@@ -1,0 +1,6 @@
+.DS_Store
+bin/
+makefile.dependencies
+build/
+*.pbxuser
+*.mode2v3

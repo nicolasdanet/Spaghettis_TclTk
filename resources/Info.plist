@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>pd</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>PureData Patch</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+		</dict>
+	</array>
+	<key>CFBundleExecutable</key>
+	<string>Pd</string>
+	<key>CFBundleGetInfoString</key>
+	<string>PureData 0.46.7,
+Copyright © 1989-2009 Tcl Core Team,
+Copyright © 2002-2009 Daniel A. Steffen,
+Copyright © 2001-2009 Apple Inc.,
+Copyright © 2001-2002 Jim Ingham &amp; Ian Reid</string>
+	<key>CFBundleIconFile</key>
+	<string>Wish.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>org.puredata.pd</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>PureData</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.46.7</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.6.0</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright (c) 1997-2015 Miller Puckette and others.</string>
+</dict>
+</plist>
