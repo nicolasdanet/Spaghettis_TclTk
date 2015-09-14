@@ -50,7 +50,7 @@ cd "${rep}/src"                                                 || exit 1
 
 if [ -e "${jack}" ]; then
     echo "Build with JACK ... "
-    JACK=TRUE make -f makefile.mac "ARCH=${arch}"               || exit 1
+    make -f makefile.mac "ARCH=${arch}" JACK=TRUE               || exit 1
 else
     make -f makefile.mac "ARCH=${arch}"                         || exit 1
 fi
