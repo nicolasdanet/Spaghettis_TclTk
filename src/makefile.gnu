@@ -1,0 +1,152 @@
+
+# Prelude.
+
+SHELL = /bin/sh
+
+# Make paths.
+
+VPATH = ../obj
+
+BIN_DIR = ../bin
+TCL_DIR = ../tcl
+
+# Install paths.
+
+# /usr/local/bin/pd
+# /usr/local/bin/pdsend
+# /usr/local/bin/pdreceive
+# /usr/local/include/m_pd.h
+# /usr/local/lib/pd/bin/pd-watchdog
+# /usr/local/lib/pd/tcl/*.tcl
+
+prefix = /usr/local
+exec_prefix = $(prefix)
+
+bindir = $(exec_prefix)/bin
+includedir = $(prefix)/include
+libdir = $(exec_prefix)/lib
+
+libpddir = $(libdir)/pd
+libpdbindir = $(libpddir)/bin
+libpdtcldir = $(libpddir)/tcl
+
+# Preprocessor flags.
+
+CPPFLAGS = -DINSTALL_PREFIX=\"$(prefix)\" \
+    -DPD -DHAVE_LIBDL_H -DHAVE_UNISTD_H -DHAVE_ALLOCA_H \
+    -D_LARGEFILE64_SOURCE \
+    -DUSEAPI_ALSA -DUSEAPI_OSS \
+    -DNDEBUG
+
+# Linker flags.
+
+LDFLAGS = -Wl,-export-dynamic $(ARCH)
+
+LIB = -ldl -lm -lpthread -lasound
+
+# JACK 
+
+ifdef JACK
+    CPPFLAGS += -DUSEAPI_JACK
+    SRC_LIBS += s_audio_jack.c
+    LIB += -ljack
+endif
+
+# Build flags.
+
+CFLAGS = -O3 -ffast-math -w $(ARCH)
+
+# The sources (filepath must NOT contain space).
+
+SRC_LIBS += s_audio_alsa.c s_audio_alsamm.c s_midi_alsa.c s_midi_oss.c s_audio_oss.c
+
+SRC = g_canvas.c g_graph.c g_text.c g_rtext.c g_array.c g_template.c g_io.c \
+    g_scalar.c g_traversal.c g_guiconnect.c g_readwrite.c g_editor.c \
+    g_all_guis.c g_bang.c g_hdial.c g_hslider.c g_mycanvas.c g_numbox.c \
+    g_toggle.c g_vdial.c g_vslider.c g_vumeter.c \
+    m_pd.c m_class.c m_obj.c m_atom.c m_memory.c m_binbuf.c \
+    m_conf.c m_glob.c m_sched.c \
+    s_main.c s_inter.c s_file.c s_print.c \
+    s_loader.c s_path.c s_entry.c s_audio.c s_midi.c s_utf8.c s_audio_paring.c \
+    d_ugen.c d_ctl.c d_arithmetic.c d_osc.c d_filter.c d_dac.c d_misc.c \
+    d_math.c d_fft.c d_fft_fftsg.c d_array.c d_global.c \
+    d_delay.c d_resample.c d_soundfile.c \
+    x_arithmetic.c x_connective.c x_interface.c x_midi.c x_misc.c \
+    x_time.c x_acoustics.c x_net.c x_text.c x_gui.c x_list.c x_array.c \
+    x_scalar.c \
+    $(SRC_LIBS)
+
+OBJ = $(SRC:.c=.o)
+
+# Targets.
+
+.PHONY: all
+
+all: $(BIN_DIR)/pd $(BIN_DIR)/pd-watchdog $(BIN_DIR)/pdsend $(BIN_DIR)/pdreceive
+
+$(BIN_DIR):
+	@test -d $(BIN_DIR) || mkdir -p $(BIN_DIR)
+
+$(OBJ): %.o : %.c
+	@echo "Build $@ ..."
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+$(BIN_DIR)/pd: $(OBJ) | $(BIN_DIR)
+	@echo "Build pd ..."
+	@$(CC) $(LDFLAGS) -o $(BIN_DIR)/pd $(OBJ) $(LIB)
+
+$(BIN_DIR)/pd-watchdog: s_watchdog.c | $(BIN_DIR)
+	@echo "Build pd-watchdog ..."
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $(BIN_DIR)/pd-watchdog s_watchdog.c
+
+$(BIN_DIR)/pdsend: u_pdsend.c | $(BIN_DIR)
+	@echo "Build pdsend ..."
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $(BIN_DIR)/pdsend u_pdsend.c
+
+$(BIN_DIR)/pdreceive: u_pdreceive.c | $(BIN_DIR)
+	@echo "Build pdreceive ..."
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $(BIN_DIR)/pdreceive u_pdreceive.c
+
+depend: makefile.dependencies
+
+makefile.dependencies:
+	@echo "Build makefile.dependencies ..."
+	@$(CC) $(CPPFLAGS) -M $(SRC) > makefile.dependencies
+
+clean:
+	@echo "Remove makefile.dependencies ..."
+	@-rm -f makefile.dependencies
+	@echo "Remove objects ..."
+	@-rm -f $(OBJ)
+	@echo "Remove binaries ..."
+	@-rm -f $(BIN_DIR)/pd $(BIN_DIR)/pdsend $(BIN_DIR)/pdreceive $(BIN_DIR)/pd-watchdog
+	@-rmdir $(BIN_DIR)
+
+install: all
+	@echo "Install binaries ..."
+	install -d $(DESTDIR)$(bindir)
+	install -m755 $(BIN_DIR)/pd $(DESTDIR)$(bindir)/pd
+	install -m755 $(BIN_DIR)/pdsend $(DESTDIR)$(bindir)/pdsend
+	install -m755 $(BIN_DIR)/pdreceive $(DESTDIR)$(bindir)/pdreceive
+	@echo "Install pd-watchdog ..."
+	install -d $(DESTDIR)$(libpdbindir)
+	install $(BIN_DIR)/pd-watchdog $(DESTDIR)$(libpdbindir)/pd-watchdog
+	@echo "Install scripts ..."
+	install -d $(DESTDIR)$(libpdtcldir)
+	install $(TCL_DIR)/*.tcl $(DESTDIR)$(libpdtcldir)
+	@echo "Install headers ..."
+	install -d $(DESTDIR)$(includedir)
+	install -m644 m_pd.h $(DESTDIR)$(includedir)/m_pd.h
+
+uninstall:
+	@echo "Uninstall binaries ..."
+	rm -f $(DESTDIR)$(bindir)/pd
+	rm -f $(DESTDIR)$(bindir)/pdsend
+	rm -f $(DESTDIR)$(bindir)/pdreceive
+	@echo "Uninstall pd-watchdog ..."
+	@echo "Uninstall scripts ..."
+	rm -f -r $(DESTDIR)$(libpddir)
+	@echo "Uninstall headers ..."
+	rm -f $(DESTDIR)$(includedir)/m_pd.h
+
+include makefile.dependencies
