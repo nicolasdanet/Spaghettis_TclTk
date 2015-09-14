@@ -1,7 +1,7 @@
 
 # Pd
 
-Unstable fork of Pure Data.
+Unstable AYOR fork of Pure Data.
 
 Credits:
 
