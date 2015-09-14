@@ -50,8 +50,7 @@ CPPFLAGS = -DINSTALL_PREFIX=\"$(prefix)\" \
 
 # Linker flags.
 
-LDFLAGS = -Wl \
-    -framework CoreAudio -framework AudioUnit -framework AudioToolbox \
+LDFLAGS = -framework CoreAudio -framework AudioUnit -framework AudioToolbox \
     -framework Carbon -framework CoreMIDI \
     $(ARCH)
 
