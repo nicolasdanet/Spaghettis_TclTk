@@ -1,7 +1,9 @@
 
 # Pd
 
-Unstable AYOR fork of Pure Data.
+Unstable "At Your Own Risk" fork of Pure Data.
+
+< http://msp.ucsd.edu/software.html >
 
 Credits:
 
