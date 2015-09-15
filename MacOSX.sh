@@ -2,7 +2,7 @@
 
 # "PureData.app" automagically built.
 # 
-#   ./MakeOSX.sh
+#   ./MacOSX.sh
 
 [ "${BASH_VERSION%.*}" \> "3.1" ] || { echo >&2 "${0##*/}: Bash 3.1 or higher only"; exit 1; }
 

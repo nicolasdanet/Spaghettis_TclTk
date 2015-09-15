@@ -2,7 +2,7 @@
 
 # "PureData" folder automagically created.
 # 
-#   ./MakeGNU.sh
+#   ./Debian.sh
 
 [ "${BASH_VERSION%.*}" \> "3.1" ] || { echo >&2 "${0##*/}: Bash 3.1 or higher only"; exit 1; }
 
