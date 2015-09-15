@@ -56,6 +56,8 @@ LDFLAGS = -framework CoreAudio -framework AudioUnit -framework AudioToolbox \
 
 LIB = -ldl -lm -lpthread
 
+SRC_LIBS=
+
 # JACK 
 
 ifdef JACK
@@ -152,9 +154,9 @@ clean:
 	@-rm -f makefile.dependencies
 	@echo "Remove objects ..."
 	@-rm -f $(OBJ)
+	@-rm -f "s_audio_jack.o"
 	@echo "Remove binaries ..."
 	@-rm -f $(BIN_DIR)/pd $(BIN_DIR)/pdsend $(BIN_DIR)/pdreceive $(BIN_DIR)/pd-watchdog
-	@-rmdir $(BIN_DIR)
 
 install: all
 	@echo "Install binaries ..."

@@ -3,12 +3,11 @@
 
 Unstable "at your own risk" fork of the Pure Data software.
 
-< http://msp.ucsd.edu/software.html >
+< http://msp.ucsd.edu >
 
 Credits:
 
-    Miller Puckette < http://msp.ucsd.edu >
-    Others < http://msp.ucsd.edu/Software/pd-README.txt >
+    Miller Puckette & others < http://msp.ucsd.edu/Software/pd-README.txt >
 
 License:
     

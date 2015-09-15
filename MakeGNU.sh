@@ -72,6 +72,8 @@ cd "${rep}/src"                         || exit 1
 make -f makefile.gnu clean              || exit 1
 cd "${rep}"                             || exit 1
 
+rmdir "${bin}"                          || exit 1
+
 # End.
 
 echo "SUCCEEDED"
