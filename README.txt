@@ -1,7 +1,7 @@
 
 # Pd
 
-Unstable "At Your Own Risk" fork of the Pure Data software.
+Unstable "at your own risk" fork of the Pure Data software.
 
 < http://msp.ucsd.edu/software.html >
 
