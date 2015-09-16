@@ -1,8 +1,6 @@
 
 # Copyright
 
-This software is copyrighted by Miller Puckette and others.
-
 Copyright (c) 1997-2013 Miller Puckette and others.
 
 Additional copyrights and licenses:
