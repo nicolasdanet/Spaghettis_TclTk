@@ -1,21 +1,26 @@
-#!/bin/sh
-# This line continues for Tcl, but is a single line for 'sh' \
-    exec wish "$0" -- ${1+"$@"}
-# For information on usage and redistribution, and for a DISCLAIMER OF ALL
-# WARRANTIES, see the file, "LICENSE.txt," in this distribution.
+#! /usr/bin/env wish
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+# ( http://wiki.tcl.tk/812 )
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 # Copyright (c) 1997-2009 Miller Puckette.
 
-# "." automatically gets a window, we don't want it.  Withdraw it before doing
-# anything else, so that we don't get the automatic window flashing for a
-# second while pd loads.
-if { [catch {wm withdraw .} fid] } { exit 2 }
+# ( https://opensource.org/licenses/BSD-3-Clause )
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+# Withdraw window first to avoid window flashing.
+
+if {[catch {wm withdraw .} fid]} { exit 2 }
 
 package require Tcl 8.3
 package require Tk
-#package require tile
-## replace Tk widgets with Ttk widgets on 8.5
-#namespace import -force ttk::*
-
 package require msgcat
 # TODO create a constructor in each package to create things at startup, that
 #  way they can be easily be modified by startup scripts
