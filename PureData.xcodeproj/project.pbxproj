@@ -393,8 +393,8 @@
 		371653E41BA3303C00ABDE22 /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
-				371655A91BA346D400ABDE22 /* apple_events.tcl */,
 				371655AA1BA346D400ABDE22 /* AppMain.tcl */,
+				371655A91BA346D400ABDE22 /* apple_events.tcl */,
 				371655AB1BA346D400ABDE22 /* dialog_array.tcl */,
 				371655AC1BA346D400ABDE22 /* dialog_audio.tcl */,
 				371655AD1BA346D400ABDE22 /* dialog_canvas.tcl */,
