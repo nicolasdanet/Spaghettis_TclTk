@@ -285,7 +285,6 @@
 		371655C01BA346D400ABDE22 /* pdtk_text.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; name = pdtk_text.tcl; path = tcl/pdtk_text.tcl; sourceTree = "<group>"; };
 		371655C11BA346D400ABDE22 /* pdtk_textwindow.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; name = pdtk_textwindow.tcl; path = tcl/pdtk_textwindow.tcl; sourceTree = "<group>"; };
 		371655C21BA346D400ABDE22 /* pdwindow.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; name = pdwindow.tcl; path = tcl/pdwindow.tcl; sourceTree = "<group>"; };
-		371655C31BA346D400ABDE22 /* pkg_mkIndex.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; name = pkg_mkIndex.tcl; path = tcl/pkg_mkIndex.tcl; sourceTree = "<group>"; };
 		371655C41BA346D400ABDE22 /* pkgIndex.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; name = pkgIndex.tcl; path = tcl/pkgIndex.tcl; sourceTree = "<group>"; };
 		371655C51BA346D400ABDE22 /* scrollbox.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; name = scrollbox.tcl; path = tcl/scrollbox.tcl; sourceTree = "<group>"; };
 		371655C61BA346D400ABDE22 /* scrollboxwindow.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; name = scrollboxwindow.tcl; path = tcl/scrollboxwindow.tcl; sourceTree = "<group>"; };
@@ -372,9 +371,9 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				371655A51BA3469200ABDE22 /* src */,
-				371655871BA3461600ABDE22 /* portmidi */,
-				371655471BA3451000ABDE22 /* portaudio */,
+				371655A51BA3469200ABDE22 /* Core */,
+				371655871BA3461600ABDE22 /* PortMidi */,
+				371655471BA3451000ABDE22 /* PortAudio */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -394,7 +393,9 @@
 			isa = PBXGroup;
 			children = (
 				371655AA1BA346D400ABDE22 /* AppMain.tcl */,
+				371655C41BA346D400ABDE22 /* pkgIndex.tcl */,
 				371655A91BA346D400ABDE22 /* apple_events.tcl */,
+				371655BE1BA346D400ABDE22 /* pd-gui.tcl */,
 				371655AB1BA346D400ABDE22 /* dialog_array.tcl */,
 				371655AC1BA346D400ABDE22 /* dialog_audio.tcl */,
 				371655AD1BA346D400ABDE22 /* dialog_canvas.tcl */,
@@ -414,13 +415,10 @@
 				371655BB1BA346D400ABDE22 /* pd_guiprefs.tcl */,
 				371655BC1BA346D400ABDE22 /* pd_menucommands.tcl */,
 				371655BD1BA346D400ABDE22 /* pd_menus.tcl */,
-				371655BE1BA346D400ABDE22 /* pd-gui.tcl */,
 				371655BF1BA346D400ABDE22 /* pdtk_canvas.tcl */,
 				371655C01BA346D400ABDE22 /* pdtk_text.tcl */,
 				371655C11BA346D400ABDE22 /* pdtk_textwindow.tcl */,
 				371655C21BA346D400ABDE22 /* pdwindow.tcl */,
-				371655C31BA346D400ABDE22 /* pkg_mkIndex.tcl */,
-				371655C41BA346D400ABDE22 /* pkgIndex.tcl */,
 				371655C51BA346D400ABDE22 /* scrollbox.tcl */,
 				371655C61BA346D400ABDE22 /* scrollboxwindow.tcl */,
 				371655C71BA346D400ABDE22 /* wheredoesthisgo.tcl */,
@@ -428,7 +426,7 @@
 			name = Scripts;
 			sourceTree = "<group>";
 		};
-		371655471BA3451000ABDE22 /* portaudio */ = {
+		371655471BA3451000ABDE22 /* PortAudio */ = {
 			isa = PBXGroup;
 			children = (
 				3716554E1BA3452E00ABDE22 /* pa_allocation.c */,
@@ -447,10 +445,10 @@
 				371655761BA345EE00ABDE22 /* pa_mac_core_blocking.c */,
 				371655781BA345F800ABDE22 /* pa_mac_core_utilities.c */,
 			);
-			name = portaudio;
+			name = PortAudio;
 			sourceTree = "<group>";
 		};
-		371655871BA3461600ABDE22 /* portmidi */ = {
+		371655871BA3461600ABDE22 /* PortMidi */ = {
 			isa = PBXGroup;
 			children = (
 				3716558C1BA3463700ABDE22 /* pmmac.c */,
@@ -461,10 +459,10 @@
 				371655961BA3466600ABDE22 /* portmidi.c */,
 				371655981BA3467500ABDE22 /* ptmacosx_cf.c */,
 			);
-			name = portmidi;
+			name = PortMidi;
 			sourceTree = "<group>";
 		};
-		371655A51BA3469200ABDE22 /* src */ = {
+		371655A51BA3469200ABDE22 /* Core */ = {
 			isa = PBXGroup;
 			children = (
 				371654B61BA3421800ABDE22 /* g_canvas.c */,
@@ -543,7 +541,7 @@
 				379A42DC1BA4282F00C1CED0 /* u_pdsend.c */,
 				379A42F31BA4290400C1CED0 /* u_pdreceive.c */,
 			);
-			name = src;
+			name = Core;
 			sourceTree = "<group>";
 		};
 		379A42041BA3F4EA00C1CED0 /* Frameworks */ = {

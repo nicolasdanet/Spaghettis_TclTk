@@ -3,31 +3,32 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# ( http://wiki.tcl.tk/812 )
+# Copyright (c) 1997-2015 Miller Puckette and others ( https://opensource.org/licenses/BSD-3-Clause ).
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Copyright (c) 1997-2009 Miller Puckette.
-
-# ( https://opensource.org/licenses/BSD-3-Clause )
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-# Withdraw window first to avoid window flashing.
+# Withdraw window first to avoid flashing.
 
 if {[catch {wm withdraw .} fid]} { exit 2 }
 
-package require Tcl 8.3
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+package require Tcl 8.5
 package require Tk
 package require msgcat
-# TODO create a constructor in each package to create things at startup, that
-#  way they can be easily be modified by startup scripts
-# TODO create alt-Enter/Cmd-I binding to bring up Properties panels
 
-# Pd's packages are stored in the same directory as the main script (pd-gui.tcl)
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+# Note that all the Tcl files MUST be kept in the directory that contains this file.
+
 set auto_path [linsert $auto_path 0 [file dirname [info script]]]
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 package require pd_connect
 package require pd_menus
 package require pd_bindings
@@ -49,7 +50,6 @@ package require opt_parser
 package require pdtk_canvas
 package require pdtk_text
 package require pdtk_textwindow
-# TODO eliminate this kludge:
 package require wheredoesthisgo
 package require pd_guiprefs
 
@@ -417,7 +417,8 @@ proc load_locale {} {
                                          [registry get {HKEY_CURRENT_USER\Control Panel\International} sLanguage] 0 1] ]
         }
     }
-    ::msgcat::mcload [file join [file dirname [info script]] .. po]
+    
+    # ::msgcat::mcload [file join [file dirname [info script]] .. po]
 
     ##--moo: force default system and stdio encoding to UTF-8
     encoding system utf-8

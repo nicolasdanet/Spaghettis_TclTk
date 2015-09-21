@@ -1,4 +1,12 @@
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+# Copyright (c) 1997-2015 Miller Puckette and others ( https://opensource.org/licenses/BSD-3-Clause ).
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 ####### scrollboxwindow -- scrollbox window with default bindings #########
 ## This is the base dialog behind the Path and Startup dialogs
 ## This namespace specifies everything the two dialogs have in common,

@@ -1,7 +1,7 @@
 
 # Copyright
 
-Copyright (c) 1997-2013 Miller Puckette and others.
+Copyright (c) 1997-2015 Miller Puckette and others.
 
 Additional copyrights and licenses:
 
@@ -24,7 +24,7 @@ Additional copyrights and licenses:
         Copyright (c) 1999-2000 Ross Bencina and Phil Burk
  
         Any person wishing to distribute modifications to the Software is
-        requested to send the modifications to the original developer so 
+        requested to send the modifications to the original developer so
         that they can be incorporated into the canonical version.
  
     src/s_path.c
@@ -38,15 +38,60 @@ Additional copyrights and licenses:
   
     src/s_midi_oss.c
         
-        Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette, 
+        Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
         Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
   
     src/s_midi_alsa.c
     
-        Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette, 
+        Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
         Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
     
-    s_audio_alsa.h
-
-        Copyright (c) 1997-1999 Guenter Geiger, Miller Puckette, 
+    src/s_midi_dummy.c
+    
+        Copyright (c) 1997-1999 Guenter Geiger, Miller Puckette,
         Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
+
+    src/s_audio_alsa.c
+
+        Copyright (c) 1997-1999 Guenter Geiger, Miller Puckette,
+        Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
+    
+    src/s_audio_alsamm.c
+    
+        Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
+        Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
+
+    src/s_audio_dummy.c
+    
+        Copyright (c) 2010 Peter Brinkmann.
+    
+    src/s_audio_esd.c
+    
+        Copyright (c) 2006 Guenter Geiger.
+        
+    src/s_audio_oss.c
+    
+        Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
+        Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
+    
+    tcl/pd_guiprefs.tcl
+    
+        Copyright (c) 1997-2009 Miller Puckette and others.
+        Copyright (c) 2011 Yvan Volochine.
+        
+    tcl/pdtk_textwindow.tcl
+    
+        Copyright (c) 2002-2012 krzYszcz and others.
+    
+    g_7_guis.c 
+    
+        Copyright (c) 2000-2001 Thomas Musil, IEM KUG Graz Austria.
+    
+    my_numbox.c
+    
+        Copyright (c) 2000-2001 Thomas Musil, IEM KUG Graz Austria.
+    
+    vdial.c 
+    
+        Copyright (c) 2000-2001 Thomas Musil, IEM KUG Graz Austria.
+        

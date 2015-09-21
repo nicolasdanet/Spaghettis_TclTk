@@ -1,3 +1,12 @@
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+# Copyright (c) 1997-2015 Miller Puckette and others ( https://opensource.org/licenses/BSD-3-Clause ).
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 # the find dialog panel is a bit unusual in that it is created directly by the
 # Tcl 'pd-gui'. Most dialog panels are created by sending a message to 'pd',
 # which then sends a message to 'pd-gui' to create the panel.
