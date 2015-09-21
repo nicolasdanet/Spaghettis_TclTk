@@ -56,18 +56,14 @@ package require pd_guiprefs
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# import functions into the global namespace
+# Import functions into the global namespace.
 
-# gui preferences
-namespace import ::pd_guiprefs::init
-namespace import ::pd_guiprefs::update_recentfiles
-namespace import ::pd_guiprefs::write_recentfiles
-# make global since they are used throughout    
 namespace import ::pd_menucommands::* 
-
-# import into the global namespace for backwards compatibility
 namespace import ::pd_connect::pdsend
-namespace import ::pdwindow::pdtk_post
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 namespace import ::pdwindow::pdtk_pd_dio
 namespace import ::pdwindow::pdtk_pd_audio
 namespace import ::pdwindow::pdtk_pd_dsp
@@ -79,6 +75,10 @@ namespace import ::pdtk_canvas::pdtk_canvas_setparents
 namespace import ::pdtk_canvas::pdtk_canvas_reflecttitle
 namespace import ::pdtk_canvas::pdtk_canvas_menuclose
 namespace import ::dialog_array::pdtk_array_dialog
+namespace import ::dialog_array::pdtk_array_listview_new
+namespace import ::dialog_array::pdtk_array_listview_fillpage
+namespace import ::dialog_array::pdtk_array_listview_setpage
+namespace import ::dialog_array::pdtk_array_listview_closeWindow
 namespace import ::dialog_audio::pdtk_audio_dialog
 namespace import ::dialog_canvas::pdtk_canvas_dialog
 namespace import ::dialog_data::pdtk_data_dialog
@@ -91,14 +91,8 @@ namespace import ::dialog_midi::pdtk_alsa_midi_dialog
 namespace import ::dialog_path::pdtk_path_dialog
 namespace import ::dialog_startup::pdtk_startup_dialog
 
-# hack - these should be better handled in the C code
-namespace import ::dialog_array::pdtk_array_listview_new
-namespace import ::dialog_array::pdtk_array_listview_fillpage
-namespace import ::dialog_array::pdtk_array_listview_setpage
-namespace import ::dialog_array::pdtk_array_listview_closeWindow
-
-#------------------------------------------------------------------------------#
-# global variables
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 # this is a wide array of global variables that are used throughout the GUI.
 # they can be used in plugins to check the status of various things since they
