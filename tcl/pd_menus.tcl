@@ -7,9 +7,6 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Copyright (c) 1997-2009 Miller Puckette.
-#(c) 2008 WordTech Communications LLC. License: standard Tcl license, http://www.tcl.tk/software/tcltk/license.html
-
 package provide pd_menus 0.1
 
 package require pd_menucommands
