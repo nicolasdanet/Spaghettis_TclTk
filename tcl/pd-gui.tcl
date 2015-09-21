@@ -8,7 +8,7 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Withdraw window first to avoid flashing.
+# Withdraw the window first to avoid flashing.
 
 if {[catch {wm withdraw .} fid]} { exit 2 }
 
@@ -22,7 +22,7 @@ package require msgcat
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Note that all the Tcl files MUST be kept in the directory that contains this file.
+# Note that all the Tcl files MUST be kept in the same directory that this file.
 
 set auto_path [linsert $auto_path 0 [file dirname [info script]]]
 
@@ -53,7 +53,9 @@ package require pdtk_textwindow
 package require wheredoesthisgo
 package require pd_guiprefs
 
-#------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 # import functions into the global namespace
 
 # gui preferences
