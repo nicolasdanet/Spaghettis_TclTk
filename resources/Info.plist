@@ -12,7 +12,7 @@
 				<string>pd</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>PureData Patch</string>
+			<string>PureData patch</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 		</dict>
