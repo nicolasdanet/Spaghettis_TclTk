@@ -33,7 +33,7 @@ plist="${rep}/resources/Info.plist"
 bin="${rep}/bin"
 tcl="${rep}/tcl"
 
-org="org.puredata.pd.plist"
+org="org.puredata.puredata.plist"
 default="${rep}/resources/${org}"
 preferences="${HOME}/Library/Preferences"
 
