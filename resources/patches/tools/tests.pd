@@ -1,4 +1,4 @@
-#N canvas 241 211 721 356 12;
+#N canvas 411 158 721 356 12;
 #X floatatom 86 283 3 0 0 0 - - -, f 3;
 #X obj 36 232 notein;
 #X obj 36 258 stripnote;
@@ -58,30 +58,21 @@
 1 1;
 #X obj 224 253 tgl 20 0 empty empty empty 20 8 0 8 -262144 -1 -1 0
 1;
-#N canvas 0 22 662 344 more 0;
-#X floatatom 42 209 0 0 0 0 - - -;
-#X obj 42 183 f;
-#X obj 79 183 + 1;
-#X obj 42 150 metro 1000;
-#X obj 42 123 tgl 20 0 empty empty empty 20 8 0 8 -262144 -1 -1 0 1
+#N canvas 440 178 507 368 more 0;
+#X floatatom 44 164 0 0 0 0 - - -;
+#X obj 44 138 f;
+#X obj 81 138 + 1;
+#X obj 44 105 metro 1000;
+#X obj 44 78 tgl 20 0 empty empty empty 20 8 0 8 -262144 -1 -1 0 1
 ;
-#X msg 264 142 \; pd restart-audio;
-#X text 24 30 this window has various wierd debugging stuff...;
-#X text 218 97 ALSA gets twisted after a few;
-#X text 216 118 hours sometimes... use this to fix:;
-#X text 22 74 see if Pd's time;
-#X text 22 93 measurement works:;
-#X obj 516 159 adc~;
-#X obj 515 206 print~;
-#X obj 524 183 bng 15 250 50 0 empty empty empty 0 -6 0 8 -262144 -1
--1;
+#X msg 44 272 \; pd restart-audio;
+#X text 27 25 See if PureData's time measurement works...;
+#X text 19 216 ALSA gets twisted after a few hours sometimes...;
 #X connect 1 0 2 0;
 #X connect 1 0 0 0;
 #X connect 2 0 1 1;
 #X connect 3 0 1 0;
 #X connect 4 0 3 0;
-#X connect 11 0 12 0;
-#X connect 13 0 12 0;
 #X restore 584 272 pd more;
 #X obj 228 144 tgl 20 0 tone-ch3 tone-ch3 3 5 -8 0 12 -262144 -1 -1
 1 1;
@@ -105,7 +96,7 @@
 1 1;
 #X obj 370 144 tgl 20 0 tone-ch8 tone-ch8 8 5 -8 0 12 -262144 -1 -1
 1 1;
-#N canvas 637 91 321 422 audio 0;
+#N canvas 595 279 321 422 audio 0;
 #X obj 25 303 s~ tone-mon;
 #X obj 25 277 line~;
 #X obj 25 249 pack 0 50;
@@ -229,7 +220,7 @@ set 1 \;;
 #X connect 42 0 43 0;
 #X connect 44 0 2 0;
 #X restore 24 68 pd tone-generator;
-#N canvas 184 22 1014 892 assigns 0;
+#N canvas 184 22 1014 700 assigns 0;
 #X obj 12 71 hip~ 5;
 #X obj 20 122 int;
 #X obj 20 96 env~ 8192;
@@ -729,7 +720,6 @@ set 1 \;;
 -1 1 1;
 #X obj 608 144 tgl 20 0 tone-ch116 tone-ch16 16 5 -8 0 12 -262144 -1
 -1 1 1;
-#X text 235 25 16 channel test tone patch;
 #X text 316 77 AUTIO INPUT (RMS dB);
 #X text 337 175 AUDIO OUTPUT ON/OFF;
 #X text 40 120 OFF;
