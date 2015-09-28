@@ -254,41 +254,39 @@
 #X restore 29 3490 pd;
 #X text 129 3490 - define a subwindow;
 #X obj 30 1366 table;
-#X obj 29 3514 inlet;
-#X text 129 3514 - add an inlet to a pd;
-#X obj 29 3538 outlet;
-#X text 129 3538 - add an outlet to a pd;
-#X obj 29 3562 inlet~;
-#X obj 89 3562 outlet~;
-#X obj 29 3631 struct;
-#X text 129 3631 - define a data structure;
-#X obj 29 3655 drawcurve;
-#X obj 117 3655 filledcurve;
-#X text 230 3655 - draw a curve;
-#X obj 29 3679 drawpolygon;
-#X obj 134 3679 filledpolygon;
-#X text 264 3679 - draw a polygon;
-#X obj 29 3703 plot;
-#X text 129 3703 - plot an array field;
-#X obj 29 3727 drawnumber;
-#X text 129 3727 - print a numeric value;
-#X obj 30 3791 pointer;
-#X text 130 3791 - point to an object belonging to a template;
-#X obj 30 3815 get;
-#X text 130 3815 - get numeric fields;
-#X obj 30 3839 set;
-#X text 130 3839 - change numeric fields;
-#X obj 30 3863 element;
-#X text 130 3863 - get an array element;
-#X obj 30 3887 getsize;
-#X text 130 3887 - get the size of an array;
-#X obj 30 3911 setsize;
-#X text 130 3911 - change the size of an array;
-#X obj 30 3935 append;
-#X text 130 3935 - add an element to a list;
-#X obj 30 3959 scalar;
-#X text 129 4013 (use tabwrite~ now);
-#X obj 29 4038 namecanvas;
+#X obj 28 3552 inlet;
+#X text 128 3552 - add an inlet to a pd;
+#X obj 27 3580 outlet;
+#X text 127 3580 - add an outlet to a pd;
+#X obj 27 3604 inlet~;
+#X obj 87 3604 outlet~;
+#X obj 27 3673 struct;
+#X text 127 3673 - define a data structure;
+#X obj 27 3697 drawcurve;
+#X obj 115 3697 filledcurve;
+#X text 228 3697 - draw a curve;
+#X obj 27 3721 drawpolygon;
+#X obj 132 3721 filledpolygon;
+#X text 262 3721 - draw a polygon;
+#X obj 27 3745 plot;
+#X text 127 3745 - plot an array field;
+#X obj 27 3769 drawnumber;
+#X text 127 3769 - print a numeric value;
+#X obj 28 3833 pointer;
+#X text 128 3833 - point to an object belonging to a template;
+#X obj 28 3857 get;
+#X text 128 3857 - get numeric fields;
+#X obj 28 3881 set;
+#X text 128 3881 - change numeric fields;
+#X obj 28 3905 element;
+#X text 128 3905 - get an array element;
+#X obj 28 3929 getsize;
+#X text 128 3929 - get the size of an array;
+#X obj 28 3953 setsize;
+#X text 128 3953 - change the size of an array;
+#X obj 28 3977 append;
+#X text 128 3977 - add an element to a list;
+#X obj 28 4001 scalar;
 #X obj 147 3320 czero_rev~;
 #X obj 31 2401 threshold~;
 #X text 131 2401 - detect signal thresholds;
@@ -300,9 +298,9 @@
 ;
 #X text 23 3461 ------------------------ SUBWINDOWS ------------------------
 ;
-#X text 23 3601 ---------------------- DATA TEMPLATES ----------------------
+#X text 21 3643 ---------------------- DATA TEMPLATES ----------------------
 ;
-#X text 23 3761 ---------------------- ACCESSING DATA ----------------------
+#X text 21 3803 ---------------------- ACCESSING DATA ----------------------
 ;
 #X text 22 2721 ------------ AUDIO OSCILLATORS AND TABLES -------------
 ;
@@ -314,8 +312,6 @@
 #X obj 123 787 <;
 #X obj 154 787 >=;
 #X obj 185 787 <=;
-#X text 25 3988 ------------------------ OBSOLETE --------------------------
-;
 #X obj 59 764 -;
 #X obj 92 764 *;
 #X obj 124 764 /;
@@ -332,7 +328,7 @@
 #X obj 126 1876 /~;
 #X obj 30 1815 declare;
 #X text 130 1815 - set search path and/or load libraries;
-#X text 167 3563 - signal versions;
+#X text 165 3605 - signal versions;
 #X obj 27 997 wrap;
 #X text 126 997 - wrap a number to range [0 \, 1);
 #X text 131 2035 - wraparound (fractional part);
@@ -354,12 +350,7 @@
 #X text 133 1392 - general array creation and manipulation;
 #X text 22 1246 ----------------- ARRAYS/TABLES -------------------
 ;
-#X text 130 3958 - create a single scalar;
-#X text 128 4039 (potentially dangerous but no substitute exists yet)
-;
-#X msg 29 4011 scope~;
-#X msg 29 4063 template;
-#X text 128 4064 (use struct now);
+#X text 128 4000 - create a single scalar;
 #X obj 30 1585 textfile;
 #X obj 30 1609 text;
 #X obj 185 810 <<;
@@ -372,3 +363,6 @@
 #X obj 26 1229 oscformat;
 #X text 118 1206 - OSC messages to Pd lists;
 #X text 118 1229 - Pd lists to OSC messages;
+#X obj 29 3519 namecanvas;
+#X text 128 3520 (potentially dangerous but no substitute exists yet)
+;
