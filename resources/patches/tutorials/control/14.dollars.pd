@@ -1,0 +1,4 @@
+#N canvas 417 283 586 180 12;
+#X obj 34 68 dollarsign2 three 4;
+#X text 32 14 An abstraction's creation arguments may be either numbers
+or symbols. Gory details are inside:;
