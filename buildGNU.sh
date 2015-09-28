@@ -33,7 +33,6 @@ isJack=$(dpkg-query -W -f='${Status}' libjack-dev 2>/dev/null | grep -c "ok inst
 # Paths.
 
 folder="${rep}/PureData"
-
 bin="${rep}/bin"
 tcl="${rep}/tcl"
 patches="${rep}/resources/patches"
@@ -58,7 +57,6 @@ cd "${rep}"                             || exit 1
 # Create the folder.
 
 echo "Create folder ..."
-
 mkdir "${folder}"                       || exit 1
 cp -R "${bin}" "${folder}"              || exit 1
 cp -R "${tcl}" "${folder}"              || exit 1
@@ -66,17 +64,14 @@ cp -R "${tcl}" "${folder}"              || exit 1
 # Install materials.
 
 echo "Install patches ..."
-
 cp -R "${patches}" "${folder}"          || exit 1
 
 # Clean the build.
 
 echo "Clean ..."
-
 cd "${rep}/src"                         || exit 1
 make -f makefile.gnu clean              || exit 1
 cd "${rep}"                             || exit 1
-
 rmdir "${bin}"                          || exit 1
 
 # End.

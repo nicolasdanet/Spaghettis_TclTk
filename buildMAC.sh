@@ -28,15 +28,12 @@ jack="/System/Library/Frameworks/Jackmp.framework/Headers/jack.h"
 
 folder="${rep}/PureData"
 app="${folder}/PureData.app"
-
 plist="${rep}/resources/Info.plist"
 bin="${rep}/bin"
 tcl="${rep}/tcl"
-
 org="org.puredata.puredata.plist"
 default="${rep}/resources/${org}"
 preferences="${HOME}/Library/Preferences"
-
 patches="${rep}/resources/patches"
 
 # Do not overwrite previous build.
@@ -65,23 +62,19 @@ cd "${rep}"                                                     || exit 1
 # Make the bundle.
 
 echo "Build package ..."
-
 mkdir "${folder}"                                               || exit 1
 cp -R "${wish}" "${app}"                                        || exit 1
-
 rm -f "${app}/Contents/Info.plist"                              || exit 1
 rm -f "${app}/Contents/PkgInfo"                                 || exit 1
 rm -f "${app}/Contents/MacOS/Wish Shell"                        || exit 1
 rm -f "${app}/Contents/_CodeSignature/CodeResources"            || exit 1
 rmdir "${app}/Contents/_CodeSignature"                          || exit 1
 rm -f "${app}/Contents/CodeResources"                           || exit 1
-
 cp -p "${plist}" "${app}/Contents/Info.plist"                   || exit 1
 echo "APPL????" > "${app}/Contents/PkgInfo"                     || exit 1
 mv "${app}/Contents/MacOS/Wish" "${app}/Contents/MacOS/Pd"      || exit 1
 cp -R "${bin}" "${app}/Contents/Resources/"                     || exit 1
 cp -R "${tcl}" "${app}/Contents/Resources/"                     || exit 1
-
 cd "${app}/Contents/Resources/"                                 || exit 1
 ln -s "tcl" "Scripts"                                           || exit 1
 cd "${rep}"                                                     || exit 1
@@ -93,17 +86,14 @@ cd "${rep}"                                                     || exit 1
 # Install materials.
 
 echo "Install patches ..."
-
 cp -R "${patches}" "${folder}"                                  || exit 1
 
 # Clean the build.
 
 echo "Clean ..."
-
 cd "${rep}/src"                                                 || exit 1
 make -f makefile.mac clean                                      || exit 1
 cd "${rep}"                                                     || exit 1
-
 rmdir "${bin}"                                                  || exit 1
 
 # End.
