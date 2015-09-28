@@ -2,11 +2,11 @@
 
 # "PureData" folder automagically created.
 # 
-#   ./Debian.sh
+#   ./buildGNU.sh
 #
 # Tested on:
 #
-#   - Wheezy (i386)
+#   - Debian / Wheezy (i386)
 #
 
 [ "${BASH_VERSION%.*}" \> "3.1" ] || { echo >&2 "${0##*/}: Bash 3.1 or higher only"; exit 1; }

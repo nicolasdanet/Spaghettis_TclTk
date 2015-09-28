@@ -2,7 +2,7 @@
 
 # "PureData.app" automagically built.
 # 
-#   ./MacOSX.sh
+#   ./buildMAC.sh
 #
 # Tested on:
 #
