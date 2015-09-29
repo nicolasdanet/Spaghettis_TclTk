@@ -1,5 +1,5 @@
-#N canvas 55 137 820 651 12;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 277 49 820 651 12;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array waveform12 131 float 1;
 #A 0 -0.172615 -0.172615 -0.172615 -0.172615 -0.172615 -0.141231 -0.109846
 -0.0941538 -0.0627692 -0.0470769 0.0156923 0.0784615 0.125538 0.188308
@@ -80,8 +80,8 @@
 #X obj 156 95 phasor~;
 #X obj 156 184 tabread4~ waveform12;
 #X obj 156 157 +~ 1;
-#X floatatom 156 66 4 0 0 0 - - -;
-#X floatatom 250 59 4 0 1000 0 - - -;
+#X floatatom 156 66 4 0 0 0 - - -, f 4;
+#X floatatom 250 59 4 0 1000 0 - - -, f 4;
 #X obj 250 80 pack 0 50;
 #X obj 250 104 line~;
 #X obj 156 131 *~;
@@ -91,7 +91,7 @@
 #X text 24 132 adjustment -->;
 #X text 250 38 squeeze;
 #X text 133 40 frequency;
-#N canvas 0 0 450 300 graph3 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array wave-out12 441 float 0;
 #X coords 0 1 440 -1 300 140 1;
 #X restore 481 190 graph;
@@ -113,7 +113,6 @@ factor makes the phase grow to a value at least \, and possibly much
 graeater than \, 129 (to which tabread4~ then limits it). So the resulting
 waveform is compressed in time.;
 #X obj 250 128 +~ 128;
-#X text 554 624 updated for Pd version 0.37;
 #X connect 1 0 2 1;
 #X connect 2 0 1 0;
 #X connect 3 0 2 2;
