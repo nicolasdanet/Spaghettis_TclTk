@@ -1,20 +1,21 @@
-#N canvas 137 102 781 520 12;
-#X graph graph1 0 -1.02 10 1.02 468 159 648 29;
+#N canvas 144 222 781 520 12;
+#N canvas 0 22 450 278 (subpatch) 0;
 #X array waveform13 11 float 1;
 #A 0 1 1 1 1 1 1 1 -1 -1 -1 -1;
-#X pop;
-#X text 533 502 updated for Pd version 0.34;
+#X coords 0 1.02 10 -1.02 180 130 1;
+#X restore 468 29 graph;
 #X obj 156 157 +~ 1;
 #X text 21 81 phase;
 #X text 20 96 generation -->;
 #X text 25 117 range;
 #X text 24 132 adjustment -->;
-#X graph graph3 0 -1.02 440 1.02 469 362 769 222;
+#N canvas 0 22 450 278 (subpatch) 0;
 #X array wave-out13 441 float 0;
-#X pop;
+#X coords 0 1.02 440 -1.02 300 140 1;
+#X restore 469 222 graph;
 #X msg 177 216 bang;
 #X text 223 217 <--click to graph;
-#N canvas 11 418 523 216 other-stuff 0;
+#N canvas 275 330 523 216 other-stuff 0;
 #X obj 41 49 loadbang;
 #X msg 39 81 \; waveform13 0 1 1 1 1 1 1 1 -1 -1 -1 -1 \; waveform13
 xlabel -1.2 0 1 2 3 4 5 6 7 8 9 10 \; pd dsp 1;
@@ -36,9 +37,9 @@ The 11-point table \, waveform13 \, contains a transition from from
 transition at the wraparoind point--the interpolation always happens
 between 4 consccutive samples of the table \, disregarding wraparound.
 ;
-#X connect 2 0 12 0;
-#X connect 8 0 11 0;
-#X connect 12 0 11 0;
-#X connect 13 0 2 0;
-#X connect 14 0 13 0;
-#X connect 16 0 17 0;
+#X connect 1 0 11 0;
+#X connect 7 0 10 0;
+#X connect 11 0 10 0;
+#X connect 12 0 1 0;
+#X connect 13 0 12 0;
+#X connect 15 0 16 0;
