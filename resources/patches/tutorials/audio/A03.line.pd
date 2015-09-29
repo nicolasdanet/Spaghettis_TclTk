@@ -1,4 +1,4 @@
-#N canvas 369 106 647 598 12;
+#N canvas 183 74 647 598 12;
 #X obj 56 79 osc~ 440;
 #X obj 56 309 dac~;
 #X msg 446 79 \; pd dsp 1;
@@ -40,7 +40,6 @@ are connected to line~'s left inlet. Except in some special cases \,
 Pd objects with more than one inlet will automatically distribute lists
 of numbers across their inlets. In this case \, "0 50" becomes \, "50
 at right and 0 at left.");
-#X text 386 557 updated for Pd version 0.36;
 #X text 93 268 <-- multiply the sine wave by the ramp. There's no longer
 a "0" argument-- this tells Pd to expect a signal here.;
 #X connect 0 0 6 0;

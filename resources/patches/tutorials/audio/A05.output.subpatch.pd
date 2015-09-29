@@ -11,7 +11,6 @@
 you touch the level control. Hitting "mute" toggles between the current
 level and zero.;
 #X obj 32 173 output~;
-#X text 383 463 updated for Pd version 0.36;
 #X text 143 115 <-- Here we make an A major triad as a test signal.
 ;
 #X text 31 250 In this and subsequent patches \, we'll use a subwindow

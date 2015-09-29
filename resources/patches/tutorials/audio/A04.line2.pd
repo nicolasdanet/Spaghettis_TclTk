@@ -1,4 +1,4 @@
-#N canvas 30 68 949 754 12;
+#N canvas 30 22 978 752 12;
 #X obj 67 77 osc~ 440;
 #X obj 67 329 dac~;
 #X obj 67 242 *~;
@@ -11,15 +11,18 @@ osc~ \, but with the outputs graphed:;
 #X obj 151 179 r graphit;
 #X obj 151 246 r graphit;
 #X obj 86 149 r to-line;
-#X graph graph1 0 -1.02 44100 1.02 631 480 831 350;
+#N canvas 0 22 450 278 (subpatch) 0;
 #X array product 44100 float 0;
-#X pop;
-#X graph graph1 0 -1.02 44100 1.02 631 150 831 20;
+#X coords 0 1.02 44100 -1.02 200 130 1;
+#X restore 631 350 graph;
+#N canvas 0 22 450 278 (subpatch) 0;
 #X array osc-output 44100 float 0;
-#X pop;
-#X graph graph1 0 -1.02 44100 1.02 631 315 831 185;
+#X coords 0 1.02 44100 -1.02 200 130 1;
+#X restore 631 20 graph;
+#N canvas 0 22 450 278 (subpatch) 0;
 #X array line-output 44100 float 0;
-#X pop;
+#X coords 0 1.02 44100 -1.02 200 130 1;
+#X restore 631 185 graph;
 #X obj 149 119 tabwrite~ osc-output;
 #X obj 67 299 *~ 0.1;
 #X msg 38 401 \; pd dsp 1 \; to-line 0 \, 1 500 \; graphit bang;
@@ -37,7 +40,6 @@ one \, with no time value \, causes the line~ to jump immediately to
 the value. The third box takes line~'s previous value as a point of
 departure. What you see will depend on which box you last clicked and
 how long you waited between the two.;
-#X text 662 727 updated for Pd version 0.33;
 #X text 41 600 On most machines \, you will hear an interruption in
 the sound one second after you click on the first or third box. This
 is because the graphical updates are likely to eat more CPU time than

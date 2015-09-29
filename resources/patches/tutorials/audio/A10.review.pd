@@ -25,7 +25,6 @@
 #X text 109 321 ("receive") ... and receiving;
 #X text 107 60 (etc.) -- arithmetic on audio signals;
 #X text 109 218 (etc.) -- arithmetic;
-#X text 385 426 updated for Pd version 0.40.;
 #X text 112 139 -- sinusoidal oscillator;
 #X obj 74 418 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0 1
 ;

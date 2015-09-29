@@ -25,9 +25,8 @@ to set the multiplier.;
 #X text 35 396 Here we calculate a gain for the multiplier (*~) using
 a "dbtorms" object (acronym for "dB to RMS"). 100 dB is normalized
 to one \, and zero dB artificially outputs a true 0;
-#X text 34 452 Pd assumes you have a two channel audio system unless
+#X text 37 448 Pd assumes you have a two channel audio system unless
 you tell it otherwise.;
-#X text 440 486 updated for Pd version 0.33;
 #X text 114 282 <-- and out. We're sending to both channels now.;
 #X connect 0 0 9 0;
 #X connect 9 0 1 0;

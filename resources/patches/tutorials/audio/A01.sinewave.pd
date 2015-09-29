@@ -1,4 +1,4 @@
-#N canvas 6 2 588 513 12;
+#N canvas 285 160 712 594 12;
 #X obj 108 109 osc~ 440;
 #X obj 108 168 dac~;
 #X text 187 111 <-- 440 Hz. sine wave at full blast;
@@ -17,9 +17,6 @@ menu \, but the buttons are provided as a shortcut.;
 is A 440 and whose amplitude is 0.05. If instead you are greeted with
 silence \, you might want to read the HTML documentation on setting
 up audio.;
-#X text 28 434 In general when you start a work session with Pd \,
-you will want to choose "test audio and MIDI" from the help window
-\, which opens a more comprehensive test patch than this one.;
 #X text 296 247 <-- click these;
 #X text 187 139 <-- reduce amplitude to 0.05;
 #X text 160 168 <----- send to the audio output device;
@@ -27,6 +24,9 @@ you will want to choose "test audio and MIDI" from the help window
 such as the three below. They use continuous audio streams to intercommunicate
 \, as well as communicating with other ("control") Pd objects using
 messages.;
-#X text 342 490 updated for Pd version 0.36;
+#X text 22 485 These patches are accompanied by a book which develops
+the underlying theory., f 78;
+#X text 24 526 It is freely available at: http://msp.ucsd.edu/techniques.htm
+, f 64;
 #X connect 0 0 3 0;
 #X connect 3 0 1 0;
