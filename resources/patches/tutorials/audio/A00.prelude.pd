@@ -1,0 +1,6 @@
+#N canvas 258 177 708 198 12;
+#X text 25 36 These patches are accompanied by a book which develops
+the underlying theory., f 78;
+#X text 27 77 It is freely available at: http://msp.ucsd.edu/techniques.htm
+, f 64;
+#X text 23 118 Examples requires fiddle~ and expr~, f 64;
