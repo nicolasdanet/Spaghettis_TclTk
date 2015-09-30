@@ -1,5 +1,5 @@
-#N canvas 55 137 777 467 12;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 55 137 796 514 12;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array pitchmod14 131 float 1;
 #A 0 0.847385 0.847385 0.847385 0.847385 0.847385 0.847385 0.847385
 0.847385 0.847385 0.847385 0.847385 0.847385 0.847385 0.847385 0.863077
@@ -77,14 +77,14 @@
 #X connect 27 0 21 0;
 #X restore 153 305 pd output;
 #X msg 229 278 MUTE;
-#X floatatom 153 95 4 0 0 0 - - -;
+#X floatatom 153 95 4 0 0 0 - - -, f 4;
 #X text 153 69 frequency;
-#X floatatom 195 206 4 0 0 0 - - -;
+#X floatatom 195 206 4 0 0 0 - - -, f 4;
 #X text 155 50 modulation;
 #X obj 152 157 *~;
 #X text 255 150 modulation;
 #X text 253 169 depth;
-#X floatatom 201 157 4 0 0 0 - - -;
+#X floatatom 201 157 4 0 0 0 - - -, f 4;
 #X obj 152 205 +~;
 #X text 250 212 frequency;
 #X obj 152 237 osc~;
@@ -94,7 +94,6 @@
 #X text 47 356 This tabosc4~ controls the pitch of a sinusoidal oscillator
 (osc~). Try changing the waveform as well as the three familiar parameters.
 ;
-#X text 520 438 updated for Pd version 0.37;
 #X connect 1 0 2 1;
 #X connect 2 0 1 0;
 #X connect 3 0 2 2;
