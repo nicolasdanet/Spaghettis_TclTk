@@ -1,9 +1,7 @@
 
 # Pd
 
-Unstable "at your own risk" fork of the Pure Data software.
-
-< http://msp.ucsd.edu >
+< https://en.wiktionary.org/wiki/work_in_progress >
 
 Credits:
 
