@@ -1,11 +1,11 @@
-#N canvas 215 77 561 455 12;
+#N canvas 225 114 561 455 12;
 #X text 14 7 CONVERTING CONTROL TO SIGNALS;
 #X obj 29 350 output~;
 #X obj 107 352 output~;
-#N canvas 0 0 450 300 metro 0;
+#N canvas 0 22 450 300 metro 0;
 #X obj 88 39 loadbang;
 #X msg 87 65 1;
-#X obj 87 131 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0 1
+#X obj 87 131 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1 1
 ;
 #X obj 87 153 sel 0 1;
 #X obj 87 190 outlet;
@@ -28,7 +28,6 @@ The subpatch is still sending alternating bangs as in the last patch
 #X text 17 172 The effect of line~ rounding breakpoints to the nearest
 block (on the order of a millisecond) is that each 4-millisecond-long
 cycle has a different shape. Using vline~ resolves the problem.;
-#X text 385 437 Updated for Pd 0.37;
 #X text 16 411 Sometimes you will want to use vline~ in place of sig~
 for the same reason.;
 #X text 15 27 For controlling amplitudes \, line~ \, with its block-aligned
