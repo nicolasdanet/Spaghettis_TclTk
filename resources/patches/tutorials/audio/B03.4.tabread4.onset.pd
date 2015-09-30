@@ -1,5 +1,4 @@
-#N canvas 87 57 580 690 12;
-#X text 355 655 updated for Pd version 0.42;
+#N canvas 145 54 580 690 12;
 #X text 28 36 Pd is usually compiled to work on 32-bit audio samples.
 These do not \, in general \, have enough precision for use as indices
 into an array of more than about 32K samples. This is because the mantissa
@@ -30,7 +29,7 @@ and the "main" (signal) inlet in 64-bit precision. So if \, for example
 #X msg 408 468 \; pd dsp 1;
 #X obj 41 474 *~ 10000;
 #X obj 41 527 +~;
-#X floatatom 192 476 6 0 0 0 - - -;
+#X floatatom 192 476 6 0 0 0 - - -, f 6;
 #X msg 247 446 1;
 #X obj 383 610 table \$0-tab 200000;
 #X obj 42 446 phasor~ 0.02;
@@ -45,22 +44,22 @@ truncation error drops by about 30 dB.;
 #X text 190 646 GOOD;
 #X text 193 425 ONSET INTO TABLE;
 #X text 384 426 This loads the table:;
-#X connect 5 0 6 0;
-#X connect 6 0 10 0;
-#X connect 7 0 13 0;
-#X connect 7 0 14 0;
-#X connect 9 0 4 0;
-#X connect 9 0 4 1;
-#X connect 10 0 8 0;
-#X connect 11 0 12 0;
-#X connect 11 0 12 1;
-#X connect 13 0 5 0;
-#X connect 13 0 8 0;
-#X connect 15 0 16 0;
-#X connect 15 0 11 0;
-#X connect 16 0 9 0;
-#X connect 17 0 11 1;
-#X connect 17 0 16 1;
-#X connect 18 0 17 0;
-#X connect 20 0 15 0;
-#X connect 21 0 17 0;
+#X connect 4 0 5 0;
+#X connect 5 0 9 0;
+#X connect 6 0 12 0;
+#X connect 6 0 13 0;
+#X connect 8 0 3 0;
+#X connect 8 0 3 1;
+#X connect 9 0 7 0;
+#X connect 10 0 11 0;
+#X connect 10 0 11 1;
+#X connect 12 0 4 0;
+#X connect 12 0 7 0;
+#X connect 14 0 15 0;
+#X connect 14 0 10 0;
+#X connect 15 0 8 0;
+#X connect 16 0 10 1;
+#X connect 16 0 15 1;
+#X connect 17 0 16 0;
+#X connect 19 0 14 0;
+#X connect 20 0 16 0;
