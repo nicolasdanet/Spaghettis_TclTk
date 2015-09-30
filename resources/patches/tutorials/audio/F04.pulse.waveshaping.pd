@@ -1,4 +1,4 @@
-#N canvas 240 229 900 586 12;
+#N canvas 111 31 900 586 12;
 #X obj 220 171 line~;
 #X obj 220 147 pack 0 50;
 #X floatatom 220 46 0 0 0 0 - - -;
@@ -15,11 +15,11 @@
 #X text 84 171 1+X^2;
 #X text 71 196 1/(1+X^2);
 #X text 28 4 ANOTHER PULSE WIDTH MOD ALGORITHM;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array F04-signal 882 float 0;
 #X coords 0 1.02 882 -1.02 200 130 1;
 #X restore 646 328 graph;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array F04-spectrum 259 float 0;
 #X coords 0 1.01 258 -0.008 256 200 1;
 #X restore 587 38 graph;
@@ -94,7 +94,6 @@ until much later.;
 #X text 174 247 <-- repeatedly;
 #X text 175 227 <-- graph once;
 #X obj 69 81 osc~;
-#X text 632 540 updated for Pd version 0.37;
 #X text 23 515 NOTE: The PAF algorithm is protected by patents belonging
 to IRCAM. Noncommercial use seems to be fine with them but contact
 them first if you want to sell something using this.;
@@ -130,4 +129,4 @@ the output.;
 #X connect 31 0 30 1;
 #X connect 32 0 30 2;
 #X connect 35 0 3 0;
-#X connect 42 0 35 0;
+#X connect 41 0 35 0;

@@ -1,14 +1,13 @@
 #N canvas 83 89 793 595 12;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array F05-signal 882 float 0;
 #X coords 0 1 882 -1 200 130 1;
 #X restore 554 218 graph;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array F05-spectrum 256 float 0;
 #X coords 0 0.51 255 -0.008 256 130 1;
 #X restore 499 22 graph;
 #X text 552 349 ---- 0.02 seconds ----;
-#X text 507 563 updated for Pd version 0.37;
 #X text 495 155 0;
 #X text 534 174 -- partial number --;
 #X text 761 142 0;
@@ -115,7 +114,7 @@ until much later.;
 #X restore 98 245 pd fft;
 #X obj 158 224 bng 18 250 50 0 empty empty empty 0 -6 0 8 -262144 -1
 -1;
-#X obj 158 245 tgl 18 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1
+#X obj 158 245 tgl 18 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0
 1;
 #X text 179 244 <-- repeatedly;
 #X text 180 224 <-- graph once;
@@ -146,15 +145,15 @@ Next we'll look at two techniques for sliding a formant frequency without
 losing harmonicity.;
 #X text 184 85 <-- pulse train;
 #X text 220 101 generator from before;
-#X connect 8 0 9 0;
-#X connect 9 0 11 0;
-#X connect 11 0 15 0;
-#X connect 11 0 16 0;
-#X connect 15 0 14 0;
-#X connect 15 0 14 1;
-#X connect 17 0 16 1;
-#X connect 18 0 16 2;
-#X connect 33 0 35 0;
-#X connect 34 0 11 1;
-#X connect 35 0 34 0;
-#X connect 36 0 35 1;
+#X connect 7 0 8 0;
+#X connect 8 0 10 0;
+#X connect 10 0 14 0;
+#X connect 10 0 15 0;
+#X connect 14 0 13 0;
+#X connect 14 0 13 1;
+#X connect 16 0 15 1;
+#X connect 17 0 15 2;
+#X connect 32 0 34 0;
+#X connect 33 0 10 1;
+#X connect 34 0 33 0;
+#X connect 35 0 34 1;

@@ -1,7 +1,7 @@
-#N canvas 83 221 774 628 12;
+#N canvas 134 54 774 628 12;
 #X obj 302 351 line~;
 #X obj 34 444 cos~;
-#X floatatom 71 560 0 0 0;
+#X floatatom 71 560 0 0 0 0 - - -;
 #N canvas 176 241 532 273 output 0;
 #X obj 338 160 t b;
 #X obj 338 110 f;
@@ -56,7 +56,7 @@
 #X restore 35 587 pd output;
 #X msg 111 560 MUTE;
 #X obj 302 327 pack 0 50;
-#X floatatom 302 255 0 0 0;
+#X floatatom 302 255 0 0 0 0 - - -;
 #X obj 34 356 -~ 0.5;
 #X obj 34 395 *~;
 #X obj 302 279 / 10;
@@ -66,7 +66,7 @@
 #X obj 35 467 +~ 1;
 #X obj 184 440 cos~;
 #X obj 35 496 *~;
-#X floatatom 206 269 4 0 0;
+#X floatatom 206 269 4 0 0 0 - - -, f 4;
 #X obj 206 293 / 10;
 #X obj 184 414 *~;
 #X text 204 224 center;
@@ -75,16 +75,17 @@
 #X obj 206 365 line~;
 #X obj 206 341 pack 0 50;
 #X obj 206 317 max 0;
-#X floatatom 34 308 4 0 0;
+#X floatatom 34 308 4 0 0 0 - - -, f 4;
 #X obj 34 332 phasor~ 100;
 #X text 156 559 <-- output;
 #X text 30 283 freq.;
 #X text 30 264 fundamental;
-#X graph graph1 0 0 128 500 440 492 696 362;
+#N canvas 0 22 450 278 (subpatch) 0;
 #X array spectrum 128 float 0;
-#X pop;
+#X coords 0 500 128 0 256 130 1;
+#X restore 440 362 graph;
 #X msg 108 498 bang;
-#N canvas 204 17 358 238 fft 0;
+#N canvas 204 22 358 238 fft 0;
 #X obj 46 48 inlet~;
 #X obj 159 181 tabwrite~ spectrum;
 #X obj 159 145 inlet;
@@ -114,7 +115,6 @@ bandwidth 0.);
 #X text 18 104 The center frequency is in units of ten per partial
 \, or in other words a value of "30" means "centered on the third partial".
 ;
-#X text 505 596 updated for Pd version 0.34;
 #X text 22 155 This technique only works if you're doing Hanning-window
 shaped PWM--you can't combine this naturally with FM or with the waveshaping
 technique we'll see later.;

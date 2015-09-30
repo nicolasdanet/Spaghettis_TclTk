@@ -1,4 +1,4 @@
-#N canvas 131 52 921 585 12;
+#N canvas 309 38 921 585 12;
 #X obj 12 219 r trigger;
 #X obj 12 437 *~;
 #X obj 12 330 *~ 0.01;
@@ -6,15 +6,15 @@
 #X obj 12 395 *~;
 #X obj 59 359 r pitch;
 #X obj 59 409 mtof;
-#X floatatom 59 384 4 0 0 0 - - -;
-#X floatatom 36 271 4 0 0 0 - - -;
+#X floatatom 59 384 4 0 0 0 - - -, f 4;
+#X floatatom 36 271 4 0 0 0 - - -, f 4;
 #X obj 36 246 r level;
-#X floatatom 110 271 4 0 0 0 - - -;
+#X floatatom 110 271 4 0 0 0 - - -, f 4;
 #X obj 110 246 r attack;
-#X floatatom 195 271 4 0 0 0 - - -;
+#X floatatom 195 271 4 0 0 0 - - -, f 4;
 #X obj 195 246 r decay;
-#X floatatom 270 271 4 0 0 0 - - -;
-#X floatatom 364 271 4 0 0 0 - - -;
+#X floatatom 270 271 4 0 0 0 - - -, f 4;
+#X floatatom 364 271 4 0 0 0 - - -, f 4;
 #X obj 270 246 r sustain;
 #X obj 364 246 r release;
 #X obj 499 158 r note;
@@ -26,28 +26,28 @@
 #X msg 35 34 bang;
 #X msg 35 59 rewind;
 #X obj 42 88 r tempo;
-#X floatatom 42 113 4 0 0 0 - - -;
+#X floatatom 42 113 4 0 0 0 - - -, f 4;
 #X msg 42 138 tempo \$1;
 #X obj 499 201 t b f;
 #X obj 550 198 s pitch;
 #X obj 624 176 r duration;
-#X floatatom 624 201 4 0 0 0 - - -;
-#X floatatom 499 181 4 0 0 0 - - -;
+#X floatatom 624 201 4 0 0 0 - - -, f 4;
+#X floatatom 499 181 4 0 0 0 - - -, f 4;
 #X obj 268 319 r trigger;
-#X floatatom 294 375 4 0 0 0 - - -;
-#X floatatom 366 405 4 0 0 0 - - -;
-#X floatatom 456 405 4 0 0 0 - - -;
-#X floatatom 542 405 4 0 0 0 - - -;
-#X floatatom 638 405 4 0 0 0 - - -;
+#X floatatom 294 375 4 0 0 0 - - -, f 4;
+#X floatatom 366 405 4 0 0 0 - - -, f 4;
+#X floatatom 456 405 4 0 0 0 - - -, f 4;
+#X floatatom 542 405 4 0 0 0 - - -, f 4;
+#X floatatom 638 405 4 0 0 0 - - -, f 4;
 #X obj 294 350 r level2;
 #X obj 366 380 r attack2;
 #X obj 456 380 r decay2;
 #X obj 542 380 r sustain2;
 #X obj 638 380 r release2;
 #X obj 59 434 tabosc4~ array1;
-#X floatatom 218 365 4 0 0 0 - - -;
+#X floatatom 218 365 4 0 0 0 - - -, f 4;
 #X obj 12 481 vcf~;
-#X floatatom 119 487 4 0 0 0 - - -;
+#X floatatom 119 487 4 0 0 0 - - -, f 4;
 #X obj 119 462 r q;
 #X obj 12 305 adsr 0 0 0 0 0;
 #X obj 268 443 adsr 0 0 0 0 0;
@@ -64,7 +64,7 @@
 #N canvas 0 258 703 380 otherstuff 0;
 #X obj 289 86 loadbang;
 #X obj 418 85 loadbang;
-#N canvas 0 0 450 300 graph2 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array array1 67 float 1;
 #A 0 0 0 0 0 0.714286 0.742857 0.757143 0.771429 0.778571 0.785714
 0.785714 0.785714 0.785714 0.790476 0.795238 0.614286 0.585714 0.442857
@@ -96,7 +96,6 @@ to make a keyboard synth.;
 four "note" messages and a message at the end that restarts the qlist
 at the beginning. The "note" messages are translated into a pitch change
 and triggers for the ADSRs.;
-#X text 667 551 updated for Pd version 0.39;
 #X text 379 305 ADSR for filter. Here \, it works better to make the
 envelope modify a constant "filter pitch"--so the "filter" receive
 gets the "mtof" treatment and the ADSR is an offset in halftones.;

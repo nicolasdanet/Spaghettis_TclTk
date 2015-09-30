@@ -1,9 +1,10 @@
-#N canvas 32 67 900 421 12;
+#N canvas 121 177 900 421 12;
 #X obj 39 247 cos~;
-#X graph graph1 0 -1.02 44100 1.02 452 206 652 76;
+#N canvas 0 22 450 278 (subpatch) 0;
 #X array env-output 44100 float 0;
-#X pop;
-#X floatatom 71 305 0 0 0;
+#X coords 0 1.02 44100 -1.02 200 130 1;
+#X restore 452 76 graph;
+#X floatatom 71 305 0 0 0 0 - - -;
 #N canvas 159 26 495 266 output 0;
 #X obj 338 160 t b;
 #X obj 338 110 f;
@@ -64,13 +65,13 @@
 #X obj 39 219 clip~ -0.5 0.5;
 #X obj 39 274 hip~ 5;
 #X obj 126 60 *~;
-#X floatatom 205 142 0 0 0;
-#X floatatom 205 168 0 0 0;
+#X floatatom 205 142 0 0 0 0 - - -;
+#X floatatom 205 168 0 0 0 0 - - -;
 #X obj 126 27 phasor~ -4;
 #X obj 126 191 +~ 0.5;
 #X obj 162 117 tabwrite~ env-output;
 #X text 451 211 --------- 1 second ---------;
-#X floatatom 205 194 0 0 0;
+#X floatatom 205 194 0 0 0 0 - - -;
 #X obj 126 142 lop~ 130;
 #N canvas 168 232 351 420 freq 0;
 #X obj 180 176 t f f;
@@ -80,9 +81,9 @@
 #X obj 90 107 metro 100;
 #X obj 61 287 pack;
 #X obj 60 376 outlet;
-#X floatatom 89 82 0 0 0;
-#X floatatom 54 243 0 0 0;
-#X floatatom 94 248 0 0 0;
+#X floatatom 89 82 0 0 0 0 - - -;
+#X floatatom 54 243 0 0 0 0 - - -;
+#X floatatom 94 248 0 0 0 0 - - -;
 #X obj 60 348 pack 0 30;
 #X obj 55 202 + 150;
 #X obj 88 34 loadbang;
@@ -126,7 +127,6 @@ important message from Nancy Reagan. If \, anywhere \, at any time
 \, we can return to the essentially frivolous occupation of making
 turn-of-the-millenium western art music.;
 #X obj 126 165 *~ 6;
-#X text 561 384 updated for Pd version 0.34;
 #X text 156 305 <-- output;
 #X connect 0 0 10 0;
 #X connect 2 0 3 1;

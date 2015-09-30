@@ -1,4 +1,4 @@
-#N canvas 262 0 692 819 12;
+#N canvas 240 22 940 752 12;
 #X obj 38 593 cos~;
 #X obj 38 570 *~;
 #X obj 81 593 cos~;
@@ -9,22 +9,22 @@
 #X obj 94 655 *~;
 #X obj 56 655 +~;
 #X obj 100 500 samphold~;
-#X floatatom 159 378 4 0 500 0 - - -;
+#X floatatom 159 378 4 0 500 0 - - -, f 4;
 #X obj 159 401 / 10;
 #X text 157 311 center;
 #X obj 159 449 line~;
 #X text 157 359 fundamental);
 #X obj 159 426 pack 0 50;
 #X obj 39 446 phasor~;
-#X floatatom 39 425 4 0 0 0 - - -;
+#X floatatom 39 425 4 0 0 0 - - -, f 4;
 #X text 19 398 fundamental;
 #X text 303 460 index;
 #X text 303 477 (percent);
-#X floatatom 303 498 4 0 500 0 - - -;
+#X floatatom 303 498 4 0 500 0 - - -, f 4;
 #X obj 303 544 line~;
 #X obj 224 564 *~;
 #X obj 303 521 pack 0 50;
-#N canvas 0 0 450 300 graph4 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array bell-curve 200 float 1;
 #A 0 1.12535e-07 1.54727e-07 2.12059e-07 2.89706e-07 3.94519e-07 5.35535e-07
 7.24633e-07 9.77371e-07 1.31404e-06 1.76105e-06 2.35258e-06 3.13275e-06
@@ -91,12 +91,11 @@
 #X obj 95 684 *~;
 #X text 131 682 <--ring mod step;
 #X text 256 635 waveshaper;
-#X text 425 791 updated for Pd version 0.37;
 #X text 157 326 frequency;
 #X text 157 342 (tenths of;
 #X text 441 698 0;
 #X text 632 697 200;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array F12-spectrum 259 float 0;
 #X coords 0 0.51 258 -0.008 256 130 1;
 #X restore 421 308 graph;
@@ -164,7 +163,7 @@ until much later.;
 #X restore 148 725 pd fft;
 #X obj 208 704 bng 18 250 50 0 empty empty empty 0 -6 0 8 -262144 -1
 -1;
-#X obj 208 725 tgl 18 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1
+#X obj 208 725 tgl 18 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0
 1;
 #X text 229 724 <-- repeatedly;
 #X text 230 704 <-- graph once;
@@ -207,7 +206,7 @@ table containing a bell curve.;
 #X connect 16 0 9 1;
 #X connect 16 0 5 1;
 #X connect 16 0 1 0;
-#X connect 16 0 53 0;
+#X connect 16 0 52 0;
 #X connect 17 0 16 0;
 #X connect 21 0 24 0;
 #X connect 22 0 23 1;
@@ -217,10 +216,10 @@ table containing a bell curve.;
 #X connect 28 0 27 0;
 #X connect 29 0 30 0;
 #X connect 30 0 31 1;
+#X connect 31 0 43 0;
 #X connect 31 0 44 0;
-#X connect 31 0 45 0;
-#X connect 44 0 43 0;
-#X connect 44 0 43 1;
-#X connect 46 0 45 1;
-#X connect 47 0 45 2;
-#X connect 53 0 28 0;
+#X connect 43 0 42 0;
+#X connect 43 0 42 1;
+#X connect 45 0 44 1;
+#X connect 46 0 44 2;
+#X connect 52 0 28 0;

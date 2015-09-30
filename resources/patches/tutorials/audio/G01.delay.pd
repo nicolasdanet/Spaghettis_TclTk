@@ -1,20 +1,20 @@
-#N canvas 19 35 777 377 12;
+#N canvas 449 186 777 377 12;
 #X text 103 7 DELAYS;
 #X text 248 79 The delwrite~ object creates the delay line \; you give
 it a name and a size in milliseconds. Each delwrite~ should have a
 different name.;
-#N canvas 0 0 548 248 sample 0;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 208 198 548 248 sample 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array G01-tab 61079 float 0;
 #X coords 0 1 61078 -1 200 140 1;
 #X restore 100 20 graph;
 #X obj 61 176 loadbang;
 #X obj 60 221 soundfiler;
-#X msg 61 199 read -resize ../sound/voice.wav G01-tab;
+#X msg 61 199 read -resize voice.wav G01-tab;
 #X connect 1 0 3 0;
 #X connect 3 0 2 0;
 #X restore 253 337 pd sample;
-#X floatatom 38 196 4 0 999 0 - - -;
+#X floatatom 38 196 4 0 999 0 - - -, f 4;
 #X text 81 195 <-- delay time;
 #X text 46 230 read from delay line;
 #X obj 38 249 delread~ delay1;
@@ -25,7 +25,6 @@ different name.;
 #X obj 16 303 output~;
 #X obj 15 275 +~;
 #X obj 24 165 delwrite~ delay1 1000;
-#X text 499 348 updated for Pd version 0.37-1;
 #X text 248 24 You can delay a signal using the delwrite~ and delread~
 objects. In this example \, a sample loops continuously and is added
 to a delayed copy of itself.;

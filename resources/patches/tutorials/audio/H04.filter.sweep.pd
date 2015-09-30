@@ -1,12 +1,12 @@
 #N canvas 360 22 557 528 12;
-#X floatatom 44 146 5 0 150 0 - #0-pitch -;
+#X floatatom 44 146 5 0 150 0 - #0-pitch -, f 5;
 #X text 126 9 SWEEPING FILTERS;
 #X obj 44 193 phasor~;
 #X obj 59 351 +~;
-#X floatatom 81 326 5 0 100 0 - #0-offset -;
-#X floatatom 60 222 5 0 0 0 - #0-speed -;
-#X floatatom 82 273 5 0 100 0 - #0-depth -;
-#X floatatom 75 404 5 0 1000 0 - #0-q -;
+#X floatatom 81 326 5 0 100 0 - #0-offset -, f 5;
+#X floatatom 60 222 5 0 0 0 - #0-speed -, f 5;
+#X floatatom 82 273 5 0 100 0 - #0-depth -, f 5;
+#X floatatom 75 404 5 0 1000 0 - #0-q -, f 5;
 #X obj 44 426 vcf~;
 #X obj 59 375 tabread4~ mtof;
 #X text 127 403 <-- Q (selectivity);
@@ -23,7 +23,6 @@
 #X obj 44 169 mtof;
 #X obj 60 244 phasor~;
 #X obj 60 298 *~;
-#X text 294 496 updated for Pd version 0.39;
 #N canvas 706 247 450 300 startup 0;
 #X obj 85 16 loadbang;
 #X obj 85 40 bng 15 250 50 0 empty empty empty 0 -6 0 8 -262144 -1
@@ -44,7 +43,7 @@ sweep speeds.;
 center frequency. (Q is still set by messages though.) Vcf is computationally
 somewhat more expensive than bp~.;
 #N canvas 0 22 612 404 conversion-tables 0;
-#N canvas 0 22 450 300 graph2 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array mtof 130 float 1;
 #A 0 8.1758 8.66196 9.17702 9.72272 10.3009 10.9134 11.5623 12.2499
 12.9783 13.75 14.5676 15.4339 16.3516 17.3239 18.354 19.4454 20.6017

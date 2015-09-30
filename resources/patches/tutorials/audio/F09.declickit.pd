@@ -12,7 +12,7 @@
 #X obj 204 185 metro 400;
 #X obj 216 209 del 200;
 #X obj 252 326 samphold~;
-#N canvas 0 0 405 406 switch 0;
+#N canvas 0 22 405 406 switch 0;
 #X obj 15 383 outlet~;
 #X obj 8 193 tgl 18 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1 1
 ;
@@ -55,10 +55,9 @@ crossings. At the phase crossings the two weighted cosines add to one
 #X text 266 365 <--toggles to select which one;
 #X text 369 384 is actually used;
 #X obj 171 602 output~;
-#X floatatom 225 264 3 0 50 0 - - -;
+#X floatatom 225 264 3 0 50 0 - - -, f 3;
 #X obj 178 263 pack;
 #X text 258 263 <--gliss time;
-#X text 324 647 updated for Pd version 0.37;
 #X obj 178 287 line~;
 #X msg 216 239 13.5;
 #X msg 178 239 4;
@@ -77,18 +76,18 @@ crossings. At the phase crossings the two weighted cosines add to one
 #X connect 8 0 18 0;
 #X connect 8 0 18 1;
 #X connect 9 0 10 0;
-#X connect 10 0 25 0;
+#X connect 10 0 24 0;
 #X connect 10 0 11 0;
-#X connect 11 0 24 0;
+#X connect 11 0 23 0;
 #X connect 12 0 13 1;
 #X connect 13 0 4 0;
 #X connect 13 0 3 0;
 #X connect 19 0 20 1;
-#X connect 20 0 23 0;
-#X connect 23 0 13 0;
-#X connect 23 0 12 0;
+#X connect 20 0 22 0;
+#X connect 22 0 13 0;
+#X connect 22 0 12 0;
+#X connect 23 0 20 0;
 #X connect 24 0 20 0;
-#X connect 25 0 20 0;
-#X connect 26 0 1 0;
-#X connect 26 0 5 1;
-#X connect 26 0 12 1;
+#X connect 25 0 1 0;
+#X connect 25 0 5 1;
+#X connect 25 0 12 1;

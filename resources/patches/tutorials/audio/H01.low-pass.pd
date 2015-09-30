@@ -1,20 +1,19 @@
-#N canvas 97 42 601 612 12;
+#N canvas 429 47 601 612 12;
 #X obj 72 411 mtof;
-#X floatatom 72 388 5 0 0 0 - #0-pit -;
+#X floatatom 72 388 5 0 0 0 - #0-pit -, f 5;
 #X obj 41 542 output~;
 #X obj 41 457 lop~;
 #X obj 42 354 noise~;
 #X text 124 387 <-- cutoff (pitch units);
 #X text 135 434 <-- cutoff (Hertz);
-#X floatatom 72 436 5 0 0 0 - - -;
-#X text 348 582 updated for Pd version 0.39;
+#X floatatom 72 436 5 0 0 0 - - -, f 5;
 #X text 88 459 low-pass filter;
 #X obj 130 535 tabwrite~ H01-graph;
 #X obj 130 510 metro 250;
 #X obj 130 490 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0
 1;
 #X text 148 487 graphing on/off;
-#N canvas 0 0 450 300 graph2 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array H01-graph 882 float 3;
 #A 0 -0.107788 -0.0695636 -0.0991016 -0.104581 -0.0683972 -0.0547128
 -0.0857414 -0.0731684 -0.0892636 -0.115914 -0.0935128 -0.0572466 -0.0387586
@@ -162,7 +161,7 @@ uses the word "rolloff" instead of "cutoff" to emphasize the gradual
 way the gain drops off with frequency.);
 #X text 108 353 white noise \, test signal;
 #X text 185 6 ONE-POLE LOW-PASS FILTER;
-#N canvas 0 0 450 300 loadbang 0;
+#N canvas 0 22 450 300 loadbang 0;
 #X obj 85 16 loadbang;
 #X obj 85 40 bng 15 250 50 0 empty empty empty 0 -6 0 8 -262144 -1
 -1;
@@ -178,8 +177,8 @@ way the gain drops off with frequency.);
 #X connect 1 0 0 0;
 #X connect 3 0 2 0;
 #X connect 3 0 2 1;
-#X connect 3 0 10 0;
+#X connect 3 0 9 0;
 #X connect 4 0 3 0;
 #X connect 7 0 3 1;
+#X connect 10 0 9 0;
 #X connect 11 0 10 0;
-#X connect 12 0 11 0;

@@ -59,7 +59,6 @@ and q decrease from 100% to -100%.;
 #X text 295 247 pole;
 #X text 249 249 zero;
 #X text 333 271 (in hundredths);
-#X text 610 387 updated for Pd version 0.46;
 #X connect 1 0 9 0;
 #X connect 5 0 12 0;
 #X connect 9 0 2 0;

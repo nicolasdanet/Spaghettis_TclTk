@@ -1,4 +1,4 @@
-#N canvas 100 17 660 504 12;
+#N canvas 100 22 660 504 12;
 #X obj 33 305 hip~ 10;
 #X floatatom 301 221 0 0 0 0 - - -;
 #X obj 301 269 line~;
@@ -42,7 +42,6 @@ past 1 if you want \, it will just oscillate.;
 #X obj 226 335 vd~ G03-del;
 #X obj 361 443 delwrite~ G03-del 1000;
 #X obj 361 419 clip~ -1 1;
-#X text 387 481 updated for Pd version 0.37-1;
 #X connect 0 0 17 0;
 #X connect 1 0 3 0;
 #X connect 2 0 21 1;

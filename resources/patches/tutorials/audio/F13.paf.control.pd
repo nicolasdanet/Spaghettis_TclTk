@@ -1,4 +1,4 @@
-#N canvas 89 36 756 792 12;
+#N canvas 89 22 756 700 12;
 #X obj 127 608 cos~;
 #X obj 127 585 *~;
 #X obj 170 608 cos~;
@@ -9,14 +9,14 @@
 #X obj 183 670 *~;
 #X obj 145 670 +~;
 #X obj 189 521 samphold~;
-#X floatatom 189 321 4 0 127 0 - - -;
+#X floatatom 189 321 4 0 127 0 - - -, f 4;
 #X text 185 283 center;
 #X obj 189 388 line~;
 #X obj 189 365 pack 0 50;
 #X obj 80 464 phasor~;
-#X floatatom 80 370 4 0 127 0 - - -;
+#X floatatom 80 370 4 0 127 0 - - -, f 4;
 #X text 71 331 fundamental;
-#X floatatom 387 384 4 0 127 0 - - -;
+#X floatatom 387 384 4 0 127 0 - - -, f 4;
 #X obj 387 455 line~;
 #X obj 298 584 *~;
 #X obj 387 432 pack 0 50;
@@ -32,7 +32,7 @@
 #X obj 52 270 expr exp(-$f1*$f1);
 #X obj 63 168 sel 199;
 #X obj 51 241 expr ($f1-100)/25;
-#N canvas 0 0 450 300 graph4 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array bell-curve 200 float 1;
 #A 0 1.12535e-07 1.54727e-07 2.12059e-07 2.89706e-07 3.94519e-07 5.35535e-07
 7.24633e-07 9.77371e-07 1.31404e-06 1.76105e-06 2.35258e-06 3.13275e-06
@@ -110,7 +110,6 @@ its reciprocal and two *~ objects finish the division.);
 #X text 69 346 (MIDI units);
 #X text 220 697 ring mod;
 #X obj 184 726 output~;
-#X text 483 762 updated for Pd version 0.37;
 #X text 19 137 Here we take a somewhat lax approach to sampholding
 the center frequency control. The frequency itself changes instantly
 \, but the center/fundamental frequency ratio waits for the next period.
@@ -140,7 +139,7 @@ which solves this problem better and \, moreover \, runs much faster.
 #X connect 14 0 9 1;
 #X connect 14 0 1 0;
 #X connect 14 0 5 1;
-#X connect 14 0 49 0;
+#X connect 14 0 48 0;
 #X connect 15 0 29 0;
 #X connect 17 0 35 0;
 #X connect 18 0 36 0;
@@ -161,4 +160,4 @@ which solves this problem better and \, moreover \, runs much faster.
 #X connect 35 0 20 0;
 #X connect 36 0 37 0;
 #X connect 37 0 19 1;
-#X connect 49 0 23 0;
+#X connect 48 0 23 0;

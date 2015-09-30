@@ -40,7 +40,6 @@
 -1;
 #X floatatom 32 272 5 0 0 0 - - -, f 5;
 #X text 620 15 2;
-#X text 609 405 updated for Pd version 0.39;
 #X text 690 168 frequency;
 #X text 630 164 0;
 #X text 813 167 44100;
@@ -72,14 +71,14 @@ on its coefficient \, and a flat frequency response. The coefficient
 (p) gives the location of the pole. There is a zero at 1/p \, unless
 p=0. If p=0 the filter is effectively a one-sample delay. Negative
 values of $p$ are allowed \, as long as p is between -1 and 1;
-#X connect 7 0 17 0;
-#X connect 17 0 0 0;
-#X connect 17 0 8 0;
-#X connect 17 1 0 1;
-#X connect 17 1 24 0;
-#X connect 17 2 0 2;
-#X connect 21 0 23 0;
-#X connect 22 0 0 3;
-#X connect 23 0 24 1;
-#X connect 23 0 22 1;
-#X connect 24 0 22 0;
+#X connect 7 0 16 0;
+#X connect 16 0 0 0;
+#X connect 16 0 8 0;
+#X connect 16 1 0 1;
+#X connect 16 1 23 0;
+#X connect 16 2 0 2;
+#X connect 20 0 22 0;
+#X connect 21 0 0 3;
+#X connect 22 0 23 1;
+#X connect 22 0 21 1;
+#X connect 23 0 21 0;

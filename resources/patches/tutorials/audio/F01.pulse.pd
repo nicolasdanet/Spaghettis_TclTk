@@ -1,8 +1,8 @@
-#N canvas 15 126 835 625 12;
+#N canvas 170 82 835 625 12;
 #X obj 272 163 line~;
 #X floatatom 53 64 0 0 0 0 - - -;
 #X obj 30 315 cos~;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array pulse-output 882 float 0;
 #X coords 0 1.02 882 -1.02 200 130 1;
 #X restore 583 409 graph;
@@ -15,11 +15,11 @@
 #X obj 272 114 / 10;
 #X obj 30 265 clip~ -0.5 0.5;
 #X obj 30 418 hip~ 5;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array phase-output 882 float 0;
 #X coords 0 1.02 882 -1.02 200 60 1;
 #X restore 583 150 graph;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array clip-output 882 float 0;
 #X coords 0 1.02 882 -1.02 200 130 1;
 #X restore 583 272 graph;
@@ -44,7 +44,6 @@
 #X obj 30 446 output~;
 #X obj 30 338 +~ 1;
 #X obj 30 361 *~ 0.5;
-#X text 574 589 updated for Pd version 0.37;
 #X text 88 337 add one (range now from 0 to 2);
 #X text 96 360 ...and now from 0 to 1;
 #X text 20 531 This patch computes a pulse train \, with an "index"

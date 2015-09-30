@@ -1,4 +1,4 @@
-#N canvas 100 17 637 513 12;
+#N canvas 344 86 637 513 12;
 #N canvas 195 311 647 354 delay-writer 0;
 #X obj 86 220 inlet~;
 #X obj 86 326 outlet~;
@@ -50,7 +50,6 @@ shorten the minimum delay by changing the block size. Do this in a
 subpatch (open it to see how).;
 #X obj 153 449 output~;
 #X obj 153 387 vline~;
-#X text 371 487 updated for Pd version 0.37-1;
 #X text 61 124 Here we use this principle to make a harpisichord-like
 sound by sending pulses into a recirculating delay line (which imitates
 the travel of the wave up and down the harpsichord string.) This is
@@ -71,9 +70,9 @@ older than their paper.;
 #X connect 4 0 13 0;
 #X connect 5 0 3 0;
 #X connect 5 0 6 0;
-#X connect 5 0 21 0;
+#X connect 5 0 20 0;
 #X connect 6 0 8 0;
 #X connect 7 0 5 0;
 #X connect 8 0 2 0;
 #X connect 13 0 0 0;
-#X connect 21 0 4 0;
+#X connect 20 0 4 0;

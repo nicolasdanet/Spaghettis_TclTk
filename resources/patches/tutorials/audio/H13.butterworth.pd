@@ -1,5 +1,5 @@
 #N canvas 49 22 840 502 12;
-#N canvas 0 0 450 300 graph2 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array \$0-tab1 100 float 1;
 #A 0 0.999974 0.998121 0.998981 1.00106 1.00019 1.00133 1.00017 0.997406
 0.995891 0.986251 0.976591 0.959539 0.93749 0.903172 0.859824 0.805118
@@ -19,7 +19,7 @@
 #X restore 615 71 graph;
 #X obj 32 250 bng 15 250 50 0 empty empty empty 0 -6 0 8 -262144 -1
 -1;
-#X floatatom 40 294 3 0 0 0 - - -;
+#X floatatom 40 294 3 0 0 0 - - -, f 3;
 #X text 670 377 frequency;
 #N canvas 876 177 375 255 startup 0;
 #X obj 22 24 loadbang;
@@ -38,11 +38,10 @@
 #X text 593 60 5;
 #X text 610 370 0;
 #X text 598 301 1;
-#X text 575 435 updated for Pd version 0.39;
 #X text 186 -4 BUTTERWORTH FILTER;
 #X obj 216 398 butterworth3~;
-#X floatatom 244 340 3 0 100 0 - #0-lf -;
-#X floatatom 291 339 3 85 150 0 - #0-hf -;
+#X floatatom 244 340 3 0 100 0 - #0-lf -, f 3;
+#X floatatom 291 339 3 85 150 0 - #0-hf -, f 3;
 #X obj 244 366 mtof;
 #X obj 291 366 mtof;
 #X text 790 373 5000;
@@ -61,14 +60,14 @@ using control messages \, and so it is not suitable for continuously
 time-varying Butterworth filters. For that \, it is often appropriate
 to use time-saving approximations \, but precisely which approximations
 to use will depend on the way the filter is to be used.;
-#X connect 1 0 18 0;
-#X connect 12 0 6 3;
+#X connect 1 0 17 0;
+#X connect 11 0 6 3;
+#X connect 12 0 14 0;
 #X connect 13 0 15 0;
-#X connect 14 0 16 0;
-#X connect 15 0 12 1;
-#X connect 16 0 12 2;
-#X connect 18 0 2 0;
-#X connect 18 0 6 0;
-#X connect 18 1 6 1;
-#X connect 18 1 12 0;
-#X connect 18 2 6 2;
+#X connect 14 0 11 1;
+#X connect 15 0 11 2;
+#X connect 17 0 2 0;
+#X connect 17 0 6 0;
+#X connect 17 1 6 1;
+#X connect 17 1 11 0;
+#X connect 17 2 6 2;
