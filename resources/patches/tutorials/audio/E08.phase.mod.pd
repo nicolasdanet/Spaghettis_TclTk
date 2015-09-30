@@ -1,4 +1,4 @@
-#N canvas 36 68 722 738 12;
+#N canvas 78 22 722 738 12;
 #X obj 224 164 *~;
 #X floatatom 224 107 0 0 0 0 - - -;
 #X obj 312 144 line~;
@@ -39,7 +39,7 @@ modulation index \, which wasn't necessary in the previous patch.;
 #X text 219 532 is the same;
 #X text 220 551 as this:;
 #X obj 335 544 osc~;
-#N canvas 0 0 450 300 graph2 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array phase-out 441 float 1;
 #A 0 0.43245 0.433463 0.434452 0.435418 0.43636 0.43728 0.438178 0.439056
 0.439912 0.440749 0.441567 0.442366 0.443148 0.443912 0.444659 0.445391
@@ -171,7 +171,6 @@ modulation index \, which wasn't necessary in the previous patch.;
 #X text 408 98 ramped to avoid;
 #X text 407 114 clicks.);
 #X text 407 82 (the index is;
-#X text 435 704 updated for Pd version 0.37;
 #X text 21 588 The "modulation" index \, which in true FM is in units
 of Hertz \, is dimensionless for phase moduation. "Good" values tend
 to be between 0 and 1... in this patch the index is in hundredths.

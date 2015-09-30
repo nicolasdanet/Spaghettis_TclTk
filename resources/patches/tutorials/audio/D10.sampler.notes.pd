@@ -1,20 +1,20 @@
-#N canvas 12 0 1074 786 12;
+#N canvas 160 35 1074 700 12;
 #X msg 257 7 bang;
 #X obj 257 35 delay 5;
 #X text 497 269 end of note;
 #X obj 363 35 r note;
 #N canvas 459 46 678 451 samples 0;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array sample1 176403 float 0;
 #X coords 0 1.02 176403 -1.02 200 130 1;
 #X restore 262 41 graph;
 #X text 264 376 ------ 4 seconds ------;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array sample2 176403 float 0;
 #X coords 0 1.02 176403 -1.02 200 130 1;
 #X restore 262 226 graph;
 #X restore 33 277 pd samples;
-#N canvas 21 287 947 410 recorder 0;
+#N canvas 29 183 1159 422 recorder 0;
 #X obj 318 43 inlet;
 #X obj 272 196 adc~ 1;
 #X obj 272 224 hip~ 5;
@@ -35,10 +35,9 @@
 #X text 628 233 v-- re-read original samples;
 #X obj 318 72 route record stop reload browse;
 #X obj 557 319 soundfiler;
-#X msg 557 261 read ../sound/bell.aiff sample1 \, read ../sound/voice2.wav
-sample2;
 #X msg 660 164 read \$1 sample1;
 #X obj 660 191 soundfiler;
+#X msg 557 261 read bell.aiff sample1 \, read voice2.wav sample2;
 #X connect 0 0 18 0;
 #X connect 1 0 2 0;
 #X connect 2 0 4 0;
@@ -51,18 +50,18 @@ sample2;
 #X connect 10 0 8 0;
 #X connect 11 0 6 0;
 #X connect 12 0 6 0;
-#X connect 13 0 20 0;
-#X connect 14 0 21 0;
+#X connect 13 0 22 0;
+#X connect 14 0 20 0;
 #X connect 15 0 14 0;
 #X connect 18 0 9 0;
 #X connect 18 0 12 0;
 #X connect 18 0 5 0;
 #X connect 18 1 7 0;
 #X connect 18 1 11 0;
-#X connect 18 2 20 0;
+#X connect 18 2 22 0;
 #X connect 18 3 15 0;
-#X connect 20 0 19 0;
-#X connect 21 0 22 0;
+#X connect 20 0 21 0;
+#X connect 22 0 19 0;
 #X restore 33 443 pd recorder;
 #X msg 33 305 record 1;
 #X msg 33 360 stop;
@@ -183,7 +182,7 @@ sample-number \$5 \; cutoff 1 5 \;;
 #X text 7 229 considering 60 as unity.;
 #X text 24 43 as before we;
 #X text 15 64 mute and wait;
-#X text 7 157 target ($4 below right.);
+#X text 7 157 target (\$4 below right.);
 #X text 450 303 combine amplitude \, rise time \, start phase \, end
 phase \, and sample number in one message;
 #X text 764 467 straight playback;
@@ -206,7 +205,6 @@ is done by altering the amount to play back in the (artificial) ten
 thousand seconds (1e+07). The playback segment can be altered to start
 in the middle of the sample instead of the beginning \, and you can
 change the duration and rise and decay times.;
-#X text 823 763 updated for Pd version 0.37;
 #X connect 0 0 1 0;
 #X connect 0 0 34 0;
 #X connect 1 0 32 0;

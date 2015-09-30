@@ -1,11 +1,11 @@
-#N canvas 124 20 599 828 12;
+#N canvas 124 22 599 700 12;
 #X floatatom 169 520 0 0 0 0 - - -;
 #X floatatom 169 446 0 0 0 0 - - -;
 #X text 462 208 START;
 #X floatatom 190 303 0 0 0 0 - - -;
 #X obj 190 280 r incr;
 #X obj 168 255 metro 50;
-#X floatatom 168 373 5 0 0 0 - - -;
+#X floatatom 168 373 5 0 0 0 - - -, f 5;
 #X obj 168 394 s phase;
 #X obj 168 350 +;
 #X obj 169 469 s dropoff+;
@@ -26,12 +26,11 @@
 #X obj 168 327 f;
 #X obj 73 742 rev2~;
 #X obj 12 769 output~;
-#X obj 168 235 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1
+#X obj 168 235 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0
 1;
 #X msg 446 225 \; dropoff 10 \; pitch 60 \; interval 120 \; metro 1
 \; rev 84 \; revtime 87 \; incr -2 \; pd dsp 1;
 #X text 27 7 SHEPARD TONE;
-#X text 339 804 updated for Pd version 0.37;
 #X obj 12 235 shepvoice 500;
 #X obj 12 258 shepvoice 1000;
 #X obj 12 281 shepvoice 1500;
@@ -75,7 +74,7 @@ reverberator at bottom.;
 #X connect 15 0 11 0;
 #X connect 16 0 27 0;
 #X connect 17 0 23 0;
-#X connect 18 0 31 0;
+#X connect 18 0 30 0;
 #X connect 19 0 25 1;
 #X connect 20 0 19 0;
 #X connect 21 0 22 0;
@@ -85,6 +84,7 @@ reverberator at bottom.;
 #X connect 25 0 26 0;
 #X connect 25 1 26 1;
 #X connect 27 0 5 0;
+#X connect 30 0 31 0;
 #X connect 31 0 32 0;
 #X connect 32 0 33 0;
 #X connect 33 0 34 0;
@@ -102,7 +102,6 @@ reverberator at bottom.;
 #X connect 45 0 46 0;
 #X connect 46 0 47 0;
 #X connect 47 0 48 0;
-#X connect 48 0 49 0;
-#X connect 49 0 25 0;
-#X connect 49 0 26 0;
-#X connect 49 0 26 1;
+#X connect 48 0 25 0;
+#X connect 48 0 26 0;
+#X connect 48 0 26 1;

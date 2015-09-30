@@ -1,4 +1,4 @@
-#N canvas 211 116 826 530 12;
+#N canvas 234 123 826 530 12;
 #X obj 28 412 osc~;
 #X obj 94 197 r poll-table;
 #X obj 129 337 + 50;
@@ -15,8 +15,6 @@
 #X obj 37 168 ftom;
 #X obj 79 256 -;
 #X obj 121 255 r whammybar;
-#X text 28 9 This abstraction is used by the spectrum drawing example
-\, number 16...;
 #X text 61 46 \$1 is the partial number.;
 #X text 79 114 pitch to frequency;
 #X text 78 141 then get the frequency of this specific partial;
@@ -50,8 +48,8 @@ we use the control object \, tabread4 \, not tabread4~.;
 #X connect 12 0 13 0;
 #X connect 12 0 0 0;
 #X connect 13 0 11 1;
-#X connect 14 0 27 0;
+#X connect 14 0 26 0;
 #X connect 15 0 14 1;
-#X connect 27 0 29 0;
-#X connect 29 0 4 0;
-#X connect 29 1 2 0;
+#X connect 26 0 28 0;
+#X connect 28 0 4 0;
+#X connect 28 1 2 0;

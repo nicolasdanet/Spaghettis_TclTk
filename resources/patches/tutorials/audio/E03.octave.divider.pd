@@ -1,12 +1,10 @@
-#N canvas 51 52 793 665 12;
+#N canvas 339 62 793 665 12;
 #X obj 477 135 loadbang;
 #X obj 31 289 hip~ 5;
 #X obj 477 53 adc~ 1;
 #X obj 477 190 soundfiler;
 #X obj 32 322 output~;
-#X text 544 646 updated for Pd version 0.37;
 #X obj 478 100 tabwrite~ E03-table;
-#X msg 477 162 read ../sound/voice.wav E03-table;
 #X obj 117 64 fiddle~ 2048;
 #X obj 118 95 unpack;
 #X obj 111 199 osc~;
@@ -15,10 +13,10 @@
 #X obj 145 147 mtof;
 #X obj 145 170 *;
 #X msg 194 125 0.5;
-#X floatatom 194 154 3 0 0 0 - - -;
+#X floatatom 194 154 3 0 0 0 - - -, f 3;
 #X msg 232 125 15;
-#N canvas 0 0 446 202 (subpatch) 0;
-#X obj 261 30 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1 1
+#N canvas 0 22 446 202 (subpatch) 0;
+#X obj 261 30 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0 1
 ;
 #X obj 100 20 inlet~;
 #X obj 99 87 *~;
@@ -29,8 +27,8 @@
 #X connect 2 0 3 0;
 #X coords 0 0 100 100 40 18 1;
 #X restore 78 248 pd;
-#N canvas 0 0 446 202 (subpatch) 0;
-#X obj 261 30 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1 1
+#N canvas 0 22 446 202 (subpatch) 0;
+#X obj 261 30 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0 1
 ;
 #X obj 100 20 inlet~;
 #X obj 99 87 *~;
@@ -44,7 +42,7 @@
 #X obj 78 222 *~ 2;
 #X obj 194 100 loadbang;
 #N canvas 414 195 613 302 looper 0;
-#N canvas 0 0 450 300 (subpatch) 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array E03-table 44103 float 0;
 #X coords 0 1.02 44103 -1.02 200 130 1;
 #X restore 349 22 graph;
@@ -104,37 +102,36 @@ the signal itself 1024 samples so it will be as tightly synchronized
 with the analysis data as possible. (If you're doing this on a real-time
 input \, you might drop the delay and settle for less perfect synchronization.)
 ;
-#X text 198 512 About fiddle~ \, suffice it to say that the third outlet
+#X text 199 514 About fiddle~ \, suffice it to say that the third outlet
 contains (pitch \, amplitude) pairs. We unpack the pitch and strip
 out any zeros (when fiddle~ fails to find a pitch it outputs zero but
 we'd rather stick with the most recent good one). This is converted
 from MIDI to Hertz \, and multiplied by 1/2 to control the modulation
 oscillator. (You can also try large-ish integers which leave the pitch
 intact but introduce funny formants.);
-#X msg 406 237 read ../../saucisse.wav E03-table;
 #X obj 25 16 adc~ 1;
-#X connect 0 0 7 0;
+#X msg 477 162 read voice.wav E03-table;
+#X connect 0 0 33 0;
 #X connect 1 0 4 0;
 #X connect 1 0 4 1;
-#X connect 2 0 6 0;
-#X connect 7 0 3 0;
-#X connect 8 2 9 0;
-#X connect 9 0 11 0;
-#X connect 10 0 12 1;
-#X connect 11 1 13 0;
-#X connect 12 0 20 0;
+#X connect 2 0 5 0;
+#X connect 6 2 7 0;
+#X connect 7 0 9 0;
+#X connect 8 0 10 1;
+#X connect 9 1 11 0;
+#X connect 10 0 18 0;
+#X connect 11 0 12 0;
+#X connect 12 0 8 0;
 #X connect 13 0 14 0;
-#X connect 14 0 10 0;
-#X connect 15 0 16 0;
-#X connect 16 0 14 1;
-#X connect 17 0 16 0;
-#X connect 18 0 1 0;
-#X connect 19 0 1 0;
-#X connect 20 0 18 0;
-#X connect 21 0 15 0;
-#X connect 22 0 25 0;
-#X connect 22 0 8 0;
-#X connect 24 0 6 0;
-#X connect 25 0 19 0;
-#X connect 25 0 12 0;
-#X connect 34 0 3 0;
+#X connect 14 0 12 1;
+#X connect 15 0 14 0;
+#X connect 16 0 1 0;
+#X connect 17 0 1 0;
+#X connect 18 0 16 0;
+#X connect 19 0 13 0;
+#X connect 20 0 23 0;
+#X connect 20 0 6 0;
+#X connect 22 0 5 0;
+#X connect 23 0 17 0;
+#X connect 23 0 10 0;
+#X connect 33 0 3 0;

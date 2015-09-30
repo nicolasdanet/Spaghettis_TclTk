@@ -1,10 +1,10 @@
-#N canvas 269 43 755 746 12;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 174 22 755 746 12;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array E02-signal 882 float 0;
 #X coords 0 5 882 -5 200 130 1;
 #X restore 501 66 graph;
 #X obj 15 370 hip~ 5;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array E02-spectrum 128 float 0;
 #X coords 0 4300 127 -40 257 130 1;
 #X restore 455 251 graph;
@@ -29,17 +29,17 @@ until much later.;
 #X obj 16 425 samplerate~;
 #X obj 16 402 bng 18 250 50 0 empty empty empty 0 -6 0 8 -262144 -1
 -1;
-#X floatatom 16 472 5 0 0 0 - - -;
+#X floatatom 16 472 5 0 0 0 - - -, f 5;
 #X obj 16 448 / 256;
 #X obj 16 378 loadbang;
-#X floatatom 16 541 5 0 0 0 - - -;
+#X floatatom 16 541 5 0 0 0 - - -, f 5;
 #X obj 24 494 s fundamental;
 #X obj 16 517 ftom;
 #X text 14 319 At load time \, calculate a good choice of fundamental
 frequency for showing spectra: the 16th bin in a 4096-point spectrum
 \, so SR*16/4096 or SR/256.;
 #X text 145 216 "bang" into this inlet to graph it;
-#X floatatom 191 480 5 0 0 0 - - -;
+#X floatatom 191 480 5 0 0 0 - - -, f 5;
 #X obj 191 456 / 4096;
 #X text 187 425 One bin is SR/4096:;
 #X text 72 540 <-just out of curiosity \, here's the fundamental pitch
@@ -74,7 +74,6 @@ frequency for showing spectra: the 16th bin in a 4096-point spectrum
 #X obj 84 344 bng 18 250 50 0 empty empty empty 0 -6 0 8 -262144 -1
 -1;
 #X obj 15 398 output~;
-#X text 501 720 updated for Pd version 0.37;
 #X text 486 384 1;
 #X text 520 384 2;
 #X text 552 384 3;
@@ -87,15 +86,15 @@ frequency for showing spectra: the 16th bin in a 4096-point spectrum
 #X text 703 120 0;
 #X obj 18 32 r fundamental;
 #X obj 18 94 osc~;
-#X obj 39 119 tgl 18 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1 1
+#X obj 39 119 tgl 18 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0 1
 ;
 #X obj 17 144 *~;
 #X obj 61 94 osc~;
-#X obj 82 119 tgl 18 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1 1
+#X obj 82 119 tgl 18 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0 1
 ;
 #X obj 60 144 *~;
 #X obj 104 94 osc~;
-#X obj 125 119 tgl 18 0 empty empty empty 0 -6 0 8 -262144 -1 -1 1
+#X obj 125 119 tgl 18 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0
 1;
 #X obj 103 144 *~;
 #X obj 104 71 * 2;
@@ -127,7 +126,7 @@ frequency for showing spectra: the 16th bin in a 4096-point spectrum
 #X obj 16 239 *~;
 #X text 300 102 partials;
 #X obj 154 270 osc~;
-#X floatatom 154 210 3 0 200 0 - - -;
+#X floatatom 154 210 3 0 200 0 - - -, f 3;
 #X obj 154 239 *;
 #X obj 187 239 r freq-step;
 #X text 226 177 modulation;
@@ -157,41 +156,41 @@ indeterminate pitch.;
 #X connect 1 0 6 0;
 #X connect 1 0 6 1;
 #X connect 5 0 3 1;
-#X connect 18 0 38 0;
-#X connect 18 0 39 0;
-#X connect 18 0 28 0;
-#X connect 18 0 40 0;
-#X connect 18 0 41 0;
-#X connect 18 0 42 0;
-#X connect 19 0 21 0;
-#X connect 20 0 21 1;
-#X connect 21 0 51 0;
-#X connect 22 0 24 0;
-#X connect 23 0 24 1;
-#X connect 24 0 51 0;
-#X connect 25 0 27 0;
-#X connect 26 0 27 1;
-#X connect 27 0 51 0;
-#X connect 28 0 25 0;
-#X connect 29 0 31 0;
-#X connect 30 0 31 1;
-#X connect 31 0 51 0;
-#X connect 32 0 34 0;
-#X connect 33 0 34 1;
-#X connect 34 0 51 0;
-#X connect 35 0 37 0;
-#X connect 36 0 37 1;
-#X connect 37 0 51 0;
-#X connect 38 0 19 0;
-#X connect 39 0 22 0;
-#X connect 40 0 29 0;
-#X connect 41 0 32 0;
-#X connect 42 0 35 0;
-#X connect 51 0 3 0;
-#X connect 51 0 1 0;
-#X connect 53 0 51 1;
-#X connect 54 0 55 0;
-#X connect 55 0 53 0;
-#X connect 56 0 55 1;
-#X connect 61 0 63 0;
-#X connect 63 0 5 0;
+#X connect 17 0 37 0;
+#X connect 17 0 38 0;
+#X connect 17 0 27 0;
+#X connect 17 0 39 0;
+#X connect 17 0 40 0;
+#X connect 17 0 41 0;
+#X connect 18 0 20 0;
+#X connect 19 0 20 1;
+#X connect 20 0 50 0;
+#X connect 21 0 23 0;
+#X connect 22 0 23 1;
+#X connect 23 0 50 0;
+#X connect 24 0 26 0;
+#X connect 25 0 26 1;
+#X connect 26 0 50 0;
+#X connect 27 0 24 0;
+#X connect 28 0 30 0;
+#X connect 29 0 30 1;
+#X connect 30 0 50 0;
+#X connect 31 0 33 0;
+#X connect 32 0 33 1;
+#X connect 33 0 50 0;
+#X connect 34 0 36 0;
+#X connect 35 0 36 1;
+#X connect 36 0 50 0;
+#X connect 37 0 18 0;
+#X connect 38 0 21 0;
+#X connect 39 0 28 0;
+#X connect 40 0 31 0;
+#X connect 41 0 34 0;
+#X connect 50 0 3 0;
+#X connect 50 0 1 0;
+#X connect 52 0 50 1;
+#X connect 53 0 54 0;
+#X connect 54 0 52 0;
+#X connect 55 0 54 1;
+#X connect 60 0 62 0;
+#X connect 62 0 5 0;

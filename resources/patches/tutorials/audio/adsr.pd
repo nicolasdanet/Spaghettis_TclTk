@@ -1,4 +1,4 @@
-#N canvas 371 139 752 655 12;
+#N canvas 197 53 752 655 12;
 #X obj 105 111 inlet;
 #X obj 435 151 inlet;
 #X text 101 86 trigger;
@@ -49,7 +49,6 @@ Inlets are supplied to change them on the fly.;
 #X text 49 477 When you send this patch a positive trigger it schedules
 a line~ to do an attack and decay \, and if zero \, it starts the release
 ramp.;
-#X text 495 629 Updated for Pd version 0.37;
 #X text 255 89 test for negative trigger;
 #X text 253 113 if so \, zero;
 #X text 254 129 the output;

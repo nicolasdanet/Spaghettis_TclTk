@@ -42,7 +42,6 @@ the frequency \, we have to take the fourth root of the target value
 output to the fourth power by squaring twice (the *~ objects \, whose
 left and right inlets are the same.) The cost is mostly that of the
 four additional *~ objects.;
-#X text 350 553 updated for Pd version 0.37;
 #X text 19 39 This patch has two sine wave oscillators \, one with
 linear envelopes \, the other with quartic ones which sound more uniform.
 The message boxes sweep the amplitude and frequency up and down. You

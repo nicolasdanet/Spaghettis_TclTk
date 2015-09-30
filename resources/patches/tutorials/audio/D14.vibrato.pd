@@ -1,11 +1,11 @@
-#N canvas 80 10 709 653 12;
+#N canvas 80 22 709 653 12;
 #X obj 28 258 r trigger;
 #X obj 28 454 *~;
 #X obj 28 482 *~;
-#X floatatom 63 304 3 0 100 0 - - -;
+#X floatatom 63 304 3 0 100 0 - - -, f 3;
 #X msg 460 493 \; trigger 0;
 #X obj 28 281 unpack;
-#X floatatom 28 304 1 0 100 0 - - -;
+#X floatatom 28 304 1 0 100 0 - - -, f 1;
 #X obj 27 533 +~ 0.3;
 #X obj 27 559 cos~;
 #X obj 27 507 osc~;
@@ -19,7 +19,7 @@
 #X text 556 512 is optional;
 #X obj 28 424 *~;
 #X obj 237 404 +~ 1;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array array62 131 float 1;
 #A 0 0.970031 1 0.970031 0.881921 0.740952 0.555571 0.336891 0.0980184
 -0.146729 -0.382682 -0.595698 -0.773009 -0.88 -0.9 -0.92 -0.92 -0.85773
@@ -40,10 +40,10 @@
 #X coords 0 1 130 -1 200 100 1;
 #X restore 246 508 graph;
 #X obj 237 356 tabosc4~ array62;
-#X floatatom 237 312 3 0 0 0 - - -;
+#X floatatom 237 312 3 0 0 0 - - -, f 3;
 #X obj 237 333 / 6;
 #X obj 237 380 *~;
-#X floatatom 391 333 3 0 0 0 - - -;
+#X floatatom 391 333 3 0 0 0 - - -, f 3;
 #X text 236 438 since we'll multiply \,;
 #X text 235 453 vibrato output should;
 #X text 235 470 be centered at 1 \, not 0;
@@ -71,7 +71,6 @@ we just raise the "pitch" to the fourth power \, so that it acts pseudo-exponent
 Rather than add vibrato to the ADSR output \, we multiply a signal
 which controls relative frequency. The relative frequency change is
 one plus an oscillator.;
-#X text 439 626 updated for Pd version 0.39;
 #X text 45 185 The table below holds 6 cycles of vibrato with small
 variations to get a not-exactly-repeating vibrato. We thus have to
 divide vibrato frequency by six. You can just use a sine or triangle

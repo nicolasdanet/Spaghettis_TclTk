@@ -1,5 +1,5 @@
 #N canvas 40 23 609 630 12;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array adsr-output 44100 float 0;
 #X coords 0 1.02 44100 -1.02 200 130 1;
 #X restore 121 332 graph;
@@ -26,7 +26,6 @@ release behavior. You can retrigger the ADSR envelope generator all
 you wish without having to wait for attacks or releases to finish;
 #X text 104 5 ENVELOPE GENERATOR ABSTRACTION;
 #X obj 18 118 adsr 1 100 200 50 300;
-#X text 356 601 updated for Pd version 0.37;
 #X obj 36 195 osc~ 440;
 #X obj 17 220 *~;
 #X obj 16 249 output~;
@@ -36,7 +35,7 @@ you wish without having to wait for attacks or releases to finish;
 #X connect 5 0 7 0;
 #X connect 7 0 12 0;
 #X connect 18 0 3 0;
-#X connect 18 0 21 0;
+#X connect 18 0 20 0;
+#X connect 19 0 20 1;
+#X connect 20 0 21 0;
 #X connect 20 0 21 1;
-#X connect 21 0 22 0;
-#X connect 21 0 22 1;

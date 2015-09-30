@@ -1,10 +1,10 @@
-#N canvas 85 89 754 729 12;
-#N canvas 0 0 450 300 (subpatch) 0;
+#N canvas 90 22 754 729 12;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array E06-signal 882 float 0;
 #X coords 0 1.02 882 -1.02 200 130 1;
 #X restore 509 46 graph;
 #X obj 14 265 hip~ 5;
-#N canvas 0 0 450 300 (subpatch) 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array E06-spectrum 128 float 0;
 #X coords 0 4300 127 -40 257 130 1;
 #X restore 463 222 graph;
@@ -29,16 +29,16 @@ until much later.;
 #X obj 16 425 samplerate~;
 #X obj 16 402 bng 18 250 50 0 empty empty empty 0 -6 0 8 -262144 -1
 -1;
-#X floatatom 16 472 5 0 0 0 - - -;
+#X floatatom 16 472 5 0 0 0 - - -, f 5;
 #X obj 16 448 / 256;
 #X obj 16 378 loadbang;
-#X floatatom 16 541 5 0 0 0 - - -;
+#X floatatom 16 541 5 0 0 0 - - -, f 5;
 #X obj 24 494 s fundamental;
 #X obj 16 517 ftom;
 #X text 14 319 At load time \, calculate a good choice of fundamental
 frequency for showing spectra: the 16th bin in a 4096-point spectrum
 \, so SR*16/4096 or SR/256.;
-#X floatatom 191 480 5 0 0 0 - - -;
+#X floatatom 191 480 5 0 0 0 - - -, f 5;
 #X obj 191 456 / 4096;
 #X text 187 425 One bin is SR/4096:;
 #X obj 191 502 s freq-step;
@@ -79,7 +79,6 @@ frequency for showing spectra: the 16th bin in a 4096-point spectrum
 #X obj 82 217 bng 18 250 50 0 empty empty empty 0 -6 0 8 -262144 -1
 -1;
 #X obj 14 293 output~;
-#X text 499 708 updated for Pd version 0.37;
 #X text 494 355 1;
 #X text 528 355 2;
 #X text 560 355 3;
@@ -99,7 +98,7 @@ frequency for showing spectra: the 16th bin in a 4096-point spectrum
 #X text 722 276 0.5;
 #X obj 82 238 tgl 18 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0 1
 ;
-#N canvas 0 0 450 300 (subpatch) 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array E06-tab 1003 float 1;
 #A 0 1.01005 1 0.99005 0.980199 0.970446 0.960789 0.951229 0.941765
 0.932394 0.923116 0.913931 0.904837 0.895834 0.88692 0.878095 0.869358
@@ -284,7 +283,7 @@ frequency for showing spectra: the 16th bin in a 4096-point spectrum
 #X obj 12 168 +~ 1;
 #X obj 12 146 *~ 100;
 #X obj 12 83 +~ 1;
-#X floatatom 68 53 5 0 200 0 - - -;
+#X floatatom 68 53 5 0 200 0 - - -, f 5;
 #X obj 68 96 pack 0 50;
 #X obj 68 120 line~;
 #X text 157 69 tenths;
@@ -320,16 +319,16 @@ gets progressively fatter.;
 #X connect 1 0 6 0;
 #X connect 1 0 6 1;
 #X connect 5 0 3 1;
-#X connect 18 0 19 0;
-#X connect 19 0 33 0;
-#X connect 25 0 3 2;
-#X connect 31 0 40 0;
-#X connect 32 0 31 0;
-#X connect 33 0 39 0;
-#X connect 34 0 38 0;
-#X connect 35 0 36 0;
-#X connect 36 0 39 1;
-#X connect 38 0 35 0;
-#X connect 39 0 32 0;
-#X connect 40 0 3 0;
-#X connect 40 0 1 0;
+#X connect 17 0 18 0;
+#X connect 18 0 32 0;
+#X connect 24 0 3 2;
+#X connect 30 0 39 0;
+#X connect 31 0 30 0;
+#X connect 32 0 38 0;
+#X connect 33 0 37 0;
+#X connect 34 0 35 0;
+#X connect 35 0 38 1;
+#X connect 37 0 34 0;
+#X connect 38 0 31 0;
+#X connect 39 0 3 0;
+#X connect 39 0 1 0;

@@ -1,9 +1,8 @@
 #N canvas 224 60 657 571 12;
 #X obj 23 269 output~;
 #X obj 45 74 / 100;
-#X floatatom 45 54 5 0 100 0 - - -;
+#X floatatom 45 54 5 0 100 0 - - -, f 5;
 #X obj 23 144 *~;
-#X text 403 539 updated for Pd version 0.37;
 #X obj 22 29 osc~ 220;
 #X obj 45 97 pack 0 50;
 #X obj 45 121 line~;
@@ -11,7 +10,7 @@
 #X text 117 68 hundredths;
 #X obj 23 169 *~ 128;
 #X obj 23 217 tabread4~ E05-tab;
-#N canvas 0 0 450 300 graph1 0;
+#N canvas 0 22 450 300 (subpatch) 0;
 #X array E05-tab 259 float 1;
 #A 0 -1.20148 -1 -0.810724 -0.63326 -0.467216 -0.31221 -0.167866 -0.0338144
 0.0903053 0.204849 0.310166 0.406597 0.494477 0.574137 0.645895 0.71007
@@ -51,7 +50,7 @@
 #X coords 0 1 258 -1 200 140 1;
 #X restore 262 46 graph;
 #X text 497 28 subpatch to;
-#N canvas 113 0 849 700 make-table 0;
+#N canvas 113 22 849 700 make-table 0;
 #X obj 141 304 t b b;
 #X obj 213 329 f;
 #X obj 251 329 + 1;
@@ -239,19 +238,19 @@ increase rapidly in value outside the interval from -1 to 1 that we
 are using here.;
 #X text 106 491 When you get tired of Chebychef polynomials you can
 draw your own functions by hand and/or try other formulas.;
-#X connect 1 0 6 0;
+#X connect 1 0 5 0;
 #X connect 2 0 1 0;
-#X connect 3 0 10 0;
-#X connect 5 0 3 0;
-#X connect 6 0 7 0;
-#X connect 7 0 3 1;
+#X connect 3 0 9 0;
+#X connect 4 0 3 0;
+#X connect 5 0 6 0;
+#X connect 6 0 3 1;
+#X connect 9 0 28 0;
 #X connect 10 0 29 0;
-#X connect 11 0 30 0;
-#X connect 15 0 14 0;
-#X connect 16 0 14 1;
-#X connect 17 0 14 2;
-#X connect 18 0 14 3;
-#X connect 19 0 14 4;
-#X connect 29 0 11 0;
-#X connect 30 0 0 0;
-#X connect 30 0 0 1;
+#X connect 14 0 13 0;
+#X connect 15 0 13 1;
+#X connect 16 0 13 2;
+#X connect 17 0 13 3;
+#X connect 18 0 13 4;
+#X connect 28 0 10 0;
+#X connect 29 0 0 0;
+#X connect 29 0 0 1;
