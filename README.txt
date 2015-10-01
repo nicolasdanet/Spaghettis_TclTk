@@ -1,5 +1,5 @@
 
-# Pd
+# PureData
 
 < https://en.wiktionary.org/wiki/work_in_progress >
 
