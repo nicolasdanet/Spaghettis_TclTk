@@ -67,6 +67,11 @@ Additional terms:
         Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
         Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
 
+    src/s_audio_oss.c
+    
+        Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
+        Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
+        
     src/s_audio_dummy.c
     
         Copyright (c) 2010 Peter Brinkmann.
@@ -75,11 +80,6 @@ Additional terms:
     
         Copyright (c) 2006 Guenter Geiger.
         
-    src/s_audio_oss.c
-    
-        Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
-        Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
-    
     tcl/pd_guiprefs.tcl
     
         Copyright (c) 1997-2009 Miller Puckette and others.
