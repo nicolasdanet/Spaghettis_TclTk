@@ -15,7 +15,6 @@ are stereo but you can specify channel numbers as in:;
 channel or channels. This requires Pd to restart DSP and so should
 only be done at setup time \, not while audio is being computed.,
 f 51;
-#X text 288 418 updated for Pd version 0.47;
 #X text 35 348 If more than one dac~ outputs to the same channel \,
 the signals are added. More than one adc~ may read the same input channel.
 ;
