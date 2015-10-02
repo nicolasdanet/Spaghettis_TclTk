@@ -67,13 +67,13 @@ static void midiin_setup(void)
         (t_method)midiin_free, sizeof(t_midiin),
             CLASS_NOINLET, A_DEFFLOAT, 0);
     class_addlist(midiin_class, midiin_list);
-    class_sethelpsymbol(midiin_class, gensym("midi"));
+    class_sethelpsymbol(midiin_class, gensym("midiout"));
 
     sysexin_class = class_new(gensym("sysexin"), (t_newmethod)sysexin_new,
         (t_method)sysexin_free, sizeof(t_midiin),
             CLASS_NOINLET, A_DEFFLOAT, 0);
     class_addlist(sysexin_class, midiin_list);
-    class_sethelpsymbol(sysexin_class, gensym("midi"));
+    class_sethelpsymbol(sysexin_class, gensym("midiout"));
 }
 
 void inmidi_byte(int portno, int byte)
@@ -151,7 +151,7 @@ static void notein_setup(void)
     notein_class = class_new(gensym("notein"), (t_newmethod)notein_new,
         (t_method)notein_free, sizeof(t_notein), CLASS_NOINLET, A_DEFFLOAT, 0);
     class_addlist(notein_class, notein_list);
-    class_sethelpsymbol(notein_class, gensym("midi"));
+    class_sethelpsymbol(notein_class, gensym("midiout"));
 }
 
 void inmidi_noteon(int portno, int channel, int pitch, int velo)
@@ -222,7 +222,7 @@ static void ctlin_setup(void)
         (t_method)ctlin_free, sizeof(t_ctlin),
             CLASS_NOINLET, A_GIMME, 0);
     class_addlist(ctlin_class, ctlin_list);
-    class_sethelpsymbol(ctlin_class, gensym("midi"));
+    class_sethelpsymbol(ctlin_class, gensym("midiout"));
 }
 
 void inmidi_controlchange(int portno, int channel, int ctlnumber, int value)
@@ -286,7 +286,7 @@ static void pgmin_setup(void)
         (t_method)pgmin_free, sizeof(t_pgmin),
             CLASS_NOINLET, A_DEFFLOAT, 0);
     class_addlist(pgmin_class, pgmin_list);
-    class_sethelpsymbol(pgmin_class, gensym("midi"));
+    class_sethelpsymbol(pgmin_class, gensym("midiout"));
 }
 
 void inmidi_programchange(int portno, int channel, int value)
@@ -348,7 +348,7 @@ static void bendin_setup(void)
     bendin_class = class_new(gensym("bendin"), (t_newmethod)bendin_new,
         (t_method)bendin_free, sizeof(t_bendin), CLASS_NOINLET, A_DEFFLOAT, 0);
     class_addlist(bendin_class, bendin_list);
-    class_sethelpsymbol(bendin_class, gensym("midi"));
+    class_sethelpsymbol(bendin_class, gensym("midiout"));
 }
 
 void inmidi_pitchbend(int portno, int channel, int value)
@@ -411,7 +411,7 @@ static void touchin_setup(void)
         (t_method)touchin_free, sizeof(t_touchin),
             CLASS_NOINLET, A_DEFFLOAT, 0);
     class_addlist(touchin_class, touchin_list);
-    class_sethelpsymbol(touchin_class, gensym("midi"));
+    class_sethelpsymbol(touchin_class, gensym("midiout"));
 }
 
 void inmidi_aftertouch(int portno, int channel, int value)
@@ -480,7 +480,7 @@ static void polytouchin_setup(void)
         (t_newmethod)polytouchin_new, (t_method)polytouchin_free,
         sizeof(t_polytouchin), CLASS_NOINLET, A_DEFFLOAT, 0);
     class_addlist(polytouchin_class, polytouchin_list);
-    class_sethelpsymbol(polytouchin_class, gensym("midi"));
+    class_sethelpsymbol(polytouchin_class, gensym("midiout"));
 }
 
 void inmidi_polyaftertouch(int portno, int channel, int pitch, int value)
@@ -534,7 +534,7 @@ static void midiclkin_setup(void)
         (t_newmethod)midiclkin_new, (t_method)midiclkin_free, 
             sizeof(t_midiclkin), CLASS_NOINLET, A_DEFFLOAT, 0);
     class_addlist(midiclkin_class, midiclkin_list);
-        class_sethelpsymbol(midiclkin_class, gensym("midi"));
+        class_sethelpsymbol(midiclkin_class, gensym("midiout"));
 }
 
 void inmidi_clk(double timing)
@@ -604,7 +604,7 @@ static void midirealtimein_setup(void)
         (t_newmethod)midirealtimein_new, (t_method)midirealtimein_free, 
             sizeof(t_midirealtimein), CLASS_NOINLET, A_DEFFLOAT, 0);
     class_addlist(midirealtimein_class, midirealtimein_list);
-        class_sethelpsymbol(midirealtimein_class, gensym("midi"));
+        class_sethelpsymbol(midirealtimein_class, gensym("midiout"));
 }
 
 void inmidi_realtimein(int portno, int SysMsg)
@@ -649,7 +649,7 @@ static void midiout_setup(void)
     midiout_class = class_new(gensym("midiout"), (t_newmethod)midiout_new, 0,
         sizeof(t_midiout), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addfloat(midiout_class, midiout_float);
-    class_sethelpsymbol(midiout_class, gensym("midi"));
+    class_sethelpsymbol(midiout_class, gensym("midiout"));
 }
 
 /* -------------------------- noteout -------------------------- */
@@ -688,7 +688,7 @@ static void noteout_setup(void)
     noteout_class = class_new(gensym("noteout"), (t_newmethod)noteout_new, 0,
         sizeof(t_noteout), 0, A_DEFFLOAT, 0);
     class_addfloat(noteout_class, noteout_float);
-    class_sethelpsymbol(noteout_class, gensym("midi"));
+    class_sethelpsymbol(noteout_class, gensym("midiout"));
 }
 
 
@@ -728,7 +728,7 @@ static void ctlout_setup(void)
     ctlout_class = class_new(gensym("ctlout"), (t_newmethod)ctlout_new, 0,
         sizeof(t_ctlout), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addfloat(ctlout_class, ctlout_float);
-    class_sethelpsymbol(ctlout_class, gensym("midi"));
+    class_sethelpsymbol(ctlout_class, gensym("midiout"));
 }
 
 
@@ -768,7 +768,7 @@ static void pgmout_setup(void)
     pgmout_class = class_new(gensym("pgmout"), (t_newmethod)pgmout_new, 0,
         sizeof(t_pgmout), 0, A_DEFFLOAT, 0);
     class_addfloat(pgmout_class, pgmout_float);
-    class_sethelpsymbol(pgmout_class, gensym("midi"));
+    class_sethelpsymbol(pgmout_class, gensym("midiout"));
 }
 
 
@@ -805,7 +805,7 @@ static void bendout_setup(void)
     bendout_class = class_new(gensym("bendout"), (t_newmethod)bendout_new, 0,
         sizeof(t_bendout), 0, A_DEFFLOAT, 0);
     class_addfloat(bendout_class, bendout_float);
-    class_sethelpsymbol(bendout_class, gensym("midi"));
+    class_sethelpsymbol(bendout_class, gensym("midiout"));
 }
 
 /* -------------------------- touch -------------------------- */
@@ -840,7 +840,7 @@ static void touchout_setup(void)
     touchout_class = class_new(gensym("touchout"), (t_newmethod)touchout_new, 0,
         sizeof(t_touchout), 0, A_DEFFLOAT, 0);
     class_addfloat(touchout_class, touchout_float);
-    class_sethelpsymbol(touchout_class, gensym("midi"));
+    class_sethelpsymbol(touchout_class, gensym("midiout"));
 }
 
 /* -------------------------- polytouch -------------------------- */
@@ -879,7 +879,7 @@ static void polytouchout_setup(void)
         (t_newmethod)polytouchout_new, 0,
         sizeof(t_polytouchout), 0, A_DEFFLOAT, 0);
     class_addfloat(polytouchout_class, polytouchout_float);
-    class_sethelpsymbol(polytouchout_class, gensym("midi"));
+    class_sethelpsymbol(polytouchout_class, gensym("midiout"));
 }
 
 /* -------------------------- makenote -------------------------- */

@@ -159,7 +159,7 @@ static void dbtorms_float(t_object *x, t_float f)
 
 void x_acoustics_setup(void)
 {
-    t_symbol *s = gensym("acoustics.pd");
+    t_symbol *s = gensym("mtof");
     mtof_class = class_new(gensym("mtof"), mtof_new, 0,
         sizeof(t_object), 0, 0);
     class_addfloat(mtof_class, (t_method)mtof_float);

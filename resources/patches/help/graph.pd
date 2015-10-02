@@ -1,0 +1,13 @@
+#N canvas 28 22 693 300 12;
+#N canvas 0 22 450 278 (subpatch) 0;
+#X array array99 100 float 0;
+#X coords 0 1 99 -1 150 100 1;
+#X restore 188 190 graph;
+#X text 174 19 GRAPHS;
+#X text 20 42 A graph in Pd is a rectangular subregion of the window
+in which you can store numeric arrays.;
+#X text 19 140 You can change the array values by redrawing it in the
+graph. See also "11.arrays" and passim in the "control examples".;
+#X text 18 85 If you create a new array Pd will usually make a new
+graph to put it in (you can change this using the "array" dialog that
+pops up.);

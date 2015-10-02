@@ -761,7 +761,7 @@ static void abs_tilde_setup(void)
 
 void d_math_setup(void)
 {
-    t_symbol *s = gensym("acoustics~.pd");
+    t_symbol *s = gensym("mtof~");
     clip_setup();
     sigrsqrt_setup();
     sigsqrt_setup();

@@ -632,7 +632,7 @@ void g_hslider_setup(void)
     hslider_widgetbehavior.w_visfn =        iemgui_vis;
     hslider_widgetbehavior.w_clickfn =      hslider_newclick;
     class_setwidget(hslider_class, &hslider_widgetbehavior);
-    class_sethelpsymbol(hslider_class, gensym("hslider"));
+    class_sethelpsymbol(hslider_class, gensym("hsl"));
     class_setsavefn(hslider_class, hslider_save);
     class_setpropertiesfn(hslider_class, hslider_properties);
 }
