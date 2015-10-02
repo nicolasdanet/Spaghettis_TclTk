@@ -1,7 +1,7 @@
 
 # License
 
-The "Standard Improved BSD License" apply to all files unless explicitly disclaimed.
+All files under "Standard Improved BSD License" unless explicitly disclaimed.
 
 < http://opensource.org/licenses/BSD-3-Clause >
 

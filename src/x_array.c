@@ -848,7 +848,7 @@ void x_array_setup(void )
     class_addmethod(array_define_class, (t_method)array_define_send,
         gensym("send"), A_SYMBOL, 0);
     class_addanything(array_define_class, array_define_anything);
-    class_sethelpsymbol(array_define_class, gensym("array-object"));
+    class_sethelpsymbol(array_define_class, gensym("array"));
     class_setsavefn(array_define_class, array_define_save);
 
     class_addmethod(array_define_class, (t_method)array_define_ignore,
@@ -864,33 +864,33 @@ void x_array_setup(void )
             sizeof(t_array_size), 0, A_GIMME, 0);
     class_addbang(array_size_class, array_size_bang);
     class_addfloat(array_size_class, array_size_float);
-    class_sethelpsymbol(array_size_class, gensym("array-object"));
+    class_sethelpsymbol(array_size_class, gensym("array"));
 
     array_sum_class = class_new(gensym("array sum"),
         (t_newmethod)array_sum_new, (t_method)array_client_free,
             sizeof(t_array_sum), 0, A_GIMME, 0);
     class_addbang(array_sum_class, array_sum_bang);
     class_addfloat(array_sum_class, array_sum_float);
-    class_sethelpsymbol(array_sum_class, gensym("array-object"));
+    class_sethelpsymbol(array_sum_class, gensym("array"));
 
     array_get_class = class_new(gensym("array get"),
         (t_newmethod)array_get_new, (t_method)array_client_free,
             sizeof(t_array_get), 0, A_GIMME, 0);
     class_addbang(array_get_class, array_get_bang);
     class_addfloat(array_get_class, array_get_float);
-    class_sethelpsymbol(array_get_class, gensym("array-object"));
+    class_sethelpsymbol(array_get_class, gensym("array"));
 
     array_set_class = class_new(gensym("array set"),
         (t_newmethod)array_set_new, (t_method)array_client_free,
             sizeof(t_array_set), 0, A_GIMME, 0);
     class_addlist(array_set_class, array_set_list);
-    class_sethelpsymbol(array_set_class, gensym("array-object"));
+    class_sethelpsymbol(array_set_class, gensym("array"));
 
     array_quantile_class = class_new(gensym("array quantile"),
         (t_newmethod)array_quantile_new, (t_method)array_client_free,
             sizeof(t_array_quantile), 0, A_GIMME, 0);
     class_addfloat(array_quantile_class, array_quantile_float);
-    class_sethelpsymbol(array_quantile_class, gensym("array-object"));
+    class_sethelpsymbol(array_quantile_class, gensym("array"));
 
     array_random_class = class_new(gensym("array random"),
         (t_newmethod)array_random_new, (t_method)array_client_free,
@@ -899,19 +899,19 @@ void x_array_setup(void )
         gensym("seed"), A_FLOAT, 0);
     class_addfloat(array_random_class, array_random_float);
     class_addbang(array_random_class, array_random_bang);
-    class_sethelpsymbol(array_random_class, gensym("array-object"));
+    class_sethelpsymbol(array_random_class, gensym("array"));
 
     array_max_class = class_new(gensym("array max"),
         (t_newmethod)array_max_new, (t_method)array_client_free,
             sizeof(t_array_max), 0, A_GIMME, 0);
     class_addfloat(array_max_class, array_max_float);
     class_addbang(array_max_class, array_max_bang);
-    class_sethelpsymbol(array_max_class, gensym("array-object"));
+    class_sethelpsymbol(array_max_class, gensym("array"));
 
     array_min_class = class_new(gensym("array min"),
         (t_newmethod)array_min_new, (t_method)array_client_free,
             sizeof(t_array_min), 0, A_GIMME, 0);
     class_addfloat(array_min_class, array_min_float);
     class_addbang(array_min_class, array_min_bang);
-    class_sethelpsymbol(array_min_class, gensym("array-object"));
+    class_sethelpsymbol(array_min_class, gensym("array"));
 }

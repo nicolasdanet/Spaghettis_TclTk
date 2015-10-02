@@ -1,4 +1,4 @@
-#N canvas 217 22 566 752 12;
+#N canvas 220 22 579 700 12;
 #X declare;
 #X obj 29 53 bang;
 #X text 129 53 - output a bang message;
@@ -260,6 +260,33 @@
 #X text 127 3580 - add an outlet to a pd;
 #X obj 27 3604 inlet~;
 #X obj 87 3604 outlet~;
+#X obj 27 3673 struct;
+#X text 127 3673 - define a data structure;
+#X obj 27 3697 drawcurve;
+#X obj 115 3697 filledcurve;
+#X text 228 3697 - draw a curve;
+#X obj 27 3721 drawpolygon;
+#X obj 132 3721 filledpolygon;
+#X text 262 3721 - draw a polygon;
+#X obj 27 3745 plot;
+#X text 127 3745 - plot an array field;
+#X obj 27 3769 drawnumber;
+#X text 127 3769 - print a numeric value;
+#X obj 28 3833 pointer;
+#X text 128 3833 - point to an object belonging to a template;
+#X obj 28 3857 get;
+#X text 128 3857 - get numeric fields;
+#X obj 28 3881 set;
+#X text 128 3881 - change numeric fields;
+#X obj 28 3905 element;
+#X text 128 3905 - get an array element;
+#X obj 28 3929 getsize;
+#X text 128 3929 - get the size of an array;
+#X obj 28 3953 setsize;
+#X text 128 3953 - change the size of an array;
+#X obj 28 3977 append;
+#X text 128 3977 - add an element to a list;
+#X obj 28 4001 scalar;
 #X obj 147 3320 czero_rev~;
 #X obj 31 2401 threshold~;
 #X text 131 2401 - detect signal thresholds;
@@ -270,6 +297,10 @@
 #X text 25 533 ------------------------- TIME --------------------------
 ;
 #X text 23 3461 ------------------------ SUBWINDOWS ------------------------
+;
+#X text 21 3643 ---------------------- DATA TEMPLATES ----------------------
+;
+#X text 21 3803 ---------------------- ACCESSING DATA ----------------------
 ;
 #X text 22 2721 ------------ AUDIO OSCILLATORS AND TABLES -------------
 ;
@@ -319,6 +350,7 @@
 #X text 133 1392 - general array creation and manipulation;
 #X text 22 1246 ----------------- ARRAYS/TABLES -------------------
 ;
+#X text 128 4000 - create a single scalar;
 #X obj 30 1585 textfile;
 #X obj 30 1609 text;
 #X obj 185 810 <<;
