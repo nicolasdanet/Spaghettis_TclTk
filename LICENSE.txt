@@ -14,18 +14,17 @@ Additional terms:
     src/d_fft_fftsg.c
 
         Copyright (c) 1996-2001 Takuya OOURA < ooura@mmm.t.u-tokyo.ac.jp >
-        
-        Download: http://momonga.t.u-tokyo.ac.jp/~ooura/fft.html
+        Download: < http://momonga.t.u-tokyo.ac.jp/~ooura/fft.html >
 
         You may use, copy, modify this code for any purpose and without fee.
         You may distribute this ORIGINAL package.
 
     src/s_audio_paring.c:
 
-        Phil Burk < http://www.softsynth.com >
+        Author: Phil Burk < http://www.softsynth.com >
  
         This program uses the PortAudio Portable Audio Library.
-        For more information see < http://www.audiomulch.com/portaudio/ >.
+        For more information see: < http://www.audiomulch.com/portaudio/ >.
         
         Copyright (c) 1999-2000 Ross Bencina and Phil Burk
  
