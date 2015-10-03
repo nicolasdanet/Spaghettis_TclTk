@@ -471,7 +471,7 @@ void g_toggle_setup(void)
     toggle_widgetbehavior.w_visfn = iemgui_vis;
     toggle_widgetbehavior.w_clickfn = toggle_newclick;
     class_setwidget(toggle_class, &toggle_widgetbehavior);
-    class_sethelpsymbol(toggle_class, gensym("toggle"));
+    class_sethelpsymbol(toggle_class, gensym("tgl"));
     class_setsavefn(toggle_class, toggle_save);
     class_setpropertiesfn(toggle_class, toggle_properties);
 }

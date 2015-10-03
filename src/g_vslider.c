@@ -634,7 +634,7 @@ void g_vslider_setup(void)
     vslider_widgetbehavior.w_visfn =        iemgui_vis;
     vslider_widgetbehavior.w_clickfn =      vslider_newclick;
     class_setwidget(vslider_class, &vslider_widgetbehavior);
-    class_sethelpsymbol(vslider_class, gensym("vslider"));
+    class_sethelpsymbol(vslider_class, gensym("vsl"));
     class_setsavefn(vslider_class, vslider_save);
     class_setpropertiesfn(vslider_class, vslider_properties);
 }

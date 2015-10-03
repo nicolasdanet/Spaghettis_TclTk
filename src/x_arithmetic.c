@@ -710,8 +710,8 @@ static void clip_setup(void)
 
 void x_arithmetic_setup(void)
 {
-    t_symbol *binop1_sym = gensym("operators");
-    t_symbol *binop23_sym = gensym("otherbinops");
+    t_symbol *binop1_sym = gensym("pow");
+    t_symbol *binop23_sym = gensym("&&");
     t_symbol *math_sym = gensym("sqrt");
 
     binop1_plus_class = class_new(gensym("+"), (t_newmethod)binop1_plus_new, 0,
