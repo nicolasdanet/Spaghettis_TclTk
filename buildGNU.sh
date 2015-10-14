@@ -7,7 +7,7 @@
 #
 # Tested on:
 #
-#   - Debian / Wheezy (i386)
+#   - Debian / Jessie (i386)
 #
 
 # ------------------------------------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ isJack=$(dpkg-query -W -f='${Status}' libjack-dev 2>/dev/null | grep -c "ok inst
 
 # Paths.
 
-folder="${rep}/PureData"
+folder="${rep}/puredata"
 bin="${rep}/bin"
 tcl="${rep}/tcl"
 patches="${rep}/resources/patches"
