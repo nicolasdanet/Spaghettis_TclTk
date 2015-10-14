@@ -16,7 +16,7 @@ package require apple_events
 
 if {[string first "-psn" [lindex $argv 0]] == 0} { 
     set argv [lrange $argv 1 end]
-    set argc [expr $argc - 1]
+    set argc [expr {$argc - 1}]
 }
 
 if [catch {source [file join [file dirname [info script]] pd-gui.tcl]}] { 
