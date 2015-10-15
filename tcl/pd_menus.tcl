@@ -301,8 +301,6 @@ proc ::pd_menus::build_help_menu {mymenu} {
     if {[tk windowingsystem] ne "aqua"} {
         $mymenu add command -label [_ "About Pd"] -command {menu_aboutpd} 
     }
-    $mymenu add command -label [_ "Browser..."] \
-        -command {menu_helpbrowser} 
     $mymenu add command -label [_ "List of objects..."] \
         -command {pdsend "pd help-intro"} 
     $mymenu add  separator

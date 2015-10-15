@@ -143,10 +143,6 @@ proc ::pd_menucommands::menu_startup_dialog {} {
     }
 }
 
-proc ::pd_menucommands::menu_helpbrowser {} {
-    ::helpbrowser::open_helpbrowser
-}
-
 proc ::pd_menucommands::menu_texteditor {} {
     ::pdwindow::error "the text editor is not implemented"
 }

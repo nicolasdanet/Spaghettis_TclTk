@@ -46,7 +46,6 @@ proc ::pd_bindings::global_bindings {} {
     # behaviors as possible, things like not sending an event for 'O' when
     # 'Control-O' is pressed.
     bind all <$::modifier-Key-a>      {menu_send %W selectall}
-    bind all <$::modifier-Key-b>      {menu_helpbrowser}
     bind all <$::modifier-Key-c>      {menu_send %W copy}
     bind all <$::modifier-Key-d>      {menu_send %W duplicate}
     bind all <$::modifier-Key-e>      {menu_toggle_editmode}

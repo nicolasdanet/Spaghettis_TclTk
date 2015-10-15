@@ -43,7 +43,6 @@ package require dialog_message
 package require dialog_midi
 package require dialog_path
 package require dialog_startup
-package require helpbrowser
 package require pd_menucommands
 package require opt_parser
 package require pdtk_canvas
@@ -284,7 +283,6 @@ proc init_for_platform {} {
             # fix menu font size on Windows with tk scaling = 1
             font create menufont -family Tahoma -size -11
             option add *Menu.font menufont startupFile
-            option add *HelpBrowser*font menufont startupFile
             option add *DialogWindow*font menufont startupFile
             option add *PdWindow*font menufont startupFile
             option add *ErrorDialog*font menufont startupFile
