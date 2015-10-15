@@ -30,7 +30,7 @@ proc ::tk::mac::ShowPreferences {args} {
 
 proc ::tk::mac::OpenDocument {args} {
     foreach filename $args {
-        if {$::done_init} {
+        if {$::initialized} {
             open_file $filename
         } else {
             lappend ::filestoopen_list $filename

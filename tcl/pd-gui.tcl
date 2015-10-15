@@ -98,16 +98,18 @@ namespace import ::dialog_startup::pdtk_startup_dialog
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-set done_init           0
+set initialized         0
+
 set windowingsystem     ""
 set loglevel            2
 set stderr              0
 set host                ""
 set port                0
+
 set font_family         "courier"
 set font_weight         "normal"
-
-set font_fixed_metrics { 
+set font_measured       {}
+set font_fixed { 
     8 6 11 
     9 6 12
     10 7 13
@@ -119,20 +121,12 @@ set font_fixed_metrics {
     30 18 37
     36 25 45
 }
-set font_measured_metrics {}
 
-# root path to lib of Pd's files, see s_main.c for more info
-set sys_libdir {}
-# root path where the pd-gui.tcl GUI script is located
-set sys_guidir {}
-# user-specified search path for objects, help, fonts, etc.
-set sys_searchpath {}
-# hard-coded search patch for objects, help, plugins, etc.
-set sys_staticpath {}
-# the path to the folder where the current plugin is being loaded from
-set current_plugin_loadpath {}
-# a list of plugins that were loaded
-set loaded_plugins {}
+set sys_libdir          {}
+set sys_guidir          {}
+set sys_searchpath      {}
+set sys_staticpath      {}
+
 # list of command line flags set at startup
 set startup_flags {}
 # list of libraries loaded on startup
@@ -384,10 +378,10 @@ proc set_base_font {family weight} {
 }
 
 # creates all the base fonts (i.e. pd_font_8 thru pd_font_36) so that they fit
-# into the metrics given by $::font_fixed_metrics for any given font/weight
+# into the metrics given by $::font_fixed for any given font/weight
 proc fit_font_into_metrics {} {
 # TODO the fonts picked seem too small, probably on fixed width
-    foreach {size width height} $::font_fixed_metrics {
+    foreach {size width height} $::font_fixed {
         set myfont [get_font_for_size $size]
         font create $myfont -family $::font_family -weight $::font_weight \
             -size [expr {-$height}]
@@ -399,12 +393,12 @@ proc fit_font_into_metrics {} {
             font configure $myfont -size [expr {-$height2}]
             if {$height2 * 2 <= $height} {
                 set giveup 1
-                set ::font_measured_metrics $::font_fixed_metrics
+                set ::font_measured $::font_fixed
                 break
             }
         }
-        set ::font_measured_metrics \
-            "$::font_measured_metrics  $size\
+        set ::font_measured \
+            "$::font_measured  $size\
                 [font measure $myfont M] [font metrics $myfont -linespace]"
         if {$giveup} {
             ::pdwindow::post [format \
@@ -428,16 +422,15 @@ proc pdtk_pd_startup {major minor bugfix test
     set_base_font $sys_font $sys_fontweight
     fit_font_into_metrics
     ::pd_guiprefs::init
-    pdsend "pd init [enquote_path [pwd]] $oldtclversion $::font_measured_metrics"
+    pdsend "pd init [enquote_path [pwd]] $oldtclversion $::font_measured"
     ::pd_bindings::class_bindings
     ::pd_bindings::global_bindings
     ::pd_menus::create_menubar
     ::pdtk_canvas::create_popup
     ::pdwindow::create_window
     ::pd_menus::configure_for_pdwindow
-    load_startup_plugins
     open_filestoopen
-    set ::done_init 1
+    set ::initialized 1
 }
 
 ##### routine to ask user if OK and, if so, send a message on to Pd ######
@@ -593,44 +586,6 @@ proc check_for_running_instances { } {
     }
 }
 
-
-# ------------------------------------------------------------------------------
-# load plugins on startup
-
-proc load_plugin_script {filename} {
-    global errorInfo
-
-    set basename [file tail $filename]
-    if {[lsearch $::loaded_plugins $basename] > -1} {
-        ::pdwindow::post [_ "'$basename' already loaded, ignoring: '$filename'\n"]
-        return
-    }
-
-    ::pdwindow::debug [_ "Loading plugin: $filename\n"]
-    set tclfile [open $filename]
-    set tclcode [read $tclfile]
-    close $tclfile
-    if {[catch {uplevel #0 $tclcode} errorname]} {
-        ::pdwindow::error "-----------\n"
-        ::pdwindow::error [_ "UNHANDLED ERROR: $errorInfo\n"]
-        ::pdwindow::error [_ "FAILED TO LOAD $filename\n"]
-        ::pdwindow::error "-----------\n"
-    } else {
-        lappend ::loaded_plugins $basename
-    }
-}
-
-proc load_startup_plugins {} {
-    foreach pathdir [concat $::sys_searchpath $::sys_staticpath] {
-        set dir [file normalize $pathdir]
-        if { ! [file isdirectory $dir]} {continue}
-        foreach filename [glob -directory $dir -nocomplain -types {f} -- \
-                              *-plugin/*-plugin.tcl *-plugin.tcl] {
-            set ::current_plugin_loadpath [file dirname $filename]
-            load_plugin_script $filename
-        }
-    }
-}
 
 # ------------------------------------------------------------------------------
 # main
