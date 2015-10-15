@@ -35,7 +35,7 @@ proc ::dialog_startup::chooseCommand { prompt initialValue } {
     catch {wm attributes $mytoplevel -topmost 1}
 
     button .inputbox.button -text [_ "OK"] -command { destroy .inputbox } \
-        -width [::msgcat::mcmax "OK"]
+        -width 50
 
     entry .inputbox.entry -width 50 -textvariable cmd 
     pack .inputbox.button -side right

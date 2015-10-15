@@ -113,7 +113,7 @@ proc ::dialog_font::create_dialog {gfxstub} {
     pack .font.buttonframe.ok -side left -expand 1
     
     labelframe .font.fontsize -text [_ "Font Size"] -padx 5 -pady 4 -borderwidth 1 \
-        -width [::msgcat::mcmax "Font Size"] -labelanchor n
+        -width 100 -labelanchor n
     pack .font.fontsize -side left -padx 5
     
     # this is whacky Tcl at its finest, but I couldn't resist...
@@ -125,7 +125,7 @@ proc ::dialog_font::create_dialog {gfxstub} {
     }
 
     labelframe .font.stretch -text [_ "Stretch"] -padx 5 -pady 5 -borderwidth 1 \
-        -width [::msgcat::mcmax "Stretch"] -labelanchor n
+        -width 100 -labelanchor n
     pack .font.stretch -side left -padx 5 -fill y
 
     entry .font.stretch.entry -textvariable ::dialog_font::stretchval -width 5

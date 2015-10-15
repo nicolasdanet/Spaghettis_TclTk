@@ -17,12 +17,11 @@ if {[catch {wm withdraw .} fid]} {exit 2}
 
 package require Tcl 8.5
 package require Tk
-package require msgcat
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Note that all the Tcl files MUST be kept in the same directory that this file.
+# Note that all the Tcl files MUST be kept in the directory of this file.
 
 set auto_path [linsert $auto_path 0 [file dirname [info script]]]
 
@@ -94,10 +93,10 @@ namespace import ::dialog_startup::pdtk_startup_dialog
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# this is a wide array of global variables that are used throughout the GUI.
-# they can be used in plugins to check the status of various things since they
-# should all have been properly initialized by the time startup plugins are
-# loaded.
+# Global variables that are used throughout the GUI.
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 set PD_MAJOR_VERSION 0
 set PD_MINOR_VERSION 0
@@ -222,45 +221,6 @@ set ::undo_toplevel "."
 namespace eval ::pdgui:: {
     variable scriptname [ file normalize [ info script ] ]
 }
-
-
-#------------------------------------------------------------------------------#
-# coding style
-#
-# these are preliminary ideas, we'll change them as we work things out:
-# - when possible use "" doublequotes to delimit messages
-# - use '$::myvar' instead of 'global myvar' 
-# - for the sake of clarity, there should not be any inline code, everything 
-#   should be in a proc that is ultimately triggered from main()
-# - if a menu_* proc opens a dialog panel, that proc is called menu_*_dialog
-# - use "eq/ne" for string comparison, NOT "==/!=" (http://wiki.tcl.tk/15323)
-#
-#
-## Names for Common Variables
-#----------------------------
-# variables named after the Tk widgets they represent
-#   $window     = any kind of Tk widget that can be a Tk 'window'
-#   $mytoplevel = a window id made by a 'toplevel' command
-#   $gfxstub  = a 'toplevel' window id for dialogs made in gfxstub/x_gui.c
-#   $menubar    = the 'menu' attached to each 'toplevel'
-#   $mymenu     = 'menu' attached to the menubar, like the File menu
-#   $tkcanvas   = a Tk 'canvas', which is the root of each patch
-#
-#
-## Dialog Panel Types
-#----------------------------
-#   global (only one):   find, sendmessage, prefs, helpbrowser
-#   per-canvas:          font, canvas properties (created with a message from pd)
-#   per object:          gatom, iemgui, array, data structures (created with a message from pd)
-#
-#
-## Prefix Names for procs
-#----------------------------
-# pdtk_     pd -> pd-gui API (i.e. called from 'pd')
-# pdsend    pd-gui -> pd API (sends a message to 'pd' using pdsend)
-
-# ------------------------------------------------------------------------------
-# init functions
 
 # root paths to find Pd's files where they are installed
 proc set_pd_paths {} {
@@ -388,34 +348,9 @@ proc init_for_platform {} {
 # locale handling
 
 # official GNU gettext msgcat shortcut
-proc _ {s} {return [::msgcat::mc $s]}
+proc _ {s} {return $s}
 
 proc load_locale {} {
-    # on any UNIX-like environment, Tcl should automatically use LANG, LC_ALL,
-    # etc. otherwise we need to dig it up.  Mac OS X only uses LANG, etc. from
-    # the Terminal, and Windows doesn't have LANG, etc unless you manually set
-    # it up yourself.  Windows apps don't use the locale env vars usually.
-    if {$::tcl_platform(os) eq "Darwin" && ! [info exists ::env(LANG)]} {
-        # http://thread.gmane.org/gmane.comp.lang.tcl.mac/5215
-        # http://thread.gmane.org/gmane.comp.lang.tcl.mac/6433
-        if {![catch "exec defaults read com.apple.dock loc" lang]} {
-            ::msgcat::mclocale $lang
-        } elseif {![catch "exec defaults read NSGlobalDomain AppleLocale" lang]} {
-            ::msgcat::mclocale $lang
-        }
-    } elseif {$::tcl_platform(platform) eq "windows"} {
-        # using LANG on Windows is useful for easy debugging
-        if {[info exists ::env(LANG)] && $::env(LANG) ne "C" && $::env(LANG) ne ""} {  
-            ::msgcat::mclocale $::env(LANG)
-        } elseif {![catch {package require registry}]} {
-            ::msgcat::mclocale [string tolower \
-                                    [string range \
-                                         [registry get {HKEY_CURRENT_USER\Control Panel\International} sLanguage] 0 1] ]
-        }
-    }
-    
-    # ::msgcat::mcload [file join [file dirname [info script]] .. po]
-
     ##--moo: force default system and stdio encoding to UTF-8
     encoding system utf-8
     fconfigure stderr -encoding utf-8
