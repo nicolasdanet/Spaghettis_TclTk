@@ -98,34 +98,17 @@ namespace import ::dialog_startup::pdtk_startup_dialog
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-set PD_MAJOR_VERSION 0
-set PD_MINOR_VERSION 0
-set PD_BUGFIX_VERSION 0
-set PD_TEST_VERSION ""
-set done_init 0
+set done_init           0
+set windowingsystem     ""
+set loglevel            2
+set stderr              0
+set host                ""
+set port                0
+set font_family         "courier"
+set font_weight         "normal"
 
-set TCL_MAJOR_VERSION 0
-set TCL_MINOR_VERSION 0
-set TCL_BUGFIX_VERSION 0
-
-# for testing which platform we are running on ("aqua", "win32", or "x11")
-set windowingsystem ""
-
-# args about how much and where to log
-set loglevel 2
-set stderr 0
-
-# connection between 'pd' and 'pd-gui'
-set host ""
-set port 0
-
-# canvas font, received from pd in pdtk_pd_startup, set in s_main.c
-set font_family "courier"
-set font_weight "normal"
-# sizes of chars for each of the Pd fixed font sizes:
-#  fontsize  width(pixels)  height(pixels)
-set font_fixed_metrics {
-    8 6 11
+set font_fixed_metrics { 
+    8 6 11 
     9 6 12
     10 7 13
     12 9 16
@@ -438,10 +421,6 @@ proc fit_font_into_metrics {} {
 
 proc pdtk_pd_startup {major minor bugfix test
                       audio_apis midi_apis sys_font sys_fontweight} {
-    set ::PD_MAJOR_VERSION $major
-    set ::PD_MINOR_VERSION $minor
-    set ::PD_BUGFIX_VERSION $bugfix
-    set ::PD_TEST_VERSION $test
     set oldtclversion 0
     set ::audio_apilist $audio_apis
     set ::midi_apilist $midi_apis

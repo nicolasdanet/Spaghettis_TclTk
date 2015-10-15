@@ -205,7 +205,6 @@ proc ::pd_menucommands::set_filenewdir {mytoplevel} {
 
 # parse the textfile for the About Pd page
 proc ::pd_menucommands::menu_aboutpd {} {
-    set versionstring "Pd $::PD_MAJOR_VERSION.$::PD_MINOR_VERSION.$::PD_BUGFIX_VERSION$::PD_TEST_VERSION"
     
     if {[winfo exists .aboutpd]} {
         wm deiconify .aboutpd
