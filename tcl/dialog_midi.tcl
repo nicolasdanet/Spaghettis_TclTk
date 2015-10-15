@@ -73,7 +73,6 @@ proc midi_popup {name buttonname varname devlist} {
     if {[tk windowingsystem] eq "win32"} {
         $name.popup configure -font menuFont
     }
-#    puts stderr [concat $devlist ]
     for {set x 0} {$x<[llength $devlist]} {incr x} {
         $name.popup add command -label [lindex $devlist $x] \
             -command [list midi_popup_action \
