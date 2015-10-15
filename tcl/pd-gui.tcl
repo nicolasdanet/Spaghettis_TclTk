@@ -551,7 +551,7 @@ proc dde_open_handler {cmd} {
 proc check_for_running_instances { } {
     switch -- [tk windowingsystem] {
         "aqua" {
-            # handled by ::tk::mac::OpenDocument in apple_events.tcl
+            # handled by ::tk::mac::OpenDocument in pd_apple.tcl
         } "x11" {
             # http://wiki.tcl.tk/1558
             # TODO replace PUREDATA name with path so this code is a singleton

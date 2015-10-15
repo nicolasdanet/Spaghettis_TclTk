@@ -2,7 +2,7 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package ifneeded apple_events 0.1       [list source [file join $dir apple_events.tcl]]
+package ifneeded pd_apple 0.1           [list source [file join $dir pd_apple.tcl]]
 package ifneeded pd_bindings 0.1        [list source [file join $dir pd_bindings.tcl]]
 package ifneeded pd_connect 0.1         [list source [file join $dir pd_connect.tcl]]
 package ifneeded dialog_array 0.1       [list source [file join $dir dialog_array.tcl]]
