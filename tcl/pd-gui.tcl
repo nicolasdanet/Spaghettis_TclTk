@@ -124,16 +124,12 @@ set sys_guidir          {}
 set sys_searchpath      {}
 set sys_staticpath      {}
 
-# list of command line flags set at startup
-set startup_flags {}
-# list of libraries loaded on startup
-set startup_libraries {}
-# start dirs for new files and open panels
-set filenewdir [pwd]
-set fileopendir [pwd]
+set startup_flags       {}
+set startup_libraries   {}
 
+set file_newdir         [pwd]
+set file_opendir        [pwd]
 
-# lists of audio/midi devices and APIs for prefs dialogs
 set audio_apilist {}
 set audio_indevlist {}
 set audio_outdevlist {}
@@ -604,8 +600,8 @@ proc main {argc argv} {
         exec -- $pd_exec -guiport $::port &
         if {[tk windowingsystem] eq "aqua"} {
             # on Aqua, if 'pd-gui' first, then initial dir is home
-            set ::filenewdir $::env(HOME)
-            set ::fileopendir $::env(HOME)
+            set ::file_newdir $::env(HOME)
+            set ::file_opendir $::env(HOME)
         }
     }
     ::pdwindow::verbose 0 "------------------ done with main ----------------------\n"
