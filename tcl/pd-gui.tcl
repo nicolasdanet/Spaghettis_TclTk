@@ -100,7 +100,6 @@ namespace import ::dialog_startup::pdtk_startup_dialog
 
 set initialized         0
 
-set loglevel            2
 set stderr              0
 set host                ""
 set port                0

@@ -88,9 +88,8 @@ proc ::pdwindow::filter_buffer_to_text {args} {
     .pdwindow.text.internal delete 0.0 end
     set i 0
     foreach {object_id level message} $logbuffer {
-        if { $level <= $::loglevel || $maxloglevel == $::loglevel} {
-            insert_log_line $object_id $level $message
-        }
+        insert_log_line $object_id $level $message
+
         # this could take a while, so update the GUI every 10000 lines
         if { [expr $i % 10000] == 0} {update idletasks}
         incr i
@@ -115,8 +114,7 @@ proc ::pdwindow::logpost {object_id level message} {
     variable lastlevel $level
 
     buffer_message $object_id $level $message
-    if {[llength [info commands .pdwindow.text.internal]] && 
-        ($level <= $::loglevel || $maxloglevel == $::loglevel)} {
+    if {[llength [info commands .pdwindow.text.internal]]} {
         # cancel any pending move of the scrollbar, and schedule it
         # after writing a line. This way the scrollbar is only moved once
         # when the inserting has finished, greatly speeding things up
@@ -364,27 +362,6 @@ proc ::pdwindow::create_window {} {
     pack .pdwindow.header.ioframe.iostate .pdwindow.header.ioframe.dio \
         -side top
 
-    label .pdwindow.header.loglabel -text [_ "Log:"] -anchor e \
-        -background lightgray
-    pack .pdwindow.header.loglabel -side left
-
-    set loglevels {0 1 2 3 4}
-    lappend logmenuitems "0 [_ fatal]"
-    lappend logmenuitems "1 [_ error]"
-    lappend logmenuitems "2 [_ normal]"
-    lappend logmenuitems "3 [_ debug]"
-    lappend logmenuitems "4 [_ all]"
-    set logmenu \
-        [eval tk_optionMenu .pdwindow.header.logmenu ::loglevel $loglevels]
-    .pdwindow.header.logmenu configure -background lightgray
-    foreach i $loglevels {
-        $logmenu entryconfigure $i -label [lindex $logmenuitems $i]
-    }
-    trace add variable ::loglevel write ::pdwindow::filter_buffer_to_text
-
-    # TODO figure out how to make the menu traversable with the keyboard
-    #.pdwindow.header.logmenu configure -takefocus 1
-    pack .pdwindow.header.logmenu -side left
     frame .pdwindow.tcl -borderwidth 0
     pack .pdwindow.tcl -side bottom -fill x
 # TODO this should use the pd_font_$size created in pd-gui.tcl    
