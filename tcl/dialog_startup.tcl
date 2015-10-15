@@ -94,7 +94,7 @@ proc ::dialog_startup::create_dialog {mytoplevel} {
 
     frame $mytoplevel.defeatrtframe
     pack $mytoplevel.defeatrtframe -side bottom -fill x -pady 2m
-    if {$::windowingsystem ne "win32"} {
+    if {[tk windowingsystem] ne "win32"} {
         checkbutton $mytoplevel.defeatrtframe.defeatrt -anchor w \
             -text [_ "Defeat real-time scheduling"] \
             -variable ::dialog_startup::defeatrt_button

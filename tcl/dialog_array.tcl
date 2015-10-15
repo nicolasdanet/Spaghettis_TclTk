@@ -81,7 +81,7 @@ proc ::dialog_array::pdtk_array_listview_new {id arrayName page} {
     bind $windowName.lb <Double-ButtonPress-1> \
         "::dialog_array::listview_edit $arrayName $page $font"
     # handle copy/paste
-    switch -- $::windowingsystem {
+    switch -- [tk windowingsystem] {
         "x11" {selection handle $windowName.lb \
                    "::dialog_array::listview_lbselection $arrayName"}
         "win32" {bind $windowName.lb <ButtonPress-3> \
@@ -324,7 +324,7 @@ proc ::dialog_array::create_dialog {mytoplevel newone} {
     button $mytoplevel.buttonframe.cancel -text [_ "Cancel"] \
         -command "::dialog_array::cancel $mytoplevel"
     pack $mytoplevel.buttonframe.cancel -side left -expand 1 -fill x -padx 10
-    if {$newone == 0 && $::windowingsystem ne "aqua"} {
+    if {$newone == 0 && [tk windowingsystem] ne "aqua"} {
         button $mytoplevel.buttonframe.apply -text [_ "Apply"] \
             -command "::dialog_array::apply $mytoplevel"
         pack $mytoplevel.buttonframe.apply -side left -expand 1 -fill x -padx 10

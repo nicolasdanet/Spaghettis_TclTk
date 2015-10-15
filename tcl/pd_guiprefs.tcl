@@ -33,14 +33,14 @@ set ::recentfiles_domain ""
 # init preferences
 #
 proc ::pd_guiprefs::init {} {
-    switch -- $::windowingsystem {
+    switch -- [tk windowingsystem] {
         "aqua"  { init_aqua }
         "win32" { init_win }
         "x11"   { init_x11 }
     }
     # assign gui preferences
     # osx special case for arrays
-    set arr [expr { $::windowingsystem eq "aqua" }]
+    set arr [expr { [tk windowingsystem] eq "aqua" }]
     set ::recentfiles_list ""
     catch {set ::recentfiles_list [get_config $::recentfiles_domain \
         $::recentfiles_key $arr]}
@@ -94,7 +94,7 @@ proc ::pd_guiprefs::update_recentfiles {afile} {
 # get configs from a file or the registry
 #
 proc ::pd_guiprefs::get_config {adomain {akey} {arr}} {
-    switch -- $::windowingsystem {
+    switch -- [tk windowingsystem] {
         "aqua"  { set conf [get_config_aqua $adomain $akey $arr] }
         "win32" { set conf [get_config_win $adomain $akey $arr] }
         "x11"   { set conf [get_config_x11 $adomain $akey $arr] }
@@ -107,7 +107,7 @@ proc ::pd_guiprefs::get_config {adomain {akey} {arr}} {
 # $arr is true if the data needs to be written in an array
 #
 proc ::pd_guiprefs::write_config {data {adomain} {akey} {arr false}} {
-    switch -- $::windowingsystem {
+    switch -- [tk windowingsystem] {
         "aqua"  { write_config_aqua $data $adomain $akey $arr }
         "win32" { write_config_win $data $adomain $akey $arr }
         "x11"   { write_config_x11 $data $adomain $akey }

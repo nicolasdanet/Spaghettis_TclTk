@@ -101,7 +101,7 @@ proc pdtk_canvas_new {mytoplevel width height geometry editable} {
 
     # for some crazy reason, win32 mousewheel scrolling is in units of
     # 120, and this forces Tk to interpret 120 to mean 1 scroll unit
-    if {$::windowingsystem eq "win32"} {
+    if {[tk windowingsystem] eq "win32"} {
         $tkcanvas configure -xscrollincrement 1 -yscrollincrement 1
     }
 
@@ -377,7 +377,7 @@ proc ::pdtk_canvas::pdtk_canvas_setparents {mytoplevel args} {
 proc ::pdtk_canvas::pdtk_canvas_reflecttitle {mytoplevel \
                                               path name arguments dirty} {
     set ::windowname($mytoplevel) $name ;# TODO add path to this
-    if {$::windowingsystem eq "aqua"} {
+    if {[tk windowingsystem] eq "aqua"} {
         wm attributes $mytoplevel -modified $dirty
         if {[file exists "$path/$name"]} {
             # for some reason -titlepath can still fail so just catch it 

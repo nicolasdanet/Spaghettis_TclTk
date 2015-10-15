@@ -71,7 +71,7 @@ proc audio_popup_action {buttonname varname devlist index} {
 proc audio_popup {name buttonname varname devlist} {
     if [winfo exists $name.popup] {destroy $name.popup}
     menu $name.popup -tearoff false
-    if {$::windowingsystem eq "win32"} {
+    if {[tk windowingsystem] eq "win32"} {
         $name.popup configure -font menuFont
     }
     for {set x 0} {$x<[llength $devlist]} {incr x} {

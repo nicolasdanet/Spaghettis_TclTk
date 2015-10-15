@@ -89,7 +89,7 @@ proc ::pd_bindings::global_bindings {} {
     bind all <$::modifier-Shift-Key-Z> {menu_redo}
 
     # OS-specific bindings
-    if {$::windowingsystem eq "aqua"} {
+    if {[tk windowingsystem] eq "aqua"} {
         # Cmd-m = Minimize and Cmd-t = Font on Mac OS X for all apps
         bind all <$::modifier-Key-m>       {menu_minimize %W}
         bind all <$::modifier-Key-t>       {menu_font_dialog}
@@ -142,7 +142,7 @@ proc ::pd_bindings::patch_bindings {mytoplevel} {
     bind $tkcanvas <$::modifier-ButtonPress-1>  "pdtk_canvas_mouse %W %x %y %b 2"
     bind $tkcanvas <Shift-ButtonPress-1>        "pdtk_canvas_mouse %W %x %y %b 1"
 
-    if {$::windowingsystem eq "x11"} {
+    if {[tk windowingsystem] eq "x11"} {
         # from http://wiki.tcl.tk/3893
         bind all <Button-4> \
             {event generate [focus -displayof %W] <MouseWheel> -delta  1}
@@ -157,7 +157,7 @@ proc ::pd_bindings::patch_bindings {mytoplevel} {
     bind $tkcanvas <Shift-MouseWheel> {::pdtk_canvas::scroll %W x %D}
 
     # "right clicks" are defined differently on each platform
-    switch -- $::windowingsystem { 
+    switch -- [tk windowingsystem] { 
         "aqua" {
             bind $tkcanvas <ButtonPress-2>      "pdtk_canvas_rightclick %W %x %y %b"
             # on Mac OS X, make a rightclick with Ctrl-click for 1 button mice

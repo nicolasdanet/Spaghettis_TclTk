@@ -36,7 +36,7 @@ namespace eval ::pd_menus:: {
 proc ::pd_menus::create_menubar {} {
     variable accelerator
     variable menubar
-    if {$::windowingsystem eq "aqua"} {
+    if {[tk windowingsystem] eq "aqua"} {
         set accelerator "Cmd"
     } else {
         set accelerator "Ctrl"
@@ -49,8 +49,8 @@ proc ::pd_menus::create_menubar {} {
             -menu $menubar.$mymenu
         [format build_%s_menu $mymenu] $menubar.$mymenu
     }
-    if {$::windowingsystem eq "aqua"} {create_apple_menu $menubar}
-    if {$::windowingsystem eq "win32"} {create_system_menu $menubar}
+    if {[tk windowingsystem] eq "aqua"} {create_apple_menu $menubar}
+    if {[tk windowingsystem] eq "win32"} {create_system_menu $menubar}
     . configure -menu $menubar
 }
 
@@ -130,7 +130,7 @@ proc ::pd_menus::configure_for_dialog {mytoplevel} {
 # menu building functions
 proc ::pd_menus::build_file_menu {mymenu} {
     # run the platform-specific build_file_menu_* procs first, and config them
-    [format build_file_menu_%s $::windowingsystem] $mymenu
+    [format build_file_menu_%s [tk windowingsystem]] $mymenu
     $mymenu entryconfigure [_ "New"]        -command {menu_new}
     $mymenu entryconfigure [_ "Open"]       -command {menu_open}
     $mymenu entryconfigure [_ "Save"]       -command {menu_send $::focused_window menusave}
@@ -163,7 +163,7 @@ proc ::pd_menus::build_edit_menu {mymenu} {
     $mymenu add command -label [_ "Select All"] -accelerator "$accelerator+A" \
         -command {menu_send $::focused_window selectall}
     $mymenu add  separator
-    if {$::windowingsystem eq "aqua"} {
+    if {[tk windowingsystem] eq "aqua"} {
 #        $mymenu add command -label [_ "Text Editor"] \
 #            -command {menu_texteditor}
         $mymenu add command -label [_ "Font"]  -accelerator "$accelerator+T" \
@@ -183,7 +183,7 @@ proc ::pd_menus::build_edit_menu {mymenu} {
     $mymenu add check -label [_ "Edit Mode"] -accelerator "$accelerator+E" \
         -variable ::editmode_button \
         -command {menu_editmode $::editmode_button}
-    if {$::windowingsystem ne "aqua"} {
+    if {[tk windowingsystem] ne "aqua"} {
         $mymenu add  separator
         create_preferences_menu $mymenu.preferences
         $mymenu add cascade -label [_ "Preferences"] -menu $mymenu.preferences
@@ -273,7 +273,7 @@ proc ::pd_menus::build_media_menu {mymenu} {
 
 proc ::pd_menus::build_window_menu {mymenu} {
     variable accelerator
-    if {$::windowingsystem eq "aqua"} {
+    if {[tk windowingsystem] eq "aqua"} {
         $mymenu add command -label [_ "Minimize"] -accelerator "$accelerator+M"\
             -command {menu_minimize $::focused_window}
         $mymenu add command -label [_ "Zoom"] \
@@ -298,7 +298,7 @@ proc ::pd_menus::build_window_menu {mymenu} {
 }
 
 proc ::pd_menus::build_help_menu {mymenu} {
-    if {$::windowingsystem ne "aqua"} {
+    if {[tk windowingsystem] ne "aqua"} {
         $mymenu add command -label [_ "About Pd"] -command {menu_aboutpd} 
     }
     $mymenu add command -label [_ "Browser..."] \
@@ -339,7 +339,7 @@ proc ::pd_menus::update_undo_on_menu {mytoplevel} {
 # update the menu entries for opening recent files (write arg should always be true except the first time when pd is opened)
 proc ::pd_menus::update_recentfiles_menu {{write true}} {
     variable menubar
-    switch -- $::windowingsystem {
+    switch -- [tk windowingsystem] {
         "aqua"  {::pd_menus::update_openrecent_menu_aqua .openrecent $write}
         "win32" {::pd_menus::update_recentfiles_on_menu $menubar.file $write}
         "x11"   {::pd_menus::update_recentfiles_on_menu $menubar.file $write}

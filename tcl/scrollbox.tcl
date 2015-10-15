@@ -158,7 +158,7 @@ proc ::scrollbox::make { mytoplevel listdata add_method edit_method } {
 
     # Standard listbox key/mouse bindings
     event add <<Delete>> <Delete>
-    if { $::windowingsystem eq "aqua" } { event add <<Delete>> <BackSpace> }
+    if { [tk windowingsystem] eq "aqua" } { event add <<Delete>> <BackSpace> }
 
     bind $mytoplevel.listbox.box <ButtonPress> "::scrollbox::click $mytoplevel %x %y"
     bind $mytoplevel.listbox.box <Double-1> "::scrollbox::dbl_click $mytoplevel $edit_method $add_method %x %y"

@@ -35,7 +35,7 @@ proc ::helpbrowser::open_helpbrowser {} {
         wm title .help_browser [_ "Help Browser"]
         bind .help_browser <$::modifier-Key-w> "wm withdraw .help_browser"
 
-        if {$::windowingsystem eq "aqua"} {
+        if {[tk windowingsystem] eq "aqua"} {
             .help_browser configure -menu $::dialog_menubar
         }
 

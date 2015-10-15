@@ -756,7 +756,7 @@ proc ::dialog_iemgui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
     button $mytoplevel.cao.cancel -text [_ "Cancel"] \
         -command "::dialog_iemgui::cancel $mytoplevel"
     pack $mytoplevel.cao.cancel -side left -padx 10 -expand 1 -fill x
-    if {$::windowingsystem ne "aqua"} {
+    if {[tk windowingsystem] ne "aqua"} {
         button $mytoplevel.cao.apply -text [_ "Apply"] \
             -command "::dialog_iemgui::apply $mytoplevel"
         pack $mytoplevel.cao.apply -side left -padx 10 -expand 1 -fill x

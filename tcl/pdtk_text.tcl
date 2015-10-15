@@ -22,7 +22,7 @@ proc pdtk_text_new {tkcanvas tags x y text font_size color} {
     # select all
     $tkcanvas bind $mytag <Triple-ButtonRelease-1>  \
         "pdtk_text_selectall $tkcanvas $mytag"
-    if {$::windowingsystem eq "aqua"} { # emacs bindings for Mac OS X
+    if {[tk windowingsystem] eq "aqua"} { # emacs bindings for Mac OS X
         $tkcanvas bind $mytag <Control-a> "$tkcanvas icursor $mytag 0"
         $tkcanvas bind $mytag <Control-e> "$tkcanvas icursor $mytag end"
     }

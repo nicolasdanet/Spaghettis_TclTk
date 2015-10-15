@@ -216,7 +216,7 @@ proc ::pdwindow::pdwindow_bindings {} {
     bind .pdwindow <$::modifier-Key-p> "bell; break"
 
     # ways of hiding/closing the Pd window
-    if {$::windowingsystem eq "aqua"} {
+    if {[tk windowingsystem] eq "aqua"} {
         # on Mac OS X, you can close the Pd window, since the menubar is there
         bind .pdwindow <$::modifier-Key-w>   "wm withdraw .pdwindow"
         wm protocol .pdwindow WM_DELETE_WINDOW "wm withdraw .pdwindow"
@@ -324,7 +324,7 @@ proc ::pdwindow::create_window {} {
     toplevel .pdwindow -class PdWindow
     wm title .pdwindow [_ "Pd"]
     set ::windowname(.pdwindow) [_ "Pd"]
-    if {$::windowingsystem eq "x11"} {
+    if {[tk windowingsystem] eq "x11"} {
         wm minsize .pdwindow 400 75
     } else {
         wm minsize .pdwindow 400 51

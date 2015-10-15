@@ -100,7 +100,6 @@ namespace import ::dialog_startup::pdtk_startup_dialog
 
 set initialized         0
 
-set windowingsystem     ""
 set loglevel            2
 set stderr              0
 set host                ""
@@ -212,7 +211,7 @@ proc init_for_platform {} {
     # deleterious effects on dialog window font sizes.
     # tk scaling 1
 
-    switch -- $::windowingsystem {
+    switch -- [tk windowingsystem] {
         "x11" {
             set ::modifier "Control"
             option add *PatchWindow*Canvas.background "white" startupFile
@@ -437,7 +436,7 @@ proc pdtk_pd_startup {major minor bugfix test
 proc pdtk_check {mytoplevel message reply_to_pd default} {
     wm deiconify $mytoplevel
     raise $mytoplevel
-    if {$::windowingsystem eq "win32"} {
+    if {[tk windowingsystem] eq "win32"} {
         set answer [tk_messageBox -message [_ $message] -type yesno -default $default \
                         -icon question -title [wm title $mytoplevel]]
     } else {
@@ -553,7 +552,7 @@ proc dde_open_handler {cmd} {
 }
 
 proc check_for_running_instances { } {
-    switch -- $::windowingsystem {
+    switch -- [tk windowingsystem] {
         "aqua" {
             # handled by ::tk::mac::OpenDocument in apple_events.tcl
         } "x11" {
@@ -590,8 +589,6 @@ proc check_for_running_instances { } {
 # ------------------------------------------------------------------------------
 # main
 proc main {argc argv} {
-    # TODO Tcl/Tk 8.3 doesn't have [tk windowingsystem]
-    set ::windowingsystem [tk windowingsystem]
     tk appname pd-gui
     load_locale
     parse_args $argc $argv
@@ -608,7 +605,7 @@ proc main {argc argv} {
         set ::port [::pd_connect::create_socket]
         set pd_exec [file join [file dirname [info script]] ../bin/pd]
         exec -- $pd_exec -guiport $::port &
-        if {$::windowingsystem eq "aqua"} {
+        if {[tk windowingsystem] eq "aqua"} {
             # on Aqua, if 'pd-gui' first, then initial dir is home
             set ::filenewdir $::env(HOME)
             set ::fileopendir $::env(HOME)

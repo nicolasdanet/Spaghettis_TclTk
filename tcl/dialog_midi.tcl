@@ -70,7 +70,7 @@ proc midi_popup_action {buttonname varname devlist index} {
 proc midi_popup {name buttonname varname devlist} {
     if [winfo exists $name.popup] {destroy $name.popup}
     menu $name.popup -tearoff false
-    if {$::windowingsystem eq "win32"} {
+    if {[tk windowingsystem] eq "win32"} {
         $name.popup configure -font menuFont
     }
 #    puts stderr [concat $devlist ]
@@ -388,7 +388,7 @@ proc ::dialog_midi::pdtk_alsa_midi_dialog {id indev1 indev2 indev3 indev4 \
     
     toplevel $id
     wm title $id [_ "ALSA MIDI Settings"]
-    if {$::windowingsystem eq "aqua"} {$id configure -menu .menubar}
+    if {[tk windowingsystem] eq "aqua"} {$id configure -menu .menubar}
     ::pd_bindings::dialog_bindings $id "midi"
 
     frame $id.buttonframe

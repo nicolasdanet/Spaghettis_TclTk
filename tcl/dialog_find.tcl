@@ -54,7 +54,7 @@ proc ::dialog_find::ok {mytoplevel} {
 
     set findstring [.find.entry get]
     if {$findstring eq ""} {
-        if {$::windowingsystem eq "aqua"} {bell}
+        if {[tk windowingsystem] eq "aqua"} {bell}
         return
     }
     if {$find_in_window eq ".pdwindow"} {
@@ -86,7 +86,7 @@ proc ::dialog_find::ok {mytoplevel} {
         }
         set window_changed 0
     }
-    if {$::windowingsystem eq "aqua"} {
+    if {[tk windowingsystem] eq "aqua"} {
         # (Mac OS X) hide panel after success, but keep it if unsuccessful by
         # having the couldnotfind proc reopen it
         cancel $mytoplevel
@@ -128,7 +128,7 @@ proc ::dialog_find::set_window_to_search {mytoplevel} {
 
 proc ::dialog_find::pdtk_showfindresult {mytoplevel success which total} {
     if {$success eq 0} {
-        if {$::windowingsystem eq "aqua"} {bell}
+        if {[tk windowingsystem] eq "aqua"} {bell}
         .find.searchin configure -text \
         [format [_ "Couldn't find '%s' in %s"] \
             [.find.entry get] [lookup_windowname $mytoplevel] ]
@@ -138,7 +138,7 @@ proc ::dialog_find::pdtk_showfindresult {mytoplevel success which total} {
             $which $total \
             [.find.entry get] [lookup_windowname $mytoplevel] ]
     }
-    if {$::windowingsystem eq "aqua"} {open_find_dialog $mytoplevel}
+    if {[tk windowingsystem] eq "aqua"} {open_find_dialog $mytoplevel}
 }
 
 # the find panel is opened from the menu and key bindings
@@ -189,7 +189,7 @@ proc ::dialog_find::create_dialog {mytoplevel} {
     
     frame .find.buttonframe -background yellow
     pack .find.buttonframe -side right -pady 3
-    if {$::windowingsystem eq "win32"} {
+    if {[tk windowingsystem] eq "win32"} {
         button .find.cancel -text [_ "Cancel"] -default normal -width 9 \
             -command "::dialog_find::cancel $mytoplevel"
         pack .find.cancel -side right -padx 6 -pady 3
@@ -197,13 +197,13 @@ proc ::dialog_find::create_dialog {mytoplevel} {
     button .find.button -text [_ "Find"] -default active -width 9 \
         -command "::dialog_find::ok $mytoplevel"
     pack .find.button -side right -padx 6 -pady 3
-    if {$::windowingsystem eq "x11"} {
+    if {[tk windowingsystem] eq "x11"} {
         button .find.close -text [_ "Close"] -default normal -width 9 \
             -command "::dialog_find::cancel $mytoplevel"
         pack .find.close -side right -padx 6 -pady 3
     }
     # on Mac OS X, the buttons shouldn't get Tab/keyboard focus
-    if {$::windowingsystem eq "aqua"} {
+    if {[tk windowingsystem] eq "aqua"} {
         .find.wholeword configure -takefocus 0
         .find.button configure -takefocus 0
     }
