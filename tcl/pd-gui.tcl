@@ -122,57 +122,44 @@ set midi_api            {}
 set midi_indev          {}
 set midi_outdev         {}
 
-set pd_midi 0
-set pd_audio 0
+set pd_midi             0
+set pd_audio            0
 
-# current state of the DSP
-set dsp 0
-# state of the peak meters in the Pd window
-set meters 0
-# the toplevel window that currently is on top and has focus
-set focused_window .
-# store that last 5 files that were opened
-set recentfiles_list {}
-set total_recentfiles 5
-# keep track of the location of popup menu for PatchWindows, in canvas coords
-set popup_xcanvas 0
-set popup_ycanvas 0
-# modifier for key commands (Ctrl/Control on most platforms, Cmd/Mod1 on MacOSX)
-set modifier ""
-# current state of the Edit Mode menu item
-set editmode_button 0
+set dsp                 0
+set focused_window      .
 
+set recentfiles_list    {}
+set total_recentfiles   5
 
-## per toplevel/patch data
-# window location modifiers
-set menubarsize 0           ;# Mac OS X and other platforms have a menubar on top
-set windowframex 0      ;# different platforms have different window frames
-set windowframey 0      ;# different platforms have different window frames
-# patch properties
-array set editmode {}   ;# store editmode for each open patch canvas
-array set editingtext {};# if an obj, msg, or comment is being edited, per patch
-array set loaded {}     ;# store whether a patch has completed loading
-array set xscrollable {};# keep track of whether the scrollbars are present
-array set yscrollable {}
-# patch window tree, these might contain patch IDs without a mapped toplevel 
-array set windowname {}    ;# window names based on mytoplevel IDs
-array set childwindows {}  ;# all child windows based on mytoplevel IDs
-array set parentwindows {} ;# topmost parent window ID based on mytoplevel IDs
+set popup_xcanvas       0
+set popup_ycanvas       0
 
-# variables for holding the menubar to allow for configuration by plugins
-set ::pdwindow_menubar ".menubar"
-set ::patch_menubar   ".menubar"
-set ::dialog_menubar   ""
+set modifier            ""
+set editmode_button     0
 
-# minimum size of the canvas window of a patch
-set canvas_minwidth 50
-set canvas_minheight 20
+set menubarsize         0
+set windowframex        0
+set windowframey        0
 
-# undo states
-set ::undo_action "no"
-set ::redo_action "no"
-set ::undo_toplevel "."
+array set editmode          {}
+array set editingtext       {}
+array set loaded            {}
+array set xscrollable       {}
+array set yscrollable       {}
 
+array set windowname        {}
+array set childwindows      {}
+array set parentwindows     {}
+
+set ::patch_menubar         ".menubar"
+set ::dialog_menubar        ""
+
+set canvas_minwidth         50
+set canvas_minheight        20
+
+set ::undo_action           "no"
+set ::redo_action           "no"
+set ::undo_toplevel         "."
 
 namespace eval ::pdgui:: {
     variable scriptname [ file normalize [ info script ] ]
