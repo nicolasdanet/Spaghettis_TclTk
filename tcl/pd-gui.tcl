@@ -64,32 +64,20 @@ namespace import ::pd_connect::pdsend
 
 # Import functions called by the pd executable into the global namespace. 
 
-namespace import ::dialog_array::pdtk_array_dialog
-namespace import ::dialog_array::pdtk_array_listview_new
-namespace import ::dialog_array::pdtk_array_listview_fillpage
-namespace import ::dialog_array::pdtk_array_listview_setpage
-namespace import ::dialog_array::pdtk_array_listview_closeWindow
-namespace import ::dialog_audio::pdtk_audio_dialog
-namespace import ::dialog_canvas::pdtk_canvas_dialog
-namespace import ::dialog_data::pdtk_data_dialog
-namespace import ::dialog_find::pdtk_showfindresult
-namespace import ::dialog_font::pdtk_canvas_dofont
-namespace import ::dialog_gatom::pdtk_gatom_dialog
-namespace import ::dialog_gui::pdtk_iemgui_dialog
-namespace import ::dialog_midi::pdtk_midi_dialog
-namespace import ::dialog_midi::pdtk_alsa_midi_dialog
-namespace import ::dialog_path::pdtk_path_dialog
-namespace import ::dialog_startup::pdtk_startup_dialog
-namespace import ::pd_console::pdtk_pd_dio
-namespace import ::pd_console::pdtk_pd_audio
-namespace import ::pd_console::pdtk_pd_dsp
-namespace import ::pd_console::pdtk_pd_meters
-namespace import ::pdtk_canvas::pdtk_canvas_popup
-namespace import ::pdtk_canvas::pdtk_canvas_editmode
-namespace import ::pdtk_canvas::pdtk_canvas_getscroll
-namespace import ::pdtk_canvas::pdtk_canvas_setparents
-namespace import ::pdtk_canvas::pdtk_canvas_reflecttitle
-namespace import ::pdtk_canvas::pdtk_canvas_menuclose
+namespace import ::dialog_array::pdtk_*
+namespace import ::dialog_audio::pdtk_*
+namespace import ::dialog_canvas::pdtk_*
+namespace import ::dialog_data::pdtk_*
+namespace import ::dialog_find::pdtk_*
+namespace import ::dialog_font::pdtk_*
+namespace import ::dialog_gatom::pdtk_*
+namespace import ::dialog_gui::pdtk_*
+namespace import ::dialog_midi::pdtk_*
+namespace import ::dialog_midi::pdtk_*
+namespace import ::dialog_path::pdtk_*
+namespace import ::dialog_startup::pdtk_*
+namespace import ::pd_console::pdtk_*
+namespace import ::pdtk_canvas::pdtk_*
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
