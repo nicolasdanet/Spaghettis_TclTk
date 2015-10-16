@@ -156,7 +156,7 @@ proc pdtk_canvas_saveas {name initialfile initialdir destroyflag} {
  $destroyflag"
     set ::file_new $dirname
     # add to recentfiles
-    ::pd_guiprefs::update_recentfiles $filename
+    ::pd_preferences::update_recentfiles $filename
 }
 
 ##### ask user Save? Discard? Cancel?, and if so, send a message on to Pd ######

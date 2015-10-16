@@ -19,7 +19,7 @@ package ifneeded pd_bindings 0.1        [list source [file join $dir pd_bindings
 package ifneeded pd_commands 0.1        [list source [file join $dir pd_commands.tcl]]
 package ifneeded pd_connect 0.1         [list source [file join $dir pd_connect.tcl]]
 package ifneeded pd_console 0.1         [list source [file join $dir pd_console.tcl]]
-package ifneeded pd_guiprefs 0.1        [list source [file join $dir pd_guiprefs.tcl]]
+package ifneeded pd_preferences 0.1     [list source [file join $dir pd_preferences.tcl]]
 package ifneeded pd_menus 0.1           [list source [file join $dir pd_menus.tcl]]
 package ifneeded pd_miscellaneous 0.1   [list source [file join $dir pd_miscellaneous.tcl]]
 package ifneeded pd_parser 0.1          [list source [file join $dir pd_parser.tcl]]

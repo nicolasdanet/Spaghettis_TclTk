@@ -43,7 +43,7 @@ package require pd_bindings
 package require pd_commands
 package require pd_connect
 package require pd_console
-package require pd_guiprefs
+package require pd_preferences
 package require pd_menus
 package require pd_miscellaneous
 package require pd_parser
@@ -392,7 +392,7 @@ proc pdtk_pd_startup {major minor bugfix test
     if {$::tcl_version >= 8.5} {find_default_font}
     set_base_font $sys_font $sys_fontweight
     fit_font_into_metrics
-    ::pd_guiprefs::init
+    ::pd_preferences::init
     pdsend "pd init [enquote_path [pwd]] $oldtclversion $::font_measured"
     ::pd_bindings::class_bindings
     ::pd_bindings::global_bindings

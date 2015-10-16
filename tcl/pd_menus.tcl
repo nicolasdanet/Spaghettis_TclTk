@@ -348,7 +348,7 @@ proc ::pd_menus::clear_recentfiles_menu {} {
     set ::recentfiles_list {}
     ::pd_menus::update_recentfiles_menu
     # empty recentfiles in preferences (write empty array)
-    ::pd_guiprefs::write_recentfiles
+    ::pd_preferences::write_recentfiles
 }
 
 proc ::pd_menus::update_openrecent_menu_aqua {mymenu {write}} {
@@ -365,7 +365,7 @@ proc ::pd_menus::update_openrecent_menu_aqua {mymenu {write}} {
     $mymenu add command -label [_ "Clear Menu"] \
         -command "::pd_menus::clear_recentfiles_menu"
     # write to config file
-    if {$write == true} { ::pd_guiprefs::write_recentfiles }
+    if {$write == true} { ::pd_preferences::write_recentfiles }
 }
 
 # ------------------------------------------------------------------------------
@@ -395,7 +395,7 @@ proc ::pd_menus::update_recentfiles_on_menu {mymenu {write}} {
         -label [file tail $filename] -command "open_file {$filename}"
 
     # write to config file
-    if {$write == true} { ::pd_guiprefs::write_recentfiles }
+    if {$write == true} { ::pd_preferences::write_recentfiles }
 }
 
 # ------------------------------------------------------------------------------

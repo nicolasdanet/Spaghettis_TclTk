@@ -20,8 +20,8 @@ proc open_file {filename} {
     } then {
         ::pdtk_canvas::started_loading_file [format "%s/%s" $basename $filename]
         pdsend "pd open [enquote_path $basename] [enquote_path $directory]"
-        # now this is done in pd_guiprefs
-        ::pd_guiprefs::update_recentfiles $filename
+        # now this is done in pd_preferences
+        ::pd_preferences::update_recentfiles $filename
     } {
         ::pd_console::post [format [_ "Ignoring '%s': doesn't look like a Pd-file"] $filename]
     }
