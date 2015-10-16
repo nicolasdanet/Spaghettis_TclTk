@@ -31,7 +31,7 @@ set auto_path [linsert $auto_path 0 [file dirname [info script]]]
 package require pd_connect
 package require pd_menus
 package require pd_bindings
-package require pdwindow
+package require pd_console
 package require dialog_array
 package require dialog_audio
 package require dialog_canvas
@@ -43,12 +43,12 @@ package require dialog_message
 package require dialog_midi
 package require dialog_path
 package require dialog_startup
-package require pd_menucommands
-package require opt_parser
+package require pd_commands
+package require pd_parser
 package require pdtk_canvas
 package require pdtk_text
 package require pdtk_textwindow
-package require wheredoesthisgo
+package require pd_miscellaneous
 package require pd_guiprefs
 
 # ------------------------------------------------------------------------------------------------------------
@@ -56,16 +56,16 @@ package require pd_guiprefs
 
 # Import functions into the global namespace.
 
-namespace import ::pd_menucommands::* 
+namespace import ::pd_commands::* 
 namespace import ::pd_connect::pdsend
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace import ::pdwindow::pdtk_pd_dio
-namespace import ::pdwindow::pdtk_pd_audio
-namespace import ::pdwindow::pdtk_pd_dsp
-namespace import ::pdwindow::pdtk_pd_meters
+namespace import ::pd_console::pdtk_pd_dio
+namespace import ::pd_console::pdtk_pd_audio
+namespace import ::pd_console::pdtk_pd_dsp
+namespace import ::pd_console::pdtk_pd_meters
 namespace import ::pdtk_canvas::pdtk_canvas_popup
 namespace import ::pdtk_canvas::pdtk_canvas_editmode
 namespace import ::pdtk_canvas::pdtk_canvas_getscroll
@@ -98,8 +98,8 @@ namespace import ::dialog_startup::pdtk_startup_dialog
 # ------------------------------------------------------------------------------------------------------------
 
 set initialized         0
+set logged              0
 
-set stderr              0
 set host                ""
 set port                0
 
@@ -348,14 +348,14 @@ proc find_default_font {} {
             break
         }
     }
-    ::pdwindow::verbose 0 "Default font: $::font_family\n"
+    ::pd_console::verbose 0 "Default font: $::font_family\n"
 }
 
 proc set_base_font {family weight} {
     if {[lsearch -exact [font families] $family] > -1} {
         set ::font_family $family
     } else {
-        ::pdwindow::post [format \
+        ::pd_console::post [format \
             [_ "WARNING: Font family '%s' not found, using default (%s)\n"] \
                 $family $::font_family]
     }
@@ -363,7 +363,7 @@ proc set_base_font {family weight} {
         set ::font_weight $weight
         set using_defaults 0
     } else {
-        ::pdwindow::post [format \
+        ::pd_console::post [format \
             [_ "WARNING: Font weight '%s' not found, using default (%s)\n"] \
                 $weight $::font_weight]
     }
@@ -393,7 +393,7 @@ proc fit_font_into_metrics {} {
             "$::font_measured  $size\
                 [font measure $myfont M] [font metrics $myfont -linespace]"
         if {$giveup} {
-            ::pdwindow::post [format \
+            ::pd_console::post [format \
     [_ "WARNING: %s failed to find font size (%s) that fits into %sx%s!\n"]\
                [lindex [info level 0] 0] $size $width $height]
             continue
@@ -419,7 +419,7 @@ proc pdtk_pd_startup {major minor bugfix test
     ::pd_bindings::global_bindings
     ::pd_menus::create_menubar
     ::pdtk_canvas::create_popup
-    ::pdwindow::create_window
+    ::pd_console::create_window
     ::pd_menus::configure_for_pdwindow
     open_filestoopen
     set ::initialized 1
@@ -452,15 +452,12 @@ proc pdtk_plugin_dispatch { args } {
     }
 }
 
-# ------------------------------------------------------------------------------
-# parse command line args when Wish/pd-gui.tcl is started first
- 
 proc parse_args {argc argv} {
-    opt_parser::init {
-        {-stderr    set {::stderr}}
+    pd_parser::init {
+        {-stderr    set {::logged}}
         {-open      lappend {- ::filestoopen_list}}
     }
-    set unflagged_files [opt_parser::get_options $argv]
+    set unflagged_files [pd_parser::get_options $argv]
     # if we have a single arg that is not a file, its a port or host:port combo
     if {$argc == 1 && ! [file exists $argv]} {
         if { [string is int $argv] && $argv > 0} {
@@ -604,7 +601,7 @@ proc main {argc argv} {
             set ::file_opendir $::env(HOME)
         }
     }
-    ::pdwindow::verbose 0 "------------------ done with main ----------------------\n"
+    ::pd_console::verbose 0 "------------------ done with main ----------------------\n"
 }
 
 main $::argc $::argv

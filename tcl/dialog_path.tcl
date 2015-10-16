@@ -35,7 +35,7 @@ proc ::dialog_path::pdtk_path_dialog {mytoplevel extrapath verbose} {
 
 proc ::dialog_path::create_dialog {mytoplevel} {
 
-    scrollboxwindow::make $mytoplevel $::sys_searchpath \
+    pd_scrollboxwindow::make $mytoplevel $::sys_searchpath \
         dialog_path::add dialog_path::edit dialog_path::commit \
         [_ "Pd search path for objects, help, fonts, and other files"] \
         400 300

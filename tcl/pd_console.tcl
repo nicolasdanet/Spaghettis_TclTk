@@ -7,9 +7,9 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pdwindow 0.1
+package provide pd_console 0.1
 
-namespace eval ::pdwindow:: {
+namespace eval ::pd_console:: {
     variable logbuffer {}
     variable tclentry {}
     variable tclentry_history {"console show"}
@@ -29,7 +29,7 @@ namespace eval ::pdwindow:: {
 
 # TODO make the Pd window save its size and location between running
 
-proc ::pdwindow::set_layout {} {
+proc ::pd_console::set_layout {} {
     variable maxloglevel
     .pdwindow.text.internal tag configure log0 -foreground "#d00" -background "#ffe0e8"
     .pdwindow.text.internal tag configure log1 -foreground "#d00"
@@ -47,14 +47,14 @@ proc ::pdwindow::set_layout {} {
 
 
 # grab focus on part of the Pd window when Pd is busy
-proc ::pdwindow::busygrab {} {
+proc ::pd_console::busygrab {} {
     # set the mouse cursor to look busy and grab focus so it stays that way    
     .pdwindow.text configure -cursor watch
     grab set .pdwindow.text
 }
 
 # release focus on part of the Pd window when Pd is finished
-proc ::pdwindow::busyrelease {} {
+proc ::pd_console::busyrelease {} {
     .pdwindow.text configure -cursor xterm
     grab release .pdwindow.text
 }
@@ -62,27 +62,27 @@ proc ::pdwindow::busyrelease {} {
 # ------------------------------------------------------------------------------
 # pdtk functions for 'pd' to send data to the Pd window
 
-proc ::pdwindow::buffer_message {object_id level message} {
+proc ::pd_console::buffer_message {object_id level message} {
     variable logbuffer
     lappend logbuffer $object_id $level $message
 }
 
-proc ::pdwindow::insert_log_line {object_id level message} {
+proc ::pd_console::insert_log_line {object_id level message} {
     if {$object_id eq ""} {
         .pdwindow.text.internal insert end $message log$level
     } else {
         .pdwindow.text.internal insert end $message [list log$level obj$object_id]
         .pdwindow.text.internal tag bind obj$object_id <$::modifier-ButtonRelease-1> \
-            "::pdwindow::select_by_id $object_id; break"
+            "::pd_console::select_by_id $object_id; break"
         .pdwindow.text.internal tag bind obj$object_id <Key-Return> \
-            "::pdwindow::select_by_id $object_id; break"
+            "::pd_console::select_by_id $object_id; break"
         .pdwindow.text.internal tag bind obj$object_id <Key-KP_Enter> \
-            "::pdwindow::select_by_id $object_id; break"
+            "::pd_console::select_by_id $object_id; break"
     }
 }
 
 # this has 'args' to satisfy trace, but its not used
-proc ::pdwindow::filter_buffer_to_text {args} {
+proc ::pd_console::filter_buffer_to_text {args} {
     variable logbuffer
     variable maxloglevel
     .pdwindow.text.internal delete 0.0 end
@@ -95,10 +95,10 @@ proc ::pdwindow::filter_buffer_to_text {args} {
         incr i
     }
     .pdwindow.text.internal yview end
-    ::pdwindow::verbose 10 "The Pd window filtered $i lines\n"
+    ::pd_console::verbose 10 "The Pd window filtered $i lines\n"
 }
 
-proc ::pdwindow::select_by_id {args} {
+proc ::pd_console::select_by_id {args} {
     if [llength $args] { # Is $args empty?
         pdsend "pd findinstance $args"
     }
@@ -109,7 +109,7 @@ proc ::pdwindow::select_by_id {args} {
 # messages that are useful for debugging patches.  They are messages
 # that are meant for the Pd programmer to see so that they can get
 # information about the patches they are building
-proc ::pdwindow::logpost {object_id level message} {
+proc ::pd_console::logpost {object_id level message} {
     variable maxloglevel
     variable lastlevel $level
 
@@ -122,21 +122,21 @@ proc ::pdwindow::logpost {object_id level message} {
         insert_log_line $object_id $level $message
         after idle .pdwindow.text.internal yview end
     }
-    # -stderr only sets $::stderr if 'pd-gui' is started before 'pd'
-    if {$::stderr} {puts stderr $message}
+    
+    if {$::logged} {puts stderr $message}
 }
 
 # shortcuts for posting to the Pd window
-proc ::pdwindow::fatal {message} {logpost {} 0 $message}
-proc ::pdwindow::error {message} {logpost {} 1 $message}
-proc ::pdwindow::post {message} {logpost {} 2 $message}
-proc ::pdwindow::debug {message} {logpost {} 3 $message}
+proc ::pd_console::fatal {message} {logpost {} 0 $message}
+proc ::pd_console::error {message} {logpost {} 1 $message}
+proc ::pd_console::post {message} {logpost {} 2 $message}
+proc ::pd_console::debug {message} {logpost {} 3 $message}
 # for backwards compatibility
-proc ::pdwindow::bug {message} {logpost {} 1 \
+proc ::pd_console::bug {message} {logpost {} 1 \
     [concat consistency check failed: $message]}
-proc ::pdwindow::pdtk_post {message} {post $message}
+proc ::pd_console::pdtk_post {message} {post $message}
 
-proc ::pdwindow::endpost {} {
+proc ::pd_console::endpost {} {
     variable linecolor
     variable lastlevel
     logpost {} $lastlevel "\n"
@@ -146,19 +146,19 @@ proc ::pdwindow::endpost {} {
 # this verbose proc has a separate numbering scheme since its for
 # debugging implementations, and therefore falls outside of the 0-3
 # numbering on the Pd window.  They should only be shown in ALL mode.
-proc ::pdwindow::verbose {level message} {
+proc ::pd_console::verbose {level message} {
     incr level 4
     logpost {} $level $message
 }
 
 # clear the log and the buffer
-proc ::pdwindow::clear_console {} {
+proc ::pd_console::clear_console {} {
     variable logbuffer {}
     .pdwindow.text.internal delete 0.0 end
 }
 
-# save the contents of the pdwindow::logbuffer to a file
-proc ::pdwindow::save_logbuffer_to_file {} {
+# save the contents of the pd_console::logbuffer to a file
+proc ::pd_console::save_logbuffer_to_file {} {
     variable logbuffer
     set filename [tk_getSaveFile -initialfile "pdwindow.txt" -defaultextension .txt]
     if {$filename eq ""} return; # they clicked cancel
@@ -173,7 +173,7 @@ proc ::pdwindow::save_logbuffer_to_file {} {
 #--compute audio/DSP checkbutton-----------------------------------------------#
 
 # set the checkbox on the "Compute Audio" menuitem and checkbox
-proc ::pdwindow::pdtk_pd_dsp {value} {
+proc ::pd_console::pdtk_pd_dsp {value} {
     # TODO canvas_startdsp/stopdsp should really send 1 or 0, not "ON" or "OFF"
     if {$value eq "ON"} {
         set ::dsp 1
@@ -182,7 +182,7 @@ proc ::pdwindow::pdtk_pd_dsp {value} {
     }
 }
 
-proc ::pdwindow::pdtk_pd_dio {red} {
+proc ::pd_console::pdtk_pd_dio {red} {
     if {$red == 1} {
         .pdwindow.header.ioframe.dio configure -foreground red
     } else {
@@ -191,13 +191,13 @@ proc ::pdwindow::pdtk_pd_dio {red} {
         
 }
 
-proc ::pdwindow::pdtk_pd_audio {state} {
+proc ::pd_console::pdtk_pd_audio {state} {
     .pdwindow.header.ioframe.iostate configure -text [concat audio $state]
 }
 
 #--bindings specific to the Pd window------------------------------------------#
 
-proc ::pdwindow::pdwindow_bindings {} {
+proc ::pd_console::pdwindow_bindings {} {
     # these bindings are for the whole Pd window, minus the Tcl entry
     foreach window {.pdwindow.text .pdwindow.header} {
         bind $window <$::modifier-Key-x> "tk_textCut .pdwindow.text"
@@ -227,7 +227,7 @@ proc ::pdwindow::pdwindow_bindings {} {
 
 #--Tcl entry procs-------------------------------------------------------------#
 
-proc ::pdwindow::eval_tclentry {} {
+proc ::pd_console::eval_tclentry {} {
     variable tclentry
     variable tclentry_history
     variable history_position 0
@@ -236,13 +236,13 @@ proc ::pdwindow::eval_tclentry {} {
         global errorInfo
         switch -regexp -- $errorname { 
             "missing close-brace" {
-                ::pdwindow::error [concat [_ "(Tcl) MISSING CLOSE-BRACE '\}': "] $errorInfo]\n
+                ::pd_console::error [concat [_ "(Tcl) MISSING CLOSE-BRACE '\}': "] $errorInfo]\n
             } "missing close-bracket" {
-                ::pdwindow::error [concat [_ "(Tcl) MISSING CLOSE-BRACKET '\]': "] $errorInfo]\n
+                ::pd_console::error [concat [_ "(Tcl) MISSING CLOSE-BRACKET '\]': "] $errorInfo]\n
             } "^invalid command name" {
-                ::pdwindow::error [concat [_ "(Tcl) INVALID COMMAND NAME: "] $errorInfo]\n
+                ::pd_console::error [concat [_ "(Tcl) INVALID COMMAND NAME: "] $errorInfo]\n
             } default {
-                ::pdwindow::error [concat [_ "(Tcl) UNHANDLED ERROR: "] $errorInfo]\n
+                ::pd_console::error [concat [_ "(Tcl) UNHANDLED ERROR: "] $errorInfo]\n
             }
         }
     }
@@ -250,7 +250,7 @@ proc ::pdwindow::eval_tclentry {} {
     set tclentry {}
 }
 
-proc ::pdwindow::get_history {direction} {
+proc ::pd_console::get_history {direction} {
     variable tclentry_history
     variable history_position
 
@@ -264,7 +264,7 @@ proc ::pdwindow::get_history {direction} {
         [lindex $tclentry_history end-[expr $history_position - 1]]
 }
 
-proc ::pdwindow::validate_tcl {} {
+proc ::pd_console::validate_tcl {} {
     variable tclentry
     if {[info complete $tclentry]} {
         .pdwindow.tcl.entry configure -background "white"
@@ -275,25 +275,25 @@ proc ::pdwindow::validate_tcl {} {
 
 #--create tcl entry-----------------------------------------------------------#
 
-proc ::pdwindow::create_tcl_entry {} {
+proc ::pd_console::create_tcl_entry {} {
 # Tcl entry box frame
     label .pdwindow.tcl.label -text [_ "Tcl:"] -anchor e
     pack .pdwindow.tcl.label -side left
     entry .pdwindow.tcl.entry -width 200 \
        -exportselection 1 -insertwidth 2 -insertbackground blue \
-       -textvariable ::pdwindow::tclentry -font {$::font_family -12}
+       -textvariable ::pd_console::tclentry -font {$::font_family -12}
     pack .pdwindow.tcl.entry -side left -fill x
 # bindings for the Tcl entry widget
     bind .pdwindow.tcl.entry <$::modifier-Key-a> "%W selection range 0 end; break"
-    bind .pdwindow.tcl.entry <Return> "::pdwindow::eval_tclentry"
-    bind .pdwindow.tcl.entry <Up>     "::pdwindow::get_history 1"
-    bind .pdwindow.tcl.entry <Down>   "::pdwindow::get_history -1"
-    bind .pdwindow.tcl.entry <KeyRelease> +"::pdwindow::validate_tcl"
+    bind .pdwindow.tcl.entry <Return> "::pd_console::eval_tclentry"
+    bind .pdwindow.tcl.entry <Up>     "::pd_console::get_history 1"
+    bind .pdwindow.tcl.entry <Down>   "::pd_console::get_history -1"
+    bind .pdwindow.tcl.entry <KeyRelease> +"::pd_console::validate_tcl"
 
     bind .pdwindow.text <Key-Tab> "focus .pdwindow.tcl.entry; break"
 }
 
-proc ::pdwindow::set_findinstance_cursor {widget key state} {
+proc ::pd_console::set_findinstance_cursor {widget key state} {
     set triggerkeys [list Control_L Control_R Meta_L Meta_R]
     if {[lsearch -exact $triggerkeys $key] > -1} {
         if {$state == 0} {
@@ -306,7 +306,7 @@ proc ::pdwindow::set_findinstance_cursor {widget key state} {
 
 #--create the window-----------------------------------------------------------#
 
-proc ::pdwindow::create_window {} {
+proc ::pd_console::create_window {} {
     variable logmenuitems
     set ::loaded(.pdwindow) 0
 
@@ -377,8 +377,8 @@ proc ::pdwindow::create_window {} {
     # run bindings last so that .pdwindow.tcl.entry exists
     pdwindow_bindings
     # set cursor to show when clicking in 'findinstance' mode
-    bind .pdwindow <KeyPress> "+::pdwindow::set_findinstance_cursor %W %K %s"
-    bind .pdwindow <KeyRelease> "+::pdwindow::set_findinstance_cursor %W %K %s"
+    bind .pdwindow <KeyPress> "+::pd_console::set_findinstance_cursor %W %K %s"
+    bind .pdwindow <KeyRelease> "+::pd_console::set_findinstance_cursor %W %K %s"
 
     # hack to make a good read-only text widget from http://wiki.tcl.tk/1152
     rename ::.pdwindow.text ::.pdwindow.text.internal
@@ -391,12 +391,12 @@ proc ::pdwindow::create_window {} {
     }
     
     # print whatever is in the queue after the event loop finishes
-    after idle [list after 0 ::pdwindow::filter_buffer_to_text]
+    after idle [list after 0 ::pd_console::filter_buffer_to_text]
 
     set ::loaded(.pdwindow) 1
 
     # set some layout variables
-    ::pdwindow::set_layout
+    ::pd_console::set_layout
 
     # wait until .pdwindow.tcl.entry is visible before opening files so that
     # the loading logic can grab it and put up the busy cursor

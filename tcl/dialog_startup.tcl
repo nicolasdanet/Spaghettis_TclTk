@@ -9,7 +9,7 @@
 
 package provide dialog_startup 0.1
 
-package require scrollboxwindow
+package require pd_scrollboxwindow
 
 namespace eval dialog_startup {
     variable defeatrt_flag 0
@@ -82,7 +82,7 @@ proc ::dialog_startup::pdtk_startup_dialog {mytoplevel defeatrt flags} {
 }
 
 proc ::dialog_startup::create_dialog {mytoplevel} {
-    ::scrollboxwindow::make $mytoplevel $::startup_libraries \
+    ::pd_scrollboxwindow::make $mytoplevel $::startup_libraries \
         dialog_startup::add dialog_startup::edit dialog_startup::commit \
         [_ "Pd libraries to load on startup"] \
         400 300

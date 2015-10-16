@@ -7,9 +7,9 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pd_menucommands 0.1
+package provide pd_commands 0.1
 
-namespace eval ::pd_menucommands:: {
+namespace eval ::pd_commands:: {
     variable untitled_number "1"
 
     namespace export menu_*
@@ -18,7 +18,7 @@ namespace eval ::pd_menucommands:: {
 # ------------------------------------------------------------------------------
 # functions called from File menu
 
-proc ::pd_menucommands::menu_new {} {
+proc ::pd_commands::menu_new {} {
     variable untitled_number
     if { ! [file isdirectory $::file_newdir]} {set ::file_newdir $::env(HOME)}
     # to localize "Untitled" there will need to be changes in g_canvas.c and
@@ -28,7 +28,7 @@ proc ::pd_menucommands::menu_new {} {
     incr untitled_number
 }
 
-proc ::pd_menucommands::menu_open {} {
+proc ::pd_commands::menu_open {} {
     if { ! [file isdirectory $::file_opendir]} {set ::file_opendir $::env(HOME)}
     set files [tk_getOpenFile -defaultextension .pd \
                        -multiple true \
@@ -42,7 +42,7 @@ proc ::pd_menucommands::menu_open {} {
     }
 }
 
-proc ::pd_menucommands::menu_print {mytoplevel} {
+proc ::pd_commands::menu_print {mytoplevel} {
     set filename [tk_getSaveFile -initialfile pd.ps \
                       -defaultextension .ps \
                       -filetypes { {{postscript} {.ps}} }]
@@ -55,19 +55,19 @@ proc ::pd_menucommands::menu_print {mytoplevel} {
 # ------------------------------------------------------------------------------
 # functions called from Edit menu
 
-proc ::pd_menucommands::menu_undo {} {
+proc ::pd_commands::menu_undo {} {
     if {$::focused_window eq $::undo_toplevel && $::undo_action ne "no"} {
         pdsend "$::focused_window undo"
     }
 }
 
-proc ::pd_menucommands::menu_redo {} {
+proc ::pd_commands::menu_redo {} {
     if {$::focused_window eq $::undo_toplevel && $::redo_action ne "no"} {
         pdsend "$::focused_window redo"
     }
 }
 
-proc ::pd_menucommands::menu_editmode {state} {
+proc ::pd_commands::menu_editmode {state} {
     if {[winfo class $::focused_window] ne "PatchWindow"} {return}
     set ::editmode_button $state
 # this shouldn't be necessary because 'pd' will reply with pdtk_canvas_editmode
@@ -75,7 +75,7 @@ proc ::pd_menucommands::menu_editmode {state} {
     pdsend "$::focused_window editmode $state"
 }
 
-proc ::pd_menucommands::menu_toggle_editmode {} {
+proc ::pd_commands::menu_toggle_editmode {} {
     menu_editmode [expr {! $::editmode_button}]
 }
 
@@ -83,7 +83,7 @@ proc ::pd_menucommands::menu_toggle_editmode {} {
 # generic procs for sending menu events
 
 # send a message to a pd canvas receiver
-proc ::pd_menucommands::menu_send {window message} {
+proc ::pd_commands::menu_send {window message} {
     set mytoplevel [winfo toplevel $window]
     if {[winfo class $mytoplevel] eq "PatchWindow"} {
         pdsend "$mytoplevel $message"
@@ -93,13 +93,13 @@ proc ::pd_menucommands::menu_send {window message} {
         } elseif {$message eq "selectall"} {
             .pdwindow.text tag add sel 1.0 end
         } elseif {$message eq "menusaveas"} {
-            ::pdwindow::save_logbuffer_to_file
+            ::pd_console::save_logbuffer_to_file
         }
     }
 }
 
 # send a message to a pd canvas receiver with a float arg
-proc ::pd_menucommands::menu_send_float {window message float} {
+proc ::pd_commands::menu_send_float {window message float} {
     set mytoplevel [winfo toplevel $window]
     if {[winfo class $mytoplevel] eq "PatchWindow"} {
         pdsend "$mytoplevel $message $float"
@@ -109,15 +109,15 @@ proc ::pd_menucommands::menu_send_float {window message float} {
 # ------------------------------------------------------------------------------
 # open the dialog panels
 
-proc ::pd_menucommands::menu_message_dialog {} {
+proc ::pd_commands::menu_message_dialog {} {
     ::dialog_message::open_message_dialog $::focused_window
 }
 
-proc ::pd_menucommands::menu_find_dialog {} {
+proc ::pd_commands::menu_find_dialog {} {
     ::dialog_find::open_find_dialog $::focused_window
 }
 
-proc ::pd_menucommands::menu_font_dialog {} {
+proc ::pd_commands::menu_font_dialog {} {
     if {[winfo exists .font]} {
         raise .font
     } elseif {$::focused_window eq ".pdwindow"} {
@@ -127,7 +127,7 @@ proc ::pd_menucommands::menu_font_dialog {} {
     }
 }
 
-proc ::pd_menucommands::menu_path_dialog {} {
+proc ::pd_commands::menu_path_dialog {} {
     if {[winfo exists .path]} {
         raise .path
     } else {
@@ -135,7 +135,7 @@ proc ::pd_menucommands::menu_path_dialog {} {
     }
 }
 
-proc ::pd_menucommands::menu_startup_dialog {} {
+proc ::pd_commands::menu_startup_dialog {} {
     if {[winfo exists .startup]} {
         raise .startup
     } else {
@@ -143,22 +143,22 @@ proc ::pd_menucommands::menu_startup_dialog {} {
     }
 }
 
-proc ::pd_menucommands::menu_texteditor {} {
-    ::pdwindow::error "the text editor is not implemented"
+proc ::pd_commands::menu_texteditor {} {
+    ::pd_console::error "the text editor is not implemented"
 }
 
 # ------------------------------------------------------------------------------
 # window management functions
 
-proc ::pd_menucommands::menu_minimize {window} {
+proc ::pd_commands::menu_minimize {window} {
     wm iconify [winfo toplevel $window]
 }
 
-proc ::pd_menucommands::menu_maximize {window} {
+proc ::pd_commands::menu_maximize {window} {
     wm state [winfo toplevel $window] zoomed
 }
 
-proc ::pd_menucommands::menu_raise_pdwindow {} {
+proc ::pd_commands::menu_raise_pdwindow {} {
     if {$::focused_window eq ".pdwindow" && [winfo viewable .pdwindow]} {
         lower .pdwindow
     } else {
@@ -168,13 +168,13 @@ proc ::pd_menucommands::menu_raise_pdwindow {} {
 }
 
 # used for cycling thru windows of an app
-proc ::pd_menucommands::menu_raisepreviouswindow {} {
+proc ::pd_commands::menu_raisepreviouswindow {} {
     lower [lindex [wm stackorder .] end] [lindex [wm stackorder .] 0]
     focus [lindex [wm stackorder .] end]
 }
 
 # used for cycling thru windows of an app the other direction
-proc ::pd_menucommands::menu_raisenextwindow {} {
+proc ::pd_commands::menu_raisenextwindow {} {
     set mytoplevel [lindex [wm stackorder .] 0]
     raise $mytoplevel
     focus $mytoplevel
@@ -183,14 +183,14 @@ proc ::pd_menucommands::menu_raisenextwindow {} {
 # ------------------------------------------------------------------------------
 # Pd window functions
 proc menu_clear_console {} {
-    ::pdwindow::clear_console
+    ::pd_console::clear_console
 }
 
 # ------------------------------------------------------------------------------
 # manage the saving of the directories for the new commands
 
 # this gets the dir from the path of a window's title
-proc ::pd_menucommands::set_filenewdir {mytoplevel} {
+proc ::pd_commands::set_filenewdir {mytoplevel} {
     # TODO add Aqua specifics once g_canvas.c has [wm attributes -titlepath]
     if {$mytoplevel eq ".pdwindow"} {
         set ::file_newdir $::file_opendir
@@ -200,7 +200,7 @@ proc ::pd_menucommands::set_filenewdir {mytoplevel} {
 }
 
 # parse the textfile for the About Pd page
-proc ::pd_menucommands::menu_aboutpd {} {
+proc ::pd_commands::menu_aboutpd {} {
     
     if {[winfo exists .aboutpd]} {
         wm deiconify .aboutpd
@@ -221,7 +221,7 @@ proc ::pd_menucommands::menu_aboutpd {} {
 
 # ------------------------------------------------------------------------------
 # opening docs as menu items (like the Test Audio and MIDI patch and the manual)
-proc ::pd_menucommands::menu_doc_open {dir basename} {
+proc ::pd_commands::menu_doc_open {dir basename} {
     if {[file pathtype $dir] eq "relative"} {
         set dirname "$::sys_libdir/$dir"
     } else {
@@ -234,12 +234,12 @@ proc ::pd_menucommands::menu_doc_open {dir basename} {
         set basename [file tail $fullpath]
         pdsend "pd open [enquote_path $basename] [enquote_path $dirname]"
     } else {
-        ::pd_menucommands::menu_openfile "$dirname/$basename"
+        ::pd_commands::menu_openfile "$dirname/$basename"
     }
 }
 
 # open HTML docs from the menu using the OS-default HTML viewer
-proc ::pd_menucommands::menu_openfile {filename} {
+proc ::pd_commands::menu_openfile {filename} {
     if {$::tcl_platform(os) eq "Darwin"} {
         exec sh -c [format "open '%s'" $filename]
     } elseif {$::tcl_platform(platform) eq "windows"} {
@@ -259,7 +259,7 @@ proc ::pd_menucommands::menu_openfile {filename} {
 # ------------------------------------------------------------------------------
 # Mac OS X specific functions
 
-proc ::pd_menucommands::menu_bringalltofront {} {
+proc ::pd_commands::menu_bringalltofront {} {
     # use [winfo children .] here to include windows that are minimized
     foreach item [winfo children .] {
         # get all toplevel windows, exclude menubar windows

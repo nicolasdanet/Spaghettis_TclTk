@@ -9,7 +9,7 @@
 
 package provide dialog_gatom 0.1
 
-package require wheredoesthisgo
+package require pd_miscellaneous
 
 namespace eval ::dialog_gatom:: {
     namespace export pdtk_gatom_dialog

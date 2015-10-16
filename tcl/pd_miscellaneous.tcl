@@ -7,7 +7,7 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide wheredoesthisgo 0.1
+package provide pd_miscellaneous 0.1
 
 # a place to temporarily store things until they find a home or go away
 
@@ -23,7 +23,7 @@ proc open_file {filename} {
         # now this is done in pd_guiprefs
         ::pd_guiprefs::update_recentfiles $filename
     } {
-        ::pdwindow::post [format [_ "Ignoring '%s': doesn't look like a Pd-file"] $filename]
+        ::pd_console::post [format [_ "Ignoring '%s': doesn't look like a Pd-file"] $filename]
     }
 }
     

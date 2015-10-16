@@ -126,7 +126,7 @@ proc ::dialog_canvas::pdtk_canvas_dialog {mytoplevel xscale yscale graphmeflags 
             $mytoplevel.parent.graphme select
             $mytoplevel.parent.hidetext select
         } default {
-            ::pdwindow::error [_ "WARNING: unknown graphme flags received in pdtk_canvas_dialog"]
+            ::pd_console::error [_ "WARNING: unknown graphme flags received in pdtk_canvas_dialog"]
         }
     }
 

@@ -7,9 +7,9 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide opt_parser 0.1
+package provide pd_parser 0.1
 
-namespace eval opt_parser {
+namespace eval pd_parser {
     # list of option vars (keys are long option names)
     variable optlist
     # option behavior <set|lappend>
@@ -17,7 +17,7 @@ namespace eval opt_parser {
     variable optprefix {-}
 }
 
-proc opt_parser::init {optdata} {
+proc pd_parser::init {optdata} {
     variable optlist
     variable optbehavior
     array unset optlist ; array set optlist {}
@@ -33,7 +33,7 @@ proc opt_parser::init {optdata} {
     }
 }
 
-proc opt_parser::get_options {argv {opts {}}} {
+proc pd_parser::get_options {argv {opts {}}} {
     # second argument are internal options
     # (like 'ignore_unknown_flags <0|1>')
     foreach {k v} $opts {set $k $v}

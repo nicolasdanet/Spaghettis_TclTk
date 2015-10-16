@@ -9,7 +9,7 @@
 
 package provide pd_bindings 0.1
 
-package require pd_menucommands
+package require pd_commands
 package require dialog_find
 
 namespace eval ::pd_bindings:: {
@@ -209,7 +209,7 @@ proc ::pd_bindings::window_focusin {mytoplevel} {
     # etc. to the correct patch receiver symbol.  MSP took out a line that
     # confusingly redirected the "find" window which might be in mid search
     set ::focused_window $mytoplevel
-    ::pd_menucommands::set_filenewdir $mytoplevel
+    ::pd_commands::set_filenewdir $mytoplevel
     ::dialog_font::update_font_dialog $mytoplevel
     if {$mytoplevel eq ".pdwindow"} {
         ::pd_menus::configure_for_pdwindow 

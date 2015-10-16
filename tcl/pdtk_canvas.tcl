@@ -75,7 +75,7 @@ proc pdtk_canvas_new {mytoplevel width height geometry editable} {
 
     # release the window grab here so that the new window will
     # properly get the Map and FocusIn events when its created
-    ::pdwindow::busyrelease
+    ::pd_console::busyrelease
     # set the loaded array for this new window so things can track state
     set ::loaded($mytoplevel) 0
     toplevel $mytoplevel -width $width -height $height -class PatchWindow
@@ -267,13 +267,13 @@ proc ::pdtk_canvas::pdtk_canvas_popup {mytoplevel xcanvas ycanvas hasproperties 
 # procs for when file loading starts/finishes
 
 proc ::pdtk_canvas::started_loading_file {patchname} {
-    ::pdwindow::busygrab
+    ::pd_console::busygrab
 }
 
 # things to run when a patch is finished loading.  This is called when
 # the OS sends the "Map" event for this window.
 proc ::pdtk_canvas::finished_loading_file {mytoplevel} {
-    # ::pdwindow::busyrelease is in pdtk_canvas_new so that the grab
+    # ::pd_console::busyrelease is in pdtk_canvas_new so that the grab
     # is released before the new toplevel window gets created.
     # Otherwise the grab blocks the new window from getting the
     # FocusIn event on creation.

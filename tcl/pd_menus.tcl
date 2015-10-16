@@ -9,7 +9,7 @@
 
 package provide pd_menus 0.1
 
-package require pd_menucommands
+package require pd_commands
 
 # TODO figure out Undo/Redo/Cut/Copy/Paste state changes for menus
 
@@ -310,7 +310,7 @@ proc ::pd_menus::build_help_menu {mymenu} {
         {http://sourceforge.net/tracker/?func=add&group_id=55736&atid=478070}} 
     $mymenu add  separator
     $mymenu add command -label [_ "Tcl prompt"] -command \
-        {::pdwindow::create_tcl_entry} 
+        {::pd_console::create_tcl_entry} 
 
 }
 
@@ -577,7 +577,7 @@ proc ::pd_menus::create_system_menu {mymenubar} {
     $mymenubar add cascade -label System -menu $mymenu
     menu $mymenu -tearoff 0
     # placeholders
-    $mymenu add command -label [_ "Edit Mode"] -command "::pdwindow::verbose 0 systemmenu"
+    $mymenu add command -label [_ "Edit Mode"] -command "::pd_console::verbose 0 systemmenu"
     # TODO add Close, Minimize, etc and whatever else is on the little menu
     # that is on the top left corner of the window frame
     # http://wiki.tcl.tk/1006
