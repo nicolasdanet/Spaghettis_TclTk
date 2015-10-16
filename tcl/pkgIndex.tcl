@@ -12,7 +12,7 @@ package ifneeded dialog_data 0.1        [list source [file join $dir dialog_data
 package ifneeded dialog_find 0.1        [list source [file join $dir dialog_find.tcl]]
 package ifneeded dialog_font 0.1        [list source [file join $dir dialog_font.tcl]]
 package ifneeded dialog_gatom 0.1       [list source [file join $dir dialog_gatom.tcl]]
-package ifneeded dialog_iemgui 0.1      [list source [file join $dir dialog_iemgui.tcl]]
+package ifneeded dialog_gui 0.1         [list source [file join $dir dialog_gui.tcl]]
 package ifneeded dialog_message 0.1     [list source [file join $dir dialog_message.tcl]]
 package ifneeded dialog_midi 0.1        [list source [file join $dir dialog_midi.tcl]]
 package ifneeded dialog_path 0.1        [list source [file join $dir dialog_path.tcl]]

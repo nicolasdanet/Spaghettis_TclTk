@@ -7,9 +7,9 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide dialog_iemgui 0.1
+package provide dialog_gui 0.1
 
-namespace eval ::dialog_iemgui:: {
+namespace eval ::dialog_gui:: {
     variable define_min_flashhold 50
     variable define_min_flashbreak 10
     variable define_min_fontsize 4
@@ -19,7 +19,7 @@ namespace eval ::dialog_iemgui:: {
 
 # TODO convert Init/No Init and Steady on click/Jump on click to checkbuttons
 
-proc ::dialog_iemgui::clip_dim {mytoplevel} {
+proc ::dialog_gui::clip_dim {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_wdt [concat iemgui_wdt_$vid]
@@ -41,7 +41,7 @@ proc ::dialog_iemgui::clip_dim {mytoplevel} {
     }
 }
 
-proc ::dialog_iemgui::clip_num {mytoplevel} {
+proc ::dialog_gui::clip_num {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_num [concat iemgui_num_$vid]
@@ -57,7 +57,7 @@ proc ::dialog_iemgui::clip_num {mytoplevel} {
     }
 }
 
-proc ::dialog_iemgui::sched_rng {mytoplevel} {
+proc ::dialog_gui::sched_rng {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_min_rng [concat iemgui_min_rng_$vid]
@@ -94,7 +94,7 @@ proc ::dialog_iemgui::sched_rng {mytoplevel} {
     }
 }
 
-proc ::dialog_iemgui::verify_rng {mytoplevel} {
+proc ::dialog_gui::verify_rng {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_min_rng [concat iemgui_min_rng_$vid]
@@ -123,7 +123,7 @@ proc ::dialog_iemgui::verify_rng {mytoplevel} {
     }
 }
 
-proc ::dialog_iemgui::clip_fontsize {mytoplevel} {
+proc ::dialog_gui::clip_fontsize {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_gn_fs [concat iemgui_gn_fs_$vid]
@@ -137,7 +137,7 @@ proc ::dialog_iemgui::clip_fontsize {mytoplevel} {
     }
 }
 
-proc ::dialog_iemgui::set_col_example {mytoplevel} {
+proc ::dialog_gui::set_col_example {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_bcol [concat iemgui_bcol_$vid]
@@ -167,7 +167,7 @@ proc ::dialog_iemgui::set_col_example {mytoplevel} {
             -activeforeground [format "#%6.6x" [eval concat $$var_iemgui_bcol]]}
 }
 
-proc ::dialog_iemgui::preset_col {mytoplevel presetcol} {
+proc ::dialog_gui::preset_col {mytoplevel presetcol} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_l2_f1_b0 [concat iemgui_l2_f1_b0_$vid]
@@ -182,10 +182,10 @@ proc ::dialog_iemgui::preset_col {mytoplevel presetcol} {
     if { [eval concat $$var_iemgui_l2_f1_b0] == 0 } { set $var_iemgui_bcol $presetcol }
     if { [eval concat $$var_iemgui_l2_f1_b0] == 1 } { set $var_iemgui_fcol $presetcol }
     if { [eval concat $$var_iemgui_l2_f1_b0] == 2 } { set $var_iemgui_lcol $presetcol }
-    ::dialog_iemgui::set_col_example $mytoplevel
+    ::dialog_gui::set_col_example $mytoplevel
 }
 
-proc ::dialog_iemgui::choose_col_bkfrlb {mytoplevel} {
+proc ::dialog_gui::choose_col_bkfrlb {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_l2_f1_b0 [concat iemgui_l2_f1_b0_$vid]
@@ -218,10 +218,10 @@ proc ::dialog_iemgui::choose_col_bkfrlb {mytoplevel} {
             set $var_iemgui_lcol [string replace $helpstring 0 0 "0x"]
             set $var_iemgui_lcol [expr [eval concat $$var_iemgui_lcol] & 0xFCFCFC] }
     }
-    ::dialog_iemgui::set_col_example $mytoplevel
+    ::dialog_gui::set_col_example $mytoplevel
 }
 
-proc ::dialog_iemgui::lilo {mytoplevel} {
+proc ::dialog_gui::lilo {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_lin0_log1 [concat iemgui_lin0_log1_$vid]
@@ -231,20 +231,20 @@ proc ::dialog_iemgui::lilo {mytoplevel} {
     set var_iemgui_lilo1 [concat iemgui_lilo1_$vid]
     global $var_iemgui_lilo1
     
-    ::dialog_iemgui::sched_rng $mytoplevel
+    ::dialog_gui::sched_rng $mytoplevel
     
     if {[eval concat $$var_iemgui_lin0_log1] == 0} {
         set $var_iemgui_lin0_log1 1
         $mytoplevel.para.lilo configure -text [eval concat $$var_iemgui_lilo1]
-        ::dialog_iemgui::verify_rng $mytoplevel
-        ::dialog_iemgui::sched_rng $mytoplevel
+        ::dialog_gui::verify_rng $mytoplevel
+        ::dialog_gui::sched_rng $mytoplevel
     } else {
         set $var_iemgui_lin0_log1 0
         $mytoplevel.para.lilo configure -text [eval concat $$var_iemgui_lilo0]
     }
 }
 
-proc ::dialog_iemgui::toggle_font {mytoplevel gn_f} {
+proc ::dialog_gui::toggle_font {mytoplevel gn_f} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_gn_f [concat iemgui_gn_f_$vid]
@@ -266,7 +266,7 @@ proc ::dialog_iemgui::toggle_font {mytoplevel gn_f} {
     $mytoplevel.colors.sections.lb_bk configure -font $current_font_spec
 }
 
-proc ::dialog_iemgui::lb {mytoplevel} {
+proc ::dialog_gui::lb {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_loadbang [concat iemgui_loadbang_$vid]
@@ -281,7 +281,7 @@ proc ::dialog_iemgui::lb {mytoplevel} {
     }
 }
 
-proc ::dialog_iemgui::stdy_jmp {mytoplevel} {
+proc ::dialog_gui::stdy_jmp {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_steady [concat iemgui_steady_$vid]
@@ -296,7 +296,7 @@ proc ::dialog_iemgui::stdy_jmp {mytoplevel} {
     }
 }
 
-proc ::dialog_iemgui::apply {mytoplevel} {
+proc ::dialog_gui::apply {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_wdt [concat iemgui_wdt_$vid]
@@ -344,12 +344,12 @@ proc ::dialog_iemgui::apply {mytoplevel} {
     set var_iemgui_lcol [concat iemgui_lcol_$vid]
     global $var_iemgui_lcol
     
-    ::dialog_iemgui::clip_dim $mytoplevel
-    ::dialog_iemgui::clip_num $mytoplevel
-    ::dialog_iemgui::sched_rng $mytoplevel
-    ::dialog_iemgui::verify_rng $mytoplevel
-    ::dialog_iemgui::sched_rng $mytoplevel
-    ::dialog_iemgui::clip_fontsize $mytoplevel
+    ::dialog_gui::clip_dim $mytoplevel
+    ::dialog_gui::clip_num $mytoplevel
+    ::dialog_gui::sched_rng $mytoplevel
+    ::dialog_gui::verify_rng $mytoplevel
+    ::dialog_gui::sched_rng $mytoplevel
+    ::dialog_gui::clip_fontsize $mytoplevel
     
     if {[eval concat $$var_iemgui_snd] == ""} {set hhhsnd "empty"} else {set hhhsnd [eval concat $$var_iemgui_snd]}
     if {[eval concat $$var_iemgui_rcv] == ""} {set hhhrcv "empty"} else {set hhhrcv [eval concat $$var_iemgui_rcv]}
@@ -394,16 +394,16 @@ proc ::dialog_iemgui::apply {mytoplevel} {
 }
 
 
-proc ::dialog_iemgui::cancel {mytoplevel} {
+proc ::dialog_gui::cancel {mytoplevel} {
     pdsend "$mytoplevel cancel"
 }
 
-proc ::dialog_iemgui::ok {mytoplevel} {
-    ::dialog_iemgui::apply $mytoplevel
-    ::dialog_iemgui::cancel $mytoplevel
+proc ::dialog_gui::ok {mytoplevel} {
+    ::dialog_gui::apply $mytoplevel
+    ::dialog_gui::cancel $mytoplevel
 }
 
-proc ::dialog_iemgui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
+proc ::dialog_gui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
                                        wdt min_wdt wdt_label \
                                        hgt min_hgt hgt_label \
                                        rng_header min_rng min_rng_label max_rng \
@@ -551,24 +551,24 @@ proc ::dialog_iemgui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
     label $mytoplevel.para.dummy3 -text "" -width 1
     if {[eval concat $$var_iemgui_lin0_log1] == 0} {
         button $mytoplevel.para.lilo -text [_ [eval concat $$var_iemgui_lilo0]] -width 5 \
-            -command "::dialog_iemgui::lilo $mytoplevel" }
+            -command "::dialog_gui::lilo $mytoplevel" }
     if {[eval concat $$var_iemgui_lin0_log1] == 1} {
         button $mytoplevel.para.lilo -text [_ [eval concat $$var_iemgui_lilo1]] -width 5 \
-            -command "::dialog_iemgui::lilo $mytoplevel" }
+            -command "::dialog_gui::lilo $mytoplevel" }
     if {[eval concat $$var_iemgui_loadbang] == 0} {
         button $mytoplevel.para.lb -text [_ "No init"] \
-            -command "::dialog_iemgui::lb $mytoplevel" }
+            -command "::dialog_gui::lb $mytoplevel" }
     if {[eval concat $$var_iemgui_loadbang] == 1} {
         button $mytoplevel.para.lb -text [_ "Save"] \
-            -command "::dialog_iemgui::lb $mytoplevel" }
+            -command "::dialog_gui::lb $mytoplevel" }
     label $mytoplevel.para.num_lab -text [_ $num_label] -width 9
     entry $mytoplevel.para.num_ent -textvariable $var_iemgui_num -width 4
 
     if {[eval concat $$var_iemgui_steady] == 0} {
-        button $mytoplevel.para.stdy_jmp -command "::dialog_iemgui::stdy_jmp $mytoplevel" \
+        button $mytoplevel.para.stdy_jmp -command "::dialog_gui::stdy_jmp $mytoplevel" \
             -text [_ "Jump on click"] }
     if {[eval concat $$var_iemgui_steady] == 1} {
-        button $mytoplevel.para.stdy_jmp -command "::dialog_iemgui::stdy_jmp $mytoplevel" \
+        button $mytoplevel.para.stdy_jmp -command "::dialog_gui::stdy_jmp $mytoplevel" \
             -text [_ "Steady on click"] }
     if {[eval concat $$var_iemgui_lin0_log1] >= 0} {
         pack $mytoplevel.para.lilo -side left -expand 1}
@@ -640,15 +640,15 @@ proc ::dialog_iemgui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
     $mytoplevel.popup add command \
         -label $::font_family \
         -font [format {{%s} 16 %s} $::font_family $::font_weight] \
-        -command "::dialog_iemgui::toggle_font $mytoplevel 0" 
+        -command "::dialog_gui::toggle_font $mytoplevel 0" 
     $mytoplevel.popup add command \
         -label "Helvetica" \
         -font [format {Helvetica 16 %s} $::font_weight] \
-        -command "::dialog_iemgui::toggle_font $mytoplevel 1" 
+        -command "::dialog_gui::toggle_font $mytoplevel 1" 
     $mytoplevel.popup add command \
         -label "Times" \
         -font [format {Times 16 %s} $::font_weight] \
-        -command "::dialog_iemgui::toggle_font $mytoplevel 2" 
+        -command "::dialog_gui::toggle_font $mytoplevel 2" 
     bind $mytoplevel.label.fontpopup_label <Button> \
         [list tk_popup $mytoplevel.popup %X %Y]
     
@@ -676,7 +676,7 @@ proc ::dialog_iemgui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
     frame $mytoplevel.colors.sections
     pack $mytoplevel.colors.sections -side top
     button $mytoplevel.colors.sections.but -text [_ "Compose color"] \
-        -command "::dialog_iemgui::choose_col_bkfrlb $mytoplevel"
+        -command "::dialog_gui::choose_col_bkfrlb $mytoplevel"
     pack $mytoplevel.colors.sections.but -side left -anchor w -padx 10 -pady 5 \
         -expand yes -fill x
     if { [eval concat $$var_iemgui_fcol] >= 0 } {
@@ -713,7 +713,7 @@ proc ::dialog_iemgui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
             label $mytoplevel.colors.r1.c$i -background [format "#%6.6x" $hexcol] \
                 -activebackground [format "#%6.6x" $hexcol] -relief ridge \
                 -padx 7 -pady 0
-            bind $mytoplevel.colors.r1.c$i <Button> [format "::dialog_iemgui::preset_col %s %d" $mytoplevel $hexcol] 
+            bind $mytoplevel.colors.r1.c$i <Button> [format "::dialog_gui::preset_col %s %d" $mytoplevel $hexcol] 
         }
     pack $mytoplevel.colors.r1.c0 $mytoplevel.colors.r1.c1 $mytoplevel.colors.r1.c2 $mytoplevel.colors.r1.c3 \
         $mytoplevel.colors.r1.c4 $mytoplevel.colors.r1.c5 $mytoplevel.colors.r1.c6 $mytoplevel.colors.r1.c7 \
@@ -729,7 +729,7 @@ proc ::dialog_iemgui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
                 -activebackground [format "#%6.6x" $hexcol] -relief ridge \
                 -padx 7 -pady 0
             bind  $mytoplevel.colors.r2.c$i <Button> \
-                [format "::dialog_iemgui::preset_col %s %d" $mytoplevel $hexcol] 
+                [format "::dialog_gui::preset_col %s %d" $mytoplevel $hexcol] 
         }
     pack $mytoplevel.colors.r2.c0 $mytoplevel.colors.r2.c1 $mytoplevel.colors.r2.c2 $mytoplevel.colors.r2.c3 \
         $mytoplevel.colors.r2.c4 $mytoplevel.colors.r2.c5 $mytoplevel.colors.r2.c6 $mytoplevel.colors.r2.c7 \
@@ -745,7 +745,7 @@ proc ::dialog_iemgui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
                 -activebackground [format "#%6.6x" $hexcol] -relief ridge \
                 -padx 7 -pady 0
             bind  $mytoplevel.colors.r3.c$i <Button> \
-                [format "::dialog_iemgui::preset_col %s %d" $mytoplevel $hexcol] 
+                [format "::dialog_gui::preset_col %s %d" $mytoplevel $hexcol] 
         }
     pack $mytoplevel.colors.r3.c0 $mytoplevel.colors.r3.c1 $mytoplevel.colors.r3.c2 $mytoplevel.colors.r3.c3 \
         $mytoplevel.colors.r3.c4 $mytoplevel.colors.r3.c5 $mytoplevel.colors.r3.c6 $mytoplevel.colors.r3.c7 \
@@ -754,15 +754,15 @@ proc ::dialog_iemgui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
     frame $mytoplevel.cao -pady 10
     pack $mytoplevel.cao -side top -expand 1 -fill x
     button $mytoplevel.cao.cancel -text [_ "Cancel"] \
-        -command "::dialog_iemgui::cancel $mytoplevel"
+        -command "::dialog_gui::cancel $mytoplevel"
     pack $mytoplevel.cao.cancel -side left -padx 10 -expand 1 -fill x
     if {[tk windowingsystem] ne "aqua"} {
         button $mytoplevel.cao.apply -text [_ "Apply"] \
-            -command "::dialog_iemgui::apply $mytoplevel"
+            -command "::dialog_gui::apply $mytoplevel"
         pack $mytoplevel.cao.apply -side left -padx 10 -expand 1 -fill x
     }
     button $mytoplevel.cao.ok -text [_ "OK"] \
-        -command "::dialog_iemgui::ok $mytoplevel"
+        -command "::dialog_gui::ok $mytoplevel"
     pack $mytoplevel.cao.ok -side left -padx 10 -expand 1 -fill x
     
     $mytoplevel.dim.w_ent select from 0

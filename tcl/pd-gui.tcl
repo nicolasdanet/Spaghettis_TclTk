@@ -28,28 +28,28 @@ set auto_path [linsert $auto_path 0 [file dirname [info script]]]
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package require pd_connect
-package require pd_menus
-package require pd_bindings
-package require pd_console
 package require dialog_array
 package require dialog_audio
 package require dialog_canvas
 package require dialog_data
 package require dialog_font
 package require dialog_gatom
-package require dialog_iemgui
+package require dialog_gui
 package require dialog_message
 package require dialog_midi
 package require dialog_path
 package require dialog_startup
+package require pd_bindings
 package require pd_commands
+package require pd_connect
+package require pd_console
+package require pd_guiprefs
+package require pd_menus
+package require pd_miscellaneous
 package require pd_parser
 package require pdtk_canvas
 package require pdtk_text
 package require pdtk_textwindow
-package require pd_miscellaneous
-package require pd_guiprefs
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -62,16 +62,6 @@ namespace import ::pd_connect::pdsend
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace import ::pd_console::pdtk_pd_dio
-namespace import ::pd_console::pdtk_pd_audio
-namespace import ::pd_console::pdtk_pd_dsp
-namespace import ::pd_console::pdtk_pd_meters
-namespace import ::pdtk_canvas::pdtk_canvas_popup
-namespace import ::pdtk_canvas::pdtk_canvas_editmode
-namespace import ::pdtk_canvas::pdtk_canvas_getscroll
-namespace import ::pdtk_canvas::pdtk_canvas_setparents
-namespace import ::pdtk_canvas::pdtk_canvas_reflecttitle
-namespace import ::pdtk_canvas::pdtk_canvas_menuclose
 namespace import ::dialog_array::pdtk_array_dialog
 namespace import ::dialog_array::pdtk_array_listview_new
 namespace import ::dialog_array::pdtk_array_listview_fillpage
@@ -83,11 +73,21 @@ namespace import ::dialog_data::pdtk_data_dialog
 namespace import ::dialog_find::pdtk_showfindresult
 namespace import ::dialog_font::pdtk_canvas_dofont
 namespace import ::dialog_gatom::pdtk_gatom_dialog
-namespace import ::dialog_iemgui::pdtk_iemgui_dialog
+namespace import ::dialog_gui::pdtk_iemgui_dialog
 namespace import ::dialog_midi::pdtk_midi_dialog
 namespace import ::dialog_midi::pdtk_alsa_midi_dialog
 namespace import ::dialog_path::pdtk_path_dialog
 namespace import ::dialog_startup::pdtk_startup_dialog
+namespace import ::pd_console::pdtk_pd_dio
+namespace import ::pd_console::pdtk_pd_audio
+namespace import ::pd_console::pdtk_pd_dsp
+namespace import ::pd_console::pdtk_pd_meters
+namespace import ::pdtk_canvas::pdtk_canvas_popup
+namespace import ::pdtk_canvas::pdtk_canvas_editmode
+namespace import ::pdtk_canvas::pdtk_canvas_getscroll
+namespace import ::pdtk_canvas::pdtk_canvas_setparents
+namespace import ::pdtk_canvas::pdtk_canvas_reflecttitle
+namespace import ::pdtk_canvas::pdtk_canvas_menuclose
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
