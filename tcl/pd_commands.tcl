@@ -20,25 +20,25 @@ namespace eval ::pd_commands:: {
 
 proc ::pd_commands::menu_new {} {
     variable untitled_number
-    if { ! [file isdirectory $::file_newdir]} {set ::file_newdir $::env(HOME)}
+    if { ! [file isdirectory $::file_new]} {set ::file_new $::env(HOME)}
     # to localize "Untitled" there will need to be changes in g_canvas.c and
     # g_readwrite.c, where it tests for the string "Untitled"
     set untitled_name "Untitled"
-    pdsend "pd menunew $untitled_name-$untitled_number [enquote_path $::file_newdir]"
+    pdsend "pd menunew $untitled_name-$untitled_number [enquote_path $::file_new]"
     incr untitled_number
 }
 
 proc ::pd_commands::menu_open {} {
-    if { ! [file isdirectory $::file_opendir]} {set ::file_opendir $::env(HOME)}
+    if { ! [file isdirectory $::file_open]} {set ::file_open $::env(HOME)}
     set files [tk_getOpenFile -defaultextension .pd \
                        -multiple true \
                        -filetypes $::filetypes \
-                       -initialdir $::file_opendir]
+                       -initialdir $::file_open]
     if {$files ne ""} {
         foreach filename $files { 
             open_file $filename
         }
-        set ::file_opendir [file dirname $filename]
+        set ::file_open [file dirname $filename]
     }
 }
 
@@ -193,9 +193,9 @@ proc menu_clear_console {} {
 proc ::pd_commands::set_filenewdir {mytoplevel} {
     # TODO add Aqua specifics once g_canvas.c has [wm attributes -titlepath]
     if {$mytoplevel eq ".pdwindow"} {
-        set ::file_newdir $::file_opendir
+        set ::file_new $::file_open
     } else {
-        regexp -- ".+ - (.+)" [wm title $mytoplevel] ignored ::file_newdir
+        regexp -- ".+ - (.+)" [wm title $mytoplevel] ignored ::file_new
     }
 }
 

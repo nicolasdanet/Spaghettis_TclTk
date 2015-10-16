@@ -121,21 +121,21 @@ set font_fixed {
     36 25 45
 }
 
+set file_new            [pwd]
+set file_open           [pwd]
+
 set sys_searchpath      {}
 set startup_flags       {}
 set startup_libraries   {}
-
-set file_newdir         [pwd]
-set file_opendir        [pwd]
-
 set audio_api           {}
-set audio_indevlist {}
-set audio_outdevlist {}
-set midi_apilist {}
-set midi_indevlist {}
-set midi_outdevlist {}
-set pd_whichapi 0
-set pd_whichmidiapi 0
+set audio_indev         {}
+set audio_outdev        {}
+set midi_api            {}
+set midi_indev          {}
+set midi_outdev         {}
+
+set pd_midi 0
+set pd_audio 0
 
 # current state of the DSP
 set dsp 0
@@ -400,7 +400,7 @@ proc pdtk_pd_startup {major minor bugfix test
                       audio_apis midi_apis sys_font sys_fontweight} {
     set oldtclversion 0
     set ::audio_api $audio_apis
-    set ::midi_apilist $midi_apis
+    set ::midi_api $midi_apis
     if {$::tcl_version >= 8.5} {find_default_font}
     set_base_font $sys_font $sys_fontweight
     fit_font_into_metrics
@@ -587,8 +587,8 @@ proc main {argc argv} {
         exec -- $pd_exec -guiport $::port &
         if {[tk windowingsystem] eq "aqua"} {
             # on Aqua, if 'pd-gui' first, then initial dir is home
-            set ::file_newdir $::env(HOME)
-            set ::file_opendir $::env(HOME)
+            set ::file_new $::env(HOME)
+            set ::file_open $::env(HOME)
         }
     }
     ::pd_console::verbose 0 "------------------ done with main ----------------------\n"

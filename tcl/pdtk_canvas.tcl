@@ -154,7 +154,7 @@ proc pdtk_canvas_saveas {name initialfile initialdir destroyflag} {
     set basename [file tail $filename]
     pdsend "$name savetofile [enquote_path $basename] [enquote_path $dirname] \
  $destroyflag"
-    set ::file_newdir $dirname
+    set ::file_new $dirname
     # add to recentfiles
     ::pd_guiprefs::update_recentfiles $filename
 }

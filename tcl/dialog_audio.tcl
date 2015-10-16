@@ -62,7 +62,7 @@ proc ::dialog_audio::ok {mytoplevel} {
 
 # callback from popup menu
 proc audio_popup_action {buttonname varname devlist index} {
-    global audio_indevlist audio_outdevlist $varname
+    global audio_indev audio_outdev $varname
     $buttonname configure -text [lindex $devlist $index]
     set $varname $index
 }
@@ -102,7 +102,7 @@ proc ::dialog_audio::pdtk_audio_dialog {mytoplevel \
     global audio_outchan1 audio_outchan2 audio_outchan3 audio_outchan4
     global audio_outenable1 audio_outenable2 audio_outenable3 audio_outenable4
     global audio_sr audio_advance audio_callback audio_blocksize
-    global audio_indevlist audio_outdevlist
+    global audio_indev audio_outdev
     global pd_indev pd_outdev
     global audio_longform
 
@@ -191,23 +191,23 @@ proc ::dialog_audio::pdtk_audio_dialog {mytoplevel \
 
     checkbutton $mytoplevel.in1f.x0 -variable audio_inenable1 \
         -text [_ "Input device 1:"] -anchor e
-    button $mytoplevel.in1f.x1 -text [lindex $audio_indevlist $audio_indev1] \
-        -command [list audio_popup $mytoplevel $mytoplevel.in1f.x1 audio_indev1 $audio_indevlist]
+    button $mytoplevel.in1f.x1 -text [lindex $audio_indev $audio_indev1] \
+        -command [list audio_popup $mytoplevel $mytoplevel.in1f.x1 audio_indev1 $audio_indev]
     label $mytoplevel.in1f.l2 -text [_ "Channels:"]
     entry $mytoplevel.in1f.x2 -textvariable audio_inchan1 -width 3
     pack $mytoplevel.in1f.x0 $mytoplevel.in1f.x1 $mytoplevel.in1f.l2 \
         $mytoplevel.in1f.x2 -side left -fill x
 
         # input device 2
-    if {$longform && $multi > 1 && [llength $audio_indevlist] > 1} {
+    if {$longform && $multi > 1 && [llength $audio_indev] > 1} {
         frame $mytoplevel.in2f
         pack $mytoplevel.in2f -side top
 
         checkbutton $mytoplevel.in2f.x0 -variable audio_inenable2 \
             -text [_ "Input device 2:"] -anchor e
-        button $mytoplevel.in2f.x1 -text [lindex $audio_indevlist $audio_indev2] \
+        button $mytoplevel.in2f.x1 -text [lindex $audio_indev $audio_indev2] \
             -command [list audio_popup $mytoplevel $mytoplevel.in2f.x1 audio_indev2 \
-                $audio_indevlist]
+                $audio_indev]
         label $mytoplevel.in2f.l2 -text [_ "Channels:"]
         entry $mytoplevel.in2f.x2 -textvariable audio_inchan2 -width 3
         pack $mytoplevel.in2f.x0 $mytoplevel.in2f.x1 $mytoplevel.in2f.l2 \
@@ -215,30 +215,30 @@ proc ::dialog_audio::pdtk_audio_dialog {mytoplevel \
     }
 
         # input device 3
-    if {$longform && $multi > 1 && [llength $audio_indevlist] > 2} {
+    if {$longform && $multi > 1 && [llength $audio_indev] > 2} {
         frame $mytoplevel.in3f
         pack $mytoplevel.in3f -side top
 
         checkbutton $mytoplevel.in3f.x0 -variable audio_inenable3 \
             -text [_ "Input device 3:"] -anchor e
-        button $mytoplevel.in3f.x1 -text [lindex $audio_indevlist $audio_indev3] \
+        button $mytoplevel.in3f.x1 -text [lindex $audio_indev $audio_indev3] \
             -command [list audio_popup $mytoplevel $mytoplevel.in3f.x1 audio_indev3 \
-                $audio_indevlist]
+                $audio_indev]
         label $mytoplevel.in3f.l2 -text [_ "Channels:"]
         entry $mytoplevel.in3f.x2 -textvariable audio_inchan3 -width 3
         pack $mytoplevel.in3f.x0 $mytoplevel.in3f.x1 $mytoplevel.in3f.l2 $mytoplevel.in3f.x2 -side left
     }
 
         # input device 4
-    if {$longform && $multi > 1 && [llength $audio_indevlist] > 3} {
+    if {$longform && $multi > 1 && [llength $audio_indev] > 3} {
         frame $mytoplevel.in4f
         pack $mytoplevel.in4f -side top
 
         checkbutton $mytoplevel.in4f.x0 -variable audio_inenable4 \
             -text [_ "Input device 4:"] -anchor e
-        button $mytoplevel.in4f.x1 -text [lindex $audio_indevlist $audio_indev4] \
+        button $mytoplevel.in4f.x1 -text [lindex $audio_indev $audio_indev4] \
             -command [list audio_popup $mytoplevel $mytoplevel.in4f.x1 audio_indev4 \
-                $audio_indevlist]
+                $audio_indev]
         label $mytoplevel.in4f.l2 -text [_ "Channels:"]
         entry $mytoplevel.in4f.x2 -textvariable audio_inchan4 -width 3
         pack $mytoplevel.in4f.x0 $mytoplevel.in4f.x1 $mytoplevel.in4f.l2 \
@@ -255,9 +255,9 @@ proc ::dialog_audio::pdtk_audio_dialog {mytoplevel \
         label $mytoplevel.out1f.l1 \
             -text [_ "(same as input device) ..............      "]
     } else {
-        button $mytoplevel.out1f.x1 -text [lindex $audio_outdevlist $audio_outdev1] \
+        button $mytoplevel.out1f.x1 -text [lindex $audio_outdev $audio_outdev1] \
             -command  [list audio_popup $mytoplevel $mytoplevel.out1f.x1 audio_outdev1 \
-                $audio_outdevlist]
+                $audio_outdev]
     }
     label $mytoplevel.out1f.l2 -text [_ "Channels:"]
     entry $mytoplevel.out1f.x2 -textvariable audio_outchan1 -width 3
@@ -269,15 +269,15 @@ proc ::dialog_audio::pdtk_audio_dialog {mytoplevel \
     }
 
         # output device 2
-    if {$longform && $multi > 1 && [llength $audio_outdevlist] > 1} {
+    if {$longform && $multi > 1 && [llength $audio_outdev] > 1} {
         frame $mytoplevel.out2f
         pack $mytoplevel.out2f -side top
 
         checkbutton $mytoplevel.out2f.x0 -variable audio_outenable2 \
             -text [_ "Output device 2:"] -anchor e
-        button $mytoplevel.out2f.x1 -text [lindex $audio_outdevlist $audio_outdev2] \
+        button $mytoplevel.out2f.x1 -text [lindex $audio_outdev $audio_outdev2] \
             -command \
-            [list audio_popup $mytoplevel $mytoplevel.out2f.x1 audio_outdev2 $audio_outdevlist]
+            [list audio_popup $mytoplevel $mytoplevel.out2f.x1 audio_outdev2 $audio_outdev]
         label $mytoplevel.out2f.l2 -text [_ "Channels:"]
         entry $mytoplevel.out2f.x2 -textvariable audio_outchan2 -width 3
         pack $mytoplevel.out2f.x0 $mytoplevel.out2f.x1 $mytoplevel.out2f.l2\
@@ -285,15 +285,15 @@ proc ::dialog_audio::pdtk_audio_dialog {mytoplevel \
     }
 
         # output device 3
-    if {$longform && $multi > 1 && [llength $audio_outdevlist] > 2} {
+    if {$longform && $multi > 1 && [llength $audio_outdev] > 2} {
         frame $mytoplevel.out3f
         pack $mytoplevel.out3f -side top
 
         checkbutton $mytoplevel.out3f.x0 -variable audio_outenable3 \
             -text [_ "Output device 3:"] -anchor e
-        button $mytoplevel.out3f.x1 -text [lindex $audio_outdevlist $audio_outdev3] \
+        button $mytoplevel.out3f.x1 -text [lindex $audio_outdev $audio_outdev3] \
             -command \
-            [list audio_popup $mytoplevel $mytoplevel.out3f.x1 audio_outdev3 $audio_outdevlist]
+            [list audio_popup $mytoplevel $mytoplevel.out3f.x1 audio_outdev3 $audio_outdev]
         label $mytoplevel.out3f.l2 -text [_ "Channels:"]
         entry $mytoplevel.out3f.x2 -textvariable audio_outchan3 -width 3
         pack $mytoplevel.out3f.x0 $mytoplevel.out3f.x1 $mytoplevel.out3f.l2 \
@@ -301,15 +301,15 @@ proc ::dialog_audio::pdtk_audio_dialog {mytoplevel \
     }
 
         # output device 4
-    if {$longform && $multi > 1 && [llength $audio_outdevlist] > 3} {
+    if {$longform && $multi > 1 && [llength $audio_outdev] > 3} {
         frame $mytoplevel.out4f
         pack $mytoplevel.out4f -side top
 
         checkbutton $mytoplevel.out4f.x0 -variable audio_outenable4 \
             -text [_ "Output device 4:"] -anchor e
-        button $mytoplevel.out4f.x1 -text [lindex $audio_outdevlist $audio_outdev4] \
+        button $mytoplevel.out4f.x1 -text [lindex $audio_outdev $audio_outdev4] \
             -command \
-            [list audio_popup $mytoplevel $mytoplevel.out4f.x1 audio_outdev4 $audio_outdevlist]
+            [list audio_popup $mytoplevel $mytoplevel.out4f.x1 audio_outdev4 $audio_outdev]
         label $mytoplevel.out4f.l2 -text [_ "Channels:"]
         entry $mytoplevel.out4f.x2 -textvariable audio_outchan4 -width 3
         pack $mytoplevel.out4f.x0 $mytoplevel.out4f.x1 $mytoplevel.out4f.l2 \

@@ -32,24 +32,24 @@ proc open_file {filename} {
 
 proc pdtk_openpanel {target localdir} {
     if {! [file isdirectory $localdir]} {
-        if { ! [file isdirectory $::file_opendir]} {
-            set ::file_opendir $::env(HOME)
+        if { ! [file isdirectory $::file_open]} {
+            set ::file_open $::env(HOME)
         }
-        set localdir $::file_opendir
+        set localdir $::file_open
     }
     set filename [tk_getOpenFile -initialdir $localdir]
     if {$filename ne ""} {
-        set ::file_opendir [file dirname $filename]
+        set ::file_open [file dirname $filename]
         pdsend "$target callback [enquote_path $filename]"
     }
 }
 
 proc pdtk_savepanel {target localdir} {
     if {! [file isdirectory $localdir]} {
-        if { ! [file isdirectory $::file_newdir]} {
-            set ::file_newdir $::env(HOME)
+        if { ! [file isdirectory $::file_new]} {
+            set ::file_new $::env(HOME)
         }
-        set localdir $::file_newdir
+        set localdir $::file_new
     }
     set filename [tk_getSaveFile -initialdir $localdir]
     if {$filename ne ""} {

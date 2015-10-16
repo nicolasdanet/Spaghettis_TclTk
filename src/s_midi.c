@@ -584,7 +584,7 @@ void sys_open_midi(int nmidiindev, int *midiindev,
     sys_save_midi_params(nmidiindev, midiindev,
         nmidioutdev, midioutdev);
 
-    sys_vgui("set pd_whichmidiapi %d\n", sys_midiapi);
+    sys_vgui("set ::pd_midi %d\n", sys_midiapi);
 
 }
 
@@ -674,14 +674,14 @@ void glob_midi_properties(t_pd *dummy, t_floatarg flongform)
     sys_get_midi_devs(indevlist, &nindevs, outdevlist, &noutdevs,
         MAXNDEV, DEVDESCSIZE);
 
-    sys_gui("global midi_indevlist; set midi_indevlist {none}\n");
+    sys_gui("set ::midi_indev {none}\n");
     for (i = 0; i < nindevs; i++)
-        sys_vgui("lappend midi_indevlist {%s}\n",
+        sys_vgui("lappend ::midi_indev {%s}\n",
             indevlist + i * DEVDESCSIZE);
 
-    sys_gui("global midi_outdevlist; set midi_outdevlist {none}\n");
+    sys_gui("set ::midi_outdev {none}\n");
     for (i = 0; i < noutdevs; i++)
-        sys_vgui("lappend midi_outdevlist {%s}\n",
+        sys_vgui("lappend ::midi_outdev {%s}\n",
             outdevlist + i * DEVDESCSIZE);
 
     sys_get_midi_params(&nindev, midiindev, &noutdev, midioutdev);

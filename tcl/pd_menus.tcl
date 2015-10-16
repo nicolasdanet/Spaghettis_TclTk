@@ -250,18 +250,18 @@ proc ::pd_menus::build_media_menu {mymenu} {
     if {$audio_apilist_length > 0} {$mymenu add separator}
     for {set x 0} {$x<$audio_apilist_length} {incr x} {
         $mymenu add radiobutton -label [lindex [lindex $::audio_api $x] 0] \
-            -command {menu_audio 0} -variable ::pd_whichapi \
+            -command {menu_audio 0} -variable ::pd_audio \
             -value [lindex [lindex $::audio_api $x] 1]\
-            -command {pdsend "pd audio-setapi $::pd_whichapi"}
+            -command {pdsend "pd audio-setapi $::pd_audio"}
     }
     
-    set midi_apilist_length [llength $::midi_apilist]
-    if {$midi_apilist_length > 0} {$mymenu add separator}
-    for {set x 0} {$x<$midi_apilist_length} {incr x} {
-        $mymenu add radiobutton -label [lindex [lindex $::midi_apilist $x] 0] \
-            -command {menu_midi 0} -variable ::pd_whichmidiapi \
-            -value [lindex [lindex $::midi_apilist $x] 1]\
-            -command {pdsend "pd midi-setapi $::pd_whichmidiapi"}
+    set midi_api_length [llength $::midi_api]
+    if {$midi_api_length > 0} {$mymenu add separator}
+    for {set x 0} {$x<$midi_api_length} {incr x} {
+        $mymenu add radiobutton -label [lindex [lindex $::midi_api $x] 0] \
+            -command {menu_midi 0} -variable ::pd_midi \
+            -value [lindex [lindex $::midi_api $x] 1]\
+            -command {pdsend "pd midi-setapi $::pd_midi"}
     }
 
     $mymenu add  separator
