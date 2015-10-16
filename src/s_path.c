@@ -698,8 +698,9 @@ void sys_set_searchpath( void)
 }
 
     /* send the hard-coded search path to pd-gui */
-void sys_set_extrapath( void)
+void sys_set_extrapath(void)
 {
+    /*
     int i;
     t_namelist *nl;
 
@@ -707,6 +708,7 @@ void sys_set_extrapath( void)
     for (nl = sys_staticpath, i = 0; nl; nl = nl->nl_next, i++)
         sys_vgui("lappend ::tmp_path {%s}\n", nl->nl_string);
     sys_gui("set ::sys_staticpath $::tmp_path\n");
+    */
 }
 
     /* start a search path dialog window */

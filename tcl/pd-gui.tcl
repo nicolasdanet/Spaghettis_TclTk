@@ -21,7 +21,7 @@ package require Tk
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Note that all the Tcl files MUST be kept in the directory of this file.
+# Note that ALL the Tcl files MUST be kept in the same directory that this file.
 
 set auto_path [linsert $auto_path 0 [file dirname [info script]]]
 
@@ -54,13 +54,15 @@ package require pdtk_textwindow
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Import functions into the global namespace.
+# Import functions into the global namespace for convenience.
 
-namespace import ::pd_commands::* 
+namespace import ::pd_commands::*
 namespace import ::pd_connect::pdsend
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
+
+# Import functions called by the pd executable into the global namespace. 
 
 namespace import ::dialog_array::pdtk_array_dialog
 namespace import ::dialog_array::pdtk_array_listview_new
@@ -119,18 +121,14 @@ set font_fixed {
     36 25 45
 }
 
-set sys_libdir          {}
-set sys_guidir          {}
 set sys_searchpath      {}
-set sys_staticpath      {}
-
 set startup_flags       {}
 set startup_libraries   {}
 
 set file_newdir         [pwd]
 set file_opendir        [pwd]
 
-set audio_apilist {}
+set audio_api           {}
 set audio_indevlist {}
 set audio_outdevlist {}
 set midi_apilist {}
@@ -190,12 +188,6 @@ set ::undo_toplevel "."
 
 namespace eval ::pdgui:: {
     variable scriptname [ file normalize [ info script ] ]
-}
-
-# root paths to find Pd's files where they are installed
-proc set_pd_paths {} {
-    set ::sys_guidir [file normalize [file dirname [info script]]]
-    set ::sys_libdir [file normalize [file join $::sys_guidir ".."]]
 }
 
 proc init_for_platform {} {
@@ -299,7 +291,6 @@ proc init_for_platform {} {
             set ::windowframex 0
             set ::windowframey 0
             # TODO use 'winico' package for full, hicolor icon support
-            # wm iconbitmap . -default [file join $::sys_guidir pd.ico]
             # mouse cursors for all the different modes
             set ::cursor_runmode_nothing "right_ptr"
             set ::cursor_runmode_clickme "arrow"
@@ -408,7 +399,7 @@ proc fit_font_into_metrics {} {
 proc pdtk_pd_startup {major minor bugfix test
                       audio_apis midi_apis sys_font sys_fontweight} {
     set oldtclversion 0
-    set ::audio_apilist $audio_apis
+    set ::audio_api $audio_apis
     set ::midi_apilist $midi_apis
     if {$::tcl_version >= 8.5} {find_default_font}
     set_base_font $sys_font $sys_fontweight
@@ -583,7 +574,6 @@ proc main {argc argv} {
     load_locale
     parse_args $argc $argv
     check_for_running_instances
-    set_pd_paths
     init_for_platform
 
     # ::host and ::port are parsed from argv by parse_args

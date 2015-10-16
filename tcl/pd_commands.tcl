@@ -219,25 +219,6 @@ proc ::pd_commands::menu_aboutpd {} {
     }
 }
 
-# ------------------------------------------------------------------------------
-# opening docs as menu items (like the Test Audio and MIDI patch and the manual)
-proc ::pd_commands::menu_doc_open {dir basename} {
-    if {[file pathtype $dir] eq "relative"} {
-        set dirname "$::sys_libdir/$dir"
-    } else {
-        set dirname $dir
-    }
-    set textextension "[string tolower [file extension $basename]]"
-    if {[lsearch -exact [lindex $::filetypes 0 1]  $textextension] > -1} {
-        set fullpath [file normalize [file join $dirname $basename]]
-        set dirname [file dirname $fullpath]
-        set basename [file tail $fullpath]
-        pdsend "pd open [enquote_path $basename] [enquote_path $dirname]"
-    } else {
-        ::pd_commands::menu_openfile "$dirname/$basename"
-    }
-}
-
 # open HTML docs from the menu using the OS-default HTML viewer
 proc ::pd_commands::menu_openfile {filename} {
     if {$::tcl_platform(os) eq "Darwin"} {

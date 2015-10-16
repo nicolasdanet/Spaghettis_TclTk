@@ -246,12 +246,12 @@ proc ::pd_menus::build_media_menu {mymenu} {
     $mymenu add radiobutton -label [_ "DSP Off"] -accelerator "$accelerator+." \
         -variable ::dsp -value 0 -command {pdsend "pd dsp 0"}
 
-    set audio_apilist_length [llength $::audio_apilist]
+    set audio_apilist_length [llength $::audio_api]
     if {$audio_apilist_length > 0} {$mymenu add separator}
     for {set x 0} {$x<$audio_apilist_length} {incr x} {
-        $mymenu add radiobutton -label [lindex [lindex $::audio_apilist $x] 0] \
+        $mymenu add radiobutton -label [lindex [lindex $::audio_api $x] 0] \
             -command {menu_audio 0} -variable ::pd_whichapi \
-            -value [lindex [lindex $::audio_apilist $x] 1]\
+            -value [lindex [lindex $::audio_api $x] 1]\
             -command {pdsend "pd audio-setapi $::pd_whichapi"}
     }
     
