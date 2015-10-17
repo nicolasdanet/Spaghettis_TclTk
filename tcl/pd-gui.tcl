@@ -87,7 +87,12 @@ namespace import ::pdtk_canvas::pdtk_*
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-set scriptname              [file normalize [info script]]
+set pd_gui(scriptname) [file normalize [info script]]
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+# set scriptname              [file normalize [info script]]
 set modifier                ""
 
 set is_initialized          0
@@ -455,8 +460,8 @@ proc singleton_request {offset maxbytes} {
 }
 
 proc first_lost {} {
-    receive_args [selection get -selection ${::scriptname} ]
-    selection own -command first_lost -selection ${::scriptname} .
+    receive_args [selection get -selection $::pd_gui(scriptname) ]
+    selection own -command first_lost -selection $::pd_gui(scriptname) .
  }
 
 proc others_lost {} {
@@ -496,19 +501,19 @@ proc check_for_running_instances { } {
             # http://wiki.tcl.tk/1558
             # TODO replace PUREDATA name with path so this code is a singleton
             # based on install location rather than this hard-coded name
-            if {![singleton ${::scriptname}_MANAGER ]} {
+            if {![singleton ${::pd_gui(scriptname)}_MANAGER ]} {
                 # if pd-gui gets called from pd ('pd-gui 5400') or is told otherwise
                 # to connect to a running instance of Pd (by providing [<host>:]<port>)
                 # then we don't want to connect to a running instance
                 if { $::port > 0 && $::host ne "" } { return }
-                selection handle -selection ${::scriptname} . "send_args"
-                selection own -command others_lost -selection ${::scriptname} .
+                selection handle -selection $::pd_gui(scriptname) . "send_args"
+                selection own -command others_lost -selection $::pd_gui(scriptname) .
                 after 5000 set ::singleton_state "timeout"
                 vwait ::singleton_state
                 exit
             } else {
                 # first instance
-                selection own -command first_lost -selection ${::scriptname} .
+                selection own -command first_lost -selection $::pd_gui(scriptname) .
             }
         } "win32" {
             ## http://wiki.tcl.tk/8940
