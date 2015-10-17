@@ -160,17 +160,17 @@ proc ::dialog_find::create_dialog {mytoplevel} {
     wm group .find .
     wm resizable .find 0 0
     wm transient .find
-    .find configure -menu $::dialog_menubar
+    .find configure -menu $::window_menubar
     .find configure -padx 10 -pady 5
     ::pd_bindings::dialog_bindings .find "find"
     # sending these commands to the Find Dialog Panel should forward them to
     # the currently focused patch
     bind .find <$::modifier-Key-s> \
-        {menu_send $::focused_window menusave; break}
+        {menu_send $::window_focused menusave; break}
     bind .find <$::modifier-Shift-Key-S> \
-        {menu_send $::focused_window menusaveas; break}
+        {menu_send $::window_focused menusaveas; break}
     bind .find <$::modifier-Key-p> \
-        {menu_print $::focused_window; break}
+        {menu_print $::window_focused; break}
     
     label .find.searchin -text \
         [concat [_ "Search in"] [_ "Pd window"] [_ "for:"] ]

@@ -90,11 +90,11 @@ proc ::dialog_font::pdtk_canvas_dofont {gfxstub initsize} {
 
 proc ::dialog_font::create_dialog {gfxstub} {
     toplevel .font -class DialogWindow
-    .font configure -menu $::dialog_menubar
+    .font configure -menu $::window_menubar
     .font configure -padx 10 -pady 5
     wm group .font .
     wm resizable .font 0 0
-    wm transient .font $::focused_window
+    wm transient .font $::window_focused
     ::pd_bindings::dialog_bindings .font "font"
     # replace standard bindings to work around the gfxstub stuff and use
     # break to prevent the close window command from going to other bindings.

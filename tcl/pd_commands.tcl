@@ -20,25 +20,25 @@ namespace eval ::pd_commands:: {
 
 proc ::pd_commands::menu_new {} {
     variable untitled_number
-    if { ! [file isdirectory $::file_new]} {set ::file_new $::env(HOME)}
+    if { ! [file isdirectory $::directory_new]} {set ::directory_new $::env(HOME)}
     # to localize "Untitled" there will need to be changes in g_canvas.c and
     # g_readwrite.c, where it tests for the string "Untitled"
     set untitled_name "Untitled"
-    pdsend "pd menunew $untitled_name-$untitled_number [enquote_path $::file_new]"
+    pdsend "pd menunew $untitled_name-$untitled_number [enquote_path $::directory_new]"
     incr untitled_number
 }
 
 proc ::pd_commands::menu_open {} {
-    if { ! [file isdirectory $::file_open]} {set ::file_open $::env(HOME)}
+    if { ! [file isdirectory $::directory_open]} {set ::directory_open $::env(HOME)}
     set files [tk_getOpenFile -defaultextension .pd \
                        -multiple true \
                        -filetypes $::filetypes \
-                       -initialdir $::file_open]
+                       -initialdir $::directory_open]
     if {$files ne ""} {
         foreach filename $files { 
             open_file $filename
         }
-        set ::file_open [file dirname $filename]
+        set ::directory_open [file dirname $filename]
     }
 }
 
@@ -56,27 +56,27 @@ proc ::pd_commands::menu_print {mytoplevel} {
 # functions called from Edit menu
 
 proc ::pd_commands::menu_undo {} {
-    if {$::focused_window eq $::undo_toplevel && $::undo_action ne "no"} {
-        pdsend "$::focused_window undo"
+    if {$::window_focused eq $::undomanager_toplevel && $::undomanager_undo ne "no"} {
+        pdsend "$::window_focused undo"
     }
 }
 
 proc ::pd_commands::menu_redo {} {
-    if {$::focused_window eq $::undo_toplevel && $::redo_action ne "no"} {
-        pdsend "$::focused_window redo"
+    if {$::window_focused eq $::undomanager_toplevel && $::undomanager_redo ne "no"} {
+        pdsend "$::window_focused redo"
     }
 }
 
 proc ::pd_commands::menu_editmode {state} {
-    if {[winfo class $::focused_window] ne "PatchWindow"} {return}
-    set ::editmode_button $state
+    if {[winfo class $::window_focused] ne "PatchWindow"} {return}
+    set ::is_editmode $state
 # this shouldn't be necessary because 'pd' will reply with pdtk_canvas_editmode
-#    set ::editmode($::focused_window) $state
-    pdsend "$::focused_window editmode $state"
+#    set ::patch_is_editmode($::window_focused) $state
+    pdsend "$::window_focused editmode $state"
 }
 
 proc ::pd_commands::menu_toggle_editmode {} {
-    menu_editmode [expr {! $::editmode_button}]
+    menu_editmode [expr {! $::is_editmode}]
 }
 
 # ------------------------------------------------------------------------------
@@ -110,20 +110,20 @@ proc ::pd_commands::menu_send_float {window message float} {
 # open the dialog panels
 
 proc ::pd_commands::menu_message_dialog {} {
-    ::dialog_message::open_message_dialog $::focused_window
+    ::dialog_message::open_message_dialog $::window_focused
 }
 
 proc ::pd_commands::menu_find_dialog {} {
-    ::dialog_find::open_find_dialog $::focused_window
+    ::dialog_find::open_find_dialog $::window_focused
 }
 
 proc ::pd_commands::menu_font_dialog {} {
     if {[winfo exists .font]} {
         raise .font
-    } elseif {$::focused_window eq ".pdwindow"} {
+    } elseif {$::window_focused eq ".pdwindow"} {
         pdtk_canvas_dofont .pdwindow [lindex [.pdwindow.text cget -font] 1]
     } else {
-        pdsend "$::focused_window menufont"
+        pdsend "$::window_focused menufont"
     }
 }
 
@@ -159,7 +159,7 @@ proc ::pd_commands::menu_maximize {window} {
 }
 
 proc ::pd_commands::menu_raise_pdwindow {} {
-    if {$::focused_window eq ".pdwindow" && [winfo viewable .pdwindow]} {
+    if {$::window_focused eq ".pdwindow" && [winfo viewable .pdwindow]} {
         lower .pdwindow
     } else {
         wm deiconify .pdwindow
@@ -193,9 +193,9 @@ proc menu_clear_console {} {
 proc ::pd_commands::set_filenewdir {mytoplevel} {
     # TODO add Aqua specifics once g_canvas.c has [wm attributes -titlepath]
     if {$mytoplevel eq ".pdwindow"} {
-        set ::file_new $::file_open
+        set ::directory_new $::directory_open
     } else {
-        regexp -- ".+ - (.+)" [wm title $mytoplevel] ignored ::file_new
+        regexp -- ".+ - (.+)" [wm title $mytoplevel] ignored ::directory_new
     }
 }
 
@@ -209,7 +209,7 @@ proc ::pd_commands::menu_aboutpd {} {
         toplevel .aboutpd -class TextWindow
         wm title .aboutpd [_ "About Pd"]
         wm group .aboutpd .
-        .aboutpd configure -menu $::dialog_menubar
+        .aboutpd configure -menu $::window_menubar
         text .aboutpd.text -relief flat -borderwidth 0 \
             -yscrollcommand ".aboutpd.scroll set" -background white
         scrollbar .aboutpd.scroll -command ".aboutpd.text yview"

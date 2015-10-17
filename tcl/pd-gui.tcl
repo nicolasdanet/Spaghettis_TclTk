@@ -87,81 +87,64 @@ namespace import ::pdtk_canvas::pdtk_*
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-set initialized         0
-set logged              0
+set scriptname              [file normalize [info script]]
+set modifier                ""
 
-set host                ""
-set port                0
+set is_initialized          0
+set is_stderr               0
+set is_dsp                  0
+set is_editmode             0
 
-set font_family         "courier"
-set font_weight         "normal"
-set font_measured       {}
-set font_fixed { 
-    8 6 11 
-    9 6 12
-    10 7 13
-    12 9 16
-    14 8 17
-    16 10 20
-    18 11 22
-    24 15 25
-    30 18 37
-    36 25 45
-}
+set host                    ""
+set port                    0
 
-set file_new            [pwd]
-set file_open           [pwd]
+set directory_new           [pwd]
+set directory_open          [pwd]
+set directory_path          {}
 
-set sys_searchpath      {}
-set startup_flags       {}
-set startup_libraries   {}
-set audio_api           {}
-set audio_indev         {}
-set audio_outdev        {}
-set midi_api            {}
-set midi_indev          {}
-set midi_outdev         {}
+set file_recent             {}
+set file_recent_maximum     5
 
-set pd_midi             0
-set pd_audio            0
+set font_family             "courier"
+set font_weight             "normal"
+set font_fixed              "8 6 11 10 7 13 12 9 16 14 8 17 16 10 20 18 11 22 24 15 25 30 18 37 36 25 45"
+set font_measured           {}
 
-set dsp                 0
-set focused_window      .
+set startup_flags           {}
+set startup_libraries       {}
 
-set recentfiles_list    {}
-set total_recentfiles   5
+set api_audio_list          {}
+set api_midi_list           {}
+set api_audio               0
+set api_midi                0
 
-set popup_xcanvas       0
-set popup_ycanvas       0
+set audio_indev             {}
+set audio_outdev            {}
+set midi_indev              {}
+set midi_outdev             {}
 
-set modifier            ""
-set editmode_button     0
+set window_focused          .
+set window_popup_x          0
+set window_popup_y          0
+set window_frame_x          0
+set window_frame_y          0
+set window_menubar          ""
+set window_menubar_height   0
+set window_minimum_width    50
+set window_minimum_height   20
 
-set menubarsize         0
-set windowframex        0
-set windowframey        0
+set undomanager_undo                "no"
+set undomanager_redo                "no"
+set undomanager_toplevel            "."
 
-array set editmode          {}
-array set editingtext       {}
-array set loaded            {}
-array set xscrollable       {}
-array set yscrollable       {}
-
-array set windowname        {}
-array set childwindows      {}
-array set parentwindows     {}
-
-set patch_menubar           ".menubar"
-set dialog_menubar          ""
-
-set canvas_minwidth         50
-set canvas_minheight        20
-
-set undo_action             "no"
-set redo_action             "no"
-set undo_toplevel           "."
-
-set scriptname [ file normalize [ info script ] ]
+array set patch_is_editmode         {}
+array set patch_is_editing          {}
+array set patch_loaded              {}
+array set patch_is_scrollable_x     {}
+array set patch_is_scrollable_y     {}
+array set patch_name                {}
+array set patch_childs              {}
+array set patch_parents             {}
 
 proc init_for_platform {} {
     # we are not using Tk scaling, so fix it to 1 on all platforms.  This
@@ -188,12 +171,12 @@ proc init_for_platform {} {
                      [list [_ "Max Text Files"]    {.mxt} ] \
                     ]
             # some platforms have a menubar on the top, so place below them
-            set ::menubarsize 0
+            set ::window_menubar_height 0
             # Tk handles the window placement differently on each
             # platform. With X11, the x,y placement refers to the window
             # frame's upper left corner. http://wiki.tcl.tk/11502
-            set ::windowframex 3
-            set ::windowframey 53
+            set ::window_frame_x 3
+            set ::window_frame_y 53
 			# TODO add wm iconphoto/iconbitmap here if it makes sense
             # mouse cursors for all the different modes
             set ::cursor_runmode_nothing "left_ptr"
@@ -212,7 +195,7 @@ proc init_for_platform {} {
             option add *DialogWindow*Button.highlightBackground "#E8E8E8" startupFile
             option add *DialogWindow*Entry.background "white" startupFile
             # Mac OS X needs a menubar all the time
-            set ::dialog_menubar ".menubar"
+            set ::window_menubar ".menubar"
             # set file types that open/save recognize
             set ::filetypes \
                 [list \
@@ -222,12 +205,12 @@ proc init_for_platform {} {
                      [list [_ "Max Text Files (.mxt)"]  {.mxt} ] \
                 ]
             # some platforms have a menubar on the top, so place below them
-            set ::menubarsize 22
+            set ::window_menubar_height 22
             # Tk handles the window placement differently on each platform, on
             # Mac OS X, the x,y placement refers to the content window's upper
             # left corner (not of the window frame) http://wiki.tcl.tk/11502
-            set ::windowframex 0
-            set ::windowframey 0
+            set ::window_frame_x 0
+            set ::window_frame_y 0
             # mouse cursors for all the different modes
             set ::cursor_runmode_nothing "arrow"
             set ::cursor_runmode_clickme "center_ptr"
@@ -256,13 +239,13 @@ proc init_for_platform {} {
                      [list [_ "Max Text Files"]    {.mxt} ] \
                     ]
             # some platforms have a menubar on the top, so place below them
-            set ::menubarsize 0
+            set ::window_menubar_height 0
             # Tk handles the window placement differently on each platform, on
             # Mac OS X, the x,y placement refers to the content window's upper
             # left corner. http://wiki.tcl.tk/11502 
             # TODO this probably needs a script layer: http://wiki.tcl.tk/11291
-            set ::windowframex 0
-            set ::windowframey 0
+            set ::window_frame_x 0
+            set ::window_frame_y 0
             # TODO use 'winico' package for full, hicolor icon support
             # mouse cursors for all the different modes
             set ::cursor_runmode_nothing "right_ptr"
@@ -372,8 +355,8 @@ proc fit_font_into_metrics {} {
 proc pdtk_pd_startup {major minor bugfix test
                       audio_apis midi_apis sys_font sys_fontweight} {
     set oldtclversion 0
-    set ::audio_api $audio_apis
-    set ::midi_api $midi_apis
+    set ::api_audio_list $audio_apis
+    set ::api_midi_list $midi_apis
     if {$::tcl_version >= 8.5} {find_default_font}
     set_base_font $sys_font $sys_fontweight
     fit_font_into_metrics
@@ -386,7 +369,7 @@ proc pdtk_pd_startup {major minor bugfix test
     ::pd_console::create_window
     ::pd_menus::configure_for_pdwindow
     open_filestoopen
-    set ::initialized 1
+    set ::is_initialized 1
 }
 
 ##### routine to ask user if OK and, if so, send a message on to Pd ######
@@ -418,7 +401,7 @@ proc pdtk_plugin_dispatch { args } {
 
 proc parse_args {argc argv} {
     pd_parser::init {
-        {-stderr    set {::logged}}
+        {-stderr    set {::is_stderr}}
         {-open      lappend {- ::filestoopen_list}}
     }
     set unflagged_files [pd_parser::get_options $argv]
@@ -560,8 +543,8 @@ proc main {argc argv} {
         exec -- $pd_exec -guiport $::port &
         if {[tk windowingsystem] eq "aqua"} {
             # on Aqua, if 'pd-gui' first, then initial dir is home
-            set ::file_new $::env(HOME)
-            set ::file_open $::env(HOME)
+            set ::directory_new $::env(HOME)
+            set ::directory_open $::env(HOME)
         }
     }
     ::pd_console::verbose 0 "------------------ done with main ----------------------\n"

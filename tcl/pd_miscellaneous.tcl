@@ -32,24 +32,24 @@ proc open_file {filename} {
 
 proc pdtk_openpanel {target localdir} {
     if {! [file isdirectory $localdir]} {
-        if { ! [file isdirectory $::file_open]} {
-            set ::file_open $::env(HOME)
+        if { ! [file isdirectory $::directory_open]} {
+            set ::directory_open $::env(HOME)
         }
-        set localdir $::file_open
+        set localdir $::directory_open
     }
     set filename [tk_getOpenFile -initialdir $localdir]
     if {$filename ne ""} {
-        set ::file_open [file dirname $filename]
+        set ::directory_open [file dirname $filename]
         pdsend "$target callback [enquote_path $filename]"
     }
 }
 
 proc pdtk_savepanel {target localdir} {
     if {! [file isdirectory $localdir]} {
-        if { ! [file isdirectory $::file_new]} {
-            set ::file_new $::env(HOME)
+        if { ! [file isdirectory $::directory_new]} {
+            set ::directory_new $::env(HOME)
         }
-        set localdir $::file_new
+        set localdir $::directory_new
     }
     set filename [tk_getSaveFile -initialdir $localdir]
     if {$filename ne ""} {
@@ -61,7 +61,7 @@ proc pdtk_savepanel {target localdir} {
 # window info (name, path, parents, children, etc.)
 
 proc lookup_windowname {mytoplevel} {
-    set window [array get ::windowname $mytoplevel]
+    set window [array get ::patch_name $mytoplevel]
     if { $window ne ""} {
         return [lindex $window 1]
     } else {

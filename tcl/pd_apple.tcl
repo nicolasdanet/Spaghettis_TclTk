@@ -30,7 +30,7 @@ proc ::tk::mac::ShowPreferences {args} {
 
 proc ::tk::mac::OpenDocument {args} {
     foreach filename $args {
-        if {$::initialized} {
+        if {$::is_initialized} {
             open_file $filename
         } else {
             lappend ::filestoopen_list $filename
@@ -39,7 +39,7 @@ proc ::tk::mac::OpenDocument {args} {
 }
 
 proc ::tk::mac::PrintDocument {args} {
-    menu_print $::focused_window
+    menu_print $::window_focused
 }
 
 proc ::tk::mac::Quit {args} {

@@ -49,7 +49,7 @@ proc pdtk_pastetext {tkcanvas} {
 
 # select all of the text in an existing text box
 proc pdtk_text_selectall {tkcanvas mytag} {
-    if {$::editmode([winfo toplevel $tkcanvas])} {
+    if {$::patch_is_editmode([winfo toplevel $tkcanvas])} {
         $tkcanvas select from $mytag 0
         $tkcanvas select to $mytag end
     }
@@ -60,5 +60,5 @@ proc pdtk_text_editing {mytoplevel tag editing} {
     set tkcanvas [tkcanvas_name $mytoplevel]
     if {$editing == 0} {selection clear $tkcanvas}
     $tkcanvas focus $tag
-    set ::editingtext($mytoplevel) $editing
+    set ::patch_is_editing($mytoplevel) $editing
 }

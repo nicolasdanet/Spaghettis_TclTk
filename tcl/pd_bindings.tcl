@@ -24,7 +24,7 @@ namespace eval ::pd_bindings:: {
 # interpreted immediately.  Since the command is being bound to $mytoplevel,
 # it makes sense to have value of $mytoplevel already in the command.  This is
 # the opposite of most menu/bind commands here and in pd_menus.tcl, which use
-# {} to force execution of any variables (i.e. $::focused_window) until later
+# {} to force execution of any variables (i.e. $::window_focused) until later
 
 
 # binding by class is not recursive, so its useful for window events
@@ -53,7 +53,7 @@ proc ::pd_bindings::global_bindings {} {
     bind all <$::modifier-Key-g>      {menu_send %W findagain}
     bind all <$::modifier-Key-n>      {menu_new}
     bind all <$::modifier-Key-o>      {menu_open}
-    bind all <$::modifier-Key-p>      {menu_print $::focused_window}
+    bind all <$::modifier-Key-p>      {menu_print $::window_focused}
     bind all <$::modifier-Key-q>      {pdsend "pd verifyquit"}
     bind all <$::modifier-Key-r>      {menu_raise_pdwindow}
     bind all <$::modifier-Key-s>      {menu_send %W menusave}
@@ -194,21 +194,21 @@ proc ::pd_bindings::patch_configure {mytoplevel width height x y} {
     
 proc ::pd_bindings::window_destroy {window} {
     set mytoplevel [winfo toplevel $window]
-    unset ::editmode($mytoplevel)
-    unset ::editingtext($mytoplevel)
-    unset ::loaded($mytoplevel)
+    unset ::patch_is_editmode($mytoplevel)
+    unset ::patch_is_editing($mytoplevel)
+    unset ::patch_loaded($mytoplevel)
     # unset my entries all of the window data tracking arrays
-    array unset ::windowname $mytoplevel
-    array unset ::parentwindows $mytoplevel
-    array unset ::childwindows $mytoplevel
+    array unset ::patch_name $mytoplevel
+    array unset ::patch_parents $mytoplevel
+    array unset ::patch_childs $mytoplevel
 }
 
 # do tasks when changing focus (Window menu, scrollbars, etc.)
 proc ::pd_bindings::window_focusin {mytoplevel} {
-    # focused_window is used throughout for sending bindings, menu commands,
+    # window_focused is used throughout for sending bindings, menu commands,
     # etc. to the correct patch receiver symbol.  MSP took out a line that
     # confusingly redirected the "find" window which might be in mid search
-    set ::focused_window $mytoplevel
+    set ::window_focused $mytoplevel
     ::pd_commands::set_filenewdir $mytoplevel
     ::dialog_font::update_font_dialog $mytoplevel
     if {$mytoplevel eq ".pdwindow"} {
@@ -216,9 +216,9 @@ proc ::pd_bindings::window_focusin {mytoplevel} {
     } else {
         ::pd_menus::configure_for_canvas $mytoplevel
     }
-    if {[winfo exists .font]} {wm transient .font $::focused_window}
+    if {[winfo exists .font]} {wm transient .font $::window_focused}
     # if we regain focus from another app, make sure to editmode cursor is right
-    if {$::editmode($mytoplevel)} {
+    if {$::patch_is_editmode($mytoplevel)} {
         $mytoplevel configure -cursor hand2
     }
     # TODO handle enabling/disabling the Cut/Copy/Paste menu items in Edit

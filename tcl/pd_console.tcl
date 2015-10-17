@@ -123,7 +123,7 @@ proc ::pd_console::logpost {object_id level message} {
         after idle .pdwindow.text.internal yview end
     }
     
-    if {$::logged} {puts stderr $message}
+    if {$::is_stderr} {puts stderr $message}
 }
 
 # shortcuts for posting to the Pd window
@@ -176,9 +176,9 @@ proc ::pd_console::save_logbuffer_to_file {} {
 proc ::pd_console::pdtk_pd_dsp {value} {
     # TODO canvas_startdsp/stopdsp should really send 1 or 0, not "ON" or "OFF"
     if {$value eq "ON"} {
-        set ::dsp 1
+        set ::is_dsp 1
     } else {
-        set ::dsp 0
+        set ::is_dsp 0
     }
 }
 
@@ -308,7 +308,7 @@ proc ::pd_console::set_findinstance_cursor {widget key state} {
 
 proc ::pd_console::create_window {} {
     variable logmenuitems
-    set ::loaded(.pdwindow) 0
+    set ::patch_loaded(.pdwindow) 0
 
     # colorize by class before creating anything
     option add *PdWindow*Entry.highlightBackground "grey" startupFile
@@ -321,7 +321,7 @@ proc ::pd_console::create_window {} {
 
     toplevel .pdwindow -class PdWindow
     wm title .pdwindow [_ "Pd"]
-    set ::windowname(.pdwindow) [_ "Pd"]
+    set ::patch_name(.pdwindow) [_ "Pd"]
     if {[tk windowingsystem] eq "x11"} {
         wm minsize .pdwindow 400 75
     } else {
@@ -336,9 +336,9 @@ proc ::pd_console::create_window {} {
     frame .pdwindow.header.pad1
     pack .pdwindow.header.pad1 -side left -padx 12
 
-    checkbutton .pdwindow.header.dsp -text [_ "DSP"] -variable ::dsp \
+    checkbutton .pdwindow.header.dsp -text [_ "DSP"] -variable ::is_dsp \
         -font {$::font_family -18 bold} -takefocus 1 -background lightgray \
-        -borderwidth 0  -command {pdsend "pd dsp $::dsp"}
+        -borderwidth 0  -command {pdsend "pd dsp $::is_dsp"}
     pack .pdwindow.header.dsp -side right -fill y -anchor e -padx 5 -pady 0
 
 # frame for DIO error and audio in/out labels
@@ -393,7 +393,7 @@ proc ::pd_console::create_window {} {
     # print whatever is in the queue after the event loop finishes
     after idle [list after 0 ::pd_console::filter_buffer_to_text]
 
-    set ::loaded(.pdwindow) 1
+    set ::patch_loaded(.pdwindow) 1
 
     # set some layout variables
     ::pd_console::set_layout
