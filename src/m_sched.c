@@ -294,7 +294,7 @@ void sys_log_error(int type)
     if (type != ERR_NOTHING && !sched_diored &&
         (sched_diddsp >= sched_dioredtime))
     {
-        sys_vgui("pdtk_pd_dio 1\n");
+        sys_vgui("::pd_console::pdtk_pd_dio 1\n");
         sched_diored = 1;
     }
     sched_dioredtime =
@@ -327,7 +327,7 @@ static void sched_pollformeters( void)
         return;
     if (sched_diored && (sched_diddsp - sched_dioredtime > 0))
     {
-        sys_vgui("pdtk_pd_dio 0\n");
+        sys_vgui("::pd_console::pdtk_pd_dio 0\n");
         sched_diored = 0;
     }
     if (sched_meterson)
@@ -403,7 +403,7 @@ void sched_set_using_audio(int flag)
         
     sys_time_per_dsp_tick = (TIMEUNITPERSECOND) *
         ((double)sys_schedblocksize) / sys_dacsr;
-    sys_vgui("pdtk_pd_audio %s\n", flag ? "on" : "off");
+    sys_vgui("::pd_console::pdtk_pd_audio %s\n", flag ? "on" : "off");
 }
 
     /* take the scheduler forward one DSP tick, also handling clock timeouts */

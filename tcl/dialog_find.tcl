@@ -27,7 +27,6 @@ namespace eval ::dialog_find:: {
     variable find_history {}
     variable history_position 0
 
-    namespace export pdtk_showfindresult
 }
 
 proc ::dialog_find::get_history {direction} {

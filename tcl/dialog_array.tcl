@@ -10,11 +10,7 @@
 package provide dialog_array 0.1
 
 namespace eval ::dialog_array:: {
-    namespace export pdtk_array_dialog
-    namespace export pdtk_array_listview_new
-    namespace export pdtk_array_listview_fillpage
-    namespace export pdtk_array_listview_setpage
-    namespace export pdtk_array_listview_closeWindow
+
 }
 
 # global variables for the listview
@@ -37,9 +33,9 @@ proc ::dialog_array::pdtk_array_listview_setpage {arrayName page} {
 }
 
 proc ::dialog_array::listview_changepage {arrayName np} {
-    pdtk_array_listview_setpage \
+    ::dialog_array::pdtk_array_listview_setpage \
         $arrayName [expr $::pd_array_listview_page($arrayName) + $np]
-    pdtk_array_listview_fillpage $arrayName
+    ::dialog_array::pdtk_array_listview_fillpage $arrayName
 }
 
 proc ::dialog_array::pdtk_array_listview_fillpage {arrayName} {
@@ -205,7 +201,7 @@ proc ::dialog_array::listview_update_entry {arrayName itemNum} {
             set flag 0
         }
     }
-    pdtk_array_listview_fillpage $arrayName
+    ::dialog_array::pdtk_array_listview_fillpage $arrayName
     destroy $lbName.entry
 }
 
@@ -215,7 +211,7 @@ proc ::dialog_array::pdtk_array_listview_closeWindow {arrayName} {
 }
 
 proc ::dialog_array::listview_close {mytoplevel arrayName} {
-    pdtk_array_listview_closeWindow $arrayName
+    ::dialog_array::pdtk_array_listview_closeWindow $arrayName
     pdsend "$mytoplevel arrayviewclose"
 }
 

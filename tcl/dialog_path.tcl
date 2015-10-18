@@ -12,8 +12,6 @@ package provide dialog_path 0.1
 namespace eval ::dialog_path:: {
     variable use_standard_extensions_button 1
     variable verbose_button 0
-
-    namespace export pdtk_path_dialog
 }
 
 ############ pdtk_path_dialog -- run a path dialog #########

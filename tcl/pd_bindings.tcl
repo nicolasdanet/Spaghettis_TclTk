@@ -186,7 +186,7 @@ proc ::pd_bindings::patch_configure {mytoplevel width height x y} {
     # for some reason, when we create a window, we get an event with a
     # widthXheight of 1x1 first, then we get the right values, so filter it out
     if {$width == 1 && $height == 1} {return}
-    pdtk_canvas_getscroll [tkcanvas_name $mytoplevel]
+    ::pdtk_canvas::pdtk_canvas_getscroll [tkcanvas_name $mytoplevel]
     # send the size/location of the window and canvas to 'pd' in the form of:
     #    left top right bottom
     pdsend "$mytoplevel setbounds $x $y [expr $x + $width] [expr $y + $height]"

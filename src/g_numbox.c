@@ -453,7 +453,7 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
         sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
 
     }
-    sprintf(buf, "pdtk_iemgui_dialog %%s |nbx| \
+    sprintf(buf, "::dialog_gui::pdtk_iemgui_dialog %%s |nbx| \
             -------dimensions(digits)(pix):------- %d %d width: %d %d height: \
             -----------output-range:----------- %g min: %g max: %d \
             %d lin log %d %d log-height: %d \

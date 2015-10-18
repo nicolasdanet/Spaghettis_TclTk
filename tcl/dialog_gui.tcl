@@ -13,8 +13,6 @@ namespace eval ::dialog_gui:: {
     variable define_min_flashhold 50
     variable define_min_flashbreak 10
     variable define_min_fontsize 4
-    
-    namespace export pdtk_iemgui_dialog
 }
 
 # TODO convert Init/No Init and Steady on click/Jump on click to checkbuttons

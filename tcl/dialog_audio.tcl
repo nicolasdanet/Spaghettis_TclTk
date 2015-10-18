@@ -10,7 +10,6 @@
 package provide dialog_audio 0.1
 
 namespace eval ::dialog_audio:: {
-    namespace export pdtk_audio_dialog
 }
 
 # TODO this panel really needs some reworking, it works but the code is very

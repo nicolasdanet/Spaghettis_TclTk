@@ -15,8 +15,6 @@ namespace eval ::dialog_font:: {
     variable whichstretch 1
     variable canvaswindow
     variable sizes {8 10 12 16 24 36}
-    
-    namespace export pdtk_canvas_dofont
 }
 
 # TODO this should use the pd_font_$size fonts created in pd-gui.tcl

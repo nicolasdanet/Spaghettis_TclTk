@@ -595,7 +595,7 @@ void canvas_reflecttitle(t_canvas *x)
         strcat(namebuf, ")");
     }
     else namebuf[0] = 0;
-    sys_vgui("pdtk_canvas_reflecttitle .x%lx {%s} {%s} {%s} %d\n",
+    sys_vgui("::pdtk_canvas::pdtk_canvas_reflecttitle .x%lx {%s} {%s} {%s} %d\n",
         x, canvas_getdir(x)->s_name, x->gl_name->s_name, namebuf, x->gl_dirty);
 }
 
@@ -652,7 +652,7 @@ void canvas_map(t_canvas *x, t_floatarg f)
             canvas_drawlines(x);
             if (x->gl_isgraph && x->gl_goprect)
                 canvas_drawredrect(x, 1);
-            sys_vgui("pdtk_canvas_getscroll .x%lx.c\n", x);
+            sys_vgui("::pdtk_canvas::pdtk_canvas_getscroll .x%lx.c\n", x);
         }
     }
     else
@@ -1082,7 +1082,7 @@ static void canvas_start_dsp(void)
 {
     t_canvas *x;
     if (pd_this->pd_dspstate) ugen_stop();
-    else sys_gui("pdtk_pd_dsp ON\n");
+    else sys_gui("::pd_console::pdtk_pd_dsp ON\n");
     ugen_start();
     
     for (x = pd_getcanvaslist(); x; x = x->gl_next)
@@ -1096,7 +1096,7 @@ static void canvas_stop_dsp(void)
     if (pd_this->pd_dspstate)
     {
         ugen_stop();
-        sys_gui("pdtk_pd_dsp OFF\n");
+        sys_gui("::pd_console::pdtk_pd_dsp OFF\n");
         canvas_dspstate = pd_this->pd_dspstate = 0;
     }
 }

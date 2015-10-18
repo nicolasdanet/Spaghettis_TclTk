@@ -13,8 +13,6 @@ package require pd_scrollboxwindow
 
 namespace eval dialog_startup {
     variable defeatrt_flag 0
-    
-    namespace export pdtk_startup_dialog
 }
 
 ########## pdtk_startup_dialog -- dialog window for startup options #########

@@ -19,8 +19,6 @@ package require pd_bindings
 namespace eval ::dialog_message:: {
     variable message_history {"pd dsp 1"}
     variable history_position 0
-
-    namespace export open_message_dialog
 }
 
 proc ::dialog_message::get_history {direction} {

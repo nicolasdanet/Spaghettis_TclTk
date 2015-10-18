@@ -61,27 +61,6 @@ namespace import ::pd_connect::pdsend
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Import functions called by the pd executable into the global namespace. 
-
-namespace import ::dialog_array::pdtk_*
-namespace import ::dialog_audio::pdtk_*
-namespace import ::dialog_canvas::pdtk_*
-namespace import ::dialog_data::pdtk_*
-namespace import ::dialog_find::pdtk_*
-namespace import ::dialog_font::pdtk_*
-namespace import ::dialog_gatom::pdtk_*
-namespace import ::dialog_gui::pdtk_*
-namespace import ::dialog_midi::pdtk_*
-namespace import ::dialog_midi::pdtk_*
-namespace import ::dialog_path::pdtk_*
-namespace import ::dialog_startup::pdtk_*
-
-namespace import ::pd_console::pdtk_*
-namespace import ::pdtk_canvas::pdtk_*
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 # Global variables that are used throughout the GUI.
 
 # ------------------------------------------------------------------------------------------------------------

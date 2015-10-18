@@ -12,7 +12,6 @@
 package provide dialog_canvas 0.1
 
 namespace eval ::dialog_canvas:: {
-    namespace export pdtk_canvas_dialog
 }
 
 # global variables to store checkbox state on canvas properties window.  These

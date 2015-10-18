@@ -275,7 +275,7 @@ static void vslider_properties(t_gobj *z, t_glist *owner)
 
     iemgui_properties(&x->x_gui, srl);
 
-    sprintf(buf, "pdtk_iemgui_dialog %%s |vsl| \
+    sprintf(buf, "::dialog_gui::pdtk_iemgui_dialog %%s |vsl| \
             --------dimensions(pix)(pix):-------- %d %d width: %d %d height: \
             -----------output-range:----------- %g bottom: %g top: %d \
             %d lin log %d %d empty %d \

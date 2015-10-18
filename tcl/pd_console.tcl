@@ -21,10 +21,6 @@ namespace eval ::pd_console:: {
     variable lastlevel 0
 
     namespace export create_window
-    namespace export pdtk_post
-    namespace export pdtk_pd_dsp
-    namespace export pdtk_pd_dio
-    namespace export pdtk_pd_audio
 }
 
 # TODO make the Pd window save its size and location between running

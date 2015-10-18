@@ -10,7 +10,6 @@
 package provide dialog_data 0.1
 
 namespace eval ::dialog_data:: {
-    namespace export pdtk_data_dialog
 }
 
 ############ pdtk_data_dialog -- run a data dialog #########

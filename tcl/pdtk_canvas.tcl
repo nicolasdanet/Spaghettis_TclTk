@@ -12,12 +12,6 @@ package provide pdtk_canvas 0.1
 package require pd_bindings
 
 namespace eval ::pdtk_canvas:: {
-    namespace export pdtk_canvas_popup
-    namespace export pdtk_canvas_editmode
-    namespace export pdtk_canvas_getscroll
-    namespace export pdtk_canvas_setparents
-    namespace export pdtk_canvas_reflecttitle
-    namespace export pdtk_canvas_menuclose
 }
 
 # One thing that is tricky to understand is the difference between a Tk
@@ -279,7 +273,7 @@ proc ::pdtk_canvas::finished_loading_file {mytoplevel} {
     # FocusIn event on creation.
 
     # set editmode to make sure the menu item is in the right state
-    pdtk_canvas_editmode $mytoplevel $::patch_is_editmode($mytoplevel)
+    ::pdtk_canvas::pdtk_canvas_editmode $mytoplevel $::patch_is_editmode($mytoplevel)
     set ::patch_loaded($mytoplevel) 1
     # send the virtual events now that everything is loaded
     event generate $mytoplevel <<Loaded>>

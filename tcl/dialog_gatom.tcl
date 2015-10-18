@@ -12,7 +12,6 @@ package provide dialog_gatom 0.1
 package require pd_miscellaneous
 
 namespace eval ::dialog_gatom:: {
-    namespace export pdtk_gatom_dialog
 }
 
 # array for communicating the position of the radiobuttons (Tk's

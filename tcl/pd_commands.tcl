@@ -70,7 +70,7 @@ proc ::pd_commands::menu_redo {} {
 proc ::pd_commands::menu_editmode {state} {
     if {[winfo class $::pd_gui(window_focused)] ne "PatchWindow"} {return}
     set ::pd_gui(is_editmode) $state
-# this shouldn't be necessary because 'pd' will reply with pdtk_canvas_editmode
+# this shouldn't be necessary because 'pd' will reply with ::pdtk_canvas::pdtk_canvas_editmode
 #    set ::patch_is_editmode($::pd_gui(window_focused)) $state
     pdsend "$::pd_gui(window_focused) editmode $state"
 }
@@ -121,7 +121,7 @@ proc ::pd_commands::menu_font_dialog {} {
     if {[winfo exists .font]} {
         raise .font
     } elseif {$::pd_gui(window_focused) eq ".pdwindow"} {
-        pdtk_canvas_dofont .pdwindow [lindex [.pdwindow.text cget -font] 1]
+        ::dialog_font::pdtk_canvas_dofont .pdwindow [lindex [.pdwindow.text cget -font] 1]
     } else {
         pdsend "$::pd_gui(window_focused) menufont"
     }
