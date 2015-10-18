@@ -131,14 +131,14 @@ proc ::pd_menus::configure_for_dialog {mytoplevel} {
 proc ::pd_menus::build_file_menu {mymenu} {
     # run the platform-specific build_file_menu_* procs first, and config them
     [format build_file_menu_%s [tk windowingsystem]] $mymenu
-    $mymenu entryconfigure [_ "New"]        -command {menu_new}
-    $mymenu entryconfigure [_ "Open"]       -command {menu_open}
-    $mymenu entryconfigure [_ "Save"]       -command {menu_send $::pd_gui(window_focused) menusave}
-    $mymenu entryconfigure [_ "Save As..."] -command {menu_send $::pd_gui(window_focused) menusaveas}
-    #$mymenu entryconfigure [_ "Revert*"]    -command {menu_revert $::pd_gui(window_focused)}
-    $mymenu entryconfigure [_ "Close"]      -command {menu_send_float $::pd_gui(window_focused) menuclose 0}
-    $mymenu entryconfigure [_ "Message..."] -command {menu_message_dialog}
-    $mymenu entryconfigure [_ "Print..."]   -command {menu_print $::pd_gui(window_focused)}
+    $mymenu entryconfigure [_ "New"]        -command {::pd_commands::menu_new}
+    $mymenu entryconfigure [_ "Open"]       -command {::pd_commands::menu_open}
+    $mymenu entryconfigure [_ "Save"]       -command {::pd_commands::menu_send $::pd_gui(window_focused) menusave}
+    $mymenu entryconfigure [_ "Save As..."] -command {::pd_commands::menu_send $::pd_gui(window_focused) menusaveas}
+    #$mymenu entryconfigure [_ "Revert*"]    -command {::pd_commands::menu_revert $::pd_gui(window_focused)}
+    $mymenu entryconfigure [_ "Close"]      -command {::pd_commands::menu_send_float $::pd_gui(window_focused) menuclose 0}
+    $mymenu entryconfigure [_ "Message..."] -command {::pd_commands::menu_message_dialog}
+    $mymenu entryconfigure [_ "Print..."]   -command {::pd_commands::menu_print $::pd_gui(window_focused)}
     # update recent files
     if {[llength $::pd_gui(file_recent)] > 0} {
         ::pd_menus::update_recentfiles_menu false
@@ -148,41 +148,41 @@ proc ::pd_menus::build_file_menu {mymenu} {
 proc ::pd_menus::build_edit_menu {mymenu} {
     variable accelerator
     $mymenu add command -label [_ "Undo"]       -accelerator "$accelerator+Z" \
-        -command {menu_undo $::pd_gui(window_focused)}
+        -command {::pd_commands::menu_undo $::pd_gui(window_focused)}
     $mymenu add command -label [_ "Redo"]       -accelerator "Shift+$accelerator+Z" \
-        -command {menu_redo $::pd_gui(window_focused)}
+        -command {::pd_commands::menu_redo $::pd_gui(window_focused)}
     $mymenu add  separator
     $mymenu add command -label [_ "Cut"]        -accelerator "$accelerator+X" \
-        -command {menu_send $::pd_gui(window_focused) cut}
+        -command {::pd_commands::menu_send $::pd_gui(window_focused) cut}
     $mymenu add command -label [_ "Copy"]       -accelerator "$accelerator+C" \
-        -command {menu_send $::pd_gui(window_focused) copy}
+        -command {::pd_commands::menu_send $::pd_gui(window_focused) copy}
     $mymenu add command -label [_ "Paste"]      -accelerator "$accelerator+V" \
-        -command {menu_send $::pd_gui(window_focused) paste}
+        -command {::pd_commands::menu_send $::pd_gui(window_focused) paste}
     $mymenu add command -label [_ "Duplicate"]  -accelerator "$accelerator+D" \
-        -command {menu_send $::pd_gui(window_focused) duplicate}
+        -command {::pd_commands::menu_send $::pd_gui(window_focused) duplicate}
     $mymenu add command -label [_ "Select All"] -accelerator "$accelerator+A" \
-        -command {menu_send $::pd_gui(window_focused) selectall}
+        -command {::pd_commands::menu_send $::pd_gui(window_focused) selectall}
     $mymenu add  separator
     if {[tk windowingsystem] eq "aqua"} {
 #        $mymenu add command -label [_ "Text Editor"] \
-#            -command {menu_texteditor}
+#            -command {::pd_commands::menu_texteditor}
         $mymenu add command -label [_ "Font"]  -accelerator "$accelerator+T" \
-            -command {menu_font_dialog}
+            -command {::pd_commands::menu_font_dialog}
     } else {
 #        $mymenu add command -label [_ "Text Editor"] -accelerator "$accelerator+T"\
-#            -command {menu_texteditor}
+#            -command {::pd_commands::menu_texteditor}
         $mymenu add command -label [_ "Font"] \
-            -command {menu_font_dialog}
+            -command {::pd_commands::menu_font_dialog}
     }
     $mymenu add command -label [_ "Tidy Up"] \
-        -command {menu_send $::pd_gui(window_focused) tidy}
+        -command {::pd_commands::menu_send $::pd_gui(window_focused) tidy}
     $mymenu add command -label [_ "Clear Console"] \
-        -accelerator "Shift+$accelerator+L" -command {menu_clear_console}
+        -accelerator "Shift+$accelerator+L" -command {::pd_commands::menu_clear_console}
     $mymenu add  separator
     #TODO madness! how to set the state of the check box without invoking the menu!
     $mymenu add check -label [_ "Edit Mode"] -accelerator "$accelerator+E" \
         -variable ::pd_gui(is_editmode) \
-        -command {menu_editmode $::pd_gui(is_editmode)}
+        -command {::pd_commands::menu_editmode $::pd_gui(is_editmode)}
     if {[tk windowingsystem] ne "aqua"} {
         $mymenu add  separator
         create_preferences_menu $mymenu.preferences
@@ -192,49 +192,49 @@ proc ::pd_menus::build_edit_menu {mymenu} {
 
 proc ::pd_menus::build_put_menu {mymenu} {
     variable accelerator
-    # The trailing 0 in menu_send_float basically means leave the object box
+    # The trailing 0 in ::pd_commands::menu_send_float basically means leave the object box
     # sticking to the mouse cursor. The iemguis alway do that when created
     # from the menu, as defined in canvas_iemguis()
     $mymenu add command -label [_ "Object"] -accelerator "$accelerator+1" \
-        -command {menu_send_float $::pd_gui(window_focused) obj 0} 
+        -command {::pd_commands::menu_send_float $::pd_gui(window_focused) obj 0} 
     $mymenu add command -label [_ "Message"] -accelerator "$accelerator+2" \
-        -command {menu_send_float $::pd_gui(window_focused) msg 0}
+        -command {::pd_commands::menu_send_float $::pd_gui(window_focused) msg 0}
     $mymenu add command -label [_ "Number"] -accelerator "$accelerator+3" \
-        -command {menu_send_float $::pd_gui(window_focused) floatatom 0}
+        -command {::pd_commands::menu_send_float $::pd_gui(window_focused) floatatom 0}
     $mymenu add command -label [_ "Symbol"] -accelerator "$accelerator+4" \
-        -command {menu_send_float $::pd_gui(window_focused) symbolatom 0}
+        -command {::pd_commands::menu_send_float $::pd_gui(window_focused) symbolatom 0}
     $mymenu add command -label [_ "Comment"] -accelerator "$accelerator+5" \
-        -command {menu_send_float $::pd_gui(window_focused) text 0}
+        -command {::pd_commands::menu_send_float $::pd_gui(window_focused) text 0}
     $mymenu add  separator
     $mymenu add command -label [_ "Bang"]    -accelerator "Shift+$accelerator+B" \
-        -command {menu_send $::pd_gui(window_focused) bng}
+        -command {::pd_commands::menu_send $::pd_gui(window_focused) bng}
     $mymenu add command -label [_ "Toggle"]  -accelerator "Shift+$accelerator+T" \
-        -command {menu_send $::pd_gui(window_focused) toggle}
+        -command {::pd_commands::menu_send $::pd_gui(window_focused) toggle}
     $mymenu add command -label [_ "Number2"] -accelerator "Shift+$accelerator+N" \
-        -command {menu_send $::pd_gui(window_focused) numbox}
+        -command {::pd_commands::menu_send $::pd_gui(window_focused) numbox}
     $mymenu add command -label [_ "Vslider"] -accelerator "Shift+$accelerator+V" \
-        -command {menu_send $::pd_gui(window_focused) vslider}
+        -command {::pd_commands::menu_send $::pd_gui(window_focused) vslider}
     $mymenu add command -label [_ "Hslider"] -accelerator "Shift+$accelerator+H" \
-        -command {menu_send $::pd_gui(window_focused) hslider}
+        -command {::pd_commands::menu_send $::pd_gui(window_focused) hslider}
     $mymenu add command -label [_ "Vradio"]  -accelerator "Shift+$accelerator+D" \
-        -command {menu_send $::pd_gui(window_focused) vradio}
+        -command {::pd_commands::menu_send $::pd_gui(window_focused) vradio}
     $mymenu add command -label [_ "Hradio"]  -accelerator "Shift+$accelerator+I" \
-        -command {menu_send $::pd_gui(window_focused) hradio}
+        -command {::pd_commands::menu_send $::pd_gui(window_focused) hradio}
     $mymenu add command -label [_ "VU Meter"] -accelerator "Shift+$accelerator+U"\
-        -command {menu_send $::pd_gui(window_focused) vumeter}
+        -command {::pd_commands::menu_send $::pd_gui(window_focused) vumeter}
     $mymenu add command -label [_ "Canvas"]  -accelerator "Shift+$accelerator+C" \
-        -command {menu_send $::pd_gui(window_focused) mycnv}
+        -command {::pd_commands::menu_send $::pd_gui(window_focused) mycnv}
     $mymenu add  separator
-    $mymenu add command -label [_ "Graph"] -command {menu_send $::pd_gui(window_focused) graph}
-    $mymenu add command -label [_ "Array"] -command {menu_send $::pd_gui(window_focused) menuarray}
+    $mymenu add command -label [_ "Graph"] -command {::pd_commands::menu_send $::pd_gui(window_focused) graph}
+    $mymenu add command -label [_ "Array"] -command {::pd_commands::menu_send $::pd_gui(window_focused) menuarray}
 }
 
 proc ::pd_menus::build_find_menu {mymenu} {
     variable accelerator
     $mymenu add command -label [_ "Find..."]    -accelerator "$accelerator+F" \
-        -command {menu_find_dialog}
+        -command {::pd_commands::menu_find_dialog}
     $mymenu add command -label [_ "Find Again"] -accelerator "$accelerator+G" \
-        -command {menu_send $::pd_gui(window_focused) findagain}
+        -command {::pd_commands::menu_send $::pd_gui(window_focused) findagain}
     $mymenu add command -label [_ "Find Last Error"] \
         -command {pdsend {pd finderror}} 
 }
@@ -250,7 +250,7 @@ proc ::pd_menus::build_media_menu {mymenu} {
     if {$audio_apilist_length > 0} {$mymenu add separator}
     for {set x 0} {$x<$audio_apilist_length} {incr x} {
         $mymenu add radiobutton -label [lindex [lindex $::pd_gui(api_audio_list) $x] 0] \
-            -command {menu_audio 0} -variable ::pd_gui(api_audio) \
+            -command {::pd_commands::menu_audio 0} -variable ::pd_gui(api_audio) \
             -value [lindex [lindex $::pd_gui(api_audio_list) $x] 1]\
             -command {pdsend "pd audio-setapi $::pd_gui(api_audio)"}
     }
@@ -259,7 +259,7 @@ proc ::pd_menus::build_media_menu {mymenu} {
     if {$midi_api_length > 0} {$mymenu add separator}
     for {set x 0} {$x<$midi_api_length} {incr x} {
         $mymenu add radiobutton -label [lindex [lindex $::pd_gui(api_midi_list) $x] 0] \
-            -command {menu_midi 0} -variable ::pd_gui(api_midi) \
+            -command {::pd_commands::menu_midi 0} -variable ::pd_gui(api_midi) \
             -value [lindex [lindex $::pd_gui(api_midi_list) $x] 1]\
             -command {pdsend "pd midi-setapi $::pd_gui(api_midi)"}
     }
@@ -275,38 +275,38 @@ proc ::pd_menus::build_window_menu {mymenu} {
     variable accelerator
     if {[tk windowingsystem] eq "aqua"} {
         $mymenu add command -label [_ "Minimize"] -accelerator "$accelerator+M"\
-            -command {menu_minimize $::pd_gui(window_focused)}
+            -command {::pd_commands::menu_minimize $::pd_gui(window_focused)}
         $mymenu add command -label [_ "Zoom"] \
-            -command {menu_maximize $::pd_gui(window_focused)}
+            -command {::pd_commands::menu_maximize $::pd_gui(window_focused)}
         $mymenu add  separator
         $mymenu add command -label [_ "Bring All to Front"] \
-            -command {menu_bringalltofront}
+            -command {::pd_commands::menu_bringalltofront}
     } else {
 		$mymenu add command -label [_ "Next Window"] \
-            -command {menu_raisenextwindow} \
+            -command {::pd_commands::menu_raisenextwindow} \
             -accelerator [_ "$accelerator+Page Down"]
 		$mymenu add command -label [_ "Previous Window"] \
-            -command {menu_raisepreviouswindow} \
+            -command {::pd_commands::menu_raisepreviouswindow} \
             -accelerator [_ "$accelerator+Page Up"]
     }
     $mymenu add  separator
-    $mymenu add command -label [_ "Pd window"] -command {menu_raise_pdwindow} \
+    $mymenu add command -label [_ "Pd window"] -command {::pd_commands::menu_raise_pdwindow} \
         -accelerator "$accelerator+R"
     $mymenu add command -label [_ "Parent Window"] \
-        -command {menu_send $::pd_gui(window_focused) findparent}
+        -command {::pd_commands::menu_send $::pd_gui(window_focused) findparent}
     $mymenu add  separator
 }
 
 proc ::pd_menus::build_help_menu {mymenu} {
     if {[tk windowingsystem] ne "aqua"} {
-        $mymenu add command -label [_ "About Pd"] -command {menu_aboutpd} 
+        $mymenu add command -label [_ "About Pd"] -command {::pd_commands::menu_aboutpd} 
     }
     $mymenu add command -label [_ "List of objects..."] \
         -command {pdsend "pd help-intro"} 
     $mymenu add  separator
     $mymenu add command -label [_ "puredata.info"] \
-        -command {menu_openfile {http://puredata.info}} 
-    $mymenu add command -label [_ "Report a bug"] -command {menu_openfile \
+        -command {::pd_commands::menu_openfile {http://puredata.info}} 
+    $mymenu add command -label [_ "Report a bug"] -command {::pd_commands::menu_openfile \
         {http://sourceforge.net/tracker/?func=add&group_id=55736&atid=478070}} 
     $mymenu add  separator
     $mymenu add command -label [_ "Tcl prompt"] -command \
@@ -495,7 +495,7 @@ proc ::pd_menus::create_preferences_menu {mymenu} {
 proc ::pd_menus::create_apple_menu {mymenu} {
     # TODO this should open a Pd patch called about.pd
     menu $mymenu.apple
-    $mymenu.apple add command -label [_ "About Pd"] -command {menu_aboutpd}
+    $mymenu.apple add command -label [_ "About Pd"] -command {::pd_commands::menu_aboutpd}
     $mymenu.apple add  separator
     create_preferences_menu $mymenu.apple.preferences
     $mymenu.apple add cascade -label [_ "Preferences"] \

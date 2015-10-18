@@ -56,7 +56,6 @@ package require pdtk_textwindow
 
 # Import functions into the global namespace for convenience.
 
-namespace import ::pd_commands::*
 namespace import ::pd_connect::pdsend
 
 # ------------------------------------------------------------------------------------------------------------
@@ -76,6 +75,7 @@ namespace import ::dialog_midi::pdtk_*
 namespace import ::dialog_midi::pdtk_*
 namespace import ::dialog_path::pdtk_*
 namespace import ::dialog_startup::pdtk_*
+
 namespace import ::pd_console::pdtk_*
 namespace import ::pdtk_canvas::pdtk_*
 

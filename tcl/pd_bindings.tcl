@@ -45,60 +45,60 @@ proc ::pd_bindings::global_bindings {} {
     # we use 'bind all' everywhere to get as much of Tk's automatic binding
     # behaviors as possible, things like not sending an event for 'O' when
     # 'Control-O' is pressed.
-    bind all <$::pd_gui(modifier)-Key-a>      {menu_send %W selectall}
-    bind all <$::pd_gui(modifier)-Key-c>      {menu_send %W copy}
-    bind all <$::pd_gui(modifier)-Key-d>      {menu_send %W duplicate}
-    bind all <$::pd_gui(modifier)-Key-e>      {menu_toggle_editmode}
-    bind all <$::pd_gui(modifier)-Key-f>      {menu_find_dialog}
-    bind all <$::pd_gui(modifier)-Key-g>      {menu_send %W findagain}
-    bind all <$::pd_gui(modifier)-Key-n>      {menu_new}
-    bind all <$::pd_gui(modifier)-Key-o>      {menu_open}
-    bind all <$::pd_gui(modifier)-Key-p>      {menu_print $::pd_gui(window_focused)}
+    bind all <$::pd_gui(modifier)-Key-a>      {::pd_commands::menu_send %W selectall}
+    bind all <$::pd_gui(modifier)-Key-c>      {::pd_commands::menu_send %W copy}
+    bind all <$::pd_gui(modifier)-Key-d>      {::pd_commands::menu_send %W duplicate}
+    bind all <$::pd_gui(modifier)-Key-e>      {::pd_commands::menu_toggle_editmode}
+    bind all <$::pd_gui(modifier)-Key-f>      {::pd_commands::menu_find_dialog}
+    bind all <$::pd_gui(modifier)-Key-g>      {::pd_commands::menu_send %W findagain}
+    bind all <$::pd_gui(modifier)-Key-n>      {::pd_commands::menu_new}
+    bind all <$::pd_gui(modifier)-Key-o>      {::pd_commands::menu_open}
+    bind all <$::pd_gui(modifier)-Key-p>      {::pd_commands::menu_print $::pd_gui(window_focused)}
     bind all <$::pd_gui(modifier)-Key-q>      {pdsend "pd verifyquit"}
-    bind all <$::pd_gui(modifier)-Key-r>      {menu_raise_pdwindow}
-    bind all <$::pd_gui(modifier)-Key-s>      {menu_send %W menusave}
-    bind all <$::pd_gui(modifier)-Key-v>      {menu_send %W paste}
-    bind all <$::pd_gui(modifier)-Key-w>      {menu_send_float %W menuclose 0}
-    bind all <$::pd_gui(modifier)-Key-x>      {menu_send %W cut}
-    bind all <$::pd_gui(modifier)-Key-z>      {menu_undo}
-    bind all <$::pd_gui(modifier)-Key-1>      {menu_send_float %W obj 0}
-    bind all <$::pd_gui(modifier)-Key-2>      {menu_send_float %W msg 0}
-    bind all <$::pd_gui(modifier)-Key-3>      {menu_send_float %W floatatom 0}
-    bind all <$::pd_gui(modifier)-Key-4>      {menu_send_float %W symbolatom 0}
-    bind all <$::pd_gui(modifier)-Key-5>      {menu_send_float %W text 0}
+    bind all <$::pd_gui(modifier)-Key-r>      {::pd_commands::menu_raise_pdwindow}
+    bind all <$::pd_gui(modifier)-Key-s>      {::pd_commands::menu_send %W menusave}
+    bind all <$::pd_gui(modifier)-Key-v>      {::pd_commands::menu_send %W paste}
+    bind all <$::pd_gui(modifier)-Key-w>      {::pd_commands::menu_send_float %W menuclose 0}
+    bind all <$::pd_gui(modifier)-Key-x>      {::pd_commands::menu_send %W cut}
+    bind all <$::pd_gui(modifier)-Key-z>      {::pd_commands::menu_undo}
+    bind all <$::pd_gui(modifier)-Key-1>      {::pd_commands::menu_send_float %W obj 0}
+    bind all <$::pd_gui(modifier)-Key-2>      {::pd_commands::menu_send_float %W msg 0}
+    bind all <$::pd_gui(modifier)-Key-3>      {::pd_commands::menu_send_float %W floatatom 0}
+    bind all <$::pd_gui(modifier)-Key-4>      {::pd_commands::menu_send_float %W symbolatom 0}
+    bind all <$::pd_gui(modifier)-Key-5>      {::pd_commands::menu_send_float %W text 0}
     bind all <$::pd_gui(modifier)-Key-slash>  {pdsend "pd dsp 1"}
     bind all <$::pd_gui(modifier)-Key-period> {pdsend "pd dsp 0"}
-    bind all <$::pd_gui(modifier)-greater>    {menu_raisenextwindow}
-    bind all <$::pd_gui(modifier)-less>       {menu_raisepreviouswindow}
+    bind all <$::pd_gui(modifier)-greater>    {::pd_commands::menu_raisenextwindow}
+    bind all <$::pd_gui(modifier)-less>       {::pd_commands::menu_raisepreviouswindow}
 
     # annoying, but Tk's bind needs uppercase letter to get the Shift
-    bind all <$::pd_gui(modifier)-Shift-Key-B> {menu_send %W bng}
-    bind all <$::pd_gui(modifier)-Shift-Key-C> {menu_send %W mycnv}
-    bind all <$::pd_gui(modifier)-Shift-Key-D> {menu_send %W vradio}
-    bind all <$::pd_gui(modifier)-Shift-Key-H> {menu_send %W hslider}
-    bind all <$::pd_gui(modifier)-Shift-Key-I> {menu_send %W hradio}
-    bind all <$::pd_gui(modifier)-Shift-Key-L> {menu_clear_console}
-    bind all <$::pd_gui(modifier)-Shift-Key-N> {menu_send %W numbox}
+    bind all <$::pd_gui(modifier)-Shift-Key-B> {::pd_commands::menu_send %W bng}
+    bind all <$::pd_gui(modifier)-Shift-Key-C> {::pd_commands::menu_send %W mycnv}
+    bind all <$::pd_gui(modifier)-Shift-Key-D> {::pd_commands::menu_send %W vradio}
+    bind all <$::pd_gui(modifier)-Shift-Key-H> {::pd_commands::menu_send %W hslider}
+    bind all <$::pd_gui(modifier)-Shift-Key-I> {::pd_commands::menu_send %W hradio}
+    bind all <$::pd_gui(modifier)-Shift-Key-L> {::pd_commands::menu_clear_console}
+    bind all <$::pd_gui(modifier)-Shift-Key-N> {::pd_commands::menu_send %W numbox}
     bind all <$::pd_gui(modifier)-Shift-Key-Q> {pdsend "pd quit"}
-    bind all <$::pd_gui(modifier)-Shift-Key-S> {menu_send %W menusaveas}
-    bind all <$::pd_gui(modifier)-Shift-Key-T> {menu_send %W toggle}
-    bind all <$::pd_gui(modifier)-Shift-Key-U> {menu_send %W vumeter}
-    bind all <$::pd_gui(modifier)-Shift-Key-V> {menu_send %W vslider}
-    bind all <$::pd_gui(modifier)-Shift-Key-W> {menu_send_float %W menuclose 1}
-    bind all <$::pd_gui(modifier)-Shift-Key-Z> {menu_redo}
+    bind all <$::pd_gui(modifier)-Shift-Key-S> {::pd_commands::menu_send %W menusaveas}
+    bind all <$::pd_gui(modifier)-Shift-Key-T> {::pd_commands::menu_send %W toggle}
+    bind all <$::pd_gui(modifier)-Shift-Key-U> {::pd_commands::menu_send %W vumeter}
+    bind all <$::pd_gui(modifier)-Shift-Key-V> {::pd_commands::menu_send %W vslider}
+    bind all <$::pd_gui(modifier)-Shift-Key-W> {::pd_commands::menu_send_float %W menuclose 1}
+    bind all <$::pd_gui(modifier)-Shift-Key-Z> {::pd_commands::menu_redo}
 
     # OS-specific bindings
     if {[tk windowingsystem] eq "aqua"} {
         # Cmd-m = Minimize and Cmd-t = Font on Mac OS X for all apps
-        bind all <$::pd_gui(modifier)-Key-m>       {menu_minimize %W}
-        bind all <$::pd_gui(modifier)-Key-t>       {menu_font_dialog}
-        bind all <$::pd_gui(modifier)-quoteleft>   {menu_raisenextwindow}
-        bind all <$::pd_gui(modifier)-Shift-Key-M> {menu_message_dialog}
+        bind all <$::pd_gui(modifier)-Key-m>       {::pd_commands::menu_minimize %W}
+        bind all <$::pd_gui(modifier)-Key-t>       {::pd_commands::menu_font_dialog}
+        bind all <$::pd_gui(modifier)-quoteleft>   {::pd_commands::menu_raisenextwindow}
+        bind all <$::pd_gui(modifier)-Shift-Key-M> {::pd_commands::menu_message_dialog}
     } else {
-        bind all <$::pd_gui(modifier)-Key-m>       {menu_message_dialog}
-        #bind all <$::pd_gui(modifier)-Key-t>       {menu_texteditor}
-        bind all <$::pd_gui(modifier)-Next>        {menu_raisenextwindow}    ;# PgUp
-        bind all <$::pd_gui(modifier)-Prior>       {menu_raisepreviouswindow};# PageDown
+        bind all <$::pd_gui(modifier)-Key-m>       {::pd_commands::menu_message_dialog}
+        #bind all <$::pd_gui(modifier)-Key-t>       {::pd_commands::menu_texteditor}
+        bind all <$::pd_gui(modifier)-Next>        {::pd_commands::menu_raisenextwindow}    ;# PgUp
+        bind all <$::pd_gui(modifier)-Prior>       {::pd_commands::menu_raisepreviouswindow};# PageDown
     }
 
     bind all <KeyPress>         {::pd_bindings::sendkey %W 1 %K %A 0}

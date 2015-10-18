@@ -39,7 +39,7 @@ proc ::tk::mac::OpenDocument {args} {
 }
 
 proc ::tk::mac::PrintDocument {args} {
-    menu_print $::pd_gui(window_focused)
+    ::pd_commands::menu_print $::pd_gui(window_focused)
 }
 
 proc ::tk::mac::Quit {args} {

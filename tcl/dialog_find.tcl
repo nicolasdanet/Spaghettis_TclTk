@@ -166,11 +166,11 @@ proc ::dialog_find::create_dialog {mytoplevel} {
     # sending these commands to the Find Dialog Panel should forward them to
     # the currently focused patch
     bind .find <$::pd_gui(modifier)-Key-s> \
-        {menu_send $::pd_gui(window_focused) menusave; break}
+        {::pd_commands::menu_send $::pd_gui(window_focused) menusave; break}
     bind .find <$::pd_gui(modifier)-Shift-Key-S> \
-        {menu_send $::pd_gui(window_focused) menusaveas; break}
+        {::pd_commands::menu_send $::pd_gui(window_focused) menusaveas; break}
     bind .find <$::pd_gui(modifier)-Key-p> \
-        {menu_print $::pd_gui(window_focused); break}
+        {::pd_commands::menu_print $::pd_gui(window_focused); break}
     
     label .find.searchin -text \
         [concat [_ "Search in"] [_ "Pd window"] [_ "for:"] ]

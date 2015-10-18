@@ -76,7 +76,7 @@ proc ::pd_commands::menu_editmode {state} {
 }
 
 proc ::pd_commands::menu_toggle_editmode {} {
-    menu_editmode [expr {! $::pd_gui(is_editmode)}]
+    ::pd_commands::menu_editmode [expr {! $::pd_gui(is_editmode)}]
 }
 
 # ------------------------------------------------------------------------------
