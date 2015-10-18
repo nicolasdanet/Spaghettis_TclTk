@@ -358,7 +358,7 @@ proc ::pd_menus::update_openrecent_menu_aqua {mymenu {write}} {
     # now the list is last first so we just add
     foreach filename $::pd_gui(file_recent) {
         $mymenu add command -label [file tail $filename] \
-            -command "open_file {$filename}"
+            -command "::pd_miscellaneous::open_file {$filename}"
     }
     # clear button
     $mymenu add  separator
@@ -388,11 +388,11 @@ proc ::pd_menus::update_recentfiles_on_menu {mymenu {write}} {
 
         set filename [lindex $::pd_gui(file_recent) $i]
         $mymenu insert [expr $top_separator+1] command \
-            -label [file tail $filename] -command "open_file {$filename}"
+            -label [file tail $filename] -command "::pd_miscellaneous::open_file {$filename}"
     }
     set filename [lindex $::pd_gui(file_recent) 0]
     $mymenu insert [expr $top_separator+1] command \
-        -label [file tail $filename] -command "open_file {$filename}"
+        -label [file tail $filename] -command "::pd_miscellaneous::open_file {$filename}"
 
     # write to config file
     if {$write == true} { ::pd_preferences::write_recentfiles }

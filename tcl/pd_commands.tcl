@@ -36,7 +36,7 @@ proc ::pd_commands::menu_open {} {
                        -initialdir $::pd_gui(directory_open)]
     if {$files ne ""} {
         foreach filename $files { 
-            open_file $filename
+            ::pd_miscellaneous::open_file $filename
         }
         set ::pd_gui(directory_open) [file dirname $filename]
     }

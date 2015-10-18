@@ -9,9 +9,11 @@
 
 package provide pd_miscellaneous 0.1
 
+namespace eval ::pd_miscellaneous:: {}
+
 # a place to temporarily store things until they find a home or go away
 
-proc open_file {filename} {
+proc ::pd_miscellaneous::open_file {filename} {
     set directory [file normalize [file dirname $filename]]
     set basename [file tail $filename]
     if {

@@ -411,7 +411,7 @@ proc parse_args {argc argv} {
 
 proc open_filestoopen {} {
     foreach filename $::pd_gui(file_pended) {
-        open_file $filename
+        ::pd_miscellaneous::open_file $filename
     }
 }
 
@@ -461,12 +461,12 @@ proc receive_args {filelist} {
     wm deiconify .pdwindow
     raise .pdwindow
     foreach filename $filelist {
-        open_file $filename
+        ::pd_miscellaneous::open_file $filename
     }
 }
 
 proc dde_open_handler {cmd} {
-    open_file [file normalize $cmd]
+    ::pd_miscellaneous::open_file [file normalize $cmd]
 }
 
 proc check_for_running_instances { } {

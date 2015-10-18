@@ -12,6 +12,8 @@ package provide pd_apple 0.1
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+package require pd_commands
+package require pd_connect
 package require pd_miscellaneous
 
 # ------------------------------------------------------------------------------------------------------------
@@ -30,7 +32,7 @@ proc ::tk::mac::ShowPreferences {args} {
 proc ::tk::mac::OpenDocument {args} {
     foreach filename $args {
         if {$::pd_gui(is_initialized)} {
-            open_file $filename
+            ::pd_miscellaneous::open_file $filename
         } else {
             lappend ::pd_gui(file_pended) $filename
         }
