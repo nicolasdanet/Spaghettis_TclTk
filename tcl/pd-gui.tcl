@@ -83,6 +83,7 @@ set pd_gui(directory_new)               [pwd]
 set pd_gui(directory_open)              [pwd]
 set pd_gui(directory_path)              {}
 
+set pd_gui(file_pended)                 {}
 set pd_gui(file_recent)                 {}
 set pd_gui(file_recent_maximum)         5
 
@@ -389,7 +390,7 @@ proc pdtk_plugin_dispatch { args } {
 proc parse_args {argc argv} {
     pd_parser::init {
         {-stderr    set {::pd_gui(is_stderr)}}
-        {-open      lappend {- ::filestoopen_list}}
+        {-open      lappend {- ::pd_gui(file_pended)}}
     }
     set unflagged_files [pd_parser::get_options $argv]
     # if we have a single arg that is not a file, its a port or host:port combo
@@ -410,13 +411,13 @@ proc parse_args {argc argv} {
         }
     } elseif {$unflagged_files ne ""} {
         foreach filename $unflagged_files {
-            lappend ::filestoopen_list $filename
+            lappend ::pd_gui(file_pended) $filename
         }
     }
 }
 
 proc open_filestoopen {} {
-    foreach filename $::filestoopen_list {
+    foreach filename $::pd_gui(file_pended) {
         open_file $filename
     }
 }
@@ -455,7 +456,7 @@ proc others_lost {} {
 # all other instances
 proc send_args {offset maxChars} {
     set sendargs {}
-    foreach filename $::filestoopen_list {
+    foreach filename $::pd_gui(file_pended) {
         lappend sendargs [file normalize $filename]
     }
     return [string range $sendargs $offset [expr {$offset+$maxChars}]]

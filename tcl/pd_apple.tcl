@@ -33,7 +33,7 @@ proc ::tk::mac::OpenDocument {args} {
         if {$::pd_gui(is_initialized)} {
             open_file $filename
         } else {
-            lappend ::filestoopen_list $filename
+            lappend ::pd_gui(file_pended) $filename
         }
     }
 }
