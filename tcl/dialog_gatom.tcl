@@ -45,7 +45,7 @@ proc ::dialog_gatom::unescape {sym} {
 proc ::dialog_gatom::apply {mytoplevel} {
     global gatomlabel_radio
     
-    pdsend "$mytoplevel param \
+    ::pd_connect::pdsend "$mytoplevel param \
         [$mytoplevel.width.entry get] \
         [$mytoplevel.limits.lower.entry get] \
         [$mytoplevel.limits.upper.entry get] \
@@ -56,7 +56,7 @@ proc ::dialog_gatom::apply {mytoplevel} {
 }
 
 proc ::dialog_gatom::cancel {mytoplevel} {
-    pdsend "$mytoplevel cancel"
+    ::pd_connect::pdsend "$mytoplevel cancel"
 }
 
 proc ::dialog_gatom::ok {mytoplevel} {

@@ -71,6 +71,6 @@ proc ::dialog_path::commit { new_path } {
     global verbose_button
 
     set ::pd_gui(directory_path) $new_path
-    pdsend "pd path-dialog $use_standard_extensions_button $verbose_button $::pd_gui(directory_path)"
+    ::pd_connect::pdsend "pd path-dialog $use_standard_extensions_button $verbose_button $::pd_gui(directory_path)"
 }
 

@@ -177,7 +177,7 @@ proc ::pd_menus::build_edit_menu {mymenu} {
     $mymenu add command -label [_ "Tidy Up"] \
         -command {::pd_commands::menu_send $::pd_gui(window_focused) tidy}
     $mymenu add command -label [_ "Clear Console"] \
-        -accelerator "Shift+$accelerator+L" -command {::pd_commands::menu_clear_console}
+        -accelerator "Shift+$accelerator+L" -command {menu_clear_console}
     $mymenu add  separator
     #TODO madness! how to set the state of the check box without invoking the menu!
     $mymenu add check -label [_ "Edit Mode"] -accelerator "$accelerator+E" \
@@ -236,15 +236,15 @@ proc ::pd_menus::build_find_menu {mymenu} {
     $mymenu add command -label [_ "Find Again"] -accelerator "$accelerator+G" \
         -command {::pd_commands::menu_send $::pd_gui(window_focused) findagain}
     $mymenu add command -label [_ "Find Last Error"] \
-        -command {pdsend {pd finderror}} 
+        -command {::pd_connect::pdsend {pd finderror}} 
 }
 
 proc ::pd_menus::build_media_menu {mymenu} {
     variable accelerator
     $mymenu add radiobutton -label [_ "DSP On"] -accelerator "$accelerator+/" \
-        -variable ::pd_gui(is_dsp) -value 1 -command {pdsend "pd dsp 1"}
+        -variable ::pd_gui(is_dsp) -value 1 -command {::pd_connect::pdsend "pd dsp 1"}
     $mymenu add radiobutton -label [_ "DSP Off"] -accelerator "$accelerator+." \
-        -variable ::pd_gui(is_dsp) -value 0 -command {pdsend "pd dsp 0"}
+        -variable ::pd_gui(is_dsp) -value 0 -command {::pd_connect::pdsend "pd dsp 0"}
 
     set audio_apilist_length [llength $::pd_gui(api_audio_list)]
     if {$audio_apilist_length > 0} {$mymenu add separator}
@@ -252,7 +252,7 @@ proc ::pd_menus::build_media_menu {mymenu} {
         $mymenu add radiobutton -label [lindex [lindex $::pd_gui(api_audio_list) $x] 0] \
             -command {::pd_commands::menu_audio 0} -variable ::pd_gui(api_audio) \
             -value [lindex [lindex $::pd_gui(api_audio_list) $x] 1]\
-            -command {pdsend "pd audio-setapi $::pd_gui(api_audio)"}
+            -command {::pd_connect::pdsend "pd audio-setapi $::pd_gui(api_audio)"}
     }
     
     set midi_api_length [llength $::pd_gui(api_midi_list)]
@@ -261,14 +261,14 @@ proc ::pd_menus::build_media_menu {mymenu} {
         $mymenu add radiobutton -label [lindex [lindex $::pd_gui(api_midi_list) $x] 0] \
             -command {::pd_commands::menu_midi 0} -variable ::pd_gui(api_midi) \
             -value [lindex [lindex $::pd_gui(api_midi_list) $x] 1]\
-            -command {pdsend "pd midi-setapi $::pd_gui(api_midi)"}
+            -command {::pd_connect::pdsend "pd midi-setapi $::pd_gui(api_midi)"}
     }
 
     $mymenu add  separator
     $mymenu add command -label [_ "Audio Settings..."] \
-        -command {pdsend "pd audio-properties"}
+        -command {::pd_connect::pdsend "pd audio-properties"}
     $mymenu add command -label [_ "MIDI Settings..."] \
-        -command {pdsend "pd midi-properties"}
+        -command {::pd_connect::pdsend "pd midi-properties"}
 }
 
 proc ::pd_menus::build_window_menu {mymenu} {
@@ -302,7 +302,7 @@ proc ::pd_menus::build_help_menu {mymenu} {
         $mymenu add command -label [_ "About Pd"] -command {::pd_commands::menu_aboutpd} 
     }
     $mymenu add command -label [_ "List of objects..."] \
-        -command {pdsend "pd help-intro"} 
+        -command {::pd_connect::pdsend "pd help-intro"} 
     $mymenu add  separator
     $mymenu add command -label [_ "puredata.info"] \
         -command {::pd_commands::menu_openfile {http://puredata.info}} 
@@ -476,16 +476,16 @@ proc ::pd_menus::update_window_menu {} {
 proc ::pd_menus::create_preferences_menu {mymenu} {
     menu $mymenu
     $mymenu add command -label [_ "Path..."] \
-        -command {pdsend "pd start-path-dialog"}
+        -command {::pd_connect::pdsend "pd start-path-dialog"}
     $mymenu add command -label [_ "Startup..."] \
-        -command {pdsend "pd start-startup-dialog"}
+        -command {::pd_connect::pdsend "pd start-startup-dialog"}
     $mymenu add command -label [_ "Audio Settings..."] \
-        -command {pdsend "pd audio-properties"}
+        -command {::pd_connect::pdsend "pd audio-properties"}
     $mymenu add command -label [_ "MIDI Settings..."] \
-        -command {pdsend "pd midi-properties"}
+        -command {::pd_connect::pdsend "pd midi-properties"}
     $mymenu add  separator
     $mymenu add command -label [_ "Save All Settings"] \
-        -command {pdsend "pd save-preferences"}
+        -command {::pd_connect::pdsend "pd save-preferences"}
 }
 
 # ------------------------------------------------------------------------------
@@ -555,7 +555,7 @@ proc ::pd_menus::build_file_menu_x11 {mymenu} {
     $mymenu add  separator
     $mymenu add command -label [_ "Close"]      -accelerator "$accelerator+W"
     $mymenu add command -label [_ "Quit"]       -accelerator "$accelerator+Q" \
-        -command {pdsend "pd verifyquit"}
+        -command {::pd_connect::pdsend "pd verifyquit"}
 }
 
 # the "Edit", "Put", and "Find" menus do not have cross-platform differences
@@ -602,7 +602,7 @@ proc ::pd_menus::build_file_menu_win32 {mymenu} {
     $mymenu add  separator
     $mymenu add command -label [_ "Close"]    -accelerator "$accelerator+W"
     $mymenu add command -label [_ "Quit"]     -accelerator "$accelerator+Q"\
-        -command {pdsend "pd verifyquit"}
+        -command {::pd_connect::pdsend "pd verifyquit"}
 }
 
 # the "Edit", "Put", and "Find" menus do not have cross-platform differences

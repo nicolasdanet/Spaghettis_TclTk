@@ -29,12 +29,12 @@ proc ::pd_scrollboxwindow::get_listdata {mytoplevel} {
 
 proc ::pd_scrollboxwindow::do_apply {mytoplevel commit_method listdata} {
     $commit_method [pdtk_encode $listdata]
-    pdsend "pd save-preferences"
+    ::pd_connect::pdsend "pd save-preferences"
 }
 
 # Cancel button action
 proc ::pd_scrollboxwindow::cancel {mytoplevel} {
-    pdsend "$mytoplevel cancel"
+    ::pd_connect::pdsend "$mytoplevel cancel"
 }
 
 # Apply button action

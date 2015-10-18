@@ -370,7 +370,7 @@ proc ::dialog_gui::apply {mytoplevel} {
     if {[eval concat $$var_iemgui_gn_dx] eq ""} {set $var_iemgui_gn_dx 0}
     if {[eval concat $$var_iemgui_gn_dy] eq ""} {set $var_iemgui_gn_dy 0}
 
-    pdsend [concat $mytoplevel dialog \
+    ::pd_connect::pdsend [concat $mytoplevel dialog \
             [eval concat $$var_iemgui_wdt] \
             [eval concat $$var_iemgui_hgt] \
             [eval concat $$var_iemgui_min_rng] \
@@ -393,7 +393,7 @@ proc ::dialog_gui::apply {mytoplevel} {
 
 
 proc ::dialog_gui::cancel {mytoplevel} {
-    pdsend "$mytoplevel cancel"
+    ::pd_connect::pdsend "$mytoplevel cancel"
 }
 
 proc ::dialog_gui::ok {mytoplevel} {

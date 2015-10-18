@@ -19,7 +19,7 @@ proc open_file {filename} {
         && [regexp -nocase -- "\.(pd|pat|mxt)$" $filename]
     } then {
         ::pdtk_canvas::started_loading_file [format "%s/%s" $basename $filename]
-        pdsend "pd open [enquote_path $basename] [enquote_path $directory]"
+        ::pd_connect::pdsend "pd open [enquote_path $basename] [enquote_path $directory]"
         # now this is done in pd_preferences
         ::pd_preferences::update_recentfiles $filename
     } {
@@ -40,7 +40,7 @@ proc pdtk_openpanel {target localdir} {
     set filename [tk_getOpenFile -initialdir $localdir]
     if {$filename ne ""} {
         set ::pd_gui(directory_open) [file dirname $filename]
-        pdsend "$target callback [enquote_path $filename]"
+        ::pd_connect::pdsend "$target callback [enquote_path $filename]"
     }
 }
 
@@ -53,7 +53,7 @@ proc pdtk_savepanel {target localdir} {
     }
     set filename [tk_getSaveFile -initialdir $localdir]
     if {$filename ne ""} {
-        pdsend "$target callback [enquote_path $filename]"
+        ::pd_connect::pdsend "$target callback [enquote_path $filename]"
     }
 }
 
@@ -110,10 +110,10 @@ proc unspace_text {x} {
 # watchdog functions
 
 proc pdtk_watchdog {} {
-   pdsend "pd watchdog"
+   ::pd_connect::pdsend "pd watchdog"
    after 2000 {pdtk_watchdog}
 }
 
 proc pdtk_ping {} {
-    pdsend "pd ping"
+    ::pd_connect::pdsend "pd ping"
 }

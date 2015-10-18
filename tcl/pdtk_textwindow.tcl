@@ -63,7 +63,7 @@ proc pdtk_textwindow_setdirty {name flag} {
 
 proc pdtk_textwindow_doclose {name} {
     destroy $name
-    pdsend [concat $name signoff]
+    ::pd_connect::pdsend [concat $name signoff]
 }
 
 proc pdtk_textwindow_append {name contents} {
@@ -80,14 +80,14 @@ proc pdtk_textwindow_clear {name} {
 
 proc pdtk_textwindow_send {name} {
     if {[winfo exists $name]} {
-        pdsend [concat $name clear]
+        ::pd_connect::pdsend [concat $name clear]
         for {set i 1} \
          {[$name.text compare $i.end < end]} \
               {incr i 1} {
             set lin [$name.text get $i.0 $i.end]
             if {$lin != ""} {
                 set lin [string map {"," " \\, " ";" " \\; " "$" "\\$"} $lin]
-                pdsend [concat $name addline $lin]
+                ::pd_connect::pdsend [concat $name addline $lin]
             }
         }
     }
@@ -106,7 +106,7 @@ proc pdtk_textwindow_close {name ask} {
              \-icon question \
              \-message [concat Save changes to \"$title\"?]]
             if {$answer == "yes"} {pdtk_textwindow_send $name}
-            if {$answer != "cancel"} {pdsend [concat $name close]}
-        } else {pdsend [concat $name close]}
+            if {$answer != "cancel"} {::pd_connect::pdsend [concat $name close]}
+        } else {::pd_connect::pdsend [concat $name close]}
     }
 }

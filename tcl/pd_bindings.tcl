@@ -54,7 +54,7 @@ proc ::pd_bindings::global_bindings {} {
     bind all <$::pd_gui(modifier)-Key-n>      {::pd_commands::menu_new}
     bind all <$::pd_gui(modifier)-Key-o>      {::pd_commands::menu_open}
     bind all <$::pd_gui(modifier)-Key-p>      {::pd_commands::menu_print $::pd_gui(window_focused)}
-    bind all <$::pd_gui(modifier)-Key-q>      {pdsend "pd verifyquit"}
+    bind all <$::pd_gui(modifier)-Key-q>      {::pd_connect::pdsend "pd verifyquit"}
     bind all <$::pd_gui(modifier)-Key-r>      {::pd_commands::menu_raise_pdwindow}
     bind all <$::pd_gui(modifier)-Key-s>      {::pd_commands::menu_send %W menusave}
     bind all <$::pd_gui(modifier)-Key-v>      {::pd_commands::menu_send %W paste}
@@ -66,8 +66,8 @@ proc ::pd_bindings::global_bindings {} {
     bind all <$::pd_gui(modifier)-Key-3>      {::pd_commands::menu_send_float %W floatatom 0}
     bind all <$::pd_gui(modifier)-Key-4>      {::pd_commands::menu_send_float %W symbolatom 0}
     bind all <$::pd_gui(modifier)-Key-5>      {::pd_commands::menu_send_float %W text 0}
-    bind all <$::pd_gui(modifier)-Key-slash>  {pdsend "pd dsp 1"}
-    bind all <$::pd_gui(modifier)-Key-period> {pdsend "pd dsp 0"}
+    bind all <$::pd_gui(modifier)-Key-slash>  {::pd_connect::pdsend "pd dsp 1"}
+    bind all <$::pd_gui(modifier)-Key-period> {::pd_connect::pdsend "pd dsp 0"}
     bind all <$::pd_gui(modifier)-greater>    {::pd_commands::menu_raisenextwindow}
     bind all <$::pd_gui(modifier)-less>       {::pd_commands::menu_raisepreviouswindow}
 
@@ -77,9 +77,9 @@ proc ::pd_bindings::global_bindings {} {
     bind all <$::pd_gui(modifier)-Shift-Key-D> {::pd_commands::menu_send %W vradio}
     bind all <$::pd_gui(modifier)-Shift-Key-H> {::pd_commands::menu_send %W hslider}
     bind all <$::pd_gui(modifier)-Shift-Key-I> {::pd_commands::menu_send %W hradio}
-    bind all <$::pd_gui(modifier)-Shift-Key-L> {::pd_commands::menu_clear_console}
+    bind all <$::pd_gui(modifier)-Shift-Key-L> {menu_clear_console}
     bind all <$::pd_gui(modifier)-Shift-Key-N> {::pd_commands::menu_send %W numbox}
-    bind all <$::pd_gui(modifier)-Shift-Key-Q> {pdsend "pd quit"}
+    bind all <$::pd_gui(modifier)-Shift-Key-Q> {::pd_connect::pdsend "pd quit"}
     bind all <$::pd_gui(modifier)-Shift-Key-S> {::pd_commands::menu_send %W menusaveas}
     bind all <$::pd_gui(modifier)-Shift-Key-T> {::pd_commands::menu_send %W toggle}
     bind all <$::pd_gui(modifier)-Shift-Key-U> {::pd_commands::menu_send %W vumeter}
@@ -174,7 +174,7 @@ proc ::pd_bindings::patch_bindings {mytoplevel} {
     }
 
     # window protocol bindings
-    wm protocol $mytoplevel WM_DELETE_WINDOW "pdsend \"$mytoplevel menuclose 0\""
+    wm protocol $mytoplevel WM_DELETE_WINDOW "::pd_connect::pdsend \"$mytoplevel menuclose 0\""
     bind $tkcanvas <Destroy> "::pd_bindings::window_destroy %W"
 }
 
@@ -189,7 +189,7 @@ proc ::pd_bindings::patch_configure {mytoplevel width height x y} {
     ::pdtk_canvas::pdtk_canvas_getscroll [tkcanvas_name $mytoplevel]
     # send the size/location of the window and canvas to 'pd' in the form of:
     #    left top right bottom
-    pdsend "$mytoplevel setbounds $x $y [expr $x + $width] [expr $y + $height]"
+    ::pd_connect::pdsend "$mytoplevel setbounds $x $y [expr $x + $width] [expr $y + $height]"
 }
     
 proc ::pd_bindings::window_destroy {window} {
@@ -236,12 +236,12 @@ proc ::pd_bindings::dialog_focusin {mytoplevel} {
 # invisible.  Invisibility means the Window Manager has minimized us.  We
 # don't get a final "unmap" event when we destroy the window.
 proc ::pd_bindings::map {mytoplevel} {
-    pdsend "$mytoplevel map 1"
+    ::pd_connect::pdsend "$mytoplevel map 1"
     ::pdtk_canvas::finished_loading_file $mytoplevel
 }
 
 proc ::pd_bindings::unmap {mytoplevel} {
-    pdsend "$mytoplevel map 0"
+    ::pd_connect::pdsend "$mytoplevel map 0"
 }
 
 
@@ -272,8 +272,8 @@ proc ::pd_bindings::sendkey {window state key iso shift} {
     #$window might be a toplevel or canvas, [winfo toplevel] does the right thing
     set mytoplevel [winfo toplevel $window]
     if {[winfo class $mytoplevel] eq "PatchWindow"} {
-        pdsend "$mytoplevel key $state $key $shift"
+        ::pd_connect::pdsend "$mytoplevel key $state $key $shift"
     } else {
-    pdsend "pd key $state $key $shift"
+    ::pd_connect::pdsend "pd key $state $key $shift"
     }
 }

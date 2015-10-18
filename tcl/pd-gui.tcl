@@ -54,13 +54,6 @@ package require pdtk_textwindow
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Import functions into the global namespace for convenience.
-
-namespace import ::pd_connect::pdsend
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 # Global variables that are used throughout the GUI.
 
 # ------------------------------------------------------------------------------------------------------------
@@ -349,7 +342,7 @@ proc pdtk_pd_startup {major minor bugfix test
     set_base_font $sys_font $sys_fontweight
     fit_font_into_metrics
     ::pd_preferences::init
-    pdsend "pd init [enquote_path [pwd]] $oldtclversion $::pd_gui(font_measured)"
+    ::pd_connect::pdsend "pd init [enquote_path [pwd]] $oldtclversion $::pd_gui(font_measured)"
     ::pd_bindings::class_bindings
     ::pd_bindings::global_bindings
     ::pd_menus::create_menubar
@@ -372,7 +365,7 @@ proc pdtk_check {mytoplevel message reply_to_pd default} {
                         -default $default -parent $mytoplevel -icon question]
     }
     if {$answer eq "yes"} {
-        pdsend $reply_to_pd
+        ::pd_connect::pdsend $reply_to_pd
     }
 }
 

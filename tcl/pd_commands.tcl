@@ -24,7 +24,7 @@ proc ::pd_commands::menu_new {} {
     # to localize "Untitled" there will need to be changes in g_canvas.c and
     # g_readwrite.c, where it tests for the string "Untitled"
     set untitled_name "Untitled"
-    pdsend "pd menunew $untitled_name-$untitled_number [enquote_path $::pd_gui(directory_new)]"
+    ::pd_connect::pdsend "pd menunew $untitled_name-$untitled_number [enquote_path $::pd_gui(directory_new)]"
     incr untitled_number
 }
 
@@ -57,13 +57,13 @@ proc ::pd_commands::menu_print {mytoplevel} {
 
 proc ::pd_commands::menu_undo {} {
     if {$::pd_gui(window_focused) eq $::pd_gui(undomanager_toplevel) && $::pd_gui(undomanager_undo) ne "no"} {
-        pdsend "$::pd_gui(window_focused) undo"
+        ::pd_connect::pdsend "$::pd_gui(window_focused) undo"
     }
 }
 
 proc ::pd_commands::menu_redo {} {
     if {$::pd_gui(window_focused) eq $::pd_gui(undomanager_toplevel) && $::pd_gui(undomanager_redo) ne "no"} {
-        pdsend "$::pd_gui(window_focused) redo"
+        ::pd_connect::pdsend "$::pd_gui(window_focused) redo"
     }
 }
 
@@ -72,7 +72,7 @@ proc ::pd_commands::menu_editmode {state} {
     set ::pd_gui(is_editmode) $state
 # this shouldn't be necessary because 'pd' will reply with ::pdtk_canvas::pdtk_canvas_editmode
 #    set ::patch_is_editmode($::pd_gui(window_focused)) $state
-    pdsend "$::pd_gui(window_focused) editmode $state"
+    ::pd_connect::pdsend "$::pd_gui(window_focused) editmode $state"
 }
 
 proc ::pd_commands::menu_toggle_editmode {} {
@@ -86,7 +86,7 @@ proc ::pd_commands::menu_toggle_editmode {} {
 proc ::pd_commands::menu_send {window message} {
     set mytoplevel [winfo toplevel $window]
     if {[winfo class $mytoplevel] eq "PatchWindow"} {
-        pdsend "$mytoplevel $message"
+        ::pd_connect::pdsend "$mytoplevel $message"
     } elseif {$mytoplevel eq ".pdwindow"} {
         if {$message eq "copy"} {
             tk_textCopy .pdwindow.text
@@ -102,7 +102,7 @@ proc ::pd_commands::menu_send {window message} {
 proc ::pd_commands::menu_send_float {window message float} {
     set mytoplevel [winfo toplevel $window]
     if {[winfo class $mytoplevel] eq "PatchWindow"} {
-        pdsend "$mytoplevel $message $float"
+        ::pd_connect::pdsend "$mytoplevel $message $float"
     }
 }
 
@@ -123,7 +123,7 @@ proc ::pd_commands::menu_font_dialog {} {
     } elseif {$::pd_gui(window_focused) eq ".pdwindow"} {
         ::dialog_font::pdtk_canvas_dofont .pdwindow [lindex [.pdwindow.text cget -font] 1]
     } else {
-        pdsend "$::pd_gui(window_focused) menufont"
+        ::pd_connect::pdsend "$::pd_gui(window_focused) menufont"
     }
 }
 
@@ -131,7 +131,7 @@ proc ::pd_commands::menu_path_dialog {} {
     if {[winfo exists .path]} {
         raise .path
     } else {
-        pdsend "pd start-path-dialog"
+        ::pd_connect::pdsend "pd start-path-dialog"
     }
 }
 
@@ -139,7 +139,7 @@ proc ::pd_commands::menu_startup_dialog {} {
     if {[winfo exists .startup]} {
         raise .startup
     } else {
-        pdsend "pd start-startup-dialog"
+        ::pd_connect::pdsend "pd start-startup-dialog"
     }
 }
 

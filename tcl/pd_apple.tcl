@@ -12,7 +12,6 @@ package provide pd_apple 0.1
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package require pd_console
 package require pd_miscellaneous
 
 # ------------------------------------------------------------------------------------------------------------
@@ -25,7 +24,7 @@ set ::tk::mac::antialiasedtext  1
 # ------------------------------------------------------------------------------------------------------------
 
 proc ::tk::mac::ShowPreferences {args} {
-    pdsend "pd start-path-dialog"
+    ::pd_connect::pdsend "pd start-path-dialog"
 }
 
 proc ::tk::mac::OpenDocument {args} {
@@ -43,7 +42,7 @@ proc ::tk::mac::PrintDocument {args} {
 }
 
 proc ::tk::mac::Quit {args} {
-    pdsend "pd verifyquit"
+    ::pd_connect::pdsend "pd verifyquit"
 }
 
 # ------------------------------------------------------------------------------------------------------------

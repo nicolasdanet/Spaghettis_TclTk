@@ -27,7 +27,7 @@ proc ::dialog_audio::apply {mytoplevel} {
     global audio_outenable1 audio_outenable2 audio_outenable3 audio_outenable4
     global audio_sr audio_advance audio_callback audio_blocksize
 
-    pdsend "pd audio-dialog \
+    ::pd_connect::pdsend "pd audio-dialog \
         $audio_indev1 \
         $audio_indev2 \
         $audio_indev3 \
@@ -51,7 +51,7 @@ proc ::dialog_audio::apply {mytoplevel} {
 }
 
 proc ::dialog_audio::cancel {mytoplevel} {
-    pdsend "$mytoplevel cancel"
+    ::pd_connect::pdsend "$mytoplevel cancel"
 }
 
 proc ::dialog_audio::ok {mytoplevel} {
@@ -162,7 +162,7 @@ proc ::dialog_audio::pdtk_audio_dialog {mytoplevel \
     pack $mytoplevel.buttonframe.ok -side left -expand 1 -fill x -padx 15
 
     button $mytoplevel.saveall -text [_ "Save All Settings"]\
-        -command "::dialog_audio::apply $mytoplevel; pdsend {pd save-preferences}"
+        -command "::dialog_audio::apply $mytoplevel; ::pd_connect::pdsend {pd save-preferences}"
     pack $mytoplevel.saveall -side bottom -expand 1 -pady 5
     
         # sample rate and advance
@@ -322,7 +322,7 @@ proc ::dialog_audio::pdtk_audio_dialog {mytoplevel \
         frame $mytoplevel.longbutton
         pack $mytoplevel.longbutton -side top
         button $mytoplevel.longbutton.b -text [_ "Use multiple devices"] \
-            -command  {pdsend "pd audio-properties 1"}
+            -command  {::pd_connect::pdsend "pd audio-properties 1"}
         pack $mytoplevel.longbutton.b
     }
     $mytoplevel.srf.x1 select from 0

@@ -40,7 +40,7 @@ proc ::dialog_message::ok {mytoplevel} {
     variable message_history
     set message [.message.f.entry get]
     if {$message ne ""} {
-        pdsend $message
+        ::pd_connect::pdsend $message
         lappend message_history $message
         .message.f.entry delete 0 end
     }

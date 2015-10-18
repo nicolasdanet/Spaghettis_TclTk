@@ -96,7 +96,7 @@ proc ::pd_console::filter_buffer_to_text {args} {
 
 proc ::pd_console::select_by_id {args} {
     if [llength $args] { # Is $args empty?
-        pdsend "pd findinstance $args"
+        ::pd_connect::pdsend "pd findinstance $args"
     }
 }
 
@@ -217,7 +217,7 @@ proc ::pd_console::pdwindow_bindings {} {
     } else {
         # TODO should it possible to close the Pd window and keep Pd open?
         bind .pdwindow <$::pd_gui(modifier)-Key-w>   "wm iconify .pdwindow"
-        wm protocol .pdwindow WM_DELETE_WINDOW "pdsend \"pd verifyquit\""
+        wm protocol .pdwindow WM_DELETE_WINDOW "::pd_connect::pdsend \"pd verifyquit\""
     }
 }
 
@@ -334,7 +334,7 @@ proc ::pd_console::create_window {} {
 
     checkbutton .pdwindow.header.dsp -text [_ "DSP"] -variable ::pd_gui(is_dsp) \
         -font {$::pd_gui(font_family) -18 bold} -takefocus 1 -background lightgray \
-        -borderwidth 0  -command {pdsend "pd dsp $::pd_gui(is_dsp)"}
+        -borderwidth 0  -command {::pd_connect::pdsend "pd dsp $::pd_gui(is_dsp)"}
     pack .pdwindow.header.dsp -side right -fill y -anchor e -padx 5 -pady 0
 
 # frame for DIO error and audio in/out labels

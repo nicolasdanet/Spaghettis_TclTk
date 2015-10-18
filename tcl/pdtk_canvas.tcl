@@ -146,7 +146,7 @@ proc pdtk_canvas_saveas {name initialfile initialdir destroyflag} {
     }
     set dirname [file dirname $filename]
     set basename [file tail $filename]
-    pdsend "$name savetofile [enquote_path $basename] [enquote_path $dirname] \
+    ::pd_connect::pdsend "$name savetofile [enquote_path $basename] [enquote_path $dirname] \
  $destroyflag"
     set ::pd_gui(directory_new) $dirname
     # add to recentfiles
@@ -161,8 +161,8 @@ proc ::pdtk_canvas::pdtk_canvas_menuclose {mytoplevel reply_to_pd} {
     set answer [tk_messageBox -message $message -type yesnocancel -default "yes" \
                     -parent $mytoplevel -icon question]
     switch -- $answer {
-        yes {pdsend "$mytoplevel menusave 1"}
-        no {pdsend $reply_to_pd}
+        yes {::pd_connect::pdsend "$mytoplevel menusave 1"}
+        no {::pd_connect::pdsend $reply_to_pd}
         cancel {}
     }
 }
@@ -173,22 +173,22 @@ proc ::pdtk_canvas::pdtk_canvas_menuclose {mytoplevel reply_to_pd} {
 # TODO put these procs into the pdtk_canvas namespace
 proc pdtk_canvas_motion {tkcanvas x y mods} {
     set mytoplevel [winfo toplevel $tkcanvas]
-    pdsend "$mytoplevel motion [$tkcanvas canvasx $x] [$tkcanvas canvasy $y] $mods"
+    ::pd_connect::pdsend "$mytoplevel motion [$tkcanvas canvasx $x] [$tkcanvas canvasy $y] $mods"
 }
 
 proc pdtk_canvas_mouse {tkcanvas x y b f} {
     set mytoplevel [winfo toplevel $tkcanvas]
-    pdsend "$mytoplevel mouse [$tkcanvas canvasx $x] [$tkcanvas canvasy $y] $b $f"
+    ::pd_connect::pdsend "$mytoplevel mouse [$tkcanvas canvasx $x] [$tkcanvas canvasy $y] $b $f"
 }
 
 proc pdtk_canvas_mouseup {tkcanvas x y b} {
     set mytoplevel [winfo toplevel $tkcanvas]
-    pdsend "$mytoplevel mouseup [$tkcanvas canvasx $x] [$tkcanvas canvasy $y] $b"
+    ::pd_connect::pdsend "$mytoplevel mouseup [$tkcanvas canvasx $x] [$tkcanvas canvasy $y] $b"
 }
 
 proc pdtk_canvas_rightclick {tkcanvas x y b} {
     set mytoplevel [winfo toplevel $tkcanvas]
-    pdsend "$mytoplevel mouse [$tkcanvas canvasx $x] [$tkcanvas canvasy $y] $b 8"
+    ::pd_connect::pdsend "$mytoplevel mouse [$tkcanvas canvasx $x] [$tkcanvas canvasy $y] $b 8"
 }
 
 # on X11, button 2 pastes from X11 clipboard, so simulate normal paste actions
@@ -201,7 +201,7 @@ proc pdtk_canvas_clickpaste {tkcanvas x y b} {
         for {set i 0} {$i < [string length $pdtk_pastebuffer]} {incr i 1} {
             set cha [string index $pdtk_pastebuffer $i]
             scan $cha %c keynum
-            pdsend "[winfo toplevel $tkcanvas] key 1 $keynum 0"
+            ::pd_connect::pdsend "[winfo toplevel $tkcanvas] key 1 $keynum 0"
         }
     }
 }
@@ -228,7 +228,7 @@ proc ::pdtk_canvas::create_popup {} {
 }
 
 proc ::pdtk_canvas::done_popup {mytoplevel action} {
-    pdsend "$mytoplevel done-popup $action $::pd_gui(window_popup_x) $::pd_gui(window_popup_y)"
+    ::pd_connect::pdsend "$mytoplevel done-popup $action $::pd_gui(window_popup_x) $::pd_gui(window_popup_y)"
 }
 
 proc ::pdtk_canvas::pdtk_canvas_popup {mytoplevel xcanvas ycanvas hasproperties hasopen} {

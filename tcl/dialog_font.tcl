@@ -32,13 +32,13 @@ proc ::dialog_font::apply {mytoplevel myfontsize} {
     } else {
         variable stretchval
         variable whichstretch
-        pdsend "$mytoplevel font $myfontsize $stretchval $whichstretch"
+        ::pd_connect::pdsend "$mytoplevel font $myfontsize $stretchval $whichstretch"
     }
 }
 
 proc ::dialog_font::cancel {gfxstub} {
     if {$gfxstub ne ".pdwindow"} {
-        pdsend "$gfxstub cancel"
+        ::pd_connect::pdsend "$gfxstub cancel"
     }
     destroy .font
 }
@@ -80,7 +80,7 @@ proc ::dialog_font::pdtk_canvas_dofont {gfxstub initsize} {
         # the gfxstub stuff expects multiple font windows, we only have one,
         # so kill the new gfxstub requests as the come in.  We'll save the
         # original gfxstub for when the font panel gets closed
-        pdsend "$gfxstub cancel"
+        ::pd_connect::pdsend "$gfxstub cancel"
     } else {
         create_dialog $gfxstub
     }

@@ -75,9 +75,9 @@ proc ::dialog_find::ok {mytoplevel} {
         if {$findstring eq $previous_findstring \
                 && $wholeword_button == $previous_wholeword_button \
                     && !$window_changed} {
-            pdsend "$find_in_window findagain"
+            ::pd_connect::pdsend "$find_in_window findagain"
         } else {
-            pdsend [concat $find_in_window find [pdtk_encodedialog $findstring] \
+            ::pd_connect::pdsend [concat $find_in_window find [pdtk_encodedialog $findstring] \
                         $wholeword_button]
             set previous_findstring $findstring
             set previous_wholeword_button $wholeword_button

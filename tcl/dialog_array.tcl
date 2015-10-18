@@ -49,7 +49,7 @@ proc ::dialog_array::pdtk_array_listview_fillpage {arrayName} {
                $::pd_array_listview_page($arrayName) \
                $topItem"
         
-        pdsend $cmd
+        ::pd_connect::pdsend $cmd
     }
 }
 
@@ -153,7 +153,7 @@ proc ::dialog_array::listview_paste {arrayName} {
     set flag 1
     for {set i 0; set counter 0} {$i < [llength $itemString]} {incr i} {
         if {[lindex $itemString $i] ne {}} {
-            pdsend "$arrayName [expr $itemNum + \
+            ::pd_connect::pdsend "$arrayName [expr $itemNum + \
                                        [expr $counter + \
                                             [expr $::pd_array_listview_pagesize \
                                                  * $::pd_array_listview_page($arrayName)]]] \
@@ -192,7 +192,7 @@ proc ::dialog_array::listview_update_entry {arrayName itemNum} {
     set flag 1
     for {set i 0; set counter 0} {$i < [llength $itemString]} {incr i} {
         if {[lindex $itemString $i] ne {}} {
-            pdsend "$arrayName [expr $itemNum + \
+            ::pd_connect::pdsend "$arrayName [expr $itemNum + \
                                        [expr $counter + \
                                             [expr $::pd_array_listview_pagesize \
                                                  * $::pd_array_listview_page($arrayName)]]] \
@@ -212,11 +212,11 @@ proc ::dialog_array::pdtk_array_listview_closeWindow {arrayName} {
 
 proc ::dialog_array::listview_close {mytoplevel arrayName} {
     ::dialog_array::pdtk_array_listview_closeWindow $arrayName
-    pdsend "$mytoplevel arrayviewclose"
+    ::pd_connect::pdsend "$mytoplevel arrayviewclose"
 }
 
 proc ::dialog_array::apply {mytoplevel} {
-    pdsend "$mytoplevel arraydialog \
+    ::pd_connect::pdsend "$mytoplevel arraydialog \
             [::dialog_gatom::escape [$mytoplevel.name.entry get]] \
             [$mytoplevel.size.entry get] \
             [expr $::saveme_button($mytoplevel) + (2 * $::drawas_button($mytoplevel))] \
@@ -224,11 +224,11 @@ proc ::dialog_array::apply {mytoplevel} {
 }
 
 proc ::dialog_array::openlistview {mytoplevel} {
-    pdsend "$mytoplevel arrayviewlistnew"
+    ::pd_connect::pdsend "$mytoplevel arrayviewlistnew"
 }
 
 proc ::dialog_array::cancel {mytoplevel} {
-    pdsend "$mytoplevel cancel"
+    ::pd_connect::pdsend "$mytoplevel cancel"
 }
 
 proc ::dialog_array::ok {mytoplevel} {

@@ -17,13 +17,13 @@ namespace eval ::dialog_data:: {
 proc ::dialog_data::send {mytoplevel} {
     for {set i 1} {[$mytoplevel.text compare [concat $i.0 + 3 chars] < end]} \
         {incr i 1} {
-            pdsend "$mytoplevel data [$mytoplevel.text get $i.0 [expr $i + 1].0]"
+            ::pd_connect::pdsend "$mytoplevel data [$mytoplevel.text get $i.0 [expr $i + 1].0]"
         }
-    pdsend "$mytoplevel end"
+    ::pd_connect::pdsend "$mytoplevel end"
 }
 
 proc ::dialog_data::cancel {mytoplevel} {
-    pdsend "$mytoplevel cancel"
+    ::pd_connect::pdsend "$mytoplevel cancel"
 }
 
 proc ::dialog_data::ok {mytoplevel} {

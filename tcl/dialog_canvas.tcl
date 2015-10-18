@@ -24,7 +24,7 @@ array set hidetext_button {}
 ############# pdtk_canvas_dialog -- dialog window for canvases #################
 
 proc ::dialog_canvas::apply {mytoplevel} {
-    pdsend "$mytoplevel donecanvasdialog \
+    ::pd_connect::pdsend "$mytoplevel donecanvasdialog \
             [$mytoplevel.scale.x.entry get] \
             [$mytoplevel.scale.y.entry get] \
             [expr $::graphme_button($mytoplevel) + 2 * $::hidetext_button($mytoplevel)] \
@@ -39,7 +39,7 @@ proc ::dialog_canvas::apply {mytoplevel} {
 }
 
 proc ::dialog_canvas::cancel {mytoplevel} {
-    pdsend "$mytoplevel cancel"
+    ::pd_connect::pdsend "$mytoplevel cancel"
 }
 
 proc ::dialog_canvas::ok {mytoplevel} {

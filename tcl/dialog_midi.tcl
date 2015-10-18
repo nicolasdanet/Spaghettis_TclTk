@@ -25,7 +25,7 @@ proc ::dialog_midi::apply {mytoplevel} {
         midi_outdev6 midi_outdev7 midi_outdev8 midi_outdev9
     global midi_alsain midi_alsaout
 
-    pdsend "pd midi-dialog \
+    ::pd_connect::pdsend "pd midi-dialog \
         $midi_indev1 \
         $midi_indev2 \
         $midi_indev3 \
@@ -49,7 +49,7 @@ proc ::dialog_midi::apply {mytoplevel} {
 }
 
 proc ::dialog_midi::cancel {mytoplevel} {
-    pdsend "$mytoplevel cancel"
+    ::pd_connect::pdsend "$mytoplevel cancel"
 }
 
 proc ::dialog_midi::ok {mytoplevel} {
@@ -347,7 +347,7 @@ proc ::dialog_midi::pdtk_midi_dialog {id \
         frame $id.longbutton
         pack $id.longbutton -side top
         button $id.longbutton.b -text [_ "Use multiple devices"] \
-            -command  {pdsend "pd midi-properties 1"}
+            -command  {::pd_connect::pdsend "pd midi-properties 1"}
         pack $id.longbutton.b
     }
 }
