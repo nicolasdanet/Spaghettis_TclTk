@@ -508,7 +508,7 @@ proc ::dialog_gui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
     wm transient $mytoplevel $::pd_gui(window_focused)
     $mytoplevel configure -menu $::pd_gui(window_menubar)
     $mytoplevel configure -padx 0 -pady 0
-    ::pd_bindings::dialog_bindings $mytoplevel "iemgui"
+    ::pd_bindings::dialog_bindings $mytoplevel "gui"
 
     frame $mytoplevel.dim
     pack $mytoplevel.dim -side top
