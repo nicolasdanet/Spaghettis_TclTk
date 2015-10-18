@@ -409,7 +409,7 @@ void sys_close_audio(void)
     audio_state = 0;
     audio_callback_is_open = 0;
 
-    sys_vgui("set ::api_audio 0\n");
+    sys_vgui("set ::pd_gui(api_audio) 0\n");
 }
 
     /* open audio using whatever parameters were last used */
@@ -509,7 +509,7 @@ void sys_reopen_audio( void)
         sys_audioapiopened = sys_audioapi;
         audio_callback_is_open = callback;
     }
-    sys_vgui("set ::api_audio %d\n",  (outcome == 0 ? sys_audioapi : 0));
+    sys_vgui("set ::pd_gui(api_audio) %d\n",  (outcome == 0 ? sys_audioapi : 0));
 }
 
 int sys_send_dacs(void)

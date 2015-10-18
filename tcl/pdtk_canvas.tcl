@@ -48,8 +48,8 @@ proc pdtk_canvas_place_window {width height geometry} {
     # read back the current geometry +posx+posy into variables
     scan $geometry {%[+]%d%[+]%d} - x - y
     # fit the geometry onto screen
-    set x [ expr $x % $screenwidth - $::window_frame_x]
-    set y [ expr $y % $screenheight - $::window_frame_y]
+    set x [ expr $x % $screenwidth - $::pd_gui(window_frame_x)]
+    set y [ expr $y % $screenheight - $::pd_gui(window_frame_y)]
     if {$x < 0} {set x 0}
     if {$y < 0} {set y 0}
     if {$width > $screenwidth} {
@@ -57,8 +57,8 @@ proc pdtk_canvas_place_window {width height geometry} {
         set x 0
     }
     if {$height > $screenheight} {
-        set height [expr $screenheight - $::window_menubar_height - 30] ;# 30 for window framing
-        set y $::window_menubar_height
+        set height [expr $screenheight - $::pd_gui(window_menubar_height) - 30] ;# 30 for window framing
+        set y $::pd_gui(window_menubar_height)
     }
     return [list $width $height ${width}x$height+$x+$y]
 }
@@ -88,7 +88,7 @@ proc pdtk_canvas_new {mytoplevel width height geometry editable} {
     event generate $mytoplevel <<Loading>>
 
     wm geometry $mytoplevel $geometry
-    wm minsize $mytoplevel $::window_minimum_width $::window_minimum_height
+    wm minsize $mytoplevel $::pd_gui(window_minimum_width) $::pd_gui(window_minimum_height)
 
     set tkcanvas [tkcanvas_name $mytoplevel]
     canvas $tkcanvas -width $width -height $height \
@@ -154,7 +154,7 @@ proc pdtk_canvas_saveas {name initialfile initialdir destroyflag} {
     set basename [file tail $filename]
     pdsend "$name savetofile [enquote_path $basename] [enquote_path $dirname] \
  $destroyflag"
-    set ::directory_new $dirname
+    set ::pd_gui(directory_new) $dirname
     # add to recentfiles
     ::pd_preferences::update_recentfiles $filename
 }
@@ -216,7 +216,7 @@ proc pdtk_canvas_clickpaste {tkcanvas x y b} {
 # canvas popup menu
 
 # since there is one popup that is used for all canvas windows, the menu
-# -commands use {} quotes so that $::window_focused is interpreted when the
+# -commands use {} quotes so that $::pd_gui(window_focused) is interpreted when the
 # menu item is called, not when the command is mapped to the menu item.  This
 # is the same as the menubar in pd_menus.tcl but the opposite of the 'bind'
 # commands in pd_bindings.tcl
@@ -225,21 +225,21 @@ proc ::pdtk_canvas::create_popup {} {
         # the popup menu for the canvas
         menu .popup -tearoff false
         .popup add command -label [_ "Properties"] \
-            -command {::pdtk_canvas::done_popup $::window_focused 0}
+            -command {::pdtk_canvas::done_popup $::pd_gui(window_focused) 0}
         .popup add command -label [_ "Open"]       \
-            -command {::pdtk_canvas::done_popup $::window_focused 1}
+            -command {::pdtk_canvas::done_popup $::pd_gui(window_focused) 1}
         .popup add command -label [_ "Help"]       \
-            -command {::pdtk_canvas::done_popup $::window_focused 2}
+            -command {::pdtk_canvas::done_popup $::pd_gui(window_focused) 2}
     }
 }
 
 proc ::pdtk_canvas::done_popup {mytoplevel action} {
-    pdsend "$mytoplevel done-popup $action $::window_popup_x $::window_popup_y"
+    pdsend "$mytoplevel done-popup $action $::pd_gui(window_popup_x) $::pd_gui(window_popup_y)"
 }
 
 proc ::pdtk_canvas::pdtk_canvas_popup {mytoplevel xcanvas ycanvas hasproperties hasopen} {
-    set ::window_popup_x $xcanvas
-    set ::window_popup_y $ycanvas
+    set ::pd_gui(window_popup_x) $xcanvas
+    set ::pd_gui(window_popup_y) $ycanvas
     if {$hasproperties} {
         .popup entryconfigure [_ "Properties"] -state normal
     } else {
@@ -290,16 +290,16 @@ proc ::pdtk_canvas::finished_loading_file {mytoplevel} {
 
 # check or uncheck the "edit" menu item
 proc ::pdtk_canvas::pdtk_canvas_editmode {mytoplevel state} {
-    set ::is_editmode $state
+    set ::pd_gui(is_editmode) $state
     set ::patch_is_editmode($mytoplevel) $state
     event generate $mytoplevel <<EditMode>>
 }
 
 # message from Pd to update the currently available undo/redo action
 proc pdtk_undomenu {mytoplevel undoaction redoaction} {
-    set ::undomanager_toplevel $mytoplevel
-    set ::undomanager_undo $undoaction
-    set ::undomanager_redo $redoaction
+    set ::pd_gui(undomanager_toplevel) $mytoplevel
+    set ::pd_gui(undomanager_undo) $undoaction
+    set ::pd_gui(undomanager_redo) $redoaction
     if {$mytoplevel ne "nobody"} {
         ::pd_menus::update_undo_on_menu $mytoplevel
     }

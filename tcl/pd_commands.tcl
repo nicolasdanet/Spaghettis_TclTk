@@ -20,25 +20,25 @@ namespace eval ::pd_commands:: {
 
 proc ::pd_commands::menu_new {} {
     variable untitled_number
-    if { ! [file isdirectory $::directory_new]} {set ::directory_new $::env(HOME)}
+    if { ! [file isdirectory $::pd_gui(directory_new)]} {set ::pd_gui(directory_new) $::env(HOME)}
     # to localize "Untitled" there will need to be changes in g_canvas.c and
     # g_readwrite.c, where it tests for the string "Untitled"
     set untitled_name "Untitled"
-    pdsend "pd menunew $untitled_name-$untitled_number [enquote_path $::directory_new]"
+    pdsend "pd menunew $untitled_name-$untitled_number [enquote_path $::pd_gui(directory_new)]"
     incr untitled_number
 }
 
 proc ::pd_commands::menu_open {} {
-    if { ! [file isdirectory $::directory_open]} {set ::directory_open $::env(HOME)}
+    if { ! [file isdirectory $::pd_gui(directory_open)]} {set ::pd_gui(directory_open) $::env(HOME)}
     set files [tk_getOpenFile -defaultextension .pd \
                        -multiple true \
                        -filetypes $::filetypes \
-                       -initialdir $::directory_open]
+                       -initialdir $::pd_gui(directory_open)]
     if {$files ne ""} {
         foreach filename $files { 
             open_file $filename
         }
-        set ::directory_open [file dirname $filename]
+        set ::pd_gui(directory_open) [file dirname $filename]
     }
 }
 
@@ -56,27 +56,27 @@ proc ::pd_commands::menu_print {mytoplevel} {
 # functions called from Edit menu
 
 proc ::pd_commands::menu_undo {} {
-    if {$::window_focused eq $::undomanager_toplevel && $::undomanager_undo ne "no"} {
-        pdsend "$::window_focused undo"
+    if {$::pd_gui(window_focused) eq $::pd_gui(undomanager_toplevel) && $::pd_gui(undomanager_undo) ne "no"} {
+        pdsend "$::pd_gui(window_focused) undo"
     }
 }
 
 proc ::pd_commands::menu_redo {} {
-    if {$::window_focused eq $::undomanager_toplevel && $::undomanager_redo ne "no"} {
-        pdsend "$::window_focused redo"
+    if {$::pd_gui(window_focused) eq $::pd_gui(undomanager_toplevel) && $::pd_gui(undomanager_redo) ne "no"} {
+        pdsend "$::pd_gui(window_focused) redo"
     }
 }
 
 proc ::pd_commands::menu_editmode {state} {
-    if {[winfo class $::window_focused] ne "PatchWindow"} {return}
-    set ::is_editmode $state
+    if {[winfo class $::pd_gui(window_focused)] ne "PatchWindow"} {return}
+    set ::pd_gui(is_editmode) $state
 # this shouldn't be necessary because 'pd' will reply with pdtk_canvas_editmode
-#    set ::patch_is_editmode($::window_focused) $state
-    pdsend "$::window_focused editmode $state"
+#    set ::patch_is_editmode($::pd_gui(window_focused)) $state
+    pdsend "$::pd_gui(window_focused) editmode $state"
 }
 
 proc ::pd_commands::menu_toggle_editmode {} {
-    menu_editmode [expr {! $::is_editmode}]
+    menu_editmode [expr {! $::pd_gui(is_editmode)}]
 }
 
 # ------------------------------------------------------------------------------
@@ -110,20 +110,20 @@ proc ::pd_commands::menu_send_float {window message float} {
 # open the dialog panels
 
 proc ::pd_commands::menu_message_dialog {} {
-    ::dialog_message::open_message_dialog $::window_focused
+    ::dialog_message::open_message_dialog $::pd_gui(window_focused)
 }
 
 proc ::pd_commands::menu_find_dialog {} {
-    ::dialog_find::open_find_dialog $::window_focused
+    ::dialog_find::open_find_dialog $::pd_gui(window_focused)
 }
 
 proc ::pd_commands::menu_font_dialog {} {
     if {[winfo exists .font]} {
         raise .font
-    } elseif {$::window_focused eq ".pdwindow"} {
+    } elseif {$::pd_gui(window_focused) eq ".pdwindow"} {
         pdtk_canvas_dofont .pdwindow [lindex [.pdwindow.text cget -font] 1]
     } else {
-        pdsend "$::window_focused menufont"
+        pdsend "$::pd_gui(window_focused) menufont"
     }
 }
 
@@ -159,7 +159,7 @@ proc ::pd_commands::menu_maximize {window} {
 }
 
 proc ::pd_commands::menu_raise_pdwindow {} {
-    if {$::window_focused eq ".pdwindow" && [winfo viewable .pdwindow]} {
+    if {$::pd_gui(window_focused) eq ".pdwindow" && [winfo viewable .pdwindow]} {
         lower .pdwindow
     } else {
         wm deiconify .pdwindow
@@ -193,9 +193,9 @@ proc menu_clear_console {} {
 proc ::pd_commands::set_filenewdir {mytoplevel} {
     # TODO add Aqua specifics once g_canvas.c has [wm attributes -titlepath]
     if {$mytoplevel eq ".pdwindow"} {
-        set ::directory_new $::directory_open
+        set ::pd_gui(directory_new) $::pd_gui(directory_open)
     } else {
-        regexp -- ".+ - (.+)" [wm title $mytoplevel] ignored ::directory_new
+        regexp -- ".+ - (.+)" [wm title $mytoplevel] ignored ::pd_gui(directory_new)
     }
 }
 
@@ -209,13 +209,13 @@ proc ::pd_commands::menu_aboutpd {} {
         toplevel .aboutpd -class TextWindow
         wm title .aboutpd [_ "About Pd"]
         wm group .aboutpd .
-        .aboutpd configure -menu $::window_menubar
+        .aboutpd configure -menu $::pd_gui(window_menubar)
         text .aboutpd.text -relief flat -borderwidth 0 \
             -yscrollcommand ".aboutpd.scroll set" -background white
         scrollbar .aboutpd.scroll -command ".aboutpd.text yview"
         pack .aboutpd.scroll -side right -fill y
         pack .aboutpd.text -side left -fill both -expand 1
-        bind .aboutpd <$::modifier-Key-w>   "wm withdraw .aboutpd"
+        bind .aboutpd <$::pd_gui(modifier)-Key-w>   "wm withdraw .aboutpd"
     }
 }
 

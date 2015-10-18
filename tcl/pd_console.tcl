@@ -72,7 +72,7 @@ proc ::pd_console::insert_log_line {object_id level message} {
         .pdwindow.text.internal insert end $message log$level
     } else {
         .pdwindow.text.internal insert end $message [list log$level obj$object_id]
-        .pdwindow.text.internal tag bind obj$object_id <$::modifier-ButtonRelease-1> \
+        .pdwindow.text.internal tag bind obj$object_id <$::pd_gui(modifier)-ButtonRelease-1> \
             "::pd_console::select_by_id $object_id; break"
         .pdwindow.text.internal tag bind obj$object_id <Key-Return> \
             "::pd_console::select_by_id $object_id; break"
@@ -123,7 +123,7 @@ proc ::pd_console::logpost {object_id level message} {
         after idle .pdwindow.text.internal yview end
     }
     
-    if {$::is_stderr} {puts stderr $message}
+    if {$::pd_gui(is_stderr)} {puts stderr $message}
 }
 
 # shortcuts for posting to the Pd window
@@ -176,9 +176,9 @@ proc ::pd_console::save_logbuffer_to_file {} {
 proc ::pd_console::pdtk_pd_dsp {value} {
     # TODO canvas_startdsp/stopdsp should really send 1 or 0, not "ON" or "OFF"
     if {$value eq "ON"} {
-        set ::is_dsp 1
+        set ::pd_gui(is_dsp) 1
     } else {
-        set ::is_dsp 0
+        set ::pd_gui(is_dsp) 0
     }
 }
 
@@ -200,27 +200,27 @@ proc ::pd_console::pdtk_pd_audio {state} {
 proc ::pd_console::pdwindow_bindings {} {
     # these bindings are for the whole Pd window, minus the Tcl entry
     foreach window {.pdwindow.text .pdwindow.header} {
-        bind $window <$::modifier-Key-x> "tk_textCut .pdwindow.text"
-        bind $window <$::modifier-Key-c> "tk_textCopy .pdwindow.text"
-        bind $window <$::modifier-Key-v> "tk_textPaste .pdwindow.text"
+        bind $window <$::pd_gui(modifier)-Key-x> "tk_textCut .pdwindow.text"
+        bind $window <$::pd_gui(modifier)-Key-c> "tk_textCopy .pdwindow.text"
+        bind $window <$::pd_gui(modifier)-Key-v> "tk_textPaste .pdwindow.text"
     }
     # Select All doesn't seem to work unless its applied to the whole window
-    bind .pdwindow <$::modifier-Key-a> ".pdwindow.text tag add sel 1.0 end"
+    bind .pdwindow <$::pd_gui(modifier)-Key-a> ".pdwindow.text tag add sel 1.0 end"
     # the "; break" part stops executing another binds, like from the Text class
 
     # these don't do anything in the Pd window, so alert the user, then break
     # so no more bindings run
-    bind .pdwindow <$::modifier-Key-s> "bell; break"
-    bind .pdwindow <$::modifier-Key-p> "bell; break"
+    bind .pdwindow <$::pd_gui(modifier)-Key-s> "bell; break"
+    bind .pdwindow <$::pd_gui(modifier)-Key-p> "bell; break"
 
     # ways of hiding/closing the Pd window
     if {[tk windowingsystem] eq "aqua"} {
         # on Mac OS X, you can close the Pd window, since the menubar is there
-        bind .pdwindow <$::modifier-Key-w>   "wm withdraw .pdwindow"
+        bind .pdwindow <$::pd_gui(modifier)-Key-w>   "wm withdraw .pdwindow"
         wm protocol .pdwindow WM_DELETE_WINDOW "wm withdraw .pdwindow"
     } else {
         # TODO should it possible to close the Pd window and keep Pd open?
-        bind .pdwindow <$::modifier-Key-w>   "wm iconify .pdwindow"
+        bind .pdwindow <$::pd_gui(modifier)-Key-w>   "wm iconify .pdwindow"
         wm protocol .pdwindow WM_DELETE_WINDOW "pdsend \"pd verifyquit\""
     }
 }
@@ -281,10 +281,10 @@ proc ::pd_console::create_tcl_entry {} {
     pack .pdwindow.tcl.label -side left
     entry .pdwindow.tcl.entry -width 200 \
        -exportselection 1 -insertwidth 2 -insertbackground blue \
-       -textvariable ::pd_console::tclentry -font {$::font_family -12}
+       -textvariable ::pd_console::tclentry -font {$::pd_gui(font_family) -12}
     pack .pdwindow.tcl.entry -side left -fill x
 # bindings for the Tcl entry widget
-    bind .pdwindow.tcl.entry <$::modifier-Key-a> "%W selection range 0 end; break"
+    bind .pdwindow.tcl.entry <$::pd_gui(modifier)-Key-a> "%W selection range 0 end; break"
     bind .pdwindow.tcl.entry <Return> "::pd_console::eval_tclentry"
     bind .pdwindow.tcl.entry <Up>     "::pd_console::get_history 1"
     bind .pdwindow.tcl.entry <Down>   "::pd_console::get_history -1"
@@ -336,9 +336,9 @@ proc ::pd_console::create_window {} {
     frame .pdwindow.header.pad1
     pack .pdwindow.header.pad1 -side left -padx 12
 
-    checkbutton .pdwindow.header.dsp -text [_ "DSP"] -variable ::is_dsp \
-        -font {$::font_family -18 bold} -takefocus 1 -background lightgray \
-        -borderwidth 0  -command {pdsend "pd dsp $::is_dsp"}
+    checkbutton .pdwindow.header.dsp -text [_ "DSP"] -variable ::pd_gui(is_dsp) \
+        -font {$::pd_gui(font_family) -18 bold} -takefocus 1 -background lightgray \
+        -borderwidth 0  -command {pdsend "pd dsp $::pd_gui(is_dsp)"}
     pack .pdwindow.header.dsp -side right -fill y -anchor e -padx 5 -pady 0
 
 # frame for DIO error and audio in/out labels
@@ -350,14 +350,14 @@ proc ::pd_console::create_window {} {
         -text [_ "audio I/O off"] -borderwidth 0 \
         -background lightgray -foreground black \
         -takefocus 0 \
-        -font {$::font_family -14}
+        -font {$::pd_gui(font_family) -14}
 
 # DIO error label
     label .pdwindow.header.ioframe.dio \
         -text [_ "audio I/O error"] -borderwidth 0 \
         -background lightgray -foreground lightgray \
         -takefocus 0 \
-        -font {$::font_family -14}
+        -font {$::pd_gui(font_family) -14}
 
     pack .pdwindow.header.ioframe.iostate .pdwindow.header.ioframe.dio \
         -side top
@@ -365,7 +365,7 @@ proc ::pd_console::create_window {} {
     frame .pdwindow.tcl -borderwidth 0
     pack .pdwindow.tcl -side bottom -fill x
 # TODO this should use the pd_font_$size created in pd-gui.tcl    
-    text .pdwindow.text -relief raised -bd 2 -font {$::font_family -12} \
+    text .pdwindow.text -relief raised -bd 2 -font {$::pd_gui(font_family) -12} \
         -highlightthickness 0 -borderwidth 1 -relief flat \
         -yscrollcommand ".pdwindow.scroll set" -width 60 \
         -undo false -autoseparators false -maxundo 1 -takefocus 0
