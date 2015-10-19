@@ -66,6 +66,8 @@ package require pd_textwindow
 
 set var(scriptName)             [file normalize [info script]]
 set var(modifierKey)            ""
+set var(menubar)                ""
+set var(menubarHeight)          0
 set var(host)                   ""
 set var(port)                   0
 
@@ -94,14 +96,11 @@ set var(isStderr)               0
 set var(isDsp)                  0
 set var(isEditmode)             0
 
-set var(windowFocused)          .
 set var(windowPopupX)           0
 set var(windowPopupY)           0
 set var(windowFrameX)           0
 set var(windowFrameY)           0
-
-set var(windowMenubar)          ""
-set var(windowMenubarHeight)    0
+set var(windowFocused)          .
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -116,9 +115,9 @@ set midi_outdev     {}
 
 array set patch_isEditmode      {}
 array set patch_isEditing       {}
-array set patch_loaded          {}
 array set patch_isScrollableX   {}
 array set patch_isScrollableY   {}
+array set patch_loaded          {}
 array set patch_name            {}
 array set patch_childs          {}
 array set patch_parents         {}
@@ -151,7 +150,7 @@ proc init_for_platform {} {
                      [list [_ "Max Text Files"]    {.mxt} ] \
                     ]
             # some platforms have a menubar on the top, so place below them
-            set ::var(windowMenubarHeight) 0
+            set ::var(menubarHeight) 0
             # Tk handles the window placement differently on each
             # platform. With X11, the x,y placement refers to the window
             # frame's upper left corner. http://wiki.tcl.tk/11502
@@ -175,7 +174,7 @@ proc init_for_platform {} {
             option add *DialogWindow*Button.highlightBackground "#E8E8E8" startupFile
             option add *DialogWindow*Entry.background "white" startupFile
             # Mac OS X needs a menubar all the time
-            set ::var(windowMenubar) ".menubar"
+            set ::var(menubar) ".menubar"
             # set file types that open/save recognize
             set ::filetypes \
                 [list \
@@ -185,7 +184,7 @@ proc init_for_platform {} {
                      [list [_ "Max Text Files (.mxt)"]  {.mxt} ] \
                 ]
             # some platforms have a menubar on the top, so place below them
-            set ::var(windowMenubarHeight) 22
+            set ::var(menubarHeight) 22
             # Tk handles the window placement differently on each platform, on
             # Mac OS X, the x,y placement refers to the content window's upper
             # left corner (not of the window frame) http://wiki.tcl.tk/11502
@@ -219,7 +218,7 @@ proc init_for_platform {} {
                      [list [_ "Max Text Files"]    {.mxt} ] \
                     ]
             # some platforms have a menubar on the top, so place below them
-            set ::var(windowMenubarHeight) 0
+            set ::var(menubarHeight) 0
             # Tk handles the window placement differently on each platform, on
             # Mac OS X, the x,y placement refers to the content window's upper
             # left corner. http://wiki.tcl.tk/11502 

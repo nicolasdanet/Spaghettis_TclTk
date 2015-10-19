@@ -119,7 +119,7 @@ proc ::dialog_midi::pdtk_midi_dialog {id \
     wm group $id .
     wm resizable $id 0 0
     wm transient $id
-    $id configure -menu $::var(windowMenubar)
+    $id configure -menu $::var(menubar)
     $id configure -padx 10 -pady 5
     ::pd_bindings::dialog_bindings $id "midi"
     # not all Tcl/Tk versions or platforms support -topmost, so catch the error

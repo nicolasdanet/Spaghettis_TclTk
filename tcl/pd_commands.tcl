@@ -189,7 +189,7 @@ proc ::pd_commands::menu_aboutpd {} {
         toplevel .aboutpd -class TextWindow
         wm title .aboutpd [_ "About Pd"]
         wm group .aboutpd .
-        .aboutpd configure -menu $::var(windowMenubar)
+        .aboutpd configure -menu $::var(menubar)
         text .aboutpd.text -relief flat -borderwidth 0 \
             -yscrollcommand ".aboutpd.scroll set" -background white
         scrollbar .aboutpd.scroll -command ".aboutpd.text yview"

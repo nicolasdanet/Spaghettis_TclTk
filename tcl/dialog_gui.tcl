@@ -506,7 +506,7 @@ proc ::dialog_gui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
     wm group $mytoplevel .
     wm resizable $mytoplevel 0 0
     wm transient $mytoplevel $::var(windowFocused)
-    $mytoplevel configure -menu $::var(windowMenubar)
+    $mytoplevel configure -menu $::var(menubar)
     $mytoplevel configure -padx 0 -pady 0
     ::pd_bindings::dialog_bindings $mytoplevel "gui"
 

@@ -51,8 +51,8 @@ proc pdtk_canvas_place_window {width height geometry} {
         set x 0
     }
     if {$height > $screenheight} {
-        set height [expr $screenheight - $::var(windowMenubarHeight) - 30] ;# 30 for window framing
-        set y $::var(windowMenubarHeight)
+        set height [expr $screenheight - $::var(menubarHeight) - 30] ;# 30 for window framing
+        set y $::var(menubarHeight)
     }
     return [list $width $height ${width}x$height+$x+$y]
 }

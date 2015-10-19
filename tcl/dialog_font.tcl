@@ -88,7 +88,7 @@ proc ::dialog_font::pdtk_canvas_dofont {gfxstub initsize} {
 
 proc ::dialog_font::create_dialog {gfxstub} {
     toplevel .font -class DialogWindow
-    .font configure -menu $::var(windowMenubar)
+    .font configure -menu $::var(menubar)
     .font configure -padx 10 -pady 5
     wm group .font .
     wm resizable .font 0 0
