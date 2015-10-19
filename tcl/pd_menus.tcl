@@ -42,7 +42,7 @@ proc ::pd_menus::create_menubar {} {
         set accelerator "Ctrl"
     }
     menu $menubar
-    set menulist "file edit put find media window help"
+    set menulist "file edit put media window help"
     foreach mymenu $menulist {    
         menu $menubar.$mymenu
         $menubar add cascade -label [_ [string totitle $mymenu]] \
@@ -228,15 +228,7 @@ proc ::pd_menus::build_put_menu {mymenu} {
     $mymenu add command -label [_ "Array"] -command {::pd_commands::menu_send $::pd_gui(window_focused) menuarray}
 }
 
-proc ::pd_menus::build_find_menu {mymenu} {
-    variable accelerator
-    $mymenu add command -label [_ "Find..."]    -accelerator "$accelerator+F" \
-        -command {::pd_commands::menu_find_dialog}
-    $mymenu add command -label [_ "Find Again"] -accelerator "$accelerator+G" \
-        -command {::pd_commands::menu_send $::pd_gui(window_focused) findagain}
-    $mymenu add command -label [_ "Find Last Error"] \
-        -command {::pd_connect::pdsend {pd finderror}} 
-}
+proc ::pd_menus::build_find_menu {mymenu} { }
 
 proc ::pd_menus::build_media_menu {mymenu} {
     variable accelerator

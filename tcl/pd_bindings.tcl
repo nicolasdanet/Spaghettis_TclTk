@@ -10,7 +10,6 @@
 package provide pd_bindings 0.1
 
 package require pd_commands
-package require dialog_find
 
 namespace eval ::pd_bindings:: {
     namespace export global_bindings
@@ -49,7 +48,6 @@ proc ::pd_bindings::global_bindings {} {
     bind all <$::pd_gui(modifier)-Key-c>      {::pd_commands::menu_send %W copy}
     bind all <$::pd_gui(modifier)-Key-d>      {::pd_commands::menu_send %W duplicate}
     bind all <$::pd_gui(modifier)-Key-e>      {::pd_commands::menu_toggle_editmode}
-    bind all <$::pd_gui(modifier)-Key-f>      {::pd_commands::menu_find_dialog}
     bind all <$::pd_gui(modifier)-Key-g>      {::pd_commands::menu_send %W findagain}
     bind all <$::pd_gui(modifier)-Key-n>      {::pd_commands::menu_new}
     bind all <$::pd_gui(modifier)-Key-o>      {::pd_commands::menu_open}
