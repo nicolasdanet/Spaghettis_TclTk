@@ -291,12 +291,7 @@ proc ::pdtk_canvas::pdtk_canvas_editmode {mytoplevel state} {
 
 # message from Pd to update the currently available undo/redo action
 proc pdtk_undomenu {mytoplevel undoaction redoaction} {
-    set ::pd_gui(undomanager_toplevel) $mytoplevel
-    set ::pd_gui(undomanager_undo) $undoaction
-    set ::pd_gui(undomanager_redo) $redoaction
-    if {$mytoplevel ne "nobody"} {
-        ::pd_menus::update_undo_on_menu $mytoplevel
-    }
+
 }
 
 # This proc configures the scrollbars whenever anything relevant has

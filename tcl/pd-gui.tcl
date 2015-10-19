@@ -102,14 +102,11 @@ set pd_gui(window_popup_x)              0
 set pd_gui(window_popup_y)              0
 set pd_gui(window_frame_x)              0
 set pd_gui(window_frame_y)              0
+
 set pd_gui(window_menubar)              ""
 set pd_gui(window_menubar_height)       0
 set pd_gui(window_minimum_width)        50
 set pd_gui(window_minimum_height)       20
-
-set pd_gui(undomanager_undo)            no
-set pd_gui(undomanager_redo)            no
-set pd_gui(undomanager_toplevel)        .
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

@@ -60,7 +60,7 @@ proc ::pd_bindings::global_bindings {} {
     bind all <$::pd_gui(modifier)-Key-v>      {::pd_commands::menu_send %W paste}
     bind all <$::pd_gui(modifier)-Key-w>      {::pd_commands::menu_send_float %W menuclose 0}
     bind all <$::pd_gui(modifier)-Key-x>      {::pd_commands::menu_send %W cut}
-    bind all <$::pd_gui(modifier)-Key-z>      {::pd_commands::menu_undo}
+    bind all <$::pd_gui(modifier)-Key-z>      {}
     bind all <$::pd_gui(modifier)-Key-1>      {::pd_commands::menu_send_float %W obj 0}
     bind all <$::pd_gui(modifier)-Key-2>      {::pd_commands::menu_send_float %W msg 0}
     bind all <$::pd_gui(modifier)-Key-3>      {::pd_commands::menu_send_float %W floatatom 0}
@@ -85,7 +85,7 @@ proc ::pd_bindings::global_bindings {} {
     bind all <$::pd_gui(modifier)-Shift-Key-U> {::pd_commands::menu_send %W vumeter}
     bind all <$::pd_gui(modifier)-Shift-Key-V> {::pd_commands::menu_send %W vslider}
     bind all <$::pd_gui(modifier)-Shift-Key-W> {::pd_commands::menu_send_float %W menuclose 1}
-    bind all <$::pd_gui(modifier)-Shift-Key-Z> {::pd_commands::menu_redo}
+    bind all <$::pd_gui(modifier)-Shift-Key-Z> {}
 
     # OS-specific bindings
     if {[tk windowingsystem] eq "aqua"} {

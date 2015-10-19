@@ -96,7 +96,6 @@ proc ::pd_menus::configure_for_canvas {mytoplevel} {
             $menubar.put entryconfigure $i -state normal 
         }
     }
-    update_undo_on_menu $mytoplevel
 }
 
 proc ::pd_menus::configure_for_dialog {mytoplevel} {
@@ -148,9 +147,9 @@ proc ::pd_menus::build_file_menu {mymenu} {
 proc ::pd_menus::build_edit_menu {mymenu} {
     variable accelerator
     $mymenu add command -label [_ "Undo"]       -accelerator "$accelerator+Z" \
-        -command {::pd_commands::menu_undo $::pd_gui(window_focused)}
+        -command {}
     $mymenu add command -label [_ "Redo"]       -accelerator "Shift+$accelerator+Z" \
-        -command {::pd_commands::menu_redo $::pd_gui(window_focused)}
+        -command {}
     $mymenu add  separator
     $mymenu add command -label [_ "Cut"]        -accelerator "$accelerator+X" \
         -command {::pd_commands::menu_send $::pd_gui(window_focused) cut}
@@ -317,21 +316,6 @@ proc ::pd_menus::build_help_menu {mymenu} {
 #------------------------------------------------------------------------------#
 # undo/redo menu items
 
-proc ::pd_menus::update_undo_on_menu {mytoplevel} {
-    variable menubar
-    if {$mytoplevel eq $::pd_gui(undomanager_toplevel) && $::pd_gui(undomanager_undo) ne "no"} {
-        $menubar.edit entryconfigure 0 -state normal \
-            -label [_ "Undo $::pd_gui(undomanager_undo)"]
-    } else {
-        $menubar.edit entryconfigure 0 -state disabled -label [_ "Undo"]
-    }
-    if {$mytoplevel eq $::pd_gui(undomanager_toplevel) && $::pd_gui(undomanager_redo) ne "no"} {
-        $menubar.edit entryconfigure 1 -state normal \
-            -label [_ "Redo $::pd_gui(undomanager_redo)"]
-    } else {
-        $menubar.edit entryconfigure 1 -state disabled -label [_ "Redo"]
-    }
-}
 
 # ------------------------------------------------------------------------------
 # update the menu entries for opening recent files (write arg should always be true except the first time when pd is opened)

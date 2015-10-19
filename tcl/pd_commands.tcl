@@ -55,18 +55,6 @@ proc ::pd_commands::menu_print {mytoplevel} {
 # ------------------------------------------------------------------------------
 # functions called from Edit menu
 
-proc ::pd_commands::menu_undo {} {
-    if {$::pd_gui(window_focused) eq $::pd_gui(undomanager_toplevel) && $::pd_gui(undomanager_undo) ne "no"} {
-        ::pd_connect::pdsend "$::pd_gui(window_focused) undo"
-    }
-}
-
-proc ::pd_commands::menu_redo {} {
-    if {$::pd_gui(window_focused) eq $::pd_gui(undomanager_toplevel) && $::pd_gui(undomanager_redo) ne "no"} {
-        ::pd_connect::pdsend "$::pd_gui(window_focused) redo"
-    }
-}
-
 proc ::pd_commands::menu_editmode {state} {
     if {[winfo class $::pd_gui(window_focused)] ne "PatchWindow"} {return}
     set ::pd_gui(is_editmode) $state
