@@ -42,7 +42,7 @@ proc ::pd_menus::create_menubar {} {
         set accelerator "Ctrl"
     }
     menu $menubar
-    set menulist "file edit put media window help"
+    set menulist "file edit put media window"
     foreach mymenu $menulist {    
         menu $menubar.$mymenu
         $menubar add cascade -label [_ [string totitle $mymenu]] \
@@ -64,7 +64,6 @@ proc ::pd_menus::configure_for_pdwindow {} {
     $menubar.file entryconfigure [_ "Close"] -state disabled
     # Edit menu
     $menubar.edit entryconfigure [_ "Duplicate"] -state disabled
-    $menubar.edit entryconfigure [_ "Tidy Up"] -state disabled
     $menubar.edit entryconfigure [_ "Edit Mode"] -state disabled
     ::pdtk_canvas::pdtk_canvas_editmode .pdwindow 0
     # Undo/Redo change names, they need to have the asterisk (*) after
@@ -86,7 +85,6 @@ proc ::pd_menus::configure_for_canvas {mytoplevel} {
     $menubar.file entryconfigure [_ "Close"] -state normal
     # Edit menu
     $menubar.edit entryconfigure [_ "Duplicate"] -state normal
-    $menubar.edit entryconfigure [_ "Tidy Up"] -state normal
     $menubar.edit entryconfigure [_ "Edit Mode"] -state normal
     ::pdtk_canvas::pdtk_canvas_editmode $mytoplevel $::patch_is_editmode($mytoplevel)
     # Put menu
@@ -111,7 +109,6 @@ proc ::pd_menus::configure_for_dialog {mytoplevel} {
     $menubar.file entryconfigure [_ "Close"] -state disabled
     # Edit menu
     $menubar.edit entryconfigure [_ "Duplicate"] -state disabled
-    $menubar.edit entryconfigure [_ "Tidy Up"] -state disabled
     $menubar.edit entryconfigure [_ "Edit Mode"] -state disabled
     ::pdtk_canvas::pdtk_canvas_editmode $mytoplevel 0
     # Undo/Redo change names, they need to have the asterisk (*) after
@@ -173,8 +170,6 @@ proc ::pd_menus::build_edit_menu {mymenu} {
         $mymenu add command -label [_ "Font"] \
             -command {::pd_commands::menu_font_dialog}
     }
-    $mymenu add command -label [_ "Tidy Up"] \
-        -command {::pd_commands::menu_send $::pd_gui(window_focused) tidy}
     $mymenu add command -label [_ "Clear Console"] \
         -accelerator "Shift+$accelerator+L" -command {menu_clear_console}
     $mymenu add  separator
@@ -286,23 +281,6 @@ proc ::pd_menus::build_window_menu {mymenu} {
     $mymenu add command -label [_ "Parent Window"] \
         -command {::pd_commands::menu_send $::pd_gui(window_focused) findparent}
     $mymenu add  separator
-}
-
-proc ::pd_menus::build_help_menu {mymenu} {
-    if {[tk windowingsystem] ne "aqua"} {
-        $mymenu add command -label [_ "About Pd"] -command {::pd_commands::menu_aboutpd} 
-    }
-    $mymenu add command -label [_ "List of objects..."] \
-        -command {::pd_connect::pdsend "pd help-intro"} 
-    $mymenu add  separator
-    $mymenu add command -label [_ "puredata.info"] \
-        -command {::pd_commands::menu_openfile {http://puredata.info}} 
-    $mymenu add command -label [_ "Report a bug"] -command {::pd_commands::menu_openfile \
-        {http://sourceforge.net/tracker/?func=add&group_id=55736&atid=478070}} 
-    $mymenu add  separator
-    $mymenu add command -label [_ "Tcl prompt"] -command \
-        {::pd_console::create_tcl_entry} 
-
 }
 
 #------------------------------------------------------------------------------#

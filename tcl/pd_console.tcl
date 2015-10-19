@@ -271,24 +271,6 @@ proc ::pd_console::validate_tcl {} {
 
 #--create tcl entry-----------------------------------------------------------#
 
-proc ::pd_console::create_tcl_entry {} {
-# Tcl entry box frame
-    label .pdwindow.tcl.label -text [_ "Tcl:"] -anchor e
-    pack .pdwindow.tcl.label -side left
-    entry .pdwindow.tcl.entry -width 200 \
-       -exportselection 1 -insertwidth 2 -insertbackground blue \
-       -textvariable ::pd_console::tclentry -font {$::pd_gui(font_family) -12}
-    pack .pdwindow.tcl.entry -side left -fill x
-# bindings for the Tcl entry widget
-    bind .pdwindow.tcl.entry <$::pd_gui(modifier)-Key-a> "%W selection range 0 end; break"
-    bind .pdwindow.tcl.entry <Return> "::pd_console::eval_tclentry"
-    bind .pdwindow.tcl.entry <Up>     "::pd_console::get_history 1"
-    bind .pdwindow.tcl.entry <Down>   "::pd_console::get_history -1"
-    bind .pdwindow.tcl.entry <KeyRelease> +"::pd_console::validate_tcl"
-
-    bind .pdwindow.text <Key-Tab> "focus .pdwindow.tcl.entry; break"
-}
-
 proc ::pd_console::set_findinstance_cursor {widget key state} {
     set triggerkeys [list Control_L Control_R Meta_L Meta_R]
     if {[lsearch -exact $triggerkeys $key] > -1} {
@@ -397,5 +379,4 @@ proc ::pd_console::create_window {} {
     # wait until .pdwindow.tcl.entry is visible before opening files so that
     # the loading logic can grab it and put up the busy cursor
     tkwait visibility .pdwindow.text
-#    create_tcl_entry
 }
