@@ -51,16 +51,6 @@ proc ::dialog_message::cancel {mytoplevel} {
     wm withdraw .message
 }
 
-# the message panel is opened from the menu and key bindings
-proc ::dialog_message::open_message_dialog {mytoplevel} {
-    if {[winfo exists .message]} {
-        wm deiconify .message
-        raise .message
-    } else {
-        create_dialog $mytoplevel
-    }
-}
-
 proc ::dialog_message::create_dialog {mytoplevel} {
     toplevel .message -class DialogWindow
     wm group .message .

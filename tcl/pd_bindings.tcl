@@ -91,9 +91,7 @@ proc ::pd_bindings::global_bindings {} {
         bind all <$::pd_gui(modifier)-Key-m>       {::pd_commands::menu_minimize %W}
         bind all <$::pd_gui(modifier)-Key-t>       {::pd_commands::menu_font_dialog}
         bind all <$::pd_gui(modifier)-quoteleft>   {::pd_commands::menu_raisenextwindow}
-        bind all <$::pd_gui(modifier)-Shift-Key-M> {::pd_commands::menu_message_dialog}
     } else {
-        bind all <$::pd_gui(modifier)-Key-m>       {::pd_commands::menu_message_dialog}
         #bind all <$::pd_gui(modifier)-Key-t>       {::pd_commands::menu_texteditor}
         bind all <$::pd_gui(modifier)-Next>        {::pd_commands::menu_raisenextwindow}    ;# PgUp
         bind all <$::pd_gui(modifier)-Prior>       {::pd_commands::menu_raisepreviouswindow};# PageDown

@@ -133,7 +133,6 @@ proc ::pd_menus::build_file_menu {mymenu} {
     $mymenu entryconfigure [_ "Save As..."] -command {::pd_commands::menu_send $::pd_gui(window_focused) menusaveas}
     #$mymenu entryconfigure [_ "Revert*"]    -command {::pd_commands::menu_revert $::pd_gui(window_focused)}
     $mymenu entryconfigure [_ "Close"]      -command {::pd_commands::menu_send_float $::pd_gui(window_focused) menuclose 0}
-    $mymenu entryconfigure [_ "Message..."] -command {::pd_commands::menu_message_dialog}
     $mymenu entryconfigure [_ "Print..."]   -command {::pd_commands::menu_print $::pd_gui(window_focused)}
     # update recent files
     if {[llength $::pd_gui(file_recent)] > 0} {
@@ -473,8 +472,6 @@ proc ::pd_menus::build_file_menu_aqua {mymenu} {
     #$mymenu add command -label [_ "Save All"]
     #$mymenu add command -label [_ "Revert to Saved"]
     $mymenu add  separator
-    $mymenu add command -label [_ "Message..."]
-    $mymenu add  separator
     $mymenu add command -label [_ "Print..."]   -accelerator "$accelerator+P"
 }
 
@@ -500,7 +497,6 @@ proc ::pd_menus::build_file_menu_x11 {mymenu} {
     $mymenu add command -label [_ "Save As..."] -accelerator "Shift+$accelerator+S"
     #    $mymenu add command -label "Revert"
     $mymenu add  separator
-    $mymenu add command -label [_ "Message..."]    -accelerator "$accelerator+M"
     create_preferences_menu $mymenu.preferences
     $mymenu add cascade -label [_ "Preferences"] -menu $mymenu.preferences
     $mymenu add command -label [_ "Print..."]   -accelerator "$accelerator+P"
@@ -547,7 +543,6 @@ proc ::pd_menus::build_file_menu_win32 {mymenu} {
     $mymenu add command -label [_ "Save As..."] -accelerator "Shift+$accelerator+S"
     #    $mymenu add command -label "Revert"
     $mymenu add  separator
-    $mymenu add command -label [_ "Message..."]  -accelerator "$accelerator+M"
     create_preferences_menu $mymenu.preferences
     $mymenu add cascade -label [_ "Preferences"] -menu $mymenu.preferences
     $mymenu add command -label [_ "Print..."] -accelerator "$accelerator+P"

@@ -97,10 +97,6 @@ proc ::pd_commands::menu_send_float {window message float} {
 # ------------------------------------------------------------------------------
 # open the dialog panels
 
-proc ::pd_commands::menu_message_dialog {} {
-    ::dialog_message::open_message_dialog $::pd_gui(window_focused)
-}
-
 proc ::pd_commands::menu_font_dialog {} {
     if {[winfo exists .font]} {
         raise .font
