@@ -2114,8 +2114,8 @@ static void canvas_find(t_canvas *x, t_symbol *s, t_floatarg wholeword)
     found = canvas_dofind(x, &myindex);
     if (found)
         canvas_find_index = 1;
-    sys_vgui("::dialog_find::pdtk_showfindresult .x%lx %d %d %d\n", x, found, canvas_find_index,
-        myindex);
+    /*sys_vgui("::dialog_find::pdtk_showfindresult .x%lx %d %d %d\n", x, found, canvas_find_index,
+        myindex);*/
 }
 
 static void canvas_find_again(t_canvas *x)
@@ -2124,8 +2124,8 @@ static void canvas_find_again(t_canvas *x)
     if (!canvas_findbuf || !canvas_whichfind)
         return;
     found = canvas_dofind(canvas_whichfind, &myindex);
-    sys_vgui("::dialog_find::pdtk_showfindresult .x%lx %d %d %d\n", x, found, ++canvas_find_index,
-        myindex);
+    /*sys_vgui("::dialog_find::pdtk_showfindresult .x%lx %d %d %d\n", x, found, ++canvas_find_index,
+        myindex);*/
 }
 
 static void canvas_find_parent(t_canvas *x)
