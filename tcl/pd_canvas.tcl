@@ -7,11 +7,11 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pdtk_canvas 0.1
+package provide pd_canvas 0.1
 
 package require pd_bindings
 
-namespace eval ::pdtk_canvas:: {
+namespace eval ::pd_canvas:: {
 }
 
 # One thing that is tricky to understand is the difference between a Tk
@@ -154,7 +154,7 @@ proc pdtk_canvas_saveas {name initialfile initialdir destroyflag} {
 }
 
 ##### ask user Save? Discard? Cancel?, and if so, send a message on to Pd ######
-proc ::pdtk_canvas::pdtk_canvas_menuclose {mytoplevel reply_to_pd} {
+proc ::pd_canvas::pdtk_canvas_menuclose {mytoplevel reply_to_pd} {
     raise $mytoplevel
     set filename [wm title $mytoplevel]
     set message [format {Do you want to save the changes you made in "%s"?} $filename]
@@ -170,7 +170,7 @@ proc ::pdtk_canvas::pdtk_canvas_menuclose {mytoplevel reply_to_pd} {
 #------------------------------------------------------------------------------#
 # mouse usage
 
-# TODO put these procs into the pdtk_canvas namespace
+# TODO put these procs into the pd_canvas namespace
 proc pdtk_canvas_motion {tkcanvas x y mods} {
     set mytoplevel [winfo toplevel $tkcanvas]
     ::pd_connect::pdsend "$mytoplevel motion [$tkcanvas canvasx $x] [$tkcanvas canvasy $y] $mods"
@@ -214,24 +214,24 @@ proc pdtk_canvas_clickpaste {tkcanvas x y b} {
 # menu item is called, not when the command is mapped to the menu item.  This
 # is the same as the menubar in pd_menus.tcl but the opposite of the 'bind'
 # commands in pd_bindings.tcl
-proc ::pdtk_canvas::create_popup {} {
+proc ::pd_canvas::create_popup {} {
     if { ! [winfo exists .popup]} {
         # the popup menu for the canvas
         menu .popup -tearoff false
         .popup add command -label [_ "Properties"] \
-            -command {::pdtk_canvas::done_popup $::var(window_focused) 0}
+            -command {::pd_canvas::done_popup $::var(window_focused) 0}
         .popup add command -label [_ "Open"]       \
-            -command {::pdtk_canvas::done_popup $::var(window_focused) 1}
+            -command {::pd_canvas::done_popup $::var(window_focused) 1}
         .popup add command -label [_ "Help"]       \
-            -command {::pdtk_canvas::done_popup $::var(window_focused) 2}
+            -command {::pd_canvas::done_popup $::var(window_focused) 2}
     }
 }
 
-proc ::pdtk_canvas::done_popup {mytoplevel action} {
+proc ::pd_canvas::done_popup {mytoplevel action} {
     ::pd_connect::pdsend "$mytoplevel done-popup $action $::var(window_popup_x) $::var(window_popup_y)"
 }
 
-proc ::pdtk_canvas::pdtk_canvas_popup {mytoplevel xcanvas ycanvas hasproperties hasopen} {
+proc ::pd_canvas::pdtk_canvas_popup {mytoplevel xcanvas ycanvas hasproperties hasopen} {
     set ::var(window_popup_x) $xcanvas
     set ::var(window_popup_y) $ycanvas
     if {$hasproperties} {
@@ -260,20 +260,20 @@ proc ::pdtk_canvas::pdtk_canvas_popup {mytoplevel xcanvas ycanvas hasproperties 
 #------------------------------------------------------------------------------#
 # procs for when file loading starts/finishes
 
-proc ::pdtk_canvas::started_loading_file {patchname} {
+proc ::pd_canvas::started_loading_file {patchname} {
     ::pd_console::busygrab
 }
 
 # things to run when a patch is finished loading.  This is called when
 # the OS sends the "Map" event for this window.
-proc ::pdtk_canvas::finished_loading_file {mytoplevel} {
+proc ::pd_canvas::finished_loading_file {mytoplevel} {
     # ::pd_console::busyrelease is in pdtk_canvas_new so that the grab
     # is released before the new toplevel window gets created.
     # Otherwise the grab blocks the new window from getting the
     # FocusIn event on creation.
 
     # set editmode to make sure the menu item is in the right state
-    ::pdtk_canvas::pdtk_canvas_editmode $mytoplevel $::patch_is_editmode($mytoplevel)
+    ::pd_canvas::pdtk_canvas_editmode $mytoplevel $::patch_is_editmode($mytoplevel)
     set ::patch_loaded($mytoplevel) 1
     # send the virtual events now that everything is loaded
     event generate $mytoplevel <<Loaded>>
@@ -283,7 +283,7 @@ proc ::pdtk_canvas::finished_loading_file {mytoplevel} {
 # procs for canvas events
 
 # check or uncheck the "edit" menu item
-proc ::pdtk_canvas::pdtk_canvas_editmode {mytoplevel state} {
+proc ::pd_canvas::pdtk_canvas_editmode {mytoplevel state} {
     set ::var(is_editmode) $state
     set ::patch_is_editmode($mytoplevel) $state
     event generate $mytoplevel <<EditMode>>
@@ -297,7 +297,7 @@ proc pdtk_undomenu {mytoplevel undoaction redoaction} {
 # This proc configures the scrollbars whenever anything relevant has
 # been updated.  It should always receive a tkcanvas, which is then
 # used to generate the mytoplevel, needed to address the scrollbars.
-proc ::pdtk_canvas::pdtk_canvas_getscroll {tkcanvas} {
+proc ::pd_canvas::pdtk_canvas_getscroll {tkcanvas} {
     set mytoplevel [winfo toplevel $tkcanvas]
     set height [winfo height $tkcanvas]
     set width [winfo width $tkcanvas]
@@ -332,7 +332,7 @@ proc ::pdtk_canvas::pdtk_canvas_getscroll {tkcanvas} {
     }
 }
 
-proc ::pdtk_canvas::scroll {tkcanvas axis amount} {
+proc ::pd_canvas::scroll {tkcanvas axis amount} {
     if {$axis eq "x" && $::patch_is_scrollable_x($tkcanvas) == 1} {
         $tkcanvas xview scroll [expr {- ($amount)}] units
     }
@@ -345,7 +345,7 @@ proc ::pdtk_canvas::scroll {tkcanvas axis amount} {
 # get patch window child/parent relationships
 
 # add a child window ID to the list of children, if it isn't already there
-proc ::pdtk_canvas::addchild {mytoplevel child} {
+proc ::pd_canvas::addchild {mytoplevel child} {
     # if either ::patch_childs($mytoplevel) does not exist, or $child does not
     # exist inside of the ::patch_childs($mytoplevel list
     if { [lsearch -exact [array names ::patch_childs $mytoplevel]] == -1 \
@@ -355,7 +355,7 @@ proc ::pdtk_canvas::addchild {mytoplevel child} {
 }
 
 # receive a list of all my parent windows from 'pd'
-proc ::pdtk_canvas::pdtk_canvas_setparents {mytoplevel args} {
+proc ::pd_canvas::pdtk_canvas_setparents {mytoplevel args} {
     set ::patch_parents($mytoplevel) $args
     foreach parent $args {
         addchild $parent $mytoplevel
@@ -363,7 +363,7 @@ proc ::pdtk_canvas::pdtk_canvas_setparents {mytoplevel args} {
 }
 
 # receive information for setting the info the the title bar of the window
-proc ::pdtk_canvas::pdtk_canvas_reflecttitle {mytoplevel \
+proc ::pd_canvas::pdtk_canvas_reflecttitle {mytoplevel \
                                               path name arguments dirty} {
     set ::patch_name($mytoplevel) $name ;# TODO add path to this
     if {[tk windowingsystem] eq "aqua"} {

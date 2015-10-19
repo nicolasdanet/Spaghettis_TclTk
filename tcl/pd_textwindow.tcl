@@ -12,12 +12,12 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# pdtk_textwindow - a window containing scrollable text for "qlist" and
+# pd_textwindow - a window containing scrollable text for "qlist" and
 # "textfile" objects - later the latter might get renamed just "text"
 
 # this is adapted from krzYszcz's code for coll in cyclone
 
-package provide pdtk_textwindow 0.1
+package provide pd_textwindow 0.1
 
 # these procs are currently all in the global namespace because they're
 # called from pd.

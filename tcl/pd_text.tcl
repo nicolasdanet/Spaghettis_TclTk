@@ -7,7 +7,7 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pdtk_text 0.1
+package provide pd_text 0.1
 
 # these procs are currently all in the global namespace because all of them
 # are used by 'pd' and therefore need to be in the global namespace.

@@ -10,9 +10,7 @@
 
 # Withdraw the window first to avoid flashing.
 
-if {[catch {wm withdraw .} fid]} {
-    exit 2
-}
+if {[catch {wm withdraw .} fid]} { exit 2 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -32,9 +30,7 @@ set auto_path [linsert $auto_path 0 [file dirname [info script]]]
 
 # Package specific to Mac OS X.
 
-if {[tk windowingsystem] eq "aqua"} {
-    package require pd_apple
-}
+if {[tk windowingsystem] eq "aqua"} { package require pd_apple }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -51,6 +47,7 @@ package require dialog_midi
 package require dialog_path
 package require dialog_startup
 package require pd_bindings
+package require pd_canvas
 package require pd_commands
 package require pd_connect
 package require pd_console
@@ -58,9 +55,8 @@ package require pd_preferences
 package require pd_menus
 package require pd_miscellaneous
 package require pd_parser
-package require pdtk_canvas
-package require pdtk_text
-package require pdtk_textwindow
+package require pd_text
+package require pd_textwindow
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -354,7 +350,7 @@ proc pdtk_pd_startup {major minor bugfix test
     ::pd_bindings::class_bindings
     ::pd_bindings::global_bindings
     ::pd_menus::create_menubar
-    ::pdtk_canvas::create_popup
+    ::pd_canvas::create_popup
     ::pd_console::create_window
     ::pd_menus::configure_for_pdwindow
     open_filestoopen

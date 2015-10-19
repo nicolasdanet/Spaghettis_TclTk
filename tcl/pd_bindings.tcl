@@ -148,8 +148,8 @@ proc ::pd_bindings::patch_bindings {mytoplevel} {
         bind all <Shift-Button-5> \
             {event generate [focus -displayof %W] <Shift-MouseWheel> -delta -1}
     }
-    bind $tkcanvas <MouseWheel>       {::pdtk_canvas::scroll %W y %D}
-    bind $tkcanvas <Shift-MouseWheel> {::pdtk_canvas::scroll %W x %D}
+    bind $tkcanvas <MouseWheel>       {::pd_canvas::scroll %W y %D}
+    bind $tkcanvas <Shift-MouseWheel> {::pd_canvas::scroll %W x %D}
 
     # "right clicks" are defined differently on each platform
     switch -- [tk windowingsystem] { 
@@ -182,7 +182,7 @@ proc ::pd_bindings::patch_configure {mytoplevel width height x y} {
     # for some reason, when we create a window, we get an event with a
     # widthXheight of 1x1 first, then we get the right values, so filter it out
     if {$width == 1 && $height == 1} {return}
-    ::pdtk_canvas::pdtk_canvas_getscroll [tkcanvas_name $mytoplevel]
+    ::pd_canvas::pdtk_canvas_getscroll [tkcanvas_name $mytoplevel]
     # send the size/location of the window and canvas to 'pd' in the form of:
     #    left top right bottom
     ::pd_connect::pdsend "$mytoplevel setbounds $x $y [expr $x + $width] [expr $y + $height]"
@@ -233,7 +233,7 @@ proc ::pd_bindings::dialog_focusin {mytoplevel} {
 # don't get a final "unmap" event when we destroy the window.
 proc ::pd_bindings::map {mytoplevel} {
     ::pd_connect::pdsend "$mytoplevel map 1"
-    ::pdtk_canvas::finished_loading_file $mytoplevel
+    ::pd_canvas::finished_loading_file $mytoplevel
 }
 
 proc ::pd_bindings::unmap {mytoplevel} {

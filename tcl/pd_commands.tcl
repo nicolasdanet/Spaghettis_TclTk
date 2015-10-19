@@ -58,7 +58,7 @@ proc ::pd_commands::menu_print {mytoplevel} {
 proc ::pd_commands::menu_editmode {state} {
     if {[winfo class $::var(window_focused)] ne "PatchWindow"} {return}
     set ::var(is_editmode) $state
-# this shouldn't be necessary because 'pd' will reply with ::pdtk_canvas::pdtk_canvas_editmode
+# this shouldn't be necessary because 'pd' will reply with ::pd_canvas::pdtk_canvas_editmode
 #    set ::patch_is_editmode($::var(window_focused)) $state
     ::pd_connect::pdsend "$::var(window_focused) editmode $state"
 }

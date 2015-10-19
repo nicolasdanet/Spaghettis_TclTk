@@ -15,6 +15,7 @@ package ifneeded dialog_path 0.1        [list source [file join $dir dialog_path
 package ifneeded dialog_startup 0.1     [list source [file join $dir dialog_startup.tcl]]
 package ifneeded pd_apple 0.1           [list source [file join $dir pd_apple.tcl]]
 package ifneeded pd_bindings 0.1        [list source [file join $dir pd_bindings.tcl]]
+package ifneeded pd_canvas 0.1          [list source [file join $dir pd_canvas.tcl]]
 package ifneeded pd_commands 0.1        [list source [file join $dir pd_commands.tcl]]
 package ifneeded pd_connect 0.1         [list source [file join $dir pd_connect.tcl]]
 package ifneeded pd_console 0.1         [list source [file join $dir pd_console.tcl]]
@@ -24,9 +25,8 @@ package ifneeded pd_miscellaneous 0.1   [list source [file join $dir pd_miscella
 package ifneeded pd_parser 0.1          [list source [file join $dir pd_parser.tcl]]
 package ifneeded pd_scrollbox 0.1       [list source [file join $dir pd_scrollbox.tcl]]
 package ifneeded pd_scrollboxwindow 0.1 [list source [file join $dir pd_scrollboxwindow.tcl]]
-package ifneeded pdtk_canvas 0.1        [list source [file join $dir pdtk_canvas.tcl]]
-package ifneeded pdtk_text 0.1          [list source [file join $dir pdtk_text.tcl]]
-package ifneeded pdtk_textwindow 0.1    [list source [file join $dir pdtk_textwindow.tcl]]
+package ifneeded pd_text 0.1            [list source [file join $dir pd_text.tcl]]
+package ifneeded pd_textwindow 0.1      [list source [file join $dir pd_textwindow.tcl]]
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
