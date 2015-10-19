@@ -23,7 +23,7 @@ namespace eval ::pd_bindings:: {
 # interpreted immediately.  Since the command is being bound to $mytoplevel,
 # it makes sense to have value of $mytoplevel already in the command.  This is
 # the opposite of most menu/bind commands here and in pd_menus.tcl, which use
-# {} to force execution of any variables (i.e. $::var(window_focused)) until later
+# {} to force execution of any variables (i.e. $::var(windowFocused)) until later
 
 
 # binding by class is not recursive, so its useful for window events
@@ -44,57 +44,57 @@ proc ::pd_bindings::global_bindings {} {
     # we use 'bind all' everywhere to get as much of Tk's automatic binding
     # behaviors as possible, things like not sending an event for 'O' when
     # 'Control-O' is pressed.
-    bind all <$::var(modifier)-Key-a>      {::pd_commands::menu_send %W selectall}
-    bind all <$::var(modifier)-Key-c>      {::pd_commands::menu_send %W copy}
-    bind all <$::var(modifier)-Key-d>      {::pd_commands::menu_send %W duplicate}
-    bind all <$::var(modifier)-Key-e>      {::pd_commands::menu_toggle_editmode}
-    bind all <$::var(modifier)-Key-g>      {::pd_commands::menu_send %W findagain}
-    bind all <$::var(modifier)-Key-n>      {::pd_commands::menu_new}
-    bind all <$::var(modifier)-Key-o>      {::pd_commands::menu_open}
-    bind all <$::var(modifier)-Key-p>      {::pd_commands::menu_print $::var(window_focused)}
-    bind all <$::var(modifier)-Key-q>      {::pd_connect::pdsend "pd verifyquit"}
-    bind all <$::var(modifier)-Key-r>      {::pd_commands::menu_raise_pdwindow}
-    bind all <$::var(modifier)-Key-s>      {::pd_commands::menu_send %W menusave}
-    bind all <$::var(modifier)-Key-v>      {::pd_commands::menu_send %W paste}
-    bind all <$::var(modifier)-Key-w>      {::pd_commands::menu_send_float %W menuclose 0}
-    bind all <$::var(modifier)-Key-x>      {::pd_commands::menu_send %W cut}
-    bind all <$::var(modifier)-Key-z>      {}
-    bind all <$::var(modifier)-Key-1>      {::pd_commands::menu_send_float %W obj 0}
-    bind all <$::var(modifier)-Key-2>      {::pd_commands::menu_send_float %W msg 0}
-    bind all <$::var(modifier)-Key-3>      {::pd_commands::menu_send_float %W floatatom 0}
-    bind all <$::var(modifier)-Key-4>      {::pd_commands::menu_send_float %W symbolatom 0}
-    bind all <$::var(modifier)-Key-5>      {::pd_commands::menu_send_float %W text 0}
-    bind all <$::var(modifier)-Key-slash>  {::pd_connect::pdsend "pd dsp 1"}
-    bind all <$::var(modifier)-Key-period> {::pd_connect::pdsend "pd dsp 0"}
-    bind all <$::var(modifier)-greater>    {::pd_commands::menu_raisenextwindow}
-    bind all <$::var(modifier)-less>       {::pd_commands::menu_raisepreviouswindow}
+    bind all <$::var(modifierKey)-Key-a>      {::pd_commands::menu_send %W selectall}
+    bind all <$::var(modifierKey)-Key-c>      {::pd_commands::menu_send %W copy}
+    bind all <$::var(modifierKey)-Key-d>      {::pd_commands::menu_send %W duplicate}
+    bind all <$::var(modifierKey)-Key-e>      {::pd_commands::menu_toggle_editmode}
+    bind all <$::var(modifierKey)-Key-g>      {::pd_commands::menu_send %W findagain}
+    bind all <$::var(modifierKey)-Key-n>      {::pd_commands::menu_new}
+    bind all <$::var(modifierKey)-Key-o>      {::pd_commands::menu_open}
+    bind all <$::var(modifierKey)-Key-p>      {::pd_commands::menu_print $::var(windowFocused)}
+    bind all <$::var(modifierKey)-Key-q>      {::pd_connect::pdsend "pd verifyquit"}
+    bind all <$::var(modifierKey)-Key-r>      {::pd_commands::menu_raise_pdwindow}
+    bind all <$::var(modifierKey)-Key-s>      {::pd_commands::menu_send %W menusave}
+    bind all <$::var(modifierKey)-Key-v>      {::pd_commands::menu_send %W paste}
+    bind all <$::var(modifierKey)-Key-w>      {::pd_commands::menu_send_float %W menuclose 0}
+    bind all <$::var(modifierKey)-Key-x>      {::pd_commands::menu_send %W cut}
+    bind all <$::var(modifierKey)-Key-z>      {}
+    bind all <$::var(modifierKey)-Key-1>      {::pd_commands::menu_send_float %W obj 0}
+    bind all <$::var(modifierKey)-Key-2>      {::pd_commands::menu_send_float %W msg 0}
+    bind all <$::var(modifierKey)-Key-3>      {::pd_commands::menu_send_float %W floatatom 0}
+    bind all <$::var(modifierKey)-Key-4>      {::pd_commands::menu_send_float %W symbolatom 0}
+    bind all <$::var(modifierKey)-Key-5>      {::pd_commands::menu_send_float %W text 0}
+    bind all <$::var(modifierKey)-Key-slash>  {::pd_connect::pdsend "pd dsp 1"}
+    bind all <$::var(modifierKey)-Key-period> {::pd_connect::pdsend "pd dsp 0"}
+    bind all <$::var(modifierKey)-greater>    {::pd_commands::menu_raisenextwindow}
+    bind all <$::var(modifierKey)-less>       {::pd_commands::menu_raisepreviouswindow}
 
     # annoying, but Tk's bind needs uppercase letter to get the Shift
-    bind all <$::var(modifier)-Shift-Key-B> {::pd_commands::menu_send %W bng}
-    bind all <$::var(modifier)-Shift-Key-C> {::pd_commands::menu_send %W mycnv}
-    bind all <$::var(modifier)-Shift-Key-D> {::pd_commands::menu_send %W vradio}
-    bind all <$::var(modifier)-Shift-Key-H> {::pd_commands::menu_send %W hslider}
-    bind all <$::var(modifier)-Shift-Key-I> {::pd_commands::menu_send %W hradio}
-    bind all <$::var(modifier)-Shift-Key-L> {menu_clear_console}
-    bind all <$::var(modifier)-Shift-Key-N> {::pd_commands::menu_send %W numbox}
-    bind all <$::var(modifier)-Shift-Key-Q> {::pd_connect::pdsend "pd quit"}
-    bind all <$::var(modifier)-Shift-Key-S> {::pd_commands::menu_send %W menusaveas}
-    bind all <$::var(modifier)-Shift-Key-T> {::pd_commands::menu_send %W toggle}
-    bind all <$::var(modifier)-Shift-Key-U> {::pd_commands::menu_send %W vumeter}
-    bind all <$::var(modifier)-Shift-Key-V> {::pd_commands::menu_send %W vslider}
-    bind all <$::var(modifier)-Shift-Key-W> {::pd_commands::menu_send_float %W menuclose 1}
-    bind all <$::var(modifier)-Shift-Key-Z> {}
+    bind all <$::var(modifierKey)-Shift-Key-B> {::pd_commands::menu_send %W bng}
+    bind all <$::var(modifierKey)-Shift-Key-C> {::pd_commands::menu_send %W mycnv}
+    bind all <$::var(modifierKey)-Shift-Key-D> {::pd_commands::menu_send %W vradio}
+    bind all <$::var(modifierKey)-Shift-Key-H> {::pd_commands::menu_send %W hslider}
+    bind all <$::var(modifierKey)-Shift-Key-I> {::pd_commands::menu_send %W hradio}
+    bind all <$::var(modifierKey)-Shift-Key-L> {menu_clear_console}
+    bind all <$::var(modifierKey)-Shift-Key-N> {::pd_commands::menu_send %W numbox}
+    bind all <$::var(modifierKey)-Shift-Key-Q> {::pd_connect::pdsend "pd quit"}
+    bind all <$::var(modifierKey)-Shift-Key-S> {::pd_commands::menu_send %W menusaveas}
+    bind all <$::var(modifierKey)-Shift-Key-T> {::pd_commands::menu_send %W toggle}
+    bind all <$::var(modifierKey)-Shift-Key-U> {::pd_commands::menu_send %W vumeter}
+    bind all <$::var(modifierKey)-Shift-Key-V> {::pd_commands::menu_send %W vslider}
+    bind all <$::var(modifierKey)-Shift-Key-W> {::pd_commands::menu_send_float %W menuclose 1}
+    bind all <$::var(modifierKey)-Shift-Key-Z> {}
 
     # OS-specific bindings
     if {[tk windowingsystem] eq "aqua"} {
         # Cmd-m = Minimize and Cmd-t = Font on Mac OS X for all apps
-        bind all <$::var(modifier)-Key-m>       {::pd_commands::menu_minimize %W}
-        bind all <$::var(modifier)-Key-t>       {::pd_commands::menu_font_dialog}
-        bind all <$::var(modifier)-quoteleft>   {::pd_commands::menu_raisenextwindow}
+        bind all <$::var(modifierKey)-Key-m>       {::pd_commands::menu_minimize %W}
+        bind all <$::var(modifierKey)-Key-t>       {::pd_commands::menu_font_dialog}
+        bind all <$::var(modifierKey)-quoteleft>   {::pd_commands::menu_raisenextwindow}
     } else {
-        #bind all <$::var(modifier)-Key-t>       {::pd_commands::menu_texteditor}
-        bind all <$::var(modifier)-Next>        {::pd_commands::menu_raisenextwindow}    ;# PgUp
-        bind all <$::var(modifier)-Prior>       {::pd_commands::menu_raisepreviouswindow};# PageDown
+        #bind all <$::var(modifierKey)-Key-t>       {::pd_commands::menu_texteditor}
+        bind all <$::var(modifierKey)-Next>        {::pd_commands::menu_raisenextwindow}    ;# PgUp
+        bind all <$::var(modifierKey)-Prior>       {::pd_commands::menu_raisepreviouswindow};# PageDown
     }
 
     bind all <KeyPress>         {::pd_bindings::sendkey %W 1 %K %A 0}
@@ -111,12 +111,12 @@ proc ::pd_bindings::dialog_bindings {mytoplevel dialogname} {
 
     bind $mytoplevel <KeyPress-Escape> "dialog_${dialogname}::cancel $mytoplevel"
     bind $mytoplevel <KeyPress-Return> "dialog_${dialogname}::ok $mytoplevel"
-    bind $mytoplevel <$::var(modifier)-Key-w> "dialog_${dialogname}::cancel $mytoplevel"
+    bind $mytoplevel <$::var(modifierKey)-Key-w> "dialog_${dialogname}::cancel $mytoplevel"
     # these aren't supported in the dialog, so alert the user, then break so
     # that no other key bindings are run
-    bind $mytoplevel <$::var(modifier)-Key-s>       {bell; break}
-    bind $mytoplevel <$::var(modifier)-Shift-Key-S> {bell; break}
-    bind $mytoplevel <$::var(modifier)-Key-p>       {bell; break}
+    bind $mytoplevel <$::var(modifierKey)-Key-s>       {bell; break}
+    bind $mytoplevel <$::var(modifierKey)-Shift-Key-S> {bell; break}
+    bind $mytoplevel <$::var(modifierKey)-Key-p>       {bell; break}
 
     wm protocol $mytoplevel WM_DELETE_WINDOW "dialog_${dialogname}::cancel $mytoplevel"
 }
@@ -131,10 +131,10 @@ proc ::pd_bindings::patch_bindings {mytoplevel} {
     # these need to be bound to $tkcanvas because %W will return $mytoplevel for
     # events over the window frame and $tkcanvas for events over the canvas
     bind $tkcanvas <Motion>                   "pdtk_canvas_motion %W %x %y 0"
-    bind $tkcanvas <$::var(modifier)-Motion>         "pdtk_canvas_motion %W %x %y 2"
+    bind $tkcanvas <$::var(modifierKey)-Motion>         "pdtk_canvas_motion %W %x %y 2"
     bind $tkcanvas <ButtonPress-1>            "pdtk_canvas_mouse %W %x %y %b 0"
     bind $tkcanvas <ButtonRelease-1>          "pdtk_canvas_mouseup %W %x %y %b"
-    bind $tkcanvas <$::var(modifier)-ButtonPress-1>  "pdtk_canvas_mouse %W %x %y %b 2"
+    bind $tkcanvas <$::var(modifierKey)-ButtonPress-1>  "pdtk_canvas_mouse %W %x %y %b 2"
     bind $tkcanvas <Shift-ButtonPress-1>        "pdtk_canvas_mouse %W %x %y %b 1"
 
     if {[tk windowingsystem] eq "x11"} {
@@ -190,8 +190,8 @@ proc ::pd_bindings::patch_configure {mytoplevel width height x y} {
     
 proc ::pd_bindings::window_destroy {window} {
     set mytoplevel [winfo toplevel $window]
-    unset ::patch_is_editmode($mytoplevel)
-    unset ::patch_is_editing($mytoplevel)
+    unset ::patch_isEditmode($mytoplevel)
+    unset ::patch_isEditing($mytoplevel)
     unset ::patch_loaded($mytoplevel)
     # unset my entries all of the window data tracking arrays
     array unset ::patch_name $mytoplevel
@@ -201,10 +201,10 @@ proc ::pd_bindings::window_destroy {window} {
 
 # do tasks when changing focus (Window menu, scrollbars, etc.)
 proc ::pd_bindings::window_focusin {mytoplevel} {
-    # ::var(window_focused) is used throughout for sending bindings, menu commands,
+    # ::var(windowFocused) is used throughout for sending bindings, menu commands,
     # etc. to the correct patch receiver symbol.  MSP took out a line that
     # confusingly redirected the "find" window which might be in mid search
-    set ::var(window_focused) $mytoplevel
+    set ::var(windowFocused) $mytoplevel
     ::pd_commands::set_filenewdir $mytoplevel
     ::dialog_font::update_font_dialog $mytoplevel
     if {$mytoplevel eq ".pdwindow"} {
@@ -212,9 +212,9 @@ proc ::pd_bindings::window_focusin {mytoplevel} {
     } else {
         ::pd_menus::configure_for_canvas $mytoplevel
     }
-    if {[winfo exists .font]} {wm transient .font $::var(window_focused)}
+    if {[winfo exists .font]} {wm transient .font $::var(windowFocused)}
     # if we regain focus from another app, make sure to editmode cursor is right
-    if {$::patch_is_editmode($mytoplevel)} {
+    if {$::patch_isEditmode($mytoplevel)} {
         $mytoplevel configure -cursor hand2
     }
     # TODO handle enabling/disabling the Cut/Copy/Paste menu items in Edit

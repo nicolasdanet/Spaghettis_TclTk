@@ -41,8 +41,8 @@ proc ::pd_preferences::init {} {
     # assign gui preferences
     # osx special case for arrays
     set arr [expr { [tk windowingsystem] eq "aqua" }]
-    set ::var(file_recent) ""
-    catch {set ::var(file_recent) [get_config $::recentfiles_domain \
+    set ::var(filesRecent) ""
+    catch {set ::var(filesRecent) [get_config $::recentfiles_domain \
         $::recentfiles_key $arr]}
 }
 
@@ -50,7 +50,6 @@ proc ::pd_preferences::init_aqua {} {
     # osx has a "Open Recent" menu with 10 recent files (others have 5 inlined)
     set ::recentfiles_domain org.puredata.puredata
     set ::recentfiles_key "NSRecentDocuments"
-    set ::var(file_recent_maximum) 10
 }
 
 proc ::pd_preferences::init_win {} {
@@ -70,7 +69,7 @@ proc ::pd_preferences::init_x11 {} {
 # write recent files
 #
 proc ::pd_preferences::write_recentfiles {} {
-    write_config $::var(file_recent) $::recentfiles_domain $::recentfiles_key true
+    write_config $::var(filesRecent) $::recentfiles_domain $::recentfiles_key true
 }
 
 # ------------------------------------------------------------------------------
@@ -78,11 +77,11 @@ proc ::pd_preferences::write_recentfiles {} {
 #
 proc ::pd_preferences::update_recentfiles {afile} {
     # remove duplicates first
-    set index [lsearch -exact $::var(file_recent) $afile]
-    set ::var(file_recent) [lreplace $::var(file_recent) $index $index]
+    set index [lsearch -exact $::var(filesRecent) $afile]
+    set ::var(filesRecent) [lreplace $::var(filesRecent) $index $index]
     # insert new one in the beginning and crop the list
-    set ::var(file_recent) [linsert $::var(file_recent) 0 $afile]
-    set ::var(file_recent) [lrange $::var(file_recent) 0 $::var(file_recent_maximum)]
+    set ::var(filesRecent) [linsert $::var(filesRecent) 0 $afile]
+    set ::var(filesRecent) [lrange $::var(filesRecent) 0 5]
     ::pd_menus::update_recentfiles_menu
 }
 

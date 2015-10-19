@@ -14,7 +14,7 @@ package require pd_commands
 # TODO figure out Undo/Redo/Cut/Copy/Paste state changes for menus
 
 # since there is one menubar that is used for all windows, the menu -commands
-# use {} quotes so that $::var(window_focused) is interpreted when the menu item
+# use {} quotes so that $::var(windowFocused) is interpreted when the menu item
 # is called, not when the command is mapped to the menu item.  This is the
 # opposite of the 'bind' commands in pd_bindings.tcl
     
@@ -86,7 +86,7 @@ proc ::pd_menus::configure_for_canvas {mytoplevel} {
     # Edit menu
     $menubar.edit entryconfigure [_ "Duplicate"] -state normal
     $menubar.edit entryconfigure [_ "Edit Mode"] -state normal
-    ::pd_canvas::pdtk_canvas_editmode $mytoplevel $::patch_is_editmode($mytoplevel)
+    ::pd_canvas::pdtk_canvas_editmode $mytoplevel $::patch_isEditmode($mytoplevel)
     # Put menu
     for {set i 0} {$i <= [$menubar.put index end]} {incr i} {
         # catch errors that happen when trying to disable separators
@@ -129,13 +129,13 @@ proc ::pd_menus::build_file_menu {mymenu} {
     [format build_file_menu_%s [tk windowingsystem]] $mymenu
     $mymenu entryconfigure [_ "New"]        -command {::pd_commands::menu_new}
     $mymenu entryconfigure [_ "Open"]       -command {::pd_commands::menu_open}
-    $mymenu entryconfigure [_ "Save"]       -command {::pd_commands::menu_send $::var(window_focused) menusave}
-    $mymenu entryconfigure [_ "Save As..."] -command {::pd_commands::menu_send $::var(window_focused) menusaveas}
-    #$mymenu entryconfigure [_ "Revert*"]    -command {::pd_commands::menu_revert $::var(window_focused)}
-    $mymenu entryconfigure [_ "Close"]      -command {::pd_commands::menu_send_float $::var(window_focused) menuclose 0}
-    $mymenu entryconfigure [_ "Print..."]   -command {::pd_commands::menu_print $::var(window_focused)}
+    $mymenu entryconfigure [_ "Save"]       -command {::pd_commands::menu_send $::var(windowFocused) menusave}
+    $mymenu entryconfigure [_ "Save As..."] -command {::pd_commands::menu_send $::var(windowFocused) menusaveas}
+    #$mymenu entryconfigure [_ "Revert*"]    -command {::pd_commands::menu_revert $::var(windowFocused)}
+    $mymenu entryconfigure [_ "Close"]      -command {::pd_commands::menu_send_float $::var(windowFocused) menuclose 0}
+    $mymenu entryconfigure [_ "Print..."]   -command {::pd_commands::menu_print $::var(windowFocused)}
     # update recent files
-    if {[llength $::var(file_recent)] > 0} {
+    if {[llength $::var(filesRecent)] > 0} {
         ::pd_menus::update_recentfiles_menu false
     }
 }
@@ -148,15 +148,15 @@ proc ::pd_menus::build_edit_menu {mymenu} {
         -command {}
     $mymenu add  separator
     $mymenu add command -label [_ "Cut"]        -accelerator "$accelerator+X" \
-        -command {::pd_commands::menu_send $::var(window_focused) cut}
+        -command {::pd_commands::menu_send $::var(windowFocused) cut}
     $mymenu add command -label [_ "Copy"]       -accelerator "$accelerator+C" \
-        -command {::pd_commands::menu_send $::var(window_focused) copy}
+        -command {::pd_commands::menu_send $::var(windowFocused) copy}
     $mymenu add command -label [_ "Paste"]      -accelerator "$accelerator+V" \
-        -command {::pd_commands::menu_send $::var(window_focused) paste}
+        -command {::pd_commands::menu_send $::var(windowFocused) paste}
     $mymenu add command -label [_ "Duplicate"]  -accelerator "$accelerator+D" \
-        -command {::pd_commands::menu_send $::var(window_focused) duplicate}
+        -command {::pd_commands::menu_send $::var(windowFocused) duplicate}
     $mymenu add command -label [_ "Select All"] -accelerator "$accelerator+A" \
-        -command {::pd_commands::menu_send $::var(window_focused) selectall}
+        -command {::pd_commands::menu_send $::var(windowFocused) selectall}
     $mymenu add  separator
     if {[tk windowingsystem] eq "aqua"} {
 #        $mymenu add command -label [_ "Text Editor"] \
@@ -174,8 +174,8 @@ proc ::pd_menus::build_edit_menu {mymenu} {
     $mymenu add  separator
     #TODO madness! how to set the state of the check box without invoking the menu!
     $mymenu add check -label [_ "Edit Mode"] -accelerator "$accelerator+E" \
-        -variable ::var(is_editmode) \
-        -command {::pd_commands::menu_editmode $::var(is_editmode)}
+        -variable ::var(isEditmode) \
+        -command {::pd_commands::menu_editmode $::var(isEditmode)}
     if {[tk windowingsystem] ne "aqua"} {
         $mymenu add  separator
         create_preferences_menu $mymenu.preferences
@@ -189,37 +189,37 @@ proc ::pd_menus::build_put_menu {mymenu} {
     # sticking to the mouse cursor. The iemguis alway do that when created
     # from the menu, as defined in canvas_iemguis()
     $mymenu add command -label [_ "Object"] -accelerator "$accelerator+1" \
-        -command {::pd_commands::menu_send_float $::var(window_focused) obj 0} 
+        -command {::pd_commands::menu_send_float $::var(windowFocused) obj 0} 
     $mymenu add command -label [_ "Message"] -accelerator "$accelerator+2" \
-        -command {::pd_commands::menu_send_float $::var(window_focused) msg 0}
+        -command {::pd_commands::menu_send_float $::var(windowFocused) msg 0}
     $mymenu add command -label [_ "Number"] -accelerator "$accelerator+3" \
-        -command {::pd_commands::menu_send_float $::var(window_focused) floatatom 0}
+        -command {::pd_commands::menu_send_float $::var(windowFocused) floatatom 0}
     $mymenu add command -label [_ "Symbol"] -accelerator "$accelerator+4" \
-        -command {::pd_commands::menu_send_float $::var(window_focused) symbolatom 0}
+        -command {::pd_commands::menu_send_float $::var(windowFocused) symbolatom 0}
     $mymenu add command -label [_ "Comment"] -accelerator "$accelerator+5" \
-        -command {::pd_commands::menu_send_float $::var(window_focused) text 0}
+        -command {::pd_commands::menu_send_float $::var(windowFocused) text 0}
     $mymenu add  separator
     $mymenu add command -label [_ "Bang"]    -accelerator "Shift+$accelerator+B" \
-        -command {::pd_commands::menu_send $::var(window_focused) bng}
+        -command {::pd_commands::menu_send $::var(windowFocused) bng}
     $mymenu add command -label [_ "Toggle"]  -accelerator "Shift+$accelerator+T" \
-        -command {::pd_commands::menu_send $::var(window_focused) toggle}
+        -command {::pd_commands::menu_send $::var(windowFocused) toggle}
     $mymenu add command -label [_ "Number2"] -accelerator "Shift+$accelerator+N" \
-        -command {::pd_commands::menu_send $::var(window_focused) numbox}
+        -command {::pd_commands::menu_send $::var(windowFocused) numbox}
     $mymenu add command -label [_ "Vslider"] -accelerator "Shift+$accelerator+V" \
-        -command {::pd_commands::menu_send $::var(window_focused) vslider}
+        -command {::pd_commands::menu_send $::var(windowFocused) vslider}
     $mymenu add command -label [_ "Hslider"] -accelerator "Shift+$accelerator+H" \
-        -command {::pd_commands::menu_send $::var(window_focused) hslider}
+        -command {::pd_commands::menu_send $::var(windowFocused) hslider}
     $mymenu add command -label [_ "Vradio"]  -accelerator "Shift+$accelerator+D" \
-        -command {::pd_commands::menu_send $::var(window_focused) vradio}
+        -command {::pd_commands::menu_send $::var(windowFocused) vradio}
     $mymenu add command -label [_ "Hradio"]  -accelerator "Shift+$accelerator+I" \
-        -command {::pd_commands::menu_send $::var(window_focused) hradio}
+        -command {::pd_commands::menu_send $::var(windowFocused) hradio}
     $mymenu add command -label [_ "VU Meter"] -accelerator "Shift+$accelerator+U"\
-        -command {::pd_commands::menu_send $::var(window_focused) vumeter}
+        -command {::pd_commands::menu_send $::var(windowFocused) vumeter}
     $mymenu add command -label [_ "Canvas"]  -accelerator "Shift+$accelerator+C" \
-        -command {::pd_commands::menu_send $::var(window_focused) mycnv}
+        -command {::pd_commands::menu_send $::var(windowFocused) mycnv}
     $mymenu add  separator
-    $mymenu add command -label [_ "Graph"] -command {::pd_commands::menu_send $::var(window_focused) graph}
-    $mymenu add command -label [_ "Array"] -command {::pd_commands::menu_send $::var(window_focused) menuarray}
+    $mymenu add command -label [_ "Graph"] -command {::pd_commands::menu_send $::var(windowFocused) graph}
+    $mymenu add command -label [_ "Array"] -command {::pd_commands::menu_send $::var(windowFocused) menuarray}
 }
 
 proc ::pd_menus::build_find_menu {mymenu} { }
@@ -227,26 +227,26 @@ proc ::pd_menus::build_find_menu {mymenu} { }
 proc ::pd_menus::build_media_menu {mymenu} {
     variable accelerator
     $mymenu add radiobutton -label [_ "DSP On"] -accelerator "$accelerator+/" \
-        -variable ::var(is_dsp) -value 1 -command {::pd_connect::pdsend "pd dsp 1"}
+        -variable ::var(isDsp) -value 1 -command {::pd_connect::pdsend "pd dsp 1"}
     $mymenu add radiobutton -label [_ "DSP Off"] -accelerator "$accelerator+." \
-        -variable ::var(is_dsp) -value 0 -command {::pd_connect::pdsend "pd dsp 0"}
+        -variable ::var(isDsp) -value 0 -command {::pd_connect::pdsend "pd dsp 0"}
 
-    set audio_apilist_length [llength $::var(api_audio_list)]
+    set audio_apilist_length [llength $::var(apiAudioAvailables)]
     if {$audio_apilist_length > 0} {$mymenu add separator}
     for {set x 0} {$x<$audio_apilist_length} {incr x} {
-        $mymenu add radiobutton -label [lindex [lindex $::var(api_audio_list) $x] 0] \
-            -command {::pd_commands::menu_audio 0} -variable ::var(api_audio) \
-            -value [lindex [lindex $::var(api_audio_list) $x] 1]\
-            -command {::pd_connect::pdsend "pd audio-setapi $::var(api_audio)"}
+        $mymenu add radiobutton -label [lindex [lindex $::var(apiAudioAvailables) $x] 0] \
+            -command {::pd_commands::menu_audio 0} -variable ::var(apiAudio) \
+            -value [lindex [lindex $::var(apiAudioAvailables) $x] 1]\
+            -command {::pd_connect::pdsend "pd audio-setapi $::var(apiAudio)"}
     }
     
-    set midi_api_length [llength $::var(api_midi_list)]
+    set midi_api_length [llength $::var(apiMidiAvailables)]
     if {$midi_api_length > 0} {$mymenu add separator}
     for {set x 0} {$x<$midi_api_length} {incr x} {
-        $mymenu add radiobutton -label [lindex [lindex $::var(api_midi_list) $x] 0] \
-            -command {::pd_commands::menu_midi 0} -variable ::var(api_midi) \
-            -value [lindex [lindex $::var(api_midi_list) $x] 1]\
-            -command {::pd_connect::pdsend "pd midi-setapi $::var(api_midi)"}
+        $mymenu add radiobutton -label [lindex [lindex $::var(apiMidiAvailables) $x] 0] \
+            -command {::pd_commands::menu_midi 0} -variable ::var(apiMidi) \
+            -value [lindex [lindex $::var(apiMidiAvailables) $x] 1]\
+            -command {::pd_connect::pdsend "pd midi-setapi $::var(apiMidi)"}
     }
 
     $mymenu add  separator
@@ -260,9 +260,9 @@ proc ::pd_menus::build_window_menu {mymenu} {
     variable accelerator
     if {[tk windowingsystem] eq "aqua"} {
         $mymenu add command -label [_ "Minimize"] -accelerator "$accelerator+M"\
-            -command {::pd_commands::menu_minimize $::var(window_focused)}
+            -command {::pd_commands::menu_minimize $::var(windowFocused)}
         $mymenu add command -label [_ "Zoom"] \
-            -command {::pd_commands::menu_maximize $::var(window_focused)}
+            -command {::pd_commands::menu_maximize $::var(windowFocused)}
         $mymenu add  separator
         $mymenu add command -label [_ "Bring All to Front"] \
             -command {::pd_commands::menu_bringalltofront}
@@ -278,7 +278,7 @@ proc ::pd_menus::build_window_menu {mymenu} {
     $mymenu add command -label [_ "Pd window"] -command {::pd_commands::menu_raise_pdwindow} \
         -accelerator "$accelerator+R"
     $mymenu add command -label [_ "Parent Window"] \
-        -command {::pd_commands::menu_send $::var(window_focused) findparent}
+        -command {::pd_commands::menu_send $::var(windowFocused) findparent}
     $mymenu add  separator
 }
 
@@ -298,7 +298,7 @@ proc ::pd_menus::update_recentfiles_menu {{write true}} {
 }
 
 proc ::pd_menus::clear_recentfiles_menu {} {
-    set ::var(file_recent) {}
+    set ::var(filesRecent) {}
     ::pd_menus::update_recentfiles_menu
     # empty recentfiles in preferences (write empty array)
     ::pd_preferences::write_recentfiles
@@ -309,7 +309,7 @@ proc ::pd_menus::update_openrecent_menu_aqua {mymenu {write}} {
     $mymenu delete 0 end
 
     # now the list is last first so we just add
-    foreach filename $::var(file_recent) {
+    foreach filename $::var(filesRecent) {
         $mymenu add command -label [file tail $filename] \
             -command "::pd_miscellaneous::open_file {$filename}"
     }
@@ -336,14 +336,14 @@ proc ::pd_menus::update_recentfiles_on_menu {mymenu {write}} {
         $mymenu delete [expr $top_separator+1] [expr $bottom_separator-1]
     }
     # insert the list from the end because we insert each element on the top
-    set i [llength $::var(file_recent)]
+    set i [llength $::var(filesRecent)]
     while {[incr i -1] > 0} {
 
-        set filename [lindex $::var(file_recent) $i]
+        set filename [lindex $::var(filesRecent) $i]
         $mymenu insert [expr $top_separator+1] command \
             -label [file tail $filename] -command "::pd_miscellaneous::open_file {$filename}"
     }
-    set filename [lindex $::var(file_recent) 0]
+    set filename [lindex $::var(filesRecent) 0]
     $mymenu insert [expr $top_separator+1] command \
         -label [file tail $filename] -command "::pd_miscellaneous::open_file {$filename}"
 

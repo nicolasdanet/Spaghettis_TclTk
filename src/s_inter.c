@@ -1285,7 +1285,7 @@ int sys_startgui(const char *libdir)
                  PD_MAJOR_VERSION, PD_MINOR_VERSION, 
                  PD_BUGFIX_VERSION, PD_TEST_VERSION,
                  buf, buf2, sys_font, sys_fontweight); 
-        sys_vgui("set ::var(api_audio) %d\n", sys_audioapi);
+        sys_vgui("set ::var(apiAudio) %d\n", sys_audioapi);
     }
     return (0);
 }

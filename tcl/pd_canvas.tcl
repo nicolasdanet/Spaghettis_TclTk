@@ -42,8 +42,8 @@ proc pdtk_canvas_place_window {width height geometry} {
     # read back the current geometry +posx+posy into variables
     scan $geometry {%[+]%d%[+]%d} - x - y
     # fit the geometry onto screen
-    set x [ expr $x % $screenwidth - $::var(window_frame_x)]
-    set y [ expr $y % $screenheight - $::var(window_frame_y)]
+    set x [ expr $x % $screenwidth - $::var(windowFrameX)]
+    set y [ expr $y % $screenheight - $::var(windowFrameY)]
     if {$x < 0} {set x 0}
     if {$y < 0} {set y 0}
     if {$width > $screenwidth} {
@@ -51,8 +51,8 @@ proc pdtk_canvas_place_window {width height geometry} {
         set x 0
     }
     if {$height > $screenheight} {
-        set height [expr $screenheight - $::var(window_menubar_height) - 30] ;# 30 for window framing
-        set y $::var(window_menubar_height)
+        set height [expr $screenheight - $::var(windowMenubarHeight) - 30] ;# 30 for window framing
+        set y $::var(windowMenubarHeight)
     }
     return [list $width $height ${width}x$height+$x+$y]
 }
@@ -82,7 +82,7 @@ proc pdtk_canvas_new {mytoplevel width height geometry editable} {
     event generate $mytoplevel <<Loading>>
 
     wm geometry $mytoplevel $geometry
-    wm minsize $mytoplevel $::var(window_minimum_width) $::var(window_minimum_height)
+    wm minsize $mytoplevel 50 50
 
     set tkcanvas [tkcanvas_name $mytoplevel]
     canvas $tkcanvas -width $width -height $height \
@@ -105,16 +105,16 @@ proc pdtk_canvas_new {mytoplevel width height geometry editable} {
     focus $tkcanvas
 
     # let the scrollbar logic determine if it should make things scrollable
-    set ::patch_is_scrollable_x($tkcanvas) 0
-    set ::patch_is_scrollable_y($tkcanvas) 0
+    set ::patch_isScrollableX($tkcanvas) 0
+    set ::patch_isScrollableY($tkcanvas) 0
 
     # init patch properties arrays
-    set ::patch_is_editing($mytoplevel) 0
+    set ::patch_isEditing($mytoplevel) 0
     set ::patch_childs($mytoplevel) {}
 
     # this should be at the end so that the window and canvas are all ready
     # before this variable changes.
-    set ::patch_is_editmode($mytoplevel) $editable
+    set ::patch_isEditmode($mytoplevel) $editable
 }
 
 # if the patch canvas window already exists, then make it come to the front
@@ -148,7 +148,7 @@ proc pdtk_canvas_saveas {name initialfile initialdir destroyflag} {
     set basename [file tail $filename]
     ::pd_connect::pdsend "$name savetofile [enquote_path $basename] [enquote_path $dirname] \
  $destroyflag"
-    set ::var(directory_new) $dirname
+    set ::var(directoryNew) $dirname
     # add to recentfiles
     ::pd_preferences::update_recentfiles $filename
 }
@@ -210,7 +210,7 @@ proc pdtk_canvas_clickpaste {tkcanvas x y b} {
 # canvas popup menu
 
 # since there is one popup that is used for all canvas windows, the menu
-# -commands use {} quotes so that $::var(window_focused) is interpreted when the
+# -commands use {} quotes so that $::var(windowFocused) is interpreted when the
 # menu item is called, not when the command is mapped to the menu item.  This
 # is the same as the menubar in pd_menus.tcl but the opposite of the 'bind'
 # commands in pd_bindings.tcl
@@ -219,21 +219,21 @@ proc ::pd_canvas::create_popup {} {
         # the popup menu for the canvas
         menu .popup -tearoff false
         .popup add command -label [_ "Properties"] \
-            -command {::pd_canvas::done_popup $::var(window_focused) 0}
+            -command {::pd_canvas::done_popup $::var(windowFocused) 0}
         .popup add command -label [_ "Open"]       \
-            -command {::pd_canvas::done_popup $::var(window_focused) 1}
+            -command {::pd_canvas::done_popup $::var(windowFocused) 1}
         .popup add command -label [_ "Help"]       \
-            -command {::pd_canvas::done_popup $::var(window_focused) 2}
+            -command {::pd_canvas::done_popup $::var(windowFocused) 2}
     }
 }
 
 proc ::pd_canvas::done_popup {mytoplevel action} {
-    ::pd_connect::pdsend "$mytoplevel done-popup $action $::var(window_popup_x) $::var(window_popup_y)"
+    ::pd_connect::pdsend "$mytoplevel done-popup $action $::var(windowPopupX) $::var(windowPopupY)"
 }
 
 proc ::pd_canvas::pdtk_canvas_popup {mytoplevel xcanvas ycanvas hasproperties hasopen} {
-    set ::var(window_popup_x) $xcanvas
-    set ::var(window_popup_y) $ycanvas
+    set ::var(windowPopupX) $xcanvas
+    set ::var(windowPopupY) $ycanvas
     if {$hasproperties} {
         .popup entryconfigure [_ "Properties"] -state normal
     } else {
@@ -273,7 +273,7 @@ proc ::pd_canvas::finished_loading_file {mytoplevel} {
     # FocusIn event on creation.
 
     # set editmode to make sure the menu item is in the right state
-    ::pd_canvas::pdtk_canvas_editmode $mytoplevel $::patch_is_editmode($mytoplevel)
+    ::pd_canvas::pdtk_canvas_editmode $mytoplevel $::patch_isEditmode($mytoplevel)
     set ::patch_loaded($mytoplevel) 1
     # send the virtual events now that everything is loaded
     event generate $mytoplevel <<Loaded>>
@@ -284,8 +284,8 @@ proc ::pd_canvas::finished_loading_file {mytoplevel} {
 
 # check or uncheck the "edit" menu item
 proc ::pd_canvas::pdtk_canvas_editmode {mytoplevel state} {
-    set ::var(is_editmode) $state
-    set ::patch_is_editmode($mytoplevel) $state
+    set ::var(isEditmode) $state
+    set ::patch_isEditmode($mytoplevel) $state
     event generate $mytoplevel <<EditMode>>
 }
 
@@ -316,27 +316,27 @@ proc ::pd_canvas::pdtk_canvas_getscroll {tkcanvas} {
     $tkcanvas configure -scrollregion $scrollregion
     # X scrollbar
     if {[lindex [$tkcanvas xview] 0] == 0.0 && [lindex [$tkcanvas xview] 1] == 1.0} {
-        set ::patch_is_scrollable_x($tkcanvas) 0
+        set ::patch_isScrollableX($tkcanvas) 0
         pack forget $mytoplevel.xscroll
     } else {
-        set ::patch_is_scrollable_x($tkcanvas) 1
+        set ::patch_isScrollableX($tkcanvas) 1
         pack $mytoplevel.xscroll -side bottom -fill x -before $tkcanvas
     }
     # Y scrollbar, it gets touchy at the limit, so say > 0.995
     if {[lindex [$tkcanvas yview] 0] == 0.0 && [lindex [$tkcanvas yview] 1] > 0.995} {
-        set ::patch_is_scrollable_y($tkcanvas) 0
+        set ::patch_isScrollableY($tkcanvas) 0
         pack forget $mytoplevel.yscroll
     } else {
-        set ::patch_is_scrollable_y($tkcanvas) 1
+        set ::patch_isScrollableY($tkcanvas) 1
         pack $mytoplevel.yscroll -side right -fill y -before $tkcanvas
     }
 }
 
 proc ::pd_canvas::scroll {tkcanvas axis amount} {
-    if {$axis eq "x" && $::patch_is_scrollable_x($tkcanvas) == 1} {
+    if {$axis eq "x" && $::patch_isScrollableX($tkcanvas) == 1} {
         $tkcanvas xview scroll [expr {- ($amount)}] units
     }
-    if {$axis eq "y" && $::patch_is_scrollable_y($tkcanvas) == 1} {
+    if {$axis eq "y" && $::patch_isScrollableY($tkcanvas) == 1} {
         $tkcanvas yview scroll [expr {- ($amount)}] units
     }
 }

@@ -46,6 +46,7 @@ package require dialog_message
 package require dialog_midi
 package require dialog_path
 package require dialog_startup
+
 package require pd_bindings
 package require pd_canvas
 package require pd_commands
@@ -63,50 +64,44 @@ package require pd_textwindow
 
 # Global variables that are used throughout the GUI.
 
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-set var(scriptname)             [file normalize [info script]]
-set var(modifier)               ""
+set var(scriptName)             [file normalize [info script]]
+set var(modifierKey)            ""
 set var(host)                   ""
 set var(port)                   0
 
-set var(startup_flags)          {}
-set var(startup_libraries)      {}
+set var(startupFlags)           {}
+set var(startupLibraries)       {}
 
-set var(api_audio_list)         {}
-set var(api_midi_list)          {}
-set var(api_audio)              0
-set var(api_midi)               0
+set var(apiAudioAvailables)     {}
+set var(apiMidiAvailables)      {}
+set var(apiAudio)               0
+set var(apiMidi)                0
 
-set var(directory_new)          [pwd]
-set var(directory_open)         [pwd]
-set var(directory_path)         {}
+set var(directoryNew)           [pwd]
+set var(directoryOpen)          [pwd]
+set var(directorySearchPath)    {}
 
-set var(file_pended)            {}
-set var(file_recent)            {}
-set var(file_recent_maximum)    5
+set var(filesOpenPended)        {}
+set var(filesRecent)            {}
 
-set var(font_family)            courier
-set var(font_weight)            normal
-set var(font_fixed)             "8 6 11 10 7 13 12 9 16 14 8 17 16 10 20 18 11 22 24 15 25 30 18 37"
-set var(font_measured)          {}
+set var(fontFamily)             courier
+set var(fontWeight)             normal
+set var(fontRequired)           "8 6 11 10 7 13 12 9 16 14 8 17 16 10 20 18 11 22 24 15 25 30 18 37"
+set var(fontMeasured)           {}
 
-set var(is_initialized)         0
-set var(is_stderr)              0
-set var(is_dsp)                 0
-set var(is_editmode)            0
+set var(isInitialized)          0
+set var(isStderr)               0
+set var(isDsp)                  0
+set var(isEditmode)             0
 
-set var(window_focused)         .
-set var(window_popup_x)         0
-set var(window_popup_y)         0
-set var(window_frame_x)         0
-set var(window_frame_y)         0
+set var(windowFocused)          .
+set var(windowPopupX)           0
+set var(windowPopupY)           0
+set var(windowFrameX)           0
+set var(windowFrameY)           0
 
-set var(window_menubar)         ""
-set var(window_menubar_height)  0
-set var(window_minimum_width)   50
-set var(window_minimum_height)  20
+set var(windowMenubar)          ""
+set var(windowMenubarHeight)    0
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -119,14 +114,14 @@ set midi_outdev     {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-array set patch_is_editmode         {}
-array set patch_is_editing          {}
-array set patch_loaded              {}
-array set patch_is_scrollable_x     {}
-array set patch_is_scrollable_y     {}
-array set patch_name                {}
-array set patch_childs              {}
-array set patch_parents             {}
+array set patch_isEditmode      {}
+array set patch_isEditing       {}
+array set patch_loaded          {}
+array set patch_isScrollableX   {}
+array set patch_isScrollableY   {}
+array set patch_name            {}
+array set patch_childs          {}
+array set patch_parents         {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -140,7 +135,7 @@ proc init_for_platform {} {
 
     switch -- [tk windowingsystem] {
         "x11" {
-            set ::var(modifier) "Control"
+            set ::var(modifierKey) "Control"
             option add *PatchWindow*Canvas.background "white" startupFile
             # add control to show/hide hidden files in the open panel (load
             # the tk_getOpenFile dialog once, otherwise it will not work)
@@ -156,12 +151,12 @@ proc init_for_platform {} {
                      [list [_ "Max Text Files"]    {.mxt} ] \
                     ]
             # some platforms have a menubar on the top, so place below them
-            set ::var(window_menubar_height) 0
+            set ::var(windowMenubarHeight) 0
             # Tk handles the window placement differently on each
             # platform. With X11, the x,y placement refers to the window
             # frame's upper left corner. http://wiki.tcl.tk/11502
-            set ::var(window_frame_x) 3
-            set ::var(window_frame_y) 53
+            set ::var(windowFrameX) 3
+            set ::var(windowFrameY) 53
 			# TODO add wm iconphoto/iconbitmap here if it makes sense
             # mouse cursors for all the different modes
             set ::cursor_runmode_nothing "left_ptr"
@@ -174,13 +169,13 @@ proc init_for_platform {} {
             set ::cursor_editmode_resize "sb_h_double_arrow"
         }
         "aqua" {
-            set ::var(modifier) "Mod1"
+            set ::var(modifierKey) "Mod1"
             option add *DialogWindow*background "#E8E8E8" startupFile
             option add *DialogWindow*Entry.highlightBackground "#E8E8E8" startupFile
             option add *DialogWindow*Button.highlightBackground "#E8E8E8" startupFile
             option add *DialogWindow*Entry.background "white" startupFile
             # Mac OS X needs a menubar all the time
-            set ::var(window_menubar) ".menubar"
+            set ::var(windowMenubar) ".menubar"
             # set file types that open/save recognize
             set ::filetypes \
                 [list \
@@ -190,12 +185,12 @@ proc init_for_platform {} {
                      [list [_ "Max Text Files (.mxt)"]  {.mxt} ] \
                 ]
             # some platforms have a menubar on the top, so place below them
-            set ::var(window_menubar_height) 22
+            set ::var(windowMenubarHeight) 22
             # Tk handles the window placement differently on each platform, on
             # Mac OS X, the x,y placement refers to the content window's upper
             # left corner (not of the window frame) http://wiki.tcl.tk/11502
-            set ::var(window_frame_x) 0
-            set ::var(window_frame_y) 0
+            set ::var(windowFrameX) 0
+            set ::var(windowFrameY) 0
             # mouse cursors for all the different modes
             set ::cursor_runmode_nothing "arrow"
             set ::cursor_runmode_clickme "center_ptr"
@@ -207,7 +202,7 @@ proc init_for_platform {} {
             set ::cursor_editmode_resize "sb_h_double_arrow"
         }
         "win32" {
-            set ::var(modifier) "Control"
+            set ::var(modifierKey) "Control"
             option add *PatchWindow*Canvas.background "white" startupFile
             # fix menu font size on Windows with tk scaling = 1
             font create menufont -family Tahoma -size -11
@@ -224,13 +219,13 @@ proc init_for_platform {} {
                      [list [_ "Max Text Files"]    {.mxt} ] \
                     ]
             # some platforms have a menubar on the top, so place below them
-            set ::var(window_menubar_height) 0
+            set ::var(windowMenubarHeight) 0
             # Tk handles the window placement differently on each platform, on
             # Mac OS X, the x,y placement refers to the content window's upper
             # left corner. http://wiki.tcl.tk/11502 
             # TODO this probably needs a script layer: http://wiki.tcl.tk/11291
-            set ::var(window_frame_x) 0
-            set ::var(window_frame_y) 0
+            set ::var(windowFrameX) 0
+            set ::var(windowFrameY) 0
             # TODO use 'winico' package for full, hicolor icon support
             # mouse cursors for all the different modes
             set ::cursor_runmode_nothing "right_ptr"
@@ -276,38 +271,38 @@ proc find_default_font {} {
         "Inconsolata" "Courier 10 Pitch" "Andale Mono" "Droid Sans Mono"}
     foreach family $testfonts {
         if {[lsearch -exact -nocase [font families] $family] > -1} {
-            set ::var(font_family) $family
+            set ::var(fontFamily) $family
             break
         }
     }
-    ::pd_console::verbose 0 "Default font: $::var(font_family)\n"
+    ::pd_console::verbose 0 "Default font: $::var(fontFamily)\n"
 }
 
 proc set_base_font {family weight} {
     if {[lsearch -exact [font families] $family] > -1} {
-        set ::var(font_family) $family
+        set ::var(fontFamily) $family
     } else {
         ::pd_console::post [format \
             [_ "WARNING: Font family '%s' not found, using default (%s)\n"] \
-                $family $::var(font_family)]
+                $family $::var(fontFamily)]
     }
     if {[lsearch -exact {bold normal} $weight] > -1} {
-        set ::var(font_weight) $weight
+        set ::var(fontWeight) $weight
         set using_defaults 0
     } else {
         ::pd_console::post [format \
             [_ "WARNING: Font weight '%s' not found, using default (%s)\n"] \
-                $weight $::var(font_weight)]
+                $weight $::var(fontWeight)]
     }
 }
 
 # creates all the base fonts (i.e. pd_font_8 thru pd_font_36) so that they fit
-# into the metrics given by $::var(font_fixed) for any given font/weight
+# into the metrics given by $::var(fontRequired) for any given font/weight
 proc fit_font_into_metrics {} {
 # TODO the fonts picked seem too small, probably on fixed width
-    foreach {size width height} $::var(font_fixed) {
+    foreach {size width height} $::var(fontRequired) {
         set myfont [get_font_for_size $size]
-        font create $myfont -family $::var(font_family) -weight $::var(font_weight) \
+        font create $myfont -family $::var(fontFamily) -weight $::var(fontWeight) \
             -size [expr {-$height}]
         set height2 $height
         set giveup 0
@@ -317,12 +312,12 @@ proc fit_font_into_metrics {} {
             font configure $myfont -size [expr {-$height2}]
             if {$height2 * 2 <= $height} {
                 set giveup 1
-                set ::var(font_measured) $::var(font_fixed)
+                set ::var(fontMeasured) $::var(fontRequired)
                 break
             }
         }
-        set ::var(font_measured) \
-            "$::var(font_measured)  $size\
+        set ::var(fontMeasured) \
+            "$::var(fontMeasured)  $size\
                 [font measure $myfont M] [font metrics $myfont -linespace]"
         if {$giveup} {
             ::pd_console::post [format \
@@ -340,13 +335,13 @@ proc fit_font_into_metrics {} {
 proc pdtk_pd_startup {major minor bugfix test
                       audio_apis midi_apis sys_font sys_fontweight} {
     set oldtclversion 0
-    set ::var(api_audio_list) $audio_apis
-    set ::var(api_midi_list) $midi_apis
+    set ::var(apiAudioAvailables) $audio_apis
+    set ::var(apiMidiAvailables) $midi_apis
     if {$::tcl_version >= 8.5} {find_default_font}
     set_base_font $sys_font $sys_fontweight
     fit_font_into_metrics
     ::pd_preferences::init
-    ::pd_connect::pdsend "pd init [enquote_path [pwd]] $oldtclversion $::var(font_measured)"
+    ::pd_connect::pdsend "pd init [enquote_path [pwd]] $oldtclversion $::var(fontMeasured)"
     ::pd_bindings::class_bindings
     ::pd_bindings::global_bindings
     ::pd_menus::create_menubar
@@ -354,7 +349,7 @@ proc pdtk_pd_startup {major minor bugfix test
     ::pd_console::create_window
     ::pd_menus::configure_for_pdwindow
     open_filestoopen
-    set ::var(is_initialized) 1
+    set ::var(isInitialized) 1
 }
 
 ##### routine to ask user if OK and, if so, send a message on to Pd ######
@@ -386,8 +381,8 @@ proc pdtk_plugin_dispatch { args } {
 
 proc parse_args {argc argv} {
     pd_parser::init {
-        {-stderr    set {::var(is_stderr)}}
-        {-open      lappend {- ::var(file_pended)}}
+        {-stderr    set {::var(isStderr)}}
+        {-open      lappend {- ::var(filesOpenPended)}}
     }
     set unflagged_files [pd_parser::get_options $argv]
     # if we have a single arg that is not a file, its a port or host:port combo
@@ -408,13 +403,13 @@ proc parse_args {argc argv} {
         }
     } elseif {$unflagged_files ne ""} {
         foreach filename $unflagged_files {
-            lappend ::var(file_pended) $filename
+            lappend ::var(filesOpenPended) $filename
         }
     }
 }
 
 proc open_filestoopen {} {
-    foreach filename $::var(file_pended) {
+    foreach filename $::var(filesOpenPended) {
         ::pd_miscellaneous::open_file $filename
     }
 }
@@ -440,8 +435,8 @@ proc singleton_request {offset maxbytes} {
 }
 
 proc first_lost {} {
-    receive_args [selection get -selection $::var(scriptname) ]
-    selection own -command first_lost -selection $::var(scriptname) .
+    receive_args [selection get -selection $::var(scriptName) ]
+    selection own -command first_lost -selection $::var(scriptName) .
  }
 
 proc others_lost {} {
@@ -453,7 +448,7 @@ proc others_lost {} {
 # all other instances
 proc send_args {offset maxChars} {
     set sendargs {}
-    foreach filename $::var(file_pended) {
+    foreach filename $::var(filesOpenPended) {
         lappend sendargs [file normalize $filename]
     }
     return [string range $sendargs $offset [expr {$offset+$maxChars}]]
@@ -481,19 +476,19 @@ proc check_for_running_instances { } {
             # http://wiki.tcl.tk/1558
             # TODO replace PUREDATA name with path so this code is a singleton
             # based on install location rather than this hard-coded name
-            if {![singleton ${::var(scriptname)}_MANAGER ]} {
+            if {![singleton ${::var(scriptName)}_MANAGER ]} {
                 # if pd-gui gets called from pd ('pd-gui 5400') or is told otherwise
                 # to connect to a running instance of Pd (by providing [<host>:]<port>)
                 # then we don't want to connect to a running instance
                 if { $::var(port) > 0 && $::var(host) ne "" } { return }
-                selection handle -selection $::var(scriptname) . "send_args"
-                selection own -command others_lost -selection $::var(scriptname) .
+                selection handle -selection $::var(scriptName) . "send_args"
+                selection own -command others_lost -selection $::var(scriptName) .
                 after 5000 set ::singleton_state "timeout"
                 vwait ::singleton_state
                 exit
             } else {
                 # first instance
-                selection own -command first_lost -selection $::var(scriptname) .
+                selection own -command first_lost -selection $::var(scriptName) .
             }
         } "win32" {
             ## http://wiki.tcl.tk/8940
@@ -528,8 +523,8 @@ proc main {argc argv} {
         exec -- $pd_exec -guiport $::var(port) &
         if {[tk windowingsystem] eq "aqua"} {
             # on Aqua, if 'pd-gui' first, then initial dir is home
-            set ::var(directory_new) $::env(HOME)
-            set ::var(directory_open) $::env(HOME)
+            set ::var(directoryNew) $::env(HOME)
+            set ::var(directoryOpen) $::env(HOME)
         }
     }
     ::pd_console::verbose 0 "------------------ done with main ----------------------\n"

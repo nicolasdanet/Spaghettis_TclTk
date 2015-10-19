@@ -38,8 +38,8 @@ proc pdtk_textwindow_open {name geometry title font} {
         scrollbar $name.scroll -command "$name.text yview"
         pack $name.scroll -side right -fill y
         pack $name.text -side left -fill both -expand 1
-        bind $name.text <$::var(modifier)-Key-s> "pdtk_textwindow_send $name"
-        bind $name.text <$::var(modifier)-Key-w> "pdtk_textwindow_close $name 1"
+        bind $name.text <$::var(modifierKey)-Key-s> "pdtk_textwindow_send $name"
+        bind $name.text <$::var(modifierKey)-Key-w> "pdtk_textwindow_close $name 1"
         focus $name.text
     }
 }

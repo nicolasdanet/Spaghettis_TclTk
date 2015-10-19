@@ -31,16 +31,16 @@ proc ::tk::mac::ShowPreferences {args} {
 
 proc ::tk::mac::OpenDocument {args} {
     foreach filename $args {
-        if {$::var(is_initialized)} {
+        if {$::var(isInitialized)} {
             ::pd_miscellaneous::open_file $filename
         } else {
-            lappend ::var(file_pended) $filename
+            lappend ::var(filesOpenPended) $filename
         }
     }
 }
 
 proc ::tk::mac::PrintDocument {args} {
-    ::pd_commands::menu_print $::var(window_focused)
+    ::pd_commands::menu_print $::var(windowFocused)
 }
 
 proc ::tk::mac::Quit {args} {
