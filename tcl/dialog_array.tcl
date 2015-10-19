@@ -68,7 +68,7 @@ proc ::dialog_array::pdtk_array_listview_new {id arrayName page} {
     set $windowName.lb [listbox $windowName.lb -height 20 -width 25\
                             -selectmode extended \
                             -relief solid -background white -borderwidth 1 \
-                            -font [format {{%s} %d %s} $::pd_gui(font_family) $font $::pd_gui(font_weight)]\
+                            -font [format {{%s} %d %s} $::var(font_family) $font $::var(font_weight)]\
                             -yscrollcommand "$windowName.lb.sb set"]
     set $windowName.lb.sb [scrollbar $windowName.lb.sb \
                                -command "$windowName.lb yview" -orient vertical]
@@ -176,7 +176,7 @@ proc ::dialog_array::listview_edit {arrayName page font} {
     set bbox [$lbName bbox $itemNum]
     set y [expr [lindex $bbox 1] - 4]
     set $lbName.entry [entry $lbName.entry \
-                           -font [format {{%s} %d %s} $::pd_gui(font_family) $font $::pd_gui(font_weight)]]
+                           -font [format {{%s} %d %s} $::var(font_family) $font $::var(font_weight)]]
     $lbName.entry insert 0 []
     place configure $lbName.entry -relx 0 -y $y -relwidth 1
     lower $lbName.entry
@@ -261,8 +261,8 @@ proc ::dialog_array::create_dialog {mytoplevel newone} {
     wm title $mytoplevel [_ "Array Properties"]
     wm group $mytoplevel .
     wm resizable $mytoplevel 0 0
-    wm transient $mytoplevel $::pd_gui(window_focused)
-    $mytoplevel configure -menu $::pd_gui(window_menubar)
+    wm transient $mytoplevel $::var(window_focused)
+    $mytoplevel configure -menu $::var(window_menubar)
     $mytoplevel configure -padx 0 -pady 0
     ::pd_bindings::dialog_bindings $mytoplevel "array"
 

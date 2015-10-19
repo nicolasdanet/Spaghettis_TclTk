@@ -61,15 +61,15 @@ proc ::dialog_startup::edit { current_library } {
 
 proc ::dialog_startup::commit { new_startup } {
     variable defeatrt_button
-    set ::pd_gui(startup_libraries) $new_startup
+    set ::var(startup_libraries) $new_startup
 
-    ::pd_connect::pdsend "pd startup-dialog $defeatrt_button [pdtk_encodedialog $::pd_gui(startup_flags)] $::pd_gui(startup_libraries)"
+    ::pd_connect::pdsend "pd startup-dialog $defeatrt_button [pdtk_encodedialog $::var(startup_flags)] $::var(startup_libraries)"
 }
 
 # set up the panel with the info from pd
 proc ::dialog_startup::pdtk_startup_dialog {mytoplevel defeatrt flags} {
     variable defeatrt_button $defeatrt
-    if {$flags ne ""} {variable ::pd_gui(startup_flags) $flags}
+    if {$flags ne ""} {variable ::var(startup_flags) $flags}
     
     if {[winfo exists $mytoplevel]} {
         wm deiconify $mytoplevel
@@ -80,13 +80,13 @@ proc ::dialog_startup::pdtk_startup_dialog {mytoplevel defeatrt flags} {
 }
 
 proc ::dialog_startup::create_dialog {mytoplevel} {
-    ::pd_scrollboxwindow::make $mytoplevel $::pd_gui(startup_libraries) \
+    ::pd_scrollboxwindow::make $mytoplevel $::var(startup_libraries) \
         dialog_startup::add dialog_startup::edit dialog_startup::commit \
         [_ "Pd libraries to load on startup"] \
         400 300
 
     label $mytoplevel.entryname -text [_ "Startup flags:"]
-    entry $mytoplevel.entry -textvariable ::pd_gui(startup_flags) -width 60
+    entry $mytoplevel.entry -textvariable ::var(startup_flags) -width 60
     pack $mytoplevel.entryname $mytoplevel.entry -side left
     pack $mytoplevel.entry -side right -padx 2m -fill x -expand 1
 

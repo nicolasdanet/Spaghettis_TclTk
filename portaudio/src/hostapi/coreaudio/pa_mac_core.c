@@ -1725,7 +1725,7 @@ static PaError OpenStream( struct PaUtilHostApiRepresentation *hostApi,
     else
     {
         inputChannelCount = 0;
-        inputSampleFormat = hostInputSampleFormat = paFloat32; /* Surpress 'uninitialised var' warnings. */
+        inputSampleFormat = hostInputSampleFormat = paFloat32; /* Surpress 'uninitialised variable' warnings. */
     }
 
     if( outputParameters )
@@ -1755,7 +1755,7 @@ static PaError OpenStream( struct PaUtilHostApiRepresentation *hostApi,
     else
     {
         outputChannelCount = 0;
-        outputSampleFormat = hostOutputSampleFormat = paFloat32; /* Surpress 'uninitialized var' warnings. */
+        outputSampleFormat = hostOutputSampleFormat = paFloat32; /* Surpress 'uninitialized variable' warnings. */
     }
 
     /* validate platform specific flags */

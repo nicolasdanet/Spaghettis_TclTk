@@ -20,25 +20,25 @@ namespace eval ::pd_commands:: {
 
 proc ::pd_commands::menu_new {} {
     variable untitled_number
-    if { ! [file isdirectory $::pd_gui(directory_new)]} {set ::pd_gui(directory_new) $::env(HOME)}
+    if { ! [file isdirectory $::var(directory_new)]} {set ::var(directory_new) $::env(HOME)}
     # to localize "Untitled" there will need to be changes in g_canvas.c and
     # g_readwrite.c, where it tests for the string "Untitled"
     set untitled_name "Untitled"
-    ::pd_connect::pdsend "pd menunew $untitled_name-$untitled_number [enquote_path $::pd_gui(directory_new)]"
+    ::pd_connect::pdsend "pd menunew $untitled_name-$untitled_number [enquote_path $::var(directory_new)]"
     incr untitled_number
 }
 
 proc ::pd_commands::menu_open {} {
-    if { ! [file isdirectory $::pd_gui(directory_open)]} {set ::pd_gui(directory_open) $::env(HOME)}
+    if { ! [file isdirectory $::var(directory_open)]} {set ::var(directory_open) $::env(HOME)}
     set files [tk_getOpenFile -defaultextension .pd \
                        -multiple true \
                        -filetypes $::filetypes \
-                       -initialdir $::pd_gui(directory_open)]
+                       -initialdir $::var(directory_open)]
     if {$files ne ""} {
         foreach filename $files { 
             ::pd_miscellaneous::open_file $filename
         }
-        set ::pd_gui(directory_open) [file dirname $filename]
+        set ::var(directory_open) [file dirname $filename]
     }
 }
 
@@ -56,15 +56,15 @@ proc ::pd_commands::menu_print {mytoplevel} {
 # functions called from Edit menu
 
 proc ::pd_commands::menu_editmode {state} {
-    if {[winfo class $::pd_gui(window_focused)] ne "PatchWindow"} {return}
-    set ::pd_gui(is_editmode) $state
+    if {[winfo class $::var(window_focused)] ne "PatchWindow"} {return}
+    set ::var(is_editmode) $state
 # this shouldn't be necessary because 'pd' will reply with ::pdtk_canvas::pdtk_canvas_editmode
-#    set ::patch_is_editmode($::pd_gui(window_focused)) $state
-    ::pd_connect::pdsend "$::pd_gui(window_focused) editmode $state"
+#    set ::patch_is_editmode($::var(window_focused)) $state
+    ::pd_connect::pdsend "$::var(window_focused) editmode $state"
 }
 
 proc ::pd_commands::menu_toggle_editmode {} {
-    ::pd_commands::menu_editmode [expr {! $::pd_gui(is_editmode)}]
+    ::pd_commands::menu_editmode [expr {! $::var(is_editmode)}]
 }
 
 # ------------------------------------------------------------------------------
@@ -100,10 +100,10 @@ proc ::pd_commands::menu_send_float {window message float} {
 proc ::pd_commands::menu_font_dialog {} {
     if {[winfo exists .font]} {
         raise .font
-    } elseif {$::pd_gui(window_focused) eq ".pdwindow"} {
+    } elseif {$::var(window_focused) eq ".pdwindow"} {
         ::dialog_font::pdtk_canvas_dofont .pdwindow [lindex [.pdwindow.text cget -font] 1]
     } else {
-        ::pd_connect::pdsend "$::pd_gui(window_focused) menufont"
+        ::pd_connect::pdsend "$::var(window_focused) menufont"
     }
 }
 
@@ -139,7 +139,7 @@ proc ::pd_commands::menu_maximize {window} {
 }
 
 proc ::pd_commands::menu_raise_pdwindow {} {
-    if {$::pd_gui(window_focused) eq ".pdwindow" && [winfo viewable .pdwindow]} {
+    if {$::var(window_focused) eq ".pdwindow" && [winfo viewable .pdwindow]} {
         lower .pdwindow
     } else {
         wm deiconify .pdwindow
@@ -173,9 +173,9 @@ proc menu_clear_console {} {
 proc ::pd_commands::set_filenewdir {mytoplevel} {
     # TODO add Aqua specifics once g_canvas.c has [wm attributes -titlepath]
     if {$mytoplevel eq ".pdwindow"} {
-        set ::pd_gui(directory_new) $::pd_gui(directory_open)
+        set ::var(directory_new) $::var(directory_open)
     } else {
-        regexp -- ".+ - (.+)" [wm title $mytoplevel] ignored ::pd_gui(directory_new)
+        regexp -- ".+ - (.+)" [wm title $mytoplevel] ignored ::var(directory_new)
     }
 }
 
@@ -189,13 +189,13 @@ proc ::pd_commands::menu_aboutpd {} {
         toplevel .aboutpd -class TextWindow
         wm title .aboutpd [_ "About Pd"]
         wm group .aboutpd .
-        .aboutpd configure -menu $::pd_gui(window_menubar)
+        .aboutpd configure -menu $::var(window_menubar)
         text .aboutpd.text -relief flat -borderwidth 0 \
             -yscrollcommand ".aboutpd.scroll set" -background white
         scrollbar .aboutpd.scroll -command ".aboutpd.text yview"
         pack .aboutpd.scroll -side right -fill y
         pack .aboutpd.text -side left -fill both -expand 1
-        bind .aboutpd <$::pd_gui(modifier)-Key-w>   "wm withdraw .aboutpd"
+        bind .aboutpd <$::var(modifier)-Key-w>   "wm withdraw .aboutpd"
     }
 }
 

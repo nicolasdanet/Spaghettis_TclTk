@@ -251,11 +251,11 @@ proc ::dialog_gui::toggle_font {mytoplevel gn_f} {
     set $var_iemgui_gn_f $gn_f
     
     switch -- $gn_f {
-        0 { set current_font $::pd_gui(font_family)}
+        0 { set current_font $::var(font_family)}
         1 { set current_font "Helvetica" }
         2 { set current_font "Times" }
     }
-    set current_font_spec "{$current_font} 16 $::pd_gui(font_weight)"
+    set current_font_spec "{$current_font} 16 $::var(font_weight)"
     
     $mytoplevel.label.fontpopup_label configure -text $current_font \
         -font $current_font_spec
@@ -505,8 +505,8 @@ proc ::dialog_gui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
     wm title $mytoplevel [format [_ "%s Properties"] $mainheader]
     wm group $mytoplevel .
     wm resizable $mytoplevel 0 0
-    wm transient $mytoplevel $::pd_gui(window_focused)
-    $mytoplevel configure -menu $::pd_gui(window_menubar)
+    wm transient $mytoplevel $::var(window_focused)
+    $mytoplevel configure -menu $::var(window_menubar)
     $mytoplevel configure -padx 0 -pady 0
     ::pd_bindings::dialog_bindings $mytoplevel "gui"
 
@@ -601,7 +601,7 @@ proc ::dialog_gui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
     }
     
     # get the current font name from the int given from C-space (gn_f)
-    set current_font $::pd_gui(font_family)
+    set current_font $::var(font_family)
     if {[eval concat $$var_iemgui_gn_f] == 1} \
         { set current_font "Helvetica" }
     if {[eval concat $$var_iemgui_gn_f] == 2} \
@@ -613,7 +613,7 @@ proc ::dialog_gui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
     labelframe $mytoplevel.label -borderwidth 1 -text [_ "Label"] -pady 4
     pack $mytoplevel.label -side top -fill x
     entry $mytoplevel.label.name_entry -textvariable $var_iemgui_gui_nam \
-        -width 30 -font [list $current_font 12 $::pd_gui(font_weight)]
+        -width 30 -font [list $current_font 12 $::var(font_weight)]
     pack $mytoplevel.label.name_entry -side top -expand yes -fill both -padx 5
     
     frame $mytoplevel.label.xy -padx 27 -pady 1
@@ -627,7 +627,7 @@ proc ::dialog_gui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
         $mytoplevel.label.xy.y_lab $mytoplevel.label.xy.y_entry -side left -anchor e
     
     button $mytoplevel.label.fontpopup_label -text $current_font \
-        -font [list $current_font 16 $::pd_gui(font_weight)]
+        -font [list $current_font 16 $::var(font_weight)]
     pack $mytoplevel.label.fontpopup_label -side left -anchor w \
         -expand 1 -fill x -padx 5
     label $mytoplevel.label.fontsize_label -text [_ "Size:"]
@@ -636,16 +636,16 @@ proc ::dialog_gui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
         -side right -anchor e -padx 5 -pady 5
     menu $mytoplevel.popup
     $mytoplevel.popup add command \
-        -label $::pd_gui(font_family) \
-        -font [format {{%s} 16 %s} $::pd_gui(font_family) $::pd_gui(font_weight)] \
+        -label $::var(font_family) \
+        -font [format {{%s} 16 %s} $::var(font_family) $::var(font_weight)] \
         -command "::dialog_gui::toggle_font $mytoplevel 0" 
     $mytoplevel.popup add command \
         -label "Helvetica" \
-        -font [format {Helvetica 16 %s} $::pd_gui(font_weight)] \
+        -font [format {Helvetica 16 %s} $::var(font_weight)] \
         -command "::dialog_gui::toggle_font $mytoplevel 1" 
     $mytoplevel.popup add command \
         -label "Times" \
-        -font [format {Times 16 %s} $::pd_gui(font_weight)] \
+        -font [format {Times 16 %s} $::var(font_weight)] \
         -command "::dialog_gui::toggle_font $mytoplevel 2" 
     bind $mytoplevel.label.fontpopup_label <Button> \
         [list tk_popup $mytoplevel.popup %X %Y]
@@ -683,21 +683,21 @@ proc ::dialog_gui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
             -activebackground [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
             -foreground [format "#%6.6x" [eval concat $$var_iemgui_fcol]] \
             -activeforeground [format "#%6.6x" [eval concat $$var_iemgui_fcol]] \
-            -font [list $current_font 12 $::pd_gui(font_weight)] -padx 2 -pady 2 -relief ridge
+            -font [list $current_font 12 $::var(font_weight)] -padx 2 -pady 2 -relief ridge
     } else {
         label $mytoplevel.colors.sections.fr_bk -text "o=||=o" -width 6 \
             -background [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
             -activebackground [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
             -foreground [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
             -activeforeground [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
-            -font [list $current_font 12 $::pd_gui(font_weight)] -padx 2 -pady 2 -relief ridge
+            -font [list $current_font 12 $::var(font_weight)] -padx 2 -pady 2 -relief ridge
     }
     label $mytoplevel.colors.sections.lb_bk -text [_ "Test label"] \
         -background [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
         -activebackground [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
         -foreground [format "#%6.6x" [eval concat $$var_iemgui_lcol]] \
         -activeforeground [format "#%6.6x" [eval concat $$var_iemgui_lcol]] \
-        -font [list $current_font 12 $::pd_gui(font_weight)] -padx 2 -pady 2 -relief ridge
+        -font [list $current_font 12 $::var(font_weight)] -padx 2 -pady 2 -relief ridge
     pack $mytoplevel.colors.sections.lb_bk $mytoplevel.colors.sections.fr_bk \
         -side right -anchor e -expand yes -fill both -pady 7
     

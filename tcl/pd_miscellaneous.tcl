@@ -34,24 +34,24 @@ proc ::pd_miscellaneous::open_file {filename} {
 
 proc pdtk_openpanel {target localdir} {
     if {! [file isdirectory $localdir]} {
-        if { ! [file isdirectory $::pd_gui(directory_open)]} {
-            set ::pd_gui(directory_open) $::env(HOME)
+        if { ! [file isdirectory $::var(directory_open)]} {
+            set ::var(directory_open) $::env(HOME)
         }
-        set localdir $::pd_gui(directory_open)
+        set localdir $::var(directory_open)
     }
     set filename [tk_getOpenFile -initialdir $localdir]
     if {$filename ne ""} {
-        set ::pd_gui(directory_open) [file dirname $filename]
+        set ::var(directory_open) [file dirname $filename]
         ::pd_connect::pdsend "$target callback [enquote_path $filename]"
     }
 }
 
 proc pdtk_savepanel {target localdir} {
     if {! [file isdirectory $localdir]} {
-        if { ! [file isdirectory $::pd_gui(directory_new)]} {
-            set ::pd_gui(directory_new) $::env(HOME)
+        if { ! [file isdirectory $::var(directory_new)]} {
+            set ::var(directory_new) $::env(HOME)
         }
-        set localdir $::pd_gui(directory_new)
+        set localdir $::var(directory_new)
     }
     set filename [tk_getSaveFile -initialdir $localdir]
     if {$filename ne ""} {

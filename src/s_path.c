@@ -694,7 +694,7 @@ void sys_set_searchpath( void)
     sys_gui("set ::tmp_path {}\n");
     for (nl = sys_searchpath, i = 0; nl; nl = nl->nl_next, i++)
         sys_vgui("lappend ::tmp_path {%s}\n", nl->nl_string);
-    sys_gui("set ::pd_gui(directory_path) $::tmp_path\n");
+    sys_gui("set ::var(directory_path) $::tmp_path\n");
 }
 
     /* send the hard-coded search path to pd-gui */
@@ -743,10 +743,10 @@ void sys_set_startup( void)
     int i;
     t_namelist *nl;
 
-    sys_vgui("set ::pd_gui(startup_flags) {%s}\n", sys_flags->s_name);
-    sys_gui("set ::pd_gui(startup_libraries) {}\n");
+    sys_vgui("set ::var(startup_flags) {%s}\n", sys_flags->s_name);
+    sys_gui("set ::var(startup_libraries) {}\n");
     for (nl = sys_externlist, i = 0; nl; nl = nl->nl_next, i++)
-        sys_vgui("lappend ::pd_gui(startup_libraries) {%s}\n", nl->nl_string);
+        sys_vgui("lappend ::var(startup_libraries) {%s}\n", nl->nl_string);
 }
 
     /* start a startup dialog window */

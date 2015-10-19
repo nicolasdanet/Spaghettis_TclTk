@@ -843,7 +843,7 @@ static PaError ValidateOpenStreamParameters(
     PaDeviceIndex *hostApiInputDevice,
     PaDeviceIndex *hostApiOutputDevice )
 {
-    int inputHostApiIndex  = -1, /* Surpress uninitialised var warnings: compiler does */
+    int inputHostApiIndex  = -1, /* Surpress uninitialised variable warnings: compiler does */
         outputHostApiIndex = -1; /* not see that if inputParameters and outputParame-  */
                                  /* ters are both nonzero, these indices are set.      */
 

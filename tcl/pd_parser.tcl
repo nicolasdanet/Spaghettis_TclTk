@@ -43,7 +43,7 @@ proc pd_parser::get_options {argv {opts {}}} {
     variable optbehavior
     variable optprefix
 
-    # zero all the options 1st var
+    # zero all the options 1st variable
     foreach optName [array names optlist] {
         uplevel [list set [lindex $optlist($optName) 0] 0]
         if {$optbehavior($optName) == {lappend}} {

@@ -88,18 +88,18 @@ proc ::dialog_font::pdtk_canvas_dofont {gfxstub initsize} {
 
 proc ::dialog_font::create_dialog {gfxstub} {
     toplevel .font -class DialogWindow
-    .font configure -menu $::pd_gui(window_menubar)
+    .font configure -menu $::var(window_menubar)
     .font configure -padx 10 -pady 5
     wm group .font .
     wm resizable .font 0 0
-    wm transient .font $::pd_gui(window_focused)
+    wm transient .font $::var(window_focused)
     ::pd_bindings::dialog_bindings .font "font"
     # replace standard bindings to work around the gfxstub stuff and use
     # break to prevent the close window command from going to other bindings.
     # .font won't exist anymore, so it'll cause errors down the line...
     bind .font <KeyPress-Return> "::dialog_font::ok $gfxstub; break"
     bind .font <KeyPress-Escape> "::dialog_font::cancel $gfxstub; break"
-    bind .font <$::pd_gui(modifier)-Key-w> "::dialog_font::cancel $gfxstub; break"
+    bind .font <$::var(modifier)-Key-w> "::dialog_font::cancel $gfxstub; break"
     wm protocol .font WM_DELETE_WINDOW "dialog_font::cancel $gfxstub"
     bind .font <Up> "::dialog_font::arrow_fontchange -1"
     bind .font <Down> "::dialog_font::arrow_fontchange 1"
