@@ -26,14 +26,22 @@ package require Tk
 rename unknown _original_unknown
 
 proc unknown {args} {
-    catch { console show }
     set i [info level]
     while {$i > 0} {
         set stack [info level $i]
-        if {[string first tclPkgUnknown $stack] < 0} { puts stderr "$i >>> $stack" }
+        if {[unknownIsExpected $stack]} { break } else { catch { console show } }
+        puts stderr "$i >>> $stack"
         incr i -1
     }
     uplevel 1 [list _original_unknown {*}$args]
+}
+
+proc unknownIsExpected {stack} {
+    set expected { "tclPkgUnknown" "tk::MenuDup" }
+    foreach e $expected {
+        if {[string first $e $stack] >= 0} { return true }
+    }
+    return false
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -126,7 +134,7 @@ set var(filesRecent)            {}
 set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pdhelp}} }
 
 set var(fontFamily)             [getDefaultFontFamily]
-set var(fontWeight)             normal
+set var(fontWeight)             "normal"
 set var(fontRequired)           "8 6 11 10 7 13 12 9 16 14 8 17 16 10 20 18 11 22 24 15 25 30 18 37"
 set var(fontMeasured)           {}
 
