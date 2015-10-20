@@ -21,6 +21,23 @@ package require Tk
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+# Handy for debugging. 
+
+if {true} {
+
+    rename unknown _original_unknown
+
+    proc unknown {args} {
+        catch { console show }
+        puts "? $args" 
+        uplevel 1 [list _original_unknown {*}$args]
+    }
+    
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 # Note that ALL the Tcl files MUST be kept in the same directory that this file.
 
 set auto_path [linsert $auto_path 0 [file dirname [info script]]]
@@ -62,7 +79,7 @@ package require pd_textwindow
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc getBestFontFamily {} {
+proc getDefaultFontFamily {} {
     
     set fonts { "DejaVu Sans Mono" \
                 "Bitstream Vera Sans Mono" \
@@ -107,7 +124,7 @@ set var(filesOpenPended)        {}
 set var(filesRecent)            {}
 set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pdhelp}} }
 
-set var(fontFamily)             [getBestFontFamily]
+set var(fontFamily)             [getDefaultFontFamily]
 set var(fontWeight)             normal
 set var(fontRequired)           "8 6 11 10 7 13 12 9 16 14 8 17 16 10 20 18 11 22 24 15 25 30 18 37"
 set var(fontMeasured)           {}
