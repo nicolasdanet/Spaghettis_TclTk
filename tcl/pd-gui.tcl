@@ -62,6 +62,26 @@ package require pd_textwindow
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+proc getBestFontFamily {} {
+    
+    set fonts { "DejaVu Sans Mono" \
+                "Bitstream Vera Sans Mono" \
+                "Inconsolata" \
+                "Andale Mono" \
+                "Droid Sans Mono" }
+              
+    foreach family $fonts {
+        if {[lsearch -exact -nocase [font families] $family] > -1} {
+            return $family
+        }
+    }
+    
+    return "courier"
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 # Global variables that are used throughout the GUI.
 
 set var(scriptName)             [file normalize [info script]]
@@ -87,7 +107,7 @@ set var(filesOpenPended)        {}
 set var(filesRecent)            {}
 set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pdhelp}} }
 
-set var(fontFamily)             courier
+set var(fontFamily)             [getBestFontFamily]
 set var(fontWeight)             normal
 set var(fontRequired)           "8 6 11 10 7 13 12 9 16 14 8 17 16 10 20 18 11 22 24 15 25 30 18 37"
 set var(fontMeasured)           {}
@@ -135,6 +155,16 @@ array set patch_parents         {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+proc _ {s} { return $s }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc getFont {size} { return "::var(font${size})" }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc initializePlatform {} {
     switch -- [tk windowingsystem] {
         "x11"   { initializePlatformX11   }
@@ -152,7 +182,7 @@ proc initializePlatformX11 {} {
     
     option add *PatchWindow*Canvas.background "white" startupFile
     
-    # ( http://wiki.tcl.tk/1060 )
+    # Don't show hidden files ( http://wiki.tcl.tk/1060 ).
     
     catch { tk_getOpenFile -dummy } 
     set ::tk::dialog::file::showHiddenBtn 1
@@ -210,44 +240,6 @@ proc initializePlatformWin32 {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# ------------------------------------------------------------------------------
-# locale handling
-
-# official GNU gettext msgcat shortcut
-proc _ {s} {return $s}
-
-proc load_locale {} {
-    ##--moo: force default system and stdio encoding to UTF-8
-    encoding system utf-8
-    fconfigure stderr -encoding utf-8
-    fconfigure stdout -encoding utf-8
-    ##--/moo
-}
-
-# ------------------------------------------------------------------------------
-# font handling
-
-# this proc gets the internal font name associated with each size
-proc get_font_for_size {size} {
-    return "::pd_font_${size}"
-}
-
-# searches for a font to use as the default.  Tk automatically assigns a
-# monospace font to the name "Courier" (see Tk 'font' docs), but it doesn't
-# always do a good job of choosing in respect to Pd's needs.  So this chooses
-# from a list of fonts that are known to work well with Pd.
-proc find_default_font {} {
-    set testfonts {"DejaVu Sans Mono" "Bitstream Vera Sans Mono" \
-        "Inconsolata" "Courier 10 Pitch" "Andale Mono" "Droid Sans Mono"}
-    foreach family $testfonts {
-        if {[lsearch -exact -nocase [font families] $family] > -1} {
-            set ::var(fontFamily) $family
-            break
-        }
-    }
-    ::pd_console::verbose 0 "Default font: $::var(fontFamily)\n"
-}
-
 proc set_base_font {family weight} {
     if {[lsearch -exact [font families] $family] > -1} {
         set ::var(fontFamily) $family
@@ -271,7 +263,7 @@ proc set_base_font {family weight} {
 proc fit_font_into_metrics {} {
 # TODO the fonts picked seem too small, probably on fixed width
     foreach {size width height} $::var(fontRequired) {
-        set myfont [get_font_for_size $size]
+        set myfont [getFont $size]
         font create $myfont -family $::var(fontFamily) -weight $::var(fontWeight) \
             -size [expr {-$height}]
         set height2 $height
@@ -298,6 +290,8 @@ proc fit_font_into_metrics {} {
     }
 }
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
 # procs called directly by pd
@@ -307,7 +301,6 @@ proc pdtk_pd_startup {major minor bugfix test
     set oldtclversion 0
     set ::var(apiAudioAvailables) $audio_apis
     set ::var(apiMidiAvailables) $midi_apis
-    if {$::tcl_version >= 8.5} {find_default_font}
     set_base_font $sys_font $sys_fontweight
     fit_font_into_metrics
     ::pd_preferences::init
@@ -477,7 +470,11 @@ proc check_for_running_instances { } {
 # main
 proc main {argc argv} {
     tk appname pd-gui
-    load_locale
+    
+    encoding system utf-8
+    fconfigure stderr -encoding utf-8
+    fconfigure stdout -encoding utf-8
+    
     parse_args $argc $argv
     check_for_running_instances
     initializePlatform
