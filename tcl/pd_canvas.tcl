@@ -128,7 +128,7 @@ proc pdtk_canvas_raise {mytoplevel} {
 proc pdtk_canvas_saveas {name initialfile initialdir destroyflag} {
     if { ! [file isdirectory $initialdir]} {set initialdir $::env(HOME)}
     set filename [tk_getSaveFile -initialfile $initialfile -initialdir $initialdir \
-                      -defaultextension .pd -filetypes $::filetypes]
+                      -defaultextension .pd -filetypes $::var(filesTypes)]
     if {$filename eq ""} return; # they clicked cancel
 
     set extension [file extension $filename]

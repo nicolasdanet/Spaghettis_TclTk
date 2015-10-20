@@ -782,14 +782,14 @@ void canvas_reload(t_symbol *name, t_symbol *dir, t_gobj *except)
 /* ------------------------ event handling ------------------------ */
 
 static char *cursorlist[] = {
-    "$cursor_runmode_nothing",
-    "$cursor_runmode_clickme",
-    "$cursor_runmode_thicken",
-    "$cursor_runmode_addpoint",
-    "$cursor_editmode_nothing",
-    "$cursor_editmode_connect",
-    "$cursor_editmode_disconnect",
-    "$cursor_editmode_resize"
+    "$::var(cursorRunNothing)",
+    "$::var(cursorRunClickMe)",
+    "$::var(cursorRunThicken)",
+    "$::var(cursorRunAddPoint)",
+    "$::var(cursorEditNothing)",
+    "$::var(cursorEditConnect)",
+    "$::var(cursorEditDisconnect)",
+    "$::var(cursorEditResize)"
 };
 
 void canvas_setcursor(t_canvas *x, unsigned int cursornum)

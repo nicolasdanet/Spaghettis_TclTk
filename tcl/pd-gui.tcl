@@ -10,7 +10,7 @@
 
 # Withdraw the window first to avoid flashing.
 
-if {[catch {wm withdraw .} fid]} { exit 2 }
+if {[catch { wm withdraw . } fid]} { exit 2 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -85,6 +85,7 @@ set var(directorySearchPath)    {}
 
 set var(filesOpenPended)        {}
 set var(filesRecent)            {}
+set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pdhelp}} }
 
 set var(fontFamily)             courier
 set var(fontWeight)             normal
@@ -101,6 +102,15 @@ set var(windowPopupY)           0
 set var(windowFrameX)           0
 set var(windowFrameY)           0
 set var(windowFocused)          .
+
+set var(cursorRunNothing)       ""
+set var(cursorRunClickMe)       ""
+set var(cursorRunThicken)       "sb_v_double_arrow"
+set var(cursorRunAddPoint)      "plus"
+set var(cursorEditNothing)      "hand2"
+set var(cursorEditConnect)      "circle"
+set var(cursorEditDisconnect)   "X_cursor"
+set var(cursorEditResize)       "sb_h_double_arrow"
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -125,119 +135,80 @@ array set patch_parents         {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc init_for_platform {} {
-    # we are not using Tk scaling, so fix it to 1 on all platforms.  This
-    # guarantees that patches will be pixel-exact on every platform
-    # 2013.07.19 msp - trying without this to see what breaks - it's having
-    # deleterious effects on dialog window font sizes.
-    # tk scaling 1
-
+proc initializePlatform {} {
     switch -- [tk windowingsystem] {
-        "x11" {
-            set ::var(modifierKey) "Control"
-            option add *PatchWindow*Canvas.background "white" startupFile
-            # add control to show/hide hidden files in the open panel (load
-            # the tk_getOpenFile dialog once, otherwise it will not work)
-            catch {tk_getOpenFile -with-invalid-argument} 
-            set ::tk::dialog::file::showHiddenBtn 1
-            set ::tk::dialog::file::showHiddenVar 0
-            # set file types that open/save recognize
-            set ::filetypes \
-                [list \
-                     [list [_ "Associated Files"]  {.pd .pat .mxt} ] \
-                     [list [_ "Pd Files"]          {.pd}  ] \
-                     [list [_ "Max Patch Files"]   {.pat} ] \
-                     [list [_ "Max Text Files"]    {.mxt} ] \
-                    ]
-            # some platforms have a menubar on the top, so place below them
-            set ::var(menubarHeight) 0
-            # Tk handles the window placement differently on each
-            # platform. With X11, the x,y placement refers to the window
-            # frame's upper left corner. http://wiki.tcl.tk/11502
-            set ::var(windowFrameX) 3
-            set ::var(windowFrameY) 53
-			# TODO add wm iconphoto/iconbitmap here if it makes sense
-            # mouse cursors for all the different modes
-            set ::cursor_runmode_nothing "left_ptr"
-            set ::cursor_runmode_clickme "arrow"
-            set ::cursor_runmode_thicken "sb_v_double_arrow"
-            set ::cursor_runmode_addpoint "plus"
-            set ::cursor_editmode_nothing "hand2"
-            set ::cursor_editmode_connect "circle"
-            set ::cursor_editmode_disconnect "X_cursor"
-            set ::cursor_editmode_resize "sb_h_double_arrow"
-        }
-        "aqua" {
-            set ::var(modifierKey) "Mod1"
-            option add *DialogWindow*background "#E8E8E8" startupFile
-            option add *DialogWindow*Entry.highlightBackground "#E8E8E8" startupFile
-            option add *DialogWindow*Button.highlightBackground "#E8E8E8" startupFile
-            option add *DialogWindow*Entry.background "white" startupFile
-            # Mac OS X needs a menubar all the time
-            set ::var(menubar) ".menubar"
-            # set file types that open/save recognize
-            set ::filetypes \
-                [list \
-                     [list [_ "Associated Files"]       {.pd .pat .mxt} ] \
-                     [list [_ "Pd Files"]               {.pd}  ] \
-                     [list [_ "Max Patch Files (.pat)"] {.pat} ] \
-                     [list [_ "Max Text Files (.mxt)"]  {.mxt} ] \
-                ]
-            # some platforms have a menubar on the top, so place below them
-            set ::var(menubarHeight) 22
-            # Tk handles the window placement differently on each platform, on
-            # Mac OS X, the x,y placement refers to the content window's upper
-            # left corner (not of the window frame) http://wiki.tcl.tk/11502
-            set ::var(windowFrameX) 0
-            set ::var(windowFrameY) 0
-            # mouse cursors for all the different modes
-            set ::cursor_runmode_nothing "arrow"
-            set ::cursor_runmode_clickme "center_ptr"
-            set ::cursor_runmode_thicken "sb_v_double_arrow"
-            set ::cursor_runmode_addpoint "plus"
-            set ::cursor_editmode_nothing "hand2"
-            set ::cursor_editmode_connect "circle"
-            set ::cursor_editmode_disconnect "X_cursor"
-            set ::cursor_editmode_resize "sb_h_double_arrow"
-        }
-        "win32" {
-            set ::var(modifierKey) "Control"
-            option add *PatchWindow*Canvas.background "white" startupFile
-            # fix menu font size on Windows with tk scaling = 1
-            font create menufont -family Tahoma -size -11
-            option add *Menu.font menufont startupFile
-            option add *DialogWindow*font menufont startupFile
-            option add *PdWindow*font menufont startupFile
-            option add *ErrorDialog*font menufont startupFile
-            # set file types that open/save recognize
-            set ::filetypes \
-                [list \
-                     [list [_ "Associated Files"]  {.pd .pat .mxt} ] \
-                     [list [_ "Pd Files"]          {.pd}  ] \
-                     [list [_ "Max Patch Files"]   {.pat} ] \
-                     [list [_ "Max Text Files"]    {.mxt} ] \
-                    ]
-            # some platforms have a menubar on the top, so place below them
-            set ::var(menubarHeight) 0
-            # Tk handles the window placement differently on each platform, on
-            # Mac OS X, the x,y placement refers to the content window's upper
-            # left corner. http://wiki.tcl.tk/11502 
-            # TODO this probably needs a script layer: http://wiki.tcl.tk/11291
-            set ::var(windowFrameX) 0
-            set ::var(windowFrameY) 0
-            # TODO use 'winico' package for full, hicolor icon support
-            # mouse cursors for all the different modes
-            set ::cursor_runmode_nothing "right_ptr"
-            set ::cursor_runmode_clickme "arrow"
-            set ::cursor_runmode_thicken "sb_v_double_arrow"
-            set ::cursor_runmode_addpoint "plus"
-            set ::cursor_editmode_nothing "hand2"
-            set ::cursor_editmode_connect "circle"
-            set ::cursor_editmode_disconnect "X_cursor"
-            set ::cursor_editmode_resize "sb_h_double_arrow"
-        }
+        "x11"   { initializePlatformX11   }
+        "aqua"  { initializePlatformAqua  }
+        "win32" { initializePlatformWin32 }
     }
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc initializePlatformX11 {} {
+
+    set ::var(modifierKey) "Control"
+    
+    option add *PatchWindow*Canvas.background "white" startupFile
+    
+    # ( http://wiki.tcl.tk/1060 )
+    
+    catch { tk_getOpenFile -dummy } 
+    set ::tk::dialog::file::showHiddenBtn 1
+    set ::tk::dialog::file::showHiddenVar 0
+    
+    # Placement refers to the frame's corner instead of the content ( http://wiki.tcl.tk/11502 ).
+    
+    set ::var(windowFrameX) 3
+    set ::var(windowFrameY) 53
+    
+    # Define mouse cursor symbols.
+    
+    set ::var(cursorRunNothing) "left_ptr"
+    set ::var(cursorRunClickMe) "arrow"
+}
+
+proc initializePlatformAqua {} {
+
+    set ::var(modifierKey) "Mod1"
+    
+    option add *DialogWindow*background "#E8E8E8" startupFile
+    option add *DialogWindow*Entry.highlightBackground "#E8E8E8" startupFile
+    option add *DialogWindow*Button.highlightBackground "#E8E8E8" startupFile
+    option add *DialogWindow*Entry.background "white" startupFile
+    
+    # Mac OS X needs a menubar all the time.
+    
+    set ::var(menubar) ".menubar"
+    set ::var(menubarHeight) 22
+    
+    # Define mouse cursor symbols.
+    
+    set ::var(cursorRunNothing) "arrow"
+    set ::var(cursorRunClickMe) "center_ptr"
+}
+
+proc initializePlatformWin32 {} {
+
+    set ::var(modifierKey) "Control"
+    
+    font create menufont -family Tahoma -size -11
+    
+    option add *PatchWindow*Canvas.background "white" startupFile
+    option add *Menu.font menufont startupFile
+    option add *DialogWindow*font menufont startupFile
+    option add *PdWindow*font menufont startupFile
+    option add *ErrorDialog*font menufont startupFile
+    
+    # Define mouse cursor symbols.
+    
+    set ::var(cursorRunNothing) "right_ptr"
+    set ::var(cursorRunClickMe) "arrow"
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
 # locale handling
@@ -509,7 +480,7 @@ proc main {argc argv} {
     load_locale
     parse_args $argc $argv
     check_for_running_instances
-    init_for_platform
+    initializePlatform
 
     # ::var(host) and ::var(port) are parsed from argv by parse_args
     if { $::var(port) > 0 && $::var(host) ne "" } {

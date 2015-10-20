@@ -32,7 +32,7 @@ proc ::pd_commands::menu_open {} {
     if { ! [file isdirectory $::var(directoryOpen)]} {set ::var(directoryOpen) $::env(HOME)}
     set files [tk_getOpenFile -defaultextension .pd \
                        -multiple true \
-                       -filetypes $::filetypes \
+                       -filetypes $::var(filesTypes) \
                        -initialdir $::var(directoryOpen)]
     if {$files ne ""} {
         foreach filename $files { 

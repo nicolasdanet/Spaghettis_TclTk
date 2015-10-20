@@ -59,8 +59,8 @@ proc ::pd_preferences::init_win {} {
 }
 
 proc ::pd_preferences::init_x11 {} {
-    # linux uses ~/.config/pure-data dir
-    set ::recentfiles_domain "~/.config/pure-data"
+    # linux uses ~/.config/puredata dir
+    set ::recentfiles_domain "~/.config/puredata"
     set ::recentfiles_key "recentfiles.conf"
     prepare_configdir
 }
