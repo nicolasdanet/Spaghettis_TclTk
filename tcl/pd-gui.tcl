@@ -10,7 +10,7 @@
 
 # Withdraw the window first to avoid flashing.
 
-if {[catch { wm withdraw . } fid]} { exit 2 }
+if {[catch { wm withdraw . }]} { exit 2 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -21,18 +21,19 @@ package require Tk
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Handy for debugging. 
+# Handy for debugging.
 
-if {true} {
+rename unknown _original_unknown
 
-    rename unknown _original_unknown
-
-    proc unknown {args} {
-        catch { console show }
-        puts "? $args" 
-        uplevel 1 [list _original_unknown {*}$args]
+proc unknown {args} {
+    catch { console show }
+    set i [info level]
+    while {$i > 0} {
+        set stack [info level $i]
+        if {[string first tclPkgUnknown $stack] < 0} { puts stderr "$i >>> $stack" }
+        incr i -1
     }
-    
+    uplevel 1 [list _original_unknown {*}$args]
 }
 
 # ------------------------------------------------------------------------------------------------------------
