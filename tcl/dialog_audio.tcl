@@ -143,7 +143,7 @@ proc ::dialog_audio::pdtk_audio_dialog {mytoplevel \
     wm group $mytoplevel .
     wm resizable $mytoplevel 0 0
     wm transient $mytoplevel
-    {[tk windowingsystem] eq "aqua"} { $mytoplevel configure -menu .menubar }
+    if {[tk windowingsystem] eq "aqua"} { $mytoplevel configure -menu .menubar }
     $mytoplevel configure -padx 10 -pady 5
     ::pd_bindings::dialog_bindings $mytoplevel "audio"
     # not all Tcl/Tk versions or platforms support -topmost, so catch the error
