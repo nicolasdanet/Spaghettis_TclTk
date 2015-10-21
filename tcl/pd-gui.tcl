@@ -310,14 +310,14 @@ proc comInitialize {audioAPIs midiAPIs fontFamily fontWeight} {
     ::pd_preferences::initialize
     ::pd_connect::pdsend "pd init [enquote_path [pwd]] $measured"
     ::pd_bindings::initialize
-    ::pd_menus::create_menubar
-    ::pd_canvas::create_popup
-    ::pd_console::create_window
-    ::pd_menus::configure_for_pdwindow
-    
-    foreach filename $::var(filesOpenPended) { ::pd_miscellaneous::open_file $filename }
+    ::pd_menus::initialize
+    ::pd_canvas::initialize
+    ::pd_console::initialize
+    ::pd_menus::configureForPdWindow
     
     set ::var(isInitialized) 1
+    
+    foreach filename $::var(filesOpenPended) { ::pd_miscellaneous::open_file $filename }
 }
 
 # ------------------------------------------------------------------------------------------------------------

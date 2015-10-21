@@ -214,7 +214,7 @@ proc pdtk_canvas_clickpaste {tkcanvas x y b} {
 # menu item is called, not when the command is mapped to the menu item.  This
 # is the same as the menubar in pd_menus.tcl but the opposite of the 'bind'
 # commands in pd_bindings.tcl
-proc ::pd_canvas::create_popup {} {
+proc ::pd_canvas::initialize {} {
     if { ! [winfo exists .popup]} {
         # the popup menu for the canvas
         menu .popup -tearoff 0

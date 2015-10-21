@@ -284,7 +284,7 @@ proc ::pd_console::set_findinstance_cursor {widget key state} {
 
 #--create the window-----------------------------------------------------------#
 
-proc ::pd_console::create_window {} {
+proc ::pd_console::initialize {} {
     variable logmenuitems
     set ::patch_loaded(.pdwindow) 0
 

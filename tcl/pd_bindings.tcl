@@ -202,7 +202,7 @@ proc ::pd_bindings::window_focusin {mytoplevel} {
     set ::var(windowFocused) $mytoplevel
     ::pd_commands::set_filenewdir $mytoplevel
     if {$mytoplevel eq ".pdwindow"} {
-        ::pd_menus::configure_for_pdwindow 
+        ::pd_menus::configureForPdWindow 
     } else {
         ::pd_menus::configure_for_canvas $mytoplevel
     }

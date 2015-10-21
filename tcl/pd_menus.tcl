@@ -23,7 +23,6 @@ namespace eval ::pd_menus:: {
     variable menubar ".menubar"
 
     namespace export create_menubar
-    namespace export configure_for_pdwindow
     namespace export configure_for_canvas
     namespace export configure_for_dialog
 
@@ -33,7 +32,7 @@ namespace eval ::pd_menus:: {
 
 # ------------------------------------------------------------------------------
 # 
-proc ::pd_menus::create_menubar {} {
+proc ::pd_menus::initialize {} {
     variable accelerator
     variable menubar
     if {[tk windowingsystem] eq "aqua"} {
@@ -54,7 +53,7 @@ proc ::pd_menus::create_menubar {} {
     . configure -menu $menubar
 }
 
-proc ::pd_menus::configure_for_pdwindow {} {
+proc ::pd_menus::configureForPdWindow {} {
     variable menubar
     # these are meaningless for the Pd window, so disable them
     # File menu
