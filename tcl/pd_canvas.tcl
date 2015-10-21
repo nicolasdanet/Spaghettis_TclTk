@@ -39,11 +39,21 @@ proc pdtk_canvas_place_window {width height geometry} {
     set screenwidth [lindex [wm maxsize .] 0]
     set screenheight [lindex [wm maxsize .] 1]
 
+    # Placement refers to the frame's corner instead of the content ( http://wiki.tcl.tk/11502 ).
+    
+    set windowFrameX 0
+    set windowFrameY 0
+    
+    if {[tk windowingsystem] eq "x11"} {
+        set windowFrameX 3
+        set windowFrameY 53
+    }
+    
     # read back the current geometry +posx+posy into variables
     scan $geometry {%[+]%d%[+]%d} - x - y
     # fit the geometry onto screen
-    set x [ expr $x % $screenwidth - $::var(windowFrameX)]
-    set y [ expr $y % $screenheight - $::var(windowFrameY)]
+    set x [ expr $x % $screenwidth - $windowFrameX]
+    set y [ expr $y % $screenheight - $windowFrameY]
     if {$x < 0} {set x 0}
     if {$y < 0} {set y 0}
     if {$width > $screenwidth} {

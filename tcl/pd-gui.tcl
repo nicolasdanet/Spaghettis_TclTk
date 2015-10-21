@@ -167,8 +167,6 @@ set var(isEditmode)             0
 
 set var(windowPopupX)           0
 set var(windowPopupY)           0
-set var(windowFrameX)           0
-set var(windowFrameY)           0
 set var(windowFocused)          .
 
 set var(cursorRunNothing)       ""
@@ -230,11 +228,6 @@ proc initializePlatformX11 {} {
     catch { tk_getOpenFile -dummy } 
     set ::tk::dialog::file::showHiddenBtn 1
     set ::tk::dialog::file::showHiddenVar 0
-    
-    # Placement refers to the frame's corner instead of the content ( http://wiki.tcl.tk/11502 ).
-    
-    set ::var(windowFrameX) 3
-    set ::var(windowFrameY) 53
     
     # Define mouse cursor symbols.
     
