@@ -136,7 +136,7 @@ proc ::pd_menus::build_file_menu {mymenu} {
     $mymenu entryconfigure [_ "Print..."]   -command {::pd_commands::menu_print $::var(windowFocused)}
     # update recent files
     if {[llength $::var(filesRecent)] > 0} {
-        ::pd_menus::update_recentfiles_menu false
+        ::pd_menus::update_recentfiles_menu 0
     }
 }
 
@@ -288,7 +288,7 @@ proc ::pd_menus::build_window_menu {mymenu} {
 
 # ------------------------------------------------------------------------------
 # update the menu entries for opening recent files (write arg should always be true except the first time when pd is opened)
-proc ::pd_menus::update_recentfiles_menu {{write true}} {
+proc ::pd_menus::update_recentfiles_menu {{write 1}} {
     variable menubar
     switch -- [tk windowingsystem] {
         "aqua"  {::pd_menus::update_openrecent_menu_aqua .openrecent $write}
@@ -318,7 +318,7 @@ proc ::pd_menus::update_openrecent_menu_aqua {mymenu {write}} {
     $mymenu add command -label [_ "Clear Menu"] \
         -command "::pd_menus::clear_recentfiles_menu"
     # write to config file
-    if {$write == true} { ::pd_preferences::write_recentfiles }
+    if {$write} { ::pd_preferences::write_recentfiles }
 }
 
 # ------------------------------------------------------------------------------
@@ -348,7 +348,7 @@ proc ::pd_menus::update_recentfiles_on_menu {mymenu {write}} {
         -label [file tail $filename] -command "::pd_miscellaneous::open_file {$filename}"
 
     # write to config file
-    if {$write == true} { ::pd_preferences::write_recentfiles }
+    if {$write} { ::pd_preferences::write_recentfiles }
 }
 
 # ------------------------------------------------------------------------------

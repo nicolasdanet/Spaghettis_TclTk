@@ -346,7 +346,7 @@ proc ::pd_console::create_window {} {
     text .pdwindow.text -relief raised -bd 2 -font {$::var(fontFamily) -12} \
         -highlightthickness 0 -borderwidth 1 -relief flat \
         -yscrollcommand ".pdwindow.scroll set" -width 60 \
-        -undo false -autoseparators false -maxundo 1 -takefocus 0
+        -undo 0 -autoseparators 0 -maxundo 1 -takefocus 0
     scrollbar .pdwindow.scroll -command ".pdwindow.text.internal yview"
     pack .pdwindow.scroll -side right -fill y
     pack .pdwindow.text -side right -fill both -expand 1

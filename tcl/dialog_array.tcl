@@ -114,7 +114,7 @@ proc ::dialog_array::listview_lbselection {arrayName off size} {
 proc ::dialog_array::listview_popup {arrayName} {
     set windowName [format ".%sArrayWindow" $arrayName]
     if [winfo exists $windowName.popup] then [destroy $windowName.popup]
-    menu $windowName.popup -tearoff false
+    menu $windowName.popup -tearoff 0
     $windowName.popup add command -label [_ "Copy"] \
         -command "::dialog_array::listview_copy $arrayName; \
                   destroy $windowName.popup"

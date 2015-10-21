@@ -69,7 +69,7 @@ proc ::pd_preferences::init_x11 {} {
 # write recent files
 #
 proc ::pd_preferences::write_recentfiles {} {
-    write_config $::var(filesRecent) $::recentfiles_domain $::recentfiles_key true
+    write_config $::var(filesRecent) $::recentfiles_domain $::recentfiles_key 1
 }
 
 # ------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ proc ::pd_preferences::get_config {adomain {akey} {arr}} {
 # write configs to a file or to the registry
 # $arr is true if the data needs to be written in an array
 #
-proc ::pd_preferences::write_config {data {adomain} {akey} {arr false}} {
+proc ::pd_preferences::write_config {data {adomain} {akey} {arr 0}} {
     switch -- [tk windowingsystem] {
         "aqua"  { write_config_aqua $data $adomain $akey $arr }
         "win32" { write_config_win $data $adomain $akey $arr }
@@ -120,7 +120,7 @@ proc ::pd_preferences::write_config {data {adomain} {akey} {arr false}} {
 # ------------------------------------------------------------------------------
 # osx: read a plist file
 #
-proc ::pd_preferences::get_config_aqua {adomain {akey} {arr false}} {
+proc ::pd_preferences::get_config_aqua {adomain {akey} {arr 0}} {
     if {![catch {exec defaults read $adomain $akey} conf]} {
         if {$arr} {
             set conf [plist_array_to_tcl_list $conf]
@@ -136,7 +136,7 @@ proc ::pd_preferences::get_config_aqua {adomain {akey} {arr false}} {
 # ------------------------------------------------------------------------------
 # win: read in the registry
 #
-proc ::pd_preferences::get_config_win {adomain {akey} {arr false}} {
+proc ::pd_preferences::get_config_win {adomain {akey} {arr 0}} {
     package require registry
     if {![catch {registry get $adomain $akey} conf]} {
         return [expr {$conf}]
@@ -148,7 +148,7 @@ proc ::pd_preferences::get_config_win {adomain {akey} {arr false}} {
 # ------------------------------------------------------------------------------
 # linux: read a config file and return its lines splitted.
 #
-proc ::pd_preferences::get_config_x11 {adomain {akey} {arr false}} {
+proc ::pd_preferences::get_config_x11 {adomain {akey} {arr 0}} {
     set filename [file join $adomain $akey]
     set conf {}
     if {
@@ -168,7 +168,7 @@ proc ::pd_preferences::get_config_x11 {adomain {akey} {arr false}} {
 # osx: write configs to plist file
 # if $arr is true, we write an array
 #
-proc ::pd_preferences::write_config_aqua {data {adomain} {akey} {arr false}} {
+proc ::pd_preferences::write_config_aqua {data {adomain} {akey} {arr 0}} {
     # FIXME empty and write again so we don't loose the order
     if {[catch {exec defaults write $adomain $akey -array} errorMsg]} {
         ::pd_console::error "write_config_aqua $akey: $errorMsg"
@@ -188,7 +188,7 @@ proc ::pd_preferences::write_config_aqua {data {adomain} {akey} {arr false}} {
 # win: write configs to registry
 # if $arr is true, we write an array
 #
-proc ::pd_preferences::write_config_win {data {adomain} {akey} {arr false}} {
+proc ::pd_preferences::write_config_win {data {adomain} {akey} {arr 0}} {
     package require registry
     # FIXME: ugly
     if {$arr} {

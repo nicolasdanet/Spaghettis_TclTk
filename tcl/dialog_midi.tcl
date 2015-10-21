@@ -67,7 +67,7 @@ proc midi_popup_action {buttonname varname devlist index} {
 # create a popup menu
 proc midi_popup {name buttonname varname devlist} {
     if [winfo exists $name.popup] {destroy $name.popup}
-    menu $name.popup -tearoff false
+    menu $name.popup -tearoff 0
     if {[tk windowingsystem] eq "win32"} {
         $name.popup configure -font menuFont
     }

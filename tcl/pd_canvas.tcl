@@ -217,7 +217,7 @@ proc pdtk_canvas_clickpaste {tkcanvas x y b} {
 proc ::pd_canvas::create_popup {} {
     if { ! [winfo exists .popup]} {
         # the popup menu for the canvas
-        menu .popup -tearoff false
+        menu .popup -tearoff 0
         .popup add command -label [_ "Properties"] \
             -command {::pd_canvas::done_popup $::var(windowFocused) 0}
         .popup add command -label [_ "Open"]       \

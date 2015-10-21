@@ -39,9 +39,9 @@ proc unknown {args} {
 proc unknownIsExpected {stack} {
     set expected { "tclPkgUnknown" "tk::MenuDup" }
     foreach e $expected {
-        if {[string first $e $stack] >= 0} { return true }
+        if {[string first $e $stack] >= 0} { return 1 }
     }
-    return false
+    return 0
 }
 
 # ------------------------------------------------------------------------------------------------------------
