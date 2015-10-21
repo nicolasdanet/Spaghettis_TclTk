@@ -135,18 +135,19 @@ proc getFontDefaultFamily {} {
 
 # Global variables that are used throughout the GUI.
 
-set var(scriptName)             [file normalize [info script]]
-set var(modifierKey)            ""
-set var(host)                   ""
-set var(port)                   0
-
-set var(startupFlags)           {}
-set var(startupLibraries)       {}
-
 set var(apiAudioAvailables)     {}
 set var(apiMidiAvailables)      {}
 set var(apiAudio)               0
 set var(apiMidi)                0
+
+set var(cursorRunNothing)       ""
+set var(cursorRunClickMe)       ""
+set var(cursorRunThicken)       "sb_v_double_arrow"
+set var(cursorRunAddPoint)      "plus"
+set var(cursorEditNothing)      "hand2"
+set var(cursorEditConnect)      "circle"
+set var(cursorEditDisconnect)   "X_cursor"
+set var(cursorEditResize)       "sb_h_double_arrow"
 
 set var(directoryNew)           [pwd]
 set var(directoryOpen)          [pwd]
@@ -165,18 +166,18 @@ set var(isStderr)               0
 set var(isDsp)                  0
 set var(isEditmode)             0
 
+set var(modifierKey)            ""
+set var(scriptName)             [file normalize [info script]]
+
+set var(startupFlags)           {}
+set var(startupLibraries)       {}
+
+set var(tcpHost)                ""
+set var(tcpPort)                0
+
 set var(windowPopupX)           0
 set var(windowPopupY)           0
 set var(windowFocused)          .
-
-set var(cursorRunNothing)       ""
-set var(cursorRunClickMe)       ""
-set var(cursorRunThicken)       "sb_v_double_arrow"
-set var(cursorRunAddPoint)      "plus"
-set var(cursorEditNothing)      "hand2"
-set var(cursorEditConnect)      "circle"
-set var(cursorEditDisconnect)   "X_cursor"
-set var(cursorEditResize)       "sb_h_double_arrow"
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -188,6 +189,8 @@ set midi_outdev     {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
+
+# Per patch states.
 
 array set patch_isEditmode      {}
 array set patch_isEditing       {}
@@ -354,15 +357,15 @@ proc parse_args {argc argv} {
     if {$argc == 1 && ! [file exists $argv]} {
         if { [string is int $argv] && $argv > 0} {
             # 'pd-gui' got the port number from 'pd'
-            set ::var(host) "localhost"
-            set ::var(port) $argv 
+            set ::var(tcpHost) "localhost"
+            set ::var(tcpPort) $argv 
         } else {
             set hostport [split $argv ":"]
-            set ::var(port) [lindex $hostport 1]
-            if { [string is int $::var(port)] && $::var(port) > 0} {
-                set ::var(host) [lindex $hostport 0]
+            set ::var(tcpPort) [lindex $hostport 1]
+            if { [string is int $::var(tcpPort)] && $::var(tcpPort) > 0} {
+                set ::var(tcpHost) [lindex $hostport 0]
             } else {
-                set ::var(port) 0
+                set ::var(tcpPort) 0
             }
 
         }
@@ -439,7 +442,7 @@ proc check_for_running_instances { } {
                 # if pd-gui gets called from pd ('pd-gui 5400') or is told otherwise
                 # to connect to a running instance of Pd (by providing [<host>:]<port>)
                 # then we don't want to connect to a running instance
-                if { $::var(port) > 0 && $::var(host) ne "" } { return }
+                if { $::var(tcpPort) > 0 && $::var(tcpHost) ne "" } { return }
                 selection handle -selection $::var(scriptName) . "send_args"
                 selection own -command others_lost -selection $::var(scriptName) .
                 after 5000 set ::singleton_state "timeout"
@@ -475,15 +478,15 @@ proc main {argc argv} {
     check_for_running_instances
     initializePlatform
 
-    # ::var(host) and ::var(port) are parsed from argv by parse_args
-    if { $::var(port) > 0 && $::var(host) ne "" } {
+    # ::var(tcpHost) and ::var(tcpPort) are parsed from argv by parse_args
+    if { $::var(tcpPort) > 0 && $::var(tcpHost) ne "" } {
         # 'pd' started first and launched us, so get the port to connect to
-        ::pd_connect::to_pd $::var(port) $::var(host)
+        ::pd_connect::to_pd $::var(tcpPort) $::var(tcpHost)
     } else {
         # the GUI is starting first, so create socket and exec 'pd'
-        set ::var(port) [::pd_connect::create_socket]
+        set ::var(tcpPort) [::pd_connect::create_socket]
         set pd_exec [file join [file dirname [info script]] ../bin/pd]
-        exec -- $pd_exec -guiport $::var(port) &
+        exec -- $pd_exec -guiport $::var(tcpPort) &
         if {[tk windowingsystem] eq "aqua"} {
             # on Aqua, if 'pd-gui' first, then initial dir is home
             set ::var(directoryNew) $::env(HOME)
