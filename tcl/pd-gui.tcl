@@ -39,7 +39,7 @@ proc unknown {args} {
 proc unknownIsExpected {stack} {
     set expected { "tclPkgUnknown" "tk::MenuDup" }
     foreach e $expected {
-        if {[string first $e $stack] >= 0} { return 1 }
+        if {[string first $e $stack] > -1} { return 1 }
     }
     return 0
 }
@@ -186,7 +186,7 @@ proc _ {s} { return $s }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc getFont {size} { return "::var(font${size})" }
+proc getFontBySize {size} { return "::var(font${size})" }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -266,30 +266,12 @@ proc initializePlatformWin32 {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc set_base_font {family weight} {
-    if {[lsearch -exact [font families] $family] > -1} {
-        set ::var(fontFamily) $family
-    } else {
-        ::pd_console::post [format \
-            [_ "WARNING: Font family '%s' not found, using default (%s)\n"] \
-                $family $::var(fontFamily)]
-    }
-    if {[lsearch -exact {bold normal} $weight] > -1} {
-        set ::var(fontWeight) $weight
-        set using_defaults 0
-    } else {
-        ::pd_console::post [format \
-            [_ "WARNING: Font weight '%s' not found, using default (%s)\n"] \
-                $weight $::var(fontWeight)]
-    }
-}
-
 # creates all the base fonts (i.e. pd_font_8 thru pd_font_36) so that they fit
 # into the metrics given by $::var(fontRequired) for any given font/weight
 proc fit_font_into_metrics {} {
 # TODO the fonts picked seem too small, probably on fixed width
     foreach {size width height} $::var(fontRequired) {
-        set myfont [getFont $size]
+        set myfont [getFontBySize $size]
         font create $myfont -family $::var(fontFamily) -weight $::var(fontWeight) \
             -size [expr {-$height}]
         set height2 $height
@@ -319,15 +301,14 @@ proc fit_font_into_metrics {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# ------------------------------------------------------------------------------
-# procs called directly by pd
-
-proc pdtk_pd_startup {major minor bugfix test
-                      audio_apis midi_apis sys_font sys_fontweight} {
+proc pdtk_pd_startup {major minor bugfix test audio_apis midi_apis sys_font sys_fontweight} {
     set oldtclversion 0
     set ::var(apiAudioAvailables) $audio_apis
     set ::var(apiMidiAvailables) $midi_apis
-    set_base_font $sys_font $sys_fontweight
+    
+    if {[lsearch -exact [font families] $sys_font] > -1}     { set ::var(fontFamily) $sys_font }
+    if {[lsearch -exact {bold normal} $sys_fontweight] > -1} { set ::var(fontWeight) $sys_fontweight }
+    
     fit_font_into_metrics
     ::pd_preferences::init
     ::pd_connect::pdsend "pd init [enquote_path [pwd]] $oldtclversion $::var(fontMeasured)"
