@@ -290,9 +290,6 @@ proc comInitialize {audioAPIs midiAPIs fontFamily fontWeight} {
     set ::var(apiAudioAvailables) $audioAPIs
     set ::var(apiMidiAvailables)  $midiAPIs
     
-    puts $audioAPIs
-    puts $midiAPIs
-    
     # Overide the default font attributes.
     
     if {[lsearch -exact [font families] $fontFamily] > -1} { set ::var(fontFamily) $fontFamily }
@@ -310,17 +307,21 @@ proc comInitialize {audioAPIs midiAPIs fontFamily fontWeight} {
         lappend measured [font metrics $f -linespace]
     }
 
-    ::pd_preferences::init
+    ::pd_preferences::initialize
     ::pd_connect::pdsend "pd init [enquote_path [pwd]] $measured"
-    ::pd_bindings::class_bindings
-    ::pd_bindings::global_bindings
+    ::pd_bindings::initialize
     ::pd_menus::create_menubar
     ::pd_canvas::create_popup
     ::pd_console::create_window
     ::pd_menus::configure_for_pdwindow
-    open_filestoopen
+    
+    foreach filename $::var(filesOpenPended) { ::pd_miscellaneous::open_file $filename }
+    
     set ::var(isInitialized) 1
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 ##### routine to ask user if OK and, if so, send a message on to Pd ######
 proc pdtk_check {mytoplevel message reply_to_pd default} {
@@ -375,12 +376,6 @@ proc parse_args {argc argv} {
         foreach filename $unflagged_files {
             lappend ::var(filesOpenPended) $filename
         }
-    }
-}
-
-proc open_filestoopen {} {
-    foreach filename $::var(filesOpenPended) {
-        ::pd_miscellaneous::open_file $filename
     }
 }
 

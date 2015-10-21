@@ -12,9 +12,7 @@ package provide pd_bindings 0.1
 package require pd_commands
 
 namespace eval ::pd_bindings:: {
-    namespace export global_bindings
-    namespace export dialog_bindings
-    namespace export patch_bindings
+
 }
 
 # TODO rename pd_bindings to window_bindings after merge is done
@@ -27,7 +25,7 @@ namespace eval ::pd_bindings:: {
 
 
 # binding by class is not recursive, so its useful for window events
-proc ::pd_bindings::class_bindings {} {
+proc ::pd_bindings::initialize {} {
     # and the Pd window is in a class to itself
     bind PdWindow <FocusIn>                "::pd_bindings::window_focusin %W"
     # bind to all the windows dedicated to patch canvases
@@ -38,9 +36,7 @@ proc ::pd_bindings::class_bindings {} {
     # dialog panel windows bindings, which behave differently than PatchWindows
     bind DialogWindow <Configure>              "::pd_bindings::dialog_configure %W"
     bind DialogWindow <FocusIn>                "::pd_bindings::dialog_focusin %W"
-}
 
-proc ::pd_bindings::global_bindings {} {
     # we use 'bind all' everywhere to get as much of Tk's automatic binding
     # behaviors as possible, things like not sending an event for 'O' when
     # 'Control-O' is pressed.

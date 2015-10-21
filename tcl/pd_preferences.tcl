@@ -32,7 +32,7 @@ set ::recentfiles_domain ""
 # ------------------------------------------------------------------------------
 # init preferences
 #
-proc ::pd_preferences::init {} {
+proc ::pd_preferences::initialize {} {
     switch -- [tk windowingsystem] {
         "aqua"  { init_aqua }
         "win32" { init_win }
