@@ -307,13 +307,21 @@ proc comInitialize {audioAPIs midiAPIs fontFamily fontWeight} {
         lappend measured [font metrics $f -linespace]
     }
 
+    # Initialize packages.
+    
     ::pd_preferences::initialize
-    ::pd_connect::pdsend "pd init [enquote_path [pwd]] $measured"
     ::pd_bindings::initialize
     ::pd_menus::initialize
     ::pd_canvas::initialize
     ::pd_console::initialize
+    
+    # Set the menubar configuration.
+    
     ::pd_menus::configureForPdWindow
+    
+    # Respond and open pended files (if any).
+    
+    ::pd_connect::pdsend "pd init [enquote_path [pwd]] $measured"
     
     set ::var(isInitialized) 1
     
