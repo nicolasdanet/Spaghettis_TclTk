@@ -43,7 +43,7 @@ proc unknown {args} {
 }
 
 proc unknownIsExpected {stack} {
-    set expected { "tclPkgUnknown" "tk::MenuDup" }
+    set expected { "tclPkgUnknown" "tk::MenuDup" "tk_optionMenu" }
     foreach e $expected {
         if {[string first $e $stack] > -1} { return 1 }
     }
@@ -295,9 +295,7 @@ proc pdtk_pd_startup {major minor bugfix test audio_apis midi_apis sys_font sys_
         lappend measured [font measure $f M]
         lappend measured [font metrics $f -linespace]
     }
-    
-    puts $measured
-    
+
     ::pd_preferences::init
     ::pd_connect::pdsend "pd init [enquote_path [pwd]] $oldtclversion $measured"
     ::pd_bindings::class_bindings
