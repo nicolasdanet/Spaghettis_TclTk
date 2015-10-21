@@ -897,7 +897,7 @@ int sys_startgui(const char *libdir)
     {
             /* fake the GUI's message giving cwd and font sizes; then
             skip starting the GUI up. */
-        t_atom zz[NDEFAULTFONT+2];
+        t_atom zz[NDEFAULTFONT+1];
         int i;
 #ifdef _WIN32
         if (GetCurrentDirectory(MAXPDSTRING, cmdbuf) == 0)
@@ -910,8 +910,8 @@ int sys_startgui(const char *libdir)
         SETSYMBOL(zz, gensym(cmdbuf));
         for (i = 0; i < (int)NDEFAULTFONT; i++)
             SETFLOAT(zz+i+1, defaultfontshit[i]);
-        SETFLOAT(zz+NDEFAULTFONT+1,0);
-        glob_initfromgui(0, 0, 23, zz);
+        // SETFLOAT(zz+NDEFAULTFONT+1,0);
+        glob_initfromgui(0, 0, NDEFAULTFONT+1, zz);
     }
     else if (sys_guisetportnumber)  /* GUI exists and sent us a port number */
     {

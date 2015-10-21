@@ -59,7 +59,7 @@ t_symbol *sys_libdir;
 static t_namelist *sys_openlist;
 static t_namelist *sys_messagelist;
 static int sys_version;
-int sys_oldtclversion;      /* hack to warn g_rtext.c about old text sel */
+/* */
 
 int sys_nmidiout = -1;
 int sys_nmidiin = -1;
@@ -207,9 +207,9 @@ void glob_initfromgui(void *dummy, t_symbol *s, int argc, t_atom *argv)
     t_namelist *nl;
     unsigned int i;
     int j;
-    int nhostfont = (argc-2)/3;
-    sys_oldtclversion = atom_getfloatarg(1, argc, argv);
-    if (argc != 2 + 3 * nhostfont) bug("glob_initfromgui");
+    int nhostfont = (argc-1)/3;
+    /* */
+    if (argc != 1 + 3 * nhostfont) bug("glob_initfromgui");
     for (i = 0; i < NFONT; i++)
     {
         int best = 0;
@@ -217,15 +217,15 @@ void glob_initfromgui(void *dummy, t_symbol *s, int argc, t_atom *argv)
         int wantwidth = sys_fontlist[i].fi_maxwidth;
         for (j = 1; j < nhostfont; j++)
         {
-            if (atom_getintarg(3 * j + 4, argc, argv) <= wantheight &&
-                atom_getintarg(3 * j + 3, argc, argv) <= wantwidth)
+            if (atom_getintarg(3 * j + 3, argc, argv) <= wantheight &&
+                atom_getintarg(3 * j + 2, argc, argv) <= wantwidth)
                     best = j;
         }
             /* best is now the host font index for the desired font index i. */
         sys_fontlist[i].fi_hostfontsize =
-            atom_getintarg(3 * best + 2, argc, argv);
-        sys_fontlist[i].fi_width = atom_getintarg(3 * best + 3, argc, argv);
-        sys_fontlist[i].fi_height = atom_getintarg(3 * best + 4, argc, argv);
+            atom_getintarg(3 * best + 1, argc, argv);
+        sys_fontlist[i].fi_width = atom_getintarg(3 * best + 2, argc, argv);
+        sys_fontlist[i].fi_height = atom_getintarg(3 * best + 3, argc, argv);
     }
 #if 0
     for (i = 0; i < 6; i++)

@@ -205,7 +205,7 @@ proc _ {s} { return $s }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc getFontBySize {size} { return "::var(font${size})" }
+proc getFontDefaultBySize {size} { return "::var(fontDefault${size})" }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -287,8 +287,6 @@ proc initializePlatformWin32 {} {
 
 proc pdtk_pd_startup {major minor bugfix test audio_apis midi_apis sys_font sys_fontweight} {
 
-    set oldtclversion 0
-    
     set ::var(apiAudioAvailables) $audio_apis
     set ::var(apiMidiAvailables) $midi_apis
     
@@ -298,7 +296,7 @@ proc pdtk_pd_startup {major minor bugfix test audio_apis midi_apis sys_font sys_
     set measured ""
     
     foreach size $::var(fontSizes) {
-        set f [getFontBySize $size]
+        set f [getFontDefaultBySize $size]
         font create $f -family $::var(fontFamily) -weight $::var(fontWeight) -size [expr -${size}]
         lappend measured $size 
         lappend measured [font measure $f M]
@@ -306,7 +304,7 @@ proc pdtk_pd_startup {major minor bugfix test audio_apis midi_apis sys_font sys_
     }
 
     ::pd_preferences::init
-    ::pd_connect::pdsend "pd init [enquote_path [pwd]] $oldtclversion $measured"
+    ::pd_connect::pdsend "pd init [enquote_path [pwd]] $measured"
     ::pd_bindings::class_bindings
     ::pd_bindings::global_bindings
     ::pd_menus::create_menubar
