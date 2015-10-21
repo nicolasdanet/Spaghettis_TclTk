@@ -23,14 +23,20 @@ package require Tk
 
 # Handy for debugging.
 
+if {true} {
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+catch { console show }
+
 rename unknown _original_unknown
 
 proc unknown {args} {
     set i [info level]
     while {$i > 0} {
         set stack [info level $i]
-        if {[unknownIsExpected $stack]} { break } else { catch { console show } }
-        puts stderr "$i >>> $stack"
+        if {[unknownIsExpected $stack]} { break } else { puts stderr "$i >>> $stack" }
         incr i -1
     }
     uplevel 1 [list _original_unknown {*}$args]
@@ -42,6 +48,11 @@ proc unknownIsExpected {stack} {
         if {[string first $e $stack] > -1} { return 1 }
     }
     return 0
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 }
 
 # ------------------------------------------------------------------------------------------------------------
