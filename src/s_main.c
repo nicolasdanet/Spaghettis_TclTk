@@ -215,7 +215,7 @@ void glob_initfromgui(void *dummy, t_symbol *s, int argc, t_atom *argv)
         int best = 0;
         int wantheight = sys_fontlist[i].fi_maxheight;
         int wantwidth = sys_fontlist[i].fi_maxwidth;
-        for (j = 1; j < nhostfont; j++)
+        for (j = 0; j < nhostfont; j++)
         {
             if (atom_getintarg(3 * j + 3, argc, argv) <= wantheight &&
                 atom_getintarg(3 * j + 2, argc, argv) <= wantwidth)
@@ -227,7 +227,7 @@ void glob_initfromgui(void *dummy, t_symbol *s, int argc, t_atom *argv)
         sys_fontlist[i].fi_width = atom_getintarg(3 * best + 2, argc, argv);
         sys_fontlist[i].fi_height = atom_getintarg(3 * best + 3, argc, argv);
     }
-#if 0
+#if 1
     for (i = 0; i < 6; i++)
         fprintf(stderr, "font (%d %d %d) -> (%d %d %d)\n",
             sys_fontlist[i].fi_fontsize,
