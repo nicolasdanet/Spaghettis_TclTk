@@ -146,7 +146,7 @@ set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pd
 
 set var(fontFamily)             [getDefaultFontFamily]
 set var(fontWeight)             "normal"
-set var(fontSizes)              "8 10 12 14 16 18 24 30 36"
+set var(fontSizes)              "8 10 12 16 24 30 36"
 
 set var(isInitialized)          0
 set var(isStderr)               0
