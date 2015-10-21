@@ -158,17 +158,6 @@ proc ::pd_menus::build_edit_menu {mymenu} {
     $mymenu add command -label [_ "Select All"] -accelerator "$accelerator+A" \
         -command {::pd_commands::menu_send $::var(windowFocused) selectall}
     $mymenu add  separator
-    if {[tk windowingsystem] eq "aqua"} {
-#        $mymenu add command -label [_ "Text Editor"] \
-#            -command {::pd_commands::menu_texteditor}
-        $mymenu add command -label [_ "Font"]  -accelerator "$accelerator+T" \
-            -command {::pd_commands::menu_font_dialog}
-    } else {
-#        $mymenu add command -label [_ "Text Editor"] -accelerator "$accelerator+T"\
-#            -command {::pd_commands::menu_texteditor}
-        $mymenu add command -label [_ "Font"] \
-            -command {::pd_commands::menu_font_dialog}
-    }
     $mymenu add command -label [_ "Clear Console"] \
         -accelerator "Shift+$accelerator+L" -command {menu_clear_console}
     $mymenu add  separator

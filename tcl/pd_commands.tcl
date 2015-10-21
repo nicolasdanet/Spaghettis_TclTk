@@ -97,16 +97,6 @@ proc ::pd_commands::menu_send_float {window message float} {
 # ------------------------------------------------------------------------------
 # open the dialog panels
 
-proc ::pd_commands::menu_font_dialog {} {
-    if {[winfo exists .font]} {
-        raise .font
-    } elseif {$::var(windowFocused) eq ".pdwindow"} {
-        ::dialog_font::pdtk_canvas_dofont .pdwindow [lindex [.pdwindow.text cget -font] 1]
-    } else {
-        ::pd_connect::pdsend "$::var(windowFocused) menufont"
-    }
-}
-
 proc ::pd_commands::menu_path_dialog {} {
     if {[winfo exists .path]} {
         raise .path

@@ -2021,11 +2021,11 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
     /* put up a dialog which may call canvas_font back to do the work */
 static void canvas_menufont(t_canvas *x)
 {
-    char buf[80];
+/*  char buf[80];
     t_canvas *x2 = canvas_getrootfor(x);
     gfxstub_deleteforkey(x2);
-    sprintf(buf, "::dialog_font::pdtk_canvas_dofont %%s %d\n", x2->gl_font);
-    gfxstub_new(&x2->gl_pd, &x2->gl_pd, buf);
+    sprintf(buf, "pdtk_canvas_dofont %%s %d\n", x2->gl_font);
+    gfxstub_new(&x2->gl_pd, &x2->gl_pd, buf); */
 }
 
 static int canvas_find_index, canvas_find_wholeword;

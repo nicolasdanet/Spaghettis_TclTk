@@ -89,7 +89,6 @@ proc ::pd_bindings::global_bindings {} {
     if {[tk windowingsystem] eq "aqua"} {
         # Cmd-m = Minimize and Cmd-t = Font on Mac OS X for all apps
         bind all <$::var(modifierKey)-Key-m>       {::pd_commands::menu_minimize %W}
-        bind all <$::var(modifierKey)-Key-t>       {::pd_commands::menu_font_dialog}
         bind all <$::var(modifierKey)-quoteleft>   {::pd_commands::menu_raisenextwindow}
     } else {
         #bind all <$::var(modifierKey)-Key-t>       {::pd_commands::menu_texteditor}
@@ -103,7 +102,7 @@ proc ::pd_bindings::global_bindings {} {
     bind all <Shift-KeyRelease> {::pd_bindings::sendkey %W 0 %K %A 1}
 }
 
-# this is for the dialogs: find, font, sendmessage, gatom properties, array
+# this is for the dialogs: gatom properties, array
 # properties, iemgui properties, canvas properties, data structures
 # properties, Audio setup, and MIDI setup
 proc ::pd_bindings::dialog_bindings {mytoplevel dialogname} {
@@ -206,13 +205,12 @@ proc ::pd_bindings::window_focusin {mytoplevel} {
     # confusingly redirected the "find" window which might be in mid search
     set ::var(windowFocused) $mytoplevel
     ::pd_commands::set_filenewdir $mytoplevel
-    ::dialog_font::update_font_dialog $mytoplevel
     if {$mytoplevel eq ".pdwindow"} {
         ::pd_menus::configure_for_pdwindow 
     } else {
         ::pd_menus::configure_for_canvas $mytoplevel
     }
-    if {[winfo exists .font]} {wm transient .font $::var(windowFocused)}
+    # if {[winfo exists .font]} {wm transient .font $::var(windowFocused)}
     # if we regain focus from another app, make sure to editmode cursor is right
     if {$::patch_isEditmode($mytoplevel)} {
         $mytoplevel configure -cursor hand2
