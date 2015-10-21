@@ -146,8 +146,7 @@ set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pd
 
 set var(fontFamily)             [getDefaultFontFamily]
 set var(fontWeight)             "normal"
-set var(fontRequired)           "8 6 11 10 7 13 12 9 16 14 8 17 16 10 20 18 11 22 24 15 25 30 18 37"
-set var(fontMeasured)           {}
+set var(fontSizes)              "8 10 12 14 16 18 24 30 36"
 
 set var(isInitialized)          0
 set var(isStderr)               0
@@ -277,52 +276,30 @@ proc initializePlatformWin32 {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# creates all the base fonts (i.e. pd_font_8 thru pd_font_36) so that they fit
-# into the metrics given by $::var(fontRequired) for any given font/weight
-proc fit_font_into_metrics {} {
-# TODO the fonts picked seem too small, probably on fixed width
-    foreach {size width height} $::var(fontRequired) {
-        set myfont [getFontBySize $size]
-        font create $myfont -family $::var(fontFamily) -weight $::var(fontWeight) \
-            -size [expr {-$height}]
-        set height2 $height
-        set giveup 0
-        while {[font measure $myfont M] > $width || \
-            [font metrics $myfont -linespace] > $height} {
-            incr height2 -1
-            font configure $myfont -size [expr {-$height2}]
-            if {$height2 * 2 <= $height} {
-                set giveup 1
-                set ::var(fontMeasured) $::var(fontRequired)
-                break
-            }
-        }
-        set ::var(fontMeasured) \
-            "$::var(fontMeasured)  $size\
-                [font measure $myfont M] [font metrics $myfont -linespace]"
-        if {$giveup} {
-            ::pd_console::post [format \
-    [_ "WARNING: %s failed to find font size (%s) that fits into %sx%s!\n"]\
-               [lindex [info level 0] 0] $size $width $height]
-            continue
-        }
-    }
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 proc pdtk_pd_startup {major minor bugfix test audio_apis midi_apis sys_font sys_fontweight} {
+
     set oldtclversion 0
+    
     set ::var(apiAudioAvailables) $audio_apis
     set ::var(apiMidiAvailables) $midi_apis
     
     if {[lsearch -exact [font families] $sys_font] > -1}     { set ::var(fontFamily) $sys_font }
     if {[lsearch -exact {bold normal} $sys_fontweight] > -1} { set ::var(fontWeight) $sys_fontweight }
     
-    fit_font_into_metrics
+    set measured ""
+    
+    foreach size $::var(fontSizes) {
+        set f [getFontBySize $size]
+        font create $f -family $::var(fontFamily) -weight $::var(fontWeight) -size [expr -${size}]
+        lappend measured $size 
+        lappend measured [font measure $f M]
+        lappend measured [font metrics $f -linespace]
+    }
+    
+    puts $measured
+    
     ::pd_preferences::init
-    ::pd_connect::pdsend "pd init [enquote_path [pwd]] $oldtclversion $::var(fontMeasured)"
+    ::pd_connect::pdsend "pd init [enquote_path [pwd]] $oldtclversion $measured"
     ::pd_bindings::class_bindings
     ::pd_bindings::global_bindings
     ::pd_menus::create_menubar
