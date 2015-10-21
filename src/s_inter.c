@@ -1281,10 +1281,10 @@ int sys_startgui(const char *libdir)
         sys_set_extrapath();
         sys_set_startup();
                            /* ... and about font, medio APIS, etc */
-        sys_vgui("pdtk_pd_startup %d %d %d {%s} %s %s {%s} %s\n",
-                 PD_MAJOR_VERSION, PD_MINOR_VERSION, 
-                 PD_BUGFIX_VERSION, PD_TEST_VERSION,
+        sys_vgui("comInitialize %s %s {%s} %s\n",
                  buf, buf2, sys_font, sys_fontweight); 
+                 /* */
+                 /* */
         sys_vgui("set ::var(apiAudio) %d\n", sys_audioapi);
     }
     return (0);

@@ -108,7 +108,12 @@ package require pd_textwindow
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc getDefaultFontFamily {} {
+proc _ {s} { return $s }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc getFontDefaultFamily {} {
     
     set fonts { "DejaVu Sans Mono" \
                 "Bitstream Vera Sans Mono" \
@@ -153,7 +158,7 @@ set var(filesOpenPended)        {}
 set var(filesRecent)            {}
 set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pdhelp}} }
 
-set var(fontFamily)             [getDefaultFontFamily]
+set var(fontFamily)             [getFontDefaultFamily]
 set var(fontWeight)             "normal"
 set var(fontSizes)              "8 10 12 16 18 20 24 30 36"
 
@@ -196,11 +201,6 @@ array set patch_loaded          {}
 array set patch_name            {}
 array set patch_childs          {}
 array set patch_parents         {}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc _ {s} { return $s }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -285,13 +285,20 @@ proc initializePlatformWin32 {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc pdtk_pd_startup {major minor bugfix test audio_apis midi_apis sys_font sys_fontweight} {
+proc comInitialize {audioAPIs midiAPIs fontFamily fontWeight} {
 
-    set ::var(apiAudioAvailables) $audio_apis
-    set ::var(apiMidiAvailables) $midi_apis
+    set ::var(apiAudioAvailables) $audioAPIs
+    set ::var(apiMidiAvailables)  $midiAPIs
     
-    if {[lsearch -exact [font families] $sys_font] > -1}     { set ::var(fontFamily) $sys_font }
-    if {[lsearch -exact {bold normal} $sys_fontweight] > -1} { set ::var(fontWeight) $sys_fontweight }
+    puts $audioAPIs
+    puts $midiAPIs
+    
+    # Overide the default font attributes.
+    
+    if {[lsearch -exact [font families] $fontFamily] > -1} { set ::var(fontFamily) $fontFamily }
+    if {[lsearch -exact {bold normal} $fontWeight] > -1}   { set ::var(fontWeight) $fontWeight }
+    
+    # Create fonts (determine horizontal and vertical spacing in pixels). 
     
     set measured ""
     
