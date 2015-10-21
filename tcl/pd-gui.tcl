@@ -137,8 +137,6 @@ proc getFontDefaultFamily {} {
 
 set var(scriptName)             [file normalize [info script]]
 set var(modifierKey)            ""
-set var(menubar)                ""
-set var(menubarHeight)          0
 set var(host)                   ""
 set var(port)                   0
 
@@ -252,11 +250,6 @@ proc initializePlatformAqua {} {
     option add *DialogWindow*Entry.highlightBackground "#E8E8E8" startupFile
     option add *DialogWindow*Button.highlightBackground "#E8E8E8" startupFile
     option add *DialogWindow*Entry.background "white" startupFile
-    
-    # Mac OS X needs a menubar all the time.
-    
-    set ::var(menubar) ".menubar"
-    set ::var(menubarHeight) 22
     
     # Define mouse cursor symbols.
     
