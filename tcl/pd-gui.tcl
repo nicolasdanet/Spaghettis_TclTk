@@ -298,11 +298,7 @@ proc comInitialize {audioAPIs midiAPIs fontFamily fontWeight} {
 
     # Initialize packages.
     
-    ::pd_preferences::initialize
-    ::pd_bindings::initialize
-    ::pd_menus::initialize
-    ::pd_canvas::initialize
-    ::pd_console::initialize
+    foreach sub {preferences bindings menus canvas console} { pd_${sub}::initialize }
     
     # Set the menubar configuration.
     
