@@ -33,7 +33,7 @@ void glob_path_dialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
 void glob_start_startup_dialog(t_pd *dummy, t_floatarg flongform);
 void glob_startup_dialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
 void glob_ping(t_pd *dummy);
-void glob_plugindispatch(t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
+// void glob_plugindispatch(t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
 void glob_watchdog(t_pd *dummy);
 void glob_savepreferences(t_pd *dummy);
 
@@ -98,7 +98,7 @@ void max_default(t_pd *x, t_symbol *s, int argc, t_atom *argv)
     endpost();
 }
 
-void glob_plugindispatch(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
+/*void glob_plugindispatch(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
     char str[80];
@@ -112,7 +112,7 @@ void glob_plugindispatch(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
         }
     }
     sys_vgui("\n");
-}
+}*/
 
 void glob_init(void)
 {
@@ -172,8 +172,8 @@ void glob_init(void)
         gensym("perf"), A_FLOAT, 0);
     class_addmethod(glob_pdobject, (t_method)glob_compatibility,
         gensym("compatibility"), A_FLOAT, 0);
-    class_addmethod(glob_pdobject, (t_method)glob_plugindispatch,
-        gensym("plugin-dispatch"), A_GIMME, 0);
+    /*class_addmethod(glob_pdobject, (t_method)glob_plugindispatch,
+        gensym("plugin-dispatch"), A_GIMME, 0);*/
     class_addmethod(glob_pdobject, (t_method)glob_helpintro,
         gensym("help-intro"), A_GIMME, 0);
 #if defined(__linux__) || defined(__FreeBSD_kernel__)

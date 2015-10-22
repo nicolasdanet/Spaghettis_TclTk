@@ -332,16 +332,8 @@ proc com_confirmAction {top message reply default} {
     }
 }
 
-# store plugin callbacks for dispatched messages from running Pd patches
-global plugin_dispatch_receivers
-
-# dispatch a message from running Pd patches to the intended plugin receiver
-proc pdtk_plugin_dispatch { args } {
-    set receiver [ lindex $args 0 ]
-    foreach callback $::pd_connect::plugin_dispatch_receivers($receiver) {
-        $callback [ lrange $args 1 end ]
-    }
-}
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 proc parse_args {argc argv} {
     pd_parser::init {
