@@ -27,17 +27,17 @@ namespace eval ::pd_console:: {
 
 proc ::pd_console::set_layout {} {
     variable maxloglevel
-    .pdwindow.text.internal tag configure log0 -foreground "#d00" -background "#ffe0e8"
-    .pdwindow.text.internal tag configure log1 -foreground "#d00"
+    .console.text.internal tag configure log0 -foreground "#d00" -background "#ffe0e8"
+    .console.text.internal tag configure log1 -foreground "#d00"
     # log2 messages are normal black on white
-    .pdwindow.text.internal tag configure log3 -foreground "#484848"
+    .console.text.internal tag configure log3 -foreground "#484848"
 
     # 0-20(4-24) is a rough useful range of 'verbose' levels for impl debugging
     set start 4
     set end 25
     for {set i $start} {$i < $end} {incr i} {
         set B [expr int(($i - $start) * (40 / ($end - $start))) + 50]
-        .pdwindow.text.internal tag configure log${i} -foreground grey${B}
+        .console.text.internal tag configure log${i} -foreground grey${B}
     }
 }
 
@@ -45,14 +45,14 @@ proc ::pd_console::set_layout {} {
 # grab focus on part of the Pd window when Pd is busy
 proc ::pd_console::busygrab {} {
     # set the mouse cursor to look busy and grab focus so it stays that way    
-    .pdwindow.text configure -cursor watch
-    grab set .pdwindow.text
+    .console.text configure -cursor watch
+    grab set .console.text
 }
 
 # release focus on part of the Pd window when Pd is finished
 proc ::pd_console::busyrelease {} {
-    .pdwindow.text configure -cursor xterm
-    grab release .pdwindow.text
+    .console.text configure -cursor xterm
+    grab release .console.text
 }
 
 # ------------------------------------------------------------------------------
@@ -65,14 +65,14 @@ proc ::pd_console::buffer_message {object_id level message} {
 
 proc ::pd_console::insert_log_line {object_id level message} {
     if {$object_id eq ""} {
-        .pdwindow.text.internal insert end $message log$level
+        .console.text.internal insert end $message log$level
     } else {
-        .pdwindow.text.internal insert end $message [list log$level obj$object_id]
-        .pdwindow.text.internal tag bind obj$object_id <$::var(modifierKey)-ButtonRelease-1> \
+        .console.text.internal insert end $message [list log$level obj$object_id]
+        .console.text.internal tag bind obj$object_id <$::var(modifierKey)-ButtonRelease-1> \
             "::pd_console::select_by_id $object_id; break"
-        .pdwindow.text.internal tag bind obj$object_id <Key-Return> \
+        .console.text.internal tag bind obj$object_id <Key-Return> \
             "::pd_console::select_by_id $object_id; break"
-        .pdwindow.text.internal tag bind obj$object_id <Key-KP_Enter> \
+        .console.text.internal tag bind obj$object_id <Key-KP_Enter> \
             "::pd_console::select_by_id $object_id; break"
     }
 }
@@ -81,7 +81,7 @@ proc ::pd_console::insert_log_line {object_id level message} {
 proc ::pd_console::filter_buffer_to_text {args} {
     variable logbuffer
     variable maxloglevel
-    .pdwindow.text.internal delete 0.0 end
+    .console.text.internal delete 0.0 end
     set i 0
     foreach {object_id level message} $logbuffer {
         insert_log_line $object_id $level $message
@@ -90,7 +90,7 @@ proc ::pd_console::filter_buffer_to_text {args} {
         if { [expr $i % 10000] == 0} {update idletasks}
         incr i
     }
-    .pdwindow.text.internal yview end
+    .console.text.internal yview end
     ::pd_console::verbose 10 "The Pd window filtered $i lines\n"
 }
 
@@ -110,13 +110,13 @@ proc ::pd_console::logpost {object_id level message} {
     variable lastlevel $level
 
     buffer_message $object_id $level $message
-    if {[llength [info commands .pdwindow.text.internal]]} {
+    if {[llength [info commands .console.text.internal]]} {
         # cancel any pending move of the scrollbar, and schedule it
         # after writing a line. This way the scrollbar is only moved once
         # when the inserting has finished, greatly speeding things up
-        after cancel .pdwindow.text.internal yview end
+        after cancel .console.text.internal yview end
         insert_log_line $object_id $level $message
-        after idle .pdwindow.text.internal yview end
+        after idle .console.text.internal yview end
     }
     
     if {$::var(isStderr)} {puts stderr $message}
@@ -150,13 +150,13 @@ proc ::pd_console::verbose {level message} {
 # clear the log and the buffer
 proc ::pd_console::clear_console {} {
     variable logbuffer {}
-    .pdwindow.text.internal delete 0.0 end
+    .console.text.internal delete 0.0 end
 }
 
 # save the contents of the pd_console::logbuffer to a file
 proc ::pd_console::save_logbuffer_to_file {} {
     variable logbuffer
-    set filename [tk_getSaveFile -initialfile "pdwindow.txt" -defaultextension .txt]
+    set filename [tk_getSaveFile -initialfile "pdconsole.txt" -defaultextension .txt]
     if {$filename eq ""} return; # they clicked cancel
     set f [open $filename w]
     puts $f "Tcl/Tk [info patchlevel]"
@@ -180,44 +180,44 @@ proc ::pd_console::pdtk_pd_dsp {value} {
 
 proc ::pd_console::pdtk_pd_dio {red} {
     if {$red == 1} {
-        .pdwindow.header.ioframe.dio configure -foreground red
+        .console.header.ioframe.dio configure -foreground red
     } else {
-        .pdwindow.header.ioframe.dio configure -foreground lightgray
+        .console.header.ioframe.dio configure -foreground lightgray
     }
         
 }
 
 proc ::pd_console::pdtk_pd_audio {state} {
-    .pdwindow.header.ioframe.iostate configure -text [concat audio $state]
+    .console.header.ioframe.iostate configure -text [concat audio $state]
 }
 
 #--bindings specific to the Pd window------------------------------------------#
 
-proc ::pd_console::pdwindow_bindings {} {
+proc ::pd_console::console_bindings {} {
     # these bindings are for the whole Pd window, minus the Tcl entry
-    foreach window {.pdwindow.text .pdwindow.header} {
-        bind $window <$::var(modifierKey)-Key-x> "tk_textCut .pdwindow.text"
-        bind $window <$::var(modifierKey)-Key-c> "tk_textCopy .pdwindow.text"
-        bind $window <$::var(modifierKey)-Key-v> "tk_textPaste .pdwindow.text"
+    foreach window {.console.text .console.header} {
+        bind $window <$::var(modifierKey)-Key-x> "tk_textCut .console.text"
+        bind $window <$::var(modifierKey)-Key-c> "tk_textCopy .console.text"
+        bind $window <$::var(modifierKey)-Key-v> "tk_textPaste .console.text"
     }
     # Select All doesn't seem to work unless its applied to the whole window
-    bind .pdwindow <$::var(modifierKey)-Key-a> ".pdwindow.text tag add sel 1.0 end"
+    bind .console <$::var(modifierKey)-Key-a> ".console.text tag add sel 1.0 end"
     # the "; break" part stops executing another binds, like from the Text class
 
     # these don't do anything in the Pd window, so alert the user, then break
     # so no more bindings run
-    bind .pdwindow <$::var(modifierKey)-Key-s> "bell; break"
-    bind .pdwindow <$::var(modifierKey)-Key-p> "bell; break"
+    bind .console <$::var(modifierKey)-Key-s> "bell; break"
+    bind .console <$::var(modifierKey)-Key-p> "bell; break"
 
     # ways of hiding/closing the Pd window
     if {[tk windowingsystem] eq "aqua"} {
         # on Mac OS X, you can close the Pd window, since the menubar is there
-        bind .pdwindow <$::var(modifierKey)-Key-w>   "wm withdraw .pdwindow"
-        wm protocol .pdwindow WM_DELETE_WINDOW "wm withdraw .pdwindow"
+        bind .console <$::var(modifierKey)-Key-w>   "wm withdraw .console"
+        wm protocol .console WM_DELETE_WINDOW "wm withdraw .console"
     } else {
         # TODO should it possible to close the Pd window and keep Pd open?
-        bind .pdwindow <$::var(modifierKey)-Key-w>   "wm iconify .pdwindow"
-        wm protocol .pdwindow WM_DELETE_WINDOW "::pd_connect::pdsend \"pd verifyquit\""
+        bind .console <$::var(modifierKey)-Key-w>   "wm iconify .console"
+        wm protocol .console WM_DELETE_WINDOW "::pd_connect::pdsend \"pd verifyquit\""
     }
 }
 
@@ -255,17 +255,17 @@ proc ::pd_console::get_history {direction} {
     if {$history_position > [llength $tclentry_history]} {
         set history_position [llength $tclentry_history]
     }
-    .pdwindow.tcl.entry delete 0 end
-    .pdwindow.tcl.entry insert 0 \
+    .console.tcl.entry delete 0 end
+    .console.tcl.entry insert 0 \
         [lindex $tclentry_history end-[expr $history_position - 1]]
 }
 
 proc ::pd_console::validate_tcl {} {
     variable tclentry
     if {[info complete $tclentry]} {
-        .pdwindow.tcl.entry configure -background "white"
+        .console.tcl.entry configure -background "white"
     } else {
-        .pdwindow.tcl.entry configure -background "#FFF0F0"
+        .console.tcl.entry configure -background "#FFF0F0"
     }
 }
 
@@ -286,97 +286,97 @@ proc ::pd_console::set_findinstance_cursor {widget key state} {
 
 proc ::pd_console::initialize {} {
     variable logmenuitems
-    set ::patch_loaded(.pdwindow) 0
+    set ::patch_loaded(.console) 0
 
     # colorize by class before creating anything
-    option add *PdWindow*Entry.highlightBackground "grey" startupFile
-    option add *PdWindow*Frame.background "grey" startupFile
-    option add *PdWindow*Label.background "grey" startupFile
-    option add *PdWindow*Checkbutton.background "grey" startupFile
-    option add *PdWindow*Menubutton.background "grey" startupFile
-    option add *PdWindow*Text.background "white" startupFile
-    option add *PdWindow*Entry.background "white" startupFile
+    option add *PdConsole*Entry.highlightBackground "grey" startupFile
+    option add *PdConsole*Frame.background "grey" startupFile
+    option add *PdConsole*Label.background "grey" startupFile
+    option add *PdConsole*Checkbutton.background "grey" startupFile
+    option add *PdConsole*Menubutton.background "grey" startupFile
+    option add *PdConsole*Text.background "white" startupFile
+    option add *PdConsole*Entry.background "white" startupFile
 
-    toplevel .pdwindow -class PdWindow
-    wm title .pdwindow [_ "Pd"]
-    set ::patch_name(.pdwindow) [_ "Pd"]
+    toplevel .console -class PdConsole
+    wm title .console [_ "Pd"]
+    set ::patch_name(.console) [_ "Pd"]
     if {[tk windowingsystem] eq "x11"} {
-        wm minsize .pdwindow 400 75
+        wm minsize .console 400 75
     } else {
-        wm minsize .pdwindow 400 51
+        wm minsize .console 400 51
     }
-    wm geometry .pdwindow =500x400+20+50
-    .pdwindow configure -menu .menubar
+    wm geometry .console =500x400+20+50
+    .console configure -menu .menubar
 
-    frame .pdwindow.header -borderwidth 1 -relief flat -background lightgray
-    pack .pdwindow.header -side top -fill x -ipady 5
+    frame .console.header -borderwidth 1 -relief flat -background lightgray
+    pack .console.header -side top -fill x -ipady 5
 
-    frame .pdwindow.header.pad1
-    pack .pdwindow.header.pad1 -side left -padx 12
+    frame .console.header.pad1
+    pack .console.header.pad1 -side left -padx 12
 
-    checkbutton .pdwindow.header.dsp -text [_ "DSP"] -variable ::var(isDsp) \
+    checkbutton .console.header.dsp -text [_ "DSP"] -variable ::var(isDsp) \
         -font {$::var(fontFamily) -18 bold} -takefocus 1 -background lightgray \
         -borderwidth 0  -command {::pd_connect::pdsend "pd dsp $::var(isDsp)"}
-    pack .pdwindow.header.dsp -side right -fill y -anchor e -padx 5 -pady 0
+    pack .console.header.dsp -side right -fill y -anchor e -padx 5 -pady 0
 
 # frame for DIO error and audio in/out labels
-    frame .pdwindow.header.ioframe -background lightgray
-    pack .pdwindow.header.ioframe -side right -padx 30
+    frame .console.header.ioframe -background lightgray
+    pack .console.header.ioframe -side right -padx 30
 
 # I/O state label (shows I/O on/off/in-only/out-only)
-    label .pdwindow.header.ioframe.iostate \
+    label .console.header.ioframe.iostate \
         -text [_ "audio I/O off"] -borderwidth 0 \
         -background lightgray -foreground black \
         -takefocus 0 \
         -font {$::var(fontFamily) -14}
 
 # DIO error label
-    label .pdwindow.header.ioframe.dio \
+    label .console.header.ioframe.dio \
         -text [_ "audio I/O error"] -borderwidth 0 \
         -background lightgray -foreground lightgray \
         -takefocus 0 \
         -font {$::var(fontFamily) -14}
 
-    pack .pdwindow.header.ioframe.iostate .pdwindow.header.ioframe.dio \
+    pack .console.header.ioframe.iostate .console.header.ioframe.dio \
         -side top
 
-    frame .pdwindow.tcl -borderwidth 0
-    pack .pdwindow.tcl -side bottom -fill x
+    frame .console.tcl -borderwidth 0
+    pack .console.tcl -side bottom -fill x
 # TODO this should use the pd_font_$size created in pd-gui.tcl    
-    text .pdwindow.text -relief raised -bd 2 -font {$::var(fontFamily) -12} \
+    text .console.text -relief raised -bd 2 -font {$::var(fontFamily) -12} \
         -highlightthickness 0 -borderwidth 1 -relief flat \
-        -yscrollcommand ".pdwindow.scroll set" -width 60 \
+        -yscrollcommand ".console.scroll set" -width 60 \
         -undo 0 -autoseparators 0 -maxundo 1 -takefocus 0
-    scrollbar .pdwindow.scroll -command ".pdwindow.text.internal yview"
-    pack .pdwindow.scroll -side right -fill y
-    pack .pdwindow.text -side right -fill both -expand 1
-    raise .pdwindow
-    focus .pdwindow.text
-    # run bindings last so that .pdwindow.tcl.entry exists
-    pdwindow_bindings
+    scrollbar .console.scroll -command ".console.text.internal yview"
+    pack .console.scroll -side right -fill y
+    pack .console.text -side right -fill both -expand 1
+    raise .console
+    focus .console.text
+    # run bindings last so that .console.tcl.entry exists
+    console_bindings
     # set cursor to show when clicking in 'findinstance' mode
-    bind .pdwindow <KeyPress> "+::pd_console::set_findinstance_cursor %W %K %s"
-    bind .pdwindow <KeyRelease> "+::pd_console::set_findinstance_cursor %W %K %s"
+    bind .console <KeyPress> "+::pd_console::set_findinstance_cursor %W %K %s"
+    bind .console <KeyRelease> "+::pd_console::set_findinstance_cursor %W %K %s"
 
     # hack to make a good read-only text widget from http://wiki.tcl.tk/1152
-    rename ::.pdwindow.text ::.pdwindow.text.internal
-    proc ::.pdwindow.text {args} {
+    rename ::.console.text ::.console.text.internal
+    proc ::.console.text {args} {
         switch -exact -- [lindex $args 0] {
             "insert" {}
             "delete" {}
-            "default" { return [eval ::.pdwindow.text.internal $args] }
+            "default" { return [eval ::.console.text.internal $args] }
         }
     }
     
     # print whatever is in the queue after the event loop finishes
     after idle [list after 0 ::pd_console::filter_buffer_to_text]
 
-    set ::patch_loaded(.pdwindow) 1
+    set ::patch_loaded(.console) 1
 
     # set some layout variables
     ::pd_console::set_layout
 
-    # wait until .pdwindow.tcl.entry is visible before opening files so that
+    # wait until .console.tcl.entry is visible before opening files so that
     # the loading logic can grab it and put up the busy cursor
-    tkwait visibility .pdwindow.text
+    tkwait visibility .console.text
 }

@@ -53,7 +53,7 @@ proc ::pd_menus::initialize {} {
     . configure -menu $menubar
 }
 
-proc ::pd_menus::configureForPdWindow {} {
+proc ::pd_menus::configureForConsole {} {
     variable menubar
     # these are meaningless for the Pd window, so disable them
     # File menu
@@ -64,7 +64,7 @@ proc ::pd_menus::configureForPdWindow {} {
     # Edit menu
     $menubar.edit entryconfigure [_ "Duplicate"] -state disabled
     $menubar.edit entryconfigure [_ "Edit Mode"] -state disabled
-    ::pd_canvas::pdtk_canvas_editmode .pdwindow 0
+    ::pd_canvas::pdtk_canvas_editmode .console 0
     # Undo/Redo change names, they need to have the asterisk (*) after
     $menubar.edit entryconfigure 0 -state disabled -label [_ "Undo"]
     $menubar.edit entryconfigure 1 -state disabled -label [_ "Redo"]
@@ -263,7 +263,7 @@ proc ::pd_menus::build_window_menu {mymenu} {
             -accelerator [_ "$accelerator+Page Up"]
     }
     $mymenu add  separator
-    $mymenu add command -label [_ "Pd window"] -command {::pd_commands::menu_raise_pdwindow} \
+    $mymenu add command -label [_ "Pd window"] -command {::pd_commands::menu_raise_console} \
         -accelerator "$accelerator+R"
     $mymenu add command -label [_ "Parent Window"] \
         -command {::pd_commands::menu_send $::var(windowFocused) findparent}

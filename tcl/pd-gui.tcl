@@ -262,7 +262,7 @@ proc initializePlatformWin32 {} {
     option add *PatchWindow*Canvas.background "white" startupFile
     option add *Menu.font menufont startupFile
     option add *DialogWindow*font menufont startupFile
-    option add *PdWindow*font menufont startupFile
+    option add *PdConsole*font menufont startupFile
     option add *ErrorDialog*font menufont startupFile
     
     # Define mouse cursor symbols.
@@ -302,7 +302,7 @@ proc comInitialize {audioAPIs midiAPIs fontFamily fontWeight} {
     
     # Set the menubar configuration.
     
-    ::pd_menus::configureForPdWindow
+    ::pd_menus::configureForConsole
     
     # Respond and open pended files (if any).
     
@@ -387,8 +387,8 @@ proc singleton {key} {
 
 proc singleton_request {offset maxbytes} {
 ## the next 2 lines raise the focus to the given window (and change desktop)
-#    wm deiconify .pdwindow
-#    raise .pdwindow
+#    wm deiconify .console
+#    raise .console
     return [tk appname]
 }
 
@@ -415,8 +415,8 @@ proc send_args {offset maxChars} {
 # this command will open files received from a 2nd instance of Pd
 proc receive_args {filelist} {
     raise .
-    wm deiconify .pdwindow
-    raise .pdwindow
+    wm deiconify .console
+    raise .console
     foreach filename $filelist {
         ::pd_miscellaneous::open_file $filename
     }

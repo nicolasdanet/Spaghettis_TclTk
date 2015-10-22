@@ -1960,7 +1960,7 @@ void glob_verifyquit(void *dummy, t_floatarg f)
         return;
     }
     if (f == 0 && sys_perf)
-        sys_vgui("pdtk_check .pdwindow {really quit?} {pd quit} yes\n");
+        sys_vgui("pdtk_check .console {really quit?} {pd quit} yes\n");
     else glob_quit(0);
 }
 

@@ -75,11 +75,11 @@ proc ::pd_commands::menu_send {window message} {
     set mytoplevel [winfo toplevel $window]
     if {[winfo class $mytoplevel] eq "PatchWindow"} {
         ::pd_connect::pdsend "$mytoplevel $message"
-    } elseif {$mytoplevel eq ".pdwindow"} {
+    } elseif {$mytoplevel eq ".console"} {
         if {$message eq "copy"} {
-            tk_textCopy .pdwindow.text
+            tk_textCopy .console.text
         } elseif {$message eq "selectall"} {
-            .pdwindow.text tag add sel 1.0 end
+            .console.text tag add sel 1.0 end
         } elseif {$message eq "menusaveas"} {
             ::pd_console::save_logbuffer_to_file
         }
@@ -128,12 +128,12 @@ proc ::pd_commands::menu_maximize {window} {
     wm state [winfo toplevel $window] zoomed
 }
 
-proc ::pd_commands::menu_raise_pdwindow {} {
-    if {$::var(windowFocused) eq ".pdwindow" && [winfo viewable .pdwindow]} {
-        lower .pdwindow
+proc ::pd_commands::menu_raise_console {} {
+    if {$::var(windowFocused) eq ".console" && [winfo viewable .console]} {
+        lower .console
     } else {
-        wm deiconify .pdwindow
-        raise .pdwindow
+        wm deiconify .console
+        raise .console
     }
 }
 
@@ -162,7 +162,7 @@ proc menu_clear_console {} {
 # this gets the dir from the path of a window's title
 proc ::pd_commands::set_filenewdir {mytoplevel} {
     # TODO add Aqua specifics once g_canvas.c has [wm attributes -titlepath]
-    if {$mytoplevel eq ".pdwindow"} {
+    if {$mytoplevel eq ".console"} {
         set ::var(directoryNew) $::var(directoryOpen)
     } else {
         regexp -- ".+ - (.+)" [wm title $mytoplevel] ignored ::var(directoryNew)

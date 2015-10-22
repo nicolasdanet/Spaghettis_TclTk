@@ -27,7 +27,7 @@ namespace eval ::pd_bindings:: {
 # binding by class is not recursive, so its useful for window events
 proc ::pd_bindings::initialize {} {
     # and the Pd window is in a class to itself
-    bind PdWindow <FocusIn>                "::pd_bindings::window_focusin %W"
+    bind PdConsole <FocusIn>                "::pd_bindings::window_focusin %W"
     # bind to all the windows dedicated to patch canvases
     bind PatchWindow <FocusIn>                "::pd_bindings::window_focusin %W"
     bind PatchWindow <Map>                    "::pd_bindings::map %W"
@@ -49,7 +49,7 @@ proc ::pd_bindings::initialize {} {
     bind all <$::var(modifierKey)-Key-o>      {::pd_commands::menu_open}
     bind all <$::var(modifierKey)-Key-p>      {::pd_commands::menu_print $::var(windowFocused)}
     bind all <$::var(modifierKey)-Key-q>      {::pd_connect::pdsend "pd verifyquit"}
-    bind all <$::var(modifierKey)-Key-r>      {::pd_commands::menu_raise_pdwindow}
+    bind all <$::var(modifierKey)-Key-r>      {::pd_commands::menu_raise_console}
     bind all <$::var(modifierKey)-Key-s>      {::pd_commands::menu_send %W menusave}
     bind all <$::var(modifierKey)-Key-v>      {::pd_commands::menu_send %W paste}
     bind all <$::var(modifierKey)-Key-w>      {::pd_commands::menu_send_float %W menuclose 0}
@@ -201,8 +201,8 @@ proc ::pd_bindings::window_focusin {mytoplevel} {
     # confusingly redirected the "find" window which might be in mid search
     set ::var(windowFocused) $mytoplevel
     ::pd_commands::set_filenewdir $mytoplevel
-    if {$mytoplevel eq ".pdwindow"} {
-        ::pd_menus::configureForPdWindow 
+    if {$mytoplevel eq ".console"} {
+        ::pd_menus::configureForConsole 
     } else {
         ::pd_menus::configure_for_canvas $mytoplevel
     }

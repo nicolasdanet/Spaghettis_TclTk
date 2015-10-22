@@ -61,12 +61,12 @@ proc ::pd_scrollboxwindow::ok {mytoplevel commit_method } {
 # title -- top-level title for the dialog
 # width, height -- initial width and height dimensions for the window, also minimum size
 proc ::pd_scrollboxwindow::make {mytoplevel listdata add_method edit_method commit_method title width height } {
-    wm deiconify .pdwindow
-    raise .pdwindow
+    wm deiconify .console
+    raise .console
     toplevel $mytoplevel -class DialogWindow
     wm title $mytoplevel $title
     wm group $mytoplevel .
-    wm transient $mytoplevel .pdwindow
+    wm transient $mytoplevel .console
     wm protocol $mytoplevel WM_DELETE_WINDOW "::pd_scrollboxwindow::cancel $mytoplevel"
 
     # Enforce a minimum size for the window
