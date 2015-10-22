@@ -1281,7 +1281,7 @@ int sys_startgui(const char *libdir)
         sys_set_extrapath();
         sys_set_startup();
                            /* ... and about font, medio APIS, etc */
-        sys_vgui("comInitialize %s %s {%s} %s\n",
+        sys_vgui("com_initialize %s %s {%s} %s\n",
                  buf, buf2, sys_font, sys_fontweight); 
                  /* */
                  /* */

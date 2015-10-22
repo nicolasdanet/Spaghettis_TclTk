@@ -274,7 +274,7 @@ proc initializePlatformWin32 {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc comInitialize {audioAPIs midiAPIs fontFamily fontWeight} {
+proc com_initialize {audioAPIs midiAPIs fontFamily fontWeight} {
 
     set ::var(apiAudioAvailables) $audioAPIs
     set ::var(apiMidiAvailables)  $midiAPIs
@@ -316,19 +316,19 @@ proc comInitialize {audioAPIs midiAPIs fontFamily fontWeight} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-##### routine to ask user if OK and, if so, send a message on to Pd ######
-proc pdtk_check {mytoplevel message reply_to_pd default} {
-    wm deiconify $mytoplevel
-    raise $mytoplevel
+proc com_confirmAction {top message reply default} {
+
+    wm deiconify $top
+    raise $top
+    
     if {[tk windowingsystem] eq "win32"} {
-        set answer [tk_messageBox -message [_ $message] -type yesno -default $default \
-                        -icon question -title [wm title $mytoplevel]]
+        set r [tk_messageBox -message [_ $message] -type yesno -default $default -icon question]
     } else {
-        set answer [tk_messageBox -message [_ $message] -type yesno \
-                        -default $default -parent $mytoplevel -icon question]
+        set r [tk_messageBox -message [_ $message] -type yesno -default $default -icon question -parent $top]
     }
-    if {$answer eq "yes"} {
-        ::pd_connect::pdsend $reply_to_pd
+    
+    if {$r eq "yes"} {
+        ::pd_connect::pdsend $reply
     }
 }
 
