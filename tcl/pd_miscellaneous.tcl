@@ -11,6 +11,29 @@ package provide pd_miscellaneous 0.1
 
 namespace eval ::pd_miscellaneous:: {}
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc ::pd_miscellaneous::getFontDefaultFamily {} {
+    
+    set fonts { "DejaVu Sans Mono" \
+                "Bitstream Vera Sans Mono" \
+                "Inconsolata" \
+                "Andale Mono" \
+                "Droid Sans Mono" }
+              
+    foreach family $fonts {
+        if {[lsearch -exact -nocase [font families] $family] > -1} {
+            return $family
+        }
+    }
+    
+    return "courier"
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 # a place to temporarily store things until they find a home or go away
 
 proc ::pd_miscellaneous::open_file {filename} {

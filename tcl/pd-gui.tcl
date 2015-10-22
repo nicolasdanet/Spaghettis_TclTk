@@ -113,26 +113,6 @@ proc _ {s} { return $s }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc getFontDefaultFamily {} {
-    
-    set fonts { "DejaVu Sans Mono" \
-                "Bitstream Vera Sans Mono" \
-                "Inconsolata" \
-                "Andale Mono" \
-                "Droid Sans Mono" }
-              
-    foreach family $fonts {
-        if {[lsearch -exact -nocase [font families] $family] > -1} {
-            return $family
-        }
-    }
-    
-    return "courier"
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 # Global variables that are used throughout the GUI.
 
 set var(apiAudioAvailables)     {}
@@ -157,7 +137,7 @@ set var(filesOpenPended)        {}
 set var(filesRecent)            {}
 set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pdhelp}} }
 
-set var(fontFamily)             [getFontDefaultFamily]
+set var(fontFamily)             [::pd_miscellaneous::getFontDefaultFamily]
 set var(fontWeight)             "normal"
 set var(fontSizes)              "8 10 12 16 18 20 24 30 36"
 
@@ -336,10 +316,12 @@ proc com_confirmAction {top message reply default} {
 # ------------------------------------------------------------------------------------------------------------
 
 proc parse_args {argc argv} {
+    
     pd_parser::init {
         {-stderr    set {::var(isStderr)}}
         {-open      lappend {- ::var(filesOpenPended)}}
     }
+    
     set unflagged_files [pd_parser::get_options $argv]
     # if we have a single arg that is not a file, its a port or host:port combo
     if {$argc == 1 && ! [file exists $argv]} {
@@ -363,6 +345,9 @@ proc parse_args {argc argv} {
         }
     }
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
 # X11 procs for handling singleton state and getting args from other instances
@@ -465,8 +450,7 @@ proc main {argc argv} {
     parse_args $argc $argv
     check_for_running_instances
     initializePlatform
-
-    # ::var(tcpHost) and ::var(tcpPort) are parsed from argv by parse_args
+    
     if { $::var(tcpPort) > 0 && $::var(tcpHost) ne "" } {
         # 'pd' started first and launched us, so get the port to connect to
         ::pd_connect::to_pd $::var(tcpPort) $::var(tcpHost)
