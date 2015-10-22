@@ -14,7 +14,7 @@ namespace eval ::pd_miscellaneous:: {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc ::pd_miscellaneous::getFontDefaultFamily {} {
+proc ::pd_miscellaneous::getDefaultFamily {} {
     
     set fonts { "DejaVu Sans Mono" \
                 "Bitstream Vera Sans Mono" \

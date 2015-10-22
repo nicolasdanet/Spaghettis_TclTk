@@ -108,11 +108,6 @@ package require pd_textwindow
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _ {s} { return $s }
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 # Global variables that are used throughout the GUI.
 
 set var(apiAudioAvailables)     {}
@@ -137,7 +132,7 @@ set var(filesOpenPended)        {}
 set var(filesRecent)            {}
 set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pdhelp}} }
 
-set var(fontFamily)             [::pd_miscellaneous::getFontDefaultFamily]
+set var(fontFamily)             [::pd_miscellaneous::getDefaultFamily]
 set var(fontWeight)             "normal"
 set var(fontSizes)              "8 10 12 16 18 20 24 30 36"
 
@@ -158,6 +153,11 @@ set var(tcpPort)                0
 set var(windowPopupX)           0
 set var(windowPopupY)           0
 set var(windowFocused)          .
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc getFont {size} { return "::var(font${size})" }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -184,7 +184,7 @@ array set patch_parents         {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc getFontDefaultBySize {size} { return "::var(fontDefault${size})" }
+proc _ {s} { return $s }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -269,7 +269,7 @@ proc com_initialize {audioAPIs midiAPIs fontFamily fontWeight} {
     set measured ""
     
     foreach size $::var(fontSizes) {
-        set f [getFontDefaultBySize $size]
+        set f [getFont $size]
         font create $f -family $::var(fontFamily) -weight $::var(fontWeight) -size [expr -${size}]
         lappend measured $size 
         lappend measured [font measure $f M]
