@@ -187,69 +187,6 @@ proc _ {s} { return $s }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc com_initialize {audioAPIs midiAPIs fontFamily fontWeight} {
-
-    puts "Initialize"
-    
-    set ::var(apiAudioAvailables) $audioAPIs
-    set ::var(apiMidiAvailables)  $midiAPIs
-    
-    # Overide the default font attributes.
-    
-    if {[lsearch -exact [font families] $fontFamily] > -1} { set ::var(fontFamily) $fontFamily }
-    if {[lsearch -exact {bold normal} $fontWeight] > -1}   { set ::var(fontWeight) $fontWeight }
-    
-    # Create fonts (determine horizontal and vertical spacing in pixels). 
-    
-    set measured ""
-    
-    foreach size $::var(fontSizes) {
-        set f [getFont $size]
-        font create $f -family $::var(fontFamily) -weight $::var(fontWeight) -size [expr -${size}]
-        lappend measured $size 
-        lappend measured [font measure $f M]
-        lappend measured [font metrics $f -linespace]
-    }
-
-    # Initialize some packages.
-    
-    foreach sub {preferences bindings menus canvas console} { pd_${sub}::initialize }
-    
-    # Set the menubar configuration.
-    
-    ::pd_menus::configureForConsole
-    
-    # Respond and open pended files (if any).
-    
-    ::pd_connect::pdsend "pd init [enquote_path [pwd]] $measured"
-    
-    set ::var(isInitialized) 1
-    
-    foreach filename $::var(filesOpenPended) { ::pd_miscellaneous::open_file $filename }
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc com_confirmAction {top message reply default} {
-
-    wm deiconify $top
-    raise $top
-    
-    if {[tk windowingsystem] eq "win32"} {
-        set r [tk_messageBox -message [_ $message] -type yesno -default $default -icon question]
-    } else {
-        set r [tk_messageBox -message [_ $message] -type yesno -default $default -icon question -parent $top]
-    }
-    
-    if {$r eq "yes"} {
-        ::pd_connect::pdsend $reply
-    }
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 proc mainX11 {} {
 
     set ::var(modifierKey) "Control"
@@ -317,8 +254,6 @@ proc mainWin32 {} {
 
 proc main {argc argv} {
 
-    puts "GUI main"
-    
     # Configure UTF-8 encoding.
     
     encoding system utf-8
@@ -344,6 +279,67 @@ proc main {argc argv} {
         set ::var(tcpPort) [::pd_connect::serverSocket]
         set executable [file join [file dirname [info script]] ../bin/pd]
         exec -- $executable -guiport $::var(tcpPort) &
+    }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc com_initialize {audioAPIs midiAPIs fontFamily fontWeight} {
+
+    set ::var(apiAudioAvailables) $audioAPIs
+    set ::var(apiMidiAvailables)  $midiAPIs
+    
+    # Overide the default font attributes.
+    
+    if {[lsearch -exact [font families] $fontFamily] > -1} { set ::var(fontFamily) $fontFamily }
+    if {[lsearch -exact {bold normal} $fontWeight] > -1}   { set ::var(fontWeight) $fontWeight }
+    
+    # Create fonts (determine horizontal and vertical spacing in pixels). 
+    
+    set measured ""
+    
+    foreach size $::var(fontSizes) {
+        set f [getFont $size]
+        font create $f -family $::var(fontFamily) -weight $::var(fontWeight) -size [expr -${size}]
+        lappend measured $size 
+        lappend measured [font measure $f M]
+        lappend measured [font metrics $f -linespace]
+    }
+
+    # Initialize some packages.
+    
+    foreach sub {preferences bindings menus canvas console} { pd_${sub}::initialize }
+    
+    # Set the menubar configuration.
+    
+    ::pd_menus::configureForConsole
+    
+    # Respond and open pended files (if any).
+    
+    ::pd_connect::pdsend "pd init [enquote_path [pwd]] $measured"
+    
+    set ::var(isInitialized) 1
+    
+    foreach filename $::var(filesOpenPended) { ::pd_miscellaneous::open_file $filename }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc com_confirmAction {top message reply default} {
+
+    wm deiconify $top
+    raise $top
+    
+    if {[tk windowingsystem] eq "win32"} {
+        set r [tk_messageBox -message [_ $message] -type yesno -default $default -icon question]
+    } else {
+        set r [tk_messageBox -message [_ $message] -type yesno -default $default -icon question -parent $top]
+    }
+    
+    if {$r eq "yes"} {
+        ::pd_connect::pdsend $reply
     }
 }
 
