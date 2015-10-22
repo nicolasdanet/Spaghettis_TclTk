@@ -21,7 +21,6 @@ package ifneeded pd_console 0.1         [list source [file join $dir pd_console.
 package ifneeded pd_preferences 0.1     [list source [file join $dir pd_preferences.tcl]]
 package ifneeded pd_menus 0.1           [list source [file join $dir pd_menus.tcl]]
 package ifneeded pd_miscellaneous 0.1   [list source [file join $dir pd_miscellaneous.tcl]]
-package ifneeded pd_parser 0.1          [list source [file join $dir pd_parser.tcl]]
 package ifneeded pd_scrollbox 0.1       [list source [file join $dir pd_scrollbox.tcl]]
 package ifneeded pd_scrollboxwindow 0.1 [list source [file join $dir pd_scrollboxwindow.tcl]]
 package ifneeded pd_text 0.1            [list source [file join $dir pd_text.tcl]]

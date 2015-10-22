@@ -118,8 +118,6 @@ proc ::pd_console::logpost {object_id level message} {
         insert_log_line $object_id $level $message
         after idle .console.text.internal yview end
     }
-    
-    if {$::var(isStderr)} {puts stderr $message}
 }
 
 # shortcuts for posting to the Pd window

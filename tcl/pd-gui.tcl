@@ -101,7 +101,6 @@ package require pd_console
 package require pd_preferences
 package require pd_menus
 package require pd_miscellaneous
-package require pd_parser
 package require pd_text
 package require pd_textwindow
 
@@ -137,7 +136,6 @@ set var(fontWeight)             "normal"
 set var(fontSizes)              "8 10 12 16 18 20 24 30 36"
 
 set var(isInitialized)          0
-set var(isStderr)               0
 set var(isDsp)                  0
 set var(isEditmode)             0
 
@@ -315,42 +313,6 @@ proc com_confirmAction {top message reply default} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc parse_args {argc argv} {
-    
-    puts "? $argv"
-    
-    pd_parser::initialize {
-        {-stderr    set {::var(isStderr)}}
-        {-open      lappend {- ::var(filesOpenPended)}}
-    }
-    
-    set unflagged_files [pd_parser::get_options $argv]
-    # if we have a single arg that is not a file, its a port or host:port combo
-    if {$argc == 1 && ! [file exists $argv]} {
-        if { [string is int $argv] && $argv > 0} {
-            # 'pd-gui' got the port number from 'pd'
-            set ::var(tcpHost) "localhost"
-            set ::var(tcpPort) $argv 
-        } else {
-            set hostport [split $argv ":"]
-            set ::var(tcpPort) [lindex $hostport 1]
-            if { [string is int $::var(tcpPort)] && $::var(tcpPort) > 0} {
-                set ::var(tcpHost) [lindex $hostport 0]
-            } else {
-                set ::var(tcpPort) 0
-            }
-
-        }
-    } elseif {$unflagged_files ne ""} {
-        foreach filename $unflagged_files {
-            lappend ::var(filesOpenPended) $filename
-        }
-    }
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 # ------------------------------------------------------------------------------
 # X11 procs for handling singleton state and getting args from other instances
 
@@ -439,17 +401,28 @@ proc check_for_running_instances { } {
     }
 }
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-# ------------------------------------------------------------------------------
-# main
 proc main {argc argv} {
+
     tk appname pd-gui
     
     encoding system utf-8
     fconfigure stderr -encoding utf-8
     fconfigure stdout -encoding utf-8
     
-    parse_args $argc $argv
+    if {$argc == 1} {
+        if {[string is int $argv]} {
+            set ::var(tcpHost) "localhost"
+            set ::var(tcpPort) $argv
+        } else {
+            set hostport [split $argv ":"]
+            set ::var(tcpHost) [lindex $hostport 0]
+            set ::var(tcpPort) [lindex $hostport 1]
+        }
+    }
+    
     check_for_running_instances
     initializePlatform
     
