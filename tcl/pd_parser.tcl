@@ -17,7 +17,7 @@ namespace eval pd_parser {
     variable optprefix {-}
 }
 
-proc pd_parser::init {optdata} {
+proc pd_parser::initialize {optdata} {
     variable optlist
     variable optbehavior
     array unset optlist ; array set optlist {}

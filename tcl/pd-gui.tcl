@@ -317,7 +317,9 @@ proc com_confirmAction {top message reply default} {
 
 proc parse_args {argc argv} {
     
-    pd_parser::init {
+    puts "? $argv"
+    
+    pd_parser::initialize {
         {-stderr    set {::var(isStderr)}}
         {-open      lappend {- ::var(filesOpenPended)}}
     }
