@@ -192,13 +192,13 @@ set midi_outdev     {}
 
 # Per patch states.
 
+array set patch_childs          {}
 array set patch_isEditmode      {}
 array set patch_isEditing       {}
 array set patch_isScrollableX   {}
 array set patch_isScrollableY   {}
 array set patch_loaded          {}
 array set patch_name            {}
-array set patch_childs          {}
 array set patch_parents         {}
 
 # ------------------------------------------------------------------------------------------------------------
