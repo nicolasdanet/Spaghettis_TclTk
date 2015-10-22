@@ -187,73 +187,10 @@ proc _ {s} { return $s }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc initializePlatform {} {
-    switch -- [tk windowingsystem] {
-        "x11"   { initializePlatformX11   }
-        "aqua"  { initializePlatformAqua  }
-        "win32" { initializePlatformWin32 }
-    }
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc initializePlatformX11 {} {
-
-    set ::var(modifierKey) "Control"
-    
-    option add *PatchWindow*Canvas.background "white" startupFile
-    
-    # Don't show hidden files ( http://wiki.tcl.tk/1060 ).
-    
-    catch { tk_getOpenFile -dummy } 
-    set ::tk::dialog::file::showHiddenBtn 1
-    set ::tk::dialog::file::showHiddenVar 0
-    
-    # Define mouse cursor symbols.
-    
-    set ::var(cursorRunNothing) "left_ptr"
-    set ::var(cursorRunClickMe) "arrow"
-}
-
-proc initializePlatformAqua {} {
-
-    set ::var(modifierKey) "Mod1"
-    
-    option add *DialogWindow*background "#E8E8E8" startupFile
-    option add *DialogWindow*Entry.highlightBackground "#E8E8E8" startupFile
-    option add *DialogWindow*Button.highlightBackground "#E8E8E8" startupFile
-    option add *DialogWindow*Entry.background "white" startupFile
-    
-    # Define mouse cursor symbols.
-    
-    set ::var(cursorRunNothing) "arrow"
-    set ::var(cursorRunClickMe) "center_ptr"
-}
-
-proc initializePlatformWin32 {} {
-
-    set ::var(modifierKey) "Control"
-    
-    font create menufont -family Tahoma -size -11
-    
-    option add *PatchWindow*Canvas.background "white" startupFile
-    option add *Menu.font menufont startupFile
-    option add *DialogWindow*font menufont startupFile
-    option add *PdConsole*font menufont startupFile
-    option add *ErrorDialog*font menufont startupFile
-    
-    # Define mouse cursor symbols.
-    
-    set ::var(cursorRunNothing) "right_ptr"
-    set ::var(cursorRunClickMe) "arrow"
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 proc com_initialize {audioAPIs midiAPIs fontFamily fontWeight} {
 
+    puts "Initialize"
+    
     set ::var(apiAudioAvailables) $audioAPIs
     set ::var(apiMidiAvailables)  $midiAPIs
     
@@ -274,7 +211,7 @@ proc com_initialize {audioAPIs midiAPIs fontFamily fontWeight} {
         lappend measured [font metrics $f -linespace]
     }
 
-    # Initialize packages.
+    # Initialize some packages.
     
     foreach sub {preferences bindings menus canvas console} { pd_${sub}::initialize }
     
@@ -313,92 +250,66 @@ proc com_confirmAction {top message reply default} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# ------------------------------------------------------------------------------
-# X11 procs for handling singleton state and getting args from other instances
+proc mainX11 {} {
 
-# first instance
-proc singleton {key} {
-    if {![catch { selection get -selection $key }]} {
-        return 0
-    }
-    selection handle -selection $key . "singleton_request"
-    selection own -command first_lost -selection $key .
-    return 1
+    set ::var(modifierKey) "Control"
+    
+    # GUI attributes.
+    
+    option add *PatchWindow*Canvas.background "white" startupFile
+    
+    # Don't show hidden files ( http://wiki.tcl.tk/1060 ).
+    
+    catch { tk_getOpenFile -dummy } 
+    set ::tk::dialog::file::showHiddenBtn 1
+    set ::tk::dialog::file::showHiddenVar 0
+    
+    # Define mouse cursor symbols.
+    
+    set ::var(cursorRunNothing) "left_ptr"
+    set ::var(cursorRunClickMe) "arrow"
 }
 
-proc singleton_request {offset maxbytes} {
-## the next 2 lines raise the focus to the given window (and change desktop)
-#    wm deiconify .console
-#    raise .console
-    return [tk appname]
+proc mainAqua {} {
+
+    set ::var(modifierKey) "Mod1"
+    
+    # GUI attributes.
+    
+    option add *DialogWindow*background "#E8E8E8" startupFile
+    option add *DialogWindow*Entry.highlightBackground "#E8E8E8" startupFile
+    option add *DialogWindow*Button.highlightBackground "#E8E8E8" startupFile
+    option add *DialogWindow*Entry.background "white" startupFile
+    
+    # Set initial directory.
+    
+    set ::var(directoryNew) $::env(HOME)
+    set ::var(directoryOpen) $::env(HOME)
+
+    # Define mouse cursor symbols.
+    
+    set ::var(cursorRunNothing) "arrow"
+    set ::var(cursorRunClickMe) "center_ptr"
 }
 
-proc first_lost {} {
-    receive_args [selection get -selection $::var(scriptName) ]
-    selection own -command first_lost -selection $::var(scriptName) .
- }
+proc mainWin32 {} {
 
-proc others_lost {} {
-    set ::singleton_state "exit"
-    destroy .
-    exit
-}
-
-# all other instances
-proc send_args {offset maxChars} {
-    set sendargs {}
-    foreach filename $::var(filesOpenPended) {
-        lappend sendargs [file normalize $filename]
-    }
-    return [string range $sendargs $offset [expr {$offset+$maxChars}]]
-}
-
-# this command will open files received from a 2nd instance of Pd
-proc receive_args {filelist} {
-    raise .
-    wm deiconify .console
-    raise .console
-    foreach filename $filelist {
-        ::pd_miscellaneous::open_file $filename
-    }
-}
-
-proc dde_open_handler {cmd} {
-    ::pd_miscellaneous::open_file [file normalize $cmd]
-}
-
-proc check_for_running_instances { } {
-    switch -- [tk windowingsystem] {
-        "aqua" {
-            # handled by ::tk::mac::OpenDocument in pd_apple.tcl
-        } "x11" {
-            # http://wiki.tcl.tk/1558
-            # TODO replace PUREDATA name with path so this code is a singleton
-            # based on install location rather than this hard-coded name
-            if {![singleton ${::var(scriptName)}_MANAGER ]} {
-                # if pd-gui gets called from pd ('pd-gui 5400') or is told otherwise
-                # to connect to a running instance of Pd (by providing [<host>:]<port>)
-                # then we don't want to connect to a running instance
-                if { $::var(tcpPort) > 0 && $::var(tcpHost) ne "" } { return }
-                selection handle -selection $::var(scriptName) . "send_args"
-                selection own -command others_lost -selection $::var(scriptName) .
-                after 5000 set ::singleton_state "timeout"
-                vwait ::singleton_state
-                exit
-            } else {
-                # first instance
-                selection own -command first_lost -selection $::var(scriptName) .
-            }
-        } "win32" {
-            ## http://wiki.tcl.tk/8940
-            package require dde ;# 1.4 or later needed for full unicode support
-            set topic "Pure_Data_DDE_Open"
-            # if no DDE service is running, start one and claim the name
-            if { [dde services TclEval $topic] == {} } {
-                dde servername -handler dde_open_handler $topic
-            }
-        }
-    }
+    set ::var(modifierKey) "Control"
+    
+    # GUI attributes.
+    
+    font create menufont -family Tahoma -size -11
+    
+    option add *PatchWindow*Canvas.background "white" startupFile
+    option add *Menu.font menufont startupFile
+    option add *DialogWindow*font menufont startupFile
+    option add *PdConsole*font menufont startupFile
+    option add *ErrorDialog*font menufont startupFile
+    
+    # Define mouse cursor symbols.
+    
+    set ::var(cursorRunNothing) "right_ptr"
+    set ::var(cursorRunClickMe) "arrow"
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -406,41 +317,40 @@ proc check_for_running_instances { } {
 
 proc main {argc argv} {
 
-    tk appname pd-gui
+    puts "GUI main"
+    
+    # Configure UTF-8 encoding.
     
     encoding system utf-8
     fconfigure stderr -encoding utf-8
     fconfigure stdout -encoding utf-8
     
-    if {$argc == 1} {
-        if {[string is int $argv]} {
-            set ::var(tcpHost) "localhost"
-            set ::var(tcpPort) $argv
-        } else {
-            set hostport [split $argv ":"]
-            set ::var(tcpHost) [lindex $hostport 0]
-            set ::var(tcpPort) [lindex $hostport 1]
-        }
+    # Settings according to host.
+    
+    switch -- [tk windowingsystem] {
+        "x11"   { mainX11   }
+        "aqua"  { mainAqua  }
+        "win32" { mainWin32 }
     }
     
-    check_for_running_instances
-    initializePlatform
+    # Handle socket connection.
     
-    if { $::var(tcpPort) > 0 && $::var(tcpHost) ne "" } {
-        # 'pd' started first and launched us, so get the port to connect to
-        ::pd_connect::to_pd $::var(tcpPort) $::var(tcpHost)
+    if {$argc == 1 && [string is int $argv]} {
+        set ::var(tcpHost) "localhost"
+        set ::var(tcpPort) $argv
+        ::pd_connect::clientSocket $::var(tcpPort) $::var(tcpHost)
+        
     } else {
-        # the GUI is starting first, so create socket and exec 'pd'
-        set ::var(tcpPort) [::pd_connect::create_socket]
-        set pd_exec [file join [file dirname [info script]] ../bin/pd]
-        exec -- $pd_exec -guiport $::var(tcpPort) &
-        if {[tk windowingsystem] eq "aqua"} {
-            # on Aqua, if 'pd-gui' first, then initial dir is home
-            set ::var(directoryNew) $::env(HOME)
-            set ::var(directoryOpen) $::env(HOME)
-        }
+        set ::var(tcpPort) [::pd_connect::serverSocket]
+        set executable [file join [file dirname [info script]] ../bin/pd]
+        exec -- $executable -guiport $::var(tcpPort) &
     }
-    ::pd_console::verbose 0 "------------------ done with main ----------------------\n"
 }
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 main $::argc $::argv
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------

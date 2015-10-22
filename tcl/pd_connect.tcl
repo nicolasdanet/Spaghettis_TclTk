@@ -13,8 +13,6 @@ namespace eval ::pd_connect:: {
     variable pd_socket
     variable cmds_from_pd ""
 
-    namespace export to_pd
-    namespace export create_socket
     namespace export pdsend
 }
 
@@ -26,12 +24,12 @@ proc ::pd_connect::configure_socket {sock} {
 }
 
 # if pd opens first, it starts pd-gui, then pd-gui connects to the port pd sent
-proc ::pd_connect::to_pd {port {host localhost}} {
+proc ::pd_connect::clientSocket {port {host localhost}} {
     variable pd_socket
     ::pd_console::debug "'pd-gui' connecting to 'pd' on localhost $port ...\n"
     if {[catch {set pd_socket [socket $host $port]}]} {
         puts stderr "WARNING: connect to pd failed, retrying port $host:$port."
-        after 1000 ::pd_connect::to_pd $port $host
+        after 1000 ::pd_connect::clientSocket $port $host
         return
     }
     ::pd_connect::configure_socket $pd_socket
@@ -39,7 +37,7 @@ proc ::pd_connect::to_pd {port {host localhost}} {
 
 # if pd-gui opens first, it creates socket and requests a port.  The function
 # then returns the portnumber it receives. pd then connects to that port.
-proc ::pd_connect::create_socket {} {
+proc ::pd_connect::serverSocket {} {
     if {[catch {set sock [socket -server ::pd_connect::from_pd -myaddr localhost 0]}]} {
         puts stderr "ERROR: failed to allocate port, exiting!"
         exit 3
