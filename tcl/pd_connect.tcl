@@ -28,38 +28,55 @@ variable tcpBuffer ""
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc configure_socket {sock} {
-    fconfigure $sock -blocking 0 -buffering none -encoding utf-8;
+proc configureSocket {sock} {
+    
+    # Non-blocking socket without buffer.
+    
+    fconfigure $sock -blocking 0 -buffering none -encoding utf-8
+    
+    # Set the callback executed while receiving data. 
+    
     fileevent $sock readable {::pd_connect::pd_readsocket}
 }
 
-# if pd opens first, it starts pd-gui, then pd-gui connects to the port pd sent
-proc clientSocket {port {host localhost}} {
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc configureClientSocket {} { 
     variable tcpSocket
-    ::pd_console::debug "'pd-gui' connecting to 'pd' on localhost $port ...\n"
-    if {[catch {set tcpSocket [socket $host $port]}]} {
-        puts stderr "WARNING: connect to pd failed, retrying port $host:$port."
-        after 1000 ::pd_connect::clientSocket $port $host
-        return
-    }
-    ::pd_connect::configure_socket $tcpSocket
+    ::pd_connect::configureSocket $tcpSocket 
 }
 
-# if pd-gui opens first, it creates socket and requests a port.  The function
-# then returns the portnumber it receives. pd then connects to that port.
-proc serverSocket {} {
-    if {[catch {set sock [socket -server ::pd_connect::from_pd -myaddr localhost 0]}]} {
-        puts stderr "ERROR: failed to allocate port, exiting!"
-        exit 3
+proc configureServerSocket {channel host port} {
+    variable tcpSocket $channel
+    ::pd_connect::configureSocket $tcpSocket
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc clientSocket {port host} {
+
+    variable tcpSocket
+    
+    if {[catch {set tcpSocket [socket $host $port]}]} { 
+        error "Connection to the TCP server $host:$port failed."
     }
+
+    ::pd_connect::configureClientSocket
+}
+
+proc serverSocket {} {
+
+    if {[catch {set sock [socket -server ::pd_connect::configureServerSocket -myaddr localhost 0]}]} {
+        error "Creation of the TCP server failed."
+    }
+    
     return [lindex [fconfigure $sock -sockname] 2]
 }
 
-proc from_pd {channel clientaddr clientport} {
-    variable tcpSocket $channel
-    ::pd_console::debug "Connection from 'pd' to 'pd-gui' on $clientaddr:$clientport\n"
-    ::pd_connect::configure_socket $tcpSocket
-}
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 # send a pd/FUDI message from Tcl to Pd. This function aims to behave like a
 # [; message( in Pd or pdsend on the command line.  Basically, whatever is in
@@ -73,6 +90,9 @@ proc pdsend {message} {
         error "Not connected to 'pd' process"
     }
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 proc pd_readsocket {} {
      variable tcpSocket
