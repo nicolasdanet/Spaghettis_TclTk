@@ -28,6 +28,33 @@ variable tcpBuffer ""
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+proc readSocket {} {
+    
+    variable tcpSocket
+    variable tcpBuffer
+    
+    # Exit if socket lost.
+    
+    if {[eof $tcpSocket]} { close $tcpSocket; exit } 
+    
+    # Fetch data.
+    
+    append tcpBuffer [read $tcpSocket]
+    
+    # Execute the command (skip uncomplete).
+    
+    if {[string index $tcpBuffer end] ne "\n" || ![info complete $tcpBuffer]} { 
+        return 
+    } else {
+        set script $tcpBuffer
+        set tcpBuffer ""
+        if {[catch { uplevel "#0" $script }]} { puts stderr $::errorInfo }
+    }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc configureSocket {sock} {
     
     # Non-blocking socket without buffer.
@@ -36,7 +63,7 @@ proc configureSocket {sock} {
     
     # Set the callback executed while receiving data. 
     
-    fileevent $sock readable {::pd_connect::pd_readsocket}
+    fileevent $sock readable { ::pd_connect::readSocket }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -59,7 +86,7 @@ proc clientSocket {port host} {
 
     variable tcpSocket
     
-    if {[catch {set tcpSocket [socket $host $port]}]} { 
+    if {[catch { set tcpSocket [socket $host $port] }]} { 
         error "Connection to the TCP server $host:$port failed."
     }
 
@@ -68,7 +95,7 @@ proc clientSocket {port host} {
 
 proc serverSocket {} {
 
-    if {[catch {set sock [socket -server ::pd_connect::configureServerSocket -myaddr localhost 0]}]} {
+    if {[catch { set sock [socket -server ::pd_connect::configureServerSocket -myaddr localhost 0] }]} {
         error "Creation of the TCP server failed."
     }
     
@@ -78,57 +105,14 @@ proc serverSocket {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# send a pd/FUDI message from Tcl to Pd. This function aims to behave like a
-# [; message( in Pd or pdsend on the command line.  Basically, whatever is in
-# quotes after the proc name will be sent as if it was sent from a message box
-# with a leading semi-colon.
+# Send FUDI message to the pd executable ( https://en.wikipedia.org/wiki/FUDI ).
+
 proc pdsend {message} {
+
     variable tcpSocket
-    append message \;
-    if {[catch {puts $tcpSocket $message} errorname]} {
-        puts stderr "pdsend errorname: >>$errorname<<"
-        error "Not connected to 'pd' process"
-    }
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc pd_readsocket {} {
-     variable tcpSocket
-     variable tcpBuffer
-     if {[eof $tcpSocket]} {
-         # if we lose the socket connection, that means pd quit, so we quit
-         close $tcpSocket
-         exit
-     } 
-     append tcpBuffer [read $tcpSocket]
-     if {[string index $tcpBuffer end] ne "\n" || \
-             ![info complete $tcpBuffer]} {
-         # the block is incomplete, wait for the next block of data
-         return
-     } else {
-         set docmds $tcpBuffer
-         set tcpBuffer ""
-         if {![catch {uplevel #0 $docmds} errorname]} {
-             # we ran the command block without error, reset the buffer
-         } else {
-             # oops, error, alert the user:
-             global errorInfo
-             switch -regexp -- $errorname {
-                 "missing close-brace" {
-                     ::pd_console::fatal \
-                         [concat [_ "(Tcl) MISSING CLOSE-BRACE '\}': "] $errorInfo "\n"]
-                 } "^invalid command name" {
-                     ::pd_console::fatal \
-                         [concat [_ "(Tcl) INVALID COMMAND NAME: "] $errorInfo "\n"]
-                 } default {
-                     ::pd_console::fatal \
-                         [concat [_ "(Tcl) UNHANDLED ERROR: "] $errorInfo "\n"]
-                 }
-             }
-         }
-     }
+    
+    append message \; 
+    if {[catch { puts $tcpSocket $message }]} { error "Unable to post to TCP socket." }
 }
 
 # ------------------------------------------------------------------------------------------------------------
