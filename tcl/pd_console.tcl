@@ -9,7 +9,14 @@
 
 package provide pd_console 0.1
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 namespace eval ::pd_console:: {
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
     variable logbuffer {}
     variable tclentry {}
     variable tclentry_history {"console show"}
@@ -20,12 +27,12 @@ namespace eval ::pd_console:: {
 
     variable lastlevel 0
 
-    namespace export create_window
-}
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 # TODO make the Pd window save its size and location between running
 
-proc ::pd_console::set_layout {} {
+proc set_layout {} {
     variable maxloglevel
     .console.text.internal tag configure log0 -foreground "#d00" -background "#ffe0e8"
     .console.text.internal tag configure log1 -foreground "#d00"
@@ -43,14 +50,14 @@ proc ::pd_console::set_layout {} {
 
 
 # grab focus on part of the Pd window when Pd is busy
-proc ::pd_console::busygrab {} {
+proc busygrab {} {
     # set the mouse cursor to look busy and grab focus so it stays that way    
     .console.text configure -cursor watch
     grab set .console.text
 }
 
 # release focus on part of the Pd window when Pd is finished
-proc ::pd_console::busyrelease {} {
+proc busyrelease {} {
     .console.text configure -cursor xterm
     grab release .console.text
 }
@@ -58,12 +65,12 @@ proc ::pd_console::busyrelease {} {
 # ------------------------------------------------------------------------------
 # pdtk functions for 'pd' to send data to the Pd window
 
-proc ::pd_console::buffer_message {object_id level message} {
+proc buffer_message {object_id level message} {
     variable logbuffer
     lappend logbuffer $object_id $level $message
 }
 
-proc ::pd_console::insert_log_line {object_id level message} {
+proc insert_log_line {object_id level message} {
     if {$object_id eq ""} {
         .console.text.internal insert end $message log$level
     } else {
@@ -78,7 +85,7 @@ proc ::pd_console::insert_log_line {object_id level message} {
 }
 
 # this has 'args' to satisfy trace, but its not used
-proc ::pd_console::filter_buffer_to_text {args} {
+proc filter_buffer_to_text {args} {
     variable logbuffer
     variable maxloglevel
     .console.text.internal delete 0.0 end
@@ -94,7 +101,7 @@ proc ::pd_console::filter_buffer_to_text {args} {
     ::pd_console::verbose 10 "The Pd window filtered $i lines\n"
 }
 
-proc ::pd_console::select_by_id {args} {
+proc select_by_id {args} {
     if [llength $args] { # Is $args empty?
         ::pd_connect::pdsend "pd findinstance $args"
     }
@@ -105,7 +112,7 @@ proc ::pd_console::select_by_id {args} {
 # messages that are useful for debugging patches.  They are messages
 # that are meant for the Pd programmer to see so that they can get
 # information about the patches they are building
-proc ::pd_console::logpost {object_id level message} {
+proc logpost {object_id level message} {
     variable maxloglevel
     variable lastlevel $level
 
@@ -121,16 +128,16 @@ proc ::pd_console::logpost {object_id level message} {
 }
 
 # shortcuts for posting to the Pd window
-proc ::pd_console::fatal {message} {logpost {} 0 $message}
-proc ::pd_console::error {message} {logpost {} 1 $message}
-proc ::pd_console::post {message} {logpost {} 2 $message}
-proc ::pd_console::debug {message} {logpost {} 3 $message}
+proc fatal {message} {logpost {} 0 $message}
+proc error {message} {logpost {} 1 $message}
+proc post {message} {logpost {} 2 $message}
+proc debug {message} {logpost {} 3 $message}
 # for backwards compatibility
-proc ::pd_console::bug {message} {logpost {} 1 \
+proc bug {message} {logpost {} 1 \
     [concat consistency check failed: $message]}
-proc ::pd_console::pdtk_post {message} {post $message}
+proc pdtk_post {message} {post $message}
 
-proc ::pd_console::endpost {} {
+proc endpost {} {
     variable linecolor
     variable lastlevel
     logpost {} $lastlevel "\n"
@@ -140,19 +147,19 @@ proc ::pd_console::endpost {} {
 # this verbose proc has a separate numbering scheme since its for
 # debugging implementations, and therefore falls outside of the 0-3
 # numbering on the Pd window.  They should only be shown in ALL mode.
-proc ::pd_console::verbose {level message} {
+proc verbose {level message} {
     incr level 4
     logpost {} $level $message
 }
 
 # clear the log and the buffer
-proc ::pd_console::clear_console {} {
+proc clear_console {} {
     variable logbuffer {}
     .console.text.internal delete 0.0 end
 }
 
 # save the contents of the pd_console::logbuffer to a file
-proc ::pd_console::save_logbuffer_to_file {} {
+proc save_logbuffer_to_file {} {
     variable logbuffer
     set filename [tk_getSaveFile -initialfile "pdconsole.txt" -defaultextension .txt]
     if {$filename eq ""} return; # they clicked cancel
@@ -167,7 +174,7 @@ proc ::pd_console::save_logbuffer_to_file {} {
 #--compute audio/DSP checkbutton-----------------------------------------------#
 
 # set the checkbox on the "Compute Audio" menuitem and checkbox
-proc ::pd_console::pdtk_pd_dsp {value} {
+proc pdtk_pd_dsp {value} {
     # TODO canvas_startdsp/stopdsp should really send 1 or 0, not "ON" or "OFF"
     if {$value eq "ON"} {
         set ::var(isDsp) 1
@@ -176,7 +183,7 @@ proc ::pd_console::pdtk_pd_dsp {value} {
     }
 }
 
-proc ::pd_console::pdtk_pd_dio {red} {
+proc pdtk_pd_dio {red} {
     if {$red == 1} {
         .console.header.ioframe.dio configure -foreground red
     } else {
@@ -185,13 +192,13 @@ proc ::pd_console::pdtk_pd_dio {red} {
         
 }
 
-proc ::pd_console::pdtk_pd_audio {state} {
+proc pdtk_pd_audio {state} {
     .console.header.ioframe.iostate configure -text [concat audio $state]
 }
 
 #--bindings specific to the Pd window------------------------------------------#
 
-proc ::pd_console::console_bindings {} {
+proc console_bindings {} {
     # these bindings are for the whole Pd window, minus the Tcl entry
     foreach window {.console.text .console.header} {
         bind $window <$::var(modifierKey)-Key-x> "tk_textCut .console.text"
@@ -221,7 +228,7 @@ proc ::pd_console::console_bindings {} {
 
 #--Tcl entry procs-------------------------------------------------------------#
 
-proc ::pd_console::eval_tclentry {} {
+proc eval_tclentry {} {
     variable tclentry
     variable tclentry_history
     variable history_position 0
@@ -244,7 +251,7 @@ proc ::pd_console::eval_tclentry {} {
     set tclentry {}
 }
 
-proc ::pd_console::get_history {direction} {
+proc get_history {direction} {
     variable tclentry_history
     variable history_position
 
@@ -258,7 +265,7 @@ proc ::pd_console::get_history {direction} {
         [lindex $tclentry_history end-[expr $history_position - 1]]
 }
 
-proc ::pd_console::validate_tcl {} {
+proc validate_tcl {} {
     variable tclentry
     if {[info complete $tclentry]} {
         .console.tcl.entry configure -background "white"
@@ -269,7 +276,7 @@ proc ::pd_console::validate_tcl {} {
 
 #--create tcl entry-----------------------------------------------------------#
 
-proc ::pd_console::set_findinstance_cursor {widget key state} {
+proc set_findinstance_cursor {widget key state} {
     set triggerkeys [list Control_L Control_R Meta_L Meta_R]
     if {[lsearch -exact $triggerkeys $key] > -1} {
         if {$state == 0} {
@@ -282,7 +289,7 @@ proc ::pd_console::set_findinstance_cursor {widget key state} {
 
 #--create the window-----------------------------------------------------------#
 
-proc ::pd_console::initialize {} {
+proc initialize {} {
     variable logmenuitems
     set ::patch_loaded(.console) 0
 
@@ -378,3 +385,11 @@ proc ::pd_console::initialize {} {
     # the loading logic can grab it and put up the busy cursor
     tkwait visibility .console.text
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
