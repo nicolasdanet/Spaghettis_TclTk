@@ -171,7 +171,7 @@ proc ::pd_preferences::get_config_x11 {adomain {akey} {arr 0}} {
 proc ::pd_preferences::write_config_aqua {data {adomain} {akey} {arr 0}} {
     # FIXME empty and write again so we don't loose the order
     if {[catch {exec defaults write $adomain $akey -array} errorMsg]} {
-        ::pd_console::error "write_config_aqua $akey: $errorMsg"
+        # ::pd_console::error "write_config_aqua $akey: $errorMsg"
     }
     if {$arr} {
         foreach filepath $data {
@@ -193,11 +193,11 @@ proc ::pd_preferences::write_config_win {data {adomain} {akey} {arr 0}} {
     # FIXME: ugly
     if {$arr} {
         if {[catch {registry set $adomain $akey $data multi_sz} errorMsg]} {
-            ::pd_console::error "write_config_win $data $akey: $errorMsg"
+            # ::pd_console::error "write_config_win $data $akey: $errorMsg"
         }
     } else {
         if {[catch {registry set $adomain $akey $data sz} errorMsg]} {
-            ::pd_console::error "write_config_win $data $akey: $errorMsg"
+            # ::pd_console::error "write_config_win $data $akey: $errorMsg"
         }
     }
 }
@@ -210,7 +210,7 @@ proc ::pd_preferences::write_config_x11 {data {adomain} {akey}} {
     set data [join $data "\n"]
     set filename [file join $adomain $akey]
     if {[catch {set fl [open $filename w]} errorMsg]} {
-        ::pd_console::error "write_config_x11 $data $akey: $errorMsg"
+        # ::pd_console::error "write_config_x11 $data $akey: $errorMsg"
     } else {
         puts -nonewline $fl $data
         close $fl
@@ -228,10 +228,10 @@ proc ::pd_preferences::prepare_configdir {} {
     if { [catch {
         if {[file isdirectory $::recentfiles_domain] != 1} {
             file mkdir $::recentfiles_domain
-            ::pd_console::debug "$::recentfiles_domain was created.\n"
+            # ::pd_console::debug "$::recentfiles_domain was created.\n"
             }
     }]} {
-                ::pd_console::error "$::recentfiles_domain was *NOT* created.\n"
+            # ::pd_console::error "$::recentfiles_domain was *NOT* created.\n"
     }
 }
 

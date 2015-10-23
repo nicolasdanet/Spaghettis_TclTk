@@ -515,7 +515,7 @@ proc ::pd_menus::create_system_menu {mymenubar} {
     $mymenubar add cascade -label System -menu $mymenu
     menu $mymenu -tearoff 0
     # placeholders
-    $mymenu add command -label [_ "Edit Mode"] -command "::pd_console::verbose 0 systemmenu"
+    # $mymenu add command -label [_ "Edit Mode"] -command "::pd_console::verbose 0 systemmenu"
     # TODO add Close, Minimize, etc and whatever else is on the little menu
     # that is on the top left corner of the window frame
     # http://wiki.tcl.tk/1006

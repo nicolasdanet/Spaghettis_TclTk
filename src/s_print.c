@@ -57,9 +57,9 @@ static void dopost(const char *s)
         fprintf(stderr, "%s", s);
 #endif
     else
-    {
+    {   /*
         char upbuf[MAXPDSTRING];
-        sys_vgui("::pd_console::post {%s}\n", strnescape(upbuf, s, MAXPDSTRING));
+        sys_vgui("::pd_console::post {%s}\n", strnescape(upbuf, s, MAXPDSTRING)); */
     }
 }
 
@@ -77,11 +77,11 @@ static void doerror(const void *object, const char *s)
     else if (sys_printtostderr)
         fprintf(stderr, "error: %s", s);
     else
-    {
+    {   /*
         char obuf[MAXPDSTRING];
         sys_vgui("::pd_console::logpost {%s} 1 {%s}\n",
                  strnpointerid(obuf, object, MAXPDSTRING), 
-                 strnescape(upbuf, s, MAXPDSTRING));
+                 strnescape(upbuf, s, MAXPDSTRING)); */
     }
 }
 
@@ -101,11 +101,11 @@ static void dologpost(const void *object, const int level, const char *s)
         fprintf(stderr, "verbose(%d): %s", level, s);
     }
     else
-    {
+    {   /*
         char obuf[MAXPDSTRING];
         sys_vgui("::pd_console::logpost {%s} %d {%s}\n", 
                  strnpointerid(obuf, object, MAXPDSTRING), 
-                 level, strnescape(upbuf, s, MAXPDSTRING));
+                 level, strnescape(upbuf, s, MAXPDSTRING)); */
     }
 }
 

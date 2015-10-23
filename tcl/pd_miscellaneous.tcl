@@ -48,7 +48,7 @@ proc ::pd_miscellaneous::open_file {filename} {
         # now this is done in pd_preferences
         ::pd_preferences::update_recentfiles $filename
     } {
-        ::pd_console::post [format [_ "Ignoring '%s': doesn't look like a Pd-file"] $filename]
+        # ::pd_console::post [format [_ "Ignoring '%s': doesn't look like a Pd-file"] $filename]
     }
 }
     

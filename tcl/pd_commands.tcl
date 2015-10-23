@@ -114,7 +114,7 @@ proc ::pd_commands::menu_startup_dialog {} {
 }
 
 proc ::pd_commands::menu_texteditor {} {
-    ::pd_console::error "the text editor is not implemented"
+    # ::pd_console::error "the text editor is not implemented"
 }
 
 # ------------------------------------------------------------------------------

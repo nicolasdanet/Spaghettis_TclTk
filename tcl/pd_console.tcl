@@ -17,15 +17,14 @@ namespace eval ::pd_console:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-    variable logbuffer {}
-    variable tclentry {}
-    variable tclentry_history {"console show"}
-    variable history_position 0
-    variable linecolor 0 ;# is toggled to alternate text line colors
-    variable logmenuitems
-    variable maxloglevel 4
-
-    variable lastlevel 0
+variable logbuffer {}
+variable tclentry {}
+variable tclentry_history {"console show"}
+variable history_position 0
+variable linecolor 0
+variable logmenuitems
+variable maxloglevel 4
+variable lastlevel 0
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -48,20 +47,6 @@ proc set_layout {} {
     }
 }
 
-
-# grab focus on part of the Pd window when Pd is busy
-proc busygrab {} {
-    # set the mouse cursor to look busy and grab focus so it stays that way    
-    .console.text configure -cursor watch
-    grab set .console.text
-}
-
-# release focus on part of the Pd window when Pd is finished
-proc busyrelease {} {
-    .console.text configure -cursor xterm
-    grab release .console.text
-}
-
 # ------------------------------------------------------------------------------
 # pdtk functions for 'pd' to send data to the Pd window
 
@@ -82,23 +67,6 @@ proc insert_log_line {object_id level message} {
         .console.text.internal tag bind obj$object_id <Key-KP_Enter> \
             "::pd_console::select_by_id $object_id; break"
     }
-}
-
-# this has 'args' to satisfy trace, but its not used
-proc filter_buffer_to_text {args} {
-    variable logbuffer
-    variable maxloglevel
-    .console.text.internal delete 0.0 end
-    set i 0
-    foreach {object_id level message} $logbuffer {
-        insert_log_line $object_id $level $message
-
-        # this could take a while, so update the GUI every 10000 lines
-        if { [expr $i % 10000] == 0} {update idletasks}
-        incr i
-    }
-    .console.text.internal yview end
-    ::pd_console::verbose 10 "The Pd window filtered $i lines\n"
 }
 
 proc select_by_id {args} {
@@ -125,31 +93,6 @@ proc logpost {object_id level message} {
         insert_log_line $object_id $level $message
         after idle .console.text.internal yview end
     }
-}
-
-# shortcuts for posting to the Pd window
-proc fatal {message} {logpost {} 0 $message}
-proc error {message} {logpost {} 1 $message}
-proc post {message} {logpost {} 2 $message}
-proc debug {message} {logpost {} 3 $message}
-# for backwards compatibility
-proc bug {message} {logpost {} 1 \
-    [concat consistency check failed: $message]}
-proc pdtk_post {message} {post $message}
-
-proc endpost {} {
-    variable linecolor
-    variable lastlevel
-    logpost {} $lastlevel "\n"
-    set linecolor [expr ! $linecolor]
-}
-
-# this verbose proc has a separate numbering scheme since its for
-# debugging implementations, and therefore falls outside of the 0-3
-# numbering on the Pd window.  They should only be shown in ALL mode.
-proc verbose {level message} {
-    incr level 4
-    logpost {} $level $message
 }
 
 # clear the log and the buffer
@@ -183,19 +126,6 @@ proc pdtk_pd_dsp {value} {
     }
 }
 
-proc pdtk_pd_dio {red} {
-    if {$red == 1} {
-        .console.header.ioframe.dio configure -foreground red
-    } else {
-        .console.header.ioframe.dio configure -foreground lightgray
-    }
-        
-}
-
-proc pdtk_pd_audio {state} {
-    .console.header.ioframe.iostate configure -text [concat audio $state]
-}
-
 #--bindings specific to the Pd window------------------------------------------#
 
 proc console_bindings {} {
@@ -223,67 +153,6 @@ proc console_bindings {} {
         # TODO should it possible to close the Pd window and keep Pd open?
         bind .console <$::var(modifierKey)-Key-w>   "wm iconify .console"
         wm protocol .console WM_DELETE_WINDOW "::pd_connect::pdsend \"pd verifyquit\""
-    }
-}
-
-#--Tcl entry procs-------------------------------------------------------------#
-
-proc eval_tclentry {} {
-    variable tclentry
-    variable tclentry_history
-    variable history_position 0
-    if {$tclentry eq ""} {return} ;# no need to do anything if empty
-    if {[catch {uplevel #0 $tclentry} errorname]} {
-        global errorInfo
-        switch -regexp -- $errorname { 
-            "missing close-brace" {
-                ::pd_console::error [concat [_ "(Tcl) MISSING CLOSE-BRACE '\}': "] $errorInfo]\n
-            } "missing close-bracket" {
-                ::pd_console::error [concat [_ "(Tcl) MISSING CLOSE-BRACKET '\]': "] $errorInfo]\n
-            } "^invalid command name" {
-                ::pd_console::error [concat [_ "(Tcl) INVALID COMMAND NAME: "] $errorInfo]\n
-            } default {
-                ::pd_console::error [concat [_ "(Tcl) UNHANDLED ERROR: "] $errorInfo]\n
-            }
-        }
-    }
-    lappend tclentry_history $tclentry
-    set tclentry {}
-}
-
-proc get_history {direction} {
-    variable tclentry_history
-    variable history_position
-
-    incr history_position $direction
-    if {$history_position < 0} {set history_position 0}
-    if {$history_position > [llength $tclentry_history]} {
-        set history_position [llength $tclentry_history]
-    }
-    .console.tcl.entry delete 0 end
-    .console.tcl.entry insert 0 \
-        [lindex $tclentry_history end-[expr $history_position - 1]]
-}
-
-proc validate_tcl {} {
-    variable tclentry
-    if {[info complete $tclentry]} {
-        .console.tcl.entry configure -background "white"
-    } else {
-        .console.tcl.entry configure -background "#FFF0F0"
-    }
-}
-
-#--create tcl entry-----------------------------------------------------------#
-
-proc set_findinstance_cursor {widget key state} {
-    set triggerkeys [list Control_L Control_R Meta_L Meta_R]
-    if {[lsearch -exact $triggerkeys $key] > -1} {
-        if {$state == 0} {
-            $widget configure -cursor xterm
-        } else {
-            $widget configure -cursor based_arrow_up
-        }
     }
 }
 
@@ -359,9 +228,6 @@ proc initialize {} {
     focus .console.text
     # run bindings last so that .console.tcl.entry exists
     console_bindings
-    # set cursor to show when clicking in 'findinstance' mode
-    bind .console <KeyPress> "+::pd_console::set_findinstance_cursor %W %K %s"
-    bind .console <KeyRelease> "+::pd_console::set_findinstance_cursor %W %K %s"
 
     # hack to make a good read-only text widget from http://wiki.tcl.tk/1152
     rename ::.console.text ::.console.text.internal
@@ -373,9 +239,6 @@ proc initialize {} {
         }
     }
     
-    # print whatever is in the queue after the event loop finishes
-    after idle [list after 0 ::pd_console::filter_buffer_to_text]
-
     set ::patch_loaded(.console) 1
 
     # set some layout variables
