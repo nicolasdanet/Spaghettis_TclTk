@@ -85,6 +85,7 @@ if {[tk windowingsystem] eq "aqua"} { package require pd_apple }
 package require dialog_array
 package require dialog_audio
 package require dialog_canvas
+package require dialog_confirm
 package require dialog_data
 package require dialog_gatom
 package require dialog_gui
@@ -254,13 +255,13 @@ proc mainWin32 {} {
 
 proc main {argc argv} {
 
-    # Configure UTF-8 encoding.
+    # Configure to UTF-8 encoding.
     
     encoding system utf-8
     fconfigure stderr -encoding utf-8
     fconfigure stdout -encoding utf-8
     
-    # Settings according to host.
+    # Settings according to the host.
     
     switch -- [tk windowingsystem] {
         "x11"   { mainX11   }
@@ -322,25 +323,6 @@ proc com_initialize {audioAPIs midiAPIs fontFamily fontWeight} {
     set ::var(isInitialized) 1
     
     foreach filename $::var(filesOpenPended) { ::pd_miscellaneous::open_file $filename }
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc com_confirmAction {top message reply default} {
-
-    wm deiconify $top
-    raise $top
-    
-    if {[tk windowingsystem] eq "win32"} {
-        set r [tk_messageBox -message [_ $message] -type yesno -default $default -icon question]
-    } else {
-        set r [tk_messageBox -message [_ $message] -type yesno -default $default -icon question -parent $top]
-    }
-    
-    if {$r eq "yes"} {
-        ::pd_connect::pdsend $reply
-    }
 }
 
 # ------------------------------------------------------------------------------------------------------------

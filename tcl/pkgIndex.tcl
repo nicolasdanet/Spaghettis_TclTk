@@ -5,6 +5,7 @@
 package ifneeded dialog_array 0.1       [list source [file join $dir dialog_array.tcl]]
 package ifneeded dialog_audio 0.1       [list source [file join $dir dialog_audio.tcl]]
 package ifneeded dialog_canvas 0.1      [list source [file join $dir dialog_canvas.tcl]]
+package ifneeded dialog_confirm 0.1     [list source [file join $dir dialog_confirm.tcl]]
 package ifneeded dialog_data 0.1        [list source [file join $dir dialog_data.tcl]]
 package ifneeded dialog_gatom 0.1       [list source [file join $dir dialog_gatom.tcl]]
 package ifneeded dialog_gui 0.1         [list source [file join $dir dialog_gui.tcl]]
