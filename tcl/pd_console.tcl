@@ -17,42 +17,17 @@ namespace eval ::pd_console:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable logbuffer {}
-variable tclentry {}
-variable tclentry_history {"console show"}
-variable history_position 0
-variable linecolor 0
-variable logmenuitems
-variable maxloglevel 4
-variable lastlevel 0
+variable logBuffer {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
-
-# TODO make the Pd window save its size and location between running
-
-proc set_layout {} {
-    variable maxloglevel
-    .console.text.internal tag configure log0 -foreground "#d00" -background "#ffe0e8"
-    .console.text.internal tag configure log1 -foreground "#d00"
-    # log2 messages are normal black on white
-    .console.text.internal tag configure log3 -foreground "#484848"
-
-    # 0-20(4-24) is a rough useful range of 'verbose' levels for impl debugging
-    set start 4
-    set end 25
-    for {set i $start} {$i < $end} {incr i} {
-        set B [expr int(($i - $start) * (40 / ($end - $start))) + 50]
-        .console.text.internal tag configure log${i} -foreground grey${B}
-    }
-}
 
 # ------------------------------------------------------------------------------
 # pdtk functions for 'pd' to send data to the Pd window
 
 proc buffer_message {object_id level message} {
-    variable logbuffer
-    lappend logbuffer $object_id $level $message
+    variable logBuffer
+    lappend logBuffer $object_id $level $message
 }
 
 proc insert_log_line {object_id level message} {
@@ -75,14 +50,7 @@ proc select_by_id {args} {
     }
 }
 
-# logpost posts to Pd window with an object to trace back to and a
-# 'log level'. The logpost and related procs are for generating
-# messages that are useful for debugging patches.  They are messages
-# that are meant for the Pd programmer to see so that they can get
-# information about the patches they are building
 proc logpost {object_id level message} {
-    variable maxloglevel
-    variable lastlevel $level
 
     buffer_message $object_id $level $message
     if {[llength [info commands .console.text.internal]]} {
@@ -97,19 +65,19 @@ proc logpost {object_id level message} {
 
 # clear the log and the buffer
 proc clear_console {} {
-    variable logbuffer {}
+    variable logBuffer {}
     .console.text.internal delete 0.0 end
 }
 
-# save the contents of the pd_console::logbuffer to a file
+# save the contents of the pd_console::logBuffer to a file
 proc save_logbuffer_to_file {} {
-    variable logbuffer
+    variable logBuffer
     set filename [tk_getSaveFile -initialfile "pdconsole.txt" -defaultextension .txt]
     if {$filename eq ""} return; # they clicked cancel
     set f [open $filename w]
     puts $f "Tcl/Tk [info patchlevel]"
     puts $f "------------------------------------------------------------------------------"
-    puts $f $logbuffer
+    puts $f $logBuffer
     close $f
 }
 
@@ -158,22 +126,30 @@ proc console_bindings {} {
 
 #--create the window-----------------------------------------------------------#
 
-proc initialize {} {
-    variable logmenuitems
-    set ::patch_loaded(.console) 0
+proc set_layout {} {
+    .console.text.internal tag configure log0 -foreground "#d00" -background "#ffe0e8"
+    .console.text.internal tag configure log1 -foreground "#d00"
+    # log2 messages are normal black on white
+    .console.text.internal tag configure log3 -foreground "#484848"
 
-    # colorize by class before creating anything
-    option add *PdConsole*Entry.highlightBackground "grey" startupFile
-    option add *PdConsole*Frame.background "grey" startupFile
-    option add *PdConsole*Label.background "grey" startupFile
-    option add *PdConsole*Checkbutton.background "grey" startupFile
-    option add *PdConsole*Menubutton.background "grey" startupFile
-    option add *PdConsole*Text.background "white" startupFile
-    option add *PdConsole*Entry.background "white" startupFile
+    # 0-20(4-24) is a rough useful range of 'verbose' levels for impl debugging
+    set start 4
+    set end 25
+    for {set i $start} {$i < $end} {incr i} {
+        set B [expr int(($i - $start) * (40 / ($end - $start))) + 50]
+        .console.text.internal tag configure log${i} -foreground grey${B}
+    }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc initialize {} {
 
     toplevel .console -class PdConsole
     wm title .console [_ "Pd"]
     set ::patch_name(.console) [_ "Pd"]
+    
     if {[tk windowingsystem] eq "x11"} {
         wm minsize .console 400 75
     } else {
@@ -239,8 +215,6 @@ proc initialize {} {
         }
     }
     
-    set ::patch_loaded(.console) 1
-
     # set some layout variables
     ::pd_console::set_layout
 

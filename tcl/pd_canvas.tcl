@@ -83,7 +83,6 @@ proc pdtk_canvas_new {mytoplevel width height geometry editable} {
     # properly get the Map and FocusIn events when its created
 
     # set the loaded array for this new window so things can track state
-    set ::patch_loaded($mytoplevel) 0
     toplevel $mytoplevel -width $width -height $height -class PatchWindow
     wm group $mytoplevel .
     $mytoplevel configure -menu .menubar
@@ -282,7 +281,6 @@ proc ::pd_canvas::finished_loading_file {mytoplevel} {
 
     # set editmode to make sure the menu item is in the right state
     ::pd_canvas::pdtk_canvas_editmode $mytoplevel $::patch_isEditmode($mytoplevel)
-    set ::patch_loaded($mytoplevel) 1
     # send the virtual events now that everything is loaded
     event generate $mytoplevel <<Loaded>>
 }

@@ -187,7 +187,6 @@ proc ::pd_bindings::window_destroy {window} {
     set mytoplevel [winfo toplevel $window]
     unset ::patch_isEditmode($mytoplevel)
     unset ::patch_isEditing($mytoplevel)
-    unset ::patch_loaded($mytoplevel)
     # unset my entries all of the window data tracking arrays
     array unset ::patch_name $mytoplevel
     array unset ::patch_parents $mytoplevel

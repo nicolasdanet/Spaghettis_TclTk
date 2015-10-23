@@ -176,7 +176,6 @@ array set patch_isEditmode      {}
 array set patch_isEditing       {}
 array set patch_isScrollableX   {}
 array set patch_isScrollableY   {}
-array set patch_loaded          {}
 array set patch_name            {}
 array set patch_parents         {}
 
@@ -188,7 +187,20 @@ proc _ {s} { return $s }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc mainX11 {} {
+proc mainSettings {} {
+
+    # GUI attributes.
+    
+    option add *PdConsole*Entry.highlightBackground "grey" startupFile
+    option add *PdConsole*Frame.background "grey" startupFile
+    option add *PdConsole*Label.background "grey" startupFile
+    option add *PdConsole*Checkbutton.background "grey" startupFile
+    option add *PdConsole*Menubutton.background "grey" startupFile
+    option add *PdConsole*Text.background "white" startupFile
+    option add *PdConsole*Entry.background "white" startupFile
+}
+
+proc mainSettingsX11 {} {
 
     set ::var(modifierKey) "Control"
     
@@ -208,7 +220,7 @@ proc mainX11 {} {
     set ::var(cursorRunClickMe) "arrow"
 }
 
-proc mainAqua {} {
+proc mainSettingsAqua {} {
 
     set ::var(modifierKey) "Mod1"
     
@@ -230,7 +242,7 @@ proc mainAqua {} {
     set ::var(cursorRunClickMe) "center_ptr"
 }
 
-proc mainWin32 {} {
+proc mainSettingsWin32 {} {
 
     set ::var(modifierKey) "Control"
     
@@ -261,12 +273,16 @@ proc main {argc argv} {
     fconfigure stderr -encoding utf-8
     fconfigure stdout -encoding utf-8
     
-    # Settings according to the host.
+    # Set various GUI settings.
+    
+    mainSettings
+    
+    # Set various platform specific GUI settings.
     
     switch -- [tk windowingsystem] {
-        "x11"   { mainX11   }
-        "aqua"  { mainAqua  }
-        "win32" { mainWin32 }
+        "x11"   { mainSettingsX11   }
+        "aqua"  { mainSettingsAqua  }
+        "win32" { mainSettingsWin32 }
     }
     
     # Handle socket connection.
