@@ -286,6 +286,8 @@ proc main {argc argv} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+# Notice that main is always called before.
+
 proc com_initialize {audioAPIs midiAPIs fontFamily fontWeight} {
 
     set ::var(apiAudioAvailables) $audioAPIs
