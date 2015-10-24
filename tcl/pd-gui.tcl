@@ -187,13 +187,9 @@ proc _ {s} { return $s }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc mainSettingsX11 {} {
+proc mainX11 {} {
 
     set ::var(modifierKey) "Control"
-    
-    # GUI attributes.
-    
-    option add *PatchWindow*Canvas.background "white" startupFile
     
     # Don't show hidden files ( http://wiki.tcl.tk/1060 ).
     
@@ -207,16 +203,9 @@ proc mainSettingsX11 {} {
     set ::var(cursorRunClickMe) "arrow"
 }
 
-proc mainSettingsAqua {} {
+proc mainAqua {} {
 
     set ::var(modifierKey) "Mod1"
-    
-    # GUI attributes.
-    
-    option add *DialogWindow*background "#E8E8E8" startupFile
-    option add *DialogWindow*Entry.highlightBackground "#E8E8E8" startupFile
-    option add *DialogWindow*Button.highlightBackground "#E8E8E8" startupFile
-    option add *DialogWindow*Entry.background "white" startupFile
     
     # Set initial directory.
     
@@ -229,19 +218,9 @@ proc mainSettingsAqua {} {
     set ::var(cursorRunClickMe) "center_ptr"
 }
 
-proc mainSettingsWin32 {} {
+proc mainWin32 {} {
 
     set ::var(modifierKey) "Control"
-    
-    # GUI attributes.
-    
-    font create menufont -family Tahoma -size -11
-    
-    option add *PatchWindow*Canvas.background "white" startupFile
-    option add *Menu.font menufont startupFile
-    option add *DialogWindow*font menufont startupFile
-    option add *PdConsole*font menufont startupFile
-    option add *ErrorDialog*font menufont startupFile
     
     # Define mouse cursor symbols.
     
@@ -263,9 +242,9 @@ proc main {argc argv} {
     # Set various platform specific GUI settings.
     
     switch -- [tk windowingsystem] {
-        "x11"   { mainSettingsX11   }
-        "aqua"  { mainSettingsAqua  }
-        "win32" { mainSettingsWin32 }
+        "x11"   { mainX11   }
+        "aqua"  { mainAqua  }
+        "win32" { mainWin32 }
     }
     
     # Handle socket connection.

@@ -98,7 +98,7 @@ proc pdtk_pd_dsp {value} {
 
 proc console_bindings {} {
     # these bindings are for the whole Pd window, minus the Tcl entry
-    foreach window {.console.text .console.header} {
+    foreach window {.console.text } {
         bind $window <$::var(modifierKey)-Key-x> "tk_textCut .console.text"
         bind $window <$::var(modifierKey)-Key-c> "tk_textCopy .console.text"
         bind $window <$::var(modifierKey)-Key-v> "tk_textPaste .console.text"
@@ -156,11 +156,6 @@ proc initialize {} {
     
     .console configure -menu .menubar
 
-    frame       .console.header         -background lightgrey
-    checkbutton .console.header.dsp     -background lightgrey \
-                                        -borderwidth 0 \
-                                        -variable ::var(isDsp) \
-                                        -command { ::pd_connect::pdsend "pd dsp $::var(isDsp)" }
     scrollbar   .console.scroll         -command ".console.text yview"
     text        .console.text           -borderwidth 0 \
                                         -font [getFontDefault 12] \
@@ -168,8 +163,6 @@ proc initialize {} {
                                         -undo 0 \
                                         -yscrollcommand ".console.scroll set"
         
-    pack .console.header                -side top   -fill x     -ipady 5
-    pack .console.header.dsp            -side right 
     pack .console.scroll                -side right -fill y
     pack .console.text                  -side right -fill both  -expand 1
     
