@@ -22,7 +22,7 @@ namespace eval ::dialog_confirm:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc com_confirmAction {top message reply default} {
+proc checkAction {top message reply default} {
 
     wm deiconify $top
     raise $top
