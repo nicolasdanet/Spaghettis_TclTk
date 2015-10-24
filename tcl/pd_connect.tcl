@@ -22,6 +22,13 @@ namespace eval ::pd_connect:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+namespace export clientSocket
+namespace export serverSocket
+namespace export pdsend
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 variable tcpSocket
 variable tcpBuffer ""
 
@@ -48,7 +55,9 @@ proc readSocket {} {
     } else {
         set script $tcpBuffer
         set tcpBuffer ""
-        if {[catch { uplevel "#0" $script }]} { puts stderr $::errorInfo }
+        if {[catch { uplevel "#0" $script }]} { 
+            puts stderr $::errorInfo 
+        }
     }
 }
 

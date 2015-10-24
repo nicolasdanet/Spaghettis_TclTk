@@ -14,16 +14,20 @@
 
 package provide pd_preferences 0.1
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 
 namespace eval ::pd_preferences:: {
-    namespace export init
-    namespace export write_recentfiles
-    namespace export update_recentfiles
-}
 
-# FIXME should these be globals ?
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 set ::recentfiles_key ""
 set ::recentfiles_domain ""
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 
 #################################################################
@@ -32,7 +36,7 @@ set ::recentfiles_domain ""
 # ------------------------------------------------------------------------------
 # init preferences
 #
-proc ::pd_preferences::initialize {} {
+proc initialize {} {
     switch -- [tk windowingsystem] {
         "aqua"  { init_aqua }
         "win32" { init_win }
@@ -46,19 +50,19 @@ proc ::pd_preferences::initialize {} {
         $::recentfiles_key $arr]}
 }
 
-proc ::pd_preferences::init_aqua {} {
+proc init_aqua {} {
     # osx has a "Open Recent" menu with 10 recent files (others have 5 inlined)
     set ::recentfiles_domain org.puredata.puredata
     set ::recentfiles_key "NSRecentDocuments"
 }
 
-proc ::pd_preferences::init_win {} {
+proc init_win {} {
     # windows uses registry
     set ::recentfiles_domain "HKEY_CURRENT_USER\\Software\\Pure-Data"
     set ::recentfiles_key "RecentDocs"
 }
 
-proc ::pd_preferences::init_x11 {} {
+proc init_x11 {} {
     # linux uses ~/.config/puredata dir
     set ::recentfiles_domain "~/.config/puredata"
     set ::recentfiles_key "recentfiles.conf"
@@ -68,14 +72,14 @@ proc ::pd_preferences::init_x11 {} {
 # ------------------------------------------------------------------------------
 # write recent files
 #
-proc ::pd_preferences::write_recentfiles {} {
+proc write_recentfiles {} {
     write_config $::var(filesRecent) $::recentfiles_domain $::recentfiles_key 1
 }
 
 # ------------------------------------------------------------------------------
 # this is called when opening a document (wheredoesthisshouldgo.tcl)
 #
-proc ::pd_preferences::update_recentfiles {afile} {
+proc update_recentfiles {afile} {
     # remove duplicates first
     set index [lsearch -exact $::var(filesRecent) $afile]
     set ::var(filesRecent) [lreplace $::var(filesRecent) $index $index]
@@ -92,7 +96,7 @@ proc ::pd_preferences::update_recentfiles {afile} {
 # ------------------------------------------------------------------------------
 # get configs from a file or the registry
 #
-proc ::pd_preferences::get_config {adomain {akey} {arr}} {
+proc get_config {adomain {akey} {arr}} {
     switch -- [tk windowingsystem] {
         "aqua"  { set conf [get_config_aqua $adomain $akey $arr] }
         "win32" { set conf [get_config_win $adomain $akey $arr] }
@@ -105,7 +109,7 @@ proc ::pd_preferences::get_config {adomain {akey} {arr}} {
 # write configs to a file or to the registry
 # $arr is true if the data needs to be written in an array
 #
-proc ::pd_preferences::write_config {data {adomain} {akey} {arr 0}} {
+proc write_config {data {adomain} {akey} {arr 0}} {
     switch -- [tk windowingsystem] {
         "aqua"  { write_config_aqua $data $adomain $akey $arr }
         "win32" { write_config_win $data $adomain $akey $arr }
@@ -120,7 +124,7 @@ proc ::pd_preferences::write_config {data {adomain} {akey} {arr 0}} {
 # ------------------------------------------------------------------------------
 # osx: read a plist file
 #
-proc ::pd_preferences::get_config_aqua {adomain {akey} {arr 0}} {
+proc get_config_aqua {adomain {akey} {arr 0}} {
     if {![catch {exec defaults read $adomain $akey} conf]} {
         if {$arr} {
             set conf [plist_array_to_tcl_list $conf]
@@ -136,7 +140,7 @@ proc ::pd_preferences::get_config_aqua {adomain {akey} {arr 0}} {
 # ------------------------------------------------------------------------------
 # win: read in the registry
 #
-proc ::pd_preferences::get_config_win {adomain {akey} {arr 0}} {
+proc get_config_win {adomain {akey} {arr 0}} {
     package require registry
     if {![catch {registry get $adomain $akey} conf]} {
         return [expr {$conf}]
@@ -148,7 +152,7 @@ proc ::pd_preferences::get_config_win {adomain {akey} {arr 0}} {
 # ------------------------------------------------------------------------------
 # linux: read a config file and return its lines splitted.
 #
-proc ::pd_preferences::get_config_x11 {adomain {akey} {arr 0}} {
+proc get_config_x11 {adomain {akey} {arr 0}} {
     set filename [file join $adomain $akey]
     set conf {}
     if {
@@ -168,7 +172,7 @@ proc ::pd_preferences::get_config_x11 {adomain {akey} {arr 0}} {
 # osx: write configs to plist file
 # if $arr is true, we write an array
 #
-proc ::pd_preferences::write_config_aqua {data {adomain} {akey} {arr 0}} {
+proc write_config_aqua {data {adomain} {akey} {arr 0}} {
     # FIXME empty and write again so we don't loose the order
     if {[catch {exec defaults write $adomain $akey -array} errorMsg]} {
         # ::pd_console::error "write_config_aqua $akey: $errorMsg"
@@ -188,7 +192,7 @@ proc ::pd_preferences::write_config_aqua {data {adomain} {akey} {arr 0}} {
 # win: write configs to registry
 # if $arr is true, we write an array
 #
-proc ::pd_preferences::write_config_win {data {adomain} {akey} {arr 0}} {
+proc write_config_win {data {adomain} {akey} {arr 0}} {
     package require registry
     # FIXME: ugly
     if {$arr} {
@@ -205,7 +209,7 @@ proc ::pd_preferences::write_config_win {data {adomain} {akey} {arr 0}} {
 # ------------------------------------------------------------------------------
 # linux: write configs to USER_APP_CONFIG_DIR
 #
-proc ::pd_preferences::write_config_x11 {data {adomain} {akey}} {
+proc write_config_x11 {data {adomain} {akey}} {
     # right now I (yvan) assume that data are just \n separated, i.e. no keys
     set data [join $data "\n"]
     set filename [file join $adomain $akey]
@@ -224,7 +228,7 @@ proc ::pd_preferences::write_config_x11 {data {adomain} {akey}} {
 # ------------------------------------------------------------------------------
 # linux only! : look for pd config directory and create it if needed
 #
-proc ::pd_preferences::prepare_configdir {} {
+proc prepare_configdir {} {
     if { [catch {
         if {[file isdirectory $::recentfiles_domain] != 1} {
             file mkdir $::recentfiles_domain
@@ -238,7 +242,7 @@ proc ::pd_preferences::prepare_configdir {} {
 # ------------------------------------------------------------------------------
 # osx: handles arrays in plist files (thanks hc)
 #
-proc ::pd_preferences::plist_array_to_tcl_list {arr} {
+proc plist_array_to_tcl_list {arr} {
     set result {}
     set filelist $arr
     regsub -all -- {("?),\s+("?)} $filelist {\1 \2} filelist
@@ -256,6 +260,14 @@ proc ::pd_preferences::plist_array_to_tcl_list {arr} {
 
 # the Mac OS X 'defaults' command uses single quotes to quote things,
 # so they need to be escaped
-proc ::pd_preferences::escape_for_plist {str} {
+proc escape_for_plist {str} {
     return [regsub -all -- {'} $str {\\'}]
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
