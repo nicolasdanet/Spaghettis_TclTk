@@ -94,36 +94,6 @@ proc pdtk_pd_dsp {value} {
     }
 }
 
-#--bindings specific to the Pd window------------------------------------------#
-
-proc console_bindings {} {
-    # these bindings are for the whole Pd window, minus the Tcl entry
-    foreach window {.console.text } {
-        bind $window <$::var(modifierKey)-Key-x> "tk_textCut .console.text"
-        bind $window <$::var(modifierKey)-Key-c> "tk_textCopy .console.text"
-        bind $window <$::var(modifierKey)-Key-v> "tk_textPaste .console.text"
-    }
-    # Select All doesn't seem to work unless its applied to the whole window
-    bind .console <$::var(modifierKey)-Key-a> ".console.text tag add sel 1.0 end"
-    # the "; break" part stops executing another binds, like from the Text class
-
-    # these don't do anything in the Pd window, so alert the user, then break
-    # so no more bindings run
-    bind .console <$::var(modifierKey)-Key-s> "bell; break"
-    bind .console <$::var(modifierKey)-Key-p> "bell; break"
-
-    # ways of hiding/closing the Pd window
-    if {[tk windowingsystem] eq "aqua"} {
-        # on Mac OS X, you can close the Pd window, since the menubar is there
-        bind .console <$::var(modifierKey)-Key-w>   "wm withdraw .console"
-        wm protocol .console WM_DELETE_WINDOW "wm withdraw .console"
-    } else {
-        # TODO should it possible to close the Pd window and keep Pd open?
-        bind .console <$::var(modifierKey)-Key-w>   "wm iconify .console"
-        wm protocol .console WM_DELETE_WINDOW "::pd_connect::pdsend \"pd verifyquit\""
-    }
-}
-
 #--create the window-----------------------------------------------------------#
 
 proc set_layout {} {
@@ -168,8 +138,6 @@ proc initialize {} {
     
     raise .console
     focus .console.text
-
-    console_bindings
 
     # hack to make a good read-only text widget from http://wiki.tcl.tk/1152
     rename ::.console.text ::.console.text.internal
