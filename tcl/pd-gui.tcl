@@ -130,6 +130,8 @@ set var(directorySearchPath)    {}
 
 set var(filesOpenPended)        {}
 set var(filesRecent)            {}
+set var(filesRecentDomain)      ""
+set var(filesRecentKey)         ""
 set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pdhelp}} }
 
 set var(fontFamily)             [::pd_miscellaneous::getDefaultFamily]
@@ -191,43 +193,45 @@ proc _ {s} { return $s }
 
 proc mainX11 {} {
 
-    set ::var(modifierKey) "Control"
-    
+    set ::var(cursorRunNothing)         "left_ptr"
+    set ::var(cursorRunClickMe)         "arrow"
+    set ::var(filesRecentDomain)        "~/.config/puredata"
+    set ::var(filesRecentKey)           "recentfiles.conf"
+    set ::var(modifierKey)              "Control"
+        
     # Don't show hidden files ( http://wiki.tcl.tk/1060 ).
     
     catch { tk_getOpenFile -dummy } 
     set ::tk::dialog::file::showHiddenBtn 1
     set ::tk::dialog::file::showHiddenVar 0
     
-    # Define mouse cursor symbols.
+    # Create directory for preferences.
     
-    set ::var(cursorRunNothing) "left_ptr"
-    set ::var(cursorRunClickMe) "arrow"
+    if {![file isdirectory $::var(filesRecentDomain)]} {
+    if {![file isfile $::var(filesRecentDomain)]} {
+        file mkdir $::var(filesRecentDomain) 
+    }
+    }
 }
 
 proc mainAqua {} {
 
-    set ::var(modifierKey) "Mod1"
-    
-    # Set initial directory.
-    
-    set ::var(directoryNew) $::env(HOME)
-    set ::var(directoryOpen) $::env(HOME)
-
-    # Define mouse cursor symbols.
-    
-    set ::var(cursorRunNothing) "arrow"
-    set ::var(cursorRunClickMe) "center_ptr"
+    set ::var(cursorRunNothing)         "arrow"
+    set ::var(cursorRunClickMe)         "center_ptr"
+    set ::var(directoryNew)             $::env(HOME)
+    set ::var(directoryOpen)            $::env(HOME)
+    set ::var(filesRecentDomain)        "org.puredata.puredata"
+    set ::var(filesRecentKey)           "NSRecentDocuments"
+    set ::var(modifierKey)              "Mod1"
 }
 
 proc mainWin32 {} {
 
-    set ::var(modifierKey) "Control"
-    
-    # Define mouse cursor symbols.
-    
-    set ::var(cursorRunNothing) "right_ptr"
-    set ::var(cursorRunClickMe) "arrow"
+    set ::var(cursorRunNothing)         "right_ptr"
+    set ::var(cursorRunClickMe)         "arrow"
+    set ::var(filesRecentDomain)        "HKEY_CURRENT_USER\\Software\\Pure-Data"
+    set ::var(filesRecentKey)           "RecentDocs"
+    set ::var(modifierKey)              "Control"
 }
 
 # ------------------------------------------------------------------------------------------------------------

@@ -17,63 +17,30 @@ package provide pd_preferences 0.1
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-
 namespace eval ::pd_preferences:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-set ::recentfiles_key ""
-set ::recentfiles_domain ""
+namespace export initialize
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-
-#################################################################
-# global procedures
-#################################################################
-# ------------------------------------------------------------------------------
-# init preferences
-#
 proc initialize {} {
-    switch -- [tk windowingsystem] {
-        "aqua"  { init_aqua }
-        "win32" { init_win }
-        "x11"   { init_x11 }
-    }
     # assign gui preferences
     # osx special case for arrays
     set arr [expr { [tk windowingsystem] eq "aqua" }]
     set ::var(filesRecent) ""
-    catch {set ::var(filesRecent) [get_config $::recentfiles_domain \
-        $::recentfiles_key $arr]}
-}
-
-proc init_aqua {} {
-    # osx has a "Open Recent" menu with 10 recent files (others have 5 inlined)
-    set ::recentfiles_domain org.puredata.puredata
-    set ::recentfiles_key "NSRecentDocuments"
-}
-
-proc init_win {} {
-    # windows uses registry
-    set ::recentfiles_domain "HKEY_CURRENT_USER\\Software\\Pure-Data"
-    set ::recentfiles_key "RecentDocs"
-}
-
-proc init_x11 {} {
-    # linux uses ~/.config/puredata dir
-    set ::recentfiles_domain "~/.config/puredata"
-    set ::recentfiles_key "recentfiles.conf"
-    prepare_configdir
+    catch {set ::var(filesRecent) [get_config $::var(filesRecentDomain)  \
+        $::var(filesRecentKey)  $arr]}
 }
 
 # ------------------------------------------------------------------------------
 # write recent files
 #
 proc write_recentfiles {} {
-    write_config $::var(filesRecent) $::recentfiles_domain $::recentfiles_key 1
+    write_config $::var(filesRecent) $::var(filesRecentDomain)  $::var(filesRecentKey)  1
 }
 
 # ------------------------------------------------------------------------------
@@ -224,20 +191,6 @@ proc write_config_x11 {data {adomain} {akey}} {
 #################################################################
 # utils
 #################################################################
-
-# ------------------------------------------------------------------------------
-# linux only! : look for pd config directory and create it if needed
-#
-proc prepare_configdir {} {
-    if { [catch {
-        if {[file isdirectory $::recentfiles_domain] != 1} {
-            file mkdir $::recentfiles_domain
-            # ::pd_console::debug "$::recentfiles_domain was created.\n"
-            }
-    }]} {
-            # ::pd_console::error "$::recentfiles_domain was *NOT* created.\n"
-    }
-}
 
 # ------------------------------------------------------------------------------
 # osx: handles arrays in plist files (thanks hc)
