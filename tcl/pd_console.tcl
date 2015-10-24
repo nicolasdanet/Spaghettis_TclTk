@@ -147,62 +147,35 @@ proc set_layout {} {
 proc initialize {} {
 
     toplevel .console -class PdConsole
-    wm title .console [_ "Pd"]
-    set ::patch_name(.console) [_ "Pd"]
     
-    if {[tk windowingsystem] eq "x11"} {
-        wm minsize .console 400 75
-    } else {
-        wm minsize .console 400 51
-    }
+    set ::patch_name(.console) [_ "PureData"]
+    
+    wm title    .console [_ "PureData"]
+    wm minsize  .console 400 75
     wm geometry .console =500x400+20+50
+    
     .console configure -menu .menubar
 
-    frame .console.header -borderwidth 1 -relief flat -background lightgray
-    pack .console.header -side top -fill x -ipady 5
-
-    frame .console.header.pad1
-    pack .console.header.pad1 -side left -padx 12
-
-    checkbutton .console.header.dsp -text [_ "DSP"] -variable ::var(isDsp) \
-        -font {$::var(fontFamily) -18 bold} -takefocus 1 -background lightgray \
-        -borderwidth 0  -command {::pd_connect::pdsend "pd dsp $::var(isDsp)"}
-    pack .console.header.dsp -side right -fill y -anchor e -padx 5 -pady 0
-
-# frame for DIO error and audio in/out labels
-    frame .console.header.ioframe -background lightgray
-    pack .console.header.ioframe -side right -padx 30
-
-# I/O state label (shows I/O on/off/in-only/out-only)
-    label .console.header.ioframe.iostate \
-        -text [_ "audio I/O off"] -borderwidth 0 \
-        -background lightgray -foreground black \
-        -takefocus 0 \
-        -font {$::var(fontFamily) -14}
-
-# DIO error label
-    label .console.header.ioframe.dio \
-        -text [_ "audio I/O error"] -borderwidth 0 \
-        -background lightgray -foreground lightgray \
-        -takefocus 0 \
-        -font {$::var(fontFamily) -14}
-
-    pack .console.header.ioframe.iostate .console.header.ioframe.dio \
-        -side top
-
-    frame .console.tcl -borderwidth 0
-    pack .console.tcl -side bottom -fill x
-# TODO this should use the pd_font_$size created in pd-gui.tcl    
-    text .console.text -relief raised -bd 2 -font {$::var(fontFamily) -12} \
-        -highlightthickness 0 -borderwidth 1 -relief flat \
-        -yscrollcommand ".console.scroll set" -width 60 \
-        -undo 0 -autoseparators 0 -maxundo 1 -takefocus 0
-    scrollbar .console.scroll -command ".console.text.internal yview"
-    pack .console.scroll -side right -fill y
-    pack .console.text -side right -fill both -expand 1
+    frame       .console.header         -background lightgrey
+    checkbutton .console.header.dsp     -background lightgrey \
+                                        -borderwidth 0 \
+                                        -variable ::var(isDsp) \
+                                        -command { ::pd_connect::pdsend "pd dsp $::var(isDsp)" }
+    scrollbar   .console.scroll         -command ".console.text yview"
+    text        .console.text           -borderwidth 0 \
+                                        -font [getFontDefault 12] \
+                                        -highlightthickness 0 \
+                                        -undo 0 \
+                                        -yscrollcommand ".console.scroll set"
+        
+    pack .console.header                -side top   -fill x     -ipady 5
+    pack .console.header.dsp            -side right 
+    pack .console.scroll                -side right -fill y
+    pack .console.text                  -side right -fill both  -expand 1
+    
     raise .console
     focus .console.text
-    # run bindings last so that .console.tcl.entry exists
+
     console_bindings
 
     # hack to make a good read-only text widget from http://wiki.tcl.tk/1152

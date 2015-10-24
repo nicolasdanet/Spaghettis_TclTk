@@ -156,7 +156,7 @@ set var(windowFocused)          .
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc getFont {size} { return "::var(font${size})" }
+proc getFontDefault {size} { return "::var(font${size})" }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -186,19 +186,6 @@ proc _ {s} { return $s }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
-
-proc mainSettings {} {
-
-    # GUI attributes.
-    
-    option add *PdConsole*Entry.highlightBackground "grey" startupFile
-    option add *PdConsole*Frame.background "grey" startupFile
-    option add *PdConsole*Label.background "grey" startupFile
-    option add *PdConsole*Checkbutton.background "grey" startupFile
-    option add *PdConsole*Menubutton.background "grey" startupFile
-    option add *PdConsole*Text.background "white" startupFile
-    option add *PdConsole*Entry.background "white" startupFile
-}
 
 proc mainSettingsX11 {} {
 
@@ -273,10 +260,6 @@ proc main {argc argv} {
     fconfigure stderr -encoding utf-8
     fconfigure stdout -encoding utf-8
     
-    # Set various GUI settings.
-    
-    mainSettings
-    
     # Set various platform specific GUI settings.
     
     switch -- [tk windowingsystem] {
@@ -319,14 +302,14 @@ proc com_initialize {audioAPIs midiAPIs fontFamily fontWeight} {
     set measured ""
     
     foreach size $::var(fontSizes) {
-        set f [getFont $size]
+        set f [getFontDefault $size]
         font create $f -family $::var(fontFamily) -weight $::var(fontWeight) -size [expr -${size}]
         lappend measured $size 
         lappend measured [font measure $f M]
         lappend measured [font metrics $f -linespace]
     }
 
-    # Initialize some packages.
+    # Initialize some packages (reorder with care).
     
     foreach sub {preferences bindings menus canvas console} { pd_${sub}::initialize }
     

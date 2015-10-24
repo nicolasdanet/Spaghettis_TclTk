@@ -15,7 +15,7 @@ package provide pd_text 0.1
 # create a new text object (ie. obj, msg, comment)
 proc pdtk_text_new {tkcanvas tags x y text font_size color} {
     $tkcanvas create text $x $y -tags $tags -text $text -fill $color \
-        -anchor nw -font [getFont $font_size]
+        -anchor nw -font [getFontDefault $font_size]
     set mytag [lindex $tags 0]
     $tkcanvas bind $mytag <Home> "$tkcanvas icursor $mytag 0"
     $tkcanvas bind $mytag <End>  "$tkcanvas icursor $mytag end"
