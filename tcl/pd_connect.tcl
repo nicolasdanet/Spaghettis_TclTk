@@ -35,7 +35,7 @@ variable tcpBuffer ""
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc readSocket {} {
+proc _readSocket {} {
     
     variable tcpSocket
     variable tcpBuffer
@@ -48,7 +48,7 @@ proc readSocket {} {
     
     append tcpBuffer [read $tcpSocket]
     
-    # Execute the command (skip uncomplete).
+    # Execute the command (skip uncomplete) at global scope.
     
     if {[string index $tcpBuffer end] ne "\n" || ![info complete $tcpBuffer]} { 
         return 
@@ -64,7 +64,7 @@ proc readSocket {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc configureSocket {sock} {
+proc _configureSocket {sock} {
     
     # Non-blocking socket without buffer.
     
@@ -72,20 +72,20 @@ proc configureSocket {sock} {
     
     # Set the callback executed while receiving data. 
     
-    fileevent $sock readable { ::pd_connect::readSocket }
+    fileevent $sock readable { ::pd_connect::_readSocket }
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc configureClientSocket {} { 
+proc _configureClientSocket {} { 
     variable tcpSocket
-    ::pd_connect::configureSocket $tcpSocket 
+    ::pd_connect::_configureSocket $tcpSocket 
 }
 
-proc configureServerSocket {channel host port} {
+proc _configureServerSocket {channel host port} {
     variable tcpSocket $channel
-    ::pd_connect::configureSocket $tcpSocket
+    ::pd_connect::_configureSocket $tcpSocket
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -99,12 +99,12 @@ proc clientSocket {port host} {
         error "Connection to the TCP server $host:$port failed."
     }
 
-    ::pd_connect::configureClientSocket
+    ::pd_connect::_configureClientSocket
 }
 
 proc serverSocket {} {
 
-    if {[catch { set sock [socket -server ::pd_connect::configureServerSocket -myaddr localhost 0] }]} {
+    if {[catch { set sock [socket -server ::pd_connect::_configureServerSocket -myaddr localhost 0] }]} {
         error "Creation of the TCP server failed."
     }
     
