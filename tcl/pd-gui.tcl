@@ -296,11 +296,13 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
     
     ::pd_menus::configureForConsole
     
-    # Respond and open pended files (if any).
+    # Respond.
     
     ::pd_connect::pdsend "pd init [enquote_path [pwd]] $measured"
     
     set ::var(isInitialized) 1
+    
+    # Open pended files.
     
     foreach filename $::var(filesOpenPended) { ::pd_miscellaneous::open_file $filename }
 }
