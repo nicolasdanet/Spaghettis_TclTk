@@ -1082,7 +1082,7 @@ static void canvas_start_dsp(void)
 {
     t_canvas *x;
     if (pd_this->pd_dspstate) ugen_stop();
-    else sys_gui("::pd_console::pdtk_pd_dsp ON\n");
+    else sys_gui("set ::var(isDsp) 1\n");
     ugen_start();
     
     for (x = pd_getcanvaslist(); x; x = x->gl_next)
@@ -1096,7 +1096,7 @@ static void canvas_stop_dsp(void)
     if (pd_this->pd_dspstate)
     {
         ugen_stop();
-        sys_gui("::pd_console::pdtk_pd_dsp OFF\n");
+        sys_gui("set ::var(isDsp) 0\n");
         canvas_dspstate = pd_this->pd_dspstate = 0;
     }
 }

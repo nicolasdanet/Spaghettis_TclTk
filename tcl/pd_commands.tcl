@@ -80,8 +80,6 @@ proc ::pd_commands::menu_send {window message} {
             tk_textCopy .console.text
         } elseif {$message eq "selectall"} {
             .console.text tag add sel 1.0 end
-        } elseif {$message eq "menusaveas"} {
-            ::pd_console::save_logbuffer_to_file
         }
     }
 }
@@ -153,7 +151,7 @@ proc ::pd_commands::menu_raisenextwindow {} {
 # ------------------------------------------------------------------------------
 # Pd window functions
 proc menu_clear_console {} {
-    ::pd_console::clear_console
+    ::pd_console::clear
 }
 
 # ------------------------------------------------------------------------------
