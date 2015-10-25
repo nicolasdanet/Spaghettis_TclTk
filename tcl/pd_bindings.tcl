@@ -28,21 +28,45 @@ namespace export initialize
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+variable modifier "Control"
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc initialize {} {
+    
+    variable modifier
+    
+    if {[tk windowingsystem] eq "aqua"} { set modifier "Command" }
+    
+    # Virtual events.
+    
+    event add <<Close>>         <$modifier-c>
+    event add <<Close>>         <$modifier-w>
+    event add <<Duplicate>>     <$modifier-d>
+    event add <<Edit>>          <$modifier-e>
+    event add <<NewFile>>       <$modifier-n>
+    event add <<OpenFile>>      <$modifier-o>
+    event add <<Quit>>          <$modifier-q>
+    event add <<Save>>          <$modifier-s>
+    event add <<SaveAs>>        <Shift-$modifier-s>
+    event add <<SelectAll>>     <$modifier-a>
+    
+    # Widget binding.
     
     wm protocol .console WM_DELETE_WINDOW   { ::pd_connect::pdsend "pd verifyquit" }
     
     # Class binding.
     
-    bind PdConsole      <FocusIn>           { ::pd_bindings::window_focusin %W }
+    bind PdConsole  <FocusIn>               { ::pd_bindings::window_focusin %W }
     
-    bind PatchWindow    <Configure>         { ::pd_bindings::patch_configure %W %w %h %x %y }
-    bind PatchWindow    <FocusIn>           { ::pd_bindings::window_focusin %W }
-    bind PatchWindow    <Map>               { ::pd_bindings::map %W }
-    bind PatchWindow    <Unmap>             { ::pd_bindings::unmap %W }
+    bind PdPatch    <Configure>             { ::pd_bindings::patch_configure %W %w %h %x %y }
+    bind PdPatch    <FocusIn>               { ::pd_bindings::window_focusin %W }
+    bind PdPatch    <Map>                   { ::pd_bindings::map %W }
+    bind PdPatch    <Unmap>                 { ::pd_bindings::unmap %W }
 
-    bind DialogWindow   <Configure>         { ::pd_bindings::dialog_configure %W }
-    bind DialogWindow   <FocusIn>           { ::pd_bindings::dialog_focusin %W }
+    bind PdDialog   <Configure>             { ::pd_bindings::dialog_configure %W }
+    bind PdDialog   <FocusIn>               { ::pd_bindings::dialog_focusin %W }
 
     # All binding.
     
@@ -55,7 +79,7 @@ proc initialize {} {
     bind all <<Copy>>                       { ::pd_commands::menu_send %W copy }
     bind all <<Cut>>                        { ::pd_commands::menu_send %W cut }
     bind all <<Duplicate>>                  { ::pd_commands::menu_send %W duplicate }
-    bind all <<EditMode>>                   { ::pd_commands::menu_toggle_editmode }
+    bind all <<Edit>>                       { }
     bind all <<NewFile>>                    { ::pd_commands::menu_new }
     bind all <<OpenFile>>                   { ::pd_commands::menu_open }
     bind all <<Paste>>                      { ::pd_commands::menu_send %W paste }
@@ -68,21 +92,6 @@ proc initialize {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc dialog_bindings {mytoplevel dialogname} {
-    variable modifier
-
-    bind $mytoplevel <KeyPress-Escape> "dialog_${dialogname}::cancel $mytoplevel"
-    bind $mytoplevel <KeyPress-Return> "dialog_${dialogname}::ok $mytoplevel"
-    bind $mytoplevel <$::var(modifierKey)-Key-w> "dialog_${dialogname}::cancel $mytoplevel"
-    # these aren't supported in the dialog, so alert the user, then break so
-    # that no other key bindings are run
-    bind $mytoplevel <$::var(modifierKey)-Key-s>       {bell; break}
-    bind $mytoplevel <$::var(modifierKey)-Shift-Key-S> {bell; break}
-    bind $mytoplevel <$::var(modifierKey)-Key-p>       {bell; break}
-
-    wm protocol $mytoplevel WM_DELETE_WINDOW "dialog_${dialogname}::cancel $mytoplevel"
-}
-
 proc patch_bindings {mytoplevel} {
     variable modifier
     set tkcanvas [tkcanvas_name $mytoplevel]
@@ -93,10 +102,10 @@ proc patch_bindings {mytoplevel} {
     # these need to be bound to $tkcanvas because %W will return $mytoplevel for
     # events over the window frame and $tkcanvas for events over the canvas
     bind $tkcanvas <Motion>                   "pdtk_canvas_motion %W %x %y 0"
-    bind $tkcanvas <$::var(modifierKey)-Motion>         "pdtk_canvas_motion %W %x %y 2"
+    #bind $tkcanvas <$::var(modifierKey)-Motion>         "pdtk_canvas_motion %W %x %y 2"
     bind $tkcanvas <ButtonPress-1>            "pdtk_canvas_mouse %W %x %y %b 0"
     bind $tkcanvas <ButtonRelease-1>          "pdtk_canvas_mouseup %W %x %y %b"
-    bind $tkcanvas <$::var(modifierKey)-ButtonPress-1>  "pdtk_canvas_mouse %W %x %y %b 2"
+    #bind $tkcanvas <$::var(modifierKey)-ButtonPress-1>  "pdtk_canvas_mouse %W %x %y %b 2"
     bind $tkcanvas <Shift-ButtonPress-1>        "pdtk_canvas_mouse %W %x %y %b 1"
 
     if {[tk windowingsystem] eq "x11"} {
@@ -230,7 +239,7 @@ proc sendkey {window state key iso shift} {
     if {! [winfo exists $window]} {return}
     #$window might be a toplevel or canvas, [winfo toplevel] does the right thing
     set mytoplevel [winfo toplevel $window]
-    if {[winfo class $mytoplevel] eq "PatchWindow"} {
+    if {[winfo class $mytoplevel] eq "PdPatch"} {
         ::pd_connect::pdsend "$mytoplevel key $state $key $shift"
     } else {
     ::pd_connect::pdsend "pd key $state $key $shift"

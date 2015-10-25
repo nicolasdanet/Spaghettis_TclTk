@@ -144,14 +144,13 @@ proc ::dialog_canvas::pdtk_canvas_dialog {mytoplevel xscale yscale graphmeflags 
 }
 
 proc ::dialog_canvas::create_dialog {mytoplevel} {
-    toplevel $mytoplevel -class DialogWindow
+    toplevel $mytoplevel -class PdDialog
     wm title $mytoplevel [_ "Canvas Properties"]
     wm group $mytoplevel .
     wm resizable $mytoplevel 0 0
     wm transient $mytoplevel $::var(windowFocused)
     if {[tk windowingsystem] eq "aqua"} { $mytoplevel configure -menu .menubar }
     $mytoplevel configure -padx 0 -pady 0
-    ::pd_bindings::dialog_bindings $mytoplevel "canvas"
     
     labelframe $mytoplevel.scale -text [_ "Scale"] -borderwidth 1
     pack $mytoplevel.scale -side top -fill x

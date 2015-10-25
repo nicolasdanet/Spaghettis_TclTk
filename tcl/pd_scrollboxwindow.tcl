@@ -63,7 +63,7 @@ proc ::pd_scrollboxwindow::ok {mytoplevel commit_method } {
 proc ::pd_scrollboxwindow::make {mytoplevel listdata add_method edit_method commit_method title width height } {
     wm deiconify .console
     raise .console
-    toplevel $mytoplevel -class DialogWindow
+    toplevel $mytoplevel -class PdDialog
     wm title $mytoplevel $title
     wm group $mytoplevel .
     wm transient $mytoplevel .console

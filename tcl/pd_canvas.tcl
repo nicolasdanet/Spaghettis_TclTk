@@ -19,7 +19,7 @@ namespace eval ::pd_canvas:: {
 # but not the same thing.  In Pd code, a 'canvas' is basically a patch, while
 # the Tk 'canvas' is the backdrop for drawing everything that is in a patch.
 # The Tk 'canvas' is contained in a 'toplevel' window. That window has a Tk
-# class of 'PatchWindow'.
+# class of 'PdPatch'.
 
 # TODO figure out weird frameless window when you open a graph
 
@@ -83,7 +83,7 @@ proc pdtk_canvas_new {mytoplevel width height geometry editable} {
     # properly get the Map and FocusIn events when its created
 
     # set the loaded array for this new window so things can track state
-    toplevel $mytoplevel -width $width -height $height -class PatchWindow
+    toplevel $mytoplevel -width $width -height $height -class PdPatch
     wm group $mytoplevel .
     $mytoplevel configure -menu .menubar
 
@@ -290,7 +290,6 @@ proc ::pd_canvas::finished_loading_file {mytoplevel} {
 proc ::pd_canvas::pdtk_canvas_editmode {mytoplevel state} {
     set ::var(isEditmode) $state
     set ::patch_isEditmode($mytoplevel) $state
-    event generate $mytoplevel <<EditMode>>
 }
 
 # message from Pd to update the currently available undo/redo action

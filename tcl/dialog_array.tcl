@@ -58,7 +58,7 @@ proc ::dialog_array::pdtk_array_listview_new {id arrayName page} {
     set ::pd_array_listview_id($arrayName) $id
     set windowName [format ".%sArrayWindow" $arrayName]
     if [winfo exists $windowName] then [destroy $windowName]
-    toplevel $windowName -class DialogWindow
+    toplevel $windowName -class PdDialog
     wm group $windowName .
     wm protocol $windowName WM_DELETE_WINDOW \
         "::dialog_array::listview_close $id $arrayName"
@@ -257,14 +257,13 @@ proc ::dialog_array::pdtk_array_dialog {mytoplevel name size flags newone} {
 }
 
 proc ::dialog_array::create_dialog {mytoplevel newone} {
-    toplevel $mytoplevel -class DialogWindow
+    toplevel $mytoplevel -class PdDialog
     wm title $mytoplevel [_ "Array Properties"]
     wm group $mytoplevel .
     wm resizable $mytoplevel 0 0
     wm transient $mytoplevel $::var(windowFocused)
     if {[tk windowingsystem] eq "aqua"} { $mytoplevel configure -menu .menubar }
     $mytoplevel configure -padx 0 -pady 0
-    ::pd_bindings::dialog_bindings $mytoplevel "array"
 
     frame $mytoplevel.name
     pack $mytoplevel.name -side top

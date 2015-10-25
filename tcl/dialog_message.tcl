@@ -52,7 +52,7 @@ proc ::dialog_message::cancel {mytoplevel} {
 }
 
 proc ::dialog_message::create_dialog {mytoplevel} {
-    toplevel .message -class DialogWindow
+    toplevel .message -class PdDialog
     wm group .message .
     wm transient .message
     wm title .message [_ "Send a Pd message"]
@@ -61,7 +61,6 @@ proc ::dialog_message::create_dialog {mytoplevel} {
     wm minsize .message 250 80
     if {[tk windowingsystem] eq "aqua"} { .message configure -menu .menubar }
     .message configure -padx 10 -pady 5
-    ::pd_bindings::dialog_bindings .message "message"
     # not all Tcl/Tk versions or platforms support -topmost, so catch the error
     catch {wm attributes $id -topmost 1}
 

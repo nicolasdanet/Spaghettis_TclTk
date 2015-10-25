@@ -138,7 +138,6 @@ set var(isInitialized)          0
 set var(isDsp)                  0
 set var(isEditmode)             0
 
-set var(modifierKey)            ""
 set var(scriptName)             [file normalize [info script]]
 
 set var(startupFlags)           {}
@@ -209,19 +208,16 @@ proc main {argc argv} {
         "x11"   {
             set ::var(cursorRunNothing)     "left_ptr"
             set ::var(cursorRunClickMe)     "arrow"
-            set ::var(modifierKey)          "Control"
         }
         "aqua"  {
             set ::var(cursorRunNothing)     "arrow"
             set ::var(cursorRunClickMe)     "center_ptr"
             set ::var(directoryNew)         $::env(HOME)
             set ::var(directoryOpen)        $::env(HOME)
-            set ::var(modifierKey)          "Mod1"
         }
         "win32" { 
             set ::var(cursorRunNothing)     "right_ptr"
             set ::var(cursorRunClickMe)     "arrow"
-            set ::var(modifierKey)          "Control"
         }
     }
     
@@ -268,7 +264,7 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
 
     # Initialize some packages.
     
-    foreach sub {console bindings menus canvas} { pd_${sub}::initialize }
+    foreach module {pd_console pd_bindings pd_menus pd_canvas} { ::${module}::initialize }
     
     # Set the menubar configuration.
     

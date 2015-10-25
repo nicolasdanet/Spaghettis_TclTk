@@ -46,7 +46,7 @@ proc ::pd_commands::menu_open {} {
 # functions called from Edit menu
 
 proc ::pd_commands::menu_editmode {state} {
-    if {[winfo class $::var(windowFocused)] ne "PatchWindow"} {return}
+    if {[winfo class $::var(windowFocused)] ne "PdPatch"} {return}
     set ::var(isEditmode) $state
 # this shouldn't be necessary because 'pd' will reply with ::pd_canvas::pdtk_canvas_editmode
 #    set ::patch_isEditmode($::var(windowFocused)) $state
@@ -63,7 +63,7 @@ proc ::pd_commands::menu_toggle_editmode {} {
 # send a message to a pd canvas receiver
 proc ::pd_commands::menu_send {window message} {
     set mytoplevel [winfo toplevel $window]
-    if {[winfo class $mytoplevel] eq "PatchWindow"} {
+    if {[winfo class $mytoplevel] eq "PdPatch"} {
         ::pd_connect::pdsend "$mytoplevel $message"
     } elseif {$mytoplevel eq ".console"} {
         if {$message eq "copy"} {
@@ -77,7 +77,7 @@ proc ::pd_commands::menu_send {window message} {
 # send a message to a pd canvas receiver with a float arg
 proc ::pd_commands::menu_send_float {window message float} {
     set mytoplevel [winfo toplevel $window]
-    if {[winfo class $mytoplevel] eq "PatchWindow"} {
+    if {[winfo class $mytoplevel] eq "PdPatch"} {
         ::pd_connect::pdsend "$mytoplevel $message $float"
     }
 }
@@ -167,7 +167,7 @@ proc ::pd_commands::menu_aboutpd {} {
         scrollbar .aboutpd.scroll -command ".aboutpd.text yview"
         pack .aboutpd.scroll -side right -fill y
         pack .aboutpd.text -side left -fill both -expand 1
-        bind .aboutpd <$::var(modifierKey)-Key-w>   "wm withdraw .aboutpd"
+        bind .aboutpd <<Close>>   "wm withdraw .aboutpd"
     }
 }
 

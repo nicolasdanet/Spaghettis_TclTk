@@ -32,7 +32,7 @@ proc ::dialog_data::ok {mytoplevel} {
 }
 
 proc ::dialog_data::pdtk_data_dialog {mytoplevel stuff} {
-    toplevel $mytoplevel -class DialogWindow
+    toplevel $mytoplevel -class PdDialog
     wm title $mytoplevel [_ "Data Properties"]
     wm group $mytoplevel $::var(windowFocused)
     wm transient $mytoplevel $::var(windowFocused)

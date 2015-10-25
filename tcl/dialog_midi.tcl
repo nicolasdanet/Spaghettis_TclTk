@@ -114,14 +114,13 @@ proc ::dialog_midi::pdtk_midi_dialog {id \
     set midi_alsain [llength $midi_indev]
     set midi_alsaout [llength $midi_outdev]
 
-    toplevel $id -class DialogWindow
+    toplevel $id -class PdDialog
     wm title $id [_ "MIDI Settings"]
     wm group $id .
     wm resizable $id 0 0
     wm transient $id
     if {[tk windowingsystem] eq "aqua"} { $id configure -menu .menubar }
     $id configure -padx 10 -pady 5
-    ::pd_bindings::dialog_bindings $id "midi"
     # not all Tcl/Tk versions or platforms support -topmost, so catch the error
     catch {wm attributes $id -topmost 1}
 
@@ -386,7 +385,6 @@ proc ::dialog_midi::pdtk_alsa_midi_dialog {id indev1 indev2 indev3 indev4 \
     toplevel $id
     wm title $id [_ "ALSA MIDI Settings"]
     if {[tk windowingsystem] eq "aqua"} {$id configure -menu .menubar}
-    ::pd_bindings::dialog_bindings $id "midi"
 
     frame $id.buttonframe
     pack $id.buttonframe -side bottom -fill x -pady 2m

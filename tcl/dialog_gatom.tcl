@@ -99,14 +99,13 @@ proc ::dialog_gatom::pdtk_gatom_dialog {mytoplevel initwidth initlower initupper
 proc ::dialog_gatom::create_dialog {mytoplevel} {
     global gatomlabel_radio
 
-    toplevel $mytoplevel -class DialogWindow
+    toplevel $mytoplevel -class PdDialog
     wm title $mytoplevel [_ "Atom Box Properties"]
     wm group $mytoplevel .
     wm resizable $mytoplevel 0 0
     wm transient $mytoplevel $::var(windowFocused)
     if {[tk windowingsystem] eq "aqua"} { $mytoplevel configure -menu .menubar }
     $mytoplevel configure -padx 0 -pady 0
-    ::pd_bindings::dialog_bindings $mytoplevel "gatom"
 
     frame $mytoplevel.width -height 7
     pack $mytoplevel.width -side top

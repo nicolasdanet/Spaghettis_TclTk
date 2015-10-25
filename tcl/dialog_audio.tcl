@@ -138,14 +138,13 @@ proc ::dialog_audio::pdtk_audio_dialog {mytoplevel \
     set audio_callback $callback
     set audio_blocksize $blocksize
 
-    toplevel $mytoplevel -class DialogWindow
+    toplevel $mytoplevel -class PdDialog
     wm title $mytoplevel [_ "Audio Settings"]
     wm group $mytoplevel .
     wm resizable $mytoplevel 0 0
     wm transient $mytoplevel
     if {[tk windowingsystem] eq "aqua"} { $mytoplevel configure -menu .menubar }
     $mytoplevel configure -padx 10 -pady 5
-    ::pd_bindings::dialog_bindings $mytoplevel "audio"
     # not all Tcl/Tk versions or platforms support -topmost, so catch the error
     catch {wm attributes $mytoplevel -topmost 1}
 
