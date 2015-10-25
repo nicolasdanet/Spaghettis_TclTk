@@ -93,42 +93,39 @@ proc initialize {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc bindPatch {mytoplevel} {
+proc bindPatch {top} {
 
     variable modifier
     
-    set tkcanvas [getCanvas $mytoplevel]
+    set c [getCanvas $top]
 
-    bind $tkcanvas <Motion>                     { pdtk_canvas_motion %W %x %y 0 }
-    bind $tkcanvas <$modifier-Motion>           { pdtk_canvas_motion %W %x %y 2 }
-    bind $tkcanvas <ButtonPress-1>              { pdtk_canvas_mouse %W %x %y %b 0 }
-    bind $tkcanvas <Shift-ButtonPress-1>        { pdtk_canvas_mouse %W %x %y %b 1 }
-    bind $tkcanvas <$modifier-ButtonPress-1>    { pdtk_canvas_mouse %W %x %y %b 2 }
-    bind $tkcanvas <ButtonRelease-1>            { pdtk_canvas_mouseup %W %x %y %b }
-    bind $tkcanvas <MouseWheel>                 { ::pd_canvas::scroll %W y %D }
-    bind $tkcanvas <Shift-MouseWheel>           { ::pd_canvas::scroll %W x %D }
-
-    # "right clicks" are defined differently on each platform
+    bind $c <Motion>                        { pdtk_canvas_motion %W %x %y 0 }
+    bind $c <$modifier-Motion>              { pdtk_canvas_motion %W %x %y 2 }
+    bind $c <ButtonPress-1>                 { pdtk_canvas_mouse %W %x %y %b 0 }
+    bind $c <Shift-ButtonPress-1>           { pdtk_canvas_mouse %W %x %y %b 1 }
+    bind $c <$modifier-ButtonPress-1>       { pdtk_canvas_mouse %W %x %y %b 2 }
+    bind $c <ButtonRelease-1>               { pdtk_canvas_mouseup %W %x %y %b }
+    bind $c <MouseWheel>                    { ::pd_canvas::scroll %W y %D }
+    bind $c <Shift-MouseWheel>              { ::pd_canvas::scroll %W x %D }
+     
     switch -- [tk windowingsystem] { 
         "aqua" {
-            bind $tkcanvas <ButtonPress-2>      "pdtk_canvas_rightclick %W %x %y %b"
-            # on Mac OS X, make a rightclick with Ctrl-click for 1 button mice
-            bind $tkcanvas <Control-Button-1> "pdtk_canvas_rightclick %W %x %y %b"
-            bind $tkcanvas <Option-ButtonPress-1> "pdtk_canvas_mouse %W %x %y %b 3"    
-        } "x11" {
-            bind $tkcanvas <ButtonPress-3>    "pdtk_canvas_rightclick %W %x %y %b"
-            # on X11, button 2 "pastes" from the X windows clipboard
-            bind $tkcanvas <ButtonPress-2>   "pdtk_canvas_clickpaste %W %x %y %b"
-            bind $tkcanvas <Alt-ButtonPress-1> "pdtk_canvas_mouse %W %x %y %b 3"
-        } "win32" {
-            bind $tkcanvas <ButtonPress-3>   "pdtk_canvas_rightclick %W %x %y %b"
-            bind $tkcanvas <Alt-ButtonPress-1> "pdtk_canvas_mouse %W %x %y %b 3"
+            bind $c <ButtonPress-2>         { pdtk_canvas_rightclick %W %x %y %b }
+            bind $c <Option-ButtonPress-1>  { pdtk_canvas_mouse %W %x %y %b 3 } 
+        } 
+        "x11" {
+            bind $c <ButtonPress-3>         { pdtk_canvas_rightclick %W %x %y %b }
+            bind $c <Alt-ButtonPress-1>     { pdtk_canvas_mouse %W %x %y %b 3 }
+        } 
+        "win32" {
+            bind $c <ButtonPress-3>         { pdtk_canvas_rightclick %W %x %y %b }
+            bind $c <Alt-ButtonPress-1>     { pdtk_canvas_mouse %W %x %y %b 3 }
         }
     }
 
-    # window protocol bindings
-    wm protocol $mytoplevel WM_DELETE_WINDOW "::pd_connect::pdsend \"$mytoplevel menuclose 0\""
-    bind $tkcanvas <Destroy> "::pd_bindings::window_destroy %W"
+    bind $c <Destroy>                       { ::pd_bindings::window_destroy %W }
+        
+    wm protocol $top WM_DELETE_WINDOW       [list ::pd_connect::pdsend "$top menuclose 0"]
 }
 
 # ------------------------------------------------------------------------------------------------------------
