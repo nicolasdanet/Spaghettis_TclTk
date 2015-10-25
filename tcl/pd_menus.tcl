@@ -132,8 +132,6 @@ proc ::pd_menus::build_file_menu {mymenu} {
     $mymenu entryconfigure [_ "Save As..."] -command {::pd_commands::menu_send $::var(windowFocused) menusaveas}
     #$mymenu entryconfigure [_ "Revert*"]    -command {::pd_commands::menu_revert $::var(windowFocused)}
     $mymenu entryconfigure [_ "Close"]      -command {::pd_commands::menu_send_float $::var(windowFocused) menuclose 0}
-    $mymenu entryconfigure [_ "Print..."]   -command {::pd_commands::menu_print $::var(windowFocused)}
-    
 }
 
 proc ::pd_menus::build_edit_menu {mymenu} {

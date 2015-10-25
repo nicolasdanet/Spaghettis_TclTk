@@ -268,7 +268,7 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
 
     # Initialize some packages.
     
-    foreach sub {bindings menus canvas console} { pd_${sub}::initialize }
+    foreach sub {console bindings menus canvas} { pd_${sub}::initialize }
     
     # Set the menubar configuration.
     

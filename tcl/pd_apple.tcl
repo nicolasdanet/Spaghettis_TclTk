@@ -44,10 +44,6 @@ proc ::tk::mac::OpenDocument {args} {
     }
 }
 
-proc ::tk::mac::PrintDocument {args} {
-    ::pd_commands::menu_print $::var(windowFocused)
-}
-
 proc ::tk::mac::Quit {args} {
     ::pd_connect::pdsend "pd verifyquit"
 }

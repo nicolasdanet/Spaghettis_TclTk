@@ -42,16 +42,6 @@ proc ::pd_commands::menu_open {} {
     }
 }
 
-proc ::pd_commands::menu_print {mytoplevel} {
-    set filename [tk_getSaveFile -initialfile pd.ps \
-                      -defaultextension .ps \
-                      -filetypes { {{postscript} {.ps}} }]
-    if {$filename ne ""} {
-        set tkcanvas [tkcanvas_name $mytoplevel]
-        $tkcanvas postscript -file $filename 
-    }
-}
-
 # ------------------------------------------------------------------------------
 # functions called from Edit menu
 

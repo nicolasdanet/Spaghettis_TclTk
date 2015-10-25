@@ -9,124 +9,66 @@
 
 package provide pd_bindings 0.1
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 package require pd_commands
+package require pd_connect
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 namespace eval ::pd_bindings:: {
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+namespace export initialize
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc initialize {} {
+    
+    wm protocol .console WM_DELETE_WINDOW   { ::pd_connect::pdsend "pd verifyquit" }
+    
+    # Class binding.
+    
+    bind PdConsole      <FocusIn>           { ::pd_bindings::window_focusin %W }
+    
+    bind PatchWindow    <Configure>         { ::pd_bindings::patch_configure %W %w %h %x %y }
+    bind PatchWindow    <FocusIn>           { ::pd_bindings::window_focusin %W }
+    bind PatchWindow    <Map>               { ::pd_bindings::map %W }
+    bind PatchWindow    <Unmap>             { ::pd_bindings::unmap %W }
+
+    bind DialogWindow   <Configure>         { ::pd_bindings::dialog_configure %W }
+    bind DialogWindow   <FocusIn>           { ::pd_bindings::dialog_focusin %W }
+
+    # All binding.
+    
+    bind all <KeyPress>                     { ::pd_bindings::sendkey %W 1 %K %A 0 }
+    bind all <KeyRelease>                   { ::pd_bindings::sendkey %W 0 %K %A 0 }
+    bind all <Shift-KeyPress>               { ::pd_bindings::sendkey %W 1 %K %A 1 }
+    bind all <Shift-KeyRelease>             { ::pd_bindings::sendkey %W 0 %K %A 1 }
+    
+    bind all <<Close>>                      { ::pd_commands::menu_send_float %W menuclose 0 }
+    bind all <<Copy>>                       { ::pd_commands::menu_send %W copy }
+    bind all <<Cut>>                        { ::pd_commands::menu_send %W cut }
+    bind all <<Duplicate>>                  { ::pd_commands::menu_send %W duplicate }
+    bind all <<EditMode>>                   { ::pd_commands::menu_toggle_editmode }
+    bind all <<NewFile>>                    { ::pd_commands::menu_new }
+    bind all <<OpenFile>>                   { ::pd_commands::menu_open }
+    bind all <<Paste>>                      { ::pd_commands::menu_send %W paste }
+    bind all <<Quit>>                       { ::pd_connect::pdsend "pd verifyquit" }
+    bind all <<Save>>                       { ::pd_commands::menu_send %W menusave }
+    bind all <<SaveAs>>                     { ::pd_commands::menu_send %W menusaveas }
+    bind all <<SelectAll>>                  { ::pd_commands::menu_send %W selectall }
 }
 
-# TODO rename pd_bindings to window_bindings after merge is done
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-# Some commands are bound using "" quotations so that the $mytoplevel is
-# interpreted immediately.  Since the command is being bound to $mytoplevel,
-# it makes sense to have value of $mytoplevel already in the command.  This is
-# the opposite of most menu/bind commands here and in pd_menus.tcl, which use
-# {} to force execution of any variables (i.e. $::var(windowFocused)) until later
-
-proc ::pd_bindings::console_bindings {} {
-
-    bind .console.text <$::var(modifierKey)-Key-x> "tk_textCut .console.text"
-    bind .console.text <$::var(modifierKey)-Key-c> "tk_textCopy .console.text"
-    bind .console.text <$::var(modifierKey)-Key-v> "tk_textPaste .console.text"
-
-    # Select All doesn't seem to work unless its applied to the whole window
-    bind .console <$::var(modifierKey)-Key-a> ".console.text tag add sel 1.0 end"
-    # the "; break" part stops executing another binds, like from the Text class
-
-    # these don't do anything in the Pd window, so alert the user, then break
-    # so no more bindings run
-    bind .console <$::var(modifierKey)-Key-s> "bell; break"
-    bind .console <$::var(modifierKey)-Key-p> "bell; break"
-
-    # ways of hiding/closing the Pd window
-    if {[tk windowingsystem] eq "aqua"} {
-        # on Mac OS X, you can close the Pd window, since the menubar is there
-        bind .console <$::var(modifierKey)-Key-w>   "wm withdraw .console"
-        wm protocol .console WM_DELETE_WINDOW "wm withdraw .console"
-    } else {
-        # TODO should it possible to close the Pd window and keep Pd open?
-        bind .console <$::var(modifierKey)-Key-w>   "wm iconify .console"
-        wm protocol .console WM_DELETE_WINDOW "::pd_connect::pdsend \"pd verifyquit\""
-    }
-}
-
-# binding by class is not recursive, so its useful for window events
-proc ::pd_bindings::initialize {} {
-    # and the Pd window is in a class to itself
-    bind PdConsole <FocusIn>                "::pd_bindings::window_focusin %W"
-    # bind to all the windows dedicated to patch canvases
-    bind PatchWindow <FocusIn>                "::pd_bindings::window_focusin %W"
-    bind PatchWindow <Map>                    "::pd_bindings::map %W"
-    bind PatchWindow <Unmap>                  "::pd_bindings::unmap %W"
-    bind PatchWindow <Configure> "::pd_bindings::patch_configure %W %w %h %x %y"
-    # dialog panel windows bindings, which behave differently than PatchWindows
-    bind DialogWindow <Configure>              "::pd_bindings::dialog_configure %W"
-    bind DialogWindow <FocusIn>                "::pd_bindings::dialog_focusin %W"
-
-    # we use 'bind all' everywhere to get as much of Tk's automatic binding
-    # behaviors as possible, things like not sending an event for 'O' when
-    # 'Control-O' is pressed.
-    bind all <$::var(modifierKey)-Key-a>      {::pd_commands::menu_send %W selectall}
-    bind all <$::var(modifierKey)-Key-c>      {::pd_commands::menu_send %W copy}
-    bind all <$::var(modifierKey)-Key-d>      {::pd_commands::menu_send %W duplicate}
-    bind all <$::var(modifierKey)-Key-e>      {::pd_commands::menu_toggle_editmode}
-    bind all <$::var(modifierKey)-Key-g>      {::pd_commands::menu_send %W findagain}
-    bind all <$::var(modifierKey)-Key-n>      {::pd_commands::menu_new}
-    bind all <$::var(modifierKey)-Key-o>      {::pd_commands::menu_open}
-    bind all <$::var(modifierKey)-Key-p>      {::pd_commands::menu_print $::var(windowFocused)}
-    bind all <$::var(modifierKey)-Key-q>      {::pd_connect::pdsend "pd verifyquit"}
-    bind all <$::var(modifierKey)-Key-r>      {::pd_commands::menu_raise_console}
-    bind all <$::var(modifierKey)-Key-s>      {::pd_commands::menu_send %W menusave}
-    bind all <$::var(modifierKey)-Key-v>      {::pd_commands::menu_send %W paste}
-    bind all <$::var(modifierKey)-Key-w>      {::pd_commands::menu_send_float %W menuclose 0}
-    bind all <$::var(modifierKey)-Key-x>      {::pd_commands::menu_send %W cut}
-    bind all <$::var(modifierKey)-Key-z>      {}
-    bind all <$::var(modifierKey)-Key-1>      {::pd_commands::menu_send_float %W obj 0}
-    bind all <$::var(modifierKey)-Key-2>      {::pd_commands::menu_send_float %W msg 0}
-    bind all <$::var(modifierKey)-Key-3>      {::pd_commands::menu_send_float %W floatatom 0}
-    bind all <$::var(modifierKey)-Key-4>      {::pd_commands::menu_send_float %W symbolatom 0}
-    bind all <$::var(modifierKey)-Key-5>      {::pd_commands::menu_send_float %W text 0}
-    bind all <$::var(modifierKey)-Key-slash>  {::pd_connect::pdsend "pd dsp 1"}
-    bind all <$::var(modifierKey)-Key-period> {::pd_connect::pdsend "pd dsp 0"}
-    bind all <$::var(modifierKey)-greater>    {::pd_commands::menu_raisenextwindow}
-    bind all <$::var(modifierKey)-less>       {::pd_commands::menu_raisepreviouswindow}
-
-    # annoying, but Tk's bind needs uppercase letter to get the Shift
-    bind all <$::var(modifierKey)-Shift-Key-B> {::pd_commands::menu_send %W bng}
-    bind all <$::var(modifierKey)-Shift-Key-C> {::pd_commands::menu_send %W mycnv}
-    bind all <$::var(modifierKey)-Shift-Key-D> {::pd_commands::menu_send %W vradio}
-    bind all <$::var(modifierKey)-Shift-Key-H> {::pd_commands::menu_send %W hslider}
-    bind all <$::var(modifierKey)-Shift-Key-I> {::pd_commands::menu_send %W hradio}
-    bind all <$::var(modifierKey)-Shift-Key-N> {::pd_commands::menu_send %W numbox}
-    bind all <$::var(modifierKey)-Shift-Key-Q> {::pd_connect::pdsend "pd quit"}
-    bind all <$::var(modifierKey)-Shift-Key-S> {::pd_commands::menu_send %W menusaveas}
-    bind all <$::var(modifierKey)-Shift-Key-T> {::pd_commands::menu_send %W toggle}
-    bind all <$::var(modifierKey)-Shift-Key-U> {::pd_commands::menu_send %W vumeter}
-    bind all <$::var(modifierKey)-Shift-Key-V> {::pd_commands::menu_send %W vslider}
-    bind all <$::var(modifierKey)-Shift-Key-W> {::pd_commands::menu_send_float %W menuclose 1}
-    bind all <$::var(modifierKey)-Shift-Key-Z> {}
-
-    # OS-specific bindings
-    if {[tk windowingsystem] eq "aqua"} {
-        # Cmd-m = Minimize and Cmd-t = Font on Mac OS X for all apps
-        bind all <$::var(modifierKey)-Key-m>       {::pd_commands::menu_minimize %W}
-        bind all <$::var(modifierKey)-quoteleft>   {::pd_commands::menu_raisenextwindow}
-    } else {
-        #bind all <$::var(modifierKey)-Key-t>       {::pd_commands::menu_texteditor}
-        bind all <$::var(modifierKey)-Next>        {::pd_commands::menu_raisenextwindow}    ;# PgUp
-        bind all <$::var(modifierKey)-Prior>       {::pd_commands::menu_raisepreviouswindow};# PageDown
-    }
-
-    bind all <KeyPress>         {::pd_bindings::sendkey %W 1 %K %A 0}
-    bind all <KeyRelease>       {::pd_bindings::sendkey %W 0 %K %A 0}
-    bind all <Shift-KeyPress>   {::pd_bindings::sendkey %W 1 %K %A 1}
-    bind all <Shift-KeyRelease> {::pd_bindings::sendkey %W 0 %K %A 1}
-}
-
-# this is for the dialogs: gatom properties, array
-# properties, iemgui properties, canvas properties, data structures
-# properties, Audio setup, and MIDI setup
-proc ::pd_bindings::dialog_bindings {mytoplevel dialogname} {
+proc dialog_bindings {mytoplevel dialogname} {
     variable modifier
 
     bind $mytoplevel <KeyPress-Escape> "dialog_${dialogname}::cancel $mytoplevel"
@@ -141,7 +83,7 @@ proc ::pd_bindings::dialog_bindings {mytoplevel dialogname} {
     wm protocol $mytoplevel WM_DELETE_WINDOW "dialog_${dialogname}::cancel $mytoplevel"
 }
 
-proc ::pd_bindings::patch_bindings {mytoplevel} {
+proc patch_bindings {mytoplevel} {
     variable modifier
     set tkcanvas [tkcanvas_name $mytoplevel]
 
@@ -194,11 +136,14 @@ proc ::pd_bindings::patch_bindings {mytoplevel} {
     bind $tkcanvas <Destroy> "::pd_bindings::window_destroy %W"
 }
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 
 #------------------------------------------------------------------------------#
 # event handlers
 
-proc ::pd_bindings::patch_configure {mytoplevel width height x y} {
+proc patch_configure {mytoplevel width height x y} {
     # for some reason, when we create a window, we get an event with a
     # widthXheight of 1x1 first, then we get the right values, so filter it out
     if {$width == 1 && $height == 1} {return}
@@ -208,7 +153,7 @@ proc ::pd_bindings::patch_configure {mytoplevel width height x y} {
     ::pd_connect::pdsend "$mytoplevel setbounds $x $y [expr $x + $width] [expr $y + $height]"
 }
     
-proc ::pd_bindings::window_destroy {window} {
+proc window_destroy {window} {
     set mytoplevel [winfo toplevel $window]
     unset ::patch_isEditmode($mytoplevel)
     unset ::patch_isEditing($mytoplevel)
@@ -219,7 +164,7 @@ proc ::pd_bindings::window_destroy {window} {
 }
 
 # do tasks when changing focus (Window menu, scrollbars, etc.)
-proc ::pd_bindings::window_focusin {mytoplevel} {
+proc window_focusin {mytoplevel} {
     # ::var(windowFocused) is used throughout for sending bindings, menu commands,
     # etc. to the correct patch receiver symbol.  MSP took out a line that
     # confusingly redirected the "find" window which might be in mid search
@@ -238,10 +183,10 @@ proc ::pd_bindings::window_focusin {mytoplevel} {
     # TODO handle enabling/disabling the Cut/Copy/Paste menu items in Edit
 }
 
-proc ::pd_bindings::dialog_configure {mytoplevel} {
+proc dialog_configure {mytoplevel} {
 }
 
-proc ::pd_bindings::dialog_focusin {mytoplevel} {
+proc dialog_focusin {mytoplevel} {
     # TODO disable things on the menus that don't work for dialogs
     ::pd_menus::configure_for_dialog $mytoplevel
 }
@@ -249,12 +194,12 @@ proc ::pd_bindings::dialog_focusin {mytoplevel} {
 # "map" event tells us when the canvas becomes visible, and "unmap",
 # invisible.  Invisibility means the Window Manager has minimized us.  We
 # don't get a final "unmap" event when we destroy the window.
-proc ::pd_bindings::map {mytoplevel} {
+proc map {mytoplevel} {
     ::pd_connect::pdsend "$mytoplevel map 1"
     ::pd_canvas::finished_loading_file $mytoplevel
 }
 
-proc ::pd_bindings::unmap {mytoplevel} {
+proc unmap {mytoplevel} {
     ::pd_connect::pdsend "$mytoplevel map 0"
 }
 
@@ -266,7 +211,7 @@ proc ::pd_bindings::unmap {mytoplevel} {
 # are local to each patch.  Therefore, key messages are not send for the
 # dialog panels, the Pd window, help browser, etc. so we need to filter those
 # events out.
-proc ::pd_bindings::sendkey {window state key iso shift} {
+proc sendkey {window state key iso shift} {
     # TODO canvas_key on the C side should be refactored with this proc as well
     switch -- $key {
         "BackSpace" { set iso ""; set key 8    }
@@ -291,3 +236,11 @@ proc ::pd_bindings::sendkey {window state key iso shift} {
     ::pd_connect::pdsend "pd key $state $key $shift"
     }
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
