@@ -187,38 +187,6 @@ proc _ {s} { return $s }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc mainX11 {} {
-
-    set ::var(cursorRunNothing)         "left_ptr"
-    set ::var(cursorRunClickMe)         "arrow"
-    set ::var(modifierKey)              "Control"
-        
-    # Don't show hidden files ( http://wiki.tcl.tk/1060 ).
-    
-    catch { tk_getOpenFile -dummy } 
-    set ::tk::dialog::file::showHiddenBtn 1
-    set ::tk::dialog::file::showHiddenVar 0
-}
-
-proc mainAqua {} {
-
-    set ::var(cursorRunNothing)         "arrow"
-    set ::var(cursorRunClickMe)         "center_ptr"
-    set ::var(directoryNew)             $::env(HOME)
-    set ::var(directoryOpen)            $::env(HOME)
-    set ::var(modifierKey)              "Mod1"
-}
-
-proc mainWin32 {} {
-
-    set ::var(cursorRunNothing)         "right_ptr"
-    set ::var(cursorRunClickMe)         "arrow"
-    set ::var(modifierKey)              "Control"
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 proc main {argc argv} {
 
     # Configure to UTF-8 encoding.
@@ -227,12 +195,34 @@ proc main {argc argv} {
     fconfigure stderr -encoding utf-8
     fconfigure stdout -encoding utf-8
     
-    # Set various platform specific GUI settings.
+    # Don't show hidden files ( http://wiki.tcl.tk/1060 ).
+    
+    if {[tk windowingsystem] eq "x11"} {
+        catch { tk_getOpenFile -dummy } 
+        set ::tk::dialog::file::showHiddenBtn 1
+        set ::tk::dialog::file::showHiddenVar 0
+    }
+    
+    # Set various platform specific settings.
     
     switch -- [tk windowingsystem] {
-        "x11"   { mainX11   }
-        "aqua"  { mainAqua  }
-        "win32" { mainWin32 }
+        "x11"   {
+            set ::var(cursorRunNothing)     "left_ptr"
+            set ::var(cursorRunClickMe)     "arrow"
+            set ::var(modifierKey)          "Control"
+        }
+        "aqua"  {
+            set ::var(cursorRunNothing)     "arrow"
+            set ::var(cursorRunClickMe)     "center_ptr"
+            set ::var(directoryNew)         $::env(HOME)
+            set ::var(directoryOpen)        $::env(HOME)
+            set ::var(modifierKey)          "Mod1"
+        }
+        "win32" { 
+            set ::var(cursorRunNothing)     "right_ptr"
+            set ::var(cursorRunClickMe)     "arrow"
+            set ::var(modifierKey)          "Control"
+        }
     }
     
     # Handle socket connection.
@@ -276,7 +266,7 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
         lappend measured [font metrics $f -linespace]
     }
 
-    # Initialize some packages (reorder with care).
+    # Initialize some packages.
     
     foreach sub {bindings menus canvas console} { pd_${sub}::initialize }
     
