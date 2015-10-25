@@ -160,8 +160,6 @@ proc pdtk_canvas_saveas {name initialfile initialdir destroyflag} {
     ::pd_connect::pdsend "$name savetofile [enquote_path $basename] [enquote_path $dirname] \
  $destroyflag"
     set ::var(directoryNew) $dirname
-    # add to recentfiles
-    ::pd_preferences::update_recentfiles $filename
 }
 
 ##### ask user Save? Discard? Cancel?, and if so, send a message on to Pd ######

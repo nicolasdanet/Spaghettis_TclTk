@@ -133,10 +133,7 @@ proc ::pd_menus::build_file_menu {mymenu} {
     #$mymenu entryconfigure [_ "Revert*"]    -command {::pd_commands::menu_revert $::var(windowFocused)}
     $mymenu entryconfigure [_ "Close"]      -command {::pd_commands::menu_send_float $::var(windowFocused) menuclose 0}
     $mymenu entryconfigure [_ "Print..."]   -command {::pd_commands::menu_print $::var(windowFocused)}
-    # update recent files
-    if {[llength $::var(filesRecent)] > 0} {
-        ::pd_menus::update_recentfiles_menu 0
-    }
+    
 }
 
 proc ::pd_menus::build_edit_menu {mymenu} {
@@ -273,75 +270,6 @@ proc ::pd_menus::build_window_menu {mymenu} {
 #------------------------------------------------------------------------------#
 # undo/redo menu items
 
-
-# ------------------------------------------------------------------------------
-# update the menu entries for opening recent files (write arg should always be true except the first time when pd is opened)
-proc ::pd_menus::update_recentfiles_menu {{write 1}} {
-    variable menubar
-    switch -- [tk windowingsystem] {
-        "aqua"  {::pd_menus::update_openrecent_menu_aqua .openrecent $write}
-        "win32" {::pd_menus::update_recentfiles_on_menu $menubar.file $write}
-        "x11"   {::pd_menus::update_recentfiles_on_menu $menubar.file $write}
-    }
-}
-
-proc ::pd_menus::clear_recentfiles_menu {} {
-    set ::var(filesRecent) {}
-    ::pd_menus::update_recentfiles_menu
-    # empty recentfiles in preferences (write empty array)
-    ::pd_preferences::write_recentfiles
-}
-
-proc ::pd_menus::update_openrecent_menu_aqua {mymenu {write}} {
-    if {! [winfo exists $mymenu]} {menu $mymenu}
-    $mymenu delete 0 end
-
-    # now the list is last first so we just add
-    foreach filename $::var(filesRecent) {
-        $mymenu add command -label [file tail $filename] \
-            -command "::pd_miscellaneous::open_file {$filename}"
-    }
-    # clear button
-    $mymenu add  separator
-    $mymenu add command -label [_ "Clear Menu"] \
-        -command "::pd_menus::clear_recentfiles_menu"
-    # write to config file
-    if {$write} { ::pd_preferences::write_recentfiles }
-}
-
-# ------------------------------------------------------------------------------
-# this expects to be run on the File menu, and to insert above the last separator
-proc ::pd_menus::update_recentfiles_on_menu {mymenu {write}} {
-    set lastitem [$mymenu index end]
-    set i 1
-    while {[$mymenu type [expr $lastitem-$i]] ne "separator"} {incr i}
-    set bottom_separator [expr $lastitem-$i]
-    incr i
-
-    while {[$mymenu type [expr $lastitem-$i]] ne "separator"} {incr i}
-    set top_separator [expr $lastitem-$i]
-    if {$top_separator < [expr $bottom_separator-1]} {
-        $mymenu delete [expr $top_separator+1] [expr $bottom_separator-1]
-    }
-    # insert the list from the end because we insert each element on the top
-    set i [llength $::var(filesRecent)]
-    while {[incr i -1] > 0} {
-
-        set filename [lindex $::var(filesRecent) $i]
-        $mymenu insert [expr $top_separator+1] command \
-            -label [file tail $filename] -command "::pd_miscellaneous::open_file {$filename}"
-    }
-    set filename [lindex $::var(filesRecent) 0]
-    $mymenu insert [expr $top_separator+1] command \
-        -label [file tail $filename] -command "::pd_miscellaneous::open_file {$filename}"
-
-    # write to config file
-    if {$write} { ::pd_preferences::write_recentfiles }
-}
-
-# ------------------------------------------------------------------------------
-# lots of crazy recursion to update the Window menu
-
 # find the first parent patch that has a mapped window
 proc ::pd_menus::find_mapped_parent {parentlist} {
     if {[llength $parentlist] == 0} {return "none"}
@@ -450,9 +378,6 @@ proc ::pd_menus::build_file_menu_aqua {mymenu} {
     variable accelerator
     $mymenu add command -label [_ "New"]       -accelerator "$accelerator+N"
     $mymenu add command -label [_ "Open"]      -accelerator "$accelerator+O"
-    # this is now done in main ::pd_menus::build_file_menu
-    #::pd_menus::update_openrecent_menu_aqua .openrecent
-    $mymenu add cascade -label [_ "Open Recent"] -menu .openrecent
     $mymenu add  separator
     $mymenu add command -label [_ "Close"]     -accelerator "$accelerator+W"
     $mymenu add command -label [_ "Save"]      -accelerator "$accelerator+S"
@@ -534,8 +459,6 @@ proc ::pd_menus::build_file_menu_win32 {mymenu} {
     create_preferences_menu $mymenu.preferences
     $mymenu add cascade -label [_ "Preferences"] -menu $mymenu.preferences
     $mymenu add command -label [_ "Print..."] -accelerator "$accelerator+P"
-    $mymenu add  separator
-    # the recent files get inserted in here by update_recentfiles_on_menu
     $mymenu add  separator
     $mymenu add command -label [_ "Close"]    -accelerator "$accelerator+W"
     $mymenu add command -label [_ "Quit"]     -accelerator "$accelerator+Q"\

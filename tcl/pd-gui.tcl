@@ -99,7 +99,6 @@ package require pd_canvas
 package require pd_commands
 package require pd_connect
 package require pd_console
-package require pd_preferences
 package require pd_menus
 package require pd_miscellaneous
 package require pd_text
@@ -129,9 +128,6 @@ set var(directoryOpen)          [pwd]
 set var(directorySearchPath)    {}
 
 set var(filesOpenPended)        {}
-set var(filesRecent)            {}
-set var(filesRecentDomain)      ""
-set var(filesRecentKey)         ""
 set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pdhelp}} }
 
 set var(fontFamily)             [::pd_miscellaneous::getDefaultFamily]
@@ -195,8 +191,6 @@ proc mainX11 {} {
 
     set ::var(cursorRunNothing)         "left_ptr"
     set ::var(cursorRunClickMe)         "arrow"
-    set ::var(filesRecentDomain)        "~/.config/puredata"
-    set ::var(filesRecentKey)           "recentfiles.conf"
     set ::var(modifierKey)              "Control"
         
     # Don't show hidden files ( http://wiki.tcl.tk/1060 ).
@@ -204,14 +198,6 @@ proc mainX11 {} {
     catch { tk_getOpenFile -dummy } 
     set ::tk::dialog::file::showHiddenBtn 1
     set ::tk::dialog::file::showHiddenVar 0
-    
-    # Create directory for preferences.
-    
-    if {![file isdirectory $::var(filesRecentDomain)]} {
-    if {![file isfile $::var(filesRecentDomain)]} {
-        file mkdir $::var(filesRecentDomain) 
-    }
-    }
 }
 
 proc mainAqua {} {
@@ -220,8 +206,6 @@ proc mainAqua {} {
     set ::var(cursorRunClickMe)         "center_ptr"
     set ::var(directoryNew)             $::env(HOME)
     set ::var(directoryOpen)            $::env(HOME)
-    set ::var(filesRecentDomain)        "org.puredata.puredata"
-    set ::var(filesRecentKey)           "NSRecentDocuments"
     set ::var(modifierKey)              "Mod1"
 }
 
@@ -229,8 +213,6 @@ proc mainWin32 {} {
 
     set ::var(cursorRunNothing)         "right_ptr"
     set ::var(cursorRunClickMe)         "arrow"
-    set ::var(filesRecentDomain)        "HKEY_CURRENT_USER\\Software\\Pure-Data"
-    set ::var(filesRecentKey)           "RecentDocs"
     set ::var(modifierKey)              "Control"
 }
 
@@ -296,7 +278,7 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
 
     # Initialize some packages (reorder with care).
     
-    foreach sub {preferences bindings menus canvas console} { pd_${sub}::initialize }
+    foreach sub {bindings menus canvas console} { pd_${sub}::initialize }
     
     # Set the menubar configuration.
     
