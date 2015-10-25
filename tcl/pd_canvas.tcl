@@ -125,7 +125,7 @@ proc pdtk_canvas_new {mytoplevel width height geometry editable} {
 
     # this should be at the end so that the window and canvas are all ready
     # before this variable changes.
-    set ::patch_isEditmode($mytoplevel) $editable
+    set ::patch_isEditMode($mytoplevel) $editable
 }
 
 # if the patch canvas window already exists, then make it come to the front
@@ -278,7 +278,7 @@ proc ::pd_canvas::started_loading_file {patchname} {
 proc ::pd_canvas::finished_loading_file {mytoplevel} {
 
     # set editmode to make sure the menu item is in the right state
-    ::pd_canvas::pdtk_canvas_editmode $mytoplevel $::patch_isEditmode($mytoplevel)
+    ::pd_canvas::pdtk_canvas_editmode $mytoplevel $::patch_isEditMode($mytoplevel)
     # send the virtual events now that everything is loaded
     event generate $mytoplevel <<Loaded>>
 }
@@ -288,8 +288,8 @@ proc ::pd_canvas::finished_loading_file {mytoplevel} {
 
 # check or uncheck the "edit" menu item
 proc ::pd_canvas::pdtk_canvas_editmode {mytoplevel state} {
-    set ::var(isEditmode) $state
-    set ::patch_isEditmode($mytoplevel) $state
+    set ::var(isEditMode) $state
+    set ::patch_isEditMode($mytoplevel) $state
 }
 
 # message from Pd to update the currently available undo/redo action

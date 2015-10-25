@@ -136,7 +136,7 @@ set var(fontSizes)              "8 10 12 16 18 20 24 30 36"
 
 set var(isInitialized)          0
 set var(isDsp)                  0
-set var(isEditmode)             0
+set var(isEditMode)             0
 
 set var(scriptName)             [file normalize [info script]]
 
@@ -169,7 +169,7 @@ set midi_outdev     {}
 # Per patch states.
 
 array set patch_childs          {}
-array set patch_isEditmode      {}
+array set patch_isEditMode      {}
 array set patch_isEditing       {}
 array set patch_isScrollableX   {}
 array set patch_isScrollableY   {}
@@ -230,7 +230,7 @@ proc main {argc argv} {
         
     } else {
         set ::var(tcpPort) [::pd_connect::serverSocket]
-        set executable [file join [file dirname [info script]] ../bin/pd]
+        set executable [file join [file dirname [info script]] "../bin/pd"]
         exec -- $executable -guiport $::var(tcpPort) &
     }
 }

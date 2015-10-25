@@ -41,10 +41,10 @@ proc initialize {} {
     
     # Virtual events.
     
-    event add <<Close>>         <$modifier-c>
     event add <<Close>>         <$modifier-w>
+    event add <<Copy>>          <$modifier-c>
     event add <<Duplicate>>     <$modifier-d>
-    event add <<Edit>>          <$modifier-e>
+    event add <<EditMode>>      <$modifier-e>
     event add <<NewFile>>       <$modifier-n>
     event add <<OpenFile>>      <$modifier-o>
     event add <<Quit>>          <$modifier-q>
@@ -79,7 +79,7 @@ proc initialize {} {
     bind all <<Copy>>                       { ::pd_commands::menu_send %W copy }
     bind all <<Cut>>                        { ::pd_commands::menu_send %W cut }
     bind all <<Duplicate>>                  { ::pd_commands::menu_send %W duplicate }
-    bind all <<Edit>>                       { }
+    bind all <<EditMode>>                   { }
     bind all <<NewFile>>                    { ::pd_commands::menu_new }
     bind all <<OpenFile>>                   { ::pd_commands::menu_open }
     bind all <<Paste>>                      { ::pd_commands::menu_send %W paste }
@@ -93,7 +93,6 @@ proc initialize {} {
 # ------------------------------------------------------------------------------------------------------------
 
 proc patch_bindings {mytoplevel} {
-    variable modifier
     set tkcanvas [tkcanvas_name $mytoplevel]
 
     # TODO move mouse bindings to global and bind to 'all'
@@ -164,7 +163,7 @@ proc patch_configure {mytoplevel width height x y} {
     
 proc window_destroy {window} {
     set mytoplevel [winfo toplevel $window]
-    unset ::patch_isEditmode($mytoplevel)
+    unset ::patch_isEditMode($mytoplevel)
     unset ::patch_isEditing($mytoplevel)
     # unset my entries all of the window data tracking arrays
     array unset ::patch_name $mytoplevel
@@ -186,7 +185,7 @@ proc window_focusin {mytoplevel} {
     }
     # if {[winfo exists .font]} {wm transient .font $::var(windowFocused)}
     # if we regain focus from another app, make sure to editmode cursor is right
-    if {$::patch_isEditmode($mytoplevel)} {
+    if {$::patch_isEditMode($mytoplevel)} {
         $mytoplevel configure -cursor hand2
     }
     # TODO handle enabling/disabling the Cut/Copy/Paste menu items in Edit

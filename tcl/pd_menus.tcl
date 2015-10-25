@@ -85,7 +85,7 @@ proc ::pd_menus::configure_for_canvas {mytoplevel} {
     # Edit menu
     $menubar.edit entryconfigure [_ "Duplicate"] -state normal
     $menubar.edit entryconfigure [_ "Edit Mode"] -state normal
-    ::pd_canvas::pdtk_canvas_editmode $mytoplevel $::patch_isEditmode($mytoplevel)
+    ::pd_canvas::pdtk_canvas_editmode $mytoplevel $::patch_isEditMode($mytoplevel)
     # Put menu
     for {set i 0} {$i <= [$menubar.put index end]} {incr i} {
         # catch errors that happen when trying to disable separators
@@ -154,8 +154,8 @@ proc ::pd_menus::build_edit_menu {mymenu} {
     $mymenu add  separator
     #TODO madness! how to set the state of the check box without invoking the menu!
     $mymenu add check -label [_ "Edit Mode"] -accelerator "$accelerator+E" \
-        -variable ::var(isEditmode) \
-        -command {::pd_commands::menu_editmode $::var(isEditmode)}
+        -variable ::var(isEditMode) \
+        -command {::pd_commands::menu_editmode $::var(isEditMode)}
     if {[tk windowingsystem] ne "aqua"} {
         $mymenu add  separator
         create_preferences_menu $mymenu.preferences

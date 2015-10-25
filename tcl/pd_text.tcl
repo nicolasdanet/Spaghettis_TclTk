@@ -49,7 +49,7 @@ proc pdtk_pastetext {tkcanvas} {
 
 # select all of the text in an existing text box
 proc pdtk_text_selectall {tkcanvas mytag} {
-    if {$::patch_isEditmode([winfo toplevel $tkcanvas])} {
+    if {$::patch_isEditMode([winfo toplevel $tkcanvas])} {
         $tkcanvas select from $mytag 0
         $tkcanvas select to $mytag end
     }
