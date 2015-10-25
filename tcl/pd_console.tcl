@@ -24,7 +24,6 @@ namespace eval ::pd_console:: {
 
 namespace export initialize
 namespace export post
-namespace export clear
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -76,10 +75,6 @@ proc post {message} {
     after cancel .console.text.internal yview
     .console.text.internal insert end $message
     after idle  .console.text.internal yview end
-}
-
-proc clear {} {
-    .console.text.internal delete 0.0 end
 }
 
 # ------------------------------------------------------------------------------------------------------------

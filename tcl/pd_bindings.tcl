@@ -97,7 +97,6 @@ proc ::pd_bindings::initialize {} {
     bind all <$::var(modifierKey)-Shift-Key-D> {::pd_commands::menu_send %W vradio}
     bind all <$::var(modifierKey)-Shift-Key-H> {::pd_commands::menu_send %W hslider}
     bind all <$::var(modifierKey)-Shift-Key-I> {::pd_commands::menu_send %W hradio}
-    bind all <$::var(modifierKey)-Shift-Key-L> {menu_clear_console}
     bind all <$::var(modifierKey)-Shift-Key-N> {::pd_commands::menu_send %W numbox}
     bind all <$::var(modifierKey)-Shift-Key-Q> {::pd_connect::pdsend "pd quit"}
     bind all <$::var(modifierKey)-Shift-Key-S> {::pd_commands::menu_send %W menusaveas}

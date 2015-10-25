@@ -149,12 +149,6 @@ proc ::pd_commands::menu_raisenextwindow {} {
 }
 
 # ------------------------------------------------------------------------------
-# Pd window functions
-proc menu_clear_console {} {
-    ::pd_console::clear
-}
-
-# ------------------------------------------------------------------------------
 # manage the saving of the directories for the new commands
 
 # this gets the dir from the path of a window's title

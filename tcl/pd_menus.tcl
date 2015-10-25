@@ -154,9 +154,6 @@ proc ::pd_menus::build_edit_menu {mymenu} {
     $mymenu add command -label [_ "Select All"] -accelerator "$accelerator+A" \
         -command {::pd_commands::menu_send $::var(windowFocused) selectall}
     $mymenu add  separator
-    $mymenu add command -label [_ "Clear Console"] \
-        -accelerator "Shift+$accelerator+L" -command {menu_clear_console}
-    $mymenu add  separator
     #TODO madness! how to set the state of the check box without invoking the menu!
     $mymenu add check -label [_ "Edit Mode"] -accelerator "$accelerator+E" \
         -variable ::var(isEditmode) \
