@@ -92,10 +92,6 @@ proc lookup_windowname {mytoplevel} {
     }
 }
 
-proc tkcanvas_name {mytoplevel} {
-    return "$mytoplevel.c"
-}
-
 # ------------------------------------------------------------------------------
 # quoting functions
 

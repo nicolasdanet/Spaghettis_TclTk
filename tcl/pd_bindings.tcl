@@ -24,6 +24,7 @@ namespace eval ::pd_bindings:: {
 # ------------------------------------------------------------------------------------------------------------
 
 namespace export initialize
+namespace export bindPatch
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -52,11 +53,11 @@ proc initialize {} {
     event add <<SaveAs>>        <Shift-$modifier-s>
     event add <<SelectAll>>     <$modifier-a>
     
-    # Widget binding.
+    # Widget.
     
     wm protocol .console WM_DELETE_WINDOW   { ::pd_connect::pdsend "pd verifyquit" }
     
-    # Class binding.
+    # Class.
     
     bind PdConsole  <FocusIn>               { ::pd_bindings::window_focusin %W }
     
@@ -68,7 +69,7 @@ proc initialize {} {
     bind PdDialog   <Configure>             { ::pd_bindings::dialog_configure %W }
     bind PdDialog   <FocusIn>               { ::pd_bindings::dialog_focusin %W }
 
-    # All binding.
+    # All.
     
     bind all <KeyPress>                     { ::pd_bindings::sendkey %W 1 %K %A 0 }
     bind all <KeyRelease>                   { ::pd_bindings::sendkey %W 0 %K %A 0 }
@@ -92,34 +93,20 @@ proc initialize {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc patch_bindings {mytoplevel} {
-    set tkcanvas [tkcanvas_name $mytoplevel]
+proc bindPatch {mytoplevel} {
 
-    # TODO move mouse bindings to global and bind to 'all'
+    variable modifier
+    
+    set tkcanvas [getCanvas $mytoplevel]
 
-    # mouse bindings -----------------------------------------------------------
-    # these need to be bound to $tkcanvas because %W will return $mytoplevel for
-    # events over the window frame and $tkcanvas for events over the canvas
-    bind $tkcanvas <Motion>                   "pdtk_canvas_motion %W %x %y 0"
-    #bind $tkcanvas <$::var(modifierKey)-Motion>         "pdtk_canvas_motion %W %x %y 2"
-    bind $tkcanvas <ButtonPress-1>            "pdtk_canvas_mouse %W %x %y %b 0"
-    bind $tkcanvas <ButtonRelease-1>          "pdtk_canvas_mouseup %W %x %y %b"
-    #bind $tkcanvas <$::var(modifierKey)-ButtonPress-1>  "pdtk_canvas_mouse %W %x %y %b 2"
-    bind $tkcanvas <Shift-ButtonPress-1>        "pdtk_canvas_mouse %W %x %y %b 1"
-
-    if {[tk windowingsystem] eq "x11"} {
-        # from http://wiki.tcl.tk/3893
-        bind all <Button-4> \
-            {event generate [focus -displayof %W] <MouseWheel> -delta  1}
-        bind all <Button-5> \
-            {event generate [focus -displayof %W] <MouseWheel> -delta -1}
-        bind all <Shift-Button-4> \
-            {event generate [focus -displayof %W] <Shift-MouseWheel> -delta  1}
-        bind all <Shift-Button-5> \
-            {event generate [focus -displayof %W] <Shift-MouseWheel> -delta -1}
-    }
-    bind $tkcanvas <MouseWheel>       {::pd_canvas::scroll %W y %D}
-    bind $tkcanvas <Shift-MouseWheel> {::pd_canvas::scroll %W x %D}
+    bind $tkcanvas <Motion>                     { pdtk_canvas_motion %W %x %y 0 }
+    bind $tkcanvas <$modifier-Motion>           { pdtk_canvas_motion %W %x %y 2 }
+    bind $tkcanvas <ButtonPress-1>              { pdtk_canvas_mouse %W %x %y %b 0 }
+    bind $tkcanvas <Shift-ButtonPress-1>        { pdtk_canvas_mouse %W %x %y %b 1 }
+    bind $tkcanvas <$modifier-ButtonPress-1>    { pdtk_canvas_mouse %W %x %y %b 2 }
+    bind $tkcanvas <ButtonRelease-1>            { pdtk_canvas_mouseup %W %x %y %b }
+    bind $tkcanvas <MouseWheel>                 { ::pd_canvas::scroll %W y %D }
+    bind $tkcanvas <Shift-MouseWheel>           { ::pd_canvas::scroll %W x %D }
 
     # "right clicks" are defined differently on each platform
     switch -- [tk windowingsystem] { 
@@ -155,7 +142,7 @@ proc patch_configure {mytoplevel width height x y} {
     # for some reason, when we create a window, we get an event with a
     # widthXheight of 1x1 first, then we get the right values, so filter it out
     if {$width == 1 && $height == 1} {return}
-    ::pd_canvas::pdtk_canvas_getscroll [tkcanvas_name $mytoplevel]
+    ::pd_canvas::pdtk_canvas_getscroll [getCanvas $mytoplevel]
     # send the size/location of the window and canvas to 'pd' in the form of:
     #    left top right bottom
     ::pd_connect::pdsend "$mytoplevel setbounds $x $y [expr $x + $width] [expr $y + $height]"

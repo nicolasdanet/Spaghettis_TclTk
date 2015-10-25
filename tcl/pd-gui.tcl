@@ -153,7 +153,8 @@ set var(windowFocused)          .
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc getFontDefault {size} { return "::var(font${size})" }
+proc getFont {size}  { return "::var(font${size})" }
+proc getCanvas {top} { return "$top.c" }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -255,7 +256,7 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
     set measured ""
     
     foreach size $::var(fontSizes) {
-        set f [getFontDefault $size]
+        set f [getFont $size]
         font create $f -family $::var(fontFamily) -weight $::var(fontWeight) -size [expr -${size}]
         lappend measured $size 
         lappend measured [font measure $f M]

@@ -33,7 +33,7 @@ proc pdtk_textwindow_open {name geometry title font} {
             [concat pdtk_textwindow_close $name 1]
         bind $name <<Modified>> "pdtk_textwindow_dodirty $name"
         text $name.text -relief raised -bd 2 \
-            -font [getFontDefault $font] \
+            -font [getFont $font] \
             -yscrollcommand "$name.scroll set" -background white
         scrollbar $name.scroll -command "$name.text yview"
         pack $name.scroll -side right -fill y
