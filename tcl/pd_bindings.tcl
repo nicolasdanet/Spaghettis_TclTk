@@ -55,8 +55,15 @@ proc initialize {} {
     event add <<SaveAs>>        <Shift-$modifier-s>
     event add <<SelectAll>>     <$modifier-a>
     
-    event add <<RightClick>>    <ButtonPress-2>
-    event add <<RightClick>>    <ButtonPress-3>
+    event add <<Motion1>>       <Motion>
+    event add <<Motion2>>       <$modifier-Motion>
+    event add <<ClickLeft1>>    <ButtonPress-1>
+    event add <<ClickLeft2>>    <Shift-ButtonPress-1>
+    event add <<ClickLeft3>>    <$modifier-ButtonPress-1>
+    event add <<ClickLeft4>>    <Alt-ButtonPress-1>
+    event add <<ClickRight>>    <ButtonPress-2>
+    event add <<ClickRight>>    <ButtonPress-3>
+    event add <<ClickRelease>>  <ButtonRelease-1>
     
     # Widget.
     
@@ -100,22 +107,21 @@ proc initialize {} {
 
 proc bindPatch {top} {
 
-    variable modifier
-    
     set c [getCanvas $top]
 
-    bind $c <Motion>                        { pdtk_canvas_motion %W %x %y 0 }
-    bind $c <$modifier-Motion>              { pdtk_canvas_motion %W %x %y 2 }
-    bind $c <ButtonPress-1>                 { pdtk_canvas_mouse %W %x %y %b 0 }
-    bind $c <Shift-ButtonPress-1>           { pdtk_canvas_mouse %W %x %y %b 1 }
-    bind $c <$modifier-ButtonPress-1>       { pdtk_canvas_mouse %W %x %y %b 2 }
-    bind $c <Alt-ButtonPress-1>             { pdtk_canvas_mouse %W %x %y %b 3 }
-    bind $c <ButtonRelease-1>               { pdtk_canvas_mouseup %W %x %y %b }
-    bind $c <MouseWheel>                    { ::pd_canvas::scroll %W y %D }
-    bind $c <<RightClick>>                  { pdtk_canvas_rightclick %W %x %y %b }
-    bind $c <Destroy>                       { ::pd_bindings::_closed [winfo toplevel %W] }
+    bind $c <<Motion1>>                 { pdtk_canvas_motion %W %x %y 0 }
+    bind $c <<Motion2>>                 { pdtk_canvas_motion %W %x %y 2 }
+    bind $c <<ClickLeft1>>              { pdtk_canvas_mouse %W %x %y %b 0 }
+    bind $c <<ClickLeft2>>              { pdtk_canvas_mouse %W %x %y %b 1 }
+    bind $c <<ClickLeft3>>              { pdtk_canvas_mouse %W %x %y %b 2 }
+    bind $c <<ClickLeft4>>              { pdtk_canvas_mouse %W %x %y %b 3 }
+    bind $c <<ClickRelease>>            { pdtk_canvas_mouseup %W %x %y %b }
+    bind $c <<ClickRight>>              { pdtk_canvas_rightclick %W %x %y %b }
+    
+    bind $c <MouseWheel>                { ::pd_canvas::scroll %W y %D }
+    bind $c <Destroy>                   { ::pd_bindings::_closed [winfo toplevel %W] }
         
-    wm protocol $top WM_DELETE_WINDOW       [list ::pd_connect::pdsend "$top menuclose 0"]
+    wm protocol $top WM_DELETE_WINDOW   [list ::pd_connect::pdsend "$top menuclose 0"]
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -140,7 +146,6 @@ proc _focusIn {top} {
     }
 }
 
-
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
@@ -153,22 +158,13 @@ proc _unmap {top} {
     ::pd_connect::pdsend "$top map 0"
 }
 
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 proc _resized {top width height x y} {
 
-    # Filter annoying values reported when a window is created.
-    
-    if {$width == 1 && $height == 1} { return }
-    
-    
-    ::pd_canvas::pdtk_canvas_getscroll [getCanvas $top]
-    ::pd_connect::pdsend "$top setbounds $x $y [expr $x + $width] [expr $y + $height]"
+    if {$width > 1 || $height > 1} { 
+        ::pd_canvas::pdtk_canvas_getscroll [getCanvas $top]
+        ::pd_connect::pdsend "$top setbounds $x $y [expr $x + $width] [expr $y + $height]"
+    }
 }
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
 
 proc _closed {top} {
 
@@ -185,11 +181,6 @@ proc _closed {top} {
 
 proc _key {w key iso isPress isShift} {
 
-    # Filter annoying values reported while the widget doesn't exist anymore.
-    
-    if {![winfo exists $w]} { return }
-    
-    
     switch -- $key {
         "BackSpace" { set iso ""; set key 8   }
         "Tab"       { set iso ""; set key 9   }
@@ -204,8 +195,8 @@ proc _key {w key iso isPress isShift} {
     
     set top [winfo toplevel $w]
     
-    if {[winfo class $top] eq "PdPatch"} {
-        ::pd_connect::pdsend "$top key $isPress $key $isShift"
+    if {[winfo class $top] eq "PdPatch"} { 
+        ::pd_connect::pdsend "$top key $isPress $key $isShift" 
     } else {
         ::pd_connect::pdsend "pd key $isPress $key $isShift"
     }
