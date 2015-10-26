@@ -7,7 +7,7 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pd_menus 0.1
+package provide pd_menu 0.1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -17,102 +17,101 @@ package require pd_commands
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::pd_menus:: {
+namespace eval ::pd_menu:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
 variable accelerator
-variable menubar ".menubar"
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
 proc initialize {} {
     variable accelerator
-    variable menubar
+
     if {[tk windowingsystem] eq "aqua"} {
         set accelerator "Cmd"
     } else {
         set accelerator "Ctrl"
     }
-    menu $menubar
+    menu .menubar
     set menulist "file edit put media window"
     foreach mymenu $menulist {    
-        menu $menubar.$mymenu
-        $menubar add cascade -label [_ [string totitle $mymenu]] \
-            -menu $menubar.$mymenu
-        [format build_%s_menu $mymenu] $menubar.$mymenu
+        menu .menubar.$mymenu
+        .menubar add cascade -label [_ [string totitle $mymenu]] \
+            -menu .menubar.$mymenu
+        [format build_%s_menu $mymenu] .menubar.$mymenu
     }
-    if {[tk windowingsystem] eq "aqua"} {create_apple_menu $menubar}
-    if {[tk windowingsystem] eq "win32"} {create_system_menu $menubar}
-    . configure -menu $menubar
+    if {[tk windowingsystem] eq "aqua"} {create_apple_menu .menubar}
+    if {[tk windowingsystem] eq "win32"} {create_system_menu .menubar}
+    . configure -menu .menubar
 }
 
 proc configureForConsole {} {
-    variable menubar
+
     # these are meaningless for the Pd window, so disable them
     # File menu
-    $menubar.file entryconfigure [_ "Save"] -state disabled
-    $menubar.file entryconfigure [_ "Save As..."] -state normal
-    $menubar.file entryconfigure [_ "Print..."] -state disabled
-    $menubar.file entryconfigure [_ "Close"] -state disabled
+    .menubar.file entryconfigure [_ "Save"] -state disabled
+    .menubar.file entryconfigure [_ "Save As..."] -state normal
+    .menubar.file entryconfigure [_ "Print..."] -state disabled
+    .menubar.file entryconfigure [_ "Close"] -state disabled
     # Edit menu
-    $menubar.edit entryconfigure [_ "Duplicate"] -state disabled
-    $menubar.edit entryconfigure [_ "Edit Mode"] -state disabled
+    .menubar.edit entryconfigure [_ "Duplicate"] -state disabled
+    .menubar.edit entryconfigure [_ "Edit Mode"] -state disabled
     ::pd_patch::pdtk_canvas_editmode .console 0
     # Undo/Redo change names, they need to have the asterisk (*) after
-    $menubar.edit entryconfigure 0 -state disabled -label [_ "Undo"]
-    $menubar.edit entryconfigure 1 -state disabled -label [_ "Redo"]
+    .menubar.edit entryconfigure 0 -state disabled -label [_ "Undo"]
+    .menubar.edit entryconfigure 1 -state disabled -label [_ "Redo"]
     # disable everything on the Put menu
-    for {set i 0} {$i <= [$menubar.put index end]} {incr i} {
+    for {set i 0} {$i <= [.menubar.put index end]} {incr i} {
         # catch errors that happen when trying to disable separators
-        catch {$menubar.put entryconfigure $i -state disabled }
+        catch {.menubar.put entryconfigure $i -state disabled }
     }
 }
 
 proc configure_for_canvas {mytoplevel} {
-    variable menubar
+
     # File menu
-    $menubar.file entryconfigure [_ "Save"] -state normal
-    $menubar.file entryconfigure [_ "Save As..."] -state normal
-    $menubar.file entryconfigure [_ "Print..."] -state normal
-    $menubar.file entryconfigure [_ "Close"] -state normal
+    .menubar.file entryconfigure [_ "Save"] -state normal
+    .menubar.file entryconfigure [_ "Save As..."] -state normal
+    .menubar.file entryconfigure [_ "Print..."] -state normal
+    .menubar.file entryconfigure [_ "Close"] -state normal
     # Edit menu
-    $menubar.edit entryconfigure [_ "Duplicate"] -state normal
-    $menubar.edit entryconfigure [_ "Edit Mode"] -state normal
+    .menubar.edit entryconfigure [_ "Duplicate"] -state normal
+    .menubar.edit entryconfigure [_ "Edit Mode"] -state normal
     ::pd_patch::pdtk_canvas_editmode $mytoplevel $::patch_isEditMode($mytoplevel)
     # Put menu
-    for {set i 0} {$i <= [$menubar.put index end]} {incr i} {
+    for {set i 0} {$i <= [.menubar.put index end]} {incr i} {
         # catch errors that happen when trying to disable separators
-        if {[$menubar.put type $i] ne "separator"} {
-            $menubar.put entryconfigure $i -state normal 
+        if {[.menubar.put type $i] ne "separator"} {
+            .menubar.put entryconfigure $i -state normal 
         }
     }
 }
 
 proc configure_for_dialog {mytoplevel} {
-    variable menubar
+
     # these are meaningless for the dialog panels, so disable them except for
     # the ones that make senes in the Find dialog panel
     # File menu
     if {$mytoplevel ne ".find"} {
-        $menubar.file entryconfigure [_ "Save"] -state disabled
-        $menubar.file entryconfigure [_ "Save As..."] -state disabled
-        $menubar.file entryconfigure [_ "Print..."] -state disabled
+        .menubar.file entryconfigure [_ "Save"] -state disabled
+        .menubar.file entryconfigure [_ "Save As..."] -state disabled
+        .menubar.file entryconfigure [_ "Print..."] -state disabled
     }
-    $menubar.file entryconfigure [_ "Close"] -state disabled
+    .menubar.file entryconfigure [_ "Close"] -state disabled
     # Edit menu
-    $menubar.edit entryconfigure [_ "Duplicate"] -state disabled
-    $menubar.edit entryconfigure [_ "Edit Mode"] -state disabled
+    .menubar.edit entryconfigure [_ "Duplicate"] -state disabled
+    .menubar.edit entryconfigure [_ "Edit Mode"] -state disabled
     ::pd_patch::pdtk_canvas_editmode $mytoplevel 0
     # Undo/Redo change names, they need to have the asterisk (*) after
-    $menubar.edit entryconfigure 0 -state disabled -label [_ "Undo"]
-    $menubar.edit entryconfigure 1 -state disabled -label [_ "Redo"]
+    .menubar.edit entryconfigure 0 -state disabled -label [_ "Undo"]
+    .menubar.edit entryconfigure 1 -state disabled -label [_ "Redo"]
     # disable everything on the Put menu
-    for {set i 0} {$i <= [$menubar.put index end]} {incr i} {
+    for {set i 0} {$i <= [.menubar.put index end]} {incr i} {
         # catch errors that happen when trying to disable separators
-        catch {$menubar.put entryconfigure $i -state disabled }
+        catch {.menubar.put entryconfigure $i -state disabled }
     }
 }
 

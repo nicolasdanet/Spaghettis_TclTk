@@ -9,7 +9,7 @@
 
 package provide pd_patch 0.1
 
-package require pd_bindings
+package require pd_bind
 
 namespace eval ::pd_patch:: {
 }
@@ -110,7 +110,7 @@ proc pdtk_canvas_new {mytoplevel width height geometry editable} {
         $tkcanvas configure -xscrollincrement 1 -yscrollincrement 1
     }
 
-    ::pd_bindings::patch $mytoplevel
+    ::pd_bind::patch $mytoplevel
 
     # give focus to the canvas so it gets the events rather than the window 	 
     focus $tkcanvas
@@ -221,8 +221,8 @@ proc pdtk_canvas_clickpaste {tkcanvas x y b} {
 # since there is one popup that is used for all canvas windows, the menu
 # -commands use {} quotes so that $::var(windowFocused) is interpreted when the
 # menu item is called, not when the command is mapped to the menu item.  This
-# is the same as the menubar in pd_menus.tcl but the opposite of the 'bind'
-# commands in pd_bindings.tcl
+# is the same as the menubar in pd_menu.tcl but the opposite of the 'bind'
+# commands in pd_bind.tcl
 proc ::pd_patch::initialize {} {
     if { ! [winfo exists .popup]} {
         # the popup menu for the canvas

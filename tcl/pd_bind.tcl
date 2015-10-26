@@ -7,20 +7,20 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pd_bindings 0.1
+package provide pd_bind 0.1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
 package require pd_commands
 package require pd_connect
-package require pd_menus
+package require pd_menu
 package require pd_patch
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::pd_bindings:: {
+namespace eval ::pd_bind:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -71,19 +71,19 @@ proc initialize {} {
     
     # Class.
     
-    bind PdConsole  <FocusIn>               { ::pd_bindings::_focusIn %W }
-    bind PdDialog   <FocusIn>               { ::pd_bindings::_focusIn %W }
-    bind PdPatch    <FocusIn>               { ::pd_bindings::_focusIn %W }
-    bind PdPatch    <Configure>             { ::pd_bindings::_resized %W %w %h %x %y }
-    bind PdPatch    <Map>                   { ::pd_bindings::_map %W    }
-    bind PdPatch    <Unmap>                 { ::pd_bindings::_unmap %W  }
+    bind PdConsole  <FocusIn>               { ::pd_bind::_focusIn %W }
+    bind PdDialog   <FocusIn>               { ::pd_bind::_focusIn %W }
+    bind PdPatch    <FocusIn>               { ::pd_bind::_focusIn %W }
+    bind PdPatch    <Configure>             { ::pd_bind::_resized %W %w %h %x %y }
+    bind PdPatch    <Map>                   { ::pd_bind::_map %W    }
+    bind PdPatch    <Unmap>                 { ::pd_bind::_unmap %W  }
 
     # All.
     
-    bind all <KeyPress>                     { ::pd_bindings::_key %W %K %A 1 0 }
-    bind all <KeyRelease>                   { ::pd_bindings::_key %W %K %A 0 0 }
-    bind all <Shift-KeyPress>               { ::pd_bindings::_key %W %K %A 1 1 }
-    bind all <Shift-KeyRelease>             { ::pd_bindings::_key %W %K %A 0 1 }
+    bind all <KeyPress>                     { ::pd_bind::_key %W %K %A 1 0 }
+    bind all <KeyRelease>                   { ::pd_bind::_key %W %K %A 0 0 }
+    bind all <Shift-KeyPress>               { ::pd_bind::_key %W %K %A 1 1 }
+    bind all <Shift-KeyRelease>             { ::pd_bind::_key %W %K %A 0 1 }
     
     bind all <<Close>>                      { ::pd_commands::menu_send_float %W menuclose 0 }
     bind all <<Copy>>                       { ::pd_commands::menu_send %W copy }
@@ -114,7 +114,7 @@ proc patch {top} {
     bind $top.c <<ClickRight>>              { pdtk_canvas_rightclick %W %x %y %b }
     
     bind $top.c <MouseWheel>                { ::pd_patch::scroll %W y %D }
-    bind $top.c <Destroy>                   { ::pd_bindings::_closed [winfo toplevel %W] }
+    bind $top.c <Destroy>                   { ::pd_bind::_closed [winfo toplevel %W] }
         
     wm protocol $top WM_DELETE_WINDOW       [list ::pd_connect::pdsend "$top menuclose 0"]
 }
@@ -129,14 +129,14 @@ proc _focusIn {top} {
     switch -- [winfo class $top] {
         "PdPatch"   {
             ::pd_commands::set_filenewdir $top
-            ::pd_menus::configure_for_canvas $top
+            ::pd_menu::configure_for_canvas $top
             if {$::patch_isEditMode($top)} { $top configure -cursor $::var(cursorEditNothing) }
         }
         "PdConsole" {
-            ::pd_menus::configureForConsole
+            ::pd_menu::configureForConsole
         }
         "PdDialog"  { 
-            ::pd_menus::configure_for_dialog $top
+            ::pd_menu::configure_for_dialog $top
         }
     }
 }

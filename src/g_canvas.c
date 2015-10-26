@@ -70,7 +70,7 @@ static t_atom *canvas_newargv;
 void canvas_updatewindowlist( void)
 {
     if (! glist_amreloadingabstractions)  /* not if we're in a reload */         
-        sys_gui("::pd_menus::update_window_menu\n");
+        sys_gui("::pd_menu::update_window_menu\n");
 }
 
     /* add a glist the list of "root" canvases (toplevels without parents.) */

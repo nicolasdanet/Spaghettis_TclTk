@@ -14,7 +14,7 @@
 
 package provide dialog_message 0.1
 
-package require pd_bindings
+package require pd_bind
 
 namespace eval ::dialog_message:: {
     variable message_history {"pd dsp 1"}
