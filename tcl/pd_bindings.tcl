@@ -26,7 +26,7 @@ namespace eval ::pd_bindings:: {
 # ------------------------------------------------------------------------------------------------------------
 
 namespace export initialize
-namespace export bindPatch
+namespace export patch
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -72,14 +72,11 @@ proc initialize {} {
     # Class.
     
     bind PdConsole  <FocusIn>               { ::pd_bindings::_focusIn %W }
-    
-    bind PdPatch    <Configure>             { ::pd_bindings::_resized %W %w %h %x %y }
-    bind PdPatch    <FocusIn>               { ::pd_bindings::_focusIn %W }
-    bind PdPatch    <Map>                   { ::pd_bindings::_map %W }
-    bind PdPatch    <Unmap>                 { ::pd_bindings::_unmap %W }
-
-    bind PdDialog   <Configure>             { }
     bind PdDialog   <FocusIn>               { ::pd_bindings::_focusIn %W }
+    bind PdPatch    <FocusIn>               { ::pd_bindings::_focusIn %W }
+    bind PdPatch    <Configure>             { ::pd_bindings::_resized %W %w %h %x %y }
+    bind PdPatch    <Map>                   { ::pd_bindings::_map %W    }
+    bind PdPatch    <Unmap>                 { ::pd_bindings::_unmap %W  }
 
     # All.
     
@@ -90,38 +87,38 @@ proc initialize {} {
     
     bind all <<Close>>                      { ::pd_commands::menu_send_float %W menuclose 0 }
     bind all <<Copy>>                       { ::pd_commands::menu_send %W copy }
-    bind all <<Cut>>                        { ::pd_commands::menu_send %W cut }
+    bind all <<Cut>>                        { ::pd_commands::menu_send %W cut  }
     bind all <<Duplicate>>                  { ::pd_commands::menu_send %W duplicate }
     bind all <<EditMode>>                   { }
-    bind all <<NewFile>>                    { ::pd_commands::menu_new }
+    bind all <<NewFile>>                    { ::pd_commands::menu_new  }
     bind all <<OpenFile>>                   { ::pd_commands::menu_open }
-    bind all <<Paste>>                      { ::pd_commands::menu_send %W paste }
-    bind all <<Quit>>                       { ::pd_connect::pdsend "pd verifyquit" }
-    bind all <<Save>>                       { ::pd_commands::menu_send %W menusave }
+    bind all <<Paste>>                      { ::pd_commands::menu_send %W paste      }
+    bind all <<Quit>>                       { ::pd_connect::pdsend "pd verifyquit"   }
+    bind all <<Save>>                       { ::pd_commands::menu_send %W menusave   }
     bind all <<SaveAs>>                     { ::pd_commands::menu_send %W menusaveas }
-    bind all <<SelectAll>>                  { ::pd_commands::menu_send %W selectall }
+    bind all <<SelectAll>>                  { ::pd_commands::menu_send %W selectall  }
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc bindPatch {top} {
+proc patch {top} {
 
     set c [getCanvas $top]
 
-    bind $c <<Motion1>>                 { pdtk_canvas_motion %W %x %y 0 }
-    bind $c <<Motion2>>                 { pdtk_canvas_motion %W %x %y 2 }
-    bind $c <<ClickLeft1>>              { pdtk_canvas_mouse %W %x %y %b 0 }
-    bind $c <<ClickLeft2>>              { pdtk_canvas_mouse %W %x %y %b 1 }
-    bind $c <<ClickLeft3>>              { pdtk_canvas_mouse %W %x %y %b 2 }
-    bind $c <<ClickLeft4>>              { pdtk_canvas_mouse %W %x %y %b 3 }
-    bind $c <<ClickRelease>>            { pdtk_canvas_mouseup %W %x %y %b }
-    bind $c <<ClickRight>>              { pdtk_canvas_rightclick %W %x %y %b }
+    bind $c <<Motion1>>                     { pdtk_canvas_motion %W %x %y 0 }
+    bind $c <<Motion2>>                     { pdtk_canvas_motion %W %x %y 2 }
+    bind $c <<ClickLeft1>>                  { pdtk_canvas_mouse %W %x %y %b 0 }
+    bind $c <<ClickLeft2>>                  { pdtk_canvas_mouse %W %x %y %b 1 }
+    bind $c <<ClickLeft3>>                  { pdtk_canvas_mouse %W %x %y %b 2 }
+    bind $c <<ClickLeft4>>                  { pdtk_canvas_mouse %W %x %y %b 3 }
+    bind $c <<ClickRelease>>                { pdtk_canvas_mouseup %W %x %y %b }
+    bind $c <<ClickRight>>                  { pdtk_canvas_rightclick %W %x %y %b }
     
-    bind $c <MouseWheel>                { ::pd_canvas::scroll %W y %D }
-    bind $c <Destroy>                   { ::pd_bindings::_closed [winfo toplevel %W] }
+    bind $c <MouseWheel>                    { ::pd_canvas::scroll %W y %D }
+    bind $c <Destroy>                       { ::pd_bindings::_closed [winfo toplevel %W] }
         
-    wm protocol $top WM_DELETE_WINDOW   [list ::pd_connect::pdsend "$top menuclose 0"]
+    wm protocol $top WM_DELETE_WINDOW       [list ::pd_connect::pdsend "$top menuclose 0"]
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -150,11 +147,13 @@ proc _focusIn {top} {
 # ------------------------------------------------------------------------------------------------------------
 
 proc _map {top} {
+
     ::pd_connect::pdsend "$top map 1"
     ::pd_canvas::finished_loading_file $top
 }
 
 proc _unmap {top} {
+
     ::pd_connect::pdsend "$top map 0"
 }
 
