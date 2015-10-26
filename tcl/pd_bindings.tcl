@@ -53,6 +53,9 @@ proc initialize {} {
     event add <<SaveAs>>        <Shift-$modifier-s>
     event add <<SelectAll>>     <$modifier-a>
     
+    event add <<RightClick>>    <ButtonPress-2>
+    event add <<RightClick>>    <ButtonPress-3>
+    
     # Widget.
     
     wm protocol .console WM_DELETE_WINDOW   { ::pd_connect::pdsend "pd verifyquit" }
@@ -61,7 +64,7 @@ proc initialize {} {
     
     bind PdConsole  <FocusIn>               { ::pd_bindings::window_focusin %W }
     
-    bind PdPatch    <Configure>             { ::pd_bindings::patch_configure %W %w %h %x %y }
+    bind PdPatch    <Configure>             { ::pd_bindings::_patchResized %W %w %h %x %y }
     bind PdPatch    <FocusIn>               { ::pd_bindings::window_focusin %W }
     bind PdPatch    <Map>                   { ::pd_bindings::map %W }
     bind PdPatch    <Unmap>                 { ::pd_bindings::unmap %W }
@@ -104,26 +107,11 @@ proc bindPatch {top} {
     bind $c <ButtonPress-1>                 { pdtk_canvas_mouse %W %x %y %b 0 }
     bind $c <Shift-ButtonPress-1>           { pdtk_canvas_mouse %W %x %y %b 1 }
     bind $c <$modifier-ButtonPress-1>       { pdtk_canvas_mouse %W %x %y %b 2 }
+    bind $c <Alt-ButtonPress-1>             { pdtk_canvas_mouse %W %x %y %b 3 }
     bind $c <ButtonRelease-1>               { pdtk_canvas_mouseup %W %x %y %b }
     bind $c <MouseWheel>                    { ::pd_canvas::scroll %W y %D }
-    bind $c <Shift-MouseWheel>              { ::pd_canvas::scroll %W x %D }
-     
-    switch -- [tk windowingsystem] { 
-        "aqua" {
-            bind $c <ButtonPress-2>         { pdtk_canvas_rightclick %W %x %y %b }
-            bind $c <Option-ButtonPress-1>  { pdtk_canvas_mouse %W %x %y %b 3 } 
-        } 
-        "x11" {
-            bind $c <ButtonPress-3>         { pdtk_canvas_rightclick %W %x %y %b }
-            bind $c <Alt-ButtonPress-1>     { pdtk_canvas_mouse %W %x %y %b 3 }
-        } 
-        "win32" {
-            bind $c <ButtonPress-3>         { pdtk_canvas_rightclick %W %x %y %b }
-            bind $c <Alt-ButtonPress-1>     { pdtk_canvas_mouse %W %x %y %b 3 }
-        }
-    }
-
-    bind $c <Destroy>                       { ::pd_bindings::window_destroy %W }
+    bind $c <<RightClick>>                  { pdtk_canvas_rightclick %W %x %y %b }
+    bind $c <Destroy>                       { ::pd_bindings::_patchClosed %W }
         
     wm protocol $top WM_DELETE_WINDOW       [list ::pd_connect::pdsend "$top menuclose 0"]
 }
@@ -131,28 +119,27 @@ proc bindPatch {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+proc _patchResized {top width height x y} {
 
-#------------------------------------------------------------------------------#
-# event handlers
-
-proc patch_configure {mytoplevel width height x y} {
-    # for some reason, when we create a window, we get an event with a
-    # widthXheight of 1x1 first, then we get the right values, so filter it out
-    if {$width == 1 && $height == 1} {return}
-    ::pd_canvas::pdtk_canvas_getscroll [getCanvas $mytoplevel]
-    # send the size/location of the window and canvas to 'pd' in the form of:
-    #    left top right bottom
-    ::pd_connect::pdsend "$mytoplevel setbounds $x $y [expr $x + $width] [expr $y + $height]"
+    # Filter annoying bad values reported when a window is created.
+    
+    if {$width == 1 && $height == 1} { return }
+    
+    ::pd_canvas::pdtk_canvas_getscroll [getCanvas $top]
+    ::pd_connect::pdsend "$top setbounds $x $y [expr $x + $width] [expr $y + $height]"
 }
     
-proc window_destroy {window} {
-    set mytoplevel [winfo toplevel $window]
-    unset ::patch_isEditMode($mytoplevel)
-    unset ::patch_isEditing($mytoplevel)
-    # unset my entries all of the window data tracking arrays
-    array unset ::patch_name $mytoplevel
-    array unset ::patch_parents $mytoplevel
-    array unset ::patch_childs $mytoplevel
+proc _patchClosed {widget} {
+    set top [winfo toplevel $widget]
+    
+    pd_console::post Toto
+    
+    unset ::patch_isEditMode($top)
+    unset ::patch_isEditing($top)
+    
+    array unset ::patch_name $top
+    array unset ::patch_parents $top
+    array unset ::patch_childs $top
 }
 
 # do tasks when changing focus (Window menu, scrollbars, etc.)
