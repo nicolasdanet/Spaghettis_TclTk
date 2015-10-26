@@ -9,30 +9,26 @@
 
 package provide pd_menus 0.1
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 package require pd_commands
 
-# TODO figure out Undo/Redo/Cut/Copy/Paste state changes for menus
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-# since there is one menubar that is used for all windows, the menu -commands
-# use {} quotes so that $::var(windowFocused) is interpreted when the menu item
-# is called, not when the command is mapped to the menu item.  This is the
-# opposite of the 'bind' commands in pd_bindings.tcl
-    
 namespace eval ::pd_menus:: {
-    variable accelerator
-    variable menubar ".menubar"
 
-    namespace export create_menubar
-    namespace export configure_for_canvas
-    namespace export configure_for_dialog
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-    # turn off tearoff menus globally
-    option add *tearOff 0
-}
+variable accelerator
+variable menubar ".menubar"
 
-# ------------------------------------------------------------------------------
-# 
-proc ::pd_menus::initialize {} {
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc initialize {} {
     variable accelerator
     variable menubar
     if {[tk windowingsystem] eq "aqua"} {
@@ -53,7 +49,7 @@ proc ::pd_menus::initialize {} {
     . configure -menu $menubar
 }
 
-proc ::pd_menus::configureForConsole {} {
+proc configureForConsole {} {
     variable menubar
     # these are meaningless for the Pd window, so disable them
     # File menu
@@ -75,7 +71,7 @@ proc ::pd_menus::configureForConsole {} {
     }
 }
 
-proc ::pd_menus::configure_for_canvas {mytoplevel} {
+proc configure_for_canvas {mytoplevel} {
     variable menubar
     # File menu
     $menubar.file entryconfigure [_ "Save"] -state normal
@@ -95,7 +91,7 @@ proc ::pd_menus::configure_for_canvas {mytoplevel} {
     }
 }
 
-proc ::pd_menus::configure_for_dialog {mytoplevel} {
+proc configure_for_dialog {mytoplevel} {
     variable menubar
     # these are meaningless for the dialog panels, so disable them except for
     # the ones that make senes in the Find dialog panel
@@ -123,7 +119,7 @@ proc ::pd_menus::configure_for_dialog {mytoplevel} {
 
 # ------------------------------------------------------------------------------
 # menu building functions
-proc ::pd_menus::build_file_menu {mymenu} {
+proc build_file_menu {mymenu} {
     # run the platform-specific build_file_menu_* procs first, and config them
     [format build_file_menu_%s [tk windowingsystem]] $mymenu
     $mymenu entryconfigure [_ "New"]        -command {::pd_commands::menu_new}
@@ -134,7 +130,7 @@ proc ::pd_menus::build_file_menu {mymenu} {
     $mymenu entryconfigure [_ "Close"]      -command {::pd_commands::menu_send_float $::var(windowFocused) menuclose 0}
 }
 
-proc ::pd_menus::build_edit_menu {mymenu} {
+proc build_edit_menu {mymenu} {
     variable accelerator
     $mymenu add command -label [_ "Undo"]       -accelerator "$accelerator+Z" \
         -command {}
@@ -163,7 +159,7 @@ proc ::pd_menus::build_edit_menu {mymenu} {
     }
 }
 
-proc ::pd_menus::build_put_menu {mymenu} {
+proc build_put_menu {mymenu} {
     variable accelerator
     # The trailing 0 in ::pd_commands::menu_send_float basically means leave the object box
     # sticking to the mouse cursor. The iemguis alway do that when created
@@ -202,9 +198,9 @@ proc ::pd_menus::build_put_menu {mymenu} {
     $mymenu add command -label [_ "Array"] -command {::pd_commands::menu_send $::var(windowFocused) menuarray}
 }
 
-proc ::pd_menus::build_find_menu {mymenu} { }
+proc build_find_menu {mymenu} { }
 
-proc ::pd_menus::build_media_menu {mymenu} {
+proc build_media_menu {mymenu} {
     variable accelerator
     $mymenu add radiobutton -label [_ "DSP On"] -accelerator "$accelerator+/" \
         -variable ::var(isDsp) -value 1 -command {::pd_connect::pdsend "pd dsp 1"}
@@ -236,7 +232,7 @@ proc ::pd_menus::build_media_menu {mymenu} {
         -command {::pd_connect::pdsend "pd midi-properties"}
 }
 
-proc ::pd_menus::build_window_menu {mymenu} {
+proc build_window_menu {mymenu} {
     variable accelerator
     if {[tk windowingsystem] eq "aqua"} {
         $mymenu add command -label [_ "Minimize"] -accelerator "$accelerator+M"\
@@ -266,7 +262,7 @@ proc ::pd_menus::build_window_menu {mymenu} {
 # undo/redo menu items
 
 # find the first parent patch that has a mapped window
-proc ::pd_menus::find_mapped_parent {parentlist} {
+proc find_mapped_parent {parentlist} {
     if {[llength $parentlist] == 0} {return "none"}
     set firstparent [lindex $parentlist 0]
     if {[winfo exists $firstparent]} {
@@ -280,7 +276,7 @@ proc ::pd_menus::find_mapped_parent {parentlist} {
 }
 
 # find the first parent patch that has a mapped window
-proc ::pd_menus::insert_into_menu {mymenu entry parent} {
+proc insert_into_menu {mymenu entry parent} {
     set insertat [$mymenu index end]
     for {set i 0} {$i <= [$mymenu index end]} {incr i} {
         if {[$mymenu type $i] ne "command"} {continue}
@@ -300,7 +296,7 @@ proc ::pd_menus::insert_into_menu {mymenu entry parent} {
 }
 
 # recurse through a list of parent windows and add to the menu
-proc ::pd_menus::add_list_to_menu {mymenu window parentlist} {
+proc add_list_to_menu {mymenu window parentlist} {
     if {[llength $parentlist] == 0} {
         insert_into_menu $mymenu $window {}
     } else {
@@ -317,7 +313,7 @@ proc ::pd_menus::add_list_to_menu {mymenu window parentlist} {
 
 # update the list of windows on the Window menu. This expects run on the
 # Window menu, and to insert below the last separator
-proc ::pd_menus::update_window_menu {} {
+proc update_window_menu {} {
     set mymenu .menubar.window
     # find the last separator and delete everything after that
     for {set i 0} {$i <= [$mymenu index end]} {incr i} {
@@ -337,7 +333,7 @@ proc ::pd_menus::update_window_menu {} {
 # ------------------------------------------------------------------------------
 # submenu for Preferences, now used on all platforms
 
-proc ::pd_menus::create_preferences_menu {mymenu} {
+proc create_preferences_menu {mymenu} {
     menu $mymenu
     $mymenu add command -label [_ "Path..."] \
         -command {::pd_connect::pdsend "pd start-path-dialog"}
@@ -356,7 +352,7 @@ proc ::pd_menus::create_preferences_menu {mymenu} {
 # menu building functions for Mac OS X/aqua
 
 # for Mac OS X only
-proc ::pd_menus::create_apple_menu {mymenu} {
+proc create_apple_menu {mymenu} {
     # TODO this should open a Pd patch called about.pd
     menu $mymenu.apple
     $mymenu.apple add command -label [_ "About Pd"] -command {::pd_commands::menu_aboutpd}
@@ -369,7 +365,7 @@ proc ::pd_menus::create_apple_menu {mymenu} {
     
 }
 
-proc ::pd_menus::build_file_menu_aqua {mymenu} {
+proc build_file_menu_aqua {mymenu} {
     variable accelerator
     $mymenu add command -label [_ "New"]       -accelerator "$accelerator+N"
     $mymenu add command -label [_ "Open"]      -accelerator "$accelerator+O"
@@ -385,10 +381,10 @@ proc ::pd_menus::build_file_menu_aqua {mymenu} {
 
 # the "Edit", "Put", and "Find" menus do not have cross-platform differences
 
-proc ::pd_menus::build_media_menu_aqua {mymenu} {
+proc build_media_menu_aqua {mymenu} {
 }
 
-proc ::pd_menus::build_window_menu_aqua {mymenu} {
+proc build_window_menu_aqua {mymenu} {
 }
 
 # the "Help" does not have cross-platform differences
@@ -396,7 +392,7 @@ proc ::pd_menus::build_window_menu_aqua {mymenu} {
 # ------------------------------------------------------------------------------
 # menu building functions for UNIX/X11
 
-proc ::pd_menus::build_file_menu_x11 {mymenu} {
+proc build_file_menu_x11 {mymenu} {
     variable accelerator
     $mymenu add command -label [_ "New"]        -accelerator "$accelerator+N"
     $mymenu add command -label [_ "Open"]       -accelerator "$accelerator+O"
@@ -418,10 +414,10 @@ proc ::pd_menus::build_file_menu_x11 {mymenu} {
 
 # the "Edit", "Put", and "Find" menus do not have cross-platform differences
 
-proc ::pd_menus::build_media_menu_x11 {mymenu} {
+proc build_media_menu_x11 {mymenu} {
 }
 
-proc ::pd_menus::build_window_menu_x11 {mymenu} {
+proc build_window_menu_x11 {mymenu} {
 }
 
 # the "Help" does not have cross-platform differences
@@ -430,7 +426,7 @@ proc ::pd_menus::build_window_menu_x11 {mymenu} {
 # menu building functions for Windows/Win32
 
 # for Windows only
-proc ::pd_menus::create_system_menu {mymenubar} {
+proc create_system_menu {mymenubar} {
     set mymenu $mymenubar.system
     $mymenubar add cascade -label System -menu $mymenu
     menu $mymenu -tearoff 0
@@ -442,7 +438,7 @@ proc ::pd_menus::create_system_menu {mymenubar} {
     # TODO add Edit Mode here
 }
 
-proc ::pd_menus::build_file_menu_win32 {mymenu} {
+proc build_file_menu_win32 {mymenu} {
     variable accelerator
     $mymenu add command -label [_ "New"]      -accelerator "$accelerator+N"
     $mymenu add command -label [_ "Open"]     -accelerator "$accelerator+O"
@@ -462,10 +458,16 @@ proc ::pd_menus::build_file_menu_win32 {mymenu} {
 
 # the "Edit", "Put", and "Find" menus do not have cross-platform differences
 
-proc ::pd_menus::build_media_menu_win32 {mymenu} {
+proc build_media_menu_win32 {mymenu} {
 }
 
-proc ::pd_menus::build_window_menu_win32 {mymenu} {
+proc build_window_menu_win32 {mymenu} {
 }
 
-# the "Help" does not have cross-platform differences
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------

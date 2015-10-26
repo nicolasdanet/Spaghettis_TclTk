@@ -202,6 +202,10 @@ proc main {argc argv} {
         set ::tk::dialog::file::showHiddenVar 0
     }
     
+    # Avoid tear-off menus.
+    
+    option add *tearOff 0
+    
     # Set various platform specific settings.
     
     switch -- [tk windowingsystem] {
