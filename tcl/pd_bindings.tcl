@@ -104,19 +104,17 @@ proc initialize {} {
 
 proc patch {top} {
 
-    set c [getCanvas $top]
-
-    bind $c <<Motion1>>                     { pdtk_canvas_motion %W %x %y 0 }
-    bind $c <<Motion2>>                     { pdtk_canvas_motion %W %x %y 2 }
-    bind $c <<ClickLeft1>>                  { pdtk_canvas_mouse %W %x %y %b 0 }
-    bind $c <<ClickLeft2>>                  { pdtk_canvas_mouse %W %x %y %b 1 }
-    bind $c <<ClickLeft3>>                  { pdtk_canvas_mouse %W %x %y %b 2 }
-    bind $c <<ClickLeft4>>                  { pdtk_canvas_mouse %W %x %y %b 3 }
-    bind $c <<ClickRelease>>                { pdtk_canvas_mouseup %W %x %y %b }
-    bind $c <<ClickRight>>                  { pdtk_canvas_rightclick %W %x %y %b }
+    bind $top.c <<Motion1>>                 { pdtk_canvas_motion %W %x %y 0 }
+    bind $top.c <<Motion2>>                 { pdtk_canvas_motion %W %x %y 2 }
+    bind $top.c <<ClickLeft1>>              { pdtk_canvas_mouse %W %x %y %b 0 }
+    bind $top.c <<ClickLeft2>>              { pdtk_canvas_mouse %W %x %y %b 1 }
+    bind $top.c <<ClickLeft3>>              { pdtk_canvas_mouse %W %x %y %b 2 }
+    bind $top.c <<ClickLeft4>>              { pdtk_canvas_mouse %W %x %y %b 3 }
+    bind $top.c <<ClickRelease>>            { pdtk_canvas_mouseup %W %x %y %b }
+    bind $top.c <<ClickRight>>              { pdtk_canvas_rightclick %W %x %y %b }
     
-    bind $c <MouseWheel>                    { ::pd_canvas::scroll %W y %D }
-    bind $c <Destroy>                       { ::pd_bindings::_closed [winfo toplevel %W] }
+    bind $top.c <MouseWheel>                { ::pd_canvas::scroll %W y %D }
+    bind $top.c <Destroy>                   { ::pd_bindings::_closed [winfo toplevel %W] }
         
     wm protocol $top WM_DELETE_WINDOW       [list ::pd_connect::pdsend "$top menuclose 0"]
 }
@@ -160,7 +158,7 @@ proc _unmap {top} {
 proc _resized {top width height x y} {
 
     if {$width > 1 || $height > 1} { 
-        ::pd_canvas::pdtk_canvas_getscroll [getCanvas $top]
+        ::pd_canvas::pdtk_canvas_getscroll $top.c
         ::pd_connect::pdsend "$top setbounds $x $y [expr $x + $width] [expr $y + $height]"
     }
 }

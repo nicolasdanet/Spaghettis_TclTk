@@ -95,7 +95,7 @@ proc pdtk_canvas_new {mytoplevel width height geometry editable} {
     wm geometry $mytoplevel $geometry
     wm minsize $mytoplevel 50 50
 
-    set tkcanvas [getCanvas $mytoplevel]
+    set tkcanvas $mytoplevel.c
     canvas $tkcanvas -width $width -height $height \
         -highlightthickness 0 -scrollregion [list 0 0 $width $height] \
         -xscrollcommand "$mytoplevel.xscroll set" \
@@ -253,7 +253,7 @@ proc ::pd_canvas::pdtk_canvas_popup {mytoplevel xcanvas ycanvas hasproperties ha
     } else {
         .popup entryconfigure [_ "Open"] -state disabled
     }
-    set tkcanvas [getCanvas $mytoplevel]
+    set tkcanvas $mytoplevel.c
     set scrollregion [$tkcanvas cget -scrollregion]
     # get the canvas location that is currently the top left corner in the window
     set left_xview_pix [expr [lindex [$tkcanvas xview] 0] * [lindex $scrollregion 2]]
