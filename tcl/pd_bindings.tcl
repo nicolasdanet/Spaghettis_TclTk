@@ -111,7 +111,7 @@ proc bindPatch {top} {
     bind $c <ButtonRelease-1>               { pdtk_canvas_mouseup %W %x %y %b }
     bind $c <MouseWheel>                    { ::pd_canvas::scroll %W y %D }
     bind $c <<RightClick>>                  { pdtk_canvas_rightclick %W %x %y %b }
-    bind $c <Destroy>                       { ::pd_bindings::_patchClosed %W }
+    bind $c <Destroy>                       { ::pd_bindings::_patchClosed [winfo toplevel %W] }
         
     wm protocol $top WM_DELETE_WINDOW       [list ::pd_connect::pdsend "$top menuclose 0"]
 }
@@ -129,11 +129,8 @@ proc _patchResized {top width height x y} {
     ::pd_connect::pdsend "$top setbounds $x $y [expr $x + $width] [expr $y + $height]"
 }
     
-proc _patchClosed {widget} {
-    set top [winfo toplevel $widget]
-    
-    pd_console::post Toto
-    
+proc _patchClosed {top} {
+
     unset ::patch_isEditMode($top)
     unset ::patch_isEditing($top)
     
@@ -142,7 +139,6 @@ proc _patchClosed {widget} {
     array unset ::patch_childs $top
 }
 
-# do tasks when changing focus (Window menu, scrollbars, etc.)
 proc window_focusin {mytoplevel} {
     # ::var(windowFocused) is used throughout for sending bindings, menu commands,
     # etc. to the correct patch receiver symbol.  MSP took out a line that
