@@ -12,10 +12,10 @@ package provide pd_bindings 0.1
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package require pd_canvas
 package require pd_commands
 package require pd_connect
 package require pd_menus
+package require pd_patch
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -113,7 +113,7 @@ proc patch {top} {
     bind $top.c <<ClickRelease>>            { pdtk_canvas_mouseup %W %x %y %b }
     bind $top.c <<ClickRight>>              { pdtk_canvas_rightclick %W %x %y %b }
     
-    bind $top.c <MouseWheel>                { ::pd_canvas::scroll %W y %D }
+    bind $top.c <MouseWheel>                { ::pd_patch::scroll %W y %D }
     bind $top.c <Destroy>                   { ::pd_bindings::_closed [winfo toplevel %W] }
         
     wm protocol $top WM_DELETE_WINDOW       [list ::pd_connect::pdsend "$top menuclose 0"]
@@ -147,7 +147,7 @@ proc _focusIn {top} {
 proc _map {top} {
 
     ::pd_connect::pdsend "$top map 1"
-    ::pd_canvas::finished_loading_file $top
+    ::pd_patch::finished_loading_file $top
 }
 
 proc _unmap {top} {
@@ -158,7 +158,7 @@ proc _unmap {top} {
 proc _resized {top width height x y} {
 
     if {$width > 1 || $height > 1} { 
-        ::pd_canvas::pdtk_canvas_getscroll $top.c
+        ::pd_patch::pdtk_canvas_getscroll $top.c
         ::pd_connect::pdsend "$top setbounds $x $y [expr $x + $width] [expr $y + $height]"
     }
 }

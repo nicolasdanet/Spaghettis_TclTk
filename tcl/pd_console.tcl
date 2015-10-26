@@ -32,9 +32,9 @@ proc initialize {} {
 
     toplevel .console -class PdConsole
     
-    set ::patch_name(.console) [_ "Logs"]
+    set ::patch_name(.console) [_ "PureData"]
     
-    wm title    .console [_ "Logs"]
+    wm title    .console [_ "PureData"]
     wm minsize  .console 400 75
     wm geometry .console =500x400+20+50
     
@@ -74,7 +74,7 @@ proc initialize {} {
 proc post {message} {
     after cancel .console.text.internal yview
     .console.text.internal insert end $message
-    after idle  .console.text.internal yview end
+    after idle .console.text.internal yview end
 }
 
 # ------------------------------------------------------------------------------------------------------------

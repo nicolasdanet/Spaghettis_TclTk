@@ -64,7 +64,7 @@ proc ::pd_menus::configureForConsole {} {
     # Edit menu
     $menubar.edit entryconfigure [_ "Duplicate"] -state disabled
     $menubar.edit entryconfigure [_ "Edit Mode"] -state disabled
-    ::pd_canvas::pdtk_canvas_editmode .console 0
+    ::pd_patch::pdtk_canvas_editmode .console 0
     # Undo/Redo change names, they need to have the asterisk (*) after
     $menubar.edit entryconfigure 0 -state disabled -label [_ "Undo"]
     $menubar.edit entryconfigure 1 -state disabled -label [_ "Redo"]
@@ -85,7 +85,7 @@ proc ::pd_menus::configure_for_canvas {mytoplevel} {
     # Edit menu
     $menubar.edit entryconfigure [_ "Duplicate"] -state normal
     $menubar.edit entryconfigure [_ "Edit Mode"] -state normal
-    ::pd_canvas::pdtk_canvas_editmode $mytoplevel $::patch_isEditMode($mytoplevel)
+    ::pd_patch::pdtk_canvas_editmode $mytoplevel $::patch_isEditMode($mytoplevel)
     # Put menu
     for {set i 0} {$i <= [$menubar.put index end]} {incr i} {
         # catch errors that happen when trying to disable separators
@@ -109,7 +109,7 @@ proc ::pd_menus::configure_for_dialog {mytoplevel} {
     # Edit menu
     $menubar.edit entryconfigure [_ "Duplicate"] -state disabled
     $menubar.edit entryconfigure [_ "Edit Mode"] -state disabled
-    ::pd_canvas::pdtk_canvas_editmode $mytoplevel 0
+    ::pd_patch::pdtk_canvas_editmode $mytoplevel 0
     # Undo/Redo change names, they need to have the asterisk (*) after
     $menubar.edit entryconfigure 0 -state disabled -label [_ "Undo"]
     $menubar.edit entryconfigure 1 -state disabled -label [_ "Redo"]

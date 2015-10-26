@@ -43,7 +43,7 @@ proc ::pd_miscellaneous::open_file {filename} {
         [file exists $filename]
         && [regexp -nocase -- "\.(pd|pat|mxt)$" $filename]
     } then {
-        ::pd_canvas::started_loading_file [format "%s/%s" $basename $filename]
+        ::pd_patch::started_loading_file [format "%s/%s" $basename $filename]
         ::pd_connect::pdsend "pd open [enquote_path $basename] [enquote_path $directory]"
     } {
         # ::pd_console::post [format [_ "Ignoring '%s': doesn't look like a Pd-file"] $filename]

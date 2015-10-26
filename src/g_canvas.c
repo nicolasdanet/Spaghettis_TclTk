@@ -595,7 +595,7 @@ void canvas_reflecttitle(t_canvas *x)
         strcat(namebuf, ")");
     }
     else namebuf[0] = 0;
-    sys_vgui("::pd_canvas::pdtk_canvas_reflecttitle .x%lx {%s} {%s} {%s} %d\n",
+    sys_vgui("::pd_patch::pdtk_canvas_reflecttitle .x%lx {%s} {%s} {%s} %d\n",
         x, canvas_getdir(x)->s_name, x->gl_name->s_name, namebuf, x->gl_dirty);
 }
 
@@ -652,7 +652,7 @@ void canvas_map(t_canvas *x, t_floatarg f)
             canvas_drawlines(x);
             if (x->gl_isgraph && x->gl_goprect)
                 canvas_drawredrect(x, 1);
-            sys_vgui("::pd_canvas::pdtk_canvas_getscroll .x%lx.c\n", x);
+            sys_vgui("::pd_patch::pdtk_canvas_getscroll .x%lx.c\n", x);
         }
     }
     else

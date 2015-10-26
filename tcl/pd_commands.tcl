@@ -48,7 +48,7 @@ proc ::pd_commands::menu_open {} {
 proc ::pd_commands::menu_editmode {state} {
     if {[winfo class $::var(windowFocused)] ne "PdPatch"} {return}
     set ::var(isEditMode) $state
-# this shouldn't be necessary because 'pd' will reply with ::pd_canvas::pdtk_canvas_editmode
+# this shouldn't be necessary because 'pd' will reply with ::pd_patch::pdtk_canvas_editmode
 #    set ::patch_isEditMode($::var(windowFocused)) $state
     ::pd_connect::pdsend "$::var(windowFocused) editmode $state"
 }

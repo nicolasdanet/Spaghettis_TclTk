@@ -95,12 +95,12 @@ package require dialog_path
 package require dialog_startup
 
 package require pd_bindings
-package require pd_canvas
 package require pd_commands
 package require pd_connect
 package require pd_console
 package require pd_menus
 package require pd_miscellaneous
+package require pd_patch
 package require pd_text
 package require pd_textwindow
 
@@ -264,7 +264,7 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
 
     # Initialize some packages.
     
-    foreach module {pd_console pd_bindings pd_menus pd_canvas} { ::${module}::initialize }
+    foreach module {pd_console pd_bindings pd_menus pd_patch} { ::${module}::initialize }
     
     # Set the menubar configuration.
     

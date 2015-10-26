@@ -862,7 +862,7 @@ static void canvas_rightclick(t_canvas *x, int xpos, int ypos, t_gobj *y)
     int canprop, canopen;
     canprop = (!y || (y && class_getpropertiesfn(pd_class(&y->g_pd))));
     canopen = (y && zgetfn(&y->g_pd, gensym("menu-open")));
-    sys_vgui("::pd_canvas::pdtk_canvas_popup .x%lx %d %d %d %d\n",
+    sys_vgui("::pd_patch::pdtk_canvas_popup .x%lx %d %d %d %d\n",
         x, xpos, ypos, canprop, canopen);
 }
 
@@ -953,7 +953,7 @@ void canvas_vis(t_canvas *x, t_floatarg f)
                 (int)(x->gl_screeny2 - x->gl_screeny1),
                 (int)(x->gl_screenx1), (int)(x->gl_screeny1),
                 x->gl_edit);
-            snprintf(cbuf, MAXPDSTRING - 2, "::pd_canvas::pdtk_canvas_setparents .x%lx",
+            snprintf(cbuf, MAXPDSTRING - 2, "::pd_patch::pdtk_canvas_setparents .x%lx",
                 (unsigned long)c);
             while (c->gl_owner) {
                 c = c->gl_owner;
@@ -1665,7 +1665,7 @@ static void canvas_displaceselection(t_canvas *x, int dx, int dy)
     }
     if (resortin) canvas_resortinlets(x);
     if (resortout) canvas_resortoutlets(x);
-    sys_vgui("::pd_canvas::pdtk_canvas_getscroll .x%lx.c\n", x);
+    sys_vgui("::pd_patch::pdtk_canvas_getscroll .x%lx.c\n", x);
     if (x->gl_editor->e_selection)
         canvas_dirty(x, 1);
 }
@@ -1955,7 +1955,7 @@ void glob_verifyquit(void *dummy, t_floatarg f)
         if (g2 = glist_finddirty(g))
     {
         canvas_vis(g2, 1);
-            sys_vgui("::pd_canvas::pdtk_canvas_menuclose .x%lx {.x%lx menuclose 3;\n}\n",
+            sys_vgui("::pd_patch::pdtk_canvas_menuclose .x%lx {.x%lx menuclose 3;\n}\n",
                      canvas_getrootfor(g2), g2);
         return;
     }
@@ -1983,7 +1983,7 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         if (g)
         {
             vmess(&g->gl_pd, gensym("menu-open"), "");
-            sys_vgui("::pd_canvas::pdtk_canvas_menuclose .x%lx {.x%lx menuclose 2;\n}\n",
+            sys_vgui("::pd_patch::pdtk_canvas_menuclose .x%lx {.x%lx menuclose 2;\n}\n",
                      canvas_getrootfor(g), g);
             return;
         }
@@ -2005,7 +2005,7 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         if (g)
         {
             vmess(&g->gl_pd, gensym("menu-open"), "");
-            sys_vgui("::pd_canvas::pdtk_canvas_menuclose .x%lx {.x%lx menuclose 2;\n}\n",
+            sys_vgui("::pd_patch::pdtk_canvas_menuclose .x%lx {.x%lx menuclose 2;\n}\n",
                      canvas_getrootfor(x), g);
             return;
         }
@@ -2380,7 +2380,7 @@ static void canvas_cut(t_canvas *x)
             canvas_undo_set_cut(x, UCUT_CUT), "cut");
         canvas_copy(x);
         canvas_doclear(x);
-        sys_vgui("::pd_canvas::pdtk_canvas_getscroll .x%lx.c\n", x);
+        sys_vgui("::pd_patch::pdtk_canvas_getscroll .x%lx.c\n", x);
     }
 }
 
@@ -2424,7 +2424,7 @@ static void canvas_dopaste(t_canvas *x, t_binbuf *b)
     paste_canvas = 0;
     canvas_resume_dsp(dspstate);
     canvas_dirty(x, 1);
-    sys_vgui("::pd_canvas::pdtk_canvas_getscroll .x%lx.c\n", x);
+    sys_vgui("::pd_patch::pdtk_canvas_getscroll .x%lx.c\n", x);
     glist_donewloadbangs(x);
     asym->s_thing = bounda;
     s__X.s_thing = boundx;
@@ -2719,7 +2719,7 @@ void canvas_editmode(t_canvas *x, t_floatarg state)
         }
     }
     if (glist_isvisible(x))
-      sys_vgui("::pd_canvas::pdtk_canvas_editmode .x%lx %d\n",
+      sys_vgui("::pd_patch::pdtk_canvas_editmode .x%lx %d\n",
           glist_getcanvas(x), x->gl_edit);
 }
 
