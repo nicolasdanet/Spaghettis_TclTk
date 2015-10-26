@@ -12,8 +12,10 @@ package provide pd_bindings 0.1
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+package require pd_canvas
 package require pd_commands
 package require pd_connect
+package require pd_menus
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -62,22 +64,22 @@ proc initialize {} {
     
     # Class.
     
-    bind PdConsole  <FocusIn>               { ::pd_bindings::window_focusin %W }
+    bind PdConsole  <FocusIn>               { ::pd_bindings::_focusIn %W }
     
-    bind PdPatch    <Configure>             { ::pd_bindings::_patchResized %W %w %h %x %y }
-    bind PdPatch    <FocusIn>               { ::pd_bindings::window_focusin %W }
-    bind PdPatch    <Map>                   { ::pd_bindings::map %W }
-    bind PdPatch    <Unmap>                 { ::pd_bindings::unmap %W }
+    bind PdPatch    <Configure>             { ::pd_bindings::_resized %W %w %h %x %y }
+    bind PdPatch    <FocusIn>               { ::pd_bindings::_focusIn %W }
+    bind PdPatch    <Map>                   { ::pd_bindings::_map %W }
+    bind PdPatch    <Unmap>                 { ::pd_bindings::_unmap %W }
 
-    bind PdDialog   <Configure>             { ::pd_bindings::dialog_configure %W }
-    bind PdDialog   <FocusIn>               { ::pd_bindings::dialog_focusin %W }
+    bind PdDialog   <Configure>             { }
+    bind PdDialog   <FocusIn>               { ::pd_bindings::_focusIn %W }
 
     # All.
     
-    bind all <KeyPress>                     { ::pd_bindings::sendkey %W 1 %K %A 0 }
-    bind all <KeyRelease>                   { ::pd_bindings::sendkey %W 0 %K %A 0 }
-    bind all <Shift-KeyPress>               { ::pd_bindings::sendkey %W 1 %K %A 1 }
-    bind all <Shift-KeyRelease>             { ::pd_bindings::sendkey %W 0 %K %A 1 }
+    bind all <KeyPress>                     { ::pd_bindings::_key %W %K %A 1 0 }
+    bind all <KeyRelease>                   { ::pd_bindings::_key %W %K %A 0 0 }
+    bind all <Shift-KeyPress>               { ::pd_bindings::_key %W %K %A 1 1 }
+    bind all <Shift-KeyRelease>             { ::pd_bindings::_key %W %K %A 0 1 }
     
     bind all <<Close>>                      { ::pd_commands::menu_send_float %W menuclose 0 }
     bind all <<Copy>>                       { ::pd_commands::menu_send %W copy }
@@ -111,7 +113,7 @@ proc bindPatch {top} {
     bind $c <ButtonRelease-1>               { pdtk_canvas_mouseup %W %x %y %b }
     bind $c <MouseWheel>                    { ::pd_canvas::scroll %W y %D }
     bind $c <<RightClick>>                  { pdtk_canvas_rightclick %W %x %y %b }
-    bind $c <Destroy>                       { ::pd_bindings::_patchClosed [winfo toplevel %W] }
+    bind $c <Destroy>                       { ::pd_bindings::_closed [winfo toplevel %W] }
         
     wm protocol $top WM_DELETE_WINDOW       [list ::pd_connect::pdsend "$top menuclose 0"]
 }
@@ -119,17 +121,56 @@ proc bindPatch {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _patchResized {top width height x y} {
+proc _focusIn {top} {
 
-    # Filter annoying bad values reported when a window is created.
+    set ::var(windowFocused) $top
+    
+    switch -- [winfo class $top] {
+        "PdPatch"   {
+            ::pd_commands::set_filenewdir $top
+            ::pd_menus::configure_for_canvas $top
+            if {$::patch_isEditMode($top)} { $top configure -cursor $::var(cursorEditNothing) }
+        }
+        "PdConsole" {
+            ::pd_menus::configureForConsole
+        }
+        "PdDialog"  { 
+            ::pd_menus::configure_for_dialog $top
+        }
+    }
+}
+
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _map {top} {
+    ::pd_connect::pdsend "$top map 1"
+    ::pd_canvas::finished_loading_file $top
+}
+
+proc _unmap {top} {
+    ::pd_connect::pdsend "$top map 0"
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _resized {top width height x y} {
+
+    # Filter annoying values reported when a window is created.
     
     if {$width == 1 && $height == 1} { return }
+    
     
     ::pd_canvas::pdtk_canvas_getscroll [getCanvas $top]
     ::pd_connect::pdsend "$top setbounds $x $y [expr $x + $width] [expr $y + $height]"
 }
-    
-proc _patchClosed {top} {
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _closed {top} {
 
     unset ::patch_isEditMode($top)
     unset ::patch_isEditing($top)
@@ -139,76 +180,34 @@ proc _patchClosed {top} {
     array unset ::patch_childs $top
 }
 
-proc window_focusin {mytoplevel} {
-    # ::var(windowFocused) is used throughout for sending bindings, menu commands,
-    # etc. to the correct patch receiver symbol.  MSP took out a line that
-    # confusingly redirected the "find" window which might be in mid search
-    set ::var(windowFocused) $mytoplevel
-    ::pd_commands::set_filenewdir $mytoplevel
-    if {$mytoplevel eq ".console"} {
-        ::pd_menus::configureForConsole 
-    } else {
-        ::pd_menus::configure_for_canvas $mytoplevel
-    }
-    # if {[winfo exists .font]} {wm transient .font $::var(windowFocused)}
-    # if we regain focus from another app, make sure to editmode cursor is right
-    if {$::patch_isEditMode($mytoplevel)} {
-        $mytoplevel configure -cursor hand2
-    }
-    # TODO handle enabling/disabling the Cut/Copy/Paste menu items in Edit
-}
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-proc dialog_configure {mytoplevel} {
-}
+proc _key {w key iso isPress isShift} {
 
-proc dialog_focusin {mytoplevel} {
-    # TODO disable things on the menus that don't work for dialogs
-    ::pd_menus::configure_for_dialog $mytoplevel
-}
-
-# "map" event tells us when the canvas becomes visible, and "unmap",
-# invisible.  Invisibility means the Window Manager has minimized us.  We
-# don't get a final "unmap" event when we destroy the window.
-proc map {mytoplevel} {
-    ::pd_connect::pdsend "$mytoplevel map 1"
-    ::pd_canvas::finished_loading_file $mytoplevel
-}
-
-proc unmap {mytoplevel} {
-    ::pd_connect::pdsend "$mytoplevel map 0"
-}
-
-
-#------------------------------------------------------------------------------#
-# key usage
-
-# canvas_key() expects to receive the patch's mytoplevel because key messages
-# are local to each patch.  Therefore, key messages are not send for the
-# dialog panels, the Pd window, help browser, etc. so we need to filter those
-# events out.
-proc sendkey {window state key iso shift} {
-    # TODO canvas_key on the C side should be refactored with this proc as well
+    # Filter annoying values reported while the widget doesn't exist anymore.
+    
+    if {![winfo exists $w]} { return }
+    
+    
     switch -- $key {
-        "BackSpace" { set iso ""; set key 8    }
-        "Tab"       { set iso ""; set key 9 }
-        "Return"    { set iso ""; set key 10 }
-        "Escape"    { set iso ""; set key 27 }
-        "Space"     { set iso ""; set key 32 }
+        "BackSpace" { set iso ""; set key 8   }
+        "Tab"       { set iso ""; set key 9   }
+        "Return"    { set iso ""; set key 10  }
+        "Escape"    { set iso ""; set key 27  }
+        "Space"     { set iso ""; set key 32  }
         "Delete"    { set iso ""; set key 127 }
         "KP_Delete" { set iso ""; set key 127 }
     }
-    if {$iso ne ""} {
-        scan $iso %c key
-    }
-    # some pop-up panels also bind to keys like the enter, but then disappear,
-    # so ignore their events.  The inputbox in the Startup dialog does this.
-    if {! [winfo exists $window]} {return}
-    #$window might be a toplevel or canvas, [winfo toplevel] does the right thing
-    set mytoplevel [winfo toplevel $window]
-    if {[winfo class $mytoplevel] eq "PdPatch"} {
-        ::pd_connect::pdsend "$mytoplevel key $state $key $shift"
+    
+    if {$iso ne ""} { scan $iso %c key }
+    
+    set top [winfo toplevel $w]
+    
+    if {[winfo class $top] eq "PdPatch"} {
+        ::pd_connect::pdsend "$top key $isPress $key $isShift"
     } else {
-    ::pd_connect::pdsend "pd key $state $key $shift"
+        ::pd_connect::pdsend "pd key $isPress $key $isShift"
     }
 }
 
