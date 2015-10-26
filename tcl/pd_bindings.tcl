@@ -145,13 +145,11 @@ proc _focusIn {top} {
 # ------------------------------------------------------------------------------------------------------------
 
 proc _map {top} {
-
     ::pd_connect::pdsend "$top map 1"
     ::pd_patch::finished_loading_file $top
 }
 
 proc _unmap {top} {
-
     ::pd_connect::pdsend "$top map 0"
 }
 
@@ -176,26 +174,28 @@ proc _closed {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _key {w key iso isPress isShift} {
+proc _key {w keysym iso isPress isShift} {
 
-    switch -- $key {
-        "BackSpace" { set iso ""; set key 8   }
-        "Tab"       { set iso ""; set key 9   }
-        "Return"    { set iso ""; set key 10  }
-        "Escape"    { set iso ""; set key 27  }
-        "Space"     { set iso ""; set key 32  }
-        "Delete"    { set iso ""; set key 127 }
-        "KP_Delete" { set iso ""; set key 127 }
+    set k ""
+    
+    switch -- $keysym {
+        "BackSpace" { set k 8   }
+        "Tab"       { set k 9   }
+        "Return"    { set k 10  }
+        "Escape"    { set k 27  }
+        "Space"     { set k 32  }
+        "Delete"    { set k 127 }
+        "KP_Delete" { set k 127 }
     }
     
-    if {$iso ne ""} { scan $iso %c key }
+    if {$k eq ""} { set k [scan $iso %c] }
     
     set top [winfo toplevel $w]
     
     if {[winfo class $top] eq "PdPatch"} { 
-        ::pd_connect::pdsend "$top key $isPress $key $isShift" 
+        ::pd_connect::pdsend "$top key $isPress $k $isShift" 
     } else {
-        ::pd_connect::pdsend "pd key $isPress $key $isShift"
+        ::pd_connect::pdsend "pd key $isPress $k $isShift"
     }
 }
 

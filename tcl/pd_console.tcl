@@ -72,9 +72,7 @@ proc initialize {} {
 # ------------------------------------------------------------------------------------------------------------
 
 proc post {message} {
-    after cancel .console.text.internal yview
     .console.text.internal insert end $message
-    after idle .console.text.internal yview end
 }
 
 # ------------------------------------------------------------------------------------------------------------
