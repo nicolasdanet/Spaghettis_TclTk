@@ -49,7 +49,7 @@ proc initialize {} {
     
     # Create sub-menus.
     
-    foreach m {file edit object settings media window} {    
+    foreach m {file edit object media window} {    
         menu .menubar.$m
         [format _%s $m] .menubar.$m
         .menubar add cascade -label [_ [string totitle $m]] -menu .menubar.$m
@@ -181,10 +181,8 @@ proc _edit {m} {
 proc _object {m} {
 
     $m add command \
-        -label [_ "New Object"] \
+        -label [_ "Object"] \
         -command { ::pd_commands::menu_send_float $::var(windowFocused) obj 0 } 
-    $m add separator
-    
     $m add command \
         -label [_ "Message"] \
         -command { ::pd_commands::menu_send_float $::var(windowFocused) msg 0 }
@@ -247,38 +245,24 @@ proc _object {m} {
         -menu $m.horizontal  
 }
 
-proc _settings {m} {
+proc _media {m} {
 
+    variable accelerator
+    
     $m add command \
         -label [_ "Path..."] \
         -command { ::pd_connect::pdsend "pd start-path-dialog" }
     $m add command \
         -label [_ "Startup..."] \
         -command { ::pd_connect::pdsend "pd start-startup-dialog" }
+    $m add separator
+    
     $m add command \
-        -label [_ "Midi..."] \
+        -label [_ "MIDI..."] \
         -command { ::pd_connect::pdsend "pd midi-properties" }
     $m add command \
         -label [_ "Audio..."] \
         -command { ::pd_connect::pdsend "pd audio-properties" }
-}
-
-proc _media {m} {
-
-    variable accelerator
-    
-    $m add radiobutton \
-        -label [_ "DSP On"] \
-        -accelerator "${accelerator}+/" \
-        -variable ::var(isDsp) \
-        -value 1 \
-        -command { ::pd_connect::pdsend "pd dsp 1" }
-    $m add radiobutton \
-        -label [_ "DSP Off"] \
-        -accelerator "${accelerator}+." \
-        -variable ::var(isDsp) \
-        -value 0 \
-        -command { ::pd_connect::pdsend "pd dsp 0" }
     $m add separator
     
     set audioLength [llength $::var(apiAudioAvailables)]
@@ -302,6 +286,21 @@ proc _media {m} {
             -value [lindex [lindex $::var(apiMidiAvailables) $x] 1] \
             -command { ::pd_connect::pdsend "pd midi-setapi $::var(apiMidi)" }
     }
+    
+    if {$midiLength > 0} { $m add separator }
+    
+    $m add radiobutton \
+        -label [_ "DSP On"] \
+        -accelerator "${accelerator}+/" \
+        -variable ::var(isDsp) \
+        -value 1 \
+        -command { ::pd_connect::pdsend "pd dsp 1" }
+    $m add radiobutton \
+        -label [_ "DSP Off"] \
+        -accelerator "${accelerator}+." \
+        -variable ::var(isDsp) \
+        -value 0 \
+        -command { ::pd_connect::pdsend "pd dsp 0" }
 }
 
 proc _window {m} {
@@ -311,15 +310,15 @@ proc _window {m} {
     if {[tk windowingsystem] eq "aqua"} { $m add separator }
     
     $m add command \
-        -label [_ "Next Window"] \
-        -command { ::pd_commands::menu_raisenextwindow}
-    $m add command \
-        -label [_ "Previous Window"] \
+        -label [_ "Previous"] \
         -command { ::pd_commands::menu_raisepreviouswindow }
+    $m add command \
+        -label [_ "Next"] \
+        -command { ::pd_commands::menu_raisenextwindow}
     $m add separator
     
     $m add command \
-        -label [_ "PureData Window"] \
+        -label [_ "PureData"] \
         -accelerator "${accelerator}+R" \
         -command { ::pd_commands::menu_raise_console }
 }
