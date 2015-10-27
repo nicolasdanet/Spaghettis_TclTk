@@ -89,7 +89,7 @@ proc initialize {} {
     bind all <<Copy>>                       { ::pd_commands::menu_send %W copy }
     bind all <<Cut>>                        { ::pd_commands::menu_send %W cut  }
     bind all <<Duplicate>>                  { ::pd_commands::menu_send %W duplicate }
-    bind all <<EditMode>>                   { }
+    bind all <<EditMode>>                   { .menubar.edit invoke "Edit Mode" }
     bind all <<NewFile>>                    { ::pd_commands::menu_new  }
     bind all <<OpenFile>>                   { ::pd_commands::menu_open }
     bind all <<Paste>>                      { ::pd_commands::menu_send %W paste      }
