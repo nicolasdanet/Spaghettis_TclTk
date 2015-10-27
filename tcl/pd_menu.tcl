@@ -43,6 +43,10 @@ proc initialize {} {
     
     menu .menubar
     
+    # Create system specific menus ( http://wiki.tcl.tk/1006 ).
+    
+    if {[tk windowingsystem] eq "aqua"}  { _apple .menubar }
+    
     # Create sub-menus.
     
     foreach m {file edit object media window} {    
@@ -50,10 +54,6 @@ proc initialize {} {
         [format _%s $m] .menubar.$m
         .menubar add cascade -label [_ [string totitle $m]] -menu .menubar.$m
     }
-    
-    # Create system specific menus ( http://wiki.tcl.tk/1006 ).
-    
-    if {[tk windowingsystem] eq "aqua"}  { _apple .menubar }
     
     . configure -menu .menubar
 }
@@ -415,7 +415,7 @@ proc _apple {m} {
     menu $m.apple
     
     $m.apple add command \
-        -label [_ "About Pd"] \
+        -label [_ "About PureData"] \
         -command { ::pd_commands::menu_aboutpd }
     $m.apple add separator
     
@@ -424,10 +424,8 @@ proc _apple {m} {
     $m.apple add cascade \
         -label [_ "Preferences"] \
         -menu $m.apple.preferences \
-        
-    $m add cascade \
-        -label "Apple" \
-        -menu $m.apple
+    
+    $m add cascade -menu $m.apple
 }
 
 # ------------------------------------------------------------------------------------------------------------

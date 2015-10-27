@@ -30,10 +30,6 @@ set ::tk::mac::antialiasedtext  1
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc ::tk::mac::ShowPreferences {args} {
-    ::pd_connect::pdsend "pd start-path-dialog"
-}
-
 proc ::tk::mac::OpenDocument {args} {
     foreach filename $args {
         if {$::var(isInitialized)} {
