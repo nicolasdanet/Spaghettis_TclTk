@@ -265,29 +265,29 @@ proc _media {m} {
         -command { ::pd_connect::pdsend "pd audio-properties" }
     $m add separator
     
-    set audioLength [llength $::var(apiAudioAvailables)]
-
-    for {set x 0} {$x < $audioLength} {incr x} {
-        $m add radiobutton \
-            -label [lindex [lindex $::var(apiAudioAvailables) $x] 0] \
-            -variable ::var(apiAudio) \
-            -value [lindex [lindex $::var(apiAudioAvailables) $x] 1] \
-            -command { ::pd_connect::pdsend "pd audio-setapi $::var(apiAudio)" }
+    foreach e $::var(apiAudioAvailables) {
+        foreach {name value} $e {
+            $m add radiobutton \
+                -label [string totitle $name] \
+                -variable ::var(apiAudio) \
+                -value $value \
+                -command { ::pd_connect::pdsend "pd audio-setapi $::var(apiAudio)" }
+        }
     }
     
-    if {$audioLength > 0} { $m add separator }
+    if {[llength $::var(apiAudioAvailables)] > 0} { $m add separator }
         
-    set midiLength [llength $::var(apiMidiAvailables)]
-    
-    for {set x 0} {$x < $midiLength} {incr x} {
-        $m add radiobutton \
-            -label [lindex [lindex $::var(apiMidiAvailables) $x] 0] \
-            -variable ::var(apiMidi) \
-            -value [lindex [lindex $::var(apiMidiAvailables) $x] 1] \
-            -command { ::pd_connect::pdsend "pd midi-setapi $::var(apiMidi)" }
+    foreach e $::var(apiMidiAvailables) {
+        foreach {name value} $e {
+            $m add radiobutton \
+                -label [string totitle $name] \
+                -variable ::var(apiMidi) \
+                -value $value \
+                -command { ::pd_connect::pdsend "pd midi-setapi $::var(apiMidi)" }
+        }
     }
     
-    if {$midiLength > 0} { $m add separator }
+    if {[llength $::var(apiMidiAvailables)] > 0} { $m add separator }
     
     $m add radiobutton \
         -label [_ "DSP On"] \
