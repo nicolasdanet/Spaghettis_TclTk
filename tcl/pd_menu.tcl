@@ -49,7 +49,7 @@ proc initialize {} {
     
     # Create sub-menus.
     
-    foreach m {file edit object media window} {    
+    foreach m {file edit object settings media window} {    
         menu .menubar.$m
         [format _%s $m] .menubar.$m
         .menubar add cascade -label [_ [string totitle $m]] -menu .menubar.$m
@@ -93,6 +93,17 @@ proc _editing {mode} {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
+
+proc _apple {m} {
+
+    menu $m.apple
+    
+    $m.apple add command \
+        -label [_ "About PureData"] \
+        -command {}
+
+    $m add cascade -menu $m.apple
+}
 
 proc _file {m} {
 
@@ -236,6 +247,22 @@ proc _object {m} {
         -menu $m.horizontal  
 }
 
+proc _settings {m} {
+
+    $m add command \
+        -label [_ "Path..."] \
+        -command { ::pd_connect::pdsend "pd start-path-dialog" }
+    $m add command \
+        -label [_ "Startup..."] \
+        -command { ::pd_connect::pdsend "pd start-startup-dialog" }
+    $m add command \
+        -label [_ "Midi..."] \
+        -command { ::pd_connect::pdsend "pd midi-properties" }
+    $m add command \
+        -label [_ "Audio..."] \
+        -command { ::pd_connect::pdsend "pd audio-properties" }
+}
+
 proc _media {m} {
 
     variable accelerator
@@ -280,23 +307,8 @@ proc _media {m} {
 proc _window {m} {
 
     variable accelerator
-    
-    if {[tk windowingsystem] eq "aqua"} {
-    
-        $m add command \
-            -label [_ "Minimize"] \
-            -accelerator "${accelerator}+M"\
-            -command { ::pd_commands::menu_minimize $::var(windowFocused) }
-        $m add command \
-            -label [_ "Zoom"] \
-            -command { ::pd_commands::menu_maximize $::var(windowFocused) }
-        $m add separator
-        
-        $m add command \
-            -label [_ "Bring All to Front"] \
-            -command { ::pd_commands::menu_bringalltofront }
-        $m add separator
-    }
+
+    if {[tk windowingsystem] eq "aqua"} { $m add separator }
     
     $m add command \
         -label [_ "Next Window"] \
@@ -307,44 +319,9 @@ proc _window {m} {
     $m add separator
     
     $m add command \
-        -label [_ "Console"] \
+        -label [_ "PureData Window"] \
         -accelerator "${accelerator}+R" \
         -command { ::pd_commands::menu_raise_console }
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc _preferences {m} {
-
-    menu $m
-    
-    $m add command \
-        -label [_ "Path..."] \
-        -command { ::pd_connect::pdsend "pd start-path-dialog" }
-    $m add command \
-        -label [_ "Startup..."] \
-        -command { ::pd_connect::pdsend "pd start-startup-dialog" }
-    $m add command \
-        -label [_ "Midi..."] \
-        -command { ::pd_connect::pdsend "pd midi-properties" }
-    $m add command \
-        -label [_ "Audio..."] \
-        -command { ::pd_connect::pdsend "pd audio-properties" }
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc _apple {m} {
-
-    menu $m.apple
-    
-    $m.apple add command \
-        -label [_ "About PureData"] \
-        -command {}
-
-    $m add cascade -menu $m.apple
 }
 
 # ------------------------------------------------------------------------------------------------------------
