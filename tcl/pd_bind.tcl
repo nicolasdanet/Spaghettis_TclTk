@@ -192,11 +192,9 @@ proc _key {w keysym iso isPress isShift} {
     
     set top [winfo toplevel $w]
     
-    if {[winfo class $top] eq "PdPatch"} { 
-        ::pd_connect::pdsend "$top key $isPress $k $isShift" 
-    } else {
-        ::pd_connect::pdsend "pd key $isPress $k $isShift"
-    }
+    if {[winfo class $top] eq "PdPatch"} { set selector "$top" } else { set selector "pd" }
+    
+    ::pd_connect::pdsend "$selector key $isPress $k $isShift" 
 }
 
 # ------------------------------------------------------------------------------------------------------------
