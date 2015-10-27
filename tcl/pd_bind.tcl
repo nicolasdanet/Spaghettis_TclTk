@@ -129,14 +129,14 @@ proc _focusIn {top} {
     switch -- [winfo class $top] {
         "PdPatch"   {
             ::pd_commands::set_filenewdir $top
-            ::pd_menu::configure_for_canvas $top
+            ::pd_menu::configureForPatch $top
             if {$::patch_isEditMode($top)} { $top configure -cursor $::var(cursorEditNothing) }
         }
         "PdConsole" {
             ::pd_menu::configureForConsole
         }
         "PdDialog"  { 
-            ::pd_menu::configure_for_dialog $top
+            ::pd_menu::configureForDialog $top
         }
     }
 }

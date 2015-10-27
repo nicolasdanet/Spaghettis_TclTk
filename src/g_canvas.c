@@ -69,8 +69,8 @@ static t_atom *canvas_newargv;
     /* maintain the list of visible toplevels for the GUI's "windows" menu */
 void canvas_updatewindowlist( void)
 {
-    if (! glist_amreloadingabstractions)  /* not if we're in a reload */         
-        sys_gui("::pd_menu::update_window_menu\n");
+    /* if (! glist_amreloadingabstractions)        
+        sys_gui("::pd_menu::update_window_menu\n"); */
 }
 
     /* add a glist the list of "root" canvases (toplevels without parents.) */

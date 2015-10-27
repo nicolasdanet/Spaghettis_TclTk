@@ -22,445 +22,408 @@ namespace eval ::pd_menu:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable accelerator
+namespace export initialize
+namespace export configureForConsole
+namespace export configureForPatch
+namespace export configureForDialog
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+variable accelerator "Ctrl"
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
 proc initialize {} {
-    variable accelerator
 
-    if {[tk windowingsystem] eq "aqua"} {
-        set accelerator "Cmd"
-    } else {
-        set accelerator "Ctrl"
-    }
+    variable accelerator
+    
+    if {[tk windowingsystem] eq "aqua"} { set accelerator "Cmd" }
+    
     menu .menubar
-    set menulist "file edit put media window"
-    foreach mymenu $menulist {    
-        menu .menubar.$mymenu
-        .menubar add cascade -label [_ [string totitle $mymenu]] \
-            -menu .menubar.$mymenu
-        [format build_%s_menu $mymenu] .menubar.$mymenu
+    
+    # Create sub-menus.
+    
+    foreach m {file edit object media window} {    
+        menu .menubar.$m
+        [format _%s $m] .menubar.$m
+        .menubar add cascade -label [_ [string totitle $m]] -menu .menubar.$m
     }
-    if {[tk windowingsystem] eq "aqua"} {create_apple_menu .menubar}
-    if {[tk windowingsystem] eq "win32"} {create_system_menu .menubar}
+    
+    # Create system specific menus ( http://wiki.tcl.tk/1006 ).
+    
+    if {[tk windowingsystem] eq "aqua"}  { _apple .menubar }
+    
     . configure -menu .menubar
 }
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc configureForConsole {} {
 
-    # these are meaningless for the Pd window, so disable them
-    # File menu
-    .menubar.file entryconfigure [_ "Save"] -state disabled
-    .menubar.file entryconfigure [_ "Save As..."] -state normal
-    .menubar.file entryconfigure [_ "Print..."] -state disabled
-    .menubar.file entryconfigure [_ "Close"] -state disabled
-    # Edit menu
-    .menubar.edit entryconfigure [_ "Duplicate"] -state disabled
-    .menubar.edit entryconfigure [_ "Edit Mode"] -state disabled
+    _editing disabled
     ::pd_patch::pdtk_canvas_editmode .console 0
-    # Undo/Redo change names, they need to have the asterisk (*) after
-    .menubar.edit entryconfigure 0 -state disabled -label [_ "Undo"]
-    .menubar.edit entryconfigure 1 -state disabled -label [_ "Redo"]
-    # disable everything on the Put menu
-    for {set i 0} {$i <= [.menubar.put index end]} {incr i} {
-        # catch errors that happen when trying to disable separators
-        catch {.menubar.put entryconfigure $i -state disabled }
-    }
 }
 
-proc configure_for_canvas {mytoplevel} {
+proc configureForPatch {top} {
 
-    # File menu
-    .menubar.file entryconfigure [_ "Save"] -state normal
-    .menubar.file entryconfigure [_ "Save As..."] -state normal
-    .menubar.file entryconfigure [_ "Print..."] -state normal
-    .menubar.file entryconfigure [_ "Close"] -state normal
-    # Edit menu
-    .menubar.edit entryconfigure [_ "Duplicate"] -state normal
-    .menubar.edit entryconfigure [_ "Edit Mode"] -state normal
-    ::pd_patch::pdtk_canvas_editmode $mytoplevel $::patch_isEditMode($mytoplevel)
-    # Put menu
-    for {set i 0} {$i <= [.menubar.put index end]} {incr i} {
-        # catch errors that happen when trying to disable separators
-        if {[.menubar.put type $i] ne "separator"} {
-            .menubar.put entryconfigure $i -state normal 
+    _editing normal
+    ::pd_patch::pdtk_canvas_editmode $top $::patch_isEditMode($top)
+}
+
+proc configureForDialog {top} {
+
+    _editing disabled
+    ::pd_patch::pdtk_canvas_editmode $top 0
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _editing {mode} {
+    
+    .menubar.file entryconfigure [_ "Save"]         -state $mode
+    .menubar.file entryconfigure [_ "Save As..."]   -state $mode
+    .menubar.file entryconfigure [_ "Close"]        -state $mode
+    .menubar.edit entryconfigure [_ "Duplicate"]    -state $mode
+    .menubar.edit entryconfigure [_ "Edit Mode"]    -state $mode
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _file {m} {
+
+    variable accelerator
+    
+    switch -- [tk windowingsystem] {
+        "x11"   {
+            $m add command \
+                -label [_ "New Patch"] \
+                -accelerator "${accelerator}+N" \
+                -command { ::pd_commands::menu_new }
+            $m add command \
+                -label [_ "Open..."] \
+                -accelerator "${accelerator}+O" \
+                -command { ::pd_commands::menu_open }
+            $m add separator
+            
+            $m add command \
+                -label [_ "Save"] \
+                -accelerator "${accelerator}+S" \
+                -command { ::pd_commands::menu_send $::var(windowFocused) menusave }
+            $m add command \
+                -label [_ "Save As..."] \
+                -accelerator "Shift+${accelerator}+S" \
+                -command { ::pd_commands::menu_send $::var(windowFocused) menusaveas }
+            $m add separator
+            
+            _preferences $m.preferences
+            
+            $m add cascade \
+                -label [_ "Preferences"] \
+                -menu $m.preferences 
+            $m add separator
+            
+            $m add command \
+                -label [_ "Close"] \
+                -accelerator "${accelerator}+W" \
+                -command { ::pd_commands::menu_send_float $::var(windowFocused) menuclose 0 }
+            $m add command \
+                -label [_ "Quit"] \
+                -accelerator "${accelerator}+Q" \
+                -command { ::pd_connect::pdsend "pd verifyquit" }
+        }
+        "aqua"  {
+            $m add command \
+                -label [_ "New Patch"] \
+                -accelerator "${accelerator}+N" \
+                -command { ::pd_commands::menu_new }
+            $m add command \
+                -label [_ "Open..."] \
+                -accelerator "${accelerator}+O" \
+                -command { ::pd_commands::menu_open }
+            $m add separator
+            
+            $m add command \
+                -label [_ "Close"] \
+                -accelerator "${accelerator}+W" \
+                -command { ::pd_commands::menu_send_float $::var(windowFocused) menuclose 0 }
+            $m add separator
+            
+            $m add command \
+                -label [_ "Save"] \
+                -accelerator "${accelerator}+S" \
+                -command { ::pd_commands::menu_send $::var(windowFocused) menusave }
+            $m add command \
+                -label [_ "Save As..."] \
+                -accelerator "Shift+${accelerator}+S" \
+                -command { ::pd_commands::menu_send $::var(windowFocused) menusaveas }
+        }
+        "win32" {
+            $m add command \
+                -label [_ "New Patch"] \
+                -accelerator "${accelerator}+N" \
+                -command { ::pd_commands::menu_new }
+            $m add command \
+                -label [_ "Open..."] \
+                -accelerator "${accelerator}+O" \
+                -command { ::pd_commands::menu_open }
+            $m add separator
+            
+            $m add command \
+                -label [_ "Save"] \
+                -accelerator "${accelerator}+S" \
+                -command { ::pd_commands::menu_send $::var(windowFocused) menusave }
+            $m add command \
+                -label [_ "Save As..."] \
+                -accelerator "Shift+${accelerator}+S" \
+                -command { ::pd_commands::menu_send $::var(windowFocused) menusaveas }
+            $m add separator
+            
+            _preferences $m.preferences
+            
+            $m add cascade \
+                -label [_ "Preferences"] \
+                -menu $m.preferences             
+            $m add separator
+            
+            $m add command \
+                -label [_ "Close"] \
+                -accelerator "${accelerator}+W" \
+                -command { ::pd_commands::menu_send_float $::var(windowFocused) menuclose 0 }
+            $m add command \
+                -label [_ "Quit"] \
+                -accelerator "${accelerator}+Q" \
+                -command { ::pd_connect::pdsend "pd verifyquit" }
         }
     }
 }
 
-proc configure_for_dialog {mytoplevel} {
+proc _edit {m} {
 
-    # these are meaningless for the dialog panels, so disable them except for
-    # the ones that make senes in the Find dialog panel
-    # File menu
-    if {$mytoplevel ne ".find"} {
-        .menubar.file entryconfigure [_ "Save"] -state disabled
-        .menubar.file entryconfigure [_ "Save As..."] -state disabled
-        .menubar.file entryconfigure [_ "Print..."] -state disabled
-    }
-    .menubar.file entryconfigure [_ "Close"] -state disabled
-    # Edit menu
-    .menubar.edit entryconfigure [_ "Duplicate"] -state disabled
-    .menubar.edit entryconfigure [_ "Edit Mode"] -state disabled
-    ::pd_patch::pdtk_canvas_editmode $mytoplevel 0
-    # Undo/Redo change names, they need to have the asterisk (*) after
-    .menubar.edit entryconfigure 0 -state disabled -label [_ "Undo"]
-    .menubar.edit entryconfigure 1 -state disabled -label [_ "Redo"]
-    # disable everything on the Put menu
-    for {set i 0} {$i <= [.menubar.put index end]} {incr i} {
-        # catch errors that happen when trying to disable separators
-        catch {.menubar.put entryconfigure $i -state disabled }
-    }
-}
-
-
-# ------------------------------------------------------------------------------
-# menu building functions
-proc build_file_menu {mymenu} {
-    # run the platform-specific build_file_menu_* procs first, and config them
-    [format build_file_menu_%s [tk windowingsystem]] $mymenu
-    $mymenu entryconfigure [_ "New"]        -command {::pd_commands::menu_new}
-    $mymenu entryconfigure [_ "Open"]       -command {::pd_commands::menu_open}
-    $mymenu entryconfigure [_ "Save"]       -command {::pd_commands::menu_send $::var(windowFocused) menusave}
-    $mymenu entryconfigure [_ "Save As..."] -command {::pd_commands::menu_send $::var(windowFocused) menusaveas}
-    #$mymenu entryconfigure [_ "Revert*"]    -command {::pd_commands::menu_revert $::var(windowFocused)}
-    $mymenu entryconfigure [_ "Close"]      -command {::pd_commands::menu_send_float $::var(windowFocused) menuclose 0}
-}
-
-proc build_edit_menu {mymenu} {
     variable accelerator
-    $mymenu add command -label [_ "Undo"]       -accelerator "$accelerator+Z" \
-        -command {}
-    $mymenu add command -label [_ "Redo"]       -accelerator "Shift+$accelerator+Z" \
-        -command {}
-    $mymenu add  separator
-    $mymenu add command -label [_ "Cut"]        -accelerator "$accelerator+X" \
-        -command {::pd_commands::menu_send $::var(windowFocused) cut}
-    $mymenu add command -label [_ "Copy"]       -accelerator "$accelerator+C" \
-        -command {::pd_commands::menu_send $::var(windowFocused) copy}
-    $mymenu add command -label [_ "Paste"]      -accelerator "$accelerator+V" \
-        -command {::pd_commands::menu_send $::var(windowFocused) paste}
-    $mymenu add command -label [_ "Duplicate"]  -accelerator "$accelerator+D" \
-        -command {::pd_commands::menu_send $::var(windowFocused) duplicate}
-    $mymenu add command -label [_ "Select All"] -accelerator "$accelerator+A" \
-        -command {::pd_commands::menu_send $::var(windowFocused) selectall}
-    $mymenu add  separator
-    #TODO madness! how to set the state of the check box without invoking the menu!
-    $mymenu add check -label [_ "Edit Mode"] -accelerator "$accelerator+E" \
+    
+    $m add command \
+        -label [_ "Cut"] \
+        -accelerator "${accelerator}+X" \
+        -command { ::pd_commands::menu_send $::var(windowFocused) cut }
+    $m add command \
+        -label [_ "Copy"] \
+        -accelerator "${accelerator}+C" \
+        -command { ::pd_commands::menu_send $::var(windowFocused) copy }
+    $m add command \
+        -label [_ "Paste"] \
+        -accelerator "${accelerator}+V" \
+        -command { ::pd_commands::menu_send $::var(windowFocused) paste }
+    $m add separator
+    
+    $m add command \
+        -label [_ "Duplicate"] \
+        -accelerator "${accelerator}+D" \
+        -command { ::pd_commands::menu_send $::var(windowFocused) duplicate }
+    $m add command \
+        -label [_ "Select All"] \
+        -accelerator "${accelerator}+A" \
+        -command { ::pd_commands::menu_send $::var(windowFocused) selectall }
+    $m add separator
+    
+    $m add check \
+        -label [_ "Edit Mode"] \
+        -accelerator "${accelerator}+E" \
         -variable ::var(isEditMode) \
-        -command {::pd_commands::menu_editmode $::var(isEditMode)}
-    if {[tk windowingsystem] ne "aqua"} {
-        $mymenu add  separator
-        create_preferences_menu $mymenu.preferences
-        $mymenu add cascade -label [_ "Preferences"] -menu $mymenu.preferences
-    }
+        -command { ::pd_commands::menu_editmode $::var(isEditMode) }
 }
 
-proc build_put_menu {mymenu} {
-    variable accelerator
-    # The trailing 0 in ::pd_commands::menu_send_float basically means leave the object box
-    # sticking to the mouse cursor. The iemguis alway do that when created
-    # from the menu, as defined in canvas_iemguis()
-    $mymenu add command -label [_ "Object"] -accelerator "$accelerator+1" \
-        -command {::pd_commands::menu_send_float $::var(windowFocused) obj 0} 
-    $mymenu add command -label [_ "Message"] -accelerator "$accelerator+2" \
-        -command {::pd_commands::menu_send_float $::var(windowFocused) msg 0}
-    $mymenu add command -label [_ "Number"] -accelerator "$accelerator+3" \
-        -command {::pd_commands::menu_send_float $::var(windowFocused) floatatom 0}
-    $mymenu add command -label [_ "Symbol"] -accelerator "$accelerator+4" \
-        -command {::pd_commands::menu_send_float $::var(windowFocused) symbolatom 0}
-    $mymenu add command -label [_ "Comment"] -accelerator "$accelerator+5" \
-        -command {::pd_commands::menu_send_float $::var(windowFocused) text 0}
-    $mymenu add  separator
-    $mymenu add command -label [_ "Bang"]    -accelerator "Shift+$accelerator+B" \
-        -command {::pd_commands::menu_send $::var(windowFocused) bng}
-    $mymenu add command -label [_ "Toggle"]  -accelerator "Shift+$accelerator+T" \
-        -command {::pd_commands::menu_send $::var(windowFocused) toggle}
-    $mymenu add command -label [_ "Number2"] -accelerator "Shift+$accelerator+N" \
-        -command {::pd_commands::menu_send $::var(windowFocused) numbox}
-    $mymenu add command -label [_ "Vslider"] -accelerator "Shift+$accelerator+V" \
-        -command {::pd_commands::menu_send $::var(windowFocused) vslider}
-    $mymenu add command -label [_ "Hslider"] -accelerator "Shift+$accelerator+H" \
-        -command {::pd_commands::menu_send $::var(windowFocused) hslider}
-    $mymenu add command -label [_ "Vradio"]  -accelerator "Shift+$accelerator+D" \
-        -command {::pd_commands::menu_send $::var(windowFocused) vradio}
-    $mymenu add command -label [_ "Hradio"]  -accelerator "Shift+$accelerator+I" \
-        -command {::pd_commands::menu_send $::var(windowFocused) hradio}
-    $mymenu add command -label [_ "VU Meter"] -accelerator "Shift+$accelerator+U"\
-        -command {::pd_commands::menu_send $::var(windowFocused) vumeter}
-    $mymenu add command -label [_ "Canvas"]  -accelerator "Shift+$accelerator+C" \
-        -command {::pd_commands::menu_send $::var(windowFocused) mycnv}
-    $mymenu add  separator
-    $mymenu add command -label [_ "Graph"] -command {::pd_commands::menu_send $::var(windowFocused) graph}
-    $mymenu add command -label [_ "Array"] -command {::pd_commands::menu_send $::var(windowFocused) menuarray}
+proc _object {m} {
+
+    $m add command \
+        -label [_ "Object"] \
+        -command { ::pd_commands::menu_send_float $::var(windowFocused) obj 0 } 
+    $m add command \
+        -label [_ "Message"] \
+        -command { ::pd_commands::menu_send_float $::var(windowFocused) msg 0 }
+    $m add command \
+        -label [_ "Float"] \
+        -command { ::pd_commands::menu_send_float $::var(windowFocused) floatatom 0 }
+    $m add command \
+        -label [_ "Symbol"] \
+        -command { ::pd_commands::menu_send_float $::var(windowFocused) symbolatom 0 }
+    $m add command \
+        -label [_ "Comment"] \
+        -command { ::pd_commands::menu_send_float $::var(windowFocused) text 0 }
+    $m add  separator
+    
+    $m add command \
+        -label [_ "Bang"] \
+        -command { ::pd_commands::menu_send $::var(windowFocused) bng }
+    $m add command \
+        -label [_ "Toggle"] \
+        -command { ::pd_commands::menu_send $::var(windowFocused) toggle }
+    $m add command \
+        -label [_ "Number"] \
+        -command { ::pd_commands::menu_send $::var(windowFocused) numbox }
+    $m add command \
+        -label [_ "Panel"] \
+        -command { ::pd_commands::menu_send $::var(windowFocused) mycnv }
+    $m add command \
+        -label [_ "Meter"] \
+        -command { ::pd_commands::menu_send $::var(windowFocused) vumeter }
+    
+    menu $m.vertical
+    
+    $m.vertical add command \
+        -label [_ "Slider"] \
+        -command { ::pd_commands::menu_send $::var(windowFocused) vslider }
+    $m.vertical add command \
+        -label [_ "Radio"] \
+        -command { ::pd_commands::menu_send $::var(windowFocused) vradio }
+    
+    menu $m.horizontal
+        
+    $m.horizontal add command \
+        -label [_ "Slider"] \
+        -command { ::pd_commands::menu_send $::var(windowFocused) hslider }
+    $m.horizontal add command \
+        -label [_ "Radio"] \
+        -command { ::pd_commands::menu_send $::var(windowFocused) hradio }
+        
+    $m add cascade \
+        -label [_ "Vertical"] \
+        -menu $m.vertical             
+    $m add cascade \
+        -label [_ "Horizontal"] \
+        -menu $m.horizontal  
+    $m add separator
+    
+    $m add command \
+        -label [_ "Array"] \
+        -command { ::pd_commands::menu_send $::var(windowFocused) menuarray }
 }
 
-proc build_find_menu {mymenu} { }
+proc _media {m} {
 
-proc build_media_menu {mymenu} {
     variable accelerator
-    $mymenu add radiobutton -label [_ "DSP On"] -accelerator "$accelerator+/" \
-        -variable ::var(isDsp) -value 1 -command {::pd_connect::pdsend "pd dsp 1"}
-    $mymenu add radiobutton -label [_ "DSP Off"] -accelerator "$accelerator+." \
-        -variable ::var(isDsp) -value 0 -command {::pd_connect::pdsend "pd dsp 0"}
+    
+    $m add radiobutton \
+        -label [_ "DSP On"] \
+        -accelerator "${accelerator}+/" \
+        -variable ::var(isDsp) \
+        -value 1 \
+        -command { ::pd_connect::pdsend "pd dsp 1" }
+    $m add radiobutton \
+        -label [_ "DSP Off"] \
+        -accelerator "${accelerator}+." \
+        -variable ::var(isDsp) \
+        -value 0 \
+        -command { ::pd_connect::pdsend "pd dsp 0" }
+    $m add separator
+    
+    set audioLength [llength $::var(apiAudioAvailables)]
 
-    set audio_apilist_length [llength $::var(apiAudioAvailables)]
-    if {$audio_apilist_length > 0} {$mymenu add separator}
-    for {set x 0} {$x<$audio_apilist_length} {incr x} {
-        $mymenu add radiobutton -label [lindex [lindex $::var(apiAudioAvailables) $x] 0] \
-            -command {::pd_commands::menu_audio 0} -variable ::var(apiAudio) \
-            -value [lindex [lindex $::var(apiAudioAvailables) $x] 1]\
-            -command {::pd_connect::pdsend "pd audio-setapi $::var(apiAudio)"}
+    for {set x 0} {$x < $audioLength} {incr x} {
+        $m add radiobutton \
+            -label [lindex [lindex $::var(apiAudioAvailables) $x] 0] \
+            -variable ::var(apiAudio) \
+            -value [lindex [lindex $::var(apiAudioAvailables) $x] 1] \
+            -command { ::pd_connect::pdsend "pd audio-setapi $::var(apiAudio)" }
     }
     
-    set midi_api_length [llength $::var(apiMidiAvailables)]
-    if {$midi_api_length > 0} {$mymenu add separator}
-    for {set x 0} {$x<$midi_api_length} {incr x} {
-        $mymenu add radiobutton -label [lindex [lindex $::var(apiMidiAvailables) $x] 0] \
-            -command {::pd_commands::menu_midi 0} -variable ::var(apiMidi) \
-            -value [lindex [lindex $::var(apiMidiAvailables) $x] 1]\
-            -command {::pd_connect::pdsend "pd midi-setapi $::var(apiMidi)"}
+    if {$audioLength > 0} { $m add separator }
+        
+    set midiLength [llength $::var(apiMidiAvailables)]
+    
+    for {set x 0} {$x < $midiLength} {incr x} {
+        $m add radiobutton \
+            -label [lindex [lindex $::var(apiMidiAvailables) $x] 0] \
+            -variable ::var(apiMidi) \
+            -value [lindex [lindex $::var(apiMidiAvailables) $x] 1] \
+            -command { ::pd_connect::pdsend "pd midi-setapi $::var(apiMidi)" }
     }
 
-    $mymenu add  separator
-    $mymenu add command -label [_ "Audio Settings..."] \
-        -command {::pd_connect::pdsend "pd audio-properties"}
-    $mymenu add command -label [_ "MIDI Settings..."] \
-        -command {::pd_connect::pdsend "pd midi-properties"}
+    if {$midiLength > 0} { $m add separator }
+    
+    $m add command \
+        -label [_ "Audio..."] \
+        -command { ::pd_connect::pdsend "pd audio-properties" }
+    $m add command \
+        -label [_ "MIDI..."] \
+        -command { ::pd_connect::pdsend "pd midi-properties" }
 }
 
-proc build_window_menu {mymenu} {
+proc _window {m} {
+
     variable accelerator
+    
     if {[tk windowingsystem] eq "aqua"} {
-        $mymenu add command -label [_ "Minimize"] -accelerator "$accelerator+M"\
-            -command {::pd_commands::menu_minimize $::var(windowFocused)}
-        $mymenu add command -label [_ "Zoom"] \
-            -command {::pd_commands::menu_maximize $::var(windowFocused)}
-        $mymenu add  separator
-        $mymenu add command -label [_ "Bring All to Front"] \
-            -command {::pd_commands::menu_bringalltofront}
-    } else {
-		$mymenu add command -label [_ "Next Window"] \
-            -command {::pd_commands::menu_raisenextwindow} \
-            -accelerator [_ "$accelerator+Page Down"]
-		$mymenu add command -label [_ "Previous Window"] \
-            -command {::pd_commands::menu_raisepreviouswindow} \
-            -accelerator [_ "$accelerator+Page Up"]
-    }
-    $mymenu add  separator
-    $mymenu add command -label [_ "Pd window"] -command {::pd_commands::menu_raise_console} \
-        -accelerator "$accelerator+R"
-    $mymenu add command -label [_ "Parent Window"] \
-        -command {::pd_commands::menu_send $::var(windowFocused) findparent}
-    $mymenu add  separator
-}
-
-#------------------------------------------------------------------------------#
-# undo/redo menu items
-
-# find the first parent patch that has a mapped window
-proc find_mapped_parent {parentlist} {
-    if {[llength $parentlist] == 0} {return "none"}
-    set firstparent [lindex $parentlist 0]
-    if {[winfo exists $firstparent]} {
-        return $firstparent
-    } elseif {[llength $parentlist] > 1} {
-        return [find_mapped_parent [lrange $parentlist 1 end]]
-    } else {
-        # we must be the first menu item to be inserted
-        return "none"
-    }
-}
-
-# find the first parent patch that has a mapped window
-proc insert_into_menu {mymenu entry parent} {
-    set insertat [$mymenu index end]
-    for {set i 0} {$i <= [$mymenu index end]} {incr i} {
-        if {[$mymenu type $i] ne "command"} {continue}
-        set currentcommand [$mymenu entrycget $i -command]
-        if {$currentcommand eq "raise $entry"} {return} ;# it exists already
-        if {$currentcommand eq "raise $parent"} {
-            set insertat $i
-        }
-    }
-    incr insertat
-    set label ""
-    for {set i 0} {$i < [llength $::patch_parents($entry)]} {incr i} {
-        append label " "
-    }
-    append label $::patch_name($entry)
-    $mymenu insert $insertat command -label $label -command "raise $entry"
-}
-
-# recurse through a list of parent windows and add to the menu
-proc add_list_to_menu {mymenu window parentlist} {
-    if {[llength $parentlist] == 0} {
-        insert_into_menu $mymenu $window {}
-    } else {
-        set entry [lindex $parentlist end]
-        if {[winfo exists $entry]} {
-            insert_into_menu $mymenu $entry \
-                [find_mapped_parent $::patch_parents($entry)]
-        }
-    }
-    if {[llength $parentlist] > 1} {
-        add_list_to_menu $mymenu $window [lrange $parentlist 0 end-1]
-    }
-}
-
-# update the list of windows on the Window menu. This expects run on the
-# Window menu, and to insert below the last separator
-proc update_window_menu {} {
-    set mymenu .menubar.window
-    # find the last separator and delete everything after that
-    for {set i 0} {$i <= [$mymenu index end]} {incr i} {
-        if {[$mymenu type $i] eq "separator"} {
-            set deleteat $i
-        }
-    }
-    $mymenu delete $deleteat end
-    $mymenu add  separator
-    foreach window [array names ::patch_parents] {
-        set parentlist $::patch_parents($window)
-        add_list_to_menu $mymenu $window $parentlist
-        insert_into_menu $mymenu $window [find_mapped_parent $parentlist]
-    }
-}
-
-# ------------------------------------------------------------------------------
-# submenu for Preferences, now used on all platforms
-
-proc create_preferences_menu {mymenu} {
-    menu $mymenu
-    $mymenu add command -label [_ "Path..."] \
-        -command {::pd_connect::pdsend "pd start-path-dialog"}
-    $mymenu add command -label [_ "Startup..."] \
-        -command {::pd_connect::pdsend "pd start-startup-dialog"}
-    $mymenu add command -label [_ "Audio Settings..."] \
-        -command {::pd_connect::pdsend "pd audio-properties"}
-    $mymenu add command -label [_ "MIDI Settings..."] \
-        -command {::pd_connect::pdsend "pd midi-properties"}
-    $mymenu add  separator
-    $mymenu add command -label [_ "Save All Settings"] \
-        -command {::pd_connect::pdsend "pd save-preferences"}
-}
-
-# ------------------------------------------------------------------------------
-# menu building functions for Mac OS X/aqua
-
-# for Mac OS X only
-proc create_apple_menu {mymenu} {
-    # TODO this should open a Pd patch called about.pd
-    menu $mymenu.apple
-    $mymenu.apple add command -label [_ "About Pd"] -command {::pd_commands::menu_aboutpd}
-    $mymenu.apple add  separator
-    create_preferences_menu $mymenu.apple.preferences
-    $mymenu.apple add cascade -label [_ "Preferences"] \
-        -menu $mymenu.apple.preferences
-    # this needs to be last for things to function properly
-    $mymenu add cascade -label "Apple" -menu $mymenu.apple
     
+        $m add command \
+            -label [_ "Minimize"] \
+            -accelerator "${accelerator}+M"\
+            -command { ::pd_commands::menu_minimize $::var(windowFocused) }
+        $m add command \
+            -label [_ "Zoom"] \
+            -command { ::pd_commands::menu_maximize $::var(windowFocused) }
+        $m add separator
+        
+        $m add command \
+            -label [_ "Bring All to Front"] \
+            -command { ::pd_commands::menu_bringalltofront }
+        $m add separator
+    }
+    
+    $m add command \
+        -label [_ "Next Window"] \
+        -command { ::pd_commands::menu_raisenextwindow}
+    $m add command \
+        -label [_ "Previous Window"] \
+        -command { ::pd_commands::menu_raisepreviouswindow }
+    $m add separator
+    
+    $m add command \
+        -label [_ "Console"] \
+        -accelerator "${accelerator}+R" \
+        -command { ::pd_commands::menu_raise_console }
 }
 
-proc build_file_menu_aqua {mymenu} {
-    variable accelerator
-    $mymenu add command -label [_ "New"]       -accelerator "$accelerator+N"
-    $mymenu add command -label [_ "Open"]      -accelerator "$accelerator+O"
-    $mymenu add  separator
-    $mymenu add command -label [_ "Close"]     -accelerator "$accelerator+W"
-    $mymenu add command -label [_ "Save"]      -accelerator "$accelerator+S"
-    $mymenu add command -label [_ "Save As..."] -accelerator "$accelerator+Shift+S"
-    #$mymenu add command -label [_ "Save All"]
-    #$mymenu add command -label [_ "Revert to Saved"]
-    $mymenu add  separator
-    $mymenu add command -label [_ "Print..."]   -accelerator "$accelerator+P"
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _preferences {m} {
+
+    menu $m
+    
+    $m add command \
+        -label [_ "Path..."] \
+        -command { ::pd_connect::pdsend "pd start-path-dialog" }
+    $m add command \
+        -label [_ "Startup..."] \
+        -command { ::pd_connect::pdsend "pd start-startup-dialog" }
 }
 
-# the "Edit", "Put", and "Find" menus do not have cross-platform differences
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-proc build_media_menu_aqua {mymenu} {
-}
+proc _apple {m} {
 
-proc build_window_menu_aqua {mymenu} {
-}
-
-# the "Help" does not have cross-platform differences
- 
-# ------------------------------------------------------------------------------
-# menu building functions for UNIX/X11
-
-proc build_file_menu_x11 {mymenu} {
-    variable accelerator
-    $mymenu add command -label [_ "New"]        -accelerator "$accelerator+N"
-    $mymenu add command -label [_ "Open"]       -accelerator "$accelerator+O"
-    $mymenu add  separator
-    $mymenu add command -label [_ "Save"]       -accelerator "$accelerator+S"
-    $mymenu add command -label [_ "Save As..."] -accelerator "Shift+$accelerator+S"
-    #    $mymenu add command -label "Revert"
-    $mymenu add  separator
-    create_preferences_menu $mymenu.preferences
-    $mymenu add cascade -label [_ "Preferences"] -menu $mymenu.preferences
-    $mymenu add command -label [_ "Print..."]   -accelerator "$accelerator+P"
-    $mymenu add  separator
-    # the recent files get inserted in here by update_recentfiles_on_menu
-    $mymenu add  separator
-    $mymenu add command -label [_ "Close"]      -accelerator "$accelerator+W"
-    $mymenu add command -label [_ "Quit"]       -accelerator "$accelerator+Q" \
-        -command {::pd_connect::pdsend "pd verifyquit"}
-}
-
-# the "Edit", "Put", and "Find" menus do not have cross-platform differences
-
-proc build_media_menu_x11 {mymenu} {
-}
-
-proc build_window_menu_x11 {mymenu} {
-}
-
-# the "Help" does not have cross-platform differences
-
-# ------------------------------------------------------------------------------
-# menu building functions for Windows/Win32
-
-# for Windows only
-proc create_system_menu {mymenubar} {
-    set mymenu $mymenubar.system
-    $mymenubar add cascade -label System -menu $mymenu
-    menu $mymenu -tearoff 0
-    # placeholders
-    # $mymenu add command -label [_ "Edit Mode"] -command "::pd_console::verbose 0 systemmenu"
-    # TODO add Close, Minimize, etc and whatever else is on the little menu
-    # that is on the top left corner of the window frame
-    # http://wiki.tcl.tk/1006
-    # TODO add Edit Mode here
-}
-
-proc build_file_menu_win32 {mymenu} {
-    variable accelerator
-    $mymenu add command -label [_ "New"]      -accelerator "$accelerator+N"
-    $mymenu add command -label [_ "Open"]     -accelerator "$accelerator+O"
-    $mymenu add  separator
-    $mymenu add command -label [_ "Save"]      -accelerator "$accelerator+S"
-    $mymenu add command -label [_ "Save As..."] -accelerator "Shift+$accelerator+S"
-    #    $mymenu add command -label "Revert"
-    $mymenu add  separator
-    create_preferences_menu $mymenu.preferences
-    $mymenu add cascade -label [_ "Preferences"] -menu $mymenu.preferences
-    $mymenu add command -label [_ "Print..."] -accelerator "$accelerator+P"
-    $mymenu add  separator
-    $mymenu add command -label [_ "Close"]    -accelerator "$accelerator+W"
-    $mymenu add command -label [_ "Quit"]     -accelerator "$accelerator+Q"\
-        -command {::pd_connect::pdsend "pd verifyquit"}
-}
-
-# the "Edit", "Put", and "Find" menus do not have cross-platform differences
-
-proc build_media_menu_win32 {mymenu} {
-}
-
-proc build_window_menu_win32 {mymenu} {
+    menu $m.apple
+    
+    $m.apple add command \
+        -label [_ "About Pd"] \
+        -command { ::pd_commands::menu_aboutpd }
+    $m.apple add separator
+    
+    _preferences $m.apple.preferences
+    
+    $m.apple add cascade \
+        -label [_ "Preferences"] \
+        -menu $m.apple.preferences \
+        
+    $m add cascade \
+        -label "Apple" \
+        -menu $m.apple
 }
 
 # ------------------------------------------------------------------------------------------------------------
