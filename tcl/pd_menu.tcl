@@ -255,8 +255,6 @@ proc _media {m} {
     $m add command \
         -label [_ "Startup..."] \
         -command { ::pd_connect::pdsend "pd start-startup-dialog" }
-    $m add separator
-    
     $m add command \
         -label [_ "MIDI..."] \
         -command { ::pd_connect::pdsend "pd midi-properties" }
@@ -310,11 +308,11 @@ proc _window {m} {
     if {[tk windowingsystem] eq "aqua"} { $m add separator }
     
     $m add command \
-        -label [_ "Previous"] \
-        -command { ::pd_commands::menu_raisepreviouswindow }
-    $m add command \
         -label [_ "Next"] \
         -command { ::pd_commands::menu_raisenextwindow}
+    $m add command \
+        -label [_ "Previous"] \
+        -command { ::pd_commands::menu_raisepreviouswindow }
     $m add separator
     
     $m add command \
