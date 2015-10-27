@@ -257,6 +257,11 @@ proc _object {m} {
     $m add  separator
     
     $m add command \
+        -label [_ "Array"] \
+        -command { ::pd_commands::menu_send $::var(windowFocused) menuarray }
+    $m add  separator
+        
+    $m add command \
         -label [_ "Bang"] \
         -command { ::pd_commands::menu_send $::var(windowFocused) bng }
     $m add command \
@@ -271,6 +276,8 @@ proc _object {m} {
     $m add command \
         -label [_ "Meter"] \
         -command { ::pd_commands::menu_send $::var(windowFocused) vumeter }
+
+    $m add separator
     
     menu $m.vertical
     
@@ -296,11 +303,6 @@ proc _object {m} {
     $m add cascade \
         -label [_ "Horizontal"] \
         -menu $m.horizontal  
-    $m add separator
-    
-    $m add command \
-        -label [_ "Array"] \
-        -command { ::pd_commands::menu_send $::var(windowFocused) menuarray }
 }
 
 proc _media {m} {
