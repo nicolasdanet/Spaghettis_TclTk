@@ -309,9 +309,11 @@ proc _window {m} {
     
     $m add command \
         -label [_ "Next"] \
+        -accelerator [_ "${accelerator}+PageDown"] \
         -command { ::pd_commands::menu_raisenextwindow}
     $m add command \
         -label [_ "Previous"] \
+        -accelerator [_ "${accelerator}+PageUp"] \
         -command { ::pd_commands::menu_raisepreviouswindow }
     $m add separator
     
