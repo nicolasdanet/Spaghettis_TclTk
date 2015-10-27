@@ -151,26 +151,6 @@ proc ::pd_commands::set_filenewdir {mytoplevel} {
     }
 }
 
-# parse the textfile for the About Pd page
-proc ::pd_commands::menu_aboutpd {} {
-    
-    if {[winfo exists .aboutpd]} {
-        wm deiconify .aboutpd
-        raise .aboutpd
-    } else {
-        toplevel .aboutpd -class TextWindow
-        wm title .aboutpd [_ "About Pd"]
-        wm group .aboutpd .
-        if {[tk windowingsystem] eq "aqua"} { .aboutpd  configure -menu .menubar }
-        text .aboutpd.text -relief flat -borderwidth 0 \
-            -yscrollcommand ".aboutpd.scroll set" -background white
-        scrollbar .aboutpd.scroll -command ".aboutpd.text yview"
-        pack .aboutpd.scroll -side right -fill y
-        pack .aboutpd.text -side left -fill both -expand 1
-        bind .aboutpd <<Close>>   "wm withdraw .aboutpd"
-    }
-}
-
 # open HTML docs from the menu using the OS-default HTML viewer
 proc ::pd_commands::menu_openfile {filename} {
     if {$::tcl_platform(os) eq "Darwin"} {
