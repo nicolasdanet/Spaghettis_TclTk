@@ -148,12 +148,6 @@ proc _file {m} {
             $m add separator
             
             $m add command \
-                -label [_ "Close"] \
-                -accelerator "${accelerator}+W" \
-                -command { ::pd_commands::menu_send_float $::var(windowFocused) menuclose 0 }
-            $m add separator
-            
-            $m add command \
                 -label [_ "Save"] \
                 -accelerator "${accelerator}+S" \
                 -command { ::pd_commands::menu_send $::var(windowFocused) menusave }
@@ -161,6 +155,12 @@ proc _file {m} {
                 -label [_ "Save As..."] \
                 -accelerator "Shift+${accelerator}+S" \
                 -command { ::pd_commands::menu_send $::var(windowFocused) menusaveas }
+            $m add separator
+                        
+            $m add command \
+                -label [_ "Close"] \
+                -accelerator "${accelerator}+W" \
+                -command { ::pd_commands::menu_send_float $::var(windowFocused) menuclose 0 }
         }
         "win32" {
             $m add command \
@@ -348,11 +348,13 @@ proc _media {m} {
     if {$midiLength > 0} { $m add separator }
     
     $m add command \
-        -label [_ "Audio..."] \
-        -command { ::pd_connect::pdsend "pd audio-properties" }
-    $m add command \
         -label [_ "MIDI..."] \
         -command { ::pd_connect::pdsend "pd midi-properties" }
+    $m add separator
+    
+    $m add command \
+        -label [_ "Audio..."] \
+        -command { ::pd_connect::pdsend "pd audio-properties" }
 }
 
 proc _window {m} {
