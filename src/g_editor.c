@@ -953,7 +953,7 @@ void canvas_vis(t_canvas *x, t_floatarg f)
                 (int)(x->gl_screeny2 - x->gl_screeny1),
                 (int)(x->gl_screenx1), (int)(x->gl_screeny1),
                 x->gl_edit);
-            snprintf(cbuf, MAXPDSTRING - 2, "::pd_patch::pdtk_canvas_setparents .x%lx",
+           snprintf(cbuf, MAXPDSTRING - 2, "::pd_patch::pdtk_canvas_setparents .x%lx",
                 (unsigned long)c);
             while (c->gl_owner) {
                 c = c->gl_owner;
@@ -963,7 +963,7 @@ void canvas_vis(t_canvas *x, t_floatarg f)
                          " .x%lx", (unsigned long)c);
             }
             strcat(cbuf, "\n");
-            sys_gui(cbuf);
+            // sys_gui(cbuf);
             canvas_reflecttitle(x);
             x->gl_havewindow = 1;
             canvas_updatewindowlist();

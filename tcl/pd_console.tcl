@@ -32,8 +32,6 @@ proc initialize {} {
 
     toplevel .console -class PdConsole
     
-    set ::patch_name(.console) [_ "PureData"]
-    
     wm title    .console [_ "PureData"]
     wm minsize  .console 400 75
     wm geometry .console =500x400+20+50

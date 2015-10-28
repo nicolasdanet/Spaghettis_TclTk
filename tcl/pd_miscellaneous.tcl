@@ -81,18 +81,6 @@ proc pdtk_savepanel {target localdir} {
 }
 
 # ------------------------------------------------------------------------------
-# window info (name, path, parents, children, etc.)
-
-proc lookup_windowname {mytoplevel} {
-    set window [array get ::patch_name $mytoplevel]
-    if { $window ne ""} {
-        return [lindex $window 1]
-    } else {
-        return ERROR
-    }
-}
-
-# ------------------------------------------------------------------------------
 # quoting functions
 
 # enquote a string for find, path, and startup dialog panels, to be decoded by

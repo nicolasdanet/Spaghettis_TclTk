@@ -121,7 +121,6 @@ proc pdtk_canvas_new {mytoplevel width height geometry editable} {
 
     # init patch properties arrays
     set ::patch_isEditing($mytoplevel) 0
-    set ::patch_childs($mytoplevel) {}
 
     # this should be at the end so that the window and canvas are all ready
     # before this variable changes.
@@ -347,28 +346,10 @@ proc ::pd_patch::scroll {tkcanvas axis amount} {
 #------------------------------------------------------------------------------#
 # get patch window child/parent relationships
 
-# add a child window ID to the list of children, if it isn't already there
-proc ::pd_patch::addchild {mytoplevel child} {
-    # if either ::patch_childs($mytoplevel) does not exist, or $child does not
-    # exist inside of the ::patch_childs($mytoplevel list
-    if { [lsearch -exact [array names ::patch_childs $mytoplevel]] == -1 \
-             || [lsearch -exact $::patch_childs($mytoplevel) $child] == -1} {
-        set ::patch_childs($mytoplevel) [lappend ::patch_childs($mytoplevel) $child]
-    }
-}
-
-# receive a list of all my parent windows from 'pd'
-proc ::pd_patch::pdtk_canvas_setparents {mytoplevel args} {
-    set ::patch_parents($mytoplevel) $args
-    foreach parent $args {
-        addchild $parent $mytoplevel
-    }
-}
-
 # receive information for setting the info the the title bar of the window
 proc ::pd_patch::pdtk_canvas_reflecttitle {mytoplevel \
                                               path name arguments dirty} {
-    set ::patch_name($mytoplevel) $name ;# TODO add path to this
+                                              
     if {[tk windowingsystem] eq "aqua"} {
         wm attributes $mytoplevel -modified $dirty
         if {[file exists "$path/$name"]} {

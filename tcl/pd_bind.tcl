@@ -240,10 +240,6 @@ proc _closed {top} {
 
     unset ::patch_isEditMode($top)
     unset ::patch_isEditing($top)
-    
-    array unset ::patch_name $top
-    array unset ::patch_parents $top
-    array unset ::patch_childs $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
