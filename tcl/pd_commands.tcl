@@ -134,16 +134,6 @@ proc ::pd_commands::menu_raisenextwindow {} {
 # ------------------------------------------------------------------------------
 # manage the saving of the directories for the new commands
 
-# this gets the dir from the path of a window's title
-proc ::pd_commands::set_filenewdir {mytoplevel} {
-    # TODO add Aqua specifics once g_canvas.c has [wm attributes -titlepath]
-    if {$mytoplevel eq ".console"} {
-        set ::var(directoryNew) $::var(directoryOpen)
-    } else {
-        regexp -- ".+ - (.+)" [wm title $mytoplevel] ignored ::var(directoryNew)
-    }
-}
-
 # open HTML docs from the menu using the OS-default HTML viewer
 proc ::pd_commands::menu_openfile {filename} {
     if {$::tcl_platform(os) eq "Darwin"} {

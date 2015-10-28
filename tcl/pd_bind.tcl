@@ -12,7 +12,6 @@ package provide pd_bind 0.1
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package require pd_commands
 package require pd_connect
 package require pd_menu
 package require pd_patch
@@ -203,9 +202,11 @@ proc _focusIn {top} {
     
     switch -- [winfo class $top] {
         "PdPatch"   {
-            ::pd_commands::set_filenewdir $top
             ::pd_menu::configureForPatch $top
-            if {$::patch_isEditMode($top)} { $top configure -cursor $::var(cursorEditNothing) }
+            
+            if {$::patch_isEditMode($top)} { 
+                $top configure -cursor $::var(cursorEditNothing) 
+            }
         }
         "PdConsole" {
             ::pd_menu::configureForConsole
