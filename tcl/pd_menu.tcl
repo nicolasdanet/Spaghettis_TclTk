@@ -103,7 +103,7 @@ proc _editing {mode} {
     .menubar.object entryconfigure [_ "Toggle"]         -state $mode
     .menubar.object entryconfigure [_ "Panel"]          -state $mode
     .menubar.object entryconfigure [_ "Number"]         -state $mode
-    .menubar.object entryconfigure [_ "Meter"]          -state $mode
+    .menubar.object entryconfigure [_ "VU Meter"]       -state $mode
     .menubar.object entryconfigure [_ "Vertical"]       -state $mode
     .menubar.object entryconfigure [_ "Horizontal"]     -state $mode
 }
@@ -237,14 +237,14 @@ proc _object {m} {
         -command { ::pd_commands::menu_send $::var(windowFocused) toggle }
     $m add command \
         -label [_ "Panel"] \
-        -accelerator "Shift+${accelerator}+C" \
+        -accelerator "Shift+${accelerator}+P" \
         -command { ::pd_commands::menu_send $::var(windowFocused) mycnv } 
     $m add command \
         -label [_ "Number"] \
         -accelerator "Shift+${accelerator}+N" \
         -command { ::pd_commands::menu_send $::var(windowFocused) numbox }
     $m add command \
-        -label [_ "Meter"] \
+        -label [_ "VU Meter"] \
         -accelerator "Shift+${accelerator}+U" \
         -command { ::pd_commands::menu_send $::var(windowFocused) vumeter }
     $m add separator

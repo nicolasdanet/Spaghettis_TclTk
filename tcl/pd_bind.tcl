@@ -74,7 +74,7 @@ proc initialize {} {
     event add <<NewArray>>                  <Shift-$mod-Key-a>
     event add <<NewBang>>                   <Shift-$mod-Key-b>
     event add <<NewToggle>>                 <Shift-$mod-Key-t>
-    event add <<NewPanel>>                  <Shift-$mod-Key-c>
+    event add <<NewPanel>>                  <Shift-$mod-Key-p>
     event add <<NewNumber>>                 <Shift-$mod-Key-n>
     event add <<NewMeter>>                  <Shift-$mod-Key-u>
     event add <<NewVSlider>>                <Shift-$mod-Key-v>  
@@ -87,7 +87,7 @@ proc initialize {} {
     event add <<NewArray>>                  <Shift-$mod-Key-A>
     event add <<NewBang>>                   <Shift-$mod-Key-B>
     event add <<NewToggle>>                 <Shift-$mod-Key-T>
-    event add <<NewPanel>>                  <Shift-$mod-Key-C>
+    event add <<NewPanel>>                  <Shift-$mod-Key-P>
     event add <<NewNumber>>                 <Shift-$mod-Key-N>
     event add <<NewMeter>>                  <Shift-$mod-Key-U>
     event add <<NewVSlider>>                <Shift-$mod-Key-V>  
@@ -149,7 +149,7 @@ proc initialize {} {
     bind all <<NewToggle>>                  { .menubar.object            invoke "Toggle"        }
     bind all <<NewPanel>>                   { .menubar.object            invoke "Panel"         }
     bind all <<NewNumber>>                  { .menubar.object            invoke "Number"        }
-    bind all <<NewMeter>>                   { .menubar.object            invoke "Meter"         }
+    bind all <<NewMeter>>                   { .menubar.object            invoke "VU Meter"      }
     bind all <<NewVSlider>>                 { .menubar.object.vertical   invoke "Slider"        } 
     bind all <<NewVRadioButton>>            { .menubar.object.vertical   invoke "RadioButton"   }
     bind all <<NewHSlider>>                 { .menubar.object.horizontal invoke "Slider"        }
