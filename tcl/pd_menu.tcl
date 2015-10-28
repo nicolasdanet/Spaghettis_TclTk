@@ -84,9 +84,14 @@ proc configureForDialog {top} {
 
 proc _editing {mode} {
     
+    .menubar entryconfigure [_ "Object"]            -state $mode
+    
     .menubar.file entryconfigure [_ "Save"]         -state $mode
     .menubar.file entryconfigure [_ "Save As..."]   -state $mode
     .menubar.file entryconfigure [_ "Close"]        -state $mode
+    
+    .menubar.edit entryconfigure [_ "Cut"]          -state $mode
+    .menubar.edit entryconfigure [_ "Paste"]        -state $mode
     .menubar.edit entryconfigure [_ "Duplicate"]    -state $mode
     .menubar.edit entryconfigure [_ "Edit Mode"]    -state $mode
 }
