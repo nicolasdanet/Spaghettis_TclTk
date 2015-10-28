@@ -286,19 +286,12 @@ proc _media {m} {
     }
     
     if {[llength $::var(apiMidiAvailables)] > 0} { $m add separator }
-    
-    $m add radiobutton \
-        -label [_ "DSP On"] \
-        -accelerator "${accelerator}+/" \
+
+    $m add check \
+        -label [_ "Run DSP"] \
+        -accelerator "${accelerator}+R" \
         -variable ::var(isDsp) \
-        -value 1 \
-        -command { ::pd_connect::pdsend "pd dsp 1" }
-    $m add radiobutton \
-        -label [_ "DSP Off"] \
-        -accelerator "${accelerator}+." \
-        -variable ::var(isDsp) \
-        -value 0 \
-        -command { ::pd_connect::pdsend "pd dsp 0" }
+        -command { ::pd_connect::pdsend "pd dsp $::var(isDsp)" }
 }
 
 proc _window {m} {
@@ -319,7 +312,7 @@ proc _window {m} {
     
     $m add command \
         -label [_ "PureData"] \
-        -accelerator "${accelerator}+R" \
+        -accelerator "${accelerator}+P" \
         -command { ::pd_commands::menu_raise_console }
 }
 
