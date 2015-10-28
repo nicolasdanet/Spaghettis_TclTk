@@ -96,7 +96,11 @@ proc initialize {} {
     event add <<NewHRadioButton>>           <Shift-$mod-Key-I>
     
     }
-        
+    
+    event add <<SearchPath>>                <$opt-$mod-Key-p>
+    event add <<Libraries>>                 <$opt-$mod-Key-l>
+    event add <<MidiSettings>>              <$opt-$mod-Key-m>
+    event add <<AudioSettings>>             <$opt-$mod-Key-a>
     event add <<RunDSP>>                    <$mod-Key-p>
     event add <<NextWindow>>                <$mod-Key-Down>
     event add <<PreviousWindow>>            <$mod-Key-Up>
@@ -151,15 +155,19 @@ proc initialize {} {
     bind all <<NewHSlider>>                 { .menubar.object.horizontal invoke "Slider"        }
     bind all <<NewHRadioButton>>            { .menubar.object.horizontal invoke "RadioButton"   }
     
-    bind all <<RunDSP>>                     { .menubar.media  invoke "Run DSP"   }
-    bind all <<NextWindow>>                 { .menubar.window invoke "Next"      }
-    bind all <<PreviousWindow>>             { .menubar.window invoke "Previous"  }
-    bind all <<PdWindow>>                   { .menubar.window invoke "PureData"  }
+    bind all <<SearchPath>>                 { .menubar.media  invoke "Path..."      }
+    bind all <<Libraries>>                  { .menubar.media  invoke "Libraries..." }
+    bind all <<MidiSettings>>               { .menubar.media  invoke "MIDI..."      }
+    bind all <<AudioSettings>>              { .menubar.media  invoke "Audio..."     }
+    bind all <<RunDSP>>                     { .menubar.media  invoke "Run DSP"      }
+    bind all <<NextWindow>>                 { .menubar.window invoke "Next"         }
+    bind all <<PreviousWindow>>             { .menubar.window invoke "Previous"     }
+    bind all <<PdWindow>>                   { .menubar.window invoke "PureData"     }
     
-    bind all <KeyPress>                     { ::pd_bind::_key %W %K %A 1 0       }
-    bind all <KeyRelease>                   { ::pd_bind::_key %W %K %A 0 0       }
-    bind all <Shift-KeyPress>               { ::pd_bind::_key %W %K %A 1 1       }
-    bind all <Shift-KeyRelease>             { ::pd_bind::_key %W %K %A 0 1       }
+    bind all <KeyPress>                     { ::pd_bind::_key %W %K %A 1 0  }
+    bind all <KeyRelease>                   { ::pd_bind::_key %W %K %A 0 0  }
+    bind all <Shift-KeyPress>               { ::pd_bind::_key %W %K %A 1 1  }
+    bind all <Shift-KeyRelease>             { ::pd_bind::_key %W %K %A 0 1  }
     
     bind all <<Quit>>                       { ::pd_connect::pdsend "pd verifyquit" }
     

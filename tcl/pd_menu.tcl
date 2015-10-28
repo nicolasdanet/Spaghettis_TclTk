@@ -84,16 +84,28 @@ proc configureForDialog {top} {
 
 proc _editing {mode} {
     
-    .menubar entryconfigure [_ "Object"]            -state $mode
+    .menubar.file entryconfigure [_ "Save"]             -state $mode
+    .menubar.file entryconfigure [_ "Save As..."]       -state $mode
+    .menubar.file entryconfigure [_ "Close"]            -state $mode
     
-    .menubar.file entryconfigure [_ "Save"]         -state $mode
-    .menubar.file entryconfigure [_ "Save As..."]   -state $mode
-    .menubar.file entryconfigure [_ "Close"]        -state $mode
+    .menubar.edit entryconfigure [_ "Cut"]              -state $mode
+    .menubar.edit entryconfigure [_ "Paste"]            -state $mode
+    .menubar.edit entryconfigure [_ "Duplicate"]        -state $mode
+    .menubar.edit entryconfigure [_ "Edit Mode"]        -state $mode
     
-    .menubar.edit entryconfigure [_ "Cut"]          -state $mode
-    .menubar.edit entryconfigure [_ "Paste"]        -state $mode
-    .menubar.edit entryconfigure [_ "Duplicate"]    -state $mode
-    .menubar.edit entryconfigure [_ "Edit Mode"]    -state $mode
+    .menubar.object entryconfigure [_ "Object"]         -state $mode
+    .menubar.object entryconfigure [_ "Message"]        -state $mode
+    .menubar.object entryconfigure [_ "Float"]          -state $mode
+    .menubar.object entryconfigure [_ "Symbol"]         -state $mode
+    .menubar.object entryconfigure [_ "Comment"]        -state $mode
+    .menubar.object entryconfigure [_ "Array"]          -state $mode
+    .menubar.object entryconfigure [_ "Bang"]           -state $mode
+    .menubar.object entryconfigure [_ "Toggle"]         -state $mode
+    .menubar.object entryconfigure [_ "Panel"]          -state $mode
+    .menubar.object entryconfigure [_ "Number"]         -state $mode
+    .menubar.object entryconfigure [_ "Meter"]          -state $mode
+    .menubar.object entryconfigure [_ "Vertical"]       -state $mode
+    .menubar.object entryconfigure [_ "Horizontal"]     -state $mode
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -273,15 +285,19 @@ proc _media {m} {
     
     $m add command \
         -label [_ "Path..."] \
+        -accelerator "Alt+${accelerator}+P" \
         -command { ::pd_connect::pdsend "pd start-path-dialog" }
     $m add command \
-        -label [_ "Startup..."] \
+        -label [_ "Libraries..."] \
+        -accelerator "Alt+${accelerator}+L" \
         -command { ::pd_connect::pdsend "pd start-startup-dialog" }
     $m add command \
         -label [_ "MIDI..."] \
+        -accelerator "Alt+${accelerator}+M" \
         -command { ::pd_connect::pdsend "pd midi-properties" }
     $m add command \
         -label [_ "Audio..."] \
+        -accelerator "Alt+${accelerator}+A" \
         -command { ::pd_connect::pdsend "pd audio-properties" }
     $m add separator
     
