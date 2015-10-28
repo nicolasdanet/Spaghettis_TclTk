@@ -69,6 +69,8 @@ proc initialize {} {
     event add <<NewSymbol>>                 <Shift-$mod-Key-4>
     event add <<NewComment>>                <Shift-$mod-Key-5>
     
+    if {[tk windowingsystem] eq "aqua"} {
+    
     event add <<NewArray>>                  <Shift-$mod-Key-a>
     event add <<NewBang>>                   <Shift-$mod-Key-b>
     event add <<NewToggle>>                 <Shift-$mod-Key-t>
@@ -79,6 +81,21 @@ proc initialize {} {
     event add <<NewVRadioButton>>           <Shift-$mod-Key-d>
     event add <<NewHSlider>>                <Shift-$mod-Key-h>
     event add <<NewHRadioButton>>           <Shift-$mod-Key-i>
+    
+    } else {
+    
+    event add <<NewArray>>                  <Shift-$mod-Key-A>
+    event add <<NewBang>>                   <Shift-$mod-Key-B>
+    event add <<NewToggle>>                 <Shift-$mod-Key-T>
+    event add <<NewPanel>>                  <Shift-$mod-Key-C>
+    event add <<NewNumber>>                 <Shift-$mod-Key-N>
+    event add <<NewMeter>>                  <Shift-$mod-Key-U>
+    event add <<NewVSlider>>                <Shift-$mod-Key-V>  
+    event add <<NewVRadioButton>>           <Shift-$mod-Key-D>
+    event add <<NewHSlider>>                <Shift-$mod-Key-H>
+    event add <<NewHRadioButton>>           <Shift-$mod-Key-I>
+    
+    }
         
     event add <<RunDSP>>                    <$mod-Key-p>
     event add <<NextWindow>>                <$mod-Key-Down>
