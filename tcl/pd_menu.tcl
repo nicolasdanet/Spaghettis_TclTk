@@ -180,61 +180,78 @@ proc _edit {m} {
 
 proc _object {m} {
 
+    variable accelerator
+    
     $m add command \
         -label [_ "Object"] \
+        -accelerator "${accelerator}+1" \
         -command { ::pd_commands::menu_send_float $::var(windowFocused) obj 0 } 
     $m add command \
         -label [_ "Message"] \
+        -accelerator "${accelerator}+2" \
         -command { ::pd_commands::menu_send_float $::var(windowFocused) msg 0 }
     $m add command \
-        -label [_ "Array"] \
-        -command { ::pd_commands::menu_send $::var(windowFocused) menuarray }
-    $m add command \
         -label [_ "Float"] \
+        -accelerator "${accelerator}+3" \
         -command { ::pd_commands::menu_send_float $::var(windowFocused) floatatom 0 }
     $m add command \
         -label [_ "Symbol"] \
+        -accelerator "${accelerator}+4" \
         -command { ::pd_commands::menu_send_float $::var(windowFocused) symbolatom 0 }
+    $m add command \
+        -label [_ "Comment"] \
+        -accelerator "${accelerator}+5" \
+        -command { ::pd_commands::menu_send_float $::var(windowFocused) text 0 }
     $m add separator
     
     $m add command \
-        -label [_ "Panel"] \
-        -command { ::pd_commands::menu_send $::var(windowFocused) mycnv }    
-    $m add command \
-        -label [_ "Comment"] \
-        -command { ::pd_commands::menu_send_float $::var(windowFocused) text 0 }
+        -label [_ "Array"] \
+        -accelerator "Shift+${accelerator}+A" \
+        -command { ::pd_commands::menu_send $::var(windowFocused) menuarray }
     $m add separator
-        
+    
     $m add command \
         -label [_ "Bang"] \
+        -accelerator "Shift+${accelerator}+B" \
         -command { ::pd_commands::menu_send $::var(windowFocused) bng }
     $m add command \
         -label [_ "Toggle"] \
+        -accelerator "Shift+${accelerator}+T" \
         -command { ::pd_commands::menu_send $::var(windowFocused) toggle }
     $m add command \
-        -label [_ "Meter"] \
-        -command { ::pd_commands::menu_send $::var(windowFocused) vumeter }
+        -label [_ "Panel"] \
+        -accelerator "Shift+${accelerator}+C" \
+        -command { ::pd_commands::menu_send $::var(windowFocused) mycnv } 
     $m add command \
         -label [_ "Number"] \
+        -accelerator "Shift+${accelerator}+N" \
         -command { ::pd_commands::menu_send $::var(windowFocused) numbox }
+    $m add command \
+        -label [_ "Meter"] \
+        -accelerator "Shift+${accelerator}+U" \
+        -command { ::pd_commands::menu_send $::var(windowFocused) vumeter }
     $m add separator
     
     menu $m.vertical
     
     $m.vertical add command \
         -label [_ "Slider"] \
+        -accelerator "Shift+${accelerator}+V" \
         -command { ::pd_commands::menu_send $::var(windowFocused) vslider }
     $m.vertical add command \
         -label [_ "RadioButton"] \
+        -accelerator "Shift+${accelerator}+D" \
         -command { ::pd_commands::menu_send $::var(windowFocused) vradio }
     
     menu $m.horizontal
         
     $m.horizontal add command \
         -label [_ "Slider"] \
+        -accelerator "Shift+${accelerator}+H" \
         -command { ::pd_commands::menu_send $::var(windowFocused) hslider }
     $m.horizontal add command \
         -label [_ "RadioButton"] \
+        -accelerator "Shift+${accelerator}+I" \
         -command { ::pd_commands::menu_send $::var(windowFocused) hradio }
         
     $m add cascade \

@@ -31,41 +31,66 @@ namespace export patch
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable modifier "Control"
+variable mod "Control"
+variable opt "Alt"
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
 proc initialize {} {
     
-    variable modifier
+    variable mod
+    variable opt
     
-    if {[tk windowingsystem] eq "aqua"} { set modifier "Command" }
+    if {[tk windowingsystem] eq "aqua"} { set mod "Command"; set opt "Option" }
 
     # Virtual events.
     
-    event add <<Copy>>                      <$modifier-c>
-    event add <<Duplicate>>                 <$modifier-d>
-    event add <<SelectAll>>                 <$modifier-a>
-    event add <<EditMode>>                  <$modifier-e>
-    event add <<NewFile>>                   <$modifier-n>
-    event add <<OpenFile>>                  <$modifier-o>
-    event add <<Save>>                      <$modifier-s>
-    event add <<SaveAs>>                    <Shift-$modifier-s>
-    event add <<Close>>                     <$modifier-w>
-    event add <<Quit>>                      <$modifier-q>
+    event add <<Copy>>                      <$mod-Key-c>
+    event add <<Duplicate>>                 <$mod-Key-d>
+    event add <<SelectAll>>                 <$mod-Key-a>
+    event add <<EditMode>>                  <$mod-Key-e>
+    event add <<NewFile>>                   <$mod-Key-n>
+    event add <<OpenFile>>                  <$mod-Key-o>
+    event add <<Save>>                      <$mod-Key-s>
+    event add <<SaveAs>>                    <Shift-$mod-Key-s>
+    event add <<Close>>                     <$mod-Key-w>
+    event add <<Quit>>                      <$mod-Key-q>
     
-    event add <<RunDSP>>                    <$modifier-p>
-    event add <<NextWindow>>                <$modifier-Down>
-    event add <<PreviousWindow>>            <$modifier-Up>
-    event add <<PdWindow>>                  <$modifier-r>
+    event add <<NewObject>>                 <$mod-ampersand>
+    event add <<NewMessage>>                <$mod-eacute>
+    event add <<NewFloat>>                  <$mod-quotedbl>
+    event add <<NewSymbol>>                 <$mod-quoteright>
+    event add <<NewComment>>                <$mod-parenleft>
+    
+    event add <<NewObject>>                 <Shift-$mod-Key-1>
+    event add <<NewMessage>>                <Shift-$mod-Key-2>
+    event add <<NewFloat>>                  <Shift-$mod-Key-3>
+    event add <<NewSymbol>>                 <Shift-$mod-Key-4>
+    event add <<NewComment>>                <Shift-$mod-Key-5>
+    
+    event add <<NewArray>>                  <Shift-$mod-Key-a>
+    event add <<NewBang>>                   <Shift-$mod-Key-b>
+    event add <<NewToggle>>                 <Shift-$mod-Key-t>
+    event add <<NewPanel>>                  <Shift-$mod-Key-c>
+    event add <<NewNumber>>                 <Shift-$mod-Key-n>
+    event add <<NewMeter>>                  <Shift-$mod-Key-u>
+    event add <<NewVSlider>>                <Shift-$mod-Key-v>  
+    event add <<NewVRadioButton>>           <Shift-$mod-Key-d>
+    event add <<NewHSlider>>                <Shift-$mod-Key-h>
+    event add <<NewHRadioButton>>           <Shift-$mod-Key-i>
+        
+    event add <<RunDSP>>                    <$mod-Key-p>
+    event add <<NextWindow>>                <$mod-Key-Down>
+    event add <<PreviousWindow>>            <$mod-Key-Up>
+    event add <<PdWindow>>                  <$mod-Key-r>
     
     event add <<Motion1>>                   <Motion>
-    event add <<Motion2>>                   <$modifier-Motion>
+    event add <<Motion2>>                   <$mod-Motion>
     event add <<ClickLeft1>>                <ButtonPress-1>
     event add <<ClickLeft2>>                <Shift-ButtonPress-1>
-    event add <<ClickLeft3>>                <$modifier-ButtonPress-1>
-    event add <<ClickLeft4>>                <Alt-ButtonPress-1>
+    event add <<ClickLeft3>>                <$mod-ButtonPress-1>
+    event add <<ClickLeft4>>                <$opt-ButtonPress-1>
     event add <<PopupMenu>>                 <ButtonPress-2>
     event add <<PopupMenu>>                 <ButtonPress-3>
     event add <<ClickRelease>>              <ButtonRelease-1>
@@ -93,7 +118,23 @@ proc initialize {} {
     bind all <<SaveAs>>                     { .menubar.file invoke "Save As..."  }
     bind all <<Close>>                      { .menubar.file invoke "Close"       }
     
-    bind all <<RunDSP>>                     { .menubar.media invoke  "Run DSP"   }
+    bind all <<NewObject>>                  { .menubar.object            invoke "Object"        }
+    bind all <<NewMessage>>                 { .menubar.object            invoke "Message"       }
+    bind all <<NewFloat>>                   { .menubar.object            invoke "Float"         }
+    bind all <<NewSymbol>>                  { .menubar.object            invoke "Symbol"        }
+    bind all <<NewComment>>                 { .menubar.object            invoke "Comment"       }
+    bind all <<NewArray>>                   { .menubar.object            invoke "Array"         }
+    bind all <<NewBang>>                    { .menubar.object            invoke "Bang"          }
+    bind all <<NewToggle>>                  { .menubar.object            invoke "Toggle"        }
+    bind all <<NewPanel>>                   { .menubar.object            invoke "Panel"         }
+    bind all <<NewNumber>>                  { .menubar.object            invoke "Number"        }
+    bind all <<NewMeter>>                   { .menubar.object            invoke "Meter"         }
+    bind all <<NewVSlider>>                 { .menubar.object.vertical   invoke "Slider"        } 
+    bind all <<NewVRadioButton>>            { .menubar.object.vertical   invoke "RadioButton"   }
+    bind all <<NewHSlider>>                 { .menubar.object.horizontal invoke "Slider"        }
+    bind all <<NewHRadioButton>>            { .menubar.object.horizontal invoke "RadioButton"   }
+    
+    bind all <<RunDSP>>                     { .menubar.media  invoke "Run DSP"   }
     bind all <<NextWindow>>                 { .menubar.window invoke "Next"      }
     bind all <<PreviousWindow>>             { .menubar.window invoke "Previous"  }
     bind all <<PdWindow>>                   { .menubar.window invoke "PureData"  }
