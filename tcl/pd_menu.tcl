@@ -289,7 +289,7 @@ proc _media {m} {
 
     $m add check \
         -label [_ "Run DSP"] \
-        -accelerator "${accelerator}+R" \
+        -accelerator "${accelerator}+P" \
         -variable ::var(isDsp) \
         -command { ::pd_connect::pdsend "pd dsp $::var(isDsp)" }
 }
@@ -302,17 +302,17 @@ proc _window {m} {
     
     $m add command \
         -label [_ "Next"] \
-        -accelerator [_ "${accelerator}+PageDown"] \
+        -accelerator [_ "${accelerator}+Down"] \
         -command { ::pd_commands::menu_raisenextwindow}
     $m add command \
         -label [_ "Previous"] \
-        -accelerator [_ "${accelerator}+PageUp"] \
+        -accelerator [_ "${accelerator}+Up"] \
         -command { ::pd_commands::menu_raisepreviouswindow }
     $m add separator
     
     $m add command \
         -label [_ "PureData"] \
-        -accelerator "${accelerator}+P" \
+        -accelerator "${accelerator}+R" \
         -command { ::pd_commands::menu_raise_console }
 }
 

@@ -41,62 +41,71 @@ proc initialize {} {
     variable modifier
     
     if {[tk windowingsystem] eq "aqua"} { set modifier "Command" }
-    
+
     # Virtual events.
     
-    event add <<Close>>         <$modifier-w>
-    event add <<Copy>>          <$modifier-c>
-    event add <<Duplicate>>     <$modifier-d>
-    event add <<EditMode>>      <$modifier-e>
-    event add <<NewFile>>       <$modifier-n>
-    event add <<OpenFile>>      <$modifier-o>
-    event add <<Quit>>          <$modifier-q>
-    event add <<Save>>          <$modifier-s>
-    event add <<SaveAs>>        <Shift-$modifier-s>
-    event add <<SelectAll>>     <$modifier-a>
+    event add <<Copy>>                      <$modifier-c>
+    event add <<Duplicate>>                 <$modifier-d>
+    event add <<SelectAll>>                 <$modifier-a>
+    event add <<EditMode>>                  <$modifier-e>
+    event add <<NewFile>>                   <$modifier-n>
+    event add <<OpenFile>>                  <$modifier-o>
+    event add <<Save>>                      <$modifier-s>
+    event add <<SaveAs>>                    <Shift-$modifier-s>
+    event add <<Close>>                     <$modifier-w>
+    event add <<Quit>>                      <$modifier-q>
     
-    event add <<Motion1>>       <Motion>
-    event add <<Motion2>>       <$modifier-Motion>
-    event add <<ClickLeft1>>    <ButtonPress-1>
-    event add <<ClickLeft2>>    <Shift-ButtonPress-1>
-    event add <<ClickLeft3>>    <$modifier-ButtonPress-1>
-    event add <<ClickLeft4>>    <Alt-ButtonPress-1>
-    event add <<ClickRight>>    <ButtonPress-2>
-    event add <<ClickRight>>    <ButtonPress-3>
-    event add <<ClickRelease>>  <ButtonRelease-1>
+    event add <<RunDSP>>                    <$modifier-p>
+    event add <<NextWindow>>                <$modifier-Down>
+    event add <<PreviousWindow>>            <$modifier-Up>
+    event add <<PdWindow>>                  <$modifier-r>
     
-    # Widget.
-    
-    wm protocol .console WM_DELETE_WINDOW   { ::pd_connect::pdsend "pd verifyquit" }
+    event add <<Motion1>>                   <Motion>
+    event add <<Motion2>>                   <$modifier-Motion>
+    event add <<ClickLeft1>>                <ButtonPress-1>
+    event add <<ClickLeft2>>                <Shift-ButtonPress-1>
+    event add <<ClickLeft3>>                <$modifier-ButtonPress-1>
+    event add <<ClickLeft4>>                <Alt-ButtonPress-1>
+    event add <<PopupMenu>>                 <ButtonPress-2>
+    event add <<PopupMenu>>                 <ButtonPress-3>
+    event add <<ClickRelease>>              <ButtonRelease-1>
     
     # Class.
     
-    bind PdConsole  <FocusIn>               { ::pd_bind::_focusIn %W }
-    bind PdDialog   <FocusIn>               { ::pd_bind::_focusIn %W }
-    bind PdPatch    <FocusIn>               { ::pd_bind::_focusIn %W }
+    bind PdConsole  <FocusIn>               { ::pd_bind::_focusIn %W             }
+    bind PdDialog   <FocusIn>               { ::pd_bind::_focusIn %W             }
+    bind PdPatch    <FocusIn>               { ::pd_bind::_focusIn %W             }
     bind PdPatch    <Configure>             { ::pd_bind::_resized %W %w %h %x %y }
-    bind PdPatch    <Map>                   { ::pd_bind::_map %W    }
-    bind PdPatch    <Unmap>                 { ::pd_bind::_unmap %W  }
+    bind PdPatch    <Map>                   { ::pd_bind::_map %W                 }
+    bind PdPatch    <Unmap>                 { ::pd_bind::_unmap %W               }
 
     # All.
     
-    bind all <KeyPress>                     { ::pd_bind::_key %W %K %A 1 0 }
-    bind all <KeyRelease>                   { ::pd_bind::_key %W %K %A 0 0 }
-    bind all <Shift-KeyPress>               { ::pd_bind::_key %W %K %A 1 1 }
-    bind all <Shift-KeyRelease>             { ::pd_bind::_key %W %K %A 0 1 }
+    bind all <<Cut>>                        { .menubar.edit invoke "Cut"         }
+    bind all <<Copy>>                       { .menubar.edit invoke "Copy"        }
+    bind all <<Paste>>                      { .menubar.edit invoke "Paste"       }
+    bind all <<Duplicate>>                  { .menubar.edit invoke "Duplicate"   }
+    bind all <<SelectAll>>                  { .menubar.edit invoke "Select All"  }
+    bind all <<EditMode>>                   { .menubar.edit invoke "Edit Mode"   }
+    bind all <<NewFile>>                    { .menubar.file invoke "New Patch"   }
+    bind all <<OpenFile>>                   { .menubar.file invoke "Open..."     }
+    bind all <<Save>>                       { .menubar.file invoke "Save"        }
+    bind all <<SaveAs>>                     { .menubar.file invoke "Save As..."  }
+    bind all <<Close>>                      { .menubar.file invoke "Close"       }
     
-    bind all <<Close>>                      { ::pd_commands::menu_send_float %W menuclose 0 }
-    bind all <<Copy>>                       { ::pd_commands::menu_send %W copy }
-    bind all <<Cut>>                        { ::pd_commands::menu_send %W cut  }
-    bind all <<Duplicate>>                  { ::pd_commands::menu_send %W duplicate }
-    bind all <<EditMode>>                   { .menubar.edit invoke "Edit Mode" }
-    bind all <<NewFile>>                    { ::pd_commands::menu_new  }
-    bind all <<OpenFile>>                   { ::pd_commands::menu_open }
-    bind all <<Paste>>                      { ::pd_commands::menu_send %W paste      }
-    bind all <<Quit>>                       { ::pd_connect::pdsend "pd verifyquit"   }
-    bind all <<Save>>                       { ::pd_commands::menu_send %W menusave   }
-    bind all <<SaveAs>>                     { ::pd_commands::menu_send %W menusaveas }
-    bind all <<SelectAll>>                  { ::pd_commands::menu_send %W selectall  }
+    bind all <<RunDSP>>                     { .menubar.media invoke  "Run DSP"   }
+    bind all <<NextWindow>>                 { .menubar.window invoke "Next"      }
+    bind all <<PreviousWindow>>             { .menubar.window invoke "Previous"  }
+    bind all <<PdWindow>>                   { .menubar.window invoke "PureData"  }
+    
+    bind all <KeyPress>                     { ::pd_bind::_key %W %K %A 1 0       }
+    bind all <KeyRelease>                   { ::pd_bind::_key %W %K %A 0 0       }
+    bind all <Shift-KeyPress>               { ::pd_bind::_key %W %K %A 1 1       }
+    bind all <Shift-KeyRelease>             { ::pd_bind::_key %W %K %A 0 1       }
+    
+    bind all <<Quit>>                       { ::pd_connect::pdsend "pd verifyquit" }
+    
+    wm protocol .console WM_DELETE_WINDOW   { ::pd_connect::pdsend "pd verifyquit" }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -104,16 +113,16 @@ proc initialize {} {
 
 proc patch {top} {
 
-    bind $top.c <<Motion1>>                 { pdtk_canvas_motion %W %x %y 0 }
-    bind $top.c <<Motion2>>                 { pdtk_canvas_motion %W %x %y 2 }
-    bind $top.c <<ClickLeft1>>              { pdtk_canvas_mouse %W %x %y %b 0 }
-    bind $top.c <<ClickLeft2>>              { pdtk_canvas_mouse %W %x %y %b 1 }
-    bind $top.c <<ClickLeft3>>              { pdtk_canvas_mouse %W %x %y %b 2 }
-    bind $top.c <<ClickLeft4>>              { pdtk_canvas_mouse %W %x %y %b 3 }
-    bind $top.c <<ClickRelease>>            { pdtk_canvas_mouseup %W %x %y %b }
-    bind $top.c <<ClickRight>>              { pdtk_canvas_rightclick %W %x %y %b }
+    bind $top.c <<Motion1>>                 { pdtk_canvas_motion %W %x %y 0          }
+    bind $top.c <<Motion2>>                 { pdtk_canvas_motion %W %x %y 2          }
+    bind $top.c <<ClickLeft1>>              { pdtk_canvas_mouse %W %x %y %b 0        }
+    bind $top.c <<ClickLeft2>>              { pdtk_canvas_mouse %W %x %y %b 1        }
+    bind $top.c <<ClickLeft3>>              { pdtk_canvas_mouse %W %x %y %b 2        }
+    bind $top.c <<ClickLeft4>>              { pdtk_canvas_mouse %W %x %y %b 3        }
+    bind $top.c <<ClickRelease>>            { pdtk_canvas_mouseup %W %x %y %b        }
+    bind $top.c <<PopupMenu>>               { pdtk_canvas_rightclick %W %x %y %b     }
     
-    bind $top.c <MouseWheel>                { ::pd_patch::scroll %W y %D }
+    bind $top.c <MouseWheel>                { ::pd_patch::scroll %W y %D             }
     bind $top.c <Destroy>                   { ::pd_bind::_closed [winfo toplevel %W] }
         
     wm protocol $top WM_DELETE_WINDOW       [list ::pd_connect::pdsend "$top menuclose 0"]
