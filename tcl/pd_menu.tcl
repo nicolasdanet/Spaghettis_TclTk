@@ -127,7 +127,7 @@ proc _file {m} {
     $m add command \
         -label [_ "Close"] \
         -accelerator "${accelerator}+W" \
-        -command { ::pd_commands::menu_send_float $::var(windowFocused) menuclose 0 }
+        -command { ::pd_commands::handle "menuclose 0" }
         
     if {[tk windowingsystem] ne "aqua"} {
     
@@ -170,7 +170,7 @@ proc _edit {m} {
         -label [_ "Edit Mode"] \
         -accelerator "${accelerator}+E" \
         -variable ::var(isEditMode) \
-        -command { ::pd_commands::editMode $::var(isEditMode) }
+        -command { ::pd_commands::handle "editmode $::var(isEditMode)" }
 }
 
 proc _object {m} {
@@ -180,23 +180,23 @@ proc _object {m} {
     $m add command \
         -label [_ "Object"] \
         -accelerator "${accelerator}+1" \
-        -command { ::pd_commands::menu_send_float $::var(windowFocused) obj 0 } 
+        -command { ::pd_commands::handle "obj 0" } 
     $m add command \
         -label [_ "Message"] \
         -accelerator "${accelerator}+2" \
-        -command { ::pd_commands::menu_send_float $::var(windowFocused) msg 0 }
+        -command { ::pd_commands::handle "msg 0" }
     $m add command \
         -label [_ "Float"] \
         -accelerator "${accelerator}+3" \
-        -command { ::pd_commands::menu_send_float $::var(windowFocused) floatatom 0 }
+        -command { ::pd_commands::handle "floatatom 0" }
     $m add command \
         -label [_ "Symbol"] \
         -accelerator "${accelerator}+4" \
-        -command { ::pd_commands::menu_send_float $::var(windowFocused) symbolatom 0 }
+        -command { ::pd_commands::handle "symbolatom 0" }
     $m add command \
         -label [_ "Comment"] \
         -accelerator "${accelerator}+5" \
-        -command { ::pd_commands::menu_send_float $::var(windowFocused) text 0 }
+        -command { ::pd_commands::handle "text 0" }
     $m add separator
     
     $m add command \

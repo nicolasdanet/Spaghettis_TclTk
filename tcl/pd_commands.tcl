@@ -68,16 +68,6 @@ proc open {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc editMode {state} {
-
-    if {[winfo class $::var(windowFocused)] eq "PdPatch"} {
-        ::pd_connect::pdsend "$::var(windowFocused) editmode $state"
-    }
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 proc handle {message} {
 
     set top [winfo toplevel $::var(windowFocused)]
@@ -91,14 +81,6 @@ proc handle {message} {
             if {$message eq "selectall"} { .console.text tag add sel 1.0 end }
         }
         "PdDialog"  { }
-    }
-}
-
-proc menu_send_float {window message float} {
-
-    set mytoplevel [winfo toplevel $window]
-    if {[winfo class $mytoplevel] eq "PdPatch"} {
-        ::pd_connect::pdsend "$mytoplevel $message $float"
     }
 }
 
