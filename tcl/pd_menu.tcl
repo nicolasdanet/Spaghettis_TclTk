@@ -117,11 +117,11 @@ proc _file {m} {
     $m add command \
         -label [_ "Save"] \
         -accelerator "${accelerator}+S" \
-        -command { ::pd_commands::menu_send $::var(windowFocused) menusave }
+        -command { ::pd_commands::handle menusave }
     $m add command \
         -label [_ "Save As..."] \
         -accelerator "Shift+${accelerator}+S" \
-        -command { ::pd_commands::menu_send $::var(windowFocused) menusaveas }
+        -command { ::pd_commands::handle menusaveas }
     $m add separator
 
     $m add command \
@@ -145,25 +145,25 @@ proc _edit {m} {
     $m add command \
         -label [_ "Cut"] \
         -accelerator "${accelerator}+X" \
-        -command { ::pd_commands::menu_send $::var(windowFocused) cut }
+        -command { ::pd_commands::handle cut }
     $m add command \
         -label [_ "Copy"] \
         -accelerator "${accelerator}+C" \
-        -command { ::pd_commands::menu_send $::var(windowFocused) copy }
+        -command { ::pd_commands::handle copy }
     $m add command \
         -label [_ "Paste"] \
         -accelerator "${accelerator}+V" \
-        -command { ::pd_commands::menu_send $::var(windowFocused) paste }
+        -command { ::pd_commands::handle paste }
     $m add separator
     
     $m add command \
         -label [_ "Duplicate"] \
         -accelerator "${accelerator}+D" \
-        -command { ::pd_commands::menu_send $::var(windowFocused) duplicate }
+        -command { ::pd_commands::handle duplicate }
     $m add command \
         -label [_ "Select All"] \
         -accelerator "${accelerator}+A" \
-        -command { ::pd_commands::menu_send $::var(windowFocused) selectall }
+        -command { ::pd_commands::handle selectall }
     $m add separator
     
     $m add check \
@@ -202,29 +202,29 @@ proc _object {m} {
     $m add command \
         -label [_ "Array"] \
         -accelerator "Shift+${accelerator}+A" \
-        -command { ::pd_commands::menu_send $::var(windowFocused) menuarray }
+        -command { ::pd_commands::handle menuarray }
     $m add separator
     
     $m add command \
         -label [_ "Bang"] \
         -accelerator "Shift+${accelerator}+B" \
-        -command { ::pd_commands::menu_send $::var(windowFocused) bng }
+        -command { ::pd_commands::handle bng }
     $m add command \
         -label [_ "Toggle"] \
         -accelerator "Shift+${accelerator}+T" \
-        -command { ::pd_commands::menu_send $::var(windowFocused) toggle }
+        -command { ::pd_commands::handle toggle }
     $m add command \
         -label [_ "Panel"] \
         -accelerator "Shift+${accelerator}+P" \
-        -command { ::pd_commands::menu_send $::var(windowFocused) mycnv } 
+        -command { ::pd_commands::handle mycnv } 
     $m add command \
         -label [_ "Number"] \
         -accelerator "Shift+${accelerator}+N" \
-        -command { ::pd_commands::menu_send $::var(windowFocused) numbox }
+        -command { ::pd_commands::handle numbox }
     $m add command \
         -label [_ "VU Meter"] \
         -accelerator "Shift+${accelerator}+U" \
-        -command { ::pd_commands::menu_send $::var(windowFocused) vumeter }
+        -command { ::pd_commands::handle vumeter }
     $m add separator
     
     menu $m.vertical
@@ -232,22 +232,22 @@ proc _object {m} {
     $m.vertical add command \
         -label [_ "Slider"] \
         -accelerator "Shift+${accelerator}+V" \
-        -command { ::pd_commands::menu_send $::var(windowFocused) vslider }
+        -command { ::pd_commands::handle vslider }
     $m.vertical add command \
         -label [_ "RadioButton"] \
         -accelerator "Shift+${accelerator}+D" \
-        -command { ::pd_commands::menu_send $::var(windowFocused) vradio }
+        -command { ::pd_commands::handle vradio }
     
     menu $m.horizontal
         
     $m.horizontal add command \
         -label [_ "Slider"] \
         -accelerator "Shift+${accelerator}+H" \
-        -command { ::pd_commands::menu_send $::var(windowFocused) hslider }
+        -command { ::pd_commands::handle hslider }
     $m.horizontal add command \
         -label [_ "RadioButton"] \
         -accelerator "Shift+${accelerator}+I" \
-        -command { ::pd_commands::menu_send $::var(windowFocused) hradio }
+        -command { ::pd_commands::handle hradio }
         
     $m add cascade \
         -label [_ "Vertical"] \

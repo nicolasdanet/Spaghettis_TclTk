@@ -30,7 +30,7 @@ namespace eval ::pd_commands:: {
 
 namespace export newPatch
 namespace export open
-namespace export editMode
+namespace export handle
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -75,18 +75,22 @@ proc editMode {state} {
     }
 }
 
-proc menu_send {window message} {
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-    set mytoplevel [winfo toplevel $window]
+proc handle {message} {
+
+    set top [winfo toplevel $::var(windowFocused)]
     
-    if {[winfo class $mytoplevel] eq "PdPatch"} {
-        ::pd_connect::pdsend "$mytoplevel $message"
-    } elseif {$mytoplevel eq ".console"} {
-        if {$message eq "copy"} {
-            tk_textCopy .console.text
-        } elseif {$message eq "selectall"} {
-            .console.text tag add sel 1.0 end
+    switch -- [winfo class $top] {
+        "PdPatch"   {
+            ::pd_connect::pdsend "$top $message"
         }
+        "PdConsole" {
+            if {$message eq "copy"} { tk_textCopy .console.text }
+            if {$message eq "selectall"} { .console.text tag add sel 1.0 end }
+        }
+        "PdDialog"  { }
     }
 }
 
