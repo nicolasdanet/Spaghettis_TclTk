@@ -12,8 +12,8 @@ package provide pd_menu 0.1
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package require pd_commands
 package require pd_connect
+package require pd_handle
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -77,27 +77,27 @@ proc _file {m} {
     $m add command \
         -label [_ "New Patch"] \
         -accelerator "${accelerator}+N" \
-        -command { ::pd_commands::newPatch }
+        -command { ::pd_handle::newPatch }
     $m add command \
         -label [_ "Open..."] \
         -accelerator "${accelerator}+O" \
-        -command { ::pd_commands::open }
+        -command { ::pd_handle::open }
     $m add separator
     
     $m add command \
         -label [_ "Save"] \
         -accelerator "${accelerator}+S" \
-        -command { ::pd_commands::handle menusave }
+        -command { ::pd_handle::handle menusave }
     $m add command \
         -label [_ "Save As..."] \
         -accelerator "Shift+${accelerator}+S" \
-        -command { ::pd_commands::handle menusaveas }
+        -command { ::pd_handle::handle menusaveas }
     $m add separator
 
     $m add command \
         -label [_ "Close"] \
         -accelerator "${accelerator}+W" \
-        -command { ::pd_commands::handle "menuclose 0" }
+        -command { ::pd_handle::handle "menuclose 0" }
         
     if {[tk windowingsystem] ne "aqua"} {
     
@@ -115,32 +115,32 @@ proc _edit {m} {
     $m add command \
         -label [_ "Cut"] \
         -accelerator "${accelerator}+X" \
-        -command { ::pd_commands::handle cut }
+        -command { ::pd_handle::handle cut }
     $m add command \
         -label [_ "Copy"] \
         -accelerator "${accelerator}+C" \
-        -command { ::pd_commands::handle copy }
+        -command { ::pd_handle::handle copy }
     $m add command \
         -label [_ "Paste"] \
         -accelerator "${accelerator}+V" \
-        -command { ::pd_commands::handle paste }
+        -command { ::pd_handle::handle paste }
     $m add separator
     
     $m add command \
         -label [_ "Duplicate"] \
         -accelerator "${accelerator}+D" \
-        -command { ::pd_commands::handle duplicate }
+        -command { ::pd_handle::handle duplicate }
     $m add command \
         -label [_ "Select All"] \
         -accelerator "${accelerator}+A" \
-        -command { ::pd_commands::handle selectall }
+        -command { ::pd_handle::handle selectall }
     $m add separator
     
     $m add check \
         -label [_ "Edit Mode"] \
         -accelerator "${accelerator}+E" \
         -variable ::var(isEditMode) \
-        -command { ::pd_commands::handle "editmode $::var(isEditMode)" }
+        -command { ::pd_handle::handle "editmode $::var(isEditMode)" }
 }
 
 proc _object {m} {
@@ -150,51 +150,51 @@ proc _object {m} {
     $m add command \
         -label [_ "Object"] \
         -accelerator "${accelerator}+1" \
-        -command { ::pd_commands::handle "obj 0" } 
+        -command { ::pd_handle::handle "obj 0" } 
     $m add command \
         -label [_ "Message"] \
         -accelerator "${accelerator}+2" \
-        -command { ::pd_commands::handle "msg 0" }
+        -command { ::pd_handle::handle "msg 0" }
     $m add command \
         -label [_ "Float"] \
         -accelerator "${accelerator}+3" \
-        -command { ::pd_commands::handle "floatatom 0" }
+        -command { ::pd_handle::handle "floatatom 0" }
     $m add command \
         -label [_ "Symbol"] \
         -accelerator "${accelerator}+4" \
-        -command { ::pd_commands::handle "symbolatom 0" }
+        -command { ::pd_handle::handle "symbolatom 0" }
     $m add command \
         -label [_ "Comment"] \
         -accelerator "${accelerator}+5" \
-        -command { ::pd_commands::handle "text 0" }
+        -command { ::pd_handle::handle "text 0" }
     $m add separator
     
     $m add command \
         -label [_ "Array"] \
         -accelerator "Shift+${accelerator}+A" \
-        -command { ::pd_commands::handle menuarray }
+        -command { ::pd_handle::handle menuarray }
     $m add separator
     
     $m add command \
         -label [_ "Bang"] \
         -accelerator "Shift+${accelerator}+B" \
-        -command { ::pd_commands::handle bng }
+        -command { ::pd_handle::handle bng }
     $m add command \
         -label [_ "Toggle"] \
         -accelerator "Shift+${accelerator}+T" \
-        -command { ::pd_commands::handle toggle }
+        -command { ::pd_handle::handle toggle }
     $m add command \
         -label [_ "Panel"] \
         -accelerator "Shift+${accelerator}+P" \
-        -command { ::pd_commands::handle mycnv } 
+        -command { ::pd_handle::handle mycnv } 
     $m add command \
         -label [_ "Number"] \
         -accelerator "Shift+${accelerator}+N" \
-        -command { ::pd_commands::handle numbox }
+        -command { ::pd_handle::handle numbox }
     $m add command \
         -label [_ "VU Meter"] \
         -accelerator "Shift+${accelerator}+U" \
-        -command { ::pd_commands::handle vumeter }
+        -command { ::pd_handle::handle vumeter }
     $m add separator
     
     menu $m.vertical
@@ -202,22 +202,22 @@ proc _object {m} {
     $m.vertical add command \
         -label [_ "Slider"] \
         -accelerator "Shift+${accelerator}+V" \
-        -command { ::pd_commands::handle vslider }
+        -command { ::pd_handle::handle vslider }
     $m.vertical add command \
         -label [_ "RadioButton"] \
         -accelerator "Shift+${accelerator}+D" \
-        -command { ::pd_commands::handle vradio }
+        -command { ::pd_handle::handle vradio }
     
     menu $m.horizontal
         
     $m.horizontal add command \
         -label [_ "Slider"] \
         -accelerator "Shift+${accelerator}+H" \
-        -command { ::pd_commands::handle hslider }
+        -command { ::pd_handle::handle hslider }
     $m.horizontal add command \
         -label [_ "RadioButton"] \
         -accelerator "Shift+${accelerator}+I" \
-        -command { ::pd_commands::handle hradio }
+        -command { ::pd_handle::handle hradio }
         
     $m add cascade \
         -label [_ "Vertical"] \
@@ -289,17 +289,17 @@ proc _window {m} {
     $m add command \
         -label [_ "Next"] \
         -accelerator [_ "${accelerator}+Down"] \
-        -command { ::pd_commands::raiseNext }
+        -command { ::pd_handle::raiseNext }
     $m add command \
         -label [_ "Previous"] \
         -accelerator [_ "${accelerator}+Up"] \
-        -command { ::pd_commands::raisePrevious }
+        -command { ::pd_handle::raisePrevious }
     $m add separator
     
     $m add command \
         -label [_ "PureData"] \
         -accelerator "${accelerator}+R" \
-        -command { ::pd_commands::raiseConsole }
+        -command { ::pd_handle::raiseConsole }
 }
 
 # ------------------------------------------------------------------------------------------------------------
