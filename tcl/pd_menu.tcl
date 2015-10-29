@@ -111,7 +111,7 @@ proc _file {m} {
     $m add command \
         -label [_ "Open..."] \
         -accelerator "${accelerator}+O" \
-        -command { ::pd_commands::menu_open }
+        -command { ::pd_commands::open }
     $m add separator
     
     $m add command \
@@ -170,7 +170,7 @@ proc _edit {m} {
         -label [_ "Edit Mode"] \
         -accelerator "${accelerator}+E" \
         -variable ::var(isEditMode) \
-        -command { ::pd_commands::menu_editmode $::var(isEditMode) }
+        -command { ::pd_commands::editMode $::var(isEditMode) }
 }
 
 proc _object {m} {
