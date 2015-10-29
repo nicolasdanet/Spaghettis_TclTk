@@ -107,7 +107,7 @@ proc _file {m} {
     $m add command \
         -label [_ "New Patch"] \
         -accelerator "${accelerator}+N" \
-        -command { ::pd_commands::menu_new }
+        -command { ::pd_commands::newPatch }
     $m add command \
         -label [_ "Open..."] \
         -accelerator "${accelerator}+O" \

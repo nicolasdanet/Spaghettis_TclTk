@@ -7,28 +7,45 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+# Event handlers for the menu items. 
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 package provide pd_commands 0.1
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+package require pd_connect
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 namespace eval ::pd_commands:: {
-    variable untitled_number "1"
 
-    namespace export menu_*
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+variable untitledName "Untitled"
+variable untitledNumber "1"
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc newPatch {} {
+
+    variable untitledName
+    variable untitledNumber 
+    
+    if {![file isdirectory $::var(directoryNew)]} { set ::var(directoryNew) $::env(HOME) }
+    
+    ::pd_connect::pdsend "pd menunew $untitledName-$untitledNumber [enquote_path $::var(directoryNew)]"
+    
+    incr untitledNumber 
 }
 
-# ------------------------------------------------------------------------------
-# functions called from File menu
-
-proc ::pd_commands::menu_new {} {
-    variable untitled_number
-    if { ! [file isdirectory $::var(directoryNew)]} {set ::var(directoryNew) $::env(HOME)}
-    # to localize "Untitled" there will need to be changes in g_canvas.c and
-    # g_readwrite.c, where it tests for the string "Untitled"
-    set untitled_name "Untitled"
-    ::pd_connect::pdsend "pd menunew $untitled_name-$untitled_number [enquote_path $::var(directoryNew)]"
-    incr untitled_number
-}
-
-proc ::pd_commands::menu_open {} {
+proc menu_open {} {
     if { ! [file isdirectory $::var(directoryOpen)]} {set ::var(directoryOpen) $::env(HOME)}
     set files [tk_getOpenFile -defaultextension .pd \
                        -multiple 1 \
@@ -45,7 +62,7 @@ proc ::pd_commands::menu_open {} {
 # ------------------------------------------------------------------------------
 # functions called from Edit menu
 
-proc ::pd_commands::menu_editmode {state} {
+proc menu_editmode {state} {
     if {[winfo class $::var(windowFocused)] ne "PdPatch"} {return}
     ::pd_connect::pdsend "$::var(windowFocused) editmode $state"
 }
@@ -54,7 +71,7 @@ proc ::pd_commands::menu_editmode {state} {
 # generic procs for sending menu events
 
 # send a message to a pd canvas receiver
-proc ::pd_commands::menu_send {window message} {
+proc menu_send {window message} {
     set mytoplevel [winfo toplevel $window]
     if {[winfo class $mytoplevel] eq "PdPatch"} {
         ::pd_connect::pdsend "$mytoplevel $message"
@@ -68,7 +85,7 @@ proc ::pd_commands::menu_send {window message} {
 }
 
 # send a message to a pd canvas receiver with a float arg
-proc ::pd_commands::menu_send_float {window message float} {
+proc menu_send_float {window message float} {
     set mytoplevel [winfo toplevel $window]
     if {[winfo class $mytoplevel] eq "PdPatch"} {
         ::pd_connect::pdsend "$mytoplevel $message $float"
@@ -78,7 +95,7 @@ proc ::pd_commands::menu_send_float {window message float} {
 # ------------------------------------------------------------------------------
 # open the dialog panels
 
-proc ::pd_commands::menu_path_dialog {} {
+proc menu_path_dialog {} {
     if {[winfo exists .path]} {
         raise .path
     } else {
@@ -86,7 +103,7 @@ proc ::pd_commands::menu_path_dialog {} {
     }
 }
 
-proc ::pd_commands::menu_startup_dialog {} {
+proc menu_startup_dialog {} {
     if {[winfo exists .startup]} {
         raise .startup
     } else {
@@ -94,22 +111,22 @@ proc ::pd_commands::menu_startup_dialog {} {
     }
 }
 
-proc ::pd_commands::menu_texteditor {} {
+proc menu_texteditor {} {
     # ::pd_console::error "the text editor is not implemented"
 }
 
 # ------------------------------------------------------------------------------
 # window management functions
 
-proc ::pd_commands::menu_minimize {window} {
+proc menu_minimize {window} {
     wm iconify [winfo toplevel $window]
 }
 
-proc ::pd_commands::menu_maximize {window} {
+proc menu_maximize {window} {
     wm state [winfo toplevel $window] zoomed
 }
 
-proc ::pd_commands::menu_raise_console {} {
+proc menu_raise_console {} {
     if {$::var(windowFocused) eq ".console" && [winfo viewable .console]} {
         lower .console
     } else {
@@ -119,13 +136,13 @@ proc ::pd_commands::menu_raise_console {} {
 }
 
 # used for cycling thru windows of an app
-proc ::pd_commands::menu_raisepreviouswindow {} {
+proc menu_raisepreviouswindow {} {
     lower [lindex [wm stackorder .] end] [lindex [wm stackorder .] 0]
     focus [lindex [wm stackorder .] end]
 }
 
 # used for cycling thru windows of an app the other direction
-proc ::pd_commands::menu_raisenextwindow {} {
+proc menu_raisenextwindow {} {
     set mytoplevel [lindex [wm stackorder .] 0]
     raise $mytoplevel
     focus $mytoplevel
@@ -135,7 +152,7 @@ proc ::pd_commands::menu_raisenextwindow {} {
 # manage the saving of the directories for the new commands
 
 # open HTML docs from the menu using the OS-default HTML viewer
-proc ::pd_commands::menu_openfile {filename} {
+proc menu_openfile {filename} {
     if {$::tcl_platform(os) eq "Darwin"} {
         exec sh -c [format "open '%s'" $filename]
     } elseif {$::tcl_platform(platform) eq "windows"} {
@@ -152,17 +169,10 @@ proc ::pd_commands::menu_openfile {filename} {
     }
 }
 
-# ------------------------------------------------------------------------------
-# Mac OS X specific functions
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-proc ::pd_commands::menu_bringalltofront {} {
-    # use [winfo children .] here to include windows that are minimized
-    foreach item [winfo children .] {
-        # get all toplevel windows, exclude menubar windows
-        if { [string equal [winfo toplevel $item] $item] && \
-                 [catch {$item cget -tearoff}]} {
-            wm deiconify $item
-        }
-    }
-    wm deiconify .
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
