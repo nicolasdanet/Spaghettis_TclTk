@@ -203,10 +203,7 @@ proc _focusIn {top} {
     switch -- [winfo class $top] {
         "PdPatch"   {
             ::pd_patch::pdtk_canvas_editmode $top $::patch_isEditMode($top)
-            
-            if {$::patch_isEditMode($top)} { 
-                $top configure -cursor $::var(cursorEditNothing) 
-            }
+            if {$::patch_isEditMode($top)} { $top configure -cursor $::var(cursorEditNothing) }
         }
         "PdConsole" {
             ::pd_patch::pdtk_canvas_editmode .console 0
