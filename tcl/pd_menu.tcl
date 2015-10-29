@@ -24,7 +24,6 @@ namespace eval ::pd_menu:: {
 # ------------------------------------------------------------------------------------------------------------
 
 namespace export initialize
-namespace export editing
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -55,35 +54,6 @@ proc initialize {} {
     }
     
     . configure -menu .menubar
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc editing {mode} {
-    
-    .menubar.file entryconfigure [_ "Save"]             -state $mode
-    .menubar.file entryconfigure [_ "Save As..."]       -state $mode
-    .menubar.file entryconfigure [_ "Close"]            -state $mode
-    
-    .menubar.edit entryconfigure [_ "Cut"]              -state $mode
-    .menubar.edit entryconfigure [_ "Paste"]            -state $mode
-    .menubar.edit entryconfigure [_ "Duplicate"]        -state $mode
-    .menubar.edit entryconfigure [_ "Edit Mode"]        -state $mode
-    
-    .menubar.object entryconfigure [_ "Object"]         -state $mode
-    .menubar.object entryconfigure [_ "Message"]        -state $mode
-    .menubar.object entryconfigure [_ "Float"]          -state $mode
-    .menubar.object entryconfigure [_ "Symbol"]         -state $mode
-    .menubar.object entryconfigure [_ "Comment"]        -state $mode
-    .menubar.object entryconfigure [_ "Array"]          -state $mode
-    .menubar.object entryconfigure [_ "Bang"]           -state $mode
-    .menubar.object entryconfigure [_ "Toggle"]         -state $mode
-    .menubar.object entryconfigure [_ "Panel"]          -state $mode
-    .menubar.object entryconfigure [_ "Number"]         -state $mode
-    .menubar.object entryconfigure [_ "VU Meter"]       -state $mode
-    .menubar.object entryconfigure [_ "Vertical"]       -state $mode
-    .menubar.object entryconfigure [_ "Horizontal"]     -state $mode
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -319,17 +289,46 @@ proc _window {m} {
     $m add command \
         -label [_ "Next"] \
         -accelerator [_ "${accelerator}+Down"] \
-        -command { ::pd_commands::menu_raisenextwindow}
+        -command { ::pd_commands::raiseNext }
     $m add command \
         -label [_ "Previous"] \
         -accelerator [_ "${accelerator}+Up"] \
-        -command { ::pd_commands::menu_raisepreviouswindow }
+        -command { ::pd_commands::raisePrevious }
     $m add separator
     
     $m add command \
         -label [_ "PureData"] \
         -accelerator "${accelerator}+R" \
-        -command { ::pd_commands::menu_raise_console }
+        -command { ::pd_commands::raiseConsole }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _editing {mode} {
+    
+    .menubar.file entryconfigure [_ "Save"]             -state $mode
+    .menubar.file entryconfigure [_ "Save As..."]       -state $mode
+    .menubar.file entryconfigure [_ "Close"]            -state $mode
+    
+    .menubar.edit entryconfigure [_ "Cut"]              -state $mode
+    .menubar.edit entryconfigure [_ "Paste"]            -state $mode
+    .menubar.edit entryconfigure [_ "Duplicate"]        -state $mode
+    .menubar.edit entryconfigure [_ "Edit Mode"]        -state $mode
+    
+    .menubar.object entryconfigure [_ "Object"]         -state $mode
+    .menubar.object entryconfigure [_ "Message"]        -state $mode
+    .menubar.object entryconfigure [_ "Float"]          -state $mode
+    .menubar.object entryconfigure [_ "Symbol"]         -state $mode
+    .menubar.object entryconfigure [_ "Comment"]        -state $mode
+    .menubar.object entryconfigure [_ "Array"]          -state $mode
+    .menubar.object entryconfigure [_ "Bang"]           -state $mode
+    .menubar.object entryconfigure [_ "Toggle"]         -state $mode
+    .menubar.object entryconfigure [_ "Panel"]          -state $mode
+    .menubar.object entryconfigure [_ "Number"]         -state $mode
+    .menubar.object entryconfigure [_ "VU Meter"]       -state $mode
+    .menubar.object entryconfigure [_ "Vertical"]       -state $mode
+    .menubar.object entryconfigure [_ "Horizontal"]     -state $mode
 }
 
 # ------------------------------------------------------------------------------------------------------------

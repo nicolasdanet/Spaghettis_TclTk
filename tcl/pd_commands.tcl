@@ -31,6 +31,9 @@ namespace eval ::pd_commands:: {
 namespace export newPatch
 namespace export open
 namespace export handle
+namespace export raiseConsole
+namespace export raisePrevious
+namespace export raiseNext
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -80,31 +83,27 @@ proc handle {message} {
             if {$message eq "copy"} { tk_textCopy .console.text }
             if {$message eq "selectall"} { .console.text tag add sel 1.0 end }
         }
-        "PdDialog"  { }
     }
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc menu_raise_console {} {
-    if {$::var(windowFocused) eq ".console" && [winfo viewable .console]} {
-        lower .console
-    } else {
-        wm deiconify .console
-        raise .console
-    }
+proc raiseConsole {} {
+    wm deiconify .console
+    raise .console
+    focus .console
 }
 
-proc menu_raisepreviouswindow {} {
+proc raisePrevious {} {
     lower [lindex [wm stackorder .] end] [lindex [wm stackorder .] 0]
     focus [lindex [wm stackorder .] end]
 }
 
-proc menu_raisenextwindow {} {
-    set mytoplevel [lindex [wm stackorder .] 0]
-    raise $mytoplevel
-    focus $mytoplevel
+proc raiseNext {} {
+    set top [lindex [wm stackorder .] 0]
+    raise $top
+    focus $top
 }
 
 # ------------------------------------------------------------------------------------------------------------

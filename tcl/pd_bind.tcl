@@ -30,18 +30,19 @@ namespace export patch
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable mod "Control"
 variable opt "Alt"
+variable mod "Control"
+
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
 proc initialize {} {
     
-    variable mod
     variable opt
+    variable mod
     
-    if {[tk windowingsystem] eq "aqua"} { set mod "Command"; set opt "Option" }
+    if {[tk windowingsystem] eq "aqua"} { set opt "Option"; set mod "Command" }
 
     # Virtual events.
     
@@ -119,6 +120,7 @@ proc initialize {} {
     
     bind PdConsole  <FocusIn>               { ::pd_bind::_focusIn %W             }
     bind PdDialog   <FocusIn>               { ::pd_bind::_focusIn %W             }
+    
     bind PdPatch    <FocusIn>               { ::pd_bind::_focusIn %W             }
     bind PdPatch    <Configure>             { ::pd_bind::_resized %W %w %h %x %y }
     bind PdPatch    <Map>                   { ::pd_bind::_map %W                 }
@@ -196,53 +198,6 @@ proc patch {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _focusIn {top} {
-
-    set ::var(windowFocused) $top
-    
-    switch -- [winfo class $top] {
-        "PdPatch"   {
-            ::pd_patch::pdtk_canvas_editmode $top $::patch_isEditMode($top)
-            if {$::patch_isEditMode($top)} { $top configure -cursor $::var(cursorEditNothing) }
-        }
-        "PdConsole" {
-            ::pd_patch::pdtk_canvas_editmode .console 0
-        }
-        "PdDialog"  { 
-            ::pd_patch::pdtk_canvas_editmode $top 0
-        }
-    }
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc _map {top} {
-    ::pd_connect::pdsend "$top map 1"
-    ::pd_patch::finished_loading_file $top
-}
-
-proc _unmap {top} {
-    ::pd_connect::pdsend "$top map 0"
-}
-
-proc _resized {top width height x y} {
-
-    if {$width > 1 || $height > 1} { 
-        ::pd_patch::pdtk_canvas_getscroll $top.c
-        ::pd_connect::pdsend "$top setbounds $x $y [expr $x + $width] [expr $y + $height]"
-    }
-}
-
-proc _closed {top} {
-
-    unset ::patch_isEditMode($top)
-    unset ::patch_isEditing($top)
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 proc _key {w keysym iso isPress isShift} {
 
     set k ""
@@ -264,6 +219,49 @@ proc _key {w keysym iso isPress isShift} {
     if {[winfo class $top] eq "PdPatch"} { set selector "$top" } else { set selector "pd" }
     
     ::pd_connect::pdsend "$selector key $isPress $k $isShift" 
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _focusIn {top} {
+
+    set ::var(windowFocused) $top
+    
+    switch -- [winfo class $top] {
+        "PdPatch"   {
+            ::pd_patch::pdtk_canvas_editmode $top $::patch_isEditMode($top)
+            if {$::patch_isEditMode($top)} { $top configure -cursor $::var(cursorEditNothing) }
+        }
+        "PdConsole" {
+            ::pd_patch::pdtk_canvas_editmode .console 0
+        }
+        "PdDialog"  { 
+            ::pd_patch::pdtk_canvas_editmode $top 0
+        }
+    }
+}
+
+proc _resized {top width height x y} {
+
+    if {$width > 1 || $height > 1} { 
+        ::pd_patch::pdtk_canvas_getscroll $top.c
+        ::pd_connect::pdsend "$top setbounds $x $y [expr $x + $width] [expr $y + $height]"
+    }
+}
+
+proc _map {top} {
+    ::pd_connect::pdsend "$top map 1"
+    ::pd_patch::finished_loading_file $top
+}
+
+proc _unmap {top} {
+    ::pd_connect::pdsend "$top map 0"
+}
+
+proc _closed {top} {
+    unset ::patch_isEditMode($top)
+    unset ::patch_isEditing($top)
 }
 
 # ------------------------------------------------------------------------------------------------------------
