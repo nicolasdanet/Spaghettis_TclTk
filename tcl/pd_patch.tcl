@@ -289,6 +289,12 @@ proc ::pd_patch::finished_loading_file {mytoplevel} {
 proc ::pd_patch::pdtk_canvas_editmode {mytoplevel state} {
     set ::var(isEditMode) $state
     set ::patch_isEditMode($mytoplevel) $state
+    
+    if {[winfo class $mytoplevel] eq "PdPatch"} { 
+        if {$::var(isEditMode)} { pd_menu::enableCopying } else { pd_menu::disableCopying }
+    } else { 
+        pd_menu::disableEditing 
+    }
 }
 
 # message from Pd to update the currently available undo/redo action

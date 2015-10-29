@@ -24,6 +24,10 @@ namespace eval ::pd_menu:: {
 # ------------------------------------------------------------------------------------------------------------
 
 namespace export initialize
+namespace export configureForPatch
+namespace export configureForConsole
+namespace export enableEditing
+namespace export disableEditing
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -55,6 +59,39 @@ proc initialize {} {
     
     . configure -menu .menubar
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc configureForPatch {} {
+
+    .menubar.file entryconfigure [_ "Save"]         -state normal
+    .menubar.file entryconfigure [_ "Save As..."]   -state normal
+    .menubar.file entryconfigure [_ "Close"]        -state normal
+    .menubar.edit entryconfigure [_ "Edit Mode"]    -state normal
+}
+
+proc configureForConsole {} {
+
+    .menubar.file entryconfigure [_ "Save"]         -state disabled
+    .menubar.file entryconfigure [_ "Save As..."]   -state disabled
+    .menubar.file entryconfigure [_ "Close"]        -state disabled
+    .menubar.edit entryconfigure [_ "Cut"]          -state disabled
+    .menubar.edit entryconfigure [_ "Copy"]         -state normal
+    .menubar.edit entryconfigure [_ "Paste"]        -state disabled
+    .menubar.edit entryconfigure [_ "Duplicate"]    -state disabled
+    .menubar.edit entryconfigure [_ "Select All"]   -state normal
+    .menubar.edit entryconfigure [_ "Edit Mode"]    -state disabled
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc enableCopying {}   { _copying normal; _editing normal }
+proc disableCopying {}  { _copying disabled; _editing disabled }
+
+proc enableEditing {}   { _editing normal }
+proc disableEditing {}  { _editing disabled }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -305,16 +342,16 @@ proc _window {m} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _editing {mode} {
-    
-    .menubar.file entryconfigure [_ "Save"]             -state $mode
-    .menubar.file entryconfigure [_ "Save As..."]       -state $mode
-    .menubar.file entryconfigure [_ "Close"]            -state $mode
-    
+proc _copying {mode} {
+
     .menubar.edit entryconfigure [_ "Cut"]              -state $mode
+    .menubar.edit entryconfigure [_ "Copy"]             -state $mode
     .menubar.edit entryconfigure [_ "Paste"]            -state $mode
     .menubar.edit entryconfigure [_ "Duplicate"]        -state $mode
-    .menubar.edit entryconfigure [_ "Edit Mode"]        -state $mode
+    .menubar.edit entryconfigure [_ "Select All"]       -state $mode
+}
+
+proc _editing {mode} {
     
     .menubar.object entryconfigure [_ "Object"]         -state $mode
     .menubar.object entryconfigure [_ "Message"]        -state $mode

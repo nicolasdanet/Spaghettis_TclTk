@@ -269,6 +269,7 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
     
     # Set the edit menu configuration.
     
+    ::pd_menu::configureForConsole
     ::pd_patch::pdtk_canvas_editmode .console 0
     
     # Respond.
