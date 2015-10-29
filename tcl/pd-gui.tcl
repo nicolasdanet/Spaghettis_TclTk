@@ -127,6 +127,7 @@ set var(directoryNew)           [pwd]
 set var(directoryOpen)          [pwd]
 set var(directorySearchPath)    {}
 
+set var(filesExtensions)        ".pd .pdhelp"
 set var(filesOpenPended)        {}
 set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pdhelp}} }
 

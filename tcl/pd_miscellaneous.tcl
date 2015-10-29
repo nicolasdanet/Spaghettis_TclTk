@@ -45,16 +45,15 @@ proc getDefaultFamily {} {
 
 proc openFile {filename} {
 
-    set directory [file normalize [file dirname $filename]]
-    set basename [file tail $filename]
-    if {
-        [file exists $filename]
-        && [regexp -nocase -- "\.(pd|pat|mxt)$" $filename]
-    } then {
-        ::pd_patch::started_loading_file [format "%s/%s" $basename $filename]
-        ::pd_connect::pdsend "pd open [enquote_path $basename] [enquote_path $directory]"
-    } {
-        # ::pd_console::post [format [_ "Ignoring '%s': doesn't look like a Pd-file"] $filename]
+    if {[file exists $filename]} {
+        set basename  [file tail $filename]
+        set extension [file extension $filename]
+        set directory [file normalize [file dirname $filename]]
+        
+        if {[lsearch -exact $::var(filesExtensions) $extension] > -1} {
+            ::pd_patch::started_loading_file [format "%s/%s" $basename $filename]
+            ::pd_connect::pdsend "pd open [enquote_path $basename] [enquote_path $directory]"
+        }
     }
 }
 
