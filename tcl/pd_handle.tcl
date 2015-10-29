@@ -38,6 +38,8 @@ namespace export raiseNext
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+# For now the default file name can not be internationalized.
+
 variable untitledName "Untitled"
 variable untitledNumber "1"
 
@@ -63,7 +65,7 @@ proc open {} {
     set files [tk_getOpenFile -multiple 1 -filetypes $::var(filesTypes) -initialdir $::var(directoryOpen)]
 
     if {$files ne ""} {
-        foreach filename $files { ::pd_miscellaneous::open_file $filename }
+        foreach filename $files { ::pd_miscellaneous::openFile $filename }
         set ::var(directoryOpen) [file dirname $filename]
     }
 }

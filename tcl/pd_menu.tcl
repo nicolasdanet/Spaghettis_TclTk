@@ -68,6 +68,9 @@ proc configureForPatch {} {
     .menubar.file entryconfigure [_ "Save"]         -state normal
     .menubar.file entryconfigure [_ "Save As..."]   -state normal
     .menubar.file entryconfigure [_ "Close"]        -state normal
+    
+    # Copy and paste items configured later by the callback.
+    
     .menubar.edit entryconfigure [_ "Edit Mode"]    -state normal
 }
 
@@ -76,11 +79,13 @@ proc configureForConsole {} {
     .menubar.file entryconfigure [_ "Save"]         -state disabled
     .menubar.file entryconfigure [_ "Save As..."]   -state disabled
     .menubar.file entryconfigure [_ "Close"]        -state disabled
+    
     .menubar.edit entryconfigure [_ "Cut"]          -state disabled
     .menubar.edit entryconfigure [_ "Copy"]         -state normal
     .menubar.edit entryconfigure [_ "Paste"]        -state disabled
     .menubar.edit entryconfigure [_ "Duplicate"]    -state disabled
     .menubar.edit entryconfigure [_ "Select All"]   -state normal
+    
     .menubar.edit entryconfigure [_ "Edit Mode"]    -state disabled
 }
 

@@ -33,7 +33,7 @@ set ::tk::mac::antialiasedtext  1
 proc ::tk::mac::OpenDocument {args} {
     foreach filename $args {
         if {$::var(isInitialized)} {
-            ::pd_miscellaneous::open_file $filename
+            ::pd_miscellaneous::openFile $filename
         } else {
             lappend ::var(filesOpenPended) $filename
         }

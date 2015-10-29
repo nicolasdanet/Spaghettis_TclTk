@@ -267,7 +267,7 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
     
     foreach module {pd_menu pd_console pd_bind pd_patch} { [format "::%s::initialize" $module] }
     
-    # Set the edit menu configuration.
+    # Set the menu configuration.
     
     ::pd_menu::configureForConsole
     ::pd_patch::pdtk_canvas_editmode .console 0
@@ -280,7 +280,7 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
     
     # Open pended files.
     
-    foreach filename $::var(filesOpenPended) { ::pd_miscellaneous::open_file $filename }
+    foreach filename $::var(filesOpenPended) { ::pd_miscellaneous::openFile $filename }
 }
 
 # ------------------------------------------------------------------------------------------------------------
