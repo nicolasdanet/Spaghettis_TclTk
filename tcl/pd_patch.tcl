@@ -287,6 +287,11 @@ proc ::pd_patch::finished_loading_file {mytoplevel} {
 
 # check or uncheck the "edit" menu item
 proc ::pd_patch::pdtk_canvas_editmode {mytoplevel state} {
+    if {$state} { 
+        ::pd_menu::editing normal 
+    } else {
+        ::pd_menu::editing disabled
+    }
     set ::var(isEditMode) $state
     set ::patch_isEditMode($mytoplevel) $state
 }

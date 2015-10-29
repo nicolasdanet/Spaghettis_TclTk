@@ -24,9 +24,7 @@ namespace eval ::pd_menu:: {
 # ------------------------------------------------------------------------------------------------------------
 
 namespace export initialize
-namespace export configureForConsole
-namespace export configureForPatch
-namespace export configureForDialog
+namespace export editing
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -62,28 +60,7 @@ proc initialize {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc configureForConsole {} {
-
-    _editing disabled
-    ::pd_patch::pdtk_canvas_editmode .console 0
-}
-
-proc configureForPatch {top} {
-
-    _editing normal
-    ::pd_patch::pdtk_canvas_editmode $top $::patch_isEditMode($top)
-}
-
-proc configureForDialog {top} {
-
-    _editing disabled
-    ::pd_patch::pdtk_canvas_editmode $top 0
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc _editing {mode} {
+proc editing {mode} {
     
     .menubar.file entryconfigure [_ "Save"]             -state $mode
     .menubar.file entryconfigure [_ "Save As..."]       -state $mode

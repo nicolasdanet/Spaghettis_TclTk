@@ -267,9 +267,9 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
     
     foreach module {pd_menu pd_console pd_bind pd_patch} { [format "::%s::initialize" $module] }
     
-    # Set the menubar configuration.
+    # Set the edit menu configuration.
     
-    ::pd_menu::configureForConsole
+    ::pd_patch::pdtk_canvas_editmode .console 0
     
     # Respond.
     
