@@ -101,10 +101,7 @@ proc initialize {} {
     event add <<Libraries>>                 <$opt-$mod-Key-l>
     event add <<MidiSettings>>              <$opt-$mod-Key-m>
     event add <<AudioSettings>>             <$opt-$mod-Key-a>
-    event add <<RunDSP>>                    <$mod-Key-p>
-    event add <<NextWindow>>                <$mod-Key-Down>
-    event add <<PreviousWindow>>            <$mod-Key-Up>
-    event add <<PdWindow>>                  <$mod-Key-r>
+    event add <<RunDSP>>                    <$mod-Key-r>
     
     event add <<Motion1>>                   <Motion>
     event add <<Motion2>>                   <$mod-Motion>
@@ -161,9 +158,6 @@ proc initialize {} {
     bind all <<MidiSettings>>               { .menubar.media  invoke "MIDI..."      }
     bind all <<AudioSettings>>              { .menubar.media  invoke "Audio..."     }
     bind all <<RunDSP>>                     { .menubar.media  invoke "Run DSP"      }
-    bind all <<NextWindow>>                 { .menubar.window invoke "Next"         }
-    bind all <<PreviousWindow>>             { .menubar.window invoke "Previous"     }
-    bind all <<PdWindow>>                   { .menubar.window invoke "PureData"     }
     
     bind all <KeyPress>                     { ::pd_bind::_key %W %K %A 1 0  }
     bind all <KeyRelease>                   { ::pd_bind::_key %W %K %A 0 0  }

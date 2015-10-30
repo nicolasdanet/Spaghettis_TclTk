@@ -57,7 +57,7 @@ proc initialize {} {
     
     # Create sub-menus.
     
-    foreach m {file edit object media window} {    
+    foreach m {file edit object media} {    
         menu .menubar.$m
         [format _%s $m] .menubar.$m
         .menubar add cascade -label [_ [string totitle $m]] -menu .menubar.$m
@@ -129,7 +129,7 @@ proc _file {m} {
     $m add command \
         -label [_ "Open..."] \
         -accelerator "${accelerator}+O" \
-        -command { ::pd_menu::_open }
+        -command { ::pd_menu::_openPatch }
     $m add separator
     
     $m add command \
@@ -323,31 +323,9 @@ proc _media {m} {
 
     $m add check \
         -label [_ "Run DSP"] \
-        -accelerator "${accelerator}+P" \
+        -accelerator "${accelerator}+R" \
         -variable ::var(isDsp) \
         -command { ::pd_connect::pdsend "pd dsp $::var(isDsp)" }
-}
-
-proc _window {m} {
-
-    variable accelerator
-
-    if {[tk windowingsystem] eq "aqua"} { $m add separator }
-    
-    $m add command \
-        -label [_ "Next"] \
-        -accelerator [_ "${accelerator}+Down"] \
-        -command { ::pd_menu::_raiseNext }
-    $m add command \
-        -label [_ "Previous"] \
-        -accelerator [_ "${accelerator}+Up"] \
-        -command { ::pd_menu::_raisePrevious }
-    $m add separator
-    
-    $m add command \
-        -label [_ "PureData"] \
-        -accelerator "${accelerator}+R" \
-        -command { ::pd_menu::_raiseConsole }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -394,7 +372,7 @@ proc _newPatch {} {
     incr untitledNumber 
 }
 
-proc _open {} {
+proc _openPatch {} {
 
     if {![file isdirectory $::var(directoryOpen)]} { set ::var(directoryOpen) $::env(HOME) }
     
@@ -422,26 +400,6 @@ proc _handle {message} {
             if {$message eq "selectall"} { .console.text tag add sel 1.0 end }
         }
     }
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc _raiseConsole {} {
-    wm deiconify .console
-    raise .console
-    focus .console
-}
-
-proc _raisePrevious {} {
-    lower [lindex [wm stackorder .] end] [lindex [wm stackorder .] 0]
-    focus [lindex [wm stackorder .] end]
-}
-
-proc _raiseNext {} {
-    set top [lindex [wm stackorder .] 0]
-    raise $top
-    focus $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
