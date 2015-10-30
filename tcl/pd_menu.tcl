@@ -26,6 +26,8 @@ namespace eval ::pd_menu:: {
 namespace export initialize
 namespace export configureForPatch
 namespace export configureForConsole
+namespace export enableCopying
+namespace export disableCopying
 namespace export enableEditing
 namespace export disableEditing
 
