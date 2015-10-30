@@ -56,17 +56,15 @@ proc getDefaultFamily {} {
 
 proc openFile {filename} {
 
+    set basename  [file tail $filename]
+    set extension [file extension $filename]
+    set directory [file normalize [file dirname $filename]]
+    
     if {[file exists $filename]} {
-        set basename  [file tail $filename]
-        set extension [file extension $filename]
-        set directory [file normalize [file dirname $filename]]
-        
-        if {[lsearch -exact $::var(filesExtensions) $extension] > -1} {
-            ::pd_patch::started_loading_file [format "%s/%s" $basename $filename]
-            ::pd_connect::pdsend "pd open [::enquote $basename] [::enquote $directory]"
-        } else {
-            pd_console::post "Sorry, couldn't open $basename file."
-        }
+    if {[lsearch -exact $::var(filesExtensions) $extension] > -1} {
+        ::pd_patch::started_loading_file [format "%s/%s" $basename $filename]
+        ::pd_connect::pdsend "pd open [::enquote $basename] [::enquote $directory]"
+    }
     }
 }
 
