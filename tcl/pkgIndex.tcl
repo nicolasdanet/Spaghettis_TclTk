@@ -17,7 +17,6 @@ package ifneeded pd_apple 0.1           [list source [file join $dir pd_apple.tc
 package ifneeded pd_bind 0.1            [list source [file join $dir pd_bind.tcl]]
 package ifneeded pd_connect 0.1         [list source [file join $dir pd_connect.tcl]]
 package ifneeded pd_console 0.1         [list source [file join $dir pd_console.tcl]]
-package ifneeded pd_handle 0.1          [list source [file join $dir pd_handle.tcl]]
 package ifneeded pd_menu 0.1            [list source [file join $dir pd_menu.tcl]]
 package ifneeded pd_miscellaneous 0.1   [list source [file join $dir pd_miscellaneous.tcl]]
 package ifneeded pd_patch 0.1           [list source [file join $dir pd_patch.tcl]]

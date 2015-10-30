@@ -13,7 +13,7 @@ package provide pd_menu 0.1
 # ------------------------------------------------------------------------------------------------------------
 
 package require pd_connect
-package require pd_handle
+package require pd_miscellaneous
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -34,7 +34,11 @@ namespace export disableEditing
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable accelerator "Ctrl"
+# For now the default file name can not be internationalized.
+
+variable accelerator    "Ctrl"
+variable untitledName   "Untitled"
+variable untitledNumber "1"
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -121,27 +125,27 @@ proc _file {m} {
     $m add command \
         -label [_ "New Patch"] \
         -accelerator "${accelerator}+N" \
-        -command { ::pd_handle::newPatch }
+        -command { ::pd_menu::_newPatch }
     $m add command \
         -label [_ "Open..."] \
         -accelerator "${accelerator}+O" \
-        -command { ::pd_handle::open }
+        -command { ::pd_menu::_open }
     $m add separator
     
     $m add command \
         -label [_ "Save"] \
         -accelerator "${accelerator}+S" \
-        -command { ::pd_handle::handle menusave }
+        -command { ::pd_menu::_handle menusave }
     $m add command \
         -label [_ "Save As..."] \
         -accelerator "Shift+${accelerator}+S" \
-        -command { ::pd_handle::handle menusaveas }
+        -command { ::pd_menu::_handle menusaveas }
     $m add separator
 
     $m add command \
         -label [_ "Close"] \
         -accelerator "${accelerator}+W" \
-        -command { ::pd_handle::handle "menuclose 0" }
+        -command { ::pd_menu::_handle "menuclose 0" }
         
     if {[tk windowingsystem] ne "aqua"} {
     
@@ -159,32 +163,32 @@ proc _edit {m} {
     $m add command \
         -label [_ "Cut"] \
         -accelerator "${accelerator}+X" \
-        -command { ::pd_handle::handle cut }
+        -command { ::pd_menu::_handle cut }
     $m add command \
         -label [_ "Copy"] \
         -accelerator "${accelerator}+C" \
-        -command { ::pd_handle::handle copy }
+        -command { ::pd_menu::_handle copy }
     $m add command \
         -label [_ "Paste"] \
         -accelerator "${accelerator}+V" \
-        -command { ::pd_handle::handle paste }
+        -command { ::pd_menu::_handle paste }
     $m add separator
     
     $m add command \
         -label [_ "Duplicate"] \
         -accelerator "${accelerator}+D" \
-        -command { ::pd_handle::handle duplicate }
+        -command { ::pd_menu::_handle duplicate }
     $m add command \
         -label [_ "Select All"] \
         -accelerator "${accelerator}+A" \
-        -command { ::pd_handle::handle selectall }
+        -command { ::pd_menu::_handle selectall }
     $m add separator
     
     $m add check \
         -label [_ "Edit Mode"] \
         -accelerator "${accelerator}+E" \
         -variable ::var(isEditMode) \
-        -command { ::pd_handle::handle "editmode $::var(isEditMode)" }
+        -command { ::pd_menu::_handle "editmode $::var(isEditMode)" }
 }
 
 proc _object {m} {
@@ -194,51 +198,51 @@ proc _object {m} {
     $m add command \
         -label [_ "Object"] \
         -accelerator "${accelerator}+1" \
-        -command { ::pd_handle::handle "obj 0" } 
+        -command { ::pd_menu::_handle "obj 0" } 
     $m add command \
         -label [_ "Message"] \
         -accelerator "${accelerator}+2" \
-        -command { ::pd_handle::handle "msg 0" }
+        -command { ::pd_menu::_handle "msg 0" }
     $m add command \
         -label [_ "Float"] \
         -accelerator "${accelerator}+3" \
-        -command { ::pd_handle::handle "floatatom 0" }
+        -command { ::pd_menu::_handle "floatatom 0" }
     $m add command \
         -label [_ "Symbol"] \
         -accelerator "${accelerator}+4" \
-        -command { ::pd_handle::handle "symbolatom 0" }
+        -command { ::pd_menu::_handle "symbolatom 0" }
     $m add command \
         -label [_ "Comment"] \
         -accelerator "${accelerator}+5" \
-        -command { ::pd_handle::handle "text 0" }
+        -command { ::pd_menu::_handle "text 0" }
     $m add separator
     
     $m add command \
         -label [_ "Array"] \
         -accelerator "Shift+${accelerator}+A" \
-        -command { ::pd_handle::handle menuarray }
+        -command { ::pd_menu::_handle menuarray }
     $m add separator
     
     $m add command \
         -label [_ "Bang"] \
         -accelerator "Shift+${accelerator}+B" \
-        -command { ::pd_handle::handle bng }
+        -command { ::pd_menu::_handle bng }
     $m add command \
         -label [_ "Toggle"] \
         -accelerator "Shift+${accelerator}+T" \
-        -command { ::pd_handle::handle toggle }
+        -command { ::pd_menu::_handle toggle }
     $m add command \
         -label [_ "Panel"] \
         -accelerator "Shift+${accelerator}+P" \
-        -command { ::pd_handle::handle mycnv } 
+        -command { ::pd_menu::_handle mycnv } 
     $m add command \
         -label [_ "Number"] \
         -accelerator "Shift+${accelerator}+N" \
-        -command { ::pd_handle::handle numbox }
+        -command { ::pd_menu::_handle numbox }
     $m add command \
         -label [_ "VU Meter"] \
         -accelerator "Shift+${accelerator}+U" \
-        -command { ::pd_handle::handle vumeter }
+        -command { ::pd_menu::_handle vumeter }
     $m add separator
     
     menu $m.vertical
@@ -246,22 +250,22 @@ proc _object {m} {
     $m.vertical add command \
         -label [_ "Slider"] \
         -accelerator "Shift+${accelerator}+V" \
-        -command { ::pd_handle::handle vslider }
+        -command { ::pd_menu::_handle vslider }
     $m.vertical add command \
         -label [_ "RadioButton"] \
         -accelerator "Shift+${accelerator}+D" \
-        -command { ::pd_handle::handle vradio }
+        -command { ::pd_menu::_handle vradio }
     
     menu $m.horizontal
         
     $m.horizontal add command \
         -label [_ "Slider"] \
         -accelerator "Shift+${accelerator}+H" \
-        -command { ::pd_handle::handle hslider }
+        -command { ::pd_menu::_handle hslider }
     $m.horizontal add command \
         -label [_ "RadioButton"] \
         -accelerator "Shift+${accelerator}+I" \
-        -command { ::pd_handle::handle hradio }
+        -command { ::pd_menu::_handle hradio }
         
     $m add cascade \
         -label [_ "Vertical"] \
@@ -333,17 +337,17 @@ proc _window {m} {
     $m add command \
         -label [_ "Next"] \
         -accelerator [_ "${accelerator}+Down"] \
-        -command { ::pd_handle::raiseNext }
+        -command { ::pd_menu::_raiseNext }
     $m add command \
         -label [_ "Previous"] \
         -accelerator [_ "${accelerator}+Up"] \
-        -command { ::pd_handle::raisePrevious }
+        -command { ::pd_menu::_raisePrevious }
     $m add separator
     
     $m add command \
         -label [_ "PureData"] \
         -accelerator "${accelerator}+R" \
-        -command { ::pd_handle::raiseConsole }
+        -command { ::pd_menu::_raiseConsole }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -373,6 +377,71 @@ proc _editing {mode} {
     .menubar.object entryconfigure [_ "VU Meter"]       -state $mode
     .menubar.object entryconfigure [_ "Vertical"]       -state $mode
     .menubar.object entryconfigure [_ "Horizontal"]     -state $mode
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _newPatch {} {
+
+    variable untitledName
+    variable untitledNumber 
+    
+    if {![file isdirectory $::var(directoryNew)]} { set ::var(directoryNew) $::env(HOME) }
+    
+    ::pd_connect::pdsend "pd menunew $untitledName-$untitledNumber [::enquote $::var(directoryNew)]"
+    
+    incr untitledNumber 
+}
+
+proc _open {} {
+
+    if {![file isdirectory $::var(directoryOpen)]} { set ::var(directoryOpen) $::env(HOME) }
+    
+    set files [tk_getOpenFile -multiple 1 -filetypes $::var(filesTypes) -initialdir $::var(directoryOpen)]
+
+    if {$files ne ""} {
+        foreach filename $files { ::pd_miscellaneous::openFile $filename }
+        set ::var(directoryOpen) [file dirname $filename]
+    }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _handle {message} {
+
+    set top [winfo toplevel $::var(windowFocused)]
+    
+    switch -- [winfo class $top] {
+        "PdPatch"   {
+            ::pd_connect::pdsend "$top $message"
+        }
+        "PdConsole" {
+            if {$message eq "copy"} { tk_textCopy .console.text }
+            if {$message eq "selectall"} { .console.text tag add sel 1.0 end }
+        }
+    }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _raiseConsole {} {
+    wm deiconify .console
+    raise .console
+    focus .console
+}
+
+proc _raisePrevious {} {
+    lower [lindex [wm stackorder .] end] [lindex [wm stackorder .] 0]
+    focus [lindex [wm stackorder .] end]
+}
+
+proc _raiseNext {} {
+    set top [lindex [wm stackorder .] 0]
+    raise $top
+    focus $top
 }
 
 # ------------------------------------------------------------------------------------------------------------

@@ -97,7 +97,6 @@ package require dialog_startup
 package require pd_bind
 package require pd_connect
 package require pd_console
-package require pd_handle
 package require pd_menu
 package require pd_miscellaneous
 package require pd_patch
