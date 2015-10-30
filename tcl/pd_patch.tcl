@@ -22,6 +22,42 @@ namespace eval ::pd_patch:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+proc create {top width height geometry editable} {
+
+    # Create a toplevel window with a menubar.
+    
+    toplevel $top   -width $width -height $height -class PdPatch
+    $top configure  -menu .menubar
+
+    wm minsize  $top 50 50
+    wm geometry $top [format "%dx%d%s" $width $height $geometry]
+    wm group    $top .
+
+    set c $top.c
+    
+    canvas $c   -width $width \
+                -height $height \
+                -highlightthickness 0 \
+                -scrollregion [list 0 0 $width $height] \
+                -xscrollcommand "$top.xscroll set" \
+                -yscrollcommand "$top.yscroll set"
+    
+    if {[tk windowingsystem] eq "win32"} { $c configure -xscrollincrement 1 -yscrollincrement 1 }
+    
+    scrollbar $top.xscroll  -orient horizontal  -command "$c xview"
+    scrollbar $top.yscroll  -orient vertical    -command "$c yview"
+                            
+    pack $c -side left -expand 1 -fill both
+
+    ::pd_bind::patch $top
+	 
+    focus $c
+
+    set ::patch_isEditing($top)     0
+    set ::patch_isEditMode($top)    $editable
+    set ::patch_isScrollableX($c)   0
+    set ::patch_isScrollableY($c)   0
+}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -30,60 +66,6 @@ namespace eval ::pd_patch:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
-
-proc pdtk_canvas_new {mytoplevel width height geometry editable} {
-
-    # Set to widthxheight+x+y format.
-    
-    set geometry [format %dx%d%s $width $height $geometry]
-    
-    # release the window grab here so that the new window will
-    # properly get the Map and FocusIn events when its created
-
-    # set the loaded array for this new window so things can track state
-    toplevel $mytoplevel -width $width -height $height -class PdPatch
-    wm group $mytoplevel .
-    $mytoplevel configure -menu .menubar
-
-    # we have to wait until $mytoplevel exists before we can generate
-    # a <<Loading>> event for it, that's why this is here and not in the
-    # started_loading_file proc.  Perhaps this doesn't make sense tho
-    event generate $mytoplevel <<Loading>>
-
-    wm geometry $mytoplevel $geometry
-    wm minsize $mytoplevel 50 50
-
-    set tkcanvas $mytoplevel.c
-    canvas $tkcanvas -width $width -height $height \
-        -highlightthickness 0 -scrollregion [list 0 0 $width $height] \
-        -xscrollcommand "$mytoplevel.xscroll set" \
-        -yscrollcommand "$mytoplevel.yscroll set"
-    scrollbar $mytoplevel.xscroll -orient horizontal -command "$tkcanvas xview"
-    scrollbar $mytoplevel.yscroll -orient vertical -command "$tkcanvas yview"
-    pack $tkcanvas -side left -expand 1 -fill both
-
-    # for some crazy reason, win32 mousewheel scrolling is in units of
-    # 120, and this forces Tk to interpret 120 to mean 1 scroll unit
-    if {[tk windowingsystem] eq "win32"} {
-        $tkcanvas configure -xscrollincrement 1 -yscrollincrement 1
-    }
-
-    ::pd_bind::patch $mytoplevel
-
-    # give focus to the canvas so it gets the events rather than the window 	 
-    focus $tkcanvas
-
-    # let the scrollbar logic determine if it should make things scrollable
-    set ::patch_isScrollableX($tkcanvas) 0
-    set ::patch_isScrollableY($tkcanvas) 0
-
-    # init patch properties arrays
-    set ::patch_isEditing($mytoplevel) 0
-
-    # this should be at the end so that the window and canvas are all ready
-    # before this variable changes.
-    set ::patch_isEditMode($mytoplevel) $editable
-}
 
 # if the patch canvas window already exists, then make it come to the front
 proc pdtk_canvas_raise {mytoplevel} {

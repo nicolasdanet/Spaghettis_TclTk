@@ -948,7 +948,7 @@ void canvas_vis(t_canvas *x, t_floatarg f)
             int cbuflen;
             t_canvas *c = x;
             canvas_create_editor(x);
-            sys_vgui("pdtk_canvas_new .x%lx %d %d +%d+%d %d\n", x,
+            sys_vgui("::pd_patch::create .x%lx %d %d +%d+%d %d\n", x,
                 (int)(x->gl_screenx2 - x->gl_screenx1),
                 (int)(x->gl_screeny2 - x->gl_screeny1),
                 (int)(x->gl_screenx1), (int)(x->gl_screeny1),
