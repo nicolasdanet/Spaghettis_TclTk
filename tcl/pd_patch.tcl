@@ -22,6 +22,7 @@ namespace eval ::pd_patch:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+namespace export initialize
 namespace export create
 
 # ------------------------------------------------------------------------------------------------------------
@@ -29,6 +30,25 @@ namespace export create
 
 variable minimumSizeX 50
 variable minimumSizeY 50
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc initialize {} {
+
+    if {![winfo exists .popup]} {
+        menu .popup
+        .popup add command \
+            -label [_ "Properties"] \
+            -command { ::pd_patch::done_popup $::var(windowFocused) 0 }
+        .popup add command \
+            -label [_ "Open"] \
+            -command { ::pd_patch::done_popup $::var(windowFocused) 1 }
+        .popup add command \
+            -label [_ "Help"]       \
+            -command { ::pd_patch::done_popup $::var(windowFocused) 2 }
+    }
+}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -174,24 +194,6 @@ proc pdtk_canvas_clickpaste {tkcanvas x y b} {
 
 #------------------------------------------------------------------------------#
 # canvas popup menu
-
-# since there is one popup that is used for all canvas windows, the menu
-# -commands use {} quotes so that $::var(windowFocused) is interpreted when the
-# menu item is called, not when the command is mapped to the menu item.  This
-# is the same as the menubar in pd_menu.tcl but the opposite of the 'bind'
-# commands in pd_bind.tcl
-proc ::pd_patch::initialize {} {
-    if { ! [winfo exists .popup]} {
-        # the popup menu for the canvas
-        menu .popup -tearoff 0
-        .popup add command -label [_ "Properties"] \
-            -command {::pd_patch::done_popup $::var(windowFocused) 0}
-        .popup add command -label [_ "Open"]       \
-            -command {::pd_patch::done_popup $::var(windowFocused) 1}
-        .popup add command -label [_ "Help"]       \
-            -command {::pd_patch::done_popup $::var(windowFocused) 2}
-    }
-}
 
 proc ::pd_patch::done_popup {mytoplevel action} {
     ::pd_connect::pdsend "$mytoplevel done-popup $action $::var(windowPopupX) $::var(windowPopupY)"
