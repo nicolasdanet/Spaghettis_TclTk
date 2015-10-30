@@ -108,23 +108,7 @@ proc savepanel {target localdir} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# ------------------------------------------------------------------------------
-# quoting functions
 
-# enquote a string for find, path, and startup dialog panels, to be decoded by
-# sys_decodedialog()
-
-# TODO enquote a filename to send it to pd, " isn't handled properly tho...
-
-
-
-#enquote a string to send it to Pd.  Blow off semi and comma; alias spaces
-#we also blow off "{", "}", "\" because they'll just cause bad trouble later.
-proc unspace_text {x} {
-    set y [string map {" " "_" ";" "" "," "" "{" "" "}" "" "\\" ""} $x]
-    if {$y eq ""} {set y "empty"}
-    concat $y
-}
 
 # ------------------------------------------------------------------------------
 # watchdog functions

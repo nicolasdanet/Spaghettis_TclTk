@@ -362,9 +362,9 @@ proc ::dialog_gui::apply {mytoplevel} {
     if {[string index $hhhgui_nam 0] == "$"} {
         set hhhgui_nam [string replace $hhhgui_nam 0 0 #] }
     
-    set hhhsnd [unspace_text $hhhsnd]
-    set hhhrcv [unspace_text $hhhrcv]
-    set hhhgui_nam [unspace_text $hhhgui_nam]
+    set hhhsnd [::unspace $hhhsnd]
+    set hhhrcv [::unspace $hhhrcv]
+    set hhhgui_nam [::unspace $hhhgui_nam]
 
 # make sure the offset boxes have a value
     if {[eval concat $$var_iemgui_gn_dx] eq ""} {set $var_iemgui_gn_dx 0}
