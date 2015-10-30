@@ -184,6 +184,14 @@ proc _ {s} { return $s }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+# Escaping and quoting.
+
+proc encode {x} { concat +[string map {" " "+_" "$" "+d" ";" "+s" "," "+c" "+" "++"} $x] }
+proc enquote {x} { string map {"," "\\," ";" "\\;" " " "\\ "} $x }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc main {argc argv} {
 
     # Configure to UTF-8 encoding.
@@ -275,7 +283,7 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
     
     # Respond.
     
-    ::pd_connect::pdsend "pd init [enquote_path [pwd]] $measured"
+    ::pd_connect::pdsend "pd init [::enquote [pwd]] $measured"
     
     set ::var(isInitialized) 1
     

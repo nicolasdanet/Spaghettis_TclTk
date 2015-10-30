@@ -53,7 +53,7 @@ proc newPatch {} {
     
     if {![file isdirectory $::var(directoryNew)]} { set ::var(directoryNew) $::env(HOME) }
     
-    ::pd_connect::pdsend "pd menunew $untitledName-$untitledNumber [enquote_path $::var(directoryNew)]"
+    ::pd_connect::pdsend "pd menunew $untitledName-$untitledNumber [::enquote $::var(directoryNew)]"
     
     incr untitledNumber 
 }

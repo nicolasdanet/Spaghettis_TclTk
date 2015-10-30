@@ -52,10 +52,17 @@ proc openFile {filename} {
         
         if {[lsearch -exact $::var(filesExtensions) $extension] > -1} {
             ::pd_patch::started_loading_file [format "%s/%s" $basename $filename]
-            ::pd_connect::pdsend "pd open [enquote_path $basename] [enquote_path $directory]"
+            ::pd_connect::pdsend "pd open [::enquote $basename] [::enquote $directory]"
+        } else {
+            pd_console::post "Sorry, couldn't open $basename file."
         }
     }
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+# Function called by the openpanel object.
 
 proc openpanel {target localdir} {
 
@@ -70,9 +77,11 @@ proc openpanel {target localdir} {
     
     if {$filename ne ""} {
         set ::var(directoryOpen) [file dirname $filename]
-        ::pd_connect::pdsend "$target callback [enquote_path $filename]"
+        ::pd_connect::pdsend "$target callback [::enquote $filename]"
     }
 }
+
+# Function called by the savepanel object.
 
 proc savepanel {target localdir} {
 
@@ -87,7 +96,7 @@ proc savepanel {target localdir} {
     
     if {$filename ne ""} {
         set ::var(directoryNew) [file dirname $filename]
-        ::pd_connect::pdsend "$target callback [enquote_path $filename]"
+        ::pd_connect::pdsend "$target callback [::enquote $filename]"
     }
 }
 
@@ -104,25 +113,10 @@ proc savepanel {target localdir} {
 
 # enquote a string for find, path, and startup dialog panels, to be decoded by
 # sys_decodedialog()
-proc pdtk_encodedialog {x} {
-    concat +[string map {" " "+_" "$" "+d" ";" "+s" "," "+c" "+" "++"} $x]
-}
-
-# encode a list with pdtk_encodedialog
-proc pdtk_encode { listdata } {
-    set outlist {}
-    foreach this_path $listdata {
-        if {0==[string match "" $this_path]} {
-            lappend outlist [pdtk_encodedialog $this_path]
-        }
-    }
-    return $outlist
-}
 
 # TODO enquote a filename to send it to pd, " isn't handled properly tho...
-proc enquote_path {message} {
-    string map {"," "\\," ";" "\\;" " " "\\ "} $message
-}
+
+
 
 #enquote a string to send it to Pd.  Blow off semi and comma; alias spaces
 #we also blow off "{", "}", "\" because they'll just cause bad trouble later.

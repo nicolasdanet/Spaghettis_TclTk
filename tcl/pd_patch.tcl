@@ -159,7 +159,7 @@ proc pdtk_canvas_saveas {name initialfile initialdir destroyflag} {
     }
     set dirname [file dirname $filename]
     set basename [file tail $filename]
-    ::pd_connect::pdsend "$name savetofile [enquote_path $basename] [enquote_path $dirname] \
+    ::pd_connect::pdsend "$name savetofile [::enquote $basename] [::enquote $dirname] \
  $destroyflag"
     set ::var(directoryNew) $dirname
 }

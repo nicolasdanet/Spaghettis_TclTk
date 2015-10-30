@@ -63,7 +63,7 @@ proc ::dialog_startup::commit { new_startup } {
     variable defeatrt_button
     set ::var(startupLibraries) $new_startup
 
-    ::pd_connect::pdsend "pd startup-dialog $defeatrt_button [pdtk_encodedialog $::var(startupFlags)] $::var(startupLibraries)"
+    ::pd_connect::pdsend "pd startup-dialog $defeatrt_button [::encode $::var(startupFlags)] $::var(startupLibraries)"
 }
 
 # set up the panel with the info from pd

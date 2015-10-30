@@ -98,4 +98,13 @@ proc ::pd_scrollboxwindow::make {mytoplevel listdata add_method edit_method comm
     pack $mytoplevel.nb.buttonframe.ok -side left -expand 1 -padx 2m
 }
 
+proc pdtk_encode { listdata } {
+    set outlist {}
+    foreach this_path $listdata {
+        if {0==[string match "" $this_path]} {
+            lappend outlist [::encode $this_path]
+        }
+    }
+    return $outlist
+}
 
