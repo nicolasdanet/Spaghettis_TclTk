@@ -57,43 +57,47 @@ proc openFile {filename} {
     }
 }
 
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
+proc openpanel {target localdir} {
 
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-# ------------------------------------------------------------------------------
-# procs for panels (openpanel, savepanel)
-
-proc pdtk_openpanel {target localdir} {
-    if {! [file isdirectory $localdir]} {
-        if { ! [file isdirectory $::var(directoryOpen)]} {
+    if {![file isdirectory $localdir]} {
+        if {![file isdirectory $::var(directoryOpen)]} {
             set ::var(directoryOpen) $::env(HOME)
         }
         set localdir $::var(directoryOpen)
     }
+    
     set filename [tk_getOpenFile -initialdir $localdir]
+    
     if {$filename ne ""} {
         set ::var(directoryOpen) [file dirname $filename]
         ::pd_connect::pdsend "$target callback [enquote_path $filename]"
     }
 }
 
-proc pdtk_savepanel {target localdir} {
-    if {! [file isdirectory $localdir]} {
-        if { ! [file isdirectory $::var(directoryNew)]} {
+proc savepanel {target localdir} {
+
+    if {![file isdirectory $localdir]} {
+        if {![file isdirectory $::var(directoryNew)]} {
             set ::var(directoryNew) $::env(HOME)
         }
         set localdir $::var(directoryNew)
     }
+    
     set filename [tk_getSaveFile -initialdir $localdir]
+    
     if {$filename ne ""} {
+        set ::var(directoryNew) [file dirname $filename]
         ::pd_connect::pdsend "$target callback [enquote_path $filename]"
     }
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
 # quoting functions
