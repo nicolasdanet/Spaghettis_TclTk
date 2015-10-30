@@ -22,41 +22,59 @@ namespace eval ::pd_patch:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+namespace export create
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+variable minimumSizeX 50
+variable minimumSizeY 50
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc create {top width height geometry editable} {
 
+    variable minimumSizeX
+    variable minimumSizeY
+    
     # Create a toplevel window with a menubar.
     
     toplevel $top   -width $width -height $height -class PdPatch
     $top configure  -menu .menubar
 
-    wm minsize  $top 50 50
+    wm minsize  $top $minimumSizeX $minimumSizeY
     wm geometry $top [format "%dx%d%s" $width $height $geometry]
     wm group    $top .
 
-    set c $top.c
+    # Create a canvas inside that fills all the window.
     
-    canvas $c   -width $width \
-                -height $height \
-                -highlightthickness 0 \
-                -scrollregion [list 0 0 $width $height] \
-                -xscrollcommand "$top.xscroll set" \
-                -yscrollcommand "$top.yscroll set"
+    canvas $top.c   -width $width \
+                    -height $height \
+                    -highlightthickness 0 \
+                    -scrollregion "0 0 $width $height" \
+                    -xscrollcommand "$top.xscroll set" \
+                    -yscrollcommand "$top.yscroll set"
     
-    if {[tk windowingsystem] eq "win32"} { $c configure -xscrollincrement 1 -yscrollincrement 1 }
+    if {[tk windowingsystem] eq "win32"} { $top.c configure -xscrollincrement 1 -yscrollincrement 1 }
     
-    scrollbar $top.xscroll  -orient horizontal  -command "$c xview"
-    scrollbar $top.yscroll  -orient vertical    -command "$c yview"
+    scrollbar $top.xscroll  -orient horizontal  -command "$top.c xview"
+    scrollbar $top.yscroll  -orient vertical    -command "$top.c yview"
                             
-    pack $c -side left -expand 1 -fill both
+    pack $top.c -side left -expand 1 -fill both
 
+    # Bind the window to get events.
+    
     ::pd_bind::patch $top
 	 
-    focus $c
+    focus $top.c
 
-    set ::patch_isEditing($top)     0
-    set ::patch_isEditMode($top)    $editable
-    set ::patch_isScrollableX($c)   0
-    set ::patch_isScrollableY($c)   0
+    # Set various attributes.
+    
+    set ::patch_isEditing($top)         0
+    set ::patch_isEditMode($top)        $editable
+    set ::patch_isScrollableX($top.c)   0
+    set ::patch_isScrollableY($top.c)   0
 }
 
 # ------------------------------------------------------------------------------------------------------------
