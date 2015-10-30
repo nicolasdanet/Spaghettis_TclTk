@@ -14,74 +14,29 @@ package provide pd_patch 0.1
 
 package require pd_bind
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 namespace eval ::pd_patch:: {
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 }
 
-# One thing that is tricky to understand is the difference between a Tk
-# 'canvas' and a 'canvas' in terms of Pd's implementation.  They are similar,
-# but not the same thing.  In Pd code, a 'canvas' is basically a patch, while
-# the Tk 'canvas' is the backdrop for drawing everything that is in a patch.
-# The Tk 'canvas' is contained in a 'toplevel' window. That window has a Tk
-# class of 'PdPatch'.
-
-# TODO figure out weird frameless window when you open a graph
-
-
-#TODO: http://wiki.tcl.tk/11502
-# MS Windows
-#wm geometry . returns contentswidthxcontentsheight+decorationTop+decorationLeftEdge.
-#and
-#winfo rooty . returns contentsTop
-#winfo rootx . returns contentsLeftEdge
-
-
-# this proc is split out on its own to make it easy to override. This makes it
-# easy for people to customize these calculations based on their Window
-# Manager, desires, etc.
-proc pdtk_canvas_place_window {width height geometry} {
-    set screenwidth [lindex [wm maxsize .] 0]
-    set screenheight [lindex [wm maxsize .] 1]
-
-    # Placement refers to the frame's corner instead of the content ( http://wiki.tcl.tk/11502 ).
-    
-    set windowFrameX 0
-    set windowFrameY 0
-    
-    if {[tk windowingsystem] eq "x11"} {
-        set windowFrameX 3
-        set windowFrameY 53
-    }
-    
-    # read back the current geometry +posx+posy into variables
-    scan $geometry {%[+]%d%[+]%d} - x - y
-    # fit the geometry onto screen
-    set x [ expr $x % $screenwidth - $windowFrameX]
-    set y [ expr $y % $screenheight - $windowFrameY]
-    if {$x < 0} {set x 0}
-    if {$y < 0} {set y 0}
-    if {$width > $screenwidth} {
-        set width $screenwidth
-        set x 0
-    }
-    if {$height > $screenheight} {
-        set menubarHeight 0
-        if {[tk windowingsystem] eq "aqua"} { set menubarHeight 22 }
-        set height [expr $screenheight - $menubarHeight - 30] ;# 30 for window framing
-        set y $menubarHeight
-    }
-    return [list $width $height ${width}x$height+$x+$y]
-}
-
-
-#------------------------------------------------------------------------------#
-# canvas new/saveas
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 proc pdtk_canvas_new {mytoplevel width height geometry editable} {
-    set l [pdtk_canvas_place_window $width $height $geometry]
-    set width [lindex $l 0]
-    set height [lindex $l 1]
-    set geometry [lindex $l 2]
 
+    # Set to widthxheight+x+y format.
+    
+    set geometry [format %dx%d%s $width $height $geometry]
+    
     # release the window grab here so that the new window will
     # properly get the Map and FocusIn events when its created
 
