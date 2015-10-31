@@ -123,16 +123,6 @@ proc popup {top xcanvas ycanvas hasProperties hasOpen} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# things to run when a patch is finished loading.  This is called when
-# the OS sends the "Map" event for this window.
-proc ::pd_patch::finished_loading_file {mytoplevel} {
-
-    # set editmode to make sure the menu item is in the right state
-    ::pd_patch::pdtk_canvas_editmode $mytoplevel $::patch_isEditMode($mytoplevel)
-    # send the virtual events now that everything is loaded
-    event generate $mytoplevel <<Loaded>>
-}
-
 #------------------------------------------------------------------------------#
 # procs for canvas events
 

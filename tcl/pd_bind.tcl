@@ -271,7 +271,6 @@ proc _resized {top width height x y} {
 
 proc _map {top} {
     ::pd_connect::pdsend "$top map 1"
-    ::pd_patch::finished_loading_file $top
 }
 
 proc _unmap {top} {
