@@ -87,50 +87,41 @@ proc front {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-}
+proc popup {top xcanvas ycanvas hasProperties hasOpen} {
 
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-#------------------------------------------------------------------------------#
-# canvas popup menu
-
-proc ::pd_patch::done_popup {mytoplevel action} {
-    ::pd_connect::pdsend "$mytoplevel done-popup $action $::var(windowPopupX) $::var(windowPopupY)"
-}
-
-proc ::pd_patch::pdtk_canvas_popup {mytoplevel xcanvas ycanvas hasproperties hasopen} {
     set ::var(windowPopupX) $xcanvas
     set ::var(windowPopupY) $ycanvas
-    if {$hasproperties} {
+    
+    if {$hasProperties} {
         .popup entryconfigure [_ "Properties"] -state normal
     } else {
         .popup entryconfigure [_ "Properties"] -state disabled
     }
-    if {$hasopen} {
+    
+    if {$hasOpen} {
         .popup entryconfigure [_ "Open"] -state normal
     } else {
         .popup entryconfigure [_ "Open"] -state disabled
     }
-    set tkcanvas $mytoplevel.c
-    set scrollregion [$tkcanvas cget -scrollregion]
-    # get the canvas location that is currently the top left corner in the window
-    set left_xview_pix [expr [lindex [$tkcanvas xview] 0] * [lindex $scrollregion 2]]
-    set top_yview_pix [expr [lindex [$tkcanvas yview] 0] * [lindex $scrollregion 3]]
-    # take the mouse clicks in canvas coords, add the root of the canvas
-    # window, and subtract the area that is obscured by scrolling
-    set xpopup [expr int($xcanvas + [winfo rootx $tkcanvas] - $left_xview_pix)]
-    set ypopup [expr int($ycanvas + [winfo rooty $tkcanvas] - $top_yview_pix)]
+    
+    set scrollregion [$top.c cget -scrollregion]
+    
+    set offsetX [expr [lindex [$top.c xview] 0] * [lindex $scrollregion 2]]
+    set offsetY [expr [lindex [$top.c yview] 0] * [lindex $scrollregion 3]]
+    
+    set xpopup [expr int($xcanvas + [winfo rootx $top.c] - $offsetX)]
+    set ypopup [expr int($ycanvas + [winfo rooty $top.c] - $offsetY)]
+    
     tk_popup .popup $xpopup $ypopup 0
 }
 
-
-#------------------------------------------------------------------------------#
-# procs for when file loading starts/finishes
-
-proc ::pd_patch::started_loading_file {patchname} {
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 # things to run when a patch is finished loading.  This is called when
 # the OS sends the "Map" event for this window.

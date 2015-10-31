@@ -862,7 +862,7 @@ static void canvas_rightclick(t_canvas *x, int xpos, int ypos, t_gobj *y)
     int canprop, canopen;
     canprop = (!y || (y && class_getpropertiesfn(pd_class(&y->g_pd))));
     canopen = (y && zgetfn(&y->g_pd, gensym("menu-open")));
-    sys_vgui("::pd_patch::pdtk_canvas_popup .x%lx %d %d %d %d\n",
+    sys_vgui("::pd_patch::popup .x%lx %d %d %d %d\n",
         x, xpos, ypos, canprop, canopen);
 }
 

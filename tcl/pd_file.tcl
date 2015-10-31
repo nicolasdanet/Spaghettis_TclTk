@@ -90,7 +90,6 @@ proc openFile {filename} {
     
     if {[file exists $filename]} {
     if {[lsearch -exact $::var(filesExtensions) $extension] > -1} {
-        ::pd_patch::started_loading_file [format "%s/%s" $basename $filename]
         ::pd_connect::pdsend "pd open [::enquote $basename] [::enquote $directory]"
         set directoryOpen $directory
     }
