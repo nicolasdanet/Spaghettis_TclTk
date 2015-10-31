@@ -92,20 +92,6 @@ proc front {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-##### ask user Save? Discard? Cancel?, and if so, send a message on to Pd ######
-proc ::pd_patch::pdtk_canvas_menuclose {mytoplevel reply_to_pd} {
-    raise $mytoplevel
-    set filename [wm title $mytoplevel]
-    set message [format {Do you want to save the changes you made in "%s"?} $filename]
-    set answer [tk_messageBox -message $message -type yesnocancel -default "yes" \
-                    -parent $mytoplevel -icon question]
-    switch -- $answer {
-        yes {::pd_connect::pdsend "$mytoplevel menusave 1"}
-        no {::pd_connect::pdsend $reply_to_pd}
-        cancel {}
-    }
-}
-
 #------------------------------------------------------------------------------#
 # mouse usage
 

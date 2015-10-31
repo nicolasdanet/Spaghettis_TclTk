@@ -34,6 +34,8 @@ namespace export savePanel
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+# For now the default file name can not be internationalized.
+
 variable untitledName       "Untitled"
 variable untitledNumber     "1"
 variable directoryNew       [pwd]
