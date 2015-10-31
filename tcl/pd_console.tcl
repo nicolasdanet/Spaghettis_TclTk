@@ -49,10 +49,6 @@ proc initialize {} {
     pack .console.scroll                -side right -fill y
     pack .console.text                  -side right -fill both  -expand 1
     
-    raise .console
-    
-    focus .console.text
-
     # Read-only text widget ( http://wiki.tcl.tk/1152 ).
     
     rename ::.console.text ::.console.text.internal
