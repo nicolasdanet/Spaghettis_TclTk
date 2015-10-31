@@ -93,45 +93,6 @@ proc front {top} {
 # ------------------------------------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------#
-# mouse usage
-
-# TODO put these procs into the pd_patch namespace
-proc pdtk_canvas_motion {tkcanvas x y mods} {
-    set mytoplevel [winfo toplevel $tkcanvas]
-    ::pd_connect::pdsend "$mytoplevel motion [$tkcanvas canvasx $x] [$tkcanvas canvasy $y] $mods"
-}
-
-proc pdtk_canvas_mouse {tkcanvas x y b f} {
-    set mytoplevel [winfo toplevel $tkcanvas]
-    ::pd_connect::pdsend "$mytoplevel mouse [$tkcanvas canvasx $x] [$tkcanvas canvasy $y] $b $f"
-}
-
-proc pdtk_canvas_mouseup {tkcanvas x y b} {
-    set mytoplevel [winfo toplevel $tkcanvas]
-    ::pd_connect::pdsend "$mytoplevel mouseup [$tkcanvas canvasx $x] [$tkcanvas canvasy $y] $b"
-}
-
-proc pdtk_canvas_rightclick {tkcanvas x y b} {
-    set mytoplevel [winfo toplevel $tkcanvas]
-    ::pd_connect::pdsend "$mytoplevel mouse [$tkcanvas canvasx $x] [$tkcanvas canvasy $y] $b 8"
-}
-
-# on X11, button 2 pastes from X11 clipboard, so simulate normal paste actions
-proc pdtk_canvas_clickpaste {tkcanvas x y b} {
-    pdtk_canvas_mouse $tkcanvas $x $y $b 0
-    pdtk_canvas_mouseup $tkcanvas $x $y $b
-    if { [catch {set pdtk_pastebuffer [selection get]}] } {
-        # no selection... do nothing
-    } else {
-        for {set i 0} {$i < [string length $pdtk_pastebuffer]} {incr i 1} {
-            set cha [string index $pdtk_pastebuffer $i]
-            scan $cha %c keynum
-            ::pd_connect::pdsend "[winfo toplevel $tkcanvas] key 1 $keynum 0"
-        }
-    }
-}
-
-#------------------------------------------------------------------------------#
 # canvas popup menu
 
 proc ::pd_patch::done_popup {mytoplevel action} {

@@ -173,14 +173,14 @@ proc initialize {} {
 
 proc patch {top} {
 
-    bind $top.c <<Motion1>>                 { pdtk_canvas_motion %W %x %y 0          }
-    bind $top.c <<Motion2>>                 { pdtk_canvas_motion %W %x %y 2          }
-    bind $top.c <<ClickLeft1>>              { pdtk_canvas_mouse %W %x %y %b 0        }
-    bind $top.c <<ClickLeft2>>              { pdtk_canvas_mouse %W %x %y %b 1        }
-    bind $top.c <<ClickLeft3>>              { pdtk_canvas_mouse %W %x %y %b 2        }
-    bind $top.c <<ClickLeft4>>              { pdtk_canvas_mouse %W %x %y %b 3        }
-    bind $top.c <<ClickRelease>>            { pdtk_canvas_mouseup %W %x %y %b        }
-    bind $top.c <<PopupMenu>>               { pdtk_canvas_rightclick %W %x %y %b     }
+    bind $top.c <<Motion1>>                 { ::pd_bind::_motion %W %x %y 0     }
+    bind $top.c <<Motion2>>                 { ::pd_bind::_motion %W %x %y 2     }
+    bind $top.c <<ClickLeft1>>              { ::pd_bind::_mouse %W %x %y %b 0   }
+    bind $top.c <<ClickLeft2>>              { ::pd_bind::_mouse %W %x %y %b 1   }
+    bind $top.c <<ClickLeft3>>              { ::pd_bind::_mouse %W %x %y %b 2   }
+    bind $top.c <<ClickLeft4>>              { ::pd_bind::_mouse %W %x %y %b 3   }
+    bind $top.c <<PopupMenu>>               { ::pd_bind::_mouse %W %x %y %b 8   }
+    bind $top.c <<ClickRelease>>            { ::pd_bind::_mouseUp %W %x %y %b   }
     
     bind $top.c <MouseWheel>                { ::pd_patch::scroll %W y %D             }
     bind $top.c <Destroy>                   { ::pd_bind::_closed [winfo toplevel %W] }
@@ -217,6 +217,24 @@ proc _key {w keysym iso isPress isShift} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+proc _motion {c x y m} {
+    set top [winfo toplevel $c]
+    ::pd_connect::pdsend "$top motion [$c canvasx $x] [$c canvasy $y] $m"
+}
+
+proc _mouse {c x y b f} {
+    set top [winfo toplevel $c]
+    ::pd_connect::pdsend "$top mouse [$c canvasx $x] [$c canvasy $y] $b $f"
+}
+
+proc _mouseUp {c x y b} {
+    set top [winfo toplevel $c]
+    ::pd_connect::pdsend "$top mouseup [$c canvasx $x] [$c canvasy $y] $b"
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc _focusIn {top} {
 
     set ::var(windowFocused) $top
@@ -239,6 +257,9 @@ proc _focusIn {top} {
         }
     }
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 proc _resized {top width height x y} {
 
