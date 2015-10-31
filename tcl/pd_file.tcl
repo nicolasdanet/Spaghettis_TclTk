@@ -28,8 +28,8 @@ namespace export directoryOpen
 
 namespace export openPatch
 namespace export openFile
-namespace export openpanel
-namespace export savepanel
+namespace export openPanel
+namespace export savePanel
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -58,7 +58,6 @@ proc openPatch {} {
 
     if {$f ne ""} {
         foreach filename $f { ::pd_file::openFile $filename }
-        set ::var(directoryOpen) [file dirname $filename]
     }
 }
 
@@ -72,6 +71,7 @@ proc openFile {filename} {
     if {[lsearch -exact $::var(filesExtensions) $extension] > -1} {
         ::pd_patch::started_loading_file [format "%s/%s" $basename $filename]
         ::pd_connect::pdsend "pd open [::enquote $basename] [::enquote $directory]"
+        set ::var(directoryOpen) $directory
     }
     }
 }
@@ -81,28 +81,26 @@ proc openFile {filename} {
 
 # Function called by the openpanel object.
 
-proc openpanel {target directory} {
+proc openPanel {target directory} {
 
     if {![file isdirectory $directory]} { set directory [::pd_file::directoryOpen] }
     
     set filename [tk_getOpenFile -initialdir $directory]
     
     if {$filename ne ""} {
-        set ::var(directoryOpen) [file dirname $filename]
         ::pd_connect::pdsend "$target callback [::enquote $filename]"
     }
 }
 
 # Function called by the savepanel object.
 
-proc savepanel {target directory} {
+proc savePanel {target directory} {
 
     if {![file isdirectory $directory]} { set directory [::pd_file::directoryNew] }
     
     set filename [tk_getSaveFile -initialdir $directory]
     
     if {$filename ne ""} {
-        set ::var(directoryNew) [file dirname $filename]
         ::pd_connect::pdsend "$target callback [::enquote $filename]"
     }
 }
