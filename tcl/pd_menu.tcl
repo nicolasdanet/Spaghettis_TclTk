@@ -14,7 +14,6 @@ package provide pd_menu 0.1
 
 package require pd_connect
 package require pd_file
-package require pd_patch
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -31,6 +30,7 @@ namespace export enableCopying
 namespace export disableCopying
 namespace export enableEditing
 namespace export disableEditing
+namespace export popup
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -106,6 +106,37 @@ proc disableCopying {}  { _copying disabled; _editing disabled }
 
 proc enableEditing {}   { _editing normal }
 proc disableEditing {}  { _editing disabled }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc popup {top xcanvas ycanvas hasProperties hasOpen} {
+
+    set ::var(windowPopupX) $xcanvas
+    set ::var(windowPopupY) $ycanvas
+    
+    if {$hasProperties} {
+        .popup entryconfigure [_ "Properties"] -state normal
+    } else {
+        .popup entryconfigure [_ "Properties"] -state disabled
+    }
+    
+    if {$hasOpen} {
+        .popup entryconfigure [_ "Open"] -state normal
+    } else {
+        .popup entryconfigure [_ "Open"] -state disabled
+    }
+    
+    set scrollregion [$top.c cget -scrollregion]
+    
+    set offsetX [expr [lindex [$top.c xview] 0] * [lindex $scrollregion 2]]
+    set offsetY [expr [lindex [$top.c yview] 0] * [lindex $scrollregion 3]]
+    
+    set xpopup [expr int($xcanvas + [winfo rootx $top.c] - $offsetX)]
+    set ypopup [expr int($ycanvas + [winfo rooty $top.c] - $offsetY)]
+    
+    tk_popup .popup $xpopup $ypopup 0
+}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

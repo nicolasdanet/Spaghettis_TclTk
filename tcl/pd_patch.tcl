@@ -87,37 +87,6 @@ proc front {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc popup {top xcanvas ycanvas hasProperties hasOpen} {
-
-    set ::var(windowPopupX) $xcanvas
-    set ::var(windowPopupY) $ycanvas
-    
-    if {$hasProperties} {
-        .popup entryconfigure [_ "Properties"] -state normal
-    } else {
-        .popup entryconfigure [_ "Properties"] -state disabled
-    }
-    
-    if {$hasOpen} {
-        .popup entryconfigure [_ "Open"] -state normal
-    } else {
-        .popup entryconfigure [_ "Open"] -state disabled
-    }
-    
-    set scrollregion [$top.c cget -scrollregion]
-    
-    set offsetX [expr [lindex [$top.c xview] 0] * [lindex $scrollregion 2]]
-    set offsetY [expr [lindex [$top.c yview] 0] * [lindex $scrollregion 3]]
-    
-    set xpopup [expr int($xcanvas + [winfo rootx $top.c] - $offsetX)]
-    set ypopup [expr int($ycanvas + [winfo rooty $top.c] - $offsetY)]
-    
-    tk_popup .popup $xpopup $ypopup 0
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 }
 
 # ------------------------------------------------------------------------------------------------------------
