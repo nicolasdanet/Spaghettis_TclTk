@@ -13,7 +13,6 @@ package provide pd_miscellaneous 0.1
 # ------------------------------------------------------------------------------------------------------------
 
 package require pd_connect
-package require pd_console
 package require pd_patch
 
 # ------------------------------------------------------------------------------------------------------------
@@ -27,8 +26,6 @@ namespace eval ::pd_miscellaneous:: {
 namespace export openFile
 namespace export openpanel
 namespace export savepanel
-namespace export ping
-namespace export watchdog
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -86,17 +83,6 @@ proc savepanel {target directory} {
         set ::var(directoryNew) [file dirname $filename]
         ::pd_connect::pdsend "$target callback [::enquote $filename]"
     }
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc ping {} {
-    ::pd_connect::pdsend "pd ping"
-}
-
-proc watchdog {} {
-    ::pd_connect::pdsend "pd watchdog"; after 2000 { ::pd_miscellaneous::watchdog }
 }
 
 # ------------------------------------------------------------------------------------------------------------

@@ -745,7 +745,7 @@ static int sys_flushqueue(void )
     {
         if (sys_bytessincelastping >= GUI_BYTESPERPING)
         {
-            sys_gui("::pd_miscellaneous::ping\n");
+            sys_gui("::ping\n");
             sys_bytessincelastping = 0;
             sys_waitingforping = 1;
             return (1);
@@ -1273,7 +1273,7 @@ int sys_startgui(const char *libdir)
             /* here is where we start the pinging. */
 #if defined(__linux__) || defined(__FreeBSD_kernel__)
         if (sys_hipriority)
-            sys_gui("::pd_miscellaneous::watchdog\n");
+            sys_gui("::watchdog\n");
 #endif
         sys_get_audio_apis(buf);
         sys_get_midi_apis(buf2);
