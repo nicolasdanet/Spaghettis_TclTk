@@ -24,6 +24,7 @@ namespace eval ::pd_patch:: {
 
 namespace export initialize
 namespace export create
+namespace export raise
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -97,6 +98,12 @@ proc create {top width height geometry editable} {
     set ::patch_isScrollableY($top.c)   0
 }
 
+proc raise {top} {
+    wm deiconify $top
+    raise $top
+    focus $top.c
+}
+
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
@@ -106,12 +113,7 @@ proc create {top width height geometry editable} {
 # ------------------------------------------------------------------------------------------------------------
 
 # if the patch canvas window already exists, then make it come to the front
-proc pdtk_canvas_raise {mytoplevel} {
-    wm deiconify $mytoplevel
-    raise $mytoplevel
-    set mycanvas $mytoplevel.c
-    focus $mycanvas
-}
+
 
 proc pdtk_canvas_saveas {name initialfile initialdir destroyflag} {
     if { ! [file isdirectory $initialdir]} {set initialdir $::env(HOME)}
