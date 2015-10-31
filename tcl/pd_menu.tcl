@@ -37,9 +37,7 @@ namespace export disableEditing
 
 # For now the default file name can not be internationalized.
 
-variable accelerator    "Ctrl"
-variable untitledName   "Untitled"
-variable untitledNumber "1"
+variable accelerator "Ctrl"
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -132,11 +130,11 @@ proc _file {m} {
     $m add command \
         -label [_ "New Patch"] \
         -accelerator "${accelerator}+N" \
-        -command { ::pd_menu::_newPatch }
+        -command { ::pd_file::newPatch }
     $m add command \
         -label [_ "Open..."] \
         -accelerator "${accelerator}+O" \
-        -command { ::pd_file::openPatches }
+        -command { ::pd_file::openPatch }
     $m add separator
     
     $m add command \
@@ -375,19 +373,6 @@ proc _editing {mode} {
     .menubar.object entryconfigure [_ "VU Meter"]       -state $mode
     .menubar.object entryconfigure [_ "Vertical"]       -state $mode
     .menubar.object entryconfigure [_ "Horizontal"]     -state $mode
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc _newPatch {} {
-
-    variable untitledName
-    variable untitledNumber 
-    
-    ::pd_connect::pdsend "pd menunew $untitledName-$untitledNumber [::enquote [::pd_file::directoryNew]]"
-    
-    incr untitledNumber 
 }
 
 # ------------------------------------------------------------------------------------------------------------

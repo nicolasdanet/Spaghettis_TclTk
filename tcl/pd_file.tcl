@@ -25,11 +25,18 @@ namespace eval ::pd_file:: {
 
 namespace export directoryNew
 namespace export directoryOpen
-namespace export openPatches
+namespace export newPatch
+namespace export openPatch
 namespace export openFile
 namespace export saveAs
 namespace export openPanel
 namespace export savePanel
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+variable untitledName   "Untitled"
+variable untitledNumber "1"
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -52,7 +59,17 @@ proc directoryOpen {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc openPatches {} {
+proc newPatch {} {
+
+    variable untitledName
+    variable untitledNumber 
+    
+    ::pd_connect::pdsend "pd menunew $untitledName-$untitledNumber [::enquote [::pd_file::directoryNew]]"
+    
+    incr untitledNumber 
+}
+
+proc openPatch {} {
 
     set f [tk_getOpenFile -multiple 1 -filetypes $::var(filesTypes) -initialdir [::pd_file::directoryOpen]]
 
@@ -60,6 +77,9 @@ proc openPatches {} {
         foreach filename $f { ::pd_file::openFile $filename }
     }
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 proc openFile {filename} {
 
