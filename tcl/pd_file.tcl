@@ -85,7 +85,9 @@ proc saveAs {target filename directory destroy} {
 
     if {![file isdirectory $directory]} { set directory [::pd_file::directoryNew] }
     
-    set filename [tk_getSaveFile -initialfile $filename -initialdir $directory -filetypes $::var(filesTypes)]
+    set filename [tk_getSaveFile    -initialfile $filename \
+                                    -initialdir $directory \
+                                    -defaultextension [lindex $::var(filesExtensions) 0]]
                       
     if {$filename ne ""} {
         set basename  [file tail $filename]
