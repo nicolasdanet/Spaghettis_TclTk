@@ -278,7 +278,7 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
 
     # Initialize some packages.
     
-    foreach module {pd_menu pd_console pd_bind pd_patch} { [format "::%s::initialize" $module] }
+    foreach module {pd_menu pd_console pd_bind} { [format "::%s::initialize" $module] }
     
     # Set the menu configuration.
     

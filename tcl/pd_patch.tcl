@@ -35,25 +35,6 @@ variable minimumSizeY 50
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc initialize {} {
-
-    if {![winfo exists .popup]} {
-        menu .popup
-        .popup add command \
-            -label [_ "Properties"] \
-            -command { ::pd_patch::done_popup $::var(windowFocused) 0 }
-        .popup add command \
-            -label [_ "Open"] \
-            -command { ::pd_patch::done_popup $::var(windowFocused) 1 }
-        .popup add command \
-            -label [_ "Help"]       \
-            -command { ::pd_patch::done_popup $::var(windowFocused) 2 }
-    }
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 proc create {top width height geometry editable} {
 
     variable minimumSizeX
@@ -98,7 +79,7 @@ proc create {top width height geometry editable} {
     set ::patch_isScrollableY($top.c)   0
 }
 
-proc raise {top} {
+proc front {top} {
     wm deiconify $top
     raise $top
     focus $top.c
@@ -113,7 +94,6 @@ proc raise {top} {
 # ------------------------------------------------------------------------------------------------------------
 
 # if the patch canvas window already exists, then make it come to the front
-
 
 proc pdtk_canvas_saveas {name initialfile initialdir destroyflag} {
     if { ! [file isdirectory $initialdir]} {set initialdir $::env(HOME)}

@@ -14,6 +14,7 @@ package provide pd_menu 0.1
 
 package require pd_connect
 package require pd_miscellaneous
+package require pd_patch
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -55,13 +56,19 @@ proc initialize {} {
     
     if {[tk windowingsystem] eq "aqua"}  { _apple .menubar }
     
-    # Create sub-menus.
+    # Create the sub-menus.
     
     foreach m {file edit object media} {    
         menu .menubar.$m
         [format _%s $m] .menubar.$m
         .menubar add cascade -label [_ [string totitle $m]] -menu .menubar.$m
     }
+    
+    # Create the popup menu.
+    
+    menu .popup; _popup .popup
+    
+    # Configure the application menu.
     
     . configure -menu .menubar
 }
@@ -326,6 +333,19 @@ proc _media {m} {
         -accelerator "${accelerator}+R" \
         -variable ::var(isDsp) \
         -command { ::pd_connect::pdsend "pd dsp $::var(isDsp)" }
+}
+
+proc _popup {m} {
+
+    $m add command \
+        -label [_ "Properties"] \
+        -command { ::pd_patch::done_popup $::var(windowFocused) 0 }
+    $m add command \
+        -label [_ "Open"] \
+        -command { ::pd_patch::done_popup $::var(windowFocused) 1 }
+    $m add command \
+        -label [_ "Help"]       \
+        -command { ::pd_patch::done_popup $::var(windowFocused) 2 }
 }
 
 # ------------------------------------------------------------------------------------------------------------
