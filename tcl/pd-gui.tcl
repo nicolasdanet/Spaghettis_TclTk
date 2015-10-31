@@ -106,6 +106,26 @@ package require pd_textwindow
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+proc getDefaultFamily {} {
+    
+    set fonts { "DejaVu Sans Mono" \
+                "Bitstream Vera Sans Mono" \
+                "Inconsolata" \
+                "Andale Mono" \
+                "Droid Sans Mono" }
+              
+    foreach family $fonts {
+        if {[lsearch -exact -nocase [font families] $family] > -1} {
+            return $family
+        }
+    }
+    
+    return "courier"
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 # Global variables that are used throughout the GUI.
 
 set var(apiAudioAvailables)     {}
@@ -130,7 +150,7 @@ set var(filesExtensions)        ".pd .pdhelp"
 set var(filesOpenPended)        {}
 set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pdhelp}} }
 
-set var(fontFamily)             [::pd_miscellaneous::getDefaultFamily]
+set var(fontFamily)             [getDefaultFamily]
 set var(fontWeight)             "normal"
 set var(fontSizes)              "8 10 12 16 18 20 24 30 36"
 

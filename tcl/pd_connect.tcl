@@ -121,6 +121,7 @@ proc pdsend {message} {
     variable tcpSocket
     
     append message \; 
+    
     if {[catch { puts $tcpSocket $message }]} { error "Unable to post onto the TCP socket." }
 }
 

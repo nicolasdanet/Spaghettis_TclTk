@@ -30,6 +30,7 @@ set ::tk::mac::antialiasedtext  1
 # ------------------------------------------------------------------------------------------------------------
 
 proc ::tk::mac::OpenDocument {args} {
+
     foreach filename $args {
         if {$::var(isInitialized)} {
             ::pd_miscellaneous::openFile $filename
@@ -40,6 +41,7 @@ proc ::tk::mac::OpenDocument {args} {
 }
 
 proc ::tk::mac::Quit {args} {
+
     ::pd_connect::pdsend "pd verifyquit"
 }
 

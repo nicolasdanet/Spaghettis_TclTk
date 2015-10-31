@@ -24,32 +24,11 @@ namespace eval ::pd_miscellaneous:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace export getDefaultFamily
 namespace export openFile
 namespace export openpanel
 namespace export savepanel
 namespace export ping
 namespace export watchdog
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc getDefaultFamily {} {
-    
-    set fonts { "DejaVu Sans Mono" \
-                "Bitstream Vera Sans Mono" \
-                "Inconsolata" \
-                "Andale Mono" \
-                "Droid Sans Mono" }
-              
-    foreach family $fonts {
-        if {[lsearch -exact -nocase [font families] $family] > -1} {
-            return $family
-        }
-    }
-    
-    return "courier"
-}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -73,16 +52,16 @@ proc openFile {filename} {
 
 # Function called by the openpanel object.
 
-proc openpanel {target localdir} {
+proc openpanel {target directory} {
 
-    if {![file isdirectory $localdir]} {
+    if {![file isdirectory $directory]} {
         if {![file isdirectory $::var(directoryOpen)]} {
             set ::var(directoryOpen) $::env(HOME)
         }
-        set localdir $::var(directoryOpen)
+        set directory $::var(directoryOpen)
     }
     
-    set filename [tk_getOpenFile -initialdir $localdir]
+    set filename [tk_getOpenFile -initialdir $directory]
     
     if {$filename ne ""} {
         set ::var(directoryOpen) [file dirname $filename]
@@ -92,16 +71,16 @@ proc openpanel {target localdir} {
 
 # Function called by the savepanel object.
 
-proc savepanel {target localdir} {
+proc savepanel {target directory} {
 
-    if {![file isdirectory $localdir]} {
+    if {![file isdirectory $directory]} {
         if {![file isdirectory $::var(directoryNew)]} {
             set ::var(directoryNew) $::env(HOME)
         }
-        set localdir $::var(directoryNew)
+        set directory $::var(directoryNew)
     }
     
-    set filename [tk_getSaveFile -initialdir $localdir]
+    set filename [tk_getSaveFile -initialdir $directory]
     
     if {$filename ne ""} {
         set ::var(directoryNew) [file dirname $filename]

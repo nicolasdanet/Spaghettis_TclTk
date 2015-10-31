@@ -22,9 +22,9 @@ namespace eval ::pd_patch:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace export initialize
 namespace export create
-namespace export raise
+namespace export front
+namespace export saveAs
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -85,6 +85,23 @@ proc front {top} {
     focus $top.c
 }
 
+proc saveAs {target filename directory destroy} {
+
+    if {![file isdirectory $directory]} { set directory $::env(HOME) }
+    
+    set filename [tk_getSaveFile    -initialfile $filename \
+                                    -initialdir $directory \
+                                    -defaultextension .pd \
+                                    -filetypes $::var(filesTypes)]
+                      
+    if {$filename ne ""} {
+        set basename  [file tail $filename]
+        set directory [file normalize [file dirname $filename]]
+        set ::var(directoryNew) $directory
+        ::pd_connect::pdsend "$target savetofile [::enquote $basename] [::enquote $directory] $destroy"
+    }
+}
+
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
@@ -92,34 +109,6 @@ proc front {top} {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
-
-# if the patch canvas window already exists, then make it come to the front
-
-proc pdtk_canvas_saveas {name initialfile initialdir destroyflag} {
-    if { ! [file isdirectory $initialdir]} {set initialdir $::env(HOME)}
-    set filename [tk_getSaveFile -initialfile $initialfile -initialdir $initialdir \
-                      -defaultextension .pd -filetypes $::var(filesTypes)]
-    if {$filename eq ""} return; # they clicked cancel
-
-    set extension [file extension $filename]
-    set oldfilename $filename
-    set filename [regsub -- "$extension$" $filename [string tolower $extension]]
-    if { ! [regexp -- "\.(pd|pat|mxt)$" $filename]} {
-        # we need the file extention even on Mac OS X
-        set filename $filename.pd
-    }
-    # test again after downcasing and maybe adding a ".pd" on the end
-    if {$filename ne $oldfilename && [file exists $filename]} {
-        set answer [tk_messageBox -type okcancel -icon question -default cancel\
-                        -message [_ "\"$filename\" already exists. Do you want to replace it?"]]
-        if {$answer eq "cancel"} return; # they clicked cancel
-    }
-    set dirname [file dirname $filename]
-    set basename [file tail $filename]
-    ::pd_connect::pdsend "$name savetofile [::enquote $basename] [::enquote $dirname] \
- $destroyflag"
-    set ::var(directoryNew) $dirname
-}
 
 ##### ask user Save? Discard? Cancel?, and if so, send a message on to Pd ######
 proc ::pd_patch::pdtk_canvas_menuclose {mytoplevel reply_to_pd} {
