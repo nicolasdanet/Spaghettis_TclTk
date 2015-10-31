@@ -97,8 +97,8 @@ package require dialog_startup
 package require pd_bind
 package require pd_connect
 package require pd_console
+package require pd_file
 package require pd_menu
-package require pd_miscellaneous
 package require pd_patch
 package require pd_text
 package require pd_textwindow
@@ -324,7 +324,7 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
     
     # Open pended files.
     
-    foreach filename $::var(filesOpenPended) { ::pd_miscellaneous::openFile $filename }
+    foreach filename $::var(filesOpenPended) { ::pd_file::openFile $filename }
 }
 
 # ------------------------------------------------------------------------------------------------------------

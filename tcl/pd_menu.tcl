@@ -13,7 +13,7 @@ package provide pd_menu 0.1
 # ------------------------------------------------------------------------------------------------------------
 
 package require pd_connect
-package require pd_miscellaneous
+package require pd_file
 package require pd_patch
 
 # ------------------------------------------------------------------------------------------------------------
@@ -399,7 +399,7 @@ proc _openPatch {} {
     set files [tk_getOpenFile -multiple 1 -filetypes $::var(filesTypes) -initialdir $::var(directoryOpen)]
 
     if {$files ne ""} {
-        foreach filename $files { ::pd_miscellaneous::openFile $filename }
+        foreach filename $files { ::pd_file::openFile $filename }
         set ::var(directoryOpen) [file dirname $filename]
     }
 }

@@ -9,7 +9,7 @@
 
 package provide dialog_gatom 0.1
 
-package require pd_miscellaneous
+package require pd_file
 
 namespace eval ::dialog_gatom:: {
 }
