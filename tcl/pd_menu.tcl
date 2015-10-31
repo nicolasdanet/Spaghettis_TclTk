@@ -136,7 +136,7 @@ proc _file {m} {
     $m add command \
         -label [_ "Open..."] \
         -accelerator "${accelerator}+O" \
-        -command { ::pd_menu::_openPatch }
+        -command { ::pd_file::openPatch }
     $m add separator
     
     $m add command \
@@ -385,23 +385,9 @@ proc _newPatch {} {
     variable untitledName
     variable untitledNumber 
     
-    if {![file isdirectory $::var(directoryNew)]} { set ::var(directoryNew) $::env(HOME) }
-    
-    ::pd_connect::pdsend "pd menunew $untitledName-$untitledNumber [::enquote $::var(directoryNew)]"
+    ::pd_connect::pdsend "pd menunew $untitledName-$untitledNumber [::enquote [::pd_file::directoryNew]]"
     
     incr untitledNumber 
-}
-
-proc _openPatch {} {
-
-    if {![file isdirectory $::var(directoryOpen)]} { set ::var(directoryOpen) $::env(HOME) }
-    
-    set files [tk_getOpenFile -multiple 1 -filetypes $::var(filesTypes) -initialdir $::var(directoryOpen)]
-
-    if {$files ne ""} {
-        foreach filename $files { ::pd_file::openFile $filename }
-        set ::var(directoryOpen) [file dirname $filename]
-    }
 }
 
 # ------------------------------------------------------------------------------------------------------------

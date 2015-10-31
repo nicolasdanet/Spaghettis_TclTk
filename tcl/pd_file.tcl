@@ -23,12 +23,44 @@ namespace eval ::pd_file:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+namespace export directoryNew
+namespace export directoryOpen
+
+namespace export openPatch
 namespace export openFile
 namespace export openpanel
 namespace export savepanel
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
+
+proc directoryNew {} {
+
+    if {![file isdirectory $::var(directoryNew)]} { set ::var(directoryNew) $::env(HOME) }
+    
+    return $::var(directoryNew)
+}
+
+
+proc directoryOpen {} {
+
+    if {![file isdirectory $::var(directoryOpen)]} { set ::var(directoryOpen) $::env(HOME) }
+    
+    return $::var(directoryOpen)
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc openPatch {} {
+
+    set f [tk_getOpenFile -multiple 1 -filetypes $::var(filesTypes) -initialdir [::pd_file::directoryOpen]]
+
+    if {$f ne ""} {
+        foreach filename $f { ::pd_file::openFile $filename }
+        set ::var(directoryOpen) [file dirname $filename]
+    }
+}
 
 proc openFile {filename} {
 
@@ -51,12 +83,7 @@ proc openFile {filename} {
 
 proc openpanel {target directory} {
 
-    if {![file isdirectory $directory]} {
-        if {![file isdirectory $::var(directoryOpen)]} {
-            set ::var(directoryOpen) $::env(HOME)
-        }
-        set directory $::var(directoryOpen)
-    }
+    if {![file isdirectory $directory]} { set directory [::pd_file::directoryOpen] }
     
     set filename [tk_getOpenFile -initialdir $directory]
     
@@ -70,12 +97,7 @@ proc openpanel {target directory} {
 
 proc savepanel {target directory} {
 
-    if {![file isdirectory $directory]} {
-        if {![file isdirectory $::var(directoryNew)]} {
-            set ::var(directoryNew) $::env(HOME)
-        }
-        set directory $::var(directoryNew)
-    }
+    if {![file isdirectory $directory]} { set directory [::pd_file::directoryNew] }
     
     set filename [tk_getSaveFile -initialdir $directory]
     
