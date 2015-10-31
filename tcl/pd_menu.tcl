@@ -335,13 +335,13 @@ proc _popup {m} {
 
     $m add command \
         -label [_ "Properties"] \
-        -command { ::pd_patch::done_popup $::var(windowFocused) 0 }
+        -command { ::pd_menu::_doPopup $::var(windowFocused) 0 }
     $m add command \
         -label [_ "Open"] \
-        -command { ::pd_patch::done_popup $::var(windowFocused) 1 }
+        -command { ::pd_menu::_doPopup $::var(windowFocused) 1 }
     $m add command \
         -label [_ "Help"]       \
-        -command { ::pd_patch::done_popup $::var(windowFocused) 2 }
+        -command { ::pd_menu::_doPopup $::var(windowFocused) 2 }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -389,6 +389,10 @@ proc _handle {message} {
             if {$message eq "selectall"} { .console.text tag add sel 1.0 end }
         }
     }
+}
+
+proc _doPopup {top action} {
+    ::pd_connect::pdsend "$top done-popup $action $::var(windowPopupX) $::var(windowPopupY)"
 }
 
 # ------------------------------------------------------------------------------------------------------------
