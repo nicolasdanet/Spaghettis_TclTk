@@ -24,7 +24,6 @@ namespace eval ::pd_patch:: {
 
 namespace export create
 namespace export front
-namespace export saveAs
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -83,23 +82,6 @@ proc front {top} {
     wm deiconify $top
     raise $top
     focus $top.c
-}
-
-proc saveAs {target filename directory destroy} {
-
-    if {![file isdirectory $directory]} { set directory $::env(HOME) }
-    
-    set filename [tk_getSaveFile    -initialfile $filename \
-                                    -initialdir $directory \
-                                    -defaultextension .pd \
-                                    -filetypes $::var(filesTypes)]
-                      
-    if {$filename ne ""} {
-        set basename  [file tail $filename]
-        set directory [file normalize [file dirname $filename]]
-        set ::var(directoryNew) $directory
-        ::pd_connect::pdsend "$target savetofile [::enquote $basename] [::enquote $directory] $destroy"
-    }
 }
 
 # ------------------------------------------------------------------------------------------------------------

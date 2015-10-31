@@ -136,7 +136,7 @@ proc _file {m} {
     $m add command \
         -label [_ "Open..."] \
         -accelerator "${accelerator}+O" \
-        -command { ::pd_file::openPatch }
+        -command { ::pd_file::openPatches }
     $m add separator
     
     $m add command \

@@ -25,9 +25,9 @@ namespace eval ::pd_file:: {
 
 namespace export directoryNew
 namespace export directoryOpen
-
-namespace export openPatch
+namespace export openPatches
 namespace export openFile
+namespace export saveAs
 namespace export openPanel
 namespace export savePanel
 
@@ -52,7 +52,7 @@ proc directoryOpen {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc openPatch {} {
+proc openPatches {} {
 
     set f [tk_getOpenFile -multiple 1 -filetypes $::var(filesTypes) -initialdir [::pd_file::directoryOpen]]
 
@@ -78,6 +78,22 @@ proc openFile {filename} {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
+
+# Function called by the pd executable.
+
+proc saveAs {target filename directory destroy} {
+
+    if {![file isdirectory $directory]} { set directory [::pd_file::directoryNew] }
+    
+    set filename [tk_getSaveFile -initialfile $filename -initialdir $directory -filetypes $::var(filesTypes)]
+                      
+    if {$filename ne ""} {
+        set basename  [file tail $filename]
+        set directory [file normalize [file dirname $filename]]
+        ::pd_connect::pdsend "$target savetofile [::enquote $basename] [::enquote $directory] $destroy"
+        set ::var(directoryNew) $directory
+    }
+}
 
 # Function called by the openpanel object.
 
