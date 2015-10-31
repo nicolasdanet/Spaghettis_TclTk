@@ -35,7 +35,9 @@ namespace export popup
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable accelerator "Ctrl"
+variable accelerator    "Ctrl"
+variable popupX         0
+variable popupY         0
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -112,8 +114,11 @@ proc disableEditing {}  { _editing disabled }
 
 proc popup {top xcanvas ycanvas hasProperties hasOpen} {
 
-    set ::var(windowPopupX) $xcanvas
-    set ::var(windowPopupY) $ycanvas
+    variable popupX
+    variable popupY
+    
+    set popupX $xcanvas
+    set popupY $ycanvas
     
     if {$hasProperties} {
         .popup entryconfigure [_ "Properties"] -state normal
@@ -422,8 +427,15 @@ proc _handle {message} {
     }
 }
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc _doPopup {top action} {
-    ::pd_connect::pdsend "$top done-popup $action $::var(windowPopupX) $::var(windowPopupY)"
+    
+    variable popupX
+    variable popupY
+    
+    ::pd_connect::pdsend "$top done-popup $action $popupX $popupY"
 }
 
 # ------------------------------------------------------------------------------------------------------------

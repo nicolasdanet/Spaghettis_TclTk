@@ -164,8 +164,6 @@ set var(startupLibraries)       {}
 set var(tcpHost)                ""
 set var(tcpPort)                0
 
-set var(windowPopupX)           0
-set var(windowPopupY)           0
 set var(windowFocused)          .
 
 # ------------------------------------------------------------------------------------------------------------
