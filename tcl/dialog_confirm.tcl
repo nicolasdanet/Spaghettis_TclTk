@@ -28,20 +28,14 @@ namespace eval ::dialog_confirm:: {
 # ------------------------------------------------------------------------------------------------------------
 
 namespace export checkAction
+namespace export checkClose
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
 proc checkAction {top message reply default} {
 
-    wm deiconify $top
-    raise $top
-    
-    if {[tk windowingsystem] eq "win32"} {
-        set r [tk_messageBox -message $message -type yesno -default $default -icon question]
-    } else {
-        set r [tk_messageBox -message $message -type yesno -default $default -icon question -parent $top]
-    }
+    set r [tk_messageBox -message $message -type yesno -default $default -icon question -parent $top]
     
     if {$r eq "yes"} {
         ::pd_connect::pdsend $reply
@@ -50,13 +44,10 @@ proc checkAction {top message reply default} {
 
 proc checkClose {top reply} {
 
-    wm deiconify $top
-    raise $top
-    
     set message [format "Save \"%s\" before closing?" [wm title $top]]
     
     set r [tk_messageBox -message $message -type yesnocancel -default "yes" -icon question -parent $top]
-    
+
     switch -- $r {
         yes {
             ::pd_connect::pdsend "$top menusave 1"
