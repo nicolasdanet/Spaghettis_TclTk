@@ -23,8 +23,7 @@ namespace eval ::pd_file:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace export directoryNew
-namespace export directoryOpen
+namespace export initialize
 namespace export newPatch
 namespace export openPatch
 namespace export openFile
@@ -35,25 +34,20 @@ namespace export savePanel
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable untitledName   "Untitled"
-variable untitledNumber "1"
+variable untitledName       "Untitled"
+variable untitledNumber     "1"
+variable directoryNew       [pwd]
+variable directoryOpen      [pwd]
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc directoryNew {} {
+proc initialize {} {
 
-    if {![file isdirectory $::var(directoryNew)]} { set ::var(directoryNew) $::env(HOME) }
+    variable directoryNew
+    variable directoryOpen
     
-    return $::var(directoryNew)
-}
-
-
-proc directoryOpen {} {
-
-    if {![file isdirectory $::var(directoryOpen)]} { set ::var(directoryOpen) $::env(HOME) }
-    
-    return $::var(directoryOpen)
+    if {[tk windowingsystem] eq "aqua"} { set directoryNew $::env(HOME); set directoryOpen $::env(HOME) }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -62,16 +56,19 @@ proc directoryOpen {} {
 proc newPatch {} {
 
     variable untitledName
-    variable untitledNumber 
+    variable untitledNumber
+    variable directoryNew
     
-    ::pd_connect::pdsend "pd menunew $untitledName-$untitledNumber [::enquote [::pd_file::directoryNew]]"
+    ::pd_connect::pdsend "pd menunew $untitledName-$untitledNumber [::enquote $directoryNew]"
     
     incr untitledNumber 
 }
 
 proc openPatch {} {
 
-    set f [tk_getOpenFile -multiple 1 -filetypes $::var(filesTypes) -initialdir [::pd_file::directoryOpen]]
+    variable directoryOpen
+    
+    set f [tk_getOpenFile -multiple 1 -filetypes $::var(filesTypes) -initialdir $directoryOpen]
 
     if {$f ne ""} {
         foreach filename $f { ::pd_file::openFile $filename }
@@ -83,6 +80,8 @@ proc openPatch {} {
 
 proc openFile {filename} {
 
+    variable directoryOpen
+    
     set basename  [file tail $filename]
     set extension [file extension $filename]
     set directory [file normalize [file dirname $filename]]
@@ -91,7 +90,7 @@ proc openFile {filename} {
     if {[lsearch -exact $::var(filesExtensions) $extension] > -1} {
         ::pd_patch::started_loading_file [format "%s/%s" $basename $filename]
         ::pd_connect::pdsend "pd open [::enquote $basename] [::enquote $directory]"
-        set ::var(directoryOpen) $directory
+        set directoryOpen $directory
     }
     }
 }
@@ -103,7 +102,9 @@ proc openFile {filename} {
 
 proc saveAs {target filename directory destroy} {
 
-    if {![file isdirectory $directory]} { set directory [::pd_file::directoryNew] }
+    variable directoryNew
+    
+    if {![file isdirectory $directory]} { set directory $directoryNew }
     
     set filename [tk_getSaveFile    -initialfile $filename \
                                     -initialdir $directory \
@@ -113,7 +114,7 @@ proc saveAs {target filename directory destroy} {
         set basename  [file tail $filename]
         set directory [file normalize [file dirname $filename]]
         ::pd_connect::pdsend "$target savetofile [::enquote $basename] [::enquote $directory] $destroy"
-        set ::var(directoryNew) $directory
+        set directoryNew $directory
     }
 }
 
@@ -121,7 +122,9 @@ proc saveAs {target filename directory destroy} {
 
 proc openPanel {target directory} {
 
-    if {![file isdirectory $directory]} { set directory [::pd_file::directoryOpen] }
+    variable directoryOpen
+    
+    if {![file isdirectory $directory]} { set directory $directoryOpen }
     
     set filename [tk_getOpenFile -initialdir $directory]
     
@@ -134,7 +137,9 @@ proc openPanel {target directory} {
 
 proc savePanel {target directory} {
 
-    if {![file isdirectory $directory]} { set directory [::pd_file::directoryNew] }
+    variable directoryNew
+    
+    if {![file isdirectory $directory]} { set directory $directoryNew }
     
     set filename [tk_getSaveFile -initialdir $directory]
     

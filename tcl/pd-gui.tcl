@@ -142,8 +142,6 @@ set var(cursorEditConnect)      "circle"
 set var(cursorEditDisconnect)   "X_cursor"
 set var(cursorEditResize)       "sb_h_double_arrow"
 
-set var(directoryNew)           [pwd]
-set var(directoryOpen)          [pwd]
 set var(directorySearchPath)    {}
 
 set var(filesExtensions)        ".pd .pdhelp"
@@ -257,8 +255,6 @@ proc main {argc argv} {
         "aqua"  {
             set ::var(cursorRunNothing)     "arrow"
             set ::var(cursorRunClickMe)     "center_ptr"
-            set ::var(directoryNew)         $::env(HOME)
-            set ::var(directoryOpen)        $::env(HOME)
         }
         "win32" { 
             set ::var(cursorRunNothing)     "right_ptr"
@@ -309,7 +305,7 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
 
     # Initialize some packages.
     
-    foreach module {pd_menu pd_console pd_bind} { [format "::%s::initialize" $module] }
+    foreach module {pd_menu pd_console pd_bind pd_file} { [format "::%s::initialize" $module] }
     
     # Set the menu configuration.
     
