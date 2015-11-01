@@ -862,7 +862,7 @@ static void canvas_rightclick(t_canvas *x, int xpos, int ypos, t_gobj *y)
     int canprop, canopen;
     canprop = (!y || (y && class_getpropertiesfn(pd_class(&y->g_pd))));
     canopen = (y && zgetfn(&y->g_pd, gensym("menu-open")));
-    sys_vgui("::pd_menu::popup .x%lx %d %d %d %d\n",
+    sys_vgui("::pd_menu::showPopup .x%lx %d %d %d %d\n",
         x, xpos, ypos, canprop, canopen);
 }
 
@@ -2719,7 +2719,7 @@ void canvas_editmode(t_canvas *x, t_floatarg state)
         }
     }
     if (glist_isvisible(x))
-      sys_vgui("::pd_patch::pdtk_canvas_editmode .x%lx %d\n",
+      sys_vgui("::pd_patch::editMode .x%lx %d\n",
           glist_getcanvas(x), x->gl_edit);
 }
 

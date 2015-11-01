@@ -26,11 +26,12 @@ namespace eval ::pd_menu:: {
 namespace export initialize
 namespace export configureForPatch
 namespace export configureForConsole
+namespace export showPopup
+
 namespace export enableCopying
 namespace export disableCopying
 namespace export enableEditing
 namespace export disableEditing
-namespace export popup
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -103,16 +104,7 @@ proc configureForConsole {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc enableCopying {}   { _copying normal; _editing normal }
-proc disableCopying {}  { _copying disabled; _editing disabled }
-
-proc enableEditing {}   { _editing normal }
-proc disableEditing {}  { _editing disabled }
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc popup {top xcanvas ycanvas hasProperties hasOpen} {
+proc showPopup {top xcanvas ycanvas hasProperties hasOpen} {
 
     variable popupX
     variable popupY
@@ -142,6 +134,15 @@ proc popup {top xcanvas ycanvas hasProperties hasOpen} {
     
     tk_popup .popup $xpopup $ypopup 0
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc enableCopying {}   { _copying normal; _editing normal }
+proc disableCopying {}  { _copying disabled; _editing disabled }
+
+proc enableEditing {}   { _editing normal }
+proc disableEditing {}  { _editing disabled }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
