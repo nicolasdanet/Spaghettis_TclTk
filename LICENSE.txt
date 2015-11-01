@@ -26,7 +26,7 @@ Additional terms:
         This program uses the PortAudio Portable Audio Library.
         For more information see: < http://www.audiomulch.com/portaudio/ >.
         
-        Copyright (c) 1999-2000 Ross Bencina and Phil Burk
+        Copyright (c) 1999-2000 Ross Bencina and Phil Burk.
  
         Any person wishing to distribute modifications to the Software is
         requested to send the modifications to the original developer so
@@ -78,13 +78,8 @@ Additional terms:
     src/s_audio_esd.c
     
         Copyright (c) 2006 Guenter Geiger.
-        
-    tcl/pd_guiprefs.tcl
-    
-        Copyright (c) 1997-2009 Miller Puckette and others.
-        Copyright (c) 2011 Yvan Volochine.
-        
-    tcl/pdtk_textwindow.tcl
+
+    tcl/pd_textwindow.tcl
     
         Copyright (c) 2002-2012 krzYszcz and others.
     
