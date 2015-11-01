@@ -266,7 +266,7 @@ proc _focusIn {top} {
 proc _resized {top width height x y} {
 
     if {$width > 1 || $height > 1} { 
-        ::pd_patch::pdtk_canvas_getscroll $top.c
+        ::pd_patch::scrollRegion $top.c
         ::pd_connect::pdsend "$top setbounds $x $y [expr $x + $width] [expr $y + $height]"
     }
 }

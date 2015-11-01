@@ -24,6 +24,8 @@ namespace eval ::pd_patch:: {
 
 namespace export create
 namespace export front
+namespace export editMode
+namespace export scrollRegion
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -96,53 +98,48 @@ proc editMode {top state} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-}
+proc scrollRegion {c} {
 
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-# message from Pd to update the currently available undo/redo action
-proc pdtk_undomenu {mytoplevel undoaction redoaction} {
-
-}
-
-# This proc configures the scrollbars whenever anything relevant has
-# been updated.  It should always receive a tkcanvas, which is then
-# used to generate the mytoplevel, needed to address the scrollbars.
-proc ::pd_patch::pdtk_canvas_getscroll {tkcanvas} {
-    set mytoplevel [winfo toplevel $tkcanvas]
-    set height [winfo height $tkcanvas]
-    set width [winfo width $tkcanvas]
+    set top [winfo toplevel $c]
+    set box [$c bbox all]
     
-    set bbox [$tkcanvas bbox all]
-    if {$bbox eq "" || [llength $bbox] != 4} {return}
-    set xupperleft [lindex $bbox 0]
-    set yupperleft [lindex $bbox 1]
-    if {$xupperleft > 0} {set xupperleft 0}
-    if {$yupperleft > 0} {set yupperleft 0}
-    set xlowerright [lindex $bbox 2]
-    set ylowerright [lindex $bbox 3]
-    if {$xlowerright < $width} {set xlowerright $width}
-    if {$ylowerright < $height} {set ylowerright $height}
-    set scrollregion [concat $xupperleft $yupperleft $xlowerright $ylowerright]
-    $tkcanvas configure -scrollregion $scrollregion
-    # X scrollbar
-    if {[lindex [$tkcanvas xview] 0] == 0.0 && [lindex [$tkcanvas xview] 1] == 1.0} {
-        set ::patch_isScrollableX($tkcanvas) 0
-        pack forget $mytoplevel.xscroll
+    if {$box ne ""} {
+    
+    set x1 [::tcl::mathfunc::min [lindex $box 0] 0]
+    set y1 [::tcl::mathfunc::min [lindex $box 1] 0]
+    set x2 [::tcl::mathfunc::max [lindex $box 2] [winfo width $c]]
+    set y2 [::tcl::mathfunc::max [lindex $box 3] [winfo height $c]]
+
+    $c configure -scrollregion [concat $x1 $y1 $x2 $y2]
+    
+    if {[lindex [$c xview] 0] == 0.0 && [lindex [$c xview] 1] == 1.0} {
+        set ::patch_isScrollableX($c) 0
+        pack forget $top.xscroll
+        
     } else {
-        set ::patch_isScrollableX($tkcanvas) 1
-        pack $mytoplevel.xscroll -side bottom -fill x -before $tkcanvas
+        set ::patch_isScrollableX($c) 1
+        pack $top.xscroll -side bottom -fill x -before $c
     }
-    # Y scrollbar, it gets touchy at the limit, so say > 0.995
-    if {[lindex [$tkcanvas yview] 0] == 0.0 && [lindex [$tkcanvas yview] 1] > 0.995} {
-        set ::patch_isScrollableY($tkcanvas) 0
-        pack forget $mytoplevel.yscroll
+    
+    if {[lindex [$c yview] 0] == 0.0 && [lindex [$c yview] 1] == 1.0} {
+        set ::patch_isScrollableY($c) 0
+        pack forget $top.yscroll
+        
     } else {
-        set ::patch_isScrollableY($tkcanvas) 1
-        pack $mytoplevel.yscroll -side right -fill y -before $tkcanvas
+        set ::patch_isScrollableY($c) 1
+        pack $top.yscroll -side right -fill y -before $c
+    }
+    
     }
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 proc ::pd_patch::scroll {tkcanvas axis amount} {
     if {$axis eq "x" && $::patch_isScrollableX($tkcanvas) == 1} {

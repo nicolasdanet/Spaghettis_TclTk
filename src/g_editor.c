@@ -352,11 +352,11 @@ void canvas_setundo(t_canvas *x, t_undofn undofn, void *buf,
     canvas_undo_buf = buf;
     canvas_undo_whatnext = UNDO_UNDO;
     canvas_undo_name = name;
-    if (x && glist_isvisible(x) && glist_istoplevel(x))
-            /* enable undo in menu */
+    /* if (x && glist_isvisible(x) && glist_istoplevel(x))
+            //
         sys_vgui("pdtk_undomenu .x%lx %s no\n", x, name);
     else if (hadone)
-        sys_vgui("pdtk_undomenu nobody no no\n");
+        sys_vgui("pdtk_undomenu nobody no no\n"); */
 }
 
     /* clear undo if it happens to be for the canvas x.
@@ -378,8 +378,8 @@ static void canvas_undo(t_canvas *x)
         /* post("undo"); */
         (*canvas_undo_fn)(canvas_undo_canvas, canvas_undo_buf, UNDO_UNDO);
             /* enable redo in menu */
-        if (glist_isvisible(x) && glist_istoplevel(x))
-            sys_vgui("pdtk_undomenu .x%lx no %s\n", x, canvas_undo_name);
+        /*if (glist_isvisible(x) && glist_istoplevel(x))
+            sys_vgui("pdtk_undomenu .x%lx no %s\n", x, canvas_undo_name);*/
         canvas_undo_whatnext = UNDO_REDO;
     }
 }
@@ -395,8 +395,8 @@ static void canvas_redo(t_canvas *x)
         /* post("redo"); */
         (*canvas_undo_fn)(canvas_undo_canvas, canvas_undo_buf, UNDO_REDO);
             /* enable undo in menu */
-        if (glist_isvisible(x) && glist_istoplevel(x))
-            sys_vgui("pdtk_undomenu .x%lx %s no\n", x, canvas_undo_name);
+        /*if (glist_isvisible(x) && glist_istoplevel(x))
+            sys_vgui("pdtk_undomenu .x%lx %s no\n", x, canvas_undo_name); */
         canvas_undo_whatnext = UNDO_UNDO;
     }
 }
@@ -1665,7 +1665,7 @@ static void canvas_displaceselection(t_canvas *x, int dx, int dy)
     }
     if (resortin) canvas_resortinlets(x);
     if (resortout) canvas_resortoutlets(x);
-    sys_vgui("::pd_patch::pdtk_canvas_getscroll .x%lx.c\n", x);
+    sys_vgui("::pd_patch::scrollRegion .x%lx.c\n", x);
     if (x->gl_editor->e_selection)
         canvas_dirty(x, 1);
 }
@@ -2380,7 +2380,7 @@ static void canvas_cut(t_canvas *x)
             canvas_undo_set_cut(x, UCUT_CUT), "cut");
         canvas_copy(x);
         canvas_doclear(x);
-        sys_vgui("::pd_patch::pdtk_canvas_getscroll .x%lx.c\n", x);
+        sys_vgui("::pd_patch::scrollRegion .x%lx.c\n", x);
     }
 }
 
@@ -2424,7 +2424,7 @@ static void canvas_dopaste(t_canvas *x, t_binbuf *b)
     paste_canvas = 0;
     canvas_resume_dsp(dspstate);
     canvas_dirty(x, 1);
-    sys_vgui("::pd_patch::pdtk_canvas_getscroll .x%lx.c\n", x);
+    sys_vgui("::pd_patch::scrollRegion .x%lx.c\n", x);
     glist_donewloadbangs(x);
     asym->s_thing = bounda;
     s__X.s_thing = boundx;

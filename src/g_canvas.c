@@ -652,7 +652,7 @@ void canvas_map(t_canvas *x, t_floatarg f)
             canvas_drawlines(x);
             if (x->gl_isgraph && x->gl_goprect)
                 canvas_drawredrect(x, 1);
-            sys_vgui("::pd_patch::pdtk_canvas_getscroll .x%lx.c\n", x);
+            sys_vgui("::pd_patch::scrollRegion .x%lx.c\n", x);
         }
     }
     else
