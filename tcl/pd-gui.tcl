@@ -154,10 +154,7 @@ set var(isDsp)                  0
 set var(isEditMode)             0
 
 set var(scriptName)             [file normalize [info script]]
-
 set var(searchPath)             {}
-set var(startupFlags)           {}
-set var(startupLibraries)       {}
 
 set var(tcpHost)                ""
 set var(tcpPort)                0

@@ -740,13 +740,13 @@ void glob_path_dialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
     /* set the global list vars for startup libraries and flags */
 void sys_set_startup( void)
 {
-    int i;
-    t_namelist *nl;
+    //int i;
+    //t_namelist *nl;
 
-    sys_vgui("set ::var(startupFlags) {%s}\n", sys_flags->s_name);
-    sys_gui("set ::var(startupLibraries) {}\n");
-    for (nl = sys_externlist, i = 0; nl; nl = nl->nl_next, i++)
-        sys_vgui("lappend ::var(startupLibraries) {%s}\n", nl->nl_string);
+    // sys_vgui("set ::var(startupFlags) {%s}\n", sys_flags->s_name);
+    // sys_gui("set ::var(startupLibraries) {}\n");
+    // for (nl = sys_externlist, i = 0; nl; nl = nl->nl_next, i++)
+        // sys_vgui("lappend ::var(startupLibraries) {%s}\n", nl->nl_string);
 }
 
     /* start a startup dialog window */
