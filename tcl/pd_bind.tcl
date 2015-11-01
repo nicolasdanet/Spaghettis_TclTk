@@ -97,7 +97,6 @@ proc initialize {} {
     }
     
     event add <<SearchPath>>                <$opt-$mod-Key-p>
-    event add <<Libraries>>                 <$opt-$mod-Key-l>
     event add <<MidiSettings>>              <$opt-$mod-Key-m>
     event add <<AudioSettings>>             <$opt-$mod-Key-a>
     event add <<RunDSP>>                    <$mod-Key-r>
@@ -152,11 +151,10 @@ proc initialize {} {
     bind all <<NewHSlider>>                 { .menubar.object.horizontal invoke "Slider"        }
     bind all <<NewHRadioButton>>            { .menubar.object.horizontal invoke "RadioButton"   }
     
-    bind all <<SearchPath>>                 { .menubar.media  invoke "Path..."      }
-    bind all <<Libraries>>                  { .menubar.media  invoke "Libraries..." }
-    bind all <<MidiSettings>>               { .menubar.media  invoke "MIDI..."      }
-    bind all <<AudioSettings>>              { .menubar.media  invoke "Audio..."     }
-    bind all <<RunDSP>>                     { .menubar.media  invoke "Run DSP"      }
+    bind all <<SearchPath>>                 { .menubar.media  invoke "Search Path..."   }
+    bind all <<MidiSettings>>               { .menubar.media  invoke "MIDI..."          }
+    bind all <<AudioSettings>>              { .menubar.media  invoke "Audio..."         }
+    bind all <<RunDSP>>                     { .menubar.media  invoke "Run DSP"          }
     
     bind all <KeyPress>                     { ::pd_bind::_key %W %K %A 1 0  }
     bind all <KeyRelease>                   { ::pd_bind::_key %W %K %A 0 0  }

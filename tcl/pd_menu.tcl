@@ -320,13 +320,11 @@ proc _media {m} {
     variable accelerator
     
     $m add command \
-        -label [_ "Path..."] \
+        -label [_ "Search Path..."] \
         -accelerator "Alt+${accelerator}+P" \
         -command { ::pd_connect::pdsend "pd start-path-dialog" }
-    $m add command \
-        -label [_ "Libraries..."] \
-        -accelerator "Alt+${accelerator}+L" \
-        -command { ::pd_connect::pdsend "pd start-startup-dialog" }
+    $m add separator
+    
     $m add command \
         -label [_ "MIDI..."] \
         -accelerator "Alt+${accelerator}+M" \
