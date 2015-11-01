@@ -182,10 +182,68 @@ proc patch {top} {
     bind $top.c <<PopupMenu>>               { ::pd_bind::_mouse %W %x %y %b 8   }
     bind $top.c <<ClickRelease>>            { ::pd_bind::_mouseUp %W %x %y %b   }
     
-    bind $top.c <MouseWheel>                { ::pd_patch::scroll %W y %D             }
+    bind $top.c <MouseWheel>                { ::pd_bind::_mouseWheel %W y %D    }
     bind $top.c <Destroy>                   { ::pd_bind::_closed [winfo toplevel %W] }
         
     wm protocol $top WM_DELETE_WINDOW       [list ::pd_connect::pdsend "$top menuclose 0"]
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _focusIn {top} {
+
+    set ::var(windowFocused) $top
+    
+    switch -- [winfo class $top] {
+        "PdPatch"   {
+            ::pd_menu::configureForPatch
+            ::pd_patch::editMode $top $::patch_isEditMode($top)
+
+            if {$::patch_isEditMode($top)} { $top configure -cursor $::var(cursorEditNothing) }
+        }
+        "PdConsole" {
+            set ::var(isEditMode) 0
+            ::pd_menu::configureForConsole
+            ::pd_menu::disableEditing
+            
+        }
+        "PdDialog"  { 
+            set ::var(isEditMode) 0
+            ::pd_menu::configureForConsole
+            ::pd_menu::disableEditing
+        }
+    }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _motion {c x y m} {
+
+    set top [winfo toplevel $c]
+    ::pd_connect::pdsend "$top motion [$c canvasx $x] [$c canvasy $y] $m"
+}
+
+proc _mouse {c x y b f} {
+
+    set top [winfo toplevel $c]
+    ::pd_connect::pdsend "$top mouse [$c canvasx $x] [$c canvasy $y] $b $f"
+}
+
+proc _mouseUp {c x y b} {
+
+    set top [winfo toplevel $c]
+    ::pd_connect::pdsend "$top mouseup [$c canvasx $x] [$c canvasy $y] $b"
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _mouseWheel {c axis amount} {
+
+    if {$axis eq "x" && $::patch_isScrollableX($c) == 1} { $c xview scroll [expr {- ($amount)}] units }
+    if {$axis eq "y" && $::patch_isScrollableY($c) == 1} { $c yview scroll [expr {- ($amount)}] units }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -217,52 +275,6 @@ proc _key {w keysym iso isPress isShift} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _motion {c x y m} {
-    set top [winfo toplevel $c]
-    ::pd_connect::pdsend "$top motion [$c canvasx $x] [$c canvasy $y] $m"
-}
-
-proc _mouse {c x y b f} {
-    set top [winfo toplevel $c]
-    ::pd_connect::pdsend "$top mouse [$c canvasx $x] [$c canvasy $y] $b $f"
-}
-
-proc _mouseUp {c x y b} {
-    set top [winfo toplevel $c]
-    ::pd_connect::pdsend "$top mouseup [$c canvasx $x] [$c canvasy $y] $b"
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc _focusIn {top} {
-
-    set ::var(windowFocused) $top
-    
-    switch -- [winfo class $top] {
-        "PdPatch"   {
-            ::pd_menu::configureForPatch
-            ::pd_patch::editMode $top $::patch_isEditMode($top)
-
-            if {$::patch_isEditMode($top)} { $top configure -cursor $::var(cursorEditNothing) }
-        }
-        "PdConsole" {
-            set ::var(isEditMode) 0
-            ::pd_menu::configureForConsole
-            ::pd_menu::disableEditing
-            
-        }
-        "PdDialog"  { 
-            ::pd_menu::configureForConsole
-            set ::var(isEditMode) 0
-            ::pd_menu::disableEditing
-        }
-    }
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 proc _resized {top width height x y} {
 
     if {$width > 1 || $height > 1} { 
@@ -271,15 +283,21 @@ proc _resized {top width height x y} {
     }
 }
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc _map {top} {
+
     ::pd_connect::pdsend "$top map 1"
 }
 
 proc _unmap {top} {
+
     ::pd_connect::pdsend "$top map 0"
 }
 
 proc _closed {top} {
+
     unset ::patch_isEditMode($top)
     unset ::patch_isEditing($top)
 }

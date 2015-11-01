@@ -87,7 +87,7 @@ proc configureForPatch {} {
 }
 
 proc configureForConsole {} {
-
+    
     .menubar.file entryconfigure [_ "Save"]         -state disabled
     .menubar.file entryconfigure [_ "Save As..."]   -state disabled
     .menubar.file entryconfigure [_ "Close"]        -state disabled

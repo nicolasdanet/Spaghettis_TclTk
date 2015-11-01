@@ -141,14 +141,7 @@ proc scrollRegion {c} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc ::pd_patch::scroll {tkcanvas axis amount} {
-    if {$axis eq "x" && $::patch_isScrollableX($tkcanvas) == 1} {
-        $tkcanvas xview scroll [expr {- ($amount)}] units
-    }
-    if {$axis eq "y" && $::patch_isScrollableY($tkcanvas) == 1} {
-        $tkcanvas yview scroll [expr {- ($amount)}] units
-    }
-}
+
 
 #------------------------------------------------------------------------------#
 # get patch window child/parent relationships
