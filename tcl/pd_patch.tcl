@@ -80,6 +80,9 @@ proc create {top width height geometry editable} {
     set ::patch_isScrollableY($top.c)   0
 }
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc front {top} {
 
     wm deiconify $top
@@ -87,12 +90,35 @@ proc front {top} {
     focus $top.c
 }
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc editMode {top state} {
 
     set ::var(isEditMode) $state
     set ::patch_isEditMode($top) $state
     
     if {$::var(isEditMode)} { pd_menu::enableCopying } else { pd_menu::disableCopying }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc title {mytoplevel path name arguments dirty} {
+                                              
+    if {[tk windowingsystem] eq "aqua"} {
+        wm attributes $mytoplevel -modified $dirty
+        if {[file exists "$path/$name"]} {
+            # for some reason -titlepath can still fail so just catch it 
+            if [catch {wm attributes $mytoplevel -titlepath "$path/$name"}] {
+                wm title $mytoplevel "$path/$name"
+            }
+        }
+        wm title $mytoplevel "$name$arguments"
+    } else {
+        if {$dirty} {set dirtychar "*"} else {set dirtychar " "}
+        wm title $mytoplevel "$name$dirtychar$arguments - $path" 
+    }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -140,27 +166,3 @@ proc scrollRegion {c} {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
-
-
-
-#------------------------------------------------------------------------------#
-# get patch window child/parent relationships
-
-# receive information for setting the info the the title bar of the window
-proc ::pd_patch::pdtk_canvas_reflecttitle {mytoplevel \
-                                              path name arguments dirty} {
-                                              
-    if {[tk windowingsystem] eq "aqua"} {
-        wm attributes $mytoplevel -modified $dirty
-        if {[file exists "$path/$name"]} {
-            # for some reason -titlepath can still fail so just catch it 
-            if [catch {wm attributes $mytoplevel -titlepath "$path/$name"}] {
-                wm title $mytoplevel "$path/$name"
-            }
-        }
-        wm title $mytoplevel "$name$arguments"
-    } else {
-        if {$dirty} {set dirtychar "*"} else {set dirtychar " "}
-        wm title $mytoplevel "$name$dirtychar$arguments - $path" 
-    }
-}

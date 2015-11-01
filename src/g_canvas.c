@@ -595,7 +595,7 @@ void canvas_reflecttitle(t_canvas *x)
         strcat(namebuf, ")");
     }
     else namebuf[0] = 0;
-    sys_vgui("::pd_patch::pdtk_canvas_reflecttitle .x%lx {%s} {%s} {%s} %d\n",
+    sys_vgui("::pd_patch::title .x%lx {%s} {%s} {%s} %d\n",
         x, canvas_getdir(x)->s_name, x->gl_name->s_name, namebuf, x->gl_dirty);
 }
 
