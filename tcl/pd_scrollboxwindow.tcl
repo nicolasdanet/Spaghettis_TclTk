@@ -7,18 +7,18 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-####### pd_scrollboxwindow -- pd_scrollbox window with default bindings #########
+####### pd_scrollboxwindow -- pd_searchpath window with default bindings #########
 ## This is the base dialog behind the Path and Startup dialogs
 ## This namespace specifies everything the two dialogs have in common,
 ## with arguments specifying the differences
 ##
 ## By default, this creates a dialog centered on the viewing area of the screen
 ## with cancel, apply, and OK buttons
-## which contains a pd_scrollbox widget populated with the given data
+## which contains a pd_searchpath widget populated with the given data
 
 package provide pd_scrollboxwindow 0.1
 
-package require pd_scrollbox
+package require pd_searchpath
 
 namespace eval pd_scrollboxwindow {
 }
@@ -55,7 +55,7 @@ proc ::pd_scrollboxwindow::ok {mytoplevel commit_method } {
 
 # "Constructor" function for building the window
 # id -- the window id to use
-# listdata -- the data used to populate the pd_scrollbox
+# listdata -- the data used to populate the pd_searchpath
 # add_method -- a reference to a proc to be called when the user adds a new item
 # edit_method -- same as above, for editing and existing item
 # commit_method -- same as above, to commit during the "apply" action
@@ -76,8 +76,8 @@ proc ::pd_scrollboxwindow::make {mytoplevel listdata add_method edit_method comm
     # Set the current dimensions of the window
     wm geometry $mytoplevel "${width}x${height}"
 
-    # Add the pd_scrollbox widget
-    ::pd_scrollbox::make $mytoplevel $listdata $add_method $edit_method
+    # Add the pd_searchpath widget
+    ::pd_searchpath::make $mytoplevel $listdata $add_method $edit_method
 
     # Use two frames for the buttons, since we want them both
     # bottom and right

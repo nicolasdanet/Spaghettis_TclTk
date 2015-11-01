@@ -7,21 +7,21 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-######### pd_scrollbox -- utility scrollbar with default bindings #######
-# pd_scrollbox is used in the Path and Startup dialogs to edit lists of options
+######### pd_searchpath -- utility scrollbar with default bindings #######
+# pd_searchpath is used in the Path and Startup dialogs to edit lists of options
 
-package provide pd_scrollbox 0.1
+package provide pd_searchpath 0.1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace eval pd_scrollbox {
+namespace eval pd_searchpath {
     # This variable keeps track of the last list element we clicked on,
     # used to implement drag-drop reordering of list items
     variable lastIdx 0
 }
 
-proc ::pd_scrollbox::get_curidx { mytoplevel } {
+proc ::pd_searchpath::get_curidx { mytoplevel } {
     set idx [$mytoplevel.listbox.box index active]
     if {$idx < 0 || \
             $idx == [$mytoplevel.listbox.box index end]} {
@@ -30,7 +30,7 @@ proc ::pd_scrollbox::get_curidx { mytoplevel } {
     return [expr $idx]
 }
 
-proc ::pd_scrollbox::insert_item { mytoplevel idx name } {
+proc ::pd_searchpath::insert_item { mytoplevel idx name } {
     if {$name != ""} {
         $mytoplevel.listbox.box insert $idx $name
         set activeIdx [expr {[$mytoplevel.listbox.box index active] + 1}]
@@ -42,12 +42,12 @@ proc ::pd_scrollbox::insert_item { mytoplevel idx name } {
     }
 }
 
-proc ::pd_scrollbox::add_item { mytoplevel add_method } {
+proc ::pd_searchpath::add_item { mytoplevel add_method } {
     set dir [$add_method]
     insert_item $mytoplevel [expr {[get_curidx $mytoplevel] + 1}] $dir
 }
 
-proc ::pd_scrollbox::edit_item { mytoplevel edit_method } {
+proc ::pd_searchpath::edit_item { mytoplevel edit_method } {
     set idx [expr {[get_curidx $mytoplevel]}]
     set initialValue [$mytoplevel.listbox.box get $idx]
     if {$initialValue != ""} {
@@ -64,7 +64,7 @@ proc ::pd_scrollbox::edit_item { mytoplevel edit_method } {
     }
 }
 
-proc ::pd_scrollbox::delete_item { mytoplevel } {
+proc ::pd_searchpath::delete_item { mytoplevel } {
     set cursel [$mytoplevel.listbox.box curselection]
     foreach idx $cursel {
         $mytoplevel.listbox.box delete $idx
@@ -73,7 +73,7 @@ proc ::pd_scrollbox::delete_item { mytoplevel } {
 
 # Double-clicking on the listbox should edit the current item,
 # or add a new one if there is no current
-proc ::pd_scrollbox::dbl_click { mytoplevel edit_method add_method x y } {
+proc ::pd_searchpath::dbl_click { mytoplevel edit_method add_method x y } {
     if { $x == "" || $y == "" } {
         return
     }
@@ -101,7 +101,7 @@ proc ::pd_scrollbox::dbl_click { mytoplevel edit_method add_method x y } {
     }
 }
 
-proc ::pd_scrollbox::click { mytoplevel x y } {
+proc ::pd_searchpath::click { mytoplevel x y } {
     # record the index of the current element being
     # clicked on
     variable ::lastIdx [$mytoplevel.listbox.box index @$x,$y]
@@ -111,7 +111,7 @@ proc ::pd_scrollbox::click { mytoplevel x y } {
 
 # For drag-and-drop reordering, recall the last-clicked index
 # and move it to the position of the item currently under the mouse
-proc ::pd_scrollbox::release { mytoplevel x y } {
+proc ::pd_searchpath::release { mytoplevel x y } {
     variable lastIdx
     set curIdx [$mytoplevel.listbox.box index @$x,$y]
 
@@ -136,13 +136,13 @@ proc ::pd_scrollbox::release { mytoplevel x y } {
     }
 }
 
-# Make a pd_scrollbox widget in a given window and set of data.
+# Make a pd_searchpath widget in a given window and set of data.
 #
-# id - the parent window for the pd_scrollbox
-# listdata - array of data to populate the pd_scrollbox
+# id - the parent window for the pd_searchpath
+# listdata - array of data to populate the pd_searchpath
 # add_method - method to be called when we add a new item
 # edit_method - method to be called when we edit an existing item
-proc ::pd_scrollbox::make { mytoplevel listdata add_method edit_method } {
+proc ::pd_searchpath::make { mytoplevel listdata add_method edit_method } {
     frame $mytoplevel.listbox
     listbox $mytoplevel.listbox.box \
         -selectmode browse -activestyle dotbox \
@@ -163,11 +163,11 @@ proc ::pd_scrollbox::make { mytoplevel listdata add_method edit_method } {
     event add <<Delete>> <Delete>
     if { [tk windowingsystem] eq "aqua" } { event add <<Delete>> <BackSpace> }
 
-    bind $mytoplevel.listbox.box <ButtonPress> "::pd_scrollbox::click $mytoplevel %x %y"
-    bind $mytoplevel.listbox.box <Double-1> "::pd_scrollbox::dbl_click $mytoplevel $edit_method $add_method %x %y"
-    bind $mytoplevel.listbox.box <ButtonRelease> "::pd_scrollbox::release $mytoplevel %x %y"
-    bind $mytoplevel.listbox.box <Return> "::pd_scrollbox::edit_item $mytoplevel $edit_method"
-    bind $mytoplevel.listbox.box <<Delete>> "::pd_scrollbox::delete_item $mytoplevel"
+    bind $mytoplevel.listbox.box <ButtonPress> "::pd_searchpath::click $mytoplevel %x %y"
+    bind $mytoplevel.listbox.box <Double-1> "::pd_searchpath::dbl_click $mytoplevel $edit_method $add_method %x %y"
+    bind $mytoplevel.listbox.box <ButtonRelease> "::pd_searchpath::release $mytoplevel %x %y"
+    bind $mytoplevel.listbox.box <Return> "::pd_searchpath::edit_item $mytoplevel $edit_method"
+    bind $mytoplevel.listbox.box <<Delete>> "::pd_searchpath::delete_item $mytoplevel"
 
     # <Configure> is called when the user modifies the window
     # We use it to capture resize events, to make sure the
@@ -187,11 +187,11 @@ proc ::pd_scrollbox::make { mytoplevel listdata add_method edit_method } {
     frame $mytoplevel.actions 
     pack $mytoplevel.actions -side top -padx 2m -fill x 
     button $mytoplevel.actions.add_path -text {New...} \
-        -command "::pd_scrollbox::add_item $mytoplevel $add_method"
+        -command "::pd_searchpath::add_item $mytoplevel $add_method"
     button $mytoplevel.actions.edit_path -text {Edit...} \
-        -command "::pd_scrollbox::edit_item $mytoplevel $edit_method"
+        -command "::pd_searchpath::edit_item $mytoplevel $edit_method"
     button $mytoplevel.actions.delete_path -text {Delete} \
-        -command "::pd_scrollbox::delete_item $mytoplevel"
+        -command "::pd_searchpath::delete_item $mytoplevel"
 
     pack $mytoplevel.actions.delete_path -side right -pady 2m
     pack $mytoplevel.actions.edit_path -side right -pady 2m
