@@ -335,18 +335,6 @@ proc _media {m} {
         -command { ::pd_connect::pdsend "pd audio-properties" }
     $m add separator
     
-    foreach e $::var(apiAudioAvailables) {
-        foreach {name value} $e {
-            $m add radiobutton \
-                -label [string totitle $name] \
-                -variable ::var(apiAudio) \
-                -value $value \
-                -command { ::pd_connect::pdsend "pd audio-setapi $::var(apiAudio)" }
-        }
-    }
-    
-    if {[llength $::var(apiAudioAvailables)] > 0} { $m add separator }
-        
     foreach e $::var(apiMidiAvailables) {
         foreach {name value} $e {
             $m add radiobutton \
@@ -358,7 +346,19 @@ proc _media {m} {
     }
     
     if {[llength $::var(apiMidiAvailables)] > 0} { $m add separator }
-
+    
+    foreach e $::var(apiAudioAvailables) {
+        foreach {name value} $e {
+            $m add radiobutton \
+                -label [string totitle $name] \
+                -variable ::var(apiAudio) \
+                -value $value \
+                -command { ::pd_connect::pdsend "pd audio-setapi $::var(apiAudio)" }
+        }
+    }
+    
+    if {[llength $::var(apiAudioAvailables)] > 0} { $m add separator }
+    
     $m add check \
         -label [_ "Run DSP"] \
         -accelerator "${accelerator}+R" \
