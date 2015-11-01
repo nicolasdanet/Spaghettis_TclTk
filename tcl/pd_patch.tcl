@@ -104,21 +104,16 @@ proc editMode {top state} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc title {mytoplevel path name arguments dirty} {
+proc title {top path name arguments dirty} {
                                               
     if {[tk windowingsystem] eq "aqua"} {
-        wm attributes $mytoplevel -modified $dirty
+        wm attributes $top -modified $dirty
         if {[file exists "$path/$name"]} {
-            # for some reason -titlepath can still fail so just catch it 
-            if [catch {wm attributes $mytoplevel -titlepath "$path/$name"}] {
-                wm title $mytoplevel "$path/$name"
-            }
+            catch {wm attributes $top -titlepath "$path/$name"}
         }
-        wm title $mytoplevel "$name$arguments"
-    } else {
-        if {$dirty} {set dirtychar "*"} else {set dirtychar " "}
-        wm title $mytoplevel "$name$dirtychar$arguments - $path" 
     }
+    
+    wm title $top "$name$arguments" 
 }
 
 # ------------------------------------------------------------------------------------------------------------
