@@ -142,8 +142,6 @@ set var(cursorEditConnect)      "circle"
 set var(cursorEditDisconnect)   "X_cursor"
 set var(cursorEditResize)       "sb_h_double_arrow"
 
-set var(directorySearchPath)    {}
-
 set var(filesExtensions)        ".pd .pdhelp"
 set var(filesOpenPended)        {}
 set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pdhelp}} }
@@ -158,6 +156,7 @@ set var(isEditMode)             0
 
 set var(scriptName)             [file normalize [info script]]
 
+set var(searchPath)             {}
 set var(startupFlags)           {}
 set var(startupLibraries)       {}
 
