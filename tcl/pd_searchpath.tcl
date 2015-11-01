@@ -24,58 +24,46 @@ variable lastIndex 0
 
 proc make {top data add edit} {
 
+    # Widgets.
+    
     frame $top.f
     
-    listbox $top.f.box            -selectmode browse \
-                                        -activestyle dotbox \
-                                        -yscrollcommand "$top.f.scrollbar set"
+    listbox $top.f.box  -selectmode browse \
+                        -activestyle dotbox \
+                        -yscrollcommand "$top.f.scrollbar set"
 
-    scrollbar $top.f.scrollbar    -command "$top.f.box yview"
-                              
-    pack $top.f.box $top.f.scrollbar -side left -fill y -anchor w 
-
-    # Populate the listbox widget
-    foreach item $data {
-        $top.f.box insert end $item
-    }
-
-    # Standard listbox key/mouse bindings
-    event add <<Delete>> <Delete>
-    if { [tk windowingsystem] eq "aqua" } { event add <<Delete>> <BackSpace> }
-
-    bind $top.f.box <ButtonPress> "::pd_searchpath::click $top %x %y"
-    bind $top.f.box <Double-1> "::pd_searchpath::dbl_click $top $edit $add %x %y"
-    bind $top.f.box <ButtonRelease> "::pd_searchpath::release $top %x %y"
-    bind $top.f.box <Return> "::pd_searchpath::edit_item $top $edit"
-    bind $top.f.box <<Delete>> "::pd_searchpath::delete_item $top"
-
-    # <Configure> is called when the user modifies the window
-    # We use it to capture resize events, to make sure the
-    # currently selected item in the listbox is always visible
-    bind $top <Configure> "$top.f.box see active"
-
-    # The listbox should expand to fill its containing window
-    # the "-fill" option specifies which direction (x, y or both) to fill, while
-    # the "-expand" option (false by default) specifies whether the widget
-    # should fill
-    pack $top.f.box -side left -fill both -expand 1
-    pack $top.f -side top -pady 2m -padx 2m -fill both -expand 1
-
-    # All widget interactions can be performed without buttons, but
-    # we still need a "New..." button since the currently visible window
-    # might be full (even though the user can still expand it)
+    scrollbar $top.f.scrollbar  -command "$top.f.box yview"
+    
     frame $top.actions 
-    pack $top.actions -side top -padx 2m -fill x 
+    
     button $top.actions.add_path -text {New...} \
         -command "::pd_searchpath::add_item $top $add"
     button $top.actions.edit_path -text {Edit...} \
         -command "::pd_searchpath::edit_item $top $edit"
     button $top.actions.delete_path -text {Delete} \
         -command "::pd_searchpath::delete_item $top"
+        
+    # Populate with items.
+    
+    foreach item $data { $top.f.box insert end $item }
 
+    # Bind to events.
+    
+    bind $top.f.box <ButtonPress>       "::pd_searchpath::click $top %x %y"
+    bind $top.f.box <ButtonRelease>     "::pd_searchpath::release $top %x %y"
+    bind $top.f.box <Return>            "::pd_searchpath::edit_item $top $edit"
+    bind $top.f.box <<DoubleClick>>     "::pd_searchpath::dbl_click $top $edit $add %x %y"
+    bind $top.f.box <<Delete>>          "::pd_searchpath::delete_item $top"
+
+    bind $top <Configure>               "$top.f.box see active"
+
+    pack $top.f.box $top.f.scrollbar -side left -fill y -anchor w
+    pack $top.f.box -side left -fill both -expand 1
+    pack $top.f -side top -pady 2m -padx 2m -fill both -expand 1
     pack $top.actions.delete_path -side right -pady 2m
     pack $top.actions.edit_path -side right -pady 2m
     pack $top.actions.add_path -side right -pady 2m
+    pack $top.actions -side top -padx 2m -fill x 
 
     $top.f.box activate end
     $top.f.box selection set end
