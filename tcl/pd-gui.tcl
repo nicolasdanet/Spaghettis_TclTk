@@ -92,7 +92,6 @@ package require dialog_gui
 package require dialog_message
 package require dialog_midi
 package require dialog_path
-package require dialog_startup
 
 package require pd_bind
 package require pd_connect

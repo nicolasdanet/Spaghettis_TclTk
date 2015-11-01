@@ -12,7 +12,6 @@ package ifneeded dialog_gui 0.1         [list source [file join $dir dialog_gui.
 package ifneeded dialog_message 0.1     [list source [file join $dir dialog_message.tcl]]
 package ifneeded dialog_midi 0.1        [list source [file join $dir dialog_midi.tcl]]
 package ifneeded dialog_path 0.1        [list source [file join $dir dialog_path.tcl]]
-package ifneeded dialog_startup 0.1     [list source [file join $dir dialog_startup.tcl]]
 package ifneeded pd_apple 0.1           [list source [file join $dir pd_apple.tcl]]
 package ifneeded pd_bind 0.1            [list source [file join $dir pd_bind.tcl]]
 package ifneeded pd_connect 0.1         [list source [file join $dir pd_connect.tcl]]
