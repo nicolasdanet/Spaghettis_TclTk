@@ -25,6 +25,7 @@ namespace eval ::pd_patch:: {
 namespace export create
 namespace export front
 namespace export editMode
+namespace export title
 namespace export scrollRegion
 
 # ------------------------------------------------------------------------------------------------------------
