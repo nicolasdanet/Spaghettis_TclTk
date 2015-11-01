@@ -12,6 +12,9 @@
 
 package provide pd_scrollbox 0.1
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 namespace eval pd_scrollbox {
     # This variable keeps track of the last list element we clicked on,
     # used to implement drag-drop reordering of list items
