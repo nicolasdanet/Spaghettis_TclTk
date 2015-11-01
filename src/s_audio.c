@@ -1024,7 +1024,7 @@ void sys_get_audio_apis(char *buf)
     sprintf(buf + strlen(buf), "{OSS %d} ", API_OSS); n++;
 #endif
 #ifdef USEAPI_MMIO
-    sprintf(buf + strlen(buf), "{\"standard (MMIO)\" %d} ", API_MMIO); n++;
+    sprintf(buf + strlen(buf), "{\"MMIO\" %d} ", API_MMIO); n++;
 #endif
 #ifdef USEAPI_ALSA
     sprintf(buf + strlen(buf), "{ALSA %d} ", API_ALSA); n++;
@@ -1036,7 +1036,7 @@ void sys_get_audio_apis(char *buf)
 #else
 #ifdef __APPLE__
     sprintf(buf + strlen(buf),
-        "{\"standard (portaudio)\" %d} ", API_PORTAUDIO);
+        "{\"portaudio\" %d} ", API_PORTAUDIO);
 #else
     sprintf(buf + strlen(buf), "{portaudio %d} ", API_PORTAUDIO);
 #endif
