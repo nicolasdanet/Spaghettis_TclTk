@@ -7,21 +7,22 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-######### pd_searchpath -- utility scrollbar with default bindings #######
-# pd_searchpath is used in the Path and Startup dialogs to edit lists of options
-
 package provide pd_searchpath 0.1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
 namespace eval pd_searchpath {
-    # This variable keeps track of the last list element we clicked on,
-    # used to implement drag-drop reordering of list items
-    variable lastIdx 0
-}
 
-proc ::pd_searchpath::get_curidx { mytoplevel } {
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+variable lastIndex 0
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc get_curidx { mytoplevel } {
     set idx [$mytoplevel.listbox.box index active]
     if {$idx < 0 || \
             $idx == [$mytoplevel.listbox.box index end]} {
@@ -30,7 +31,7 @@ proc ::pd_searchpath::get_curidx { mytoplevel } {
     return [expr $idx]
 }
 
-proc ::pd_searchpath::insert_item { mytoplevel idx name } {
+proc insert_item { mytoplevel idx name } {
     if {$name != ""} {
         $mytoplevel.listbox.box insert $idx $name
         set activeIdx [expr {[$mytoplevel.listbox.box index active] + 1}]
@@ -42,12 +43,12 @@ proc ::pd_searchpath::insert_item { mytoplevel idx name } {
     }
 }
 
-proc ::pd_searchpath::add_item { mytoplevel add_method } {
+proc add_item { mytoplevel add_method } {
     set dir [$add_method]
     insert_item $mytoplevel [expr {[get_curidx $mytoplevel] + 1}] $dir
 }
 
-proc ::pd_searchpath::edit_item { mytoplevel edit_method } {
+proc edit_item { mytoplevel edit_method } {
     set idx [expr {[get_curidx $mytoplevel]}]
     set initialValue [$mytoplevel.listbox.box get $idx]
     if {$initialValue != ""} {
@@ -64,7 +65,7 @@ proc ::pd_searchpath::edit_item { mytoplevel edit_method } {
     }
 }
 
-proc ::pd_searchpath::delete_item { mytoplevel } {
+proc delete_item { mytoplevel } {
     set cursel [$mytoplevel.listbox.box curselection]
     foreach idx $cursel {
         $mytoplevel.listbox.box delete $idx
@@ -73,7 +74,7 @@ proc ::pd_searchpath::delete_item { mytoplevel } {
 
 # Double-clicking on the listbox should edit the current item,
 # or add a new one if there is no current
-proc ::pd_searchpath::dbl_click { mytoplevel edit_method add_method x y } {
+proc dbl_click { mytoplevel edit_method add_method x y } {
     if { $x == "" || $y == "" } {
         return
     }
@@ -101,35 +102,37 @@ proc ::pd_searchpath::dbl_click { mytoplevel edit_method add_method x y } {
     }
 }
 
-proc ::pd_searchpath::click { mytoplevel x y } {
+proc click { mytoplevel x y } {
     # record the index of the current element being
     # clicked on
-    variable ::lastIdx [$mytoplevel.listbox.box index @$x,$y]
+    variable lastIndex 
+    
+    set lastIndex [$mytoplevel.listbox.box index @$x,$y]
 
     focus $mytoplevel.listbox.box
 }
 
 # For drag-and-drop reordering, recall the last-clicked index
 # and move it to the position of the item currently under the mouse
-proc ::pd_searchpath::release { mytoplevel x y } {
-    variable lastIdx
+proc release { mytoplevel x y } {
+    variable lastIndex 
     set curIdx [$mytoplevel.listbox.box index @$x,$y]
 
-    if { $curIdx != $::lastIdx } {
+    if { $curIdx != $lastIndex  } {
         # clear any current selection
         $mytoplevel.listbox.box selection clear 0 end
 
-        set oldIdx $::lastIdx
+        set oldIdx $lastIndex 
         set newIdx [expr {$curIdx+1}]
         set selIdx $curIdx
 
-        if { $curIdx < $::lastIdx } {
-            set oldIdx [expr {$::lastIdx + 1}]
+        if { $curIdx < $lastIndex  } {
+            set oldIdx [expr {$lastIndex  + 1}]
             set newIdx $curIdx
             set selIdx $newIdx
         }
 
-        $mytoplevel.listbox.box insert $newIdx [$mytoplevel.listbox.box get $::lastIdx]
+        $mytoplevel.listbox.box insert $newIdx [$mytoplevel.listbox.box get $lastIndex ]
         $mytoplevel.listbox.box delete $oldIdx
         $mytoplevel.listbox.box activate $newIdx
         $mytoplevel.listbox.box selection set $selIdx
@@ -142,7 +145,7 @@ proc ::pd_searchpath::release { mytoplevel x y } {
 # listdata - array of data to populate the pd_searchpath
 # add_method - method to be called when we add a new item
 # edit_method - method to be called when we edit an existing item
-proc ::pd_searchpath::make { mytoplevel listdata add_method edit_method } {
+proc make { mytoplevel listdata add_method edit_method } {
     frame $mytoplevel.listbox
     listbox $mytoplevel.listbox.box \
         -selectmode browse -activestyle dotbox \
@@ -201,3 +204,12 @@ proc ::pd_searchpath::make { mytoplevel listdata add_method edit_method } {
     $mytoplevel.listbox.box selection set end
     focus $mytoplevel.listbox.box
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
