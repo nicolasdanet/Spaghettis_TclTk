@@ -44,7 +44,7 @@ proc checkAction {top message reply default} {
 
 proc checkClose {top reply} {
 
-    set message [format "Save \"%s\" before closing?" [wm title $top]]
+    set message [format [_ "Save \"%s\" before closing?"] [wm title $top]]
     
     set r [tk_messageBox -message $message -type yesnocancel -default "yes" -icon question -parent $top]
 

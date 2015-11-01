@@ -13,6 +13,7 @@ package provide pd_file 0.1
 # ------------------------------------------------------------------------------------------------------------
 
 package require pd_connect
+package require pd_console
 package require pd_patch
 
 # ------------------------------------------------------------------------------------------------------------
@@ -92,8 +93,11 @@ proc openFile {filename} {
     if {[lsearch -exact $::var(filesExtensions) $extension] > -1} {
         ::pd_connect::pdsend "pd open [::enquote $basename] [::enquote $directory]"
         set directoryOpen $directory
+        return
     }
     }
+    
+    ::pd_console::post [format [_ "Opening '%s' failed."] $filename]
 }
 
 # ------------------------------------------------------------------------------------------------------------
