@@ -22,24 +22,87 @@ variable lastIndex 0
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+proc make {top data add edit} {
+
+    frame $top.f
+    
+    listbox $top.f.box            -selectmode browse \
+                                        -activestyle dotbox \
+                                        -yscrollcommand "$top.f.scrollbar set"
+
+    scrollbar $top.f.scrollbar    -command "$top.f.box yview"
+                              
+    pack $top.f.box $top.f.scrollbar -side left -fill y -anchor w 
+
+    # Populate the listbox widget
+    foreach item $data {
+        $top.f.box insert end $item
+    }
+
+    # Standard listbox key/mouse bindings
+    event add <<Delete>> <Delete>
+    if { [tk windowingsystem] eq "aqua" } { event add <<Delete>> <BackSpace> }
+
+    bind $top.f.box <ButtonPress> "::pd_searchpath::click $top %x %y"
+    bind $top.f.box <Double-1> "::pd_searchpath::dbl_click $top $edit $add %x %y"
+    bind $top.f.box <ButtonRelease> "::pd_searchpath::release $top %x %y"
+    bind $top.f.box <Return> "::pd_searchpath::edit_item $top $edit"
+    bind $top.f.box <<Delete>> "::pd_searchpath::delete_item $top"
+
+    # <Configure> is called when the user modifies the window
+    # We use it to capture resize events, to make sure the
+    # currently selected item in the listbox is always visible
+    bind $top <Configure> "$top.f.box see active"
+
+    # The listbox should expand to fill its containing window
+    # the "-fill" option specifies which direction (x, y or both) to fill, while
+    # the "-expand" option (false by default) specifies whether the widget
+    # should fill
+    pack $top.f.box -side left -fill both -expand 1
+    pack $top.f -side top -pady 2m -padx 2m -fill both -expand 1
+
+    # All widget interactions can be performed without buttons, but
+    # we still need a "New..." button since the currently visible window
+    # might be full (even though the user can still expand it)
+    frame $top.actions 
+    pack $top.actions -side top -padx 2m -fill x 
+    button $top.actions.add_path -text {New...} \
+        -command "::pd_searchpath::add_item $top $add"
+    button $top.actions.edit_path -text {Edit...} \
+        -command "::pd_searchpath::edit_item $top $edit"
+    button $top.actions.delete_path -text {Delete} \
+        -command "::pd_searchpath::delete_item $top"
+
+    pack $top.actions.delete_path -side right -pady 2m
+    pack $top.actions.edit_path -side right -pady 2m
+    pack $top.actions.add_path -side right -pady 2m
+
+    $top.f.box activate end
+    $top.f.box selection set end
+    focus $top.f.box
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc get_curidx { mytoplevel } {
-    set idx [$mytoplevel.listbox.box index active]
+    set idx [$mytoplevel.f.box index active]
     if {$idx < 0 || \
-            $idx == [$mytoplevel.listbox.box index end]} {
-        return [expr {[$mytoplevel.listbox.box index end] + 1}]
+            $idx == [$mytoplevel.f.box index end]} {
+        return [expr {[$mytoplevel.f.box index end] + 1}]
     }
     return [expr $idx]
 }
 
 proc insert_item { mytoplevel idx name } {
     if {$name != ""} {
-        $mytoplevel.listbox.box insert $idx $name
-        set activeIdx [expr {[$mytoplevel.listbox.box index active] + 1}]
-        $mytoplevel.listbox.box see $activeIdx
-        $mytoplevel.listbox.box activate $activeIdx
-        $mytoplevel.listbox.box selection clear 0 end
-        $mytoplevel.listbox.box selection set active
-        focus $mytoplevel.listbox.box
+        $mytoplevel.f.box insert $idx $name
+        set activeIdx [expr {[$mytoplevel.f.box index active] + 1}]
+        $mytoplevel.f.box see $activeIdx
+        $mytoplevel.f.box activate $activeIdx
+        $mytoplevel.f.box selection clear 0 end
+        $mytoplevel.f.box selection set active
+        focus $mytoplevel.f.box
     }
 }
 
@@ -50,25 +113,25 @@ proc add_item { mytoplevel add_method } {
 
 proc edit_item { mytoplevel edit_method } {
     set idx [expr {[get_curidx $mytoplevel]}]
-    set initialValue [$mytoplevel.listbox.box get $idx]
+    set initialValue [$mytoplevel.f.box get $idx]
     if {$initialValue != ""} {
         set dir [$edit_method $initialValue]
 
         if {$dir != ""} {
-            $mytoplevel.listbox.box delete $idx
+            $mytoplevel.f.box delete $idx
             insert_item $mytoplevel $idx $dir
         }
-        $mytoplevel.listbox.box activate $idx
-        $mytoplevel.listbox.box selection clear 0 end
-        $mytoplevel.listbox.box selection set active
-        focus $mytoplevel.listbox.box
+        $mytoplevel.f.box activate $idx
+        $mytoplevel.f.box selection clear 0 end
+        $mytoplevel.f.box selection set active
+        focus $mytoplevel.f.box
     }
 }
 
 proc delete_item { mytoplevel } {
-    set cursel [$mytoplevel.listbox.box curselection]
+    set cursel [$mytoplevel.f.box curselection]
     foreach idx $cursel {
-        $mytoplevel.listbox.box delete $idx
+        $mytoplevel.f.box delete $idx
     }
 }
 
@@ -79,7 +142,7 @@ proc dbl_click { mytoplevel edit_method add_method x y } {
         return
     }
 
-    set curBB [$mytoplevel.listbox.box bbox @$x,$y]
+    set curBB [$mytoplevel.f.box bbox @$x,$y]
 
     # listbox bbox returns an array of 4 items in the order:
     # left, top, width, height
@@ -107,20 +170,20 @@ proc click { mytoplevel x y } {
     # clicked on
     variable lastIndex 
     
-    set lastIndex [$mytoplevel.listbox.box index @$x,$y]
+    set lastIndex [$mytoplevel.f.box index @$x,$y]
 
-    focus $mytoplevel.listbox.box
+    focus $mytoplevel.f.box
 }
 
 # For drag-and-drop reordering, recall the last-clicked index
 # and move it to the position of the item currently under the mouse
 proc release { mytoplevel x y } {
     variable lastIndex 
-    set curIdx [$mytoplevel.listbox.box index @$x,$y]
+    set curIdx [$mytoplevel.f.box index @$x,$y]
 
     if { $curIdx != $lastIndex  } {
         # clear any current selection
-        $mytoplevel.listbox.box selection clear 0 end
+        $mytoplevel.f.box selection clear 0 end
 
         set oldIdx $lastIndex 
         set newIdx [expr {$curIdx+1}]
@@ -132,77 +195,11 @@ proc release { mytoplevel x y } {
             set selIdx $newIdx
         }
 
-        $mytoplevel.listbox.box insert $newIdx [$mytoplevel.listbox.box get $lastIndex ]
-        $mytoplevel.listbox.box delete $oldIdx
-        $mytoplevel.listbox.box activate $newIdx
-        $mytoplevel.listbox.box selection set $selIdx
+        $mytoplevel.f.box insert $newIdx [$mytoplevel.f.box get $lastIndex ]
+        $mytoplevel.f.box delete $oldIdx
+        $mytoplevel.f.box activate $newIdx
+        $mytoplevel.f.box selection set $selIdx
     }
-}
-
-# Make a pd_searchpath widget in a given window and set of data.
-#
-# id - the parent window for the pd_searchpath
-# listdata - array of data to populate the pd_searchpath
-# add_method - method to be called when we add a new item
-# edit_method - method to be called when we edit an existing item
-proc make { mytoplevel listdata add_method edit_method } {
-    frame $mytoplevel.listbox
-    listbox $mytoplevel.listbox.box \
-        -selectmode browse -activestyle dotbox \
-        -yscrollcommand [list "$mytoplevel.listbox.scrollbar" set]
-
-    # Create a scrollbar and keep it in sync with the current
-    # listbox view
-    pack $mytoplevel.listbox.box [scrollbar "$mytoplevel.listbox.scrollbar" \
-                              -command [list $mytoplevel.listbox.box yview]] \
-        -side left -fill y -anchor w 
-
-    # Populate the listbox widget
-    foreach item $listdata {
-        $mytoplevel.listbox.box insert end $item
-    }
-
-    # Standard listbox key/mouse bindings
-    event add <<Delete>> <Delete>
-    if { [tk windowingsystem] eq "aqua" } { event add <<Delete>> <BackSpace> }
-
-    bind $mytoplevel.listbox.box <ButtonPress> "::pd_searchpath::click $mytoplevel %x %y"
-    bind $mytoplevel.listbox.box <Double-1> "::pd_searchpath::dbl_click $mytoplevel $edit_method $add_method %x %y"
-    bind $mytoplevel.listbox.box <ButtonRelease> "::pd_searchpath::release $mytoplevel %x %y"
-    bind $mytoplevel.listbox.box <Return> "::pd_searchpath::edit_item $mytoplevel $edit_method"
-    bind $mytoplevel.listbox.box <<Delete>> "::pd_searchpath::delete_item $mytoplevel"
-
-    # <Configure> is called when the user modifies the window
-    # We use it to capture resize events, to make sure the
-    # currently selected item in the listbox is always visible
-    bind $mytoplevel <Configure> "$mytoplevel.listbox.box see active"
-
-    # The listbox should expand to fill its containing window
-    # the "-fill" option specifies which direction (x, y or both) to fill, while
-    # the "-expand" option (false by default) specifies whether the widget
-    # should fill
-    pack $mytoplevel.listbox.box -side left -fill both -expand 1
-    pack $mytoplevel.listbox -side top -pady 2m -padx 2m -fill both -expand 1
-
-    # All widget interactions can be performed without buttons, but
-    # we still need a "New..." button since the currently visible window
-    # might be full (even though the user can still expand it)
-    frame $mytoplevel.actions 
-    pack $mytoplevel.actions -side top -padx 2m -fill x 
-    button $mytoplevel.actions.add_path -text {New...} \
-        -command "::pd_searchpath::add_item $mytoplevel $add_method"
-    button $mytoplevel.actions.edit_path -text {Edit...} \
-        -command "::pd_searchpath::edit_item $mytoplevel $edit_method"
-    button $mytoplevel.actions.delete_path -text {Delete} \
-        -command "::pd_searchpath::delete_item $mytoplevel"
-
-    pack $mytoplevel.actions.delete_path -side right -pady 2m
-    pack $mytoplevel.actions.edit_path -side right -pady 2m
-    pack $mytoplevel.actions.add_path -side right -pady 2m
-
-    $mytoplevel.listbox.box activate end
-    $mytoplevel.listbox.box selection set end
-    focus $mytoplevel.listbox.box
 }
 
 # ------------------------------------------------------------------------------------------------------------
