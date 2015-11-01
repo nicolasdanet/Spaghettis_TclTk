@@ -27,48 +27,37 @@ proc make {top data add edit} {
     # Widgets.
     
     frame $top.paths
+
+    listbox $top.paths.box              -selectmode browse \
+                                        -activestyle dotbox \
+                                        -yscrollcommand "$top.paths.scrollbar set"
+    scrollbar $top.paths.scrollbar      -command "$top.paths.box yview"
+    
     frame $top.actions
         
-    listbox $top.paths.box                  -selectmode browse \
-                                            -activestyle dotbox \
-                                            -yscrollcommand "$top.paths.scrollbar set"
-    scrollbar $top.paths.scrollbar          -command "$top.paths.box yview"
-    
-    button $top.actions.add                 -text "New..." \
-                                            -command "::pd_searchpath::add_item $top $add"
-    button $top.actions.edit                -text "Edit..." \
-                                            -command "::pd_searchpath::edit_item $top $edit"
-    button $top.actions.delete              -text "Delete" \
-                                            -command "::pd_searchpath::delete_item $top"
+    button $top.actions.add             -text "New..." \
+                                        -command "::pd_searchpath::add_item $top $add"
+    button $top.actions.edit            -text "Edit..." \
+                                        -command "::pd_searchpath::edit_item $top $edit"
+    button $top.actions.delete          -text "Delete" \
+                                        -command "::pd_searchpath::delete_item $top"
         
-    # Bind to events.
+    # Dispose.
     
-    bind $top.paths.box <ButtonPress>       "::pd_searchpath::click $top %x %y"
-    bind $top.paths.box <ButtonRelease>     "::pd_searchpath::release $top %x %y"
-    bind $top.paths.box <Return>            "::pd_searchpath::edit_item $top $edit"
-    bind $top.paths.box <Delete>            "::pd_searchpath::delete_item $top"
+    pack $top.paths             -side top -padx 2m -pady 2m -fill both -expand 1
+    pack $top.actions           -side top -padx 2m -fill x 
+        
+    pack $top.paths.box         -side left -fill both -expand 1
+    pack $top.paths.scrollbar   -side left -fill y -anchor w
     
-    bind $top           <Configure>         "$top.paths.box see active"
+    pack $top.actions.delete    -side right -pady 2m
+    pack $top.actions.edit      -side right -pady 2m
+    pack $top.actions.add       -side right -pady 2m
 
     # Populate with items.
     
     foreach item $data { $top.paths.box insert end $item }
     
-    # Dispose.
-    
-    pack $top.paths -side top -pady 2m -padx 2m -fill both -expand 1
-    pack $top.actions -side top -padx 2m -fill x 
-        
-    pack $top.paths.box $top.paths.scrollbar -side left -fill y -anchor w
-    pack $top.paths.box -side left -fill both -expand 1
-    
-    pack $top.actions.delete -side right -pady 2m
-    pack $top.actions.edit -side right -pady 2m
-    pack $top.actions.add -side right -pady 2m
-
-
-    $top.paths.box activate end
-    $top.paths.box selection set end
     focus $top.paths.box
 }
 
