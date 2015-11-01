@@ -25,7 +25,7 @@ namespace eval pd_scrollboxwindow {
 
 
 proc ::pd_scrollboxwindow::get_listdata {mytoplevel} {
-    return [$mytoplevel.f.box get 0 end]
+    return [$mytoplevel.paths.box get 0 end]
 }
 
 proc ::pd_scrollboxwindow::do_apply {mytoplevel commit_method listdata} {

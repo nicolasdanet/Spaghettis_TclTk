@@ -26,71 +26,73 @@ proc make {top data add edit} {
 
     # Widgets.
     
-    frame $top.f
-    
-    listbox $top.f.box  -selectmode browse \
-                        -activestyle dotbox \
-                        -yscrollcommand "$top.f.scrollbar set"
-
-    scrollbar $top.f.scrollbar  -command "$top.f.box yview"
-    
-    frame $top.actions 
-    
-    button $top.actions.add_path -text {New...} \
-        -command "::pd_searchpath::add_item $top $add"
-    button $top.actions.edit_path -text {Edit...} \
-        -command "::pd_searchpath::edit_item $top $edit"
-    button $top.actions.delete_path -text {Delete} \
-        -command "::pd_searchpath::delete_item $top"
+    frame $top.paths
+    frame $top.actions
         
-    # Populate with items.
+    listbox $top.paths.box                  -selectmode browse \
+                                            -activestyle dotbox \
+                                            -yscrollcommand "$top.paths.scrollbar set"
+    scrollbar $top.paths.scrollbar          -command "$top.paths.box yview"
     
-    foreach item $data { $top.f.box insert end $item }
-
+    button $top.actions.add                 -text "New..." \
+                                            -command "::pd_searchpath::add_item $top $add"
+    button $top.actions.edit                -text "Edit..." \
+                                            -command "::pd_searchpath::edit_item $top $edit"
+    button $top.actions.delete              -text "Delete" \
+                                            -command "::pd_searchpath::delete_item $top"
+        
     # Bind to events.
     
-    bind $top.f.box <ButtonPress>       "::pd_searchpath::click $top %x %y"
-    bind $top.f.box <ButtonRelease>     "::pd_searchpath::release $top %x %y"
-    bind $top.f.box <Return>            "::pd_searchpath::edit_item $top $edit"
-    bind $top.f.box <<DoubleClick>>     "::pd_searchpath::dbl_click $top $edit $add %x %y"
-    bind $top.f.box <<Delete>>          "::pd_searchpath::delete_item $top"
+    bind $top.paths.box <ButtonPress>       "::pd_searchpath::click $top %x %y"
+    bind $top.paths.box <ButtonRelease>     "::pd_searchpath::release $top %x %y"
+    bind $top.paths.box <Return>            "::pd_searchpath::edit_item $top $edit"
+    bind $top.paths.box <Delete>            "::pd_searchpath::delete_item $top"
+    
+    bind $top           <Configure>         "$top.paths.box see active"
 
-    bind $top <Configure>               "$top.f.box see active"
-
-    pack $top.f.box $top.f.scrollbar -side left -fill y -anchor w
-    pack $top.f.box -side left -fill both -expand 1
-    pack $top.f -side top -pady 2m -padx 2m -fill both -expand 1
-    pack $top.actions.delete_path -side right -pady 2m
-    pack $top.actions.edit_path -side right -pady 2m
-    pack $top.actions.add_path -side right -pady 2m
+    # Populate with items.
+    
+    foreach item $data { $top.paths.box insert end $item }
+    
+    # Dispose.
+    
+    pack $top.paths -side top -pady 2m -padx 2m -fill both -expand 1
     pack $top.actions -side top -padx 2m -fill x 
+        
+    pack $top.paths.box $top.paths.scrollbar -side left -fill y -anchor w
+    pack $top.paths.box -side left -fill both -expand 1
+    
+    pack $top.actions.delete -side right -pady 2m
+    pack $top.actions.edit -side right -pady 2m
+    pack $top.actions.add -side right -pady 2m
 
-    $top.f.box activate end
-    $top.f.box selection set end
-    focus $top.f.box
+
+    $top.paths.box activate end
+    $top.paths.box selection set end
+    focus $top.paths.box
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
 proc get_curidx { mytoplevel } {
-    set idx [$mytoplevel.f.box index active]
+    set idx [$mytoplevel.paths.box index active]
     if {$idx < 0 || \
-            $idx == [$mytoplevel.f.box index end]} {
-        return [expr {[$mytoplevel.f.box index end] + 1}]
+            $idx == [$mytoplevel.paths.box index end]} {
+        return [expr {[$mytoplevel.paths.box index end] + 1}]
     }
     return [expr $idx]
 }
 
 proc insert_item { mytoplevel idx name } {
     if {$name != ""} {
-        $mytoplevel.f.box insert $idx $name
-        set activeIdx [expr {[$mytoplevel.f.box index active] + 1}]
-        $mytoplevel.f.box see $activeIdx
-        $mytoplevel.f.box activate $activeIdx
-        $mytoplevel.f.box selection clear 0 end
-        $mytoplevel.f.box selection set active
-        focus $mytoplevel.f.box
+        $mytoplevel.paths.box insert $idx $name
+        set activeIdx [expr {[$mytoplevel.paths.box index active] + 1}]
+        $mytoplevel.paths.box see $activeIdx
+        $mytoplevel.paths.box activate $activeIdx
+        $mytoplevel.paths.box selection clear 0 end
+        $mytoplevel.paths.box selection set active
+        focus $mytoplevel.paths.box
     }
 }
 
@@ -101,25 +103,25 @@ proc add_item { mytoplevel add_method } {
 
 proc edit_item { mytoplevel edit_method } {
     set idx [expr {[get_curidx $mytoplevel]}]
-    set initialValue [$mytoplevel.f.box get $idx]
+    set initialValue [$mytoplevel.paths.box get $idx]
     if {$initialValue != ""} {
         set dir [$edit_method $initialValue]
 
         if {$dir != ""} {
-            $mytoplevel.f.box delete $idx
+            $mytoplevel.paths.box delete $idx
             insert_item $mytoplevel $idx $dir
         }
-        $mytoplevel.f.box activate $idx
-        $mytoplevel.f.box selection clear 0 end
-        $mytoplevel.f.box selection set active
-        focus $mytoplevel.f.box
+        $mytoplevel.paths.box activate $idx
+        $mytoplevel.paths.box selection clear 0 end
+        $mytoplevel.paths.box selection set active
+        focus $mytoplevel.paths.box
     }
 }
 
 proc delete_item { mytoplevel } {
-    set cursel [$mytoplevel.f.box curselection]
+    set cursel [$mytoplevel.paths.box curselection]
     foreach idx $cursel {
-        $mytoplevel.f.box delete $idx
+        $mytoplevel.paths.box delete $idx
     }
 }
 
@@ -130,7 +132,7 @@ proc dbl_click { mytoplevel edit_method add_method x y } {
         return
     }
 
-    set curBB [$mytoplevel.f.box bbox @$x,$y]
+    set curBB [$mytoplevel.paths.box bbox @$x,$y]
 
     # listbox bbox returns an array of 4 items in the order:
     # left, top, width, height
@@ -158,20 +160,20 @@ proc click { mytoplevel x y } {
     # clicked on
     variable lastIndex 
     
-    set lastIndex [$mytoplevel.f.box index @$x,$y]
+    set lastIndex [$mytoplevel.paths.box index @$x,$y]
 
-    focus $mytoplevel.f.box
+    focus $mytoplevel.paths.box
 }
 
 # For drag-and-drop reordering, recall the last-clicked index
 # and move it to the position of the item currently under the mouse
 proc release { mytoplevel x y } {
     variable lastIndex 
-    set curIdx [$mytoplevel.f.box index @$x,$y]
+    set curIdx [$mytoplevel.paths.box index @$x,$y]
 
     if { $curIdx != $lastIndex  } {
         # clear any current selection
-        $mytoplevel.f.box selection clear 0 end
+        $mytoplevel.paths.box selection clear 0 end
 
         set oldIdx $lastIndex 
         set newIdx [expr {$curIdx+1}]
@@ -183,10 +185,10 @@ proc release { mytoplevel x y } {
             set selIdx $newIdx
         }
 
-        $mytoplevel.f.box insert $newIdx [$mytoplevel.f.box get $lastIndex ]
-        $mytoplevel.f.box delete $oldIdx
-        $mytoplevel.f.box activate $newIdx
-        $mytoplevel.f.box selection set $selIdx
+        $mytoplevel.paths.box insert $newIdx [$mytoplevel.paths.box get $lastIndex ]
+        $mytoplevel.paths.box delete $oldIdx
+        $mytoplevel.paths.box activate $newIdx
+        $mytoplevel.paths.box selection set $selIdx
     }
 }
 

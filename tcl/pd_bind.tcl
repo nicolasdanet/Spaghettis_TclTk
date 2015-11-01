@@ -111,10 +111,6 @@ proc initialize {} {
     event add <<PopupMenu>>                 <ButtonPress-3>
     event add <<ClickRelease>>              <ButtonRelease-1>
     
-    event add <<DoubleClick>>               <Double-1>
-    event add <<Delete>>                    <Delete>
-    event add <<Delete>>                    <BackSpace>
-    
     # Class.
     
     bind PdConsole  <FocusIn>               { ::pd_bind::_focusIn %W             }
