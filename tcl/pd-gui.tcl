@@ -308,7 +308,6 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
     # Set the menu configuration.
     
     ::pd_menu::configureForConsole
-    ::pd_patch::editMode .console 0
     
     # Respond.
     

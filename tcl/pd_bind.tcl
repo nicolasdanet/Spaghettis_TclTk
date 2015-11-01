@@ -247,13 +247,15 @@ proc _focusIn {top} {
             if {$::patch_isEditMode($top)} { $top configure -cursor $::var(cursorEditNothing) }
         }
         "PdConsole" {
+            set ::var(isEditMode) 0
             ::pd_menu::configureForConsole
-            ::pd_patch::editMode .console 0
+            ::pd_menu::disableEditing
             
         }
         "PdDialog"  { 
             ::pd_menu::configureForConsole
-            ::pd_patch::editMode $top 0
+            set ::var(isEditMode) 0
+            ::pd_menu::disableEditing
         }
     }
 }

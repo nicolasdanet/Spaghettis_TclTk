@@ -79,6 +79,7 @@ proc create {top width height geometry editable} {
 }
 
 proc front {top} {
+
     wm deiconify $top
     raise $top
     focus $top.c
@@ -89,11 +90,7 @@ proc editMode {top state} {
     set ::var(isEditMode) $state
     set ::patch_isEditMode($top) $state
     
-    if {[winfo class $top] eq "PdPatch"} { 
-        if {$::var(isEditMode)} { pd_menu::enableCopying } else { pd_menu::disableCopying }
-    } else { 
-        pd_menu::disableEditing 
-    }
+    if {$::var(isEditMode)} { pd_menu::enableCopying } else { pd_menu::disableCopying }
 }
 
 # ------------------------------------------------------------------------------------------------------------
