@@ -17,6 +17,7 @@
 ## which contains a pd_scrollbox widget populated with the given data
 
 package provide pd_scrollboxwindow 0.1
+
 package require pd_scrollbox
 
 namespace eval pd_scrollboxwindow {
