@@ -34,7 +34,7 @@ proc open {top} {
     ::pd_menu::disablePath 
 }
 
-proc release {} {
+proc _closed {} {
 
     ::pd_menu::enablePath
 }
@@ -49,7 +49,7 @@ proc _create {top} {
     wm group $top .
     
     wm minsize  $top 400 300
-    wm geometry $top =400x300+30+60
+    wm geometry $top "=400x300+30+60"
     
     frame $top.paths
     frame $top.actions
@@ -61,9 +61,9 @@ proc _create {top} {
     scrollbar $top.paths.scrollbar      -command "$top.paths.box yview"
     
     button $top.actions.add             -text "Add..." \
-                                        -command "::dialog_path::_add $top"
+                                        -command "::dialog_path::_addItem  $top"
     button $top.actions.delete          -text "Delete" \
-                                        -command "::dialog_path::_delete $top"
+                                        -command "::dialog_path::_deleteItem $top"
         
     pack $top.paths             -side top -padx 2m -pady 2m -fill both -expand 1
     pack $top.actions           -side top -padx 2m -fill x 
@@ -78,29 +78,32 @@ proc _create {top} {
     
     focus $top.paths.box
     
-    wm protocol $top WM_DELETE_WINDOW { dialog_path::release }
+    wm protocol $top WM_DELETE_WINDOW { dialog_path::_closed }
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _add {top} {
+proc _addItem  {top} {
 
     set item [tk_chooseDirectory -title [_ "Add a Directory"]]
     
     if {$item ne ""} { $top.paths.box insert end $item }
     
-    ::dialog_path::_apply $top
+    ::dialog_path::_applyChanges $top
 }
 
-proc _delete {top} {
+proc _deleteItem {top} {
 
     foreach item [$top.paths.box curselection] { $top.paths.box delete $item }
     
-    ::dialog_path::_apply $top
+    ::dialog_path::_applyChanges $top
 }
 
-proc _apply {top} {
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _applyChanges {top} {
 
     set ::var(searchPath) {}
     
