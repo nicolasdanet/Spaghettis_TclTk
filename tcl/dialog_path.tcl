@@ -17,18 +17,12 @@ namespace eval ::dialog_path:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable use_standard_extensions_button 1
-variable verbose_button 0
+namespace export open
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc pdtk_path_dialog {mytoplevel extrapath verbose} {
-    global use_standard_extensions_button
-    global verbose_button
-    set use_standard_extensions_button $extrapath
-    set verbose_button $verbose
-
+proc open {mytoplevel} {
     if {[winfo exists $mytoplevel]} {
         wm deiconify $mytoplevel
         raise $mytoplevel
@@ -55,15 +49,6 @@ proc create_dialog {mytoplevel} {
     wm geometry $mytoplevel "400x300"
     
     dialog_path::initialize $mytoplevel $::var(searchPath) dialog_path::add dialog_path::edit 
-    
-    frame $mytoplevel.extraframe
-    pack $mytoplevel.extraframe -side bottom -pady 2m
-    checkbutton $mytoplevel.extraframe.extra -text [_ "Use standard extensions"] \
-        -variable use_standard_extensions_button -anchor w 
-    checkbutton $mytoplevel.extraframe.verbose -text [_ "Verbose"] \
-        -variable verbose_button -anchor w 
-    pack $mytoplevel.extraframe.extra $mytoplevel.extraframe.verbose \
-        -side left -expand 1
 }
 
 proc choosePath { currentpath title } {
@@ -82,11 +67,8 @@ proc edit { currentpath } {
 }
 
 proc commit { new_path } {
-    global use_standard_extensions_button
-    global verbose_button
-
     set ::var(searchPath) $new_path
-    ::pd_connect::pdsend "pd path-dialog $use_standard_extensions_button $verbose_button $::var(searchPath)"
+    ::pd_connect::pdsend "pd path-dialog $::var(searchPath)"
 }
 
 # ------------------------------------------------------------------------------------------------------------

@@ -49,12 +49,8 @@ proc checkClose {top reply} {
     set r [tk_messageBox -message $message -type yesnocancel -default "yes" -icon question -parent $top]
 
     switch -- $r {
-        yes {
-            ::pd_connect::pdsend "$top menusave 1"
-        }
-        no {
-            ::pd_connect::pdsend $reply
-        }
+        yes { ::pd_connect::pdsend "$top menusave 1" }
+        no  { ::pd_connect::pdsend $reply }
         cancel {
         
         }

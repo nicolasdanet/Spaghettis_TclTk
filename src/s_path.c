@@ -717,7 +717,7 @@ void glob_start_path_dialog(t_pd *dummy)
      char buf[MAXPDSTRING];
 
     sys_set_searchpath();
-    sprintf(buf, "::dialog_path::pdtk_path_dialog %%s %d %d\n", sys_usestdpath, sys_verbose);
+    sprintf(buf, "::dialog_path::open %%s\n");
     gfxstub_new(&glob_pdobject, (void *)glob_start_path_dialog, buf);
 }
 
@@ -727,11 +727,11 @@ void glob_path_dialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
     int i;
     namelist_free(sys_searchpath);
     sys_searchpath = 0;
-    sys_usestdpath = atom_getintarg(0, argc, argv);
-    sys_verbose = atom_getintarg(1, argc, argv);
-    for (i = 0; i < argc-2; i++)
+    //sys_usestdpath = atom_getintarg(0, argc, argv);
+    //sys_verbose = atom_getintarg(1, argc, argv);
+    for (i = 0; i < argc; i++)
     {
-        t_symbol *s = sys_decodedialog(atom_getsymbolarg(i+2, argc, argv));
+        t_symbol *s = sys_decodedialog(atom_getsymbolarg(i, argc, argv));
         if (*s->s_name)
             sys_searchpath = namelist_append_files(sys_searchpath, s->s_name);
     }
