@@ -65,7 +65,24 @@ proc _create {top} {
     focus $top.paths.box
 }
 
-# wm protocol $mytoplevel WM_DELETE_WINDOW "::dialog_path::apply $mytoplevel dialog_path::commit"
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _add {top} {
+
+    set item [tk_chooseDirectory -title [_ "Add a Directory"]]
+    
+    if {$item ne ""} { $top.paths.box insert end $item }
+    
+    ::dialog_path::_apply $top
+}
+
+proc _delete {top} {
+
+    foreach item [$top.paths.box curselection] { $top.paths.box delete $item }
+    
+    ::dialog_path::_apply $top
+}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -73,22 +90,11 @@ proc _create {top} {
 proc _apply {top} {
 
     set ::var(searchPath) {}
+    
     foreach path [$top.paths.box get 0 end] { lappend ::var(searchPath) [::encode $path] }
 
     ::pd_connect::pdsend "pd path-dialog $::var(searchPath)"
     ::pd_connect::pdsend "pd save-preferences"
-}
-
-proc _add {top} {
-
-    set item [tk_chooseDirectory -title [_ "Add a Directory"]]
-    
-    if {$item ne ""} { $top.paths.box insert end $item }
-}
-
-proc _delete {top} {
-
-    foreach item [$top.paths.box curselection] { $top.paths.box delete $item }
 }
 
 # ------------------------------------------------------------------------------------------------------------

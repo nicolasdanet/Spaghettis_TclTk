@@ -67,6 +67,7 @@ proc initialize {} {
 
 proc post {message} {
     .console.text.internal insert end $message
+    .console.text.internal insert end "\n"
 }
 
 # ------------------------------------------------------------------------------------------------------------
