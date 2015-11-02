@@ -78,7 +78,7 @@ proc _create {top} {
     
     focus $top.paths.box
     
-    wm protocol $top WM_DELETE_WINDOW { dialog_path::_closed }
+    bind $top <Destroy> { dialog_path::_closed }
 }
 
 # ------------------------------------------------------------------------------------------------------------
