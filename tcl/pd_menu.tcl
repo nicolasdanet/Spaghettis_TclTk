@@ -142,11 +142,11 @@ proc showPopup {top xcanvas ycanvas hasProperties hasOpen} {
 
 proc enableCopying {}       { _copying normal; _editing normal }
 proc enableEditing {}       { _editing normal }
-proc enableSearchPath {}    { .menubar.media entryconfigure [_ "Search Path..."] -state normal }
+proc enableSearchPath {}    { .menubar.media entryconfigure [_ "Path..."] -state normal }
 
 proc disableCopying {}      { _copying disabled; _editing disabled }
 proc disableEditing {}      { _editing disabled }
-proc disableSearchPath {}   { .menubar.media entryconfigure [_ "Search Path..."] -state disabled }
+proc disableSearchPath {}   { .menubar.media entryconfigure [_ "Path..."] -state disabled }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -324,12 +324,6 @@ proc _media {m} {
     variable accelerator
     
     $m add command \
-        -label [_ "Search Path..."] \
-        -accelerator "Alt+${accelerator}+P" \
-        -command { ::pd_connect::pdsend "pd start-path-dialog" }
-    $m add separator
-    
-    $m add command \
         -label [_ "MIDI..."] \
         -accelerator "Alt+${accelerator}+M" \
         -command { ::pd_connect::pdsend "pd midi-properties" }
@@ -362,6 +356,12 @@ proc _media {m} {
     }
     
     if {[llength $::var(apiAudioAvailables)] > 0} { $m add separator }
+    
+    $m add command \
+        -label [_ "Path..."] \
+        -accelerator "Alt+${accelerator}+P" \
+        -command { ::pd_connect::pdsend "pd start-path-dialog" }
+    $m add separator
     
     $m add check \
         -label [_ "Run DSP"] \
