@@ -58,11 +58,7 @@ proc initialize {top data add edit} {
 proc apply {top commit} {
 
     set out {}
-    
-    foreach path [$top.paths.box get 0 end] {
-        if {$path ne ""} { lappend out [::encode $path] }
-    }
-    
+    foreach path [$top.paths.box get 0 end] { if {$path ne ""} { lappend out [::encode $path] } }
     $commit $out
     
     ::pd_connect::pdsend "pd save-preferences"
@@ -77,9 +73,6 @@ proc _append {top item} {
 
     if {$item ne ""} { 
         $top.paths.box insert end $item
-        $top.paths.box activate end
-        $top.paths.box selection clear 0 end
-        $top.paths.box selection set active
     }
 }
 
