@@ -30,7 +30,7 @@ namespace export open
 
 proc open {top} { 
 
-    _create $top
+    ::dialog_path::_create $top
     ::pd_menu::disablePath 
 }
 

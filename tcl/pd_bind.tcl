@@ -162,8 +162,6 @@ proc initialize {} {
     bind all <Shift-KeyRelease>             { ::pd_bind::_key %W %K %A 0 1  }
     
     bind all <<Quit>>                       { ::pd_connect::pdsend "pd verifyquit" }
-    
-    wm protocol .console WM_DELETE_WINDOW   { ::pd_connect::pdsend "pd verifyquit" }
 }
 
 # ------------------------------------------------------------------------------------------------------------
