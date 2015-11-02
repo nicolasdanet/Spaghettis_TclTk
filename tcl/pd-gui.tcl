@@ -26,8 +26,6 @@ if {[tk windowingsystem] eq "aqua"} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-catch { console show }
-
 rename unknown _original_unknown
 
 proc unknown {args} {
@@ -45,6 +43,8 @@ proc unknownIsExpected {stack} {
     foreach e $expected {
         if {[string first $e $stack] > -1} { return 1 }
     }
+    
+    catch { console show }
     return 0
 }
 
