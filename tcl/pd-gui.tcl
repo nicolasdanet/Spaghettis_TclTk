@@ -290,7 +290,7 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
     
     foreach size $::var(fontSizes) {
         set f [getFont $size]
-        font create $f -family $::var(fontFamily) -weight $::var(fontWeight) -size [expr -${size}]
+        font create $f -family $::var(fontFamily) -weight $::var(fontWeight) -size [expr {-($size)}]
         lappend measured $size 
         lappend measured [font measure $f M]
         lappend measured [font metrics $f -linespace]

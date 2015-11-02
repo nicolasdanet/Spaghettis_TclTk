@@ -240,8 +240,8 @@ proc _mouseUp {c x y b} {
 
 proc _mouseWheel {c axis amount} {
 
-    if {$axis eq "x" && $::patch_isScrollableX($c) == 1} { $c xview scroll [expr {- ($amount)}] units }
-    if {$axis eq "y" && $::patch_isScrollableY($c) == 1} { $c yview scroll [expr {- ($amount)}] units }
+    if {$axis eq "x" && $::patch_isScrollableX($c) == 1} { $c xview scroll [expr {-($amount)}] units }
+    if {$axis eq "y" && $::patch_isScrollableY($c) == 1} { $c yview scroll [expr {-($amount)}] units }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -277,7 +277,7 @@ proc _resized {top width height x y} {
 
     if {$width > 1 || $height > 1} { 
         ::pd_patch::scrollRegion $top.c
-        ::pd_connect::pdsend "$top setbounds $x $y [expr $x + $width] [expr $y + $height]"
+        ::pd_connect::pdsend "$top setbounds $x $y [expr {$x + $width}] [expr {$y + $height}]"
     }
 }
 

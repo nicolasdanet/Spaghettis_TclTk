@@ -128,11 +128,11 @@ proc showPopup {top xcanvas ycanvas hasProperties hasOpen} {
     
     set scrollregion [$top.c cget -scrollregion]
     
-    set offsetX [expr [lindex [$top.c xview] 0] * [lindex $scrollregion 2]]
-    set offsetY [expr [lindex [$top.c yview] 0] * [lindex $scrollregion 3]]
+    set offsetX [expr {[lindex [$top.c xview] 0] * [lindex $scrollregion 2]}]
+    set offsetY [expr {[lindex [$top.c yview] 0] * [lindex $scrollregion 3]}]
     
-    set xpopup [expr int($xcanvas + [winfo rootx $top.c] - $offsetX)]
-    set ypopup [expr int($ycanvas + [winfo rooty $top.c] - $offsetY)]
+    set xpopup [expr {int($xcanvas + [winfo rootx $top.c] - $offsetX)}]
+    set ypopup [expr {int($ycanvas + [winfo rooty $top.c] - $offsetY)}]
     
     tk_popup .popup $xpopup $ypopup 0
 }
