@@ -77,7 +77,7 @@ proc ::pd_scrollboxwindow::make {mytoplevel listdata add_method edit_method comm
     wm geometry $mytoplevel "${width}x${height}"
 
     # Add the pd_searchpath widget
-    ::pd_searchpath::make $mytoplevel $listdata $add_method $edit_method
+    ::pd_searchpath::make $mytoplevel $listdata $add_method
 
     # Use two frames for the buttons, since we want them both
     # bottom and right
