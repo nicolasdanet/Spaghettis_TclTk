@@ -55,8 +55,8 @@ proc _create {top} {
     pack $top.paths.box         -side left -fill both -expand 1
     pack $top.paths.scrollbar   -side left -fill y -anchor w
     
-    pack $top.actions.add       -side right -pady 2m
-    pack $top.actions.delete    -side right -pady 2m
+    pack $top.actions.add       -side left -pady 2m
+    pack $top.actions.delete    -side left -pady 2m
 
     foreach item $::var(searchPath) { $top.paths.box insert end $item }
     
