@@ -18,11 +18,12 @@ namespace eval pd_searchpath {
 # ------------------------------------------------------------------------------------------------------------
 
 namespace export initialize
+namespace export apply
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc initialize {top data add edit commit} {
+proc initialize {top data add edit} {
 
     frame $top.paths
     frame $top.actions
@@ -49,40 +50,11 @@ proc initialize {top data add edit commit} {
     foreach item $data { $top.paths.box insert end $item }
     
     focus $top.paths.box
-
-    # ::pd_searchpath::apply $mytoplevel $commit_method
 }
 
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc get_listdata {mytoplevel} {
-    return [$mytoplevel.paths.box get 0 end]
-}
-
-proc do_apply {mytoplevel commit_method listdata} {
-    $commit_method [pdtk_encode $listdata]
+proc apply {top commit} {
+    $commit [pdtk_encode [$top.paths.box get 0 end]]
     ::pd_connect::pdsend "pd save-preferences"
-}
-
-# Cancel button action
-proc cancel {mytoplevel} {
-    ::pd_connect::pdsend "$mytoplevel cancel"
-}
-
-# Apply button action
-proc apply {mytoplevel commit_method } {
-    do_apply $mytoplevel $commit_method [get_listdata $mytoplevel]
-}
-
-# OK button action
-# The "commit" action can take a second or more,
-# long enough to be noticeable, so we only write
-# the changes after closing the dialog
-proc ok {mytoplevel commit_method } {
-    set listdata [get_listdata $mytoplevel]
-    cancel $mytoplevel
-    do_apply $mytoplevel $commit_method $listdata
 }
 
 # ------------------------------------------------------------------------------------------------------------
