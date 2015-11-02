@@ -61,7 +61,7 @@ proc create {top width height geometry editable} {
 
     # Bind the window to get events.
     
-    ::pd_bind::patch $top
+    ::pd_bind::bindPatch $top
 	 
     focus $top.c
 

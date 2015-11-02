@@ -25,7 +25,7 @@ namespace eval ::pd_bind:: {
 # ------------------------------------------------------------------------------------------------------------
 
 namespace export initialize
-namespace export patch
+namespace export bindPatch
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -118,8 +118,8 @@ proc initialize {} {
     
     bind PdPatch    <FocusIn>               { ::pd_bind::_focusIn %W             }
     bind PdPatch    <Configure>             { ::pd_bind::_resized %W %w %h %x %y }
-    bind PdPatch    <Map>                   { ::pd_bind::_map %W                 }
-    bind PdPatch    <Unmap>                 { ::pd_bind::_unmap %W               }
+    bind PdPatch    <Map>                   { ::pd_bind::_mapped %W              }
+    bind PdPatch    <Unmap>                 { ::pd_bind::_unmapped %W            }
 
     # All.
     
@@ -169,18 +169,17 @@ proc initialize {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc patch {top} {
+proc bindPatch {top} {
 
-    bind $top.c <<Motion1>>                 { ::pd_bind::_motion %W %x %y 0     }
-    bind $top.c <<Motion2>>                 { ::pd_bind::_motion %W %x %y 2     }
-    bind $top.c <<ClickLeft1>>              { ::pd_bind::_mouse %W %x %y %b 0   }
-    bind $top.c <<ClickLeft2>>              { ::pd_bind::_mouse %W %x %y %b 1   }
-    bind $top.c <<ClickLeft3>>              { ::pd_bind::_mouse %W %x %y %b 2   }
-    bind $top.c <<ClickLeft4>>              { ::pd_bind::_mouse %W %x %y %b 3   }
-    bind $top.c <<PopupMenu>>               { ::pd_bind::_mouse %W %x %y %b 8   }
-    bind $top.c <<ClickRelease>>            { ::pd_bind::_mouseUp %W %x %y %b   }
-    
-    bind $top.c <MouseWheel>                { ::pd_bind::_mouseWheel %W y %D    }
+    bind $top.c <<Motion1>>                 { ::pd_bind::_motion %W %x %y 0   }
+    bind $top.c <<Motion2>>                 { ::pd_bind::_motion %W %x %y 2   }
+    bind $top.c <<ClickLeft1>>              { ::pd_bind::_mouse %W %x %y %b 0 }
+    bind $top.c <<ClickLeft2>>              { ::pd_bind::_mouse %W %x %y %b 1 }
+    bind $top.c <<ClickLeft3>>              { ::pd_bind::_mouse %W %x %y %b 2 }
+    bind $top.c <<ClickLeft4>>              { ::pd_bind::_mouse %W %x %y %b 3 }
+    bind $top.c <<PopupMenu>>               { ::pd_bind::_mouse %W %x %y %b 8 }
+    bind $top.c <<ClickRelease>>            { ::pd_bind::_mouseUp %W %x %y %b }
+    bind $top.c <MouseWheel>                { ::pd_bind::_mouseWheel %W y %D  }
     bind $top.c <Destroy>                   { ::pd_bind::_closed [winfo toplevel %W] }
         
     wm protocol $top WM_DELETE_WINDOW       [list ::pd_connect::pdsend "$top menuclose 0"]
@@ -284,12 +283,12 @@ proc _resized {top width height x y} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _map {top} {
+proc _mapped {top} {
 
     ::pd_connect::pdsend "$top map 1"
 }
 
-proc _unmap {top} {
+proc _unmapped {top} {
 
     ::pd_connect::pdsend "$top map 0"
 }
