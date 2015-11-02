@@ -26,6 +26,7 @@ namespace eval ::pd_menu:: {
 namespace export initialize
 namespace export configureForPatch
 namespace export configureForConsole
+namespace export configureForDialog
 namespace export showPopup
 
 namespace export enableCopying
@@ -101,6 +102,11 @@ proc configureForConsole {} {
     .menubar.edit entryconfigure [_ "Select All"]   -state normal
     
     .menubar.edit entryconfigure [_ "Edit Mode"]    -state disabled
+}
+
+proc configureForDialog {} {
+
+    ::pd_menu::configureForConsole
 }
 
 # ------------------------------------------------------------------------------------------------------------

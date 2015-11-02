@@ -205,7 +205,7 @@ proc _focusIn {top} {
         }
         "PdDialog"  { 
             set ::var(isEditMode) 0
-            ::pd_menu::configureForConsole
+            ::pd_menu::configureForDialog
             ::pd_menu::disableEditing
         }
     }

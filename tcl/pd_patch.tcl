@@ -24,9 +24,9 @@ namespace eval ::pd_patch:: {
 # ------------------------------------------------------------------------------------------------------------
 
 namespace export create
-namespace export front
+namespace export setTitle
+namespace export bringToFront
 namespace export editMode
-namespace export title
 namespace export scrollRegion
 
 # ------------------------------------------------------------------------------------------------------------
@@ -76,7 +76,23 @@ proc create {top width height geometry editable} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc front {top} {
+proc setTitle {top path name arguments dirty} {
+                                              
+    if {[tk windowingsystem] eq "aqua"} {
+        wm attributes $top -modified $dirty
+        if {[file exists "$path/$name"]} {
+            catch {wm attributes $top -titlepath "$path/$name"}
+        }
+        wm title $top "$name$arguments"
+    } else {
+        wm title $top "$name$arguments - $path"
+    }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc bringToFront {top} {
 
     wm deiconify $top
     raise $top
@@ -92,22 +108,6 @@ proc editMode {top state} {
     set ::patch_isEditMode($top) $state
     
     if {$::var(isEditMode)} { pd_menu::enableCopying } else { pd_menu::disableCopying }
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc title {top path name arguments dirty} {
-                                              
-    if {[tk windowingsystem] eq "aqua"} {
-        wm attributes $top -modified $dirty
-        if {[file exists "$path/$name"]} {
-            catch {wm attributes $top -titlepath "$path/$name"}
-        }
-        wm title $top "$name$arguments"
-    } else {
-        wm title $top "$name$arguments - $path"
-    }
 }
 
 # ------------------------------------------------------------------------------------------------------------
