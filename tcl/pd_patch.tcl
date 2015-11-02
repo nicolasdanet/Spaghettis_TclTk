@@ -32,23 +32,14 @@ namespace export scrollRegion
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable minimumSizeX 50
-variable minimumSizeY 50
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 proc create {top width height geometry editable} {
 
-    variable minimumSizeX
-    variable minimumSizeY
-    
     # Create a toplevel window with a menubar.
     
     toplevel $top   -width $width -height $height -class PdPatch
     $top configure  -menu .menubar
 
-    wm minsize  $top $minimumSizeX $minimumSizeY
+    wm minsize  $top 50 50
     wm geometry $top [format "%dx%d%s" $width $height $geometry]
     wm group    $top .
 

@@ -38,16 +38,16 @@ proc initialize {} {
     
     .console configure -menu .menubar
 
-    scrollbar   .console.scroll         -command ".console.text.internal yview"
-    text        .console.text           -font [getFont 12] \
-                                        -borderwidth 0 \
-                                        -insertwidth 0 \
-                                        -highlightthickness 0 \
-                                        -undo 0 \
-                                        -yscrollcommand ".console.scroll set"
+    scrollbar   .console.scroll     -command ".console.text.internal yview"
+    text        .console.text       -font [getFont 12] \
+                                    -borderwidth 0 \
+                                    -insertwidth 0 \
+                                    -highlightthickness 0 \
+                                    -undo 0 \
+                                    -yscrollcommand ".console.scroll set"
         
-    pack .console.scroll                -side right -fill y
-    pack .console.text                  -side right -fill both  -expand 1
+    pack .console.scroll            -side right -fill y
+    pack .console.text              -side right -fill both  -expand 1
     
     # Read-only text widget ( http://wiki.tcl.tk/1152 ).
     

@@ -22,60 +22,22 @@ namespace export open
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc open {mytoplevel} {
-    if {[winfo exists $mytoplevel]} {
-        wm deiconify $mytoplevel
-        raise $mytoplevel
-    } else {
-        create_dialog $mytoplevel
-    }
-}
+proc open {top} {
 
-proc create_dialog {mytoplevel} {
-
-    # wm deiconify .console
-    # raise .console
-    toplevel $mytoplevel -class PdDialog
-    wm title $mytoplevel [_ "Pd search path for objects, help, fonts, and other files"]
-    # wm group $mytoplevel .
-    # wm transient $mytoplevel .console
-    
-    wm protocol $mytoplevel WM_DELETE_WINDOW "::dialog_path::apply $mytoplevel dialog_path::commit"
-    
-    # Enforce a minimum size for the window
-    wm minsize $mytoplevel 400 300
-
-    # Set the current dimensions of the window
-    wm geometry $mytoplevel "400x300"
-    
-    dialog_path::initialize $mytoplevel $::var(searchPath) dialog_path::add dialog_path::edit 
-}
-
-proc choosePath { currentpath title } {
-    if {$currentpath == ""} {
-        set currentpath "~"
-    }
-    return [tk_chooseDirectory -initialdir $currentpath -title $title]
-}
-
-proc add {} {
-    return [::dialog_path::choosePath "" {Add a new path}]
-}
-
-proc edit { currentpath } {
-    return [::dialog_path::choosePath $currentpath "Edit existing path \[$currentpath\]"]
-}
-
-proc commit { new_path } {
-    set ::var(searchPath) $new_path
-    ::pd_connect::pdsend "pd path-dialog $::var(searchPath)"
+    if {[winfo exists $top]} { wm deiconify $top; raise $top } else { _create $top }
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc initialize {top data add edit} {
+proc _create {top} {
 
+    toplevel $top -class PdDialog
+    wm title $top [_ "Search Path"]
+    wm group $top .
+    wm minsize  $top 400 300
+    wm geometry $top =400x300+30+60
+    
     frame $top.paths
     frame $top.actions
     
@@ -84,8 +46,8 @@ proc initialize {top data add edit} {
                                         -yscrollcommand "$top.paths.scrollbar set"
     scrollbar $top.paths.scrollbar      -command "$top.paths.box yview"
     
-    button $top.actions.add             -text "New..." \
-                                        -command "::dialog_path::_new $top $add"
+    button $top.actions.add             -text "Add..." \
+                                        -command "::dialog_path::_add $top"
     button $top.actions.delete          -text "Delete" \
                                         -command "::dialog_path::_delete $top"
         
@@ -98,40 +60,35 @@ proc initialize {top data add edit} {
     pack $top.actions.add       -side right -pady 2m
     pack $top.actions.delete    -side right -pady 2m
 
-    foreach item $data { $top.paths.box insert end $item }
+    foreach item $::var(searchPath) { $top.paths.box insert end $item }
     
     focus $top.paths.box
 }
 
+# wm protocol $mytoplevel WM_DELETE_WINDOW "::dialog_path::apply $mytoplevel dialog_path::commit"
+
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc apply {top commit} {
+proc _apply {top} {
 
-    set out {}
-    foreach path [$top.paths.box get 0 end] { if {$path ne ""} { lappend out [::encode $path] } }
-    $commit $out
-    
+    set ::var(searchPath) {}
+    foreach path [$top.paths.box get 0 end] { lappend ::var(searchPath) [::encode $path] }
+
+    ::pd_connect::pdsend "pd path-dialog $::var(searchPath)"
     ::pd_connect::pdsend "pd save-preferences"
 }
 
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
+proc _add {top} {
 
-proc _new {top add} { _append $top [$add] }
-
-proc _append {top item} {
-
-    if {$item ne ""} { 
-        $top.paths.box insert end $item
-    }
+    set item [tk_chooseDirectory -title [_ "Add a Directory"]]
+    
+    if {$item ne ""} { $top.paths.box insert end $item }
 }
 
 proc _delete {top} {
 
-    foreach item [$top.paths.box curselection] {
-        $top.paths.box delete $item
-    }
+    foreach item [$top.paths.box curselection] { $top.paths.box delete $item }
 }
 
 # ------------------------------------------------------------------------------------------------------------
