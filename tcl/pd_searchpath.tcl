@@ -52,8 +52,19 @@ proc initialize {top data add edit} {
     focus $top.paths.box
 }
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc apply {top commit} {
-    $commit [pdtk_encode [$top.paths.box get 0 end]]
+
+    set out {}
+    
+    foreach path [$top.paths.box get 0 end] {
+        if {$path ne ""} { lappend out [::encode $path] }
+    }
+    
+    $commit $out
+    
     ::pd_connect::pdsend "pd save-preferences"
 }
 
@@ -86,13 +97,3 @@ proc _delete {top} {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
-
-proc pdtk_encode { listdata } {
-    set outlist {}
-    foreach this_path $listdata {
-        if {0==[string match "" $this_path]} {
-            lappend outlist [::encode $this_path]
-        }
-    }
-    return $outlist
-}
