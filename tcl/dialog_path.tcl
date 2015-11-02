@@ -23,9 +23,6 @@ variable verbose_button 0
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-############ pdtk_path_dialog -- run a path dialog #########
-
-# set up the panel with the info from pd
 proc pdtk_path_dialog {mytoplevel extrapath verbose} {
     global use_standard_extensions_button
     global verbose_button
