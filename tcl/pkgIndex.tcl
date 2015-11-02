@@ -19,7 +19,6 @@ package ifneeded pd_console 0.1         [list source [file join $dir pd_console.
 package ifneeded pd_file 0.1            [list source [file join $dir pd_file.tcl]]
 package ifneeded pd_menu 0.1            [list source [file join $dir pd_menu.tcl]]
 package ifneeded pd_patch 0.1           [list source [file join $dir pd_patch.tcl]]
-package ifneeded pd_searchpath 0.1      [list source [file join $dir pd_searchpath.tcl]]
 package ifneeded pd_text 0.1            [list source [file join $dir pd_text.tcl]]
 package ifneeded pd_textwindow 0.1      [list source [file join $dir pd_textwindow.tcl]]
 

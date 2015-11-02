@@ -9,15 +9,24 @@
 
 package provide dialog_path 0.1
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 namespace eval ::dialog_path:: {
-    variable use_standard_extensions_button 1
-    variable verbose_button 0
-}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+variable use_standard_extensions_button 1
+variable verbose_button 0
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 ############ pdtk_path_dialog -- run a path dialog #########
 
 # set up the panel with the info from pd
-proc ::dialog_path::pdtk_path_dialog {mytoplevel extrapath verbose} {
+proc pdtk_path_dialog {mytoplevel extrapath verbose} {
     global use_standard_extensions_button
     global verbose_button
     set use_standard_extensions_button $extrapath
@@ -31,7 +40,7 @@ proc ::dialog_path::pdtk_path_dialog {mytoplevel extrapath verbose} {
     }
 }
 
-proc ::dialog_path::create_dialog {mytoplevel} {
+proc create_dialog {mytoplevel} {
 
     # wm deiconify .console
     # raise .console
@@ -40,7 +49,7 @@ proc ::dialog_path::create_dialog {mytoplevel} {
     # wm group $mytoplevel .
     # wm transient $mytoplevel .console
     
-    wm protocol $mytoplevel WM_DELETE_WINDOW "::pd_searchpath::apply $mytoplevel dialog_path::commit"
+    wm protocol $mytoplevel WM_DELETE_WINDOW "::dialog_path::apply $mytoplevel dialog_path::commit"
     
     # Enforce a minimum size for the window
     wm minsize $mytoplevel 400 300
@@ -48,7 +57,7 @@ proc ::dialog_path::create_dialog {mytoplevel} {
     # Set the current dimensions of the window
     wm geometry $mytoplevel "400x300"
     
-    pd_searchpath::initialize $mytoplevel $::var(searchPath) dialog_path::add dialog_path::edit 
+    dialog_path::initialize $mytoplevel $::var(searchPath) dialog_path::add dialog_path::edit 
     
     frame $mytoplevel.extraframe
     pack $mytoplevel.extraframe -side bottom -pady 2m
@@ -60,29 +69,97 @@ proc ::dialog_path::create_dialog {mytoplevel} {
         -side left -expand 1
 }
 
-
-
-############ pdtk_path_dialog -- dialog window for search path #########
-proc ::dialog_path::choosePath { currentpath title } {
+proc choosePath { currentpath title } {
     if {$currentpath == ""} {
         set currentpath "~"
     }
     return [tk_chooseDirectory -initialdir $currentpath -title $title]
 }
 
-proc ::dialog_path::add {} {
+proc add {} {
     return [::dialog_path::choosePath "" {Add a new path}]
 }
 
-proc ::dialog_path::edit { currentpath } {
+proc edit { currentpath } {
     return [::dialog_path::choosePath $currentpath "Edit existing path \[$currentpath\]"]
 }
 
-proc ::dialog_path::commit { new_path } {
+proc commit { new_path } {
     global use_standard_extensions_button
     global verbose_button
 
     set ::var(searchPath) $new_path
     ::pd_connect::pdsend "pd path-dialog $use_standard_extensions_button $verbose_button $::var(searchPath)"
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc initialize {top data add edit} {
+
+    frame $top.paths
+    frame $top.actions
+    
+    listbox $top.paths.box              -selectmode browse \
+                                        -activestyle dotbox \
+                                        -yscrollcommand "$top.paths.scrollbar set"
+    scrollbar $top.paths.scrollbar      -command "$top.paths.box yview"
+    
+    button $top.actions.add             -text "New..." \
+                                        -command "::dialog_path::_new $top $add"
+    button $top.actions.delete          -text "Delete" \
+                                        -command "::dialog_path::_delete $top"
+        
+    pack $top.paths             -side top -padx 2m -pady 2m -fill both -expand 1
+    pack $top.actions           -side top -padx 2m -fill x 
+        
+    pack $top.paths.box         -side left -fill both -expand 1
+    pack $top.paths.scrollbar   -side left -fill y -anchor w
+    
+    pack $top.actions.add       -side right -pady 2m
+    pack $top.actions.delete    -side right -pady 2m
+
+    foreach item $data { $top.paths.box insert end $item }
+    
+    focus $top.paths.box
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc apply {top commit} {
+
+    set out {}
+    foreach path [$top.paths.box get 0 end] { if {$path ne ""} { lappend out [::encode $path] } }
+    $commit $out
+    
+    ::pd_connect::pdsend "pd save-preferences"
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _new {top add} { _append $top [$add] }
+
+proc _append {top item} {
+
+    if {$item ne ""} { 
+        $top.paths.box insert end $item
+    }
+}
+
+proc _delete {top} {
+
+    foreach item [$top.paths.box curselection] {
+        $top.paths.box delete $item
+    }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
