@@ -39,8 +39,9 @@ proc _create {top} {
     frame $top.paths
     frame $top.actions
     
-    listbox $top.paths.box              -selectmode browse \
-                                        -activestyle dotbox \
+    listbox $top.paths.box              -selectmode single \
+                                        -activestyle none \
+                                        -font [getFont 12] \
                                         -yscrollcommand "$top.paths.scrollbar set"
     scrollbar $top.paths.scrollbar      -command "$top.paths.box yview"
     
