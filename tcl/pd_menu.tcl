@@ -30,10 +30,10 @@ namespace export showPopup
 
 namespace export enableCopying
 namespace export enableEditing
-namespace export enableSearchPath
+namespace export enablePath
 namespace export disableEditing
 namespace export disableCopying
-namespace export disableSearchPath
+namespace export disablePath
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -142,11 +142,11 @@ proc showPopup {top xcanvas ycanvas hasProperties hasOpen} {
 
 proc enableCopying {}       { _copying normal; _editing normal }
 proc enableEditing {}       { _editing normal }
-proc enableSearchPath {}    { .menubar.media entryconfigure [_ "Path..."] -state normal }
+proc enablePath {}          { .menubar.media entryconfigure [_ "Path..."] -state normal }
 
 proc disableCopying {}      { _copying disabled; _editing disabled }
 proc disableEditing {}      { _editing disabled }
-proc disableSearchPath {}   { .menubar.media entryconfigure [_ "Path..."] -state disabled }
+proc disablePath {}         { .menubar.media entryconfigure [_ "Path..."] -state disabled }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
