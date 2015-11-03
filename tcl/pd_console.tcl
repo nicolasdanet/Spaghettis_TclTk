@@ -35,7 +35,6 @@ proc initialize {} { ::pd_console::_create }
 
 proc post {message} {
     .console.text.internal insert end $message
-    .console.text.internal insert end "\n"
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -60,7 +59,7 @@ proc _create {} {
     .console configure -menu .menubar
 
     scrollbar   .console.scroll     -command ".console.text.internal yview"
-    text        .console.text       -font [getFont 12] \
+    text        .console.text       -font [getFont 14] \
                                     -borderwidth 0 \
                                     -insertwidth 0 \
                                     -highlightthickness 0 \

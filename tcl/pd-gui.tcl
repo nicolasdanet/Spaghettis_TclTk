@@ -26,6 +26,8 @@ if {[tk windowingsystem] eq "aqua"} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+catch { console show }
+
 rename unknown _original_unknown
 
 proc unknown {args} {
@@ -110,6 +112,8 @@ proc getFamily {} {
     set fonts { "DejaVu Sans Mono" \
                 "Bitstream Vera Sans Mono" \
                 "Inconsolata" \
+                "Verdana" \
+                "Arial" \
                 "Andale Mono" \
                 "Droid Sans Mono" }
               
@@ -120,6 +124,11 @@ proc getFamily {} {
     }
     
     return "courier"
+}
+
+proc getWeight {} {
+
+    return "normal"
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -146,8 +155,8 @@ set var(filesOpenPended)        {}
 set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pdhelp}} }
 
 set var(fontFamily)             [getFamily]
-set var(fontWeight)             "normal"
-set var(fontSizes)              "8 10 12 16 18 20 24 30 36"
+set var(fontWeight)             [getWeight]
+set var(fontSizes)              "8 10 12 14 16 18 20 24 30 36"
 
 set var(isInitialized)          0
 set var(isDsp)                  0
@@ -279,12 +288,9 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
     set ::var(apiAudioAvailables) $audioAPIs
     set ::var(apiMidiAvailables)  $midiAPIs
     
-    # Overide the default font attributes.
-    
-    if {[lsearch -exact [font families] $fontFamily] > -1} { set ::var(fontFamily) $fontFamily }
-    if {[lsearch -exact {bold normal} $fontWeight] > -1}   { set ::var(fontWeight) $fontWeight }
-    
     # Create fonts (determine horizontal and vertical spacing in pixels). 
+    
+    puts $::var(fontFamily)
     
     set measured ""
     
