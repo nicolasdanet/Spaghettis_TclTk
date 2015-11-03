@@ -51,6 +51,9 @@ proc _create {top} {
     wm minsize  $top 400 300
     wm geometry $top "=400x300+30+60"
     
+    wm deiconify .console
+    wm transient $top .console
+    
     frame $top.paths
     frame $top.actions
     
