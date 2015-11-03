@@ -180,7 +180,7 @@ proc bindPatch {top} {
     bind $top.c <MouseWheel>                { ::pd_bind::_mouseWheel %W y %D  }
     bind $top.c <Destroy>                   { ::pd_bind::_closed [winfo toplevel %W] }
         
-    wm protocol $top WM_DELETE_WINDOW       [list ::pd_connect::pdsend "$top menuclose 0"]
+    wm protocol $top WM_DELETE_WINDOW       "::pd_patch::willClose $top"
 }
 
 # ------------------------------------------------------------------------------------------------------------

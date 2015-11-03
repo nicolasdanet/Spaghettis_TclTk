@@ -13,6 +13,7 @@ package provide pd_patch 0.1
 # ------------------------------------------------------------------------------------------------------------
 
 package require pd_bind
+package require pd_connect
 package require pd_menu
 
 # ------------------------------------------------------------------------------------------------------------
@@ -24,6 +25,7 @@ namespace eval ::pd_patch:: {
 # ------------------------------------------------------------------------------------------------------------
 
 namespace export create
+namespace export willClose
 namespace export setTitle
 namespace export bringToFront
 namespace export editMode
@@ -71,6 +73,11 @@ proc create {top width height geometry editable} {
     set ::patch_isEditMode($top)        $editable
     set ::patch_isScrollableX($top.c)   0
     set ::patch_isScrollableY($top.c)   0
+}
+
+proc willClose {top} {
+
+    ::pd_connect::pdsend "$top menuclose 0"
 }
 
 # ------------------------------------------------------------------------------------------------------------
