@@ -90,10 +90,9 @@ proc setTitle {top path name arguments dirty} {
         if {[file exists "$path/$name"]} {
             catch {wm attributes $top -titlepath "$path/$name"}
         }
-        wm title $top "$name$arguments"
-    } else {
-        wm title $top "$name$arguments - $path"
     }
+    
+    wm title $top "$name$arguments"
 }
 
 # ------------------------------------------------------------------------------------------------------------
