@@ -45,7 +45,7 @@ proc _closed {} {
 proc _create {top} {
 
     toplevel $top -class PdDialog
-    wm title $top [_ "Search Path"]
+    wm title $top [_ "Path"]
     wm group $top .
     
     wm minsize  $top 400 300
