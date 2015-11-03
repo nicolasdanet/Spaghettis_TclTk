@@ -26,8 +26,6 @@ if {[tk windowingsystem] eq "aqua"} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-catch { console show }
-
 rename unknown _original_unknown
 
 proc unknown {args} {
@@ -128,7 +126,7 @@ proc getFamily {} {
 
 proc getWeight {} {
 
-    return "normal"
+    if {[tk windowingsystem] eq "x11"} { return "bold" } else { return "normal" }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -289,8 +287,6 @@ proc initialize {audioAPIs midiAPIs fontFamily fontWeight} {
     set ::var(apiMidiAvailables)  $midiAPIs
     
     # Create fonts (determine horizontal and vertical spacing in pixels). 
-    
-    puts $::var(fontFamily)
     
     set measured ""
     
