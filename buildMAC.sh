@@ -7,7 +7,7 @@
 # 
 # Tested on:
 #
-#   - Mac OS X 10.6.8 (Snow Leopard)
+#   - Mac OS X 10.6.8 (Snow Leopard / ActiveTcl 8.5.18.0 )
 #
 
 # ------------------------------------------------------------------------------------------------------------
@@ -29,8 +29,21 @@ rep=$(pwd)
 
 # Frameworks ( http://jackaudio.org/downloads/ ).
 
-wish="/System/Library/Frameworks/Tk.framework/Versions/8.5/Resources/Wish.app"
 jack="/System/Library/Frameworks/Jackmp.framework/Headers/jack.h"
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+# ActiveTcl ( http://wiki.tcl.tk/1875 ).
+
+wish="/Library/Frameworks/Tk.framework/Versions/8.5/Resources/Wish.app"
+
+if [ -e "${wish}" ]; then
+    echo "Build with ActiveTcl Tk framework ..."
+else
+    echo "Build with Apple Tk framework ..."
+    wish="/System/Library/Frameworks/Tk.framework/Versions/8.5/Resources/Wish.app"
+fi
 
 [ -e "${wish}" ] || { echo >&2 "${0##*/}: cannot find Tk framework"; exit 1; }
 
@@ -73,7 +86,7 @@ echo "Build ${HOSTTYPE} ..."
 cd "${rep}/src"                                                 || exit 1
 
 if [ -e "${jack}" ]; then
-    echo "Build with JACK ... "
+    echo "Build with JACK ..."
     make -f makefile.mac "ARCH=${arch}" JACK=TRUE               || exit 1
 else
     make -f makefile.mac "ARCH=${arch}"                         || exit 1
@@ -92,9 +105,9 @@ cp -R "${wish}" "${app}"                                        || exit 1
 rm -f "${app}/Contents/Info.plist"                              || exit 1
 rm -f "${app}/Contents/PkgInfo"                                 || exit 1
 rm -f "${app}/Contents/MacOS/Wish Shell"                        || exit 1
-rm -f "${app}/Contents/_CodeSignature/CodeResources"            || exit 1
-rmdir "${app}/Contents/_CodeSignature"                          || exit 1
+rm -rf "${app}/Contents/_CodeSignature"                         || exit 1
 rm -f "${app}/Contents/CodeResources"                           || exit 1
+rm -f "${app}/Contents/Resources/Wish.sdef"                     || exit 1
 cp -p "${plist}" "${app}/Contents/Info.plist"                   || exit 1
 echo "APPL????" > "${app}/Contents/PkgInfo"                     || exit 1
 mv "${app}/Contents/MacOS/Wish" "${app}/Contents/MacOS/Pd"      || exit 1
