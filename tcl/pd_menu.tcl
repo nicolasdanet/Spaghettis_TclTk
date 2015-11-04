@@ -295,7 +295,7 @@ proc _object {m} {
         -label [_ "Slider"] \
         -command { ::pd_menu::_handle vslider }
     $m.vertical add command \
-        -label [_ "RadioButton"] \
+        -label [_ "Radio Button"] \
         -command { ::pd_menu::_handle vradio }
     
     menu $m.horizontal
@@ -304,7 +304,7 @@ proc _object {m} {
         -label [_ "Slider"] \
         -command { ::pd_menu::_handle hslider }
     $m.horizontal add command \
-        -label [_ "RadioButton"] \
+        -label [_ "Radio Button"] \
         -command { ::pd_menu::_handle hradio }
         
     $m add cascade \
