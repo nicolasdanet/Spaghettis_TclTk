@@ -121,7 +121,7 @@ proc getFamily {} {
         }
     }
     
-    return "courier"
+    return "Courier"
 }
 
 proc getWeight {} {
