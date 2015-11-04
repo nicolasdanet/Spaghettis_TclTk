@@ -269,29 +269,23 @@ proc _object {m} {
     
     $m add command \
         -label [_ "Array"] \
-        -accelerator "Shift+${accelerator}+A" \
         -command { ::pd_menu::_handle menuarray }
     $m add separator
     
     $m add command \
         -label [_ "Bang"] \
-        -accelerator "Shift+${accelerator}+B" \
         -command { ::pd_menu::_handle bng }
     $m add command \
         -label [_ "Toggle"] \
-        -accelerator "Shift+${accelerator}+T" \
         -command { ::pd_menu::_handle toggle }
     $m add command \
         -label [_ "Panel"] \
-        -accelerator "Shift+${accelerator}+P" \
-        -command { ::pd_menu::_handle mycnv } 
+        -command { ::pd_menu::_handle mycnv }
     $m add command \
         -label [_ "Number"] \
-        -accelerator "Shift+${accelerator}+N" \
         -command { ::pd_menu::_handle numbox }
     $m add command \
         -label [_ "VU Meter"] \
-        -accelerator "Shift+${accelerator}+U" \
         -command { ::pd_menu::_handle vumeter }
     $m add separator
     
@@ -299,22 +293,18 @@ proc _object {m} {
     
     $m.vertical add command \
         -label [_ "Slider"] \
-        -accelerator "Shift+${accelerator}+V" \
         -command { ::pd_menu::_handle vslider }
     $m.vertical add command \
         -label [_ "RadioButton"] \
-        -accelerator "Shift+${accelerator}+D" \
         -command { ::pd_menu::_handle vradio }
     
     menu $m.horizontal
         
     $m.horizontal add command \
         -label [_ "Slider"] \
-        -accelerator "Shift+${accelerator}+H" \
         -command { ::pd_menu::_handle hslider }
     $m.horizontal add command \
         -label [_ "RadioButton"] \
-        -accelerator "Shift+${accelerator}+I" \
         -command { ::pd_menu::_handle hradio }
         
     $m add cascade \
@@ -331,11 +321,9 @@ proc _media {m} {
     
     $m add command \
         -label [_ "MIDI..."] \
-        -accelerator "Alt+${accelerator}+M" \
         -command { ::pd_connect::pdsend "pd midi-properties" }
     $m add command \
         -label [_ "Audio..."] \
-        -accelerator "Alt+${accelerator}+A" \
         -command { ::pd_connect::pdsend "pd audio-properties" }
     $m add separator
     
@@ -365,7 +353,6 @@ proc _media {m} {
     
     $m add command \
         -label [_ "Path..."] \
-        -accelerator "Alt+${accelerator}+P" \
         -command { ::pd_connect::pdsend "pd start-path-dialog" }
     $m add separator
     

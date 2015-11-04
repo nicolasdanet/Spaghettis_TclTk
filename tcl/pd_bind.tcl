@@ -67,38 +67,7 @@ proc initialize {} {
     event add <<NewFloat>>                  <Shift-$mod-Key-3>
     event add <<NewSymbol>>                 <Shift-$mod-Key-4>
     event add <<NewComment>>                <Shift-$mod-Key-5>
-    
-    if {[tk windowingsystem] eq "aqua"} {
-    
-    event add <<NewArray>>                  <Shift-$mod-Key-a>
-    event add <<NewBang>>                   <Shift-$mod-Key-b>
-    event add <<NewToggle>>                 <Shift-$mod-Key-t>
-    event add <<NewPanel>>                  <Shift-$mod-Key-p>
-    event add <<NewNumber>>                 <Shift-$mod-Key-n>
-    event add <<NewMeter>>                  <Shift-$mod-Key-u>
-    event add <<NewVSlider>>                <Shift-$mod-Key-v>  
-    event add <<NewVRadioButton>>           <Shift-$mod-Key-d>
-    event add <<NewHSlider>>                <Shift-$mod-Key-h>
-    event add <<NewHRadioButton>>           <Shift-$mod-Key-i>
-    
-    } else {
-    
-    event add <<NewArray>>                  <Shift-$mod-Key-A>
-    event add <<NewBang>>                   <Shift-$mod-Key-B>
-    event add <<NewToggle>>                 <Shift-$mod-Key-T>
-    event add <<NewPanel>>                  <Shift-$mod-Key-P>
-    event add <<NewNumber>>                 <Shift-$mod-Key-N>
-    event add <<NewMeter>>                  <Shift-$mod-Key-U>
-    event add <<NewVSlider>>                <Shift-$mod-Key-V>  
-    event add <<NewVRadioButton>>           <Shift-$mod-Key-D>
-    event add <<NewHSlider>>                <Shift-$mod-Key-H>
-    event add <<NewHRadioButton>>           <Shift-$mod-Key-I>
-    
-    }
-    
-    event add <<SearchPath>>                <$opt-$mod-Key-p>
-    event add <<MidiSettings>>              <$opt-$mod-Key-m>
-    event add <<AudioSettings>>             <$opt-$mod-Key-a>
+        
     event add <<RunDSP>>                    <$mod-Key-r>
     
     event add <<Motion1>>                   <Motion>
@@ -123,38 +92,25 @@ proc initialize {} {
 
     # All.
     
-    bind all <<Cut>>                        { .menubar.edit invoke "Cut"         }
-    bind all <<Copy>>                       { .menubar.edit invoke "Copy"        }
-    bind all <<Paste>>                      { .menubar.edit invoke "Paste"       }
-    bind all <<Duplicate>>                  { .menubar.edit invoke "Duplicate"   }
-    bind all <<SelectAll>>                  { .menubar.edit invoke "Select All"  }
-    bind all <<EditMode>>                   { .menubar.edit invoke "Edit Mode"   }
-    bind all <<NewFile>>                    { .menubar.file invoke "New Patch"   }
-    bind all <<OpenFile>>                   { .menubar.file invoke "Open..."     }
-    bind all <<Save>>                       { .menubar.file invoke "Save"        }
-    bind all <<SaveAs>>                     { .menubar.file invoke "Save As..."  }
-    bind all <<Close>>                      { .menubar.file invoke "Close"       }
+    bind all <<Cut>>                        { .menubar.edit     invoke "Cut"        }
+    bind all <<Copy>>                       { .menubar.edit     invoke "Copy"       }
+    bind all <<Paste>>                      { .menubar.edit     invoke "Paste"      }
+    bind all <<Duplicate>>                  { .menubar.edit     invoke "Duplicate"  }
+    bind all <<SelectAll>>                  { .menubar.edit     invoke "Select All" }
+    bind all <<EditMode>>                   { .menubar.edit     invoke "Edit Mode"  }
+    bind all <<NewFile>>                    { .menubar.file     invoke "New Patch"  }
+    bind all <<OpenFile>>                   { .menubar.file     invoke "Open..."    }
+    bind all <<Save>>                       { .menubar.file     invoke "Save"       }
+    bind all <<SaveAs>>                     { .menubar.file     invoke "Save As..." }
+    bind all <<Close>>                      { .menubar.file     invoke "Close"      }
     
-    bind all <<NewObject>>                  { .menubar.object            invoke "Object"        }
-    bind all <<NewMessage>>                 { .menubar.object            invoke "Message"       }
-    bind all <<NewFloat>>                   { .menubar.object            invoke "Float"         }
-    bind all <<NewSymbol>>                  { .menubar.object            invoke "Symbol"        }
-    bind all <<NewComment>>                 { .menubar.object            invoke "Comment"       }
-    bind all <<NewArray>>                   { .menubar.object            invoke "Array"         }
-    bind all <<NewBang>>                    { .menubar.object            invoke "Bang"          }
-    bind all <<NewToggle>>                  { .menubar.object            invoke "Toggle"        }
-    bind all <<NewPanel>>                   { .menubar.object            invoke "Panel"         }
-    bind all <<NewNumber>>                  { .menubar.object            invoke "Number"        }
-    bind all <<NewMeter>>                   { .menubar.object            invoke "VU Meter"      }
-    bind all <<NewVSlider>>                 { .menubar.object.vertical   invoke "Slider"        } 
-    bind all <<NewVRadioButton>>            { .menubar.object.vertical   invoke "RadioButton"   }
-    bind all <<NewHSlider>>                 { .menubar.object.horizontal invoke "Slider"        }
-    bind all <<NewHRadioButton>>            { .menubar.object.horizontal invoke "RadioButton"   }
-    
-    bind all <<MidiSettings>>               { .menubar.media  invoke "MIDI..."  }
-    bind all <<AudioSettings>>              { .menubar.media  invoke "Audio..." }
-    bind all <<SearchPath>>                 { .menubar.media  invoke "Path..."  }
-    bind all <<RunDSP>>                     { .menubar.media  invoke "Run DSP"  }
+    bind all <<NewObject>>                  { .menubar.object   invoke "Object"     }
+    bind all <<NewMessage>>                 { .menubar.object   invoke "Message"    }
+    bind all <<NewFloat>>                   { .menubar.object   invoke "Float"      }
+    bind all <<NewSymbol>>                  { .menubar.object   invoke "Symbol"     }
+    bind all <<NewComment>>                 { .menubar.object   invoke "Comment"    }
+
+    bind all <<RunDSP>>                     { .menubar.media    invoke "Run DSP"    }
     
     bind all <KeyPress>                     { ::pd_bind::_key %W %K %A 1 0  }
     bind all <KeyRelease>                   { ::pd_bind::_key %W %K %A 0 0  }
