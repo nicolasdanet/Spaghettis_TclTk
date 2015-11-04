@@ -51,10 +51,11 @@ proc _closed {} {
 proc _create {} {
 
     toplevel .console -class PdConsole
-    
-    wm title    .console [_ "PureData"]
+    wm title .console [_ "PureData"]
+    wm group .console .
+     
     wm minsize  .console 400 75
-    wm geometry .console =500x400+20+50
+    wm geometry .console "=500x400+20+50"
     
     .console configure -menu .menubar
 

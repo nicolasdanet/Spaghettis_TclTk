@@ -38,13 +38,14 @@ proc create {top width height geometry editable} {
 
     # Create a toplevel window with a menubar.
     
-    toplevel $top   -width $width -height $height -class PdPatch
-    $top configure  -menu .menubar
+    toplevel $top -width $width -height $height -class PdPatch
+    wm group $top .
 
     wm minsize  $top 50 50
-    wm geometry $top [format "%dx%d%s" $width $height $geometry]
-    wm group    $top .
+    wm geometry $top [format "=%dx%d%s" $width $height $geometry]
 
+    $top configure  -menu .menubar
+    
     # Create a canvas inside that fills all the window.
     
     canvas $top.c   -width $width \

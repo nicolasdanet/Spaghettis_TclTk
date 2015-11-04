@@ -50,10 +50,7 @@ proc _create {top} {
     
     wm minsize  $top 400 300
     wm geometry $top "=400x300+30+60"
-    
-    wm deiconify .console
-    wm transient $top .console
-    
+        
     frame $top.paths
     frame $top.actions
     
@@ -93,23 +90,22 @@ proc _addItem  {top} {
     
     if {$item ne ""} { $top.paths.box insert end $item }
     
-    ::dialog_path::_applyChanges $top
+    ::dialog_path::_apply $top
 }
 
 proc _deleteItem {top} {
 
     foreach item [$top.paths.box curselection] { $top.paths.box delete $item }
     
-    ::dialog_path::_applyChanges $top
+    ::dialog_path::_apply $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _applyChanges {top} {
+proc _apply {top} {
 
     set ::var(searchPath) {}
-    
     foreach path [$top.paths.box get 0 end] { lappend ::var(searchPath) [::encode $path] }
 
     ::pd_connect::pdsend "pd path-dialog $::var(searchPath)"
