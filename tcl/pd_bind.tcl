@@ -134,7 +134,8 @@ proc bindPatch {top} {
     bind $top.c <<PopupMenu>>               { ::pd_bind::_mouse %W %x %y %b 8 }
     bind $top.c <<ClickRelease>>            { ::pd_bind::_mouseUp %W %x %y %b }
     bind $top.c <MouseWheel>                { ::pd_bind::_mouseWheel %W y %D  }
-    bind $top.c <Destroy>                   { ::pd_bind::_closed [winfo toplevel %W] }
+    
+    bind $top.c <Destroy>                   { ::pd_patch::closed [winfo toplevel %W] }
         
     wm protocol $top WM_DELETE_WINDOW       "::pd_patch::willClose $top"
 }
@@ -245,12 +246,6 @@ proc _mapped {top} {
 proc _unmapped {top} {
 
     ::pd_connect::pdsend "$top map 0"
-}
-
-proc _closed {top} {
-
-    unset ::patch_isEditMode($top)
-    unset ::patch_isEditing($top)
 }
 
 # ------------------------------------------------------------------------------------------------------------

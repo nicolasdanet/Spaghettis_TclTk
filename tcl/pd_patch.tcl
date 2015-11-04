@@ -26,6 +26,7 @@ namespace eval ::pd_patch:: {
 
 namespace export create
 namespace export willClose
+namespace export closed
 namespace export setTitle
 namespace export bringToFront
 namespace export editMode
@@ -79,6 +80,12 @@ proc create {top width height geometry editable} {
 proc willClose {top} {
 
     ::pd_connect::pdsend "$top menuclose 0"
+}
+
+proc closed {top} {
+
+    unset ::patch_isEditMode($top)
+    unset ::patch_isEditing($top)
 }
 
 # ------------------------------------------------------------------------------------------------------------
