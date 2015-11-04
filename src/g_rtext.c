@@ -303,7 +303,7 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
     }
     if (action == SEND_FIRST)
     {
-        sys_vgui("pdtk_text_new .x%lx.c {%s %s text} %f %f {%.*s} %d %s\n",
+        sys_vgui("::pd_object::new .x%lx.c {%s %s text} %f %f {%.*s} %d %s\n",
             canvas, x->x_tag, rtext_gettype(x)->s_name,
             dispx + LMARGIN, dispy + TMARGIN,
             outchars_b, tempbuf, sys_hostfontsize(font),

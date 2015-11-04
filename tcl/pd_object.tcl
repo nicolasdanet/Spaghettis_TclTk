@@ -17,6 +17,16 @@ namespace eval ::pd_object:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+proc new {c tags x y text fontSize color} {
+
+    $c create text $x $y    -tags $tags \
+                            -text $text \
+                            -fill $color \
+                            -anchor nw \
+                            -font [getFont $fontSize]
+
+}
+
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
@@ -26,20 +36,7 @@ namespace eval ::pd_object:: {
 # ------------------------------------------------------------------------------------------------------------
 
 # create a new text object (ie. obj, msg, comment)
-proc pdtk_text_new {tkcanvas tags x y text font_size color} {
-    $tkcanvas create text $x $y -tags $tags -text $text -fill $color \
-        -anchor nw -font [getFont $font_size]
-    set mytag [lindex $tags 0]
-    $tkcanvas bind $mytag <Home> "$tkcanvas icursor $mytag 0"
-    $tkcanvas bind $mytag <End>  "$tkcanvas icursor $mytag end"
-    # select all
-    $tkcanvas bind $mytag <Triple-ButtonRelease-1>  \
-        "pdtk_text_selectall $tkcanvas $mytag"
-    if {[tk windowingsystem] eq "aqua"} { # emacs bindings for Mac OS X
-        $tkcanvas bind $mytag <Control-a> "$tkcanvas icursor $mytag 0"
-        $tkcanvas bind $mytag <Control-e> "$tkcanvas icursor $mytag end"
-    }
-}
+
 
 # change the text in an existing text box
 proc pdtk_text_set {tkcanvas tag text} {
