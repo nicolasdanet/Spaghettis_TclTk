@@ -17,7 +17,7 @@ namespace eval ::pd_object:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc new {c tags x y text fontSize color} {
+proc newText {c tags x y text fontSize color} {
 
     $c create text $x $y    -tags $tags \
                             -text $text \
@@ -27,6 +27,11 @@ proc new {c tags x y text fontSize color} {
 
 }
 
+proc setText {c tag text} {
+
+    $c itemconfig $tag -text $text
+}
+
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
@@ -34,14 +39,6 @@ proc new {c tags x y text fontSize color} {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
-
-# create a new text object (ie. obj, msg, comment)
-
-
-# change the text in an existing text box
-proc pdtk_text_set {tkcanvas tag text} {
-    $tkcanvas itemconfig $tag -text $text
-}
 
 # paste into an existing text box by literally "typing" the contents of the
 # clipboard, i.e. send the contents one character at a time via 'pd key'

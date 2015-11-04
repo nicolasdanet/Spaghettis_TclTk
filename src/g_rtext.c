@@ -303,7 +303,7 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
     }
     if (action == SEND_FIRST)
     {
-        sys_vgui("::pd_object::new .x%lx.c {%s %s text} %f %f {%.*s} %d %s\n",
+        sys_vgui("::pd_object::newText .x%lx.c {%s %s text} %f %f {%.*s} %d %s\n",
             canvas, x->x_tag, rtext_gettype(x)->s_name,
             dispx + LMARGIN, dispy + TMARGIN,
             outchars_b, tempbuf, sys_hostfontsize(font),
@@ -312,7 +312,7 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
     }
     else if (action == SEND_UPDATE)
     {
-        sys_vgui("pdtk_text_set .x%lx.c %s {%.*s}\n",
+        sys_vgui("::pd_object::setText .x%lx.c %s {%.*s}\n",
             canvas, x->x_tag, outchars_b, tempbuf);
         if (pixwide != x->x_drawnwidth || pixhigh != x->x_drawnheight) 
             text_drawborder(x->x_text, x->x_glist, x->x_tag,
