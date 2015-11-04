@@ -1281,8 +1281,8 @@ int sys_startgui(const char *libdir)
         sys_set_extrapath();
         sys_set_startup();
                            /* ... and about font, medio APIS, etc */
-        sys_vgui("::initialize %s %s {%s} %s\n",
-                 buf, buf2, sys_font, sys_fontweight); 
+        sys_vgui("::initialize %s %s\n",
+                 buf, buf2); 
                  /* */
                  /* */
         sys_vgui("set ::var(apiAudio) %d\n", sys_audioapi);

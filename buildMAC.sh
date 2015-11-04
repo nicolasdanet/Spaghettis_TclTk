@@ -39,9 +39,8 @@ jack="/System/Library/Frameworks/Jackmp.framework/Headers/jack.h"
 wish="/Library/Frameworks/Tk.framework/Versions/8.5/Resources/Wish.app"
 
 if [ -e "${wish}" ]; then
-    echo "Build with ActiveTcl Tk framework ..."
+    echo "Build with ActiveTcl ..."
 else
-    echo "Build with Apple Tk framework ..."
     wish="/System/Library/Frameworks/Tk.framework/Versions/8.5/Resources/Wish.app"
 fi
 
