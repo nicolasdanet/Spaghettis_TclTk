@@ -30,6 +30,7 @@ namespace export closed
 namespace export setTitle
 namespace export bringToFront
 namespace export editMode
+namespace export scroll
 namespace export scrollRegion
 
 # ------------------------------------------------------------------------------------------------------------
@@ -84,8 +85,10 @@ proc willClose {top} {
 
 proc closed {top} {
 
-    unset ::patch_isEditMode($top)
     unset ::patch_isEditing($top)
+    unset ::patch_isEditMode($top)
+    unset ::patch_isScrollableX($top.c)
+    unset ::patch_isScrollableY($top.c)
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -126,6 +129,12 @@ proc editMode {top state} {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
+
+proc scroll {c axis amount} {
+
+    if {$axis eq "x" && $::patch_isScrollableX($c) == 1} { $c xview scroll [expr {-($amount)}] units }
+    if {$axis eq "y" && $::patch_isScrollableY($c) == 1} { $c yview scroll [expr {-($amount)}] units }
+}
 
 proc scrollRegion {c} {
 

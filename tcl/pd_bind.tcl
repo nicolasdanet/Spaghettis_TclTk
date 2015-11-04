@@ -133,8 +133,7 @@ proc bindPatch {top} {
     bind $top.c <<ClickLeft4>>              { ::pd_bind::_mouse %W %x %y %b 3 }
     bind $top.c <<PopupMenu>>               { ::pd_bind::_mouse %W %x %y %b 8 }
     bind $top.c <<ClickRelease>>            { ::pd_bind::_mouseUp %W %x %y %b }
-    bind $top.c <MouseWheel>                { ::pd_bind::_mouseWheel %W y %D  }
-    
+    bind $top.c <MouseWheel>                { ::pd_patch::scroll %W y %D      }
     bind $top.c <Destroy>                   { ::pd_patch::closed [winfo toplevel %W] }
         
     wm protocol $top WM_DELETE_WINDOW       "::pd_patch::willClose $top"
@@ -187,15 +186,6 @@ proc _mouseUp {c x y b} {
 
     set top [winfo toplevel $c]
     ::pd_connect::pdsend "$top mouseup [$c canvasx $x] [$c canvasy $y] $b"
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc _mouseWheel {c axis amount} {
-
-    if {$axis eq "x" && $::patch_isScrollableX($c) == 1} { $c xview scroll [expr {-($amount)}] units }
-    if {$axis eq "y" && $::patch_isScrollableY($c) == 1} { $c yview scroll [expr {-($amount)}] units }
 }
 
 # ------------------------------------------------------------------------------------------------------------
