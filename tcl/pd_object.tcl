@@ -24,7 +24,6 @@ proc newText {c tags x y text fontSize color} {
                             -fill $color \
                             -anchor nw \
                             -font [getFont $fontSize]
-
 }
 
 proc setText {c tag text} {
