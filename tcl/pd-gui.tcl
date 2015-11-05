@@ -274,7 +274,7 @@ proc main {argc argv} {
         ::pd_connect::clientSocket $::var(tcpPort) $::var(tcpHost)
         
     } else {
-        set ::var(tcpPort) [::pd_connect::serverSocket]
+        ::pd_connect::serverSocket
         set executable [file join [file dirname [info script]] "../bin/pd"]
         exec -- $executable -guiport $::var(tcpPort) &
     }

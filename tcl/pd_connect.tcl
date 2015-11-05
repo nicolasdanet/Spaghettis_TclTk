@@ -108,7 +108,7 @@ proc serverSocket {} {
         error "Creation of the TCP server failed."
     }
     
-    return [lindex [fconfigure $sock -sockname] 2]
+    set ::var(tcpPort) [lindex [fconfigure $sock -sockname] 2]
 }
 
 # ------------------------------------------------------------------------------------------------------------
