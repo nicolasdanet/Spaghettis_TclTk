@@ -105,7 +105,7 @@ package require pd_textwindow
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc getFamily {} {
+proc getDefaultFamily {} {
     
     set fonts { "DejaVu Sans Mono" \
                 "Bitstream Vera Sans Mono" \
@@ -124,9 +124,13 @@ proc getFamily {} {
     return "Courier"
 }
 
-proc getWeight {} {
+proc getDefaultWeight {} {
 
-    if {[tk windowingsystem] eq "x11"} { return "bold" } else { return "normal" }
+    if {[tk windowingsystem] eq "aqua"} { 
+        return "normal" 
+    } else { 
+        return "bold" 
+    }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -152,8 +156,8 @@ set var(filesExtensions)        ".pd .pdhelp"
 set var(filesOpenPended)        {}
 set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pdhelp}} }
 
-set var(fontFamily)             [getFamily]
-set var(fontWeight)             [getWeight]
+set var(fontFamily)             [getDefaultFamily]
+set var(fontWeight)             [getDefaultWeight]
 set var(fontSizes)              "8 10 12 14 16 18 20 24 30 36"
 
 set var(isInitialized)          0

@@ -1665,7 +1665,7 @@ static void canvas_displaceselection(t_canvas *x, int dx, int dy)
     }
     if (resortin) canvas_resortinlets(x);
     if (resortout) canvas_resortoutlets(x);
-    sys_vgui("::pd_patch::scrollRegion .x%lx.c\n", x);
+    sys_vgui("::pd_patch::updateScrollRegion .x%lx.c\n", x);
     if (x->gl_editor->e_selection)
         canvas_dirty(x, 1);
 }
@@ -2380,7 +2380,7 @@ static void canvas_cut(t_canvas *x)
             canvas_undo_set_cut(x, UCUT_CUT), "cut");
         canvas_copy(x);
         canvas_doclear(x);
-        sys_vgui("::pd_patch::scrollRegion .x%lx.c\n", x);
+        sys_vgui("::pd_patch::updateScrollRegion .x%lx.c\n", x);
     }
 }
 
@@ -2424,7 +2424,7 @@ static void canvas_dopaste(t_canvas *x, t_binbuf *b)
     paste_canvas = 0;
     canvas_resume_dsp(dspstate);
     canvas_dirty(x, 1);
-    sys_vgui("::pd_patch::scrollRegion .x%lx.c\n", x);
+    sys_vgui("::pd_patch::updateScrollRegion .x%lx.c\n", x);
     glist_donewloadbangs(x);
     asym->s_thing = bounda;
     s__X.s_thing = boundx;
@@ -2438,7 +2438,7 @@ static void canvas_paste(t_canvas *x)
     if (x->gl_editor->e_textedfor)
     {
         /* simulate keystrokes as if the copy buffer were typed in. */
-        sys_vgui("pdtk_pastetext .x%lx\n", x);
+        // sys_vgui("::pd_object::pasteText .x%lx\n", x);
     }
     else
     {
@@ -2719,7 +2719,7 @@ void canvas_editmode(t_canvas *x, t_floatarg state)
         }
     }
     if (glist_isvisible(x))
-      sys_vgui("::pd_patch::editMode .x%lx %d\n",
+      sys_vgui("::pd_patch::setEditMode .x%lx %d\n",
           glist_getcanvas(x), x->gl_edit);
 }
 

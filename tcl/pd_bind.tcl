@@ -149,7 +149,7 @@ proc _focusIn {top} {
     switch -- [winfo class $top] {
         "PdPatch"   {
             ::pd_menu::configureForPatch
-            ::pd_patch::editMode $top $::patch_isEditMode($top)
+            ::pd_patch::setEditMode $top $::patch_isEditMode($top)
 
             if {$::patch_isEditMode($top)} { $top configure -cursor $::var(cursorEditNothing) }
         }
@@ -220,7 +220,7 @@ proc _key {w keysym iso isPress isShift} {
 proc _resized {top width height x y} {
 
     if {$width > 1 || $height > 1} { 
-        ::pd_patch::scrollRegion $top.c
+        ::pd_patch::updateScrollRegion $top.c
         ::pd_connect::pdsend "$top setbounds $x $y [expr {$x + $width}] [expr {$y + $height}]"
     }
 }
