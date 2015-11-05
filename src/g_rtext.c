@@ -458,7 +458,7 @@ void rtext_activate(t_rtext *x, int state)
     t_canvas *canvas = glist_getcanvas(glist);
     if (state)
     {
-        sys_vgui("pdtk_text_editing .x%lx %s 1\n", canvas, x->x_tag);
+        sys_vgui("::pd_object::setEditing .x%lx %s 1\n", canvas, x->x_tag);
         glist->gl_editor->e_textedfor = x;
         glist->gl_editor->e_textdirty = 0;
         x->x_dragfrom = x->x_selstart = 0;
@@ -467,7 +467,7 @@ void rtext_activate(t_rtext *x, int state)
     }
     else
     {
-        sys_vgui("pdtk_text_editing .x%lx {} 0\n", canvas);
+        sys_vgui("::pd_object::setEditing .x%lx {} 0\n", canvas);
         if (glist->gl_editor->e_textedfor == x)
             glist->gl_editor->e_textedfor = 0;
         x->x_active = 0;

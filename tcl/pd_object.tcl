@@ -19,7 +19,7 @@ namespace eval ::pd_object:: {
 
 namespace export newText
 namespace export setText
-namespace export pasteText
+namespace export setEditing
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -38,6 +38,13 @@ proc setText {c tag text} {
     $c itemconfig $tag -text $text
 }
 
+proc setEditing {top tag isEditing} {
+
+    if {$isEditing == 0} {selection clear $top.c}
+    $top.c focus $tag
+    set ::patch_isEditing($top) $isEditing
+}
+
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
@@ -45,21 +52,3 @@ proc setText {c tag text} {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
-
-
-
-# select all of the text in an existing text box
-proc pdtk_text_selectall {tkcanvas mytag} {
-    if {$::patch_isEditMode([winfo toplevel $tkcanvas])} {
-        $tkcanvas select from $mytag 0
-        $tkcanvas select to $mytag end
-    }
-}
-
-# de/activate a text box for editing based on $editing flag
-proc pdtk_text_editing {mytoplevel tag editing} {
-    set tkcanvas $mytoplevel.c
-    if {$editing == 0} {selection clear $tkcanvas}
-    $tkcanvas focus $tag
-    set ::patch_isEditing($mytoplevel) $editing
-}
