@@ -369,6 +369,7 @@ void canvas_noundo(t_canvas *x)
 
 static void canvas_undo(t_canvas *x)
 {
+    int dspwas = canvas_suspend_dsp();
     if (x != canvas_undo_canvas)
         bug("canvas_undo 1");
     else if (canvas_undo_whatnext != UNDO_UNDO)
@@ -379,13 +380,15 @@ static void canvas_undo(t_canvas *x)
         (*canvas_undo_fn)(canvas_undo_canvas, canvas_undo_buf, UNDO_UNDO);
             /* enable redo in menu */
         /*if (glist_isvisible(x) && glist_istoplevel(x))
-            sys_vgui("pdtk_undomenu .x%lx no %s\n", x, canvas_undo_name);*/
+            sys_vgui("pdtk_undomenu .x%lx no %s\n", x, canvas_undo_name); */
         canvas_undo_whatnext = UNDO_REDO;
     }
+    canvas_resume_dsp(dspwas);
 }
 
 static void canvas_redo(t_canvas *x)
 {
+    int dspwas = canvas_suspend_dsp();
     if (x != canvas_undo_canvas)
         bug("canvas_undo 1");
     else if (canvas_undo_whatnext != UNDO_REDO)
@@ -396,9 +399,10 @@ static void canvas_redo(t_canvas *x)
         (*canvas_undo_fn)(canvas_undo_canvas, canvas_undo_buf, UNDO_REDO);
             /* enable undo in menu */
         /*if (glist_isvisible(x) && glist_istoplevel(x))
-            sys_vgui("pdtk_undomenu .x%lx %s no\n", x, canvas_undo_name); */
+            sys_vgui("pdtk_undomenu .x%lx %s no\n", x, canvas_undo_name);*/
         canvas_undo_whatnext = UNDO_UNDO;
     }
+    canvas_resume_dsp(dspwas);
 }
 
 /* ------- specific undo methods: 1. connect and disconnect -------- */
