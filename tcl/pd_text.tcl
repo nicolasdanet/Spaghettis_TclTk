@@ -23,6 +23,7 @@ namespace eval ::pd_text:: {
 # ------------------------------------------------------------------------------------------------------------
 
 namespace export open
+namespace export setDirty
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -50,6 +51,8 @@ proc _create {top geometry title fontSize} {
     
     text $top.text  -font [getFont $fontSize] \
                     -yscrollcommand "$top.scroll set" \
+                    -borderwidth 0 \
+                    -highlightthickness 0 \
                     -background white
                     
     scrollbar $top.scroll   -command "$top.text yview"
@@ -64,6 +67,11 @@ proc _create {top geometry title fontSize} {
     wm protocol $top WM_DELETE_WINDOW   "pdtk_textwindow_close $top 1"
         
     focus $top.text
+}
+
+proc setDirty {top flag} {
+
+    if {[winfo exists $top]} { $top.text edit modified $flag }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -83,12 +91,6 @@ proc _dirty {top} {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
-
-proc pdtk_textwindow_setdirty {name flag} {
-    if {[winfo exists $name]} {
-        catch {$name.text edit modified $flag}
-    }
-}
 
 proc pdtk_textwindow_doclose {name} {
     destroy $name
@@ -120,7 +122,7 @@ proc pdtk_textwindow_send {name} {
             }
         }
     }
-    pdtk_textwindow_setdirty $name 0
+    ::pd_text::setDirty $name 0
 }
 
 proc pdtk_textwindow_close {name ask} {
