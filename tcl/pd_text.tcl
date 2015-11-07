@@ -50,9 +50,7 @@ proc _create {top geometry title fontSize} {
     wm minsize  $top 50 50
     wm geometry $top $geometry
     
-    text $top.text  -relief raised \
-                    -bd 2 \
-                    -font [getFont $fontSize] \
+    text $top.text  -font [getFont $fontSize] \
                     -yscrollcommand "$top.scroll set" \
                     -background white
                     
