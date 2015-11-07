@@ -100,7 +100,7 @@ package require pd_file
 package require pd_menu
 package require pd_object
 package require pd_patch
-package require pd_textwindow
+package require pd_text
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

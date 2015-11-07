@@ -41,7 +41,9 @@ proc setText {c tag text} {
 proc setEditing {top tag isEditing} {
 
     if {$isEditing == 0} {selection clear $top.c}
+    
     $top.c focus $tag
+    
     set ::patch_isEditing($top) $isEditing
 }
 

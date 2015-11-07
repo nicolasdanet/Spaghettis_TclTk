@@ -9,40 +9,66 @@
 
 # Copyright (c) 2002-2012 krzYszcz and others.
 
+# Adapted from krzYszcz's code for coll in cyclone.
+
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# pd_textwindow - a window containing scrollable text for "qlist" and
-# "textfile" objects - later the latter might get renamed just "text"
+package provide pd_text 0.1
 
-# this is adapted from krzYszcz's code for coll in cyclone
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-package provide pd_textwindow 0.1
+namespace eval ::pd_text:: {
 
-# these procs are currently all in the global namespace because they're
-# called from pd.
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-proc pdtk_textwindow_open {name geometry title font} {
- if {[winfo exists $name]} {
+namespace export open
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc open {name geometry title font} {
+
+    ::pd_console::post $name
+    
+    if {[winfo exists $name]} {
         $name.text delete 1.0 end
     } else {
-        toplevel $name
-        wm title $name $title
-        wm geometry $name $geometry
-        wm protocol $name WM_DELETE_WINDOW \
-            [concat pdtk_textwindow_close $name 1]
-        bind $name <<Modified>> "pdtk_textwindow_dodirty $name"
-        text $name.text -relief raised -bd 2 \
-            -font [getFont $font] \
-            -yscrollcommand "$name.scroll set" -background white
-        scrollbar $name.scroll -command "$name.text yview"
-        pack $name.scroll -side right -fill y
-        pack $name.text -side left -fill both -expand 1
-        bind $name.text <<Save>> "pdtk_textwindow_send $name"
-        bind $name.text <<Close>> "pdtk_textwindow_close $name 1"
-        focus $name.text
+        _create $name $geometry $title $font
     }
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _create {name geometry title font} {
+    
+    toplevel $name
+    wm title $name $title
+    wm geometry $name $geometry
+    wm protocol $name WM_DELETE_WINDOW \
+        [concat pdtk_textwindow_close $name 1]
+    bind $name <<Modified>> "pdtk_textwindow_dodirty $name"
+    text $name.text -relief raised -bd 2 \
+        -font [getFont $font] \
+        -yscrollcommand "$name.scroll set" -background white
+    scrollbar $name.scroll -command "$name.text yview"
+    pack $name.scroll -side right -fill y
+    pack $name.text -side left -fill both -expand 1
+    bind $name.text <<Save>> "pdtk_textwindow_send $name"
+    bind $name.text <<Close>> "pdtk_textwindow_close $name 1"
+    focus $name.text
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 proc pdtk_textwindow_dodirty {name} {
     if {[catch {$name.text edit modified} dirty]} {set dirty 1}
