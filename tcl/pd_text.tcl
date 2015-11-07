@@ -9,8 +9,6 @@
 
 # Copyright (c) 2002-2012 krzYszcz and others.
 
-# Adapted from krzYszcz's code for coll in cyclone.
-
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
@@ -61,7 +59,7 @@ proc _create {top geometry title fontSize} {
 
     bind $top.text  <<Save>>            "pdtk_textwindow_send $top"
     bind $top.text  <<Close>>           "pdtk_textwindow_close $top 1"
-    bind $top       <<Modified>>        "pdtk_textwindow_dodirty $top"
+    bind $top       <<Modified>>        "::pd_text::_dirty $top"
     
     wm protocol $top WM_DELETE_WINDOW   "pdtk_textwindow_close $top 1"
         
@@ -71,21 +69,20 @@ proc _create {top geometry title fontSize} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-}
+proc _dirty {top} {
 
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc pdtk_textwindow_dodirty {name} {
-    if {[catch {$name.text edit modified} dirty]} {set dirty 1}
-    set title [wm title $name]
-    set dt [string equal -length 1 $title "*"]
-    if {$dirty} {
-        if {$dt == 0} {wm title $name *$title}
-    } else {
-        if {$dt} {wm title $name [string range $title 1 end]}
+    if {[tk windowingsystem] eq "aqua"} {
+        wm attributes $top -modified [$top.text edit modified]
     }
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 proc pdtk_textwindow_setdirty {name flag} {
     if {[winfo exists $name]} {
