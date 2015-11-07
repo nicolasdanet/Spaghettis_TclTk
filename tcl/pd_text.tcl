@@ -29,37 +29,45 @@ namespace export open
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc open {name geometry title font} {
+proc open {top geometry title fontSize} {
 
-    ::pd_console::post $name
-    
-    if {[winfo exists $name]} {
-        $name.text delete 1.0 end
+    if {[winfo exists $top]} {
+        $top.text delete 1.0 end
     } else {
-        _create $name $geometry $title $font
+        _create $top $geometry $title $fontSize
     }
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {name geometry title font} {
+proc _create {top geometry title fontSize} {
     
-    toplevel $name
-    wm title $name $title
-    wm geometry $name $geometry
-    wm protocol $name WM_DELETE_WINDOW \
-        [concat pdtk_textwindow_close $name 1]
-    bind $name <<Modified>> "pdtk_textwindow_dodirty $name"
-    text $name.text -relief raised -bd 2 \
-        -font [getFont $font] \
-        -yscrollcommand "$name.scroll set" -background white
-    scrollbar $name.scroll -command "$name.text yview"
-    pack $name.scroll -side right -fill y
-    pack $name.text -side left -fill both -expand 1
-    bind $name.text <<Save>> "pdtk_textwindow_send $name"
-    bind $name.text <<Close>> "pdtk_textwindow_close $name 1"
-    focus $name.text
+    toplevel $top
+    wm title $top $title
+    wm group $top .
+     
+    wm minsize  $top 50 50
+    wm geometry $top $geometry
+    
+    text $top.text  -relief raised \
+                    -bd 2 \
+                    -font [getFont $fontSize] \
+                    -yscrollcommand "$top.scroll set" \
+                    -background white
+                    
+    scrollbar $top.scroll   -command "$top.text yview"
+    
+    pack $top.text   -side left -fill both -expand 1
+    pack $top.scroll -side left -fill y
+
+    bind $top.text  <<Save>>            "pdtk_textwindow_send $top"
+    bind $top.text  <<Close>>           "pdtk_textwindow_close $top 1"
+    bind $top       <<Modified>>        "pdtk_textwindow_dodirty $top"
+    
+    wm protocol $top WM_DELETE_WINDOW   "pdtk_textwindow_close $top 1"
+        
+    focus $top.text
 }
 
 # ------------------------------------------------------------------------------------------------------------

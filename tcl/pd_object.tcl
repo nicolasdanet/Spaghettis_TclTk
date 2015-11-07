@@ -25,7 +25,7 @@ namespace export setEditing
 # ------------------------------------------------------------------------------------------------------------
 
 proc newText {c tags x y text fontSize color} {
-
+    
     $c create text $x $y    -tags $tags \
                             -text $text \
                             -fill $color \
