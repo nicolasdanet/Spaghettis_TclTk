@@ -88,7 +88,7 @@ static void textbuf_open(t_textbuf *x)
     else
     {
         char buf[40];
-        sys_vgui("::pd_text::open .x%lx %dx%d {%s: %s} %d\n",
+        sys_vgui("::pd_text::show .x%lx %dx%d {%s: %s} %d\n",
             x, 600, 340, "myname", "text", 
                  sys_hostfontsize(glist_getfont(x->b_canvas)));
         sprintf(buf, ".x%lx", (unsigned long)x);
