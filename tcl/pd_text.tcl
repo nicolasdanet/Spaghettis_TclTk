@@ -17,12 +17,18 @@ package provide pd_text 0.1
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+package require pd_connect
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 namespace eval ::pd_text:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
 namespace export open
+namespace export release
 namespace export setDirty
 
 # ------------------------------------------------------------------------------------------------------------
@@ -35,6 +41,20 @@ proc open {top geometry title fontSize} {
     } else {
         _create $top $geometry $title $fontSize
     }
+}
+
+proc release {top} {
+
+    destroy $top
+    ::pd_connect::pdsend "$top signoff"
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc setDirty {top flag} {
+
+    if {[winfo exists $top]} { $top.text edit modified $flag }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -61,17 +81,11 @@ proc _create {top geometry title fontSize} {
     pack $top.scroll -side left -fill y
 
     bind $top.text  <<Save>>            "pdtk_textwindow_send $top"
-    bind $top.text  <<Close>>           "pdtk_textwindow_close $top 1"
     bind $top       <<Modified>>        "::pd_text::_dirty $top"
     
     wm protocol $top WM_DELETE_WINDOW   "pdtk_textwindow_close $top 1"
         
     focus $top.text
-}
-
-proc setDirty {top flag} {
-
-    if {[winfo exists $top]} { $top.text edit modified $flag }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -92,10 +106,7 @@ proc _dirty {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc pdtk_textwindow_doclose {name} {
-    destroy $name
-    ::pd_connect::pdsend [concat $name signoff]
-}
+
 
 proc pdtk_textwindow_append {name contents} {
     if {[winfo exists $name]} {

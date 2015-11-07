@@ -99,7 +99,7 @@ static void textbuf_open(t_textbuf *x)
 
 static void textbuf_close(t_textbuf *x)
 {
-    sys_vgui("pdtk_textwindow_doclose .x%lx\n", x);
+    sys_vgui("::pd_text::release .x%lx\n", x);
     if (x->b_guiconnect)
     {
         guiconnect_notarget(x->b_guiconnect, 1000);
