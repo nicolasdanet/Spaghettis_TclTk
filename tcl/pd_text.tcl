@@ -52,6 +52,16 @@ proc release {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+proc append {top contents} {
+
+    if {[winfo exists $top]} { $top.text insert end $contents }
+}
+
+proc clear {top} {
+
+    if {[winfo exists $top]} { $top.text delete 1.0 end }
+}
+
 proc setDirty {top flag} {
 
     if {[winfo exists $top]} { $top.text edit modified $flag }
@@ -80,8 +90,8 @@ proc _create {top geometry title fontSize} {
     pack $top.text   -side left -fill both -expand 1
     pack $top.scroll -side left -fill y
 
-    bind $top.text  <<Save>>            "pdtk_textwindow_send $top"
-    bind $top       <<Modified>>        "::pd_text::_dirty $top"
+    bind $top.text  <<Save>>            "::pd_text::_save $top"
+    bind $top       <<Modified>>        "::pd_text::_modified $top"
     
     wm protocol $top WM_DELETE_WINDOW   "pdtk_textwindow_close $top 1"
         
@@ -91,50 +101,38 @@ proc _create {top geometry title fontSize} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _dirty {top} {
+proc _modified {top} {
 
     if {[tk windowingsystem] eq "aqua"} {
         wm attributes $top -modified [$top.text edit modified]
     }
 }
 
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
+proc _save {top} {
 
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-
-
-proc pdtk_textwindow_append {name contents} {
-    if {[winfo exists $name]} {
-        $name.text insert end $contents
-    }
-}
-
-proc pdtk_textwindow_clear {name} {
-    if {[winfo exists $name]} {
-        $name.text delete 1.0 end
-    }
-}
-
-proc pdtk_textwindow_send {name} {
-    if {[winfo exists $name]} {
-        ::pd_connect::pdsend [concat $name clear]
-        for {set i 1} \
-         {[$name.text compare $i.end < end]} \
-              {incr i 1} {
-            set lin [$name.text get $i.0 $i.end]
-            if {$lin != ""} {
-                set lin [string map {"," " \\, " ";" " \\; " "$" "\\$"} $lin]
-                ::pd_connect::pdsend [concat $name addline $lin]
+    if {[winfo exists $top]} {
+    
+        ::pd_connect::pdsend "$top clear"
+        
+        for {set i 1} {[$top.text compare $i.end < end]} {incr i 1} {
+            set line [$top.text get $i.0 $i.end]
+            if {$line != ""} {
+                set line [string map {"," " \\, " ";" " \\; " "$" "\\$"} $line]
+                ::pd_connect::pdsend "$top addline $line"
             }
         }
     }
-    ::pd_text::setDirty $name 0
+    
+    ::pd_text::setDirty $top 0
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 proc pdtk_textwindow_close {name ask} {
     if {[winfo exists $name]} {
@@ -147,7 +145,7 @@ proc pdtk_textwindow_close {name ask} {
             set answer [tk_messageBox \-type yesnocancel \
              \-icon question \
              \-message [concat Save changes to \"$title\"?]]
-            if {$answer == "yes"} {pdtk_textwindow_send $name}
+            if {$answer == "yes"} {::pd_text::_save $name}
             if {$answer != "cancel"} {::pd_connect::pdsend [concat $name close]}
         } else {::pd_connect::pdsend [concat $name close]}
     }

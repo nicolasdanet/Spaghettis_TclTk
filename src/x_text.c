@@ -64,12 +64,12 @@ static void textbuf_senditup(t_textbuf *x)
     if (!x->b_guiconnect)
         return;
     binbuf_gettext(x->b_binbuf, &txt, &ntxt);
-    sys_vgui("pdtk_textwindow_clear .x%lx\n", x);
+    sys_vgui("::pd_text::clear .x%lx\n", x);
     for (i = 0; i < ntxt; )
     {
         char *j = strchr(txt+i, '\n');
         if (!j) j = txt + ntxt;
-        sys_vgui("pdtk_textwindow_append .x%lx {%.*s\n}\n",
+        sys_vgui("::pd_text::append .x%lx {%.*s\n}\n",
             x, j-txt-i, txt+i);
         i = (j-txt)+1;
     }
