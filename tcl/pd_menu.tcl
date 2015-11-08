@@ -139,13 +139,15 @@ proc showPopup {top xcanvas ycanvas hasProperties hasOpen} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc enableCopying {}       { _copying normal }
-proc enableEditing {}       { _editing normal }
-proc enablePath {}          { .menubar.media entryconfigure [_ "Path..."] -state normal }
+proc enableCopying {}               { _copying normal }
+proc enableEditing {}               { _editing normal }
+proc enableCopyingAndEditing {}     { _copying normal; _editing normal }
+proc enablePath {}                  { .menubar.media entryconfigure [_ "Path..."] -state normal }
 
-proc disableCopying {}      { _copying disabled }
-proc disableEditing {}      { _editing disabled }
-proc disablePath {}         { .menubar.media entryconfigure [_ "Path..."] -state disabled }
+proc disableCopying {}              { _copying disabled }
+proc disableEditing {}              { _editing disabled }
+proc disableCopyingAndEditing {}    { _copying disabled; _editing disabled }
+proc disablePath {}                 { .menubar.media entryconfigure [_ "Path..."] -state disabled }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
