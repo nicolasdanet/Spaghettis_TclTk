@@ -17,7 +17,22 @@ namespace eval ::pd_patch:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+variable isEditMode
+variable isScrollableX
+variable isScrollableY
+
+array set isEditMode    {}
+array set isScrollableX {}
+array set isScrollableY {}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc create {top width height geometry editable} {
+
+    variable isEditMode
+    variable isScrollableX
+    variable isScrollableY
 
     # Create a toplevel window with a menubar.
     
@@ -53,10 +68,9 @@ proc create {top width height geometry editable} {
 
     # Set various attributes.
     
-    set ::patch_isEditing($top)         0
-    set ::patch_isEditMode($top)        $editable
-    set ::patch_isScrollableX($top.c)   0
-    set ::patch_isScrollableY($top.c)   0
+    set isEditMode($top)        $editable
+    set isScrollableX($top.c)   0
+    set isScrollableY($top.c)   0
 }
 
 proc willClose {top} {
@@ -66,10 +80,13 @@ proc willClose {top} {
 
 proc closed {top} {
 
-    unset ::patch_isEditing($top)
-    unset ::patch_isEditMode($top)
-    unset ::patch_isScrollableX($top.c)
-    unset ::patch_isScrollableY($top.c)
+    variable isEditMode
+    variable isScrollableX
+    variable isScrollableY
+
+    unset isEditMode($top)
+    unset isScrollableX($top.c)
+    unset isScrollableY($top.c)
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -100,15 +117,22 @@ proc setTitle {top path name arguments dirty} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc setEditing {top state} {
+proc configureEditMode {top} {
 
-    set ::patch_isEditing($top) $state
+    variable isEditMode
+
+    ::pd_patch::setEditMode $top $isEditMode($top)
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 proc setEditMode {top state} {
 
+    variable isEditMode
+
+    set isEditMode($top) $state
     set ::var(isEditMode) $state
-    set ::patch_isEditMode($top) $state
     
     if {$::var(isEditMode)} { 
         ::pd_menu::enableCopying; ::pd_menu::enableEditing
@@ -120,21 +144,19 @@ proc setEditMode {top state} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc configureForEditMode {top} {
-
-    ::pd_patch::setEditMode $top $::patch_isEditMode($top)
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 proc scroll {c axis amount} {
+    
+    variable isScrollableX
+    variable isScrollableY
 
-    if {$axis eq "x" && $::patch_isScrollableX($c) == 1} { $c xview scroll [expr {-($amount)}] units }
-    if {$axis eq "y" && $::patch_isScrollableY($c) == 1} { $c yview scroll [expr {-($amount)}] units }
+    if {$axis eq "x" && $isScrollableX($c) == 1} { $c xview scroll [expr {-($amount)}] units }
+    if {$axis eq "y" && $isScrollableY($c) == 1} { $c yview scroll [expr {-($amount)}] units }
 }
 
 proc updateScrollRegion {c} {
+
+    variable isScrollableX
+    variable isScrollableY
 
     set top [winfo toplevel $c]
     set box [$c bbox all]
@@ -149,20 +171,20 @@ proc updateScrollRegion {c} {
     $c configure -scrollregion [concat $x1 $y1 $x2 $y2]
     
     if {[lindex [$c xview] 0] == 0.0 && [lindex [$c xview] 1] == 1.0} {
-        set ::patch_isScrollableX($c) 0
+        set isScrollableX($c) 0
         pack forget $top.xscroll
         
     } else {
-        set ::patch_isScrollableX($c) 1
+        set isScrollableX($c) 1
         pack $top.xscroll -side bottom -fill x -before $c
     }
     
     if {[lindex [$c yview] 0] == 0.0 && [lindex [$c yview] 1] == 1.0} {
-        set ::patch_isScrollableY($c) 0
+        set isScrollableY($c) 0
         pack forget $top.yscroll
         
     } else {
-        set ::patch_isScrollableY($c) 1
+        set isScrollableY($c) 1
         pack $top.yscroll -side right -fill y -before $c
     }
     

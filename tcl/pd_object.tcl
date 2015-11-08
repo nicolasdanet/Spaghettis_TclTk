@@ -36,8 +36,6 @@ proc setEditing {top tag isEditing} {
     if {$isEditing == 0} {selection clear $top.c}
     
     $top.c focus $tag
-    
-    ::pd_patch::setEditing $top $isEditing
 }
 
 # ------------------------------------------------------------------------------------------------------------
