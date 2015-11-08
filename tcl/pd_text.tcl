@@ -29,6 +29,8 @@ namespace eval ::pd_text:: {
 
 namespace export show
 namespace export release
+namespace export append
+namespace export clear
 namespace export setDirty
 
 # ------------------------------------------------------------------------------------------------------------
@@ -93,7 +95,7 @@ proc _create {top geometry title fontSize} {
     bind $top.text  <<Save>>            "::pd_text::_save $top"
     bind $top       <<Modified>>        "::pd_text::_modified $top"
     
-    wm protocol $top WM_DELETE_WINDOW   "pdtk_textwindow_close $top 1"
+    wm protocol $top WM_DELETE_WINDOW   "::pd_text::_closed $top"
         
     focus $top.text
 }
@@ -110,43 +112,42 @@ proc _modified {top} {
 
 proc _save {top} {
 
-    if {[winfo exists $top]} {
-    
-        ::pd_connect::pdsend "$top clear"
+    ::pd_connect::pdsend "$top clear"
         
-        for {set i 1} {[$top.text compare $i.end < end]} {incr i 1} {
-            set line [$top.text get $i.0 $i.end]
-            if {$line != ""} {
-                set line [string map {"," " \\, " ";" " \\; " "$" "\\$"} $line]
-                ::pd_connect::pdsend "$top addline $line"
-            }
+    for {set i 1} {[$top.text compare $i.end < end]} {incr i 1} {
+        set line [$top.text get $i.0 $i.end]
+        if {$line != ""} {
+            set line [string map {"," " \\, " ";" " \\; " "$" "\\$"} $line]
+            ::pd_connect::pdsend "$top addline $line"
         }
     }
     
     ::pd_text::setDirty $top 0
 }
 
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
+proc _closed {top} {
 
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc pdtk_textwindow_close {name ask} {
-    if {[winfo exists $name]} {
-        if {[catch {$name.text edit modified} dirty]} {set dirty 1}
-        if {$ask && $dirty} {
-            set title [wm title $name]
-            if {[string equal -length 1 $title "*"]} {
-                set title [string range $title 1 end]
+    if {[$top.text edit modified]} {
+    
+        set message [format [_ "Save \"%s\" before closing?"] [wm title $top]]
+        set r [tk_messageBox -type yesnocancel -icon question -message $message -parent $top]
+        
+        switch -- $r {
+            yes { ::pd_text::_save $top }
+            no  { }
+            cancel {
+                return
             }
-            set answer [tk_messageBox \-type yesnocancel \
-             \-icon question \
-             \-message [concat Save changes to \"$title\"?]]
-            if {$answer == "yes"} {::pd_text::_save $name}
-            if {$answer != "cancel"} {::pd_connect::pdsend [concat $name close]}
-        } else {::pd_connect::pdsend [concat $name close]}
+        }
     }
+    
+    ::pd_connect::pdsend "$top close"
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
