@@ -78,8 +78,7 @@ proc _create {top geometry title fontSize} {
     text $top.text  -font [getFont $fontSize] \
                     -yscrollcommand "$top.scroll set" \
                     -borderwidth 0 \
-                    -highlightthickness 0 \
-                    -background white
+                    -highlightthickness 0
                     
     scrollbar $top.scroll   -command "$top.text yview"
     

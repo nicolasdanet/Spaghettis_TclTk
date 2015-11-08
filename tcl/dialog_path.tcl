@@ -53,6 +53,7 @@ proc _create {top} {
     listbox $top.paths.box              -selectmode single \
                                         -activestyle none \
                                         -font [getFont 14] \
+                                        -borderwidth 0 \
                                         -yscrollcommand "$top.paths.scrollbar set"
     scrollbar $top.paths.scrollbar      -command "$top.paths.box yview"
     
