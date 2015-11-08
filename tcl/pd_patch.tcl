@@ -120,14 +120,9 @@ proc setEditMode {top state} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc restoreEditMode {top} {
+proc configureForEditMode {top} {
 
     ::pd_patch::setEditMode $top $::patch_isEditMode($top)
-}
-
-proc configureCursor {top} {
-
-    if {$::patch_isEditMode($top)} { $top configure -cursor $::var(cursorEditNothing) }
 }
 
 # ------------------------------------------------------------------------------------------------------------
