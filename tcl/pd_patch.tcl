@@ -75,6 +75,16 @@ proc closed {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+proc bringToFront {top} {
+
+    wm deiconify $top
+    raise $top
+    focus $top.c
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc setTitle {top path name arguments dirty} {
                                               
     if {[tk windowingsystem] eq "aqua"} {
@@ -90,15 +100,10 @@ proc setTitle {top path name arguments dirty} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc bringToFront {top} {
+proc setEditing {top state} {
 
-    wm deiconify $top
-    raise $top
-    focus $top.c
+    set ::patch_isEditing($top) $state
 }
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
 
 proc setEditMode {top state} {
 
@@ -106,12 +111,23 @@ proc setEditMode {top state} {
     set ::patch_isEditMode($top) $state
     
     if {$::var(isEditMode)} { 
-        ::pd_menu::enableCopying 
-        ::pd_menu::enableEditing
+        ::pd_menu::enableCopying; ::pd_menu::enableEditing
     } else { 
-        ::pd_menu::disableCopying 
-        ::pd_menu::disableEditing
+        ::pd_menu::disableCopying; ::pd_menu::disableEditing
     }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc restoreEditMode {top} {
+
+    ::pd_patch::setEditMode $top $::patch_isEditMode($top)
+}
+
+proc configureCursor {top} {
+
+    if {$::patch_isEditMode($top)} { $top configure -cursor $::var(cursorEditNothing) }
 }
 
 # ------------------------------------------------------------------------------------------------------------

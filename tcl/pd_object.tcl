@@ -37,7 +37,7 @@ proc setEditing {top tag isEditing} {
     
     $top.c focus $tag
     
-    set ::patch_isEditing($top) $isEditing
+    ::pd_patch::setEditing $top $isEditing
 }
 
 # ------------------------------------------------------------------------------------------------------------

@@ -137,9 +137,8 @@ proc _focusIn {top} {
     switch -- [winfo class $top] {
         "PdPatch"   {
             ::pd_menu::configureForPatch
-            ::pd_patch::setEditMode $top $::patch_isEditMode($top)
-
-            if {$::patch_isEditMode($top)} { $top configure -cursor $::var(cursorEditNothing) }
+            ::pd_patch::restoreEditMode $top
+            ::pd_patch::configureCursor $top
         }
         "PdConsole" {
             set ::var(isEditMode) 0
