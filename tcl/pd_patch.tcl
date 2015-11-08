@@ -105,7 +105,13 @@ proc setEditMode {top state} {
     set ::var(isEditMode) $state
     set ::patch_isEditMode($top) $state
     
-    if {$::var(isEditMode)} { pd_menu::enableCopying } else { pd_menu::disableCopying }
+    if {$::var(isEditMode)} { 
+        ::pd_menu::enableCopying 
+        ::pd_menu::enableEditing
+    } else { 
+        ::pd_menu::disableCopying 
+        ::pd_menu::disableEditing
+    }
 }
 
 # ------------------------------------------------------------------------------------------------------------

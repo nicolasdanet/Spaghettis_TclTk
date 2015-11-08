@@ -62,8 +62,6 @@ proc configureForPatch {} {
     .menubar.file entryconfigure [_ "Save As..."]   -state normal
     .menubar.file entryconfigure [_ "Close"]        -state normal
     
-    # Copy and paste items configured later by the callback.
-    
     .menubar.edit entryconfigure [_ "Edit Mode"]    -state normal
 }
 
@@ -84,7 +82,24 @@ proc configureForConsole {} {
 
 proc configureForDialog {} {
 
-    ::pd_menu::configureForConsole
+    .menubar.file entryconfigure [_ "Save"]         -state disabled
+    .menubar.file entryconfigure [_ "Save As..."]   -state disabled
+    .menubar.file entryconfigure [_ "Close"]        -state disabled
+    
+    _copying disabled
+    
+    .menubar.edit entryconfigure [_ "Edit Mode"]    -state disabled
+}
+
+proc configureForText {} {
+    
+    .menubar.file entryconfigure [_ "Save"]         -state disabled
+    .menubar.file entryconfigure [_ "Save As..."]   -state disabled
+    .menubar.file entryconfigure [_ "Close"]        -state disabled
+    
+    _copying normal
+    
+    .menubar.edit entryconfigure [_ "Edit Mode"]    -state disabled
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -124,11 +139,11 @@ proc showPopup {top xcanvas ycanvas hasProperties hasOpen} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc enableCopying {}       { _copying normal; _editing normal }
+proc enableCopying {}       { _copying normal }
 proc enableEditing {}       { _editing normal }
 proc enablePath {}          { .menubar.media entryconfigure [_ "Path..."] -state normal }
 
-proc disableCopying {}      { _copying disabled; _editing disabled }
+proc disableCopying {}      { _copying disabled }
 proc disableEditing {}      { _editing disabled }
 proc disablePath {}         { .menubar.media entryconfigure [_ "Path..."] -state disabled }
 

@@ -34,6 +34,7 @@ proc show {top geometry title fontSize} {
 proc release {top} {
 
     destroy $top
+    
     ::pd_connect::pdsend "$top signoff"
 }
 
@@ -60,12 +61,14 @@ proc setDirty {top flag} {
 
 proc _create {top geometry title fontSize} {
     
-    toplevel $top
+    toplevel $top -class PdText
     wm title $top $title
     wm group $top .
      
     wm minsize  $top 50 50
     wm geometry $top $geometry
+    
+    if {[tk windowingsystem] eq "aqua"} { $top configure -menu .menubar }
     
     text $top.text  -font [getFont $fontSize] \
                     -yscrollcommand "$top.scroll set" \

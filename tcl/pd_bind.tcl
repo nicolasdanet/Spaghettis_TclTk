@@ -71,8 +71,9 @@ proc initialize {} {
     
     bind PdConsole  <FocusIn>               { ::pd_bind::_focusIn %W             }
     bind PdDialog   <FocusIn>               { ::pd_bind::_focusIn %W             }
-    
+    bind PdText     <FocusIn>               { ::pd_bind::_focusIn %W             }
     bind PdPatch    <FocusIn>               { ::pd_bind::_focusIn %W             }
+    
     bind PdPatch    <Configure>             { ::pd_bind::_resized %W %w %h %x %y }
     bind PdPatch    <Map>                   { ::pd_bind::_mapped %W              }
     bind PdPatch    <Unmap>                 { ::pd_bind::_unmapped %W            }
@@ -149,6 +150,11 @@ proc _focusIn {top} {
         "PdDialog"  { 
             set ::var(isEditMode) 0
             ::pd_menu::configureForDialog
+            ::pd_menu::disableEditing
+        }
+        "PdText"    {
+            set ::var(isEditMode) 0
+            ::pd_menu::configureForText
             ::pd_menu::disableEditing
         }
     }
