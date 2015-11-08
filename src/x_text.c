@@ -73,7 +73,7 @@ static void textbuf_senditup(t_textbuf *x)
             x, j-txt-i, txt+i);
         i = (j-txt)+1;
     }
-    sys_vgui("::pd_text::setDirty .x%lx 0\n", x);
+    sys_vgui("::pd_text::dirty .x%lx 0\n", x);
     t_freebytes(txt, ntxt);
 }
 

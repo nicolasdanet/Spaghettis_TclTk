@@ -51,7 +51,7 @@ proc clear {top} {
     if {[winfo exists $top]} { $top.text delete 1.0 end }
 }
 
-proc setDirty {top flag} {
+proc dirty {top flag} {
 
     if {[winfo exists $top]} { $top.text edit modified $flag }
 }
@@ -111,7 +111,7 @@ proc _save {top} {
         }
     }
     
-    ::pd_text::setDirty $top 0
+    ::pd_text::dirty $top 0
 }
 
 proc _closed {top} {
