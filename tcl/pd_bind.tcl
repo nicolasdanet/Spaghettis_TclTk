@@ -140,20 +140,19 @@ proc _focusIn {top} {
             ::pd_patch::configureEditMode $top
         }
         "PdConsole" {
-            set ::var(isEditMode) 0
             ::pd_menu::configureForConsole
             ::pd_menu::disableEditing
-            
+            set ::var(isEditMode) 0
         }
         "PdDialog"  { 
-            set ::var(isEditMode) 0
             ::pd_menu::configureForDialog
             ::pd_menu::disableEditing
+            set ::var(isEditMode) 0
         }
         "PdText"    {
-            set ::var(isEditMode) 0
             ::pd_menu::configureForText
             ::pd_menu::disableEditing
+            set ::var(isEditMode) 0
         }
     }
 }
