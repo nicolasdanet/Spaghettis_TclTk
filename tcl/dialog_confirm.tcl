@@ -35,7 +35,11 @@ proc checkClose {top reply} {
 
     set message [format [_ "Save \"%s\" before closing?"] [wm title $top]]
     
-    set r [tk_messageBox -message $message -type yesnocancel -default "yes" -icon question -parent $top]
+    if {[winfo viewable $top]} {
+        set r [tk_messageBox -message $message -type yesnocancel -default "yes" -icon question -parent $top]
+    } else {
+        set r [tk_messageBox -message $message -type yesnocancel -default "yes" -icon question]
+    }
 
     switch -- $r {
         yes { ::pd_connect::pdsend "$top menusave 1" }
