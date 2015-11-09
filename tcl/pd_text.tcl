@@ -75,7 +75,7 @@ proc _create {top geometry title fontSize} {
     
     if {[tk windowingsystem] eq "aqua"} { $top configure -menu .menubar }
     
-    text $top.text  -font [getFont $fontSize] \
+    text $top.text  -font [::getFont $fontSize] \
                     -yscrollcommand "$top.scroll set" \
                     -borderwidth 0 \
                     -highlightthickness 0
@@ -122,7 +122,7 @@ proc _closed {top} {
 
     if {[$top.text edit modified]} {
     
-        set message [format [_ "Save \"%s\" before closing?"] [wm title $top]]
+        set message [format [_ "Save \"%s\" before closing?"] [::getTitle $top]]
         set r [tk_messageBox -type yesnocancel -icon question -message $message -parent $top]
         
         switch -- $r {

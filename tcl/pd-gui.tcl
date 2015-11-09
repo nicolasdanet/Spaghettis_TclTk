@@ -156,8 +156,8 @@ set var(filesExtensions)        ".pd .pdhelp"
 set var(filesOpenPended)        {}
 set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pdhelp}} }
 
-set var(fontFamily)             [getDefaultFamily]
-set var(fontWeight)             [getDefaultWeight]
+set var(fontFamily)             [::getDefaultFamily]
+set var(fontWeight)             [::getDefaultWeight]
 set var(fontSizes)              "8 10 12 16 24 36"
 
 set var(isInitialized)          0
@@ -176,6 +176,18 @@ set var(windowFocused)          .
 # ------------------------------------------------------------------------------------------------------------
 
 proc getFont {size} { return "::var(font${size})" }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc getTitle {top} { 
+
+    set title [wm title $top]
+    
+    if {[winfo class $top] eq "PdPatch"} { }
+    
+    return $title
+}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -285,7 +297,7 @@ proc initialize {audioAPIs midiAPIs} {
     set measured ""
     
     foreach size $::var(fontSizes) {
-        set f [getFont $size]
+        set f [::getFont $size]
         font create $f -family $::var(fontFamily) -weight $::var(fontWeight) -size [expr {-($size)}]
         lappend measured $size 
         lappend measured [font measure $f M]

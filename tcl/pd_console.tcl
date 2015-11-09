@@ -54,7 +54,7 @@ proc _create {} {
     .console configure -menu .menubar
 
     scrollbar   .console.scroll     -command ".console.text.internal yview"
-    text        .console.text       -font [getFont 14] \
+    text        .console.text       -font [::getFont 14] \
                                     -borderwidth 0 \
                                     -insertwidth 0 \
                                     -highlightthickness 0 \
