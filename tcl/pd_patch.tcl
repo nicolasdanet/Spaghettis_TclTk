@@ -116,7 +116,7 @@ proc setTitle {top path name arguments dirty} {
         }
     }
     
-    wm title $top "$name$arguments"
+    wm title $top "[string trimright $name .pd]$arguments"
 }
 
 # ------------------------------------------------------------------------------------------------------------
