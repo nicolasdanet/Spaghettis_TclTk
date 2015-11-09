@@ -115,8 +115,8 @@ proc setTitle {top path name arguments dirty} {
             catch {wm attributes $top -titlepath "$path/$name"}
         }
     }
-    
-    wm title $top "[string trimright $name .pd]$arguments"
+
+    wm title $top "[file rootname [file tail $name]]$arguments"
 }
 
 # ------------------------------------------------------------------------------------------------------------
