@@ -142,7 +142,7 @@ proc _focusIn {top} {
     switch -- [winfo class $top] {
         "PdPatch"   {
             ::pd_menu::configureForPatch
-            ::pd_patch::configureEditMode $top
+            ::pd_patch::setEditMode $top
         }
         "PdConsole" {
             ::pd_menu::configureForConsole

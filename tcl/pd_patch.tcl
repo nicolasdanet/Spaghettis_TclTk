@@ -127,20 +127,14 @@ proc getTitle {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc configureEditMode {top} {
+# Refresh if no state parameter is provided.
+
+proc setEditMode {top {state {}}} {
 
     variable isEditMode
-
-    ::pd_patch::setEditMode $top $isEditMode($top)
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc setEditMode {top state} {
-
-    variable isEditMode
-
+    
+    if {[llength [info level 0]] == 2} { set state $isEditMode($top) }
+    
     set isEditMode($top) $state
     set ::var(isEditMode) $state
     
