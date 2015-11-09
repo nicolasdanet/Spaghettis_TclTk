@@ -579,10 +579,10 @@ void canvas_reflecttitle(t_canvas *x)
 {
     char namebuf[MAXPDSTRING];
     t_canvasenvironment *env = canvas_getenv(x);
-    if (env->ce_argc)
+    /*if (env->ce_argc)
     {
         int i;
-        strcpy(namebuf, " [ ");
+        strcpy(namebuf, " (");
         for (i = 0; i < env->ce_argc; i++)
         {
             if (strlen(namebuf) > MAXPDSTRING/2 - 5)
@@ -592,11 +592,11 @@ void canvas_reflecttitle(t_canvas *x)
             atom_string(&env->ce_argv[i], namebuf + strlen(namebuf), 
                 MAXPDSTRING/2);
         }
-        strcat(namebuf, " ]");
+        strcat(namebuf, ")");
     }
-    else namebuf[0] = 0;
-    sys_vgui("::pd_patch::setTitle .x%lx {%s} {%s} {%s} %d\n",
-        x, canvas_getdir(x)->s_name, x->gl_name->s_name, namebuf, x->gl_dirty);
+    else namebuf[0] = 0;*/
+    sys_vgui("::pd_patch::setTitle .x%lx {%s} {%s} %d\n",
+        x, canvas_getdir(x)->s_name, x->gl_name->s_name, x->gl_dirty);
 }
 
     /* mark a glist dirty or clean */

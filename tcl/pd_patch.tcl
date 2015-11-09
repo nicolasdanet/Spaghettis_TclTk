@@ -107,7 +107,7 @@ proc bringToFront {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc setTitle {top path name arguments dirty} {
+proc setTitle {top path name dirty} {
                                               
     if {[tk windowingsystem] eq "aqua"} {
         wm attributes $top -modified $dirty
@@ -116,7 +116,7 @@ proc setTitle {top path name arguments dirty} {
         }
     }
 
-    wm title $top "[file rootname [file tail $name]]$arguments"
+    wm title $top "[file rootname [file tail $name]]"
 }
 
 # ------------------------------------------------------------------------------------------------------------
