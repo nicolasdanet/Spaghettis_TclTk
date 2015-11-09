@@ -123,6 +123,7 @@ proc _closed {top} {
     if {[$top.text edit modified]} {
     
         set message [format [_ "Save \"%s\" before closing?"] [::getTitle $top]]
+        
         set r [tk_messageBox -type yesnocancel -icon question -message $message -parent $top]
         
         switch -- $r {
