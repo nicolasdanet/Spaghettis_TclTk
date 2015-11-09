@@ -104,6 +104,7 @@ proc saveAs {target filename directory destroy} {
     
     set filename [tk_getSaveFile    -initialfile $filename \
                                     -initialdir $directory \
+                                    -filetypes $::var(filesTypes) \
                                     -defaultextension [lindex $::var(filesExtensions) 0]]
                       
     if {$filename ne ""} {
