@@ -109,9 +109,11 @@ proc serverSocket {} {
 
 # Send FUDI message to the pd executable ( https://en.wikipedia.org/wiki/FUDI ).
 
-proc pdsend {message} {
+proc pdsend {args} {
 
     variable tcpSocket
+    
+    set message [join $args]
     
     append message \; 
     
