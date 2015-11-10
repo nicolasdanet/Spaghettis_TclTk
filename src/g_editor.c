@@ -1636,7 +1636,7 @@ void canvas_mouseup(t_canvas *x,
                 vmess(&gl2->gl_pd, gensym("menu-open"), "");
                 x->gl_editor->e_onmotion = MA_NONE;
                 sys_vgui(
-"::dialog_confirm::checkAction .x%lx {Discard changes to '%s'?} {.x%lx dirty 0} no\n",
+"::dialog_confirm::checkAction .x%lx {Discard changes to %s?} {::pd_connect::pdsend .x%lx dirty 0} {no}\n",
                     canvas_getrootfor(gl2),
                         canvas_getrootfor(gl2)->gl_name->s_name, gl2);
                 return;
@@ -1964,7 +1964,7 @@ void glob_verifyquit(void *dummy, t_floatarg f)
         return;
     }
     if (f == 0 && sys_perf)
-        sys_vgui("::dialog_confirm::checkAction .console {really quit?} {pd quit} yes\n");
+        sys_vgui("::dialog_confirm::checkAction .console {really quit?} {::pd_connect::pdsend pd quit} {yes}\n");
     else glob_quit(0);
 }
 
@@ -1993,7 +1993,7 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         }
         else if (sys_perf)
         {
-            sys_vgui("::dialog_confirm::checkAction .x%lx {Close this window?} {.x%lx menuclose 1} yes\n",
+            sys_vgui("::dialog_confirm::checkAction .x%lx {Close this window?} {::pd_connect::pdsend .x%lx menuclose 1} {yes}\n",
                      canvas_getrootfor(x), x);
         }
         else pd_free(&x->gl_pd);

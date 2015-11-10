@@ -22,12 +22,16 @@ namespace eval ::dialog_confirm:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc checkAction {top message reply default} {
+proc checkAction {top message ifYes implicit} {
 
-    set r [tk_messageBox -message $message -type yesno -default $default -icon question -parent $top]
+    if {[winfo viewable $top]} {
+        set r [tk_messageBox -message $message -type yesno -default $implicit -icon question -parent $top]
+    } else {
+        set r [tk_messageBox -message $message -type yesno -default $implicit -icon question]
+    }
     
     if {$r eq "yes"} {
-        ::pd_connect::pdsend $reply
+        uplevel 0 $ifYes
     }
 }
 
