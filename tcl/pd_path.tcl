@@ -48,24 +48,20 @@ proc _create {top} {
     frame $top.paths
     frame $top.actions
     
-    scrollbar $top.paths.scrollbar      -command "$top.paths.box yview"
-        
-    listbox $top.paths.box              -selectmode single \
-                                        -activestyle none \
-                                        -font [::getFont 14] \
-                                        -borderwidth 0 \
-                                        -yscrollcommand "$top.paths.scrollbar set"
+    listbox $top.paths.box      -selectmode single \
+                                -activestyle none \
+                                -font [::getFont 14] \
+                                -borderwidth 0
     
-    button $top.actions.add             -text "Add..." \
-                                        -command "::pd_path::_addItem  $top"
-    button $top.actions.delete          -text "Delete" \
-                                        -command "::pd_path::_deleteItem $top"
+    button $top.actions.add     -text "Add..." \
+                                -command "::pd_path::_addItem  $top"
+    button $top.actions.delete  -text "Delete" \
+                                -command "::pd_path::_deleteItem $top"
         
     pack $top.paths             -side top -padx 2m -pady 2m -fill both -expand 1
     pack $top.actions           -side top -padx 2m -fill x 
     
     pack $top.paths.box         -side left -fill both -expand 1
-    pack $top.paths.scrollbar   -side left -fill y -anchor w
     
     pack $top.actions.add       -side left -pady 2m
     pack $top.actions.delete    -side left -pady 2m
