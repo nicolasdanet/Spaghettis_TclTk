@@ -47,8 +47,6 @@ proc create {top width height geometry editable} {
     wm minsize  $top 50 50
     wm geometry $top [format "=%dx%d%s" $width $height $geometry]
 
-    $top configure  -menu .menubar
-    
     # Create a canvas inside that fills all the window.
     
     canvas $top.c   -width $width \
