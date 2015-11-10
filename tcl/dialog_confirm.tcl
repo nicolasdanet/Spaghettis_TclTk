@@ -31,6 +31,23 @@ proc checkAction {top message reply default} {
     }
 }
 
+proc checkClose {top ifYes ifNo ifCancel} {
+
+    set message [format [_ "Save \"%s\" before closing?"] [::getTitle $top]]
+    
+    if {[winfo viewable $top]} {
+        set r [tk_messageBox -message $message -type yesnocancel -default "yes" -icon question -parent $top]
+    } else {
+        set r [tk_messageBox -message $message -type yesnocancel -default "yes" -icon question]
+    }
+
+    switch -- $r {
+        yes     { uplevel 0 $ifYes    }
+        no      { uplevel 0 $ifNo     }
+        cancel  { uplevel 0 $ifCancel }
+    }
+}
+
 proc checkClosePatch {top reply} {
 
     set message [format [_ "Save \"%s\" before closing?"] [::getTitle $top]]
@@ -46,21 +63,6 @@ proc checkClosePatch {top reply} {
         no  { ::pd_connect::pdsend $reply }
         cancel {
         
-        }
-    }
-}
-
-proc checkCloseText {top} {
-
-    set message [format [_ "Save \"%s\" before closing?"] [::getTitle $top]]
-        
-    set r [tk_messageBox -type yesnocancel -icon question -message $message -parent $top]
-        
-    switch -- $r {
-        yes { ::pd_text::_save $top }
-        no  {}
-        cancel {
-            return -level 2
         }
     }
 }
