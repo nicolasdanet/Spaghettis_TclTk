@@ -39,14 +39,16 @@ proc create {top width height geometry editable} {
     variable isScrollableX
     variable isScrollableY
 
-    # Create a toplevel window with a menubar.
+    # Create a toplevel window.
     
     toplevel $top -width $width -height $height -class PdPatch
     wm group $top .
 
     wm minsize  $top 50 50
     wm geometry $top [format "=%dx%d%s" $width $height $geometry]
-
+    
+    if {[tk windowingsystem] ne "aqua"} { $top configure -menu .menubar }
+    
     # Create a canvas inside that fills all the window.
     
     canvas $top.c   -width $width \

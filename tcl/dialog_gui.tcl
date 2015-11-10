@@ -506,7 +506,6 @@ proc ::dialog_gui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
     wm group $mytoplevel .
     wm resizable $mytoplevel 0 0
     wm transient $mytoplevel $::var(windowFocused)
-    if {[tk windowingsystem] eq "aqua"} { $mytoplevel configure -menu .menubar }
     $mytoplevel configure -padx 0 -pady 0
 
     frame $mytoplevel.dim

@@ -36,7 +36,6 @@ proc ::dialog_data::pdtk_data_dialog {mytoplevel stuff} {
     wm title $mytoplevel [_ "Data Properties"]
     wm group $mytoplevel $::var(windowFocused)
     wm transient $mytoplevel $::var(windowFocused)
-    if {[tk windowingsystem] eq "aqua"} { $mytoplevel configure -menu .menubar }
     $mytoplevel configure -padx 0 -pady 0
 
     frame $mytoplevel.buttonframe
