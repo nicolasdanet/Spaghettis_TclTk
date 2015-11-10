@@ -717,7 +717,7 @@ void glob_start_path_dialog(t_pd *dummy)
      char buf[MAXPDSTRING];
 
     sys_set_searchpath();
-    sprintf(buf, "::dialog_path::show %%s\n");
+    sprintf(buf, "::pd_path::show %%s\n");
     gfxstub_new(&glob_pdobject, (void *)glob_start_path_dialog, buf);
 }
 

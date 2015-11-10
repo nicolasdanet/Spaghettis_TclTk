@@ -12,19 +12,19 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide dialog_path 0.1
+package provide pd_path 0.1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::dialog_path:: {
+namespace eval ::pd_path:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
 proc show {top} { 
 
-    ::dialog_path::_create $top
+    ::pd_path::_create $top
     ::pd_menu::disablePath 
 }
 
@@ -56,9 +56,9 @@ proc _create {top} {
     scrollbar $top.paths.scrollbar      -command "$top.paths.box yview"
     
     button $top.actions.add             -text "Add..." \
-                                        -command "::dialog_path::_addItem  $top"
+                                        -command "::pd_path::_addItem  $top"
     button $top.actions.delete          -text "Delete" \
-                                        -command "::dialog_path::_deleteItem $top"
+                                        -command "::pd_path::_deleteItem $top"
         
     pack $top.paths             -side top -padx 2m -pady 2m -fill both -expand 1
     pack $top.actions           -side top -padx 2m -fill x 
@@ -73,7 +73,7 @@ proc _create {top} {
     
     focus $top.paths.box
     
-    bind $top <Destroy> { dialog_path::_closed }
+    bind $top <Destroy> { ::pd_path::_closed }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -85,14 +85,14 @@ proc _addItem  {top} {
     
     if {$item ne ""} { $top.paths.box insert end $item }
     
-    ::dialog_path::_apply $top
+    ::pd_path::_apply $top
 }
 
 proc _deleteItem {top} {
 
     foreach item [$top.paths.box curselection] { $top.paths.box delete $item }
     
-    ::dialog_path::_apply $top
+    ::pd_path::_apply $top
 }
 
 # ------------------------------------------------------------------------------------------------------------

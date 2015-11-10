@@ -119,7 +119,7 @@ proc _save {top} {
 proc _closed {top} {
 
     if {[$top.text edit modified]} { 
-        ::dialog_confirm::checkClose $top {::pd_text::_save $top} {} {return -level 2}
+        ::pd_confirm::checkClose $top {::pd_text::_save $top} {} {return -level 2}
     }
 
     ::pd_connect::pdsend "$top close"
