@@ -73,8 +73,6 @@ proc _create {top geometry title fontSize} {
     wm minsize  $top 50 50
     wm geometry $top $geometry
     
-    if {[tk windowingsystem] eq "aqua"} { $top configure -menu .menubar }
-    
     text $top.text  -font [::getFont $fontSize] \
                     -yscrollcommand "$top.scroll set" \
                     -borderwidth 0 \

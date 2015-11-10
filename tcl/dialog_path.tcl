@@ -44,9 +44,7 @@ proc _create {top} {
     
     wm minsize  $top 400 300
     wm geometry $top "=400x300+30+60"
-    
-    if {[tk windowingsystem] eq "aqua"} { $top configure -menu .menubar }
-    
+        
     frame $top.paths
     frame $top.actions
     
