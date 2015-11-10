@@ -1636,7 +1636,7 @@ void canvas_mouseup(t_canvas *x,
                 vmess(&gl2->gl_pd, gensym("menu-open"), "");
                 x->gl_editor->e_onmotion = MA_NONE;
                 sys_vgui(
-"::pd_confirm::checkAction .x%lx {Discard changes to %s?} {::pd_connect::pdsend .x%lx dirty 0} {no}\n",
+"::pd_confirm::checkAction .x%lx { Discard changes to %s? } { ::pd_connect::pdsend .x%lx dirty 0 } { no }\n",
                     canvas_getrootfor(gl2),
                         canvas_getrootfor(gl2)->gl_name->s_name, gl2);
                 return;
@@ -1959,12 +1959,12 @@ void glob_verifyquit(void *dummy, t_floatarg f)
         if (g2 = glist_finddirty(g))
     {
         canvas_vis(g2, 1);
-            sys_vgui("::pd_confirm::checkClose .x%lx {::pd_connect::pdsend $top menusave 1} {::pd_connect::pdsend .x%lx menuclose 3} {}\n",
+            sys_vgui("::pd_confirm::checkClose .x%lx { ::pd_connect::pdsend $top menusave 1 } { ::pd_connect::pdsend .x%lx menuclose 3 } {}\n",
                      canvas_getrootfor(g2), g2);
         return;
     }
     if (f == 0 && sys_perf)
-        sys_vgui("::pd_confirm::checkAction .console {really quit?} {::pd_connect::pdsend pd quit} {yes}\n");
+        sys_vgui("::pd_confirm::checkAction .console { Really quit? } { ::pd_connect::pdsend pd quit } { yes }\n");
     else glob_quit(0);
 }
 
@@ -1987,13 +1987,13 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         if (g)
         {
             vmess(&g->gl_pd, gensym("menu-open"), "");
-            sys_vgui("::pd_confirm::checkClose .x%lx {::pd_connect::pdsend $top menusave 1} {::pd_connect::pdsend .x%lx menuclose 2} {}\n",
+            sys_vgui("::pd_confirm::checkClose .x%lx { ::pd_connect::pdsend $top menusave 1 } { ::pd_connect::pdsend .x%lx menuclose 2 } {}\n",
                      canvas_getrootfor(g), g);
             return;
         }
         else if (sys_perf)
         {
-            sys_vgui("::pd_confirm::checkAction .x%lx {Close this window?} {::pd_connect::pdsend .x%lx menuclose 1} {yes}\n",
+            sys_vgui("::pd_confirm::checkAction .x%lx { Close this window? } { ::pd_connect::pdsend .x%lx menuclose 1 } { yes }\n",
                      canvas_getrootfor(x), x);
         }
         else pd_free(&x->gl_pd);
@@ -2009,7 +2009,7 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         if (g)
         {
             vmess(&g->gl_pd, gensym("menu-open"), "");
-            sys_vgui("::pd_confirm::checkClose .x%lx {::pd_connect::pdsend $top menusave 1} {::pd_connect::pdsend .x%lx menuclose 2} {}\n",
+            sys_vgui("::pd_confirm::checkClose .x%lx { ::pd_connect::pdsend $top menusave 1 } { ::pd_connect::pdsend .x%lx menuclose 2 } {}\n",
                      canvas_getrootfor(x), g);
             return;
         }
