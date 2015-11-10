@@ -1959,7 +1959,7 @@ void glob_verifyquit(void *dummy, t_floatarg f)
         if (g2 = glist_finddirty(g))
     {
         canvas_vis(g2, 1);
-            sys_vgui("::dialog_confirm::checkClosePatch .x%lx {.x%lx menuclose 3}\n",
+            sys_vgui("::dialog_confirm::checkClose .x%lx {::pd_connect::pdsend $top menusave 1} {::pd_connect::pdsend $top menuclose 3} {}\n",
                      canvas_getrootfor(g2), g2);
         return;
     }
@@ -1987,7 +1987,7 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         if (g)
         {
             vmess(&g->gl_pd, gensym("menu-open"), "");
-            sys_vgui("::dialog_confirm::checkClosePatch .x%lx {.x%lx menuclose 2}\n",
+            sys_vgui("::dialog_confirm::checkClose .x%lx {::pd_connect::pdsend $top menusave 1} {::pd_connect::pdsend $top menuclose 2} {}\n",
                      canvas_getrootfor(g), g);
             return;
         }
@@ -2009,7 +2009,7 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         if (g)
         {
             vmess(&g->gl_pd, gensym("menu-open"), "");
-            sys_vgui("::dialog_confirm::checkClosePatch .x%lx {.x%lx menuclose 2}\n",
+            sys_vgui("::dialog_confirm::checkClose .x%lx {::pd_connect::pdsend $top menusave 1} {::pd_connect::pdsend $top menuclose 2} {}\n",
                      canvas_getrootfor(x), g);
             return;
         }
