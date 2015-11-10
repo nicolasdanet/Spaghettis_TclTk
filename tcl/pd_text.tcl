@@ -120,21 +120,8 @@ proc _save {top} {
 
 proc _closed {top} {
 
-    if {[$top.text edit modified]} {
-    
-        set message [format [_ "Save \"%s\" before closing?"] [::getTitle $top]]
-        
-        set r [tk_messageBox -type yesnocancel -icon question -message $message -parent $top]
-        
-        switch -- $r {
-            yes { ::pd_text::_save $top }
-            no  {}
-            cancel {
-                return
-            }
-        }
-    }
-    
+    if {[$top.text edit modified]} { ::dialog_confirm::checkCloseText $top }
+
     ::pd_connect::pdsend "$top close"
 }
 

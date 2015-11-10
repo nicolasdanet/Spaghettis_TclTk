@@ -50,6 +50,21 @@ proc checkClose {top reply} {
     }
 }
 
+proc checkCloseText {top} {
+
+    set message [format [_ "Save \"%s\" before closing?"] [::getTitle $top]]
+        
+    set r [tk_messageBox -type yesnocancel -icon question -message $message -parent $top]
+        
+    switch -- $r {
+        yes { ::pd_text::_save $top }
+        no  {}
+        cancel {
+            return -level 2
+        }
+    }
+}
+
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
