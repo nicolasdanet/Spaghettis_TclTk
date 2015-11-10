@@ -51,6 +51,9 @@ proc create {top width height geometry editable} {
     
     # Create a canvas inside that fills all the window.
     
+    scrollbar $top.xscroll  -orient horizontal  -command "$top.c xview"
+    scrollbar $top.yscroll  -orient vertical    -command "$top.c yview"
+    
     canvas $top.c   -width $width \
                     -height $height \
                     -highlightthickness 0 \
@@ -60,9 +63,6 @@ proc create {top width height geometry editable} {
     
     if {[tk windowingsystem] eq "win32"} { $top.c configure -xscrollincrement 1 -yscrollincrement 1 }
     
-    scrollbar $top.xscroll  -orient horizontal  -command "$top.c xview"
-    scrollbar $top.yscroll  -orient vertical    -command "$top.c yview"
-                            
     pack $top.c -side left -expand 1 -fill both
 
     # Bind the window to get events.

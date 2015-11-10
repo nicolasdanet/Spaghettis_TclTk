@@ -29,6 +29,7 @@ proc initialize {} { ::pd_console::_create }
 
 proc post {message} {
     .console.text.internal insert end $message
+    after idle .console.text.internal yview end
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -62,7 +63,7 @@ proc _create {} {
                                     -yscrollcommand ".console.scroll set"
         
     pack .console.scroll            -side right -fill y
-    pack .console.text              -side right -fill both  -expand 1
+    pack .console.text              -side right -fill both -expand 1
     
     # Read-only text widget ( http://wiki.tcl.tk/1152 ).
     

@@ -44,16 +44,17 @@ proc _create {top} {
     
     wm minsize  $top 400 300
     wm geometry $top "=400x300+30+60"
-        
+    
     frame $top.paths
     frame $top.actions
     
+    scrollbar $top.paths.scrollbar      -command "$top.paths.box yview"
+        
     listbox $top.paths.box              -selectmode single \
                                         -activestyle none \
                                         -font [::getFont 14] \
                                         -borderwidth 0 \
                                         -yscrollcommand "$top.paths.scrollbar set"
-    scrollbar $top.paths.scrollbar      -command "$top.paths.box yview"
     
     button $top.actions.add             -text "Add..." \
                                         -command "::pd_path::_addItem  $top"
@@ -62,7 +63,7 @@ proc _create {top} {
         
     pack $top.paths             -side top -padx 2m -pady 2m -fill both -expand 1
     pack $top.actions           -side top -padx 2m -fill x 
-        
+    
     pack $top.paths.box         -side left -fill both -expand 1
     pack $top.paths.scrollbar   -side left -fill y -anchor w
     

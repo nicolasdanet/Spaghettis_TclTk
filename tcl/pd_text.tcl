@@ -73,16 +73,16 @@ proc _create {top geometry title fontSize} {
     wm minsize  $top 50 50
     wm geometry $top $geometry
     
-    text $top.text  -font [::getFont $fontSize] \
-                    -yscrollcommand "$top.scroll set" \
-                    -borderwidth 0 \
-                    -highlightthickness 0
-                    
     scrollbar $top.scroll   -command "$top.text yview"
+    
+    text $top.text          -font [::getFont $fontSize] \
+                            -yscrollcommand "$top.scroll set" \
+                            -borderwidth 0 \
+                            -highlightthickness 0
     
     pack $top.text   -side left -fill both -expand 1
     pack $top.scroll -side left -fill y
-
+    
     bind $top.text  <<Save>>            "::pd_text::_save $top"
     bind $top       <<Modified>>        "::pd_text::_modified $top"
     
