@@ -31,7 +31,7 @@ proc checkAction {top message reply default} {
     }
 }
 
-proc checkClose {top reply} {
+proc checkClosePatch {top reply} {
 
     set message [format [_ "Save \"%s\" before closing?"] [::getTitle $top]]
     
