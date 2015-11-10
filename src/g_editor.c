@@ -1636,7 +1636,7 @@ void canvas_mouseup(t_canvas *x,
                 vmess(&gl2->gl_pd, gensym("menu-open"), "");
                 x->gl_editor->e_onmotion = MA_NONE;
                 sys_vgui(
-"::dialog_confirm::checkAction .x%lx {Discard changes to '%s'?} {.x%lx dirty 0;\n} no\n",
+"::dialog_confirm::checkAction .x%lx {Discard changes to '%s'?} {.x%lx dirty 0} no\n",
                     canvas_getrootfor(gl2),
                         canvas_getrootfor(gl2)->gl_name->s_name, gl2);
                 return;
@@ -1959,7 +1959,7 @@ void glob_verifyquit(void *dummy, t_floatarg f)
         if (g2 = glist_finddirty(g))
     {
         canvas_vis(g2, 1);
-            sys_vgui("::dialog_confirm::checkClosePatch .x%lx {.x%lx menuclose 3;\n}\n",
+            sys_vgui("::dialog_confirm::checkClosePatch .x%lx {.x%lx menuclose 3}\n",
                      canvas_getrootfor(g2), g2);
         return;
     }
@@ -1987,13 +1987,13 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         if (g)
         {
             vmess(&g->gl_pd, gensym("menu-open"), "");
-            sys_vgui("::dialog_confirm::checkClosePatch .x%lx {.x%lx menuclose 2;\n}\n",
+            sys_vgui("::dialog_confirm::checkClosePatch .x%lx {.x%lx menuclose 2}\n",
                      canvas_getrootfor(g), g);
             return;
         }
         else if (sys_perf)
         {
-            sys_vgui("::dialog_confirm::checkAction .x%lx {Close this window?} {.x%lx menuclose 1;\n} yes\n",
+            sys_vgui("::dialog_confirm::checkAction .x%lx {Close this window?} {.x%lx menuclose 1} yes\n",
                      canvas_getrootfor(x), x);
         }
         else pd_free(&x->gl_pd);
@@ -2009,7 +2009,7 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         if (g)
         {
             vmess(&g->gl_pd, gensym("menu-open"), "");
-            sys_vgui("::dialog_confirm::checkClosePatch .x%lx {.x%lx menuclose 2;\n}\n",
+            sys_vgui("::dialog_confirm::checkClosePatch .x%lx {.x%lx menuclose 2}\n",
                      canvas_getrootfor(x), g);
             return;
         }
