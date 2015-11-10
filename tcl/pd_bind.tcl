@@ -214,6 +214,8 @@ proc _key {w keysym iso isPress isShift} {
 
 proc _resized {top width height x y} {
 
+    # Filter annoying bad values generated at initialization time.
+    
     if {$width > 1 && $height > 1} { 
         ::pd_patch::updateScrollRegion $top.c
         ::pd_connect::pdsend "$top setbounds $x $y [expr {$x + $width}] [expr {$y + $height}]"

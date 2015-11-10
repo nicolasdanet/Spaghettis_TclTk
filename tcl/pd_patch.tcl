@@ -163,29 +163,38 @@ proc updateScrollRegion {c} {
     
     if {$box ne ""} {
     
-    set x1 [::tcl::mathfunc::min [lindex $box 0] 0]
-    set y1 [::tcl::mathfunc::min [lindex $box 1] 0]
-    set x2 [::tcl::mathfunc::max [lindex $box 2] [winfo width $c]]
-    set y2 [::tcl::mathfunc::max [lindex $box 3] [winfo height $c]]
+    set w [winfo width $c]
+    set h [winfo height $c]
+    
+    # Filter annoying bad values generated at initialization time.
+    
+    if {$w > 1 && $h > 1} {
+    
+        set x1 [::tcl::mathfunc::min [lindex $box 0] 0]
+        set y1 [::tcl::mathfunc::min [lindex $box 1] 0]
+        set x2 [::tcl::mathfunc::max [lindex $box 2] $w]
+        set y2 [::tcl::mathfunc::max [lindex $box 3] $h]
 
-    $c configure -scrollregion [concat $x1 $y1 $x2 $y2]
-    
-    if {[lindex [$c xview] 0] == 0.0 && [lindex [$c xview] 1] == 1.0} {
-        set isScrollableX($c) 0
-        pack forget $top.xscroll
+        $c configure -scrollregion [concat $x1 $y1 $x2 $y2]
         
-    } else {
-        set isScrollableX($c) 1
-        pack $top.xscroll -side bottom -fill x -before $c
-    }
-    
-    if {[lindex [$c yview] 0] == 0.0 && [lindex [$c yview] 1] == 1.0} {
-        set isScrollableY($c) 0
-        pack forget $top.yscroll
+        if {[lindex [$c xview] 0] == 0.0 && [lindex [$c xview] 1] == 1.0} {
+            set isScrollableX($c) 0
+            pack forget $top.xscroll
+            
+        } else {
+            set isScrollableX($c) 1
+            pack $top.xscroll -side bottom -fill x -before $c
+        }
         
-    } else {
-        set isScrollableY($c) 1
-        pack $top.yscroll -side right -fill y -before $c
+        if {[lindex [$c yview] 0] == 0.0 && [lindex [$c yview] 1] == 1.0} {
+            set isScrollableY($c) 0
+            pack forget $top.yscroll
+            
+        } else {
+            set isScrollableY($c) 1
+            pack $top.yscroll -side right -fill y -before $c
+        }
+    
     }
     
     }
