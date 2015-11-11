@@ -126,6 +126,7 @@ proc bindPatch {top} {
     bind $top.c <<ClickLeft4>>              { ::pd_bind::_mouse %W %x %y %b 3 }
     bind $top.c <<PopupMenu>>               { ::pd_bind::_mouse %W %x %y %b 8 }
     bind $top.c <<ClickRelease>>            { ::pd_bind::_mouseUp %W %x %y %b }
+    
     bind $top.c <MouseWheel>                { ::pd_patch::scroll %W y %D      }
     bind $top.c <Destroy>                   { ::pd_patch::closed [winfo toplevel %W] }
         
@@ -217,6 +218,7 @@ proc _resized {top width height x y} {
     # Filter annoying bad values generated at initialization time.
     
     if {$width > 1 && $height > 1} { 
+    
         ::pd_patch::updateScrollRegion $top.c
         ::pd_connect::pdsend "$top setbounds $x $y [expr {$x + $width}] [expr {$y + $height}]"
     }

@@ -79,8 +79,9 @@ proc _create {top geometry title fontSize} {
     
     pack $top.text  -side left -fill both -expand 1
     
+    bind $top.text  <<SelectAll>>       "::pd_text::_selectAll $top"
+    bind $top.text  <<Modified>>        "::pd_text::_modified $top"
     bind $top.text  <<Save>>            "::pd_text::_save $top"
-    bind $top       <<Modified>>        "::pd_text::_modified $top"
     
     wm protocol $top WM_DELETE_WINDOW   "::pd_text::_closed $top"
         
@@ -89,6 +90,11 @@ proc _create {top geometry title fontSize} {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
+
+proc _selectAll {top} {
+
+    $top.text tag add sel 1.0 end
+}
 
 proc _modified {top} {
 
