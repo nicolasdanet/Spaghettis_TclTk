@@ -38,9 +38,7 @@ proc show {top geometry title fontSize} {
 
 proc release {top} {
 
-    destroy $top
-    
-    ::pd_connect::pdsend "$top signoff"
+    destroy $top; ::pd_connect::pdsend "$top signoff"
 }
 
 # ------------------------------------------------------------------------------------------------------------
