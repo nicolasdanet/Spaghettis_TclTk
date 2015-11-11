@@ -412,15 +412,7 @@ proc _handle {message} {
 
     set top [winfo toplevel $::var(windowFocused)]
     
-    switch -- [winfo class $top] {
-        "PdPatch"   {
-            ::pd_connect::pdsend "$top $message"
-        }
-        "PdConsole" {
-            if {$message eq "copy"} { tk_textCopy .console.text }
-            if {$message eq "selectall"} { .console.text tag add sel 1.0 end }
-        }
-    }
+    if {[winfo class $top] eq "PdPatch"} { ::pd_connect::pdsend "$top $message" }
 }
 
 # ------------------------------------------------------------------------------------------------------------

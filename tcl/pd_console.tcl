@@ -27,9 +27,10 @@ proc initialize {} { ::pd_console::_create }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc post {message} {
-    .console.text.internal insert end "$message\n"
-    after idle .console.text.internal yview end
+proc post {message} { 
+
+    .console.text.internal insert end $message 
+    .console.text.internal yview end
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -76,6 +77,8 @@ proc _create {} {
             "default" { return [eval ::.console.text.internal $args] }
         }
     }
+    
+    bind .console <<SelectAll>> ".console.text.internal tag add sel 1.0 end"
     
     wm protocol .console WM_DELETE_WINDOW   { ::pd_console::_closed }
 }
