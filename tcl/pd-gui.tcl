@@ -68,7 +68,7 @@ catch { wm withdraw . }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Note that ALL the Tcl files MUST be kept in the same directory that this file.
+# Note that ALL the Tcl files MUST be kept in the same directory.
 
 set auto_path [linsert $auto_path 0 [file dirname [info script]]]
 

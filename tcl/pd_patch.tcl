@@ -22,22 +22,22 @@ namespace eval ::pd_patch:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable isEditMode
-variable isScrollableX
-variable isScrollableY
+variable patchIsEditMode
+variable patchIsScrollableX
+variable patchIsScrollableY
 
-array set isEditMode    {}
-array set isScrollableX {}
-array set isScrollableY {}
+array set patchIsEditMode    {}
+array set patchIsScrollableX {}
+array set patchIsScrollableY {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
 proc create {top width height geometry editable} {
 
-    variable isEditMode
-    variable isScrollableX
-    variable isScrollableY
+    variable patchIsEditMode
+    variable patchIsScrollableX
+    variable patchIsScrollableY
 
     # Create a toplevel window.
     
@@ -73,9 +73,9 @@ proc create {top width height geometry editable} {
 
     # Set various attributes.
     
-    set isEditMode($top)        $editable
-    set isScrollableX($top.c)   0
-    set isScrollableY($top.c)   0
+    set patchIsEditMode($top)       $editable
+    set patchIsScrollableX($top.c)  0
+    set patchIsScrollableY($top.c)  0
 }
 
 proc willClose {top} {
@@ -85,13 +85,13 @@ proc willClose {top} {
 
 proc closed {top} {
 
-    variable isEditMode
-    variable isScrollableX
-    variable isScrollableY
+    variable patchIsEditMode
+    variable patchIsScrollableX
+    variable patchIsScrollableY
 
-    unset isEditMode($top)
-    unset isScrollableX($top.c)
-    unset isScrollableY($top.c)
+    unset patchIsEditMode($top)
+    unset patchIsScrollableX($top.c)
+    unset patchIsScrollableY($top.c)
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -131,12 +131,12 @@ proc getTitle {top} {
 
 proc setEditMode {top {state {}}} {
 
-    variable isEditMode
+    variable patchIsEditMode
     
-    if {[llength [info level 0]] == 2} { set state $isEditMode($top) }
+    if {[llength [info level 0]] == 2} { set state $patchIsEditMode($top) }
     
-    set isEditMode($top) $state
     set ::var(isEditMode) $state
+    set patchIsEditMode($top) $state
     
     if {$state} { ::pd_menu::enableCopyingAndEditing } else { ::pd_menu::disableCopyingAndEditing }
 }
@@ -146,17 +146,17 @@ proc setEditMode {top {state {}}} {
 
 proc scroll {c axis amount} {
     
-    variable isScrollableX
-    variable isScrollableY
+    variable patchIsScrollableX
+    variable patchIsScrollableY
 
-    if {$axis eq "x" && $isScrollableX($c) == 1} { $c xview scroll [expr {-($amount)}] units }
-    if {$axis eq "y" && $isScrollableY($c) == 1} { $c yview scroll [expr {-($amount)}] units }
+    if {$axis eq "x" && $patchIsScrollableX($c) == 1} { $c xview scroll [expr {-($amount)}] units }
+    if {$axis eq "y" && $patchIsScrollableY($c) == 1} { $c yview scroll [expr {-($amount)}] units }
 }
 
 proc updateScrollRegion {c} {
 
-    variable isScrollableX
-    variable isScrollableY
+    variable patchIsScrollableX
+    variable patchIsScrollableY
 
     set top [winfo toplevel $c]
     set box [$c bbox all]
@@ -178,20 +178,20 @@ proc updateScrollRegion {c} {
         $c configure -scrollregion [concat $x1 $y1 $x2 $y2]
         
         if {[lindex [$c xview] 0] == 0.0 && [lindex [$c xview] 1] == 1.0} {
-            set isScrollableX($c) 0
+            set patchIsScrollableX($c) 0
             pack forget $top.xscroll
             
         } else {
-            set isScrollableX($c) 1
+            set patchIsScrollableX($c) 1
             pack $top.xscroll -side bottom -fill x -before $c
         }
         
         if {[lindex [$c yview] 0] == 0.0 && [lindex [$c yview] 1] == 1.0} {
-            set isScrollableY($c) 0
+            set patchIsScrollableY($c) 0
             pack forget $top.yscroll
             
         } else {
-            set isScrollableY($c) 1
+            set patchIsScrollableY($c) 1
             pack $top.yscroll -side right -fill y -before $c
         }
     
