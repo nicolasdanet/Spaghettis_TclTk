@@ -396,7 +396,7 @@ EXTERN t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     t_float x1, t_float y1, t_float x2, t_float y2,
     t_float px1, t_float py1, t_float px2, t_float py2);
 EXTERN void glist_arraydialog(t_glist *parent, t_symbol *name,
-    t_floatarg size, t_floatarg saveit, t_floatarg newgraph);
+    t_floatarg size, t_floatarg saveit);
 EXTERN t_binbuf *glist_writetobinbuf(t_glist *x, int wholething);
 EXTERN int glist_isgraph(t_glist *x);
 EXTERN void glist_redraw(t_glist *x);

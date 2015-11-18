@@ -2844,7 +2844,7 @@ void g_editor_setup(void)
     class_addmethod(canvas_class, (t_method)canvas_donecanvasdialog,
         gensym("donecanvasdialog"), A_GIMME, A_NULL);
     class_addmethod(canvas_class, (t_method)glist_arraydialog,
-        gensym("arraydialog"), A_SYMBOL, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+        gensym("arraydialog"), A_SYMBOL, A_FLOAT, A_FLOAT, A_NULL);
 
 /* -------------- connect method used in reading files ------------------ */
     class_addmethod(canvas_class, (t_method)canvas_connect,

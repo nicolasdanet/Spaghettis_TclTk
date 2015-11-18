@@ -387,14 +387,14 @@ void garray_properties(t_garray *x)
     /* this is called back from the dialog window to create a garray. 
     The otherflag requests that we find an existing graph to put it in. */
 void glist_arraydialog(t_glist *parent, t_symbol *name, t_floatarg size,
-    t_floatarg fflags, t_floatarg otherflag)
+    t_floatarg fflags)
 {
     t_glist *gl;
     t_garray *a;
     int flags = fflags;
     if (size < 1)
         size = 1;
-    if (otherflag == 0 || (!(gl = glist_findgraph(parent))))
+    if (0 /* otherflag */ == 0 || (!(gl = glist_findgraph(parent))))
         gl = glist_addglist(parent, &s_, 0, 1,
             size, -1, 0, 0, 0, 0);
     a = graph_array(gl, iemgui_raute2dollar(name), &s_float, size, flags);
@@ -403,7 +403,7 @@ void glist_arraydialog(t_glist *parent, t_symbol *name, t_floatarg size,
 
     /* this is called from the properties dialog window for an existing array */
 void garray_arraydialog(t_garray *x, t_symbol *name, t_floatarg fsize,
-    t_floatarg fflags, t_floatarg deleteit)
+    t_floatarg fflags)
 {
     int flags = fflags;
     int saveit = ((flags & 1) != 0);
@@ -413,7 +413,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_floatarg fsize,
     t_float stylewas = template_getfloat(
         template_findbyname(x->x_scalar->sc_template),
             gensym("style"), x->x_scalar->sc_vec, 1);
-    if (deleteit != 0)
+    if (0) // deleteit
     {
         int wasused = x->x_usedindsp;
         glist_delete(x->x_glist, &x->x_gobj);
@@ -1230,7 +1230,7 @@ void g_array_setup(void)
     class_addmethod(garray_class, (t_method)garray_normalize,
         gensym("normalize"), A_DEFFLOAT, 0);
     class_addmethod(garray_class, (t_method)garray_arraydialog,
-        gensym("arraydialog"), A_SYMBOL, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+        gensym("arraydialog"), A_SYMBOL, A_FLOAT, A_FLOAT, A_NULL);
 /* jsarlo { */
     class_addmethod(garray_class, (t_method)garray_arrayviewlist_new,
         gensym("arrayviewlistnew"), A_NULL);

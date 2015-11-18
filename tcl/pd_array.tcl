@@ -55,8 +55,7 @@ proc apply {mytoplevel} {
     ::pd_connect::pdsend "$mytoplevel arraydialog \
             [::dialog_gatom::escape [$mytoplevel.name.entry get]] \
             [$mytoplevel.size.entry get] \
-            [expr $saveMe($mytoplevel) + (2 * $drawAs($mytoplevel))] \
-            0"
+            [expr $saveMe($mytoplevel) + (2 * $drawAs($mytoplevel))]"
 }
 
 proc cancel {mytoplevel} {
