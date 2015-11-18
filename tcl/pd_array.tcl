@@ -17,19 +17,19 @@ namespace eval ::pd_array:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable saveMe
-variable drawAs
+variable drawMode
+variable saveContents
 
-array set saveMe {}
-array set drawAs {}
+array set drawMode     {}
+array set saveContents {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
 proc show {mytoplevel name size flags newone} {
 
-    variable saveMe
-    variable drawAs
+    variable drawMode
+    variable saveContents
     
     if {[winfo exists $mytoplevel]} {
         wm deiconify $mytoplevel
@@ -40,8 +40,8 @@ proc show {mytoplevel name size flags newone} {
 
     $mytoplevel.name.entry insert 0 [::dialog_gatom::unescape $name]
     $mytoplevel.size.entry insert 0 $size
-    set saveMe($mytoplevel) [expr $flags & 1]
-    set drawAs($mytoplevel) [expr ( $flags & 6 ) >> 1]
+    set saveContents($mytoplevel) [expr $flags & 1]
+    set drawMode($mytoplevel) [expr ( $flags & 6 ) >> 1]
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -49,13 +49,13 @@ proc show {mytoplevel name size flags newone} {
 
 proc apply {mytoplevel} {
     
-    variable saveMe
-    variable drawAs
+    variable drawMode
+    variable saveContents
     
     ::pd_connect::pdsend "$mytoplevel arraydialog \
             [::dialog_gatom::escape [$mytoplevel.name.entry get]] \
             [$mytoplevel.size.entry get] \
-            [expr $saveMe($mytoplevel) + (2 * $drawAs($mytoplevel))]"
+            [expr $saveContents($mytoplevel) + (2 * $drawMode($mytoplevel))]"
 }
 
 proc cancel {mytoplevel} {
@@ -69,8 +69,8 @@ proc ok {mytoplevel} {
 
 proc create_dialog {mytoplevel newone} {
 
-    variable saveMe
-    variable drawAs
+    variable drawMode
+    variable saveContents
     
     toplevel $mytoplevel -class PdDialog
     wm title $mytoplevel [_ "Array Properties"]
@@ -93,17 +93,17 @@ proc create_dialog {mytoplevel newone} {
     pack $mytoplevel.size.label $mytoplevel.size.entry -anchor w
 
     checkbutton $mytoplevel.saveme -text [_ "Save contents"] \
-        -variable ::pd_array::saveMe($mytoplevel) -anchor w
+        -variable ::pd_array::saveContents($mytoplevel) -anchor w
     pack $mytoplevel.saveme -side top
 
     labelframe $mytoplevel.drawas -text [_ "Draw as:"] -padx 20 -borderwidth 1
     pack $mytoplevel.drawas -side top -fill x
     radiobutton $mytoplevel.drawas.points -value 0 \
-        -variable ::pd_array::drawAs($mytoplevel) -text [_ "Polygon"]
+        -variable ::pd_array::drawMode($mytoplevel) -text [_ "Polygon"]
     radiobutton $mytoplevel.drawas.polygon -value 1 \
-        -variable ::pd_array::drawAs($mytoplevel) -text [_ "Points"]
+        -variable ::pd_array::drawMode($mytoplevel) -text [_ "Points"]
     radiobutton $mytoplevel.drawas.bezier -value 2 \
-        -variable ::pd_array::drawAs($mytoplevel) -text [_ "Bezier curve"]
+        -variable ::pd_array::drawMode($mytoplevel) -text [_ "Bezier curve"]
     pack $mytoplevel.drawas.points -side top -anchor w
     pack $mytoplevel.drawas.polygon -side top -anchor w
     pack $mytoplevel.drawas.bezier -side top -anchor w
