@@ -143,11 +143,11 @@ set var(apiMidiAvailables)      {}
 set var(apiAudio)               0
 set var(apiMidi)                0
 
-set var(cursorRunNothing)       ""
-set var(cursorRunClickMe)       ""
+set var(cursorRunNothing)       "left_ptr"
+set var(cursorRunClickMe)       "hand2"
 set var(cursorRunThicken)       "sb_v_double_arrow"
 set var(cursorRunAddPoint)      "plus"
-set var(cursorEditNothing)      "hand2"
+set var(cursorEditNothing)      "left_ptr"
 set var(cursorEditConnect)      "circle"
 set var(cursorEditDisconnect)   "X_cursor"
 set var(cursorEditResize)       "sb_h_double_arrow"
@@ -247,23 +247,6 @@ proc main {argc argv} {
     # Avoid tear-off menus.
     
     option add *tearOff 0
-    
-    # Set various platform specific settings.
-    
-    switch -- [tk windowingsystem] {
-        "x11"   {
-            set ::var(cursorRunNothing)     "left_ptr"
-            set ::var(cursorRunClickMe)     "arrow"
-        }
-        "aqua"  {
-            set ::var(cursorRunNothing)     "arrow"
-            set ::var(cursorRunClickMe)     "center_ptr"
-        }
-        "win32" { 
-            set ::var(cursorRunNothing)     "right_ptr"
-            set ::var(cursorRunClickMe)     "arrow"
-        }
-    }
     
     # Handle socket connection.
     
