@@ -26,22 +26,23 @@ array set saveContents {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {mytoplevel name size flags} {
+proc show {top name size flags} {
 
     variable drawMode
     variable saveContents
     
-    if {[winfo exists $mytoplevel]} {
-        wm deiconify $mytoplevel
-        raise $mytoplevel
+    if {[winfo exists $top]} {
+        wm deiconify $top
+        raise $top
     } else {
-        create_dialog $mytoplevel
+        ::pd_array::_create $top
     }
 
-    $mytoplevel.name.entry insert 0 [::dialog_gatom::unescape $name]
-    $mytoplevel.size.entry insert 0 $size
-    set saveContents($mytoplevel) [expr $flags & 1]
-    set drawMode($mytoplevel) [expr ( $flags & 6 ) >> 1]
+    $top.name.entry insert 0 [::dialog_gatom::unescape $name]
+    $top.size.entry insert 0 $size
+    
+    set saveContents($top)  [expr {$flags & 1}]
+    set drawMode($top)      [expr {($flags & 6) >> 1}]
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -67,7 +68,7 @@ proc ok {mytoplevel} {
     ::pd_array::cancel $mytoplevel
 }
 
-proc create_dialog {mytoplevel} {
+proc _create {mytoplevel} {
 
     variable drawMode
     variable saveContents
