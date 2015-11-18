@@ -22,6 +22,11 @@ namespace eval ::pd_patch:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+variable suffix "(Edit)"
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 variable patchTitle
 variable patchIsEditMode
 variable patchIsScrollableX
@@ -127,6 +132,8 @@ proc setTitle {top path name dirty} {
     }
 
     wm title $top $patchTitle($top)
+    
+    ::pd_patch::_reflectEditmode $top
 }
 
 proc getTitle {top} {
@@ -151,6 +158,8 @@ proc setEditMode {top {state {}}} {
     set patchIsEditMode($top) $state
     
     if {$state} { ::pd_menu::enableCopyingAndEditing } else { ::pd_menu::disableCopyingAndEditing }
+    
+    ::pd_patch::_reflectEditmode $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -209,6 +218,23 @@ proc updateScrollRegion {c} {
     
     }
     
+    }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _reflectEditmode {top} {
+
+    variable suffix
+    variable patchIsEditMode
+    
+    set title [::pd_patch::getTitle $top]
+    
+    if {$patchIsEditMode($top)} { 
+        wm title $top "$title $suffix" 
+    } else {
+        wm title $top "$title"
     }
 }
 

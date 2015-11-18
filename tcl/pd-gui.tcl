@@ -181,7 +181,7 @@ proc getFont {size} { return "::var(font${size})" }
 # ------------------------------------------------------------------------------------------------------------
 
 proc getTitle {top} { 
-
+    
     if {[winfo class $top] eq "PdPatch"} { return [::pd_patch::getTitle $top] }
     return [wm title $top]
 }
