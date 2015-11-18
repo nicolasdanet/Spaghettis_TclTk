@@ -22,10 +22,12 @@ namespace eval ::pd_patch:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+variable patchTitle
 variable patchIsEditMode
 variable patchIsScrollableX
 variable patchIsScrollableY
 
+array set patchTitle         {}
 array set patchIsEditMode    {}
 array set patchIsScrollableX {}
 array set patchIsScrollableY {}
@@ -35,6 +37,7 @@ array set patchIsScrollableY {}
 
 proc create {top width height geometry editable} {
 
+    variable patchTitle
     variable patchIsEditMode
     variable patchIsScrollableX
     variable patchIsScrollableY
@@ -73,6 +76,7 @@ proc create {top width height geometry editable} {
 
     # Set various attributes.
     
+    set patchTitle($top)            ""
     set patchIsEditMode($top)       $editable
     set patchIsScrollableX($top.c)  0
     set patchIsScrollableY($top.c)  0
@@ -85,10 +89,12 @@ proc willClose {top} {
 
 proc closed {top} {
 
+    variable patchTitle
     variable patchIsEditMode
     variable patchIsScrollableX
     variable patchIsScrollableY
 
+    unset patchTitle($top)
     unset patchIsEditMode($top)
     unset patchIsScrollableX($top.c)
     unset patchIsScrollableY($top.c)
@@ -108,7 +114,11 @@ proc bringToFront {top} {
 # ------------------------------------------------------------------------------------------------------------
 
 proc setTitle {top path name dirty} {
-                                              
+
+    variable patchTitle
+    
+    set patchTitle($top) "[file rootname [file tail $name]]"
+    
     if {[tk windowingsystem] eq "aqua"} {
         wm attributes $top -modified $dirty
         if {[file exists "$path/$name"]} {
@@ -116,18 +126,20 @@ proc setTitle {top path name dirty} {
         }
     }
 
-    wm title $top "[file rootname [file tail $name]]"
+    wm title $top $patchTitle($top)
 }
 
 proc getTitle {top} {
 
-    return [wm title $top]
+    variable patchTitle
+    
+    return $patchTitle($top)
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Refresh with no state provided.
+# Refresh if no state provided.
 
 proc setEditMode {top {state {}}} {
 
