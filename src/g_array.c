@@ -444,7 +444,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_floatarg fsize,
             /* jsarlo { */
             if (x->x_listviewing)
             {
-              garray_arrayviewlist_close(x);
+              // garray_arrayviewlist_close(x);
             }
             /* } jsarlo */
             x->x_name = argname;
@@ -479,7 +479,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_floatarg fsize,
 
 /* jsarlo { */
 void garray_arrayviewlist_new(t_garray *x)
-{
+{/*
     int i, xonset=0, yonset=0, type=0, elemsize=0;
     t_float yval;
     char cmdbuf[200];
@@ -488,7 +488,7 @@ void garray_arrayviewlist_new(t_garray *x)
 
     if (!a)
     {
-        /* FIXME */
+        //
         error("error in garray_arrayviewlist_new()");
     }
     x->x_listviewing = 1;
@@ -506,13 +506,13 @@ void garray_arrayviewlist_new(t_garray *x)
                  i,
                  i,
                  yval);
-    }
+    }*/
 }
 
 void garray_arrayviewlist_fillpage(t_garray *x,
                                    t_float page,
                                    t_float fTopItem)
-{
+{/*
     int i, xonset=0, yonset=0, type=0, elemsize=0, topItem;
     t_float yval;
     char cmdbuf[200];
@@ -522,7 +522,7 @@ void garray_arrayviewlist_fillpage(t_garray *x,
     topItem = (int)fTopItem;
     if (!a)
     {
-        /* FIXME */
+        //
         error("error in garray_arrayviewlist_new()");
     }
 
@@ -555,14 +555,14 @@ void garray_arrayviewlist_fillpage(t_garray *x,
     }
     sys_vgui(".%sArrayWindow.lb yview %d\n",
              x->x_realname->s_name,
-             topItem);
+             topItem);*/
 }
 
 void garray_arrayviewlist_close(t_garray *x)
 {
     x->x_listviewing = 0;
-    sys_vgui("::pd_array::pdtk_array_listview_closeWindow %s\n",
-             x->x_realname->s_name);
+    /*sys_vgui("::pd_array::pdtk_array_listview_closeWindow %s\n",
+             x->x_realname->s_name);*/
 }
 /* } jsarlo */
 
@@ -573,7 +573,7 @@ static void garray_free(t_garray *x)
     /* jsarlo { */
         if (x->x_listviewing)
     {
-        garray_arrayviewlist_close(x);
+        // garray_arrayviewlist_close(x);
     }
     /* } jsarlo */
     gfxstub_deleteforkey(x);
@@ -799,12 +799,12 @@ void garray_redraw(t_garray *x)
     /* jsarlo { */
     /* this happens in garray_vis() when array is visible for
        performance reasons */
-    else
-    {
-      if (x->x_listviewing)
+    //else
+    //{
+      /* if (x->x_listviewing)
         sys_vgui("::pd_array::pdtk_array_listview_fillpage %s\n",
-                 x->x_realname->s_name);
-    }
+                 x->x_realname->s_name);*/
+    //}
     /* } jsarlo */
 }
 
@@ -1083,7 +1083,7 @@ static void garray_rename(t_garray *x, t_symbol *s)
     /* jsarlo { */
     if (x->x_listviewing)
     {
-        garray_arrayviewlist_close(x);
+        /*garray_arrayviewlist_close(x);*/
     }
     /* } jsarlo */
     pd_unbind(&x->x_gobj.g_pd, x->x_realname);
