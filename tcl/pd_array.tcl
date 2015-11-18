@@ -30,12 +30,24 @@ namespace eval ::pd_array:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+proc show {mytoplevel name size flags newone} {
 
+    if {[winfo exists $mytoplevel]} {
+        wm deiconify $mytoplevel
+        raise $mytoplevel
+    } else {
+        create_dialog $mytoplevel $newone
+    }
+
+    $mytoplevel.name.entry insert 0 [::dialog_gatom::unescape $name]
+    $mytoplevel.size.entry insert 0 $size
+    set ::saveme_button($mytoplevel) [expr $flags & 1]
+    set ::drawas_button($mytoplevel) [expr ( $flags & 6 ) >> 1]
+    set ::otherflag_button($mytoplevel) 0
+}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
-
-############ pdtk_array_dialog -- dialog window for arrays #########
 
 proc pdtk_array_listview_setpage {arrayName page} {
     set ::pd_array_listview_page($arrayName) $page
@@ -243,26 +255,6 @@ proc cancel {mytoplevel} {
 proc ok {mytoplevel} {
     ::pd_array::apply $mytoplevel
     ::pd_array::cancel $mytoplevel
-}
-
-proc pdtk_array_dialog {mytoplevel name size flags newone} {
-    if {[winfo exists $mytoplevel]} {
-        wm deiconify $mytoplevel
-        raise $mytoplevel
-    } else {
-        create_dialog $mytoplevel $newone
-    }
-
-    $mytoplevel.name.entry insert 0 [::dialog_gatom::unescape $name]
-    $mytoplevel.size.entry insert 0 $size
-    set ::saveme_button($mytoplevel) [expr $flags & 1]
-    set ::drawas_button($mytoplevel) [expr ( $flags & 6 ) >> 1]
-    set ::otherflag_button($mytoplevel) 0
-# pd -> tcl
-#  2 * (int)(template_getfloat(template_findbyname(sc->sc_template), gensym("style"), x->x_scalar->sc_vec, 1)));
-
-# tcl->pd
-#    int style = ((flags & 6) >> 1);
 }
 
 proc create_dialog {mytoplevel newone} {
