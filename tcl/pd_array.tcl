@@ -14,7 +14,6 @@ package provide pd_array 0.1
 
 array set saveme_button {}
 array set drawas_button {}
-array set otherflag_button {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -37,7 +36,6 @@ proc show {mytoplevel name size flags newone} {
     $mytoplevel.size.entry insert 0 $size
     set ::saveme_button($mytoplevel) [expr $flags & 1]
     set ::drawas_button($mytoplevel) [expr ( $flags & 6 ) >> 1]
-    set ::otherflag_button($mytoplevel) 0
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -48,7 +46,7 @@ proc apply {mytoplevel} {
             [::dialog_gatom::escape [$mytoplevel.name.entry get]] \
             [$mytoplevel.size.entry get] \
             [expr $::saveme_button($mytoplevel) + (2 * $::drawas_button($mytoplevel))] \
-            $::otherflag_button($mytoplevel)"
+            0"
 }
 
 proc cancel {mytoplevel} {
@@ -96,21 +94,6 @@ proc create_dialog {mytoplevel newone} {
     pack $mytoplevel.drawas.points -side top -anchor w
     pack $mytoplevel.drawas.polygon -side top -anchor w
     pack $mytoplevel.drawas.bezier -side top -anchor w
-
-    if {$newone != 0} {
-        labelframe $mytoplevel.radio -text [_ "Put array into:"] -padx 20 -borderwidth 1
-        pack $mytoplevel.radio -side top -fill x
-        radiobutton $mytoplevel.radio.radio0 -value 0 \
-            -variable ::otherflag_button($mytoplevel) -text [_ "New graph"]
-        radiobutton $mytoplevel.radio.radio1 -value 1 \
-            -variable ::otherflag_button($mytoplevel) -text [_ "Last graph"]
-        pack $mytoplevel.radio.radio0 -side top -anchor w
-        pack $mytoplevel.radio.radio1 -side top -anchor w
-    } else {    
-        checkbutton $mytoplevel.deletearray -text [_ "Delete array"] \
-            -variable ::otherflag_button($mytoplevel) -anchor w
-        pack $mytoplevel.deletearray -side top
-    }
 
     frame $mytoplevel.buttonframe
     pack $mytoplevel.buttonframe -side bottom -expand 1 -fill x -pady 2m
