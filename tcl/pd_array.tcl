@@ -26,7 +26,7 @@ array set saveContents {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {mytoplevel name size flags newone} {
+proc show {mytoplevel name size flags} {
 
     variable drawMode
     variable saveContents
@@ -35,7 +35,7 @@ proc show {mytoplevel name size flags newone} {
         wm deiconify $mytoplevel
         raise $mytoplevel
     } else {
-        create_dialog $mytoplevel $newone
+        create_dialog $mytoplevel
     }
 
     $mytoplevel.name.entry insert 0 [::dialog_gatom::unescape $name]
@@ -67,7 +67,7 @@ proc ok {mytoplevel} {
     ::pd_array::cancel $mytoplevel
 }
 
-proc create_dialog {mytoplevel newone} {
+proc create_dialog {mytoplevel} {
 
     variable drawMode
     variable saveContents
@@ -113,11 +113,7 @@ proc create_dialog {mytoplevel newone} {
     button $mytoplevel.buttonframe.cancel -text [_ "Cancel"] \
         -command "::pd_array::cancel $mytoplevel"
     pack $mytoplevel.buttonframe.cancel -side left -expand 1 -fill x -padx 10
-    if {$newone == 0 && [tk windowingsystem] ne "aqua"} {
-        button $mytoplevel.buttonframe.apply -text [_ "Apply"] \
-            -command "::pd_array::apply $mytoplevel"
-        pack $mytoplevel.buttonframe.apply -side left -expand 1 -fill x -padx 10
-    }
+
     button $mytoplevel.buttonframe.ok -text [_ "OK"]\
         -command "::pd_array::ok $mytoplevel"
     pack $mytoplevel.buttonframe.ok -side left -expand 1 -fill x -padx 10
