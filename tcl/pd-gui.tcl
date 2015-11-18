@@ -39,7 +39,7 @@ proc unknown {args} {
 }
 
 proc unknownIsExpected {stack} {
-    set expected { "tclPkgUnknown" "tk::MenuDup" "tk_optionMenu" }
+    set expected { "tclPkgUnknown" "tk::MenuDup" "tk_optionMenu" "tcl_wordBreakBefore" }
     foreach e $expected {
         if {[string first $e $stack] > -1} { return 1 }
     }
@@ -82,7 +82,6 @@ if {[tk windowingsystem] eq "aqua"} { package require pd_apple }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package require dialog_array
 package require dialog_audio
 package require dialog_canvas
 package require dialog_data
@@ -91,6 +90,7 @@ package require dialog_gui
 package require dialog_message
 package require dialog_midi
 
+package require pd_array
 package require pd_bind
 package require pd_confirm
 package require pd_connect

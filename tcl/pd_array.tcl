@@ -7,38 +7,47 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide dialog_array 0.1
+package provide pd_array 0.1
 
-namespace eval ::dialog_array:: {
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-}
-
-# global variables for the listview
 array set pd_array_listview_entry {}
 array set pd_array_listview_id {}
 array set pd_array_listview_page {}
+
 set pd_array_listview_pagesize 0
-# this stores the state of the "save me" check button
+
 array set saveme_button {}
-# this stores the state of the "draw as" radio buttons
 array set drawas_button {}
-# this stores the state of the "in new graph"/"in last graph" radio buttons
-# and the "delete array" checkbutton
 array set otherflag_button {}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+namespace eval ::pd_array:: {
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 ############ pdtk_array_dialog -- dialog window for arrays #########
 
-proc ::dialog_array::pdtk_array_listview_setpage {arrayName page} {
+proc pdtk_array_listview_setpage {arrayName page} {
     set ::pd_array_listview_page($arrayName) $page
 }
 
-proc ::dialog_array::listview_changepage {arrayName np} {
-    ::dialog_array::pdtk_array_listview_setpage \
+proc listview_changepage {arrayName np} {
+    ::pd_array::pdtk_array_listview_setpage \
         $arrayName [expr $::pd_array_listview_page($arrayName) + $np]
-    ::dialog_array::pdtk_array_listview_fillpage $arrayName
+    ::pd_array::pdtk_array_listview_fillpage $arrayName
 }
 
-proc ::dialog_array::pdtk_array_listview_fillpage {arrayName} {
+proc pdtk_array_listview_fillpage {arrayName} {
     set windowName [format ".%sArrayWindow" $arrayName]
     set topItem [expr [lindex [$windowName.lb yview] 0] * \
                      [$windowName.lb size]]
@@ -53,7 +62,7 @@ proc ::dialog_array::pdtk_array_listview_fillpage {arrayName} {
     }
 }
 
-proc ::dialog_array::pdtk_array_listview_new {id arrayName page} {
+proc pdtk_array_listview_new {id arrayName page} {
     set ::pd_array_listview_page($arrayName) $page
     set ::pd_array_listview_id($arrayName) $id
     set windowName [format ".%sArrayWindow" $arrayName]
@@ -61,7 +70,7 @@ proc ::dialog_array::pdtk_array_listview_new {id arrayName page} {
     toplevel $windowName -class PdDialog
     wm group $windowName .
     wm protocol $windowName WM_DELETE_WINDOW \
-        "::dialog_array::listview_close $id $arrayName"
+        "::pd_array::listview_close $id $arrayName"
     wm title $windowName [concat $arrayName "(list view)"]
     # FIXME
     set font 12
@@ -75,24 +84,24 @@ proc ::dialog_array::pdtk_array_listview_new {id arrayName page} {
     place configure $windowName.lb.sb -relheight 1 -relx 0.9 -relwidth 0.1
     pack $windowName.lb -expand 1 -fill both
     bind $windowName.lb <Double-ButtonPress-1> \
-        "::dialog_array::listview_edit $arrayName $page $font"
+        "::pd_array::listview_edit $arrayName $page $font"
     # handle copy/paste
     switch -- [tk windowingsystem] {
         "x11" {selection handle $windowName.lb \
-                   "::dialog_array::listview_lbselection $arrayName"}
+                   "::pd_array::listview_lbselection $arrayName"}
         "win32" {bind $windowName.lb <ButtonPress-3> \
-                     "::dialog_array::listview_popup $arrayName"} 
+                     "::pd_array::listview_popup $arrayName"} 
     }
     set $windowName.prevBtn [button $windowName.prevBtn -text "<-" \
-                                 -command "::dialog_array::listview_changepage $arrayName -1"]
+                                 -command "::pd_array::listview_changepage $arrayName -1"]
     set $windowName.nextBtn [button $windowName.nextBtn -text "->" \
-                                 -command "::dialog_array::listview_changepage $arrayName 1"]
+                                 -command "::pd_array::listview_changepage $arrayName 1"]
     pack $windowName.prevBtn -side left -ipadx 20 -pady 10 -anchor s
     pack $windowName.nextBtn -side right -ipadx 20 -pady 10 -anchor s
     focus $windowName
 }
 
-proc ::dialog_array::listview_lbselection {arrayName off size} {
+proc listview_lbselection {arrayName off size} {
     set windowName [format ".%sArrayWindow" $arrayName]
     set itemNums [$windowName.lb curselection]
     set cbString ""
@@ -111,21 +120,21 @@ proc ::dialog_array::listview_lbselection {arrayName off size} {
 }
 
 # Win32 uses a popup menu for copy/paste
-proc ::dialog_array::listview_popup {arrayName} {
+proc listview_popup {arrayName} {
     set windowName [format ".%sArrayWindow" $arrayName]
     if [winfo exists $windowName.popup] then [destroy $windowName.popup]
     menu $windowName.popup -tearoff 0
     $windowName.popup add command -label [_ "Copy"] \
-        -command "::dialog_array::listview_copy $arrayName; \
+        -command "::pd_array::listview_copy $arrayName; \
                   destroy $windowName.popup"
     $windowName.popup add command -label [_ "Paste"] \
-        -command "::dialog_array::listview_paste $arrayName; \
+        -command "::pd_array::listview_paste $arrayName; \
                   destroy $windowName.popup"
     tk_popup $windowName.popup [winfo pointerx $windowName] \
         [winfo pointery $windowName] 0
 }
 
-proc ::dialog_array::listview_copy {arrayName} {
+proc listview_copy {arrayName} {
     set windowName [format ".%sArrayWindow" $arrayName]
     set itemNums [$windowName.lb curselection]
     set cbString ""
@@ -144,7 +153,7 @@ proc ::dialog_array::listview_copy {arrayName} {
     clipboard append $cbString
 }
 
-proc ::dialog_array::listview_paste {arrayName} {
+proc listview_paste {arrayName} {
     set cbString [selection get -selection CLIPBOARD]
     set lbName [format ".%sArrayWindow.lb" $arrayName]
     set itemNum [lindex [$lbName curselection] 0]
@@ -164,10 +173,10 @@ proc ::dialog_array::listview_paste {arrayName} {
     }
 }
 
-proc ::dialog_array::listview_edit {arrayName page font} {
+proc listview_edit {arrayName page font} {
     set lbName [format ".%sArrayWindow.lb" $arrayName]
     if {[winfo exists $lbName.entry]} {
-        ::dialog_array::listview_update_entry \
+        ::pd_array::listview_update_entry \
             $arrayName $::pd_array_listview_entry($arrayName)
         unset ::pd_array_listview_entry($arrayName)
     }
@@ -182,10 +191,10 @@ proc ::dialog_array::listview_edit {arrayName page font} {
     lower $lbName.entry
     focus $lbName.entry
     bind $lbName.entry <Return> \
-        "::dialog_array::listview_update_entry $arrayName $itemNum;"
+        "::pd_array::listview_update_entry $arrayName $itemNum;"
 }
 
-proc ::dialog_array::listview_update_entry {arrayName itemNum} {
+proc listview_update_entry {arrayName itemNum} {
     set lbName [format ".%sArrayWindow.lb" $arrayName]
     set splitChars ", \n"
     set itemString [split [$lbName.entry get] $splitChars]
@@ -201,21 +210,21 @@ proc ::dialog_array::listview_update_entry {arrayName itemNum} {
             set flag 0
         }
     }
-    ::dialog_array::pdtk_array_listview_fillpage $arrayName
+    ::pd_array::pdtk_array_listview_fillpage $arrayName
     destroy $lbName.entry
 }
 
-proc ::dialog_array::pdtk_array_listview_closeWindow {arrayName} {
+proc pdtk_array_listview_closeWindow {arrayName} {
     set mytoplevel [format ".%sArrayWindow" $arrayName]
     destroy $mytoplevel
 }
 
-proc ::dialog_array::listview_close {mytoplevel arrayName} {
-    ::dialog_array::pdtk_array_listview_closeWindow $arrayName
+proc listview_close {mytoplevel arrayName} {
+    ::pd_array::pdtk_array_listview_closeWindow $arrayName
     ::pd_connect::pdsend "$mytoplevel arrayviewclose"
 }
 
-proc ::dialog_array::apply {mytoplevel} {
+proc apply {mytoplevel} {
     ::pd_connect::pdsend "$mytoplevel arraydialog \
             [::dialog_gatom::escape [$mytoplevel.name.entry get]] \
             [$mytoplevel.size.entry get] \
@@ -223,20 +232,20 @@ proc ::dialog_array::apply {mytoplevel} {
             $::otherflag_button($mytoplevel)"
 }
 
-proc ::dialog_array::openlistview {mytoplevel} {
+proc openlistview {mytoplevel} {
     ::pd_connect::pdsend "$mytoplevel arrayviewlistnew"
 }
 
-proc ::dialog_array::cancel {mytoplevel} {
+proc cancel {mytoplevel} {
     ::pd_connect::pdsend "$mytoplevel cancel"
 }
 
-proc ::dialog_array::ok {mytoplevel} {
-    ::dialog_array::apply $mytoplevel
-    ::dialog_array::cancel $mytoplevel
+proc ok {mytoplevel} {
+    ::pd_array::apply $mytoplevel
+    ::pd_array::cancel $mytoplevel
 }
 
-proc ::dialog_array::pdtk_array_dialog {mytoplevel name size flags newone} {
+proc pdtk_array_dialog {mytoplevel name size flags newone} {
     if {[winfo exists $mytoplevel]} {
         wm deiconify $mytoplevel
         raise $mytoplevel
@@ -256,7 +265,7 @@ proc ::dialog_array::pdtk_array_dialog {mytoplevel name size flags newone} {
 #    int style = ((flags & 6) >> 1);
 }
 
-proc ::dialog_array::create_dialog {mytoplevel newone} {
+proc create_dialog {mytoplevel newone} {
     toplevel $mytoplevel -class PdDialog
     wm title $mytoplevel [_ "Array Properties"]
     wm group $mytoplevel .
@@ -310,21 +319,29 @@ proc ::dialog_array::create_dialog {mytoplevel newone} {
     # jsarlo
     if {$newone == 0} {
         button $mytoplevel.listview -text [_ "Open List View..."] \
-            -command "::dialog_array::openlistview $mytoplevel [$mytoplevel.name.entry get]"
+            -command "::pd_array::openlistview $mytoplevel [$mytoplevel.name.entry get]"
         pack $mytoplevel.listview -side top
     }
     # end jsarlo
     frame $mytoplevel.buttonframe
     pack $mytoplevel.buttonframe -side bottom -expand 1 -fill x -pady 2m
     button $mytoplevel.buttonframe.cancel -text [_ "Cancel"] \
-        -command "::dialog_array::cancel $mytoplevel"
+        -command "::pd_array::cancel $mytoplevel"
     pack $mytoplevel.buttonframe.cancel -side left -expand 1 -fill x -padx 10
     if {$newone == 0 && [tk windowingsystem] ne "aqua"} {
         button $mytoplevel.buttonframe.apply -text [_ "Apply"] \
-            -command "::dialog_array::apply $mytoplevel"
+            -command "::pd_array::apply $mytoplevel"
         pack $mytoplevel.buttonframe.apply -side left -expand 1 -fill x -padx 10
     }
     button $mytoplevel.buttonframe.ok -text [_ "OK"]\
-        -command "::dialog_array::ok $mytoplevel"
+        -command "::pd_array::ok $mytoplevel"
     pack $mytoplevel.buttonframe.ok -side left -expand 1 -fill x -padx 10
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
