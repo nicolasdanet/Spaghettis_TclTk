@@ -35,6 +35,23 @@ proc show {top name size flags} {
     ::pd_array::_create $top $name $size $flags
 }
 
+proc _closed {top} {
+    
+    variable arrayName
+    variable arraySize
+    variable arrayDraw
+    variable arraySave
+    
+    ::pd_array::_apply $top
+    
+    unset arrayName($top)
+    unset arraySize($top)
+    unset arrayDraw($top)
+    unset arraySave($top)
+    
+    ::pd_connect::pdsend "$top cancel"
+}
+
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
@@ -60,7 +77,7 @@ proc _create {top name size flags} {
     entry $top.size             -textvariable ::pd_array::arraySize($top)
 
     
-    checkbutton $top.saveme     -text [_ "Save contents"] \
+    checkbutton $top.save       -text [_ "Save contents"] \
                                 -variable ::pd_array::arraySave($top)
     
     radiobutton $top.points     -text [_ "Polygon"] \
@@ -74,30 +91,19 @@ proc _create {top name size flags} {
     radiobutton $top.bezier     -text [_ "Bezier curve"] \
                                 -variable ::pd_array::arrayDraw($top) \
                                 -value 2 
-    
-    button $top.cancel          -text [_ "Cancel"] \
-                                -command "::pd_array::_cancel $top"
                                 
-    button $top.ok              -text [_ "Apply"] \
-                                -command "::pd_array::_apply $top"
-    
     pack $top.name              -side top -anchor w
     pack $top.size              -side top -anchor w
-    pack $top.saveme            -side top -anchor w
+    pack $top.save              -side top -anchor w
     pack $top.points            -side top -anchor w
     pack $top.polygon           -side top -anchor w
     pack $top.bezier            -side top -anchor w
-    pack $top.cancel            -side top -anchor w
-    pack $top.ok                -side top -anchor w
+    
+    wm protocol $top WM_DELETE_WINDOW   "::pd_array::_closed $top"
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
-
-proc _cancel {top} {
-
-    ::pd_connect::pdsend "$top cancel"
-}
 
 proc _apply {top} {
 
@@ -111,7 +117,6 @@ proc _apply {top} {
     set flags [expr {$::pd_array::arraySave($top) + (2 * $::pd_array::arrayDraw($top))}]
     
     ::pd_connect::pdsend "$top arraydialog $name $size $flags"
-    ::pd_connect::pdsend "$top cancel"
 }
 
 # ------------------------------------------------------------------------------------------------------------
