@@ -268,19 +268,23 @@ proc _object {m} {
     $m add separator
     
     $m add command \
-        -label [_ "Array"] \
-        -command { ::pd_menu::_handle menuarray }
-    $m add separator
-    
-    $m add command \
         -label [_ "Bang"] \
+        -accelerator "${accelerator}+6" \
         -command { ::pd_menu::_handle bng }
     $m add command \
         -label [_ "Toggle"] \
+        -accelerator "${accelerator}+7" \
         -command { ::pd_menu::_handle toggle }
     $m add command \
         -label [_ "Panel"] \
+        -accelerator "${accelerator}+8" \
         -command { ::pd_menu::_handle mycnv }
+    $m add command \
+        -label [_ "Array"] \
+        -accelerator "${accelerator}+9" \
+        -command { ::pd_menu::_handle menuarray }
+    $m add separator
+     
     $m add command \
         -label [_ "Number"] \
         -command { ::pd_menu::_handle numbox }

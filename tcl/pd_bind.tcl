@@ -48,17 +48,27 @@ proc initialize {} {
     event add <<Close>>                     <$mod-Key-w>
     event add <<Quit>>                      <$mod-Key-q>
     
+    # ( http://wiki.tcl.tk/1435 ).
+    
     event add <<NewObject>>                 <$mod-ampersand>
     event add <<NewMessage>>                <$mod-eacute>
     event add <<NewFloat>>                  <$mod-quotedbl>
     event add <<NewSymbol>>                 <$mod-quoteright>
     event add <<NewComment>>                <$mod-parenleft>
-    
+    event add <<NewBang>>                   <$mod-section>
+    event add <<NewToggle>>                 <$mod-egrave>
+    event add <<NewPanel>>                  <$mod-exclam>
+    event add <<NewArray>>                  <$mod-ccedilla>
+     
     event add <<NewObject>>                 <Shift-$mod-Key-1>
     event add <<NewMessage>>                <Shift-$mod-Key-2>
     event add <<NewFloat>>                  <Shift-$mod-Key-3>
     event add <<NewSymbol>>                 <Shift-$mod-Key-4>
     event add <<NewComment>>                <Shift-$mod-Key-5>
+    event add <<NewBang>>                   <Shift-$mod-Key-6>
+    event add <<NewToggle>>                 <Shift-$mod-Key-7>
+    event add <<NewPanel>>                  <Shift-$mod-Key-8>
+    event add <<NewArray>>                  <Shift-$mod-Key-9>
         
     event add <<RunDSP>>                    <$mod-Key-r>
     
@@ -102,7 +112,11 @@ proc initialize {} {
     bind all <<NewFloat>>                   { .menubar.object   invoke "Float"      }
     bind all <<NewSymbol>>                  { .menubar.object   invoke "Symbol"     }
     bind all <<NewComment>>                 { .menubar.object   invoke "Comment"    }
-
+    bind all <<NewBang>>                    { .menubar.object   invoke "Bang"       }
+    bind all <<NewToggle>>                  { .menubar.object   invoke "Toggle"     }
+    bind all <<NewPanel>>                   { .menubar.object   invoke "Panel"      }
+    bind all <<NewArray>>                   { .menubar.object   invoke "Array"      }
+    
     bind all <<RunDSP>>                     { .menubar.media    invoke "Run DSP"    }
     
     bind all <KeyPress>                     { ::pd_bind::_key %W %K %A 1 0  }
