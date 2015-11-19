@@ -28,18 +28,60 @@ array set saveContents {}
 
 proc show {top name size flags} {
 
-    variable drawMode
-    variable saveContents
-    
     if {[winfo exists $top]} {
         wm deiconify $top
         raise $top
     } else {
-        ::pd_array::_create $top
+        ::pd_array::_create $top $name $size $flags
     }
+}
 
-    $top.name.entry insert 0 [::dialog_gatom::unescape $name]
-    $top.size.entry insert 0 $size
+proc _create {top name size flags} {
+
+    variable drawMode
+    variable saveContents
+    
+    toplevel $top -class PdDialog
+    wm title $top [_ "Array Properties"]
+    wm group $top .
+    
+    wm resizable $top 0 0
+    
+    entry $top.name
+    $top.name insert 0 [::dialog_gatom::unescape $name]
+    
+    entry $top.size
+    $top.size insert 0 $size
+    
+    checkbutton $top.saveme     -text [_ "Save contents"] \
+                                -variable ::pd_array::saveContents($top)
+    
+    radiobutton $top.points     -text [_ "Polygon"] \
+                                -variable ::pd_array::drawMode($top) \
+                                -value 0 
+                                
+    radiobutton $top.polygon    -text [_ "Points"] \
+                                -variable ::pd_array::drawMode($top) \
+                                -value 1
+                                
+    radiobutton $top.bezier     -text [_ "Bezier curve"] \
+                                -variable ::pd_array::drawMode($top) \
+                                -value 2 
+    
+    button $top.cancel          -text [_ "Cancel"] \
+                                -command "::pd_array::cancel $top"
+                                
+    button $top.ok              -text [_ "OK"] \
+                                -command "::pd_array::ok $top"
+    
+    pack $top.name      -side top -anchor w
+    pack $top.size      -side top -anchor w
+    pack $top.saveme    -side top -anchor w
+    pack $top.points    -side top -anchor w
+    pack $top.polygon   -side top -anchor w
+    pack $top.bezier    -side top -anchor w
+    pack $top.cancel    -side top -anchor w
+    pack $top.ok        -side top -anchor w
     
     set saveContents($top)  [expr {$flags & 1}]
     set drawMode($top)      [expr {($flags & 6) >> 1}]
@@ -48,76 +90,24 @@ proc show {top name size flags} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc apply {mytoplevel} {
+proc apply {top} {
     
     variable drawMode
     variable saveContents
     
-    ::pd_connect::pdsend "$mytoplevel arraydialog \
-            [::dialog_gatom::escape [$mytoplevel.name.entry get]] \
-            [$mytoplevel.size.entry get] \
-            [expr $saveContents($mytoplevel) + (2 * $drawMode($mytoplevel))]"
+    ::pd_connect::pdsend "$top arraydialog \
+            [::dialog_gatom::escape [$top.name get]] \
+            [$top.size get] \
+            [expr $saveContents($top) + (2 * $drawMode($top))]"
 }
 
-proc cancel {mytoplevel} {
-    ::pd_connect::pdsend "$mytoplevel cancel"
+proc cancel {top} {
+    ::pd_connect::pdsend "$top cancel"
 }
 
-proc ok {mytoplevel} {
-    ::pd_array::apply $mytoplevel
-    ::pd_array::cancel $mytoplevel
-}
-
-proc _create {mytoplevel} {
-
-    variable drawMode
-    variable saveContents
-    
-    toplevel $mytoplevel -class PdDialog
-    wm title $mytoplevel [_ "Array Properties"]
-    wm group $mytoplevel .
-    wm resizable $mytoplevel 0 0
-    wm transient $mytoplevel $::var(windowFocused)
-    
-    $mytoplevel configure -padx 0 -pady 0
-
-    frame $mytoplevel.name
-    pack $mytoplevel.name -side top
-    label $mytoplevel.name.label -text [_ "Name:"]
-    entry $mytoplevel.name.entry
-    pack $mytoplevel.name.label $mytoplevel.name.entry -anchor w
-
-    frame $mytoplevel.size
-    pack $mytoplevel.size -side top
-    label $mytoplevel.size.label -text [_ "Size:"]
-    entry $mytoplevel.size.entry
-    pack $mytoplevel.size.label $mytoplevel.size.entry -anchor w
-
-    checkbutton $mytoplevel.saveme -text [_ "Save contents"] \
-        -variable ::pd_array::saveContents($mytoplevel) -anchor w
-    pack $mytoplevel.saveme -side top
-
-    labelframe $mytoplevel.drawas -text [_ "Draw as:"] -padx 20 -borderwidth 1
-    pack $mytoplevel.drawas -side top -fill x
-    radiobutton $mytoplevel.drawas.points -value 0 \
-        -variable ::pd_array::drawMode($mytoplevel) -text [_ "Polygon"]
-    radiobutton $mytoplevel.drawas.polygon -value 1 \
-        -variable ::pd_array::drawMode($mytoplevel) -text [_ "Points"]
-    radiobutton $mytoplevel.drawas.bezier -value 2 \
-        -variable ::pd_array::drawMode($mytoplevel) -text [_ "Bezier curve"]
-    pack $mytoplevel.drawas.points -side top -anchor w
-    pack $mytoplevel.drawas.polygon -side top -anchor w
-    pack $mytoplevel.drawas.bezier -side top -anchor w
-
-    frame $mytoplevel.buttonframe
-    pack $mytoplevel.buttonframe -side bottom -expand 1 -fill x -pady 2m
-    button $mytoplevel.buttonframe.cancel -text [_ "Cancel"] \
-        -command "::pd_array::cancel $mytoplevel"
-    pack $mytoplevel.buttonframe.cancel -side left -expand 1 -fill x -padx 10
-
-    button $mytoplevel.buttonframe.ok -text [_ "OK"]\
-        -command "::pd_array::ok $mytoplevel"
-    pack $mytoplevel.buttonframe.ok -side left -expand 1 -fill x -padx 10
+proc ok {top} {
+    ::pd_array::apply $top
+    ::pd_array::cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
