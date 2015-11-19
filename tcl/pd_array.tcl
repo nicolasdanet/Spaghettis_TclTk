@@ -100,6 +100,8 @@ proc _create {top name size flags} {
     pack $top.bezier            -side top -anchor w
     
     wm protocol $top WM_DELETE_WINDOW   "::pd_array::_closed $top"
+    
+    focus $top.name
 }
 
 # ------------------------------------------------------------------------------------------------------------
