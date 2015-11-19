@@ -17,11 +17,15 @@ namespace eval ::pd_array:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable drawAs
-variable saveMe
+variable arrayName
+variable arraySize
+variable arrayDraw
+variable arraySave
 
-array set drawAs {}
-array set saveMe {}
+array set arrayName {}
+array set arraySize {}
+array set arrayDraw {}
+array set arraySave {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -36,14 +40,21 @@ proc show {top name size flags} {
 
 proc _create {top name size flags} {
 
-    variable drawAs
-    variable saveMe
+    variable arrayName
+    variable arraySize
+    variable arrayDraw
+    variable arraySave
     
     toplevel $top -class PdDialog
     wm title $top [_ "Array Properties"]
     wm group $top .
     
     wm resizable $top 0 0
+    
+    set arrayName($top) $name
+    set arraySize($top) $size
+    set arraySave($top) [expr {$flags & 1}]
+    set arrayDraw($top) [expr {($flags & 6) >> 1}]
     
     entry $top.name
     $top.name insert 0 [::dialog_gatom::unescape $name]
@@ -52,18 +63,18 @@ proc _create {top name size flags} {
     $top.size insert 0 $size
     
     checkbutton $top.saveme     -text [_ "Save contents"] \
-                                -variable ::pd_array::saveMe($top)
+                                -variable ::pd_array::arraySave($top)
     
     radiobutton $top.points     -text [_ "Polygon"] \
-                                -variable ::pd_array::drawAs($top) \
+                                -variable ::pd_array::arrayDraw($top) \
                                 -value 0 
                                 
     radiobutton $top.polygon    -text [_ "Points"] \
-                                -variable ::pd_array::drawAs($top) \
+                                -variable ::pd_array::arrayDraw($top) \
                                 -value 1
                                 
     radiobutton $top.bezier     -text [_ "Bezier curve"] \
-                                -variable ::pd_array::drawAs($top) \
+                                -variable ::pd_array::arrayDraw($top) \
                                 -value 2 
     
     button $top.cancel          -text [_ "Cancel"] \
@@ -80,9 +91,6 @@ proc _create {top name size flags} {
     pack $top.bezier            -side top -anchor w
     pack $top.cancel            -side top -anchor w
     pack $top.ok                -side top -anchor w
-    
-    set saveMe($top) [expr {$flags & 1}]
-    set drawAs($top) [expr {($flags & 6) >> 1}]
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -95,14 +103,16 @@ proc _cancel {top} {
 
 proc _apply {top} {
 
-    variable drawAs
-    variable saveMe
+    variable arrayName
+    variable arraySize
+    variable arrayDraw
+    variable arraySave
     
-    ::pd_connect::pdsend "$top arraydialog \
-            [::dialog_gatom::escape [$top.name get]] \
-            [$top.size get] \
-            [expr $saveMe($top) + (2 * $drawAs($top))]"
-            
+    set name  [::dialog_gatom::escape [$top.name get]]
+    set size  [$top.size get]
+    set flags [expr {$::pd_array::arraySave($top) + (2 * $::pd_array::arrayDraw($top))}]
+    
+    ::pd_connect::pdsend "$top arraydialog $name $size $flags"
     ::pd_connect::pdsend "$top cancel"
 }
 
