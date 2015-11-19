@@ -39,7 +39,7 @@ proc unknown {args} {
 }
 
 proc unknownIsExpected {stack} {
-    set expected { "tclPkgUnknown" "tk::MenuDup" "tk_optionMenu" "tcl_wordBreakBefore" }
+    set expected { "tclPkgUnknown" "tk::MenuDup" "tk_optionMenu" "tcl_wordBreakBefore" "tk_focusNext" }
     foreach e $expected {
         if {[string first $e $stack] > -1} { return 1 }
     }
