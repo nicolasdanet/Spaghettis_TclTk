@@ -98,6 +98,7 @@ proc _deleteItem {top} {
 proc _apply {top} {
 
     set ::var(searchPath) {}
+    
     foreach path [$top.paths.box get 0 end] { lappend ::var(searchPath) [::encode $path] }
 
     ::pd_connect::pdsend "pd path-dialog $::var(searchPath)"
