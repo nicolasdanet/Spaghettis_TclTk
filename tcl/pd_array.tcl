@@ -17,10 +17,10 @@ namespace eval ::pd_array:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable arrayName
-variable arraySize
-variable arrayDraw
-variable arraySave
+variable  arrayName
+variable  arraySize
+variable  arrayDraw
+variable  arraySave
 
 array set arrayName {}
 array set arraySize {}
@@ -51,16 +51,14 @@ proc _create {top name size flags} {
     
     wm resizable $top 0 0
     
-    set arrayName($top) $name
+    set arrayName($top) [::dialog_gatom::unescape $name]
     set arraySize($top) $size
     set arraySave($top) [expr {$flags & 1}]
     set arrayDraw($top) [expr {($flags & 6) >> 1}]
     
-    entry $top.name
-    $top.name insert 0 [::dialog_gatom::unescape $name]
-    
-    entry $top.size
-    $top.size insert 0 $size
+    entry $top.name             -textvariable ::pd_array::arrayName($top)
+    entry $top.size             -textvariable ::pd_array::arraySize($top)
+
     
     checkbutton $top.saveme     -text [_ "Save contents"] \
                                 -variable ::pd_array::arraySave($top)
@@ -108,8 +106,8 @@ proc _apply {top} {
     variable arrayDraw
     variable arraySave
     
-    set name  [::dialog_gatom::escape [$top.name get]]
-    set size  [$top.size get]
+    set name  [::dialog_gatom::escape $::pd_array::arrayName($top)]
+    set size  $::pd_array::arraySize($top)
     set flags [expr {$::pd_array::arraySave($top) + (2 * $::pd_array::arrayDraw($top))}]
     
     ::pd_connect::pdsend "$top arraydialog $name $size $flags"
