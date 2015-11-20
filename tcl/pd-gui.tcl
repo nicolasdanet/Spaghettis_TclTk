@@ -87,7 +87,6 @@ package require dialog_canvas
 package require dialog_data
 package require dialog_gatom
 package require dialog_gui
-package require dialog_message
 package require dialog_midi
 
 package require pd_array
