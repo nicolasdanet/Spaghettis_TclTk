@@ -9,15 +9,24 @@
 
 package provide dialog_gui 0.1
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 namespace eval ::dialog_gui:: {
-    variable define_min_flashhold 50
-    variable define_min_flashbreak 10
-    variable define_min_fontsize 4
-}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+variable define_min_flashhold 50
+variable define_min_flashbreak 10
+variable define_min_fontsize 4
+    
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 # TODO convert Init/No Init and Steady on click/Jump on click to checkbuttons
 
-proc ::dialog_gui::clip_dim {mytoplevel} {
+proc clip_dim {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_wdt [concat iemgui_wdt_$vid]
@@ -55,7 +64,7 @@ proc ::dialog_gui::clip_num {mytoplevel} {
     }
 }
 
-proc ::dialog_gui::sched_rng {mytoplevel} {
+proc sched_rng {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_min_rng [concat iemgui_min_rng_$vid]
@@ -92,7 +101,7 @@ proc ::dialog_gui::sched_rng {mytoplevel} {
     }
 }
 
-proc ::dialog_gui::verify_rng {mytoplevel} {
+proc verify_rng {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_min_rng [concat iemgui_min_rng_$vid]
@@ -121,7 +130,7 @@ proc ::dialog_gui::verify_rng {mytoplevel} {
     }
 }
 
-proc ::dialog_gui::clip_fontsize {mytoplevel} {
+proc clip_fontsize {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_gn_fs [concat iemgui_gn_fs_$vid]
@@ -135,7 +144,7 @@ proc ::dialog_gui::clip_fontsize {mytoplevel} {
     }
 }
 
-proc ::dialog_gui::set_col_example {mytoplevel} {
+proc set_col_example {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_bcol [concat iemgui_bcol_$vid]
@@ -165,7 +174,7 @@ proc ::dialog_gui::set_col_example {mytoplevel} {
             -activeforeground [format "#%6.6x" [eval concat $$var_iemgui_bcol]]}
 }
 
-proc ::dialog_gui::preset_col {mytoplevel presetcol} {
+proc preset_col {mytoplevel presetcol} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_l2_f1_b0 [concat iemgui_l2_f1_b0_$vid]
@@ -183,7 +192,7 @@ proc ::dialog_gui::preset_col {mytoplevel presetcol} {
     ::dialog_gui::set_col_example $mytoplevel
 }
 
-proc ::dialog_gui::choose_col_bkfrlb {mytoplevel} {
+proc choose_col_bkfrlb {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_l2_f1_b0 [concat iemgui_l2_f1_b0_$vid]
@@ -219,7 +228,7 @@ proc ::dialog_gui::choose_col_bkfrlb {mytoplevel} {
     ::dialog_gui::set_col_example $mytoplevel
 }
 
-proc ::dialog_gui::lilo {mytoplevel} {
+proc lilo {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_lin0_log1 [concat iemgui_lin0_log1_$vid]
@@ -242,7 +251,7 @@ proc ::dialog_gui::lilo {mytoplevel} {
     }
 }
 
-proc ::dialog_gui::toggle_font {mytoplevel gn_f} {
+proc toggle_font {mytoplevel gn_f} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_gn_f [concat iemgui_gn_f_$vid]
@@ -264,7 +273,7 @@ proc ::dialog_gui::toggle_font {mytoplevel gn_f} {
     $mytoplevel.colors.sections.lb_bk configure -font $current_font_spec
 }
 
-proc ::dialog_gui::lb {mytoplevel} {
+proc lb {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_loadbang [concat iemgui_loadbang_$vid]
@@ -279,7 +288,7 @@ proc ::dialog_gui::lb {mytoplevel} {
     }
 }
 
-proc ::dialog_gui::stdy_jmp {mytoplevel} {
+proc stdy_jmp {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_steady [concat iemgui_steady_$vid]
@@ -294,7 +303,7 @@ proc ::dialog_gui::stdy_jmp {mytoplevel} {
     }
 }
 
-proc ::dialog_gui::apply {mytoplevel} {
+proc apply {mytoplevel} {
     set vid [string trimleft $mytoplevel .]
     
     set var_iemgui_wdt [concat iemgui_wdt_$vid]
@@ -392,16 +401,16 @@ proc ::dialog_gui::apply {mytoplevel} {
 }
 
 
-proc ::dialog_gui::cancel {mytoplevel} {
+proc cancel {mytoplevel} {
     ::pd_connect::pdsend "$mytoplevel cancel"
 }
 
-proc ::dialog_gui::ok {mytoplevel} {
+proc ok {mytoplevel} {
     ::dialog_gui::apply $mytoplevel
     ::dialog_gui::cancel $mytoplevel
 }
 
-proc ::dialog_gui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
+proc pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
                                        wdt min_wdt wdt_label \
                                        hgt min_hgt hgt_label \
                                        rng_header min_rng min_rng_label max_rng \
@@ -766,3 +775,10 @@ proc ::dialog_gui::pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
     focus $mytoplevel.dim.w_ent
 }
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
