@@ -29,8 +29,9 @@ proc initialize {} { ::pd_console::_create }
 
 proc post {message} { 
 
-    .console.text.internal insert end $message 
-    .console.text.internal yview end
+    .console.text.internal insert end $message
+    
+    after idle ::pd_console::_update
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -55,7 +56,7 @@ proc _create {} {
     
     .console configure -menu .menubar
 
-    scrollbar   .console.scroll     -command ".console.text.internal yview"
+    scrollbar   .console.scroll     -command ".console.text yview"
     text        .console.text       -font [::getFont 14] \
                                     -borderwidth 0 \
                                     -insertwidth 0 \
@@ -63,13 +64,16 @@ proc _create {} {
                                     -undo 0 \
                                     -yscrollcommand ".console.scroll set"
         
-    pack .console.scroll            -side right -fill y
     pack .console.text              -side right -fill both -expand 1
+        
+    bind .console <<SelectAll>> ".console.text tag add sel 1.0 end"
+    
+    wm protocol .console WM_DELETE_WINDOW   { ::pd_console::_closed }
     
     # Read-only text widget ( http://wiki.tcl.tk/1152 ).
-    
+  
     rename ::.console.text ::.console.text.internal
-    
+
     proc ::.console.text {args} {
         switch -exact -- [lindex $args 0] {
             "insert"  {}
@@ -77,10 +81,22 @@ proc _create {} {
             "default" { return [eval ::.console.text.internal $args] }
         }
     }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _update {} {
+
+    set view [.console.text yview]
     
-    bind .console <<SelectAll>> ".console.text.internal tag add sel 1.0 end"
-    
-    wm protocol .console WM_DELETE_WINDOW   { ::pd_console::_closed }
+    if {[lindex $view 0] == 0.0 && [lindex $view 1] == 1.0} {
+        pack forget .console.scroll
+    } else {
+        pack .console.scroll -side right -fill y -before .console.text
+    }
+        
+    .console.text yview end
 }
 
 # ------------------------------------------------------------------------------------------------------------
