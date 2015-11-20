@@ -238,7 +238,7 @@ static void bng_properties(t_gobj *z, t_glist *owner)
     t_symbol *srl[3];
 
     iemgui_properties(&x->x_gui, srl);
-    sprintf(buf, "::dialog_gui::pdtk_iemgui_dialog %%s |bang| \
+    sprintf(buf, "::pd_iem::pdtk_iemgui_dialog %%s |bang| \
             ----------dimensions(pix):----------- %d %d size: 0 0 empty \
             --------flash-time(ms)(ms):--------- %d intrrpt: %d hold: %d \
             %d empty empty %d %d empty %d \

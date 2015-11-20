@@ -86,7 +86,6 @@ package require dialog_audio
 package require dialog_canvas
 package require dialog_data
 package require dialog_gatom
-package require dialog_gui
 package require dialog_midi
 
 package require pd_array
@@ -95,6 +94,7 @@ package require pd_confirm
 package require pd_connect
 package require pd_console
 package require pd_file
+package require pd_iem
 package require pd_menu
 package require pd_object
 package require pd_patch

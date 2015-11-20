@@ -264,7 +264,7 @@ static void hradio_properties(t_gobj *z, t_glist *owner)
     iemgui_properties(&x->x_gui, srl);
     if (pd_class(&x->x_gui.x_obj.ob_pd) == hradio_old_class)
         hchange = x->x_change;
-    sprintf(buf, "::dialog_gui::pdtk_iemgui_dialog %%s |hradio| \
+    sprintf(buf, "::pd_iem::pdtk_iemgui_dialog %%s |hradio| \
             ----------dimensions(pix):----------- %d %d size: 0 0 empty \
             empty 0.0 empty 0.0 empty %d \
             %d new-only new&old %d %d number: %d \
