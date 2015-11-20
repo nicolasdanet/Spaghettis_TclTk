@@ -154,7 +154,7 @@ static void my_canvas_properties(t_gobj *z, t_glist *owner)
     t_symbol *srl[3];
 
     iemgui_properties(&x->x_gui, srl);
-    sprintf(buf, "::pd_iem::pdtk_iemgui_dialog %%s |cnv| \
+    sprintf(buf, "::pd_iem::create %%s |cnv| \
             ------selectable_dimensions(pix):------ %d %d size: 0.0 0.0 empty \
             ------visible_rectangle(pix)(pix):------ %d width: %d height: %d \
             %d empty empty %d %d empty %d \

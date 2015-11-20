@@ -504,7 +504,7 @@ static void vu_properties(t_gobj *z, t_glist *owner)
     t_symbol *srl[3];
 
     iemgui_properties(&x->x_gui, srl);
-    sprintf(buf, "::pd_iem::pdtk_iemgui_dialog %%s |vu| \
+    sprintf(buf, "::pd_iem::create %%s |vu| \
             --------dimensions(pix)(pix):-------- %d %d width: %d %d height: \
             empty 0.0 empty 0.0 empty %d \
             %d no_scale scale %d %d empty %d \

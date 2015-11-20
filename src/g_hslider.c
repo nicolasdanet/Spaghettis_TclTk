@@ -264,7 +264,7 @@ static void hslider_properties(t_gobj *z, t_glist *owner)
     t_symbol *srl[3];
 
     iemgui_properties(&x->x_gui, srl);
-    sprintf(buf, "::pd_iem::pdtk_iemgui_dialog %%s |hsl| \
+    sprintf(buf, "::pd_iem::create %%s |hsl| \
             --------dimensions(pix)(pix):-------- %d %d width: %d %d height: \
             -----------output-range:----------- %g left: %g right: %g \
             %d lin log %d %d empty %d \

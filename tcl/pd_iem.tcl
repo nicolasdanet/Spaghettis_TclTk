@@ -22,400 +22,14 @@ namespace eval ::pd_iem:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable define_min_flashhold 50
-variable define_min_flashbreak 10
-variable define_min_fontsize 4
-    
+variable minimumflashHold   50
+variable minimumFlashBreak  10
+variable minimumFontSize    4
+
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# TODO convert Init/No Init and Steady on click/Jump on click to checkbuttons
-
-proc clip_dim {mytoplevel} {
-    set vid [string trimleft $mytoplevel .]
-    
-    set var_iemgui_wdt [concat iemgui_wdt_$vid]
-    global $var_iemgui_wdt
-    set var_iemgui_min_wdt [concat iemgui_min_wdt_$vid]
-    global $var_iemgui_min_wdt
-    set var_iemgui_hgt [concat iemgui_hgt_$vid]
-    global $var_iemgui_hgt
-    set var_iemgui_min_hgt [concat iemgui_min_hgt_$vid]
-    global $var_iemgui_min_hgt
-    
-    if {[eval concat $$var_iemgui_wdt] < [eval concat $$var_iemgui_min_wdt]} {
-        set $var_iemgui_wdt [eval concat $$var_iemgui_min_wdt]
-        $mytoplevel.dim.w_ent configure -textvariable $var_iemgui_wdt
-    }
-    if {[eval concat $$var_iemgui_hgt] < [eval concat $$var_iemgui_min_hgt]} {
-        set $var_iemgui_hgt [eval concat $$var_iemgui_min_hgt]
-        $mytoplevel.dim.h_ent configure -textvariable $var_iemgui_hgt
-    }
-}
-
-proc ::pd_iem::clip_num {mytoplevel} {
-    set vid [string trimleft $mytoplevel .]
-    
-    set var_iemgui_num [concat iemgui_num_$vid]
-    global $var_iemgui_num
-    
-    if {[eval concat $$var_iemgui_num] > 2000} {
-        set $var_iemgui_num 2000
-        $mytoplevel.para.num_ent configure -textvariable $var_iemgui_num
-    }
-    if {[eval concat $$var_iemgui_num] < 1} {
-        set $var_iemgui_num 1
-        $mytoplevel.para.num_ent configure -textvariable $var_iemgui_num
-    }
-}
-
-proc sched_rng {mytoplevel} {
-    set vid [string trimleft $mytoplevel .]
-    
-    set var_iemgui_min_rng [concat iemgui_min_rng_$vid]
-    global $var_iemgui_min_rng
-    set var_iemgui_max_rng [concat iemgui_max_rng_$vid]
-    global $var_iemgui_max_rng
-    set var_iemgui_rng_sch [concat iemgui_rng_sch_$vid]
-    global $var_iemgui_rng_sch
-    
-    variable define_min_flashhold
-    variable define_min_flashbreak
-    
-    if {[eval concat $$var_iemgui_rng_sch] == 2} {
-        if {[eval concat $$var_iemgui_max_rng] < [eval concat $$var_iemgui_min_rng]} {
-            set hhh [eval concat $$var_iemgui_min_rng]
-            set $var_iemgui_min_rng [eval concat $$var_iemgui_max_rng]
-            set $var_iemgui_max_rng $hhh
-            $mytoplevel.rng.max_ent configure -textvariable $var_iemgui_max_rng
-            $mytoplevel.rng.min_ent configure -textvariable $var_iemgui_min_rng }
-        if {[eval concat $$var_iemgui_max_rng] < $define_min_flashhold} {
-            set $var_iemgui_max_rng $define_min_flashhold
-            $mytoplevel.rng.max_ent configure -textvariable $var_iemgui_max_rng
-        }
-        if {[eval concat $$var_iemgui_min_rng] < $define_min_flashbreak} {
-            set $var_iemgui_min_rng $define_min_flashbreak
-            $mytoplevel.rng.min_ent configure -textvariable $var_iemgui_min_rng
-        }
-    }
-    if {[eval concat $$var_iemgui_rng_sch] == 1} {
-        if {[eval concat $$var_iemgui_min_rng] == 0.0} {
-            set $var_iemgui_min_rng 1.0
-            $mytoplevel.rng.min_ent configure -textvariable $var_iemgui_min_rng
-        }
-    }
-}
-
-proc verify_rng {mytoplevel} {
-    set vid [string trimleft $mytoplevel .]
-    
-    set var_iemgui_min_rng [concat iemgui_min_rng_$vid]
-    global $var_iemgui_min_rng
-    set var_iemgui_max_rng [concat iemgui_max_rng_$vid]
-    global $var_iemgui_max_rng
-    set var_iemgui_lin0_log1 [concat iemgui_lin0_log1_$vid]
-    global $var_iemgui_lin0_log1
-    
-    if {[eval concat $$var_iemgui_lin0_log1] == 1} {
-        if {[eval concat $$var_iemgui_max_rng] == 0.0 && [eval concat $$var_iemgui_min_rng] == 0.0} {
-            set $var_iemgui_max_rng 1.0
-            $mytoplevel.rng.max_ent configure -textvariable $var_iemgui_max_rng
-        }
-        if {[eval concat $$var_iemgui_max_rng] > 0} {
-            if {[eval concat $$var_iemgui_min_rng] <= 0} {
-                set $var_iemgui_min_rng [expr [eval concat $$var_iemgui_max_rng] * 0.01]
-                $mytoplevel.rng.min_ent configure -textvariable $var_iemgui_min_rng
-            }
-        } else {
-            if {[eval concat $$var_iemgui_min_rng] > 0} {
-                set $var_iemgui_max_rng [expr [eval concat $$var_iemgui_min_rng] * 0.01]
-                $mytoplevel.rng.max_ent configure -textvariable $var_iemgui_max_rng
-            }
-        }
-    }
-}
-
-proc clip_fontsize {mytoplevel} {
-    set vid [string trimleft $mytoplevel .]
-    
-    set var_iemgui_gn_fs [concat iemgui_gn_fs_$vid]
-    global $var_iemgui_gn_fs
-    
-    variable define_min_fontsize
-    
-    if {[eval concat $$var_iemgui_gn_fs] < $define_min_fontsize} {
-        set $var_iemgui_gn_fs $define_min_fontsize
-        $mytoplevel.label.fs_ent configure -textvariable $var_iemgui_gn_fs
-    }
-}
-
-proc set_col_example {mytoplevel} {
-    set vid [string trimleft $mytoplevel .]
-    
-    set var_iemgui_bcol [concat iemgui_bcol_$vid]
-    global $var_iemgui_bcol
-    set var_iemgui_fcol [concat iemgui_fcol_$vid]
-    global $var_iemgui_fcol
-    set var_iemgui_lcol [concat iemgui_lcol_$vid]
-    global $var_iemgui_lcol
-    
-    $mytoplevel.colors.sections.lb_bk configure \
-        -background [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
-        -activebackground [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
-        -foreground [format "#%6.6x" [eval concat $$var_iemgui_lcol]] \
-        -activeforeground [format "#%6.6x" [eval concat $$var_iemgui_lcol]]
-    
-    if { [eval concat $$var_iemgui_fcol] >= 0 } {
-        $mytoplevel.colors.sections.fr_bk configure \
-            -background [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
-            -activebackground [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
-            -foreground [format "#%6.6x" [eval concat $$var_iemgui_fcol]] \
-            -activeforeground [format "#%6.6x" [eval concat $$var_iemgui_fcol]]
-    } else {
-        $mytoplevel.colors.sections.fr_bk configure \
-            -background [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
-            -activebackground [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
-            -foreground [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
-            -activeforeground [format "#%6.6x" [eval concat $$var_iemgui_bcol]]}
-}
-
-proc preset_col {mytoplevel presetcol} {
-    set vid [string trimleft $mytoplevel .]
-    
-    set var_iemgui_l2_f1_b0 [concat iemgui_l2_f1_b0_$vid]
-    global $var_iemgui_l2_f1_b0
-    set var_iemgui_bcol [concat iemgui_bcol_$vid]
-    global $var_iemgui_bcol
-    set var_iemgui_fcol [concat iemgui_fcol_$vid]
-    global $var_iemgui_fcol
-    set var_iemgui_lcol [concat iemgui_lcol_$vid]
-    global $var_iemgui_lcol
-    
-    if { [eval concat $$var_iemgui_l2_f1_b0] == 0 } { set $var_iemgui_bcol $presetcol }
-    if { [eval concat $$var_iemgui_l2_f1_b0] == 1 } { set $var_iemgui_fcol $presetcol }
-    if { [eval concat $$var_iemgui_l2_f1_b0] == 2 } { set $var_iemgui_lcol $presetcol }
-    ::pd_iem::set_col_example $mytoplevel
-}
-
-proc choose_col_bkfrlb {mytoplevel} {
-    set vid [string trimleft $mytoplevel .]
-    
-    set var_iemgui_l2_f1_b0 [concat iemgui_l2_f1_b0_$vid]
-    global $var_iemgui_l2_f1_b0
-    set var_iemgui_bcol [concat iemgui_bcol_$vid]
-    global $var_iemgui_bcol
-    set var_iemgui_fcol [concat iemgui_fcol_$vid]
-    global $var_iemgui_fcol
-    set var_iemgui_lcol [concat iemgui_lcol_$vid]
-    global $var_iemgui_lcol
-    
-    if {[eval concat $$var_iemgui_l2_f1_b0] == 0} {
-        set $var_iemgui_bcol [expr [eval concat $$var_iemgui_bcol] & 0xFCFCFC]
-        set helpstring [tk_chooseColor -title [_ "Background color"] -initialcolor [format "#%6.6x" [eval concat $$var_iemgui_bcol]]]
-        if { $helpstring ne "" } {
-            set $var_iemgui_bcol [string replace $helpstring 0 0 "0x"]
-            set $var_iemgui_bcol [expr [eval concat $$var_iemgui_bcol] & 0xFCFCFC] }
-    }
-    if {[eval concat $$var_iemgui_l2_f1_b0] == 1} {
-        set $var_iemgui_fcol [expr [eval concat $$var_iemgui_fcol] & 0xFCFCFC]
-        set helpstring [tk_chooseColor -title [_ "Foreground color"] -initialcolor [format "#%6.6x" [eval concat $$var_iemgui_fcol]]]
-        if { $helpstring ne "" } {
-            set $var_iemgui_fcol [string replace $helpstring 0 0 "0x"]
-            set $var_iemgui_fcol [expr [eval concat $$var_iemgui_fcol] & 0xFCFCFC] }
-    }
-    if {[eval concat $$var_iemgui_l2_f1_b0] == 2} {
-        set $var_iemgui_lcol [expr [eval concat $$var_iemgui_lcol] & 0xFCFCFC]
-        set helpstring [tk_chooseColor -title [_ "Label color"] -initialcolor [format "#%6.6x" [eval concat $$var_iemgui_lcol]]]
-        if { $helpstring ne "" } {
-            set $var_iemgui_lcol [string replace $helpstring 0 0 "0x"]
-            set $var_iemgui_lcol [expr [eval concat $$var_iemgui_lcol] & 0xFCFCFC] }
-    }
-    ::pd_iem::set_col_example $mytoplevel
-}
-
-proc lilo {mytoplevel} {
-    set vid [string trimleft $mytoplevel .]
-    
-    set var_iemgui_lin0_log1 [concat iemgui_lin0_log1_$vid]
-    global $var_iemgui_lin0_log1
-    set var_iemgui_lilo0 [concat iemgui_lilo0_$vid]
-    global $var_iemgui_lilo0
-    set var_iemgui_lilo1 [concat iemgui_lilo1_$vid]
-    global $var_iemgui_lilo1
-    
-    ::pd_iem::sched_rng $mytoplevel
-    
-    if {[eval concat $$var_iemgui_lin0_log1] == 0} {
-        set $var_iemgui_lin0_log1 1
-        $mytoplevel.para.lilo configure -text [eval concat $$var_iemgui_lilo1]
-        ::pd_iem::verify_rng $mytoplevel
-        ::pd_iem::sched_rng $mytoplevel
-    } else {
-        set $var_iemgui_lin0_log1 0
-        $mytoplevel.para.lilo configure -text [eval concat $$var_iemgui_lilo0]
-    }
-}
-
-proc toggle_font {mytoplevel gn_f} {
-    set vid [string trimleft $mytoplevel .]
-    
-    set var_iemgui_gn_f [concat iemgui_gn_f_$vid]
-    global $var_iemgui_gn_f
-    
-    set $var_iemgui_gn_f $gn_f
-    
-    switch -- $gn_f {
-        0 { set current_font $::var(fontFamily)}
-        1 { set current_font "Helvetica" }
-        2 { set current_font "Times" }
-    }
-    set current_font_spec "{$current_font} 16 $::var(fontWeight)"
-    
-    $mytoplevel.label.fontpopup_label configure -text $current_font \
-        -font $current_font_spec
-    $mytoplevel.label.name_entry configure -font $current_font_spec
-    $mytoplevel.colors.sections.fr_bk configure -font $current_font_spec
-    $mytoplevel.colors.sections.lb_bk configure -font $current_font_spec
-}
-
-proc lb {mytoplevel} {
-    set vid [string trimleft $mytoplevel .]
-    
-    set var_iemgui_loadbang [concat iemgui_loadbang_$vid]
-    global $var_iemgui_loadbang
-    
-    if {[eval concat $$var_iemgui_loadbang] == 0} {
-        set $var_iemgui_loadbang 1
-        $mytoplevel.para.lb configure -text [_ "Init"]
-    } else {
-        set $var_iemgui_loadbang 0
-        $mytoplevel.para.lb configure -text [_ "No init"]
-    }
-}
-
-proc stdy_jmp {mytoplevel} {
-    set vid [string trimleft $mytoplevel .]
-    
-    set var_iemgui_steady [concat iemgui_steady_$vid]
-    global $var_iemgui_steady
-    
-    if {[eval concat $$var_iemgui_steady]} {
-        set $var_iemgui_steady 0
-        $mytoplevel.para.stdy_jmp configure -text [_ "Jump on click"]
-    } else {
-        set $var_iemgui_steady 1
-        $mytoplevel.para.stdy_jmp configure -text [_ "Steady on click"]
-    }
-}
-
-proc apply {mytoplevel} {
-    set vid [string trimleft $mytoplevel .]
-    
-    set var_iemgui_wdt [concat iemgui_wdt_$vid]
-    global $var_iemgui_wdt
-    set var_iemgui_min_wdt [concat iemgui_min_wdt_$vid]
-    global $var_iemgui_min_wdt
-    set var_iemgui_hgt [concat iemgui_hgt_$vid]
-    global $var_iemgui_hgt
-    set var_iemgui_min_hgt [concat iemgui_min_hgt_$vid]
-    global $var_iemgui_min_hgt
-    set var_iemgui_min_rng [concat iemgui_min_rng_$vid]
-    global $var_iemgui_min_rng
-    set var_iemgui_max_rng [concat iemgui_max_rng_$vid]
-    global $var_iemgui_max_rng
-    set var_iemgui_lin0_log1 [concat iemgui_lin0_log1_$vid]
-    global $var_iemgui_lin0_log1
-    set var_iemgui_lilo0 [concat iemgui_lilo0_$vid]
-    global $var_iemgui_lilo0
-    set var_iemgui_lilo1 [concat iemgui_lilo1_$vid]
-    global $var_iemgui_lilo1
-    set var_iemgui_loadbang [concat iemgui_loadbang_$vid]
-    global $var_iemgui_loadbang
-    set var_iemgui_num [concat iemgui_num_$vid]
-    global $var_iemgui_num
-    set var_iemgui_steady [concat iemgui_steady_$vid]
-    global $var_iemgui_steady
-    set var_iemgui_snd [concat iemgui_snd_$vid]
-    global $var_iemgui_snd
-    set var_iemgui_rcv [concat iemgui_rcv_$vid]
-    global $var_iemgui_rcv
-    set var_iemgui_gui_nam [concat iemgui_gui_nam_$vid]
-    global $var_iemgui_gui_nam
-    set var_iemgui_gn_dx [concat iemgui_gn_dx_$vid]
-    global $var_iemgui_gn_dx
-    set var_iemgui_gn_dy [concat iemgui_gn_dy_$vid]
-    global $var_iemgui_gn_dy
-    set var_iemgui_gn_f [concat iemgui_gn_f_$vid]
-    global $var_iemgui_gn_f
-    set var_iemgui_gn_fs [concat iemgui_gn_fs_$vid]
-    global $var_iemgui_gn_fs
-    set var_iemgui_bcol [concat iemgui_bcol_$vid]
-    global $var_iemgui_bcol
-    set var_iemgui_fcol [concat iemgui_fcol_$vid]
-    global $var_iemgui_fcol
-    set var_iemgui_lcol [concat iemgui_lcol_$vid]
-    global $var_iemgui_lcol
-    
-    ::pd_iem::clip_dim $mytoplevel
-    ::pd_iem::clip_num $mytoplevel
-    ::pd_iem::sched_rng $mytoplevel
-    ::pd_iem::verify_rng $mytoplevel
-    ::pd_iem::sched_rng $mytoplevel
-    ::pd_iem::clip_fontsize $mytoplevel
-    
-    if {[eval concat $$var_iemgui_snd] == ""} {set hhhsnd "empty"} else {set hhhsnd [eval concat $$var_iemgui_snd]}
-    if {[eval concat $$var_iemgui_rcv] == ""} {set hhhrcv "empty"} else {set hhhrcv [eval concat $$var_iemgui_rcv]}
-    if {[eval concat $$var_iemgui_gui_nam] == ""} {set hhhgui_nam "empty"
-    } else {
-        set hhhgui_nam [eval concat $$var_iemgui_gui_nam]}
-    
-    if {[string index $hhhsnd 0] == "$"} {
-        set hhhsnd [string replace $hhhsnd 0 0 #] }
-    if {[string index $hhhrcv 0] == "$"} {
-        set hhhrcv [string replace $hhhrcv 0 0 #] }
-    if {[string index $hhhgui_nam 0] == "$"} {
-        set hhhgui_nam [string replace $hhhgui_nam 0 0 #] }
-    
-    set hhhsnd [::unspace $hhhsnd]
-    set hhhrcv [::unspace $hhhrcv]
-    set hhhgui_nam [::unspace $hhhgui_nam]
-
-# make sure the offset boxes have a value
-    if {[eval concat $$var_iemgui_gn_dx] eq ""} {set $var_iemgui_gn_dx 0}
-    if {[eval concat $$var_iemgui_gn_dy] eq ""} {set $var_iemgui_gn_dy 0}
-
-    ::pd_connect::pdsend [concat $mytoplevel dialog \
-            [eval concat $$var_iemgui_wdt] \
-            [eval concat $$var_iemgui_hgt] \
-            [eval concat $$var_iemgui_min_rng] \
-            [eval concat $$var_iemgui_max_rng] \
-            [eval concat $$var_iemgui_lin0_log1] \
-            [eval concat $$var_iemgui_loadbang] \
-            [eval concat $$var_iemgui_num] \
-            $hhhsnd \
-            $hhhrcv \
-            $hhhgui_nam \
-            [eval concat $$var_iemgui_gn_dx] \
-            [eval concat $$var_iemgui_gn_dy] \
-            [eval concat $$var_iemgui_gn_f] \
-            [eval concat $$var_iemgui_gn_fs] \
-            [eval concat $$var_iemgui_bcol] \
-            [eval concat $$var_iemgui_fcol] \
-            [eval concat $$var_iemgui_lcol] \
-            [eval concat $$var_iemgui_steady]]
-}
-
-
-proc cancel {mytoplevel} {
-    ::pd_connect::pdsend "$mytoplevel cancel"
-}
-
-proc ok {mytoplevel} {
-    ::pd_iem::apply $mytoplevel
-    ::pd_iem::cancel $mytoplevel
-}
-
-proc pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
+proc create {mytoplevel mainheader dim_header \
                                        wdt min_wdt wdt_label \
                                        hgt min_hgt hgt_label \
                                        rng_header min_rng min_rng_label max_rng \
@@ -778,6 +392,395 @@ proc pdtk_iemgui_dialog {mytoplevel mainheader dim_header \
     $mytoplevel.dim.w_ent select from 0
     $mytoplevel.dim.w_ent select adjust end
     focus $mytoplevel.dim.w_ent
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+# TODO convert Init/No Init and Steady on click/Jump on click to checkbuttons
+
+proc clip_dim {mytoplevel} {
+    set vid [string trimleft $mytoplevel .]
+    
+    set var_iemgui_wdt [concat iemgui_wdt_$vid]
+    global $var_iemgui_wdt
+    set var_iemgui_min_wdt [concat iemgui_min_wdt_$vid]
+    global $var_iemgui_min_wdt
+    set var_iemgui_hgt [concat iemgui_hgt_$vid]
+    global $var_iemgui_hgt
+    set var_iemgui_min_hgt [concat iemgui_min_hgt_$vid]
+    global $var_iemgui_min_hgt
+    
+    if {[eval concat $$var_iemgui_wdt] < [eval concat $$var_iemgui_min_wdt]} {
+        set $var_iemgui_wdt [eval concat $$var_iemgui_min_wdt]
+        $mytoplevel.dim.w_ent configure -textvariable $var_iemgui_wdt
+    }
+    if {[eval concat $$var_iemgui_hgt] < [eval concat $$var_iemgui_min_hgt]} {
+        set $var_iemgui_hgt [eval concat $$var_iemgui_min_hgt]
+        $mytoplevel.dim.h_ent configure -textvariable $var_iemgui_hgt
+    }
+}
+
+proc ::pd_iem::clip_num {mytoplevel} {
+    set vid [string trimleft $mytoplevel .]
+    
+    set var_iemgui_num [concat iemgui_num_$vid]
+    global $var_iemgui_num
+    
+    if {[eval concat $$var_iemgui_num] > 2000} {
+        set $var_iemgui_num 2000
+        $mytoplevel.para.num_ent configure -textvariable $var_iemgui_num
+    }
+    if {[eval concat $$var_iemgui_num] < 1} {
+        set $var_iemgui_num 1
+        $mytoplevel.para.num_ent configure -textvariable $var_iemgui_num
+    }
+}
+
+proc sched_rng {mytoplevel} {
+    set vid [string trimleft $mytoplevel .]
+    
+    set var_iemgui_min_rng [concat iemgui_min_rng_$vid]
+    global $var_iemgui_min_rng
+    set var_iemgui_max_rng [concat iemgui_max_rng_$vid]
+    global $var_iemgui_max_rng
+    set var_iemgui_rng_sch [concat iemgui_rng_sch_$vid]
+    global $var_iemgui_rng_sch
+    
+    variable minimumflashHold
+    variable minimumFlashBreak
+    
+    if {[eval concat $$var_iemgui_rng_sch] == 2} {
+        if {[eval concat $$var_iemgui_max_rng] < [eval concat $$var_iemgui_min_rng]} {
+            set hhh [eval concat $$var_iemgui_min_rng]
+            set $var_iemgui_min_rng [eval concat $$var_iemgui_max_rng]
+            set $var_iemgui_max_rng $hhh
+            $mytoplevel.rng.max_ent configure -textvariable $var_iemgui_max_rng
+            $mytoplevel.rng.min_ent configure -textvariable $var_iemgui_min_rng }
+        if {[eval concat $$var_iemgui_max_rng] < $minimumflashHold} {
+            set $var_iemgui_max_rng $minimumflashHold
+            $mytoplevel.rng.max_ent configure -textvariable $var_iemgui_max_rng
+        }
+        if {[eval concat $$var_iemgui_min_rng] < $minimumFlashBreak} {
+            set $var_iemgui_min_rng $minimumFlashBreak
+            $mytoplevel.rng.min_ent configure -textvariable $var_iemgui_min_rng
+        }
+    }
+    if {[eval concat $$var_iemgui_rng_sch] == 1} {
+        if {[eval concat $$var_iemgui_min_rng] == 0.0} {
+            set $var_iemgui_min_rng 1.0
+            $mytoplevel.rng.min_ent configure -textvariable $var_iemgui_min_rng
+        }
+    }
+}
+
+proc verify_rng {mytoplevel} {
+    set vid [string trimleft $mytoplevel .]
+    
+    set var_iemgui_min_rng [concat iemgui_min_rng_$vid]
+    global $var_iemgui_min_rng
+    set var_iemgui_max_rng [concat iemgui_max_rng_$vid]
+    global $var_iemgui_max_rng
+    set var_iemgui_lin0_log1 [concat iemgui_lin0_log1_$vid]
+    global $var_iemgui_lin0_log1
+    
+    if {[eval concat $$var_iemgui_lin0_log1] == 1} {
+        if {[eval concat $$var_iemgui_max_rng] == 0.0 && [eval concat $$var_iemgui_min_rng] == 0.0} {
+            set $var_iemgui_max_rng 1.0
+            $mytoplevel.rng.max_ent configure -textvariable $var_iemgui_max_rng
+        }
+        if {[eval concat $$var_iemgui_max_rng] > 0} {
+            if {[eval concat $$var_iemgui_min_rng] <= 0} {
+                set $var_iemgui_min_rng [expr [eval concat $$var_iemgui_max_rng] * 0.01]
+                $mytoplevel.rng.min_ent configure -textvariable $var_iemgui_min_rng
+            }
+        } else {
+            if {[eval concat $$var_iemgui_min_rng] > 0} {
+                set $var_iemgui_max_rng [expr [eval concat $$var_iemgui_min_rng] * 0.01]
+                $mytoplevel.rng.max_ent configure -textvariable $var_iemgui_max_rng
+            }
+        }
+    }
+}
+
+proc clip_fontsize {mytoplevel} {
+    set vid [string trimleft $mytoplevel .]
+    
+    set var_iemgui_gn_fs [concat iemgui_gn_fs_$vid]
+    global $var_iemgui_gn_fs
+    
+    variable minimumFontSize
+    
+    if {[eval concat $$var_iemgui_gn_fs] < $minimumFontSize} {
+        set $var_iemgui_gn_fs $minimumFontSize
+        $mytoplevel.label.fs_ent configure -textvariable $var_iemgui_gn_fs
+    }
+}
+
+proc set_col_example {mytoplevel} {
+    set vid [string trimleft $mytoplevel .]
+    
+    set var_iemgui_bcol [concat iemgui_bcol_$vid]
+    global $var_iemgui_bcol
+    set var_iemgui_fcol [concat iemgui_fcol_$vid]
+    global $var_iemgui_fcol
+    set var_iemgui_lcol [concat iemgui_lcol_$vid]
+    global $var_iemgui_lcol
+    
+    $mytoplevel.colors.sections.lb_bk configure \
+        -background [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
+        -activebackground [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
+        -foreground [format "#%6.6x" [eval concat $$var_iemgui_lcol]] \
+        -activeforeground [format "#%6.6x" [eval concat $$var_iemgui_lcol]]
+    
+    if { [eval concat $$var_iemgui_fcol] >= 0 } {
+        $mytoplevel.colors.sections.fr_bk configure \
+            -background [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
+            -activebackground [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
+            -foreground [format "#%6.6x" [eval concat $$var_iemgui_fcol]] \
+            -activeforeground [format "#%6.6x" [eval concat $$var_iemgui_fcol]]
+    } else {
+        $mytoplevel.colors.sections.fr_bk configure \
+            -background [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
+            -activebackground [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
+            -foreground [format "#%6.6x" [eval concat $$var_iemgui_bcol]] \
+            -activeforeground [format "#%6.6x" [eval concat $$var_iemgui_bcol]]}
+}
+
+proc preset_col {mytoplevel presetcol} {
+    set vid [string trimleft $mytoplevel .]
+    
+    set var_iemgui_l2_f1_b0 [concat iemgui_l2_f1_b0_$vid]
+    global $var_iemgui_l2_f1_b0
+    set var_iemgui_bcol [concat iemgui_bcol_$vid]
+    global $var_iemgui_bcol
+    set var_iemgui_fcol [concat iemgui_fcol_$vid]
+    global $var_iemgui_fcol
+    set var_iemgui_lcol [concat iemgui_lcol_$vid]
+    global $var_iemgui_lcol
+    
+    if { [eval concat $$var_iemgui_l2_f1_b0] == 0 } { set $var_iemgui_bcol $presetcol }
+    if { [eval concat $$var_iemgui_l2_f1_b0] == 1 } { set $var_iemgui_fcol $presetcol }
+    if { [eval concat $$var_iemgui_l2_f1_b0] == 2 } { set $var_iemgui_lcol $presetcol }
+    ::pd_iem::set_col_example $mytoplevel
+}
+
+proc choose_col_bkfrlb {mytoplevel} {
+    set vid [string trimleft $mytoplevel .]
+    
+    set var_iemgui_l2_f1_b0 [concat iemgui_l2_f1_b0_$vid]
+    global $var_iemgui_l2_f1_b0
+    set var_iemgui_bcol [concat iemgui_bcol_$vid]
+    global $var_iemgui_bcol
+    set var_iemgui_fcol [concat iemgui_fcol_$vid]
+    global $var_iemgui_fcol
+    set var_iemgui_lcol [concat iemgui_lcol_$vid]
+    global $var_iemgui_lcol
+    
+    if {[eval concat $$var_iemgui_l2_f1_b0] == 0} {
+        set $var_iemgui_bcol [expr [eval concat $$var_iemgui_bcol] & 0xFCFCFC]
+        set helpstring [tk_chooseColor -title [_ "Background color"] -initialcolor [format "#%6.6x" [eval concat $$var_iemgui_bcol]]]
+        if { $helpstring ne "" } {
+            set $var_iemgui_bcol [string replace $helpstring 0 0 "0x"]
+            set $var_iemgui_bcol [expr [eval concat $$var_iemgui_bcol] & 0xFCFCFC] }
+    }
+    if {[eval concat $$var_iemgui_l2_f1_b0] == 1} {
+        set $var_iemgui_fcol [expr [eval concat $$var_iemgui_fcol] & 0xFCFCFC]
+        set helpstring [tk_chooseColor -title [_ "Foreground color"] -initialcolor [format "#%6.6x" [eval concat $$var_iemgui_fcol]]]
+        if { $helpstring ne "" } {
+            set $var_iemgui_fcol [string replace $helpstring 0 0 "0x"]
+            set $var_iemgui_fcol [expr [eval concat $$var_iemgui_fcol] & 0xFCFCFC] }
+    }
+    if {[eval concat $$var_iemgui_l2_f1_b0] == 2} {
+        set $var_iemgui_lcol [expr [eval concat $$var_iemgui_lcol] & 0xFCFCFC]
+        set helpstring [tk_chooseColor -title [_ "Label color"] -initialcolor [format "#%6.6x" [eval concat $$var_iemgui_lcol]]]
+        if { $helpstring ne "" } {
+            set $var_iemgui_lcol [string replace $helpstring 0 0 "0x"]
+            set $var_iemgui_lcol [expr [eval concat $$var_iemgui_lcol] & 0xFCFCFC] }
+    }
+    ::pd_iem::set_col_example $mytoplevel
+}
+
+proc lilo {mytoplevel} {
+    set vid [string trimleft $mytoplevel .]
+    
+    set var_iemgui_lin0_log1 [concat iemgui_lin0_log1_$vid]
+    global $var_iemgui_lin0_log1
+    set var_iemgui_lilo0 [concat iemgui_lilo0_$vid]
+    global $var_iemgui_lilo0
+    set var_iemgui_lilo1 [concat iemgui_lilo1_$vid]
+    global $var_iemgui_lilo1
+    
+    ::pd_iem::sched_rng $mytoplevel
+    
+    if {[eval concat $$var_iemgui_lin0_log1] == 0} {
+        set $var_iemgui_lin0_log1 1
+        $mytoplevel.para.lilo configure -text [eval concat $$var_iemgui_lilo1]
+        ::pd_iem::verify_rng $mytoplevel
+        ::pd_iem::sched_rng $mytoplevel
+    } else {
+        set $var_iemgui_lin0_log1 0
+        $mytoplevel.para.lilo configure -text [eval concat $$var_iemgui_lilo0]
+    }
+}
+
+proc toggle_font {mytoplevel gn_f} {
+    set vid [string trimleft $mytoplevel .]
+    
+    set var_iemgui_gn_f [concat iemgui_gn_f_$vid]
+    global $var_iemgui_gn_f
+    
+    set $var_iemgui_gn_f $gn_f
+    
+    switch -- $gn_f {
+        0 { set current_font $::var(fontFamily)}
+        1 { set current_font "Helvetica" }
+        2 { set current_font "Times" }
+    }
+    set current_font_spec "{$current_font} 16 $::var(fontWeight)"
+    
+    $mytoplevel.label.fontpopup_label configure -text $current_font \
+        -font $current_font_spec
+    $mytoplevel.label.name_entry configure -font $current_font_spec
+    $mytoplevel.colors.sections.fr_bk configure -font $current_font_spec
+    $mytoplevel.colors.sections.lb_bk configure -font $current_font_spec
+}
+
+proc lb {mytoplevel} {
+    set vid [string trimleft $mytoplevel .]
+    
+    set var_iemgui_loadbang [concat iemgui_loadbang_$vid]
+    global $var_iemgui_loadbang
+    
+    if {[eval concat $$var_iemgui_loadbang] == 0} {
+        set $var_iemgui_loadbang 1
+        $mytoplevel.para.lb configure -text [_ "Init"]
+    } else {
+        set $var_iemgui_loadbang 0
+        $mytoplevel.para.lb configure -text [_ "No init"]
+    }
+}
+
+proc stdy_jmp {mytoplevel} {
+    set vid [string trimleft $mytoplevel .]
+    
+    set var_iemgui_steady [concat iemgui_steady_$vid]
+    global $var_iemgui_steady
+    
+    if {[eval concat $$var_iemgui_steady]} {
+        set $var_iemgui_steady 0
+        $mytoplevel.para.stdy_jmp configure -text [_ "Jump on click"]
+    } else {
+        set $var_iemgui_steady 1
+        $mytoplevel.para.stdy_jmp configure -text [_ "Steady on click"]
+    }
+}
+
+proc apply {mytoplevel} {
+    set vid [string trimleft $mytoplevel .]
+    
+    set var_iemgui_wdt [concat iemgui_wdt_$vid]
+    global $var_iemgui_wdt
+    set var_iemgui_min_wdt [concat iemgui_min_wdt_$vid]
+    global $var_iemgui_min_wdt
+    set var_iemgui_hgt [concat iemgui_hgt_$vid]
+    global $var_iemgui_hgt
+    set var_iemgui_min_hgt [concat iemgui_min_hgt_$vid]
+    global $var_iemgui_min_hgt
+    set var_iemgui_min_rng [concat iemgui_min_rng_$vid]
+    global $var_iemgui_min_rng
+    set var_iemgui_max_rng [concat iemgui_max_rng_$vid]
+    global $var_iemgui_max_rng
+    set var_iemgui_lin0_log1 [concat iemgui_lin0_log1_$vid]
+    global $var_iemgui_lin0_log1
+    set var_iemgui_lilo0 [concat iemgui_lilo0_$vid]
+    global $var_iemgui_lilo0
+    set var_iemgui_lilo1 [concat iemgui_lilo1_$vid]
+    global $var_iemgui_lilo1
+    set var_iemgui_loadbang [concat iemgui_loadbang_$vid]
+    global $var_iemgui_loadbang
+    set var_iemgui_num [concat iemgui_num_$vid]
+    global $var_iemgui_num
+    set var_iemgui_steady [concat iemgui_steady_$vid]
+    global $var_iemgui_steady
+    set var_iemgui_snd [concat iemgui_snd_$vid]
+    global $var_iemgui_snd
+    set var_iemgui_rcv [concat iemgui_rcv_$vid]
+    global $var_iemgui_rcv
+    set var_iemgui_gui_nam [concat iemgui_gui_nam_$vid]
+    global $var_iemgui_gui_nam
+    set var_iemgui_gn_dx [concat iemgui_gn_dx_$vid]
+    global $var_iemgui_gn_dx
+    set var_iemgui_gn_dy [concat iemgui_gn_dy_$vid]
+    global $var_iemgui_gn_dy
+    set var_iemgui_gn_f [concat iemgui_gn_f_$vid]
+    global $var_iemgui_gn_f
+    set var_iemgui_gn_fs [concat iemgui_gn_fs_$vid]
+    global $var_iemgui_gn_fs
+    set var_iemgui_bcol [concat iemgui_bcol_$vid]
+    global $var_iemgui_bcol
+    set var_iemgui_fcol [concat iemgui_fcol_$vid]
+    global $var_iemgui_fcol
+    set var_iemgui_lcol [concat iemgui_lcol_$vid]
+    global $var_iemgui_lcol
+    
+    ::pd_iem::clip_dim $mytoplevel
+    ::pd_iem::clip_num $mytoplevel
+    ::pd_iem::sched_rng $mytoplevel
+    ::pd_iem::verify_rng $mytoplevel
+    ::pd_iem::sched_rng $mytoplevel
+    ::pd_iem::clip_fontsize $mytoplevel
+    
+    if {[eval concat $$var_iemgui_snd] == ""} {set hhhsnd "empty"} else {set hhhsnd [eval concat $$var_iemgui_snd]}
+    if {[eval concat $$var_iemgui_rcv] == ""} {set hhhrcv "empty"} else {set hhhrcv [eval concat $$var_iemgui_rcv]}
+    if {[eval concat $$var_iemgui_gui_nam] == ""} {set hhhgui_nam "empty"
+    } else {
+        set hhhgui_nam [eval concat $$var_iemgui_gui_nam]}
+    
+    if {[string index $hhhsnd 0] == "$"} {
+        set hhhsnd [string replace $hhhsnd 0 0 #] }
+    if {[string index $hhhrcv 0] == "$"} {
+        set hhhrcv [string replace $hhhrcv 0 0 #] }
+    if {[string index $hhhgui_nam 0] == "$"} {
+        set hhhgui_nam [string replace $hhhgui_nam 0 0 #] }
+    
+    set hhhsnd [::unspace $hhhsnd]
+    set hhhrcv [::unspace $hhhrcv]
+    set hhhgui_nam [::unspace $hhhgui_nam]
+
+# make sure the offset boxes have a value
+    if {[eval concat $$var_iemgui_gn_dx] eq ""} {set $var_iemgui_gn_dx 0}
+    if {[eval concat $$var_iemgui_gn_dy] eq ""} {set $var_iemgui_gn_dy 0}
+
+    ::pd_connect::pdsend [concat $mytoplevel dialog \
+            [eval concat $$var_iemgui_wdt] \
+            [eval concat $$var_iemgui_hgt] \
+            [eval concat $$var_iemgui_min_rng] \
+            [eval concat $$var_iemgui_max_rng] \
+            [eval concat $$var_iemgui_lin0_log1] \
+            [eval concat $$var_iemgui_loadbang] \
+            [eval concat $$var_iemgui_num] \
+            $hhhsnd \
+            $hhhrcv \
+            $hhhgui_nam \
+            [eval concat $$var_iemgui_gn_dx] \
+            [eval concat $$var_iemgui_gn_dy] \
+            [eval concat $$var_iemgui_gn_f] \
+            [eval concat $$var_iemgui_gn_fs] \
+            [eval concat $$var_iemgui_bcol] \
+            [eval concat $$var_iemgui_fcol] \
+            [eval concat $$var_iemgui_lcol] \
+            [eval concat $$var_iemgui_steady]]
+}
+
+
+proc cancel {mytoplevel} {
+    ::pd_connect::pdsend "$mytoplevel cancel"
+}
+
+proc ok {mytoplevel} {
+    ::pd_iem::apply $mytoplevel
+    ::pd_iem::cancel $mytoplevel
 }
 
 # ------------------------------------------------------------------------------------------------------------
