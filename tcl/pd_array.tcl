@@ -102,12 +102,11 @@ proc _create {top name size flags} {
     pack $top.polygon           -side top -anchor w
     pack $top.bezier            -side top -anchor w
     
-    bind $top.name <Return> { focus [tk_focusNext %W] }
-    bind $top.size <Return> { focus [tk_focusNext %W] }
+    bind $top.name <Return> { ::getNextEntry %W }
+    bind $top.size <Return> { ::getNextEntry %W }
     
     focus $top.name
     
-    $top.size selection range 0 end
     $top.name selection range 0 end
     
     wm protocol $top WM_DELETE_WINDOW   "::pd_array::_closed $top"
