@@ -105,12 +105,12 @@ proc _create {top name size flags} {
     bind $top.name <Return> { focus [tk_focusNext %W] }
     bind $top.size <Return> { focus [tk_focusNext %W] }
     
-    $top.name selection range 0 end
+    focus $top.name
+    
     $top.size selection range 0 end
+    $top.name selection range 0 end
     
     wm protocol $top WM_DELETE_WINDOW   "::pd_array::_closed $top"
-    
-    focus $top.name
 }
 
 # ------------------------------------------------------------------------------------------------------------
