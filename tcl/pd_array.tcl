@@ -65,6 +65,7 @@ proc _create {top name size flags} {
     toplevel $top -class PdDialog
     wm title $top [_ "Array"]
     wm group $top .
+    wm transient $top $::var(windowFocused)
     
     wm resizable $top 0 0
     

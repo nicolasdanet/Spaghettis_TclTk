@@ -67,6 +67,7 @@ proc _create {top geometry title fontSize} {
     toplevel $top -class PdText
     wm title $top $title
     wm group $top .
+    wm transient $top $::var(windowFocused)
      
     wm minsize  $top 50 50
     wm geometry $top $geometry
