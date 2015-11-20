@@ -63,7 +63,7 @@ proc _create {top name size flags} {
     variable arraySave
     
     toplevel $top -class PdDialog
-    wm title $top [_ "Array Properties"]
+    wm title $top [_ "Array"]
     wm group $top .
     
     wm resizable $top 0 0
