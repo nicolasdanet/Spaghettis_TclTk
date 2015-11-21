@@ -27,14 +27,14 @@ namespace eval ::pd_text:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {top fontSize} {
+proc show {top} {
 
     if {[winfo exists $top]} {
         wm deiconify $top
         raise $top
         $top.text delete 1.0 end
     } else {
-        _create $top $fontSize
+        _create $top
     }
 }
 
@@ -64,7 +64,7 @@ proc dirty {top flag} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {top fontSize} {
+proc _create {top} {
     
     toplevel $top -class PdText
     wm title $top [_ "Text"]
@@ -72,9 +72,9 @@ proc _create {top fontSize} {
     wm transient $top $::var(windowFocused)
     
     wm minsize  $top 50 50
-    wm geometry $top [format "=500x300%s" [::rightNextTo $::var(windowFocused)]]
+    wm geometry $top [format "=600x400%s" [::rightNextTo $::var(windowFocused)]]
     
-    text $top.text  -font [::getFont $fontSize] \
+    text $top.text  -font [::getFont 14] \
                     -borderwidth 0 \
                     -highlightthickness 0
     
