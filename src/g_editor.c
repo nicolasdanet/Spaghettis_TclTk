@@ -952,10 +952,10 @@ void canvas_vis(t_canvas *x, t_floatarg f)
             int cbuflen;
             t_canvas *c = x;
             canvas_create_editor(x);
-            sys_vgui("::pd_patch::create .x%lx %d %d %d\n", x,
+            sys_vgui("::pd_patch::create .x%lx %d %d +%d+%d %d\n", x,
                 (int)(x->gl_screenx2 - x->gl_screenx1),
                 (int)(x->gl_screeny2 - x->gl_screeny1),
-                /* (int)(x->gl_screenx1), (int)(x->gl_screeny1), */
+                (int)(x->gl_screenx1), (int)(x->gl_screeny1),
                 x->gl_edit);
            snprintf(cbuf, MAXPDSTRING - 2, "::pd_patch::pdtk_canvas_setparents .x%lx",
                 (unsigned long)c);
