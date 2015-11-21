@@ -24,12 +24,17 @@ namespace eval ::pd_path:: {
 
 proc show {{top {}}} { 
     
-    ::pd_path::_create .paths
+    if {[winfo exists .path]} {
+        wm deiconify .path
+        raise .path
+    } else {
+        ::pd_path::_create .path
+    }
 }
 
 proc hide {} {
 
-    destroy .paths
+    ::pad_path::_closed
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -69,11 +74,13 @@ proc _create {top} {
     
     focus $top.paths.box
     
-    bind $top <Destroy> { ::pd_path::_closed }
+    wm protocol $top WM_DELETE_WINDOW { ::pd_path::_closed }
 }
 
 proc _closed {} {
 
+    wm withdraw .path
+    
     set ::var(hasPath) 0
 }
 
