@@ -40,7 +40,7 @@ array set patchIsScrollableY {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc create {top width height coordinates editable} {
+proc create {top width height editable} {
 
     variable patchTitle
     variable patchIsEditMode
