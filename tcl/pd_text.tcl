@@ -42,17 +42,17 @@ proc release {top} {
 
 proc append {top contents} {
 
-    if {[winfo exists $top]} { $top.text insert end $contents }
+    $top.text insert end $contents
 }
 
 proc clear {top} {
 
-    if {[winfo exists $top]} { $top.text delete 1.0 end }
+    $top.text delete 1.0 end
 }
 
 proc dirty {top flag} {
 
-    if {[winfo exists $top]} { $top.text edit modified $flag }
+    $top.text edit modified $flag
 }
 
 # ------------------------------------------------------------------------------------------------------------
