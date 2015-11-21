@@ -40,7 +40,7 @@ array set patchIsScrollableY {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc create {top width height geometry editable} {
+proc create {top width height coordinates editable} {
 
     variable patchTitle
     variable patchIsEditMode
@@ -53,7 +53,7 @@ proc create {top width height geometry editable} {
     wm group $top .
 
     wm minsize  $top 50 50
-    wm geometry $top [format "=%dx%d%s" $width $height $geometry]
+    wm geometry $top [format "=%dx%d%s" $width $height [::rightNextTo $::var(windowFocused)]]
     
     if {[tk windowingsystem] ne "aqua"} { $top configure -menu .menubar }
     

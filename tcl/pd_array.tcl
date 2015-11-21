@@ -51,6 +51,7 @@ proc _create {top name size flags} {
     wm transient $top $::var(windowFocused)
     
     wm resizable $top 0 0
+    wm geometry  $top [::rightNextTo $::var(windowFocused)]
     
     set arrayName($top) [::dialog_gatom::unescape $name]
     set arraySize($top) $size
@@ -86,8 +87,8 @@ proc _create {top name size flags} {
     pack $top.polygon           -side top -anchor w
     pack $top.bezier            -side top -anchor w
     
-    bind $top.name <Return> { ::getNextEntry %W }
-    bind $top.size <Return> { ::getNextEntry %W }
+    bind $top.name <Return> { ::nextEntry %W }
+    bind $top.size <Return> { ::nextEntry %W }
     
     focus $top.name
     

@@ -45,9 +45,9 @@ proc _create {} {
     toplevel .path -class PdDialog
     wm title .path [_ "Path"]
     wm group .path .
-    
+        
     wm minsize  .path 400 300
-    wm geometry .path "=400x300+30+60"
+    wm geometry .path [format "=400x300%s" [::rightNextTo .console]]
     
     frame .path.paths
     frame .path.actions
