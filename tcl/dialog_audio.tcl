@@ -142,7 +142,6 @@ proc ::dialog_audio::pdtk_audio_dialog {mytoplevel \
     wm title $mytoplevel [_ "Audio Settings"]
     wm group $mytoplevel .
     wm resizable $mytoplevel 0 0
-    wm transient $mytoplevel
     $mytoplevel configure -padx 10 -pady 5
     # not all Tcl/Tk versions or platforms support -topmost, so catch the error
     catch {wm attributes $mytoplevel -topmost 1}

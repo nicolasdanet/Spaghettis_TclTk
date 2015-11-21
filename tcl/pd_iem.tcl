@@ -133,7 +133,6 @@ proc create {mytoplevel mainheader dim_header \
     wm title $mytoplevel [format [_ "%s Properties"] $mainheader]
     wm group $mytoplevel .
     wm resizable $mytoplevel 0 0
-    wm transient $mytoplevel $::var(windowFocused)
     $mytoplevel configure -padx 0 -pady 0
 
     frame $mytoplevel.dim

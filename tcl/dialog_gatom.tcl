@@ -103,7 +103,6 @@ proc ::dialog_gatom::create_dialog {mytoplevel} {
     wm title $mytoplevel [_ "Atom Box Properties"]
     wm group $mytoplevel .
     wm resizable $mytoplevel 0 0
-    wm transient $mytoplevel $::var(windowFocused)
     $mytoplevel configure -padx 0 -pady 0
 
     frame $mytoplevel.width -height 7

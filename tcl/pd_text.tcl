@@ -29,13 +29,7 @@ namespace eval ::pd_text:: {
 
 proc show {top} {
 
-    if {[winfo exists $top]} {
-        wm deiconify $top
-        raise $top
-        $top.text delete 1.0 end
-    } else {
-        _create $top
-    }
+    _create $top
 }
 
 proc release {top} {
@@ -69,7 +63,6 @@ proc _create {top} {
     toplevel $top -class PdText
     wm title $top [_ "Text"]
     wm group $top .
-    wm transient $top $::var(windowFocused)
     
     wm minsize  $top 50 50
     wm geometry $top [format "=600x400%s" [::rightNextTo $::var(windowFocused)]]
@@ -108,9 +101,7 @@ proc _selectAll {top} {
 
 proc _modified {top} {
 
-    if {[tk windowingsystem] eq "aqua"} {
-        wm attributes $top -modified [$top.text edit modified]
-    }
+    if {[tk windowingsystem] eq "aqua"} { wm attributes $top -modified [$top.text edit modified] }
 }
 
 proc _save {top} {

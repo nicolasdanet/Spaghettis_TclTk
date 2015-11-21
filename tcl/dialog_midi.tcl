@@ -118,7 +118,6 @@ proc ::dialog_midi::pdtk_midi_dialog {id \
     wm title $id [_ "MIDI Settings"]
     wm group $id .
     wm resizable $id 0 0
-    wm transient $id
     $id configure -padx 10 -pady 5
     # not all Tcl/Tk versions or platforms support -topmost, so catch the error
     catch {wm attributes $id -topmost 1}
