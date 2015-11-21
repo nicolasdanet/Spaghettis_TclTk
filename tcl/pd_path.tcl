@@ -28,7 +28,7 @@ proc show {{top {}}} {
         wm deiconify .path
         raise .path
     } else {
-        ::pd_path::_create .path
+        ::pd_path::_create
     }
 }
 
@@ -40,41 +40,41 @@ proc hide {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {top} {
+proc _create {} {
 
-    toplevel $top -class PdDialog
-    wm title $top [_ "Path"]
-    wm group $top .
+    toplevel .path -class PdDialog
+    wm title .path [_ "Path"]
+    wm group .path .
     
-    wm minsize  $top 400 300
-    wm geometry $top "=400x300+30+60"
+    wm minsize  .path 400 300
+    wm geometry .path "=400x300+30+60"
     
-    frame $top.paths
-    frame $top.actions
+    frame .path.paths
+    frame .path.actions
     
-    listbox $top.paths.box      -selectmode single \
+    listbox .path.paths.box     -selectmode single \
                                 -activestyle none \
                                 -font [::getFont 14] \
                                 -borderwidth 0
     
-    button $top.actions.add     -text "Add..." \
-                                -command "::pd_path::_addItem  $top"
-    button $top.actions.delete  -text "Delete" \
-                                -command "::pd_path::_deleteItem $top"
+    button .path.actions.add    -text "Add..." \
+                                -command "::pd_path::_addItem"
+    button .path.actions.delete -text "Delete" \
+                                -command "::pd_path::_deleteItem"
         
-    pack $top.paths             -side top -padx 2m -pady 2m -fill both -expand 1
-    pack $top.actions           -side top -padx 2m -fill x 
+    pack .path.paths            -side top -padx 2m -pady 2m -fill both -expand 1
+    pack .path.actions          -side top -padx 2m -fill x 
     
-    pack $top.paths.box         -side left -fill both -expand 1
+    pack .path.paths.box        -side left -fill both -expand 1
     
-    pack $top.actions.add       -side left -pady 2m
-    pack $top.actions.delete    -side left -pady 2m
+    pack .path.actions.add      -side left -pady 2m
+    pack .path.actions.delete   -side left -pady 2m
 
-    foreach item $::var(searchPath) { $top.paths.box insert end $item }
+    foreach item $::var(searchPath) { .path.paths.box insert end $item }
     
-    focus $top.paths.box
+    focus .path.paths.box
     
-    wm protocol $top WM_DELETE_WINDOW { ::pd_path::_closed }
+    wm protocol .path WM_DELETE_WINDOW { ::pd_path::_closed }
 }
 
 proc _closed {} {
@@ -87,32 +87,33 @@ proc _closed {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _addItem  {top} {
+proc _addItem {} {
 
     set item [tk_chooseDirectory -title [_ "Add a Directory"]]
     
-    if {$item ne ""} { $top.paths.box insert end $item }
+    if {$item ne ""} { .path.paths.box insert end $item }
     
-    ::pd_path::_apply $top
+    ::pd_path::_apply
 }
 
-proc _deleteItem {top} {
+proc _deleteItem {} {
 
-    foreach item [$top.paths.box curselection] { $top.paths.box delete $item }
+    foreach item [.path.paths.box curselection] { .path.paths.box delete $item }
     
-    ::pd_path::_apply $top
+    ::pd_path::_apply
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _apply {top} {
+proc _apply {} {
 
     set ::var(searchPath) {}
     
-    foreach path [$top.paths.box get 0 end] { lappend ::var(searchPath) [::encode $path] }
+    foreach path [.path.paths.box get 0 end] { lappend ::var(searchPath) [::encode $path] }
 
     ::pd_connect::pdsend "pd path-dialog $::var(searchPath)"
+    
     ::pd_connect::pdsend "pd save-preferences"
 }
 
