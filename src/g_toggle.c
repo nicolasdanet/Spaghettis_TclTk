@@ -229,7 +229,7 @@ static void toggle_properties(t_gobj *z, t_glist *owner)
     sprintf(buf, "::pd_iem::create %%s |tgl| \
             ----------dimensions(pix):----------- %d %d size: 0 0 empty \
             -----------non-zero-value:----------- %g value: 0.0 empty %g \
-            -1 lin log %d %d empty %d \
+            -1 empty empty %d %d empty %d \
             %s %s \
             %s %d %d \
             %d %d \

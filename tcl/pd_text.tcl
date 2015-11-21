@@ -61,7 +61,7 @@ proc dirty {top flag} {
 proc _create {top} {
     
     toplevel $top -class PdText
-    wm title $top [_ "Text"]
+    wm title $top [_ "Contents"]
     wm group $top .
     
     wm minsize  $top 50 50
