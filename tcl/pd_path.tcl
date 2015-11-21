@@ -72,8 +72,6 @@ proc _create {} {
 
     foreach item $::var(searchPath) { .path.paths.box insert end $item }
     
-    focus .path.paths.box
-    
     wm protocol .path WM_DELETE_WINDOW { ::pd_path::_closed }
 }
 
@@ -81,6 +79,8 @@ proc _closed {} {
 
     wm withdraw .path
     
+    focus [lindex [wm stackorder .] end]
+        
     set ::var(hasPath) 0
 }
 
@@ -90,6 +90,8 @@ proc _closed {} {
 proc _addItem {} {
 
     set item [tk_chooseDirectory -title [_ "Add a Directory"]]
+    
+    focus .path
     
     if {$item ne ""} { .path.paths.box insert end $item }
     
