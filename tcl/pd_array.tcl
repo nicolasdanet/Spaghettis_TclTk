@@ -35,23 +35,6 @@ proc show {top name size flags} {
     ::pd_array::_create $top $name $size $flags
 }
 
-proc _closed {top} {
-    
-    variable arrayName
-    variable arraySize
-    variable arrayDraw
-    variable arraySave
-    
-    ::pd_array::_apply $top
-    
-    unset arrayName($top)
-    unset arraySize($top)
-    unset arrayDraw($top)
-    unset arraySave($top)
-    
-    ::pd_array::_cancel $top
-}
-
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
@@ -111,6 +94,23 @@ proc _create {top name size flags} {
     $top.name selection range 0 end
     
     wm protocol $top WM_DELETE_WINDOW   "::pd_array::_closed $top"
+}
+
+proc _closed {top} {
+    
+    variable arrayName
+    variable arraySize
+    variable arrayDraw
+    variable arraySave
+    
+    ::pd_array::_apply $top
+    
+    unset arrayName($top)
+    unset arraySize($top)
+    unset arrayDraw($top)
+    unset arraySave($top)
+    
+    ::pd_array::_cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------

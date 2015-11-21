@@ -30,6 +30,8 @@ namespace eval ::pd_text:: {
 proc show {top geometry title fontSize} {
 
     if {[winfo exists $top]} {
+        wm deiconify $top
+        raise $top
         $top.text delete 1.0 end
     } else {
         _create $top $geometry $title $fontSize
@@ -87,6 +89,15 @@ proc _create {top geometry title fontSize} {
     focus $top.text
 }
 
+proc _closed {top} {
+
+    if {[$top.text edit modified]} { 
+        ::pd_confirm::checkClose $top { ::pd_text::_save $top } {} { return -level 2 }
+    }
+
+    ::pd_connect::pdsend "$top close"
+}
+
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
@@ -115,15 +126,6 @@ proc _save {top} {
     }
     
     ::pd_text::dirty $top 0
-}
-
-proc _closed {top} {
-
-    if {[$top.text edit modified]} { 
-        ::pd_confirm::checkClose $top { ::pd_text::_save $top } {} { return -level 2 }
-    }
-
-    ::pd_connect::pdsend "$top close"
 }
 
 # ------------------------------------------------------------------------------------------------------------

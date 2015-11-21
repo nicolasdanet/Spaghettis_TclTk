@@ -159,6 +159,8 @@ set var(fontFamily)             [::getDefaultFamily]
 set var(fontWeight)             [::getDefaultWeight]
 set var(fontSizes)              "8 10 12 16 24 36"
 
+set var(hasPath)                0
+
 set var(isInitialized)          0
 set var(isDsp)                  0
 set var(isEditMode)             0
