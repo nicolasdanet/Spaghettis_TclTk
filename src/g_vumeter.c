@@ -504,17 +504,19 @@ static void vu_properties(t_gobj *z, t_glist *owner)
     t_symbol *srl[3];
 
     iemgui_properties(&x->x_gui, srl);
-    sprintf(buf, "::pd_iem::create %%s |vu| \
-            --------dimensions(pix)(pix):-------- %d %d width: %d %d height: \
-            empty 0.0 empty 0.0 empty %d \
-            %d no_scale scale %d %d empty %d \
+    sprintf(buf, "::pd_iem::create %%s VU \
+            Dimensions %d %d Width %d %d Height \
+            empty 0.0 empty 0.0 empty \
+            0 \
+            %d {Hide Scale} {Show Scale} \
+            -1 -1 \
+            empty -1 \
             %s %s \
             %s %d %d \
             %d %d \
             %d %d %d\n",
             x->x_gui.x_w, IEM_GUI_MINSIZE, x->x_gui.x_h, IEM_VU_STEPS*IEM_VU_MINSIZE,
-            0,/*no_schedule*/
-            x->x_scale, -1, -1, -1,/*no linlog, no init, no multi*/
+            x->x_scale, 
             "nosndno", srl[1]->s_name,/*no send*/
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
             x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
