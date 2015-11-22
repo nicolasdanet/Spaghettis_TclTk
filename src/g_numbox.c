@@ -453,18 +453,22 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
         sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
 
     }
-    sprintf(buf, "::pd_iem::create %%s |nbx| \
-            -------dimensions(digits)(pix):------- %d %d width: %d %d height: \
-            -----------output-range:----------- %g min: %g max: %d \
-            %d lin log %d %d log-height: %d \
+    sprintf(buf, "::pd_iem::create %%s Number \
+            Dimensions %d %d Digits %d %d Height \
+            Range %g Low %g High \
+            0 \
+            %d Linear Logarithmic \
+            %d -1 \
+            {Logarithmic Height} %d \
             %s %s \
             %s %d %d \
             %d %d \
             %d %d %d\n",
             x->x_gui.x_w, 1, x->x_gui.x_h, 8,
-            x->x_min, x->x_max, 0,/*no_schedule*/
-            x->x_lin0_log1, x->x_gui.x_isa.x_loadinit, -1,
-                x->x_log_height, /*no multi, but iem-characteristic*/
+            x->x_min, x->x_max,
+            x->x_lin0_log1, 
+            x->x_gui.x_isa.x_loadinit,
+            x->x_log_height, /*no multi, but iem-characteristic*/
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
             x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
