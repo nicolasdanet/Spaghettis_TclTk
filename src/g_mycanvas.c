@@ -154,17 +154,19 @@ static void my_canvas_properties(t_gobj *z, t_glist *owner)
     t_symbol *srl[3];
 
     iemgui_properties(&x->x_gui, srl);
-    sprintf(buf, "::pd_iem::create %%s |cnv| \
-            ------selectable_dimensions(pix):------ %d %d size: 0.0 0.0 empty \
-            ------visible_rectangle(pix)(pix):------ %d width: %d height: %d \
-            %d empty empty %d %d empty %d \
+    sprintf(buf, "::pd_iem::create %%s Panel \
+            Dimensions %d %d {Grip Size} 0.0 0.0 empty \
+            {Visible Rectangle} %d Width %d Height \
+            0 \
+            -1 empty empty \
+            -1 -1 \
+            empty -1 \
             %s %s \
             %s %d %d \
             %d %d \
             %d %d %d\n",
             x->x_gui.x_w, 1,
-            x->x_vis_w, x->x_vis_h, 0,/*no_schedule*/
-            -1, -1, -1, -1,/*no linlog, no init, no multi*/
+            x->x_vis_w, x->x_vis_h,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
             x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
