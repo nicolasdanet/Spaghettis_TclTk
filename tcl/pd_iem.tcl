@@ -29,6 +29,73 @@ variable minimumFontSize    4
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+variable  iemMainTitle
+variable  iemSizeTitle
+variable  iemWidth
+variable  iemWidthMinimum
+variable  iemWidthLabel
+variable  iemHeight
+variable  iemHeightMinimum
+variable  iemHeightLabel
+variable  iemOptionTitle
+variable  iemOptionA
+variable  iemOptionALabel
+variable  iemOptionB
+variable  iemOptionBLabel
+variable  iemOptionFlags
+variable  iemCheck
+variable  iemCheckA
+variable  iemCheckB
+variable  iemIsLoadbang
+variable  iemIsSteady
+variable  iemExtraLabel
+variable  iemExtra
+variable  iemSend
+variable  iemReceive
+variable  iemName
+variable  iemNameDeltaX
+variable  iemNameDeltaY
+variable  iemNameFont
+variable  iemNameFontSize
+variable  iemBackgroundColor
+variable  iemFrontColor
+variable  iemNameColor
+
+array set iemMainTitle          {}
+array set iemSizeTitle          {}
+array set iemWidth              {}
+array set iemWidthMinimum       {}
+array set iemWidthLabel         {}
+array set iemHeight             {}
+array set iemHeightMinimum      {}
+array set iemHeightLabel        {}
+array set iemOptionTitle        {}
+array set iemOptionA            {}
+array set iemOptionALabel       {}
+array set iemOptionB            {}
+array set iemOptionBLabel       {}
+array set iemOptionFlags        {}
+array set iemCheck              {}
+array set iemCheckA             {}
+array set iemCheckB             {}
+array set iemIsLoadbang         {}
+array set iemIsSteady           {}
+array set iemExtraLabel         {}
+array set iemExtra              {}
+array set iemSend               {}
+array set iemReceive            {}
+array set iemName               {}
+array set iemNameDeltaX         {}
+array set iemNameDeltaY         {}
+array set iemNameFont           {}
+array set iemNameFontSize       {}
+array set iemBackgroundColor    {}
+array set iemFrontColor         {}
+array set iemNameColor          {}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc create {mytoplevel mainheader dim_header \
                                        wdt min_wdt wdt_label \
                                        hgt min_hgt hgt_label \
