@@ -264,17 +264,21 @@ static void hslider_properties(t_gobj *z, t_glist *owner)
     t_symbol *srl[3];
 
     iemgui_properties(&x->x_gui, srl);
-    sprintf(buf, "::pd_iem::create %%s |hsl| \
-            --------dimensions(pix)(pix):-------- %d %d width: %d %d height: \
-            -----------output-range:----------- %g left: %g right: %g \
-            %d lin log %d %d empty %d \
+    sprintf(buf, "::pd_iem::create %%s Slider \
+            Dimensions %d %d Width %d %d Height \
+            Range %g Low %g High \
+            0 \
+            %d Linear Logarithmic \
+            %d %d \
+            empty -1 \
             %s %s \
             %s %d %d \
             %d %d \
             %d %d %d\n",
             x->x_gui.x_w, IEM_SL_MINSIZE, x->x_gui.x_h, IEM_GUI_MINSIZE,
-            x->x_min, x->x_max, 0.0,/*no_schedule*/
-            x->x_lin0_log1, x->x_gui.x_isa.x_loadinit, x->x_steady, -1,/*no multi, but iem-characteristic*/
+            x->x_min, x->x_max,
+            x->x_lin0_log1, 
+            x->x_gui.x_isa.x_loadinit, x->x_steady,/*no multi, but iem-characteristic*/
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
             x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
