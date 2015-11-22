@@ -265,7 +265,7 @@ static void hradio_properties(t_gobj *z, t_glist *owner)
     if (pd_class(&x->x_gui.x_obj.ob_pd) == hradio_old_class)
         hchange = x->x_change;
     sprintf(buf, "::pd_iem::create %%s {Radio Button} \
-            Dimensions %d %d Size 0 0 empty \
+            Dimensions %d %d {Button Size} 0 0 empty \
             empty 0.0 empty 0.0 empty \
             0 \
             -1 empty empty \

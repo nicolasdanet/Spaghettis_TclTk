@@ -265,8 +265,8 @@ static void hslider_properties(t_gobj *z, t_glist *owner)
 
     iemgui_properties(&x->x_gui, srl);
     sprintf(buf, "::pd_iem::create %%s Slider \
-            Dimensions %d %d Width %d %d Height \
-            Range %g Low %g High \
+            Dimensions %d %d {Slider Width} %d %d {Slider Height} \
+            Range %g {Low Value} %g {High Value} \
             0 \
             %d Linear Logarithmic \
             %d %d \
