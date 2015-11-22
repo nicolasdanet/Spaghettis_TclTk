@@ -267,14 +267,14 @@ static void hradio_properties(t_gobj *z, t_glist *owner)
     sprintf(buf, "::pd_iem::create %%s |hradio| \
             ----------dimensions(pix):----------- %d %d size: 0 0 empty \
             empty 0.0 empty 0.0 empty %d \
-            %d new-only new&old %d %d number: %d \
+            %d empty empty %d %d number: %d \
             %s %s \
             %s %d %d \
             %d %d \
             %d %d %d\n",
             x->x_gui.x_w, IEM_GUI_MINSIZE,
             0,/*no_schedule*/
-            hchange, x->x_gui.x_isa.x_loadinit, -1, x->x_number,
+            -1, x->x_gui.x_isa.x_loadinit, -1, x->x_number,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
             x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
