@@ -264,17 +264,20 @@ static void hradio_properties(t_gobj *z, t_glist *owner)
     iemgui_properties(&x->x_gui, srl);
     if (pd_class(&x->x_gui.x_obj.ob_pd) == hradio_old_class)
         hchange = x->x_change;
-    sprintf(buf, "::pd_iem::create %%s |hradio| \
-            ----------dimensions(pix):----------- %d %d size: 0 0 empty \
-            empty 0.0 empty 0.0 empty %d \
-            %d empty empty %d %d number: %d \
+    sprintf(buf, "::pd_iem::create %%s {Radio Button} \
+            Dimensions %d %d Size 0 0 empty \
+            empty 0.0 empty 0.0 empty \
+            0 \
+            -1 empty empty \
+            %d -1 \
+            {Buttons Number} %d \
             %s %s \
             %s %d %d \
             %d %d \
             %d %d %d\n",
             x->x_gui.x_w, IEM_GUI_MINSIZE,
-            0,/*no_schedule*/
-            -1, x->x_gui.x_isa.x_loadinit, -1, x->x_number,
+            x->x_gui.x_isa.x_loadinit,
+            x->x_number,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
             x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
