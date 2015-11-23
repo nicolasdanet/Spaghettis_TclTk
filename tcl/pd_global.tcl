@@ -51,6 +51,7 @@ proc rightNextTo {top} {
 
 proc encode  {x} { concat +[string map {" " "+_" "$" "+d" ";" "+s" "," "+c" "+" "++"} $x] }
 proc enquote {x} { string map {"," "\\," ";" "\\;" " " "\\ "} $x }
+proc parse   {x} { if {$x eq "empty"} { return "" } else { return [string map {"#" "$"} $x] } }
 proc unspace {x} {
     set y [string map {" " "_" ";" "" "," "" "{" "" "}" "" "\\" ""} $x]
     if {$y eq ""} { set y "empty" }

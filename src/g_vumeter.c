@@ -505,7 +505,7 @@ static void vu_properties(t_gobj *z, t_glist *owner)
 
     iemgui_properties(&x->x_gui, srl);
     sprintf(buf, "::pd_iem::create %%s VU \
-            Dimensions %d %d {VU Meter Width} %d %d {VU Meter Height} \
+            Dimensions %d %d {VU Width} %d %d {VU Height} \
             empty 0.0 empty 0.0 empty \
             0 \
             %d {Hide Scale} {Show Scale} \
