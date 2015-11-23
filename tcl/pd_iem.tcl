@@ -244,31 +244,37 @@ proc create {top type
     pack  $top.nameDeltaYLabel      -side top -anchor w
     pack  $top.nameDeltaY           -side top -anchor w
     
+    label $top.nameFontSizeLabel    -text [_ "Font Size"]
+    entry $top.nameFontSize         -textvariable ::pd_iem::iemNameFontSize($top)
+    pack  $top.nameFontSizeLabel    -side top -anchor w
+    pack  $top.nameFontSize         -side top -anchor w
+    
     if {0} {
     
-    button $top .label.fontpopup_label -text $current_font \
+    button $top.label.fontpopup_label -text $current_font \
         -font [list $current_font 16 $::var(fontWeight)]
     pack $top .label.fontpopup_label -side left -anchor w \
         -expand 1 -fill x -padx 5
-    label $top .label.fontsize_label -text [_ "Size:"]
-    entry $top .label.fontsize_entry -textvariable $var_iemgui_gn_fs -width 5
-    pack $top .label.fontsize_entry $top .label.fontsize_label \
+        
+    pack $top.label.fontsize_entry $top.label.fontsize_label \
         -side right -anchor e -padx 5 -pady 5
-    menu $top .popup
-    $top .popup add command \
+        
+    menu $top.popup
+    $top.popup add command \
         -label $::var(fontFamily) \
         -font [format {{%s} 16 %s} $::var(fontFamily) $::var(fontWeight)] \
         -command "::pd_iem::toggle_font $top  0" 
-    $top .popup add command \
+    $top.popup add command \
         -label "Helvetica" \
         -font [format {Helvetica 16 %s} $::var(fontWeight)] \
         -command "::pd_iem::toggle_font $top  1" 
-    $top .popup add command \
+    $top.popup add command \
         -label "Times" \
         -font [format {Times 16 %s} $::var(fontWeight)] \
         -command "::pd_iem::toggle_font $top  2" 
-    bind $top .label.fontpopup_label <Button> \
-        [list tk_popup $top .popup %X %Y]
+        
+    bind $top.label.fontpopup_label <Button> \
+        [list tk_popup $top.popup %X %Y]
     
     frame $top .spacer2 -height 7
     pack $top .spacer2 -side top
