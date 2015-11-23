@@ -37,7 +37,7 @@ variable  iemReceive
 variable  iemName
 variable  iemNameDeltaX
 variable  iemNameDeltaY
-variable  iemNameFont
+variable  iemNameFontFamily
 variable  iemNameFontSize
 variable  iemBackgroundColor
 variable  iemFrontColor
@@ -59,7 +59,7 @@ array set iemReceive            {}
 array set iemName               {}
 array set iemNameDeltaX         {}
 array set iemNameDeltaY         {}
-array set iemNameFont           {}
+array set iemNameFontFamily     {}
 array set iemNameFontSize       {}
 array set iemBackgroundColor    {}
 array set iemFrontColor         {}
@@ -78,7 +78,7 @@ proc create {top type
              extraLabel extra
              send receive
              name nameDeltaX nameDeltaY 
-             nameFont nameFontSize
+             nameFontFamily nameFontSize
              backgroundColor frontColor nameColor} {
     
     variable iemWidth
@@ -96,7 +96,7 @@ proc create {top type
     variable iemName
     variable iemNameDeltaX
     variable iemNameDeltaY
-    variable iemNameFont
+    variable iemNameFontFamily
     variable iemNameFontSize
     variable iemBackgroundColor
     variable iemFrontColor
@@ -118,7 +118,7 @@ proc create {top type
     set iemName($top)               [::parse $name]
     set iemNameDeltaX($top)         $nameDeltaX
     set iemNameDeltaY($top)         $nameDeltaY
-    set iemNameFont($top)           $nameFont
+    set iemNameFontFamily($top)     $nameFontFamily
     set iemNameFontSize($top)       $nameFontSize
     set iemBackgroundColor($top)    $backgroundColor
     set iemFrontColor($top)         $frontColor
@@ -413,7 +413,7 @@ proc _closed {top} {
     variable iemName
     variable iemNameDeltaX
     variable iemNameDeltaY
-    variable iemNameFont
+    variable iemNameFontFamily
     variable iemNameFontSize
     variable iemBackgroundColor
     variable iemFrontColor
@@ -437,7 +437,7 @@ proc _closed {top} {
     unset iemName($top)
     unset iemNameDeltaX($top)
     unset iemNameDeltaY($top)
-    unset iemNameFont($top)
+    unset iemNameFontFamily($top)
     unset iemNameFontSize($top)
     unset iemBackgroundColor($top)
     unset iemFrontColor($top)
