@@ -28,7 +28,6 @@ variable  iemHeight
 variable  iemHeightMinimum
 variable  iemOptionA
 variable  iemOptionB
-variable  iemOptionFlags
 variable  iemCheck
 variable  iemIsLoadbang
 variable  iemIsSteady
@@ -51,7 +50,6 @@ array set iemHeight             {}
 array set iemHeightMinimum      {}
 array set iemOptionA            {}
 array set iemOptionB            {}
-array set iemOptionFlags        {}
 array set iemCheck              {}
 array set iemIsLoadbang         {}
 array set iemIsSteady           {}
@@ -72,12 +70,12 @@ array set iemColor              {}
 # ------------------------------------------------------------------------------------------------------------
 
 proc create {top 
-             mainTitle
-             sizeTitle width widthMinimum widthLabel height heightMinimum heightLabel
-             optionTitle optionA optionALabel optionB optionBLabel 
-             optionFlags
+             type
+             width widthMinimum widthLabel height heightMinimum heightLabel
+             optionA optionALabel optionB optionBLabel 
              check checkA checkB 
-             isLoadbang isSteady 
+             isLoadbang
+             isSteady 
              extraLabel extra
              send receive
              name nameDeltaX nameDeltaY 
@@ -90,7 +88,6 @@ proc create {top
     variable iemHeightMinimum
     variable iemOptionA
     variable iemOptionB
-    variable iemOptionFlags
     variable iemCheck
     variable iemIsLoadbang
     variable iemIsSteady
@@ -113,7 +110,6 @@ proc create {top
     set iemHeightMinimum($top)      $heightMinimum
     set iemOptionA($top)            $optionA
     set iemOptionB($top)            $optionB
-    set iemOptionFlags($top)        $optionFlags
     set iemCheck($top)              $check
     set iemIsLoadbang($top)         $isLoadbang
     set iemIsSteady($top)           $isSteady
@@ -131,7 +127,7 @@ proc create {top
     set iemColor($top)              0
 
     toplevel $top -class PdDialog
-    wm title $top $mainTitle
+    wm title $top $type
     wm group $top .
     
     wm resizable $top 0 0
@@ -197,10 +193,10 @@ proc create {top
     
     if {$isSteady != -1}            {
     
-        radiobutton $top.jump       -text [_ "Jump on Click"] \
+        radiobutton $top.jump       -text [_ "Jump"] \
                                     -variable ::pd_iem::iemIsSteady($top) \
                                     -value 0
-        radiobutton $top.steady     -text [_ "Steady on Click"] \
+        radiobutton $top.steady     -text [_ "Steady"] \
                                     -variable ::pd_iem::iemIsSteady($top) \
                                     -value 1
         pack $top.jump              -side top -anchor w
@@ -210,7 +206,7 @@ proc create {top
     
     if {$isLoadbang != -1}          {
     
-        checkbutton $top.loadbang   -text [_ "Load at Start"] \
+        checkbutton $top.loadbang   -text [_ "Loadbang"] \
                                     -variable ::pd_iem::iemIsLoadbang($top)
         pack $top.loadbang          -side top -anchor w
         
@@ -421,7 +417,6 @@ proc _closed {top} {
     variable iemHeightMinimum
     variable iemOptionA
     variable iemOptionB
-    variable iemOptionFlags
     variable iemCheck
     variable iemIsLoadbang
     variable iemIsSteady
@@ -446,7 +441,6 @@ proc _closed {top} {
     unset iemHeightMinimum($top)
     unset iemOptionA($top)
     unset iemOptionB($top)
-    unset iemOptionFlags($top)
     unset iemCheck($top)
     unset iemIsLoadbang($top)
     unset iemIsSteady($top)

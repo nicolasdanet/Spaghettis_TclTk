@@ -155,11 +155,11 @@ static void my_canvas_properties(t_gobj *z, t_glist *owner)
 
     iemgui_properties(&x->x_gui, srl);
     sprintf(buf, "::pd_iem::create %%s Panel \
-            Dimensions %d %d {Grip Size} 0 0 empty \
-            Rectangle %d {Panel Width} %d {Panel Height} \
-            0 \
+            %d %d {Grip Size} 0 0 empty \
+            %d {Panel Width} %d {Panel Height} \
             -1 empty empty \
-            -1 -1 \
+            -1 \
+            -1 \
             empty -1 \
             %s %s \
             %s %d %d \

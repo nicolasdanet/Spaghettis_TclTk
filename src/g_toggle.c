@@ -227,11 +227,11 @@ static void toggle_properties(t_gobj *z, t_glist *owner)
 
     iemgui_properties(&x->x_gui, srl);
     sprintf(buf, "::pd_iem::create %%s Toggle \
-            Dimensions %d %d {Button Size} 0 0 empty \
-            Value %g {Non-Zero Value} 0.0 empty \
-            1 \
+            %d %d {Button Size} 0 0 empty \
+            %g {Non-Zero Value} 0 empty \
             -1 empty empty \
-            %d -1 \
+            %d \
+            -1 \
             empty -1 \
             %s %s \
             %s %d %d \

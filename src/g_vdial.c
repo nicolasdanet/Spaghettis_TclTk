@@ -266,11 +266,11 @@ static void vradio_properties(t_gobj *z, t_glist *owner)
     if(pd_class(&x->x_gui.x_obj.ob_pd) == vradio_old_class)
         hchange = x->x_change;
     sprintf(buf, "::pd_iem::create %%s {Radio Button} \
-            Dimensions %d %d {Button Size} 0 0 empty \
-            empty 0.0 empty 0.0 empty \
-            0 \
+            %d %d {Button Size} 0 0 empty \
+            0 empty 0 empty \
             -1 empty empty \
-            %d -1 \
+            %d \
+            -1 \
             {Buttons Number} %d \
             %s %s \
             %s %d %d \

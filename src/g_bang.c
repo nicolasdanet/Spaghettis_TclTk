@@ -239,11 +239,11 @@ static void bng_properties(t_gobj *z, t_glist *owner)
 
     iemgui_properties(&x->x_gui, srl);
     sprintf(buf, "::pd_iem::create %%s Bang \
-            Dimensions %d %d {Button Size} 0 0 empty \
-            Time %d {Flash Break} %d {Flash Hold} \
-            2 \
+            %d %d {Button Size} 0 0 empty \
+            %d {Flash Break} %d {Flash Hold} \
             -1 empty empty \
-            %d -1 \
+            %d \
+            -1 \
             empty -1 \
             %s %s \
             %s %d %d \
@@ -251,7 +251,7 @@ static void bng_properties(t_gobj *z, t_glist *owner)
             %d %d %d\n",
             x->x_gui.x_w, IEM_GUI_MINSIZE,
             x->x_flashtime_break, x->x_flashtime_hold,
-            x->x_gui.x_isa.x_loadinit, /*no linlog, no multi*/
+            x->x_gui.x_isa.x_loadinit,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
             x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
