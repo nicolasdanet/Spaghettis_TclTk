@@ -211,37 +211,25 @@ proc create {top type
         
     }
     
+    if {$send ne "nosndno"}         {
+    
+        label $top.sendLabel        -text [_ "Send"]
+        entry $top.send             -textvariable ::pd_iem::iemSend($top)
+        pack  $top.sendLabel        -side top -anchor w
+        pack  $top.send             -side top -anchor w
+
+    }
+    
+    if {$send ne "norcvno"}         {
+    
+        label $top.receiveLabel     -text [_ "Receive"]
+        entry $top.receive          -textvariable ::pd_iem::iemReceive($top)
+        pack  $top.receiveLabel     -side top -anchor w
+        pack  $top.receive          -side top -anchor w
+
+    }
+    
     if {0} {
-    
-    frame $top .spacer0 -height 4
-    pack $top .spacer0 -side top
-    
-    labelframe $top .s_r -borderwidth 1 -pady 4 -text [_ "Messages"]
-    pack $top .s_r -side top -fill x -ipadx 5
-    frame $top .s_r.send
-    pack $top .s_r.send -side top -padx 4 -fill x -expand 1
-    label $top .s_r.send.lab -text [_ "Send symbol:"] -justify left
-    entry $top .s_r.send.ent -textvariable $var_iemgui_snd -width 22
-    if { $snd ne "nosndno" } {
-        pack $top .s_r.send.lab $top .s_r.send.ent -side left \
-            -fill x -expand 1
-    }
-    
-    frame $top .s_r.receive
-    pack $top .s_r.receive -side top -padx 4 -fill x -expand 1
-    label $top .s_r.receive.lab -text [_ "Receive symbol:"] -justify left
-    entry $top .s_r.receive.ent -textvariable $var_iemgui_rcv -width 22
-    if { $rcv ne "norcvno" } {
-        pack $top .s_r.receive.lab $top .s_r.receive.ent -side left \
-            -fill x -expand 1
-    }
-    
-    # get the current font name from the int given from C-space (gn_f)
-    set current_font $::var(fontFamily)
-    if {[eval concat $$var_iemgui_gn_f] == 1} \
-        { set current_font "Helvetica" }
-    if {[eval concat $$var_iemgui_gn_f] == 2} \
-        { set current_font "Times" }
     
     frame $top .spacer1 -height 7
     pack $top .spacer1 -side top
