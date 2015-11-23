@@ -26,8 +26,8 @@ variable  iemWidth
 variable  iemWidthMinimum
 variable  iemHeight
 variable  iemHeightMinimum
-variable  iemOptionA
-variable  iemOptionB
+variable  iemOption1
+variable  iemOption2
 variable  iemCheck
 variable  iemIsLoadbang
 variable  iemIsSteady
@@ -48,8 +48,8 @@ array set iemWidth              {}
 array set iemWidthMinimum       {}
 array set iemHeight             {}
 array set iemHeightMinimum      {}
-array set iemOptionA            {}
-array set iemOptionB            {}
+array set iemOption1            {}
+array set iemOption2            {}
 array set iemCheck              {}
 array set iemIsLoadbang         {}
 array set iemIsSteady           {}
@@ -69,11 +69,10 @@ array set iemColor              {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc create {top 
-             type
+proc create {top type
              width widthMinimum widthLabel height heightMinimum heightLabel
-             optionA optionALabel optionB optionBLabel 
-             check checkA checkB 
+             option1 option1Label option2 option2Label 
+             check check1 check2 
              isLoadbang
              isSteady 
              extraLabel extra
@@ -86,8 +85,8 @@ proc create {top
     variable iemWidthMinimum
     variable iemHeight
     variable iemHeightMinimum
-    variable iemOptionA
-    variable iemOptionB
+    variable iemOption1
+    variable iemOption2
     variable iemCheck
     variable iemIsLoadbang
     variable iemIsSteady
@@ -108,8 +107,8 @@ proc create {top
     set iemWidthMinimum($top)       $widthMinimum
     set iemHeight($top)             $height
     set iemHeightMinimum($top)      $heightMinimum
-    set iemOptionA($top)            $optionA
-    set iemOptionB($top)            $optionB
+    set iemOption1($top)            $option1
+    set iemOption2($top)            $option2
     set iemCheck($top)              $check
     set iemIsLoadbang($top)         $isLoadbang
     set iemIsSteady($top)           $isSteady
@@ -151,21 +150,21 @@ proc create {top
         
     }
     
-    if {$optionALabel ne "empty"}   {
+    if {$option1Label ne "empty"}   {
     
-        label $top.optionALabel     -text [_ $optionALabel]
-        entry $top.optionA          -textvariable ::pd_iem::iemOptionA($top)
-        pack  $top.optionALabel     -side top -anchor w
-        pack  $top.optionA          -side top -anchor w
+        label $top.option1Label     -text [_ $option1Label]
+        entry $top.option1          -textvariable ::pd_iem::iemOption1($top)
+        pack  $top.option1Label     -side top -anchor w
+        pack  $top.option1          -side top -anchor w
         
     }
     
-    if {$optionBLabel ne "empty"}   {
+    if {$option2Label ne "empty"}   {
     
-        label $top.optionBLabel     -text [_ $optionBLabel]
-        entry $top.optionB          -textvariable ::pd_iem::iemOptionB($top)
-        pack  $top.optionBLabel     -side top -anchor w
-        pack  $top.optionB          -side top -anchor w
+        label $top.option2Label     -text [_ $option2Label]
+        entry $top.option2          -textvariable ::pd_iem::iemOption2($top)
+        pack  $top.option2Label     -side top -anchor w
+        pack  $top.option2          -side top -anchor w
         
     }
     
@@ -180,14 +179,14 @@ proc create {top
     
     if {$check != -1}               {
     
-        radiobutton $top.checkA     -text [_ $checkA] \
+        radiobutton $top.check1     -text [_ $check1] \
                                     -variable ::pd_iem::iemCheck($top) \
                                     -value 0
-        radiobutton $top.checkB     -text [_ $checkB] \
+        radiobutton $top.check2     -text [_ $check2] \
                                     -variable ::pd_iem::iemCheck($top) \
                                     -value 1
-        pack $top.checkA            -side top -anchor w
-        pack $top.checkB            -side top -anchor w
+        pack $top.check1            -side top -anchor w
+        pack $top.check2            -side top -anchor w
         
     }
     
@@ -415,8 +414,8 @@ proc _closed {top} {
     variable iemWidthMinimum
     variable iemHeight
     variable iemHeightMinimum
-    variable iemOptionA
-    variable iemOptionB
+    variable iemOption1
+    variable iemOption2
     variable iemCheck
     variable iemIsLoadbang
     variable iemIsSteady
@@ -439,8 +438,8 @@ proc _closed {top} {
     unset iemWidthMinimum($top)
     unset iemHeight($top)
     unset iemHeightMinimum($top)
-    unset iemOptionA($top)
-    unset iemOptionB($top)
+    unset iemOption1($top)
+    unset iemOption2($top)
     unset iemCheck($top)
     unset iemIsLoadbang($top)
     unset iemIsSteady($top)
