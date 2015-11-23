@@ -229,26 +229,22 @@ proc create {top type
 
     }
     
+    label $top.nameLabel            -text [_ "Name"]
+    entry $top.name                 -textvariable ::pd_iem::iemName($top)
+    pack  $top.nameLabel            -side top -anchor w
+    pack  $top.name                 -side top -anchor w
+    
+    label $top.nameDeltaXLabel      -text [_ "Offset Horizontal"]
+    entry $top.nameDeltaX           -textvariable ::pd_iem::iemNameDeltaX($top)
+    pack  $top.nameDeltaXLabel      -side top -anchor w
+    pack  $top.nameDeltaX           -side top -anchor w
+    
+    label $top.nameDeltaYLabel      -text [_ "Offset Vertical"]
+    entry $top.nameDeltaY           -textvariable ::pd_iem::iemNameDeltaY($top)
+    pack  $top.nameDeltaYLabel      -side top -anchor w
+    pack  $top.nameDeltaY           -side top -anchor w
+    
     if {0} {
-    
-    frame $top .spacer1 -height 7
-    pack $top .spacer1 -side top
-    
-    labelframe $top .label -borderwidth 1 -text [_ "Label"] -pady 4
-    pack $top .label -side top -fill x
-    entry $top .label.name_entry -textvariable $var_iemgui_gui_nam \
-        -width 30 -font [list $current_font 12 $::var(fontWeight)]
-    pack $top .label.name_entry -side top -expand yes -fill both -padx 5
-    
-    frame $top .label.xy -padx 27 -pady 1
-    pack $top .label.xy -side top
-    label $top .label.xy.x_lab -text [_ "X offset"]
-    entry $top .label.xy.x_entry -textvariable $var_iemgui_gn_dx -width 5
-    label $top .label.xy.dummy1 -text " " -width 2
-    label $top .label.xy.y_lab -text [_ "Y offset"]
-    entry $top .label.xy.y_entry -textvariable $var_iemgui_gn_dy -width 5
-    pack $top .label.xy.x_lab $top .label.xy.x_entry $top .label.xy.dummy1 \
-        $top .label.xy.y_lab $top .label.xy.y_entry -side left -anchor e
     
     button $top .label.fontpopup_label -text $current_font \
         -font [list $current_font 16 $::var(fontWeight)]
