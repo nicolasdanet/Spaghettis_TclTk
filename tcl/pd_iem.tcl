@@ -352,7 +352,8 @@ proc _closed {top} {
 
 proc _apply {top} {
 
-    _forceWidth $top
+    _forceWidth  $top
+    _forceHeight $top
 }
 
 proc _cancel {top} {
@@ -377,6 +378,24 @@ proc _forceWidth {top} {
             }
         } else {
             set ::pd_iem::iemWidth($top) $::pd_iem::iemWidthOld($top)
+        }
+    }
+}
+
+proc _forceHeight {top} {
+
+    variable iemHeight
+    variable iemHeightMinimum
+    variable iemHeightLabel
+    variable iemHeightOld
+
+    if {$::pd_iem::iemHeightLabel($top) ne "empty"} {
+        if {[string is integer -strict $::pd_iem::iemHeight($top)]} {
+            if {$::pd_iem::iemHeight($top) < $::pd_iem::iemHeightMinimum($top)} {
+                set ::pd_iem::iemHeight($top) $::pd_iem::iemHeightMinimum($top)
+            }
+        } else {
+            set ::pd_iem::iemHeight($top) $::pd_iem::iemHeightOld($top)
         }
     }
 }
