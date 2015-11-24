@@ -38,6 +38,7 @@ variable  iemIsSteady
 variable  iemExtra
 variable  iemExtraMaximum
 variable  iemExtraLabel
+variable  iemExtraOld
 variable  iemSend
 variable  iemReceive
 variable  iemName
@@ -66,6 +67,7 @@ array set iemIsSteady           {}
 array set iemExtra              {}
 array set iemExtraMaximum       {}
 array set iemExtraLabel         {}
+array set iemExtraOld           {}
 array set iemSend               {}
 array set iemReceive            {}
 array set iemName               {}
@@ -109,6 +111,7 @@ proc create {top type
     variable iemExtra
     variable iemExtraMaximum
     variable iemExtraLabel
+    variable iemExtraOld
     variable iemSend
     variable iemReceive
     variable iemName
@@ -137,6 +140,7 @@ proc create {top type
     set iemExtra($top)              $extra
     set iemExtraMaximum($top)       $extraMaximum
     set iemExtraLabel($top)         $extraLabel
+    set iemExtraOld($top)           $extra
     set iemSend($top)               [::parse $send]
     set iemReceive($top)            [::parse $receive]
     set iemName($top)               [::parse $name]
@@ -336,6 +340,7 @@ proc _closed {top} {
     variable iemExtra
     variable iemExtraMaximum
     variable iemExtraLabel
+    variable iemExtraOld
     variable iemSend
     variable iemReceive
     variable iemName
@@ -366,6 +371,7 @@ proc _closed {top} {
     unset iemExtra($top)
     unset iemExtraMaximum($top)
     unset iemExtraLabel($top)
+    unset iemExtraOld($top)
     unset iemSend($top)
     unset iemReceive($top)
     unset iemName($top)
@@ -388,6 +394,7 @@ proc _apply {top} {
 
     _forceWidth  $top
     _forceHeight $top
+    _forceExtra  $top
 }
 
 proc _cancel {top} {
@@ -432,6 +439,26 @@ proc _forceHeight {top} {
             set ::pd_iem::iemHeight($top) $::pd_iem::iemHeightOld($top)
         }
     }
+}
+
+proc _forceExtra {top} {
+
+    variable iemExtra
+    variable iemExtraMaximum
+    variable iemExtraLabel
+    variable iemExtraOld
+
+    if {$::pd_iem::iemExtraLabel($top) ne "empty"} {
+        if {[string is integer -strict $::pd_iem::iemExtra($top)]} {
+            if {$::pd_iem::iemExtra($top) > $::pd_iem::iemExtraMaximum($top)} {
+                set ::pd_iem::iemExtra($top) $::pd_iem::iemExtraMaximum($top)
+            }
+        } else {
+            set ::pd_iem::iemExtra($top) $::pd_iem::iemExtraOld($top)
+        }
+    }
+    
+    ::pd_console::post "$::pd_iem::iemExtra($top)\n"
 }
 
 # ------------------------------------------------------------------------------------------------------------
