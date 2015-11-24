@@ -30,7 +30,7 @@ proc nextEntry {w} {
 
     set next [tk_focusNext $w]
     focus $next
-    if {[winfo class $next] eq "Entry"} { $next selection range 0 end }
+    if {[string match "*Entry" [winfo class $next]]} { $next selection range 0 end }
 }
 
 # ------------------------------------------------------------------------------------------------------------
