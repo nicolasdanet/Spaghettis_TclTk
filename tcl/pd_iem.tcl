@@ -7,7 +7,7 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# ( http://iem.kug.ac.at/ ).
+# IEM ( http://iem.kug.ac.at/ ) objects properties.
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -188,7 +188,7 @@ proc create {top type
     
     menubutton $top.nameFontFamily  -textvariable ::pd_iem::iemFont($top) \
                                     -takefocus 0
-    menu $top.nameFontFamily.menu   -tearoff 0
+    menu $top.nameFontFamily.menu
     $top.nameFontFamily configure   -menu $top.nameFontFamily.menu
     
     $top.nameFontFamily.menu add radiobutton    -label "$::var(fontFamily)" \
@@ -453,12 +453,13 @@ proc _forceExtra {top} {
             if {$::pd_iem::iemExtra($top) > $::pd_iem::iemExtraMaximum($top)} {
                 set ::pd_iem::iemExtra($top) $::pd_iem::iemExtraMaximum($top)
             }
+            if {$::pd_iem::iemExtra($top) < 1} { 
+                set ::pd_iem::iemExtra($top) 1 
+            }
         } else {
             set ::pd_iem::iemExtra($top) $::pd_iem::iemExtraOld($top)
         }
     }
-    
-    ::pd_console::post "$::pd_iem::iemExtra($top)\n"
 }
 
 # ------------------------------------------------------------------------------------------------------------

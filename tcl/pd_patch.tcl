@@ -27,10 +27,10 @@ variable suffix "(Edit)"
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable patchTitle
-variable patchIsEditMode
-variable patchIsScrollableX
-variable patchIsScrollableY
+variable  patchTitle
+variable  patchIsEditMode
+variable  patchIsScrollableX
+variable  patchIsScrollableY
 
 array set patchTitle         {}
 array set patchIsEditMode    {}
@@ -47,8 +47,6 @@ proc create {top width height coordinates editable} {
     variable patchIsScrollableX
     variable patchIsScrollableY
 
-    # Create a toplevel window.
-    
     toplevel $top -width $width -height $height -class PdPatch
     wm group $top .
 
@@ -56,8 +54,6 @@ proc create {top width height coordinates editable} {
     wm geometry $top [format "=%dx%d%s" $width $height $coordinates]
     
     if {[tk windowingsystem] ne "aqua"} { $top configure -menu .menubar }
-    
-    # Create a canvas inside that fills all the window.
     
     scrollbar $top.xscroll  -orient horizontal  -command "$top.c xview"
     scrollbar $top.yscroll  -orient vertical    -command "$top.c yview"
@@ -72,14 +68,10 @@ proc create {top width height coordinates editable} {
     if {[tk windowingsystem] eq "win32"} { $top.c configure -xscrollincrement 1 -yscrollincrement 1 }
     
     pack $top.c -side left -expand 1 -fill both
-
-    # Bind the window to get events.
     
     ::pd_bind::bindPatch $top
 	 
     focus $top.c
-
-    # Set various attributes.
     
     set patchTitle($top)            ""
     set patchIsEditMode($top)       $editable
@@ -187,7 +179,7 @@ proc updateScrollRegion {c} {
     set w [winfo width $c]
     set h [winfo height $c]
     
-    # Filter annoying bad values generated at initialization time.
+    # Conditional below aims to filter annoying bad values generated at initialization time.
     
     if {$w > 1 && $h > 1} {
     

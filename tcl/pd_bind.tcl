@@ -35,8 +35,6 @@ proc initialize {} {
     
     if {[tk windowingsystem] eq "aqua"} { set opt "Option"; set mod "Command" }
 
-    # Virtual events.
-    
     event add <<Copy>>                      <$mod-Key-c>
     event add <<Duplicate>>                 <$mod-Key-d>
     event add <<SelectAll>>                 <$mod-Key-a>
@@ -82,8 +80,6 @@ proc initialize {} {
     event add <<PopupMenu>>                 <ButtonPress-3>
     event add <<ClickRelease>>              <ButtonRelease-1>
     
-    # Class.
-    
     bind PdConsole  <FocusIn>               { ::pd_bind::_focusIn %W             }
     bind PdDialog   <FocusIn>               { ::pd_bind::_focusIn %W             }
     bind PdText     <FocusIn>               { ::pd_bind::_focusIn %W             }
@@ -93,8 +89,6 @@ proc initialize {} {
     bind PdPatch    <Map>                   { ::pd_bind::_mapped %W              }
     bind PdPatch    <Unmap>                 { ::pd_bind::_unmapped %W            }
 
-    # All.
-    
     bind all <<Cut>>                        { .menubar.edit     invoke "Cut"        }
     bind all <<Copy>>                       { .menubar.edit     invoke "Copy"       }
     bind all <<Paste>>                      { .menubar.edit     invoke "Paste"      }
@@ -229,7 +223,7 @@ proc _key {w keysym iso isPress isShift} {
 
 proc _resized {top width height x y} {
 
-    # Filter annoying bad values generated at initialization time.
+    # Conditional below aims to filter annoying bad values generated at initialization time.
     
     if {$width > 1 && $height > 1} { 
     
