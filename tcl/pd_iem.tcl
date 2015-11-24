@@ -43,6 +43,7 @@ variable  iemBackgroundColor
 variable  iemFrontColor
 variable  iemNameColor
 variable  iemColor
+variable  iemFont
 
 array set iemWidth              {}
 array set iemWidthMinimum       {}
@@ -65,6 +66,7 @@ array set iemBackgroundColor    {}
 array set iemFrontColor         {}
 array set iemNameColor          {}
 array set iemColor              {}
+array set iemFont               {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -102,6 +104,7 @@ proc create {top type
     variable iemFrontColor
     variable iemNameColor
     variable iemColor
+    variable iemFont
 
     set iemWidth($top)              $width
     set iemWidthMinimum($top)       $widthMinimum
@@ -124,6 +127,7 @@ proc create {top type
     set iemFrontColor($top)         $frontColor
     set iemNameColor($top)          $nameColor
     set iemColor($top)              0
+    set iemFont($top)               "$::var(fontFamily)"
 
     toplevel $top -class PdDialog
     wm title $top $type
@@ -249,33 +253,27 @@ proc create {top type
     pack  $top.nameFontSizeLabel    -side top -anchor w
     pack  $top.nameFontSize         -side top -anchor w
     
+    menubutton $top.nameFontFamily  -textvariable ::pd_iem::iemFont($top)
+    menu $top.nameFontFamily.menu   -tearoff 0
+    $top.nameFontFamily configure   -menu $top.nameFontFamily.menu
+    
+    $top.nameFontFamily.menu add radiobutton    -label "$::var(fontFamily)" \
+                                                -variable ::pd_iem::iemNameFontFamily($top) \
+                                                -value 0 \
+                                                -command "set ::pd_iem::iemFont($top) $::var(fontFamily)"
+    $top.nameFontFamily.menu add radiobutton    -label "Helvetica" \
+                                                -variable ::pd_iem::iemNameFontFamily($top) \
+                                                -value 1 \
+                                                -command "set ::pd_iem::iemFont($top) Helvetica"
+    $top.nameFontFamily.menu add radiobutton    -label "Times" \
+                                                -variable ::pd_iem::iemNameFontFamily($top) \
+                                                -value 2 \
+                                                -command "set ::pd_iem::iemFont($top) Times"
+                                                
+    pack $top.nameFontFamily        -side top -anchor w
+
     if {0} {
-    
-    button $top.label.fontpopup_label -text $current_font \
-        -font [list $current_font 16 $::var(fontWeight)]
-    pack $top .label.fontpopup_label -side left -anchor w \
-        -expand 1 -fill x -padx 5
         
-    pack $top.label.fontsize_entry $top.label.fontsize_label \
-        -side right -anchor e -padx 5 -pady 5
-        
-    menu $top.popup
-    $top.popup add command \
-        -label $::var(fontFamily) \
-        -font [format {{%s} 16 %s} $::var(fontFamily) $::var(fontWeight)] \
-        -command "::pd_iem::toggle_font $top  0" 
-    $top.popup add command \
-        -label "Helvetica" \
-        -font [format {Helvetica 16 %s} $::var(fontWeight)] \
-        -command "::pd_iem::toggle_font $top  1" 
-    $top.popup add command \
-        -label "Times" \
-        -font [format {Times 16 %s} $::var(fontWeight)] \
-        -command "::pd_iem::toggle_font $top  2" 
-        
-    bind $top.label.fontpopup_label <Button> \
-        [list tk_popup $top.popup %X %Y]
-    
     frame $top .spacer2 -height 7
     pack $top .spacer2 -side top
     
@@ -421,6 +419,7 @@ proc _closed {top} {
     variable iemFrontColor
     variable iemNameColor
     variable iemColor
+    variable iemFont
     
     ::pd_iem::_apply $top
     
@@ -445,6 +444,7 @@ proc _closed {top} {
     unset iemFrontColor($top)
     unset iemNameColor($top)
     unset iemColor($top)
+    unset iemFont($top)
     
     ::pd_iem::_cancel $top
 }
