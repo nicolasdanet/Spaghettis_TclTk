@@ -24,8 +24,12 @@ namespace eval ::pd_iem:: {
 
 variable  iemWidth
 variable  iemWidthMinimum
+variable  iemWidthLabel
+variable  iemWidthOld
 variable  iemHeight
 variable  iemHeightMinimum
+variable  iemHeightLabel
+variable  iemHeightOld
 variable  iemOption1
 variable  iemOption2
 variable  iemCheck
@@ -42,13 +46,16 @@ variable  iemNameFontSize
 variable  iemBackgroundColor
 variable  iemFrontColor
 variable  iemNameColor
-variable  iemColor
 variable  iemFont
 
 array set iemWidth              {}
 array set iemWidthMinimum       {}
+array set iemWidthLabel         {}
+array set iemWidthOld           {}
 array set iemHeight             {}
 array set iemHeightMinimum      {}
+array set iemHeightLabel        {}
+array set iemHeightOld          {}
 array set iemOption1            {}
 array set iemOption2            {}
 array set iemCheck              {}
@@ -65,7 +72,6 @@ array set iemNameFontSize       {}
 array set iemBackgroundColor    {}
 array set iemFrontColor         {}
 array set iemNameColor          {}
-array set iemColor              {}
 array set iemFont               {}
 
 # ------------------------------------------------------------------------------------------------------------
@@ -85,8 +91,12 @@ proc create {top type
     
     variable iemWidth
     variable iemWidthMinimum
+    variable iemWidthLabel
+    variable iemWidthOld
     variable iemHeight
     variable iemHeightMinimum
+    variable iemHeightLabel
+    variable iemHeightOld
     variable iemOption1
     variable iemOption2
     variable iemCheck
@@ -103,13 +113,16 @@ proc create {top type
     variable iemBackgroundColor
     variable iemFrontColor
     variable iemNameColor
-    variable iemColor
     variable iemFont
 
     set iemWidth($top)              $width
     set iemWidthMinimum($top)       $widthMinimum
+    set iemWidthLabel($top)         $widthLabel
+    set iemWidthOld($top)           $width
     set iemHeight($top)             $height
     set iemHeightMinimum($top)      $heightMinimum
+    set iemHeightLabel($top)        $heightLabel
+    set iemHeightOld($top)          $height
     set iemOption1($top)            $option1
     set iemOption2($top)            $option2
     set iemCheck($top)              $check
@@ -126,9 +139,9 @@ proc create {top type
     set iemBackgroundColor($top)    $backgroundColor
     set iemFrontColor($top)         $frontColor
     set iemNameColor($top)          $nameColor
-    set iemColor($top)              0
+    
     set iemFont($top)               "$::var(fontFamily)"
-
+    
     toplevel $top -class PdDialog
     wm title $top $type
     wm group $top .
@@ -279,8 +292,12 @@ proc _closed {top} {
     
     variable iemWidth
     variable iemWidthMinimum
+    variable iemWidthLabel
+    variable iemWidthOld
     variable iemHeight
     variable iemHeightMinimum
+    variable iemHeightLabel
+    variable iemHeightOld
     variable iemOption1
     variable iemOption2
     variable iemCheck
@@ -297,15 +314,18 @@ proc _closed {top} {
     variable iemBackgroundColor
     variable iemFrontColor
     variable iemNameColor
-    variable iemColor
     variable iemFont
     
     ::pd_iem::_apply $top
     
     unset iemWidth($top)
     unset iemWidthMinimum($top)
+    unset iemWidthLabel($top)
+    unset iemWidthOld($top)
     unset iemHeight($top)
     unset iemHeightMinimum($top)
+    unset iemHeightLabel($top)
+    unset iemHeightOld($top)
     unset iemOption1($top)
     unset iemOption2($top)
     unset iemCheck($top)
@@ -322,7 +342,6 @@ proc _closed {top} {
     unset iemBackgroundColor($top)
     unset iemFrontColor($top)
     unset iemNameColor($top)
-    unset iemColor($top)
     unset iemFont($top)
     
     ::pd_iem::_cancel $top
@@ -333,11 +352,33 @@ proc _closed {top} {
 
 proc _apply {top} {
 
+    _forceWidth $top
 }
 
 proc _cancel {top} {
     
     ::pd_connect::pdsend "$top cancel"
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _forceWidth {top} {
+
+    variable iemWidth
+    variable iemWidthMinimum
+    variable iemWidthLabel
+    variable iemWidthOld
+
+    if {$::pd_iem::iemWidthLabel($top) ne "empty"} {
+        if {[string is integer -strict $::pd_iem::iemWidth($top)]} {
+            if {$::pd_iem::iemWidth($top) < $::pd_iem::iemWidthMinimum($top)} {
+                set ::pd_iem::iemWidth($top) $::pd_iem::iemWidthMinimum($top)
+            }
+        } else {
+            set ::pd_iem::iemWidth($top) $::pd_iem::iemWidthOld($top)
+        }
+    }
 }
 
 # ------------------------------------------------------------------------------------------------------------
