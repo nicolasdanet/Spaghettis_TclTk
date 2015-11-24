@@ -36,6 +36,8 @@ variable  iemCheck
 variable  iemIsLoadbang
 variable  iemIsSteady
 variable  iemExtra
+variable  iemExtraMaximum
+variable  iemExtraLabel
 variable  iemSend
 variable  iemReceive
 variable  iemName
@@ -62,6 +64,8 @@ array set iemCheck              {}
 array set iemIsLoadbang         {}
 array set iemIsSteady           {}
 array set iemExtra              {}
+array set iemExtraMaximum       {}
+array set iemExtraLabel         {}
 array set iemSend               {}
 array set iemReceive            {}
 array set iemName               {}
@@ -83,7 +87,7 @@ proc create {top type
              check check1 check2 
              isLoadbang
              isSteady 
-             extraLabel extra
+             extra extraMaximum extraLabel
              send receive
              name nameDeltaX nameDeltaY 
              nameFontFamily nameFontSize
@@ -103,6 +107,8 @@ proc create {top type
     variable iemIsLoadbang
     variable iemIsSteady
     variable iemExtra
+    variable iemExtraMaximum
+    variable iemExtraLabel
     variable iemSend
     variable iemReceive
     variable iemName
@@ -129,6 +135,8 @@ proc create {top type
     set iemIsLoadbang($top)         $isLoadbang
     set iemIsSteady($top)           $isSteady
     set iemExtra($top)              $extra
+    set iemExtraMaximum($top)       $extraMaximum
+    set iemExtraLabel($top)         $extraLabel
     set iemSend($top)               [::parse $send]
     set iemReceive($top)            [::parse $receive]
     set iemName($top)               [::parse $name]
@@ -326,6 +334,8 @@ proc _closed {top} {
     variable iemIsLoadbang
     variable iemIsSteady
     variable iemExtra
+    variable iemExtraMaximum
+    variable iemExtraLabel
     variable iemSend
     variable iemReceive
     variable iemName
@@ -354,6 +364,8 @@ proc _closed {top} {
     unset iemIsLoadbang($top)
     unset iemIsSteady($top)
     unset iemExtra($top)
+    unset iemExtraMaximum($top)
+    unset iemExtraLabel($top)
     unset iemSend($top)
     unset iemReceive($top)
     unset iemName($top)

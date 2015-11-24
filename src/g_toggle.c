@@ -232,7 +232,7 @@ static void toggle_properties(t_gobj *z, t_glist *owner)
             -1 empty empty \
             %d \
             -1 \
-            empty -1 \
+            -1 -1 empty \
             %s %s \
             %s %d %d \
             %d %d \

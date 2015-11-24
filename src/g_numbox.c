@@ -459,7 +459,7 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
             %d Linear Logarithmic \
             %d \
             -1 \
-            {Logarithm Height} %d \
+            %d 1024 {Logarithm Height} \
             %s %s \
             %s %d %d \
             %d %d \
