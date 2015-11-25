@@ -442,8 +442,6 @@ proc _cancel {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Must be an integer clipped by a minimum value.  
-
 proc _forceWidth {top} {
 
     variable iemWidth
@@ -451,18 +449,11 @@ proc _forceWidth {top} {
     variable iemWidthLabel
     variable iemWidthOld
 
-    if {$::pd_iem::iemWidthLabel($top) ne "empty"} {
-        if {[string is integer -strict $::pd_iem::iemWidth($top)]} {
-            if {$::pd_iem::iemWidth($top) < $::pd_iem::iemWidthMinimum($top)} {
-                set ::pd_iem::iemWidth($top) $::pd_iem::iemWidthMinimum($top)
-            }
-        } else {
-            set ::pd_iem::iemWidth($top) $::pd_iem::iemWidthOld($top)
-        }
+    if {$iemWidthLabel($top) ne "empty"} {
+        set iemWidth($top) [::ifInteger $iemWidth($top) $iemWidthOld($top)]
+        set iemWidth($top) [::tcl::mathfunc::max $iemWidth($top) $iemWidthMinimum($top)]
     }
 }
-
-# Must be an integer clipped by a minimum value. 
 
 proc _forceHeight {top} {
 
@@ -472,17 +463,10 @@ proc _forceHeight {top} {
     variable iemHeightOld
 
     if {$::pd_iem::iemHeightLabel($top) ne "empty"} {
-        if {[string is integer -strict $::pd_iem::iemHeight($top)]} {
-            if {$::pd_iem::iemHeight($top) < $::pd_iem::iemHeightMinimum($top)} {
-                set ::pd_iem::iemHeight($top) $::pd_iem::iemHeightMinimum($top)
-            }
-        } else {
-            set ::pd_iem::iemHeight($top) $::pd_iem::iemHeightOld($top)
-        }
+        set iemHeight($top) [::ifInteger $iemHeight($top) $iemHeightOld($top)]
+        set iemHeight($top) [::tcl::mathfunc::max $iemHeight($top) $iemHeightMinimum($top)]
     }
 }
-
-# Must be a positive integer clipped by a maximum value.
 
 proc _forceExtra {top} {
 
@@ -492,16 +476,9 @@ proc _forceExtra {top} {
     variable iemExtraOld
 
     if {$::pd_iem::iemExtraLabel($top) ne "empty"} {
-        if {[string is integer -strict $::pd_iem::iemExtra($top)]} {
-            if {$::pd_iem::iemExtra($top) > $::pd_iem::iemExtraMaximum($top)} {
-                set ::pd_iem::iemExtra($top) $::pd_iem::iemExtraMaximum($top)
-            }
-            if {$::pd_iem::iemExtra($top) < 1} { 
-                set ::pd_iem::iemExtra($top) 1 
-            }
-        } else {
-            set ::pd_iem::iemExtra($top) $::pd_iem::iemExtraOld($top)
-        }
+        set iemExtra($top) [::ifInteger $iemExtra($top) $iemExtraOld($top)]
+        set iemExtra($top) [::tcl::mathfunc::max $iemExtra($top) 1]
+        set iemExtra($top) [::tcl::mathfunc::min $iemExtra($top) $iemExtraMaximum($top)]
     }
 }
 
@@ -509,7 +486,7 @@ proc _forceOptions {top} {
     
     variable iemType
 
-    switch -- $::pd_iem::iemType($top) {
+    switch -- $iemType($top) {
         "Bang"      {}
         "Toggle"    {}
         "Slider"    {}
