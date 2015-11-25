@@ -428,12 +428,12 @@ proc _closed {top} {
 
 proc _apply {top} {
 
-    _forceWidth   $top
-    _forceHeight  $top
-    _forceExtra   $top
-    _forceOptions $top
-    _forceDelta   $top
-    _forceFont    $top
+    _forceWidth     $top
+    _forceHeight    $top
+    _forceExtra     $top
+    _forceOptions   $top
+    _forceDelta     $top
+    _forceFont      $top
 }
 
 proc _cancel {top} {
@@ -491,6 +491,7 @@ proc _forceOptions {top} {
     variable iemOption1Old
     variable iemOption2
     variable iemOption2Old
+    variable iemCheck
 
     switch -regexp -- $iemType($top) {
         "Bang"          {
