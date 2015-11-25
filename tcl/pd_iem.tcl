@@ -432,6 +432,8 @@ proc _apply {top} {
     _forceHeight  $top
     _forceExtra   $top
     _forceOptions $top
+    _forceDelta   $top
+    _forceFont    $top
 }
 
 proc _cancel {top} {
@@ -516,6 +518,26 @@ proc _forceOptions {top} {
             set iemOption2($top) [::ifNumber $iemOption2($top) $iemOption2Old($top)]
         } 
     }
+}
+
+proc _forceDelta {top} {
+
+    variable iemNameDeltaX
+    variable iemNameDeltaY
+    variable iemNameDeltaXOld
+    variable iemNameDeltaYOld
+    
+    set iemNameDeltaX($top) [::ifInteger $iemNameDeltaX($top) $iemNameDeltaXOld($top)]
+    set iemNameDeltaY($top) [::ifInteger $iemNameDeltaY($top) $iemNameDeltaYOld($top)]
+}
+
+proc _forceFont {top} {
+
+    variable iemNameFontSize
+    variable iemNameFontSizeOld
+    
+    set iemNameFontSize($top) [::ifInteger $iemNameFontSize($top) $iemNameFontSizeOld($top)]
+    set iemNameFontSize($top) [::tcl::mathfunc::max $iemNameFontSize($top) 4]
 }
 
 # ------------------------------------------------------------------------------------------------------------
