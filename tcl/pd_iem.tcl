@@ -485,12 +485,22 @@ proc _forceExtra {top} {
 proc _forceOptions {top} {
     
     variable iemType
+    variable iemOption1
+    variable iemOption1Old
+    variable iemOption2
+    variable iemOption2Old
 
     switch -- $iemType($top) {
-        "Bang"      {}
-        "Toggle"    {}
-        "Slider"    {}
-        "Number"    {}
+        "Bang"      {
+            set iemOption1($top) [::ifInteger $iemOption1($top) $iemOption1Old($top)]
+            set iemOption1($top) [::tcl::mathfunc::max $iemOption1($top) 10]
+            set iemOption2($top) [::ifInteger $iemOption2($top) $iemOption2Old($top)]
+            set iemOption2($top) [::tcl::mathfunc::max $iemOption2($top) 10]
+            set t1 $iemOption1($top)
+            set t2 $iemOption2($top)
+            set iemOption1($top) [::tcl::mathfunc::min $t1 $t2]
+            set iemOption2($top) [::tcl::mathfunc::max $t1 $t2]
+        }
     }
 }
 
