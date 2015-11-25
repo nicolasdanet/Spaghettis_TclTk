@@ -22,6 +22,7 @@ namespace eval ::pd_iem:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+variable  iemType
 variable  iemWidth
 variable  iemWidthMinimum
 variable  iemWidthLabel
@@ -31,7 +32,9 @@ variable  iemHeightMinimum
 variable  iemHeightLabel
 variable  iemHeightOld
 variable  iemOption1
+variable  iemOption1Old
 variable  iemOption2
+variable  iemOption2Old
 variable  iemCheck
 variable  iemIsLoadbang
 variable  iemIsSteady
@@ -43,14 +46,18 @@ variable  iemSend
 variable  iemReceive
 variable  iemName
 variable  iemNameDeltaX
+variable  iemNameDeltaXOld
 variable  iemNameDeltaY
+variable  iemNameDeltaYOld
 variable  iemNameFontFamily
 variable  iemNameFontSize
+variable  iemNameFontSizeOld
 variable  iemBackgroundColor
 variable  iemFrontColor
 variable  iemNameColor
 variable  iemFont
 
+array set iemType               {}
 array set iemWidth              {}
 array set iemWidthMinimum       {}
 array set iemWidthLabel         {}
@@ -60,7 +67,9 @@ array set iemHeightMinimum      {}
 array set iemHeightLabel        {}
 array set iemHeightOld          {}
 array set iemOption1            {}
+array set iemOption1Old         {}
 array set iemOption2            {}
+array set iemOption2Old         {}
 array set iemCheck              {}
 array set iemIsLoadbang         {}
 array set iemIsSteady           {}
@@ -72,9 +81,12 @@ array set iemSend               {}
 array set iemReceive            {}
 array set iemName               {}
 array set iemNameDeltaX         {}
+array set iemNameDeltaXOld      {}
 array set iemNameDeltaY         {}
+array set iemNameDeltaYOld      {}
 array set iemNameFontFamily     {}
 array set iemNameFontSize       {}
+array set iemNameFontSizeOld    {}
 array set iemBackgroundColor    {}
 array set iemFrontColor         {}
 array set iemNameColor          {}
@@ -95,6 +107,7 @@ proc create {top type
              nameFontFamily nameFontSize
              backgroundColor frontColor nameColor} {
     
+    variable iemType
     variable iemWidth
     variable iemWidthMinimum
     variable iemWidthLabel
@@ -104,7 +117,9 @@ proc create {top type
     variable iemHeightLabel
     variable iemHeightOld
     variable iemOption1
+    variable iemOption1Old
     variable iemOption2
+    variable iemOption2Old
     variable iemCheck
     variable iemIsLoadbang
     variable iemIsSteady
@@ -116,14 +131,18 @@ proc create {top type
     variable iemReceive
     variable iemName
     variable iemNameDeltaX
+    variable iemNameDeltaXOld
     variable iemNameDeltaY
+    variable iemNameDeltaYOld
     variable iemNameFontFamily
     variable iemNameFontSize
+    variable iemNameFontSizeOld
     variable iemBackgroundColor
     variable iemFrontColor
     variable iemNameColor
     variable iemFont
 
+    set iemType($top)               $type
     set iemWidth($top)              $width
     set iemWidthMinimum($top)       $widthMinimum
     set iemWidthLabel($top)         $widthLabel
@@ -133,7 +152,9 @@ proc create {top type
     set iemHeightLabel($top)        $heightLabel
     set iemHeightOld($top)          $height
     set iemOption1($top)            $option1
+    set iemOption1Old($top)         $option1
     set iemOption2($top)            $option2
+    set iemOption2Old($top)         $option2
     set iemCheck($top)              $check
     set iemIsLoadbang($top)         $isLoadbang
     set iemIsSteady($top)           $isSteady
@@ -145,9 +166,12 @@ proc create {top type
     set iemReceive($top)            [::parse $receive]
     set iemName($top)               [::parse $name]
     set iemNameDeltaX($top)         $nameDeltaX
+    set iemNameDeltaXOld($top)      $nameDeltaX
     set iemNameDeltaY($top)         $nameDeltaY
+    set iemNameDeltaYOld($top)      $nameDeltaY
     set iemNameFontFamily($top)     $nameFontFamily
     set iemNameFontSize($top)       $nameFontSize
+    set iemNameFontSizeOld($top)    $nameFontSize
     set iemBackgroundColor($top)    $backgroundColor
     set iemFrontColor($top)         $frontColor
     set iemNameColor($top)          $nameColor
@@ -324,6 +348,7 @@ proc create {top type
 
 proc _closed {top} {
     
+    variable iemType
     variable iemWidth
     variable iemWidthMinimum
     variable iemWidthLabel
@@ -333,7 +358,9 @@ proc _closed {top} {
     variable iemHeightLabel
     variable iemHeightOld
     variable iemOption1
+    variable iemOption1Old
     variable iemOption2
+    variable iemOption2Old
     variable iemCheck
     variable iemIsLoadbang
     variable iemIsSteady
@@ -345,9 +372,12 @@ proc _closed {top} {
     variable iemReceive
     variable iemName
     variable iemNameDeltaX
+    variable iemNameDeltaXOld
     variable iemNameDeltaY
+    variable iemNameDeltaYOld
     variable iemNameFontFamily
     variable iemNameFontSize
+    variable iemNameFontSizeOld
     variable iemBackgroundColor
     variable iemFrontColor
     variable iemNameColor
@@ -355,6 +385,7 @@ proc _closed {top} {
     
     ::pd_iem::_apply $top
     
+    unset iemType($top)
     unset iemWidth($top)
     unset iemWidthMinimum($top)
     unset iemWidthLabel($top)
@@ -364,7 +395,9 @@ proc _closed {top} {
     unset iemHeightLabel($top)
     unset iemHeightOld($top)
     unset iemOption1($top)
+    unset iemOption1Old($top)
     unset iemOption2($top)
+    unset iemOption2Old($top)
     unset iemCheck($top)
     unset iemIsLoadbang($top)
     unset iemIsSteady($top)
@@ -376,9 +409,12 @@ proc _closed {top} {
     unset iemReceive($top)
     unset iemName($top)
     unset iemNameDeltaX($top)
+    unset iemNameDeltaXOld($top)
     unset iemNameDeltaY($top)
+    unset iemNameDeltaYOld($top)
     unset iemNameFontFamily($top)
     unset iemNameFontSize($top)
+    unset iemNameFontSizeOld($top)
     unset iemBackgroundColor($top)
     unset iemFrontColor($top)
     unset iemNameColor($top)
@@ -392,9 +428,10 @@ proc _closed {top} {
 
 proc _apply {top} {
 
-    _forceWidth  $top
-    _forceHeight $top
-    _forceExtra  $top
+    _forceWidth   $top
+    _forceHeight  $top
+    _forceExtra   $top
+    _forceOptions $top
 }
 
 proc _cancel {top} {
@@ -404,6 +441,8 @@ proc _cancel {top} {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
+
+# Must be an integer clipped by a minimum value.  
 
 proc _forceWidth {top} {
 
@@ -423,6 +462,8 @@ proc _forceWidth {top} {
     }
 }
 
+# Must be an integer clipped by a minimum value. 
+
 proc _forceHeight {top} {
 
     variable iemHeight
@@ -440,6 +481,8 @@ proc _forceHeight {top} {
         }
     }
 }
+
+# Must be a positive integer clipped by a maximum value.
 
 proc _forceExtra {top} {
 
@@ -459,6 +502,18 @@ proc _forceExtra {top} {
         } else {
             set ::pd_iem::iemExtra($top) $::pd_iem::iemExtraOld($top)
         }
+    }
+}
+
+proc _forceOptions {top} {
+    
+    variable iemType
+
+    switch -- $::pd_iem::iemType($top) {
+        "Bang"      {}
+        "Toggle"    {}
+        "Slider"    {}
+        "Number"    {}
     }
 }
 
