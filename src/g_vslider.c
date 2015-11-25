@@ -277,7 +277,7 @@ static void vslider_properties(t_gobj *z, t_glist *owner)
 
     sprintf(buf, "::pd_iem::create %%s Slider \
             %d %d {Slider Width} %d %d {Slider Height} \
-            %g {Low Value} %g {High Value} \
+            %g {Bottom Value} %g {Top Value} \
             %d Linear Logarithmic \
             %d \
             %d \

@@ -490,8 +490,8 @@ proc _forceOptions {top} {
     variable iemOption2
     variable iemOption2Old
 
-    switch -- $iemType($top) {
-        "Bang"      {
+    switch -regexp -- $iemType($top) {
+        "Bang"          {
             set iemOption1($top) [::ifInteger $iemOption1($top) $iemOption1Old($top)]
             set iemOption1($top) [::tcl::mathfunc::max $iemOption1($top) 10]
             set iemOption2($top) [::ifInteger $iemOption2($top) $iemOption2Old($top)]
@@ -501,6 +501,20 @@ proc _forceOptions {top} {
             set iemOption1($top) [::tcl::mathfunc::min $t1 $t2]
             set iemOption2($top) [::tcl::mathfunc::max $t1 $t2]
         }
+        "Toggle"        {
+            set iemOption1($top) [::ifNumber  $iemOption1($top) $iemOption1Old($top)]
+            set iemOption1($top) [::ifNonZero $iemOption1($top) $iemOption1Old($top)]
+        }
+        "Panel"         {
+            set iemOption1($top) [::ifInteger $iemOption1($top) $iemOption1Old($top)]
+            set iemOption1($top) [::tcl::mathfunc::max $iemOption1($top) 1]
+            set iemOption2($top) [::ifInteger $iemOption2($top) $iemOption2Old($top)]
+            set iemOption2($top) [::tcl::mathfunc::max $iemOption2($top) 1]
+        }
+        "Slider|Number" {
+            set iemOption1($top) [::ifNumber $iemOption1($top) $iemOption1Old($top)]
+            set iemOption2($top) [::ifNumber $iemOption2($top) $iemOption2Old($top)]
+        } 
     }
 }
 
