@@ -162,9 +162,9 @@ proc create {top type
     set iemExtraMaximum($top)       $extraMaximum
     set iemExtraLabel($top)         $extraLabel
     set iemExtraOld($top)           $extra
-    set iemSend($top)               [::parse $send]
-    set iemReceive($top)            [::parse $receive]
-    set iemName($top)               [::parse $name]
+    set iemSend($top)               [::fromSymbol $send]
+    set iemReceive($top)            [::fromSymbol $receive]
+    set iemName($top)               [::fromSymbol $name]
     set iemNameDeltaX($top)         $nameDeltaX
     set iemNameDeltaXOld($top)      $nameDeltaX
     set iemNameDeltaY($top)         $nameDeltaY

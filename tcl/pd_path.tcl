@@ -114,7 +114,7 @@ proc _apply {} {
 
     set ::var(searchPath) {}
     
-    foreach path [.path.paths.box get 0 end] { lappend ::var(searchPath) [::encode $path] }
+    foreach path [.path.paths.box get 0 end] { lappend ::var(searchPath) [::encoded $path] }
 
     ::pd_connect::pdsend "pd path-dialog $::var(searchPath)"
     

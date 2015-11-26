@@ -59,14 +59,15 @@ proc rightNextTo {top} {
 
 # Escaping and quoting.
 
-proc encode  {x} { concat +[string map {" " "+_" "$" "+d" ";" "+s" "," "+c" "+" "++"} $x] }
-proc enquote {x} { string map {"," "\\," ";" "\\;" " " "\\ "} $x }
-proc parse   {x} { if {$x eq "empty"} { return "" } else { return [string map {"#" "$"} $x] } }
-proc unspace {x} {
-    set y [string map {" " "_" ";" "" "," "" "{" "" "}" "" "\\" ""} $x]
-    if {$y eq ""} { set y "empty" }
-    concat $y
-}
+proc encoded   {x} { concat +[string map {" " "+_" "$" "+d" ";" "+s" "," "+c" "+" "++"} $x] }
+proc enquoted  {x} { string map {"," "\\," ";" "\\;" " " "\\ "} $x }
+proc sanitized {x} { concat [string map {" " "_" ";" "" "," "" "{" "" "}" "" "\\" ""} $x] }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc fromSymbol {x} { if {$x eq "empty"} { return "" } else { return [string map {"#" "$"} $x] } }
+proc toSymbol   {x} { if {$x eq ""} { return "empty" } else { return [string map {"$" "#"} $x] } }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

@@ -30,7 +30,7 @@ proc ::dialog_gatom::escape {sym} {
             set ret [string map {"$" "#"} $sym]
         }
     }
-    return [::unspace $ret]
+    return [::sanitized $ret]
 }
 
 proc ::dialog_gatom::unescape {sym} {
