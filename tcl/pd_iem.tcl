@@ -428,12 +428,51 @@ proc _closed {top} {
 
 proc _apply {top} {
 
+    variable iemWidth
+    variable iemHeight
+    variable iemOption1
+    variable iemOption2
+    variable iemCheck
+    variable iemIsLoadbang
+    variable iemIsSteady
+    variable iemExtra
+    variable iemSend
+    variable iemReceive
+    variable iemName
+    variable iemNameDeltaX
+    variable iemNameDeltaY
+    variable iemNameFontFamily
+    variable iemNameFontSize
+    variable iemBackgroundColor
+    variable iemFrontColor
+    variable iemNameColor
+    
     _forceWidth     $top
     _forceHeight    $top
     _forceExtra     $top
     _forceOptions   $top
     _forceDelta     $top
     _forceFont      $top
+    
+    ::pd_connect::pdsend "$top dialog \
+            $iemWidth($top) \
+            $iemHeight($top) \
+            $iemOption1($top) \
+            $iemOption2($top) \
+            $iemCheck($top) \
+            $iemIsLoadbang($top) \
+            $iemExtra($top) \
+            [::sanitized [::toSymbol $iemSend($top)]] \
+            [::sanitized [::toSymbol $iemReceive($top)]] \
+            [::sanitized [::toSymbol $iemName($top)]] \
+            $iemNameDeltaX($top) \
+            $iemNameDeltaY($top) \
+            $iemNameFontFamily($top) \
+            $iemNameFontSize($top) \
+            $iemBackgroundColor($top) \
+            $iemFrontColor($top) \
+            $iemNameColor($top) \
+            $iemIsSteady($top)"
 }
 
 proc _cancel {top} {
