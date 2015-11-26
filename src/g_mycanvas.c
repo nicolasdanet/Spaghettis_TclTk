@@ -159,12 +159,12 @@ static void my_canvas_properties(t_gobj *z, t_glist *owner)
             %d {Panel Width} %d {Panel Height} \
             -1 empty empty \
             -1 \
-            -1 \
             -1 -1 empty \
             %s %s \
             %s %d %d \
             %d %d \
-            %d %d %d\n",
+            %d %d %d \
+            -1\n",
             x->x_gui.x_w, 1,
             x->x_vis_w, x->x_vis_h,
             srl[0]->s_name, srl[1]->s_name,

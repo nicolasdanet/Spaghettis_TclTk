@@ -243,12 +243,12 @@ static void bng_properties(t_gobj *z, t_glist *owner)
             %d {Flash Break} %d {Flash Hold} \
             -1 empty empty \
             %d \
-            -1 \
             -1 -1 empty \
             %s %s \
             %s %d %d \
             %d %d \
-            %d %d %d\n",
+            %d %d %d \
+            -1\n",
             x->x_gui.x_w, IEM_GUI_MINSIZE,
             x->x_flashtime_break, x->x_flashtime_hold,
             x->x_gui.x_isa.x_loadinit,

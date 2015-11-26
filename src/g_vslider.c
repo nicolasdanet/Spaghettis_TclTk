@@ -280,20 +280,21 @@ static void vslider_properties(t_gobj *z, t_glist *owner)
             %g {Bottom Value} %g {Top Value} \
             %d Linear Logarithmic \
             %d \
-            %d \
             -1 -1 empty \
             %s %s \
             %s %d %d \
             %d %d \
-            %d %d %d\n",
+            %d %d %d \
+            %d\n",
             x->x_gui.x_w, IEM_GUI_MINSIZE, x->x_gui.x_h, IEM_SL_MINSIZE,
             x->x_min, x->x_max,
             x->x_lin0_log1, 
-            x->x_gui.x_isa.x_loadinit, x->x_steady, /*no multi, but iem-characteristic*/
+            x->x_gui.x_isa.x_loadinit,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
             x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
-            0xffffff & x->x_gui.x_bcol, 0xffffff & x->x_gui.x_fcol, 0xffffff & x->x_gui.x_lcol);
+            0xffffff & x->x_gui.x_bcol, 0xffffff & x->x_gui.x_fcol, 0xffffff & x->x_gui.x_lcol, 
+            x->x_steady);
     gfxstub_new(&x->x_gui.x_obj.ob_pd, x, buf);
 }
 

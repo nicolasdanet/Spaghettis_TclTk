@@ -458,12 +458,12 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
             %g {Low Value} %g {High Value} \
             %d Linear Logarithmic \
             %d \
-            -1 \
             %d 1024 {Logarithm Height} \
             %s %s \
             %s %d %d \
             %d %d \
-            %d %d %d\n",
+            %d %d %d \
+            -1\n",
             x->x_gui.x_w, 1, x->x_gui.x_h, 8,
             x->x_min, x->x_max,
             x->x_lin0_log1, 

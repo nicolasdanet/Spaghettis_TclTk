@@ -231,12 +231,12 @@ static void toggle_properties(t_gobj *z, t_glist *owner)
             %g {Non-Zero Value} 0 empty \
             -1 empty empty \
             %d \
-            -1 \
             -1 -1 empty \
             %s %s \
             %s %d %d \
             %d %d \
-            %d %d %d\n",
+            %d %d %d \
+            -1\n",
             x->x_gui.x_w, IEM_GUI_MINSIZE,
             x->x_nonzero,
             x->x_gui.x_isa.x_loadinit,

@@ -509,12 +509,12 @@ static void vu_properties(t_gobj *z, t_glist *owner)
             0 empty 0 empty \
             %d {Hide Scale} {Show Scale} \
             -1 \
-            -1 \
             -1 -1 empty \
             %s %s \
             %s %d %d \
             %d %d \
-            %d %d %d\n",
+            %d %d %d \
+            -1\n",
             x->x_gui.x_w, IEM_GUI_MINSIZE, x->x_gui.x_h, IEM_VU_STEPS*IEM_VU_MINSIZE,
             x->x_scale, 
             "nosndno", srl[1]->s_name,/*no send*/

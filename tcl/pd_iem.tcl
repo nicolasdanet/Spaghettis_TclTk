@@ -36,8 +36,7 @@ variable  iemOption1Old
 variable  iemOption2
 variable  iemOption2Old
 variable  iemCheck
-variable  iemIsLoadbang
-variable  iemIsSteady
+variable  iemLoadbang
 variable  iemExtra
 variable  iemExtraMaximum
 variable  iemExtraLabel
@@ -55,6 +54,7 @@ variable  iemNameFontSizeOld
 variable  iemBackgroundColor
 variable  iemFrontColor
 variable  iemNameColor
+variable  iemSteady
 variable  iemFont
 
 array set iemType               {}
@@ -71,8 +71,7 @@ array set iemOption1Old         {}
 array set iemOption2            {}
 array set iemOption2Old         {}
 array set iemCheck              {}
-array set iemIsLoadbang         {}
-array set iemIsSteady           {}
+array set iemLoadbang           {}
 array set iemExtra              {}
 array set iemExtraMaximum       {}
 array set iemExtraLabel         {}
@@ -90,6 +89,7 @@ array set iemNameFontSizeOld    {}
 array set iemBackgroundColor    {}
 array set iemFrontColor         {}
 array set iemNameColor          {}
+array set iemSteady             {}
 array set iemFont               {}
 
 # ------------------------------------------------------------------------------------------------------------
@@ -99,13 +99,13 @@ proc create {top type
              width widthMinimum widthLabel height heightMinimum heightLabel
              option1 option1Label option2 option2Label 
              check check1 check2 
-             isLoadbang
-             isSteady 
+             loadbang
              extra extraMaximum extraLabel
              send receive
              name nameDeltaX nameDeltaY 
              nameFontFamily nameFontSize
-             backgroundColor frontColor nameColor} {
+             backgroundColor frontColor nameColor
+             steady} {
     
     variable iemType
     variable iemWidth
@@ -121,8 +121,7 @@ proc create {top type
     variable iemOption2
     variable iemOption2Old
     variable iemCheck
-    variable iemIsLoadbang
-    variable iemIsSteady
+    variable iemLoadbang
     variable iemExtra
     variable iemExtraMaximum
     variable iemExtraLabel
@@ -140,6 +139,7 @@ proc create {top type
     variable iemBackgroundColor
     variable iemFrontColor
     variable iemNameColor
+    variable iemSteady
     variable iemFont
 
     set iemType($top)               $type
@@ -156,8 +156,7 @@ proc create {top type
     set iemOption2($top)            $option2
     set iemOption2Old($top)         $option2
     set iemCheck($top)              $check
-    set iemIsLoadbang($top)         $isLoadbang
-    set iemIsSteady($top)           $isSteady
+    set iemLoadbang($top)           $loadbang
     set iemExtra($top)              $extra
     set iemExtraMaximum($top)       $extraMaximum
     set iemExtraLabel($top)         $extraLabel
@@ -175,7 +174,8 @@ proc create {top type
     set iemBackgroundColor($top)    $backgroundColor
     set iemFrontColor($top)         $frontColor
     set iemNameColor($top)          $nameColor
-    
+    set iemSteady($top)             $steady
+        
     set iemFont($top)               "$::var(fontFamily)"
     
     toplevel $top -class PdDialog
@@ -295,14 +295,14 @@ proc create {top type
         
     }
     
-    if {$isSteady != -1}            {
+    if {$steady != -1}              {
     
         radiobutton $top.jump       -text [_ "Jump"] \
-                                    -variable ::pd_iem::iemIsSteady($top) \
+                                    -variable ::pd_iem::iemSteady($top) \
                                     -takefocus 0 \
                                     -value 0
         radiobutton $top.steady     -text [_ "Steady"] \
-                                    -variable ::pd_iem::iemIsSteady($top) \
+                                    -variable ::pd_iem::iemSteady($top) \
                                     -takefocus 0 \
                                     -value 1
         pack $top.jump              -side top -anchor w
@@ -310,10 +310,10 @@ proc create {top type
         
     }
     
-    if {$isLoadbang != -1}          {
+    if {$loadbang != -1}            {
     
         checkbutton $top.loadbang   -text [_ "Loadbang"] \
-                                    -variable ::pd_iem::iemIsLoadbang($top) \
+                                    -variable ::pd_iem::iemLoadbang($top) \
                                     -takefocus 0
         pack $top.loadbang          -side top -anchor w
         
@@ -362,8 +362,7 @@ proc _closed {top} {
     variable iemOption2
     variable iemOption2Old
     variable iemCheck
-    variable iemIsLoadbang
-    variable iemIsSteady
+    variable iemLoadbang
     variable iemExtra
     variable iemExtraMaximum
     variable iemExtraLabel
@@ -381,6 +380,7 @@ proc _closed {top} {
     variable iemBackgroundColor
     variable iemFrontColor
     variable iemNameColor
+    variable iemSteady
     variable iemFont
     
     ::pd_iem::_apply $top
@@ -399,8 +399,7 @@ proc _closed {top} {
     unset iemOption2($top)
     unset iemOption2Old($top)
     unset iemCheck($top)
-    unset iemIsLoadbang($top)
-    unset iemIsSteady($top)
+    unset iemLoadbang($top)
     unset iemExtra($top)
     unset iemExtraMaximum($top)
     unset iemExtraLabel($top)
@@ -418,6 +417,7 @@ proc _closed {top} {
     unset iemBackgroundColor($top)
     unset iemFrontColor($top)
     unset iemNameColor($top)
+    unset iemSteady($top)
     unset iemFont($top)
     
     ::pd_iem::_cancel $top
@@ -433,8 +433,7 @@ proc _apply {top} {
     variable iemOption1
     variable iemOption2
     variable iemCheck
-    variable iemIsLoadbang
-    variable iemIsSteady
+    variable iemLoadbang
     variable iemExtra
     variable iemSend
     variable iemReceive
@@ -446,6 +445,7 @@ proc _apply {top} {
     variable iemBackgroundColor
     variable iemFrontColor
     variable iemNameColor
+    variable iemSteady
     
     _forceWidth     $top
     _forceHeight    $top
@@ -460,7 +460,7 @@ proc _apply {top} {
             $iemOption1($top) \
             $iemOption2($top) \
             $iemCheck($top) \
-            $iemIsLoadbang($top) \
+            $iemLoadbang($top) \
             $iemExtra($top) \
             [::sanitized [::toSymbol $iemSend($top)]] \
             [::sanitized [::toSymbol $iemReceive($top)]] \
@@ -472,7 +472,7 @@ proc _apply {top} {
             $iemBackgroundColor($top) \
             $iemFrontColor($top) \
             $iemNameColor($top) \
-            $iemIsSteady($top)"
+            $iemSteady($top)"
 }
 
 proc _cancel {top} {
