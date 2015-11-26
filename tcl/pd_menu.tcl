@@ -274,9 +274,9 @@ proc _object {m} {
         -accelerator "${accelerator}+7" \
         -command { ::pd_menu::_handle toggle }
     $m add command \
-        -label [_ "Panel"] \
+        -label [_ "Number"] \
         -accelerator "${accelerator}+8" \
-        -command { ::pd_menu::_handle mycnv }
+        -command { ::pd_menu::_handle numbox }
     $m add command \
         -label [_ "Array"] \
         -accelerator "${accelerator}+9" \
@@ -284,8 +284,8 @@ proc _object {m} {
     $m add separator
      
     $m add command \
-        -label [_ "Number"] \
-        -command { ::pd_menu::_handle numbox }
+        -label [_ "Panel"] \
+        -command { ::pd_menu::_handle mycnv }
     $m add command \
         -label [_ "VU Meter"] \
         -command { ::pd_menu::_handle vumeter }

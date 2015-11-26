@@ -55,7 +55,7 @@ proc initialize {} {
     event add <<NewComment>>                <$mod-parenleft>
     event add <<NewBang>>                   <$mod-section>
     event add <<NewToggle>>                 <$mod-egrave>
-    event add <<NewPanel>>                  <$mod-exclam>
+    event add <<NewNumber>>                 <$mod-exclam>
     event add <<NewArray>>                  <$mod-ccedilla>
      
     event add <<NewObject>>                 <Shift-$mod-Key-1>
@@ -65,7 +65,7 @@ proc initialize {} {
     event add <<NewComment>>                <Shift-$mod-Key-5>
     event add <<NewBang>>                   <Shift-$mod-Key-6>
     event add <<NewToggle>>                 <Shift-$mod-Key-7>
-    event add <<NewPanel>>                  <Shift-$mod-Key-8>
+    event add <<NewNumber>>                 <Shift-$mod-Key-8>
     event add <<NewArray>>                  <Shift-$mod-Key-9>
         
     event add <<RunDSP>>                    <$mod-Key-r>
@@ -108,7 +108,7 @@ proc initialize {} {
     bind all <<NewComment>>                 { .menubar.object   invoke "Comment"    }
     bind all <<NewBang>>                    { .menubar.object   invoke "Bang"       }
     bind all <<NewToggle>>                  { .menubar.object   invoke "Toggle"     }
-    bind all <<NewPanel>>                   { .menubar.object   invoke "Panel"      }
+    bind all <<NewNumber>>                  { .menubar.object   invoke "Number"     }
     bind all <<NewArray>>                   { .menubar.object   invoke "Array"      }
     
     bind all <<RunDSP>>                     { .menubar.media    invoke "Run DSP"    }
