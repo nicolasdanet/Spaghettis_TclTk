@@ -281,6 +281,8 @@ proc create {top type
     }
     
     if {$check != -1}               {
+    if {$check1 ne "empty"}         {
+    if {$check2 ne "empty"}         {
     
         radiobutton $top.check1     -text [_ $check1] \
                                     -variable ::pd_iem::iemCheck($top) \
@@ -292,7 +294,9 @@ proc create {top type
                                     -value 1
         pack $top.check1            -side top -anchor w
         pack $top.check2            -side top -anchor w
-        
+    
+    }
+    }
     }
     
     if {$steady != -1}              {
@@ -530,7 +534,6 @@ proc _forceOptions {top} {
     variable iemOption1Old
     variable iemOption2
     variable iemOption2Old
-    variable iemCheck
 
     switch -regexp -- $iemType($top) {
         "Bang"          {

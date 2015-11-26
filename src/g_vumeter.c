@@ -507,7 +507,7 @@ static void vu_properties(t_gobj *z, t_glist *owner)
     sprintf(buf, "::pd_iem::create %%s VU \
             %d %d {Meter Width} %d %d {Meter Height} \
             0 empty 0 empty \
-            %d {Hide Scale} {Show Scale} \
+            %d empty empty \
             -1 \
             -1 -1 empty \
             %s %s \
