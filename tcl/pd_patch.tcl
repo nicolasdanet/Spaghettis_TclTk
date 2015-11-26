@@ -47,7 +47,7 @@ proc create {top width height coordinates editable} {
     variable patchIsScrollableX
     variable patchIsScrollableY
 
-    toplevel $top -width $width -height $height -class PdPatch
+    toplevel $top -class PdPatch
     wm group $top .
 
     wm minsize  $top 50 50
