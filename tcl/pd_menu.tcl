@@ -282,13 +282,13 @@ proc _object {m} {
         -accelerator "${accelerator}+9" \
         -command { ::pd_menu::_handle menuarray }
     $m add separator
-     
+    
+    $m add command \
+        -label [_ "VU"] \
+        -command { ::pd_menu::_handle vumeter }
     $m add command \
         -label [_ "Panel"] \
         -command { ::pd_menu::_handle mycnv }
-    $m add command \
-        -label [_ "VU Meter"] \
-        -command { ::pd_menu::_handle vumeter }
     $m add separator
     
     menu $m.vertical
@@ -403,9 +403,9 @@ proc _editing {mode} {
     .menubar.object entryconfigure [_ "Array"]          -state $mode
     .menubar.object entryconfigure [_ "Bang"]           -state $mode
     .menubar.object entryconfigure [_ "Toggle"]         -state $mode
-    .menubar.object entryconfigure [_ "Panel"]          -state $mode
     .menubar.object entryconfigure [_ "Number"]         -state $mode
-    .menubar.object entryconfigure [_ "VU Meter"]       -state $mode
+    .menubar.object entryconfigure [_ "Panel"]          -state $mode
+    .menubar.object entryconfigure [_ "VU"]             -state $mode
     .menubar.object entryconfigure [_ "Vertical"]       -state $mode
     .menubar.object entryconfigure [_ "Horizontal"]     -state $mode
 }
