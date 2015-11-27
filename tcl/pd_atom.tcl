@@ -7,20 +7,22 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide dialog_gatom 0.1
+package provide pd_atom 0.1
 
-package require pd_file
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::dialog_gatom:: {
-}
-
-# array for communicating the position of the radiobuttons (Tk's
-# radiobutton widget requires this to be global)
 array set gatomlabel_radio {}
 
-############ pdtk_gatom_dialog -- run a gatom dialog #########
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-proc ::dialog_gatom::escape {sym} {
+namespace eval ::pd_atom:: {
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc escape {sym} {
     if {[string length $sym] == 0} {
         set ret "-"
     } else {
@@ -33,7 +35,7 @@ proc ::dialog_gatom::escape {sym} {
     return [::sanitized $ret]
 }
 
-proc ::dialog_gatom::unescape {sym} {
+proc unescape {sym} {
     if {[string equal -length 1 $sym "-"]} {
         set ret [string replace $sym 0 0 ""]
     } else {
@@ -42,35 +44,37 @@ proc ::dialog_gatom::unescape {sym} {
     return $ret
 }
 
-proc ::dialog_gatom::apply {mytoplevel} {
+proc apply {mytoplevel} {
     global gatomlabel_radio
     
     ::pd_connect::pdsend "$mytoplevel param \
         [$mytoplevel.width.entry get] \
         [$mytoplevel.limits.lower.entry get] \
         [$mytoplevel.limits.upper.entry get] \
-        [::dialog_gatom::escape [$mytoplevel.gatomlabel.name.entry get]] \
+        [::pd_atom::escape [$mytoplevel.gatomlabel.name.entry get]] \
         $gatomlabel_radio($mytoplevel) \
-        [::dialog_gatom::escape [$mytoplevel.s_r.receive.entry get]] \
-        [::dialog_gatom::escape [$mytoplevel.s_r.send.entry get]]"
+        [::pd_atom::escape [$mytoplevel.s_r.receive.entry get]] \
+        [::pd_atom::escape [$mytoplevel.s_r.send.entry get]]"
 }
 
-proc ::dialog_gatom::cancel {mytoplevel} {
+proc cancel {mytoplevel} {
     ::pd_connect::pdsend "$mytoplevel cancel"
 }
 
-proc ::dialog_gatom::ok {mytoplevel} {
-    ::dialog_gatom::apply $mytoplevel
-    ::dialog_gatom::cancel $mytoplevel
+proc ok {mytoplevel} {
+    ::pd_atom::apply $mytoplevel
+    ::pd_atom::cancel $mytoplevel
 }
 
 # set up the panel with the info from pd
-proc ::dialog_gatom::pdtk_gatom_dialog {mytoplevel initwidth initlower initupper \
+proc pdtk_gatom_dialog {mytoplevel initwidth initlower initupper \
                                      initgatomlabel_radio \
                                      initgatomlabel initreceive initsend} {
     global gatomlabel_radio
     set gatomlabel_radio($mytoplevel) $initgatomlabel_radio
 
+    ::pd_console::post "?\n"
+    
     if {[winfo exists $mytoplevel]} {
         wm deiconify $mytoplevel
         raise $mytoplevel
@@ -83,20 +87,20 @@ proc ::dialog_gatom::pdtk_gatom_dialog {mytoplevel initwidth initlower initupper
     $mytoplevel.limits.upper.entry insert 0 $initupper
     if {$initgatomlabel ne "-"} {
         $mytoplevel.gatomlabel.name.entry insert 0 \
-            [::dialog_gatom::unescape $initgatomlabel]
+            [::pd_atom::unescape $initgatomlabel]
     }
     set gatomlabel_radio($mytoplevel) $initgatomlabel_radio
         if {$initsend ne "-"} {
         $mytoplevel.s_r.send.entry insert 0 \
-            [::dialog_gatom::unescape $initsend]
+            [::pd_atom::unescape $initsend]
     }
     if {$initreceive ne "-"} {
         $mytoplevel.s_r.receive.entry insert 0 \
-            [::dialog_gatom::unescape $initreceive]
+            [::pd_atom::unescape $initreceive]
     }
 }
 
-proc ::dialog_gatom::create_dialog {mytoplevel} {
+proc create_dialog {mytoplevel} {
     global gatomlabel_radio
 
     toplevel $mytoplevel -class PdDialog
@@ -162,18 +166,26 @@ proc ::dialog_gatom::create_dialog {mytoplevel} {
     frame $mytoplevel.buttonframe -pady 5
     pack $mytoplevel.buttonframe -side top -fill x -expand 1 -pady 2m
     button $mytoplevel.buttonframe.cancel -text [_ "Cancel"] \
-        -command "::dialog_gatom::cancel $mytoplevel"
+        -command "::pd_atom::cancel $mytoplevel"
     pack $mytoplevel.buttonframe.cancel -side left -expand 1 -fill x -padx 10
     if {[tk windowingsystem] ne "aqua"} {
         button $mytoplevel.buttonframe.apply -text [_ "Apply"] \
-            -command "::dialog_gatom::apply $mytoplevel"
+            -command "::pd_atom::apply $mytoplevel"
     pack $mytoplevel.buttonframe.apply -side left -expand 1 -fill x -padx 10
     }
     button $mytoplevel.buttonframe.ok -text [_ "OK"] \
-        -command "::dialog_gatom::ok $mytoplevel"
+        -command "::pd_atom::ok $mytoplevel"
     pack $mytoplevel.buttonframe.ok -side left -expand 1 -fill x -padx 10
 
     $mytoplevel.width.entry select from 0
     $mytoplevel.width.entry select adjust end
     focus $mytoplevel.width.entry
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------

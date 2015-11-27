@@ -57,7 +57,7 @@ proc _create {top name size flags} {
     wm resizable $top 0 0
     wm geometry  $top [::rightNextTo $::var(windowFocused)]
     
-    set arrayName($top) [::dialog_gatom::unescape $name]
+    set arrayName($top) [::pd_atom::unescape $name]
     set arraySize($top) $size
     set arraySave($top) [expr {$flags & 1}]
     set arrayDraw($top) [expr {($flags & 6) >> 1}]
@@ -128,7 +128,7 @@ proc _apply {top} {
     variable arrayDraw
     variable arraySave
     
-    set name  [::dialog_gatom::escape $::pd_array::arrayName($top)]
+    set name  [::pd_atom::escape $::pd_array::arrayName($top)]
     set size  $::pd_array::arraySize($top)
     set flags [expr {$::pd_array::arraySave($top) + (2 * $::pd_array::arrayDraw($top))}]
     
