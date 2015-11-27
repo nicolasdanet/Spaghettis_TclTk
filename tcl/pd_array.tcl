@@ -24,13 +24,15 @@ namespace eval ::pd_array:: {
 
 variable  arrayName
 variable  arraySize
+variable  arraySizeOld
 variable  arrayDraw
 variable  arraySave
 
-array set arrayName {}
-array set arraySize {}
-array set arrayDraw {}
-array set arraySave {}
+array set arrayName     {}
+array set arraySize     {}
+array set arraySizeOld  {}
+array set arrayDraw     {}
+array set arraySave     {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -47,6 +49,7 @@ proc _create {top name size flags} {
 
     variable arrayName
     variable arraySize
+    variable arraySizeOld
     variable arrayDraw
     variable arraySave
     
@@ -57,10 +60,11 @@ proc _create {top name size flags} {
     wm resizable $top 0 0
     wm geometry  $top [::rightNextTo $::var(windowFocused)]
     
-    set arrayName($top) [::rauteToDollar $name]
-    set arraySize($top) $size
-    set arraySave($top) [expr {$flags & 1}]
-    set arrayDraw($top) [expr {($flags & 6) >> 1}]
+    set arrayName($top)     [::rauteToDollar $name]
+    set arraySize($top)     $size
+    set arraySizeOld($top)  $size
+    set arraySave($top)     [expr {$flags & 1}]
+    set arrayDraw($top)     [expr {($flags & 6) >> 1}]
     
     entry $top.name             -textvariable ::pd_array::arrayName($top)
     entry $top.size             -textvariable ::pd_array::arraySize($top)
@@ -105,6 +109,7 @@ proc _closed {top} {
     
     variable arrayName
     variable arraySize
+    variable arraySizeOld
     variable arrayDraw
     variable arraySave
     
@@ -112,6 +117,7 @@ proc _closed {top} {
     
     unset arrayName($top)
     unset arraySize($top)
+    unset arraySizeOld($top)
     unset arrayDraw($top)
     unset arraySave($top)
     
@@ -125,12 +131,16 @@ proc _apply {top} {
 
     variable arrayName
     variable arraySize
+    variable arraySizeOld
     variable arrayDraw
     variable arraySave
     
-    set name  [::sanitized [::dollarToRaute [::asEmpty $::pd_array::arrayName($top)]]]
-    set size  $::pd_array::arraySize($top)
-    set flags [expr {$::pd_array::arraySave($top) + (2 * $::pd_array::arrayDraw($top))}]
+    set arraySize($top) [::ifInteger $arraySize($top) $arraySizeOld($top)]
+    set arraySize($top) [::tcl::mathfunc::max $arraySize($top) 1]
+    
+    set name  [::sanitized [::dollarToRaute [::asEmpty $arrayName($top)]]]
+    set size  $arraySize($top)
+    set flags [expr {$arraySave($top) + (2 * $arrayDraw($top))}]
     
     ::pd_connect::pdsend "$top arraydialog $name $size $flags"
 }
