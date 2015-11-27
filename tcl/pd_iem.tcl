@@ -161,9 +161,9 @@ proc create {top type
     set iemExtraMaximum($top)       $extraMaximum
     set iemExtraLabel($top)         $extraLabel
     set iemExtraOld($top)           $extra
-    set iemSend($top)               [::fromSymbol $send]
-    set iemReceive($top)            [::fromSymbol $receive]
-    set iemName($top)               [::fromSymbol $name]
+    set iemSend($top)               [::rauteToDollar [::parseEmpty $send]]
+    set iemReceive($top)            [::rauteToDollar [::parseEmpty $receive]]
+    set iemName($top)               [::rauteToDollar [::parseEmpty $name]]
     set iemNameDeltaX($top)         $nameDeltaX
     set iemNameDeltaXOld($top)      $nameDeltaX
     set iemNameDeltaY($top)         $nameDeltaY
@@ -466,9 +466,9 @@ proc _apply {top} {
             $iemCheck($top) \
             $iemLoadbang($top) \
             $iemExtra($top) \
-            [::sanitized [::toSymbol $iemSend($top)]] \
-            [::sanitized [::toSymbol $iemReceive($top)]] \
-            [::sanitized [::toSymbol $iemName($top)]] \
+            [::sanitized [::dollarToRaute [::asEmpty $iemSend($top)]]] \
+            [::sanitized [::dollarToRaute [::asEmpty $iemReceive($top)]]] \
+            [::sanitized [::dollarToRaute [::asEmpty $iemName($top)]]] \
             $iemNameDeltaX($top) \
             $iemNameDeltaY($top) \
             $iemNameFontFamily($top) \
