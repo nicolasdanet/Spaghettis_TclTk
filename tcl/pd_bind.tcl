@@ -50,7 +50,7 @@ proc initialize {} {
     
     event add <<NewObject>>                 <$mod-ampersand>
     event add <<NewMessage>>                <$mod-eacute>
-    event add <<NewFloat>>                  <$mod-quotedbl>
+    event add <<NewAtom>>                   <$mod-quotedbl>
     event add <<NewSymbol>>                 <$mod-quoteright>
     event add <<NewComment>>                <$mod-parenleft>
     event add <<NewBang>>                   <$mod-section>
@@ -60,7 +60,7 @@ proc initialize {} {
      
     event add <<NewObject>>                 <Shift-$mod-Key-1>
     event add <<NewMessage>>                <Shift-$mod-Key-2>
-    event add <<NewFloat>>                  <Shift-$mod-Key-3>
+    event add <<NewAtom>>                   <Shift-$mod-Key-3>
     event add <<NewSymbol>>                 <Shift-$mod-Key-4>
     event add <<NewComment>>                <Shift-$mod-Key-5>
     event add <<NewBang>>                   <Shift-$mod-Key-6>
@@ -103,7 +103,7 @@ proc initialize {} {
     
     bind all <<NewObject>>                  { .menubar.object   invoke "Object"     }
     bind all <<NewMessage>>                 { .menubar.object   invoke "Message"    }
-    bind all <<NewFloat>>                   { .menubar.object   invoke "Float"      }
+    bind all <<NewAtom>>                    { .menubar.object   invoke "Atom"       }
     bind all <<NewSymbol>>                  { .menubar.object   invoke "Symbol"     }
     bind all <<NewComment>>                 { .menubar.object   invoke "Comment"    }
     bind all <<NewBang>>                    { .menubar.object   invoke "Bang"       }

@@ -252,7 +252,7 @@ proc _object {m} {
         -accelerator "${accelerator}+2" \
         -command { ::pd_menu::_handle "msg 0" }
     $m add command \
-        -label [_ "Float"] \
+        -label [_ "Atom"] \
         -accelerator "${accelerator}+3" \
         -command { ::pd_menu::_handle "floatatom 0" }
     $m add command \
@@ -397,7 +397,7 @@ proc _editing {mode} {
     
     .menubar.object entryconfigure [_ "Object"]         -state $mode
     .menubar.object entryconfigure [_ "Message"]        -state $mode
-    .menubar.object entryconfigure [_ "Float"]          -state $mode
+    .menubar.object entryconfigure [_ "Atom"]           -state $mode
     .menubar.object entryconfigure [_ "Symbol"]         -state $mode
     .menubar.object entryconfigure [_ "Comment"]        -state $mode
     .menubar.object entryconfigure [_ "Array"]          -state $mode

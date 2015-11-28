@@ -69,7 +69,7 @@ proc _create {top width low high position name send receive} {
     variable atomReceive
     
     toplevel $top -class PdDialog
-    wm title $top [_ "Float"]
+    wm title $top [_ "Atom"]
     wm group $top .
     
     wm resizable $top 0 0
