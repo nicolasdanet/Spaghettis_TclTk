@@ -145,9 +145,9 @@ proc _create {top width low high position name send receive} {
     bind  $top.send    <Return> { ::nextEntry %W }
     bind  $top.receive <Return> { ::nextEntry %W }
 
-    focus $top.name
+    focus $top.width
     
-    $top.name selection range 0 end
+    $top.width selection range 0 end
     
     wm protocol $top WM_DELETE_WINDOW   "::pd_atom::_closed $top"
 }

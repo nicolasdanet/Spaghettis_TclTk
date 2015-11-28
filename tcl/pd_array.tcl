@@ -131,22 +131,32 @@ proc _apply {top} {
 
     variable arrayName
     variable arraySize
-    variable arraySizeOld
     variable arrayDraw
     variable arraySave
     
-    set arraySize($top) [::ifInteger $arraySize($top) $arraySizeOld($top)]
-    set arraySize($top) [::tcl::mathfunc::max $arraySize($top) 1]
+    ::pd_array::_forceSize $top
     
-    set name  [::sanitized [::dollarToRaute [::withEmpty $arrayName($top)]]]
-    set flags [expr {$arraySave($top) + (2 * $arrayDraw($top))}]
-    
-    ::pd_connect::pdsend "$top arraydialog $name $arraySize($top) $flags"
+    ::pd_connect::pdsend "$top arraydialog \
+            [::sanitized [::dollarToRaute [::withEmpty $arrayName($top)]]] \
+            $arraySize($top) \
+            [expr {$arraySave($top) + (2 * $arrayDraw($top))}]"
 }
 
 proc _cancel {top} {
 
     ::pd_connect::pdsend "$top cancel"
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _forceSize {top} {
+
+    variable arraySize
+    variable arraySizeOld
+    
+    set arraySize($top) [::ifInteger $arraySize($top) $arraySizeOld($top)]
+    set arraySize($top) [::tcl::mathfunc::max $arraySize($top) 1]
 }
 
 # ------------------------------------------------------------------------------------------------------------
