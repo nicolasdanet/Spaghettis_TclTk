@@ -179,7 +179,7 @@ proc create {top type
     set iemFont($top)               "$::var(fontFamily)"
     
     toplevel $top -class PdDialog
-    wm title $top $type
+    wm title $top [_ $type]
     wm group $top .
     
     wm resizable $top 0 0
