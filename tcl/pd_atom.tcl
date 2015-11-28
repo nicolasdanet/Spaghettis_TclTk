@@ -28,10 +28,10 @@ variable  atomLow
 variable  atomLowOld
 variable  atomHigh
 variable  atomHighOld
-variable  atomPosition
-variable  atomName
 variable  atomSend
 variable  atomReceive
+variable  atomName
+variable  atomPosition
 
 array set atomWidth     {}
 array set atomWidthOld  {}
@@ -39,23 +39,23 @@ array set atomLow       {}
 array set atomLowOld    {}
 array set atomHigh      {}
 array set atomHighOld   {}
-array set atomPosition  {}
-array set atomName      {}
 array set atomSend      {}
 array set atomReceive   {}
+array set atomName      {}
+array set atomPosition  {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {top width low high position name send receive} {
+proc show {top width low high send receive name position} {
 
-    ::pd_atom::_create $top $width $low $high $position $name $send $receive
+    ::pd_atom::_create $top $width $low $high $send $receive $name $position
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {top width low high position name send receive} {
+proc _create {top width low high send receive name position} {
     
     variable atomWidth
     variable atomWidthOld
@@ -63,10 +63,10 @@ proc _create {top width low high position name send receive} {
     variable atomLowOld
     variable atomHigh
     variable atomHighOld
-    variable atomPosition
-    variable atomName
     variable atomSend
     variable atomReceive
+    variable atomName
+    variable atomPosition
     
     toplevel $top -class PdDialog
     wm title $top [_ "Atom"]
@@ -81,10 +81,10 @@ proc _create {top width low high position name send receive} {
     set atomLowOld($top)        $low
     set atomHigh($top)          $high
     set atomHighOld($top)       $high
-    set atomPosition($top)      $position
-    set atomName($top)          [::parseDash $name]
     set atomSend($top)          [::parseDash $send]
     set atomReceive($top)       [::parseDash $receive]
+    set atomName($top)          [::parseDash $name]
+    set atomPosition($top)      $position
     
     label $top.widthLabel       -text [_ "Width"]
     entry $top.width            -textvariable ::pd_atom::atomWidth($top)
@@ -160,10 +160,10 @@ proc _closed {top} {
     variable atomLowOld
     variable atomHigh
     variable atomHighOld
-    variable atomPosition
-    variable atomName
     variable atomSend
     variable atomReceive
+    variable atomName
+    variable atomPosition
     
     ::pd_atom::_apply $top
     
@@ -173,11 +173,11 @@ proc _closed {top} {
     unset atomLowOld($top)
     unset atomHigh($top)
     unset atomHighOld($top)
-    unset atomPosition($top)
-    unset atomName($top)
     unset atomSend($top)
     unset atomReceive($top)
-    
+    unset atomName($top)
+    unset atomPosition($top)
+        
     ::pd_atom::_cancel $top
 }
 
@@ -189,21 +189,21 @@ proc _apply {top} {
     variable atomWidth
     variable atomLow
     variable atomHigh
-    variable atomPosition
-    variable atomName
     variable atomSend
     variable atomReceive
-    
+    variable atomName
+    variable atomPosition
+        
     ::pd_atom::_forceValues $top
     
     ::pd_connect::pdsend "$top param \
             $atomWidth($top) \
             $atomLow($top) \
-            $atomLow($top) \
-            [::sanitized [::withDash $atomName($top)]] \
-            $atomPosition($top) \
+            $atomHigh($top) \
+            [::sanitized [::withDash $atomSend($top)]] \
             [::sanitized [::withDash $atomReceive($top)]] \
-            [::sanitized [::withDash $atomSend($top)]]"
+            [::sanitized [::withDash $atomName($top)]] \
+            $atomPosition($top)"
     
 }
 

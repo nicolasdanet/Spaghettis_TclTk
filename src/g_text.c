@@ -767,10 +767,10 @@ static void gatom_param(t_gatom *x, t_symbol *sel, int argc, t_atom *argv)
     t_float width = atom_getfloatarg(0, argc, argv);
     t_float draglo = atom_getfloatarg(1, argc, argv);
     t_float draghi = atom_getfloatarg(2, argc, argv);
-    t_symbol *label = gatom_unescapit(atom_getsymbolarg(3, argc, argv));
-    t_float wherelabel = atom_getfloatarg(4, argc, argv);
-    t_symbol *symfrom = gatom_unescapit(atom_getsymbolarg(5, argc, argv));
-    t_symbol *symto = gatom_unescapit(atom_getsymbolarg(6, argc, argv));
+    t_symbol *symto = gatom_unescapit(atom_getsymbolarg(3, argc, argv));
+    t_symbol *symfrom = gatom_unescapit(atom_getsymbolarg(4, argc, argv));
+    t_symbol *label = gatom_unescapit(atom_getsymbolarg(5, argc, argv));
+    t_float wherelabel = atom_getfloatarg(6, argc, argv);
 
     gobj_vis(&x->a_text.te_g, x->a_glist, 0);
     if (!*symfrom->s_name && *x->a_symfrom->s_name)
@@ -978,11 +978,12 @@ static void gatom_properties(t_gobj *z, t_glist *owner)
 {
     t_gatom *x = (t_gatom *)z;
     char buf[200];
-    sprintf(buf, "::pd_atom::show %%s %d %g %g %d {%s} {%s} {%s}\n",
+    sprintf(buf, "::pd_atom::show %%s %d %g %g {%s} {%s} {%s} %d\n",
         x->a_text.te_width, x->a_draglo, x->a_draghi,
-            x->a_wherelabel, gatom_escapit(x->a_label)->s_name,
+                gatom_escapit(x->a_symto)->s_name,
                 gatom_escapit(x->a_symfrom)->s_name,
-                    gatom_escapit(x->a_symto)->s_name);
+                gatom_escapit(x->a_label)->s_name, 
+                x->a_wherelabel);
     gfxstub_new(&x->a_text.te_pd, x, buf);
 }
 
