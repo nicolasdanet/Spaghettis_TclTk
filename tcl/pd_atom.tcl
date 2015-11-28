@@ -186,25 +186,53 @@ proc _closed {top} {
 
 proc _apply {top} {
     
-    if {0} {
-    
+    variable atomWidth
+    variable atomLow
+    variable atomHigh
     variable atomPosition
+    variable atomName
+    variable atomSend
+    variable atomReceive
+    
+    ::pd_atom::_forceValues $top
     
     ::pd_connect::pdsend "$top param \
-        [$top.width.entry get] \
-        [$top.limits.lower.entry get] \
-        [$top.limits.upper.entry get] \
-        [::sanitized [::withDash [$top.gatomlabel.name.entry get]]] \
-        $atomPosition($top) \
-        [::sanitized [::withDash [$top.s_r.receive.entry get]]] \
-        [::sanitized [::withDash [$top.s_r.send.entry get]]]"
+            $atomWidth($top) \
+            $atomLow($top) \
+            $atomLow($top) \
+            [::sanitized [::withDash $atomName($top)]] \
+            $atomPosition($top) \
+            [::sanitized [::withDash $atomReceive($top)]] \
+            [::sanitized [::withDash $atomSend($top)]]"
     
-    }
 }
 
 proc _cancel {top} {
 
     ::pd_connect::pdsend "$top cancel"
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _forceValues {top} {
+
+    variable atomWidth
+    variable atomWidthOld
+    variable atomLow
+    variable atomLowOld
+    variable atomHigh
+    variable atomHighOld
+    
+    set atomWidth($top) [::ifInteger $atomWidth($top) $atomWidthOld($top)]
+    set atomLow($top)   [::ifInteger $atomLow($top) $atomLowOld($top)]
+    set atomHigh($top)  [::ifInteger $atomHigh($top) $atomHighOld($top)]
+    
+    set min [::tcl::mathfunc::min $atomLow($top) $atomHigh($top)]
+    set max [::tcl::mathfunc::max $atomLow($top) $atomHigh($top)]
+    
+    set atomLow($top)  $min
+    set atomHigh($top) $max
 }
 
 # ------------------------------------------------------------------------------------------------------------
