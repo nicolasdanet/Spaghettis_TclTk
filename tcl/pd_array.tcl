@@ -138,7 +138,7 @@ proc _apply {top} {
     set arraySize($top) [::ifInteger $arraySize($top) $arraySizeOld($top)]
     set arraySize($top) [::tcl::mathfunc::max $arraySize($top) 1]
     
-    set name  [::sanitized [::dollarToRaute [::asEmpty $arrayName($top)]]]
+    set name  [::sanitized [::dollarToRaute [::withEmpty $arrayName($top)]]]
     set size  $arraySize($top)
     set flags [expr {$arraySave($top) + (2 * $arrayDraw($top))}]
     

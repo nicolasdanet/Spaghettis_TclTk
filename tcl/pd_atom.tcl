@@ -56,10 +56,10 @@ proc apply {mytoplevel} {
         [$mytoplevel.width.entry get] \
         [$mytoplevel.limits.lower.entry get] \
         [$mytoplevel.limits.upper.entry get] \
-        [::pd_atom::escape [$mytoplevel.gatomlabel.name.entry get]] \
+        [::sanitized [::withDash [$mytoplevel.gatomlabel.name.entry get]]] \
         $gatomlabel_radio($mytoplevel) \
-        [::pd_atom::escape [$mytoplevel.s_r.receive.entry get]] \
-        [::pd_atom::escape [$mytoplevel.s_r.send.entry get]]"
+        [::sanitized [::withDash [$mytoplevel.s_r.receive.entry get]]] \
+        [::sanitized [::withDash [$mytoplevel.s_r.send.entry get]]]"
 }
 
 proc cancel {mytoplevel} {
@@ -92,16 +92,16 @@ proc pdtk_gatom_dialog {mytoplevel initwidth initlower initupper \
     $mytoplevel.limits.upper.entry insert 0 $initupper
     if {$initgatomlabel ne "-"} {
         $mytoplevel.gatomlabel.name.entry insert 0 \
-            [::pd_atom::unescape $initgatomlabel]
+            [::parseDash $initgatomlabel]
     }
     set gatomlabel_radio($mytoplevel) $initgatomlabel_radio
         if {$initsend ne "-"} {
         $mytoplevel.s_r.send.entry insert 0 \
-            [::pd_atom::unescape $initsend]
+            [::parseDash $initsend]
     }
     if {$initreceive ne "-"} {
         $mytoplevel.s_r.receive.entry insert 0 \
-            [::pd_atom::unescape $initreceive]
+            [::parseDash $initreceive]
     }
 }
 

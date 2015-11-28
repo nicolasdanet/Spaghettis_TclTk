@@ -466,9 +466,9 @@ proc _apply {top} {
             $iemCheck($top) \
             $iemLoadbang($top) \
             $iemExtra($top) \
-            [::sanitized [::dollarToRaute [::asEmpty $iemSend($top)]]] \
-            [::sanitized [::dollarToRaute [::asEmpty $iemReceive($top)]]] \
-            [::sanitized [::dollarToRaute [::asEmpty $iemName($top)]]] \
+            [::sanitized [::dollarToRaute [::withEmpty $iemSend($top)]]] \
+            [::sanitized [::dollarToRaute [::withEmpty $iemReceive($top)]]] \
+            [::sanitized [::dollarToRaute [::withEmpty $iemName($top)]]] \
             $iemNameDeltaX($top) \
             $iemNameDeltaY($top) \
             $iemNameFontFamily($top) \
