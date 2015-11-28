@@ -66,7 +66,10 @@ proc _create {top name size flags} {
     set arraySave($top)     [expr {$flags & 1}]
     set arrayDraw($top)     [expr {($flags & 6) >> 1}]
     
+    label $top.nameLabel        -text [_ "Name"]
     entry $top.name             -textvariable ::pd_array::arrayName($top)
+    
+    label $top.sizeLabel        -text [_ "Size"]
     entry $top.size             -textvariable ::pd_array::arraySize($top)
 
     checkbutton $top.save       -text [_ "Save contents"] \
@@ -83,14 +86,18 @@ proc _create {top name size flags} {
                                 -takefocus 0 \
                                 -value 1
                                 
-    radiobutton $top.bezier     -text [_ "Bezier curve"] \
+    radiobutton $top.bezier     -text [_ "Bezier"] \
                                 -variable ::pd_array::arrayDraw($top) \
                                 -takefocus 0 \
                                 -value 2 
-                                
+    
+    pack $top.nameLabel         -side top -anchor w                           
     pack $top.name              -side top -anchor w
-    pack $top.size              -side top -anchor w
+    pack $top.sizeLabel         -side top -anchor w
+    pack $top.size              -side top -anchor w 
+    
     pack $top.save              -side top -anchor w
+    
     pack $top.points            -side top -anchor w
     pack $top.polygon           -side top -anchor w
     pack $top.bezier            -side top -anchor w

@@ -185,51 +185,6 @@ proc create {top type
     wm resizable $top 0 0
     wm geometry  $top [::rightNextTo $::var(windowFocused)]
     
-    label $top.nameLabel            -text [_ "Name"]
-    entry $top.name                 -textvariable ::pd_iem::iemName($top)
-    pack  $top.nameLabel            -side top -anchor w
-    pack  $top.name                 -side top -anchor w
-    
-    label $top.nameDeltaXLabel      -text [_ "Offset Horizontal"]
-    entry $top.nameDeltaX           -textvariable ::pd_iem::iemNameDeltaX($top)
-    pack  $top.nameDeltaXLabel      -side top -anchor w
-    pack  $top.nameDeltaX           -side top -anchor w
-    
-    label $top.nameDeltaYLabel      -text [_ "Offset Vertical"]
-    entry $top.nameDeltaY           -textvariable ::pd_iem::iemNameDeltaY($top)
-    pack  $top.nameDeltaYLabel      -side top -anchor w
-    pack  $top.nameDeltaY           -side top -anchor w
-    
-    label $top.nameFontSizeLabel    -text [_ "Font Size"]
-    entry $top.nameFontSize         -textvariable ::pd_iem::iemNameFontSize($top)
-    pack  $top.nameFontSizeLabel    -side top -anchor w
-    pack  $top.nameFontSize         -side top -anchor w
-    
-    bind $top.name <Return>         { ::nextEntry %W }
-    bind $top.nameDeltaX <Return>   { ::nextEntry %W }
-    bind $top.nameDeltaY <Return>   { ::nextEntry %W }
-    bind $top.nameFontSize <Return> { ::nextEntry %W }
-    
-    menubutton $top.nameFontFamily  -textvariable ::pd_iem::iemFont($top) \
-                                    -takefocus 0
-    menu $top.nameFontFamily.menu
-    $top.nameFontFamily configure   -menu $top.nameFontFamily.menu
-    
-    $top.nameFontFamily.menu add radiobutton    -label "$::var(fontFamily)" \
-                                                -variable ::pd_iem::iemNameFontFamily($top) \
-                                                -value 0 \
-                                                -command "set ::pd_iem::iemFont($top) $::var(fontFamily)"
-    $top.nameFontFamily.menu add radiobutton    -label "Helvetica" \
-                                                -variable ::pd_iem::iemNameFontFamily($top) \
-                                                -value 1 \
-                                                -command "set ::pd_iem::iemFont($top) Helvetica"
-    $top.nameFontFamily.menu add radiobutton    -label "Times" \
-                                                -variable ::pd_iem::iemNameFontFamily($top) \
-                                                -value 2 \
-                                                -command "set ::pd_iem::iemFont($top) Times"
-                                                
-    pack $top.nameFontFamily        -side top -anchor w
-    
     if {$widthLabel ne "empty"}     {
     
         label $top.widthLabel       -text [_ $widthLabel]
@@ -323,6 +278,51 @@ proc create {top type
         
     }
     
+    label $top.nameLabel            -text [_ "Name"]
+    entry $top.name                 -textvariable ::pd_iem::iemName($top)
+    pack  $top.nameLabel            -side top -anchor w
+    pack  $top.name                 -side top -anchor w
+    
+    label $top.nameDeltaXLabel      -text [_ "Offset Horizontal"]
+    entry $top.nameDeltaX           -textvariable ::pd_iem::iemNameDeltaX($top)
+    pack  $top.nameDeltaXLabel      -side top -anchor w
+    pack  $top.nameDeltaX           -side top -anchor w
+    
+    label $top.nameDeltaYLabel      -text [_ "Offset Vertical"]
+    entry $top.nameDeltaY           -textvariable ::pd_iem::iemNameDeltaY($top)
+    pack  $top.nameDeltaYLabel      -side top -anchor w
+    pack  $top.nameDeltaY           -side top -anchor w
+    
+    label $top.nameFontSizeLabel    -text [_ "Font Size"]
+    entry $top.nameFontSize         -textvariable ::pd_iem::iemNameFontSize($top)
+    pack  $top.nameFontSizeLabel    -side top -anchor w
+    pack  $top.nameFontSize         -side top -anchor w
+    
+    bind $top.name <Return>         { ::nextEntry %W }
+    bind $top.nameDeltaX <Return>   { ::nextEntry %W }
+    bind $top.nameDeltaY <Return>   { ::nextEntry %W }
+    bind $top.nameFontSize <Return> { ::nextEntry %W }
+    
+    menubutton $top.nameFontFamily  -textvariable ::pd_iem::iemFont($top) \
+                                    -takefocus 0
+    menu $top.nameFontFamily.menu
+    $top.nameFontFamily configure   -menu $top.nameFontFamily.menu
+    
+    $top.nameFontFamily.menu add radiobutton    -label "$::var(fontFamily)" \
+                                                -variable ::pd_iem::iemNameFontFamily($top) \
+                                                -value 0 \
+                                                -command "set ::pd_iem::iemFont($top) $::var(fontFamily)"
+    $top.nameFontFamily.menu add radiobutton    -label "Helvetica" \
+                                                -variable ::pd_iem::iemNameFontFamily($top) \
+                                                -value 1 \
+                                                -command "set ::pd_iem::iemFont($top) Helvetica"
+    $top.nameFontFamily.menu add radiobutton    -label "Times" \
+                                                -variable ::pd_iem::iemNameFontFamily($top) \
+                                                -value 2 \
+                                                -command "set ::pd_iem::iemFont($top) Times"
+                                                
+    pack $top.nameFontFamily        -side top -anchor w
+    
     if {$send ne "nosndno"}         {
     
         label $top.sendLabel        -text [_ "Send"]
@@ -343,10 +343,8 @@ proc create {top type
         bind  $top.receive <Return> { ::nextEntry %W }
     }
     
-    focus $top.name
-    
-    $top.name selection range 0 end
-    
+    if {[winfo exists $top.width]} { focus $top.width; $top.width selection range 0 end }
+        
     wm protocol $top WM_DELETE_WINDOW   "::pd_iem::_closed $top"
 }
 
