@@ -17,69 +17,25 @@ package provide pd_atom 0.1
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-array set gatomlabel_radio {}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 namespace eval ::pd_atom:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc escape {sym} {
-    if {[string length $sym] == 0} {
-        set ret "-"
-    } else {
-        if {[string equal -length 1 $sym "-"]} {
-            set ret [string replace $sym 0 0 "--"]
-        } else {
-            set ret [string map {"$" "#"} $sym]
-        }
-    }
-    return [::sanitized $ret]
-}
+variable  atomPosition
+array set atomPosition {}
 
-proc unescape {sym} {
-    if {[string equal -length 1 $sym "-"]} {
-        set ret [string replace $sym 0 0 ""]
-    } else {
-        set ret [string map {"#" "$"} $sym]
-    }
-    return $ret
-}
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-proc apply {mytoplevel} {
-    global gatomlabel_radio
-    
-    ::pd_connect::pdsend "$mytoplevel param \
-        [$mytoplevel.width.entry get] \
-        [$mytoplevel.limits.lower.entry get] \
-        [$mytoplevel.limits.upper.entry get] \
-        [::sanitized [::withDash [$mytoplevel.gatomlabel.name.entry get]]] \
-        $gatomlabel_radio($mytoplevel) \
-        [::sanitized [::withDash [$mytoplevel.s_r.receive.entry get]]] \
-        [::sanitized [::withDash [$mytoplevel.s_r.send.entry get]]]"
-}
-
-proc cancel {mytoplevel} {
-    ::pd_connect::pdsend "$mytoplevel cancel"
-}
-
-proc ok {mytoplevel} {
-    ::pd_atom::apply $mytoplevel
-    ::pd_atom::cancel $mytoplevel
-}
-
-# set up the panel with the info from pd
 proc pdtk_gatom_dialog {mytoplevel initwidth initlower initupper \
                                      initgatomlabel_radio \
                                      initgatomlabel initreceive initsend} {
-    global gatomlabel_radio
-    set gatomlabel_radio($mytoplevel) $initgatomlabel_radio
-
-    ::pd_console::post "?\n"
     
+    variable atomPosition
+    
+    set atomPosition($mytoplevel) $initgatomlabel_radio
+
     if {[winfo exists $mytoplevel]} {
         wm deiconify $mytoplevel
         raise $mytoplevel
@@ -94,8 +50,10 @@ proc pdtk_gatom_dialog {mytoplevel initwidth initlower initupper \
         $mytoplevel.gatomlabel.name.entry insert 0 \
             [::parseDash $initgatomlabel]
     }
-    set gatomlabel_radio($mytoplevel) $initgatomlabel_radio
-        if {$initsend ne "-"} {
+    
+    set atomPosition($mytoplevel) $initgatomlabel_radio
+
+    if {$initsend ne "-"} {
         $mytoplevel.s_r.send.entry insert 0 \
             [::parseDash $initsend]
     }
@@ -105,8 +63,12 @@ proc pdtk_gatom_dialog {mytoplevel initwidth initlower initupper \
     }
 }
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 proc create_dialog {mytoplevel} {
-    global gatomlabel_radio
+    
+    variable atomPosition
 
     toplevel $mytoplevel -class PdDialog
     wm title $mytoplevel [_ "Atom Box Properties"]
@@ -142,13 +104,13 @@ proc create_dialog {mytoplevel} {
     frame $mytoplevel.gatomlabel.radio
     pack $mytoplevel.gatomlabel.radio -side top
     radiobutton $mytoplevel.gatomlabel.radio.left -value 0 -text [_ "Left   "] \
-        -variable gatomlabel_radio($mytoplevel) -justify left -takefocus 0
+        -variable ::pd_atom::atomPosition($mytoplevel) -justify left -takefocus 0
     radiobutton $mytoplevel.gatomlabel.radio.right -value 1 -text [_ "Right"] \
-        -variable gatomlabel_radio($mytoplevel) -justify left -takefocus 0
+        -variable ::pd_atom::atomPosition($mytoplevel) -justify left -takefocus 0
     radiobutton $mytoplevel.gatomlabel.radio.top -value 2 -text [_ "Top"] \
-        -variable gatomlabel_radio($mytoplevel) -justify left -takefocus 0
+        -variable ::pd_atom::atomPosition($mytoplevel) -justify left -takefocus 0
     radiobutton $mytoplevel.gatomlabel.radio.bottom -value 3 -text [_ "Bottom"] \
-        -variable gatomlabel_radio($mytoplevel) -justify left -takefocus 0
+        -variable ::pd_atom::atomPosition($mytoplevel) -justify left -takefocus 0
     pack $mytoplevel.gatomlabel.radio.left -side left -anchor w
     pack $mytoplevel.gatomlabel.radio.right -side right -anchor w
     pack $mytoplevel.gatomlabel.radio.top -side top -anchor w
@@ -185,6 +147,36 @@ proc create_dialog {mytoplevel} {
     $mytoplevel.width.entry select from 0
     $mytoplevel.width.entry select adjust end
     focus $mytoplevel.width.entry
+}
+
+proc _closed {top} {
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc apply {mytoplevel} {
+    
+    variable atomPosition
+    
+    ::pd_connect::pdsend "$mytoplevel param \
+        [$mytoplevel.width.entry get] \
+        [$mytoplevel.limits.lower.entry get] \
+        [$mytoplevel.limits.upper.entry get] \
+        [::sanitized [::withDash [$mytoplevel.gatomlabel.name.entry get]]] \
+        $atomPosition($mytoplevel) \
+        [::sanitized [::withDash [$mytoplevel.s_r.receive.entry get]]] \
+        [::sanitized [::withDash [$mytoplevel.s_r.send.entry get]]]"
+}
+
+proc cancel {mytoplevel} {
+    ::pd_connect::pdsend "$mytoplevel cancel"
+}
+
+proc ok {mytoplevel} {
+    ::pd_atom::apply $mytoplevel
+    ::pd_atom::cancel $mytoplevel
 }
 
 # ------------------------------------------------------------------------------------------------------------
