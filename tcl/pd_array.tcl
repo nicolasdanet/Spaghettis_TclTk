@@ -139,10 +139,9 @@ proc _apply {top} {
     set arraySize($top) [::tcl::mathfunc::max $arraySize($top) 1]
     
     set name  [::sanitized [::dollarToRaute [::withEmpty $arrayName($top)]]]
-    set size  $arraySize($top)
     set flags [expr {$arraySave($top) + (2 * $arrayDraw($top))}]
     
-    ::pd_connect::pdsend "$top arraydialog $name $size $flags"
+    ::pd_connect::pdsend "$top arraydialog $name $arraySize($top) $flags"
 }
 
 proc _cancel {top} {

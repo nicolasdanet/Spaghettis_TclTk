@@ -22,161 +22,189 @@ namespace eval ::pd_atom:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+variable  atomWidth
+variable  atomWidthOld
+variable  atomLow
+variable  atomLowOld
+variable  atomHigh
+variable  atomHighOld
 variable  atomPosition
-array set atomPosition {}
+variable  atomName
+variable  atomSend
+variable  atomReceive
+
+array set atomWidth     {}
+array set atomWidthOld  {}
+array set atomLow       {}
+array set atomLowOld    {}
+array set atomHigh      {}
+array set atomHighOld   {}
+array set atomPosition  {}
+array set atomName      {}
+array set atomSend      {}
+array set atomReceive   {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {mytoplevel initwidth initlower initupper \
-                                     initgatomlabel_radio \
-                                     initgatomlabel initreceive initsend} {
-    
-    variable atomPosition
-    
-    set atomPosition($mytoplevel) $initgatomlabel_radio
+proc show {top width low high position name send receive} {
 
-    if {[winfo exists $mytoplevel]} {
-        wm deiconify $mytoplevel
-        raise $mytoplevel
-    } else {
-        create_dialog $mytoplevel
-    }
-
-    $mytoplevel.width.entry insert 0 $initwidth
-    $mytoplevel.limits.lower.entry insert 0 $initlower
-    $mytoplevel.limits.upper.entry insert 0 $initupper
-    if {$initgatomlabel ne "-"} {
-        $mytoplevel.gatomlabel.name.entry insert 0 \
-            [::parseDash $initgatomlabel]
-    }
-    
-    set atomPosition($mytoplevel) $initgatomlabel_radio
-
-    if {$initsend ne "-"} {
-        $mytoplevel.s_r.send.entry insert 0 \
-            [::parseDash $initsend]
-    }
-    if {$initreceive ne "-"} {
-        $mytoplevel.s_r.receive.entry insert 0 \
-            [::parseDash $initreceive]
-    }
+    ::pd_atom::_create $top $width $low $high $position $name $send $receive
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc create_dialog {mytoplevel} {
+proc _create {top width low high position name send receive} {
     
+    variable atomWidth
+    variable atomWidthOld
+    variable atomLow
+    variable atomLowOld
+    variable atomHigh
+    variable atomHighOld
     variable atomPosition
-
-    toplevel $mytoplevel -class PdDialog
-    wm title $mytoplevel [_ "Atom Box Properties"]
-    wm group $mytoplevel .
-    wm resizable $mytoplevel 0 0
-    $mytoplevel configure -padx 0 -pady 0
-
-    frame $mytoplevel.width -height 7
-    pack $mytoplevel.width -side top
-    label $mytoplevel.width.label -text [_ "Width:"]
-    entry $mytoplevel.width.entry -width 4
-    pack $mytoplevel.width.label $mytoplevel.width.entry -side left
-
-    labelframe $mytoplevel.limits -text [_ "Limits"] -padx 15 -pady 4 -borderwidth 1
-    pack $mytoplevel.limits -side top -fill x
-    frame $mytoplevel.limits.lower
-    pack $mytoplevel.limits.lower -side left
-    label $mytoplevel.limits.lower.label -text [_ "Lower:"]
-    entry $mytoplevel.limits.lower.entry -width 7
-    pack $mytoplevel.limits.lower.label $mytoplevel.limits.lower.entry -side left
-    frame $mytoplevel.limits.upper
-    pack $mytoplevel.limits.upper -side left
-    label $mytoplevel.limits.upper.label -text [_ "Upper:"]
-    entry $mytoplevel.limits.upper.entry -width 7
-    pack $mytoplevel.limits.upper.label $mytoplevel.limits.upper.entry -side left
-
-    labelframe $mytoplevel.gatomlabel -text [_ "Label"] -padx 5 -pady 5 -borderwidth 1
-    pack $mytoplevel.gatomlabel -side top -fill x -pady 5
-    frame $mytoplevel.gatomlabel.name
-    pack $mytoplevel.gatomlabel.name -side top
-    entry $mytoplevel.gatomlabel.name.entry -width 33
-    pack $mytoplevel.gatomlabel.name.entry -side left
-    frame $mytoplevel.gatomlabel.radio
-    pack $mytoplevel.gatomlabel.radio -side top
-    radiobutton $mytoplevel.gatomlabel.radio.left -value 0 -text [_ "Left   "] \
-        -variable ::pd_atom::atomPosition($mytoplevel) -justify left -takefocus 0
-    radiobutton $mytoplevel.gatomlabel.radio.right -value 1 -text [_ "Right"] \
-        -variable ::pd_atom::atomPosition($mytoplevel) -justify left -takefocus 0
-    radiobutton $mytoplevel.gatomlabel.radio.top -value 2 -text [_ "Top"] \
-        -variable ::pd_atom::atomPosition($mytoplevel) -justify left -takefocus 0
-    radiobutton $mytoplevel.gatomlabel.radio.bottom -value 3 -text [_ "Bottom"] \
-        -variable ::pd_atom::atomPosition($mytoplevel) -justify left -takefocus 0
-    pack $mytoplevel.gatomlabel.radio.left -side left -anchor w
-    pack $mytoplevel.gatomlabel.radio.right -side right -anchor w
-    pack $mytoplevel.gatomlabel.radio.top -side top -anchor w
-    pack $mytoplevel.gatomlabel.radio.bottom -side bottom -anchor w
-
-    labelframe $mytoplevel.s_r -text [_ "Messages"] -padx 5 -pady 5 -borderwidth 1
-    pack $mytoplevel.s_r -side top -fill x
-    frame $mytoplevel.s_r.send
-    pack $mytoplevel.s_r.send -side top -anchor e
-    label $mytoplevel.s_r.send.label -text [_ "Send symbol:"]
-    entry $mytoplevel.s_r.send.entry -width 21
-    pack $mytoplevel.s_r.send.entry $mytoplevel.s_r.send.label -side right
-
-    frame $mytoplevel.s_r.receive
-    pack $mytoplevel.s_r.receive -side top -anchor e
-    label $mytoplevel.s_r.receive.label -text [_ "Receive symbol:"]
-    entry $mytoplevel.s_r.receive.entry -width 21
-    pack $mytoplevel.s_r.receive.entry $mytoplevel.s_r.receive.label -side right
+    variable atomName
+    variable atomSend
+    variable atomReceive
     
-    frame $mytoplevel.buttonframe -pady 5
-    pack $mytoplevel.buttonframe -side top -fill x -expand 1 -pady 2m
-    button $mytoplevel.buttonframe.cancel -text [_ "Cancel"] \
-        -command "::pd_atom::cancel $mytoplevel"
-    pack $mytoplevel.buttonframe.cancel -side left -expand 1 -fill x -padx 10
-    if {[tk windowingsystem] ne "aqua"} {
-        button $mytoplevel.buttonframe.apply -text [_ "Apply"] \
-            -command "::pd_atom::apply $mytoplevel"
-    pack $mytoplevel.buttonframe.apply -side left -expand 1 -fill x -padx 10
-    }
-    button $mytoplevel.buttonframe.ok -text [_ "OK"] \
-        -command "::pd_atom::ok $mytoplevel"
-    pack $mytoplevel.buttonframe.ok -side left -expand 1 -fill x -padx 10
+    toplevel $top -class PdDialog
+    wm title $top [_ "Float"]
+    wm group $top .
+    
+    wm resizable $top 0 0
+    wm geometry  $top [::rightNextTo $::var(windowFocused)]
 
-    $mytoplevel.width.entry select from 0
-    $mytoplevel.width.entry select adjust end
-    focus $mytoplevel.width.entry
+    set atomWidth($top)         $width
+    set atomWidthOld($top)      $width
+    set atomLow($top)           $low
+    set atomLowOld($top)        $low
+    set atomHigh($top)          $high
+    set atomHighOld($top)       $high
+    set atomPosition($top)      $position
+    set atomName($top)          [::parseDash $name]
+    set atomSend($top)          [::parseDash $send]
+    set atomReceive($top)       [::parseDash $receive]
+    
+    label $top.widthLabel       -text [_ "Width"]
+    entry $top.width            -textvariable ::pd_atom::atomWidth($top)
+    
+    label $top.lowLabel         -text [_ "Low Value"]
+    entry $top.low              -textvariable ::pd_atom::atomLow($top)
+    
+    label $top.highLabel        -text [_ "High Value"]
+    entry $top.high             -textvariable ::pd_atom::atomHigh($top)
+    
+    label $top.nameLabel        -text [_ "Name"]
+    entry $top.name             -textvariable ::pd_atom::atomName($top)
+    
+    radiobutton $top.left       -text [_ "Left"] \
+                                -variable ::pd_atom::atomPosition($top) \
+                                -takefocus 0 \
+                                -value 0 
+    radiobutton $top.right      -text [_ "Right"] \
+                                -variable ::pd_atom::atomPosition($top) \
+                                -takefocus 0 \
+                                -value 1
+    radiobutton $top.top        -text [_ "Top"] \
+                                -variable ::pd_atom::atomPosition($top) \
+                                -takefocus 0 \
+                                -value 2 
+    radiobutton $top.bottom     -text [_ "Bottom"] \
+                                -variable ::pd_atom::atomPosition($top) \
+                                -takefocus 0 \
+                                -value 3 
+    
+    label $top.sendLabel        -text [_ "Send"]
+    entry $top.send             -textvariable ::pd_atom::atomSend($top)
+    
+    label $top.receiveLabel     -text [_ "Receive"]
+    entry $top.receive          -textvariable ::pd_atom::atomReceive($top)
+
+    pack  $top.widthLabel       -side top -anchor w
+    pack  $top.width            -side top -anchor w
+    pack  $top.lowLabel         -side top -anchor w
+    pack  $top.low              -side top -anchor w
+    pack  $top.highLabel        -side top -anchor w
+    pack  $top.high             -side top -anchor w
+    pack  $top.nameLabel        -side top -anchor w
+    pack  $top.name             -side top -anchor w
+    pack  $top.right            -side top -anchor w
+    pack  $top.left             -side top -anchor w
+    pack  $top.top              -side top -anchor w
+    pack  $top.bottom           -side top -anchor w
+    pack  $top.sendLabel        -side top -anchor w
+    pack  $top.send             -side top -anchor w
+    pack  $top.receiveLabel     -side top -anchor w
+    pack  $top.receive          -side top -anchor w
+    
+    bind  $top.width   <Return> { ::nextEntry %W }
+    bind  $top.low     <Return> { ::nextEntry %W }
+    bind  $top.high    <Return> { ::nextEntry %W }
+    bind  $top.name    <Return> { ::nextEntry %W }
+    bind  $top.send    <Return> { ::nextEntry %W }
+    bind  $top.receive <Return> { ::nextEntry %W }
+
+    focus $top.name
+    
+    $top.name selection range 0 end
+    
+    wm protocol $top WM_DELETE_WINDOW   "::pd_atom::_closed $top"
 }
 
 proc _closed {top} {
 
+    variable atomWidth
+    variable atomWidthOld
+    variable atomLow
+    variable atomLowOld
+    variable atomHigh
+    variable atomHighOld
+    variable atomPosition
+    variable atomName
+    variable atomSend
+    variable atomReceive
+    
+    ::pd_atom::_apply $top
+    
+    unset atomWidth($top)
+    unset atomWidthOld($top)
+    unset atomLow($top)
+    unset atomLowOld($top)
+    unset atomHigh($top)
+    unset atomHighOld($top)
+    unset atomPosition($top)
+    unset atomName($top)
+    unset atomSend($top)
+    unset atomReceive($top)
+    
+    ::pd_atom::_cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc apply {mytoplevel} {
+proc _apply {top} {
+    
+    if {0} {
     
     variable atomPosition
     
-    ::pd_connect::pdsend "$mytoplevel param \
-        [$mytoplevel.width.entry get] \
-        [$mytoplevel.limits.lower.entry get] \
-        [$mytoplevel.limits.upper.entry get] \
-        [::sanitized [::withDash [$mytoplevel.gatomlabel.name.entry get]]] \
-        $atomPosition($mytoplevel) \
-        [::sanitized [::withDash [$mytoplevel.s_r.receive.entry get]]] \
-        [::sanitized [::withDash [$mytoplevel.s_r.send.entry get]]]"
+    ::pd_connect::pdsend "$top param \
+        [$top.width.entry get] \
+        [$top.limits.lower.entry get] \
+        [$top.limits.upper.entry get] \
+        [::sanitized [::withDash [$top.gatomlabel.name.entry get]]] \
+        $atomPosition($top) \
+        [::sanitized [::withDash [$top.s_r.receive.entry get]]] \
+        [::sanitized [::withDash [$top.s_r.send.entry get]]]"
+    
+    }
 }
 
-proc cancel {mytoplevel} {
-    ::pd_connect::pdsend "$mytoplevel cancel"
-}
+proc _cancel {top} {
 
-proc ok {mytoplevel} {
-    ::pd_atom::apply $mytoplevel
-    ::pd_atom::cancel $mytoplevel
+    ::pd_connect::pdsend "$top cancel"
 }
 
 # ------------------------------------------------------------------------------------------------------------
