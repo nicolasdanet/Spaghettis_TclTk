@@ -30,35 +30,32 @@ proc show {top content} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {mytoplevel stuff} {
+proc _create {top content} {
 
-    toplevel $mytoplevel -class PdDialog
-    wm title $mytoplevel [_ "Data Properties"]
-    wm group $mytoplevel $::var(windowFocused)
-    $mytoplevel configure -padx 0 -pady 0
+    toplevel $top -class PdText
+    wm title $top [_ "Data"]
+    wm group $top .
+    
+    wm minsize  $top 50 50
+    wm geometry $top [format "=600x400%s" [::rightNextTo $::var(windowFocused)]]
 
-    frame $mytoplevel.buttonframe
-    pack $mytoplevel.buttonframe -side bottom -fill x -pady 2m
-    button $mytoplevel.buttonframe.send -text [_ "Send (Ctrl s)"] \
-        -command "::pd_data::send $mytoplevel"
-    button $mytoplevel.buttonframe.ok -text [_ "OK (Ctrl t)"] \
-        -command "::pd_data::ok $mytoplevel"
-    pack $mytoplevel.buttonframe.send -side left -expand 1
-    pack $mytoplevel.buttonframe.ok -side left -expand 1
+    text $top.text  -font [::getFont 14] \
+                    -borderwidth 0 \
+                    -highlightthickness 0
+    
+    pack $top.text  -side left -fill both -expand 1
 
-    text $mytoplevel.text -relief raised -bd 2 -height 40 -width 60 \
-        -yscrollcommand "$mytoplevel.scroll set"
-    scrollbar $mytoplevel.scroll -command "$mytoplevel.text yview"
-    pack $mytoplevel.scroll -side right -fill y
-    pack $mytoplevel.text -side left -fill both -expand 1
-    $mytoplevel.text insert end $stuff
-    focus $mytoplevel.text
-    bind $mytoplevel.text <Control-t> "::pd_data::ok $mytoplevel"
-    bind $mytoplevel.text <Control-s> "::pd_data::send $mytoplevel"
+    $top.text insert end $content
+    
+    wm protocol $top WM_DELETE_WINDOW   "::pd_data::_closed $top"
+        
+    focus $top.text
 }
 
 proc _closed {top} {
 
+    ::pd_data::_apply  $top
+    ::pd_data::_cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -76,17 +73,17 @@ proc _cancel {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc send {mytoplevel} {
-    for {set i 1} {[$mytoplevel.text compare [concat $i.0 + 3 chars] < end]} \
+proc send {top} {
+    for {set i 1} {[$top.text compare [concat $i.0 + 3 chars] < end]} \
         {incr i 1} {
-            ::pd_connect::pdsend "$mytoplevel data [$mytoplevel.text get $i.0 [expr $i + 1].0]"
+            ::pd_connect::pdsend "$top data [$top.text get $i.0 [expr $i + 1].0]"
         }
-    ::pd_connect::pdsend "$mytoplevel end"
+    ::pd_connect::pdsend "$top end"
 }
 
-proc ok {mytoplevel} {
-    ::pd_data::send $mytoplevel
-    ::pd_data::_cancel $mytoplevel
+proc ok {top} {
+    ::pd_data::send $top
+    ::pd_data::_cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
