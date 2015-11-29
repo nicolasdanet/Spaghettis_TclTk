@@ -63,22 +63,19 @@ proc _closed {top} {
 
 proc _apply {top} {
 
+    for {set i 1} {[$top.text compare $i.end < end]} {incr i 1} {
+        set line [$top.text get $i.0 $i.end]
+        if {$line != ""} {
+            ::pd_connect::pdsend "$top data $line"
+        }
+    }
+    
+    ::pd_connect::pdsend "$top end"
 }
 
 proc _cancel {top} {
 
     ::pd_connect::pdsend "$top cancel"
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc send {top} {
-    for {set i 1} {[$top.text compare [concat $i.0 + 3 chars] < end]} \
-        {incr i 1} {
-            ::pd_connect::pdsend "$top data [$top.text get $i.0 [expr $i + 1].0]"
-        }
-    ::pd_connect::pdsend "$top end"
 }
 
 # ------------------------------------------------------------------------------------------------------------
