@@ -3,12 +3,12 @@
 # ------------------------------------------------------------------------------------------------------------
 
 package ifneeded dialog_audio 0.1       [list source [file join $dir dialog_audio.tcl]]
-package ifneeded dialog_canvas 0.1      [list source [file join $dir dialog_canvas.tcl]]
 package ifneeded dialog_midi 0.1        [list source [file join $dir dialog_midi.tcl]]
 package ifneeded pd_apple 0.1           [list source [file join $dir pd_apple.tcl]]
 package ifneeded pd_array 0.1           [list source [file join $dir pd_array.tcl]]
 package ifneeded pd_atom 0.1            [list source [file join $dir pd_atom.tcl]]
 package ifneeded pd_bind 0.1            [list source [file join $dir pd_bind.tcl]]
+package ifneeded pd_canvas 0.1          [list source [file join $dir pd_canvas.tcl]]
 package ifneeded pd_confirm 0.1         [list source [file join $dir pd_confirm.tcl]]
 package ifneeded pd_connect 0.1         [list source [file join $dir pd_connect.tcl]]
 package ifneeded pd_console 0.1         [list source [file join $dir pd_console.tcl]]

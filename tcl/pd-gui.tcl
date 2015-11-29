@@ -90,12 +90,12 @@ if {[tk windowingsystem] eq "aqua"} { package require pd_apple }
 # ------------------------------------------------------------------------------------------------------------
 
 package require dialog_audio
-package require dialog_canvas
 package require dialog_midi
 
 package require pd_array
 package require pd_atom
 package require pd_bind
+package require pd_canvas
 package require pd_confirm
 package require pd_connect
 package require pd_console

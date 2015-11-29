@@ -7,23 +7,23 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# TODO offset this panel so it doesn't overlap the pdtk_array panel
+package provide pd_canvas 0.1
 
-package provide dialog_canvas 0.1
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::dialog_canvas:: {
-}
-
-# global variables to store checkbox state on canvas properties window.  These
-# are only used in the context of getting data from the checkboxes, so they
-# aren't really useful elsewhere.  It would be nice to have them globally
-# useful, but that would mean changing the C code.
 array set graphme_button {}
 array set hidetext_button {}
 
-############# pdtk_canvas_dialog -- dialog window for canvases #################
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-proc ::dialog_canvas::apply {mytoplevel} {
+namespace eval ::pd_canvas:: {
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc apply {mytoplevel} {
     ::pd_connect::pdsend "$mytoplevel donecanvasdialog \
             [$mytoplevel.scale.x.entry get] \
             [$mytoplevel.scale.y.entry get] \
@@ -38,16 +38,16 @@ proc ::dialog_canvas::apply {mytoplevel} {
             [$mytoplevel.range.y.margin_entry get]"
 }
 
-proc ::dialog_canvas::cancel {mytoplevel} {
+proc cancel {mytoplevel} {
     ::pd_connect::pdsend "$mytoplevel cancel"
 }
 
-proc ::dialog_canvas::ok {mytoplevel} {
-    ::dialog_canvas::apply $mytoplevel
-    ::dialog_canvas::cancel $mytoplevel
+proc ok {mytoplevel} {
+    ::pd_canvas::apply $mytoplevel
+    ::pd_canvas::cancel $mytoplevel
 }
 
-proc ::dialog_canvas::checkcommand {mytoplevel} {
+proc checkcommand {mytoplevel} {
     if { $::graphme_button($mytoplevel) != 0 } {
         $mytoplevel.scale.x.entry configure -state disabled
         $mytoplevel.scale.y.entry configure -state disabled
@@ -102,7 +102,7 @@ proc ::dialog_canvas::checkcommand {mytoplevel} {
     }
 }
 
-proc ::dialog_canvas::pdtk_canvas_dialog {mytoplevel xscale yscale graphmeflags \
+proc pdtk_canvas_dialog {mytoplevel xscale yscale graphmeflags \
                                              xfrom yfrom xto yto \
                                              xsize ysize xmargin ymargin} {
     if {[winfo exists $mytoplevel]} {
@@ -140,10 +140,10 @@ proc ::dialog_canvas::pdtk_canvas_dialog {mytoplevel xscale yscale graphmeflags 
     $mytoplevel.range.x.margin_entry insert 0 $xmargin
     $mytoplevel.range.y.margin_entry insert 0 $ymargin
 
-   ::dialog_canvas::checkcommand $mytoplevel
+   ::pd_canvas::checkcommand $mytoplevel
 }
 
-proc ::dialog_canvas::create_dialog {mytoplevel} {
+proc create_dialog {mytoplevel} {
     toplevel $mytoplevel -class PdDialog
     wm title $mytoplevel [_ "Canvas Properties"]
     wm group $mytoplevel .
@@ -167,11 +167,11 @@ proc ::dialog_canvas::create_dialog {mytoplevel} {
     pack $mytoplevel.parent -side top -fill x
     checkbutton $mytoplevel.parent.graphme -text [_ "Graph-On-Parent"] \
         -anchor w -variable graphme_button($mytoplevel) \
-        -command [concat ::dialog_canvas::checkcommand $mytoplevel]
+        -command [concat ::pd_canvas::checkcommand $mytoplevel]
     pack $mytoplevel.parent.graphme -side top -fill x -padx 40
     checkbutton $mytoplevel.parent.hidetext -text [_ "Hide object name and arguments"] \
         -anchor w -variable hidetext_button($mytoplevel) \
-        -command [concat ::dialog_canvas::checkcommand $mytoplevel]
+        -command [concat ::pd_canvas::checkcommand $mytoplevel]
     pack $mytoplevel.parent.hidetext -side top -fill x -padx 40
 
     labelframe $mytoplevel.range -text [_ "Range and size"] -borderwidth 1
@@ -210,14 +210,22 @@ proc ::dialog_canvas::create_dialog {mytoplevel} {
     frame $mytoplevel.buttons
     pack $mytoplevel.buttons -side bottom -fill x -expand 1 -pady 2m
     button $mytoplevel.buttons.cancel -text [_ "Cancel"] \
-        -command "::dialog_canvas::cancel $mytoplevel"
+        -command "::pd_canvas::cancel $mytoplevel"
     pack $mytoplevel.buttons.cancel -side left -expand 1 -fill x -padx 10
     if {[tk windowingsystem] ne "aqua"} {
         button $mytoplevel.buttons.apply -text [_ "Apply"] \
-            -command "::dialog_canvas::apply $mytoplevel"
+            -command "::pd_canvas::apply $mytoplevel"
         pack $mytoplevel.buttons.apply -side left -expand 1 -fill x -padx 10
     }
     button $mytoplevel.buttons.ok -text [_ "OK"] \
-        -command "::dialog_canvas::ok $mytoplevel"
+        -command "::pd_canvas::ok $mytoplevel"
     pack $mytoplevel.buttons.ok -side left -expand 1 -fill x -padx 10
  }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------

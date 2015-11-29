@@ -1061,14 +1061,14 @@ void canvas_properties(t_gobj*z, t_glist*unused)
     char graphbuf[200];
     if (glist_isgraph(x) != 0)
         sprintf(graphbuf,
-            "::dialog_canvas::pdtk_canvas_dialog %%s %g %g %d %g %g %g %g %d %d %d %d\n",
+            "::pd_canvas::pdtk_canvas_dialog %%s %g %g %d %g %g %g %g %d %d %d %d\n",
                 0., 0.,
                 glist_isgraph(x) ,//1,
                 x->gl_x1, x->gl_y1, x->gl_x2, x->gl_y2, 
                 (int)x->gl_pixwidth, (int)x->gl_pixheight,
                 (int)x->gl_xmargin, (int)x->gl_ymargin);
     else sprintf(graphbuf,
-            "::dialog_canvas::pdtk_canvas_dialog %%s %g %g %d %g %g %g %g %d %d %d %d\n",
+            "::pd_canvas::pdtk_canvas_dialog %%s %g %g %d %g %g %g %g %d %d %d %d\n",
                 glist_dpixtodx(x, 1), -glist_dpixtody(x, 1),
                 0,
                 0., -1., 1., 1., 
