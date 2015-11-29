@@ -400,7 +400,7 @@ static void scalar_properties(t_gobj *z, struct _glist *owner)
     binbuf_free(b);
     buf = t_resizebytes(buf, bufsize, bufsize+1);
     buf[bufsize] = 0;
-    sprintf(buf2, "::dialog_data::pdtk_data_dialog %%s {");
+    sprintf(buf2, "::pd_data::pdtk_data_dialog %%s {");
     gfxstub_new((t_pd *)owner, x, buf2);
     sys_gui(buf);
     sys_gui("}\n");
