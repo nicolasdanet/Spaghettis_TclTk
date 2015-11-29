@@ -49,7 +49,7 @@ proc newPatch {} {
     variable untitledNumber
     variable directoryNew
     
-    ::pd_connect::pdsend "pd menunew $untitledName-$untitledNumber [::enquoted $directoryNew]"
+    ::pd_connect::pdsend "pd menunew $untitledName-$untitledNumber [::escaped $directoryNew]"
     
     incr untitledNumber 
 }
@@ -80,7 +80,7 @@ proc openFile {filename} {
     
     if {[file exists $filename]} {
     if {[lsearch -exact $::var(filesExtensions) $extension] > -1} {
-        ::pd_connect::pdsend "pd open [::enquoted $basename] [::enquoted $directory]"
+        ::pd_connect::pdsend "pd open [::escaped $basename] [::escaped $directory]"
         set directoryOpen $directory
         return
     }
@@ -108,7 +108,7 @@ proc saveAs {target filename directory destroy} {
     if {$filename ne ""} {
         set basename  [file tail $filename]
         set directory [file normalize [file dirname $filename]]
-        ::pd_connect::pdsend "$target savetofile [::enquoted $basename] [::enquoted $directory] $destroy"
+        ::pd_connect::pdsend "$target savetofile [::escaped $basename] [::escaped $directory] $destroy"
         set directoryNew $directory
     }
 }
@@ -124,7 +124,7 @@ proc openPanel {target directory} {
     set filename [tk_getOpenFile -initialdir $directory]
     
     if {$filename ne ""} {
-        ::pd_connect::pdsend "$target callback [::enquoted $filename]"
+        ::pd_connect::pdsend "$target callback [::escaped $filename]"
     }
 }
 
@@ -139,7 +139,7 @@ proc savePanel {target directory} {
     set filename [tk_getSaveFile -initialdir $directory]
     
     if {$filename ne ""} {
-        ::pd_connect::pdsend "$target callback [::enquoted $filename]"
+        ::pd_connect::pdsend "$target callback [::escaped $filename]"
     }
 }
 

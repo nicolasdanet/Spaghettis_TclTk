@@ -260,7 +260,7 @@ proc initialize {audioAPIs midiAPIs} {
     
     # Respond.
     
-    ::pd_connect::pdsend "pd init [::enquoted [pwd]] $measured"
+    ::pd_connect::pdsend "pd init [::escaped [pwd]] $measured"
     
     set ::var(isInitialized) 1
     
