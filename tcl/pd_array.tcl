@@ -24,15 +24,13 @@ namespace eval ::pd_array:: {
 
 variable  arrayName
 variable  arraySize
-variable  arraySizeOld
 variable  arrayDraw
 variable  arraySave
 
-array set arrayName     {}
-array set arraySize     {}
-array set arraySizeOld  {}
-array set arrayDraw     {}
-array set arraySave     {}
+array set arrayName {}
+array set arraySize {}
+array set arrayDraw {}
+array set arraySave {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -49,7 +47,6 @@ proc _create {top name size flags} {
 
     variable arrayName
     variable arraySize
-    variable arraySizeOld
     variable arrayDraw
     variable arraySave
     
@@ -60,11 +57,11 @@ proc _create {top name size flags} {
     wm resizable $top 0 0
     wm geometry  $top [::rightNextTo $::var(windowFocused)]
     
-    set arrayName($top)     [::rauteToDollar $name]
-    set arraySize($top)     $size
-    set arraySizeOld($top)  $size
-    set arraySave($top)     [expr {$flags & 1}]
-    set arrayDraw($top)     [expr {($flags & 6) >> 1}]
+    set arrayName($top)         [::rauteToDollar $name]
+    set arraySize($top)         $size
+    set arraySize(${top}.old)   $size
+    set arraySave($top)         [expr {$flags & 1}]
+    set arrayDraw($top)         [expr {($flags & 6) >> 1}]
     
     label $top.nameLabel        -text [_ "Name"]
     entry $top.name             -textvariable ::pd_array::arrayName($top)
@@ -116,7 +113,6 @@ proc _closed {top} {
     
     variable arrayName
     variable arraySize
-    variable arraySizeOld
     variable arrayDraw
     variable arraySave
     
@@ -124,7 +120,7 @@ proc _closed {top} {
     
     unset arrayName($top)
     unset arraySize($top)
-    unset arraySizeOld($top)
+    unset arraySize(${top}.old)
     unset arrayDraw($top)
     unset arraySave($top)
     
@@ -160,9 +156,8 @@ proc _cancel {top} {
 proc _forceSize {top} {
 
     variable arraySize
-    variable arraySizeOld
     
-    set arraySize($top) [::ifInteger $arraySize($top) $arraySizeOld($top)]
+    set arraySize($top) [::ifInteger $arraySize($top) $arraySize(${top}.old)]
     set arraySize($top) [::tcl::mathfunc::max $arraySize($top) 1]
 }
 

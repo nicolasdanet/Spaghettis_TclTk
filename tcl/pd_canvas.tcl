@@ -144,10 +144,10 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     label $top.endLabel         -text [_ "End"]
     entry $top.end              -textvariable ::pd_canvas::canvasEnd($top)
     
-    label $top.upLabel          -text [_ "Up"]
+    label $top.upLabel          -text [_ "Top"]
     entry $top.up               -textvariable ::pd_canvas::canvasUp($top)
 
-    label $top.downLabel        -text [_ "Down"]
+    label $top.downLabel        -text [_ "Bottom"]
     entry $top.down             -textvariable ::pd_canvas::canvasDown($top)
     
     label $top.xLabel           -text [_ "Origin X"]
