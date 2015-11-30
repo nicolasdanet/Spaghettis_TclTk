@@ -26,10 +26,10 @@ variable  canvasScaleX
 variable  canvasScaleY
 variable  canvasVisible
 variable  canvasHide
-variable  canvasLowX
-variable  canvasLowY
-variable  canvasHighX
-variable  canvasHighY
+variable  canvasStart
+variable  canvasUp
+variable  canvasEnd
+variable  canvasDown
 variable  canvasWidth
 variable  canvasHeight
 variable  canvasX
@@ -39,10 +39,10 @@ array set canvasScaleX  {}
 array set canvasScaleY  {}
 array set canvasVisible {}
 array set canvasHide    {}
-array set canvasLowX    {}
-array set canvasLowY    {}
-array set canvasHighX   {}
-array set canvasHighY   {}
+array set canvasStart   {}
+array set canvasUp      {}
+array set canvasEnd     {}
+array set canvasDown    {}
 array set canvasWidth   {}
 array set canvasHeight  {}
 array set canvasX       {}
@@ -51,24 +51,24 @@ array set canvasY       {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {top scaleX scaleY flags lowX lowY highX highY width height x y} {
+proc show {top scaleX scaleY flags start up end down width height x y} {
     
-    ::pd_canvas::_create $top $scaleX $scaleY $flags $lowX $lowY $highX $highY $width $height $x $y
+    ::pd_canvas::_create $top $scaleX $scaleY $flags $start $up $end $down $width $height $x $y
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {top scaleX scaleY flags lowX lowY highX highY width height x y} {
+proc _create {top scaleX scaleY flags start up end down width height x y} {
 
     variable canvasScaleX
     variable canvasScaleY
     variable canvasVisible
     variable canvasHide
-    variable canvasLowX
-    variable canvasLowY
-    variable canvasHighX
-    variable canvasHighY
+    variable canvasStart
+    variable canvasUp
+    variable canvasEnd
+    variable canvasDown
     variable canvasWidth
     variable canvasHeight
     variable canvasX
@@ -83,10 +83,10 @@ proc _create {top scaleX scaleY flags lowX lowY highX highY width height x y} {
     
     set canvasScaleX($top)          $scaleX
     set canvasScaleY($top)          $scaleY
-    set canvasLowX($top)            $lowX
-    set canvasLowY($top)            $lowY
-    set canvasHighX($top)           $highX
-    set canvasHighY($top)           $highY
+    set canvasStart($top)           $start
+    set canvasUp($top)              $up
+    set canvasEnd($top)             $end
+    set canvasDown($top)            $down
     set canvasWidth($top)           $width
     set canvasHeight($top)          $height
     set canvasX($top)               $x
@@ -94,10 +94,10 @@ proc _create {top scaleX scaleY flags lowX lowY highX highY width height x y} {
     
     set canvasScaleX(${top}.old)    $scaleX
     set canvasScaleY(${top}.old)    $scaleY
-    set canvasLowX(${top}.old)      $lowX
-    set canvasLowY(${top}.old)      $lowY
-    set canvasHighX(${top}.old)     $highX
-    set canvasHighY(${top}.old)     $highY
+    set canvasStart(${top}.old)     $start
+    set canvasUp(${top}.old)        $up
+    set canvasEnd(${top}.old)       $end
+    set canvasDown(${top}.old)      $down
     set canvasWidth(${top}.old)     $width
     set canvasHeight(${top}.old)    $height
     set canvasX(${top}.old)         $x
@@ -138,17 +138,17 @@ proc _create {top scaleX scaleY flags lowX lowY highX highY width height x y} {
                                 -variable ::pd_canvas::canvasHide($top) \
                                 -takefocus 0
     
-    label $top.lowXLabel        -text [_ "Minimum X"]
-    entry $top.lowX             -textvariable ::pd_canvas::canvasLowX($top)
+    label $top.startLabel       -text [_ "Start"]
+    entry $top.start            -textvariable ::pd_canvas::canvasStart($top)
 
-    label $top.highXLabel       -text [_ "Maximum X"]
-    entry $top.highX            -textvariable ::pd_canvas::canvasHighX($top)
+    label $top.endLabel         -text [_ "End"]
+    entry $top.end              -textvariable ::pd_canvas::canvasEnd($top)
     
-    label $top.lowYLabel        -text [_ "Minimum Y"]
-    entry $top.lowY             -textvariable ::pd_canvas::canvasLowY($top)
+    label $top.upLabel          -text [_ "Up"]
+    entry $top.up               -textvariable ::pd_canvas::canvasUp($top)
 
-    label $top.highYLabel       -text [_ "Maximum Y"]
-    entry $top.highY            -textvariable ::pd_canvas::canvasHighY($top)
+    label $top.downLabel        -text [_ "Down"]
+    entry $top.down             -textvariable ::pd_canvas::canvasDown($top)
     
     label $top.xLabel           -text [_ "Origin X"]
     entry $top.x                -textvariable ::pd_canvas::canvasX($top)
@@ -168,14 +168,14 @@ proc _create {top scaleX scaleY flags lowX lowY highX highY width height x y} {
     pack  $top.scaleY           -side top -anchor w
     pack  $top.visible          -side top -anchor w
     pack  $top.hide             -side top -anchor w
-    pack  $top.lowXLabel        -side top -anchor w
-    pack  $top.lowX             -side top -anchor w
-    pack  $top.highXLabel       -side top -anchor w
-    pack  $top.highX            -side top -anchor w
-    pack  $top.lowYLabel        -side top -anchor w
-    pack  $top.lowY             -side top -anchor w
-    pack  $top.highYLabel       -side top -anchor w
-    pack  $top.highY            -side top -anchor w
+    pack  $top.startLabel       -side top -anchor w
+    pack  $top.start            -side top -anchor w
+    pack  $top.endLabel         -side top -anchor w
+    pack  $top.end              -side top -anchor w
+    pack  $top.upLabel          -side top -anchor w
+    pack  $top.up               -side top -anchor w
+    pack  $top.downLabel        -side top -anchor w
+    pack  $top.down             -side top -anchor w
     pack  $top.xLabel           -side top -anchor w
     pack  $top.x                -side top -anchor w
     pack  $top.yLabel           -side top -anchor w
@@ -187,10 +187,10 @@ proc _create {top scaleX scaleY flags lowX lowY highX highY width height x y} {
     
     bind  $top.scaleX   <Return> { ::nextEntry %W }
     bind  $top.scaleY   <Return> { ::nextEntry %W }
-    bind  $top.lowX     <Return> { ::nextEntry %W }
-    bind  $top.highX    <Return> { ::nextEntry %W }
-    bind  $top.lowY     <Return> { ::nextEntry %W }
-    bind  $top.highY    <Return> { ::nextEntry %W }
+    bind  $top.start    <Return> { ::nextEntry %W }
+    bind  $top.end      <Return> { ::nextEntry %W }
+    bind  $top.up       <Return> { ::nextEntry %W }
+    bind  $top.down     <Return> { ::nextEntry %W }
     bind  $top.x        <Return> { ::nextEntry %W }
     bind  $top.y        <Return> { ::nextEntry %W }
     bind  $top.width    <Return> { ::nextEntry %W }
@@ -209,10 +209,10 @@ proc _closed {top} {
     variable canvasScaleY
     variable canvasVisible
     variable canvasHide
-    variable canvasLowX
-    variable canvasLowY
-    variable canvasHighX
-    variable canvasHighY
+    variable canvasStart
+    variable canvasUp
+    variable canvasEnd
+    variable canvasDown
     variable canvasWidth
     variable canvasHeight
     variable canvasX
@@ -224,10 +224,10 @@ proc _closed {top} {
     unset canvasScaleY($top)
     unset canvasVisible($top)
     unset canvasHide($top)
-    unset canvasLowX($top)
-    unset canvasLowY($top)
-    unset canvasHighX($top)
-    unset canvasHighY($top)
+    unset canvasStart($top)
+    unset canvasUp($top)
+    unset canvasEnd($top)
+    unset canvasDown($top)
     unset canvasWidth($top)
     unset canvasHeight($top)
     unset canvasX($top)
@@ -235,10 +235,10 @@ proc _closed {top} {
     
     unset canvasScaleX(${top}.old)
     unset canvasScaleY(${top}.old)
-    unset canvasLowX(${top}.old)
-    unset canvasLowY(${top}.old)
-    unset canvasHighX(${top}.old)
-    unset canvasHighY(${top}.old)
+    unset canvasStart(${top}.old)
+    unset canvasUp(${top}.old)
+    unset canvasEnd(${top}.old)
+    unset canvasDown(${top}.old)
     unset canvasWidth(${top}.old)
     unset canvasHeight(${top}.old)
     unset canvasX(${top}.old)
@@ -256,10 +256,10 @@ proc _apply {top} {
     variable canvasScaleY
     variable canvasVisible
     variable canvasHide
-    variable canvasLowX
-    variable canvasLowY
-    variable canvasHighX
-    variable canvasHighY
+    variable canvasStart
+    variable canvasUp
+    variable canvasEnd
+    variable canvasDown
     variable canvasWidth
     variable canvasHeight
     variable canvasX
@@ -273,10 +273,10 @@ proc _apply {top} {
             $canvasScaleX($top) \
             $canvasScaleY($top) \
             [expr {$canvasVisible($top) + 2 * $canvasHide($top)}] \
-            $canvasLowX($top) \
-            $canvasLowY($top) \
-            $canvasHighX($top) \
-            $canvasHighY($top) \
+            $canvasStart($top) \
+            $canvasUp($top) \
+            $canvasEnd($top) \
+            $canvasDown($top) \
             $canvasWidth($top) \
             $canvasHeight($top) \
             $canvasX($top) \
@@ -307,22 +307,22 @@ proc _forceScales {top} {
 
 proc _forceLimits {top} {
 
-    variable canvasLowX
-    variable canvasLowY
-    variable canvasHighX
-    variable canvasHighY
+    variable canvasStart
+    variable canvasUp
+    variable canvasEnd
+    variable canvasDown
 
-    set canvasLowX($top)  [::ifInteger $canvasLowX($top)  $canvasLowX(${top}.old)]
-    set canvasHighX($top) [::ifInteger $canvasHighX($top) $canvasHighX(${top}.old)]
-    set canvasLowY($top)  [::ifNumber  $canvasLowY($top)  $canvasLowY(${top}.old)]
-    set canvasHighY($top) [::ifNumber  $canvasHighY($top) $canvasHighY(${top}.old)]
+    set canvasStart($top) [::ifInteger $canvasStart($top) $canvasStart(${top}.old)]
+    set canvasEnd($top)   [::ifInteger $canvasEnd($top)   $canvasEnd(${top}.old)]
+    set canvasUp($top)    [::ifNumber  $canvasUp($top)    $canvasUp(${top}.old)]
+    set canvasDown($top)  [::ifNumber  $canvasDown($top)  $canvasDown(${top}.old)]
     
-    if {$canvasLowX($top) == $canvasHighX($top)} {
-        set canvasLowX($top) $canvasLowX(${top}.old); set canvasHighX($top) $canvasHighX(${top}.old)
+    if {$canvasStart($top) == $canvasEnd($top)} {
+        set canvasStart($top) $canvasStart(${top}.old); set canvasEnd($top) $canvasEnd(${top}.old)
     }
     
-    if {$canvasLowY($top) == $canvasHighY($top)} { 
-        set canvasLowY($top) $canvasLowY(${top}.old); set canvasHighY($top) $canvasHighY(${top}.old)
+    if {$canvasUp($top) == $canvasDown($top)} { 
+        set canvasUp($top) $canvasUp(${top}.old); set canvasDown($top) $canvasDown(${top}.old)
     }
 }
 
