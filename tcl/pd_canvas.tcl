@@ -317,6 +317,9 @@ proc _forceLimits {top} {
     set canvasUp($top)    [::ifNumber  $canvasUp($top)    $canvasUp(${top}.old)]
     set canvasDown($top)  [::ifNumber  $canvasDown($top)  $canvasDown(${top}.old)]
     
+    set canvasStart($top) [::tcl::mathfunc::max $canvasStart($top) 0]
+    set canvasEnd($top)   [::tcl::mathfunc::max $canvasEnd($top)   0]
+    
     if {$canvasStart($top) == $canvasEnd($top)} {
         set canvasStart($top) $canvasStart(${top}.old); set canvasEnd($top) $canvasEnd(${top}.old)
     }
