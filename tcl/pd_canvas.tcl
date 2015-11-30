@@ -23,86 +23,12 @@ namespace eval ::pd_canvas:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc apply {mytoplevel} {
-    ::pd_connect::pdsend "$mytoplevel donecanvasdialog \
-            [$mytoplevel.scale.x.entry get] \
-            [$mytoplevel.scale.y.entry get] \
-            [expr $::graphme_button($mytoplevel) + 2 * $::hidetext_button($mytoplevel)] \
-            [$mytoplevel.range.x.from_entry get] \
-            [$mytoplevel.range.y.from_entry get] \
-            [$mytoplevel.range.x.to_entry get] \
-            [$mytoplevel.range.y.to_entry get] \
-            [$mytoplevel.range.x.size_entry get] \
-            [$mytoplevel.range.y.size_entry get] \
-            [$mytoplevel.range.x.margin_entry get] \
-            [$mytoplevel.range.y.margin_entry get]"
-}
 
-proc cancel {mytoplevel} {
-    ::pd_connect::pdsend "$mytoplevel cancel"
-}
 
-proc ok {mytoplevel} {
-    ::pd_canvas::apply $mytoplevel
-    ::pd_canvas::cancel $mytoplevel
-}
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-proc checkcommand {mytoplevel} {
-    if { $::graphme_button($mytoplevel) != 0 } {
-        $mytoplevel.scale.x.entry configure -state disabled
-        $mytoplevel.scale.y.entry configure -state disabled
-        $mytoplevel.parent.hidetext configure -state normal
-        $mytoplevel.range.x.from_entry configure -state normal
-        $mytoplevel.range.x.to_entry configure -state normal
-        $mytoplevel.range.x.size_entry configure -state normal
-        $mytoplevel.range.x.margin_entry configure -state normal
-        $mytoplevel.range.y.from_entry configure -state normal
-        $mytoplevel.range.y.to_entry configure -state normal
-        $mytoplevel.range.y.size_entry configure -state normal
-        $mytoplevel.range.y.margin_entry configure -state normal
-        if { [$mytoplevel.range.x.from_entry get] == 0 \
-                 && [$mytoplevel.range.y.from_entry get] == 0 \
-                 && [$mytoplevel.range.x.to_entry get] == 0 \
-                 && [$mytoplevel.range.y.to_entry get] == 0 } {
-            $mytoplevel.range.y.to_entry insert 0 1
-            $mytoplevel.range.y.to_entry insert 0 1
-        }
-        if { [$mytoplevel.range.x.size_entry get] == 0 } {
-            $mytoplevel.range.x.size_entry delete 0 end
-            $mytoplevel.range.x.margin_entry delete 0 end
-            $mytoplevel.range.x.size_entry insert 0 85
-            $mytoplevel.range.x.margin_entry insert 0 100
-        }
-        if { [$mytoplevel.range.y.size_entry get] == 0 } {
-            $mytoplevel.range.y.size_entry delete 0 end
-            $mytoplevel.range.y.margin_entry delete 0 end
-            $mytoplevel.range.y.size_entry insert 0 60
-            $mytoplevel.range.y.margin_entry insert 0 100
-       }
-    } else {
-        $mytoplevel.scale.x.entry configure -state normal
-        $mytoplevel.scale.y.entry configure -state normal
-        $mytoplevel.parent.hidetext configure -state disabled
-        $mytoplevel.range.x.from_entry configure -state disabled
-        $mytoplevel.range.x.to_entry configure -state disabled
-        $mytoplevel.range.x.size_entry configure -state disabled
-        $mytoplevel.range.x.margin_entry configure -state disabled
-        $mytoplevel.range.y.from_entry configure -state disabled
-        $mytoplevel.range.y.to_entry configure -state disabled
-        $mytoplevel.range.y.size_entry configure -state disabled
-        $mytoplevel.range.y.margin_entry configure -state disabled
-        if { [$mytoplevel.scale.x.entry get] == 0 } {
-            $mytoplevel.scale.x.entry delete 0 end
-            $mytoplevel.scale.x.entry insert 0 1
-        }
-        if { [$mytoplevel.scale.y.entry get] == 0 } {
-            $mytoplevel.scale.y.entry delete 0 end
-            $mytoplevel.scale.y.entry insert 0 1
-        }
-    }
-}
-
-proc pdtk_canvas_dialog {mytoplevel xscale yscale graphmeflags \
+proc show {mytoplevel xscale yscale graphmeflags \
                                              xfrom yfrom xto yto \
                                              xsize ysize xmargin ymargin} {
     if {[winfo exists $mytoplevel]} {
@@ -111,6 +37,7 @@ proc pdtk_canvas_dialog {mytoplevel xscale yscale graphmeflags \
     } else {
         create_dialog $mytoplevel
     }
+    
     switch -- $graphmeflags {
         0 {
             $mytoplevel.parent.graphme deselect
@@ -124,8 +51,6 @@ proc pdtk_canvas_dialog {mytoplevel xscale yscale graphmeflags \
         } 3 {
             $mytoplevel.parent.graphme select
             $mytoplevel.parent.hidetext select
-        } default {
-            # ::pd_console::error [_ "WARNING: unknown graphme flags received in pdtk_canvas_dialog"]
         }
     }
 
@@ -142,6 +67,9 @@ proc pdtk_canvas_dialog {mytoplevel xscale yscale graphmeflags \
 
    ::pd_canvas::checkcommand $mytoplevel
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 proc create_dialog {mytoplevel} {
     toplevel $mytoplevel -class PdDialog
@@ -221,6 +149,91 @@ proc create_dialog {mytoplevel} {
         -command "::pd_canvas::ok $mytoplevel"
     pack $mytoplevel.buttons.ok -side left -expand 1 -fill x -padx 10
  }
+ 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc apply {mytoplevel} {
+    ::pd_connect::pdsend "$mytoplevel donecanvasdialog \
+            [$mytoplevel.scale.x.entry get] \
+            [$mytoplevel.scale.y.entry get] \
+            [expr $::graphme_button($mytoplevel) + 2 * $::hidetext_button($mytoplevel)] \
+            [$mytoplevel.range.x.from_entry get] \
+            [$mytoplevel.range.y.from_entry get] \
+            [$mytoplevel.range.x.to_entry get] \
+            [$mytoplevel.range.y.to_entry get] \
+            [$mytoplevel.range.x.size_entry get] \
+            [$mytoplevel.range.y.size_entry get] \
+            [$mytoplevel.range.x.margin_entry get] \
+            [$mytoplevel.range.y.margin_entry get]"
+}
+
+proc cancel {mytoplevel} {
+    ::pd_connect::pdsend "$mytoplevel cancel"
+}
+
+proc ok {mytoplevel} {
+    ::pd_canvas::apply $mytoplevel
+    ::pd_canvas::cancel $mytoplevel
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc checkcommand {mytoplevel} {
+    if { $::graphme_button($mytoplevel) != 0 } {
+        $mytoplevel.scale.x.entry configure -state disabled
+        $mytoplevel.scale.y.entry configure -state disabled
+        $mytoplevel.parent.hidetext configure -state normal
+        $mytoplevel.range.x.from_entry configure -state normal
+        $mytoplevel.range.x.to_entry configure -state normal
+        $mytoplevel.range.x.size_entry configure -state normal
+        $mytoplevel.range.x.margin_entry configure -state normal
+        $mytoplevel.range.y.from_entry configure -state normal
+        $mytoplevel.range.y.to_entry configure -state normal
+        $mytoplevel.range.y.size_entry configure -state normal
+        $mytoplevel.range.y.margin_entry configure -state normal
+        if { [$mytoplevel.range.x.from_entry get] == 0 \
+                 && [$mytoplevel.range.y.from_entry get] == 0 \
+                 && [$mytoplevel.range.x.to_entry get] == 0 \
+                 && [$mytoplevel.range.y.to_entry get] == 0 } {
+            $mytoplevel.range.y.to_entry insert 0 1
+            $mytoplevel.range.y.to_entry insert 0 1
+        }
+        if { [$mytoplevel.range.x.size_entry get] == 0 } {
+            $mytoplevel.range.x.size_entry delete 0 end
+            $mytoplevel.range.x.margin_entry delete 0 end
+            $mytoplevel.range.x.size_entry insert 0 85
+            $mytoplevel.range.x.margin_entry insert 0 100
+        }
+        if { [$mytoplevel.range.y.size_entry get] == 0 } {
+            $mytoplevel.range.y.size_entry delete 0 end
+            $mytoplevel.range.y.margin_entry delete 0 end
+            $mytoplevel.range.y.size_entry insert 0 60
+            $mytoplevel.range.y.margin_entry insert 0 100
+       }
+    } else {
+        $mytoplevel.scale.x.entry configure -state normal
+        $mytoplevel.scale.y.entry configure -state normal
+        $mytoplevel.parent.hidetext configure -state disabled
+        $mytoplevel.range.x.from_entry configure -state disabled
+        $mytoplevel.range.x.to_entry configure -state disabled
+        $mytoplevel.range.x.size_entry configure -state disabled
+        $mytoplevel.range.x.margin_entry configure -state disabled
+        $mytoplevel.range.y.from_entry configure -state disabled
+        $mytoplevel.range.y.to_entry configure -state disabled
+        $mytoplevel.range.y.size_entry configure -state disabled
+        $mytoplevel.range.y.margin_entry configure -state disabled
+        if { [$mytoplevel.scale.x.entry get] == 0 } {
+            $mytoplevel.scale.x.entry delete 0 end
+            $mytoplevel.scale.x.entry insert 0 1
+        }
+        if { [$mytoplevel.scale.y.entry get] == 0 } {
+            $mytoplevel.scale.y.entry delete 0 end
+            $mytoplevel.scale.y.entry insert 0 1
+        }
+    }
+}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
