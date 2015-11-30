@@ -1069,7 +1069,7 @@ void canvas_properties(t_gobj*z, t_glist*unused)
                 (int)x->gl_xmargin, (int)x->gl_ymargin);
     else sprintf(graphbuf,
             "::pd_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
-                glist_dpixtodx(x, 1), -glist_dpixtody(x, 1),
+                glist_dpixtodx(x, 1), glist_dpixtody(x, 1),
                 0,
                 0., -1., 1., 1., 
                 (int)x->gl_pixwidth, (int)x->gl_pixheight,
@@ -1082,7 +1082,7 @@ void canvas_properties(t_gobj*z, t_glist*unused)
 }
 
     /* called from the gui when "OK" is selected on the canvas properties
-        dialog.  Again we negate "y" scale. */
+        dialog. */
 static void canvas_donecanvasdialog(t_glist *x,
     t_symbol *s, int argc, t_atom *argv)
 {
@@ -1108,7 +1108,7 @@ static void canvas_donecanvasdialog(t_glist *x,
     x->gl_xmargin = xmargin;
     x->gl_ymargin = ymargin;
 
-    yperpix = -yperpix;
+    // yperpix = -yperpix;
     if (xperpix == 0)
         xperpix = 1;
     if (yperpix == 0)

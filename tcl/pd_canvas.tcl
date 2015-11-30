@@ -122,6 +122,8 @@ proc _create {top scaleX scaleY flags lowX lowY highX highY width height x y} {
         }
     }
     
+    ::pd_canvas::_forceVisible $top
+    
     label $top.scaleXLabel      -text [_ "Scale Horizontal"]
     entry $top.scaleX           -textvariable ::pd_canvas::canvasScaleX($top)
     
@@ -132,7 +134,7 @@ proc _create {top scaleX scaleY flags lowX lowY highX highY width height x y} {
                                 -variable ::pd_canvas::canvasVisible($top) \
                                 -takefocus 0
     
-    checkbutton $top.hide       -text [_ "Hide Arguments"] \
+    checkbutton $top.hide       -text [_ "Hide Title in Visible"] \
                                 -variable ::pd_canvas::canvasHide($top) \
                                 -takefocus 0
     
@@ -199,8 +201,6 @@ proc _create {top scaleX scaleY flags lowX lowY highX highY width height x y} {
     $top.scaleX selection range 0 end
     
     wm protocol $top WM_DELETE_WINDOW   "::pd_canvas::_closed $top"
-    
-    ::pd_canvas::_check $top
 }
 
 proc _closed {top} {
@@ -252,6 +252,10 @@ proc _closed {top} {
 
 proc _apply {top} {
 
+    ::pd_canvas::_forceScales  $top
+    ::pd_canvas::_forceLimits  $top
+    ::pd_canvas::_forceVisible $top
+
     if {0} {
     
     ::pd_connect::pdsend "$top donecanvasdialog \
@@ -278,64 +282,57 @@ proc _cancel {top} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _check {top} {
+proc _forceScales {top} {
 
-    if {0} {
+    variable canvasScaleX
+    variable canvasScaleY
     
-    if { $::graphme_button($top) != 0 } {
-        $top.scale.x.entry configure -state disabled
-        $top.scale.y.entry configure -state disabled
-        $top.parent.hidetext configure -state normal
-        $top.range.x.from_entry configure -state normal
-        $top.range.x.to_entry configure -state normal
-        $top.range.x.size_entry configure -state normal
-        $top.range.x.margin_entry configure -state normal
-        $top.range.y.from_entry configure -state normal
-        $top.range.y.to_entry configure -state normal
-        $top.range.y.size_entry configure -state normal
-        $top.range.y.margin_entry configure -state normal
-        if { [$top.range.x.from_entry get] == 0 \
-                 && [$top.range.y.from_entry get] == 0 \
-                 && [$top.range.x.to_entry get] == 0 \
-                 && [$top.range.y.to_entry get] == 0 } {
-            $top.range.y.to_entry insert 0 1
-            $top.range.y.to_entry insert 0 1
-        }
-        if { [$top.range.x.size_entry get] == 0 } {
-            $top.range.x.size_entry delete 0 end
-            $top.range.x.margin_entry delete 0 end
-            $top.range.x.size_entry insert 0 85
-            $top.range.x.margin_entry insert 0 100
-        }
-        if { [$top.range.y.size_entry get] == 0 } {
-            $top.range.y.size_entry delete 0 end
-            $top.range.y.margin_entry delete 0 end
-            $top.range.y.size_entry insert 0 60
-            $top.range.y.margin_entry insert 0 100
-       }
-    } else {
-        $top.scale.x.entry configure -state normal
-        $top.scale.y.entry configure -state normal
-        $top.parent.hidetext configure -state disabled
-        $top.range.x.from_entry configure -state disabled
-        $top.range.x.to_entry configure -state disabled
-        $top.range.x.size_entry configure -state disabled
-        $top.range.x.margin_entry configure -state disabled
-        $top.range.y.from_entry configure -state disabled
-        $top.range.y.to_entry configure -state disabled
-        $top.range.y.size_entry configure -state disabled
-        $top.range.y.margin_entry configure -state disabled
-        if { [$top.scale.x.entry get] == 0 } {
-            $top.scale.x.entry delete 0 end
-            $top.scale.x.entry insert 0 1
-        }
-        if { [$top.scale.y.entry get] == 0 } {
-            $top.scale.y.entry delete 0 end
-            $top.scale.y.entry insert 0 1
-        }
+    set canvasScaleX($top) [::ifNumber  $canvasScaleX($top) $canvasScaleX(${top}.old)]
+    set canvasScaleX($top) [::ifNonZero $canvasScaleX($top) $canvasScaleX(${top}.old)]
+    set canvasScaleX($top) [::ifNonZero $canvasScaleX($top) 1.0)]
+    
+    set canvasScaleY($top) [::ifNumber  $canvasScaleY($top) $canvasScaleY(${top}.old)]
+    set canvasScaleY($top) [::ifNonZero $canvasScaleY($top) $canvasScaleY(${top}.old)]
+    set canvasScaleY($top) [::ifNonZero $canvasScaleY($top) 1.0)]
+}
+
+proc _forceLimits {top} {
+
+    variable canvasLowX
+    variable canvasLowY
+    variable canvasHighX
+    variable canvasHighY
+
+    set canvasLowX($top)  [::ifNumber $canvasLowX($top)  $canvasLowX(${top}.old)]
+    set canvasHighX($top) [::ifNumber $canvasHighX($top) $canvasHighX(${top}.old)]
+    set canvasLowY($top)  [::ifNumber $canvasLowY($top)  $canvasLowY(${top}.old)]
+    set canvasHighY($top) [::ifNumber $canvasHighY($top) $canvasHighY(${top}.old)]
+    
+    if {$canvasLowX($top) == $canvasHighX($top)} {
+        set canvasLowX($top) $canvasLowX(${top}.old); set canvasHighX($top) $canvasHighX(${top}.old)
     }
     
+    if {$canvasLowY($top) == $canvasHighY($top)} { 
+        set canvasLowY($top) $canvasLowY(${top}.old); set canvasHighY($top) $canvasHighY(${top}.old)
     }
+}
+
+proc _forceVisible {top} {
+
+    variable canvasWidth
+    variable canvasHeight
+    variable canvasX
+    variable canvasY
+    
+    set canvasWidth($top)  [::ifInteger $canvasWidth($top)  $canvasWidth(${top}.old)]
+    set canvasHeight($top) [::ifInteger $canvasHeight($top) $canvasHeight(${top}.old)]
+    set canvasX($top)      [::ifInteger $canvasX($top)      $canvasX(${top}.old)]
+    set canvasY($top)      [::ifInteger $canvasY($top)      $canvasY(${top}.old)]
+    
+    set canvasWidth($top)  [::ifNonZero $canvasWidth($top)  $canvasWidth(${top}.old)]
+    set canvasHeight($top) [::ifNonZero $canvasHeight($top) $canvasHeight(${top}.old)]
+    set canvasWidth($top)  [::ifNonZero $canvasWidth($top)  85]
+    set canvasHeight($top) [::ifNonZero $canvasHeight($top) 60]
 }
 
 # ------------------------------------------------------------------------------------------------------------
