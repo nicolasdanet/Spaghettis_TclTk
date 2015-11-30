@@ -329,6 +329,11 @@ proc _forceVisible {top} {
     set canvasX($top)      [::ifInteger $canvasX($top)      $canvasX(${top}.old)]
     set canvasY($top)      [::ifInteger $canvasY($top)      $canvasY(${top}.old)]
     
+    set canvasWidth($top)  [::tcl::mathfunc::max $canvasWidth($top)  0]
+    set canvasHeight($top) [::tcl::mathfunc::max $canvasHeight($top) 0]
+    set canvasX($top)      [::tcl::mathfunc::max $canvasX($top)      0]
+    set canvasY($top)      [::tcl::mathfunc::max $canvasY($top)      0]
+    
     set canvasWidth($top)  [::ifNonZero $canvasWidth($top)  $canvasWidth(${top}.old)]
     set canvasHeight($top) [::ifNonZero $canvasHeight($top) $canvasHeight(${top}.old)]
     set canvasWidth($top)  [::ifNonZero $canvasWidth($top)  85]
