@@ -7,13 +7,12 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+# Canvas properties.
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 package provide pd_canvas 0.1
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-array set graphme_button {}
-array set hidetext_button {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -23,215 +22,319 @@ namespace eval ::pd_canvas:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+variable  canvasScaleX
+variable  canvasScaleY
+variable  canvasVisible
+variable  canvasHide
+variable  canvasLowX
+variable  canvasLowY
+variable  canvasHighX
+variable  canvasHighY
+variable  canvasWidth
+variable  canvasHeight
+variable  canvasX
+variable  canvasY
 
+array set canvasScaleX  {}
+array set canvasScaleY  {}
+array set canvasVisible {}
+array set canvasHide    {}
+array set canvasLowX    {}
+array set canvasLowY    {}
+array set canvasHighX   {}
+array set canvasHighY   {}
+array set canvasWidth   {}
+array set canvasHeight  {}
+array set canvasX       {}
+array set canvasY       {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {mytoplevel xscale yscale graphmeflags \
-                                             xfrom yfrom xto yto \
-                                             xsize ysize xmargin ymargin} {
-    if {[winfo exists $mytoplevel]} {
-        wm deiconify $mytoplevel
-        raise $mytoplevel
-    } else {
-        create_dialog $mytoplevel
+proc show {top scaleX scaleY flags lowX lowY highX highY width height x y} {
+    
+    ::pd_canvas::_create $top $scaleX $scaleY $flags $lowX $lowY $highX $highY $width $height $x $y
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _create {top scaleX scaleY flags lowX lowY highX highY width height x y} {
+
+    variable canvasScaleX
+    variable canvasScaleY
+    variable canvasVisible
+    variable canvasHide
+    variable canvasLowX
+    variable canvasLowY
+    variable canvasHighX
+    variable canvasHighY
+    variable canvasWidth
+    variable canvasHeight
+    variable canvasX
+    variable canvasY
+
+    toplevel $top -class PdDialog
+    wm title $top [_ "Canvas"]
+    wm group $top .
+    
+    wm resizable $top 0 0
+    wm geometry  $top [::rightNextTo $::var(windowFocused)]
+    
+    set canvasScaleX($top)          $scaleX
+    set canvasScaleY($top)          $scaleY
+    set canvasLowX($top)            $lowX
+    set canvasLowY($top)            $lowY
+    set canvasHighX($top)           $highX
+    set canvasHighY($top)           $highY
+    set canvasWidth($top)           $width
+    set canvasHeight($top)          $height
+    set canvasX($top)               $x
+    set canvasY($top)               $y
+    
+    set canvasScaleX(${top}.old)    $scaleX
+    set canvasScaleY(${top}.old)    $scaleY
+    set canvasLowX(${top}.old)      $lowX
+    set canvasLowY(${top}.old)      $lowY
+    set canvasHighX(${top}.old)     $highX
+    set canvasHighY(${top}.old)     $highY
+    set canvasWidth(${top}.old)     $width
+    set canvasHeight(${top}.old)    $height
+    set canvasX(${top}.old)         $x
+    set canvasY(${top}.old)         $y
+    
+    switch -- $flags {
+        "0" {
+            set canvasVisible($top) 0
+            set canvasHide($top)    0
+        } 
+        "1" {
+            set canvasVisible($top) 1
+            set canvasHide($top)    0
+        } 
+        "2" {
+            set canvasVisible($top) 0
+            set canvasHide($top)    1
+        } 
+        "3" {
+            set canvasVisible($top) 1
+            set canvasHide($top)    1
+        }
     }
     
-    switch -- $graphmeflags {
-        0 {
-            $mytoplevel.parent.graphme deselect
-            $mytoplevel.parent.hidetext deselect
-        } 1 {
-            $mytoplevel.parent.graphme select
-            $mytoplevel.parent.hidetext deselect
-        } 2 {
-            $mytoplevel.parent.graphme deselect
-            $mytoplevel.parent.hidetext select
-        } 3 {
-            $mytoplevel.parent.graphme select
-            $mytoplevel.parent.hidetext select
-        }
-    }
-
-    $mytoplevel.scale.x.entry insert 0 $xscale
-    $mytoplevel.scale.y.entry insert 0 $yscale
-    $mytoplevel.range.x.from_entry insert 0 $xfrom
-    $mytoplevel.range.y.from_entry insert 0 $yfrom
-    $mytoplevel.range.x.to_entry insert 0 $xto
-    $mytoplevel.range.y.to_entry insert 0 $yto
-    $mytoplevel.range.x.size_entry insert 0 $xsize
-    $mytoplevel.range.y.size_entry insert 0 $ysize
-    $mytoplevel.range.x.margin_entry insert 0 $xmargin
-    $mytoplevel.range.y.margin_entry insert 0 $ymargin
-
-   ::pd_canvas::checkcommand $mytoplevel
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc create_dialog {mytoplevel} {
-    toplevel $mytoplevel -class PdDialog
-    wm title $mytoplevel [_ "Canvas Properties"]
-    wm group $mytoplevel .
-    wm resizable $mytoplevel 0 0
-    $mytoplevel configure -padx 0 -pady 0
+    label $top.scaleXLabel      -text [_ "Scale Horizontal"]
+    entry $top.scaleX           -textvariable ::pd_canvas::canvasScaleX($top)
     
-    labelframe $mytoplevel.scale -text [_ "Scale"] -borderwidth 1
-    pack $mytoplevel.scale -side top -fill x
-    frame $mytoplevel.scale.x -pady 2 -borderwidth 1
-    pack $mytoplevel.scale.x -side top
-    label $mytoplevel.scale.x.label -text [_ "X units per pixel:"]
-    entry $mytoplevel.scale.x.entry -width 10
-    pack $mytoplevel.scale.x.label $mytoplevel.scale.x.entry -side left
-    frame $mytoplevel.scale.y -pady 2
-    pack $mytoplevel.scale.y -side top
-    label $mytoplevel.scale.y.label -text [_ "Y units per pixel:"]
-    entry $mytoplevel.scale.y.entry -width 10
-    pack $mytoplevel.scale.y.label $mytoplevel.scale.y.entry -side left
+    label $top.scaleYLabel      -text [_ "Scale Vertical"]
+    entry $top.scaleY           -textvariable ::pd_canvas::canvasScaleY($top)
 
-    labelframe $mytoplevel.parent -text [_ "Appearance on parent patch"] -borderwidth 1
-    pack $mytoplevel.parent -side top -fill x
-    checkbutton $mytoplevel.parent.graphme -text [_ "Graph-On-Parent"] \
-        -anchor w -variable graphme_button($mytoplevel) \
-        -command [concat ::pd_canvas::checkcommand $mytoplevel]
-    pack $mytoplevel.parent.graphme -side top -fill x -padx 40
-    checkbutton $mytoplevel.parent.hidetext -text [_ "Hide object name and arguments"] \
-        -anchor w -variable hidetext_button($mytoplevel) \
-        -command [concat ::pd_canvas::checkcommand $mytoplevel]
-    pack $mytoplevel.parent.hidetext -side top -fill x -padx 40
+    checkbutton $top.visible    -text [_ "Visible in Parent"] \
+                                -variable ::pd_canvas::canvasVisible($top) \
+                                -takefocus 0
+    
+    checkbutton $top.hide       -text [_ "Hide Arguments"] \
+                                -variable ::pd_canvas::canvasHide($top) \
+                                -takefocus 0
+    
+    label $top.lowXLabel        -text [_ "X Minimum"]
+    entry $top.lowX             -textvariable ::pd_canvas::canvasLowX($top)
 
-    labelframe $mytoplevel.range -text [_ "Range and size"] -borderwidth 1
-    pack $mytoplevel.range -side top -fill x
-    frame $mytoplevel.range.x -padx 2 -pady 2
-    pack $mytoplevel.range.x -side top
-    label $mytoplevel.range.x.from_label -text [_ "X range, from"]
-    entry $mytoplevel.range.x.from_entry -width 6
-    label $mytoplevel.range.x.to_label -text [_ "to"]
-    entry $mytoplevel.range.x.to_entry -width 6
-    label $mytoplevel.range.x.size_label -text [_ "Size:"]
-    entry $mytoplevel.range.x.size_entry -width 4
-    label $mytoplevel.range.x.margin_label -text [_ "Margin:"]
-    entry $mytoplevel.range.x.margin_entry -width 4
-    pack $mytoplevel.range.x.from_label $mytoplevel.range.x.from_entry \
-        $mytoplevel.range.x.to_label $mytoplevel.range.x.to_entry \
-        $mytoplevel.range.x.size_label $mytoplevel.range.x.size_entry \
-        $mytoplevel.range.x.margin_label $mytoplevel.range.x.margin_entry \
-        -side left
-    frame $mytoplevel.range.y -padx 2 -pady 2
-    pack $mytoplevel.range.y -side top
-    label $mytoplevel.range.y.from_label -text [_ "Y range, from"]
-    entry $mytoplevel.range.y.from_entry -width 6
-    label $mytoplevel.range.y.to_label -text [_ "to"]
-    entry $mytoplevel.range.y.to_entry -width 6
-    label $mytoplevel.range.y.size_label -text [_ "Size:"]
-    entry $mytoplevel.range.y.size_entry -width 4
-    label $mytoplevel.range.y.margin_label -text [_ "Margin:"]
-    entry $mytoplevel.range.y.margin_entry -width 4
-    pack $mytoplevel.range.y.from_label $mytoplevel.range.y.from_entry \
-        $mytoplevel.range.y.to_label $mytoplevel.range.y.to_entry \
-        $mytoplevel.range.y.size_label $mytoplevel.range.y.size_entry \
-        $mytoplevel.range.y.margin_label $mytoplevel.range.y.margin_entry \
-        -side left
+    label $top.highXLabel       -text [_ "X Maximum"]
+    entry $top.highX            -textvariable ::pd_canvas::canvasHighX($top)
+    
+    label $top.lowYLabel        -text [_ "Y Minimum"]
+    entry $top.lowY             -textvariable ::pd_canvas::canvasLowY($top)
 
-    frame $mytoplevel.buttons
-    pack $mytoplevel.buttons -side bottom -fill x -expand 1 -pady 2m
-    button $mytoplevel.buttons.cancel -text [_ "Cancel"] \
-        -command "::pd_canvas::cancel $mytoplevel"
-    pack $mytoplevel.buttons.cancel -side left -expand 1 -fill x -padx 10
-    if {[tk windowingsystem] ne "aqua"} {
-        button $mytoplevel.buttons.apply -text [_ "Apply"] \
-            -command "::pd_canvas::apply $mytoplevel"
-        pack $mytoplevel.buttons.apply -side left -expand 1 -fill x -padx 10
+    label $top.highYLabel       -text [_ "Y Maximum"]
+    entry $top.highY            -textvariable ::pd_canvas::canvasHighY($top)
+    
+    label $top.xLabel           -text [_ "X Origin"]
+    entry $top.x                -textvariable ::pd_canvas::canvasX($top)
+
+    label $top.yLabel           -text [_ "Y Origin"]
+    entry $top.y                -textvariable ::pd_canvas::canvasY($top)
+    
+    label $top.widthLabel       -text [_ "Width"]
+    entry $top.width            -textvariable ::pd_canvas::canvasWidth($top)
+
+    label $top.heightLabel      -text [_ "Height"]
+    entry $top.height           -textvariable ::pd_canvas::canvasHeight($top)
+    
+    pack  $top.scaleXLabel      -side top -anchor w
+    pack  $top.scaleX           -side top -anchor w
+    pack  $top.scaleYLabel      -side top -anchor w
+    pack  $top.scaleY           -side top -anchor w
+    pack  $top.visible          -side top -anchor w
+    pack  $top.hide             -side top -anchor w
+    pack  $top.lowXLabel        -side top -anchor w
+    pack  $top.lowX             -side top -anchor w
+    pack  $top.highXLabel       -side top -anchor w
+    pack  $top.highX            -side top -anchor w
+    pack  $top.lowYLabel        -side top -anchor w
+    pack  $top.lowY             -side top -anchor w
+    pack  $top.highYLabel       -side top -anchor w
+    pack  $top.highY            -side top -anchor w
+    pack  $top.xLabel           -side top -anchor w
+    pack  $top.x                -side top -anchor w
+    pack  $top.yLabel           -side top -anchor w
+    pack  $top.y                -side top -anchor w
+    pack  $top.widthLabel       -side top -anchor w
+    pack  $top.width            -side top -anchor w
+    pack  $top.heightLabel      -side top -anchor w
+    pack  $top.height           -side top -anchor w
+    
+    bind  $top.scaleX   <Return> { ::nextEntry %W }
+    bind  $top.scaleY   <Return> { ::nextEntry %W }
+    bind  $top.lowX     <Return> { ::nextEntry %W }
+    bind  $top.highX    <Return> { ::nextEntry %W }
+    bind  $top.lowY     <Return> { ::nextEntry %W }
+    bind  $top.highY    <Return> { ::nextEntry %W }
+    bind  $top.x        <Return> { ::nextEntry %W }
+    bind  $top.y        <Return> { ::nextEntry %W }
+    bind  $top.width    <Return> { ::nextEntry %W }
+    bind  $top.height   <Return> { ::nextEntry %W }
+
+    focus $top.scaleX
+    
+    $top.scaleX selection range 0 end
+    
+    wm protocol $top WM_DELETE_WINDOW   "::pd_canvas::_closed $top"
+    
+    ::pd_canvas::_check $top
+}
+
+proc _closed {top} {
+
+    variable canvasScaleX
+    variable canvasScaleY
+    variable canvasVisible
+    variable canvasHide
+    variable canvasLowX
+    variable canvasLowY
+    variable canvasHighX
+    variable canvasHighY
+    variable canvasWidth
+    variable canvasHeight
+    variable canvasX
+    variable canvasY
+    
+    ::pd_canvas::_apply $top
+    
+    unset canvasScaleX($top)
+    unset canvasScaleY($top)
+    unset canvasVisible($top)
+    unset canvasHide($top)
+    unset canvasLowX($top)
+    unset canvasLowY($top)
+    unset canvasHighX($top)
+    unset canvasHighY($top)
+    unset canvasWidth($top)
+    unset canvasHeight($top)
+    unset canvasX($top)
+    unset canvasY($top)
+    
+    unset canvasScaleX(${top}.old)
+    unset canvasScaleY(${top}.old)
+    unset canvasLowX(${top}.old)
+    unset canvasLowY(${top}.old)
+    unset canvasHighX(${top}.old)
+    unset canvasHighY(${top}.old)
+    unset canvasWidth(${top}.old)
+    unset canvasHeight(${top}.old)
+    unset canvasX(${top}.old)
+    unset canvasY(${top}.old)
+    
+    ::pd_canvas::_cancel $top
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _apply {top} {
+
+    if {0} {
+    
+    ::pd_connect::pdsend "$top donecanvasdialog \
+            [$top.scale.x.entry get] \
+            [$top.scale.y.entry get] \
+            [expr $::graphme_button($top) + 2 * $::hidetext_button($top)] \
+            [$top.range.x.from_entry get] \
+            [$top.range.y.from_entry get] \
+            [$top.range.x.to_entry get] \
+            [$top.range.y.to_entry get] \
+            [$top.range.x.size_entry get] \
+            [$top.range.y.size_entry get] \
+            [$top.range.x.margin_entry get] \
+            [$top.range.y.margin_entry get]"
+    
     }
-    button $mytoplevel.buttons.ok -text [_ "OK"] \
-        -command "::pd_canvas::ok $mytoplevel"
-    pack $mytoplevel.buttons.ok -side left -expand 1 -fill x -padx 10
- }
- 
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc apply {mytoplevel} {
-    ::pd_connect::pdsend "$mytoplevel donecanvasdialog \
-            [$mytoplevel.scale.x.entry get] \
-            [$mytoplevel.scale.y.entry get] \
-            [expr $::graphme_button($mytoplevel) + 2 * $::hidetext_button($mytoplevel)] \
-            [$mytoplevel.range.x.from_entry get] \
-            [$mytoplevel.range.y.from_entry get] \
-            [$mytoplevel.range.x.to_entry get] \
-            [$mytoplevel.range.y.to_entry get] \
-            [$mytoplevel.range.x.size_entry get] \
-            [$mytoplevel.range.y.size_entry get] \
-            [$mytoplevel.range.x.margin_entry get] \
-            [$mytoplevel.range.y.margin_entry get]"
 }
 
-proc cancel {mytoplevel} {
-    ::pd_connect::pdsend "$mytoplevel cancel"
-}
+proc _cancel {top} {
 
-proc ok {mytoplevel} {
-    ::pd_canvas::apply $mytoplevel
-    ::pd_canvas::cancel $mytoplevel
+    ::pd_connect::pdsend "$top cancel"
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc checkcommand {mytoplevel} {
-    if { $::graphme_button($mytoplevel) != 0 } {
-        $mytoplevel.scale.x.entry configure -state disabled
-        $mytoplevel.scale.y.entry configure -state disabled
-        $mytoplevel.parent.hidetext configure -state normal
-        $mytoplevel.range.x.from_entry configure -state normal
-        $mytoplevel.range.x.to_entry configure -state normal
-        $mytoplevel.range.x.size_entry configure -state normal
-        $mytoplevel.range.x.margin_entry configure -state normal
-        $mytoplevel.range.y.from_entry configure -state normal
-        $mytoplevel.range.y.to_entry configure -state normal
-        $mytoplevel.range.y.size_entry configure -state normal
-        $mytoplevel.range.y.margin_entry configure -state normal
-        if { [$mytoplevel.range.x.from_entry get] == 0 \
-                 && [$mytoplevel.range.y.from_entry get] == 0 \
-                 && [$mytoplevel.range.x.to_entry get] == 0 \
-                 && [$mytoplevel.range.y.to_entry get] == 0 } {
-            $mytoplevel.range.y.to_entry insert 0 1
-            $mytoplevel.range.y.to_entry insert 0 1
+proc _check {top} {
+
+    if {0} {
+    
+    if { $::graphme_button($top) != 0 } {
+        $top.scale.x.entry configure -state disabled
+        $top.scale.y.entry configure -state disabled
+        $top.parent.hidetext configure -state normal
+        $top.range.x.from_entry configure -state normal
+        $top.range.x.to_entry configure -state normal
+        $top.range.x.size_entry configure -state normal
+        $top.range.x.margin_entry configure -state normal
+        $top.range.y.from_entry configure -state normal
+        $top.range.y.to_entry configure -state normal
+        $top.range.y.size_entry configure -state normal
+        $top.range.y.margin_entry configure -state normal
+        if { [$top.range.x.from_entry get] == 0 \
+                 && [$top.range.y.from_entry get] == 0 \
+                 && [$top.range.x.to_entry get] == 0 \
+                 && [$top.range.y.to_entry get] == 0 } {
+            $top.range.y.to_entry insert 0 1
+            $top.range.y.to_entry insert 0 1
         }
-        if { [$mytoplevel.range.x.size_entry get] == 0 } {
-            $mytoplevel.range.x.size_entry delete 0 end
-            $mytoplevel.range.x.margin_entry delete 0 end
-            $mytoplevel.range.x.size_entry insert 0 85
-            $mytoplevel.range.x.margin_entry insert 0 100
+        if { [$top.range.x.size_entry get] == 0 } {
+            $top.range.x.size_entry delete 0 end
+            $top.range.x.margin_entry delete 0 end
+            $top.range.x.size_entry insert 0 85
+            $top.range.x.margin_entry insert 0 100
         }
-        if { [$mytoplevel.range.y.size_entry get] == 0 } {
-            $mytoplevel.range.y.size_entry delete 0 end
-            $mytoplevel.range.y.margin_entry delete 0 end
-            $mytoplevel.range.y.size_entry insert 0 60
-            $mytoplevel.range.y.margin_entry insert 0 100
+        if { [$top.range.y.size_entry get] == 0 } {
+            $top.range.y.size_entry delete 0 end
+            $top.range.y.margin_entry delete 0 end
+            $top.range.y.size_entry insert 0 60
+            $top.range.y.margin_entry insert 0 100
        }
     } else {
-        $mytoplevel.scale.x.entry configure -state normal
-        $mytoplevel.scale.y.entry configure -state normal
-        $mytoplevel.parent.hidetext configure -state disabled
-        $mytoplevel.range.x.from_entry configure -state disabled
-        $mytoplevel.range.x.to_entry configure -state disabled
-        $mytoplevel.range.x.size_entry configure -state disabled
-        $mytoplevel.range.x.margin_entry configure -state disabled
-        $mytoplevel.range.y.from_entry configure -state disabled
-        $mytoplevel.range.y.to_entry configure -state disabled
-        $mytoplevel.range.y.size_entry configure -state disabled
-        $mytoplevel.range.y.margin_entry configure -state disabled
-        if { [$mytoplevel.scale.x.entry get] == 0 } {
-            $mytoplevel.scale.x.entry delete 0 end
-            $mytoplevel.scale.x.entry insert 0 1
+        $top.scale.x.entry configure -state normal
+        $top.scale.y.entry configure -state normal
+        $top.parent.hidetext configure -state disabled
+        $top.range.x.from_entry configure -state disabled
+        $top.range.x.to_entry configure -state disabled
+        $top.range.x.size_entry configure -state disabled
+        $top.range.x.margin_entry configure -state disabled
+        $top.range.y.from_entry configure -state disabled
+        $top.range.y.to_entry configure -state disabled
+        $top.range.y.size_entry configure -state disabled
+        $top.range.y.margin_entry configure -state disabled
+        if { [$top.scale.x.entry get] == 0 } {
+            $top.scale.x.entry delete 0 end
+            $top.scale.x.entry insert 0 1
         }
-        if { [$mytoplevel.scale.y.entry get] == 0 } {
-            $mytoplevel.scale.y.entry delete 0 end
-            $mytoplevel.scale.y.entry insert 0 1
+        if { [$top.scale.y.entry get] == 0 } {
+            $top.scale.y.entry delete 0 end
+            $top.scale.y.entry insert 0 1
         }
+    }
+    
     }
 }
 
