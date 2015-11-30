@@ -134,26 +134,26 @@ proc _create {top scaleX scaleY flags lowX lowY highX highY width height x y} {
                                 -variable ::pd_canvas::canvasVisible($top) \
                                 -takefocus 0
     
-    checkbutton $top.hide       -text [_ "Hide Title in Visible"] \
+    checkbutton $top.hide       -text [_ "Hide Text"] \
                                 -variable ::pd_canvas::canvasHide($top) \
                                 -takefocus 0
     
-    label $top.lowXLabel        -text [_ "X Minimum"]
+    label $top.lowXLabel        -text [_ "Minimum X"]
     entry $top.lowX             -textvariable ::pd_canvas::canvasLowX($top)
 
-    label $top.highXLabel       -text [_ "X Maximum"]
+    label $top.highXLabel       -text [_ "Maximum X"]
     entry $top.highX            -textvariable ::pd_canvas::canvasHighX($top)
     
-    label $top.lowYLabel        -text [_ "Y Minimum"]
+    label $top.lowYLabel        -text [_ "Minimum Y"]
     entry $top.lowY             -textvariable ::pd_canvas::canvasLowY($top)
 
-    label $top.highYLabel       -text [_ "Y Maximum"]
+    label $top.highYLabel       -text [_ "Maximum Y"]
     entry $top.highY            -textvariable ::pd_canvas::canvasHighY($top)
     
-    label $top.xLabel           -text [_ "X Origin"]
+    label $top.xLabel           -text [_ "Origin X"]
     entry $top.x                -textvariable ::pd_canvas::canvasX($top)
 
-    label $top.yLabel           -text [_ "Y Origin"]
+    label $top.yLabel           -text [_ "Origin Y"]
     entry $top.y                -textvariable ::pd_canvas::canvasY($top)
     
     label $top.widthLabel       -text [_ "Width"]
@@ -252,26 +252,35 @@ proc _closed {top} {
 
 proc _apply {top} {
 
+    variable canvasScaleX
+    variable canvasScaleY
+    variable canvasVisible
+    variable canvasHide
+    variable canvasLowX
+    variable canvasLowY
+    variable canvasHighX
+    variable canvasHighY
+    variable canvasWidth
+    variable canvasHeight
+    variable canvasX
+    variable canvasY
+    
     ::pd_canvas::_forceScales  $top
     ::pd_canvas::_forceLimits  $top
     ::pd_canvas::_forceVisible $top
 
-    if {0} {
-    
     ::pd_connect::pdsend "$top donecanvasdialog \
-            [$top.scale.x.entry get] \
-            [$top.scale.y.entry get] \
-            [expr $::graphme_button($top) + 2 * $::hidetext_button($top)] \
-            [$top.range.x.from_entry get] \
-            [$top.range.y.from_entry get] \
-            [$top.range.x.to_entry get] \
-            [$top.range.y.to_entry get] \
-            [$top.range.x.size_entry get] \
-            [$top.range.y.size_entry get] \
-            [$top.range.x.margin_entry get] \
-            [$top.range.y.margin_entry get]"
-    
-    }
+            $canvasScaleX($top) \
+            $canvasScaleY($top) \
+            [expr {$canvasVisible($top) + 2 * $canvasHide($top)}] \
+            $canvasLowX($top) \
+            $canvasLowY($top) \
+            $canvasHighX($top) \
+            $canvasHighY($top) \
+            $canvasWidth($top) \
+            $canvasHeight($top) \
+            $canvasX($top) \
+            $canvasY($top)"
 }
 
 proc _cancel {top} {
@@ -303,10 +312,10 @@ proc _forceLimits {top} {
     variable canvasHighX
     variable canvasHighY
 
-    set canvasLowX($top)  [::ifNumber $canvasLowX($top)  $canvasLowX(${top}.old)]
-    set canvasHighX($top) [::ifNumber $canvasHighX($top) $canvasHighX(${top}.old)]
-    set canvasLowY($top)  [::ifNumber $canvasLowY($top)  $canvasLowY(${top}.old)]
-    set canvasHighY($top) [::ifNumber $canvasHighY($top) $canvasHighY(${top}.old)]
+    set canvasLowX($top)  [::ifInteger $canvasLowX($top)  $canvasLowX(${top}.old)]
+    set canvasHighX($top) [::ifInteger $canvasHighX($top) $canvasHighX(${top}.old)]
+    set canvasLowY($top)  [::ifNumber  $canvasLowY($top)  $canvasLowY(${top}.old)]
+    set canvasHighY($top) [::ifNumber  $canvasHighY($top) $canvasHighY(${top}.old)]
     
     if {$canvasLowX($top) == $canvasHighX($top)} {
         set canvasLowX($top) $canvasLowX(${top}.old); set canvasHighX($top) $canvasHighX(${top}.old)
