@@ -674,14 +674,14 @@ void glob_midi_properties(t_pd *dummy, t_floatarg flongform)
     sys_get_midi_devs(indevlist, &nindevs, outdevlist, &noutdevs,
         MAXNDEV, DEVDESCSIZE);
 
-    sys_gui("set ::midi_indev {none}\n");
+    sys_gui("set ::pd_midi::midiIn {none}\n");
     for (i = 0; i < nindevs; i++)
-        sys_vgui("lappend ::midi_indev {%s}\n",
+        sys_vgui("lappend ::pd_midi::midiIn {%s}\n",
             indevlist + i * DEVDESCSIZE);
 
-    sys_gui("set ::midi_outdev {none}\n");
+    sys_gui("set ::pd_midi::midiOut {none}\n");
     for (i = 0; i < noutdevs; i++)
-        sys_vgui("lappend ::midi_outdev {%s}\n",
+        sys_vgui("lappend ::pd_midi::midiOut {%s}\n",
             outdevlist + i * DEVDESCSIZE);
 
     sys_get_midi_params(&nindev, midiindev, &noutdev, midioutdev);
