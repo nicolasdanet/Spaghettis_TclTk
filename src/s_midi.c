@@ -711,7 +711,7 @@ void glob_midi_properties(t_pd *dummy, t_floatarg flongform)
 #ifdef USEAPI_ALSA
       if (sys_midiapi == API_ALSA)
     sprintf(buf,
-"::dialog_midi::pdtk_alsa_midi_dialog %%s \
+"::pd_midi::pdtk_alsa_midi_dialog %%s \
 %d %d %d %d %d %d %d %d \
 %d 1\n",
         midiindev1, midiindev2, midiindev3, midiindev4, 
@@ -720,7 +720,7 @@ void glob_midi_properties(t_pd *dummy, t_floatarg flongform)
       else
 #endif
     sprintf(buf,
-"::dialog_midi::pdtk_midi_dialog %%s \
+"::pd_midi::pdtk_midi_dialog %%s \
 %d %d %d %d %d %d %d %d %d \
 %d %d %d %d %d %d %d %d %d \
 %d\n",

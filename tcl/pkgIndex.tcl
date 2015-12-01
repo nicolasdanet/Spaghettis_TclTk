@@ -3,7 +3,6 @@
 # ------------------------------------------------------------------------------------------------------------
 
 package ifneeded dialog_audio 0.1       [list source [file join $dir dialog_audio.tcl]]
-package ifneeded dialog_midi 0.1        [list source [file join $dir dialog_midi.tcl]]
 package ifneeded pd_apple 0.1           [list source [file join $dir pd_apple.tcl]]
 package ifneeded pd_array 0.1           [list source [file join $dir pd_array.tcl]]
 package ifneeded pd_atom 0.1            [list source [file join $dir pd_atom.tcl]]
@@ -16,6 +15,7 @@ package ifneeded pd_data 0.1            [list source [file join $dir pd_data.tcl
 package ifneeded pd_file 0.1            [list source [file join $dir pd_file.tcl]]
 package ifneeded pd_iem 0.1             [list source [file join $dir pd_iem.tcl]]
 package ifneeded pd_menu 0.1            [list source [file join $dir pd_menu.tcl]]
+package ifneeded pd_midi 0.1            [list source [file join $dir pd_midi.tcl]]
 package ifneeded pd_patch 0.1           [list source [file join $dir pd_patch.tcl]]
 package ifneeded pd_path 0.1            [list source [file join $dir pd_path.tcl]]
 package ifneeded pd_object 0.1          [list source [file join $dir pd_object.tcl]]

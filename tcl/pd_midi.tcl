@@ -7,18 +7,17 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide dialog_midi 0.1
+package provide pd_midi 0.1
 
-namespace eval ::dialog_midi:: {
-}
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-# TODO this panel really needs some reworking, it works but the code is
-# very unreadable
+namespace eval ::pd_midi:: {
 
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-####################### midi dialog ##################
-
-proc ::dialog_midi::apply {mytoplevel} {
+proc apply {mytoplevel} {
     global midi_indev1 midi_indev2 midi_indev3 midi_indev4 midi_indev5 \
         midi_indev6 midi_indev7 midi_indev8 midi_indev9
     global midi_outdev1 midi_outdev2 midi_outdev3 midi_outdev4 midi_outdev5 \
@@ -48,13 +47,13 @@ proc ::dialog_midi::apply {mytoplevel} {
         $midi_alsaout"
 }
 
-proc ::dialog_midi::cancel {mytoplevel} {
+proc cancel {mytoplevel} {
     ::pd_connect::pdsend "$mytoplevel cancel"
 }
 
-proc ::dialog_midi::ok {mytoplevel} {
-    ::dialog_midi::apply $mytoplevel
-    ::dialog_midi::cancel $mytoplevel
+proc ok {mytoplevel} {
+    ::pd_midi::apply $mytoplevel
+    ::pd_midi::cancel $mytoplevel
 }
 
 # callback from popup menu
@@ -82,7 +81,7 @@ proc midi_popup {name buttonname varname devlist} {
 # start a dialog window to select midi devices.  "longform" asks us to make
 # controls for opening several devices; if not, we get an extra button to
 # turn longform on and restart the dialog.
-proc ::dialog_midi::pdtk_midi_dialog {id \
+proc pdtk_midi_dialog {id \
       indev1 indev2 indev3 indev4 indev5 indev6 indev7 indev8 indev9 \
       outdev1 outdev2 outdev3 outdev4 outdev5 outdev6 outdev7 outdev8 outdev9 \
       longform} {
@@ -125,11 +124,11 @@ proc ::dialog_midi::pdtk_midi_dialog {id \
     frame $id.buttonframe
     pack $id.buttonframe -side bottom -fill x -pady 2m
     button $id.buttonframe.cancel -text [_ "Cancel"]\
-        -command "::dialog_midi::cancel $id"
+        -command "::pd_midi::cancel $id"
     button $id.buttonframe.apply -text [_ "Apply"]\
-        -command "::dialog_midi::apply $id"
+        -command "::pd_midi::apply $id"
     button $id.buttonframe.ok -text [_ "OK"]\
-        -command "::dialog_midi::ok $id"
+        -command "::pd_midi::ok $id"
     pack $id.buttonframe.cancel -side left -expand 1
     pack $id.buttonframe.apply -side left -expand 1
     pack $id.buttonframe.ok -side left -expand 1
@@ -349,7 +348,7 @@ proc ::dialog_midi::pdtk_midi_dialog {id \
     }
 }
 
-proc ::dialog_midi::pdtk_alsa_midi_dialog {id indev1 indev2 indev3 indev4 \
+proc pdtk_alsa_midi_dialog {id indev1 indev2 indev3 indev4 \
         outdev1 outdev2 outdev3 outdev4 longform alsa} {
 
     global midi_indev1 midi_indev2 midi_indev3 midi_indev4 midi_indev5 \
@@ -386,11 +385,11 @@ proc ::dialog_midi::pdtk_alsa_midi_dialog {id indev1 indev2 indev3 indev4 \
     frame $id.buttonframe
     pack $id.buttonframe -side bottom -fill x -pady 2m
     button $id.buttonframe.cancel -text [_ "Cancel"]\
-        -command "::dialog_midi::cancel $id"
+        -command "::pd_midi::cancel $id"
     button $id.buttonframe.apply -text [_ "Apply"]\
-        -command "::dialog_midi::apply $id"
+        -command "::pd_midi::apply $id"
     button $id.buttonframe.ok -text [_ "OK"]\
-        -command "::dialog_midi::ok $id"
+        -command "::pd_midi::ok $id"
     pack $id.buttonframe.cancel -side left -expand 1
     pack $id.buttonframe.apply -side left -expand 1
     pack $id.buttonframe.ok -side left -expand 1
@@ -407,3 +406,11 @@ proc ::dialog_midi::pdtk_alsa_midi_dialog {id indev1 indev2 indev3 indev4 \
         pack $id.in1f.l2 $id.in1f.x2 -side left
     }
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
