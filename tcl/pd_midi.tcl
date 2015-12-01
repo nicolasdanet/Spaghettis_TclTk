@@ -17,391 +17,172 @@ namespace eval ::pd_midi:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-variable midiIn
-variable midiOut
+variable  midiIn
+variable  midiOut
+variable  midiAlsaIn 
+variable  midiAlsaOut
+variable  midiInDevice
+variable  midiOutDevice
+
+array set midiInDevice  {}
+array set midiOutDevice {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {id \
-      indev1 indev2 indev3 indev4 indev5 indev6 indev7 indev8 indev9 \
-      outdev1 outdev2 outdev3 outdev4 outdev5 outdev6 outdev7 outdev8 outdev9} {
+proc show {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     
+    ::pd_midi::_create $top $i1 $i2 $i3 $i4 $i5 $i6 $i7 $i8 $i9 $o1 $o2 $o3 $o4 $o5 $o6 $o7 $o8 $o9
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
+
     variable midiIn
     variable midiOut
+    variable midiAlsaIn
+    variable midiAlsaOut
+    variable midiInDevice
+    variable midiOutDevice
+
+    array set midiInDevice  [ list 1 $i1 2 $i2 3 $i3 4 $i4 5 $i5 6 $i6 7 $i7 8 $i8 9 $i9 ]
+    array set midiOutDevice [ list 1 $o1 2 $o2 3 $o3 4 $o4 5 $o5 6 $o6 7 $o7 8 $o8 9 $o9 ]
     
-    global midi_indev1 midi_indev2 midi_indev3 midi_indev4 midi_indev5 \
-         midi_indev6 midi_indev7 midi_indev8 midi_indev9
-    global midi_outdev1 midi_outdev2 midi_outdev3 midi_outdev4 midi_outdev5 \
-         midi_outdev6 midi_outdev7 midi_outdev8 midi_outdev9
-    global midi_alsain midi_alsaout
+    set midiAlsaIn  [llength $midiIn]
+    set midiAlsaOut [llength $midiOut]
 
-    set midi_indev1 $indev1
-    set midi_indev2 $indev2
-    set midi_indev3 $indev3
-    set midi_indev4 $indev4
-    set midi_indev5 $indev5
-    set midi_indev6 $indev6
-    set midi_indev7 $indev7
-    set midi_indev8 $indev8
-    set midi_indev9 $indev9
-    set midi_outdev1 $outdev1
-    set midi_outdev2 $outdev2
-    set midi_outdev3 $outdev3
-    set midi_outdev4 $outdev4
-    set midi_outdev5 $outdev5
-    set midi_outdev6 $outdev6
-    set midi_outdev7 $outdev7
-    set midi_outdev8 $outdev8
-    set midi_outdev9 $outdev9
-    set midi_alsain [llength $midiIn]
-    set midi_alsaout [llength $midiOut]
-
-    toplevel $id -class PdDialog
-    wm title $id [_ "MIDI Settings"]
-    wm group $id .
-    wm resizable $id 0 0
-    $id configure -padx 10 -pady 5
-    # not all Tcl/Tk versions or platforms support -topmost, so catch the error
-    catch {wm attributes $id -topmost 1}
-
-    frame $id.buttonframe
-    pack $id.buttonframe -side bottom -fill x -pady 2m
-    button $id.buttonframe.cancel -text [_ "Cancel"]\
-        -command "::pd_midi::cancel $id"
-    button $id.buttonframe.apply -text [_ "Apply"]\
-        -command "::pd_midi::apply $id"
-    button $id.buttonframe.ok -text [_ "OK"]\
-        -command "::pd_midi::ok $id"
-    pack $id.buttonframe.cancel -side left -expand 1
-    pack $id.buttonframe.apply -side left -expand 1
-    pack $id.buttonframe.ok -side left -expand 1
+    toplevel $top -class PdDialog
+    wm title $top [_ "MIDI"]
+    wm group $top .
     
-        # input device 1
-    frame $id.in1f
-    pack $id.in1f -side top
+    wm resizable $top 0 0
+    wm geometry  $top [::rightNextTo .console]
 
-    label $id.in1f.l1 -text [_ "Input device 1:"]
-    button $id.in1f.x1 -text [lindex $midiIn $midi_indev1] \
-        -command [list ::pd_midi::midi_popup $id $id.in1f.x1 midi_indev1 $midiIn]
-    pack $id.in1f.l1 $id.in1f.x1 -side left
-
-        # input device 2
-    if {[llength $midiIn] > 2} {
-        frame $id.in2f
-        pack $id.in2f -side top
-
-        label $id.in2f.l1 -text [_ "Input device 2:"]
-        button $id.in2f.x1 -text [lindex $midiIn $midi_indev2] \
-            -command [list ::pd_midi::midi_popup $id $id.in2f.x1 midi_indev2 \
-                $midiIn]
-        pack $id.in2f.l1 $id.in2f.x1 -side left
-    }
-
-        # input device 3
-    if {[llength $midiIn] > 3} {
-        frame $id.in3f
-        pack $id.in3f -side top
-
-        label $id.in3f.l1 -text [_ "Input device 3:"]
-        button $id.in3f.x1 -text [lindex $midiIn $midi_indev3] \
-            -command [list ::pd_midi::midi_popup $id $id.in3f.x1 midi_indev3 \
-                $midiIn]
-        pack $id.in3f.l1 $id.in3f.x1 -side left
-    }
-
-        # input device 4
-    if {[llength $midiIn] > 4} {
-        frame $id.in4f
-        pack $id.in4f -side top
-
-        label $id.in4f.l1 -text [_ "Input device 4:"]
-        button $id.in4f.x1 -text [lindex $midiIn $midi_indev4] \
-            -command [list ::pd_midi::midi_popup $id $id.in4f.x1 midi_indev4 \
-                $midiIn]
-        pack $id.in4f.l1 $id.in4f.x1 -side left
-    }
-
-        # input device 5
-    if {[llength $midiIn] > 5} {
-        frame $id.in5f
-        pack $id.in5f -side top
-
-        label $id.in5f.l1 -text [_ "Input device 5:"]
-        button $id.in5f.x1 -text [lindex $midiIn $midi_indev5] \
-            -command [list ::pd_midi::midi_popup $id $id.in5f.x1 midi_indev5 \
-                $midiIn]
-        pack $id.in5f.l1 $id.in5f.x1 -side left
-    }
-
-        # input device 6
-    if {[llength $midiIn] > 6} {
-        frame $id.in6f
-        pack $id.in6f -side top
-
-        label $id.in6f.l1 -text [_ "Input device 6:"]
-        button $id.in6f.x1 -text [lindex $midiIn $midi_indev6] \
-            -command [list ::pd_midi::midi_popup $id $id.in6f.x1 midi_indev6 \
-                $midiIn]
-        pack $id.in6f.l1 $id.in6f.x1 -side left
-    }
-
-        # input device 7
-    if {[llength $midiIn] > 7} {
-        frame $id.in7f
-        pack $id.in7f -side top
-
-        label $id.in7f.l1 -text [_ "Input device 7:"]
-        button $id.in7f.x1 -text [lindex $midiIn $midi_indev7] \
-            -command [list ::pd_midi::midi_popup $id $id.in7f.x1 midi_indev7 \
-                $midiIn]
-        pack $id.in7f.l1 $id.in7f.x1 -side left
-    }
-
-        # input device 8
-    if {[llength $midiIn] > 8} {
-        frame $id.in8f
-        pack $id.in8f -side top
-
-        label $id.in8f.l1 -text [_ "Input device 8:"]
-        button $id.in8f.x1 -text [lindex $midiIn $midi_indev8] \
-            -command [list ::pd_midi::midi_popup $id $id.in8f.x1 midi_indev8 \
-                $midiIn]
-        pack $id.in8f.l1 $id.in8f.x1 -side left
-    }
-
-        # input device 9
-    if {[llength $midiIn] > 9} {
-        frame $id.in9f
-        pack $id.in9f -side top
-
-        label $id.in9f.l1 -text [_ "Input device 9:"]
-        button $id.in9f.x1 -text [lindex $midiIn $midi_indev9] \
-            -command [list ::pd_midi::midi_popup $id $id.in9f.x1 midi_indev9 \
-                $midiIn]
-        pack $id.in9f.l1 $id.in9f.x1 -side left
-    }
-
-        # output device 1
-
-    frame $id.out1f
-    pack $id.out1f -side top
-    label $id.out1f.l1 -text [_ "Output device 1:"]
-    button $id.out1f.x1 -text [lindex $midiOut $midi_outdev1] \
-        -command [list ::pd_midi::midi_popup $id $id.out1f.x1 midi_outdev1 \
-            $midiOut]
-    pack $id.out1f.l1 $id.out1f.x1 -side left
-
-        # output device 2
-    if {[llength $midiOut] > 2} {
-        frame $id.out2f
-        pack $id.out2f -side top
-        label $id.out2f.l1 -text [_ "Output device 2:"]
-        button $id.out2f.x1 -text [lindex $midiOut $midi_outdev2] \
-            -command \
-            [list ::pd_midi::midi_popup $id $id.out2f.x1 midi_outdev2 $midiOut]
-        pack $id.out2f.l1 $id.out2f.x1 -side left
-    }
-
-        # output device 3
-    if {[llength $midiOut] > 3} {
-        frame $id.out3f
-        pack $id.out3f -side top
-        label $id.out3f.l1 -text [_ "Output device 3:"]
-        button $id.out3f.x1 -text [lindex $midiOut $midi_outdev3] \
-            -command \
-            [list ::pd_midi::midi_popup $id $id.out3f.x1 midi_outdev3 $midiOut]
-        pack $id.out3f.l1 $id.out3f.x1 -side left
-    }
-
-        # output device 4
-    if {[llength $midiOut] > 4} {
-        frame $id.out4f
-        pack $id.out4f -side top
-        label $id.out4f.l1 -text [_ "Output device 4:"]
-        button $id.out4f.x1 -text [lindex $midiOut $midi_outdev4] \
-            -command \
-            [list ::pd_midi::midi_popup $id $id.out4f.x1 midi_outdev4 $midiOut]
-        pack $id.out4f.l1 $id.out4f.x1 -side left
-    }
-
-        # output device 5
-    if {[llength $midiOut] > 5} {
-        frame $id.out5f
-        pack $id.out5f -side top
-        label $id.out5f.l1 -text [_ "Output device 5:"]
-        button $id.out5f.x1 -text [lindex $midiOut $midi_outdev5] \
-            -command \
-            [list ::pd_midi::midi_popup $id $id.out5f.x1 midi_outdev5 $midiOut]
-        pack $id.out5f.l1 $id.out5f.x1 -side left
-    }
-
-        # output device 6
-    if {[llength $midiOut] > 6} {
-        frame $id.out6f
-        pack $id.out6f -side top
-        label $id.out6f.l1 -text [_ "Output device 6:"]
-        button $id.out6f.x1 -text [lindex $midiOut $midi_outdev6] \
-            -command \
-            [list ::pd_midi::midi_popup $id $id.out6f.x1 midi_outdev6 $midiOut]
-        pack $id.out6f.l1 $id.out6f.x1 -side left
-    }
-
-        # output device 7
-    if {[llength $midiOut] > 7} {
-        frame $id.out7f
-        pack $id.out7f -side top
-        label $id.out7f.l1 -text [_ "Output device 7:"]
-        button $id.out7f.x1 -text [lindex $midiOut $midi_outdev7] \
-            -command \
-            [list ::pd_midi::midi_popup $id $id.out7f.x1 midi_outdev7 $midiOut]
-        pack $id.out7f.l1 $id.out7f.x1 -side left
-    }
-
-        # output device 8
-    if {[llength $midiOut] > 8} {
-        frame $id.out8f
-        pack $id.out8f -side top
-        label $id.out8f.l1 -text [_ "Output device 8:"]
-        button $id.out8f.x1 -text [lindex $midiOut $midi_outdev8] \
-            -command \
-            [list ::pd_midi::midi_popup $id $id.out8f.x1 midi_outdev8 $midiOut]
-        pack $id.out8f.l1 $id.out8f.x1 -side left
-    }
-
-        # output device 9
-    if {[llength $midiOut] > 9} {
-        frame $id.out9f
-        pack $id.out9f -side top
-        label $id.out9f.l1 -text [_ "Output device 9:"]
-        button $id.out9f.x1 -text [lindex $midiOut $midi_outdev9] \
-            -command \
-            [list ::pd_midi::midi_popup $id $id.out9f.x1 midi_outdev9 $midiOut]
-        pack $id.out9f.l1 $id.out9f.x1 -side left
-    }
-}
-
-proc hide {top} {
-
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc _create {top} {
-
+    foreach e $midiIn  { ::pd_midi::_makeIn  $top [incr i] }
+    foreach e $midiOut { ::pd_midi::_makeOut $top [incr j] }
+    
+    wm protocol $top WM_DELETE_WINDOW   "::pd_midi::_closed $top"
 }
 
 proc _closed {top} {
 
+    ::pd_midi::_apply  $top
+    ::pd_midi::_cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc apply {mytoplevel} {
-    global midi_indev1 midi_indev2 midi_indev3 midi_indev4 midi_indev5 \
-        midi_indev6 midi_indev7 midi_indev8 midi_indev9
-    global midi_outdev1 midi_outdev2 midi_outdev3 midi_outdev4 midi_outdev5 \
-        midi_outdev6 midi_outdev7 midi_outdev8 midi_outdev9
-    global midi_alsain midi_alsaout
+proc _makeIn {top k} {
 
-    ::pd_connect::pdsend "pd midi-dialog \
-        $midi_indev1 \
-        $midi_indev2 \
-        $midi_indev3 \
-        $midi_indev4 \
-        $midi_indev5 \
-        $midi_indev6 \
-        $midi_indev7 \
-        $midi_indev8 \
-        $midi_indev9 \
-        $midi_outdev1 \
-        $midi_outdev2 \
-        $midi_outdev3 \
-        $midi_outdev4 \
-        $midi_outdev5 \
-        $midi_outdev6 \
-        $midi_outdev7 \
-        $midi_outdev8 \
-        $midi_outdev9 \
-        $midi_alsain \
-        $midi_alsaout"
 }
 
-proc cancel {mytoplevel} {
-    ::pd_connect::pdsend "$mytoplevel cancel"
-}
+proc _makeOut {top k} {
 
-proc ok {mytoplevel} {
-    ::pd_midi::apply $mytoplevel
-    ::pd_midi::cancel $mytoplevel
+    variable midiOut
+    variable midiOutDevice
+    
+    set title   [format "%s.outDevice%dLabel" $top $k]
+    set devices [format "%s.outDevice%d" $top $k]
+    
+    label $title                        -text [format "%s %d" [_ "Output"] $k]
+    menubutton $devices                 -text [lindex $midiOut $midiOutDevice($k)]
+    
+    menu $devices.menu
+    $devices configure                  -menu $devices.menu
+    
+    set i 0
+    
+    foreach e $midiOut {
+        $devices.menu add radiobutton   -label "$e" \
+                                        -variable ::pd_midi::midiOutDevice($k) \
+                                        -value $i \
+                                        -command [list $devices configure -text [lindex $midiOut $i]]
+        incr i
+    }
+    
+    pack $title                         -side top -anchor w
+    pack $devices                       -side top -anchor w
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# callback from popup menu
-proc midi_popup_action {buttonname varname devlist index} {
+proc _apply {top} {
     
     variable midiIn
     variable midiOut
+    variable midiAlsaIn
+    variable midiAlsaOut
+    variable midiInDevice
+    variable midiOutDevice
     
-    global $varname
-    $buttonname configure -text [lindex $devlist $index]
-    set $varname $index
+    ::pd_console::post "pd midi-dialog \
+        $midiInDevice(1) \
+        $midiInDevice(2) \
+        $midiInDevice(3) \
+        $midiInDevice(4) \
+        $midiInDevice(5) \
+        $midiInDevice(6) \
+        $midiInDevice(7) \
+        $midiInDevice(8) \
+        $midiInDevice(9) \
+        $midiOutDevice(1) \
+        $midiOutDevice(2) \
+        $midiOutDevice(3) \
+        $midiOutDevice(4) \
+        $midiOutDevice(5) \
+        $midiOutDevice(6) \
+        $midiOutDevice(7) \
+        $midiOutDevice(8) \
+        $midiOutDevice(9) \
+        $midiAlsaIn \
+        $midiAlsaOut"
+        
+    ::pd_console::post "\n"
 }
 
-# create a popup menu
-proc midi_popup {name buttonname varname devlist} {
-    if [winfo exists $name.popup] {destroy $name.popup}
-    menu $name.popup -tearoff 0
-    if {[tk windowingsystem] eq "win32"} {
-        $name.popup configure -font menuFont
-    }
-    for {set x 0} {$x<[llength $devlist]} {incr x} {
-        $name.popup add command -label [lindex $devlist $x] \
-            -command [list ::pd_midi::midi_popup_action \
-                $buttonname $varname $devlist $x] 
-    }
-    tk_popup $name.popup [winfo pointerx $name] [winfo pointery $name] 0
+proc _cancel {top} {
+
+    ::pd_connect::pdsend "$top cancel"
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc pdtk_alsa_midi_dialog {id indev1 indev2 indev3 indev4 \
-        outdev1 outdev2 outdev3 outdev4 alsa} {
+proc pdtk_alsa_midi_dialog {id in1 in2 in3 in4 out1 out2 out3 out4 alsa} {
 
+    if {0} {
+    
     variable midiIn
     variable midiOut
+    variable midiAlsaIn
+    variable midiAlsaOut
+    variable midiInDevice
+    variable midiOutDevice
     
-    global midi_indev1 midi_indev2 midi_indev3 midi_indev4 midi_indev5 \
-         midi_indev6 midi_indev7 midi_indev8 midi_indev9
-    global midi_outdev1 midi_outdev2 midi_outdev3 midi_outdev4 midi_outdev5 \
-         midi_outdev6 midi_outdev7 midi_outdev8 midi_outdev9
-    global midi_alsain midi_alsaout
-
-    set midi_indev1 $indev1
-    set midi_indev2 $indev2
-    set midi_indev3 $indev3
-    set midi_indev4 $indev4
-    set midi_indev5 0
-    set midi_indev6 0
-    set midi_indev7 0
-    set midi_indev8 0
-    set midi_indev9 0
-    set midi_outdev1 $outdev1
-    set midi_outdev2 $outdev2
-    set midi_outdev3 $outdev3
-    set midi_outdev4 $outdev4
-    set midi_outdev5 0
-    set midi_outdev6 0
-    set midi_outdev7 0
-    set midi_outdev8 0
-    set midi_outdev9 0
-    set midi_alsain [expr [llength $midiIn] - 1]
-    set midi_alsaout [expr [llength $midiOut] - 1]
+    set midiInDevice1 $in1
+    set midiInDevice2 $in2
+    set midiInDevice3 $in3
+    set midiInDevice4 $in4
+    set midiInDevice5 0
+    set midiInDevice6 0
+    set midiInDevice7 0
+    set midiInDevice8 0
+    set midiInDevice9 0
+    set midiOutDevice1 $out1
+    set midiOutDevice2 $out2
+    set midiOutDevice3 $out3
+    set midiOutDevice4 $out4
+    set midiOutDevice5 0
+    set midiOutDevice6 0
+    set midiOutDevice7 0
+    set midiOutDevice8 0
+    set midiOutDevice9 0
+    set midiAlsaIn [expr [llength $midiIn] - 1]
+    set midiAlsaOut [expr [llength $midiOut] - 1]
     
     toplevel $id
     wm title $id [_ "ALSA MIDI Settings"]
@@ -423,11 +204,13 @@ proc pdtk_alsa_midi_dialog {id indev1 indev2 indev3 indev4 \
 
     if {$alsa} {
         label $id.in1f.l1 -text [_ "In Ports:"]
-        entry $id.in1f.x1 -textvariable midi_alsain -width 4
+        entry $id.in1f.x1 -textvariable midiAlsaIn -width 4
         pack $id.in1f.l1 $id.in1f.x1 -side left
         label $id.in1f.l2 -text [_ "Out Ports:"]
-        entry $id.in1f.x2 -textvariable midi_alsaout -width 4
+        entry $id.in1f.x2 -textvariable midiAlsaOut -width 4
         pack $id.in1f.l2 $id.in1f.x2 -side left
+    }
+    
     }
 }
 
