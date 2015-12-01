@@ -720,7 +720,7 @@ void glob_midi_properties(t_pd *dummy, t_floatarg flongform)
       else
 #endif
     sprintf(buf,
-"::pd_midi::pdtk_midi_dialog %%s \
+"::pd_midi::show %%s \
 %d %d %d %d %d %d %d %d %d \
 %d %d %d %d %d %d %d %d %d \
 %d\n",

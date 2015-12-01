@@ -17,74 +17,11 @@ namespace eval ::pd_midi:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc apply {mytoplevel} {
-    global midi_indev1 midi_indev2 midi_indev3 midi_indev4 midi_indev5 \
-        midi_indev6 midi_indev7 midi_indev8 midi_indev9
-    global midi_outdev1 midi_outdev2 midi_outdev3 midi_outdev4 midi_outdev5 \
-        midi_outdev6 midi_outdev7 midi_outdev8 midi_outdev9
-    global midi_alsain midi_alsaout
-
-    ::pd_connect::pdsend "pd midi-dialog \
-        $midi_indev1 \
-        $midi_indev2 \
-        $midi_indev3 \
-        $midi_indev4 \
-        $midi_indev5 \
-        $midi_indev6 \
-        $midi_indev7 \
-        $midi_indev8 \
-        $midi_indev9 \
-        $midi_outdev1 \
-        $midi_outdev2 \
-        $midi_outdev3 \
-        $midi_outdev4 \
-        $midi_outdev5 \
-        $midi_outdev6 \
-        $midi_outdev7 \
-        $midi_outdev8 \
-        $midi_outdev9 \
-        $midi_alsain \
-        $midi_alsaout"
-}
-
-proc cancel {mytoplevel} {
-    ::pd_connect::pdsend "$mytoplevel cancel"
-}
-
-proc ok {mytoplevel} {
-    ::pd_midi::apply $mytoplevel
-    ::pd_midi::cancel $mytoplevel
-}
-
-# callback from popup menu
-proc midi_popup_action {buttonname varname devlist index} {
-    global midi_indev midi_outdev $varname
-    $buttonname configure -text [lindex $devlist $index]
-    set $varname $index
-}
-
-# create a popup menu
-proc midi_popup {name buttonname varname devlist} {
-    if [winfo exists $name.popup] {destroy $name.popup}
-    menu $name.popup -tearoff 0
-    if {[tk windowingsystem] eq "win32"} {
-        $name.popup configure -font menuFont
-    }
-    for {set x 0} {$x<[llength $devlist]} {incr x} {
-        $name.popup add command -label [lindex $devlist $x] \
-            -command [list midi_popup_action \
-                $buttonname $varname $devlist $x] 
-    }
-    tk_popup $name.popup [winfo pointerx $name] [winfo pointery $name] 0
-}
-
-# start a dialog window to select midi devices.  "longform" asks us to make
-# controls for opening several devices; if not, we get an extra button to
-# turn longform on and restart the dialog.
-proc pdtk_midi_dialog {id \
+proc show {id \
       indev1 indev2 indev3 indev4 indev5 indev6 indev7 indev8 indev9 \
       outdev1 outdev2 outdev3 outdev4 outdev5 outdev6 outdev7 outdev8 outdev9 \
       longform} {
+      
     global midi_indev1 midi_indev2 midi_indev3 midi_indev4 midi_indev5 \
          midi_indev6 midi_indev7 midi_indev8 midi_indev9
     global midi_outdev1 midi_outdev2 midi_outdev3 midi_outdev4 midi_outdev5 \
@@ -139,7 +76,7 @@ proc pdtk_midi_dialog {id \
 
     label $id.in1f.l1 -text [_ "Input device 1:"]
     button $id.in1f.x1 -text [lindex $midi_indev $midi_indev1] \
-        -command [list midi_popup $id $id.in1f.x1 midi_indev1 $midi_indev]
+        -command [list ::pd_midi::midi_popup $id $id.in1f.x1 midi_indev1 $midi_indev]
     pack $id.in1f.l1 $id.in1f.x1 -side left
 
         # input device 2
@@ -149,7 +86,7 @@ proc pdtk_midi_dialog {id \
 
         label $id.in2f.l1 -text [_ "Input device 2:"]
         button $id.in2f.x1 -text [lindex $midi_indev $midi_indev2] \
-            -command [list midi_popup $id $id.in2f.x1 midi_indev2 \
+            -command [list ::pd_midi::midi_popup $id $id.in2f.x1 midi_indev2 \
                 $midi_indev]
         pack $id.in2f.l1 $id.in2f.x1 -side left
     }
@@ -161,7 +98,7 @@ proc pdtk_midi_dialog {id \
 
         label $id.in3f.l1 -text [_ "Input device 3:"]
         button $id.in3f.x1 -text [lindex $midi_indev $midi_indev3] \
-            -command [list midi_popup $id $id.in3f.x1 midi_indev3 \
+            -command [list ::pd_midi::midi_popup $id $id.in3f.x1 midi_indev3 \
                 $midi_indev]
         pack $id.in3f.l1 $id.in3f.x1 -side left
     }
@@ -173,7 +110,7 @@ proc pdtk_midi_dialog {id \
 
         label $id.in4f.l1 -text [_ "Input device 4:"]
         button $id.in4f.x1 -text [lindex $midi_indev $midi_indev4] \
-            -command [list midi_popup $id $id.in4f.x1 midi_indev4 \
+            -command [list ::pd_midi::midi_popup $id $id.in4f.x1 midi_indev4 \
                 $midi_indev]
         pack $id.in4f.l1 $id.in4f.x1 -side left
     }
@@ -185,7 +122,7 @@ proc pdtk_midi_dialog {id \
 
         label $id.in5f.l1 -text [_ "Input device 5:"]
         button $id.in5f.x1 -text [lindex $midi_indev $midi_indev5] \
-            -command [list midi_popup $id $id.in5f.x1 midi_indev5 \
+            -command [list ::pd_midi::midi_popup $id $id.in5f.x1 midi_indev5 \
                 $midi_indev]
         pack $id.in5f.l1 $id.in5f.x1 -side left
     }
@@ -197,7 +134,7 @@ proc pdtk_midi_dialog {id \
 
         label $id.in6f.l1 -text [_ "Input device 6:"]
         button $id.in6f.x1 -text [lindex $midi_indev $midi_indev6] \
-            -command [list midi_popup $id $id.in6f.x1 midi_indev6 \
+            -command [list ::pd_midi::midi_popup $id $id.in6f.x1 midi_indev6 \
                 $midi_indev]
         pack $id.in6f.l1 $id.in6f.x1 -side left
     }
@@ -209,7 +146,7 @@ proc pdtk_midi_dialog {id \
 
         label $id.in7f.l1 -text [_ "Input device 7:"]
         button $id.in7f.x1 -text [lindex $midi_indev $midi_indev7] \
-            -command [list midi_popup $id $id.in7f.x1 midi_indev7 \
+            -command [list ::pd_midi::midi_popup $id $id.in7f.x1 midi_indev7 \
                 $midi_indev]
         pack $id.in7f.l1 $id.in7f.x1 -side left
     }
@@ -221,7 +158,7 @@ proc pdtk_midi_dialog {id \
 
         label $id.in8f.l1 -text [_ "Input device 8:"]
         button $id.in8f.x1 -text [lindex $midi_indev $midi_indev8] \
-            -command [list midi_popup $id $id.in8f.x1 midi_indev8 \
+            -command [list ::pd_midi::midi_popup $id $id.in8f.x1 midi_indev8 \
                 $midi_indev]
         pack $id.in8f.l1 $id.in8f.x1 -side left
     }
@@ -233,7 +170,7 @@ proc pdtk_midi_dialog {id \
 
         label $id.in9f.l1 -text [_ "Input device 9:"]
         button $id.in9f.x1 -text [lindex $midi_indev $midi_indev9] \
-            -command [list midi_popup $id $id.in9f.x1 midi_indev9 \
+            -command [list ::pd_midi::midi_popup $id $id.in9f.x1 midi_indev9 \
                 $midi_indev]
         pack $id.in9f.l1 $id.in9f.x1 -side left
     }
@@ -244,7 +181,7 @@ proc pdtk_midi_dialog {id \
     pack $id.out1f -side top
     label $id.out1f.l1 -text [_ "Output device 1:"]
     button $id.out1f.x1 -text [lindex $midi_outdev $midi_outdev1] \
-        -command [list midi_popup $id $id.out1f.x1 midi_outdev1 \
+        -command [list ::pd_midi::midi_popup $id $id.out1f.x1 midi_outdev1 \
             $midi_outdev]
     pack $id.out1f.l1 $id.out1f.x1 -side left
 
@@ -255,7 +192,7 @@ proc pdtk_midi_dialog {id \
         label $id.out2f.l1 -text [_ "Output device 2:"]
         button $id.out2f.x1 -text [lindex $midi_outdev $midi_outdev2] \
             -command \
-            [list midi_popup $id $id.out2f.x1 midi_outdev2 $midi_outdev]
+            [list ::pd_midi::midi_popup $id $id.out2f.x1 midi_outdev2 $midi_outdev]
         pack $id.out2f.l1 $id.out2f.x1 -side left
     }
 
@@ -266,7 +203,7 @@ proc pdtk_midi_dialog {id \
         label $id.out3f.l1 -text [_ "Output device 3:"]
         button $id.out3f.x1 -text [lindex $midi_outdev $midi_outdev3] \
             -command \
-            [list midi_popup $id $id.out3f.x1 midi_outdev3 $midi_outdev]
+            [list ::pd_midi::midi_popup $id $id.out3f.x1 midi_outdev3 $midi_outdev]
         pack $id.out3f.l1 $id.out3f.x1 -side left
     }
 
@@ -277,7 +214,7 @@ proc pdtk_midi_dialog {id \
         label $id.out4f.l1 -text [_ "Output device 4:"]
         button $id.out4f.x1 -text [lindex $midi_outdev $midi_outdev4] \
             -command \
-            [list midi_popup $id $id.out4f.x1 midi_outdev4 $midi_outdev]
+            [list ::pd_midi::midi_popup $id $id.out4f.x1 midi_outdev4 $midi_outdev]
         pack $id.out4f.l1 $id.out4f.x1 -side left
     }
 
@@ -288,7 +225,7 @@ proc pdtk_midi_dialog {id \
         label $id.out5f.l1 -text [_ "Output device 5:"]
         button $id.out5f.x1 -text [lindex $midi_outdev $midi_outdev5] \
             -command \
-            [list midi_popup $id $id.out5f.x1 midi_outdev5 $midi_outdev]
+            [list ::pd_midi::midi_popup $id $id.out5f.x1 midi_outdev5 $midi_outdev]
         pack $id.out5f.l1 $id.out5f.x1 -side left
     }
 
@@ -299,7 +236,7 @@ proc pdtk_midi_dialog {id \
         label $id.out6f.l1 -text [_ "Output device 6:"]
         button $id.out6f.x1 -text [lindex $midi_outdev $midi_outdev6] \
             -command \
-            [list midi_popup $id $id.out6f.x1 midi_outdev6 $midi_outdev]
+            [list ::pd_midi::midi_popup $id $id.out6f.x1 midi_outdev6 $midi_outdev]
         pack $id.out6f.l1 $id.out6f.x1 -side left
     }
 
@@ -310,7 +247,7 @@ proc pdtk_midi_dialog {id \
         label $id.out7f.l1 -text [_ "Output device 7:"]
         button $id.out7f.x1 -text [lindex $midi_outdev $midi_outdev7] \
             -command \
-            [list midi_popup $id $id.out7f.x1 midi_outdev7 $midi_outdev]
+            [list ::pd_midi::midi_popup $id $id.out7f.x1 midi_outdev7 $midi_outdev]
         pack $id.out7f.l1 $id.out7f.x1 -side left
     }
 
@@ -321,7 +258,7 @@ proc pdtk_midi_dialog {id \
         label $id.out8f.l1 -text [_ "Output device 8:"]
         button $id.out8f.x1 -text [lindex $midi_outdev $midi_outdev8] \
             -command \
-            [list midi_popup $id $id.out8f.x1 midi_outdev8 $midi_outdev]
+            [list ::pd_midi::midi_popup $id $id.out8f.x1 midi_outdev8 $midi_outdev]
         pack $id.out8f.l1 $id.out8f.x1 -side left
     }
 
@@ -332,7 +269,7 @@ proc pdtk_midi_dialog {id \
         label $id.out9f.l1 -text [_ "Output device 9:"]
         button $id.out9f.x1 -text [lindex $midi_outdev $midi_outdev9] \
             -command \
-            [list midi_popup $id $id.out9f.x1 midi_outdev9 $midi_outdev]
+            [list ::pd_midi::midi_popup $id $id.out9f.x1 midi_outdev9 $midi_outdev]
         pack $id.out9f.l1 $id.out9f.x1 -side left
     }
 
@@ -347,6 +284,80 @@ proc pdtk_midi_dialog {id \
         pack $id.longbutton.b
     }
 }
+
+proc _closed {top} {
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc apply {mytoplevel} {
+    global midi_indev1 midi_indev2 midi_indev3 midi_indev4 midi_indev5 \
+        midi_indev6 midi_indev7 midi_indev8 midi_indev9
+    global midi_outdev1 midi_outdev2 midi_outdev3 midi_outdev4 midi_outdev5 \
+        midi_outdev6 midi_outdev7 midi_outdev8 midi_outdev9
+    global midi_alsain midi_alsaout
+
+    ::pd_connect::pdsend "pd midi-dialog \
+        $midi_indev1 \
+        $midi_indev2 \
+        $midi_indev3 \
+        $midi_indev4 \
+        $midi_indev5 \
+        $midi_indev6 \
+        $midi_indev7 \
+        $midi_indev8 \
+        $midi_indev9 \
+        $midi_outdev1 \
+        $midi_outdev2 \
+        $midi_outdev3 \
+        $midi_outdev4 \
+        $midi_outdev5 \
+        $midi_outdev6 \
+        $midi_outdev7 \
+        $midi_outdev8 \
+        $midi_outdev9 \
+        $midi_alsain \
+        $midi_alsaout"
+}
+
+proc cancel {mytoplevel} {
+    ::pd_connect::pdsend "$mytoplevel cancel"
+}
+
+proc ok {mytoplevel} {
+    ::pd_midi::apply $mytoplevel
+    ::pd_midi::cancel $mytoplevel
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+# callback from popup menu
+proc midi_popup_action {buttonname varname devlist index} {
+    global midi_indev midi_outdev $varname
+    $buttonname configure -text [lindex $devlist $index]
+    set $varname $index
+}
+
+# create a popup menu
+proc midi_popup {name buttonname varname devlist} {
+    if [winfo exists $name.popup] {destroy $name.popup}
+    menu $name.popup -tearoff 0
+    if {[tk windowingsystem] eq "win32"} {
+        $name.popup configure -font menuFont
+    }
+    for {set x 0} {$x<[llength $devlist]} {incr x} {
+        $name.popup add command -label [lindex $devlist $x] \
+            -command [list ::pd_midi::midi_popup_action \
+                $buttonname $varname $devlist $x] 
+    }
+    tk_popup $name.popup [winfo pointerx $name] [winfo pointery $name] 0
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 proc pdtk_alsa_midi_dialog {id indev1 indev2 indev3 indev4 \
         outdev1 outdev2 outdev3 outdev4 longform alsa} {
