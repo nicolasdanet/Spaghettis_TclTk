@@ -51,7 +51,7 @@ fi
 
 # Paths.
 
-folder="${rep}/Application"
+folder="${rep}/Pd"
 app="${folder}/PureData.app"
 plist="${rep}/resources/Info.plist"
 bin="${rep}/bin"
