@@ -183,10 +183,12 @@ proc updateScrollRegion {c} {
     
     if {$w > 1 && $h > 1} {
     
-        set x1 [::tcl::mathfunc::min [lindex $box 0] 0]
-        set y1 [::tcl::mathfunc::min [lindex $box 1] 0]
-        set x2 [::tcl::mathfunc::max [lindex $box 2] $w]
-        set y2 [::tcl::mathfunc::max [lindex $box 3] $h]
+        # Bounded box is overestimate by a few pixels.
+        
+        set x1 [::tcl::mathfunc::min [expr {[lindex $box 0] + 2}] 0]
+        set y1 [::tcl::mathfunc::min [expr {[lindex $box 1] + 2}] 0]
+        set x2 [::tcl::mathfunc::max [expr {[lindex $box 2] - 2}] $w]
+        set y2 [::tcl::mathfunc::max [expr {[lindex $box 3] - 2}] $h]
 
         $c configure -scrollregion [concat $x1 $y1 $x2 $y2]
         
