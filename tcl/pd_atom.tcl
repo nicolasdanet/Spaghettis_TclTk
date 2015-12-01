@@ -23,22 +23,16 @@ namespace eval ::pd_atom:: {
 # ------------------------------------------------------------------------------------------------------------
 
 variable  atomWidth
-variable  atomWidthOld
 variable  atomLow
-variable  atomLowOld
 variable  atomHigh
-variable  atomHighOld
 variable  atomSend
 variable  atomReceive
 variable  atomName
 variable  atomPosition
 
 array set atomWidth     {}
-array set atomWidthOld  {}
 array set atomLow       {}
-array set atomLowOld    {}
 array set atomHigh      {}
-array set atomHighOld   {}
 array set atomSend      {}
 array set atomReceive   {}
 array set atomName      {}
@@ -58,11 +52,8 @@ proc show {top width low high send receive name position} {
 proc _create {top width low high send receive name position} {
     
     variable atomWidth
-    variable atomWidthOld
     variable atomLow
-    variable atomLowOld
     variable atomHigh
-    variable atomHighOld
     variable atomSend
     variable atomReceive
     variable atomName
@@ -76,16 +67,17 @@ proc _create {top width low high send receive name position} {
     wm geometry  $top [::rightNextTo $::var(windowFocused)]
 
     set atomWidth($top)         $width
-    set atomWidthOld($top)      $width
     set atomLow($top)           $low
-    set atomLowOld($top)        $low
     set atomHigh($top)          $high
-    set atomHighOld($top)       $high
     set atomSend($top)          [::parseDash $send]
     set atomReceive($top)       [::parseDash $receive]
     set atomName($top)          [::parseDash $name]
     set atomPosition($top)      $position
     
+    set atomWidth(${top}.old)   $width
+    set atomLow(${top}.old)     $low
+    set atomHigh(${top}.old)    $high
+
     label $top.widthLabel       -text [_ "Width"]
     entry $top.width            -textvariable ::pd_atom::atomWidth($top)
     
@@ -155,11 +147,8 @@ proc _create {top width low high send receive name position} {
 proc _closed {top} {
 
     variable atomWidth
-    variable atomWidthOld
     variable atomLow
-    variable atomLowOld
     variable atomHigh
-    variable atomHighOld
     variable atomSend
     variable atomReceive
     variable atomName
@@ -168,16 +157,17 @@ proc _closed {top} {
     ::pd_atom::_apply $top
     
     unset atomWidth($top)
-    unset atomWidthOld($top)
     unset atomLow($top)
-    unset atomLowOld($top)
     unset atomHigh($top)
-    unset atomHighOld($top)
     unset atomSend($top)
     unset atomReceive($top)
     unset atomName($top)
     unset atomPosition($top)
-        
+    
+    unset atomWidth(${top}.old)
+    unset atomLow(${top}.old)
+    unset atomHigh(${top}.old)
+
     ::pd_atom::_cancel $top
 }
 
@@ -218,15 +208,12 @@ proc _cancel {top} {
 proc _forceValues {top} {
 
     variable atomWidth
-    variable atomWidthOld
     variable atomLow
-    variable atomLowOld
     variable atomHigh
-    variable atomHighOld
     
-    set atomWidth($top) [::ifInteger $atomWidth($top) $atomWidthOld($top)]
-    set atomLow($top)   [::ifInteger $atomLow($top) $atomLowOld($top)]
-    set atomHigh($top)  [::ifInteger $atomHigh($top) $atomHighOld($top)]
+    set atomWidth($top) [::ifInteger $atomWidth($top) $atomWidth(${top}.old)]
+    set atomLow($top)   [::ifInteger $atomLow($top) $atomLow(${top}.old)]
+    set atomHigh($top)  [::ifInteger $atomHigh($top) $atomHigh(${top}.old)]
     
     set min [::tcl::mathfunc::min $atomLow($top) $atomHigh($top)]
     set max [::tcl::mathfunc::max $atomLow($top) $atomHigh($top)]
