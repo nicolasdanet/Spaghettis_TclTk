@@ -25,8 +25,7 @@ variable midiOut
 
 proc show {id \
       indev1 indev2 indev3 indev4 indev5 indev6 indev7 indev8 indev9 \
-      outdev1 outdev2 outdev3 outdev4 outdev5 outdev6 outdev7 outdev8 outdev9 \
-      longform} {
+      outdev1 outdev2 outdev3 outdev4 outdev5 outdev6 outdev7 outdev8 outdev9} {
     
     variable midiIn
     variable midiOut
@@ -88,7 +87,7 @@ proc show {id \
     pack $id.in1f.l1 $id.in1f.x1 -side left
 
         # input device 2
-    if {$longform && [llength $midiIn] > 2} {
+    if {[llength $midiIn] > 2} {
         frame $id.in2f
         pack $id.in2f -side top
 
@@ -100,7 +99,7 @@ proc show {id \
     }
 
         # input device 3
-    if {$longform && [llength $midiIn] > 3} {
+    if {[llength $midiIn] > 3} {
         frame $id.in3f
         pack $id.in3f -side top
 
@@ -112,7 +111,7 @@ proc show {id \
     }
 
         # input device 4
-    if {$longform && [llength $midiIn] > 4} {
+    if {[llength $midiIn] > 4} {
         frame $id.in4f
         pack $id.in4f -side top
 
@@ -124,7 +123,7 @@ proc show {id \
     }
 
         # input device 5
-    if {$longform && [llength $midiIn] > 5} {
+    if {[llength $midiIn] > 5} {
         frame $id.in5f
         pack $id.in5f -side top
 
@@ -136,7 +135,7 @@ proc show {id \
     }
 
         # input device 6
-    if {$longform && [llength $midiIn] > 6} {
+    if {[llength $midiIn] > 6} {
         frame $id.in6f
         pack $id.in6f -side top
 
@@ -148,7 +147,7 @@ proc show {id \
     }
 
         # input device 7
-    if {$longform && [llength $midiIn] > 7} {
+    if {[llength $midiIn] > 7} {
         frame $id.in7f
         pack $id.in7f -side top
 
@@ -160,7 +159,7 @@ proc show {id \
     }
 
         # input device 8
-    if {$longform && [llength $midiIn] > 8} {
+    if {[llength $midiIn] > 8} {
         frame $id.in8f
         pack $id.in8f -side top
 
@@ -172,7 +171,7 @@ proc show {id \
     }
 
         # input device 9
-    if {$longform && [llength $midiIn] > 9} {
+    if {[llength $midiIn] > 9} {
         frame $id.in9f
         pack $id.in9f -side top
 
@@ -194,7 +193,7 @@ proc show {id \
     pack $id.out1f.l1 $id.out1f.x1 -side left
 
         # output device 2
-    if {$longform && [llength $midiOut] > 2} {
+    if {[llength $midiOut] > 2} {
         frame $id.out2f
         pack $id.out2f -side top
         label $id.out2f.l1 -text [_ "Output device 2:"]
@@ -205,7 +204,7 @@ proc show {id \
     }
 
         # output device 3
-    if {$longform && [llength $midiOut] > 3} {
+    if {[llength $midiOut] > 3} {
         frame $id.out3f
         pack $id.out3f -side top
         label $id.out3f.l1 -text [_ "Output device 3:"]
@@ -216,7 +215,7 @@ proc show {id \
     }
 
         # output device 4
-    if {$longform && [llength $midiOut] > 4} {
+    if {[llength $midiOut] > 4} {
         frame $id.out4f
         pack $id.out4f -side top
         label $id.out4f.l1 -text [_ "Output device 4:"]
@@ -227,7 +226,7 @@ proc show {id \
     }
 
         # output device 5
-    if {$longform && [llength $midiOut] > 5} {
+    if {[llength $midiOut] > 5} {
         frame $id.out5f
         pack $id.out5f -side top
         label $id.out5f.l1 -text [_ "Output device 5:"]
@@ -238,7 +237,7 @@ proc show {id \
     }
 
         # output device 6
-    if {$longform && [llength $midiOut] > 6} {
+    if {[llength $midiOut] > 6} {
         frame $id.out6f
         pack $id.out6f -side top
         label $id.out6f.l1 -text [_ "Output device 6:"]
@@ -249,7 +248,7 @@ proc show {id \
     }
 
         # output device 7
-    if {$longform && [llength $midiOut] > 7} {
+    if {[llength $midiOut] > 7} {
         frame $id.out7f
         pack $id.out7f -side top
         label $id.out7f.l1 -text [_ "Output device 7:"]
@@ -260,7 +259,7 @@ proc show {id \
     }
 
         # output device 8
-    if {$longform && [llength $midiOut] > 8} {
+    if {[llength $midiOut] > 8} {
         frame $id.out8f
         pack $id.out8f -side top
         label $id.out8f.l1 -text [_ "Output device 8:"]
@@ -271,7 +270,7 @@ proc show {id \
     }
 
         # output device 9
-    if {$longform && [llength $midiOut] > 9} {
+    if {[llength $midiOut] > 9} {
         frame $id.out9f
         pack $id.out9f -side top
         label $id.out9f.l1 -text [_ "Output device 9:"]
@@ -279,17 +278,6 @@ proc show {id \
             -command \
             [list ::pd_midi::midi_popup $id $id.out9f.x1 midi_outdev9 $midiOut]
         pack $id.out9f.l1 $id.out9f.x1 -side left
-    }
-
-        # if not the "long form" make a button to
-        # restart with longform set. 
-    
-    if {$longform == 0} {
-        frame $id.longbutton
-        pack $id.longbutton -side top
-        button $id.longbutton.b -text [_ "Use multiple devices"] \
-            -command  {::pd_connect::pdsend "pd midi-properties 1"}
-        pack $id.longbutton.b
     }
 }
 
@@ -383,7 +371,7 @@ proc midi_popup {name buttonname varname devlist} {
 # ------------------------------------------------------------------------------------------------------------
 
 proc pdtk_alsa_midi_dialog {id indev1 indev2 indev3 indev4 \
-        outdev1 outdev2 outdev3 outdev4 longform alsa} {
+        outdev1 outdev2 outdev3 outdev4 alsa} {
 
     variable midiIn
     variable midiOut

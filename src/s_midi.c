@@ -713,22 +713,19 @@ void glob_midi_properties(t_pd *dummy, t_floatarg flongform)
     sprintf(buf,
 "::pd_midi::pdtk_alsa_midi_dialog %%s \
 %d %d %d %d %d %d %d %d \
-%d 1\n",
+1\n",
         midiindev1, midiindev2, midiindev3, midiindev4, 
-        midioutdev1, midioutdev2, midioutdev3, midioutdev4,
-        (flongform != 0));
+        midioutdev1, midioutdev2, midioutdev3, midioutdev4);
       else
 #endif
     sprintf(buf,
 "::pd_midi::show %%s \
 %d %d %d %d %d %d %d %d %d \
-%d %d %d %d %d %d %d %d %d \
-%d\n",
+%d %d %d %d %d %d %d %d %d\n",
         midiindev1, midiindev2, midiindev3, midiindev4, midiindev5,
         midiindev6, midiindev7, midiindev8, midiindev9, 
         midioutdev1, midioutdev2, midioutdev3, midioutdev4, midioutdev5,
-        midioutdev6, midioutdev7, midioutdev8, midioutdev9,
-        (flongform != 0));
+        midioutdev6, midioutdev7, midioutdev8, midioutdev9);
 
     gfxstub_deleteforkey(0);
     gfxstub_new(&glob_pdobject, (void *)glob_midi_properties, buf);
