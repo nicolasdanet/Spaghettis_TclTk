@@ -62,6 +62,8 @@ proc show {top \
     variable audioCallback
     variable audioBlockSize
 
+    ::pd_menu::disableAudio
+        
     array set audioInDevice  [ list 1 $i1 2 $i2 3 $i3 4 $i4 ]
     array set audioOutDevice [ list 1 $o1 2 $o2 3 $o3 4 $o4 ]
 
@@ -273,6 +275,8 @@ proc _closed {top} {
 
     ::pd_audio::_apply  $top
     ::pd_audio::_cancel $top
+    
+    ::pd_menu::enableAudio
 }
 
 # ------------------------------------------------------------------------------------------------------------
