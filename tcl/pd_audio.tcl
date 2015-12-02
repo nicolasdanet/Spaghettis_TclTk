@@ -86,9 +86,9 @@ proc show {top \
     set audioInEnabled(3)   [expr {$iChannels3 > 0}]
     set audioInEnabled(4)   [expr {$iChannels4 > 0}]
     set audioOutEnabled(1)  [expr {$oChannels1 > 0}]
-    set audioOutEnabled(1)  [expr {$oChannels2 > 0}]
-    set audioOutEnabled(1)  [expr {$oChannels3 > 0}]
-    set audioOutEnabled(1)  [expr {$oChannels4 > 0}]
+    set audioOutEnabled(2)  [expr {$oChannels2 > 0}]
+    set audioOutEnabled(3)  [expr {$oChannels3 > 0}]
+    set audioOutEnabled(4)  [expr {$oChannels4 > 0}]
 
     set audioSampleRate     $sampleRate
     set audioDelay          $delay
@@ -189,8 +189,7 @@ proc _makeIn {top k} {
     
     label $channelsLabel                -text [_ "Channels"]
     entry $channels                     -textvariable ::pd_audio::audioInChannels($k) \
-                                        -takefocus 0 \
-                                        -state readonly
+                                        -state disabled
     
     pack $devicesLabel                  -side top -anchor w
     pack $devices                       -side top -anchor w
@@ -200,6 +199,42 @@ proc _makeIn {top k} {
 
 proc _makeOut {top k} {
 
+    variable audioOut
+    variable audioOutDevice
+    variable audioOutChannels
+    variable audioOutEnabled
+    
+    set devicesLabel  [format "%s.outDevice%dLabel" $top $k]
+    set devices       [format "%s.outDevice%d" $top $k]
+    set channelsLabel [format "%s.outChannels%dLabel" $top $k]
+    set channels      [format "%s.outChannels%d" $top $k]
+    
+    checkbutton $devicesLabel           -text [format "%s %d" [_ "Output"] $k] \
+                                        -variable ::pd_audio::audioOutEnabled($k) \
+                                        -takefocus 0
+    menubutton $devices                 -text [lindex $audioOut $audioOutDevice($k)]
+    
+    menu $devices.menu
+    $devices configure                  -menu $devices.menu
+    
+    set i 0
+    
+    foreach e $audioOut {
+        $devices.menu add radiobutton   -label "$e" \
+                                        -variable ::pd_audio::audioOutDevice($k) \
+                                        -value $i \
+                                        -command [list $devices configure -text [lindex $audioOut $i]]
+        incr i
+    }
+    
+    label $channelsLabel                -text [_ "Channels"]
+    entry $channels                     -textvariable ::pd_audio::audioOutChannels($k) \
+                                        -state disabled
+    
+    pack $devicesLabel                  -side top -anchor w
+    pack $devices                       -side top -anchor w
+    pack $channelsLabel                 -side top -anchor w
+    pack $channels                      -side top -anchor w
 }
 
 # ------------------------------------------------------------------------------------------------------------

@@ -108,13 +108,11 @@ proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     
     label $top.inLabel  -text [_ "Input Ports"]
     entry $top.in       -textvariable ::pd_midi::midiAlsaIn \
-                        -takefocus 0 \
-                        -state readonly
+                        -state disabled
     
     label $top.outLabel -text [_ "Output Ports"]
     entry $top.out      -textvariable ::pd_midi::midiAlsaOut \
-                        -takefocus 0 \
-                        -state readonly
+                        -state disabled
                         
     pack  $top.inLabel  -side top -anchor w
     pack  $top.in       -side top -anchor w
