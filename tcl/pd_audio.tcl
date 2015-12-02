@@ -164,12 +164,12 @@ proc _makeIn {top k} {
     variable audioInChannels
     variable audioInEnabled
     
-    set title    [format "%s.inDevice%dCheck" $top $k]
-    set devices  [format "%s.inDevice%d" $top $k]
-    set channels [format "%s.inDevice%dLabel" $top $k]
-    set number   [format "%s.inDevice%dEntry" $top $k]
+    set devicesLabel  [format "%s.inDevice%dLabel" $top $k]
+    set devices       [format "%s.inDevice%d" $top $k]
+    set channelsLabel [format "%s.inChannels%dLabel" $top $k]
+    set channels      [format "%s.inChannels%d" $top $k]
     
-    checkbutton $title                  -text [format "%s %d" [_ "Input"] $k] \
+    checkbutton $devicesLabel           -text [format "%s %d" [_ "Input"] $k] \
                                         -variable ::pd_audio::audioInEnabled($k) \
                                         -takefocus 0
     menubutton $devices                 -text [lindex $audioIn $audioInDevice($k)]
@@ -187,15 +187,15 @@ proc _makeIn {top k} {
         incr i
     }
     
-    label $channels                     -text [_ "Channels"]
-    entry $number                       -textvariable ::pd_audio::audioInChannels($k) \
+    label $channelsLabel                -text [_ "Channels"]
+    entry $channels                     -textvariable ::pd_audio::audioInChannels($k) \
                                         -takefocus 0 \
                                         -state readonly
     
-    pack $title                         -side top -anchor w
+    pack $devicesLabel                  -side top -anchor w
     pack $devices                       -side top -anchor w
+    pack $channelsLabel                 -side top -anchor w
     pack $channels                      -side top -anchor w
-    pack $number                        -side top -anchor w
 }
 
 proc _makeOut {top k} {
