@@ -7,6 +7,11 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+# Audio settings.
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 package provide pd_audio 0.1
 
 # ------------------------------------------------------------------------------------------------------------
@@ -122,151 +127,21 @@ proc show {top \
     
     }
     
+    if {$multiple > 1} {
+        foreach e $audioIn  { ::pd_audio::_makeIn  $top [incr i] }
+        foreach e $audioOut { ::pd_audio::_makeOut $top [incr j] }
+        
+    } else {
+        ::pd_audio::_makeIn  $top 1
+        ::pd_audio::_makeOut $top 1
+    }
+    
     bind  $top.sampleRate   <Return> { ::nextEntry %W }
     bind  $top.delay        <Return> { ::nextEntry %W }
 
     focus $top.sampleRate
     
     $top.sampleRate selection range 0 end
-    
-    if {0} {
-    
-        # input device 1
-    frame $top.in1f
-    pack $top.in1f -side top
-
-    checkbutton $top.in1f.x0 -variable audio_inenable1 \
-        -text [_ "Input device 1:"] -anchor e
-    button $top.in1f.x1 -text [lindex $audioIn $audio_indev1] \
-        -command [list ::pd_audio::audio_popup $top $top.in1f.x1 audio_indev1 $audioIn]
-    label $top.in1f.l2 -text [_ "Channels:"]
-    entry $top.in1f.x2 -textvariable audio_inchan1 -width 3
-    pack $top.in1f.x0 $top.in1f.x1 $top.in1f.l2 \
-        $top.in1f.x2 -side left -fill x
-
-        # input device 2
-    if {$longform && $multi > 1 && [llength $audioIn] > 1} {
-        frame $top.in2f
-        pack $top.in2f -side top
-
-        checkbutton $top.in2f.x0 -variable audio_inenable2 \
-            -text [_ "Input device 2:"] -anchor e
-        button $top.in2f.x1 -text [lindex $audioIn $audio_indev2] \
-            -command [list ::pd_audio::audio_popup $top $top.in2f.x1 audio_indev2 \
-                $audioIn]
-        label $top.in2f.l2 -text [_ "Channels:"]
-        entry $top.in2f.x2 -textvariable audio_inchan2 -width 3
-        pack $top.in2f.x0 $top.in2f.x1 $top.in2f.l2 \
-            $top.in2f.x2 -side left -fill x
-    }
-
-        # input device 3
-    if {$longform && $multi > 1 && [llength $audioIn] > 2} {
-        frame $top.in3f
-        pack $top.in3f -side top
-
-        checkbutton $top.in3f.x0 -variable audio_inenable3 \
-            -text [_ "Input device 3:"] -anchor e
-        button $top.in3f.x1 -text [lindex $audioIn $audio_indev3] \
-            -command [list ::pd_audio::audio_popup $top $top.in3f.x1 audio_indev3 \
-                $audioIn]
-        label $top.in3f.l2 -text [_ "Channels:"]
-        entry $top.in3f.x2 -textvariable audio_inchan3 -width 3
-        pack $top.in3f.x0 $top.in3f.x1 $top.in3f.l2 $top.in3f.x2 -side left
-    }
-
-        # input device 4
-    if {$longform && $multi > 1 && [llength $audioIn] > 3} {
-        frame $top.in4f
-        pack $top.in4f -side top
-
-        checkbutton $top.in4f.x0 -variable audio_inenable4 \
-            -text [_ "Input device 4:"] -anchor e
-        button $top.in4f.x1 -text [lindex $audioIn $audio_indev4] \
-            -command [list ::pd_audio::audio_popup $top $top.in4f.x1 audio_indev4 \
-                $audioIn]
-        label $top.in4f.l2 -text [_ "Channels:"]
-        entry $top.in4f.x2 -textvariable audio_inchan4 -width 3
-        pack $top.in4f.x0 $top.in4f.x1 $top.in4f.l2 \
-            $top.in4f.x2 -side left
-    }
-
-        # output device 1
-    frame $top.out1f
-    pack $top.out1f -side top
-
-    checkbutton $top.out1f.x0 -variable audio_outenable1 \
-        -text [_ "Output device 1:"] -anchor e
-    if {$multi == 0} {
-        label $top.out1f.l1 \
-            -text [_ "(same as input device) ..............      "]
-    } else {
-        button $top.out1f.x1 -text [lindex $audioOut $audio_outdev1] \
-            -command  [list ::pd_audio::audio_popup $top $top.out1f.x1 audio_outdev1 \
-                $audioOut]
-    }
-    label $top.out1f.l2 -text [_ "Channels:"]
-    entry $top.out1f.x2 -textvariable audio_outchan1 -width 3
-    if {$multi == 0} {
-        pack $top.out1f.x0 $top.out1f.l1 $top.out1f.x2 -side left -fill x
-    } else {
-        pack $top.out1f.x0 $top.out1f.x1 $top.out1f.l2\
-            $top.out1f.x2 -side left -fill x
-    }
-
-        # output device 2
-    if {$longform && $multi > 1 && [llength $audioOut] > 1} {
-        frame $top.out2f
-        pack $top.out2f -side top
-
-        checkbutton $top.out2f.x0 -variable audio_outenable2 \
-            -text [_ "Output device 2:"] -anchor e
-        button $top.out2f.x1 -text [lindex $audioOut $audio_outdev2] \
-            -command \
-            [list ::pd_audio::audio_popup $top $top.out2f.x1 audio_outdev2 $audioOut]
-        label $top.out2f.l2 -text [_ "Channels:"]
-        entry $top.out2f.x2 -textvariable audio_outchan2 -width 3
-        pack $top.out2f.x0 $top.out2f.x1 $top.out2f.l2\
-            $top.out2f.x2 -side left
-    }
-
-        # output device 3
-    if {$longform && $multi > 1 && [llength $audioOut] > 2} {
-        frame $top.out3f
-        pack $top.out3f -side top
-
-        checkbutton $top.out3f.x0 -variable audio_outenable3 \
-            -text [_ "Output device 3:"] -anchor e
-        button $top.out3f.x1 -text [lindex $audioOut $audio_outdev3] \
-            -command \
-            [list ::pd_audio::audio_popup $top $top.out3f.x1 audio_outdev3 $audioOut]
-        label $top.out3f.l2 -text [_ "Channels:"]
-        entry $top.out3f.x2 -textvariable audio_outchan3 -width 3
-        pack $top.out3f.x0 $top.out3f.x1 $top.out3f.l2 \
-            $top.out3f.x2 -side left
-    }
-
-        # output device 4
-    if {$longform && $multi > 1 && [llength $audioOut] > 3} {
-        frame $top.out4f
-        pack $top.out4f -side top
-
-        checkbutton $top.out4f.x0 -variable audio_outenable4 \
-            -text [_ "Output device 4:"] -anchor e
-        button $top.out4f.x1 -text [lindex $audioOut $audio_outdev4] \
-            -command \
-            [list ::pd_audio::audio_popup $top $top.out4f.x1 audio_outdev4 $audioOut]
-        label $top.out4f.l2 -text [_ "Channels:"]
-        entry $top.out4f.x2 -textvariable audio_outchan4 -width 3
-        pack $top.out4f.x0 $top.out4f.x1 $top.out4f.l2 \
-            $top.out4f.x2 -side left
-    }
-
-    $top.srf.x1 select from 0
-    $top.srf.x1 select adjust end
-    focus $top.srf.x1
-    
-    }
     
     wm protocol $top WM_DELETE_WINDOW   "::pd_audio::_closed $top"
 }
@@ -281,6 +156,51 @@ proc _closed {top} {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
+
+proc _makeIn {top k} {
+
+    variable audioIn
+    variable audioInDevice
+    variable audioInChannels
+    variable audioInEnabled
+    
+    set title    [format "%s.inDevice%dCheck" $top $k]
+    set devices  [format "%s.inDevice%d" $top $k]
+    set channels [format "%s.inDevice%dLabel" $top $k]
+    set number   [format "%s.inDevice%dEntry" $top $k]
+    
+    checkbutton $title                  -text [format "%s %d" [_ "Input"] $k] \
+                                        -variable ::pd_audio::audioInEnabled($k) \
+                                        -takefocus 0
+    menubutton $devices                 -text [lindex $audioIn $audioInDevice($k)]
+    
+    menu $devices.menu
+    $devices configure                  -menu $devices.menu
+    
+    set i 0
+    
+    foreach e $audioIn {
+        $devices.menu add radiobutton   -label "$e" \
+                                        -variable ::pd_audio::audioInDevice($k) \
+                                        -value $i \
+                                        -command [list $devices configure -text [lindex $audioIn $i]]
+        incr i
+    }
+    
+    label $channels                     -text [_ "Channels"]
+    entry $number                       -textvariable ::pd_audio::audioInChannels($k) \
+                                        -takefocus 0 \
+                                        -state readonly
+    
+    pack $title                         -side top -anchor w
+    pack $devices                       -side top -anchor w
+    pack $channels                      -side top -anchor w
+    pack $number                        -side top -anchor w
+}
+
+proc _makeOut {top k} {
+
+}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

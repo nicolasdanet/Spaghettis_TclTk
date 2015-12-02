@@ -7,6 +7,11 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+# MIDI settings.
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
 package provide pd_midi 0.1
 
 # ------------------------------------------------------------------------------------------------------------
@@ -66,11 +71,9 @@ proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     wm resizable $top 0 0
     wm geometry  $top [::rightNextTo .console]
 
-    set empty [expr {[llength $midiIn] + [llength $midiOut] == 2}]
+    if {[expr {[llength $midiIn] + [llength $midiOut] == 2}]} {
     
-    if {$empty} {
-    
-        label $top.none -text [_ "None Detected."]
+        label $top.none -text [_ "No MIDI device found."]
         pack  $top.none -side top -anchor w
         
     } else {
@@ -105,10 +108,12 @@ proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     
     label $top.inLabel  -text [_ "Input Ports"]
     entry $top.in       -textvariable ::pd_midi::midiAlsaIn \
+                        -takefocus 0 \
                         -state readonly
     
     label $top.outLabel -text [_ "Output Ports"]
     entry $top.out      -textvariable ::pd_midi::midiAlsaOut \
+                        -takefocus 0 \
                         -state readonly
                         
     pack  $top.inLabel  -side top -anchor w
@@ -135,10 +140,10 @@ proc _makeIn {top k} {
     variable midiIn
     variable midiInDevice
     
-    set title   [format "%s.inDevice%dLabel" $top $k]
-    set devices [format "%s.inDevice%d" $top $k]
+    set devicesLabel [format "%s.inDevice%dLabel" $top $k]
+    set devices      [format "%s.inDevice%d" $top $k]
     
-    label $title                        -text [format "%s %d" [_ "Input"] $k]
+    label $devicesLabel                 -text [format "%s %d" [_ "Input"] $k]
     menubutton $devices                 -text [lindex $midiIn $midiInDevice($k)]
     
     menu $devices.menu
@@ -154,7 +159,7 @@ proc _makeIn {top k} {
         incr i
     }
     
-    pack $title                         -side top -anchor w
+    pack $devicesLabel                  -side top -anchor w
     pack $devices                       -side top -anchor w
 }
 
@@ -163,10 +168,10 @@ proc _makeOut {top k} {
     variable midiOut
     variable midiOutDevice
     
-    set title   [format "%s.outDevice%dLabel" $top $k]
-    set devices [format "%s.outDevice%d" $top $k]
+    set devicesLabel [format "%s.outDevice%dLabel" $top $k]
+    set devices      [format "%s.outDevice%d" $top $k]
     
-    label $title                        -text [format "%s %d" [_ "Output"] $k]
+    label $devicesLabel                 -text [format "%s %d" [_ "Output"] $k]
     menubutton $devices                 -text [lindex $midiOut $midiOutDevice($k)]
     
     menu $devices.menu
@@ -182,7 +187,7 @@ proc _makeOut {top k} {
         incr i
     }
     
-    pack $title                         -side top -anchor w
+    pack $devicesLabel                  -side top -anchor w
     pack $devices                       -side top -anchor w
 }
 
