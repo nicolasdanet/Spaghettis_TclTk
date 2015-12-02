@@ -70,8 +70,8 @@ proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     
     if {$empty} {
     
-        label $top.none     -text [_ "None Detected."]
-        pack  $top.none     -side top -anchor w
+        label $top.none -text [_ "None Detected."]
+        pack  $top.none -side top -anchor w
         
     } else {
         foreach e $midiIn  { if {$e ne "none"} { ::pd_midi::_makeIn  $top [incr i] } }
@@ -195,8 +195,6 @@ proc _cancel {top} {
 
 proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
 
-    if {0} {
-    
     variable midiIn
     variable midiOut
     variable midiAlsaIn
@@ -204,55 +202,33 @@ proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     variable midiInDevice
     variable midiOutDevice
     
-    set midiInDevice1 $in1
-    set midiInDevice2 $in2
-    set midiInDevice3 $in3
-    set midiInDevice4 $in4
-    set midiInDevice5 0
-    set midiInDevice6 0
-    set midiInDevice7 0
-    set midiInDevice8 0
-    set midiInDevice9 0
-    set midiOutDevice1 $out1
-    set midiOutDevice2 $out2
-    set midiOutDevice3 $out3
-    set midiOutDevice4 $out4
-    set midiOutDevice5 0
-    set midiOutDevice6 0
-    set midiOutDevice7 0
-    set midiOutDevice8 0
-    set midiOutDevice9 0
-    set midiAlsaIn [expr [llength $midiIn] - 1]
-    set midiAlsaOut [expr [llength $midiOut] - 1]
+    array set midiInDevice  [ list 1 $i1 2 $i2 3 $i3 4 $i4 5 $i5 6 $i6 7 $i7 8 $i8 9 $i9 ]
+    array set midiOutDevice [ list 1 $o1 2 $o2 3 $o3 4 $o4 5 $o5 6 $o6 7 $o7 8 $o8 9 $o9 ]
     
-    toplevel $id
-    wm title $id [_ "ALSA MIDI Settings"]
-
-    frame $id.buttonframe
-    pack $id.buttonframe -side bottom -fill x -pady 2m
-    button $id.buttonframe.cancel -text [_ "Cancel"]\
-        -command "::pd_midi::cancel $id"
-    button $id.buttonframe.apply -text [_ "Apply"]\
-        -command "::pd_midi::apply $id"
-    button $id.buttonframe.ok -text [_ "OK"]\
-        -command "::pd_midi::ok $id"
-    pack $id.buttonframe.cancel -side left -expand 1
-    pack $id.buttonframe.apply -side left -expand 1
-    pack $id.buttonframe.ok -side left -expand 1
-
-    frame $id.in1f
-    pack $id.in1f -side top
-
-    if {$alsa} {
-        label $id.in1f.l1 -text [_ "In Ports:"]
-        entry $id.in1f.x1 -textvariable midiAlsaIn -width 4
-        pack $id.in1f.l1 $id.in1f.x1 -side left
-        label $id.in1f.l2 -text [_ "Out Ports:"]
-        entry $id.in1f.x2 -textvariable midiAlsaOut -width 4
-        pack $id.in1f.l2 $id.in1f.x2 -side left
-    }
+    set midiAlsaIn  [expr {[llength $midiIn] - 1}]
+    set midiAlsaOut [expr {[llength $midiOut] - 1}]
     
-    }
+    toplevel $top -class PdDialog
+    wm title $top [_ "ALSA MIDI"]
+    wm group $top .
+    
+    wm resizable $top 0 0
+    wm geometry  $top [::rightNextTo .console]
+    
+    label $top.inLabel  -text [_ "Input Ports"]
+    entry $top.in       -textvariable midiAlsaIn \
+                        -state readonly
+    
+    label $top.outLabel -text [_ "Output Ports"]
+    entry $top.out      -textvariable midiAlsaOut \
+                        -state readonly
+                        
+    pack  $top.inLabel  -side top -anchor w
+    pack  $top.in       -side top -anchor w
+    pack  $top.outLabel -side top -anchor w
+    pack  $top.out      -side top -anchor w
+    
+    wm protocol $top WM_DELETE_WINDOW   "::pd_midi::_closed $top"
 }
 
 # ------------------------------------------------------------------------------------------------------------
