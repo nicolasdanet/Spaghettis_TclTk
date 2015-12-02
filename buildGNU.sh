@@ -3,7 +3,7 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# "PureData" folder automagically created.
+# PureData automagically builded.
 #
 # Tested on:
 #
@@ -36,7 +36,7 @@ isTcl_6=$(dpkg-query -W -f='${Status}' tcl8.6 2>/dev/null | grep -c "ok installe
 isTk_6=$(dpkg-query -W -f='${Status}' tk8.6 2>/dev/null | grep -c "ok installed")
 isJack=$(dpkg-query -W -f='${Status}' libjack-dev 2>/dev/null | grep -c "ok installed")
 
-[ ${isTk_5} -eq 1 ]  || [ ${isTk_6} -eq 1 ]  || { echo >&2 "${0##*/}: tk8.* package required"; exit 1; }
+[ ${isTk_5} -eq 1 ]  || [ ${isTk_6} -eq 1 ]  || { echo >&2 "${0##*/}: tk8.* package required";  exit 1; }
 [ ${isTcl_5} -eq 1 ] || [ ${isTcl_6} -eq 1 ] || { echo >&2 "${0##*/}: tcl8.* package required"; exit 1; }
 [ ${isAlsa} -eq 1 ]  || { echo >&2 "${0##*/}: libasound2 package required"; exit 1; }
 

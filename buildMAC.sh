@@ -51,7 +51,7 @@ fi
 
 # Paths.
 
-folder="${rep}/PureData"
+folder="${rep}/Application"
 app="${folder}/PureData.app"
 plist="${rep}/resources/Info.plist"
 bin="${rep}/bin"
@@ -67,7 +67,7 @@ patches="${rep}/resources/patches"
 # Do not overwrite previous build.
 
 [ -e "${folder}" ] && { echo >&2 "${0##*/}: ${folder} already exist"; exit 1; }
-[ -e "${app}" ]    && { echo >&2 "${0##*/}: ${app} already exist"; exit 1; }
+[ -e "${app}" ]    && { echo >&2 "${0##*/}: ${app} already exist";    exit 1; }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

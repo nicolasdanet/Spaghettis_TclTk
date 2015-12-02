@@ -711,8 +711,9 @@ void glob_midi_properties(t_pd *dummy, t_floatarg flongform)
 #ifdef USEAPI_ALSA
       if (sys_midiapi == API_ALSA)
     sprintf(buf,
-"::pd_midi::pdtk_alsa_midi_dialog %%s \
-%d %d %d %d %d %d %d %d \
+"::pd_midi::show %%s \
+%d %d %d %d 0 0 0 0 0 \
+%d %d %d %d 0 0 0 0 0 \
 1\n",
         midiindev1, midiindev2, midiindev3, midiindev4, 
         midioutdev1, midioutdev2, midioutdev3, midioutdev4);
@@ -721,11 +722,12 @@ void glob_midi_properties(t_pd *dummy, t_floatarg flongform)
     sprintf(buf,
 "::pd_midi::show %%s \
 %d %d %d %d %d %d %d %d %d \
-%d %d %d %d %d %d %d %d %d\n",
-        midiindev1, midiindev2, midiindev3, midiindev4, midiindev5,
-        midiindev6, midiindev7, midiindev8, midiindev9, 
-        midioutdev1, midioutdev2, midioutdev3, midioutdev4, midioutdev5,
-        midioutdev6, midioutdev7, midioutdev8, midioutdev9);
+%d %d %d %d %d %d %d %d %d \
+0\n",
+        midiindev1, midiindev2, midiindev3, midiindev4, 
+        midiindev5, midiindev6, midiindev7, midiindev8, midiindev9, 
+        midioutdev1, midioutdev2, midioutdev3, midioutdev4, 
+        midioutdev5, midioutdev6, midioutdev7, midioutdev8, midioutdev9);
 
     gfxstub_deleteforkey(0);
     gfxstub_new(&glob_pdobject, (void *)glob_midi_properties, buf);
