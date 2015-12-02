@@ -795,13 +795,13 @@ void glob_audio_properties(t_pd *dummy, t_floatarg flongform)
 "::pd_audio::show %%s \
 %d %d %d %d %d %d %d %d \
 %d %d %d %d %d %d %d %d \
-%d %d %d %d %d %d\n",
+%d %d %d %d %d\n",
         audioindev1, audioindev2, audioindev3, audioindev4, 
         audioinchan1, audioinchan2, audioinchan3, audioinchan4, 
         audiooutdev1, audiooutdev2, audiooutdev3, audiooutdev4,
         audiooutchan1, audiooutchan2, audiooutchan3, audiooutchan4, 
         rate, advance, canmulti, (cancallback ? callback : -1),
-        (flongform != 0), blocksize);
+        blocksize);
     gfxstub_deleteforkey(0);
     gfxstub_new(&glob_pdobject, (void *)glob_audio_properties, buf);
 }
