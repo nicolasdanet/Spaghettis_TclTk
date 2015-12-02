@@ -147,10 +147,12 @@ proc showPopup {top xcanvas ycanvas hasProperties hasOpen} {
 proc enableCopying {}               { _copying normal }
 proc enableEditing {}               { _editing normal }
 proc enableCopyingAndEditing {}     { _copying normal; _editing normal }
+proc enableMidi {}                  { .menubar.media entryconfigure [_ "MIDI..."] -state normal }
 
 proc disableCopying {}              { _copying disabled }
 proc disableEditing {}              { _editing disabled }
 proc disableCopyingAndEditing {}    { _copying disabled; _editing disabled }
+proc disableMidi {}                 { .menubar.media entryconfigure [_ "MIDI..."] -state disabled }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

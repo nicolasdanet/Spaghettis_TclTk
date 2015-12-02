@@ -32,6 +32,8 @@ array set midiOutDevice {}
 
 proc show {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     
+    ::pd_menu::disableMidi
+    
     ::pd_midi::_create $top $i1 $i2 $i3 $i4 $i5 $i6 $i7 $i8 $i9 $o1 $o2 $o3 $o4 $o5 $o6 $o7 $o8 $o9
 }
 
@@ -64,7 +66,7 @@ proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     
     if {$empty} {
     
-        label $top.none     -text [_ "No MIDI devices detected."]
+        label $top.none     -text [_ "None Detected."]
         pack  $top.none     -side top -anchor w
         
     } else {
@@ -79,6 +81,8 @@ proc _closed {top} {
 
     ::pd_midi::_apply  $top
     ::pd_midi::_cancel $top
+    
+    ::pd_menu::enableMidi
 }
 
 # ------------------------------------------------------------------------------------------------------------
