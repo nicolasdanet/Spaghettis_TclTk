@@ -30,8 +30,10 @@ variable  audioInChannels
 variable  audioOutChannels
 variable  audioInEnabled
 variable  audioOutEnabled
-variable  audioSampleRate 
-variable  audioDelay 
+variable  audioSampleRate
+variable  audioSampleRateOld 
+variable  audioDelay
+variable  audioDelayOld
 variable  audioCallback
 variable  audioBlockSize
 
@@ -63,7 +65,9 @@ proc show {top \
     variable audioInEnabled
     variable audioOutEnabled
     variable audioSampleRate 
+    variable audioSampleRateOld
     variable audioDelay 
+    variable audioDelayOld
     variable audioCallback
     variable audioBlockSize
 
@@ -91,7 +95,9 @@ proc show {top \
     set audioOutEnabled(4)  [expr {$oChannels4 > 0}]
 
     set audioSampleRate     $sampleRate
+    set audioSampleRateOld  $sampleRate
     set audioDelay          $delay
+    set audioDelayOld       $delay
     set audioCallback       $callback
     set audioBlockSize      $blockSize
 
@@ -242,8 +248,6 @@ proc _makeOut {top k} {
 
 proc _apply {top} {
 
-    if {0} {
-
     variable audioInDevice
     variable audioOutDevice
     variable audioInChannels
@@ -255,36 +259,52 @@ proc _apply {top} {
     variable audioCallback
     variable audioBlockSize
     
+    _forceValues
+    
     ::pd_connect::pdsend "pd audio-dialog \
-        $audio_indev1 \
-        $audio_indev2 \
-        $audio_indev3 \
-        $audio_indev4 \
-        [expr $audio_inchan1 * ( $audio_inenable1 ? 1 : -1 ) ]\
-        [expr $audio_inchan2 * ( $audio_inenable2 ? 1 : -1 ) ]\
-        [expr $audio_inchan3 * ( $audio_inenable3 ? 1 : -1 ) ]\
-        [expr $audio_inchan4 * ( $audio_inenable4 ? 1 : -1 ) ]\
-        $audio_outdev1 \
-        $audio_outdev2 \
-        $audio_outdev3 \
-        $audio_outdev4 \
-        [expr $audio_outchan1 * ( $audio_outenable1 ? 1 : -1 ) ]\
-        [expr $audio_outchan2 * ( $audio_outenable2 ? 1 : -1 ) ]\
-        [expr $audio_outchan3 * ( $audio_outenable3 ? 1 : -1 ) ]\
-        [expr $audio_outchan4 * ( $audio_outenable4 ? 1 : -1 ) ]\
-        $audio_sr \
-        $audio_advance \
-        $audio_callback \
-        $audio_blocksize"
+        $audioInDevice(1) \
+        $audioInDevice(2) \
+        $audioInDevice(3) \
+        $audioInDevice(4) \
+        [expr {$audioInChannels(1) * ($audioInEnabled(1) ? 1 : -1)}] \
+        [expr {$audioInChannels(2) * ($audioInEnabled(2) ? 1 : -1)}] \
+        [expr {$audioInChannels(3) * ($audioInEnabled(3) ? 1 : -1)}] \
+        [expr {$audioInChannels(4) * ($audioInEnabled(4) ? 1 : -1)}] \
+        $audioOutDevice(1) \
+        $audioOutDevice(2) \
+        $audioOutDevice(3) \
+        $audioOutDevice(4) \
+        [expr {$audioOutChannels(1) * ($audioOutEnabled(1) ? 1 : -1)}] \
+        [expr {$audioOutChannels(2) * ($audioOutEnabled(2) ? 1 : -1)}] \
+        [expr {$audioOutChannels(3) * ($audioOutEnabled(3) ? 1 : -1)}] \
+        [expr {$audioOutChannels(4) * ($audioOutEnabled(4) ? 1 : -1)}] \
+        $audioSampleRate \
+        $audioDelay \
+        $audioCallback \
+        $audioBlockSize"
     
     ::pd_connect::pdsend "pd save-preferences"
-    
-    }
 }
 
 proc _cancel {top} {
 
     ::pd_connect::pdsend "$top cancel"
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _forceValues {} {
+
+    variable audioSampleRate
+    variable audioSampleRateOld
+    variable audioDelay
+    variable audioDelayOld 
+
+    set audioSampleRate [::ifInteger $audioSampleRate $audioSampleRateOld]
+    set audioSampleRate [::tcl::mathfunc::max $audioSampleRate 1]
+    set audioDelay      [::ifInteger $audioDelay $audioDelayOld]
+    set audioDelay      [::tcl::mathfunc::max $audioDelay 0]
 }
 
 # ------------------------------------------------------------------------------------------------------------
