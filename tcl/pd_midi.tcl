@@ -60,8 +60,17 @@ proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     wm resizable $top 0 0
     wm geometry  $top [::rightNextTo .console]
 
-    foreach e $midiIn  { if {$e ne "none" } { ::pd_midi::_makeIn  $top [incr i] } }
-    foreach e $midiOut { if {$e ne "none" } { ::pd_midi::_makeOut $top [incr j] } }
+    set empty [expr {[llength $midiIn] + [llength $midiOut] == 2}]
+    
+    if {$empty} {
+    
+        label $top.none     -text [_ "No MIDI devices detected."]
+        pack  $top.none     -side top -anchor w
+        
+    } else {
+        foreach e $midiIn  { if {$e ne "none"} { ::pd_midi::_makeIn  $top [incr i] } }
+        foreach e $midiOut { if {$e ne "none"} { ::pd_midi::_makeOut $top [incr j] } }
+    }
     
     wm protocol $top WM_DELETE_WINDOW   "::pd_midi::_closed $top"
 }
@@ -143,7 +152,7 @@ proc _apply {top} {
     variable midiInDevice
     variable midiOutDevice
     
-    ::pd_console::post "pd midi-dialog \
+    ::pd_connect::pdsend "pd midi-dialog \
         $midiInDevice(1) \
         $midiInDevice(2) \
         $midiInDevice(3) \
@@ -164,8 +173,8 @@ proc _apply {top} {
         $midiOutDevice(9) \
         $midiAlsaIn \
         $midiAlsaOut"
-        
-    ::pd_console::post "\n"
+    
+    ::pd_connect::pdsend "pd save-preferences"
 }
 
 proc _cancel {top} {
