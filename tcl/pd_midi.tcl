@@ -81,6 +81,44 @@ proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     wm protocol $top WM_DELETE_WINDOW   "::pd_midi::_closed $top"
 }
 
+proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
+
+    variable midiIn
+    variable midiOut
+    variable midiAlsaIn
+    variable midiAlsaOut
+    variable midiInDevice
+    variable midiOutDevice
+    
+    array set midiInDevice  [ list 1 $i1 2 $i2 3 $i3 4 $i4 5 $i5 6 $i6 7 $i7 8 $i8 9 $i9 ]
+    array set midiOutDevice [ list 1 $o1 2 $o2 3 $o3 4 $o4 5 $o5 6 $o6 7 $o7 8 $o8 9 $o9 ]
+    
+    set midiAlsaIn  [expr {[llength $midiIn] - 1}]
+    set midiAlsaOut [expr {[llength $midiOut] - 1}]
+    
+    toplevel $top -class PdDialog
+    wm title $top [_ "ALSA MIDI"]
+    wm group $top .
+    
+    wm resizable $top 0 0
+    wm geometry  $top [::rightNextTo .console]
+    
+    label $top.inLabel  -text [_ "Input Ports"]
+    entry $top.in       -textvariable midiAlsaIn \
+                        -state readonly
+    
+    label $top.outLabel -text [_ "Output Ports"]
+    entry $top.out      -textvariable midiAlsaOut \
+                        -state readonly
+                        
+    pack  $top.inLabel  -side top -anchor w
+    pack  $top.in       -side top -anchor w
+    pack  $top.outLabel -side top -anchor w
+    pack  $top.out      -side top -anchor w
+    
+    wm protocol $top WM_DELETE_WINDOW   "::pd_midi::_closed $top"
+}
+
 proc _closed {top} {
 
     ::pd_midi::_apply  $top
@@ -188,47 +226,6 @@ proc _apply {top} {
 proc _cancel {top} {
 
     ::pd_connect::pdsend "$top cancel"
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
-
-    variable midiIn
-    variable midiOut
-    variable midiAlsaIn
-    variable midiAlsaOut
-    variable midiInDevice
-    variable midiOutDevice
-    
-    array set midiInDevice  [ list 1 $i1 2 $i2 3 $i3 4 $i4 5 $i5 6 $i6 7 $i7 8 $i8 9 $i9 ]
-    array set midiOutDevice [ list 1 $o1 2 $o2 3 $o3 4 $o4 5 $o5 6 $o6 7 $o7 8 $o8 9 $o9 ]
-    
-    set midiAlsaIn  [expr {[llength $midiIn] - 1}]
-    set midiAlsaOut [expr {[llength $midiOut] - 1}]
-    
-    toplevel $top -class PdDialog
-    wm title $top [_ "ALSA MIDI"]
-    wm group $top .
-    
-    wm resizable $top 0 0
-    wm geometry  $top [::rightNextTo .console]
-    
-    label $top.inLabel  -text [_ "Input Ports"]
-    entry $top.in       -textvariable midiAlsaIn \
-                        -state readonly
-    
-    label $top.outLabel -text [_ "Output Ports"]
-    entry $top.out      -textvariable midiAlsaOut \
-                        -state readonly
-                        
-    pack  $top.inLabel  -side top -anchor w
-    pack  $top.in       -side top -anchor w
-    pack  $top.outLabel -side top -anchor w
-    pack  $top.out      -side top -anchor w
-    
-    wm protocol $top WM_DELETE_WINDOW   "::pd_midi::_closed $top"
 }
 
 # ------------------------------------------------------------------------------------------------------------
