@@ -756,14 +756,14 @@ void glob_audio_properties(t_pd *dummy, t_floatarg flongform)
     audio_getdevs(indevlist, &nindevs, outdevlist, &noutdevs, &canmulti,
          &cancallback, MAXNDEV, DEVDESCSIZE);
 
-    sys_gui("set ::audio_indev {}\n");
+    sys_gui("set ::pd_audio::audioIn {}\n");
     for (i = 0; i < nindevs; i++)
-        sys_vgui("lappend audio_indev {%s}\n",
+        sys_vgui("lappend ::pd_audio::audioIn {%s}\n",
             indevlist + i * DEVDESCSIZE);
 
-    sys_gui("set ::audio_outdev {}\n");
+    sys_gui("set ::pd_audio::audioOut {}\n");
     for (i = 0; i < noutdevs; i++)
-        sys_vgui("lappend ::audio_outdev {%s}\n",
+        sys_vgui("lappend ::pd_audio::audioOut {%s}\n",
             outdevlist + i * DEVDESCSIZE);
 
     sys_get_audio_params(&naudioindev, audioindev, chindev,

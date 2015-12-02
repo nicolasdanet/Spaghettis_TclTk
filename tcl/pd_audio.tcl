@@ -17,68 +17,11 @@ namespace eval ::pd_audio:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc apply {mytoplevel} {
-    global audio_indev1 audio_indev2 audio_indev3 audio_indev4 
-    global audio_inchan1 audio_inchan2 audio_inchan3 audio_inchan4
-    global audio_inenable1 audio_inenable2 audio_inenable3 audio_inenable4
-    global audio_outdev1 audio_outdev2 audio_outdev3 audio_outdev4 
-    global audio_outchan1 audio_outchan2 audio_outchan3 audio_outchan4
-    global audio_outenable1 audio_outenable2 audio_outenable3 audio_outenable4
-    global audio_sr audio_advance audio_callback audio_blocksize
+variable  audioIn
+variable  audioOut
 
-    ::pd_connect::pdsend "pd audio-dialog \
-        $audio_indev1 \
-        $audio_indev2 \
-        $audio_indev3 \
-        $audio_indev4 \
-        [expr $audio_inchan1 * ( $audio_inenable1 ? 1 : -1 ) ]\
-        [expr $audio_inchan2 * ( $audio_inenable2 ? 1 : -1 ) ]\
-        [expr $audio_inchan3 * ( $audio_inenable3 ? 1 : -1 ) ]\
-        [expr $audio_inchan4 * ( $audio_inenable4 ? 1 : -1 ) ]\
-        $audio_outdev1 \
-        $audio_outdev2 \
-        $audio_outdev3 \
-        $audio_outdev4 \
-        [expr $audio_outchan1 * ( $audio_outenable1 ? 1 : -1 ) ]\
-        [expr $audio_outchan2 * ( $audio_outenable2 ? 1 : -1 ) ]\
-        [expr $audio_outchan3 * ( $audio_outenable3 ? 1 : -1 ) ]\
-        [expr $audio_outchan4 * ( $audio_outenable4 ? 1 : -1 ) ]\
-        $audio_sr \
-        $audio_advance \
-        $audio_callback \
-        $audio_blocksize"
-}
-
-proc cancel {mytoplevel} {
-    ::pd_connect::pdsend "$mytoplevel cancel"
-}
-
-proc ok {mytoplevel} {
-    ::pd_audio::apply $mytoplevel
-    ::pd_audio::cancel $mytoplevel
-}
-
-# callback from popup menu
-proc audio_popup_action {buttonname varname devlist index} {
-    global audio_indev audio_outdev $varname
-    $buttonname configure -text [lindex $devlist $index]
-    set $varname $index
-}
-
-# create a popup menu
-proc audio_popup {name buttonname varname devlist} {
-    if [winfo exists $name.popup] {destroy $name.popup}
-    menu $name.popup -tearoff 0
-    if {[tk windowingsystem] eq "win32"} {
-        $name.popup configure -font menuFont
-    }
-    for {set x 0} {$x<[llength $devlist]} {incr x} {
-        $name.popup add command -label [lindex $devlist $x] \
-            -command [list audio_popup_action \
-                          $buttonname $varname $devlist $x] 
-    }
-    tk_popup $name.popup [winfo pointerx $name] [winfo pointery $name] 0
-}
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
 # start a dialog window to select audio devices and settings.  "multi"
 # is 0 if only one device is allowed; 1 if one apiece may be specified for
@@ -93,6 +36,10 @@ proc show {mytoplevel \
         outdev1 outdev2 outdev3 outdev4 \
         outchan1 outchan2 outchan3 outchan4 sr advance multi callback \
         longform blocksize} {
+    
+    variable audioIn
+    variable audioOut
+    
     global audio_indev1 audio_indev2 audio_indev3 audio_indev4 
     global audio_inchan1 audio_inchan2 audio_inchan3 audio_inchan4
     global audio_inenable1 audio_inenable2 audio_inenable3 audio_inenable4
@@ -100,7 +47,6 @@ proc show {mytoplevel \
     global audio_outchan1 audio_outchan2 audio_outchan3 audio_outchan4
     global audio_outenable1 audio_outenable2 audio_outenable3 audio_outenable4
     global audio_sr audio_advance audio_callback audio_blocksize
-    global audio_indev audio_outdev
     global pd_indev pd_outdev
     global audio_longform
 
@@ -186,23 +132,23 @@ proc show {mytoplevel \
 
     checkbutton $mytoplevel.in1f.x0 -variable audio_inenable1 \
         -text [_ "Input device 1:"] -anchor e
-    button $mytoplevel.in1f.x1 -text [lindex $audio_indev $audio_indev1] \
-        -command [list audio_popup $mytoplevel $mytoplevel.in1f.x1 audio_indev1 $audio_indev]
+    button $mytoplevel.in1f.x1 -text [lindex $audioIn $audio_indev1] \
+        -command [list ::pd_audio::audio_popup $mytoplevel $mytoplevel.in1f.x1 audio_indev1 $audioIn]
     label $mytoplevel.in1f.l2 -text [_ "Channels:"]
     entry $mytoplevel.in1f.x2 -textvariable audio_inchan1 -width 3
     pack $mytoplevel.in1f.x0 $mytoplevel.in1f.x1 $mytoplevel.in1f.l2 \
         $mytoplevel.in1f.x2 -side left -fill x
 
         # input device 2
-    if {$longform && $multi > 1 && [llength $audio_indev] > 1} {
+    if {$longform && $multi > 1 && [llength $audioIn] > 1} {
         frame $mytoplevel.in2f
         pack $mytoplevel.in2f -side top
 
         checkbutton $mytoplevel.in2f.x0 -variable audio_inenable2 \
             -text [_ "Input device 2:"] -anchor e
-        button $mytoplevel.in2f.x1 -text [lindex $audio_indev $audio_indev2] \
-            -command [list audio_popup $mytoplevel $mytoplevel.in2f.x1 audio_indev2 \
-                $audio_indev]
+        button $mytoplevel.in2f.x1 -text [lindex $audioIn $audio_indev2] \
+            -command [list ::pd_audio::audio_popup $mytoplevel $mytoplevel.in2f.x1 audio_indev2 \
+                $audioIn]
         label $mytoplevel.in2f.l2 -text [_ "Channels:"]
         entry $mytoplevel.in2f.x2 -textvariable audio_inchan2 -width 3
         pack $mytoplevel.in2f.x0 $mytoplevel.in2f.x1 $mytoplevel.in2f.l2 \
@@ -210,30 +156,30 @@ proc show {mytoplevel \
     }
 
         # input device 3
-    if {$longform && $multi > 1 && [llength $audio_indev] > 2} {
+    if {$longform && $multi > 1 && [llength $audioIn] > 2} {
         frame $mytoplevel.in3f
         pack $mytoplevel.in3f -side top
 
         checkbutton $mytoplevel.in3f.x0 -variable audio_inenable3 \
             -text [_ "Input device 3:"] -anchor e
-        button $mytoplevel.in3f.x1 -text [lindex $audio_indev $audio_indev3] \
-            -command [list audio_popup $mytoplevel $mytoplevel.in3f.x1 audio_indev3 \
-                $audio_indev]
+        button $mytoplevel.in3f.x1 -text [lindex $audioIn $audio_indev3] \
+            -command [list ::pd_audio::audio_popup $mytoplevel $mytoplevel.in3f.x1 audio_indev3 \
+                $audioIn]
         label $mytoplevel.in3f.l2 -text [_ "Channels:"]
         entry $mytoplevel.in3f.x2 -textvariable audio_inchan3 -width 3
         pack $mytoplevel.in3f.x0 $mytoplevel.in3f.x1 $mytoplevel.in3f.l2 $mytoplevel.in3f.x2 -side left
     }
 
         # input device 4
-    if {$longform && $multi > 1 && [llength $audio_indev] > 3} {
+    if {$longform && $multi > 1 && [llength $audioIn] > 3} {
         frame $mytoplevel.in4f
         pack $mytoplevel.in4f -side top
 
         checkbutton $mytoplevel.in4f.x0 -variable audio_inenable4 \
             -text [_ "Input device 4:"] -anchor e
-        button $mytoplevel.in4f.x1 -text [lindex $audio_indev $audio_indev4] \
-            -command [list audio_popup $mytoplevel $mytoplevel.in4f.x1 audio_indev4 \
-                $audio_indev]
+        button $mytoplevel.in4f.x1 -text [lindex $audioIn $audio_indev4] \
+            -command [list ::pd_audio::audio_popup $mytoplevel $mytoplevel.in4f.x1 audio_indev4 \
+                $audioIn]
         label $mytoplevel.in4f.l2 -text [_ "Channels:"]
         entry $mytoplevel.in4f.x2 -textvariable audio_inchan4 -width 3
         pack $mytoplevel.in4f.x0 $mytoplevel.in4f.x1 $mytoplevel.in4f.l2 \
@@ -250,9 +196,9 @@ proc show {mytoplevel \
         label $mytoplevel.out1f.l1 \
             -text [_ "(same as input device) ..............      "]
     } else {
-        button $mytoplevel.out1f.x1 -text [lindex $audio_outdev $audio_outdev1] \
-            -command  [list audio_popup $mytoplevel $mytoplevel.out1f.x1 audio_outdev1 \
-                $audio_outdev]
+        button $mytoplevel.out1f.x1 -text [lindex $audioOut $audio_outdev1] \
+            -command  [list ::pd_audio::audio_popup $mytoplevel $mytoplevel.out1f.x1 audio_outdev1 \
+                $audioOut]
     }
     label $mytoplevel.out1f.l2 -text [_ "Channels:"]
     entry $mytoplevel.out1f.x2 -textvariable audio_outchan1 -width 3
@@ -264,15 +210,15 @@ proc show {mytoplevel \
     }
 
         # output device 2
-    if {$longform && $multi > 1 && [llength $audio_outdev] > 1} {
+    if {$longform && $multi > 1 && [llength $audioOut] > 1} {
         frame $mytoplevel.out2f
         pack $mytoplevel.out2f -side top
 
         checkbutton $mytoplevel.out2f.x0 -variable audio_outenable2 \
             -text [_ "Output device 2:"] -anchor e
-        button $mytoplevel.out2f.x1 -text [lindex $audio_outdev $audio_outdev2] \
+        button $mytoplevel.out2f.x1 -text [lindex $audioOut $audio_outdev2] \
             -command \
-            [list audio_popup $mytoplevel $mytoplevel.out2f.x1 audio_outdev2 $audio_outdev]
+            [list ::pd_audio::audio_popup $mytoplevel $mytoplevel.out2f.x1 audio_outdev2 $audioOut]
         label $mytoplevel.out2f.l2 -text [_ "Channels:"]
         entry $mytoplevel.out2f.x2 -textvariable audio_outchan2 -width 3
         pack $mytoplevel.out2f.x0 $mytoplevel.out2f.x1 $mytoplevel.out2f.l2\
@@ -280,15 +226,15 @@ proc show {mytoplevel \
     }
 
         # output device 3
-    if {$longform && $multi > 1 && [llength $audio_outdev] > 2} {
+    if {$longform && $multi > 1 && [llength $audioOut] > 2} {
         frame $mytoplevel.out3f
         pack $mytoplevel.out3f -side top
 
         checkbutton $mytoplevel.out3f.x0 -variable audio_outenable3 \
             -text [_ "Output device 3:"] -anchor e
-        button $mytoplevel.out3f.x1 -text [lindex $audio_outdev $audio_outdev3] \
+        button $mytoplevel.out3f.x1 -text [lindex $audioOut $audio_outdev3] \
             -command \
-            [list audio_popup $mytoplevel $mytoplevel.out3f.x1 audio_outdev3 $audio_outdev]
+            [list ::pd_audio::audio_popup $mytoplevel $mytoplevel.out3f.x1 audio_outdev3 $audioOut]
         label $mytoplevel.out3f.l2 -text [_ "Channels:"]
         entry $mytoplevel.out3f.x2 -textvariable audio_outchan3 -width 3
         pack $mytoplevel.out3f.x0 $mytoplevel.out3f.x1 $mytoplevel.out3f.l2 \
@@ -296,15 +242,15 @@ proc show {mytoplevel \
     }
 
         # output device 4
-    if {$longform && $multi > 1 && [llength $audio_outdev] > 3} {
+    if {$longform && $multi > 1 && [llength $audioOut] > 3} {
         frame $mytoplevel.out4f
         pack $mytoplevel.out4f -side top
 
         checkbutton $mytoplevel.out4f.x0 -variable audio_outenable4 \
             -text [_ "Output device 4:"] -anchor e
-        button $mytoplevel.out4f.x1 -text [lindex $audio_outdev $audio_outdev4] \
+        button $mytoplevel.out4f.x1 -text [lindex $audioOut $audio_outdev4] \
             -command \
-            [list audio_popup $mytoplevel $mytoplevel.out4f.x1 audio_outdev4 $audio_outdev]
+            [list ::pd_audio::audio_popup $mytoplevel $mytoplevel.out4f.x1 audio_outdev4 $audioOut]
         label $mytoplevel.out4f.l2 -text [_ "Channels:"]
         entry $mytoplevel.out4f.x2 -textvariable audio_outchan4 -width 3
         pack $mytoplevel.out4f.x0 $mytoplevel.out4f.x1 $mytoplevel.out4f.l2 \
@@ -324,6 +270,84 @@ proc show {mytoplevel \
     $mytoplevel.srf.x1 select from 0
     $mytoplevel.srf.x1 select adjust end
     focus $mytoplevel.srf.x1
+}
+
+proc _closed {top} {
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc apply {mytoplevel} {
+
+    global audio_indev1 audio_indev2 audio_indev3 audio_indev4 
+    global audio_inchan1 audio_inchan2 audio_inchan3 audio_inchan4
+    global audio_inenable1 audio_inenable2 audio_inenable3 audio_inenable4
+    global audio_outdev1 audio_outdev2 audio_outdev3 audio_outdev4 
+    global audio_outchan1 audio_outchan2 audio_outchan3 audio_outchan4
+    global audio_outenable1 audio_outenable2 audio_outenable3 audio_outenable4
+    global audio_sr audio_advance audio_callback audio_blocksize
+
+    ::pd_connect::pdsend "pd audio-dialog \
+        $audio_indev1 \
+        $audio_indev2 \
+        $audio_indev3 \
+        $audio_indev4 \
+        [expr $audio_inchan1 * ( $audio_inenable1 ? 1 : -1 ) ]\
+        [expr $audio_inchan2 * ( $audio_inenable2 ? 1 : -1 ) ]\
+        [expr $audio_inchan3 * ( $audio_inenable3 ? 1 : -1 ) ]\
+        [expr $audio_inchan4 * ( $audio_inenable4 ? 1 : -1 ) ]\
+        $audio_outdev1 \
+        $audio_outdev2 \
+        $audio_outdev3 \
+        $audio_outdev4 \
+        [expr $audio_outchan1 * ( $audio_outenable1 ? 1 : -1 ) ]\
+        [expr $audio_outchan2 * ( $audio_outenable2 ? 1 : -1 ) ]\
+        [expr $audio_outchan3 * ( $audio_outenable3 ? 1 : -1 ) ]\
+        [expr $audio_outchan4 * ( $audio_outenable4 ? 1 : -1 ) ]\
+        $audio_sr \
+        $audio_advance \
+        $audio_callback \
+        $audio_blocksize"
+}
+
+proc cancel {mytoplevel} {
+    ::pd_connect::pdsend "$mytoplevel cancel"
+}
+
+proc ok {mytoplevel} {
+    ::pd_audio::apply $mytoplevel
+    ::pd_audio::cancel $mytoplevel
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+# callback from popup menu
+proc audio_popup_action {buttonname varname devlist index} {
+
+    variable audioIn
+    variable audioOut
+    
+    global $varname
+    $buttonname configure -text [lindex $devlist $index]
+    set $varname $index
+}
+
+# create a popup menu
+proc audio_popup {name buttonname varname devlist} {
+    if [winfo exists $name.popup] {destroy $name.popup}
+    menu $name.popup -tearoff 0
+    if {[tk windowingsystem] eq "win32"} {
+        $name.popup configure -font menuFont
+    }
+    for {set x 0} {$x<[llength $devlist]} {incr x} {
+        $name.popup add command -label [lindex $devlist $x] \
+            -command [list ::pd_audio::audio_popup_action \
+                          $buttonname $varname $devlist $x] 
+    }
+    tk_popup $name.popup [winfo pointerx $name] [winfo pointery $name] 0
 }
 
 # ------------------------------------------------------------------------------------------------------------
