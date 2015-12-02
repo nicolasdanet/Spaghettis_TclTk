@@ -792,7 +792,7 @@ void glob_audio_properties(t_pd *dummy, t_floatarg flongform)
     audiooutchan3 = (naudiooutdev > 2 ? choutdev[2] : 0);
     audiooutchan4 = (naudiooutdev > 3 ? choutdev[3] : 0);
     sprintf(buf,
-"::dialog_audio::pdtk_audio_dialog %%s \
+"::pd_audio::show %%s \
 %d %d %d %d %d %d %d %d \
 %d %d %d %d %d %d %d %d \
 %d %d %d %d %d %d\n",

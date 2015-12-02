@@ -7,18 +7,17 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide dialog_audio 0.1
+package provide pd_audio 0.1
 
-namespace eval ::dialog_audio:: {
-}
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-# TODO this panel really needs some reworking, it works but the code is very
-# unreadable.  The panel could look a lot better too, like using menubuttons
-# instead of regular buttons with tk_popup for pulldown menus.
+namespace eval ::pd_audio:: {
 
-####################### audio dialog ##################3
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
 
-proc ::dialog_audio::apply {mytoplevel} {
+proc apply {mytoplevel} {
     global audio_indev1 audio_indev2 audio_indev3 audio_indev4 
     global audio_inchan1 audio_inchan2 audio_inchan3 audio_inchan4
     global audio_inenable1 audio_inenable2 audio_inenable3 audio_inenable4
@@ -50,13 +49,13 @@ proc ::dialog_audio::apply {mytoplevel} {
         $audio_blocksize"
 }
 
-proc ::dialog_audio::cancel {mytoplevel} {
+proc cancel {mytoplevel} {
     ::pd_connect::pdsend "$mytoplevel cancel"
 }
 
-proc ::dialog_audio::ok {mytoplevel} {
-    ::dialog_audio::apply $mytoplevel
-    ::dialog_audio::cancel $mytoplevel
+proc ok {mytoplevel} {
+    ::pd_audio::apply $mytoplevel
+    ::pd_audio::cancel $mytoplevel
 }
 
 # callback from popup menu
@@ -88,7 +87,7 @@ proc audio_popup {name buttonname varname devlist} {
 # opening several devices; if not, we get an extra button to turn longform
 # on and restart the dialog.
 
-proc ::dialog_audio::pdtk_audio_dialog {mytoplevel \
+proc show {mytoplevel \
         indev1 indev2 indev3 indev4 \
         inchan1 inchan2 inchan3 inchan4 \
         outdev1 outdev2 outdev3 outdev4 \
@@ -149,17 +148,17 @@ proc ::dialog_audio::pdtk_audio_dialog {mytoplevel \
     frame $mytoplevel.buttonframe
     pack $mytoplevel.buttonframe -side bottom -fill x -pady 2m
     button $mytoplevel.buttonframe.cancel -text [_ "Cancel"]\
-        -command "::dialog_audio::cancel $mytoplevel"
+        -command "::pd_audio::cancel $mytoplevel"
     pack $mytoplevel.buttonframe.cancel -side left -expand 1 -fill x -padx 15
     button $mytoplevel.buttonframe.apply -text [_ "Apply"]\
-        -command "::dialog_audio::apply $mytoplevel"
+        -command "::pd_audio::apply $mytoplevel"
     pack $mytoplevel.buttonframe.apply -side left -expand 1 -fill x -padx 15
     button $mytoplevel.buttonframe.ok -text [_ "OK"] \
-        -command "::dialog_audio::ok $mytoplevel"
+        -command "::pd_audio::ok $mytoplevel"
     pack $mytoplevel.buttonframe.ok -side left -expand 1 -fill x -padx 15
 
     button $mytoplevel.saveall -text [_ "Save All Settings"]\
-        -command "::dialog_audio::apply $mytoplevel; ::pd_connect::pdsend {pd save-preferences}"
+        -command "::pd_audio::apply $mytoplevel; ::pd_connect::pdsend {pd save-preferences}"
     pack $mytoplevel.saveall -side bottom -expand 1 -pady 5
     
         # sample rate and advance
@@ -326,3 +325,11 @@ proc ::dialog_audio::pdtk_audio_dialog {mytoplevel \
     $mytoplevel.srf.x1 select adjust end
     focus $mytoplevel.srf.x1
 }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
