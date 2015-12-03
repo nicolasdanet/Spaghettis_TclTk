@@ -18,7 +18,6 @@ package ifneeded pd_menu 1.0            [list source [file join $dir pd_menu.tcl
 package ifneeded pd_midi 1.0            [list source [file join $dir pd_midi.tcl]]
 package ifneeded pd_patch 1.0           [list source [file join $dir pd_patch.tcl]]
 package ifneeded pd_path 1.0            [list source [file join $dir pd_path.tcl]]
-package ifneeded pd_preferences 1.0     [list source [file join $dir pd_preferences.tcl]]
 package ifneeded pd_object 1.0          [list source [file join $dir pd_object.tcl]]
 package ifneeded pd_text 1.0            [list source [file join $dir pd_text.tcl]]
 

@@ -105,7 +105,6 @@ package require pd_midi
 package require pd_object
 package require pd_patch
 package require pd_path
-package require pd_preferences
 package require pd_text
 
 # ------------------------------------------------------------------------------------------------------------
@@ -241,7 +240,7 @@ proc initialize {audioAPIs midiAPIs} {
 
     # Initialize some packages.
     
-    foreach module {pd_preferences pd_menu pd_console pd_bind pd_file} { [format "::%s::initialize" $module] }
+    foreach module {pd_menu pd_console pd_bind pd_file} { [format "::%s::initialize" $module] }
     
     # Set the menu configuration.
     
