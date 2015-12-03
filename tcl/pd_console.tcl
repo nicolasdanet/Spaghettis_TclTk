@@ -43,8 +43,8 @@ proc _create {} {
     wm title .console [_ "PureData"]
     wm group .console .
      
-    wm minsize  .console 400 75
-    wm geometry .console "=500x400+30+60"
+    wm minsize  .console 400 300
+    wm geometry .console "=400x300+30+60"
     
     .console configure -menu .menubar
 

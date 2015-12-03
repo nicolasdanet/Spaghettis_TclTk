@@ -178,6 +178,7 @@ set var(windowFocused)          .
 # ------------------------------------------------------------------------------------------------------------
 
 source [file join [file dirname [info script]] pd_global.tcl]
+source [file join [file dirname [info script]] pd_styles.tcl]
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -242,17 +243,15 @@ proc initialize {audioAPIs midiAPIs} {
     
     foreach module {pd_menu pd_console pd_bind pd_file} { [format "::%s::initialize" $module] }
     
-    # Set the menu configuration.
-    
-    ::pd_menu::configureForConsole
-    
-    # Respond.
+    focus .console
+        
+    # Respond to executable.
     
     ::pd_connect::pdsend "pd init [::escaped [pwd]] $measured"
     
-    set ::var(isInitialized) 1
-    
     # Open pended files.
+    
+    set ::var(isInitialized) 1
     
     foreach filename $::var(filesOpenPended) { ::pd_file::openFile $filename }
 }
