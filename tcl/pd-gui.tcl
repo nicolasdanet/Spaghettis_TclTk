@@ -243,6 +243,7 @@ proc initialize {audioAPIs midiAPIs} {
     
     foreach module {pd_menu pd_console pd_bind pd_file} { [format "::%s::initialize" $module] }
     
+    wm deiconify .console
     focus .console
         
     # Respond to executable.

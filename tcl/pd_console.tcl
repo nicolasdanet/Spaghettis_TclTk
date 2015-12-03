@@ -42,21 +42,25 @@ proc _create {} {
     toplevel .console -class PdConsole
     wm title .console [_ "PureData"]
     wm group .console .
-     
+    
     wm minsize  .console 400 300
     wm geometry .console "=400x300+30+60"
     
+    wm withdraw .console
+    
     .console configure -menu .menubar
 
-    scrollbar   .console.scroll     -command ".console.text yview"
-    text        .console.text       -font [::getFont 14] \
-                                    -borderwidth 0 \
-                                    -insertwidth 0 \
-                                    -highlightthickness 0 \
-                                    -undo 0 \
-                                    -yscrollcommand ".console.scroll set"
+    ttk::scrollbar  .console.scroll     -command ".console.text yview"
+    text            .console.text       -background black \
+                                        -foreground white \
+                                        -font [::getFont 14] \
+                                        -borderwidth 0 \
+                                        -insertwidth 0 \
+                                        -highlightthickness 0 \
+                                        -undo 0 \
+                                        -yscrollcommand ".console.scroll set"
         
-    pack .console.text              -side right -fill both -expand 1
+    pack .console.text                  -side right -fill both -expand 1
         
     bind .console <<SelectAll>> ".console.text tag add sel 1.0 end"
     
