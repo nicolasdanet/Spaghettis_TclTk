@@ -105,6 +105,7 @@ package require pd_midi
 package require pd_object
 package require pd_patch
 package require pd_path
+package require pd_preferences
 package require pd_text
 
 # ------------------------------------------------------------------------------------------------------------
@@ -164,17 +165,14 @@ set var(fontWeight)             [::getDefaultWeight]
 set var(fontSizes)              "8 10 12 14 16 18 20 24 36"
 
 set var(hasPath)                0
-
 set var(isInitialized)          0
 set var(isDsp)                  0
 set var(isEditMode)             0
 
 set var(scriptName)             [file normalize [info script]]
 set var(searchPath)             {}
-
 set var(tcpHost)                ""
 set var(tcpPort)                0
-
 set var(windowFocused)          .
 
 # ------------------------------------------------------------------------------------------------------------
@@ -243,7 +241,7 @@ proc initialize {audioAPIs midiAPIs} {
 
     # Initialize some packages.
     
-    foreach module {pd_menu pd_console pd_bind pd_file} { [format "::%s::initialize" $module] }
+    foreach module {pd_preferences pd_menu pd_console pd_bind pd_file} { [format "::%s::initialize" $module] }
     
     # Set the menu configuration.
     
