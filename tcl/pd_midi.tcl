@@ -124,8 +124,8 @@ proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
 
 proc _closed {top} {
 
-    ::pd_midi::_apply  $top
-    ::pd_midi::_cancel $top
+    ::pd_midi::_apply $top
+    ::cancel $top
     
     ::pd_menu::enableMidi
 }
@@ -202,33 +202,28 @@ proc _apply {top} {
     variable midiOutDevice
     
     ::pd_connect::pdsend "pd midi-dialog \
-        $midiInDevice(1) \
-        $midiInDevice(2) \
-        $midiInDevice(3) \
-        $midiInDevice(4) \
-        $midiInDevice(5) \
-        $midiInDevice(6) \
-        $midiInDevice(7) \
-        $midiInDevice(8) \
-        $midiInDevice(9) \
-        $midiOutDevice(1) \
-        $midiOutDevice(2) \
-        $midiOutDevice(3) \
-        $midiOutDevice(4) \
-        $midiOutDevice(5) \
-        $midiOutDevice(6) \
-        $midiOutDevice(7) \
-        $midiOutDevice(8) \
-        $midiOutDevice(9) \
-        $midiAlsaIn \
-        $midiAlsaOut"
+            $midiInDevice(1) \
+            $midiInDevice(2) \
+            $midiInDevice(3) \
+            $midiInDevice(4) \
+            $midiInDevice(5) \
+            $midiInDevice(6) \
+            $midiInDevice(7) \
+            $midiInDevice(8) \
+            $midiInDevice(9) \
+            $midiOutDevice(1) \
+            $midiOutDevice(2) \
+            $midiOutDevice(3) \
+            $midiOutDevice(4) \
+            $midiOutDevice(5) \
+            $midiOutDevice(6) \
+            $midiOutDevice(7) \
+            $midiOutDevice(8) \
+            $midiOutDevice(9) \
+            $midiAlsaIn \
+            $midiAlsaOut"
     
     ::pd_connect::pdsend "pd save-preferences"
-}
-
-proc _cancel {top} {
-
-    ::pd_connect::pdsend "$top cancel"
 }
 
 # ------------------------------------------------------------------------------------------------------------

@@ -392,7 +392,7 @@ proc _closed {top} {
     unset iemNameDeltaY(${top}.old)
     unset iemNameFontSize(${top}.old)
 
-    ::pd_iem::_cancel $top
+    ::cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -445,11 +445,6 @@ proc _apply {top} {
             $iemFrontColor($top) \
             $iemNameColor($top) \
             $iemSteady($top)"
-}
-
-proc _cancel {top} {
-    
-    ::pd_connect::pdsend "$top cancel"
 }
 
 # ------------------------------------------------------------------------------------------------------------

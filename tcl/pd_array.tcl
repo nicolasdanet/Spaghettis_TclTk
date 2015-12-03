@@ -124,7 +124,7 @@ proc _closed {top} {
     unset arrayDraw($top)
     unset arraySave($top)
     
-    ::pd_array::_cancel $top
+    ::cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -143,11 +143,6 @@ proc _apply {top} {
             [::sanitized [::dollarToRaute [::withEmpty $arrayName($top)]]] \
             $arraySize($top) \
             [expr {$arraySave($top) + (2 * $arrayDraw($top))}]"
-}
-
-proc _cancel {top} {
-
-    ::pd_connect::pdsend "$top cancel"
 }
 
 # ------------------------------------------------------------------------------------------------------------

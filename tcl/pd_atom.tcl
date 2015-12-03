@@ -168,7 +168,7 @@ proc _closed {top} {
     unset atomLow(${top}.old)
     unset atomHigh(${top}.old)
 
-    ::pd_atom::_cancel $top
+    ::cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -195,11 +195,6 @@ proc _apply {top} {
             [::sanitized [::withDash $atomName($top)]] \
             $atomPosition($top)"
     
-}
-
-proc _cancel {top} {
-
-    ::pd_connect::pdsend "$top cancel"
 }
 
 # ------------------------------------------------------------------------------------------------------------

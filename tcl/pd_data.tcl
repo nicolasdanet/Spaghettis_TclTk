@@ -54,8 +54,8 @@ proc _create {top content} {
 
 proc _closed {top} {
 
-    ::pd_data::_apply  $top
-    ::pd_data::_cancel $top
+    ::pd_data::_apply $top
+    ::cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -71,11 +71,6 @@ proc _apply {top} {
     }
     
     ::pd_connect::pdsend "$top end"
-}
-
-proc _cancel {top} {
-
-    ::pd_connect::pdsend "$top cancel"
 }
 
 # ------------------------------------------------------------------------------------------------------------

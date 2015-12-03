@@ -155,7 +155,7 @@ proc show {top \
 proc _closed {top} {
 
     ::pd_audio::_apply  $top
-    ::pd_audio::_cancel $top
+    ::cancel $top
     
     ::pd_menu::enableAudio
 }
@@ -262,33 +262,28 @@ proc _apply {top} {
     _forceValues
     
     ::pd_connect::pdsend "pd audio-dialog \
-        $audioInDevice(1) \
-        $audioInDevice(2) \
-        $audioInDevice(3) \
-        $audioInDevice(4) \
-        [expr {$audioInChannels(1) * ($audioInEnabled(1) ? 1 : -1)}] \
-        [expr {$audioInChannels(2) * ($audioInEnabled(2) ? 1 : -1)}] \
-        [expr {$audioInChannels(3) * ($audioInEnabled(3) ? 1 : -1)}] \
-        [expr {$audioInChannels(4) * ($audioInEnabled(4) ? 1 : -1)}] \
-        $audioOutDevice(1) \
-        $audioOutDevice(2) \
-        $audioOutDevice(3) \
-        $audioOutDevice(4) \
-        [expr {$audioOutChannels(1) * ($audioOutEnabled(1) ? 1 : -1)}] \
-        [expr {$audioOutChannels(2) * ($audioOutEnabled(2) ? 1 : -1)}] \
-        [expr {$audioOutChannels(3) * ($audioOutEnabled(3) ? 1 : -1)}] \
-        [expr {$audioOutChannels(4) * ($audioOutEnabled(4) ? 1 : -1)}] \
-        $audioSampleRate \
-        $audioDelay \
-        $audioCallback \
-        $audioBlockSize"
+            $audioInDevice(1) \
+            $audioInDevice(2) \
+            $audioInDevice(3) \
+            $audioInDevice(4) \
+            [expr {$audioInChannels(1) * ($audioInEnabled(1) ? 1 : -1)}] \
+            [expr {$audioInChannels(2) * ($audioInEnabled(2) ? 1 : -1)}] \
+            [expr {$audioInChannels(3) * ($audioInEnabled(3) ? 1 : -1)}] \
+            [expr {$audioInChannels(4) * ($audioInEnabled(4) ? 1 : -1)}] \
+            $audioOutDevice(1) \
+            $audioOutDevice(2) \
+            $audioOutDevice(3) \
+            $audioOutDevice(4) \
+            [expr {$audioOutChannels(1) * ($audioOutEnabled(1) ? 1 : -1)}] \
+            [expr {$audioOutChannels(2) * ($audioOutEnabled(2) ? 1 : -1)}] \
+            [expr {$audioOutChannels(3) * ($audioOutEnabled(3) ? 1 : -1)}] \
+            [expr {$audioOutChannels(4) * ($audioOutEnabled(4) ? 1 : -1)}] \
+            $audioSampleRate \
+            $audioDelay \
+            $audioCallback \
+            $audioBlockSize"
     
     ::pd_connect::pdsend "pd save-preferences"
-}
-
-proc _cancel {top} {
-
-    ::pd_connect::pdsend "$top cancel"
 }
 
 # ------------------------------------------------------------------------------------------------------------

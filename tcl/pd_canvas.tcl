@@ -244,7 +244,7 @@ proc _closed {top} {
     unset canvasX(${top}.old)
     unset canvasY(${top}.old)
     
-    ::pd_canvas::_cancel $top
+    ::cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -281,11 +281,6 @@ proc _apply {top} {
             $canvasHeight($top) \
             $canvasX($top) \
             $canvasY($top)"
-}
-
-proc _cancel {top} {
-
-    ::pd_connect::pdsend "$top cancel"
 }
 
 # ------------------------------------------------------------------------------------------------------------
