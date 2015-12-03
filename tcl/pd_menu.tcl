@@ -43,7 +43,7 @@ proc initialize {} {
     
     # Create the sub-menus.
     
-    foreach m {file edit object media} {    
+    foreach m {file edit object tools media} {    
         menu .menubar.$m
         [format _%s $m] .menubar.$m
         .menubar add cascade -label [_ [string totitle $m]] -menu .menubar.$m
@@ -358,18 +358,20 @@ proc _media {m} {
     if {[llength $::var(apiAudioAvailables)] > 0} { $m add separator }
     
     $m add check \
-        -label [_ "Path..."] \
-        -variable ::var(hasPath) \
-        -command { 
-            if {$::var(hasPath)} { ::pd_connect::pdsend "pd start-path-dialog" } else { ::pd_path::hide } 
-        }
-    $m add separator
-    
-    $m add check \
         -label [_ "Run DSP"] \
         -accelerator "${accelerator}+R" \
         -variable ::var(isDsp) \
         -command { ::pd_connect::pdsend "pd dsp $::var(isDsp)" }
+}
+
+proc _tools {m} {
+
+    $m add check \
+        -label [_ "Path"] \
+        -variable ::var(hasPath) \
+        -command { 
+            if {$::var(hasPath)} { ::pd_connect::pdsend "pd start-path-dialog" } else { ::pd_path::hide } 
+        }
 }
 
 proc _popup {m} {
