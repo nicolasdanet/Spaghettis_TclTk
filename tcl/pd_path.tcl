@@ -44,7 +44,7 @@ proc hide {} {
 
 proc _create {} {
 
-    toplevel .path -class PdDialog
+    toplevel .path -class PdTool
     wm title .path [_ "Path"]
     wm group .path .
         

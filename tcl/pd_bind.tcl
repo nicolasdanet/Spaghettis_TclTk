@@ -80,15 +80,18 @@ proc initialize {} {
     event add <<PopupMenu>>                 <ButtonPress-3>
     event add <<ClickRelease>>              <ButtonRelease-1>
     
-    bind PdConsole  <FocusIn>               { ::pd_bind::_focusIn %W             }
-    bind PdDialog   <FocusIn>               { ::pd_bind::_focusIn %W             }
-    bind PdText     <FocusIn>               { ::pd_bind::_focusIn %W             }
-    bind PdPatch    <FocusIn>               { ::pd_bind::_focusIn %W             }
+    bind PdConsole  <FocusIn>               { ::pd_bind::_focusIn %W }
+    bind PdDialog   <FocusIn>               { ::pd_bind::_focusIn %W }
+    bind PdPatch    <FocusIn>               { ::pd_bind::_focusIn %W }
+    bind PdText     <FocusIn>               { ::pd_bind::_focusIn %W }
+    bind PdTool     <FocusIn>               { ::pd_bind::_focusIn %W }
     
     bind PdPatch    <Configure>             { ::pd_bind::_resized %W %w %h %x %y }
-    bind PdPatch    <Map>                   { ::pd_bind::_mapped %W              }
-    bind PdPatch    <Unmap>                 { ::pd_bind::_unmapped %W            }
+    bind PdPatch    <Map>                   { ::pd_bind::_mapped %W   }
+    bind PdPatch    <Unmap>                 { ::pd_bind::_unmapped %W }
 
+    bind all <Escape>                       { ::cancel %W }
+     
     bind all <<Cut>>                        { .menubar.edit     invoke "Cut"        }
     bind all <<Copy>>                       { .menubar.edit     invoke "Copy"       }
     bind all <<Paste>>                      { .menubar.edit     invoke "Paste"      }
@@ -148,23 +151,23 @@ proc _focusIn {top} {
 
     set ::var(windowFocused) $top
     
-    switch -- [winfo class $top] {
-        "PdPatch"   {
-            ::pd_menu::configureForPatch
-            ::pd_patch::setEditMode $top
-        }
-        "PdConsole" {
+    switch -regexp -- [winfo class $top] {
+        "PdConsole"         {
             ::pd_menu::configureForConsole
             ::pd_menu::disableEditing
             set ::var(isEditMode) 0
         }
-        "PdDialog"  { 
-            ::pd_menu::configureForDialog
+        "PdPatch"           {
+            ::pd_menu::configureForPatch
+            ::pd_patch::setEditMode $top
+        }
+        "PdText"            {
+            ::pd_menu::configureForText
             ::pd_menu::disableEditing
             set ::var(isEditMode) 0
         }
-        "PdText"    {
-            ::pd_menu::configureForText
+        "PdTool|PdDialog"   { 
+            ::pd_menu::configureForDialog
             ::pd_menu::disableEditing
             set ::var(isEditMode) 0
         }

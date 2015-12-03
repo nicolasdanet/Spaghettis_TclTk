@@ -81,6 +81,8 @@ proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
         foreach e $midiOut { if {$e ne "none"} { ::pd_midi::_makeOut $top [incr j] } }
     }
     
+    bind $top <Destroy> { ::pd_menu::enableMidi }
+    
     wm protocol $top WM_DELETE_WINDOW   "::pd_midi::_closed $top"
 }
 
@@ -119,6 +121,8 @@ proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     pack  $top.outLabel -side top -anchor w
     pack  $top.out      -side top -anchor w
     
+    bind $top <Destroy> { ::pd_menu::enableMidi }
+    
     wm protocol $top WM_DELETE_WINDOW   "::pd_midi::_closed $top"
 }
 
@@ -126,8 +130,6 @@ proc _closed {top} {
 
     ::pd_midi::_apply $top
     ::cancel $top
-    
-    ::pd_menu::enableMidi
 }
 
 # ------------------------------------------------------------------------------------------------------------
