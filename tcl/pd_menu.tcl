@@ -89,7 +89,7 @@ proc configureForDialog {} {
 
     .menubar.file entryconfigure [_ "Save"]         -state disabled
     .menubar.file entryconfigure [_ "Save As..."]   -state disabled
-    .menubar.file entryconfigure [_ "Close"]        -state disabled
+    .menubar.file entryconfigure [_ "Close"]        -state normal
     
     _copying disabled
     
@@ -100,7 +100,7 @@ proc configureForText {} {
     
     .menubar.file entryconfigure [_ "Save"]         -state disabled
     .menubar.file entryconfigure [_ "Save As..."]   -state disabled
-    .menubar.file entryconfigure [_ "Close"]        -state disabled
+    .menubar.file entryconfigure [_ "Close"]        -state normal
     
     _copying normal
     
@@ -197,7 +197,7 @@ proc _file {m} {
     $m add command \
         -label [_ "Close"] \
         -accelerator "${accelerator}+W" \
-        -command { ::pd_menu::_handle "menuclose 0" }
+        -command { ::pd_menu::_close }
         
     if {[tk windowingsystem] ne "aqua"} {
     
@@ -424,6 +424,39 @@ proc _handle {message} {
     set top [winfo toplevel $::var(windowFocused)]
     
     if {[winfo class $top] eq "PdPatch"} { ::pd_connect::pdsend "$top $message" }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _close {} {
+
+    set top [winfo toplevel $::var(windowFocused)]
+    
+    switch -regexp -- [winfo class $top] {
+        "PdPatch" { 
+            ::pd_connect::pdsend "$top menuclose 0"
+        }
+        "PdDialog|PdText|PdTool" { 
+            switch -- [wm title $top] {
+                "Array"         { ::pd_array::closed  $top }
+                "Atom"          { ::pd_atom::closed   $top }
+                "Audio"         { ::pd_audio::closed  $top }
+                "Bang"          { ::pd_iem::closed    $top }
+                "Canvas"        { ::pd_canvas::closed $top }
+                "Data"          { ::pd_data::closed   $top }
+                "MIDI"          { ::pd_midi::closed   $top }
+                "Number"        { ::pd_iem::closed    $top }
+                "Panel"         { ::pd_iem::closed    $top }
+                "Path"          { ::pd_path::closed   $top }
+                "Slider"        { ::pd_iem::closed    $top }
+                "Radio Button"  { ::pd_iem::closed    $top }
+                "Text"          { ::pd_text::closed   $top }
+                "Toggle"        { ::pd_iem::closed    $top }
+                "VU"            { ::pd_iem::closed    $top }
+            }
+        }
+    }
 }
 
 # ------------------------------------------------------------------------------------------------------------

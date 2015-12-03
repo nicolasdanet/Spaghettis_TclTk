@@ -106,10 +106,10 @@ proc _create {top name size flags} {
     
     $top.name selection range 0 end
     
-    wm protocol $top WM_DELETE_WINDOW   "::pd_array::_closed $top"
+    wm protocol $top WM_DELETE_WINDOW   "::pd_array::closed $top"
 }
 
-proc _closed {top} {
+proc closed {top} {
     
     variable arrayName
     variable arraySize

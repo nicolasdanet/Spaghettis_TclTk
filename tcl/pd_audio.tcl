@@ -151,12 +151,12 @@ proc show {top \
     
     bind $top <Destroy> { ::pd_menu::enableAudio }
         
-    wm protocol $top WM_DELETE_WINDOW   "::pd_audio::_closed $top"
+    wm protocol $top WM_DELETE_WINDOW   "::pd_audio::closed $top"
 }
 
-proc _closed {top} {
+proc closed {top} {
 
-    ::pd_audio::_apply  $top
+    ::pd_audio::_apply $top
     ::cancel $top
 }
 

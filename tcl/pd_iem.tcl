@@ -322,10 +322,10 @@ proc create {top type
     
     if {[winfo exists $top.width]} { focus $top.width; $top.width selection range 0 end }
         
-    wm protocol $top WM_DELETE_WINDOW   "::pd_iem::_closed $top"
+    wm protocol $top WM_DELETE_WINDOW   "::pd_iem::closed $top"
 }
 
-proc _closed {top} {
+proc closed {top} {
     
     variable iemType
     variable iemWidth

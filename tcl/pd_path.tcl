@@ -36,7 +36,7 @@ proc show {{top {}}} {
 
 proc hide {} {
 
-    ::pd_path::_closed
+    ::pd_path::closed
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -74,10 +74,10 @@ proc _create {} {
 
     foreach item $::var(searchPath) { .path.paths.box insert end $item }
     
-    wm protocol .path WM_DELETE_WINDOW { ::pd_path::_closed }
+    wm protocol .path WM_DELETE_WINDOW { ::pd_path::closed }
 }
 
-proc _closed {} {
+proc closed {{top {}}} {
 
     wm withdraw .path
     

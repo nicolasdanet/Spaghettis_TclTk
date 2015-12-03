@@ -77,12 +77,12 @@ proc _create {top} {
     bind $top.text  <<Modified>>        "::pd_text::_modified $top"
     bind $top.text  <<Save>>            "::pd_text::_save $top"
     
-    wm protocol $top WM_DELETE_WINDOW   "::pd_text::_closed $top"
+    wm protocol $top WM_DELETE_WINDOW   "::pd_text::closed $top"
         
     focus $top.text
 }
 
-proc _closed {top} {
+proc closed {top} {
 
     if {[$top.text edit modified]} { 
         ::pd_confirm::checkClose $top { ::pd_text::_save $top } {} { return -level 2 }

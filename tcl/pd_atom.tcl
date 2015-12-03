@@ -141,10 +141,10 @@ proc _create {top width low high send receive name position} {
     
     $top.width selection range 0 end
     
-    wm protocol $top WM_DELETE_WINDOW   "::pd_atom::_closed $top"
+    wm protocol $top WM_DELETE_WINDOW   "::pd_atom::closed $top"
 }
 
-proc _closed {top} {
+proc closed {top} {
 
     variable atomWidth
     variable atomLow

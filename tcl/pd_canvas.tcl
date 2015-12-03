@@ -200,10 +200,10 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     
     $top.scaleX selection range 0 end
     
-    wm protocol $top WM_DELETE_WINDOW   "::pd_canvas::_closed $top"
+    wm protocol $top WM_DELETE_WINDOW   "::pd_canvas::closed $top"
 }
 
-proc _closed {top} {
+proc closed {top} {
 
     variable canvasScaleX
     variable canvasScaleY

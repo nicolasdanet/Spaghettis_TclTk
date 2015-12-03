@@ -47,12 +47,12 @@ proc _create {top content} {
 
     $top.text insert end $content
     
-    wm protocol $top WM_DELETE_WINDOW   "::pd_data::_closed $top"
+    wm protocol $top WM_DELETE_WINDOW   "::pd_data::closed $top"
         
     focus $top.text
 }
 
-proc _closed {top} {
+proc closed {top} {
 
     ::pd_data::_apply $top
     ::cancel $top

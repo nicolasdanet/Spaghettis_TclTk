@@ -60,7 +60,7 @@ proc _create {} {
         
     bind .console <<SelectAll>> ".console.text tag add sel 1.0 end"
     
-    wm protocol .console WM_DELETE_WINDOW   { ::pd_console::_closed }
+    wm protocol .console WM_DELETE_WINDOW   { ::pd_console::closed }
     
     # Read-only text widget ( http://wiki.tcl.tk/1152 ).
   
@@ -75,7 +75,7 @@ proc _create {} {
     }
 }
 
-proc _closed {} {
+proc closed {} {
 
     ::pd_connect::pdsend "pd verifyquit"
 }
