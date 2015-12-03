@@ -46,14 +46,10 @@ proc _create {} {
     wm minsize  .console 400 300
     wm geometry .console "=400x300+30+60"
     
-    wm withdraw .console
-    
     .console configure -menu .menubar
 
     ttk::scrollbar  .console.scroll     -command ".console.text yview"
-    text            .console.text       -background black \
-                                        -foreground white \
-                                        -font [::getFont 14] \
+    text            .console.text       -font [::getFont 14] \
                                         -borderwidth 0 \
                                         -insertwidth 0 \
                                         -highlightthickness 0 \
