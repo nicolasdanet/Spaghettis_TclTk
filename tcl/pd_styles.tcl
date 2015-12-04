@@ -18,6 +18,8 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+proc styleTextFont  {}  { return TkTextFont    }
+
 proc styleMainFrame {}  { return "-padding 10" }
 proc styleFrame {}      { return "-padding 5"  }
 proc styleLabelFrame {} { return "-padding 5"  }
