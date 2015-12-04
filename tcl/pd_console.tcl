@@ -49,7 +49,7 @@ proc _create {} {
     .console configure -menu .menubar
 
     ttk::scrollbar  .console.scroll     -command ".console.text yview"
-    text            .console.text       -font [::styleTextFont] \
+    text            .console.text       -font [::styleFontConsole] \
                                         -borderwidth 0 \
                                         -insertwidth 0 \
                                         -highlightthickness 0 \
