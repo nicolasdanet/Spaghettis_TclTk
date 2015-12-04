@@ -83,7 +83,7 @@ proc closed {{top {}}} {
     
     focus [lindex [wm stackorder .] end]
         
-    set ::var(hasPath) 0
+    set ::var(isPath) 0
 }
 
 # ------------------------------------------------------------------------------------------------------------

@@ -368,9 +368,9 @@ proc _tools {m} {
 
     $m add check \
         -label [_ "Path"] \
-        -variable ::var(hasPath) \
+        -variable ::var(isPath) \
         -command { 
-            if {$::var(hasPath)} { ::pd_connect::pdsend "pd start-path-dialog" } else { ::pd_path::hide } 
+            if {$::var(isPath)} { ::pd_connect::pdsend "pd start-path-dialog" } else { ::pd_path::hide } 
         }
 }
 
