@@ -52,18 +52,17 @@ proc _create {} {
     wm geometry .path [format "=400x300%s" [::rightNextTo .console]]
     
     ttk::frame      .path.f                 {*}[::styleMainFrame]
-    
-    ttk::labelframe .path.f.paths           {*}[::styleLabelFrame]  -text [_ "Search Paths"]
+    ttk::labelframe .path.f.paths           {*}[::styleFrame]
     ttk::frame      .path.f.actions         {*}[::styleFrame]
     
-    listbox         .path.f.paths.box       -selectmode single \
+    listbox         .path.f.paths.box       -selectmode multiple \
                                             -activestyle none \
                                             -borderwidth 0
     
-    button          .path.f.actions.add     -text "Add..." \
+    ttk::button     .path.f.actions.add     -text "+" \
                                             -command "::pd_path::_addItem"
-    button          .path.f.actions.delete  -text "Delete" \
-                                            -command "::pd_path::_deleteItem"
+    ttk::button     .path.f.actions.delete  -text "-" \
+                                            -command "::pd_path::_deleteItems"
     
     pack .path.f                    -side top -fill both -expand 1
     pack .path.f.paths              -side top -fill both -expand 1
@@ -75,6 +74,8 @@ proc _create {} {
     pack .path.f.actions.delete     -side left
 
     foreach item $::var(searchPath) { .path.f.paths.box insert end $item }
+    
+    bind .path.f.paths.box <<Delete>>   "::pd_path::_deleteItems"
     
     wm protocol .path WM_DELETE_WINDOW { ::pd_path::closed }
 }
@@ -102,9 +103,11 @@ proc _addItem {} {
     ::pd_path::_apply
 }
 
-proc _deleteItem {} {
+proc _deleteItems {} {
 
-    foreach item [.path.f.paths.box curselection] { .path.f.paths.box delete $item }
+    set i 0
+    
+    foreach item [.path.f.paths.box curselection] { .path.f.paths.box delete [expr {$item - $i}]; incr i }
     
     ::pd_path::_apply
 }
