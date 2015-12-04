@@ -56,8 +56,7 @@ proc _create {} {
     ttk::labelframe .path.f.paths           {*}[::styleLabelFrame]  -text [_ "Search Paths"]
     ttk::frame      .path.f.actions         {*}[::styleFrame]
     
-    listbox         .path.f.paths.box       -font [::mainFont] \
-                                            -selectmode single \
+    listbox         .path.f.paths.box       -selectmode single \
                                             -activestyle none \
                                             -borderwidth 0
     
