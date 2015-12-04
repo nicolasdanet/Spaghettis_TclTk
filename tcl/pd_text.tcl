@@ -67,7 +67,7 @@ proc _create {top} {
     wm minsize  $top 50 50
     wm geometry $top [format "=600x400%s" [::rightNextTo $::var(windowFocused)]]
     
-    text $top.text  -font [::getFont 14] \
+    text $top.text  -font [::mainFont] \
                     -borderwidth 0 \
                     -highlightthickness 0
     

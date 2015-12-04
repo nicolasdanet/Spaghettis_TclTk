@@ -51,28 +51,31 @@ proc _create {} {
     wm minsize  .path 400 300
     wm geometry .path [format "=400x300%s" [::rightNextTo .console]]
     
-    frame .path.paths
-    frame .path.actions
+    ttk::frame      .path.f                 {*}[::styleMainFrame]
     
-    listbox .path.paths.box     -selectmode single \
-                                -activestyle none \
-                                -font [::getFont 14] \
-                                -borderwidth 0
+    ttk::labelframe .path.f.paths           {*}[::styleLabelFrame]  -text [_ "Search Paths"]
+    ttk::frame      .path.f.actions         {*}[::styleFrame]
     
-    button .path.actions.add    -text "Add..." \
-                                -command "::pd_path::_addItem"
-    button .path.actions.delete -text "Delete" \
-                                -command "::pd_path::_deleteItem"
-        
-    pack .path.paths            -side top -padx 2m -pady 2m -fill both -expand 1
-    pack .path.actions          -side top -padx 2m -fill x 
+    listbox         .path.f.paths.box       -font [::mainFont] \
+                                            -selectmode single \
+                                            -activestyle none \
+                                            -borderwidth 0
     
-    pack .path.paths.box        -side left -fill both -expand 1
+    button          .path.f.actions.add     -text "Add..." \
+                                            -command "::pd_path::_addItem"
+    button          .path.f.actions.delete  -text "Delete" \
+                                            -command "::pd_path::_deleteItem"
     
-    pack .path.actions.add      -side left -pady 2m
-    pack .path.actions.delete   -side left -pady 2m
+    pack .path.f                    -side top -fill both -expand 1
+    pack .path.f.paths              -side top -fill both -expand 1
+    pack .path.f.actions            -side top -fill x 
+    
+    pack .path.f.paths.box          -side top -fill both -expand 1
+    
+    pack .path.f.actions.add        -side left
+    pack .path.f.actions.delete     -side left
 
-    foreach item $::var(searchPath) { .path.paths.box insert end $item }
+    foreach item $::var(searchPath) { .path.f.paths.box insert end $item }
     
     wm protocol .path WM_DELETE_WINDOW { ::pd_path::closed }
 }
@@ -95,14 +98,14 @@ proc _addItem {} {
     
     focus .path
     
-    if {$item ne ""} { .path.paths.box insert end $item }
+    if {$item ne ""} { .path.f.paths.box insert end $item }
     
     ::pd_path::_apply
 }
 
 proc _deleteItem {} {
 
-    foreach item [.path.paths.box curselection] { .path.paths.box delete $item }
+    foreach item [.path.f.paths.box curselection] { .path.f.paths.box delete $item }
     
     ::pd_path::_apply
 }
@@ -114,7 +117,7 @@ proc _apply {} {
 
     set ::var(searchPath) {}
     
-    foreach path [.path.paths.box get 0 end] { lappend ::var(searchPath) [::encoded $path] }
+    foreach path [.path.f.paths.box get 0 end] { lappend ::var(searchPath) [::encoded $path] }
 
     ::pd_connect::pdsend "pd path-dialog $::var(searchPath)"
     
