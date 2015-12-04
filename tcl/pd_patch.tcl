@@ -55,8 +55,8 @@ proc create {top width height coordinates editable} {
     
     if {[tk windowingsystem] ne "aqua"} { $top configure -menu .menubar }
     
-    scrollbar $top.xscroll  -orient horizontal  -command "$top.c xview"
-    scrollbar $top.yscroll  -orient vertical    -command "$top.c yview"
+    ttk::scrollbar $top.xscroll -orient horizontal  -command "$top.c xview"
+    ttk::scrollbar $top.yscroll -orient vertical    -command "$top.c yview"
     
     canvas $top.c   -width $width \
                     -height $height \

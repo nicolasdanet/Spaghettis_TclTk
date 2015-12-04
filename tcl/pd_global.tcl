@@ -30,6 +30,7 @@ proc getFont {size} {
 proc getTitle {top} { 
     
     if {[winfo class $top] eq "PdPatch"} { return [::pd_patch::getTitle $top] }
+    
     return [wm title $top]
 }
 
@@ -39,7 +40,9 @@ proc getTitle {top} {
 proc nextEntry {w} {
 
     set next [tk_focusNext $w]
+    
     focus $next
+    
     if {[string match "*Entry" [winfo class $next]]} { $next selection range 0 end }
 }
 
@@ -115,10 +118,12 @@ proc ifNonZero {new old} {
 # ------------------------------------------------------------------------------------------------------------
 
 proc ping {} {
+
     ::pd_connect::pdsend "pd ping"
 }
 
 proc watchdog {} {
+
     ::pd_connect::pdsend "pd watchdog"; after 2000 { ::watchdog }
 }
 
