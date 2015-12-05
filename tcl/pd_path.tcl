@@ -49,33 +49,22 @@ proc _create {} {
     wm group .path .
         
     wm minsize  .path 400 300
-    wm geometry .path [format "=400x300%s" [::rightNextTo .console]]
+    wm geometry .path [format "=600x300%s" [::rightNextTo .console]]
     
     ttk::frame      .path.f                 {*}[::styleMainFrame]
     ttk::labelframe .path.f.paths           {*}[::styleFrame]
-    ttk::frame      .path.f.actions         {*}[::styleFrame]
-    
-    listbox         .path.f.paths.box       -selectmode multiple \
+    listbox         .path.f.paths.list      -selectmode extended \
                                             -activestyle none \
                                             -borderwidth 0
     
-    ttk::button     .path.f.actions.add     -text "+" \
-                                            -command "::pd_path::_addItem"
-    ttk::button     .path.f.actions.delete  -text "-" \
-                                            -command "::pd_path::_deleteItems"
-    
-    pack .path.f                    -side top -fill both -expand 1
-    pack .path.f.paths              -side top -fill both -expand 1
-    pack .path.f.actions            -side top -fill x 
-    
-    pack .path.f.paths.box          -side top -fill both -expand 1
-    
-    pack .path.f.actions.add        -side left
-    pack .path.f.actions.delete     -side left
+    pack .path.f                -side top -fill both -expand 1
+    pack .path.f.paths          -side top -fill both -expand 1
+    pack .path.f.paths.list     -side top -fill both -expand 1
 
-    foreach item $::var(searchPath) { .path.f.paths.box insert end $item }
+    foreach item $::var(searchPath) { .path.f.paths.list insert end $item }
     
-    bind .path.f.paths.box <<Delete>>   "::pd_path::_deleteItems"
+    bind .path.f.paths.list <<DoubleClick>> "::pd_path::_addItem"
+    bind .path.f.paths.list <<Delete>>      "::pd_path::_deleteItems"
     
     wm protocol .path WM_DELETE_WINDOW { ::pd_path::closed }
 }
@@ -94,11 +83,11 @@ proc closed {{top {}}} {
 
 proc _addItem {} {
 
+    .path.f.paths.list selection clear 0 end
+    
     set item [tk_chooseDirectory -title [_ "Add a Directory"]]
     
-    focus .path
-    
-    if {$item ne ""} { .path.f.paths.box insert end $item }
+    if {$item ne ""} { .path.f.paths.list insert end $item; .path.f.paths.list selection set end }
     
     ::pd_path::_apply
 }
@@ -107,7 +96,7 @@ proc _deleteItems {} {
 
     set i 0
     
-    foreach item [.path.f.paths.box curselection] { .path.f.paths.box delete [expr {$item - $i}]; incr i }
+    foreach item [.path.f.paths.list curselection] { .path.f.paths.list delete [expr {$item - $i}]; incr i }
     
     ::pd_path::_apply
 }
@@ -119,7 +108,7 @@ proc _apply {} {
 
     set ::var(searchPath) {}
     
-    foreach path [.path.f.paths.box get 0 end] { lappend ::var(searchPath) [::encoded $path] }
+    foreach path [.path.f.paths.list get 0 end] { lappend ::var(searchPath) [::encoded $path] }
 
     ::pd_connect::pdsend "pd path-dialog $::var(searchPath)"
     
