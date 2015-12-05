@@ -144,11 +144,10 @@ proc _makeIn {top k} {
     variable midiIn
     variable midiInDevice
     
-    set devicesLabel [format "%s.inDevice%dLabel" $top $k]
-    set devices      [format "%s.inDevice%d" $top $k]
+    set devices [format "%s.inDevice%d" $top $k]
     
-    label $devicesLabel                 -text [format "%s %d" [_ "Input"] $k]
-    menubutton $devices                 -text [lindex $midiIn $midiInDevice($k)]
+    ttk::menubutton $devices            -text [lindex $midiIn $midiInDevice($k)] \
+                                        -width -24
     
     menu $devices.menu
     $devices configure                  -menu $devices.menu
@@ -163,8 +162,7 @@ proc _makeIn {top k} {
         incr i
     }
     
-    pack $devicesLabel                  -side top -anchor w
-    pack $devices                       -side top -anchor w
+    pack $devices                       -side top -fill x -expand 1
 }
 
 proc _makeOut {top k} {
@@ -172,11 +170,10 @@ proc _makeOut {top k} {
     variable midiOut
     variable midiOutDevice
     
-    set devicesLabel [format "%s.outDevice%dLabel" $top $k]
-    set devices      [format "%s.outDevice%d" $top $k]
+    set devices [format "%s.outDevice%d" $top $k]
     
-    label $devicesLabel                 -text [format "%s %d" [_ "Output"] $k]
-    menubutton $devices                 -text [lindex $midiOut $midiOutDevice($k)]
+    ttk::menubutton $devices            -text [lindex $midiOut $midiOutDevice($k)] \
+                                        -width -24
     
     menu $devices.menu
     $devices configure                  -menu $devices.menu
@@ -191,8 +188,7 @@ proc _makeOut {top k} {
         incr i
     }
     
-    pack $devicesLabel                  -side top -anchor w
-    pack $devices                       -side top -anchor w
+    pack $devices                       -side top -fill x -expand 1
 }
 
 # ------------------------------------------------------------------------------------------------------------
