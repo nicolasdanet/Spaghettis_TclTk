@@ -49,13 +49,14 @@ proc _create {} {
     ttk::frame      .path.f                 {*}[::styleMainFrame]
     ttk::labelframe .path.f.paths           {*}[::styleFrame] \
                                             -text [_ [::ifAqua "Folders" "Directories"]]
+    
+    pack            .path.f                 {*}[::styleMainFrameDispose]
+    pack            .path.f.paths           {*}[::styleFrameDispose]
+    
     listbox         .path.f.paths.list      -selectmode extended \
                                             -activestyle none \
                                             -borderwidth 0
-    
-    pack .path.f                            -side top -fill both -expand 1
-    pack .path.f.paths                      -side top -fill both -expand 1
-    pack .path.f.paths.list                 -side top -fill both -expand 1
+    pack            .path.f.paths.list      -side top -fill both -expand 1
 
     foreach item $::var(searchPath) { .path.f.paths.list insert end $item }
     

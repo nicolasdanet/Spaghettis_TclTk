@@ -24,8 +24,12 @@ proc styleFontText {}       { return TkTextFont }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc styleMainFrame {}      { return "-padding 15" }
-proc styleFrame {}          { return "-padding 5"  }
+proc styleMainFrame {}          { return "-padding 15" }
+proc styleFrame {}              { return "-padding 5"  }
+
+proc styleMainFrameDispose {}   { return "-side top -fill both -expand 1" }
+proc styleFrameDispose {}       { return "-side top -fill both -expand 1" }
+proc styleFrameDisposeNext {}   { return "-side top -fill both -expand 1 -pady {5 0}" }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
