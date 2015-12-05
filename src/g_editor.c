@@ -944,7 +944,7 @@ void canvas_vis(t_canvas *x, t_floatarg f)
          * so its ok to run it on a canvas that already has a gl_editor. */
         if (x->gl_editor && x->gl_havewindow)
         {           /* just put us in front */
-            sys_vgui("::pd_patch::bringToFront .x%lx\n", x);  
+            sys_vgui("::bringToFront .x%lx\n", x);  
         }
         else
         {

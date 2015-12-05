@@ -26,12 +26,7 @@ namespace eval ::pd_path:: {
 
 proc show {{top {}}} { 
     
-    if {[winfo exists .path]} {
-        wm deiconify .path
-        raise .path
-    } else {
-        ::pd_path::_create
-    }
+    if {[winfo exists .path]} { ::bringToFront .path } else { ::pd_path::_create }
 }
 
 proc hide {} {
@@ -113,7 +108,6 @@ proc _apply {} {
     foreach path [.path.f.paths.list get 0 end] { lappend ::var(searchPath) [::encoded $path] }
 
     ::pd_connect::pdsend "pd path-dialog $::var(searchPath)"
-    
     ::pd_connect::pdsend "pd save-preferences"
 }
 
