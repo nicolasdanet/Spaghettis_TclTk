@@ -68,9 +68,7 @@ proc _create {} {
 
 proc closed {{top {}}} {
 
-    wm withdraw .path
-    
-    focus [lindex [wm stackorder .] end]
+    ::removeFromScreen .path
         
     set ::var(isPath) 0
 }

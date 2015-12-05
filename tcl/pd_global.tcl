@@ -59,9 +59,12 @@ proc rightNextTo {top} {
 
 proc bringToFront {top} {
 
-    wm deiconify $top
-    raise $top
-    focus $top
+    wm deiconify $top; raise $top; focus $top
+}
+
+proc removeFromScreen {top} {
+
+    wm withdraw $top; focus [lindex [wm stackorder .] end]
 }
 
 # ------------------------------------------------------------------------------------------------------------
