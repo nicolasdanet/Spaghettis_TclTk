@@ -35,9 +35,6 @@ proc initialize {} {
     
     if {[tk windowingsystem] eq "aqua"} { set opt "Option"; set mod "Command" }
 
-    event add <<Delete>>                    <BackSpace>
-    event add <<DoubleClick>>               <Double-Button-1>
-    
     event add <<Copy>>                      <$mod-Key-c>
     event add <<Duplicate>>                 <$mod-Key-d>
     event add <<SelectAll>>                 <$mod-Key-a>

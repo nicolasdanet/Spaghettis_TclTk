@@ -63,8 +63,9 @@ proc _create {} {
 
     foreach item $::var(searchPath) { .path.f.paths.list insert end $item }
     
-    bind .path.f.paths.list <<DoubleClick>> "::pd_path::_addItem"
-    bind .path.f.paths.list <<Delete>>      "::pd_path::_deleteItems"
+    bind .path.f.paths.list <BackSpace>         "::pd_path::_deleteItems"
+    bind .path.f.paths.list <Double-Button-1>   "::pd_path::_addItem"
+    bind .path.f.paths.list <Triple-Button-1>   {}
     
     wm protocol .path WM_DELETE_WINDOW { ::pd_path::closed }
 }
