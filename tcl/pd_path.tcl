@@ -49,7 +49,7 @@ proc _create {} {
     wm group .path .
         
     wm minsize  .path 400 300
-    wm geometry .path [format "=600x300%s" [::rightNextTo .console]]
+    wm geometry .path [format "=500x300%s" [::rightNextTo .console]]
     
     ttk::frame      .path.f                 {*}[::styleMainFrame]
     ttk::labelframe .path.f.paths           {*}[::styleFrame]
