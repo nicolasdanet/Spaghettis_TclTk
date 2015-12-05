@@ -69,7 +69,7 @@ proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     wm group $top .
     
     wm resizable $top 0 0
-    wm geometry  $top [format "=300x150%s" [::rightNextTo .console]]
+    wm geometry  $top [::rightNextTo .console]
 
     set noInput  [expr {[llength $midiIn]  == 1}]
     set noOutput [expr {[llength $midiOut] == 1}]
@@ -82,8 +82,8 @@ proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     pack $top.f.inputs              {*}[::styleFrameDispose]
     pack $top.f.outputs             {*}[::styleFrameDisposeNext]
     
-    #foreach e $midiIn  { if {$e ne "none" || $noInput}  { ::pd_midi::_makeIn  $top [incr i] } }
-    #foreach e $midiOut { if {$e ne "none" || $noOutput} { ::pd_midi::_makeOut $top [incr j] } }
+    foreach e $midiIn  { if {$e ne "none" || $noInput}  { ::pd_midi::_makeIn  $top.f.inputs  [incr i] } }
+    foreach e $midiOut { if {$e ne "none" || $noOutput} { ::pd_midi::_makeOut $top.f.outputs [incr j] } }
     
     bind $top <Destroy> { ::pd_menu::enableMidi }
     

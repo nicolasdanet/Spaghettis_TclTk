@@ -46,17 +46,17 @@ proc _create {} {
     wm minsize  .path 400 300
     wm geometry .path [format "=500x300%s" [::rightNextTo .console]]
     
-    ttk::frame      .path.f                 {*}[::styleMainFrame]
-    ttk::labelframe .path.f.paths           {*}[::styleFrame] \
+    ttk::frame      .path.f             {*}[::styleMainFrame]
+    ttk::labelframe .path.f.paths       {*}[::styleFrame] \
                                             -text [_ [::ifAqua "Folders" "Directories"]]
     
-    pack            .path.f                 {*}[::styleMainFrameDispose]
-    pack            .path.f.paths           {*}[::styleFrameDispose]
+    pack            .path.f             {*}[::styleMainFrameDispose]
+    pack            .path.f.paths       {*}[::styleFrameDispose]
     
-    listbox         .path.f.paths.list      -selectmode extended \
-                                            -activestyle none \
-                                            -borderwidth 0
-    pack            .path.f.paths.list      -side top -fill both -expand 1
+    listbox         .path.f.paths.list  -selectmode extended \
+                                        -activestyle none \
+                                        -borderwidth 0
+    pack            .path.f.paths.list  -side top -fill both -expand 1
 
     foreach item $::var(searchPath) { .path.f.paths.list insert end $item }
     
