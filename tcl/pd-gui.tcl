@@ -168,7 +168,6 @@ set var(isInitialized)          0
 set var(isDsp)                  0
 set var(isEditMode)             0
 
-set var(scriptName)             [file normalize [info script]]
 set var(searchPath)             {}
 set var(tcpHost)                ""
 set var(tcpPort)                0
