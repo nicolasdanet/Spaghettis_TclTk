@@ -71,13 +71,21 @@ proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     wm resizable $top 0 0
     wm geometry  $top [::rightNextTo .console]
 
-    if {[expr {[llength $midiIn] + [llength $midiOut] == 2}]} {
+    if {[llength $midiIn] == 1} {
     
-        label $top.none -text [_ "No MIDI device found."]
-        pack  $top.none -side top -anchor w
-        
+        label $top.inEmpty -text [_ "No MIDI device found."]
+        pack  $top.inEmpty -side top -anchor w
+    
     } else {
         foreach e $midiIn  { if {$e ne "none"} { ::pd_midi::_makeIn  $top [incr i] } }
+    }
+    
+    if {[llength $midiOut] == 1} {
+    
+        label $top.outEmpty -text [_ "No MIDI device found."]
+        pack  $top.outEmpty -side top -anchor w
+    
+    } else {
         foreach e $midiOut { if {$e ne "none"} { ::pd_midi::_makeOut $top [incr j] } }
     }
     

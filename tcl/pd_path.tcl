@@ -53,9 +53,9 @@ proc _create {} {
                                             -activestyle none \
                                             -borderwidth 0
     
-    pack .path.f                -side top -fill both -expand 1
-    pack .path.f.paths          -side top -fill both -expand 1
-    pack .path.f.paths.list     -side top -fill both -expand 1
+    pack .path.f                            -side top -fill both -expand 1
+    pack .path.f.paths                      -side top -fill both -expand 1
+    pack .path.f.paths.list                 -side top -fill both -expand 1
 
     foreach item $::var(searchPath) { .path.f.paths.list insert end $item }
     
