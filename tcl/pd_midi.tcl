@@ -112,18 +112,24 @@ proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     wm resizable $top 0 0
     wm geometry  $top [::rightNextTo .console]
     
-    label $top.inLabel  -text [_ "Input Ports"]
-    entry $top.in       -textvariable ::pd_midi::midiAlsaIn \
-                        -state disabled
+    ttk::frame      $top.f          {*}[::styleMainFrame]
+    ttk::labelframe $top.f.inputs   {*}[::styleFrame]   -text [_ "Input Ports"]
+    ttk::labelframe $top.f.outputs  {*}[::styleFrame]   -text [_ "Output Ports"]
     
-    label $top.outLabel -text [_ "Output Ports"]
-    entry $top.out      -textvariable ::pd_midi::midiAlsaOut \
-                        -state disabled
+    pack $top.f                     {*}[::styleMainFrameDispose]
+    pack $top.f.inputs              {*}[::styleFrameDispose]
+    pack $top.f.outputs             {*}[::styleFrameDisposeNext]
+    
+    ttk::entry $top.f.inputs.in     -textvariable ::pd_midi::midiAlsaIn \
+                                    -width -12 \
+                                    -state disabled
+    
+    ttk::entry $top.f.outputs.out   -textvariable ::pd_midi::midiAlsaOut \
+                                    -width -12 \
+                                    -state disabled
                         
-    pack  $top.inLabel  -side top -anchor w
-    pack  $top.in       -side top -anchor w
-    pack  $top.outLabel -side top -anchor w
-    pack  $top.out      -side top -anchor w
+    pack $top.f.inputs.in           -side top -fill x -expand 1
+    pack $top.f.outputs.out         -side top -fill x -expand 1
     
     bind $top <Destroy> { ::pd_menu::enableMidi }
     
