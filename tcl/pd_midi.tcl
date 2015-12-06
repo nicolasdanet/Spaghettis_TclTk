@@ -106,7 +106,7 @@ proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     set midiAlsaOut [expr {[llength $midiOut] - 1}]
     
     toplevel $top -class PdDialog
-    wm title $top [_ "ALSA MIDI"]
+    wm title $top [_ "MIDI"]
     wm group $top .
     
     wm resizable $top 0 0
