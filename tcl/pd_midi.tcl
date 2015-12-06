@@ -121,14 +121,14 @@ proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     pack $top.f.outputs             {*}[::packNextCategory]
     
     ttk::entry $top.f.inputs.in     {*}[::styleEntry] \
-                                    -textvariable ::pd_midi::midiAlsaIn \
-                                    -width 12 \
-                                    -state disabled
+                                        -textvariable ::pd_midi::midiAlsaIn \
+                                        -width 12 \
+                                        -state disabled
     
     ttk::entry $top.f.outputs.out   {*}[::styleEntry] \
-                                    -textvariable ::pd_midi::midiAlsaOut \
-                                    -width 12 \
-                                    -state disabled
+                                        -textvariable ::pd_midi::midiAlsaOut \
+                                        -width 12 \
+                                        -state disabled
                         
     pack $top.f.inputs.in           -side top -fill x -expand 1
     pack $top.f.outputs.out         -side top -fill x -expand 1
@@ -182,8 +182,8 @@ proc _makeOut {top k} {
     set devices [format "%s.outDevice%d" $top $k]
     
     ttk::menubutton $devices            {*}[::styleMenuButton] \
-                                        -width -24 \
-                                        -text [lindex $midiOut $midiOutDevice($k)]
+                                            -width -24 \
+                                            -text [lindex $midiOut $midiOutDevice($k)]
     
     menu $devices.menu
     $devices configure                  -menu $devices.menu

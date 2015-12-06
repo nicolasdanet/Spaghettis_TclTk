@@ -110,22 +110,25 @@ proc show {top \
     
     ttk::frame      $top.f                              {*}[::styleFrame]
     ttk::labelframe $top.f.properties                   {*}[::styleLabelFrame] \
-                                                        -text [_ "Properties"]
+                                                            -text [_ "Properties"]
 
     pack $top.f                                         {*}[::packMain]
     pack $top.f.properties                              {*}[::packCategory]
     
-    ttk::label $top.f.properties.sampleRateLabel        -text [_ "Sample Rate"]
+    ttk::label $top.f.properties.sampleRateLabel        {*}[::styleLabel] \
+                                                            -text [_ "Sample Rate"]
     ttk::entry $top.f.properties.sampleRate             {*}[::styleEntry] \
-                                                        -width 12 \
-                                                        -textvariable ::pd_audio::audioSampleRate
+                                                            -width 12 \
+                                                            -textvariable ::pd_audio::audioSampleRate
     
-    ttk::label $top.f.properties.delayLabel             -text [_ "Delay in Milliseconds"]
+    ttk::label $top.f.properties.delayLabel             {*}[::styleLabel] \
+                                                            -text [_ "Delay in Milliseconds"]
     ttk::entry $top.f.properties.delay                  {*}[::styleEntry] \
-                                                        -width 12 \
-                                                        -textvariable ::pd_audio::audioDelay
+                                                            -width 12 \
+                                                            -textvariable ::pd_audio::audioDelay
 
-    ttk::label $top.f.properties.blockSizeLabel         -text [_ "Block Size"]
+    ttk::label $top.f.properties.blockSizeLabel         {*}[::styleLabel] \
+                                                            -text [_ "Block Size"]
     _makeBlocksize $top.f.properties.blockSize
     
     grid $top.f.properties.sampleRateLabel              -row 0 -column 0 -sticky nsew {*}[::gridPadRight]
@@ -135,16 +138,20 @@ proc show {top \
     grid $top.f.properties.blockSizeLabel               -row 2 -column 0 -sticky nsew {*}[::gridPadRight]
     grid $top.f.properties.blockSize                    -row 2 -column 1 -sticky nsew
     
-    if {0} {
-        
     if {$audioCallback >= 0} {
     
-    checkbutton $top.callback       -text [_ "Use Callbacks"] \
-                                    -variable ::pd_audio::audioCallback \
-                                    -takefocus 0
-    pack $top.callback              -side top -anchor w
+    ttk::label $top.f.properties.callbackLabel          {*}[::styleLabel] \
+                                                            -text [_ "Use Callbacks"]
+    ttk::checkbutton $top.f.properties.callback         {*}[::styleCheckButton] \
+                                                            -variable ::pd_audio::audioCallback \
+                                                            -takefocus 0
+    
+    grid $top.f.properties.callbackLabel                -row 3 -column 0 -sticky nsew {*}[::gridPadRight]
+    grid $top.f.properties.callback                     -row 3 -column 1 -sticky nsew
     
     }
+    
+    if {0} {
     
     if {$multiple > 1} {
         foreach e $audioIn  { ::pd_audio::_makeIn  $top [incr i] }
@@ -155,14 +162,14 @@ proc show {top \
         ::pd_audio::_makeOut $top 1
     }
     
-    bind  $top.sampleRate   <Return> { ::nextEntry %W }
-    bind  $top.delay        <Return> { ::nextEntry %W }
-    
-    focus $top.sampleRate
-    
-    $top.sampleRate selection range 0 end
-    
     }
+    
+    bind  $top.f.properties.sampleRate  <Return> { ::nextEntry %W }
+    bind  $top.f.properties.delay       <Return> { ::nextEntry %W }
+    
+    focus $top.f.properties.sampleRate
+    
+    $top.f.properties.sampleRate selection range 0 end
     
     bind $top <Destroy> { ::pd_menu::enableAudio }
         
@@ -185,7 +192,8 @@ proc _makeBlocksize {top} {
     set values {64 128 256 512 1024 2048}
     
     ttk::menubutton $top            {*}[::styleMenuButton] \
-                                    -text $::pd_audio::audioBlockSize
+                                    -text $::pd_audio::audioBlockSize \
+                                    -takefocus 0
     
     menu $top.menu
     $top configure                  -menu $top.menu

@@ -23,6 +23,8 @@ ttk::style configure PureData.TFrame
 ttk::style configure PureData.TLabelframe
 ttk::style configure PureData.TEntry
 ttk::style configure PureData.TMenubutton
+ttk::style configure PureData.TLabel
+ttk::style configure PureData.TCheckbutton
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -35,8 +37,10 @@ proc styleFontConsole {}        { return TkTextFont }
 
 proc styleFrame {}              { return "-style PureData.TFrame        -padding 10" }
 proc styleLabelFrame {}         { return "-style PureData.TLabelframe   -padding 10" }
-proc styleEntry {}              { return "-style PureData.TEntry"      }
-proc styleMenuButton {}         { return "-style PureData.TMenubutton" }
+proc styleEntry {}              { return "-style PureData.TEntry"       }
+proc styleMenuButton {}         { return "-style PureData.TMenubutton"  }
+proc styleLabel {}              { return "-style PureData.TLabel"       }
+proc styleCheckButton {}        { return "-style PureData.TCheckbutton" }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
