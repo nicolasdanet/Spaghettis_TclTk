@@ -110,7 +110,7 @@ proc show {top \
     
     ttk::frame      $top.f                              {*}[::styleFrame]
     ttk::labelframe $top.f.properties                   {*}[::styleLabelFrame] \
-                                                            -text [_ "Properties"]
+                                                            -text [_ "Settings"]
 
     pack $top.f                                         {*}[::packMain]
     pack $top.f.properties                              {*}[::packCategory]

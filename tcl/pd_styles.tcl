@@ -24,7 +24,7 @@ ttk::style configure PureData.TLabelframe
 ttk::style configure PureData.TEntry
 ttk::style configure PureData.TMenubutton
 ttk::style configure PureData.TLabel
-ttk::style configure PureData.TCheckbutton
+ttk::style configure PureData.TCheckbutton -padding 2
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
