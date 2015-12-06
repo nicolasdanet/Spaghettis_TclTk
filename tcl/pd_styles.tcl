@@ -19,8 +19,15 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+# Note that TEntry width option does not work (at least with ActiveTcl 8.5.18).
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+ttk::style configure PureData.TFrame
+ttk::style configure PureData.TLabelframe
+ttk::style configure PureData.TEntry
 ttk::style configure PureData.TMenubutton   -width -24
-ttk::style configure PureData.TEntry        -width -12
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -31,19 +38,22 @@ proc styleFontText {}           { return TkTextFont }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-
-proc styleMenuButton {}         { return "-style PureData.TMenubutton" }
-proc styleEntry {}              { return "-style PureData.TEntry"      }
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 proc styleMainFrame {}          { return "-padding 10" }
 proc styleFrame {}              { return "-padding 5"  }
+proc styleLabelFrame {}         { return "-padding 5"  }
 
-proc styleMainFrameDispose {}   { return "-side top -fill both -expand 1" }
-proc styleFrameDispose {}       { return "-side top -fill both -expand 1" }
-proc styleFrameDisposeNext {}   { return "-side top -fill both -expand 1 -pady {5 0}" }
+proc styleEntry {}              { return "-width 12"   }
+proc styleMenuButton {}         { return "-style PureData.TMenubutton" }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc packMain {}                { return "-side top     -fill both -expand 1" }
+proc packCategory {}            { return "-side top     -fill both -expand 1" }
+proc packNextCategory {}        { return "-side top     -fill both -expand 1 -pady {5 0}" }
+
+proc packCategoryLeft {}        { return "-side left    -fill both -expand 1" }
+proc packCategoryRight {}       { return "-side right   -fill both -expand 1" }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

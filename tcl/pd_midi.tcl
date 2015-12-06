@@ -75,12 +75,12 @@ proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     set noOutput [expr {[llength $midiOut] == 1}]
     
     ttk::frame      $top.f          {*}[::styleMainFrame]
-    ttk::labelframe $top.f.inputs   {*}[::styleFrame]   -text [_ "Inputs"]
-    ttk::labelframe $top.f.outputs  {*}[::styleFrame]   -text [_ "Outputs"]
+    ttk::labelframe $top.f.inputs   {*}[::styleLabelFrame]  -text [_ "Inputs"]
+    ttk::labelframe $top.f.outputs  {*}[::styleLabelFrame]  -text [_ "Outputs"]
 
-    pack $top.f                     {*}[::styleMainFrameDispose]
-    pack $top.f.inputs              {*}[::styleFrameDispose]
-    pack $top.f.outputs             {*}[::styleFrameDisposeNext]
+    pack $top.f                     {*}[::packMain]
+    pack $top.f.inputs              {*}[::packCategory]
+    pack $top.f.outputs             {*}[::packNextCategory]
     
     foreach e $midiIn  { if {$e ne "none" || $noInput}  { ::pd_midi::_makeIn  $top.f.inputs  [incr i] } }
     foreach e $midiOut { if {$e ne "none" || $noOutput} { ::pd_midi::_makeOut $top.f.outputs [incr j] } }
@@ -113,12 +113,12 @@ proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     wm geometry  $top [::rightNextTo .console]
     
     ttk::frame      $top.f          {*}[::styleMainFrame]
-    ttk::labelframe $top.f.inputs   {*}[::styleFrame]   -text [_ "Input Ports"]
-    ttk::labelframe $top.f.outputs  {*}[::styleFrame]   -text [_ "Output Ports"]
+    ttk::labelframe $top.f.inputs   {*}[::styleLabelFrame]  -text [_ "Input Ports"]
+    ttk::labelframe $top.f.outputs  {*}[::styleLabelFrame]  -text [_ "Output Ports"]
     
-    pack $top.f                     {*}[::styleMainFrameDispose]
-    pack $top.f.inputs              {*}[::styleFrameDispose]
-    pack $top.f.outputs             {*}[::styleFrameDisposeNext]
+    pack $top.f                     {*}[::packMain]
+    pack $top.f.inputs              {*}[::packCategory]
+    pack $top.f.outputs             {*}[::packNextCategory]
     
     ttk::entry $top.f.inputs.in     {*}[::styleEntry] \
                                     -textvariable ::pd_midi::midiAlsaIn \

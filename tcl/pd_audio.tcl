@@ -108,22 +108,38 @@ proc show {top \
     wm resizable $top 0 0
     wm geometry  $top [::rightNextTo .console]
     
-    label $top.sampleRateLabel      -text [_ "Sample Rate"]
-    entry $top.sampleRate           -textvariable ::pd_audio::audioSampleRate
+    ttk::frame      $top.f                              {*}[::styleMainFrame]
+    ttk::labelframe $top.f.properties                   {*}[::styleLabelFrame] \
+                                                        -text [_ "Properties"]
     
-    label $top.delayLabel           -text [_ "Delay in Milliseconds"]
-    entry $top.delay                -textvariable ::pd_audio::audioDelay
+    ttk::frame      $top.f.properties.left              {*}[::styleFrame]
+    ttk::frame      $top.f.properties.right             {*}[::styleFrame]
 
-    label $top.blockSizeLabel       -text [_ "Block Size"]
-    tk_optionMenu $top.blockSize    ::pd_audio::blockSize 64 128 256 512 1024 2048
-
-    pack $top.sampleRateLabel       -side top -anchor w
-    pack $top.sampleRate            -side top -anchor w
-    pack $top.delayLabel            -side top -anchor w
-    pack $top.delay                 -side top -anchor w
-    pack $top.blockSizeLabel        -side top -anchor w
-    pack $top.blockSize             -side top -anchor w
+    pack $top.f                                         {*}[::packMain]
+    pack $top.f.properties                              {*}[::packCategory]
+    pack $top.f.properties.left                         {*}[::packCategoryLeft]
+    pack $top.f.properties.right                        {*}[::packCategoryRight]
     
+    ttk::label $top.f.properties.left.sampleRateLabel   -text [_ "Sample Rate"]
+    ttk::entry $top.f.properties.right.sampleRate       {*}[::styleEntry] \
+                                                        -textvariable ::pd_audio::audioSampleRate
+    
+    ttk::label $top.f.properties.left.delayLabel        -text [_ "Delay in Milliseconds"]
+    ttk::entry $top.f.properties.right.delay            {*}[::styleEntry] \
+                                                        -textvariable ::pd_audio::audioDelay
+
+    ttk::label $top.f.properties.left.blockSizeLabel    -text [_ "Block Size"]
+    tk_optionMenu $top.f.properties.right.blockSize     ::pd_audio::blockSize 64 128 256 512 1024 2048
+
+    pack $top.f.properties.left.sampleRateLabel         -side top -fill x -expand 1
+    pack $top.f.properties.right.sampleRate             -side top -fill x -expand 1
+    pack $top.f.properties.left.delayLabel              -side top -fill x -expand 1
+    pack $top.f.properties.right.delay                  -side top -fill x -expand 1
+    pack $top.f.properties.left.blockSizeLabel          -side top -fill x -expand 1
+    pack $top.f.properties.right.blockSize              -side top -fill x -expand 1
+    
+    if {0} {
+        
     if {$audioCallback >= 0} {
     
     checkbutton $top.callback       -text [_ "Use Callbacks"] \
@@ -148,6 +164,8 @@ proc show {top \
     focus $top.sampleRate
     
     $top.sampleRate selection range 0 end
+    
+    }
     
     bind $top <Destroy> { ::pd_menu::enableAudio }
         

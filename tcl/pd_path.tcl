@@ -47,11 +47,11 @@ proc _create {} {
     wm geometry .path [format "=500x300%s" [::rightNextTo .console]]
     
     ttk::frame      .path.f             {*}[::styleMainFrame]
-    ttk::labelframe .path.f.paths       {*}[::styleFrame] \
+    ttk::labelframe .path.f.paths       {*}[::styleLabelFrame] \
                                         -text [_ [::ifAqua "Folders" "Directories"]]
     
-    pack            .path.f             {*}[::styleMainFrameDispose]
-    pack            .path.f.paths       {*}[::styleFrameDispose]
+    pack            .path.f             {*}[::packMain]
+    pack            .path.f.paths       {*}[::packCategory]
     
     listbox         .path.f.paths.list  -selectmode extended \
                                         -activestyle none \
