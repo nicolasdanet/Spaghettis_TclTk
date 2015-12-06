@@ -122,15 +122,17 @@ proc show {top \
     
     ttk::label $top.f.properties.left.sampleRateLabel   -text [_ "Sample Rate"]
     ttk::entry $top.f.properties.right.sampleRate       {*}[::styleEntry] \
+                                                        -width 12 \
                                                         -textvariable ::pd_audio::audioSampleRate
     
     ttk::label $top.f.properties.left.delayLabel        -text [_ "Delay in Milliseconds"]
     ttk::entry $top.f.properties.right.delay            {*}[::styleEntry] \
+                                                        -width 12 \
                                                         -textvariable ::pd_audio::audioDelay
 
     ttk::label $top.f.properties.left.blockSizeLabel    -text [_ "Block Size"]
-    tk_optionMenu $top.f.properties.right.blockSize     ::pd_audio::blockSize 64 128 256 512 1024 2048
-
+    _makeBlocksize $top.f.properties.right
+    
     pack $top.f.properties.left.sampleRateLabel         -side top -fill x -expand 1
     pack $top.f.properties.right.sampleRate             -side top -fill x -expand 1
     pack $top.f.properties.left.delayLabel              -side top -fill x -expand 1
@@ -176,6 +178,28 @@ proc closed {top} {
 
     ::pd_audio::_apply $top
     ::cancel $top
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _makeBlocksize {top} {
+    
+    variable audioBlockSize
+    
+    set values {64 128 256 512 1024 2048}
+    
+    ttk::menubutton $top.blockSize      {*}[::styleMenuButton] \
+                                        -text $::pd_audio::audioBlockSize
+    
+    menu $top.blockSize.menu
+    $top.blockSize configure            -menu $top.blockSize.menu
+    
+    foreach e $values {
+        $top.blockSize.menu add radiobutton -label "$e" \
+                                            -variable ::pd_audio::audioBlockSize \
+                                            -value $e
+    }
 }
 
 # ------------------------------------------------------------------------------------------------------------

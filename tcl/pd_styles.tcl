@@ -19,15 +19,10 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Note that TEntry width option does not work (at least with ActiveTcl 8.5.18).
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
 ttk::style configure PureData.TFrame
 ttk::style configure PureData.TLabelframe
 ttk::style configure PureData.TEntry
-ttk::style configure PureData.TMenubutton   -width -24
+ttk::style configure PureData.TMenubutton
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -38,11 +33,11 @@ proc styleFontText {}           { return TkTextFont }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc styleMainFrame {}          { return "-padding 10" }
-proc styleFrame {}              { return "-padding 5"  }
-proc styleLabelFrame {}         { return "-padding 5"  }
+proc styleMainFrame {}          { return "-style PureData.TFrame        -padding 10" }
+proc styleFrame {}              { return "-style PureData.TFrame        -padding 5"  }
+proc styleLabelFrame {}         { return "-style PureData.TLabelframe   -padding 10" }
 
-proc styleEntry {}              { return "-width 12"   }
+proc styleEntry {}              { return "-style PureData.TEntry"      }
 proc styleMenuButton {}         { return "-style PureData.TMenubutton" }
 
 # ------------------------------------------------------------------------------------------------------------
