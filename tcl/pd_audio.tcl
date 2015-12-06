@@ -109,34 +109,37 @@ proc show {top \
     wm geometry  $top [::rightNextTo .console]
     
     ttk::frame      $top.f                              {*}[::styleFrame]
-    ttk::labelframe $top.f.properties                   {*}[::styleLabelFrame] \
-                                                            -text [_ "Settings"]
-
+    ttk::labelframe $top.f.properties                   {*}[::styleLabelFrame]  -text [_ "Settings"]
+    ttk::labelframe $top.f.inputs                       {*}[::styleLabelFrame]  -text [_ "Inputs"]
+    ttk::labelframe $top.f.outputs                      {*}[::styleLabelFrame]  -text [_ "Outputs"]
+    
     pack $top.f                                         {*}[::packMain]
     pack $top.f.properties                              {*}[::packCategory]
+    pack $top.f.inputs                                  {*}[::packCategoryNext]
+    pack $top.f.outputs                                 {*}[::packCategoryNext]
     
     ttk::label $top.f.properties.sampleRateLabel        {*}[::styleLabel] \
                                                             -text [_ "Sample Rate"]
     ttk::entry $top.f.properties.sampleRate             {*}[::styleEntry] \
-                                                            -width 12 \
-                                                            -textvariable ::pd_audio::audioSampleRate
+                                                            -textvariable ::pd_audio::audioSampleRate \
+                                                            -width 8
     
     ttk::label $top.f.properties.delayLabel             {*}[::styleLabel] \
                                                             -text [_ "Delay in Milliseconds"]
     ttk::entry $top.f.properties.delay                  {*}[::styleEntry] \
-                                                            -width 12 \
-                                                            -textvariable ::pd_audio::audioDelay
+                                                            -textvariable ::pd_audio::audioDelay \
+                                                            -width 8
 
     ttk::label $top.f.properties.blockSizeLabel         {*}[::styleLabel] \
                                                             -text [_ "Block Size"]
     _makeBlocksize $top.f.properties.blockSize
     
-    grid $top.f.properties.sampleRateLabel              -row 0 -column 0 -sticky nsew {*}[::gridPadRight]
-    grid $top.f.properties.sampleRate                   -row 0 -column 1 -sticky nsew
-    grid $top.f.properties.delayLabel                   -row 1 -column 0 -sticky nsew {*}[::gridPadRight]
-    grid $top.f.properties.delay                        -row 1 -column 1 -sticky nsew
-    grid $top.f.properties.blockSizeLabel               -row 2 -column 0 -sticky nsew {*}[::gridPadRight]
-    grid $top.f.properties.blockSize                    -row 2 -column 1 -sticky nsew
+    grid $top.f.properties.sampleRateLabel              -row 0 -column 0 -sticky nsew
+    grid $top.f.properties.sampleRate                   -row 0 -column 2 -sticky nsew
+    grid $top.f.properties.delayLabel                   -row 1 -column 0 -sticky nsew
+    grid $top.f.properties.delay                        -row 1 -column 2 -sticky nsew
+    grid $top.f.properties.blockSizeLabel               -row 2 -column 0 -sticky nsew
+    grid $top.f.properties.blockSize                    -row 2 -column 2 -sticky nsew
     
     if {$audioCallback >= 0} {
     
@@ -146,23 +149,23 @@ proc show {top \
                                                             -variable ::pd_audio::audioCallback \
                                                             -takefocus 0
     
-    grid $top.f.properties.callbackLabel                -row 3 -column 0 -sticky nsew {*}[::gridPadRight]
-    grid $top.f.properties.callback                     -row 3 -column 1 -sticky nsew
+    grid $top.f.properties.callbackLabel                -row 3 -column 0 -sticky nsew
+    grid $top.f.properties.callback                     -row 3 -column 2 -sticky w
     
     }
-    
-    if {0} {
     
     if {$multiple > 1} {
-        foreach e $audioIn  { ::pd_audio::_makeIn  $top [incr i] }
-        foreach e $audioOut { ::pd_audio::_makeOut $top [incr j] }
+        foreach e $audioIn  { ::pd_audio::_makeIn  $top.f.inputs  [incr i] }
+        foreach e $audioOut { ::pd_audio::_makeOut $top.f.outputs [incr j] }
         
     } else {
-        ::pd_audio::_makeIn  $top 1
-        ::pd_audio::_makeOut $top 1
+        ::pd_audio::_makeIn  $top.f.inputs  1
+        ::pd_audio::_makeOut $top.f.outputs 1
     }
     
-    }
+    grid columnconfigure $top.f.properties  1 -weight 1
+    grid columnconfigure $top.f.inputs      1 -weight 1
+    grid columnconfigure $top.f.outputs     1 -weight 1
     
     bind  $top.f.properties.sampleRate  <Return> { ::nextEntry %W }
     bind  $top.f.properties.delay       <Return> { ::nextEntry %W }
@@ -215,15 +218,17 @@ proc _makeIn {top k} {
     variable audioInChannels
     variable audioInEnabled
     
-    set devicesLabel  [format "%s.inDevice%dLabel" $top $k]
-    set devices       [format "%s.inDevice%d" $top $k]
-    set channelsLabel [format "%s.inChannels%dLabel" $top $k]
-    set channels      [format "%s.inChannels%d" $top $k]
+    set slot     [format "%s.inSlot%d" $top $k]
+    set devices  [format "%s.inDevice%d" $top $k]
+    set channels [format "%s.inChannels%d" $top $k]
     
-    checkbutton $devicesLabel           -text [format "%s %d" [_ "Input"] $k] \
-                                        -variable ::pd_audio::audioInEnabled($k) \
-                                        -takefocus 0
-    menubutton $devices                 -text [lindex $audioIn $audioInDevice($k)]
+    ttk::checkbutton $slot              {*}[::styleCheckButton] \
+                                            -variable ::pd_audio::audioInEnabled($k) \
+                                            -takefocus 0
+    ttk::menubutton $devices            {*}[::styleMenuButton] \
+                                            -text [lindex $audioIn $audioInDevice($k)] \
+                                            -width -24 \
+                                            -takefocus 0 
     
     menu $devices.menu
     $devices configure                  -menu $devices.menu
@@ -238,14 +243,16 @@ proc _makeIn {top k} {
         incr i
     }
     
-    label $channelsLabel                -text [_ "Channels"]
-    entry $channels                     -textvariable ::pd_audio::audioInChannels($k) \
+    ttk::entry $channels                {*}[::styleEntry] \
+                                        -textvariable ::pd_audio::audioInChannels($k) \
+                                        -width 3 \
                                         -state disabled
     
-    pack $devicesLabel                  -side top -anchor w
-    pack $devices                       -side top -anchor w
-    pack $channelsLabel                 -side top -anchor w
-    pack $channels                      -side top -anchor w
+    set row [expr {$k - 1}]
+    
+    grid $slot                          -row $row -column 0 -sticky nsew
+    grid $devices                       -row $row -column 1 -sticky nsew -padx {0 5}
+    grid $channels                      -row $row -column 2 -sticky nsew
 }
 
 proc _makeOut {top k} {
@@ -255,15 +262,17 @@ proc _makeOut {top k} {
     variable audioOutChannels
     variable audioOutEnabled
     
-    set devicesLabel  [format "%s.outDevice%dLabel" $top $k]
-    set devices       [format "%s.outDevice%d" $top $k]
-    set channelsLabel [format "%s.outChannels%dLabel" $top $k]
-    set channels      [format "%s.outChannels%d" $top $k]
+    set slot     [format "%s.outSlot%d" $top $k]
+    set devices  [format "%s.outDevice%d" $top $k]
+    set channels [format "%s.outChannels%d" $top $k]
     
-    checkbutton $devicesLabel           -text [format "%s %d" [_ "Output"] $k] \
+    ttk::checkbutton $slot              {*}[::styleCheckButton] \
                                         -variable ::pd_audio::audioOutEnabled($k) \
                                         -takefocus 0
-    menubutton $devices                 -text [lindex $audioOut $audioOutDevice($k)]
+    ttk::menubutton $devices            {*}[::styleMenuButton] \
+                                        -text [lindex $audioOut $audioOutDevice($k)] \
+                                        -width -24 \
+                                        -takefocus 0
     
     menu $devices.menu
     $devices configure                  -menu $devices.menu
@@ -278,14 +287,16 @@ proc _makeOut {top k} {
         incr i
     }
     
-    label $channelsLabel                -text [_ "Channels"]
-    entry $channels                     -textvariable ::pd_audio::audioOutChannels($k) \
+    ttk::entry $channels                {*}[::styleEntry] \
+                                        -textvariable ::pd_audio::audioOutChannels($k) \
+                                        -width 3 \
                                         -state disabled
     
-    pack $devicesLabel                  -side top -anchor w
-    pack $devices                       -side top -anchor w
-    pack $channelsLabel                 -side top -anchor w
-    pack $channels                      -side top -anchor w
+    set row [expr {$k - 1}]
+    
+    grid $slot                          -row $row -column 0 -sticky nsew
+    grid $devices                       -row $row -column 1 -sticky nsew -padx {0 5}
+    grid $channels                      -row $row -column 2 -sticky nsew
 }
 
 # ------------------------------------------------------------------------------------------------------------
