@@ -14,17 +14,31 @@
 
 # ( http://wiki.tcl-lang.org/14796 ).
 # ( http://wiki.tcl-lang.org/37973 ).
+# ( http://www.tkdocs.com/tutorial/styles.html ).
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc styleFontConsole {}    { return TkTextFont }
-proc styleFontText {}       { return TkTextFont }
+ttk::style configure PureData.TMenubutton   -width -24
+ttk::style configure PureData.TEntry        -width -12
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc styleMainFrame {}          { return "-padding 15" }
+proc styleFontConsole {}        { return TkTextFont }
+proc styleFontText {}           { return TkTextFont }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+
+proc styleMenuButton {}         { return "-style PureData.TMenubutton" }
+proc styleEntry {}              { return "-style PureData.TEntry"      }
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc styleMainFrame {}          { return "-padding 10" }
 proc styleFrame {}              { return "-padding 5"  }
 
 proc styleMainFrameDispose {}   { return "-side top -fill both -expand 1" }

@@ -48,7 +48,7 @@ proc _create {} {
     
     ttk::frame      .path.f             {*}[::styleMainFrame]
     ttk::labelframe .path.f.paths       {*}[::styleFrame] \
-                                            -text [_ [::ifAqua "Folders" "Directories"]]
+                                        -text [_ [::ifAqua "Folders" "Directories"]]
     
     pack            .path.f             {*}[::styleMainFrameDispose]
     pack            .path.f.paths       {*}[::styleFrameDispose]

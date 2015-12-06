@@ -77,7 +77,7 @@ proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     ttk::frame      $top.f          {*}[::styleMainFrame]
     ttk::labelframe $top.f.inputs   {*}[::styleFrame]   -text [_ "Inputs"]
     ttk::labelframe $top.f.outputs  {*}[::styleFrame]   -text [_ "Outputs"]
-    
+
     pack $top.f                     {*}[::styleMainFrameDispose]
     pack $top.f.inputs              {*}[::styleFrameDispose]
     pack $top.f.outputs             {*}[::styleFrameDisposeNext]
@@ -120,12 +120,12 @@ proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     pack $top.f.inputs              {*}[::styleFrameDispose]
     pack $top.f.outputs             {*}[::styleFrameDisposeNext]
     
-    ttk::entry $top.f.inputs.in     -textvariable ::pd_midi::midiAlsaIn \
-                                    -width -12 \
+    ttk::entry $top.f.inputs.in     {*}[::styleEntry] \
+                                    -textvariable ::pd_midi::midiAlsaIn \
                                     -state disabled
     
-    ttk::entry $top.f.outputs.out   -textvariable ::pd_midi::midiAlsaOut \
-                                    -width -12 \
+    ttk::entry $top.f.outputs.out   {*}[::styleEntry] \
+                                    -textvariable ::pd_midi::midiAlsaOut \
                                     -state disabled
                         
     pack $top.f.inputs.in           -side top -fill x -expand 1
@@ -152,8 +152,8 @@ proc _makeIn {top k} {
     
     set devices [format "%s.inDevice%d" $top $k]
     
-    ttk::menubutton $devices            -text [lindex $midiIn $midiInDevice($k)] \
-                                        -width -24
+    ttk::menubutton $devices            {*}[::styleMenuButton] \
+                                        -text [lindex $midiIn $midiInDevice($k)]
     
     menu $devices.menu
     $devices configure                  -menu $devices.menu
@@ -178,8 +178,8 @@ proc _makeOut {top k} {
     
     set devices [format "%s.outDevice%d" $top $k]
     
-    ttk::menubutton $devices            -text [lindex $midiOut $midiOutDevice($k)] \
-                                        -width -24
+    ttk::menubutton $devices            {*}[::styleMenuButton] \
+                                        -text [lindex $midiOut $midiOutDevice($k)]
     
     menu $devices.menu
     $devices configure                  -menu $devices.menu
