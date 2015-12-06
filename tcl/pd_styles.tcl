@@ -27,28 +27,25 @@ ttk::style configure PureData.TMenubutton
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc styleFontConsole {}        { return TkTextFont }
 proc styleFontText {}           { return TkTextFont }
+proc styleFontConsole {}        { return TkTextFont }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc styleMainFrame {}          { return "-style PureData.TFrame        -padding 10" }
-proc styleFrame {}              { return "-style PureData.TFrame        -padding 5"  }
+proc styleFrame {}              { return "-style PureData.TFrame        -padding 10" }
 proc styleLabelFrame {}         { return "-style PureData.TLabelframe   -padding 10" }
-
 proc styleEntry {}              { return "-style PureData.TEntry"      }
 proc styleMenuButton {}         { return "-style PureData.TMenubutton" }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc packMain {}                { return "-side top     -fill both -expand 1" }
-proc packCategory {}            { return "-side top     -fill both -expand 1" }
-proc packNextCategory {}        { return "-side top     -fill both -expand 1 -pady {5 0}" }
+proc packMain {}                { return "-side top -fill both -expand 1" }
+proc packCategory {}            { return "-side top -fill both -expand 1" }
+proc packNextCategory {}        { return "-side top -fill both -expand 1 -pady {5 0}" }
 
-proc packCategoryLeft {}        { return "-side left    -fill both -expand 1" }
-proc packCategoryRight {}       { return "-side right   -fill both -expand 1" }
+proc gridPadRight {}            { return "-padx {0 20}" }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

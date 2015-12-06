@@ -46,7 +46,7 @@ proc _create {} {
     wm minsize  .path 400 300
     wm geometry .path [format "=500x300%s" [::rightNextTo .console]]
     
-    ttk::frame      .path.f             {*}[::styleMainFrame]
+    ttk::frame      .path.f             {*}[::styleFrame]
     ttk::labelframe .path.f.paths       {*}[::styleLabelFrame] \
                                         -text [_ [::ifAqua "Folders" "Directories"]]
     

@@ -108,37 +108,32 @@ proc show {top \
     wm resizable $top 0 0
     wm geometry  $top [::rightNextTo .console]
     
-    ttk::frame      $top.f                              {*}[::styleMainFrame]
+    ttk::frame      $top.f                              {*}[::styleFrame]
     ttk::labelframe $top.f.properties                   {*}[::styleLabelFrame] \
                                                         -text [_ "Properties"]
-    
-    ttk::frame      $top.f.properties.left              {*}[::styleFrame]
-    ttk::frame      $top.f.properties.right             {*}[::styleFrame]
 
     pack $top.f                                         {*}[::packMain]
     pack $top.f.properties                              {*}[::packCategory]
-    pack $top.f.properties.left                         {*}[::packCategoryLeft]
-    pack $top.f.properties.right                        {*}[::packCategoryRight]
     
-    ttk::label $top.f.properties.left.sampleRateLabel   -text [_ "Sample Rate"]
-    ttk::entry $top.f.properties.right.sampleRate       {*}[::styleEntry] \
+    ttk::label $top.f.properties.sampleRateLabel        -text [_ "Sample Rate"]
+    ttk::entry $top.f.properties.sampleRate             {*}[::styleEntry] \
                                                         -width 12 \
                                                         -textvariable ::pd_audio::audioSampleRate
     
-    ttk::label $top.f.properties.left.delayLabel        -text [_ "Delay in Milliseconds"]
-    ttk::entry $top.f.properties.right.delay            {*}[::styleEntry] \
+    ttk::label $top.f.properties.delayLabel             -text [_ "Delay in Milliseconds"]
+    ttk::entry $top.f.properties.delay                  {*}[::styleEntry] \
                                                         -width 12 \
                                                         -textvariable ::pd_audio::audioDelay
 
-    ttk::label $top.f.properties.left.blockSizeLabel    -text [_ "Block Size"]
-    _makeBlocksize $top.f.properties.right
+    ttk::label $top.f.properties.blockSizeLabel         -text [_ "Block Size"]
+    _makeBlocksize $top.f.properties.blockSize
     
-    pack $top.f.properties.left.sampleRateLabel         -side top -fill x -expand 1
-    pack $top.f.properties.right.sampleRate             -side top -fill x -expand 1
-    pack $top.f.properties.left.delayLabel              -side top -fill x -expand 1
-    pack $top.f.properties.right.delay                  -side top -fill x -expand 1
-    pack $top.f.properties.left.blockSizeLabel          -side top -fill x -expand 1
-    pack $top.f.properties.right.blockSize              -side top -fill x -expand 1
+    grid $top.f.properties.sampleRateLabel              -row 0 -column 0 -sticky nsew {*}[::gridPadRight]
+    grid $top.f.properties.sampleRate                   -row 0 -column 1 -sticky nsew
+    grid $top.f.properties.delayLabel                   -row 1 -column 0 -sticky nsew {*}[::gridPadRight]
+    grid $top.f.properties.delay                        -row 1 -column 1 -sticky nsew
+    grid $top.f.properties.blockSizeLabel               -row 2 -column 0 -sticky nsew {*}[::gridPadRight]
+    grid $top.f.properties.blockSize                    -row 2 -column 1 -sticky nsew
     
     if {0} {
         
@@ -189,16 +184,16 @@ proc _makeBlocksize {top} {
     
     set values {64 128 256 512 1024 2048}
     
-    ttk::menubutton $top.blockSize      {*}[::styleMenuButton] \
-                                        -text $::pd_audio::audioBlockSize
+    ttk::menubutton $top            {*}[::styleMenuButton] \
+                                    -text $::pd_audio::audioBlockSize
     
-    menu $top.blockSize.menu
-    $top.blockSize configure            -menu $top.blockSize.menu
+    menu $top.menu
+    $top configure                  -menu $top.menu
     
     foreach e $values {
-        $top.blockSize.menu add radiobutton -label "$e" \
-                                            -variable ::pd_audio::audioBlockSize \
-                                            -value $e
+        $top.menu add radiobutton   -label "$e" \
+                                    -variable ::pd_audio::audioBlockSize \
+                                    -value $e
     }
 }
 
