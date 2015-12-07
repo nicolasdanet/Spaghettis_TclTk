@@ -93,7 +93,7 @@ proc _create {top name size flags} {
     ttk::label $top.f.properties.drawLabel          {*}[::styleLabel] \
                                                         -text [_ "Draw With"]
     
-    ::createMenuByIndex $top.f.properties.draw      $shapes ::pd_array::arrayDraw($top) "-8"
+    ::createMenuByIndex $top.f.properties.draw      $shapes ::pd_array::arrayDraw($top) -width -8
     
     grid $top.f.properties.nameLabel                -row 0 -column 0 -sticky nsew
     grid $top.f.properties.name                     -row 0 -column 1 -sticky nsew

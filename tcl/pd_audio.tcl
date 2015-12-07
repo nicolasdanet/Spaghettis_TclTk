@@ -136,7 +136,7 @@ proc show {top \
     
     set values {64 128 256 512 1024 2048}
     
-    ::createMenuByValue $top.f.properties.blockSize     $values ::pd_audio::audioBlockSize "6"
+    ::createMenuByValue $top.f.properties.blockSize     $values ::pd_audio::audioBlockSize -width 6
     
     grid $top.f.properties.sampleRateLabel              -row 0 -column 0 -sticky nsew
     grid $top.f.properties.sampleRate                   -row 0 -column 2 -sticky nsew
@@ -212,7 +212,7 @@ proc _makeIn {top k} {
                                             -variable ::pd_audio::audioInEnabled($k) \
                                             -takefocus 0
     
-    ::createMenuByIndex $devices        $audioIn ::pd_audio::audioInDevice($k)
+    ::createMenuByIndex $devices        $audioIn ::pd_audio::audioInDevice($k) -width -24
         
     ttk::entry $channels                {*}[::styleEntry] \
                                         -textvariable ::pd_audio::audioInChannels($k) \
@@ -241,7 +241,7 @@ proc _makeOut {top k} {
                                         -variable ::pd_audio::audioOutEnabled($k) \
                                         -takefocus 0
 
-    ::createMenuByIndex $devices        $audioOut ::pd_audio::audioOutDevice($k)
+    ::createMenuByIndex $devices        $audioOut ::pd_audio::audioOutDevice($k) -width -24
     
     ttk::entry $channels                {*}[::styleEntry] \
                                         -textvariable ::pd_audio::audioOutChannels($k) \

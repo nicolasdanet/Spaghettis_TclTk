@@ -160,7 +160,7 @@ proc _makeIn {top k} {
     
     set devices [format "%s.inDevice%d" $top $k]
     
-    ::createMenuByIndex $devices $midiIn ::pd_midi::midiInDevice($k)
+    ::createMenuByIndex $devices $midiIn ::pd_midi::midiInDevice($k) -width -24
     
     pack $devices -side top -fill x -expand 1
 }
@@ -172,7 +172,7 @@ proc _makeOut {top k} {
     
     set devices [format "%s.outDevice%d" $top $k]
     
-    ::createMenuByIndex $devices $midiOut ::pd_midi::midiOutDevice($k)
+    ::createMenuByIndex $devices $midiOut ::pd_midi::midiOutDevice($k) -width -24
     
     pack $devices -side top -fill x -expand 1
 }
