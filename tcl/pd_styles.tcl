@@ -25,6 +25,7 @@ ttk::style configure PureData.TEntry
 ttk::style configure PureData.TMenubutton
 ttk::style configure PureData.TLabel
 ttk::style configure PureData.TCheckbutton  -padding 3
+ttk::style configure PureData.TRadiobutton
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -41,6 +42,7 @@ proc styleEntry {}              { return "-style PureData.TEntry"       }
 proc styleMenuButton {}         { return "-style PureData.TMenubutton"  }
 proc styleLabel {}              { return "-style PureData.TLabel"       }
 proc styleCheckButton {}        { return "-style PureData.TCheckbutton" }
+proc styleRadioButton {}        { return "-style PureData.TRadiobutton" }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------

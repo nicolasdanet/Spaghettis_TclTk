@@ -54,7 +54,7 @@ proc _create {top name size flags} {
     wm title $top [_ "Array"]
     wm group $top .
     
-    wm resizable $top 0 0
+    # wm resizable $top 0 0
     wm geometry  $top [::rightNextTo $::var(windowFocused)]
     
     set arrayName($top)         [::rauteToDollar $name]
@@ -63,48 +63,66 @@ proc _create {top name size flags} {
     set arraySave($top)         [expr {$flags & 1}]
     set arrayDraw($top)         [expr {($flags & 6) >> 1}]
     
-    label $top.nameLabel        -text [_ "Name"]
-    entry $top.name             -textvariable ::pd_array::arrayName($top)
-    
-    label $top.sizeLabel        -text [_ "Size"]
-    entry $top.size             -textvariable ::pd_array::arraySize($top)
+    ttk::frame      $top.f                      {*}[::styleFrame]
+    ttk::labelframe $top.f.properties           {*}[::styleLabelFrame]  -text [_ "Properties"]
 
-    checkbutton $top.save       -text [_ "Save contents"] \
-                                -variable ::pd_array::arraySave($top) \
-                                -takefocus 0
+    pack $top.f                                 {*}[::packMain]
+    pack $top.f.properties                      {*}[::packCategory]
     
-    radiobutton $top.points     -text [_ "Polygon"] \
-                                -variable ::pd_array::arrayDraw($top) \
-                                -takefocus 0 \
-                                -value 0 
+    ttk::label $top.f.properties.nameLabel      {*}[::styleLabel] \
+                                                    -text [_ "Name"]
+    ttk::entry $top.f.properties.name           {*}[::styleEntry] \
+                                                    -textvariable ::pd_array::arrayName($top) \
+                                                    -width 12
+
+    ttk::label $top.f.properties.sizeLabel      {*}[::styleLabel] \
+                                                    -text [_ "Size"]
+    ttk::entry $top.f.properties.size           {*}[::styleEntry] \
+                                                    -textvariable ::pd_array::arraySize($top) \
+                                                    -width 12
+
+    ttk::label $top.f.properties.saveLabel      {*}[::styleLabel] \
+                                                    -text [_ "Save contents"]
+    ttk::checkbutton $top.f.properties.save     {*}[::styleCheckButton] \
+                                                    -variable ::pd_array::arraySave($top) \
+                                                    -takefocus 0
+
+    
+        
+    ttk::radiobutton $top.f.properties.points   {*}[::styleRadioButton] \
+                                                    -text [_ "Polygon"] \
+                                                    -variable ::pd_array::arrayDraw($top) \
+                                                    -takefocus 0 \
+                                                    -value 0 
                                 
-    radiobutton $top.polygon    -text [_ "Points"] \
-                                -variable ::pd_array::arrayDraw($top) \
-                                -takefocus 0 \
-                                -value 1
+    ttk::radiobutton $top.f.properties.polygon  {*}[::styleRadioButton] \
+                                                    -text [_ "Points"] \
+                                                    -variable ::pd_array::arrayDraw($top) \
+                                                    -takefocus 0 \
+                                                    -value 1
                                 
-    radiobutton $top.bezier     -text [_ "Bezier"] \
-                                -variable ::pd_array::arrayDraw($top) \
-                                -takefocus 0 \
-                                -value 2 
+    ttk::radiobutton $top.f.properties.bezier   {*}[::styleRadioButton] \
+                                                    -text [_ "Bezier Curve"] \
+                                                    -variable ::pd_array::arrayDraw($top) \
+                                                    -takefocus 0 \
+                                                    -value 2 
     
-    pack $top.nameLabel         -side top -anchor w                           
-    pack $top.name              -side top -anchor w
-    pack $top.sizeLabel         -side top -anchor w
-    pack $top.size              -side top -anchor w 
+    grid $top.f.properties.nameLabel            -row 0 -column 0 -sticky nsew
+    grid $top.f.properties.name                 -row 0 -column 1 -sticky nsew
+    grid $top.f.properties.sizeLabel            -row 1 -column 0 -sticky nsew
+    grid $top.f.properties.size                 -row 1 -column 1 -sticky nsew
+    grid $top.f.properties.saveLabel            -row 2 -column 0 -sticky nsew
+    grid $top.f.properties.save                 -row 2 -column 1 -sticky nsew
+    grid $top.f.properties.points               -row 3 -column 1 -sticky nsew
+    grid $top.f.properties.polygon              -row 4 -column 1 -sticky nsew
+    grid $top.f.properties.bezier               -row 5 -column 1 -sticky nsew
     
-    pack $top.save              -side top -anchor w
+    bind $top.f.properties.name <Return> { ::nextEntry %W }
+    bind $top.f.properties.size <Return> { ::nextEntry %W }
     
-    pack $top.points            -side top -anchor w
-    pack $top.polygon           -side top -anchor w
-    pack $top.bezier            -side top -anchor w
+    focus $top.f.properties.name
     
-    bind $top.name <Return> { ::nextEntry %W }
-    bind $top.size <Return> { ::nextEntry %W }
-    
-    focus $top.name
-    
-    $top.name selection range 0 end
+    $top.f.properties.name selection range 0 end
     
     wm protocol $top WM_DELETE_WINDOW   "::pd_array::closed $top"
 }
