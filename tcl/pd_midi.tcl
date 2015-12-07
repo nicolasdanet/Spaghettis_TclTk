@@ -160,24 +160,9 @@ proc _makeIn {top k} {
     
     set devices [format "%s.inDevice%d" $top $k]
     
-    ttk::menubutton $devices            {*}[::styleMenuButton] \
-                                        -width -20 \
-                                        -text [lindex $midiIn $midiInDevice($k)]
+    ::createMenuByIndex $devices "-20" $midiIn ::pd_midi::midiInDevice($k)
     
-    menu $devices.menu
-    $devices configure                  -menu $devices.menu
-    
-    set i 0
-    
-    foreach e $midiIn {
-        $devices.menu add radiobutton   -label "$e" \
-                                        -variable ::pd_midi::midiInDevice($k) \
-                                        -value $i \
-                                        -command [list $devices configure -text [lindex $midiIn $i]]
-        incr i
-    }
-    
-    pack $devices                       -side top -fill x -expand 1
+    pack $devices -side top -fill x -expand 1
 }
 
 proc _makeOut {top k} {
@@ -187,24 +172,9 @@ proc _makeOut {top k} {
     
     set devices [format "%s.outDevice%d" $top $k]
     
-    ttk::menubutton $devices            {*}[::styleMenuButton] \
-                                            -width -20 \
-                                            -text [lindex $midiOut $midiOutDevice($k)]
+    ::createMenuByIndex $devices "-20" $midiOut ::pd_midi::midiOutDevice($k)
     
-    menu $devices.menu
-    $devices configure                  -menu $devices.menu
-    
-    set i 0
-    
-    foreach e $midiOut {
-        $devices.menu add radiobutton   -label "$e" \
-                                        -variable ::pd_midi::midiOutDevice($k) \
-                                        -value $i \
-                                        -command [list $devices configure -text [lindex $midiOut $i]]
-        incr i
-    }
-    
-    pack $devices                       -side top -fill x -expand 1
+    pack $devices -side top -fill x -expand 1
 }
 
 # ------------------------------------------------------------------------------------------------------------

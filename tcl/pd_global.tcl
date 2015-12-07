@@ -164,3 +164,31 @@ proc _ {s} { return $s }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
+
+# Note that the name parameter must be fully qualified.
+
+proc createMenuByIndex {top width values name} {
+
+    upvar $name v
+    
+    ttk::menubutton $top            {*}[::styleMenuButton] \
+                                        -width $width \
+                                        -text [lindex $values $v] \
+                                        -takefocus 0
+    
+    menu $top.menu
+    $top configure                  -menu $top.menu
+    
+    set i 0
+    
+    foreach e $values {
+        $top.menu add radiobutton   -label "$e" \
+                                    -variable $name \
+                                    -value $i \
+                                    -command [list $top configure -text [lindex $values $i]]
+        incr i
+    }
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------

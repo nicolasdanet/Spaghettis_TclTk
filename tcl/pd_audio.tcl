@@ -231,24 +231,9 @@ proc _makeIn {top k} {
     ttk::checkbutton $slot              {*}[::styleCheckButton] \
                                             -variable ::pd_audio::audioInEnabled($k) \
                                             -takefocus 0
-    ttk::menubutton $devices            {*}[::styleMenuButton] \
-                                            -text [lindex $audioIn $audioInDevice($k)] \
-                                            -width -20 \
-                                            -takefocus 0 
     
-    menu $devices.menu
-    $devices configure                  -menu $devices.menu
-    
-    set i 0
-    
-    foreach e $audioIn {
-        $devices.menu add radiobutton   -label "$e" \
-                                        -variable ::pd_audio::audioInDevice($k) \
-                                        -value $i \
-                                        -command [list $devices configure -text [lindex $audioIn $i]]
-        incr i
-    }
-    
+    ::createMenuByIndex $devices        "-20" $audioIn ::pd_audio::audioInDevice($k)
+        
     ttk::entry $channels                {*}[::styleEntry] \
                                         -textvariable ::pd_audio::audioInChannels($k) \
                                         -width 3 \
@@ -275,23 +260,8 @@ proc _makeOut {top k} {
     ttk::checkbutton $slot              {*}[::styleCheckButton] \
                                         -variable ::pd_audio::audioOutEnabled($k) \
                                         -takefocus 0
-    ttk::menubutton $devices            {*}[::styleMenuButton] \
-                                        -text [lindex $audioOut $audioOutDevice($k)] \
-                                        -width -20 \
-                                        -takefocus 0
-    
-    menu $devices.menu
-    $devices configure                  -menu $devices.menu
-    
-    set i 0
-    
-    foreach e $audioOut {
-        $devices.menu add radiobutton   -label "$e" \
-                                        -variable ::pd_audio::audioOutDevice($k) \
-                                        -value $i \
-                                        -command [list $devices configure -text [lindex $audioOut $i]]
-        incr i
-    }
+
+    ::createMenuByIndex $devices        "-20" $audioOut ::pd_audio::audioOutDevice($k)
     
     ttk::entry $channels                {*}[::styleEntry] \
                                         -textvariable ::pd_audio::audioOutChannels($k) \

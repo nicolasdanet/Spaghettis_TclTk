@@ -93,25 +93,8 @@ proc _create {top name size flags} {
     ttk::label $top.f.properties.drawLabel          {*}[::styleLabel] \
                                                         -text [_ "Draw With"]
     
-    ttk::menubutton $top.f.properties.draw          {*}[::styleMenuButton] \
-                                                        -text [lindex $shapes $::pd_array::arrayDraw($top)] \
-                                                        -takefocus 0 \
-                                                        -width 8
+    ::createMenuByIndex $top.f.properties.draw      "-8" $shapes ::pd_array::arrayDraw($top)
     
-    menu $top.f.properties.draw.menu
-    $top.f.properties.draw configure                -menu $top.f.properties.draw.menu
-    
-    set i 0
-    
-    foreach e $shapes {
-       $top.f.properties.draw.menu add radiobutton  -label "$e" \
-                                                    -variable ::pd_array::arrayDraw($top) \
-                                                    -value $i \
-                                                    -command [list $top.f.properties.draw configure \
-                                                    -text [lindex $shapes $i]]
-        incr i
-    }
-
     grid $top.f.properties.nameLabel                -row 0 -column 0 -sticky nsew
     grid $top.f.properties.name                     -row 0 -column 1 -sticky nsew
     grid $top.f.properties.sizeLabel                -row 1 -column 0 -sticky nsew
