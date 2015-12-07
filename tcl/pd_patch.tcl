@@ -216,11 +216,7 @@ proc _reflectEditmode {top} {
     
     set title [::pd_patch::getTitle $top]
     
-    if {$patchIsEditMode($top)} { 
-        wm title $top "$title $suffix" 
-    } else {
-        wm title $top "$title"
-    }
+    if {$patchIsEditMode($top)} { wm title $top "$title $suffix" } else { wm title $top "$title" }
 }
 
 # ------------------------------------------------------------------------------------------------------------
