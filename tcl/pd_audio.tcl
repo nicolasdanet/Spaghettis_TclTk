@@ -106,6 +106,7 @@ proc show {top \
     wm group $top .
     
     wm resizable $top 0 0
+    wm minsize   $top 300 150
     wm geometry  $top [::rightNextTo .console]
     
     ttk::frame      $top.f                              {*}[::styleFrame]

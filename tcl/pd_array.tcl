@@ -54,7 +54,8 @@ proc _create {top name size flags} {
     wm title $top [_ "Array"]
     wm group $top .
     
-    # wm resizable $top 0 0
+    wm resizable $top 0 0
+    wm minsize   $top 300 150
     wm geometry  $top [::rightNextTo $::var(windowFocused)]
     
     set arrayName($top)         [::rauteToDollar $name]
@@ -76,21 +77,22 @@ proc _create {top name size flags} {
                                                     -width 12
 
     ttk::label $top.f.properties.sizeLabel      {*}[::styleLabel] \
-                                                    -text [_ "Size"]
+                                                    -text [_ "Array Size"]
     ttk::entry $top.f.properties.size           {*}[::styleEntry] \
                                                     -textvariable ::pd_array::arraySize($top) \
                                                     -width 12
 
     ttk::label $top.f.properties.saveLabel      {*}[::styleLabel] \
-                                                    -text [_ "Save contents"]
+                                                    -text [_ "Save Contents"]
     ttk::checkbutton $top.f.properties.save     {*}[::styleCheckButton] \
                                                     -variable ::pd_array::arraySave($top) \
                                                     -takefocus 0
 
-    
-        
+    ttk::label $top.f.properties.drawLabel      {*}[::styleLabel] \
+                                                    -text [_ "Draw With"]
+                                                    
     ttk::radiobutton $top.f.properties.points   {*}[::styleRadioButton] \
-                                                    -text [_ "Polygon"] \
+                                                    -text [_ "Polygons"] \
                                                     -variable ::pd_array::arrayDraw($top) \
                                                     -takefocus 0 \
                                                     -value 0 
@@ -102,7 +104,7 @@ proc _create {top name size flags} {
                                                     -value 1
                                 
     ttk::radiobutton $top.f.properties.bezier   {*}[::styleRadioButton] \
-                                                    -text [_ "Bezier Curve"] \
+                                                    -text [_ "Bezier Curves"] \
                                                     -variable ::pd_array::arrayDraw($top) \
                                                     -takefocus 0 \
                                                     -value 2 
@@ -113,9 +115,12 @@ proc _create {top name size flags} {
     grid $top.f.properties.size                 -row 1 -column 1 -sticky nsew
     grid $top.f.properties.saveLabel            -row 2 -column 0 -sticky nsew
     grid $top.f.properties.save                 -row 2 -column 1 -sticky nsew
+    grid $top.f.properties.drawLabel            -row 3 -column 0 -sticky nsew
     grid $top.f.properties.points               -row 3 -column 1 -sticky nsew
     grid $top.f.properties.polygon              -row 4 -column 1 -sticky nsew
     grid $top.f.properties.bezier               -row 5 -column 1 -sticky nsew
+    
+    grid columnconfigure $top.f.properties 0 -weight 1
     
     bind $top.f.properties.name <Return> { ::nextEntry %W }
     bind $top.f.properties.size <Return> { ::nextEntry %W }
