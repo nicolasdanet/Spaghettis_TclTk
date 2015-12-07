@@ -187,6 +187,8 @@ proc _apply {top} {
     variable midiInDevice
     variable midiOutDevice
     
+    _forceValues
+    
     ::pd_connect::pdsend "pd midi-dialog \
             $midiInDevice(1) \
             $midiInDevice(2) \
@@ -210,6 +212,20 @@ proc _apply {top} {
             $midiAlsaOut"
     
     ::pd_connect::pdsend "pd save-preferences"
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _forceValues {} {
+
+    variable midiAlsaIn
+    variable midiAlsaOut
+    
+    set midiAlsaIn   [::ifInteger $midiAlsaIn 0]
+    set midiAlsaIn   [::tcl::mathfunc::max $midiAlsaIn 0]
+    set midiAlsaOut  [::ifInteger $midiAlsaOut 0]
+    set midiAlsaOut  [::tcl::mathfunc::max $midiAlsaOut 0]
 }
 
 # ------------------------------------------------------------------------------------------------------------
