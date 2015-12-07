@@ -95,7 +95,8 @@ proc _create {top name size flags} {
     
     ttk::menubutton $top.f.properties.draw          {*}[::styleMenuButton] \
                                                         -text [lindex $shapes $::pd_array::arrayDraw($top)] \
-                                                        -takefocus 0
+                                                        -takefocus 0 \
+                                                        -width 8
     
     menu $top.f.properties.draw.menu
     $top.f.properties.draw configure                -menu $top.f.properties.draw.menu

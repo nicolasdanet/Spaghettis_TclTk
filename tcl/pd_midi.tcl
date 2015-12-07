@@ -112,26 +112,32 @@ proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     wm resizable $top 0 0
     wm geometry  $top [::rightNextTo .console]
     
-    ttk::frame      $top.f          {*}[::styleFrame]
-    ttk::labelframe $top.f.inputs   {*}[::styleLabelFrame]  -text [_ "Input Ports"]
-    ttk::labelframe $top.f.outputs  {*}[::styleLabelFrame]  -text [_ "Output Ports"]
+    ttk::frame      $top.f              {*}[::styleFrame]
+    ttk::labelframe $top.f.inputs       {*}[::styleLabelFrame]  -text [_ "Inputs"]
+    ttk::labelframe $top.f.outputs      {*}[::styleLabelFrame]  -text [_ "Outputs"]
     
-    pack $top.f                     {*}[::packMain]
-    pack $top.f.inputs              {*}[::packCategory]
-    pack $top.f.outputs             {*}[::packCategoryNext]
+    pack $top.f                         {*}[::packMain]
+    pack $top.f.inputs                  {*}[::packCategory]
+    pack $top.f.outputs                 {*}[::packCategoryNext]
     
-    ttk::entry $top.f.inputs.in     {*}[::styleEntry] \
-                                        -textvariable ::pd_midi::midiAlsaIn \
-                                        -width 12 \
-                                        -state disabled
+    ttk::label $top.f.inputs.inLabel    {*}[::styleLabel] \
+                                            -text [_ "Ports"]
+    ttk::entry $top.f.inputs.in         {*}[::styleEntry] \
+                                            -textvariable ::pd_midi::midiAlsaIn \
+                                            -width 8 \
+                                            -state disabled
     
-    ttk::entry $top.f.outputs.out   {*}[::styleEntry] \
-                                        -textvariable ::pd_midi::midiAlsaOut \
-                                        -width 12 \
-                                        -state disabled
+    ttk::label $top.f.outputs.outLabel  {*}[::styleLabel] \
+                                            -text [_ "Ports"]
+    ttk::entry $top.f.outputs.out       {*}[::styleEntry] \
+                                            -textvariable ::pd_midi::midiAlsaOut \
+                                            -width 8 \
+                                            -state disabled
                         
-    pack $top.f.inputs.in           -side top -fill x -expand 1
-    pack $top.f.outputs.out         -side top -fill x -expand 1
+    pack $top.f.inputs.inLabel          -side left -fill x -expand 1
+    pack $top.f.inputs.in               -side left -fill x -expand 1
+    pack $top.f.outputs.outLabel        -side left -fill x -expand 1
+    pack $top.f.outputs.out             -side left -fill x -expand 1
     
     bind $top <Destroy> { ::pd_menu::enableMidi }
     
