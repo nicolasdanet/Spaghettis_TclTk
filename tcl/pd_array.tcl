@@ -64,61 +64,61 @@ proc _create {top name size flags} {
     set arraySave($top)         [expr {$flags & 1}]
     set arrayDraw($top)         [expr {($flags & 6) >> 1}]
     
-    ttk::frame      $top.f                      {*}[::styleFrame]
-    ttk::labelframe $top.f.properties           {*}[::styleLabelFrame]  -text [_ "Properties"]
+    set shapes {"Polygons" "Points" "Curves"} 
+        
+    ttk::frame      $top.f                          {*}[::styleFrame]
+    ttk::labelframe $top.f.properties               {*}[::styleLabelFrame]  -text [_ "Properties"]
 
-    pack $top.f                                 {*}[::packMain]
-    pack $top.f.properties                      {*}[::packCategory]
+    pack $top.f                                     {*}[::packMain]
+    pack $top.f.properties                          {*}[::packCategory]
     
-    ttk::label $top.f.properties.nameLabel      {*}[::styleLabel] \
-                                                    -text [_ "Name"]
-    ttk::entry $top.f.properties.name           {*}[::styleEntry] \
-                                                    -textvariable ::pd_array::arrayName($top) \
-                                                    -width 12
+    ttk::label $top.f.properties.nameLabel          {*}[::styleLabel] \
+                                                        -text [_ "Name"]
+    ttk::entry $top.f.properties.name               {*}[::styleEntry] \
+                                                        -textvariable ::pd_array::arrayName($top) \
+                                                        -width 12
 
-    ttk::label $top.f.properties.sizeLabel      {*}[::styleLabel] \
-                                                    -text [_ "Array Size"]
-    ttk::entry $top.f.properties.size           {*}[::styleEntry] \
-                                                    -textvariable ::pd_array::arraySize($top) \
-                                                    -width 12
+    ttk::label $top.f.properties.sizeLabel          {*}[::styleLabel] \
+                                                        -text [_ "Array Size"]
+    ttk::entry $top.f.properties.size               {*}[::styleEntry] \
+                                                        -textvariable ::pd_array::arraySize($top) \
+                                                        -width 12
 
-    ttk::label $top.f.properties.saveLabel      {*}[::styleLabel] \
-                                                    -text [_ "Save Contents"]
-    ttk::checkbutton $top.f.properties.save     {*}[::styleCheckButton] \
-                                                    -variable ::pd_array::arraySave($top) \
-                                                    -takefocus 0
+    ttk::label $top.f.properties.saveLabel          {*}[::styleLabel] \
+                                                        -text [_ "Save Contents"]
+    ttk::checkbutton $top.f.properties.save         {*}[::styleCheckButton] \
+                                                        -variable ::pd_array::arraySave($top) \
+                                                        -takefocus 0
 
-    ttk::label $top.f.properties.drawLabel      {*}[::styleLabel] \
-                                                    -text [_ "Draw With"]
-                                                    
-    ttk::radiobutton $top.f.properties.points   {*}[::styleRadioButton] \
-                                                    -text [_ "Polygons"] \
-                                                    -variable ::pd_array::arrayDraw($top) \
-                                                    -takefocus 0 \
-                                                    -value 0 
-                                
-    ttk::radiobutton $top.f.properties.polygon  {*}[::styleRadioButton] \
-                                                    -text [_ "Points"] \
-                                                    -variable ::pd_array::arrayDraw($top) \
-                                                    -takefocus 0 \
-                                                    -value 1
-                                
-    ttk::radiobutton $top.f.properties.bezier   {*}[::styleRadioButton] \
-                                                    -text [_ "Bezier Curves"] \
-                                                    -variable ::pd_array::arrayDraw($top) \
-                                                    -takefocus 0 \
-                                                    -value 2 
+    ttk::label $top.f.properties.drawLabel          {*}[::styleLabel] \
+                                                        -text [_ "Draw With"]
     
-    grid $top.f.properties.nameLabel            -row 0 -column 0 -sticky nsew
-    grid $top.f.properties.name                 -row 0 -column 1 -sticky nsew
-    grid $top.f.properties.sizeLabel            -row 1 -column 0 -sticky nsew
-    grid $top.f.properties.size                 -row 1 -column 1 -sticky nsew
-    grid $top.f.properties.saveLabel            -row 2 -column 0 -sticky nsew
-    grid $top.f.properties.save                 -row 2 -column 1 -sticky nsew
-    grid $top.f.properties.drawLabel            -row 3 -column 0 -sticky nsew
-    grid $top.f.properties.points               -row 3 -column 1 -sticky nsew
-    grid $top.f.properties.polygon              -row 4 -column 1 -sticky nsew
-    grid $top.f.properties.bezier               -row 5 -column 1 -sticky nsew
+    ttk::menubutton $top.f.properties.draw          {*}[::styleMenuButton] \
+                                                        -text [lindex $shapes $::pd_array::arrayDraw($top)] \
+                                                        -takefocus 0
+    
+    menu $top.f.properties.draw.menu
+    $top.f.properties.draw configure                -menu $top.f.properties.draw.menu
+    
+    set i 0
+    
+    foreach e $shapes {
+       $top.f.properties.draw.menu add radiobutton  -label "$e" \
+                                                    -variable ::pd_array::arrayDraw($top) \
+                                                    -value $i \
+                                                    -command [list $top.f.properties.draw configure \
+                                                    -text [lindex $shapes $i]]
+        incr i
+    }
+
+    grid $top.f.properties.nameLabel                -row 0 -column 0 -sticky nsew
+    grid $top.f.properties.name                     -row 0 -column 1 -sticky nsew
+    grid $top.f.properties.sizeLabel                -row 1 -column 0 -sticky nsew
+    grid $top.f.properties.size                     -row 1 -column 1 -sticky nsew
+    grid $top.f.properties.saveLabel                -row 2 -column 0 -sticky nsew
+    grid $top.f.properties.save                     -row 2 -column 1 -sticky nsew
+    grid $top.f.properties.drawLabel                -row 3 -column 0 -sticky nsew
+    grid $top.f.properties.draw                     -row 3 -column 1 -sticky nsew
     
     grid columnconfigure $top.f.properties 0 -weight 1
     

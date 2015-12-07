@@ -155,7 +155,7 @@ proc _makeIn {top k} {
     set devices [format "%s.inDevice%d" $top $k]
     
     ttk::menubutton $devices            {*}[::styleMenuButton] \
-                                        -width -24 \
+                                        -width -20 \
                                         -text [lindex $midiIn $midiInDevice($k)]
     
     menu $devices.menu
@@ -182,7 +182,7 @@ proc _makeOut {top k} {
     set devices [format "%s.outDevice%d" $top $k]
     
     ttk::menubutton $devices            {*}[::styleMenuButton] \
-                                            -width -24 \
+                                            -width -20 \
                                             -text [lindex $midiOut $midiOutDevice($k)]
     
     menu $devices.menu

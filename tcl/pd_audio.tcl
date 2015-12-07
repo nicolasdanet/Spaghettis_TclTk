@@ -139,9 +139,7 @@ proc show {top \
     grid $top.f.properties.sampleRate                   -row 0 -column 2 -sticky nsew
     grid $top.f.properties.delayLabel                   -row 1 -column 0 -sticky nsew
     grid $top.f.properties.delay                        -row 1 -column 2 -sticky nsew
-    grid $top.f.properties.blockSizeLabel               -row 2 -column 0 -sticky nsew
-    grid $top.f.properties.blockSize                    -row 2 -column 2 -sticky nsew
-    
+
     if {$audioCallback >= 0} {
     
     ttk::label $top.f.properties.callbackLabel          {*}[::styleLabel] \
@@ -150,8 +148,15 @@ proc show {top \
                                                             -variable ::pd_audio::audioCallback \
                                                             -takefocus 0
     
-    grid $top.f.properties.callbackLabel                -row 3 -column 0 -sticky nsew
-    grid $top.f.properties.callback                     -row 3 -column 2 -sticky w
+    grid $top.f.properties.callbackLabel                -row 2 -column 0 -sticky nsew
+    grid $top.f.properties.callback                     -row 2 -column 2 -sticky nsew
+    grid $top.f.properties.blockSizeLabel               -row 3 -column 0 -sticky nsew
+    grid $top.f.properties.blockSize                    -row 3 -column 2 -sticky nsew
+    
+    } else {
+    
+    grid $top.f.properties.blockSizeLabel               -row 2 -column 0 -sticky nsew
+    grid $top.f.properties.blockSize                    -row 2 -column 2 -sticky nsew
     
     }
     
@@ -228,7 +233,7 @@ proc _makeIn {top k} {
                                             -takefocus 0
     ttk::menubutton $devices            {*}[::styleMenuButton] \
                                             -text [lindex $audioIn $audioInDevice($k)] \
-                                            -width -24 \
+                                            -width -20 \
                                             -takefocus 0 
     
     menu $devices.menu
@@ -272,7 +277,7 @@ proc _makeOut {top k} {
                                         -takefocus 0
     ttk::menubutton $devices            {*}[::styleMenuButton] \
                                         -text [lindex $audioOut $audioOutDevice($k)] \
-                                        -width -24 \
+                                        -width -20 \
                                         -takefocus 0
     
     menu $devices.menu
