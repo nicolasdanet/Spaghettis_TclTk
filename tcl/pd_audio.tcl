@@ -232,7 +232,7 @@ proc _makeIn {top k} {
                                             -variable ::pd_audio::audioInEnabled($k) \
                                             -takefocus 0
     
-    ::createMenuByIndex $devices        "-20" $audioIn ::pd_audio::audioInDevice($k)
+    ::createMenuByIndex $devices        $audioIn ::pd_audio::audioInDevice($k)
         
     ttk::entry $channels                {*}[::styleEntry] \
                                         -textvariable ::pd_audio::audioInChannels($k) \
@@ -261,7 +261,7 @@ proc _makeOut {top k} {
                                         -variable ::pd_audio::audioOutEnabled($k) \
                                         -takefocus 0
 
-    ::createMenuByIndex $devices        "-20" $audioOut ::pd_audio::audioOutDevice($k)
+    ::createMenuByIndex $devices        $audioOut ::pd_audio::audioOutDevice($k)
     
     ttk::entry $channels                {*}[::styleEntry] \
                                         -textvariable ::pd_audio::audioOutChannels($k) \

@@ -167,7 +167,7 @@ proc _ {s} { return $s }
 
 # Note that the name parameter must be fully qualified.
 
-proc createMenuByIndex {top width values name} {
+proc createMenuByIndex {top values name {width -24}} {
 
     upvar $name v
     
