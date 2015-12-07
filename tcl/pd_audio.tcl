@@ -133,7 +133,10 @@ proc show {top \
 
     ttk::label $top.f.properties.blockSizeLabel         {*}[::styleLabel] \
                                                             -text [_ "Block Size"]
-    _makeBlocksize $top.f.properties.blockSize
+    
+    set values {64 128 256 512 1024 2048}
+    
+    ::createMenuByValue $top.f.properties.blockSize     $values ::pd_audio::audioBlockSize "6"
     
     grid $top.f.properties.sampleRateLabel              -row 0 -column 0 -sticky nsew
     grid $top.f.properties.sampleRate                   -row 0 -column 2 -sticky nsew
@@ -189,29 +192,6 @@ proc closed {top} {
 
     ::pd_audio::_apply $top
     ::cancel $top
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc _makeBlocksize {top} {
-    
-    variable audioBlockSize
-    
-    set values {64 128 256 512 1024 2048}
-    
-    ttk::menubutton $top            {*}[::styleMenuButton] \
-                                    -text $::pd_audio::audioBlockSize \
-                                    -takefocus 0
-    
-    menu $top.menu
-    $top configure                  -menu $top.menu
-    
-    foreach e $values {
-        $top.menu add radiobutton   -label "$e" \
-                                    -variable ::pd_audio::audioBlockSize \
-                                    -value $e
-    }
 }
 
 # ------------------------------------------------------------------------------------------------------------

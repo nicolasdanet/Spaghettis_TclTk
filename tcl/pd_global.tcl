@@ -190,5 +190,22 @@ proc createMenuByIndex {top values name {width -24}} {
     }
 }
 
+proc createMenuByValue {top values name {width -24}} {
+
+    ttk::menubutton $top            {*}[::styleMenuButton] \
+                                        -width $width \
+                                        -textvariable $name \
+                                        -takefocus 0
+    
+    menu $top.menu
+    $top configure                  -menu $top.menu
+    
+    foreach e $values {
+        $top.menu add radiobutton   -label "$e" \
+                                    -variable $name \
+                                    -value $e
+    }
+}
+
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
