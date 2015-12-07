@@ -216,8 +216,7 @@ proc _makeIn {top k} {
         
     ttk::entry $channels                {*}[::styleEntry] \
                                         -textvariable ::pd_audio::audioInChannels($k) \
-                                        -width 3 \
-                                        -state disabled
+                                        -width 3
     
     set row [expr {$k - 1}]
     
@@ -245,8 +244,7 @@ proc _makeOut {top k} {
     
     ttk::entry $channels                {*}[::styleEntry] \
                                         -textvariable ::pd_audio::audioOutChannels($k) \
-                                        -width 3 \
-                                        -state disabled
+                                        -width 3
     
     set row [expr {$k - 1}]
     
@@ -303,11 +301,25 @@ proc _apply {top} {
 
 proc _forceValues {} {
 
+    variable audioInChannels
+    variable audioOutChannels
     variable audioSampleRate
     variable audioSampleRateOld
     variable audioDelay
-    variable audioDelayOld 
+    variable audioDelayOld
 
+    foreach i {1 2 3 4} {
+    
+    set audioInChannels($i)  [::ifInteger $audioInChannels($i) 2]
+    set audioInChannels($i)  [::tcl::mathfunc::max $audioInChannels($i) 0]
+    set audioInChannels($i)  [::tcl::mathfunc::min $audioInChannels($i) 128]
+    
+    set audioOutChannels($i) [::ifInteger $audioOutChannels($i) 2]
+    set audioOutChannels($i) [::tcl::mathfunc::max $audioOutChannels($i) 0]
+    set audioOutChannels($i) [::tcl::mathfunc::min $audioOutChannels($i) 128]
+    
+    }
+    
     set audioSampleRate [::ifInteger $audioSampleRate $audioSampleRateOld]
     set audioSampleRate [::tcl::mathfunc::max $audioSampleRate 1]
     set audioDelay      [::ifInteger $audioDelay $audioDelayOld]
