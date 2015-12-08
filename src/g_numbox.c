@@ -454,11 +454,11 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
 
     }
     sprintf(buf, "::pd_iem::create %%s Number \
-            %d %d {Digits Number} %d %d {Box Height} \
+            %d %d Digits %d %d {Box Height} \
             %g {Low Value} %g {High Value} \
             %d Linear Logarithmic \
             %d \
-            %d 1024 {Logarithm Height} \
+            %d 1024 {Logarithm Ratio} \
             %s %s \
             %s %d %d \
             %d %d \

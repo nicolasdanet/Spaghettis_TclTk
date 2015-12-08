@@ -239,7 +239,7 @@ static void bng_properties(t_gobj *z, t_glist *owner)
 
     iemgui_properties(&x->x_gui, srl);
     sprintf(buf, "::pd_iem::create %%s Bang \
-            %d %d {Button Size} 0 0 empty \
+            %d %d Size 0 0 empty \
             %d {Flash Break} %d {Flash Hold} \
             -1 empty empty \
             %d \

@@ -163,130 +163,125 @@ proc create {top type
     wm minsize   $top {*}[::styleMinimumSize]
     wm geometry  $top [::rightNextTo $::var(windowFocused)]
     
-    ttk::frame      $top.f                          {*}[::styleFrame]
-    ttk::labelframe $top.f.properties               {*}[::styleLabelFrame]  -text [_ "Properties"]
-    ttk::labelframe $top.f.label                    {*}[::styleLabelFrame]  -text [_ "Label"]
+    ttk::frame      $top.f                              {*}[::styleFrame]
+    ttk::labelframe $top.f.properties                   {*}[::styleLabelFrame]  -text [_ "Properties"]
+    ttk::labelframe $top.f.label                        {*}[::styleLabelFrame]  -text [_ "Label"]
     
-    pack $top.f                                     {*}[::packMain]
-    pack $top.f.properties                          {*}[::packCategory]
+    pack $top.f                                         {*}[::packMain]
+    pack $top.f.properties                              {*}[::packCategory]
     #pack $top.f.label                               {*}[::packCategoryNext]
     
     set row -1
     
     if {$widthLabel ne "empty"}     {
     
-        ttk::label $top.f.properties.widthLabel     {*}[::styleLabel] \
-                                                        -text [_ $widthLabel]
-        ttk::entry $top.f.properties.width          {*}[::styleEntry] \
-                                                        -textvariable ::pd_iem::iemWidth($top) \
-                                                        -width $::width(small)
+        ttk::label $top.f.properties.widthLabel         {*}[::styleLabel] \
+                                                            -text [_ $widthLabel]
+        ttk::entry $top.f.properties.width              {*}[::styleEntry] \
+                                                            -textvariable ::pd_iem::iemWidth($top) \
+                                                            -width $::width(small)
         
-        grid $top.f.properties.widthLabel           -row [incr row] -column 0 -sticky nsew
-        grid $top.f.properties.width                -row $row       -column 1 -sticky nsew
+        grid $top.f.properties.widthLabel               -row [incr row] -column 0 -sticky nsew
+        grid $top.f.properties.width                    -row $row       -column 1 -sticky nsew
 
-        bind $top.f.properties.width <Return>       { ::nextEntry %W }
+        bind $top.f.properties.width <Return>           { ::nextEntry %W }
     }
     
     if {$heightLabel ne "empty"}    {
     
-        ttk::label $top.f.properties.heightLabel    {*}[::styleLabel] \
-                                                        -text [_ $heightLabel]
-        ttk::entry $top.f.properties.height         {*}[::styleEntry] \
-                                                        -textvariable ::pd_iem::iemHeight($top) \
-                                                        -width $::width(small)
+        ttk::label $top.f.properties.heightLabel        {*}[::styleLabel] \
+                                                            -text [_ $heightLabel]
+        ttk::entry $top.f.properties.height             {*}[::styleEntry] \
+                                                            -textvariable ::pd_iem::iemHeight($top) \
+                                                            -width $::width(small)
                                                         
-        grid $top.f.properties.heightLabel          -row [incr row] -column 0 -sticky nsew
-        grid $top.f.properties.height               -row $row       -column 1 -sticky nsew
+        grid $top.f.properties.heightLabel              -row [incr row] -column 0 -sticky nsew
+        grid $top.f.properties.height                   -row $row       -column 1 -sticky nsew
         
-        bind $top.f.properties.height <Return>      { ::nextEntry %W }
+        bind $top.f.properties.height <Return>          { ::nextEntry %W }
     }
     
     if {$option1Label ne "empty"}   {
     
-        ttk::label $top.f.properties.option1Label   {*}[::styleLabel] \
-                                                        -text [_ $option1Label]
-        ttk::entry $top.f.properties.option1        {*}[::styleEntry] \
-                                                        -textvariable ::pd_iem::iemOption1($top) \
-                                                        -width $::width(small)
+        ttk::label $top.f.properties.option1Label       {*}[::styleLabel] \
+                                                            -text [_ $option1Label]
+        ttk::entry $top.f.properties.option1            {*}[::styleEntry] \
+                                                            -textvariable ::pd_iem::iemOption1($top) \
+                                                            -width $::width(small)
 
-        grid $top.f.properties.option1Label         -row [incr row] -column 0 -sticky nsew
-        grid $top.f.properties.option1              -row $row       -column 1 -sticky nsew
+        grid $top.f.properties.option1Label             -row [incr row] -column 0 -sticky nsew
+        grid $top.f.properties.option1                  -row $row       -column 1 -sticky nsew
         
-        bind  $top.f.properties.option1 <Return>    { ::nextEntry %W }
+        bind  $top.f.properties.option1 <Return>        { ::nextEntry %W }
     }
     
     if {$option2Label ne "empty"}   {
     
-        ttk::label $top.f.properties.option2Label   {*}[::styleLabel] \
-                                                        -text [_ $option2Label]
-        ttk::entry $top.f.properties.option2        {*}[::styleEntry] \
-                                                        -textvariable ::pd_iem::iemOption2($top) \
-                                                        -width $::width(small)
+        ttk::label $top.f.properties.option2Label       {*}[::styleLabel] \
+                                                            -text [_ $option2Label]
+        ttk::entry $top.f.properties.option2            {*}[::styleEntry] \
+                                                            -textvariable ::pd_iem::iemOption2($top) \
+                                                            -width $::width(small)
                                                         
-        grid $top.f.properties.option2Label         -row [incr row] -column 0 -sticky nsew
-        grid $top.f.properties.option2              -row $row       -column 1 -sticky nsew
+        grid $top.f.properties.option2Label             -row [incr row] -column 0 -sticky nsew
+        grid $top.f.properties.option2                  -row $row       -column 1 -sticky nsew
         
-        bind $top.f.properties.option2 <Return>     { ::nextEntry %W }
+        bind $top.f.properties.option2 <Return>         { ::nextEntry %W }
     }
     
     if {$extraLabel ne "empty"}     {
     
-        ttk::label $top.f.properties.extraLabel     {*}[::styleLabel] \
-                                                        -text [_ $extraLabel]
-        ttk::entry $top.f.properties.extra          {*}[::styleEntry] \
-                                                        -textvariable ::pd_iem::iemExtra($top) \
-                                                        -width $::width(small)
+        ttk::label $top.f.properties.extraLabel         {*}[::styleLabel] \
+                                                            -text [_ $extraLabel]
+        ttk::entry $top.f.properties.extra              {*}[::styleEntry] \
+                                                            -textvariable ::pd_iem::iemExtra($top) \
+                                                            -width $::width(small)
 
-        grid $top.f.properties.extraLabel           -row [incr row] -column 0 -sticky nsew
-        grid $top.f.properties.extra                -row $row       -column 1 -sticky nsew
+        grid $top.f.properties.extraLabel               -row [incr row] -column 0 -sticky nsew
+        grid $top.f.properties.extra                    -row $row       -column 1 -sticky nsew
         
-        bind $top.f.properties.extra <Return>       { ::nextEntry %W }
+        bind $top.f.properties.extra <Return>           { ::nextEntry %W }
     }
     
-    if {0} {
+    if {$loadbang != -1}            {
+    
+        ttk::label $top.f.properties.loadbangLabel      {*}[::styleLabel] \
+                                                            -text [_ "Load At Start"]
+                                                            
+        ttk::checkbutton $top.f.properties.loadbang     {*}[::styleCheckButton] \
+                                                            -variable ::pd_iem::iemLoadbang($top) \
+                                                            -takefocus 0
+        
+        grid $top.f.properties.loadbangLabel            -row [incr row] -column 0 -sticky nsew
+        grid $top.f.properties.loadbang                 -row $row       -column 1 -sticky nsew
+        
+    }
     
     if {$check != -1}               {
     if {$check1 ne "empty"}         {
     if {$check2 ne "empty"}         {
     
-        radiobutton $top.check1     -text [_ $check1] \
-                                    -variable ::pd_iem::iemCheck($top) \
-                                    -takefocus 0 \
-                                    -value 0
-        radiobutton $top.check2     -text [_ $check2] \
-                                    -variable ::pd_iem::iemCheck($top) \
-                                    -takefocus 0 \
-                                    -value 1
-        pack $top.check1            -side top -anchor w
-        pack $top.check2            -side top -anchor w
-    
+        set values [list [_ $check1] [_ $check2]]
+        
+        ::createMenuByIndex $top.f.properties.check     $values ::pd_iem::iemCheck($top) \
+                                                            -width -$::width(medium)
+        
+        grid $top.f.properties.check                    -row [incr row] -column 1 -sticky nsew
     }
     }
     }
     
     if {$steady != -1}              {
     
-        radiobutton $top.jump       -text [_ "Jump"] \
-                                    -variable ::pd_iem::iemSteady($top) \
-                                    -takefocus 0 \
-                                    -value 0
-        radiobutton $top.steady     -text [_ "Steady"] \
-                                    -variable ::pd_iem::iemSteady($top) \
-                                    -takefocus 0 \
-                                    -value 1
-        pack $top.jump              -side top -anchor w
-        pack $top.steady            -side top -anchor w
+        set values [list [_ "Jump"] [_ "Steady"]]
         
+        ::createMenuByIndex $top.f.properties.steady    $values ::pd_iem::iemSteady($top) \
+                                                            -width -$::width(medium)
+        
+        grid $top.f.properties.steady                   -row [incr row] -column 1 -sticky nsew
     }
     
-    if {$loadbang != -1}            {
-    
-        checkbutton $top.loadbang   -text [_ "Loadbang"] \
-                                    -variable ::pd_iem::iemLoadbang($top) \
-                                    -takefocus 0
-        pack $top.loadbang          -side top -anchor w
-        
-    }
+    if {0} {
     
     label $top.nameLabel            -text [_ "Name"]
     entry $top.name                 -textvariable ::pd_iem::iemName($top)
