@@ -169,7 +169,7 @@ proc create {top type
     
     pack $top.f                                         {*}[::packMain]
     pack $top.f.properties                              {*}[::packCategory]
-    #pack $top.f.label                               {*}[::packCategoryNext]
+    pack $top.f.label                                   {*}[::packCategoryNext]
     
     set row -1
     
@@ -281,32 +281,45 @@ proc create {top type
         grid $top.f.properties.steady                   -row [incr row] -column 1 -sticky nsew
     }
     
+    ttk::label $top.f.label.nameLabel                   {*}[::styleLabel] \
+                                                            -text [_ "Name"]
+    ttk::entry $top.f.label.name                        {*}[::styleEntry] \
+                                                            -textvariable ::pd_iem::iemName($top) \
+                                                            -width $::width(large)
+    
+    ttk::label $top.f.label.nameDeltaXLabel             {*}[::styleLabel] \
+                                                            -text [_ "Position X"]
+    ttk::entry $top.f.label.nameDeltaX                  {*}[::styleEntry] \
+                                                            -textvariable ::pd_iem::iemNameDeltaX($top) \
+                                                            -width $::width(small)
+    
+    ttk::label $top.f.label.nameDeltaYLabel             {*}[::styleLabel] \
+                                                            -text [_ "Position Y"]
+    ttk::entry $top.f.label.nameDeltaY                  {*}[::styleEntry] \
+                                                            -textvariable ::pd_iem::iemNameDeltaY($top) \
+                                                            -width $::width(small)
+
+    ttk::label $top.f.label.nameFontSizeLabel           {*}[::styleLabel] \
+                                                            -text [_ "Font Size"]
+    ttk::entry $top.f.label.nameFontSize                {*}[::styleEntry] \
+                                                            -textvariable ::pd_iem::iemNameFontSize($top) \
+                                                            -width $::width(small)
+    
+    grid $top.f.label.nameLabel                         -row [incr row] -column 0 -sticky nsew
+    grid $top.f.label.name                              -row $row       -column 1 -sticky nsew
+    grid $top.f.label.nameDeltaXLabel                   -row [incr row] -column 0 -sticky nsew
+    grid $top.f.label.nameDeltaX                        -row $row       -column 1 -sticky nsew
+    grid $top.f.label.nameDeltaYLabel                   -row [incr row] -column 0 -sticky nsew
+    grid $top.f.label.nameDeltaY                        -row $row       -column 1 -sticky nsew
+    grid $top.f.label.nameFontSizeLabel                 -row [incr row] -column 0 -sticky nsew
+    grid $top.f.label.nameFontSize                      -row $row       -column 1 -sticky nsew
+    
+    bind $top.f.label.name <Return>                     { ::nextEntry %W }
+    bind $top.f.label.nameDeltaX <Return>               { ::nextEntry %W }
+    bind $top.f.label.nameDeltaY <Return>               { ::nextEntry %W }
+    bind $top.f.label.nameFontSize <Return>             { ::nextEntry %W }
+    
     if {0} {
-    
-    label $top.nameLabel            -text [_ "Name"]
-    entry $top.name                 -textvariable ::pd_iem::iemName($top)
-    pack  $top.nameLabel            -side top -anchor w
-    pack  $top.name                 -side top -anchor w
-    
-    label $top.nameDeltaXLabel      -text [_ "Offset Horizontal"]
-    entry $top.nameDeltaX           -textvariable ::pd_iem::iemNameDeltaX($top)
-    pack  $top.nameDeltaXLabel      -side top -anchor w
-    pack  $top.nameDeltaX           -side top -anchor w
-    
-    label $top.nameDeltaYLabel      -text [_ "Offset Vertical"]
-    entry $top.nameDeltaY           -textvariable ::pd_iem::iemNameDeltaY($top)
-    pack  $top.nameDeltaYLabel      -side top -anchor w
-    pack  $top.nameDeltaY           -side top -anchor w
-    
-    label $top.nameFontSizeLabel    -text [_ "Font Size"]
-    entry $top.nameFontSize         -textvariable ::pd_iem::iemNameFontSize($top)
-    pack  $top.nameFontSizeLabel    -side top -anchor w
-    pack  $top.nameFontSize         -side top -anchor w
-    
-    bind $top.name <Return>         { ::nextEntry %W }
-    bind $top.nameDeltaX <Return>   { ::nextEntry %W }
-    bind $top.nameDeltaY <Return>   { ::nextEntry %W }
-    bind $top.nameFontSize <Return> { ::nextEntry %W }
     
     menubutton $top.nameFontFamily  -textvariable ::pd_iem::iemFont($top) \
                                     -takefocus 0
