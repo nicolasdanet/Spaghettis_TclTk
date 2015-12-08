@@ -246,7 +246,7 @@ proc create {top type
     if {$loadbang != -1}            {
     
         ttk::label $top.f.properties.loadbangLabel      {*}[::styleLabel] \
-                                                            -text [_ "Load At Start"]
+                                                            -text [_ "Load On Start"]
                                                             
         ttk::checkbutton $top.f.properties.loadbang     {*}[::styleCheckButton] \
                                                             -variable ::pd_iem::iemLoadbang($top) \
@@ -305,6 +305,14 @@ proc create {top type
                                                             -textvariable ::pd_iem::iemNameFontSize($top) \
                                                             -width $::width(small)
     
+    set values [list "$::var(fontFamily)" "Helvetica" "Times"]
+    
+    ttk::label $top.f.label.nameFontFamilyLabel         {*}[::styleLabel] \
+                                                            -text [_ "Font Family"]
+                                                            
+    ::createMenuByIndex $top.f.label.nameFontFamily     $values ::pd_iem::iemNameFontFamily($top) \
+                                                            -width [::measure $values]
+                                                            
     grid $top.f.label.nameLabel                         -row [incr row] -column 0 -sticky nsew
     grid $top.f.label.name                              -row $row       -column 1 -sticky nsew
     grid $top.f.label.nameDeltaXLabel                   -row [incr row] -column 0 -sticky nsew
@@ -313,33 +321,10 @@ proc create {top type
     grid $top.f.label.nameDeltaY                        -row $row       -column 1 -sticky nsew
     grid $top.f.label.nameFontSizeLabel                 -row [incr row] -column 0 -sticky nsew
     grid $top.f.label.nameFontSize                      -row $row       -column 1 -sticky nsew
-    
-    bind $top.f.label.name <Return>                     { ::nextEntry %W }
-    bind $top.f.label.nameDeltaX <Return>               { ::nextEntry %W }
-    bind $top.f.label.nameDeltaY <Return>               { ::nextEntry %W }
-    bind $top.f.label.nameFontSize <Return>             { ::nextEntry %W }
-    
+    grid $top.f.label.nameFontFamilyLabel               -row [incr row] -column 0 -sticky nsew
+    grid $top.f.label.nameFontFamily                    -row $row       -column 1 -sticky nsew
+
     if {0} {
-    
-    menubutton $top.nameFontFamily  -textvariable ::pd_iem::iemFont($top) \
-                                    -takefocus 0
-    menu $top.nameFontFamily.menu
-    $top.nameFontFamily configure   -menu $top.nameFontFamily.menu
-    
-    $top.nameFontFamily.menu add radiobutton    -label "$::var(fontFamily)" \
-                                                -variable ::pd_iem::iemNameFontFamily($top) \
-                                                -value 0 \
-                                                -command "set ::pd_iem::iemFont($top) $::var(fontFamily)"
-    $top.nameFontFamily.menu add radiobutton    -label "Helvetica" \
-                                                -variable ::pd_iem::iemNameFontFamily($top) \
-                                                -value 1 \
-                                                -command "set ::pd_iem::iemFont($top) Helvetica"
-    $top.nameFontFamily.menu add radiobutton    -label "Times" \
-                                                -variable ::pd_iem::iemNameFontFamily($top) \
-                                                -value 2 \
-                                                -command "set ::pd_iem::iemFont($top) Times"
-                                                
-    pack $top.nameFontFamily        -side top -anchor w
     
     if {$send ne "nosndno"}         {
     
@@ -365,6 +350,11 @@ proc create {top type
     
     grid columnconfigure $top.f.properties  0 -weight 1
     grid columnconfigure $top.f.label       0 -weight 1
+    
+    bind $top.f.label.name          <Return>    { ::nextEntry %W }
+    bind $top.f.label.nameDeltaX    <Return>    { ::nextEntry %W }
+    bind $top.f.label.nameDeltaY    <Return>    { ::nextEntry %W }
+    bind $top.f.label.nameFontSize  <Return>    { ::nextEntry %W }
     
     if {[winfo exists $top.f.properties.width]} { 
         focus $top.f.properties.width
