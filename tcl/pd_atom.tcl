@@ -64,6 +64,7 @@ proc _create {top width low high send receive name position} {
     wm group $top .
     
     wm resizable $top 0 0
+    wm minsize   $top 300 150
     wm geometry  $top [::rightNextTo $::var(windowFocused)]
 
     set atomWidth($top)         $width
@@ -78,68 +79,86 @@ proc _create {top width low high send receive name position} {
     set atomLow(${top}.old)     $low
     set atomHigh(${top}.old)    $high
 
-    label $top.widthLabel       -text [_ "Width"]
-    entry $top.width            -textvariable ::pd_atom::atomWidth($top)
+    set positions {"Left" "Right" "Top" "Bottom"}
+     
+    ttk::frame      $top.f                          {*}[::styleFrame]
+    ttk::labelframe $top.f.properties               {*}[::styleLabelFrame]  -text [_ "Properties"]
+    ttk::labelframe $top.f.label                    {*}[::styleLabelFrame]  -text [_ "Label"]
     
-    label $top.lowLabel         -text [_ "Low Value"]
-    entry $top.low              -textvariable ::pd_atom::atomLow($top)
+    pack $top.f                                     {*}[::packMain]
+    pack $top.f.properties                          {*}[::packCategory]
+    pack $top.f.label                               {*}[::packCategoryNext]
     
-    label $top.highLabel        -text [_ "High Value"]
-    entry $top.high             -textvariable ::pd_atom::atomHigh($top)
+    ttk::label $top.f.properties.widthLabel         {*}[::styleLabel] \
+                                                        -text [_ "Digits"]
+    ttk::entry $top.f.properties.width              {*}[::styleEntry] \
+                                                        -textvariable ::pd_atom::atomWidth($top) \
+                                                        -width 8
     
-    label $top.nameLabel        -text [_ "Name"]
-    entry $top.name             -textvariable ::pd_atom::atomName($top)
+    ttk::label $top.f.properties.lowLabel           {*}[::styleLabel] \
+                                                        -text [_ "Low Value"]
+    ttk::entry $top.f.properties.low                {*}[::styleEntry] \
+                                                        -textvariable ::pd_atom::atomLow($top) \
+                                                        -width 8
     
-    radiobutton $top.left       -text [_ "Left"] \
-                                -variable ::pd_atom::atomPosition($top) \
-                                -takefocus 0 \
-                                -value 0 
-    radiobutton $top.right      -text [_ "Right"] \
-                                -variable ::pd_atom::atomPosition($top) \
-                                -takefocus 0 \
-                                -value 1
-    radiobutton $top.top        -text [_ "Top"] \
-                                -variable ::pd_atom::atomPosition($top) \
-                                -takefocus 0 \
-                                -value 2 
-    radiobutton $top.bottom     -text [_ "Bottom"] \
-                                -variable ::pd_atom::atomPosition($top) \
-                                -takefocus 0 \
-                                -value 3 
+    ttk::label $top.f.properties.highLabel          {*}[::styleLabel] \
+                                                        -text [_ "High Value"]
+    ttk::entry $top.f.properties.high               {*}[::styleEntry] \
+                                                        -textvariable ::pd_atom::atomHigh($top) \
+                                                        -width 8
     
-    label $top.sendLabel        -text [_ "Send"]
-    entry $top.send             -textvariable ::pd_atom::atomSend($top)
+    ttk::label $top.f.label.nameLabel               {*}[::styleLabel] \
+                                                        -text [_ "Name"]
+    ttk::entry $top.f.label.name                    {*}[::styleEntry] \
+                                                        -textvariable ::pd_atom::atomName($top) \
+                                                        -width 16
+                                                        
+    ttk::label $top.f.label.positionLabel           {*}[::styleLabel] \
+                                                        -text [_ "Position"]
+                                                        
+    ::createMenuByIndex $top.f.label.position       $positions ::pd_atom::atomPosition($top) -width -8
     
-    label $top.receiveLabel     -text [_ "Receive"]
-    entry $top.receive          -textvariable ::pd_atom::atomReceive($top)
+    ttk::label $top.f.label.sendLabel               {*}[::styleLabel] \
+                                                        -text [_ "Send"]
+    ttk::entry $top.f.label.send                    {*}[::styleEntry] \
+                                                        -textvariable ::pd_atom::atomSend($top) \
+                                                        -width 16
+    
+    ttk::label $top.f.label.receiveLabel            {*}[::styleLabel] \
+                                                        -text [_ "Receive"]
+    ttk::entry $top.f.label.receive                 {*}[::styleEntry] \
+                                                        -textvariable ::pd_atom::atomReceive($top) \
+                                                        -width 16
 
-    pack  $top.widthLabel       -side top -anchor w
-    pack  $top.width            -side top -anchor w
-    pack  $top.lowLabel         -side top -anchor w
-    pack  $top.low              -side top -anchor w
-    pack  $top.highLabel        -side top -anchor w
-    pack  $top.high             -side top -anchor w
-    pack  $top.nameLabel        -side top -anchor w
-    pack  $top.name             -side top -anchor w
-    pack  $top.right            -side top -anchor w
-    pack  $top.left             -side top -anchor w
-    pack  $top.top              -side top -anchor w
-    pack  $top.bottom           -side top -anchor w
-    pack  $top.sendLabel        -side top -anchor w
-    pack  $top.send             -side top -anchor w
-    pack  $top.receiveLabel     -side top -anchor w
-    pack  $top.receive          -side top -anchor w
+    grid $top.f.properties.widthLabel               -row 0 -column 0 -sticky nsew
+    grid $top.f.properties.width                    -row 0 -column 1 -sticky nsew
+    grid $top.f.properties.lowLabel                 -row 1 -column 0 -sticky nsew
+    grid $top.f.properties.low                      -row 1 -column 1 -sticky nsew
+    grid $top.f.properties.highLabel                -row 2 -column 0 -sticky nsew
+    grid $top.f.properties.high                     -row 2 -column 1 -sticky nsew
     
-    bind  $top.width   <Return> { ::nextEntry %W }
-    bind  $top.low     <Return> { ::nextEntry %W }
-    bind  $top.high    <Return> { ::nextEntry %W }
-    bind  $top.name    <Return> { ::nextEntry %W }
-    bind  $top.send    <Return> { ::nextEntry %W }
-    bind  $top.receive <Return> { ::nextEntry %W }
+    grid $top.f.label.nameLabel                     -row 0 -column 0 -sticky nsew
+    grid $top.f.label.name                          -row 0 -column 1 -sticky nsew
+    grid $top.f.label.positionLabel                 -row 1 -column 0 -sticky nsew
+    grid $top.f.label.position                      -row 1 -column 1 -sticky nsew
+    grid $top.f.label.sendLabel                     -row 2 -column 0 -sticky nsew
+    grid $top.f.label.send                          -row 2 -column 1 -sticky nsew
+    grid $top.f.label.receiveLabel                  -row 3 -column 0 -sticky nsew
+    grid $top.f.label.receive                       -row 3 -column 1 -sticky nsew
+    
+    grid columnconfigure $top.f.properties  0 -weight 1
+    grid columnconfigure $top.f.label       0 -weight 1
+    
+    bind  $top.f.properties.width   <Return> { ::nextEntry %W }
+    bind  $top.f.properties.low     <Return> { ::nextEntry %W }
+    bind  $top.f.properties.high    <Return> { ::nextEntry %W }
+    bind  $top.f.label.name         <Return> { ::nextEntry %W }
+    bind  $top.f.label.send         <Return> { ::nextEntry %W }
+    bind  $top.f.label.receive      <Return> { ::nextEntry %W }
 
-    focus $top.width
+    focus $top.f.properties.width
     
-    $top.width selection range 0 end
+    $top.f.properties.width selection range 0 end
     
     wm protocol $top WM_DELETE_WINDOW   "::pd_atom::closed $top"
 }

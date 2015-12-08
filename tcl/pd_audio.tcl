@@ -136,7 +136,7 @@ proc show {top \
     
     set values {64 128 256 512 1024 2048}
     
-    ::createMenuByValue $top.f.properties.blockSize     $values ::pd_audio::audioBlockSize -width 6
+    ::createMenuByValue $top.f.properties.blockSize     $values ::pd_audio::audioBlockSize -width 8
     
     grid $top.f.properties.sampleRateLabel              -row 0 -column 0 -sticky nsew
     grid $top.f.properties.sampleRate                   -row 0 -column 2 -sticky nsew
@@ -320,10 +320,10 @@ proc _forceValues {} {
     
     }
     
-    set audioSampleRate [::ifInteger $audioSampleRate $audioSampleRateOld]
-    set audioSampleRate [::tcl::mathfunc::max $audioSampleRate 1]
-    set audioDelay      [::ifInteger $audioDelay $audioDelayOld]
-    set audioDelay      [::tcl::mathfunc::max $audioDelay 0]
+    set audioSampleRate      [::ifInteger $audioSampleRate $audioSampleRateOld]
+    set audioSampleRate      [::tcl::mathfunc::max $audioSampleRate 1]
+    set audioDelay           [::ifInteger $audioDelay $audioDelayOld]
+    set audioDelay           [::tcl::mathfunc::max $audioDelay 0]
 }
 
 # ------------------------------------------------------------------------------------------------------------
