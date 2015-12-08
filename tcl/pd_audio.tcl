@@ -123,20 +123,21 @@ proc show {top \
                                                             -text [_ "Sample Rate"]
     ttk::entry $top.f.properties.sampleRate             {*}[::styleEntry] \
                                                             -textvariable ::pd_audio::audioSampleRate \
-                                                            -width 8
+                                                            -width $::width(small)
     
     ttk::label $top.f.properties.delayLabel             {*}[::styleLabel] \
                                                             -text [_ "Delay in Milliseconds"]
     ttk::entry $top.f.properties.delay                  {*}[::styleEntry] \
                                                             -textvariable ::pd_audio::audioDelay \
-                                                            -width 8
+                                                            -width $::width(small)
 
     ttk::label $top.f.properties.blockSizeLabel         {*}[::styleLabel] \
                                                             -text [_ "Block Size"]
     
     set values {64 128 256 512 1024 2048}
     
-    ::createMenuByValue $top.f.properties.blockSize     $values ::pd_audio::audioBlockSize -width 8
+    ::createMenuByValue $top.f.properties.blockSize     $values ::pd_audio::audioBlockSize \
+                                                            -width $::width(small)
     
     grid $top.f.properties.sampleRateLabel              -row 0 -column 0 -sticky nsew
     grid $top.f.properties.sampleRate                   -row 0 -column 2 -sticky nsew
@@ -212,11 +213,11 @@ proc _makeIn {top k} {
                                             -variable ::pd_audio::audioInEnabled($k) \
                                             -takefocus 0
     
-    ::createMenuByIndex $devices        $audioIn ::pd_audio::audioInDevice($k) -width -24
+    ::createMenuByIndex $devices        $audioIn ::pd_audio::audioInDevice($k) -width -$::width(large)
         
     ttk::entry $channels                {*}[::styleEntry] \
                                         -textvariable ::pd_audio::audioInChannels($k) \
-                                        -width 3
+                                        -width $::width(tiny)
     
     set row [expr {$k - 1}]
     
@@ -240,11 +241,11 @@ proc _makeOut {top k} {
                                         -variable ::pd_audio::audioOutEnabled($k) \
                                         -takefocus 0
 
-    ::createMenuByIndex $devices        $audioOut ::pd_audio::audioOutDevice($k) -width -24
+    ::createMenuByIndex $devices        $audioOut ::pd_audio::audioOutDevice($k) -width -$::width(large)
     
     ttk::entry $channels                {*}[::styleEntry] \
                                         -textvariable ::pd_audio::audioOutChannels($k) \
-                                        -width 3
+                                        -width $::width(tiny)
     
     set row [expr {$k - 1}]
     

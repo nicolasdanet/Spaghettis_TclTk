@@ -93,42 +93,43 @@ proc _create {top width low high send receive name position} {
                                                         -text [_ "Digits"]
     ttk::entry $top.f.properties.width              {*}[::styleEntry] \
                                                         -textvariable ::pd_atom::atomWidth($top) \
-                                                        -width 8
+                                                        -width $::width(small)
     
     ttk::label $top.f.properties.lowLabel           {*}[::styleLabel] \
                                                         -text [_ "Low Value"]
     ttk::entry $top.f.properties.low                {*}[::styleEntry] \
                                                         -textvariable ::pd_atom::atomLow($top) \
-                                                        -width 8
+                                                        -width $::width(small)
     
     ttk::label $top.f.properties.highLabel          {*}[::styleLabel] \
                                                         -text [_ "High Value"]
     ttk::entry $top.f.properties.high               {*}[::styleEntry] \
                                                         -textvariable ::pd_atom::atomHigh($top) \
-                                                        -width 8
+                                                        -width $::width(small)
     
     ttk::label $top.f.label.nameLabel               {*}[::styleLabel] \
                                                         -text [_ "Name"]
     ttk::entry $top.f.label.name                    {*}[::styleEntry] \
                                                         -textvariable ::pd_atom::atomName($top) \
-                                                        -width 16
+                                                        -width $::width(large)
                                                         
     ttk::label $top.f.label.positionLabel           {*}[::styleLabel] \
                                                         -text [_ "Position"]
                                                         
-    ::createMenuByIndex $top.f.label.position       $positions ::pd_atom::atomPosition($top) -width -8
+    ::createMenuByIndex $top.f.label.position       $positions ::pd_atom::atomPosition($top) \
+                                                        -width -$::width(small)
     
     ttk::label $top.f.label.sendLabel               {*}[::styleLabel] \
                                                         -text [_ "Send"]
     ttk::entry $top.f.label.send                    {*}[::styleEntry] \
                                                         -textvariable ::pd_atom::atomSend($top) \
-                                                        -width 16
+                                                        -width $::width(large)
     
     ttk::label $top.f.label.receiveLabel            {*}[::styleLabel] \
                                                         -text [_ "Receive"]
     ttk::entry $top.f.label.receive                 {*}[::styleEntry] \
                                                         -textvariable ::pd_atom::atomReceive($top) \
-                                                        -width 16
+                                                        -width $::width(large)
 
     grid $top.f.properties.widthLabel               -row 0 -column 0 -sticky nsew
     grid $top.f.properties.width                    -row 0 -column 1 -sticky nsew

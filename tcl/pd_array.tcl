@@ -76,13 +76,13 @@ proc _create {top name size flags} {
                                                         -text [_ "Name"]
     ttk::entry $top.f.properties.name               {*}[::styleEntry] \
                                                         -textvariable ::pd_array::arrayName($top) \
-                                                        -width 12
+                                                        -width $::width(medium)
 
     ttk::label $top.f.properties.sizeLabel          {*}[::styleLabel] \
                                                         -text [_ "Array Size"]
     ttk::entry $top.f.properties.size               {*}[::styleEntry] \
                                                         -textvariable ::pd_array::arraySize($top) \
-                                                        -width 8
+                                                        -width $::width(small)
 
     ttk::label $top.f.properties.saveLabel          {*}[::styleLabel] \
                                                         -text [_ "Save Contents"]
@@ -93,7 +93,8 @@ proc _create {top name size flags} {
     ttk::label $top.f.properties.drawLabel          {*}[::styleLabel] \
                                                         -text [_ "Draw With"]
     
-    ::createMenuByIndex $top.f.properties.draw      $shapes ::pd_array::arrayDraw($top) -width -6
+    ::createMenuByIndex $top.f.properties.draw      $shapes ::pd_array::arrayDraw($top) \
+                                                        -width -$::width(small)
     
     grid $top.f.properties.nameLabel                -row 0 -column 0 -sticky nsew
     grid $top.f.properties.name                     -row 0 -column 1 -sticky nsew
