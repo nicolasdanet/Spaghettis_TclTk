@@ -264,7 +264,7 @@ proc create {top type
         set values [list [_ $check1] [_ $check2]]
         
         ::createMenuByIndex $top.f.properties.check     $values ::pd_iem::iemCheck($top) \
-                                                            -width -$::width(medium)
+                                                            -width [::measure $values]
         
         grid $top.f.properties.check                    -row [incr row] -column 1 -sticky nsew
     }
@@ -276,7 +276,7 @@ proc create {top type
         set values [list [_ "Jump"] [_ "Steady"]]
         
         ::createMenuByIndex $top.f.properties.steady    $values ::pd_iem::iemSteady($top) \
-                                                            -width -$::width(medium)
+                                                            -width [::measure $values]
         
         grid $top.f.properties.steady                   -row [incr row] -column 1 -sticky nsew
     }

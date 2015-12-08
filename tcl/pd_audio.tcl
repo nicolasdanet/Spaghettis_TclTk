@@ -101,6 +101,8 @@ proc show {top \
     set audioCallback       $callback
     set audioBlockSize      $blockSize
 
+    set values {64 128 256 512 1024 2048}
+        
     toplevel $top -class PdDialog
     wm title $top [_ "Audio"]
     wm group $top .
@@ -134,10 +136,8 @@ proc show {top \
     ttk::label $top.f.properties.blockSizeLabel         {*}[::styleLabel] \
                                                             -text [_ "Block Size"]
     
-    set values {64 128 256 512 1024 2048}
-    
     ::createMenuByValue $top.f.properties.blockSize     $values ::pd_audio::audioBlockSize \
-                                                            -width $::width(small)
+                                                            -width [::measure $values]
     
     grid $top.f.properties.sampleRateLabel              -row 0 -column 0 -sticky nsew
     grid $top.f.properties.sampleRate                   -row 0 -column 2 -sticky nsew

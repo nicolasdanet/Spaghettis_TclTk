@@ -64,7 +64,7 @@ proc _create {top name size flags} {
     set arraySave($top)         [expr {$flags & 1}]
     set arrayDraw($top)         [expr {($flags & 6) >> 1}]
     
-    set shapes {"Polygons" "Points" "Curves"} 
+    set values {"Polygons" "Points" "Curves"} 
         
     ttk::frame      $top.f                          {*}[::styleFrame]
     ttk::labelframe $top.f.properties               {*}[::styleLabelFrame]  -text [_ "Properties"]
@@ -93,8 +93,8 @@ proc _create {top name size flags} {
     ttk::label $top.f.properties.drawLabel          {*}[::styleLabel] \
                                                         -text [_ "Draw With"]
     
-    ::createMenuByIndex $top.f.properties.draw      $shapes ::pd_array::arrayDraw($top) \
-                                                        -width -$::width(small)
+    ::createMenuByIndex $top.f.properties.draw      $values ::pd_array::arrayDraw($top) \
+                                                        -width [::measure $values]
     
     grid $top.f.properties.nameLabel                -row 0 -column 0 -sticky nsew
     grid $top.f.properties.name                     -row 0 -column 1 -sticky nsew

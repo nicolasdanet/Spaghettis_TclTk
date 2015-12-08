@@ -79,7 +79,7 @@ proc _create {top width low high send receive name position} {
     set atomLow(${top}.old)     $low
     set atomHigh(${top}.old)    $high
 
-    set positions {"Left" "Right" "Top" "Bottom"}
+    set values {"Left" "Right" "Top" "Bottom"}
      
     ttk::frame      $top.f                          {*}[::styleFrame]
     ttk::labelframe $top.f.properties               {*}[::styleLabelFrame]  -text [_ "Properties"]
@@ -116,8 +116,8 @@ proc _create {top width low high send receive name position} {
     ttk::label $top.f.label.positionLabel           {*}[::styleLabel] \
                                                         -text [_ "Position"]
                                                         
-    ::createMenuByIndex $top.f.label.position       $positions ::pd_atom::atomPosition($top) \
-                                                        -width -$::width(small)
+    ::createMenuByIndex $top.f.label.position       $values ::pd_atom::atomPosition($top) \
+                                                        -width [::measure $values]
     
     ttk::label $top.f.label.sendLabel               {*}[::styleLabel] \
                                                         -text [_ "Send"]
