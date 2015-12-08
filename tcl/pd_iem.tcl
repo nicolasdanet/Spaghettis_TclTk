@@ -160,57 +160,90 @@ proc create {top type
     wm group $top .
     
     wm resizable $top 0 0
+    wm minsize   $top {*}[::styleMinimumSize]
     wm geometry  $top [::rightNextTo $::var(windowFocused)]
+    
+    ttk::frame      $top.f                          {*}[::styleFrame]
+    ttk::labelframe $top.f.properties               {*}[::styleLabelFrame]  -text [_ "Properties"]
+    ttk::labelframe $top.f.label                    {*}[::styleLabelFrame]  -text [_ "Label"]
+    
+    pack $top.f                                     {*}[::packMain]
+    pack $top.f.properties                          {*}[::packCategory]
+    #pack $top.f.label                               {*}[::packCategoryNext]
+    
+    set row -1
     
     if {$widthLabel ne "empty"}     {
     
-        label $top.widthLabel       -text [_ $widthLabel]
-        entry $top.width            -textvariable ::pd_iem::iemWidth($top)
-        pack  $top.widthLabel       -side top -anchor w
-        pack  $top.width            -side top -anchor w
+        ttk::label $top.f.properties.widthLabel     {*}[::styleLabel] \
+                                                        -text [_ $widthLabel]
+        ttk::entry $top.f.properties.width          {*}[::styleEntry] \
+                                                        -textvariable ::pd_iem::iemWidth($top) \
+                                                        -width $::width(small)
         
-        bind  $top.width <Return>   { ::nextEntry %W }
+        grid $top.f.properties.widthLabel           -row [incr row] -column 0 -sticky nsew
+        grid $top.f.properties.width                -row $row       -column 1 -sticky nsew
+
+        bind $top.f.properties.width <Return>       { ::nextEntry %W }
     }
     
     if {$heightLabel ne "empty"}    {
     
-        label $top.heightLabel      -text [_ $heightLabel]
-        entry $top.height           -textvariable ::pd_iem::iemHeight($top)
-        pack  $top.heightLabel      -side top -anchor w
-        pack  $top.height           -side top -anchor w
+        ttk::label $top.f.properties.heightLabel    {*}[::styleLabel] \
+                                                        -text [_ $heightLabel]
+        ttk::entry $top.f.properties.height         {*}[::styleEntry] \
+                                                        -textvariable ::pd_iem::iemHeight($top) \
+                                                        -width $::width(small)
+                                                        
+        grid $top.f.properties.heightLabel          -row [incr row] -column 0 -sticky nsew
+        grid $top.f.properties.height               -row $row       -column 1 -sticky nsew
         
-        bind  $top.height <Return>  { ::nextEntry %W }
+        bind $top.f.properties.height <Return>      { ::nextEntry %W }
     }
     
     if {$option1Label ne "empty"}   {
     
-        label $top.option1Label     -text [_ $option1Label]
-        entry $top.option1          -textvariable ::pd_iem::iemOption1($top)
-        pack  $top.option1Label     -side top -anchor w
-        pack  $top.option1          -side top -anchor w
+        ttk::label $top.f.properties.option1Label   {*}[::styleLabel] \
+                                                        -text [_ $option1Label]
+        ttk::entry $top.f.properties.option1        {*}[::styleEntry] \
+                                                        -textvariable ::pd_iem::iemOption1($top) \
+                                                        -width $::width(small)
+
+        grid $top.f.properties.option1Label         -row [incr row] -column 0 -sticky nsew
+        grid $top.f.properties.option1              -row $row       -column 1 -sticky nsew
         
-        bind  $top.option1 <Return> { ::nextEntry %W }
+        bind  $top.f.properties.option1 <Return>    { ::nextEntry %W }
     }
     
     if {$option2Label ne "empty"}   {
     
-        label $top.option2Label     -text [_ $option2Label]
-        entry $top.option2          -textvariable ::pd_iem::iemOption2($top)
-        pack  $top.option2Label     -side top -anchor w
-        pack  $top.option2          -side top -anchor w
+        ttk::label $top.f.properties.option2Label   {*}[::styleLabel] \
+                                                        -text [_ $option2Label]
+        ttk::entry $top.f.properties.option2        {*}[::styleEntry] \
+                                                        -textvariable ::pd_iem::iemOption2($top) \
+                                                        -width $::width(small)
+                                                        
+        grid $top.f.properties.option2Label         -row [incr row] -column 0 -sticky nsew
+        grid $top.f.properties.option2              -row $row       -column 1 -sticky nsew
         
-        bind  $top.option2 <Return> { ::nextEntry %W }
+        bind $top.f.properties.option2 <Return>     { ::nextEntry %W }
     }
     
     if {$extraLabel ne "empty"}     {
     
-        label $top.extraLabel       -text [_ $extraLabel]
-        entry $top.extra            -textvariable ::pd_iem::iemExtra($top)
-        pack  $top.extraLabel       -side top -anchor w
-        pack  $top.extra            -side top -anchor w
+        ttk::label $top.f.properties.extraLabel     {*}[::styleLabel] \
+                                                        -text [_ $extraLabel]
+        ttk::entry $top.f.properties.extra          {*}[::styleEntry] \
+                                                        -textvariable ::pd_iem::iemExtra($top) \
+                                                        -width $::width(small)
+
+        grid $top.f.properties.extraLabel           -row [incr row] -column 0 -sticky nsew
+        grid $top.f.properties.extra                -row $row       -column 1 -sticky nsew
         
-        bind  $top.extra <Return>   { ::nextEntry %W }
+        bind $top.f.properties.extra <Return>       { ::nextEntry %W }
     }
+    
+    if {0} {
     
     if {$check != -1}               {
     if {$check1 ne "empty"}         {
@@ -320,7 +353,15 @@ proc create {top type
         bind  $top.receive <Return> { ::nextEntry %W }
     }
     
-    if {[winfo exists $top.width]} { focus $top.width; $top.width selection range 0 end }
+    }
+    
+    grid columnconfigure $top.f.properties  0 -weight 1
+    grid columnconfigure $top.f.label       0 -weight 1
+    
+    if {[winfo exists $top.f.properties.width]} { 
+        focus $top.f.properties.width
+        $top.f.properties.width selection range 0 end 
+    }
         
     wm protocol $top WM_DELETE_WINDOW   "::pd_iem::closed $top"
 }
@@ -469,7 +510,7 @@ proc _forceHeight {top} {
     variable iemHeightLabel
 
     if {$::pd_iem::iemHeightLabel($top) ne "empty"} {
-        set iemHeight($top) [::ifInteger $iemHeight($top) $iemHeigh(${top}.old)]
+        set iemHeight($top) [::ifInteger $iemHeight($top) $iemHeight(${top}.old)]
         set iemHeight($top) [::tcl::mathfunc::max $iemHeight($top) $iemHeightMinimum($top)]
     }
 }
