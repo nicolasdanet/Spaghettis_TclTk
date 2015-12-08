@@ -50,7 +50,6 @@ proc create {top width height coordinates editable} {
     toplevel $top -class PdPatch
     wm group $top .
 
-    wm minsize  $top 50 50
     wm geometry $top [format "=%dx%d%s" $width $height $coordinates]
     
     if {[tk windowingsystem] ne "aqua"} { $top configure -menu .menubar }

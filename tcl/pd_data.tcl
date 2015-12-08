@@ -36,7 +36,7 @@ proc _create {top content} {
     wm title $top [_ "Data"]
     wm group $top .
     
-    wm minsize  $top 300 150
+    wm minsize  $top {*}[::styleMinimumSize]
     wm geometry $top [format "=600x400%s" [::rightNextTo $::var(windowFocused)]]
 
     text $top.text  -font [::styleFontText] \

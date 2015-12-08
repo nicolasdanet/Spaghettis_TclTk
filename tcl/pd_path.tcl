@@ -43,7 +43,7 @@ proc _create {} {
     wm title .path [_ "Path"]
     wm group .path .
         
-    wm minsize  .path 300 150
+    wm minsize  .path {*}[::styleMinimumSize]
     wm geometry .path [format "=500x300%s" [::rightNextTo .console]]
     
     ttk::frame      .path.f             {*}[::styleFrame]

@@ -64,7 +64,7 @@ proc _create {top width low high send receive name position} {
     wm group $top .
     
     wm resizable $top 0 0
-    wm minsize   $top 300 150
+    wm minsize   $top {*}[::styleMinimumSize]
     wm geometry  $top [::rightNextTo $::var(windowFocused)]
 
     set atomWidth($top)         $width

@@ -55,7 +55,7 @@ proc _create {top name size flags} {
     wm group $top .
     
     wm resizable $top 0 0
-    wm minsize   $top 300 150
+    wm minsize   $top {*}[::styleMinimumSize]
     wm geometry  $top [::rightNextTo $::var(windowFocused)]
     
     set arrayName($top)         [::rauteToDollar $name]
