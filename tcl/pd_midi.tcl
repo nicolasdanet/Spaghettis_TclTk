@@ -139,8 +139,15 @@ proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     pack $top.f.outputs.outLabel        -side left -fill x -expand 1 -padx {0 20}
     pack $top.f.outputs.out             -side left -fill x -expand 1
     
-    bind $top <Destroy> { ::pd_menu::enableMidi }
+    bind $top.f.inputs.in   <Return> { ::nextEntry %W }
+    bind $top.f.outputs.out <Return> { ::nextEntry %W }
     
+    focus $top.f.inputs.in
+    
+    $top.f.inputs.in selection range 0 end
+    
+    bind $top <Destroy> { ::pd_menu::enableMidi }
+        
     wm protocol $top WM_DELETE_WINDOW   "::pd_midi::closed $top"
 }
 

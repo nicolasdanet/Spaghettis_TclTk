@@ -224,6 +224,8 @@ proc _makeIn {top k} {
     grid $slot                          -row $row -column 0 -sticky nsew
     grid $devices                       -row $row -column 1 -sticky nsew -padx {0 5}
     grid $channels                      -row $row -column 2 -sticky nsew
+    
+    bind $channels <Return> { ::nextEntry %W }
 }
 
 proc _makeOut {top k} {
@@ -252,6 +254,8 @@ proc _makeOut {top k} {
     grid $slot                          -row $row -column 0 -sticky nsew
     grid $devices                       -row $row -column 1 -sticky nsew -padx {0 5}
     grid $channels                      -row $row -column 2 -sticky nsew
+    
+    bind $channels <Return> { ::nextEntry %W }
 }
 
 # ------------------------------------------------------------------------------------------------------------
