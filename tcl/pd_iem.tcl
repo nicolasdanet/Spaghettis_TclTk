@@ -182,7 +182,7 @@ proc create {top type
                                                             -width $::width(small)
         
         grid $top.f.properties.widthLabel               -row [incr row] -column 0 -sticky nsew
-        grid $top.f.properties.width                    -row $row       -column 1 -sticky nsew
+        grid $top.f.properties.width                    -row $row       -column 2 -sticky nsew
 
         bind $top.f.properties.width <Return>           { ::nextEntry %W }
     }
@@ -196,7 +196,7 @@ proc create {top type
                                                             -width $::width(small)
                                                         
         grid $top.f.properties.heightLabel              -row [incr row] -column 0 -sticky nsew
-        grid $top.f.properties.height                   -row $row       -column 1 -sticky nsew
+        grid $top.f.properties.height                   -row $row       -column 2 -sticky nsew
         
         bind $top.f.properties.height <Return>          { ::nextEntry %W }
     }
@@ -210,7 +210,7 @@ proc create {top type
                                                             -width $::width(small)
 
         grid $top.f.properties.option1Label             -row [incr row] -column 0 -sticky nsew
-        grid $top.f.properties.option1                  -row $row       -column 1 -sticky nsew
+        grid $top.f.properties.option1                  -row $row       -column 2 -sticky nsew
         
         bind  $top.f.properties.option1 <Return>        { ::nextEntry %W }
     }
@@ -224,7 +224,7 @@ proc create {top type
                                                             -width $::width(small)
                                                         
         grid $top.f.properties.option2Label             -row [incr row] -column 0 -sticky nsew
-        grid $top.f.properties.option2                  -row $row       -column 1 -sticky nsew
+        grid $top.f.properties.option2                  -row $row       -column 2 -sticky nsew
         
         bind $top.f.properties.option2 <Return>         { ::nextEntry %W }
     }
@@ -238,7 +238,7 @@ proc create {top type
                                                             -width $::width(small)
 
         grid $top.f.properties.extraLabel               -row [incr row] -column 0 -sticky nsew
-        grid $top.f.properties.extra                    -row $row       -column 1 -sticky nsew
+        grid $top.f.properties.extra                    -row $row       -column 2 -sticky nsew
         
         bind $top.f.properties.extra <Return>           { ::nextEntry %W }
     }
@@ -253,7 +253,7 @@ proc create {top type
                                                             -takefocus 0
         
         grid $top.f.properties.loadbangLabel            -row [incr row] -column 0 -sticky nsew
-        grid $top.f.properties.loadbang                 -row $row       -column 1 -sticky nsew
+        grid $top.f.properties.loadbang                 -row $row       -column 2 -sticky nsew
         
     }
     
@@ -266,7 +266,7 @@ proc create {top type
         ::createMenuByIndex $top.f.properties.check     $values ::pd_iem::iemCheck($top) \
                                                             -width [::measure $values]
         
-        grid $top.f.properties.check                    -row [incr row] -column 1 -sticky nsew
+        grid $top.f.properties.check                    -row [incr row] -column 1 -sticky nsew -columnspan 2
     }
     }
     }
@@ -278,7 +278,7 @@ proc create {top type
         ::createMenuByIndex $top.f.properties.steady    $values ::pd_iem::iemSteady($top) \
                                                             -width [::measure $values]
         
-        grid $top.f.properties.steady                   -row [incr row] -column 1 -sticky nsew
+        grid $top.f.properties.steady                   -row [incr row] -column 1 -sticky nsew -columnspan 2
     }
     
     ttk::label $top.f.label.nameLabel                   {*}[::styleLabel] \
@@ -314,15 +314,15 @@ proc create {top type
                                                             -width [::measure $values]
                                                             
     grid $top.f.label.nameLabel                         -row [incr row] -column 0 -sticky nsew
-    grid $top.f.label.name                              -row $row       -column 1 -sticky nsew
+    grid $top.f.label.name                              -row $row       -column 1 -sticky nsew -columnspan 2
     grid $top.f.label.nameDeltaXLabel                   -row [incr row] -column 0 -sticky nsew
-    grid $top.f.label.nameDeltaX                        -row $row       -column 1 -sticky nsew
+    grid $top.f.label.nameDeltaX                        -row $row       -column 2 -sticky nsew
     grid $top.f.label.nameDeltaYLabel                   -row [incr row] -column 0 -sticky nsew
-    grid $top.f.label.nameDeltaY                        -row $row       -column 1 -sticky nsew
+    grid $top.f.label.nameDeltaY                        -row $row       -column 2 -sticky nsew
     grid $top.f.label.nameFontSizeLabel                 -row [incr row] -column 0 -sticky nsew
-    grid $top.f.label.nameFontSize                      -row $row       -column 1 -sticky nsew
+    grid $top.f.label.nameFontSize                      -row $row       -column 2 -sticky nsew
     grid $top.f.label.nameFontFamilyLabel               -row [incr row] -column 0 -sticky nsew
-    grid $top.f.label.nameFontFamily                    -row $row       -column 1 -sticky nsew
+    grid $top.f.label.nameFontFamily                    -row $row       -column 1 -sticky nsew -columnspan 2
 
     if {0} {
     
@@ -348,8 +348,12 @@ proc create {top type
     
     }
     
-    grid columnconfigure $top.f.properties  0 -weight 1
-    grid columnconfigure $top.f.label       0 -weight 1
+    grid columnconfigure $top.f.properties  0 -weight 3
+    grid columnconfigure $top.f.properties  1 -weight 1
+    grid columnconfigure $top.f.properties  2 -weight 0
+    grid columnconfigure $top.f.label       0 -weight 3
+    grid columnconfigure $top.f.label       1 -weight 1
+    grid columnconfigure $top.f.label       2 -weight 0
     
     bind $top.f.label.name          <Return>    { ::nextEntry %W }
     bind $top.f.label.nameDeltaX    <Return>    { ::nextEntry %W }

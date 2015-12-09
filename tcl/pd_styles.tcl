@@ -32,7 +32,7 @@ ttk::style configure PureData.TRadiobutton
 
 array set width {
     tiny    3
-    small   8
+    small   6
     medium  12
     large   18
 }
