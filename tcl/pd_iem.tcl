@@ -288,7 +288,7 @@ proc create {top type
                                                             -text [_ "Name"]
     ttk::entry $top.f.label.name                        {*}[::styleEntry] \
                                                             -textvariable ::pd_iem::iemName($top) \
-                                                            -width $::width(large)
+                                                            -width $::width(medium)
     
     ttk::label $top.f.label.nameDeltaXLabel             {*}[::styleLabel] \
                                                             -text [_ "Position X"]
@@ -338,7 +338,7 @@ proc create {top type
                                                             -text [_ "Send"]
         ttk::entry $top.f.label.send                    {*}[::styleEntry] \
                                                             -textvariable ::pd_iem::iemSend($top) \
-                                                            -width $::width(large)
+                                                            -width $::width(medium)
                                                             
         grid $top.f.label.sendLabel                     -row [incr row] -column 0 -sticky nsew
         grid $top.f.label.send                          -row $row       -column 1 -sticky nsew -columnspan 2
@@ -352,7 +352,7 @@ proc create {top type
                                                             -text [_ "Receive"]
         ttk::entry $top.f.label.receive                 {*}[::styleEntry] \
                                                             -textvariable ::pd_iem::iemReceive($top) \
-                                                            -width $::width(large)
+                                                            -width $::width(medium)
         
         grid $top.f.label.receiveLabel                  -row [incr row] -column 0 -sticky nsew
         grid $top.f.label.receive                       -row $row       -column 1 -sticky nsew -columnspan 2

@@ -270,7 +270,7 @@ static void vradio_properties(t_gobj *z, t_glist *owner)
             0 empty 0 empty \
             -1 empty empty \
             %d \
-            %d 256 {Buttons Number} \
+            %d 256 {Number Of Buttons} \
             %s %s \
             %s %d %d \
             %d %d \
