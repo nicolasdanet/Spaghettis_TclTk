@@ -47,7 +47,6 @@ variable  iemBackgroundColor
 variable  iemFrontColor
 variable  iemNameColor
 variable  iemSteady
-variable  iemFont
 
 array set iemType               {}
 array set iemWidth              {}
@@ -74,7 +73,6 @@ array set iemBackgroundColor    {}
 array set iemFrontColor         {}
 array set iemNameColor          {}
 array set iemSteady             {}
-array set iemFont               {}
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -116,7 +114,6 @@ proc create {top type
     variable iemFrontColor
     variable iemNameColor
     variable iemSteady
-    variable iemFont
 
     set iemType($top)               $type
     set iemWidth($top)              $width
@@ -143,9 +140,7 @@ proc create {top type
     set iemFrontColor($top)         $frontColor
     set iemNameColor($top)          $nameColor
     set iemSteady($top)             $steady
-        
-    set iemFont($top)               "$::var(fontFamily)"
-    
+
     set iemWidth(${top}.old)        $width
     set iemHeight(${top}.old)       $height
     set iemOption1(${top}.old)      $option1
@@ -155,6 +150,12 @@ proc create {top type
     set iemNameDeltaY(${top}.old)   $nameDeltaY
     set iemNameFontSize(${top}.old) $nameFontSize
 
+    set bColor [format "#%6.6x" $backgroundColor]
+    set fColor [format "#%6.6x" $frontColor]
+    set nColor [format "#%6.6x" $nameColor]
+    
+    set fonts  [list "$::var(fontFamily)" "Helvetica" "Times"]
+        
     toplevel $top -class PdDialog
     wm title $top [_ $type]
     wm group $top .
@@ -165,12 +166,14 @@ proc create {top type
     
     ttk::frame      $top.f                              {*}[::styleFrame]
     ttk::labelframe $top.f.properties                   {*}[::styleLabelFrame]  -text [_ "Properties"]
+    ttk::labelframe $top.f.colors                       {*}[::styleLabelFrame]  -text [_ "Colors"]
     ttk::labelframe $top.f.label                        {*}[::styleLabelFrame]  -text [_ "Label"]
-    
+        
     pack $top.f                                         {*}[::packMain]
     pack $top.f.properties                              {*}[::packCategory]
+    pack $top.f.colors                                  {*}[::packCategoryNext]
     pack $top.f.label                                   {*}[::packCategoryNext]
-    
+        
     set row -1
     
     if {$widthLabel ne "empty"}     {
@@ -187,7 +190,6 @@ proc create {top type
         bind $top.f.properties.width <Return>           { ::nextEntry %W }
         
         focus $top.f.properties.width
-        
         $top.f.properties.width selection range 0 end 
     }
     
@@ -251,7 +253,6 @@ proc create {top type
     
         ttk::label $top.f.properties.loadbangLabel      {*}[::styleLabel] \
                                                             -text [_ "Load On Start"]
-                                                            
         ttk::checkbutton $top.f.properties.loadbang     {*}[::styleCheckButton] \
                                                             -variable ::pd_iem::iemLoadbang($top) \
                                                             -takefocus 0
@@ -284,6 +285,23 @@ proc create {top type
         grid $top.f.properties.steady                   -row [incr row] -column 1 -sticky nsew -columnspan 2
     }
     
+    ttk::label $top.f.colors.backgroundLabel            {*}[::styleLabel]   -text [_ "Background"]
+    ttk::label $top.f.colors.frontLabel                 {*}[::styleLabel]   -text [_ "Foreground"]
+    ttk::label $top.f.colors.nameLabel                  {*}[::styleLabel]   -text [_ "Label"]
+    
+    label $top.f.colors.background                      -background $bColor -width $::width(small)
+    label $top.f.colors.front                           -background $fColor -width $::width(small)
+    label $top.f.colors.name                            -background $nColor -width $::width(small)
+    
+    set row -1
+    
+    grid $top.f.colors.backgroundLabel                  -row [incr row] -column 0 -sticky nsew
+    grid $top.f.colors.background                       -row $row       -column 1 -sticky nsew -pady 2
+    grid $top.f.colors.frontLabel                       -row [incr row] -column 0 -sticky nsew
+    grid $top.f.colors.front                            -row $row       -column 1 -sticky nsew -pady 2
+    grid $top.f.colors.nameLabel                        -row [incr row] -column 0 -sticky nsew
+    grid $top.f.colors.name                             -row $row       -column 1 -sticky nsew -pady 2
+    
     ttk::label $top.f.label.nameLabel                   {*}[::styleLabel] \
                                                             -text [_ "Name"]
     ttk::entry $top.f.label.name                        {*}[::styleEntry] \
@@ -308,14 +326,13 @@ proc create {top type
                                                             -textvariable ::pd_iem::iemNameFontSize($top) \
                                                             -width $::width(small)
     
-    set values [list "$::var(fontFamily)" "Helvetica" "Times"]
-    
     ttk::label $top.f.label.nameFontFamilyLabel         {*}[::styleLabel] \
                                                             -text [_ "Font Family"]
-                                                            
-    ::createMenuByIndex $top.f.label.nameFontFamily     $values ::pd_iem::iemNameFontFamily($top) \
-                                                            -width [::measure $values]
-                                                            
+    ::createMenuByIndex $top.f.label.nameFontFamily     $fonts ::pd_iem::iemNameFontFamily($top) \
+                                                            -width [::measure $fonts]
+
+    set row -1
+    
     grid $top.f.label.nameLabel                         -row [incr row] -column 0 -sticky nsew
     grid $top.f.label.name                              -row $row       -column 1 -sticky nsew -columnspan 2
     grid $top.f.label.nameDeltaXLabel                   -row [incr row] -column 0 -sticky nsew
@@ -359,10 +376,12 @@ proc create {top type
         
         bind $top.f.label.receive <Return>              { ::nextEntry %W }
     }
- 
+    
     grid columnconfigure $top.f.properties  0 -weight 3
     grid columnconfigure $top.f.properties  1 -weight 1
     grid columnconfigure $top.f.properties  2 -weight 0
+    grid columnconfigure $top.f.colors      0 -weight 1
+    grid columnconfigure $top.f.colors      1 -weight 0
     grid columnconfigure $top.f.label       0 -weight 3
     grid columnconfigure $top.f.label       1 -weight 1
     grid columnconfigure $top.f.label       2 -weight 0
@@ -397,7 +416,6 @@ proc closed {top} {
     variable iemFrontColor
     variable iemNameColor
     variable iemSteady
-    variable iemFont
     
     ::pd_iem::_apply $top
     
@@ -426,7 +444,6 @@ proc closed {top} {
     unset iemFrontColor($top)
     unset iemNameColor($top)
     unset iemSteady($top)
-    unset iemFont($top)
     
     unset iemWidth(${top}.old)
     unset iemHeight(${top}.old)
