@@ -185,6 +185,10 @@ proc create {top type
         grid $top.f.properties.width                    -row $row       -column 2 -sticky nsew
 
         bind $top.f.properties.width <Return>           { ::nextEntry %W }
+        
+        focus $top.f.properties.width
+        
+        $top.f.properties.width selection range 0 end 
     }
     
     if {$heightLabel ne "empty"}    {
@@ -254,7 +258,6 @@ proc create {top type
         
         grid $top.f.properties.loadbangLabel            -row [incr row] -column 0 -sticky nsew
         grid $top.f.properties.loadbang                 -row $row       -column 2 -sticky nsew
-        
     }
     
     if {$check != -1}               {
@@ -324,30 +327,39 @@ proc create {top type
     grid $top.f.label.nameFontFamilyLabel               -row [incr row] -column 0 -sticky nsew
     grid $top.f.label.nameFontFamily                    -row $row       -column 1 -sticky nsew -columnspan 2
 
-    if {0} {
+    bind $top.f.label.name          <Return>            { ::nextEntry %W }
+    bind $top.f.label.nameDeltaX    <Return>            { ::nextEntry %W }
+    bind $top.f.label.nameDeltaY    <Return>            { ::nextEntry %W }
+    bind $top.f.label.nameFontSize  <Return>            { ::nextEntry %W }
     
     if {$send ne "nosndno"}         {
     
-        label $top.sendLabel        -text [_ "Send"]
-        entry $top.send             -textvariable ::pd_iem::iemSend($top)
-        pack  $top.sendLabel        -side top -anchor w
-        pack  $top.send             -side top -anchor w
+        ttk::label $top.f.label.sendLabel               {*}[::styleLabel] \
+                                                            -text [_ "Send"]
+        ttk::entry $top.f.label.send                    {*}[::styleEntry] \
+                                                            -textvariable ::pd_iem::iemSend($top) \
+                                                            -width $::width(large)
+                                                            
+        grid $top.f.label.sendLabel                     -row [incr row] -column 0 -sticky nsew
+        grid $top.f.label.send                          -row $row       -column 1 -sticky nsew -columnspan 2
         
-        bind  $top.send <Return>    { ::nextEntry %W }
+        bind $top.f.label.send <Return>                 { ::nextEntry %W }
     }
     
     if {$send ne "norcvno"}         {
     
-        label $top.receiveLabel     -text [_ "Receive"]
-        entry $top.receive          -textvariable ::pd_iem::iemReceive($top)
-        pack  $top.receiveLabel     -side top -anchor w
-        pack  $top.receive          -side top -anchor w
+        ttk::label $top.f.label.receiveLabel            {*}[::styleLabel] \
+                                                            -text [_ "Receive"]
+        ttk::entry $top.f.label.receive                 {*}[::styleEntry] \
+                                                            -textvariable ::pd_iem::iemReceive($top) \
+                                                            -width $::width(large)
         
-        bind  $top.receive <Return> { ::nextEntry %W }
+        grid $top.f.label.receiveLabel                  -row [incr row] -column 0 -sticky nsew
+        grid $top.f.label.receive                       -row $row       -column 1 -sticky nsew -columnspan 2
+        
+        bind $top.f.label.receive <Return>              { ::nextEntry %W }
     }
-    
-    }
-    
+ 
     grid columnconfigure $top.f.properties  0 -weight 3
     grid columnconfigure $top.f.properties  1 -weight 1
     grid columnconfigure $top.f.properties  2 -weight 0
@@ -355,16 +367,6 @@ proc create {top type
     grid columnconfigure $top.f.label       1 -weight 1
     grid columnconfigure $top.f.label       2 -weight 0
     
-    bind $top.f.label.name          <Return>    { ::nextEntry %W }
-    bind $top.f.label.nameDeltaX    <Return>    { ::nextEntry %W }
-    bind $top.f.label.nameDeltaY    <Return>    { ::nextEntry %W }
-    bind $top.f.label.nameFontSize  <Return>    { ::nextEntry %W }
-    
-    if {[winfo exists $top.f.properties.width]} { 
-        focus $top.f.properties.width
-        $top.f.properties.width selection range 0 end 
-    }
-        
     wm protocol $top WM_DELETE_WINDOW   "::pd_iem::closed $top"
 }
 
