@@ -150,10 +150,6 @@ proc create {top type
     set iemNameDeltaY(${top}.old)   $nameDeltaY
     set iemNameFontSize(${top}.old) $nameFontSize
 
-    set bColor [format "#%6.6x" $backgroundColor]
-    set fColor [format "#%6.6x" $frontColor]
-    set nColor [format "#%6.6x" $nameColor]
-    
     set fonts  [list "$::var(fontFamily)" "Helvetica" "Times"]
         
     toplevel $top -class PdDialog
@@ -285,22 +281,29 @@ proc create {top type
         grid $top.f.properties.steady                   -row [incr row] -column 1 -sticky nsew -columnspan 2
     }
     
+    ttk::label $top.f.colors.nameLabel                  {*}[::styleLabel]   -text [_ "Label"]
     ttk::label $top.f.colors.backgroundLabel            {*}[::styleLabel]   -text [_ "Background"]
     ttk::label $top.f.colors.frontLabel                 {*}[::styleLabel]   -text [_ "Foreground"]
-    ttk::label $top.f.colors.nameLabel                  {*}[::styleLabel]   -text [_ "Label"]
     
-    label $top.f.colors.background                      -background $bColor -width $::width(small)
-    label $top.f.colors.front                           -background $fColor -width $::width(small)
-    label $top.f.colors.name                            -background $nColor -width $::width(small)
+    label $top.f.colors.name                            -background [format "#%6.6x" $nameColor] \
+                                                        -width $::width(small)
+    label $top.f.colors.background                      -background [format "#%6.6x" $backgroundColor] \
+                                                        -width $::width(small)
+    label $top.f.colors.front                           -background [format "#%6.6x" $frontColor] \
+                                                        -width $::width(small)
     
     set row -1
     
+    grid $top.f.colors.nameLabel                        -row [incr row] -column 0 -sticky nsew
+    grid $top.f.colors.name                             -row $row       -column 1 -sticky nsew -pady 2
     grid $top.f.colors.backgroundLabel                  -row [incr row] -column 0 -sticky nsew
     grid $top.f.colors.background                       -row $row       -column 1 -sticky nsew -pady 2
     grid $top.f.colors.frontLabel                       -row [incr row] -column 0 -sticky nsew
     grid $top.f.colors.front                            -row $row       -column 1 -sticky nsew -pady 2
-    grid $top.f.colors.nameLabel                        -row [incr row] -column 0 -sticky nsew
-    grid $top.f.colors.name                             -row $row       -column 1 -sticky nsew -pady 2
+
+    bind $top.f.colors.name       <Button>              { ::pd_console::post "%W\n" }
+    bind $top.f.colors.background <Button>              { ::pd_console::post "%W\n" }
+    bind $top.f.colors.front      <Button>              { ::pd_console::post "%W\n" }
     
     ttk::label $top.f.label.nameLabel                   {*}[::styleLabel] \
                                                             -text [_ "Name"]
