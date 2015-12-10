@@ -176,7 +176,7 @@ proc create {top type
     
         ttk::label $top.f.properties.widthLabel         {*}[::styleLabel] \
                                                             -text [_ $widthLabel]
-        ttk::entry $top.f.properties.width              {*}[::styleEntry] \
+        ttk::entry $top.f.properties.width              {*}[::styleEntryNumber] \
                                                             -textvariable ::pd_iem::iemWidth($top) \
                                                             -width $::width(small)
         
@@ -193,7 +193,7 @@ proc create {top type
     
         ttk::label $top.f.properties.heightLabel        {*}[::styleLabel] \
                                                             -text [_ $heightLabel]
-        ttk::entry $top.f.properties.height             {*}[::styleEntry] \
+        ttk::entry $top.f.properties.height             {*}[::styleEntryNumber] \
                                                             -textvariable ::pd_iem::iemHeight($top) \
                                                             -width $::width(small)
                                                         
@@ -207,7 +207,7 @@ proc create {top type
     
         ttk::label $top.f.properties.option1Label       {*}[::styleLabel] \
                                                             -text [_ $option1Label]
-        ttk::entry $top.f.properties.option1            {*}[::styleEntry] \
+        ttk::entry $top.f.properties.option1            {*}[::styleEntryNumber] \
                                                             -textvariable ::pd_iem::iemOption1($top) \
                                                             -width $::width(small)
 
@@ -221,7 +221,7 @@ proc create {top type
     
         ttk::label $top.f.properties.option2Label       {*}[::styleLabel] \
                                                             -text [_ $option2Label]
-        ttk::entry $top.f.properties.option2            {*}[::styleEntry] \
+        ttk::entry $top.f.properties.option2            {*}[::styleEntryNumber] \
                                                             -textvariable ::pd_iem::iemOption2($top) \
                                                             -width $::width(small)
                                                         
@@ -235,7 +235,7 @@ proc create {top type
     
         ttk::label $top.f.properties.extraLabel         {*}[::styleLabel] \
                                                             -text [_ $extraLabel]
-        ttk::entry $top.f.properties.extra              {*}[::styleEntry] \
+        ttk::entry $top.f.properties.extra              {*}[::styleEntryNumber] \
                                                             -textvariable ::pd_iem::iemExtra($top) \
                                                             -width $::width(small)
 
@@ -281,29 +281,46 @@ proc create {top type
         grid $top.f.properties.steady                   -row [incr row] -column 1 -sticky nsew -columnspan 2
     }
     
-    ttk::label $top.f.colors.nameLabel                  {*}[::styleLabel]   -text [_ "Label"]
-    ttk::label $top.f.colors.backgroundLabel            {*}[::styleLabel]   -text [_ "Background"]
-    ttk::label $top.f.colors.frontLabel                 {*}[::styleLabel]   -text [_ "Foreground"]
-    
-    label $top.f.colors.name                            -background [::integerToColor $nameColor] \
-                                                        -width $::width(small)
-    label $top.f.colors.background                      -background [::integerToColor $backgroundColor] \
-                                                        -width $::width(small)
-    label $top.f.colors.front                           -background [::integerToColor $frontColor] \
-                                                        -width $::width(small)
-    
     set row -1
+        
+    if {$nameColor != -1}           {
     
-    grid $top.f.colors.nameLabel                        -row [incr row] -column 0 -sticky nsew
-    grid $top.f.colors.name                             -row $row       -column 1 -sticky nsew -pady 2
-    grid $top.f.colors.backgroundLabel                  -row [incr row] -column 0 -sticky nsew
-    grid $top.f.colors.background                       -row $row       -column 1 -sticky nsew -pady 2
-    grid $top.f.colors.frontLabel                       -row [incr row] -column 0 -sticky nsew
-    grid $top.f.colors.front                            -row $row       -column 1 -sticky nsew -pady 2
+        ttk::label $top.f.colors.nameLabel              {*}[::styleLabel]   -text [_ "Label"]
+        
+        label $top.f.colors.name                        -background [::integerToColor $nameColor] \
+                                                        -width $::width(small)
+        
+        grid $top.f.colors.nameLabel                    -row [incr row] -column 0 -sticky nsew
+        grid $top.f.colors.name                         -row $row       -column 1 -sticky nsew -pady 2
+    
+        bind $top.f.colors.name <Button>                "::pd_iem::_chooseNameColor $top %W"
+    }
 
-    bind $top.f.colors.name       <Button>              "::pd_iem::_chooseNameColor $top %W"
-    bind $top.f.colors.background <Button>              "::pd_iem::_chooseBackgroundColor $top %W"
-    bind $top.f.colors.front      <Button>              "::pd_iem::_chooseFrontColor $top %W"
+    if {$backgroundColor != -1}     {
+    
+        ttk::label $top.f.colors.backgroundLabel        {*}[::styleLabel]   -text [_ "Background"]
+        
+        label $top.f.colors.background                  -background [::integerToColor $backgroundColor] \
+                                                        -width $::width(small)
+                                                    
+        grid $top.f.colors.backgroundLabel              -row [incr row] -column 0 -sticky nsew
+        grid $top.f.colors.background                   -row $row       -column 1 -sticky nsew -pady 2
+        
+        bind $top.f.colors.background <Button>          "::pd_iem::_chooseBackgroundColor $top %W"
+    }
+    
+    if {$frontColor != -1}          {
+    
+        ttk::label $top.f.colors.frontLabel             {*}[::styleLabel]   -text [_ "Foreground"]
+    
+        label $top.f.colors.front                       -background [::integerToColor $frontColor] \
+                                                        -width $::width(small)
+    
+        grid $top.f.colors.frontLabel                   -row [incr row] -column 0 -sticky nsew
+        grid $top.f.colors.front                        -row $row       -column 1 -sticky nsew -pady 2
+
+        bind $top.f.colors.front <Button>               "::pd_iem::_chooseFrontColor $top %W"
+    }
     
     ttk::label $top.f.label.nameLabel                   {*}[::styleLabel] \
                                                             -text [_ "Name"]
@@ -313,19 +330,19 @@ proc create {top type
     
     ttk::label $top.f.label.nameDeltaXLabel             {*}[::styleLabel] \
                                                             -text [_ "Position X"]
-    ttk::entry $top.f.label.nameDeltaX                  {*}[::styleEntry] \
+    ttk::entry $top.f.label.nameDeltaX                  {*}[::styleEntryNumber] \
                                                             -textvariable ::pd_iem::iemNameDeltaX($top) \
                                                             -width $::width(small)
     
     ttk::label $top.f.label.nameDeltaYLabel             {*}[::styleLabel] \
                                                             -text [_ "Position Y"]
-    ttk::entry $top.f.label.nameDeltaY                  {*}[::styleEntry] \
+    ttk::entry $top.f.label.nameDeltaY                  {*}[::styleEntryNumber] \
                                                             -textvariable ::pd_iem::iemNameDeltaY($top) \
                                                             -width $::width(small)
 
     ttk::label $top.f.label.nameFontSizeLabel           {*}[::styleLabel] \
                                                             -text [_ "Font Size"]
-    ttk::entry $top.f.label.nameFontSize                {*}[::styleEntry] \
+    ttk::entry $top.f.label.nameFontSize                {*}[::styleEntryNumber] \
                                                             -textvariable ::pd_iem::iemNameFontSize($top) \
                                                             -width $::width(small)
     
@@ -366,7 +383,7 @@ proc create {top type
         bind $top.f.label.send <Return>                 { ::nextEntry %W }
     }
     
-    if {$send ne "norcvno"}         {
+    if {$receive ne "norcvno"}      {
     
         ttk::label $top.f.label.receiveLabel            {*}[::styleLabel] \
                                                             -text [_ "Receive"]

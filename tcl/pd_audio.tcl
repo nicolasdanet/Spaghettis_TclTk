@@ -123,13 +123,13 @@ proc show {top \
     
     ttk::label $top.f.properties.sampleRateLabel        {*}[::styleLabel] \
                                                             -text [_ "Sample Rate"]
-    ttk::entry $top.f.properties.sampleRate             {*}[::styleEntry] \
+    ttk::entry $top.f.properties.sampleRate             {*}[::styleEntryNumber] \
                                                             -textvariable ::pd_audio::audioSampleRate \
                                                             -width $::width(small)
     
     ttk::label $top.f.properties.delayLabel             {*}[::styleLabel] \
                                                             -text [_ "Delay in Milliseconds"]
-    ttk::entry $top.f.properties.delay                  {*}[::styleEntry] \
+    ttk::entry $top.f.properties.delay                  {*}[::styleEntryNumber] \
                                                             -textvariable ::pd_audio::audioDelay \
                                                             -width $::width(small)
 
@@ -215,7 +215,7 @@ proc _makeIn {top k} {
     
     ::createMenuByIndex $devices        $audioIn ::pd_audio::audioInDevice($k) -width -$::width(large)
         
-    ttk::entry $channels                {*}[::styleEntry] \
+    ttk::entry $channels                {*}[::styleEntryNumber] \
                                         -textvariable ::pd_audio::audioInChannels($k) \
                                         -width $::width(tiny)
     
@@ -245,7 +245,7 @@ proc _makeOut {top k} {
 
     ::createMenuByIndex $devices        $audioOut ::pd_audio::audioOutDevice($k) -width -$::width(large)
     
-    ttk::entry $channels                {*}[::styleEntry] \
+    ttk::entry $channels                {*}[::styleEntryNumber] \
                                         -textvariable ::pd_audio::audioOutChannels($k) \
                                         -width $::width(tiny)
     

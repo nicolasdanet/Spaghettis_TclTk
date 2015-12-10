@@ -124,13 +124,13 @@ proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     
     ttk::label $top.f.inputs.inLabel    {*}[::styleLabel] \
                                             -text [_ "Ports"]
-    ttk::entry $top.f.inputs.in         {*}[::styleEntry] \
+    ttk::entry $top.f.inputs.in         {*}[::styleEntryNumber] \
                                             -textvariable ::pd_midi::midiAlsaIn \
                                             -width $::width(small)
     
     ttk::label $top.f.outputs.outLabel  {*}[::styleLabel] \
                                             -text [_ "Ports"]
-    ttk::entry $top.f.outputs.out       {*}[::styleEntry] \
+    ttk::entry $top.f.outputs.out       {*}[::styleEntryNumber] \
                                             -textvariable ::pd_midi::midiAlsaOut \
                                             -width $::width(small)
                         
