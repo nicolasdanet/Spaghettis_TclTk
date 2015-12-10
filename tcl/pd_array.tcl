@@ -80,7 +80,7 @@ proc _create {top name size flags} {
 
     ttk::label $top.f.properties.sizeLabel          {*}[::styleLabel] \
                                                         -text [_ "Size"]
-    ttk::entry $top.f.properties.size               {*}[::styleEntryNumber] \
+    ttk::entry $top.f.properties.size               {*}[::styleEntry] \
                                                         -textvariable ::pd_array::arraySize($top) \
                                                         -width $::width(small)
 

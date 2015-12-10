@@ -125,121 +125,130 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     
     ::pd_canvas::_forceVisible $top
     
-    ttk::frame      $top.f                          {*}[::styleFrame]
-    ttk::labelframe $top.f.table                    {*}[::styleLabelFrame]  -text [_ "Array"]
-    ttk::labelframe $top.f.graph                    {*}[::styleLabelFrame]  -text [_ "Graph"]
+    ttk::frame      $top.f                      {*}[::styleFrame]
+    ttk::labelframe $top.f.table                {*}[::styleLabelFrame]  -text [_ "Array"]
+    ttk::labelframe $top.f.graph                {*}[::styleLabelFrame]  -text [_ "Graph"]
+    ttk::labelframe $top.f.onParent             {*}[::styleLabelFrame]  -text [_ "Patch"]
         
-    pack $top.f                                     {*}[::packMain]
-    pack $top.f.table                               {*}[::packCategory]
-    pack $top.f.graph                               {*}[::packCategoryNext]
+    pack $top.f                                 {*}[::packMain]
+    pack $top.f.table                           {*}[::packCategory]
+    pack $top.f.graph                           {*}[::packCategoryNext]
+    pack $top.f.onParent                        {*}[::packCategoryNext]
     
-    ttk::label $top.f.table.startLabel              {*}[::styleLabel] \
-                                                        -text [_ "Start"]
-    ttk::entry $top.f.table.start                   {*}[::styleEntryNumber] \
-                                                        -textvariable ::pd_canvas::canvasStart($top) \
-                                                        -width $::width(small)
+    ttk::label $top.f.table.startLabel          {*}[::styleLabel] \
+                                                    -text [_ "Index Start"]
+    ttk::entry $top.f.table.start               {*}[::styleEntryNumber] \
+                                                    -textvariable ::pd_canvas::canvasStart($top) \
+                                                    -width $::width(small)
 
-    ttk::label $top.f.table.endLabel                {*}[::styleLabel] \
-                                                        -text [_ "End"]
-    ttk::entry $top.f.table.end                     {*}[::styleEntryNumber] \
-                                                        -textvariable ::pd_canvas::canvasEnd($top) \
-                                                        -width $::width(small)
+    ttk::label $top.f.table.endLabel            {*}[::styleLabel] \
+                                                    -text [_ "Index End"]
+    ttk::entry $top.f.table.end                 {*}[::styleEntryNumber] \
+                                                    -textvariable ::pd_canvas::canvasEnd($top) \
+                                                    -width $::width(small)
     
-    ttk::label $top.f.table.downLabel               {*}[::styleLabel] \
-                                                        -text [_ "Bottom"]
-    ttk::entry $top.f.table.down                    {*}[::styleEntryNumber] \
-                                                        -textvariable ::pd_canvas::canvasDown($top) \
-                                                        -width $::width(small)
+    ttk::label $top.f.table.downLabel           {*}[::styleLabel] \
+                                                    -text [_ "Value Bottom"]
+    ttk::entry $top.f.table.down                {*}[::styleEntryNumber] \
+                                                    -textvariable ::pd_canvas::canvasDown($top) \
+                                                    -width $::width(small)
                                                         
-    ttk::label $top.f.table.upLabel                 {*}[::styleLabel] \
-                                                        -text [_ "Top"]
-    ttk::entry $top.f.table.up                      {*}[::styleEntryNumber] \
-                                                        -textvariable ::pd_canvas::canvasUp($top) \
-                                                        -width $::width(small)
+    ttk::label $top.f.table.upLabel             {*}[::styleLabel] \
+                                                    -text [_ "Value Top"]
+    ttk::entry $top.f.table.up                  {*}[::styleEntryNumber] \
+                                                    -textvariable ::pd_canvas::canvasUp($top) \
+                                                    -width $::width(small)
 
-    if {0} {
+    ttk::label $top.f.graph.scaleXLabel         {*}[::styleLabel] \
+                                                    -text [_ "Scale X"]
+    ttk::entry $top.f.graph.scaleX              {*}[::styleEntryNumber] \
+                                                    -textvariable ::pd_canvas::canvasScaleX($top) \
+                                                    -width $::width(small)
     
-    label $top.scaleXLabel      -text [_ "Scale Horizontal"]
-    entry $top.scaleX           -textvariable ::pd_canvas::canvasScaleX($top)
-    
-    label $top.scaleYLabel      -text [_ "Scale Vertical"]
-    entry $top.scaleY           -textvariable ::pd_canvas::canvasScaleY($top)
+    ttk::label $top.f.graph.scaleYLabel         {*}[::styleLabel] \
+                                                    -text [_ "Scale Y"]
+    ttk::entry $top.f.graph.scaleY              {*}[::styleEntryNumber] \
+                                                    -textvariable ::pd_canvas::canvasScaleY($top) \
+                                                    -width $::width(small)
 
-    checkbutton $top.visible    -text [_ "Visible in Parent"] \
-                                -variable ::pd_canvas::canvasVisible($top) \
-                                -takefocus 0
+    ttk::label $top.f.onParent.visibleLabel     {*}[::styleLabel] \
+                                                    -text [_ "Visible On Parent"]
+    ttk::checkbutton $top.f.onParent.visible    {*}[::styleCheckButton] \
+                                                    -variable ::pd_canvas::canvasVisible($top) \
+                                                    -takefocus 0
     
-    checkbutton $top.hide       -text [_ "Hide Text"] \
-                                -variable ::pd_canvas::canvasHide($top) \
-                                -takefocus 0
-    
-    label $top.xLabel           -text [_ "Origin X"]
-    entry $top.x                -textvariable ::pd_canvas::canvasX($top)
+    ttk::label $top.f.onParent.hideLabel        {*}[::styleLabel] \
+                                                    -text [_ "Hide Text"]
+    ttk::checkbutton $top.f.onParent.hide       {*}[::styleCheckButton] \
+                                                    -variable ::pd_canvas::canvasHide($top) \
+                                                    -takefocus 0
 
-    label $top.yLabel           -text [_ "Origin Y"]
-    entry $top.y                -textvariable ::pd_canvas::canvasY($top)
-    
-    label $top.widthLabel       -text [_ "Width"]
-    entry $top.width            -textvariable ::pd_canvas::canvasWidth($top)
+    ttk::label $top.f.onParent.xLabel           {*}[::styleLabel] \
+                                                    -text [_ "View X"]
+    ttk::entry $top.f.onParent.x                {*}[::styleEntryNumber] \
+                                                    -textvariable ::pd_canvas::canvasX($top) \
+                                                    -width $::width(small)
 
-    label $top.heightLabel      -text [_ "Height"]
-    entry $top.height           -textvariable ::pd_canvas::canvasHeight($top)
+    ttk::label $top.f.onParent.yLabel           {*}[::styleLabel] \
+                                                    -text [_ "View Y"]
+    ttk::entry $top.f.onParent.y                {*}[::styleEntryNumber] \
+                                                    -textvariable ::pd_canvas::canvasY($top) \
+                                                    -width $::width(small)
     
-    pack  $top.scaleXLabel      -side top -anchor w
-    pack  $top.scaleX           -side top -anchor w
-    pack  $top.scaleYLabel      -side top -anchor w
-    pack  $top.scaleY           -side top -anchor w
-    pack  $top.visible          -side top -anchor w
-    pack  $top.hide             -side top -anchor w
-    pack  $top.startLabel       -side top -anchor w
-    pack  $top.start            -side top -anchor w
-    pack  $top.endLabel         -side top -anchor w
-    pack  $top.end              -side top -anchor w
-    pack  $top.upLabel          -side top -anchor w
-    pack  $top.up               -side top -anchor w
-    pack  $top.downLabel        -side top -anchor w
-    pack  $top.down             -side top -anchor w
-    pack  $top.xLabel           -side top -anchor w
-    pack  $top.x                -side top -anchor w
-    pack  $top.yLabel           -side top -anchor w
-    pack  $top.y                -side top -anchor w
-    pack  $top.widthLabel       -side top -anchor w
-    pack  $top.width            -side top -anchor w
-    pack  $top.heightLabel      -side top -anchor w
-    pack  $top.height           -side top -anchor w
-    
-    bind  $top.scaleX   <Return> { ::nextEntry %W }
-    bind  $top.scaleY   <Return> { ::nextEntry %W }
-    bind  $top.start    <Return> { ::nextEntry %W }
-    bind  $top.end      <Return> { ::nextEntry %W }
-    bind  $top.up       <Return> { ::nextEntry %W }
-    bind  $top.down     <Return> { ::nextEntry %W }
-    bind  $top.x        <Return> { ::nextEntry %W }
-    bind  $top.y        <Return> { ::nextEntry %W }
-    bind  $top.width    <Return> { ::nextEntry %W }
-    bind  $top.height   <Return> { ::nextEntry %W }
+    ttk::label $top.f.onParent.widthLabel       {*}[::styleLabel] \
+                                                    -text [_ "View Width"]
+    ttk::entry $top.f.onParent.width            {*}[::styleEntryNumber] \
+                                                    -textvariable ::pd_canvas::canvasWidth($top) \
+                                                    -width $::width(small)
 
-    focus $top.scaleX
+    ttk::label $top.f.onParent.heightLabel      {*}[::styleLabel] \
+                                                    -text [_ "View Height"]
+    ttk::entry $top.f.onParent.height           {*}[::styleEntryNumber] \
+                                                    -textvariable ::pd_canvas::canvasHeight($top) \
+                                                    -width $::width(small)
     
-    $top.scaleX selection range 0 end
+    grid $top.f.table.startLabel                -row 0 -column 0 -sticky nsew
+    grid $top.f.table.start                     -row 0 -column 1 -sticky nsew
+    grid $top.f.table.endLabel                  -row 1 -column 0 -sticky nsew
+    grid $top.f.table.end                       -row 1 -column 1 -sticky nsew
+    grid $top.f.table.downLabel                 -row 2 -column 0 -sticky nsew
+    grid $top.f.table.down                      -row 2 -column 1 -sticky nsew
+    grid $top.f.table.upLabel                   -row 3 -column 0 -sticky nsew
+    grid $top.f.table.up                        -row 3 -column 1 -sticky nsew
     
-    }
+    grid $top.f.graph.scaleXLabel               -row 0 -column 0 -sticky nsew
+    grid $top.f.graph.scaleX                    -row 0 -column 1 -sticky nsew
+    grid $top.f.graph.scaleYLabel               -row 1 -column 0 -sticky nsew
+    grid $top.f.graph.scaleY                    -row 1 -column 1 -sticky nsew
     
-    grid $top.f.table.startLabel                    -row 0 -column 0 -sticky nsew
-    grid $top.f.table.start                         -row 0 -column 1 -sticky nsew
-    grid $top.f.table.endLabel                      -row 1 -column 0 -sticky nsew
-    grid $top.f.table.end                           -row 1 -column 1 -sticky nsew
-    grid $top.f.table.downLabel                     -row 2 -column 0 -sticky nsew
-    grid $top.f.table.down                          -row 2 -column 1 -sticky nsew
-    grid $top.f.table.upLabel                       -row 3 -column 0 -sticky nsew
-    grid $top.f.table.up                            -row 3 -column 1 -sticky nsew
+    grid $top.f.onParent.visibleLabel           -row 0 -column 0 -sticky nsew
+    grid $top.f.onParent.visible                -row 0 -column 1 -sticky nsew
+    grid $top.f.onParent.hideLabel              -row 1 -column 0 -sticky nsew
+    grid $top.f.onParent.hide                   -row 1 -column 1 -sticky nsew
+    grid $top.f.onParent.xLabel                 -row 2 -column 0 -sticky nsew
+    grid $top.f.onParent.x                      -row 2 -column 1 -sticky nsew
+    grid $top.f.onParent.yLabel                 -row 3 -column 0 -sticky nsew
+    grid $top.f.onParent.y                      -row 3 -column 1 -sticky nsew
+    grid $top.f.onParent.widthLabel             -row 4 -column 0 -sticky nsew
+    grid $top.f.onParent.width                  -row 4 -column 1 -sticky nsew
+    grid $top.f.onParent.heightLabel            -row 5 -column 0 -sticky nsew
+    grid $top.f.onParent.height                 -row 5 -column 1 -sticky nsew
     
-    grid columnconfigure $top.f.table 0 -weight 1
+    grid columnconfigure $top.f.table           0 -weight 1
+    grid columnconfigure $top.f.graph           0 -weight 1
+    grid columnconfigure $top.f.onParent        0 -weight 1
     
-    bind  $top.f.table.start <Return> { ::nextEntry %W }
-    bind  $top.f.table.end   <Return> { ::nextEntry %W }
-    bind  $top.f.table.up    <Return> { ::nextEntry %W }
-    bind  $top.f.table.down  <Return> { ::nextEntry %W }
+    bind $top.f.table.start     <Return>        { ::nextEntry %W }
+    bind $top.f.table.end       <Return>        { ::nextEntry %W }
+    bind $top.f.table.up        <Return>        { ::nextEntry %W }
+    bind $top.f.table.down      <Return>        { ::nextEntry %W }
+    bind $top.f.graph.scaleX    <Return>        { ::nextEntry %W }
+    bind $top.f.graph.scaleY    <Return>        { ::nextEntry %W }
+    
+    bind $top.f.onParent.x      <Return>        { ::nextEntry %W }
+    bind $top.f.onParent.y      <Return>        { ::nextEntry %W }
+    bind $top.f.onParent.width  <Return>        { ::nextEntry %W }
+    bind $top.f.onParent.height <Return>        { ::nextEntry %W }
     
     focus $top.f.table.start
     
