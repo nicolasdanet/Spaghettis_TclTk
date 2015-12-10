@@ -228,3 +228,34 @@ proc createMenuByValue {top values name args} {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
+
+proc colorToInteger {color} {
+
+    set hex [string replace $color 0 0 "0x"]
+    return  [expr {$hex}]
+}
+
+proc integerToColor {integer} {
+
+    return [format "#%6.6x" $integer]
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc chooseColor {label initial title} {
+
+    # On Mac OS X the initial color parameter seems broken.
+    
+    set color [tk_chooseColor -title $title -parent [winfo toplevel $label]]
+    
+    if {$color ne ""} {
+        $label configure -background $color
+        return [::colorToInteger $color]
+    }
+    
+    return $initial
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------

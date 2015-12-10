@@ -285,11 +285,11 @@ proc create {top type
     ttk::label $top.f.colors.backgroundLabel            {*}[::styleLabel]   -text [_ "Background"]
     ttk::label $top.f.colors.frontLabel                 {*}[::styleLabel]   -text [_ "Foreground"]
     
-    label $top.f.colors.name                            -background [format "#%6.6x" $nameColor] \
+    label $top.f.colors.name                            -background [::integerToColor $nameColor] \
                                                         -width $::width(small)
-    label $top.f.colors.background                      -background [format "#%6.6x" $backgroundColor] \
+    label $top.f.colors.background                      -background [::integerToColor $backgroundColor] \
                                                         -width $::width(small)
-    label $top.f.colors.front                           -background [format "#%6.6x" $frontColor] \
+    label $top.f.colors.front                           -background [::integerToColor $frontColor] \
                                                         -width $::width(small)
     
     set row -1
@@ -301,9 +301,9 @@ proc create {top type
     grid $top.f.colors.frontLabel                       -row [incr row] -column 0 -sticky nsew
     grid $top.f.colors.front                            -row $row       -column 1 -sticky nsew -pady 2
 
-    bind $top.f.colors.name       <Button>              { ::pd_console::post "%W\n" }
-    bind $top.f.colors.background <Button>              { ::pd_console::post "%W\n" }
-    bind $top.f.colors.front      <Button>              { ::pd_console::post "%W\n" }
+    bind $top.f.colors.name       <Button>              "::pd_iem::_chooseNameColor $top %W"
+    bind $top.f.colors.background <Button>              "::pd_iem::_chooseBackgroundColor $top %W"
+    bind $top.f.colors.front      <Button>              "::pd_iem::_chooseFrontColor $top %W"
     
     ttk::label $top.f.label.nameLabel                   {*}[::styleLabel] \
                                                             -text [_ "Name"]
@@ -601,6 +601,30 @@ proc _forceFont {top} {
     
     set iemNameFontSize($top) [::ifInteger $iemNameFontSize($top) $iemNameFontSize(${top}.old)]
     set iemNameFontSize($top) [::tcl::mathfunc::max $iemNameFontSize($top) 4]
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _chooseNameColor {top label} {
+    
+    variable iemNameColor
+    
+    set iemNameColor($top) [::chooseColor $label $iemNameColor($top) [_ "Label"]]
+}
+
+proc _chooseBackgroundColor {top label} {
+    
+    variable iemBackgroundColor
+    
+    set iemBackgroundColor($top) [::chooseColor $label $iemBackgroundColor($top) [_ "Background"]]
+}
+
+proc _chooseFrontColor {top label} {
+    
+    variable iemFrontColor
+    
+    set iemFrontColor($top) [::chooseColor $label $iemFrontColor($top) [_ "Foreground"]]
 }
 
 # ------------------------------------------------------------------------------------------------------------
