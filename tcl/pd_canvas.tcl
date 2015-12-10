@@ -175,7 +175,8 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
                                                     -text [_ "Visible On Parent"]
     ttk::checkbutton $top.f.onParent.visible    {*}[::styleCheckButton] \
                                                     -variable ::pd_canvas::canvasVisible($top) \
-                                                    -takefocus 0
+                                                    -takefocus 0 \
+                                                    -command "::pd_canvas::_setVisible $top"
     
     ttk::label $top.f.onParent.hideLabel        {*}[::styleLabel] \
                                                     -text [_ "Hide Text"]
@@ -254,6 +255,8 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     
     $top.f.table.start selection range 0 end
     
+    ::pd_canvas::_setVisible $top
+        
     wm protocol $top WM_DELETE_WINDOW   "::pd_canvas::closed $top"
 }
 
@@ -399,6 +402,30 @@ proc _forceVisible {top} {
     set canvasHeight($top) [::ifNonZero $canvasHeight($top) $canvasHeight(${top}.old)]
     set canvasWidth($top)  [::ifNonZero $canvasWidth($top)  85]
     set canvasHeight($top) [::ifNonZero $canvasHeight($top) 60]
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _setVisible {top} {
+
+    variable canvasVisible
+    
+    set state "disabled"
+    
+    if {$canvasVisible($top)} { set state "!disabled" }
+    
+    $top.f.onParent.hideLabel       state $state
+    $top.f.onParent.xLabel          state $state
+    $top.f.onParent.yLabel          state $state
+    $top.f.onParent.widthLabel      state $state
+    $top.f.onParent.heightLabel     state $state
+    
+    $top.f.onParent.hide            state $state
+    $top.f.onParent.x               state $state
+    $top.f.onParent.y               state $state
+    $top.f.onParent.width           state $state
+    $top.f.onParent.height          state $state
 }
 
 # ------------------------------------------------------------------------------------------------------------
