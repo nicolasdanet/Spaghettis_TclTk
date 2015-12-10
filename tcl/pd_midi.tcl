@@ -144,7 +144,7 @@ proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     
     focus $top.f.inputs.in
     
-    $top.f.inputs.in selection range 0 end
+    after idle "$top.f.inputs.in selection range 0 end"
     
     bind $top <Destroy> { ::pd_menu::enableMidi }
         

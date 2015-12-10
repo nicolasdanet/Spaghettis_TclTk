@@ -112,7 +112,7 @@ proc _create {top name size flags} {
     
     focus $top.f.properties.name
     
-    $top.f.properties.name selection range 0 end
+    after idle "$top.f.properties.name selection range 0 end"
     
     wm protocol $top WM_DELETE_WINDOW   "::pd_array::closed $top"
 }

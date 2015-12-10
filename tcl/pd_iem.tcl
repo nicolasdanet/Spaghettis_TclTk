@@ -186,7 +186,8 @@ proc create {top type
         bind $top.f.properties.width <Return>           { ::nextEntry %W }
         
         focus $top.f.properties.width
-        $top.f.properties.width selection range 0 end 
+        
+        after idle "$top.f.properties.width selection range 0 end" 
     }
     
     if {$heightLabel ne "empty"}    {

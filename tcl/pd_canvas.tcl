@@ -253,7 +253,7 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     
     focus $top.f.table.start
     
-    $top.f.table.start selection range 0 end
+    after idle "$top.f.table.start selection range 0 end"
     
     ::pd_canvas::_setVisible $top
         

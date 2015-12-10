@@ -159,7 +159,7 @@ proc _create {top width low high send receive name position} {
 
     focus $top.f.properties.width
     
-    $top.f.properties.width selection range 0 end
+    after idle "$top.f.properties.width selection range 0 end"
     
     wm protocol $top WM_DELETE_WINDOW   "::pd_atom::closed $top"
 }

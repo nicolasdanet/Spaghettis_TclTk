@@ -182,7 +182,7 @@ proc show {top \
     
     focus $top.f.properties.sampleRate
     
-    $top.f.properties.sampleRate selection range 0 end
+    after idle "$top.f.properties.sampleRate selection range 0 end"
     
     bind $top <Destroy> { ::pd_menu::enableAudio }
         
