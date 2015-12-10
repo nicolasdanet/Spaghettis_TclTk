@@ -51,8 +51,12 @@ proc nextEntry {w} {
 
 proc rightNextTo {top} {
 
-    set x [expr {[winfo rootx $top]} + 50]
-    set y [expr {[winfo rooty $top]} + 50]
+    set offset [expr {[incr ::var(windowStagger) 50] + 50}]
+    
+    set x [expr {[winfo rootx $top] + $offset}]
+    set y [expr {[winfo rooty $top] + $offset}]
+    
+    after 1000 { set ::var(windowStagger) 0 }
     
     return [format "+%d+%d" $x $y]
 }
