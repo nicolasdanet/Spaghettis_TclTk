@@ -96,14 +96,14 @@ proc _create {top name size flags} {
     ::createMenuByIndex $top.f.properties.draw      $values ::pd_array::arrayDraw($top) \
                                                         -width [::measure $values]
     
-    grid $top.f.properties.nameLabel                -row 0 -column 0 -sticky nsew
-    grid $top.f.properties.name                     -row 0 -column 1 -sticky nsew
-    grid $top.f.properties.sizeLabel                -row 1 -column 0 -sticky nsew
-    grid $top.f.properties.size                     -row 1 -column 1 -sticky nsew
-    grid $top.f.properties.saveLabel                -row 2 -column 0 -sticky nsew
-    grid $top.f.properties.save                     -row 2 -column 1 -sticky nsew
-    grid $top.f.properties.drawLabel                -row 3 -column 0 -sticky nsew
-    grid $top.f.properties.draw                     -row 3 -column 1 -sticky nsew
+    grid $top.f.properties.nameLabel                -row 0 -column 0 -sticky ew
+    grid $top.f.properties.name                     -row 0 -column 1 -sticky ew
+    grid $top.f.properties.sizeLabel                -row 1 -column 0 -sticky ew
+    grid $top.f.properties.size                     -row 1 -column 1 -sticky ew
+    grid $top.f.properties.saveLabel                -row 2 -column 0 -sticky ew
+    grid $top.f.properties.save                     -row 2 -column 1 -sticky ew
+    grid $top.f.properties.drawLabel                -row 3 -column 0 -sticky ew
+    grid $top.f.properties.draw                     -row 3 -column 1 -sticky ew
     
     grid columnconfigure $top.f.properties 0 -weight 1
     

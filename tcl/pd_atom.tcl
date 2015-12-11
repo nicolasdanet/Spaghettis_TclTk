@@ -131,21 +131,21 @@ proc _create {top width low high send receive name position} {
                                                         -textvariable ::pd_atom::atomReceive($top) \
                                                         -width $::width(large)
 
-    grid $top.f.properties.widthLabel               -row 0 -column 0 -sticky nsew
-    grid $top.f.properties.width                    -row 0 -column 1 -sticky nsew
-    grid $top.f.properties.lowLabel                 -row 1 -column 0 -sticky nsew
-    grid $top.f.properties.low                      -row 1 -column 1 -sticky nsew
-    grid $top.f.properties.highLabel                -row 2 -column 0 -sticky nsew
-    grid $top.f.properties.high                     -row 2 -column 1 -sticky nsew
+    grid $top.f.properties.widthLabel               -row 0 -column 0 -sticky ew
+    grid $top.f.properties.width                    -row 0 -column 1 -sticky ew
+    grid $top.f.properties.lowLabel                 -row 1 -column 0 -sticky ew
+    grid $top.f.properties.low                      -row 1 -column 1 -sticky ew
+    grid $top.f.properties.highLabel                -row 2 -column 0 -sticky ew
+    grid $top.f.properties.high                     -row 2 -column 1 -sticky ew
     
-    grid $top.f.label.nameLabel                     -row 0 -column 0 -sticky nsew
-    grid $top.f.label.name                          -row 0 -column 1 -sticky nsew
-    grid $top.f.label.positionLabel                 -row 1 -column 0 -sticky nsew
-    grid $top.f.label.position                      -row 1 -column 1 -sticky nsew
-    grid $top.f.label.sendLabel                     -row 2 -column 0 -sticky nsew
-    grid $top.f.label.send                          -row 2 -column 1 -sticky nsew
-    grid $top.f.label.receiveLabel                  -row 3 -column 0 -sticky nsew
-    grid $top.f.label.receive                       -row 3 -column 1 -sticky nsew
+    grid $top.f.label.nameLabel                     -row 0 -column 0 -sticky ew
+    grid $top.f.label.name                          -row 0 -column 1 -sticky ew
+    grid $top.f.label.positionLabel                 -row 1 -column 0 -sticky ew
+    grid $top.f.label.position                      -row 1 -column 1 -sticky ew
+    grid $top.f.label.sendLabel                     -row 2 -column 0 -sticky ew
+    grid $top.f.label.send                          -row 2 -column 1 -sticky ew
+    grid $top.f.label.receiveLabel                  -row 3 -column 0 -sticky ew
+    grid $top.f.label.receive                       -row 3 -column 1 -sticky ew
     
     grid columnconfigure $top.f.properties  0 -weight 1
     grid columnconfigure $top.f.label       0 -weight 1

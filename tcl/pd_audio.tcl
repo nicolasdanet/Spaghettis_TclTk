@@ -139,10 +139,10 @@ proc show {top \
     ::createMenuByValue $top.f.properties.blockSize     $values ::pd_audio::audioBlockSize \
                                                             -width [::measure $values]
     
-    grid $top.f.properties.sampleRateLabel              -row 0 -column 0 -sticky nsew
-    grid $top.f.properties.sampleRate                   -row 0 -column 2 -sticky nsew
-    grid $top.f.properties.delayLabel                   -row 1 -column 0 -sticky nsew
-    grid $top.f.properties.delay                        -row 1 -column 2 -sticky nsew
+    grid $top.f.properties.sampleRateLabel              -row 0 -column 0 -sticky ew
+    grid $top.f.properties.sampleRate                   -row 0 -column 2 -sticky ew
+    grid $top.f.properties.delayLabel                   -row 1 -column 0 -sticky ew
+    grid $top.f.properties.delay                        -row 1 -column 2 -sticky ew
 
     if {$audioCallback >= 0} {
     
@@ -152,15 +152,15 @@ proc show {top \
                                                             -variable ::pd_audio::audioCallback \
                                                             -takefocus 0
     
-    grid $top.f.properties.callbackLabel                -row 2 -column 0 -sticky nsew
-    grid $top.f.properties.callback                     -row 2 -column 2 -sticky nsew
-    grid $top.f.properties.blockSizeLabel               -row 3 -column 0 -sticky nsew
-    grid $top.f.properties.blockSize                    -row 3 -column 2 -sticky nsew
+    grid $top.f.properties.callbackLabel                -row 2 -column 0 -sticky ew
+    grid $top.f.properties.callback                     -row 2 -column 2 -sticky ew
+    grid $top.f.properties.blockSizeLabel               -row 3 -column 0 -sticky ew
+    grid $top.f.properties.blockSize                    -row 3 -column 2 -sticky ew
     
     } else {
     
-    grid $top.f.properties.blockSizeLabel               -row 2 -column 0 -sticky nsew
-    grid $top.f.properties.blockSize                    -row 2 -column 2 -sticky nsew
+    grid $top.f.properties.blockSizeLabel               -row 2 -column 0 -sticky ew
+    grid $top.f.properties.blockSize                    -row 2 -column 2 -sticky ew
     
     }
     
@@ -221,9 +221,9 @@ proc _makeIn {top k} {
     
     set row [expr {$k - 1}]
     
-    grid $slot                          -row $row -column 0 -sticky nsew
-    grid $devices                       -row $row -column 1 -sticky nsew -padx {0 5}
-    grid $channels                      -row $row -column 2 -sticky nsew
+    grid $slot                          -row $row -column 0 -sticky ew
+    grid $devices                       -row $row -column 1 -sticky ew -padx {0 5}
+    grid $channels                      -row $row -column 2 -sticky ew
     
     bind $channels <Return> { ::nextEntry %W }
 }
@@ -251,9 +251,9 @@ proc _makeOut {top k} {
     
     set row [expr {$k - 1}]
     
-    grid $slot                          -row $row -column 0 -sticky nsew
-    grid $devices                       -row $row -column 1 -sticky nsew -padx {0 5}
-    grid $channels                      -row $row -column 2 -sticky nsew
+    grid $slot                          -row $row -column 0 -sticky ew
+    grid $devices                       -row $row -column 1 -sticky ew -padx {0 5}
+    grid $channels                      -row $row -column 2 -sticky ew
     
     bind $channels <Return> { ::nextEntry %W }
 }

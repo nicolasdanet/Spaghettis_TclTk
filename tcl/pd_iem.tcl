@@ -180,8 +180,8 @@ proc create {top type
                                                             -textvariable ::pd_iem::iemWidth($top) \
                                                             -width $::width(small)
         
-        grid $top.f.properties.widthLabel               -row [incr row] -column 0 -sticky nsew
-        grid $top.f.properties.width                    -row $row       -column 2 -sticky nsew
+        grid $top.f.properties.widthLabel               -row [incr row] -column 0 -sticky ew
+        grid $top.f.properties.width                    -row $row       -column 2 -sticky ew
 
         bind $top.f.properties.width <Return>           { ::nextEntry %W }
         
@@ -198,8 +198,8 @@ proc create {top type
                                                             -textvariable ::pd_iem::iemHeight($top) \
                                                             -width $::width(small)
                                                         
-        grid $top.f.properties.heightLabel              -row [incr row] -column 0 -sticky nsew
-        grid $top.f.properties.height                   -row $row       -column 2 -sticky nsew
+        grid $top.f.properties.heightLabel              -row [incr row] -column 0 -sticky ew
+        grid $top.f.properties.height                   -row $row       -column 2 -sticky ew
         
         bind $top.f.properties.height <Return>          { ::nextEntry %W }
     }
@@ -212,8 +212,8 @@ proc create {top type
                                                             -textvariable ::pd_iem::iemOption1($top) \
                                                             -width $::width(small)
 
-        grid $top.f.properties.option1Label             -row [incr row] -column 0 -sticky nsew
-        grid $top.f.properties.option1                  -row $row       -column 2 -sticky nsew
+        grid $top.f.properties.option1Label             -row [incr row] -column 0 -sticky ew
+        grid $top.f.properties.option1                  -row $row       -column 2 -sticky ew
         
         bind  $top.f.properties.option1 <Return>        { ::nextEntry %W }
     }
@@ -226,8 +226,8 @@ proc create {top type
                                                             -textvariable ::pd_iem::iemOption2($top) \
                                                             -width $::width(small)
                                                         
-        grid $top.f.properties.option2Label             -row [incr row] -column 0 -sticky nsew
-        grid $top.f.properties.option2                  -row $row       -column 2 -sticky nsew
+        grid $top.f.properties.option2Label             -row [incr row] -column 0 -sticky ew
+        grid $top.f.properties.option2                  -row $row       -column 2 -sticky ew
         
         bind $top.f.properties.option2 <Return>         { ::nextEntry %W }
     }
@@ -240,8 +240,8 @@ proc create {top type
                                                             -textvariable ::pd_iem::iemExtra($top) \
                                                             -width $::width(small)
 
-        grid $top.f.properties.extraLabel               -row [incr row] -column 0 -sticky nsew
-        grid $top.f.properties.extra                    -row $row       -column 2 -sticky nsew
+        grid $top.f.properties.extraLabel               -row [incr row] -column 0 -sticky ew
+        grid $top.f.properties.extra                    -row $row       -column 2 -sticky ew
         
         bind $top.f.properties.extra <Return>           { ::nextEntry %W }
     }
@@ -254,8 +254,8 @@ proc create {top type
                                                             -variable ::pd_iem::iemLoadbang($top) \
                                                             -takefocus 0
         
-        grid $top.f.properties.loadbangLabel            -row [incr row] -column 0 -sticky nsew
-        grid $top.f.properties.loadbang                 -row $row       -column 2 -sticky nsew
+        grid $top.f.properties.loadbangLabel            -row [incr row] -column 0 -sticky ew
+        grid $top.f.properties.loadbang                 -row $row       -column 2 -sticky ew
     }
     
     if {$check != -1}               {
@@ -267,7 +267,7 @@ proc create {top type
         ::createMenuByIndex $top.f.properties.check     $values ::pd_iem::iemCheck($top) \
                                                             -width [::measure $values]
         
-        grid $top.f.properties.check                    -row [incr row] -column 1 -sticky nsew -columnspan 2
+        grid $top.f.properties.check                    -row [incr row] -column 1 -sticky ew -columnspan 2
     }
     }
     }
@@ -279,7 +279,7 @@ proc create {top type
         ::createMenuByIndex $top.f.properties.steady    $values ::pd_iem::iemSteady($top) \
                                                             -width [::measure $values]
         
-        grid $top.f.properties.steady                   -row [incr row] -column 1 -sticky nsew -columnspan 2
+        grid $top.f.properties.steady                   -row [incr row] -column 1 -sticky ew -columnspan 2
     }
     
     set row -1
@@ -291,8 +291,8 @@ proc create {top type
         label $top.f.colors.name                        -background [::integerToColor $nameColor] \
                                                         -width $::width(small)
         
-        grid $top.f.colors.nameLabel                    -row [incr row] -column 0 -sticky nsew
-        grid $top.f.colors.name                         -row $row       -column 1 -sticky nsew -pady 2
+        grid $top.f.colors.nameLabel                    -row [incr row] -column 0 -sticky ew
+        grid $top.f.colors.name                         -row $row       -column 1 -sticky ew -pady 2
     
         bind $top.f.colors.name <Button>                "::pd_iem::_chooseNameColor $top %W"
     }
@@ -304,8 +304,8 @@ proc create {top type
         label $top.f.colors.background                  -background [::integerToColor $backgroundColor] \
                                                         -width $::width(small)
                                                     
-        grid $top.f.colors.backgroundLabel              -row [incr row] -column 0 -sticky nsew
-        grid $top.f.colors.background                   -row $row       -column 1 -sticky nsew -pady 2
+        grid $top.f.colors.backgroundLabel              -row [incr row] -column 0 -sticky ew
+        grid $top.f.colors.background                   -row $row       -column 1 -sticky ew -pady 2
         
         bind $top.f.colors.background <Button>          "::pd_iem::_chooseBackgroundColor $top %W"
     }
@@ -317,8 +317,8 @@ proc create {top type
         label $top.f.colors.front                       -background [::integerToColor $frontColor] \
                                                         -width $::width(small)
     
-        grid $top.f.colors.frontLabel                   -row [incr row] -column 0 -sticky nsew
-        grid $top.f.colors.front                        -row $row       -column 1 -sticky nsew -pady 2
+        grid $top.f.colors.frontLabel                   -row [incr row] -column 0 -sticky ew
+        grid $top.f.colors.front                        -row $row       -column 1 -sticky ew -pady 2
 
         bind $top.f.colors.front <Button>               "::pd_iem::_chooseFrontColor $top %W"
     }
@@ -354,16 +354,16 @@ proc create {top type
 
     set row -1
     
-    grid $top.f.label.nameLabel                         -row [incr row] -column 0 -sticky nsew
-    grid $top.f.label.name                              -row $row       -column 1 -sticky nsew -columnspan 2
-    grid $top.f.label.nameDeltaXLabel                   -row [incr row] -column 0 -sticky nsew
-    grid $top.f.label.nameDeltaX                        -row $row       -column 2 -sticky nsew
-    grid $top.f.label.nameDeltaYLabel                   -row [incr row] -column 0 -sticky nsew
-    grid $top.f.label.nameDeltaY                        -row $row       -column 2 -sticky nsew
-    grid $top.f.label.nameFontSizeLabel                 -row [incr row] -column 0 -sticky nsew
-    grid $top.f.label.nameFontSize                      -row $row       -column 2 -sticky nsew
-    grid $top.f.label.nameFontFamilyLabel               -row [incr row] -column 0 -sticky nsew
-    grid $top.f.label.nameFontFamily                    -row $row       -column 1 -sticky nsew -columnspan 2
+    grid $top.f.label.nameLabel                         -row [incr row] -column 0 -sticky ew
+    grid $top.f.label.name                              -row $row       -column 1 -sticky ew -columnspan 2
+    grid $top.f.label.nameDeltaXLabel                   -row [incr row] -column 0 -sticky ew
+    grid $top.f.label.nameDeltaX                        -row $row       -column 2 -sticky ew
+    grid $top.f.label.nameDeltaYLabel                   -row [incr row] -column 0 -sticky ew
+    grid $top.f.label.nameDeltaY                        -row $row       -column 2 -sticky ew
+    grid $top.f.label.nameFontSizeLabel                 -row [incr row] -column 0 -sticky ew
+    grid $top.f.label.nameFontSize                      -row $row       -column 2 -sticky ew
+    grid $top.f.label.nameFontFamilyLabel               -row [incr row] -column 0 -sticky ew
+    grid $top.f.label.nameFontFamily                    -row $row       -column 1 -sticky ew -columnspan 2
 
     bind $top.f.label.name          <Return>            { ::nextEntry %W }
     bind $top.f.label.nameDeltaX    <Return>            { ::nextEntry %W }
@@ -378,8 +378,8 @@ proc create {top type
                                                             -textvariable ::pd_iem::iemSend($top) \
                                                             -width $::width(medium)
                                                             
-        grid $top.f.label.sendLabel                     -row [incr row] -column 0 -sticky nsew
-        grid $top.f.label.send                          -row $row       -column 1 -sticky nsew -columnspan 2
+        grid $top.f.label.sendLabel                     -row [incr row] -column 0 -sticky ew
+        grid $top.f.label.send                          -row $row       -column 1 -sticky ew -columnspan 2
         
         bind $top.f.label.send <Return>                 { ::nextEntry %W }
     }
@@ -392,8 +392,8 @@ proc create {top type
                                                             -textvariable ::pd_iem::iemReceive($top) \
                                                             -width $::width(medium)
         
-        grid $top.f.label.receiveLabel                  -row [incr row] -column 0 -sticky nsew
-        grid $top.f.label.receive                       -row $row       -column 1 -sticky nsew -columnspan 2
+        grid $top.f.label.receiveLabel                  -row [incr row] -column 0 -sticky ew
+        grid $top.f.label.receive                       -row $row       -column 1 -sticky ew -columnspan 2
         
         bind $top.f.label.receive <Return>              { ::nextEntry %W }
     }

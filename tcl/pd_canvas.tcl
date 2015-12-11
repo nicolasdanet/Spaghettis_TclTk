@@ -208,32 +208,32 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
                                                     -textvariable ::pd_canvas::canvasScaleY($top) \
                                                     -width $::width(small)
                                                     
-    grid $top.f.table.startLabel                -row 0 -column 0 -sticky nsew
-    grid $top.f.table.start                     -row 0 -column 1 -sticky nsew
-    grid $top.f.table.endLabel                  -row 1 -column 0 -sticky nsew
-    grid $top.f.table.end                       -row 1 -column 1 -sticky nsew
-    grid $top.f.table.downLabel                 -row 2 -column 0 -sticky nsew
-    grid $top.f.table.down                      -row 2 -column 1 -sticky nsew
-    grid $top.f.table.upLabel                   -row 3 -column 0 -sticky nsew
-    grid $top.f.table.up                        -row 3 -column 1 -sticky nsew
+    grid $top.f.table.startLabel                -row 0 -column 0 -sticky ew
+    grid $top.f.table.start                     -row 0 -column 1 -sticky ew
+    grid $top.f.table.endLabel                  -row 1 -column 0 -sticky ew
+    grid $top.f.table.end                       -row 1 -column 1 -sticky ew
+    grid $top.f.table.downLabel                 -row 2 -column 0 -sticky ew
+    grid $top.f.table.down                      -row 2 -column 1 -sticky ew
+    grid $top.f.table.upLabel                   -row 3 -column 0 -sticky ew
+    grid $top.f.table.up                        -row 3 -column 1 -sticky ew
     
-    grid $top.f.onParent.visibleLabel           -row 0 -column 0 -sticky nsew
-    grid $top.f.onParent.visible                -row 0 -column 1 -sticky nsew
-    grid $top.f.onParent.hideLabel              -row 1 -column 0 -sticky nsew
-    grid $top.f.onParent.hide                   -row 1 -column 1 -sticky nsew
-    grid $top.f.onParent.xLabel                 -row 2 -column 0 -sticky nsew
-    grid $top.f.onParent.x                      -row 2 -column 1 -sticky nsew
-    grid $top.f.onParent.yLabel                 -row 3 -column 0 -sticky nsew
-    grid $top.f.onParent.y                      -row 3 -column 1 -sticky nsew
-    grid $top.f.onParent.widthLabel             -row 4 -column 0 -sticky nsew
-    grid $top.f.onParent.width                  -row 4 -column 1 -sticky nsew
-    grid $top.f.onParent.heightLabel            -row 5 -column 0 -sticky nsew
-    grid $top.f.onParent.height                 -row 5 -column 1 -sticky nsew
+    grid $top.f.onParent.visibleLabel           -row 0 -column 0 -sticky ew
+    grid $top.f.onParent.visible                -row 0 -column 1 -sticky ew
+    grid $top.f.onParent.hideLabel              -row 1 -column 0 -sticky ew
+    grid $top.f.onParent.hide                   -row 1 -column 1 -sticky ew
+    grid $top.f.onParent.xLabel                 -row 2 -column 0 -sticky ew
+    grid $top.f.onParent.x                      -row 2 -column 1 -sticky ew
+    grid $top.f.onParent.yLabel                 -row 3 -column 0 -sticky ew
+    grid $top.f.onParent.y                      -row 3 -column 1 -sticky ew
+    grid $top.f.onParent.widthLabel             -row 4 -column 0 -sticky ew
+    grid $top.f.onParent.width                  -row 4 -column 1 -sticky ew
+    grid $top.f.onParent.heightLabel            -row 5 -column 0 -sticky ew
+    grid $top.f.onParent.height                 -row 5 -column 1 -sticky ew
     
-    grid $top.f.graph.scaleXLabel               -row 0 -column 0 -sticky nsew
-    grid $top.f.graph.scaleX                    -row 0 -column 1 -sticky nsew
-    grid $top.f.graph.scaleYLabel               -row 1 -column 0 -sticky nsew
-    grid $top.f.graph.scaleY                    -row 1 -column 1 -sticky nsew
+    grid $top.f.graph.scaleXLabel               -row 0 -column 0 -sticky ew
+    grid $top.f.graph.scaleX                    -row 0 -column 1 -sticky ew
+    grid $top.f.graph.scaleYLabel               -row 1 -column 0 -sticky ew
+    grid $top.f.graph.scaleY                    -row 1 -column 1 -sticky ew
     
     grid columnconfigure $top.f.table           0 -weight 1
     grid columnconfigure $top.f.onParent        0 -weight 1
