@@ -167,7 +167,7 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
                                                     -command "::pd_canvas::_setVisible $top"
     
     ttk::label $top.f.onParent.hideLabel        {*}[::styleLabel] \
-                                                    -text [_ "Hide Text"]
+                                                    -text [_ "Hide Title"]
     ttk::checkbutton $top.f.onParent.hide       {*}[::styleCheckButton] \
                                                     -variable ::pd_canvas::canvasHide($top) \
                                                     -takefocus 0
