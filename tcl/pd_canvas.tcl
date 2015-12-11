@@ -160,7 +160,7 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
                                                     -width $::width(small)
 
     ttk::label $top.f.onParent.visibleLabel     {*}[::styleLabel] \
-                                                    -text [_ "Visible On Parent"]
+                                                    -text [_ "Graph On Parent"]
     ttk::checkbutton $top.f.onParent.visible    {*}[::styleCheckButton] \
                                                     -variable ::pd_canvas::canvasVisible($top) \
                                                     -takefocus 0 \
