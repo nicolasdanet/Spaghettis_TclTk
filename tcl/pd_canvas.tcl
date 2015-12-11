@@ -127,13 +127,13 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     
     ttk::frame      $top.f                      {*}[::styleFrame]
     ttk::labelframe $top.f.table                {*}[::styleLabelFrame]  -text [_ "Array"]
-    ttk::labelframe $top.f.graph                {*}[::styleLabelFrame]  -text [_ "Graph"]
     ttk::labelframe $top.f.onParent             {*}[::styleLabelFrame]  -text [_ "Patch"]
+    ttk::labelframe $top.f.graph                {*}[::styleLabelFrame]  -text [_ "Drawing"]
         
     pack $top.f                                 {*}[::packMain]
     pack $top.f.table                           {*}[::packCategory]
-    pack $top.f.graph                           {*}[::packCategoryNext]
     pack $top.f.onParent                        {*}[::packCategoryNext]
+    pack $top.f.graph                           {*}[::packCategoryNext]
     
     ttk::label $top.f.table.startLabel          {*}[::styleLabel] \
                                                     -text [_ "Index Start"]
@@ -157,18 +157,6 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
                                                     -text [_ "Value Top"]
     ttk::entry $top.f.table.up                  {*}[::styleEntryNumber] \
                                                     -textvariable ::pd_canvas::canvasUp($top) \
-                                                    -width $::width(small)
-
-    ttk::label $top.f.graph.scaleXLabel         {*}[::styleLabel] \
-                                                    -text [_ "Scale X"]
-    ttk::entry $top.f.graph.scaleX              {*}[::styleEntryNumber] \
-                                                    -textvariable ::pd_canvas::canvasScaleX($top) \
-                                                    -width $::width(small)
-    
-    ttk::label $top.f.graph.scaleYLabel         {*}[::styleLabel] \
-                                                    -text [_ "Scale Y"]
-    ttk::entry $top.f.graph.scaleY              {*}[::styleEntryNumber] \
-                                                    -textvariable ::pd_canvas::canvasScaleY($top) \
                                                     -width $::width(small)
 
     ttk::label $top.f.onParent.visibleLabel     {*}[::styleLabel] \
@@ -208,6 +196,18 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
                                                     -textvariable ::pd_canvas::canvasHeight($top) \
                                                     -width $::width(small)
     
+    ttk::label $top.f.graph.scaleXLabel         {*}[::styleLabel] \
+                                                    -text [_ "Scale X"]
+    ttk::entry $top.f.graph.scaleX              {*}[::styleEntryNumber] \
+                                                    -textvariable ::pd_canvas::canvasScaleX($top) \
+                                                    -width $::width(small)
+    
+    ttk::label $top.f.graph.scaleYLabel         {*}[::styleLabel] \
+                                                    -text [_ "Scale Y"]
+    ttk::entry $top.f.graph.scaleY              {*}[::styleEntryNumber] \
+                                                    -textvariable ::pd_canvas::canvasScaleY($top) \
+                                                    -width $::width(small)
+                                                    
     grid $top.f.table.startLabel                -row 0 -column 0 -sticky nsew
     grid $top.f.table.start                     -row 0 -column 1 -sticky nsew
     grid $top.f.table.endLabel                  -row 1 -column 0 -sticky nsew
@@ -216,11 +216,6 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     grid $top.f.table.down                      -row 2 -column 1 -sticky nsew
     grid $top.f.table.upLabel                   -row 3 -column 0 -sticky nsew
     grid $top.f.table.up                        -row 3 -column 1 -sticky nsew
-    
-    grid $top.f.graph.scaleXLabel               -row 0 -column 0 -sticky nsew
-    grid $top.f.graph.scaleX                    -row 0 -column 1 -sticky nsew
-    grid $top.f.graph.scaleYLabel               -row 1 -column 0 -sticky nsew
-    grid $top.f.graph.scaleY                    -row 1 -column 1 -sticky nsew
     
     grid $top.f.onParent.visibleLabel           -row 0 -column 0 -sticky nsew
     grid $top.f.onParent.visible                -row 0 -column 1 -sticky nsew
@@ -235,25 +230,31 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     grid $top.f.onParent.heightLabel            -row 5 -column 0 -sticky nsew
     grid $top.f.onParent.height                 -row 5 -column 1 -sticky nsew
     
+    grid $top.f.graph.scaleXLabel               -row 0 -column 0 -sticky nsew
+    grid $top.f.graph.scaleX                    -row 0 -column 1 -sticky nsew
+    grid $top.f.graph.scaleYLabel               -row 1 -column 0 -sticky nsew
+    grid $top.f.graph.scaleY                    -row 1 -column 1 -sticky nsew
+    
     grid columnconfigure $top.f.table           0 -weight 1
-    grid columnconfigure $top.f.graph           0 -weight 1
     grid columnconfigure $top.f.onParent        0 -weight 1
+    grid columnconfigure $top.f.graph           0 -weight 1
     
     bind $top.f.table.start     <Return>        { ::nextEntry %W }
     bind $top.f.table.end       <Return>        { ::nextEntry %W }
     bind $top.f.table.up        <Return>        { ::nextEntry %W }
     bind $top.f.table.down      <Return>        { ::nextEntry %W }
-    bind $top.f.graph.scaleX    <Return>        { ::nextEntry %W }
-    bind $top.f.graph.scaleY    <Return>        { ::nextEntry %W }
     
     bind $top.f.onParent.x      <Return>        { ::nextEntry %W }
     bind $top.f.onParent.y      <Return>        { ::nextEntry %W }
     bind $top.f.onParent.width  <Return>        { ::nextEntry %W }
     bind $top.f.onParent.height <Return>        { ::nextEntry %W }
     
+    bind $top.f.graph.scaleX    <Return>        { ::nextEntry %W }
+    bind $top.f.graph.scaleY    <Return>        { ::nextEntry %W }
+    
     focus $top.f.table.start
     
-    after idle "$top.f.table.start selection range 0 end"
+    after 250 "$top.f.table.start selection range 0 end"
     
     ::pd_canvas::_setVisible $top
         
