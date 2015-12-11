@@ -96,13 +96,13 @@ proc _create {top width low high send receive name position} {
                                                         -width $::width(small)
     
     ttk::label $top.f.properties.lowLabel           {*}[::styleLabel] \
-                                                        -text [_ "Low Value"]
+                                                        -text [_ "Value Low"]
     ttk::entry $top.f.properties.low                {*}[::styleEntryNumber] \
                                                         -textvariable ::pd_atom::atomLow($top) \
                                                         -width $::width(small)
     
     ttk::label $top.f.properties.highLabel          {*}[::styleLabel] \
-                                                        -text [_ "High Value"]
+                                                        -text [_ "Value High"]
     ttk::entry $top.f.properties.high               {*}[::styleEntryNumber] \
                                                         -textvariable ::pd_atom::atomHigh($top) \
                                                         -width $::width(small)

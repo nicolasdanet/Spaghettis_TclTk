@@ -458,7 +458,7 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
             %g {Value Low} %g {Value High} \
             %d Linear Logarithmic \
             %d \
-            %d 1024 {Logarithm Ratio} \
+            %d 1024 {Logarithmic Steps} \
             %s %s \
             %s %d %d \
             %d %d \

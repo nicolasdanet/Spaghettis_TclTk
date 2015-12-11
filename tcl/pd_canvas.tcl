@@ -415,17 +415,11 @@ proc _setVisible {top} {
     
     if {$canvasVisible($top)} { set state "!disabled" }
     
-    $top.f.onParent.hideLabel       state $state
-    $top.f.onParent.xLabel          state $state
-    $top.f.onParent.yLabel          state $state
-    $top.f.onParent.widthLabel      state $state
-    $top.f.onParent.heightLabel     state $state
-    
-    $top.f.onParent.hide            state $state
-    $top.f.onParent.x               state $state
-    $top.f.onParent.y               state $state
-    $top.f.onParent.width           state $state
-    $top.f.onParent.height          state $state
+    $top.f.onParent.hide    state $state
+    $top.f.onParent.x       state $state
+    $top.f.onParent.y       state $state
+    $top.f.onParent.width   state $state
+    $top.f.onParent.height  state $state
 }
 
 # ------------------------------------------------------------------------------------------------------------
