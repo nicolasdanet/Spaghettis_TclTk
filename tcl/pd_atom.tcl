@@ -227,8 +227,8 @@ proc _forceValues {top} {
     variable atomHigh
     
     set atomWidth($top) [::ifInteger $atomWidth($top) $atomWidth(${top}.old)]
-    set atomLow($top)   [::ifInteger $atomLow($top) $atomLow(${top}.old)]
-    set atomHigh($top)  [::ifInteger $atomHigh($top) $atomHigh(${top}.old)]
+    set atomLow($top)   [::ifInteger $atomLow($top)   $atomLow(${top}.old)]
+    set atomHigh($top)  [::ifInteger $atomHigh($top)  $atomHigh(${top}.old)]
     
     set min [::tcl::mathfunc::min $atomLow($top) $atomHigh($top)]
     set max [::tcl::mathfunc::max $atomLow($top) $atomHigh($top)]
