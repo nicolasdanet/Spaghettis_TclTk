@@ -7,7 +7,7 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# PureData styles.
+# PureData styles for Mac OS X.
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -53,8 +53,8 @@ proc styleFontConsole {}        { return TkTextFont }
 
 proc styleFrame {}              { return "-style PureData.TFrame        -padding 15" }
 proc styleLabelFrame {}         { return "-style PureData.TLabelframe   -padding 10" }
-proc styleEntry {}              { return "-style PureData.TEntry"}
-proc styleEntryNumber {}        { return "-style PureData.TEntry        -justify right"}
+proc styleEntry {}              { return "-style PureData.TEntry" }
+proc styleEntryNumber {}        { return "-style PureData.TEntry        -justify right" }
 proc styleMenuButton {}         { return "-style PureData.TMenubutton"  }
 proc styleLabel {}              { return "-style PureData.TLabel"       }
 proc styleCheckButton {}        { return "-style PureData.TCheckbutton" }

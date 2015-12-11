@@ -197,13 +197,13 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
                                                     -width $::width(small)
     
     ttk::label $top.f.graph.scaleXLabel         {*}[::styleLabel] \
-                                                    -text [_ "Scale X"]
+                                                    -text [_ "Scale Horizontal"]
     ttk::entry $top.f.graph.scaleX              {*}[::styleEntryNumber] \
                                                     -textvariable ::pd_canvas::canvasScaleX($top) \
                                                     -width $::width(small)
     
     ttk::label $top.f.graph.scaleYLabel         {*}[::styleLabel] \
-                                                    -text [_ "Scale Y"]
+                                                    -text [_ "Scale Vertical"]
     ttk::entry $top.f.graph.scaleY              {*}[::styleEntryNumber] \
                                                     -textvariable ::pd_canvas::canvasScaleY($top) \
                                                     -width $::width(small)
