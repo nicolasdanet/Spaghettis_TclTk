@@ -36,7 +36,7 @@ glist has its own window, even if miniaturized.
 /* NOTE: this file describes Pd implementation details which may change
 in future releases.  The public (stable) API is in m_pd.h. */  
 
-#if defined(_LANGUAGE_C_PLUS_PLUS) || defined(__cplusplus)
+#if defined (__cplusplus)
 extern "C" {
 #endif
 
@@ -617,6 +617,6 @@ EXTERN void guiconnect_notarget(t_guiconnect *x, double timedelay);
 EXTERN t_symbol *iemgui_raute2dollar(t_symbol *s);
 EXTERN t_symbol *iemgui_dollar2raute(t_symbol *s);
 
-#if defined(_LANGUAGE_C_PLUS_PLUS) || defined(__cplusplus)
+#if defined (__cplusplus)
 }
 #endif

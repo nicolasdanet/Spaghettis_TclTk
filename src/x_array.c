@@ -285,7 +285,7 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
             pd_error(x, "array: stale or empty pointer");
             return (0);
         }
-        if (gs->gs_which == GP_ARRAY)
+        if (gs->gs_type == GP_ARRAY)
             vec = x->tc_gp.gp_un.gp_w;
         else vec = x->tc_gp.gp_un.gp_scalar->sc_vec;
 
@@ -301,12 +301,12 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
                 x->tc_field->s_name);
             return (0);
         }
-        if (gs->gs_which == GP_GLIST)
+        if (gs->gs_type == GP_GLIST)
             *glist = gs->gs_un.gs_glist;
         else
         {
             t_array *owner_array = gs->gs_un.gs_array;
-            while (owner_array->a_gp.gp_stub->gs_which == GP_ARRAY)
+            while (owner_array->a_gp.gp_stub->gs_type == GP_ARRAY)
                 owner_array = owner_array->a_gp.gp_stub->gs_un.gs_array;
             *glist = owner_array->a_gp.gp_stub->gs_un.gs_glist;
         }

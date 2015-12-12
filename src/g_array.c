@@ -72,7 +72,7 @@ void array_resize_and_redraw(t_array *array, t_glist *glist, int n)
 {
     t_array *a2 = array;
     int vis = glist_isvisible(glist);
-    while (a2->a_gp.gp_stub->gs_which == GP_ARRAY)
+    while (a2->a_gp.gp_stub->gs_type == GP_ARRAY)
         a2 = a2->a_gp.gp_stub->gs_un.gs_array;
     if (vis)
         gobj_vis(&a2->a_gp.gp_un.gp_scalar->sc_gobj, glist, 0);
@@ -588,7 +588,7 @@ static void garray_free(t_garray *x)
 
 void array_redraw(t_array *a, t_glist *glist)
 {
-    while (a->a_gp.gp_stub->gs_which == GP_ARRAY)
+    while (a->a_gp.gp_stub->gs_type == GP_ARRAY)
         a = a->a_gp.gp_stub->gs_un.gs_array;
     scalar_redraw(a->a_gp.gp_un.gp_scalar, glist);
 }

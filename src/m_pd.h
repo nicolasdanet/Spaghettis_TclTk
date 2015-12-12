@@ -1,165 +1,163 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
+
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #ifndef __m_pd_h_
+#define __m_pd_h_
 
-#if defined(_LANGUAGE_C_PLUS_PLUS) || defined(__cplusplus)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if defined (__cplusplus)
+
 extern "C" {
+    
 #endif
 
-#define PD_MAJOR_VERSION 0
-#define PD_MINOR_VERSION 46
-#define PD_BUGFIX_VERSION 7
-#define PD_TEST_VERSION ""
-extern int pd_compatibilitylevel;   /* e.g., 43 for pd 0.43 compatibility */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-/* old name for "MSW" flag -- we have to take it for the sake of many old
-"nmakefiles" for externs, which will define NT and not MSW */
-#if defined(NT) && !defined(MSW)
-#define MSW
-#endif
+#define PD_MAJOR_VERSION    0
+#define PD_MINOR_VERSION    46
+#define PD_BUGFIX_VERSION   7
 
-/* These pragmas are only used for MSVC, not MinGW or Cygwin <hans@at.or.at> */
-#ifdef _MSC_VER
-/* #pragma warning( disable : 4091 ) */
-#pragma warning( disable : 4305 )  /* uncast const double to float */
-#pragma warning( disable : 4244 )  /* uncast float/int conversion etc. */
-#pragma warning( disable : 4101 )  /* unused automatic variables */
-#endif /* _MSC_VER */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-    /* the external storage class is "extern" in UNIX; in MSW it's ugly. */
+extern int pd_compatibilitylevel;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #ifdef _WIN32
-#ifdef PD_INTERNAL
-#define EXTERN __declspec(dllexport) extern
+    #ifdef PD_INTERNAL
+        #define EXTERN __declspec(dllexport) extern
+    #else
+        #define EXTERN __declspec(dllimport) extern
+    #endif
 #else
-#define EXTERN __declspec(dllimport) extern
-#endif /* PD_INTERNAL */
-#else
-#define EXTERN extern
-#endif /* _WIN32 */
-
-    /* On most c compilers, you can just say "struct foo;" to declare a
-    structure whose elements are defined elsewhere.  On MSVC, when compiling
-    C (but not C++) code, you have to say "extern struct foo;".  So we make
-    a stupid macro: */
-#if defined(_MSC_VER) && !defined(_LANGUAGE_C_PLUS_PLUS) \
-    && !defined(__cplusplus)
-#define EXTERN_STRUCT extern struct
-#else
-#define EXTERN_STRUCT struct
+    #define EXTERN extern
 #endif
 
-/* Define some attributes, specific to the compiler */
-#if defined(__GNUC__)
-#define ATTRIBUTE_FORMAT_PRINTF(a, b) __attribute__ ((format (printf, a, b)))
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if defined (_MSC_VER) && !defined (__cplusplus)
+    #define EXTERN_STRUCT extern struct
 #else
-#define ATTRIBUTE_FORMAT_PRINTF(a, b)
+    #define EXTERN_STRUCT struct
 #endif
 
-#if !defined(_SIZE_T) && !defined(_SIZE_T_)
-#include <stddef.h>     /* just for size_t -- how lame! */
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-/* Microsoft Visual Studio is not C99, it does not provide stdint.h */
+/* Microsoft Visual Studio does NOT provide the "stdint.h" header. */
+
 #ifdef _MSC_VER
-typedef signed __int8     int8_t;
-typedef signed __int16    int16_t;
-typedef signed __int32    int32_t;
-typedef signed __int64    int64_t;
-typedef unsigned __int8   uint8_t;
-typedef unsigned __int16  uint16_t;
-typedef unsigned __int32  uint32_t;
-typedef unsigned __int64  uint64_t;
+    typedef signed __int8               int8_t;
+    typedef signed __int16              int16_t;
+    typedef signed __int32              int32_t;
+    typedef signed __int64              int64_t;
+    typedef unsigned __int8             uint8_t;
+    typedef unsigned __int16            uint16_t;
+    typedef unsigned __int32            uint32_t;
+    typedef unsigned __int64            uint64_t;
 #else
-# include <stdint.h>
+    #include <stdint.h>
 #endif
 
-/* for FILE, needed by sys_fopen() and sys_fclose() only */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #include <stdio.h>
 
-#define MAXPDSTRING 1000        /* use this for anything you want */
-#define MAXPDARG 5              /* max number of args we can typecheck today */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-/* signed and unsigned integer types the size of a pointer:  */
-#if !defined(PD_LONGINTTYPE)
-#define PD_LONGINTTYPE long
-#endif
+#define MAXPDSTRING     1000            /* Size limit for a string. */
+#define MAXPDARG        5               /* Maximum number of arguments. */
 
-#if !defined(PD_FLOATSIZE)
-  /* normally, our floats (t_float, t_sample,...) are 32bit */
-# define PD_FLOATSIZE 32
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-#if PD_FLOATSIZE == 32
-# define PD_FLOATTYPE float
-/* an unsigned int of the same size as FLOATTYPE: */
-# define PD_FLOATUINTTYPE unsigned int
+#define T_TEXT          0
+#define T_OBJECT        1
+#define T_MESSAGE       2
+#define T_ATOM          3
 
-#elif PD_FLOATSIZE == 64
-# define PD_FLOATTYPE double
-# define PD_FLOATUINTTYPE unsigned long
-#else
-# error invalid FLOATSIZE: must be 32 or 64
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-typedef PD_LONGINTTYPE t_int;       /* pointer-size integer */
-typedef PD_FLOATTYPE t_float;       /* a float type at most the same size */
-typedef PD_FLOATTYPE t_floatarg;    /* float type for function calls */
+#define GP_NONE         0
+#define GP_GLIST        1
+#define GP_ARRAY        2
 
-typedef struct _symbol
-{
-    char *s_name;
-    struct _class **s_thing;
-    struct _symbol *s_next;
-} t_symbol;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-EXTERN_STRUCT _array;
-#define t_array struct _array       /* g_canvas.h */
+typedef long    t_int;                  /* A pointer-size integer. */
+typedef float   t_float;                /* A float type. */
+typedef float   t_floatarg;             /* A float type parameter. */
 
-/* pointers to glist and array elements go through a "stub" which sticks
-around after the glist or array is freed.  The stub itself is deleted when
-both the glist/array is gone and the refcount is zero, ensuring that no
-gpointers are pointing here. */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-#define GP_NONE 0       /* the stub points nowhere (has been cut off) */
-#define GP_GLIST 1      /* the stub points to a glist element */
-#define GP_ARRAY 2      /* ... or array */
-
-typedef struct _gstub
-{
-    union
-    {
-        struct _glist *gs_glist;    /* glist we're in */
-        struct _array *gs_array;    /* array we're in */
+typedef struct _gstub {
+    union {
+        struct _glist *gs_glist;
+        struct _array *gs_array;
     } gs_un;
-    int gs_which;                   /* GP_GLIST/GP_ARRAY */
-    int gs_refcount;                /* number of gpointers pointing here */
-} t_gstub;
+    int gs_type;
+    int gs_refcount;
+    } t_gstub;
 
-typedef struct _gpointer           /* pointer to a gobj in a glist */
-{
-    union
-    {   
-        struct _scalar *gp_scalar;  /* scalar we're in (if glist) */
-        union word *gp_w;           /* raw data (if array) */
+typedef struct _gpointer {
+    union {   
+        struct _scalar  *gp_scalar;
+        union word      *gp_w;
     } gp_un;
-    int gp_valid;                   /* number which must match gpointee */
-    t_gstub *gp_stub;               /* stub which points to glist/array */
-} t_gpointer;
+    int     gp_valid;
+    t_gstub *gp_stub;
+    } t_gpointer;
 
-typedef union word
-{
-    t_float w_float;
-    t_symbol *w_symbol;
-    t_gpointer *w_gpointer;
-    t_array *w_array;
-    struct _binbuf *w_binbuf;
-    int w_index;
-} t_word;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-typedef enum
-{
+typedef struct _symbol {
+    char            *s_name;
+    struct _class   **s_thing;
+    struct _symbol  *s_next;
+    } t_symbol;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef union word {
+    t_float         w_float;
+    int             w_index;
+    t_symbol        *w_symbol;
+    t_gpointer      *w_gpointer;
+    struct _array   *w_array;
+    struct _binbuf  *w_binbuf;
+    } t_word;
+
+typedef enum {
     A_NULL,
     A_FLOAT,
     A_SYMBOL,
@@ -172,69 +170,68 @@ typedef enum
     A_DOLLSYM,
     A_GIMME,
     A_CANT
-}  t_atomtype;
+    } t_atomtype;
 
-#define A_DEFSYMBOL A_DEFSYM    /* better name for this */
-
-typedef struct _atom
-{
+typedef struct _atom {
     t_atomtype a_type;
     union word a_w;
-} t_atom;
+    } t_atom;
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+EXTERN_STRUCT _array;
 EXTERN_STRUCT _class;
-#define t_class struct _class
-
 EXTERN_STRUCT _outlet;
-#define t_outlet struct _outlet
-
 EXTERN_STRUCT _inlet;
-#define t_inlet struct _inlet
-
 EXTERN_STRUCT _binbuf;
-#define t_binbuf struct _binbuf
-
 EXTERN_STRUCT _clock;
-#define t_clock struct _clock
-
 EXTERN_STRUCT _outconnect;
-#define t_outconnect struct _outconnect
-
 EXTERN_STRUCT _glist;
-#define t_glist struct _glist
-#define t_canvas struct _glist  /* LATER lose this */
 
-typedef t_class *t_pd;      /* pure datum: nothing but a class pointer */
+#define t_array         struct _array
+#define t_class         struct _class
+#define t_outlet        struct _outlet
+#define t_inlet         struct _inlet
+#define t_binbuf        struct _binbuf
+#define t_clock         struct _clock
+#define t_outconnect    struct _outconnect
+#define t_glist         struct _glist
+#define t_canvas        struct _glist
 
-typedef struct _gobj        /* a graphical object */
-{
-    t_pd g_pd;              /* pure datum header (class) */
-    struct _gobj *g_next;   /* next in list */
-} t_gobj;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-typedef struct _scalar      /* a graphical object holding data */
-{
-    t_gobj sc_gobj;         /* header for graphical object */
-    t_symbol *sc_template;  /* template name (LATER replace with pointer) */
-    t_word sc_vec[1];       /* indeterminate-length array of words */
-} t_scalar;
+/* < http://comments.gmane.org/gmane.comp.multimedia.puredata.general/94098 > */
 
-typedef struct _text        /* patchable object - graphical, with text */
-{
-    t_gobj te_g;                /* header for graphical object */
-    t_binbuf *te_binbuf;        /* holder for the text */
-    t_outlet *te_outlet;        /* linked list of outlets */
-    t_inlet *te_inlet;          /* linked list of inlets */
-    short te_xpix;              /* x&y location (within the toplevel) */
-    short te_ypix;
-    short te_width;             /* requested width in chars, 0 if auto */
-    unsigned int te_type:2;     /* from defs below */
-} t_text;
+typedef t_class *t_pd;
 
-#define T_TEXT 0        /* just a textual comment */
-#define T_OBJECT 1      /* a MAX style patchable object */
-#define T_MESSAGE 2     /* a MAX stype message */
-#define T_ATOM 3        /* a cell to display a number or symbol */
+typedef struct _gobj {
+    t_pd            g_pd;
+    struct _gobj    *g_next;
+    } t_gobj;
+
+typedef struct _scalar {                
+    t_gobj          sc_gobj;         
+    t_symbol        *sc_template;
+    t_word          sc_vec[1];          /* Indeterminate-length array of words. */
+    } t_scalar;
+
+typedef struct _text {
+    t_gobj          te_g;
+    t_binbuf        *te_binbuf;
+    t_outlet        *te_outlet;
+    t_inlet         *te_inlet;
+    short           te_xpix;
+    short           te_ypix;
+    short           te_width; 
+    unsigned int    te_type;
+    } t_text;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #define te_pd te_g.g_pd
 
@@ -524,12 +521,11 @@ EXTERN void poststring(const char *s);
 EXTERN void postfloat(t_floatarg f);
 EXTERN void postatom(int argc, t_atom *argv);
 EXTERN void endpost(void);
-EXTERN void error(const char *fmt, ...) ATTRIBUTE_FORMAT_PRINTF(1, 2);
-EXTERN void verbose(int level, const char *fmt, ...) ATTRIBUTE_FORMAT_PRINTF(2, 3);
-EXTERN void bug(const char *fmt, ...) ATTRIBUTE_FORMAT_PRINTF(1, 2);
-EXTERN void pd_error(void *object, const char *fmt, ...) ATTRIBUTE_FORMAT_PRINTF(2, 3);
-EXTERN void logpost(const void *object, const int level, const char *fmt, ...)
-    ATTRIBUTE_FORMAT_PRINTF(3, 4);
+EXTERN void error(const char *fmt, ...);
+EXTERN void verbose(int level, const char *fmt, ...);
+EXTERN void bug(const char *fmt, ...);
+EXTERN void pd_error(void *object, const char *fmt, ...);
+EXTERN void logpost(const void *object, const int level, const char *fmt, ...);
 EXTERN void sys_logerror(const char *object, const char *s);
 EXTERN void sys_unixerror(const char *object);
 EXTERN void sys_ouch(void);
@@ -563,10 +559,10 @@ EXTERN int sys_trylock(void);
 
 /* --------------- signals ----------------------------------- */
 
-typedef PD_FLOATTYPE t_sample;
+typedef float t_sample;
 typedef union _sampleint_union {
   t_sample f;
-  PD_FLOATUINTTYPE i;
+  unsigned int i;
 } t_sampleint_union;
 #define MAXLOGSIG 32
 #define MAXSIGSIZE (1 << MAXLOGSIG)
@@ -723,7 +719,6 @@ defined, there is a "te_xpix" field in objects, not a "te_xpos" as before: */
 #ifndef _MSC_VER /* Microoft compiler can't handle "inline" function/macros */
 #if defined(__i386__) || defined(__x86_64__) || defined(__arm__)
 /* a test for NANs and denormals.  Should only be necessary on i386. */
-#if PD_FLOATSIZE == 32
 
 typedef  union
 {
@@ -746,47 +741,19 @@ static inline int PD_BIGORSMALL(t_float f)  /* exponent outside (-64,64) */
     return((pun.ui & 0x20000000) == ((pun.ui >> 1) & 0x20000000));
 }
 
-#elif PD_FLOATSIZE == 64
-
-typedef  union
-{
-    t_float f;
-    unsigned int ui[2]; 
-}t_bigorsmall64; 
-
-static inline int PD_BADFLOAT(t_float f)  /* malformed double */
-{
-    t_bigorsmall64 pun;
-    pun.f = f;
-    pun.ui[1] &= 0x7ff00000;
-    return((pun.ui[1] == 0) | (pun.ui[1] == 0x7ff00000));
-}
-
-static inline int PD_BIGORSMALL(t_float f)  /* exponent outside (-512,512) */
-{
-    t_bigorsmall64 pun;
-    pun.f = f;
-    return((pun.ui[1] & 0x20000000) == ((pun.ui[1] >> 1) & 0x20000000));
-}
-
-#endif /* PD_FLOATSIZE */
 #else /* not INTEL or ARM */
 #define PD_BADFLOAT(f) 0
 #define PD_BIGORSMALL(f) 0
 #endif
 
 #else   /* _MSC_VER */
-#if PD_FLOATSIZE == 32
+
 #define PD_BADFLOAT(f) ((((*(unsigned int*)&(f))&0x7f800000)==0) || \
     (((*(unsigned int*)&(f))&0x7f800000)==0x7f800000))
 /* more stringent test: anything not between 1e-19 and 1e19 in absolute val */
 #define PD_BIGORSMALL(f) ((((*(unsigned int*)&(f))&0x60000000)==0) || \
     (((*(unsigned int*)&(f))&0x60000000)==0x60000000))
-#else   /* 64 bits... don't know what to do here */
-#define PD_BADFLOAT(f) (!(((f) >= 0) || ((f) <= 0)))
-#define PD_BIGORSMALL(f) ((f) > 1e150 || (f) <  -1e150 \
-    || (f) > -1e-150 && (f) < 1e-150 )
-#endif
+
 #endif /* _MSC_VER */
     /* get version number at run time */
 EXTERN void sys_getversion(int *major, int *minor, int *bugfix);
@@ -802,9 +769,15 @@ EXTERN void pdinstance_free(t_pdinstance *x);
 EXTERN t_canvas *pd_getcanvaslist(void);
 EXTERN int pd_getdspstate(void);
 
-#if defined(_LANGUAGE_C_PLUS_PLUS) || defined(__cplusplus)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if defined (__cplusplus)
+
 }
+
 #endif
 
-#define __m_pd_h_
-#endif /* __m_pd_h_ */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#endif // __m_pd_h_

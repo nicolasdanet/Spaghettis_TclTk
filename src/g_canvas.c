@@ -1623,8 +1623,8 @@ void g_canvas_setup(void)
         A_NULL);
 
 /* ----- subcanvases, which you get by typing "pd" in a box ---- */
-    class_addcreator((t_newmethod)subcanvas_new, gensym("pd"), A_DEFSYMBOL, 0);
-    class_addcreator((t_newmethod)subcanvas_new, gensym("page"),  A_DEFSYMBOL, 0);
+    class_addcreator((t_newmethod)subcanvas_new, gensym("pd"), A_DEFSYM, 0);
+    class_addcreator((t_newmethod)subcanvas_new, gensym("page"),  A_DEFSYM, 0);
 
     class_addmethod(canvas_class, (t_method)canvas_click,
         gensym("click"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
