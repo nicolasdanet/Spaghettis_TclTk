@@ -17,7 +17,7 @@ if {[string first "-psn" [lindex $argv 0]] == 0} {
     set argc [expr {$argc - 1}]
 }
 
-if [catch {source [file join [file dirname [info script]] pd-gui.tcl]}] { 
+if [catch {source [file join [file dirname [info script]] pd_main.tcl]}] { 
     puts stderr $errorInfo
 }
 

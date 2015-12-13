@@ -1042,10 +1042,10 @@ int sys_startgui(const char *libdir)
             glob_buffer.gl_matchc = 1; /* we only need one match */
             glob(embed_glob, GLOB_LIMIT, NULL, &glob_buffer);
             /* If we are using a copy of Wish embedded in the Pd.app, then it
-             * will automatically load pd-gui.tcl if that embedded Wish can
+             * will automatically load pd_main.tcl if that embedded Wish can
              * find ../Resources/Scripts/AppMain.tcl, then Wish doesn't want
-             * to receive the pd-gui.tcl as an argument.  Otherwise it needs
-             * to know how to find pd-gui.tcl */
+             * to receive the pd_main.tcl as an argument.  Otherwise it needs
+             * to know how to find pd_main.tcl */
             if (glob_buffer.gl_pathc > 0)
                 sprintf(cmdbuf, "\"%s\" %d\n", glob_buffer.gl_pathv[0], portno);
             else
@@ -1069,7 +1069,7 @@ int sys_startgui(const char *libdir)
             if necessary we put that in here too. */
             sprintf(cmdbuf,
   "TCL_LIBRARY=\"%s/lib/tcl/library\" TK_LIBRARY=\"%s/lib/tk/library\"%s \
-  wish \"%s/" PDGUIDIR "/pd-gui.tcl\" %d\n",
+  wish \"%s/" PDGUIDIR "/pd_main.tcl\" %d\n",
                  libdir, libdir, (getenv("HOME") ? "" : " HOME=/tmp"),
                     libdir, portno);
 #endif /* __APPLE__ */
@@ -1117,7 +1117,7 @@ int sys_startgui(const char *libdir)
         
         strcpy(scriptbuf, "\"");
         strcat(scriptbuf, libdir);
-        strcat(scriptbuf, "/" PDGUIDIR "pd-gui.tcl\"");
+        strcat(scriptbuf, "/" PDGUIDIR "pd_main.tcl\"");
         sys_bashfilename(scriptbuf, scriptbuf);
         
         sprintf(portbuf, "%d", portno);
