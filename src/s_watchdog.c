@@ -2,7 +2,7 @@
 * For information on usage and redistribution, and for a DISCLAIMER OF ALL
 * WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/* This file is compiled into the separate program, "pd-watchdog," which
+/* This file is compiled into the separate program, "pdwatchdog," which
 tries to prevent Pd from locking up the processor if it's at realtime
 priority.  Linux only.  Invoked from s_inter.c. */
 

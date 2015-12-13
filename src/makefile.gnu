@@ -16,7 +16,7 @@ TCL_DIR = ../tcl
 # /usr/local/bin/pdsend
 # /usr/local/bin/pdreceive
 # /usr/local/include/m_pd.h
-# /usr/local/lib/pd/bin/pd-watchdog
+# /usr/local/lib/pd/bin/pdwatchdog
 # /usr/local/lib/pd/tcl/*.tcl
 
 prefix = /usr/local
@@ -82,7 +82,7 @@ OBJ = $(SRC:.c=.o)
 
 .PHONY: all
 
-all: $(BIN_DIR)/pd $(BIN_DIR)/pd-watchdog $(BIN_DIR)/pdsend $(BIN_DIR)/pdreceive
+all: $(BIN_DIR)/pd $(BIN_DIR)/pdwatchdog $(BIN_DIR)/pdsend $(BIN_DIR)/pdreceive
 
 $(BIN_DIR):
 	@test -d $(BIN_DIR) || mkdir -p $(BIN_DIR)
@@ -95,9 +95,9 @@ $(BIN_DIR)/pd: $(OBJ) | $(BIN_DIR)
 	@echo "Build pd ..."
 	@$(CC) $(LDFLAGS) -o $(BIN_DIR)/pd $(OBJ) $(LIB)
 
-$(BIN_DIR)/pd-watchdog: s_watchdog.c | $(BIN_DIR)
-	@echo "Build pd-watchdog ..."
-	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $(BIN_DIR)/pd-watchdog s_watchdog.c
+$(BIN_DIR)/pdwatchdog: s_watchdog.c | $(BIN_DIR)
+	@echo "Build pdwatchdog ..."
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $(BIN_DIR)/pdwatchdog s_watchdog.c
 
 $(BIN_DIR)/pdsend: u_pdsend.c | $(BIN_DIR)
 	@echo "Build pdsend ..."
@@ -120,7 +120,7 @@ clean:
 	@-rm -f $(OBJ)
 	@-rm -f "s_audio_jack.o"
 	@echo "Remove binaries ..."
-	@-rm -f $(BIN_DIR)/pd $(BIN_DIR)/pdsend $(BIN_DIR)/pdreceive $(BIN_DIR)/pd-watchdog
+	@-rm -f $(BIN_DIR)/pd $(BIN_DIR)/pdsend $(BIN_DIR)/pdreceive $(BIN_DIR)/pdwatchdog
 
 install: all
 	@echo "Install binaries ..."
@@ -128,9 +128,9 @@ install: all
 	install -m755 $(BIN_DIR)/pd $(DESTDIR)$(bindir)/pd
 	install -m755 $(BIN_DIR)/pdsend $(DESTDIR)$(bindir)/pdsend
 	install -m755 $(BIN_DIR)/pdreceive $(DESTDIR)$(bindir)/pdreceive
-	@echo "Install pd-watchdog ..."
+	@echo "Install pdwatchdog ..."
 	install -d $(DESTDIR)$(libpdbindir)
-	install $(BIN_DIR)/pd-watchdog $(DESTDIR)$(libpdbindir)/pd-watchdog
+	install $(BIN_DIR)/pdwatchdog $(DESTDIR)$(libpdbindir)/pdwatchdog
 	@echo "Install scripts ..."
 	install -d $(DESTDIR)$(libpdtcldir)
 	install $(TCL_DIR)/*.tcl $(DESTDIR)$(libpdtcldir)
@@ -143,7 +143,7 @@ uninstall:
 	rm -f $(DESTDIR)$(bindir)/pd
 	rm -f $(DESTDIR)$(bindir)/pdsend
 	rm -f $(DESTDIR)$(bindir)/pdreceive
-	@echo "Uninstall pd-watchdog ..."
+	@echo "Uninstall pdwatchdog ..."
 	@echo "Uninstall scripts ..."
 	rm -f -r $(DESTDIR)$(libpddir)
 	@echo "Uninstall headers ..."

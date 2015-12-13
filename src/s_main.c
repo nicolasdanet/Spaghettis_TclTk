@@ -515,12 +515,12 @@ void sys_findprogdir(char *progname)
         pd was found in.  We now want to infer the "lib" directory and the
         "gui" directory.  In "simple" unix installations, the layout is
             .../bin/pd
-            .../bin/pd-watchdog (etc)
+            .../bin/pdwatchdog (etc)
             .../bin/pd_main.tcl
             .../doc
         and in "complicated" unix installations, it's:
             .../bin/pd
-            .../lib/pd/bin/pd-watchdog
+            .../lib/pd/bin/pdwatchdog
             .../lib/pd/bin/pd_main.tcl
             .../lib/pd/doc
         To decide which, we stat .../lib/pd; if that exists, we assume it's
