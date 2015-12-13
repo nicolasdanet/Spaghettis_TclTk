@@ -85,7 +85,7 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MAXPDSTRING         1000                    /* Maximum size for a string. */
+#define MAXPDSTRING         1024                    /* Maximum size for a string. */
 #define MAXPDARG            5                       /* Maximum number of typechecked arguments. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -220,6 +220,7 @@ EXTERN_STRUCT _pdinstance;
 
 EXTERN char     sys_font[];
 EXTERN char     sys_fontweight[];
+
 EXTERN int      canvas_dspstate;
 
 EXTERN float    *cos_table;
