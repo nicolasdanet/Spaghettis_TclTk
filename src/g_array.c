@@ -75,10 +75,10 @@ void array_resize_and_redraw(t_array *array, t_glist *glist, int n)
     while (a2->a_gp.gp_stub->gs_type == GP_ARRAY)
         a2 = a2->a_gp.gp_stub->gs_un.gs_array;
     if (vis)
-        gobj_vis(&a2->a_gp.gp_un.gp_scalar->sc_gobj, glist, 0);
+        gobj_vis(&a2->a_gp.gp_un.gp_scalar->sc_g, glist, 0);
     array_resize(array, n);
     if (vis)
-        gobj_vis(&a2->a_gp.gp_un.gp_scalar->sc_gobj, glist, 1);
+        gobj_vis(&a2->a_gp.gp_un.gp_scalar->sc_g, glist, 1);
 }
 
 void word_free(t_word *wp, t_template *template);
@@ -139,13 +139,13 @@ void garray_init( void)
     glob_setfilename(0, gensym("_float_template"), gensym("."));
     binbuf_text(b, garray_floattemplatefile, strlen(garray_floattemplatefile));
     binbuf_eval(b, &pd_canvasmaker, 0, 0);
-    vmess(s__X.s_thing, gensym("pop"), "i", 0);
+    pd_vmess(s__X.s_thing, gensym("pop"), "i", 0);
     
     glob_setfilename(0, gensym("_float_array_template"), gensym("."));
     binbuf_text(b, garray_arraytemplatefile, strlen(garray_arraytemplatefile));
     binbuf_eval(b, &pd_canvasmaker, 0, 0);
     garray_arraytemplatecanvas = s__X.s_thing;
-    vmess(s__X.s_thing, gensym("pop"), "i", 0);
+    pd_vmess(s__X.s_thing, gensym("pop"), "i", 0);
 
     glob_setfilename(0, &s_, &s_);
     binbuf_free(b);  
@@ -251,7 +251,7 @@ static void garray_fittograph(t_garray *x, int n, int style)
     t_glist *gl = x->x_glist;
     if (gl->gl_list == &x->x_gobj && !x->x_gobj.g_next)
     {
-        vmess(&gl->gl_pd, gensym("bounds"), "ffff",
+        pd_vmess(&gl->gl_pd, gensym("bounds"), "ffff",
             0., gl->gl_y1, (double)
                 (style == PLOTSTYLE_POINTS || n == 1 ? n : n-1),
                     gl->gl_y2);
@@ -581,7 +581,7 @@ static void garray_free(t_garray *x)
         /* just in case we're still bound to #A from loading... */
     while (x2 = pd_findbyclass(gensym("#A"), garray_class))
         pd_unbind(x2, gensym("#A"));
-    pd_free(&x->x_scalar->sc_gobj.g_pd);
+    pd_free(&x->x_scalar->sc_g.g_pd);
 }
 
 /* ------------- code used by both array and plot widget functions ---- */
@@ -674,7 +674,7 @@ static void garray_getrect(t_gobj *z, t_glist *glist,
     int *xp1, int *yp1, int *xp2, int *yp2)
 {
     t_garray *x = (t_garray *)z;
-    gobj_getrect(&x->x_scalar->sc_gobj, glist, xp1, yp1, xp2, yp2);
+    gobj_getrect(&x->x_scalar->sc_g, glist, xp1, yp1, xp2, yp2);
 }
 
 static void garray_displace(t_gobj *z, t_glist *glist, int dx, int dy)
@@ -700,14 +700,14 @@ static void garray_delete(t_gobj *z, t_glist *glist)
 static void garray_vis(t_gobj *z, t_glist *glist, int vis)
 {
     t_garray *x = (t_garray *)z;
-    gobj_vis(&x->x_scalar->sc_gobj, glist, vis);
+    gobj_vis(&x->x_scalar->sc_g, glist, vis);
 }
 
 static int garray_click(t_gobj *z, t_glist *glist,
     int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
     t_garray *x = (t_garray *)z;
-    return (gobj_click(&x->x_scalar->sc_gobj, glist,
+    return (gobj_click(&x->x_scalar->sc_g, glist,
         xpix, ypix, shift, alt, dbl, doit));
 }
 
@@ -943,13 +943,13 @@ static void garray_sinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
     npoints = atom_getfloatarg(0, argc, argv);
     argv++, argc--;
     
-    svec = (t_float *)t_getbytes(sizeof(t_float) * argc);
+    svec = (t_float *)getbytes(sizeof(t_float) * argc);
     if (!svec) return;
     
     for (i = 0; i < argc; i++)
         svec[i] = atom_getfloatarg(i, argc, argv);
     garray_dofo(x, npoints, 0, argc, svec, 1);
-    t_freebytes(svec, sizeof(t_float) * argc);
+    freebytes(svec, sizeof(t_float) * argc);
 }
 
 static void garray_cosinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
@@ -967,13 +967,13 @@ static void garray_cosinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
     npoints = atom_getfloatarg(0, argc, argv);
     argv++, argc--;
     
-    svec = (t_float *)t_getbytes(sizeof(t_float) * argc);
+    svec = (t_float *)getbytes(sizeof(t_float) * argc);
     if (!svec) return;
 
     for (i = 0; i < argc; i++)
         svec[i] = atom_getfloatarg(i, argc, argv);
     garray_dofo(x, npoints, 0, argc, svec, 0);
-    t_freebytes(svec, sizeof(t_float) * argc);
+    freebytes(svec, sizeof(t_float) * argc);
 }
 
 static void garray_normalize(t_garray *x, t_float f)
@@ -1052,30 +1052,30 @@ static void garray_list(t_garray *x, t_symbol *s, int argc, t_atom *argv)
 static void garray_bounds(t_garray *x, t_floatarg x1, t_floatarg y1,
     t_floatarg x2, t_floatarg y2)
 {
-    vmess(&x->x_glist->gl_pd, gensym("bounds"), "ffff", x1, y1, x2, y2);
+    pd_vmess(&x->x_glist->gl_pd, gensym("bounds"), "ffff", x1, y1, x2, y2);
 }
 
     /* same for "xticks", etc */
 static void garray_xticks(t_garray *x,
     t_floatarg point, t_floatarg inc, t_floatarg f)
 {
-    vmess(&x->x_glist->gl_pd, gensym("xticks"), "fff", point, inc, f);
+    pd_vmess(&x->x_glist->gl_pd, gensym("xticks"), "fff", point, inc, f);
 }
 
 static void garray_yticks(t_garray *x,
     t_floatarg point, t_floatarg inc, t_floatarg f)
 {
-    vmess(&x->x_glist->gl_pd, gensym("yticks"), "fff", point, inc, f);
+    pd_vmess(&x->x_glist->gl_pd, gensym("yticks"), "fff", point, inc, f);
 }
 
 static void garray_xlabel(t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
-    typedmess(&x->x_glist->gl_pd, s, argc, argv);
+    pd_typedmess(&x->x_glist->gl_pd, s, argc, argv);
 }
 
 static void garray_ylabel(t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
-    typedmess(&x->x_glist->gl_pd, s, argc, argv);
+    pd_typedmess(&x->x_glist->gl_pd, s, argc, argv);
 }
     /* change the name of a garray. */
 static void garray_rename(t_garray *x, t_symbol *s)

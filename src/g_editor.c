@@ -102,9 +102,9 @@ int gobj_shouldvis(t_gobj *x, struct _glist *glist)
         boxes inside graphs---except comments, if we're doing the new
         (goprect) style. */
         return (glist->gl_havewindow ||
-            (ob->te_pd != canvas_class &&
-                ob->te_pd->c_wb != &text_widgetbehavior) ||
-            (ob->te_pd == canvas_class && (((t_glist *)ob)->gl_isgraph)) ||
+            (ob->te_g.g_pd != canvas_class &&
+                ob->te_g.g_pd->c_wb != &text_widgetbehavior) ||
+            (ob->te_g.g_pd == canvas_class && (((t_glist *)ob)->gl_isgraph)) ||
             (glist->gl_goprect && (ob->te_type == T_TEXT)));
     }
     else return (1);
@@ -434,8 +434,8 @@ void canvas_disconnect(t_canvas *x,
     linetraverser_start(&t, x);
     while (oc = linetraverser_next(&t))
     {
-        int srcno = canvas_getindex(x, &t.tr_ob->ob_g);
-        int sinkno = canvas_getindex(x, &t.tr_ob2->ob_g);
+        int srcno = canvas_getindex(x, &t.tr_ob->te_g);
+        int sinkno = canvas_getindex(x, &t.tr_ob2->te_g);
         if (srcno == index1 && t.tr_outno == outno &&
             sinkno == index2 && t.tr_inno == inno)
         {
@@ -460,7 +460,7 @@ static void canvas_undo_disconnect(t_canvas *x, void *z, int action)
             buf->u_index2, buf->u_inletno);
     }
     else if (action == UNDO_FREE)
-        t_freebytes(buf, sizeof(*buf));
+        freebytes(buf, sizeof(*buf));
 }
 
     /* connect just calls disconnect actions backward... */
@@ -511,17 +511,17 @@ static void *canvas_undo_set_cut(t_canvas *x, int mode)
     linetraverser_start(&t, x);
     while (oc = linetraverser_next(&t))
     {
-        int issel1 = glist_isselected(x, &t.tr_ob->ob_g);
-        int issel2 = glist_isselected(x, &t.tr_ob2->ob_g);
+        int issel1 = glist_isselected(x, &t.tr_ob->te_g);
+        int issel2 = glist_isselected(x, &t.tr_ob2->te_g);
         if (issel1 != issel2)
         {
             binbuf_addv(buf->u_reconnectbuf, "ssiiii;",
                 gensym("#X"), gensym("connect"),
                 (issel1 ? nnotsel : 0)
-                    + glist_selectionindex(x, &t.tr_ob->ob_g, issel1),
+                    + glist_selectionindex(x, &t.tr_ob->te_g, issel1),
                 t.tr_outno,
                 (issel2 ? nnotsel : 0) +
-                    glist_selectionindex(x, &t.tr_ob2->ob_g, issel2),
+                    glist_selectionindex(x, &t.tr_ob2->te_g, issel2),
                 t.tr_inno);
         }
     }
@@ -599,7 +599,7 @@ static void canvas_undo_cut(t_canvas *x, void *z, int action)
             binbuf_free(buf->u_reconnectbuf);
         if (buf->u_redotextbuf)
             binbuf_free(buf->u_redotextbuf);
-        t_freebytes(buf, sizeof(*buf));
+        freebytes(buf, sizeof(*buf));
     }
 }
 
@@ -678,8 +678,8 @@ static void canvas_undo_move(t_canvas *x, void *z, int action)
     }
     else if (action == UNDO_FREE)
     {
-        t_freebytes(buf->u_vec, buf->u_n * sizeof(*buf->u_vec));
-        t_freebytes(buf, sizeof(*buf));
+        freebytes(buf->u_vec, buf->u_n * sizeof(*buf->u_vec));
+        freebytes(buf, sizeof(*buf));
     }
 }
 
@@ -718,7 +718,7 @@ static void canvas_undo_paste(t_canvas *x, void *z, int action)
                 gobj_displace(sel->sel_what, x, 10, 10);
     }
 else if (action == UNDO_FREE)
-        t_freebytes(buf, sizeof(*buf));
+        freebytes(buf, sizeof(*buf));
 }
 
     /* recursively check for abstractions to reload as result of a save. 
@@ -1182,7 +1182,7 @@ static void canvas_done_popup(t_canvas *x, t_float which, t_float xpos, t_float 
             {
                 if (!zgetfn(&y->g_pd, gensym("menu-open")))
                     continue;
-                vmess(&y->g_pd, gensym("menu-open"), "");
+                pd_vmess(&y->g_pd, gensym("menu-open"), "");
                 return;
             }
             else    /* help */
@@ -1326,8 +1326,8 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
             int noutlet;
                 /* resize?  only for "true" text boxes or canvases*/
             if (ob && !x->gl_editor->e_selection &&
-                (ob->te_pd->c_wb == &text_widgetbehavior ||
-                    pd_checkglist(&ob->te_pd)) &&
+                (ob->te_g.g_pd->c_wb == &text_widgetbehavior ||
+                    pd_checkglist(&ob->te_g.g_pd)) &&
                         xpos >= x2-4 && ypos < y2-4)
             {
                 if (doit)
@@ -1436,8 +1436,8 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
             if (doit)
             {
                 glist_selectline(glist2, oc, 
-                    canvas_getindex(glist2, &t.tr_ob->ob_g), t.tr_outno,
-                    canvas_getindex(glist2, &t.tr_ob2->ob_g), t.tr_inno);
+                    canvas_getindex(glist2, &t.tr_ob->te_g), t.tr_outno,
+                    canvas_getindex(glist2, &t.tr_ob2->te_g), t.tr_inno);
             }
             canvas_setcursor(x, CURSOR_EDITMODE_DISCONNECT);
             return;
@@ -1554,8 +1554,8 @@ void canvas_doconnect(t_canvas *x, int xpos, int ypos, int which, int doit)
                 canvas_dirty(x, 1);
                 canvas_setundo(x, canvas_undo_connect,
                     canvas_undo_set_connect(x, 
-                        canvas_getindex(x, &ob1->ob_g), closest1,
-                        canvas_getindex(x, &ob2->ob_g), closest2),
+                        canvas_getindex(x, &ob1->te_g), closest1,
+                        canvas_getindex(x, &ob2->te_g), closest2),
                         "connect");
             }
             else canvas_setcursor(x, CURSOR_EDITMODE_CONNECT);
@@ -1633,7 +1633,7 @@ void canvas_mouseup(t_canvas *x,
                 canvas_isabstraction((t_glist *)g) &&
                     (gl2 = glist_finddirty((t_glist *)g)))
             {
-                vmess(&gl2->gl_pd, gensym("menu-open"), "");
+                pd_vmess(&gl2->gl_pd, gensym("menu-open"), "");
                 x->gl_editor->e_onmotion = MA_NONE;
                 sys_vgui(
 "::pd_confirm::checkAction .x%lx { Discard changes to %s? } { ::pd_connect::pdsend .x%lx dirty 0 } { no }\n",
@@ -1885,8 +1885,8 @@ void canvas_motion(t_canvas *x, t_floatarg xpos, t_floatarg ypos,
             int wantwidth = xpos - x11;
             t_gotfn sizefn;
             t_object *ob = pd_checkobject(&y1->g_pd);
-            if (ob && ob->te_pd->c_wb == &text_widgetbehavior ||
-                    (pd_checkglist(&ob->te_pd) &&
+            if (ob && ob->te_g.g_pd->c_wb == &text_widgetbehavior ||
+                    (pd_checkglist(&ob->te_g.g_pd) &&
                         !((t_canvas *)ob)->gl_isgraph))
             {
                 wantwidth = wantwidth / sys_fontwidth(glist_getfont(x));
@@ -1897,7 +1897,7 @@ void canvas_motion(t_canvas *x, t_floatarg xpos, t_floatarg ypos,
                 canvas_fixlinesfor(x, ob);
                 gobj_vis(y1, x, 1);
             }
-            else if (ob && ob->ob_pd == canvas_class)
+            else if (ob && ob->te_g.g_pd == canvas_class)
             {
                 gobj_vis(y1, x, 0);
                 ((t_canvas *)ob)->gl_pixwidth += xpos - x->gl_editor->e_xnew;
@@ -1986,7 +1986,7 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         g = glist_finddirty(x);
         if (g)
         {
-            vmess(&g->gl_pd, gensym("menu-open"), "");
+            pd_vmess(&g->gl_pd, gensym("menu-open"), "");
             sys_vgui("::pd_confirm::checkClose .x%lx { ::pd_connect::pdsend $top menusave 1 } { ::pd_connect::pdsend .x%lx menuclose 2 } {}\n",
                      canvas_getrootfor(g), g);
             return;
@@ -2008,7 +2008,7 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         g = glist_finddirty(x);
         if (g)
         {
-            vmess(&g->gl_pd, gensym("menu-open"), "");
+            pd_vmess(&g->gl_pd, gensym("menu-open"), "");
             sys_vgui("::pd_confirm::checkClose .x%lx { ::pd_connect::pdsend $top menusave 1 } { ::pd_connect::pdsend .x%lx menuclose 2 } {}\n",
                      canvas_getrootfor(x), g);
             return;
@@ -2083,14 +2083,14 @@ static int canvas_dofind(t_canvas *x, int *myindexp)
         t_object *ob = 0;
         if (ob = pd_checkobject(&y->g_pd))
         {
-            if (atoms_match(binbuf_getnatom(ob->ob_binbuf), 
-                binbuf_getvec(ob->ob_binbuf), findargc, findargv,
+            if (atoms_match(binbuf_getnatom(ob->te_binbuf), 
+                binbuf_getvec(ob->te_binbuf), findargc, findargv,
                     canvas_find_wholeword))
             {
                 if (*myindexp == canvas_find_index)
                 {
                     glist_noselect(x);
-                    vmess(&x->gl_pd, gensym("menu-open"), "");
+                    pd_vmess(&x->gl_pd, gensym("menu-open"), "");
                     canvas_editmode(x, 1.);
                     glist_select(x, y);
                     didit = 1;
@@ -2221,13 +2221,13 @@ void canvas_stowconnections(t_canvas *x)
     linetraverser_start(&t, x);
     while (oc = linetraverser_next(&t))
     {
-        int s1 = glist_isselected(x, &t.tr_ob->ob_g);
-        int s2 = glist_isselected(x, &t.tr_ob2->ob_g);
+        int s1 = glist_isselected(x, &t.tr_ob->te_g);
+        int s2 = glist_isselected(x, &t.tr_ob2->te_g);
         if (s1 != s2)
             binbuf_addv(x->gl_editor->e_connectbuf, "ssiiii;",
                 gensym("#X"), gensym("connect"),
-                    glist_getindex(x, &t.tr_ob->ob_g), t.tr_outno,
-                        glist_getindex(x, &t.tr_ob2->ob_g), t.tr_inno);
+                    glist_getindex(x, &t.tr_ob->te_g), t.tr_outno,
+                        glist_getindex(x, &t.tr_ob2->te_g), t.tr_inno);
     }
 }
 
@@ -2253,12 +2253,12 @@ static t_binbuf *canvas_docopy(t_canvas *x)
     linetraverser_start(&t, x);
     while (oc = linetraverser_next(&t))
     {
-        if (glist_isselected(x, &t.tr_ob->ob_g)
-            && glist_isselected(x, &t.tr_ob2->ob_g))
+        if (glist_isselected(x, &t.tr_ob->te_g)
+            && glist_isselected(x, &t.tr_ob2->te_g))
         {
             binbuf_addv(b, "ssiiii;", gensym("#X"), gensym("connect"),
-                glist_selectionindex(x, &t.tr_ob->ob_g, 1), t.tr_outno,
-                glist_selectionindex(x, &t.tr_ob2->ob_g, 1), t.tr_inno);
+                glist_selectionindex(x, &t.tr_ob->te_g, 1), t.tr_outno,
+                glist_selectionindex(x, &t.tr_ob2->te_g, 1), t.tr_inno);
         }
     }
     return (b);
@@ -2550,7 +2550,7 @@ void canvas_connect(t_canvas *x, t_floatarg fwhoout, t_floatarg foutno,
             outlet_new(objsrc, 0);
     if (pd_class(&sink->g_pd) == text_class && objsink->te_type == T_OBJECT)
         while (inno >= obj_ninlets(objsink))
-            inlet_new(objsink, &objsink->ob_pd, 0, 0);
+            inlet_new(objsink, &objsink->te_g.g_pd, 0, 0);
 
     if (!(oc = obj_connect(objsrc, outno, objsink, inno))) goto bad;
     if (glist_isvisible(x))

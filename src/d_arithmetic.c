@@ -41,7 +41,7 @@ static void *plus_new(t_symbol *s, int argc, t_atom *argv)
     else
     {
         t_plus *x = (t_plus *)pd_new(plus_class);
-        inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal);
+        inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;
         return (x);
@@ -174,7 +174,7 @@ static void *minus_new(t_symbol *s, int argc, t_atom *argv)
     else
     {
         t_minus *x = (t_minus *)pd_new(minus_class);
-        inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal);
+        inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;
         return (x);
@@ -305,7 +305,7 @@ static void *times_new(t_symbol *s, int argc, t_atom *argv)
     else
     {
         t_times *x = (t_times *)pd_new(times_class);
-        inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal);
+        inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;
         return (x);
@@ -435,7 +435,7 @@ static void *over_new(t_symbol *s, int argc, t_atom *argv)
     else
     {
         t_over *x = (t_over *)pd_new(over_class);
-        inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal);
+        inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;
         return (x);
@@ -577,7 +577,7 @@ static void *max_new(t_symbol *s, int argc, t_atom *argv)
     else
     {
         t_max *x = (t_max *)pd_new(max_class);
-        inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal);
+        inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;
         return (x);
@@ -719,7 +719,7 @@ static void *min_new(t_symbol *s, int argc, t_atom *argv)
     else
     {
         t_min *x = (t_min *)pd_new(min_class);
-        inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal);
+        inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;
         return (x);

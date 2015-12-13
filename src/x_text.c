@@ -74,7 +74,7 @@ static void textbuf_senditup(t_textbuf *x)
         i = (j-txt)+1;
     }
     sys_vgui("::pd_text::dirty .x%lx 0\n", x);
-    t_freebytes(txt, ntxt);
+    freebytes(txt, ntxt);
 }
 
 static void textbuf_open(t_textbuf *x)
@@ -92,7 +92,7 @@ static void textbuf_open(t_textbuf *x)
             x /*, 600, 340, "myname", "text",
                  sys_hostfontsize(glist_getfont(x->b_canvas))*/);
         sprintf(buf, ".x%lx", (unsigned long)x);
-        x->b_guiconnect = guiconnect_new(&x->b_ob.ob_pd, gensym(buf));
+        x->b_guiconnect = guiconnect_new(&x->b_ob.te_g.g_pd, gensym(buf));
         textbuf_senditup(x);
     }
 }
@@ -263,7 +263,7 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
     }
     if (argc && argv->a_type == A_SYMBOL)
     {
-        pd_bind(&x->x_ob.ob_pd, argv->a_w.w_symbol);
+        pd_bind(&x->x_ob.te_g.g_pd, argv->a_w.w_symbol);
         x->x_bindsym = argv->a_w.w_symbol;
         argc--; argv++;
     }
@@ -286,7 +286,7 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
     asym->s_thing = 0;
         /* and now bind #A to us to receive following messages in the
         saved file or copy buffer */
-    pd_bind(&x->x_ob.ob_pd, asym); 
+    pd_bind(&x->x_ob.te_g.g_pd, asym); 
     return (x);
 }
 
@@ -305,7 +305,7 @@ t_binbuf *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
 static void text_define_frompointer(t_text_define *x, t_gpointer *gp,
     t_symbol *s)
 {
-    t_binbuf *b = pointertobinbuf(&x->x_textbuf.b_ob.ob_pd,
+    t_binbuf *b = pointertobinbuf(&x->x_textbuf.b_ob.te_g.g_pd,
         gp, s, "text_frompointer");
     if (b)
     {
@@ -317,7 +317,7 @@ static void text_define_frompointer(t_text_define *x, t_gpointer *gp,
 
 static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
 {
-    t_binbuf *b = pointertobinbuf(&x->x_textbuf.b_ob.ob_pd,
+    t_binbuf *b = pointertobinbuf(&x->x_textbuf.b_ob.te_g.g_pd,
         gp, s, "text_topointer");
     if (b)
     {
@@ -358,7 +358,7 @@ static void text_define_save(t_gobj *z, t_binbuf *bb)
     t_text_define *x = (t_text_define *)z;
     binbuf_addv(bb, "ssff", &s__X, gensym("obj"),
         (float)x->x_ob.te_xpix, (float)x->x_ob.te_ypix);
-    binbuf_addbinbuf(bb, x->x_ob.ob_binbuf);
+    binbuf_addbinbuf(bb, x->x_ob.te_binbuf);
     binbuf_addsemi(bb);
     if (x->x_keep)
     {
@@ -373,7 +373,7 @@ static void text_define_free(t_text_define *x)
 {
     textbuf_free(&x->x_textbuf);
     if (x->x_bindsym != &s_)
-        pd_unbind(&x->x_ob.ob_pd, x->x_bindsym);
+        pd_unbind(&x->x_ob.te_g.g_pd, x->x_bindsym);
     gpointer_unset(&x->x_gp);
 }
 
@@ -834,7 +834,7 @@ static void text_tolist_bang(t_text_tolist *x)
        return;
     b2 = binbuf_new();
     binbuf_addbinbuf(b2, b);
-    outlet_list(x->tc_obj.ob_outlet, 0, binbuf_getnatom(b2), binbuf_getvec(b2));
+    outlet_list(x->tc_obj.te_outlet, 0, binbuf_getnatom(b2), binbuf_getvec(b2));
     binbuf_free(b2);
 }
 
@@ -1355,7 +1355,7 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
         if (to)
         {
             if (nleft > 0 && vecleft[0].a_type == A_SYMBOL)
-                typedmess(to, vecleft->a_w.w_symbol, nleft-1, vecleft+1);
+                pd_typedmess(to, vecleft->a_w.w_symbol, nleft-1, vecleft+1);
             else pd_list(to, 0, nleft, vecleft);
         }
     }
@@ -1437,7 +1437,7 @@ static void text_sequence_args(t_text_sequence *x, t_symbol *s,
     int argc, t_atom *argv)
 {
     int i;
-    x->x_argv = t_resizebytes(x->x_argv,
+    x->x_argv = resizebytes(x->x_argv,
         x->x_argc * sizeof(t_atom), argc * sizeof(t_atom));
     for (i = 0; i < argc; i++)
         x->x_argv[i] = argv[i];
@@ -1455,7 +1455,7 @@ static void text_sequence_tempo(t_text_sequence *x,
 
 static void text_sequence_free(t_text_sequence *x)
 {
-    t_freebytes(x->x_argv, sizeof(t_atom) * x->x_argc);
+    freebytes(x->x_argv, sizeof(t_atom) * x->x_argc);
     clock_free(x->x_clock);
     text_client_free(&x->x_tc);
 }
@@ -1578,7 +1578,7 @@ static void qlist_donext(t_qlist *x, int drop, int automatic)
                     x->x_clockdelay = ap->a_w.w_float * x->x_tempo);
                 x->x_whenclockset = clock_getsystime();
             }
-            else outlet_list(x->x_ob.ob_outlet, 0, onset2-onset, ap);
+            else outlet_list(x->x_ob.te_outlet, 0, onset2-onset, ap);
             x->x_innext = 0;
             return;
         }
@@ -1612,9 +1612,9 @@ static void qlist_donext(t_qlist *x, int drop, int automatic)
         if (!drop)
         {   
             if (ap->a_type == A_FLOAT)
-                typedmess(target, &s_list, count, ap);
+                pd_typedmess(target, &s_list, count, ap);
             else if (ap->a_type == A_SYMBOL)
-                typedmess(target, ap->a_w.w_symbol, count-1, ap+1);
+                pd_typedmess(target, ap->a_w.w_symbol, count-1, ap+1);
         }
         if (x->x_rewound)
         {
@@ -1780,9 +1780,9 @@ static void textfile_bang(t_qlist *x)
     {
         x->x_onset = onset2;
         if (ap->a_type == A_SYMBOL)
-            outlet_anything(x->x_ob.ob_outlet, ap->a_w.w_symbol,
+            outlet_anything(x->x_ob.te_outlet, ap->a_w.w_symbol,
                 onset2-onset-1, ap+1);
-        else outlet_list(x->x_ob.ob_outlet, 0, onset2-onset, ap);
+        else outlet_list(x->x_ob.te_outlet, 0, onset2-onset, ap);
     }
     else
     {
@@ -1819,7 +1819,7 @@ static void text_template_init( void)
     glob_setfilename(0, gensym("_text_template"), gensym("."));
     binbuf_text(b, text_templatefile, strlen(text_templatefile));
     binbuf_eval(b, &pd_canvasmaker, 0, 0);
-    vmess(s__X.s_thing, gensym("pop"), "i", 0);
+    pd_vmess(s__X.s_thing, gensym("pop"), "i", 0);
     
     glob_setfilename(0, &s_, &s_);
     binbuf_free(b);  

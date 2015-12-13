@@ -521,7 +521,7 @@ static void vu_properties(t_gobj *z, t_glist *owner)
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
             x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
             0xffffff & x->x_gui.x_bcol, -1/*no front-color*/, 0xffffff & x->x_gui.x_lcol);
-    gfxstub_new(&x->x_gui.x_obj.ob_pd, x, buf);
+    gfxstub_new(&x->x_gui.x_obj.te_g.g_pd, x, buf);
 }
 
 static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
@@ -680,7 +680,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     else { x->x_gui.x_fsf.x_font_style = 0;
         strcpy(x->x_gui.x_font, sys_font); }
     if(x->x_gui.x_fsf.x_rcv_able)
-        pd_bind(&x->x_gui.x_obj.ob_pd, x->x_gui.x_rcv);
+        pd_bind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     x->x_gui.x_ldx = ldx;
     x->x_gui.x_ldy = ldy;
 
@@ -698,7 +698,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     x->x_fp = -101.0;
     x->x_fr = -101.0;
     iemgui_verify_snd_ne_rcv(&x->x_gui);
-    inlet_new(&x->x_gui.x_obj, &x->x_gui.x_obj.ob_pd, &s_float, gensym("ft1"));
+    inlet_new(&x->x_gui.x_obj, &x->x_gui.x_obj.te_g.g_pd, &s_float, gensym("ft1"));
     x->x_out_rms = outlet_new(&x->x_gui.x_obj, &s_float);
     x->x_out_peak = outlet_new(&x->x_gui.x_obj, &s_float);
     return (x);
@@ -707,7 +707,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
 static void vu_free(t_vu *x)
 {
     if(x->x_gui.x_fsf.x_rcv_able)
-        pd_unbind(&x->x_gui.x_obj.ob_pd, x->x_gui.x_rcv);
+        pd_unbind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     gfxstub_deleteforkey(x);
 }
 

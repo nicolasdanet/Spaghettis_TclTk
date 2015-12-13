@@ -78,7 +78,7 @@ static void *mtof_new(void)
 
 static void mtof_float(t_object *x, t_float f)
 {
-    outlet_float(x->ob_outlet, mtof(f));
+    outlet_float(x->te_outlet, mtof(f));
 }
 
 
@@ -93,7 +93,7 @@ static void *ftom_new(void)
 
 static void ftom_float(t_object *x, t_float f)
 {
-    outlet_float(x->ob_outlet, ftom(f));
+    outlet_float(x->te_outlet, ftom(f));
 }
 
 
@@ -108,7 +108,7 @@ static void *rmstodb_new(void)
 
 static void rmstodb_float(t_object *x, t_float f)
 {
-    outlet_float(x->ob_outlet, rmstodb(f));
+    outlet_float(x->te_outlet, rmstodb(f));
 }
 
 
@@ -123,7 +123,7 @@ static void *powtodb_new(void)
 
 static void powtodb_float(t_object *x, t_float f)
 {
-    outlet_float(x->ob_outlet, powtodb(f));
+    outlet_float(x->te_outlet, powtodb(f));
 }
 
 
@@ -138,7 +138,7 @@ static void *dbtopow_new(void)
 
 static void dbtopow_float(t_object *x, t_float f)
 {
-    outlet_float(x->ob_outlet, dbtopow(f));
+    outlet_float(x->te_outlet, dbtopow(f));
 }
 
 
@@ -153,7 +153,7 @@ static void *dbtorms_new(void)
 
 static void dbtorms_float(t_object *x, t_float f)
 {
-    outlet_float(x->ob_outlet, dbtorms(f));
+    outlet_float(x->te_outlet, dbtorms(f));
 }
 
 

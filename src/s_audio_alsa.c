@@ -885,10 +885,10 @@ static char **alsa_names = 0;
 void alsa_adddev(char *name)
 {
     if (alsa_nnames)
-        alsa_names = (char **)t_resizebytes(alsa_names,
+        alsa_names = (char **)resizebytes(alsa_names,
             alsa_nnames * sizeof(char *),
             (alsa_nnames+1) * sizeof(char *));
-    else alsa_names = (char **)t_getbytes(sizeof(char *));
+    else alsa_names = (char **)getbytes(sizeof(char *));
     alsa_names[alsa_nnames] = gensym(name)->s_name;
     alsa_nnames++;
 }

@@ -1360,7 +1360,7 @@ usage:
 done:
     if (fd >= 0)
         close (fd);
-    outlet_float(x->x_obj.ob_outlet, (t_float)itemsread); 
+    outlet_float(x->x_obj.te_outlet, (t_float)itemsread); 
 }
 
     /* this is broken out from soundfiler_write below so garray_write can
@@ -1485,7 +1485,7 @@ static void soundfiler_write(t_soundfiler *x, t_symbol *s,
 {
     long bozo = soundfiler_dowrite(x, x->x_canvas,
         argc, argv);
-    outlet_float(x->x_obj.ob_outlet, (t_float)bozo); 
+    outlet_float(x->x_obj.te_outlet, (t_float)bozo); 
 }
 
 static void soundfiler_setup(void)
@@ -2421,7 +2421,7 @@ static void *writesf_new(t_floatarg fnchannels, t_floatarg fbufsize)
     x = (t_writesf *)pd_new(writesf_class);
     
     for (i = 1; i < nchannels; i++)
-        inlet_new(&x->x_obj,  &x->x_obj.ob_pd, &s_signal, &s_signal);
+        inlet_new(&x->x_obj,  &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
 
     x->x_f = 0;
     x->x_sfchannels = nchannels;

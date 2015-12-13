@@ -14,12 +14,12 @@ t_pd *pd_new(t_class *c)
     t_pd *x;
     if (!c) 
         bug ("pd_new: apparently called before setup routine");
-    x = (t_pd *)t_getbytes(c->c_size);
+    x = (t_pd *)getbytes(c->c_size);
     *x = c;
     if (c->c_patchable)
     {
-        ((t_object *)x)->ob_inlet = 0;
-        ((t_object *)x)->ob_outlet = 0;
+        ((t_object *)x)->te_inlet = 0;
+        ((t_object *)x)->te_outlet = 0;
     }
     return (x);
 }
@@ -30,14 +30,14 @@ void pd_free(t_pd *x)
     if (c->c_freemethod) (*(t_gotfn)(c->c_freemethod))(x);
     if (c->c_patchable)
     {
-        while (((t_object *)x)->ob_outlet)
-            outlet_free(((t_object *)x)->ob_outlet);
-        while (((t_object *)x)->ob_inlet)
-            inlet_free(((t_object *)x)->ob_inlet);
-        if (((t_object *)x)->ob_binbuf)
-            binbuf_free(((t_object *)x)->ob_binbuf);
+        while (((t_object *)x)->te_outlet)
+            outlet_free(((t_object *)x)->te_outlet);
+        while (((t_object *)x)->te_inlet)
+            inlet_free(((t_object *)x)->te_inlet);
+        if (((t_object *)x)->te_binbuf)
+            binbuf_free(((t_object *)x)->te_binbuf);
     }
-    if (c->c_size) t_freebytes(x, c->c_size);
+    if (c->c_size) freebytes(x, c->c_size);
 }
 
 void gobj_save(t_gobj *x, t_binbuf *b)
@@ -233,7 +233,7 @@ int pd_setloadingabstraction(t_symbol *sym)
 
 void pd_pushsym(t_pd *x)
 {
-    t_gstack *y = (t_gstack *)t_getbytes(sizeof(*y));
+    t_gstack *y = (t_gstack *)getbytes(sizeof(*y));
     y->g_what = s__X.s_thing;
     y->g_next = gstack_head;
     y->g_loadingabstraction = pd_loadingabstraction;
@@ -250,7 +250,7 @@ void pd_popsym(t_pd *x)
         t_gstack *headwas = gstack_head;
         s__X.s_thing = headwas->g_what;
         gstack_head = headwas->g_next;
-        t_freebytes(headwas, sizeof(*headwas));
+        freebytes(headwas, sizeof(*headwas));
         lastpopped = x;
     }
 }

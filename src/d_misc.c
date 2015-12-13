@@ -98,7 +98,7 @@ static void bang_tilde_dsp(t_bang *x, t_signal **sp)
 
 static void bang_tilde_tick(t_bang *x)
 {
-    outlet_bang(x->x_obj.ob_outlet);
+    outlet_bang(x->x_obj.te_outlet);
 }
 
 static void bang_tilde_free(t_bang *x)

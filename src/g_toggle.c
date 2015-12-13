@@ -244,14 +244,14 @@ static void toggle_properties(t_gobj *z, t_glist *owner)
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
             x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
             0xffffff & x->x_gui.x_bcol, 0xffffff & x->x_gui.x_fcol, 0xffffff & x->x_gui.x_lcol);
-    gfxstub_new(&x->x_gui.x_obj.ob_pd, x, buf);
+    gfxstub_new(&x->x_gui.x_obj.te_g.g_pd, x, buf);
 }
 
 static void toggle_bang(t_toggle *x)
 {
     x->x_on = (x->x_on==0.0)?x->x_nonzero:0.0;
     (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);
-    outlet_float(x->x_gui.x_obj.ob_outlet, x->x_on);
+    outlet_float(x->x_gui.x_obj.te_outlet, x->x_on);
     if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
         pd_float(x->x_gui.x_snd->s_thing, x->x_on);
 }
@@ -302,7 +302,7 @@ static void toggle_float(t_toggle *x, t_floatarg f)
     toggle_set(x, f);
     if(x->x_gui.x_fsf.x_put_in2out)
     {
-        outlet_float(x->x_gui.x_obj.ob_outlet, x->x_on);
+        outlet_float(x->x_gui.x_obj.te_outlet, x->x_on);
         if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
             pd_float(x->x_gui.x_snd->s_thing, x->x_on);
     }
@@ -311,7 +311,7 @@ static void toggle_float(t_toggle *x, t_floatarg f)
 static void toggle_fout(t_toggle *x, t_floatarg f)
 {
     toggle_set(x, f);
-    outlet_float(x->x_gui.x_obj.ob_outlet, x->x_on);
+    outlet_float(x->x_gui.x_obj.te_outlet, x->x_on);
     if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
         pd_float(x->x_gui.x_snd->s_thing, x->x_on);
 }
@@ -420,7 +420,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
     else
         x->x_on = 0.0;
     if (x->x_gui.x_fsf.x_rcv_able)
-        pd_bind(&x->x_gui.x_obj.ob_pd, x->x_gui.x_rcv);
+        pd_bind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     x->x_gui.x_ldx = ldx;
     x->x_gui.x_ldy = ldy;
 
@@ -438,7 +438,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
 static void toggle_ff(t_toggle *x)
 {
     if(x->x_gui.x_fsf.x_rcv_able)
-        pd_unbind(&x->x_gui.x_obj.ob_pd, x->x_gui.x_rcv);
+        pd_unbind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     gfxstub_deleteforkey(x);
 }
 

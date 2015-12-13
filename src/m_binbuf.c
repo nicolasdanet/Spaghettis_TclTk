@@ -26,30 +26,30 @@ struct _binbuf
 
 t_binbuf *binbuf_new(void)
 {
-    t_binbuf *x = (t_binbuf *)t_getbytes(sizeof(*x));
+    t_binbuf *x = (t_binbuf *)getbytes(sizeof(*x));
     x->b_n = 0;
-    x->b_vec = t_getbytes(0);
+    x->b_vec = getbytes(0);
     return (x);
 }
 
 void binbuf_free(t_binbuf *x)
 {
-    t_freebytes(x->b_vec, x->b_n * sizeof(*x->b_vec));
-    t_freebytes(x,  sizeof(*x));
+    freebytes(x->b_vec, x->b_n * sizeof(*x->b_vec));
+    freebytes(x,  sizeof(*x));
 }
 
 t_binbuf *binbuf_duplicate(t_binbuf *y)
 {
-    t_binbuf *x = (t_binbuf *)t_getbytes(sizeof(*x));
+    t_binbuf *x = (t_binbuf *)getbytes(sizeof(*x));
     x->b_n = y->b_n;
-    x->b_vec = t_getbytes(x->b_n * sizeof(*x->b_vec));
+    x->b_vec = getbytes(x->b_n * sizeof(*x->b_vec));
     memcpy(x->b_vec, y->b_vec, x->b_n * sizeof(*x->b_vec));
     return (x);
 }
 
 void binbuf_clear(t_binbuf *x)
 {
-    x->b_vec = t_resizebytes(x->b_vec, x->b_n * sizeof(*x->b_vec), 0);
+    x->b_vec = resizebytes(x->b_vec, x->b_n * sizeof(*x->b_vec), 0);
     x->b_n = 0;
 }
 
@@ -60,8 +60,8 @@ void binbuf_text(t_binbuf *x, char *text, size_t size)
     const char *textp = text, *etext = text+size;
     t_atom *ap;
     int nalloc = 16, natom = 0;
-    t_freebytes(x->b_vec, x->b_n * sizeof(*x->b_vec));
-    x->b_vec = t_getbytes(nalloc * sizeof(*x->b_vec));
+    freebytes(x->b_vec, x->b_n * sizeof(*x->b_vec));
+    x->b_vec = getbytes(nalloc * sizeof(*x->b_vec));
     ap = x->b_vec;
     x->b_n = 0;
     while (1)
@@ -183,7 +183,7 @@ void binbuf_text(t_binbuf *x, char *text, size_t size)
         natom++;
         if (natom == nalloc)
         {
-            x->b_vec = t_resizebytes(x->b_vec, nalloc * sizeof(*x->b_vec),
+            x->b_vec = resizebytes(x->b_vec, nalloc * sizeof(*x->b_vec),
                 nalloc * (2*sizeof(*x->b_vec)));
             nalloc = nalloc * 2;
             ap = x->b_vec + natom;
@@ -191,7 +191,7 @@ void binbuf_text(t_binbuf *x, char *text, size_t size)
         if (textp == etext) break;
     }
     /* reallocate the vector to exactly the right size */
-    x->b_vec = t_resizebytes(x->b_vec, nalloc * sizeof(*x->b_vec),
+    x->b_vec = resizebytes(x->b_vec, nalloc * sizeof(*x->b_vec),
         natom * sizeof(*x->b_vec));
     x->b_n = natom;
 }
@@ -221,7 +221,7 @@ void binbuf_gettext(t_binbuf *x, char **bufp, int *lengthp)
     }
     if (length && buf[length-1] == ' ')
     {
-        if (newbuf = t_resizebytes(buf, length, length-1))
+        if (newbuf = resizebytes(buf, length, length-1))
         {
             buf = newbuf;
             length--;
@@ -238,7 +238,7 @@ void binbuf_add(t_binbuf *x, int argc, t_atom *argv)
 {
     int newsize = x->b_n + argc, i;
     t_atom *ap;
-    if (ap = t_resizebytes(x->b_vec, x->b_n * sizeof(*x->b_vec),
+    if (ap = resizebytes(x->b_vec, x->b_n * sizeof(*x->b_vec),
         newsize * sizeof(*x->b_vec)))
             x->b_vec = ap;
     else
@@ -352,7 +352,7 @@ void binbuf_restore(t_binbuf *x, int argc, t_atom *argv)
 {
     int newsize = x->b_n + argc, i;
     t_atom *ap;
-    if (ap = t_resizebytes(x->b_vec, x->b_n * sizeof(*x->b_vec),
+    if (ap = resizebytes(x->b_vec, x->b_n * sizeof(*x->b_vec),
         newsize * sizeof(*x->b_vec)))
             x->b_vec = ap;
     else
@@ -445,7 +445,7 @@ t_atom *binbuf_getvec(t_binbuf *x)
 
 int binbuf_resize(t_binbuf *x, int newsize)
 {
-    t_atom *new = t_resizebytes(x->b_vec,
+    t_atom *new = resizebytes(x->b_vec,
         x->b_n * sizeof(*x->b_vec), newsize * sizeof(*x->b_vec));
     if (new)
         x->b_vec = new, x->b_n = newsize;
@@ -764,7 +764,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
             switch (mstack->a_type)
             {
             case A_SYMBOL:
-                typedmess(target, mstack->a_w.w_symbol, nargs-1, mstack+1);
+                pd_typedmess(target, mstack->a_w.w_symbol, nargs-1, mstack+1);
                 break;
             case A_FLOAT:
                 if (nargs == 1) pd_float(target, mstack->a_w.w_float);
@@ -803,7 +803,7 @@ int binbuf_read(t_binbuf *b, char *filename, char *dirname, int crflag)
         return (1);
     }
     if ((length = lseek(fd, 0, SEEK_END)) < 0 || lseek(fd, 0, SEEK_SET) < 0 
-        || !(buf = t_getbytes(length)))
+        || !(buf = getbytes(length)))
     {
         fprintf(stderr, "lseek: ");
         perror(namebuf);
@@ -815,7 +815,7 @@ int binbuf_read(t_binbuf *b, char *filename, char *dirname, int crflag)
         fprintf(stderr, "read (%d %ld) -> %d\n", fd, length, readret);
         perror(namebuf);
         close(fd);
-        t_freebytes(buf, length);
+        freebytes(buf, length);
         return(1);
     }
         /* optionally map carriage return to semicolon */
@@ -832,7 +832,7 @@ int binbuf_read(t_binbuf *b, char *filename, char *dirname, int crflag)
     startpost("binbuf_read "); postatom(b->b_n, b->b_vec); endpost();
 #endif
 
-    t_freebytes(buf, length);
+    freebytes(buf, length);
     close(fd);
     return (0);
 }
@@ -1496,7 +1496,7 @@ t_pd *glob_evalfile(t_pd *ignore, t_symbol *name, t_symbol *dir)
     while ((x != s__X.s_thing) && s__X.s_thing) 
     {
         x = s__X.s_thing;
-        vmess(x, gensym("pop"), "i", 1);
+        pd_vmess(x, gensym("pop"), "i", 1);
     }
     pd_doloadbang();
     canvas_resume_dsp(dspstate);

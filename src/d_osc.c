@@ -66,7 +66,7 @@ static void *phasor_new(t_floatarg f)
 {
     t_phasor *x = (t_phasor *)pd_new(phasor_class);
     x->x_f = f;
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_float, gensym("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, gensym("ft1"));
     x->x_phase = 0;
     x->x_conv = 0;
     outlet_new(&x->x_obj, gensym("signal"));
@@ -245,7 +245,7 @@ static void *osc_new(t_floatarg f)
     t_osc *x = (t_osc *)pd_new(osc_class);
     x->x_f = f;
     outlet_new(&x->x_obj, gensym("signal"));
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_float, gensym("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, gensym("ft1"));
     x->x_phase = 0;
     x->x_conv = 0;
     return (x);
@@ -353,8 +353,8 @@ t_class *sigvcf_class;
 static void *sigvcf_new(t_floatarg q)
 {
     t_sigvcf *x = (t_sigvcf *)pd_new(sigvcf_class);
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal);
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, gensym("float"), gensym("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("float"), gensym("ft1"));
     outlet_new(&x->x_obj, gensym("signal"));
     outlet_new(&x->x_obj, gensym("signal"));
     x->x_ctl = &x->x_cspace;

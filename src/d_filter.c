@@ -31,7 +31,7 @@ static void sighip_ft1(t_sighip *x, t_floatarg f);
 static void *sighip_new(t_floatarg f)
 {
     t_sighip *x = (t_sighip *)pd_new(sighip_class);
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, gensym("float"), gensym("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("float"), gensym("ft1"));
     outlet_new(&x->x_obj, &s_signal);
     x->x_sr = 44100;
     x->x_ctl = &x->x_cspace;
@@ -164,7 +164,7 @@ static void siglop_ft1(t_siglop *x, t_floatarg f);
 static void *siglop_new(t_floatarg f)
 {
     t_siglop *x = (t_siglop *)pd_new(siglop_class);
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, gensym("float"), gensym("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("float"), gensym("ft1"));
     outlet_new(&x->x_obj, &s_signal);
     x->x_sr = 44100;
     x->x_ctl = &x->x_cspace;
@@ -259,8 +259,8 @@ static void sigbp_docoef(t_sigbp *x, t_floatarg f, t_floatarg q);
 static void *sigbp_new(t_floatarg f, t_floatarg q)
 {
     t_sigbp *x = (t_sigbp *)pd_new(sigbp_class);
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, gensym("float"), gensym("ft1"));
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, gensym("float"), gensym("ft2"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("float"), gensym("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("float"), gensym("ft2"));
     outlet_new(&x->x_obj, &s_signal);
     x->x_sr = 44100;
     x->x_ctl = &x->x_cspace;
@@ -509,7 +509,7 @@ t_class *sigsamphold_class;
 static void *sigsamphold_new(void)
 {
     t_sigsamphold *x = (t_sigsamphold *)pd_new(sigsamphold_class);
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
     outlet_new(&x->x_obj, &s_signal);
     x->x_lastin = 0;
     x->x_lastout = 0;
@@ -586,7 +586,7 @@ static void *sigrpole_new(t_float f)
 {
     t_sigrpole *x = (t_sigrpole *)pd_new(sigrpole_class);
     pd_float(
-        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal),
+        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal),
             f);
     outlet_new(&x->x_obj, &s_signal);
     x->x_last = 0;
@@ -659,7 +659,7 @@ static void *sigrzero_new(t_float f)
 {
     t_sigrzero *x = (t_sigrzero *)pd_new(sigrzero_class);
     pd_float(
-        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal),
+        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal),
             f);
     outlet_new(&x->x_obj, &s_signal);
     x->x_last = 0;
@@ -731,7 +731,7 @@ static void *sigrzero_rev_new(t_float f)
 {
     t_sigrzero_rev *x = (t_sigrzero_rev *)pd_new(sigrzero_rev_class);
     pd_float(
-        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal),
+        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal),
             f);
     outlet_new(&x->x_obj, &s_signal);
     x->x_last = 0;
@@ -804,12 +804,12 @@ t_class *sigcpole_class;
 static void *sigcpole_new(t_float re, t_float im)
 {
     t_sigcpole *x = (t_sigcpole *)pd_new(sigcpole_class);
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
     pd_float(
-        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal),
+        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal),
             re);
     pd_float(
-        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal),
+        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal),
             im);
     outlet_new(&x->x_obj, &s_signal);
     outlet_new(&x->x_obj, &s_signal);
@@ -897,12 +897,12 @@ t_class *sigczero_class;
 static void *sigczero_new(t_float re, t_float im)
 {
     t_sigczero *x = (t_sigczero *)pd_new(sigczero_class);
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
     pd_float(
-        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal),
+        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal),
             re);
     pd_float(
-        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal),
+        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal),
             im);
     outlet_new(&x->x_obj, &s_signal);
     outlet_new(&x->x_obj, &s_signal);
@@ -987,12 +987,12 @@ t_class *sigczero_rev_class;
 static void *sigczero_rev_new(t_float re, t_float im)
 {
     t_sigczero_rev *x = (t_sigczero_rev *)pd_new(sigczero_rev_class);
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
     pd_float(
-        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal),
+        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal),
             re);
     pd_float(
-        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal),
+        (t_pd *)inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal),
             im);
     outlet_new(&x->x_obj, &s_signal);
     outlet_new(&x->x_obj, &s_signal);

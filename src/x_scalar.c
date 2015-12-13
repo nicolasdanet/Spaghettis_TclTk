@@ -75,8 +75,8 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
         pd_error(x, "%s: couldn't create scalar", templatesym->s_name);
         goto noscalar;
     }
-    sc->sc_gobj.g_next = 0;
-    x->gl_list = &sc->sc_gobj;
+    sc->sc_g.g_next = 0;
+    x->gl_list = &sc->sc_g;
     x->gl_private = keep;
            /* bashily unbind #A -- this would create garbage if #A were
            multiply bound but we believe in this context it's at most
@@ -84,14 +84,14 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
     asym->s_thing = 0;
         /* and now bind #A to us to receive following messages in the
         saved file or copy buffer */
-    pd_bind(&x->gl_obj.ob_pd, asym); 
+    pd_bind(&x->gl_obj.te_g.g_pd, asym); 
 noscalar:
     newest = &x->gl_pd;     /* mimic action of canvas_pop() */
     pd_popsym(&x->gl_pd);
     x->gl_loading = 0;
     
         /* bash the class to "scalar define" -- see comment in x_array,c */
-    x->gl_obj.ob_pd = scalar_define_class;
+    x->gl_obj.te_g.g_pd = scalar_define_class;
     return (x);
 }
 
@@ -135,7 +135,7 @@ static void scalar_define_save(t_gobj *z, t_binbuf *bb)
     t_glist *x = (t_glist *)z;
     binbuf_addv(bb, "ssff", &s__X, gensym("obj"),
         (float)x->gl_obj.te_xpix, (float)x->gl_obj.te_ypix);
-    binbuf_addbinbuf(bb, x->gl_obj.ob_binbuf);
+    binbuf_addbinbuf(bb, x->gl_obj.te_binbuf);
     binbuf_addsemi(bb);
     if (x->gl_private && x->gl_list &&
         pd_class(&x->gl_list->g_pd) == scalar_class)

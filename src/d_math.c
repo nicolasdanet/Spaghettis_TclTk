@@ -115,9 +115,6 @@ t_float q8_sqrt(t_float f0)
             rsqrt_mantissatab[(u.l >> 13) & 0x3ff]);
 }
 
-t_float qsqrt(t_float f) {return (q8_sqrt(f)); }
-t_float qrsqrt(t_float f) {return (q8_rsqrt(f)); }
-
 typedef struct sigrsqrt
 {
     t_object x_obj;
@@ -673,7 +670,7 @@ typedef struct _log_tilde
 static void *log_tilde_new( void)
 {
     t_log_tilde *x = (t_log_tilde *)pd_new(log_tilde_class);
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal);
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
     outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     return (x);

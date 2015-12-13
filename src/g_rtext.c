@@ -198,7 +198,7 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
     int x_bufsize_c = u8_charnum(x->x_buf, x->x_bufsize);
         /* if we're a GOP (the new, "goprect" style) borrow the font size
         from the inside to preserve the spacing */
-    if (pd_class(&x->x_text->te_pd) == canvas_class &&
+    if (pd_class(&x->x_text->te_g.g_pd) == canvas_class &&
         ((t_glist *)(x->x_text))->gl_isgraph &&
         ((t_glist *)(x->x_text))->gl_goprect)
             font =  glist_getfont((t_glist *)(x->x_text));
@@ -208,7 +208,7 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
     findx = (*widthp + (fontwidth/2)) / fontwidth;
     findy = *heightp / fontheight;
     if (x->x_bufsize >= 100)
-         tempbuf = (char *)t_getbytes(2 * x->x_bufsize + 1);
+         tempbuf = (char *)getbytes(2 * x->x_bufsize + 1);
     else tempbuf = smallbuf;
     while (x_bufsize_c - inindex_c > 0)
     {
@@ -342,14 +342,14 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
     *widthp = pixwide;
     *heightp = pixhigh;
     if (tempbuf != smallbuf)
-        t_freebytes(tempbuf, 2 * x->x_bufsize + 1);
+        freebytes(tempbuf, 2 * x->x_bufsize + 1);
 }
 
 void rtext_retext(t_rtext *x)
 {
     int w = 0, h = 0, indx;
     t_text *text = x->x_text;
-    t_freebytes(x->x_buf, x->x_bufsize);
+    freebytes(x->x_buf, x->x_bufsize);
     binbuf_gettext(text->te_binbuf, &x->x_buf, &x->x_bufsize);
         /* special case: for number boxes, try to pare the number down
         to the specified width of the box. */
@@ -379,19 +379,19 @@ void rtext_retext(t_rtext *x)
             for (s1 = nextchar - wantreduce, s2 = s1 + wantreduce;
                 s2 < ebuf; s1++, s2++)
                     *s1 = *s2;
-            x->x_buf = t_resizebytes(x->x_buf, bufsize, text->te_width);
+            x->x_buf = resizebytes(x->x_buf, bufsize, text->te_width);
             bufsize = text->te_width;
             goto done;
         giveup:
                 /* give up and bash it to "+" or "-" */
             x->x_buf[0] = (atomp->a_w.w_float < 0 ? '-' : '+');
-            x->x_buf = t_resizebytes(x->x_buf, bufsize, 1);
+            x->x_buf = resizebytes(x->x_buf, bufsize, 1);
             bufsize = 1;
         }
         else if (bufsize > text->te_width)
         {
             x->x_buf[text->te_width - 1] = '>';
-            x->x_buf = t_resizebytes(x->x_buf, bufsize, text->te_width);
+            x->x_buf = resizebytes(x->x_buf, bufsize, text->te_width);
             bufsize = text->te_width;
         }
     done:

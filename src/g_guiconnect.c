@@ -27,7 +27,7 @@ t_guiconnect *guiconnect_new(t_pd *who, t_symbol *sym)
     t_guiconnect *x = (t_guiconnect *)pd_new(guiconnect_class);
     x->x_who = who;
     x->x_sym = sym;
-    pd_bind(&x->x_obj.ob_pd, sym);
+    pd_bind(&x->x_obj.te_g.g_pd, sym);
     return (x);
 }
 
@@ -35,7 +35,7 @@ t_guiconnect *guiconnect_new(t_pd *who, t_symbol *sym)
 static void guiconnect_free(t_guiconnect *x)
 {
     if (x->x_sym)
-        pd_unbind(&x->x_obj.ob_pd, x->x_sym);
+        pd_unbind(&x->x_obj.te_g.g_pd, x->x_sym);
     if (x->x_clock)
         clock_free(x->x_clock); 
 }
@@ -44,7 +44,7 @@ static void guiconnect_free(t_guiconnect *x)
     be gone by now. */
 static void guiconnect_tick(t_guiconnect *x)
 {
-    pd_free(&x->x_obj.ob_pd);
+    pd_free(&x->x_obj.te_g.g_pd);
 }
 
     /* the target calls this to disconnect.  If the gui has "signed off"
@@ -53,7 +53,7 @@ static void guiconnect_tick(t_guiconnect *x)
 void guiconnect_notarget(t_guiconnect *x, double timedelay)
 {
     if (!x->x_sym)
-        pd_free(&x->x_obj.ob_pd);
+        pd_free(&x->x_obj.te_g.g_pd);
     else
     {
         x->x_who = 0;
@@ -70,7 +70,7 @@ static void guiconnect_anything(t_guiconnect *x,
     t_symbol *s, int ac, t_atom *av)
 {
     if (x->x_who)
-        typedmess(x->x_who, s, ac, av);
+        pd_typedmess(x->x_who, s, ac, av);
 }
 
     /* the GUI calls this when it disappears.  (If there's any chance the
@@ -79,10 +79,10 @@ static void guiconnect_anything(t_guiconnect *x,
 static void guiconnect_signoff(t_guiconnect *x)
 {
     if (!x->x_who)
-        pd_free(&x->x_obj.ob_pd);
+        pd_free(&x->x_obj.te_g.g_pd);
     else
     {
-        pd_unbind(&x->x_obj.ob_pd, x->x_sym);
+        pd_unbind(&x->x_obj.te_g.g_pd, x->x_sym);
         x->x_sym = 0;
     }
 }

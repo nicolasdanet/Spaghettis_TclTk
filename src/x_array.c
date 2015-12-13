@@ -103,12 +103,12 @@ static void array_define_yrange(t_glist *x, t_floatarg ylo, t_floatarg yhi)
     if (gl && gl->gl_list && pd_class(&gl->gl_list->g_pd) == garray_class)
     {
         int n = garray_getarray((t_garray *)gl->gl_list)->a_n;
-        vmess(&x->gl_list->g_pd, gensym("bounds"),
+        pd_vmess(&x->gl_list->g_pd, gensym("bounds"),
             "ffff", 0., yhi, (double)(n == 1 ? n : n-1), ylo);
-        vmess(&x->gl_list->g_pd, gensym("xlabel"),
+        pd_vmess(&x->gl_list->g_pd, gensym("xlabel"),
             "fff", ylo + glist_pixelstoy(gl, 2) - glist_pixelstoy(gl, 0),
                 0., (float)(n-1));
-        vmess(&x->gl_list->g_pd, gensym("ylabel"),
+        pd_vmess(&x->gl_list->g_pd, gensym("ylabel"),
             "fff", glist_pixelstox(gl, 0) - glist_pixelstox(gl, 5), ylo, yhi);
     }
     else bug("array_define_yrange");
@@ -174,7 +174,7 @@ static void *array_define_new(t_symbol *s, int argc, t_atom *argv)
         /* bash the class to "array define".  We don't do this earlier in
         part so that canvas_getcurrent() will work while the glist and
         garray are being created.  There may be other, unknown side effects. */
-    x->gl_obj.ob_pd = array_define_class;
+    x->gl_obj.te_g.g_pd = array_define_class;
     array_define_yrange(x, ylo, yhi);
     return (x);
 }
@@ -187,7 +187,7 @@ void array_define_save(t_gobj *z, t_binbuf *bb)
     t_glist *gl = (x->gl_list ? pd_checkglist(&x->gl_list->g_pd) : 0);
     binbuf_addv(bb, "ssff", &s__X, gensym("obj"),
         (float)x->gl_obj.te_xpix, (float)x->gl_obj.te_ypix);
-    binbuf_addbinbuf(bb, x->gl_obj.ob_binbuf);
+    binbuf_addbinbuf(bb, x->gl_obj.te_binbuf);
     binbuf_addsemi(bb);
 
     garray_savecontentsto((t_garray *)gl->gl_list, bb);
@@ -221,7 +221,7 @@ static void array_define_anything(t_glist *x,
 {
     t_glist *gl = (x->gl_list ? pd_checkglist(&x->gl_list->g_pd) : 0);
     if (gl && gl->gl_list && pd_class(&gl->gl_list->g_pd) == garray_class)
-        typedmess(&gl->gl_list->g_pd, s, argc, argv);
+        pd_typedmess(&gl->gl_list->g_pd, s, argc, argv);
     else bug("array_define_anything");
 }
 
@@ -334,7 +334,7 @@ typedef struct _array_size
 {
     t_array_client x_tc;
 } t_array_size;
-#define x_outlet x_tc.tc_obj.ob_outlet
+#define x_outlet x_tc.tc_obj.te_outlet
 
 static void *array_size_new(t_symbol *s, int argc, t_atom *argv)
 {

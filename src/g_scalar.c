@@ -120,7 +120,7 @@ t_scalar *scalar_new(t_glist *owner, t_symbol *templatesym)
         return (0);
     x = (t_scalar *)getbytes(sizeof(t_scalar) +
         (template->t_n - 1) * sizeof(*x->sc_vec));
-    x->sc_gobj.g_pd = scalar_class;
+    x->sc_g.g_pd = scalar_class;
     x->sc_template = templatesym;
     gpointer_setglist(&gp, owner, x);
     word_init(x->sc_vec, template, &gp);
@@ -210,7 +210,7 @@ static void scalar_drawselectrect(t_scalar *x, t_glist *glist, int state)
     {
         int x1, y1, x2, y2;
        
-        scalar_getrect(&x->sc_gobj, glist, &x1, &y1, &x2, &y2);
+        scalar_getrect(&x->sc_g, glist, &x1, &y1, &x2, &y2);
         x1--; x2++; y1--; y2++;
         sys_vgui(".x%lx.c create line %d %d %d %d %d %d %d %d %d %d \
             -width 0 -fill blue -tags select%lx\n",
@@ -314,7 +314,7 @@ static void scalar_vis(t_gobj *z, t_glist *owner, int vis)
         if (!wb) continue;
         (*wb->w_parentvisfn)(y, owner, x->sc_vec, template, basex, basey, vis);
     }
-    if (glist_isselected(owner, &x->sc_gobj))
+    if (glist_isselected(owner, &x->sc_g))
     {
         scalar_drawselectrect(x, owner, 0);
         scalar_drawselectrect(x, owner, 1);
@@ -398,13 +398,13 @@ static void scalar_properties(t_gobj *z, struct _glist *owner)
     b = glist_writetobinbuf(owner, 0);
     binbuf_gettext(b, &buf, &bufsize);
     binbuf_free(b);
-    buf = t_resizebytes(buf, bufsize, bufsize+1);
+    buf = resizebytes(buf, bufsize, bufsize+1);
     buf[bufsize] = 0;
     sprintf(buf2, "::pd_data::show %%s {");
     gfxstub_new((t_pd *)owner, x, buf2);
     sys_gui(buf);
     sys_gui("}\n");
-    t_freebytes(buf, bufsize+1);
+    freebytes(buf, bufsize+1);
 }
 
 static t_widgetbehavior scalar_widgetbehavior =

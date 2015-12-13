@@ -301,7 +301,7 @@ static t_int *vline_tilde_perform(t_int *w)
                 x->x_target = s->s_target;
                 x->x_targettime = s->s_targettime;
                 x->x_list = s->s_next;
-                t_freebytes(s, sizeof(*s));
+                freebytes(s, sizeof(*s));
                 s = x->x_list;
                 goto checknext;
             }
@@ -320,7 +320,7 @@ static void vline_tilde_stop(t_vline *x)
 {
     t_vseg *s1, *s2;
     for (s1 = x->x_list; s1; s1 = s2)
-        s2 = s1->s_next, t_freebytes(s1, sizeof(*s1));
+        s2 = s1->s_next, freebytes(s1, sizeof(*s1));
     x->x_list = 0;
     x->x_inc = 0;
     x->x_inlet1 = x->x_inlet2 = 0;
@@ -345,7 +345,7 @@ static void vline_tilde_float(t_vline *x, t_float f)
         vline_tilde_stop(x);
         return;
     }
-    snew = (t_vseg *)t_getbytes(sizeof(*snew));
+    snew = (t_vseg *)getbytes(sizeof(*snew));
         /* check if we supplant the first item in the list.  We supplant
         an item by having an earlier starttime, or an equal starttime unless
         the equal one was instantaneous and the new one isn't (in which case
@@ -377,7 +377,7 @@ static void vline_tilde_float(t_vline *x, t_float f)
     while (deletefrom)
     {
         s1 = deletefrom->s_next;
-        t_freebytes(deletefrom, sizeof(*deletefrom));
+        freebytes(deletefrom, sizeof(*deletefrom));
         deletefrom = s1;
     }
     snew->s_next = 0;
@@ -456,7 +456,7 @@ static void snapshot_tilde_dsp(t_snapshot *x, t_signal **sp)
 
 static void snapshot_tilde_bang(t_snapshot *x)
 {
-    outlet_float(x->x_obj.ob_outlet, x->x_value);
+    outlet_float(x->x_obj.te_outlet, x->x_value);
 }
 
 static void snapshot_tilde_set(t_snapshot *x, t_floatarg f)
@@ -520,7 +520,7 @@ static void vsnapshot_tilde_dsp(t_vsnapshot *x, t_signal **sp)
     if (n != x->x_n)
     {
         if (x->x_vec)
-            t_freebytes(x->x_vec, x->x_n * sizeof(t_sample));
+            freebytes(x->x_vec, x->x_n * sizeof(t_sample));
         x->x_vec = (t_sample *)getbytes(n * sizeof(t_sample));
         x->x_gotone = 0;
         x->x_n = n;
@@ -542,13 +542,13 @@ static void vsnapshot_tilde_bang(t_vsnapshot *x)
         val = x->x_vec[indx];
     }
     else val = 0;
-    outlet_float(x->x_obj.ob_outlet, val);
+    outlet_float(x->x_obj.te_outlet, val);
 }
 
 static void vsnapshot_tilde_ff(t_vsnapshot *x)
 {
     if (x->x_vec)
-        t_freebytes(x->x_vec, x->x_n * sizeof(t_sample));
+        freebytes(x->x_vec, x->x_n * sizeof(t_sample));
 }
 
 static void vsnapshot_tilde_setup(void)
@@ -735,7 +735,7 @@ static t_threshold_tilde *threshold_tilde_new(t_floatarg hithresh,
     x->x_clock = clock_new(x, (t_method)threshold_tilde_tick);
     x->x_outlet1 = outlet_new(&x->x_obj, &s_bang);
     x->x_outlet2 = outlet_new(&x->x_obj, &s_bang);
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_float, gensym("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, gensym("ft1"));
     x->x_msecpertick = 0.;
     x->x_f = 0;
     threshold_tilde_set(x, hithresh, hideadtime, lothresh, lodeadtime);

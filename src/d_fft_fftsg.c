@@ -49,11 +49,11 @@ static int ooura_init( int n)
     {
         if (ooura_maxn)
         {
-            t_freebytes(ooura_bitrev, ooura_bitrevsize);
-            t_freebytes(ooura_costab, ooura_maxn * sizeof(FFTFLT) / 2);
+            freebytes(ooura_bitrev, ooura_bitrevsize);
+            freebytes(ooura_costab, ooura_maxn * sizeof(FFTFLT) / 2);
         }
         ooura_bitrevsize = sizeof(int) * (2 + (1 << (ilog2(n)/2)));
-        ooura_bitrev = (int *)t_getbytes(ooura_bitrevsize);
+        ooura_bitrev = (int *)getbytes(ooura_bitrevsize);
         ooura_bitrev[0] = 0;
         if (!ooura_bitrev)
         {
@@ -61,11 +61,11 @@ static int ooura_init( int n)
             ooura_maxn = 0;
             return (0);
         }
-        ooura_costab = (FFTFLT *)t_getbytes(n * sizeof(FFTFLT)/2);
+        ooura_costab = (FFTFLT *)getbytes(n * sizeof(FFTFLT)/2);
         if (!ooura_costab)
         {
             error("out of memory allocating FFT buffer");
-            t_freebytes(ooura_bitrev, ooura_bitrevsize);
+            freebytes(ooura_bitrev, ooura_bitrevsize);
             ooura_maxn = 0;
             return (0);
         }

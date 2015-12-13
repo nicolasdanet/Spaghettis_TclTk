@@ -256,7 +256,7 @@ static void bng_properties(t_gobj *z, t_glist *owner)
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
             x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
             0xffffff & x->x_gui.x_bcol, 0xffffff & x->x_gui.x_fcol, 0xffffff & x->x_gui.x_lcol);
-    gfxstub_new(&x->x_gui.x_obj.ob_pd, x, buf);
+    gfxstub_new(&x->x_gui.x_obj.te_g.g_pd, x, buf);
 }
 
 static void bng_set(t_bng *x)
@@ -283,7 +283,7 @@ static void bng_bout1(t_bng *x)/*wird nur mehr gesendet, wenn snd != rcv*/
         x->x_gui.x_isa.x_locked = 1;
         clock_delay(x->x_clock_lck, 2);
     }
-    outlet_bang(x->x_gui.x_obj.ob_outlet);
+    outlet_bang(x->x_gui.x_obj.te_outlet);
     if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing && x->x_gui.x_fsf.x_put_in2out)
         pd_bang(x->x_gui.x_snd->s_thing);
 }
@@ -295,7 +295,7 @@ static void bng_bout2(t_bng *x)/*wird immer gesendet, wenn moeglich*/
         x->x_gui.x_isa.x_locked = 1;
         clock_delay(x->x_clock_lck, 2);
     }
-    outlet_bang(x->x_gui.x_obj.ob_outlet);
+    outlet_bang(x->x_gui.x_obj.te_outlet);
     if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
         pd_bang(x->x_gui.x_snd->s_thing);
 }
@@ -488,7 +488,7 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
         strcpy(x->x_gui.x_font, sys_font); }
 
     if (x->x_gui.x_fsf.x_rcv_able)
-        pd_bind(&x->x_gui.x_obj.ob_pd, x->x_gui.x_rcv);
+        pd_bind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     x->x_gui.x_ldx = ldx;
     x->x_gui.x_ldy = ldy;
 
@@ -511,7 +511,7 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
 static void bng_ff(t_bng *x)
 {
     if(x->x_gui.x_fsf.x_rcv_able)
-        pd_unbind(&x->x_gui.x_obj.ob_pd, x->x_gui.x_rcv);
+        pd_unbind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     clock_free(x->x_clock_lck);
     clock_free(x->x_clock_brk);
     clock_free(x->x_clock_hld);

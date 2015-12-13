@@ -24,7 +24,7 @@ typedef struct _sigsend
 static void *sigsend_new(t_symbol *s)
 {
     t_sigsend *x = (t_sigsend *)pd_new(sigsend_class);
-    pd_bind(&x->x_obj.ob_pd, s);
+    pd_bind(&x->x_obj.te_g.g_pd, s);
     x->x_sym = s;
     x->x_n = DEFSENDVS;
     x->x_vec = (t_sample *)getbytes(DEFSENDVS * sizeof(t_sample));
@@ -56,7 +56,7 @@ static void sigsend_dsp(t_sigsend *x, t_signal **sp)
 
 static void sigsend_free(t_sigsend *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, x->x_sym);
+    pd_unbind(&x->x_obj.te_g.g_pd, x->x_sym);
     freebytes(x->x_vec, x->x_n * sizeof(t_sample));
 }
 
@@ -201,7 +201,7 @@ typedef struct _sigcatch
 static void *sigcatch_new(t_symbol *s)
 {
     t_sigcatch *x = (t_sigcatch *)pd_new(sigcatch_class);
-    pd_bind(&x->x_obj.ob_pd, s);
+    pd_bind(&x->x_obj.te_g.g_pd, s);
     x->x_sym = s;
     x->x_n = DEFSENDVS;
     x->x_vec = (t_sample *)getbytes(DEFSENDVS * sizeof(t_sample));
@@ -250,7 +250,7 @@ static void sigcatch_dsp(t_sigcatch *x, t_signal **sp)
 
 static void sigcatch_free(t_sigcatch *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, x->x_sym);
+    pd_unbind(&x->x_obj.te_g.g_pd, x->x_sym);
     freebytes(x->x_vec, x->x_n * sizeof(t_sample));
 }
 

@@ -72,7 +72,7 @@ static void *sigdelwrite_new(t_symbol *s, t_floatarg msec)
 {
     t_sigdelwrite *x = (t_sigdelwrite *)pd_new(sigdelwrite_class);
     if (!*s->s_name) s = gensym("delwrite~");
-    pd_bind(&x->x_obj.ob_pd, s);
+    pd_bind(&x->x_obj.te_g.g_pd, s);
     x->x_sym = s;
     x->x_deltime = msec;
     x->x_cspace.c_n = 0;
@@ -122,7 +122,7 @@ static void sigdelwrite_dsp(t_sigdelwrite *x, t_signal **sp)
 
 static void sigdelwrite_free(t_sigdelwrite *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, x->x_sym);
+    pd_unbind(&x->x_obj.te_g.g_pd, x->x_sym);
     freebytes(x->x_cspace.c_vec,
         (x->x_cspace.c_n + XTRASAMPS) * sizeof(t_sample));
 }

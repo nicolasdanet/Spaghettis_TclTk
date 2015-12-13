@@ -474,12 +474,12 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
             x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
             0xffffff & x->x_gui.x_bcol, 0xffffff & x->x_gui.x_fcol,
                 0xffffff & x->x_gui.x_lcol);
-    gfxstub_new(&x->x_gui.x_obj.ob_pd, x, buf);
+    gfxstub_new(&x->x_gui.x_obj.te_g.g_pd, x, buf);
 }
 
 static void my_numbox_bang(t_my_numbox *x)
 {
-    outlet_float(x->x_gui.x_obj.ob_outlet, x->x_val);
+    outlet_float(x->x_gui.x_obj.te_outlet, x->x_val);
     if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
         pd_float(x->x_gui.x_snd->s_thing, x->x_val);
 }
@@ -817,7 +817,7 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
     else { x->x_gui.x_fsf.x_font_style = 0;
         strcpy(x->x_gui.x_font, sys_font); }
     if (x->x_gui.x_fsf.x_rcv_able)
-        pd_bind(&x->x_gui.x_obj.ob_pd, x->x_gui.x_rcv);
+        pd_bind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     x->x_gui.x_ldx = ldx;
     x->x_gui.x_ldy = ldy;
     if(fs < 4)
@@ -844,7 +844,7 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
 static void my_numbox_free(t_my_numbox *x)
 {
     if(x->x_gui.x_fsf.x_rcv_able)
-        pd_unbind(&x->x_gui.x_obj.ob_pd, x->x_gui.x_rcv);
+        pd_unbind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     clock_free(x->x_clock_reset);
     clock_free(x->x_clock_wait);
     gfxstub_deleteforkey(x);

@@ -78,7 +78,7 @@ static void random_bang(t_random *x)
     nval = ((double)range) * ((double)randval)
         * (1./4294967296.);
     if (nval >= range) nval = range-1;
-    outlet_float(x->x_obj.ob_outlet, nval);
+    outlet_float(x->x_obj.te_outlet, nval);
 }
 
 static void random_seed(t_random *x, t_float f, t_float glob)
@@ -114,7 +114,7 @@ static void *loadbang_new(void)
 static void loadbang_loadbang(t_loadbang *x)
 {
     if (!sys_noloadbang)
-        outlet_bang(x->x_obj.ob_outlet);
+        outlet_bang(x->x_obj.te_outlet);
 }
 
 static void loadbang_setup(void)
@@ -243,7 +243,7 @@ static void cputime_bang2(t_cputime *x)
     elapsedcpu = 1000 * (
         newcputime.tms_utime + newcputime.tms_stime -
             x->x_setcputime.tms_utime - x->x_setcputime.tms_stime) / CLOCKHZ;
-    outlet_float(x->x_obj.ob_outlet, elapsedcpu);
+    outlet_float(x->x_obj.te_outlet, elapsedcpu);
 #else
     t_float elapsedcpu;
     FILETIME ignorethis, ignorethat;
@@ -257,7 +257,7 @@ static void cputime_bang2(t_cputime *x)
             ((kerneltime.QuadPart - x->x_kerneltime.QuadPart) +
                 (usertime.QuadPart - x->x_usertime.QuadPart));
     else elapsedcpu = 0;
-    outlet_float(x->x_obj.ob_outlet, elapsedcpu);
+    outlet_float(x->x_obj.te_outlet, elapsedcpu);
 #endif /* NOT _WIN32 */
 }
 
@@ -266,7 +266,7 @@ static void *cputime_new(void)
     t_cputime *x = (t_cputime *)pd_new(cputime_class);
     outlet_new(&x->x_obj, gensym("float"));
 
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, gensym("bang"), gensym("bang2"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("bang"), gensym("bang2"));
 #ifdef _WIN32
     x->x_warned = 0;
 #endif
@@ -299,7 +299,7 @@ static void realtime_bang(t_realtime *x)
 
 static void realtime_bang2(t_realtime *x)
 {
-    outlet_float(x->x_obj.ob_outlet,
+    outlet_float(x->x_obj.te_outlet,
         (sys_getrealtime() - x->x_setrealtime) * 1000.);
 }
 
@@ -307,7 +307,7 @@ static void *realtime_new(void)
 {
     t_realtime *x = (t_realtime *)pd_new(realtime_class);
     outlet_new(&x->x_obj, gensym("float"));
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, gensym("bang"), gensym("bang2"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("bang"), gensym("bang2"));
     realtime_bang(x);
     return (x);
 }
@@ -496,7 +496,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
                 (int)(argv[i].a_w.w_float), (int)(argv[i].a_w.w_float));
         } 
     }
-    outlet_list(x->x_obj.ob_outlet, 0, j, outv);
+    outlet_list(x->x_obj.te_outlet, 0, j, outv);
     return;
 tooshort:
     pd_error(x, "oscparse: OSC message ended prematurely");
@@ -682,7 +682,7 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
         bug("oscformat: typeindex %d, datastart %d, msgindex %d, msgsize %d",
             typeindex, datastart, msgindex, msgsize);
     /* else post("datastart %d, msgsize %d", datastart, msgsize); */
-    outlet_list(x->x_obj.ob_outlet, 0, msgsize, msg);
+    outlet_list(x->x_obj.te_outlet, 0, msgsize, msg);
 }
 
 static void oscformat_free(t_oscformat *x)

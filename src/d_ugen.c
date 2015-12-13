@@ -300,7 +300,7 @@ void dsp_add(t_perfroutine f, int n, ...)
     int newsize = pd_this->pd_dspchainsize + n+1, i;
     va_list ap;
 
-    pd_this->pd_dspchain = t_resizebytes(pd_this->pd_dspchain, 
+    pd_this->pd_dspchain = resizebytes(pd_this->pd_dspchain, 
         pd_this->pd_dspchainsize * sizeof (t_int), newsize * sizeof (t_int));
     pd_this->pd_dspchain[pd_this->pd_dspchainsize-1] = (t_int)f;
     va_start(ap, n);
@@ -316,7 +316,7 @@ void dsp_addv(t_perfroutine f, int n, t_int *vec)
 {
     int newsize = pd_this->pd_dspchainsize + n+1, i;
     
-    pd_this->pd_dspchain = t_resizebytes(pd_this->pd_dspchain, 
+    pd_this->pd_dspchain = resizebytes(pd_this->pd_dspchain, 
         pd_this->pd_dspchainsize * sizeof (t_int), newsize * sizeof (t_int));
     pd_this->pd_dspchain[pd_this->pd_dspchainsize-1] = (t_int)f;
     for (i = 0; i < n; i++)
@@ -363,8 +363,8 @@ void signal_cleanup(void)
     {
         pd_this->pd_signals = sig->s_nextused;
         if (!sig->s_isborrowed)
-            t_freebytes(sig->s_vec, sig->s_vecsize * sizeof (*sig->s_vec));
-        t_freebytes(sig, sizeof *sig);
+            freebytes(sig->s_vec, sig->s_vecsize * sizeof (*sig->s_vec));
+        freebytes(sig, sizeof *sig);
     }
     for (i = 0; i <= MAXLOGSIG; i++)
         signal_freelist[i] = 0;
@@ -445,7 +445,7 @@ t_signal *signal_new(int n, t_float sr)
     else
     {
             /* LATER figure out what to do for out-of-space here! */
-        ret = (t_signal *)t_getbytes(sizeof *ret);
+        ret = (t_signal *)getbytes(sizeof *ret);
         if (n)
         {
             ret->s_vec = (t_sample *)getbytes(vecsize * sizeof (*ret->s_vec));
@@ -662,8 +662,8 @@ void ugen_connect(t_dspcontext *dc, t_object *x1, int outno, t_object *x2,
     int siginno = obj_siginletindex(x2, inno);
     if (ugen_loud)
         post("%s -> %s: %d->%d",
-            class_getname(x1->ob_pd),
-                class_getname(x2->ob_pd), outno, inno);
+            class_getname(x1->te_g.g_pd),
+                class_getname(x2->te_g.g_pd), outno, inno);
     for (u1 = dc->dc_ugenlist; u1 && u1->u_obj != x1; u1 = u1->u_next);
     for (u2 = dc->dc_ugenlist; u2 && u2->u_obj != x2; u2 = u2->u_next);
     if (!u1 || !u2 || siginno < 0)
@@ -675,8 +675,8 @@ void ugen_connect(t_dspcontext *dc, t_object *x1, int outno, t_object *x2,
     if (sigoutno < 0 || sigoutno >= u1->u_nout || siginno >= u2->u_nin)
     {
         bug("ugen_connect %s %s %d %d (%d %d)",
-            class_getname(x1->ob_pd),
-            class_getname(x2->ob_pd), sigoutno, siginno, u1->u_nout,
+            class_getname(x1->te_g.g_pd),
+            class_getname(x2->te_g.g_pd), sigoutno, siginno, u1->u_nout,
                 u2->u_nin);
     }
     uout = u1->u_out + sigoutno;
@@ -710,7 +710,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
     t_sigoutlet *uout;
     t_siginlet *uin;
     t_sigoutconnect *oc, *oc2;
-    t_class *class = pd_class(&u->u_obj->ob_pd);
+    t_class *class = pd_class(&u->u_obj->te_g.g_pd);
     int i, n;
         /* suppress creating new signals for the outputs of signal
         inlets and subpatchs; except in the case we're an inlet and "blocking"
@@ -737,7 +737,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
             t_float *scalar;
             s3 = signal_new(dc->dc_calcsize, dc->dc_srate);
             /* post("%s: unconnected signal inlet set to zero",
-                class_getname(u->u_obj->ob_pd)); */
+                class_getname(u->u_obj->te_g.g_pd)); */
             if (scalar = obj_findsignalscalar(u->u_obj, i))
                 dsp_add_scalarcopy(scalar, s3->s_vec, s3->s_n);
             else
@@ -784,7 +784,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
         /* now call the DSP scheduling routine for the ugen.  This
         routine must fill in "borrowed" signal outputs in case it's either
         a subcanvas or a signal inlet. */
-    mess1(&u->u_obj->ob_pd, gensym("dsp"), insig);
+    mess1(&u->u_obj->te_g.g_pd, gensym("dsp"), insig);
     
         /* if any output signals aren't connected to anyone, free them
         now; otherwise they'll either get freed when the reference count
@@ -798,14 +798,14 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
     if (ugen_loud)
     {
         if (u->u_nin + u->u_nout == 0) post("put %s %d", 
-            class_getname(u->u_obj->ob_pd), ugen_index(dc, u));
+            class_getname(u->u_obj->te_g.g_pd), ugen_index(dc, u));
         else if (u->u_nin + u->u_nout == 1) post("put %s %d (%lx)", 
-            class_getname(u->u_obj->ob_pd), ugen_index(dc, u), sig[0]);
+            class_getname(u->u_obj->te_g.g_pd), ugen_index(dc, u), sig[0]);
         else if (u->u_nin + u->u_nout == 2) post("put %s %d (%lx %lx)", 
-            class_getname(u->u_obj->ob_pd), ugen_index(dc, u),
+            class_getname(u->u_obj->te_g.g_pd), ugen_index(dc, u),
                 sig[0], sig[1]);
         else post("put %s %d (%lx %lx %lx ...)", 
-            class_getname(u->u_obj->ob_pd), ugen_index(dc, u),
+            class_getname(u->u_obj->te_g.g_pd), ugen_index(dc, u),
                 sig[0], sig[1], sig[2]);
     }
 
@@ -825,7 +825,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
                 if (!signal_compatible(s1, s2))
                 {
                     pd_error(u->u_obj, "%s: incompatible signal inputs",
-                        class_getname(u->u_obj->ob_pd));
+                        class_getname(u->u_obj->te_g.g_pd));
                     return;
                 }
                 s3 = signal_newlike(s1);
@@ -851,7 +851,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
         notyet: ;
         }
     }
-    t_freebytes(insig,(u->u_nin + u->u_nout) * sizeof(t_signal *));
+    freebytes(insig,(u->u_nin + u->u_nout) * sizeof(t_signal *));
     u->u_done = 1;
 }
 
@@ -885,12 +885,12 @@ void ugen_done_graph(t_dspcontext *dc)
         post("ugen_done_graph...");
         for (u = dc->dc_ugenlist; u; u = u->u_next)
         {
-            post("ugen: %s", class_getname(u->u_obj->ob_pd));
+            post("ugen: %s", class_getname(u->u_obj->te_g.g_pd));
             for (uout = u->u_out, i = 0; i < u->u_nout; uout++, i++)
                 for (oc = uout->o_connections; oc; oc = oc->oc_next)
             {
                 post("... out %d to %s, index %d, inlet %d", i,
-                    class_getname(oc->oc_who->u_obj->ob_pd),
+                    class_getname(oc->oc_who->u_obj->te_g.g_pd),
                         ugen_index(dc, oc->oc_who), oc->oc_inno);
             }
         }
@@ -899,7 +899,7 @@ void ugen_done_graph(t_dspcontext *dc)
         /* search for an object of class "block~" */
     for (u = dc->dc_ugenlist, blk = 0; u; u = u->u_next)
     {
-        t_pd *zz = &u->u_obj->ob_pd;
+        t_pd *zz = &u->u_obj->te_g.g_pd;
         if (pd_class(zz) == block_class)
         {
             if (blk)
@@ -1005,7 +1005,7 @@ void ugen_done_graph(t_dspcontext *dc)
         
     for (u = dc->dc_ugenlist; u; u = u->u_next)
     {
-        t_pd *zz = &u->u_obj->ob_pd;
+        t_pd *zz = &u->u_obj->te_g.g_pd;
         t_signal **insigs = dc->dc_iosigs, **outsigs = dc->dc_iosigs;
         if (outsigs) outsigs += dc->dc_ninlets;
 
@@ -1084,7 +1084,7 @@ void ugen_done_graph(t_dspcontext *dc)
 
     for (u = dc->dc_ugenlist; u; u = u->u_next)
     {
-        t_pd *zz = &u->u_obj->ob_pd;
+        t_pd *zz = &u->u_obj->te_g.g_pd;
         if (pd_class(zz) == voutlet_class)
         {
             t_signal **iosigs = dc->dc_iosigs;
@@ -1172,7 +1172,7 @@ static void samplerate_tilde_bang(t_samplerate *x)
         if (b) 
             srate *= (t_float)(b->x_upsample) / (t_float)(b->x_downsample); 
     }
-    outlet_float(x->x_obj.ob_outlet, srate);
+    outlet_float(x->x_obj.te_outlet, srate);
 }
 
 static void *samplerate_tilde_new(t_symbol *s)

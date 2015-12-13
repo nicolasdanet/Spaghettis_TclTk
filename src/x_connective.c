@@ -30,12 +30,12 @@ static void *pdint_new(t_floatarg f)
 
 static void pdint_bang(t_pdint *x)
 {
-    outlet_float(x->x_obj.ob_outlet, (t_float)(int)(x->x_f));
+    outlet_float(x->x_obj.te_outlet, (t_float)(int)(x->x_f));
 }
 
 static void pdint_float(t_pdint *x, t_float f)
 {
-    outlet_float(x->x_obj.ob_outlet, (t_float)(int)(x->x_f = f));
+    outlet_float(x->x_obj.te_outlet, (t_float)(int)(x->x_f = f));
 }
 
 static void pdint_send(t_pdint *x, t_symbol *s)
@@ -75,7 +75,7 @@ static void *pdfloat_new(t_pd *dummy, t_float f)
     x->x_f = f;
     outlet_new(&x->x_obj, &s_float);
     floatinlet_new(&x->x_obj, &x->x_f);
-    newest = &x->x_obj.ob_pd;
+    newest = &x->x_obj.te_g.g_pd;
     return (x);
 }
 
@@ -86,12 +86,12 @@ static void *pdfloat_new2(t_floatarg f)
 
 static void pdfloat_bang(t_pdfloat *x)
 {
-    outlet_float(x->x_obj.ob_outlet, x->x_f);
+    outlet_float(x->x_obj.te_outlet, x->x_f);
 }
 
 static void pdfloat_float(t_pdfloat *x, t_float f)
 {
-    outlet_float(x->x_obj.ob_outlet, x->x_f = f);
+    outlet_float(x->x_obj.te_outlet, x->x_f = f);
 }
 
 static void pdfloat_send(t_pdfloat *x, t_symbol *s)
@@ -127,23 +127,23 @@ static void *pdsymbol_new(t_pd *dummy, t_symbol *s)
     x->x_s = s;
     outlet_new(&x->x_obj, &s_symbol);
     symbolinlet_new(&x->x_obj, &x->x_s);
-    newest = &x->x_obj.ob_pd;
+    newest = &x->x_obj.te_g.g_pd;
     return (x);
 }
 
 static void pdsymbol_bang(t_pdsymbol *x)
 {
-    outlet_symbol(x->x_obj.ob_outlet, x->x_s);
+    outlet_symbol(x->x_obj.te_outlet, x->x_s);
 }
 
 static void pdsymbol_symbol(t_pdsymbol *x, t_symbol *s)
 {
-    outlet_symbol(x->x_obj.ob_outlet, x->x_s = s);
+    outlet_symbol(x->x_obj.te_outlet, x->x_s = s);
 }
 
 static void pdsymbol_anything(t_pdsymbol *x, t_symbol *s, int ac, t_atom *av)
 {
-    outlet_symbol(x->x_obj.ob_outlet, x->x_s = s);
+    outlet_symbol(x->x_obj.te_outlet, x->x_s = s);
 }
 
     /* For "list" message don't just output "list"; if empty, we want to
@@ -183,7 +183,7 @@ static void *bang_new(t_pd *dummy)
 {
     t_bang *x = (t_bang *)pd_new(bang_class);
     outlet_new(&x->x_obj, &s_bang);
-    newest = &x->x_obj.ob_pd;
+    newest = &x->x_obj.te_g.g_pd;
     return (x);
 }
 
@@ -194,7 +194,7 @@ static void *bang_new2(t_bang f)
 
 static void bang_bang(t_bang *x)
 {
-    outlet_bang(x->x_obj.ob_outlet);
+    outlet_bang(x->x_obj.te_outlet);
 }
 
 void bang_setup(void)
@@ -246,7 +246,7 @@ static void send_list(t_send *x, t_symbol *s, int argc, t_atom *argv)
 
 static void send_anything(t_send *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->x_sym->s_thing) typedmess(x->x_sym->s_thing, s, argc, argv);
+    if (x->x_sym->s_thing) pd_typedmess(x->x_sym->s_thing, s, argc, argv);
 }
 
 static void *send_new(t_symbol *s)
@@ -282,46 +282,46 @@ typedef struct _receive
 
 static void receive_bang(t_receive *x)
 {
-    outlet_bang(x->x_obj.ob_outlet);
+    outlet_bang(x->x_obj.te_outlet);
 }
 
 static void receive_float(t_receive *x, t_float f)
 {
-    outlet_float(x->x_obj.ob_outlet, f);
+    outlet_float(x->x_obj.te_outlet, f);
 }
 
 static void receive_symbol(t_receive *x, t_symbol *s)
 {
-    outlet_symbol(x->x_obj.ob_outlet, s);
+    outlet_symbol(x->x_obj.te_outlet, s);
 }
 
 static void receive_pointer(t_receive *x, t_gpointer *gp)
 {
-    outlet_pointer(x->x_obj.ob_outlet, gp);
+    outlet_pointer(x->x_obj.te_outlet, gp);
 }
 
 static void receive_list(t_receive *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_list(x->x_obj.ob_outlet, s, argc, argv);
+    outlet_list(x->x_obj.te_outlet, s, argc, argv);
 }
 
 static void receive_anything(t_receive *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_anything(x->x_obj.ob_outlet, s, argc, argv);
+    outlet_anything(x->x_obj.te_outlet, s, argc, argv);
 }
 
 static void *receive_new(t_symbol *s)
 {
     t_receive *x = (t_receive *)pd_new(receive_class);
     x->x_sym = s;
-    pd_bind(&x->x_obj.ob_pd, s);
+    pd_bind(&x->x_obj.te_g.g_pd, s);
     outlet_new(&x->x_obj, 0);
     return (x);
 }
 
 static void receive_free(t_receive *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, x->x_sym);
+    pd_unbind(&x->x_obj.te_g.g_pd, x->x_sym);
 }
 
 static void receive_setup(void)
@@ -676,7 +676,7 @@ static void *pack_new(t_symbol *s, int argc, t_atom *argv)
         if (ap->a_type == A_SYMBOL && *ap->a_w.w_symbol->s_name == 'p')
             nptr++;
 
-    gp = x->x_gpointer = (t_gpointer *)t_getbytes(nptr * sizeof (*gp));
+    gp = x->x_gpointer = (t_gpointer *)getbytes(nptr * sizeof (*gp));
     x->x_nptr = nptr;
 
     for (i = 0, vp = x->x_vec, ap = argv; i < argc; i++, ap++, vp++)
@@ -733,7 +733,7 @@ static void pack_bang(t_pack *x)
             /* LATER figure out how to deal with reentrancy and pointers... */
         if (x->x_nptr)
             post("pack_bang: warning: reentry with pointers unprotected");
-        outvec = t_getbytes(size);
+        outvec = getbytes(size);
         reentered = 1;
     }
     else
@@ -742,9 +742,9 @@ static void pack_bang(t_pack *x)
         x->x_outvec = 0;
     }
     memcpy(outvec, x->x_vec, size);
-    outlet_list(x->x_obj.ob_outlet, &s_list, x->x_n, outvec);
+    outlet_list(x->x_obj.te_outlet, &s_list, x->x_n, outvec);
     if (reentered)
-        t_freebytes(outvec, size);
+        freebytes(outvec, size);
     else x->x_outvec = outvec;
 }
 
@@ -1097,32 +1097,32 @@ static void *spigot_new(t_floatarg f)
 
 static void spigot_bang(t_spigot *x)
 {
-    if (x->x_state != 0) outlet_bang(x->x_obj.ob_outlet);
+    if (x->x_state != 0) outlet_bang(x->x_obj.te_outlet);
 }
 
 static void spigot_pointer(t_spigot *x, t_gpointer *gp)
 {
-    if (x->x_state != 0) outlet_pointer(x->x_obj.ob_outlet, gp);
+    if (x->x_state != 0) outlet_pointer(x->x_obj.te_outlet, gp);
 }
 
 static void spigot_float(t_spigot *x, t_float f)
 {
-    if (x->x_state != 0) outlet_float(x->x_obj.ob_outlet, f);
+    if (x->x_state != 0) outlet_float(x->x_obj.te_outlet, f);
 }
 
 static void spigot_symbol(t_spigot *x, t_symbol *s)
 {
-    if (x->x_state != 0) outlet_symbol(x->x_obj.ob_outlet, s);
+    if (x->x_state != 0) outlet_symbol(x->x_obj.te_outlet, s);
 }
 
 static void spigot_list(t_spigot *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->x_state != 0) outlet_list(x->x_obj.ob_outlet, s, argc, argv);
+    if (x->x_state != 0) outlet_list(x->x_obj.te_outlet, s, argc, argv);
 }
 
 static void spigot_anything(t_spigot *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->x_state != 0) outlet_anything(x->x_obj.ob_outlet, s, argc, argv);
+    if (x->x_state != 0) outlet_anything(x->x_obj.te_outlet, s, argc, argv);
 }
 
 static void spigot_setup(void)
@@ -1159,7 +1159,7 @@ static void *moses_new(t_floatarg f)
 
 static void moses_float(t_moses *x, t_float f)
 {
-    if (f < x->x_y) outlet_float(x->x_ob.ob_outlet, f);
+    if (f < x->x_y) outlet_float(x->x_ob.te_outlet, f);
     else outlet_float(x->x_out2, f);
 }
 
@@ -1184,7 +1184,7 @@ typedef struct _until
 static void *until_new(void)
 {
     t_until *x = (t_until *)pd_new(until_class);
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, gensym("bang"), gensym("bang2"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("bang"), gensym("bang2"));
     outlet_new(&x->x_obj, &s_bang);
     x->x_run = 0;
     return (x);
@@ -1195,7 +1195,7 @@ static void until_bang(t_until *x)
     x->x_run = 1;
     x->x_count = -1;
     while (x->x_run && x->x_count)
-        x->x_count--, outlet_bang(x->x_obj.ob_outlet);
+        x->x_count--, outlet_bang(x->x_obj.te_outlet);
 }
 
 static void until_float(t_until *x, t_float f)
@@ -1205,7 +1205,7 @@ static void until_float(t_until *x, t_float f)
     x->x_run = 1;
     x->x_count = f;
     while (x->x_run && x->x_count)
-        x->x_count--, outlet_bang(x->x_obj.ob_outlet);
+        x->x_count--, outlet_bang(x->x_obj.te_outlet);
 }
 
 static void until_bang2(t_until *x)
@@ -1296,7 +1296,7 @@ static void makefilename_float(t_makefilename *x, t_floatarg f)
         sprintf(buf, x->x_format->s_name, buf2);
     }
     if (buf[0]!=0)
-    outlet_symbol(x->x_obj.ob_outlet, gensym(buf));
+    outlet_symbol(x->x_obj.te_outlet, gensym(buf));
 }
 
 static void makefilename_symbol(t_makefilename *x, t_symbol *s)
@@ -1307,7 +1307,7 @@ static void makefilename_symbol(t_makefilename *x, t_symbol *s)
     else
         sprintf(buf, x->x_format->s_name, 0);
     if (buf[0]!=0)
-    outlet_symbol(x->x_obj.ob_outlet, gensym(buf));
+    outlet_symbol(x->x_obj.te_outlet, gensym(buf));
 }
 
 static void makefilename_set(t_makefilename *x, t_symbol *s)
@@ -1352,7 +1352,7 @@ static void *swap_new(t_floatarg f)
 static void swap_bang(t_swap *x)
 {
     outlet_float(x->x_out2, x->x_f1);
-    outlet_float(x->x_obj.ob_outlet, x->x_f2);
+    outlet_float(x->x_obj.te_outlet, x->x_f2);
 }
 
 static void swap_float(t_swap *x, t_float f)
@@ -1389,7 +1389,7 @@ static void *change_new(t_floatarg f)
 
 static void change_bang(t_change *x)
 {
-    outlet_float(x->x_obj.ob_outlet, x->x_f);
+    outlet_float(x->x_obj.te_outlet, x->x_f);
 }
 
 static void change_float(t_change *x, t_float f)
@@ -1397,7 +1397,7 @@ static void change_float(t_change *x, t_float f)
     if (f != x->x_f)
     {
         x->x_f = f;
-        outlet_float(x->x_obj.ob_outlet, x->x_f);
+        outlet_float(x->x_obj.te_outlet, x->x_f);
     }
 }
 
@@ -1510,7 +1510,7 @@ static void *value_new(t_symbol *s)
 
 static void value_bang(t_value *x)
 {
-    outlet_float(x->x_obj.ob_outlet, *x->x_floatstar);
+    outlet_float(x->x_obj.te_outlet, *x->x_floatstar);
 }
 
 static void value_float(t_value *x, t_float f)

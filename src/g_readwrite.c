@@ -149,7 +149,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
             /* temporarily lie about vis flag while this is built */
         glist_getcanvas(x)->gl_mapped = 0;
     }
-    glist_add(x, &sc->sc_gobj);
+    glist_add(x, &sc->sc_g);
     
     nline = canvas_scanbinbuf(natoms, vec, &message, p_nextmsg);
     glist_readatoms(x, natoms, vec, p_nextmsg, templatesym, sc->sc_vec, 
@@ -158,11 +158,11 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
     {
             /* reset vis flag as before */
         glist_getcanvas(x)->gl_mapped = 1;
-        gobj_vis(&sc->sc_gobj, x, 1);
+        gobj_vis(&sc->sc_g, x, 1);
     }
     if (selectit)
     {
-        glist_select(x, &sc->sc_gobj);
+        glist_select(x, &sc->sc_g);
     }
     return (1);
 }
@@ -215,7 +215,7 @@ void glist_readfrombinbuf(t_glist *x, t_binbuf *b, char *filename, int selectem)
             if (nline != 2 && nline != 3)
                 break;
             newnargs = ntemplateargs + nline;
-            templateargs = (t_atom *)t_resizebytes(templateargs,
+            templateargs = (t_atom *)resizebytes(templateargs,
                 sizeof(*templateargs) * ntemplateargs,
                 sizeof(*templateargs) * newnargs);
             templateargs[ntemplateargs] = vec[message];
@@ -228,11 +228,11 @@ void glist_readfrombinbuf(t_glist *x, t_binbuf *b, char *filename, int selectem)
         {
             error("%s: template not found in current patch",
                 templatesym->s_name);
-            t_freebytes(templateargs, sizeof (*templateargs) * ntemplateargs);
+            freebytes(templateargs, sizeof (*templateargs) * ntemplateargs);
             return;
         }
         newtemplate = template_new(templatesym, ntemplateargs, templateargs);
-        t_freebytes(templateargs, sizeof (*templateargs) * ntemplateargs);
+        freebytes(templateargs, sizeof (*templateargs) * ntemplateargs);
         if (!template_match(existtemplate, newtemplate))
         {
             error("%s: template doesn't match current one",
@@ -300,7 +300,7 @@ void canvas_dataproperties(t_canvas *x, t_scalar *sc, t_binbuf *b)
     t_template *template;
     for (y = x->gl_list, ntotal = 0, scindex = -1; y; y = y->g_next)
     {
-        if (y == &sc->sc_gobj)
+        if (y == &sc->sc_g)
             scindex = ntotal, oldone = y;
         ntotal++;
     }
@@ -377,7 +377,7 @@ void canvas_doaddtemplate(t_symbol *templatesym,
     for (i = 0; i < n; i++)
         if (templatevec[i] == templatesym)
             return;
-    templatevec = (t_symbol **)t_resizebytes(templatevec,
+    templatevec = (t_symbol **)resizebytes(templatevec,
         n * sizeof(*templatevec), (n+1) * sizeof(*templatevec));
     templatevec[n] = templatesym;
     *p_templatevec = templatevec;
@@ -393,7 +393,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_binbuf *b,
 {
     t_dataslot *ds;
     t_template *template = template_findbyname(templatesym);
-    t_atom *a = (t_atom *)t_getbytes(0);
+    t_atom *a = (t_atom *)getbytes(0);
     int i, n = template->t_n, natom = 0;
     if (!amarrayelement)
     {
@@ -409,7 +409,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_binbuf *b,
         if (template->t_vec[i].ds_type == DT_FLOAT ||
             template->t_vec[i].ds_type == DT_SYMBOL)
         {
-            a = (t_atom *)t_resizebytes(a,
+            a = (t_atom *)resizebytes(a,
                 natom * sizeof(*a), (natom + 1) * sizeof (*a));
             if (template->t_vec[i].ds_type == DT_FLOAT)
                 SETFLOAT(a + natom, w[i].w_float);
@@ -422,7 +422,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_binbuf *b,
         SETSYMBOL(a + natom,  &s_bang), natom++;
     binbuf_add(b, natom, a);
     binbuf_addsemi(b);
-    t_freebytes(a, natom * sizeof(*a));
+    freebytes(a, natom * sizeof(*a));
     for (i = 0; i < n; i++)
     {
         if (template->t_vec[i].ds_type == DT_ARRAY)
@@ -594,7 +594,7 @@ static void canvas_saveto(t_canvas *x, t_binbuf *b)
         /* have to go to original binbuf to find out how we were named. */
         t_binbuf *bz = binbuf_new();
         t_symbol *patchsym;
-        binbuf_addbinbuf(bz, x->gl_obj.ob_binbuf);
+        binbuf_addbinbuf(bz, x->gl_obj.te_binbuf);
         patchsym = atom_getsymbolarg(1, binbuf_getnatom(bz), binbuf_getvec(bz));
         binbuf_free(bz);
         binbuf_addv(b, "ssiiiisi;", gensym("#N"), gensym("canvas"),
@@ -622,8 +622,8 @@ static void canvas_saveto(t_canvas *x, t_binbuf *b)
     linetraverser_start(&t, x);
     while (oc = linetraverser_next(&t))
     {
-        int srcno = canvas_getindex(x, &t.tr_ob->ob_g);
-        int sinkno = canvas_getindex(x, &t.tr_ob2->ob_g);
+        int srcno = canvas_getindex(x, &t.tr_ob->te_g);
+        int sinkno = canvas_getindex(x, &t.tr_ob2->te_g);
         binbuf_addv(b, "ssiiii;", gensym("#X"), gensym("connect"),
             srcno, t.tr_outno, sinkno, t.tr_inno);
     }
@@ -734,7 +734,7 @@ static void canvas_savetofile(t_canvas *x, t_symbol *filename, t_symbol *dir,
         canvas_dirty(x, 0);
         canvas_reload(filename, dir, &x->gl_gobj);
         if (fdestroy != 0)
-            vmess(&x->gl_pd, gensym("menuclose"), "f", 1.);
+            pd_vmess(&x->gl_pd, gensym("menuclose"), "f", 1.);
     }
     binbuf_free(b);
 }

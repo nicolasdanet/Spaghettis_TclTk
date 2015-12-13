@@ -235,7 +235,7 @@ static void iemgui_init_sym2dollararg(t_iemgui *iemgui, t_symbol **symp,
 {
     if (!*symp)
     {
-        t_binbuf *b = iemgui->x_obj.ob_binbuf;
+        t_binbuf *b = iemgui->x_obj.te_binbuf;
         if (binbuf_getnatom(b) > indx)
         {
             char buf[80];
@@ -377,14 +377,14 @@ void iemgui_receive(void *x, t_iemgui *iemgui, t_symbol *s)
         if(strcmp(rcv->s_name, iemgui->x_rcv->s_name))
         {
             if(iemgui->x_fsf.x_rcv_able)
-                pd_unbind(&iemgui->x_obj.ob_pd, iemgui->x_rcv);
+                pd_unbind(&iemgui->x_obj.te_g.g_pd, iemgui->x_rcv);
             iemgui->x_rcv = rcv;
-            pd_bind(&iemgui->x_obj.ob_pd, iemgui->x_rcv);
+            pd_bind(&iemgui->x_obj.te_g.g_pd, iemgui->x_rcv);
         }
     }
     else if(!rcvable && iemgui->x_fsf.x_rcv_able)
     {
-        pd_unbind(&iemgui->x_obj.ob_pd, iemgui->x_rcv);
+        pd_unbind(&iemgui->x_obj.te_g.g_pd, iemgui->x_rcv);
         iemgui->x_rcv = rcv;
     }
     iemgui->x_fsf.x_rcv_able = rcvable;
@@ -594,14 +594,14 @@ int iemgui_dialog(t_iemgui *iemgui, t_symbol **srl, int argc, t_atom *argv)
         if(strcmp(srl[1]->s_name, iemgui->x_rcv->s_name))
         {
             if(iemgui->x_fsf.x_rcv_able)
-                pd_unbind(&iemgui->x_obj.ob_pd, iemgui->x_rcv);
+                pd_unbind(&iemgui->x_obj.te_g.g_pd, iemgui->x_rcv);
             iemgui->x_rcv = srl[1];
-            pd_bind(&iemgui->x_obj.ob_pd, iemgui->x_rcv);
+            pd_bind(&iemgui->x_obj.te_g.g_pd, iemgui->x_rcv);
         }
     }
     else if(!rcvable && iemgui->x_fsf.x_rcv_able)
     {
-        pd_unbind(&iemgui->x_obj.ob_pd, iemgui->x_rcv);
+        pd_unbind(&iemgui->x_obj.te_g.g_pd, iemgui->x_rcv);
         iemgui->x_rcv = srl[1];
     }
     iemgui->x_snd = srl[0];

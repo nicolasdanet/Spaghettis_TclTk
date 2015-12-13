@@ -174,7 +174,7 @@ t_class *class_new(t_symbol *s, t_newmethod newmethod, t_method freemethod,
     t_atomtype vec[MAXPDARG+1], *vp = vec;
     int count = 0;
     t_class *c;
-    int typeflag = flags & CLASS_TYPEMASK;
+    int typeflag = flags & 3;
     if (!typeflag) typeflag = CLASS_PATCHABLE;
     *vp = type1;
 
@@ -210,10 +210,10 @@ t_class *class_new(t_symbol *s, t_newmethod newmethod, t_method freemethod,
                     vec[0], vec[1], vec[2], vec[3], vec[4], vec[5]);
         }
     }
-    c = (t_class *)t_getbytes(sizeof(*c));
+    c = (t_class *)getbytes(sizeof(*c));
     c->c_name = c->c_helpname = s;
     c->c_size = size;
-    c->c_methods = t_getbytes(0);
+    c->c_methods = getbytes(0);
     c->c_nmethod = 0;
     c->c_freemethod = (t_method)freemethod;
     c->c_bangmethod = pd_defaultbang;
@@ -328,7 +328,7 @@ void class_addmethod(t_class *c, t_method fn, t_symbol *sel,
             else post("warning: old method '%s' for class '%s' renamed '%s'",
                 sel->s_name, c->c_name->s_name, nbuf);
         }
-        c->c_methods = t_resizebytes(c->c_methods,
+        c->c_methods = resizebytes(c->c_methods,
             c->c_nmethod * sizeof(*c->c_methods),
             (c->c_nmethod + 1) * sizeof(*c->c_methods));
         m = c->c_methods +  c->c_nmethod;
@@ -508,8 +508,8 @@ t_symbol *dogensym(const char *s, t_symbol *oldsym)
     if (oldsym) sym2 = oldsym;
     else
     {
-        sym2 = (t_symbol *)t_getbytes(sizeof(*sym2));
-        sym2->s_name = t_getbytes(length+1);
+        sym2 = (t_symbol *)getbytes(sizeof(*sym2));
+        sym2->s_name = getbytes(length+1);
         sym2->s_next = 0;
         sym2->s_thing = 0;
         strcpy(sym2->s_name, s);
@@ -557,7 +557,7 @@ void new_anything(void *dummy, t_symbol *s, int argc, t_atom *argv)
     if (sys_load_lib(canvas_getcurrent(), s->s_name))
     {
         tryingalready++;
-        typedmess(dummy, s, argc, argv);
+        pd_typedmess(dummy, s, argc, argv);
         tryingalready--;
         return;
     }
@@ -620,15 +620,8 @@ void mess_init(void)
 
 t_pd *newest;
 
-/* This is externally available, but note that it might later disappear; the
-whole "newest" thing is a hack which needs to be redesigned. */
-t_pd *pd_newest(void)
-{
-    return (newest);
-}
-
     /* horribly, we need prototypes for each of the artificial function
-    calls in typedmess(), to keep the compiler quiet. */
+    calls in pd_typedmess(), to keep the compiler quiet. */
 typedef t_pd *(*t_newgimme)(t_symbol *s, int argc, t_atom *argv);
 typedef void(*t_messgimme)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
 
@@ -790,7 +783,7 @@ badarg:
         s->s_name, c->c_name->s_name);
 }
 
-    /* convenience routine giving a stdarg interface to typedmess().  Only
+    /* convenience routine giving a stdarg interface to pd_typedmess().  Only
     ten args supported; it seems unlikely anyone will need more since
     longer messages are likely to be programmatically generated anyway. */
 void pd_vmess(t_pd *x, t_symbol *sel, char *fmt, ...)
@@ -821,7 +814,7 @@ void pd_vmess(t_pd *x, t_symbol *sel, char *fmt, ...)
     }
 done:
     va_end(ap);
-    typedmess(x, sel, nargs, arg);
+    pd_typedmess(x, sel, nargs, arg);
 }
 
 void pd_forwardmess(t_pd *x, int argc, t_atom *argv)

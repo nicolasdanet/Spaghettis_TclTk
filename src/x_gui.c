@@ -196,7 +196,7 @@ static void *openpanel_new( void)
     t_openpanel *x = (t_openpanel *)pd_new(openpanel_class);
     sprintf(buf, "d%lx", (t_int)x);
     x->x_s = gensym(buf);
-    pd_bind(&x->x_obj.ob_pd, x->x_s);
+    pd_bind(&x->x_obj.te_g.g_pd, x->x_s);
     outlet_new(&x->x_obj, &s_symbol);
     return (x);
 }
@@ -214,13 +214,13 @@ static void openpanel_bang(t_openpanel *x)
 
 static void openpanel_callback(t_openpanel *x, t_symbol *s)
 {
-    outlet_symbol(x->x_obj.ob_outlet, s);
+    outlet_symbol(x->x_obj.te_outlet, s);
 }
 
 
 static void openpanel_free(t_openpanel *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, x->x_s);
+    pd_unbind(&x->x_obj.te_g.g_pd, x->x_s);
 }
 
 static void openpanel_setup(void)
@@ -252,7 +252,7 @@ static void *savepanel_new( void)
     sprintf(buf, "d%lx", (t_int)x);
     x->x_s = gensym(buf);
     x->x_canvas = canvas_getcurrent();
-    pd_bind(&x->x_obj.ob_pd, x->x_s);
+    pd_bind(&x->x_obj.te_g.g_pd, x->x_s);
     outlet_new(&x->x_obj, &s_symbol);
     return (x);
 }
@@ -270,12 +270,12 @@ static void savepanel_bang(t_savepanel *x)
 
 static void savepanel_callback(t_savepanel *x, t_symbol *s)
 {
-    outlet_symbol(x->x_obj.ob_outlet, s);
+    outlet_symbol(x->x_obj.te_outlet, s);
 }
 
 static void savepanel_free(t_savepanel *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, x->x_s);
+    pd_unbind(&x->x_obj.te_g.g_pd, x->x_s);
 }
 
 static void savepanel_setup(void)
@@ -303,18 +303,18 @@ static void *key_new( void)
 {
     t_key *x = (t_key *)pd_new(key_class);
     outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.ob_pd, key_sym);
+    pd_bind(&x->x_obj.te_g.g_pd, key_sym);
     return (x);
 }
 
 static void key_float(t_key *x, t_floatarg f)
 {
-    outlet_float(x->x_obj.ob_outlet, f);
+    outlet_float(x->x_obj.te_outlet, f);
 }
 
 static void key_free(t_key *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, key_sym);
+    pd_unbind(&x->x_obj.te_g.g_pd, key_sym);
 }
 
 typedef struct _keyup
@@ -326,18 +326,18 @@ static void *keyup_new( void)
 {
     t_keyup *x = (t_keyup *)pd_new(keyup_class);
     outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.ob_pd, keyup_sym);
+    pd_bind(&x->x_obj.te_g.g_pd, keyup_sym);
     return (x);
 }
 
 static void keyup_float(t_keyup *x, t_floatarg f)
 {
-    outlet_float(x->x_obj.ob_outlet, f);
+    outlet_float(x->x_obj.te_outlet, f);
 }
 
 static void keyup_free(t_keyup *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, keyup_sym);
+    pd_unbind(&x->x_obj.te_g.g_pd, keyup_sym);
 }
 
 typedef struct _keyname
@@ -352,7 +352,7 @@ static void *keyname_new( void)
     t_keyname *x = (t_keyname *)pd_new(keyname_class);
     x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
     x->x_outlet2 = outlet_new(&x->x_obj, &s_symbol);
-    pd_bind(&x->x_obj.ob_pd, keyname_sym);
+    pd_bind(&x->x_obj.te_g.g_pd, keyname_sym);
     return (x);
 }
 
@@ -364,7 +364,7 @@ static void keyname_list(t_keyname *x, t_symbol *s, int ac, t_atom *av)
 
 static void keyname_free(t_keyname *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, keyname_sym);
+    pd_unbind(&x->x_obj.te_g.g_pd, keyname_sym);
 }
 
 static void key_setup(void)

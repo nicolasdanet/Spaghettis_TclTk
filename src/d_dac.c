@@ -36,7 +36,7 @@ static void *dac_new(t_symbol *s, int argc, t_atom *argv)
     for (i = 0; i < argc; i++)
         x->x_vec[i] = atom_getintarg(i, argc, argv);
     for (i = 1; i < argc; i++)
-        inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_signal, &s_signal);
+        inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
     x->x_f = 0;
     return (x);
 }

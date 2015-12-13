@@ -104,7 +104,7 @@ static void netsend_readbin(t_netsend *x, int fd)
             sys_sockerror("recv");
         sys_rmpollfn(fd);
         sys_closesocket(fd);
-        if (x->x_obj.ob_pd == netreceive_class)
+        if (x->x_obj.te_g.g_pd == netreceive_class)
             netreceive_notify((t_netreceive *)x, fd);
     }
     else if (x->x_protocol == SOCK_DGRAM)
@@ -234,7 +234,7 @@ static void netsend_connect(t_netsend *x, t_symbol *hostname,
             sys_addpollfn(sockfd, (t_fdpollfn)socketreceiver_read, y);
         }
     }
-    outlet_float(x->x_obj.ob_outlet, 1);
+    outlet_float(x->x_obj.te_outlet, 1);
 }
 
 static void netsend_disconnect(t_netsend *x)
@@ -244,7 +244,7 @@ static void netsend_disconnect(t_netsend *x)
         sys_rmpollfn(x->x_sockfd);
         sys_closesocket(x->x_sockfd);
         x->x_sockfd = -1;
-        outlet_float(x->x_obj.ob_outlet, 0);
+        outlet_float(x->x_obj.te_outlet, 0);
     }
 }
 
@@ -306,7 +306,7 @@ static int netsend_dosend(t_netsend *x, int sockfd,
     done:
     if (!x->x_bin)
     {
-        t_freebytes(buf, length);
+        freebytes(buf, length);
         binbuf_free(b);
     }
     return (fail);
@@ -350,7 +350,7 @@ static void netreceive_notify(t_netreceive *x, int fd)
         {
             memmove(x->x_connections+i, x->x_connections+(i+1),
                 sizeof(int) * (x->x_nconnections - (i+1)));
-            x->x_connections = (int *)t_resizebytes(x->x_connections,
+            x->x_connections = (int *)resizebytes(x->x_connections,
                 x->x_nconnections * sizeof(int), 
                     (x->x_nconnections-1) * sizeof(int));
             x->x_nconnections--;
@@ -367,7 +367,7 @@ static void netreceive_connectpoll(t_netreceive *x)
     {
         int nconnections = x->x_nconnections+1;
         
-        x->x_connections = (int *)t_resizebytes(x->x_connections,
+        x->x_connections = (int *)resizebytes(x->x_connections,
             x->x_nconnections * sizeof(int), nconnections * sizeof(int));
         x->x_connections[x->x_nconnections] = fd;
         if (x->x_ns.x_bin)
@@ -391,7 +391,7 @@ static void netreceive_closeall(t_netreceive *x)
         sys_rmpollfn(x->x_connections[i]);
         sys_closesocket(x->x_connections[i]);
     }
-    x->x_connections = (int *)t_resizebytes(x->x_connections, 
+    x->x_connections = (int *)resizebytes(x->x_connections, 
         x->x_nconnections * sizeof(int), 0);
     x->x_nconnections = 0;
     if (x->x_ns.x_sockfd >= 0)
@@ -508,7 +508,7 @@ static void *netreceive_new(t_symbol *s, int argc, t_atom *argv)
     x->x_old = 0;
     x->x_ns.x_bin = 0;
     x->x_nconnections = 0;
-    x->x_connections = (int *)t_getbytes(0);
+    x->x_connections = (int *)getbytes(0);
     x->x_ns.x_sockfd = -1;
     if (argc && argv->a_type == A_FLOAT)
     {

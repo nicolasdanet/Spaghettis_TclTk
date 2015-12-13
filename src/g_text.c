@@ -126,9 +126,9 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
         glist_select(gl, &x->te_g);
         gobj_activate(&x->te_g, gl, 1);
     }
-    if (pd_class(&x->ob_pd) == vinlet_class)
+    if (pd_class(&x->te_g.g_pd) == vinlet_class)
         canvas_resortinlets(glist_getcanvas(gl));
-    if (pd_class(&x->ob_pd) == voutlet_class)
+    if (pd_class(&x->te_g.g_pd) == voutlet_class)
         canvas_resortoutlets(glist_getcanvas(gl));
     canvas_unsetcurrent((t_canvas *)gl);
 }
@@ -774,7 +774,7 @@ static void gatom_param(t_gatom *x, t_symbol *sel, int argc, t_atom *argv)
 
     gobj_vis(&x->a_text.te_g, x->a_glist, 0);
     if (!*symfrom->s_name && *x->a_symfrom->s_name)
-        inlet_new(&x->a_text, &x->a_text.te_pd, 0, 0);
+        inlet_new(&x->a_text, &x->a_text.te_g.g_pd, 0, 0);
     else if (*symfrom->s_name && !*x->a_symfrom->s_name && x->a_text.te_inlet)
     {
         canvas_deletelinesforio(x->a_glist, &x->a_text,
@@ -801,11 +801,11 @@ static void gatom_param(t_gatom *x, t_symbol *sel, int argc, t_atom *argv)
     x->a_wherelabel = ((int)wherelabel & 3);
     x->a_label = label;
     if (*x->a_symfrom->s_name)
-        pd_unbind(&x->a_text.te_pd,
+        pd_unbind(&x->a_text.te_g.g_pd,
             canvas_realizedollar(x->a_glist, x->a_symfrom));
     x->a_symfrom = symfrom;
     if (*x->a_symfrom->s_name)
-        pd_bind(&x->a_text.te_pd,
+        pd_bind(&x->a_text.te_g.g_pd,
             canvas_realizedollar(x->a_glist, x->a_symfrom));
     x->a_symto = symto;
     x->a_expanded_to = canvas_realizedollar(x->a_glist, x->a_symto);
@@ -925,7 +925,7 @@ void canvas_atom(t_glist *gl, t_atomtype type,
         x->a_label = gatom_unescapit(atom_getsymbolarg(6, argc, argv));
         x->a_symfrom = gatom_unescapit(atom_getsymbolarg(7, argc, argv));
         if (*x->a_symfrom->s_name)
-            pd_bind(&x->a_text.te_pd,
+            pd_bind(&x->a_text.te_g.g_pd,
                 canvas_realizedollar(x->a_glist, x->a_symfrom));
 
         x->a_symto = gatom_unescapit(atom_getsymbolarg(8, argc, argv));
@@ -934,7 +934,7 @@ void canvas_atom(t_glist *gl, t_atomtype type,
             outlet_new(&x->a_text,
                 x->a_atom.a_type == A_FLOAT ? &s_float: &s_symbol);
         if (x->a_symfrom == &s_)
-            inlet_new(&x->a_text, &x->a_text.te_pd, 0, 0);
+            inlet_new(&x->a_text, &x->a_text.te_g.g_pd, 0, 0);
         glist_add(gl, &x->a_text.te_g);
     }
     else
@@ -943,7 +943,7 @@ void canvas_atom(t_glist *gl, t_atomtype type,
         canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
         outlet_new(&x->a_text,
             x->a_atom.a_type == A_FLOAT ? &s_float: &s_symbol);
-        inlet_new(&x->a_text, &x->a_text.te_pd, 0, 0);
+        inlet_new(&x->a_text, &x->a_text.te_g.g_pd, 0, 0);
         pd_vmess(&gl->gl_pd, gensym("editmode"), "i", 1);
         x->a_text.te_xpix = xpix;
         x->a_text.te_ypix = ypix;
@@ -969,7 +969,7 @@ void canvas_symbolatom(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 static void gatom_free(t_gatom *x)
 {
     if (*x->a_symfrom->s_name)
-        pd_unbind(&x->a_text.te_pd,
+        pd_unbind(&x->a_text.te_g.g_pd,
             canvas_realizedollar(x->a_glist, x->a_symfrom));
     gfxstub_deleteforkey(x);
 }
@@ -984,7 +984,7 @@ static void gatom_properties(t_gobj *z, t_glist *owner)
                 gatom_escapit(x->a_symfrom)->s_name,
                 gatom_escapit(x->a_label)->s_name, 
                 x->a_wherelabel);
-    gfxstub_new(&x->a_text.te_pd, x, buf);
+    gfxstub_new(&x->a_text.te_g.g_pd, x, buf);
 }
 
 
@@ -1105,10 +1105,10 @@ static int text_click(t_gobj *z, struct _glist *glist,
     if (x->te_type == T_OBJECT)
     {
         t_symbol *clicksym = gensym("click");
-        if (zgetfn(&x->te_pd, clicksym))
+        if (zgetfn(&x->te_g.g_pd, clicksym))
         {
             if (doit)
-                pd_vmess(&x->te_pd, clicksym, "fffff",
+                pd_vmess(&x->te_g.g_pd, clicksym, "fffff",
                     (double)xpix, (double)ypix,
                         (double)shift, (double)0, (double)alt);
             return (1);
@@ -1139,12 +1139,12 @@ void text_save(t_gobj *z, t_binbuf *b)
     {
             /* if we have a "saveto" method, and if we don't happen to be
             a canvas that's an abstraction, the saveto method does the work */
-        if (zgetfn(&x->te_pd, gensym("saveto")) &&
-            !((pd_class(&x->te_pd) == canvas_class) && 
+        if (zgetfn(&x->te_g.g_pd, gensym("saveto")) &&
+            !((pd_class(&x->te_g.g_pd) == canvas_class) && 
                 (canvas_isabstraction((t_canvas *)x)
                     || canvas_istable((t_canvas *)x))))
         {  
-            mess1(&x->te_pd, gensym("saveto"), b);
+            mess1(&x->te_g.g_pd, gensym("saveto"), b);
             binbuf_addv(b, "ssii", gensym("#X"), gensym("restore"),
                 (int)x->te_xpix, (int)x->te_ypix);
         }
@@ -1270,7 +1270,7 @@ void text_drawborder(t_text *x, t_glist *glist,
     height = y2 - y1;
     if (x->te_type == T_OBJECT)
     {
-        char *pattern = ((pd_class(&x->te_pd) == text_class) ? "-" : "\"\"");
+        char *pattern = ((pd_class(&x->te_g.g_pd) == text_class) ? "-" : "\"\"");
         if (firsttime)
             sys_vgui(".x%lx.c create line\
  %d %d %d %d %d %d %d %d %d %d -dash %s -tags [list %sR obj]\n",
@@ -1332,7 +1332,7 @@ void text_drawborder(t_text *x, t_glist *glist,
     }
         /* draw inlets/outlets */
     
-    if (ob = pd_checkobject(&x->te_pd))
+    if (ob = pd_checkobject(&x->te_g.g_pd))
         glist_drawiofor(glist, ob, firsttime, tag, x1, y1, x2, y2);
 }
 
@@ -1376,7 +1376,7 @@ void text_setto(t_text *x, t_glist *glist, char *buf, int bufsize)
              vec2[0].a_type == A_SYMBOL
             && !strcmp(vec2[0].a_w.w_symbol->s_name, "pd"))
         {
-            typedmess(&x->te_pd, gensym("rename"), natom2-1, vec2+1);
+            pd_typedmess(&x->te_g.g_pd, gensym("rename"), natom2-1, vec2+1);
             binbuf_free(x->te_binbuf);
             x->te_binbuf = b;
         }

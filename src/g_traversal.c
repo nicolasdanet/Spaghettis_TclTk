@@ -28,7 +28,7 @@ sublist - get a pointer into a list which is an element of another scalar
 
 t_gstub *gstub_new(t_glist *gl, t_array *a)
 {
-    t_gstub *gs = t_getbytes(sizeof(*gs));
+    t_gstub *gs = getbytes(sizeof(*gs));
     if (gl)
     {
         gs->gs_type = GP_GLIST;
@@ -52,7 +52,7 @@ static void gstub_dis(t_gstub *gs)
 {
     int refcount = --gs->gs_refcount;
     if ((!refcount) && gs->gs_type == GP_NONE)
-        t_freebytes(gs, sizeof (*gs));
+        freebytes(gs, sizeof (*gs));
     else if (refcount < 0) bug("gstub_dis");
 }
 
@@ -64,7 +64,7 @@ void gstub_cutoff(t_gstub *gs)
 {
     gs->gs_type = GP_NONE;
     if (gs->gs_refcount < 0) bug("gstub_cutoff");
-    if (!gs->gs_refcount) t_freebytes(gs, sizeof (*gs));
+    if (!gs->gs_refcount) freebytes(gs, sizeof (*gs));
 }
 
 /* call this to verify that a pointer is fresh, i.e., that it either
@@ -289,7 +289,7 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
             "ptrobj_vnext: next-selected only works for a visible window");
         return;
     }
-    gobj = &gp->gp_un.gp_scalar->sc_gobj;
+    gobj = &gp->gp_un.gp_scalar->sc_g;
     
     if (!gobj) gobj = glist->gl_list;
     else gobj = gobj->g_next;
@@ -837,7 +837,7 @@ static void elem_float(t_elem *x, t_float f)
 
     gpointer_setarray(&x->x_gp, array, 
         (t_word *)((char *)(array->a_vec) + indx * elemsize));
-    outlet_pointer(x->x_obj.ob_outlet, &x->x_gp);
+    outlet_pointer(x->x_obj.te_outlet, &x->x_gp);
 }
 
 static void elem_free(t_elem *x, t_gpointer *gp)
@@ -926,7 +926,7 @@ static void getsize_pointer(t_getsize *x, t_gpointer *gp)
     else w = gp->gp_un.gp_scalar->sc_vec;
     
     array = *(t_array **)(((char *)w) + onset);
-    outlet_float(x->x_obj.ob_outlet, (t_float)(array->a_n));
+    outlet_float(x->x_obj.te_outlet, (t_float)(array->a_n));
 }
 
 static void getsize_setup(void)
@@ -1225,13 +1225,13 @@ static void append_float(t_append *x, t_float f)
     
     if (oldsc)
     {
-        sc->sc_gobj.g_next = oldsc->sc_gobj.g_next;
-        oldsc->sc_gobj.g_next = &sc->sc_gobj;
+        sc->sc_g.g_next = oldsc->sc_g.g_next;
+        oldsc->sc_g.g_next = &sc->sc_g;
     }
     else
     {
-        sc->sc_gobj.g_next = glist->gl_list;
-        glist->gl_list = &sc->sc_gobj;
+        sc->sc_g.g_next = glist->gl_list;
+        glist->gl_list = &sc->sc_g;
     }
 
     gp->gp_un.gp_scalar = sc;
@@ -1242,11 +1242,11 @@ static void append_float(t_append *x, t_float f)
     }
  
     if (glist_isvisible(glist_getcanvas(glist)))
-        gobj_vis(&sc->sc_gobj, glist, 1);
+        gobj_vis(&sc->sc_g, glist, 1);
     /*  scalar_redraw(sc, glist);  ... have to do 'vis' instead here because
     redraw assumes we're already visible??? ... */
 
-    outlet_pointer(x->x_obj.ob_outlet, gp);
+    outlet_pointer(x->x_obj.te_outlet, gp);
 }
 
 static void append_free(t_append *x)

@@ -32,7 +32,7 @@ static void *midiin_new( void)
     t_midiin *x = (t_midiin *)pd_new(midiin_class);
     x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
     x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.ob_pd, pd_this->pd_midiin_sym);
+    pd_bind(&x->x_obj.te_g.g_pd, pd_this->pd_midiin_sym);
     return (x);
 }
 
@@ -44,7 +44,7 @@ static void midiin_list(t_midiin *x, t_symbol *s, int ac, t_atom *av)
 
 static void midiin_free(t_midiin *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, pd_this->pd_midiin_sym);
+    pd_unbind(&x->x_obj.te_g.g_pd, pd_this->pd_midiin_sym);
 }
 
 static void *sysexin_new( void)
@@ -52,13 +52,13 @@ static void *sysexin_new( void)
     t_midiin *x = (t_midiin *)pd_new(sysexin_class);
     x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
     x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.ob_pd, pd_this->pd_sysexin_sym);
+    pd_bind(&x->x_obj.te_g.g_pd, pd_this->pd_sysexin_sym);
     return (x);
 }
 
 static void sysexin_free(t_midiin *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, pd_this->pd_sysexin_sym);
+    pd_unbind(&x->x_obj.te_g.g_pd, pd_this->pd_sysexin_sym);
 }
 
 static void midiin_setup(void)
@@ -118,7 +118,7 @@ static void *notein_new(t_floatarg f)
     x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
     x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
     if (f == 0) x->x_outlet3 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.ob_pd, pd_this->pd_notein_sym);
+    pd_bind(&x->x_obj.te_g.g_pd, pd_this->pd_notein_sym);
     return (x);
 }
 
@@ -143,7 +143,7 @@ static void notein_list(t_notein *x, t_symbol *s, int argc, t_atom *argv)
 
 static void notein_free(t_notein *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, pd_this->pd_notein_sym);
+    pd_unbind(&x->x_obj.te_g.g_pd, pd_this->pd_notein_sym);
 }
 
 static void notein_setup(void)
@@ -195,7 +195,7 @@ static void *ctlin_new(t_symbol *s, int argc, t_atom *argv)
         if (x->x_ctlno < 0) x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
         x->x_outlet3 = outlet_new(&x->x_obj, &s_float);
     }
-    pd_bind(&x->x_obj.ob_pd, pd_this->pd_ctlin_sym);
+    pd_bind(&x->x_obj.te_g.g_pd, pd_this->pd_ctlin_sym);
     return (x);
 }
 
@@ -213,7 +213,7 @@ static void ctlin_list(t_ctlin *x, t_symbol *s, int argc, t_atom *argv)
 
 static void ctlin_free(t_ctlin *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, pd_this->pd_ctlin_sym);
+    pd_unbind(&x->x_obj.te_g.g_pd, pd_this->pd_ctlin_sym);
 }
 
 static void ctlin_setup(void)
@@ -255,7 +255,7 @@ static void *pgmin_new(t_floatarg f)
     x->x_channel = f;
     x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
     if (f == 0) x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.ob_pd, pd_this->pd_pgmin_sym);
+    pd_bind(&x->x_obj.te_g.g_pd, pd_this->pd_pgmin_sym);
     return (x);
 }
 
@@ -277,7 +277,7 @@ static void pgmin_list(t_pgmin *x, t_symbol *s, int argc, t_atom *argv)
 
 static void pgmin_free(t_pgmin *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, pd_this->pd_pgmin_sym);
+    pd_unbind(&x->x_obj.te_g.g_pd, pd_this->pd_pgmin_sym);
 }
 
 static void pgmin_setup(void)
@@ -318,7 +318,7 @@ static void *bendin_new(t_floatarg f)
     x->x_channel = f;
     x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
     if (f == 0) x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.ob_pd, pd_this->pd_bendin_sym);
+    pd_bind(&x->x_obj.te_g.g_pd, pd_this->pd_bendin_sym);
     return (x);
 }
 
@@ -340,7 +340,7 @@ static void bendin_list(t_bendin *x, t_symbol *s, int argc, t_atom *argv)
 
 static void bendin_free(t_bendin *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, pd_this->pd_bendin_sym);
+    pd_unbind(&x->x_obj.te_g.g_pd, pd_this->pd_bendin_sym);
 }
 
 static void bendin_setup(void)
@@ -380,7 +380,7 @@ static void *touchin_new(t_floatarg f)
     x->x_channel = f;
     x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
     if (f == 0) x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.ob_pd, pd_this->pd_touchin_sym);
+    pd_bind(&x->x_obj.te_g.g_pd, pd_this->pd_touchin_sym);
     return (x);
 }
 
@@ -402,7 +402,7 @@ static void touchin_list(t_touchin *x, t_symbol *s, int argc, t_atom *argv)
 
 static void touchin_free(t_touchin *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, pd_this->pd_touchin_sym);
+    pd_unbind(&x->x_obj.te_g.g_pd, pd_this->pd_touchin_sym);
 }
 
 static void touchin_setup(void)
@@ -445,7 +445,7 @@ static void *polytouchin_new(t_floatarg f)
     x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
     x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
     if (f == 0) x->x_outlet3 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.ob_pd, pd_this->pd_polytouchin_sym);
+    pd_bind(&x->x_obj.te_g.g_pd, pd_this->pd_polytouchin_sym);
     return (x);
 }
 
@@ -471,7 +471,7 @@ static void polytouchin_list(t_polytouchin *x, t_symbol *s, int argc,
 
 static void polytouchin_free(t_polytouchin *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, pd_this->pd_polytouchin_sym);
+    pd_unbind(&x->x_obj.te_g.g_pd, pd_this->pd_polytouchin_sym);
 }
 
 static void polytouchin_setup(void)
@@ -511,7 +511,7 @@ static void *midiclkin_new(t_floatarg f)
     t_midiclkin *x = (t_midiclkin *)pd_new(midiclkin_class);
     x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
     x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.ob_pd, pd_this->pd_midiclkin_sym);
+    pd_bind(&x->x_obj.te_g.g_pd, pd_this->pd_midiclkin_sym);
     return (x);
 }
 
@@ -525,7 +525,7 @@ static void midiclkin_list(t_midiclkin *x, t_symbol *s, int argc, t_atom *argv)
 
 static void midiclkin_free(t_midiclkin *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, pd_this->pd_midiclkin_sym);
+    pd_unbind(&x->x_obj.te_g.g_pd, pd_this->pd_midiclkin_sym);
 }
 
 static void midiclkin_setup(void)
@@ -579,7 +579,7 @@ static void *midirealtimein_new( void)
     t_midirealtimein *x = (t_midirealtimein *)pd_new(midirealtimein_class);
     x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
     x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
-    pd_bind(&x->x_obj.ob_pd, pd_this->pd_midirealtimein_sym);
+    pd_bind(&x->x_obj.te_g.g_pd, pd_this->pd_midirealtimein_sym);
     return (x);
 }
 
@@ -595,7 +595,7 @@ static void midirealtimein_list(t_midirealtimein *x, t_symbol *s,
 
 static void midirealtimein_free(t_midirealtimein *x)
 {
-    pd_unbind(&x->x_obj.ob_pd, pd_this->pd_midirealtimein_sym);
+    pd_unbind(&x->x_obj.te_g.g_pd, pd_this->pd_midirealtimein_sym);
 }
 
 static void midirealtimein_setup(void)
@@ -1087,7 +1087,7 @@ static void poly_float(t_poly *x, t_float f)
         {
             outlet_float(x->x_velout, x->x_vel);
             outlet_float(x->x_pitchout, firstoff->v_pitch = f);
-            outlet_float(x->x_obj.ob_outlet, offindex+1);
+            outlet_float(x->x_obj.te_outlet, offindex+1);
             firstoff->v_used = 1;
             firstoff->v_serial = x->x_serial++;
         }
@@ -1096,10 +1096,10 @@ static void poly_float(t_poly *x, t_float f)
         {
             outlet_float(x->x_velout, 0);
             outlet_float(x->x_pitchout, firston->v_pitch);
-            outlet_float(x->x_obj.ob_outlet, onindex+1);
+            outlet_float(x->x_obj.te_outlet, onindex+1);
             outlet_float(x->x_velout, x->x_vel);
             outlet_float(x->x_pitchout, firston->v_pitch = f);
-            outlet_float(x->x_obj.ob_outlet, onindex+1);
+            outlet_float(x->x_obj.te_outlet, onindex+1);
             firston->v_serial = x->x_serial++;
         }
     }
@@ -1115,7 +1115,7 @@ static void poly_float(t_poly *x, t_float f)
             firston->v_serial = x->x_serial++;
             outlet_float(x->x_velout, 0);
             outlet_float(x->x_pitchout, firston->v_pitch);
-            outlet_float(x->x_obj.ob_outlet, onindex+1);
+            outlet_float(x->x_obj.te_outlet, onindex+1);
         }
     }
 }
@@ -1129,7 +1129,7 @@ static void poly_stop(t_poly *x)
     {
         outlet_float(x->x_velout, 0L);
         outlet_float(x->x_pitchout, v->v_pitch);
-        outlet_float(x->x_obj.ob_outlet, i+1);
+        outlet_float(x->x_obj.te_outlet, i+1);
         v->v_used = 0;
         v->v_serial = x->x_serial++;
     }
@@ -1225,7 +1225,7 @@ static void bag_flush(t_bag *x)
     t_bagelem *bagelem;
     while (bagelem = x->x_first)
     {
-        outlet_float(x->x_obj.ob_outlet, bagelem->e_value);
+        outlet_float(x->x_obj.te_outlet, bagelem->e_value);
         x->x_first = bagelem->e_next;
         freebytes(bagelem, sizeof(*bagelem));
     }

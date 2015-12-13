@@ -78,7 +78,7 @@ static void delay_ft1(t_delay *x, t_floatarg g)
 
 static void delay_tick(t_delay *x)
 {
-    outlet_bang(x->x_obj.ob_outlet);
+    outlet_bang(x->x_obj.te_outlet);
 }
 
 static void delay_bang(t_delay *x)
@@ -116,7 +116,7 @@ static void *delay_new(t_symbol *unitname, t_floatarg f, t_floatarg tempo)
     delay_ft1(x, f);
     x->x_clock = clock_new(x, (t_method)delay_tick);
     outlet_new(&x->x_obj, gensym("bang"));
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, gensym("float"), gensym("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("float"), gensym("ft1"));
     if (tempo != 0)
         delay_tempo(x, unitname, tempo);
     return (x);
@@ -159,7 +159,7 @@ static void metro_ft1(t_metro *x, t_floatarg g)
 static void metro_tick(t_metro *x)
 {
     x->x_hit = 0;
-    outlet_bang(x->x_obj.ob_outlet);
+    outlet_bang(x->x_obj.te_outlet);
     if (!x->x_hit) clock_delay(x->x_clock, x->x_deltime);
 }
 
@@ -200,7 +200,7 @@ static void *metro_new(t_symbol *unitname, t_floatarg f, t_floatarg tempo)
     x->x_hit = 0;
     x->x_clock = clock_new(x, (t_method)metro_tick);
     outlet_new(&x->x_obj, gensym("bang"));
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, gensym("float"), gensym("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("float"), gensym("ft1"));
     if (tempo != 0)
         metro_tempo(x, unitname, tempo);
     return (x);
@@ -244,11 +244,11 @@ static void line_tick(t_line *x)
     double msectogo = - clock_gettimesince(x->x_targettime);
     if (msectogo < 1E-9)
     {
-        outlet_float(x->x_obj.ob_outlet, x->x_targetval);
+        outlet_float(x->x_obj.te_outlet, x->x_targetval);
     }
     else
     {
-        outlet_float(x->x_obj.ob_outlet,
+        outlet_float(x->x_obj.te_outlet,
             x->x_setval + x->x_1overtimediff * (timenow - x->x_prevtime)
                 * (x->x_targetval - x->x_setval));
         if (x->x_grain <= 0)
@@ -283,7 +283,7 @@ static void line_float(t_line *x, t_float f)
     {
         clock_unset(x->x_clock);
         x->x_targetval = x->x_setval = f;
-        outlet_float(x->x_obj.ob_outlet, f);
+        outlet_float(x->x_obj.te_outlet, f);
     }
     x->x_gotinlet = 0;
 }
@@ -321,7 +321,7 @@ static void *line_new(t_floatarg f, t_floatarg grain)
     x->x_targettime = x->x_prevtime = clock_getsystime();
     x->x_grain = grain;
     outlet_new(&x->x_obj, gensym("float"));
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, gensym("float"), gensym("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("float"), gensym("ft1"));
     floatinlet_new(&x->x_obj, &x->x_grain);
     return (x);
 }
@@ -359,7 +359,7 @@ static void timer_bang(t_timer *x)
 
 static void timer_bang2(t_timer *x)
 {
-    outlet_float(x->x_obj.ob_outlet,
+    outlet_float(x->x_obj.te_outlet,
         clock_gettimesincewithunits(x->x_settime, x->x_unit, x->x_samps)
             + x->x_moreelapsed);
 }
@@ -379,7 +379,7 @@ static void *timer_new(t_symbol *unitname, t_floatarg tempo)
     x->x_samps = 0;
     timer_bang(x);
     outlet_new(&x->x_obj, gensym("float"));
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, gensym("bang"), gensym("bang2"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("bang"), gensym("bang2"));
     if (tempo != 0)
         timer_tempo(x, unitname, tempo);
     return (x);
@@ -461,7 +461,7 @@ static void *pipe_new(t_symbol *s, int argc, t_atom *argv)
         if (ap->a_type == A_SYMBOL && *ap->a_w.w_symbol->s_name == 'p')
             nptr++;
 
-    gp = x->x_gp = (t_gpointer *)t_getbytes(nptr * sizeof (*gp));
+    gp = x->x_gp = (t_gpointer *)getbytes(nptr * sizeof (*gp));
     x->x_nptr = nptr;
 
     for (i = 0, vp = vec, ap = argv; i < argc; i++, ap++, vp++)

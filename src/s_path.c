@@ -218,8 +218,8 @@ void namelist_free(t_namelist *listwas)
     for (nl = listwas; nl; nl = nl2)
     {
         nl2 = nl->nl_next;
-        t_freebytes(nl->nl_string, strlen(nl->nl_string) + 1);
-        t_freebytes(nl, sizeof(*nl));
+        freebytes(nl->nl_string, strlen(nl->nl_string) + 1);
+        freebytes(nl, sizeof(*nl));
     }
 }
 

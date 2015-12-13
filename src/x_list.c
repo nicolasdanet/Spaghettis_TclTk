@@ -221,13 +221,13 @@ static void list_append_list(t_list_append *x, t_symbol *s,
         t_alist y;
         alist_clone(&x->x_alist, &y);
         alist_toatoms(&y, outv+argc);
-        outlet_list(x->x_obj.ob_outlet, &s_list, outc, outv);
+        outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
         alist_clear(&y);
     }
     else
     {
         alist_toatoms(&x->x_alist, outv+argc);
-        outlet_list(x->x_obj.ob_outlet, &s_list, outc, outv);
+        outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
     }
     ATOMS_FREEA(outv, outc);
 }
@@ -245,13 +245,13 @@ static void list_append_anything(t_list_append *x, t_symbol *s,
         t_alist y;
         alist_clone(&x->x_alist, &y);
         alist_toatoms(&y, outv + 1 + argc);
-        outlet_list(x->x_obj.ob_outlet, &s_list, outc, outv);
+        outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
         alist_clear(&y);
     }
     else
     {
         alist_toatoms(&x->x_alist, outv + 1 + argc);
-        outlet_list(x->x_obj.ob_outlet, &s_list, outc, outv);
+        outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
     }
     ATOMS_FREEA(outv, outc);
 }
@@ -303,13 +303,13 @@ static void list_prepend_list(t_list_prepend *x, t_symbol *s,
         t_alist y;
         alist_clone(&x->x_alist, &y);
         alist_toatoms(&y, outv);
-        outlet_list(x->x_obj.ob_outlet, &s_list, outc, outv);
+        outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
         alist_clear(&y);
     }
     else
     {
         alist_toatoms(&x->x_alist, outv);
-        outlet_list(x->x_obj.ob_outlet, &s_list, outc, outv);
+        outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
     }
     ATOMS_FREEA(outv, outc);
 }
@@ -329,13 +329,13 @@ static void list_prepend_anything(t_list_prepend *x, t_symbol *s,
         t_alist y;
         alist_clone(&x->x_alist, &y);
         alist_toatoms(&y, outv);
-        outlet_list(x->x_obj.ob_outlet, &s_list, outc, outv);
+        outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
         alist_clear(&y);
     }
     else
     {
         alist_toatoms(&x->x_alist, outv);
-        outlet_list(x->x_obj.ob_outlet, &s_list, outc, outv);
+        outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
     }
     ATOMS_FREEA(outv, outc);
 }
@@ -434,15 +434,15 @@ static void list_trim_list(t_list_trim *x, t_symbol *s,
     int argc, t_atom *argv)
 {
     if (argc < 1 || argv[0].a_type != A_SYMBOL)
-        outlet_list(x->x_obj.ob_outlet, &s_list, argc, argv);
-    else outlet_anything(x->x_obj.ob_outlet, argv[0].a_w.w_symbol,
+        outlet_list(x->x_obj.te_outlet, &s_list, argc, argv);
+    else outlet_anything(x->x_obj.te_outlet, argv[0].a_w.w_symbol,
         argc-1, argv+1);
 }
 
 static void list_trim_anything(t_list_trim *x, t_symbol *s,
     int argc, t_atom *argv)
 {
-    outlet_anything(x->x_obj.ob_outlet, s, argc, argv);
+    outlet_anything(x->x_obj.te_outlet, s, argc, argv);
 }
 
 static void list_trim_setup(void)
@@ -474,13 +474,13 @@ static void *list_length_new( void)
 static void list_length_list(t_list_length *x, t_symbol *s,
     int argc, t_atom *argv)
 {
-    outlet_float(x->x_obj.ob_outlet, (t_float)argc);
+    outlet_float(x->x_obj.te_outlet, (t_float)argc);
 }
 
 static void list_length_anything(t_list_length *x, t_symbol *s,
     int argc, t_atom *argv)
 {
-    outlet_float(x->x_obj.ob_outlet, (t_float)argc+1);
+    outlet_float(x->x_obj.te_outlet, (t_float)argc+1);
 }
 
 static void list_length_setup(void)
@@ -516,7 +516,7 @@ static void list_fromsymbol_symbol(t_list_fromsymbol *x, t_symbol *s)
     ATOMS_ALLOCA(outv, outc);
     for (n = 0; n < outc; n++)
         SETFLOAT(outv + n, (unsigned char)s->s_name[n]);
-    outlet_list(x->x_obj.ob_outlet, &s_list, outc, outv);
+    outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
     ATOMS_FREEA(outv, outc);
 }
 
@@ -556,7 +556,7 @@ static void list_tosymbol_list(t_list_tosymbol *x, t_symbol *s,
     for (i = 0; i < argc; i++)
         str[i] = (char)atom_getfloatarg(i, argc, argv);
     str[argc] = 0;
-    outlet_symbol(x->x_obj.ob_outlet, gensym(str));
+    outlet_symbol(x->x_obj.te_outlet, gensym(str));
 #if HAVE_ALLOCA
 #else
     freebytes(str, argc+1);

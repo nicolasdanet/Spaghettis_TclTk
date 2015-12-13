@@ -251,7 +251,7 @@ t_outconnect *linetraverser_next(t_linetraverser *t)
             t_gobj *y;
             t_object *ob = 0;
             if (!t->tr_ob) y = t->tr_x->gl_list;
-            else y = t->tr_ob->ob_g.g_next;
+            else y = t->tr_ob->te_g.g_next;
             for (; y; y = y->g_next)
                 if (ob = pd_checkobject(&y->g_pd)) break;
             if (!ob) return (0);
@@ -275,7 +275,7 @@ t_outconnect *linetraverser_next(t_linetraverser *t)
     {
         int inplus = (t->tr_nin == 1 ? 1 : t->tr_nin - 1);
         int outplus = (t->tr_nout == 1 ? 1 : t->tr_nout - 1);
-        gobj_getrect(&t->tr_ob2->ob_g, t->tr_x,
+        gobj_getrect(&t->tr_ob2->te_g, t->tr_x,
             &t->tr_x21, &t->tr_y21, &t->tr_x22, &t->tr_y22);
         t->tr_lx1 = t->tr_x11 +
             ((t->tr_x12 - t->tr_x11 - IOWIDTH) * t->tr_outno) /
@@ -310,8 +310,8 @@ void glist_init(t_glist *x)
     memset(((char *)x) + sizeof(x->gl_pd), 0, sizeof(*x) - sizeof(x->gl_pd));
     x->gl_stub = gstub_new(x, 0);
     x->gl_valid = ++glist_valid;
-    x->gl_xlabel = (t_symbol **)t_getbytes(0);
-    x->gl_ylabel = (t_symbol **)t_getbytes(0);
+    x->gl_xlabel = (t_symbol **)getbytes(0);
+    x->gl_ylabel = (t_symbol **)getbytes(0);
 }
 
     /* make a new glist.  It will either be a "root" canvas or else
@@ -932,8 +932,8 @@ void canvas_logerror(t_object *y)
 {
 #ifdef LATER
     canvas_vis(x, 1);
-    if (!glist_isselected(x, &y->ob_g))
-        glist_select(x, &y->ob_g);
+    if (!glist_isselected(x, &y->te_g))
+        glist_select(x, &y->te_g);
 #endif
 }
 

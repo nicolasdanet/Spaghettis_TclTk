@@ -171,7 +171,7 @@ static void my_canvas_properties(t_gobj *z, t_glist *owner)
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
             x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
             0xffffff & x->x_gui.x_bcol, -1/*no frontcolor*/, 0xffffff & x->x_gui.x_lcol);
-    gfxstub_new(&x->x_gui.x_obj.ob_pd, x, buf);
+    gfxstub_new(&x->x_gui.x_obj.te_g.g_pd, x, buf);
 }
 
 static void my_canvas_get_pos(t_my_canvas *x)
@@ -337,7 +337,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     else { x->x_gui.x_fsf.x_font_style = 0;
         strcpy(x->x_gui.x_font, sys_font); }
     if (x->x_gui.x_fsf.x_rcv_able)
-        pd_bind(&x->x_gui.x_obj.ob_pd, x->x_gui.x_rcv);
+        pd_bind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     x->x_gui.x_ldx = ldx;
     x->x_gui.x_ldy = ldy;
     if(fs < 4)
@@ -353,7 +353,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
 static void my_canvas_ff(t_my_canvas *x)
 {
     if(x->x_gui.x_fsf.x_rcv_able)
-        pd_unbind(&x->x_gui.x_obj.ob_pd, x->x_gui.x_rcv);
+        pd_unbind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     gfxstub_deleteforkey(x);
 }
 

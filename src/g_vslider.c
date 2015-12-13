@@ -295,7 +295,7 @@ static void vslider_properties(t_gobj *z, t_glist *owner)
             x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
             0xffffff & x->x_gui.x_bcol, 0xffffff & x->x_gui.x_fcol, 0xffffff & x->x_gui.x_lcol, 
             x->x_steady);
-    gfxstub_new(&x->x_gui.x_obj.ob_pd, x, buf);
+    gfxstub_new(&x->x_gui.x_obj.te_g.g_pd, x, buf);
 }
 
     /* compute numeric value (fval) from pixel location (val) and range */
@@ -317,7 +317,7 @@ static void vslider_bang(t_vslider *x)
     if (pd_compatibilitylevel < 46)
         out = vslider_getfval(x);
     else out = x->x_fval;
-    outlet_float(x->x_gui.x_obj.ob_outlet, out);
+    outlet_float(x->x_gui.x_obj.te_outlet, out);
     if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
         pd_float(x->x_gui.x_snd->s_thing, out);
 }
@@ -579,7 +579,7 @@ static void *vslider_new(t_symbol *s, int argc, t_atom *argv)
     else if(x->x_gui.x_fsf.x_font_style == 2) strcpy(x->x_gui.x_font, "times");
     else { x->x_gui.x_fsf.x_font_style = 0;
         strcpy(x->x_gui.x_font, sys_font); }
-    if(x->x_gui.x_fsf.x_rcv_able) pd_bind(&x->x_gui.x_obj.ob_pd, x->x_gui.x_rcv);
+    if(x->x_gui.x_fsf.x_rcv_able) pd_bind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     x->x_gui.x_ldx = ldx;
     x->x_gui.x_ldy = ldy;
     if(fs < 4)
@@ -598,7 +598,7 @@ static void *vslider_new(t_symbol *s, int argc, t_atom *argv)
 static void vslider_free(t_vslider *x)
 {
     if(x->x_gui.x_fsf.x_rcv_able)
-        pd_unbind(&x->x_gui.x_obj.ob_pd, x->x_gui.x_rcv);
+        pd_unbind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     gfxstub_deleteforkey(x);
 }
 

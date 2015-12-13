@@ -366,7 +366,7 @@ void sys_addpollfn(int fd, t_fdpollfn fn, void *ptr)
     int nfd = sys_nfdpoll;
     int size = nfd * sizeof(t_fdpoll);
     t_fdpoll *fp;
-    sys_fdpoll = (t_fdpoll *)t_resizebytes(sys_fdpoll, size,
+    sys_fdpoll = (t_fdpoll *)resizebytes(sys_fdpoll, size,
         size + sizeof(t_fdpoll));
     fp = sys_fdpoll + nfd;
     fp->fdp_fd = fd;
@@ -390,7 +390,7 @@ void sys_rmpollfn(int fd)
                 fp[0] = fp[1];
                 fp++;
             }
-            sys_fdpoll = (t_fdpoll *)t_resizebytes(sys_fdpoll, size,
+            sys_fdpoll = (t_fdpoll *)resizebytes(sys_fdpoll, size,
                 size - sizeof(t_fdpoll));
             sys_nfdpoll = nfd - 1;
             return;
@@ -755,7 +755,7 @@ static int sys_flushqueue(void )
             t_guiqueue *headwas = sys_guiqueuehead;
             sys_guiqueuehead = headwas->gq_next;
             (*headwas->gq_fn)(headwas->gq_client, headwas->gq_glist);
-            t_freebytes(headwas, sizeof(*headwas));
+            freebytes(headwas, sizeof(*headwas));
             if (sys_bytessincelastping >= wherestop)
                 break;
         }
@@ -804,7 +804,7 @@ void sys_queuegui(void *client, t_glist *glist, t_guicallbackfn f)
             return;
         gqnextptr = &gq->gq_next;
     }
-    gq = t_getbytes(sizeof(*gq));
+    gq = getbytes(sizeof(*gq));
     gq->gq_next = 0;
     gq->gq_client = client;
     gq->gq_glist = glist;
@@ -820,7 +820,7 @@ void sys_unqueuegui(void *client)
     {
         gq = sys_guiqueuehead;
         sys_guiqueuehead = sys_guiqueuehead->gq_next;
-        t_freebytes(gq, sizeof(*gq));
+        freebytes(gq, sizeof(*gq));
     }
     if (!sys_guiqueuehead)
         return;
@@ -828,7 +828,7 @@ void sys_unqueuegui(void *client)
         if (gq2->gq_client == client)
     {
         gq->gq_next = gq2->gq_next;
-        t_freebytes(gq2, sizeof(*gq2));
+        freebytes(gq2, sizeof(*gq2));
         break;
     }
 }
@@ -843,7 +843,7 @@ void sys_init_fdpoll(void)
     if (sys_fdpoll)
         return;
     /* create an empty FD poll list */
-    sys_fdpoll = (t_fdpoll *)t_getbytes(0);
+    sys_fdpoll = (t_fdpoll *)getbytes(0);
     sys_nfdpoll = 0;
     inbinbuf = binbuf_new();
 }

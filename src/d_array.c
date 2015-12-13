@@ -560,7 +560,7 @@ static void *tabosc4_tilde_new(t_symbol *s)
     x->x_fnpoints = 512.;
     x->x_finvnpoints = (1./512.);
     outlet_new(&x->x_obj, gensym("signal"));
-    inlet_new(&x->x_obj, &x->x_obj.ob_pd, &s_float, gensym("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, gensym("ft1"));
     x->x_f = 0;
     return (x);
 }
@@ -882,7 +882,7 @@ static void tabread_float(t_tabread *x, t_float f)
         int n = f;
         if (n < 0) n = 0;
         else if (n >= npoints) n = npoints - 1;
-        outlet_float(x->x_obj.ob_outlet, (npoints ? vec[n].w_float : 0));
+        outlet_float(x->x_obj.te_outlet, (npoints ? vec[n].w_float : 0));
     }
 }
 
@@ -929,11 +929,11 @@ static void tabread4_float(t_tabread4 *x, t_float f)
     else if (!garray_getfloatwords(a, &npoints, &vec))
         pd_error(x, "%s: bad template for tabread4", x->x_arrayname->s_name);
     else if (npoints < 4)
-        outlet_float(x->x_obj.ob_outlet, 0);
+        outlet_float(x->x_obj.te_outlet, 0);
     else if (f <= 1)
-        outlet_float(x->x_obj.ob_outlet, vec[1].w_float);
+        outlet_float(x->x_obj.te_outlet, vec[1].w_float);
     else if (f >= npoints - 2)
-        outlet_float(x->x_obj.ob_outlet, vec[npoints - 2].w_float);
+        outlet_float(x->x_obj.te_outlet, vec[npoints - 2].w_float);
     else
     {
         int n = f;
@@ -948,7 +948,7 @@ static void tabread4_float(t_tabread4 *x, t_float f)
         c = wp[1].w_float;
         d = wp[2].w_float;
         cminusb = c-b;
-        outlet_float(x->x_obj.ob_outlet, b + frac * (
+        outlet_float(x->x_obj.te_outlet, b + frac * (
             cminusb - 0.1666667f * (1.-frac) * (
                 (d - a - 3.0f * cminusb) * frac + (d + 2.0f*a - 3.0f*b))));
     }

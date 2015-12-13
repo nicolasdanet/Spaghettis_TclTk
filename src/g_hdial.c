@@ -243,7 +243,7 @@ static void hradio_save(t_gobj *z, t_binbuf *b)
     iemgui_save(&x->x_gui, srl, bflcol);
     binbuf_addv(b, "ssiisiiiisssiiiiiiif", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.x_obj.te_xpix, (int)x->x_gui.x_obj.te_ypix,
-                (pd_class(&x->x_gui.x_obj.ob_pd) == hradio_old_class ?
+                (pd_class(&x->x_gui.x_obj.te_g.g_pd) == hradio_old_class ?
                     gensym("hdl") : gensym("hradio")),
                 x->x_gui.x_w,
                 x->x_change, iem_symargstoint(&x->x_gui.x_isa), x->x_number,
@@ -262,7 +262,7 @@ static void hradio_properties(t_gobj *z, t_glist *owner)
     int hchange=-1;
 
     iemgui_properties(&x->x_gui, srl);
-    if (pd_class(&x->x_gui.x_obj.ob_pd) == hradio_old_class)
+    if (pd_class(&x->x_gui.x_obj.te_g.g_pd) == hradio_old_class)
         hchange = x->x_change;
     sprintf(buf, "::pd_iem::create %%s {Radio Button} \
             %d %d Size 0 0 empty \
@@ -282,7 +282,7 @@ static void hradio_properties(t_gobj *z, t_glist *owner)
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
             x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
             0xffffff & x->x_gui.x_bcol, 0xffffff & x->x_gui.x_fcol, 0xffffff & x->x_gui.x_lcol);
-    gfxstub_new(&x->x_gui.x_obj.ob_pd, x, buf);
+    gfxstub_new(&x->x_gui.x_obj.te_g.g_pd, x, buf);
 }
 
 static void hradio_dialog(t_hradio *x, t_symbol *s, int argc, t_atom *argv)
@@ -347,27 +347,27 @@ static void hradio_set(t_hradio *x, t_floatarg f)
 static void hradio_bang(t_hradio *x)
 {
         /* compatibility with earlier  "hdial" behavior */
-    if (pd_class(&x->x_gui.x_obj.ob_pd) == hradio_old_class)
+    if (pd_class(&x->x_gui.x_obj.te_g.g_pd) == hradio_old_class)
     {
         if((x->x_change)&&(x->x_on != x->x_on_old))
         {
             SETFLOAT(x->x_at, (t_float)x->x_on_old);
             SETFLOAT(x->x_at+1, 0.0);
-            outlet_list(x->x_gui.x_obj.ob_outlet, &s_list, 2, x->x_at);
+            outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
             if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
                 pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
         }
         x->x_on_old = x->x_on;
         SETFLOAT(x->x_at, (t_float)x->x_on);
         SETFLOAT(x->x_at+1, 1.0);
-        outlet_list(x->x_gui.x_obj.ob_outlet, &s_list, 2, x->x_at);
+        outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
         if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
             pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
     }
     else
     {
         float outval = (pd_compatibilitylevel < 46 ? x->x_on : x->x_fval);
-        outlet_float(x->x_gui.x_obj.ob_outlet, outval);
+        outlet_float(x->x_gui.x_obj.te_outlet, outval);
         if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
             pd_float(x->x_gui.x_snd->s_thing, outval);
     }
@@ -383,13 +383,13 @@ static void hradio_fout(t_hradio *x, t_floatarg f)
     if(i >= x->x_number)
         i = x->x_number-1;
 
-    if (pd_class(&x->x_gui.x_obj.ob_pd) == hradio_old_class)
+    if (pd_class(&x->x_gui.x_obj.te_g.g_pd) == hradio_old_class)
     {
         if((x->x_change)&&(i != x->x_on_old))
         {
             SETFLOAT(x->x_at, (t_float)x->x_on_old);
             SETFLOAT(x->x_at+1, 0.0);
-            outlet_list(x->x_gui.x_obj.ob_outlet, &s_list, 2, x->x_at);
+            outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
             if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
                 pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
         }
@@ -400,7 +400,7 @@ static void hradio_fout(t_hradio *x, t_floatarg f)
         x->x_on_old = x->x_on;
         SETFLOAT(x->x_at, (t_float)x->x_on);
         SETFLOAT(x->x_at+1, 1.0);
-        outlet_list(x->x_gui.x_obj.ob_outlet, &s_list, 2, x->x_at);
+        outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
         if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
             pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
     }
@@ -410,7 +410,7 @@ static void hradio_fout(t_hradio *x, t_floatarg f)
         x->x_on_old = x->x_on;
         x->x_on = i;
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);
-        outlet_float(x->x_gui.x_obj.ob_outlet, outval);
+        outlet_float(x->x_gui.x_obj.te_outlet, outval);
         if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
             pd_float(x->x_gui.x_snd->s_thing, outval);
     }
@@ -425,7 +425,7 @@ static void hradio_float(t_hradio *x, t_floatarg f)
     if(i >= x->x_number)
         i = x->x_number-1;
 
-    if (pd_class(&x->x_gui.x_obj.ob_pd) == hradio_old_class)
+    if (pd_class(&x->x_gui.x_obj.te_g.g_pd) == hradio_old_class)
     {
             /* compatibility with earlier  "vdial" behavior */
         if((x->x_change)&&(i != x->x_on_old))
@@ -434,7 +434,7 @@ static void hradio_float(t_hradio *x, t_floatarg f)
             {
                 SETFLOAT(x->x_at, (t_float)x->x_on_old);
                 SETFLOAT(x->x_at+1, 0.0);
-                outlet_list(x->x_gui.x_obj.ob_outlet, &s_list, 2, x->x_at);
+                outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
                 if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
                     pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
             }
@@ -448,7 +448,7 @@ static void hradio_float(t_hradio *x, t_floatarg f)
         {
             SETFLOAT(x->x_at, (t_float)x->x_on);
             SETFLOAT(x->x_at+1, 1.0);
-            outlet_list(x->x_gui.x_obj.ob_outlet, &s_list, 2, x->x_at);
+            outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
             if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
                 pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
         }
@@ -461,7 +461,7 @@ static void hradio_float(t_hradio *x, t_floatarg f)
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);
         if (x->x_gui.x_fsf.x_put_in2out)
         {
-            outlet_float(x->x_gui.x_obj.ob_outlet, outval);
+            outlet_float(x->x_gui.x_obj.te_outlet, outval);
             if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
                 pd_float(x->x_gui.x_snd->s_thing, outval);
         }
@@ -617,7 +617,7 @@ static void *hradio_donew(t_symbol *s, int argc, t_atom *argv, int old)
     x->x_on_old = x->x_on;
     x->x_change = (chg==0)?0:1;
     if (x->x_gui.x_fsf.x_rcv_able)
-        pd_bind(&x->x_gui.x_obj.ob_pd, x->x_gui.x_rcv);
+        pd_bind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     x->x_gui.x_ldx = ldx;
     x->x_gui.x_ldy = ldy;
     if(fs < 4)
@@ -644,7 +644,7 @@ static void *hdial_new(t_symbol *s, int argc, t_atom *argv)
 static void hradio_ff(t_hradio *x)
 {
     if(x->x_gui.x_fsf.x_rcv_able)
-        pd_unbind(&x->x_gui.x_obj.ob_pd, x->x_gui.x_rcv);
+        pd_unbind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     gfxstub_deleteforkey(x);
 }
 

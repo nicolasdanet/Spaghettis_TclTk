@@ -61,7 +61,7 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
 {
     t_template *x = (t_template *)pd_new(template_class);
     x->t_n = 0;
-    x->t_vec = (t_dataslot *)t_getbytes(0);
+    x->t_vec = (t_dataslot *)getbytes(0);
     while (argc > 0)
     {
         int newtype, oldn, newn;
@@ -96,7 +96,7 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
             goto bad;
         }
         newn = (oldn = x->t_n) + 1;
-        x->t_vec = (t_dataslot *)t_resizebytes(x->t_vec,
+        x->t_vec = (t_dataslot *)resizebytes(x->t_vec,
             oldn * sizeof(*x->t_vec), newn * sizeof(*x->t_vec));
         x->t_n = newn;
         x->t_vec[oldn].ds_type = newtype;
@@ -268,7 +268,7 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
         gpointer_init(&gp);
         x = (t_scalar *)getbytes(sizeof(t_scalar) +
             (tto->t_n - 1) * sizeof(*x->sc_vec));
-        x->sc_gobj.g_pd = scalar_class;
+        x->sc_g.g_pd = scalar_class;
         x->sc_template = tfrom->t_sym;
         gpointer_setglist(&gp, glist, x);
             /* Here we initialize to the new template, but array and list
@@ -279,26 +279,26 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
             scfrom->sc_vec, x->sc_vec);
             
             /* replace the old one with the new one in the list */
-        if (glist->gl_list == &scfrom->sc_gobj)
+        if (glist->gl_list == &scfrom->sc_g)
         {
-            glist->gl_list = &x->sc_gobj;
-            x->sc_gobj.g_next = scfrom->sc_gobj.g_next;
+            glist->gl_list = &x->sc_g;
+            x->sc_g.g_next = scfrom->sc_g.g_next;
         }
         else
         {
             t_gobj *y, *y2;
             for (y = glist->gl_list; y2 = y->g_next; y = y2)
-                if (y2 == &scfrom->sc_gobj)
+                if (y2 == &scfrom->sc_g)
             {
-                x->sc_gobj.g_next = y2->g_next;
-                y->g_next = &x->sc_gobj;
+                x->sc_g.g_next = y2->g_next;
+                y->g_next = &x->sc_g;
                 goto nobug;
             }
             bug("template_conformscalar");
         nobug: ;
         }
             /* burn the old one */
-        pd_free(&scfrom->sc_gobj.g_pd);
+        pd_free(&scfrom->sc_g.g_pd);
         scalartemplate = tto;
     }
     else
@@ -379,7 +379,7 @@ static void template_conformglist(t_template *tfrom, t_template *tto,
     {
         if (pd_class(&g->g_pd) == scalar_class)
             g = &template_conformscalar(tfrom, tto, conformaction,
-                glist, (t_scalar *)g)->sc_gobj;
+                glist, (t_scalar *)g)->sc_g;
         else if (pd_class(&g->g_pd) == canvas_class)
             template_conformglist(tfrom, tto, (t_glist *)g, conformaction);
         else if (pd_class(&g->g_pd) == garray_class)
@@ -458,7 +458,7 @@ t_canvas *template_findcanvas(t_template *template)
 void template_notify(t_template *template, t_symbol *s, int argc, t_atom *argv)
 {
     if (template->t_list)
-        outlet_anything(template->t_list->x_obj.ob_outlet, s, argc, argv);
+        outlet_anything(template->t_list->x_obj.te_outlet, s, argc, argv);
 }
 
     /* bash the first of (argv) with a pointer to a scalar, and send on
@@ -526,7 +526,7 @@ void template_free(t_template *x)
 {
     if (*x->t_sym->s_name)
         pd_unbind(&x->t_pdobj, x->t_sym);
-    t_freebytes(x->t_vec, x->t_n * sizeof(*x->t_vec));
+    freebytes(x->t_vec, x->t_n * sizeof(*x->t_vec));
 }
 
 static void template_setup(void)
@@ -1000,7 +1000,7 @@ static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
     if (argc < 0) argc = 0;
     nxy =  (argc + (argc & 1));
     x->x_npoints = (nxy>>1);
-    x->x_vec = (t_fielddesc *)t_getbytes(nxy * sizeof(t_fielddesc));
+    x->x_vec = (t_fielddesc *)getbytes(nxy * sizeof(t_fielddesc));
     for (i = 0, fd = x->x_vec; i < argc; i++, fd++, argv++)
         fielddesc_setfloatarg(fd, 1, argv);
     if (argc & 1) fielddesc_setfloat_const(fd, 0);
@@ -1296,7 +1296,7 @@ t_parentwidgetbehavior curve_widgetbehavior =
 
 static void curve_free(t_curve *x)
 {
-    t_freebytes(x->x_vec, 2 * x->x_npoints * sizeof(*x->x_vec));
+    freebytes(x->x_vec, 2 * x->x_npoints * sizeof(*x->x_vec));
 }
 
 static void curve_setup(void)
@@ -2428,7 +2428,7 @@ static void drawnumber_getbuf(t_drawnumber *x, t_word *data,
             buf[nchars+ncopy] = 0;
             if (nchars+ncopy == DRAWNUMBER_BUFSIZE-1)
                 strcpy(buf+(DRAWNUMBER_BUFSIZE-4), "...");
-            t_freebytes(buf2, size2);
+            freebytes(buf2, size2);
         }
         else
         {
