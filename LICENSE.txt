@@ -79,7 +79,7 @@ Additional terms:
     
         Copyright (c) 2006 Guenter Geiger.
 
-    tcl/pd_textwindow.tcl
+    tcl/pd_text.tcl
     
         Copyright (c) 2002-2012 krzYszcz and others.
     
