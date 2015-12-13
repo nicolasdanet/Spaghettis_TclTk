@@ -366,7 +366,7 @@ static void vradio_bang(t_vradio *x)
     }
     else
     {
-        float outval = (pd_compatibilitylevel < 46 ? x->x_on : x->x_fval);
+        float outval = (PD_COMPATIBILITY < 46 ? x->x_on : x->x_fval);
         outlet_float(x->x_gui.x_obj.te_outlet, outval);
         if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
             pd_float(x->x_gui.x_snd->s_thing, outval);
@@ -407,7 +407,7 @@ static void vradio_fout(t_vradio *x, t_floatarg f)
     }
     else
     {
-        float outval = (pd_compatibilitylevel < 46 ? i : x->x_fval);
+        float outval = (PD_COMPATIBILITY < 46 ? i : x->x_fval);
         x->x_on_old = x->x_on;
         x->x_on = i;
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);
@@ -457,7 +457,7 @@ static void vradio_float(t_vradio *x, t_floatarg f)
     }
     else
     {
-        float outval = (pd_compatibilitylevel < 46 ? i : x->x_fval);
+        float outval = (PD_COMPATIBILITY < 46 ? i : x->x_fval);
         x->x_on_old = x->x_on;
         x->x_on = i;
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);

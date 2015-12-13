@@ -9,7 +9,6 @@ t_class *glob_pdobject;
 static t_class *maxclass;
 
 int sys_perf;   /* true if we should query user on close and quit */
-int pd_compatibilitylevel = 100000;  /* e.g., 43 for pd 0.43 compatibility */
 
 /* These "glob" routines, which implement messages to Pd, are from all
 over.  Some others are prototyped in m_imp.h as well. */
@@ -44,9 +43,9 @@ static void glob_helpintro(t_pd *dummy)
 
 static void glob_compatibility(t_pd *dummy, t_floatarg level)
 {
-    int dspwas = canvas_suspend_dsp();
-    pd_compatibilitylevel = 0.5 + 100. * level;
-    canvas_resume_dsp(dspwas);
+    // int dspwas = canvas_suspend_dsp();
+    // pd_compatibilitylevel = 0.5 + 100. * level;
+    // canvas_resume_dsp(dspwas);
 }
 
 #ifdef _WIN32

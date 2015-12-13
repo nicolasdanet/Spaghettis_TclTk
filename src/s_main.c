@@ -970,15 +970,15 @@ int sys_argparse(int argc, char **argv)
             sys_noautopatch = 1;
             argc--; argv++;
         }
-        else if (!strcmp(*argv, "-compatibility") && argc > 1)
+        /*else if (!strcmp(*argv, "-compatibility") && argc > 1)
         {
             float f;
             if (sscanf(argv[1], "%f", &f) < 1)
                 goto usage;
-            pd_compatibilitylevel = 0.5 + 100. * f; /* e.g., 2.44 --> 244 */
+            pd_compatibilitylevel = 0.5 + 100. * f;
             argv += 2;
             argc -= 2;
-        }
+        }*/
 #ifdef HAVE_UNISTD_H
         else if (!strcmp(*argv, "-rt") || !strcmp(*argv, "-realtime"))
         {

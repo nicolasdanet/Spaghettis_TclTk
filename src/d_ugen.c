@@ -16,6 +16,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
+#define MAXLOGSIG           32
+
 extern t_class *vinlet_class, *voutlet_class, *canvas_class;
 t_float *obj_findsignalscalar(t_object *x, int m);
 static int ugen_loud;

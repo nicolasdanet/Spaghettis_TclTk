@@ -10,6 +10,8 @@
 
 #define UNITBIT32 1572864.  /* 3*2^19; bit 32 has place value 1 */
 
+#define LOGCOSTABSIZE       9
+#define COSTABSIZE          (1 << LOGCOSTABSIZE)
 
 #if defined(__FreeBSD__) || defined(__APPLE__) || defined(__FreeBSD_kernel__) \
     || defined(__OpenBSD__)

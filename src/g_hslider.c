@@ -333,7 +333,7 @@ static void hslider_bang(t_hslider *x)
 {
     double out;
 
-    if (pd_compatibilitylevel < 46)
+    if (PD_COMPATIBILITY < 46)
         out = hslider_getfval(x);
     else out = x->x_fval;
     outlet_float(x->x_gui.x_obj.te_outlet, out);
