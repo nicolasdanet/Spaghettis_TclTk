@@ -268,8 +268,12 @@ typedef void *(*t_newmethod)(void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-EXTERN t_pd     pd_objectmaker;
-EXTERN t_pd     pd_canvasmaker;
+EXTERN t_pd pd_objectmaker;
+EXTERN t_pd pd_canvasmaker;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 EXTERN t_symbol s_pointer;
 EXTERN t_symbol s_float;
 EXTERN t_symbol s_symbol;
@@ -286,9 +290,9 @@ EXTERN t_symbol s_;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-EXTERN t_class  *garray_class;
-EXTERN t_class  *scalar_class;
-EXTERN t_class  *glob_pdobject;
+EXTERN t_class *garray_class;
+EXTERN t_class *scalar_class;
+EXTERN t_class *glob_pdobject;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -322,12 +326,6 @@ typedef void (*t_gotfn5)(void *x, void *arg1, void *arg2, void *arg3, void *arg4
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-EXTERN void obj_list        (t_object *x, t_symbol *s, int argc, t_atom *argv);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 EXTERN void *getbytes       (size_t nbytes);
 EXTERN void *getzbytes      (size_t nbytes);
@@ -339,13 +337,13 @@ EXTERN void freebytes       (void *x, size_t nbytes);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define SETSEMI(atom)                       ((atom)->a_type = A_SEMI, (atom)->a_w.w_index = 0)
-#define SETCOMMA(atom)                      ((atom)->a_type = A_COMMA, (atom)->a_w.w_index = 0)
-#define SETPOINTER(atom, gp)                ((atom)->a_type = A_POINTER, (atom)->a_w.w_gpointer = (gp))
-#define SETFLOAT(atom, f)                   ((atom)->a_type = A_FLOAT, (atom)->a_w.w_float = (f))
-#define SETSYMBOL(atom, s)                  ((atom)->a_type = A_SYMBOL, (atom)->a_w.w_symbol = (s))
-#define SETDOLLAR(atom, n)                  ((atom)->a_type = A_DOLLAR, (atom)->a_w.w_index = (n))
-#define SETDOLLSYM(atom, s)                 ((atom)->a_type = A_DOLLSYM, (atom)->a_w.w_symbol= (s))
+#define SETSEMI(atom)               ((atom)->a_type = A_SEMI, (atom)->a_w.w_index = 0)
+#define SETCOMMA(atom)              ((atom)->a_type = A_COMMA, (atom)->a_w.w_index = 0)
+#define SETPOINTER(atom, gp)        ((atom)->a_type = A_POINTER, (atom)->a_w.w_gpointer = (gp))
+#define SETFLOAT(atom, f)           ((atom)->a_type = A_FLOAT, (atom)->a_w.w_float = (f))
+#define SETSYMBOL(atom, s)          ((atom)->a_type = A_SYMBOL, (atom)->a_w.w_symbol = (s))
+#define SETDOLLAR(atom, n)          ((atom)->a_type = A_DOLLAR, (atom)->a_w.w_index = (n))
+#define SETDOLLSYM(atom, s)         ((atom)->a_type = A_DOLLSYM, (atom)->a_w.w_symbol= (s))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -476,6 +474,8 @@ EXTERN void     outlet_list                 (t_outlet *x, t_symbol *s, int argc,
 EXTERN void     outlet_anything             (t_outlet *x, t_symbol *s, int argc, t_atom *argv);
 EXTERN void     outlet_free                 (t_outlet *x);
 
+EXTERN void     obj_list                    (t_object *x, t_symbol *s, int argc, t_atom *argv);
+
 EXTERN t_symbol *outlet_getsymbol           (t_outlet *x);
 EXTERN t_object *pd_checkobject             (t_pd *x);
 
@@ -565,7 +565,6 @@ EXTERN void     class_set_extern_dir        (t_symbol *s);
 EXTERN void     class_setsavefn             (t_class *c, t_savefn f);
 EXTERN t_savefn class_getsavefn             (t_class *c);
 EXTERN void     obj_saveformat              (t_object *x, t_binbuf *bb);
-
 
 EXTERN void           class_setpropertiesfn (t_class *c, t_propertiesfn f);
 EXTERN t_propertiesfn class_getpropertiesfn (t_class *c);
