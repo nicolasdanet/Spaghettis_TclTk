@@ -126,68 +126,6 @@ typedef float   t_floatarg;             /* A float type parameter. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _gstub {
-    union {
-        struct _glist *gs_glist;
-        struct _array *gs_array;
-    } gs_un;
-    int gs_type;
-    int gs_refcount;
-    } t_gstub;
-
-typedef struct _gpointer {
-    union {   
-        struct _scalar  *gp_scalar;
-        union word      *gp_w;
-    } gp_un;
-    int     gp_valid;
-    t_gstub *gp_stub;
-    } t_gpointer;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-typedef struct _symbol {
-    char            *s_name;
-    struct _class   **s_thing;
-    struct _symbol  *s_next;
-    } t_symbol;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-typedef union word {
-    t_float         w_float;
-    int             w_index;
-    t_symbol        *w_symbol;
-    t_gpointer      *w_gpointer;
-    struct _array   *w_array;
-    struct _binbuf  *w_binbuf;
-    } t_word;
-
-typedef enum {
-    A_NULL,
-    A_FLOAT,
-    A_SYMBOL,
-    A_POINTER,
-    A_SEMI,
-    A_COMMA,
-    A_DEFFLOAT,
-    A_DEFSYM,
-    A_DOLLAR, 
-    A_DOLLSYM,
-    A_GIMME,
-    A_CANT
-    } t_atomtype;
-
-typedef struct _atom {
-    t_atomtype a_type;
-    union word a_w;
-    } t_atom;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 EXTERN_STRUCT _array;
 EXTERN_STRUCT _class;
 EXTERN_STRUCT _outlet;
@@ -218,15 +156,64 @@ EXTERN_STRUCT _pdinstance;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-EXTERN int      canvas_dspstate;
+typedef struct _gstub {
+    union {
+        t_glist *gs_glist;
+        t_array *gs_array;
+    } gs_un;
+    int gs_type;
+    int gs_refcount;
+    } t_gstub;
 
-EXTERN float    *cos_table;
+typedef struct _gpointer {
+    union {   
+        struct _scalar  *gp_scalar;
+        union word      *gp_w;
+    } gp_un;
+    int     gp_valid;
+    t_gstub *gp_stub;
+    } t_gpointer;
 
-EXTERN int      (*sys_idlehook)(void);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-EXTERN t_class  *garray_class;
-EXTERN t_class  *scalar_class;
-EXTERN t_class  *glob_pdobject;
+typedef struct _symbol {
+    char            *s_name;
+    t_class         **s_thing;
+    struct _symbol  *s_next;
+    } t_symbol;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef union word {
+    t_float     w_float;
+    int         w_index;
+    t_symbol    *w_symbol;
+    t_gpointer  *w_gpointer;
+    t_array     *w_array;
+    t_binbuf    *w_binbuf;
+    } t_word;
+
+typedef enum {
+    A_NULL,
+    A_FLOAT,
+    A_SYMBOL,
+    A_POINTER,
+    A_SEMI,
+    A_COMMA,
+    A_DEFFLOAT,
+    A_DEFSYM,
+    A_DOLLAR, 
+    A_DOLLSYM,
+    A_GIMME,
+    A_CANT
+    } t_atomtype;
+
+typedef struct _atom {
+    t_atomtype a_type;
+    union word a_w;
+    } t_atom;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -295,6 +282,17 @@ EXTERN t_symbol s__X;
 EXTERN t_symbol s_x;
 EXTERN t_symbol s_y;
 EXTERN t_symbol s_;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+EXTERN float    *cos_table;
+
+EXTERN int      (*sys_idlehook)(void);
+
+EXTERN t_class  *garray_class;
+EXTERN t_class  *scalar_class;
+EXTERN t_class  *glob_pdobject;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

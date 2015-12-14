@@ -1075,8 +1075,6 @@ static void canvas_dsp(t_canvas *x, t_signal **sp)
     canvas_dodsp(x, 0, sp);
 }
 
-int canvas_dspstate;
-
     /* this routine starts DSP for all root canvases. */
 static void canvas_start_dsp(void)
 {
@@ -1088,7 +1086,7 @@ static void canvas_start_dsp(void)
     for (x = pd_getcanvaslist(); x; x = x->gl_next)
         canvas_dodsp(x, 1, 0);
     
-    canvas_dspstate = pd_this->pd_dspstate = 1;
+    pd_this->pd_dspstate = 1;
 }
 
 static void canvas_stop_dsp(void)
@@ -1097,7 +1095,7 @@ static void canvas_stop_dsp(void)
     {
         ugen_stop();
         sys_gui("set ::var(isDsp) 0\n");
-        canvas_dspstate = pd_this->pd_dspstate = 0;
+        pd_this->pd_dspstate = 0;
     }
 }
 
