@@ -551,11 +551,10 @@ int iemgui_dialog(t_iemgui *iemgui, t_symbol **srl, int argc, t_atom *argv)
     int init = (int)atom_getintarg(5, argc, argv);
     int ldx = (int)atom_getintarg(10, argc, argv);
     int ldy = (int)atom_getintarg(11, argc, argv);
-    int f = (int)atom_getintarg(12, argc, argv);
-    int fs = (int)atom_getintarg(13, argc, argv);
-    int bcol = (int)atom_getintarg(14, argc, argv);
-    int fcol = (int)atom_getintarg(15, argc, argv);
-    int lcol = (int)atom_getintarg(16, argc, argv);
+    int fs = (int)atom_getintarg(12, argc, argv);
+    int bcol = (int)atom_getintarg(13, argc, argv);
+    int fcol = (int)atom_getintarg(14, argc, argv);
+    int lcol = (int)atom_getintarg(15, argc, argv);
     int sndable=1, rcvable=1, oldsndrcvable=0;
 
     if(iemgui->x_fsf.x_rcv_able)
@@ -613,14 +612,6 @@ int iemgui_dialog(t_iemgui *iemgui, t_symbol **srl, int argc, t_atom *argv)
     iemgui->x_lab = srl[2];
     iemgui->x_ldx = ldx;
     iemgui->x_ldy = ldy;
-    if(f == 1) strcpy(iemgui->x_font, "helvetica");
-    else if(f == 2) strcpy(iemgui->x_font, "times");
-    else
-    {
-        f = 0;
-        strcpy(iemgui->x_font, "$::var(fontFamily)");
-    }
-    iemgui->x_fsf.x_font_style = f;
     if(fs < 4)
         fs = 4;
     iemgui->x_fontsize = fs;

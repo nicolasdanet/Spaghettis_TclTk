@@ -41,7 +41,6 @@ variable  iemReceive
 variable  iemName
 variable  iemNameDeltaX
 variable  iemNameDeltaY
-variable  iemNameFontFamily
 variable  iemNameFontSize
 variable  iemBackgroundColor
 variable  iemFrontColor
@@ -67,7 +66,6 @@ array set iemReceive            {}
 array set iemName               {}
 array set iemNameDeltaX         {}
 array set iemNameDeltaY         {}
-array set iemNameFontFamily     {}
 array set iemNameFontSize       {}
 array set iemBackgroundColor    {}
 array set iemFrontColor         {}
@@ -85,7 +83,7 @@ proc create {top type
              extra extraMaximum extraLabel
              send receive
              name nameDeltaX nameDeltaY 
-             nameFontFamily nameFontSize
+             nameFontSize
              backgroundColor frontColor nameColor
              steady} {
     
@@ -108,7 +106,6 @@ proc create {top type
     variable iemName
     variable iemNameDeltaX
     variable iemNameDeltaY
-    variable iemNameFontFamily
     variable iemNameFontSize
     variable iemBackgroundColor
     variable iemFrontColor
@@ -134,7 +131,6 @@ proc create {top type
     set iemName($top)               [::rauteToDollar [::parseEmpty $name]]
     set iemNameDeltaX($top)         $nameDeltaX
     set iemNameDeltaY($top)         $nameDeltaY
-    set iemNameFontFamily($top)     $nameFontFamily
     set iemNameFontSize($top)       $nameFontSize
     set iemBackgroundColor($top)    $backgroundColor
     set iemFrontColor($top)         $frontColor
@@ -150,8 +146,6 @@ proc create {top type
     set iemNameDeltaY(${top}.old)   $nameDeltaY
     set iemNameFontSize(${top}.old) $nameFontSize
 
-    set fonts  [list "$::var(fontFamily)" "Helvetica" "Times"]
-        
     toplevel $top -class PdDialog
     wm title $top [_ $type]
     wm group $top .
@@ -347,11 +341,6 @@ proc create {top type
                                                             -textvariable ::pd_iem::iemNameFontSize($top) \
                                                             -width $::width(small)
     
-    ttk::label $top.f.label.nameFontFamilyLabel         {*}[::styleLabel] \
-                                                            -text [_ "Font Family"]
-    ::createMenuByIndex $top.f.label.nameFontFamily     $fonts ::pd_iem::iemNameFontFamily($top) \
-                                                            -width [::measure $fonts]
-
     set row -1
     
     grid $top.f.label.nameLabel                         -row [incr row] -column 0 -sticky ew
@@ -362,8 +351,6 @@ proc create {top type
     grid $top.f.label.nameDeltaY                        -row $row       -column 2 -sticky ew
     grid $top.f.label.nameFontSizeLabel                 -row [incr row] -column 0 -sticky ew
     grid $top.f.label.nameFontSize                      -row $row       -column 2 -sticky ew
-    grid $top.f.label.nameFontFamilyLabel               -row [incr row] -column 0 -sticky ew
-    grid $top.f.label.nameFontFamily                    -row $row       -column 1 -sticky ew -columnspan 2
 
     bind $top.f.label.name          <Return>            { ::nextEntry %W }
     bind $top.f.label.nameDeltaX    <Return>            { ::nextEntry %W }
@@ -431,7 +418,6 @@ proc closed {top} {
     variable iemName
     variable iemNameDeltaX
     variable iemNameDeltaY
-    variable iemNameFontFamily
     variable iemNameFontSize
     variable iemBackgroundColor
     variable iemFrontColor
@@ -459,7 +445,6 @@ proc closed {top} {
     unset iemName($top)
     unset iemNameDeltaX($top)
     unset iemNameDeltaY($top)
-    unset iemNameFontFamily($top)
     unset iemNameFontSize($top)
     unset iemBackgroundColor($top)
     unset iemFrontColor($top)
@@ -495,7 +480,6 @@ proc _apply {top} {
     variable iemName
     variable iemNameDeltaX
     variable iemNameDeltaY
-    variable iemNameFontFamily
     variable iemNameFontSize
     variable iemBackgroundColor
     variable iemFrontColor
@@ -522,7 +506,6 @@ proc _apply {top} {
             [::sanitized [::dollarToRaute [::withEmpty $iemName($top)]]] \
             $iemNameDeltaX($top) \
             $iemNameDeltaY($top) \
-            $iemNameFontFamily($top) \
             $iemNameFontSize($top) \
             $iemBackgroundColor($top) \
             $iemFrontColor($top) \

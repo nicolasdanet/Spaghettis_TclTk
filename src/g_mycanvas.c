@@ -162,14 +162,14 @@ static void my_canvas_properties(t_gobj *z, t_glist *owner)
             -1 -1 empty \
             %s %s \
             %s %d %d \
-            %d %d \
+            %d \
             %d %d %d \
             -1\n",
             x->x_gui.x_w, 1,
             x->x_vis_w, x->x_vis_h,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
-            x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
+            x->x_gui.x_fontsize,
             0xffffff & x->x_gui.x_bcol, -1/*no frontcolor*/, 0xffffff & x->x_gui.x_lcol);
     gfxstub_new(&x->x_gui.x_obj.te_g.g_pd, x, buf);
 }

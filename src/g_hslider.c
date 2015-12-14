@@ -272,7 +272,7 @@ static void hslider_properties(t_gobj *z, t_glist *owner)
             -1 -1 empty \
             %s %s \
             %s %d %d \
-            %d %d \
+            %d \
             %d %d %d \
             %d\n",
             x->x_gui.x_w, IEM_SL_MINSIZE, x->x_gui.x_h, IEM_GUI_MINSIZE,
@@ -281,7 +281,7 @@ static void hslider_properties(t_gobj *z, t_glist *owner)
             x->x_gui.x_isa.x_loadinit,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
-            x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
+            x->x_gui.x_fontsize,
             0xffffff & x->x_gui.x_bcol, 0xffffff & x->x_gui.x_fcol, 0xffffff & x->x_gui.x_lcol,
             x->x_steady);
     gfxstub_new(&x->x_gui.x_obj.te_g.g_pd, x, buf);
@@ -349,7 +349,7 @@ static void hslider_dialog(t_hslider *x, t_symbol *s, int argc, t_atom *argv)
     double min = (double)atom_getfloatarg(2, argc, argv);
     double max = (double)atom_getfloatarg(3, argc, argv);
     int lilo = (int)atom_getintarg(4, argc, argv);
-    int steady = (int)atom_getintarg(17, argc, argv);
+    int steady = (int)atom_getintarg(16, argc, argv);
     int sr_flags;
 
     if(lilo != 0) lilo = 1;

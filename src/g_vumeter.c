@@ -512,14 +512,14 @@ static void vu_properties(t_gobj *z, t_glist *owner)
             -1 -1 empty \
             %s %s \
             %s %d %d \
-            %d %d \
+            %d \
             %d %d %d \
             -1\n",
             x->x_gui.x_w, IEM_GUI_MINSIZE, x->x_gui.x_h, IEM_VU_STEPS*IEM_VU_MINSIZE,
             x->x_scale, 
             "nosndno", srl[1]->s_name,/*no send*/
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
-            x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
+            x->x_gui.x_fontsize,
             0xffffff & x->x_gui.x_bcol, -1/*no front-color*/, 0xffffff & x->x_gui.x_lcol);
     gfxstub_new(&x->x_gui.x_obj.te_g.g_pd, x, buf);
 }

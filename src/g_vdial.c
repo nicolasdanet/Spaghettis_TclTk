@@ -273,7 +273,7 @@ static void vradio_properties(t_gobj *z, t_glist *owner)
             %d 256 {Number Of Buttons} \
             %s %s \
             %s %d %d \
-            %d %d \
+            %d \
             %d %d %d \
             -1\n",
             x->x_gui.x_w, IEM_GUI_MINSIZE,
@@ -281,7 +281,7 @@ static void vradio_properties(t_gobj *z, t_glist *owner)
             x->x_number,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
-            x->x_gui.x_fsf.x_font_style, x->x_gui.x_fontsize,
+            x->x_gui.x_fontsize,
             0xffffff & x->x_gui.x_bcol, 0xffffff & x->x_gui.x_fcol, 0xffffff & x->x_gui.x_lcol);
     gfxstub_new(&x->x_gui.x_obj.te_g.g_pd, x, buf);
 }
