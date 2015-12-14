@@ -410,10 +410,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
         x->x_gui.x_fsf.x_snd_able = 0;
     if (!strcmp(x->x_gui.x_rcv->s_name, "empty"))
         x->x_gui.x_fsf.x_rcv_able = 0;
-    if(x->x_gui.x_fsf.x_font_style == 1) strcpy(x->x_gui.x_font, "helvetica");
-    else if(x->x_gui.x_fsf.x_font_style == 2) strcpy(x->x_gui.x_font, "times");
-    else { x->x_gui.x_fsf.x_font_style = 0;
-        strcpy(x->x_gui.x_font, "$::var(fontFamily)"); }
+
     x->x_nonzero = (nonzero!=0.0)?nonzero:1.0;
     if(x->x_gui.x_isa.x_loadinit)
         x->x_on = (on!=0.0)?nonzero:0.0;

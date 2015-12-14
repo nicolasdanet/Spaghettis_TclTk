@@ -100,7 +100,7 @@
 
 typedef struct _iem_fstyle_flags
 {
-    unsigned int x_font_style:6;
+    unsigned int x_font_style:6;            /* Unused but kept for file compatibility. */
     unsigned int x_rcv_able:1;
     unsigned int x_snd_able:1;
     unsigned int x_lab_is_unique:1;
@@ -141,7 +141,6 @@ typedef struct _iemgui
     int                x_w;
     int                x_ldx;
     int                x_ldy;
-    char               x_font[MAXPDSTRING]; /* font names can be long! */
     t_iem_fstyle_flags x_fsf;
     int                x_fontsize;
     t_iem_init_symargs x_isa;

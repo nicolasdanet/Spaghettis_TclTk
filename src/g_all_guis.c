@@ -426,17 +426,7 @@ void iemgui_label_pos(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av
 
 void iemgui_label_font(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av)
 {
-    int f = (int)atom_getintarg(0, ac, av);
-
-    if (f != 1 || f != 2) strcpy(iemgui->x_font, "helvetica");
-    else if(f == 2) strcpy(iemgui->x_font, "times");
-    else
-    {
-        f = 0;
-        strcpy(iemgui->x_font, "$::var(fontFamily)");
-    }
-    iemgui->x_fsf.x_font_style = f;
-    f = (int)atom_getintarg(1, ac, av);
+    int f = (int)atom_getintarg(1, ac, av);
     if(f < 4)
         f = 4;
     iemgui->x_fontsize = f;

@@ -323,6 +323,12 @@ proc create {top type
                                                             -textvariable ::pd_iem::iemName($top) \
                                                             -width $::width(medium)
     
+    ttk::label $top.f.label.nameFontSizeLabel           {*}[::styleLabel] \
+                                                            -text [_ "Font Size"]
+    ttk::entry $top.f.label.nameFontSize                {*}[::styleEntryNumber] \
+                                                            -textvariable ::pd_iem::iemNameFontSize($top) \
+                                                            -width $::width(small)
+                                                            
     ttk::label $top.f.label.nameDeltaXLabel             {*}[::styleLabel] \
                                                             -text [_ "Position X"]
     ttk::entry $top.f.label.nameDeltaX                  {*}[::styleEntryNumber] \
@@ -335,27 +341,21 @@ proc create {top type
                                                             -textvariable ::pd_iem::iemNameDeltaY($top) \
                                                             -width $::width(small)
 
-    ttk::label $top.f.label.nameFontSizeLabel           {*}[::styleLabel] \
-                                                            -text [_ "Font Size"]
-    ttk::entry $top.f.label.nameFontSize                {*}[::styleEntryNumber] \
-                                                            -textvariable ::pd_iem::iemNameFontSize($top) \
-                                                            -width $::width(small)
-    
     set row -1
     
     grid $top.f.label.nameLabel                         -row [incr row] -column 0 -sticky ew
     grid $top.f.label.name                              -row $row       -column 1 -sticky ew -columnspan 2
+    grid $top.f.label.nameFontSizeLabel                 -row [incr row] -column 0 -sticky ew
+    grid $top.f.label.nameFontSize                      -row $row       -column 2 -sticky ew
     grid $top.f.label.nameDeltaXLabel                   -row [incr row] -column 0 -sticky ew
     grid $top.f.label.nameDeltaX                        -row $row       -column 2 -sticky ew
     grid $top.f.label.nameDeltaYLabel                   -row [incr row] -column 0 -sticky ew
     grid $top.f.label.nameDeltaY                        -row $row       -column 2 -sticky ew
-    grid $top.f.label.nameFontSizeLabel                 -row [incr row] -column 0 -sticky ew
-    grid $top.f.label.nameFontSize                      -row $row       -column 2 -sticky ew
 
     bind $top.f.label.name          <Return>            { ::nextEntry %W }
+    bind $top.f.label.nameFontSize  <Return>            { ::nextEntry %W }
     bind $top.f.label.nameDeltaX    <Return>            { ::nextEntry %W }
     bind $top.f.label.nameDeltaY    <Return>            { ::nextEntry %W }
-    bind $top.f.label.nameFontSize  <Return>            { ::nextEntry %W }
     
     if {$send ne "nosndno"}         {
     
