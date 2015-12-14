@@ -128,7 +128,7 @@ static void phasor_setup(void)
 
 /* ------------------------ cos~ ----------------------------- */
 
-float *cos_table;
+static float *cos_table;
 
 static t_class *cos_class;
 

@@ -286,10 +286,6 @@ EXTERN t_symbol s_;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-EXTERN float    *cos_table;
-
-EXTERN int      (*sys_idlehook)(void);
-
 EXTERN t_class  *garray_class;
 EXTERN t_class  *scalar_class;
 EXTERN t_class  *glob_pdobject;
