@@ -66,13 +66,6 @@ int sys_nmidiin = -1;
 int sys_midiindevlist[MAXMIDIINDEV] = {1};
 int sys_midioutdevlist[MAXMIDIOUTDEV] = {1};
 
-#ifdef __APPLE__
-char sys_font[100] = "Monaco";
-char sys_fontweight[10] = "normal";
-#else
-char sys_font[100] = "DejaVu Sans Mono";
-char sys_fontweight[10] = "bold";
-#endif
 static int sys_main_srate;
 static int sys_main_advance;
 static int sys_main_callback;
@@ -847,21 +840,21 @@ int sys_argparse(int argc, char **argv)
             argc -= 2;
             argv += 2;
         }
-        else if ((!strcmp(*argv, "-font-face") || !strcmp(*argv, "-typeface"))
+        /*else if ((!strcmp(*argv, "-font-face") || !strcmp(*argv, "-typeface"))
             && argc > 1)
         {
             strncpy(sys_font,*(argv+1),sizeof(sys_font)-1);
             sys_font[sizeof(sys_font)-1] = 0;
             argc -= 2;
             argv += 2;
-        }
-        else if (!strcmp(*argv, "-font-weight") && argc > 1)
+        }*/
+        /*else if (!strcmp(*argv, "-font-weight") && argc > 1)
         {
             strncpy(sys_fontweight,*(argv+1),sizeof(sys_fontweight)-1);
             sys_fontweight[sizeof(sys_fontweight)-1] = 0;
             argc -= 2;
             argv += 2;
-        }
+        }*/
         else if (!strcmp(*argv, "-verbose"))
         {
             sys_verbose++;

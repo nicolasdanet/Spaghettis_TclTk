@@ -2525,8 +2525,8 @@ static void drawnumber_vis(t_gobj *z, t_glist *glist,
         drawnumber_getbuf(x, data, template, buf);
         sys_vgui(".x%lx.c create text %d %d -anchor nw -fill %s -text {%s}",
                 glist_getcanvas(glist), xloc, yloc, colorstring, buf);
-        sys_vgui(" -font {{%s} -%d %s}", sys_font,
-                 sys_hostfontsize(glist_getfont(glist)), sys_fontweight);
+        sys_vgui(" -font [::getFont %d]",
+                 sys_hostfontsize(glist_getfont(glist)));
         sys_vgui(" -tags [list drawnumber%lx label]\n", data);
     }
     else sys_vgui(".x%lx.c delete drawnumber%lx\n", glist_getcanvas(glist), data);

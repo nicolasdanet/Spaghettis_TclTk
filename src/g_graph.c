@@ -737,9 +737,9 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         {
             i -= sys_fontheight(glist_getfont(x));
             sys_vgui(".x%lx.c create text %d %d -text {%s} -anchor nw\
-             -font {{%s} -%d %s} -tags [list %s label graph]\n",
-             (long)glist_getcanvas(x),  x1, i, arrayname->s_name, sys_font,
-                sys_hostfontsize(glist_getfont(x)), sys_fontweight, tag);
+             -font [::getFont %d] -tags [list %s label graph]\n",
+             (long)glist_getcanvas(x), x1, i, arrayname->s_name,
+                sys_hostfontsize(glist_getfont(x)), tag);
         }
         
             /* draw ticks on horizontal borders.  If lperb field is
@@ -819,22 +819,22 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             /* draw x labels */
         for (i = 0; i < x->gl_nxlabels; i++)
             sys_vgui(".x%lx.c create text\
- %d %d -text {%s} -font {{%s} -%d %s} -anchor %s -tags [list %s label graph]\n",
+ %d %d -text {%s} -font [::getFont %d] -anchor %s -tags [list %s label graph]\n",
                 glist_getcanvas(x),
                 (int)glist_xtopixels(x, atof(x->gl_xlabel[i]->s_name)),
                 (int)glist_ytopixels(x, x->gl_xlabely),
-                x->gl_xlabel[i]->s_name, sys_font,
-                     glist_getfont(x), sys_fontweight, xlabelanchor, tag);
+                x->gl_xlabel[i]->s_name,
+                     glist_getfont(x), xlabelanchor, tag);
 
             /* draw y labels */
         for (i = 0; i < x->gl_nylabels; i++)
             sys_vgui(".x%lx.c create text\
- %d %d -text {%s} -font {{%s} -%d %s} -anchor %s -tags [list %s label graph]\n",
+ %d %d -text {%s} -font [::getFont %d] -anchor %s -tags [list %s label graph]\n",
                 glist_getcanvas(x),
                 (int)glist_xtopixels(x, x->gl_ylabelx),
                 (int)glist_ytopixels(x, atof(x->gl_ylabel[i]->s_name)),
-                x->gl_ylabel[i]->s_name, sys_font,
-                glist_getfont(x), sys_fontweight, ylabelanchor, tag);
+                x->gl_ylabel[i]->s_name,
+                glist_getfont(x), ylabelanchor, tag);
 
             /* draw contents of graph as glist */
         for (g = x->gl_list; g; g = g->g_next)

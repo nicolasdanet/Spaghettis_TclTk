@@ -195,16 +195,16 @@ static void my_numbox_draw_new(t_my_numbox *x, t_glist *glist)
         xpos, ypos + x->x_gui.x_h,
         x->x_gui.x_fcol, x);
     sys_vgui(".x%lx.c create text %d %d -text {%s} -anchor w \
-        -font {{%s} -%d %s} -fill #%6.6x -tags [list %lxLABEL label text]\n",
+        -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",
         canvas, xpos+x->x_gui.x_ldx, ypos+x->x_gui.x_ldy,
         strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"",
-        x->x_gui.x_font, x->x_gui.x_fontsize, sys_fontweight,
+        x->x_gui.x_fontsize,
              x->x_gui.x_lcol, x);
     my_numbox_ftoa(x);
     sys_vgui(".x%lx.c create text %d %d -text {%s} -anchor w \
-        -font {{%s} -%d %s} -fill #%6.6x -tags %lxNUMBER\n",
+        -font [::getFont %d] -fill #%6.6x -tags %lxNUMBER\n",
         canvas, xpos+half+2, ypos+half+d,
-        x->x_buf, x->x_gui.x_font, x->x_gui.x_fontsize, sys_fontweight,
+        x->x_buf, x->x_gui.x_fontsize,
         x->x_gui.x_fcol, x);
     if(!x->x_gui.x_fsf.x_snd_able)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
@@ -271,12 +271,12 @@ static void my_numbox_draw_config(t_my_numbox* x,t_glist* glist)
 {
     t_canvas *canvas=glist_getcanvas(glist);
 
-    sys_vgui(".x%lx.c itemconfigure %lxLABEL -font {{%s} -%d %s} -fill #%6.6x -text {%s} \n",
-             canvas, x, x->x_gui.x_font, x->x_gui.x_fontsize, sys_fontweight,
+    sys_vgui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
+             canvas, x, x->x_gui.x_fontsize,
              x->x_gui.x_fsf.x_selected?IEM_GUI_COLOR_SELECTED:x->x_gui.x_lcol,
              strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"");
-    sys_vgui(".x%lx.c itemconfigure %lxNUMBER -font {{%s} -%d %s} -fill #%6.6x \n",
-             canvas, x, x->x_gui.x_font, x->x_gui.x_fontsize, sys_fontweight,
+    sys_vgui(".x%lx.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%6.6x \n",
+             canvas, x, x->x_gui.x_fontsize,
              x->x_gui.x_fsf.x_selected?IEM_GUI_COLOR_SELECTED:x->x_gui.x_fcol);
     sys_vgui(".x%lx.c itemconfigure %lxBASE1 -fill #%6.6x\n", canvas,
              x, x->x_gui.x_bcol);
@@ -815,7 +815,7 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
     if(x->x_gui.x_fsf.x_font_style == 1) strcpy(x->x_gui.x_font, "helvetica");
     else if(x->x_gui.x_fsf.x_font_style == 2) strcpy(x->x_gui.x_font, "times");
     else { x->x_gui.x_fsf.x_font_style = 0;
-        strcpy(x->x_gui.x_font, sys_font); }
+        strcpy(x->x_gui.x_font, "$::var(fontFamily)"); }
     if (x->x_gui.x_fsf.x_rcv_able)
         pd_bind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     x->x_gui.x_ldx = ldx;
