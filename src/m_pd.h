@@ -778,7 +778,7 @@ EXTERN int              pd_getdspstate      (void);
             return ((pun.ui == 0) | (pun.ui == 0x7f800000));
         }
 
-        static inline int PD_BIGORSMALL (t_float f)  /* Exponent overflow. */
+        static inline int PD_BIGORSMALL (t_float f)  /* Exponent underflow or overflow. */
         {
             t_bigorsmall32 pun;
             pun.f = f;
