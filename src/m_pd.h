@@ -489,7 +489,7 @@ EXTERN void     glob_setfilename            (void *dummy, t_symbol *name, t_symb
 
 EXTERN void     canvas_setargs              (int argc, t_atom *argv);
 EXTERN void     canvas_getargs              (int *argcp, t_atom **argvp);
-EXTERN void     canvas_makefilename         (t_glist *c, char *file, char *result,int resultsize);
+EXTERN void     canvas_makefilename         (t_glist *c, char *file, char *result, int resultsize);
 EXTERN t_symbol *canvas_getcurrentdir       (void);
 EXTERN t_glist  *canvas_getcurrent          (void);
 EXTERN t_symbol *canvas_getdir              (t_glist *x);
@@ -778,7 +778,7 @@ EXTERN int              pd_getdspstate      (void);
             return ((pun.ui == 0) | (pun.ui == 0x7f800000));
         }
 
-        static inline int PD_BIGORSMALL(t_float f)  /* Exponent overflow. */
+        static inline int PD_BIGORSMALL (t_float f)  /* Exponent overflow. */
         {
             t_bigorsmall32 pun;
             pun.f = f;
@@ -797,11 +797,11 @@ EXTERN int              pd_getdspstate      (void);
 
 #else   // _MSC_VER
 
-        #define PD_BADFLOAT(f)      ((((*(unsigned int*)&(f))&0x7f800000)==0) || \
-                                        (((*(unsigned int*)&(f))&0x7f800000)==0x7f800000))
+        #define PD_BADFLOAT(f)      ((((*(unsigned int*)&(f)) & 0x7f800000) == 0) || \
+                                        (((*(unsigned int*)&(f)) & 0x7f800000) == 0x7f800000))
     
-        #define PD_BIGORSMALL(f)    ((((*(unsigned int*)&(f))&0x60000000)==0) || \
-                                        (((*(unsigned int*)&(f))&0x60000000)==0x60000000))
+        #define PD_BIGORSMALL(f)    ((((*(unsigned int*)&(f)) & 0x60000000) == 0) || \
+                                        (((*(unsigned int*)&(f)) & 0x60000000) == 0x60000000))
 
 #endif
 
