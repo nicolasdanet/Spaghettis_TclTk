@@ -51,7 +51,7 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if defined ( _MSC_VER ) && !defined ( __cplusplus )
+#if defined ( _MSC_VER ) && ! defined ( __cplusplus )
     #define EXTERN_STRUCT extern struct
 #else
     #define EXTERN_STRUCT struct

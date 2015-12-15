@@ -1,58 +1,38 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/* this file defines the structure for "glists" and related structures and
-functions.  "Glists" and "canvases" and "graphs" used to be different
-structures until being unified in version 0.35.
-
-A glist occupies its own window if the "gl_havewindow" flag is set.  Its
-appearance on its "parent", also called "owner", (if it has one) is as a graph
-if "gl_isgraph" is set, and otherwise as a text box.
-
-A glist is "root" if it has no owner, i.e., a document window.  In this
-case "gl_havewindow" is always set.
-
-We maintain a list of root windows, so that we can traverse the whole
-collection of everything in a Pd process.
-
-If a glist has a window it may still not be "mapped."  Miniaturized
-windows aren't mapped, for example, but a window is also not mapped
-immediately upon creation.  In either case gl_havewindow is true but
-gl_mapped is false.
-
-Closing a non-root window makes it invisible; closing a root destroys it.
-
-A glist that's just a text object on its parent is always "toplevel."  An
-embedded glist can switch back and forth to appear as a toplevel by double-
-clicking on it.  Single-clicking a text box makes the toplevel become visible
-and raises the window it's in.
-
-If a glist shows up as a graph on its parent, the graph is blanked while the
-glist has its own window, even if miniaturized.
-
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
 */
 
-/* NOTE: this file describes Pd implementation details which may change
-in future releases.  The public (stable) API is in m_pd.h. */  
+/* < https://opensource.org/licenses/BSD-3-Clause > */
 
-#if defined (__cplusplus)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#ifndef __g_canvas_h_
+#define __g_canvas_h_
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if defined ( __cplusplus )
+
 extern "C" {
+
 #endif
 
-/* --------------------- geometry ---------------------------- */
-#define IOWIDTH 7       /* width of an inlet/outlet in pixels */
-#define IOMIDDLE ((IOWIDTH-1)/2)
-#define GLIST_DEFGRAPHWIDTH 200
-#define GLIST_DEFGRAPHHEIGHT 140
-/* ----------------------- data ------------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-typedef struct _updateheader
-{
-    struct _updateheader *upd_next;
-    unsigned int upd_array:1;       /* true if array, false if glist */
-    unsigned int upd_queued:1;      /* true if we're queued */
-} t_updateheader;
+#define IOWIDTH                     7                       /* Width of an inlet/outlet in pixels. */
+#define IOMIDDLE                    ((IOWIDTH - 1) / 2)
+#define GLIST_DEFGRAPHWIDTH         200
+#define GLIST_DEFGRAPHHEIGHT        140
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* types to support glists grabbing mouse motion or keys from parent */
 typedef void (*t_glistmotionfn)(void *z, t_floatarg dx, t_floatarg dy);
@@ -85,7 +65,6 @@ typedef struct _selection
     /* this structure is instantiated whenever a glist becomes visible. */
 typedef struct _editor
 {
-    t_updateheader e_upd;           /* update header structure */
     t_selection *e_updlist;         /* list of objects to update */
     t_rtext *e_rtext;               /* text responder linked list */
     t_selection *e_selection;       /* head of the selection list */
@@ -127,7 +106,6 @@ could do so if the structure gets big (like the "editor" above.) */
     
 typedef struct _arrayvis
 {
-    t_updateheader av_upd;          /* update header structure */
     t_garray *av_garray;            /* owning structure */    
 } t_arrayvis;
 
@@ -617,6 +595,16 @@ EXTERN void guiconnect_notarget(t_guiconnect *x, double timedelay);
 EXTERN t_symbol *iemgui_raute2dollar(t_symbol *s);
 EXTERN t_symbol *iemgui_dollar2raute(t_symbol *s);
 
-#if defined (__cplusplus)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if defined ( __cplusplus )
+
 }
+
 #endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#endif // __g_canvas_h_
