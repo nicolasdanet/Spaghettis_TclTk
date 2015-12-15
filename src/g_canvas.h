@@ -25,10 +25,22 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IOWIDTH                     7                       /* Width of an inlet/outlet in pixels. */
+#define IOWIDTH                     7                       /* Width of inlet or outlet in pixels. */
 #define IOMIDDLE                    ((IOWIDTH - 1) / 2)
 #define GLIST_DEFGRAPHWIDTH         200
 #define GLIST_DEFGRAPHHEIGHT        140
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define MA_NONE                     0
+#define MA_MOVE                     1
+#define MA_CONNECT                  2
+#define MA_REGION                   3
+#define MA_PASSOUT                  4
+#define MA_DRAGTEXT                 5
+#define MA_RESIZE                   6
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -49,122 +61,97 @@ EXTERN_STRUCT _fielddesc;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef void (*t_glistmotionfn)(void *z, t_floatarg dx, t_floatarg dy);
 typedef void (*t_glistkeyfn)(void *z, t_floatarg key);
+typedef void (*t_glistmotionfn)(void *z, t_floatarg dx, t_floatarg dy);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+typedef struct _tick {
+    t_float     k_point;
+    t_float     k_inc;
+    int         k_lperb;
+    } t_tick;
+    
 typedef struct _selection {
     t_gobj              *sel_what;
     struct _selection   *sel_next;
     } t_selection;
 
-/* This structure is instantiated whenever a glist becomes visible. */
-
 typedef struct _editor {
-    t_selection         *e_updlist;             /* list of objects to update */
-    t_rtext             *e_rtext;               /* text responder linked list */
-    t_selection         *e_selection;           /* head of the selection list */
-    t_rtext             *e_textedfor;           /* the rtext if any that we are editing */
-    t_gobj              *e_grab;                /* object being "dragged" */
-    t_glistmotionfn     e_motionfn;             /* ... motion callback */
-    t_glistkeyfn        e_keyfn;                /* ... keypress callback */
-    t_binbuf            *e_connectbuf;          /* connections to deleted objects */
-    t_binbuf            *e_deleted;             /* last stuff we deleted */
-    t_guiconnect        *e_guiconnect;          /* GUI connection for filtering messages */
-    t_glist             *e_glist;               /* glist which owns this */
-    int                 e_xwas;                 /* xpos on last mousedown or motion event */
-    int                 e_ywas;                 /* ypos, similarly */
-    int                 e_selectline_index1;    /* indices for the selected line if any */
-    int                 e_selectline_outno;     /* (only valid if e_selectedline is set) */
+    t_selection         *e_updlist;
+    t_rtext             *e_rtext;
+    t_selection         *e_selection;
+    t_rtext             *e_textedfor;
+    t_gobj              *e_grab;
+    t_glistmotionfn     e_motionfn;
+    t_glistkeyfn        e_keyfn;
+    t_binbuf            *e_connectbuf;
+    t_binbuf            *e_deleted;
+    t_guiconnect        *e_guiconnect; 
+    t_glist             *e_glist;
+    int                 e_xwas;
+    int                 e_ywas;
+    int                 e_selectline_index1;
+    int                 e_selectline_outno;
     int                 e_selectline_index2;
     int                 e_selectline_inno;
     t_outconnect        *e_selectline_tag;
-    char                e_onmotion;             /* action to take on motion */
-    char                e_lastmoved;            /* one if mouse has moved since click */
-    char                e_textdirty;            /* one if e_textedfor has changed */
-    char                e_selectedline;         /* one if a line is selected */
-    t_clock             *e_clock;               /* clock to filter GUI move messages */
-    int                 e_xnew;                 /* xpos for next move event */
-    int                 e_ynew;                 /* ypos, similarly */
+    char                e_onmotion;             
+    char                e_lastmoved;
+    char                e_textdirty;
+    char                e_selectedline; 
+    t_clock             *e_clock;
+    int                 e_xnew;
+    int                 e_ynew;
     } t_editor;
 
-#define MA_NONE    0    /* e_onmotion: do nothing on mouse motion */
-#define MA_MOVE    1    /* drag the selection around */
-#define MA_CONNECT 2    /* make a connection */
-#define MA_REGION  3    /* selection region */
-#define MA_PASSOUT 4    /* send on to e_grab */
-#define MA_DRAGTEXT 5   /* drag in text editor to alter selection */
-#define MA_RESIZE  6    /* drag to resize */
+struct _glist {  
+    t_object            gl_obj;
+    t_gobj              *gl_list;   
+    t_gstub             *gl_stub;
+    int                 gl_valid;
+    struct _glist       *gl_owner;
+    int                 gl_pixwidth;
+    int                 gl_pixheight;
+    t_float             gl_x1;
+    t_float             gl_y1;
+    t_float             gl_x2;
+    t_float             gl_y2;
+    int                 gl_screenx1;
+    int                 gl_screeny1;
+    int                 gl_screenx2;
+    int                 gl_screeny2;
+    int                 gl_xmargin;
+    int                 gl_ymargin;
+    t_tick              gl_xtick;  
+    int                 gl_nxlabels;
+    t_symbol            **gl_xlabel;
+    t_float             gl_xlabely;
+    t_tick              gl_ytick;
+    int                 gl_nylabels;
+    t_symbol            **gl_ylabel;
+    t_float             gl_ylabelx;
+    t_editor            *gl_editor;
+    t_symbol            *gl_name;
+    int                 gl_font;
+    struct _glist       *gl_next;
+    t_canvasenvironment *gl_env;
+    char                gl_havewindow; 
+    char                gl_mapped;
+    char                gl_dirty; 
+    char                gl_loading;
+    char                gl_willvis;
+    char                gl_edit;
+    char                gl_isdeleting;
+    char                gl_goprect;
+    char                gl_isgraph;
+    char                gl_hidetext;
+    char                gl_private;
+    };
 
-/* editor structure for "garrays".  We don't bother to delete and regenerate
-this structure when the "garray" becomes invisible or visible, although we
-could do so if the structure gets big (like the "editor" above.) */
-    
-typedef struct _arrayvis
-{
-    t_garray *av_garray;            /* owning structure */    
-} t_arrayvis;
-
-/* the t_tick structure describes where to draw x and y "ticks" for a glist */
-
-typedef struct _tick    /* where to put ticks on x or y axes */
-{
-    t_float k_point;      /* one point to draw a big tick at */
-    t_float k_inc;        /* x or y increment per little tick */
-    int k_lperb;        /* little ticks per big; 0 if no ticks to draw */
-} t_tick;
-
-/* the t_glist structure, which describes a list of elements that live on an
-area of a window.
-
-*/
-
-struct _glist
-{  
-    t_object gl_obj;            /* header in case we're a glist */
-    t_gobj *gl_list;            /* the actual data */
-    struct _gstub *gl_stub;     /* safe pointer handler */
-    int gl_valid;               /* incremented when pointers might be stale */
-    struct _glist *gl_owner;    /* parent glist, supercanvas, or 0 if none */
-    int gl_pixwidth;            /* width in pixels (on parent, if a graph) */
-    int gl_pixheight;
-    t_float gl_x1;                /* bounding rectangle in our own coordinates */
-    t_float gl_y1;
-    t_float gl_x2;
-    t_float gl_y2;
-    int gl_screenx1;            /* screen coordinates when toplevel */
-    int gl_screeny1;
-    int gl_screenx2;
-    int gl_screeny2;
-    int gl_xmargin;                /* origin for GOP rectangle */
-    int gl_ymargin;
-    t_tick gl_xtick;            /* ticks marking X values */    
-    int gl_nxlabels;            /* number of X coordinate labels */
-    t_symbol **gl_xlabel;           /* ... an array to hold them */
-    t_float gl_xlabely;               /* ... and their Y coordinates */
-    t_tick gl_ytick;            /* same as above for Y ticks and labels */
-    int gl_nylabels;
-    t_symbol **gl_ylabel;
-    t_float gl_ylabelx;
-    t_editor *gl_editor;        /* editor structure when visible */
-    t_symbol *gl_name;          /* symbol bound here */
-    int gl_font;                /* nominal font size in points, e.g., 10 */
-    struct _glist *gl_next;         /* link in list of toplevels */
-    t_canvasenvironment *gl_env;    /* root canvases and abstractions only */
-    unsigned int gl_havewindow:1;   /* true if we own a window */
-    unsigned int gl_mapped:1;       /* true if, moreover, it's "mapped" */
-    unsigned int gl_dirty:1;        /* (root canvas only:) patch has changed */
-    unsigned int gl_loading:1;      /* am now loading from file */
-    unsigned int gl_willvis:1;      /* make me visible after loading */ 
-    unsigned int gl_edit:1;         /* edit mode */
-    unsigned int gl_isdeleting:1;   /* we're inside glist_delete -- hack! */
-    unsigned int gl_goprect:1;      /* draw rectangle for graph-on-parent */
-    unsigned int gl_isgraph:1;      /* show as graph on parent */
-    unsigned int gl_hidetext:1;     /* hide object-name + args when doing graph on parent */
-    unsigned int gl_private:1;      /* private flag used in x_scalar.c */
-};
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #define gl_gobj gl_obj.te_g
 #define gl_pd gl_gobj.g_pd
