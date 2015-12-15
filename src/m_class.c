@@ -2,7 +2,6 @@
 * For information on usage and redistribution, and for a DISCLAIMER OF ALL
 * WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-#define PD_CLASS_DEF
 #include "m_pd.h"
 #include "m_imp.h"
 #include "s_stuff.h"
@@ -296,7 +295,7 @@ void class_addmethod(t_class *c, t_method fn, t_symbol *sel,
     else if (sel == &s_float)
     {
         if (argtype != A_FLOAT || va_arg(ap, t_atomtype)) goto phooey;
-        class_doaddfloat(c, fn);
+        class_addfloat(c, fn);
     }
     else if (sel == &s_symbol)
     {
@@ -364,7 +363,7 @@ void class_addpointer(t_class *c, t_method fn)
     c->c_pointermethod = (t_pointermethod)fn;
 }
 
-void class_doaddfloat(t_class *c, t_method fn)
+void class_addfloat(t_class *c, t_method fn)
 {
     c->c_floatmethod = (t_floatmethod)fn;
 }

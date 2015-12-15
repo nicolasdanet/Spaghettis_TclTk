@@ -61,17 +61,15 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Microsoft Visual Studio does NOT provide the "stdint.h" header. */
-
 #ifdef _MSC_VER
-    typedef signed __int8               int8_t;
-    typedef signed __int16              int16_t;
-    typedef signed __int32              int32_t;
-    typedef signed __int64              int64_t;
-    typedef unsigned __int8             uint8_t;
-    typedef unsigned __int16            uint16_t;
-    typedef unsigned __int32            uint32_t;
-    typedef unsigned __int64            uint64_t;
+    typedef signed __int8       int8_t;
+    typedef signed __int16      int16_t;
+    typedef signed __int32      int32_t;
+    typedef signed __int64      int64_t;
+    typedef unsigned __int8     uint8_t;
+    typedef unsigned __int16    uint16_t;
+    typedef unsigned __int32    uint32_t;
+    typedef unsigned __int64    uint64_t;
 #else
     #include <stdint.h>
 #endif
@@ -552,7 +550,7 @@ EXTERN void     class_addcreator            (t_newmethod newmethod, t_symbol *s,
 EXTERN void     class_addmethod             (t_class *c, t_method fn, t_symbol *sel, t_atomtype arg1, ...);
 EXTERN void     class_addbang               (t_class *c, t_method fn);
 EXTERN void     class_addpointer            (t_class *c, t_method fn);
-EXTERN void     class_doaddfloat            (t_class *c, t_method fn);
+EXTERN void     class_addfloat              (t_class *c, t_method fn);
 EXTERN void     class_addsymbol             (t_class *c, t_method fn);
 EXTERN void     class_addlist               (t_class *c, t_method fn);
 EXTERN void     class_addanything           (t_class *c, t_method fn);
@@ -574,19 +572,6 @@ EXTERN void     obj_saveformat              (t_object *x, t_binbuf *bb);
 
 EXTERN void           class_setpropertiesfn (t_class *c, t_propertiesfn f);
 EXTERN t_propertiesfn class_getpropertiesfn (t_class *c);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#ifndef PD_CLASS_DEF
-    #define class_addbang(x, y)         class_addbang((x), (t_method)(y))
-    #define class_addpointer(x, y)      class_addpointer((x), (t_method)(y))
-    #define class_addfloat(x, y)        class_doaddfloat((x), (t_method)(y))
-    #define class_addsymbol(x, y)       class_addsymbol((x), (t_method)(y))
-    #define class_addlist(x, y)         class_addlist((x), (t_method)(y))
-    #define class_addanything(x, y)     class_addanything((x), (t_method)(y))
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
