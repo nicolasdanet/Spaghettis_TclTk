@@ -119,10 +119,15 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef long    t_int;                  /* A pointer-size integer. */
-typedef float   t_float;                /* A float type. */
-typedef float   t_floatarg;             /* A float type parameter. */
+#ifdef _WIN64
+    typedef long long   t_int;                  /* A pointer-size integer (LLP64). */
+#else 
+    typedef long        t_int;                  /* Ditto (LP64 / ILP64). */
+#endif
 
+typedef float           t_float;                /* A float type. */
+typedef float           t_floatarg;             /* A float type parameter. */
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
