@@ -34,63 +34,61 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* types to support glists grabbing mouse motion or keys from parent */
+EXTERN_STRUCT _rtext;
+EXTERN_STRUCT _gtemplate;
+EXTERN_STRUCT _guiconnect;
+EXTERN_STRUCT _canvasenvironment;
+EXTERN_STRUCT _fielddesc;
+
+#define t_rtext                     struct _rtext
+#define t_gtemplate                 struct _gtemplate
+#define t_guiconnect                struct _guiconnect
+#define t_canvasenvironment         struct _canvasenvironment 
+#define t_fielddesc                 struct _fielddesc
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 typedef void (*t_glistmotionfn)(void *z, t_floatarg dx, t_floatarg dy);
 typedef void (*t_glistkeyfn)(void *z, t_floatarg key);
 
-EXTERN_STRUCT _rtext;
-#define t_rtext struct _rtext
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-EXTERN_STRUCT _gtemplate;
-#define t_gtemplate struct _gtemplate
+typedef struct _selection {
+    t_gobj              *sel_what;
+    struct _selection   *sel_next;
+    } t_selection;
 
-EXTERN_STRUCT _guiconnect;
-#define t_guiconnect struct _guiconnect
+/* This structure is instantiated whenever a glist becomes visible. */
 
-EXTERN_STRUCT _tscalar;
-#define t_tscalar struct _tscalar
-
-EXTERN_STRUCT _canvasenvironment;
-#define t_canvasenvironment struct _canvasenvironment 
-
-EXTERN_STRUCT _fielddesc;
-#define t_fielddesc struct _fielddesc
-
-typedef struct _selection
-{
-    t_gobj *sel_what;
-    struct _selection *sel_next;
-} t_selection;
-
-    /* this structure is instantiated whenever a glist becomes visible. */
-typedef struct _editor
-{
-    t_selection *e_updlist;         /* list of objects to update */
-    t_rtext *e_rtext;               /* text responder linked list */
-    t_selection *e_selection;       /* head of the selection list */
-    t_rtext *e_textedfor;           /* the rtext if any that we are editing */
-    t_gobj *e_grab;                 /* object being "dragged" */
-    t_glistmotionfn e_motionfn;     /* ... motion callback */
-    t_glistkeyfn e_keyfn;           /* ... keypress callback */
-    t_binbuf *e_connectbuf;         /* connections to deleted objects */
-    t_binbuf *e_deleted;            /* last stuff we deleted */
-    t_guiconnect *e_guiconnect;     /* GUI connection for filtering messages */
-    struct _glist *e_glist;         /* glist which owns this */
-    int e_xwas;                     /* xpos on last mousedown or motion event */
-    int e_ywas;                     /* ypos, similarly */
-    int e_selectline_index1;        /* indices for the selected line if any */
-    int e_selectline_outno;         /* (only valid if e_selectedline is set) */
-    int e_selectline_index2;
-    int e_selectline_inno;
-    t_outconnect *e_selectline_tag;
-    unsigned int e_onmotion: 3;     /* action to take on motion */
-    unsigned int e_lastmoved: 1;    /* one if mouse has moved since click */
-    unsigned int e_textdirty: 1;    /* one if e_textedfor has changed */
-    unsigned int e_selectedline: 1; /* one if a line is selected */
-    t_clock *e_clock;               /* clock to filter GUI move messages */
-    int e_xnew;                     /* xpos for next move event */
-    int e_ynew;                     /* ypos, similarly */
-} t_editor;
+typedef struct _editor {
+    t_selection         *e_updlist;             /* list of objects to update */
+    t_rtext             *e_rtext;               /* text responder linked list */
+    t_selection         *e_selection;           /* head of the selection list */
+    t_rtext             *e_textedfor;           /* the rtext if any that we are editing */
+    t_gobj              *e_grab;                /* object being "dragged" */
+    t_glistmotionfn     e_motionfn;             /* ... motion callback */
+    t_glistkeyfn        e_keyfn;                /* ... keypress callback */
+    t_binbuf            *e_connectbuf;          /* connections to deleted objects */
+    t_binbuf            *e_deleted;             /* last stuff we deleted */
+    t_guiconnect        *e_guiconnect;          /* GUI connection for filtering messages */
+    t_glist             *e_glist;               /* glist which owns this */
+    int                 e_xwas;                 /* xpos on last mousedown or motion event */
+    int                 e_ywas;                 /* ypos, similarly */
+    int                 e_selectline_index1;    /* indices for the selected line if any */
+    int                 e_selectline_outno;     /* (only valid if e_selectedline is set) */
+    int                 e_selectline_index2;
+    int                 e_selectline_inno;
+    t_outconnect        *e_selectline_tag;
+    char                e_onmotion;             /* action to take on motion */
+    char                e_lastmoved;            /* one if mouse has moved since click */
+    char                e_textdirty;            /* one if e_textedfor has changed */
+    char                e_selectedline;         /* one if a line is selected */
+    t_clock             *e_clock;               /* clock to filter GUI move messages */
+    int                 e_xnew;                 /* xpos for next move event */
+    int                 e_ynew;                 /* ypos, similarly */
+    } t_editor;
 
 #define MA_NONE    0    /* e_onmotion: do nothing on mouse motion */
 #define MA_MOVE    1    /* drag the selection around */

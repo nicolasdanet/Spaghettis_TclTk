@@ -238,10 +238,10 @@ typedef struct _text {
     t_binbuf        *te_binbuf;
     t_outlet        *te_outlet;
     t_inlet         *te_inlet;
-    short           te_xpix;
-    short           te_ypix;
-    short           te_width; 
-    short           te_type;
+    int             te_xpix;
+    int             te_ypix;
+    int             te_width; 
+    int             te_type;
     } t_text;
 
 // -----------------------------------------------------------------------------------------------------------
