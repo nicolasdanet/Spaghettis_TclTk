@@ -329,11 +329,6 @@ static t_pdinstance *pdinstance_donew(int useprefix)
     return (x);
 }
 
-EXTERN t_pdinstance *pdinstance_new(void)
-{
-    return (pdinstance_donew(1));
-}
-
 void pd_init(void)
 {
     if (!pd_this)
@@ -345,23 +340,9 @@ void pd_init(void)
     garray_init();
 }
 
-EXTERN void pd_setinstance(t_pdinstance *x)
-{
-    pd_this = x;
-}
-
-EXTERN void pdinstance_free(t_pdinstance *x)
-{
-    /* placeholder - LATER free symtab, dsp chain, classes and canvases */
-}
-
 EXTERN t_canvas *pd_getcanvaslist(void)
 {
     return (pd_this->pd_canvaslist);
 }
 
-EXTERN int pd_getdspstate(void)
-{
-    return (pd_this->pd_dspstate);
-}
 
