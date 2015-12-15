@@ -5,6 +5,7 @@
 /* misc. */
 
 #include "m_pd.h"
+#include "m_macros.h"
 #include "s_stuff.h"
 #include <math.h>
 #include <stdio.h>

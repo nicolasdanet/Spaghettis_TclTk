@@ -5,6 +5,7 @@
 /*  send~, delread~, throw~, catch~ */
 
 #include "m_pd.h"
+#include "m_macros.h"
 extern int ugen_getsortno(void);
 
 #define DEFDELVS 64             /* LATER get this from canvas at DSP time */

@@ -7,6 +7,7 @@
 */
 
 #include "m_pd.h"
+#include "m_macros.h"
 #include "math.h"
 
 /* -------------------------- sig~ ------------------------------ */

@@ -5,6 +5,7 @@
 /*  send~, receive~, throw~, catch~ */
 
 #include "m_pd.h"
+#include "m_macros.h"
 #include <string.h>
 
 #define DEFSENDVS 64    /* LATER get send to get this from canvas */

@@ -102,6 +102,7 @@ EXTERN void outlet_setstacklim  (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 EXTERN t_outconnect *obj_starttraverseoutlet    (t_object *x, t_outlet **op, int nout);
 EXTERN t_outconnect *obj_nexttraverseoutlet     (t_outconnect *lastconnect, 
@@ -126,6 +127,7 @@ EXTERN int obj_sigoutletindex   (t_object *x, int m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 EXTERN t_pd *glob_evalfile      (t_pd *ignore, t_symbol *name, t_symbol *dir);
 EXTERN void glob_initfromgui    (void *dummy, t_symbol *s, int argc, t_atom *argv);
