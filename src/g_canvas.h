@@ -25,10 +25,10 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IOWIDTH                     7
-#define IOMIDDLE                    ((IOWIDTH - 1) / 2)
-#define GLIST_DEFGRAPHWIDTH         200
-#define GLIST_DEFGRAPHHEIGHT        140
+#define IO_WIDTH                    7
+#define IO_MIDDLE                   ((IO_WIDTH - 1) / 2)
+#define GLIST_DEFAULT_WIDTH         200
+#define GLIST_DEFAULT_HEIGHT        140
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

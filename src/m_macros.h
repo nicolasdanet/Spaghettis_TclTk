@@ -24,7 +24,7 @@
             unsigned int ui;
         } t_bigorsmall32;
 
-        static inline int PD_BADFLOAT (t_float f)   /* Malformed float. */
+        static inline int PD_BADFLOAT (t_float f)       /* Malformed float. */
         {
             t_bigorsmall32 pun;
             pun.f = f;
@@ -32,7 +32,7 @@
             return ((pun.ui == 0) | (pun.ui == 0x7f800000));
         }
 
-        static inline int PD_BIGORSMALL (t_float f)  /* Exponent underflow or overflow. */
+        static inline int PD_BIGORSMALL (t_float f)     /* Exponent underflow or overflow. */
         {
             t_bigorsmall32 pun;
             pun.f = f;

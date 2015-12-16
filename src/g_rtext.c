@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "m_pd.h"
+#include "m_imp.h"
 #include "s_stuff.h"
 #include "g_canvas.h"
 #include "s_utf8.h"

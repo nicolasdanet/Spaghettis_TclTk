@@ -277,12 +277,12 @@ t_outconnect *linetraverser_next(t_linetraverser *t)
         gobj_getrect(&t->tr_ob2->te_g, t->tr_x,
             &t->tr_x21, &t->tr_y21, &t->tr_x22, &t->tr_y22);
         t->tr_lx1 = t->tr_x11 +
-            ((t->tr_x12 - t->tr_x11 - IOWIDTH) * t->tr_outno) /
-                outplus + IOMIDDLE;
+            ((t->tr_x12 - t->tr_x11 - IO_WIDTH) * t->tr_outno) /
+                outplus + IO_MIDDLE;
         t->tr_ly1 = t->tr_y12;
         t->tr_lx2 = t->tr_x21 +
-            ((t->tr_x22 - t->tr_x21 - IOWIDTH) * t->tr_inno)/inplus +
-                IOMIDDLE;
+            ((t->tr_x22 - t->tr_x21 - IO_WIDTH) * t->tr_inno)/inplus +
+                IO_MIDDLE;
         t->tr_ly2 = t->tr_y21;
     }
     else
@@ -461,8 +461,8 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     if (x1 == x2 || y1 == y2)
         x1 = 0, x2 = 100, y1 = 1, y2 = -1;
     if (px1 >= px2 || py1 >= py2)
-        px1 = 100, py1 = 20, px2 = 100 + GLIST_DEFGRAPHWIDTH,
-            py2 = 20 + GLIST_DEFGRAPHHEIGHT;
+        px1 = 100, py1 = 20, px2 = 100 + GLIST_DEFAULT_WIDTH,
+            py2 = 20 + GLIST_DEFAULT_HEIGHT;
     x->gl_name = sym;
     x->gl_x1 = x1;
     x->gl_x2 = x2;

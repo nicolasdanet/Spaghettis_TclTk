@@ -69,10 +69,10 @@ void toggle_draw_new(t_toggle *x, t_glist *glist)
              x->x_gui.x_lcol, x);
     if(!x->x_gui.x_fsf.x_snd_able)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
-             canvas, xx, yy + x->x_gui.x_h-1, xx + IOWIDTH, yy + x->x_gui.x_h, x, 0);
+             canvas, xx, yy + x->x_gui.x_h-1, xx + IO_WIDTH, yy + x->x_gui.x_h, x, 0);
     if(!x->x_gui.x_fsf.x_rcv_able)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
-             canvas, xx, yy, xx + IOWIDTH, yy+1, x, 0);
+             canvas, xx, yy, xx + IO_WIDTH, yy+1, x, 0);
 }
 
 void toggle_draw_move(t_toggle *x, t_glist *glist)
@@ -97,10 +97,10 @@ void toggle_draw_move(t_toggle *x, t_glist *glist)
              canvas, x, xx+x->x_gui.x_ldx, yy+x->x_gui.x_ldy);
     if(!x->x_gui.x_fsf.x_snd_able)
         sys_vgui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
-             canvas, x, 0, xx, yy + x->x_gui.x_h-1, xx + IOWIDTH, yy + x->x_gui.x_h);
+             canvas, x, 0, xx, yy + x->x_gui.x_h-1, xx + IO_WIDTH, yy + x->x_gui.x_h);
     if(!x->x_gui.x_fsf.x_rcv_able)
         sys_vgui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
-             canvas, x, 0, xx, yy, xx + IOWIDTH, yy+1);
+             canvas, x, 0, xx, yy, xx + IO_WIDTH, yy+1);
 }
 
 void toggle_draw_erase(t_toggle* x, t_glist* glist)
@@ -142,14 +142,14 @@ void toggle_draw_io(t_toggle* x, t_glist* glist, int old_snd_rcv_flags)
     if((old_snd_rcv_flags & IEM_GUI_OLD_SND_FLAG) && !x->x_gui.x_fsf.x_snd_able)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
              canvas, xpos,
-             ypos + x->x_gui.x_h-1, xpos + IOWIDTH,
+             ypos + x->x_gui.x_h-1, xpos + IO_WIDTH,
              ypos + x->x_gui.x_h, x, 0);
     if(!(old_snd_rcv_flags & IEM_GUI_OLD_SND_FLAG) && x->x_gui.x_fsf.x_snd_able)
         sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
     if((old_snd_rcv_flags & IEM_GUI_OLD_RCV_FLAG) && !x->x_gui.x_fsf.x_rcv_able)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
              canvas, xpos, ypos,
-             xpos + IOWIDTH, ypos+1, x, 0);
+             xpos + IO_WIDTH, ypos+1, x, 0);
     if(!(old_snd_rcv_flags & IEM_GUI_OLD_RCV_FLAG) && x->x_gui.x_fsf.x_rcv_able)
         sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
 }

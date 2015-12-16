@@ -1029,10 +1029,10 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
     else if (flag)
     {
         if (x->gl_pixwidth <= 0)
-            x->gl_pixwidth = GLIST_DEFGRAPHWIDTH;
+            x->gl_pixwidth = GLIST_DEFAULT_WIDTH;
 
         if (x->gl_pixheight <= 0)
-            x->gl_pixheight = GLIST_DEFGRAPHHEIGHT;
+            x->gl_pixheight = GLIST_DEFAULT_HEIGHT;
 
         if (x->gl_owner && !x->gl_loading && glist_isvisible(x->gl_owner))
             gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
@@ -1352,9 +1352,9 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
                 int nout1 = (noutlet > 1 ? noutlet - 1 : 1);
                 int closest = ((xpos-x1) * (nout1) + width/2)/width;
                 int hotspot = x1 +
-                    (width - IOWIDTH) * closest / (nout1);
+                    (width - IO_WIDTH) * closest / (nout1);
                 if (closest < noutlet &&
-                    xpos >= (hotspot-1) && xpos <= hotspot + (IOWIDTH+1))
+                    xpos >= (hotspot-1) && xpos <= hotspot + (IO_WIDTH+1))
                 {
                     if (doit)
                     {
@@ -1506,7 +1506,7 @@ void canvas_doconnect(t_canvas *x, int xpos, int ypos, int which, int doit)
             {
                 closest1 = ((xwas-x11) * (noutlet1-1) + width1/2)/width1;
                 hotspot1 = x11 +
-                    (width1 - IOWIDTH) * closest1 / (noutlet1-1);
+                    (width1 - IO_WIDTH) * closest1 / (noutlet1-1);
             }
             else closest1 = 0, hotspot1 = x11;
 
@@ -1514,7 +1514,7 @@ void canvas_doconnect(t_canvas *x, int xpos, int ypos, int which, int doit)
             {
                 closest2 = ((xpos-x21) * (ninlet2-1) + width2/2)/width2;
                 hotspot2 = x21 +
-                    (width2 - IOWIDTH) * closest2 / (ninlet2-1);
+                    (width2 - IO_WIDTH) * closest2 / (ninlet2-1);
             }
             else closest2 = 0, hotspot2 = x21;
 
@@ -1540,12 +1540,12 @@ void canvas_doconnect(t_canvas *x, int xpos, int ypos, int which, int doit)
             {
                 oc = obj_connect(ob1, closest1, ob2, closest2);
                 lx1 = x11 + (noutlet1 > 1 ?
-                        ((x12-x11-IOWIDTH) * closest1)/(noutlet1-1) : 0)
-                             + IOMIDDLE;
+                        ((x12-x11-IO_WIDTH) * closest1)/(noutlet1-1) : 0)
+                             + IO_MIDDLE;
                 ly1 = y12;
                 lx2 = x21 + (ninlet2 > 1 ?
-                        ((x22-x21-IOWIDTH) * closest2)/(ninlet2-1) : 0)
-                            + IOMIDDLE;
+                        ((x22-x21-IO_WIDTH) * closest2)/(ninlet2-1) : 0)
+                            + IO_MIDDLE;
                 ly2 = y21;
                 sys_vgui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
                     glist_getcanvas(x),

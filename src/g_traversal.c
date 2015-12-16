@@ -20,6 +20,7 @@ sublist - get a pointer into a list which is an element of another scalar
 #include <string.h>
 #include <stdio.h>      /* for read/write to files */
 #include "m_pd.h"
+#include "m_imp.h"
 #include "g_canvas.h"
 
 /* ------------- gstubs and gpointers - safe pointing --------------- */
