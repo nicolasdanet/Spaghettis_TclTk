@@ -55,6 +55,28 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define PLOTSTYLE_POINTS            0
+#define PLOTSTYLE_POLYGONS          1
+#define PLOTSTYLE_CURVES            2
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define CURSOR_RUN_NOTHING          0
+#define CURSOR_RUN_CLICKME          1
+#define CURSOR_RUN_THICKEN          2
+#define CURSOR_RUN_ADDPOINT         3
+
+#define CURSOR_EDIT_NOTHING         4
+#define CURSOR_EDIT_CONNECT         5
+#define CURSOR_EDIT_DISCONNECT      6
+#define CURSOR_EDIT_RESIZE          7
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 EXTERN_STRUCT _rtext;
 EXTERN_STRUCT _gtemplate;
 EXTERN_STRUCT _guiconnect;
@@ -66,6 +88,17 @@ EXTERN_STRUCT _fielddesc;
 #define t_guiconnect                struct _guiconnect
 #define t_canvasenvironment         struct _canvasenvironment
 #define t_fielddesc                 struct _fielddesc
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+extern int glist_valid;             /* Global to PureData. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+extern t_class *vinlet_class;       
+extern t_class *voutlet_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -281,91 +314,97 @@ struct _parentwidgetbehavior {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define CURSOR_RUNMODE_NOTHING          0
-#define CURSOR_RUNMODE_CLICKME          1
-#define CURSOR_RUNMODE_THICKEN          2
-#define CURSOR_RUNMODE_ADDPOINT         3
-
-#define CURSOR_EDITMODE_NOTHING         4
-#define CURSOR_EDITMODE_CONNECT         5
-#define CURSOR_EDITMODE_DISCONNECT      6
-#define CURSOR_EDITMODE_RESIZE          7
+EXTERN void canvas_setcursor    (t_glist *x, unsigned int cursornum);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-EXTERN void canvas_setcursor(t_glist *x, unsigned int cursornum);
+EXTERN void gobj_getrect    (t_gobj *x, t_glist *owner, int *x1, int *y1, int *x2, int *y2);
+EXTERN void gobj_displace   (t_gobj *x, t_glist *owner, int dx, int dy);
+EXTERN void gobj_select     (t_gobj *x, t_glist *owner, int state);
+EXTERN void gobj_activate   (t_gobj *x, t_glist *owner, int state);
+EXTERN void gobj_delete     (t_gobj *x, t_glist *owner);
+EXTERN void gobj_save       (t_gobj *x, t_binbuf *b);
+EXTERN void gobj_save       (t_gobj *x, t_binbuf *b);
+EXTERN void gobj_properties (t_gobj *x, t_glist *gl);
+EXTERN int  gobj_shouldvis  (t_gobj *x, t_glist *gl);
+EXTERN void gobj_vis        (t_gobj *x, t_glist *gl, int flag);
+EXTERN int  gobj_click      (t_gobj *x, t_glist *gl, int xpix, int ypix, int shift, int alt, int dbl, int b);
 
-extern t_canvas *canvas_whichfind;  /* last canvas we did a find in */ 
-extern t_class *vinlet_class, *voutlet_class;
-extern int glist_valid;         /* incremented when pointers might be stale */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-#define PLOTSTYLE_POINTS 0     /* plotting styles for arrays */
-#define PLOTSTYLE_POLY 1
-#define PLOTSTYLE_BEZ 2
+EXTERN t_glist  *glist_new              (void);
+EXTERN void     glist_init              (t_glist *x);
+EXTERN void     glist_add               (t_glist *x, t_gobj *g);
 
-/* ------------------- functions on any gobj ----------------------------- */
-EXTERN void gobj_getrect(t_gobj *x, t_glist *owner, int *x1, int *y1,
-    int *x2, int *y2);
-EXTERN void gobj_displace(t_gobj *x, t_glist *owner, int dx, int dy);
-EXTERN void gobj_select(t_gobj *x, t_glist *owner, int state);
-EXTERN void gobj_activate(t_gobj *x, t_glist *owner, int state);
-EXTERN void gobj_delete(t_gobj *x, t_glist *owner);
-EXTERN void gobj_vis(t_gobj *x, t_glist *glist, int flag);
-EXTERN int gobj_click(t_gobj *x, struct _glist *glist,
-    int xpix, int ypix, int shift, int alt, int dbl, int doit);
-EXTERN void gobj_save(t_gobj *x, t_binbuf *b);
-EXTERN void gobj_properties(t_gobj *x, struct _glist *glist);
-EXTERN void gobj_save(t_gobj *x, t_binbuf *b);
-EXTERN int gobj_shouldvis(t_gobj *x, struct _glist *glist);
+EXTERN void     glist_clear             (t_glist *x);
+EXTERN t_canvas *glist_getcanvas        (t_glist *x);
+EXTERN int      glist_isselected        (t_glist *x, t_gobj *y);
+EXTERN void     glist_select            (t_glist *x, t_gobj *y);
+EXTERN void     glist_deselect          (t_glist *x, t_gobj *y);
+EXTERN void     glist_noselect          (t_glist *x);
+EXTERN void     glist_selectall         (t_glist *x);
+EXTERN void     glist_delete            (t_glist *x, t_gobj *y);
+EXTERN void     glist_retext            (t_glist *x, t_text *y);
+EXTERN int      glist_isvisible         (t_glist *x);
+EXTERN int      glist_istoplevel        (t_glist *x);
+EXTERN t_glist *glist_findgraph         (t_glist *x);
+EXTERN int      glist_getfont           (t_glist *x);
+EXTERN void     glist_sort              (t_glist *canvas);
+EXTERN void     glist_read              (t_glist *x, t_symbol *filename, t_symbol *format);
+EXTERN void     glist_mergefile         (t_glist *x, t_symbol *filename, t_symbol *format);
+EXTERN void     glist_grab              (t_glist *x,
+                                            t_gobj *y,
+                                            t_glistmotionfn motionfn,
+                                            t_glistkeyfn keyfn,
+                                            int xpos,
+                                            int ypos);
+                                        
+EXTERN t_float  glist_pixelstox         (t_glist *x, t_float xpix);
+EXTERN t_float  glist_pixelstoy         (t_glist *x, t_float ypix);
+EXTERN t_float  glist_xtopixels         (t_glist *x, t_float xval);
+EXTERN t_float  glist_ytopixels         (t_glist *x, t_float yval);
+EXTERN t_float  glist_dpixtodx          (t_glist *x, t_float dxpix);
+EXTERN t_float  glist_dpixtody          (t_glist *x, t_float dypix);
 
-/* -------------------- functions on glists --------------------- */
-EXTERN t_glist *glist_new( void);
-EXTERN void glist_init(t_glist *x);
-EXTERN void glist_add(t_glist *x, t_gobj *g);
+EXTERN void     glist_getnextxy         (t_glist *x, int *xval, int *yval);
+EXTERN void     glist_glist             (t_glist *x, t_symbol *s, int argc, t_atom *argv);
+EXTERN t_glist *glist_addglist          (t_glist *x,
+                                            t_symbol *sym,
+                                            t_float x1,
+                                            t_float y1,
+                                            t_float x2,
+                                            t_float y2,
+                                            t_float px1,
+                                            t_float py1,
+                                            t_float px2,
+                                            t_float py2);
+                                        
+EXTERN void     glist_arraydialog       (t_glist *parent,
+                                            t_symbol *name,
+                                            t_floatarg size,
+                                            t_floatarg saveit);
+                                        
+EXTERN t_binbuf *glist_writetobinbuf    (t_glist *x, int wholething);
+EXTERN int      glist_isgraph           (t_glist *x);
+EXTERN void     glist_redraw            (t_glist *x);
+EXTERN void     glist_drawiofor         (t_glist *x, 
+                                            t_object *ob,
+                                            int firsttime,
+                                            char *tag,
+                                            int x1,
+                                            int y1,
+                                            int x2,
+                                            int y2);
+                                            
+EXTERN void     glist_eraseiofor        (t_glist *glist, t_object *ob, char *tag);
 
-EXTERN void glist_clear(t_glist *x);
-EXTERN t_canvas *glist_getcanvas(t_glist *x);
-EXTERN int glist_isselected(t_glist *x, t_gobj *y);
-EXTERN void glist_select(t_glist *x, t_gobj *y);
-EXTERN void glist_deselect(t_glist *x, t_gobj *y);
-EXTERN void glist_noselect(t_glist *x);
-EXTERN void glist_selectall(t_glist *x);
-EXTERN void glist_delete(t_glist *x, t_gobj *y);
-EXTERN void glist_retext(t_glist *x, t_text *y);
-EXTERN void glist_grab(t_glist *x, t_gobj *y, t_glistmotionfn motionfn,
-    t_glistkeyfn keyfn, int xpos, int ypos);
-EXTERN int glist_isvisible(t_glist *x);
-EXTERN int glist_istoplevel(t_glist *x);
-EXTERN t_glist *glist_findgraph(t_glist *x);
-EXTERN int glist_getfont(t_glist *x);
-EXTERN void glist_sort(t_glist *canvas);
-EXTERN void glist_read(t_glist *x, t_symbol *filename, t_symbol *format);
-EXTERN void glist_mergefile(t_glist *x, t_symbol *filename, t_symbol *format);
+EXTERN void     canvas_create_editor    (t_glist *x);
+EXTERN void     canvas_destroy_editor   (t_glist *x);
 
-EXTERN t_float glist_pixelstox(t_glist *x, t_float xpix);
-EXTERN t_float glist_pixelstoy(t_glist *x, t_float ypix);
-EXTERN t_float glist_xtopixels(t_glist *x, t_float xval);
-EXTERN t_float glist_ytopixels(t_glist *x, t_float yval);
-EXTERN t_float glist_dpixtodx(t_glist *x, t_float dxpix);
-EXTERN t_float glist_dpixtody(t_glist *x, t_float dypix);
-
-EXTERN void glist_getnextxy(t_glist *gl, int *xval, int *yval);
-EXTERN void glist_glist(t_glist *g, t_symbol *s, int argc, t_atom *argv);
-EXTERN t_glist *glist_addglist(t_glist *g, t_symbol *sym,
-    t_float x1, t_float y1, t_float x2, t_float y2,
-    t_float px1, t_float py1, t_float px2, t_float py2);
-EXTERN void glist_arraydialog(t_glist *parent, t_symbol *name,
-    t_floatarg size, t_floatarg saveit);
-EXTERN t_binbuf *glist_writetobinbuf(t_glist *x, int wholething);
-EXTERN int glist_isgraph(t_glist *x);
-EXTERN void glist_redraw(t_glist *x);
-EXTERN void glist_drawiofor(t_glist *glist, t_object *ob, int firsttime,
-    char *tag, int x1, int y1, int x2, int y2);
-EXTERN void glist_eraseiofor(t_glist *glist, t_object *ob, char *tag);
-EXTERN void canvas_create_editor(t_glist *x);
-EXTERN void canvas_destroy_editor(t_glist *x);
 void canvas_deletelinesforio(t_canvas *x, t_text *text,
     t_inlet *inp, t_outlet *outp);
 extern int glist_amreloadingabstractions; /* stop GUI changes while reloading */ 

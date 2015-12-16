@@ -1339,7 +1339,7 @@ typedef struct _plot
 static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
 {
     t_plot *x = (t_plot *)pd_new(plot_class);
-    int defstyle = PLOTSTYLE_POLY;
+    int defstyle = PLOTSTYLE_POLYGONS;
     x->x_canvas = canvas_getcurrent();
 
     fielddesc_setfloat_var(&x->x_xpoints, gensym("x"));
@@ -1354,7 +1354,7 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
         if (!strcmp(firstarg->s_name, "curve") ||
             !strcmp(firstarg->s_name, "-c"))
         {
-            defstyle = PLOTSTYLE_BEZ;
+            defstyle = PLOTSTYLE_CURVES;
             argc--, argv++;
         }
         else if (!strcmp(firstarg->s_name, "-v") && argc > 1)
@@ -1815,7 +1815,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
             ouch:
                 sys_vgui(" -width 1 -fill %s -outline %s\\\n",
                     outline, outline);
-                if (style == PLOTSTYLE_BEZ) sys_vgui("-smooth 1\\\n");
+                if (style == PLOTSTYLE_CURVES) sys_vgui("-smooth 1\\\n");
 
                 sys_vgui("-tags [list plot%lx array]\n", data);
             }
@@ -1859,7 +1859,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
 
                 sys_vgui("-width %f\\\n", linewidth);
                 sys_vgui("-fill %s\\\n", outline);
-                if (style == PLOTSTYLE_BEZ) sys_vgui("-smooth 1\\\n");
+                if (style == PLOTSTYLE_CURVES) sys_vgui("-smooth 1\\\n");
 
                 sys_vgui("-tags [list plot%lx array]\n", data);
             }
@@ -2261,11 +2261,11 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                     if (alt)
                     {
                         if (xpix < pxpix)
-                            return (CURSOR_EDITMODE_DISCONNECT);
-                        else return (CURSOR_RUNMODE_ADDPOINT);
+                            return (CURSOR_EDIT_DISCONNECT);
+                        else return (CURSOR_RUN_ADDPOINT);
                     }
                     else return (array_motion_fatten ?
-                        CURSOR_RUNMODE_THICKEN : CURSOR_RUNMODE_CLICKME);
+                        CURSOR_RUN_THICKEN : CURSOR_RUN_CLICKME);
                 }
             }   
         }

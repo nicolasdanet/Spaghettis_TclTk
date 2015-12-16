@@ -1288,7 +1288,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
         {
             if (y)
                 canvas_setcursor(x, clickreturned);
-            else canvas_setcursor(x, CURSOR_RUNMODE_NOTHING);
+            else canvas_setcursor(x, CURSOR_RUN_NOTHING);
         }
         return;
     }
@@ -1343,7 +1343,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
                     x->gl_editor->e_xnew = xpos;
                     x->gl_editor->e_ynew = ypos;
                 }                                   
-                else canvas_setcursor(x, CURSOR_EDITMODE_RESIZE);
+                else canvas_setcursor(x, CURSOR_EDIT_RESIZE);
             }
                 /* look for an outlet */
             else if (ob && (noutlet = obj_noutlets(ob)) && ypos >= y2-4)
@@ -1367,11 +1367,11 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
                                 x, xpos, ypos, xpos, ypos,
                                     (issignal ? 2 : 1));
                     }                                   
-                    else canvas_setcursor(x, CURSOR_EDITMODE_CONNECT);
+                    else canvas_setcursor(x, CURSOR_EDIT_CONNECT);
                 }
                 else if (doit)
                     goto nooutletafterall;
-                else canvas_setcursor(x, CURSOR_EDITMODE_NOTHING);
+                else canvas_setcursor(x, CURSOR_EDIT_NOTHING);
             }
                 /* not in an outlet; select and move */
             else if (doit)
@@ -1399,7 +1399,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
                     x->gl_editor->e_onmotion = MA_MOVE;
                 }
             }
-            else canvas_setcursor(x, CURSOR_EDITMODE_NOTHING);
+            else canvas_setcursor(x, CURSOR_EDIT_NOTHING);
         }
         return;
     }
@@ -1412,7 +1412,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
         box, set cursor and return */
     if (runmode || rightclick)
     {
-        canvas_setcursor(x, CURSOR_RUNMODE_NOTHING);
+        canvas_setcursor(x, CURSOR_RUN_NOTHING);
         return;
     }
         /* having failed to find a box, we try lines now. */
@@ -1439,11 +1439,11 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
                     canvas_getindex(glist2, &t.tr_ob->te_g), t.tr_outno,
                     canvas_getindex(glist2, &t.tr_ob2->te_g), t.tr_inno);
             }
-            canvas_setcursor(x, CURSOR_EDITMODE_DISCONNECT);
+            canvas_setcursor(x, CURSOR_EDIT_DISCONNECT);
             return;
         }
     }
-    canvas_setcursor(x, CURSOR_EDITMODE_NOTHING);
+    canvas_setcursor(x, CURSOR_EDIT_NOTHING);
     if (doit)
     {
         if (!shiftmod) glist_noselect(x);
@@ -1525,7 +1525,7 @@ void canvas_doconnect(t_canvas *x, int xpos, int ypos, int which, int doit)
 
             if (canvas_isconnected (x, ob1, closest1, ob2, closest2))
             {
-                canvas_setcursor(x, CURSOR_EDITMODE_NOTHING);
+                canvas_setcursor(x, CURSOR_EDIT_NOTHING);
                 return;
             }
             if (obj_issignaloutlet(ob1, closest1) &&
@@ -1533,7 +1533,7 @@ void canvas_doconnect(t_canvas *x, int xpos, int ypos, int which, int doit)
             {
                 if (doit)
                     error("can't connect signal outlet to control inlet");
-                canvas_setcursor(x, CURSOR_EDITMODE_NOTHING);
+                canvas_setcursor(x, CURSOR_EDIT_NOTHING);
                 return;
             }
             if (doit)
@@ -1558,11 +1558,11 @@ void canvas_doconnect(t_canvas *x, int xpos, int ypos, int which, int doit)
                         canvas_getindex(x, &ob2->te_g), closest2),
                         "connect");
             }
-            else canvas_setcursor(x, CURSOR_EDITMODE_CONNECT);
+            else canvas_setcursor(x, CURSOR_EDIT_CONNECT);
             return;
         }
     }
-    canvas_setcursor(x, CURSOR_EDITMODE_NOTHING);
+    canvas_setcursor(x, CURSOR_EDIT_NOTHING);
 }
 
 void canvas_selectinrect(t_canvas *x, int lox, int loy, int hix, int hiy)
@@ -1821,7 +1821,7 @@ void canvas_key(t_canvas *x, t_symbol *s, int ac, t_atom *av)
     if (x && keynum == 0 && x->gl_edit &&
         !strncmp(gotkeysym->s_name, "Control", 7))
             canvas_setcursor(x, down ?
-                CURSOR_RUNMODE_NOTHING :CURSOR_EDITMODE_NOTHING);
+                CURSOR_RUN_NOTHING :CURSOR_EDIT_NOTHING);
 }
 
 static void delay_move(t_canvas *x)
@@ -2105,6 +2105,7 @@ static int canvas_dofind(t_canvas *x, int *myindexp)
     return (didit);
 }
 
+/*
 static void canvas_find(t_canvas *x, t_symbol *s, t_floatarg wholeword)
 {
     int myindex = 0, found;
@@ -2118,8 +2119,8 @@ static void canvas_find(t_canvas *x, t_symbol *s, t_floatarg wholeword)
     found = canvas_dofind(x, &myindex);
     if (found)
         canvas_find_index = 1;
-    /*sys_vgui("::dialog_find::pdtk_showfindresult .x%lx %d %d %d\n", x, found, canvas_find_index,
-        myindex);*/
+    sys_vgui("::dialog_find::pdtk_showfindresult .x%lx %d %d %d\n", x, found, canvas_find_index,
+        myindex);
 }
 
 static void canvas_find_again(t_canvas *x)
@@ -2128,10 +2129,10 @@ static void canvas_find_again(t_canvas *x)
     if (!canvas_findbuf || !canvas_whichfind)
         return;
     found = canvas_dofind(canvas_whichfind, &myindex);
-    /*sys_vgui("::dialog_find::pdtk_showfindresult .x%lx %d %d %d\n", x, found, ++canvas_find_index,
-        myindex);*/
+    sys_vgui("::dialog_find::pdtk_showfindresult .x%lx %d %d %d\n", x, found, ++canvas_find_index,
+        myindex);
 }
-
+*/
 static void canvas_find_parent(t_canvas *x)
 {
     if (x->gl_owner)
@@ -2704,7 +2705,7 @@ void canvas_editmode(t_canvas *x, t_floatarg state)
     {
         t_gobj *g;
         t_object *ob;
-        canvas_setcursor(x, CURSOR_EDITMODE_NOTHING);
+        canvas_setcursor(x, CURSOR_EDIT_NOTHING);
         for (g = x->gl_list; g; g = g->g_next)
             if ((ob = pd_checkobject(&g->g_pd)) && ob->te_type == T_TEXT)
         {
@@ -2718,7 +2719,7 @@ void canvas_editmode(t_canvas *x, t_floatarg state)
         glist_noselect(x);
         if (glist_isvisible(x) && glist_istoplevel(x))
         {
-            canvas_setcursor(x, CURSOR_RUNMODE_NOTHING);
+            canvas_setcursor(x, CURSOR_RUN_NOTHING);
             sys_vgui(".x%lx.c delete commentbar\n", glist_getcanvas(x));
         }
     }
@@ -2833,10 +2834,10 @@ void g_editor_setup(void)
         gensym("menufont"), A_NULL);
     class_addmethod(canvas_class, (t_method)canvas_font,
         gensym("font"), A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_find,
+    /*class_addmethod(canvas_class, (t_method)canvas_find,
         gensym("find"), A_SYMBOL, A_FLOAT, A_NULL);
     class_addmethod(canvas_class, (t_method)canvas_find_again,
-        gensym("findagain"), A_NULL);
+        gensym("findagain"), A_NULL);*/
     class_addmethod(canvas_class, (t_method)canvas_find_parent,
         gensym("findparent"), A_NULL);
     class_addmethod(canvas_class, (t_method)canvas_done_popup,

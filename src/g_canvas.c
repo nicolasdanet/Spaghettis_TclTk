@@ -45,7 +45,6 @@ desktops because the borders have both window title area and menus. */
 
 extern t_pd *newest;
 t_class *canvas_class;
-t_canvas *canvas_whichfind;         /* last canvas we did a find in */ 
 
 /* ------------------ forward function declarations --------------- */
 static void canvas_start_dsp(void);
@@ -726,8 +725,6 @@ void canvas_free(t_canvas *x)
     t_gobj *y;
     int dspstate = canvas_suspend_dsp();
     canvas_noundo(x);
-    if (canvas_whichfind == x)
-        canvas_whichfind = 0;
     glist_noselect(x);
     while (y = x->gl_list)
         glist_delete(x, y);

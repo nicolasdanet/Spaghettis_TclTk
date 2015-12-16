@@ -1044,7 +1044,7 @@ static int graph_click(t_gobj *z, struct _glist *glist,
         {
             if (y)
                 canvas_setcursor(glist_getcanvas(x), clickreturned);
-            else canvas_setcursor(glist_getcanvas(x), CURSOR_RUNMODE_NOTHING);
+            else canvas_setcursor(glist_getcanvas(x), CURSOR_RUN_NOTHING);
         }
         return (clickreturned); 
     }
