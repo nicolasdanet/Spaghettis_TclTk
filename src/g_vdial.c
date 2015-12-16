@@ -14,7 +14,7 @@ put out a "float" as in sliders, toggles, etc. */
 #include "m_pd.h"
 #include "g_canvas.h"
 
-#include "g_all_guis.h"
+#include "g_iem.h"
 #include <math.h>
 
 /*------------------ global variables -------------------------*/

@@ -13,7 +13,7 @@
 #include "m_pd.h"
 #include "g_canvas.h"
 
-#include "g_all_guis.h"
+#include "g_iem.h"
 #include <math.h>
 
 #ifdef _WIN32
@@ -140,10 +140,10 @@ int iemgui_clip_font(int size)
 
 int iemgui_modulo_color(int col)
 {
-    while(col >= IEM_GUI_MAX_COLOR)
-        col -= IEM_GUI_MAX_COLOR;
+    while(col >= IEM_GUI_COLOR_MAXIMUM)
+        col -= IEM_GUI_COLOR_MAXIMUM;
     while(col < 0)
-        col += IEM_GUI_MAX_COLOR;
+        col += IEM_GUI_COLOR_MAXIMUM;
     return(col);
 }
 

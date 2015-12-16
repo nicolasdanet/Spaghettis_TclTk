@@ -298,7 +298,7 @@
 		372AC0651C1B4BE100C7D214 /* s_midi_alsa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_midi_alsa.c; path = src/s_midi_alsa.c; sourceTree = "<group>"; };
 		372AC0661C1B4BE100C7D214 /* s_midi_dummy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_midi_dummy.c; path = src/s_midi_dummy.c; sourceTree = "<group>"; };
 		372AC0671C1B4BE100C7D214 /* s_midi_oss.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_midi_oss.c; path = src/s_midi_oss.c; sourceTree = "<group>"; };
-		3733CD381C07682000D3DA23 /* g_all_guis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_all_guis.h; path = src/g_all_guis.h; sourceTree = "<group>"; };
+		3733CD381C07682000D3DA23 /* g_iem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_iem.h; path = src/g_iem.h; sourceTree = "<group>"; };
 		3733CD391C07683B00D3DA23 /* m_pd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_pd.h; path = src/m_pd.h; sourceTree = "<group>"; };
 		3791B61C1BFF8C9D0093E7C1 /* pd_global.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; name = pd_global.tcl; path = tcl/pd_global.tcl; sourceTree = "<group>"; };
 		379A42051BA3F4FD00C1CED0 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = /System/Library/Frameworks/CoreAudio.framework; sourceTree = "<absolute>"; };
@@ -456,9 +456,9 @@
 				3720F30E1C1FF2910054029F /* m_macros.h */,
 				372AC04D1C1B4AFF00C7D214 /* m_imp.h */,
 				372AC0471C1B4AD600C7D214 /* g_canvas.h */,
-				3733CD381C07682000D3DA23 /* g_all_guis.h */,
-				372AC0481C1B4AFF00C7D214 /* s_utf8.h */,
+				3733CD381C07682000D3DA23 /* g_iem.h */,
 				372AC0491C1B4AFF00C7D214 /* s_stuff.h */,
+				372AC0481C1B4AFF00C7D214 /* s_utf8.h */,
 				372AC04A1C1B4AFF00C7D214 /* s_audio_paring.h */,
 				372AC04B1C1B4AFF00C7D214 /* s_audio_alsa.h */,
 				371654B61BA3421800ABDE22 /* g_canvas.c */,

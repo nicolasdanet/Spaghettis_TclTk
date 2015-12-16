@@ -11,7 +11,7 @@
 #include "m_pd.h"
 #include "g_canvas.h"
 
-#include "g_all_guis.h"
+#include "g_iem.h"
 #include <math.h>
 
 #ifdef _WIN32

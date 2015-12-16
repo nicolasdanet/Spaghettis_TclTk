@@ -1,46 +1,35 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution. */
-/* g_7_guis.h written by Thomas Musil (c) IEM KUG Graz Austria 2000-2001 */
 
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
 
-#define IEM_GUI_COLNR_WHITE          0
-#define IEM_GUI_COLNR_ML_GREY        1
-#define IEM_GUI_COLNR_D_GREY         2
-#define IEM_GUI_COLNR_L_RED          3
-#define IEM_GUI_COLNR_L_ORANGE       4
-#define IEM_GUI_COLNR_L_YELLOW       5
-#define IEM_GUI_COLNR_L_GREEN        6
-#define IEM_GUI_COLNR_L_CYAN         7
-#define IEM_GUI_COLNR_L_BLUE         8
-#define IEM_GUI_COLNR_L_MAGENTA      9
+/* < https://opensource.org/licenses/BSD-3-Clause > */
 
-#define IEM_GUI_COLNR_LL_GREY        10
-#define IEM_GUI_COLNR_M_GREY         11
-#define IEM_GUI_COLNR_DD_GREY        12
-#define IEM_GUI_COLNR_RED            13
-#define IEM_GUI_COLNR_ORANGE         14
-#define IEM_GUI_COLNR_YELLOW         15
-#define IEM_GUI_COLNR_GREEN          16
-#define IEM_GUI_COLNR_CYAN           17
-#define IEM_GUI_COLNR_BLUE           18
-#define IEM_GUI_COLNR_MAGENTA        19
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-#define IEM_GUI_COLNR_L_GREY         20
-#define IEM_GUI_COLNR_MD_GREY        21
-#define IEM_GUI_COLNR_BLACK          22
-#define IEM_GUI_COLNR_D_RED          23
-#define IEM_GUI_COLNR_D_ORANGE       24
-#define IEM_GUI_COLNR_D_YELLOW       25
-#define IEM_GUI_COLNR_D_GREEN        26
-#define IEM_GUI_COLNR_D_CYAN         27
-#define IEM_GUI_COLNR_D_BLUE         28
-#define IEM_GUI_COLNR_D_MAGENTA      29
+/* Original "g_7_guis.h" written by Thomas Musil (c) IEM KUG Graz Austria 2000-2001. */
 
-#define IEM_GUI_COLOR_SELECTED       255
-#define IEM_GUI_COLOR_NORMAL         0
+/* < http://iem.kug.ac.at/ > */
 
-#define IEM_GUI_MAX_COLOR            30
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#ifndef __g_iem_h_
+#define __g_iem_h_
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define IEM_GUI_COLOR_NORMAL        0
+#define IEM_GUI_COLOR_SELECTED      255
+#define IEM_GUI_COLOR_MAXIMUM       30
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #define IEM_GUI_DEFAULTSIZE 15
 #define IEM_GUI_MINSIZE 8
@@ -100,7 +89,7 @@
 
 typedef struct _iem_fstyle_flags
 {
-    unsigned int x_font_style:6;            /* Unused but kept for file compatibility. */
+    unsigned int x_font_style:6;            /* Unused but kept for compatibility. */
     unsigned int x_rcv_able:1;
     unsigned int x_snd_able:1;
     unsigned int x_lab_is_unique:1;
@@ -272,51 +261,55 @@ extern int iemgui_vu_db2i[];
 extern int iemgui_vu_col[];
 extern char *iemgui_vu_scale_str[];
 
-EXPORT int iemgui_clip_size(int size);
-EXPORT int iemgui_clip_font(int size);
-EXPORT int iemgui_modulo_color(int col);
-EXPORT t_symbol *iemgui_unique2dollarzero(t_symbol *s, int unique_num, int and_unique_flag);
-EXPORT t_symbol *iemgui_sym2dollararg(t_symbol *s, int nth_arg, int tail_len);
-EXPORT t_symbol *iemgui_dollarzero2unique(t_symbol *s, int unique_num);
-EXPORT t_symbol *iemgui_dollararg2sym(t_symbol *s, int nth_arg, int tail_len, int pargc, t_atom *pargv);
-EXPORT int iemgui_is_dollarzero(t_symbol *s);
-EXPORT int iemgui_is_dollararg(t_symbol *s, int *tail_len);
-EXPORT void iemgui_fetch_unique(t_iemgui *iemgui);
-EXPORT void iemgui_fetch_parent_args(t_iemgui *iemgui, int *pargc, t_atom **pargv);
-EXPORT void iemgui_verify_snd_ne_rcv(t_iemgui *iemgui);
-EXPORT void iemgui_all_unique2dollarzero(t_iemgui *iemgui, t_symbol **srlsym);
-EXPORT void iemgui_all_sym2dollararg(t_iemgui *iemgui, t_symbol **srlsym);
-EXPORT void iemgui_all_dollarzero2unique(t_iemgui *iemgui, t_symbol **srlsym);
-EXPORT t_symbol *iemgui_new_dogetname(t_iemgui *iemgui, int indx, t_atom *argv);
-EXPORT void iemgui_new_getnames(t_iemgui *iemgui, int indx, t_atom *argv);
-EXPORT void iemgui_all_dollararg2sym(t_iemgui *iemgui, t_symbol **srlsym);
-EXPORT void iemgui_all_col2save(t_iemgui *iemgui, int *bflcol);
-EXPORT void iemgui_all_colfromload(t_iemgui *iemgui, int *bflcol);
-EXPORT int iemgui_compatible_col(int i);
-EXPORT void iemgui_all_dollar2raute(t_symbol **srlsym);
-EXPORT void iemgui_all_raute2dollar(t_symbol **srlsym);
-EXPORT void iemgui_send(void *x, t_iemgui *iemgui, t_symbol *s);
-EXPORT void iemgui_receive(void *x, t_iemgui *iemgui, t_symbol *s);
-EXPORT void iemgui_label(void *x, t_iemgui *iemgui, t_symbol *s);
-EXPORT void iemgui_label_pos(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
-EXPORT void iemgui_label_font(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
-EXPORT void iemgui_size(void *x, t_iemgui *iemgui);
-EXPORT void iemgui_delta(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
-EXPORT void iemgui_pos(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
-EXPORT void iemgui_color(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
-EXPORT int iemgui_list(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
-EXPORT void iemgui_displace(t_gobj *z, t_glist *glist, int dx, int dy);
-EXPORT void iemgui_select(t_gobj *z, t_glist *glist, int selected);
-EXPORT void iemgui_delete(t_gobj *z, t_glist *glist);
-EXPORT void iemgui_vis(t_gobj *z, t_glist *glist, int vis);
-EXPORT void iemgui_save(t_iemgui *iemgui, t_symbol **srl, int *bflcol);
-EXPORT void iemgui_properties(t_iemgui *iemgui, t_symbol **srl);
-EXPORT int iemgui_dialog(t_iemgui *iemgui, t_symbol **srl, int argc, t_atom *argv);
+int iemgui_clip_size(int size);
+int iemgui_clip_font(int size);
+int iemgui_modulo_color(int col);
+t_symbol *iemgui_unique2dollarzero(t_symbol *s, int unique_num, int and_unique_flag);
+t_symbol *iemgui_sym2dollararg(t_symbol *s, int nth_arg, int tail_len);
+t_symbol *iemgui_dollarzero2unique(t_symbol *s, int unique_num);
+t_symbol *iemgui_dollararg2sym(t_symbol *s, int nth_arg, int tail_len, int pargc, t_atom *pargv);
+int iemgui_is_dollarzero(t_symbol *s);
+int iemgui_is_dollararg(t_symbol *s, int *tail_len);
+void iemgui_fetch_unique(t_iemgui *iemgui);
+void iemgui_fetch_parent_args(t_iemgui *iemgui, int *pargc, t_atom **pargv);
+void iemgui_verify_snd_ne_rcv(t_iemgui *iemgui);
+void iemgui_all_unique2dollarzero(t_iemgui *iemgui, t_symbol **srlsym);
+void iemgui_all_sym2dollararg(t_iemgui *iemgui, t_symbol **srlsym);
+void iemgui_all_dollarzero2unique(t_iemgui *iemgui, t_symbol **srlsym);
+t_symbol *iemgui_new_dogetname(t_iemgui *iemgui, int indx, t_atom *argv);
+void iemgui_new_getnames(t_iemgui *iemgui, int indx, t_atom *argv);
+void iemgui_all_dollararg2sym(t_iemgui *iemgui, t_symbol **srlsym);
+void iemgui_all_col2save(t_iemgui *iemgui, int *bflcol);
+void iemgui_all_colfromload(t_iemgui *iemgui, int *bflcol);
+int iemgui_compatible_col(int i);
+void iemgui_all_dollar2raute(t_symbol **srlsym);
+void iemgui_all_raute2dollar(t_symbol **srlsym);
+void iemgui_send(void *x, t_iemgui *iemgui, t_symbol *s);
+void iemgui_receive(void *x, t_iemgui *iemgui, t_symbol *s);
+void iemgui_label(void *x, t_iemgui *iemgui, t_symbol *s);
+void iemgui_label_pos(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
+void iemgui_label_font(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
+void iemgui_size(void *x, t_iemgui *iemgui);
+void iemgui_delta(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
+void iemgui_pos(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
+void iemgui_color(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
+int iemgui_list(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
+void iemgui_displace(t_gobj *z, t_glist *glist, int dx, int dy);
+void iemgui_select(t_gobj *z, t_glist *glist, int selected);
+void iemgui_delete(t_gobj *z, t_glist *glist);
+void iemgui_vis(t_gobj *z, t_glist *glist, int vis);
+void iemgui_save(t_iemgui *iemgui, t_symbol **srl, int *bflcol);
+void iemgui_properties(t_iemgui *iemgui, t_symbol **srl);
+int iemgui_dialog(t_iemgui *iemgui, t_symbol **srl, int argc, t_atom *argv);
 
-EXPORT int canvas_getdollarzero(void);
-EXPORT void canvas_getargs(int *argcp, t_atom **argvp);
+int canvas_getdollarzero(void);
+void canvas_getargs(int *argcp, t_atom **argvp);
 
-EXPORT void iem_inttosymargs(t_iem_init_symargs *symargp, int n);
-EXPORT int iem_symargstoint(t_iem_init_symargs *symargp);
-EXPORT void iem_inttofstyle(t_iem_fstyle_flags *fstylep, int n);
-EXPORT int iem_fstyletoint(t_iem_fstyle_flags *fstylep);
+void iem_inttosymargs(t_iem_init_symargs *symargp, int n);
+int iem_symargstoint(t_iem_init_symargs *symargp);
+void iem_inttofstyle(t_iem_fstyle_flags *fstylep, int n);
+int iem_fstyletoint(t_iem_fstyle_flags *fstylep);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#endif // __g_iem_h_
