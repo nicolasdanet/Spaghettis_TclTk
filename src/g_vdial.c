@@ -315,7 +315,7 @@ static void vradio_dialog(t_vradio *x, t_symbol *s, int argc, t_atom *argv)
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_CONFIG);
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_IO + sr_flags);
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_MOVE);
-        canvas_fixlinesfor(x->x_gui.x_glist, (t_text*)x);
+        canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
     }
 }
 

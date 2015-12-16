@@ -92,7 +92,7 @@ void glist_delete(t_glist *x, t_gobj *y)
             {
                 char tag[80];
                 sprintf(tag, "graph%lx", (t_int)gl);
-                glist_eraseiofor(x, &gl->gl_obj, tag);
+                glist_eraseio(x, &gl->gl_obj, tag);
             }
             else
             {
@@ -287,7 +287,7 @@ t_inlet *canvas_addinlet(t_canvas *x, t_pd *who, t_symbol *s)
     {
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
-        canvas_fixlinesfor(x->gl_owner, &x->gl_obj);
+        canvas_fixlines(x->gl_owner, &x->gl_obj);
     }
     if (!x->gl_loading) canvas_resortinlets(x);
     return (ip);
@@ -306,7 +306,7 @@ void canvas_rminlet(t_canvas *x, t_inlet *ip)
     if (redraw)
     {
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
-        canvas_fixlinesfor(x->gl_owner, &x->gl_obj);
+        canvas_fixlines(x->gl_owner, &x->gl_obj);
     }
 }
 
@@ -349,7 +349,7 @@ void canvas_resortinlets(t_canvas *x)
     }
     freebytes(vec, ninlets * sizeof(*vec));
     if (x->gl_owner && glist_isvisible(x->gl_owner))
-        canvas_fixlinesfor(x->gl_owner, &x->gl_obj);
+        canvas_fixlines(x->gl_owner, &x->gl_obj);
 }
 
 t_outlet *canvas_addoutlet(t_canvas *x, t_pd *who, t_symbol *s)
@@ -359,7 +359,7 @@ t_outlet *canvas_addoutlet(t_canvas *x, t_pd *who, t_symbol *s)
     {
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
-        canvas_fixlinesfor(x->gl_owner, &x->gl_obj);
+        canvas_fixlines(x->gl_owner, &x->gl_obj);
     }
     if (!x->gl_loading) canvas_resortoutlets(x);
     return (op);
@@ -379,7 +379,7 @@ void canvas_rmoutlet(t_canvas *x, t_outlet *op)
     if (redraw)
     {
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
-        canvas_fixlinesfor(x->gl_owner, &x->gl_obj);
+        canvas_fixlines(x->gl_owner, &x->gl_obj);
     }
 }
 
@@ -422,7 +422,7 @@ void canvas_resortoutlets(t_canvas *x)
     }
     freebytes(vec, noutlets * sizeof(*vec));
     if (x->gl_owner && glist_isvisible(x->gl_owner))
-        canvas_fixlinesfor(x->gl_owner, &x->gl_obj);
+        canvas_fixlines(x->gl_owner, &x->gl_obj);
 }
 
 /* ----------calculating coordinates and controlling appearance --------- */
@@ -689,9 +689,9 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
 
     sprintf(tag, "graph%lx", (t_int)x);
     if (vis)
-        glist_drawiofor(parent_glist, &x->gl_obj, 1,
+        glist_drawio(parent_glist, &x->gl_obj, 1,
             tag, x1, y1, x2, y2);
-    else glist_eraseiofor(parent_glist, &x->gl_obj, tag);
+    else glist_eraseio(parent_glist, &x->gl_obj, tag);
         /* if we look like a graph but have been moved to a toplevel,
         just show the bounding rectangle */
     if (x->gl_havewindow)
@@ -933,7 +933,7 @@ static void graph_displace(t_gobj *z, t_glist *glist, int dx, int dy)
         x->gl_obj.te_xpix += dx;
         x->gl_obj.te_ypix += dy;
         glist_redraw(x);
-        canvas_fixlinesfor(glist, &x->gl_obj);
+        canvas_fixlines(glist, &x->gl_obj);
     }
 }
 
@@ -973,7 +973,7 @@ static void graph_delete(t_gobj *z, t_glist *glist)
             them as well (e.g., array or scalar objects that are implemented
             as canvases with "real" inlets).  Connections to ordinary canvas
             in/outlets already got zapped when we cleared the contents above */
-    canvas_deletelinesfor(glist, &x->gl_obj);
+    canvas_deletelines(glist, &x->gl_obj);
 }
 
 static t_float graph_lastxpix, graph_lastypix;

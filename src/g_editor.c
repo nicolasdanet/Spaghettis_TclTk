@@ -248,7 +248,7 @@ void glist_deselect(t_glist *x, t_gobj *y)
 
             rtext_gettext(z, &buf, &bufsize);
             text_setto((t_text *)y, x, buf, bufsize);
-            canvas_fixlinesfor(x, (t_text *)y);
+            canvas_fixlines(x, (t_text *)y);
             x->gl_editor->e_textedfor = 0;
         }
         if (fixdsp)
@@ -1023,7 +1023,7 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
         if (x->gl_owner && !x->gl_loading && glist_isvisible(x->gl_owner))
         {
             gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
-            canvas_fixlinesfor(x->gl_owner, &x->gl_obj);
+            canvas_fixlines(x->gl_owner, &x->gl_obj);
         }
     }
     else if (flag)
@@ -1044,7 +1044,7 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
         if (x->gl_owner && !x->gl_loading && glist_isvisible(x->gl_owner))
         {
             gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
-            canvas_fixlinesfor(x->gl_owner, &x->gl_obj);
+            canvas_fixlines(x->gl_owner, &x->gl_obj);
         }
     }
 }
@@ -1637,8 +1637,8 @@ void canvas_mouseup(t_canvas *x,
                 x->gl_editor->e_onmotion = MA_NONE;
                 sys_vgui(
 "::pd_confirm::checkAction .x%lx { Discard changes to %s? } { ::pd_connect::pdsend .x%lx dirty 0 } { no }\n",
-                    canvas_getrootfor(gl2),
-                        canvas_getrootfor(gl2)->gl_name->s_name, gl2);
+                    canvas_getroot(gl2),
+                        canvas_getroot(gl2)->gl_name->s_name, gl2);
                 return;
             }
                 /* OK, activate it */
@@ -1894,7 +1894,7 @@ void canvas_motion(t_canvas *x, t_floatarg xpos, t_floatarg ypos,
                     wantwidth = 1;
                 ob->te_width = wantwidth;
                 gobj_vis(y1, x, 0);
-                canvas_fixlinesfor(x, ob);
+                canvas_fixlines(x, ob);
                 gobj_vis(y1, x, 1);
             }
             else if (ob && ob->te_g.g_pd == canvas_class)
@@ -1904,7 +1904,7 @@ void canvas_motion(t_canvas *x, t_floatarg xpos, t_floatarg ypos,
                 ((t_canvas *)ob)->gl_pixheight += ypos - x->gl_editor->e_ynew;
                 x->gl_editor->e_xnew = xpos;
                 x->gl_editor->e_ynew = ypos;
-                canvas_fixlinesfor(x, ob);
+                canvas_fixlines(x, ob);
                 gobj_vis(y1, x, 1);
             }
             else post("not resizable");
@@ -1960,7 +1960,7 @@ void glob_verifyquit(void *dummy, t_floatarg f)
     {
         canvas_vis(g2, 1);
             sys_vgui("::pd_confirm::checkClose .x%lx { ::pd_connect::pdsend $top menusave 1 } { ::pd_connect::pdsend .x%lx menuclose 3 } {}\n",
-                     canvas_getrootfor(g2), g2);
+                     canvas_getroot(g2), g2);
         return;
     }
     if (f == 0 && sys_perf)
@@ -1988,13 +1988,13 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         {
             pd_vmess(&g->gl_obj.te_g.g_pd, gensym("menu-open"), "");
             sys_vgui("::pd_confirm::checkClose .x%lx { ::pd_connect::pdsend $top menusave 1 } { ::pd_connect::pdsend .x%lx menuclose 2 } {}\n",
-                     canvas_getrootfor(g), g);
+                     canvas_getroot(g), g);
             return;
         }
         else if (sys_perf)
         {
             sys_vgui("::pd_confirm::checkAction .x%lx { Close this window? } { ::pd_connect::pdsend .x%lx menuclose 1 } { yes }\n",
-                     canvas_getrootfor(x), x);
+                     canvas_getroot(x), x);
         }
         else pd_free(&x->gl_obj.te_g.g_pd);
     }
@@ -2010,7 +2010,7 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         {
             pd_vmess(&g->gl_obj.te_g.g_pd, gensym("menu-open"), "");
             sys_vgui("::pd_confirm::checkClose .x%lx { ::pd_connect::pdsend $top menusave 1 } { ::pd_connect::pdsend .x%lx menuclose 2 } {}\n",
-                     canvas_getrootfor(x), g);
+                     canvas_getroot(x), g);
             return;
         }
         else pd_free(&x->gl_obj.te_g.g_pd);
@@ -2026,7 +2026,7 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
 static void canvas_menufont(t_canvas *x)
 {
 /*  char buf[80];
-    t_canvas *x2 = canvas_getrootfor(x);
+    t_canvas *x2 = canvas_getroot(x);
     gfxstub_deleteforkey(x2);
     sprintf(buf, "pdtk_canvas_dofont %%s %d\n", x2->gl_font);
     gfxstub_new(&x2->gl_obj.te_g.g_pd, &x2->gl_obj.te_g.g_pd, buf); */
@@ -2559,7 +2559,7 @@ void canvas_connect(t_canvas *x, t_floatarg fwhoout, t_floatarg foutno,
         sys_vgui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
             glist_getcanvas(x), 0, 0, 0, 0,
             (obj_issignaloutlet(objsrc, outno) ? 2 : 1),oc);
-        canvas_fixlinesfor(x, objsrc);
+        canvas_fixlines(x, objsrc);
     }
     return;
 
@@ -2759,7 +2759,7 @@ static void canvas_font(t_canvas *x, t_floatarg font, t_floatarg resize,
     t_floatarg whichresize)
 {
     t_float realresize, realresx = 1, realresy = 1;
-    t_canvas *x2 = canvas_getrootfor(x);
+    t_canvas *x2 = canvas_getroot(x);
     if (!resize) realresize = 1;
     else
     {

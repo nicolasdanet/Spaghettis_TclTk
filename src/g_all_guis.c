@@ -441,7 +441,7 @@ void iemgui_size(void *x, t_iemgui *iemgui)
     if(glist_isvisible(iemgui->x_glist))
     {
         (*iemgui->x_draw)(x, iemgui->x_glist, IEM_GUI_DRAW_MODE_MOVE);
-        canvas_fixlinesfor(iemgui->x_glist, (t_text*)x);
+        canvas_fixlines(iemgui->x_glist, (t_text*)x);
     }
 }
 
@@ -452,7 +452,7 @@ void iemgui_delta(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av)
     if(glist_isvisible(iemgui->x_glist))
     {
         (*iemgui->x_draw)(x, iemgui->x_glist, IEM_GUI_DRAW_MODE_MOVE);
-        canvas_fixlinesfor(iemgui->x_glist, (t_text*)x);
+        canvas_fixlines(iemgui->x_glist, (t_text*)x);
     }
 }
 
@@ -463,7 +463,7 @@ void iemgui_pos(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av)
     if(glist_isvisible(iemgui->x_glist))
     {
         (*iemgui->x_draw)(x, iemgui->x_glist, IEM_GUI_DRAW_MODE_MOVE);
-        canvas_fixlinesfor(iemgui->x_glist, (t_text*)x);
+        canvas_fixlines(iemgui->x_glist, (t_text*)x);
     }
 }
 
@@ -488,7 +488,7 @@ void iemgui_displace(t_gobj *z, t_glist *glist, int dx, int dy)
     x->x_obj.te_xpix += dx;
     x->x_obj.te_ypix += dy;
     (*x->x_draw)((void *)z, glist, IEM_GUI_DRAW_MODE_MOVE);
-    canvas_fixlinesfor(glist, (t_text *)z);
+    canvas_fixlines(glist, (t_text *)z);
 }
 
 void iemgui_select(t_gobj *z, t_glist *glist, int selected)
@@ -501,7 +501,7 @@ void iemgui_select(t_gobj *z, t_glist *glist, int selected)
 
 void iemgui_delete(t_gobj *z, t_glist *glist)
 {
-    canvas_deletelinesfor(glist, (t_text *)z);
+    canvas_deletelines(glist, (t_text *)z);
 }
 
 void iemgui_vis(t_gobj *z, t_glist *glist, int vis)

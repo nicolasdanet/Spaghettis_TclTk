@@ -1045,7 +1045,7 @@ static void text_displace(t_gobj *z, t_glist *glist,
         rtext_displace(y, dx, dy);
         text_drawborder(x, glist, rtext_gettag(y),
             rtext_width(y), rtext_height(y), 0);
-        canvas_fixlinesfor(glist, x);
+        canvas_fixlines(glist, x);
     }
 }
 
@@ -1069,7 +1069,7 @@ static void text_activate(t_gobj *z, t_glist *glist, int state)
 static void text_delete(t_gobj *z, t_glist *glist)
 {
     t_text *x = (t_text *)z;
-        canvas_deletelinesfor(glist, x);
+        canvas_deletelines(glist, x);
 }
 
 static void text_vis(t_gobj *z, t_glist *glist, int vis)
@@ -1219,7 +1219,7 @@ static t_widgetbehavior gatom_widgetbehavior =
 #endif
 
     /* draw inlets and outlets for a text object or for a graph. */
-void glist_drawiofor(t_glist *glist, t_object *ob, int firsttime,
+void glist_drawio(t_glist *glist, t_object *ob, int firsttime,
     char *tag, int x1, int y1, int x2, int y2)
 {
     int n = obj_noutlets(ob), nplus = (n == 1 ? 1 : n-1), i;
@@ -1333,10 +1333,10 @@ void text_drawborder(t_text *x, t_glist *glist,
         /* draw inlets/outlets */
     
     if (ob = pd_checkobject(&x->te_g.g_pd))
-        glist_drawiofor(glist, ob, firsttime, tag, x1, y1, x2, y2);
+        glist_drawio(glist, ob, firsttime, tag, x1, y1, x2, y2);
 }
 
-void glist_eraseiofor(t_glist *glist, t_object *ob, char *tag)
+void glist_eraseio(t_glist *glist, t_object *ob, char *tag)
 {
     int i, n;
     n = obj_noutlets(ob);
@@ -1354,7 +1354,7 @@ void text_eraseborder(t_text *x, t_glist *glist, char *tag)
     if (x->te_type == T_TEXT && !glist->gl_edit) return;
     sys_vgui(".x%lx.c delete %sR\n",
         glist_getcanvas(glist), tag);
-    glist_eraseiofor(glist, x, tag);
+    glist_eraseio(glist, x, tag);
 }
 
     /* change text; if T_OBJECT, remake it.  */

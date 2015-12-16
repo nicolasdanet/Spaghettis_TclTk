@@ -601,7 +601,7 @@ void canvas_reflecttitle(t_canvas *x)
     /* mark a glist dirty or clean */
 void canvas_dirty(t_canvas *x, t_floatarg n)
 {
-    t_canvas *x2 = canvas_getrootfor(x);
+    t_canvas *x2 = canvas_getroot(x);
     if (glist_reloading)
         return;
     if ((unsigned)n != x2->gl_dirty)
@@ -765,7 +765,7 @@ static void canvas_drawlines(t_canvas *x)
     }
 }
 
-void canvas_fixlinesfor(t_canvas *x, t_text *text)
+void canvas_fixlines(t_canvas *x, t_text *text)
 {
     t_linetraverser t;
     t_outconnect *oc;
@@ -783,7 +783,7 @@ void canvas_fixlinesfor(t_canvas *x, t_text *text)
 }
 
     /* kill all lines for the object */
-void canvas_deletelinesfor(t_canvas *x, t_text *text)
+void canvas_deletelines(t_canvas *x, t_text *text)
 {
     t_linetraverser t;
     t_outconnect *oc;
@@ -1009,11 +1009,11 @@ int canvas_showtext(t_canvas *x)
 }
 
     /* get the document containing this canvas */
-t_canvas *canvas_getrootfor(t_canvas *x)
+t_canvas *canvas_getroot(t_canvas *x)
 {
     if ((!x->gl_owner) || canvas_isabstraction(x))
         return (x);
-    else return (canvas_getrootfor(x->gl_owner));
+    else return (canvas_getroot(x->gl_owner));
 }
 
 /* ------------------------- DSP chain handling ------------------------- */

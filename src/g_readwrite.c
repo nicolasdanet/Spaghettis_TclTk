@@ -741,14 +741,14 @@ static void canvas_savetofile(t_canvas *x, t_symbol *filename, t_symbol *dir,
 
 static void canvas_menusaveas(t_canvas *x, float fdestroy)
 {
-    t_canvas *x2 = canvas_getrootfor(x);
+    t_canvas *x2 = canvas_getroot(x);
     sys_vgui("::pd_file::saveAs .x%lx {%s} {%s} %d\n", x2,
         x2->gl_name->s_name, canvas_getdir(x2)->s_name, (fdestroy != 0));
 }
 
 static void canvas_menusave(t_canvas *x, float fdestroy)
 {
-    t_canvas *x2 = canvas_getrootfor(x);
+    t_canvas *x2 = canvas_getroot(x);
     char *name = x2->gl_name->s_name;
     if (*name && strncmp(name, "Untitled", 8)
             && (strlen(name) < 4 || strcmp(name + strlen(name)-4, ".pat")
