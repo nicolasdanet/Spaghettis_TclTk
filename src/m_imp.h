@@ -91,48 +91,48 @@ struct _pdinstance {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pdinstance *pd_this;                   /* Global to PureData. */
+extern t_pdinstance *pd_this;           /* Global to PureData. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-EXTERN void pd_emptylist        (t_pd *x);
-EXTERN void outlet_setstacklim  (void);
+void pd_emptylist       (t_pd *x);
+void outlet_setstacklim (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-EXTERN t_outconnect *obj_starttraverseoutlet    (t_object *x, t_outlet **op, int nout);
-EXTERN t_outconnect *obj_nexttraverseoutlet     (t_outconnect *lastconnect, 
-                                                    t_object **destp, 
-                                                    t_inlet **inletp, 
-                                                    int *whichp);
+t_outconnect *obj_starttraverseoutlet   (t_object *x, t_outlet **op, int nout);
+t_outconnect *obj_nexttraverseoutlet    (t_outconnect *lastconnect, 
+                                            t_object **destp, 
+                                            t_inlet **inletp, 
+                                            int *whichp);
 
-EXTERN t_outconnect *obj_connect                (t_object *source, int outno, t_object *sink, int inno);
-EXTERN void         obj_disconnect              (t_object *source, int outno, t_object *sink, int inno);
+t_outconnect *obj_connect               (t_object *source, int outno, t_object *sink, int inno);
+void         obj_disconnect             (t_object *source, int outno, t_object *sink, int inno);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-EXTERN int obj_noutlets         (t_object *x);
-EXTERN int obj_ninlets          (t_object *x);
-EXTERN int obj_issignalinlet    (t_object *x, int m);
-EXTERN int obj_issignaloutlet   (t_object *x, int m);
-EXTERN int obj_nsiginlets       (t_object *x);
-EXTERN int obj_nsigoutlets      (t_object *x);
-EXTERN int obj_siginletindex    (t_object *x, int m);
-EXTERN int obj_sigoutletindex   (t_object *x, int m);
+int obj_noutlets        (t_object *x);
+int obj_ninlets         (t_object *x);
+int obj_issignalinlet   (t_object *x, int m);
+int obj_issignaloutlet  (t_object *x, int m);
+int obj_nsiginlets      (t_object *x);
+int obj_nsigoutlets     (t_object *x);
+int obj_siginletindex   (t_object *x, int m);
+int obj_sigoutletindex  (t_object *x, int m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-EXTERN t_pd *glob_evalfile      (t_pd *ignore, t_symbol *name, t_symbol *dir);
-EXTERN void glob_initfromgui    (void *dummy, t_symbol *s, int argc, t_atom *argv);
-EXTERN void glob_quit           (void *dummy);
-EXTERN void open_via_helppath   (const char *name, const char *dir);
+t_pd *glob_evalfile     (t_pd *ignore, t_symbol *name, t_symbol *dir);
+void glob_initfromgui   (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void glob_quit          (void *dummy);
+void open_via_helppath  (const char *name, const char *dir);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
