@@ -192,6 +192,6 @@ void sys_getversion(int *major, int *minor, int *bugfix)
     if (minor)
         *minor = PD_MINOR_VERSION;
     if (bugfix)
-        *bugfix = PD_BUGFIX_VERSION;
+        *bugfix = PD_FIXED_VERSION;
 }
 

@@ -75,12 +75,12 @@ static int ooura_init( int n)
     return (1);
 }
 
-EXPORT void mayer_fht(t_sample *fz, int n)
+PD_DLL void mayer_fht(t_sample *fz, int n)
 {
     post("FHT: not yet implemented");
 }
 
-EXPORT void mayer_dofft(t_sample *fz1, t_sample *fz2, int n, int sgn)
+PD_DLL void mayer_dofft(t_sample *fz1, t_sample *fz2, int n, int sgn)
 {
     FFTFLT *buf, *fp3;
     int i;
@@ -103,17 +103,17 @@ EXPORT void mayer_dofft(t_sample *fz1, t_sample *fz2, int n, int sgn)
     }
 }
 
-EXPORT void mayer_fft(int n, t_sample *fz1, t_sample *fz2)
+PD_DLL void mayer_fft(int n, t_sample *fz1, t_sample *fz2)
 {
     mayer_dofft(fz1, fz2, n, -1);
 }
 
-EXPORT void mayer_ifft(int n, t_sample *fz1, t_sample *fz2)
+PD_DLL void mayer_ifft(int n, t_sample *fz1, t_sample *fz2)
 {
     mayer_dofft(fz1, fz2, n, 1);
 }
 
-EXPORT void mayer_realfft(int n, t_sample *fz)
+PD_DLL void mayer_realfft(int n, t_sample *fz)
 {
     FFTFLT *buf, *fp3;
     int i, nover2 = n/2;
@@ -131,7 +131,7 @@ EXPORT void mayer_realfft(int n, t_sample *fz)
             *fp1 = fp3[0], *fp2 = fp3[1];
 }
 
-EXPORT void mayer_realifft(int n, t_sample *fz)
+PD_DLL void mayer_realifft(int n, t_sample *fz)
 {
     FFTFLT *buf, *fp3;
     int i, nover2 = n/2;

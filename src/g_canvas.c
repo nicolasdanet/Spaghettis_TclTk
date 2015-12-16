@@ -1018,7 +1018,7 @@ t_canvas *canvas_getroot(t_canvas *x)
 
 /* ------------------------- DSP chain handling ------------------------- */
 
-EXTERN_STRUCT _dspcontext;
+PD_STRUCT _dspcontext;
 #define t_dspcontext struct _dspcontext
 
 void ugen_start(void);

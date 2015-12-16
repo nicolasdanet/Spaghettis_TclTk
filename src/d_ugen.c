@@ -22,8 +22,8 @@ extern t_class *vinlet_class, *voutlet_class, *canvas_class;
 t_float *obj_findsignalscalar(t_object *x, int m);
 static int ugen_loud;
 
-EXTERN_STRUCT _vinlet;
-EXTERN_STRUCT _voutlet;
+PD_STRUCT _vinlet;
+PD_STRUCT _voutlet;
 
 void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
     int myvecsize, int calcsize, int phase, int period, int frequency,

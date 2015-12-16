@@ -94,11 +94,11 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-EXTERN_STRUCT _rtext;
-EXTERN_STRUCT _gtemplate;
-EXTERN_STRUCT _guiconnect;
-EXTERN_STRUCT _canvasenvironment;
-EXTERN_STRUCT _fielddesc;
+PD_STRUCT _rtext;
+PD_STRUCT _gtemplate;
+PD_STRUCT _guiconnect;
+PD_STRUCT _canvasenvironment;
+PD_STRUCT _fielddesc;
 
 #define t_rtext                     struct _rtext
 #define t_gtemplate                 struct _gtemplate

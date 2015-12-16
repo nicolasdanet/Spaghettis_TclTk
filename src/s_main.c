@@ -29,7 +29,7 @@
 #define stringify(s) str(s)
 #define str(s) #s
  
-char *pd_version = "Pd-" stringify(PD_MAJOR_VERSION) "." stringify(PD_MINOR_VERSION) "." stringify(PD_BUGFIX_VERSION);
+char *pd_version = "Pd-" stringify(PD_MAJOR_VERSION) "." stringify(PD_MINOR_VERSION) "." stringify(PD_FIXED_VERSION);
 char pd_compiletime[] = __TIME__;
 char pd_compiledate[] = __DATE__;
 
