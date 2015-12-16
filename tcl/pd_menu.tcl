@@ -437,7 +437,7 @@ proc _close {} {
         "PdPatch" { 
             ::pd_connect::pdsend "$top menuclose 0"
         }
-        "PdDialog|PdText|PdTool" { 
+        "PdDialog|PdText|PdData|PdTool" { 
             switch -- [::getTitle $top] {
                 "Array"         { ::pd_array::closed  $top }
                 "Atom"          { ::pd_atom::closed   $top }

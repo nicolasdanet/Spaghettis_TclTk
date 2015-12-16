@@ -44,18 +44,18 @@ extern int sys_noloadbang;
 extern int sys_nogui;
 extern char *sys_guicmd;
 
-EXTERN int sys_nearestfontsize(int fontsize);
-EXTERN int sys_hostfontsize(int fontsize);
+EXPORT int sys_nearestfontsize(int fontsize);
+EXPORT int sys_hostfontsize(int fontsize);
 
 extern int sys_defaultfont;
-EXTERN t_symbol *sys_libdir;    /* library directory for auxilliary files */
+EXPORT t_symbol *sys_libdir;    /* library directory for auxilliary files */
 extern t_symbol *sys_guidir;    /* directory holding pd_gui, u_pdsend, etc */
 
 /* s_loader.c */
 
 typedef int (*loader_t)(t_canvas *canvas, char *classname); /* callback type */
-EXTERN int sys_load_lib(t_canvas *canvas, char *filename);
-EXTERN void sys_register_loader(loader_t loader);
+EXPORT int sys_load_lib(t_canvas *canvas, char *filename);
+EXPORT void sys_register_loader(loader_t loader);
 
 /* s_audio.c */
 
@@ -66,8 +66,8 @@ EXTERN void sys_register_loader(loader_t loader);
 #define DEFDACBLKSIZE 64
 extern int sys_schedblocksize;  /* audio block size for scheduler */
 extern int sys_hipriority;      /* real-time flag, true if priority boosted */
-EXTERN t_sample *sys_soundout;
-EXTERN t_sample *sys_soundin;
+EXPORT t_sample *sys_soundout;
+EXPORT t_sample *sys_soundin;
 extern int sys_inchannels;
 extern int sys_outchannels;
 extern int sys_advance_samples; /* scheduler advance in samples */
@@ -75,22 +75,22 @@ extern int sys_blocksize;       /* audio I/O block size in sample frames */
 extern t_float sys_dacsr;
 extern int sys_schedadvance;
 extern int sys_sleepgrain;
-EXTERN void sys_set_audio_settings(int naudioindev, int *audioindev,
+EXPORT void sys_set_audio_settings(int naudioindev, int *audioindev,
     int nchindev, int *chindev,
     int naudiooutdev, int *audiooutdev, int nchoutdev, int *choutdev,
     int srate, int advance, int callback, int blocksize);
 /* the same as above, but reopens the audio subsystem if needed */
-EXTERN void sys_set_audio_settings_reopen(int naudioindev, int *audioindev,
+EXPORT void sys_set_audio_settings_reopen(int naudioindev, int *audioindev,
     int nchindev, int *chindev,
     int naudiooutdev, int *audiooutdev, int nchoutdev, int *choutdev,
     int srate, int advance, int callback, int blocksize);
-EXTERN void sys_reopen_audio( void);
-EXTERN void sys_close_audio(void);
+EXPORT void sys_reopen_audio( void);
+EXPORT void sys_close_audio(void);
     /* return true if the interface prefers always being open (ala jack) : */
-EXTERN int audio_shouldkeepopen( void);
-EXTERN int audio_isopen( void);     /* true if audio interface is open */
-EXTERN int sys_audiodevnametonumber(int output, const char *name);
-EXTERN void sys_audiodevnumbertoname(int output, int devno, char *name,
+EXPORT int audio_shouldkeepopen( void);
+EXPORT int audio_isopen( void);     /* true if audio interface is open */
+EXPORT int sys_audiodevnametonumber(int output, const char *name);
+EXPORT void sys_audiodevnumbertoname(int output, int devno, char *name,
     int namesize);
 
 int sys_send_dacs(void);
@@ -101,10 +101,10 @@ void sys_getmeters(t_sample *inmax, t_sample *outmax);
 void sys_listdevs(void);
 void sys_setblocksize(int n);
 
-EXTERN void sys_get_audio_devs(char *indevlist, int *nindevs,
+EXPORT void sys_get_audio_devs(char *indevlist, int *nindevs,
                           char *outdevlist, int *noutdevs, int *canmulti, int *cancallback, 
                           int maxndev, int devdescsize);
-EXTERN void sys_get_audio_apis(char *buf);
+EXPORT void sys_get_audio_apis(char *buf);
 
 /* s_midi.c */
 #define MAXMIDIINDEV 16         /* max. number of input ports */
@@ -115,26 +115,26 @@ extern int sys_nmidiout;
 extern int sys_midiindevlist[];
 extern int sys_midioutdevlist[];
 
-EXTERN void sys_open_midi(int nmidiin, int *midiinvec,
+EXPORT void sys_open_midi(int nmidiin, int *midiinvec,
     int nmidiout, int *midioutvec, int enable);
 
-EXTERN void sys_get_midi_apis(char *buf);
-EXTERN void sys_get_midi_devs(char *indevlist, int *nindevs,
+EXPORT void sys_get_midi_apis(char *buf);
+EXPORT void sys_get_midi_devs(char *indevlist, int *nindevs,
     char *outdevlist, int *noutdevs, 
    int maxndev, int devdescsize);
-EXTERN void sys_get_midi_params(int *pnmidiindev, int *pmidiindev,
+EXPORT void sys_get_midi_params(int *pnmidiindev, int *pmidiindev,
     int *pnmidioutdev, int *pmidioutdev);
-EXTERN int sys_mididevnametonumber(int output, const char *name);
-EXTERN void sys_mididevnumbertoname(int output, int devno, char *name,
+EXPORT int sys_mididevnametonumber(int output, const char *name);
+EXPORT void sys_mididevnumbertoname(int output, int devno, char *name,
     int namesize);
 
-EXTERN void sys_reopen_midi( void);
-EXTERN void sys_close_midi( void);
-EXTERN void sys_putmidimess(int portno, int a, int b, int c);
-EXTERN void sys_putmidibyte(int portno, int a);
-EXTERN void sys_poll_midi(void);
-EXTERN void sys_setmiditimediff(double inbuftime, double outbuftime);
-EXTERN void sys_midibytein(int portno, int byte);
+EXPORT void sys_reopen_midi( void);
+EXPORT void sys_close_midi( void);
+EXPORT void sys_putmidimess(int portno, int a, int b, int c);
+EXPORT void sys_putmidibyte(int portno, int a);
+EXPORT void sys_poll_midi(void);
+EXPORT void sys_setmiditimediff(double inbuftime, double outbuftime);
+EXPORT void sys_midibytein(int portno, int byte);
 
     /* implemented in the system dependent MIDI code (s_midi_pm.c, etc. ) */
 void midi_getdevs(char *indevlist, int *nindevs,
@@ -143,12 +143,12 @@ void sys_do_open_midi(int nmidiindev, int *midiindev,
     int nmidioutdev, int *midioutdev);
 
 #ifdef USEAPI_ALSA
-EXTERN void sys_alsa_putmidimess(int portno, int a, int b, int c);
-EXTERN void sys_alsa_putmidibyte(int portno, int a);
-EXTERN void sys_alsa_poll_midi(void);
-EXTERN void sys_alsa_setmiditimediff(double inbuftime, double outbuftime);
-EXTERN void sys_alsa_midibytein(int portno, int byte);
-EXTERN void sys_alsa_close_midi( void);
+EXPORT void sys_alsa_putmidimess(int portno, int a, int b, int c);
+EXPORT void sys_alsa_putmidibyte(int portno, int a);
+EXPORT void sys_alsa_poll_midi(void);
+EXPORT void sys_alsa_setmiditimediff(double inbuftime, double outbuftime);
+EXPORT void sys_alsa_midibytein(int portno, int byte);
+EXPORT void sys_alsa_close_midi( void);
 
 
     /* implemented in the system dependent MIDI code (s_midi_pm.c, etc. ) */
@@ -159,7 +159,7 @@ void sys_alsa_do_open_midi(int nmidiindev, int *midiindev,
 #endif
 
 /* m_sched.c */
-EXTERN void sys_log_error(int type);
+EXPORT void sys_log_error(int type);
 #define ERR_NOTHING 0
 #define ERR_ADCSLEPT 1
 #define ERR_DACSLEPT 2
@@ -173,11 +173,11 @@ void sched_set_using_audio(int flag);
 
 /* s_inter.c */
 
-EXTERN void sys_microsleep(int microsec);
-EXTERN void sys_init_fdpoll(void);
+EXPORT void sys_microsleep(int microsec);
+EXPORT void sys_init_fdpoll(void);
 
-EXTERN void sys_bail(int exitcode);
-EXTERN int sys_pollgui(void);
+EXPORT void sys_bail(int exitcode);
+EXPORT int sys_pollgui(void);
 
 EXTERN_STRUCT _socketreceiver;
 #define t_socketreceiver struct _socketreceiver
@@ -185,15 +185,15 @@ EXTERN_STRUCT _socketreceiver;
 typedef void (*t_socketnotifier)(void *x, int n);
 typedef void (*t_socketreceivefn)(void *x, t_binbuf *b);
 
-EXTERN t_socketreceiver *socketreceiver_new(void *owner,
+EXPORT t_socketreceiver *socketreceiver_new(void *owner,
     t_socketnotifier notifier, t_socketreceivefn socketreceivefn, int udp);
-EXTERN void socketreceiver_read(t_socketreceiver *x, int fd);
-EXTERN void sys_sockerror(char *s);
-EXTERN void sys_closesocket(int fd);
+EXPORT void socketreceiver_read(t_socketreceiver *x, int fd);
+EXPORT void sys_sockerror(char *s);
+EXPORT void sys_closesocket(int fd);
 
 typedef void (*t_fdpollfn)(void *ptr, int fd);
-EXTERN void sys_addpollfn(int fd, t_fdpollfn fn, void *ptr);
-EXTERN void sys_rmpollfn(int fd);
+EXPORT void sys_addpollfn(int fd, t_fdpollfn fn, void *ptr);
+EXPORT void sys_rmpollfn(int fd);
 #if defined(USEAPI_OSS) || defined(USEAPI_ALSA)
 void sys_setalarm(int microsec);
 #endif
@@ -343,16 +343,16 @@ void dummy_getdevs(char *indevlist, int *nindevs, char *outdevlist,
 void dummy_listdevs( void);
 
 void sys_listmididevs(void);
-EXTERN void sys_set_midi_api(int whichapi);
-EXTERN void sys_set_audio_api(int whichapi);
-EXTERN int sys_audioapi;
-EXTERN void sys_set_audio_state(int onoff);
+EXPORT void sys_set_midi_api(int whichapi);
+EXPORT void sys_set_audio_api(int whichapi);
+EXPORT int sys_audioapi;
+EXPORT void sys_set_audio_state(int onoff);
 
 /* API dependent audio flags and settings */
 void oss_set32bit( void);
 void linux_alsa_devname(char *devname);
 
-EXTERN void sys_get_audio_params(
+EXPORT void sys_get_audio_params(
     int *pnaudioindev, int *paudioindev, int *chindev,
     int *pnaudiooutdev, int *paudiooutdev, int *choutdev,
     int *prate, int *padvance, int *callback, int *blocksize);
@@ -369,41 +369,41 @@ extern int sys_printtostderr;
 
 /* jsarlo { */
 
-EXTERN double sys_time;
-EXTERN double sys_time_per_dsp_tick;
-EXTERN int sys_externalschedlib;
+EXPORT double sys_time;
+EXPORT double sys_time_per_dsp_tick;
+EXPORT int sys_externalschedlib;
 
-EXTERN t_sample* get_sys_soundout(void ) ;
-EXTERN t_sample* get_sys_soundin(void ) ;
-EXTERN int* get_sys_main_advance(void ) ;
-EXTERN double* get_sys_time_per_dsp_tick(void ) ;
-EXTERN int* get_sys_schedblocksize(void ) ;
-EXTERN double* get_sys_time(void ) ;
-EXTERN t_float* get_sys_dacsr(void ) ;
-EXTERN int* get_sys_sleepgrain(void ) ;
-EXTERN int* get_sys_schedadvance(void ) ;
+EXPORT t_sample* get_sys_soundout(void ) ;
+EXPORT t_sample* get_sys_soundin(void ) ;
+EXPORT int* get_sys_main_advance(void ) ;
+EXPORT double* get_sys_time_per_dsp_tick(void ) ;
+EXPORT int* get_sys_schedblocksize(void ) ;
+EXPORT double* get_sys_time(void ) ;
+EXPORT t_float* get_sys_dacsr(void ) ;
+EXPORT int* get_sys_sleepgrain(void ) ;
+EXPORT int* get_sys_schedadvance(void ) ;
 
-EXTERN void sys_clearhist(void );
-EXTERN void sys_initmidiqueue(void );
-EXTERN int sys_addhist(int phase);
-EXTERN void sys_setmiditimediff(double inbuftime, double outbuftime);
-EXTERN void sched_tick( void);
-EXTERN void sys_pollmidiqueue(void );
-EXTERN int sys_pollgui(void );
-EXTERN void sys_setchsr(int chin, int chout, int sr);
+EXPORT void sys_clearhist(void );
+EXPORT void sys_initmidiqueue(void );
+EXPORT int sys_addhist(int phase);
+EXPORT void sys_setmiditimediff(double inbuftime, double outbuftime);
+EXPORT void sched_tick( void);
+EXPORT void sys_pollmidiqueue(void );
+EXPORT int sys_pollgui(void );
+EXPORT void sys_setchsr(int chin, int chout, int sr);
 
-EXTERN void inmidi_realtimein(int portno, int cmd);
-EXTERN void inmidi_byte(int portno, int byte);
-EXTERN void inmidi_sysex(int portno, int byte);
-EXTERN void inmidi_noteon(int portno, int channel, int pitch, int velo);
-EXTERN void inmidi_controlchange(int portno,
+EXPORT void inmidi_realtimein(int portno, int cmd);
+EXPORT void inmidi_byte(int portno, int byte);
+EXPORT void inmidi_sysex(int portno, int byte);
+EXPORT void inmidi_noteon(int portno, int channel, int pitch, int velo);
+EXPORT void inmidi_controlchange(int portno,
                                  int channel,
                                  int ctlnumber,
                                  int value);
-EXTERN void inmidi_programchange(int portno, int channel, int value);
-EXTERN void inmidi_pitchbend(int portno, int channel, int value);
-EXTERN void inmidi_aftertouch(int portno, int channel, int value);
-EXTERN void inmidi_polyaftertouch(int portno,
+EXPORT void inmidi_programchange(int portno, int channel, int value);
+EXPORT void inmidi_pitchbend(int portno, int channel, int value);
+EXPORT void inmidi_aftertouch(int portno, int channel, int value);
+EXPORT void inmidi_polyaftertouch(int portno,
                                   int channel,
                                   int pitch,
                                   int value);

@@ -32,7 +32,7 @@ proc show {top content} {
 
 proc _create {top content} {
 
-    toplevel $top -class PdText
+    toplevel $top -class PdData
     wm title $top [_ "Data"]
     wm group $top .
     

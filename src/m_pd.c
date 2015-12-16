@@ -340,7 +340,7 @@ void pd_init(void)
     garray_init();
 }
 
-EXTERN t_canvas *pd_getcanvaslist(void)
+EXPORT t_canvas *pd_getcanvaslist(void)
 {
     return (pd_this->pd_canvaslist);
 }

@@ -155,8 +155,9 @@ proc watchdog {} {
 proc cancel {w} {
 
     set top [winfo toplevel $w]
+    set class [winfo class $top]
     
-    if {[winfo class $top] eq "PdDialog"} { ::pd_connect::pdsend "$top cancel" }
+    if {$class eq "PdDialog" || $class eq "PdData"} { ::pd_connect::pdsend "$top cancel" }
 }
 
 # ------------------------------------------------------------------------------------------------------------
