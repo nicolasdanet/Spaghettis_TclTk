@@ -768,18 +768,18 @@ static void glist_doreload(t_glist *gl, t_symbol *name, t_symbol *dir,
 
     /* this flag stops canvases from being marked "dirty" if we have to touch
     them to reload an abstraction; also suppress window list update */
-int glist_amreloadingabstractions = 0;
+int glist_reloading = 0;
 
     /* call canvas_doreload on everyone */
 void canvas_reload(t_symbol *name, t_symbol *dir, t_gobj *except)
 {
     t_canvas *x;
     int dspwas = canvas_suspend_dsp();
-    glist_amreloadingabstractions = 1;
+    glist_reloading = 1;
         /* find all root canvases */
     for (x = pd_getcanvaslist(); x; x = x->gl_next)
         glist_doreload(x, name, dir, except);
-    glist_amreloadingabstractions = 0;
+    glist_reloading = 0;
     canvas_resume_dsp(dspwas);
 }
 
