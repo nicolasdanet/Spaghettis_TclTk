@@ -533,7 +533,7 @@ EXTERN t_parentwidgetbehavior *class_parentwidget   (t_class *c);
 #pragma mark -
 
 typedef void (*t_savefn)(t_gobj *x, t_binbuf *b);
-typedef void (*t_propertiesfn)(t_gobj *x, struct _glist *glist);
+typedef void (*t_propertiesfn)(t_gobj *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

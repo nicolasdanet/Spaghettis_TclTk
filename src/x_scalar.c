@@ -86,8 +86,8 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
         saved file or copy buffer */
     pd_bind(&x->gl_obj.te_g.g_pd, asym); 
 noscalar:
-    newest = &x->gl_pd;     /* mimic action of canvas_pop() */
-    pd_popsym(&x->gl_pd);
+    newest = &x->gl_obj.te_g.g_pd;     /* mimic action of canvas_pop() */
+    pd_popsym(&x->gl_obj.te_g.g_pd);
     x->gl_loading = 0;
     
         /* bash the class to "scalar define" -- see comment in x_array,c */

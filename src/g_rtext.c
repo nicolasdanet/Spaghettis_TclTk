@@ -308,7 +308,7 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
             dispx + LMARGIN, dispy + TMARGIN,
             outchars_b, tempbuf, sys_hostfontsize(font),
             (glist_isselected(x->x_glist,
-                &x->x_glist->gl_gobj)? "blue" : "black"));
+                &x->x_glist->gl_obj.te_g)? "blue" : "black"));
     }
     else if (action == SEND_UPDATE)
     {

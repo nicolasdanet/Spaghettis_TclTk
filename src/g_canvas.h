@@ -46,6 +46,15 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define DT_FLOAT                    0
+#define DT_SYMBOL                   1
+#define DT_TEXT                     2
+#define DT_ARRAY                    3
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 EXTERN_STRUCT _rtext;
 EXTERN_STRUCT _gtemplate;
 EXTERN_STRUCT _guiconnect;
@@ -111,7 +120,7 @@ struct _glist {
     t_gobj              *gl_list;
     t_gstub             *gl_stub;
     int                 gl_valid;
-    struct _glist       *gl_owner;
+    t_glist             *gl_owner;
     int                 gl_pixwidth;
     int                 gl_pixheight;
     t_float             gl_x1;
@@ -135,7 +144,7 @@ struct _glist {
     t_editor            *gl_editor;
     t_symbol            *gl_name;
     int                 gl_font;
-    struct _glist       *gl_next;
+    t_glist             *gl_next;
     t_canvasenvironment *gl_env;
     char                gl_havewindow;
     char                gl_mapped;
@@ -150,154 +159,142 @@ struct _glist {
     char                gl_private;
     };
 
+typedef struct _dataslot {
+    int         ds_type;
+    t_symbol    *ds_name;
+    t_symbol    *ds_arraytemplate;
+    } t_dataslot;
+
+typedef struct _template {
+    t_pd        t_pdobj;   
+    t_gtemplate *t_list;  
+    t_symbol    *t_sym;    
+    int         t_n;    
+    t_dataslot  *t_vec;  
+    } t_template;
+
+struct _array {
+    int         a_n;
+    int         a_elemsize;
+    char        *a_vec;
+    t_symbol    *a_templatesym;
+    int         a_valid;
+    t_gpointer  a_gp;
+    t_gstub     *a_stub;
+    };
+
+typedef struct _linetraverser {
+    t_canvas        *tr_x;
+    t_object        *tr_ob;
+    int             tr_nout;
+    int             tr_outno;
+    t_object        *tr_ob2;
+    t_outlet        *tr_outlet;
+    t_inlet         *tr_inlet;
+    int             tr_nin;
+    int             tr_inno;
+    int             tr_x11, tr_y11, tr_x12, tr_y12;
+    int             tr_x21, tr_y21, tr_x22, tr_y22;
+    int             tr_lx1, tr_ly1, tr_lx2, tr_ly2;
+    t_outconnect    *tr_nextoc;
+    int             tr_nextoutno;
+    } t_linetraverser;
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define gl_gobj gl_obj.te_g
-#define gl_pd gl_gobj.g_pd
+typedef void (*t_getrectfn)(t_gobj *x, t_glist *glist, int *x1, int *y1, int *x2, int *y2);
+typedef void (*t_displacefn)(t_gobj *x, t_glist *glist, int dx, int dy);
+typedef void (*t_selectfn)(t_gobj *x, t_glist *glist, int state);
+typedef void (*t_activatefn)(t_gobj *x, t_glist *glist, int state);
+typedef void (*t_deletefn)(t_gobj *x, t_glist *glist);
+typedef void (*t_visfn)(t_gobj *x, t_glist *glist, int flag);
+typedef int  (*t_clickfn)(t_gobj *x, t_glist *glist, int xpix, int ypix, int shift, int alt, int dbl, int b);
 
-/* a data structure to describe a field in a pure datum */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-#define DT_FLOAT 0
-#define DT_SYMBOL 1
-#define DT_TEXT 2
-#define DT_ARRAY 3
+struct _widgetbehavior {
+    t_getrectfn     w_getrectfn;
+    t_displacefn    w_displacefn;
+    t_selectfn      w_selectfn;
+    t_activatefn    w_activatefn;
+    t_deletefn      w_deletefn;
+    t_visfn         w_visfn;
+    t_clickfn       w_clickfn;
+    };
 
-typedef struct _dataslot
-{
-    int ds_type;
-    t_symbol *ds_name;
-    t_symbol *ds_arraytemplate;     /* filled in for arrays only */
-} t_dataslot;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-typedef struct _template
-{
-    t_pd t_pdobj;               /* header */
-    struct _gtemplate *t_list;  /* list of "struct"/gtemplate objects */
-    t_symbol *t_sym;            /* name */
-    int t_n;                    /* number of dataslots (fields) */
-    t_dataslot *t_vec;          /* array of dataslots */
-} t_template;
+typedef void    (*t_parentgetrectfn)    (t_gobj *x, t_glist *glist, t_word *data, t_template *tmpl,
+                                            t_float basex,
+                                            t_float basey,
+                                            int *x1,
+                                            int *y1,
+                                            int *x2,
+                                            int *y2);
+typedef void    (*t_parentdisplacefn)   (t_gobj *x, t_glist *glist, t_word *data, t_template *tmpl,
+                                            t_float basex,
+                                            t_float basey,
+                                            int dx, 
+                                            int dy);
+typedef void    (*t_parentselectfn)     (t_gobj *x, t_glist *glist, t_word *data, t_template *tmpl,
+                                            t_float basex,
+                                            t_float basey,
+                                            int state);
+typedef void    (*t_parentactivatefn)   (t_gobj *x, t_glist *glist, t_word *data, t_template *tmpl,
+                                            t_float basex,
+                                            t_float basey,
+                                            int state);
+typedef void    (*t_parentvisfn)        (t_gobj *x, t_glist *glist, t_word *data, t_template *tmpl,
+                                            t_float basex,
+                                            t_float basey,
+                                            int flag);
+typedef int     (*t_parentclickfn)      (t_gobj *x, t_glist *glist, t_word *data, t_template *tmpl,
+                                            t_scalar *sc,
+                                            t_array *ap,
+                                            t_float basex,
+                                            t_float basey,
+                                            int xpix,
+                                            int ypix,
+                                            int shift,
+                                            int alt,
+                                            int dbl,
+                                            int b);
 
-struct _array
-{
-    int a_n;            /* number of elements */
-    int a_elemsize;     /* size in bytes; LATER get this from template */
-    char *a_vec;        /* array of elements */
-    t_symbol *a_templatesym;    /* template for elements */
-    int a_valid;        /* protection against stale pointers into array */
-    t_gpointer a_gp;    /* pointer to scalar or array element we're in */
-    t_gstub *a_stub;    /* stub for pointing into this array */
-};
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-    /* structure for traversing all the connections in a glist */
-typedef struct _linetraverser
-{
-    t_canvas *tr_x;
-    t_object *tr_ob;
-    int tr_nout;
-    int tr_outno;
-    t_object *tr_ob2;
-    t_outlet *tr_outlet;
-    t_inlet *tr_inlet;
-    int tr_nin;
-    int tr_inno;
-    int tr_x11, tr_y11, tr_x12, tr_y12;
-    int tr_x21, tr_y21, tr_x22, tr_y22;
-    int tr_lx1, tr_ly1, tr_lx2, tr_ly2;
-    t_outconnect *tr_nextoc;
-    int tr_nextoutno;
-} t_linetraverser;
+struct _parentwidgetbehavior {
+    t_parentgetrectfn   w_parentgetrectfn;
+    t_parentdisplacefn  w_parentdisplacefn;
+    t_parentselectfn    w_parentselectfn;
+    t_parentactivatefn  w_parentactivatefn;
+    t_parentvisfn       w_parentvisfn;
+    t_parentclickfn     w_parentclickfn;
+    };
 
-/* function types used to define graphical behavior for gobjs, a bit like X
-widgets.  We don't use Pd methods because Pd's typechecking can't specify the
-types of pointer arguments.  Also it's more convenient this way, since
-every "patchable" object can just get the "text" behaviors. */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-        /* Call this to get a gobj's bounding rectangle in pixels */
-typedef void (*t_getrectfn)(t_gobj *x, struct _glist *glist,
-    int *x1, int *y1, int *x2, int *y2);
-        /* and this to displace a gobj: */
-typedef void (*t_displacefn)(t_gobj *x, struct _glist *glist, int dx, int dy);
-        /* change color to show selection: */
-typedef void (*t_selectfn)(t_gobj *x, struct _glist *glist, int state);
-        /* change appearance to show activation/deactivation: */
-typedef void (*t_activatefn)(t_gobj *x, struct _glist *glist, int state);
-        /* warn a gobj it's about to be deleted */
-typedef void (*t_deletefn)(t_gobj *x, struct _glist *glist);
-        /*  making visible or invisible */
-typedef void (*t_visfn)(t_gobj *x, struct _glist *glist, int flag);
-        /* field a mouse click (when not in "edit" mode) */
-typedef int (*t_clickfn)(t_gobj *x, struct _glist *glist,
-    int xpix, int ypix, int shift, int alt, int dbl, int doit);
-        /* ... and later, resizing; getting/setting font or color... */
+#define CURSOR_RUNMODE_NOTHING          0
+#define CURSOR_RUNMODE_CLICKME          1
+#define CURSOR_RUNMODE_THICKEN          2
+#define CURSOR_RUNMODE_ADDPOINT         3
 
-struct _widgetbehavior
-{
-    t_getrectfn w_getrectfn;
-    t_displacefn w_displacefn;
-    t_selectfn w_selectfn;
-    t_activatefn w_activatefn;
-    t_deletefn w_deletefn;
-    t_visfn w_visfn;
-    t_clickfn w_clickfn;
-};
+#define CURSOR_EDITMODE_NOTHING         4
+#define CURSOR_EDITMODE_CONNECT         5
+#define CURSOR_EDITMODE_DISCONNECT      6
+#define CURSOR_EDITMODE_RESIZE          7
 
-/* -------- behaviors for scalars defined by objects in template --------- */
-/* these are set by "drawing commands" in g_template.c which add appearance to
-scalars, which live in some other window.  If the scalar is just included
-in a canvas the "parent" is a misnomer.  There is also a text scalar object
-which really does draw the scalar on the parent window; see g_scalar.c. */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-/* note how the click function wants the whole scalar, not the "data", so
-doesn't work on array elements... LATER reconsider this */
-
-        /* bounding rectangle: */
-typedef void (*t_parentgetrectfn)(t_gobj *x, struct _glist *glist,
-    t_word *data, t_template *tmpl, t_float basex, t_float basey,
-    int *x1, int *y1, int *x2, int *y2);
-        /* displace it */
-typedef void (*t_parentdisplacefn)(t_gobj *x, struct _glist *glist, 
-    t_word *data, t_template *tmpl, t_float basex, t_float basey,
-    int dx, int dy);
-        /* change color to show selection */
-typedef void (*t_parentselectfn)(t_gobj *x, struct _glist *glist,
-    t_word *data, t_template *tmpl, t_float basex, t_float basey,
-    int state);
-        /* change appearance to show activation/deactivation: */
-typedef void (*t_parentactivatefn)(t_gobj *x, struct _glist *glist,
-    t_word *data, t_template *tmpl, t_float basex, t_float basey,
-    int state);
-        /*  making visible or invisible */
-typedef void (*t_parentvisfn)(t_gobj *x, struct _glist *glist,
-    t_word *data, t_template *tmpl, t_float basex, t_float basey,
-    int flag);
-        /*  field a mouse click */
-typedef int (*t_parentclickfn)(t_gobj *x, struct _glist *glist,
-    t_word *data, t_template *tmpl, t_scalar *sc, t_array *ap,
-    t_float basex, t_float basey,
-    int xpix, int ypix, int shift, int alt, int dbl, int doit);
-
-struct _parentwidgetbehavior
-{
-    t_parentgetrectfn w_parentgetrectfn;
-    t_parentdisplacefn w_parentdisplacefn;
-    t_parentselectfn w_parentselectfn;
-    t_parentactivatefn w_parentactivatefn;
-    t_parentvisfn w_parentvisfn;
-    t_parentclickfn w_parentclickfn;
-};
-
-    /* cursor definitions; used as return value for t_parentclickfn */
-#define CURSOR_RUNMODE_NOTHING 0
-#define CURSOR_RUNMODE_CLICKME 1
-#define CURSOR_RUNMODE_THICKEN 2
-#define CURSOR_RUNMODE_ADDPOINT 3
-#define CURSOR_EDITMODE_NOTHING 4
-#define CURSOR_EDITMODE_CONNECT 5
-#define CURSOR_EDITMODE_DISCONNECT 6
-#define CURSOR_EDITMODE_RESIZE 7
 EXTERN void canvas_setcursor(t_glist *x, unsigned int cursornum);
 
 extern t_canvas *canvas_whichfind;  /* last canvas we did a find in */ 

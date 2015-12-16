@@ -125,12 +125,12 @@ t_canvas *canvas_getcurrent(void)
 
 void canvas_setcurrent(t_canvas *x)
 {
-    pd_pushsym(&x->gl_pd);
+    pd_pushsym(&x->gl_obj.te_g.g_pd);
 }
 
 void canvas_unsetcurrent(t_canvas *x)
 {
-    pd_popsym(&x->gl_pd);
+    pd_popsym(&x->gl_obj.te_g.g_pd);
 }
 
 t_canvasenvironment *canvas_getenv(t_canvas *x)
@@ -307,7 +307,7 @@ int glist_valid = 10000;
 void glist_init(t_glist *x)
 {
         /* zero out everyone except "pd" field */
-    memset(((char *)x) + sizeof(x->gl_pd), 0, sizeof(*x) - sizeof(x->gl_pd));
+    memset(((char *)x) + sizeof(x->gl_obj.te_g.g_pd), 0, sizeof(*x) - sizeof(x->gl_obj.te_g.g_pd));
     x->gl_stub = gstub_new(x, 0);
     x->gl_valid = ++glist_valid;
     x->gl_xlabel = (t_symbol **)getbytes(0);
@@ -398,7 +398,7 @@ t_canvas *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
     x->gl_willvis = vis;
     x->gl_edit = !strncmp(x->gl_name->s_name, "Untitled", 8);
     x->gl_font = sys_nearestfontsize(font);
-    pd_pushsym(&x->gl_pd);
+    pd_pushsym(&x->gl_obj.te_g.g_pd);
     return(x);
 }
 
@@ -486,8 +486,8 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     x->gl_obj.te_binbuf = binbuf_new();
     binbuf_addv(x->gl_obj.te_binbuf, "s", gensym("graph"));
     if (!menu)
-        pd_pushsym(&x->gl_pd);
-    glist_add(g, &x->gl_gobj);
+        pd_pushsym(&x->gl_obj.te_g.g_pd);
+    glist_add(g, &x->gl_obj.te_g);
     return (x);
 }
 
@@ -566,13 +566,13 @@ t_symbol *canvas_makebindsym(t_symbol *s)
 static void canvas_bind(t_canvas *x)
 {
     if (strcmp(x->gl_name->s_name, "Pd"))
-        pd_bind(&x->gl_pd, canvas_makebindsym(x->gl_name));
+        pd_bind(&x->gl_obj.te_g.g_pd, canvas_makebindsym(x->gl_name));
 }
 
 static void canvas_unbind(t_canvas *x)
 {
     if (strcmp(x->gl_name->s_name, "Pd"))
-        pd_unbind(&x->gl_pd, canvas_makebindsym(x->gl_name));
+        pd_unbind(&x->gl_obj.te_g.g_pd, canvas_makebindsym(x->gl_name));
 }
 
 void canvas_reflecttitle(t_canvas *x)
@@ -688,13 +688,13 @@ void glist_menu_open(t_glist *x)
         else
         {
                 /* erase ourself in parent window */
-            gobj_vis(&x->gl_gobj, gl2, 0);
+            gobj_vis(&x->gl_obj.te_g, gl2, 0);
                     /* get rid of our editor (and subeditors) */
             if (x->gl_editor)
                 canvas_destroy_editor(x);
             x->gl_havewindow = 1;
                     /* redraw ourself in parent window (blanked out this time) */
-            gobj_vis(&x->gl_gobj, gl2, 1);
+            gobj_vis(&x->gl_obj.te_g, gl2, 1);
         }
     }
     canvas_vis(x, 1);
@@ -831,7 +831,7 @@ static void canvas_pop(t_canvas *x, t_floatarg fvis)
 {
     if (fvis != 0)
         canvas_vis(x, 1);
-    pd_popsym(&x->gl_pd);
+    pd_popsym(&x->gl_obj.te_g.g_pd);
     canvas_resortinlets(x);
     canvas_resortoutlets(x);
     x->gl_loading = 0;
@@ -921,8 +921,8 @@ static void canvas_relocate(t_canvas *x, t_symbol *canvasgeom,
 
 void canvas_popabstraction(t_canvas *x)
 {
-    newest = &x->gl_pd;
-    pd_popsym(&x->gl_pd);
+    newest = &x->gl_obj.te_g.g_pd;
+    pd_popsym(&x->gl_obj.te_g.g_pd);
     x->gl_loading = 0;
     canvas_resortinlets(x);
     canvas_resortoutlets(x);

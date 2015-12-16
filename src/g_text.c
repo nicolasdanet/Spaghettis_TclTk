@@ -202,7 +202,7 @@ void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         t_binbuf *b = binbuf_new();
         int connectme, xpix, ypix, indx, nobj;
         canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
-        pd_vmess(&gl->gl_pd, gensym("editmode"), "i", 1);
+        pd_vmess(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
         canvas_objtext(gl, xpix, ypix, 0, 1, b);
         if (connectme)
             canvas_connect(gl, indx, 0, nobj, 0);
@@ -219,7 +219,7 @@ void canvas_iemguis(t_glist *gl, t_symbol *guiobjname)
     t_binbuf *b = binbuf_new();
     int xpix, ypix;
 
-    pd_vmess(&gl->gl_pd, gensym("editmode"), "i", 1);
+    pd_vmess(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
     glist_noselect(gl);
     SETSYMBOL(&at, guiobjname);
     binbuf_restore(b, 1, &at);
@@ -474,7 +474,7 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         int connectme, xpix, ypix, indx, nobj;
         canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
         
-        pd_vmess(&gl->gl_pd, gensym("editmode"), "i", 1);
+        pd_vmess(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
         x->m_text.te_xpix = xpix;
         x->m_text.te_ypix = ypix;
         glist_add(gl, &x->m_text.te_g);
@@ -944,7 +944,7 @@ void canvas_atom(t_glist *gl, t_atomtype type,
         outlet_new(&x->a_text,
             x->a_atom.a_type == A_FLOAT ? &s_float: &s_symbol);
         inlet_new(&x->a_text, &x->a_text.te_g.g_pd, 0, 0);
-        pd_vmess(&gl->gl_pd, gensym("editmode"), "i", 1);
+        pd_vmess(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
         x->a_text.te_xpix = xpix;
         x->a_text.te_ypix = ypix;
         glist_add(gl, &x->a_text.te_g);

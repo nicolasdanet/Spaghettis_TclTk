@@ -732,9 +732,9 @@ static void canvas_savetofile(t_canvas *x, t_symbol *filename, t_symbol *dir,
 }
         post("saved to: %s/%s", dir->s_name, filename->s_name);
         canvas_dirty(x, 0);
-        canvas_reload(filename, dir, &x->gl_gobj);
+        canvas_reload(filename, dir, &x->gl_obj.te_g);
         if (fdestroy != 0)
-            pd_vmess(&x->gl_pd, gensym("menuclose"), "f", 1.);
+            pd_vmess(&x->gl_obj.te_g.g_pd, gensym("menuclose"), "f", 1.);
     }
     binbuf_free(b);
 }

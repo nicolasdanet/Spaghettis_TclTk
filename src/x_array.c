@@ -73,8 +73,8 @@ static void *table_donew(t_symbol *s, int size, int flags,
 
     graph_array(gl, s, &s_float, size, flags);
 
-    newest = &x->gl_pd;     /* mimic action of canvas_pop() */
-    pd_popsym(&x->gl_pd);
+    newest = &x->gl_obj.te_g.g_pd;     /* mimic action of canvas_pop() */
+    pd_popsym(&x->gl_obj.te_g.g_pd);
     x->gl_loading = 0;
 
     return (x);

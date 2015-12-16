@@ -251,7 +251,7 @@ static void garray_fittograph(t_garray *x, int n, int style)
     t_glist *gl = x->x_glist;
     if (gl->gl_list == &x->x_gobj && !x->x_gobj.g_next)
     {
-        pd_vmess(&gl->gl_pd, gensym("bounds"), "ffff",
+        pd_vmess(&gl->gl_obj.te_g.g_pd, gensym("bounds"), "ffff",
             0., gl->gl_y1, (double)
                 (style == PLOTSTYLE_POINTS || n == 1 ? n : n-1),
                     gl->gl_y2);
@@ -358,7 +358,7 @@ void canvas_menuarray(t_glist *canvas)
             break;
     }
     sprintf(cmdbuf, "::pd_array::show %%s array%d 100 3\n", gcount);
-    gfxstub_new(&x->gl_pd, x, cmdbuf);
+    gfxstub_new(&x->gl_obj.te_g.g_pd, x, cmdbuf);
 }
 
     /* called from graph_dialog to set properties */
@@ -456,8 +456,8 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_floatarg fsize,
                 canvas_redraw(x->x_glist);
             else if (glist_isvisible(x->x_glist->gl_owner))
             {
-                gobj_vis(&x->x_glist->gl_gobj, x->x_glist->gl_owner, 0);
-                gobj_vis(&x->x_glist->gl_gobj, x->x_glist->gl_owner, 1);
+                gobj_vis(&x->x_glist->gl_obj.te_g, x->x_glist->gl_owner, 0);
+                gobj_vis(&x->x_glist->gl_obj.te_g, x->x_glist->gl_owner, 1);
             }
             canvas_update_dsp();
         }
@@ -1052,30 +1052,30 @@ static void garray_list(t_garray *x, t_symbol *s, int argc, t_atom *argv)
 static void garray_bounds(t_garray *x, t_floatarg x1, t_floatarg y1,
     t_floatarg x2, t_floatarg y2)
 {
-    pd_vmess(&x->x_glist->gl_pd, gensym("bounds"), "ffff", x1, y1, x2, y2);
+    pd_vmess(&x->x_glist->gl_obj.te_g.g_pd, gensym("bounds"), "ffff", x1, y1, x2, y2);
 }
 
     /* same for "xticks", etc */
 static void garray_xticks(t_garray *x,
     t_floatarg point, t_floatarg inc, t_floatarg f)
 {
-    pd_vmess(&x->x_glist->gl_pd, gensym("xticks"), "fff", point, inc, f);
+    pd_vmess(&x->x_glist->gl_obj.te_g.g_pd, gensym("xticks"), "fff", point, inc, f);
 }
 
 static void garray_yticks(t_garray *x,
     t_floatarg point, t_floatarg inc, t_floatarg f)
 {
-    pd_vmess(&x->x_glist->gl_pd, gensym("yticks"), "fff", point, inc, f);
+    pd_vmess(&x->x_glist->gl_obj.te_g.g_pd, gensym("yticks"), "fff", point, inc, f);
 }
 
 static void garray_xlabel(t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
-    pd_typedmess(&x->x_glist->gl_pd, s, argc, argv);
+    pd_typedmess(&x->x_glist->gl_obj.te_g.g_pd, s, argc, argv);
 }
 
 static void garray_ylabel(t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
-    pd_typedmess(&x->x_glist->gl_pd, s, argc, argv);
+    pd_typedmess(&x->x_glist->gl_obj.te_g.g_pd, s, argc, argv);
 }
     /* change the name of a garray. */
 static void garray_rename(t_garray *x, t_symbol *s)

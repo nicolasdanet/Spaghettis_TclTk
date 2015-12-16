@@ -69,7 +69,7 @@ int gobj_shouldvis(t_gobj *x, struct _glist *glist)
             /* if our parent is a graph, and if that graph itself isn't
             visible, then we aren't either. */
     if (!glist->gl_havewindow && glist->gl_isgraph && glist->gl_owner
-        && !gobj_shouldvis(&glist->gl_gobj, glist->gl_owner))
+        && !gobj_shouldvis(&glist->gl_obj.te_g, glist->gl_owner))
             return (0);
             /* if we're graphing-on-parent and the object falls outside the
             graph rectangle, don't draw it. */
@@ -84,7 +84,7 @@ int gobj_shouldvis(t_gobj *x, struct _glist *glist)
         if (pd_class(&x->g_pd) == scalar_class
             || pd_class(&x->g_pd) == garray_class)
                 return (1);
-        gobj_getrect(&glist->gl_gobj, glist->gl_owner, &x1, &y1, &x2, &y2);
+        gobj_getrect(&glist->gl_obj.te_g, glist->gl_owner, &x1, &y1, &x2, &y2);
         if (x1 > x2)
             m = x1, x1 = x2, x2 = m;
         if (y1 > y2)
@@ -570,7 +570,7 @@ static void canvas_undo_cut(t_canvas *x, void *z, int action)
             }
             canvas_dopaste(x, buf->u_objectbuf);
         }
-        s__X.s_thing = &x->gl_pd;
+        s__X.s_thing = &x->gl_obj.te_g.g_pd;
         binbuf_eval(buf->u_reconnectbuf, 0, 0, 0);
         s__X.s_thing = boundx;
     }
@@ -586,7 +586,7 @@ static void canvas_undo_cut(t_canvas *x, void *z, int action)
             if (y1)
                 glist_delete(x, y1);
             canvas_dopaste(x, buf->u_redotextbuf);
-            s__X.s_thing = &x->gl_pd;
+            s__X.s_thing = &x->gl_obj.te_g.g_pd;
             binbuf_eval(buf->u_reconnectbuf, 0, 0, 0);
             s__X.s_thing = boundx;
         }
@@ -880,7 +880,7 @@ static t_editor *editor_new(t_glist *owner)
     x->e_deleted = binbuf_new();
     x->e_glist = owner;
     sprintf(buf, ".x%lx", (t_int)owner);
-    x->e_guiconnect = guiconnect_new(&owner->gl_pd, gensym(buf));
+    x->e_guiconnect = guiconnect_new(&owner->gl_obj.te_g.g_pd, gensym(buf));
     x->e_clock = 0;
     return (x);
 }
@@ -1001,10 +1001,10 @@ void canvas_vis(t_canvas *x, t_floatarg f)
         {
             t_glist *gl2 = x->gl_owner;
             if (glist_isvisible(gl2))
-                gobj_vis(&x->gl_gobj, gl2, 0);
+                gobj_vis(&x->gl_obj.te_g, gl2, 0);
             x->gl_havewindow = 0;
             if (glist_isvisible(gl2) && !gl2->gl_isdeleting)
-                gobj_vis(&x->gl_gobj, gl2, 1);
+                gobj_vis(&x->gl_obj.te_g, gl2, 1);
         }
         else x->gl_havewindow = 0;
         canvas_updatewindowlist();
@@ -1018,11 +1018,11 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
     if (!flag && glist_isgraph(x))
     {
         if (x->gl_owner && !x->gl_loading && glist_isvisible(x->gl_owner))
-            gobj_vis(&x->gl_gobj, x->gl_owner, 0);
+            gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
         x->gl_isgraph = 0;
         if (x->gl_owner && !x->gl_loading && glist_isvisible(x->gl_owner))
         {
-            gobj_vis(&x->gl_gobj, x->gl_owner, 1);
+            gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
             canvas_fixlinesfor(x->gl_owner, &x->gl_obj);
         }
     }
@@ -1035,7 +1035,7 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
             x->gl_pixheight = GLIST_DEFGRAPHHEIGHT;
 
         if (x->gl_owner && !x->gl_loading && glist_isvisible(x->gl_owner))
-            gobj_vis(&x->gl_gobj, x->gl_owner, 0);
+            gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
         x->gl_isgraph = 1;
         x->gl_hidetext = !(!(flag&2));
         x->gl_goprect = !nogoprect;
@@ -1043,7 +1043,7 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
             glist_redraw(x);
         if (x->gl_owner && !x->gl_loading && glist_isvisible(x->gl_owner))
         {
-            gobj_vis(&x->gl_gobj, x->gl_owner, 1);
+            gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
             canvas_fixlinesfor(x->gl_owner, &x->gl_obj);
         }
     }
@@ -1074,7 +1074,7 @@ void canvas_properties(t_gobj*z, t_glist*unused)
                 0., 1., 1., -1., 
                 (int)x->gl_pixwidth, (int)x->gl_pixheight,
                 (int)x->gl_xmargin, (int)x->gl_ymargin);
-    gfxstub_new(&x->gl_pd, x, graphbuf);
+    gfxstub_new(&x->gl_obj.te_g.g_pd, x, graphbuf);
         /* if any arrays are in the graph, put out their dialogs too */
     for (y = x->gl_list; y; y = y->g_next)
         if (pd_class(&y->g_pd) == garray_class) 
@@ -1155,8 +1155,8 @@ static void canvas_donecanvasdialog(t_glist *x,
         canvas_redraw(x);
     else if (glist_isvisible(x->gl_owner))
     {
-        gobj_vis(&x->gl_gobj, x->gl_owner, 0);
-        gobj_vis(&x->gl_gobj, x->gl_owner, 1);
+        gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
+        gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
     }
 }
 
@@ -1213,7 +1213,7 @@ static void canvas_done_popup(t_canvas *x, t_float which, t_float xpos, t_float 
         }
     }
     if (which == 0)
-        canvas_properties(&x->gl_gobj, 0);
+        canvas_properties(&x->gl_obj.te_g, 0);
     else if (which == 2)
         open_via_helppath("intro.pd", canvas_getdir((t_canvas *)x)->s_name);
 }
@@ -1633,7 +1633,7 @@ void canvas_mouseup(t_canvas *x,
                 canvas_isabstraction((t_glist *)g) &&
                     (gl2 = glist_finddirty((t_glist *)g)))
             {
-                pd_vmess(&gl2->gl_pd, gensym("menu-open"), "");
+                pd_vmess(&gl2->gl_obj.te_g.g_pd, gensym("menu-open"), "");
                 x->gl_editor->e_onmotion = MA_NONE;
                 sys_vgui(
 "::pd_confirm::checkAction .x%lx { Discard changes to %s? } { ::pd_connect::pdsend .x%lx dirty 0 } { no }\n",
@@ -1986,7 +1986,7 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         g = glist_finddirty(x);
         if (g)
         {
-            pd_vmess(&g->gl_pd, gensym("menu-open"), "");
+            pd_vmess(&g->gl_obj.te_g.g_pd, gensym("menu-open"), "");
             sys_vgui("::pd_confirm::checkClose .x%lx { ::pd_connect::pdsend $top menusave 1 } { ::pd_connect::pdsend .x%lx menuclose 2 } {}\n",
                      canvas_getrootfor(g), g);
             return;
@@ -1996,10 +1996,10 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
             sys_vgui("::pd_confirm::checkAction .x%lx { Close this window? } { ::pd_connect::pdsend .x%lx menuclose 1 } { yes }\n",
                      canvas_getrootfor(x), x);
         }
-        else pd_free(&x->gl_pd);
+        else pd_free(&x->gl_obj.te_g.g_pd);
     }
     else if (force == 1)
-        pd_free(&x->gl_pd);
+        pd_free(&x->gl_obj.te_g.g_pd);
     else if (force == 2)
     {
         canvas_dirty(x, 0);
@@ -2008,12 +2008,12 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         g = glist_finddirty(x);
         if (g)
         {
-            pd_vmess(&g->gl_pd, gensym("menu-open"), "");
+            pd_vmess(&g->gl_obj.te_g.g_pd, gensym("menu-open"), "");
             sys_vgui("::pd_confirm::checkClose .x%lx { ::pd_connect::pdsend $top menusave 1 } { ::pd_connect::pdsend .x%lx menuclose 2 } {}\n",
                      canvas_getrootfor(x), g);
             return;
         }
-        else pd_free(&x->gl_pd);
+        else pd_free(&x->gl_obj.te_g.g_pd);
     }
     else if (force == 3)
     {
@@ -2029,7 +2029,7 @@ static void canvas_menufont(t_canvas *x)
     t_canvas *x2 = canvas_getrootfor(x);
     gfxstub_deleteforkey(x2);
     sprintf(buf, "pdtk_canvas_dofont %%s %d\n", x2->gl_font);
-    gfxstub_new(&x2->gl_pd, &x2->gl_pd, buf); */
+    gfxstub_new(&x2->gl_obj.te_g.g_pd, &x2->gl_obj.te_g.g_pd, buf); */
 }
 
 static int canvas_find_index, canvas_find_wholeword;
@@ -2090,7 +2090,7 @@ static int canvas_dofind(t_canvas *x, int *myindexp)
                 if (*myindexp == canvas_find_index)
                 {
                     glist_noselect(x);
-                    pd_vmess(&x->gl_pd, gensym("menu-open"), "");
+                    pd_vmess(&x->gl_obj.te_g.g_pd, gensym("menu-open"), "");
                     canvas_editmode(x, 1.);
                     glist_select(x, y);
                     didit = 1;
@@ -2234,7 +2234,7 @@ void canvas_stowconnections(t_canvas *x)
 void canvas_restoreconnections(t_canvas *x)
 {
     t_pd *boundx = s__X.s_thing;
-    s__X.s_thing = &x->gl_pd;
+    s__X.s_thing = &x->gl_obj.te_g.g_pd;
     binbuf_eval(x->gl_editor->e_connectbuf, 0, 0, 0);
     s__X.s_thing = boundx;
 }
@@ -2411,7 +2411,7 @@ static void canvas_dopaste(t_canvas *x, t_binbuf *b)
     t_pd *boundx = s__X.s_thing, *bounda = asym->s_thing, 
         *boundn = s__N.s_thing;
     asym->s_thing = 0;
-    s__X.s_thing = &x->gl_pd;
+    s__X.s_thing = &x->gl_obj.te_g.g_pd;
     s__N.s_thing = &pd_canvasmaker;
 
     canvas_editmode(x, 1.);

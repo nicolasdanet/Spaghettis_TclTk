@@ -285,8 +285,8 @@ t_inlet *canvas_addinlet(t_canvas *x, t_pd *who, t_symbol *s)
     t_inlet *ip = inlet_new(&x->gl_obj, who, s, 0);
     if (!x->gl_loading && x->gl_owner && glist_isvisible(x->gl_owner))
     {
-        gobj_vis(&x->gl_gobj, x->gl_owner, 0);
-        gobj_vis(&x->gl_gobj, x->gl_owner, 1);
+        gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
+        gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
         canvas_fixlinesfor(x->gl_owner, &x->gl_obj);
     }
     if (!x->gl_loading) canvas_resortinlets(x);
@@ -301,11 +301,11 @@ void canvas_rminlet(t_canvas *x, t_inlet *ip)
     
     if (owner) canvas_deletelinesforio(owner, &x->gl_obj, ip, 0);
     if (redraw)
-        gobj_vis(&x->gl_gobj, x->gl_owner, 0);
+        gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
     inlet_free(ip);
     if (redraw)
     {
-        gobj_vis(&x->gl_gobj, x->gl_owner, 1);
+        gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
         canvas_fixlinesfor(x->gl_owner, &x->gl_obj);
     }
 }
@@ -357,8 +357,8 @@ t_outlet *canvas_addoutlet(t_canvas *x, t_pd *who, t_symbol *s)
     t_outlet *op = outlet_new(&x->gl_obj, s);
     if (!x->gl_loading && x->gl_owner && glist_isvisible(x->gl_owner))
     {
-        gobj_vis(&x->gl_gobj, x->gl_owner, 0);
-        gobj_vis(&x->gl_gobj, x->gl_owner, 1);
+        gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
+        gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
         canvas_fixlinesfor(x->gl_owner, &x->gl_obj);
     }
     if (!x->gl_loading) canvas_resortoutlets(x);
@@ -373,12 +373,12 @@ void canvas_rmoutlet(t_canvas *x, t_outlet *op)
     
     if (owner) canvas_deletelinesforio(owner, &x->gl_obj, 0, op);
     if (redraw)
-        gobj_vis(&x->gl_gobj, x->gl_owner, 0);
+        gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
 
     outlet_free(op);
     if (redraw)
     {
-        gobj_vis(&x->gl_gobj, x->gl_owner, 1);
+        gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
         canvas_fixlinesfor(x->gl_owner, &x->gl_obj);
     }
 }
@@ -520,7 +520,7 @@ t_float glist_pixelstox(t_glist *x, t_float xpix)
         int x1, y1, x2, y2;
         if (!x->gl_owner)
             bug("glist_pixelstox");         
-        graph_graphrect(&x->gl_gobj, x->gl_owner, &x1, &y1, &x2, &y2);
+        graph_graphrect(&x->gl_obj.te_g, x->gl_owner, &x1, &y1, &x2, &y2);
         return (x->gl_x1 + (x->gl_x2 - x->gl_x1) * 
             (xpix - x1) / (x2 - x1));
     }
@@ -538,7 +538,7 @@ t_float glist_pixelstoy(t_glist *x, t_float ypix)
         int x1, y1, x2, y2;
         if (!x->gl_owner)
             bug("glist_pixelstox");
-        graph_graphrect(&x->gl_gobj, x->gl_owner, &x1, &y1, &x2, &y2);
+        graph_graphrect(&x->gl_obj.te_g, x->gl_owner, &x1, &y1, &x2, &y2);
         return (x->gl_y1 + (x->gl_y2 - x->gl_y1) * 
             (ypix - y1) / (y2 - y1));
     }
@@ -557,7 +557,7 @@ t_float glist_xtopixels(t_glist *x, t_float xval)
         int x1, y1, x2, y2;
         if (!x->gl_owner)
             bug("glist_pixelstox");
-        graph_graphrect(&x->gl_gobj, x->gl_owner, &x1, &y1, &x2, &y2);
+        graph_graphrect(&x->gl_obj.te_g, x->gl_owner, &x1, &y1, &x2, &y2);
         return (x1 + (x2 - x1) * (xval - x->gl_x1) / (x->gl_x2 - x->gl_x1));
     }
 }
@@ -574,7 +574,7 @@ t_float glist_ytopixels(t_glist *x, t_float yval)
         int x1, y1, x2, y2;
         if (!x->gl_owner)
             bug("glist_pixelstox");
-        graph_graphrect(&x->gl_gobj, x->gl_owner, &x1, &y1, &x2, &y2);
+        graph_graphrect(&x->gl_obj.te_g, x->gl_owner, &x1, &y1, &x2, &y2);
         return (y1 + (y2 - y1) * (yval - x->gl_y1) / (x->gl_y2 - x->gl_y1));
     }
 }
@@ -655,8 +655,8 @@ void glist_redraw(t_glist *x)
         }
         if (x->gl_owner && glist_isvisible(x->gl_owner))
         {
-            graph_vis(&x->gl_gobj, x->gl_owner, 0); 
-            graph_vis(&x->gl_gobj, x->gl_owner, 1);
+            graph_vis(&x->gl_obj.te_g, x->gl_owner, 0); 
+            graph_vis(&x->gl_obj.te_g, x->gl_owner, 1);
         }
     }
 }
