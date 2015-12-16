@@ -18,7 +18,7 @@
 #if defined ( __cplusplus )
 
 extern "C" {
-    
+
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -230,8 +230,8 @@ typedef struct _gobj {
     struct _gobj    *g_next;
     } t_gobj;
 
-typedef struct _scalar {                
-    t_gobj          sc_g;         
+typedef struct _scalar {
+    t_gobj          sc_g;
     t_symbol        *sc_template;
     t_word          sc_vec[1];          /* Indeterminate-length array (see above link). */
     } t_scalar;
@@ -636,7 +636,7 @@ typedef struct _signal {
     t_sample            *s_vec;
     t_float             s_sr;
     int                 s_refcount;
-    int                 s_isborrowed; 
+    int                 s_isborrowed;
     struct _signal      *s_borrowedfrom;
     struct _signal      *s_nextfree;
     struct _signal      *s_nextused;

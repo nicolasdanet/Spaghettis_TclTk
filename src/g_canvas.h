@@ -25,7 +25,7 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IOWIDTH                     7                       /* Width of inlet or outlet in pixels. */
+#define IOWIDTH                     7
 #define IOMIDDLE                    ((IOWIDTH - 1) / 2)
 #define GLIST_DEFGRAPHWIDTH         200
 #define GLIST_DEFGRAPHHEIGHT        140
@@ -55,7 +55,7 @@ EXTERN_STRUCT _fielddesc;
 #define t_rtext                     struct _rtext
 #define t_gtemplate                 struct _gtemplate
 #define t_guiconnect                struct _guiconnect
-#define t_canvasenvironment         struct _canvasenvironment 
+#define t_canvasenvironment         struct _canvasenvironment
 #define t_fielddesc                 struct _fielddesc
 
 // -----------------------------------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ typedef struct _tick {
     t_float     k_inc;
     int         k_lperb;
     } t_tick;
-    
+
 typedef struct _selection {
     t_gobj              *sel_what;
     struct _selection   *sel_next;
@@ -88,7 +88,7 @@ typedef struct _editor {
     t_glistkeyfn        e_keyfn;
     t_binbuf            *e_connectbuf;
     t_binbuf            *e_deleted;
-    t_guiconnect        *e_guiconnect; 
+    t_guiconnect        *e_guiconnect;
     t_glist             *e_glist;
     int                 e_xwas;
     int                 e_ywas;
@@ -97,10 +97,10 @@ typedef struct _editor {
     int                 e_selectline_index2;
     int                 e_selectline_inno;
     t_outconnect        *e_selectline_tag;
-    char                e_onmotion;             
+    char                e_onmotion;
     char                e_lastmoved;
     char                e_textdirty;
-    char                e_selectedline; 
+    char                e_selectedline;
     t_clock             *e_clock;
     int                 e_xnew;
     int                 e_ynew;
@@ -108,7 +108,7 @@ typedef struct _editor {
 
 struct _glist {  
     t_object            gl_obj;
-    t_gobj              *gl_list;   
+    t_gobj              *gl_list;
     t_gstub             *gl_stub;
     int                 gl_valid;
     struct _glist       *gl_owner;
@@ -124,7 +124,7 @@ struct _glist {
     int                 gl_screeny2;
     int                 gl_xmargin;
     int                 gl_ymargin;
-    t_tick              gl_xtick;  
+    t_tick              gl_xtick;
     int                 gl_nxlabels;
     t_symbol            **gl_xlabel;
     t_float             gl_xlabely;
@@ -137,9 +137,9 @@ struct _glist {
     int                 gl_font;
     struct _glist       *gl_next;
     t_canvasenvironment *gl_env;
-    char                gl_havewindow; 
+    char                gl_havewindow;
     char                gl_mapped;
-    char                gl_dirty; 
+    char                gl_dirty;
     char                gl_loading;
     char                gl_willvis;
     char                gl_edit;
