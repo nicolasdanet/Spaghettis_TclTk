@@ -129,25 +129,19 @@ void bng_draw_config(t_bng* x, t_glist* glist)
              x->x_flashed?x->x_gui.x_fcol:x->x_gui.x_bcol);
 }
 
-void bng_draw_io(t_bng* x, t_glist* glist, int old_snd_rcv_flags)
+void bng_draw_io(t_bng* x, t_glist* glist)
 {
     int xpos=text_xpix(&x->x_gui.x_obj, glist);
     int ypos=text_ypix(&x->x_gui.x_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
-    if((old_snd_rcv_flags & IEM_GUI_OLD_SEND) && !x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
-             canvas, xpos,
-             ypos + x->x_gui.x_h-1, xpos + INLETS_WIDTH,
-             ypos + x->x_gui.x_h, x, 0);
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_SEND) && x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    if((old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && !x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
-             canvas, xpos, ypos,
-             xpos + INLETS_WIDTH, ypos+1, x, 0);
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
+        canvas, xpos,
+        ypos + x->x_gui.x_h-1, xpos + INLETS_WIDTH,
+        ypos + x->x_gui.x_h, x, 0);
+    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
+        canvas, xpos, ypos,
+        xpos + INLETS_WIDTH, ypos+1, x, 0);
 }
 
 void bng_draw_select(t_bng* x, t_glist* glist)
@@ -183,7 +177,7 @@ void bng_draw(t_bng *x, t_glist *glist, int mode)
     else if(mode == IEM_GUI_DRAW_CONFIG)
         bng_draw_config(x, glist);
     else if(mode >= IEM_GUI_DRAW_IO)
-        bng_draw_io(x, glist, mode - IEM_GUI_DRAW_IO);
+        bng_draw_io(x, glist);
 }
 
 /* ------------------------ bng widgetbehaviour----------------------------- */
@@ -328,13 +322,13 @@ static void bng_dialog(t_bng *x, t_symbol *s, int argc, t_atom *argv)
     int a = (int)atom_getintarg(0, argc, argv);
     int fthold = (int)atom_getintarg(2, argc, argv);
     int ftbreak = (int)atom_getintarg(3, argc, argv);
-    int sr_flags = iemgui_dialog(&x->x_gui, srl, argc, argv);
+    iemgui_dialog(&x->x_gui, srl, argc, argv);
 
     x->x_gui.x_w = iemgui_clip_size(a);
     x->x_gui.x_h = x->x_gui.x_w;
     bng_check_minmax(x, ftbreak, fthold);
     (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_CONFIG);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_IO + sr_flags);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_IO);
     (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MOVE);
     canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
 }

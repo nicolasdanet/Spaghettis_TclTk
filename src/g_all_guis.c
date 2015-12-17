@@ -343,13 +343,8 @@ void iemgui_all_raute2dollar(t_symbol **srlsym)
 void iemgui_send(void *x, t_iemgui *iemgui, t_symbol *s)
 {
     t_symbol *snd;
-    int pargc, tail_len, nth_arg, sndable=1, oldsndrcvable=0;
+    int pargc, tail_len, nth_arg, sndable=1;
     t_atom *pargv;
-
-    if(iemgui->x_fsf.x_rcv_able)
-        oldsndrcvable += IEM_GUI_OLD_RECEIVE;
-    if(iemgui->x_fsf.x_snd_able)
-        oldsndrcvable += IEM_GUI_OLD_SEND;
 
     if(!strcmp(s->s_name, "empty")) sndable = 0;
     snd = iemgui_raute2dollar(s);
@@ -357,19 +352,14 @@ void iemgui_send(void *x, t_iemgui *iemgui, t_symbol *s)
     iemgui->x_snd = snd = canvas_realizedollar(iemgui->x_glist, snd);
     iemgui->x_fsf.x_snd_able = sndable;
     iemgui_verify_snd_ne_rcv(iemgui);
-    (*iemgui->x_draw)(x, iemgui->x_glist, IEM_GUI_DRAW_IO + oldsndrcvable);
+    (*iemgui->x_draw)(x, iemgui->x_glist, IEM_GUI_DRAW_IO);
 }
 
 void iemgui_receive(void *x, t_iemgui *iemgui, t_symbol *s)
 {
     t_symbol *rcv;
-    int pargc, tail_len, nth_arg, rcvable=1, oldsndrcvable=0;
+    int pargc, tail_len, nth_arg, rcvable=1;
     t_atom *pargv;
-
-    if(iemgui->x_fsf.x_rcv_able)
-        oldsndrcvable += IEM_GUI_OLD_RECEIVE;
-    if(iemgui->x_fsf.x_snd_able)
-        oldsndrcvable += IEM_GUI_OLD_SEND;
 
     if(!strcmp(s->s_name, "empty")) rcvable = 0;
     rcv = iemgui_raute2dollar(s);
@@ -392,7 +382,7 @@ void iemgui_receive(void *x, t_iemgui *iemgui, t_symbol *s)
     }
     iemgui->x_fsf.x_rcv_able = rcvable;
     iemgui_verify_snd_ne_rcv(iemgui);
-    (*iemgui->x_draw)(x, iemgui->x_glist, IEM_GUI_DRAW_IO + oldsndrcvable);
+    (*iemgui->x_draw)(x, iemgui->x_glist, IEM_GUI_DRAW_IO);
 }
 
 void iemgui_label(void *x, t_iemgui *iemgui, t_symbol *s)
@@ -538,7 +528,7 @@ void iemgui_properties(t_iemgui *iemgui, t_symbol **srl)
     iemgui_all_dollar2raute(srl);
 }
 
-int iemgui_dialog(t_iemgui *iemgui, t_symbol **srl, int argc, t_atom *argv)
+void iemgui_dialog(t_iemgui *iemgui, t_symbol **srl, int argc, t_atom *argv)
 {
     char str[144];
     int init = (int)atom_getintarg(5, argc, argv);
@@ -548,12 +538,8 @@ int iemgui_dialog(t_iemgui *iemgui, t_symbol **srl, int argc, t_atom *argv)
     int bcol = (int)atom_getintarg(13, argc, argv);
     int fcol = (int)atom_getintarg(14, argc, argv);
     int lcol = (int)atom_getintarg(15, argc, argv);
-    int sndable=1, rcvable=1, oldsndrcvable=0;
+    int sndable=1, rcvable=1;
 
-    if(iemgui->x_fsf.x_rcv_able)
-        oldsndrcvable += IEM_GUI_OLD_RECEIVE;
-    if(iemgui->x_fsf.x_snd_able)
-        oldsndrcvable += IEM_GUI_OLD_SEND;
     if(IS_SYMBOL(argv,7))
         srl[0] = atom_getsymbolarg(7, argc, argv);
     else if(IS_FLOAT(argv,7))
@@ -610,7 +596,6 @@ int iemgui_dialog(t_iemgui *iemgui, t_symbol **srl, int argc, t_atom *argv)
     iemgui->x_fontsize = fs;
     iemgui_verify_snd_ne_rcv(iemgui);
     canvas_dirty(iemgui->x_glist, 1);
-    return(oldsndrcvable);
 }
 
 /* pre-0.46 the flags were 1 for 'loadinit' and 1<<20 for 'scale'.

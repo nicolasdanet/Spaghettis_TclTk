@@ -136,28 +136,22 @@ static void vslider_draw_config(t_vslider* x,t_glist* glist)
              x, x->x_gui.x_bcol);
 }
 
-static void vslider_draw_io(t_vslider* x,t_glist* glist, int old_snd_rcv_flags)
+static void vslider_draw_io(t_vslider* x,t_glist* glist)
 {
     int xpos=text_xpix(&x->x_gui.x_obj, glist);
     int ypos=text_ypix(&x->x_gui.x_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
-    if((old_snd_rcv_flags & IEM_GUI_OLD_SEND) && !x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
-             canvas,
-             xpos, ypos + x->x_gui.x_h+2,
-             xpos+7, ypos + x->x_gui.x_h+3,
-             x, 0);
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_SEND) && x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    if((old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && !x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
-             canvas,
-             xpos, ypos-2,
-             xpos+7, ypos-1,
-             x, 0);
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
+        canvas,
+        xpos, ypos + x->x_gui.x_h+2,
+        xpos+7, ypos + x->x_gui.x_h+3,
+        x, 0);
+    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
+        canvas,
+        xpos, ypos-2,
+        xpos+7, ypos-1,
+        x, 0);
 }
 
 static void vslider_draw_select(t_vslider *x, t_glist *glist)
@@ -191,7 +185,7 @@ void vslider_draw(t_vslider *x, t_glist *glist, int mode)
     else if(mode == IEM_GUI_DRAW_CONFIG)
         vslider_draw_config(x, glist);
     else if(mode >= IEM_GUI_DRAW_IO)
-        vslider_draw_io(x, glist, mode - IEM_GUI_DRAW_IO);
+        vslider_draw_io(x, glist);
 }
 
 /* ------------------------ vsl widgetbehaviour----------------------------- */
@@ -333,7 +327,6 @@ static void vslider_dialog(t_vslider *x, t_symbol *s, int argc, t_atom *argv)
     double max = (double)atom_getfloatarg(3, argc, argv);
     int lilo = (int)atom_getintarg(4, argc, argv);
     int steady = (int)atom_getintarg(16, argc, argv);
-    int sr_flags;
 
     if(lilo != 0) lilo = 1;
     x->x_lin0_log1 = lilo;
@@ -341,12 +334,12 @@ static void vslider_dialog(t_vslider *x, t_symbol *s, int argc, t_atom *argv)
         x->x_steady = 1;
     else
         x->x_steady = 0;
-    sr_flags = iemgui_dialog(&x->x_gui, srl, argc, argv);
+    iemgui_dialog(&x->x_gui, srl, argc, argv);
     x->x_gui.x_w = iemgui_clip_size(w);
     vslider_check_height(x, h);
     vslider_check_minmax(x, min, max);
     (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_CONFIG);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_IO + sr_flags);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_IO);
     (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MOVE);
     canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
 }

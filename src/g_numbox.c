@@ -287,28 +287,22 @@ static void my_numbox_draw_config(t_my_numbox* x,t_glist* glist)
              x, x->x_gui.x_fsf.x_selected?IEM_GUI_COLOR_SELECTED:x->x_gui.x_fcol);
 }
 
-static void my_numbox_draw_io(t_my_numbox* x,t_glist* glist, int old_snd_rcv_flags)
+static void my_numbox_draw_io(t_my_numbox* x, t_glist* glist)
 {
     int xpos=text_xpix(&x->x_gui.x_obj, glist);
     int ypos=text_ypix(&x->x_gui.x_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
-    if((old_snd_rcv_flags & IEM_GUI_OLD_SEND) && !x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
-             canvas,
-             xpos, ypos + x->x_gui.x_h-1,
-             xpos+INLETS_WIDTH, ypos + x->x_gui.x_h,
-             x, 0);
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_SEND) && x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    if((old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && !x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
-             canvas,
-             xpos, ypos,
-             xpos+INLETS_WIDTH, ypos+1,
-             x, 0);
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
+        canvas,
+        xpos, ypos + x->x_gui.x_h-1,
+        xpos+INLETS_WIDTH, ypos + x->x_gui.x_h,
+        x, 0);
+    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
+        canvas,
+        xpos, ypos,
+        xpos+INLETS_WIDTH, ypos+1,
+        x, 0);
 }
 
 static void my_numbox_draw_select(t_my_numbox *x, t_glist *glist)
@@ -361,7 +355,7 @@ void my_numbox_draw(t_my_numbox *x, t_glist *glist, int mode)
     else if(mode == IEM_GUI_DRAW_CONFIG)
         my_numbox_draw_config(x, glist);
     else if(mode >= IEM_GUI_DRAW_IO)
-        my_numbox_draw_io(x, glist, mode - IEM_GUI_DRAW_IO);
+        my_numbox_draw_io(x, glist);
 }
 
 /* ------------------------ nbx widgetbehaviour----------------------------- */
@@ -497,11 +491,10 @@ static void my_numbox_dialog(t_my_numbox *x, t_symbol *s, int argc,
     double max = (double)atom_getfloatarg(3, argc, argv);
     int lilo = (int)atom_getintarg(4, argc, argv);
     int log_height = (int)atom_getintarg(6, argc, argv);
-    int sr_flags;
 
     if(lilo != 0) lilo = 1;
     x->x_lin0_log1 = lilo;
-    sr_flags = iemgui_dialog(&x->x_gui, srl, argc, argv);
+    iemgui_dialog(&x->x_gui, srl, argc, argv);
     if(w < 1)
         w = 1;
     x->x_gui.x_w = w;
@@ -516,7 +509,7 @@ static void my_numbox_dialog(t_my_numbox *x, t_symbol *s, int argc,
      my_numbox_bang(x);*/
     my_numbox_check_minmax(x, min, max);
     (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_IO + sr_flags);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_IO);
     (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_CONFIG);
     (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MOVE);
     canvas_fixlines(x->x_gui.x_glist, (t_text*)x);

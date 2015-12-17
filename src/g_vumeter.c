@@ -308,48 +308,33 @@ static void vu_draw_config(t_vu* x, t_glist* glist)
              x->x_led_size);
 }
 
-static void vu_draw_io(t_vu* x, t_glist* glist, int old_snd_rcv_flags)
+static void vu_draw_io(t_vu* x, t_glist* glist)
 {
     int xpos=text_xpix(&x->x_gui.x_obj, glist);
     int ypos=text_ypix(&x->x_gui.x_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
-    if((old_snd_rcv_flags & IEM_GUI_OLD_SEND) && !x->x_gui.x_fsf.x_snd_able)
-    {
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
-             canvas,
-             xpos-1, ypos + x->x_gui.x_h+1,
-             xpos + INLETS_WIDTH-1, ypos + x->x_gui.x_h+2,
-             x, 0);
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
-             canvas,
-             xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos + x->x_gui.x_h+1,
-             xpos+x->x_gui.x_w+1, ypos + x->x_gui.x_h+2,
-             x, 1);
-    }
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_SEND) && x->x_gui.x_fsf.x_snd_able)
-    {
-        sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-        sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 1);
-    }
-    if((old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && !x->x_gui.x_fsf.x_rcv_able)
-    {
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
-             canvas,
-             xpos-1, ypos-2,
-             xpos + INLETS_WIDTH-1, ypos-1,
-             x, 0);
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
-             canvas,
-             xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos-2,
-             xpos+x->x_gui.x_w+1, ypos-1,
-             x, 1);
-    }
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && x->x_gui.x_fsf.x_rcv_able)
-    {
-        sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
-        sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 1);
-    }
+    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
+         canvas,
+         xpos-1, ypos + x->x_gui.x_h+1,
+         xpos + INLETS_WIDTH-1, ypos + x->x_gui.x_h+2,
+         x, 0);
+    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
+         canvas,
+         xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos + x->x_gui.x_h+1,
+         xpos+x->x_gui.x_w+1, ypos + x->x_gui.x_h+2,
+         x, 1);
+
+    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
+         canvas,
+         xpos-1, ypos-2,
+         xpos + INLETS_WIDTH-1, ypos-1,
+         x, 0);
+    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
+         canvas,
+         xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos-2,
+         xpos+x->x_gui.x_w+1, ypos-1,
+         x, 1);
 }
 
 static void vu_draw_select(t_vu* x,t_glist* glist)
@@ -406,7 +391,7 @@ void vu_draw(t_vu *x, t_glist *glist, int mode)
     else if(mode == IEM_GUI_DRAW_CONFIG)
         vu_draw_config(x, glist);
     else if(mode >= IEM_GUI_DRAW_IO)
-        vu_draw_io(x, glist, mode - IEM_GUI_DRAW_IO);
+        vu_draw_io(x, glist);
 }
 
 /* ------------------------ vu widgetbehaviour----------------------------- */
@@ -537,10 +522,9 @@ static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
     int w = (int)atom_getintarg(0, argc, argv);
     int h = (int)atom_getintarg(1, argc, argv);
     int scale = (int)atom_getintarg(4, argc, argv);
-    int sr_flags;
 
     srl[0] = gensym("empty");
-    sr_flags = iemgui_dialog(&x->x_gui, srl, argc, argv);
+    iemgui_dialog(&x->x_gui, srl, argc, argv);
     x->x_gui.x_fsf.x_snd_able = 0;
     x->x_gui.x_isa.x_loadinit = 0;
     x->x_gui.x_w = iemgui_clip_size(w);
@@ -549,7 +533,7 @@ static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
         scale = 1;
     vu_scale(x, (t_float)scale);
     (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_CONFIG);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_IO + sr_flags);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_IO);
     (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MOVE);
     canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
 }

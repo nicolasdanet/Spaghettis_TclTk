@@ -131,24 +131,19 @@ static void hslider_draw_config(t_hslider* x,t_glist* glist)
     sys_vgui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas, x, x->x_gui.x_bcol);
 }
 
-static void hslider_draw_io(t_hslider* x,t_glist* glist, int old_snd_rcv_flags)
+static void hslider_draw_io(t_hslider* x, t_glist* glist)
 {
     int xpos=text_xpix(&x->x_gui.x_obj, glist);
     int ypos=text_ypix(&x->x_gui.x_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
-    if((old_snd_rcv_flags & IEM_GUI_OLD_SEND) && !x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
-             canvas, xpos-3, ypos + x->x_gui.x_h-1,
-             xpos+4, ypos + x->x_gui.x_h, x, 0);
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_SEND) && x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    if((old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && !x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
-             canvas, xpos-3, ypos,
-             xpos+4, ypos+1, x, 0);
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
+        canvas, xpos-3, ypos + x->x_gui.x_h-1,
+        xpos+4, ypos + x->x_gui.x_h, x, 0);
+
+    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
+        canvas, xpos-3, ypos,
+        xpos+4, ypos+1, x, 0);
 }
 
 static void hslider_draw_select(t_hslider* x,t_glist* glist)
@@ -182,7 +177,7 @@ void hslider_draw(t_hslider *x, t_glist *glist, int mode)
     else if(mode == IEM_GUI_DRAW_CONFIG)
         hslider_draw_config(x, glist);
     else if(mode >= IEM_GUI_DRAW_IO)
-        hslider_draw_io(x, glist, mode - IEM_GUI_DRAW_IO);
+        hslider_draw_io(x, glist);
 }
 
 /* ------------------------ hsl widgetbehaviour----------------------------- */
@@ -353,7 +348,6 @@ static void hslider_dialog(t_hslider *x, t_symbol *s, int argc, t_atom *argv)
     double max = (double)atom_getfloatarg(3, argc, argv);
     int lilo = (int)atom_getintarg(4, argc, argv);
     int steady = (int)atom_getintarg(16, argc, argv);
-    int sr_flags;
 
     if(lilo != 0) lilo = 1;
     x->x_lin0_log1 = lilo;
@@ -361,12 +355,12 @@ static void hslider_dialog(t_hslider *x, t_symbol *s, int argc, t_atom *argv)
         x->x_steady = 1;
     else
         x->x_steady = 0;
-    sr_flags = iemgui_dialog(&x->x_gui, srl, argc, argv);
+    iemgui_dialog(&x->x_gui, srl, argc, argv);
     x->x_gui.x_h = iemgui_clip_size(h);
     hslider_check_width(x, w);
     hslider_check_minmax(x, min, max);
     (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_CONFIG);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_IO + sr_flags);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_IO);
     (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MOVE);
     canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
 }

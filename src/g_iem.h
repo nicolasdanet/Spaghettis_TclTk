@@ -25,10 +25,14 @@
 
 #define IEM_GUI_COLOR_NORMAL        0
 #define IEM_GUI_COLOR_SELECTED      255
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define IEM_GUI_DEFAULT_SIZE        15
 #define IEM_GUI_MINIMUM_SIZE        8
-#define IEM_GUI_OLD_SEND            1
-#define IEM_GUI_OLD_RECEIVE         2
+
 #define IEM_GUI_BUFFER_LENGTH       32
 
 // -----------------------------------------------------------------------------------------------------------
@@ -270,7 +274,7 @@ void iemgui_delete(t_gobj *z, t_glist *glist);
 void iemgui_vis(t_gobj *z, t_glist *glist, int vis);
 void iemgui_save(t_iemgui *iemgui, t_symbol **srl, int *bflcol);
 void iemgui_properties(t_iemgui *iemgui, t_symbol **srl);
-int iemgui_dialog(t_iemgui *iemgui, t_symbol **srl, int argc, t_atom *argv);
+void iemgui_dialog(t_iemgui *iemgui, t_symbol **srl, int argc, t_atom *argv);
 
 int canvas_getdollarzero(void);
 void canvas_getargs(int *argcp, t_atom **argvp);

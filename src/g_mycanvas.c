@@ -190,7 +190,7 @@ static void my_canvas_dialog(t_my_canvas *x, t_symbol *s, int argc, t_atom *argv
     int a = (int)atom_getintarg(0, argc, argv);
     int w = (int)atom_getintarg(2, argc, argv);
     int h = (int)atom_getintarg(3, argc, argv);
-    int sr_flags = iemgui_dialog(&x->x_gui, srl, argc, argv);
+    iemgui_dialog(&x->x_gui, srl, argc, argv);
 
     x->x_gui.x_isa.x_loadinit = 0;
     if(a < 1)
