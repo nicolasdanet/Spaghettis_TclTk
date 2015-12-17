@@ -82,10 +82,10 @@ void vradio_draw_new(t_vradio *x, t_glist *glist)
              strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"",
              x->x_gui.x_fontsize,
              x->x_gui.x_lcol, x);
-    if(!x->x_gui.x_fsf.x_snd_able)
+
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
              canvas, xx11, yy11-1, xx11 + INLETS_WIDTH, yy11, x, 0);
-    if(!x->x_gui.x_fsf.x_rcv_able)
+
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
              canvas, xx11, yy11b, xx11 + INLETS_WIDTH, yy11b+1, x, 0);
 }

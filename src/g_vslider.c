@@ -67,13 +67,13 @@ static void vslider_draw_new(t_vslider *x, t_glist *glist)
              strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"",
              x->x_gui.x_fontsize,
              x->x_gui.x_lcol, x);
-    if(!x->x_gui.x_fsf.x_snd_able)
+
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
              canvas,
              xpos, ypos + x->x_gui.x_h+2,
              xpos+7, ypos + x->x_gui.x_h+3,
              x, 0);
-    if(!x->x_gui.x_fsf.x_rcv_able)
+
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
              canvas,
              xpos, ypos-2,

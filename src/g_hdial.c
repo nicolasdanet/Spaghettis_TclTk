@@ -80,11 +80,11 @@ void hradio_draw_new(t_hradio *x, t_glist *glist)
              strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"",
              x->x_gui.x_fontsize,
              x->x_gui.x_lcol, x);
-    if(!x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
+
+    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
              canvas, xx11b, yy12-1, xx11b + INLETS_WIDTH, yy12, x, 0);
-    if(!x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
+
+    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
              canvas, xx11b, yy11, xx11b + INLETS_WIDTH, yy11+1, x, 0);
 
 }
