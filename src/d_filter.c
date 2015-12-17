@@ -71,7 +71,7 @@ static t_int *sighip_perform(t_int *w)
             *out++ = normal * (new - last);
             last = new;
         }
-        if (PD_BIGORSMALL(last))
+        if (PD_BIG_OR_SMALL(last))
             last = 0; 
         c->c_x = last;
     }
@@ -101,7 +101,7 @@ static t_int *sighip_perform_old(t_int *w)
             *out++ = new - last;
             last = new;
         }
-        if (PD_BIGORSMALL(last))
+        if (PD_BIG_OR_SMALL(last))
             last = 0; 
         c->c_x = last;
     }
@@ -203,7 +203,7 @@ static t_int *siglop_perform(t_int *w)
     t_sample feedback = 1 - coef;
     for (i = 0; i < n; i++)
         last = *out++ = coef * *in++ + feedback * last;
-    if (PD_BIGORSMALL(last))
+    if (PD_BIG_OR_SMALL(last))
         last = 0;
     c->c_x = last;
     return (w+5);
@@ -335,9 +335,9 @@ static t_int *sigbp_perform(t_int *w)
         prev = last;
         last = output;
     }
-    if (PD_BIGORSMALL(last))
+    if (PD_BIG_OR_SMALL(last))
         last = 0;
-    if (PD_BIGORSMALL(prev))
+    if (PD_BIG_OR_SMALL(prev))
         prev = 0;
     c->c_x1 = last;
     c->c_x2 = prev;
@@ -421,7 +421,7 @@ static t_int *sigbiquad_perform(t_int *w)
     for (i = 0; i < n; i++)
     {
         t_sample output =  *in++ + fb1 * last + fb2 * prev;
-        if (PD_BIGORSMALL(output))
+        if (PD_BIG_OR_SMALL(output))
             output = 0; 
         *out++ = ff1 * output + ff2 * last + ff3 * prev;
         prev = last;
@@ -609,7 +609,7 @@ static t_int *sigrpole_perform(t_int *w)
         t_sample coef = *in2++;
         *out++ = last = coef * last + next;
     }
-    if (PD_BIGORSMALL(last))
+    if (PD_BIG_OR_SMALL(last))
         last = 0;
     x->x_last = last;
     return (w+6);
@@ -842,9 +842,9 @@ static t_int *sigcpole_perform(t_int *w)
         lastim = *outim++ = nextim + lastre * coefim + lastim * coefre;
         lastre = tempre;
     }
-    if (PD_BIGORSMALL(lastre))
+    if (PD_BIG_OR_SMALL(lastre))
         lastre = 0;
-    if (PD_BIGORSMALL(lastim))
+    if (PD_BIG_OR_SMALL(lastim))
         lastim = 0;
     x->x_lastre = lastre;
     x->x_lastim = lastim;

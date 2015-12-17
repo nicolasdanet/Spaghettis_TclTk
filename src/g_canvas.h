@@ -488,7 +488,6 @@ void     canvas_deletelines                 (t_canvas *x, t_text *text);
 void     canvas_stowconnections             (t_canvas *x);
 void     canvas_restoreconnections          (t_canvas *x);
 void     canvas_redraw                      (t_canvas *x);
-
 t_inlet  *canvas_addinlet                   (t_canvas *x, t_pd *who, t_symbol *sym);
 void     canvas_rminlet                     (t_canvas *x, t_inlet *ip);
 t_outlet *canvas_addoutlet                  (t_canvas *x, t_pd *who, t_symbol *sym);
@@ -510,83 +509,83 @@ t_int    *canvas_recurapply                 (t_canvas *x,
                                                 t_int x2,
                                                 t_int x3);
 
-void     canvas_resortinlets                (t_canvas *x);
-void     canvas_resortoutlets               (t_canvas *x);
-void     canvas_free                        (t_canvas *x);
-void     canvas_updatewindowlist            (void);
-void     canvas_editmode                    (t_canvas *x, t_floatarg state);
-int      canvas_isabstraction               (t_canvas *x);
-int      canvas_istable                     (t_canvas *x);
-int      canvas_showtext                    (t_canvas *x);
-void     canvas_vis                         (t_canvas *x, t_floatarg f);
+void     canvas_resortinlets            (t_canvas *x);
+void     canvas_resortoutlets           (t_canvas *x);
+void     canvas_free                    (t_canvas *x);
+void     canvas_updatewindowlist        (void);
+void     canvas_editmode                (t_canvas *x, t_floatarg state);
+int      canvas_isabstraction           (t_canvas *x);
+int      canvas_istable                 (t_canvas *x);
+int      canvas_showtext                (t_canvas *x);
+void     canvas_vis                     (t_canvas *x, t_floatarg f);
 
-t_canvasenvironment *canvas_getenv          (t_canvas *x);
+t_canvasenvironment *canvas_getenv      (t_canvas *x);
 
-void     canvas_rename                      (t_canvas *x, t_symbol *s, t_symbol *dir);
-void     canvas_loadbang                    (t_canvas *x);
-int      canvas_hitbox                      (t_canvas *x,
-                                                t_gobj *y,
-                                                int xpos,
-                                                int ypos,
-                                                int *x1p,
-                                                int *y1p,
-                                                int *x2p,
-                                                int *y2p);
+void     canvas_rename                  (t_canvas *x, t_symbol *s, t_symbol *dir);
+void     canvas_loadbang                (t_canvas *x);
+int      canvas_hitbox                  (t_canvas *x,
+                                            t_gobj *y,
+                                            int xpos,
+                                            int ypos,
+                                            int *x1p,
+                                            int *y1p,
+                                            int *x2p,
+                                            int *y2p);
 
-int      canvas_setdeleting                 (t_canvas *x, int flag);
-void     canvas_setundo                     (t_canvas *x,
-                                                t_undofn undofn,
-                                                void *buf,
-                                                const char *name);
+int      canvas_setdeleting             (t_canvas *x, int flag);
+void     canvas_setundo                 (t_canvas *x,
+                                            t_undofn undofn,
+                                            void *buf,
+                                            const char *name);
 
-void     canvas_noundo                      (t_canvas *x);
-int      canvas_getindex                    (t_canvas *x, t_gobj *y);
-void     canvas_connect                     (t_canvas *x,
-                                                t_floatarg fwhoout,
-                                                t_floatarg foutno,
-                                                t_floatarg fwhoin,
-                                                t_floatarg finno);
+void     canvas_noundo                  (t_canvas *x);
+int      canvas_getindex                (t_canvas *x, t_gobj *y);
+void     canvas_connect                 (t_canvas *x,
+                                            t_floatarg fwhoout,
+                                            t_floatarg foutno,
+                                            t_floatarg fwhoin,
+                                            t_floatarg finno);
 
-void     canvas_disconnect                  (t_canvas *x,
-                                                t_float index1,
-                                                t_float outno,
-                                                t_float index2,
-                                                t_float inno);
+void     canvas_disconnect              (t_canvas *x,
+                                            t_float index1,
+                                            t_float outno,
+                                            t_float index2,
+                                            t_float inno);
 
-int      canvas_isconnected                 (t_canvas *x,
-                                                t_text *ob1,
-                                                int n1,
-                                                t_text *ob2,
-                                                int n2);
+int      canvas_isconnected             (t_canvas *x,
+                                            t_text *ob1,
+                                            int n1,
+                                            t_text *ob2,
+                                            int n2);
 
-void     canvas_selectinrect                (t_canvas *x, int lox, int loy, int hix, int hiy);
-void     canvas_fattenforscalars            (t_canvas *x, int *x1, int *y1, int *x2, int *y2);
-void     canvas_visforscalars               (t_canvas *x, t_glist *glist, int vis);
-int      canvas_clicksub                    (t_canvas *x,
-                                                int xpix,
-                                                int ypix,
-                                                int shift,
-                                                int alt,
-                                                int dbl,
-                                                int b);
+void     canvas_selectinrect            (t_canvas *x, int lox, int loy, int hix, int hiy);
+void     canvas_fattenforscalars        (t_canvas *x, int *x1, int *y1, int *x2, int *y2);
+void     canvas_visforscalars           (t_canvas *x, t_glist *glist, int vis);
+int      canvas_clicksub                (t_canvas *x,
+                                            int xpix,
+                                            int ypix,
+                                            int shift,
+                                            int alt,
+                                            int dbl,
+                                            int b);
 
-t_glist  *canvas_getglistonsuper            (void);
-t_glist  *pd_checkglist                     (t_pd *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void         linetraverser_start            (t_linetraverser *t, t_canvas *x);
-t_outconnect *linetraverser_next            (t_linetraverser *t);
-void         linetraverser_skipobject       (t_linetraverser *t);
+t_glist  *canvas_getglistonsuper        (void);
+t_glist  *pd_checkglist                 (t_pd *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_guiconnect *guiconnect_new                (t_pd *who, t_symbol *sym);
-void         guiconnect_notarget            (t_guiconnect *x, double timedelay);
+void         linetraverser_start        (t_linetraverser *t, t_canvas *x);
+t_outconnect *linetraverser_next        (t_linetraverser *t);
+void         linetraverser_skipobject   (t_linetraverser *t);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_guiconnect *guiconnect_new            (t_pd *who, t_symbol *sym);
+void         guiconnect_notarget        (t_guiconnect *x, double timedelay);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -683,6 +682,7 @@ t_float      template_getfloat      (t_template *x, t_symbol *fieldname, t_word 
 void         template_setfloat      (t_template *x, t_symbol *fieldname, t_word *wp, t_float f, int loud);
 t_symbol     *template_getsymbol    (t_template *x, t_symbol *fieldname, t_word *wp, int loud);
 void         template_setsymbol     (t_template *x, t_symbol *fieldname, t_word *wp, t_symbol *s, int loud);
+
 t_float      fielddesc_getcoord     (t_fielddesc *f, t_template *tmpl, t_word *wp, int loud);
 void         fielddesc_setcoord     (t_fielddesc *f, t_template *tmpl, t_word *wp, t_float pix, int loud);
 t_float      fielddesc_cvttocoord   (t_fielddesc *f, t_float val);

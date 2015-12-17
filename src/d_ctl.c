@@ -109,7 +109,7 @@ static t_int *line_tilde_perform(t_int *w)
     int n = (int)(w[3]);
     t_sample f = x->x_value;
 
-    if (PD_BIGORSMALL(f))
+    if (PD_BIG_OR_SMALL(f))
             x->x_value = f = 0;
     if (x->x_retarget)
     {
@@ -144,7 +144,7 @@ static t_int *line_tilde_perf8(t_int *w)
     int n = (int)(w[3]);
     t_sample f = x->x_value;
 
-    if (PD_BIGORSMALL(f))
+    if (PD_BIG_OR_SMALL(f))
         x->x_value = f = 0;
     if (x->x_retarget)
     {
@@ -336,7 +336,7 @@ static void vline_tilde_float(t_vline *x, t_float f)
     t_float inlet2 = x->x_inlet2;
     double starttime = timenow + inlet2;
     t_vseg *s1, *s2, *deletefrom = 0, *snew;
-    if (PD_BIGORSMALL(f))
+    if (PD_BIG_OR_SMALL(f))
         f = 0;
 
         /* negative delay input means stop and jump immediately to new value */

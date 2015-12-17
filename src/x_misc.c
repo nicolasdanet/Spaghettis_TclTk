@@ -442,7 +442,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
                 goto tooshort;
             z.z_i = READINT(argv+k);
             f = z.z_f;
-            if (PD_BADFLOAT(f))
+            if (PD_DENORMAL_OR_ZERO(f))
                 f = 0;
             if (j >= outc)
             {

@@ -428,9 +428,9 @@ static t_int *sigvcf_perform(t_int *w)
             + coefr * re2 - coefi * im;
         *out2++ = im = coefi * re2 + coefr * im;
     }
-    if (PD_BIGORSMALL(re))
+    if (PD_BIG_OR_SMALL(re))
         re = 0;
-    if (PD_BIGORSMALL(im))
+    if (PD_BIG_OR_SMALL(im))
         im = 0;
     c->c_re = re;
     c->c_im = im;

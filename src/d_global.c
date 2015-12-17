@@ -41,7 +41,7 @@ static t_int *sigsend_perform(t_int *w)
     int n = (int)(w[3]);
     while (n--)
     {
-        *out = (PD_BIGORSMALL(*in) ? 0 : *in);
+        *out = (PD_BIG_OR_SMALL(*in) ? 0 : *in);
         out++;
         in++;
     }
@@ -296,7 +296,7 @@ static t_int *sigthrow_perform(t_int *w)
     {
         while (n--)
         {
-            *out += (PD_BIGORSMALL(*in) ? 0 : *in);
+            *out += (PD_BIG_OR_SMALL(*in) ? 0 : *in);
             out++;
             in++;
         }

@@ -58,7 +58,7 @@ static t_int *tabwrite_tilde_perform(t_int *w)
         while (nxfer--)
         {
             t_sample f = *in++;
-            if (PD_BIGORSMALL(f))
+            if (PD_BIG_OR_SMALL(f))
                 f = 0;
             (wp++)->w_float = f;
         }
@@ -718,7 +718,7 @@ static t_int *tabsend_perform(t_int *w)
     while (n--)
     {   
         t_sample f = *in++;
-        if (PD_BIGORSMALL(f))
+        if (PD_BIG_OR_SMALL(f))
             f = 0;
          (dest++)->w_float = f;
     }

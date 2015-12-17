@@ -96,7 +96,7 @@ static t_int *sigdelwrite_perform(t_int *w)
     while (n--)
     {
         t_sample f = *in++;
-        if (PD_BIGORSMALL(f))
+        if (PD_BIG_OR_SMALL(f))
             f = 0;
         *bp++ = f;
         if (bp == ep)
