@@ -20,6 +20,9 @@
 #include <unistd.h>
 #endif
 
+#define IEM_NUMBER_COLOR_EDITED            16711680
+
+
 /*------------------ global varaibles -------------------------*/
 
 
@@ -146,7 +149,7 @@ static void my_numbox_draw_update(t_gobj *client, t_glist *glist)
                     cp += sl - x->x_gui.x_w + 1;
                 sys_vgui(
                     ".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s} \n",
-                         glist_getcanvas(glist), x, IEM_GUI_COLOR_EDITED, cp);
+                         glist_getcanvas(glist), x, IEM_NUMBER_COLOR_EDITED, cp);
                 x->x_buf[sl] = 0;
             }
             else
@@ -154,7 +157,7 @@ static void my_numbox_draw_update(t_gobj *client, t_glist *glist)
                 my_numbox_ftoa(x);
                 sys_vgui(
                     ".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s} \n",
-                    glist_getcanvas(glist), x, IEM_GUI_COLOR_EDITED, x->x_buf);
+                    glist_getcanvas(glist), x, IEM_NUMBER_COLOR_EDITED, x->x_buf);
                 x->x_buf[0] = 0;
             }
         }
@@ -290,21 +293,21 @@ static void my_numbox_draw_io(t_my_numbox* x,t_glist* glist, int old_snd_rcv_fla
     int ypos=text_ypix(&x->x_gui.x_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
-    if((old_snd_rcv_flags & IEM_GUI_OLD_SND_FLAG) && !x->x_gui.x_fsf.x_snd_able)
+    if((old_snd_rcv_flags & IEM_GUI_OLD_SEND) && !x->x_gui.x_fsf.x_snd_able)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
              canvas,
              xpos, ypos + x->x_gui.x_h-1,
              xpos+INLETS_WIDTH, ypos + x->x_gui.x_h,
              x, 0);
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_SND_FLAG) && x->x_gui.x_fsf.x_snd_able)
+    if(!(old_snd_rcv_flags & IEM_GUI_OLD_SEND) && x->x_gui.x_fsf.x_snd_able)
         sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    if((old_snd_rcv_flags & IEM_GUI_OLD_RCV_FLAG) && !x->x_gui.x_fsf.x_rcv_able)
+    if((old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && !x->x_gui.x_fsf.x_rcv_able)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
              canvas,
              xpos, ypos,
              xpos+INLETS_WIDTH, ypos+1,
              x, 0);
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_RCV_FLAG) && x->x_gui.x_fsf.x_rcv_able)
+    if(!(old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && x->x_gui.x_fsf.x_rcv_able)
         sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
 }
 
@@ -345,20 +348,20 @@ static void my_numbox_draw_select(t_my_numbox *x, t_glist *glist)
 
 void my_numbox_draw(t_my_numbox *x, t_glist *glist, int mode)
 {
-    if(mode == IEM_GUI_DRAW_MODE_UPDATE)
+    if(mode == IEM_GUI_DRAW_UPDATE)
         sys_queuegui(x, glist, my_numbox_draw_update);
-    else if(mode == IEM_GUI_DRAW_MODE_MOVE)
+    else if(mode == IEM_GUI_DRAW_MOVE)
         my_numbox_draw_move(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_NEW)
+    else if(mode == IEM_GUI_DRAW_NEW)
         my_numbox_draw_new(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_SELECT)
+    else if(mode == IEM_GUI_DRAW_SELECT)
         my_numbox_draw_select(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_ERASE)
+    else if(mode == IEM_GUI_DRAW_ERASE)
         my_numbox_draw_erase(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_CONFIG)
+    else if(mode == IEM_GUI_DRAW_CONFIG)
         my_numbox_draw_config(x, glist);
-    else if(mode >= IEM_GUI_DRAW_MODE_IO)
-        my_numbox_draw_io(x, glist, mode - IEM_GUI_DRAW_MODE_IO);
+    else if(mode >= IEM_GUI_DRAW_IO)
+        my_numbox_draw_io(x, glist, mode - IEM_GUI_DRAW_IO);
 }
 
 /* ------------------------ nbx widgetbehaviour----------------------------- */
@@ -512,10 +515,10 @@ static void my_numbox_dialog(t_my_numbox *x, t_symbol *s, int argc,
     /*if(my_numbox_check_minmax(x, min, max))
      my_numbox_bang(x);*/
     my_numbox_check_minmax(x, min, max);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_IO + sr_flags);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_CONFIG);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_MOVE);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_IO + sr_flags);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_CONFIG);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MOVE);
     canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
 }
 
@@ -715,7 +718,7 @@ static void my_numbox_key(void *z, t_floatarg fkey)
     if(((c>='0')&&(c<='9'))||(c=='.')||(c=='-')||
         (c=='e')||(c=='+')||(c=='E'))
     {
-        if(strlen(x->x_buf) < (IEMGUI_MAX_NUM_LEN-2))
+        if(strlen(x->x_buf) < (IEM_GUI_BUFFER_LENGTH-2))
         {
             buf[0] = c;
             strcat(x->x_buf, buf);
@@ -746,7 +749,7 @@ static void my_numbox_key(void *z, t_floatarg fkey)
 
 static void my_numbox_list(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
 {
-    if (IS_A_FLOAT(av,0))
+    if (IS_FLOAT(av,0))
     {
         my_numbox_set(x, atom_getfloatarg(0, ac, av));
         my_numbox_bang(x);
@@ -764,15 +767,15 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
     double min=-1.0e+37, max=1.0e+37,v=0.0;
     char str[144];
 
-    if((argc >= 17)&&IS_A_FLOAT(argv,0)&&IS_A_FLOAT(argv,1)
-       &&IS_A_FLOAT(argv,2)&&IS_A_FLOAT(argv,3)
-       &&IS_A_FLOAT(argv,4)&&IS_A_FLOAT(argv,5)
-       &&(IS_A_SYMBOL(argv,6)||IS_A_FLOAT(argv,6))
-       &&(IS_A_SYMBOL(argv,7)||IS_A_FLOAT(argv,7))
-       &&(IS_A_SYMBOL(argv,8)||IS_A_FLOAT(argv,8))
-       &&IS_A_FLOAT(argv,9)&&IS_A_FLOAT(argv,10)
-       &&IS_A_FLOAT(argv,11)&&IS_A_FLOAT(argv,12)&&IS_A_FLOAT(argv,13)
-       &&IS_A_FLOAT(argv,14)&&IS_A_FLOAT(argv,15)&&IS_A_FLOAT(argv,16))
+    if((argc >= 17)&&IS_FLOAT(argv,0)&&IS_FLOAT(argv,1)
+       &&IS_FLOAT(argv,2)&&IS_FLOAT(argv,3)
+       &&IS_FLOAT(argv,4)&&IS_FLOAT(argv,5)
+       &&(IS_SYMBOL(argv,6)||IS_FLOAT(argv,6))
+       &&(IS_SYMBOL(argv,7)||IS_FLOAT(argv,7))
+       &&(IS_SYMBOL(argv,8)||IS_FLOAT(argv,8))
+       &&IS_FLOAT(argv,9)&&IS_FLOAT(argv,10)
+       &&IS_FLOAT(argv,11)&&IS_FLOAT(argv,12)&&IS_FLOAT(argv,13)
+       &&IS_FLOAT(argv,14)&&IS_FLOAT(argv,15)&&IS_FLOAT(argv,16))
     {
         w = (int)atom_getintarg(0, argc, argv);
         h = (int)atom_getintarg(1, argc, argv);
@@ -791,7 +794,7 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
         v = atom_getfloatarg(16, argc, argv);
     }
     else iemgui_new_getnames(&x->x_gui, 6, 0);
-    if((argc == 18)&&IS_A_FLOAT(argv,17))
+    if((argc == 18)&&IS_FLOAT(argv,17))
     {
         log_height = (int)atom_getintarg(17, argc, argv);
     }

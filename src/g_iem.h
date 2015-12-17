@@ -25,67 +25,37 @@
 
 #define IEM_GUI_COLOR_NORMAL        0
 #define IEM_GUI_COLOR_SELECTED      255
-#define IEM_GUI_COLOR_MAXIMUM       30
+#define IEM_GUI_DEFAULT_SIZE        15
+#define IEM_GUI_MINIMUM_SIZE        8
+#define IEM_GUI_OLD_SEND            1
+#define IEM_GUI_OLD_RECEIVE         2
+#define IEM_GUI_BUFFER_LENGTH       32
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_GUI_DEFAULTSIZE 15
-#define IEM_GUI_MINSIZE 8
-#define IEM_GUI_MAXSIZE 1000
-#define IEM_SL_DEFAULTSIZE 128
-#define IEM_SL_MINSIZE 2
-#define IEM_FONT_MINSIZE 4
+#define IEM_GUI_DRAW_UPDATE         0
+#define IEM_GUI_DRAW_MOVE           1
+#define IEM_GUI_DRAW_NEW            2
+#define IEM_GUI_DRAW_SELECT         3
+#define IEM_GUI_DRAW_ERASE          4
+#define IEM_GUI_DRAW_CONFIG         5
+#define IEM_GUI_DRAW_IO             6
 
-#define IEM_BNG_DEFAULTHOLDFLASHTIME 250
-#define IEM_BNG_DEFAULTBREAKFLASHTIME 50
-#define IEM_BNG_MINHOLDFLASHTIME 50
-#define IEM_BNG_MINBREAKFLASHTIME 10
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-#define IEM_VU_DEFAULTSIZE 3
-#define IEM_VU_LARGESMALL  2
-#define IEM_VU_MINSIZE     2
-#define IEM_VU_MAXSIZE     25
-#define IEM_VU_STEPS       40
+#define IS_POINTER(atom, index)     ((atom + index)->a_type == A_POINTER)
+#define IS_FLOAT(atom, index)       ((atom + index)->a_type == A_FLOAT)
+#define IS_SYMBOL(atom, index)      ((atom + index)->a_type == A_SYMBOL)
+#define IS_DOLLAR(atom, index)      ((atom + index)->a_type == A_DOLLAR)
+#define IS_DOLLSYM(atom, index)     ((atom + index)->a_type == A_DOLLSYM)
 
-#define IEM_VU_MINDB    -99.9
-#define IEM_VU_MAXDB    12.0
-#define IEM_VU_OFFSET   100.0
-
-#define IEM_RADIO_MAX   128
-
-#define IEM_SYM_UNIQUE_SND  256
-#define IEM_SYM_UNIQUE_RCV  512
-#define IEM_SYM_UNIQUE_LAB  1024
-#define IEM_SYM_UNIQUE_ALL  1792
-#define IEM_FONT_STYLE_ALL  255
-
-#define IEM_MAX_SYM_LEN      127
-
-#define IEM_GUI_DRAW_MODE_UPDATE 0
-#define IEM_GUI_DRAW_MODE_MOVE   1
-#define IEM_GUI_DRAW_MODE_NEW    2
-#define IEM_GUI_DRAW_MODE_SELECT 3
-#define IEM_GUI_DRAW_MODE_ERASE  4
-#define IEM_GUI_DRAW_MODE_CONFIG 5
-#define IEM_GUI_DRAW_MODE_IO     6
-
-
-#define IS_A_POINTER(atom,index) ((atom+index)->a_type == A_POINTER)
-#define IS_A_FLOAT(atom,index) ((atom+index)->a_type == A_FLOAT)
-#define IS_A_SYMBOL(atom,index) ((atom+index)->a_type == A_SYMBOL)
-#define IS_A_DOLLAR(atom,index) ((atom+index)->a_type == A_DOLLAR)
-#define IS_A_DOLLSYM(atom,index) ((atom+index)->a_type == A_DOLLSYM)
-
-#define IEM_FSTYLE_FLAGS_ALL 0x007fffff
-#define IEM_INIT_ARGS_ALL    0x01ffffff
-
-#define IEM_GUI_OLD_SND_FLAG 1
-#define IEM_GUI_OLD_RCV_FLAG 2
-
-#define IEM_GUI_COLOR_EDITED 16711680
-#define IEMGUI_MAX_NUM_LEN 32
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 typedef struct _iem_fstyle_flags
 {
@@ -235,7 +205,7 @@ typedef struct _my_numbox
     double   x_max;
     double   x_k;
     int      x_lin0_log1;
-    char     x_buf[IEMGUI_MAX_NUM_LEN];
+    char     x_buf[IEM_GUI_BUFFER_LENGTH];
     int      x_numwidth;
     int      x_log_height;
 } t_my_numbox;

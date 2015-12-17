@@ -22,6 +22,13 @@
 #include <unistd.h>
 #endif
 
+#define IEM_VU_DEFAULT_SIZE         3
+#define IEM_VU_MINIMUM_SIZE         2
+#define IEM_VU_MINIMUM_DECIBELS     -99.9
+#define IEM_VU_MAXIMUM_DECIBELS     12.0
+#define IEM_VU_STEPS                40
+#define IEM_VU_OFFSET               100.0
+
 /* ----- vu  gui-peak- & rms- vu-meter-display ---------- */
 
 t_widgetbehavior vu_widgetbehavior;
@@ -307,7 +314,7 @@ static void vu_draw_io(t_vu* x, t_glist* glist, int old_snd_rcv_flags)
     int ypos=text_ypix(&x->x_gui.x_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
-    if((old_snd_rcv_flags & IEM_GUI_OLD_SND_FLAG) && !x->x_gui.x_fsf.x_snd_able)
+    if((old_snd_rcv_flags & IEM_GUI_OLD_SEND) && !x->x_gui.x_fsf.x_snd_able)
     {
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
              canvas,
@@ -320,12 +327,12 @@ static void vu_draw_io(t_vu* x, t_glist* glist, int old_snd_rcv_flags)
              xpos+x->x_gui.x_w+1, ypos + x->x_gui.x_h+2,
              x, 1);
     }
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_SND_FLAG) && x->x_gui.x_fsf.x_snd_able)
+    if(!(old_snd_rcv_flags & IEM_GUI_OLD_SEND) && x->x_gui.x_fsf.x_snd_able)
     {
         sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
         sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 1);
     }
-    if((old_snd_rcv_flags & IEM_GUI_OLD_RCV_FLAG) && !x->x_gui.x_fsf.x_rcv_able)
+    if((old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && !x->x_gui.x_fsf.x_rcv_able)
     {
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
              canvas,
@@ -338,7 +345,7 @@ static void vu_draw_io(t_vu* x, t_glist* glist, int old_snd_rcv_flags)
              xpos+x->x_gui.x_w+1, ypos-1,
              x, 1);
     }
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_RCV_FLAG) && x->x_gui.x_fsf.x_rcv_able)
+    if(!(old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && x->x_gui.x_fsf.x_rcv_able)
     {
         sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
         sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 1);
@@ -388,18 +395,18 @@ static void vu_draw_select(t_vu* x,t_glist* glist)
 
 void vu_draw(t_vu *x, t_glist *glist, int mode)
 {
-    if(mode == IEM_GUI_DRAW_MODE_MOVE)
+    if(mode == IEM_GUI_DRAW_MOVE)
         vu_draw_move(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_NEW)
+    else if(mode == IEM_GUI_DRAW_NEW)
         vu_draw_new(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_SELECT)
+    else if(mode == IEM_GUI_DRAW_SELECT)
         vu_draw_select(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_ERASE)
+    else if(mode == IEM_GUI_DRAW_ERASE)
         vu_draw_erase(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_CONFIG)
+    else if(mode == IEM_GUI_DRAW_CONFIG)
         vu_draw_config(x, glist);
-    else if(mode >= IEM_GUI_DRAW_MODE_IO)
-        vu_draw_io(x, glist, mode - IEM_GUI_DRAW_MODE_IO);
+    else if(mode >= IEM_GUI_DRAW_IO)
+        vu_draw_io(x, glist, mode - IEM_GUI_DRAW_IO);
 }
 
 /* ------------------------ vu widgetbehaviour----------------------------- */
@@ -439,8 +446,8 @@ void vu_check_height(t_vu *x, int h)
     int n;
 
     n = h / IEM_VU_STEPS;
-    if(n < IEM_VU_MINSIZE)
-        n = IEM_VU_MINSIZE;
+    if(n < IEM_VU_MINIMUM_SIZE)
+        n = IEM_VU_MINIMUM_SIZE;
     x->x_led_size = n-1;
     x->x_gui.x_h = IEM_VU_STEPS * n;
 }
@@ -515,7 +522,7 @@ static void vu_properties(t_gobj *z, t_glist *owner)
             %d \
             %d %d %d \
             -1\n",
-            x->x_gui.x_w, IEM_GUI_MINSIZE, x->x_gui.x_h, IEM_VU_STEPS*IEM_VU_MINSIZE,
+            x->x_gui.x_w, IEM_GUI_MINIMUM_SIZE, x->x_gui.x_h, IEM_VU_STEPS*IEM_VU_MINIMUM_SIZE,
             x->x_scale, 
             "nosndno", srl[1]->s_name,/*no send*/
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
@@ -541,9 +548,9 @@ static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
     if(scale != 0)
         scale = 1;
     vu_scale(x, (t_float)scale);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_CONFIG);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_IO + sr_flags);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_MOVE);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_CONFIG);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_IO + sr_flags);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MOVE);
     canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
 }
 
@@ -554,8 +561,8 @@ static void vu_size(t_vu *x, t_symbol *s, int ac, t_atom *av)
         vu_check_height(x, (int)atom_getintarg(1, ac, av));
     if(glist_isvisible(x->x_gui.x_glist))
     {
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_MOVE);
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_CONFIG);
+        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MOVE);
+        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_CONFIG);
         canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
     }
 }
@@ -585,9 +592,9 @@ static void vu_float(t_vu *x, t_floatarg rms)
 {
     int i;
     int old = x->x_rms;
-    if(rms <= IEM_VU_MINDB)
+    if(rms <= IEM_VU_MINIMUM_DECIBELS)
         x->x_rms = 0;
-    else if(rms >= IEM_VU_MAXDB)
+    else if(rms >= IEM_VU_MAXIMUM_DECIBELS)
         x->x_rms = IEM_VU_STEPS;
     else
     {
@@ -607,9 +614,9 @@ static void vu_ft1(t_vu *x, t_floatarg peak)
 {
     int i;
     int old = x->x_peak;
-    if(peak <= IEM_VU_MINDB)
+    if(peak <= IEM_VU_MINIMUM_DECIBELS)
         x->x_peak = 0;
-    else if(peak >= IEM_VU_MAXDB)
+    else if(peak >= IEM_VU_MAXIMUM_DECIBELS)
         x->x_peak = IEM_VU_STEPS;
     else
     {
@@ -637,20 +644,20 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_vu *x = (t_vu *)pd_new(vu_class);
     int bflcol[]={-66577, -1, -1};
-    int w=IEM_GUI_DEFAULTSIZE, h=IEM_VU_STEPS*IEM_VU_DEFAULTSIZE;
+    int w=IEM_GUI_DEFAULT_SIZE, h=IEM_VU_STEPS*IEM_VU_DEFAULT_SIZE;
     int ldx=-1, ldy=-8, f=0, fs=10, scale=1;
-    int ftbreak=IEM_BNG_DEFAULTBREAKFLASHTIME, fthold=IEM_BNG_DEFAULTHOLDFLASHTIME;
+    //int ftbreak=IEM_BANG_DEFAULT_BREAK, fthold=IEM_BANG_DEFAULT_HOLD;
     char str[144];
 
     iem_inttosymargs(&x->x_gui.x_isa, 0);
     iem_inttofstyle(&x->x_gui.x_fsf, 0);
 
-    if((argc >= 11)&&IS_A_FLOAT(argv,0)&&IS_A_FLOAT(argv,1)
-       &&(IS_A_SYMBOL(argv,2)||IS_A_FLOAT(argv,2))
-       &&(IS_A_SYMBOL(argv,3)||IS_A_FLOAT(argv,3))
-       &&IS_A_FLOAT(argv,4)&&IS_A_FLOAT(argv,5)
-       &&IS_A_FLOAT(argv,6)&&IS_A_FLOAT(argv,7)
-       &&IS_A_FLOAT(argv,8)&&IS_A_FLOAT(argv,9)&&IS_A_FLOAT(argv,10))
+    if((argc >= 11)&&IS_FLOAT(argv,0)&&IS_FLOAT(argv,1)
+       &&(IS_SYMBOL(argv,2)||IS_FLOAT(argv,2))
+       &&(IS_SYMBOL(argv,3)||IS_FLOAT(argv,3))
+       &&IS_FLOAT(argv,4)&&IS_FLOAT(argv,5)
+       &&IS_FLOAT(argv,6)&&IS_FLOAT(argv,7)
+       &&IS_FLOAT(argv,8)&&IS_FLOAT(argv,9)&&IS_FLOAT(argv,10))
     {
         w = (int)atom_getintarg(0, argc, argv);
         h = (int)atom_getintarg(1, argc, argv);
@@ -664,7 +671,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
         scale = (int)atom_getintarg(10, argc, argv);
     }
     else iemgui_new_getnames(&x->x_gui, 1, 0);
-    if((argc == 12)&&IS_A_FLOAT(argv,11))
+    if((argc == 12)&&IS_FLOAT(argv,11))
         iem_inttosymargs(&x->x_gui.x_isa, atom_getintarg(11, argc, argv));
     x->x_gui.x_draw = (t_iemfunptr)vu_draw;
 

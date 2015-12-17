@@ -139,18 +139,18 @@ void toggle_draw_io(t_toggle* x, t_glist* glist, int old_snd_rcv_flags)
     int ypos=text_ypix(&x->x_gui.x_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
-    if((old_snd_rcv_flags & IEM_GUI_OLD_SND_FLAG) && !x->x_gui.x_fsf.x_snd_able)
+    if((old_snd_rcv_flags & IEM_GUI_OLD_SEND) && !x->x_gui.x_fsf.x_snd_able)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
              canvas, xpos,
              ypos + x->x_gui.x_h-1, xpos + INLETS_WIDTH,
              ypos + x->x_gui.x_h, x, 0);
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_SND_FLAG) && x->x_gui.x_fsf.x_snd_able)
+    if(!(old_snd_rcv_flags & IEM_GUI_OLD_SEND) && x->x_gui.x_fsf.x_snd_able)
         sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    if((old_snd_rcv_flags & IEM_GUI_OLD_RCV_FLAG) && !x->x_gui.x_fsf.x_rcv_able)
+    if((old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && !x->x_gui.x_fsf.x_rcv_able)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
              canvas, xpos, ypos,
              xpos + INLETS_WIDTH, ypos+1, x, 0);
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_RCV_FLAG) && x->x_gui.x_fsf.x_rcv_able)
+    if(!(old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && x->x_gui.x_fsf.x_rcv_able)
         sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
 }
 
@@ -172,20 +172,20 @@ void toggle_draw_select(t_toggle* x, t_glist* glist)
 
 void toggle_draw(t_toggle *x, t_glist *glist, int mode)
 {
-    if(mode == IEM_GUI_DRAW_MODE_UPDATE)
+    if(mode == IEM_GUI_DRAW_UPDATE)
         toggle_draw_update(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_MOVE)
+    else if(mode == IEM_GUI_DRAW_MOVE)
         toggle_draw_move(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_NEW)
+    else if(mode == IEM_GUI_DRAW_NEW)
         toggle_draw_new(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_SELECT)
+    else if(mode == IEM_GUI_DRAW_SELECT)
         toggle_draw_select(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_ERASE)
+    else if(mode == IEM_GUI_DRAW_ERASE)
         toggle_draw_erase(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_CONFIG)
+    else if(mode == IEM_GUI_DRAW_CONFIG)
         toggle_draw_config(x, glist);
-    else if(mode >= IEM_GUI_DRAW_MODE_IO)
-        toggle_draw_io(x, glist, mode - IEM_GUI_DRAW_MODE_IO);
+    else if(mode >= IEM_GUI_DRAW_IO)
+        toggle_draw_io(x, glist, mode - IEM_GUI_DRAW_IO);
 }
 
 /* ------------------------ tgl widgetbehaviour----------------------------- */
@@ -237,7 +237,7 @@ static void toggle_properties(t_gobj *z, t_glist *owner)
             %d \
             %d %d %d \
             -1\n",
-            x->x_gui.x_w, IEM_GUI_MINSIZE,
+            x->x_gui.x_w, IEM_GUI_MINIMUM_SIZE,
             x->x_nonzero,
             x->x_gui.x_isa.x_loadinit,
             srl[0]->s_name, srl[1]->s_name,
@@ -250,7 +250,7 @@ static void toggle_properties(t_gobj *z, t_glist *owner)
 static void toggle_bang(t_toggle *x)
 {
     x->x_on = (x->x_on==0.0)?x->x_nonzero:0.0;
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
     outlet_float(x->x_gui.x_obj.te_outlet, x->x_on);
     if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
         pd_float(x->x_gui.x_snd->s_thing, x->x_on);
@@ -271,9 +271,9 @@ static void toggle_dialog(t_toggle *x, t_symbol *s, int argc, t_atom *argv)
     sr_flags = iemgui_dialog(&x->x_gui, srl, argc, argv);
     x->x_gui.x_w = iemgui_clip_size(a);
     x->x_gui.x_h = x->x_gui.x_w;
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_CONFIG);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_IO + sr_flags);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_MOVE);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_CONFIG);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_IO + sr_flags);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MOVE);
     canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
 }
 
@@ -294,7 +294,7 @@ static void toggle_set(t_toggle *x, t_floatarg f)
     if (f != 0.0 && PD_COMPATIBILITY < 46)
         x->x_nonzero = f;
     if ((x->x_on != 0) != old)
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);
+        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
 }
 
 static void toggle_float(t_toggle *x, t_floatarg f)
@@ -368,7 +368,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_toggle *x = (t_toggle *)pd_new(toggle_class);
     int bflcol[]={-262144, -1, -1};
-    int a=IEM_GUI_DEFAULTSIZE, f=0;
+    int a=IEM_GUI_DEFAULT_SIZE, f=0;
     int ldx=17, ldy=7;
     int fs=10;
     t_float on=0.0, nonzero=1.0;
@@ -377,14 +377,14 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
     iem_inttosymargs(&x->x_gui.x_isa, 0);
     iem_inttofstyle(&x->x_gui.x_fsf, 0);
 
-    if(((argc == 13)||(argc == 14))&&IS_A_FLOAT(argv,0)
-       &&IS_A_FLOAT(argv,1)
-       &&(IS_A_SYMBOL(argv,2)||IS_A_FLOAT(argv,2))
-       &&(IS_A_SYMBOL(argv,3)||IS_A_FLOAT(argv,3))
-       &&(IS_A_SYMBOL(argv,4)||IS_A_FLOAT(argv,4))
-       &&IS_A_FLOAT(argv,5)&&IS_A_FLOAT(argv,6)
-       &&IS_A_FLOAT(argv,7)&&IS_A_FLOAT(argv,8)&&IS_A_FLOAT(argv,9)
-       &&IS_A_FLOAT(argv,10)&&IS_A_FLOAT(argv,11)&&IS_A_FLOAT(argv,12))
+    if(((argc == 13)||(argc == 14))&&IS_FLOAT(argv,0)
+       &&IS_FLOAT(argv,1)
+       &&(IS_SYMBOL(argv,2)||IS_FLOAT(argv,2))
+       &&(IS_SYMBOL(argv,3)||IS_FLOAT(argv,3))
+       &&(IS_SYMBOL(argv,4)||IS_FLOAT(argv,4))
+       &&IS_FLOAT(argv,5)&&IS_FLOAT(argv,6)
+       &&IS_FLOAT(argv,7)&&IS_FLOAT(argv,8)&&IS_FLOAT(argv,9)
+       &&IS_FLOAT(argv,10)&&IS_FLOAT(argv,11)&&IS_FLOAT(argv,12))
     {
         a = (int)atom_getintarg(0, argc, argv);
         iem_inttosymargs(&x->x_gui.x_isa, atom_getintarg(1, argc, argv));
@@ -399,7 +399,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
         on = (t_float)atom_getfloatarg(12, argc, argv);
     }
     else iemgui_new_getnames(&x->x_gui, 2, 0);
-    if((argc == 14)&&IS_A_FLOAT(argv,13))
+    if((argc == 14)&&IS_FLOAT(argv,13))
         nonzero = (t_float)atom_getfloatarg(13, argc, argv);
     x->x_gui.x_draw = (t_iemfunptr)toggle_draw;
 

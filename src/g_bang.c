@@ -22,6 +22,10 @@
 #include <unistd.h>
 #endif
 
+#define IEM_BANG_DEFAULT_HOLD       250
+#define IEM_BANG_DEFAULT_BREAK      50
+#define IEM_BANG_MINIMUM_HOLD       50
+#define IEM_BANG_MINIMUM_BREAK      10
 
 /* --------------- bng     gui-bang ------------------------- */
 
@@ -131,18 +135,18 @@ void bng_draw_io(t_bng* x, t_glist* glist, int old_snd_rcv_flags)
     int ypos=text_ypix(&x->x_gui.x_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
-    if((old_snd_rcv_flags & IEM_GUI_OLD_SND_FLAG) && !x->x_gui.x_fsf.x_snd_able)
+    if((old_snd_rcv_flags & IEM_GUI_OLD_SEND) && !x->x_gui.x_fsf.x_snd_able)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
              canvas, xpos,
              ypos + x->x_gui.x_h-1, xpos + INLETS_WIDTH,
              ypos + x->x_gui.x_h, x, 0);
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_SND_FLAG) && x->x_gui.x_fsf.x_snd_able)
+    if(!(old_snd_rcv_flags & IEM_GUI_OLD_SEND) && x->x_gui.x_fsf.x_snd_able)
         sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    if((old_snd_rcv_flags & IEM_GUI_OLD_RCV_FLAG) && !x->x_gui.x_fsf.x_rcv_able)
+    if((old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && !x->x_gui.x_fsf.x_rcv_able)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
              canvas, xpos, ypos,
              xpos + INLETS_WIDTH, ypos+1, x, 0);
-    if(!(old_snd_rcv_flags & IEM_GUI_OLD_RCV_FLAG) && x->x_gui.x_fsf.x_rcv_able)
+    if(!(old_snd_rcv_flags & IEM_GUI_OLD_RECEIVE) && x->x_gui.x_fsf.x_rcv_able)
         sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
 }
 
@@ -166,20 +170,20 @@ void bng_draw_select(t_bng* x, t_glist* glist)
 
 void bng_draw(t_bng *x, t_glist *glist, int mode)
 {
-    if(mode == IEM_GUI_DRAW_MODE_UPDATE)
+    if(mode == IEM_GUI_DRAW_UPDATE)
         bng_draw_update(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_MOVE)
+    else if(mode == IEM_GUI_DRAW_MOVE)
         bng_draw_move(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_NEW)
+    else if(mode == IEM_GUI_DRAW_NEW)
         bng_draw_new(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_SELECT)
+    else if(mode == IEM_GUI_DRAW_SELECT)
         bng_draw_select(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_ERASE)
+    else if(mode == IEM_GUI_DRAW_ERASE)
         bng_draw_erase(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_CONFIG)
+    else if(mode == IEM_GUI_DRAW_CONFIG)
         bng_draw_config(x, glist);
-    else if(mode >= IEM_GUI_DRAW_MODE_IO)
-        bng_draw_io(x, glist, mode - IEM_GUI_DRAW_MODE_IO);
+    else if(mode >= IEM_GUI_DRAW_IO)
+        bng_draw_io(x, glist, mode - IEM_GUI_DRAW_IO);
 }
 
 /* ------------------------ bng widgetbehaviour----------------------------- */
@@ -223,10 +227,10 @@ void bng_check_minmax(t_bng *x, int ftbreak, int fthold)
         ftbreak = fthold;
         fthold = h;
     }
-    if(ftbreak < IEM_BNG_MINBREAKFLASHTIME)
-        ftbreak = IEM_BNG_MINBREAKFLASHTIME;
-    if(fthold < IEM_BNG_MINHOLDFLASHTIME)
-        fthold = IEM_BNG_MINHOLDFLASHTIME;
+    if(ftbreak < IEM_BANG_MINIMUM_BREAK)
+        ftbreak = IEM_BANG_MINIMUM_BREAK;
+    if(fthold < IEM_BANG_MINIMUM_HOLD)
+        fthold = IEM_BANG_MINIMUM_HOLD;
     x->x_flashtime_break = ftbreak;
     x->x_flashtime_hold = fthold;
 }
@@ -249,7 +253,7 @@ static void bng_properties(t_gobj *z, t_glist *owner)
             %d \
             %d %d %d \
             -1\n",
-            x->x_gui.x_w, IEM_GUI_MINSIZE,
+            x->x_gui.x_w, IEM_GUI_MINIMUM_SIZE,
             x->x_flashtime_break, x->x_flashtime_hold,
             x->x_gui.x_isa.x_loadinit,
             srl[0]->s_name, srl[1]->s_name,
@@ -264,14 +268,14 @@ static void bng_set(t_bng *x)
     if(x->x_flashed)
     {
         x->x_flashed = 0;
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);
+        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
         clock_delay(x->x_clock_brk, x->x_flashtime_break);
         x->x_flashed = 1;
     }
     else
     {
         x->x_flashed = 1;
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);
+        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
     }
     clock_delay(x->x_clock_hld, x->x_flashtime_hold);
 }
@@ -329,9 +333,9 @@ static void bng_dialog(t_bng *x, t_symbol *s, int argc, t_atom *argv)
     x->x_gui.x_w = iemgui_clip_size(a);
     x->x_gui.x_h = x->x_gui.x_w;
     bng_check_minmax(x, ftbreak, fthold);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_CONFIG);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_IO + sr_flags);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_MOVE);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_CONFIG);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_IO + sr_flags);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MOVE);
     canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
 }
 
@@ -419,12 +423,12 @@ static void bng_init(t_bng *x, t_floatarg f)
 static void bng_tick_hld(t_bng *x)
 {
     x->x_flashed = 0;
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
 }
 
 static void bng_tick_brk(t_bng *x)
 {
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_UPDATE);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
 }
 
 static void bng_tick_lck(t_bng *x)
@@ -436,25 +440,25 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_bng *x = (t_bng *)pd_new(bng_class);
     int bflcol[]={-262144, -1, -1};
-    int a=IEM_GUI_DEFAULTSIZE;
+    int a=IEM_GUI_DEFAULT_SIZE;
     int ldx=17, ldy=7;
     int fs=10;
-    int ftbreak=IEM_BNG_DEFAULTBREAKFLASHTIME,
-        fthold=IEM_BNG_DEFAULTHOLDFLASHTIME;
+    int ftbreak=IEM_BANG_DEFAULT_BREAK,
+        fthold=IEM_BANG_DEFAULT_HOLD;
     char str[144];
 
     iem_inttosymargs(&x->x_gui.x_isa, 0);
     iem_inttofstyle(&x->x_gui.x_fsf, 0);
 
-    if((argc == 14)&&IS_A_FLOAT(argv,0)
-       &&IS_A_FLOAT(argv,1)&&IS_A_FLOAT(argv,2)
-       &&IS_A_FLOAT(argv,3)
-       &&(IS_A_SYMBOL(argv,4)||IS_A_FLOAT(argv,4))
-       &&(IS_A_SYMBOL(argv,5)||IS_A_FLOAT(argv,5))
-       &&(IS_A_SYMBOL(argv,6)||IS_A_FLOAT(argv,6))
-       &&IS_A_FLOAT(argv,7)&&IS_A_FLOAT(argv,8)
-       &&IS_A_FLOAT(argv,9)&&IS_A_FLOAT(argv,10)&&IS_A_FLOAT(argv,11)
-       &&IS_A_FLOAT(argv,12)&&IS_A_FLOAT(argv,13))
+    if((argc == 14)&&IS_FLOAT(argv,0)
+       &&IS_FLOAT(argv,1)&&IS_FLOAT(argv,2)
+       &&IS_FLOAT(argv,3)
+       &&(IS_SYMBOL(argv,4)||IS_FLOAT(argv,4))
+       &&(IS_SYMBOL(argv,5)||IS_FLOAT(argv,5))
+       &&(IS_SYMBOL(argv,6)||IS_FLOAT(argv,6))
+       &&IS_FLOAT(argv,7)&&IS_FLOAT(argv,8)
+       &&IS_FLOAT(argv,9)&&IS_FLOAT(argv,10)&&IS_FLOAT(argv,11)
+       &&IS_FLOAT(argv,12)&&IS_FLOAT(argv,13))
     {
 
         a = (int)atom_getintarg(0, argc, argv);

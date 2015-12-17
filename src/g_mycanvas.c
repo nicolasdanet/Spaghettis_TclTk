@@ -107,15 +107,15 @@ void my_canvas_draw_select(t_my_canvas* x, t_glist* glist)
 
 void my_canvas_draw(t_my_canvas *x, t_glist *glist, int mode)
 {
-    if(mode == IEM_GUI_DRAW_MODE_MOVE)
+    if(mode == IEM_GUI_DRAW_MOVE)
         my_canvas_draw_move(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_NEW)
+    else if(mode == IEM_GUI_DRAW_NEW)
         my_canvas_draw_new(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_SELECT)
+    else if(mode == IEM_GUI_DRAW_SELECT)
         my_canvas_draw_select(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_ERASE)
+    else if(mode == IEM_GUI_DRAW_ERASE)
         my_canvas_draw_erase(x, glist);
-    else if(mode == IEM_GUI_DRAW_MODE_CONFIG)
+    else if(mode == IEM_GUI_DRAW_CONFIG)
         my_canvas_draw_config(x, glist);
 }
 
@@ -203,8 +203,8 @@ static void my_canvas_dialog(t_my_canvas *x, t_symbol *s, int argc, t_atom *argv
     if(h < 1)
         h = 1;
     x->x_vis_h = h;
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_CONFIG);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_MOVE);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_CONFIG);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MOVE);
 }
 
 static void my_canvas_size(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
@@ -240,7 +240,7 @@ static void my_canvas_vis_size(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
     }
     x->x_vis_h = i;
     if(glist_isvisible(x->x_gui.x_glist))
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MODE_MOVE);
+        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MOVE);
 }
 
 static void my_canvas_color(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
@@ -265,7 +265,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_my_canvas *x = (t_my_canvas *)pd_new(my_canvas_class);
     int bflcol[]={-233017, -1, -66577};
-    int a=IEM_GUI_DEFAULTSIZE, w=100, h=60;
+    int a=IEM_GUI_DEFAULT_SIZE, w=100, h=60;
     int ldx=20, ldy=12, f=2, i=0;
     int fs=14;
     char str[144];
@@ -274,18 +274,18 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     iem_inttofstyle(&x->x_gui.x_fsf, 0);
 
     if(((argc >= 10)&&(argc <= 13))
-       &&IS_A_FLOAT(argv,0)&&IS_A_FLOAT(argv,1)&&IS_A_FLOAT(argv,2))
+       &&IS_FLOAT(argv,0)&&IS_FLOAT(argv,1)&&IS_FLOAT(argv,2))
     {
         a = (int)atom_getintarg(0, argc, argv);
         w = (int)atom_getintarg(1, argc, argv);
         h = (int)atom_getintarg(2, argc, argv);
     }
-    if((argc >= 12)&&(IS_A_SYMBOL(argv,3)||IS_A_FLOAT(argv,3))&&(IS_A_SYMBOL(argv,4)||IS_A_FLOAT(argv,4)))
+    if((argc >= 12)&&(IS_SYMBOL(argv,3)||IS_FLOAT(argv,3))&&(IS_SYMBOL(argv,4)||IS_FLOAT(argv,4)))
     {
         i = 2;
         iemgui_new_getnames(&x->x_gui, 3, argv);
     }
-    else if((argc == 11)&&(IS_A_SYMBOL(argv,3)||IS_A_FLOAT(argv,3)))
+    else if((argc == 11)&&(IS_SYMBOL(argv,3)||IS_FLOAT(argv,3)))
     {
         i = 1;
         iemgui_new_getnames(&x->x_gui, 3, argv);
@@ -293,10 +293,10 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     else iemgui_new_getnames(&x->x_gui, 3, 0);
 
     if(((argc >= 10)&&(argc <= 13))
-       &&(IS_A_SYMBOL(argv,i+3)||IS_A_FLOAT(argv,i+3))&&IS_A_FLOAT(argv,i+4)
-       &&IS_A_FLOAT(argv,i+5)&&IS_A_FLOAT(argv,i+6)
-       &&IS_A_FLOAT(argv,i+7)&&IS_A_FLOAT(argv,i+8)
-       &&IS_A_FLOAT(argv,i+9))
+       &&(IS_SYMBOL(argv,i+3)||IS_FLOAT(argv,i+3))&&IS_FLOAT(argv,i+4)
+       &&IS_FLOAT(argv,i+5)&&IS_FLOAT(argv,i+6)
+       &&IS_FLOAT(argv,i+7)&&IS_FLOAT(argv,i+8)
+       &&IS_FLOAT(argv,i+9))
     {
             /* disastrously, the "label" sits in a different part of the
             message.  So we have to track its location separately (in
@@ -310,7 +310,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
         bflcol[0] = (int)atom_getintarg(i+8, argc, argv);
         bflcol[2] = (int)atom_getintarg(i+9, argc, argv);
     }
-    if((argc == 13)&&IS_A_FLOAT(argv,i+10))
+    if((argc == 13)&&IS_FLOAT(argv,i+10))
     {
         iem_inttosymargs(&x->x_gui.x_isa, atom_getintarg(i+10, argc, argv));
     }
