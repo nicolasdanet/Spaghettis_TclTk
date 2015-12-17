@@ -22,9 +22,11 @@
 #include <unistd.h>
 #endif
 
+#define IEM_BANG_DEFAULT_SIZE       15
+#define IEM_BANG_MINIMUM_SIZE       8
 #define IEM_BANG_DEFAULT_HOLD       250
 #define IEM_BANG_DEFAULT_BREAK      50
-#define IEM_BANG_MINIMUM_HOLD       50
+#define IEM_BANG_MINIMUM_HOLD       10
 #define IEM_BANG_MINIMUM_BREAK      10
 
 /* --------------- bng     gui-bang ------------------------- */
@@ -245,7 +247,7 @@ static void bng_properties(t_gobj *z, t_glist *owner)
             %d \
             %d %d %d \
             -1\n",
-            x->x_gui.x_w, IEM_GUI_MINIMUM_SIZE,
+            x->x_gui.x_w, IEM_BANG_MINIMUM_SIZE,
             x->x_flashtime_break, x->x_flashtime_hold,
             x->x_gui.x_isa.x_loadinit,
             srl[0]->s_name, srl[1]->s_name,
@@ -432,7 +434,7 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_bng *x = (t_bng *)pd_new(bng_class);
     int bflcol[]={-262144, -1, -1};
-    int a=IEM_GUI_DEFAULT_SIZE;
+    int a=IEM_BANG_DEFAULT_SIZE;
     int ldx=17, ldy=7;
     int fs=10;
     int ftbreak=IEM_BANG_DEFAULT_BREAK,

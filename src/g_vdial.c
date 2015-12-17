@@ -17,7 +17,9 @@ put out a "float" as in sliders, toggles, etc. */
 #include "g_iem.h"
 #include <math.h>
 
-#define IEM_RADIO_MAXIMUM_BUTTONS   128
+#define IEM_VRADIO_DEFAULT_SIZE         15
+#define IEM_VRADIO_MINIMUM_SIZE         8
+#define IEM_VRADIO_MAXIMUM_BUTTONS      128
 
 /*------------------ global variables -------------------------*/
 
@@ -273,7 +275,7 @@ static void vradio_properties(t_gobj *z, t_glist *owner)
             %d \
             %d %d %d \
             -1\n",
-            x->x_gui.x_w, IEM_GUI_MINIMUM_SIZE,
+            x->x_gui.x_w, IEM_VRADIO_MINIMUM_SIZE,
             x->x_gui.x_isa.x_loadinit, 
             x->x_number,
             srl[0]->s_name, srl[1]->s_name,
@@ -495,8 +497,8 @@ static void vradio_number(t_vradio *x, t_floatarg num)
 
     if(n < 1)
         n = 1;
-    if(n > IEM_RADIO_MAXIMUM_BUTTONS)
-        n = IEM_RADIO_MAXIMUM_BUTTONS;
+    if(n > IEM_VRADIO_MAXIMUM_BUTTONS)
+        n = IEM_VRADIO_MAXIMUM_BUTTONS;
     if(n != x->x_number)
     {
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_ERASE);
@@ -554,7 +556,7 @@ static void *vradio_donew(t_symbol *s, int argc, t_atom *argv, int old)
 {
     t_vradio *x = (t_vradio *)pd_new(old? vradio_old_class : vradio_class);
     int bflcol[]={-262144, -1, -1};
-    int a=IEM_GUI_DEFAULT_SIZE, on = 0, f=0;
+    int a=IEM_VRADIO_DEFAULT_SIZE, on = 0, f=0;
     int ldx=0, ldy=-8, chg=1, num=8;
     int fs=10;
     //int ftbreak=IEM_BANG_DEFAULT_BREAK, fthold=IEM_BANG_DEFAULT_HOLD;
@@ -596,8 +598,8 @@ static void *vradio_donew(t_symbol *s, int argc, t_atom *argv, int old)
 
     if(num < 1)
         num = 1;
-    if(num > IEM_RADIO_MAXIMUM_BUTTONS)
-        num = IEM_RADIO_MAXIMUM_BUTTONS;
+    if(num > IEM_VRADIO_MAXIMUM_BUTTONS)
+        num = IEM_VRADIO_MAXIMUM_BUTTONS;
     x->x_number = num;
     x->x_fval = fval;
     on = fval;

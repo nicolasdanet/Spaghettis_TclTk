@@ -711,7 +711,7 @@ static void my_numbox_key(void *z, t_floatarg fkey)
     if(((c>='0')&&(c<='9'))||(c=='.')||(c=='-')||
         (c=='e')||(c=='+')||(c=='E'))
     {
-        if(strlen(x->x_buf) < (IEM_GUI_BUFFER_LENGTH-2))
+        if(strlen(x->x_buf) < (IEM_NUMBER_BUFFER_LENGTH-2))
         {
             buf[0] = c;
             strcat(x->x_buf, buf);

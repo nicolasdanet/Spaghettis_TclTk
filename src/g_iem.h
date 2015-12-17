@@ -30,15 +30,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_GUI_DEFAULT_SIZE        15
-#define IEM_GUI_MINIMUM_SIZE        8
-
-#define IEM_GUI_BUFFER_LENGTH       32
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 #define IEM_GUI_DRAW_UPDATE         0
 #define IEM_GUI_DRAW_MOVE           1
 #define IEM_GUI_DRAW_NEW            2
@@ -56,6 +47,12 @@
 #define IS_SYMBOL(atom, index)      ((atom + index)->a_type == A_SYMBOL)
 #define IS_DOLLAR(atom, index)      ((atom + index)->a_type == A_DOLLAR)
 #define IS_DOLLSYM(atom, index)     ((atom + index)->a_type == A_DOLLSYM)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define IEM_NUMBER_BUFFER_LENGTH    32
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -209,7 +206,7 @@ typedef struct _my_numbox
     double   x_max;
     double   x_k;
     int      x_lin0_log1;
-    char     x_buf[IEM_GUI_BUFFER_LENGTH];
+    char     x_buf[IEM_NUMBER_BUFFER_LENGTH];
     int      x_numwidth;
     int      x_log_height;
 } t_my_numbox;

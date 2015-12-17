@@ -27,7 +27,8 @@
 /*------------------ global varaibles -------------------------*/
 
 #define IEM_COLOR_MAXIMUM       30
-#define IEM_FONT_MINIMUM_SIZE       4
+#define IEM_GUI_MINIMUM_SIZE    8
+#define IEM_FONT_MINIMUM_SIZE   4
 
 int iemgui_color_hex[]=
 {

@@ -22,12 +22,14 @@
 #include <unistd.h>
 #endif
 
-#define IEM_VU_DEFAULT_SIZE         3
-#define IEM_VU_MINIMUM_SIZE         2
-#define IEM_VU_MINIMUM_DECIBELS     -99.9
-#define IEM_VU_MAXIMUM_DECIBELS     12.0
-#define IEM_VU_STEPS                40
-#define IEM_VU_OFFSET               100.0
+#define IEM_VUMETER_DEFAULT_HEIGHT       3
+#define IEM_VUMETER_MINIMUM_HEIGHT       2
+#define IEM_VUMETER_DEFAULT_WIDTH        15
+#define IEM_VUMETER_MINIMUM_WIDTH        8
+#define IEM_VUMETER_MINIMUM_DECIBELS     -99.9
+#define IEM_VUMETER_MAXIMUM_DECIBELS     12.0
+#define IEM_VUMETER_STEPS                40
+#define IEM_VUMETER_OFFSET               100.0
 
 /* ----- vu  gui-peak- & rms- vu-meter-display ---------- */
 
@@ -45,7 +47,7 @@ static void vu_update_rms(t_vu *x, t_glist *glist)
 
         sys_vgui(".x%lx.c coords %lxRCOVER %d %d %d %d\n",
                  glist_getcanvas(glist), x, quad1, off, quad3,
-                 off + (x->x_led_size+1)*(IEM_VU_STEPS-x->x_rms));
+                 off + (x->x_led_size+1)*(IEM_VUMETER_STEPS-x->x_rms));
     }
 }
 
@@ -61,7 +63,7 @@ static void vu_update_peak(t_vu *x, t_glist *glist)
         if(x->x_peak)
         {
             int i=iemgui_vu_col[x->x_peak];
-            int j=ypos + (x->x_led_size+1)*(IEM_VU_STEPS+1-x->x_peak)
+            int j=ypos + (x->x_led_size+1)*(IEM_VUMETER_STEPS+1-x->x_peak)
                 - (x->x_led_size+1)/2;
 
             sys_vgui(".x%lx.c coords %lxPLED %d %d %d %d\n", canvas, x,
@@ -108,14 +110,14 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
         quad1=xpos+w4+1;
     int quad3=xpos+x->x_gui.x_w-w4,
         end=xpos+x->x_gui.x_w+4;
-    int k1=x->x_led_size+1, k2=IEM_VU_STEPS+1, k3=k1/2;
+    int k1=x->x_led_size+1, k2=IEM_VUMETER_STEPS+1, k3=k1/2;
     int led_col, yyy, i, k4=ypos-k3;
 
     sys_vgui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
              canvas, xpos-1, ypos-2,
              xpos+x->x_gui.x_w+1,
              ypos+x->x_gui.x_h+2, x->x_gui.x_bcol, x);
-    for(i=1; i<=IEM_VU_STEPS; i++)
+    for(i=1; i<=IEM_VUMETER_STEPS; i++)
     {
         led_col = iemgui_vu_col[i];
         yyy = k4 + k1*(k2-i);
@@ -130,7 +132,7 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
     }
     if(x->x_scale)
     {
-        i=IEM_VU_STEPS+1;
+        i=IEM_VUMETER_STEPS+1;
         yyy = k4 + k1*(k2-i);
         /*sys_vgui(".x%lx.c create text %d %d -text {%s} -anchor w \
                  -font {{%s} -%d %s} -fill #%6.6x -tags %lxSCALE%d\n",
@@ -140,7 +142,7 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
     }
     sys_vgui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxRCOVER\n",
              canvas, quad1, ypos-1, quad3-1,
-             ypos-1 + k1*IEM_VU_STEPS, x->x_gui.x_bcol, x->x_gui.x_bcol, x);
+             ypos-1 + k1*IEM_VUMETER_STEPS, x->x_gui.x_bcol, x->x_gui.x_bcol, x);
     sys_vgui(".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxPLED\n",
              canvas, mid, ypos+10,
              mid, ypos+10, x->x_led_size, x->x_gui.x_bcol, x);
@@ -187,13 +189,13 @@ static void vu_draw_move(t_vu *x, t_glist *glist)
     int w4=x->x_gui.x_w/4, quad1=xpos+w4+1;
     int quad3=xpos+x->x_gui.x_w-w4,
         end=xpos+x->x_gui.x_w+4;
-    int k1=x->x_led_size+1, k2=IEM_VU_STEPS+1, k3=k1/2;
+    int k1=x->x_led_size+1, k2=IEM_VUMETER_STEPS+1, k3=k1/2;
     int yyy, i, k4=ypos-k3;
 
     sys_vgui(".x%lx.c coords %lxBASE %d %d %d %d\n",
              canvas, x, xpos-1, ypos-2,
              xpos+x->x_gui.x_w+1,ypos+x->x_gui.x_h+2);
-    for(i=1; i<=IEM_VU_STEPS; i++)
+    for(i=1; i<=IEM_VUMETER_STEPS; i++)
     {
         yyy = k4 + k1*(k2-i);
         sys_vgui(".x%lx.c coords %lxRLED%d %d %d %d %d\n",
@@ -204,7 +206,7 @@ static void vu_draw_move(t_vu *x, t_glist *glist)
     }
     if(x->x_scale)
     {
-        i=IEM_VU_STEPS+1;
+        i=IEM_VUMETER_STEPS+1;
         yyy = k4 + k1*(k2-i);
         /*sys_vgui(".x%lx.c coords %lxSCALE%d %d %d\n",
                  canvas, x, i, end, yyy+k3);*/
@@ -244,7 +246,7 @@ static void vu_draw_erase(t_vu* x,t_glist* glist)
     t_canvas *canvas=glist_getcanvas(glist);
 
     sys_vgui(".x%lx.c delete %lxBASE\n", canvas, x);
-    for(i=1; i<=IEM_VU_STEPS; i++)
+    for(i=1; i<=IEM_VUMETER_STEPS; i++)
     {
         sys_vgui(".x%lx.c delete %lxRLED%d\n", canvas, x, i);
         /*if(((i+2)&3) && (x->x_scale))
@@ -252,7 +254,7 @@ static void vu_draw_erase(t_vu* x,t_glist* glist)
     }
     if(x->x_scale)
     {
-        i=IEM_VU_STEPS+1;
+        i=IEM_VUMETER_STEPS+1;
         /*sys_vgui(".x%lx.c delete %lxSCALE%d\n", canvas, x, i);*/
     }
     sys_vgui(".x%lx.c delete %lxPLED\n", canvas, x);
@@ -276,7 +278,7 @@ static void vu_draw_config(t_vu* x, t_glist* glist)
     t_canvas *canvas=glist_getcanvas(glist);
 
     sys_vgui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas, x, x->x_gui.x_bcol);
-    for(i=1; i<=IEM_VU_STEPS; i++)
+    for(i=1; i<=IEM_VUMETER_STEPS; i++)
     {
         sys_vgui(".x%lx.c itemconfigure %lxRLED%d -width %d\n", canvas, x, i,
                  x->x_led_size);
@@ -288,7 +290,7 @@ static void vu_draw_config(t_vu* x, t_glist* glist)
     }
     if(x->x_scale)
     {
-        i=IEM_VU_STEPS+1;
+        i=IEM_VUMETER_STEPS+1;
         /*sys_vgui(".x%lx.c itemconfigure %lxSCALE%d -text {%s} -font {{%s} -%d %s} -fill #%6.6x\n",
                  canvas, x, i, iemgui_vu_scale_str[i], x->x_gui.x_font, 
                  x->x_gui.x_fontsize, sys_fontweight,
@@ -342,7 +344,7 @@ static void vu_draw_select(t_vu* x,t_glist* glist)
     if(x->x_gui.x_fsf.x_selected)
     {
         sys_vgui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_GUI_COLOR_SELECTED);
-        for(i=1; i<=IEM_VU_STEPS; i++)
+        for(i=1; i<=IEM_VUMETER_STEPS; i++)
         {
             /*if(((i+2)&3) && (x->x_scale))
                 sys_vgui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
@@ -350,7 +352,7 @@ static void vu_draw_select(t_vu* x,t_glist* glist)
         }
         if(x->x_scale)
         {
-            i=IEM_VU_STEPS+1;
+            i=IEM_VUMETER_STEPS+1;
            /* sys_vgui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
                      canvas, x, i, IEM_GUI_COLOR_SELECTED);*/
         }
@@ -359,7 +361,7 @@ static void vu_draw_select(t_vu* x,t_glist* glist)
     else
     {
         sys_vgui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_GUI_COLOR_NORMAL);
-        for(i=1; i<=IEM_VU_STEPS; i++)
+        for(i=1; i<=IEM_VUMETER_STEPS; i++)
         {
             /*if(((i+2)&3) && (x->x_scale))
                 sys_vgui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
@@ -367,7 +369,7 @@ static void vu_draw_select(t_vu* x,t_glist* glist)
         }
         if(x->x_scale)
         {
-            i=IEM_VU_STEPS+1;
+            i=IEM_VUMETER_STEPS+1;
             /*sys_vgui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
                      canvas, x, i, x->x_gui.x_lcol);*/
         }
@@ -427,11 +429,11 @@ void vu_check_height(t_vu *x, int h)
 {
     int n;
 
-    n = h / IEM_VU_STEPS;
-    if(n < IEM_VU_MINIMUM_SIZE)
-        n = IEM_VU_MINIMUM_SIZE;
+    n = h / IEM_VUMETER_STEPS;
+    if(n < IEM_VUMETER_MINIMUM_HEIGHT)
+        n = IEM_VUMETER_MINIMUM_HEIGHT;
     x->x_led_size = n-1;
-    x->x_gui.x_h = IEM_VU_STEPS * n;
+    x->x_gui.x_h = IEM_VUMETER_STEPS * n;
 }
 
 static void vu_scale(t_vu *x, t_floatarg fscale)
@@ -446,26 +448,26 @@ static void vu_scale(t_vu *x, t_floatarg fscale)
         x->x_scale = (int)scale;
         if(glist_isvisible(x->x_gui.x_glist))
         {
-            for(i=1; i<=IEM_VU_STEPS; i++)
+            for(i=1; i<=IEM_VUMETER_STEPS; i++)
             {
                 /*if((i+2)&3)
                     sys_vgui(".x%lx.c delete %lxSCALE%d\n", canvas, x, i);*/
             }
-            i=IEM_VU_STEPS+1;
+            i=IEM_VUMETER_STEPS+1;
             /*sys_vgui(".x%lx.c delete %lxSCALE%d\n", canvas, x, i);*/
         }
     }
     if(!x->x_scale && scale)
     {
         int w4=x->x_gui.x_w/4, end=text_xpix(&x->x_gui.x_obj, x->x_gui.x_glist)+x->x_gui.x_w+4;
-        int k1=x->x_led_size+1, k2=IEM_VU_STEPS+1, k3=k1/2;
+        int k1=x->x_led_size+1, k2=IEM_VUMETER_STEPS+1, k3=k1/2;
         int yyy, k4=text_ypix(&x->x_gui.x_obj, x->x_gui.x_glist)-k3;
         t_canvas *canvas=glist_getcanvas(x->x_gui.x_glist);
 
         x->x_scale = (int)scale;
         if(glist_isvisible(x->x_gui.x_glist))
         {
-            for(i=1; i<=IEM_VU_STEPS; i++)
+            for(i=1; i<=IEM_VUMETER_STEPS; i++)
             {
                 yyy = k4 + k1*(k2-i);
                 /*if((i+2)&3)*/
@@ -475,7 +477,7 @@ static void vu_scale(t_vu *x, t_floatarg fscale)
                              x->x_gui.x_font, x->x_gui.x_fontsize,
                              sys_fontweight, x->x_gui.x_lcol, x, i);*/
             }
-            i=IEM_VU_STEPS+1;
+            i=IEM_VUMETER_STEPS+1;
             yyy = k4 + k1*(k2-i);
             /*sys_vgui(".x%lx.c create text %d %d -text {%s} -anchor w \
                      -font {{%s} -%d %s} -fill #%6.6x -tags %lxSCALE%d\n",
@@ -504,7 +506,7 @@ static void vu_properties(t_gobj *z, t_glist *owner)
             %d \
             %d %d %d \
             -1\n",
-            x->x_gui.x_w, IEM_GUI_MINIMUM_SIZE, x->x_gui.x_h, IEM_VU_STEPS*IEM_VU_MINIMUM_SIZE,
+            x->x_gui.x_w, IEM_VUMETER_MINIMUM_WIDTH, x->x_gui.x_h, IEM_VUMETER_STEPS*IEM_VUMETER_MINIMUM_HEIGHT,
             x->x_scale, 
             "nosndno", srl[1]->s_name,/*no send*/
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
@@ -573,13 +575,13 @@ static void vu_float(t_vu *x, t_floatarg rms)
 {
     int i;
     int old = x->x_rms;
-    if(rms <= IEM_VU_MINIMUM_DECIBELS)
+    if(rms <= IEM_VUMETER_MINIMUM_DECIBELS)
         x->x_rms = 0;
-    else if(rms >= IEM_VU_MAXIMUM_DECIBELS)
-        x->x_rms = IEM_VU_STEPS;
+    else if(rms >= IEM_VUMETER_MAXIMUM_DECIBELS)
+        x->x_rms = IEM_VUMETER_STEPS;
     else
     {
-        int i = (int)(2.0*(rms + IEM_VU_OFFSET));
+        int i = (int)(2.0*(rms + IEM_VUMETER_OFFSET));
         x->x_rms = iemgui_vu_db2i[i];
     }
     i = (int)(100.0*rms + 10000.5);
@@ -595,13 +597,13 @@ static void vu_ft1(t_vu *x, t_floatarg peak)
 {
     int i;
     int old = x->x_peak;
-    if(peak <= IEM_VU_MINIMUM_DECIBELS)
+    if(peak <= IEM_VUMETER_MINIMUM_DECIBELS)
         x->x_peak = 0;
-    else if(peak >= IEM_VU_MAXIMUM_DECIBELS)
-        x->x_peak = IEM_VU_STEPS;
+    else if(peak >= IEM_VUMETER_MAXIMUM_DECIBELS)
+        x->x_peak = IEM_VUMETER_STEPS;
     else
     {
-        int i = (int)(2.0*(peak + IEM_VU_OFFSET));
+        int i = (int)(2.0*(peak + IEM_VUMETER_OFFSET));
         x->x_peak = iemgui_vu_db2i[i];
     }
     i = (int)(100.0*peak + 10000.5);
@@ -625,7 +627,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_vu *x = (t_vu *)pd_new(vu_class);
     int bflcol[]={-66577, -1, -1};
-    int w=IEM_GUI_DEFAULT_SIZE, h=IEM_VU_STEPS*IEM_VU_DEFAULT_SIZE;
+    int w=IEM_VUMETER_DEFAULT_WIDTH, h=IEM_VUMETER_STEPS*IEM_VUMETER_DEFAULT_HEIGHT;
     int ldx=-1, ldy=-8, f=0, fs=10, scale=1;
     //int ftbreak=IEM_BANG_DEFAULT_BREAK, fthold=IEM_BANG_DEFAULT_HOLD;
     char str[144];

@@ -23,8 +23,10 @@
 #endif
 
 
-#define IEM_SLIDER_DEFAULT_SIZE     128
-#define IEM_SLIDER_MINIMUM_SIZE     2
+#define IEM_HSLIDER_DEFAULT_WIDTH    128
+#define IEM_HSLIDER_DEFAULT_HEIGHT   15
+#define IEM_HSLIDER_MINIMUM_WIDTH    8
+#define IEM_HSLIDER_MINIMUM_HEIGHT   8
 
 /* ------------ hsl    gui-horicontal  slider ----------------------- */
 
@@ -216,8 +218,8 @@ static void hslider_save(t_gobj *z, t_binbuf *b)
 
 void hslider_check_width(t_hslider *x, int w)
 {
-    if(w < IEM_SLIDER_MINIMUM_SIZE)
-        w = IEM_SLIDER_MINIMUM_SIZE;
+    if(w < IEM_HSLIDER_MINIMUM_WIDTH)
+        w = IEM_HSLIDER_MINIMUM_WIDTH;
     x->x_gui.x_w = w;
     if(x->x_val > (x->x_gui.x_w*100 - 100))
     {
@@ -273,7 +275,7 @@ static void hslider_properties(t_gobj *z, t_glist *owner)
             %d \
             %d %d %d \
             %d\n",
-            x->x_gui.x_w, IEM_SLIDER_MINIMUM_SIZE, x->x_gui.x_h, IEM_GUI_MINIMUM_SIZE,
+            x->x_gui.x_w, IEM_HSLIDER_MINIMUM_WIDTH, x->x_gui.x_h, IEM_HSLIDER_MINIMUM_HEIGHT,
             x->x_min, x->x_max,
             x->x_lin0_log1, 
             x->x_gui.x_isa.x_loadinit,
@@ -510,10 +512,10 @@ static void *hslider_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_hslider *x = (t_hslider *)pd_new(hslider_class);
     int bflcol[]={-262144, -1, -1};
-    int w=IEM_SLIDER_DEFAULT_SIZE, h=IEM_GUI_DEFAULT_SIZE;
+    int w=IEM_HSLIDER_DEFAULT_WIDTH, h=IEM_HSLIDER_DEFAULT_HEIGHT;
     int lilo=0, ldx=-2, ldy=-8, f=0, steady=1;
     int fs=10;
-    double min=0.0, max=(double)(IEM_SLIDER_DEFAULT_SIZE-1);
+    double min=0.0, max=(double)(IEM_HSLIDER_DEFAULT_WIDTH-1);
     char str[144];
     float v = 0;
 

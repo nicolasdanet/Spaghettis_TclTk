@@ -22,6 +22,8 @@
 #include <unistd.h>
 #endif
 
+#define IEM_PANEL_DEFAULT_SIZE      8
+
 /* ---------- cnv  my gui-canvas for a window ---------------- */
 
 t_widgetbehavior my_canvas_widgetbehavior;
@@ -265,7 +267,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_my_canvas *x = (t_my_canvas *)pd_new(my_canvas_class);
     int bflcol[]={-233017, -1, -66577};
-    int a=IEM_GUI_DEFAULT_SIZE, w=100, h=60;
+    int a=IEM_PANEL_DEFAULT_SIZE, w=100, h=60;
     int ldx=20, ldy=12, f=2, i=0;
     int fs=14;
     char str[144];

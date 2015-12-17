@@ -22,6 +22,9 @@
 #include <unistd.h>
 #endif
 
+#define IEM_TOGGLE_DEFAULT_SIZE     15
+#define IEM_TOGGLE_MINIMUM_SIZE     8
+
 /* --------------- tgl     gui-toggle ------------------------- */
 
 t_widgetbehavior toggle_widgetbehavior;
@@ -231,7 +234,7 @@ static void toggle_properties(t_gobj *z, t_glist *owner)
             %d \
             %d %d %d \
             -1\n",
-            x->x_gui.x_w, IEM_GUI_MINIMUM_SIZE,
+            x->x_gui.x_w, IEM_TOGGLE_MINIMUM_SIZE,
             x->x_nonzero,
             x->x_gui.x_isa.x_loadinit,
             srl[0]->s_name, srl[1]->s_name,
@@ -361,7 +364,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_toggle *x = (t_toggle *)pd_new(toggle_class);
     int bflcol[]={-262144, -1, -1};
-    int a=IEM_GUI_DEFAULT_SIZE, f=0;
+    int a=IEM_TOGGLE_DEFAULT_SIZE, f=0;
     int ldx=17, ldy=7;
     int fs=10;
     t_float on=0.0, nonzero=1.0;

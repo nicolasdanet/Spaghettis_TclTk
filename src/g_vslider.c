@@ -22,8 +22,10 @@
 #include <unistd.h>
 #endif
 
-#define IEM_SLIDER_DEFAULT_SIZE     128
-#define IEM_SLIDER_MINIMUM_SIZE     2
+#define IEM_VSLIDER_DEFAULT_WIDTH       15
+#define IEM_VSLIDER_DEFAULT_HEIGHT      128
+#define IEM_VSLIDER_MINIMUM_WIDTH       8
+#define IEM_VSLIDER_MINIMUM_HEIGHT      8
 
 /* ------------ vsl gui-vertical  slider ----------------------- */
 
@@ -224,8 +226,8 @@ static void vslider_save(t_gobj *z, t_binbuf *b)
 
 void vslider_check_height(t_vslider *x, int h)
 {
-    if(h < IEM_SLIDER_MINIMUM_SIZE)
-        h = IEM_SLIDER_MINIMUM_SIZE;
+    if(h < IEM_VSLIDER_MINIMUM_HEIGHT)
+        h = IEM_VSLIDER_MINIMUM_HEIGHT;
     x->x_gui.x_h = h;
     if(x->x_val > (x->x_gui.x_h*100 - 100))
     {
@@ -282,7 +284,7 @@ static void vslider_properties(t_gobj *z, t_glist *owner)
             %d \
             %d %d %d \
             %d\n",
-            x->x_gui.x_w, IEM_GUI_MINIMUM_SIZE, x->x_gui.x_h, IEM_SLIDER_MINIMUM_SIZE,
+            x->x_gui.x_w, IEM_VSLIDER_MINIMUM_WIDTH, x->x_gui.x_h, IEM_VSLIDER_MINIMUM_HEIGHT,
             x->x_min, x->x_max,
             x->x_lin0_log1, 
             x->x_gui.x_isa.x_loadinit,
@@ -517,10 +519,10 @@ static void *vslider_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_vslider *x = (t_vslider *)pd_new(vslider_class);
     int bflcol[]={-262144, -1, -1};
-    int w=IEM_GUI_DEFAULT_SIZE, h=IEM_SLIDER_DEFAULT_SIZE;
+    int w=IEM_VSLIDER_DEFAULT_WIDTH, h=IEM_VSLIDER_DEFAULT_HEIGHT;
     int lilo=0, f=0, ldx=0, ldy=-9;
     int fs=10, steady=1;
-    double min=0.0, max=(double)(IEM_SLIDER_DEFAULT_SIZE-1);
+    double min=0.0, max=(double)(IEM_VSLIDER_DEFAULT_HEIGHT-1);
     char str[144];
     float v = 0;
 
