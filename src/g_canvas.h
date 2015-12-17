@@ -25,8 +25,13 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IO_WIDTH                    7
-#define IO_MIDDLE                   ((IO_WIDTH - 1) / 2)
+#define INLETS_WIDTH                7
+#define INLETS_MIDDLE               ((INLETS_WIDTH - 1) / 2)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define GLIST_DEFAULT_WIDTH         200
 #define GLIST_DEFAULT_HEIGHT        140
 
@@ -34,40 +39,30 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MA_NONE                     0
-#define MA_MOVE                     1
-#define MA_CONNECT                  2
-#define MA_REGION                   3
-#define MA_PASSOUT                  4
-#define MA_DRAGTEXT                 5
-#define MA_RESIZE                   6
+#define ACTION_NONE                 0
+#define ACTION_MOVE                 1
+#define ACTION_CONNECT              2
+#define ACTION_REGION               3
+#define ACTION_PASS                 4
+#define ACTION_DRAG                 5
+#define ACTION_RESIZE               6
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define DT_FLOAT                    0
-#define DT_SYMBOL                   1
-#define DT_TEXT                     2
-#define DT_ARRAY                    3
+#define PLOT_POINTS                 0
+#define PLOT_POLYGONS               1
+#define PLOT_CURVES                 2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PLOTSTYLE_POINTS            0
-#define PLOTSTYLE_POLYGONS          1
-#define PLOTSTYLE_CURVES            2
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define CURSOR_RUN_NOTHING          0
-#define CURSOR_RUN_CLICKME          1
-#define CURSOR_RUN_THICKEN          2
-#define CURSOR_RUN_ADDPOINT         3
-
+#define CURSOR_NOTHING              0
+#define CURSOR_CLICKME              1
+#define CURSOR_THICKEN              2
+#define CURSOR_ADDPOINT             3
 #define CURSOR_EDIT_NOTHING         4
 #define CURSOR_EDIT_CONNECT         5
 #define CURSOR_EDIT_DISCONNECT      6

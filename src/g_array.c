@@ -254,7 +254,7 @@ static void garray_fittograph(t_garray *x, int n, int style)
     {
         pd_vmess(&gl->gl_obj.te_g.g_pd, gensym("bounds"), "ffff",
             0., gl->gl_y1, (double)
-                (style == PLOTSTYLE_POINTS || n == 1 ? n : n-1),
+                (style == PLOT_POINTS || n == 1 ? n : n-1),
                     gl->gl_y2);
         
             /* hack - if the xlabels seem to want to be from 0 to table size-1,
@@ -289,8 +289,8 @@ t_garray *graph_array(t_glist *gl, t_symbol *s, t_symbol *templateargsym,
     int flags = fflags;
     t_gpointer gp;
     int filestyle = ((flags & 6) >> 1);
-    int style = (filestyle == 0 ? PLOTSTYLE_POLYGONS :
-        (filestyle == 1 ? PLOTSTYLE_POINTS : filestyle));
+    int style = (filestyle == 0 ? PLOT_POLYGONS :
+        (filestyle == 1 ? PLOT_POINTS : filestyle));
     if (templateargsym != &s_float)
     {
         error("array %s: only 'float' type understood", templateargsym->s_name);
@@ -331,7 +331,7 @@ t_garray *graph_array(t_glist *gl, t_symbol *s, t_symbol *templateargsym,
     template_setfloat(template, gensym("style"), x->x_scalar->sc_vec,
         style, 1);
     template_setfloat(template, gensym("linewidth"), x->x_scalar->sc_vec, 
-        ((style == PLOTSTYLE_POINTS) ? 2 : 1), 1);
+        ((style == PLOT_POINTS) ? 2 : 1), 1);
 
            /* bashily unbind #A -- this would create garbage if #A were
            multiply bound but we believe in this context it's at most
@@ -370,8 +370,8 @@ void garray_properties(t_garray *x)
     t_scalar *sc = x->x_scalar;
     int style = template_getfloat(template_findbyname(sc->sc_template),
         gensym("style"), x->x_scalar->sc_vec, 1);
-    int filestyle = (style == 0 ? PLOTSTYLE_POLYGONS :
-        (style == 1 ? PLOTSTYLE_POINTS : style));
+    int filestyle = (style == 0 ? PLOT_POLYGONS :
+        (style == 1 ? PLOT_POINTS : style));
 
     if (!a)
         return;
@@ -409,8 +409,8 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_floatarg fsize,
     int flags = fflags;
     int saveit = ((flags & 1) != 0);
     int filestyle = ((flags & 6) >> 1);
-    int style = (filestyle == 0 ? PLOTSTYLE_POLYGONS :
-        (filestyle == 1 ? PLOTSTYLE_POINTS : filestyle));
+    int style = (filestyle == 0 ? PLOT_POLYGONS :
+        (filestyle == 1 ? PLOT_POINTS : filestyle));
     t_float stylewas = template_getfloat(
         template_findbyname(x->x_scalar->sc_template),
             gensym("style"), x->x_scalar->sc_vec, 1);
@@ -757,8 +757,8 @@ static void garray_save(t_gobj *z, t_binbuf *b)
     }
     style = template_getfloat(scalartemplate, gensym("style"),
             x->x_scalar->sc_vec, 0);    
-    filestyle = (style == PLOTSTYLE_POINTS ? 1 : 
-        (style == PLOTSTYLE_POLYGONS ? 0 : style)); 
+    filestyle = (style == PLOT_POINTS ? 1 : 
+        (style == PLOT_POLYGONS ? 0 : style)); 
     binbuf_addv(b, "sssisi;", gensym("#X"), gensym("array"),
         x->x_name, array->a_n, &s_float,
             x->x_saveit + 2 * filestyle + 8*x->x_hidename);

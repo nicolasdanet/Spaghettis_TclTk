@@ -1263,11 +1263,11 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
     if (doit)
     {
         x->gl_editor->e_grab = 0;
-        x->gl_editor->e_onmotion = MA_NONE;
+        x->gl_editor->e_onmotion = ACTION_NONE;
     }
     /* post("click %d %d %d %d", xpos, ypos, which, mod); */
     
-    if (x->gl_editor->e_onmotion != MA_NONE)
+    if (x->gl_editor->e_onmotion != ACTION_NONE)
         return;
 
     x->gl_editor->e_xwas = xpos;
@@ -1288,7 +1288,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
         {
             if (y)
                 canvas_setcursor(x, clickreturned);
-            else canvas_setcursor(x, CURSOR_RUN_NOTHING);
+            else canvas_setcursor(x, CURSOR_NOTHING);
         }
         return;
     }
@@ -1309,7 +1309,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
                     rt == glist_findrtext(x, ob))
                 {
                     rtext_mouse(rt, xpos - x1, ypos - y1, RTEXT_SHIFT);
-                    x->gl_editor->e_onmotion = MA_DRAGTEXT;
+                    x->gl_editor->e_onmotion = ACTION_DRAG;
                     x->gl_editor->e_xwas = x1;
                     x->gl_editor->e_ywas = y1;
                 }
@@ -1337,7 +1337,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
                         glist_noselect(x);
                         glist_select(x, y);
                     }
-                    x->gl_editor->e_onmotion = MA_RESIZE;
+                    x->gl_editor->e_onmotion = ACTION_RESIZE;
                     x->gl_editor->e_xwas = x1;
                     x->gl_editor->e_ywas = y1;
                     x->gl_editor->e_xnew = xpos;
@@ -1352,14 +1352,14 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
                 int nout1 = (noutlet > 1 ? noutlet - 1 : 1);
                 int closest = ((xpos-x1) * (nout1) + width/2)/width;
                 int hotspot = x1 +
-                    (width - IO_WIDTH) * closest / (nout1);
+                    (width - INLETS_WIDTH) * closest / (nout1);
                 if (closest < noutlet &&
-                    xpos >= (hotspot-1) && xpos <= hotspot + (IO_WIDTH+1))
+                    xpos >= (hotspot-1) && xpos <= hotspot + (INLETS_WIDTH+1))
                 {
                     if (doit)
                     {
                         int issignal = obj_issignaloutlet(ob, closest);
-                        x->gl_editor->e_onmotion = MA_CONNECT;
+                        x->gl_editor->e_onmotion = ACTION_CONNECT;
                         x->gl_editor->e_xwas = xpos;
                         x->gl_editor->e_ywas = ypos;
                         sys_vgui(
@@ -1384,7 +1384,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
                 {
                     rtext_mouse(rt, xpos - x1, ypos - y1,
                         (doublemod ? RTEXT_DBL : RTEXT_DOWN));
-                    x->gl_editor->e_onmotion = MA_DRAGTEXT;
+                    x->gl_editor->e_onmotion = ACTION_DRAG;
                     x->gl_editor->e_xwas = x1;
                     x->gl_editor->e_ywas = y1;
                 }
@@ -1396,7 +1396,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
                         glist_noselect(x);
                         glist_select(x, y);
                     }
-                    x->gl_editor->e_onmotion = MA_MOVE;
+                    x->gl_editor->e_onmotion = ACTION_MOVE;
                 }
             }
             else canvas_setcursor(x, CURSOR_EDIT_NOTHING);
@@ -1412,7 +1412,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
         box, set cursor and return */
     if (runmode || rightclick)
     {
-        canvas_setcursor(x, CURSOR_RUN_NOTHING);
+        canvas_setcursor(x, CURSOR_NOTHING);
         return;
     }
         /* having failed to find a box, we try lines now. */
@@ -1451,7 +1451,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
               x, xpos, ypos, xpos, ypos);
         x->gl_editor->e_xwas = xpos;
         x->gl_editor->e_ywas = ypos;
-        x->gl_editor->e_onmotion = MA_REGION;
+        x->gl_editor->e_onmotion = ACTION_REGION;
     }
 }
 
@@ -1506,7 +1506,7 @@ void canvas_doconnect(t_canvas *x, int xpos, int ypos, int which, int doit)
             {
                 closest1 = ((xwas-x11) * (noutlet1-1) + width1/2)/width1;
                 hotspot1 = x11 +
-                    (width1 - IO_WIDTH) * closest1 / (noutlet1-1);
+                    (width1 - INLETS_WIDTH) * closest1 / (noutlet1-1);
             }
             else closest1 = 0, hotspot1 = x11;
 
@@ -1514,7 +1514,7 @@ void canvas_doconnect(t_canvas *x, int xpos, int ypos, int which, int doit)
             {
                 closest2 = ((xpos-x21) * (ninlet2-1) + width2/2)/width2;
                 hotspot2 = x21 +
-                    (width2 - IO_WIDTH) * closest2 / (ninlet2-1);
+                    (width2 - INLETS_WIDTH) * closest2 / (ninlet2-1);
             }
             else closest2 = 0, hotspot2 = x21;
 
@@ -1540,12 +1540,12 @@ void canvas_doconnect(t_canvas *x, int xpos, int ypos, int which, int doit)
             {
                 oc = obj_connect(ob1, closest1, ob2, closest2);
                 lx1 = x11 + (noutlet1 > 1 ?
-                        ((x12-x11-IO_WIDTH) * closest1)/(noutlet1-1) : 0)
-                             + IO_MIDDLE;
+                        ((x12-x11-INLETS_WIDTH) * closest1)/(noutlet1-1) : 0)
+                             + INLETS_MIDDLE;
                 ly1 = y12;
                 lx2 = x21 + (ninlet2 > 1 ?
-                        ((x22-x21-IO_WIDTH) * closest2)/(ninlet2-1) : 0)
-                            + IO_MIDDLE;
+                        ((x22-x21-INLETS_WIDTH) * closest2)/(ninlet2-1) : 0)
+                            + INLETS_MIDDLE;
                 ly2 = y21;
                 sys_vgui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
                     glist_getcanvas(x),
@@ -1591,7 +1591,7 @@ static void canvas_doregion(t_canvas *x, int xpos, int ypos, int doit)
         else hiy = x->gl_editor->e_ywas, loy = ypos;
         canvas_selectinrect(x, lox, loy, hix, hiy);
         sys_vgui(".x%lx.c delete x\n", x);
-        x->gl_editor->e_onmotion = MA_NONE;
+        x->gl_editor->e_onmotion = ACTION_NONE;
     }
     else sys_vgui(".x%lx.c coords x %d %d %d %d\n",
             x, x->gl_editor->e_xwas,
@@ -1613,12 +1613,12 @@ void canvas_mouseup(t_canvas *x,
     canvas_upx = xpos;
     canvas_upy = ypos;
 
-    if (x->gl_editor->e_onmotion == MA_CONNECT)
+    if (x->gl_editor->e_onmotion == ACTION_CONNECT)
         canvas_doconnect(x, xpos, ypos, which, 1);
-    else if (x->gl_editor->e_onmotion == MA_REGION)
+    else if (x->gl_editor->e_onmotion == ACTION_REGION)
         canvas_doregion(x, xpos, ypos, 1);
-    else if (x->gl_editor->e_onmotion == MA_MOVE ||
-        x->gl_editor->e_onmotion == MA_RESIZE)
+    else if (x->gl_editor->e_onmotion == ACTION_MOVE ||
+        x->gl_editor->e_onmotion == ACTION_RESIZE)
     {
             /* after motion or resizing, if there's only one text item
                 selected, activate the text */
@@ -1634,7 +1634,7 @@ void canvas_mouseup(t_canvas *x,
                     (gl2 = glist_finddirty((t_glist *)g)))
             {
                 pd_vmess(&gl2->gl_obj.te_g.g_pd, gensym("menu-open"), "");
-                x->gl_editor->e_onmotion = MA_NONE;
+                x->gl_editor->e_onmotion = ACTION_NONE;
                 sys_vgui(
 "::pd_confirm::checkAction .x%lx { Discard changes to %s? } { ::pd_connect::pdsend .x%lx dirty 0 } { no }\n",
                     canvas_getroot(gl2),
@@ -1646,7 +1646,7 @@ void canvas_mouseup(t_canvas *x,
         }
     }
 
-    x->gl_editor->e_onmotion = MA_NONE;
+    x->gl_editor->e_onmotion = ACTION_NONE;
 }
 
     /* displace the selection by (dx, dy) pixels */
@@ -1768,8 +1768,8 @@ void canvas_key(t_canvas *x, t_symbol *s, int ac, t_atom *av)
     {
         t_object *ob;
             /* cancel any dragging action */
-        if (x->gl_editor->e_onmotion == MA_MOVE)
-            x->gl_editor->e_onmotion = MA_NONE;
+        if (x->gl_editor->e_onmotion == ACTION_MOVE)
+            x->gl_editor->e_onmotion = ACTION_NONE;
             /* if an object has "grabbed" keys just send them on */
         if (x->gl_editor->e_grab
             && x->gl_editor->e_keyfn && keynum)
@@ -1821,7 +1821,7 @@ void canvas_key(t_canvas *x, t_symbol *s, int ac, t_atom *av)
     if (x && keynum == 0 && x->gl_edit &&
         !strncmp(gotkeysym->s_name, "Control", 7))
             canvas_setcursor(x, down ?
-                CURSOR_RUN_NOTHING :CURSOR_EDIT_NOTHING);
+                CURSOR_NOTHING :CURSOR_EDIT_NOTHING);
 }
 
 static void delay_move(t_canvas *x)
@@ -1844,7 +1844,7 @@ void canvas_motion(t_canvas *x, t_floatarg xpos, t_floatarg ypos,
         return;
     }
     glist_setlastxy(x, xpos, ypos);
-    if (x->gl_editor->e_onmotion == MA_MOVE)
+    if (x->gl_editor->e_onmotion == ACTION_MOVE)
     {
         if (!x->gl_editor->e_clock)
             x->gl_editor->e_clock = clock_new(x, (t_method)delay_move);
@@ -1853,11 +1853,11 @@ void canvas_motion(t_canvas *x, t_floatarg xpos, t_floatarg ypos,
         x->gl_editor->e_xnew = xpos;
         x->gl_editor->e_ynew = ypos;
     }
-    else if (x->gl_editor->e_onmotion == MA_REGION)
+    else if (x->gl_editor->e_onmotion == ACTION_REGION)
         canvas_doregion(x, xpos, ypos, 0);
-    else if (x->gl_editor->e_onmotion == MA_CONNECT)
+    else if (x->gl_editor->e_onmotion == ACTION_CONNECT)
         canvas_doconnect(x, xpos, ypos, 0, 0);
-    else if (x->gl_editor->e_onmotion == MA_PASSOUT)
+    else if (x->gl_editor->e_onmotion == ACTION_PASS)
     {
         if (!x->gl_editor->e_motionfn)
             bug("e_motionfn");
@@ -1867,14 +1867,14 @@ void canvas_motion(t_canvas *x, t_floatarg xpos, t_floatarg ypos,
         x->gl_editor->e_xwas = xpos;
         x->gl_editor->e_ywas = ypos;
     }
-    else if (x->gl_editor->e_onmotion == MA_DRAGTEXT)
+    else if (x->gl_editor->e_onmotion == ACTION_DRAG)
     {
         t_rtext *rt = x->gl_editor->e_textedfor;
         if (rt)
             rtext_mouse(rt, xpos - x->gl_editor->e_xwas,
                 ypos - x->gl_editor->e_ywas, RTEXT_DRAG);
     }
-    else if (x->gl_editor->e_onmotion == MA_RESIZE)
+    else if (x->gl_editor->e_onmotion == ACTION_RESIZE)
     {
         int x11=0, y11=0, x12=0, y12=0; 
         t_gobj *y1;
@@ -1921,7 +1921,7 @@ void canvas_startmotion(t_canvas *x)
     if (!x->gl_editor) return;
     glist_getnextxy(x, &xval, &yval);
     if (xval == 0 && yval == 0) return;
-    x->gl_editor->e_onmotion = MA_MOVE;
+    x->gl_editor->e_onmotion = ACTION_MOVE;
     x->gl_editor->e_xwas = xval;
     x->gl_editor->e_ywas = yval; 
 }
@@ -2457,7 +2457,7 @@ static void canvas_duplicate(t_canvas *x)
 {
     if (!x->gl_editor)
         return;
-    if (x->gl_editor->e_onmotion == MA_NONE && x->gl_editor->e_selection)
+    if (x->gl_editor->e_onmotion == ACTION_NONE && x->gl_editor->e_selection)
     {
         t_selection *y;
         canvas_copy(x);
@@ -2719,7 +2719,7 @@ void canvas_editmode(t_canvas *x, t_floatarg state)
         glist_noselect(x);
         if (glist_isvisible(x) && glist_istoplevel(x))
         {
-            canvas_setcursor(x, CURSOR_RUN_NOTHING);
+            canvas_setcursor(x, CURSOR_NOTHING);
             sys_vgui(".x%lx.c delete commentbar\n", glist_getcanvas(x));
         }
     }

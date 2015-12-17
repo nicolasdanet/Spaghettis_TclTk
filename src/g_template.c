@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include "m_pd.h"
+#include "m_imp.h"
 #include "s_stuff.h"    /* for sys_hostfontsize */
 #include "g_canvas.h"
 
@@ -1339,7 +1340,7 @@ typedef struct _plot
 static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
 {
     t_plot *x = (t_plot *)pd_new(plot_class);
-    int defstyle = PLOTSTYLE_POLYGONS;
+    int defstyle = PLOT_POLYGONS;
     x->x_canvas = canvas_getcurrent();
 
     fielddesc_setfloat_var(&x->x_xpoints, gensym("x"));
@@ -1354,7 +1355,7 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
         if (!strcmp(firstarg->s_name, "curve") ||
             !strcmp(firstarg->s_name, "-c"))
         {
-            defstyle = PLOTSTYLE_CURVES;
+            defstyle = PLOT_CURVES;
             argc--, argv++;
         }
         else if (!strcmp(firstarg->s_name, "-v") && argc > 1)
@@ -1676,7 +1677,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
 
     if (tovis)
     {
-        if (style == PLOTSTYLE_POINTS)
+        if (style == PLOT_POINTS)
         {
             t_float minyval = 1e20, maxyval = -1e20;
             int ndrawn = 0;
@@ -1815,7 +1816,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
             ouch:
                 sys_vgui(" -width 1 -fill %s -outline %s\\\n",
                     outline, outline);
-                if (style == PLOTSTYLE_CURVES) sys_vgui("-smooth 1\\\n");
+                if (style == PLOT_CURVES) sys_vgui("-smooth 1\\\n");
 
                 sys_vgui("-tags [list plot%lx array]\n", data);
             }
@@ -1859,7 +1860,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
 
                 sys_vgui("-width %f\\\n", linewidth);
                 sys_vgui("-fill %s\\\n", outline);
-                if (style == PLOTSTYLE_CURVES) sys_vgui("-smooth 1\\\n");
+                if (style == PLOT_CURVES) sys_vgui("-smooth 1\\\n");
 
                 sys_vgui("-tags [list plot%lx array]\n", data);
             }
@@ -2262,10 +2263,10 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                     {
                         if (xpix < pxpix)
                             return (CURSOR_EDIT_DISCONNECT);
-                        else return (CURSOR_RUN_ADDPOINT);
+                        else return (CURSOR_ADDPOINT);
                     }
                     else return (array_motion_fatten ?
-                        CURSOR_RUN_THICKEN : CURSOR_RUN_CLICKME);
+                        CURSOR_THICKEN : CURSOR_CLICKME);
                 }
             }   
         }

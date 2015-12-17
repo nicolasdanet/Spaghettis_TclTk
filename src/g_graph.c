@@ -171,7 +171,7 @@ void glist_grab(t_glist *x, t_gobj *y, t_glistmotionfn motionfn,
 {
     t_glist *x2 = glist_getcanvas(x);
     if (motionfn)
-        x2->gl_editor->e_onmotion = MA_PASSOUT;
+        x2->gl_editor->e_onmotion = ACTION_PASS;
     else x2->gl_editor->e_onmotion = 0;
     x2->gl_editor->e_grab = y;
     x2->gl_editor->e_motionfn = motionfn;
@@ -1044,7 +1044,7 @@ static int graph_click(t_gobj *z, struct _glist *glist,
         {
             if (y)
                 canvas_setcursor(glist_getcanvas(x), clickreturned);
-            else canvas_setcursor(glist_getcanvas(x), CURSOR_RUN_NOTHING);
+            else canvas_setcursor(glist_getcanvas(x), CURSOR_NOTHING);
         }
         return (clickreturned); 
     }

@@ -82,10 +82,10 @@ void vradio_draw_new(t_vradio *x, t_glist *glist)
              x->x_gui.x_lcol, x);
     if(!x->x_gui.x_fsf.x_snd_able)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
-             canvas, xx11, yy11-1, xx11 + IO_WIDTH, yy11, x, 0);
+             canvas, xx11, yy11-1, xx11 + INLETS_WIDTH, yy11, x, 0);
     if(!x->x_gui.x_fsf.x_rcv_able)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
-             canvas, xx11, yy11b, xx11 + IO_WIDTH, yy11b+1, x, 0);
+             canvas, xx11, yy11b, xx11 + INLETS_WIDTH, yy11b+1, x, 0);
 }
 
 void vradio_draw_move(t_vradio *x, t_glist *glist)
@@ -113,10 +113,10 @@ void vradio_draw_move(t_vradio *x, t_glist *glist)
              canvas, x, xx11+x->x_gui.x_ldx, yy11b+x->x_gui.x_ldy);
     if(!x->x_gui.x_fsf.x_snd_able)
         sys_vgui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
-             canvas, x, 0, xx11, yy11-1, xx11 + IO_WIDTH, yy11);
+             canvas, x, 0, xx11, yy11-1, xx11 + INLETS_WIDTH, yy11);
     if(!x->x_gui.x_fsf.x_rcv_able)
         sys_vgui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
-             canvas, x, 0, xx11, yy11b, xx11 + IO_WIDTH, yy11b+1);
+             canvas, x, 0, xx11, yy11b, xx11 + INLETS_WIDTH, yy11b+1);
 }
 
 void vradio_draw_erase(t_vradio* x, t_glist* glist)
@@ -165,14 +165,14 @@ void vradio_draw_io(t_vradio* x, t_glist* glist, int old_snd_rcv_flags)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
                  canvas, xpos,
                  ypos+(x->x_number*x->x_gui.x_h)-1,
-                 xpos+ IO_WIDTH,
+                 xpos+ INLETS_WIDTH,
                  ypos+(x->x_number*x->x_gui.x_h), x, 0);
     if(!(old_snd_rcv_flags & IEM_GUI_OLD_SND_FLAG) && x->x_gui.x_fsf.x_snd_able)
         sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
     if((old_snd_rcv_flags & IEM_GUI_OLD_RCV_FLAG) && !x->x_gui.x_fsf.x_rcv_able)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
                  canvas, xpos, ypos,
-                 xpos+ IO_WIDTH, ypos+1,
+                 xpos+ INLETS_WIDTH, ypos+1,
                  x, 0);
     if(!(old_snd_rcv_flags & IEM_GUI_OLD_RCV_FLAG) && x->x_gui.x_fsf.x_rcv_able)
         sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);

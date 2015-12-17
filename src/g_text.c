@@ -1226,37 +1226,37 @@ void glist_drawio(t_glist *glist, t_object *ob, int firsttime,
     int width = x2 - x1;
     for (i = 0; i < n; i++)
     {
-        int onset = x1 + (width - IO_WIDTH) * i / nplus;
+        int onset = x1 + (width - INLETS_WIDTH) * i / nplus;
         if (firsttime)
             sys_vgui(".x%lx.c create rectangle %d %d %d %d \
 -tags [list %so%d outlet]\n",
                 glist_getcanvas(glist),
                 onset, y2 - 1,
-                onset + IO_WIDTH, y2,
+                onset + INLETS_WIDTH, y2,
                 tag, i);
         else
             sys_vgui(".x%lx.c coords %so%d %d %d %d %d\n",
                 glist_getcanvas(glist), tag, i,
                 onset, y2 - 1,
-                onset + IO_WIDTH, y2);
+                onset + INLETS_WIDTH, y2);
     }
     n = obj_ninlets(ob);
     nplus = (n == 1 ? 1 : n-1);
     for (i = 0; i < n; i++)
     {
-        int onset = x1 + (width - IO_WIDTH) * i / nplus;
+        int onset = x1 + (width - INLETS_WIDTH) * i / nplus;
         if (firsttime)
             sys_vgui(".x%lx.c create rectangle %d %d %d %d \
 -tags [list %si%d inlet]\n",
                 glist_getcanvas(glist),
                 onset, y1,
-                onset + IO_WIDTH, y1 + EXTRAPIX,
+                onset + INLETS_WIDTH, y1 + EXTRAPIX,
                 tag, i);
         else
             sys_vgui(".x%lx.c coords %si%d %d %d %d %d\n",
                 glist_getcanvas(glist), tag, i,
                 onset, y1,
-                onset + IO_WIDTH, y1 + EXTRAPIX);
+                onset + INLETS_WIDTH, y1 + EXTRAPIX);
     }
 }
 

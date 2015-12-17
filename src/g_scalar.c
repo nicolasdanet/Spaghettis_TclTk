@@ -12,6 +12,7 @@ can contain numbers, sublists, and arrays.
 #include <string.h>
 #include <stdio.h>      /* for read/write to files */
 #include "m_pd.h"
+#include "m_imp.h"
 #include "g_canvas.h"
 
 t_class *scalar_class;

@@ -148,11 +148,11 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
              canvas,
              xpos-1, ypos + x->x_gui.x_h+1,
-             xpos + IO_WIDTH-1, ypos + x->x_gui.x_h+2,
+             xpos + INLETS_WIDTH-1, ypos + x->x_gui.x_h+2,
              x, 0);
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]x\n",
              canvas,
-             xpos+x->x_gui.x_w+1-IO_WIDTH, ypos + x->x_gui.x_h+1,
+             xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos + x->x_gui.x_h+1,
              xpos+x->x_gui.x_w+1, ypos + x->x_gui.x_h+2,
              x, 1);
     }
@@ -161,11 +161,11 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
              canvas,
              xpos-1, ypos-2,
-             xpos + IO_WIDTH-1, ypos-1,
+             xpos + INLETS_WIDTH-1, ypos-1,
              x, 0);
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
              canvas,
-             xpos+x->x_gui.x_w+1-IO_WIDTH, ypos-2,
+             xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos-2,
              xpos+x->x_gui.x_w+1, ypos-1,
              x, 1);
     }
@@ -215,10 +215,10 @@ static void vu_draw_move(t_vu *x, t_glist *glist)
         sys_vgui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
              canvas, x, 0,
              xpos-1, ypos + x->x_gui.x_h+1,
-             xpos + IO_WIDTH-1, ypos + x->x_gui.x_h+2);
+             xpos + INLETS_WIDTH-1, ypos + x->x_gui.x_h+2);
         sys_vgui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
              canvas, x, 1,
-             xpos+x->x_gui.x_w+1-IO_WIDTH, ypos + x->x_gui.x_h+1,
+             xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos + x->x_gui.x_h+1,
                  xpos+x->x_gui.x_w+1, ypos + x->x_gui.x_h+2);
     }
     if(!x->x_gui.x_fsf.x_rcv_able)
@@ -226,10 +226,10 @@ static void vu_draw_move(t_vu *x, t_glist *glist)
     sys_vgui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
              canvas, x, 0,
              xpos-1, ypos-2,
-             xpos + IO_WIDTH-1, ypos-1);
+             xpos + INLETS_WIDTH-1, ypos-1);
     sys_vgui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
              canvas, x, 1,
-             xpos+x->x_gui.x_w+1-IO_WIDTH, ypos-2,
+             xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos-2,
              xpos+x->x_gui.x_w+1, ypos-1);
     }
 }
@@ -312,11 +312,11 @@ static void vu_draw_io(t_vu* x, t_glist* glist, int old_snd_rcv_flags)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
              canvas,
              xpos-1, ypos + x->x_gui.x_h+1,
-             xpos + IO_WIDTH-1, ypos + x->x_gui.x_h+2,
+             xpos + INLETS_WIDTH-1, ypos + x->x_gui.x_h+2,
              x, 0);
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
              canvas,
-             xpos+x->x_gui.x_w+1-IO_WIDTH, ypos + x->x_gui.x_h+1,
+             xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos + x->x_gui.x_h+1,
              xpos+x->x_gui.x_w+1, ypos + x->x_gui.x_h+2,
              x, 1);
     }
@@ -330,11 +330,11 @@ static void vu_draw_io(t_vu* x, t_glist* glist, int old_snd_rcv_flags)
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
              canvas,
              xpos-1, ypos-2,
-             xpos + IO_WIDTH-1, ypos-1,
+             xpos + INLETS_WIDTH-1, ypos-1,
              x, 0);
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
              canvas,
-             xpos+x->x_gui.x_w+1-IO_WIDTH, ypos-2,
+             xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos-2,
              xpos+x->x_gui.x_w+1, ypos-1,
              x, 1);
     }
