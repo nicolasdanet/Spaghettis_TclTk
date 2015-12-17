@@ -624,19 +624,11 @@ int iem_symargstoint(t_iem_init_symargs *symargp)
 
 void iem_inttofstyle(t_iem_fstyle_flags *fstylep, int n)
 {
-    memset(fstylep, 0, sizeof(*fstylep));
-    fstylep->x_font_style = (n >> 0);
-    fstylep->x_shiftdown = 0;
-    fstylep->x_selected = 0;
-    fstylep->x_finemoved = 0;
-    fstylep->x_put_in2out = 0;
-    fstylep->x_change = 0;
-    fstylep->x_thick = 0;
-    fstylep->x_lin0_log1 = 0;
-    fstylep->x_steady = 0;
+    memset (fstylep, 0, sizeof (*fstylep));
+    fstylep->x_font_style = (char)n;
 }
 
 int iem_fstyletoint(t_iem_fstyle_flags *fstylep)
 {
-    return ((fstylep->x_font_style << 0) & 63);
+    return (int)fstylep->x_font_style;
 }

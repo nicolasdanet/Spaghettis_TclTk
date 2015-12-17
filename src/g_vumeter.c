@@ -123,22 +123,11 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
         yyy = k4 + k1*(k2-i);
         sys_vgui(".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxRLED%d\n",
                  canvas, quad1, yyy, quad3, yyy, x->x_led_size, iemgui_color_hex[led_col], x, i);
-        /*if(((i+2)&3) && (x->x_scale))*/
-            /*sys_vgui(".x%lx.c create text %d %d -text {%s} -anchor w \
-                     -font {{%s} -%d %s} -fill #%6.6x -tags %lxSCALE%d\n",
-                     canvas, end, yyy+k3, iemgui_vu_scale_str[i], 
-                     x->x_gui.x_font, x->x_gui.x_fontsize,
-                     sys_fontweight, x->x_gui.x_lcol, x, i);*/
     }
     if(x->x_scale)
     {
         i=IEM_VUMETER_STEPS+1;
         yyy = k4 + k1*(k2-i);
-        /*sys_vgui(".x%lx.c create text %d %d -text {%s} -anchor w \
-                 -font {{%s} -%d %s} -fill #%6.6x -tags %lxSCALE%d\n",
-                 canvas, end, yyy+k3, iemgui_vu_scale_str[i], x->x_gui.x_font, 
-                 x->x_gui.x_fontsize, sys_fontweight,
-                 x->x_gui.x_lcol, x, i);*/
     }
     sys_vgui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxRCOVER\n",
              canvas, quad1, ypos-1, quad3-1,
@@ -282,19 +271,10 @@ static void vu_draw_config(t_vu* x, t_glist* glist)
     {
         sys_vgui(".x%lx.c itemconfigure %lxRLED%d -width %d\n", canvas, x, i,
                  x->x_led_size);
-        /*if(((i+2)&3) && (x->x_scale))*/
-            /*sys_vgui(".x%lx.c itemconfigure %lxSCALE%d -text {%s} -font {{%s} -%d %s} -fill #%6.6x\n",
-                     canvas, x, i, iemgui_vu_scale_str[i], x->x_gui.x_font, 
-                     x->x_gui.x_fontsize, sys_fontweight, 
-                     x->x_gui.x_fsf.x_selected?IEM_GUI_COLOR_SELECTED:x->x_gui.x_lcol);*/
     }
     if(x->x_scale)
     {
         i=IEM_VUMETER_STEPS+1;
-        /*sys_vgui(".x%lx.c itemconfigure %lxSCALE%d -text {%s} -font {{%s} -%d %s} -fill #%6.6x\n",
-                 canvas, x, i, iemgui_vu_scale_str[i], x->x_gui.x_font, 
-                 x->x_gui.x_fontsize, sys_fontweight,
-                 x->x_gui.x_fsf.x_selected?IEM_GUI_COLOR_SELECTED:x->x_gui.x_lcol);*/
     }
     sys_vgui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
              canvas, x, x->x_gui.x_fontsize,
@@ -470,20 +450,9 @@ static void vu_scale(t_vu *x, t_floatarg fscale)
             for(i=1; i<=IEM_VUMETER_STEPS; i++)
             {
                 yyy = k4 + k1*(k2-i);
-                /*if((i+2)&3)*/
-                    /*sys_vgui(".x%lx.c create text %d %d -text {%s} -anchor w \
-                             -font {{%s} -%d %s} -fill #%6.6x -tags %lxSCALE%d\n",
-                             canvas, end, yyy+k3, iemgui_vu_scale_str[i], 
-                             x->x_gui.x_font, x->x_gui.x_fontsize,
-                             sys_fontweight, x->x_gui.x_lcol, x, i);*/
             }
             i=IEM_VUMETER_STEPS+1;
             yyy = k4 + k1*(k2-i);
-            /*sys_vgui(".x%lx.c create text %d %d -text {%s} -anchor w \
-                     -font {{%s} -%d %s} -fill #%6.6x -tags %lxSCALE%d\n",
-                     canvas, end, yyy+k3, iemgui_vu_scale_str[i], 
-                     x->x_gui.x_font, x->x_gui.x_fontsize, sys_fontweight,
-                     sys_fontweight, x->x_gui.x_lcol, x, i);*/
         }
     }
 }

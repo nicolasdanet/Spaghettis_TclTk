@@ -42,11 +42,11 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IS_POINTER(atom, index)     ((atom + index)->a_type == A_POINTER)
 #define IS_FLOAT(atom, index)       ((atom + index)->a_type == A_FLOAT)
 #define IS_SYMBOL(atom, index)      ((atom + index)->a_type == A_SYMBOL)
 #define IS_DOLLAR(atom, index)      ((atom + index)->a_type == A_DOLLAR)
 #define IS_DOLLSYM(atom, index)     ((atom + index)->a_type == A_DOLLSYM)
+#define IS_POINTER(atom, index)     ((atom + index)->a_type == A_POINTER)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -58,170 +58,162 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef struct _iem_fstyle_flags
-{
-    unsigned int x_font_style:6;            /* Unused but kept for compatibility. */
-    unsigned int x_rcv_able:1;
-    unsigned int x_snd_able:1;
-    unsigned int x_lab_is_unique:1;
-    unsigned int x_rcv_is_unique:1;
-    unsigned int x_snd_is_unique:1;
-    unsigned int x_lab_arg_tail_len:6;
-    unsigned int x_lab_is_arg_num:6;
-    unsigned int x_shiftdown:1;
-    unsigned int x_selected:1;
-    unsigned int x_finemoved:1;
-    unsigned int x_put_in2out:1;
-    unsigned int x_change:1;
-    unsigned int x_thick:1;
-    unsigned int x_lin0_log1:1;
-    unsigned int x_steady:1;
-} t_iem_fstyle_flags;
+typedef struct _iem_fstyle_flags {
+    char x_font_style;                  /* Unused but kept for compatibility. */
+    char x_rcv_able;
+    char x_snd_able;
+    char x_selected;
+    char x_finemoved;
+    char x_put_in2out;
+    char x_change;
+    char x_lin0_log1;
+    char x_steady;
+    } t_iem_fstyle_flags;
 
-typedef struct _iem_init_symargs
-{
-    unsigned int x_loadinit:1;
-    unsigned int x_rcv_arg_tail_len:6;
-    unsigned int x_snd_arg_tail_len:6;
-    unsigned int x_rcv_is_arg_num:6;
-    unsigned int x_snd_is_arg_num:6;
-    unsigned int x_scale:1;
-    unsigned int x_flashed:1;
-    unsigned int x_locked:1;
-} t_iem_init_symargs;
+typedef struct _iem_init_symargs {
+    char x_loadinit;
+    char x_scale;
+    char x_flashed;
+    char x_locked;
+    } t_iem_init_symargs;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 typedef void (*t_iemfunptr)(void *x, t_glist *glist, int mode);
 
-typedef struct _iemgui
-{
-    t_object           x_obj;
-    t_glist            *x_glist;
-    t_iemfunptr        x_draw;
-    int                x_h;
-    int                x_w;
-    int                x_ldx;
-    int                x_ldy;
-    t_iem_fstyle_flags x_fsf;
-    int                x_fontsize;
-    t_iem_init_symargs x_isa;
-    int                x_fcol;
-    int                x_bcol;
-    int                x_lcol;
-    t_symbol           *x_snd;              /* send symbol */
-    t_symbol           *x_rcv;              /* receive */
-    t_symbol           *x_lab;              /* label */
-    t_symbol           *x_snd_unexpanded;   /* same 3, with '$' unexpanded */
-    t_symbol           *x_rcv_unexpanded;
-    t_symbol           *x_lab_unexpanded;
-    int                x_binbufindex;       /* where in binbuf to find these */
-    int                x_labelbindex;       /* where in binbuf to find label */
-} t_iemgui;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-typedef struct _bng
-{
-    t_iemgui x_gui;
-    int      x_flashed;
-    int      x_flashtime_break;
-    int      x_flashtime_hold;
-    t_clock  *x_clock_hld;
-    t_clock  *x_clock_brk;
-    t_clock  *x_clock_lck;
-} t_bng;
+typedef struct _iemgui {
+    t_object            x_obj;
+    t_glist             *x_glist;
+    t_iemfunptr         x_draw;
+    int                 x_h;
+    int                 x_w;
+    int                 x_ldx;
+    int                 x_ldy;
+    t_iem_fstyle_flags  x_fsf;
+    int                 x_fontsize;
+    t_iem_init_symargs  x_isa;
+    int                 x_fcol;
+    int                 x_bcol;
+    int                 x_lcol;
+    t_symbol            *x_snd;
+    t_symbol            *x_rcv;
+    t_symbol            *x_lab;
+    t_symbol            *x_snd_unexpanded;
+    t_symbol            *x_rcv_unexpanded;
+    t_symbol            *x_lab_unexpanded;
+    int                 x_binbufindex;
+    int                 x_labelbindex;
+    } t_iemgui;
 
-typedef struct _hslider
-{
-    t_iemgui x_gui;
-    int      x_pos;
-    int      x_val;
-    int      x_lin0_log1;
-    int      x_steady;
-    double   x_min;
-    double   x_max;
-    double   x_k;
-    t_float  x_fval;
-} t_hslider;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-typedef struct _hdial
-{
-    t_iemgui x_gui;
-    int      x_on;
-    int      x_on_old;  /* LATER delete this; it's used for old version */
-    int      x_change;
-    int      x_number;
-    int      x_drawn;
-    t_float  x_fval;
-    t_atom   x_at[2];
-} t_hdial;
+typedef struct _bng {
+    t_iemgui    x_gui;
+    int         x_flashed;
+    int         x_flashtime_break;
+    int         x_flashtime_hold;
+    t_clock     *x_clock_hld;
+    t_clock     *x_clock_brk;
+    t_clock     *x_clock_lck;
+    } t_bng;
 
-typedef struct _toggle
-{
-    t_iemgui x_gui;
-    t_float    x_on;
-    t_float    x_nonzero;
-} t_toggle;
+typedef struct _hslider {
+    t_iemgui    x_gui;
+    int         x_pos;
+    int         x_val;
+    int         x_lin0_log1;
+    int         x_steady;
+    double      x_min;
+    double      x_max;
+    double      x_k;
+    t_float     x_fval;
+    } t_hslider;
 
-typedef struct _my_canvas
-{
-    t_iemgui x_gui;
-    t_atom   x_at[3];
-    int      x_vis_w;
-    int      x_vis_h;
-} t_my_canvas;
+typedef struct _hdial {
+    t_iemgui    x_gui;
+    int         x_on;
+    int         x_on_old;  /* LATER delete this; it's used for old version */
+    int         x_change;
+    int         x_number;
+    int         x_drawn;
+    t_float     x_fval;
+    t_atom      x_at[2];
+    } t_hdial;
 
-typedef struct _vslider
-{
-    t_iemgui x_gui;
-    int      x_pos;
-    int      x_val;
-    int      x_lin0_log1;
-    int      x_steady;
-    double   x_min;
-    double   x_max;
-    double   x_k;
-    t_float  x_fval;
-} t_vslider;
+typedef struct _toggle {
+    t_iemgui    x_gui;
+    t_float     x_on;
+    t_float     x_nonzero;
+    } t_toggle;
 
-typedef struct _vu
-{
-    t_iemgui x_gui;
-    int      x_led_size;
-    int      x_peak;
-    int      x_rms;
-    t_float  x_fp;
-    t_float  x_fr;
-    int      x_scale;
-    void     *x_out_rms;
-    void     *x_out_peak;
-    unsigned int x_updaterms:1;
-    unsigned int x_updatepeak:1;
-} t_vu;
+typedef struct _my_canvas {
+    t_iemgui    x_gui;
+    t_atom      x_at[3];
+    int         x_vis_w;
+    int         x_vis_h;
+    } t_my_canvas;
 
-typedef struct _my_numbox
-{
-    t_iemgui x_gui;
-    t_clock  *x_clock_reset;
-    t_clock  *x_clock_wait;
-    double   x_val;
-    double   x_min;
-    double   x_max;
-    double   x_k;
-    int      x_lin0_log1;
-    char     x_buf[IEM_NUMBER_BUFFER_LENGTH];
-    int      x_numwidth;
-    int      x_log_height;
-} t_my_numbox;
+typedef struct _vslider {
+    t_iemgui    x_gui;
+    int         x_pos;
+    int         x_val;
+    int         x_lin0_log1;
+    int         x_steady;
+    double      x_min;
+    double      x_max;
+    double      x_k;
+    t_float     x_fval;
+    } t_vslider;
 
-typedef struct _vdial
-{
-    t_iemgui x_gui;
-    int      x_on;
-    int      x_on_old;
-    int      x_change;
-    int      x_number;
-    int      x_drawn;
-    t_float  x_fval;
-    t_atom   x_at[2];
-} t_vdial;
+typedef struct _vu {
+    t_iemgui    x_gui;
+    int         x_led_size;
+    int         x_peak;
+    int         x_rms;
+    t_float     x_fp;
+    t_float     x_fr;
+    int         x_scale;
+    void        *x_out_rms;
+    void        *x_out_peak;
+    char        x_updaterms;
+    char        x_updatepeak;
+    } t_vu;
+
+typedef struct _my_numbox {
+    t_iemgui    x_gui;
+    t_clock     *x_clock_reset;
+    t_clock     *x_clock_wait;
+    double      x_val;
+    double      x_min;
+    double      x_max;
+    double      x_k;
+    int         x_lin0_log1;
+    char        x_buf[IEM_NUMBER_BUFFER_LENGTH];
+    int         x_numwidth;
+    int         x_log_height;
+    } t_my_numbox;
+
+typedef struct _vdial {
+    t_iemgui    x_gui;
+    int         x_on;
+    int         x_on_old;
+    int         x_change;
+    int         x_number;
+    int         x_drawn;
+    t_float     x_fval;
+    t_atom      x_at[2];
+    } t_vdial;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #define t_vradio t_vdial
 #define t_hradio t_hdial
