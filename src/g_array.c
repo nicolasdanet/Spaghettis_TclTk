@@ -380,7 +380,7 @@ void garray_properties(t_garray *x)
         properly; right now we just detect a leading '$' and escape
         it.  There should be a systematic way of doing this. */
     sprintf(cmdbuf, "::pd_array::show %%s %s %d %d\n",
-            iemgui_dollar2raute(x->x_name)->s_name, a->a_n, x->x_saveit + 
+            iem_dollar2raute(x->x_name)->s_name, a->a_n, x->x_saveit + 
             2 * filestyle);
     gfxstub_new(&x->x_gobj.g_pd, x, cmdbuf);
 }
@@ -398,7 +398,7 @@ void glist_arraydialog(t_glist *parent, t_symbol *name, t_floatarg size,
     if (0 /* otherflag */ == 0 || (!(gl = glist_findgraph(parent))))
         gl = glist_addglist(parent, &s_, 0, 1,
             size, -1, 0, 0, 0, 0);
-    a = graph_array(gl, iemgui_raute2dollar(name), &s_float, size, flags);
+    a = graph_array(gl, iem_raute2dollar(name), &s_float, size, flags);
     canvas_dirty(parent, 1);
 }
 
@@ -426,7 +426,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_floatarg fsize,
         long size;
         int styleonset, styletype;
         t_symbol *stylearraytype;
-        t_symbol *argname = iemgui_raute2dollar(name);
+        t_symbol *argname = iem_raute2dollar(name);
         t_array *a = garray_getarray(x);
         t_template *scalartemplate;
         if (!a)

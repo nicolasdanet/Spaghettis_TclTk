@@ -213,7 +213,7 @@ void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 /* make an object box for an object that's already there. */
 
 /* iemlib */
-void canvas_iemguis(t_glist *gl, t_symbol *guiobjname)
+void canvas_iems(t_glist *gl, t_symbol *guiobjname)
 {
     t_atom at;
     t_binbuf *b = binbuf_new();
@@ -230,47 +230,47 @@ void canvas_iemguis(t_glist *gl, t_symbol *guiobjname)
 
 void canvas_bng(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iemguis(gl, gensym("bng"));
+    canvas_iems(gl, gensym("bng"));
 }
 
 void canvas_toggle(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iemguis(gl, gensym("tgl"));
+    canvas_iems(gl, gensym("tgl"));
 }
 
 void canvas_vslider(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iemguis(gl, gensym("vsl"));
+    canvas_iems(gl, gensym("vsl"));
 }
 
 void canvas_hslider(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iemguis(gl, gensym("hsl"));
+    canvas_iems(gl, gensym("hsl"));
 }
 
 void canvas_hradio(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iemguis(gl, gensym("hradio"));
+    canvas_iems(gl, gensym("hradio"));
 }
 
 void canvas_vradio(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iemguis(gl, gensym("vradio"));
+    canvas_iems(gl, gensym("vradio"));
 }
 
 void canvas_vumeter(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iemguis(gl, gensym("vu"));
+    canvas_iems(gl, gensym("vu"));
 }
 
 void canvas_mycnv(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iemguis(gl, gensym("cnv"));
+    canvas_iems(gl, gensym("cnv"));
 }
 
 void canvas_numbox(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iemguis(gl, gensym("nbx"));
+    canvas_iems(gl, gensym("nbx"));
 }
 
 /* iemlib */
@@ -518,7 +518,7 @@ static t_symbol *gatom_escapit(t_symbol *s)
         shmo[99] = 0;
         return (gensym(shmo));
     }
-    else return (iemgui_dollar2raute(s));
+    else return (iem_dollar2raute(s));
 }
 
     /* undo previous operation: strip leading "-" if found. */
@@ -526,7 +526,7 @@ static t_symbol *gatom_unescapit(t_symbol *s)
 {
     if (*s->s_name == '-')
         return (gensym(s->s_name+1));
-    else return (iemgui_raute2dollar(s));
+    else return (iem_raute2dollar(s));
 }
 
 static void gatom_redraw(t_gobj *client, t_glist *glist)

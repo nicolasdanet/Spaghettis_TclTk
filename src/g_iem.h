@@ -23,20 +23,20 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_GUI_COLOR_NORMAL        0
-#define IEM_GUI_COLOR_SELECTED      255
+#define IEM_COLOR_NORMAL            0
+#define IEM_COLOR_SELECTED          255
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_GUI_DRAW_UPDATE         0
-#define IEM_GUI_DRAW_MOVE           1
-#define IEM_GUI_DRAW_NEW            2
-#define IEM_GUI_DRAW_SELECT         3
-#define IEM_GUI_DRAW_ERASE          4
-#define IEM_GUI_DRAW_CONFIG         5
-#define IEM_GUI_DRAW_IO             6
+#define IEM_DRAW_UPDATE             0
+#define IEM_DRAW_MOVE               1
+#define IEM_DRAW_NEW                2
+#define IEM_DRAW_SELECT             3
+#define IEM_DRAW_ERASE              4
+#define IEM_DRAW_CONFIG             5
+#define IEM_DRAW_IO                 6
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -86,7 +86,7 @@ typedef void (*t_iemfunptr)(void *x, t_glist *glist, int mode);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _iemgui {
+typedef struct _iem {
     t_object            x_obj;
     t_glist             *x_glist;
     t_iemfunptr         x_draw;
@@ -108,14 +108,14 @@ typedef struct _iemgui {
     t_symbol            *x_lab_unexpanded;
     int                 x_binbufindex;
     int                 x_labelbindex;
-    } t_iemgui;
+    } t_iem;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 typedef struct _bng {
-    t_iemgui    x_gui;
+    t_iem       x_gui;
     int         x_flashed;
     int         x_flashtime_break;
     int         x_flashtime_hold;
@@ -125,7 +125,7 @@ typedef struct _bng {
     } t_bng;
 
 typedef struct _hslider {
-    t_iemgui    x_gui;
+    t_iem       x_gui;
     int         x_pos;
     int         x_val;
     int         x_lin0_log1;
@@ -137,7 +137,7 @@ typedef struct _hslider {
     } t_hslider;
 
 typedef struct _hradio {
-    t_iemgui    x_gui;
+    t_iem       x_gui;
     int         x_on;
     int         x_change;
     int         x_number;
@@ -147,20 +147,20 @@ typedef struct _hradio {
     } t_hradio;
 
 typedef struct _toggle {
-    t_iemgui    x_gui;
+    t_iem       x_gui;
     t_float     x_on;
     t_float     x_nonzero;
     } t_toggle;
 
 typedef struct _my_canvas {
-    t_iemgui    x_gui;
+    t_iem       x_gui;
     t_atom      x_at[3];
     int         x_vis_w;
     int         x_vis_h;
     } t_my_canvas;
 
 typedef struct _vslider {
-    t_iemgui    x_gui;
+    t_iem       x_gui;
     int         x_pos;
     int         x_val;
     int         x_lin0_log1;
@@ -172,7 +172,7 @@ typedef struct _vslider {
     } t_vslider;
 
 typedef struct _vu {
-    t_iemgui    x_gui;
+    t_iem       x_gui;
     int         x_led_size;
     int         x_peak;
     int         x_rms;
@@ -186,7 +186,7 @@ typedef struct _vu {
     } t_vu;
 
 typedef struct _my_numbox {
-    t_iemgui    x_gui;
+    t_iem       x_gui;
     t_clock     *x_clock_reset;
     t_clock     *x_clock_wait;
     double      x_val;
@@ -200,7 +200,7 @@ typedef struct _my_numbox {
     } t_my_numbox;
 
 typedef struct _vradio {
-    t_iemgui    x_gui;
+    t_iem       x_gui;
     int         x_on;
     int         x_change;
     int         x_number;
@@ -213,60 +213,57 @@ typedef struct _vradio {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-extern int sys_noloadbang;
-extern int iemgui_color_hex[];
-extern int iemgui_vu_db2i[];
-extern int iemgui_vu_col[];
-extern char *iemgui_vu_scale_str[];
+int         canvas_getdollarzero        (void);
+void        canvas_getargs              (int *argcp, t_atom **argvp);
 
-int iemgui_clip_size(int size);
-int iemgui_clip_font(int size);
-int iemgui_modulo_color(int col);
-t_symbol *iemgui_unique2dollarzero(t_symbol *s, int unique_num, int and_unique_flag);
-t_symbol *iemgui_sym2dollararg(t_symbol *s, int nth_arg, int tail_len);
-t_symbol *iemgui_dollarzero2unique(t_symbol *s, int unique_num);
-t_symbol *iemgui_dollararg2sym(t_symbol *s, int nth_arg, int tail_len, int pargc, t_atom *pargv);
-int iemgui_is_dollarzero(t_symbol *s);
-int iemgui_is_dollararg(t_symbol *s, int *tail_len);
-void iemgui_fetch_unique(t_iemgui *iemgui);
-void iemgui_fetch_parent_args(t_iemgui *iemgui, int *pargc, t_atom **pargv);
-void iemgui_verify_snd_ne_rcv(t_iemgui *iemgui);
-void iemgui_all_unique2dollarzero(t_iemgui *iemgui, t_symbol **srlsym);
-void iemgui_all_sym2dollararg(t_iemgui *iemgui, t_symbol **srlsym);
-void iemgui_all_dollarzero2unique(t_iemgui *iemgui, t_symbol **srlsym);
-t_symbol *iemgui_new_dogetname(t_iemgui *iemgui, int indx, t_atom *argv);
-void iemgui_new_getnames(t_iemgui *iemgui, int indx, t_atom *argv);
-void iemgui_all_dollararg2sym(t_iemgui *iemgui, t_symbol **srlsym);
-void iemgui_all_col2save(t_iemgui *iemgui, int *bflcol);
-void iemgui_all_colfromload(t_iemgui *iemgui, int *bflcol);
-int iemgui_compatible_col(int i);
-void iemgui_all_dollar2raute(t_symbol **srlsym);
-void iemgui_all_raute2dollar(t_symbol **srlsym);
-void iemgui_send(void *x, t_iemgui *iemgui, t_symbol *s);
-void iemgui_receive(void *x, t_iemgui *iemgui, t_symbol *s);
-void iemgui_label(void *x, t_iemgui *iemgui, t_symbol *s);
-void iemgui_label_pos(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
-void iemgui_label_font(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
-void iemgui_size(void *x, t_iemgui *iemgui);
-void iemgui_delta(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
-void iemgui_pos(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
-void iemgui_color(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
-int iemgui_list(void *x, t_iemgui *iemgui, t_symbol *s, int ac, t_atom *av);
-void iemgui_displace(t_gobj *z, t_glist *glist, int dx, int dy);
-void iemgui_select(t_gobj *z, t_glist *glist, int selected);
-void iemgui_delete(t_gobj *z, t_glist *glist);
-void iemgui_vis(t_gobj *z, t_glist *glist, int vis);
-void iemgui_save(t_iemgui *iemgui, t_symbol **srl, int *bflcol);
-void iemgui_properties(t_iemgui *iemgui, t_symbol **srl);
-void iemgui_dialog(t_iemgui *iemgui, t_symbol **srl, int argc, t_atom *argv);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-int canvas_getdollarzero(void);
-void canvas_getargs(int *argcp, t_atom **argvp);
-
-void iem_inttosymargs(t_iem_init_symargs *symargp, int n);
-int iem_symargstoint(t_iem_init_symargs *symargp);
-void iem_inttofstyle(t_iem_fstyle_flags *fstylep, int n);
-int iem_fstyletoint(t_iem_fstyle_flags *fstylep);
+int         iem_clip_size               (int size);
+int         iem_clip_font               (int size);
+int         iem_modulo_color            (int col);
+t_symbol    *iem_unique2dollarzero      (t_symbol *s, int unique_num, int and_unique_flag);
+t_symbol    *iem_sym2dollararg          (t_symbol *s, int nth_arg, int tail_len);
+t_symbol    *iem_dollarzero2unique      (t_symbol *s, int unique_num);
+t_symbol    *iem_dollararg2sym          (t_symbol *s, int nth_arg, int tail_len, int pargc, t_atom *pargv);
+int         iem_is_dollarzero           (t_symbol *s);
+int         iem_is_dollararg            (t_symbol *s, int *tail_len);
+void        iem_fetch_unique            (t_iem *iem);
+void        iem_fetch_parent_args       (t_iem *iem, int *pargc, t_atom **pargv);
+void        iem_verify_snd_ne_rcv       (t_iem *iem);
+void        iem_all_unique2dollarzero   (t_iem *iem, t_symbol **srlsym);
+void        iem_all_sym2dollararg       (t_iem *iem, t_symbol **srlsym);
+void        iem_all_dollarzero2unique   (t_iem *iem, t_symbol **srlsym);
+t_symbol    *iem_new_dogetname          (t_iem *iem, int indx, t_atom *argv);
+void        iem_new_getnames            (t_iem *iem, int indx, t_atom *argv);
+void        iem_all_dollararg2sym       (t_iem *iem, t_symbol **srlsym);
+void        iem_all_col2save            (t_iem *iem, int *bflcol);
+void        iem_all_colfromload         (t_iem *iem, int *bflcol);
+int         iem_compatible_col          (int i);
+void        iem_all_dollar2raute        (t_symbol **srlsym);
+void        iem_all_raute2dollar        (t_symbol **srlsym);
+void        iem_send                    (void *x, t_iem *iem, t_symbol *s);
+void        iem_receive                 (void *x, t_iem *iem, t_symbol *s);
+void        iem_label                   (void *x, t_iem *iem, t_symbol *s);
+void        iem_label_pos               (void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av);
+void        iem_label_font              (void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av);
+void        iem_size                    (void *x, t_iem *iem);
+void        iem_delta                   (void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av);
+void        iem_pos                     (void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av);
+void        iem_color                   (void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av);
+int         iem_list                    (void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av);
+void        iem_displace                (t_gobj *z, t_glist *glist, int dx, int dy);
+void        iem_select                  (t_gobj *z, t_glist *glist, int selected);
+void        iem_delete                  (t_gobj *z, t_glist *glist);
+void        iem_vis                     (t_gobj *z, t_glist *glist, int vis);
+void        iem_save                    (t_iem *iem, t_symbol **srl, int *bflcol);
+void        iem_properties              (t_iem *iem, t_symbol **srl);
+void        iem_dialog                  (t_iem *iem, t_symbol **srl, int argc, t_atom *argv);
+void        iem_inttosymargs            (t_iem_init_symargs *symargp, int n);
+int         iem_symargstoint            (t_iem_init_symargs *symargp);
+void        iem_inttofstyle             (t_iem_fstyle_flags *fstylep, int n);
+int         iem_fstyletoint             (t_iem_fstyle_flags *fstylep);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

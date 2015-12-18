@@ -40,12 +40,12 @@ extern "C" {
 
 #ifdef _WIN32
     #ifdef PD_INTERNAL
-        #define PD_DLL  __declspec(dllexport)
+        #define PD_DLL  __declspec(dllexport) extern
     #else
-        #define PD_DLL  __declspec(dllimport)
+        #define PD_DLL  __declspec(dllimport) extern 
     #endif
 #else
-    #define PD_DLL      __attribute__((visibility("default")))
+    #define PD_DLL      __attribute__((visibility("default"))) extern
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -254,7 +254,7 @@ typedef void *(*t_newmethod)(void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL t_pd pd_objectmaker;                 /* Global to PureData. */
+PD_DLL t_pd pd_objectmaker;                 /* Global. */
 PD_DLL t_pd pd_canvasmaker;
 
 PD_DLL t_symbol s_pointer;

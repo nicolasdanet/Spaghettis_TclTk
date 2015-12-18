@@ -22,7 +22,7 @@
 #include <unistd.h>
 #endif
 
-#define IEM_PANEL_DEFAULT_SIZE      8
+#define IEM_PANEL_DEFAULT_GRIP_SIZE     15
 
 /* ---------- cnv  my gui-canvas for a window ---------------- */
 
@@ -86,7 +86,7 @@ void my_canvas_draw_config(t_my_canvas* x, t_glist* glist)
     sys_vgui(".x%lx.c itemconfigure %lxRECT -fill #%6.6x -outline #%6.6x\n", canvas, x,
              x->x_gui.x_bcol, x->x_gui.x_bcol);
     sys_vgui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x,
-             x->x_gui.x_fsf.x_selected?IEM_GUI_COLOR_SELECTED:x->x_gui.x_bcol);
+             x->x_gui.x_fsf.x_selected?IEM_COLOR_SELECTED:x->x_gui.x_bcol);
     sys_vgui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
              canvas, x, x->x_gui.x_fontsize,
              x->x_gui.x_lcol,
@@ -99,7 +99,7 @@ void my_canvas_draw_select(t_my_canvas* x, t_glist* glist)
 
     if(x->x_gui.x_fsf.x_selected)
     {
-        sys_vgui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_GUI_COLOR_SELECTED);
+        sys_vgui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
     }
     else
     {
@@ -109,15 +109,15 @@ void my_canvas_draw_select(t_my_canvas* x, t_glist* glist)
 
 void my_canvas_draw(t_my_canvas *x, t_glist *glist, int mode)
 {
-    if(mode == IEM_GUI_DRAW_MOVE)
+    if(mode == IEM_DRAW_MOVE)
         my_canvas_draw_move(x, glist);
-    else if(mode == IEM_GUI_DRAW_NEW)
+    else if(mode == IEM_DRAW_NEW)
         my_canvas_draw_new(x, glist);
-    else if(mode == IEM_GUI_DRAW_SELECT)
+    else if(mode == IEM_DRAW_SELECT)
         my_canvas_draw_select(x, glist);
-    else if(mode == IEM_GUI_DRAW_ERASE)
+    else if(mode == IEM_DRAW_ERASE)
         my_canvas_draw_erase(x, glist);
-    else if(mode == IEM_GUI_DRAW_CONFIG)
+    else if(mode == IEM_DRAW_CONFIG)
         my_canvas_draw_config(x, glist);
 }
 
@@ -139,7 +139,7 @@ static void my_canvas_save(t_gobj *z, t_binbuf *b)
     int bflcol[3];
     t_symbol *srl[3];
 
-    iemgui_save(&x->x_gui, srl, bflcol);
+    iem_save(&x->x_gui, srl, bflcol);
     binbuf_addv(b, "ssiisiiisssiiiiiii", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.x_obj.te_xpix, (int)x->x_gui.x_obj.te_ypix,
                 gensym("cnv"), x->x_gui.x_w, x->x_vis_w, x->x_vis_h,
@@ -155,7 +155,7 @@ static void my_canvas_properties(t_gobj *z, t_glist *owner)
     char buf[800];
     t_symbol *srl[3];
 
-    iemgui_properties(&x->x_gui, srl);
+    iem_properties(&x->x_gui, srl);
     sprintf(buf, "::pd_iem::create %%s Panel \
             %d %d {Grip Size} 0 0 empty \
             %d {Panel Width} %d {Panel Height} \
@@ -192,7 +192,7 @@ static void my_canvas_dialog(t_my_canvas *x, t_symbol *s, int argc, t_atom *argv
     int a = (int)atom_getintarg(0, argc, argv);
     int w = (int)atom_getintarg(2, argc, argv);
     int h = (int)atom_getintarg(3, argc, argv);
-    iemgui_dialog(&x->x_gui, srl, argc, argv);
+    iem_dialog(&x->x_gui, srl, argc, argv);
 
     x->x_gui.x_isa.x_loadinit = 0;
     if(a < 1)
@@ -205,8 +205,8 @@ static void my_canvas_dialog(t_my_canvas *x, t_symbol *s, int argc, t_atom *argv
     if(h < 1)
         h = 1;
     x->x_vis_h = h;
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_CONFIG);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MOVE);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_CONFIG);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_MOVE);
 }
 
 static void my_canvas_size(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
@@ -217,14 +217,14 @@ static void my_canvas_size(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
         i = 1;
     x->x_gui.x_w = i;
     x->x_gui.x_h = i;
-    iemgui_size((void *)x, &x->x_gui);
+    iem_size((void *)x, &x->x_gui);
 }
 
 static void my_canvas_delta(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_delta((void *)x, &x->x_gui, s, ac, av);}
+{iem_delta((void *)x, &x->x_gui, s, ac, av);}
 
 static void my_canvas_pos(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_pos((void *)x, &x->x_gui, s, ac, av);}
+{iem_pos((void *)x, &x->x_gui, s, ac, av);}
 
 static void my_canvas_vis_size(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
 {
@@ -242,32 +242,32 @@ static void my_canvas_vis_size(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
     }
     x->x_vis_h = i;
     if(glist_isvisible(x->x_gui.x_glist))
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MOVE);
+        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_MOVE);
 }
 
 static void my_canvas_color(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_color((void *)x, &x->x_gui, s, ac, av);}
+{iem_color((void *)x, &x->x_gui, s, ac, av);}
 
 static void my_canvas_send(t_my_canvas *x, t_symbol *s)
-{iemgui_send(x, &x->x_gui, s);}
+{iem_send(x, &x->x_gui, s);}
 
 static void my_canvas_receive(t_my_canvas *x, t_symbol *s)
-{iemgui_receive(x, &x->x_gui, s);}
+{iem_receive(x, &x->x_gui, s);}
 
 static void my_canvas_label(t_my_canvas *x, t_symbol *s)
-{iemgui_label((void *)x, &x->x_gui, s);}
+{iem_label((void *)x, &x->x_gui, s);}
 
 static void my_canvas_label_pos(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_label_pos((void *)x, &x->x_gui, s, ac, av);}
+{iem_label_pos((void *)x, &x->x_gui, s, ac, av);}
 
 static void my_canvas_label_font(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_label_font((void *)x, &x->x_gui, s, ac, av);}
+{iem_label_font((void *)x, &x->x_gui, s, ac, av);}
 
 static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_my_canvas *x = (t_my_canvas *)pd_new(my_canvas_class);
     int bflcol[]={-233017, -1, -66577};
-    int a=IEM_PANEL_DEFAULT_SIZE, w=100, h=60;
+    int a=IEM_PANEL_DEFAULT_GRIP_SIZE, w=100, h=60;
     int ldx=20, ldy=12, f=2, i=0;
     int fs=14;
     char str[144];
@@ -285,14 +285,14 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     if((argc >= 12)&&(IS_SYMBOL(argv,3)||IS_FLOAT(argv,3))&&(IS_SYMBOL(argv,4)||IS_FLOAT(argv,4)))
     {
         i = 2;
-        iemgui_new_getnames(&x->x_gui, 3, argv);
+        iem_new_getnames(&x->x_gui, 3, argv);
     }
     else if((argc == 11)&&(IS_SYMBOL(argv,3)||IS_FLOAT(argv,3)))
     {
         i = 1;
-        iemgui_new_getnames(&x->x_gui, 3, argv);
+        iem_new_getnames(&x->x_gui, 3, argv);
     }
-    else iemgui_new_getnames(&x->x_gui, 3, 0);
+    else iem_new_getnames(&x->x_gui, 3, 0);
 
     if(((argc >= 10)&&(argc <= 13))
        &&(IS_SYMBOL(argv,i+3)||IS_FLOAT(argv,i+3))&&IS_FLOAT(argv,i+4)
@@ -303,7 +303,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
             /* disastrously, the "label" sits in a different part of the
             message.  So we have to track its location separately (in
             the slot x_labelbindex) and initialize it specially here. */
-        iemgui_new_dogetname(&x->x_gui, i+3, argv);
+        iem_new_dogetname(&x->x_gui, i+3, argv);
         x->x_gui.x_labelbindex = i+4;
         ldx = (int)atom_getintarg(i+4, argc, argv);
         ldy = (int)atom_getintarg(i+5, argc, argv);
@@ -342,10 +342,10 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     if(fs < 4)
         fs = 4;
     x->x_gui.x_fontsize = fs;
-    iemgui_all_colfromload(&x->x_gui, bflcol);
+    iem_all_colfromload(&x->x_gui, bflcol);
     x->x_at[0].a_type = A_FLOAT;
     x->x_at[1].a_type = A_FLOAT;
-    iemgui_verify_snd_ne_rcv(&x->x_gui);
+    iem_verify_snd_ne_rcv(&x->x_gui);
     return (x);
 }
 
@@ -375,11 +375,11 @@ void g_mycanvas_setup(void)
     class_addmethod(my_canvas_class, (t_method)my_canvas_get_pos, gensym("get_pos"), 0);
 
     my_canvas_widgetbehavior.w_getrectfn = my_canvas_getrect;
-    my_canvas_widgetbehavior.w_displacefn = iemgui_displace;
-    my_canvas_widgetbehavior.w_selectfn = iemgui_select;
+    my_canvas_widgetbehavior.w_displacefn = iem_displace;
+    my_canvas_widgetbehavior.w_selectfn = iem_select;
     my_canvas_widgetbehavior.w_activatefn = NULL;
-    my_canvas_widgetbehavior.w_deletefn = iemgui_delete;
-    my_canvas_widgetbehavior.w_visfn = iemgui_vis;
+    my_canvas_widgetbehavior.w_deletefn = iem_delete;
+    my_canvas_widgetbehavior.w_visfn = iem_vis;
     my_canvas_widgetbehavior.w_clickfn = NULL;
     class_setwidget(my_canvas_class, &my_canvas_widgetbehavior);
     class_sethelpsymbol(my_canvas_class, gensym("cnv"));

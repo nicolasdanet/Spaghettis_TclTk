@@ -34,6 +34,8 @@
 t_widgetbehavior bng_widgetbehavior;
 static t_class *bng_class;
 
+extern int sys_noloadbang;
+
 /*  widget helper functions  */
 
 
@@ -122,7 +124,7 @@ void bng_draw_config(t_bng* x, t_glist* glist)
 
     sys_vgui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
              canvas, x, x->x_gui.x_fontsize,
-             x->x_gui.x_fsf.x_selected?IEM_GUI_COLOR_SELECTED:x->x_gui.x_lcol,
+             x->x_gui.x_fsf.x_selected?IEM_COLOR_SELECTED:x->x_gui.x_lcol,
              strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"");
     sys_vgui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas, x, x->x_gui.x_bcol);
     sys_vgui(".x%lx.c itemconfigure %lxBUT -fill #%6.6x\n", canvas, x,
@@ -150,33 +152,33 @@ void bng_draw_select(t_bng* x, t_glist* glist)
 
     if(x->x_gui.x_fsf.x_selected)
     {
-        sys_vgui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_GUI_COLOR_SELECTED);
-        sys_vgui(".x%lx.c itemconfigure %lxBUT -outline #%6.6x\n", canvas, x, IEM_GUI_COLOR_SELECTED);
-        sys_vgui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, IEM_GUI_COLOR_SELECTED);
+        sys_vgui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
+        sys_vgui(".x%lx.c itemconfigure %lxBUT -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
+        sys_vgui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
     }
     else
     {
-        sys_vgui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_GUI_COLOR_NORMAL);
-        sys_vgui(".x%lx.c itemconfigure %lxBUT -outline #%6.6x\n", canvas, x, IEM_GUI_COLOR_NORMAL);
+        sys_vgui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_NORMAL);
+        sys_vgui(".x%lx.c itemconfigure %lxBUT -outline #%6.6x\n", canvas, x, IEM_COLOR_NORMAL);
         sys_vgui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, x->x_gui.x_lcol);
     }
 }
 
 void bng_draw(t_bng *x, t_glist *glist, int mode)
 {
-    if(mode == IEM_GUI_DRAW_UPDATE)
+    if(mode == IEM_DRAW_UPDATE)
         bng_draw_update(x, glist);
-    else if(mode == IEM_GUI_DRAW_MOVE)
+    else if(mode == IEM_DRAW_MOVE)
         bng_draw_move(x, glist);
-    else if(mode == IEM_GUI_DRAW_NEW)
+    else if(mode == IEM_DRAW_NEW)
         bng_draw_new(x, glist);
-    else if(mode == IEM_GUI_DRAW_SELECT)
+    else if(mode == IEM_DRAW_SELECT)
         bng_draw_select(x, glist);
-    else if(mode == IEM_GUI_DRAW_ERASE)
+    else if(mode == IEM_DRAW_ERASE)
         bng_draw_erase(x, glist);
-    else if(mode == IEM_GUI_DRAW_CONFIG)
+    else if(mode == IEM_DRAW_CONFIG)
         bng_draw_config(x, glist);
-    else if(mode >= IEM_GUI_DRAW_IO)
+    else if(mode >= IEM_DRAW_IO)
         bng_draw_io(x, glist);
 }
 
@@ -198,7 +200,7 @@ static void bng_save(t_gobj *z, t_binbuf *b)
     int bflcol[3];
     t_symbol *srl[3];
 
-    iemgui_save(&x->x_gui, srl, bflcol);
+    iem_save(&x->x_gui, srl, bflcol);
     binbuf_addv(b, "ssiisiiiisssiiiiiii", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.x_obj.te_xpix, (int)x->x_gui.x_obj.te_ypix,
                 gensym("bng"), x->x_gui.x_w,
@@ -235,7 +237,7 @@ static void bng_properties(t_gobj *z, t_glist *owner)
     char buf[800];
     t_symbol *srl[3];
 
-    iemgui_properties(&x->x_gui, srl);
+    iem_properties(&x->x_gui, srl);
     sprintf(buf, "::pd_iem::create %%s Bang \
             %d %d Size 0 0 empty \
             %d {Flash Break} %d {Flash Hold} \
@@ -262,14 +264,14 @@ static void bng_set(t_bng *x)
     if(x->x_flashed)
     {
         x->x_flashed = 0;
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
+        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_UPDATE);
         clock_delay(x->x_clock_brk, x->x_flashtime_break);
         x->x_flashed = 1;
     }
     else
     {
         x->x_flashed = 1;
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
+        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_UPDATE);
     }
     clock_delay(x->x_clock_hld, x->x_flashtime_hold);
 }
@@ -322,14 +324,14 @@ static void bng_dialog(t_bng *x, t_symbol *s, int argc, t_atom *argv)
     int a = (int)atom_getintarg(0, argc, argv);
     int fthold = (int)atom_getintarg(2, argc, argv);
     int ftbreak = (int)atom_getintarg(3, argc, argv);
-    iemgui_dialog(&x->x_gui, srl, argc, argv);
+    iem_dialog(&x->x_gui, srl, argc, argv);
 
-    x->x_gui.x_w = iemgui_clip_size(a);
+    x->x_gui.x_w = iem_clip_size(a);
     x->x_gui.x_h = x->x_gui.x_w;
     bng_check_minmax(x, ftbreak, fthold);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_CONFIG);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_IO);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_MOVE);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_CONFIG);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_IO);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_MOVE);
     canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
 }
 
@@ -374,16 +376,16 @@ static void bng_loadbang(t_bng *x)
 
 static void bng_size(t_bng *x, t_symbol *s, int ac, t_atom *av)
 {
-    x->x_gui.x_w = iemgui_clip_size((int)atom_getintarg(0, ac, av));
+    x->x_gui.x_w = iem_clip_size((int)atom_getintarg(0, ac, av));
     x->x_gui.x_h = x->x_gui.x_w;
-    iemgui_size((void *)x, &x->x_gui);
+    iem_size((void *)x, &x->x_gui);
 }
 
 static void bng_delta(t_bng *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_delta((void *)x, &x->x_gui, s, ac, av);}
+{iem_delta((void *)x, &x->x_gui, s, ac, av);}
 
 static void bng_pos(t_bng *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_pos((void *)x, &x->x_gui, s, ac, av);}
+{iem_pos((void *)x, &x->x_gui, s, ac, av);}
 
 static void bng_flashtime(t_bng *x, t_symbol *s, int ac, t_atom *av)
 {
@@ -392,22 +394,22 @@ static void bng_flashtime(t_bng *x, t_symbol *s, int ac, t_atom *av)
 }
 
 static void bng_color(t_bng *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_color((void *)x, &x->x_gui, s, ac, av);}
+{iem_color((void *)x, &x->x_gui, s, ac, av);}
 
 static void bng_send(t_bng *x, t_symbol *s)
-{iemgui_send(x, &x->x_gui, s);}
+{iem_send(x, &x->x_gui, s);}
 
 static void bng_receive(t_bng *x, t_symbol *s)
-{iemgui_receive(x, &x->x_gui, s);}
+{iem_receive(x, &x->x_gui, s);}
 
 static void bng_label(t_bng *x, t_symbol *s)
-{iemgui_label((void *)x, &x->x_gui, s);}
+{iem_label((void *)x, &x->x_gui, s);}
 
 static void bng_label_pos(t_bng *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_label_pos((void *)x, &x->x_gui, s, ac, av);}
+{iem_label_pos((void *)x, &x->x_gui, s, ac, av);}
 
 static void bng_label_font(t_bng *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_label_font((void *)x, &x->x_gui, s, ac, av);}
+{iem_label_font((void *)x, &x->x_gui, s, ac, av);}
 
 static void bng_init(t_bng *x, t_floatarg f)
 {
@@ -417,12 +419,12 @@ static void bng_init(t_bng *x, t_floatarg f)
 static void bng_tick_hld(t_bng *x)
 {
     x->x_flashed = 0;
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_UPDATE);
 }
 
 static void bng_tick_brk(t_bng *x)
 {
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_UPDATE);
 }
 
 static void bng_tick_lck(t_bng *x)
@@ -459,7 +461,7 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
         fthold = (int)atom_getintarg(1, argc, argv);
         ftbreak = (int)atom_getintarg(2, argc, argv);
         iem_inttosymargs(&x->x_gui.x_isa, atom_getintarg(3, argc, argv));
-        iemgui_new_getnames(&x->x_gui, 4, argv);
+        iem_new_getnames(&x->x_gui, 4, argv);
         ldx = (int)atom_getintarg(7, argc, argv);
         ldy = (int)atom_getintarg(8, argc, argv);
         iem_inttofstyle(&x->x_gui.x_fsf, atom_getintarg(9, argc, argv));
@@ -468,7 +470,7 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
         bflcol[1] = (int)atom_getintarg(12, argc, argv);
         bflcol[2] = (int)atom_getintarg(13, argc, argv);
     }
-    else iemgui_new_getnames(&x->x_gui, 4, 0);
+    else iem_new_getnames(&x->x_gui, 4, 0);
 
     x->x_gui.x_draw = (t_iemfunptr)bng_draw;
 
@@ -489,12 +491,12 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
     if(fs < 4)
         fs = 4;
     x->x_gui.x_fontsize = fs;
-    x->x_gui.x_w = iemgui_clip_size(a);
+    x->x_gui.x_w = iem_clip_size(a);
     x->x_gui.x_h = x->x_gui.x_w;
     bng_check_minmax(x, ftbreak, fthold);
-    iemgui_all_colfromload(&x->x_gui, bflcol);
+    iem_all_colfromload(&x->x_gui, bflcol);
     x->x_gui.x_isa.x_locked = 0;
-    iemgui_verify_snd_ne_rcv(&x->x_gui);
+    iem_verify_snd_ne_rcv(&x->x_gui);
     x->x_clock_hld = clock_new(x, (t_method)bng_tick_hld);
     x->x_clock_brk = clock_new(x, (t_method)bng_tick_brk);
     x->x_clock_lck = clock_new(x, (t_method)bng_tick_lck);
@@ -539,11 +541,11 @@ void g_bang_setup(void)
     class_addmethod(bng_class, (t_method)bng_label_font, gensym("label_font"), A_GIMME, 0);
     class_addmethod(bng_class, (t_method)bng_init, gensym("init"), A_FLOAT, 0);
     bng_widgetbehavior.w_getrectfn = bng_getrect;
-    bng_widgetbehavior.w_displacefn = iemgui_displace;
-    bng_widgetbehavior.w_selectfn = iemgui_select;
+    bng_widgetbehavior.w_displacefn = iem_displace;
+    bng_widgetbehavior.w_selectfn = iem_select;
     bng_widgetbehavior.w_activatefn = NULL;
-    bng_widgetbehavior.w_deletefn = iemgui_delete;
-    bng_widgetbehavior.w_visfn = iemgui_vis;
+    bng_widgetbehavior.w_deletefn = iem_delete;
+    bng_widgetbehavior.w_visfn = iem_vis;
     bng_widgetbehavior.w_clickfn = bng_newclick;
     class_setwidget(bng_class, &bng_widgetbehavior);
     class_sethelpsymbol(bng_class, gensym("bng"));
