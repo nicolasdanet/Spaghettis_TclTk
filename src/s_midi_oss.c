@@ -16,15 +16,17 @@
 #include <errno.h>
 #include <string.h>
 #include "m_pd.h"
-#include "s_stuff.h"
+#include "s_system.h"
+
+extern int sys_verbose;
 
 #define NSEARCH 10
 static int oss_nmidiindevs, oss_nmidioutdevs;
 static char oss_indevnames[NSEARCH][4], oss_outdevnames[NSEARCH][4];
 static int oss_nmidiin;
-static int oss_midiinfd[MAXMIDIINDEV];
+static int oss_midiinfd[MAXIMUM_MIDI_IN];
 static int oss_nmidiout;
-static int oss_midioutfd[MAXMIDIOUTDEV];
+static int oss_midioutfd[MAXIMUM_MIDI_OUT];
 
 static void oss_midiout(int fd, int n)
 {

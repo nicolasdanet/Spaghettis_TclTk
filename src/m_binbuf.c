@@ -5,7 +5,7 @@
 
 #include <stdlib.h>
 #include "m_pd.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #include <stdio.h>
 #include <errno.h>
 #ifdef HAVE_UNISTD_H
@@ -20,6 +20,7 @@
 
 extern t_pd pd_objectmaker;
 extern t_pd pd_canvasmaker;
+extern int sys_defaultfont;
 
 struct _binbuf
 {

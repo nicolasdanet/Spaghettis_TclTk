@@ -35,6 +35,7 @@ t_widgetbehavior bng_widgetbehavior;
 static t_class *bng_class;
 
 extern int sys_noloadbang;
+extern int sys_noloadbang;
 
 /*  widget helper functions  */
 

@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include "m_pd.h"
 #include "m_imp.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #include "g_canvas.h"
 #include "s_utf8.h" /*-- moo --*/
 #include <string.h>
@@ -20,6 +20,7 @@ extern t_pd pd_canvasmaker;
 extern t_class *canvas_class;
 extern t_class *vinlet_class;
 extern t_class *voutlet_class;
+extern int sys_defaultfont;
 
 void glist_readfrombinbuf(t_glist *x, t_binbuf *b, char *filename,
     int selectem);

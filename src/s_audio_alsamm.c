@@ -17,7 +17,7 @@
 #include <alsa/asoundlib.h>
 
 #include "m_pd.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -81,6 +81,13 @@
    so  i will change it maybe in future...
 */
 
+extern int sys_verbose;
+extern t_sample *sys_soundout;
+extern t_sample *sys_soundin;
+extern int sys_inchannels;
+extern int sys_outchannels;
+extern int sys_advance_samples;
+
 static int alsamm_incards = 0;
 static t_alsa_dev *alsamm_indevice[ALSA_MAXDEV];
 static int alsamm_outcards = 0;
@@ -94,7 +101,7 @@ static t_alsa_dev *alsamm_outdevice[ALSA_MAXDEV];
 static unsigned int alsamm_sr = 0; 
 static unsigned int alsamm_buffertime = 0;
 static unsigned int alsamm_buffersize = 0;
-static int alsamm_transfersize = DEFDACBLKSIZE;
+static int alsamm_transfersize = DEFAULT_BLOCKSIZE;
 
 /* bad style: we asume all cards give the same answer at init so we make this vars global
    to have a faster access in writing reading during send_dacs */
@@ -119,6 +126,8 @@ Note on why:
    the dma for them to reduce pci load, but this is only
    implemented in alsa low level drivers for dspmadi now and maybe fixed for hdsp in future
 */
+
+extern int sys_schedadvance;
 
 static int alsamm_inchannels = 0;
 static int alsamm_outchannels = 0;
@@ -1029,7 +1038,7 @@ static int alsamm_stop()
 /* I see: (a guess as a documentation)
 
    all DAC data is in sys_soundout array with 
-   DEFDACBLKSIZE (mostly 64) for each channels which
+   DEFAULT_BLOCKSIZE (mostly 64) for each channels which
    if we have more channels opened then dac-channels = sys_outchannels
    we have to zero (silence them), which should be done once.
 
@@ -1087,7 +1096,7 @@ int alsamm_send_dacs(void)
 
   if (!inchannels && !outchannels)
     {
-      return SENDDACS_NO;
+      return SEND_DACS_NO;
     }
 
   /* here we should check if in and out samples are here.
@@ -1123,7 +1132,7 @@ int alsamm_send_dacs(void)
       err = xrun_recovery(out, -EPIPE); 
       if (err < 0) {
         check_error(err,"otavail<0 recovery failed");
-        return SENDDACS_NO;     
+        return SEND_DACS_NO;     
       }
       oavail = snd_pcm_avail_update(out); 
     }
@@ -1135,7 +1144,7 @@ int alsamm_send_dacs(void)
       err = xrun_recovery(out, -EPIPE);
       if (err < 0) {
         check_error(err,"DAC XRUN recovery failed");
-        return SENDDACS_NO;
+        return SEND_DACS_NO;
       }
       oavail = snd_pcm_avail_update(out); 
 
@@ -1143,7 +1152,7 @@ int alsamm_send_dacs(void)
       err = xrun_recovery(out, -ESTRPIPE);
       if (err < 0) {
         check_error(err,"DAC SUSPEND recovery failed");
-        return SENDDACS_NO;
+        return SEND_DACS_NO;
       }
       oavail = snd_pcm_avail_update(out); 
     }
@@ -1158,7 +1167,7 @@ int alsamm_send_dacs(void)
        this should only happen on first card otherwise we got a problem :-(()*/
 
     if(oavail < alsamm_transfersize){
-      return SENDDACS_NO;
+      return SEND_DACS_NO;
     }
     
     /* transfer now */
@@ -1217,7 +1226,7 @@ int alsamm_send_dacs(void)
       if (commitres < 0 || commitres != oframes) {
         if ((err = xrun_recovery(out, commitres >= 0 ? -EPIPE : commitres)) < 0) {
           check_error(err,"MMAP commit error");
-          return SENDDACS_NO;
+          return SEND_DACS_NO;
         }    
       }
 
@@ -1248,7 +1257,7 @@ int alsamm_send_dacs(void)
       err = xrun_recovery(in, iavail);
       if (err < 0) {
         check_error(err,"input avail update failed");
-        return SENDDACS_NO;
+        return SEND_DACS_NO;
       }
       iavail=snd_pcm_avail_update(in); 
     }
@@ -1259,7 +1268,7 @@ int alsamm_send_dacs(void)
       err = xrun_recovery(in, -EPIPE);
       if (err < 0) {
         check_error(err,"ADC XRUN recovery failed");
-        return SENDDACS_NO;
+        return SEND_DACS_NO;
       }
       iavail=snd_pcm_avail_update(in); 
 
@@ -1267,14 +1276,14 @@ int alsamm_send_dacs(void)
       err = xrun_recovery(in, -ESTRPIPE);
       if (err < 0) {
         check_error(err,"ADC SUSPEND recovery failed");
-        return SENDDACS_NO;
+        return SEND_DACS_NO;
       }
       iavail=snd_pcm_avail_update(in); 
     }
     
     /* only transfer full transfersize or nothing */
     if(iavail < alsamm_transfersize){
-      return SENDDACS_NO;
+      return SEND_DACS_NO;
     }
     size = alsamm_transfersize; 
     fp1 = fpi;
@@ -1293,7 +1302,7 @@ int alsamm_send_dacs(void)
       if (err < 0){
         if ((err = xrun_recovery(in, err)) < 0) {
           check_error(err,"MMAP begins avail error");
-          return SENDDACS_NO;
+          return SEND_DACS_NO;
         }
       }
 
@@ -1323,7 +1332,7 @@ int alsamm_send_dacs(void)
         post("please never");
         if ((err = xrun_recovery(in, commitres >= 0 ? -EPIPE : commitres)) < 0) {
           check_error(err,"MMAP synced in commit error");
-          return SENDDACS_NO;
+          return SEND_DACS_NO;
         }
       }
       fp1 += iframes;
@@ -1341,10 +1350,10 @@ int alsamm_send_dacs(void)
         post("slept %f > %f + %f (=%f)",
              timenow,timelast,sleep_time,(timelast + sleep_time)); 
 #endif
-      return (SENDDACS_SLEPT);
+      return (SEND_DACS_SLEPT);
     }
   
-  return SENDDACS_YES;
+  return SEND_DACS_YES;
 }
 
 

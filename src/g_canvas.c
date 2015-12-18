@@ -9,7 +9,7 @@ to be different but are now unified except for some fossilized names.) */
 #include <stdio.h>
 #include "m_pd.h"
 #include "m_imp.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #include "g_canvas.h"
 #include <string.h>
 #include "g_iem.h"
@@ -22,6 +22,8 @@ extern t_class *scalar_class;
 extern t_pdinstance *pd_this;
 extern t_pd pd_canvasmaker;
 extern int glist_reloading;
+extern int sys_defaultfont;
+extern t_symbol *sys_libdir;
 
     /* LATER consider adding font size to this struct (see glist_getfont()) */
 struct _canvasenvironment
@@ -49,6 +51,7 @@ desktops because the borders have both window title area and menus. */
 /* ---------------------- variables --------------------------- */
 
 extern t_pd *newest;
+
 t_class *canvas_class;  /* Global. */
 
 /* ------------------ forward function declarations --------------- */

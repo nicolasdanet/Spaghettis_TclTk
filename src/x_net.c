@@ -5,7 +5,7 @@
 /* network */
 
 #include "m_pd.h"
-#include "s_stuff.h"
+#include "s_system.h"
 
 #include <sys/types.h>
 #include <string.h>

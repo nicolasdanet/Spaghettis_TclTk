@@ -7,7 +7,7 @@
 */
 
 #include "m_pd.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #include <stdio.h>
 #ifdef _WIN32
 #include <time.h>
@@ -23,13 +23,14 @@
 #define SYS_DEFAULTCH 2
 typedef long t_pa_sample;
 #define SYS_SAMPLEWIDTH sizeof(t_pa_sample)
-#define SYS_BYTESPERCHAN (DEFDACBLKSIZE * SYS_SAMPLEWIDTH) 
-#define SYS_XFERSAMPS (SYS_DEFAULTCH*DEFDACBLKSIZE)
+#define SYS_BYTESPERCHAN (DEFAULT_BLOCKSIZE * SYS_SAMPLEWIDTH) 
+#define SYS_XFERSAMPS (SYS_DEFAULTCH*DEFAULT_BLOCKSIZE)
 #define SYS_XFERSIZE (SYS_SAMPLEWIDTH * SYS_XFERSAMPS)
 #define MAXNDEV 20
 #define DEVDESCSIZE 80
 
 extern t_class *glob_pdobject;
+extern int sys_verbose;
 
 static void audio_getdevs(char *indevlist, int *nindevs,
     char *outdevlist, int *noutdevs, int *canmulti, int *cancallback, 
@@ -37,21 +38,21 @@ static void audio_getdevs(char *indevlist, int *nindevs,
 
     /* these are set in this file when opening audio, but then may be reduced,
     even to zero, in the system dependent open_audio routines. */
-int sys_inchannels;
-int sys_outchannels;
-int sys_advance_samples;        /* scheduler advance in samples */
-int sys_audioapi = API_DEFAULT;
-int sys_audioapiopened = -1;    /* save last API opened for later closing */
+int sys_inchannels; /* Global. */
+int sys_outchannels;  /* Global. */
+int sys_advance_samples;        /* scheduler advance in samples */ /* Global. */
+int sys_audioapi = API_DEFAULT; /* Global. */
+int sys_audioapiopened = -1;    /* save last API opened for later closing */ /* Global. */
 static int sys_meters;          /* true if we're metering */
 static t_sample sys_inmax;         /* max input amplitude */
 static t_sample sys_outmax;        /* max output amplitude */
 
     /* exported variables */
-int sys_schedadvance;   /* scheduler advance in microseconds */
-t_float sys_dacsr;
+int sys_schedadvance;   /* scheduler advance in microseconds */ /* Global. */
+t_float sys_dacsr; /* Global. */
 
-t_sample *sys_soundout;
-t_sample *sys_soundin;
+t_sample *sys_soundout;     /* Global. */
+t_sample *sys_soundin;  /* Global. */
 
     /* the "state" is normally one if we're open and zero otherwise; 
     but if the state is one, we still haven't necessarily opened the
@@ -62,11 +63,11 @@ static int audio_state;
 static int audio_naudioindev = -1;
 static int audio_audioindev[MAXAUDIOINDEV];
 static int audio_audiochindev[MAXAUDIOINDEV];
-static char audio_indevnames[MAXMIDIINDEV * DEVDESCSIZE];
+static char audio_indevnames[MAXIMUM_MIDI_IN * DEVDESCSIZE];
 static int audio_naudiooutdev = -1;
 static int audio_audiooutdev[MAXAUDIOOUTDEV];
 static int audio_audiochoutdev[MAXAUDIOOUTDEV];
-static char audio_outdevnames[MAXMIDIINDEV * DEVDESCSIZE];
+static char audio_outdevnames[MAXIMUM_MIDI_IN * DEVDESCSIZE];
 static int audio_rate;
 static int audio_advance = -1;
 static int audio_callback;
@@ -165,24 +166,24 @@ void sys_setchsr(int chin, int chout, int sr)
 {
     int nblk;
     int inbytes = (chin ? chin : 2) *
-                (DEFDACBLKSIZE*sizeof(t_sample));
+                (DEFAULT_BLOCKSIZE*sizeof(t_sample));
     int outbytes = (chout ? chout : 2) *
-                (DEFDACBLKSIZE*sizeof(t_sample));
+                (DEFAULT_BLOCKSIZE*sizeof(t_sample));
 
     if (sys_soundin)
         freebytes(sys_soundin, 
             (sys_inchannels? sys_inchannels : 2) *
-                (DEFDACBLKSIZE*sizeof(t_sample)));
+                (DEFAULT_BLOCKSIZE*sizeof(t_sample)));
     if (sys_soundout)
         freebytes(sys_soundout, 
             (sys_outchannels? sys_outchannels : 2) *
-                (DEFDACBLKSIZE*sizeof(t_sample)));
+                (DEFAULT_BLOCKSIZE*sizeof(t_sample)));
     sys_inchannels = chin;
     sys_outchannels = chout;
     sys_dacsr = sr;
     sys_advance_samples = (sys_schedadvance * sys_dacsr) / (1000000.);
-    if (sys_advance_samples < DEFDACBLKSIZE)
-        sys_advance_samples = DEFDACBLKSIZE;
+    if (sys_advance_samples < DEFAULT_BLOCKSIZE)
+        sys_advance_samples = DEFAULT_BLOCKSIZE;
 
     sys_soundin = (t_sample *)getbytes(inbytes);
     memset(sys_soundin, 0, inbytes);
@@ -222,8 +223,8 @@ void sys_set_audio_settings(int naudioindev, int *audioindev, int nchindev,
         rate = DEFAULTSRATE;
     if (advance < 0)
         advance = DEFAULTADVANCE;
-    if (blocksize != (1 << ilog2(blocksize)) || blocksize < DEFDACBLKSIZE)
-        blocksize = DEFDACBLKSIZE;
+    if (blocksize != (1 << ilog2(blocksize)) || blocksize < DEFAULT_BLOCKSIZE)
+        blocksize = DEFAULT_BLOCKSIZE;
      audio_init();
         /* Since the channel vector might be longer than the
         audio device vector, or vice versa, we fill the shorter one
@@ -520,7 +521,7 @@ int sys_send_dacs(void)
     {
         int i, n;
         t_sample maxsamp;
-        for (i = 0, n = sys_inchannels * DEFDACBLKSIZE, maxsamp = sys_inmax;
+        for (i = 0, n = sys_inchannels * DEFAULT_BLOCKSIZE, maxsamp = sys_inmax;
             i < n; i++)
         {
             t_sample f = sys_soundin[i];
@@ -528,7 +529,7 @@ int sys_send_dacs(void)
             else if (-f > maxsamp) maxsamp = -f;
         }
         sys_inmax = maxsamp;
-        for (i = 0, n = sys_outchannels * DEFDACBLKSIZE, maxsamp = sys_outmax;
+        for (i = 0, n = sys_outchannels * DEFAULT_BLOCKSIZE, maxsamp = sys_outmax;
             i < n; i++)
         {
             t_sample f = sys_soundout[i];
@@ -867,8 +868,8 @@ void sys_set_audio_settings_reopen(int naudioindev, int *audioindev, int nchinde
     if (callback < 0)
         callback = 0;
     if (newblocksize != (1<<ilog2(newblocksize)) ||
-        newblocksize < DEFDACBLKSIZE || newblocksize > 2048)
-            newblocksize = DEFDACBLKSIZE;
+        newblocksize < DEFAULT_BLOCKSIZE || newblocksize > 2048)
+            newblocksize = DEFAULT_BLOCKSIZE;
     
     if (!audio_callback_is_open && !callback)
         sys_close_audio();

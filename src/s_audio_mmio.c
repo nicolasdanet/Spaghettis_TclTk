@@ -6,7 +6,7 @@
 "wave" devices, which is how ADAT boards appear to the WAVE API. */
 
 #include "m_pd.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #include <stdio.h>
 
 #include <windows.h>
@@ -14,6 +14,14 @@
 #include <mmsystem.h>
 
 /* ------------------------- audio -------------------------- */
+
+extern int sys_verbose;
+extern t_sample *sys_soundout;
+extern t_sample *sys_soundin;
+extern int sys_inchannels;
+extern int sys_outchannels;
+extern int sys_advance_samples;
+extern t_float sys_dacsr;
 
 static void nt_close_midiin(void);
 static void nt_noresync( void);
@@ -27,7 +35,7 @@ static void postflags(void);
 #define SAMPSIZE 2
 
 int nt_realdacblksize;
-#define DEFREALDACBLKSIZE (4 * DEFDACBLKSIZE) /* larger underlying bufsize */
+#define DEFREALDACBLKSIZE (4 * DEFAULT_BLOCKSIZE) /* larger underlying bufsize */
 
 #define MAXBUFFER 100   /* number of buffers in use at maximum advance */
 #define DEFBUFFER 30    /* default is about 30x6 = 180 msec! */
@@ -508,7 +516,7 @@ int mmio_send_dacs(void)
     {
         int i, n;
         float maxsamp;
-        for (i = 0, n = 2 * nt_nwavein * DEFDACBLKSIZE, maxsamp = nt_inmax;
+        for (i = 0, n = 2 * nt_nwavein * DEFAULT_BLOCKSIZE, maxsamp = nt_inmax;
             i < n; i++)
         {
             float f = sys_soundin[i];
@@ -516,7 +524,7 @@ int mmio_send_dacs(void)
             else if (-f > maxsamp) maxsamp = -f;
         }
         nt_inmax = maxsamp;
-        for (i = 0, n = 2 * nt_nwaveout * DEFDACBLKSIZE, maxsamp = nt_outmax;
+        for (i = 0, n = 2 * nt_nwaveout * DEFAULT_BLOCKSIZE, maxsamp = nt_outmax;
             i < n; i++)
         {
             float f = sys_soundout[i];
@@ -572,9 +580,9 @@ int mmio_send_dacs(void)
 
         for (i = 0, sp1 = (short *)(ntsnd_outvec[nda][phase].lpData) +
             CHANNELS_PER_DEVICE * nt_fill;
-                i < 2; i++, fp1 += DEFDACBLKSIZE, sp1++)
+                i < 2; i++, fp1 += DEFAULT_BLOCKSIZE, sp1++)
         {
-            for (j = 0, fp2 = fp1, sp2 = sp1; j < DEFDACBLKSIZE;
+            for (j = 0, fp2 = fp1, sp2 = sp1; j < DEFAULT_BLOCKSIZE;
                 j++, fp2++, sp2 += CHANNELS_PER_DEVICE)
             {
                 int x1 = 32767.f * *fp2;
@@ -585,7 +593,7 @@ int mmio_send_dacs(void)
         }
     }
     memset(sys_soundout, 0, 
-        (DEFDACBLKSIZE *sizeof(t_sample)*CHANNELS_PER_DEVICE)*nt_nwaveout);
+        (DEFAULT_BLOCKSIZE *sizeof(t_sample)*CHANNELS_PER_DEVICE)*nt_nwaveout);
 
         /* vice versa for the input buffer */ 
 
@@ -595,9 +603,9 @@ int mmio_send_dacs(void)
 
         for (i = 0, sp1 = (short *)(ntsnd_invec[nad][phase].lpData) +
             CHANNELS_PER_DEVICE * nt_fill;
-                i < 2; i++, fp1 += DEFDACBLKSIZE, sp1++)
+                i < 2; i++, fp1 += DEFAULT_BLOCKSIZE, sp1++)
         {
-            for (j = 0, fp2 = fp1, sp2 = sp1; j < DEFDACBLKSIZE;
+            for (j = 0, fp2 = fp1, sp2 = sp1; j < DEFAULT_BLOCKSIZE;
                 j++, fp2++, sp2 += CHANNELS_PER_DEVICE)
             {
                 *fp2 = ((float)(1./32767.)) * (float)(*sp2);    
@@ -605,7 +613,7 @@ int mmio_send_dacs(void)
         }
     }
 
-    nt_fill = nt_fill + DEFDACBLKSIZE;
+    nt_fill = nt_fill + DEFAULT_BLOCKSIZE;
     if (nt_fill == nt_realdacblksize)
     {
         nt_fill = 0;

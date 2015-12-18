@@ -6,7 +6,7 @@
 
 #include "m_pd.h"
 #include "m_macros.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
@@ -42,6 +42,8 @@
 
 /* -------------------------- random ------------------------------ */
 /* this is strictly homebrew and untested. */
+
+extern int sys_noloadbang;
 
 static t_class *random_class;
 

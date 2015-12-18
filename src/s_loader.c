@@ -19,7 +19,7 @@
 #endif
 #include <string.h>
 #include "m_pd.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #include <stdio.h>
 #include <sys/stat.h>
 #ifdef _MSC_VER  /* This is only for Microsoft's compiler, not cygwin, e.g. */

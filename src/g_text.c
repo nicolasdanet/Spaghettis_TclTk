@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include "m_pd.h"
 #include "m_imp.h"
-#include "s_stuff.h"
+#include "s_system.h"
 
 #include "g_canvas.h"
 #include <stdio.h>

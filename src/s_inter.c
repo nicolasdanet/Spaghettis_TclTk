@@ -6,7 +6,7 @@
 that didn't really belong anywhere. */
 
 #include "m_pd.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #include "m_imp.h"
 #include "g_canvas.h"   /* for GUI queueing stuff */
 #ifndef _WIN32
@@ -71,6 +71,12 @@ typedef int socklen_t;
 #else
 #define LOCALHOST "localhost"
 #endif
+
+extern int sys_debuglevel;
+extern int sys_verbose;
+extern int sys_nogui;
+extern char *sys_guicmd;
+extern int sys_hipriority;
 
 typedef struct _fdpoll
 {

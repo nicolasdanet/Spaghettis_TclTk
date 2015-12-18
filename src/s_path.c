@@ -34,7 +34,7 @@
 #include <string.h>
 #include "m_pd.h"
 #include "m_imp.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #include "s_utf8.h"
 #include <stdio.h>
 #include <fcntl.h>
@@ -47,12 +47,15 @@
 # define stat  stat64
 #endif
 
-t_namelist *sys_externlist;
-t_namelist *sys_searchpath;
-t_namelist *sys_staticpath;
-t_namelist *sys_helppath;
+t_namelist *sys_externlist;     /* Global. */
+t_namelist *sys_searchpath;     /* Global. */
+t_namelist *sys_staticpath;     /* Global. */
+t_namelist *sys_helppath;       /* Global. */
 
 extern t_class *glob_pdobject;
+extern int sys_defeatrt;
+extern int sys_verbose;
+extern t_symbol *sys_flags;
 
     /* change '/' characters to the system's native file separator */
 void sys_bashfilename(const char *from, char *to)
@@ -234,7 +237,7 @@ char *namelist_get(t_namelist *namelist, int n)
     return (nl ? nl->nl_string : 0);
 }
 
-int sys_usestdpath = 1;
+int sys_usestdpath = 1;     /* Global. */
 
 void sys_setextrapath(const char *p)
 {

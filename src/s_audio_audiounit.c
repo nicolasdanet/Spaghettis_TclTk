@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "m_pd.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #include <AudioToolbox/AudioToolbox.h>
 
 pthread_mutex_t audiounit_mutex;

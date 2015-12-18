@@ -8,8 +8,8 @@ typedef int16_t t_alsa_sample16;
 typedef int32_t t_alsa_sample32;
 #define ALSA_SAMPLEWIDTH_16 sizeof(t_alsa_sample16)
 #define ALSA_SAMPLEWIDTH_32 sizeof(t_alsa_sample32)
-#define ALSA_XFERSIZE16  (signed int)(sizeof(t_alsa_sample16) * DEFDACBLKSIZE)
-#define ALSA_XFERSIZE32  (signed int)(sizeof(t_alsa_sample32) * DEFDACBLKSIZE)
+#define ALSA_XFERSIZE16  (signed int)(sizeof(t_alsa_sample16) * DEFAULT_BLOCKSIZE)
+#define ALSA_XFERSIZE32  (signed int)(sizeof(t_alsa_sample32) * DEFAULT_BLOCKSIZE)
 #define ALSA_MAXDEV 4
 #define ALSA_JITTER 1024
 #define ALSA_EXTRABUFFER 2048

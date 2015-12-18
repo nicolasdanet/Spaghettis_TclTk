@@ -8,13 +8,15 @@
 #include <stdarg.h>
 #include <string.h>
 #include <errno.h>
-#include "s_stuff.h"
+#include "s_system.h"
 #ifdef _MSC_VER  /* This is only for Microsoft's compiler, not cygwin, e.g. */
 #define snprintf sprintf_s
 #endif
 
-t_printhook sys_printhook;
-int sys_printtostderr;
+extern int sys_verbose;
+
+t_printhook sys_printhook;  /* Global. */
+int sys_printtostderr;      /* Global. */
 
 /* escape characters for tcl/tk */
 static char* strnescape(char *dest, const char *src, size_t len)

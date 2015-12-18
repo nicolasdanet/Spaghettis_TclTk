@@ -10,7 +10,7 @@ to this file... */
 #include "m_pd.h"
 
 #include "g_canvas.h"
-#include "s_stuff.h"    /* for sys_hostfontsize */
+#include "s_system.h"    /* for sys_hostfontsize */
 #include <stdio.h>
 #include <string.h>
 

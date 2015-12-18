@@ -4,7 +4,7 @@
 
 #include "m_pd.h"
 #include "m_imp.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #include <stdlib.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -25,10 +25,8 @@ static t_symbol *class_loadsym;     /* name under which an extern is invoked */
 static void pd_defaultfloat(t_pd *x, t_float f);
 static void pd_defaultlist(t_pd *x, t_symbol *s, int argc, t_atom *argv);
 
-/* Global. */
-
-t_pd pd_objectmaker;    /* factory for creating "object" boxes */
-t_pd pd_canvasmaker;    /* factory for creating canvases */
+t_pd pd_objectmaker;    /* factory for creating "object" boxes */   /* Global. */
+t_pd pd_canvasmaker;    /* factory for creating canvases */ /* Global. */
 
 static t_symbol *class_extern_dir = &s_;
 

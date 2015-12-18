@@ -8,8 +8,12 @@
 #include <string.h> /* memset */
 #include <esd.h>
 #include "m_pd.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #include "m_fixed.h"
+
+extern t_sample *sys_soundout;
+extern t_sample *sys_soundin;
+extern t_float sys_dacsr;
 
 /* exported variables */
 
@@ -68,10 +72,10 @@ void esd_close_audio( void)
 }
 
 
-#define DEFDACBLKSIZE 64
+#define DEFAULT_BLOCKSIZE 64
 #define MAXCHANS 2
 
-static short buf[DEFDACBLKSIZE*MAXCHANS];
+static short buf[DEFAULT_BLOCKSIZE*MAXCHANS];
 
 int esd_send_dacs(void)
 {
@@ -82,10 +86,10 @@ int esd_send_dacs(void)
   /* Do input */
 
   if (esd_channels_in) {
-    read(esd_socket_in,buf,DEFDACBLKSIZE*esd_channels_out*2);  
-    for (i = DEFDACBLKSIZE,  fp1 = sys_soundin,
+    read(esd_socket_in,buf,DEFAULT_BLOCKSIZE*esd_channels_out*2);  
+    for (i = DEFAULT_BLOCKSIZE,  fp1 = sys_soundin,
                  sp = (short *)buf; i--; fp1++, sp += esd_channels_in) {
-      for (j=0, fp2 = fp1; j<esd_channels_in; j++, fp2 += DEFDACBLKSIZE)
+      for (j=0, fp2 = fp1; j<esd_channels_in; j++, fp2 += DEFAULT_BLOCKSIZE)
         {
           int s = INVSCALE16(sp[j]);
           *fp2 = s;
@@ -96,9 +100,9 @@ int esd_send_dacs(void)
   /* Do output */
 
   if (esd_channels_out) {
-    for (i = DEFDACBLKSIZE,  fp1 = sys_soundout,
+    for (i = DEFAULT_BLOCKSIZE,  fp1 = sys_soundout,
          sp = (short *)buf; i--; fp1++, sp += esd_channels_out) {
-      for (j=0, fp2 = fp1; j<esd_channels_out; j++, fp2 += DEFDACBLKSIZE)
+      for (j=0, fp2 = fp1; j<esd_channels_out; j++, fp2 += DEFAULT_BLOCKSIZE)
         {
           int s = SCALE16(*fp2);
           if (s > 32767) s = 32767;
@@ -107,13 +111,13 @@ int esd_send_dacs(void)
         }
     }
   
-    write(esd_socket_out,buf,DEFDACBLKSIZE*esd_channels_out*2);  
+    write(esd_socket_out,buf,DEFAULT_BLOCKSIZE*esd_channels_out*2);  
   }
   
-  memset(sys_soundin,0,DEFDACBLKSIZE*esd_channels_out*2);
-  memset(sys_soundout,0,DEFDACBLKSIZE*esd_channels_out*4);
+  memset(sys_soundin,0,DEFAULT_BLOCKSIZE*esd_channels_out*2);
+  memset(sys_soundout,0,DEFAULT_BLOCKSIZE*esd_channels_out*4);
 
-  return (SENDDACS_YES);
+  return (SEND_DACS_YES);
 }
 
 void esd_listdevs( void)

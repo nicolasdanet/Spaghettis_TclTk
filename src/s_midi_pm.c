@@ -8,7 +8,7 @@
 */
 
 #include "m_pd.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #include <stdio.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -44,8 +44,10 @@
 #define MIDIACTIVESENSE   0xfe  /* 0 */
 #define MIDIRESET         0xff  /* 0 */
 
-static PmStream *mac_midiindevlist[MAXMIDIINDEV];
-static PmStream *mac_midioutdevlist[MAXMIDIOUTDEV];
+extern int sys_verbose;
+
+static PmStream *mac_midiindevlist[MAXIMUM_MIDI_IN];
+static PmStream *mac_midioutdevlist[MAXIMUM_MIDI_OUT];
 static int mac_nmidiindev;
 static int mac_nmidioutdev;
 

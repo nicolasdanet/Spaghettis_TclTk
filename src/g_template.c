@@ -8,7 +8,7 @@
 
 #include "m_pd.h"
 #include "m_imp.h"
-#include "s_stuff.h"    /* for sys_hostfontsize */
+#include "s_system.h"    /* for sys_hostfontsize */
 #include "g_canvas.h"
 
 extern t_class *garray_class;

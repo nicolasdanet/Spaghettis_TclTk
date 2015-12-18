@@ -16,7 +16,7 @@
 #include <errno.h>
 #include <alsa/asoundlib.h>
 #include "m_pd.h"
-#include "s_stuff.h"
+#include "s_system.h"
 
 //the maximum length of input messages
 #ifndef ALSA_MAX_EVENT_SIZE
@@ -24,9 +24,9 @@
 #endif
 
 static int alsa_nmidiin;
-static int alsa_midiinfd[MAXMIDIINDEV];
+static int alsa_midiinfd[MAXIMUM_MIDI_IN];
 static int alsa_nmidiout;
-static int alsa_midioutfd[MAXMIDIOUTDEV];
+static int alsa_midioutfd[MAXIMUM_MIDI_OUT];
 
 static snd_seq_t *midi_handle;
 
@@ -47,15 +47,15 @@ void sys_alsa_do_open_midi(int nmidiin, int *midiinvec,
 
     if (nmidiout == 0 && nmidiin == 0) return;
 
-    if(nmidiin>MAXMIDIINDEV )
+    if(nmidiin>MAXIMUM_MIDI_IN )
       {
-        post("midi input ports reduced to maximum %d", MAXMIDIINDEV);
-        nmidiin=MAXMIDIINDEV;
+        post("midi input ports reduced to maximum %d", MAXIMUM_MIDI_IN);
+        nmidiin=MAXIMUM_MIDI_IN;
       }
-    if(nmidiout>MAXMIDIOUTDEV)
+    if(nmidiout>MAXIMUM_MIDI_OUT)
       {
-        post("midi output ports reduced to maximum %d", MAXMIDIOUTDEV);
-        nmidiout=MAXMIDIOUTDEV;
+        post("midi output ports reduced to maximum %d", MAXIMUM_MIDI_OUT);
+        nmidiout=MAXIMUM_MIDI_OUT;
       }
 
     if (nmidiin>0 && nmidiout>0)

@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "m_pd.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #include <jack/weakjack.h>
 #include <jack/jack.h>
 #include <regex.h>
@@ -20,6 +20,12 @@
 #define MAX_JACK_PORTS 128  /* higher values seem to give bad xrun problems */
 #define BUF_JACK 4096
 #define JACK_OUT_MAX  64
+
+extern t_sample *sys_soundout;
+extern t_sample *sys_soundin;
+extern int sys_inchannels;
+extern int sys_outchannels;
+extern t_float sys_dacsr;
 
 static jack_nframes_t jack_out_max;
 static jack_nframes_t jack_filled = 0;
@@ -112,38 +118,38 @@ static int callbackprocess(jack_nframes_t nframes, void *arg)
     unsigned int n;
     jack_default_audio_sample_t *out[MAX_JACK_PORTS], *in[MAX_JACK_PORTS], *jp;
 
-    if (nframes % DEFDACBLKSIZE)
+    if (nframes % DEFAULT_BLOCKSIZE)
     {
         fprintf(stderr, "jack: nframes %d not a multiple of blocksize %d\n",
-            nframes, DEFDACBLKSIZE);
-        nframes -= (nframes % DEFDACBLKSIZE);
+            nframes, DEFAULT_BLOCKSIZE);
+        nframes -= (nframes % DEFAULT_BLOCKSIZE);
     }
     for (chan = 0; chan < sys_inchannels; chan++)
         in[chan] = jack_port_get_buffer(input_port[chan], nframes);
     for (chan = 0; chan < sys_outchannels; chan++)
         out[chan] = jack_port_get_buffer(output_port[chan], nframes);
-    for (n = 0; n < nframes; n += DEFDACBLKSIZE)
+    for (n = 0; n < nframes; n += DEFAULT_BLOCKSIZE)
     {
         t_sample *fp;
         for (chan = 0; chan < sys_inchannels; chan++)
             if (in[chan])
         {
-            for (fp = sys_soundin + chan*DEFDACBLKSIZE,
-                jp = in[chan] + n, j=0; j < DEFDACBLKSIZE; j++)
+            for (fp = sys_soundin + chan*DEFAULT_BLOCKSIZE,
+                jp = in[chan] + n, j=0; j < DEFAULT_BLOCKSIZE; j++)
                     *fp++ = *jp++;
         }
         for (chan = 0; chan < sys_outchannels; chan++)
         {
-            for (fp = sys_soundout + chan*DEFDACBLKSIZE,
-                j = 0; j < DEFDACBLKSIZE; j++)
+            for (fp = sys_soundout + chan*DEFAULT_BLOCKSIZE,
+                j = 0; j < DEFAULT_BLOCKSIZE; j++)
                     *fp++ = 0;
         }
         (*jack_callback)();
         for (chan = 0; chan < sys_outchannels; chan++)
             if (out[chan])
         {
-            for (fp = sys_soundout + chan*DEFDACBLKSIZE, jp = out[chan] + n,
-                j=0; j < DEFDACBLKSIZE; j++)
+            for (fp = sys_soundout + chan*DEFAULT_BLOCKSIZE, jp = out[chan] + n,
+                j=0; j < DEFAULT_BLOCKSIZE; j++)
                     *jp++ = *fp++;
         }
     }       
@@ -495,11 +501,11 @@ int jack_send_dacs(void)
 {
     t_sample * fp;
     int j;
-    int rtnval =  SENDDACS_YES;
+    int rtnval =  SEND_DACS_YES;
     int timenow;
     int timeref = sys_getrealtime();
-    if (!jack_client) return SENDDACS_NO;
-    if (!sys_inchannels && !sys_outchannels) return (SENDDACS_NO); 
+    if (!jack_client) return SEND_DACS_NO;
+    if (!sys_inchannels && !sys_outchannels) return (SEND_DACS_NO); 
     if (jack_dio_error)
     {
         sys_log_error(ERR_RESYNC);
@@ -512,7 +518,7 @@ int jack_send_dacs(void)
     if (!jack_client)
     {
         pthread_mutex_unlock(&jack_mutex);
-        return SENDDACS_NO;
+        return SEND_DACS_NO;
     }
     jack_started = 1;
 
@@ -520,24 +526,24 @@ int jack_send_dacs(void)
     for (j = 0; j < sys_outchannels; j++)
     {
         memcpy(jack_outbuf + (j * BUF_JACK) + jack_filled, fp,
-            DEFDACBLKSIZE*sizeof(t_sample));
-        fp += DEFDACBLKSIZE;  
+            DEFAULT_BLOCKSIZE*sizeof(t_sample));
+        fp += DEFAULT_BLOCKSIZE;  
     }
     fp = sys_soundin;
     for (j = 0; j < sys_inchannels; j++)
     {
         memcpy(fp, jack_inbuf + (j * BUF_JACK) + jack_filled,
-            DEFDACBLKSIZE*sizeof(t_sample));
-        fp += DEFDACBLKSIZE;
+            DEFAULT_BLOCKSIZE*sizeof(t_sample));
+        fp += DEFAULT_BLOCKSIZE;
     }
-    jack_filled += DEFDACBLKSIZE;
+    jack_filled += DEFAULT_BLOCKSIZE;
     pthread_mutex_unlock(&jack_mutex);
 
     if ((timenow = sys_getrealtime()) - timeref > 0.002)
     {
-        rtnval = SENDDACS_SLEPT;
+        rtnval = SEND_DACS_SLEPT;
     }
-    memset(sys_soundout, 0, DEFDACBLKSIZE*sizeof(t_sample)*sys_outchannels);
+    memset(sys_soundout, 0, DEFAULT_BLOCKSIZE*sizeof(t_sample)*sys_outchannels);
     return rtnval;
 }
 

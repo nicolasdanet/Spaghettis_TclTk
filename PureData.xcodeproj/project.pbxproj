@@ -283,7 +283,7 @@
 		372ABF7C1C1B268C00C7D214 /* pd_x11.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; name = pd_x11.tcl; path = tcl/pd_x11.tcl; sourceTree = "<group>"; };
 		372AC0471C1B4AD600C7D214 /* g_canvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_canvas.h; path = src/g_canvas.h; sourceTree = "<group>"; };
 		372AC0481C1B4AFF00C7D214 /* s_utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_utf8.h; path = src/s_utf8.h; sourceTree = "<group>"; };
-		372AC0491C1B4AFF00C7D214 /* s_stuff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_stuff.h; path = src/s_stuff.h; sourceTree = "<group>"; };
+		372AC0491C1B4AFF00C7D214 /* s_system.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_system.h; path = src/s_system.h; sourceTree = "<group>"; };
 		372AC04A1C1B4AFF00C7D214 /* s_audio_paring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_audio_paring.h; path = src/s_audio_paring.h; sourceTree = "<group>"; };
 		372AC04B1C1B4AFF00C7D214 /* s_audio_alsa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_audio_alsa.h; path = src/s_audio_alsa.h; sourceTree = "<group>"; };
 		372AC04D1C1B4AFF00C7D214 /* m_imp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_imp.h; path = src/m_imp.h; sourceTree = "<group>"; };
@@ -457,7 +457,7 @@
 				372AC04D1C1B4AFF00C7D214 /* m_imp.h */,
 				372AC0471C1B4AD600C7D214 /* g_canvas.h */,
 				3733CD381C07682000D3DA23 /* g_iem.h */,
-				372AC0491C1B4AFF00C7D214 /* s_stuff.h */,
+				372AC0491C1B4AFF00C7D214 /* s_system.h */,
 				372AC0481C1B4AFF00C7D214 /* s_utf8.h */,
 				372AC04A1C1B4AFF00C7D214 /* s_audio_paring.h */,
 				372AC04B1C1B4AFF00C7D214 /* s_audio_alsa.h */,

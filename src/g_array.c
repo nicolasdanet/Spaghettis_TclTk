@@ -103,9 +103,7 @@ void array_free(t_array *x)
 
 /* --------------------- graphical arrays (garrays) ------------------- */
 
-/* Global. */
-
-t_class *garray_class; 
+t_class *garray_class;      /* Global. */
 
 struct _garray
 {

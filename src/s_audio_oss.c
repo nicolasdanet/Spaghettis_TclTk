@@ -15,7 +15,7 @@
 #endif
 
 #include "m_pd.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -43,9 +43,16 @@
 typedef int16_t t_oss_int16;
 typedef int32_t t_oss_int32;
 #define OSS_MAXSAMPLEWIDTH sizeof(t_oss_int32)
-#define OSS_BYTESPERCHAN(width) (DEFDACBLKSIZE * (width)) 
-#define OSS_XFERSAMPS(chans) (DEFDACBLKSIZE* (chans))
-#define OSS_XFERSIZE(chans, width) (DEFDACBLKSIZE * (chans) * (width))
+#define OSS_BYTESPERCHAN(width) (DEFAULT_BLOCKSIZE * (width)) 
+#define OSS_XFERSAMPS(chans) (DEFAULT_BLOCKSIZE* (chans))
+#define OSS_XFERSIZE(chans, width) (DEFAULT_BLOCKSIZE * (chans) * (width))
+
+extern int sys_verbose;
+extern t_sample *sys_soundout;
+extern int sys_inchannels;
+extern int sys_outchannels;
+extern int sys_advance_samples;
+extern int sys_schedadvance;
 
 /* GLOBALS */
 static int linux_meters;        /* true if we're metering */
@@ -71,9 +78,9 @@ static int linux_noutdevs = 0;
 static int linux_nindevs = 0;
 
     /* exported variables */
-t_float sys_dacsr;
-t_sample *sys_soundout;
-t_sample *sys_soundin;
+t_float sys_dacsr;              /* Global. */
+t_sample *sys_soundout;         /* Global. */
+t_sample *sys_soundin;          /* Global. */
 
     /* OSS-specific private variables */
 static int oss_blockmode = 1;   /* flag to use "blockmode"  */
@@ -165,7 +172,7 @@ void oss_configure(t_oss_dev *dev, int srate, int dac, int skipblocksize,
         if (!linux_fragsize)
         {
             linux_fragsize = OSS_DEFFRAGSIZE;
-            while (linux_fragsize > DEFDACBLKSIZE
+            while (linux_fragsize > DEFAULT_BLOCKSIZE
                 && linux_fragsize * 6 > sys_advance_samples)
                     linux_fragsize = linux_fragsize/2;
         }
@@ -271,7 +278,7 @@ int oss_open_audio(int nindev,  int *indev,  int nchin,  int *chin,
     int inchannels = 0, outchannels = 0;
     char devname[20];
     int n, i, fd, flags;
-    char buf[OSS_MAXSAMPLEWIDTH * DEFDACBLKSIZE * OSS_MAXCHPERDEV];
+    char buf[OSS_MAXSAMPLEWIDTH * DEFAULT_BLOCKSIZE * OSS_MAXCHPERDEV];
     int num_devs = 0;
     int wantmore=0;
     int spread = 0;
@@ -467,7 +474,7 @@ int oss_open_audio(int nindev,  int *indev,  int nchin,  int *chin,
             fprintf(stderr,("OSS: issuing first ADC 'read' ... "));
         read(linux_adcs[0].d_fd, buf,
             linux_adcs[0].d_bytespersamp *
-                linux_adcs[0].d_nchannels * DEFDACBLKSIZE);
+                linux_adcs[0].d_nchannels * DEFAULT_BLOCKSIZE);
         if (sys_verbose)
             fprintf(stderr, "...done.\n");
     }
@@ -476,11 +483,11 @@ int oss_open_audio(int nindev,  int *indev,  int nchin,  int *chin,
     {
         int j;
         memset(buf, 0, linux_dacs[i].d_bytespersamp *
-                linux_dacs[i].d_nchannels * DEFDACBLKSIZE);
-        for (j = 0; j < sys_advance_samples/DEFDACBLKSIZE; j++)
+                linux_dacs[i].d_nchannels * DEFAULT_BLOCKSIZE);
+        for (j = 0; j < sys_advance_samples/DEFAULT_BLOCKSIZE; j++)
             write(linux_dacs[i].d_fd, buf,
                 linux_dacs[i].d_bytespersamp *
-                    linux_dacs[i].d_nchannels * DEFDACBLKSIZE);
+                    linux_dacs[i].d_nchannels * DEFAULT_BLOCKSIZE);
     }
     sys_setalarm(0);
     sys_inchannels = inchannels;
@@ -552,7 +559,7 @@ in audio output and/or input. */
 static void oss_doresync( void)
 {
     int dev, zeroed = 0, wantsize;
-    char buf[OSS_MAXSAMPLEWIDTH * DEFDACBLKSIZE * OSS_MAXCHPERDEV];
+    char buf[OSS_MAXSAMPLEWIDTH * DEFAULT_BLOCKSIZE * OSS_MAXCHPERDEV];
     audio_buf_info ainfo;
 
         /* 1. if any input devices are ahead (have more than 1 buffer stored),
@@ -631,8 +638,8 @@ int oss_send_dacs(void)
 {
     t_sample *fp1, *fp2;
     long fill;
-    int i, j, dev, rtnval = SENDDACS_YES;
-    char buf[OSS_MAXSAMPLEWIDTH * DEFDACBLKSIZE * OSS_MAXCHPERDEV];
+    int i, j, dev, rtnval = SEND_DACS_YES;
+    char buf[OSS_MAXSAMPLEWIDTH * DEFAULT_BLOCKSIZE * OSS_MAXCHPERDEV];
     t_oss_int16 *sp;
     t_oss_int32 *lp;
         /* the maximum number of samples we should have in the ADC buffer */
@@ -641,7 +648,7 @@ int oss_send_dacs(void)
     double timeref, timenow;
 
     if (!linux_nindevs && !linux_noutdevs)
-        return (SENDDACS_NO);
+        return (SEND_DACS_NO);
 
     if (!oss_blockmode)
     {
@@ -683,7 +690,7 @@ int oss_send_dacs(void)
                 /* here's the bad case.  Give up and resync. */
             sys_log_error(ERR_DATALATE);
             oss_doresync();
-            return (SENDDACS_NO);
+            return (SEND_DACS_NO);
         }
             /* check for slippage between devices, either because
             data got lost in the driver from a previous late condition, or
@@ -706,11 +713,11 @@ int oss_send_dacs(void)
                         goto badsync;
 
             /* return zero to tell the scheduler we're idle. */
-        return (SENDDACS_NO);
+        return (SEND_DACS_NO);
     badsync:
         sys_log_error(ERR_RESYNC);
         oss_doresync();
-        return (SENDDACS_NO);
+        return (SEND_DACS_NO);
         
     }
 
@@ -726,11 +733,11 @@ int oss_send_dacs(void)
         {
             if (linux_dacs[dev].d_bytespersamp == 2)
             {
-                for (i = DEFDACBLKSIZE,  fp1 = sys_soundout +   
-                    DEFDACBLKSIZE*thischan,
+                for (i = DEFAULT_BLOCKSIZE,  fp1 = sys_soundout +   
+                    DEFAULT_BLOCKSIZE*thischan,
                     sp = (t_oss_int16 *)buf; i--; fp1++, sp += nchannels)
                 {
-                    for (j=0, fp2 = fp1; j<nchannels; j++, fp2 += DEFDACBLKSIZE)
+                    for (j=0, fp2 = fp1; j<nchannels; j++, fp2 += DEFAULT_BLOCKSIZE)
                     {
                         int s = *fp2 * 32767.;
                         if (s > 32767) s = 32767;
@@ -745,14 +752,14 @@ int oss_send_dacs(void)
             {
                 if (!oss_blockmode)
                     sys_log_error(ERR_DACSLEPT);
-                else rtnval = SENDDACS_SLEPT;
+                else rtnval = SEND_DACS_SLEPT;
             }
             timeref = timenow;
         }
         thischan += nchannels;
     }
     memset(sys_soundout, 0,
-        sys_outchannels * (sizeof(t_sample) * DEFDACBLKSIZE));
+        sys_outchannels * (sizeof(t_sample) * DEFAULT_BLOCKSIZE));
 
         /* do input */
 
@@ -767,17 +774,17 @@ int oss_send_dacs(void)
             if (!oss_blockmode)
                 sys_log_error(ERR_ADCSLEPT);
             else
-                rtnval = SENDDACS_SLEPT;
+                rtnval = SEND_DACS_SLEPT;
         }
         timeref = timenow;
 
         if (linux_adcs[dev].d_bytespersamp == 2)
         {
-            for (i = DEFDACBLKSIZE,fp1 = sys_soundin + thischan*DEFDACBLKSIZE,
+            for (i = DEFAULT_BLOCKSIZE,fp1 = sys_soundin + thischan*DEFAULT_BLOCKSIZE,
                 sp = (t_oss_int16 *)buf; i--; fp1++, sp += nchannels)
             {
                 for (j=0;j<nchannels;j++)
-                    fp1[j*DEFDACBLKSIZE] = (float)sp[j]*(float)3.051850e-05;
+                    fp1[j*DEFAULT_BLOCKSIZE] = (float)sp[j]*(float)3.051850e-05;
             }
         }
         thischan += nchannels;    

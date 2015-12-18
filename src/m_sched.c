@@ -6,7 +6,7 @@
 
 #include "m_pd.h"
 #include "m_imp.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -28,11 +28,16 @@
 #define SYS_QUIT_RESTART 2
 static int sys_quit;
 
+extern int sys_nogui;
 extern t_pdinstance *pd_this;
+extern int sys_schedblocksize;
+extern int sys_hipriority;
+extern t_float sys_dacsr;
+extern int sys_schedadvance;
 
-int sys_schedblocksize = DEFDACBLKSIZE;
+int sys_schedblocksize = DEFAULT_BLOCKSIZE;     /* Global. */
 int sys_usecsincelastsleep(void);
-int sys_sleepgrain;
+int sys_sleepgrain;                             /* Global. */
 
 typedef void (*t_clockmethod)(void *client);
 
@@ -519,14 +524,14 @@ static void m_pollingscheduler( void)
         {
             if (1000. * (sys_getrealtime() - sched_referencerealtime)
                 > clock_gettimesince(sched_referencelogicaltime))
-                    timeforward = SENDDACS_YES;
-            else timeforward = SENDDACS_NO;
+                    timeforward = SEND_DACS_YES;
+            else timeforward = SEND_DACS_NO;
         }
         sys_setmiditimediff(0, 1e-6 * sys_schedadvance);
         sys_addhist(1);
-        if (timeforward != SENDDACS_NO)
+        if (timeforward != SEND_DACS_NO)
             sched_tick();
-        if (timeforward == SENDDACS_YES)
+        if (timeforward == SEND_DACS_YES)
             didsomething = 1;
 
         sys_addhist(2);
@@ -546,7 +551,7 @@ static void m_pollingscheduler( void)
 #if THREAD_LOCKING
             sys_unlock();   /* unlock while we idle */
 #endif
-            if (timeforward != SENDDACS_SLEPT) { sys_microsleep(sys_sleepgrain); }
+            if (timeforward != SEND_DACS_SLEPT) { sys_microsleep(sys_sleepgrain); }
 #if THREAD_LOCKING
             sys_lock();
 #endif

@@ -4,7 +4,7 @@
 
 #include "m_pd.h"
 #include "m_imp.h"
-#include "s_stuff.h"
+#include "s_system.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <limits.h>
@@ -26,7 +26,18 @@
 #endif
 
 extern t_pdinstance *pd_this;
-       
+extern int sys_usestdpath;
+extern t_namelist *sys_externlist;
+extern t_namelist *sys_searchpath;
+extern t_namelist *sys_helppath;
+
+extern int sys_schedblocksize;
+extern t_sample *sys_soundout;
+extern t_sample *sys_soundin;
+extern t_float sys_dacsr;
+extern int sys_schedadvance;
+extern int sys_sleepgrain;
+
 #define stringify(s) str(s)
 #define str(s) #s
  
@@ -47,25 +58,25 @@ void sys_addhelppath(char *p);
 void alsa_adddev(char *name);
 #endif
 
-int sys_debuglevel;
-int sys_verbose;
-int sys_noloadbang;
-int sys_nogui;
-int sys_hipriority = -1;    /* -1 = don't care; 0 = no; 1 = yes */
-int sys_guisetportnumber;   /* if started from the GUI, this is the port # */
-int sys_nosleep = 0;  /* skip all "sleep" calls and spin instead */
+int sys_debuglevel;         /* Global. */
+int sys_verbose;            /* Global. */
+int sys_noloadbang;         /* Global. */
+int sys_nogui;              /* Global. */
+int sys_hipriority = -1;    /* -1 = don't care; 0 = no; 1 = yes */  /* Global. */
+int sys_guisetportnumber;   /* if started from the GUI, this is the port # */ /* Global. */
+int sys_nosleep = 0;  /* skip all "sleep" calls and spin instead */ /* Global. */
 
-char *sys_guicmd;
-t_symbol *sys_libdir;
+char *sys_guicmd;       /* Global. */
+t_symbol *sys_libdir;   /* Global. */
 static t_namelist *sys_openlist;
 static t_namelist *sys_messagelist;
 static int sys_version;
 /* */
 
-int sys_nmidiout = -1;
-int sys_nmidiin = -1;
-int sys_midiindevlist[MAXMIDIINDEV] = {1};
-int sys_midioutdevlist[MAXMIDIOUTDEV] = {1};
+int sys_nmidiout = -1;  /* Global. */
+int sys_nmidiin = -1;   /* Global. */
+int sys_midiindevlist[MAXIMUM_MIDI_IN] = {1};   /* Global. */
+int sys_midioutdevlist[MAXIMUM_MIDI_OUT] = {1}; /* Global. */
 
 static int sys_main_srate;
 static int sys_main_advance;
@@ -170,7 +181,7 @@ int sys_fontheight(int fontsize)
     return (sys_findfont(fontsize)->fi_height);
 }
 
-int sys_defaultfont;
+int sys_defaultfont;    /* Global. */
 #define DEFAULTFONT 12
 
 static void openit(const char *dirname, const char *filename)
@@ -725,7 +736,7 @@ int sys_argparse(int argc, char **argv)
         }
         else if (!strcmp(*argv, "-midiindev") && (argc > 1))
         {
-            sys_parsedevlist(&sys_nmidiin, sys_midiindevlist, MAXMIDIINDEV,
+            sys_parsedevlist(&sys_nmidiin, sys_midiindevlist, MAXIMUM_MIDI_IN,
                 argv[1]);
             if (!sys_nmidiin)
                 goto usage;
@@ -733,7 +744,7 @@ int sys_argparse(int argc, char **argv)
         }
         else if (!strcmp(*argv, "-midioutdev") && (argc > 1))
         {
-            sys_parsedevlist(&sys_nmidiout, sys_midioutdevlist, MAXMIDIOUTDEV,
+            sys_parsedevlist(&sys_nmidiout, sys_midioutdevlist, MAXIMUM_MIDI_OUT,
                 argv[1]);
             if (!sys_nmidiout)
                 goto usage;
@@ -741,9 +752,9 @@ int sys_argparse(int argc, char **argv)
         }
         else if (!strcmp(*argv, "-mididev") && (argc > 1))
         {
-            sys_parsedevlist(&sys_nmidiin, sys_midiindevlist, MAXMIDIINDEV,
+            sys_parsedevlist(&sys_nmidiin, sys_midiindevlist, MAXIMUM_MIDI_IN,
                 argv[1]);
-            sys_parsedevlist(&sys_nmidiout, sys_midioutdevlist, MAXMIDIOUTDEV,
+            sys_parsedevlist(&sys_nmidiout, sys_midioutdevlist, MAXIMUM_MIDI_OUT,
                 argv[1]);
             if (!sys_nmidiout)
                 goto usage;
@@ -753,7 +764,7 @@ int sys_argparse(int argc, char **argv)
         {
             if (sys_nmidiin < 0)
                 sys_nmidiin = 0;
-            if (sys_nmidiin < MAXMIDIINDEV)
+            if (sys_nmidiin < MAXIMUM_MIDI_IN)
             {
                 int devn = sys_mididevnametonumber(0, argv[1]);
                 if (devn < 0)
@@ -762,14 +773,14 @@ int sys_argparse(int argc, char **argv)
                 else sys_midiindevlist[sys_nmidiin++] = devn + 1;
             }
             else fprintf(stderr, "number of MIDI devices limited to %d\n",
-                MAXMIDIINDEV);
+                MAXIMUM_MIDI_IN);
             argc -= 2; argv += 2;
         }
         else if (!strcmp(*argv, "-midiaddoutdev") && (argc > 1))
         {
             if (sys_nmidiout < 0)
                 sys_nmidiout = 0;
-            if (sys_nmidiout < MAXMIDIINDEV)
+            if (sys_nmidiout < MAXIMUM_MIDI_IN)
             {
                 int devn = sys_mididevnametonumber(1, argv[1]);
                 if (devn < 0)
@@ -778,7 +789,7 @@ int sys_argparse(int argc, char **argv)
                 else sys_midioutdevlist[sys_nmidiout++] = devn + 1;
             }
             else fprintf(stderr, "number of MIDI devices limited to %d\n",
-                MAXMIDIINDEV);
+                MAXIMUM_MIDI_IN);
             argc -= 2; argv += 2;
         }
         else if (!strcmp(*argv, "-midiadddev") && (argc > 1))
@@ -787,7 +798,7 @@ int sys_argparse(int argc, char **argv)
                 sys_nmidiin = 0;
             if (sys_nmidiout < 0)
                 sys_nmidiout = 0;
-            if (sys_nmidiin < MAXMIDIINDEV && sys_nmidiout < MAXMIDIINDEV)
+            if (sys_nmidiin < MAXIMUM_MIDI_IN && sys_nmidiout < MAXIMUM_MIDI_IN)
             {
                 int devn = sys_mididevnametonumber(1, argv[1]);
                 if (devn < 0)
@@ -801,7 +812,7 @@ int sys_argparse(int argc, char **argv)
                 else sys_midioutdevlist[sys_nmidiout++] = devn + 1;
             }
             else fprintf(stderr, "number of MIDI devices limited to %d",
-                MAXMIDIINDEV);
+                MAXIMUM_MIDI_IN);
             argc -= 2; argv += 2;
         }
         else if (!strcmp(*argv, "-path") && (argc > 1))
@@ -1110,7 +1121,7 @@ int sys_argparse(int argc, char **argv)
 
 int sys_getblksize(void)
 {
-    return (DEFDACBLKSIZE);
+    return (DEFAULT_BLOCKSIZE);
 }
 
     /* stuff to do, once, after calling sys_argparse() -- which may itself
@@ -1123,8 +1134,8 @@ static void sys_afterargparse(void)
     int naudioindev, audioindev[MAXAUDIOINDEV], chindev[MAXAUDIOINDEV];
     int naudiooutdev, audiooutdev[MAXAUDIOOUTDEV], choutdev[MAXAUDIOOUTDEV];
     int nchindev, nchoutdev, rate, advance, callback, blocksize;
-    int nmidiindev = 0, midiindev[MAXMIDIINDEV];
-    int nmidioutdev = 0, midioutdev[MAXMIDIOUTDEV];
+    int nmidiindev = 0, midiindev[MAXIMUM_MIDI_IN];
+    int nmidioutdev = 0, midioutdev[MAXIMUM_MIDI_OUT];
         /* correct to make audio and MIDI device lists zero based.  On
         MMIO, however, "1" really means the second device (the first one
         is "mapper" which is was not included when the command args were
