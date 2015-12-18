@@ -32,7 +32,7 @@
             return ((pun.ui == 0) | (pun.ui == 0x7f800000));
         }
         
-        static inline int PD_BIG_OR_SMALL (t_float f)       /* If exponent falls out [-64, 64] range. */
+        static inline int PD_BIG_OR_SMALL (t_float f)       /* If exponent falls out (-64, 64) range. */
         {
             t_bigorsmall32 pun;
             pun.f = f;
