@@ -19,14 +19,14 @@
 		371654C91BA3427C00ABDE22 /* g_guiconnect.c in Sources */ = {isa = PBXBuildFile; fileRef = 371654C81BA3427C00ABDE22 /* g_guiconnect.c */; };
 		371654CB1BA3428500ABDE22 /* g_readwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 371654CA1BA3428500ABDE22 /* g_readwrite.c */; };
 		371654CD1BA3428D00ABDE22 /* g_editor.c in Sources */ = {isa = PBXBuildFile; fileRef = 371654CC1BA3428D00ABDE22 /* g_editor.c */; };
-		371654CF1BA3429800ABDE22 /* g_all_guis.c in Sources */ = {isa = PBXBuildFile; fileRef = 371654CE1BA3429800ABDE22 /* g_all_guis.c */; };
+		371654CF1BA3429800ABDE22 /* g_iem.c in Sources */ = {isa = PBXBuildFile; fileRef = 371654CE1BA3429800ABDE22 /* g_iem.c */; };
 		371654D11BA342B200ABDE22 /* g_bang.c in Sources */ = {isa = PBXBuildFile; fileRef = 371654D01BA342B200ABDE22 /* g_bang.c */; };
-		371654D31BA342BC00ABDE22 /* g_hdial.c in Sources */ = {isa = PBXBuildFile; fileRef = 371654D21BA342BC00ABDE22 /* g_hdial.c */; };
+		371654D31BA342BC00ABDE22 /* g_hradio.c in Sources */ = {isa = PBXBuildFile; fileRef = 371654D21BA342BC00ABDE22 /* g_hradio.c */; };
 		371654D51BA342C400ABDE22 /* g_hslider.c in Sources */ = {isa = PBXBuildFile; fileRef = 371654D41BA342C400ABDE22 /* g_hslider.c */; };
 		371654D71BA342DC00ABDE22 /* g_mycanvas.c in Sources */ = {isa = PBXBuildFile; fileRef = 371654D61BA342DC00ABDE22 /* g_mycanvas.c */; };
 		371654D91BA342E500ABDE22 /* g_numbox.c in Sources */ = {isa = PBXBuildFile; fileRef = 371654D81BA342E500ABDE22 /* g_numbox.c */; };
 		371654DB1BA342EE00ABDE22 /* g_toggle.c in Sources */ = {isa = PBXBuildFile; fileRef = 371654DA1BA342EE00ABDE22 /* g_toggle.c */; };
-		371654DD1BA342F900ABDE22 /* g_vdial.c in Sources */ = {isa = PBXBuildFile; fileRef = 371654DC1BA342F900ABDE22 /* g_vdial.c */; };
+		371654DD1BA342F900ABDE22 /* g_vradio.c in Sources */ = {isa = PBXBuildFile; fileRef = 371654DC1BA342F900ABDE22 /* g_vradio.c */; };
 		371654DF1BA3430200ABDE22 /* g_vumeter.c in Sources */ = {isa = PBXBuildFile; fileRef = 371654DE1BA3430200ABDE22 /* g_vumeter.c */; };
 		371654E11BA3430E00ABDE22 /* m_pd.c in Sources */ = {isa = PBXBuildFile; fileRef = 371654E01BA3430E00ABDE22 /* m_pd.c */; };
 		371654E31BA3431600ABDE22 /* m_class.c in Sources */ = {isa = PBXBuildFile; fileRef = 371654E21BA3431600ABDE22 /* m_class.c */; };
@@ -178,14 +178,14 @@
 		371654C81BA3427C00ABDE22 /* g_guiconnect.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_guiconnect.c; path = src/g_guiconnect.c; sourceTree = "<group>"; };
 		371654CA1BA3428500ABDE22 /* g_readwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_readwrite.c; path = src/g_readwrite.c; sourceTree = "<group>"; };
 		371654CC1BA3428D00ABDE22 /* g_editor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_editor.c; path = src/g_editor.c; sourceTree = "<group>"; };
-		371654CE1BA3429800ABDE22 /* g_all_guis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_all_guis.c; path = src/g_all_guis.c; sourceTree = "<group>"; };
+		371654CE1BA3429800ABDE22 /* g_iem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_iem.c; path = src/g_iem.c; sourceTree = "<group>"; };
 		371654D01BA342B200ABDE22 /* g_bang.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_bang.c; path = src/g_bang.c; sourceTree = "<group>"; };
-		371654D21BA342BC00ABDE22 /* g_hdial.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_hdial.c; path = src/g_hdial.c; sourceTree = "<group>"; };
+		371654D21BA342BC00ABDE22 /* g_hradio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_hradio.c; path = src/g_hradio.c; sourceTree = "<group>"; };
 		371654D41BA342C400ABDE22 /* g_hslider.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_hslider.c; path = src/g_hslider.c; sourceTree = "<group>"; };
 		371654D61BA342DC00ABDE22 /* g_mycanvas.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_mycanvas.c; path = src/g_mycanvas.c; sourceTree = "<group>"; };
 		371654D81BA342E500ABDE22 /* g_numbox.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_numbox.c; path = src/g_numbox.c; sourceTree = "<group>"; };
 		371654DA1BA342EE00ABDE22 /* g_toggle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_toggle.c; path = src/g_toggle.c; sourceTree = "<group>"; };
-		371654DC1BA342F900ABDE22 /* g_vdial.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_vdial.c; path = src/g_vdial.c; sourceTree = "<group>"; };
+		371654DC1BA342F900ABDE22 /* g_vradio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_vradio.c; path = src/g_vradio.c; sourceTree = "<group>"; };
 		371654DE1BA3430200ABDE22 /* g_vumeter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_vumeter.c; path = src/g_vumeter.c; sourceTree = "<group>"; };
 		371654E01BA3430E00ABDE22 /* m_pd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_pd.c; path = src/m_pd.c; sourceTree = "<group>"; };
 		371654E21BA3431600ABDE22 /* m_class.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_class.c; path = src/m_class.c; sourceTree = "<group>"; };
@@ -473,14 +473,14 @@
 				371654C81BA3427C00ABDE22 /* g_guiconnect.c */,
 				371654CA1BA3428500ABDE22 /* g_readwrite.c */,
 				371654CC1BA3428D00ABDE22 /* g_editor.c */,
-				371654CE1BA3429800ABDE22 /* g_all_guis.c */,
+				371654CE1BA3429800ABDE22 /* g_iem.c */,
 				371654D01BA342B200ABDE22 /* g_bang.c */,
-				371654D21BA342BC00ABDE22 /* g_hdial.c */,
+				371654D21BA342BC00ABDE22 /* g_hradio.c */,
 				371654D41BA342C400ABDE22 /* g_hslider.c */,
 				371654D61BA342DC00ABDE22 /* g_mycanvas.c */,
 				371654D81BA342E500ABDE22 /* g_numbox.c */,
 				371654DA1BA342EE00ABDE22 /* g_toggle.c */,
-				371654DC1BA342F900ABDE22 /* g_vdial.c */,
+				371654DC1BA342F900ABDE22 /* g_vradio.c */,
 				379A424E1BA3FA6F00C1CED0 /* g_vslider.c */,
 				371654DE1BA3430200ABDE22 /* g_vumeter.c */,
 				371654E01BA3430E00ABDE22 /* m_pd.c */,
@@ -735,14 +735,14 @@
 				371654C91BA3427C00ABDE22 /* g_guiconnect.c in Sources */,
 				371654CB1BA3428500ABDE22 /* g_readwrite.c in Sources */,
 				371654CD1BA3428D00ABDE22 /* g_editor.c in Sources */,
-				371654CF1BA3429800ABDE22 /* g_all_guis.c in Sources */,
+				371654CF1BA3429800ABDE22 /* g_iem.c in Sources */,
 				371654D11BA342B200ABDE22 /* g_bang.c in Sources */,
-				371654D31BA342BC00ABDE22 /* g_hdial.c in Sources */,
+				371654D31BA342BC00ABDE22 /* g_hradio.c in Sources */,
 				371654D51BA342C400ABDE22 /* g_hslider.c in Sources */,
 				371654D71BA342DC00ABDE22 /* g_mycanvas.c in Sources */,
 				371654D91BA342E500ABDE22 /* g_numbox.c in Sources */,
 				371654DB1BA342EE00ABDE22 /* g_toggle.c in Sources */,
-				371654DD1BA342F900ABDE22 /* g_vdial.c in Sources */,
+				371654DD1BA342F900ABDE22 /* g_vradio.c in Sources */,
 				371654DF1BA3430200ABDE22 /* g_vumeter.c in Sources */,
 				371654E11BA3430E00ABDE22 /* m_pd.c in Sources */,
 				371654E31BA3431600ABDE22 /* m_class.c in Sources */,
