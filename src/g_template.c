@@ -11,6 +11,11 @@
 #include "s_stuff.h"    /* for sys_hostfontsize */
 #include "g_canvas.h"
 
+extern t_class *garray_class;
+extern t_class *scalar_class;
+extern t_pd pd_canvasmaker;
+extern t_class *canvas_class;
+
 /*
 This file contains text objects you would put in a canvas to define a
 template.  Templates describe objects of type "array" (g_array.c) and

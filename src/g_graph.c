@@ -14,6 +14,13 @@ to this file... */
 #include <stdio.h>
 #include <string.h>
 
+extern t_class *garray_class;
+extern t_class *scalar_class;
+extern int glist_valid;
+extern t_class *canvas_class;
+extern t_class *vinlet_class;
+extern t_class *voutlet_class;
+
 /* ---------------------- forward definitions ----------------- */
 
 static void graph_vis(t_gobj *gr, t_glist *unused_glist, int vis);

@@ -24,6 +24,9 @@
 static t_symbol *class_loadsym;     /* name under which an extern is invoked */
 static void pd_defaultfloat(t_pd *x, t_float f);
 static void pd_defaultlist(t_pd *x, t_symbol *s, int argc, t_atom *argv);
+
+/* Global. */
+
 t_pd pd_objectmaker;    /* factory for creating "object" boxes */
 t_pd pd_canvasmaker;    /* factory for creating canvases */
 
@@ -585,6 +588,8 @@ void new_anything(void *dummy, t_symbol *s, int argc, t_atom *argv)
     }
     else newest = 0;
 }
+
+/* Global. */
 
 t_symbol  s_pointer =   {"pointer", 0, 0};
 t_symbol  s_float =     {"float", 0, 0};

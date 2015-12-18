@@ -16,6 +16,7 @@
 #include "g_canvas.h"
 #include "s_utf8.h"
 
+extern t_class *canvas_class;
 
 #define LMARGIN 2
 #define RMARGIN 2

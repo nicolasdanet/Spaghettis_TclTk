@@ -14,6 +14,13 @@
 #define snprintf sprintf_s
 #endif
 
+extern t_class *garray_class;
+extern t_class *scalar_class;
+extern t_pd pd_canvasmaker;
+extern t_class *canvas_class;
+extern t_class *vinlet_class;
+extern t_class *voutlet_class;
+
 void glist_readfrombinbuf(t_glist *x, t_binbuf *b, char *filename,
     int selectem);
 
@@ -768,7 +775,7 @@ static void glist_doreload(t_glist *gl, t_symbol *name, t_symbol *dir,
 
     /* this flag stops canvases from being marked "dirty" if we have to touch
     them to reload an abstraction; also suppress window list update */
-int glist_reloading = 0;
+int glist_reloading = 0;    /* Global. */
 
     /* call canvas_doreload on everyone */
 void canvas_reload(t_symbol *name, t_symbol *dir, t_gobj *except)

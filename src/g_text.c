@@ -18,6 +18,11 @@
 
 #include "s_utf8.h"
 
+extern t_pd pd_objectmaker;
+extern t_class *canvas_class;
+extern t_class *vinlet_class;
+extern t_class *voutlet_class;
+
 t_class *text_class;
 static t_class *message_class;
 static t_class *gatom_class;

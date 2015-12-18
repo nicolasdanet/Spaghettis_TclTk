@@ -15,7 +15,7 @@ can contain numbers, sublists, and arrays.
 #include "m_imp.h"
 #include "g_canvas.h"
 
-t_class *scalar_class;
+t_class *scalar_class; /* Global. */
 
 void word_init(t_word *wp, t_template *template, t_gpointer *gp)
 {

@@ -29,6 +29,8 @@ typedef long t_pa_sample;
 #define MAXNDEV 20
 #define DEVDESCSIZE 80
 
+extern t_class *glob_pdobject;
+
 static void audio_getdevs(char *indevlist, int *nindevs,
     char *outdevlist, int *noutdevs, int *canmulti, int *cancallback, 
         int maxndev, int devdescsize);

@@ -26,6 +26,8 @@ objects use Posix-like threads.  */
 
 #include "m_pd.h"
 
+extern t_class *garray_class;
+
 #define MAXSFCHANS 64
 
 #ifdef _LARGEFILE64_SOURCE

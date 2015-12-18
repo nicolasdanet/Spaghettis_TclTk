@@ -17,7 +17,9 @@ moment it also defines "text" but it may later be better to split this off. */
 #ifdef _WIN32
 #include <io.h>
 #endif
-extern t_pd *newest;    /* OK - this should go into a .h file now :) */
+extern t_pd *newest;
+extern t_pd pd_canvasmaker;
+
 static t_class *text_define_class;
 
 #ifdef HAVE_ALLOCA_H        /* ifdef nonsense to find include for alloca() */

@@ -5,7 +5,8 @@
 #include "m_pd.h"
 #include "m_imp.h"
 
-t_class *glob_pdobject;
+t_class *glob_pdobject;     /* Global. */
+
 static t_class *maxclass;
 
 int sys_perf;   /* true if we should query user on close and quit */

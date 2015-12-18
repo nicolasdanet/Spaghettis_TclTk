@@ -18,6 +18,9 @@
 #include <string.h>
 #include <stdarg.h>
 
+extern t_pd pd_objectmaker;
+extern t_pd pd_canvasmaker;
+
 struct _binbuf
 {
     int b_n;

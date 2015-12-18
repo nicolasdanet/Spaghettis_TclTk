@@ -23,6 +23,9 @@ sublist - get a pointer into a list which is an element of another scalar
 #include "m_imp.h"
 #include "g_canvas.h"
 
+extern t_class *scalar_class;
+extern t_class *canvas_class;
+
 /* ------------- gstubs and gpointers - safe pointing --------------- */
 
 /* create a gstub which is "owned" by a glist (gl) or an array ("a"). */

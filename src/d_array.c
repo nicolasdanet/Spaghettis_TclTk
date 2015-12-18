@@ -9,6 +9,8 @@
 #include "m_pd.h"
 #include "m_macros.h"
 
+extern t_class *garray_class;
+
 /* ------------------------- tabwrite~ -------------------------- */
 
 static t_class *tabwrite_tilde_class;

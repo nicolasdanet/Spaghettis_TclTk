@@ -10,6 +10,9 @@
 #include "g_canvas.h"
 #include <math.h>
 
+extern t_pd pd_canvasmaker;
+extern int glist_valid;
+
 /* jsarlo { */
 #define ARRAYPAGESIZE 1000  /* this should match the page size in u_main.tk */
 /* } jsarlo */
@@ -100,7 +103,9 @@ void array_free(t_array *x)
 
 /* --------------------- graphical arrays (garrays) ------------------- */
 
-t_class *garray_class;
+/* Global. */
+
+t_class *garray_class; 
 
 struct _garray
 {

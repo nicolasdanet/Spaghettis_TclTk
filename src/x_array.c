@@ -16,6 +16,7 @@
 #include <io.h>
 #endif
 extern t_pd *newest;    /* OK - this should go into a .h file now :) */
+extern t_class *garray_class;
 
 #ifdef HAVE_ALLOCA_H        /* ifdef nonsense to find include for alloca() */
 # include <alloca.h>        /* linux, mac, mingw, cygwin */

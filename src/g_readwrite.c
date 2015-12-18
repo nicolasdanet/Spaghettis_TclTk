@@ -18,6 +18,9 @@ file format as in the dialog window for data.
 #include "g_canvas.h"
 #include <string.h>
 
+extern t_class *scalar_class;
+extern t_class *canvas_class;
+
 static t_class *declare_class;
 void canvas_savedeclarationsto(t_canvas *x, t_binbuf *b);
 

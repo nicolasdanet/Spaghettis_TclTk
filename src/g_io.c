@@ -20,7 +20,7 @@ void signal_setborrowed(t_signal *sig, t_signal *sig2);
 void signal_makereusable(t_signal *sig);
 
 /* ------------------------- vinlet -------------------------- */
-t_class *vinlet_class;
+t_class *vinlet_class;  /* Global. */
 
 typedef struct _vinlet
 {
@@ -296,7 +296,7 @@ static void vinlet_setup(void)
 
 /* ------------------------- voutlet -------------------------- */
 
-t_class *voutlet_class;
+t_class *voutlet_class;     /* Global. */
 
 typedef struct _voutlet
 {

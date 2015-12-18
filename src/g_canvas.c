@@ -18,6 +18,11 @@ to be different but are now unified except for some fossilized names.) */
 #define snprintf sprintf_s
 #endif
 
+extern t_class *scalar_class;
+extern t_pdinstance *pd_this;
+extern t_pd pd_canvasmaker;
+extern int glist_reloading;
+
     /* LATER consider adding font size to this struct (see glist_getfont()) */
 struct _canvasenvironment
 {
@@ -44,7 +49,7 @@ desktops because the borders have both window title area and menus. */
 /* ---------------------- variables --------------------------- */
 
 extern t_pd *newest;
-t_class *canvas_class;
+t_class *canvas_class;  /* Global. */
 
 /* ------------------ forward function declarations --------------- */
 static void canvas_start_dsp(void);
@@ -301,7 +306,7 @@ void linetraverser_skipobject(t_linetraverser *t)
 }
 
 /* -------------------- the canvas object -------------------------- */
-int glist_valid = 10000;
+int glist_valid = 10000;    /* Global. */
 
 void glist_init(t_glist *x)
 {

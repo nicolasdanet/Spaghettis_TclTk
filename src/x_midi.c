@@ -15,6 +15,7 @@ void outmidi_polyaftertouch(int portno, int channel, int pitch, int value);
 void outmidi_mclk(int portno);
 void outmidi_byte(int portno, int value);
 
+extern t_pdinstance *pd_this;
 
 /* ----------------------- midiin and sysexin ------------------------- */
 

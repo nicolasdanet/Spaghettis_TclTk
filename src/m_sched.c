@@ -28,6 +28,8 @@
 #define SYS_QUIT_RESTART 2
 static int sys_quit;
 
+extern t_pdinstance *pd_this;
+
 int sys_schedblocksize = DEFDACBLKSIZE;
 int sys_usecsincelastsleep(void);
 int sys_sleepgrain;

@@ -18,7 +18,10 @@
 
 #define MAXLOGSIG           32
 
-extern t_class *vinlet_class, *voutlet_class, *canvas_class;
+extern t_pdinstance *pd_this;
+extern t_class *canvas_class;
+
+extern t_class *vinlet_class, *voutlet_class;
 t_float *obj_findsignalscalar(t_object *x, int m);
 static int ugen_loud;
 

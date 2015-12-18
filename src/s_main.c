@@ -25,6 +25,7 @@
 #define snprintf sprintf_s
 #endif
 
+extern t_pdinstance *pd_this;
        
 #define stringify(s) str(s)
 #define str(s) #s

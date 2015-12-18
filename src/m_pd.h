@@ -32,7 +32,7 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define PD_COMPATIBILITY    46                      /* Compile time compatibility level. */
+#define PD_COMPATIBILITY    46                  /* Compile time compatibility level. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -83,8 +83,8 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MAXPDSTRING         1024                    /* Maximum size for a string. */
-#define MAXPDARG            5                       /* Maximum number of typechecked arguments. */
+#define MAXPDSTRING         1024                /* Maximum size for a string. */
+#define MAXPDARG            5                   /* Maximum number of typechecked arguments. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -216,7 +216,7 @@ typedef struct _gobj {
 typedef struct _scalar {
     t_gobj          sc_g;
     t_symbol        *sc_template;
-    t_word          sc_vec[1];          /* Indeterminate-length array (see above link). */
+    t_word          sc_vec[1];                  /* Indeterminate-length array (see above link). */
     } t_scalar;
 
 typedef struct _text {
@@ -254,9 +254,6 @@ typedef void *(*t_newmethod)(void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL t_pd pd_objectmaker;                 /* Global. */
-PD_DLL t_pd pd_canvasmaker;
-
 PD_DLL t_symbol s_pointer;
 PD_DLL t_symbol s_float;
 PD_DLL t_symbol s_symbol;
@@ -269,10 +266,6 @@ PD_DLL t_symbol s__X;
 PD_DLL t_symbol s_x;
 PD_DLL t_symbol s_y;
 PD_DLL t_symbol s_;
-
-PD_DLL t_class *garray_class;
-PD_DLL t_class *scalar_class;
-PD_DLL t_class *glob_pdobject;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

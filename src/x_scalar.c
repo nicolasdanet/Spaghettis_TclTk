@@ -15,6 +15,7 @@
 #include <io.h>
 #endif
 extern t_pd *newest;
+extern t_class *scalar_class;
 
 t_class *scalar_define_class;
 
