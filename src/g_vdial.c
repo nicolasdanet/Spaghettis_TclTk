@@ -32,7 +32,7 @@ put out a "float" as in sliders, toggles, etc. */
 /* ------------- vdl     gui-vertical radio button ---------------------- */
 
 t_widgetbehavior vradio_widgetbehavior;
-static t_class *vradio_class, *vradio_old_class;
+static t_class *vradio_class;
 
 /* widget helper functions */
 
@@ -243,8 +243,7 @@ static void vradio_save(t_gobj *z, t_binbuf *b)
     binbuf_addv(b, "ssiisiiiisssiiiiiiif", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.x_obj.te_xpix,
                 (int)x->x_gui.x_obj.te_ypix,
-                (pd_class(&x->x_gui.x_obj.te_g.g_pd) == vradio_old_class ?
-                    gensym("vdl") : gensym("vradio")),
+                gensym("vradio"),
                 x->x_gui.x_w,
                 x->x_change, iem_symargstoint(&x->x_gui.x_isa), x->x_number,
                 srl[0], srl[1], srl[2],
@@ -259,11 +258,9 @@ static void vradio_properties(t_gobj *z, t_glist *owner)
     t_vradio *x = (t_vradio *)z;
     char buf[800];
     t_symbol *srl[3];
-    int hchange=-1;
 
     iemgui_properties(&x->x_gui, srl);
-    if(pd_class(&x->x_gui.x_obj.te_g.g_pd) == vradio_old_class)
-        hchange = x->x_change;
+
     sprintf(buf, "::pd_iem::create %%s {Radio Button} \
             %d %d Size 0 0 empty \
             0 empty 0 empty \
@@ -304,7 +301,6 @@ static void vradio_dialog(t_vradio *x, t_symbol *s, int argc, t_atom *argv)
         if(x->x_on >= x->x_number)
         {
             x->x_on = x->x_number - 1;
-            x->x_on_old = x->x_on;
         }
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_NEW);
     }
@@ -327,48 +323,17 @@ static void vradio_set(t_vradio *x, t_floatarg f)
         i = 0;
     if(i >= x->x_number)
         i = x->x_number-1;
-    if(x->x_on != x->x_on_old)
-    {
-        old = x->x_on_old;
-        x->x_on_old = x->x_on;
-        x->x_on = i;
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
-        x->x_on_old = old;
-    }
-    else
-    {
-        x->x_on = i;
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
-    }
+
+    x->x_on = i;
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
 }
 
 static void vradio_bang(t_vradio *x)
 {
-        /* compatibility with earlier  "vdial" behavior */
-    if (pd_class(&x->x_gui.x_obj.te_g.g_pd) == vradio_old_class)
-    {
-        if((x->x_change)&&(x->x_on != x->x_on_old))
-        {
-            SETFLOAT(x->x_at, (t_float)x->x_on_old);
-            SETFLOAT(x->x_at+1, 0.0);
-            outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
-            if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
-                pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
-        }
-        x->x_on_old = x->x_on;
-        SETFLOAT(x->x_at, (t_float)x->x_on);
-        SETFLOAT(x->x_at+1, 1.0);
-        outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
-        if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
-            pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
-    }
-    else
-    {
         float outval = (PD_COMPATIBILITY < 46 ? x->x_on : x->x_fval);
         outlet_float(x->x_gui.x_obj.te_outlet, outval);
         if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
             pd_float(x->x_gui.x_snd->s_thing, outval);
-    }
 }
 
 static void vradio_fout(t_vradio *x, t_floatarg f)
@@ -381,38 +346,12 @@ static void vradio_fout(t_vradio *x, t_floatarg f)
     if(i >= x->x_number)
         i = x->x_number-1;
 
-    if (pd_class(&x->x_gui.x_obj.te_g.g_pd) == vradio_old_class)
-    {
-            /* compatibility with earlier  "vdial" behavior */
-        if((x->x_change)&&(i != x->x_on_old))
-        {
-            SETFLOAT(x->x_at, (t_float)x->x_on_old);
-            SETFLOAT(x->x_at+1, 0.0);
-            outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
-            if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
-                pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
-        }
-        if(x->x_on != x->x_on_old)
-            x->x_on_old = x->x_on;
-        x->x_on = i;
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
-        x->x_on_old = x->x_on;
-        SETFLOAT(x->x_at, (t_float)x->x_on);
-        SETFLOAT(x->x_at+1, 1.0);
-        outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
-        if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
-            pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
-    }
-    else
-    {
         float outval = (PD_COMPATIBILITY < 46 ? i : x->x_fval);
-        x->x_on_old = x->x_on;
         x->x_on = i;
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
         outlet_float(x->x_gui.x_obj.te_outlet, outval);
         if (x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
             pd_float(x->x_gui.x_snd->s_thing, outval);
-    }
 }
 
 static void vradio_float(t_vradio *x, t_floatarg f)
@@ -425,38 +364,7 @@ static void vradio_float(t_vradio *x, t_floatarg f)
     if(i >= x->x_number)
         i = x->x_number-1;
 
-    if (pd_class(&x->x_gui.x_obj.te_g.g_pd) == vradio_old_class)
-    {
-            /* compatibility with earlier  "vdial" behavior */
-        if((x->x_change)&&(i != x->x_on_old))
-        {
-            if(x->x_gui.x_fsf.x_put_in2out)
-            {
-                SETFLOAT(x->x_at, (t_float)x->x_on_old);
-                SETFLOAT(x->x_at+1, 0.0);
-                outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
-                if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
-                    pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
-            }
-        }
-        if(x->x_on != x->x_on_old)
-            x->x_on_old = x->x_on;
-        x->x_on = i;
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
-        x->x_on_old = x->x_on;
-        if(x->x_gui.x_fsf.x_put_in2out)
-        {
-            SETFLOAT(x->x_at, (t_float)x->x_on);
-            SETFLOAT(x->x_at+1, 1.0);
-            outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
-            if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
-                pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
-        }
-    }
-    else
-    {
         float outval = (PD_COMPATIBILITY < 46 ? i : x->x_fval);
-        x->x_on_old = x->x_on;
         x->x_on = i;
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
         if (x->x_gui.x_fsf.x_put_in2out)
@@ -465,7 +373,6 @@ static void vradio_float(t_vradio *x, t_floatarg f)
             if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
                 pd_float(x->x_gui.x_snd->s_thing, outval);
         }
-    }
 }
 
 static void vradio_click(t_vradio *x, t_floatarg xpos, t_floatarg ypos,
@@ -505,7 +412,6 @@ static void vradio_number(t_vradio *x, t_floatarg num)
         x->x_number = n;
         if(x->x_on >= x->x_number)
             x->x_on = x->x_number - 1;
-        x->x_on_old = x->x_on;
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_NEW);
     }
 }
@@ -552,9 +458,9 @@ static void vradio_double_change(t_vradio *x)
 static void vradio_single_change(t_vradio *x)
 {x->x_change = 0;}
 
-static void *vradio_donew(t_symbol *s, int argc, t_atom *argv, int old)
+static void *vradio_donew(t_symbol *s, int argc, t_atom *argv)
 {
-    t_vradio *x = (t_vradio *)pd_new(old? vradio_old_class : vradio_class);
+    t_vradio *x = (t_vradio *)pd_new(vradio_class);
     int bflcol[]={-262144, -1, -1};
     int a=IEM_VRADIO_DEFAULT_SIZE, on = 0, f=0;
     int ldx=0, ldy=-8, chg=1, num=8;
@@ -611,7 +517,6 @@ static void *vradio_donew(t_symbol *s, int argc, t_atom *argv, int old)
         x->x_on = on;
     else
         x->x_on = 0;
-    x->x_on_old = x->x_on;
     x->x_change = (chg==0)?0:1;
     if (x->x_gui.x_fsf.x_rcv_able)
         pd_bind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
@@ -630,12 +535,7 @@ static void *vradio_donew(t_symbol *s, int argc, t_atom *argv, int old)
 
 static void *vradio_new(t_symbol *s, int argc, t_atom *argv)
 {
-    return (vradio_donew(s, argc, argv, 0));
-}
-
-static void *vdial_new(t_symbol *s, int argc, t_atom *argv)
-{
-    return (vradio_donew(s, argc, argv, 1));
+    return (vradio_donew(s, argc, argv));
 }
 
 static void vradio_ff(t_vradio *x)
@@ -696,31 +596,4 @@ void g_vradio_setup(void)
     class_sethelpsymbol(vradio_class, gensym("vradio"));
     class_setsavefn(vradio_class, vradio_save);
     class_setpropertiesfn(vradio_class, vradio_properties);
-
-        /* obsolete version (0.34-0.35) */
-    vradio_old_class = class_new(gensym("vdl"), (t_newmethod)vdial_new,
-        (t_method)vradio_ff, sizeof(t_vradio), 0, A_GIMME, 0);
-    class_addbang(vradio_old_class, vradio_bang);
-    class_addfloat(vradio_old_class, vradio_float);
-    class_addmethod(vradio_old_class, (t_method)vradio_click, gensym("click"),
-                    A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addmethod(vradio_old_class, (t_method)vradio_dialog, gensym("dialog"),
-                    A_GIMME, 0);
-    class_addmethod(vradio_old_class, (t_method)vradio_loadbang, gensym("loadbang"), 0);
-    class_addmethod(vradio_old_class, (t_method)vradio_set, gensym("set"), A_FLOAT, 0);
-    class_addmethod(vradio_old_class, (t_method)vradio_size, gensym("size"), A_GIMME, 0);
-    class_addmethod(vradio_old_class, (t_method)vradio_delta, gensym("delta"), A_GIMME, 0);
-    class_addmethod(vradio_old_class, (t_method)vradio_pos, gensym("pos"), A_GIMME, 0);
-    class_addmethod(vradio_old_class, (t_method)vradio_color, gensym("color"), A_GIMME, 0);
-    class_addmethod(vradio_old_class, (t_method)vradio_send, gensym("send"), A_DEFSYM, 0);
-    class_addmethod(vradio_old_class, (t_method)vradio_receive, gensym("receive"), A_DEFSYM, 0);
-    class_addmethod(vradio_old_class, (t_method)vradio_label, gensym("label"), A_DEFSYM, 0);
-    class_addmethod(vradio_old_class, (t_method)vradio_label_pos, gensym("label_pos"), A_GIMME, 0);
-    class_addmethod(vradio_old_class, (t_method)vradio_label_font, gensym("label_font"), A_GIMME, 0);
-    class_addmethod(vradio_old_class, (t_method)vradio_init, gensym("init"), A_FLOAT, 0);
-    class_addmethod(vradio_old_class, (t_method)vradio_number, gensym("number"), A_FLOAT, 0);
-    class_addmethod(vradio_old_class, (t_method)vradio_single_change, gensym("single_change"), 0);
-    class_addmethod(vradio_old_class, (t_method)vradio_double_change, gensym("double_change"), 0);
-    class_setwidget(vradio_old_class, &vradio_widgetbehavior);
-    class_sethelpsymbol(vradio_old_class, gensym("vradio"));
 }

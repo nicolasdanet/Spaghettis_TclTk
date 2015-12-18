@@ -136,16 +136,15 @@ typedef struct _hslider {
     t_float     x_fval;
     } t_hslider;
 
-typedef struct _hdial {
+typedef struct _hradio {
     t_iemgui    x_gui;
     int         x_on;
-    int         x_on_old;  /* LATER delete this; it's used for old version */
     int         x_change;
     int         x_number;
     int         x_drawn;
     t_float     x_fval;
     t_atom      x_at[2];
-    } t_hdial;
+    } t_hradio;
 
 typedef struct _toggle {
     t_iemgui    x_gui;
@@ -200,23 +199,19 @@ typedef struct _my_numbox {
     int         x_log_height;
     } t_my_numbox;
 
-typedef struct _vdial {
+typedef struct _vradio {
     t_iemgui    x_gui;
     int         x_on;
-    int         x_on_old;
     int         x_change;
     int         x_number;
     int         x_drawn;
     t_float     x_fval;
     t_atom      x_at[2];
-    } t_vdial;
+    } t_vradio;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-#define t_vradio t_vdial
-#define t_hradio t_hdial
 
 extern int sys_noloadbang;
 extern int iemgui_color_hex[];

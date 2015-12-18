@@ -1518,11 +1518,6 @@ extern void canvas_bng(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
 extern void canvas_toggle(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
 extern void canvas_vslider(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
 extern void canvas_hslider(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-extern void canvas_vdial(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-    /* old version... */
-extern void canvas_hdial(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-extern void canvas_hdial(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-    /* new version: */
 extern void canvas_hradio(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
 extern void canvas_vradio(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
 extern void canvas_vumeter(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
@@ -1578,10 +1573,6 @@ void g_canvas_setup(void)
     class_addmethod(canvas_class, (t_method)canvas_vslider, gensym("vslider"),
                     A_GIMME, A_NULL);
     class_addmethod(canvas_class, (t_method)canvas_hslider, gensym("hslider"),
-                    A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_hdial, gensym("hdial"),
-                    A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_vdial, gensym("vdial"),
                     A_GIMME, A_NULL);
     class_addmethod(canvas_class, (t_method)canvas_hradio, gensym("hradio"),
                     A_GIMME, A_NULL);

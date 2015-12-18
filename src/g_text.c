@@ -248,16 +248,6 @@ void canvas_hslider(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     canvas_iemguis(gl, gensym("hsl"));
 }
 
-void canvas_hdial(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
-{
-    canvas_iemguis(gl, gensym("hdl"));
-}
-
-void canvas_vdial(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
-{
-    canvas_iemguis(gl, gensym("vdl"));
-}
-
 void canvas_hradio(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
     canvas_iemguis(gl, gensym("hradio"));

@@ -31,7 +31,7 @@ put out a "float" as in sliders, toggles, etc. */
 /* ------------- hdl     gui-horicontal dial ---------------------- */
 
 t_widgetbehavior hradio_widgetbehavior;
-static t_class *hradio_class, *hradio_old_class;
+static t_class *hradio_class;
 
 /* widget helper functions */
 
@@ -241,8 +241,7 @@ static void hradio_save(t_gobj *z, t_binbuf *b)
     iemgui_save(&x->x_gui, srl, bflcol);
     binbuf_addv(b, "ssiisiiiisssiiiiiiif", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.x_obj.te_xpix, (int)x->x_gui.x_obj.te_ypix,
-                (pd_class(&x->x_gui.x_obj.te_g.g_pd) == hradio_old_class ?
-                    gensym("hdl") : gensym("hradio")),
+                gensym("hradio"),
                 x->x_gui.x_w,
                 x->x_change, iem_symargstoint(&x->x_gui.x_isa), x->x_number,
                 srl[0], srl[1], srl[2],
@@ -257,11 +256,9 @@ static void hradio_properties(t_gobj *z, t_glist *owner)
     t_hradio *x = (t_hradio *)z;
     char buf[800];
     t_symbol *srl[3];
-    int hchange=-1;
 
     iemgui_properties(&x->x_gui, srl);
-    if (pd_class(&x->x_gui.x_obj.te_g.g_pd) == hradio_old_class)
-        hchange = x->x_change;
+
     sprintf(buf, "::pd_iem::create %%s {Radio Button} \
             %d %d Size 0 0 empty \
             0 empty 0 empty \
@@ -302,7 +299,6 @@ static void hradio_dialog(t_hradio *x, t_symbol *s, int argc, t_atom *argv)
         if(x->x_on >= x->x_number)
         {
             x->x_on = x->x_number - 1;
-            x->x_on_old = x->x_on;
         }
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_NEW);
     }
@@ -319,55 +315,24 @@ static void hradio_dialog(t_hradio *x, t_symbol *s, int argc, t_atom *argv)
 static void hradio_set(t_hradio *x, t_floatarg f)
 {
     int i=(int)f;
-    int old=x->x_on_old;
 
     x->x_fval = f;
     if(i < 0)
         i = 0;
     if(i >= x->x_number)
         i = x->x_number-1;
-    if(x->x_on != x->x_on_old)
-    {
-        old = x->x_on_old;
-        x->x_on_old = x->x_on;
-        x->x_on = i;
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
-        x->x_on_old = old;
-    }
-    else
-    {
-        x->x_on = i;
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
-    }
+
+    x->x_on = i;
+    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
+
 }
 
 static void hradio_bang(t_hradio *x)
 {
-        /* compatibility with earlier  "hdial" behavior */
-    if (pd_class(&x->x_gui.x_obj.te_g.g_pd) == hradio_old_class)
-    {
-        if((x->x_change)&&(x->x_on != x->x_on_old))
-        {
-            SETFLOAT(x->x_at, (t_float)x->x_on_old);
-            SETFLOAT(x->x_at+1, 0.0);
-            outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
-            if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
-                pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
-        }
-        x->x_on_old = x->x_on;
-        SETFLOAT(x->x_at, (t_float)x->x_on);
-        SETFLOAT(x->x_at+1, 1.0);
-        outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
-        if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
-            pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
-    }
-    else
-    {
         float outval = (PD_COMPATIBILITY < 46 ? x->x_on : x->x_fval);
         outlet_float(x->x_gui.x_obj.te_outlet, outval);
         if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
             pd_float(x->x_gui.x_snd->s_thing, outval);
-    }
 }
 
 static void hradio_fout(t_hradio *x, t_floatarg f)
@@ -380,37 +345,12 @@ static void hradio_fout(t_hradio *x, t_floatarg f)
     if(i >= x->x_number)
         i = x->x_number-1;
 
-    if (pd_class(&x->x_gui.x_obj.te_g.g_pd) == hradio_old_class)
-    {
-        if((x->x_change)&&(i != x->x_on_old))
-        {
-            SETFLOAT(x->x_at, (t_float)x->x_on_old);
-            SETFLOAT(x->x_at+1, 0.0);
-            outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
-            if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
-                pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
-        }
-        if(x->x_on != x->x_on_old)
-            x->x_on_old = x->x_on;
-        x->x_on = i;
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
-        x->x_on_old = x->x_on;
-        SETFLOAT(x->x_at, (t_float)x->x_on);
-        SETFLOAT(x->x_at+1, 1.0);
-        outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
-        if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
-            pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
-    }
-    else
-    {
         float outval = (PD_COMPATIBILITY < 46 ? i : x->x_fval);
-        x->x_on_old = x->x_on;
         x->x_on = i;
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
         outlet_float(x->x_gui.x_obj.te_outlet, outval);
         if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
             pd_float(x->x_gui.x_snd->s_thing, outval);
-    }
 }
 
 static void hradio_float(t_hradio *x, t_floatarg f)
@@ -422,38 +362,7 @@ static void hradio_float(t_hradio *x, t_floatarg f)
     if(i >= x->x_number)
         i = x->x_number-1;
 
-    if (pd_class(&x->x_gui.x_obj.te_g.g_pd) == hradio_old_class)
-    {
-            /* compatibility with earlier  "vdial" behavior */
-        if((x->x_change)&&(i != x->x_on_old))
-        {
-            if(x->x_gui.x_fsf.x_put_in2out)
-            {
-                SETFLOAT(x->x_at, (t_float)x->x_on_old);
-                SETFLOAT(x->x_at+1, 0.0);
-                outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
-                if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
-                    pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
-            }
-        }
-        if(x->x_on != x->x_on_old)
-            x->x_on_old = x->x_on;
-        x->x_on = i;
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
-        x->x_on_old = x->x_on;
-        if(x->x_gui.x_fsf.x_put_in2out)
-        {
-            SETFLOAT(x->x_at, (t_float)x->x_on);
-            SETFLOAT(x->x_at+1, 1.0);
-            outlet_list(x->x_gui.x_obj.te_outlet, &s_list, 2, x->x_at);
-            if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
-                pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
-        }
-    }
-    else
-    {
         float outval = (PD_COMPATIBILITY < 46 ? i : x->x_fval);
-        x->x_on_old = x->x_on;
         x->x_on = i;
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_UPDATE);
         if (x->x_gui.x_fsf.x_put_in2out)
@@ -462,7 +371,6 @@ static void hradio_float(t_hradio *x, t_floatarg f)
             if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
                 pd_float(x->x_gui.x_snd->s_thing, outval);
         }
-    }
 }
 
 static void hradio_click(t_hradio *x, t_floatarg xpos, t_floatarg ypos, t_floatarg shift, t_floatarg ctrl, t_floatarg alt)
@@ -499,7 +407,6 @@ static void hradio_number(t_hradio *x, t_floatarg num)
         x->x_number = n;
         if(x->x_on >= x->x_number)
             x->x_on = x->x_number - 1;
-        x->x_on_old = x->x_on;
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_GUI_DRAW_NEW);
     }
 }
@@ -546,9 +453,9 @@ static void hradio_double_change(t_hradio *x)
 static void hradio_single_change(t_hradio *x)
 {x->x_change = 0;}
 
-static void *hradio_donew(t_symbol *s, int argc, t_atom *argv, int old)
+static void *hradio_donew(t_symbol *s, int argc, t_atom *argv)
 {
-    t_hradio *x = (t_hradio *)pd_new(old? hradio_old_class : hradio_class);
+    t_hradio *x = (t_hradio *)pd_new(hradio_class);
     int bflcol[]={-262144, -1, -1};
     int a=IEM_HRADIO_DEFAULT_SIZE, on = 0, f=0;
     int ldx=0, ldy=-8, chg=1, num=8;
@@ -608,7 +515,6 @@ static void *hradio_donew(t_symbol *s, int argc, t_atom *argv, int old)
         x->x_on = on;
     else
         x->x_on = 0;
-    x->x_on_old = x->x_on;
     x->x_change = (chg==0)?0:1;
     if (x->x_gui.x_fsf.x_rcv_able)
         pd_bind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
@@ -627,12 +533,7 @@ static void *hradio_donew(t_symbol *s, int argc, t_atom *argv, int old)
 
 static void *hradio_new(t_symbol *s, int argc, t_atom *argv)
 {
-    return (hradio_donew(s, argc, argv, 0));
-}
-
-static void *hdial_new(t_symbol *s, int argc, t_atom *argv)
-{
-    return (hradio_donew(s, argc, argv, 1));
+    return (hradio_donew(s, argc, argv));
 }
 
 static void hradio_ff(t_hradio *x)
@@ -693,50 +594,4 @@ void g_hradio_setup(void)
     class_sethelpsymbol(hradio_class, gensym("hradio"));
     class_setsavefn(hradio_class, hradio_save);
     class_setpropertiesfn(hradio_class, hradio_properties);
-
-        /*obsolete version (0.34-0.35) */
-    hradio_old_class = class_new(gensym("hdl"), (t_newmethod)hdial_new,
-        (t_method)hradio_ff, sizeof(t_hradio), 0, A_GIMME, 0);
-    class_addcreator((t_newmethod)hradio_new, gensym("rdb"), A_GIMME, 0);
-    class_addcreator((t_newmethod)hradio_new, gensym("radiobut"), A_GIMME, 0);
-    class_addcreator((t_newmethod)hradio_new, gensym("radiobutton"),
-        A_GIMME, 0);
-    class_addbang(hradio_old_class, hradio_bang);
-    class_addfloat(hradio_old_class, hradio_float);
-    class_addmethod(hradio_old_class, (t_method)hradio_click, gensym("click"),
-                    A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addmethod(hradio_old_class, (t_method)hradio_dialog, gensym("dialog"),
-                    A_GIMME, 0);
-    class_addmethod(hradio_old_class, (t_method)hradio_loadbang,
-        gensym("loadbang"), 0);
-    class_addmethod(hradio_old_class, (t_method)hradio_set,
-        gensym("set"), A_FLOAT, 0);
-    class_addmethod(hradio_old_class, (t_method)hradio_size,
-        gensym("size"), A_GIMME, 0);
-    class_addmethod(hradio_old_class, (t_method)hradio_delta,
-        gensym("delta"), A_GIMME, 0);
-    class_addmethod(hradio_old_class, (t_method)hradio_pos,
-        gensym("pos"), A_GIMME, 0);
-    class_addmethod(hradio_old_class, (t_method)hradio_color,
-        gensym("color"), A_GIMME, 0);
-    class_addmethod(hradio_old_class, (t_method)hradio_send,
-        gensym("send"), A_DEFSYM, 0);
-    class_addmethod(hradio_old_class, (t_method)hradio_receive,
-        gensym("receive"), A_DEFSYM, 0);
-    class_addmethod(hradio_old_class, (t_method)hradio_label,
-        gensym("label"), A_DEFSYM, 0);
-    class_addmethod(hradio_old_class, (t_method)hradio_label_pos,
-        gensym("label_pos"), A_GIMME, 0);
-    class_addmethod(hradio_old_class, (t_method)hradio_label_font,
-        gensym("label_font"), A_GIMME, 0);
-    class_addmethod(hradio_old_class, (t_method)hradio_init,
-        gensym("init"), A_FLOAT, 0);
-    class_addmethod(hradio_old_class, (t_method)hradio_number,
-        gensym("number"), A_FLOAT, 0);
-    class_addmethod(hradio_old_class, (t_method)hradio_single_change,
-        gensym("single_change"), 0);
-    class_addmethod(hradio_old_class, (t_method)hradio_double_change,
-        gensym("double_change"), 0);
-    class_setwidget(hradio_old_class, &hradio_widgetbehavior);
-    class_sethelpsymbol(hradio_old_class, gensym("hradio"));
 }
