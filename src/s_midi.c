@@ -297,12 +297,12 @@ void inmidi_polyaftertouch(int portno, int channel, int pitch, int value);
 
 static void sys_dispatchnextmidiin( void)
 {
-    static t_midiparser parser[MAXIMUM_MIDI_IN], *parserp;
+    static t_midiparser parser[MIDI_MAXIMUM_IN], *parserp;
     int portno = midi_inqueue[midi_intail].q_portno,
         byte = midi_inqueue[midi_intail].q_byte1;
     if (!midi_inqueue[midi_intail].q_onebyte)
         bug("sys_dispatchnextmidiin");
-    if (portno < 0 || portno >= MAXIMUM_MIDI_IN)
+    if (portno < 0 || portno >= MIDI_MAXIMUM_IN)
         bug("sys_dispatchnextmidiin 2");
     parserp = parser + portno;
     outlet_setstacklim();
@@ -500,11 +500,11 @@ void midi_oss_init( void);
 
     /* last requested parameters */
 static int midi_nmidiindev;
-static int midi_midiindev[MAXIMUM_MIDI_IN];
-static char midi_indevnames[MAXIMUM_MIDI_IN * DEVDESCSIZE];
+static int midi_midiindev[MIDI_MAXIMUM_IN];
+static char midi_indevnames[MIDI_MAXIMUM_IN * DEVDESCSIZE];
 static int midi_nmidioutdev;
-static int midi_midioutdev[MAXIMUM_MIDI_OUT];
-static char midi_outdevnames[MAXIMUM_MIDI_IN * DEVDESCSIZE];
+static int midi_midioutdev[MIDI_MAXIMUM_OUT];
+static char midi_outdevnames[MIDI_MAXIMUM_IN * DEVDESCSIZE];
 
 void sys_get_midi_apis(char *buf)
 {
@@ -593,8 +593,8 @@ void sys_open_midi(int nmidiindev, int *midiindev,
     /* open midi using whatever parameters were last used */
 void sys_reopen_midi( void)
 {
-    int nmidiindev, midiindev[MAXIMUM_MIDI_IN];
-    int nmidioutdev, midioutdev[MAXIMUM_MIDI_OUT];
+    int nmidiindev, midiindev[MIDI_MAXIMUM_IN];
+    int nmidioutdev, midioutdev[MIDI_MAXIMUM_OUT];
     sys_get_midi_params(&nmidiindev, midiindev, &nmidioutdev, midioutdev);
     sys_open_midi(nmidiindev, midiindev, nmidioutdev, midioutdev, 1);
 }
@@ -663,8 +663,8 @@ void glob_midi_properties(t_pd *dummy, t_floatarg flongform)
 {
     char buf[1024 + 2 * MAXNDEV*(DEVDESCSIZE+4)];
         /* these are the devices you're using: */
-    int nindev, midiindev[MAXIMUM_MIDI_IN];
-    int noutdev, midioutdev[MAXIMUM_MIDI_OUT];
+    int nindev, midiindev[MIDI_MAXIMUM_IN];
+    int noutdev, midioutdev[MIDI_MAXIMUM_OUT];
     int midiindev1, midiindev2, midiindev3, midiindev4, midiindev5,
         midiindev6, midiindev7, midiindev8, midiindev9,
         midioutdev1, midioutdev2, midioutdev3, midioutdev4, midioutdev5,
@@ -739,8 +739,8 @@ void glob_midi_properties(t_pd *dummy, t_floatarg flongform)
     /* new values from dialog window */
 void glob_midi_dialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    int nmidiindev, midiindev[MAXIMUM_MIDI_IN];
-    int nmidioutdev, midioutdev[MAXIMUM_MIDI_OUT];
+    int nmidiindev, midiindev[MIDI_MAXIMUM_IN];
+    int nmidioutdev, midioutdev[MIDI_MAXIMUM_OUT];
     int i, nindev, noutdev;
     int newmidiindev[9], newmidioutdev[9];
     int alsadevin, alsadevout;

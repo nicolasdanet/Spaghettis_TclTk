@@ -24,9 +24,9 @@
 #endif
 
 static int alsa_nmidiin;
-static int alsa_midiinfd[MAXIMUM_MIDI_IN];
+static int alsa_midiinfd[MIDI_MAXIMUM_IN];
 static int alsa_nmidiout;
-static int alsa_midioutfd[MAXIMUM_MIDI_OUT];
+static int alsa_midioutfd[MIDI_MAXIMUM_OUT];
 
 static snd_seq_t *midi_handle;
 
@@ -47,15 +47,15 @@ void sys_alsa_do_open_midi(int nmidiin, int *midiinvec,
 
     if (nmidiout == 0 && nmidiin == 0) return;
 
-    if(nmidiin>MAXIMUM_MIDI_IN )
+    if(nmidiin>MIDI_MAXIMUM_IN )
       {
-        post("midi input ports reduced to maximum %d", MAXIMUM_MIDI_IN);
-        nmidiin=MAXIMUM_MIDI_IN;
+        post("midi input ports reduced to maximum %d", MIDI_MAXIMUM_IN);
+        nmidiin=MIDI_MAXIMUM_IN;
       }
-    if(nmidiout>MAXIMUM_MIDI_OUT)
+    if(nmidiout>MIDI_MAXIMUM_OUT)
       {
-        post("midi output ports reduced to maximum %d", MAXIMUM_MIDI_OUT);
-        nmidiout=MAXIMUM_MIDI_OUT;
+        post("midi output ports reduced to maximum %d", MIDI_MAXIMUM_OUT);
+        nmidiout=MIDI_MAXIMUM_OUT;
       }
 
     if (nmidiin>0 && nmidiout>0)

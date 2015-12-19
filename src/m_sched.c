@@ -35,7 +35,7 @@ extern int sys_hipriority;
 extern t_float sys_dacsr;
 extern int sys_schedadvance;
 
-int sys_schedblocksize = DEFAULT_BLOCKSIZE;     /* Global. */
+int sys_schedblocksize = DEFAULT_BLOCK;     /* Global. */
 int sys_usecsincelastsleep(void);
 int sys_sleepgrain;                             /* Global. */
 
@@ -298,7 +298,7 @@ void sys_log_error(int type)
     oss_resync[oss_resyncphase].r_error = type;
     oss_nresync++;
     if (++oss_resyncphase == NRESYNC) oss_resyncphase = 0;
-    if (type != ERR_NOTHING && !sched_diored &&
+    if (type != ERROR_NOTHING && !sched_diored &&
         (sched_diddsp >= sched_dioredtime))
     {
         // sys_vgui("::pd_console::pdtk_pd_dio 1\n");
@@ -383,7 +383,7 @@ void glob_foo(void *dummy, t_symbol *s, int argc, t_atom *argv)
 
 void dsp_tick(void);
 
-static int sched_useaudio = SCHED_AUDIO_NONE;
+static int sched_useaudio = SCHEDULER_NONE;
 static double sched_referencerealtime, sched_referencelogicaltime;
 double sys_time_per_dsp_tick;
 
@@ -395,16 +395,16 @@ void sched_reopenmeplease(void)   /* request from s_audio for deferred reopen */
 void sched_set_using_audio(int flag)
 {
     sched_useaudio = flag;
-    if (flag == SCHED_AUDIO_NONE)
+    if (flag == SCHEDULER_NONE)
     {
         sched_referencerealtime = sys_getrealtime();
         sched_referencelogicaltime = clock_getlogicaltime();
     }
-        if (flag == SCHED_AUDIO_CALLBACK &&
-            sched_useaudio != SCHED_AUDIO_CALLBACK)
+        if (flag == SCHEDULER_CALLBACK &&
+            sched_useaudio != SCHEDULER_CALLBACK)
                 sys_quit = SYS_QUIT_RESTART;
-        if (flag != SCHED_AUDIO_CALLBACK &&
-            sched_useaudio == SCHED_AUDIO_CALLBACK)
+        if (flag != SCHEDULER_CALLBACK &&
+            sched_useaudio == SCHEDULER_CALLBACK)
                 post("sorry, can't turn off callbacks yet; restart Pd");
                     /* not right yet! */
         
@@ -478,7 +478,7 @@ static void m_pollingscheduler( void)
 
         sys_addhist(0);
     waitfortick:
-        if (sched_useaudio != SCHED_AUDIO_NONE)
+        if (sched_useaudio != SCHEDULER_NONE)
         {
 #if THREAD_LOCKING
             /* T.Grill - send_dacs may sleep -> 
@@ -501,7 +501,7 @@ static void m_pollingscheduler( void)
                 if (!(idlecount & 31))
                 {
                     static double idletime;
-                    if (sched_useaudio != SCHED_AUDIO_POLL)
+                    if (sched_useaudio != SCHEDULER_POLL)
                     {
                             bug("m_pollingscheduler\n");
                             return;
@@ -514,7 +514,7 @@ static void m_pollingscheduler( void)
                     {
                         error("audio I/O stuck... closing audio\n");
                         sys_close_audio();
-                        sched_set_using_audio(SCHED_AUDIO_NONE);
+                        sched_set_using_audio(SCHEDULER_NONE);
                         goto waitfortick;
                     }
                 }
@@ -524,14 +524,14 @@ static void m_pollingscheduler( void)
         {
             if (1000. * (sys_getrealtime() - sched_referencerealtime)
                 > clock_gettimesince(sched_referencelogicaltime))
-                    timeforward = SEND_DACS_YES;
-            else timeforward = SEND_DACS_NO;
+                    timeforward = DACS_YES;
+            else timeforward = DACS_NO;
         }
         sys_setmiditimediff(0, 1e-6 * sys_schedadvance);
         sys_addhist(1);
-        if (timeforward != SEND_DACS_NO)
+        if (timeforward != DACS_NO)
             sched_tick();
-        if (timeforward == SEND_DACS_YES)
+        if (timeforward == DACS_YES)
             didsomething = 1;
 
         sys_addhist(2);
@@ -547,11 +547,10 @@ static void m_pollingscheduler( void)
         if (!didsomething)
         {
             sched_pollformeters();
-            sys_reportidle();
 #if THREAD_LOCKING
             sys_unlock();   /* unlock while we idle */
 #endif
-            if (timeforward != SEND_DACS_SLEPT) { sys_microsleep(sys_sleepgrain); }
+            if (timeforward != DACS_SLEPT) { sys_microsleep(sys_sleepgrain); }
 #if THREAD_LOCKING
             sys_lock();
 #endif
@@ -606,7 +605,7 @@ int m_mainloop(void)
 {
     while (sys_quit != SYS_QUIT_QUIT)
     {
-        if (sched_useaudio == SCHED_AUDIO_CALLBACK)
+        if (sched_useaudio == SCHEDULER_CALLBACK)
             m_callbackscheduler();
         else m_pollingscheduler();
         if (sys_quit == SYS_QUIT_RESTART)

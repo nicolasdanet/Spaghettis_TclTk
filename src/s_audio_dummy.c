@@ -13,8 +13,8 @@ int dummy_open_audio(int nin, int nout, int sr) {
   return 0;
 }
 
-int dummy_close_audio() {
-  return 0;
+void dummy_close_audio() {
+
 }
 
 int dummy_send_dacs() {

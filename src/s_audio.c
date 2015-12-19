@@ -23,8 +23,8 @@
 #define SYS_DEFAULTCH 2
 typedef long t_pa_sample;
 #define SYS_SAMPLEWIDTH sizeof(t_pa_sample)
-#define SYS_BYTESPERCHAN (DEFAULT_BLOCKSIZE * SYS_SAMPLEWIDTH) 
-#define SYS_XFERSAMPS (SYS_DEFAULTCH*DEFAULT_BLOCKSIZE)
+#define SYS_BYTESPERCHAN (DEFAULT_BLOCK * SYS_SAMPLEWIDTH) 
+#define SYS_XFERSAMPS (SYS_DEFAULTCH*DEFAULT_BLOCK)
 #define SYS_XFERSIZE (SYS_SAMPLEWIDTH * SYS_XFERSAMPS)
 #define MAXNDEV 20
 #define DEVDESCSIZE 80
@@ -61,13 +61,13 @@ static int audio_state;
 
     /* last requested parameters */
 static int audio_naudioindev = -1;
-static int audio_audioindev[MAXAUDIOINDEV];
-static int audio_audiochindev[MAXAUDIOINDEV];
-static char audio_indevnames[MAXIMUM_MIDI_IN * DEVDESCSIZE];
+static int audio_audioindev[AUDIO_MAXIMUM_IN];
+static int audio_audiochindev[AUDIO_MAXIMUM_IN];
+static char audio_indevnames[MIDI_MAXIMUM_IN * DEVDESCSIZE];
 static int audio_naudiooutdev = -1;
-static int audio_audiooutdev[MAXAUDIOOUTDEV];
-static int audio_audiochoutdev[MAXAUDIOOUTDEV];
-static char audio_outdevnames[MAXIMUM_MIDI_IN * DEVDESCSIZE];
+static int audio_audiooutdev[AUDIO_MAXIMUM_OUT];
+static int audio_audiochoutdev[AUDIO_MAXIMUM_OUT];
+static char audio_outdevnames[MIDI_MAXIMUM_IN * DEVDESCSIZE];
 static int audio_rate;
 static int audio_advance = -1;
 static int audio_callback;
@@ -166,24 +166,24 @@ void sys_setchsr(int chin, int chout, int sr)
 {
     int nblk;
     int inbytes = (chin ? chin : 2) *
-                (DEFAULT_BLOCKSIZE*sizeof(t_sample));
+                (DEFAULT_BLOCK*sizeof(t_sample));
     int outbytes = (chout ? chout : 2) *
-                (DEFAULT_BLOCKSIZE*sizeof(t_sample));
+                (DEFAULT_BLOCK*sizeof(t_sample));
 
     if (sys_soundin)
         freebytes(sys_soundin, 
             (sys_inchannels? sys_inchannels : 2) *
-                (DEFAULT_BLOCKSIZE*sizeof(t_sample)));
+                (DEFAULT_BLOCK*sizeof(t_sample)));
     if (sys_soundout)
         freebytes(sys_soundout, 
             (sys_outchannels? sys_outchannels : 2) *
-                (DEFAULT_BLOCKSIZE*sizeof(t_sample)));
+                (DEFAULT_BLOCK*sizeof(t_sample)));
     sys_inchannels = chin;
     sys_outchannels = chout;
     sys_dacsr = sr;
     sys_advance_samples = (sys_schedadvance * sys_dacsr) / (1000000.);
-    if (sys_advance_samples < DEFAULT_BLOCKSIZE)
-        sys_advance_samples = DEFAULT_BLOCKSIZE;
+    if (sys_advance_samples < DEFAULT_BLOCK)
+        sys_advance_samples = DEFAULT_BLOCK;
 
     sys_soundin = (t_sample *)getbytes(inbytes);
     memset(sys_soundin, 0, inbytes);
@@ -211,8 +211,8 @@ void sys_set_audio_settings(int naudioindev, int *audioindev, int nchindev,
     int i, *ip;
     int defaultchannels = SYS_DEFAULTCH;
     int inchans, outchans, nrealindev, nrealoutdev;
-    int realindev[MAXAUDIOINDEV], realoutdev[MAXAUDIOOUTDEV];
-    int realinchans[MAXAUDIOINDEV], realoutchans[MAXAUDIOOUTDEV];
+    int realindev[AUDIO_MAXIMUM_IN], realoutdev[AUDIO_MAXIMUM_OUT];
+    int realinchans[AUDIO_MAXIMUM_IN], realoutchans[AUDIO_MAXIMUM_OUT];
 
     char indevlist[MAXNDEV*DEVDESCSIZE], outdevlist[MAXNDEV*DEVDESCSIZE];
     int indevs = 0, outdevs = 0, canmulti = 0, cancallback = 0;
@@ -220,11 +220,11 @@ void sys_set_audio_settings(int naudioindev, int *audioindev, int nchindev,
         &cancallback, MAXNDEV, DEVDESCSIZE);
 
     if (rate < 1)
-        rate = DEFAULTSRATE;
+        rate = DEFAULT_SAMPLING;
     if (advance < 0)
-        advance = DEFAULTADVANCE;
-    if (blocksize != (1 << ilog2(blocksize)) || blocksize < DEFAULT_BLOCKSIZE)
-        blocksize = DEFAULT_BLOCKSIZE;
+        advance = DEFAULT_ADVANCE;
+    if (blocksize != (1 << ilog2(blocksize)) || blocksize < DEFAULT_BLOCK)
+        blocksize = DEFAULT_BLOCK;
      audio_init();
         /* Since the channel vector might be longer than the
         audio device vector, or vice versa, we fill the shorter one
@@ -239,13 +239,13 @@ void sys_set_audio_settings(int naudioindev, int *audioindev, int nchindev,
                 nchindev=1;
                 chindev[0] = defaultchannels;
                 naudioindev = 1;
-                audioindev[0] = DEFAULTAUDIODEV;
+                audioindev[0] = AUDIO_DEFAULT_DEVICE;
             }
             else naudioindev = nchindev = 0;
         }
         else
         {
-            for (i = 0; i < MAXAUDIOINDEV; i++)
+            for (i = 0; i < AUDIO_MAXIMUM_IN; i++)
                 audioindev[i] = i;
             naudioindev = nchindev;
         }
@@ -263,7 +263,7 @@ void sys_set_audio_settings(int naudioindev, int *audioindev, int nchindev,
             for (i = naudioindev; i < nchindev; i++)
             {
                 if (i == 0)
-                    audioindev[0] = DEFAULTAUDIODEV;
+                    audioindev[0] = AUDIO_DEFAULT_DEVICE;
                 else audioindev[i] = audioindev[i-1] + 1;
             }
             naudioindev = nchindev;
@@ -289,13 +289,13 @@ void sys_set_audio_settings(int naudioindev, int *audioindev, int nchindev,
                 nchoutdev=1;
                 choutdev[0]=defaultchannels;
                 naudiooutdev=1;
-                audiooutdev[0] = DEFAULTAUDIODEV;
+                audiooutdev[0] = AUDIO_DEFAULT_DEVICE;
             }
             else nchoutdev = naudiooutdev = 0;
         }
         else
         {
-            for (i = 0; i < MAXAUDIOOUTDEV; i++)
+            for (i = 0; i < AUDIO_MAXIMUM_OUT; i++)
                 audiooutdev[i] = i;
             naudiooutdev = nchoutdev;
         }
@@ -313,7 +313,7 @@ void sys_set_audio_settings(int naudioindev, int *audioindev, int nchindev,
             for (i = naudiooutdev; i < nchoutdev; i++)
             {
                 if (i == 0)
-                    audiooutdev[0] = DEFAULTAUDIODEV;
+                    audiooutdev[0] = AUDIO_DEFAULT_DEVICE;
                 else audiooutdev[i] = audiooutdev[i-1] + 1;
             }
             naudiooutdev = nchoutdev;
@@ -348,7 +348,7 @@ void sys_set_audio_settings(int naudioindev, int *audioindev, int nchindev,
         nrealoutdev++;
     }
     sys_schedadvance = advance * 1000;
-    sys_log_error(ERR_NOTHING);
+    sys_log_error(ERROR_NOTHING);
     audio_nextinchans = inchans;
     audio_nextoutchans = outchans;
     sys_setchsr(audio_nextinchans, audio_nextoutchans, rate);
@@ -390,16 +390,6 @@ void sys_close_audio(void)
         mmio_close_audio();
     else
 #endif
-#ifdef USEAPI_AUDIOUNIT
-    if (sys_audioapiopened == API_AUDIOUNIT)
-        audiounit_close_audio();
-    else
-#endif
-#ifdef USEAPI_ESD
-    if (sys_audioapiopened == API_ESD)
-        esd_close_audio();
-    else
-#endif
 #ifdef USEAPI_DUMMY
     if (sys_audioapiopened == API_DUMMY)
         dummy_close_audio();
@@ -408,7 +398,7 @@ void sys_close_audio(void)
         post("sys_close_audio: unknown API %d", sys_audioapiopened);
     sys_inchannels = sys_outchannels = 0;
     sys_audioapiopened = -1;
-    sched_set_using_audio(SCHED_AUDIO_NONE);
+    sched_set_using_audio(SCHEDULER_NONE);
     audio_state = 0;
     audio_callback_is_open = 0;
 
@@ -418,8 +408,8 @@ void sys_close_audio(void)
     /* open audio using whatever parameters were last used */
 void sys_reopen_audio( void)
 {
-    int naudioindev, audioindev[MAXAUDIOINDEV], chindev[MAXAUDIOINDEV];
-    int naudiooutdev, audiooutdev[MAXAUDIOOUTDEV], choutdev[MAXAUDIOOUTDEV];
+    int naudioindev, audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
+    int naudiooutdev, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
     int rate, advance, callback, blocksize, outcome = 0;
     sys_get_audio_params(&naudioindev, audioindev, chindev,
         &naudiooutdev, audiooutdev, choutdev, &rate, &advance, &callback,
@@ -427,7 +417,7 @@ void sys_reopen_audio( void)
     sys_setchsr(audio_nextinchans, audio_nextoutchans, rate);
     if (!naudioindev && !naudiooutdev)
     {
-        sched_set_using_audio(SCHED_AUDIO_NONE);
+        sched_set_using_audio(SCHEDULER_NONE);
         return;
     }
 #ifdef USEAPI_PORTAUDIO
@@ -476,18 +466,6 @@ void sys_reopen_audio( void)
                 audio_blocksize);
     else
 #endif
-#ifdef USEAPI_AUDIOUNIT
-    if (sys_audioapi == API_AUDIOUNIT)
-        outcome = audiounit_open_audio((naudioindev > 0 ? chindev[0] : 0),
-            (naudioindev > 0 ? choutdev[0] : 0), rate);
-    else
-#endif
-#ifdef USEAPI_ESD
-    if (sys_audioapi == API_ALSA)
-        outcome = esd_open_audio(naudioindev, audioindev, naudioindev,
-            chindev, naudiooutdev, audiooutdev, naudiooutdev, choutdev, rate);
-    else 
-#endif
 #ifdef USEAPI_DUMMY
     if (sys_audioapi == API_DUMMY)
         outcome = dummy_open_audio(naudioindev, naudiooutdev, rate);
@@ -499,7 +477,7 @@ void sys_reopen_audio( void)
     if (outcome)    /* failed */
     {
         audio_state = 0;
-        sched_set_using_audio(SCHED_AUDIO_NONE);
+        sched_set_using_audio(SCHEDULER_NONE);
         sys_audioapiopened = -1;
         audio_callback_is_open = 0;
     }
@@ -508,7 +486,7 @@ void sys_reopen_audio( void)
                 /* fprintf(stderr, "started w/callback %d\n", callback); */
         audio_state = 1;
         sched_set_using_audio(
-            (callback ? SCHED_AUDIO_CALLBACK : SCHED_AUDIO_POLL));
+            (callback ? SCHEDULER_CALLBACK : SCHEDULER_POLL));
         sys_audioapiopened = sys_audioapi;
         audio_callback_is_open = callback;
     }
@@ -521,7 +499,7 @@ int sys_send_dacs(void)
     {
         int i, n;
         t_sample maxsamp;
-        for (i = 0, n = sys_inchannels * DEFAULT_BLOCKSIZE, maxsamp = sys_inmax;
+        for (i = 0, n = sys_inchannels * DEFAULT_BLOCK, maxsamp = sys_inmax;
             i < n; i++)
         {
             t_sample f = sys_soundin[i];
@@ -529,7 +507,7 @@ int sys_send_dacs(void)
             else if (-f > maxsamp) maxsamp = -f;
         }
         sys_inmax = maxsamp;
-        for (i = 0, n = sys_outchannels * DEFAULT_BLOCKSIZE, maxsamp = sys_outmax;
+        for (i = 0, n = sys_outchannels * DEFAULT_BLOCK, maxsamp = sys_outmax;
             i < n; i++)
         {
             t_sample f = sys_soundout[i];
@@ -562,16 +540,6 @@ int sys_send_dacs(void)
 #ifdef USEAPI_MMIO
     if (sys_audioapi == API_MMIO)
         return (mmio_send_dacs());
-    else
-#endif
-#ifdef USEAPI_AUDIOUNIT
-    if (sys_audioapi == API_AUDIOUNIT)
-        return (audiounit_send_dacs());
-    else
-#endif
-#ifdef USEAPI_ESD
-    if (sys_audioapi == API_ESD)
-        return (esd_send_dacs());
     else
 #endif
 #ifdef USEAPI_DUMMY
@@ -609,10 +577,6 @@ void sys_getmeters(t_sample *inmax, t_sample *outmax)
     else
         sys_meters = 0;
     sys_inmax = sys_outmax = 0;
-}
-
-void sys_reportidle(void)
-{
 }
 
 /* this could later be set by a preference but for now it seems OK to just
@@ -666,20 +630,6 @@ static void audio_getdevs(char *indevlist, int *nindevs,
     if (sys_audioapi == API_MMIO)
     {
         mmio_getdevs(indevlist, nindevs, outdevlist, noutdevs, canmulti,
-            maxndev, devdescsize);
-    }
-    else
-#endif
-#ifdef USEAPI_AUDIOUNIT
-    if (sys_audioapi == API_AUDIOUNIT)
-    {
-    }
-    else
-#endif
-#ifdef USEAPI_ESD
-    if (sys_audioapi == API_ESD)
-    {
-        esd_getdevs(indevlist, nindevs, outdevlist, noutdevs, canmulti,
             maxndev, devdescsize);
     }
     else
@@ -745,8 +695,8 @@ void glob_audio_properties(t_pd *dummy, t_floatarg flongform)
 {
     char buf[1024 + 2 * MAXNDEV*(DEVDESCSIZE+4)];
         /* these are the devices you're using: */
-    int naudioindev, audioindev[MAXAUDIOINDEV], chindev[MAXAUDIOINDEV];
-    int naudiooutdev, audiooutdev[MAXAUDIOOUTDEV], choutdev[MAXAUDIOOUTDEV];
+    int naudioindev, audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
+    int naudiooutdev, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
     int audioindev1, audioindev2, audioindev3, audioindev4,
         audioinchan1, audioinchan2, audioinchan3, audioinchan4,
         audiooutdev1, audiooutdev2, audiooutdev3, audiooutdev4,
@@ -813,8 +763,8 @@ extern int pa_foo;
     /* new values from dialog window */
 void glob_audio_dialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    int naudioindev, audioindev[MAXAUDIOINDEV], chindev[MAXAUDIOINDEV];
-    int naudiooutdev, audiooutdev[MAXAUDIOOUTDEV], choutdev[MAXAUDIOOUTDEV];
+    int naudioindev, audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
+    int naudiooutdev, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
     int rate, advance, audioon, i, nindev, noutdev;
     int audioindev1, audioinchan1, audiooutdev1, audiooutchan1;
     int newaudioindev[4], newaudioinchan[4],
@@ -868,8 +818,8 @@ void sys_set_audio_settings_reopen(int naudioindev, int *audioindev, int nchinde
     if (callback < 0)
         callback = 0;
     if (newblocksize != (1<<ilog2(newblocksize)) ||
-        newblocksize < DEFAULT_BLOCKSIZE || newblocksize > 2048)
-            newblocksize = DEFAULT_BLOCKSIZE;
+        newblocksize < DEFAULT_BLOCK || newblocksize > 2048)
+            newblocksize = DEFAULT_BLOCK;
     
     if (!audio_callback_is_open && !callback)
         sys_close_audio();
@@ -905,16 +855,6 @@ void sys_listdevs(void )
 #endif
 #ifdef USEAPI_MMIO
     if (sys_audioapi == API_MMIO)
-        sys_listaudiodevs();
-    else
-#endif
-#ifdef USEAPI_AUDIOUNIT
-    if (sys_audioapi == API_AUDIOUNIT)
-        sys_listaudiodevs();
-    else
-#endif
-#ifdef USEAPI_ESD
-    if (sys_audioapi == API_ESD)
         sys_listaudiodevs();
     else
 #endif
@@ -956,19 +896,13 @@ void sys_set_audio_api(int which)
 #ifdef USEAPI_MMIO
     ok += (which == API_MMIO);
 #endif
-#ifdef USEAPI_AUDIOUNIT
-    ok += (which == API_AUDIOUNIT);
-#endif
-#ifdef USEAPI_ESD
-    ok += (which == API_ESD);
-#endif
 #ifdef USEAPI_DUMMY
     ok += (which == API_DUMMY);
 #endif
     if (!ok)
     {
         post("API %d not supported, reverting to %d (%s)",
-            which, API_DEFAULT, API_DEFSTRING);
+            which, API_DEFAULT, API_STRING);
         which = API_DEFAULT;
     }
     sys_audioapi = which;
@@ -992,7 +926,7 @@ void glob_audio_setapi(void *dummy, t_floatarg f)
             sys_audioapi = newapi;
                 /* bash device params back to default */
             audio_naudioindev = audio_naudiooutdev = 1;
-            audio_audioindev[0] = audio_audiooutdev[0] = DEFAULTAUDIODEV;
+            audio_audioindev[0] = audio_audiooutdev[0] = AUDIO_DEFAULT_DEVICE;
             audio_audiochindev[0] = audio_audiochoutdev[0] = SYS_DEFAULTCH;
             sys_reopen_audio();
         }
@@ -1048,12 +982,6 @@ void sys_get_audio_apis(char *buf)
 #endif
 #ifdef USEAPI_JACK
     sprintf(buf + strlen(buf), "{jack %d} ", API_JACK); n++;
-#endif
-#ifdef USEAPI_AUDIOUNIT
-    sprintf(buf + strlen(buf), "{AudioUnit %d} ", API_AUDIOUNIT); n++;
-#endif
-#ifdef USEAPI_ESD
-    sprintf(buf + strlen(buf), "{ESD %d} ", API_ESD); n++;
 #endif
 #ifdef USEAPI_DUMMY
     sprintf(buf + strlen(buf), "{dummy %d} ", API_DUMMY); n++;

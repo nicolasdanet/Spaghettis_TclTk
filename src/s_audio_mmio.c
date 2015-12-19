@@ -31,16 +31,15 @@ static void postflags(void);
 #define NAPORTS 16   /* wini hack for multiple ADDA devices  */
 #define CHANNELS_PER_DEVICE 2
 #define DEFAULTCHANS 2
-#define DEFAULTSRATE 44100
 #define SAMPSIZE 2
 
 int nt_realdacblksize;
-#define DEFREALDACBLKSIZE (4 * DEFAULT_BLOCKSIZE) /* larger underlying bufsize */
+#define DEFREALDACBLKSIZE (4 * DEFAULT_BLOCK) /* larger underlying bufsize */
 
 #define MAXBUFFER 100   /* number of buffers in use at maximum advance */
 #define DEFBUFFER 30    /* default is about 30x6 = 180 msec! */
 static int nt_naudiobuffer = DEFBUFFER;
-float sys_dacsr = DEFAULTSRATE;
+float sys_dacsr = DEFAULT_SAMPLING;
 
 static int nt_whichapi = API_MMIO;
 static int nt_meters;        /* true if we're metering */
@@ -516,7 +515,7 @@ int mmio_send_dacs(void)
     {
         int i, n;
         float maxsamp;
-        for (i = 0, n = 2 * nt_nwavein * DEFAULT_BLOCKSIZE, maxsamp = nt_inmax;
+        for (i = 0, n = 2 * nt_nwavein * DEFAULT_BLOCK, maxsamp = nt_inmax;
             i < n; i++)
         {
             float f = sys_soundin[i];
@@ -524,7 +523,7 @@ int mmio_send_dacs(void)
             else if (-f > maxsamp) maxsamp = -f;
         }
         nt_inmax = maxsamp;
-        for (i = 0, n = 2 * nt_nwaveout * DEFAULT_BLOCKSIZE, maxsamp = nt_outmax;
+        for (i = 0, n = 2 * nt_nwaveout * DEFAULT_BLOCK, maxsamp = nt_outmax;
             i < n; i++)
         {
             float f = sys_soundout[i];
@@ -580,9 +579,9 @@ int mmio_send_dacs(void)
 
         for (i = 0, sp1 = (short *)(ntsnd_outvec[nda][phase].lpData) +
             CHANNELS_PER_DEVICE * nt_fill;
-                i < 2; i++, fp1 += DEFAULT_BLOCKSIZE, sp1++)
+                i < 2; i++, fp1 += DEFAULT_BLOCK, sp1++)
         {
-            for (j = 0, fp2 = fp1, sp2 = sp1; j < DEFAULT_BLOCKSIZE;
+            for (j = 0, fp2 = fp1, sp2 = sp1; j < DEFAULT_BLOCK;
                 j++, fp2++, sp2 += CHANNELS_PER_DEVICE)
             {
                 int x1 = 32767.f * *fp2;
@@ -593,7 +592,7 @@ int mmio_send_dacs(void)
         }
     }
     memset(sys_soundout, 0, 
-        (DEFAULT_BLOCKSIZE *sizeof(t_sample)*CHANNELS_PER_DEVICE)*nt_nwaveout);
+        (DEFAULT_BLOCK *sizeof(t_sample)*CHANNELS_PER_DEVICE)*nt_nwaveout);
 
         /* vice versa for the input buffer */ 
 
@@ -603,9 +602,9 @@ int mmio_send_dacs(void)
 
         for (i = 0, sp1 = (short *)(ntsnd_invec[nad][phase].lpData) +
             CHANNELS_PER_DEVICE * nt_fill;
-                i < 2; i++, fp1 += DEFAULT_BLOCKSIZE, sp1++)
+                i < 2; i++, fp1 += DEFAULT_BLOCK, sp1++)
         {
-            for (j = 0, fp2 = fp1, sp2 = sp1; j < DEFAULT_BLOCKSIZE;
+            for (j = 0, fp2 = fp1, sp2 = sp1; j < DEFAULT_BLOCK;
                 j++, fp2++, sp2 += CHANNELS_PER_DEVICE)
             {
                 *fp2 = ((float)(1./32767.)) * (float)(*sp2);    
@@ -613,7 +612,7 @@ int mmio_send_dacs(void)
         }
     }
 
-    nt_fill = nt_fill + DEFAULT_BLOCKSIZE;
+    nt_fill = nt_fill + DEFAULT_BLOCK;
     if (nt_fill == nt_realdacblksize)
     {
         nt_fill = 0;
@@ -733,11 +732,6 @@ int mmio_open_audio(int naudioindev, int *audioindev,
     if (naudiooutdev > 1 || naudioindev > 1)
  post("separate audio device choice not supported; using sequential devices.");
     return (mmio_do_open_audio());
-}
-
-
-void mmio_reportidle(void)
-{
 }
 
 #if 0

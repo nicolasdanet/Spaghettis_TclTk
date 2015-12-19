@@ -31,6 +31,7 @@ extern int sys_verbose;
 extern int sys_inchannels;
 extern int sys_outchannels;
 extern int sys_schedadvance;
+extern int sys_audioapi;
 
 /* Defines */
 #define DEBUG(x) x
@@ -211,7 +212,7 @@ static int alsaio_setup(t_alsa_dev *dev, int out, int *channels, int *rate,
     check_error(err, out, "snd_pcm_hw_params");
 
         /* set up the buffer */
-    bufsizeforthis = DEFAULT_BLOCKSIZE * dev->a_sampwidth * *channels;
+    bufsizeforthis = DEFAULT_BLOCK * dev->a_sampwidth * *channels;
     if (alsa_snd_buf)
     {
         if (alsa_snd_bufsize < bufsizeforthis)
@@ -385,12 +386,12 @@ int alsa_open_audio(int naudioindev, int *audioindev, int nchindev,
 
     if (outchans)
     {
-        i = (frag_size * nfrags)/DEFAULT_BLOCKSIZE + 1;
+        i = (frag_size * nfrags)/DEFAULT_BLOCK + 1;
         while (i--)
         {
             for (iodev = 0; iodev < alsa_noutdev; iodev++)
                 snd_pcm_writei(alsa_outdev[iodev].a_handle, alsa_snd_buf,
-                    DEFAULT_BLOCKSIZE);
+                    DEFAULT_BLOCK);
         }
     }
     if (inchans)
@@ -445,11 +446,11 @@ int alsa_send_dacs(void)
         return (alsamm_send_dacs());
 
     if (!alsa_nindev && !alsa_noutdev)
-        return (SEND_DACS_NO);
+        return (DACS_NO);
 
     chansintogo = sys_inchannels;
     chansouttogo = sys_outchannels;
-    transfersize = DEFAULT_BLOCKSIZE;
+    transfersize = DEFAULT_BLOCK;
 
     timelast = timenow;
     timenow = sys_getrealtime();
@@ -474,7 +475,7 @@ int alsa_send_dacs(void)
         }
         snd_pcm_status(alsa_indev[iodev].a_handle, alsa_status);
         if (snd_pcm_status_get_avail(alsa_status) < transfersize)
-            return (SEND_DACS_NO);
+            return (DACS_NO);
     }
     for (iodev = 0; iodev < alsa_noutdev; iodev++)
     {
@@ -488,7 +489,7 @@ int alsa_send_dacs(void)
         }
         snd_pcm_status(alsa_outdev[iodev].a_handle, alsa_status);
         if (snd_pcm_status_get_avail(alsa_status) < transfersize)
-            return (SEND_DACS_NO);
+            return (DACS_NO);
     }
 
 #ifdef DEBUG_ALSA_XFER
@@ -503,21 +504,21 @@ int alsa_send_dacs(void)
 
         if (alsa_outdev[iodev].a_sampwidth == 4)
         {
-            for (i = 0; i < chans; i++, ch++, fp1 += DEFAULT_BLOCKSIZE)
-                for (j = i, k = DEFAULT_BLOCKSIZE, fp2 = fp1; k--;
+            for (i = 0; i < chans; i++, ch++, fp1 += DEFAULT_BLOCK)
+                for (j = i, k = DEFAULT_BLOCK, fp2 = fp1; k--;
                      j += thisdevchans, fp2++)
             {
                 float s1 = *fp2 * INT32_MAX;
                 ((t_alsa_sample32 *)alsa_snd_buf)[j] = CLIP32(s1);
             }
             for (; i < thisdevchans; i++, ch++)
-                for (j = i, k = DEFAULT_BLOCKSIZE; k--; j += thisdevchans)
+                for (j = i, k = DEFAULT_BLOCK; k--; j += thisdevchans)
                     ((t_alsa_sample32 *)alsa_snd_buf)[j] = 0;
         }
         else if (alsa_outdev[iodev].a_sampwidth == 3)
         {
-            for (i = 0; i < chans; i++, ch++, fp1 += DEFAULT_BLOCKSIZE)
-                for (j = i, k = DEFAULT_BLOCKSIZE, fp2 = fp1; k--;
+            for (i = 0; i < chans; i++, ch++, fp1 += DEFAULT_BLOCK)
+                for (j = i, k = DEFAULT_BLOCK, fp2 = fp1; k--;
                      j += thisdevchans, fp2++)
             {
                 int s = *fp2 * 8388352.;
@@ -534,15 +535,15 @@ int alsa_send_dacs(void)
 #endif
             }
             for (; i < thisdevchans; i++, ch++)
-                for (j = i, k = DEFAULT_BLOCKSIZE; k--; j += thisdevchans)
+                for (j = i, k = DEFAULT_BLOCK; k--; j += thisdevchans)
                     ((char *)(alsa_snd_buf))[3*j] =
                     ((char *)(alsa_snd_buf))[3*j+1] =
                     ((char *)(alsa_snd_buf))[3*j+2] = 0;
         }
         else        /* 16 bit samples */
         {
-            for (i = 0; i < chans; i++, ch++, fp1 += DEFAULT_BLOCKSIZE)
-                for (j = ch, k = DEFAULT_BLOCKSIZE, fp2 = fp1; k--;
+            for (i = 0; i < chans; i++, ch++, fp1 += DEFAULT_BLOCK)
+                for (j = ch, k = DEFAULT_BLOCK, fp2 = fp1; k--;
                      j += thisdevchans, fp2++)
             {
                 int s = *fp2 * 32767.;
@@ -553,7 +554,7 @@ int alsa_send_dacs(void)
                 ((t_alsa_sample16 *)alsa_snd_buf)[j] = s;
             }
             for (; i < thisdevchans; i++, ch++)
-                for (j = ch, k = DEFAULT_BLOCKSIZE; k--; j += thisdevchans)
+                for (j = ch, k = DEFAULT_BLOCK; k--; j += thisdevchans)
                     ((t_alsa_sample16 *)alsa_snd_buf)[j] = 0;
         }
         result = snd_pcm_writei(alsa_outdev[iodev].a_handle, alsa_snd_buf,
@@ -568,7 +569,7 @@ int alsa_send_dacs(void)
             else post("ALSA: write: %s\n",
                          snd_strerror(errno));
     #endif
-            sys_log_error(ERR_DATALATE);
+            sys_log_error(ERROR_DATA_LATE);
             if (result == -EPIPE)
             {
                 result = snd_pcm_prepare(alsa_indev[iodev].a_handle);
@@ -580,7 +581,7 @@ int alsa_send_dacs(void)
         }
 
         /* zero out the output buffer */
-        memset(sys_soundout, 0, DEFAULT_BLOCKSIZE * sizeof(*sys_soundout) *
+        memset(sys_soundout, 0, DEFAULT_BLOCK * sizeof(*sys_soundout) *
                sys_outchannels);
         if (sys_getrealtime() - timenow > 0.002)
         {
@@ -589,7 +590,7 @@ int alsa_send_dacs(void)
                     callno, (int)(1000 * (timenow - timelast))), fflush(stderr);
     #endif
             timenow = sys_getrealtime();
-            sys_log_error(ERR_DACSLEPT);
+            sys_log_error(ERROR_DAC);
         }
     }
 
@@ -610,7 +611,7 @@ int alsa_send_dacs(void)
             else post("snd_pcm_read %d %d returned only %d\n",
                          callno, xferno, result);
 #endif
-            sys_log_error(ERR_DATALATE);
+            sys_log_error(ERROR_DATA_LATE);
             if (result == -EPIPE)
             {
                 result = snd_pcm_prepare(alsa_indev[iodev].a_handle);
@@ -622,9 +623,9 @@ int alsa_send_dacs(void)
         }
         if (alsa_indev[iodev].a_sampwidth == 4)
         {
-            for (i = 0; i < chans; i++, ch++, fp1 += DEFAULT_BLOCKSIZE)
+            for (i = 0; i < chans; i++, ch++, fp1 += DEFAULT_BLOCK)
             {
-                for (j = ch, k = DEFAULT_BLOCKSIZE, fp2 = fp1; k--;
+                for (j = ch, k = DEFAULT_BLOCK, fp2 = fp1; k--;
                      j += thisdevchans, fp2++)
                     *fp2 = (float) ((t_alsa_sample32 *)alsa_snd_buf)[j]
                         * (1./ INT32_MAX);
@@ -633,9 +634,9 @@ int alsa_send_dacs(void)
         else if (alsa_indev[iodev].a_sampwidth == 3)
         {
 #if BYTE_ORDER == LITTLE_ENDIAN
-            for (i = 0; i < chans; i++, ch++, fp1 += DEFAULT_BLOCKSIZE)
+            for (i = 0; i < chans; i++, ch++, fp1 += DEFAULT_BLOCK)
             {
-                for (j = ch, k = DEFAULT_BLOCKSIZE, fp2 = fp1; k--;
+                for (j = ch, k = DEFAULT_BLOCK, fp2 = fp1; k--;
                      j += thisdevchans, fp2++)
                     *fp2 = ((float) (
                         (((unsigned char *)alsa_snd_buf)[3*j] << 8)
@@ -649,9 +650,9 @@ int alsa_send_dacs(void)
         }
         else
         {
-            for (i = 0; i < chans; i++, ch++, fp1 += DEFAULT_BLOCKSIZE)
+            for (i = 0; i < chans; i++, ch++, fp1 += DEFAULT_BLOCK)
             {
-                for (j = ch, k = DEFAULT_BLOCKSIZE, fp2 = fp1; k--;
+                for (j = ch, k = DEFAULT_BLOCK, fp2 = fp1; k--;
                     j += thisdevchans, fp2++)
                         *fp2 = (float) ((t_alsa_sample16 *)alsa_snd_buf)[j]
                             * 3.051850e-05;
@@ -667,7 +668,7 @@ int alsa_send_dacs(void)
         post("alsa_send_dacs took %d msec\n",
             (int)(1000 * (sys_getrealtime() - timenow)));
 #endif
-        sys_log_error(ERR_ADCSLEPT);
+        sys_log_error(ERROR_ADC);
     }
     {
         static int checkcountdown = 0;
@@ -678,7 +679,7 @@ int alsa_send_dacs(void)
                 alsa_checkiosync();   /*  check I/O are in sync */     
         }
     }
-    return SEND_DACS_YES;
+    return DACS_YES;
 }
 
 void alsa_printstate( void)
@@ -713,14 +714,14 @@ void alsa_putzeros(int iodev, int n)
 {
     int i, result;
     memset(alsa_snd_buf, 0,
-        alsa_outdev[iodev].a_sampwidth * DEFAULT_BLOCKSIZE *
+        alsa_outdev[iodev].a_sampwidth * DEFAULT_BLOCK *
             alsa_outdev[iodev].a_channels);
     for (i = 0; i < n; i++)
     {
         result = snd_pcm_writei(alsa_outdev[iodev].a_handle, alsa_snd_buf,
-            DEFAULT_BLOCKSIZE);
+            DEFAULT_BLOCK);
 #if 0
-        if (result != DEFAULT_BLOCKSIZE)
+        if (result != DEFAULT_BLOCK)
             post("result %d", result);
 #endif
     }
@@ -733,9 +734,9 @@ void alsa_getzeros(int iodev, int n)
     for (i = 0; i < n; i++)
     {
         result = snd_pcm_readi(alsa_indev[iodev].a_handle, alsa_snd_buf,
-            DEFAULT_BLOCKSIZE);
+            DEFAULT_BLOCK);
 #if 0
-        if (result != DEFAULT_BLOCKSIZE)
+        if (result != DEFAULT_BLOCK)
             post("result %d", result);
 #endif
     }
@@ -795,7 +796,7 @@ static void alsa_checkiosync( void)
             if (thisphase > maxphase)
                 maxphase = thisphase;
             if (outdelay < 0)
-                sys_log_error(ERR_DATALATE), alreadylogged = 1;
+                sys_log_error(ERROR_DATA_LATE), alreadylogged = 1;
         }
         for (iodev = 0; iodev < alsa_nindev; iodev++)
         {
@@ -834,10 +835,10 @@ static void alsa_checkiosync( void)
                 maxphase = thisphase;
         }
             /* the "correct" position is for all the phases to be exactly
-            equal; but since we only make corrections DEFAULT_BLOCKSIZE samples
+            equal; but since we only make corrections DEFAULT_BLOCK samples
             at a time, we just ask that the spread be not more than 3/4
             of a block.  */
-        if (maxphase <= minphase + (alsa_jittermax * (DEFAULT_BLOCKSIZE / 4)))
+        if (maxphase <= minphase + (alsa_jittermax * (DEFAULT_BLOCK / 4)))
                 break;
 
 #ifdef DEBUG_ALSA_XFER
@@ -850,11 +851,11 @@ static void alsa_checkiosync( void)
             if (result < 0)
                 break;
             thisphase = alsa_buf_samps - outdelay;
-            if (thisphase > minphase + DEFAULT_BLOCKSIZE)
+            if (thisphase > minphase + DEFAULT_BLOCK)
             {
                 alsa_putzeros(iodev, 1);
                 if (!alreadylogged)
-                    sys_log_error(ERR_RESYNC), alreadylogged = 1;
+                    sys_log_error(ERROR_RESYNC), alreadylogged = 1;
 #ifdef DEBUG_ALSA_XFER
                 post("putz %d %d %d %d",
                     callno, xferno, (int)thisphase, (int)minphase);
@@ -866,11 +867,11 @@ static void alsa_checkiosync( void)
             result = snd_pcm_delay(alsa_indev[iodev].a_handle, &thisphase);
             if (result < 0)
                 break;
-            if (thisphase > minphase + DEFAULT_BLOCKSIZE)
+            if (thisphase > minphase + DEFAULT_BLOCK)
             {
                 alsa_getzeros(iodev, 1);
                 if (!alreadylogged)
-                    sys_log_error(ERR_RESYNC), alreadylogged = 1;
+                    sys_log_error(ERROR_RESYNC), alreadylogged = 1;
 #ifdef DEBUG_ALSA_XFER
                 post("getz %d %d %d %d",
                     callno, xferno, (int)thisphase, (int)minphase);

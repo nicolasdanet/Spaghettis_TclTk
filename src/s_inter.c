@@ -77,6 +77,7 @@ extern int sys_verbose;
 extern int sys_nogui;
 extern char *sys_guicmd;
 extern int sys_hipriority;
+extern int sys_audioapi;
 
 typedef struct _fdpoll
 {

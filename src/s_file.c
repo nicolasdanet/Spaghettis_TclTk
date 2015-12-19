@@ -38,6 +38,7 @@ extern t_namelist *sys_externlist;
 extern t_namelist *sys_searchpath;
 extern t_symbol *sys_libdir;
 extern int sys_hipriority;
+extern int sys_audioapi;
 
 int sys_defeatrt;               /* Global. */
 t_symbol *sys_flags = &s_;      /* Global. */
@@ -297,10 +298,10 @@ static void sys_donesavepreferences( void)
 
 void sys_loadpreferences( void)
 {
-    int naudioindev, audioindev[MAXAUDIOINDEV], chindev[MAXAUDIOINDEV];
-    int naudiooutdev, audiooutdev[MAXAUDIOOUTDEV], choutdev[MAXAUDIOOUTDEV];
-    int nmidiindev, midiindev[MAXIMUM_MIDI_IN];
-    int nmidioutdev, midioutdev[MAXIMUM_MIDI_OUT];
+    int naudioindev, audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
+    int naudiooutdev, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
+    int nmidiindev, midiindev[MIDI_MAXIMUM_IN];
+    int nmidioutdev, midioutdev[MIDI_MAXIMUM_OUT];
     int i, rate = 0, advance = -1, callback = 0, blocksize = 0,
         api, nolib, maxi;
     char prefbuf[MAXPDSTRING], keybuf[80];
@@ -316,7 +317,7 @@ void sys_loadpreferences( void)
             naudioindev = 0;
     else
     {
-        for (i = 0, naudioindev = 0; i < MAXAUDIOINDEV; i++)
+        for (i = 0, naudioindev = 0; i < AUDIO_MAXIMUM_IN; i++)
         {
                 /* first try to find a name - if that matches an existing
                 device use it.  Otherwise fall back to device number. */
@@ -345,7 +346,7 @@ void sys_loadpreferences( void)
             naudiooutdev = 0;
     else
     {
-        for (i = 0, naudiooutdev = 0; i < MAXAUDIOOUTDEV; i++)
+        for (i = 0, naudiooutdev = 0; i < AUDIO_MAXIMUM_OUT; i++)
         {
             int devn;
             sprintf(keybuf, "audiooutdev%d", i+1);
@@ -379,7 +380,7 @@ void sys_loadpreferences( void)
     if (sys_getpreference("nomidiin", prefbuf, MAXPDSTRING) &&
         (!strcmp(prefbuf, ".") || !strcmp(prefbuf, "True")))
             nmidiindev = 0;
-    else for (i = 0, nmidiindev = 0; i < MAXIMUM_MIDI_IN; i++)
+    else for (i = 0, nmidiindev = 0; i < MIDI_MAXIMUM_IN; i++)
     {
             /* first try to find a name - if that matches an existing device
             use it.  Otherwise fall back to device number. */
@@ -402,7 +403,7 @@ void sys_loadpreferences( void)
     if (sys_getpreference("nomidiout", prefbuf, MAXPDSTRING) &&
         (!strcmp(prefbuf, ".") || !strcmp(prefbuf, "True")))
             nmidioutdev = 0;
-    else for (i = 0, nmidioutdev = 0; i < MAXIMUM_MIDI_OUT; i++)
+    else for (i = 0, nmidioutdev = 0; i < MIDI_MAXIMUM_OUT; i++)
     {
         int devn;
         sprintf(keybuf, "midioutdevname%d", i+1);
@@ -473,12 +474,12 @@ void sys_loadpreferences( void)
 
 void glob_savepreferences(t_pd *dummy)
 {
-    int naudioindev, audioindev[MAXAUDIOINDEV], chindev[MAXAUDIOINDEV];
-    int naudiooutdev, audiooutdev[MAXAUDIOOUTDEV], choutdev[MAXAUDIOOUTDEV];
+    int naudioindev, audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
+    int naudiooutdev, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
     int i, rate, advance, callback, blocksize;
     char buf1[MAXPDSTRING], buf2[MAXPDSTRING];
-    int nmidiindev, midiindev[MAXIMUM_MIDI_IN];
-    int nmidioutdev, midioutdev[MAXIMUM_MIDI_OUT];
+    int nmidiindev, midiindev[MIDI_MAXIMUM_IN];
+    int nmidioutdev, midioutdev[MIDI_MAXIMUM_OUT];
 
     sys_initsavepreferences();
 

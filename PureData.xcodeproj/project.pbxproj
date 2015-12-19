@@ -289,9 +289,7 @@
 		372AC04D1C1B4AFF00C7D214 /* m_imp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_imp.h; path = src/m_imp.h; sourceTree = "<group>"; };
 		372AC0501C1B4B4E00C7D214 /* s_audio_alsa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_alsa.c; path = src/s_audio_alsa.c; sourceTree = "<group>"; };
 		372AC0511C1B4B4E00C7D214 /* s_audio_alsamm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_alsamm.c; path = src/s_audio_alsamm.c; sourceTree = "<group>"; };
-		372AC0521C1B4B4E00C7D214 /* s_audio_audiounit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_audiounit.c; path = src/s_audio_audiounit.c; sourceTree = "<group>"; };
 		372AC0531C1B4B4E00C7D214 /* s_audio_dummy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_dummy.c; path = src/s_audio_dummy.c; sourceTree = "<group>"; };
-		372AC0541C1B4B4E00C7D214 /* s_audio_esd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_esd.c; path = src/s_audio_esd.c; sourceTree = "<group>"; };
 		372AC0551C1B4B4E00C7D214 /* s_audio_jack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_jack.c; path = src/s_audio_jack.c; sourceTree = "<group>"; };
 		372AC0561C1B4B4E00C7D214 /* s_audio_mmio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_mmio.c; path = src/s_audio_mmio.c; sourceTree = "<group>"; };
 		372AC0571C1B4B4E00C7D214 /* s_audio_oss.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_oss.c; path = src/s_audio_oss.c; sourceTree = "<group>"; };
@@ -502,9 +500,7 @@
 				371655001BA343A600ABDE22 /* s_audio.c */,
 				372AC0501C1B4B4E00C7D214 /* s_audio_alsa.c */,
 				372AC0511C1B4B4E00C7D214 /* s_audio_alsamm.c */,
-				372AC0521C1B4B4E00C7D214 /* s_audio_audiounit.c */,
 				372AC0531C1B4B4E00C7D214 /* s_audio_dummy.c */,
-				372AC0541C1B4B4E00C7D214 /* s_audio_esd.c */,
 				372AC0551C1B4B4E00C7D214 /* s_audio_jack.c */,
 				372AC0561C1B4B4E00C7D214 /* s_audio_mmio.c */,
 				372AC0571C1B4B4E00C7D214 /* s_audio_oss.c */,

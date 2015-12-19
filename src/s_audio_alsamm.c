@@ -101,7 +101,7 @@ static t_alsa_dev *alsamm_outdevice[ALSA_MAXDEV];
 static unsigned int alsamm_sr = 0; 
 static unsigned int alsamm_buffertime = 0;
 static unsigned int alsamm_buffersize = 0;
-static int alsamm_transfersize = DEFAULT_BLOCKSIZE;
+static int alsamm_transfersize = DEFAULT_BLOCK;
 
 /* bad style: we asume all cards give the same answer at init so we make this vars global
    to have a faster access in writing reading during send_dacs */
@@ -1038,7 +1038,7 @@ static int alsamm_stop()
 /* I see: (a guess as a documentation)
 
    all DAC data is in sys_soundout array with 
-   DEFAULT_BLOCKSIZE (mostly 64) for each channels which
+   DEFAULT_BLOCK (mostly 64) for each channels which
    if we have more channels opened then dac-channels = sys_outchannels
    we have to zero (silence them), which should be done once.
 
@@ -1096,7 +1096,7 @@ int alsamm_send_dacs(void)
 
   if (!inchannels && !outchannels)
     {
-      return SEND_DACS_NO;
+      return DACS_NO;
     }
 
   /* here we should check if in and out samples are here.
@@ -1132,7 +1132,7 @@ int alsamm_send_dacs(void)
       err = xrun_recovery(out, -EPIPE); 
       if (err < 0) {
         check_error(err,"otavail<0 recovery failed");
-        return SEND_DACS_NO;     
+        return DACS_NO;     
       }
       oavail = snd_pcm_avail_update(out); 
     }
@@ -1144,7 +1144,7 @@ int alsamm_send_dacs(void)
       err = xrun_recovery(out, -EPIPE);
       if (err < 0) {
         check_error(err,"DAC XRUN recovery failed");
-        return SEND_DACS_NO;
+        return DACS_NO;
       }
       oavail = snd_pcm_avail_update(out); 
 
@@ -1152,7 +1152,7 @@ int alsamm_send_dacs(void)
       err = xrun_recovery(out, -ESTRPIPE);
       if (err < 0) {
         check_error(err,"DAC SUSPEND recovery failed");
-        return SEND_DACS_NO;
+        return DACS_NO;
       }
       oavail = snd_pcm_avail_update(out); 
     }
@@ -1167,7 +1167,7 @@ int alsamm_send_dacs(void)
        this should only happen on first card otherwise we got a problem :-(()*/
 
     if(oavail < alsamm_transfersize){
-      return SEND_DACS_NO;
+      return DACS_NO;
     }
     
     /* transfer now */
@@ -1226,7 +1226,7 @@ int alsamm_send_dacs(void)
       if (commitres < 0 || commitres != oframes) {
         if ((err = xrun_recovery(out, commitres >= 0 ? -EPIPE : commitres)) < 0) {
           check_error(err,"MMAP commit error");
-          return SEND_DACS_NO;
+          return DACS_NO;
         }    
       }
 
@@ -1257,7 +1257,7 @@ int alsamm_send_dacs(void)
       err = xrun_recovery(in, iavail);
       if (err < 0) {
         check_error(err,"input avail update failed");
-        return SEND_DACS_NO;
+        return DACS_NO;
       }
       iavail=snd_pcm_avail_update(in); 
     }
@@ -1268,7 +1268,7 @@ int alsamm_send_dacs(void)
       err = xrun_recovery(in, -EPIPE);
       if (err < 0) {
         check_error(err,"ADC XRUN recovery failed");
-        return SEND_DACS_NO;
+        return DACS_NO;
       }
       iavail=snd_pcm_avail_update(in); 
 
@@ -1276,14 +1276,14 @@ int alsamm_send_dacs(void)
       err = xrun_recovery(in, -ESTRPIPE);
       if (err < 0) {
         check_error(err,"ADC SUSPEND recovery failed");
-        return SEND_DACS_NO;
+        return DACS_NO;
       }
       iavail=snd_pcm_avail_update(in); 
     }
     
     /* only transfer full transfersize or nothing */
     if(iavail < alsamm_transfersize){
-      return SEND_DACS_NO;
+      return DACS_NO;
     }
     size = alsamm_transfersize; 
     fp1 = fpi;
@@ -1302,7 +1302,7 @@ int alsamm_send_dacs(void)
       if (err < 0){
         if ((err = xrun_recovery(in, err)) < 0) {
           check_error(err,"MMAP begins avail error");
-          return SEND_DACS_NO;
+          return DACS_NO;
         }
       }
 
@@ -1332,7 +1332,7 @@ int alsamm_send_dacs(void)
         post("please never");
         if ((err = xrun_recovery(in, commitres >= 0 ? -EPIPE : commitres)) < 0) {
           check_error(err,"MMAP synced in commit error");
-          return SEND_DACS_NO;
+          return DACS_NO;
         }
       }
       fp1 += iframes;
@@ -1350,10 +1350,10 @@ int alsamm_send_dacs(void)
         post("slept %f > %f + %f (=%f)",
              timenow,timelast,sleep_time,(timelast + sleep_time)); 
 #endif
-      return (SEND_DACS_SLEPT);
+      return (DACS_SLEPT);
     }
   
-  return SEND_DACS_YES;
+  return DACS_YES;
 }
 
 

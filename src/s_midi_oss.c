@@ -24,9 +24,9 @@ extern int sys_verbose;
 static int oss_nmidiindevs, oss_nmidioutdevs;
 static char oss_indevnames[NSEARCH][4], oss_outdevnames[NSEARCH][4];
 static int oss_nmidiin;
-static int oss_midiinfd[MAXIMUM_MIDI_IN];
+static int oss_midiinfd[MIDI_MAXIMUM_IN];
 static int oss_nmidiout;
-static int oss_midioutfd[MAXIMUM_MIDI_OUT];
+static int oss_midioutfd[MIDI_MAXIMUM_OUT];
 
 static void oss_midiout(int fd, int n)
 {
