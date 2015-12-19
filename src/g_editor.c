@@ -21,6 +21,7 @@ extern t_class *canvas_class;
 extern t_class *vinlet_class;
 extern t_class *voutlet_class;
 extern int sys_defaultfont;
+extern t_widgetbehavior text_widgetbehavior;
 
 void glist_readfrombinbuf(t_glist *x, t_binbuf *b, char *filename,
     int selectem);

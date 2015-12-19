@@ -20,6 +20,7 @@ extern int glist_valid;
 extern t_class *canvas_class;
 extern t_class *vinlet_class;
 extern t_class *voutlet_class;
+extern t_widgetbehavior text_widgetbehavior;
 
 /* ---------------------- forward definitions ----------------- */
 

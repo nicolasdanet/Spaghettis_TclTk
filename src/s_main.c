@@ -84,8 +84,6 @@ static int sys_main_callback;
 static int sys_main_blocksize;
 static int sys_listplease;
 
-int sys_externalschedlib;
-char sys_externalschedlibname[MAXPDSTRING];
 static int sys_batch;
 int sys_extraflags;
 char sys_extraflagsstring[MAXPDSTRING];
@@ -105,16 +103,6 @@ static int sys_nchin = -1;
 static int sys_nchout = -1;
 static int sys_chinlist[AUDIO_MAXIMUM_IN];
 static int sys_choutlist[AUDIO_MAXIMUM_OUT];
-
-t_sample* get_sys_soundout() { return sys_soundout; }
-t_sample* get_sys_soundin() { return sys_soundin; }
-int* get_sys_main_advance() { return &sys_main_advance; }
-double* get_sys_time_per_dsp_tick() { return &sys_time_per_dsp_tick; }
-int* get_sys_schedblocksize() { return &sys_schedblocksize; }
-double* get_sys_time() { return &pd_this->pd_systime; }
-t_float* get_sys_dacsr() { return &sys_dacsr; }
-int* get_sys_sleepgrain() { return &sys_sleepgrain; }
-int* get_sys_schedadvance() { return &sys_schedadvance; }
 
 typedef struct _fontinfo
 {
@@ -269,7 +257,6 @@ static void sys_afterargparse(void);
 int sys_main(int argc, char **argv)
 {
     int i, noprefs;
-    sys_externalschedlib = 0;
     sys_extraflags = 0;
 #ifdef PD_DEBUG
     fprintf(stderr, "Pd: COMPILED FOR DEBUGGING\n");
@@ -307,10 +294,7 @@ int sys_main(int argc, char **argv)
     sys_setsignalhandlers();
     if (sys_startgui(sys_libdir->s_name))       /* start the gui */
         return (1);
-    if (sys_externalschedlib)
-        return (sys_run_scheduler(sys_externalschedlibname,
-            sys_extraflagsstring));
-    else if (sys_batch)
+    if (sys_batch)
         return (m_batchmain());
     else
     {
@@ -892,16 +876,6 @@ int sys_argparse(int argc, char **argv)
             argc -= 2;
             argv += 2;
         }
-        else if (!strcmp(*argv, "-nostderr"))
-        {
-            sys_printtostderr = 0;
-            argc--; argv++;
-        }
-        else if (!strcmp(*argv, "-stderr"))
-        {
-            sys_printtostderr = 1;
-            argc--; argv++;
-        }
         else if (!strcmp(*argv, "-guicmd") && argc > 1)
         {
             sys_guicmd = argv[1];
@@ -916,14 +890,6 @@ int sys_argparse(int argc, char **argv)
         {
             sys_listplease = 1;
             argc--; argv++;
-        }
-        else if (!strcmp(*argv, "-schedlib") && argc > 1)
-        {
-            sys_externalschedlib = 1;
-            strncpy(sys_externalschedlibname, argv[1],
-                sizeof(sys_externalschedlibname) - 1);
-            argv += 2;
-            argc -= 2;
         }
         else if (!strcmp(*argv, "-extraflags") && argc > 1)
         {
@@ -1081,10 +1047,7 @@ int sys_argparse(int argc, char **argv)
     }
     if (sys_batch)
         sys_nogui = 1;
-    if (sys_nogui)
-        sys_printtostderr = 1;
 #ifdef _WIN32
-    if (sys_printtostderr)
         /* we need to tell Windows to output UTF-8 */
         SetConsoleOutputCP(CP_UTF8);
 #endif

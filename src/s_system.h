@@ -24,7 +24,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define ERROR_NOTHING               0
+#define ERROR_NONE                  0
 #define ERROR_ADC                   1
 #define ERROR_DAC                   2
 #define ERROR_RESYNC                3
@@ -318,6 +318,19 @@ int  sys_pollgui                (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void sys_clearhist              (void);
+void sys_initmidiqueue          (void);
+int  sys_addhist                (int phase);
+void sys_setmiditimediff        (double inbuftime, double outbuftime);
+void sched_tick                 (void);
+void sys_pollmidiqueue          (void);
+int  sys_pollgui                (void);
+void sys_setchsr                (int chin, int chout, int sr);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 PD_STRUCT _socketreceiver;
 
 #define t_socketreceiver struct _socketreceiver
@@ -528,52 +541,15 @@ void sys_save_audio_params  (int naudioindev,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_printhook)(const char *s);
-extern t_printhook sys_printhook;  /* set this to override printing */
-extern int sys_printtostderr;
-
-/* jsarlo { */
-
-double sys_time;
-double sys_time_per_dsp_tick;
-int sys_externalschedlib;
-
-t_sample* get_sys_soundout(void ) ;
-t_sample* get_sys_soundin(void ) ;
-int* get_sys_main_advance(void ) ;
-double* get_sys_time_per_dsp_tick(void ) ;
-int* get_sys_schedblocksize(void ) ;
-double* get_sys_time(void ) ;
-t_float* get_sys_dacsr(void ) ;
-int* get_sys_sleepgrain(void ) ;
-int* get_sys_schedadvance(void ) ;
-
-void sys_clearhist(void );
-void sys_initmidiqueue(void );
-int sys_addhist(int phase);
-void sys_setmiditimediff(double inbuftime, double outbuftime);
-void sched_tick( void);
-void sys_pollmidiqueue(void );
-int sys_pollgui(void );
-void sys_setchsr(int chin, int chout, int sr);
-
-void inmidi_realtimein(int portno, int cmd);
-void inmidi_byte(int portno, int byte);
-void inmidi_sysex(int portno, int byte);
-void inmidi_noteon(int portno, int channel, int pitch, int velo);
-void inmidi_controlchange(int portno,
-                                 int channel,
-                                 int ctlnumber,
-                                 int value);
-void inmidi_programchange(int portno, int channel, int value);
-void inmidi_pitchbend(int portno, int channel, int value);
-void inmidi_aftertouch(int portno, int channel, int value);
-void inmidi_polyaftertouch(int portno,
-                                  int channel,
-                                  int pitch,
-                                  int value);
-/* } jsarlo */
-extern t_widgetbehavior text_widgetbehavior;
+void inmidi_realtimein          (int portno, int cmd);
+void inmidi_byte                (int portno, int byte);
+void inmidi_sysex               (int portno, int byte);
+void inmidi_noteon              (int portno, int channel, int pitch, int velo);
+void inmidi_controlchange       (int portno, int channel, int ctlnumber, int value);
+void inmidi_programchange       (int portno, int channel, int value);
+void inmidi_pitchbend           (int portno, int channel, int value);
+void inmidi_aftertouch          (int portno, int channel, int value);
+void inmidi_polyaftertouch      (int portno, int channel, int pitch, int value);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

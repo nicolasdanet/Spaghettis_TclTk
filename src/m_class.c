@@ -17,6 +17,8 @@
 #include <string.h>
 #include <stdio.h>
 
+extern t_widgetbehavior text_widgetbehavior;
+
 #ifdef _MSC_VER  /* This is only for Microsoft's compiler, not cygwin, e.g. */
 #define snprintf sprintf_s
 #endif

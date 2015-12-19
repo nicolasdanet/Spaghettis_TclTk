@@ -348,7 +348,7 @@ void sys_set_audio_settings(int naudioindev, int *audioindev, int nchindev,
         nrealoutdev++;
     }
     sys_schedadvance = advance * 1000;
-    sys_log_error(ERROR_NOTHING);
+    sys_log_error(ERROR_NONE);
     audio_nextinchans = inchans;
     audio_nextoutchans = outchans;
     sys_setchsr(audio_nextinchans, audio_nextoutchans, rate);
@@ -359,10 +359,6 @@ void sys_set_audio_settings(int naudioindev, int *audioindev, int nchindev,
 
 void sys_close_audio(void)
 {
-    if (sys_externalschedlib)
-    {
-        return;
-    }
     if (!audio_isopen())
         return;
 #ifdef USEAPI_PORTAUDIO

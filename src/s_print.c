@@ -15,9 +15,6 @@
 
 extern int sys_verbose;
 
-t_printhook sys_printhook;  /* Global. */
-int sys_printtostderr;      /* Global. */
-
 /* escape characters for tcl/tk */
 static char* strnescape(char *dest, const char *src, size_t len)
 {
@@ -50,9 +47,7 @@ static char* strnpointerid(char *dest, const void *pointer, size_t len)
 
 static void dopost(const char *s)
 {
-    if (sys_printhook)
-        (*sys_printhook)(s);
-    else if (sys_printtostderr)
+    if (0)
 #ifdef _WIN32
         fwprintf(stderr, L"%S", s);
 #else
@@ -70,16 +65,9 @@ static void doerror(const void *object, const char *s)
     char upbuf[MAXPDSTRING];
     upbuf[MAXPDSTRING-1]=0;
 
-    // what about sys_printhook_error ?
-    if (sys_printhook) 
-    {
-        snprintf(upbuf, MAXPDSTRING-1, "error: %s", s);
-        (*sys_printhook)(upbuf);
-    }
-    else if (sys_printtostderr)
+    if (0) {
         fprintf(stderr, "error: %s", s);
-    else
-    {   
+    } else { 
         char obuf[MAXPDSTRING];
         sys_vgui("::pd_console::post {%s}\n",
                  strnescape(upbuf, s, MAXPDSTRING));
@@ -92,13 +80,7 @@ static void dologpost(const void *object, const int level, const char *s)
     char upbuf[MAXPDSTRING];
     upbuf[MAXPDSTRING-1]=0;
 
-    // what about sys_printhook_verbose ?
-    if (sys_printhook) 
-    {
-        snprintf(upbuf, MAXPDSTRING-1, "verbose(%d): %s", level, s);
-        (*sys_printhook)(upbuf);
-    }
-    else if (sys_printtostderr) 
+    if (0) 
     {
         fprintf(stderr, "verbose(%d): %s", level, s);
     }
@@ -181,11 +163,11 @@ void postfloat(t_float f)
 
 void endpost(void)
 {
-    if (sys_printhook)
-        (*sys_printhook)("\n");
-    else if (sys_printtostderr)
+    if (0) {
         fprintf(stderr, "\n");
-    else post("");
+    } else { 
+        post("");
+    }
 }
 
 void error(const char *fmt, ...)

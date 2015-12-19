@@ -298,7 +298,7 @@ void sys_log_error(int type)
     oss_resync[oss_resyncphase].r_error = type;
     oss_nresync++;
     if (++oss_resyncphase == NRESYNC) oss_resyncphase = 0;
-    if (type != ERROR_NOTHING && !sched_diored &&
+    if (type != ERROR_NONE && !sched_diored &&
         (sched_diddsp >= sched_dioredtime))
     {
         // sys_vgui("::pd_console::pdtk_pd_dio 1\n");
@@ -385,7 +385,7 @@ void dsp_tick(void);
 
 static int sched_useaudio = SCHEDULER_NONE;
 static double sched_referencerealtime, sched_referencelogicaltime;
-double sys_time_per_dsp_tick;
+static double sys_time_per_dsp_tick;
 
 void sched_reopenmeplease(void)   /* request from s_audio for deferred reopen */
 {
