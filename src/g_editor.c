@@ -1705,7 +1705,7 @@ void canvas_key(t_canvas *x, t_symbol *s, int ac, t_atom *av)
         gotkeysym = av[1].a_w.w_symbol;
     else if (av[1].a_type == A_FLOAT)
     {
-        char buf[UTF8_MAXBYTES1];
+        char buf[UTF8_MAXBYTES + 1];
         switch((int)(av[1].a_w.w_float))
         {
         case 8:  gotkeysym = gensym("BackSpace"); break;

@@ -1,19 +1,23 @@
+
 /*
-  Basic UTF-8 manipulation routines
-  by Jeff Bezanson
-  placed in the public domain Fall 2005
+    Basic UTF-8 manipulation routines,
+    by Jeff Bezanson,
+    placed in the public domain Fall 2005.
 
-  This code is designed to provide the utilities you need to manipulate
-  UTF-8 as an internal string encoding. These functions do not perform the
-  error checking normally needed when handling UTF-8 data, so if you happen
-  to be from the Unicode Consortium you will want to flay me alive.
-  I do this because error checking can be performed at the boundaries (I/O),
-  with these routines reserved for higher performance on data known to be
-  valid.
+    This code is designed to provide the utilities you need to manipulate
+    UTF-8 as an internal string encoding. These functions do not perform the
+    error checking normally needed when handling UTF-8 data, so if you happen
+    to be from the Unicode Consortium you will want to flay me alive.
+    I do this because error checking can be performed at the boundaries (I/O),
+    with these routines reserved for higher performance on data known to be
+    valid.
 
-  modified by Bryan Jurish (moo) March 2009
-  + removed some unneeded functions (escapes, printf etc), added others
+    Modified by Bryan Jurish (moo) March 2009.
+    
 */
+
+#define isutf(c) (((c)&0xC0)!=0x80)
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
