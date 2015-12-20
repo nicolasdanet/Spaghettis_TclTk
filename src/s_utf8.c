@@ -16,7 +16,7 @@
     
 */
 
-#define isutf(c) (((c)&0xC0)!=0x80)
+#define isutf(c) (((c) & 0xC0) != 0x80)
 
 #include <stdlib.h>
 #include <stdio.h>

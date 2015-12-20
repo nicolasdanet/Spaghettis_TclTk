@@ -47,9 +47,11 @@
 
 int      u8_utf8toucs2      (uint16_t *dest, int sz, char *src, int srcsz);
 int      u8_ucs2toutf8      (char *dest, int sz, uint16_t *src, int srcsz);
+
 int      u8_wc_nbytes       (uint32_t ch);
 int      u8_wc_toutf8       (char *dest, uint32_t ch);
 int      u8_wc_toutf8_nul   (char *dest, uint32_t ch);
+
 int      u8_offset          (char *str, int charnum);
 int      u8_charnum         (char *s, int offset);
 uint32_t u8_nextchar        (char *s, int *i);
