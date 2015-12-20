@@ -86,7 +86,7 @@ static int sys_listplease;
 
 static int sys_batch;
 int sys_extraflags;
-char sys_extraflagsstring[MAXPDSTRING];
+char sys_extraflagsstring[PD_STRING];
 int sys_run_scheduler(const char *externalschedlibname,
     const char *sys_extraflagsstring);
 int sys_noautopatch;    /* temporary hack to defeat new 0.42 editing */
@@ -174,9 +174,9 @@ int sys_defaultfont;    /* Global. */
 
 static void openit(const char *dirname, const char *filename)
 {
-    char dirbuf[MAXPDSTRING], *nameptr;
+    char dirbuf[PD_STRING], *nameptr;
     int fd = open_via_path(dirname, filename, "", dirbuf, &nameptr,
-        MAXPDSTRING, 0);
+        PD_STRING, 0);
     if (fd >= 0)
     {
         close (fd);
@@ -453,7 +453,7 @@ static int sys_getmultidevchannels(int n, int *devlist)
     INSTALL_PREFIX.  In MSW, we don't try to use INSTALL_PREFIX. */
 void sys_findprogdir(char *progname)
 {
-    char sbuf[MAXPDSTRING], sbuf2[MAXPDSTRING], *sp;
+    char sbuf[PD_STRING], sbuf2[PD_STRING], *sp;
     char *lastslash; 
 #ifndef _WIN32
     struct stat statbuf;
@@ -462,11 +462,11 @@ void sys_findprogdir(char *progname)
     /* find out by what string Pd was invoked; put answer in "sbuf". */
 #ifdef _WIN32
     GetModuleFileName(NULL, sbuf2, sizeof(sbuf2));
-    sbuf2[MAXPDSTRING-1] = 0;
+    sbuf2[PD_STRING-1] = 0;
     sys_unbashfilename(sbuf2, sbuf);
 #else
-    strncpy(sbuf, progname, MAXPDSTRING);
-    sbuf[MAXPDSTRING-1] = 0;
+    strncpy(sbuf, progname, PD_STRING);
+    sbuf[PD_STRING-1] = 0;
 #endif /* _WIN32 */
     lastslash = strrchr(sbuf, '/');
     if (lastslash)
@@ -514,8 +514,8 @@ void sys_findprogdir(char *progname)
 #ifdef _WIN32
     sys_libdir = gensym(sbuf2);
 #else
-    strncpy(sbuf, sbuf2, MAXPDSTRING-30);
-    sbuf[MAXPDSTRING-30] = 0;
+    strncpy(sbuf, sbuf2, PD_STRING-30);
+    sbuf[PD_STRING-30] = 0;
     strcat(sbuf, "/lib/pd");
     if (stat(sbuf, &statbuf) >= 0)
     {
@@ -538,7 +538,7 @@ static int sys_mmio = 0;
 
 int sys_argparse(int argc, char **argv)
 {
-    char sbuf[MAXPDSTRING];
+    char sbuf[PD_STRING];
     int i;
     while ((argc > 0) && **argv == '-')
     {
@@ -1070,7 +1070,7 @@ int sys_getblksize(void)
     from command-line arguments */
 static void sys_afterargparse(void)
 {
-    char sbuf[MAXPDSTRING];
+    char sbuf[PD_STRING];
     int i;
     int naudioindev, audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
     int naudiooutdev, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
@@ -1158,5 +1158,5 @@ static void sys_afterargparse(void)
 
 static void sys_addreferencepath(void)
 {
-    char sbuf[MAXPDSTRING];
+    char sbuf[PD_STRING];
 }

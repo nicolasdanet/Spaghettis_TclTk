@@ -93,8 +93,8 @@ void class_set_extern_dir(t_symbol *s);
 
 static int sys_do_load_lib(t_canvas *canvas, char *objectname)
 {
-    char symname[MAXPDSTRING], filename[MAXPDSTRING], dirbuf[MAXPDSTRING],
-        *classname, *nameptr, altsymname[MAXPDSTRING];
+    char symname[PD_STRING], filename[PD_STRING], dirbuf[PD_STRING],
+        *classname, *nameptr, altsymname[PD_STRING];
     void *dlobj;
     t_xxx makeout = NULL;
     int i, hexmunge = 0, fd;
@@ -109,7 +109,7 @@ static int sys_do_load_lib(t_canvas *canvas, char *objectname)
         post("%s: already loaded", objectname);
         return (1);
     }
-    for (i = 0, nameptr = classname; i < MAXPDSTRING-7 && *nameptr; nameptr++)
+    for (i = 0, nameptr = classname; i < PD_STRING-7 && *nameptr; nameptr++)
     {
         char c = *nameptr;
         if ((c>='0' && c<='9') || (c>='A' && c<='Z')||
@@ -144,34 +144,34 @@ static int sys_do_load_lib(t_canvas *canvas, char *objectname)
 #endif
         /* try looking in the path for (objectname).(sys_dllextent) ... */
     if ((fd = canvas_open(canvas, objectname, sys_dllextent,
-        dirbuf, &nameptr, MAXPDSTRING, 1)) >= 0)
+        dirbuf, &nameptr, PD_STRING, 1)) >= 0)
             goto gotone;
         /* same, with the more generic sys_dllextent2 */
     if ((fd = canvas_open(canvas, objectname, sys_dllextent2,
-        dirbuf, &nameptr, MAXPDSTRING, 1)) >= 0)
+        dirbuf, &nameptr, PD_STRING, 1)) >= 0)
             goto gotone;
         /* next try (objectname)/(classname).(sys_dllextent) ... */
-    strncpy(filename, objectname, MAXPDSTRING);
-    filename[MAXPDSTRING-2] = 0;
+    strncpy(filename, objectname, PD_STRING);
+    filename[PD_STRING-2] = 0;
     strcat(filename, "/");
-    strncat(filename, classname, MAXPDSTRING-strlen(filename));
-    filename[MAXPDSTRING-1] = 0;
+    strncat(filename, classname, PD_STRING-strlen(filename));
+    filename[PD_STRING-1] = 0;
     if ((fd = canvas_open(canvas, filename, sys_dllextent,
-        dirbuf, &nameptr, MAXPDSTRING, 1)) >= 0)
+        dirbuf, &nameptr, PD_STRING, 1)) >= 0)
             goto gotone;
     if ((fd = canvas_open(canvas, filename, sys_dllextent2,
-        dirbuf, &nameptr, MAXPDSTRING, 1)) >= 0)
+        dirbuf, &nameptr, PD_STRING, 1)) >= 0)
             goto gotone;
 #ifdef ANDROID
     /* Android libs always have a 'lib' prefix, '.so' suffix and don't allow ~ */
-    char libname[MAXPDSTRING] = "lib";
-    strncat(libname, objectname, MAXPDSTRING - 4);
+    char libname[PD_STRING] = "lib";
+    strncat(libname, objectname, PD_STRING - 4);
     int len = strlen(libname);
-    if (libname[len-1] == '~' && len < MAXPDSTRING - 6) {
+    if (libname[len-1] == '~' && len < PD_STRING - 6) {
         strcpy(libname+len-1, "_tilde");
     }
     if ((fd = canvas_open(canvas, libname, ".so",
-        dirbuf, &nameptr, MAXPDSTRING, 1)) >= 0)
+        dirbuf, &nameptr, PD_STRING, 1)) >= 0)
             goto gotone;
 #endif
     return (0);
@@ -180,22 +180,22 @@ gotone:
     class_set_extern_dir(gensym(dirbuf));
 
         /* rebuild the absolute pathname */
-    strncpy(filename, dirbuf, MAXPDSTRING);
-    filename[MAXPDSTRING-2] = 0;
+    strncpy(filename, dirbuf, PD_STRING);
+    filename[PD_STRING-2] = 0;
     strcat(filename, "/");
-    strncat(filename, nameptr, MAXPDSTRING-strlen(filename));
-    filename[MAXPDSTRING-1] = 0;
+    strncat(filename, nameptr, PD_STRING-strlen(filename));
+    filename[PD_STRING-1] = 0;
 
 #ifdef _WIN32
     {
-        char dirname[MAXPDSTRING], *s, *basename;
+        char dirname[PD_STRING], *s, *basename;
         sys_bashfilename(filename, filename);
         /* set the dirname as DllDirectory, meaning in the path for
            loading other DLLs so that dependent libraries can be included
            in the same folder as the external. SetDllDirectory() needs a
            minimum supported version of Windows XP SP1 for
            SetDllDirectory, so WINVER must be 0x0502 */
-        strncpy(dirname, filename, MAXPDSTRING);
+        strncpy(dirname, filename, PD_STRING);
         s = strrchr(dirname, '\\');
         basename = s;
         if (s && *s)
@@ -288,7 +288,7 @@ int sys_run_scheduler(const char *externalschedlibname,
 {
     typedef int (*t_externalschedlibmain)(const char *);
     t_externalschedlibmain externalmainfunc;
-    char filename[MAXPDSTRING];
+    char filename[PD_STRING];
     struct stat statbuf;
     snprintf(filename, sizeof(filename), "%s%s", externalschedlibname,
         sys_dllextent);

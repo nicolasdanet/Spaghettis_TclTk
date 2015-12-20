@@ -50,7 +50,7 @@ PD_STRUCT _widgetbehavior;
 typedef struct _methodentry {
     t_symbol    *me_name;
     t_gotfn     me_fun;
-    t_atomtype  me_arg[MAXPDARG + 1];
+    t_atomtype  me_arg[PD_ARGUMENTS + 1];
     } t_methodentry;
 
 // -----------------------------------------------------------------------------------------------------------

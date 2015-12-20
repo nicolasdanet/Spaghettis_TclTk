@@ -1283,7 +1283,7 @@ static void *makefilename_new(t_symbol *s)
 
 static void makefilename_float(t_makefilename *x, t_floatarg f)
 {
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
     if (x->x_accept == A_FLOAT) {
         if (x->x_intconvert)
             sprintf(buf, x->x_format->s_name, (int)f);
@@ -1291,7 +1291,7 @@ static void makefilename_float(t_makefilename *x, t_floatarg f)
     }
     else
     {
-        char buf2[MAXPDSTRING];
+        char buf2[PD_STRING];
         sprintf(buf2, "%g", f);
         sprintf(buf, x->x_format->s_name, buf2);
     }
@@ -1301,7 +1301,7 @@ static void makefilename_float(t_makefilename *x, t_floatarg f)
 
 static void makefilename_symbol(t_makefilename *x, t_symbol *s)
 {
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
     if (x->x_accept == A_SYMBOL)
     sprintf(buf, x->x_format->s_name, s->s_name);
     else

@@ -173,7 +173,7 @@ t_class *class_new(t_symbol *s, t_newmethod newmethod, t_method freemethod,
     size_t size, int flags, t_atomtype type1, ...)
 {
     va_list ap;
-    t_atomtype vec[MAXPDARG+1], *vp = vec;
+    t_atomtype vec[PD_ARGUMENTS+1], *vp = vec;
     int count = 0;
     t_class *c;
     int typeflag = flags & 3;
@@ -183,10 +183,10 @@ t_class *class_new(t_symbol *s, t_newmethod newmethod, t_method freemethod,
     va_start(ap, type1);
     while (*vp)
     {
-        if (count == MAXPDARG)
+        if (count == PD_ARGUMENTS)
         {
             error("class %s: sorry: only %d args typechecked; use A_GIMME",
-                s->s_name, MAXPDARG);
+                s->s_name, PD_ARGUMENTS);
             break;
         }
         vp++;
@@ -248,17 +248,17 @@ void class_addcreator(t_newmethod newmethod, t_symbol *s,
     t_atomtype type1, ...)
 {
     va_list ap;
-    t_atomtype vec[MAXPDARG+1], *vp = vec;
+    t_atomtype vec[PD_ARGUMENTS+1], *vp = vec;
     int count = 0;
     *vp = type1;
 
     va_start(ap, type1);
     while (*vp)
     {
-        if (count == MAXPDARG)
+        if (count == PD_ARGUMENTS)
         {
             error("class %s: sorry: only %d creation args allowed",
-                s->s_name, MAXPDARG);
+                s->s_name, PD_ARGUMENTS);
             break;
         }
         vp++;
@@ -338,7 +338,7 @@ void class_addmethod(t_class *c, t_method fn, t_symbol *sel,
         m->me_name = sel;
         m->me_fun = (t_gotfn)fn;
         nargs = 0;
-        while (argtype != A_NULL && nargs < MAXPDARG)
+        while (argtype != A_NULL && nargs < PD_ARGUMENTS)
         {
             m->me_arg[nargs++] = argtype;
             argtype = va_arg(ap, t_atomtype);
@@ -527,7 +527,7 @@ t_symbol *gensym(const char *s)
 
 static t_symbol *addfileextent(t_symbol *s)
 {
-    char namebuf[MAXPDSTRING], *str = s->s_name;
+    char namebuf[PD_STRING], *str = s->s_name;
     int ln = strlen(str);
     if (!strcmp(str + ln - 3, ".pd")) return (s);
     strcpy(namebuf, str);
@@ -549,7 +549,7 @@ int pd_setloadingabstraction(t_symbol *sym);
 void new_anything(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int fd;
-    char dirbuf[MAXPDSTRING], classslashclass[MAXPDSTRING], *nameptr;
+    char dirbuf[PD_STRING], classslashclass[PD_STRING], *nameptr;
     if (tryingalready>MAXOBJDEPTH){
       error("maximum object loading depth %d reached", MAXOBJDEPTH);
       return;
@@ -565,13 +565,13 @@ void new_anything(void *dummy, t_symbol *s, int argc, t_atom *argv)
     }
     class_loadsym = 0;
     /* for class/class.pd support, to match class/class.pd_linux  */
-    snprintf(classslashclass, MAXPDSTRING, "%s/%s", s->s_name, s->s_name);
+    snprintf(classslashclass, PD_STRING, "%s/%s", s->s_name, s->s_name);
     if ((fd = canvas_open(canvas_getcurrent(), s->s_name, ".pd",
-        dirbuf, &nameptr, MAXPDSTRING, 0)) >= 0 ||
+        dirbuf, &nameptr, PD_STRING, 0)) >= 0 ||
             (fd = canvas_open(canvas_getcurrent(), s->s_name, ".pat",
-                dirbuf, &nameptr, MAXPDSTRING, 0)) >= 0 ||
+                dirbuf, &nameptr, PD_STRING, 0)) >= 0 ||
                (fd = canvas_open(canvas_getcurrent(), classslashclass, ".pd",
-                    dirbuf, &nameptr, MAXPDSTRING, 0)) >= 0)
+                    dirbuf, &nameptr, PD_STRING, 0)) >= 0)
     {
         close (fd);
         if (!pd_setloadingabstraction(s))
@@ -651,8 +651,8 @@ void pd_typedmess(t_pd *x, t_symbol *s, int argc, t_atom *argv)
     t_methodentry *m;
     t_atomtype *wp, wanttype;
     int i;
-    t_int ai[MAXPDARG+1], *ap = ai;
-    t_floatarg ad[MAXPDARG+1], *dp = ad;
+    t_int ai[PD_ARGUMENTS+1], *ap = ai;
+    t_floatarg ad[PD_ARGUMENTS+1], *dp = ad;
     int narg = 0;
     t_pd *bonzo;
     
@@ -696,7 +696,7 @@ void pd_typedmess(t_pd *x, t_symbol *s, int argc, t_atom *argv)
             else (*((t_messgimme)(m->me_fun)))(x, s, argc, argv);
             return;
         }
-        if (argc > MAXPDARG) argc = MAXPDARG;
+        if (argc > PD_ARGUMENTS) argc = PD_ARGUMENTS;
         if (x != &pd_objectmaker) *(ap++) = (t_int)x, narg++;
         while (wanttype = *wp++)
         {

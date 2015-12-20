@@ -957,7 +957,7 @@ void canvas_vis(t_canvas *x, t_floatarg f)
         }
         else
         {
-            char cbuf[MAXPDSTRING];
+            char cbuf[PD_STRING];
             int cbuflen;
             t_canvas *c = x;
             canvas_create_editor(x);
@@ -966,13 +966,13 @@ void canvas_vis(t_canvas *x, t_floatarg f)
                 (int)(x->gl_screeny2 - x->gl_screeny1),
                 (int)(x->gl_screenx1), (int)(x->gl_screeny1),
                 x->gl_edit);
-           snprintf(cbuf, MAXPDSTRING - 2, "::pd_patch::pdtk_canvas_setparents .x%lx",
+           snprintf(cbuf, PD_STRING - 2, "::pd_patch::pdtk_canvas_setparents .x%lx",
                 (unsigned long)c);
             while (c->gl_owner) {
                 c = c->gl_owner;
                 cbuflen = strlen(cbuf);
                 snprintf(cbuf + cbuflen,
-                         MAXPDSTRING - cbuflen - 2,/* leave 2 for "\n\0" */
+                         PD_STRING - cbuflen - 2,/* leave 2 for "\n\0" */
                          " .x%lx", (unsigned long)c);
             }
             strcat(cbuf, "\n");
@@ -1173,7 +1173,7 @@ static void canvas_donecanvasdialog(t_glist *x,
         "open," or "help." */
 static void canvas_done_popup(t_canvas *x, t_float which, t_float xpos, t_float ypos)
 {
-    char pathbuf[MAXPDSTRING], namebuf[MAXPDSTRING];
+    char pathbuf[PD_STRING], namebuf[PD_STRING];
     t_gobj *y;
     for (y = x->gl_list; y; y = y->g_next)
     {
@@ -1205,7 +1205,7 @@ static void canvas_done_popup(t_canvas *x, t_float which, t_float xpos, t_float 
                     t_atom *av = binbuf_getvec(ob->te_binbuf);
                     if (ac < 1)
                         return;
-                    atom_string(av, namebuf, MAXPDSTRING);
+                    atom_string(av, namebuf, PD_STRING);
                     dir = canvas_getdir((t_canvas *)y)->s_name;
                 }
                 else
@@ -1705,7 +1705,7 @@ void canvas_key(t_canvas *x, t_symbol *s, int ac, t_atom *av)
         gotkeysym = av[1].a_w.w_symbol;
     else if (av[1].a_type == A_FLOAT)
     {
-        char buf[UTF8_MAXBYTES + 1];
+        char buf[UTF8_MAXIMUM_BYTES + 1];
         switch((int)(av[1].a_w.w_float))
         {
         case 8:  gotkeysym = gensym("BackSpace"); break;
@@ -1716,7 +1716,7 @@ void canvas_key(t_canvas *x, t_symbol *s, int ac, t_atom *av)
         case 127:gotkeysym = gensym("Delete"); break;
         default:
         /*-- moo: assume keynum is a Unicode codepoint; encode as UTF-8 --*/
-            u8_wc_toutf8_nul(buf, (UCS4)(av[1].a_w.w_float));
+            u8_wc_toutf8_nul(buf, (UCS4_CODE_POINT)(av[1].a_w.w_float));
             gotkeysym = gensym(buf);
         }
     }

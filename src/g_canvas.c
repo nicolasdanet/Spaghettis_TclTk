@@ -561,7 +561,7 @@ static void canvas_dosetbounds(t_canvas *x, int x1, int y1, int x2, int y2)
 
 t_symbol *canvas_makebindsym(t_symbol *s)
 {
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
     strcpy(buf, "pd-");
     strcat(buf, s->s_name);
     return (gensym(buf));
@@ -584,7 +584,7 @@ static void canvas_unbind(t_canvas *x)
 
 void canvas_reflecttitle(t_canvas *x)
 {
-    char namebuf[MAXPDSTRING];
+    char namebuf[PD_STRING];
     t_canvasenvironment *env = canvas_getenv(x);
     /*if (env->ce_argc)
     {
@@ -592,12 +592,12 @@ void canvas_reflecttitle(t_canvas *x)
         strcpy(namebuf, " (");
         for (i = 0; i < env->ce_argc; i++)
         {
-            if (strlen(namebuf) > MAXPDSTRING/2 - 5)
+            if (strlen(namebuf) > PD_STRING/2 - 5)
                 break;
             if (i != 0)
                 strcat(namebuf, " ");
             atom_string(&env->ce_argv[i], namebuf + strlen(namebuf), 
-                MAXPDSTRING/2);
+                PD_STRING/2);
         }
         strcat(namebuf, ")");
     }
@@ -1306,17 +1306,17 @@ static void canvas_completepath(char *from, char *to, int bufsize)
 #ifdef _WIN32
 static int check_exists(const char*path)
 {
-    char pathbuf[MAXPDSTRING];
-    wchar_t ucs2path[MAXPDSTRING];
+    char pathbuf[PD_STRING];
+    wchar_t ucs2path[PD_STRING];
     sys_bashfilename(path, pathbuf);
-    u8_utf8toucs2(ucs2path, MAXPDSTRING, pathbuf, MAXPDSTRING-1);
+    u8_utf8toucs2(ucs2path, PD_STRING, pathbuf, PD_STRING-1);
     return (0 ==  _waccess(ucs2path, 0));
 }
 #else
 #include <unistd.h>
 static int check_exists(const char*path)
 {
-    char pathbuf[MAXPDSTRING];
+    char pathbuf[PD_STRING];
     sys_bashfilename(path, pathbuf);
     return (0 == access(pathbuf, 0));
 }
@@ -1327,14 +1327,14 @@ extern t_namelist *sys_staticpath;
 static void canvas_stdpath(t_canvasenvironment *e, char *stdpath)
 {
     t_namelist*nl;
-    char strbuf[MAXPDSTRING];
+    char strbuf[PD_STRING];
     if (sys_isabsolutepath(stdpath))
     {
         e->ce_path = namelist_append(e->ce_path, stdpath, 0);
         return;
     }
 
-    canvas_completepath(stdpath, strbuf, MAXPDSTRING);
+    canvas_completepath(stdpath, strbuf, PD_STRING);
     if (check_exists(strbuf))
     {
         e->ce_path = namelist_append(e->ce_path, strbuf, 0);
@@ -1346,8 +1346,8 @@ static void canvas_stdpath(t_canvasenvironment *e, char *stdpath)
     /* check whether the given subdir is in one of the standard-paths */
     for (nl=sys_staticpath; nl; nl=nl->nl_next)
     {
-        snprintf(strbuf, MAXPDSTRING-1, "%s/%s/", nl->nl_string, stdpath);
-        strbuf[MAXPDSTRING-1]=0;
+        snprintf(strbuf, PD_STRING-1, "%s/%s/", nl->nl_string, stdpath);
+        strbuf[PD_STRING-1]=0;
         if (check_exists(strbuf))
         {
             e->ce_path = namelist_append(e->ce_path, strbuf, 0);
@@ -1358,14 +1358,14 @@ static void canvas_stdpath(t_canvasenvironment *e, char *stdpath)
 static void canvas_stdlib(t_canvasenvironment *e, char *stdlib)
 {
     t_namelist*nl;
-    char strbuf[MAXPDSTRING];
+    char strbuf[PD_STRING];
     if (sys_isabsolutepath(stdlib))
     {
         sys_load_lib(0, stdlib);
         return;
     }
 
-    canvas_completepath(stdlib, strbuf, MAXPDSTRING);
+    canvas_completepath(stdlib, strbuf, PD_STRING);
     if (sys_load_lib(0, strbuf))
         return;
 
@@ -1376,8 +1376,8 @@ static void canvas_stdlib(t_canvasenvironment *e, char *stdlib)
     /* check whether the given library is located in one of the standard-paths */
     for (nl=sys_staticpath; nl; nl=nl->nl_next)
     {
-        snprintf(strbuf, MAXPDSTRING-1, "%s/%s", nl->nl_string, stdlib);
-        strbuf[MAXPDSTRING-1]=0;
+        snprintf(strbuf, PD_STRING-1, "%s/%s", nl->nl_string, stdlib);
+        strbuf[PD_STRING-1]=0;
         if (sys_load_lib(0, strbuf))
             return;
     }
@@ -1439,7 +1439,7 @@ int canvas_open(t_canvas *x, const char *name, const char *ext,
 {
     t_namelist *nl, thislist;
     int fd = -1;
-    char listbuf[MAXPDSTRING];
+    char listbuf[PD_STRING];
     t_canvas *y;
 
         /* first check if "name" is absolute (and if so, try to open) */
@@ -1459,19 +1459,19 @@ int canvas_open(t_canvas *x, const char *name, const char *ext,
         dir = (x2 ? canvas_getdir(x2)->s_name : ".");
         for (nl = y->gl_env->ce_path; nl; nl = nl->nl_next)
         {
-            char realname[MAXPDSTRING];
+            char realname[PD_STRING];
             if (sys_isabsolutepath(nl->nl_string))
             {
                 realname[0] = '\0';
             }
             else
             {   /* if not absolute path, append Pd lib dir */
-                strncpy(realname, dir, MAXPDSTRING);
-                realname[MAXPDSTRING-3] = 0;
+                strncpy(realname, dir, PD_STRING);
+                realname[PD_STRING-3] = 0;
                 strcat(realname, "/");
             }
-            strncat(realname, nl->nl_string, MAXPDSTRING-strlen(realname));
-            realname[MAXPDSTRING-1] = 0;
+            strncat(realname, nl->nl_string, PD_STRING-strlen(realname));
+            realname[PD_STRING-1] = 0;
             if ((fd = sys_trytoopenone(realname, name, ext,
                 dirresult, nameresult, size, bin)) >= 0)
                     return (fd);

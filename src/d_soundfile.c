@@ -162,7 +162,7 @@ typedef struct _aiff
 
 #define READHDRSIZE (16 > WHDR2 + 2 ? 16 : WHDR2 + 2)
 
-#define OBUFSIZE MAXPDSTRING  /* assume MAXPDSTRING is bigger than headers */
+#define OBUFSIZE PD_STRING  /* assume PD_STRING is bigger than headers */
 
 /* this routine returns 1 if the high order byte comes at the lower
 address on our architecture (big-endianness.).  It's 1 for Motorola,
@@ -436,7 +436,7 @@ int open_soundfile(const char *dirname, const char *filename, int headersize,
 {
     char buf[OBUFSIZE], *bufptr;
     int fd;
-    fd = open_via_path(dirname, filename, "", buf, &bufptr, MAXPDSTRING, 1);
+    fd = open_via_path(dirname, filename, "", buf, &bufptr, PD_STRING, 1);
     if (fd < 0)
         return (-1);
     else return (open_soundfile_via_fd(fd, headersize, p_bytespersamp,
@@ -452,7 +452,7 @@ int open_soundfile_via_canvas(t_canvas *canvas, const char *filename, int header
 {
     char buf[OBUFSIZE], *bufptr;
     int fd;
-    fd = canvas_open(canvas, filename, "", buf, &bufptr, MAXPDSTRING, 1);
+    fd = canvas_open(canvas, filename, "", buf, &bufptr, PD_STRING, 1);
     if (fd < 0)
         return (-1);
     else return (open_soundfile_via_fd(fd, headersize, p_bytespersamp,
@@ -772,15 +772,15 @@ static int create_soundfile(t_canvas *canvas, const char *filename,
     int filetype, int nframes, int bytespersamp,
     int bigendian, int nchannels, int swap, t_float samplerate)
 {
-    char filenamebuf[MAXPDSTRING], buf2[MAXPDSTRING];
+    char filenamebuf[PD_STRING], buf2[PD_STRING];
     char headerbuf[WRITEHDRSIZE];
     t_wave *wavehdr = (t_wave *)headerbuf;
     t_nextstep *nexthdr = (t_nextstep *)headerbuf;
     t_aiff *aiffhdr = (t_aiff *)headerbuf;
     int fd, headersize = 0;
     
-    strncpy(filenamebuf, filename, MAXPDSTRING-10);
-    filenamebuf[MAXPDSTRING-10] = 0;
+    strncpy(filenamebuf, filename, PD_STRING-10);
+    filenamebuf[PD_STRING-10] = 0;
 
     if (filetype == FORMAT_NEXT)
     {
@@ -845,7 +845,7 @@ static int create_soundfile(t_canvas *canvas, const char *filename,
         headersize = sizeof(t_wave);
     }
 
-    canvas_makefilename(canvas, filenamebuf, buf2, MAXPDSTRING);
+    canvas_makefilename(canvas, filenamebuf, buf2, PD_STRING);
     if ((fd = sys_open(buf2, O_WRONLY | O_CREAT | O_TRUNC, 0666)) < 0)
         return (-1);
 

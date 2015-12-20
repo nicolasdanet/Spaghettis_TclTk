@@ -407,10 +407,10 @@ static void message_adddollar(t_message *x, t_floatarg f)
 static void message_adddollsym(t_message *x, t_symbol *s)
 {
     t_atom a;
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
     buf[0] = '$';
-    strncpy(buf+1, s->s_name, MAXPDSTRING-2);
-    buf[MAXPDSTRING-1] = 0;
+    strncpy(buf+1, s->s_name, PD_STRING-2);
+    buf[PD_STRING-1] = 0;
     SETDOLLSYM(&a, gensym(buf));
     binbuf_add(x->m_text.te_binbuf, 1, &a);
     glist_retext(x->m_glist, &x->m_text);
@@ -704,7 +704,7 @@ static void gatom_key(void *z, t_floatarg f)
              * and only if the resulting utf8 string fits into a_buf
              * we apply it
              */
-            char utf8[UTF8_MAXBYTES];
+            char utf8[UTF8_MAXIMUM_BYTES];
             int utf8len = u8_wc_toutf8(utf8, c);
             if((len+utf8len) < (ATOMBUFSIZE-1))
             {

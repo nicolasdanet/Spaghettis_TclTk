@@ -736,7 +736,7 @@ static void fielddesc_setsymbol_const(t_fielddesc *fd, t_symbol *s)
 
 static void fielddesc_setfloat_var(t_fielddesc *fd, t_symbol *s)
 {
-    char *s1, *s2, *s3, strbuf[MAXPDSTRING];
+    char *s1, *s2, *s3, strbuf[PD_STRING];
     int i;
     fd->fd_type = A_FLOAT;
     fd->fd_var = 1;
@@ -751,8 +751,8 @@ static void fielddesc_setfloat_var(t_fielddesc *fd, t_symbol *s)
     {
         int cpy = s1 - s->s_name, got;
         double v1, v2, screen1, screen2, quantum;
-        if (cpy > MAXPDSTRING-5)
-            cpy = MAXPDSTRING-5;
+        if (cpy > PD_STRING-5)
+            cpy = PD_STRING-5;
         strncpy(strbuf, s->s_name, cpy);
         strbuf[cpy] = 0;
         fd->fd_un.fd_varsym = gensym(strbuf);
@@ -2580,7 +2580,7 @@ static void drawnumber_key(void *z, t_floatarg fkey)
 {
     t_drawnumber *x = (t_drawnumber *)z;
     int key = fkey;
-    char sbuf[MAXPDSTRING];
+    char sbuf[PD_STRING];
     t_atom at;
     if (!gpointer_check(&drawnumber_motion_gpointer, 0))
     {
@@ -2596,8 +2596,8 @@ static void drawnumber_key(void *z, t_floatarg fkey)
             sbuf[0] = 0;
         else strncpy(sbuf, template_getsymbol(drawnumber_motion_template,
             x->x_fieldname, drawnumber_motion_wp, 1)->s_name,
-                MAXPDSTRING);
-        sbuf[MAXPDSTRING-1] = 0;
+                PD_STRING);
+        sbuf[PD_STRING-1] = 0;
         if (key == '\b')
         {
             if (*sbuf)

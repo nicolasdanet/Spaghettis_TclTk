@@ -203,7 +203,7 @@ t_namelist *namelist_append(t_namelist *listwas, const char *s, int allowdup)
 t_namelist *namelist_append_files(t_namelist *listwas, const char *s)
 {
     const char *npos;
-    char temp[MAXPDSTRING];
+    char temp[PD_STRING];
     t_namelist *nl = listwas, *rtn = listwas;
     
     npos = s;
@@ -241,25 +241,25 @@ int sys_usestdpath = 1;     /* Global. */
 
 void sys_setextrapath(const char *p)
 {
-    char pathbuf[MAXPDSTRING];
+    char pathbuf[PD_STRING];
     namelist_free(sys_staticpath);
     /* add standard place for users to install stuff first */
 #ifdef __gnu_linux__
-    sys_expandpath("~/pd-externals", pathbuf, MAXPDSTRING);
+    sys_expandpath("~/pd-externals", pathbuf, PD_STRING);
     sys_staticpath = namelist_append(0, pathbuf, 0);
     sys_staticpath = namelist_append(sys_staticpath, "/usr/local/lib/pd-externals", 0);
 #endif
 
 #ifdef __APPLE__
-    sys_expandpath("~/Library/Pd", pathbuf, MAXPDSTRING);
+    sys_expandpath("~/Library/Pd", pathbuf, PD_STRING);
     sys_staticpath = namelist_append(0, pathbuf, 0);
     sys_staticpath = namelist_append(sys_staticpath, "/Library/Pd", 0);
 #endif
 
 #ifdef _WIN32
-    sys_expandpath("%AppData%/Pd", pathbuf, MAXPDSTRING);
+    sys_expandpath("%AppData%/Pd", pathbuf, PD_STRING);
     sys_staticpath = namelist_append(0, pathbuf, 0);
-    sys_expandpath("%CommonProgramFiles%/Pd", pathbuf, MAXPDSTRING);
+    sys_expandpath("%CommonProgramFiles%/Pd", pathbuf, PD_STRING);
     sys_staticpath = namelist_append(sys_staticpath, pathbuf, 0);
 #endif
     /* add built-in "extra" path last so its checked last */
@@ -277,10 +277,10 @@ int sys_trytoopenone(const char *dir, const char *name, const char* ext,
     char *dirresult, char **nameresult, unsigned int size, int bin)
 {
     int fd;
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
     if (strlen(dir) + strlen(name) + strlen(ext) + 4 > size)
         return (-1);
-    sys_expandpath(dir, buf, MAXPDSTRING);
+    sys_expandpath(dir, buf, PD_STRING);
     strcpy(dirresult, buf);
     if (*dirresult && dirresult[strlen(dirresult)-1] != '/')
         strcat(dirresult, "/");
@@ -334,13 +334,13 @@ int sys_open_absolute(const char *name, const char* ext,
 {
     if (sys_isabsolutepath(name))
     {
-        char dirbuf[MAXPDSTRING], *z = strrchr(name, '/');
+        char dirbuf[PD_STRING], *z = strrchr(name, '/');
         int dirlen;
         if (!z)
             return (0);
         dirlen = z - name;
-        if (dirlen > MAXPDSTRING-1) 
-            dirlen = MAXPDSTRING-1;
+        if (dirlen > PD_STRING-1) 
+            dirlen = PD_STRING-1;
         strncpy(dirbuf, name, dirlen);
         dirbuf[dirlen] = 0;
         *fdp = sys_trytoopenone(dirbuf, name+(dirlen+1), ext,
@@ -411,10 +411,10 @@ int open_via_path(const char *dir, const char *name, const char *ext,
 int sys_open(const char *path, int oflag, ...)
 {
     int i, fd;
-    char pathbuf[MAXPDSTRING];
-    wchar_t ucs2path[MAXPDSTRING];
+    char pathbuf[PD_STRING];
+    wchar_t ucs2path[PD_STRING];
     sys_bashfilename(path, pathbuf);
-    u8_utf8toucs2(ucs2path, MAXPDSTRING, pathbuf, MAXPDSTRING-1);
+    u8_utf8toucs2(ucs2path, PD_STRING, pathbuf, PD_STRING-1);
     /* For the create mode, Win32 does not have the same possibilities,
      * so we ignore the argument and just hard-code read/write. */
     if (oflag & O_CREAT)
@@ -426,13 +426,13 @@ int sys_open(const char *path, int oflag, ...)
 
 FILE *sys_fopen(const char *filename, const char *mode)
 {
-    char namebuf[MAXPDSTRING];
-    wchar_t ucs2buf[MAXPDSTRING];
-    wchar_t ucs2mode[MAXPDSTRING];
+    char namebuf[PD_STRING];
+    wchar_t ucs2buf[PD_STRING];
+    wchar_t ucs2mode[PD_STRING];
     sys_bashfilename(filename, namebuf);
-    u8_utf8toucs2(ucs2buf, MAXPDSTRING, namebuf, MAXPDSTRING-1);
+    u8_utf8toucs2(ucs2buf, PD_STRING, namebuf, PD_STRING-1);
     /* mode only uses ASCII, so no need for a full conversion, just copy it */
-    mbstowcs(ucs2mode, mode, MAXPDSTRING);
+    mbstowcs(ucs2mode, mode, PD_STRING);
     return (_wfopen(ucs2buf, ucs2mode));
 }
 #else
@@ -440,7 +440,7 @@ FILE *sys_fopen(const char *filename, const char *mode)
 int sys_open(const char *path, int oflag, ...)
 {
     int i, fd;
-    char pathbuf[MAXPDSTRING];
+    char pathbuf[PD_STRING];
     sys_bashfilename(path, pathbuf);
     if (oflag & O_CREAT)
     {
@@ -468,7 +468,7 @@ int sys_open(const char *path, int oflag, ...)
 
 FILE *sys_fopen(const char *filename, const char *mode)
 {
-  char namebuf[MAXPDSTRING];
+  char namebuf[PD_STRING];
   sys_bashfilename(filename, namebuf);
   return fopen(namebuf, mode);
 }
@@ -497,27 +497,27 @@ int sys_fclose(FILE *stream)
     search attempts. */
 void open_via_helppath(const char *name, const char *dir)
 {
-    char realname[MAXPDSTRING], dirbuf[MAXPDSTRING], *basename;
+    char realname[PD_STRING], dirbuf[PD_STRING], *basename;
         /* make up a silly "dir" if none is supplied */
     const char *usedir = (*dir ? dir : "./");
     int fd;
 
         /* 1. "objectname-help.pd" */
-    strncpy(realname, name, MAXPDSTRING-10);
-    realname[MAXPDSTRING-10] = 0;
+    strncpy(realname, name, PD_STRING-10);
+    realname[PD_STRING-10] = 0;
     if (strlen(realname) > 3 && !strcmp(realname+strlen(realname)-3, ".pd"))
         realname[strlen(realname)-3] = 0;
     strcat(realname, "-help.pd");
     if ((fd = do_open_via_path(usedir, realname, "", dirbuf, &basename, 
-        MAXPDSTRING, 0, sys_helppath)) >= 0)
+        PD_STRING, 0, sys_helppath)) >= 0)
             goto gotone;
 
         /* 2. "help-objectname.pd" */
     strcpy(realname, "help-");
-    strncat(realname, name, MAXPDSTRING-10);
-    realname[MAXPDSTRING-1] = 0;
+    strncat(realname, name, PD_STRING-10);
+    realname[PD_STRING-1] = 0;
     if ((fd = do_open_via_path(usedir, realname, "", dirbuf, &basename, 
-        MAXPDSTRING, 0, sys_helppath)) >= 0)
+        PD_STRING, 0, sys_helppath)) >= 0)
             goto gotone;
 
     post("sorry, couldn't find help patch for \"%s\"", name);
@@ -546,7 +546,7 @@ int sys_rcfile(void)
     int rcargc;
     char* rcargv[NUMARGS];
     char* buffer;
-    char  fname[MAXPDSTRING], buf[1000], *home = getenv("HOME");
+    char  fname[PD_STRING], buf[1000], *home = getenv("HOME");
     int retval = 1; /* that's what we will return at the end; for now, let's think it'll be an error */
  
     /* initialize rc-arg-array so we can safely clean up at the end */
@@ -558,7 +558,7 @@ int sys_rcfile(void)
     
     *fname = '\0'; 
 
-    strncat(fname, home? home : ".", MAXPDSTRING-10);
+    strncat(fname, home? home : ".", PD_STRING-10);
     strcat(fname, "/");
 
     strcat(fname, STARTUPNAME);
@@ -619,8 +619,8 @@ void sys_doflags( void)
 {
     int i, beginstring = 0, state = 0, len = strlen(sys_flags->s_name);
     int rcargc = 0;
-    char *rcargv[MAXPDSTRING];
-    if (len > MAXPDSTRING)
+    char *rcargv[PD_STRING];
+    if (len > PD_STRING)
     {
         error("flags: %s: too long", sys_flags->s_name);
         return;
@@ -647,7 +647,7 @@ void sys_doflags( void)
                 foo[i - beginstring] = 0;
                 rcargv[rcargc] = foo;
                 rcargc++;
-                if (rcargc >= MAXPDSTRING)
+                if (rcargc >= PD_STRING)
                     break;
                 state = 0;
             }
@@ -661,12 +661,12 @@ void sys_doflags( void)
     dollars, and semis down here. */
 t_symbol *sys_decodedialog(t_symbol *s)
 {
-    char buf[MAXPDSTRING], *sp = s->s_name;
+    char buf[PD_STRING], *sp = s->s_name;
     int i;
     if (*sp != '+')
         bug("sys_decodedialog: %s", sp);
     else sp++;
-    for (i = 0; i < MAXPDSTRING-1; i++, sp++)
+    for (i = 0; i < PD_STRING-1; i++, sp++)
     {
         if (!sp[0])
             break;
@@ -719,7 +719,7 @@ void sys_set_extrapath(void)
     /* start a search path dialog window */
 void glob_start_path_dialog(t_pd *dummy)
 {
-     char buf[MAXPDSTRING];
+     char buf[PD_STRING];
 
     sys_set_searchpath();
     sprintf(buf, "::pd_path::show %%s\n");
@@ -757,7 +757,7 @@ void sys_set_startup( void)
     /* start a startup dialog window */
 void glob_start_startup_dialog(t_pd *dummy)
 {
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
 
     sys_set_startup();
     /* sprintf(buf, "::dialog_startup::pdtk_startup_dialog %%s %d \"%s\"\n", sys_defeatrt,

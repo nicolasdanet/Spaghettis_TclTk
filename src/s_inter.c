@@ -880,7 +880,7 @@ static int defaultfontshit[MAXFONTS] = {
 
 int sys_startgui(const char *libdir)
 {
-    char cmdbuf[4*MAXPDSTRING];
+    char cmdbuf[4*PD_STRING];
     struct sockaddr_in server;
     int msgsock;
     char buf[15];
@@ -907,10 +907,10 @@ int sys_startgui(const char *libdir)
         t_atom zz[NDEFAULTFONT+1];
         int i;
 #ifdef _WIN32
-        if (GetCurrentDirectory(MAXPDSTRING, cmdbuf) == 0)
+        if (GetCurrentDirectory(PD_STRING, cmdbuf) == 0)
             strcpy(cmdbuf, ".");
 #else
-        if (!getcwd(cmdbuf, MAXPDSTRING))
+        if (!getcwd(cmdbuf, PD_STRING))
             strcpy(cmdbuf, ".");
         
 #endif
@@ -971,7 +971,7 @@ int sys_startgui(const char *libdir)
     else    /* default behavior: start up the GUI ourselves. */
     {
 #ifdef _WIN32
-        char scriptbuf[MAXPDSTRING+30], wishbuf[MAXPDSTRING+30], portbuf[80];
+        char scriptbuf[PD_STRING+30], wishbuf[PD_STRING+30], portbuf[80];
         int spawnret;
         char intarg;
 #else

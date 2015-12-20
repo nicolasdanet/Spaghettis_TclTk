@@ -91,8 +91,8 @@ static void *netsend_new(t_symbol *s, int argc, t_atom *argv)
 
 static void netsend_readbin(t_netsend *x, int fd)
 {
-    unsigned char inbuf[MAXPDSTRING];
-    int ret = recv(fd, inbuf, MAXPDSTRING, 0), i;
+    unsigned char inbuf[PD_STRING];
+    int ret = recv(fd, inbuf, PD_STRING, 0), i;
     if (!x->x_msgout)
     {
         bug("netsend_readbin");

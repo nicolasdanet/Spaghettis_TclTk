@@ -55,30 +55,30 @@ static void dopost(const char *s)
 #endif
     else
     {
-        char upbuf[MAXPDSTRING];
-        sys_vgui("::pd_console::post {%s}\n", strnescape(upbuf, s, MAXPDSTRING));
+        char upbuf[PD_STRING];
+        sys_vgui("::pd_console::post {%s}\n", strnescape(upbuf, s, PD_STRING));
     }
 }
 
 static void doerror(const void *object, const char *s)
 {
-    char upbuf[MAXPDSTRING];
-    upbuf[MAXPDSTRING-1]=0;
+    char upbuf[PD_STRING];
+    upbuf[PD_STRING-1]=0;
 
     if (0) {
         fprintf(stderr, "error: %s", s);
     } else { 
-        char obuf[MAXPDSTRING];
+        char obuf[PD_STRING];
         sys_vgui("::pd_console::post {%s}\n",
-                 strnescape(upbuf, s, MAXPDSTRING));
+                 strnescape(upbuf, s, PD_STRING));
                  /* */
     }
 }
 
 static void dologpost(const void *object, const int level, const char *s)
 {
-    char upbuf[MAXPDSTRING];
-    upbuf[MAXPDSTRING-1]=0;
+    char upbuf[PD_STRING];
+    upbuf[PD_STRING-1]=0;
 
     if (0) 
     {
@@ -86,21 +86,21 @@ static void dologpost(const void *object, const int level, const char *s)
     }
     else
     {
-        char obuf[MAXPDSTRING];
+        char obuf[PD_STRING];
         sys_vgui("::pd_console::post {%s}\n",  
-                 strnescape(upbuf, s, MAXPDSTRING));
+                 strnescape(upbuf, s, PD_STRING));
                  /* */
     }
 }
 
 void logpost(const void *object, const int level, const char *fmt, ...)
 {
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
     va_list ap;
     t_int arg[8];
     int i;
     va_start(ap, fmt);
-    vsnprintf(buf, MAXPDSTRING-1, fmt, ap);
+    vsnprintf(buf, PD_STRING-1, fmt, ap);
     va_end(ap);
     strcat(buf, "\n");
 
@@ -109,12 +109,12 @@ void logpost(const void *object, const int level, const char *fmt, ...)
 
 void post(const char *fmt, ...)
 {
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
     va_list ap;
     t_int arg[8];
     int i;
     va_start(ap, fmt);
-    vsnprintf(buf, MAXPDSTRING-1, fmt, ap);
+    vsnprintf(buf, PD_STRING-1, fmt, ap);
     va_end(ap);
     strcat(buf, "\n");
 
@@ -123,12 +123,12 @@ void post(const char *fmt, ...)
 
 void startpost(const char *fmt, ...)
 {
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
     va_list ap;
     t_int arg[8];
     int i;
     va_start(ap, fmt);
-    vsnprintf(buf, MAXPDSTRING-1, fmt, ap);
+    vsnprintf(buf, PD_STRING-1, fmt, ap);
     va_end(ap);
 
     dopost(buf);
@@ -146,8 +146,8 @@ void postatom(int argc, t_atom *argv)
     int i;
     for (i = 0; i < argc; i++)
     {
-        char buf[MAXPDSTRING];
-        atom_string(argv+i, buf, MAXPDSTRING);
+        char buf[PD_STRING];
+        atom_string(argv+i, buf, PD_STRING);
         poststring(buf);
     }
 }
@@ -172,13 +172,13 @@ void endpost(void)
 
 void error(const char *fmt, ...)
 {
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
     va_list ap;
     t_int arg[8];
     int i;
 
     va_start(ap, fmt);
-    vsnprintf(buf, MAXPDSTRING-1, fmt, ap);
+    vsnprintf(buf, PD_STRING-1, fmt, ap);
     va_end(ap);
     strcat(buf, "\n");
 
@@ -187,7 +187,7 @@ void error(const char *fmt, ...)
 
 void verbose(int level, const char *fmt, ...)
 {
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
     va_list ap;
     t_int arg[8];
     int i;
@@ -196,7 +196,7 @@ void verbose(int level, const char *fmt, ...)
     if(level>sys_verbose)return;
 
     va_start(ap, fmt);
-    vsnprintf(buf, MAXPDSTRING-1, fmt, ap);
+    vsnprintf(buf, PD_STRING-1, fmt, ap);
     va_end(ap);
     strcat(buf, "\n");
 
@@ -213,14 +213,14 @@ void canvas_finderror(void *object);
 
 void pd_error(void *object, const char *fmt, ...)
 {
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
     va_list ap;
     t_int arg[8];
     int i;
     static int saidit;
 
     va_start(ap, fmt);
-    vsnprintf(buf, MAXPDSTRING-1, fmt, ap);
+    vsnprintf(buf, PD_STRING-1, fmt, ap);
     va_end(ap);
     strcat(buf, "\n");
 
@@ -265,12 +265,12 @@ void glob_findinstance(t_pd *dummy, t_symbol*s)
 
 void bug(const char *fmt, ...)
 {
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
     va_list ap;
     t_int arg[8];
     int i;
     va_start(ap, fmt);
-    vsnprintf(buf, MAXPDSTRING-1, fmt, ap);
+    vsnprintf(buf, PD_STRING-1, fmt, ap);
     va_end(ap);
 
     error("consistency check failed: %s", buf);

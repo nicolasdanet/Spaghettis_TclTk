@@ -68,8 +68,8 @@ int iem_modulo_color(int col)
 
 t_symbol *iem_dollar2raute(t_symbol *s)
 {
-    char buf[MAXPDSTRING+1], *s1, *s2;
-    if (strlen(s->s_name) >= MAXPDSTRING)
+    char buf[PD_STRING+1], *s1, *s2;
+    if (strlen(s->s_name) >= PD_STRING)
         return (s);
     for (s1 = s->s_name, s2 = buf; ; s1++, s2++)
     {
@@ -83,8 +83,8 @@ t_symbol *iem_dollar2raute(t_symbol *s)
 
 t_symbol *iem_raute2dollar(t_symbol *s)
 {
-    char buf[MAXPDSTRING+1], *s1, *s2;
-    if (strlen(s->s_name) >= MAXPDSTRING)
+    char buf[PD_STRING+1], *s1, *s2;
+    if (strlen(s->s_name) >= PD_STRING)
         return (s);
     for (s1 = s->s_name, s2 = buf; ; s1++, s2++)
     {

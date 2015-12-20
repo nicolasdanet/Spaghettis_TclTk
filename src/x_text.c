@@ -159,7 +159,7 @@ static void textbuf_write(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
 {
     int cr = 0;
     t_symbol *filename;
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
     while (argc && argv->a_type == A_SYMBOL &&
         *argv->a_w.w_symbol->s_name == '-')
     {
@@ -188,7 +188,7 @@ static void textbuf_write(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
         postatom(argc, argv); endpost();
     }
     canvas_makefilename(x->b_canvas, filename->s_name,
-        buf, MAXPDSTRING);
+        buf, PD_STRING);
     if (binbuf_write(x->b_binbuf, buf, "", cr))
             pd_error(x, "%s: write failed", filename->s_name);
 }
@@ -1701,9 +1701,9 @@ static void qlist_read(t_qlist *x, t_symbol *filename, t_symbol *format)
 static void qlist_write(t_qlist *x, t_symbol *filename, t_symbol *format)
 {
     int cr = 0;
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
     canvas_makefilename(x->x_canvas, filename->s_name,
-        buf, MAXPDSTRING);
+        buf, PD_STRING);
     if (!strcmp(format->s_name, "cr"))
         cr = 1;
     else if (*format->s_name)

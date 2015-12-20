@@ -342,12 +342,12 @@ typedef struct _oscparse
 
 static t_symbol *grabstring(int argc, t_atom *argv, int *ip, int slash)
 {
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
     int first, nchar;
     if (slash)
         while (*ip < argc && argv[*ip].a_w.w_float == '/')
             (*ip)++;
-    for (nchar = 0; nchar < MAXPDSTRING-1 && *ip < argc; nchar++, (*ip)++)
+    for (nchar = 0; nchar < PD_STRING-1 && *ip < argc; nchar++, (*ip)++)
     {
         char c = argv[*ip].a_w.w_float;
         if (c == 0 || (slash && c == '/'))
@@ -532,7 +532,7 @@ typedef struct _oscformat
 
 static void oscformat_set(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
 {
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
     int i, newsize;
     *x->x_pathbuf = 0;
     buf[0] = '/';
@@ -540,7 +540,7 @@ static void oscformat_set(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
     {
         char *where = (argv[i].a_type == A_SYMBOL &&
             *argv[i].a_w.w_symbol->s_name == '/' ? buf : buf+1);
-        atom_string(&argv[i], where, MAXPDSTRING-1);
+        atom_string(&argv[i], where, PD_STRING-1);
         if ((newsize = strlen(buf) + strlen(x->x_pathbuf) + 1) > x->x_pathsize)
         {
             x->x_pathbuf = resizebytes(x->x_pathbuf, x->x_pathsize, newsize);

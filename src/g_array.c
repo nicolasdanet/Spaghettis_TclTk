@@ -1099,7 +1099,7 @@ static void garray_read(t_garray *x, t_symbol *filename)
 {
     int nelem, filedesc, i;
     FILE *fd;
-    char buf[MAXPDSTRING], *bufptr;
+    char buf[PD_STRING], *bufptr;
     int yonset, elemsize;
     t_array *array = garray_getarray_floatonly(x, &yonset, &elemsize);
     if (!array)
@@ -1109,7 +1109,7 @@ static void garray_read(t_garray *x, t_symbol *filename)
     }
     nelem = array->a_n;
     if ((filedesc = canvas_open(glist_getcanvas(x->x_glist),
-            filename->s_name, "", buf, &bufptr, MAXPDSTRING, 0)) < 0 
+            filename->s_name, "", buf, &bufptr, PD_STRING, 0)) < 0 
                 || !(fd = fdopen(filedesc, "r")))
     {
         error("%s: can't open", filename->s_name);
@@ -1136,7 +1136,7 @@ static void garray_read(t_garray *x, t_symbol *filename)
 static void garray_write(t_garray *x, t_symbol *filename)
 {
     FILE *fd;
-    char buf[MAXPDSTRING];
+    char buf[PD_STRING];
     int yonset, elemsize, i;
     t_array *array = garray_getarray_floatonly(x, &yonset, &elemsize);
     if (!array)
@@ -1145,7 +1145,7 @@ static void garray_write(t_garray *x, t_symbol *filename)
         return;
     }
     canvas_makefilename(glist_getcanvas(x->x_glist), filename->s_name,
-        buf, MAXPDSTRING);
+        buf, PD_STRING);
     if (!(fd = sys_fopen(buf, "w")))
     {
         error("%s: can't create", buf);

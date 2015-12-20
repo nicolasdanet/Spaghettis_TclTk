@@ -60,7 +60,7 @@ void binbuf_clear(t_binbuf *x)
     /* convert text to a binbuf */
 void binbuf_text(t_binbuf *x, char *text, size_t size)
 {
-    char buf[MAXPDSTRING+1], *bufp, *ebuf = buf+MAXPDSTRING;
+    char buf[PD_STRING+1], *bufp, *ebuf = buf+PD_STRING;
     const char *textp = text, *etext = text+size;
     t_atom *ap;
     int nalloc = 16, natom = 0;
@@ -205,7 +205,7 @@ void binbuf_gettext(t_binbuf *x, char **bufp, int *lengthp)
 {
     char *buf = getbytes(0), *newbuf;
     int length = 0;
-    char string[MAXPDSTRING];
+    char string[PD_STRING];
     t_atom *ap;
     int indx;
 
@@ -214,7 +214,7 @@ void binbuf_gettext(t_binbuf *x, char **bufp, int *lengthp)
         int newlength;
         if ((ap->a_type == A_SEMI || ap->a_type == A_COMMA) &&
                 length && buf[length-1] == ' ') length--;
-        atom_string(ap, string, MAXPDSTRING);
+        atom_string(ap, string, PD_STRING);
         newlength = length + strlen(string) + 1;
         if (!(newbuf = resizebytes(buf, length, newlength))) break;
         buf = newbuf;
@@ -305,7 +305,7 @@ void binbuf_addbinbuf(t_binbuf *x, t_binbuf *y)
     binbuf_add(z, y->b_n, y->b_vec);
     for (i = 0, ap = z->b_vec; i < z->b_n; i++, ap++)
     {
-        char tbuf[MAXPDSTRING], *s;
+        char tbuf[PD_STRING], *s;
         switch (ap->a_type)
         {
         case A_FLOAT:
@@ -321,7 +321,7 @@ void binbuf_addbinbuf(t_binbuf *x, t_binbuf *y)
             SETSYMBOL(ap, gensym(tbuf));
             break;
         case A_DOLLSYM:
-            atom_string(ap, tbuf, MAXPDSTRING);
+            atom_string(ap, tbuf, PD_STRING);
             SETSYMBOL(ap, gensym(tbuf));
             break;
         case A_SYMBOL:
@@ -330,7 +330,7 @@ void binbuf_addbinbuf(t_binbuf *x, t_binbuf *y)
                     fixit = 1;
             if (fixit)
             {
-                atom_string(ap, tbuf, MAXPDSTRING);
+                atom_string(ap, tbuf, PD_STRING);
                 SETSYMBOL(ap, gensym(tbuf));
             }
             break;
@@ -395,10 +395,10 @@ void binbuf_restore(t_binbuf *x, int argc, t_atom *argv)
             }
             else if (strchr(argv->a_w.w_symbol->s_name, '\\'))
             {
-                char buf[MAXPDSTRING], *sp1, *sp2;
+                char buf[PD_STRING], *sp1, *sp2;
                 int slashed = 0;
                 for (sp1 = buf, sp2 = argv->a_w.w_symbol->s_name;
-                    *sp2 && sp1 < buf + (MAXPDSTRING-1);
+                    *sp2 && sp1 < buf + (PD_STRING-1);
                         sp2++)
                 {
                     if (slashed)
@@ -497,10 +497,10 @@ int binbuf_expanddollsym(char*s, char*buf,t_atom dollar0, int ac, t_atom *av, in
       sprintf(buf, "$%d", argno);
     }
   else if (argno == 0){ /* $0 */
-    atom_string(&dollar0, buf, MAXPDSTRING/2-1);
+    atom_string(&dollar0, buf, PD_STRING/2-1);
   }
   else{ /* fine! */
-    atom_string(av+(argno-1), buf, MAXPDSTRING/2-1);
+    atom_string(av+(argno-1), buf, PD_STRING/2-1);
   }
   return (arglen-1);
 }
@@ -509,11 +509,11 @@ int binbuf_expanddollsym(char*s, char*buf,t_atom dollar0, int ac, t_atom *av, in
 argument. */
 t_symbol *binbuf_realizedollsym(t_symbol *s, int ac, t_atom *av, int tonew)
 {
-    char buf[MAXPDSTRING];
-    char buf2[MAXPDSTRING];
+    char buf[PD_STRING];
+    char buf2[PD_STRING];
     char*str=s->s_name;
     char*substr;
-    int next=0, i=MAXPDSTRING;
+    int next=0, i=PD_STRING;
     t_atom dollarnull;
     SETFLOAT(&dollarnull, canvas_getdollarzero());
     while(i--)buf2[i]=0;
@@ -527,7 +527,7 @@ t_symbol *binbuf_realizedollsym(t_symbol *s, int ac, t_atom *av, int tonew)
      * whenever this happened, enable this code
      */
     substr=strchr(str, '$');
-    if (!substr || substr-str >= MAXPDSTRING)
+    if (!substr || substr-str >= PD_STRING)
         return (s);
 
     strncat(buf2, str, (substr-str));
@@ -550,7 +550,7 @@ t_symbol *binbuf_realizedollsym(t_symbol *s, int ac, t_atom *av, int tonew)
             return 0; /* JMZ: this should mimick the original behaviour */
         }
 
-        strncat(buf2, buf, MAXPDSTRING/2-1);
+        strncat(buf2, buf, PD_STRING/2-1);
         str+=next;
         substr=strchr(str, '$');
         if(substr)
@@ -793,7 +793,7 @@ int binbuf_read(t_binbuf *b, char *filename, char *dirname, int crflag)
     int fd;
     int readret;
     char *buf;
-    char namebuf[MAXPDSTRING];
+    char namebuf[PD_STRING];
     
     namebuf[0] = 0;
     if (*dirname)
@@ -846,9 +846,9 @@ int binbuf_read_via_canvas(t_binbuf *b, char *filename, t_canvas *canvas,
     int crflag)
 {
     int filedesc;
-    char buf[MAXPDSTRING], *bufptr;
+    char buf[PD_STRING], *bufptr;
     if ((filedesc = canvas_open(canvas, filename, "",
-        buf, &bufptr, MAXPDSTRING, 0)) < 0)
+        buf, &bufptr, PD_STRING, 0)) < 0)
     {
         error("%s: can't open", filename);
         return (1);
@@ -864,9 +864,9 @@ int binbuf_read_via_path(t_binbuf *b, char *filename, char *dirname,
     int crflag)
 {
     int filedesc;
-    char buf[MAXPDSTRING], *bufptr;
+    char buf[PD_STRING], *bufptr;
     if ((filedesc = open_via_path(
-        dirname, filename, "", buf, &bufptr, MAXPDSTRING, 0)) < 0)
+        dirname, filename, "", buf, &bufptr, PD_STRING, 0)) < 0)
     {
         error("%s: can't open", filename);
         return (1);
@@ -885,7 +885,7 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd);
 int binbuf_write(t_binbuf *x, char *filename, char *dir, int crflag)
 {
     FILE *f = 0;
-    char sbuf[WBUFSIZE], fbuf[MAXPDSTRING], *bp = sbuf, *ep = sbuf + WBUFSIZE;
+    char sbuf[WBUFSIZE], fbuf[PD_STRING], *bp = sbuf, *ep = sbuf + WBUFSIZE;
     t_atom *ap;
     int indx, deleteit = 0;
     int ncolumn = 0;
@@ -1523,8 +1523,8 @@ void binbuf_savetext(t_binbuf *bfrom, t_binbuf *bto)
                     binbuf_add(bto, 1, &ap[k]);
         else
         {
-            char buf[MAXPDSTRING+1];
-            atom_string(&ap[k], buf, MAXPDSTRING);
+            char buf[PD_STRING+1];
+            atom_string(&ap[k], buf, PD_STRING);
             SETSYMBOL(&at, gensym(buf));
             binbuf_add(bto, 1, &at);
         }

@@ -44,9 +44,9 @@ static t_gfxstub *gfxstub_list;
 
 void gfxstub_new(t_pd *owner, void *key, const char *cmd)
 {
-    char buf[4*MAXPDSTRING];
+    char buf[4*PD_STRING];
     char namebuf[80];
-    char sprintfbuf[MAXPDSTRING];
+    char sprintfbuf[PD_STRING];
     char *afterpercent;
     t_int afterpercentlen;
     t_gfxstub *x;
@@ -55,7 +55,7 @@ void gfxstub_new(t_pd *owner, void *key, const char *cmd)
     for (x = gfxstub_list; x; x = x->x_next)
         if (x->x_key == key)
             gfxstub_deleteforkey(key);
-    if (strlen(cmd) + 50 > 4*MAXPDSTRING)
+    if (strlen(cmd) + 50 > 4*PD_STRING)
     {
         bug("audio dialog too long");
         bug("%s", cmd);
@@ -77,7 +77,7 @@ void gfxstub_new(t_pd *owner, void *key, const char *cmd)
     strncpy(sprintfbuf, cmd, afterpercentlen);
     sprintfbuf[afterpercentlen] = '\0';
     sprintf(buf, sprintfbuf, s->s_name);
-    strncat(buf, afterpercent, (4*MAXPDSTRING) - afterpercentlen);
+    strncat(buf, afterpercent, (4*PD_STRING) - afterpercentlen);
     sys_gui(buf);
 }
 

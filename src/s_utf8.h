@@ -28,40 +28,34 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include "m_pd.h"
+#include <stdint.h>
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#ifndef UCS4
-    #define UCS4 uint32_t
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#define UTF8_MAXBYTES       4
+#define UCS4_CODE_POINT         uint32_t
+#define UTF8_MAXIMUM_BYTES      4
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int      u8_utf8toucs2      (uint16_t *dest, int sz, char *src, int srcsz);
-int      u8_ucs2toutf8      (char *dest, int sz, uint16_t *src, int srcsz);
+int         u8_utf8toucs2       (uint16_t *dest, int sz, char *src, int srcsz);
+int         u8_ucs2toutf8       (char *dest, int sz, uint16_t *src, int srcsz);
 
-int      u8_wc_nbytes       (uint32_t ch);
-int      u8_wc_toutf8       (char *dest, uint32_t ch);
-int      u8_wc_toutf8_nul   (char *dest, uint32_t ch);
+int         u8_wc_nbytes        (uint32_t ch);
+int         u8_wc_toutf8        (char *dest, uint32_t ch);
+int         u8_wc_toutf8_nul    (char *dest, uint32_t ch);
 
-int      u8_offset          (char *str, int charnum);
-int      u8_charnum         (char *s, int offset);
-uint32_t u8_nextchar        (char *s, int *i);
-void     u8_inc             (char *s, int *i);
-void     u8_dec             (char *s, int *i);
-void     u8_inc_ptr         (char **sp);
-void     u8_dec_ptr         (char **sp);
-int      u8_seqlen          (char *s);
+int         u8_offset           (char *str, int charnum);
+int         u8_charnum          (char *s, int offset);
+uint32_t    u8_nextchar         (char *s, int *i);
+void        u8_inc              (char *s, int *i);
+void        u8_dec              (char *s, int *i);
+void        u8_inc_ptr          (char **sp);
+void        u8_dec_ptr          (char **sp);
+int         u8_seqlen           (char *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
