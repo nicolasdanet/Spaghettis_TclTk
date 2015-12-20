@@ -102,7 +102,7 @@ static t_alsa_dev *alsamm_outdevice[ALSA_MAXIMUM_DEVICES];
 static unsigned int alsamm_sr = 0; 
 static unsigned int alsamm_buffertime = 0;
 static unsigned int alsamm_buffersize = 0;
-static int alsamm_transfersize = DEFAULT_BLOCK;
+static int alsamm_transfersize = AUDIO_DEFAULT_BLOCK;
 
 /* bad style: we asume all cards give the same answer at init so we make this vars global
    to have a faster access in writing reading during send_dacs */
@@ -1039,7 +1039,7 @@ static int alsamm_stop()
 /* I see: (a guess as a documentation)
 
    all DAC data is in sys_soundout array with 
-   DEFAULT_BLOCK (mostly 64) for each channels which
+   AUDIO_DEFAULT_BLOCK (mostly 64) for each channels which
    if we have more channels opened then dac-channels = sys_outchannels
    we have to zero (silence them), which should be done once.
 

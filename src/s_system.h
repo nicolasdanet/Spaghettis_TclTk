@@ -60,18 +60,18 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define DEFAULT_BLOCK               64
-#define DEFAULT_SAMPLING            44100
+#define AUDIO_DEFAULT_BLOCK         64
+#define AUDIO_DEFAULT_SAMPLING      44100
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 #if defined  ( _WIN32 )
-    #define DEFAULT_ADVANCE         80
+    #define AUDIO_DEFAULT_ADVANCE   80
 #elif defined ( __APPLE__ )
-    #define DEFAULT_ADVANCE         5
+    #define AUDIO_DEFAULT_ADVANCE   5
 #else
-    #define DEFAULT_ADVANCE         25
+    #define AUDIO_DEFAULT_ADVANCE   25
 #endif
 
 // -----------------------------------------------------------------------------------------------------------

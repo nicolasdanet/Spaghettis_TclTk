@@ -23,8 +23,8 @@
 #define SYS_DEFAULTCH 2
 typedef long t_pa_sample;
 #define SYS_SAMPLEWIDTH sizeof(t_pa_sample)
-#define SYS_BYTESPERCHAN (DEFAULT_BLOCK * SYS_SAMPLEWIDTH) 
-#define SYS_XFERSAMPS (SYS_DEFAULTCH*DEFAULT_BLOCK)
+#define SYS_BYTESPERCHAN (AUDIO_DEFAULT_BLOCK * SYS_SAMPLEWIDTH) 
+#define SYS_XFERSAMPS (SYS_DEFAULTCH*AUDIO_DEFAULT_BLOCK)
 #define SYS_XFERSIZE (SYS_SAMPLEWIDTH * SYS_XFERSAMPS)
 #define MAXNDEV 20
 #define DEVDESCSIZE 80
@@ -166,24 +166,24 @@ void sys_setchsr(int chin, int chout, int sr)
 {
     int nblk;
     int inbytes = (chin ? chin : 2) *
-                (DEFAULT_BLOCK*sizeof(t_sample));
+                (AUDIO_DEFAULT_BLOCK*sizeof(t_sample));
     int outbytes = (chout ? chout : 2) *
-                (DEFAULT_BLOCK*sizeof(t_sample));
+                (AUDIO_DEFAULT_BLOCK*sizeof(t_sample));
 
     if (sys_soundin)
         freebytes(sys_soundin, 
             (sys_inchannels? sys_inchannels : 2) *
-                (DEFAULT_BLOCK*sizeof(t_sample)));
+                (AUDIO_DEFAULT_BLOCK*sizeof(t_sample)));
     if (sys_soundout)
         freebytes(sys_soundout, 
             (sys_outchannels? sys_outchannels : 2) *
-                (DEFAULT_BLOCK*sizeof(t_sample)));
+                (AUDIO_DEFAULT_BLOCK*sizeof(t_sample)));
     sys_inchannels = chin;
     sys_outchannels = chout;
     sys_dacsr = sr;
     sys_advance_samples = (sys_schedadvance * sys_dacsr) / (1000000.);
-    if (sys_advance_samples < DEFAULT_BLOCK)
-        sys_advance_samples = DEFAULT_BLOCK;
+    if (sys_advance_samples < AUDIO_DEFAULT_BLOCK)
+        sys_advance_samples = AUDIO_DEFAULT_BLOCK;
 
     sys_soundin = (t_sample *)getbytes(inbytes);
     memset(sys_soundin, 0, inbytes);
@@ -220,11 +220,11 @@ void sys_set_audio_settings(int naudioindev, int *audioindev, int nchindev,
         &cancallback, MAXNDEV, DEVDESCSIZE);
 
     if (rate < 1)
-        rate = DEFAULT_SAMPLING;
+        rate = AUDIO_DEFAULT_SAMPLING;
     if (advance < 0)
-        advance = DEFAULT_ADVANCE;
-    if (blocksize != (1 << ilog2(blocksize)) || blocksize < DEFAULT_BLOCK)
-        blocksize = DEFAULT_BLOCK;
+        advance = AUDIO_DEFAULT_ADVANCE;
+    if (blocksize != (1 << ilog2(blocksize)) || blocksize < AUDIO_DEFAULT_BLOCK)
+        blocksize = AUDIO_DEFAULT_BLOCK;
      audio_init();
         /* Since the channel vector might be longer than the
         audio device vector, or vice versa, we fill the shorter one
@@ -495,7 +495,7 @@ int sys_send_dacs(void)
     {
         int i, n;
         t_sample maxsamp;
-        for (i = 0, n = sys_inchannels * DEFAULT_BLOCK, maxsamp = sys_inmax;
+        for (i = 0, n = sys_inchannels * AUDIO_DEFAULT_BLOCK, maxsamp = sys_inmax;
             i < n; i++)
         {
             t_sample f = sys_soundin[i];
@@ -503,7 +503,7 @@ int sys_send_dacs(void)
             else if (-f > maxsamp) maxsamp = -f;
         }
         sys_inmax = maxsamp;
-        for (i = 0, n = sys_outchannels * DEFAULT_BLOCK, maxsamp = sys_outmax;
+        for (i = 0, n = sys_outchannels * AUDIO_DEFAULT_BLOCK, maxsamp = sys_outmax;
             i < n; i++)
         {
             t_sample f = sys_soundout[i];
@@ -814,8 +814,8 @@ void sys_set_audio_settings_reopen(int naudioindev, int *audioindev, int nchinde
     if (callback < 0)
         callback = 0;
     if (newblocksize != (1<<ilog2(newblocksize)) ||
-        newblocksize < DEFAULT_BLOCK || newblocksize > 2048)
-            newblocksize = DEFAULT_BLOCK;
+        newblocksize < AUDIO_DEFAULT_BLOCK || newblocksize > 2048)
+            newblocksize = AUDIO_DEFAULT_BLOCK;
     
     if (!audio_callback_is_open && !callback)
         sys_close_audio();

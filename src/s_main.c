@@ -1062,7 +1062,7 @@ int sys_argparse(int argc, char **argv)
 
 int sys_getblksize(void)
 {
-    return (DEFAULT_BLOCK);
+    return (AUDIO_DEFAULT_BLOCK);
 }
 
     /* stuff to do, once, after calling sys_argparse() -- which may itself

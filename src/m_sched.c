@@ -35,7 +35,7 @@ extern int sys_hipriority;
 extern t_float sys_dacsr;
 extern int sys_schedadvance;
 
-int sys_schedblocksize = DEFAULT_BLOCK;     /* Global. */
+int sys_schedblocksize = AUDIO_DEFAULT_BLOCK;     /* Global. */
 int sys_usecsincelastsleep(void);
 int sys_sleepgrain;                             /* Global. */
 

@@ -118,38 +118,38 @@ static int callbackprocess(jack_nframes_t nframes, void *arg)
     unsigned int n;
     jack_default_audio_sample_t *out[MAX_JACK_PORTS], *in[MAX_JACK_PORTS], *jp;
 
-    if (nframes % DEFAULT_BLOCK)
+    if (nframes % AUDIO_DEFAULT_BLOCK)
     {
         fprintf(stderr, "jack: nframes %d not a multiple of blocksize %d\n",
-            nframes, DEFAULT_BLOCK);
-        nframes -= (nframes % DEFAULT_BLOCK);
+            nframes, AUDIO_DEFAULT_BLOCK);
+        nframes -= (nframes % AUDIO_DEFAULT_BLOCK);
     }
     for (chan = 0; chan < sys_inchannels; chan++)
         in[chan] = jack_port_get_buffer(input_port[chan], nframes);
     for (chan = 0; chan < sys_outchannels; chan++)
         out[chan] = jack_port_get_buffer(output_port[chan], nframes);
-    for (n = 0; n < nframes; n += DEFAULT_BLOCK)
+    for (n = 0; n < nframes; n += AUDIO_DEFAULT_BLOCK)
     {
         t_sample *fp;
         for (chan = 0; chan < sys_inchannels; chan++)
             if (in[chan])
         {
-            for (fp = sys_soundin + chan*DEFAULT_BLOCK,
-                jp = in[chan] + n, j=0; j < DEFAULT_BLOCK; j++)
+            for (fp = sys_soundin + chan*AUDIO_DEFAULT_BLOCK,
+                jp = in[chan] + n, j=0; j < AUDIO_DEFAULT_BLOCK; j++)
                     *fp++ = *jp++;
         }
         for (chan = 0; chan < sys_outchannels; chan++)
         {
-            for (fp = sys_soundout + chan*DEFAULT_BLOCK,
-                j = 0; j < DEFAULT_BLOCK; j++)
+            for (fp = sys_soundout + chan*AUDIO_DEFAULT_BLOCK,
+                j = 0; j < AUDIO_DEFAULT_BLOCK; j++)
                     *fp++ = 0;
         }
         (*jack_callback)();
         for (chan = 0; chan < sys_outchannels; chan++)
             if (out[chan])
         {
-            for (fp = sys_soundout + chan*DEFAULT_BLOCK, jp = out[chan] + n,
-                j=0; j < DEFAULT_BLOCK; j++)
+            for (fp = sys_soundout + chan*AUDIO_DEFAULT_BLOCK, jp = out[chan] + n,
+                j=0; j < AUDIO_DEFAULT_BLOCK; j++)
                     *jp++ = *fp++;
         }
     }       
@@ -526,24 +526,24 @@ int jack_send_dacs(void)
     for (j = 0; j < sys_outchannels; j++)
     {
         memcpy(jack_outbuf + (j * BUF_JACK) + jack_filled, fp,
-            DEFAULT_BLOCK*sizeof(t_sample));
-        fp += DEFAULT_BLOCK;  
+            AUDIO_DEFAULT_BLOCK*sizeof(t_sample));
+        fp += AUDIO_DEFAULT_BLOCK;  
     }
     fp = sys_soundin;
     for (j = 0; j < sys_inchannels; j++)
     {
         memcpy(fp, jack_inbuf + (j * BUF_JACK) + jack_filled,
-            DEFAULT_BLOCK*sizeof(t_sample));
-        fp += DEFAULT_BLOCK;
+            AUDIO_DEFAULT_BLOCK*sizeof(t_sample));
+        fp += AUDIO_DEFAULT_BLOCK;
     }
-    jack_filled += DEFAULT_BLOCK;
+    jack_filled += AUDIO_DEFAULT_BLOCK;
     pthread_mutex_unlock(&jack_mutex);
 
     if ((timenow = sys_getrealtime()) - timeref > 0.002)
     {
         rtnval = DACS_SLEPT;
     }
-    memset(sys_soundout, 0, DEFAULT_BLOCK*sizeof(t_sample)*sys_outchannels);
+    memset(sys_soundout, 0, AUDIO_DEFAULT_BLOCK*sizeof(t_sample)*sys_outchannels);
     return rtnval;
 }
 

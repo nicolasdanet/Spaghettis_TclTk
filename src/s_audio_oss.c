@@ -43,9 +43,9 @@
 typedef int16_t t_oss_int16;
 typedef int32_t t_oss_int32;
 #define OSS_MAXSAMPLEWIDTH sizeof(t_oss_int32)
-#define OSS_BYTESPERCHAN(width) (DEFAULT_BLOCK * (width)) 
-#define OSS_XFERSAMPS(chans) (DEFAULT_BLOCK* (chans))
-#define OSS_XFERSIZE(chans, width) (DEFAULT_BLOCK * (chans) * (width))
+#define OSS_BYTESPERCHAN(width) (AUDIO_DEFAULT_BLOCK * (width)) 
+#define OSS_XFERSAMPS(chans) (AUDIO_DEFAULT_BLOCK* (chans))
+#define OSS_XFERSIZE(chans, width) (AUDIO_DEFAULT_BLOCK * (chans) * (width))
 
 extern int sys_verbose;
 extern t_sample *sys_soundout;
@@ -172,7 +172,7 @@ void oss_configure(t_oss_dev *dev, int srate, int dac, int skipblocksize,
         if (!linux_fragsize)
         {
             linux_fragsize = OSS_DEFFRAGSIZE;
-            while (linux_fragsize > DEFAULT_BLOCK
+            while (linux_fragsize > AUDIO_DEFAULT_BLOCK
                 && linux_fragsize * 6 > sys_advance_samples)
                     linux_fragsize = linux_fragsize/2;
         }
@@ -278,7 +278,7 @@ int oss_open_audio(int nindev,  int *indev,  int nchin,  int *chin,
     int inchannels = 0, outchannels = 0;
     char devname[20];
     int n, i, fd, flags;
-    char buf[OSS_MAXSAMPLEWIDTH * DEFAULT_BLOCK * OSS_MAXCHPERDEV];
+    char buf[OSS_MAXSAMPLEWIDTH * AUDIO_DEFAULT_BLOCK * OSS_MAXCHPERDEV];
     int num_devs = 0;
     int wantmore=0;
     int spread = 0;
@@ -474,7 +474,7 @@ int oss_open_audio(int nindev,  int *indev,  int nchin,  int *chin,
             fprintf(stderr,("OSS: issuing first ADC 'read' ... "));
         read(linux_adcs[0].d_fd, buf,
             linux_adcs[0].d_bytespersamp *
-                linux_adcs[0].d_nchannels * DEFAULT_BLOCK);
+                linux_adcs[0].d_nchannels * AUDIO_DEFAULT_BLOCK);
         if (sys_verbose)
             fprintf(stderr, "...done.\n");
     }
@@ -483,11 +483,11 @@ int oss_open_audio(int nindev,  int *indev,  int nchin,  int *chin,
     {
         int j;
         memset(buf, 0, linux_dacs[i].d_bytespersamp *
-                linux_dacs[i].d_nchannels * DEFAULT_BLOCK);
-        for (j = 0; j < sys_advance_samples/DEFAULT_BLOCK; j++)
+                linux_dacs[i].d_nchannels * AUDIO_DEFAULT_BLOCK);
+        for (j = 0; j < sys_advance_samples/AUDIO_DEFAULT_BLOCK; j++)
             write(linux_dacs[i].d_fd, buf,
                 linux_dacs[i].d_bytespersamp *
-                    linux_dacs[i].d_nchannels * DEFAULT_BLOCK);
+                    linux_dacs[i].d_nchannels * AUDIO_DEFAULT_BLOCK);
     }
     sys_setalarm(0);
     sys_inchannels = inchannels;
@@ -559,7 +559,7 @@ in audio output and/or input. */
 static void oss_doresync( void)
 {
     int dev, zeroed = 0, wantsize;
-    char buf[OSS_MAXSAMPLEWIDTH * DEFAULT_BLOCK * OSS_MAXCHPERDEV];
+    char buf[OSS_MAXSAMPLEWIDTH * AUDIO_DEFAULT_BLOCK * OSS_MAXCHPERDEV];
     audio_buf_info ainfo;
 
         /* 1. if any input devices are ahead (have more than 1 buffer stored),
@@ -639,7 +639,7 @@ int oss_send_dacs(void)
     t_sample *fp1, *fp2;
     long fill;
     int i, j, dev, rtnval = DACS_YES;
-    char buf[OSS_MAXSAMPLEWIDTH * DEFAULT_BLOCK * OSS_MAXCHPERDEV];
+    char buf[OSS_MAXSAMPLEWIDTH * AUDIO_DEFAULT_BLOCK * OSS_MAXCHPERDEV];
     t_oss_int16 *sp;
     t_oss_int32 *lp;
         /* the maximum number of samples we should have in the ADC buffer */
@@ -733,11 +733,11 @@ int oss_send_dacs(void)
         {
             if (linux_dacs[dev].d_bytespersamp == 2)
             {
-                for (i = DEFAULT_BLOCK,  fp1 = sys_soundout +   
-                    DEFAULT_BLOCK*thischan,
+                for (i = AUDIO_DEFAULT_BLOCK,  fp1 = sys_soundout +   
+                    AUDIO_DEFAULT_BLOCK*thischan,
                     sp = (t_oss_int16 *)buf; i--; fp1++, sp += nchannels)
                 {
-                    for (j=0, fp2 = fp1; j<nchannels; j++, fp2 += DEFAULT_BLOCK)
+                    for (j=0, fp2 = fp1; j<nchannels; j++, fp2 += AUDIO_DEFAULT_BLOCK)
                     {
                         int s = *fp2 * 32767.;
                         if (s > 32767) s = 32767;
@@ -759,7 +759,7 @@ int oss_send_dacs(void)
         thischan += nchannels;
     }
     memset(sys_soundout, 0,
-        sys_outchannels * (sizeof(t_sample) * DEFAULT_BLOCK));
+        sys_outchannels * (sizeof(t_sample) * AUDIO_DEFAULT_BLOCK));
 
         /* do input */
 
@@ -780,11 +780,11 @@ int oss_send_dacs(void)
 
         if (linux_adcs[dev].d_bytespersamp == 2)
         {
-            for (i = DEFAULT_BLOCK,fp1 = sys_soundin + thischan*DEFAULT_BLOCK,
+            for (i = AUDIO_DEFAULT_BLOCK,fp1 = sys_soundin + thischan*AUDIO_DEFAULT_BLOCK,
                 sp = (t_oss_int16 *)buf; i--; fp1++, sp += nchannels)
             {
                 for (j=0;j<nchannels;j++)
-                    fp1[j*DEFAULT_BLOCK] = (float)sp[j]*(float)3.051850e-05;
+                    fp1[j*AUDIO_DEFAULT_BLOCK] = (float)sp[j]*(float)3.051850e-05;
             }
         }
         thischan += nchannels;    
