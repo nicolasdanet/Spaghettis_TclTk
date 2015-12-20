@@ -75,9 +75,13 @@ Additional terms:
     
         Copyright (c) 2010 Peter Brinkmann.
     
-    src/s_audio_esd.c
+    src/s_utf8.c
     
-        Copyright (c) 2006 Guenter Geiger.
+        Basic UTF-8 manipulation routines,
+        by Jeff Bezanson,
+        placed in the public domain Fall 2005.
+
+        Modified by Bryan Jurish (moo) March 2009.
 
     tcl/pd_text.tcl
     
