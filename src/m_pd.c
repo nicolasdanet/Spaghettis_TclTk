@@ -112,7 +112,7 @@ static void bindlist_anything(t_bindlist *x, t_symbol *s,
 void m_pd_setup(void)
 {
     bindlist_class = class_new(gensym("bindlist"), 0, 0,
-        sizeof(t_bindlist), CLASS_PD, 0);
+        sizeof(t_bindlist), CLASS_PURE, 0);
     class_addbang(bindlist_class, bindlist_bang);
     class_addfloat(bindlist_class, (t_method)bindlist_float);
     class_addsymbol(bindlist_class, bindlist_symbol);

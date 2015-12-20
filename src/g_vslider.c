@@ -618,9 +618,9 @@ void g_vslider_setup(void)
     class_addmethod(vslider_class, (t_method)vslider_pos, gensym("pos"), A_GIMME, 0);
     class_addmethod(vslider_class, (t_method)vslider_range, gensym("range"), A_GIMME, 0);
     class_addmethod(vslider_class, (t_method)vslider_color, gensym("color"), A_GIMME, 0);
-    class_addmethod(vslider_class, (t_method)vslider_send, gensym("send"), A_DEFSYM, 0);
-    class_addmethod(vslider_class, (t_method)vslider_receive, gensym("receive"), A_DEFSYM, 0);
-    class_addmethod(vslider_class, (t_method)vslider_label, gensym("label"), A_DEFSYM, 0);
+    class_addmethod(vslider_class, (t_method)vslider_send, gensym("send"), A_DEFSYMBOL, 0);
+    class_addmethod(vslider_class, (t_method)vslider_receive, gensym("receive"), A_DEFSYMBOL, 0);
+    class_addmethod(vslider_class, (t_method)vslider_label, gensym("label"), A_DEFSYMBOL, 0);
     class_addmethod(vslider_class, (t_method)vslider_label_pos, gensym("label_pos"), A_GIMME, 0);
     class_addmethod(vslider_class, (t_method)vslider_label_font, gensym("label_font"), A_GIMME, 0);
     class_addmethod(vslider_class, (t_method)vslider_log, gensym("log"), 0);

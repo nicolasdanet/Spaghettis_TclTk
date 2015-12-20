@@ -8,6 +8,7 @@ to this file... */
 
 #include <stdlib.h>
 #include "m_pd.h"
+#include "m_macros.h"
 
 #include "g_canvas.h"
 #include "s_system.h"    /* for sys_hostfontsize */

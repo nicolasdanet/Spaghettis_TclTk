@@ -454,9 +454,9 @@ void g_toggle_setup(void)
     class_addmethod(toggle_class, (t_method)toggle_delta, gensym("delta"), A_GIMME, 0);
     class_addmethod(toggle_class, (t_method)toggle_pos, gensym("pos"), A_GIMME, 0);
     class_addmethod(toggle_class, (t_method)toggle_color, gensym("color"), A_GIMME, 0);
-    class_addmethod(toggle_class, (t_method)toggle_send, gensym("send"), A_DEFSYM, 0);
-    class_addmethod(toggle_class, (t_method)toggle_receive, gensym("receive"), A_DEFSYM, 0);
-    class_addmethod(toggle_class, (t_method)toggle_label, gensym("label"), A_DEFSYM, 0);
+    class_addmethod(toggle_class, (t_method)toggle_send, gensym("send"), A_DEFSYMBOL, 0);
+    class_addmethod(toggle_class, (t_method)toggle_receive, gensym("receive"), A_DEFSYMBOL, 0);
+    class_addmethod(toggle_class, (t_method)toggle_label, gensym("label"), A_DEFSYMBOL, 0);
     class_addmethod(toggle_class, (t_method)toggle_label_pos, gensym("label_pos"), A_GIMME, 0);
     class_addmethod(toggle_class, (t_method)toggle_label_font, gensym("label_font"), A_GIMME, 0);
     class_addmethod(toggle_class, (t_method)toggle_init, gensym("init"), A_FLOAT, 0);

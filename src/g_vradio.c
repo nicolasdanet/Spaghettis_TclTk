@@ -570,11 +570,11 @@ void g_vradio_setup(void)
     class_addmethod(vradio_class, (t_method)vradio_color,
         gensym("color"), A_GIMME, 0);
     class_addmethod(vradio_class, (t_method)vradio_send,
-        gensym("send"), A_DEFSYM, 0);
+        gensym("send"), A_DEFSYMBOL, 0);
     class_addmethod(vradio_class, (t_method)vradio_receive,
-        gensym("receive"), A_DEFSYM, 0);
+        gensym("receive"), A_DEFSYMBOL, 0);
     class_addmethod(vradio_class, (t_method)vradio_label,
-        gensym("label"), A_DEFSYM, 0);
+        gensym("label"), A_DEFSYMBOL, 0);
     class_addmethod(vradio_class, (t_method)vradio_label_pos,
         gensym("label_pos"), A_GIMME, 0);
     class_addmethod(vradio_class, (t_method)vradio_label_font,

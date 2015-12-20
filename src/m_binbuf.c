@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include "m_pd.h"
+#include "m_macros.h"
 #include "s_system.h"
 #include <stdio.h>
 #include <errno.h>
@@ -75,7 +76,7 @@ void binbuf_text(t_binbuf *x, char *text, size_t size)
         while ((textp != etext) && (*textp == ' ' || *textp == '\n'
             || *textp == '\r' || *textp == '\t')) textp++;
         if (textp == etext) break;
-        if (*textp == ';') SETSEMI(ap), textp++;
+        if (*textp == ';') SETSEMICOLON(ap), textp++;
         else if (*textp == ',') SETCOMMA(ap), textp++;
         else
         {
@@ -179,7 +180,7 @@ void binbuf_text(t_binbuf *x, char *text, size_t size)
                         dollar = 0;
                 if (dollar)
                     SETDOLLAR(ap, atoi(buf+1));
-                else SETDOLLSYM(ap, gensym(buf));
+                else SETDOLLARSYMBOL(ap, gensym(buf));
             }
             else SETSYMBOL(ap, gensym(buf));
         }
@@ -212,7 +213,7 @@ void binbuf_gettext(t_binbuf *x, char **bufp, int *lengthp)
     for (ap = x->b_vec, indx = x->b_n; indx--; ap++)
     {
         int newlength;
-        if ((ap->a_type == A_SEMI || ap->a_type == A_COMMA) &&
+        if ((ap->a_type == A_SEMICOLON || ap->a_type == A_COMMA) &&
                 length && buf[length-1] == ' ') length--;
         atom_string(ap, string, PD_STRING);
         newlength = length + strlen(string) + 1;
@@ -220,7 +221,7 @@ void binbuf_gettext(t_binbuf *x, char **bufp, int *lengthp)
         buf = newbuf;
         strcpy(buf + length, string);
         length = newlength;
-        if (ap->a_type == A_SEMI) buf[length-1] = '\n';
+        if (ap->a_type == A_SEMICOLON) buf[length-1] = '\n';
         else buf[length-1] = ' ';
     }
     if (length && buf[length-1] == ' ')
@@ -281,7 +282,7 @@ void binbuf_addv(t_binbuf *x, char *fmt, ...)
         case 'i': SETFLOAT(at, va_arg(ap, int)); break;
         case 'f': SETFLOAT(at, va_arg(ap, double)); break;
         case 's': SETSYMBOL(at, va_arg(ap, t_symbol *)); break;
-        case ';': SETSEMI(at); break;
+        case ';': SETSEMICOLON(at); break;
         case ',': SETCOMMA(at); break;
         default: goto done;
         }
@@ -310,7 +311,7 @@ void binbuf_addbinbuf(t_binbuf *x, t_binbuf *y)
         {
         case A_FLOAT:
             break;
-        case A_SEMI:
+        case A_SEMICOLON:
             SETSYMBOL(ap, gensym(";"));
             break;
         case A_COMMA:
@@ -320,7 +321,7 @@ void binbuf_addbinbuf(t_binbuf *x, t_binbuf *y)
             sprintf(tbuf, "$%d", ap->a_w.w_index);
             SETSYMBOL(ap, gensym(tbuf));
             break;
-        case A_DOLLSYM:
+        case A_DOLLARSYMBOL:
             atom_string(ap, tbuf, PD_STRING);
             SETSYMBOL(ap, gensym(tbuf));
             break;
@@ -345,7 +346,7 @@ void binbuf_addbinbuf(t_binbuf *x, t_binbuf *y)
 void binbuf_addsemi(t_binbuf *x)
 {
     t_atom a;
-    SETSEMI(&a);
+    SETSEMICOLON(&a);
     binbuf_add(x, 1, &a);
 }
 
@@ -370,7 +371,7 @@ void binbuf_restore(t_binbuf *x, int argc, t_atom *argv)
         if (argv->a_type == A_SYMBOL)
         {
             char *str = argv->a_w.w_symbol->s_name, *str2;
-            if (!strcmp(str, ";")) SETSEMI(ap);
+            if (!strcmp(str, ";")) SETSEMICOLON(ap);
             else if (!strcmp(str, ",")) SETCOMMA(ap);
             else if ((str2 = strchr(str, '$')) && str2[1] >= '0'
                 && str2[1] <= '9')
@@ -385,7 +386,7 @@ void binbuf_restore(t_binbuf *x, int argc, t_atom *argv)
                     break;
                 }
                 if (dollsym)
-                    SETDOLLSYM(ap, gensym(str));
+                    SETDOLLARSYMBOL(ap, gensym(str));
                 else
                 {
                     int dollar = 0;
@@ -430,7 +431,7 @@ void binbuf_print(t_binbuf *x)
             startedpost = 1;
         }
         postatom(1, x->b_vec + i);
-        if (x->b_vec[i].a_type == A_SEMI)
+        if (x->b_vec[i].a_type == A_SEMICOLON)
             newline = 1;
         else newline = 0; 
     }
@@ -519,10 +520,10 @@ t_symbol *binbuf_realizedollsym(t_symbol *s, int ac, t_atom *av, int tonew)
     while(i--)buf2[i]=0;
 
 #if 1
-    /* JMZ: currently, a symbol is detected to be A_DOLLSYM if it starts with '$'
+    /* JMZ: currently, a symbol is detected to be A_DOLLARSYMBOL if it starts with '$'
      * the leading $ is stripped and the rest stored in "s"
      * i would suggest to NOT strip the leading $
-     * and make everything a A_DOLLSYM that contains(!) a $
+     * and make everything a A_DOLLARSYMBOL that contains(!) a $
      *
      * whenever this happened, enable this code
      */
@@ -543,7 +544,7 @@ t_symbol *binbuf_realizedollsym(t_symbol *s, int ac, t_atom *av, int tonew)
         * (or the dollarsym is in reality a A_DOLLAR)
         * 0 is returned from binbuf_realizedollsym
         * this happens, when expanding in a message-box, but does not happen
-        * when the A_DOLLSYM is the name of a subpatch
+        * when the A_DOLLARSYMBOL is the name of a subpatch
         */
         if(!tonew&&(0==next)&&(0==*buf))
         {
@@ -619,7 +620,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
             int i, j = (target ? 0 : -1);
             for (i = 0; i < ac; i++)
             {
-                if (at[i].a_type == A_SEMI)
+                if (at[i].a_type == A_SEMICOLON)
                     j = -1;
                 else if (at[i].a_type == A_COMMA)
                     j = 0;
@@ -648,7 +649,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
         while (!target)
         {
             t_symbol *s;
-            while (ac && (at->a_type == A_SEMI || at->a_type == A_COMMA))
+            while (ac && (at->a_type == A_SEMICOLON || at->a_type == A_COMMA))
                 ac--,  at++;
             if (!ac) break;
             if (at->a_type == A_DOLLAR)
@@ -667,7 +668,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
                 }
                 else s = argv[at->a_w.w_index-1].a_w.w_symbol;
             }
-            else if (at->a_type == A_DOLLSYM)
+            else if (at->a_type == A_DOLLARSYMBOL)
             {
                 if (!(s = binbuf_realizedollsym(at->a_w.w_symbol,
                     argc, argv, 0)))
@@ -683,7 +684,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
                 error("%s: no such object", s->s_name);
             cleanup:
                 do at++, ac--;
-                while (ac && at->a_type != A_SEMI);
+                while (ac && at->a_type != A_SEMICOLON);
                     /* LATER eat args until semicolon and continue */
                 continue;
             }
@@ -702,7 +703,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
             if (!ac) goto gotmess;
             switch (at->a_type)
             {
-            case A_SEMI:
+            case A_SEMICOLON:
                     /* semis and commas in new message just get bashed to
                     a symbol.  This is needed so you can pass them to "expr." */
                 if (target == &pd_objectmaker)
@@ -743,7 +744,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
                     }
                 }
                 break;
-            case A_DOLLSYM:
+            case A_DOLLARSYMBOL:
                 s9 = binbuf_realizedollsym(at->a_w.w_symbol, argc, argv,
                     target == &pd_objectmaker);
                 if (!s9)
@@ -912,7 +913,7 @@ int binbuf_write(t_binbuf *x, char *filename, char *dir, int crflag)
         int length;
             /* estimate how many characters will be needed.  Printing out
             symbols may need extra characters for inserting backslashes. */
-        if (ap->a_type == A_SYMBOL || ap->a_type == A_DOLLSYM)
+        if (ap->a_type == A_SYMBOL || ap->a_type == A_DOLLARSYMBOL)
             length = 80 + strlen(ap->a_w.w_symbol->s_name);
         else length = 40;
         if (ep - bp < length)
@@ -924,16 +925,16 @@ int binbuf_write(t_binbuf *x, char *filename, char *dir, int crflag)
             }
             bp = sbuf;
         }
-        if ((ap->a_type == A_SEMI || ap->a_type == A_COMMA) &&
+        if ((ap->a_type == A_SEMICOLON || ap->a_type == A_COMMA) &&
             bp > sbuf && bp[-1] == ' ') bp--;
-        if (!crflag || ap->a_type != A_SEMI)
+        if (!crflag || ap->a_type != A_SEMICOLON)
         {
             atom_string(ap, bp, (ep-bp)-2);
             length = strlen(bp);
             bp += length;
             ncolumn += length;
         }
-        if (ap->a_type == A_SEMI || (!crflag && ncolumn > 65))
+        if (ap->a_type == A_SEMICOLON || (!crflag && ncolumn > 65))
         {
             *bp++ = '\n';
             ncolumn = 0;
@@ -992,7 +993,7 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
     {
         int endmess, natom;
         char *first, *second, *third;
-        for (endmess = nextindex; endmess < n && vec[endmess].a_type != A_SEMI;
+        for (endmess = nextindex; endmess < n && vec[endmess].a_type != A_SEMICOLON;
             endmess++)
                 ;
         if (endmess == n) break;
@@ -1021,7 +1022,7 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                     sprintf(buf, "$%d", nextmess[i].a_w.w_index);
                     SETSYMBOL(nextmess+i, gensym(buf));
                 }
-                else if (nextmess[i].a_type == A_DOLLSYM)
+                else if (nextmess[i].a_type == A_DOLLARSYMBOL)
                 {
                     char buf[100];
                     sprintf(buf, "%s", nextmess[i].a_w.w_symbol->s_name);
@@ -1094,7 +1095,7 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                     SETSYMBOL(outmess+4, classname);
                     for (i = 7; i < natom; i++)
                         outmess[i-2] = nextmess[i];
-                    SETSEMI(outmess + natom - 2);
+                    SETSEMICOLON(outmess + natom - 2);
                     binbuf_add(newb, natom - 1, outmess);
                     nobj++;
                 }
@@ -1108,7 +1109,7 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                     outmess[3] = nextmess[3];
                     for (i = 6; i < natom; i++)
                         outmess[i-2] = nextmess[i];
-                    SETSEMI(outmess + natom - 2);
+                    SETSEMICOLON(outmess + natom - 2);
                     binbuf_add(newb, natom - 1, outmess);
                     nobj++;
                 }
@@ -1278,7 +1279,7 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                     SETSYMBOL(outmess + 6, gensym("p"));
                     for (i = 5; i < natom; i++)
                         outmess[i+2] = nextmess[i];
-                    SETSEMI(outmess + natom + 2);
+                    SETSEMICOLON(outmess + natom + 2);
                     binbuf_add(newb, natom + 3, outmess);
                     if (stackdepth) stackdepth--;
                     nobj = stack[stackdepth];
@@ -1380,7 +1381,7 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                             else 
                                 outmess[i+2] = nextmess[i];
                         }
-                        SETSEMI(outmess + natom + 2);
+                        SETSEMICOLON(outmess + natom + 2);
                         binbuf_add(newb, natom + 3, outmess);
                     }
                     else
@@ -1395,7 +1396,7 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                             outmess[i+2] = nextmess[i];
                         if (classname == gensym("osc~"))
                             SETSYMBOL(outmess + 6, gensym("cycle~"));
-                        SETSEMI(outmess + natom + 2);
+                        SETSEMICOLON(outmess + natom + 2);
                         binbuf_add(newb, natom + 3, outmess);
                     }
                     nobj++;
@@ -1413,7 +1414,7 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                     SETFLOAT(outmess + 5, fontsize);
                     for (i = 4; i < natom; i++)
                         outmess[i+2] = nextmess[i];
-                    SETSEMI(outmess + natom + 2);
+                    SETSEMICOLON(outmess + natom + 2);
                     binbuf_add(newb, natom + 3, outmess);
                     nobj++;
                 }

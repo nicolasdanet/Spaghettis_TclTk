@@ -5,6 +5,7 @@
 /* clock objects */
 
 #include "m_pd.h"
+#include "m_macros.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -126,9 +127,9 @@ static void delay_setup(void)
 {
     delay_class = class_new(gensym("delay"), (t_newmethod)delay_new,
         (t_method)delay_free, sizeof(t_delay), 0,
-            A_DEFFLOAT, A_DEFFLOAT, A_DEFSYM, 0);
+            A_DEFFLOAT, A_DEFFLOAT, A_DEFSYMBOL, 0);
     class_addcreator((t_newmethod)delay_new, gensym("del"),
-        A_DEFFLOAT, A_DEFFLOAT, A_DEFSYM, 0);
+        A_DEFFLOAT, A_DEFFLOAT, A_DEFSYMBOL, 0);
     class_addbang(delay_class, delay_bang);
     class_addmethod(delay_class, (t_method)delay_stop, gensym("stop"), 0);
     class_addmethod(delay_class, (t_method)delay_ft1,
@@ -210,7 +211,7 @@ static void metro_setup(void)
 {
     metro_class = class_new(gensym("metro"), (t_newmethod)metro_new,
         (t_method)metro_free, sizeof(t_metro), 0,
-            A_DEFFLOAT, A_DEFFLOAT, A_DEFSYM, 0);
+            A_DEFFLOAT, A_DEFFLOAT, A_DEFSYMBOL, 0);
     class_addbang(metro_class, metro_bang);
     class_addmethod(metro_class, (t_method)metro_stop, gensym("stop"), 0);
     class_addmethod(metro_class, (t_method)metro_ft1, gensym("ft1"),
@@ -388,7 +389,7 @@ static void *timer_new(t_symbol *unitname, t_floatarg tempo)
 static void timer_setup(void)
 {
     timer_class = class_new(gensym("timer"), (t_newmethod)timer_new, 0,
-        sizeof(t_timer), 0, A_DEFFLOAT, A_DEFSYM, 0);
+        sizeof(t_timer), 0, A_DEFFLOAT, A_DEFSYMBOL, 0);
     class_addbang(timer_class, timer_bang);
     class_addmethod(timer_class, (t_method)timer_bang2, gensym("bang2"), 0);
     class_addmethod(timer_class, (t_method)timer_tempo,

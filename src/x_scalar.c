@@ -5,6 +5,7 @@
 /* The "scalar" object. */
 
 #include "m_pd.h"
+#include "m_macros.h"
 #include "g_canvas.h"
 #include <string.h>
 #include <stdio.h>

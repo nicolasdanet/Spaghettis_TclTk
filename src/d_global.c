@@ -64,9 +64,9 @@ static void sigsend_free(t_sigsend *x)
 static void sigsend_setup(void)
 {
     sigsend_class = class_new(gensym("send~"), (t_newmethod)sigsend_new,
-        (t_method)sigsend_free, sizeof(t_sigsend), 0, A_DEFSYM, 0);
-    class_addcreator((t_newmethod)sigsend_new, gensym("s~"), A_DEFSYM, 0);
-    CLASS_MAINSIGNALIN(sigsend_class, t_sigsend, x_f);
+        (t_method)sigsend_free, sizeof(t_sigsend), 0, A_DEFSYMBOL, 0);
+    class_addcreator((t_newmethod)sigsend_new, gensym("s~"), A_DEFSYMBOL, 0);
+    CLASS_SIGNAL(sigsend_class, t_sigsend, x_f);
     class_addmethod(sigsend_class, (t_method)sigsend_dsp,
         gensym("dsp"), A_CANT, 0);
 }
@@ -179,8 +179,8 @@ static void sigreceive_setup(void)
 {
     sigreceive_class = class_new(gensym("receive~"),
         (t_newmethod)sigreceive_new, 0,
-        sizeof(t_sigreceive), 0, A_DEFSYM, 0);
-    class_addcreator((t_newmethod)sigreceive_new, gensym("r~"), A_DEFSYM, 0);
+        sizeof(t_sigreceive), 0, A_DEFSYMBOL, 0);
+    class_addcreator((t_newmethod)sigreceive_new, gensym("r~"), A_DEFSYMBOL, 0);
     class_addmethod(sigreceive_class, (t_method)sigreceive_set, gensym("set"),
         A_SYMBOL, 0);
     class_addmethod(sigreceive_class, (t_method)sigreceive_dsp,
@@ -258,7 +258,7 @@ static void sigcatch_free(t_sigcatch *x)
 static void sigcatch_setup(void)
 {
     sigcatch_class = class_new(gensym("catch~"), (t_newmethod)sigcatch_new,
-        (t_method)sigcatch_free, sizeof(t_sigcatch), CLASS_NOINLET, A_DEFSYM, 0);
+        (t_method)sigcatch_free, sizeof(t_sigcatch), CLASS_NOINLET, A_DEFSYMBOL, 0);
     class_addmethod(sigcatch_class, (t_method)sigcatch_dsp,
         gensym("dsp"), A_CANT, 0);
     class_sethelpsymbol(sigcatch_class, gensym("throw~"));
@@ -342,10 +342,10 @@ static void sigthrow_dsp(t_sigthrow *x, t_signal **sp)
 static void sigthrow_setup(void)
 {
     sigthrow_class = class_new(gensym("throw~"), (t_newmethod)sigthrow_new, 0,
-        sizeof(t_sigthrow), 0, A_DEFSYM, 0);
+        sizeof(t_sigthrow), 0, A_DEFSYMBOL, 0);
     class_addmethod(sigthrow_class, (t_method)sigthrow_set, gensym("set"),
         A_SYMBOL, 0);
-    CLASS_MAINSIGNALIN(sigthrow_class, t_sigthrow, x_f);
+    CLASS_SIGNAL(sigthrow_class, t_sigthrow, x_f);
     class_addmethod(sigthrow_class, (t_method)sigthrow_dsp,
         gensym("dsp"), A_CANT, 0);
 }

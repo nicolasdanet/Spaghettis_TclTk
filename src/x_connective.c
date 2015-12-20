@@ -5,6 +5,7 @@
 /* connective objects */
 
 #include "m_pd.h"
+#include "m_macros.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -261,8 +262,8 @@ static void *send_new(t_symbol *s)
 static void send_setup(void)
 {
     send_class = class_new(gensym("send"), (t_newmethod)send_new, 0,
-        sizeof(t_send), 0, A_DEFSYM, 0);
-    class_addcreator((t_newmethod)send_new, gensym("s"), A_DEFSYM, 0);
+        sizeof(t_send), 0, A_DEFSYMBOL, 0);
+    class_addcreator((t_newmethod)send_new, gensym("s"), A_DEFSYMBOL, 0);
     class_addbang(send_class, send_bang);
     class_addfloat(send_class, send_float);
     class_addsymbol(send_class, send_symbol);
@@ -327,8 +328,8 @@ static void receive_free(t_receive *x)
 static void receive_setup(void)
 {
     receive_class = class_new(gensym("receive"), (t_newmethod)receive_new, 
-        (t_method)receive_free, sizeof(t_receive), CLASS_NOINLET, A_DEFSYM, 0);
-    class_addcreator((t_newmethod)receive_new, gensym("r"), A_DEFSYM, 0);
+        (t_method)receive_free, sizeof(t_receive), CLASS_NOINLET, A_DEFSYMBOL, 0);
+    class_addcreator((t_newmethod)receive_new, gensym("r"), A_DEFSYMBOL, 0);
     class_addbang(receive_class, receive_bang);
     class_addfloat(receive_class, (t_method)receive_float);
     class_addsymbol(receive_class, receive_symbol);
@@ -1320,7 +1321,7 @@ static void makefilename_setup(void)
 {
     makefilename_class = class_new(gensym("makefilename"),
     (t_newmethod)makefilename_new, 0,
-        sizeof(t_makefilename), 0, A_DEFSYM, 0);
+        sizeof(t_makefilename), 0, A_DEFSYMBOL, 0);
     class_addfloat(makefilename_class, makefilename_float);
     class_addsymbol(makefilename_class, makefilename_symbol);
     class_addmethod(makefilename_class, (t_method)makefilename_set,
@@ -1527,12 +1528,12 @@ static void value_setup(void)
 {
     value_class = class_new(gensym("value"), (t_newmethod)value_new,
         (t_method)value_ff,
-        sizeof(t_value), 0, A_DEFSYM, 0);
-    class_addcreator((t_newmethod)value_new, gensym("v"), A_DEFSYM, 0);
+        sizeof(t_value), 0, A_DEFSYMBOL, 0);
+    class_addcreator((t_newmethod)value_new, gensym("v"), A_DEFSYMBOL, 0);
     class_addbang(value_class, value_bang);
     class_addfloat(value_class, value_float);
     vcommon_class = class_new(gensym("value"), 0, 0,
-        sizeof(t_vcommon), CLASS_PD, 0);
+        sizeof(t_vcommon), CLASS_PURE, 0);
     class_addfloat(vcommon_class, vcommon_float);
 }
 

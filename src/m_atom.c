@@ -70,7 +70,7 @@ void atom_string(t_atom *a, char *buf, unsigned int bufsize)
     char tbuf[30];
     switch(a->a_type)
     {
-    case A_SEMI: strcpy(buf, ";"); break;
+    case A_SEMICOLON: strcpy(buf, ";"); break;
     case A_COMMA: strcpy(buf, ","); break;
     case A_POINTER:
         strcpy(buf, "(pointer)");
@@ -119,7 +119,7 @@ void atom_string(t_atom *a, char *buf, unsigned int bufsize)
     case A_DOLLAR:
         sprintf(buf, "$%d", a->a_w.w_index);
         break;
-    case A_DOLLSYM:
+    case A_DOLLARSYMBOL:
         strncpy(buf, a->a_w.w_symbol->s_name, bufsize);
         buf[bufsize-1] = 0;
         break;

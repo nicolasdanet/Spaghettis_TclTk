@@ -4,6 +4,7 @@
 
 #include "m_pd.h"
 #include "m_imp.h"
+#include "m_macros.h"
 #include "s_system.h"
 #include <stdlib.h>
 #ifdef HAVE_UNISTD_H
@@ -177,7 +178,7 @@ t_class *class_new(t_symbol *s, t_newmethod newmethod, t_method freemethod,
     int count = 0;
     t_class *c;
     int typeflag = flags & 3;
-    if (!typeflag) typeflag = CLASS_PATCHABLE;
+    if (!typeflag) typeflag = CLASS_BOX;
     *vp = type1;
 
     va_start(ap, type1);
@@ -224,15 +225,15 @@ t_class *class_new(t_symbol *s, t_newmethod newmethod, t_method freemethod,
     c->c_symbolmethod = pd_defaultsymbol;
     c->c_listmethod = pd_defaultlist;
     c->c_anymethod = pd_defaultanything;
-    c->c_wb = (typeflag == CLASS_PATCHABLE ? &text_widgetbehavior : 0);
+    c->c_wb = (typeflag == CLASS_BOX ? &text_widgetbehavior : 0);
     c->c_pwb = 0;
     c->c_firstin = ((flags & CLASS_NOINLET) == 0);
-    c->c_patchable = (typeflag == CLASS_PATCHABLE);
-    c->c_gobj = (typeflag >= CLASS_GOBJ);
+    c->c_patchable = (typeflag == CLASS_BOX);
+    c->c_gobj = (typeflag >= CLASS_GRAPHIC);
     c->c_drawcommand = 0;
     c->c_floatsignalin = 0;
     c->c_externdir = class_extern_dir;
-    c->c_savefn = (typeflag == CLASS_PATCHABLE ? text_save : class_nosavefn);
+    c->c_savefn = (typeflag == CLASS_BOX ? text_save : class_nosavefn);
 #if 0 
     post("class: %s", c->c_name->s_name);
 #endif
@@ -281,7 +282,7 @@ void class_addmethod(t_class *c, t_method fn, t_symbol *sel,
     va_start(ap, arg1);
         /* "signal" method specifies that we take audio signals but
         that we don't want automatic float to signal conversion.  This
-        is obsolete; you should now use the CLASS_MAINSIGNALIN macro. */
+        is obsolete; you should now use the CLASS_SIGNAL macro. */
     if (sel == &s_signal)
     {
         if (c->c_floatsignalin)
@@ -731,7 +732,7 @@ void pd_typedmess(t_pd *x, t_symbol *s, int argc, t_atom *argv)
                 break;
             case A_SYMBOL:
                 if (!argc) goto badarg;
-            case A_DEFSYM:
+            case A_DEFSYMBOL:
                 if (!argc) *ap = (t_int)(&s_);
                 else
                 {

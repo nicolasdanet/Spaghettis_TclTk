@@ -7,6 +7,7 @@
 #include <stdio.h>      /* for read/write to files */
 #include "m_pd.h"
 #include "m_imp.h"
+#include "m_macros.h"
 #include "g_canvas.h"
 #include <math.h>
 
@@ -1202,7 +1203,7 @@ static void garray_print(t_garray *x)
 void g_array_setup(void)
 {
     garray_class = class_new(gensym("array"), 0, (t_method)garray_free,
-        sizeof(t_garray), CLASS_GOBJ, 0);
+        sizeof(t_garray), CLASS_GRAPHIC, 0);
     class_setwidget(garray_class, &garray_widgetbehavior);
     class_addmethod(garray_class, (t_method)garray_const, gensym("const"),
         A_DEFFLOAT, A_NULL);

@@ -27,12 +27,18 @@ extern "C" {
 
 #define PD_MAJOR_VERSION    0
 #define PD_MINOR_VERSION    46
-#define PD_FIXED_VERSION    7
+#define PD_PATCH_VERSION    7
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #define PD_COMPATIBILITY    46                  /* Compile time compatibility level. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define PD_STRUCT           struct
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -40,13 +46,15 @@ extern "C" {
 
 #ifdef _WIN32
     #ifdef PD_INTERNAL
-        #define PD_DLL  __declspec(dllexport) extern
+        #define PD_DLL      __declspec(dllexport) extern
     #else
-        #define PD_DLL  __declspec(dllimport) extern 
+        #define PD_DLL      __declspec(dllimport) extern 
     #endif
 #else
-    #define PD_DLL      __attribute__((visibility("default"))) extern
+    #define PD_DLL          __attribute__((visibility("default"))) extern
 #endif
+
+
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -66,9 +74,9 @@ extern "C" {
 #pragma mark -
 
 #define CLASS_DEFAULT       0
-#define CLASS_PD            1
-#define CLASS_GOBJ          2
-#define CLASS_PATCHABLE     3
+#define CLASS_PURE          1
+#define CLASS_GRAPHIC       2
+#define CLASS_BOX           3
 #define CLASS_NOINLET       8
 
 // -----------------------------------------------------------------------------------------------------------
@@ -76,19 +84,14 @@ extern "C" {
 #pragma mark -
 
 #ifdef _WIN64
-    typedef long long   t_int;                  /* A pointer-size integer (LLP64). */
-#else 
-    typedef long        t_int;                  /* Ditto (LP64 / ILP64). */
+    typedef long long       t_int;              /* A pointer-size integer (LLP64). */
+#else
+    typedef long            t_int;              /* Ditto (LP64 / ILP64). */
 #endif
 
-typedef float           t_float;                /* A float type. */
-typedef float           t_floatarg;             /* A float type parameter. */
+typedef float               t_float;            /* A float type. */
+typedef float               t_floatarg;         /* A float type parameter. */
     
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#define PD_STRUCT       struct
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -166,12 +169,12 @@ typedef enum {
     A_FLOAT,
     A_SYMBOL,
     A_POINTER,
-    A_SEMI,
+    A_SEMICOLON,
     A_COMMA,
     A_DEFFLOAT,
-    A_DEFSYM,
+    A_DEFSYMBOL,
     A_DOLLAR, 
-    A_DOLLSYM,
+    A_DOLLARSYMBOL,
     A_GIMME,
     A_CANT
     } t_atomtype;
@@ -264,40 +267,11 @@ PD_DLL t_symbol *gensym     (const char *s);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_gotfn1)(void *x, void *arg1);
-typedef void (*t_gotfn2)(void *x, void *arg1, void *arg2);
-typedef void (*t_gotfn3)(void *x, void *arg1, void *arg2, void *arg3);
-typedef void (*t_gotfn4)(void *x, void *arg1, void *arg2, void *arg3, void *arg4);
-typedef void (*t_gotfn5)(void *x, void *arg1, void *arg2, void *arg3, void *arg4, void *arg5);
-    
-#define mess0(x, s)                 ((*getfn((x), (s)))((x)))
-#define mess1(x, s, a)              ((*(t_gotfn1)getfn((x), (s)))((x), (a)))
-#define mess2(x, s, a, b)           ((*(t_gotfn2)getfn((x), (s)))((x), (a), (b)))
-#define mess3(x, s, a, b, c)        ((*(t_gotfn3)getfn((x), (s)))((x), (a), (b), (c)))
-#define mess4(x, s, a, b, c, d)     ((*(t_gotfn4)getfn((x), (s)))((x), (a), (b), (c), (d)))
-#define mess5(x, s, a, b, c, d, e)  ((*(t_gotfn5)getfn((x), (s)))((x), (a), (b), (c), (d), (e)))
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 PD_DLL void *getbytes       (size_t nbytes);
 PD_DLL void *getzbytes      (size_t nbytes);
 PD_DLL void *copybytes      (void *src, size_t nbytes);
 PD_DLL void *resizebytes    (void *x, size_t oldsize, size_t newsize);
 PD_DLL void freebytes       (void *x, size_t nbytes);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define SETSEMI(atom)               ((atom)->a_type = A_SEMI, (atom)->a_w.w_index = 0)
-#define SETCOMMA(atom)              ((atom)->a_type = A_COMMA, (atom)->a_w.w_index = 0)
-#define SETPOINTER(atom, gp)        ((atom)->a_type = A_POINTER, (atom)->a_w.w_gpointer = (gp))
-#define SETFLOAT(atom, f)           ((atom)->a_type = A_FLOAT, (atom)->a_w.w_float = (f))
-#define SETSYMBOL(atom, s)          ((atom)->a_type = A_SYMBOL, (atom)->a_w.w_symbol = (s))
-#define SETDOLLAR(atom, n)          ((atom)->a_type = A_DOLLAR, (atom)->a_w.w_index = (n))
-#define SETDOLLSYM(atom, s)         ((atom)->a_type = A_DOLLSYM, (atom)->a_w.w_symbol= (s))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -474,9 +448,7 @@ PD_DLL t_parentwidgetbehavior *class_parentwidget   (t_class *c);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define pd_class(x) (*(x))
-
-#define CLASS_MAINSIGNALIN(c, type, field) class_domainsignalin(c, (char *)(&((type *)0)->field) - (char *)0)
+#define CLASS_SIGNAL(c, type, field)    class_domainsignalin(c, (char *)(&((type *)0)->field) - (char *)0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

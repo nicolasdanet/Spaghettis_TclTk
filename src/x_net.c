@@ -5,6 +5,7 @@
 /* network */
 
 #include "m_pd.h"
+#include "m_macros.h"
 #include "s_system.h"
 
 #include <sys/types.h>
@@ -131,13 +132,13 @@ static void netsend_doit(void *z, t_binbuf *b)
     {
         int emsg;
         for (emsg = msg; emsg < natom && at[emsg].a_type != A_COMMA
-            && at[emsg].a_type != A_SEMI; emsg++)
+            && at[emsg].a_type != A_SEMICOLON; emsg++)
                 ;
         if (emsg > msg)
         {
             int i;
             for (i = msg; i < emsg; i++)
-                if (at[i].a_type == A_DOLLAR || at[i].a_type == A_DOLLSYM)
+                if (at[i].a_type == A_DOLLAR || at[i].a_type == A_DOLLARSYMBOL)
             {
                 pd_error(x, "netreceive: got dollar sign in message");
                 goto nodice;
@@ -267,7 +268,7 @@ static int netsend_dosend(t_netsend *x, int sockfd,
         t_atom at;
         b = binbuf_new();
         binbuf_add(b, argc, argv);
-        SETSEMI(&at);
+        SETSEMICOLON(&at);
         binbuf_add(b, 1, &at);
         binbuf_gettext(b, &buf, &length);
     }

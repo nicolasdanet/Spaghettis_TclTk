@@ -13,6 +13,7 @@ can contain numbers, sublists, and arrays.
 #include <stdio.h>      /* for read/write to files */
 #include "m_pd.h"
 #include "m_imp.h"
+#include "m_macros.h"
 #include "g_canvas.h"
 
 t_class *scalar_class; /* Global. */
@@ -442,7 +443,7 @@ static void scalar_free(t_scalar *x)
 void g_scalar_setup(void)
 {
     scalar_class = class_new(gensym("scalar"), 0, (t_method)scalar_free, 0,
-        CLASS_GOBJ, 0);
+        CLASS_GRAPHIC, 0);
     class_setwidget(scalar_class, &scalar_widgetbehavior);
     class_setsavefn(scalar_class, scalar_save);
     class_setpropertiesfn(scalar_class, scalar_properties);

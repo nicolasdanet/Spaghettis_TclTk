@@ -9,6 +9,7 @@ to be different but are now unified except for some fossilized names.) */
 #include <stdio.h>
 #include "m_pd.h"
 #include "m_imp.h"
+#include "m_macros.h"
 #include "s_system.h"
 #include "g_canvas.h"
 #include <string.h>
@@ -982,7 +983,7 @@ static void canvas_rename_method(t_canvas *x, t_symbol *s, int ac, t_atom *av)
 {
     if (ac && av->a_type == A_SYMBOL)
         canvas_rename(x, av->a_w.w_symbol, 0);
-    else if (ac && av->a_type == A_DOLLSYM)
+    else if (ac && av->a_type == A_DOLLARSYMBOL)
     {
         t_canvasenvironment *e = canvas_getenv(x);
         canvas_setcurrent(x);
@@ -1617,8 +1618,8 @@ void g_canvas_setup(void)
         A_NULL);
 
 /* ----- subcanvases, which you get by typing "pd" in a box ---- */
-    class_addcreator((t_newmethod)subcanvas_new, gensym("pd"), A_DEFSYM, 0);
-    class_addcreator((t_newmethod)subcanvas_new, gensym("page"),  A_DEFSYM, 0);
+    class_addcreator((t_newmethod)subcanvas_new, gensym("pd"), A_DEFSYMBOL, 0);
+    class_addcreator((t_newmethod)subcanvas_new, gensym("page"),  A_DEFSYMBOL, 0);
 
     class_addmethod(canvas_class, (t_method)canvas_click,
         gensym("click"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);

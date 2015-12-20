@@ -618,9 +618,9 @@ void g_hslider_setup(void)
     class_addmethod(hslider_class, (t_method)hslider_pos, gensym("pos"), A_GIMME, 0);
     class_addmethod(hslider_class, (t_method)hslider_range, gensym("range"), A_GIMME, 0);
     class_addmethod(hslider_class, (t_method)hslider_color, gensym("color"), A_GIMME, 0);
-    class_addmethod(hslider_class, (t_method)hslider_send, gensym("send"), A_DEFSYM, 0);
-    class_addmethod(hslider_class, (t_method)hslider_receive, gensym("receive"), A_DEFSYM, 0);
-    class_addmethod(hslider_class, (t_method)hslider_label, gensym("label"), A_DEFSYM, 0);
+    class_addmethod(hslider_class, (t_method)hslider_send, gensym("send"), A_DEFSYMBOL, 0);
+    class_addmethod(hslider_class, (t_method)hslider_receive, gensym("receive"), A_DEFSYMBOL, 0);
+    class_addmethod(hslider_class, (t_method)hslider_label, gensym("label"), A_DEFSYMBOL, 0);
     class_addmethod(hslider_class, (t_method)hslider_label_pos, gensym("label_pos"), A_GIMME, 0);
     class_addmethod(hslider_class, (t_method)hslider_label_font, gensym("label_font"), A_GIMME, 0);
     class_addmethod(hslider_class, (t_method)hslider_log, gensym("log"), 0);

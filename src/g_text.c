@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include "m_pd.h"
 #include "m_imp.h"
+#include "m_macros.h"
 #include "s_system.h"
 
 #include "g_canvas.h"
@@ -411,7 +412,7 @@ static void message_adddollsym(t_message *x, t_symbol *s)
     buf[0] = '$';
     strncpy(buf+1, s->s_name, PD_STRING-2);
     buf[PD_STRING-1] = 0;
-    SETDOLLSYM(&a, gensym(buf));
+    SETDOLLARSYMBOL(&a, gensym(buf));
     binbuf_add(x->m_text.te_binbuf, 1, &a);
     glist_retext(x->m_glist, &x->m_text);
 }
@@ -1404,11 +1405,11 @@ static void text_anything(t_text *x, t_symbol *s, int argc, t_atom *argv)
 void g_text_setup(void)
 {
     text_class = class_new(gensym("text"), 0, 0, sizeof(t_text),
-        CLASS_NOINLET | CLASS_PATCHABLE, 0);
+        CLASS_NOINLET | CLASS_BOX, 0);
     class_addanything(text_class, text_anything);
 
     message_class = class_new(gensym("message"), 0, (t_method)message_free,
-        sizeof(t_message), CLASS_PATCHABLE, 0);
+        sizeof(t_message), CLASS_BOX, 0);
     class_addbang(message_class, message_bang);
     class_addfloat(message_class, message_float);
     class_addsymbol(message_class, message_symbol);
@@ -1433,7 +1434,7 @@ void g_text_setup(void)
         gensym("adddollsym"), A_SYMBOL, 0);
 
     messresponder_class = class_new(gensym("messresponder"), 0, 0,
-        sizeof(t_text), CLASS_PD, 0);
+        sizeof(t_text), CLASS_PURE, 0);
     class_addbang(messresponder_class, messresponder_bang);
     class_addfloat(messresponder_class, (t_method) messresponder_float);
     class_addsymbol(messresponder_class, messresponder_symbol);
@@ -1441,7 +1442,7 @@ void g_text_setup(void)
     class_addanything(messresponder_class, messresponder_anything);
 
     gatom_class = class_new(gensym("gatom"), 0, (t_method)gatom_free,
-        sizeof(t_gatom), CLASS_NOINLET | CLASS_PATCHABLE, 0);
+        sizeof(t_gatom), CLASS_NOINLET | CLASS_BOX, 0);
     class_addbang(gatom_class, gatom_bang);
     class_addfloat(gatom_class, gatom_float);
     class_addsymbol(gatom_class, gatom_symbol);

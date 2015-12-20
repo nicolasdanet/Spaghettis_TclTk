@@ -2640,7 +2640,7 @@ static void writesf_setup(void)
     class_addmethod(writesf_class, (t_method)writesf_open, gensym("open"), 
         A_GIMME, 0);
     class_addmethod(writesf_class, (t_method)writesf_print, gensym("print"), 0);
-    CLASS_MAINSIGNALIN(writesf_class, t_writesf, x_f);
+    CLASS_SIGNAL(writesf_class, t_writesf, x_f);
 }
 
 /* ------------------------ global setup routine ------------------------- */

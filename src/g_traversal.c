@@ -21,6 +21,7 @@ sublist - get a pointer into a list which is an element of another scalar
 #include <stdio.h>      /* for read/write to files */
 #include "m_pd.h"
 #include "m_imp.h"
+#include "m_macros.h"
 #include "g_canvas.h"
 
 extern t_class *scalar_class;
@@ -853,7 +854,7 @@ static void elem_free(t_elem *x, t_gpointer *gp)
 static void elem_setup(void)
 {
     elem_class = class_new(gensym("element"), (t_newmethod)elem_new,
-        (t_method)elem_free, sizeof(t_elem), 0, A_DEFSYM, A_DEFSYM, 0);
+        (t_method)elem_free, sizeof(t_elem), 0, A_DEFSYMBOL, A_DEFSYMBOL, 0);
     class_addfloat(elem_class, elem_float); 
     class_addmethod(elem_class, (t_method)elem_set, gensym("set"),
         A_SYMBOL, A_SYMBOL, 0); 
@@ -936,7 +937,7 @@ static void getsize_pointer(t_getsize *x, t_gpointer *gp)
 static void getsize_setup(void)
 {
     getsize_class = class_new(gensym("getsize"), (t_newmethod)getsize_new, 0,
-        sizeof(t_getsize), 0, A_DEFSYM, A_DEFSYM, 0);
+        sizeof(t_getsize), 0, A_DEFSYMBOL, A_DEFSYMBOL, 0);
     class_addpointer(getsize_class, getsize_pointer); 
     class_addmethod(getsize_class, (t_method)getsize_set, gensym("set"),
         A_SYMBOL, A_SYMBOL, 0); 
@@ -1109,7 +1110,7 @@ static void setsize_setup(void)
 {
     setsize_class = class_new(gensym("setsize"), (t_newmethod)setsize_new,
         (t_method)setsize_free, sizeof(t_setsize), 0,
-        A_DEFSYM, A_DEFSYM, A_DEFFLOAT, 0);
+        A_DEFSYMBOL, A_DEFSYMBOL, A_DEFFLOAT, 0);
     class_addfloat(setsize_class, setsize_float);
     class_addmethod(setsize_class, (t_method)setsize_set, gensym("set"),
         A_SYMBOL, A_SYMBOL, 0); 

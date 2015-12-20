@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "m_pd.h"
 #include "m_imp.h"
+#include "m_macros.h"
 #include "s_system.h"
 #include "g_canvas.h"
 #include "s_utf8.h" /*-- moo --*/
@@ -2055,7 +2056,7 @@ static int atoms_match(int inargc, t_atom *inargv, int searchargc,
         {
             t_atom *a1 = &inargv[indexin + nmatched], 
                 *a2 = &searchargv[nmatched];
-            if (a1->a_type == A_SEMI || a1->a_type == A_COMMA)
+            if (a1->a_type == A_SEMICOLON || a1->a_type == A_COMMA)
             {
                 if (a2->a_type != a1->a_type)
                     goto nomatch;
@@ -2066,9 +2067,9 @@ static int atoms_match(int inargc, t_atom *inargv, int searchargc,
                     a1->a_w.w_float != a2->a_w.w_float)
                         goto nomatch;
             }
-            else if (a1->a_type == A_SYMBOL || a1->a_type == A_DOLLSYM)
+            else if (a1->a_type == A_SYMBOL || a1->a_type == A_DOLLARSYMBOL)
             {
-                if ((a2->a_type != A_SYMBOL && a2->a_type != A_DOLLSYM)
+                if ((a2->a_type != A_SYMBOL && a2->a_type != A_DOLLARSYMBOL)
                     || (wholeword && a1->a_w.w_symbol != a2->a_w.w_symbol)
                     || (!wholeword &&  !strstr(a1->a_w.w_symbol->s_name,
                                         a2->a_w.w_symbol->s_name)))

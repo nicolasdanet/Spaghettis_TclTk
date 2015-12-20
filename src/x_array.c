@@ -6,6 +6,7 @@
 
 #include "m_pd.h"
 #include "m_imp.h"
+#include "m_macros.h"
 #include "g_canvas.h"
 #include <string.h>
 #include <stdio.h>
@@ -859,7 +860,7 @@ void x_array_setup(void )
     class_addcreator((t_newmethod)arrayobj_new, gensym("array"), A_GIMME, 0);
 
     class_addcreator((t_newmethod)table_new, gensym("table"),
-        A_DEFSYM, A_DEFFLOAT, 0);
+        A_DEFSYMBOL, A_DEFFLOAT, 0);
 
     array_size_class = class_new(gensym("array size"),
         (t_newmethod)array_size_new, (t_method)array_client_free,

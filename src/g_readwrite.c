@@ -15,6 +15,7 @@ file format as in the dialog window for data.
 #include <stdio.h>
 #include "m_pd.h"
 #include "m_imp.h"
+#include "m_macros.h"
 #include "g_canvas.h"
 #include <string.h>
 
@@ -34,7 +35,7 @@ static int canvas_scanbinbuf(int natoms, t_atom *vec, int *p_indexout,
     *p_indexout = indexwas;
     if (indexwas >= natoms)
         return (0);
-    for (i = indexwas; i < natoms && vec[i].a_type != A_SEMI; i++)
+    for (i = indexwas; i < natoms && vec[i].a_type != A_SEMICOLON; i++)
         ;
     if (i >= natoms)
         *p_next = i;
@@ -103,7 +104,7 @@ static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
         {
             t_binbuf *z = binbuf_new();
             int first = *p_nextmsg, last;
-            for (last = first; last < natoms && vec[last].a_type != A_SEMI;
+            for (last = first; last < natoms && vec[last].a_type != A_SEMICOLON;
                 last++);
             binbuf_restore(z, last-first, vec+first);
             binbuf_add(w[i].w_binbuf, binbuf_getnatom(z), binbuf_getvec(z));
@@ -766,11 +767,11 @@ static void canvas_menusave(t_canvas *x, float fdestroy)
 void g_readwrite_setup(void)
 {
     class_addmethod(canvas_class, (t_method)glist_write,
-        gensym("write"), A_SYMBOL, A_DEFSYM, A_NULL);
+        gensym("write"), A_SYMBOL, A_DEFSYMBOL, A_NULL);
     class_addmethod(canvas_class, (t_method)glist_read,
-        gensym("read"), A_SYMBOL, A_DEFSYM, A_NULL);
+        gensym("read"), A_SYMBOL, A_DEFSYMBOL, A_NULL);
     class_addmethod(canvas_class, (t_method)glist_mergefile,
-        gensym("mergefile"), A_SYMBOL, A_DEFSYM, A_NULL);
+        gensym("mergefile"), A_SYMBOL, A_DEFSYMBOL, A_NULL);
     class_addmethod(canvas_class, (t_method)canvas_savetofile,
         gensym("savetofile"), A_SYMBOL, A_SYMBOL, A_DEFFLOAT, 0);
     class_addmethod(canvas_class, (t_method)canvas_saveto,

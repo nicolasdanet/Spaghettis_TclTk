@@ -714,8 +714,8 @@ void g_vumeter_setup(void)
     class_addmethod(vu_class, (t_method)vu_delta, gensym("delta"), A_GIMME, 0);
     class_addmethod(vu_class, (t_method)vu_pos, gensym("pos"), A_GIMME, 0);
     class_addmethod(vu_class, (t_method)vu_color, gensym("color"), A_GIMME, 0);
-    class_addmethod(vu_class, (t_method)vu_receive, gensym("receive"), A_DEFSYM, 0);
-    class_addmethod(vu_class, (t_method)vu_label, gensym("label"), A_DEFSYM, 0);
+    class_addmethod(vu_class, (t_method)vu_receive, gensym("receive"), A_DEFSYMBOL, 0);
+    class_addmethod(vu_class, (t_method)vu_label, gensym("label"), A_DEFSYMBOL, 0);
     class_addmethod(vu_class, (t_method)vu_label_pos, gensym("label_pos"), A_GIMME, 0);
     class_addmethod(vu_class, (t_method)vu_label_font, gensym("label_font"), A_GIMME, 0);
     vu_widgetbehavior.w_getrectfn =    vu_getrect;

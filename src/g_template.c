@@ -8,6 +8,7 @@
 
 #include "m_pd.h"
 #include "m_imp.h"
+#include "m_macros.h"
 #include "s_system.h"    /* for sys_hostfontsize */
 #include "g_canvas.h"
 
@@ -538,7 +539,7 @@ void template_free(t_template *x)
 static void template_setup(void)
 {
     template_class = class_new(gensym("template"), 0, (t_method)template_free,
-        sizeof(t_template), CLASS_PD, 0);
+        sizeof(t_template), CLASS_PURE, 0);
     class_addmethod(pd_canvasmaker, (t_method)template_usetemplate,
         gensym("struct"), A_GIMME, 0);
         

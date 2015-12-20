@@ -45,7 +45,7 @@
 #define IS_FLOAT(atom, index)       ((atom + index)->a_type == A_FLOAT)
 #define IS_SYMBOL(atom, index)      ((atom + index)->a_type == A_SYMBOL)
 #define IS_DOLLAR(atom, index)      ((atom + index)->a_type == A_DOLLAR)
-#define IS_DOLLSYM(atom, index)     ((atom + index)->a_type == A_DOLLSYM)
+#define IS_DOLLSYM(atom, index)     ((atom + index)->a_type == A_DOLLARSYMBOL)
 #define IS_POINTER(atom, index)     ((atom + index)->a_type == A_POINTER)
 
 // -----------------------------------------------------------------------------------------------------------

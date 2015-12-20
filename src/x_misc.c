@@ -156,7 +156,7 @@ static void namecanvas_setup(void)
 {
     namecanvas_class = class_new(gensym("namecanvas"),
         (t_newmethod)namecanvas_new, (t_method)namecanvas_free,
-            sizeof(t_namecanvas), CLASS_NOINLET, A_DEFSYM, 0);
+            sizeof(t_namecanvas), CLASS_NOINLET, A_DEFSYMBOL, 0);
 }
 
 /* ---------------serial ports (_WIN32 only -- hack) ------------------------- */
@@ -720,7 +720,7 @@ void oscformat_setup(void)
     class_addmethod(oscformat_class, (t_method)oscformat_set,
         gensym("set"), A_GIMME, 0);
     class_addmethod(oscformat_class, (t_method)oscformat_format,
-        gensym("format"), A_DEFSYM, 0);
+        gensym("format"), A_DEFSYMBOL, 0);
     class_addlist(oscformat_class, oscformat_list);
 }
 

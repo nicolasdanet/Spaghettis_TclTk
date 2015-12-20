@@ -4,6 +4,7 @@
 
 #include "m_pd.h"
 #include "m_imp.h"
+#include "m_macros.h"
 
 t_class *glob_pdobject;     /* Global. */
 
@@ -193,6 +194,6 @@ void sys_getversion(int *major, int *minor, int *bugfix)
     if (minor)
         *minor = PD_MINOR_VERSION;
     if (bugfix)
-        *bugfix = PD_FIXED_VERSION;
+        *bugfix = PD_PATCH_VERSION;
 }
 

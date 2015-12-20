@@ -367,9 +367,9 @@ void g_mycanvas_setup(void)
     class_addmethod(my_canvas_class, (t_method)my_canvas_pos, gensym("pos"), A_GIMME, 0);
     class_addmethod(my_canvas_class, (t_method)my_canvas_vis_size, gensym("vis_size"), A_GIMME, 0);
     class_addmethod(my_canvas_class, (t_method)my_canvas_color, gensym("color"), A_GIMME, 0);
-    class_addmethod(my_canvas_class, (t_method)my_canvas_send, gensym("send"), A_DEFSYM, 0);
-    class_addmethod(my_canvas_class, (t_method)my_canvas_receive, gensym("receive"), A_DEFSYM, 0);
-    class_addmethod(my_canvas_class, (t_method)my_canvas_label, gensym("label"), A_DEFSYM, 0);
+    class_addmethod(my_canvas_class, (t_method)my_canvas_send, gensym("send"), A_DEFSYMBOL, 0);
+    class_addmethod(my_canvas_class, (t_method)my_canvas_receive, gensym("receive"), A_DEFSYMBOL, 0);
+    class_addmethod(my_canvas_class, (t_method)my_canvas_label, gensym("label"), A_DEFSYMBOL, 0);
     class_addmethod(my_canvas_class, (t_method)my_canvas_label_pos, gensym("label_pos"), A_GIMME, 0);
     class_addmethod(my_canvas_class, (t_method)my_canvas_label_font, gensym("label_font"), A_GIMME, 0);
     class_addmethod(my_canvas_class, (t_method)my_canvas_get_pos, gensym("get_pos"), 0);

@@ -7,6 +7,7 @@ moment it also defines "text" but it may later be better to split this off. */
 
 #include "m_pd.h"
 #include "m_imp.h"
+#include "m_macros.h"
 #include "g_canvas.h"    /* just for glist_getfont, bother */
 #include "s_system.h"    /* just for sys_hostfontsize, phooey */
 #include <string.h>
@@ -216,14 +217,14 @@ static int text_nthline(int n, t_atom *vec, int line, int *startp, int *endp)
         if (cnt == line)
         {
             int j = i, outc, k;
-            while (j < n && vec[j].a_type != A_SEMI &&
+            while (j < n && vec[j].a_type != A_SEMICOLON &&
                 vec[j].a_type != A_COMMA)
                     j++;
             *startp = i;
             *endp = j;
             return (1);
         }
-        else if (vec[i].a_type == A_SEMI || vec[i].a_type == A_COMMA)
+        else if (vec[i].a_type == A_SEMICOLON || vec[i].a_type == A_COMMA)
             cnt++;
     }
     return (0);
@@ -726,13 +727,13 @@ static void text_set_list(t_text_set *x,
     }
     else if (fieldno < 0)  /* if line number too high just append to end */
     {
-        int addsemi = (n && vec[n-1].a_type != A_SEMI &&
+        int addsemi = (n && vec[n-1].a_type != A_SEMICOLON &&
             vec[n-1].a_type != A_COMMA), newsize = n + addsemi + argc + 1;
         (void)binbuf_resize(b, newsize);
         vec = binbuf_getvec(b);
         if (addsemi)
-            SETSEMI(&vec[n]);
-        SETSEMI(&vec[newsize-1]);
+            SETSEMICOLON(&vec[n]);
+        SETSEMICOLON(&vec[newsize-1]);
         start = n+addsemi;
     }
     else
@@ -785,10 +786,10 @@ static void text_size_bang(t_text_size *x)
     n = binbuf_getnatom(b);
     for (i = 0; i < n; i++)
     {
-        if (vec[i].a_type == A_SEMI || vec[i].a_type == A_COMMA)
+        if (vec[i].a_type == A_SEMICOLON || vec[i].a_type == A_COMMA)
             cnt++;
     }
-    if (n && vec[n-1].a_type != A_SEMI && vec[n-1].a_type != A_COMMA)
+    if (n && vec[n-1].a_type != A_SEMICOLON && vec[n-1].a_type != A_COMMA)
         cnt++;
     outlet_float(x->x_out1, cnt);
 }
@@ -970,7 +971,7 @@ static void text_search_list(t_text_search *x,
         bug("text_search");
     for (i = lineno = thisstart = 0; i < n; i++)
     {
-        if (vec[i].a_type == A_SEMI || vec[i].a_type == A_COMMA || i == n-1)
+        if (vec[i].a_type == A_SEMICOLON || vec[i].a_type == A_COMMA || i == n-1)
         {
             int thisn = i - thisstart, j, field = x->x_keyvec[0].k_field,
                 binop = x->x_keyvec[0].k_binop;
@@ -1250,7 +1251,7 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
         }
         else
         {
-            for (i = onset; i < n && vec[i].a_type != A_SEMI &&
+            for (i = onset; i < n && vec[i].a_type != A_SEMICOLON &&
                 vec[i].a_type != A_COMMA; i++)
                     ;
             x->x_eaten = 1;
@@ -1260,7 +1261,7 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
     }
     else    /* message to send */
     {
-        for (i = onset; i < n && vec[i].a_type != A_SEMI &&
+        for (i = onset; i < n && vec[i].a_type != A_SEMICOLON &&
             vec[i].a_type != A_COMMA; i++)
                 ;
         wait = 0;
@@ -1291,7 +1292,7 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
             }
             else outvec[i] = argv[atno];
         }
-        else if (type == A_DOLLSYM)
+        else if (type == A_DOLLARSYMBOL)
         {
             t_symbol *s =
                 binbuf_realizedollsym(ap->a_w.w_symbol, argc, argv, 0);
@@ -1561,9 +1562,9 @@ static void qlist_donext(t_qlist *x, int drop, int automatic)
         t_atom *argv = binbuf_getvec(x->x_binbuf);
         t_atom *ap = argv + onset, *ap2;
         if (onset >= argc) goto end;
-        while (ap->a_type == A_SEMI || ap->a_type == A_COMMA)
+        while (ap->a_type == A_SEMICOLON || ap->a_type == A_COMMA)
         {
-            if (ap->a_type == A_SEMI) target = 0;
+            if (ap->a_type == A_SEMICOLON) target = 0;
             onset++, ap++;
             if (onset >= argc) goto end;
         }
@@ -1662,7 +1663,7 @@ static void qlist_tick(t_qlist *x)
 static void qlist_add(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_atom a;
-    SETSEMI(&a);
+    SETSEMICOLON(&a);
     binbuf_add(x->x_binbuf, argc, argv);
     binbuf_add(x->x_binbuf, 1, &a);
 }
@@ -1772,12 +1773,12 @@ static void textfile_bang(t_qlist *x)
     t_atom *argv = binbuf_getvec(x->x_binbuf);
     t_atom *ap = argv + onset, *ap2;
     while (onset < argc &&
-        (ap->a_type == A_SEMI || ap->a_type == A_COMMA))
+        (ap->a_type == A_SEMICOLON || ap->a_type == A_COMMA))
             onset++, ap++;
     onset2 = onset;
     ap2 = ap;
     while (onset2 < argc &&
-        (ap2->a_type != A_SEMI && ap2->a_type != A_COMMA))
+        (ap2->a_type != A_SEMICOLON && ap2->a_type != A_COMMA))
             onset2++, ap2++;
     if (onset2 > onset)
     {
@@ -1924,15 +1925,15 @@ void x_qlist_setup(void )
     class_addmethod(qlist_class, (t_method)qlist_add, gensym("append"),
         A_GIMME, 0);
     class_addmethod(qlist_class, (t_method)qlist_read, gensym("read"),
-        A_SYMBOL, A_DEFSYM, 0);
+        A_SYMBOL, A_DEFSYMBOL, 0);
     class_addmethod(qlist_class, (t_method)qlist_write, gensym("write"),
-        A_SYMBOL, A_DEFSYM, 0);
+        A_SYMBOL, A_DEFSYMBOL, 0);
     class_addmethod(qlist_class, (t_method)textbuf_open, gensym("click"), 0);
     class_addmethod(qlist_class, (t_method)textbuf_close, gensym("close"), 0);
     class_addmethod(qlist_class, (t_method)textbuf_addline, 
         gensym("addline"), A_GIMME, 0);
     class_addmethod(qlist_class, (t_method)qlist_print, gensym("print"),
-        A_DEFSYM, 0);
+        A_DEFSYMBOL, 0);
     class_addmethod(qlist_class, (t_method)qlist_tempo,
         gensym("tempo"), A_FLOAT, 0);
     class_addbang(qlist_class, qlist_bang);
@@ -1951,16 +1952,16 @@ void x_qlist_setup(void )
     class_addmethod(textfile_class, (t_method)qlist_add, gensym("append"),
         A_GIMME, 0);
     class_addmethod(textfile_class, (t_method)qlist_read, gensym("read"), 
-        A_SYMBOL, A_DEFSYM, 0);
+        A_SYMBOL, A_DEFSYMBOL, 0);
     class_addmethod(textfile_class, (t_method)qlist_write, gensym("write"), 
-        A_SYMBOL, A_DEFSYM, 0);
+        A_SYMBOL, A_DEFSYMBOL, 0);
     class_addmethod(textfile_class, (t_method)textbuf_open, gensym("click"), 0);
     class_addmethod(textfile_class, (t_method)textbuf_close, gensym("close"), 
         0);
     class_addmethod(textfile_class, (t_method)textbuf_addline, 
         gensym("addline"), A_GIMME, 0);
     class_addmethod(textfile_class, (t_method)qlist_print, gensym("print"),
-        A_DEFSYM, 0);
+        A_DEFSYMBOL, 0);
     class_addbang(textfile_class, textfile_bang);
 }
 

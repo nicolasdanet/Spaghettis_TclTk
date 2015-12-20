@@ -874,11 +874,11 @@ void g_numbox_setup(void)
     class_addmethod(my_numbox_class, (t_method)my_numbox_color,
         gensym("color"), A_GIMME, 0);
     class_addmethod(my_numbox_class, (t_method)my_numbox_send,
-        gensym("send"), A_DEFSYM, 0);
+        gensym("send"), A_DEFSYMBOL, 0);
     class_addmethod(my_numbox_class, (t_method)my_numbox_receive,
-        gensym("receive"), A_DEFSYM, 0);
+        gensym("receive"), A_DEFSYMBOL, 0);
     class_addmethod(my_numbox_class, (t_method)my_numbox_label,
-        gensym("label"), A_DEFSYM, 0);
+        gensym("label"), A_DEFSYMBOL, 0);
     class_addmethod(my_numbox_class, (t_method)my_numbox_label_pos,
         gensym("label_pos"), A_GIMME, 0);
     class_addmethod(my_numbox_class, (t_method)my_numbox_label_font,

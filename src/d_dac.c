@@ -6,6 +6,7 @@
 */
 
 #include "m_pd.h"
+#include "m_macros.h"
 #include "s_system.h"
 
 extern t_sample *sys_soundout;
@@ -76,7 +77,7 @@ static void dac_setup(void)
 {
     dac_class = class_new(gensym("dac~"), (t_newmethod)dac_new,
         (t_method)dac_free, sizeof(t_dac), 0, A_GIMME, 0);
-    CLASS_MAINSIGNALIN(dac_class, t_dac, x_f);
+    CLASS_SIGNAL(dac_class, t_dac, x_f);
     class_addmethod(dac_class, (t_method)dac_dsp, gensym("dsp"), A_CANT, 0);
     class_addmethod(dac_class, (t_method)dac_set, gensym("set"), A_GIMME, 0);
     class_sethelpsymbol(dac_class, gensym("adc~"));

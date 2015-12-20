@@ -3,6 +3,7 @@
 * WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
 #include "m_pd.h"
+#include "m_macros.h"
 /* #include <string.h> */
 
 #ifdef HAVE_ALLOCA_H        /* ifdef nonsense to find include for alloca() */

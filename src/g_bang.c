@@ -535,9 +535,9 @@ void g_bang_setup(void)
     class_addmethod(bng_class, (t_method)bng_pos, gensym("pos"), A_GIMME, 0);
     class_addmethod(bng_class, (t_method)bng_flashtime, gensym("flashtime"), A_GIMME, 0);
     class_addmethod(bng_class, (t_method)bng_color, gensym("color"), A_GIMME, 0);
-    class_addmethod(bng_class, (t_method)bng_send, gensym("send"), A_DEFSYM, 0);
-    class_addmethod(bng_class, (t_method)bng_receive, gensym("receive"), A_DEFSYM, 0);
-    class_addmethod(bng_class, (t_method)bng_label, gensym("label"), A_DEFSYM, 0);
+    class_addmethod(bng_class, (t_method)bng_send, gensym("send"), A_DEFSYMBOL, 0);
+    class_addmethod(bng_class, (t_method)bng_receive, gensym("receive"), A_DEFSYMBOL, 0);
+    class_addmethod(bng_class, (t_method)bng_label, gensym("label"), A_DEFSYMBOL, 0);
     class_addmethod(bng_class, (t_method)bng_label_pos, gensym("label_pos"), A_GIMME, 0);
     class_addmethod(bng_class, (t_method)bng_label_font, gensym("label_font"), A_GIMME, 0);
     class_addmethod(bng_class, (t_method)bng_init, gensym("init"), A_FLOAT, 0);

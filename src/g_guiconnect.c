@@ -90,7 +90,7 @@ static void guiconnect_signoff(t_guiconnect *x)
 void g_guiconnect_setup(void)
 {
     guiconnect_class = class_new(gensym("guiconnect"), 0,
-        (t_method)guiconnect_free, sizeof(t_guiconnect), CLASS_PD, 0);
+        (t_method)guiconnect_free, sizeof(t_guiconnect), CLASS_PURE, 0);
     class_addanything(guiconnect_class, guiconnect_anything);
     class_addmethod(guiconnect_class, (t_method)guiconnect_signoff,
         gensym("signoff"), 0);
