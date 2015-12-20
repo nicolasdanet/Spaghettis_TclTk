@@ -25,8 +25,8 @@
 #pragma mark -
 
 #define ERROR_NONE                  0
-#define ERROR_ADC                   1
-#define ERROR_DAC                   2
+#define ERROR_ADC_SLEPT             1
+#define ERROR_DAC_SLEPT             2
 #define ERROR_RESYNC                3
 #define ERROR_DATA_LATE             4
 

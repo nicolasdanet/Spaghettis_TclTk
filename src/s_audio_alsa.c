@@ -590,7 +590,7 @@ int alsa_send_dacs(void)
                     callno, (int)(1000 * (timenow - timelast))), fflush(stderr);
     #endif
             timenow = sys_getrealtime();
-            sys_log_error(ERROR_DAC);
+            sys_log_error(ERROR_DAC_SLEPT);
         }
     }
 
@@ -668,7 +668,7 @@ int alsa_send_dacs(void)
         post("alsa_send_dacs took %d msec\n",
             (int)(1000 * (sys_getrealtime() - timenow)));
 #endif
-        sys_log_error(ERROR_ADC);
+        sys_log_error(ERROR_ADC_SLEPT);
     }
     {
         static int checkcountdown = 0;

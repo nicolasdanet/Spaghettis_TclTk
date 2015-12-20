@@ -751,7 +751,7 @@ int oss_send_dacs(void)
             if ((timenow = sys_getrealtime()) - timeref > 0.002)
             {
                 if (!oss_blockmode)
-                    sys_log_error(ERROR_DAC);
+                    sys_log_error(ERROR_DAC_SLEPT);
                 else rtnval = DACS_SLEPT;
             }
             timeref = timenow;
@@ -772,7 +772,7 @@ int oss_send_dacs(void)
         if ((timenow = sys_getrealtime()) - timeref > 0.002)
         {
             if (!oss_blockmode)
-                sys_log_error(ERROR_ADC);
+                sys_log_error(ERROR_ADC_SLEPT);
             else
                 rtnval = DACS_SLEPT;
         }
