@@ -72,7 +72,7 @@ CFLAGS = -O3 -ffast-math -w $(ARCH)
 
 # The sources (filepath must NOT contain space).
 
-SRC_LIBS += s_midi_pm.c s_audio_pa.c s_audio_paring.c \
+SRC_LIBS += s_midi_pm.c s_audio_pa.c s_ringbuffer.c \
     $(PA_DIR)/src/common/pa_allocation.c \
     $(PA_DIR)/src/common/pa_converters.c \
     $(PA_DIR)/src/common/pa_cpuload.c \

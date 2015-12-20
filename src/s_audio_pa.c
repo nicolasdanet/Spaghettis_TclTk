@@ -79,7 +79,7 @@ static int pa_nbuffers;
 static int pa_dio_error;
 
 #ifdef FAKEBLOCKING
-#include "s_audio_paring.h"
+#include "s_ringbuffer.h"
 static PA_VOLATILE char *pa_outbuf;
 static PA_VOLATILE sys_ringbuf pa_outring;
 static PA_VOLATILE char *pa_inbuf;

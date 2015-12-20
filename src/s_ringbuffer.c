@@ -1,46 +1,28 @@
+
 /*
- * ringbuffer.c
- * Ring Buffer utility..
- *
- * Author: Phil Burk, http://www.softsynth.com
- *
- * This program uses the PortAudio Portable Audio Library.
- * For more information see: http://www.audiomulch.com/portaudio/
- * Copyright (c) 1999-2000 Ross Bencina and Phil Burk
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files
- * (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge,
- * publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * Any person wishing to distribute modifications to the Software is
- * requested to send the modifications to the original developer so that
- * they can be incorporated into the canonical version.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
- * ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
- * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * modified 2002/07/13 by olaf.matthes@gmx.de to allow any number if channels
- *
- * extensively hacked by msp@ucsd.edu for various reasons
- *
- */
+    Author: Phil Burk < http://www.softsynth.com >.
+    
+    This program is distributed with the PortAudio Portable Audio Library.
+    For more information see: < http://www.audiomulch.com/portaudio/ >.
+ 
+    Copyright (c) 1999-2000 Ross Bencina and Phil Burk.
+
+    < http://opensource.org/licenses/MIT >.
+    
+    Any person wishing to distribute modifications to the Software is
+    requested to send the modifications to the original developer so that
+    they can be incorporated into the canonical version.
+    
+    Modified 2002/07/13 by olaf.matthes@gmx.de to allow any number if channels.
+    
+    Extensively hacked by msp@ucsd.edu for various reasons.
+    
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "s_audio_paring.h"
+#include "s_ringbuffer.h"
 #include <string.h>
 
 /* Clear buffer. Should only be called when buffer is NOT being read. */
