@@ -31,6 +31,8 @@ Additional terms:
         Any person wishing to distribute modifications to the Software is
         requested to send the modifications to the original developer so
         that they can be incorporated into the canonical version.
+        
+        Modified by olaf.matthes@gmx.de (2002/07/13).
  
     src/s_path.c
 
