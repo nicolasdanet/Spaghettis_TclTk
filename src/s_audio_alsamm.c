@@ -29,7 +29,7 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <sched.h>
-#include "s_audio_alsa.h"
+#include "s_alsa.h"
 
 /* needed for alsa 0.9 compatibility: */
 #if (SND_LIB_MAJOR < 1)
@@ -45,10 +45,6 @@
 */
 
 #define ALSAMM_SAMPLEWIDTH_32 sizeof(t_alsa_sample32)
-
-#ifndef INT32_MAX
-#define INT32_MAX 0x7fffffff
-#endif
 
 /* maybe:
     don't assume we can turn all 31 bits when doing float-to-fix; 
@@ -88,10 +84,15 @@ extern int sys_inchannels;
 extern int sys_outchannels;
 extern int sys_advance_samples;
 
+extern t_alsa_dev alsa_indev[ALSA_MAXIMUM_DEVICES];
+extern t_alsa_dev alsa_outdev[ALSA_MAXIMUM_DEVICES];
+extern int alsa_nindev;
+extern int alsa_noutdev;
+
 static int alsamm_incards = 0;
-static t_alsa_dev *alsamm_indevice[ALSA_MAXDEV];
+static t_alsa_dev *alsamm_indevice[ALSA_MAXIMUM_DEVICES];
 static int alsamm_outcards = 0;
-static t_alsa_dev *alsamm_outdevice[ALSA_MAXDEV];
+static t_alsa_dev *alsamm_outdevice[ALSA_MAXIMUM_DEVICES];
 
 /*
    we need same samplerate, buffertime and so on for
@@ -223,7 +224,7 @@ int alsamm_open_audio(int rate, int blocksize)
 #endif
 
   /* init some structures */
-  for(i=0;i < ALSA_MAXDEV;i++){
+  for(i=0;i < ALSA_MAXIMUM_DEVICES;i++){
     alsa_indev[i].a_synced=alsa_outdev[i].a_synced=0;
     alsa_indev[i].a_channels=alsa_outdev[i].a_channels=-1; /* query defaults */
   }

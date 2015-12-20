@@ -24,7 +24,7 @@
 #include <fcntl.h>
 #include <sched.h>
 #include <sys/mman.h>
-#include "s_audio_alsa.h"
+#include "s_alsa.h"
 #include <endian.h>
 
 extern int sys_verbose;
@@ -61,8 +61,8 @@ static int alsa_buf_samps;
 static snd_pcm_status_t *alsa_status;
 static int alsa_usemmap;
 
-t_alsa_dev alsa_indev[ALSA_MAXDEV];
-t_alsa_dev alsa_outdev[ALSA_MAXDEV];
+t_alsa_dev alsa_indev[ALSA_MAXIMUM_DEVICES];
+t_alsa_dev alsa_outdev[ALSA_MAXIMUM_DEVICES];
 int alsa_nindev;
 int alsa_noutdev;
 
@@ -280,7 +280,7 @@ int alsa_open_audio(int naudioindev, int *audioindev, int nchindev,
     int err, inchans = 0, outchans = 0, subunitdir;
     char devname[512];
     snd_output_t* out;
-    int frag_size = (blocksize ? blocksize : ALSA_DEFFRAGSIZE);
+    int frag_size = (blocksize ? blocksize : ALSA_DEFAULT_BLOCK);
     int nfrags, i, iodev, dev2;
     int wantinchans, wantoutchans, device;
 
