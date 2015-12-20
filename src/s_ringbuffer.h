@@ -1,19 +1,24 @@
 
 /*
-    Author: Phil Burk < http://www.softsynth.com >.
+    Author is Phil Burk.
     
     This program is distributed with the PortAudio Portable Audio Library.
-    For more information see: < http://www.audiomulch.com/portaudio/ >.
  
     Copyright (c) 1999-2000 Ross Bencina and Phil Burk.
 
-    < http://opensource.org/licenses/MIT >.
-    
     Any person wishing to distribute modifications to the Software is
     requested to send the modifications to the original developer so that
     they can be incorporated into the canonical version.
     
 */
+
+/* < http://opensource.org/licenses/MIT > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* < http://www.softsynth.com > */
+/* < http://www.audiomulch.com/portaudio/ > */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
