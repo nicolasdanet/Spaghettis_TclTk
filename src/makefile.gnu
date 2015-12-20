@@ -95,9 +95,9 @@ $(BIN_DIR)/pd: $(OBJ) | $(BIN_DIR)
 	@echo "Build pd ..."
 	@$(CC) $(LDFLAGS) -o $(BIN_DIR)/pd $(OBJ) $(LIB)
 
-$(BIN_DIR)/pdwatchdog: s_watchdog.c | $(BIN_DIR)
+$(BIN_DIR)/pdwatchdog: u_watchdog.c | $(BIN_DIR)
 	@echo "Build pdwatchdog ..."
-	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $(BIN_DIR)/pdwatchdog s_watchdog.c
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $(BIN_DIR)/pdwatchdog u_watchdog.c
 
 $(BIN_DIR)/pdsend: u_pdsend.c | $(BIN_DIR)
 	@echo "Build pdsend ..."
