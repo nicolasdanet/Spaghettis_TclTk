@@ -49,7 +49,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
 static void canvas_readerror(int natoms, t_atom *vec, int message, 
     int nline, char *s)
 {
-    error("%s", s);
+    post_error ("%s", s);
     post("line was:");
     post_atoms(nline, vec + message);
 }
@@ -64,7 +64,7 @@ static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
     t_template *template = template_findbyname(templatesym);
     if (!template)
     {
-        error("%s: no such template", templatesym->s_name);
+        post_error ("%s: no such template", templatesym->s_name);
         *p_nextmsg = natoms;
         return;
     }
@@ -82,7 +82,7 @@ static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
                 template_findbyname(arraytemplatesym);
             if (!arraytemplate)
             {
-                error("%s: no such template", arraytemplatesym->s_name);
+                post_error ("%s: no such template", arraytemplatesym->s_name);
             }
             else while (1)
             {
@@ -137,14 +137,14 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
     
     if (!(template = template_findbyname(templatesym)))
     {
-        error("canvas_read: %s: no such template", templatesym->s_name);
+        post_error ("canvas_read: %s: no such template", templatesym->s_name);
         *p_nextmsg = natoms;
         return (0);
     }
     sc = scalar_new(x, templatesym);
     if (!sc)
     {
-        error("couldn't create scalar \"%s\"", templatesym->s_name);
+        post_error ("couldn't create scalar \"%s\"", templatesym->s_name);
         *p_nextmsg = natoms;
         return (0);
     }
@@ -187,7 +187,7 @@ void glist_readfrombinbuf(t_glist *x, t_binbuf *b, char *filename, int selectem)
     if (nline != 1 && vec[message].a_type != A_SYMBOL &&
         strcmp(vec[message].a_w.w_symbol->s_name, "data"))
     {
-        error("%s: file apparently of wrong type", filename);
+        post_error ("%s: file apparently of wrong type", filename);
         binbuf_free(b);
         return;
     }
@@ -230,7 +230,7 @@ void glist_readfrombinbuf(t_glist *x, t_binbuf *b, char *filename, int selectem)
         }
         if (!(existtemplate = template_findbyname(templatesym)))
         {
-            error("%s: template not found in current patch",
+            post_error ("%s: template not found in current patch",
                 templatesym->s_name);
             freebytes(templateargs, sizeof (*templateargs) * ntemplateargs);
             return;
@@ -239,7 +239,7 @@ void glist_readfrombinbuf(t_glist *x, t_binbuf *b, char *filename, int selectem)
         freebytes(templateargs, sizeof (*templateargs) * ntemplateargs);
         if (!template_match(existtemplate, newtemplate))
         {
-            error("%s: template doesn't match current one",
+            post_error ("%s: template doesn't match current one",
                 templatesym->s_name);
             template_free(newtemplate);
             return;
@@ -264,11 +264,11 @@ static void glist_doread(t_glist *x, t_symbol *filename, t_symbol *format,
     if (!strcmp(format->s_name, "cr"))
         cr = 1;
     else if (*format->s_name)
-        error("qlist_read: unknown flag: %s", format->s_name);
+        post_error ("qlist_read: unknown flag: %s", format->s_name);
     
     if (binbuf_read_via_canvas(b, filename->s_name, canvas, cr))
     {
-        error("read failed");
+        post_error ("read failed");
         binbuf_free(b);
         return;
     }
@@ -311,7 +311,7 @@ void canvas_dataproperties(t_canvas *x, t_scalar *sc, t_binbuf *b)
     
     if (scindex == -1)
     {
-        error("data_properties: scalar disappeared");
+        post_error ("data_properties: scalar disappeared");
         return;
     }
     glist_readfrombinbuf(x, b, "properties dialog", 0);
@@ -331,7 +331,7 @@ void canvas_dataproperties(t_canvas *x, t_scalar *sc, t_binbuf *b)
     }
     else gobj_vis((newone = x->gl_list), x, 0), x->gl_list = newone->g_next;
     if (!newone)
-        error("couldn't update properties (perhaps a format problem?)");
+        post_error ("couldn't update properties (perhaps a format problem?)");
     else if (!oldone) { PD_BUG; }
     else if (newone->g_pd == scalar_class && oldone->g_pd == scalar_class
         && ((t_scalar *)newone)->sc_template ==
@@ -569,13 +569,13 @@ static void glist_write(t_glist *x, t_symbol *filename, t_symbol *format)
     if (!strcmp(format->s_name, "cr"))
         cr = 1;
     else if (*format->s_name)
-        error("qlist_read: unknown flag: %s", format->s_name);
+        post_error ("qlist_read: unknown flag: %s", format->s_name);
     
     b = glist_writetobinbuf(x, 1);
     if (b)
     {
         if (binbuf_write(b, buf, "", cr))
-            error("%s: write failed", filename->s_name);
+            post_error ("%s: write failed", filename->s_name);
         binbuf_free(b);
     }
 }

@@ -201,7 +201,7 @@ gotone:
         if (s && *s)
           *s = '\0';
         if (!SetDllDirectory(dirname))
-           error("Could not set '%s' as DllDirectory(), '%s' might not load.",
+           post_error ("Could not set '%s' as DllDirectory(), '%s' might not load.",
                  dirname, basename);
         /* now load the DLL for the external */
         ntdll = LoadLibrary(filename);

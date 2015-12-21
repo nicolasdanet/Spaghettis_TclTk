@@ -513,7 +513,7 @@ static void m_pollingscheduler( void)
                         idletime = sys_getrealtime();
                     else if (sys_getrealtime() - idletime > 1.)
                     {
-                        error("audio I/O stuck... closing audio\n");
+                        post_error ("audio I/O stuck... closing audio\n");
                         sys_close_audio();
                         sched_set_using_audio(SCHEDULER_NONE);
                         goto waitfortick;

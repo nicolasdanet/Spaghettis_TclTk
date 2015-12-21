@@ -137,7 +137,7 @@ void resample_dsp(t_resample *x,
 
   if (insize > outsize) { /* downsampling */
     if (insize % outsize) {
-      error("bad downsampling factor");
+      post_error ("bad downsampling factor");
       return;
     }
     switch (method) {
@@ -148,7 +148,7 @@ void resample_dsp(t_resample *x,
 
   } else { /* upsampling */
     if (outsize % insize) {
-      error("bad upsampling factor");
+      post_error ("bad upsampling factor");
       return;
     }
     switch (method) {

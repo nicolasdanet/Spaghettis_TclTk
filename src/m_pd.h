@@ -500,10 +500,8 @@ PD_DLL t_propertiesfn class_getpropertiesfn (t_class *c);
 #pragma mark -
 
 PD_DLL void post            (const char *fmt, ...);
-PD_DLL void error           (const char *fmt, ...);
-
-PD_DLL void post_atoms        (int argc, t_atom *argv);
-
+PD_DLL void post_error      (const char *fmt, ...);
+PD_DLL void post_atoms      (int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

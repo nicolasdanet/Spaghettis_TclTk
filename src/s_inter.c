@@ -478,7 +478,7 @@ static void socketreceiver_getudp(t_socketreceiver *x, int fd)
         {
 #if 0
             buf[ret] = 0;
-            error("dropped bad buffer %s\n", buf);
+            post_error ("dropped bad buffer %s\n", buf);
 #endif
         }
         else

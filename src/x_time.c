@@ -52,8 +52,8 @@ void parsetimeunits(void *x, t_float amount, t_symbol *unitname,
                 back compatibility, since it's possible someone threw a
                 float argument to timer which had previously been ignored. */
             if (*s)
-                error("%s: unknown time unit", s);
-            else error("tempo setting needs time unit ('sec', 'samp', 'permin', etc.");
+                post_error ("%s: unknown time unit", s);
+            else post_error ("tempo setting needs time unit ('sec', 'samp', 'permin', etc.");
             *unit = 1;
             *samps = 0;
         }
@@ -441,7 +441,7 @@ static void *pipe_new(t_symbol *s, int argc, t_atom *argv)
         {
             char stupid[80];
             atom_string(&argv[argc-1], stupid, 79);
-            error("pipe: %s: bad time delay value", stupid);
+            post_error ("pipe: %s: bad time delay value", stupid);
             deltime = 0;
         }
         else deltime = argv[argc-1].a_w.w_float;
@@ -492,7 +492,7 @@ static void *pipe_new(t_symbol *s, int argc, t_atom *argv)
             }
             else
             {
-                if (c != 'f') error("pipe: %s: bad type",
+                if (c != 'f') post_error ("pipe: %s: bad type",
                     ap->a_w.w_symbol->s_name);
                 SETFLOAT(&vp->p_atom, 0);
                 vp->p_outlet = outlet_new(&x->x_obj, &s_float);
@@ -544,7 +544,7 @@ static void hang_tick(t_hang *h)
         case A_POINTER:
             if (gpointer_check(w->w_gpointer, 1))
                 outlet_pointer(p->p_outlet, w->w_gpointer);
-            else error("pipe: stale pointer");
+            else post_error ("pipe: stale pointer");
             break;
         }
     }
@@ -565,7 +565,7 @@ static void pipe_list(t_pipe *x, t_symbol *s, int ac, t_atom *av)
     {
         if (av[n].a_type == A_FLOAT)
             x->x_deltime = av[n].a_w.w_float;
-        else error("pipe: symbol or pointer in time inlet");
+        else post_error ("pipe: symbol or pointer in time inlet");
         ac = n;
     }
     for (i = 0, gp = x->x_gp, p = x->x_vec, ap = av; i < ac;
@@ -578,7 +578,7 @@ static void pipe_list(t_pipe *x, t_symbol *s, int ac, t_atom *av)
         case A_POINTER:
             gpointer_unset(gp);
             if (ap->a_type != A_POINTER)
-                error("pipe: bad pointer");
+                post_error ("pipe: bad pointer");
             else
             {
                 *gp = *(ap->a_w.w_gpointer);

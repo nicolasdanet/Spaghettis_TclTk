@@ -36,7 +36,7 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
             keep = 1;
         else
         {
-            error("scalar define: unknown flag ...");
+            post_error ("scalar define: unknown flag ...");
             post_atoms(argc, argv);
         }
         argc--; argv++;
@@ -67,14 +67,14 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
     template = template_findbyname(canvas_makebindsym(templatesym));
     if (!template)
     {
-        error("scalar define: couldn't find template %s",
+        post_error ("scalar define: couldn't find template %s",
             templatesym->s_name);
         goto noscalar;
     }
     sc = scalar_new(x, canvas_makebindsym(templatesym));
     if (!sc)
     {
-        error("%s: couldn't create scalar", templatesym->s_name);
+        post_error ("%s: couldn't create scalar", templatesym->s_name);
         goto noscalar;
     }
     sc->sc_g.g_next = 0;
@@ -101,7 +101,7 @@ noscalar:
 static void scalar_define_send(t_glist *x, t_symbol *s)
 {
     if (!s->s_thing)
-        error("scalar_define_send: %s: no such object", s->s_name);
+        post_error ("scalar_define_send: %s: no such object", s->s_name);
     else if (x->gl_list && pd_class(&x->gl_list->g_pd) == scalar_class)
     {
         t_gpointer gp;
@@ -164,7 +164,7 @@ static void *scalarobj_new(t_symbol *s, int argc, t_atom *argv)
             newest = scalar_define_new(s, argc-1, argv+1);
         else 
         {
-            error("scalar %s: unknown function", str);
+            post_error ("scalar %s: unknown function", str);
             newest = 0;
         }
     }

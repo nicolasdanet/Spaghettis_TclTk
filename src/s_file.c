@@ -88,7 +88,7 @@ static void sys_initloadpreferences( void)
     lseek(fd, 0, 0);
     if (!(sys_prefbuf = malloc(length + 2)))
     {
-        error("couldn't allocate memory for preferences buffer");
+        post_error ("couldn't allocate memory for preferences buffer");
         close(fd);
         return;
     }
@@ -149,7 +149,7 @@ static void sys_initsavepreferences( void)
     filenamebuf[PD_STRING-1] = 0;
     if ((sys_prefsavefp = fopen(filenamebuf, "w")) == NULL)
     {
-        error("%s: %s", filenamebuf, strerror(errno));
+        post_error ("%s: %s", filenamebuf, strerror(errno));
     }
 }
 
@@ -213,12 +213,12 @@ static void sys_putpreference(const char *key, const char *value)
         NULL, &hkey, NULL);
     if (err != ERROR_SUCCESS)
     {
-        error("unable to create registry entry: %s\n", key);
+        post_error ("unable to create registry entry: %s\n", key);
         return;
     }
     err = RegSetValueEx(hkey, key, 0, REG_EXPAND_SZ, value, strlen(value)+1);
     if (err != ERROR_SUCCESS)
-        error("unable to set registry entry: %s\n", key);
+        post_error ("unable to set registry entry: %s\n", key);
     RegCloseKey(hkey);
 }
 

@@ -248,7 +248,7 @@ void binbuf_add(t_binbuf *x, int argc, t_atom *argv)
             x->b_vec = ap;
     else
     {
-        error("binbuf_addmessage: out of space");
+        post_error ("binbuf_addmessage: out of space");
         return;
     }
 #if 0
@@ -273,7 +273,7 @@ void binbuf_addv(t_binbuf *x, char *fmt, ...)
     {
         if (nargs >= MAXADDMESSV)
         {
-            error("binbuf_addmessv: only %d allowed", MAXADDMESSV);
+            post_error ("binbuf_addmessv: only %d allowed", MAXADDMESSV);
             break;
         }
         switch(*fp++)
@@ -361,7 +361,7 @@ void binbuf_restore(t_binbuf *x, int argc, t_atom *argv)
             x->b_vec = ap;
     else
     {
-        error("binbuf_addmessage: out of space");
+        post_error ("binbuf_addmessage: out of space");
         return;
     }
 
@@ -653,13 +653,13 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
             {
                 if (at->a_w.w_index <= 0 || at->a_w.w_index > argc)
                 {
-                    error("$%d: not enough arguments supplied",
+                    post_error ("$%d: not enough arguments supplied",
                             at->a_w.w_index);
                     goto cleanup; 
                 }
                 else if (argv[at->a_w.w_index-1].a_type != A_SYMBOL)
                 {
-                    error("$%d: symbol needed as message destination",
+                    post_error ("$%d: symbol needed as message destination",
                         at->a_w.w_index);
                     goto cleanup; 
                 }
@@ -670,7 +670,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
                 if (!(s = binbuf_realizedollsym(at->a_w.w_symbol,
                     argc, argv, 0)))
                 {
-                    error("$%s: not enough arguments supplied",
+                    post_error ("$%s: not enough arguments supplied",
                         at->a_w.w_symbol->s_name);
                     goto cleanup;
                 }
@@ -678,7 +678,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
             else s = atom_getsymbol(at);
             if (!(target = s->s_thing))
             {
-                error("%s: no such object", s->s_name);
+                post_error ("%s: no such object", s->s_name);
             cleanup:
                 do at++, ac--;
                 while (ac && at->a_type != A_SEMICOLON);
@@ -735,7 +735,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
                         SETFLOAT(msp, 0);
                     else
                     {
-                        error("$%d: argument number out of range",
+                        post_error ("$%d: argument number out of range",
                             at->a_w.w_index);
                         SETFLOAT(msp, 0);
                     }
@@ -746,7 +746,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
                     target == &pd_objectmaker);
                 if (!s9)
                 {
-                    error("%s: argument number out of range", at->a_w.w_symbol->s_name);
+                    post_error ("%s: argument number out of range", at->a_w.w_symbol->s_name);
                     SETSYMBOL(msp, at->a_w.w_symbol);
                 }
                 else SETSYMBOL(msp, s9);
@@ -848,7 +848,7 @@ int binbuf_read_via_canvas(t_binbuf *b, char *filename, t_canvas *canvas,
     if ((filedesc = canvas_open(canvas, filename, "",
         buf, &bufptr, PD_STRING, 0)) < 0)
     {
-        error("%s: can't open", filename);
+        post_error ("%s: can't open", filename);
         return (1);
     }
     else close (filedesc);
@@ -866,7 +866,7 @@ int binbuf_read_via_path(t_binbuf *b, char *filename, char *dirname,
     if ((filedesc = open_via_path(
         dirname, filename, "", buf, &bufptr, PD_STRING, 0)) < 0)
     {
-        error("%s: can't open", filename);
+        post_error ("%s: can't open", filename);
         return (1);
     }
     else close (filedesc);
@@ -1032,7 +1032,7 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                 {
                     if (stackdepth >= MAXSTACK)
                     {
-                        error("stack depth exceeded: too many embedded patches");
+                        post_error ("stack depth exceeded: too many embedded patches");
                         return (newb);
                     }
                     stack[stackdepth] = nobj;
@@ -1242,7 +1242,7 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                     t_float x, y;
                     if (stackdepth >= MAXSTACK)
                     {
-                        error("stack depth exceeded: too many embedded patches");
+                        post_error ("stack depth exceeded: too many embedded patches");
                         return (newb);
                     }
                     stack[stackdepth] = nobj;
@@ -1460,7 +1460,7 @@ void binbuf_evalfile(t_symbol *name, t_symbol *dir)
         /* set filename so that new canvases can pick them up */
     glob_setfilename(0, name, dir);
     if (binbuf_read(b, name->s_name, dir->s_name, 0))
-        error("%s: read failed; %s", name->s_name, strerror(errno));
+        post_error ("%s: read failed; %s", name->s_name, strerror(errno));
     else
     {
             /* save bindings of symbols #N, #A (and restore afterward) */

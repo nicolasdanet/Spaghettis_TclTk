@@ -57,14 +57,14 @@ static int ooura_init( int n)
         ooura_bitrev[0] = 0;
         if (!ooura_bitrev)
         {
-            error("out of memory allocating FFT buffer");
+            post_error ("out of memory allocating FFT buffer");
             ooura_maxn = 0;
             return (0);
         }
         ooura_costab = (FFTFLT *)getbytes(n * sizeof(FFTFLT)/2);
         if (!ooura_costab)
         {
-            error("out of memory allocating FFT buffer");
+            post_error ("out of memory allocating FFT buffer");
             freebytes(ooura_bitrev, ooura_bitrevsize);
             ooura_maxn = 0;
             return (0);

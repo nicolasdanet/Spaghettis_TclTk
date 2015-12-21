@@ -600,7 +600,7 @@ int sys_rcfile(void)
     }
     if (sys_argparse(rcargc-1, rcargv+1))
     {
-        error("error parsing RC arguments");
+        post_error ("error parsing RC arguments");
         goto cleanup;
     }
 
@@ -622,7 +622,7 @@ void sys_doflags( void)
     char *rcargv[PD_STRING];
     if (len > PD_STRING)
     {
-        error("flags: %s: too long", sys_flags->s_name);
+        post_error ("flags: %s: too long", sys_flags->s_name);
         return;
     }
     for (i = 0; i < len+1; i++)
@@ -654,7 +654,7 @@ void sys_doflags( void)
         }
     }
     if (sys_argparse(rcargc, rcargv))
-        error("error parsing startup arguments");
+        post_error ("error parsing startup arguments");
 }
 
 /* undo pdtl_encodedialog.  This allows dialogs to send spaces, commas,

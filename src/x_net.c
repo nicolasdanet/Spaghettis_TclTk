@@ -74,14 +74,14 @@ static void *netsend_new(t_symbol *s, int argc, t_atom *argv)
             x->x_protocol = SOCK_DGRAM;
         else
         {
-            error("netsend: unknown flag ...");
+            post_error ("netsend: unknown flag ...");
             post_atoms(argc, argv);
         }
         argc--; argv++;
     }
     if (argc)
     {
-        error("netsend: extra arguments ignored:");
+        post_error ("netsend: extra arguments ignored:");
         post_atoms(argc, argv);
     }
     x->x_sockfd = -1;
@@ -140,7 +140,7 @@ static void netsend_doit(void *z, t_binbuf *b)
             for (i = msg; i < emsg; i++)
                 if (at[i].a_type == A_DOLLAR || at[i].a_type == A_DOLLARSYMBOL)
             {
-                error("netreceive: got dollar sign in message");
+                post_error ("netreceive: got dollar sign in message");
                 goto nodice;
             }
             if (at[msg].a_type == A_FLOAT)
@@ -169,7 +169,7 @@ static void netsend_connect(t_netsend *x, t_symbol *hostname,
     int intarg;
     if (x->x_sockfd >= 0)
     {
-        error("netsend_connect: already connected");
+        post_error ("netsend_connect: already connected");
         return;
     }
 
@@ -496,7 +496,7 @@ static void netreceive_send(t_netreceive *x,
     for (i = 0; i < x->x_nconnections; i++)
     {
         if (netsend_dosend(&x->x_ns, x->x_connections[i], s, argc, argv))
-            error("netreceive send message failed");
+            post_error ("netreceive send message failed");
                 /* should we now close the connection? */
     }
 }
@@ -530,7 +530,7 @@ static void *netreceive_new(t_symbol *s, int argc, t_atom *argv)
                 x->x_ns.x_protocol = SOCK_DGRAM;
             else
             {
-                error("netreceive: unknown flag ...");
+                post_error ("netreceive: unknown flag ...");
                 post_atoms(argc, argv);
             }
             argc--; argv++;
@@ -540,7 +540,7 @@ static void *netreceive_new(t_symbol *s, int argc, t_atom *argv)
         portno = argv->a_w.w_float, argc--, argv++;
     if (argc)
     {
-        error("netreceive: extra arguments ignored:");
+        post_error ("netreceive: extra arguments ignored:");
         post_atoms(argc, argv);
     }
     if (x->x_old)

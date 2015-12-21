@@ -152,7 +152,7 @@ static void *array_define_new(t_symbol *s, int argc, t_atom *argv)
         }
         else
         {
-            error("array define: unknown flag ...");
+            post_error ("array define: unknown flag ...");
             post_atoms(argc, argv);
         }
         argc--; argv++;
@@ -205,7 +205,7 @@ static void array_define_send(t_glist *x, t_symbol *s)
 {
     t_glist *gl = (x->gl_list ? pd_checkglist(&x->gl_list->g_pd) : 0);
     if (!s->s_thing)
-        error("array_define_send: %s: no such object", s->s_name);
+        post_error ("array_define_send: %s: no such object", s->s_name);
     else if (gl && gl->gl_list && pd_class(&gl->gl_list->g_pd) == garray_class)
     {
         t_gpointer gp;
@@ -265,7 +265,7 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
         }
         else
         {
-            error("array: couldn't find named array '%s'",
+            post_error ("array: couldn't find named array '%s'",
                 x->tc_sym->s_name);
             *glist = 0;
             return (0);
@@ -280,12 +280,12 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
         t_symbol *arraytype;
         if (!template)
         {
-            error("array: couldn't find struct %s", x->tc_struct->s_name);
+            post_error ("array: couldn't find struct %s", x->tc_struct->s_name);
             return (0);
         }
         if (!gpointer_check(&x->tc_gp, 0))
         {
-            error("array: stale or empty pointer");
+            post_error ("array: stale or empty pointer");
             return (0);
         }
         if (gs->gs_type == GP_ARRAY)
@@ -295,12 +295,12 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
         if (!template_find_field(template,
             x->tc_field, &onset, &type, &arraytype))
         {
-            error("array: no field named %s", x->tc_field->s_name);
+            post_error ("array: no field named %s", x->tc_field->s_name);
             return (0);
         }
         if (type != DT_ARRAY)
         {
-            error("array: field %s not of type array",
+            post_error ("array: field %s not of type array",
                 x->tc_field->s_name);
             return (0);
         }
@@ -357,7 +357,7 @@ static void *array_size_new(t_symbol *s, int argc, t_atom *argv)
         }
         else
         {
-            error("array setline: unknown flag ...");
+            post_error ("array setline: unknown flag ...");
             post_atoms(argc, argv);
         }
         argc--; argv++;
@@ -366,7 +366,7 @@ static void *array_size_new(t_symbol *s, int argc, t_atom *argv)
     {
         if (x->x_struct)
         {
-            error("array setline: extra names after -s..");
+            post_error ("array setline: extra names after -s..");
             post_atoms(argc, argv);
         }
         else x->x_sym = argv->a_w.w_symbol;
@@ -477,7 +477,7 @@ static void *array_rangeop_new(t_class *class,
         }
         else
         {
-            error("%s: unknown flag ...", class_getname(class));
+            post_error ("%s: unknown flag ...", class_getname(class));
             post_atoms(argc, argv);
         }
         argc--; argv++;
@@ -486,7 +486,7 @@ static void *array_rangeop_new(t_class *class,
     {
         if (x->x_struct)
         {
-            error("%s: extra names after -s..", class_getname(class));
+            post_error ("%s: extra names after -s..", class_getname(class));
             post_atoms(argc, argv);
         }
         else x->x_sym = argv->a_w.w_symbol;
@@ -531,7 +531,7 @@ static int array_rangeop_getrange(t_array_rangeop *x,
     if (!template_find_field(template, x->x_elemfield, &fieldonset,
         &type, &arraytype) || type != DT_FLOAT)
     {
-        error("can't find field %s in struct %s",
+        post_error ("can't find field %s in struct %s",
             x->x_elemfield->s_name, a->a_templatesym->s_name);
         return (0);
     }
@@ -832,7 +832,7 @@ static void *arrayobj_new(t_symbol *s, int argc, t_atom *argv)
             newest = array_min_new(s, argc-1, argv+1);
         else 
         {
-            error("array %s: unknown function", str);
+            post_error ("array %s: unknown function", str);
             newest = 0;
         }
     }

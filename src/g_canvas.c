@@ -857,8 +857,8 @@ void canvas_restore(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
     }
     canvas_pop(x, x->gl_willvis);
 
-    if (!(z = gensym("#X")->s_thing)) error("canvas_restore: out of context");
-    else if (*z != canvas_class) error("canvas_restore: wasn't a canvas");
+    if (!(z = gensym("#X")->s_thing)) post_error ("canvas_restore: out of context");
+    else if (*z != canvas_class) post_error ("canvas_restore: wasn't a canvas");
     else
     {
         t_canvas *x2 = (t_canvas *)z;

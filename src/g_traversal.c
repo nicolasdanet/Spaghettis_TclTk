@@ -178,24 +178,24 @@ t_binbuf *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
     t_word *vec;
     if (!templatesym)
     {
-        error("%s: bad pointer", fname);
+        post_error ("%s: bad pointer", fname);
         return (0);
     }
     if (!(template = template_findbyname(templatesym)))
     {
-        error("%s: couldn't find template %s", fname,
+        post_error ("%s: couldn't find template %s", fname,
             templatesym->s_name);
         return (0);
     }
     if (!template_find_field(template, s, &onset, &type, &arraytype))
     {
-        error("%s: %s.%s: no such field", fname,
+        post_error ("%s: %s.%s: no such field", fname,
             templatesym->s_name, s->s_name);
         return (0);
     }
     if (type != DT_TEXT)
     {
-        error("%s: %s.%s: not a list", fname,
+        post_error ("%s: %s.%s: not a list", fname,
             templatesym->s_name, s->s_name);
         return (0);
     }
@@ -261,7 +261,7 @@ static void ptrobj_traverse(t_ptrobj *x, t_symbol *s)
 {
     t_glist *glist = (t_glist *)pd_findbyclass(s, canvas_class);
     if (glist) gpointer_setglist(&x->x_gp, glist, 0);
-    else { error(x, "pointer: list '%s' not found", s->s_name); }
+    else { post_error (x, "pointer: list '%s' not found", s->s_name); }
 }
 
 static void ptrobj_vnext(t_ptrobj *x, t_float f)
@@ -274,23 +274,23 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
 
     if (!gs)
     {
-        error("ptrobj_next: no current pointer");
+        post_error ("ptrobj_next: no current pointer");
         return;
     }
     if (gs->gs_type != GP_GLIST)
     {
-        error("ptrobj_next: lists only, not arrays");
+        post_error ("ptrobj_next: lists only, not arrays");
         return;
     }
     glist = gs->gs_un.gs_glist;
     if (glist->gl_valid != gp->gp_valid)
     {
-        error("ptrobj_next: stale pointer");
+        post_error ("ptrobj_next: stale pointer");
         return;
     }
     if (wantselected && !glist_isvisible(glist))
     {
-        error("ptrobj_vnext: next-selected only works for a visible window");
+        post_error ("ptrobj_vnext: next-selected only works for a visible window");
         return;
     }
     gobj = &gp->gp_un.gp_scalar->sc_g;
@@ -343,7 +343,7 @@ static void ptrobj_sendwindow(t_ptrobj *x, t_symbol *s, int argc, t_atom *argv)
     t_gstub *gs;
     if (!gpointer_check(&x->x_gp, 1))
     {
-        error("send-window: empty pointer");
+        post_error ("send-window: empty pointer");
         return;
     }
     gs = x->x_gp.gp_stub;
@@ -359,7 +359,7 @@ static void ptrobj_sendwindow(t_ptrobj *x, t_symbol *s, int argc, t_atom *argv)
     canvas = (t_pd *)glist_getcanvas(glist);
     if (argc && argv->a_type == A_SYMBOL)
         pd_typedmess(canvas, argv->a_w.w_symbol, argc-1, argv+1);
-    else { error("send-window: no message?"); }
+    else { post_error ("send-window: no message?"); }
 }
 
 
@@ -367,9 +367,9 @@ static void ptrobj_sendwindow(t_ptrobj *x, t_symbol *s, int argc, t_atom *argv)
 static void ptrobj_send(t_ptrobj *x, t_symbol *s)
 {
     if (!s->s_thing)
-        error("%s: no such object", s->s_name);
+        post_error ("%s: no such object", s->s_name);
     else if (!gpointer_check(&x->x_gp, 1))
-        error("pointer_send: empty pointer");
+        post_error ("pointer_send: empty pointer");
     else pd_pointer(s->s_thing, &x->x_gp);
 }
 
@@ -380,7 +380,7 @@ static void ptrobj_bang(t_ptrobj *x)
     t_typedout *to;
     if (!gpointer_check(&x->x_gp, 1))
     {
-        error("pointer_bang: empty pointer");
+        post_error ("pointer_bang: empty pointer");
         return;
     }
     templatesym = gpointer_gettemplatesym(&x->x_gp);
@@ -415,13 +415,13 @@ static void ptrobj_rewind(t_ptrobj *x)
     t_gstub *gs;
     if (!gpointer_check(&x->x_gp, 1))
     {
-        error("pointer_rewind: empty pointer");
+        post_error ("pointer_rewind: empty pointer");
         return;
     }
     gs = x->x_gp.gp_stub;
     if (gs->gs_type != GP_GLIST)
     {
-        error("pointer_rewind: sorry, unavailable for arrays");
+        post_error ("pointer_rewind: sorry, unavailable for arrays");
         return;
     }
     glist = gs->gs_un.gs_glist;  
@@ -504,7 +504,7 @@ static void *get_new(t_symbol *why, int argc, t_atom *argv)
 static void get_set(t_get *x, t_symbol *templatesym, t_symbol *field)
 {
     if (x->x_nout != 1)
-        error("get: cannot set multiple fields.");
+        post_error ("get: cannot set multiple fields.");
     else
     {
         x->x_templatesym = template_getbindsym(templatesym); 
@@ -523,14 +523,14 @@ static void get_pointer(t_get *x, t_gpointer *gp)
 
     if (!gpointer_check(gp, 0))
     {
-        error("get: stale or empty pointer");
+        post_error ("get: stale or empty pointer");
         return;
     }
     if (*x->x_templatesym->s_name)
     {
         if ((templatesym = x->x_templatesym) != gpointer_gettemplatesym(gp))
         {
-            error("get %s: got wrong template (%s)",
+            post_error ("get %s: got wrong template (%s)",
                 templatesym->s_name, gpointer_gettemplatesym(gp)->s_name);
             return;
         } 
@@ -538,7 +538,7 @@ static void get_pointer(t_get *x, t_gpointer *gp)
     else templatesym = gpointer_gettemplatesym(gp);
     if (!(template = template_findbyname(templatesym)))
     {
-        error("get: couldn't find template %s", templatesym->s_name);
+        post_error ("get: couldn't find template %s", templatesym->s_name);
         return;
     }
     if (gs->gs_type == GP_ARRAY) vec = gp->gp_un.gp_w;
@@ -555,10 +555,10 @@ static void get_pointer(t_get *x, t_gpointer *gp)
             else if (type == DT_SYMBOL)
                 outlet_symbol(vp->gv_outlet,
                     *(t_symbol **)(((char *)vec) + onset));
-            else error("get: %s.%s is not a number or symbol",
+            else post_error ("get: %s.%s is not a number or symbol",
                     template->t_sym->s_name, vp->gv_sym->s_name);
         }
-        else error("get: %s.%s: no such field",
+        else post_error ("get: %s.%s: no such field",
             template->t_sym->s_name, vp->gv_sym->s_name);
     }
 }
@@ -643,7 +643,7 @@ static void *set_new(t_symbol *why, int argc, t_atom *argv)
 static void set_set(t_set *x, t_symbol *templatesym, t_symbol *field)
 {
     if (x->x_nin != 1)
-        error("set: cannot set multiple fields.");
+        post_error ("set: cannot set multiple fields.");
     else
     {
        x->x_templatesym = template_getbindsym(templatesym); 
@@ -666,14 +666,14 @@ static void set_bang(t_set *x)
     t_word *vec;
     if (!gpointer_check(gp, 0))
     {
-        error("set: empty pointer");
+        post_error ("set: empty pointer");
         return;
     }
     if (*x->x_templatesym->s_name)
     {
         if ((templatesym = x->x_templatesym) != gpointer_gettemplatesym(gp))
         {
-            error("set %s: got wrong template (%s)",
+            post_error ("set %s: got wrong template (%s)",
                 templatesym->s_name, gpointer_gettemplatesym(gp)->s_name);
             return;
         } 
@@ -681,7 +681,7 @@ static void set_bang(t_set *x)
     else templatesym = gpointer_gettemplatesym(gp);
     if (!(template = template_findbyname(templatesym)))
     {
-        error("set: couldn't find template %s", templatesym->s_name);
+        post_error ("set: couldn't find template %s", templatesym->s_name);
         return;
     }
     if (!nitems)
@@ -713,7 +713,7 @@ static void set_float(t_set *x, t_float f)
         x->x_variables[0].gv_w.w_float = f;
         set_bang(x);
     }
-    else error("type mismatch or no field specified");
+    else post_error ("type mismatch or no field specified");
 }
 
 static void set_symbol(t_set *x, t_symbol *s)
@@ -723,7 +723,7 @@ static void set_symbol(t_set *x, t_symbol *s)
         x->x_variables[0].gv_w.w_symbol = s;
         set_bang(x);
     }
-    else error("type mismatch or no field specified");
+    else post_error ("type mismatch or no field specified");
 }
 
 static void set_free(t_set *x)
@@ -787,7 +787,7 @@ static void elem_float(t_elem *x, t_float f)
     
     if (!gpointer_check(gparent, 0))
     {
-        error("element: empty pointer");
+        post_error ("element: empty pointer");
         return;
     }
     if (*x->x_templatesym->s_name)
@@ -795,7 +795,7 @@ static void elem_float(t_elem *x, t_float f)
         if ((templatesym = x->x_templatesym) !=
             gpointer_gettemplatesym(gparent))
         {
-            error("elem %s: got wrong template (%s)",
+            post_error ("elem %s: got wrong template (%s)",
                 templatesym->s_name, gpointer_gettemplatesym(gparent)->s_name);
             return;
         } 
@@ -803,30 +803,30 @@ static void elem_float(t_elem *x, t_float f)
     else templatesym = gpointer_gettemplatesym(gparent);
     if (!(template = template_findbyname(templatesym)))
     {
-        error("elem: couldn't find template %s", templatesym->s_name);
+        post_error ("elem: couldn't find template %s", templatesym->s_name);
         return;
     }
     if (gparent->gp_stub->gs_type == GP_ARRAY) w = gparent->gp_un.gp_w;
     else w = gparent->gp_un.gp_scalar->sc_vec;
     if (!template)
     {
-        error("element: couldn't find template %s", templatesym->s_name);
+        post_error ("element: couldn't find template %s", templatesym->s_name);
         return;
     }
     if (!template_find_field(template, fieldsym,
         &onset, &type, &elemtemplatesym))
     {
-        error("element: couldn't find array field %s", fieldsym->s_name);
+        post_error ("element: couldn't find array field %s", fieldsym->s_name);
         return;
     }
     if (type != DT_ARRAY)
     {
-        error("element: field %s not of type array", fieldsym->s_name);
+        post_error ("element: field %s not of type array", fieldsym->s_name);
         return;
     }
     if (!(elemtemplate = template_findbyname(elemtemplatesym)))
     {
-        error("element: couldn't find field template %s",
+        post_error ("element: couldn't find field template %s",
             elemtemplatesym->s_name);
         return;
     }
@@ -896,7 +896,7 @@ static void getsize_pointer(t_getsize *x, t_gpointer *gp)
     t_gstub *gs = gp->gp_stub;
     if (!gpointer_check(gp, 0))
     {
-        error("getsize: stale or empty pointer");
+        post_error ("getsize: stale or empty pointer");
         return;
     }
     if (*x->x_templatesym->s_name)
@@ -904,7 +904,7 @@ static void getsize_pointer(t_getsize *x, t_gpointer *gp)
         if ((templatesym = x->x_templatesym) !=
             gpointer_gettemplatesym(gp))
         {
-            error("elem %s: got wrong template (%s)",
+            post_error ("elem %s: got wrong template (%s)",
                 templatesym->s_name, gpointer_gettemplatesym(gp)->s_name);
             return;
         } 
@@ -912,18 +912,18 @@ static void getsize_pointer(t_getsize *x, t_gpointer *gp)
     else templatesym = gpointer_gettemplatesym(gp);
     if (!(template = template_findbyname(templatesym)))
     {
-        error("elem: couldn't find template %s", templatesym->s_name);
+        post_error ("elem: couldn't find template %s", templatesym->s_name);
         return;
     }
     if (!template_find_field(template, fieldsym,
         &onset, &type, &elemtemplatesym))
     {
-        error("getsize: couldn't find array field %s", fieldsym->s_name);
+        post_error ("getsize: couldn't find array field %s", fieldsym->s_name);
         return;
     }
     if (type != DT_ARRAY)
     {
-        error("getsize: field %s not of type array", fieldsym->s_name);
+        post_error ("getsize: field %s not of type array", fieldsym->s_name);
         return;
     }
     if (gs->gs_type == GP_ARRAY) w = gp->gp_un.gp_w;
@@ -987,7 +987,7 @@ static void setsize_float(t_setsize *x, t_float f)
     t_gstub *gs = gp->gp_stub;
     if (!gpointer_check(&x->x_gp, 0))
     {
-        error("setsize: empty pointer");
+        post_error ("setsize: empty pointer");
         return;
     }
     if (*x->x_templatesym->s_name)
@@ -995,7 +995,7 @@ static void setsize_float(t_setsize *x, t_float f)
         if ((templatesym = x->x_templatesym) !=
             gpointer_gettemplatesym(gp))
         {
-            error("elem %s: got wrong template (%s)",
+            post_error ("elem %s: got wrong template (%s)",
                 templatesym->s_name, gpointer_gettemplatesym(gp)->s_name);
             return;
         } 
@@ -1003,19 +1003,19 @@ static void setsize_float(t_setsize *x, t_float f)
     else templatesym = gpointer_gettemplatesym(gp);
     if (!(template = template_findbyname(templatesym)))
     {
-        error("elem: couldn't find template %s", templatesym->s_name);
+        post_error ("elem: couldn't find template %s", templatesym->s_name);
         return;
     }
 
     if (!template_find_field(template, fieldsym,
         &onset, &type, &elemtemplatesym))
     {
-        error("setsize: couldn't find array field %s", fieldsym->s_name);
+        post_error ("setsize: couldn't find array field %s", fieldsym->s_name);
         return;
     }
     if (type != DT_ARRAY)
     {
-        error("setsize: field %s not of type array", fieldsym->s_name);
+        post_error ("setsize: field %s not of type array", fieldsym->s_name);
         return;
     }
     if (gs->gs_type == GP_ARRAY) w = gp->gp_un.gp_w;
@@ -1023,7 +1023,7 @@ static void setsize_float(t_setsize *x, t_float f)
 
     if (!(elemtemplate = template_findbyname(elemtemplatesym)))
     {
-        error("element: couldn't find field template %s",
+        post_error ("element: couldn't find field template %s",
             elemtemplatesym->s_name);
         return;
     }
@@ -1168,7 +1168,7 @@ static void *append_new(t_symbol *why, int argc, t_atom *argv)
 static void append_set(t_append *x, t_symbol *templatesym, t_symbol *field)
 {
     if (x->x_nin != 1)
-        error("set: cannot set multiple fields.");
+        post_error ("set: cannot set multiple fields.");
     else
     {
        x->x_templatesym = template_getbindsym(templatesym); 
@@ -1191,29 +1191,29 @@ static void append_float(t_append *x, t_float f)
     
     if (!templatesym->s_name)
     {
-        error("append: no template supplied");
+        post_error ("append: no template supplied");
         return;
     }
     template = template_findbyname(templatesym);
     if (!template)
     {
-        error("append: couldn't find template %s", templatesym->s_name);
+        post_error ("append: couldn't find template %s", templatesym->s_name);
         return;
     }
     if (!gs)
     {
-        error("append: no current pointer");
+        post_error ("append: no current pointer");
         return;
     }
     if (gs->gs_type != GP_GLIST)
     {
-        error("append: lists only, not arrays");
+        post_error ("append: lists only, not arrays");
         return;
     }
     glist = gs->gs_un.gs_glist;
     if (glist->gl_valid != gp->gp_valid)
     {
-        error("append: stale pointer");
+        post_error ("append: stale pointer");
         return;
     }
     if (!nitems) return;
@@ -1222,7 +1222,7 @@ static void append_float(t_append *x, t_float f)
     sc = scalar_new(glist, templatesym);
     if (!sc)
     {
-        error("%s: couldn't create scalar", templatesym->s_name);
+        post_error ("%s: couldn't create scalar", templatesym->s_name);
         return;
     }
     oldsc = gp->gp_un.gp_scalar;

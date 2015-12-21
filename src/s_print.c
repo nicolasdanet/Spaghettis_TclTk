@@ -10,10 +10,7 @@
 #pragma mark -
 
 #include <stdio.h>
-#include <errno.h>
-#include <stdlib.h>
 #include <stdarg.h>
-#include <string.h>
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -24,15 +21,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-static void doPost (const char *s)
-{
-    sys_vgui ("::pd_console::post {%s}\n", s);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 void post (const char *fmt, ...)
 {
@@ -46,10 +34,10 @@ void post (const char *fmt, ...)
     
     PD_ASSERT (t >= 0 && t < PD_STRING);
 
-    doPost (buf);
+    sys_vgui ("::pd_console::post {%s}\n", buf);
 }
 
-void error (const char *fmt, ...)
+void post_error (const char *fmt, ...)
 {
     int t;
     char buf[PD_STRING] = { 0 };
@@ -61,7 +49,7 @@ void error (const char *fmt, ...)
     
     PD_ASSERT (t >= 0 && t < PD_STRING);
 
-    doPost (buf);
+    sys_vgui ("::pd_console::post {%s}\n", buf);
 }
 
 void post_atoms (int argc, t_atom *argv)

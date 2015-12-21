@@ -687,7 +687,7 @@ void alsa_printstate( void)
     snd_pcm_sframes_t indelay, outdelay;
     if (sys_audioapi != API_ALSA)
     {
-        error("restart-audio: implemented for ALSA only.");
+        post_error ("restart-audio: implemented for ALSA only.");
         return;
     }
     if (sys_inchannels)

@@ -35,7 +35,7 @@ static t_symbol *class_extern_dir = &s_;
 
 static void pd_defaultanything(t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
-    error("%s: no method for '%s'", (*x)->c_name->s_name, s->s_name);
+    post_error ("%s: no method for '%s'", (*x)->c_name->s_name, s->s_name);
 }
 
 static void pd_defaultbang(t_pd *x)
@@ -186,7 +186,7 @@ t_class *class_new(t_symbol *s, t_newmethod newmethod, t_method freemethod,
     {
         if (count == PD_ARGUMENTS)
         {
-            error("class %s: sorry: only %d args typechecked; use A_GIMME",
+            post_error ("class %s: sorry: only %d args typechecked; use A_GIMME",
                 s->s_name, PD_ARGUMENTS);
             break;
         }
@@ -258,7 +258,7 @@ void class_addcreator(t_newmethod newmethod, t_symbol *s,
     {
         if (count == PD_ARGUMENTS)
         {
-            error("class %s: sorry: only %d creation args allowed",
+            post_error ("class %s: sorry: only %d creation args allowed",
                 s->s_name, PD_ARGUMENTS);
             break;
         }
@@ -345,7 +345,7 @@ void class_addmethod(t_class *c, t_method fn, t_symbol *sel,
             argtype = va_arg(ap, t_atomtype);
         }
         if (argtype != A_NULL)
-            error("%s_%s: only 5 arguments are typecheckable; use A_GIMME",
+            post_error ("%s_%s: only 5 arguments are typecheckable; use A_GIMME",
                 c->c_name->s_name, sel->s_name);
         va_end(ap);
         m->me_arg[nargs] = A_NULL;
@@ -432,7 +432,7 @@ static void pd_floatforsignal(t_pd *x, t_float f)
     if (offset > 0)
         *(t_float *)(((char *)x) + offset) = f;
     else
-        error("%s: float unexpected for signal input",
+        post_error ("%s: float unexpected for signal input",
             (*x)->c_name->s_name);
 }
 
@@ -551,7 +551,7 @@ void new_anything(void *dummy, t_symbol *s, int argc, t_atom *argv)
     int fd;
     char dirbuf[PD_STRING], classslashclass[PD_STRING], *nameptr;
     if (tryingalready>MAXOBJDEPTH){
-      error("maximum object loading depth %d reached", MAXOBJDEPTH);
+      post_error ("maximum object loading depth %d reached", MAXOBJDEPTH);
       return;
     }
     newest = 0;
@@ -584,7 +584,7 @@ void new_anything(void *dummy, t_symbol *s, int argc, t_atom *argv)
             else s__X.s_thing = was;
             canvas_setargs(0, 0);
         }
-        else error("%s: can't load abstraction within itself\n", s->s_name);
+        else post_error ("%s: can't load abstraction within itself\n", s->s_name);
     }
     else newest = 0;
 }
@@ -783,7 +783,7 @@ void pd_typedmess(t_pd *x, t_symbol *s, int argc, t_atom *argv)
     (*c->c_anymethod)(x, s, argc, argv);
     return;
 badarg:
-    error("Bad arguments for message '%s' to object '%s'",
+    post_error ("Bad arguments for message '%s' to object '%s'",
         s->s_name, c->c_name->s_name);
 }
 
@@ -802,7 +802,7 @@ void pd_vmess(t_pd *x, t_symbol *sel, char *fmt, ...)
     {
         if (nargs >= 10)
         {
-            error("pd_vmess: only 10 allowed");
+            post_error ("pd_vmess: only 10 allowed");
             break;
         }
         switch(*fp++)
@@ -852,7 +852,7 @@ t_gotfn getfn(t_pd *x, t_symbol *s)
 
     for (i = c->c_nmethod, m = c->c_methods; i--; m++)
         if (m->me_name == s) return(m->me_fun);
-    error("%s: no method for message '%s'", c->c_name->s_name, s->s_name);
+    post_error ("%s: no method for message '%s'", c->c_name->s_name, s->s_name);
     return((t_gotfn)nullfn);
 }
 

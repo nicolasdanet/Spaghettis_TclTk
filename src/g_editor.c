@@ -1537,7 +1537,7 @@ void canvas_doconnect(t_canvas *x, int xpos, int ypos, int which, int doit)
                 !obj_issignalinlet(ob2, closest2))
             {
                 if (doit)
-                    error("can't connect signal outlet to control inlet");
+                    post_error ("can't connect signal outlet to control inlet");
                 canvas_setcursor(x, CURSOR_EDIT_NOTHING);
                 return;
             }

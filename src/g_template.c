@@ -89,7 +89,7 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
         {
             if (argc < 3 || argv[2].a_type != A_SYMBOL)
             {
-                error("array lacks element template or name");
+                post_error ("array lacks element template or name");
                 goto bad;
             }
             newarraytemplate = canvas_makebindsym(argv[2].a_w.w_symbol);
@@ -99,7 +99,7 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
         }
         else
         {
-            error("%s: no such type", newtypesym->s_name);
+            post_error ("%s: no such type", newtypesym->s_name);
             goto bad;
         }
         newn = (oldn = x->t_n) + 1;
@@ -153,10 +153,10 @@ t_float template_getfloat(t_template *x, t_symbol *fieldname, t_word *wp,
     {
         if (type == DT_FLOAT)
             val = *(t_float *)(((char *)wp) + onset);
-        else if (loud) error("%s.%s: not a number",
+        else if (loud) post_error ("%s.%s: not a number",
             x->t_sym->s_name, fieldname->s_name);
     }
-    else if (loud) error("%s.%s: no such field",
+    else if (loud) post_error ("%s.%s: no such field",
         x->t_sym->s_name, fieldname->s_name);
     return (val);
 }
@@ -170,10 +170,10 @@ void template_setfloat(t_template *x, t_symbol *fieldname, t_word *wp,
      {
         if (type == DT_FLOAT)
             *(t_float *)(((char *)wp) + onset) = f;
-        else if (loud) error("%s.%s: not a number",
+        else if (loud) post_error ("%s.%s: not a number",
             x->t_sym->s_name, fieldname->s_name);
     }
-    else if (loud) error("%s.%s: no such field",
+    else if (loud) post_error ("%s.%s: no such field",
         x->t_sym->s_name, fieldname->s_name);
 }
 
@@ -187,10 +187,10 @@ t_symbol *template_getsymbol(t_template *x, t_symbol *fieldname, t_word *wp,
     {
         if (type == DT_SYMBOL)
             val = *(t_symbol **)(((char *)wp) + onset);
-        else if (loud) error("%s.%s: not a symbol",
+        else if (loud) post_error ("%s.%s: not a symbol",
             x->t_sym->s_name, fieldname->s_name);
     }
-    else if (loud) error("%s.%s: no such field",
+    else if (loud) post_error ("%s.%s: no such field",
         x->t_sym->s_name, fieldname->s_name);
     return (val);
 }
@@ -204,10 +204,10 @@ void template_setsymbol(t_template *x, t_symbol *fieldname, t_word *wp,
      {
         if (type == DT_SYMBOL)
             *(t_symbol **)(((char *)wp) + onset) = s;
-        else if (loud) error("%s.%s: not a symbol",
+        else if (loud) post_error ("%s.%s: not a symbol",
             x->t_sym->s_name, fieldname->s_name);
     }
-    else if (loud) error("%s.%s: no such field",
+    else if (loud) post_error ("%s.%s: no such field",
         x->t_sym->s_name, fieldname->s_name);
 }
 
@@ -507,7 +507,7 @@ static void *template_usetemplate(void *dummy, t_symbol *s,
             if (x->t_list)
             {
                     /* don't know what to do here! */
-                error("%s: template mismatch",
+                post_error ("%s: template mismatch",
                     templatesym->s_name);
             }
             else
@@ -838,7 +838,7 @@ static t_float fielddesc_getfloat(t_fielddesc *f, t_template *template,
     else
     {
         if (loud)
-            error("symbolic data field used as number");
+            post_error ("symbolic data field used as number");
         return (0);
     }
 }
@@ -879,7 +879,7 @@ t_float fielddesc_getcoord(t_fielddesc *f, t_template *template,
     else
     {
         if (loud)
-            error("symbolic data field used as number");
+            post_error ("symbolic data field used as number");
         return (0);
     }
 }
@@ -896,7 +896,7 @@ static t_symbol *fielddesc_getsymbol(t_fielddesc *f, t_template *template,
     else
     {
         if (loud)
-            error("numeric data field used as symbol");
+            post_error ("numeric data field used as symbol");
         return (&s_);
     }
 }
@@ -936,7 +936,7 @@ void fielddesc_setcoord(t_fielddesc *f, t_template *template,
     else
     {
         if (loud)
-            error("attempt to set constant or symbolic data field to a number");
+            post_error ("attempt to set constant or symbolic data field to a number");
     }
 }
 
@@ -1018,7 +1018,7 @@ void curve_float(t_curve *x, t_floatarg f)
     int viswas;
     if (x->x_vis.fd_type != A_FLOAT || x->x_vis.fd_var)
     {
-        error("global vis/invis for a template with variable visibility");
+        post_error ("global vis/invis for a template with variable visibility");
         return;
     }
     viswas = (x->x_vis.fd_un.fd_float != 0);
@@ -1411,7 +1411,7 @@ void plot_float(t_plot *x, t_floatarg f)
     int viswas;
     if (x->x_vis.fd_type != A_FLOAT || x->x_vis.fd_var)
     {
-        error("global vis/invis for a template with variable visibility");
+        post_error ("global vis/invis for a template with variable visibility");
         return;
     }
     viswas = (x->x_vis.fd_un.fd_float != 0);
@@ -1442,18 +1442,18 @@ static int plot_readownertemplate(t_plot *x,
         /* find the data and verify it's an array */
     if (x->x_data.fd_type != A_ARRAY || !x->x_data.fd_var)
     {
-        error("plot: needs an array field");
+        post_error ("plot: needs an array field");
         return (-1);
     }
     if (!template_find_field(ownertemplate, x->x_data.fd_un.fd_varsym,
         &arrayonset, &type, &elemtemplatesym))
     {
-        error("plot: %s: no such field", x->x_data.fd_un.fd_varsym->s_name);
+        post_error ("plot: %s: no such field", x->x_data.fd_un.fd_varsym->s_name);
         return (-1);
     }
     if (type != DT_ARRAY)
     {
-        error("plot: %s: not an array", x->x_data.fd_un.fd_varsym->s_name);
+        post_error ("plot: %s: not an array", x->x_data.fd_un.fd_varsym->s_name);
         return (-1);
     }
     array = *(t_array **)(((char *)data) + arrayonset);
@@ -1491,13 +1491,13 @@ int array_getfields(t_symbol *elemtemplatesym,
 
     if (!(elemtemplate =  template_findbyname(elemtemplatesym)))
     {
-        error("plot: %s: no such template", elemtemplatesym->s_name);
+        post_error ("plot: %s: no such template", elemtemplatesym->s_name);
         return (-1);
     }
     if (!((elemtemplatesym == &s_float) ||
         (elemtemplatecanvas = template_findcanvas(elemtemplate))))
     {
-        error("plot: %s: no canvas for this template", elemtemplatesym->s_name);
+        post_error ("plot: %s: no canvas for this template", elemtemplatesym->s_name);
         return (-1);
     }
     elemsize = elemtemplate->t_n * sizeof(t_word);
@@ -2384,7 +2384,7 @@ void drawnumber_float(t_drawnumber *x, t_floatarg f)
     int viswas;
     if (x->x_vis.fd_type != A_FLOAT || x->x_vis.fd_var)
     {
-        error("global vis/invis for a template with variable visibility");
+        post_error ("global vis/invis for a template with variable visibility");
         return;
     }
     viswas = (x->x_vis.fd_un.fd_float != 0);

@@ -130,7 +130,7 @@ typedef struct _multidev {
 int oss_reset(int fd) {
      int err;
      if ((err = ioctl(fd,SNDCTL_DSP_RESET)) < 0)
-          error("OSS: Could not reset");
+          post_error ("OSS: Could not reset");
      return err;
 }
 
@@ -189,7 +189,7 @@ void oss_configure(t_oss_dev *dev, int srate, int dac, int skipblocksize,
 
         param = orig = (nfragment<<16) + logfragsize;
         if (ioctl(fd,SNDCTL_DSP_SETFRAGMENT, &param) == -1)
-            error("OSS: Could not set or read fragment size\n");
+            post_error ("OSS: Could not set or read fragment size\n");
         if (param != orig)
         {
             nfragment = ((param >> 16) & 0xffff);
@@ -239,7 +239,7 @@ static int oss_setchannels(int fd, int wantchannels, char *devname)
     if (ioctl(fd, SNDCTL_DSP_CHANNELS, &param) == -1)
     {
         if (false)
-            error("OSS: SOUND_DSP_READ_CHANNELS failed %s", devname);
+            post_error ("OSS: SOUND_DSP_READ_CHANNELS failed %s", devname);
     }
     else
     {
@@ -258,7 +258,7 @@ whynot:
     {
         int save = param;
         if (ioctl(fd, SNDCTL_DSP_CHANNELS, &param) == -1)
-            error("OSS: SNDCTL_DSP_CHANNELS failed %s",devname);
+            post_error ("OSS: SNDCTL_DSP_CHANNELS failed %s",devname);
         else if (param == save) 
             return (param);
         param = save - 1;
@@ -353,7 +353,7 @@ int oss_open_audio(int nindev,  int *indev,  int nchin,  int *chin,
                 post("opened %s for writing only\n", devname);
         }
         if (ioctl(fd, SNDCTL_DSP_GETCAPS, &capabilities) == -1)
-            error("OSS: SNDCTL_DSP_GETCAPS failed %s", devname);
+            post_error ("OSS: SNDCTL_DSP_GETCAPS failed %s", devname);
 
         gotchans = oss_setchannels(fd,
             (wantchannels>OSS_MAXCHPERDEV)?OSS_MAXCHPERDEV:wantchannels,

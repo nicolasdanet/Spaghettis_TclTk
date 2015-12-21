@@ -110,7 +110,7 @@ static void alist_list(t_alist *x, t_symbol *s, int argc, t_atom *argv)
     if (!(x->l_vec = (t_listelem *)getbytes(argc * sizeof(*x->l_vec))))
     {
         x->l_n = 0;
-        error("list_alloc: out of memory");
+        post_error ("list_alloc: out of memory");
         return;
     }
     x->l_n = argc;
@@ -134,7 +134,7 @@ static void alist_anything(t_alist *x, t_symbol *s, int argc, t_atom *argv)
     if (!(x->l_vec = (t_listelem *)getbytes((argc+1) * sizeof(*x->l_vec))))
     {
         x->l_n = 0;
-        error("list_alloc: out of memory");
+        post_error ("list_alloc: out of memory");
         return;
     }
     x->l_n = argc+1;
@@ -169,7 +169,7 @@ static void alist_clone(t_alist *x, t_alist *y)
     if (!(y->l_vec = (t_listelem *)getbytes(y->l_n * sizeof(*y->l_vec))))
     {
         y->l_n = 0;
-        error("list_alloc: out of memory");
+        post_error ("list_alloc: out of memory");
     }
     else for (i = 0; i < x->l_n; i++)
     {
@@ -597,7 +597,7 @@ static void *list_new(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
             newest = list_tosymbol_new();
         else 
         {
-            error("list %s: unknown function", s2->s_name);
+            post_error ("list %s: unknown function", s2->s_name);
             newest = 0;
         }
     }

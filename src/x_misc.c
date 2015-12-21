@@ -371,14 +371,14 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
     for (i = 0; i < argc; i++)
         if (argv[i].a_type != A_FLOAT)
     {
-        error("oscparse: takes numbers only");
+        post_error ("oscparse: takes numbers only");
         return;
     }
     if (argv[0].a_w.w_float == '#') /* it's a bundle */
     {
         if (argv[1].a_w.w_float != 'b' || argc < 16)
         {
-            error("oscparse: malformed bundle");
+            post_error ("oscparse: malformed bundle");
             return;
         }
             /* we ignore the timetag since there's no correct way to
@@ -390,7 +390,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
             int msize = READINT(argv+i);
             if (msize <= 0 || msize & 3)
             {
-                error("oscparse: bad bundle element size");
+                post_error ("oscparse: bad bundle element size");
                 return;
             }
             oscparse_list(x, 0, msize, argv+i+4);
@@ -400,7 +400,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
     }
     else if (argv[0].a_w.w_float != '/')
     {
-        error("oscparse: not an OSC message (no leading slash)");
+        post_error ("oscparse: not an OSC message (no leading slash)");
         return;
     }
     for (i = 1; i < argc && argv[i].a_w.w_float != 0; i++)
@@ -409,7 +409,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
     i = ROUNDUPTO4(i+1);
     if (argv[i].a_w.w_float != ',' || (i+1) >= argc)
     {
-        error("oscparse: malformed type string (char %d, index %d)",
+        post_error ("oscparse: malformed type string (char %d, index %d)",
             (int)(argv[i].a_w.w_float), i);
         return;
     }
@@ -495,14 +495,14 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
             k = ROUNDUPTO4(k);
             break;
         default:
-            error("oscparse: unknown tag '%c' (%d)", 
+            post_error ("oscparse: unknown tag '%c' (%d)", 
                 (int)(argv[i].a_w.w_float), (int)(argv[i].a_w.w_float));
         } 
     }
     outlet_list(x->x_obj.te_outlet, 0, j, outv);
     return;
 tooshort:
-    error("oscparse: OSC message ended prematurely");
+    post_error ("oscparse: OSC message ended prematurely");
 }
 
 static t_oscparse *oscparse_new(t_symbol *s, int argc, t_atom *argv)
@@ -557,7 +557,7 @@ static void oscformat_format(t_oscformat *x, t_symbol *s)
     {
         if (*sp != 'f' && *sp != 'i' && *sp != 's' && *sp != 'b')
         {
-            error("oscformat '%s' may only contain 'f', 'i'. 's', and/or 'b'",
+            post_error ("oscformat '%s' may only contain 'f', 'i'. 's', and/or 'b'",
                     sp);
             return;
         }

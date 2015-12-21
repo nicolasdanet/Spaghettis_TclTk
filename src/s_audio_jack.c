@@ -169,7 +169,7 @@ void glob_audio_setapi(void *dummy, t_floatarg f);
 static void
 jack_shutdown (void *arg)
 {
-  error("JACK: server shut down");
+  post_error ("JACK: server shut down");
   
   jack_deactivate (jack_client);
   //jack_client_close(jack_client); /* likely to hang if the server shut down */
@@ -274,7 +274,7 @@ static int jack_connect_ports(char* client)
         for (i=0;jack_ports[i] != NULL && i < sys_inchannels;i++)      
             if (jack_connect (jack_client, jack_ports[i],
                jack_port_name (input_port[i]))) 
-                  error ("JACK: cannot connect input ports %s -> %s",
+                  post_error ("JACK: cannot connect input ports %s -> %s",
                       jack_ports[i],jack_port_name (input_port[i]));
         free(jack_ports);
     }
@@ -285,7 +285,7 @@ static int jack_connect_ports(char* client)
         for (i=0;jack_ports[i] != NULL && i < sys_outchannels;i++)      
           if (jack_connect (jack_client, jack_port_name (output_port[i]),
             jack_ports[i])) 
-              error( "JACK: cannot connect output ports %s -> %s",
+              post_error ( "JACK: cannot connect output ports %s -> %s",
                 jack_port_name (output_port[i]),jack_ports[i]);
 
         free(jack_ports);
@@ -295,7 +295,7 @@ static int jack_connect_ports(char* client)
 
 
 static void pd_jack_error_callback(const char *desc) {
-  error("JACKerror: %s", desc);
+  post_error ("JACKerror: %s", desc);
   return;
 }
 
@@ -314,7 +314,7 @@ jack_open_audio(int inchans, int outchans, int rate, t_audiocallback callback)
 #ifdef __APPLE__
     if (!jack_client_open)
     {
-        error("Can't open Jack (it seems not to be installed on this Mac)");
+        post_error ("Can't open Jack (it seems not to be installed on this Mac)");
         return 1;
     }
 #endif
@@ -324,13 +324,13 @@ jack_open_audio(int inchans, int outchans, int rate, t_audiocallback callback)
     if ((inchans == 0) && (outchans == 0)) return 0;
 
     if (outchans > MAX_JACK_PORTS) {
-        error("JACK: %d output ports not supported, setting to %d",
+        post_error ("JACK: %d output ports not supported, setting to %d",
             outchans, MAX_JACK_PORTS);
         outchans = MAX_JACK_PORTS;
     }
 
     if (inchans > MAX_JACK_PORTS) {
-        error("JACK: %d input ports not supported, setting to %d",
+        post_error ("JACK: %d input ports not supported, setting to %d",
             inchans, MAX_JACK_PORTS);
         inchans = MAX_JACK_PORTS;
     }
@@ -346,7 +346,7 @@ jack_open_audio(int inchans, int outchans, int rate, t_audiocallback callback)
           jack_client = jack_client_open (client_name, JackNoStartServer,
             &status, NULL);
           if (status & JackServerFailed) {
-            error("JACK: unable to connect to JACK server.  Is JACK running?");
+            post_error ("JACK: unable to connect to JACK server.  Is JACK running?");
             jack_client=NULL;
             break;
           }
@@ -356,7 +356,7 @@ jack_open_audio(int inchans, int outchans, int rate, t_audiocallback callback)
           if (status & JackServerStarted) {
              // verbose(1, "JACK: started server");
           } else {
-            error("JACK: server returned status %d", status);
+            post_error ("JACK: server returned status %d", status);
           }
         }
         // verbose(1, "JACK: started server as '%s'", client_name);
@@ -431,7 +431,7 @@ jack_open_audio(int inchans, int outchans, int rate, t_audiocallback callback)
             port_name, JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
         if (!input_port[j])
         {
-          error("JACK: can only register %d input ports (of %d requested)",
+          post_error ("JACK: can only register %d input ports (of %d requested)",
             j, inchans);
           sys_inchannels = inchans = j;
           break;
@@ -445,7 +445,7 @@ jack_open_audio(int inchans, int outchans, int rate, t_audiocallback callback)
             port_name, JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
         if (!output_port[j])
         {
-          error("JACK: can only register %d output ports (of %d requested)",
+          post_error ("JACK: can only register %d output ports (of %d requested)",
             j, outchans);
           sys_outchannels = outchans = j;
           break;
@@ -458,7 +458,7 @@ jack_open_audio(int inchans, int outchans, int rate, t_audiocallback callback)
     if (new_jack)
     {
         if (jack_activate (jack_client)) {
-            error("cannot activate client");
+            post_error ("cannot activate client");
             sys_inchannels = sys_outchannels = 0;
             return 1;
         }

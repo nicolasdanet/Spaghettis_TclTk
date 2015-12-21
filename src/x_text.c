@@ -131,7 +131,7 @@ static void textbuf_read(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
             cr = 1;
         else
         {
-            error("text read: unknown flag ...");
+            post_error ("text read: unknown flag ...");
             post_atoms(argc, argv);
         }
         argc--; argv++;
@@ -143,7 +143,7 @@ static void textbuf_read(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
     }
     else
     {
-        error("text read: no file name given");
+        post_error ("text read: no file name given");
         return;
     }
     if (argc)
@@ -152,7 +152,7 @@ static void textbuf_read(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
         post_atoms(argc, argv);
     }
     if (binbuf_read_via_canvas(x->b_binbuf, filename->s_name, x->b_canvas, cr))
-            error("%s: read failed", filename->s_name);
+            post_error ("%s: read failed", filename->s_name);
     textbuf_senditup(x);
 }
 
@@ -168,7 +168,7 @@ static void textbuf_write(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
             cr = 1;
         else
         {
-            error("text write: unknown flag ...");
+            post_error ("text write: unknown flag ...");
             post_atoms(argc, argv);
         }
         argc--; argv++;
@@ -180,7 +180,7 @@ static void textbuf_write(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
     }
     else
     {
-        error("text write: no file name given");
+        post_error ("text write: no file name given");
         return;
     }
     if (argc)
@@ -191,7 +191,7 @@ static void textbuf_write(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
     canvas_makefilename(x->b_canvas, filename->s_name,
         buf, PD_STRING);
     if (binbuf_write(x->b_binbuf, buf, "", cr))
-            error("%s: write failed", filename->s_name);
+            post_error ("%s: write failed", filename->s_name);
 }
 
 static void textbuf_free(t_textbuf *x)
@@ -260,7 +260,7 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
             x->x_keep = 1;
         else
         {
-            error("text define: unknown flag ...");
+            post_error ("text define: unknown flag ...");
             post_atoms(argc, argv);
         }
         argc--; argv++;
@@ -412,7 +412,7 @@ static void text_client_argparse(t_text_client *x, int *argcp, t_atom **argvp,
         }
         else
         {
-            error("%s: unknown flag '%s'...", name,
+            post_error ("%s: unknown flag '%s'...", name,
                 argv->a_w.w_symbol->s_name);
         }
         argc--; argv++;
@@ -420,7 +420,7 @@ static void text_client_argparse(t_text_client *x, int *argcp, t_atom **argvp,
     if (argc && argv->a_type == A_SYMBOL)
     {
         if (x->tc_struct)
-            error("%s: extra names after -s..", name);
+            post_error ("%s: extra names after -s..", name);
         else x->tc_sym = argv->a_w.w_symbol;
         argc--; argv++;
     }
@@ -440,7 +440,7 @@ static t_binbuf *text_client_getbuf(t_text_client *x)
             return (y->b_binbuf);
         else
         {
-            error("text: couldn't find text buffer '%s'",
+            post_error ("text: couldn't find text buffer '%s'",
                 x->tc_sym->s_name);
             return (0);
         }
@@ -454,12 +454,12 @@ static t_binbuf *text_client_getbuf(t_text_client *x)
         t_symbol *arraytype;
         if (!template)
         {
-            error("text: couldn't find struct %s", x->tc_struct->s_name);
+            post_error ("text: couldn't find struct %s", x->tc_struct->s_name);
             return (0);
         }
         if (!gpointer_check(&x->tc_gp, 0))
         {
-            error("text: stale or empty pointer");
+            post_error ("text: stale or empty pointer");
             return (0);
         }
         if (gs->gs_type == GP_ARRAY)
@@ -469,12 +469,12 @@ static t_binbuf *text_client_getbuf(t_text_client *x)
         if (!template_find_field(template,
             x->tc_field, &onset, &type, &arraytype))
         {
-            error("text: no field named %s", x->tc_field->s_name);
+            post_error ("text: no field named %s", x->tc_field->s_name);
             return (0);
         }
         if (type != DT_TEXT)
         {
-            error("text: field %s not of type text", x->tc_field->s_name);
+            post_error ("text: field %s not of type text", x->tc_field->s_name);
             return (0);
         }
         return (*(t_binbuf **)(((char *)vec) + onset));
@@ -498,12 +498,12 @@ static  void text_client_senditup(t_text_client *x)
         t_gstub *gs = x->tc_gp.gp_stub;
         if (!template)
         {
-            error("text: couldn't find struct %s", x->tc_struct->s_name);
+            post_error ("text: couldn't find struct %s", x->tc_struct->s_name);
             return;
         }
         if (!gpointer_check(&x->tc_gp, 0))
         {
-            error("text: stale or empty pointer");
+            post_error ("text: stale or empty pointer");
             return;
         }
         if (gs->gs_type == GP_GLIST)
@@ -611,7 +611,7 @@ static void text_get_float(t_text_get *x, t_floatarg f)
             ATOMS_FREEA(outv, outc);
         }
         else if (startfield + nfield > outc)
-            error("text get: field request (%d %d) out of range",
+            post_error ("text get: field request (%d %d) out of range",
                 startfield, nfield); 
         else
         {
@@ -692,7 +692,7 @@ static void text_set_list(t_text_set *x,
     n = binbuf_getnatom(b);
     if (lineno < 0)
     {
-        error("text set: line number (%d) < 0", lineno);
+        post_error ("text set: line number (%d) < 0", lineno);
         return;
     }
     if (text_nthline(n, vec, lineno, &start, &end))
@@ -716,7 +716,7 @@ static void text_set_list(t_text_set *x,
         {
             if (fieldno >= end - start)
             {
-                error("text set: field number (%d) past end of line",
+                post_error ("text set: field number (%d) past end of line",
                     fieldno);
                 return;
             }
@@ -928,7 +928,7 @@ static void *text_search_new(t_symbol *s, int argc, t_atom *argv)
         {
             char *s = argv[i].a_w.w_symbol->s_name;
             if (nextop >= 0)
-                error("text search: extra operation argument ignored: %s", s);
+                post_error ("text search: extra operation argument ignored: %s", s);
             else if (!strcmp(argv[i].a_w.w_symbol->s_name, ">"))
                 nextop = KB_GT;
             else if (!strcmp(argv[i].a_w.w_symbol->s_name, ">="))
@@ -939,7 +939,7 @@ static void *text_search_new(t_symbol *s, int argc, t_atom *argv)
                 nextop = KB_LE;
             else if (!strcmp(argv[i].a_w.w_symbol->s_name, "near"))
                 nextop = KB_NEAR;
-            else error("text search: unknown operation argument: %s", s);
+            else post_error ("text search: unknown operation argument: %s", s);
         }
     }
     if (x->x_struct)
@@ -960,7 +960,7 @@ static void text_search_list(t_text_search *x,
        return;
     if (argc < nkeys)
     {
-        error("need %d keys, only got %d in list",
+        post_error ("need %d keys, only got %d in list",
             nkeys, argc);
     }
     vec = binbuf_getvec(b);
@@ -1015,7 +1015,7 @@ static void text_search_list(t_text_search *x,
                     {
                         if (!failed)
                         {
-                            error("text search (%s): only exact matches allowed for symbols",
+                            post_error ("text search (%s): only exact matches allowed for symbols",
                                 argv[j].a_w.w_symbol->s_name);
                             failed = 1;
                         }
@@ -1179,7 +1179,7 @@ static void *text_sequence_new(t_symbol *s, int argc, t_atom *argv)
         }
         else
         {
-            error("text sequence: unknown flag '%s'...",
+            post_error ("text sequence: unknown flag '%s'...",
                 argv->a_w.w_symbol->s_name);
         }
         argc--; argv++;
@@ -1203,7 +1203,7 @@ static void *text_sequence_new(t_symbol *s, int argc, t_atom *argv)
     if (global)
     {
         if (x->x_waitargc)
-            error(
+            post_error (
        "warning: text sequence: numeric 'w' argument ignored if '-g' given");
         x->x_waitargc = 0x40000000;
     }
@@ -1282,7 +1282,7 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
             int atno = ap->a_w.w_index-1;
             if (atno < 0 || atno >= argc)
             {
-                error("argument $%d out of range", atno+1);
+                post_error ("argument $%d out of range", atno+1);
                 SETFLOAT(outvec+i, 0);
             }
             else outvec[i] = argv[atno];
@@ -1295,7 +1295,7 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
                 SETSYMBOL(outvec+i, s);
             else
             {
-                error("$%s: not enough arguments supplied",
+                post_error ("$%s: not enough arguments supplied",
                     ap->a_w.w_symbol->s_name);
                 SETSYMBOL(outvec+i, &s_symbol);
             }
@@ -1346,7 +1346,7 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
         if (tosym)
         {
             if (!(to = tosym->s_thing))
-                error("%s: no such object", tosym->s_name);
+                post_error ("%s: no such object", tosym->s_name);
         }
         x->x_lastto = (gotcomma ? tosym : 0);
         if (to)
@@ -1423,7 +1423,7 @@ static void text_sequence_line(t_text_sequence *x, t_floatarg f)
     n = binbuf_getnatom(b);
     if (!text_nthline(n, vec, f, &start, &end))
     {
-        error("text sequence: line number %d out of range", (int)f);
+        post_error ("text sequence: line number %d out of range", (int)f);
         x->x_onset = 0x7fffffff;
     }
     else x->x_onset = start;
@@ -1483,7 +1483,7 @@ static void *text_new(t_symbol *s, int argc, t_atom *argv)
             newest = text_sequence_new(s, argc-1, argv+1);
         else 
         {
-            error("list %s: unknown function", str);
+            post_error ("list %s: unknown function", str);
             newest = 0;
         }
     }
@@ -1544,7 +1544,7 @@ static void qlist_donext(t_qlist *x, int drop, int automatic)
     t_pd *target = 0;
     if (x->x_innext)
     {
-        error("qlist sent 'next' from within itself");
+        post_error ("qlist sent 'next' from within itself");
         return;
     }
     x->x_innext = 1;
@@ -1591,7 +1591,7 @@ static void qlist_donext(t_qlist *x, int drop, int automatic)
             if (ap->a_type != A_SYMBOL) continue;
             else if (!(target = ap->a_w.w_symbol->s_thing))
             {
-                error("qlist: %s: no such object",
+                post_error ("qlist: %s: no such object",
                     ap->a_w.w_symbol->s_name);
                 continue;
             }
@@ -1684,10 +1684,10 @@ static void qlist_read(t_qlist *x, t_symbol *filename, t_symbol *format)
     if (!strcmp(format->s_name, "cr"))
         cr = 1;
     else if (*format->s_name)
-        error("qlist_read: unknown flag: %s", format->s_name);
+        post_error ("qlist_read: unknown flag: %s", format->s_name);
 
     if (binbuf_read_via_canvas(x->x_binbuf, filename->s_name, x->x_canvas, cr))
-            error("%s: read failed", filename->s_name);
+            post_error ("%s: read failed", filename->s_name);
     x->x_onset = 0x7fffffff;
     x->x_rewound = 1;
 }
@@ -1701,9 +1701,9 @@ static void qlist_write(t_qlist *x, t_symbol *filename, t_symbol *format)
     if (!strcmp(format->s_name, "cr"))
         cr = 1;
     else if (*format->s_name)
-        error("qlist_read: unknown flag: %s", format->s_name);
+        post_error ("qlist_read: unknown flag: %s", format->s_name);
     if (binbuf_write(x->x_binbuf, buf, "", cr))
-            error("%s: write failed", filename->s_name);
+            post_error ("%s: write failed", filename->s_name);
 }
 
 static void qlist_print(t_qlist *x)

@@ -43,7 +43,7 @@ static void pdint_send(t_pdint *x, t_symbol *s)
 {
     if (s->s_thing)
         pd_float(s->s_thing, (t_float)(int)x->x_f);
-    else error("%s: no such object", s->s_name);
+    else post_error ("%s: no such object", s->s_name);
 }
 
 void pdint_setup(void)
@@ -99,7 +99,7 @@ static void pdfloat_send(t_pdfloat *x, t_symbol *s)
 {
     if (s->s_thing)
         pd_float(s->s_thing, x->x_f);
-    else error("%s: no such object", s->s_name);
+    else post_error ("%s: no such object", s->s_name);
 }
 
 void pdfloat_setup(void)
@@ -705,7 +705,7 @@ static void *pack_new(t_symbol *s, int argc, t_atom *argv)
             }
             else
             {
-                if (c != 'f') error("pack: %s: bad type",
+                if (c != 'f') post_error ("pack: %s: bad type",
                     ap->a_w.w_symbol->s_name);
                 SETFLOAT(vp, 0);
                 if (i) floatinlet_new(&x->x_obj, &vp->a_w.w_float);
@@ -724,7 +724,7 @@ static void pack_bang(t_pack *x)
     for (i = x->x_nptr, gp = x->x_gpointer; i--; gp++)
         if (!gpointer_check(gp, 1))
     {
-        error("pack: stale pointer");
+        post_error ("pack: stale pointer");
         return;
     }
         /* reentrancy protection.  The first time through use the pre-allocated
@@ -758,7 +758,7 @@ static void pack_pointer(t_pack *x, t_gpointer *gp)
         if (gp->gp_stub) gp->gp_stub->gs_refcount++;
         pack_bang(x);
     }
-    else error("pack_pointer: wrong type");
+    else post_error ("pack_pointer: wrong type");
 }
 
 static void pack_float(t_pack *x, t_float f)
@@ -768,7 +768,7 @@ static void pack_float(t_pack *x, t_float f)
         x->x_vec->a_w.w_float = f;
         pack_bang(x);
     }
-    else error("pack_float: wrong type");
+    else post_error ("pack_float: wrong type");
 }
 
 static void pack_symbol(t_pack *x, t_symbol *s)
@@ -778,7 +778,7 @@ static void pack_symbol(t_pack *x, t_symbol *s)
         x->x_vec->a_w.w_symbol = s;
         pack_bang(x);
     }
-    else error("pack_symbol: wrong type");
+    else post_error ("pack_symbol: wrong type");
 }
 
 static void pack_list(t_pack *x, t_symbol *s, int ac, t_atom *av)
@@ -870,7 +870,7 @@ static void *unpack_new(t_symbol *s, int argc, t_atom *argv)
             }
             else
             {
-                if (c != 'f') error("unpack: %s: bad type",
+                if (c != 'f') post_error ("unpack: %s: bad type",
                     ap->a_w.w_symbol->s_name);
                 u->u_type = A_FLOAT;
                 u->u_outlet = outlet_new(&x->x_obj, &s_float);
@@ -895,7 +895,7 @@ static void unpack_list(t_unpack *x, t_symbol *s, int argc, t_atom *argv)
     {
         t_atomtype type = u->u_type;
         if (type != ap->a_type)
-            error("unpack: type mismatch");
+            post_error ("unpack: type mismatch");
         else if (type == A_FLOAT)
             outlet_float(u->u_outlet, ap->a_w.w_float);
         else if (type == A_SYMBOL)
@@ -990,7 +990,7 @@ static void *trigger_new(t_symbol *s, int argc, t_atom *argv)
                 u->u_outlet = outlet_new(&x->x_obj, &s_symbol);
         else
         {
-            error("trigger: %s: bad type", ap->a_w.w_symbol->s_name);
+            post_error ("trigger: %s: bad type", ap->a_w.w_symbol->s_name);
             u->u_type = TR_FLOAT, u->u_outlet = outlet_new(&x->x_obj, &s_float);
         }
     }
@@ -1013,7 +1013,7 @@ static void trigger_list(t_trigger *x, t_symbol *s, int argc, t_atom *argv)
         else if (u->u_type == TR_POINTER)
         {
             if (!argc || argv->a_type != TR_POINTER)
-                error("unpack: bad pointer");
+                post_error ("unpack: bad pointer");
             else outlet_pointer(u->u_outlet, argv->a_w.w_gpointer);
         }
         else outlet_list(u->u_outlet, &s_list, argc, argv);
@@ -1030,7 +1030,7 @@ static void trigger_anything(t_trigger *x, t_symbol *s, int argc, t_atom *argv)
             outlet_bang(u->u_outlet);
         else if (u->u_type == TR_ANYTHING)
             outlet_anything(u->u_outlet, s, argc, argv);
-        else error("trigger: can only convert 's' to 'b' or 'a'");
+        else post_error ("trigger: can only convert 's' to 'b' or 'a'");
     }
 }
 

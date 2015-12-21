@@ -183,7 +183,7 @@ static void openit(const char *dirname, const char *filename)
         glob_evalfile(0, gensym(nameptr), gensym(dirbuf));
     }
     else
-        error("%s: can't open", filename);
+        post_error ("%s: can't open", filename);
 }
 
 /* this is called from the gui process.  The first argument is the cwd, and
