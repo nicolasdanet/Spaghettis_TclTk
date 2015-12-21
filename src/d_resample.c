@@ -4,6 +4,7 @@
 
 
 #include "m_pd.h"
+#include "m_macros.h"
 
 /* --------------------- up/down-sampling --------------------- */
 t_int *downsampling_perform_0(t_int *w)
@@ -130,7 +131,7 @@ void resample_dsp(t_resample *x,
                   int method)
 {
   if (insize == outsize){
-    bug("nothing to be done");
+    PD_BUG;
     return;
   }
 

@@ -687,7 +687,7 @@ static void gatom_key(void *z, t_floatarg f)
             x->a_atom.a_w.w_float = atof(x->a_buf);
         else if (x->a_atom.a_type == A_SYMBOL)
             x->a_atom.a_w.w_symbol = gensym(x->a_buf);
-        else bug("gatom_key");
+        else { PD_BUG; }
         gatom_bang(x);
         gatom_retext(x, 1);
         x->a_buf[0] = 0;

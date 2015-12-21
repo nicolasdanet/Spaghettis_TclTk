@@ -34,6 +34,7 @@
 #include <string.h>
 #include "m_pd.h"
 #include "m_private.h"
+#include "m_macros.h"
 #include "s_system.h"
 #include "s_utf8.h"
 #include <stdio.h>
@@ -662,8 +663,7 @@ t_symbol *sys_decodedialog(t_symbol *s)
 {
     char buf[PD_STRING], *sp = s->s_name;
     int i;
-    if (*sp != '+')
-        bug("sys_decodedialog: %s", sp);
+    if (*sp != '+') { PD_BUG; }
     else sp++;
     for (i = 0; i < PD_STRING-1; i++, sp++)
     {

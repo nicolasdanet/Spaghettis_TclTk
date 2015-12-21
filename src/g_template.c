@@ -128,7 +128,7 @@ int template_find_field(t_template *x, t_symbol *name, int *p_onset,
     int i, n;
     if (!x)
     {
-        bug("template_find_field");
+        PD_BUG;
         return (0);
     }
     n = x->t_n;
@@ -301,7 +301,7 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
                 y->g_next = &x->sc_g;
                 goto nobug;
             }
-            bug("template_conformscalar");
+            PD_BUG;
         nobug: ;
         }
             /* burn the old one */
@@ -339,8 +339,7 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
             newelemsize = sizeof(t_word) * tto->t_n;
         char *newarray = getbytes(newelemsize * a->a_n);
         char *oldarray = a->a_vec;
-        if (a->a_elemsize != oldelemsize)
-            bug("template_conformarray");
+        if (a->a_elemsize != oldelemsize) { PD_BUG; }
         for (i = 0; i < a->a_n; i++)
         {
             t_word *wp = (t_word *)(newarray + newelemsize * i);
@@ -454,8 +453,7 @@ t_template *template_findbyname(t_symbol *s)
 t_canvas *template_findcanvas(t_template *template)
 {
     t_gtemplate *gt;
-    if (!template) 
-        bug("template_findcanvas");
+    if (!template) { PD_BUG; }
     if (!(gt = template->t_list))
         return (0);
     return (gt->x_owner);

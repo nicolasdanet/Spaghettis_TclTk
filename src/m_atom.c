@@ -3,6 +3,7 @@
 * WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
 #include "m_pd.h"
+#include "m_macros.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -124,6 +125,6 @@ void atom_string(t_atom *a, char *buf, unsigned int bufsize)
         buf[bufsize-1] = 0;
         break;
     default:
-        bug("atom_string");
+        PD_BUG;
     }
 }

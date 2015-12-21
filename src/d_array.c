@@ -39,8 +39,7 @@ static void *tabwrite_tilde_new(t_symbol *s)
 static void tabwrite_tilde_redraw(t_tabwrite_tilde *x)
 {
     t_garray *a = (t_garray *)pd_findbyclass(x->x_arrayname, garray_class);
-    if (!a)
-        bug("tabwrite_tilde_redraw");
+    if (!a) { PD_BUG; }
     else garray_redraw(a);
 }
 
@@ -727,8 +726,7 @@ static t_int *tabsend_perform(t_int *w)
     if (!i--)
     {
         t_garray *a = (t_garray *)pd_findbyclass(x->x_arrayname, garray_class);
-        if (!a)
-            bug("tabsend_dsp");
+        if (!a) { PD_BUG; }
         else garray_redraw(a);
         i = x->x_graphperiod;
     }

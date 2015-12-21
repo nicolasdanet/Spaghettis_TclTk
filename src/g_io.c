@@ -92,7 +92,7 @@ static void vinlet_free(t_vinlet *x)
 
 t_inlet *vinlet_getit(t_pd *x)
 {
-    if (pd_class(x) != vinlet_class) bug("vinlet_getit");
+    if (pd_class(x) != vinlet_class) { PD_BUG; }
     return (((t_vinlet *)x)->x_inlet);
 }
 
@@ -371,7 +371,7 @@ static void voutlet_free(t_voutlet *x)
 
 t_outlet *voutlet_getit(t_pd *x)
 {
-    if (pd_class(x) != voutlet_class) bug("voutlet_getit");
+    if (pd_class(x) != voutlet_class) { PD_BUG; }
     return (((t_voutlet *)x)->x_parentoutlet);
 }
 
@@ -462,7 +462,7 @@ void voutlet_dspprolog(struct _voutlet *x, t_signal **parentsigs,
     }
     else
     {
-        if (!parentsigs) bug("voutlet_dspprolog");
+        if (!parentsigs) { PD_BUG; }
         x->x_directsignal =
             parentsigs[outlet_getsignalindex(x->x_parentoutlet)];
     }
@@ -530,7 +530,7 @@ void voutlet_dspepilog(struct _voutlet *x, t_signal **parentsigs,
             x->x_endbuf = buf + bufsize;
             x->x_buf = buf;
         }
-        if (re_parentvecsize * period > bufsize) bug("voutlet_dspepilog");
+        if (re_parentvecsize * period > bufsize) { PD_BUG; }
         x->x_write = x->x_buf + re_parentvecsize * blockphase;
         if (x->x_write == x->x_endbuf) x->x_write = x->x_buf;
         if (period == 1 && frequency > 1)

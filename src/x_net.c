@@ -96,7 +96,7 @@ static void netsend_readbin(t_netsend *x, int fd)
     int ret = recv(fd, inbuf, PD_STRING, 0), i;
     if (!x->x_msgout)
     {
-        bug("netsend_readbin");
+        PD_BUG;
         return;
     }
     if (ret <= 0)

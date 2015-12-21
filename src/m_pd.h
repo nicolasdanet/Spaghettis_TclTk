@@ -507,7 +507,6 @@ PD_DLL void postatom        (int argc, t_atom *argv);
 PD_DLL void endpost         (void);
 PD_DLL void error           (const char *fmt, ...);
 PD_DLL void verbose         (int level, const char *fmt, ...);
-PD_DLL void bug             (const char *fmt, ...);
 PD_DLL void pd_error        (void *object, const char *fmt, ...);
 PD_DLL void logpost         (const void *object, const int level, const char *fmt, ...);
 

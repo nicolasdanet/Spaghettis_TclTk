@@ -6,6 +6,7 @@
 
 #include "m_pd.h"
 #include "m_private.h"
+#include "m_macros.h"
 #include "s_system.h"
 #ifdef _WIN32
 #include <windows.h>
@@ -503,7 +504,7 @@ static void m_pollingscheduler( void)
                     static double idletime;
                     if (sched_useaudio != SCHEDULER_POLL)
                     {
-                            bug("m_pollingscheduler\n");
+                            PD_BUG;
                             return;
                     }
                         /* on 32nd idle, start a clock watch;  every

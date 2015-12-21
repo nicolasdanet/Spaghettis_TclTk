@@ -415,7 +415,7 @@ t_socketreceiver *socketreceiver_new(void *owner, t_socketnotifier notifier,
     x->sr_notifier = notifier;
     x->sr_socketreceivefn = socketreceivefn;
     x->sr_udp = udp;
-    if (!(x->sr_inbuf = malloc(INBUFSIZE))) bug("t_socketreceiver");;
+    if (!(x->sr_inbuf = malloc(INBUFSIZE))) { PD_BUG; }
     return (x);
 }
 
@@ -490,7 +490,7 @@ static void socketreceiver_getudp(t_socketreceiver *x, int fd)
             outlet_setstacklim();
             if (x->sr_socketreceivefn)
                 (*x->sr_socketreceivefn)(x->sr_owner, inbinbuf);
-            else bug("socketreceiver_getudp");
+            else { PD_BUG; }
         }
     }
 }
@@ -684,8 +684,7 @@ void sys_vgui(char *fmt, ...)
         msglen2 = vsnprintf(sys_guibuf + sys_guibufhead,
             sys_guibufsize - sys_guibufhead, fmt, ap);
         va_end(ap);
-        if (msglen2 != msglen)
-            bug("sys_vgui");
+        if (msglen2 != msglen) { PD_BUG; }
         if (msglen >= sys_guibufsize - sys_guibufhead)
             msglen = sys_guibufsize - sys_guibufhead;
     }

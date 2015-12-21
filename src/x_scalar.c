@@ -110,7 +110,7 @@ static void scalar_define_send(t_glist *x, t_symbol *s)
         pd_pointer(s->s_thing, &gp);
         gpointer_unset(&gp);
     }
-    else bug("scalar_define_send");
+    else { PD_BUG; }
 }
 
     /* set to a list, used to restore from scalar_define_save()s below */
@@ -128,7 +128,7 @@ static void scalar_define_set(t_glist *x, t_symbol *s, int argc, t_atom *argv)
         canvas_readscalar(x, natoms, vec, &nextmsg, 0);
         binbuf_free(b);
     }
-    else bug("scalar_define_set");
+    else { PD_BUG; }
 }
 
     /* save to a binbuf (for file save or copy) */

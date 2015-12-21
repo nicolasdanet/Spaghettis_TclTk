@@ -4,6 +4,7 @@
 
 #include "m_pd.h"
 #include "m_private.h"
+#include "m_macros.h"
 #include "s_system.h"
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -201,7 +202,7 @@ void glob_initfromgui(void *dummy, t_symbol *s, int argc, t_atom *argv)
     int j;
     int nhostfont = (argc-1)/3;
     /* */
-    if (argc != 1 + 3 * nhostfont) bug("glob_initfromgui");
+    if (argc != 1 + 3 * nhostfont) { PD_BUG; }
     for (i = 0; i < NFONT; i++)
     {
         int best = 0;

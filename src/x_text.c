@@ -490,7 +490,7 @@ static  void text_client_senditup(t_text_client *x)
             text_define_class);
         if (y)
             textbuf_senditup(y);
-        else bug("text_client_senditup");
+        else { PD_BUG; }
     }
     else if (x->tc_struct)   /* by pointer */
     {
@@ -967,8 +967,7 @@ static void text_search_list(t_text_search *x,
     }
     vec = binbuf_getvec(b);
     n = binbuf_getnatom(b);
-    if (nkeys < 1)
-        bug("text_search");
+    if (nkeys < 1) { PD_BUG; }
     for (i = lineno = thisstart = 0; i < n; i++)
     {
         if (vec[i].a_type == A_SEMICOLON || vec[i].a_type == A_COMMA || i == n-1)
@@ -1043,8 +1042,7 @@ static void text_search_list(t_text_search *x,
                 for (j = 0; j < argc; )
                 {
                     if (field >= thisn
-                        || vec[thisstart+field].a_type != argv[j].a_type)
-                            bug("text search 2");
+                        || vec[thisstart+field].a_type != argv[j].a_type) { PD_BUG; }
                     if (argv[j].a_type == A_FLOAT)      /* arg is a float */
                     {
                         float thisv = vec[thisstart+field].a_w.w_float, 
@@ -1305,7 +1303,7 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
                 SETSYMBOL(outvec+i, &s_symbol);
             }
         }
-        else bug("text sequence");
+        else { PD_BUG; }
     }
     if (wait)
     {
@@ -1313,8 +1311,7 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
         x->x_lastto = 0;
         if (x->x_auto && nfield == 1 && outvec[0].a_type == A_FLOAT)
             x->x_nextdelay = outvec[0].a_w.w_float;
-        else if (!x->x_waitout)
-            bug("text sequence 3");
+        else if (!x->x_waitout) { PD_BUG; }
         else
         {
             x->x_auto = 0;
@@ -1344,8 +1341,7 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
         int nleft = nfield;
         if (!tosym)
         {
-            if (outvec[0].a_type != A_SYMBOL)
-                bug("text sequence 2");
+            if (outvec[0].a_type != A_SYMBOL) { PD_BUG; }
             else tosym = outvec[0].a_w.w_symbol;
             vecleft++;
             nleft--;

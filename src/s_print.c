@@ -273,17 +273,5 @@ void glob_findinstance(t_pd *dummy, t_symbol*s)
     }
 }
 
-void bug (const char *fmt, ...)
-{
-    char buf[PD_STRING];
-    va_list ap;
-    
-    va_start (ap, fmt);
-    vsnprintf (buf, PD_STRING - 1, fmt, ap);
-    va_end (ap);
-
-    error("consistency check failed: %s", buf);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

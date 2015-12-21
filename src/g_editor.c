@@ -184,7 +184,7 @@ void glist_select(t_glist *x, t_gobj *y)
         if (x->gl_editor->e_selectedline)
             glist_deselectline(x);
             /* LATER #ifdef out the following check */
-        if (glist_isselected(x, y)) bug("glist_select");
+        if (glist_isselected(x, y)) { PD_BUG; }
         sel->sel_next = x->gl_editor->e_selection;
         sel->sel_what = y;
         x->gl_editor->e_selection = sel;
@@ -214,7 +214,7 @@ void glist_deselect(t_glist *x, t_gobj *y)
     {
         t_selection *sel, *sel2;
         t_rtext *z = 0;
-        if (!glist_isselected(x, y)) bug("glist_deselect");
+        if (!glist_isselected(x, y)) { PD_BUG; }
         if (x->gl_editor->e_textedfor)
         {
             t_rtext *fuddy = glist_findrtext(x, (t_text *)y);
@@ -380,10 +380,8 @@ void canvas_noundo(t_canvas *x)
 static void canvas_undo(t_canvas *x)
 {
     int dspwas = canvas_suspend_dsp();
-    if (x != canvas_undo_canvas)
-        bug("canvas_undo 1");
-    else if (canvas_undo_whatnext != UNDO_UNDO)
-        bug("canvas_undo 2");
+    if (x != canvas_undo_canvas) { PD_BUG; }
+    else if (canvas_undo_whatnext != UNDO_UNDO) { PD_BUG; }
     else
     {
         /* post("undo"); */
@@ -399,10 +397,8 @@ static void canvas_undo(t_canvas *x)
 static void canvas_redo(t_canvas *x)
 {
     int dspwas = canvas_suspend_dsp();
-    if (x != canvas_undo_canvas)
-        bug("canvas_undo 1");
-    else if (canvas_undo_whatnext != UNDO_REDO)
-        bug("canvas_undo 2");
+    if (x != canvas_undo_canvas) { PD_BUG; }
+    else if (canvas_undo_whatnext != UNDO_REDO) { PD_BUG; }
     else
     {
         /* post("redo"); */
@@ -754,8 +750,7 @@ static void glist_doreload(t_glist *gl, t_symbol *name, t_symbol *dir,
             int j = glist_getindex(gl, g);
             if (!gl->gl_editor)
                 canvas_vis(gl, 1);
-            if (!gl->gl_editor)
-                bug("editor");
+            if (!gl->gl_editor) { PD_BUG; }
             glist_noselect(gl);
             glist_select(gl, g);
             canvas_setundo(gl, canvas_undo_cut,
@@ -812,7 +807,7 @@ void canvas_setcursor(t_canvas *x, unsigned int cursornum)
     static unsigned int cursorwas;
     if (cursornum >= sizeof(cursorlist)/sizeof *cursorlist)
     {
-        bug("canvas_setcursor");
+        PD_BUG;
         return;
     }
     if (xwas != x || cursorwas != cursornum)
@@ -1248,7 +1243,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
     
     if (!x->gl_editor)
     {
-        bug("editor");
+        PD_BUG;
         return;
     }
     
@@ -1615,7 +1610,7 @@ void canvas_mouseup(t_canvas *x,
     /* post("mouseup %d %d %d", xpos, ypos, which); */
     if (!x->gl_editor)
     {
-        bug("editor");
+        PD_BUG;
         return;
     }
 
@@ -1850,7 +1845,7 @@ void canvas_motion(t_canvas *x, t_floatarg xpos, t_floatarg ypos,
     int mod = fmod;
     if (!x->gl_editor)
     {
-        bug("editor");
+        PD_BUG;
         return;
     }
     glist_setlastxy(x, xpos, ypos);
@@ -1869,8 +1864,7 @@ void canvas_motion(t_canvas *x, t_floatarg xpos, t_floatarg ypos,
         canvas_doconnect(x, xpos, ypos, 0, 0);
     else if (x->gl_editor->e_onmotion == ACTION_PASS)
     {
-        if (!x->gl_editor->e_motionfn)
-            bug("e_motionfn");
+        if (!x->gl_editor->e_motionfn) { PD_BUG; }
         (*x->gl_editor->e_motionfn)(&x->gl_editor->e_grab->g_pd,
             xpos - x->gl_editor->e_xwas,
             ypos - x->gl_editor->e_ywas);

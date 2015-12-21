@@ -58,7 +58,7 @@ static void gstub_dis(t_gstub *gs)
     int refcount = --gs->gs_refcount;
     if ((!refcount) && gs->gs_type == GP_NONE)
         freebytes(gs, sizeof (*gs));
-    else if (refcount < 0) bug("gstub_dis");
+    else if (refcount < 0) { PD_BUG; }
 }
 
 /* this routing is called by the owner to inform the gstub that it is
@@ -68,7 +68,7 @@ otherwise we wait for the last gstub_dis() to free it. */
 void gstub_cutoff(t_gstub *gs)
 {
     gs->gs_type = GP_NONE;
-    if (gs->gs_refcount < 0) bug("gstub_cutoff");
+    if (gs->gs_refcount < 0) { PD_BUG; }
     if (!gs->gs_refcount) freebytes(gs, sizeof (*gs));
 }
 
@@ -123,7 +123,7 @@ void gpointer_copy(const t_gpointer *gpfrom, t_gpointer *gpto)
     *gpto = *gpfrom;
     if (gpto->gp_stub)
         gpto->gp_stub->gs_refcount++;
-    else bug("gpointer_copy");
+    else { PD_BUG; }
 }
 
     /* clear a gpointer that was previously set, releasing the associted
@@ -1033,7 +1033,7 @@ static void setsize_float(t_setsize *x, t_float f)
 
     array = *(t_array **)(((char *)w) + onset);
 
-    if (elemsize != array->a_elemsize) bug("setsize_gpointer");
+    if (elemsize != array->a_elemsize) { PD_BUG; }
 
     nitems = array->a_n;
     if (newsize < 1) newsize = 1;

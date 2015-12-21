@@ -257,9 +257,8 @@ void pd_pushsym(t_pd *x)
 
 void pd_popsym(t_pd *x)
 {
-    if (!gstack_head || s__X.s_thing != x) bug("gstack_pop");
-    else
-    {
+    if (!gstack_head || s__X.s_thing != x) { PD_BUG; }
+    else {
         t_gstack *headwas = gstack_head;
         s__X.s_thing = headwas->g_what;
         gstack_head = headwas->g_next;

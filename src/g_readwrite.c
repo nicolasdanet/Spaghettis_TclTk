@@ -333,8 +333,7 @@ void canvas_dataproperties(t_canvas *x, t_scalar *sc, t_binbuf *b)
     else gobj_vis((newone = x->gl_list), x, 0), x->gl_list = newone->g_next;
     if (!newone)
         error("couldn't update properties (perhaps a format problem?)");
-    else if (!oldone)
-        bug("data_properties: couldn't find old element");
+    else if (!oldone) { PD_BUG; }
     else if (newone->g_pd == scalar_class && oldone->g_pd == scalar_class
         && ((t_scalar *)newone)->sc_template ==
             ((t_scalar *)oldone)->sc_template 
@@ -364,7 +363,7 @@ void canvas_dataproperties(t_canvas *x, t_scalar *sc, t_binbuf *b)
                 y->g_next = newone;
                 goto didit;
             }
-            bug("data_properties: can't reinsert");
+            PD_BUG;
         }
         else newone->g_next = x->gl_list, x->gl_list = newone;
     }
@@ -406,8 +405,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_binbuf *b,
         SETSYMBOL(&templatename, gensym(templatesym->s_name + 3));
         binbuf_add(b, 1, &templatename);
     }
-    if (!template)
-        bug("canvas_writescalar");
+    if (!template) { PD_BUG; }
         /* write the atoms (floats and symbols) */
     for (i = 0; i < n; i++)
     {
@@ -470,8 +468,7 @@ static void canvas_addtemplatesforscalar(t_symbol *templatesym,
     int i;
     t_template *template = template_findbyname(templatesym);
     canvas_doaddtemplate(templatesym, p_ntemplates, p_templatevec);
-    if (!template)
-        bug("canvas_addtemplatesforscalar");
+    if (!template) { PD_BUG; }
     else for (ds = template->t_vec, i = template->t_n; i--; ds++, w++)
     {
         if (ds->ds_type == DT_ARRAY)
@@ -537,7 +534,7 @@ t_binbuf *glist_writetobinbuf(t_glist *x, int wholething)
                 case DT_SYMBOL: type = &s_symbol; break;
                 case DT_ARRAY: type = gensym("array"); break;
                 case DT_TEXT: type = &s_list; break;
-                default: type = &s_float; bug("canvas_write");
+                default: type = &s_float; PD_BUG;
             }
             if (template->t_vec[j].ds_type == DT_ARRAY)
                 binbuf_addv(b, "sss;", type, template->t_vec[j].ds_name,
@@ -689,7 +686,7 @@ static void canvas_savetemplatesto(t_canvas *x, t_binbuf *b, int wholething)
         int j, m = template->t_n;
         if (!template)
         {
-            bug("canvas_savetemplatesto");
+            PD_BUG;
             continue;
         }
             /* drop "pd-" prefix from template symbol to print */
@@ -704,7 +701,7 @@ static void canvas_savetemplatesto(t_canvas *x, t_binbuf *b, int wholething)
                 case DT_SYMBOL: type = &s_symbol; break;
                 case DT_ARRAY: type = gensym("array"); break;
                 case DT_TEXT: type = gensym("text"); break;
-                default: type = &s_float; bug("canvas_write");
+                default: type = &s_float; PD_BUG;
             }
             if (template->t_vec[j].ds_type == DT_ARRAY)
                 binbuf_addv(b, "sss", type, template->t_vec[j].ds_name,

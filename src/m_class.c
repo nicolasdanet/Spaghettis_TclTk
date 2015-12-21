@@ -352,8 +352,7 @@ void class_addmethod(t_class *c, t_method fn, t_symbol *sel,
     }
     return;
 phooey:
-    bug("class_addmethod: %s_%s: bad argument types\n",
-        c->c_name->s_name, sel->s_name);
+    PD_BUG;
 }
 
     /* Instead of these, see the "class_addfloat", etc.,  macros in m_pd.h */
@@ -461,7 +460,7 @@ char *class_gethelpdir(t_class *c)
 
 static void class_nosavefn(t_gobj *z, t_binbuf *b)
 {
-    bug("save function called but not defined");
+    PD_BUG;
 }
 
 void class_setsavefn(t_class *c, t_savefn f)
@@ -838,7 +837,7 @@ void pd_forwardmess(t_pd *x, int argc, t_atom *argv)
             if (argc == 1) pd_float(x, argv->a_w.w_float);
             else pd_list(x, &s_list, argc, argv);
         }
-        else bug("pd_forwardmess");
+        else { PD_BUG; }
     }
 
 }

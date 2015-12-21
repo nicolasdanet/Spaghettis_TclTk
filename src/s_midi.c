@@ -7,6 +7,7 @@
 #include "m_pd.h"
 #include "s_system.h"
 #include "m_private.h"
+#include "m_macros.h"
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #include <sys/time.h>
@@ -298,10 +299,8 @@ static void sys_dispatchnextmidiin( void)
     static t_midiparser parser[MIDI_MAXIMUM_IN], *parserp;
     int portno = midi_inqueue[midi_intail].q_portno,
         byte = midi_inqueue[midi_intail].q_byte1;
-    if (!midi_inqueue[midi_intail].q_onebyte)
-        bug("sys_dispatchnextmidiin");
-    if (portno < 0 || portno >= MIDI_MAXIMUM_IN)
-        bug("sys_dispatchnextmidiin 2");
+    if (!midi_inqueue[midi_intail].q_onebyte) { PD_BUG; }
+    if (portno < 0 || portno >= MIDI_MAXIMUM_IN) { PD_BUG; }
     parserp = parser + portno;
     outlet_setstacklim();
     

@@ -290,8 +290,7 @@ int oss_open_audio(int nindev,  int *indev,  int nchin,  int *chin,
 
     /* open output devices */
     wantmore=0;
-    if (noutdev < 0 || nindev < 0)
-        bug("linux_open_audio");
+    if (noutdev < 0 || nindev < 0) { PD_BUG; }
 
     for (n = 0; n < noutdev; n++)
     {

@@ -114,7 +114,7 @@ static void array_define_yrange(t_glist *x, t_floatarg ylo, t_floatarg yhi)
         pd_vmess(&x->gl_list->g_pd, gensym("ylabel"),
             "fff", glist_pixelstox(gl, 0) - glist_pixelstox(gl, 5), ylo, yhi);
     }
-    else bug("array_define_yrange");
+    else { PD_BUG; }
 }
 
 static void *array_define_new(t_symbol *s, int argc, t_atom *argv)
@@ -215,7 +215,7 @@ static void array_define_send(t_glist *x, t_symbol *s)
         pd_pointer(s->s_thing, &gp);
         gpointer_unset(&gp);
     }
-    else bug("array_define_anything");
+    else { PD_BUG; }
 }
 
     /* just forward any messages to the garray */
@@ -225,7 +225,7 @@ static void array_define_anything(t_glist *x,
     t_glist *gl = (x->gl_list ? pd_checkglist(&x->gl_list->g_pd) : 0);
     if (gl && gl->gl_list && pd_class(&gl->gl_list->g_pd) == garray_class)
         pd_typedmess(&gl->gl_list->g_pd, s, argc, argv);
-    else bug("array_define_anything");
+    else { PD_BUG; }
 }
 
     /* ignore messages like "editmode" */

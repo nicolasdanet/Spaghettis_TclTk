@@ -387,7 +387,7 @@ void signal_makereusable(t_signal *sig)
     {
         if (s5 == sig)
         {
-            bug("signal_free 3");
+            PD_BUG;
             return;
         }
     }
@@ -395,7 +395,7 @@ void signal_makereusable(t_signal *sig)
     {
         if (s5 == sig)
         {
-            bug("signal_free 4");
+            PD_BUG;
             return;
         }
     }
@@ -406,8 +406,7 @@ void signal_makereusable(t_signal *sig)
             /* if the signal is borrowed, decrement the borrowed-from signal's
                 reference count, possibly marking it reusable too */
         t_signal *s2 = sig->s_borrowedfrom;
-        if ((s2 == sig) || !s2)
-            bug("signal_free");
+        if ((s2 == sig) || !s2) { PD_BUG; }
         s2->s_refcount--;
         if (!s2->s_refcount)
             signal_makereusable(s2);
@@ -418,7 +417,7 @@ void signal_makereusable(t_signal *sig)
     {
             /* if it's a real signal (not borrowed), put it on the free list
                 so we can reuse it. */
-        if (signal_freelist[logn] == sig) bug("signal_free 2");
+        if (signal_freelist[logn] == sig) { PD_BUG; }
         sig->s_nextfree = signal_freelist[logn];
         signal_freelist[logn] = sig;
     }
@@ -438,8 +437,7 @@ t_signal *signal_new(int n, t_float sr)
     {
         if ((vecsize = (1<<logn)) != n)
             vecsize *= 2;
-        if (logn > MAXLOGSIG)
-            bug("signal buffer too large");
+        if (logn > MAXLOGSIG) { PD_BUG; }
         whichlist = signal_freelist + logn;
     }
     else
@@ -481,10 +479,8 @@ static t_signal *signal_newlike(const t_signal *sig)
 
 void signal_setborrowed(t_signal *sig, t_signal *sig2)
 {
-    if (!sig->s_isborrowed || sig->s_borrowedfrom)
-        bug("signal_setborrowed");
-    if (sig == sig2)
-        bug("signal_setborrowed 2");
+    if (!sig->s_isborrowed || sig->s_borrowedfrom) { PD_BUG; }
+    if (sig == sig2) { PD_BUG; }
     sig->s_borrowedfrom = sig2;
     sig->s_vec = sig2->s_vec;
     sig->s_n = sig2->s_n;
@@ -575,7 +571,7 @@ void ugen_start(void)
     pd_this->pd_dspchain = (t_int *)getbytes(sizeof(*pd_this->pd_dspchain));
     pd_this->pd_dspchain[0] = (t_int)dsp_done;
     pd_this->pd_dspchainsize = 1;
-    if (ugen_currentcontext) bug("ugen_start");
+    if (ugen_currentcontext) { PD_BUG; }
 }
 
 int ugen_getsortno(void)
@@ -680,10 +676,7 @@ void ugen_connect(t_dspcontext *dc, t_object *x1, int outno, t_object *x2,
     }
     if (sigoutno < 0 || sigoutno >= u1->u_nout || siginno >= u2->u_nin)
     {
-        bug("ugen_connect %s %s %d %d (%d %d)",
-            class_getname(x1->te_g.g_pd),
-            class_getname(x2->te_g.g_pd), sigoutno, siginno, u1->u_nout,
-                u2->u_nin);
+        PD_BUG;
     }
     uout = u1->u_out + sigoutno;
     uin = u2->u_in + siginno;
@@ -1142,14 +1135,14 @@ void ugen_done_graph(t_dspcontext *dc)
     }
     if (ugen_currentcontext == dc)
         ugen_currentcontext = dc->dc_parentcontext;
-    else bug("ugen_currentcontext");
+    else { PD_BUG; }
     freebytes(dc, sizeof(*dc));
 
 }
 
 t_signal *ugen_getiosig(int index, int inout)
 {
-    if (!ugen_currentcontext) bug("ugen_getiosig");
+    if (!ugen_currentcontext) { PD_BUG; }
     if (ugen_currentcontext->dc_toplevel) return (0);
     if (inout) index += ugen_currentcontext->dc_ninlets;
     return (ugen_currentcontext->dc_iosigs[index]);

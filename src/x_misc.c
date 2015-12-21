@@ -448,7 +448,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
                 f = 0;
             if (j >= outc)
             {
-                bug("oscparse 1: %d >=%d", j, outc);
+                PD_BUG;
                 return;
             }
             SETFLOAT(outv+j, f);
@@ -459,7 +459,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
                 goto tooshort;
             if (j >= outc)
             {
-                bug("oscparse 2");
+                PD_BUG;
                 return;
             }
             SETFLOAT(outv+j, READINT(argv+k));
@@ -468,7 +468,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
         case 's':
             if (j >= outc)
             {
-                bug("oscparse 3");
+                PD_BUG;
                 return;
             }
             SETSYMBOL(outv+j, grabstring(argc, argv, &k, 0));
@@ -483,7 +483,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
                 goto tooshort;
             if (j + blobsize + 1 > outc)
             {
-                bug("oscparse 4");
+                PD_BUG;
                 return;
             }
             if (k + blobsize > argc)
@@ -681,9 +681,7 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
     typeindex++;
     while (typeindex & 3)
         SETFLOAT(&msg[typeindex], 0), typeindex++;
-    if (typeindex != datastart || msgindex != msgsize)
-        bug("oscformat: typeindex %d, datastart %d, msgindex %d, msgsize %d",
-            typeindex, datastart, msgindex, msgsize);
+    if (typeindex != datastart || msgindex != msgsize) { PD_BUG; }
     /* else post("datastart %d, msgsize %d", datastart, msgsize); */
     outlet_list(x->x_obj.te_outlet, 0, msgsize, msg);
 }

@@ -6,6 +6,7 @@
 away before the panel does... */
 
 #include "m_pd.h"
+#include "m_macros.h"
 #include <stdio.h>
 #include <string.h>
 #ifdef HAVE_UNISTD_H
@@ -57,8 +58,7 @@ void gfxstub_new(t_pd *owner, void *key, const char *cmd)
             gfxstub_deleteforkey(key);
     if (strlen(cmd) + 50 > 4*PD_STRING)
     {
-        bug("audio dialog too long");
-        bug("%s", cmd);
+        PD_BUG;
         return;
     }
     x = (t_gfxstub *)pd_new(gfxstub_class);

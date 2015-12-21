@@ -143,10 +143,9 @@ void canvas_unsetcurrent(t_canvas *x)
 
 t_canvasenvironment *canvas_getenv(t_canvas *x)
 {
-    if (!x) bug("canvas_getenv");
+    if (!x) { PD_BUG; }
     while (!x->gl_env)
-        if (!(x = x->gl_owner))
-            bug("t_canvasenvironment");
+        if (!(x = x->gl_owner)) { PD_BUG; }
     return (x->gl_env);
 }
 
@@ -278,7 +277,7 @@ t_outconnect *linetraverser_next(t_linetraverser *t)
     t->tr_nextoc = obj_nexttraverseoutlet(rval, &t->tr_ob2,
         &t->tr_inlet, &t->tr_inno);
     t->tr_nin = obj_ninlets(t->tr_ob2);
-    if (!t->tr_nin) bug("drawline");
+    if (!t->tr_nin) { PD_BUG; }
     if (glist_isvisible(t->tr_x))
     {
         int inplus = (t->tr_nin == 1 ? 1 : t->tr_nin - 1);
@@ -649,7 +648,7 @@ void canvas_map(t_canvas *x, t_floatarg f)
             t_selection *sel;
             if (!x->gl_havewindow)
             {
-                bug("canvas_map");
+                PD_BUG;
                 canvas_vis(x, 1);
             }
             for (y = x->gl_list; y; y = y->g_next)
@@ -691,10 +690,8 @@ void glist_menu_open(t_glist *x)
     if (glist_isvisible(x) && !glist_istoplevel(x))
     {
         t_glist *gl2 = x->gl_owner;
-        if (!gl2) 
-            bug("glist_menu_open");  /* shouldn't happen but not dangerous */
-        else
-        {
+        if (!gl2) { PD_BUG; }
+        else {
                 /* erase ourself in parent window */
             gobj_vis(&x->gl_obj.te_g, gl2, 0);
                     /* get rid of our editor (and subeditors) */
@@ -724,8 +721,7 @@ int glist_istoplevel(t_glist *x)
 int glist_getfont(t_glist *x)
 {
     while (!x->gl_env)
-        if (!(x = x->gl_owner))
-            bug("t_canvasenvironment");
+        if (!(x = x->gl_owner)) { PD_BUG; }
     return (x->gl_font);
 }
 
@@ -916,8 +912,7 @@ static void canvas_relocate(t_canvas *x, t_symbol *canvasgeom,
     int cxpix, cypix, cw, ch, txpix, typix, tw, th;
     if (sscanf(canvasgeom->s_name, "%dx%d+%d+%d", &cw, &ch, &cxpix, &cypix)
         < 4 ||
-        sscanf(topgeom->s_name, "%dx%d+%d+%d", &tw, &th, &txpix, &typix) < 4)
-        bug("canvas_relocate");
+        sscanf(topgeom->s_name, "%dx%d+%d+%d", &tw, &th, &txpix, &typix) < 4) { PD_BUG; }
             /* for some reason this is initially called with cw=ch=1 so
             we just suppress that here. */
     if (cw > 5 && ch > 5)

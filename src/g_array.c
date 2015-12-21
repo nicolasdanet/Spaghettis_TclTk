@@ -821,8 +821,7 @@ t_template *garray_template(t_garray *x)
     t_array *array = garray_getarray(x);
     t_template *template = 
         (array ? template_findbyname(array->a_templatesym) : 0);
-    if (!template)
-        bug("garray_template");
+    if (!template) { PD_BUG; }
     return (template);
 }
 

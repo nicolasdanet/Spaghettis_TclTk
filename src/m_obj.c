@@ -720,8 +720,9 @@ int inlet_getsignalindex(t_inlet *x)
 {
     int n = 0;
     t_inlet *i;
-    if (x->i_symfrom != &s_signal)
-        bug("inlet_getsignalindex");
+    
+    if (x->i_symfrom != &s_signal) { PD_BUG; }
+    
     for (i = x->i_owner->te_inlet, n = 0; i && i != x; i = i->i_next)
         if (i->i_symfrom == &s_signal) n++;
     return (n);

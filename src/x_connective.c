@@ -1464,7 +1464,7 @@ void value_release(t_symbol *s)
             pd_free(&c->c_pd);
         }
     }
-    else bug("value_release");
+    else { PD_BUG; }
 }
 
 /*

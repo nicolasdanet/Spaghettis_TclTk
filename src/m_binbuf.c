@@ -336,7 +336,7 @@ void binbuf_addbinbuf(t_binbuf *x, t_binbuf *y)
             }
             break;
         default:
-            bug("binbuf_addbinbuf");
+            PD_BUG;
         }
     }
     
@@ -755,7 +755,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
                 else SETSYMBOL(msp, s9);
                 break;
             default:
-                bug("bad item in binbuf");
+                PD_BUG;
                 goto broken;
             }
             msp++;

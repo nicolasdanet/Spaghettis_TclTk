@@ -218,8 +218,7 @@ static void cos_maketable(void)
             is as we declared it.  If not, the code has to be
             recompiled the other way. */
     tf.tf_d = UNITBIT32 + 0.5;
-    if ((unsigned)tf.tf_i[LOWOFFSET] != 0x80000000)
-        bug("cos~: unexpected machine alignment");
+    if ((unsigned)tf.tf_i[LOWOFFSET] != 0x80000000) { PD_BUG; }
 }
 
 static void cos_setup(void)

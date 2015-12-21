@@ -527,8 +527,7 @@ t_float glist_pixelstox(t_glist *x, t_float xpix)
     else 
     {
         int x1, y1, x2, y2;
-        if (!x->gl_owner)
-            bug("glist_pixelstox");         
+        if (!x->gl_owner) { PD_BUG; }       
         graph_graphrect(&x->gl_obj.te_g, x->gl_owner, &x1, &y1, &x2, &y2);
         return (x->gl_x1 + (x->gl_x2 - x->gl_x1) * 
             (xpix - x1) / (x2 - x1));
@@ -545,8 +544,7 @@ t_float glist_pixelstoy(t_glist *x, t_float ypix)
     else 
     {
         int x1, y1, x2, y2;
-        if (!x->gl_owner)
-            bug("glist_pixelstox");
+        if (!x->gl_owner) { PD_BUG; }
         graph_graphrect(&x->gl_obj.te_g, x->gl_owner, &x1, &y1, &x2, &y2);
         return (x->gl_y1 + (x->gl_y2 - x->gl_y1) * 
             (ypix - y1) / (y2 - y1));
@@ -564,8 +562,7 @@ t_float glist_xtopixels(t_glist *x, t_float xval)
     else
     {
         int x1, y1, x2, y2;
-        if (!x->gl_owner)
-            bug("glist_pixelstox");
+        if (!x->gl_owner) { PD_BUG; }
         graph_graphrect(&x->gl_obj.te_g, x->gl_owner, &x1, &y1, &x2, &y2);
         return (x1 + (x2 - x1) * (xval - x->gl_x1) / (x->gl_x2 - x->gl_x1));
     }
@@ -581,8 +578,7 @@ t_float glist_ytopixels(t_glist *x, t_float yval)
     else 
     {
         int x1, y1, x2, y2;
-        if (!x->gl_owner)
-            bug("glist_pixelstox");
+        if (!x->gl_owner) { PD_BUG; }
         graph_graphrect(&x->gl_obj.te_g, x->gl_owner, &x1, &y1, &x2, &y2);
         return (y1 + (y2 - y1) * (yval - x->gl_y1) / (x->gl_y2 - x->gl_y1));
     }
