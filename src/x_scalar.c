@@ -37,7 +37,7 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
         else
         {
             error("scalar define: unknown flag ...");
-            postatom(argc, argv);
+            post_atoms(argc, argv);
         }
         argc--; argv++;
     }
@@ -49,7 +49,7 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
     if (argc)
     {
         post("warning: scalar define ignoring extra argument: ");
-        postatom(argc, argv);
+        post_atoms(argc, argv);
     }
     
         /* make a canvas... */

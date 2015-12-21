@@ -50,9 +50,8 @@ static void canvas_readerror(int natoms, t_atom *vec, int message,
     int nline, char *s)
 {
     error("%s", s);
-    startpost("line was:");
-    postatom(nline, vec + message);
-    endpost();
+    post("line was:");
+    post_atoms(nline, vec + message);
 }
 
     /* fill in the contents of the scalar into the vector w. */

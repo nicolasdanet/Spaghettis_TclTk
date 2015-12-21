@@ -75,14 +75,14 @@ static void *netsend_new(t_symbol *s, int argc, t_atom *argv)
         else
         {
             error("netsend: unknown flag ...");
-            postatom(argc, argv); endpost();
+            post_atoms(argc, argv);
         }
         argc--; argv++;
     }
     if (argc)
     {
         error("netsend: extra arguments ignored:");
-        postatom(argc, argv); endpost();
+        post_atoms(argc, argv);
     }
     x->x_sockfd = -1;
     if (x->x_protocol == SOCK_STREAM)
@@ -531,7 +531,7 @@ static void *netreceive_new(t_symbol *s, int argc, t_atom *argv)
             else
             {
                 error("netreceive: unknown flag ...");
-                postatom(argc, argv); endpost();
+                post_atoms(argc, argv);
             }
             argc--; argv++;
         }
@@ -541,7 +541,7 @@ static void *netreceive_new(t_symbol *s, int argc, t_atom *argv)
     if (argc)
     {
         error("netreceive: extra arguments ignored:");
-        postatom(argc, argv); endpost();
+        post_atoms(argc, argv);
     }
     if (x->x_old)
     {

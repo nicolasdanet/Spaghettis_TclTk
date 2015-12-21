@@ -132,7 +132,7 @@ static void textbuf_read(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
         else
         {
             error("text read: unknown flag ...");
-            postatom(argc, argv); endpost();
+            post_atoms(argc, argv);
         }
         argc--; argv++;
     }
@@ -149,7 +149,7 @@ static void textbuf_read(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
     if (argc)
     {
         post("warning: text define ignoring extra argument: ");
-        postatom(argc, argv); endpost();
+        post_atoms(argc, argv);
     }
     if (binbuf_read_via_canvas(x->b_binbuf, filename->s_name, x->b_canvas, cr))
             error("%s: read failed", filename->s_name);
@@ -169,7 +169,7 @@ static void textbuf_write(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
         else
         {
             error("text write: unknown flag ...");
-            postatom(argc, argv); endpost();
+            post_atoms(argc, argv);
         }
         argc--; argv++;
     }
@@ -186,7 +186,7 @@ static void textbuf_write(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
     if (argc)
     {
         post("warning: text define ignoring extra argument: ");
-        postatom(argc, argv); endpost();
+        post_atoms(argc, argv);
     }
     canvas_makefilename(x->b_canvas, filename->s_name,
         buf, PD_STRING);
@@ -261,7 +261,7 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
         else
         {
             error("text define: unknown flag ...");
-            postatom(argc, argv); endpost();
+            post_atoms(argc, argv);
         }
         argc--; argv++;
     }
@@ -274,7 +274,7 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
     if (argc)
     {
         post("warning: text define ignoring extra argument: ");
-        postatom(argc, argv); endpost();
+        post_atoms(argc, argv);
     }
     textbuf_init(&x->x_textbuf);
         /* set up a scalar and a pointer to it that we can output */
@@ -559,7 +559,7 @@ static void *text_get_new(t_symbol *s, int argc, t_atom *argv)
         else
         {
             post("text get: can't understand field number");
-            postatom(argc, argv); endpost();
+            post_atoms(argc, argv);
         }
         argc--; argv++;
     }
@@ -570,14 +570,14 @@ static void *text_get_new(t_symbol *s, int argc, t_atom *argv)
         else
         {
             post("text get: can't understand field count");
-            postatom(argc, argv); endpost();
+            post_atoms(argc, argv);
         }
         argc--; argv++;
     }
     if (argc)
     {
         post("warning: text get ignoring extra argument: ");
-        postatom(argc, argv); endpost();
+        post_atoms(argc, argv);
     }
     if (x->x_struct)
         pointerinlet_new(&x->x_obj, &x->x_gp);
@@ -654,7 +654,7 @@ static void *text_set_new(t_symbol *s, int argc, t_atom *argv)
         else
         {
             post("text get: can't understand field number");
-            postatom(argc, argv); endpost();
+            post_atoms(argc, argv);
         }
         argc--; argv++;
     }
@@ -665,14 +665,14 @@ static void *text_set_new(t_symbol *s, int argc, t_atom *argv)
         else
         {
             post("text get: can't understand field count");
-            postatom(argc, argv); endpost();
+            post_atoms(argc, argv);
         }
         argc--; argv++;
     }
     if (argc)
     {
         post("warning: text set ignoring extra argument: ");
-        postatom(argc, argv); endpost();
+        post_atoms(argc, argv);
     }
     if (x->x_struct)
         pointerinlet_new(&x->x_obj, &x->x_gp);
@@ -767,7 +767,7 @@ static void *text_size_new(t_symbol *s, int argc, t_atom *argv)
     if (argc)
     {
         post("warning: text size ignoring extra argument: ");
-        postatom(argc, argv); endpost();
+        post_atoms(argc, argv);
     }
     if (x->x_struct)
         pointerinlet_new(&x->x_obj, &x->x_gp);
@@ -821,7 +821,7 @@ static void *text_tolist_new(t_symbol *s, int argc, t_atom *argv)
     if (argc)
     {
         post("warning: text tolist ignoring extra argument: ");
-        postatom(argc, argv); endpost();
+        post_atoms(argc, argv);
     }
     if (x->tc_struct)
         pointerinlet_new(&x->tc_obj, &x->tc_gp);
@@ -854,7 +854,7 @@ static void *text_fromlist_new(t_symbol *s, int argc, t_atom *argv)
     if (argc)
     {
         post("warning: text fromlist ignoring extra argument: ");
-        postatom(argc, argv); endpost();
+        post_atoms(argc, argv);
     }
     if (x->tc_struct)
         pointerinlet_new(&x->tc_obj, &x->tc_gp);
@@ -1187,7 +1187,7 @@ static void *text_sequence_new(t_symbol *s, int argc, t_atom *argv)
     if (argc)
     {
         post("warning: text sequence ignoring extra argument: ");
-        postatom(argc, argv); endpost();
+        post_atoms(argc, argv);
     }
     if (x->x_tc.tc_struct)
         pointerinlet_new(&x->x_tc.tc_obj, &x->x_tc.tc_gp);

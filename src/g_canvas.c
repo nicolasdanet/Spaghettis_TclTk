@@ -1385,9 +1385,8 @@ static void canvas_declare(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
     int i;
     t_canvasenvironment *e = canvas_getenv(x);
 #if 0
-    startpost("declare:: %s", s->s_name);
-    postatom(argc, argv);
-    endpost();
+    post("declare:: %s", s->s_name);
+    post_atoms(argc, argv);
 #endif
     for (i = 0; i < argc; i++)
     {

@@ -500,13 +500,10 @@ PD_DLL t_propertiesfn class_getpropertiesfn (t_class *c);
 #pragma mark -
 
 PD_DLL void post            (const char *fmt, ...);
-PD_DLL void startpost       (const char *fmt, ...);
-PD_DLL void poststring      (const char *s);
-PD_DLL void postfloat       (t_floatarg f);
-PD_DLL void postatom        (int argc, t_atom *argv);
-PD_DLL void endpost         (void);
 PD_DLL void error           (const char *fmt, ...);
-PD_DLL void logpost         (const void *object, const int level, const char *fmt, ...);
+
+PD_DLL void post_atoms        (int argc, t_atom *argv);
+
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

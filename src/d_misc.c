@@ -28,12 +28,10 @@ static t_int *print_perform(t_int *w)
     if (x->x_count)
     {
         int i=0;
-        startpost("%s:", x->x_sym->s_name);
+        post("%s:", x->x_sym->s_name);
         for(i=0; i<n; i++) {
-          if(i%8==0)endpost();
-          startpost("%.4g  ", in[i]);
+          post("%.4g  ", in[i]);
         }
-        endpost();
         x->x_count--;
     }
     return (w+4);

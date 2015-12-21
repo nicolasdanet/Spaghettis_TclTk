@@ -62,22 +62,20 @@ static void print_float(t_print *x, t_float f)
 static void print_list(t_print *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
-    if (argc && argv->a_type != A_SYMBOL) startpost("%s:", x->x_sym->s_name);
-    else startpost("%s%s%s", x->x_sym->s_name,
+    if (argc && argv->a_type != A_SYMBOL) post("%s:", x->x_sym->s_name);
+    else post("%s%s%s", x->x_sym->s_name,
         (*x->x_sym->s_name ? ": " : ""),
         (argc > 1 ? s_list.s_name : (argc == 1 ? s_symbol.s_name :
             s_bang.s_name)));
-    postatom(argc, argv);
-    endpost();
+    post_atoms(argc, argv);
 }
 
 static void print_anything(t_print *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
-    startpost("%s%s%s", x->x_sym->s_name, (*x->x_sym->s_name ? ": " : ""),
+    post("%s%s%s", x->x_sym->s_name, (*x->x_sym->s_name ? ": " : ""),
         s->s_name);
-    postatom(argc, argv);
-    endpost();
+    post_atoms(argc, argv);
 }
 
 static void print_setup(void)

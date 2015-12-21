@@ -252,9 +252,8 @@ void binbuf_add(t_binbuf *x, int argc, t_atom *argv)
         return;
     }
 #if 0
-    startpost("binbuf_add: ");
-    postatom(argc, argv);
-    endpost();
+    post("binbuf_add: ");
+    post_atoms(argc, argv);
 #endif
     for (ap = x->b_vec + x->b_n, i = argc; i--; ap++)
         *ap = *(argv++);
@@ -426,16 +425,14 @@ void binbuf_print(t_binbuf *x)
     {
         if (newline)
         {
-            if (startedpost) endpost();
-            startpost("");
+            post("");
             startedpost = 1;
         }
-        postatom(1, x->b_vec + i);
+        post_atoms(1, x->b_vec + i);
         if (x->b_vec[i].a_type == A_SEMICOLON)
             newline = 1;
         else newline = 0; 
     }
-    if (startedpost) endpost();
 }
 
 int binbuf_getnatom(t_binbuf *x)
@@ -834,7 +831,7 @@ int binbuf_read(t_binbuf *b, char *filename, char *dirname, int crflag)
     binbuf_text(b, buf, length);
 
 #if 0
-    startpost("binbuf_read "); postatom(b->b_n, b->b_vec); endpost();
+    post("binbuf_read "); post_atoms(b->b_n, b->b_vec);
 #endif
 
     freebytes(buf, length);

@@ -344,15 +344,14 @@ static void nt_printaudiostatus(void)
             firstphasedone);
         continue;
     multipleadc:
-        startpost("nad %d phase %d: oops:", nad, phase);
+        post("nad %d phase %d: oops:", nad, phase);
         for (count = 0; count < nt_naudiobuffer; count++)
         {
             char buf[80];
             sprintf(buf, " %d", 
                 (ntsnd_invec[nad][count].lpWaveHdr->dwFlags & WHDR_DONE));
-            poststring(buf);
+            post("%s", buf);
         }
-        endpost();
     }
     for (nda = 0; nda < nt_nwaveout; nda++)
     {
@@ -384,15 +383,14 @@ static void nt_printaudiostatus(void)
             firstphasedone);
         continue;
     multipledac:
-        startpost("nda %d phase %d: oops:", nda, phase);
+        post("nda %d phase %d: oops:", nda, phase);
         for (count = 0; count < nt_naudiobuffer; count++)
         {
             char buf[80];
             sprintf(buf, " %d", 
                 (ntsnd_outvec[nad][count].lpWaveHdr->dwFlags & WHDR_DONE));
-            poststring(buf);
+            post("%s", buf);
         }
-        endpost();
     }
 }
 #endif /* 0 */
