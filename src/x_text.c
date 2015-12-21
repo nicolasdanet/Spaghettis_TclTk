@@ -6,7 +6,7 @@
 moment it also defines "text" but it may later be better to split this off. */
 
 #include "m_pd.h"
-#include "m_imp.h"
+#include "m_private.h"
 #include "m_macros.h"
 #include "g_canvas.h"    /* just for glist_getfont, bother */
 #include "s_system.h"    /* just for sys_hostfontsize, phooey */

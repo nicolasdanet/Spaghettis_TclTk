@@ -12,7 +12,7 @@
 */
 
 #include "m_pd.h"
-#include "m_imp.h"
+#include "m_private.h"
 #include "m_macros.h"
 #include <stdlib.h>
 #include <stdarg.h>

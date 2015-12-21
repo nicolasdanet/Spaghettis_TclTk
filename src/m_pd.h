@@ -192,18 +192,18 @@ typedef struct _atom {
 typedef t_class *t_pd;
 
 typedef struct _gobj {
-    t_pd            g_pd;
+    t_pd            g_pd;                       /* MUST be the first. */
     struct _gobj    *g_next;
     } t_gobj;
 
 typedef struct _scalar {
-    t_gobj          sc_g;
+    t_gobj          sc_g;                       /* MUST be the first. */
     t_symbol        *sc_template;
     t_word          sc_vec[1];                  /* Indeterminate-length array (see above link). */
     } t_scalar;
 
 typedef struct _text {
-    t_gobj          te_g;
+    t_gobj          te_g;                       /* MUST be the first. */
     t_binbuf        *te_binbuf;
     t_outlet        *te_outlet;
     t_inlet         *te_inlet;

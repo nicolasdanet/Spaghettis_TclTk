@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "m_pd.h"
-#include "m_imp.h"
+#include "m_private.h"
 #include "m_macros.h"
 #include "s_system.h"
 #include "g_canvas.h"

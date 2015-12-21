@@ -33,7 +33,7 @@
 
 #include <string.h>
 #include "m_pd.h"
-#include "m_imp.h"
+#include "m_private.h"
 #include "s_system.h"
 #include "s_utf8.h"
 #include <stdio.h>

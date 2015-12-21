@@ -6,7 +6,7 @@
 
 #include "m_pd.h"
 #include "s_system.h"
-#include "m_imp.h"
+#include "m_private.h"
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #include <sys/time.h>

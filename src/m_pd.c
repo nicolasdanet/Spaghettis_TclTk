@@ -1,34 +1,47 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
+
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include <stdlib.h>
 #include <string.h>
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #include "m_pd.h"
-#include "m_imp.h"
+#include "m_private.h"
+#include "m_macros.h"
 
-    /* FIXME no out-of-memory testing yet! */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-t_pd *pd_new(t_class *c)
+t_pd *pd_new (t_class *c)
 {
     t_pd *x;
-    if (!c) 
-        bug ("pd_new: apparently called before setup routine");
-    x = (t_pd *)getbytes(c->c_size);
+    
+    PD_ASSERT (c != NULL);
+
+    x = (t_pd *)getbytes (c->c_size);
+    
     *x = c;
-    if (c->c_patchable)
-    {
-        ((t_object *)x)->te_inlet = 0;
-        ((t_object *)x)->te_outlet = 0;
-    }
-    return (x);
+    
+    if (c->c_box) { ((t_object *)x)->te_inlet = ((t_object *)x)->te_outlet = NULL; }
+    
+    return x;
 }
 
 void pd_free(t_pd *x)
 {
     t_class *c = *x;
     if (c->c_freemethod) (*(t_gotfn)(c->c_freemethod))(x);
-    if (c->c_patchable)
+    if (c->c_box)
     {
         while (((t_object *)x)->te_outlet)
             outlet_free(((t_object *)x)->te_outlet);
@@ -345,4 +358,5 @@ PD_DLL t_canvas *pd_getcanvaslist(void)
     return (pd_this->pd_canvaslist);
 }
 
-
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

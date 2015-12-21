@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "m_pd.h"
-#include "m_imp.h"
+#include "m_private.h"
 
 /* #define LOUD */
 #ifdef LOUD

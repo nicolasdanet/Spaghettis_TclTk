@@ -5,7 +5,7 @@
 /* MIDI. */
 
 #include "m_pd.h"
-#include "m_imp.h"
+#include "m_private.h"
 #include "m_macros.h"
 void outmidi_noteon(int portno, int channel, int pitch, int velo);
 void outmidi_controlchange(int portno, int channel, int ctlno, int value);

@@ -8,7 +8,7 @@ to be different but are now unified except for some fossilized names.) */
 #include <stdlib.h>
 #include <stdio.h>
 #include "m_pd.h"
-#include "m_imp.h"
+#include "m_private.h"
 #include "m_macros.h"
 #include "s_system.h"
 #include "g_canvas.h"

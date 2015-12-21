@@ -7,7 +7,7 @@ can interconnect via inlets and outlets; also, the (terse) generic
 behavior for "gobjs" appears at the end of this file.  */
 
 #include "m_pd.h"
-#include "m_imp.h"
+#include "m_private.h"
 #include "m_macros.h"
 
 union inletunion
@@ -584,7 +584,7 @@ t_outconnect *obj_nexttraverseoutlet(t_outconnect *lastconnect,
     it, correctly typed, or zero if the check failed. */
 t_object *pd_checkobject(t_pd *x)
 {
-    if ((*x)->c_patchable) return ((t_object *)x);
+    if ((*x)->c_box) return ((t_object *)x);
     else return (0);
 }
 

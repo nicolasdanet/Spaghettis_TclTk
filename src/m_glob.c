@@ -3,7 +3,7 @@
 * WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
 #include "m_pd.h"
-#include "m_imp.h"
+#include "m_private.h"
 #include "m_macros.h"
 
 t_class *glob_pdobject;     /* Global. */
@@ -13,7 +13,7 @@ static t_class *maxclass;
 int sys_perf;   /* true if we should query user on close and quit */
 
 /* These "glob" routines, which implement messages to Pd, are from all
-over.  Some others are prototyped in m_imp.h as well. */
+over.  Some others are prototyped in m_private.h as well. */
 
 void glob_menunew(void *dummy, t_symbol *name, t_symbol *dir);
 void glob_verifyquit(void *dummy, t_floatarg f);

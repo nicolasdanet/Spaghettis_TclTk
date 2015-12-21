@@ -58,7 +58,7 @@
     /* LATER try to figure out how to handle default devices in portaudio;
     the way s_audio.c handles them isn't going to work here. */
 
-    /* public interface declared in m_imp.h */
+    /* public interface declared in m_private.h */
 
     /* implementation */
 

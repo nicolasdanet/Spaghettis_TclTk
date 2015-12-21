@@ -8,7 +8,7 @@ that didn't really belong anywhere. */
 #include "m_pd.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "m_imp.h"
+#include "m_private.h"
 #include "g_canvas.h"   /* for GUI queueing stuff */
 #ifndef _WIN32
 #include <unistd.h>

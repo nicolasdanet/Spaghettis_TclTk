@@ -3,7 +3,7 @@
 * WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
 #include "m_pd.h"
-#include "m_imp.h"
+#include "m_private.h"
 #include "m_macros.h"
 #include "s_system.h"
 #include <stdlib.h>
@@ -147,7 +147,7 @@ static void pd_defaultlist(t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
         /* if the object is patchable (i.e., can have proper inlets)
             send it on to obj_list which will unpack the list into the inlets */
-    else if ((*x)->c_patchable)
+    else if ((*x)->c_box)
         obj_list((t_object *)x, s, argc, argv);
             /* otherwise gove up and complain. */
     else pd_defaultanything(x, &s_list, argc, argv);
@@ -228,7 +228,7 @@ t_class *class_new(t_symbol *s, t_newmethod newmethod, t_method freemethod,
     c->c_wb = (typeflag == CLASS_BOX ? &text_widgetbehavior : 0);
     c->c_pwb = 0;
     c->c_firstin = ((flags & CLASS_NOINLET) == 0);
-    c->c_patchable = (typeflag == CLASS_BOX);
+    c->c_box = (typeflag == CLASS_BOX);
     c->c_gobj = (typeflag >= CLASS_GRAPHIC);
     c->c_drawcommand = 0;
     c->c_floatsignalin = 0;

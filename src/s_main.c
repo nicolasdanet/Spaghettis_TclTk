@@ -3,7 +3,7 @@
 * WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
 #include "m_pd.h"
-#include "m_imp.h"
+#include "m_private.h"
 #include "s_system.h"
 #include <sys/types.h>
 #include <sys/stat.h>
