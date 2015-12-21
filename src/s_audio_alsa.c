@@ -125,7 +125,7 @@ static int alsaio_setup(t_alsa_dev *dev, int out, int *channels, int *rate,
     snd_pcm_hw_params_alloca(&hw_params);
     snd_pcm_sw_params_alloca(&sw_params);
 
-    if (false)
+    if (0)
         post((out ? "configuring sound output..." :
             "configuring sound input..."));
 
@@ -167,7 +167,7 @@ static int alsaio_setup(t_alsa_dev *dev, int out, int *channels, int *rate,
     }
     else dev->a_sampwidth = 4;
 
-    if (false)
+    if (0)
         post("Sample width set to %d bytes", dev->a_sampwidth);
 
         /* set the subformat */
@@ -289,7 +289,7 @@ int alsa_open_audio(int naudioindev, int *audioindev, int nchindev,
     alsa_nindev = alsa_noutdev = 0;
     alsa_jittermax = ALSA_DEFJITTERMAX;
 
-    if (false)
+    if (0)
         post("audio buffer set to %d", (int)(0.001 * sys_schedadvance));
 
     for (iodev = 0; iodev < naudioindev; iodev++)
@@ -302,7 +302,7 @@ int alsa_open_audio(int naudioindev, int *audioindev, int nchindev,
             continue;
         alsa_indev[alsa_nindev].a_devno = audioindev[iodev];
         snd_pcm_nonblock(alsa_indev[alsa_nindev].a_handle, 1);
-        if (false)
+        if (0)
             post("opened input device name %s", devname);
         alsa_nindev++;
     }
@@ -763,7 +763,7 @@ static void alsa_checkiosync( void)
             if ((result = snd_pcm_state(alsa_outdev[iodev].a_handle))
                 != SND_PCM_STATE_RUNNING && result != SND_PCM_STATE_XRUN)
             {
-                if (false)
+                if (0)
                     post("restarting output device from state %d",
                         snd_pcm_state(alsa_outdev[iodev].a_handle));
                 if ((err = snd_pcm_start(alsa_outdev[iodev].a_handle)) < 0)
@@ -802,7 +802,7 @@ static void alsa_checkiosync( void)
             if ((result = snd_pcm_state(alsa_indev[iodev].a_handle))
                 != SND_PCM_STATE_RUNNING && result != SND_PCM_STATE_XRUN)
             {
-                if (false)
+                if (0)
                     post("restarting input device from state %d",
                         snd_pcm_state(alsa_indev[iodev].a_handle));
                 if ((err = snd_pcm_start(alsa_indev[iodev].a_handle)) < 0)
