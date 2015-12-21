@@ -61,7 +61,7 @@ void sys_do_open_midi(int nmidiin, int *midiinvec,
         {
             sys_setalarm(1000000);
             fd = open(namebuf, O_RDWR | O_MIDIFLAG);
-            if (false)
+            if (0)
                 post("tried to open %s read/write; got %d\n",
                     namebuf, fd);
             if (outdevindex >= 0 && fd >= 0)
@@ -72,7 +72,7 @@ void sys_do_open_midi(int nmidiin, int *midiinvec,
         {
             sys_setalarm(1000000);
             fd = open(namebuf, O_RDONLY | O_MIDIFLAG);
-            if (false)
+            if (0)
                 post("tried to open %s read-only; got %d\n",
                     namebuf, fd);
         }
@@ -92,7 +92,7 @@ void sys_do_open_midi(int nmidiin, int *midiinvec,
         {
             sys_setalarm(1000000);
             fd = open(namebuf, O_WRONLY | O_MIDIFLAG);
-            if (false)
+            if (0)
                 post("tried to open %s write-only; got %d\n",
                     namebuf, fd);
         }
@@ -101,7 +101,7 @@ void sys_do_open_midi(int nmidiin, int *midiinvec,
         else post("couldn't open MIDI output device %s", namebuf);
     }
 
-    if (oss_nmidiin < nmidiin || oss_nmidiout < nmidiout || false)
+    if (oss_nmidiin < nmidiin || oss_nmidiout < nmidiout || 0)
         post("opened %d MIDI input device(s) and %d MIDI output device(s).",
             oss_nmidiin, oss_nmidiout);
 
