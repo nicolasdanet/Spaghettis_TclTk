@@ -180,97 +180,17 @@ void endpost(void)
     }
 }
 
-void error(const char *fmt, ...)
+void error (const char *fmt, ...)
 {
     char buf[PD_STRING];
     va_list ap;
-    t_int arg[8];
-    int i;
 
-    va_start(ap, fmt);
-    vsnprintf(buf, PD_STRING-1, fmt, ap);
-    va_end(ap);
-    strcat(buf, "\n");
+    va_start (ap, fmt);
+    vsnprintf (buf, PD_STRING - 1, fmt, ap);
+    va_end (ap);
+    strcat (buf, "\n");
 
-    doerror(NULL, buf);
-}
-
-void verbose(int level, const char *fmt, ...)
-{
-    char buf[PD_STRING];
-    va_list ap;
-    t_int arg[8];
-    int i;
-    int loglevel=level+3;
-
-    //if(level>sys_verbose)return;
-
-    va_start(ap, fmt);
-    vsnprintf(buf, PD_STRING-1, fmt, ap);
-    va_end(ap);
-    strcat(buf, "\n");
-
-    dologpost(NULL, loglevel, buf);
-}
-
-    /* here's the good way to log errors -- keep a pointer to the
-    offending or offended object around so the user can search for it
-    later. */
-
-static void *error_object;
-static char error_string[256];
-void canvas_finderror(void *object);
-
-void pd_error(void *object, const char *fmt, ...)
-{
-    char buf[PD_STRING];
-    va_list ap;
-    t_int arg[8];
-    int i;
-    static int saidit;
-
-    va_start(ap, fmt);
-    vsnprintf(buf, PD_STRING-1, fmt, ap);
-    va_end(ap);
-    strcat(buf, "\n");
-
-    doerror(object, buf);
-
-    error_object = object;
-    strncpy(error_string, buf, 256);
-    error_string[255] = 0;
-
-    if (!saidit)
-    {
-        logpost(NULL, 4,
-                "... you might be able to track this down from the Find menu.");
-        saidit = 1;
-    }
-}
-
-void glob_finderror(t_pd *dummy)
-{
-    if (!error_object)
-        post("no findable error yet.");
-    else
-    {
-        post("last trackable error:");
-        post("%s", error_string);
-        canvas_finderror(error_object);
-    }
-}
-
-void glob_findinstance(t_pd *dummy, t_symbol*s)
-{
-    // revert s to (potential) pointer to object
-    long obj = 0;
-    if (sscanf(s->s_name, ".x%lx", &obj))
-    {
-        if (obj)
-        {
-            canvas_finderror((void *)obj);
-        }
-    }
+    doerror (NULL, buf);
 }
 
 // -----------------------------------------------------------------------------------------------------------

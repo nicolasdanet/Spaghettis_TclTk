@@ -35,7 +35,7 @@ static t_symbol *class_extern_dir = &s_;
 
 static void pd_defaultanything(t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
-    pd_error(x, "%s: no method for '%s'", (*x)->c_name->s_name, s->s_name);
+    error("%s: no method for '%s'", (*x)->c_name->s_name, s->s_name);
 }
 
 static void pd_defaultbang(t_pd *x)
@@ -432,7 +432,7 @@ static void pd_floatforsignal(t_pd *x, t_float f)
     if (offset > 0)
         *(t_float *)(((char *)x) + offset) = f;
     else
-        pd_error(x, "%s: float unexpected for signal input",
+        error("%s: float unexpected for signal input",
             (*x)->c_name->s_name);
 }
 
@@ -783,7 +783,7 @@ void pd_typedmess(t_pd *x, t_symbol *s, int argc, t_atom *argv)
     (*c->c_anymethod)(x, s, argc, argv);
     return;
 badarg:
-    pd_error(x, "Bad arguments for message '%s' to object '%s'",
+    error("Bad arguments for message '%s' to object '%s'",
         s->s_name, c->c_name->s_name);
 }
 
@@ -802,7 +802,7 @@ void pd_vmess(t_pd *x, t_symbol *sel, char *fmt, ...)
     {
         if (nargs >= 10)
         {
-            pd_error(x, "pd_vmess: only 10 allowed");
+            error("pd_vmess: only 10 allowed");
             break;
         }
         switch(*fp++)
@@ -852,7 +852,7 @@ t_gotfn getfn(t_pd *x, t_symbol *s)
 
     for (i = c->c_nmethod, m = c->c_methods; i--; m++)
         if (m->me_name == s) return(m->me_fun);
-    pd_error(x, "%s: no method for message '%s'", c->c_name->s_name, s->s_name);
+    error("%s: no method for message '%s'", c->c_name->s_name, s->s_name);
     return((t_gotfn)nullfn);
 }
 

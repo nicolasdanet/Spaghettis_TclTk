@@ -67,14 +67,14 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
     template = template_findbyname(canvas_makebindsym(templatesym));
     if (!template)
     {
-        pd_error(x, "scalar define: couldn't find template %s",
+        error("scalar define: couldn't find template %s",
             templatesym->s_name);
         goto noscalar;
     }
     sc = scalar_new(x, canvas_makebindsym(templatesym));
     if (!sc)
     {
-        pd_error(x, "%s: couldn't create scalar", templatesym->s_name);
+        error("%s: couldn't create scalar", templatesym->s_name);
         goto noscalar;
     }
     sc->sc_g.g_next = 0;
@@ -101,7 +101,7 @@ noscalar:
 static void scalar_define_send(t_glist *x, t_symbol *s)
 {
     if (!s->s_thing)
-        pd_error(x, "scalar_define_send: %s: no such object", s->s_name);
+        error("scalar_define_send: %s: no such object", s->s_name);
     else if (x->gl_list && pd_class(&x->gl_list->g_pd) == scalar_class)
     {
         t_gpointer gp;

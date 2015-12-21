@@ -178,22 +178,22 @@ static void block_set(t_block *x, t_floatarg fcalcsize, t_floatarg foverlap,
     else vecsize = 0;
     if (vecsize && (vecsize != (1 << ilog2(vecsize))))
     {
-        pd_error(x, "block~: vector size not a power of 2");
+        error("block~: vector size not a power of 2");
         vecsize = 64;
     }
     if (overlap != (1 << ilog2(overlap)))
     {
-        pd_error(x, "block~: overlap not a power of 2");
+        error("block~: overlap not a power of 2");
         overlap = 1;
     }
     if (downsample != (1 << ilog2(downsample)))
     {
-        pd_error(x, "block~: downsampling not a power of 2");
+        error("block~: downsampling not a power of 2");
         downsample = 1;
     }
     if (upsample != (1 << ilog2(upsample)))
     {
-        pd_error(x, "block~: upsampling not a power of 2");
+        error("block~: upsampling not a power of 2");
         upsample = 1;
     }
 
@@ -230,7 +230,7 @@ static void block_bang(t_block *x)
             ip = (*(t_perfroutine)(*ip))(ip);
         x->x_return = 0;
     }
-    else pd_error(x, "bang to block~ or on-state switch~ has no effect");
+    else error("bang to block~ or on-state switch~ has no effect");
 }
 
 
@@ -670,8 +670,7 @@ void ugen_connect(t_dspcontext *dc, t_object *x1, int outno, t_object *x2,
     for (u2 = dc->dc_ugenlist; u2 && u2->u_obj != x2; u2 = u2->u_next);
     if (!u1 || !u2 || siginno < 0)
     {
-        pd_error(u1->u_obj,
-            "signal outlet connect to nonsignal inlet (ignored)");
+        error("signal outlet connect to nonsignal inlet (ignored)");
         return;
     }
     if (sigoutno < 0 || sigoutno >= u1->u_nout || siginno >= u2->u_nin)
@@ -823,7 +822,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
                 s2->s_refcount--;
                 if (!signal_compatible(s1, s2))
                 {
-                    pd_error(u->u_obj, "%s: incompatible signal inputs",
+                    error("%s: incompatible signal inputs",
                         class_getname(u->u_obj->te_g.g_pd));
                     return;
                 }
@@ -902,7 +901,7 @@ void ugen_done_graph(t_dspcontext *dc)
         if (pd_class(zz) == block_class)
         {
             if (blk)
-                pd_error(blk, "conflicting block~ objects in same page");
+                error("conflicting block~ objects in same page");
             else blk = (t_block *)zz;
         }
     }
@@ -1054,8 +1053,7 @@ void ugen_done_graph(t_dspcontext *dc)
         if (!u->u_done) 
     {
         t_signal **sigp;
-        pd_error(u->u_obj,
-            "DSP loop detected (some tilde objects not scheduled)");
+        error("DSP loop detected (some tilde objects not scheduled)");
                 /* this might imply that we have unfilled "borrowed" outputs
                 which we'd better fill in now. */
         for (i = 0, sigp = dc->dc_iosigs + dc->dc_ninlets; i < dc->dc_noutlets;

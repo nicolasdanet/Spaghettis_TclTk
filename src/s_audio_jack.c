@@ -354,12 +354,12 @@ jack_open_audio(int inchans, int outchans, int rate, t_audiocallback callback)
 
         if(status) {
           if (status & JackServerStarted) {
-            verbose(1, "JACK: started server");
+             // verbose(1, "JACK: started server");
           } else {
             error("JACK: server returned status %d", status);
           }
         }
-        verbose(1, "JACK: started server as '%s'", client_name);
+        // verbose(1, "JACK: started server as '%s'", client_name);
 
         if (!jack_client) {
             /* jack spits out enough messages already, do not warn */

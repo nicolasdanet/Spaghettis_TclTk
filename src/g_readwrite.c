@@ -188,7 +188,7 @@ void glist_readfrombinbuf(t_glist *x, t_binbuf *b, char *filename, int selectem)
     if (nline != 1 && vec[message].a_type != A_SYMBOL &&
         strcmp(vec[message].a_w.w_symbol->s_name, "data"))
     {
-        pd_error(x, "%s: file apparently of wrong type", filename);
+        error("%s: file apparently of wrong type", filename);
         binbuf_free(b);
         return;
     }
@@ -269,7 +269,7 @@ static void glist_doread(t_glist *x, t_symbol *filename, t_symbol *format,
     
     if (binbuf_read_via_canvas(b, filename->s_name, canvas, cr))
     {
-        pd_error(x, "read failed");
+        error("read failed");
         binbuf_free(b);
         return;
     }

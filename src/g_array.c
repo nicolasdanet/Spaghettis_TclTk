@@ -435,7 +435,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_floatarg fsize,
         t_template *scalartemplate;
         if (!a)
         {
-            pd_error(x, "can't find array\n");
+            error("can't find array\n");
             return;
         }
         if (!(scalartemplate = template_findbyname(x->x_scalar->sc_template)))
@@ -749,7 +749,7 @@ static void garray_save(t_gobj *z, t_binbuf *b)
     if (x->x_scalar->sc_template != gensym("pd-float-array"))
     {
             /* LATER "save" the scalar as such */ 
-        pd_error(x, "can't save arrays of type %s yet", 
+        error("can't save arrays of type %s yet", 
             x->x_scalar->sc_template->s_name);
         return;
     }

@@ -89,7 +89,7 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
         {
             if (argc < 3 || argv[2].a_type != A_SYMBOL)
             {
-                pd_error(x, "array lacks element template or name");
+                error("array lacks element template or name");
                 goto bad;
             }
             newarraytemplate = canvas_makebindsym(argv[2].a_w.w_symbol);
@@ -99,7 +99,7 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
         }
         else
         {
-            pd_error(x, "%s: no such type", newtypesym->s_name);
+            error("%s: no such type", newtypesym->s_name);
             goto bad;
         }
         newn = (oldn = x->t_n) + 1;
@@ -1018,7 +1018,7 @@ void curve_float(t_curve *x, t_floatarg f)
     int viswas;
     if (x->x_vis.fd_type != A_FLOAT || x->x_vis.fd_var)
     {
-        pd_error(x, "global vis/invis for a template with variable visibility");
+        error("global vis/invis for a template with variable visibility");
         return;
     }
     viswas = (x->x_vis.fd_un.fd_float != 0);
@@ -1411,7 +1411,7 @@ void plot_float(t_plot *x, t_floatarg f)
     int viswas;
     if (x->x_vis.fd_type != A_FLOAT || x->x_vis.fd_var)
     {
-        pd_error(x, "global vis/invis for a template with variable visibility");
+        error("global vis/invis for a template with variable visibility");
         return;
     }
     viswas = (x->x_vis.fd_un.fd_float != 0);
@@ -2384,7 +2384,7 @@ void drawnumber_float(t_drawnumber *x, t_floatarg f)
     int viswas;
     if (x->x_vis.fd_type != A_FLOAT || x->x_vis.fd_var)
     {
-        pd_error(x, "global vis/invis for a template with variable visibility");
+        error("global vis/invis for a template with variable visibility");
         return;
     }
     viswas = (x->x_vis.fd_un.fd_float != 0);

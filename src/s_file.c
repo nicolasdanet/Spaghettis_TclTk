@@ -149,7 +149,7 @@ static void sys_initsavepreferences( void)
     filenamebuf[PD_STRING-1] = 0;
     if ((sys_prefsavefp = fopen(filenamebuf, "w")) == NULL)
     {
-        pd_error(0, "%s: %s", filenamebuf, strerror(errno));
+        error("%s: %s", filenamebuf, strerror(errno));
     }
 }
 

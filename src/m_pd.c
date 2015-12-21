@@ -192,7 +192,7 @@ void pd_unbind(t_pd *x, t_symbol *s)
             pd_free(&b->b_pd);
         }
     }
-    else pd_error(x, "%s: couldn't unbind", s->s_name);
+    else { error("%s: couldn't unbind", s->s_name); }
 }
 
 t_pd *pd_findbyclass(t_symbol *s, t_class *c)

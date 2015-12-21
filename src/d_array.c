@@ -82,13 +82,13 @@ static void tabwrite_tilde_set(t_tabwrite_tilde *x, t_symbol *s)
     x->x_arrayname = s;
     if (!(a = (t_garray *)pd_findbyclass(x->x_arrayname, garray_class)))
     {
-        if (*s->s_name) pd_error(x, "tabwrite~: %s: no such array",
+        if (*s->s_name) error("tabwrite~: %s: no such array",
             x->x_arrayname->s_name);
         x->x_vec = 0;
     }
     else if (!garray_getfloatwords(a, &x->x_nsampsintab, &x->x_vec))
     {
-        pd_error(x, "%s: bad template for tabwrite~", x->x_arrayname->s_name);
+        error("%s: bad template for tabwrite~", x->x_arrayname->s_name);
         x->x_vec = 0;
     }
     else garray_usedindsp(a);
@@ -207,13 +207,13 @@ static void tabplay_tilde_set(t_tabplay_tilde *x, t_symbol *s)
     x->x_arrayname = s;
     if (!(a = (t_garray *)pd_findbyclass(x->x_arrayname, garray_class)))
     {
-        if (*s->s_name) pd_error(x, "tabplay~: %s: no such array",
+        if (*s->s_name) error("tabplay~: %s: no such array",
             x->x_arrayname->s_name);
         x->x_vec = 0;
     }
     else if (!garray_getfloatwords(a, &x->x_nsampsintab, &x->x_vec))
     {
-        pd_error(x, "%s: bad template for tabplay~", x->x_arrayname->s_name);
+        error("%s: bad template for tabplay~", x->x_arrayname->s_name);
         x->x_vec = 0;
     }
     else garray_usedindsp(a);
@@ -328,12 +328,12 @@ static void tabread_tilde_set(t_tabread_tilde *x, t_symbol *s)
     if (!(a = (t_garray *)pd_findbyclass(x->x_arrayname, garray_class)))
     {
         if (*s->s_name)
-            pd_error(x, "tabread~: %s: no such array", x->x_arrayname->s_name);
+            error("tabread~: %s: no such array", x->x_arrayname->s_name);
         x->x_vec = 0;
     }
     else if (!garray_getfloatwords(a, &x->x_npoints, &x->x_vec))
     {
-        pd_error(x, "%s: bad template for tabread~", x->x_arrayname->s_name);
+        error("%s: bad template for tabread~", x->x_arrayname->s_name);
         x->x_vec = 0;
     }
     else garray_usedindsp(a);
@@ -460,12 +460,12 @@ static void tabread4_tilde_set(t_tabread4_tilde *x, t_symbol *s)
     if (!(a = (t_garray *)pd_findbyclass(x->x_arrayname, garray_class)))
     {
         if (*s->s_name)
-            pd_error(x, "tabread4~: %s: no such array", x->x_arrayname->s_name);
+            error("tabread4~: %s: no such array", x->x_arrayname->s_name);
         x->x_vec = 0;
     }
     else if (!garray_getfloatwords(a, &x->x_npoints, &x->x_vec))
     {
-        pd_error(x, "%s: bad template for tabread4~", x->x_arrayname->s_name);
+        error("%s: bad template for tabread4~", x->x_arrayname->s_name);
         x->x_vec = 0;
     }
     else garray_usedindsp(a);
@@ -629,17 +629,17 @@ static void tabosc4_tilde_set(t_tabosc4_tilde *x, t_symbol *s)
     if (!(a = (t_garray *)pd_findbyclass(x->x_arrayname, garray_class)))
     {
         if (*s->s_name)
-            pd_error(x, "tabosc4~: %s: no such array", x->x_arrayname->s_name);
+            error("tabosc4~: %s: no such array", x->x_arrayname->s_name);
         x->x_vec = 0;
     }
     else if (!garray_getfloatwords(a, &pointsinarray, &x->x_vec))
     {
-        pd_error(x, "%s: bad template for tabosc4~", x->x_arrayname->s_name);
+        error("%s: bad template for tabosc4~", x->x_arrayname->s_name);
         x->x_vec = 0;
     }
     else if ((npoints = pointsinarray - 3) != (1 << ilog2(pointsinarray - 3)))
     {
-        pd_error(x, "%s: number of points (%d) not a power of 2 plus three",
+        error("%s: number of points (%d) not a power of 2 plus three",
             x->x_arrayname->s_name, pointsinarray);
         x->x_vec = 0;
         garray_usedindsp(a);
@@ -743,12 +743,12 @@ static void tabsend_set(t_tabsend *x, t_symbol *s)
     if (!(a = (t_garray *)pd_findbyclass(x->x_arrayname, garray_class)))
     {
         if (*s->s_name)
-            pd_error(x, "tabsend~: %s: no such array", x->x_arrayname->s_name);
+            error("tabsend~: %s: no such array", x->x_arrayname->s_name);
         x->x_vec = 0;
     }
     else if (!garray_getfloatwords(a, &x->x_npoints, &x->x_vec))
     {
-        pd_error(x, "%s: bad template for tabsend~", x->x_arrayname->s_name);
+        error("%s: bad template for tabsend~", x->x_arrayname->s_name);
         x->x_vec = 0;
     }
     else garray_usedindsp(a);
@@ -819,13 +819,13 @@ static void tabreceive_set(t_tabreceive *x, t_symbol *s)
     if (!(a = (t_garray *)pd_findbyclass(x->x_arrayname, garray_class)))
     {
         if (*s->s_name)
-            pd_error(x, "tabreceive~: %s: no such array",
+            error("tabreceive~: %s: no such array",
                 x->x_arrayname->s_name);
         x->x_vec = 0;
     }
     else if (!garray_getfloatwords(a, &x->x_npoints, &x->x_vec))
     {
-        pd_error(x, "%s: bad template for tabreceive~",
+        error("%s: bad template for tabreceive~",
             x->x_arrayname->s_name);
         x->x_vec = 0;
     }
@@ -874,9 +874,9 @@ static void tabread_float(t_tabread *x, t_float f)
     t_word *vec;
 
     if (!(a = (t_garray *)pd_findbyclass(x->x_arrayname, garray_class)))
-        pd_error(x, "%s: no such array", x->x_arrayname->s_name);
+        error("%s: no such array", x->x_arrayname->s_name);
     else if (!garray_getfloatwords(a, &npoints, &vec))
-        pd_error(x, "%s: bad template for tabread", x->x_arrayname->s_name);
+        error("%s: bad template for tabread", x->x_arrayname->s_name);
     else
     {
         int n = f;
@@ -925,9 +925,9 @@ static void tabread4_float(t_tabread4 *x, t_float f)
     t_word *vec;
 
     if (!(a = (t_garray *)pd_findbyclass(x->x_arrayname, garray_class)))
-        pd_error(x, "%s: no such array", x->x_arrayname->s_name);
+        error("%s: no such array", x->x_arrayname->s_name);
     else if (!garray_getfloatwords(a, &npoints, &vec))
-        pd_error(x, "%s: bad template for tabread4", x->x_arrayname->s_name);
+        error("%s: bad template for tabread4", x->x_arrayname->s_name);
     else if (npoints < 4)
         outlet_float(x->x_obj.te_outlet, 0);
     else if (f <= 1)
@@ -994,9 +994,9 @@ static void tabwrite_float(t_tabwrite *x, t_float f)
     t_word *vec;
 
     if (!(a = (t_garray *)pd_findbyclass(x->x_arrayname, garray_class)))
-        pd_error(x, "%s: no such array", x->x_arrayname->s_name);
+        error("%s: no such array", x->x_arrayname->s_name);
     else if (!garray_getfloatwords(a, &vecsize, &vec))
-        pd_error(x, "%s: bad template for tabwrite", x->x_arrayname->s_name);
+        error("%s: bad template for tabwrite", x->x_arrayname->s_name);
     else
     {
         int n = x->x_ft1;

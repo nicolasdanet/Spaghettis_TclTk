@@ -726,7 +726,7 @@ static int soundfiler_writeargparse(void *obj, int *p_argc, t_atom **p_argv,
     {
         if (filetype == FORMAT_AIFF)
         {
-            pd_error(obj, "AIFF floating-point file format unavailable");
+            error("AIFF floating-point file format unavailable");
             goto usage;
         }
     }
@@ -735,13 +735,13 @@ static int soundfiler_writeargparse(void *obj, int *p_argc, t_atom **p_argv,
     {
         bigendian = 0;
         if (endianness == 1)
-            pd_error(obj, "WAVE file forced to little endian");
+            error("WAVE file forced to little endian");
     }
     else if (filetype == FORMAT_AIFF)
     {
         bigendian = 1;
         if (endianness == 0)
-            pd_error(obj, "AIFF file forced to big endian");
+            error("AIFF file forced to big endian");
     }
     else if (endianness == -1)
     {
@@ -863,7 +863,7 @@ static void soundfile_finishwrite(void *obj, char *filename, int fd,
     if (itemswritten < nframes) 
     {
         if (nframes < 0x7fffffff)
-            pd_error(obj, "soundfiler_write: %ld out of %ld bytes written",
+            error("soundfiler_write: %ld out of %ld bytes written",
                 itemswritten, nframes);
             /* try to fix size fields in header */
         if (filetype == FORMAT_WAVE)
@@ -1250,7 +1250,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         if (!(garrays[i] =
             (t_garray *)pd_findbyclass(argv[i].a_w.w_symbol, garray_class)))
         {
-            pd_error(x, "%s: no such table", argv[i].a_w.w_symbol->s_name);
+            error("%s: no such table", argv[i].a_w.w_symbol->s_name);
             goto done;
         }
         else if (!garray_getfloatwords(garrays[i], &vecsize, 
@@ -1270,7 +1270,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
     
     if (fd < 0)
     {
-        pd_error(x, "soundfiler_read: %s: %s", filename, (errno == EIO ?
+        error("soundfiler_read: %s: %s", filename, (errno == EIO ?
             "unknown or bad header format" : strerror(errno)));
         goto done;
     }
@@ -1284,14 +1284,14 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
         eofis = lseek(fd, 0, SEEK_END);
         if (poswas < 0 || eofis < 0 || eofis < poswas)
         {
-            pd_error(x, "soundfiler_read: lseek failed");
+            error("soundfiler_read: lseek failed");
             goto done;
         }
         lseek(fd, poswas, SEEK_SET);
         framesinfile = (eofis - poswas) / (channels * bytespersamp);
         if (framesinfile > maxsize)
         {
-            pd_error(x, "soundfiler_read: truncated to %ld elements", maxsize);
+            error("soundfiler_read: truncated to %ld elements", maxsize);
             framesinfile = maxsize;
         }
         if (framesinfile > bytelimit / (channels * bytespersamp))
@@ -1309,7 +1309,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
                 /* if the resize failed, garray_resize reported the error */
             if (vecsize != framesinfile)
             {
-                pd_error(x, "resize failed");
+                error("resize failed");
                 goto done;
             }
         }
@@ -1356,7 +1356,7 @@ static void soundfiler_read(t_soundfiler *x, t_symbol *s,
     fd = -1;
     goto done;
 usage:
-    pd_error(x, "usage: read [flags] filename tablename...");
+    error("usage: read [flags] filename tablename...");
     post("flags: -skip <n> -resize -maxsize <n> ...");
     post("-raw <headerbytes> <channels> <bytespersamp> <endian (b, l, or n)>.");
 done:
@@ -1401,7 +1401,7 @@ long soundfiler_dowrite(void *obj, t_canvas *canvas,
         if (!(garrays[i] =
             (t_garray *)pd_findbyclass(argv[i].a_w.w_symbol, garray_class)))
         {
-            pd_error(obj, "%s: no such table", argv[i].a_w.w_symbol->s_name);
+            error("%s: no such table", argv[i].a_w.w_symbol->s_name);
             goto fail;
         }
         else if (!garray_getfloatwords(garrays[i], &vecsize, &vecs[i]))
@@ -1420,7 +1420,7 @@ long soundfiler_dowrite(void *obj, t_canvas *canvas,
     }
     if (nframes <= 0)
     {
-        pd_error(obj, "soundfiler_write: no samples at onset %ld", onset);
+        error("soundfiler_write: no samples at onset %ld", onset);
         goto fail;
     }
 
@@ -1472,7 +1472,7 @@ long soundfiler_dowrite(void *obj, t_canvas *canvas,
     }
     return ((float)itemswritten); 
 usage:
-    pd_error(obj, "usage: write [flags] filename tablename...");
+    error("usage: write [flags] filename tablename...");
     post("flags: -skip <n> -nframes <n> -bytes <n> -wave -aiff -nextstep ...");
     post("-big -little -normalize");
     post("(defaults to a 16-bit wave file).");
@@ -1981,7 +1981,7 @@ static t_int *readsf_perform(t_int *w)
             int xfersize;
             if (x->x_fileerror)
             {
-                pd_error(x, "dsp: %s: %s", x->x_filename,
+                error("dsp: %s: %s", x->x_filename,
                     (x->x_fileerror == EIO ?
                         "unknown or bad header format" :
                             strerror(x->x_fileerror)));
@@ -2038,7 +2038,7 @@ static void readsf_start(t_readsf *x)
     to the "running" state. */
     if (x->x_state == STATE_STARTUP)
         x->x_state = STATE_STREAM;
-    else pd_error(x, "readsf: start requested with no prior 'open'");
+    else error("readsf: start requested with no prior 'open'");
 }
 
 static void readsf_stop(t_readsf *x)
@@ -2084,7 +2084,7 @@ static void readsf_open(t_readsf *x, t_symbol *s, int argc, t_atom *argv)
     else if (*endian->s_name == 'l')
          x->x_bigendian = 0;
     else if (*endian->s_name)
-        pd_error(x, "endianness neither 'b' nor 'l'");
+        error("endianness neither 'b' nor 'l'");
     else x->x_bigendian = garray_ambigendian();
     x->x_onsetframes = (onsetframes > 0 ? onsetframes : 0);
     x->x_skipheaderbytes = (headerbytes > 0 ? headerbytes : 
@@ -2499,7 +2499,7 @@ static void writesf_start(t_writesf *x)
     if (x->x_state == STATE_STARTUP)
         x->x_state = STATE_STREAM;
     else
-        pd_error(x, "writesf: start requested with no prior 'open'");
+        error("writesf: start requested with no prior 'open'");
 }
 
 static void writesf_stop(t_writesf *x)
@@ -2534,15 +2534,14 @@ static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
         &argv, &filesym, &filetype, &bytespersamp, &swap, &bigendian,
         &normalize, &onset, &nframes, &samplerate))
     {
-        pd_error(x,
-            "writesf~: usage: open [-bytes [234]] [-wave,-nextstep,-aiff] ...");
+        error("writesf~: usage: open [-bytes [234]] [-wave,-nextstep,-aiff] ...");
         post("... [-big,-little] [-rate ####] filename");
         return;
     }
     if (normalize || onset || (nframes != 0x7fffffff))
-        pd_error(x, "normalize/onset/nframes argument to writesf~: ignored");
+        error("normalize/onset/nframes argument to writesf~: ignored");
     if (argc)
-        pd_error(x, "extra argument(s) to writesf~: ignored");
+        error("extra argument(s) to writesf~: ignored");
     pthread_mutex_lock(&x->x_mutex);
     while (x->x_requestcode != REQUEST_NOTHING)
     {

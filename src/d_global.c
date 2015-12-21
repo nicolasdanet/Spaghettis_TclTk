@@ -147,13 +147,13 @@ static void sigreceive_set(t_sigreceive *x, t_symbol *s)
             x->x_wherefrom = sender->x_vec;
         else
         {
-            pd_error(x, "receive~ %s: vector size mismatch", x->x_sym->s_name);
+            error("receive~ %s: vector size mismatch", x->x_sym->s_name);
             x->x_wherefrom = 0;
         }
     }
     else
     {
-        pd_error(x, "receive~ %s: no matching send", x->x_sym->s_name);
+        error("receive~ %s: no matching send", x->x_sym->s_name);
         x->x_wherefrom = 0;
     }
 }
@@ -162,7 +162,7 @@ static void sigreceive_dsp(t_sigreceive *x, t_signal **sp)
 {
     if (sp[0]->s_n != x->x_n)
     {
-        pd_error(x, "receive~ %s: vector size mismatch", x->x_sym->s_name);
+        error("receive~ %s: vector size mismatch", x->x_sym->s_name);
     }
     else
     {
@@ -314,13 +314,13 @@ static void sigthrow_set(t_sigthrow *x, t_symbol *s)
             x->x_whereto = catcher->x_vec;
         else
         {
-            pd_error(x, "throw~ %s: vector size mismatch", x->x_sym->s_name);
+            error("throw~ %s: vector size mismatch", x->x_sym->s_name);
             x->x_whereto = 0;
         }
     }
     else
     {
-        pd_error(x, "throw~ %s: no matching catch", x->x_sym->s_name);
+        error("throw~ %s: no matching catch", x->x_sym->s_name);
         x->x_whereto = 0;
     }
 }
@@ -329,7 +329,7 @@ static void sigthrow_dsp(t_sigthrow *x, t_signal **sp)
 {
     if (sp[0]->s_n != x->x_n)
     {
-        pd_error(x, "throw~ %s: vector size mismatch", x->x_sym->s_name);
+        error("throw~ %s: vector size mismatch", x->x_sym->s_name);
     }
     else
     {

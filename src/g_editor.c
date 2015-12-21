@@ -2143,41 +2143,6 @@ static void canvas_find_parent(t_canvas *x)
         canvas_vis(glist_getcanvas(x->gl_owner), 1);
 }
 
-static int glist_dofinderror(t_glist *gl, void *error_object)
-{
-    t_gobj *g;
-    for (g = gl->gl_list; g; g = g->g_next)
-    {
-        if ((void *)g == error_object)
-        {
-            /* got it... now show it. */
-            glist_noselect(gl);
-            canvas_vis(glist_getcanvas(gl), 1);
-            canvas_editmode(glist_getcanvas(gl), 1.);
-            glist_select(gl, g);
-            return (1);
-        }
-        else if (g->g_pd == canvas_class)
-        {
-            if (glist_dofinderror((t_canvas *)g, error_object))
-                return (1);
-        }
-    }
-    return (0);
-}
-
-void canvas_finderror(void *error_object)
-{
-    t_canvas *x;
-        /* find all root canvases */
-    for (x = pd_getcanvaslist(); x; x = x->gl_next)
-    {
-        if (glist_dofinderror(x, error_object))
-            return;
-    }
-    error("... sorry, I couldn't find the source of that error.");
-}
-
 void canvas_stowconnections(t_canvas *x)
 {
     t_gobj *selhead = 0, *seltail = 0, *nonhead = 0, *nontail = 0, *y, *y2;

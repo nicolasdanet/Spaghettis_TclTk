@@ -205,7 +205,7 @@ static void array_define_send(t_glist *x, t_symbol *s)
 {
     t_glist *gl = (x->gl_list ? pd_checkglist(&x->gl_list->g_pd) : 0);
     if (!s->s_thing)
-        pd_error(x, "array_define_send: %s: no such object", s->s_name);
+        error("array_define_send: %s: no such object", s->s_name);
     else if (gl && gl->gl_list && pd_class(&gl->gl_list->g_pd) == garray_class)
     {
         t_gpointer gp;
@@ -265,7 +265,7 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
         }
         else
         {
-            pd_error(x, "array: couldn't find named array '%s'",
+            error("array: couldn't find named array '%s'",
                 x->tc_sym->s_name);
             *glist = 0;
             return (0);
@@ -280,12 +280,12 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
         t_symbol *arraytype;
         if (!template)
         {
-            pd_error(x, "array: couldn't find struct %s", x->tc_struct->s_name);
+            error("array: couldn't find struct %s", x->tc_struct->s_name);
             return (0);
         }
         if (!gpointer_check(&x->tc_gp, 0))
         {
-            pd_error(x, "array: stale or empty pointer");
+            error("array: stale or empty pointer");
             return (0);
         }
         if (gs->gs_type == GP_ARRAY)
@@ -295,12 +295,12 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
         if (!template_find_field(template,
             x->tc_field, &onset, &type, &arraytype))
         {
-            pd_error(x, "array: no field named %s", x->tc_field->s_name);
+            error("array: no field named %s", x->tc_field->s_name);
             return (0);
         }
         if (type != DT_ARRAY)
         {
-            pd_error(x, "array: field %s not of type array",
+            error("array: field %s not of type array",
                 x->tc_field->s_name);
             return (0);
         }
@@ -357,7 +357,7 @@ static void *array_size_new(t_symbol *s, int argc, t_atom *argv)
         }
         else
         {
-            pd_error(x, "array setline: unknown flag ...");
+            error("array setline: unknown flag ...");
             postatom(argc, argv); endpost();
         }
         argc--; argv++;
@@ -366,7 +366,7 @@ static void *array_size_new(t_symbol *s, int argc, t_atom *argv)
     {
         if (x->x_struct)
         {
-            pd_error(x, "array setline: extra names after -s..");
+            error("array setline: extra names after -s..");
             postatom(argc, argv); endpost();
         }
         else x->x_sym = argv->a_w.w_symbol;
@@ -477,7 +477,7 @@ static void *array_rangeop_new(t_class *class,
         }
         else
         {
-            pd_error(x, "%s: unknown flag ...", class_getname(class));
+            error("%s: unknown flag ...", class_getname(class));
             postatom(argc, argv); endpost();
         }
         argc--; argv++;
@@ -486,7 +486,7 @@ static void *array_rangeop_new(t_class *class,
     {
         if (x->x_struct)
         {
-            pd_error(x, "%s: extra names after -s..", class_getname(class));
+            error("%s: extra names after -s..", class_getname(class));
             postatom(argc, argv); endpost();
         }
         else x->x_sym = argv->a_w.w_symbol;
@@ -531,7 +531,7 @@ static int array_rangeop_getrange(t_array_rangeop *x,
     if (!template_find_field(template, x->x_elemfield, &fieldonset,
         &type, &arraytype) || type != DT_FLOAT)
     {
-        pd_error(x, "can't find field %s in struct %s",
+        error("can't find field %s in struct %s",
             x->x_elemfield->s_name, a->a_templatesym->s_name);
         return (0);
     }

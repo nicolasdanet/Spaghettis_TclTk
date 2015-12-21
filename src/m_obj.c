@@ -72,8 +72,7 @@ t_inlet *signalinlet_new(t_object *owner, t_float f)
 
 static void inlet_wrong(t_inlet *x, t_symbol *s)
 {
-    pd_error(x->i_owner, "inlet: expected '%s' but got '%s'",
-        x->i_symfrom->s_name, s->s_name);
+    error("inlet: expected '%s' but got '%s'", x->i_symfrom->s_name, s->s_name);
 }
 
 static void inlet_list(t_inlet *x, t_symbol *s, int argc, t_atom *argv);
@@ -351,7 +350,7 @@ t_outlet *outlet_new(t_object *owner, t_symbol *s)
 
 static void outlet_stackerror(t_outlet *x)
 {
-    pd_error(x->o_owner, "stack overflow");
+    error("stack overflow");
 }
 
 void outlet_bang(t_outlet *x)

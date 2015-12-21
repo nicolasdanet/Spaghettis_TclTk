@@ -74,14 +74,14 @@ static void *netsend_new(t_symbol *s, int argc, t_atom *argv)
             x->x_protocol = SOCK_DGRAM;
         else
         {
-            pd_error(x, "netsend: unknown flag ...");
+            error("netsend: unknown flag ...");
             postatom(argc, argv); endpost();
         }
         argc--; argv++;
     }
     if (argc)
     {
-        pd_error(x, "netsend: extra arguments ignored:");
+        error("netsend: extra arguments ignored:");
         postatom(argc, argv); endpost();
     }
     x->x_sockfd = -1;
@@ -140,7 +140,7 @@ static void netsend_doit(void *z, t_binbuf *b)
             for (i = msg; i < emsg; i++)
                 if (at[i].a_type == A_DOLLAR || at[i].a_type == A_DOLLARSYMBOL)
             {
-                pd_error(x, "netreceive: got dollar sign in message");
+                error("netreceive: got dollar sign in message");
                 goto nodice;
             }
             if (at[msg].a_type == A_FLOAT)
@@ -496,7 +496,7 @@ static void netreceive_send(t_netreceive *x,
     for (i = 0; i < x->x_nconnections; i++)
     {
         if (netsend_dosend(&x->x_ns, x->x_connections[i], s, argc, argv))
-            pd_error(x, "netreceive send message failed");
+            error("netreceive send message failed");
                 /* should we now close the connection? */
     }
 }
@@ -530,7 +530,7 @@ static void *netreceive_new(t_symbol *s, int argc, t_atom *argv)
                 x->x_ns.x_protocol = SOCK_DGRAM;
             else
             {
-                pd_error(x, "netreceive: unknown flag ...");
+                error("netreceive: unknown flag ...");
                 postatom(argc, argv); endpost();
             }
             argc--; argv++;
@@ -540,7 +540,7 @@ static void *netreceive_new(t_symbol *s, int argc, t_atom *argv)
         portno = argv->a_w.w_float, argc--, argv++;
     if (argc)
     {
-        pd_error(x, "netreceive: extra arguments ignored:");
+        error("netreceive: extra arguments ignored:");
         postatom(argc, argv); endpost();
     }
     if (x->x_old)

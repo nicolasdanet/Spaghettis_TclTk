@@ -142,7 +142,7 @@ void glist_scalar(t_glist *glist,
     t_atom *vec;
     if (!template_findbyname(templatesym))
     {
-        pd_error(glist, "%s: no such template",
+        error("%s: no such template",
             atom_getsymbolarg(0, argc, argv)->s_name);
         return;
     }

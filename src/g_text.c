@@ -117,7 +117,7 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
         if (binbuf_getnatom(b))
         {
             binbuf_print(b);
-            pd_error(x, "... couldn't create");
+            error("... couldn't create");
         }
     }
     x->te_binbuf = b;
@@ -574,8 +574,7 @@ static void gatom_bang(t_gatom *x)
         if (*x->a_expanded_to->s_name && x->a_expanded_to->s_thing)
         {
             if (x->a_symto == x->a_symfrom)
-                pd_error(x,
-                    "%s: atom with same send/receive name (infinite loop)",
+                error("%s: atom with same send/receive name (infinite loop)",
                         x->a_symto->s_name);
             else pd_float(x->a_expanded_to->s_thing, x->a_atom.a_w.w_float);
         }
@@ -587,8 +586,7 @@ static void gatom_bang(t_gatom *x)
         if (*x->a_symto->s_name && x->a_expanded_to->s_thing)
         {
             if (x->a_symto == x->a_symfrom)
-                pd_error(x,
-                    "%s: atom with same send/receive name (infinite loop)",
+                error("%s: atom with same send/receive name (infinite loop)",
                         x->a_symto->s_name);
             else pd_symbol(x->a_expanded_to->s_thing, x->a_atom.a_w.w_symbol);
         }
@@ -633,7 +631,7 @@ static void gatom_list(t_gatom *x, t_symbol *s, int argc, t_atom *argv)
         gatom_float(x, argv->a_w.w_float);
     else if (argv->a_type == A_SYMBOL)
         gatom_symbol(x, argv->a_w.w_symbol);
-    else pd_error(x, "gatom_list: need float or symbol");
+    else { error("gatom_list: need float or symbol"); }
 }
 
 static void gatom_motion(void *z, t_floatarg dx, t_floatarg dy)

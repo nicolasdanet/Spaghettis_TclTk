@@ -65,7 +65,7 @@ static void sigdelwrite_checkvecsize(t_sigdelwrite *x, int vecsize)
         For now just suppress this check. */
 #if 0
     else if (vecsize != x->x_vecsize)
-        pd_error(x, "delread/delwrite/vd vector size mismatch");
+        error("delread/delwrite/vd vector size mismatch");
 #endif
 }
 
