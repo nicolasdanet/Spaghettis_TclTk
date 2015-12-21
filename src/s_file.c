@@ -73,14 +73,14 @@ static void sys_initloadpreferences( void)
     filenamebuf[PD_STRING-1] = 0;
     if ((fd = open(filenamebuf, 0)) < 0)
     {
-        if (false)
+        if (0)
             perror(filenamebuf);
         return;
     }
     length = lseek(fd, 0, 2);
     if (length < 0)
     {
-        if (false)
+        if (0)
             perror(filenamebuf);
         close(fd);
         return;
@@ -102,7 +102,7 @@ static void sys_initloadpreferences( void)
     }
     sys_prefbuf[length+1] = 0;
     close(fd);
-    if (false)
+    if (0)
         post("success reading preferences from: %s", filenamebuf);
 }
 
