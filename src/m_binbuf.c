@@ -905,7 +905,7 @@ int binbuf_write(t_binbuf *x, char *filename, char *dir, int crflag)
     if (!(f = sys_fopen(fbuf, "w")))
     {
         fprintf(stderr, "open: ");
-        sys_unixerror(fbuf);
+        /* sys_unixerror(fbuf); */
         goto fail;
     }
     for (ap = x->b_vec, indx = x->b_n; indx--; ap++)
@@ -920,7 +920,7 @@ int binbuf_write(t_binbuf *x, char *filename, char *dir, int crflag)
         {
             if (fwrite(sbuf, bp-sbuf, 1, f) < 1)
             {
-                sys_unixerror(fbuf);
+                /* sys_unixerror(fbuf); */
                 goto fail;
             }
             bp = sbuf;
@@ -947,13 +947,13 @@ int binbuf_write(t_binbuf *x, char *filename, char *dir, int crflag)
     }
     if (fwrite(sbuf, bp-sbuf, 1, f) < 1)
     {
-        sys_unixerror(fbuf);
+        /* sys_unixerror(fbuf); */
         goto fail;
     }
 
     if (fflush(f) != 0) 
     {
-        sys_unixerror(fbuf);
+        /* sys_unixerror(fbuf); */
         goto fail;
     }
 

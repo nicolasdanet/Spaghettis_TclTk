@@ -510,9 +510,6 @@ PD_DLL void verbose         (int level, const char *fmt, ...);
 PD_DLL void bug             (const char *fmt, ...);
 PD_DLL void pd_error        (void *object, const char *fmt, ...);
 PD_DLL void logpost         (const void *object, const int level, const char *fmt, ...);
-PD_DLL void sys_logerror    (const char *object, const char *s);
-PD_DLL void sys_unixerror   (const char *object);
-PD_DLL void sys_ouch        (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

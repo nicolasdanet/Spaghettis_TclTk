@@ -54,7 +54,6 @@ t_namelist *sys_helppath;       /* Global. */
 
 extern t_class *glob_pdobject;
 extern int sys_defeatrt;
-extern int sys_verbose;
 extern t_symbol *sys_flags;
 
     /* change '/' characters to the system's native file separator */
@@ -298,7 +297,7 @@ int sys_trytoopenone(const char *dir, const char *name, const char* ext,
             !S_ISDIR(statbuf.st_mode));
         if (!ok)
         {
-            if (sys_verbose) post("tried %s; stat failed or directory",
+            if (0) post("tried %s; stat failed or directory",
                 dirresult);
             close (fd);
             fd = -1;
@@ -307,7 +306,7 @@ int sys_trytoopenone(const char *dir, const char *name, const char* ext,
 #endif
         {
             char *slash;
-            if (sys_verbose) post("tried %s and succeeded", dirresult);
+            if (0) post("tried %s and succeeded", dirresult);
             sys_unbashfilename(dirresult, dirresult);
             slash = strrchr(dirresult, '/');
             if (slash)
@@ -322,7 +321,7 @@ int sys_trytoopenone(const char *dir, const char *name, const char* ext,
     }
     else
     {
-        if (sys_verbose) post("tried %s and failed", dirresult);
+        if (0) post("tried %s and failed", dirresult);
     }
     return (-1);
 }
@@ -588,7 +587,7 @@ int sys_rcfile(void)
     /* parse the options */
 
     fclose(file);
-    if (sys_verbose)
+    if (0)
     {
         if (rcargc)
         {

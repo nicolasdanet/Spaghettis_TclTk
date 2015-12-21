@@ -18,8 +18,6 @@
 #include "m_pd.h"
 #include "s_system.h"
 
-extern int sys_verbose;
-
 #define NSEARCH 10
 static int oss_nmidiindevs, oss_nmidioutdevs;
 static char oss_indevnames[NSEARCH][4], oss_outdevnames[NSEARCH][4];
@@ -63,7 +61,7 @@ void sys_do_open_midi(int nmidiin, int *midiinvec,
         {
             sys_setalarm(1000000);
             fd = open(namebuf, O_RDWR | O_MIDIFLAG);
-            if (sys_verbose)
+            if (false)
                 post("tried to open %s read/write; got %d\n",
                     namebuf, fd);
             if (outdevindex >= 0 && fd >= 0)
@@ -74,7 +72,7 @@ void sys_do_open_midi(int nmidiin, int *midiinvec,
         {
             sys_setalarm(1000000);
             fd = open(namebuf, O_RDONLY | O_MIDIFLAG);
-            if (sys_verbose)
+            if (false)
                 post("tried to open %s read-only; got %d\n",
                     namebuf, fd);
         }
@@ -94,7 +92,7 @@ void sys_do_open_midi(int nmidiin, int *midiinvec,
         {
             sys_setalarm(1000000);
             fd = open(namebuf, O_WRONLY | O_MIDIFLAG);
-            if (sys_verbose)
+            if (false)
                 post("tried to open %s write-only; got %d\n",
                     namebuf, fd);
         }
@@ -103,7 +101,7 @@ void sys_do_open_midi(int nmidiin, int *midiinvec,
         else post("couldn't open MIDI output device %s", namebuf);
     }
 
-    if (oss_nmidiin < nmidiin || oss_nmidiout < nmidiout || sys_verbose)
+    if (oss_nmidiin < nmidiin || oss_nmidiout < nmidiout || false)
         post("opened %d MIDI input device(s) and %d MIDI output device(s).",
             oss_nmidiin, oss_nmidiout);
 

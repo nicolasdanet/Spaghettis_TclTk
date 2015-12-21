@@ -1,20 +1,29 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
+
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#include <stdio.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #include "m_pd.h"
 #include "m_macros.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <errno.h>
 #include "s_system.h"
-#ifdef _MSC_VER  /* This is only for Microsoft's compiler, not cygwin, e.g. */
-#define snprintf sprintf_s
-#endif
 
-extern int sys_verbose;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 /* escape characters for tcl/tk */
 static char* strnescape(char *dest, const char *src, size_t len)
@@ -194,7 +203,7 @@ void verbose(int level, const char *fmt, ...)
     int i;
     int loglevel=level+3;
 
-    if(level>sys_verbose)return;
+    //if(level>sys_verbose)return;
 
     va_start(ap, fmt);
     vsnprintf(buf, PD_STRING-1, fmt, ap);
@@ -264,38 +273,17 @@ void glob_findinstance(t_pd *dummy, t_symbol*s)
     }
 }
 
-void bug(const char *fmt, ...)
+void bug (const char *fmt, ...)
 {
     char buf[PD_STRING];
     va_list ap;
-    t_int arg[8];
-    int i;
-    va_start(ap, fmt);
-    vsnprintf(buf, PD_STRING-1, fmt, ap);
-    va_end(ap);
+    
+    va_start (ap, fmt);
+    vsnprintf (buf, PD_STRING - 1, fmt, ap);
+    va_end (ap);
 
     error("consistency check failed: %s", buf);
 }
 
-    /* this isn't worked out yet. */
-static const char *errobject;
-static const char *errstring;
-
-void sys_logerror(const char *object, const char *s)
-{
-    errobject = object;
-    errstring = s;
-}
-
-void sys_unixerror(const char *object)
-{
-    errobject = object;
-    errstring = strerror(errno);
-}
-
-void sys_ouch(void)
-{
-    if (*errobject) error("%s: %s", errobject, errstring);
-    else error("%s", errstring);
-    sys_gui("bell\n");
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

@@ -74,7 +74,6 @@ typedef int socklen_t;
 #endif
 
 extern int sys_debuglevel;
-extern int sys_verbose;
 extern int sys_nogui;
 extern char *sys_guicmd;
 extern int sys_hipriority;
@@ -328,7 +327,7 @@ void sys_set_priority(int higher)
                 p3);
         else fprintf(stderr, "priority %d scheduling failed.\n", p3);
     }
-    else if (!higher && sys_verbose)
+    else if (!higher && 0)
         post("priority %d scheduling enabled.\n", p3);
 #endif
 
@@ -1018,7 +1017,7 @@ int sys_startgui(const char *libdir)
             server.sin_port = htons((unsigned short)(portno));
         }
 
-        if (sys_verbose) fprintf(stderr, "port %d\n", portno);
+        if (0) fprintf(stderr, "port %d\n", portno);
 
 
 #ifndef _WIN32
@@ -1063,7 +1062,7 @@ int sys_startgui(const char *libdir)
                 wish_paths[0] = home_filename;
                 for(i=0; i<10; i++)
                 {
-                    if (sys_verbose)
+                    if (0)
                         fprintf(stderr, "Trying Wish at \"%s\"\n", wish_paths[i]);
                     if (stat(wish_paths[i], &statbuf) >= 0)
                         break;
@@ -1084,7 +1083,7 @@ int sys_startgui(const char *libdir)
             sys_guicmd = cmdbuf;
         }
 
-        if (sys_verbose) 
+        if (0) 
             fprintf(stderr, "%s", sys_guicmd);
 
         childpid = fork();
@@ -1171,7 +1170,7 @@ int sys_startgui(const char *libdir)
             sys_hipriority = 0;
         }
     }
-    else if (sys_verbose)
+    else if (0)
         post("not setting real-time priority");
     
     if (sys_hipriority)
@@ -1213,7 +1212,7 @@ int sys_startgui(const char *libdir)
             }
             close(pipe9[1]);
 
-            if (sys_verbose) fprintf(stderr, "%s\n", cmdbuf);
+            if (0) fprintf(stderr, "%s\n", cmdbuf);
             execl("/bin/sh", "sh", "-c", cmdbuf, (char*)0);
             perror("pd: exec");
             _exit(1);
@@ -1257,7 +1256,7 @@ int sys_startgui(const char *libdir)
 
     if (!sys_nogui && !sys_guisetportnumber)
     {
-        if (sys_verbose)
+        if (0)
             fprintf(stderr, "Waiting for connection request... \n");
         if (listen(xsock, 5) < 0) sys_sockerror("listen");
 
@@ -1267,7 +1266,7 @@ int sys_startgui(const char *libdir)
         sys_closesocket(xsock);
 #endif
         if (sys_guisock < 0) sys_sockerror("accept");
-        if (sys_verbose)
+        if (0)
             fprintf(stderr, "... connected\n");
         sys_guibufhead = sys_guibuftail = 0;
     }

@@ -24,8 +24,6 @@
 #include <stdio.h>
 #include <signal.h>
 
-extern int sys_verbose;
-
 typedef struct _midiqelem
 {
     double q_time;
@@ -628,7 +626,7 @@ void sys_listmididevs(void )
 void sys_set_midi_api(int which)
 {
      sys_midiapi = which;
-     if (sys_verbose)
+     if (0)
         post("sys_midiapi %d", sys_midiapi);
 }
 
@@ -655,7 +653,6 @@ void glob_midi_setapi(void *dummy, t_floatarg f)
     glob_midi_properties(0, (midi_nmidiindev > 1 || midi_nmidioutdev > 1));
 }
 
-extern int sys_verbose;
 extern t_class *glob_pdobject;
 
     /* start an midi settings dialog window */

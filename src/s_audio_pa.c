@@ -62,7 +62,6 @@
 
     /* implementation */
 
-extern int sys_verbose;
 extern t_sample *sys_soundout;
 extern t_sample *sys_soundin;
 extern int sys_inchannels;
@@ -394,7 +393,7 @@ int pa_open_audio(int inchans, int outchans, int rate, t_sample *soundin,
     if (outchans > 0 && pa_outdev == -1)
         outchans = 0;
     
-    if (sys_verbose)
+    if (0)
     {
         post("input device %d, channels %d", pa_indev, inchans);
         post("output device %d, channels %d", pa_outdev, outchans);
@@ -453,7 +452,7 @@ int pa_open_audio(int inchans, int outchans, int rate, t_sample *soundin,
         /* Pa_Terminate(); */
         return (1);
     }
-    else if (sys_verbose)
+    else if (0)
         post("... opened OK.");
     return (0);
 }

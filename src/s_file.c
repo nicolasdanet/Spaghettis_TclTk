@@ -33,7 +33,6 @@
 #endif
 
 extern int sys_usestdpath;
-extern int sys_verbose;
 extern t_namelist *sys_externlist;
 extern t_namelist *sys_searchpath;
 extern t_symbol *sys_libdir;
@@ -74,14 +73,14 @@ static void sys_initloadpreferences( void)
     filenamebuf[PD_STRING-1] = 0;
     if ((fd = open(filenamebuf, 0)) < 0)
     {
-        if (sys_verbose)
+        if (false)
             perror(filenamebuf);
         return;
     }
     length = lseek(fd, 0, 2);
     if (length < 0)
     {
-        if (sys_verbose)
+        if (false)
             perror(filenamebuf);
         close(fd);
         return;
@@ -103,7 +102,7 @@ static void sys_initloadpreferences( void)
     }
     sys_prefbuf[length+1] = 0;
     close(fd);
-    if (sys_verbose)
+    if (false)
         post("success reading preferences from: %s", filenamebuf);
 }
 
@@ -435,8 +434,9 @@ void sys_loadpreferences( void)
     }
     if (sys_getpreference("standardpath", prefbuf, PD_STRING))
         sscanf(prefbuf, "%d", &sys_usestdpath);
-    if (sys_getpreference("verbose", prefbuf, PD_STRING))
-        sscanf(prefbuf, "%d", &sys_verbose);
+        
+    /*if (sys_getpreference("verbose", prefbuf, PD_STRING))
+        sscanf(prefbuf, "%d", &sys_verbose); */
 
         /* startup settings */
     if (sys_getpreference("nloadlib", prefbuf, PD_STRING))
@@ -569,8 +569,8 @@ void glob_savepreferences(t_pd *dummy)
     sys_putpreference("npath", buf1);
     sprintf(buf1, "%d", sys_usestdpath);
     sys_putpreference("standardpath", buf1);
-    sprintf(buf1, "%d", sys_verbose);
-    sys_putpreference("verbose", buf1);
+    //sprintf(buf1, "%d", sys_verbose);
+    //sys_putpreference("verbose", buf1);
     
         /* startup */
     for (i = 0; 1; i++)

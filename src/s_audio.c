@@ -30,7 +30,6 @@ typedef long t_pa_sample;
 #define DEVDESCSIZE 80
 
 extern t_class *glob_pdobject;
-extern int sys_verbose;
 
 static void audio_getdevs(char *indevlist, int *nindevs,
     char *outdevlist, int *noutdevs, int *canmulti, int *cancallback, 
@@ -191,7 +190,7 @@ void sys_setchsr(int chin, int chout, int sr)
     sys_soundout = (t_sample *)getbytes(outbytes);
     memset(sys_soundout, 0, outbytes);
 
-    if (sys_verbose)
+    if (0)
         post("input channels = %d, output channels = %d",
             sys_inchannels, sys_outchannels);
     canvas_resume_dsp(canvas_suspend_dsp());
@@ -420,7 +419,7 @@ void sys_reopen_audio( void)
     if (sys_audioapi == API_PORTAUDIO)
     {
         int blksize = (audio_blocksize ? audio_blocksize : 64);
-        if (sys_verbose)
+        if (0)
             fprintf(stderr, "blksize %d, advance %d\n", blksize, sys_advance_samples/blksize);
         outcome = pa_open_audio((naudioindev > 0 ? chindev[0] : 0),
         (naudiooutdev > 0 ? choutdev[0] : 0), rate, sys_soundin,
@@ -902,7 +901,7 @@ void sys_set_audio_api(int which)
         which = API_DEFAULT;
     }
     sys_audioapi = which;
-    if (sys_verbose && ok)
+    if (0 && ok)
         post("sys_audioapi set to %d", sys_audioapi);
 }
 

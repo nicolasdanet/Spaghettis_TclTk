@@ -15,7 +15,6 @@
 
 /* ------------------------- audio -------------------------- */
 
-extern int sys_verbose;
 extern t_sample *sys_soundout;
 extern t_sample *sys_soundin;
 extern int sys_inchannels;
@@ -131,7 +130,7 @@ int mmio_do_open_audio(void)
     UINT mmresult;
     int nad, nda;
     static int naudioprepped = 0, nindevsprepped = 0, noutdevsprepped = 0;
-    if (sys_verbose)
+    if (false)
         post("%d devices in, %d devices out",
             nt_nwavein, nt_nwaveout);
 
@@ -177,7 +176,7 @@ int mmio_do_open_audio(void)
         mmresult = waveInOpen(&ntsnd_indev[nad], nt_whichadc+nad,
                 (WAVEFORMATEX *)(&form), 0L, 0L, CALLBACK_NULL);
 
-        if (sys_verbose)
+        if (false)
             printf("opened adc device %d with return %d\n",
                 nt_whichadc+nad,mmresult);
 
@@ -211,7 +210,7 @@ int mmio_do_open_audio(void)
         mmresult = waveOutOpen(&ntsnd_outdev[nda], nt_whichdac + nda,
             (WAVEFORMATEX *)(&form), 0L, 0L, CALLBACK_NULL);
 
-        if (sys_verbose)
+        if (false)
             fprintf(stderr,"opened dac device %d, with return %d\n",
                 nt_whichdac +nda, mmresult);
 
@@ -230,7 +229,7 @@ void mmio_close_audio( void)
 {
     int errcode;
     int nda, nad;
-    if (sys_verbose)
+    if (false)
         post("closing audio...");
 
     for (nda=0; nda < nt_nwaveout; nda++) /*if (nt_nwaveout) wini */

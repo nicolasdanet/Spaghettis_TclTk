@@ -44,8 +44,6 @@
 #define MIDIACTIVESENSE   0xfe  /* 0 */
 #define MIDIRESET         0xff  /* 0 */
 
-extern int sys_verbose;
-
 static PmStream *mac_midiindevlist[MIDI_MAXIMUM_IN];
 static PmStream *mac_midioutdevlist[MIDI_MAXIMUM_OUT];
 static int mac_nmidiindev;
@@ -78,7 +76,7 @@ void sys_do_open_midi(int nmidiin, int *midiinvec,
         
                     else        
                     {
-                        if (sys_verbose)
+                        if (0)
                             post("Midi Input (%s) opened.",
                                 info->name);
                         mac_nmidiindev++;
@@ -107,7 +105,7 @@ void sys_do_open_midi(int nmidiin, int *midiinvec,
                             j, info->name, Pm_GetErrorText(err));
                     else        
                     {
-                        if (sys_verbose)
+                        if (0)
                             post("Midi Output (%s) opened.",
                                 info->name);
                         mac_nmidioutdev++;

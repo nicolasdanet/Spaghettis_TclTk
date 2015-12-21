@@ -77,7 +77,6 @@
    so  i will change it maybe in future...
 */
 
-extern int sys_verbose;
 extern t_sample *sys_soundout;
 extern t_sample *sys_soundin;
 extern int sys_inchannels;
@@ -218,7 +217,7 @@ int alsamm_open_audio(int rate, int blocksize)
      set up device infos for them */
 
 #ifdef ALSAMM_DEBUG
-  if(sys_verbose)
+  if(false)
     post("naudioindev=%d,  nchindev=%d, naudiooutdev=%d, nchoutdev=%d,rate=%d",
          naudioindev, nchindev,naudiooutdev, nchoutdev, rate);
 #endif
@@ -253,7 +252,7 @@ int alsamm_open_audio(int rate, int blocksize)
   else
     alsamm_buffersize = blocksize;
    
-  if(sys_verbose)
+  if(false)
     post("syschedadvance=%d us(%d Samples)so buffertime max should be this=%d" 
          "or sys_blocksize=%d (samples) to use buffersize=%d",
          sys_schedadvance,sys_advance_samples,alsamm_buffertime,
@@ -296,7 +295,7 @@ int alsamm_open_audio(int rate, int blocksize)
   for(i=0;i<alsa_nindev;i++)
     {
       
-      if(sys_verbose)
+      if(false)
         post("capture card %d:--------------------",i);
       
       if((err = set_hwparams(alsa_indev[i].a_handle, hw_params,
@@ -324,7 +323,7 @@ int alsamm_open_audio(int rate, int blocksize)
       
       memset(alsa_indev[i].a_addr, 0, sizeof(char*) * alsa_indev[i].a_channels);
       
-      if(sys_verbose)
+      if(false)
         post("capture device with %d channels and buffertime %d us opened\n", 
              alsa_indev[i].a_channels,alsamm_buffertime);
     }
@@ -338,7 +337,7 @@ int alsamm_open_audio(int rate, int blocksize)
       if ((err = snd_pcm_link (alsa_indev[i].a_handle,
                                alsa_outdev[i].a_handle)) == 0){
         alsa_indev[i].a_synced = alsa_outdev[i].a_synced = 1;
-        if(sys_verbose)
+        if(false)
           post("Linking in and outs of card %d",i);
       }
       else
@@ -352,7 +351,7 @@ int alsamm_open_audio(int rate, int blocksize)
 
 #ifdef ALSAMM_DEBUG
   /* start ---------------------------- */
-  if(sys_verbose)
+  if(false)
     post("open_audio: after dacsend=%d (xruns=%d)done",dac_send,alsamm_xruns);
   alsamm_xruns = dac_send = 0; /* reset debug */
 
@@ -382,7 +381,7 @@ void alsamm_close_audio(void)
 
 
 #ifdef ALSAMM_DEBUG
-  if(sys_verbose)
+  if(false)
     post("closing devices");
 #endif
 
@@ -392,7 +391,7 @@ void alsamm_close_audio(void)
 
 
 #ifdef ALSAMM_DEBUG
-    if(sys_verbose)
+    if(false)
       post("unlink audio out %d, of %lx",i,used_outdevice[i]);
 #endif
 
@@ -416,7 +415,7 @@ void alsamm_close_audio(void)
 
     err = snd_pcm_close(alsa_indev[i].a_handle);
 
-    if(sys_verbose)
+    if(false)
       check_error(err, "snd_pcm_close (input)");
 
     if(alsa_indev[i].a_addr){
@@ -428,7 +427,7 @@ void alsamm_close_audio(void)
   }
   alsa_nindev = alsa_noutdev = 0;
 #ifdef ALSAMM_DEBUG
-  if(sys_verbose)
+  if(false)
     post("close_audio: after dacsend=%d (xruns=%d)done",dac_send,alsamm_xruns);
    alsamm_xruns = dac_send = 0;
 #endif
@@ -454,7 +453,7 @@ static int set_hwparams(snd_pcm_t *handle, snd_pcm_hw_params_t *params,int *chs)
                                      SND_PCM_ACCESS_MMAP_NONINTERLEAVED);
   if (err >= 0) {
 #ifdef ALSAMM_DEBUG 
-    if(sys_verbose)
+    if(false)
       post("Access type %s available","SND_PCM_ACCESS_MMAP_NONINTERLEAVED"); 
 #endif
   }
@@ -471,7 +470,7 @@ static int set_hwparams(snd_pcm_t *handle, snd_pcm_hw_params_t *params,int *chs)
   }
 
 #ifdef ALSAMM_DEBUG
-  if(sys_verbose)
+  if(false)
     post("Setting format to %s",snd_pcm_format_name(ALSAMM_FORMAT));
 #endif
 
@@ -482,7 +481,7 @@ static int set_hwparams(snd_pcm_t *handle, snd_pcm_hw_params_t *params,int *chs)
   rrate = alsamm_sr;
 
 #ifdef ALSAMM_DEBUG
-  if(sys_verbose)
+  if(false)
     post("Samplerate request: %i Hz",rrate);
 #endif
 
@@ -498,7 +497,7 @@ static int set_hwparams(snd_pcm_t *handle, snd_pcm_hw_params_t *params,int *chs)
     alsamm_sr = rrate;
   }
   else
-    if(sys_verbose)
+    if(false)
       post("Samplerate is set to %iHz",alsamm_sr);
 
   /* Info on channels */
@@ -517,7 +516,7 @@ static int set_hwparams(snd_pcm_t *handle, snd_pcm_hw_params_t *params,int *chs)
     }
 
 #ifdef ALSAMM_DEBUG
-    if(sys_verbose)
+    if(false)
       post("Getting channels:min=%d, max= %d for request=%d",minchs,maxchs,channels);
 #endif
     if(channels < 0)channels=maxchs;
@@ -529,7 +528,7 @@ static int set_hwparams(snd_pcm_t *handle, snd_pcm_hw_params_t *params,int *chs)
  
     *chs = channels;
 #ifdef ALSAMM_DEBUG
-    if(sys_verbose)
+    if(false)
       post("trying to use channels: %d",channels);
 #endif
   }
@@ -546,7 +545,7 @@ static int set_hwparams(snd_pcm_t *handle, snd_pcm_hw_params_t *params,int *chs)
     check_error(err,"Get channels not available");
 #ifdef ALSAMM_DEBUG
   else
-    if(sys_verbose)
+    if(false)
       post("When setting channels count and got %d",*chs);
 #endif
 
@@ -554,7 +553,7 @@ static int set_hwparams(snd_pcm_t *handle, snd_pcm_hw_params_t *params,int *chs)
   if(alsamm_buffersize > 0){
 
 #ifdef ALSAMM_DEBUG
-    if(sys_verbose)
+    if(false)
       post("hw_params: ask for max buffersize of %d samples", 
            (unsigned int) alsamm_buffersize );
 #endif
@@ -574,7 +573,7 @@ static int set_hwparams(snd_pcm_t *handle, snd_pcm_hw_params_t *params,int *chs)
       alsamm_buffertime = 20000;
 
 #ifdef ALSAMM_DEBUG
-    if(sys_verbose)
+    if(false)
       post("hw_params: ask for max buffertime of %d ms", 
            (unsigned int) (alsamm_buffertime*0.001) );
 #endif
@@ -595,7 +594,7 @@ static int set_hwparams(snd_pcm_t *handle, snd_pcm_hw_params_t *params,int *chs)
   }
 
 #ifdef ALSAMM_DEBUG
-  if(sys_verbose)
+  if(false)
     post("hw_params: got buffertime to %f ms",
          (float) (alsamm_buffertime*0.001));
 #endif
@@ -608,7 +607,7 @@ static int set_hwparams(snd_pcm_t *handle, snd_pcm_hw_params_t *params,int *chs)
   }
 
 #ifdef ALSAMM_DEBUG
-  if(sys_verbose)
+  if(false)
     post("hw_params: got  buffersize to %d samples",(int) alsamm_buffer_size);
 #endif
 
@@ -620,7 +619,7 @@ static int set_hwparams(snd_pcm_t *handle, snd_pcm_hw_params_t *params,int *chs)
   }
 
 #ifdef ALSAMM_DEBUG
-  if(sys_verbose)
+  if(false)
     post("Got period size of %d", (int) alsamm_period_size);
 #endif  
   { 
@@ -656,7 +655,7 @@ static int set_hwparams(snd_pcm_t *handle, snd_pcm_hw_params_t *params,int *chs)
       return err;
     }
 #ifdef ALSAMM_DEBUG
-    if(sys_verbose)
+    if(false)
       post("Got periods of %d, where periodsmin=%d, periodsmax=%d", 
            alsamm_periods,pmin,pmax);
 #endif
@@ -698,7 +697,7 @@ static int set_swparams(snd_pcm_t *handle, snd_pcm_sw_params_t *swparams, int pl
   snd_pcm_sw_params_get_start_threshold(swparams, &bs);
 
 #ifdef ALSAMM_DEBUG
-  if(sys_verbose)
+  if(false)
     post("sw_params: got start_thresh_hold= %d (was %d)",(int) bs,(int)obs);
 #endif
 
@@ -714,7 +713,7 @@ static int set_swparams(snd_pcm_t *handle, snd_pcm_sw_params_t *swparams, int pl
 
   snd_pcm_sw_params_get_stop_threshold(swparams, &bs);
 #ifdef ALSAMM_DEBUG
-  if(sys_verbose)
+  if(false)
     post("sw_params: set stop_thresh_hold= %d (was %d)", (int) bs,(int)obs);
 #endif
 
@@ -728,7 +727,7 @@ static int set_swparams(snd_pcm_t *handle, snd_pcm_sw_params_t *swparams, int pl
   }
   snd_pcm_sw_params_get_silence_threshold (swparams, &ps);
 #ifdef ALSAMM_DEBUG
-  if(sys_verbose)
+  if(false)
     post("sw_params: set silence_threshold = %d (was %d)", (int) ps,(int)ops);
 #endif
 
@@ -739,7 +738,7 @@ static int set_swparams(snd_pcm_t *handle, snd_pcm_sw_params_t *swparams, int pl
   }
   snd_pcm_sw_params_get_silence_size (swparams, &ps);
 #ifdef ALSAMM_DEBUG
-  if(sys_verbose)
+  if(false)
     post("sw_params: set silence_size = %d (was %d)", (int) ps,(int)ops);
 #endif
 
@@ -755,7 +754,7 @@ static int set_swparams(snd_pcm_t *handle, snd_pcm_sw_params_t *swparams, int pl
 
   snd_pcm_sw_params_get_avail_min(swparams, &ps);
 #ifdef ALSAMM_DEBUG
-  if(sys_verbose)
+  if(false)
     post("sw_params: set avail_min= %d (was  %d)", (int) ps, (int) ops);
 #endif
   
@@ -768,7 +767,7 @@ static int set_swparams(snd_pcm_t *handle, snd_pcm_sw_params_t *swparams, int pl
   }
 
 #ifdef ALSAMM_DEBUG
-  if(sys_verbose)
+  if(false)
     post("set sw finished");
 #endif
 #else
@@ -861,7 +860,7 @@ static int alsamm_start()
   const snd_pcm_channel_area_t *mm_areas;
 
 #ifdef ALSAMM_DEBUG
-  if(sys_verbose)
+  if(false)
     post("start audio with %d out cards and %d incards",alsamm_outcards,alsamm_incards);
 #endif
 
@@ -887,7 +886,7 @@ static int alsamm_start()
     /* cleaning out mmap buffer before start */
 
 #ifdef ALSAMM_DEBUG
-    if(sys_verbose)
+    if(false)
       post("start: set mems for avail=%d,offset=%d at buffersize=%d",
            avail,offset,alsamm_buffer_size);
 #endif
@@ -910,7 +909,7 @@ static int alsamm_start()
       avail = snd_pcm_avail_update(dev->a_handle);
 
 #ifdef ALSAMM_DEBUG
-      if(sys_verbose)
+      if(false)
         post("start: now channels cleared, out with avail=%d, offset=%d,comitted=%d",
              avail,offset,comitted);
 #endif      
@@ -919,7 +918,7 @@ static int alsamm_start()
     avail = snd_pcm_avail_update(dev->a_handle);
 
 #ifdef ALSAMM_DEBUG
-    if(sys_verbose)
+    if(false)
       post("start: finish start, out with avail=%d, offset=%d",avail,offset);
 #endif
 
@@ -1002,7 +1001,7 @@ static int alsamm_stop()
 
     t_alsa_dev *dev = &alsa_indev[devno];
 
-    if(sys_verbose)
+    if(false)
       post("stop in device %d",devno);
 
     if ((err = snd_pcm_drop(dev->a_handle)) < 0) {
@@ -1016,7 +1015,7 @@ static int alsamm_stop()
 
 
     t_alsa_dev *dev = &alsa_outdev[devno];
-    if(sys_verbose)
+    if(false)
       post("stop out device %d",devno);
 
     if ((err = snd_pcm_drop(dev->a_handle)) < 0) {
@@ -1347,7 +1346,7 @@ int alsamm_send_dacs(void)
     {
 
 #ifdef ALSAMM_DEBUG      
-      if(dac_send < 10 && sys_verbose)
+      if(dac_send < 10 && false)
         post("slept %f > %f + %f (=%f)",
              timenow,timelast,sleep_time,(timelast + sleep_time)); 
 #endif

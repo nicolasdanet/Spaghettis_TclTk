@@ -59,7 +59,6 @@ void alsa_adddev(char *name);
 #endif
 
 int sys_debuglevel;         /* Global. */
-int sys_verbose;            /* Global. */
 int sys_noloadbang;         /* Global. */
 int sys_nogui;              /* Global. */
 int sys_hipriority = -1;    /* -1 = don't care; 0 = no; 1 = yes */  /* Global. */
@@ -287,7 +286,7 @@ int sys_main(int argc, char **argv)
     if (sys_argparse(argc-1, argv+1))           /* parse cmd line */
         return (1);
     sys_afterargparse();                    /* post-argparse settings */
-    if (sys_verbose || sys_version) fprintf(stderr, "%s compiled %s %s\n",
+    if (0 || sys_version) fprintf(stderr, "%s compiled %s %s\n",
         pd_version, pd_compiletime, pd_compiledate);
     if (sys_version)    /* if we were just asked our version, exit here. */
         return (0);
@@ -828,7 +827,7 @@ int sys_argparse(int argc, char **argv)
             sys_fontweight[sizeof(sys_fontweight)-1] = 0;
             argc -= 2;
             argv += 2;
-        }*/
+        }
         else if (!strcmp(*argv, "-verbose"))
         {
             sys_verbose++;
@@ -838,7 +837,7 @@ int sys_argparse(int argc, char **argv)
         {
             sys_verbose=0;
             argc--; argv++;
-        }
+        }*/
         else if (!strcmp(*argv, "-version"))
         {
             sys_version = 1;
