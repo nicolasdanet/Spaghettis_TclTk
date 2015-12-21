@@ -30,6 +30,7 @@ proc initialize {} { ::pd_console::_create }
 proc post {message} { 
 
     .console.text.internal insert end $message
+    .console.text.internal insert end "\n"
     
     after idle ::pd_console::_update
 }
