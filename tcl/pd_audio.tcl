@@ -118,8 +118,9 @@ proc show {top \
     
     pack $top.f                                         {*}[::packMain]
     pack $top.f.properties                              {*}[::packCategory]
-    pack $top.f.inputs                                  {*}[::packCategoryNext]
-    pack $top.f.outputs                                 {*}[::packCategoryNext]
+    
+    if {$audioIn ne ""}  { pack $top.f.inputs           {*}[::packCategoryNext] }
+    if {$audioOut ne ""} { pack $top.f.outputs          {*}[::packCategoryNext] }
     
     ttk::label $top.f.properties.sampleRateLabel        {*}[::styleLabel] \
                                                             -text [_ "Sample Rate"]
