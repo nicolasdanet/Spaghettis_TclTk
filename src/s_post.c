@@ -34,7 +34,7 @@ void post (const char *fmt, ...)
     
     PD_ASSERT (t >= 0 && t < PD_STRING);
         
-    sys_vgui ("::pd_console::post {%s}\n", buf);
+    sys_vgui ("::pd_console::post {%s}\n", buf);    // --
 }
 
 void post_log (const char *fmt, ...)
@@ -62,7 +62,7 @@ void post_error (const char *fmt, ...)
     
     PD_ASSERT (t >= 0 && t < PD_STRING);
 
-    sys_vgui ("::pd_console::post {%s}\n", buf);
+    sys_vgui ("::pd_console::post {%s}\n", buf);    // --
 }
 
 // -----------------------------------------------------------------------------------------------------------
