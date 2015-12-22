@@ -25,6 +25,12 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define PD_DEBUG
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define PD_MAJOR_VERSION    0
 #define PD_MINOR_VERSION    46
 #define PD_PATCH_VERSION    7
@@ -500,7 +506,9 @@ PD_DLL t_propertiesfn class_getpropertiesfn (t_class *c);
 #pragma mark -
 
 PD_DLL void post            (const char *fmt, ...);
+PD_DLL void post_log        (const char *fmt, ...);
 PD_DLL void post_error      (const char *fmt, ...);
+
 PD_DLL void post_atoms      (int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------

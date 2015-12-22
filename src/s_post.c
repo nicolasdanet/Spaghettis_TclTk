@@ -33,8 +33,21 @@ void post (const char *fmt, ...)
     va_end (ap);
     
     PD_ASSERT (t >= 0 && t < PD_STRING);
-
+        
     sys_vgui ("::pd_console::post {%s}\n", buf);
+}
+
+void post_log (const char *fmt, ...)
+{
+    int t;
+    char buf[PD_STRING] = { 0 };
+    va_list ap;
+    
+    va_start (ap, fmt);
+    t = vsnprintf (buf, PD_STRING, fmt, ap);
+    va_end (ap);
+    
+    if (t >= 0 && t < PD_STRING) { fprintf (stdout, "%s", buf); }
 }
 
 void post_error (const char *fmt, ...)
@@ -51,6 +64,10 @@ void post_error (const char *fmt, ...)
 
     sys_vgui ("::pd_console::post {%s}\n", buf);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void post_atoms (int argc, t_atom *argv)
 {
