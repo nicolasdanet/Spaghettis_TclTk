@@ -167,12 +167,11 @@ proc show {top \
     if {$multiple > 1} {
         foreach e $audioIn  { ::pd_audio::_makeIn  $top.f.inputs  [incr i] }
         foreach e $audioOut { ::pd_audio::_makeOut $top.f.outputs [incr j] }
-        
-    } else {
-        ::pd_audio::_makeIn  $top.f.inputs  1
-        ::pd_audio::_makeOut $top.f.outputs 1
     }
-    
+
+    if {![llength [winfo children $top.f.inputs]]}  { ::pd_audio::_makeIn  $top.f.inputs  1 }
+    if {![llength [winfo children $top.f.outputs]]} { ::pd_audio::_makeOut $top.f.outputs 1 }
+
     grid columnconfigure $top.f.properties  1 -weight 1
     grid columnconfigure $top.f.inputs      1 -weight 1
     grid columnconfigure $top.f.outputs     1 -weight 1
