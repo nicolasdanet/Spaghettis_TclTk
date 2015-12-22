@@ -7,7 +7,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 #include <stdlib.h>
 #include <string.h>
@@ -21,6 +20,84 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+static t_class *bindlist_class;     /* Global. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* To manage several objects bound to the same symbol. */
+
+typedef struct _bindelem {
+    t_pd             *e_who;
+    struct _bindelem *e_next;
+    } t_bindelem;
+
+typedef struct _bindlist {
+    t_pd        b_pd;
+    t_bindelem  *b_list;
+    } t_bindlist;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void bindlist_bang (t_bindlist *x)
+{
+    t_bindelem *e = NULL;
+    for (e = x->b_list; e; e = e->e_next) { pd_bang (e->e_who); }
+}
+
+static void bindlist_float (t_bindlist *x, t_float f)
+{
+    t_bindelem *e = NULL;
+    for (e = x->b_list; e; e = e->e_next) { pd_float (e->e_who, f); }
+}
+
+static void bindlist_symbol (t_bindlist *x, t_symbol *s)
+{
+    t_bindelem *e = NULL;
+    for (e = x->b_list; e; e = e->e_next) { pd_symbol (e->e_who, s); }
+}
+
+static void bindlist_pointer (t_bindlist *x, t_gpointer *gp)
+{
+    t_bindelem *e = NULL;
+    for (e = x->b_list; e; e = e->e_next) { pd_pointer (e->e_who, gp); }
+}
+
+static void bindlist_list (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_bindelem *e = NULL;
+    for (e = x->b_list; e; e = e->e_next) { pd_list (e->e_who, s, argc, argv); }
+}
+
+static void bindlist_anything (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_bindelem *e = NULL;
+    for (e = x->b_list; e; e = e->e_next) { pd_typedmess(e->e_who, s, argc, argv); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void m_pd_setup (void)
+{
+    bindlist_class = class_new (gensym ("bindlist"), NULL, NULL, sizeof (t_bindlist), CLASS_PURE, 0);
+    
+    class_addbang (bindlist_class, (t_method)bindlist_bang);
+    class_addfloat (bindlist_class, (t_method)bindlist_float);
+    class_addsymbol (bindlist_class, (t_method)bindlist_symbol);
+    class_addpointer (bindlist_class, (t_method)bindlist_pointer);
+    class_addlist (bindlist_class, (t_method)bindlist_list);
+    class_addanything (bindlist_class, (t_method)bindlist_anything);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_pd *pd_new (t_class *c)
 {
@@ -40,101 +117,26 @@ t_pd *pd_new (t_class *c)
 void pd_free (t_pd *x)
 {
     t_class *c = *x;
+    
     if (c->c_methodFree) (*(t_gotfn)(c->c_methodFree))(x);
-    if (c->c_isBox)
-    {
-        while (((t_object *)x)->te_outlet)
-            outlet_free(((t_object *)x)->te_outlet);
-        while (((t_object *)x)->te_inlet)
-            inlet_free(((t_object *)x)->te_inlet);
-        if (((t_object *)x)->te_binbuf)
-            binbuf_free(((t_object *)x)->te_binbuf);
+    
+    if (c->c_isBox) {
+        while (((t_object *)x)->te_outlet) { outlet_free (((t_object *)x)->te_outlet); }
+        while (((t_object *)x)->te_inlet)  { inlet_free (((t_object *)x)->te_inlet);   }
+        
+        if (((t_object *)x)->te_binbuf) { 
+            binbuf_free (((t_object *)x)->te_binbuf); 
+        }
     }
-    if (c->c_size) freebytes(x, c->c_size);
+    
+    if (c->c_size) { freebytes (x, c->c_size); }
 }
 
-void gobj_save(t_gobj *x, t_binbuf *b)
-{
-    t_class *c = x->g_pd;
-    if (c->c_fnSave)
-        (c->c_fnSave)(x, b);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-/* deal with several objects bound to the same symbol.  If more than one, we
-actually bind a collection object to the symbol, which forwards messages sent
-to the symbol. */
-
-static t_class *bindlist_class;
-
-typedef struct _bindelem
-{
-    t_pd *e_who;
-    struct _bindelem *e_next;
-} t_bindelem;
-
-typedef struct _bindlist
-{
-    t_pd b_pd;
-    t_bindelem *b_list;
-} t_bindlist;
-
-static void bindlist_bang(t_bindlist *x)
-{
-    t_bindelem *e;
-    for (e = x->b_list; e; e = e->e_next)
-        pd_bang(e->e_who);
-}
-
-static void bindlist_float(t_bindlist *x, t_float f)
-{
-    t_bindelem *e;
-    for (e = x->b_list; e; e = e->e_next)
-        pd_float(e->e_who, f);
-}
-
-static void bindlist_symbol(t_bindlist *x, t_symbol *s)
-{
-    t_bindelem *e;
-    for (e = x->b_list; e; e = e->e_next)
-        pd_symbol(e->e_who, s);
-}
-
-static void bindlist_pointer(t_bindlist *x, t_gpointer *gp)
-{
-    t_bindelem *e;
-    for (e = x->b_list; e; e = e->e_next)
-        pd_pointer(e->e_who, gp);
-}
-
-static void bindlist_list(t_bindlist *x, t_symbol *s,
-    int argc, t_atom *argv)
-{
-    t_bindelem *e;
-    for (e = x->b_list; e; e = e->e_next)
-        pd_list(e->e_who, s, argc, argv);
-}
-
-static void bindlist_anything(t_bindlist *x, t_symbol *s,
-    int argc, t_atom *argv)
-{
-    t_bindelem *e;
-    for (e = x->b_list; e; e = e->e_next)
-        pd_typedmess(e->e_who, s, argc, argv);
-}
-
-void m_pd_setup(void)
-{
-    bindlist_class = class_new(gensym("bindlist"), 0, 0,
-        sizeof(t_bindlist), CLASS_PURE, 0);
-    class_addbang(bindlist_class, bindlist_bang);
-    class_addfloat(bindlist_class, (t_method)bindlist_float);
-    class_addsymbol(bindlist_class, bindlist_symbol);
-    class_addpointer(bindlist_class, bindlist_pointer);
-    class_addlist(bindlist_class, bindlist_list);
-    class_addanything(bindlist_class, bindlist_anything);
-}
-
-void pd_bind(t_pd *x, t_symbol *s)
+void pd_bind (t_pd *x, t_symbol *s)
 {
     if (s->s_thing)
     {
@@ -194,6 +196,10 @@ void pd_unbind(t_pd *x, t_symbol *s)
     }
     else { post_error ("%s: couldn't unbind", s->s_name); }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_pd *pd_findbyclass(t_symbol *s, t_class *c)
 {

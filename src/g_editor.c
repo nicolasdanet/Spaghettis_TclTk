@@ -73,6 +73,13 @@ void gobj_delete(t_gobj *x, t_glist *glist)
         (*x->g_pd->c_behavior->w_deletefn)(x, glist);
 }
 
+void gobj_save (t_gobj *x, t_binbuf *b)
+{
+    t_class *c = x->g_pd;
+    if (c->c_fnSave)
+        (c->c_fnSave)(x, b);
+}
+
 int gobj_shouldvis(t_gobj *x, struct _glist *glist)
 {
     t_object *ob;

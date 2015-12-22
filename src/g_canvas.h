@@ -333,12 +333,11 @@ void gobj_displace      (t_gobj *x, t_glist *owner, int dx, int dy);
 void gobj_select        (t_gobj *x, t_glist *owner, int state);
 void gobj_activate      (t_gobj *x, t_glist *owner, int state);
 void gobj_delete        (t_gobj *x, t_glist *owner);
-void gobj_save          (t_gobj *x, t_binbuf *b);
-void gobj_save          (t_gobj *x, t_binbuf *b);
 void gobj_properties    (t_gobj *x, t_glist *gl);
 int  gobj_shouldvis     (t_gobj *x, t_glist *gl);
 void gobj_vis           (t_gobj *x, t_glist *gl, int flag);
 int  gobj_click         (t_gobj *x, t_glist *gl, int xpix, int ypix, int shift, int alt, int dbl, int b);
+void gobj_save          (t_gobj *x, t_binbuf *b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

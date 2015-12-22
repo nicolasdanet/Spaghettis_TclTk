@@ -226,6 +226,7 @@ typedef struct _text t_object;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 typedef void (*t_method)(void);
 typedef void *(*t_newmethod)(void);
@@ -259,25 +260,41 @@ PD_DLL t_symbol s_;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-PD_DLL void pd_typedmess    (t_pd *x, t_symbol *s, int argc, t_atom *argv);
-PD_DLL void pd_forwardmess  (t_pd *x, int argc, t_atom *argv);
-PD_DLL void pd_vmess        (t_pd *x, t_symbol *s, char *fmt, ...);
+PD_DLL t_symbol *gensym             (const char *s);
 
-PD_DLL t_gotfn  getfn       (t_pd *x, t_symbol *s);
-PD_DLL t_gotfn  zgetfn      (t_pd *x, t_symbol *s);
-PD_DLL void     nullfn      (void);
+PD_DLL void     *getbytes           (size_t nbytes);
+PD_DLL void     *getzbytes          (size_t nbytes);
+PD_DLL void     *copybytes          (void *src, size_t nbytes);
+PD_DLL void     *resizebytes        (void *x, size_t oldsize, size_t newsize);
+PD_DLL void     freebytes           (void *x, size_t nbytes);
 
-PD_DLL t_symbol *gensym     (const char *s);
+PD_DLL void     nullfn              (void);
+PD_DLL t_gotfn  getfn               (t_pd *x, t_symbol *s);
+PD_DLL t_gotfn  zgetfn              (t_pd *x, t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL void *getbytes       (size_t nbytes);
-PD_DLL void *getzbytes      (size_t nbytes);
-PD_DLL void *copybytes      (void *src, size_t nbytes);
-PD_DLL void *resizebytes    (void *x, size_t oldsize, size_t newsize);
-PD_DLL void freebytes       (void *x, size_t nbytes);
+PD_DLL t_pd     *pd_new             (t_class *c);
+PD_DLL t_pd     *pd_findbyclass     (t_symbol *s, t_class *c);
+PD_DLL t_symbol *pd_getfilename     (void);
+PD_DLL t_symbol *pd_getdirname      (void);
+
+PD_DLL void     pd_free             (t_pd *x);
+PD_DLL void     pd_bind             (t_pd *x, t_symbol *s);
+PD_DLL void     pd_unbind           (t_pd *x, t_symbol *s);
+PD_DLL void     pd_pushsym          (t_pd *x);
+PD_DLL void     pd_popsym           (t_pd *x);
+PD_DLL void     pd_bang             (t_pd *x);
+PD_DLL void     pd_pointer          (t_pd *x, t_gpointer *gp);
+PD_DLL void     pd_float            (t_pd *x, t_float f);
+PD_DLL void     pd_symbol           (t_pd *x, t_symbol *s);
+PD_DLL void     pd_list             (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+PD_DLL void     pd_anything         (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+PD_DLL void     pd_typedmess        (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+PD_DLL void     pd_forwardmess      (t_pd *x, int argc, t_atom *argv);
+PD_DLL void     pd_vmess            (t_pd *x, t_symbol *s, char *fmt, ...);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -336,27 +353,6 @@ PD_DLL double   clock_getsystime            (void);
 PD_DLL double   clock_gettimesince          (double prevsystime);
 PD_DLL double   clock_gettimesincewithunits (double prevsystime, double units, int sampflag);
 PD_DLL double   clock_getsystimeafter       (double delaytime);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-PD_DLL t_pd     *pd_new                     (t_class *c);
-
-PD_DLL void     pd_free                     (t_pd *x);
-PD_DLL void     pd_bind                     (t_pd *x, t_symbol *s);
-PD_DLL void     pd_unbind                   (t_pd *x, t_symbol *s);
-PD_DLL void     pd_pushsym                  (t_pd *x);
-PD_DLL void     pd_popsym                   (t_pd *x);
-PD_DLL void     pd_bang                     (t_pd *x);
-PD_DLL void     pd_pointer                  (t_pd *x, t_gpointer *gp);
-PD_DLL void     pd_float                    (t_pd *x, t_float f);
-PD_DLL void     pd_symbol                   (t_pd *x, t_symbol *s);
-PD_DLL void     pd_list                     (t_pd *x, t_symbol *s, int argc, t_atom *argv);
-PD_DLL void     pd_anything                 (t_pd *x, t_symbol *s, int argc, t_atom *argv);
-
-PD_DLL t_pd     *pd_findbyclass             (t_symbol *s, t_class *c);
-PD_DLL t_symbol *pd_getfilename             (void);
-PD_DLL t_symbol *pd_getdirname              (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
