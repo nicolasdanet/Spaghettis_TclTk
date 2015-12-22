@@ -47,7 +47,7 @@ void post_log (const char *fmt, ...)
     t = vsnprintf (buf, PD_STRING, fmt, ap);
     va_end (ap);
     
-    if (t >= 0 && t < PD_STRING) { fprintf (stdout, "%s", buf); }
+    if (t >= 0 && t < PD_STRING) { fprintf (stderr, "%s", buf); fputs ("\n", stderr); }
 }
 
 void post_error (const char *fmt, ...)
