@@ -45,32 +45,32 @@ static t_glist *glist_finddirty(t_glist *x);
 void gobj_getrect(t_gobj *x, t_glist *glist, int *x1, int *y1,
     int *x2, int *y2)
 {
-    if (x->g_pd->c_wb && x->g_pd->c_wb->w_getrectfn)
-        (*x->g_pd->c_wb->w_getrectfn)(x, glist, x1, y1, x2, y2);
+    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_getrectfn)
+        (*x->g_pd->c_behavior->w_getrectfn)(x, glist, x1, y1, x2, y2);
 }
 
 void gobj_displace(t_gobj *x, t_glist *glist, int dx, int dy)
 {
-    if (x->g_pd->c_wb && x->g_pd->c_wb->w_displacefn)
-        (*x->g_pd->c_wb->w_displacefn)(x, glist, dx, dy);
+    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_displacefn)
+        (*x->g_pd->c_behavior->w_displacefn)(x, glist, dx, dy);
 }
 
 void gobj_select(t_gobj *x, t_glist *glist, int state)
 {
-    if (x->g_pd->c_wb && x->g_pd->c_wb->w_selectfn)
-        (*x->g_pd->c_wb->w_selectfn)(x, glist, state);
+    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_selectfn)
+        (*x->g_pd->c_behavior->w_selectfn)(x, glist, state);
 }
 
 void gobj_activate(t_gobj *x, t_glist *glist, int state)
 {
-    if (x->g_pd->c_wb && x->g_pd->c_wb->w_activatefn)
-        (*x->g_pd->c_wb->w_activatefn)(x, glist, state);
+    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_activatefn)
+        (*x->g_pd->c_behavior->w_activatefn)(x, glist, state);
 }
 
 void gobj_delete(t_gobj *x, t_glist *glist)
 {
-    if (x->g_pd->c_wb && x->g_pd->c_wb->w_deletefn)
-        (*x->g_pd->c_wb->w_deletefn)(x, glist);
+    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_deletefn)
+        (*x->g_pd->c_behavior->w_deletefn)(x, glist);
 }
 
 int gobj_shouldvis(t_gobj *x, struct _glist *glist)
@@ -113,7 +113,7 @@ int gobj_shouldvis(t_gobj *x, struct _glist *glist)
         (goprect) style. */
         return (glist->gl_havewindow ||
             (ob->te_g.g_pd != canvas_class &&
-                ob->te_g.g_pd->c_wb != &text_widgetbehavior) ||
+                ob->te_g.g_pd->c_behavior != &text_widgetbehavior) ||
             (ob->te_g.g_pd == canvas_class && (((t_glist *)ob)->gl_isgraph)) ||
             (glist->gl_goprect && (ob->te_type == T_TEXT)));
     }
@@ -122,15 +122,15 @@ int gobj_shouldvis(t_gobj *x, struct _glist *glist)
 
 void gobj_vis(t_gobj *x, struct _glist *glist, int flag)
 {
-    if (x->g_pd->c_wb && x->g_pd->c_wb->w_visfn && gobj_shouldvis(x, glist))
-        (*x->g_pd->c_wb->w_visfn)(x, glist, flag);
+    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_visfn && gobj_shouldvis(x, glist))
+        (*x->g_pd->c_behavior->w_visfn)(x, glist, flag);
 }
 
 int gobj_click(t_gobj *x, struct _glist *glist,
     int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
-    if (x->g_pd->c_wb && x->g_pd->c_wb->w_clickfn)
-        return ((*x->g_pd->c_wb->w_clickfn)(x,
+    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_clickfn)
+        return ((*x->g_pd->c_behavior->w_clickfn)(x,
             glist, xpix, ypix, shift, alt, dbl, doit));
     else return (0);
 }
@@ -1331,7 +1331,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
             int noutlet;
                 /* resize?  only for "true" text boxes or canvases*/
             if (ob && !x->gl_editor->e_selection &&
-                (ob->te_g.g_pd->c_wb == &text_widgetbehavior ||
+                (ob->te_g.g_pd->c_behavior == &text_widgetbehavior ||
                     pd_checkglist(&ob->te_g.g_pd)) &&
                         xpos >= x2-4 && ypos < y2-4)
             {
@@ -1889,7 +1889,7 @@ void canvas_motion(t_canvas *x, t_floatarg xpos, t_floatarg ypos,
             int wantwidth = xpos - x11;
             t_gotfn sizefn;
             t_object *ob = pd_checkobject(&y1->g_pd);
-            if (ob && ob->te_g.g_pd->c_wb == &text_widgetbehavior ||
+            if (ob && ob->te_g.g_pd->c_behavior == &text_widgetbehavior ||
                     (pd_checkglist(&ob->te_g.g_pd) &&
                         !((t_canvas *)ob)->gl_isgraph))
             {

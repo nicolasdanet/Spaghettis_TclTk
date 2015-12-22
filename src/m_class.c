@@ -40,9 +40,9 @@ static void pd_defaultanything(t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
 static void pd_defaultbang(t_pd *x)
 {
-    if (*(*x)->c_listmethod != pd_defaultlist)
-        (*(*x)->c_listmethod)(x, 0, 0, 0);
-    else (*(*x)->c_anymethod)(x, &s_bang, 0, 0);
+    if (*(*x)->c_methodList != pd_defaultlist)
+        (*(*x)->c_methodList)(x, 0, 0, 0);
+    else (*(*x)->c_methodAny)(x, &s_bang, 0, 0);
 }
 
     /* am empty list calls the 'bang' method unless it's the default
@@ -52,56 +52,56 @@ static void pd_defaultbang(t_pd *x)
     an empty list.  */
 void pd_emptylist(t_pd *x)
 {
-    if (*(*x)->c_bangmethod != pd_defaultbang)
-        (*(*x)->c_bangmethod)(x);
-    else (*(*x)->c_anymethod)(x, &s_bang, 0, 0);
+    if (*(*x)->c_methodBang != pd_defaultbang)
+        (*(*x)->c_methodBang)(x);
+    else (*(*x)->c_methodAny)(x, &s_bang, 0, 0);
 }
 
 static void pd_defaultpointer(t_pd *x, t_gpointer *gp)
 {
-    if (*(*x)->c_listmethod != pd_defaultlist)
+    if (*(*x)->c_methodList != pd_defaultlist)
     {
         t_atom at;
         SETPOINTER(&at, gp);
-        (*(*x)->c_listmethod)(x, 0, 1, &at);
+        (*(*x)->c_methodList)(x, 0, 1, &at);
     }
     else
     {
         t_atom at;
         SETPOINTER(&at, gp);
-        (*(*x)->c_anymethod)(x, &s_pointer, 1, &at);
+        (*(*x)->c_methodAny)(x, &s_pointer, 1, &at);
     }
 }
 
 static void pd_defaultfloat(t_pd *x, t_float f)
 {
-    if (*(*x)->c_listmethod != pd_defaultlist)
+    if (*(*x)->c_methodList != pd_defaultlist)
     {
         t_atom at;
         SETFLOAT(&at, f);
-        (*(*x)->c_listmethod)(x, 0, 1, &at);
+        (*(*x)->c_methodList)(x, 0, 1, &at);
     }
     else
     {
         t_atom at;
         SETFLOAT(&at, f);
-        (*(*x)->c_anymethod)(x, &s_float, 1, &at);
+        (*(*x)->c_methodAny)(x, &s_float, 1, &at);
     }
 }
 
 static void pd_defaultsymbol(t_pd *x, t_symbol *s)
 {
-    if (*(*x)->c_listmethod != pd_defaultlist)
+    if (*(*x)->c_methodList != pd_defaultlist)
     {
         t_atom at;
         SETSYMBOL(&at, s);
-        (*(*x)->c_listmethod)(x, 0, 1, &at);
+        (*(*x)->c_methodList)(x, 0, 1, &at);
     }
     else
     {
         t_atom at;
         SETSYMBOL(&at, s);
-        (*(*x)->c_anymethod)(x, &s_symbol, 1, &at);
+        (*(*x)->c_methodAny)(x, &s_symbol, 1, &at);
     }
 }
 
@@ -113,9 +113,9 @@ static void pd_defaultlist(t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
             /* a list with no elements is handled by the 'bang' method if
             one exists. */
-    if (argc == 0 && *(*x)->c_bangmethod != pd_defaultbang)
+    if (argc == 0 && *(*x)->c_methodBang != pd_defaultbang)
     {
-        (*(*x)->c_bangmethod)(x);
+        (*(*x)->c_methodBang)(x);
         return;
     }
             /* a list with one element which is a number can be handled by a
@@ -123,31 +123,31 @@ static void pd_defaultlist(t_pd *x, t_symbol *s, int argc, t_atom *argv)
     if (argc == 1)
     {
         if (argv->a_type == A_FLOAT &&
-        *(*x)->c_floatmethod != pd_defaultfloat)
+        *(*x)->c_methodFloat != pd_defaultfloat)
         {
-            (*(*x)->c_floatmethod)(x, argv->a_w.w_float);
+            (*(*x)->c_methodFloat)(x, argv->a_w.w_float);
             return;
         }
         else if (argv->a_type == A_SYMBOL &&
-            *(*x)->c_symbolmethod != pd_defaultsymbol)
+            *(*x)->c_methodSymbol != pd_defaultsymbol)
         {
-            (*(*x)->c_symbolmethod)(x, argv->a_w.w_symbol);
+            (*(*x)->c_methodSymbol)(x, argv->a_w.w_symbol);
             return;
         }
         else if (argv->a_type == A_POINTER &&
-            *(*x)->c_pointermethod != pd_defaultpointer)
+            *(*x)->c_methodPointer != pd_defaultpointer)
         {
-            (*(*x)->c_pointermethod)(x, argv->a_w.w_gpointer);
+            (*(*x)->c_methodPointer)(x, argv->a_w.w_gpointer);
             return;
         }
     }
         /* Next try for an "anything" method */
-    if ((*x)->c_anymethod != pd_defaultanything)
-        (*(*x)->c_anymethod)(x, &s_list, argc, argv);
+    if ((*x)->c_methodAny != pd_defaultanything)
+        (*(*x)->c_methodAny)(x, &s_list, argc, argv);
 
         /* if the object is patchable (i.e., can have proper inlets)
             send it on to obj_list which will unpack the list into the inlets */
-    else if ((*x)->c_box)
+    else if ((*x)->c_isBox)
         obj_list((t_object *)x, s, argc, argv);
             /* otherwise gove up and complain. */
     else pd_defaultanything(x, &s_list, argc, argv);
@@ -214,26 +214,26 @@ t_class *class_new(t_symbol *s, t_newmethod newmethod, t_method freemethod,
         }
     }
     c = (t_class *)getbytes(sizeof(*c));
-    c->c_name = c->c_helpname = s;
+    c->c_name = c->c_helpName = s;
     c->c_size = size;
     c->c_methods = getbytes(0);
-    c->c_nmethod = 0;
-    c->c_freemethod = (t_method)freemethod;
-    c->c_bangmethod = pd_defaultbang;
-    c->c_pointermethod = pd_defaultpointer;
-    c->c_floatmethod = pd_defaultfloat;
-    c->c_symbolmethod = pd_defaultsymbol;
-    c->c_listmethod = pd_defaultlist;
-    c->c_anymethod = pd_defaultanything;
-    c->c_wb = (typeflag == CLASS_BOX ? &text_widgetbehavior : 0);
-    c->c_pwb = 0;
-    c->c_firstin = ((flags & CLASS_NOINLET) == 0);
-    c->c_box = (typeflag == CLASS_BOX);
-    c->c_gobj = (typeflag >= CLASS_GRAPHIC);
-    c->c_drawcommand = 0;
-    c->c_floatsignalin = 0;
-    c->c_externdir = class_extern_dir;
-    c->c_savefn = (typeflag == CLASS_BOX ? text_save : class_nosavefn);
+    c->c_nMethods = 0;
+    c->c_methodFree = (t_method)freemethod;
+    c->c_methodBang = pd_defaultbang;
+    c->c_methodPointer = pd_defaultpointer;
+    c->c_methodFloat = pd_defaultfloat;
+    c->c_methodSymbol = pd_defaultsymbol;
+    c->c_methodList = pd_defaultlist;
+    c->c_methodAny = pd_defaultanything;
+    c->c_behavior = (typeflag == CLASS_BOX ? &text_widgetbehavior : 0);
+    c->c_behaviorParent = 0;
+    c->c_hasFirstInlet = ((flags & CLASS_NOINLET) == 0);
+    c->c_isBox = (typeflag == CLASS_BOX);
+    c->c_isGraphic = (typeflag >= CLASS_GRAPHIC);
+    c->c_isDrawCommand = 0;
+    c->c_floatSignalIn = 0;
+    c->c_externDirectory = class_extern_dir;
+    c->c_fnSave = (typeflag == CLASS_BOX ? text_save : class_nosavefn);
 #if 0 
     post("class: %s", c->c_name->s_name);
 #endif
@@ -285,9 +285,9 @@ void class_addmethod(t_class *c, t_method fn, t_symbol *sel,
         is obsolete; you should now use the CLASS_SIGNAL macro. */
     if (sel == &s_signal)
     {
-        if (c->c_floatsignalin)
+        if (c->c_floatSignalIn)
             post("warning: signal method overrides class_mainsignalin");
-        c->c_floatsignalin = -1;
+        c->c_floatSignalIn = -1;
     }
         /* check for special cases.  "Pointer" is missing here so that
         pd_objectmaker's pointer method can be typechecked differently.  */
@@ -319,7 +319,7 @@ void class_addmethod(t_class *c, t_method fn, t_symbol *sel,
     else
     {
         int i;
-        for (i = 0; i < c->c_nmethod; i++)
+        for (i = 0; i < c->c_nMethods; i++)
             if (c->c_methods[i].me_name == sel)
         {
             char nbuf[80];
@@ -332,10 +332,10 @@ void class_addmethod(t_class *c, t_method fn, t_symbol *sel,
                 sel->s_name, c->c_name->s_name, nbuf);
         }
         c->c_methods = resizebytes(c->c_methods,
-            c->c_nmethod * sizeof(*c->c_methods),
-            (c->c_nmethod + 1) * sizeof(*c->c_methods));
-        m = c->c_methods +  c->c_nmethod;
-        c->c_nmethod++;
+            c->c_nMethods * sizeof(*c->c_methods),
+            (c->c_nMethods + 1) * sizeof(*c->c_methods));
+        m = c->c_methods +  c->c_nMethods;
+        c->c_nMethods++;
         m->me_name = sel;
         m->me_fun = (t_gotfn)fn;
         nargs = 0;
@@ -358,42 +358,42 @@ phooey:
     /* Instead of these, see the "class_addfloat", etc.,  macros in m_pd.h */
 void class_addbang(t_class *c, t_method fn)
 {
-    c->c_bangmethod = (t_bangmethod)fn;
+    c->c_methodBang = (t_bangmethod)fn;
 }
 
 void class_addpointer(t_class *c, t_method fn)
 {
-    c->c_pointermethod = (t_pointermethod)fn;
+    c->c_methodPointer = (t_pointermethod)fn;
 }
 
 void class_addfloat(t_class *c, t_method fn)
 {
-    c->c_floatmethod = (t_floatmethod)fn;
+    c->c_methodFloat = (t_floatmethod)fn;
 }
 
 void class_addsymbol(t_class *c, t_method fn)
 {
-    c->c_symbolmethod = (t_symbolmethod)fn;
+    c->c_methodSymbol = (t_symbolmethod)fn;
 }
 
 void class_addlist(t_class *c, t_method fn)
 {
-    c->c_listmethod = (t_listmethod)fn;
+    c->c_methodList = (t_listmethod)fn;
 }
 
 void class_addanything(t_class *c, t_method fn)
 {
-    c->c_anymethod = (t_anymethod)fn;
+    c->c_methodAny = (t_anymethod)fn;
 }
 
 void class_setwidget(t_class *c, t_widgetbehavior *w)
 {
-    c->c_wb = w;
+    c->c_behavior = w;
 }
 
 void class_setparentwidget(t_class *c, t_parentwidgetbehavior *pw)
 {
-    c->c_pwb = pw;
+    c->c_behaviorParent = pw;
 }
 
 char *class_getname(t_class *c)
@@ -403,32 +403,32 @@ char *class_getname(t_class *c)
 
 char *class_gethelpname(t_class *c)
 {
-    return (c->c_helpname->s_name);
+    return (c->c_helpName->s_name);
 }
 
 void class_sethelpsymbol(t_class *c, t_symbol *s)
 {
-    c->c_helpname = s;
+    c->c_helpName = s;
 }
 
 t_parentwidgetbehavior *pd_getparentwidget(t_pd *x)
 {
-    return ((*x)->c_pwb);
+    return ((*x)->c_behaviorParent);
 }
 
 void class_setdrawcommand(t_class *c)
 {
-    c->c_drawcommand = 1;
+    c->c_isDrawCommand = 1;
 }
 
 int class_isdrawcommand(t_class *c)
 {
-    return (c->c_drawcommand);
+    return (c->c_isDrawCommand);
 }
 
 static void pd_floatforsignal(t_pd *x, t_float f)
 {
-    int offset = (*x)->c_floatsignalin;
+    int offset = (*x)->c_floatSignalIn;
     if (offset > 0)
         *(t_float *)(((char *)x) + offset) = f;
     else
@@ -441,11 +441,11 @@ void class_domainsignalin(t_class *c, int onset)
     if (onset <= 0) onset = -1;
     else
     {
-        if (c->c_floatmethod != pd_defaultfloat)
+        if (c->c_methodFloat != pd_defaultfloat)
             post("warning: %s: float method overwritten", c->c_name->s_name);
-        c->c_floatmethod = (t_floatmethod)pd_floatforsignal;
+        c->c_methodFloat = (t_floatmethod)pd_floatforsignal;
     }
-    c->c_floatsignalin = onset;
+    c->c_floatSignalIn = onset;
 }
 
 void class_set_extern_dir(t_symbol *s)
@@ -455,7 +455,7 @@ void class_set_extern_dir(t_symbol *s)
 
 char *class_gethelpdir(t_class *c)
 {
-    return (c->c_externdir->s_name);
+    return (c->c_externDirectory->s_name);
 }
 
 static void class_nosavefn(t_gobj *z, t_binbuf *b)
@@ -465,22 +465,22 @@ static void class_nosavefn(t_gobj *z, t_binbuf *b)
 
 void class_setsavefn(t_class *c, t_savefn f)
 {
-    c->c_savefn = f;
+    c->c_fnSave = f;
 }
 
 t_savefn class_getsavefn(t_class *c)
 {
-    return (c->c_savefn);
+    return (c->c_fnSave);
 }
 
 void class_setpropertiesfn(t_class *c, t_propertiesfn f)
 {
-    c->c_propertiesfn = f;
+    c->c_fnProperties = f;
 }
 
 t_propertiesfn class_getpropertiesfn(t_class *c)
 {
-    return (c->c_propertiesfn);
+    return (c->c_fnProperties);
 }
 
 /* ---------------- the symbol table ------------------------ */
@@ -661,31 +661,31 @@ void pd_typedmess(t_pd *x, t_symbol *s, int argc, t_atom *argv)
         to pd_objectmaker doesn't require that we supply a pointer value. */
     if (s == &s_float)
     {
-        if (!argc) (*c->c_floatmethod)(x, 0.);
+        if (!argc) (*c->c_methodFloat)(x, 0.);
         else if (argv->a_type == A_FLOAT)
-            (*c->c_floatmethod)(x, argv->a_w.w_float);
+            (*c->c_methodFloat)(x, argv->a_w.w_float);
         else goto badarg;
         return;
     }
     if (s == &s_bang)
     {
-        (*c->c_bangmethod)(x);
+        (*c->c_methodBang)(x);
         return;
     }
     if (s == &s_list)
     {
-        (*c->c_listmethod)(x, s, argc, argv);
+        (*c->c_methodList)(x, s, argc, argv);
         return;
     }
     if (s == &s_symbol)
     {
         if (argc && argv->a_type == A_SYMBOL)
-            (*c->c_symbolmethod)(x, argv->a_w.w_symbol);
+            (*c->c_methodSymbol)(x, argv->a_w.w_symbol);
         else
-            (*c->c_symbolmethod)(x, &s_);
+            (*c->c_methodSymbol)(x, &s_);
         return;
     }
-    for (i = c->c_nmethod, m = c->c_methods; i--; m++)
+    for (i = c->c_nMethods, m = c->c_methods; i--; m++)
         if (m->me_name == s)
     {
         wp = m->me_arg;
@@ -780,7 +780,7 @@ void pd_typedmess(t_pd *x, t_symbol *s, int argc, t_atom *argv)
             newest = bonzo;
         return;
     }
-    (*c->c_anymethod)(x, s, argc, argv);
+    (*c->c_methodAny)(x, s, argc, argv);
     return;
 badarg:
     post_error ("Bad arguments for message '%s' to object '%s'",
@@ -850,7 +850,7 @@ t_gotfn getfn(t_pd *x, t_symbol *s)
     t_methodentry *m;
     int i;
 
-    for (i = c->c_nmethod, m = c->c_methods; i--; m++)
+    for (i = c->c_nMethods, m = c->c_methods; i--; m++)
         if (m->me_name == s) return(m->me_fun);
     post_error ("%s: no method for message '%s'", c->c_name->s_name, s->s_name);
     return((t_gotfn)nullfn);
@@ -862,7 +862,7 @@ t_gotfn zgetfn(t_pd *x, t_symbol *s)
     t_methodentry *m;
     int i;
 
-    for (i = c->c_nmethod, m = c->c_methods; i--; m++)
+    for (i = c->c_nMethods, m = c->c_methods; i--; m++)
         if (m->me_name == s) return(m->me_fun);
     return(0);
 }

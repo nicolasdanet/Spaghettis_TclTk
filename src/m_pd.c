@@ -32,16 +32,16 @@ t_pd *pd_new (t_class *c)
     
     *x = c;
     
-    if (c->c_box) { ((t_object *)x)->te_inlet = ((t_object *)x)->te_outlet = NULL; }
+    if (c->c_isBox) { ((t_object *)x)->te_inlet = ((t_object *)x)->te_outlet = NULL; }
     
     return x;
 }
 
-void pd_free(t_pd *x)
+void pd_free (t_pd *x)
 {
     t_class *c = *x;
-    if (c->c_freemethod) (*(t_gotfn)(c->c_freemethod))(x);
-    if (c->c_box)
+    if (c->c_methodFree) (*(t_gotfn)(c->c_methodFree))(x);
+    if (c->c_isBox)
     {
         while (((t_object *)x)->te_outlet)
             outlet_free(((t_object *)x)->te_outlet);
@@ -56,8 +56,8 @@ void pd_free(t_pd *x)
 void gobj_save(t_gobj *x, t_binbuf *b)
 {
     t_class *c = x->g_pd;
-    if (c->c_savefn)
-        (c->c_savefn)(x, b);
+    if (c->c_fnSave)
+        (c->c_fnSave)(x, b);
 }
 
 /* deal with several objects bound to the same symbol.  If more than one, we
@@ -276,27 +276,27 @@ void pd_doloadbang(void)
 
 void pd_bang(t_pd *x)
 {
-    (*(*x)->c_bangmethod)(x);
+    (*(*x)->c_methodBang)(x);
 }
 
 void pd_float(t_pd *x, t_float f)
 {
-    (*(*x)->c_floatmethod)(x, f);
+    (*(*x)->c_methodFloat)(x, f);
 }
 
 void pd_pointer(t_pd *x, t_gpointer *gp)
 {
-    (*(*x)->c_pointermethod)(x, gp);
+    (*(*x)->c_methodPointer)(x, gp);
 }
 
 void pd_symbol(t_pd *x, t_symbol *s)
 {
-    (*(*x)->c_symbolmethod)(x, s);
+    (*(*x)->c_methodSymbol)(x, s);
 }
 
 void pd_list(t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
-    (*(*x)->c_listmethod)(x, &s_list, argc, argv);
+    (*(*x)->c_methodList)(x, &s_list, argc, argv);
 }
 
 void mess_init(void);

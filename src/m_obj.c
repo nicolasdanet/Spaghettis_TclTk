@@ -454,7 +454,7 @@ t_outconnect *obj_connect(t_object *source, int outno,
     for (o = source->te_outlet; o && outno; o = o->o_next, outno--) ;
     if (!o) return (0);
     
-    if (sink->te_g.g_pd->c_firstin)
+    if (sink->te_g.g_pd->c_hasFirstInlet)
     {
         if (!inno)
         {
@@ -492,7 +492,7 @@ void obj_disconnect(t_object *source, int outno, t_object *sink, int inno)
     
     for (o = source->te_outlet; o && outno; o = o->o_next, outno--)
     if (!o) return;
-    if (sink->te_g.g_pd->c_firstin)
+    if (sink->te_g.g_pd->c_hasFirstInlet)
     {
         if (!inno)
         {
@@ -541,7 +541,7 @@ int obj_ninlets(t_object *x)
     int n;
     t_inlet *i;
     for (i = x->te_inlet, n = 0; i; i = i->i_next) n++;
-    if (x->te_g.g_pd->c_firstin) n++;
+    if (x->te_g.g_pd->c_hasFirstInlet) n++;
     return (n);
 }
 
@@ -564,7 +564,7 @@ t_outconnect *obj_nexttraverseoutlet(t_outconnect *lastconnect,
         int n;
         t_inlet *i = (t_inlet *)y, *i2;
         t_object *dest = i->i_owner;
-        for (n = dest->te_g.g_pd->c_firstin, i2 = dest->te_inlet;
+        for (n = dest->te_g.g_pd->c_hasFirstInlet, i2 = dest->te_inlet;
             i2 && i2 != i; i2 = i2->i_next) n++;
         *whichp = n;
         *destp = dest;
@@ -583,7 +583,7 @@ t_outconnect *obj_nexttraverseoutlet(t_outconnect *lastconnect,
     it, correctly typed, or zero if the check failed. */
 t_object *pd_checkobject(t_pd *x)
 {
-    if ((*x)->c_box) return ((t_object *)x);
+    if ((*x)->c_isBox) return ((t_object *)x);
     else return (0);
 }
 
@@ -625,7 +625,7 @@ int obj_nsiginlets(t_object *x)
     t_inlet *i;
     for (i = x->te_inlet, n = 0; i; i = i->i_next)
         if (i->i_symfrom == &s_signal) n++;
-    if (x->te_g.g_pd->c_firstin && x->te_g.g_pd->c_floatsignalin) n++;
+    if (x->te_g.g_pd->c_hasFirstInlet && x->te_g.g_pd->c_floatSignalIn) n++;
     return (n);
 }
 
@@ -634,7 +634,7 @@ int obj_siginletindex(t_object *x, int m)
 {
     int n = 0;
     t_inlet *i;
-    if (x->te_g.g_pd->c_firstin && x->te_g.g_pd->c_floatsignalin)
+    if (x->te_g.g_pd->c_hasFirstInlet && x->te_g.g_pd->c_floatSignalIn)
     {
         if (!m--) return (0);
         n++;
@@ -651,10 +651,10 @@ int obj_siginletindex(t_object *x, int m)
 int obj_issignalinlet(t_object *x, int m)
 {
     t_inlet *i;
-    if (x->te_g.g_pd->c_firstin)
+    if (x->te_g.g_pd->c_hasFirstInlet)
     {
         if (!m)
-            return (x->te_g.g_pd->c_firstin && x->te_g.g_pd->c_floatsignalin);
+            return (x->te_g.g_pd->c_hasFirstInlet && x->te_g.g_pd->c_floatSignalIn);
         else m--;
     }
     for (i = x->te_inlet; i && m; i = i->i_next, m--)
@@ -696,11 +696,11 @@ t_float *obj_findsignalscalar(t_object *x, int m)
 {
     int n = 0;
     t_inlet *i;
-    if (x->te_g.g_pd->c_firstin && x->te_g.g_pd->c_floatsignalin)
+    if (x->te_g.g_pd->c_hasFirstInlet && x->te_g.g_pd->c_floatSignalIn)
     {
         if (!m--)
-            return (x->te_g.g_pd->c_floatsignalin > 0 ?
-                (t_float *)(((char *)x) + x->te_g.g_pd->c_floatsignalin) : 0);
+            return (x->te_g.g_pd->c_floatSignalIn > 0 ?
+                (t_float *)(((char *)x) + x->te_g.g_pd->c_floatSignalIn) : 0);
         n++;
     }
     for (i = x->te_inlet; i; i = i->i_next, m--)

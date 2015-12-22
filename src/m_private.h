@@ -68,27 +68,27 @@ typedef void (*t_anymethod)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
 
 struct _class {
     t_symbol                *c_name;
-    t_symbol                *c_helpname;
-    t_symbol                *c_externdir;
+    t_symbol                *c_helpName;
+    t_symbol                *c_externDirectory;
     size_t                  c_size;
     t_methodentry           *c_methods;
-    int                     c_nmethod;
-    t_method                c_freemethod;
-    t_bangmethod            c_bangmethod;
-    t_pointermethod         c_pointermethod;
-    t_floatmethod           c_floatmethod;
-    t_symbolmethod          c_symbolmethod;
-    t_listmethod            c_listmethod;
-    t_anymethod             c_anymethod;
-    t_widgetbehavior        *c_wb;
-    t_parentwidgetbehavior  *c_pwb;
-    t_savefn                c_savefn;
-    t_propertiesfn          c_propertiesfn;
-    int                     c_floatsignalin;
-    char                    c_gobj;
-    char                    c_box;
-    char                    c_firstin;
-    char                    c_drawcommand;
+    int                     c_nMethods;
+    t_method                c_methodFree;
+    t_bangmethod            c_methodBang;
+    t_pointermethod         c_methodPointer;
+    t_floatmethod           c_methodFloat;
+    t_symbolmethod          c_methodSymbol;
+    t_listmethod            c_methodList;
+    t_anymethod             c_methodAny;
+    t_widgetbehavior        *c_behavior;
+    t_parentwidgetbehavior  *c_behaviorParent;
+    t_savefn                c_fnSave;
+    t_propertiesfn          c_fnProperties;
+    int                     c_floatSignalIn;
+    char                    c_isGraphic;
+    char                    c_isBox;
+    char                    c_hasFirstInlet;
+    char                    c_isDrawCommand;
     };
 
 // -----------------------------------------------------------------------------------------------------------
