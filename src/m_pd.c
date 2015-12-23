@@ -76,7 +76,7 @@ static void bindlist_list (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
 static void bindlist_anything (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_bindelem *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_typedmess(e->e_who, s, argc, argv); }
+    for (e = x->b_list; e; e = e->e_next) { pd_typedmess (e->e_who, s, argc, argv); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -138,63 +138,67 @@ void pd_free (t_pd *x)
 
 void pd_bind (t_pd *x, t_symbol *s)
 {
-    if (s->s_thing)
-    {
-        if (*s->s_thing == bindlist_class)
-        {
+    if (s->s_thing) {
+    
+        if (*s->s_thing == bindlist_class) {
             t_bindlist *b = (t_bindlist *)s->s_thing;
-            t_bindelem *e = (t_bindelem *)getbytes(sizeof(t_bindelem));
+            t_bindelem *e = (t_bindelem *)getbytes (sizeof (t_bindelem));
             e->e_next = b->b_list;
-            e->e_who = x;
+            e->e_who  = x;
             b->b_list = e;
-        }
-        else
-        {
-            t_bindlist *b = (t_bindlist *)pd_new(bindlist_class);
-            t_bindelem *e1 = (t_bindelem *)getbytes(sizeof(t_bindelem));
-            t_bindelem *e2 = (t_bindelem *)getbytes(sizeof(t_bindelem));
-            b->b_list = e1;
-            e1->e_who = x;
+            
+        } else {
+            t_bindlist *b  = (t_bindlist *)pd_new (bindlist_class);
+            t_bindelem *e1 = (t_bindelem *)getbytes (sizeof (t_bindelem));
+            t_bindelem *e2 = (t_bindelem *)getbytes (sizeof (t_bindelem));
+            b->b_list  = e1;
+            e1->e_who  = x;
             e1->e_next = e2;
-            e2->e_who = s->s_thing;
-            e2->e_next = 0;
+            e2->e_who  = s->s_thing;
+            e2->e_next = NULL;
             s->s_thing = &b->b_pd;
         }
+        
+    } else {
+        s->s_thing = x;
     }
-    else s->s_thing = x;
 }
 
-void pd_unbind(t_pd *x, t_symbol *s)
+void pd_unbind (t_pd *x, t_symbol *s)
 {
-    if (s->s_thing == x) s->s_thing = 0;
-    else if (s->s_thing && *s->s_thing == bindlist_class)
-    {
-            /* bindlists always have at least two elements... if the number
-            goes down to one, get rid of the bindlist and bind the symbol
-            straight to the remaining element. */
-
-        t_bindlist *b = (t_bindlist *)s->s_thing;
-        t_bindelem *e, *e2;
-        if ((e = b->b_list)->e_who == x)
-        {
-            b->b_list = e->e_next;
-            freebytes(e, sizeof(t_bindelem));
+    if (s->s_thing == x) { 
+        s->s_thing = NULL; 
+        
+    } else if (s->s_thing && *s->s_thing == bindlist_class) {
+    
+        t_bindlist *b  = (t_bindlist *)s->s_thing;
+        t_bindelem *e1 = NULL;
+        t_bindelem *e2 = NULL;
+        
+        if ((e1 = b->b_list)->e_who == x) {
+            b->b_list = e1->e_next;
+            freebytes (e1, sizeof (t_bindelem));
+        } else {
+            for (e1 = b->b_list; e2 = e1->e_next; e1 = e2) {
+                if (e2->e_who == x) {
+                    e1->e_next = e2->e_next;
+                    freebytes (e2, sizeof (t_bindelem));
+                    break;
+                }
+            }
         }
-        else for (e = b->b_list; e2 = e->e_next; e = e2)
-            if (e2->e_who == x)
-        {
-            e->e_next = e2->e_next;
-            freebytes(e2, sizeof(t_bindelem));
-            break;
-        }
-        if (!b->b_list->e_next)
-        {
+        
+        /* Delete the bindlist if just one element remains. */
+        
+        if (!b->b_list->e_next) {
             s->s_thing = b->b_list->e_who;
-            freebytes(b->b_list, sizeof(t_bindelem));
+            freebytes (b->b_list, sizeof (t_bindelem));
             pd_free(&b->b_pd);
         }
+        
+    } else { 
+        post_error ("%s: couldn't unbind", s->s_name); 
     }
-    else { post_error ("%s: couldn't unbind", s->s_name); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
