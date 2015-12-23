@@ -39,8 +39,8 @@ extern t_symbol *sys_libdir;
 extern int sys_hipriority;
 extern int sys_audioapi;
 
-int sys_defeatrt;               /* Global. */
-t_symbol *sys_flags = &s_;      /* Global. */
+int sys_defeatrt;               /* Shared. */
+t_symbol *sys_flags = &s_;      /* Shared. */
 void sys_doflags( void);
 
     /* Hmm... maybe better would be to #if on not-apple-or-windows  */

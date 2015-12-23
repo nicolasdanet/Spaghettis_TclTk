@@ -447,7 +447,7 @@ void template_conform(t_template *tfrom, t_template *tto)
 
 t_template *template_findbyname(t_symbol *s)
 {
-    return ((t_template *)pd_findbyclass(s, template_class));
+    return ((t_template *)pd_findByClass(s, template_class));
 }
 
 t_canvas *template_findcanvas(t_template *template)
@@ -457,7 +457,7 @@ t_canvas *template_findcanvas(t_template *template)
     if (!(gt = template->t_list))
         return (0);
     return (gt->x_owner);
-    /* return ((t_canvas *)pd_findbyclass(template->t_sym, canvas_class)); */
+    /* return ((t_canvas *)pd_findByClass(template->t_sym, canvas_class)); */
 }
 
 void template_notify(t_template *template, t_symbol *s, int argc, t_atom *argv)
@@ -496,7 +496,7 @@ static void *template_usetemplate(void *dummy, t_symbol *s,
         return (0);
     argc--; argv++;
             /* check if there's already a template by this name. */
-    if ((x = (t_template *)pd_findbyclass(templatesym, template_class)))
+    if ((x = (t_template *)pd_findByClass(templatesym, template_class)))
     {
         t_template *y = template_new(&s_, argc, argv), *y2;
             /* If the new template is the same as the old one,

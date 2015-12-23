@@ -6,7 +6,7 @@
 #include "m_private.h"
 #include "m_macros.h"
 
-t_class *glob_pdobject;     /* Global. */
+t_class *glob_pdobject;     /* Shared. */
 
 static t_class *maxclass;
 

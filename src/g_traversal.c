@@ -259,7 +259,7 @@ static void *ptrobj_new(t_symbol *classname, int argc, t_atom *argv)
 
 static void ptrobj_traverse(t_ptrobj *x, t_symbol *s)
 {
-    t_glist *glist = (t_glist *)pd_findbyclass(s, canvas_class);
+    t_glist *glist = (t_glist *)pd_findByClass(s, canvas_class);
     if (glist) gpointer_setglist(&x->x_gp, glist, 0);
     else { post_error (x, "pointer: list '%s' not found", s->s_name); }
 }

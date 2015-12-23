@@ -37,21 +37,21 @@ static void audio_getdevs(char *indevlist, int *nindevs,
 
     /* these are set in this file when opening audio, but then may be reduced,
     even to zero, in the system dependent open_audio routines. */
-int sys_inchannels; /* Global. */
-int sys_outchannels;  /* Global. */
-int sys_advance_samples;        /* scheduler advance in samples */ /* Global. */
-int sys_audioapi = API_DEFAULT; /* Global. */
-int sys_audioapiopened = -1;    /* save last API opened for later closing */ /* Global. */
+int sys_inchannels; /* Shared. */
+int sys_outchannels;  /* Shared. */
+int sys_advance_samples;        /* scheduler advance in samples */ /* Shared. */
+int sys_audioapi = API_DEFAULT; /* Shared. */
+int sys_audioapiopened = -1;    /* save last API opened for later closing */ /* Shared. */
 static int sys_meters;          /* true if we're metering */
 static t_sample sys_inmax;         /* max input amplitude */
 static t_sample sys_outmax;        /* max output amplitude */
 
     /* exported variables */
-int sys_schedadvance;   /* scheduler advance in microseconds */ /* Global. */
-t_float sys_dacsr; /* Global. */
+int sys_schedadvance;   /* scheduler advance in microseconds */ /* Shared. */
+t_float sys_dacsr; /* Shared. */
 
-t_sample *sys_soundout;     /* Global. */
-t_sample *sys_soundin;  /* Global. */
+t_sample *sys_soundout;     /* Shared. */
+t_sample *sys_soundin;  /* Shared. */
 
     /* the "state" is normally one if we're open and zero otherwise; 
     but if the state is one, we still haven't necessarily opened the

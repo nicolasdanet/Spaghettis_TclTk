@@ -780,7 +780,7 @@ static void glist_doreload(t_glist *gl, t_symbol *name, t_symbol *dir,
 
     /* this flag stops canvases from being marked "dirty" if we have to touch
     them to reload an abstraction; also suppress window list update */
-int glist_reloading = 0;    /* Global. */
+int glist_reloading = 0;    /* Shared. */
 
     /* call canvas_doreload on everyone */
 void canvas_reload(t_symbol *name, t_symbol *dir, t_gobj *except)

@@ -277,7 +277,7 @@ PD_DLL t_gotfn  zgetfn              (t_pd *x, t_symbol *s);
 #pragma mark -
 
 PD_DLL t_pd     *pd_new             (t_class *c);
-PD_DLL t_pd     *pd_findbyclass     (t_symbol *s, t_class *c);
+PD_DLL t_pd     *pd_findByClass     (t_symbol *s, t_class *c);
 PD_DLL t_symbol *pd_getfilename     (void);
 PD_DLL t_symbol *pd_getdirname      (void);
 

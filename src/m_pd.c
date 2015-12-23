@@ -20,17 +20,12 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-static t_class *bindlist_class;     /* Global. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 /* To manage several objects bound to the same symbol. */
 
 typedef struct _bindelem {
-    t_pd             *e_who;
+    t_pd             *e_what;               /* MUST be the first. */
     struct _bindelem *e_next;
     } t_bindelem;
 
@@ -43,40 +38,64 @@ typedef struct _bindlist {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* To maintain bindings for the #X symbol during nestable loads. */
+
+typedef struct _gstack {
+    t_pd            *g_what;
+    t_symbol        *g_loadingAbstraction;
+    struct _gstack  *g_next;
+    } t_gstack;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class  *bindlist_class;            /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_gstack *pd_gstackHead;             /* Shared. */
+static t_pd     *pd_lastPopped;             /* Shared. */
+static t_symbol *pd_loadingAbstraction;     /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void bindlist_bang (t_bindlist *x)
 {
     t_bindelem *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_bang (e->e_who); }
+    for (e = x->b_list; e; e = e->e_next) { pd_bang (e->e_what); }
 }
 
 static void bindlist_float (t_bindlist *x, t_float f)
 {
     t_bindelem *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_float (e->e_who, f); }
+    for (e = x->b_list; e; e = e->e_next) { pd_float (e->e_what, f); }
 }
 
 static void bindlist_symbol (t_bindlist *x, t_symbol *s)
 {
     t_bindelem *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_symbol (e->e_who, s); }
+    for (e = x->b_list; e; e = e->e_next) { pd_symbol (e->e_what, s); }
 }
 
 static void bindlist_pointer (t_bindlist *x, t_gpointer *gp)
 {
     t_bindelem *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_pointer (e->e_who, gp); }
+    for (e = x->b_list; e; e = e->e_next) { pd_pointer (e->e_what, gp); }
 }
 
 static void bindlist_list (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_bindelem *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_list (e->e_who, s, argc, argv); }
+    for (e = x->b_list; e; e = e->e_next) { pd_list (e->e_what, s, argc, argv); }
 }
 
 static void bindlist_anything (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_bindelem *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_typedmess (e->e_who, s, argc, argv); }
+    for (e = x->b_list; e; e = e->e_next) { pd_typedmess (e->e_what, s, argc, argv); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -144,7 +163,7 @@ void pd_bind (t_pd *x, t_symbol *s)
             t_bindlist *b = (t_bindlist *)s->s_thing;
             t_bindelem *e = (t_bindelem *)getbytes (sizeof (t_bindelem));
             e->e_next = b->b_list;
-            e->e_who  = x;
+            e->e_what = x;
             b->b_list = e;
             
         } else {
@@ -152,9 +171,9 @@ void pd_bind (t_pd *x, t_symbol *s)
             t_bindelem *e1 = (t_bindelem *)getbytes (sizeof (t_bindelem));
             t_bindelem *e2 = (t_bindelem *)getbytes (sizeof (t_bindelem));
             b->b_list  = e1;
-            e1->e_who  = x;
+            e1->e_what = x;
             e1->e_next = e2;
-            e2->e_who  = s->s_thing;
+            e2->e_what = s->s_thing;
             e2->e_next = NULL;
             s->s_thing = &b->b_pd;
         }
@@ -175,12 +194,12 @@ void pd_unbind (t_pd *x, t_symbol *s)
         t_bindelem *e1 = NULL;
         t_bindelem *e2 = NULL;
         
-        if ((e1 = b->b_list)->e_who == x) {
+        if ((e1 = b->b_list)->e_what == x) {
             b->b_list = e1->e_next;
             freebytes (e1, sizeof (t_bindelem));
         } else {
             for (e1 = b->b_list; e2 = e1->e_next; e1 = e2) {
-                if (e2->e_who == x) {
+                if (e2->e_what == x) {
                     e1->e_next = e2->e_next;
                     freebytes (e2, sizeof (t_bindelem));
                     break;
@@ -188,100 +207,84 @@ void pd_unbind (t_pd *x, t_symbol *s)
             }
         }
         
-        /* Delete the bindlist if just one element remains. */
-        
-        if (!b->b_list->e_next) {
-            s->s_thing = b->b_list->e_who;
+        if (!b->b_list->e_next) {                           /* Delete it if just one element remains. */
+            s->s_thing = b->b_list->e_what;
             freebytes (b->b_list, sizeof (t_bindelem));
             pd_free(&b->b_pd);
         }
         
-    } else { 
-        post_error ("%s: couldn't unbind", s->s_name); 
-    }
+    } else { PD_BUG; }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_pd *pd_findbyclass(t_symbol *s, t_class *c)
+t_pd *pd_findByClass (t_symbol *s, t_class *c)
 {
-    t_pd *x = 0;
+    t_pd *x = NULL;
     
-    if (!s->s_thing) return (0);
+    if (!s->s_thing) return (NULL);
     if (*s->s_thing == c) return (s->s_thing);
-    if (*s->s_thing == bindlist_class)
-    {
+    
+    if (*s->s_thing == bindlist_class) {
         t_bindlist *b = (t_bindlist *)s->s_thing;
-        t_bindelem *e, *e2;
-        int warned = 0;
-        for (e = b->b_list; e; e = e->e_next)
-            if (*e->e_who == c)
-        {
-            if (x && !warned)
-            {
-                post("warning: %s: multiply defined", s->s_name);
-                warned = 1;
-            }
-            x = e->e_who;
+        t_bindelem *e = NULL;
+        
+        for (e = b->b_list; e; e = e->e_next) {
+            if (*e->e_what == c) { PD_ASSERT (x == NULL); x = e->e_what; }
         }
     }
+    
     return x;
 }
 
-/* stack for maintaining bindings for the #X symbol during nestable loads.
-*/
-
-typedef struct _gstack
-{
-    t_pd *g_what;
-    t_symbol *g_loadingabstraction;
-    struct _gstack *g_next;
-} t_gstack;
-
-static t_gstack *gstack_head = 0;
-static t_pd *lastpopped;
-static t_symbol *pd_loadingabstraction;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int pd_setloadingabstraction(t_symbol *sym)
 {
-    t_gstack *foo = gstack_head;
-    for (foo = gstack_head; foo; foo = foo->g_next)
-        if (foo->g_loadingabstraction == sym)
+    t_gstack *foo = pd_gstackHead;
+    for (foo = pd_gstackHead; foo; foo = foo->g_next)
+        if (foo->g_loadingAbstraction == sym)
             return (1);
-    pd_loadingabstraction = sym;
+    pd_loadingAbstraction = sym;
     return (0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void pd_pushsym(t_pd *x)
 {
     t_gstack *y = (t_gstack *)getbytes(sizeof(*y));
     y->g_what = s__X.s_thing;
-    y->g_next = gstack_head;
-    y->g_loadingabstraction = pd_loadingabstraction;
-    pd_loadingabstraction = 0;
-    gstack_head = y;
+    y->g_next = pd_gstackHead;
+    y->g_loadingAbstraction = pd_loadingAbstraction;
+    pd_loadingAbstraction = 0;
+    pd_gstackHead = y;
     s__X.s_thing = x;
 }
 
 void pd_popsym(t_pd *x)
 {
-    if (!gstack_head || s__X.s_thing != x) { PD_BUG; }
+    if (!pd_gstackHead || s__X.s_thing != x) { PD_BUG; }
     else {
-        t_gstack *headwas = gstack_head;
+        t_gstack *headwas = pd_gstackHead;
         s__X.s_thing = headwas->g_what;
-        gstack_head = headwas->g_next;
+        pd_gstackHead = headwas->g_next;
         freebytes(headwas, sizeof(*headwas));
-        lastpopped = x;
+        pd_lastPopped = x;
     }
 }
 
 void pd_doloadbang(void)
 {
-    if (lastpopped)
-        pd_vmess(lastpopped, gensym("loadbang"), "");
-    lastpopped = 0;
+    if (pd_lastPopped)
+        pd_vmess(pd_lastPopped, gensym("loadbang"), "");
+    pd_lastPopped = 0;
 }
 
 void pd_bang(t_pd *x)
@@ -315,7 +318,7 @@ void conf_init(void);
 void glob_init(void);
 void garray_init(void);
 
-t_pdinstance *pd_this;      /* Global. */
+t_pdinstance *pd_this;      /* Shared. */
 
 static t_symbol *midi_gensym(const char *prefix, const char *name)
 {

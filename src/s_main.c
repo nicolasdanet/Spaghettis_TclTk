@@ -59,24 +59,24 @@ void sys_addhelppath(char *p);
 void alsa_adddev(char *name);
 #endif
 
-int sys_debuglevel;         /* Global. */
-int sys_noloadbang;         /* Global. */
-int sys_nogui;              /* Global. */
-int sys_hipriority = -1;    /* -1 = don't care; 0 = no; 1 = yes */  /* Global. */
-int sys_guisetportnumber;   /* if started from the GUI, this is the port # */ /* Global. */
-int sys_nosleep = 0;  /* skip all "sleep" calls and spin instead */ /* Global. */
+int sys_debuglevel;         /* Shared. */
+int sys_noloadbang;         /* Shared. */
+int sys_nogui;              /* Shared. */
+int sys_hipriority = -1;    /* -1 = don't care; 0 = no; 1 = yes */  /* Shared. */
+int sys_guisetportnumber;   /* if started from the GUI, this is the port # */ /* Shared. */
+int sys_nosleep = 0;  /* skip all "sleep" calls and spin instead */ /* Shared. */
 
-char *sys_guicmd;       /* Global. */
-t_symbol *sys_libdir;   /* Global. */
+char *sys_guicmd;       /* Shared. */
+t_symbol *sys_libdir;   /* Shared. */
 static t_namelist *sys_openlist;
 static t_namelist *sys_messagelist;
 static int sys_version;
 /* */
 
-int sys_nmidiout = -1;  /* Global. */
-int sys_nmidiin = -1;   /* Global. */
-int sys_midiindevlist[MIDI_MAXIMUM_IN] = {1};   /* Global. */
-int sys_midioutdevlist[MIDI_MAXIMUM_OUT] = {1}; /* Global. */
+int sys_nmidiout = -1;  /* Shared. */
+int sys_nmidiin = -1;   /* Shared. */
+int sys_midiindevlist[MIDI_MAXIMUM_IN] = {1};   /* Shared. */
+int sys_midioutdevlist[MIDI_MAXIMUM_OUT] = {1}; /* Shared. */
 
 static int sys_main_srate;
 static int sys_main_advance;
@@ -169,7 +169,7 @@ int sys_fontheight(int fontsize)
     return (sys_findfont(fontsize)->fi_height);
 }
 
-int sys_defaultfont;    /* Global. */
+int sys_defaultfont;    /* Shared. */
 #define DEFAULTFONT 12
 
 static void openit(const char *dirname, const char *filename)

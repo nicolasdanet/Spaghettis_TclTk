@@ -78,9 +78,9 @@ static int linux_noutdevs = 0;
 static int linux_nindevs = 0;
 
     /* exported variables */
-t_float sys_dacsr;              /* Global. */
-t_sample *sys_soundout;         /* Global. */
-t_sample *sys_soundin;          /* Global. */
+t_float sys_dacsr;              /* Shared. */
+t_sample *sys_soundout;         /* Shared. */
+t_sample *sys_soundin;          /* Shared. */
 
     /* OSS-specific private variables */
 static int oss_blockmode = 1;   /* flag to use "blockmode"  */

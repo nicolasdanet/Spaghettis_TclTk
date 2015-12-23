@@ -139,7 +139,7 @@ static t_int *sigreceive_perf8(t_int *w)
 
 static void sigreceive_set(t_sigreceive *x, t_symbol *s)
 {
-    t_sigsend *sender = (t_sigsend *)pd_findbyclass((x->x_sym = s),
+    t_sigsend *sender = (t_sigsend *)pd_findByClass((x->x_sym = s),
         sigsend_class);
     if (sender)
     {
@@ -306,7 +306,7 @@ static t_int *sigthrow_perform(t_int *w)
 
 static void sigthrow_set(t_sigthrow *x, t_symbol *s)
 {
-    t_sigcatch *catcher = (t_sigcatch *)pd_findbyclass((x->x_sym = s),
+    t_sigcatch *catcher = (t_sigcatch *)pd_findByClass((x->x_sym = s),
         sigcatch_class);
     if (catcher)
     {

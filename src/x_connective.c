@@ -1439,7 +1439,7 @@ typedef struct _value
     belongs to a "vcommon" object, which is created if necessary. */
 t_float *value_get(t_symbol *s)
 {
-    t_vcommon *c = (t_vcommon *)pd_findbyclass(s, vcommon_class);
+    t_vcommon *c = (t_vcommon *)pd_findByClass(s, vcommon_class);
     if (!c)
     {
         c = (t_vcommon *)pd_new(vcommon_class);
@@ -1455,7 +1455,7 @@ t_float *value_get(t_symbol *s)
     last interested party releases it. */
 void value_release(t_symbol *s)
 {
-    t_vcommon *c = (t_vcommon *)pd_findbyclass(s, vcommon_class);
+    t_vcommon *c = (t_vcommon *)pd_findByClass(s, vcommon_class);
     if (c)
     {
         if (!--c->c_refcount)
@@ -1474,7 +1474,7 @@ void value_release(t_symbol *s)
 int
 value_getfloat(t_symbol *s, t_float *f) 
 {
-    t_vcommon *c = (t_vcommon *)pd_findbyclass(s, vcommon_class);
+    t_vcommon *c = (t_vcommon *)pd_findByClass(s, vcommon_class);
     if (!c)
         return (1);
     *f = c->c_f;
@@ -1488,7 +1488,7 @@ value_getfloat(t_symbol *s, t_float *f)
 int
 value_setfloat(t_symbol *s, t_float f)
 {
-    t_vcommon *c = (t_vcommon *)pd_findbyclass(s, vcommon_class);
+    t_vcommon *c = (t_vcommon *)pd_findByClass(s, vcommon_class);
     if (!c)
         return (1);
     c->c_f = f; 

@@ -204,7 +204,7 @@ static void textbuf_free(t_textbuf *x)
         guiconnect_notarget(x->b_guiconnect, 1000);
     }
         /* just in case we're still bound to #A from loading... */
-    while (x2 = pd_findbyclass(gensym("#A"), text_define_class))
+    while (x2 = pd_findByClass(gensym("#A"), text_define_class))
         pd_unbind(x2, gensym("#A"));
 }
 
@@ -434,7 +434,7 @@ static t_binbuf *text_client_getbuf(t_text_client *x)
 {
     if (x->tc_sym)       /* named text object */
     {
-        t_textbuf *y = (t_textbuf *)pd_findbyclass(x->tc_sym,
+        t_textbuf *y = (t_textbuf *)pd_findByClass(x->tc_sym,
             text_define_class);
         if (y)
             return (y->b_binbuf);
@@ -486,7 +486,7 @@ static  void text_client_senditup(t_text_client *x)
 {
     if (x->tc_sym)       /* named text object */
     {
-        t_textbuf *y = (t_textbuf *)pd_findbyclass(x->tc_sym,
+        t_textbuf *y = (t_textbuf *)pd_findByClass(x->tc_sym,
             text_define_class);
         if (y)
             textbuf_senditup(y);

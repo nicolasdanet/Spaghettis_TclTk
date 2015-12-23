@@ -53,7 +53,7 @@ desktops because the borders have both window title area and menus. */
 
 extern t_pd *newest;
 
-t_class *canvas_class;  /* Global. */
+t_class *canvas_class;  /* Shared. */
 
 /* ------------------ forward function declarations --------------- */
 static void canvas_start_dsp(void);
@@ -128,7 +128,7 @@ void glob_menunew(void *dummy, t_symbol *filesym, t_symbol *dirsym)
 
 t_canvas *canvas_getcurrent(void)
 {
-    return ((t_canvas *)pd_findbyclass(&s__X, canvas_class));
+    return ((t_canvas *)pd_findByClass(&s__X, canvas_class));
 }
 
 void canvas_setcurrent(t_canvas *x)
@@ -309,7 +309,7 @@ void linetraverser_skipobject(t_linetraverser *t)
 }
 
 /* -------------------- the canvas object -------------------------- */
-int glist_valid = 10000;    /* Global. */
+int glist_valid = 10000;    /* Shared. */
 
 void glist_init(t_glist *x)
 {

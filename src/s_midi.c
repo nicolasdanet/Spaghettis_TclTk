@@ -44,7 +44,7 @@ int midi_inhead, midi_intail;
 static double sys_midiinittime;
 #define API_DEFAULTMIDI 0
 
-int sys_midiapi = API_DEFAULTMIDI;  /* Global. */
+int sys_midiapi = API_DEFAULTMIDI;  /* Shared. */
 
     /* this is our current estimate for at what "system" real time the
     current logical time's output should occur. */

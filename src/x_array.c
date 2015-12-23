@@ -257,7 +257,7 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
 {
     if (x->tc_sym)       /* named array object */
     {
-        t_garray *y = (t_garray *)pd_findbyclass(x->tc_sym, garray_class);
+        t_garray *y = (t_garray *)pd_findByClass(x->tc_sym, garray_class);
         if (y)
         {
             *glist = garray_getglist(y);
@@ -404,7 +404,7 @@ static void array_size_float(t_array_size *x, t_floatarg f)
               should have a return slot for the garray if any?  */
         if (x->x_tc.tc_sym)
         {
-            t_garray *y = (t_garray *)pd_findbyclass(x->x_tc.tc_sym,
+            t_garray *y = (t_garray *)pd_findByClass(x->x_tc.tc_sym,
                 garray_class);
             garray_resize(y, f);
         }

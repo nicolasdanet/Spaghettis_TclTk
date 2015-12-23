@@ -104,7 +104,7 @@ void array_free(t_array *x)
 
 /* --------------------- graphical arrays (garrays) ------------------- */
 
-t_class *garray_class;      /* Global. */
+t_class *garray_class;      /* Shared. */
 
 struct _garray
 {
@@ -359,7 +359,7 @@ void canvas_menuarray(t_glist *canvas)
     for (gcount = 1; gcount < 1000; gcount++)
     {
         sprintf(arraybuf, "array%d", gcount);
-        if (!pd_findbyclass(gensym(arraybuf), garray_class))
+        if (!pd_findByClass(gensym(arraybuf), garray_class))
             break;
     }
     sprintf(cmdbuf, "::ui_array::show %%s array%d 100 3\n", gcount);
@@ -584,7 +584,7 @@ static void garray_free(t_garray *x)
     gfxstub_deleteforkey(x);
     pd_unbind(&x->x_gobj.g_pd, x->x_realname);
         /* just in case we're still bound to #A from loading... */
-    while (x2 = pd_findbyclass(gensym("#A"), garray_class))
+    while (x2 = pd_findByClass(gensym("#A"), garray_class))
         pd_unbind(x2, gensym("#A"));
     pd_free(&x->x_scalar->sc_g.g_pd);
 }

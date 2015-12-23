@@ -48,10 +48,10 @@
 # define stat  stat64
 #endif
 
-t_namelist *sys_externlist;     /* Global. */
-t_namelist *sys_searchpath;     /* Global. */
-t_namelist *sys_staticpath;     /* Global. */
-t_namelist *sys_helppath;       /* Global. */
+t_namelist *sys_externlist;     /* Shared. */
+t_namelist *sys_searchpath;     /* Shared. */
+t_namelist *sys_staticpath;     /* Shared. */
+t_namelist *sys_helppath;       /* Shared. */
 
 extern t_class *glob_pdobject;
 extern int sys_defeatrt;
@@ -237,7 +237,7 @@ char *namelist_get(t_namelist *namelist, int n)
     return (nl ? nl->nl_string : 0);
 }
 
-int sys_usestdpath = 1;     /* Global. */
+int sys_usestdpath = 1;     /* Shared. */
 
 void sys_setextrapath(const char *p)
 {
