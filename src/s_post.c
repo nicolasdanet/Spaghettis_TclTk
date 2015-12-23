@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <syslog.h>
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -47,7 +48,11 @@ void post_log (const char *fmt, ...)
     t = vsnprintf (buf, PD_STRING, fmt, ap);
     va_end (ap);
     
-    if (t >= 0 && t < PD_STRING) { fprintf (stderr, "%s", buf); fputs ("\n", stderr); }
+    if (t >= 0 && t < PD_STRING) { 
+        openlog (PD_NAME, LOG_CONS|LOG_PID|LOG_PERROR, LOG_USER);
+        syslog (LOG_ERR, "%s", buf);
+        closelog();
+    }
 }
 
 void post_error (const char *fmt, ...)

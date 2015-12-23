@@ -64,20 +64,6 @@ void glob_foo(void *dummy, t_symbol *s, int argc, t_atom *argv)
 }
 #endif
 
-static void glob_version(t_pd *dummy, float f)
-{
-    if (f > (PD_MAJOR_VERSION + 0.01*PD_MINOR_VERSION + 0.001))
-    {
-        static int warned;
-        if (warned < 1)
-            post("warning: file format (%g) newer than this version (%g) of Pd",
-                f, PD_MAJOR_VERSION + 0.01*PD_MINOR_VERSION);
-        else if (warned < 2)
-            post("(... more file format messages suppressed)");
-        warned++;
-    }
-}
-
 static void glob_perf(t_pd *dummy, float f)
 {
     sys_perf = (f != 0);
@@ -160,8 +146,6 @@ void glob_init(void)
     class_addmethod(glob_pdobject, (t_method)glob_ping, gensym("ping"), 0);
     class_addmethod(glob_pdobject, (t_method)glob_savepreferences,
         gensym("save-preferences"), 0);
-    class_addmethod(glob_pdobject, (t_method)glob_version,
-        gensym("version"), A_FLOAT, 0);
     class_addmethod(glob_pdobject, (t_method)glob_perf,
         gensym("perf"), A_FLOAT, 0);
     class_addmethod(glob_pdobject, (t_method)glob_compatibility,
@@ -178,15 +162,4 @@ void glob_init(void)
     pd_bind(&glob_pdobject, gensym("pd"));
 }
 
-    /* function to return version number at run time.  Any of the
-    calling pointers may be zero in case you don't need all of them. */
-void sys_getversion(int *major, int *minor, int *bugfix)
-{
-    if (major)
-        *major = PD_MAJOR_VERSION;
-    if (minor)
-        *minor = PD_MINOR_VERSION;
-    if (bugfix)
-        *bugfix = PD_PATCH_VERSION;
-}
 

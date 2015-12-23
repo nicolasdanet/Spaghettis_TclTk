@@ -42,7 +42,6 @@ extern int sys_sleepgrain;
 #define stringify(s) str(s)
 #define str(s) #s
  
-char *pd_version = "Pd-" stringify(PD_MAJOR_VERSION) "." stringify(PD_MINOR_VERSION) "." stringify(PD_PATCH_VERSION);
 char pd_compiletime[] = __TIME__;
 char pd_compiledate[] = __DATE__;
 
@@ -287,8 +286,8 @@ int sys_main(int argc, char **argv)
     if (sys_argparse(argc-1, argv+1))           /* parse cmd line */
         return (1);
     sys_afterargparse();                    /* post-argparse settings */
-    if (0 || sys_version) fprintf(stderr, "%s compiled %s %s\n",
-        pd_version, pd_compiletime, pd_compiledate);
+    if (0 || sys_version) fprintf(stderr, "%s-%s compiled %s %s\n",
+        PD_NAME, PD_VERSION, pd_compiletime, pd_compiledate);
     if (sys_version)    /* if we were just asked our version, exit here. */
         return (0);
     sys_setsignalhandlers();
