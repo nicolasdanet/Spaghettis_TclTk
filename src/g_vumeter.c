@@ -499,7 +499,7 @@ static void vu_properties(t_gobj *z, t_glist *owner)
     t_symbol *srl[3];
 
     iem_properties(&x->x_gui, srl);
-    sprintf(buf, "::pd_iem::create %%s VU \
+    sprintf(buf, "::ui_iem::create %%s VU \
             %d %d {Meter Width} %d %d {Meter Height} \
             0 empty 0 empty \
             %d empty empty \

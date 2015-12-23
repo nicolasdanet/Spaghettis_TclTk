@@ -497,12 +497,12 @@ void sys_findprogdir(char *progname)
         "gui" directory.  In "simple" unix installations, the layout is
             .../bin/pd
             .../bin/pdwatchdog (etc)
-            .../bin/pd_main.tcl
+            .../bin/ui_main.tcl
             .../doc
         and in "complicated" unix installations, it's:
             .../bin/pd
             .../lib/pd/bin/pdwatchdog
-            .../lib/pd/bin/pd_main.tcl
+            .../lib/pd/bin/ui_main.tcl
             .../lib/pd/doc
         To decide which, we stat .../lib/pd; if that exists, we assume it's
         the complicated layout.  In MSW, it's the "simple" layout, but

@@ -12,12 +12,12 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pd_array 1.0
+package provide ui_array 1.0
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::pd_array:: {
+namespace eval ::ui_array:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ array set arraySave {}
 
 proc show {top name size flags} {
 
-    ::pd_array::_create $top $name $size $flags
+    ::ui_array::_create $top $name $size $flags
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -75,25 +75,25 @@ proc _create {top name size flags} {
     ttk::label $top.f.properties.nameLabel          {*}[::styleLabel] \
                                                         -text [_ "Name"]
     ttk::entry $top.f.properties.name               {*}[::styleEntry] \
-                                                        -textvariable ::pd_array::arrayName($top) \
+                                                        -textvariable ::ui_array::arrayName($top) \
                                                         -width $::width(medium)
 
     ttk::label $top.f.properties.sizeLabel          {*}[::styleLabel] \
                                                         -text [_ "Size"]
     ttk::entry $top.f.properties.size               {*}[::styleEntryNumber] \
-                                                        -textvariable ::pd_array::arraySize($top) \
+                                                        -textvariable ::ui_array::arraySize($top) \
                                                         -width $::width(small)
 
     ttk::label $top.f.properties.saveLabel          {*}[::styleLabel] \
                                                         -text [_ "Save Contents"]
     ttk::checkbutton $top.f.properties.save         {*}[::styleCheckButton] \
-                                                        -variable ::pd_array::arraySave($top) \
+                                                        -variable ::ui_array::arraySave($top) \
                                                         -takefocus 0
 
     ttk::label $top.f.properties.drawLabel          {*}[::styleLabel] \
                                                         -text [_ "Draw With"]
     
-    ::createMenuByIndex $top.f.properties.draw      $values ::pd_array::arrayDraw($top) \
+    ::createMenuByIndex $top.f.properties.draw      $values ::ui_array::arrayDraw($top) \
                                                         -width [::measure $values]
     
     grid $top.f.properties.nameLabel                -row 0 -column 0 -sticky ew
@@ -114,7 +114,7 @@ proc _create {top name size flags} {
     
     after idle "$top.f.properties.name selection range 0 end"
     
-    wm protocol $top WM_DELETE_WINDOW   "::pd_array::closed $top"
+    wm protocol $top WM_DELETE_WINDOW   "::ui_array::closed $top"
 }
 
 proc closed {top} {
@@ -124,7 +124,7 @@ proc closed {top} {
     variable arrayDraw
     variable arraySave
     
-    ::pd_array::_apply $top
+    ::ui_array::_apply $top
     
     unset arrayName($top)
     unset arraySize($top)
@@ -145,9 +145,9 @@ proc _apply {top} {
     variable arrayDraw
     variable arraySave
     
-    ::pd_array::_forceSize $top
+    ::ui_array::_forceSize $top
     
-    ::pd_connect::pdsend "$top arraydialog \
+    ::ui_connect::pdsend "$top arraydialog \
             [::sanitized [::dollarToRaute [::withEmpty $arrayName($top)]]] \
             $arraySize($top) \
             [expr {$arraySave($top) + (2 * $arrayDraw($top))}]"

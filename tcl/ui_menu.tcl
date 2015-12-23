@@ -12,12 +12,12 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pd_menu 1.0
+package provide ui_menu 1.0
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::pd_menu:: {
+namespace eval ::ui_menu:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -177,34 +177,34 @@ proc _file {m} {
     $m add command \
         -label [_ "New Patch"] \
         -accelerator "${accelerator}+N" \
-        -command { ::pd_file::newPatch }
+        -command { ::ui_file::newPatch }
     $m add command \
         -label [_ "Open..."] \
         -accelerator "${accelerator}+O" \
-        -command { ::pd_file::openPatch }
+        -command { ::ui_file::openPatch }
     $m add separator
     
     $m add command \
         -label [_ "Save"] \
         -accelerator "${accelerator}+S" \
-        -command { ::pd_menu::_handle menusave }
+        -command { ::ui_menu::_handle menusave }
     $m add command \
         -label [_ "Save As..."] \
         -accelerator "Shift+${accelerator}+S" \
-        -command { ::pd_menu::_handle menusaveas }
+        -command { ::ui_menu::_handle menusaveas }
     $m add separator
 
     $m add command \
         -label [_ "Close"] \
         -accelerator "${accelerator}+W" \
-        -command { ::pd_menu::_close }
+        -command { ::ui_menu::_close }
         
     if {[tk windowingsystem] ne "aqua"} {
     
     $m add command \
         -label [_ "Quit"] \
         -accelerator "${accelerator}+Q" \
-        -command { ::pd_connect::pdsend "pd verifyquit" }
+        -command { ::ui_connect::pdsend "pd verifyquit" }
     }
 }
 
@@ -215,32 +215,32 @@ proc _edit {m} {
     $m add command \
         -label [_ "Cut"] \
         -accelerator "${accelerator}+X" \
-        -command { ::pd_menu::_handle cut }
+        -command { ::ui_menu::_handle cut }
     $m add command \
         -label [_ "Copy"] \
         -accelerator "${accelerator}+C" \
-        -command { ::pd_menu::_handle copy }
+        -command { ::ui_menu::_handle copy }
     $m add command \
         -label [_ "Paste"] \
         -accelerator "${accelerator}+V" \
-        -command { ::pd_menu::_handle paste }
+        -command { ::ui_menu::_handle paste }
     $m add separator
     
     $m add command \
         -label [_ "Duplicate"] \
         -accelerator "${accelerator}+D" \
-        -command { ::pd_menu::_handle duplicate }
+        -command { ::ui_menu::_handle duplicate }
     $m add command \
         -label [_ "Select All"] \
         -accelerator "${accelerator}+A" \
-        -command { ::pd_menu::_handle selectall }
+        -command { ::ui_menu::_handle selectall }
     $m add separator
     
     $m add check \
         -label [_ "Edit Mode"] \
         -accelerator "${accelerator}+E" \
         -variable ::var(isEditMode) \
-        -command { ::pd_menu::_handle "editmode $::var(isEditMode)" }
+        -command { ::ui_menu::_handle "editmode $::var(isEditMode)" }
 }
 
 proc _object {m} {
@@ -250,68 +250,68 @@ proc _object {m} {
     $m add command \
         -label [_ "Object"] \
         -accelerator "${accelerator}+1" \
-        -command { ::pd_menu::_handle "obj 0" } 
+        -command { ::ui_menu::_handle "obj 0" } 
     $m add command \
         -label [_ "Message"] \
         -accelerator "${accelerator}+2" \
-        -command { ::pd_menu::_handle "msg 0" }
+        -command { ::ui_menu::_handle "msg 0" }
     $m add command \
         -label [_ "Atom"] \
         -accelerator "${accelerator}+3" \
-        -command { ::pd_menu::_handle "floatatom 0" }
+        -command { ::ui_menu::_handle "floatatom 0" }
     $m add command \
         -label [_ "Symbol"] \
         -accelerator "${accelerator}+4" \
-        -command { ::pd_menu::_handle "symbolatom 0" }
+        -command { ::ui_menu::_handle "symbolatom 0" }
     $m add command \
         -label [_ "Comment"] \
         -accelerator "${accelerator}+5" \
-        -command { ::pd_menu::_handle "text 0" }
+        -command { ::ui_menu::_handle "text 0" }
     $m add separator
     
     $m add command \
         -label [_ "Bang"] \
         -accelerator "${accelerator}+6" \
-        -command { ::pd_menu::_handle bng }
+        -command { ::ui_menu::_handle bng }
     $m add command \
         -label [_ "Toggle"] \
         -accelerator "${accelerator}+7" \
-        -command { ::pd_menu::_handle toggle }
+        -command { ::ui_menu::_handle toggle }
     $m add command \
         -label [_ "Number"] \
         -accelerator "${accelerator}+8" \
-        -command { ::pd_menu::_handle numbox }
+        -command { ::ui_menu::_handle numbox }
     $m add command \
         -label [_ "Array"] \
         -accelerator "${accelerator}+9" \
-        -command { ::pd_menu::_handle menuarray }
+        -command { ::ui_menu::_handle menuarray }
     $m add separator
     
     $m add command \
         -label [_ "VU"] \
-        -command { ::pd_menu::_handle vumeter }
+        -command { ::ui_menu::_handle vumeter }
     $m add command \
         -label [_ "Panel"] \
-        -command { ::pd_menu::_handle mycnv }
+        -command { ::ui_menu::_handle mycnv }
     $m add separator
     
     menu $m.vertical
     
     $m.vertical add command \
         -label [_ "Slider"] \
-        -command { ::pd_menu::_handle vslider }
+        -command { ::ui_menu::_handle vslider }
     $m.vertical add command \
         -label [_ "Radio Button"] \
-        -command { ::pd_menu::_handle vradio }
+        -command { ::ui_menu::_handle vradio }
     
     menu $m.horizontal
         
     $m.horizontal add command \
         -label [_ "Slider"] \
-        -command { ::pd_menu::_handle hslider }
+        -command { ::ui_menu::_handle hslider }
     $m.horizontal add command \
         -label [_ "Radio Button"] \
-        -command { ::pd_menu::_handle hradio }
+        -command { ::ui_menu::_handle hradio }
         
     $m add cascade \
         -label [_ "Vertical"] \
@@ -327,10 +327,10 @@ proc _media {m} {
     
     $m add command \
         -label [_ "MIDI..."] \
-        -command { ::pd_connect::pdsend "pd midi-properties" }
+        -command { ::ui_connect::pdsend "pd midi-properties" }
     $m add command \
         -label [_ "Audio..."] \
-        -command { ::pd_connect::pdsend "pd audio-properties" }
+        -command { ::ui_connect::pdsend "pd audio-properties" }
     $m add separator
     
     foreach e $::var(apiMidiAvailables) {
@@ -339,7 +339,7 @@ proc _media {m} {
                 -label [string totitle $name] \
                 -variable ::var(apiMidi) \
                 -value $value \
-                -command { ::pd_connect::pdsend "pd midi-setapi $::var(apiMidi)" }
+                -command { ::ui_connect::pdsend "pd midi-setapi $::var(apiMidi)" }
         }
     }
     
@@ -351,7 +351,7 @@ proc _media {m} {
                 -label [string totitle $name] \
                 -variable ::var(apiAudio) \
                 -value $value \
-                -command { ::pd_connect::pdsend "pd audio-setapi $::var(apiAudio)" }
+                -command { ::ui_connect::pdsend "pd audio-setapi $::var(apiAudio)" }
         }
     }
     
@@ -361,7 +361,7 @@ proc _media {m} {
         -label [_ "Run DSP"] \
         -accelerator "${accelerator}+R" \
         -variable ::var(isDsp) \
-        -command { ::pd_connect::pdsend "pd dsp $::var(isDsp)" }
+        -command { ::ui_connect::pdsend "pd dsp $::var(isDsp)" }
 }
 
 proc _tools {m} {
@@ -370,7 +370,7 @@ proc _tools {m} {
         -label [_ "Path"] \
         -variable ::var(isPath) \
         -command { 
-            if {$::var(isPath)} { ::pd_connect::pdsend "pd start-path-dialog" } else { ::pd_path::hide } 
+            if {$::var(isPath)} { ::ui_connect::pdsend "pd start-path-dialog" } else { ::ui_path::hide } 
         }
 }
 
@@ -378,13 +378,13 @@ proc _popup {m} {
 
     $m add command \
         -label [_ "Properties"] \
-        -command { ::pd_menu::_doPopup $::var(windowFocused) 0 }
+        -command { ::ui_menu::_doPopup $::var(windowFocused) 0 }
     $m add command \
         -label [_ "Open"] \
-        -command { ::pd_menu::_doPopup $::var(windowFocused) 1 }
+        -command { ::ui_menu::_doPopup $::var(windowFocused) 1 }
     $m add command \
         -label [_ "Help"]       \
-        -command { ::pd_menu::_doPopup $::var(windowFocused) 2 }
+        -command { ::ui_menu::_doPopup $::var(windowFocused) 2 }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -423,7 +423,7 @@ proc _handle {message} {
 
     set top [winfo toplevel $::var(windowFocused)]
     
-    if {[winfo class $top] eq "PdPatch"} { ::pd_connect::pdsend "$top $message" }
+    if {[winfo class $top] eq "PdPatch"} { ::ui_connect::pdsend "$top $message" }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -435,25 +435,25 @@ proc _close {} {
     
     switch -regexp -- [winfo class $top] {
         "PdPatch" { 
-            ::pd_connect::pdsend "$top menuclose 0"
+            ::ui_connect::pdsend "$top menuclose 0"
         }
         "PdDialog|PdText|PdData|PdTool" { 
             switch -- [::getTitle $top] {
-                "Array"         { ::pd_array::closed  $top }
-                "Atom"          { ::pd_atom::closed   $top }
-                "Audio"         { ::pd_audio::closed  $top }
-                "Bang"          { ::pd_iem::closed    $top }
-                "Canvas"        { ::pd_canvas::closed $top }
-                "Data"          { ::pd_data::closed   $top }
-                "MIDI"          { ::pd_midi::closed   $top }
-                "Number"        { ::pd_iem::closed    $top }
-                "Panel"         { ::pd_iem::closed    $top }
-                "Path"          { ::pd_path::closed   $top }
-                "Slider"        { ::pd_iem::closed    $top }
-                "Radio Button"  { ::pd_iem::closed    $top }
-                "Text"          { ::pd_text::closed   $top }
-                "Toggle"        { ::pd_iem::closed    $top }
-                "VU"            { ::pd_iem::closed    $top }
+                "Array"         { ::ui_array::closed  $top }
+                "Atom"          { ::ui_atom::closed   $top }
+                "Audio"         { ::ui_audio::closed  $top }
+                "Bang"          { ::ui_iem::closed    $top }
+                "Canvas"        { ::ui_canvas::closed $top }
+                "Data"          { ::ui_data::closed   $top }
+                "MIDI"          { ::ui_midi::closed   $top }
+                "Number"        { ::ui_iem::closed    $top }
+                "Panel"         { ::ui_iem::closed    $top }
+                "Path"          { ::ui_path::closed   $top }
+                "Slider"        { ::ui_iem::closed    $top }
+                "Radio Button"  { ::ui_iem::closed    $top }
+                "Text"          { ::ui_text::closed   $top }
+                "Toggle"        { ::ui_iem::closed    $top }
+                "VU"            { ::ui_iem::closed    $top }
             }
         }
     }
@@ -467,7 +467,7 @@ proc _doPopup {top action} {
     variable popupX
     variable popupY
     
-    ::pd_connect::pdsend "$top done-popup $action $popupX $popupY"
+    ::ui_connect::pdsend "$top done-popup $action $popupX $popupY"
 }
 
 # ------------------------------------------------------------------------------------------------------------

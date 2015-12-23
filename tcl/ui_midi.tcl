@@ -12,12 +12,12 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pd_midi 1.0
+package provide ui_midi 1.0
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::pd_midi:: {
+namespace eval ::ui_midi:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -37,12 +37,12 @@ array set midiOutDevice {}
 
 proc show {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9 alsa} {
     
-    ::pd_menu::disableMidi
+    ::ui_menu::disableMidi
     
     if {$alsa} { 
-        ::pd_midi::_createAlsa $top $i1 $i2 $i3 $i4 $i5 $i6 $i7 $i8 $i9 $o1 $o2 $o3 $o4 $o5 $o6 $o7 $o8 $o9
+        ::ui_midi::_createAlsa $top $i1 $i2 $i3 $i4 $i5 $i6 $i7 $i8 $i9 $o1 $o2 $o3 $o4 $o5 $o6 $o7 $o8 $o9
     } else {
-        ::pd_midi::_create $top $i1 $i2 $i3 $i4 $i5 $i6 $i7 $i8 $i9 $o1 $o2 $o3 $o4 $o5 $o6 $o7 $o8 $o9
+        ::ui_midi::_create $top $i1 $i2 $i3 $i4 $i5 $i6 $i7 $i8 $i9 $o1 $o2 $o3 $o4 $o5 $o6 $o7 $o8 $o9
     }
 }
 
@@ -83,12 +83,12 @@ proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     pack $top.f.inputs              {*}[::packCategory]
     pack $top.f.outputs             {*}[::packCategoryNext]
     
-    foreach e $midiIn  { if {$e ne "none" || $noInput}  { ::pd_midi::_makeIn  $top.f.inputs  [incr i] } }
-    foreach e $midiOut { if {$e ne "none" || $noOutput} { ::pd_midi::_makeOut $top.f.outputs [incr j] } }
+    foreach e $midiIn  { if {$e ne "none" || $noInput}  { ::ui_midi::_makeIn  $top.f.inputs  [incr i] } }
+    foreach e $midiOut { if {$e ne "none" || $noOutput} { ::ui_midi::_makeOut $top.f.outputs [incr j] } }
     
-    bind $top <Destroy> { ::pd_menu::enableMidi }
+    bind $top <Destroy> { ::ui_menu::enableMidi }
     
-    wm protocol $top WM_DELETE_WINDOW   "::pd_midi::closed $top"
+    wm protocol $top WM_DELETE_WINDOW   "::ui_midi::closed $top"
 }
 
 proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
@@ -125,13 +125,13 @@ proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     ttk::label $top.f.inputs.inLabel    {*}[::styleLabel] \
                                             -text [_ "Ports"]
     ttk::entry $top.f.inputs.in         {*}[::styleEntryNumber] \
-                                            -textvariable ::pd_midi::midiAlsaIn \
+                                            -textvariable ::ui_midi::midiAlsaIn \
                                             -width $::width(small)
     
     ttk::label $top.f.outputs.outLabel  {*}[::styleLabel] \
                                             -text [_ "Ports"]
     ttk::entry $top.f.outputs.out       {*}[::styleEntryNumber] \
-                                            -textvariable ::pd_midi::midiAlsaOut \
+                                            -textvariable ::ui_midi::midiAlsaOut \
                                             -width $::width(small)
                         
     pack $top.f.inputs.inLabel          -side left -fill x -expand 1 -padx {0 20}
@@ -146,14 +146,14 @@ proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     
     after idle "$top.f.inputs.in selection range 0 end"
     
-    bind $top <Destroy> { ::pd_menu::enableMidi }
+    bind $top <Destroy> { ::ui_menu::enableMidi }
         
-    wm protocol $top WM_DELETE_WINDOW   "::pd_midi::closed $top"
+    wm protocol $top WM_DELETE_WINDOW   "::ui_midi::closed $top"
 }
 
 proc closed {top} {
 
-    ::pd_midi::_apply $top
+    ::ui_midi::_apply $top
     ::cancel $top
 }
 
@@ -167,7 +167,7 @@ proc _makeIn {top k} {
     
     set devices [format "%s.inDevice%d" $top $k]
     
-    ::createMenuByIndex $devices $midiIn ::pd_midi::midiInDevice($k) -width -$::width(large)
+    ::createMenuByIndex $devices $midiIn ::ui_midi::midiInDevice($k) -width -$::width(large)
     
     pack $devices -side top -fill x -expand 1
 }
@@ -179,7 +179,7 @@ proc _makeOut {top k} {
     
     set devices [format "%s.outDevice%d" $top $k]
     
-    ::createMenuByIndex $devices $midiOut ::pd_midi::midiOutDevice($k) -width -$::width(large)
+    ::createMenuByIndex $devices $midiOut ::ui_midi::midiOutDevice($k) -width -$::width(large)
     
     pack $devices -side top -fill x -expand 1
 }
@@ -198,7 +198,7 @@ proc _apply {top} {
     
     _forceValues
     
-    ::pd_connect::pdsend "pd midi-dialog \
+    ::ui_connect::pdsend "pd midi-dialog \
             $midiInDevice(1) \
             $midiInDevice(2) \
             $midiInDevice(3) \
@@ -220,7 +220,7 @@ proc _apply {top} {
             $midiAlsaIn \
             $midiAlsaOut"
     
-    ::pd_connect::pdsend "pd save-preferences"
+    ::ui_connect::pdsend "pd save-preferences"
 }
 
 # ------------------------------------------------------------------------------------------------------------

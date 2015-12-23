@@ -402,7 +402,7 @@ static void scalar_properties(t_gobj *z, struct _glist *owner)
     binbuf_free(b);
     buf = resizebytes(buf, bufsize, bufsize+1);
     buf[bufsize] = 0;
-    sprintf(buf2, "::pd_data::show %%s {");
+    sprintf(buf2, "::ui_data::show %%s {");
     gfxstub_new((t_pd *)owner, x, buf2);
     sys_gui(buf);
     sys_gui("}\n");

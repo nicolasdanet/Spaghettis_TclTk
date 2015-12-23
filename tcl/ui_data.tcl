@@ -7,115 +7,70 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Copyright (c) 2002-2012 krzYszcz and others.
+# Scalar properties.
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Text for [qlist] and [textfile] objects.
+package provide ui_data 1.0
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pd_text 1.0
+namespace eval ::ui_data:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::pd_text:: {
+proc show {top content} {
 
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc show {top} {
-
-    _create $top
-}
-
-proc release {top} {
-
-    destroy $top; ::pd_connect::pdsend "$top signoff"
+    ::ui_data::_create $top $content
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc append {top contents} {
+proc _create {top content} {
 
-    $top.text insert end $contents
-}
-
-proc clear {top} {
-
-    $top.text delete 1.0 end
-}
-
-proc dirty {top flag} {
-
-    $top.text edit modified $flag
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc _create {top} {
-    
-    toplevel $top -class PdText
-    wm title $top [_ "Text"]
+    toplevel $top -class PdData
+    wm title $top [_ "Data"]
     wm group $top .
     
     wm minsize  $top {*}[::styleMinimumSize]
     wm geometry $top [format "=600x400%s" [::rightNextTo $::var(windowFocused)]]
-    
+
     text $top.text  -font [::styleFontText] \
                     -borderwidth 0 \
                     -highlightthickness 0
     
     pack $top.text  -side left -fill both -expand 1
+
+    $top.text insert end $content
     
-    bind $top.text  <<SelectAll>>       "::pd_text::_selectAll $top"
-    bind $top.text  <<Modified>>        "::pd_text::_modified $top"
-    bind $top.text  <<Save>>            "::pd_text::_save $top"
-    
-    wm protocol $top WM_DELETE_WINDOW   "::pd_text::closed $top"
+    wm protocol $top WM_DELETE_WINDOW   "::ui_data::closed $top"
         
     focus $top.text
 }
 
 proc closed {top} {
 
-    if {[$top.text edit modified]} { 
-        ::pd_confirm::checkClose $top { ::pd_text::_save $top } {} { return -level 2 }
-    }
-
-    ::pd_connect::pdsend "$top close"
+    ::ui_data::_apply $top
+    ::cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _selectAll {top} {
+proc _apply {top} {
 
-    $top.text tag add sel 1.0 end
-}
-
-proc _modified {top} {
-
-    if {[tk windowingsystem] eq "aqua"} { wm attributes $top -modified [$top.text edit modified] }
-}
-
-proc _save {top} {
-
-    ::pd_connect::pdsend "$top clear"
-        
     for {set i 1} {[$top.text compare $i.end < end]} {incr i 1} {
         set line [$top.text get $i.0 $i.end]
         if {$line != ""} {
-            ::pd_connect::pdsend "$top addline [::escaped $line]"
+            ::ui_connect::pdsend "$top data $line"
         }
     }
     
-    ::pd_text::dirty $top 0
+    ::ui_connect::pdsend "$top end"
 }
 
 # ------------------------------------------------------------------------------------------------------------

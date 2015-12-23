@@ -156,7 +156,7 @@ static void my_canvas_properties(t_gobj *z, t_glist *owner)
     t_symbol *srl[3];
 
     iem_properties(&x->x_gui, srl);
-    sprintf(buf, "::pd_iem::create %%s Panel \
+    sprintf(buf, "::ui_iem::create %%s Panel \
             %d %d {Grip Size} 0 0 empty \
             %d {Panel Width} %d {Panel Height} \
             -1 empty empty \

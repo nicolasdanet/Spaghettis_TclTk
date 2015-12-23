@@ -451,7 +451,7 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
         sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
 
     }
-    sprintf(buf, "::pd_iem::create %%s Number \
+    sprintf(buf, "::ui_iem::create %%s Number \
             %d %d Digits %d %d {Box Height} \
             %g {Value Low} %g {Value High} \
             %d Linear Logarithmic \

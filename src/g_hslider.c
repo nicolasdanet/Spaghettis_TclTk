@@ -266,7 +266,7 @@ static void hslider_properties(t_gobj *z, t_glist *owner)
     t_symbol *srl[3];
 
     iem_properties(&x->x_gui, srl);
-    sprintf(buf, "::pd_iem::create %%s Slider \
+    sprintf(buf, "::ui_iem::create %%s Slider \
             %d %d {Slider Width} %d %d {Slider Height} \
             %g {Value Left} %g {Value Right} \
             %d Linear Logarithmic \

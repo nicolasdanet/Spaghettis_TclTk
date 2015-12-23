@@ -29,7 +29,7 @@ proc getFont {size} {
 
 proc getTitle {top} { 
     
-    if {[winfo class $top] eq "PdPatch"} { return [::pd_patch::getTitle $top] }
+    if {[winfo class $top] eq "PdPatch"} { return [::ui_patch::getTitle $top] }
     
     return [wm title $top]
 }
@@ -141,12 +141,12 @@ proc ifAqua {a b} {
 
 proc ping {} {
 
-    ::pd_connect::pdsend "pd ping"
+    ::ui_connect::pdsend "pd ping"
 }
 
 proc watchdog {} {
 
-    ::pd_connect::pdsend "pd watchdog"; after 2000 { ::watchdog }
+    ::ui_connect::pdsend "pd watchdog"; after 2000 { ::watchdog }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -157,7 +157,7 @@ proc cancel {w} {
     set top [winfo toplevel $w]
     set class [winfo class $top]
     
-    if {$class eq "PdDialog" || $class eq "PdData"} { ::pd_connect::pdsend "$top cancel" }
+    if {$class eq "PdDialog" || $class eq "PdData"} { ::ui_connect::pdsend "$top cancel" }
 }
 
 # ------------------------------------------------------------------------------------------------------------

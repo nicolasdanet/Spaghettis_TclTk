@@ -12,12 +12,12 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pd_path 1.0
+package provide ui_path 1.0
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::pd_path:: {
+namespace eval ::ui_path:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -26,12 +26,12 @@ namespace eval ::pd_path:: {
 
 proc show {{top {}}} { 
     
-    if {[winfo exists .path]} { ::bringToFront .path } else { ::pd_path::_create }
+    if {[winfo exists .path]} { ::bringToFront .path } else { ::ui_path::_create }
 }
 
 proc hide {} {
 
-    ::pd_path::closed
+    ::ui_path::closed
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -60,11 +60,11 @@ proc _create {} {
 
     foreach item $::var(searchPath) { .path.f.paths.list insert end $item }
     
-    bind .path.f.paths.list <BackSpace>         "::pd_path::_deleteItems"
-    bind .path.f.paths.list <Double-Button-1>   "::pd_path::_addItem"
+    bind .path.f.paths.list <BackSpace>         "::ui_path::_deleteItems"
+    bind .path.f.paths.list <Double-Button-1>   "::ui_path::_addItem"
     bind .path.f.paths.list <Triple-Button-1>   {}
     
-    wm protocol .path WM_DELETE_WINDOW { ::pd_path::closed }
+    wm protocol .path WM_DELETE_WINDOW { ::ui_path::closed }
 }
 
 proc closed {{top {}}} {
@@ -85,7 +85,7 @@ proc _addItem {} {
     
     if {$item ne ""} { .path.f.paths.list insert end $item; .path.f.paths.list selection set end }
     
-    ::pd_path::_apply
+    ::ui_path::_apply
 }
 
 proc _deleteItems {} {
@@ -94,7 +94,7 @@ proc _deleteItems {} {
     
     foreach item [.path.f.paths.list curselection] { .path.f.paths.list delete [expr {$item - $i}]; incr i }
     
-    ::pd_path::_apply
+    ::ui_path::_apply
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -106,8 +106,8 @@ proc _apply {} {
     
     foreach path [.path.f.paths.list get 0 end] { lappend ::var(searchPath) [::encoded $path] }
 
-    ::pd_connect::pdsend "pd path-dialog $::var(searchPath)"
-    ::pd_connect::pdsend "pd save-preferences"
+    ::ui_connect::pdsend "pd path-dialog $::var(searchPath)"
+    ::ui_connect::pdsend "pd save-preferences"
 }
 
 # ------------------------------------------------------------------------------------------------------------

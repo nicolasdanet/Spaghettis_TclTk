@@ -84,28 +84,28 @@ set auto_path [linsert $auto_path 0 [file dirname [info script]]]
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-if {[tk windowingsystem] eq "aqua"} { package require pd_apple }
+if {[tk windowingsystem] eq "aqua"} { package require ui_apple }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package require pd_array
-package require pd_atom
-package require pd_audio
-package require pd_bind
-package require pd_canvas
-package require pd_confirm
-package require pd_connect
-package require pd_console
-package require pd_data
-package require pd_file
-package require pd_iem
-package require pd_menu
-package require pd_midi
-package require pd_object
-package require pd_patch
-package require pd_path
-package require pd_text
+package require ui_array
+package require ui_atom
+package require ui_audio
+package require ui_bind
+package require ui_canvas
+package require ui_confirm
+package require ui_connect
+package require ui_console
+package require ui_data
+package require ui_file
+package require ui_iem
+package require ui_menu
+package require ui_midi
+package require ui_object
+package require ui_patch
+package require ui_path
+package require ui_text
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -178,15 +178,15 @@ set var(windowStagger)          0
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-source [file join [file dirname [info script]] pd_global.tcl]
+source [file join [file dirname [info script]] ui_global.tcl]
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
 if {[tk windowingsystem] eq "x11"} {
-    source [file join [file dirname [info script]] pd_x11.tcl]
+    source [file join [file dirname [info script]] ui_x11.tcl]
 } else {
-    source [file join [file dirname [info script]] pd_aqua.tcl]
+    source [file join [file dirname [info script]] ui_aqua.tcl]
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -217,10 +217,10 @@ proc main {argc argv} {
     if {$argc == 1 && [string is int $argv]} {
         set ::var(tcpHost) "localhost"
         set ::var(tcpPort) $argv
-        ::pd_connect::clientSocket $::var(tcpPort) $::var(tcpHost)
+        ::ui_connect::clientSocket $::var(tcpPort) $::var(tcpHost)
         
     } else {
-        ::pd_connect::serverSocket
+        ::ui_connect::serverSocket
         set executable [file join [file dirname [info script]] "../bin/pd"]
         exec -- $executable -guiport $::var(tcpPort) &
     }
@@ -250,19 +250,19 @@ proc initialize {audioAPIs midiAPIs} {
 
     # Initialize some packages.
     
-    foreach module {pd_menu pd_console pd_bind pd_file} { [format "::%s::initialize" $module] }
+    foreach module {ui_menu ui_console ui_bind ui_file} { [format "::%s::initialize" $module] }
     
     focus .console
         
     # Respond to executable.
     
-    ::pd_connect::pdsend "pd init [::escaped [pwd]] $measured"
+    ::ui_connect::pdsend "pd init [::escaped [pwd]] $measured"
     
     # Open pended files.
     
     set ::var(isInitialized) 1
     
-    foreach filename $::var(filesOpenPended) { ::pd_file::openFile $filename }
+    foreach filename $::var(filesOpenPended) { ::ui_file::openFile $filename }
 }
 
 # ------------------------------------------------------------------------------------------------------------

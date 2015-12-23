@@ -12,12 +12,12 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pd_iem 1.0
+package provide ui_iem 1.0
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::pd_iem:: {
+namespace eval ::ui_iem:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -171,7 +171,7 @@ proc create {top type
         ttk::label $top.f.properties.widthLabel         {*}[::styleLabel] \
                                                             -text [_ $widthLabel]
         ttk::entry $top.f.properties.width              {*}[::styleEntryNumber] \
-                                                            -textvariable ::pd_iem::iemWidth($top) \
+                                                            -textvariable ::ui_iem::iemWidth($top) \
                                                             -width $::width(small)
         
         grid $top.f.properties.widthLabel               -row [incr row] -column 0 -sticky ew
@@ -189,7 +189,7 @@ proc create {top type
         ttk::label $top.f.properties.heightLabel        {*}[::styleLabel] \
                                                             -text [_ $heightLabel]
         ttk::entry $top.f.properties.height             {*}[::styleEntryNumber] \
-                                                            -textvariable ::pd_iem::iemHeight($top) \
+                                                            -textvariable ::ui_iem::iemHeight($top) \
                                                             -width $::width(small)
                                                         
         grid $top.f.properties.heightLabel              -row [incr row] -column 0 -sticky ew
@@ -203,7 +203,7 @@ proc create {top type
         ttk::label $top.f.properties.option1Label       {*}[::styleLabel] \
                                                             -text [_ $option1Label]
         ttk::entry $top.f.properties.option1            {*}[::styleEntryNumber] \
-                                                            -textvariable ::pd_iem::iemOption1($top) \
+                                                            -textvariable ::ui_iem::iemOption1($top) \
                                                             -width $::width(small)
 
         grid $top.f.properties.option1Label             -row [incr row] -column 0 -sticky ew
@@ -217,7 +217,7 @@ proc create {top type
         ttk::label $top.f.properties.option2Label       {*}[::styleLabel] \
                                                             -text [_ $option2Label]
         ttk::entry $top.f.properties.option2            {*}[::styleEntryNumber] \
-                                                            -textvariable ::pd_iem::iemOption2($top) \
+                                                            -textvariable ::ui_iem::iemOption2($top) \
                                                             -width $::width(small)
                                                         
         grid $top.f.properties.option2Label             -row [incr row] -column 0 -sticky ew
@@ -231,7 +231,7 @@ proc create {top type
         ttk::label $top.f.properties.extraLabel         {*}[::styleLabel] \
                                                             -text [_ $extraLabel]
         ttk::entry $top.f.properties.extra              {*}[::styleEntryNumber] \
-                                                            -textvariable ::pd_iem::iemExtra($top) \
+                                                            -textvariable ::ui_iem::iemExtra($top) \
                                                             -width $::width(small)
 
         grid $top.f.properties.extraLabel               -row [incr row] -column 0 -sticky ew
@@ -245,7 +245,7 @@ proc create {top type
         ttk::label $top.f.properties.loadbangLabel      {*}[::styleLabel] \
                                                             -text [_ "Load On Start"]
         ttk::checkbutton $top.f.properties.loadbang     {*}[::styleCheckButton] \
-                                                            -variable ::pd_iem::iemLoadbang($top) \
+                                                            -variable ::ui_iem::iemLoadbang($top) \
                                                             -takefocus 0
         
         grid $top.f.properties.loadbangLabel            -row [incr row] -column 0 -sticky ew
@@ -258,7 +258,7 @@ proc create {top type
     
         set values [list [_ $check1] [_ $check2]]
         
-        ::createMenuByIndex $top.f.properties.check     $values ::pd_iem::iemCheck($top) \
+        ::createMenuByIndex $top.f.properties.check     $values ::ui_iem::iemCheck($top) \
                                                             -width [::measure $values]
         
         grid $top.f.properties.check                    -row [incr row] -column 1 -sticky ew -columnspan 2
@@ -270,7 +270,7 @@ proc create {top type
     
         set values [list [_ "Jump"] [_ "Steady"]]
         
-        ::createMenuByIndex $top.f.properties.steady    $values ::pd_iem::iemSteady($top) \
+        ::createMenuByIndex $top.f.properties.steady    $values ::ui_iem::iemSteady($top) \
                                                             -width [::measure $values]
         
         grid $top.f.properties.steady                   -row [incr row] -column 1 -sticky ew -columnspan 2
@@ -288,7 +288,7 @@ proc create {top type
         grid $top.f.colors.nameLabel                    -row [incr row] -column 0 -sticky ew
         grid $top.f.colors.name                         -row $row       -column 1 -sticky ew -pady 2
     
-        bind $top.f.colors.name <Button>                "::pd_iem::_chooseNameColor $top %W"
+        bind $top.f.colors.name <Button>                "::ui_iem::_chooseNameColor $top %W"
     }
 
     if {$backgroundColor != -1}     {
@@ -301,7 +301,7 @@ proc create {top type
         grid $top.f.colors.backgroundLabel              -row [incr row] -column 0 -sticky ew
         grid $top.f.colors.background                   -row $row       -column 1 -sticky ew -pady 2
         
-        bind $top.f.colors.background <Button>          "::pd_iem::_chooseBackgroundColor $top %W"
+        bind $top.f.colors.background <Button>          "::ui_iem::_chooseBackgroundColor $top %W"
     }
     
     if {$frontColor != -1}          {
@@ -314,31 +314,31 @@ proc create {top type
         grid $top.f.colors.frontLabel                   -row [incr row] -column 0 -sticky ew
         grid $top.f.colors.front                        -row $row       -column 1 -sticky ew -pady 2
 
-        bind $top.f.colors.front <Button>               "::pd_iem::_chooseFrontColor $top %W"
+        bind $top.f.colors.front <Button>               "::ui_iem::_chooseFrontColor $top %W"
     }
     
     ttk::label $top.f.label.nameLabel                   {*}[::styleLabel] \
                                                             -text [_ "Name"]
     ttk::entry $top.f.label.name                        {*}[::styleEntry] \
-                                                            -textvariable ::pd_iem::iemName($top) \
+                                                            -textvariable ::ui_iem::iemName($top) \
                                                             -width $::width(medium)
     
     ttk::label $top.f.label.nameFontSizeLabel           {*}[::styleLabel] \
                                                             -text [_ "Font Size"]
     ttk::entry $top.f.label.nameFontSize                {*}[::styleEntryNumber] \
-                                                            -textvariable ::pd_iem::iemNameFontSize($top) \
+                                                            -textvariable ::ui_iem::iemNameFontSize($top) \
                                                             -width $::width(small)
                                                             
     ttk::label $top.f.label.nameDeltaXLabel             {*}[::styleLabel] \
                                                             -text [_ "Position X"]
     ttk::entry $top.f.label.nameDeltaX                  {*}[::styleEntryNumber] \
-                                                            -textvariable ::pd_iem::iemNameDeltaX($top) \
+                                                            -textvariable ::ui_iem::iemNameDeltaX($top) \
                                                             -width $::width(small)
     
     ttk::label $top.f.label.nameDeltaYLabel             {*}[::styleLabel] \
                                                             -text [_ "Position Y"]
     ttk::entry $top.f.label.nameDeltaY                  {*}[::styleEntryNumber] \
-                                                            -textvariable ::pd_iem::iemNameDeltaY($top) \
+                                                            -textvariable ::ui_iem::iemNameDeltaY($top) \
                                                             -width $::width(small)
 
     set row -1
@@ -362,7 +362,7 @@ proc create {top type
         ttk::label $top.f.label.sendLabel               {*}[::styleLabel] \
                                                             -text [_ "Send"]
         ttk::entry $top.f.label.send                    {*}[::styleEntry] \
-                                                            -textvariable ::pd_iem::iemSend($top) \
+                                                            -textvariable ::ui_iem::iemSend($top) \
                                                             -width $::width(medium)
                                                             
         grid $top.f.label.sendLabel                     -row [incr row] -column 0 -sticky ew
@@ -376,7 +376,7 @@ proc create {top type
         ttk::label $top.f.label.receiveLabel            {*}[::styleLabel] \
                                                             -text [_ "Receive"]
         ttk::entry $top.f.label.receive                 {*}[::styleEntry] \
-                                                            -textvariable ::pd_iem::iemReceive($top) \
+                                                            -textvariable ::ui_iem::iemReceive($top) \
                                                             -width $::width(medium)
         
         grid $top.f.label.receiveLabel                  -row [incr row] -column 0 -sticky ew
@@ -394,7 +394,7 @@ proc create {top type
     grid columnconfigure $top.f.label       1 -weight 1
     grid columnconfigure $top.f.label       2 -weight 0
     
-    wm protocol $top WM_DELETE_WINDOW   "::pd_iem::closed $top"
+    wm protocol $top WM_DELETE_WINDOW   "::ui_iem::closed $top"
 }
 
 proc closed {top} {
@@ -424,7 +424,7 @@ proc closed {top} {
     variable iemNameColor
     variable iemSteady
     
-    ::pd_iem::_apply $top
+    ::ui_iem::_apply $top
     
     unset iemType($top)
     unset iemWidth($top)
@@ -493,7 +493,7 @@ proc _apply {top} {
     _forceDelta     $top
     _forceFont      $top
     
-    ::pd_connect::pdsend "$top dialog \
+    ::ui_connect::pdsend "$top dialog \
             $iemWidth($top) \
             $iemHeight($top) \
             $iemOption1($top) \
@@ -534,7 +534,7 @@ proc _forceHeight {top} {
     variable iemHeightMinimum
     variable iemHeightLabel
 
-    if {$::pd_iem::iemHeightLabel($top) ne "empty"} {
+    if {$::ui_iem::iemHeightLabel($top) ne "empty"} {
         set iemHeight($top) [::ifInteger $iemHeight($top) $iemHeight(${top}.old)]
         set iemHeight($top) [::tcl::mathfunc::max $iemHeight($top) $iemHeightMinimum($top)]
     }
@@ -546,7 +546,7 @@ proc _forceExtra {top} {
     variable iemExtraMaximum
     variable iemExtraLabel
 
-    if {$::pd_iem::iemExtraLabel($top) ne "empty"} {
+    if {$::ui_iem::iemExtraLabel($top) ne "empty"} {
         set iemExtra($top) [::ifInteger $iemExtra($top) $iemExtra(${top}.old)]
         set iemExtra($top) [::tcl::mathfunc::max $iemExtra($top) 1]
         set iemExtra($top) [::tcl::mathfunc::min $iemExtra($top) $iemExtraMaximum($top)]

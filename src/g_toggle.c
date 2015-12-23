@@ -225,7 +225,7 @@ static void toggle_properties(t_gobj *z, t_glist *owner)
     t_symbol *srl[3];
 
     iem_properties(&x->x_gui, srl);
-    sprintf(buf, "::pd_iem::create %%s Toggle \
+    sprintf(buf, "::ui_iem::create %%s Toggle \
             %d %d Size 0 0 empty \
             %g {Non-Zero Value} 0 empty \
             -1 empty empty \

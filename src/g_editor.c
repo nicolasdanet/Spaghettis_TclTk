@@ -878,7 +878,7 @@ static void canvas_rightclick(t_canvas *x, int xpos, int ypos, t_gobj *y)
     int canprop, canopen;
     canprop = (!y || (y && class_getpropertiesfn(pd_class(&y->g_pd))));
     canopen = (y && zgetfn(&y->g_pd, gensym("menu-open")));
-    sys_vgui("::pd_menu::showPopup .x%lx %d %d %d %d\n",
+    sys_vgui("::ui_menu::showPopup .x%lx %d %d %d %d\n",
         x, xpos, ypos, canprop, canopen);
 }
 
@@ -964,12 +964,12 @@ void canvas_vis(t_canvas *x, t_floatarg f)
             int cbuflen;
             t_canvas *c = x;
             canvas_create_editor(x);
-            sys_vgui("::pd_patch::create .x%lx %d %d +%d+%d %d\n", x,
+            sys_vgui("::ui_patch::create .x%lx %d %d +%d+%d %d\n", x,
                 (int)(x->gl_screenx2 - x->gl_screenx1),
                 (int)(x->gl_screeny2 - x->gl_screeny1),
                 (int)(x->gl_screenx1), (int)(x->gl_screeny1),
                 x->gl_edit);
-           snprintf(cbuf, PD_STRING - 2, "::pd_patch::pdtk_canvas_setparents .x%lx",
+           snprintf(cbuf, PD_STRING - 2, "::ui_patch::pdtk_canvas_setparents .x%lx",
                 (unsigned long)c);
             while (c->gl_owner) {
                 c = c->gl_owner;
@@ -1073,14 +1073,14 @@ void canvas_properties(t_gobj*z, t_glist*unused)
     char graphbuf[200];
     if (glist_isgraph(x) != 0)
         sprintf(graphbuf,
-            "::pd_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
+            "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
                 0., 0.,
                 glist_isgraph(x) ,//1,
                 x->gl_x1, x->gl_y1, x->gl_x2, x->gl_y2, 
                 (int)x->gl_pixwidth, (int)x->gl_pixheight,
                 (int)x->gl_xmargin, (int)x->gl_ymargin);
     else sprintf(graphbuf,
-            "::pd_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
+            "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
                 glist_dpixtodx(x, 1), glist_dpixtody(x, 1),
                 0,
                 0., 1., 1., -1., 
@@ -1648,7 +1648,7 @@ void canvas_mouseup(t_canvas *x,
                 pd_vmess(&gl2->gl_obj.te_g.g_pd, gensym("menu-open"), "");
                 x->gl_editor->e_onmotion = ACTION_NONE;
                 sys_vgui(
-"::pd_confirm::checkAction .x%lx { Discard changes to %s? } { ::pd_connect::pdsend .x%lx dirty 0 } { no }\n",
+"::ui_confirm::checkAction .x%lx { Discard changes to %s? } { ::ui_connect::pdsend .x%lx dirty 0 } { no }\n",
                     canvas_getroot(gl2),
                         canvas_getroot(gl2)->gl_name->s_name, gl2);
                 return;
@@ -1681,7 +1681,7 @@ static void canvas_displaceselection(t_canvas *x, int dx, int dy)
     }
     if (resortin) canvas_resortinlets(x);
     if (resortout) canvas_resortoutlets(x);
-    sys_vgui("::pd_patch::updateScrollRegion .x%lx.c\n", x);
+    sys_vgui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
     if (x->gl_editor->e_selection)
         canvas_dirty(x, 1);
 }
@@ -1970,12 +1970,12 @@ void glob_verifyquit(void *dummy, t_floatarg f)
         if (g2 = glist_finddirty(g))
     {
         canvas_vis(g2, 1);
-            sys_vgui("::pd_confirm::checkClose .x%lx { ::pd_connect::pdsend $top menusave 1 } { ::pd_connect::pdsend .x%lx menuclose 3 } {}\n",
+            sys_vgui("::ui_confirm::checkClose .x%lx { ::ui_connect::pdsend $top menusave 1 } { ::ui_connect::pdsend .x%lx menuclose 3 } {}\n",
                      canvas_getroot(g2), g2);
         return;
     }
     if (f == 0 && sys_perf)
-        sys_vgui("::pd_confirm::checkAction .console { Really quit? } { ::pd_connect::pdsend pd quit } { yes }\n");
+        sys_vgui("::ui_confirm::checkAction .console { Really quit? } { ::ui_connect::pdsend pd quit } { yes }\n");
     else glob_quit(0);
 }
 
@@ -1998,13 +1998,13 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         if (g)
         {
             pd_vmess(&g->gl_obj.te_g.g_pd, gensym("menu-open"), "");
-            sys_vgui("::pd_confirm::checkClose .x%lx { ::pd_connect::pdsend $top menusave 1 } { ::pd_connect::pdsend .x%lx menuclose 2 } {}\n",
+            sys_vgui("::ui_confirm::checkClose .x%lx { ::ui_connect::pdsend $top menusave 1 } { ::ui_connect::pdsend .x%lx menuclose 2 } {}\n",
                      canvas_getroot(g), g);
             return;
         }
         else if (sys_perf)
         {
-            sys_vgui("::pd_confirm::checkAction .x%lx { Close this window? } { ::pd_connect::pdsend .x%lx menuclose 1 } { yes }\n",
+            sys_vgui("::ui_confirm::checkAction .x%lx { Close this window? } { ::ui_connect::pdsend .x%lx menuclose 1 } { yes }\n",
                      canvas_getroot(x), x);
         }
         else pd_free(&x->gl_obj.te_g.g_pd);
@@ -2020,7 +2020,7 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         if (g)
         {
             pd_vmess(&g->gl_obj.te_g.g_pd, gensym("menu-open"), "");
-            sys_vgui("::pd_confirm::checkClose .x%lx { ::pd_connect::pdsend $top menusave 1 } { ::pd_connect::pdsend .x%lx menuclose 2 } {}\n",
+            sys_vgui("::ui_confirm::checkClose .x%lx { ::ui_connect::pdsend $top menusave 1 } { ::ui_connect::pdsend .x%lx menuclose 2 } {}\n",
                      canvas_getroot(x), g);
             return;
         }
@@ -2361,7 +2361,7 @@ static void canvas_cut(t_canvas *x)
             canvas_undo_set_cut(x, UCUT_CUT), "cut");
         canvas_copy(x);
         canvas_doclear(x);
-        sys_vgui("::pd_patch::updateScrollRegion .x%lx.c\n", x);
+        sys_vgui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
     }
 }
 
@@ -2405,7 +2405,7 @@ static void canvas_dopaste(t_canvas *x, t_binbuf *b)
     paste_canvas = 0;
     canvas_resume_dsp(dspstate);
     canvas_dirty(x, 1);
-    sys_vgui("::pd_patch::updateScrollRegion .x%lx.c\n", x);
+    sys_vgui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
     glist_donewloadbangs(x);
     asym->s_thing = bounda;
     s__X.s_thing = boundx;
@@ -2419,7 +2419,7 @@ static void canvas_paste(t_canvas *x)
     if (x->gl_editor->e_textedfor)
     {
         /* simulate keystrokes as if the copy buffer were typed in. */
-        // sys_vgui("::pd_object::pasteText .x%lx\n", x);
+        // sys_vgui("::ui_object::pasteText .x%lx\n", x);
     }
     else
     {
@@ -2700,7 +2700,7 @@ void canvas_editmode(t_canvas *x, t_floatarg state)
         }
     }
     if (glist_isvisible(x))
-      sys_vgui("::pd_patch::setEditMode .x%lx %d\n",
+      sys_vgui("::ui_patch::setEditMode .x%lx %d\n",
           glist_getcanvas(x), x->gl_edit);
 }
 

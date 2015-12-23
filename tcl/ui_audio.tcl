@@ -12,12 +12,12 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pd_audio 1.0
+package provide ui_audio 1.0
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::pd_audio:: {
+namespace eval ::ui_audio:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -71,7 +71,7 @@ proc show {top \
     variable audioCallback
     variable audioBlockSize
 
-    ::pd_menu::disableAudio
+    ::ui_menu::disableAudio
         
     array set audioInDevice  [ list 1 $i1 2 $i2 3 $i3 4 $i4 ]
     array set audioOutDevice [ list 1 $o1 2 $o2 3 $o3 4 $o4 ]
@@ -125,19 +125,19 @@ proc show {top \
     ttk::label $top.f.properties.sampleRateLabel        {*}[::styleLabel] \
                                                             -text [_ "Sample Rate"]
     ttk::entry $top.f.properties.sampleRate             {*}[::styleEntryNumber] \
-                                                            -textvariable ::pd_audio::audioSampleRate \
+                                                            -textvariable ::ui_audio::audioSampleRate \
                                                             -width $::width(small)
     
     ttk::label $top.f.properties.delayLabel             {*}[::styleLabel] \
                                                             -text [_ "Delay in Milliseconds"]
     ttk::entry $top.f.properties.delay                  {*}[::styleEntryNumber] \
-                                                            -textvariable ::pd_audio::audioDelay \
+                                                            -textvariable ::ui_audio::audioDelay \
                                                             -width $::width(small)
 
     ttk::label $top.f.properties.blockSizeLabel         {*}[::styleLabel] \
                                                             -text [_ "Block Size"]
     
-    ::createMenuByValue $top.f.properties.blockSize     $values ::pd_audio::audioBlockSize \
+    ::createMenuByValue $top.f.properties.blockSize     $values ::ui_audio::audioBlockSize \
                                                             -width [::measure $values]
     
     grid $top.f.properties.sampleRateLabel              -row 0 -column 0 -sticky ew
@@ -150,7 +150,7 @@ proc show {top \
     ttk::label $top.f.properties.callbackLabel          {*}[::styleLabel] \
                                                             -text [_ "Use Callbacks"]
     ttk::checkbutton $top.f.properties.callback         {*}[::styleCheckButton] \
-                                                            -variable ::pd_audio::audioCallback \
+                                                            -variable ::ui_audio::audioCallback \
                                                             -takefocus 0
     
     grid $top.f.properties.callbackLabel                -row 2 -column 0 -sticky ew
@@ -166,12 +166,12 @@ proc show {top \
     }
     
     if {$multiple > 1} {
-        foreach e $audioIn  { ::pd_audio::_makeIn  $top.f.inputs  [incr i] }
-        foreach e $audioOut { ::pd_audio::_makeOut $top.f.outputs [incr j] }
+        foreach e $audioIn  { ::ui_audio::_makeIn  $top.f.inputs  [incr i] }
+        foreach e $audioOut { ::ui_audio::_makeOut $top.f.outputs [incr j] }
     }
 
-    if {![llength [winfo children $top.f.inputs]]}  { ::pd_audio::_makeIn  $top.f.inputs  1 }
-    if {![llength [winfo children $top.f.outputs]]} { ::pd_audio::_makeOut $top.f.outputs 1 }
+    if {![llength [winfo children $top.f.inputs]]}  { ::ui_audio::_makeIn  $top.f.inputs  1 }
+    if {![llength [winfo children $top.f.outputs]]} { ::ui_audio::_makeOut $top.f.outputs 1 }
 
     grid columnconfigure $top.f.properties  1 -weight 1
     grid columnconfigure $top.f.inputs      1 -weight 1
@@ -184,14 +184,14 @@ proc show {top \
     
     after idle "$top.f.properties.sampleRate selection range 0 end"
     
-    bind $top <Destroy> { ::pd_menu::enableAudio }
+    bind $top <Destroy> { ::ui_menu::enableAudio }
         
-    wm protocol $top WM_DELETE_WINDOW   "::pd_audio::closed $top"
+    wm protocol $top WM_DELETE_WINDOW   "::ui_audio::closed $top"
 }
 
 proc closed {top} {
 
-    ::pd_audio::_apply $top
+    ::ui_audio::_apply $top
     ::cancel $top
 }
 
@@ -210,13 +210,13 @@ proc _makeIn {top k} {
     set channels [format "%s.inChannels%d" $top $k]
     
     ttk::checkbutton $slot              {*}[::styleCheckButton] \
-                                            -variable ::pd_audio::audioInEnabled($k) \
+                                            -variable ::ui_audio::audioInEnabled($k) \
                                             -takefocus 0
     
-    ::createMenuByIndex $devices        $audioIn ::pd_audio::audioInDevice($k) -width -$::width(large)
+    ::createMenuByIndex $devices        $audioIn ::ui_audio::audioInDevice($k) -width -$::width(large)
         
     ttk::entry $channels                {*}[::styleEntryNumber] \
-                                        -textvariable ::pd_audio::audioInChannels($k) \
+                                        -textvariable ::ui_audio::audioInChannels($k) \
                                         -width $::width(tiny)
     
     set row [expr {$k - 1}]
@@ -240,13 +240,13 @@ proc _makeOut {top k} {
     set channels [format "%s.outChannels%d" $top $k]
     
     ttk::checkbutton $slot              {*}[::styleCheckButton] \
-                                        -variable ::pd_audio::audioOutEnabled($k) \
+                                        -variable ::ui_audio::audioOutEnabled($k) \
                                         -takefocus 0
 
-    ::createMenuByIndex $devices        $audioOut ::pd_audio::audioOutDevice($k) -width -$::width(large)
+    ::createMenuByIndex $devices        $audioOut ::ui_audio::audioOutDevice($k) -width -$::width(large)
     
     ttk::entry $channels                {*}[::styleEntryNumber] \
-                                        -textvariable ::pd_audio::audioOutChannels($k) \
+                                        -textvariable ::ui_audio::audioOutChannels($k) \
                                         -width $::width(tiny)
     
     set row [expr {$k - 1}]
@@ -276,7 +276,7 @@ proc _apply {top} {
     
     _forceValues
     
-    ::pd_connect::pdsend "pd audio-dialog \
+    ::ui_connect::pdsend "pd audio-dialog \
             $audioInDevice(1) \
             $audioInDevice(2) \
             $audioInDevice(3) \
@@ -298,7 +298,7 @@ proc _apply {top} {
             $audioCallback \
             $audioBlockSize"
     
-    ::pd_connect::pdsend "pd save-preferences"
+    ::ui_connect::pdsend "pd save-preferences"
 }
 
 # ------------------------------------------------------------------------------------------------------------

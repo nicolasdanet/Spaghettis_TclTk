@@ -306,7 +306,7 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
     }
     if (action == SEND_FIRST)
     {
-        sys_vgui("::pd_object::newText .x%lx.c {%s %s text} %f %f {%.*s} %d %s\n",
+        sys_vgui("::ui_object::newText .x%lx.c {%s %s text} %f %f {%.*s} %d %s\n",
             canvas, x->x_tag, rtext_gettype(x)->s_name,
             dispx + LMARGIN, dispy + TMARGIN,
             outchars_b, tempbuf, sys_hostfontsize(font),
@@ -315,7 +315,7 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
     }
     else if (action == SEND_UPDATE)
     {
-        sys_vgui("::pd_object::setText .x%lx.c %s {%.*s}\n",
+        sys_vgui("::ui_object::setText .x%lx.c %s {%.*s}\n",
             canvas, x->x_tag, outchars_b, tempbuf);
         if (pixwide != x->x_drawnwidth || pixhigh != x->x_drawnheight) 
             text_drawborder(x->x_text, x->x_glist, x->x_tag,
@@ -461,7 +461,7 @@ void rtext_activate(t_rtext *x, int state)
     t_canvas *canvas = glist_getcanvas(glist);
     if (state)
     {
-        sys_vgui("::pd_object::setEditing .x%lx %s 1\n", canvas, x->x_tag);
+        sys_vgui("::ui_object::setEditing .x%lx %s 1\n", canvas, x->x_tag);
         glist->gl_editor->e_textedfor = x;
         glist->gl_editor->e_textdirty = 0;
         x->x_dragfrom = x->x_selstart = 0;
@@ -470,7 +470,7 @@ void rtext_activate(t_rtext *x, int state)
     }
     else
     {
-        sys_vgui("::pd_object::setEditing .x%lx {} 0\n", canvas);
+        sys_vgui("::ui_object::setEditing .x%lx {} 0\n", canvas);
         if (glist->gl_editor->e_textedfor == x)
             glist->gl_editor->e_textedfor = 0;
         x->x_active = 0;

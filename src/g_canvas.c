@@ -78,7 +78,7 @@ static t_atom *canvas_newargv;
 void canvas_updatewindowlist( void)
 {
     /* if (! glist_reloading)        
-        sys_gui("::pd_menu::update_window_menu\n"); */
+        sys_gui("::ui_menu::update_window_menu\n"); */
 }
 
     /* add a glist the list of "root" canvases (toplevels without parents.) */
@@ -602,7 +602,7 @@ void canvas_reflecttitle(t_canvas *x)
         strcat(namebuf, ")");
     }
     else namebuf[0] = 0;*/
-    sys_vgui("::pd_patch::setTitle .x%lx {%s} {%s} %d\n",
+    sys_vgui("::ui_patch::setTitle .x%lx {%s} {%s} %d\n",
         x, canvas_getdir(x)->s_name, x->gl_name->s_name, x->gl_dirty);
 }
 
@@ -659,7 +659,7 @@ void canvas_map(t_canvas *x, t_floatarg f)
             canvas_drawlines(x);
             if (x->gl_isgraph && x->gl_goprect)
                 canvas_drawredrect(x, 1);
-            sys_vgui("::pd_patch::updateScrollRegion .x%lx.c\n", x);
+            sys_vgui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
         }
     }
     else

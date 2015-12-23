@@ -12,12 +12,12 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pd_patch 1.0
+package provide ui_patch 1.0
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::pd_patch:: {
+namespace eval ::ui_patch:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -69,7 +69,7 @@ proc create {top width height coordinates editable} {
     
     pack $top.c -side left -expand 1 -fill both
     
-    ::pd_bind::bindPatch $top
+    ::ui_bind::bindPatch $top
 	 
     focus $top.c
     
@@ -81,7 +81,7 @@ proc create {top width height coordinates editable} {
 
 proc willClose {top} {
 
-    ::pd_connect::pdsend "$top menuclose 0"
+    ::ui_connect::pdsend "$top menuclose 0"
 }
 
 proc closed {top} {
@@ -115,7 +115,7 @@ proc setTitle {top path name dirty} {
 
     wm title $top $patchTitle($top)
     
-    ::pd_patch::_reflectEditmode $top
+    ::ui_patch::_reflectEditmode $top
 }
 
 proc getTitle {top} {
@@ -139,9 +139,9 @@ proc setEditMode {top {state {}}} {
     set ::var(isEditMode) $state
     set patchIsEditMode($top) $state
     
-    if {$state} { ::pd_menu::enableCopyingAndEditing } else { ::pd_menu::disableCopyingAndEditing }
+    if {$state} { ::ui_menu::enableCopyingAndEditing } else { ::ui_menu::disableCopyingAndEditing }
     
-    ::pd_patch::_reflectEditmode $top
+    ::ui_patch::_reflectEditmode $top
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -213,7 +213,7 @@ proc _reflectEditmode {top} {
     variable suffix
     variable patchIsEditMode
     
-    set title [::pd_patch::getTitle $top]
+    set title [::ui_patch::getTitle $top]
     
     if {$patchIsEditMode($top)} { wm title $top "$title $suffix" } else { wm title $top "$title" }
 }

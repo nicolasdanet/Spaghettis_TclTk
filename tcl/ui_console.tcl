@@ -7,70 +7,94 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Scalar properties.
+# The PureData console.
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pd_data 1.0
+package provide ui_console 1.0
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::pd_data:: {
+namespace eval ::ui_console:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {top content} {
+proc initialize {} { ::ui_console::_create }
 
-    ::pd_data::_create $top $content
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc post {message} { 
+
+    .console.text.internal insert end $message
+    .console.text.internal insert end "\n"
+    
+    after idle ::ui_console::_update
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {top content} {
+proc _create {} {
 
-    toplevel $top -class PdData
-    wm title $top [_ "Data"]
-    wm group $top .
+    toplevel .console -class PdConsole
+    wm title .console [_ "PureData"]
+    wm group .console .
     
-    wm minsize  $top {*}[::styleMinimumSize]
-    wm geometry $top [format "=600x400%s" [::rightNextTo $::var(windowFocused)]]
+    wm minsize  .console {*}[::styleMinimumSize]
+    wm geometry .console "=400x300+30+60"
+    
+    .console configure -menu .menubar
 
-    text $top.text  -font [::styleFontText] \
-                    -borderwidth 0 \
-                    -highlightthickness 0
-    
-    pack $top.text  -side left -fill both -expand 1
-
-    $top.text insert end $content
-    
-    wm protocol $top WM_DELETE_WINDOW   "::pd_data::closed $top"
+    ttk::scrollbar  .console.scroll     -command ".console.text yview"
+    text            .console.text       -font [::styleFontConsole] \
+                                        -borderwidth 0 \
+                                        -insertwidth 0 \
+                                        -highlightthickness 0 \
+                                        -undo 0 \
+                                        -yscrollcommand ".console.scroll set"
         
-    focus $top.text
-}
+    pack .console.text                  -side right -fill both -expand 1
+        
+    bind .console <<SelectAll>> ".console.text tag add sel 1.0 end"
+    
+    wm protocol .console WM_DELETE_WINDOW   { ::ui_console::closed }
+    
+    # Read-only text widget ( http://wiki.tcl.tk/1152 ).
+  
+    rename ::.console.text ::.console.text.internal
 
-proc closed {top} {
-
-    ::pd_data::_apply $top
-    ::cancel $top
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc _apply {top} {
-
-    for {set i 1} {[$top.text compare $i.end < end]} {incr i 1} {
-        set line [$top.text get $i.0 $i.end]
-        if {$line != ""} {
-            ::pd_connect::pdsend "$top data $line"
+    proc ::.console.text {args} {
+        switch -exact -- [lindex $args 0] {
+            "insert"  {}
+            "delete"  {}
+            "default" { return [eval ::.console.text.internal $args] }
         }
     }
+}
+
+proc closed {} {
+
+    ::ui_connect::pdsend "pd verifyquit"
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _update {} {
+
+    set view [.console.text yview]
     
-    ::pd_connect::pdsend "$top end"
+    if {[lindex $view 0] == 0.0 && [lindex $view 1] == 1.0} {
+        pack forget .console.scroll
+    } else {
+        pack .console.scroll -side right -fill y -before .console.text
+    }
+        
+    .console.text yview end
 }
 
 # ------------------------------------------------------------------------------------------------------------

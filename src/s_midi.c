@@ -673,14 +673,14 @@ void glob_midi_properties(t_pd *dummy, t_floatarg flongform)
     sys_get_midi_devs(indevlist, &nindevs, outdevlist, &noutdevs,
         MAXNDEV, DEVDESCSIZE);
 
-    sys_gui("set ::pd_midi::midiIn {none}\n");
+    sys_gui("set ::ui_midi::midiIn {none}\n");
     for (i = 0; i < nindevs; i++)
-        sys_vgui("lappend ::pd_midi::midiIn {%s}\n",
+        sys_vgui("lappend ::ui_midi::midiIn {%s}\n",
             indevlist + i * DEVDESCSIZE);
 
-    sys_gui("set ::pd_midi::midiOut {none}\n");
+    sys_gui("set ::ui_midi::midiOut {none}\n");
     for (i = 0; i < noutdevs; i++)
-        sys_vgui("lappend ::pd_midi::midiOut {%s}\n",
+        sys_vgui("lappend ::ui_midi::midiOut {%s}\n",
             outdevlist + i * DEVDESCSIZE);
 
     sys_get_midi_params(&nindev, midiindev, &noutdev, midioutdev);
@@ -710,7 +710,7 @@ void glob_midi_properties(t_pd *dummy, t_floatarg flongform)
 #ifdef USEAPI_ALSA
       if (sys_midiapi == API_ALSA)
     sprintf(buf,
-"::pd_midi::show %%s \
+"::ui_midi::show %%s \
 %d %d %d %d 0 0 0 0 0 \
 %d %d %d %d 0 0 0 0 0 \
 1\n",
@@ -719,7 +719,7 @@ void glob_midi_properties(t_pd *dummy, t_floatarg flongform)
       else
 #endif
     sprintf(buf,
-"::pd_midi::show %%s \
+"::ui_midi::show %%s \
 %d %d %d %d %d %d %d %d %d \
 %d %d %d %d %d %d %d %d %d \
 0\n",

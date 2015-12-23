@@ -362,7 +362,7 @@ void canvas_menuarray(t_glist *canvas)
         if (!pd_findbyclass(gensym(arraybuf), garray_class))
             break;
     }
-    sprintf(cmdbuf, "::pd_array::show %%s array%d 100 3\n", gcount);
+    sprintf(cmdbuf, "::ui_array::show %%s array%d 100 3\n", gcount);
     gfxstub_new(&x->gl_obj.te_g.g_pd, x, cmdbuf);
 }
 
@@ -383,7 +383,7 @@ void garray_properties(t_garray *x)
         /* create dialog window.  LATER fix this to escape '$'
         properly; right now we just detect a leading '$' and escape
         it.  There should be a systematic way of doing this. */
-    sprintf(cmdbuf, "::pd_array::show %%s %s %d %d\n",
+    sprintf(cmdbuf, "::ui_array::show %%s %s %d %d\n",
             iem_dollar2raute(x->x_name)->s_name, a->a_n, x->x_saveit + 
             2 * filestyle);
     gfxstub_new(&x->x_gobj.g_pd, x, cmdbuf);
@@ -498,7 +498,7 @@ void garray_arrayviewlist_new(t_garray *x)
     }
     x->x_listviewing = 1;
     sprintf(cmdbuf,
-            "::pd_array::pdtk_array_listview_new %%s %s %d\n",
+            "::ui_array::pdtk_array_listview_new %%s %s %d\n",
             x->x_realname->s_name,
             0);
     gfxstub_new(&x->x_gobj.g_pd, x, cmdbuf);
@@ -533,13 +533,13 @@ void garray_arrayviewlist_fillpage(t_garray *x,
 
     if (page < 0) {
       page = 0;
-      sys_vgui("::pd_array::pdtk_array_listview_setpage %s %d\n",
+      sys_vgui("::ui_array::pdtk_array_listview_setpage %s %d\n",
                x->x_realname->s_name,
                (int)page);
     }
     else if ((page * ARRAYPAGESIZE) >= a->a_n) {
       page = (int)(((int)a->a_n - 1)/ (int)ARRAYPAGESIZE);
-      sys_vgui("::pd_array::pdtk_array_listview_setpage %s %d\n",
+      sys_vgui("::ui_array::pdtk_array_listview_setpage %s %d\n",
                x->x_realname->s_name,
                (int)page);
     }
@@ -566,7 +566,7 @@ void garray_arrayviewlist_fillpage(t_garray *x,
 void garray_arrayviewlist_close(t_garray *x)
 {
     x->x_listviewing = 0;
-    /*sys_vgui("::pd_array::pdtk_array_listview_closeWindow %s\n",
+    /*sys_vgui("::ui_array::pdtk_array_listview_closeWindow %s\n",
              x->x_realname->s_name);*/
 }
 /* } jsarlo */
@@ -807,7 +807,7 @@ void garray_redraw(t_garray *x)
     //else
     //{
       /* if (x->x_listviewing)
-        sys_vgui("::pd_array::pdtk_array_listview_fillpage %s\n",
+        sys_vgui("::ui_array::pdtk_array_listview_fillpage %s\n",
                  x->x_realname->s_name);*/
     //}
     /* } jsarlo */

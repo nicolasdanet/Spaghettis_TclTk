@@ -68,16 +68,16 @@ static void textbuf_senditup(t_textbuf *x)
     if (!x->b_guiconnect)
         return;
     binbuf_gettext(x->b_binbuf, &txt, &ntxt);
-    sys_vgui("::pd_text::clear .x%lx\n", x);
+    sys_vgui("::ui_text::clear .x%lx\n", x);
     for (i = 0; i < ntxt; )
     {
         char *j = strchr(txt+i, '\n');
         if (!j) j = txt + ntxt;
-        sys_vgui("::pd_text::append .x%lx {%.*s\n}\n",
+        sys_vgui("::ui_text::append .x%lx {%.*s\n}\n",
             x, j-txt-i, txt+i);
         i = (j-txt)+1;
     }
-    sys_vgui("::pd_text::dirty .x%lx 0\n", x);
+    sys_vgui("::ui_text::dirty .x%lx 0\n", x);
     freebytes(txt, ntxt);
 }
 
@@ -92,7 +92,7 @@ static void textbuf_open(t_textbuf *x)
     else
     {
         char buf[40];
-        sys_vgui("::pd_text::show .x%lx\n",
+        sys_vgui("::ui_text::show .x%lx\n",
             x /*, 600, 340, "myname", "text",
                  sys_hostfontsize(glist_getfont(x->b_canvas))*/);
         sprintf(buf, ".x%lx", (unsigned long)x);
@@ -103,7 +103,7 @@ static void textbuf_open(t_textbuf *x)
 
 static void textbuf_close(t_textbuf *x)
 {
-    sys_vgui("::pd_text::release .x%lx\n", x);
+    sys_vgui("::ui_text::release .x%lx\n", x);
     if (x->b_guiconnect)
     {
         guiconnect_notarget(x->b_guiconnect, 1000);

@@ -12,12 +12,12 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pd_bind 1.0
+package provide ui_bind 1.0
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::pd_bind:: {
+namespace eval ::ui_bind:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -80,16 +80,16 @@ proc initialize {} {
     event add <<PopupMenu>>                 <ButtonPress-3>
     event add <<ClickRelease>>              <ButtonRelease-1>
     
-    bind PdConsole  <FocusIn>               { ::pd_bind::_focusIn %W }
-    bind PdData     <FocusIn>               { ::pd_bind::_focusIn %W }
-    bind PdDialog   <FocusIn>               { ::pd_bind::_focusIn %W }
-    bind PdPatch    <FocusIn>               { ::pd_bind::_focusIn %W }
-    bind PdText     <FocusIn>               { ::pd_bind::_focusIn %W }
-    bind PdTool     <FocusIn>               { ::pd_bind::_focusIn %W }
+    bind PdConsole  <FocusIn>               { ::ui_bind::_focusIn %W }
+    bind PdData     <FocusIn>               { ::ui_bind::_focusIn %W }
+    bind PdDialog   <FocusIn>               { ::ui_bind::_focusIn %W }
+    bind PdPatch    <FocusIn>               { ::ui_bind::_focusIn %W }
+    bind PdText     <FocusIn>               { ::ui_bind::_focusIn %W }
+    bind PdTool     <FocusIn>               { ::ui_bind::_focusIn %W }
     
-    bind PdPatch    <Configure>             { ::pd_bind::_resized %W %w %h %x %y }
-    bind PdPatch    <Map>                   { ::pd_bind::_mapped %W   }
-    bind PdPatch    <Unmap>                 { ::pd_bind::_unmapped %W }
+    bind PdPatch    <Configure>             { ::ui_bind::_resized %W %w %h %x %y }
+    bind PdPatch    <Map>                   { ::ui_bind::_mapped %W   }
+    bind PdPatch    <Unmap>                 { ::ui_bind::_unmapped %W }
 
     bind all <Escape>                       { ::cancel %W }
      
@@ -117,12 +117,12 @@ proc initialize {} {
     
     bind all <<RunDSP>>                     { .menubar.media    invoke "Run DSP"    }
     
-    bind all <KeyPress>                     { ::pd_bind::_key %W %K %A 1 0  }
-    bind all <KeyRelease>                   { ::pd_bind::_key %W %K %A 0 0  }
-    bind all <Shift-KeyPress>               { ::pd_bind::_key %W %K %A 1 1  }
-    bind all <Shift-KeyRelease>             { ::pd_bind::_key %W %K %A 0 1  }
+    bind all <KeyPress>                     { ::ui_bind::_key %W %K %A 1 0  }
+    bind all <KeyRelease>                   { ::ui_bind::_key %W %K %A 0 0  }
+    bind all <Shift-KeyPress>               { ::ui_bind::_key %W %K %A 1 1  }
+    bind all <Shift-KeyRelease>             { ::ui_bind::_key %W %K %A 0 1  }
     
-    bind all <<Quit>>                       { ::pd_connect::pdsend "pd verifyquit" }
+    bind all <<Quit>>                       { ::ui_connect::pdsend "pd verifyquit" }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -130,19 +130,19 @@ proc initialize {} {
 
 proc bindPatch {top} {
 
-    bind $top.c <<Motion1>>                 { ::pd_bind::_motion %W %x %y 0   }
-    bind $top.c <<Motion2>>                 { ::pd_bind::_motion %W %x %y 2   }
-    bind $top.c <<ClickLeft1>>              { ::pd_bind::_mouse %W %x %y %b 0 }
-    bind $top.c <<ClickLeft2>>              { ::pd_bind::_mouse %W %x %y %b 1 }
-    bind $top.c <<ClickLeft3>>              { ::pd_bind::_mouse %W %x %y %b 2 }
-    bind $top.c <<ClickLeft4>>              { ::pd_bind::_mouse %W %x %y %b 3 }
-    bind $top.c <<PopupMenu>>               { ::pd_bind::_mouse %W %x %y %b 8 }
-    bind $top.c <<ClickRelease>>            { ::pd_bind::_mouseUp %W %x %y %b }
+    bind $top.c <<Motion1>>                 { ::ui_bind::_motion %W %x %y 0   }
+    bind $top.c <<Motion2>>                 { ::ui_bind::_motion %W %x %y 2   }
+    bind $top.c <<ClickLeft1>>              { ::ui_bind::_mouse %W %x %y %b 0 }
+    bind $top.c <<ClickLeft2>>              { ::ui_bind::_mouse %W %x %y %b 1 }
+    bind $top.c <<ClickLeft3>>              { ::ui_bind::_mouse %W %x %y %b 2 }
+    bind $top.c <<ClickLeft4>>              { ::ui_bind::_mouse %W %x %y %b 3 }
+    bind $top.c <<PopupMenu>>               { ::ui_bind::_mouse %W %x %y %b 8 }
+    bind $top.c <<ClickRelease>>            { ::ui_bind::_mouseUp %W %x %y %b }
     
-    bind $top.c <MouseWheel>                { ::pd_patch::scroll %W y %D      }
-    bind $top.c <Destroy>                   { ::pd_patch::closed [winfo toplevel %W] }
+    bind $top.c <MouseWheel>                { ::ui_patch::scroll %W y %D      }
+    bind $top.c <Destroy>                   { ::ui_patch::closed [winfo toplevel %W] }
         
-    wm protocol $top WM_DELETE_WINDOW       "::pd_patch::willClose $top"
+    wm protocol $top WM_DELETE_WINDOW       "::ui_patch::willClose $top"
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -154,22 +154,22 @@ proc _focusIn {top} {
     
     switch -regexp -- [winfo class $top] {
         "PdConsole"         {
-            ::pd_menu::configureForConsole
-            ::pd_menu::disableEditing
+            ::ui_menu::configureForConsole
+            ::ui_menu::disableEditing
             set ::var(isEditMode) 0
         }
         "PdPatch"           {
-            ::pd_menu::configureForPatch
-            ::pd_patch::setEditMode $top
+            ::ui_menu::configureForPatch
+            ::ui_patch::setEditMode $top
         }
         "PdText|PdData"     {
-            ::pd_menu::configureForText
-            ::pd_menu::disableEditing
+            ::ui_menu::configureForText
+            ::ui_menu::disableEditing
             set ::var(isEditMode) 0
         }
         "PdTool|PdDialog"   { 
-            ::pd_menu::configureForDialog
-            ::pd_menu::disableEditing
+            ::ui_menu::configureForDialog
+            ::ui_menu::disableEditing
             set ::var(isEditMode) 0
         }
     }
@@ -181,19 +181,19 @@ proc _focusIn {top} {
 proc _motion {c x y m} {
 
     set top [winfo toplevel $c]
-    ::pd_connect::pdsend "$top motion [$c canvasx $x] [$c canvasy $y] $m"
+    ::ui_connect::pdsend "$top motion [$c canvasx $x] [$c canvasy $y] $m"
 }
 
 proc _mouse {c x y b f} {
 
     set top [winfo toplevel $c]
-    ::pd_connect::pdsend "$top mouse [$c canvasx $x] [$c canvasy $y] $b $f"
+    ::ui_connect::pdsend "$top mouse [$c canvasx $x] [$c canvasy $y] $b $f"
 }
 
 proc _mouseUp {c x y b} {
 
     set top [winfo toplevel $c]
-    ::pd_connect::pdsend "$top mouseup [$c canvasx $x] [$c canvasy $y] $b"
+    ::ui_connect::pdsend "$top mouseup [$c canvasx $x] [$c canvasy $y] $b"
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -219,7 +219,7 @@ proc _key {w keysym iso isPress isShift} {
     
     if {[winfo class $top] eq "PdPatch"} { set selector "$top" } else { set selector "pd" }
     
-    ::pd_connect::pdsend "$selector key $isPress $k $isShift" 
+    ::ui_connect::pdsend "$selector key $isPress $k $isShift" 
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -231,8 +231,8 @@ proc _resized {top width height x y} {
     
     if {$width > 1 && $height > 1} { 
     
-        ::pd_patch::updateScrollRegion $top.c
-        ::pd_connect::pdsend "$top setbounds $x $y [expr {$x + $width}] [expr {$y + $height}]"
+        ::ui_patch::updateScrollRegion $top.c
+        ::ui_connect::pdsend "$top setbounds $x $y [expr {$x + $width}] [expr {$y + $height}]"
     }
 }
 
@@ -241,12 +241,12 @@ proc _resized {top width height x y} {
 
 proc _mapped {top} {
 
-    ::pd_connect::pdsend "$top map 1"
+    ::ui_connect::pdsend "$top map 1"
 }
 
 proc _unmapped {top} {
 
-    ::pd_connect::pdsend "$top map 0"
+    ::ui_connect::pdsend "$top map 0"
 }
 
 # ------------------------------------------------------------------------------------------------------------

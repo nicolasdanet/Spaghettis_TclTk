@@ -239,7 +239,7 @@ static void bng_properties(t_gobj *z, t_glist *owner)
     t_symbol *srl[3];
 
     iem_properties(&x->x_gui, srl);
-    sprintf(buf, "::pd_iem::create %%s Bang \
+    sprintf(buf, "::ui_iem::create %%s Bang \
             %d %d Size 0 0 empty \
             %d {Flash Break} %d {Flash Hold} \
             -1 empty empty \

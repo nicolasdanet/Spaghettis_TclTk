@@ -261,7 +261,7 @@ static void hradio_properties(t_gobj *z, t_glist *owner)
 
     iem_properties(&x->x_gui, srl);
 
-    sprintf(buf, "::pd_iem::create %%s {Radio Button} \
+    sprintf(buf, "::ui_iem::create %%s {Radio Button} \
             %d %d Size 0 0 empty \
             0 empty 0 empty \
             -1 empty empty \

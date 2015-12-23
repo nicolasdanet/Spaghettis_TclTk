@@ -7,94 +7,115 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# The PureData console.
+# Copyright (c) 2002-2012 krzYszcz and others.
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pd_console 1.0
+# Text for [qlist] and [textfile] objects.
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::pd_console:: {
+package provide ui_text 1.0
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc initialize {} { ::pd_console::_create }
+namespace eval ::ui_text:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc post {message} { 
+proc show {top} {
 
-    .console.text.internal insert end $message
-    .console.text.internal insert end "\n"
-    
-    after idle ::pd_console::_update
+    _create $top
+}
+
+proc release {top} {
+
+    destroy $top; ::ui_connect::pdsend "$top signoff"
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {} {
+proc append {top contents} {
 
-    toplevel .console -class PdConsole
-    wm title .console [_ "PureData"]
-    wm group .console .
-    
-    wm minsize  .console {*}[::styleMinimumSize]
-    wm geometry .console "=400x300+30+60"
-    
-    .console configure -menu .menubar
+    $top.text insert end $contents
+}
 
-    ttk::scrollbar  .console.scroll     -command ".console.text yview"
-    text            .console.text       -font [::styleFontConsole] \
-                                        -borderwidth 0 \
-                                        -insertwidth 0 \
-                                        -highlightthickness 0 \
-                                        -undo 0 \
-                                        -yscrollcommand ".console.scroll set"
+proc clear {top} {
+
+    $top.text delete 1.0 end
+}
+
+proc dirty {top flag} {
+
+    $top.text edit modified $flag
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _create {top} {
+    
+    toplevel $top -class PdText
+    wm title $top [_ "Text"]
+    wm group $top .
+    
+    wm minsize  $top {*}[::styleMinimumSize]
+    wm geometry $top [format "=600x400%s" [::rightNextTo $::var(windowFocused)]]
+    
+    text $top.text  -font [::styleFontText] \
+                    -borderwidth 0 \
+                    -highlightthickness 0
+    
+    pack $top.text  -side left -fill both -expand 1
+    
+    bind $top.text  <<SelectAll>>       "::ui_text::_selectAll $top"
+    bind $top.text  <<Modified>>        "::ui_text::_modified $top"
+    bind $top.text  <<Save>>            "::ui_text::_save $top"
+    
+    wm protocol $top WM_DELETE_WINDOW   "::ui_text::closed $top"
         
-    pack .console.text                  -side right -fill both -expand 1
-        
-    bind .console <<SelectAll>> ".console.text tag add sel 1.0 end"
-    
-    wm protocol .console WM_DELETE_WINDOW   { ::pd_console::closed }
-    
-    # Read-only text widget ( http://wiki.tcl.tk/1152 ).
-  
-    rename ::.console.text ::.console.text.internal
+    focus $top.text
+}
 
-    proc ::.console.text {args} {
-        switch -exact -- [lindex $args 0] {
-            "insert"  {}
-            "delete"  {}
-            "default" { return [eval ::.console.text.internal $args] }
+proc closed {top} {
+
+    if {[$top.text edit modified]} { 
+        ::ui_confirm::checkClose $top { ::ui_text::_save $top } {} { return -level 2 }
+    }
+
+    ::ui_connect::pdsend "$top close"
+}
+
+# ------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------------------
+
+proc _selectAll {top} {
+
+    $top.text tag add sel 1.0 end
+}
+
+proc _modified {top} {
+
+    if {[tk windowingsystem] eq "aqua"} { wm attributes $top -modified [$top.text edit modified] }
+}
+
+proc _save {top} {
+
+    ::ui_connect::pdsend "$top clear"
+        
+    for {set i 1} {[$top.text compare $i.end < end]} {incr i 1} {
+        set line [$top.text get $i.0 $i.end]
+        if {$line != ""} {
+            ::ui_connect::pdsend "$top addline [::escaped $line]"
         }
     }
-}
-
-proc closed {} {
-
-    ::pd_connect::pdsend "pd verifyquit"
-}
-
-# ------------------------------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------------------------------------
-
-proc _update {} {
-
-    set view [.console.text yview]
     
-    if {[lindex $view 0] == 0.0 && [lindex $view 1] == 1.0} {
-        pack forget .console.scroll
-    } else {
-        pack .console.scroll -side right -fill y -before .console.text
-    }
-        
-    .console.text yview end
+    ::ui_text::dirty $top 0
 }
 
 # ------------------------------------------------------------------------------------------------------------

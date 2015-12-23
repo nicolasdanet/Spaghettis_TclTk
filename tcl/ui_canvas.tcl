@@ -12,12 +12,12 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide pd_canvas 1.0
+package provide ui_canvas 1.0
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::pd_canvas:: {
+namespace eval ::ui_canvas:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ array set canvasY       {}
 
 proc show {top scaleX scaleY flags start up end down width height x y} {
     
-    ::pd_canvas::_create $top $scaleX $scaleY $flags $start $up $end $down $width $height $x $y
+    ::ui_canvas::_create $top $scaleX $scaleY $flags $start $up $end $down $width $height $x $y
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -123,7 +123,7 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
         }
     }
     
-    ::pd_canvas::_forceVisible $top
+    ::ui_canvas::_forceVisible $top
     
     ttk::frame      $top.f                      {*}[::styleFrame]
     ttk::labelframe $top.f.table                {*}[::styleLabelFrame]  -text [_ "Array"]
@@ -138,74 +138,74 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     ttk::label $top.f.table.startLabel          {*}[::styleLabel] \
                                                     -text [_ "Index Start"]
     ttk::entry $top.f.table.start               {*}[::styleEntryNumber] \
-                                                    -textvariable ::pd_canvas::canvasStart($top) \
+                                                    -textvariable ::ui_canvas::canvasStart($top) \
                                                     -width $::width(small)
 
     ttk::label $top.f.table.endLabel            {*}[::styleLabel] \
                                                     -text [_ "Index End"]
     ttk::entry $top.f.table.end                 {*}[::styleEntryNumber] \
-                                                    -textvariable ::pd_canvas::canvasEnd($top) \
+                                                    -textvariable ::ui_canvas::canvasEnd($top) \
                                                     -width $::width(small)
     
     ttk::label $top.f.table.downLabel           {*}[::styleLabel] \
                                                     -text [_ "Value Bottom"]
     ttk::entry $top.f.table.down                {*}[::styleEntryNumber] \
-                                                    -textvariable ::pd_canvas::canvasDown($top) \
+                                                    -textvariable ::ui_canvas::canvasDown($top) \
                                                     -width $::width(small)
                                                         
     ttk::label $top.f.table.upLabel             {*}[::styleLabel] \
                                                     -text [_ "Value Top"]
     ttk::entry $top.f.table.up                  {*}[::styleEntryNumber] \
-                                                    -textvariable ::pd_canvas::canvasUp($top) \
+                                                    -textvariable ::ui_canvas::canvasUp($top) \
                                                     -width $::width(small)
 
     ttk::label $top.f.onParent.visibleLabel     {*}[::styleLabel] \
                                                     -text [_ "Graph On Parent"]
     ttk::checkbutton $top.f.onParent.visible    {*}[::styleCheckButton] \
-                                                    -variable ::pd_canvas::canvasVisible($top) \
+                                                    -variable ::ui_canvas::canvasVisible($top) \
                                                     -takefocus 0 \
-                                                    -command "::pd_canvas::_setVisible $top"
+                                                    -command "::ui_canvas::_setVisible $top"
     
     ttk::label $top.f.onParent.hideLabel        {*}[::styleLabel] \
                                                     -text [_ "Hide Title"]
     ttk::checkbutton $top.f.onParent.hide       {*}[::styleCheckButton] \
-                                                    -variable ::pd_canvas::canvasHide($top) \
+                                                    -variable ::ui_canvas::canvasHide($top) \
                                                     -takefocus 0
 
     ttk::label $top.f.onParent.xLabel           {*}[::styleLabel] \
                                                     -text [_ "View X"]
     ttk::entry $top.f.onParent.x                {*}[::styleEntryNumber] \
-                                                    -textvariable ::pd_canvas::canvasX($top) \
+                                                    -textvariable ::ui_canvas::canvasX($top) \
                                                     -width $::width(small)
 
     ttk::label $top.f.onParent.yLabel           {*}[::styleLabel] \
                                                     -text [_ "View Y"]
     ttk::entry $top.f.onParent.y                {*}[::styleEntryNumber] \
-                                                    -textvariable ::pd_canvas::canvasY($top) \
+                                                    -textvariable ::ui_canvas::canvasY($top) \
                                                     -width $::width(small)
     
     ttk::label $top.f.onParent.widthLabel       {*}[::styleLabel] \
                                                     -text [_ "View Width"]
     ttk::entry $top.f.onParent.width            {*}[::styleEntryNumber] \
-                                                    -textvariable ::pd_canvas::canvasWidth($top) \
+                                                    -textvariable ::ui_canvas::canvasWidth($top) \
                                                     -width $::width(small)
 
     ttk::label $top.f.onParent.heightLabel      {*}[::styleLabel] \
                                                     -text [_ "View Height"]
     ttk::entry $top.f.onParent.height           {*}[::styleEntryNumber] \
-                                                    -textvariable ::pd_canvas::canvasHeight($top) \
+                                                    -textvariable ::ui_canvas::canvasHeight($top) \
                                                     -width $::width(small)
     
     ttk::label $top.f.graph.scaleXLabel         {*}[::styleLabel] \
                                                     -text [_ "Scale Horizontal"]
     ttk::entry $top.f.graph.scaleX              {*}[::styleEntryNumber] \
-                                                    -textvariable ::pd_canvas::canvasScaleX($top) \
+                                                    -textvariable ::ui_canvas::canvasScaleX($top) \
                                                     -width $::width(small)
     
     ttk::label $top.f.graph.scaleYLabel         {*}[::styleLabel] \
                                                     -text [_ "Scale Vertical"]
     ttk::entry $top.f.graph.scaleY              {*}[::styleEntryNumber] \
-                                                    -textvariable ::pd_canvas::canvasScaleY($top) \
+                                                    -textvariable ::ui_canvas::canvasScaleY($top) \
                                                     -width $::width(small)
                                                     
     grid $top.f.table.startLabel                -row 0 -column 0 -sticky ew
@@ -256,9 +256,9 @@ proc _create {top scaleX scaleY flags start up end down width height x y} {
     
     after 250 "$top.f.table.start selection range 0 end"
     
-    ::pd_canvas::_setVisible $top
+    ::ui_canvas::_setVisible $top
         
-    wm protocol $top WM_DELETE_WINDOW   "::pd_canvas::closed $top"
+    wm protocol $top WM_DELETE_WINDOW   "::ui_canvas::closed $top"
 }
 
 proc closed {top} {
@@ -276,7 +276,7 @@ proc closed {top} {
     variable canvasX
     variable canvasY
     
-    ::pd_canvas::_apply $top
+    ::ui_canvas::_apply $top
     
     unset canvasScaleX($top)
     unset canvasScaleY($top)
@@ -323,11 +323,11 @@ proc _apply {top} {
     variable canvasX
     variable canvasY
     
-    ::pd_canvas::_forceScales  $top
-    ::pd_canvas::_forceLimits  $top
-    ::pd_canvas::_forceVisible $top
+    ::ui_canvas::_forceScales  $top
+    ::ui_canvas::_forceLimits  $top
+    ::ui_canvas::_forceVisible $top
 
-    ::pd_connect::pdsend "$top donecanvasdialog \
+    ::ui_connect::pdsend "$top donecanvasdialog \
             $canvasScaleX($top) \
             $canvasScaleY($top) \
             [expr {$canvasVisible($top) + 2 * $canvasHide($top)}] \

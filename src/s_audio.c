@@ -704,14 +704,14 @@ void glob_audio_properties(t_pd *dummy, t_floatarg flongform)
     audio_getdevs(indevlist, &nindevs, outdevlist, &noutdevs, &canmulti,
          &cancallback, MAXNDEV, DEVDESCSIZE);
 
-    sys_gui("set ::pd_audio::audioIn {}\n");
+    sys_gui("set ::ui_audio::audioIn {}\n");
     for (i = 0; i < nindevs; i++)
-        sys_vgui("lappend ::pd_audio::audioIn {%s}\n",
+        sys_vgui("lappend ::ui_audio::audioIn {%s}\n",
             indevlist + i * DEVDESCSIZE);
 
-    sys_gui("set ::pd_audio::audioOut {}\n");
+    sys_gui("set ::ui_audio::audioOut {}\n");
     for (i = 0; i < noutdevs; i++)
-        sys_vgui("lappend ::pd_audio::audioOut {%s}\n",
+        sys_vgui("lappend ::ui_audio::audioOut {%s}\n",
             outdevlist + i * DEVDESCSIZE);
 
     sys_get_audio_params(&naudioindev, audioindev, chindev,
@@ -740,7 +740,7 @@ void glob_audio_properties(t_pd *dummy, t_floatarg flongform)
     audiooutchan3 = (naudiooutdev > 2 ? choutdev[2] : 0);
     audiooutchan4 = (naudiooutdev > 3 ? choutdev[3] : 0);
     sprintf(buf,
-"::pd_audio::show %%s \
+"::ui_audio::show %%s \
 %d %d %d %d %d %d %d %d \
 %d %d %d %d %d %d %d %d \
 %d %d %d %d %d\n",
