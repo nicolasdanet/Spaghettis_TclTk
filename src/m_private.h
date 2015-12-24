@@ -16,27 +16,27 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define T_TEXT      0
-#define T_OBJECT    1
-#define T_MESSAGE   2
-#define T_ATOM      3
+#define TYPE_TEXT               0
+#define TYPE_OBJECT             1
+#define TYPE_MESSAGE            2
+#define TYPE_ATOM               3
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define GP_NONE     0
-#define GP_GLIST    1
-#define GP_ARRAY    2
+#define DATA_FLOAT              0
+#define DATA_SYMBOL             1
+#define DATA_TEXT               2
+#define DATA_ARRAY              3
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define DT_FLOAT    0
-#define DT_SYMBOL   1
-#define DT_TEXT     2
-#define DT_ARRAY    3
+#define POINTER_NONE            0
+#define POINTER_GLIST           1
+#define POINTER_ARRAY           2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -49,8 +49,8 @@ PD_STRUCT _widgetbehavior;
 
 typedef struct _methodentry {
     t_symbol    *me_name;
-    t_gotfn     me_fun;
-    t_atomtype  me_arg[PD_ARGUMENTS + 1];
+    t_gotfn     me_function;
+    t_atomtype  me_arguments[PD_ARGUMENTS + 1];
     } t_methodentry;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ struct _class {
     t_symbol                *c_externDirectory;
     size_t                  c_size;
     t_methodentry           *c_methods;
-    int                     c_nMethods;
+    int                     c_methodsSize;
     t_method                c_methodFree;
     t_bangmethod            c_methodBang;
     t_pointermethod         c_methodPointer;
@@ -96,22 +96,23 @@ struct _class {
 
 struct _pdinstance {
     double      pd_systime;
-    t_clock     *pd_clock_setlist;
-    t_int       *pd_dspchain;
-    int         pd_dspchainsize;
-    t_canvas    *pd_canvaslist;
-    int         pd_dspstate;
+    t_clock     *pd_clocks;
+    t_int       *pd_dspChain;
+    int         pd_dspChainSize;
+    int         pd_dspState;
+    t_canvas    *pd_canvases;
     t_signal    *pd_signals;
-    t_symbol    *pd_midiin_sym;
-    t_symbol    *pd_sysexin_sym;
-    t_symbol    *pd_notein_sym;
-    t_symbol    *pd_ctlin_sym;
-    t_symbol    *pd_pgmin_sym;
-    t_symbol    *pd_bendin_sym;
-    t_symbol    *pd_touchin_sym;
-    t_symbol    *pd_polytouchin_sym;
-    t_symbol    *pd_midiclkin_sym;
-    t_symbol    *pd_midirealtimein_sym;
+    //
+    t_symbol    *sym_midiin;
+    t_symbol    *sym_sysexin;
+    t_symbol    *sym_notein;
+    t_symbol    *sym_ctlin;
+    t_symbol    *sym_pgmin;
+    t_symbol    *sym_bendin;
+    t_symbol    *sym_touchin;
+    t_symbol    *sym_polytouchin;
+    t_symbol    *sym_midiclkin;
+    t_symbol    *sym_midirealtimein;
     };
     
 // -----------------------------------------------------------------------------------------------------------

@@ -113,10 +113,10 @@ static t_symbol *rtext_gettype(t_rtext *x)
 {
     switch (x->x_text->te_type) 
     {
-    case T_TEXT: return gensym("text");
-    case T_OBJECT: return gensym("obj");
-    case T_MESSAGE: return gensym("msg");
-    case T_ATOM: return gensym("atom");
+    case TYPE_TEXT: return gensym("text");
+    case TYPE_OBJECT: return gensym("obj");
+    case TYPE_MESSAGE: return gensym("msg");
+    case TYPE_ATOM: return gensym("atom");
     }
     return (&s_);
 }
@@ -280,7 +280,7 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
     if (nlines < 1) nlines = 1;
     if (!widthspec_c)
     {
-        while (ncolumns < (x->x_text->te_type == T_TEXT ? 1 : 3))
+        while (ncolumns < (x->x_text->te_type == TYPE_TEXT ? 1 : 3))
         {
             tempbuf[outchars_b++] = ' ';
             ncolumns++;
@@ -290,7 +290,7 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
     pixwide = ncolumns * fontwidth + (LMARGIN + RMARGIN);
     pixhigh = nlines * fontheight + (TMARGIN + BMARGIN);
 
-    if (action && x->x_text->te_width && x->x_text->te_type != T_ATOM)
+    if (action && x->x_text->te_width && x->x_text->te_type != TYPE_ATOM)
     {
             /* if our width is specified but the "natural" width is the
             same as the specified width, set specified width to zero
@@ -356,7 +356,7 @@ void rtext_retext(t_rtext *x)
     binbuf_gettext(text->te_binbuf, &x->x_buf, &x->x_bufsize);
         /* special case: for number boxes, try to pare the number down
         to the specified width of the box. */
-    if (text->te_width > 0 && text->te_type == T_ATOM &&
+    if (text->te_width > 0 && text->te_type == TYPE_ATOM &&
         x->x_bufsize > text->te_width)
     {
         t_atom *atomp = binbuf_getvec(text->te_binbuf);

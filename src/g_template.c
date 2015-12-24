@@ -59,7 +59,7 @@ static int dataslot_matches(t_dataslot *ds1, t_dataslot *ds2,
 {
     return ((!nametoo || ds1->ds_name == ds2->ds_name) &&
         ds1->ds_type == ds2->ds_type &&
-            (ds1->ds_type != DT_ARRAY ||
+            (ds1->ds_type != DATA_ARRAY ||
                 ds1->ds_arraytemplate == ds2->ds_arraytemplate));
 }
 
@@ -80,12 +80,12 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
         newtypesym = argv[0].a_w.w_symbol;
         newname = argv[1].a_w.w_symbol;
         if (newtypesym == &s_float)
-            newtype = DT_FLOAT;
+            newtype = DATA_FLOAT;
         else if (newtypesym == &s_symbol)
-            newtype = DT_SYMBOL;
+            newtype = DATA_SYMBOL;
                 /* "list" is old name.. accepted here but never saved as such */
         else if (newtypesym == gensym("text") || newtypesym == &s_list)
-            newtype = DT_TEXT;
+            newtype = DATA_TEXT;
         else if (newtypesym == gensym("array"))
         {
             if (argc < 3 || argv[2].a_type != A_SYMBOL)
@@ -94,7 +94,7 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
                 goto bad;
             }
             newarraytemplate = canvas_makebindsym(argv[2].a_w.w_symbol);
-            newtype = DT_ARRAY;
+            newtype = DATA_ARRAY;
             argc--;
             argv++;
         }
@@ -152,7 +152,7 @@ t_float template_getfloat(t_template *x, t_symbol *fieldname, t_word *wp,
     t_float val = 0;
     if (template_find_field(x, fieldname, &onset, &type, &arraytype))
     {
-        if (type == DT_FLOAT)
+        if (type == DATA_FLOAT)
             val = *(t_float *)(((char *)wp) + onset);
         else if (loud) post_error ("%s.%s: not a number",
             x->t_sym->s_name, fieldname->s_name);
@@ -169,7 +169,7 @@ void template_setfloat(t_template *x, t_symbol *fieldname, t_word *wp,
     t_symbol *arraytype;
     if (template_find_field(x, fieldname, &onset, &type, &arraytype))
      {
-        if (type == DT_FLOAT)
+        if (type == DATA_FLOAT)
             *(t_float *)(((char *)wp) + onset) = f;
         else if (loud) post_error ("%s.%s: not a number",
             x->t_sym->s_name, fieldname->s_name);
@@ -186,7 +186,7 @@ t_symbol *template_getsymbol(t_template *x, t_symbol *fieldname, t_word *wp,
     t_symbol *val = &s_;
     if (template_find_field(x, fieldname, &onset, &type, &arraytype))
     {
-        if (type == DT_SYMBOL)
+        if (type == DATA_SYMBOL)
             val = *(t_symbol **)(((char *)wp) + onset);
         else if (loud) post_error ("%s.%s: not a symbol",
             x->t_sym->s_name, fieldname->s_name);
@@ -203,7 +203,7 @@ void template_setsymbol(t_template *x, t_symbol *fieldname, t_word *wp,
     t_symbol *arraytype;
     if (template_find_field(x, fieldname, &onset, &type, &arraytype))
      {
-        if (type == DT_SYMBOL)
+        if (type == DATA_SYMBOL)
             *(t_symbol **)(((char *)wp) + onset) = s;
         else if (loud) post_error ("%s.%s: not a symbol",
             x->t_sym->s_name, fieldname->s_name);
@@ -222,7 +222,7 @@ int template_match(t_template *x1, t_template *x2)
         return (0);
     for (i = x2->t_n; i < x1->t_n; i++)
     {
-        if (x1->t_vec[i].ds_type == DT_ARRAY)
+        if (x1->t_vec[i].ds_type == DATA_ARRAY)
                 return (0);
     }
     if (x2->t_n > x1->t_n)
@@ -318,7 +318,7 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
     for (i = 0; i < scalartemplate->t_n; i++)
     {
         t_dataslot *ds = scalartemplate->t_vec + i;
-        if (ds->ds_type == DT_ARRAY)
+        if (ds->ds_type == DATA_ARRAY)
         {
             template_conformarray(tfrom, tto, conformaction, 
                 x->sc_vec[i].w_array);
@@ -361,7 +361,7 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
         for (j = 0; j < scalartemplate->t_n; j++)
         {
             t_dataslot *ds = scalartemplate->t_vec + j;
-            if (ds->ds_type == DT_ARRAY)
+            if (ds->ds_type == DATA_ARRAY)
             {
                 template_conformarray(tfrom, tto, conformaction, 
                     wp[j].w_array);
@@ -439,7 +439,7 @@ void template_conform(t_template *tfrom, t_template *tto)
     if (doit)
     {
         t_glist *gl;
-        for (gl = pd_this->pd_canvaslist; gl; gl = gl->gl_next)
+        for (gl = pd_this->pd_canvases; gl; gl = gl->gl_next)
             template_conformglist(tfrom, tto, gl, conformaction);
     }
     freebytes(conformaction, sizeof(int) * nto);
@@ -1452,7 +1452,7 @@ static int plot_readownertemplate(t_plot *x,
         post_error ("plot: %s: no such field", x->x_data.fd_un.fd_varsym->s_name);
         return (-1);
     }
-    if (type != DT_ARRAY)
+    if (type != DATA_ARRAY)
     {
         post_error ("plot: %s: not an array", x->x_data.fd_un.fd_varsym->s_name);
         return (-1);
@@ -1506,19 +1506,19 @@ int array_getfields(t_symbol *elemtemplatesym,
         varname = yfielddesc->fd_un.fd_varsym;
     else varname = gensym("y");
     if (!template_find_field(elemtemplate, varname, &yonset, &type, &dummy)
-        || type != DT_FLOAT)    
+        || type != DATA_FLOAT)    
             yonset = -1;
     if (xfielddesc && xfielddesc->fd_var)
         varname = xfielddesc->fd_un.fd_varsym;
     else varname = gensym("x");
     if (!template_find_field(elemtemplate, varname, &xonset, &type, &dummy)
-        || type != DT_FLOAT) 
+        || type != DATA_FLOAT) 
             xonset = -1;
     if (wfielddesc && wfielddesc->fd_var)
         varname = wfielddesc->fd_un.fd_varsym;
     else varname = gensym("w");
     if (!template_find_field(elemtemplate, varname, &wonset, &type, &dummy)
-        || type != DT_FLOAT) 
+        || type != DATA_FLOAT) 
             wonset = -1;
 
         /* fill in slots for return values */
@@ -2405,7 +2405,7 @@ static int drawnumber_gettype(t_drawnumber *x, t_word *data,
     int type;
     t_symbol *arraytype;
     if (template_find_field(template, x->x_fieldname, onsetp, &type,
-        &arraytype) && type != DT_ARRAY)
+        &arraytype) && type != DATA_ARRAY)
             return (type);
     else return (-1);
 }
@@ -2422,7 +2422,7 @@ static void drawnumber_getbuf(t_drawnumber *x, t_word *data,
         strncpy(buf, x->x_label->s_name, DRAWNUMBER_BUFSIZE);
         buf[DRAWNUMBER_BUFSIZE - 1] = 0;
         nchars = strlen(buf);
-        if (type == DT_TEXT)
+        if (type == DATA_TEXT)
         {
             char *buf2;
             int size2, ncopy;
@@ -2439,7 +2439,7 @@ static void drawnumber_getbuf(t_drawnumber *x, t_word *data,
         else
         {
             t_atom at;
-            if (type == DT_FLOAT)
+            if (type == DATA_FLOAT)
                 SETFLOAT(&at, ((t_word *)((char *)data + onset))->w_float);
             else SETSYMBOL(&at, ((t_word *)((char *)data + onset))->w_symbol);
             atom_string(&at, buf + nchars, DRAWNUMBER_BUFSIZE - nchars);
@@ -2557,7 +2557,7 @@ static void drawnumber_motion(void *z, t_floatarg dx, t_floatarg dy)
         post("drawnumber_motion: scalar disappeared");
         return;
     }
-    if (drawnumber_motion_type != DT_FLOAT)
+    if (drawnumber_motion_type != DATA_FLOAT)
         return;
     drawnumber_motion_ycumulative -= dy;
     template_setfloat(drawnumber_motion_template,
@@ -2589,7 +2589,7 @@ static void drawnumber_key(void *z, t_floatarg fkey)
     }
     if (key == 0)
         return;
-    if (drawnumber_motion_type == DT_SYMBOL)
+    if (drawnumber_motion_type == DATA_SYMBOL)
     {
             /* key entry for a symbol field */
         if (drawnumber_motion_firstkey)
@@ -2609,7 +2609,7 @@ static void drawnumber_key(void *z, t_floatarg fkey)
             sbuf[strlen(sbuf)] = key;
         }
     }
-    else if (drawnumber_motion_type == DT_FLOAT)
+    else if (drawnumber_motion_type == DATA_FLOAT)
     {
             /* key entry for a numeric field.  This is just a stopgap. */
         double newf;
@@ -2655,8 +2655,8 @@ static int drawnumber_click(t_gobj *z, t_glist *glist,
         data, template, basex, basey,
         &x1, &y1, &x2, &y2);
     if (xpix >= x1 && xpix <= x2 && ypix >= y1 && ypix <= y2 &&
-        ((type = drawnumber_gettype(x, data, template, &onset)) == DT_FLOAT ||
-            type == DT_SYMBOL))
+        ((type = drawnumber_gettype(x, data, template, &onset)) == DATA_FLOAT ||
+            type == DATA_SYMBOL))
     {
         if (doit)
         {

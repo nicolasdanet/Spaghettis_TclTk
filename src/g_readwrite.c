@@ -72,7 +72,7 @@ static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
     n = template->t_n;
     for (i = 0; i < n; i++)
     {
-        if (template->t_vec[i].ds_type == DT_ARRAY)
+        if (template->t_vec[i].ds_type == DATA_ARRAY)
         {
             int j;
             t_array *a = w[i].w_array;
@@ -99,7 +99,7 @@ static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
                 nitems++;
             }
         }
-        else if (template->t_vec[i].ds_type == DT_TEXT)
+        else if (template->t_vec[i].ds_type == DATA_TEXT)
         {
             t_binbuf *z = binbuf_new();
             int first = *p_nextmsg, last;
@@ -408,12 +408,12 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_binbuf *b,
         /* write the atoms (floats and symbols) */
     for (i = 0; i < n; i++)
     {
-        if (template->t_vec[i].ds_type == DT_FLOAT ||
-            template->t_vec[i].ds_type == DT_SYMBOL)
+        if (template->t_vec[i].ds_type == DATA_FLOAT ||
+            template->t_vec[i].ds_type == DATA_SYMBOL)
         {
             a = (t_atom *)resizebytes(a,
                 natom * sizeof(*a), (natom + 1) * sizeof (*a));
-            if (template->t_vec[i].ds_type == DT_FLOAT)
+            if (template->t_vec[i].ds_type == DATA_FLOAT)
                 SETFLOAT(a + natom, w[i].w_float);
             else SETSYMBOL(a + natom,  w[i].w_symbol);
             natom++;
@@ -427,7 +427,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_binbuf *b,
     freebytes(a, natom * sizeof(*a));
     for (i = 0; i < n; i++)
     {
-        if (template->t_vec[i].ds_type == DT_ARRAY)
+        if (template->t_vec[i].ds_type == DATA_ARRAY)
         {
             int j;
             t_array *a = w[i].w_array;
@@ -438,7 +438,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_binbuf *b,
                     (t_word *)(((char *)a->a_vec) + elemsize * j), b, 1);
             binbuf_addsemi(b);
         }
-        else if (template->t_vec[i].ds_type == DT_TEXT)
+        else if (template->t_vec[i].ds_type == DATA_TEXT)
             binbuf_savetext(w[i].w_binbuf, b);
     }
 }
@@ -470,7 +470,7 @@ static void canvas_addtemplatesforscalar(t_symbol *templatesym,
     if (!template) { PD_BUG; }
     else for (ds = template->t_vec, i = template->t_n; i--; ds++, w++)
     {
-        if (ds->ds_type == DT_ARRAY)
+        if (ds->ds_type == DATA_ARRAY)
         {
             int j;
             t_array *a = w->w_array;
@@ -529,13 +529,13 @@ t_binbuf *glist_writetobinbuf(t_glist *x, int wholething)
             t_symbol *type;
             switch (template->t_vec[j].ds_type)
             {
-                case DT_FLOAT: type = &s_float; break;
-                case DT_SYMBOL: type = &s_symbol; break;
-                case DT_ARRAY: type = gensym("array"); break;
-                case DT_TEXT: type = &s_list; break;
+                case DATA_FLOAT: type = &s_float; break;
+                case DATA_SYMBOL: type = &s_symbol; break;
+                case DATA_ARRAY: type = gensym("array"); break;
+                case DATA_TEXT: type = &s_list; break;
                 default: type = &s_float; PD_BUG;
             }
-            if (template->t_vec[j].ds_type == DT_ARRAY)
+            if (template->t_vec[j].ds_type == DATA_ARRAY)
                 binbuf_addv(b, "sss;", type, template->t_vec[j].ds_name,
                     gensym(template->t_vec[j].ds_arraytemplate->s_name + 3));
             else binbuf_addv(b, "ss;", type, template->t_vec[j].ds_name);
@@ -696,13 +696,13 @@ static void canvas_savetemplatesto(t_canvas *x, t_binbuf *b, int wholething)
             t_symbol *type;
             switch (template->t_vec[j].ds_type)
             {
-                case DT_FLOAT: type = &s_float; break;
-                case DT_SYMBOL: type = &s_symbol; break;
-                case DT_ARRAY: type = gensym("array"); break;
-                case DT_TEXT: type = gensym("text"); break;
+                case DATA_FLOAT: type = &s_float; break;
+                case DATA_SYMBOL: type = &s_symbol; break;
+                case DATA_ARRAY: type = gensym("array"); break;
+                case DATA_TEXT: type = gensym("text"); break;
                 default: type = &s_float; PD_BUG;
             }
-            if (template->t_vec[j].ds_type == DT_ARRAY)
+            if (template->t_vec[j].ds_type == DATA_ARRAY)
                 binbuf_addv(b, "sss", type, template->t_vec[j].ds_name,
                     gensym(template->t_vec[j].ds_arraytemplate->s_name + 3));
             else binbuf_addv(b, "ss", type, template->t_vec[j].ds_name);

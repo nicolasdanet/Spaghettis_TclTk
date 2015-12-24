@@ -84,18 +84,18 @@ void canvas_updatewindowlist( void)
     /* add a glist the list of "root" canvases (toplevels without parents.) */
 static void canvas_addtolist(t_canvas *x)
 {
-    x->gl_next = pd_this->pd_canvaslist;
-    pd_this->pd_canvaslist = x;
+    x->gl_next = pd_this->pd_canvases;
+    pd_this->pd_canvases = x;
 }
 
 static void canvas_takeofflist(t_canvas *x)
 {
         /* take it off the window list */
-    if (x == pd_this->pd_canvaslist) pd_this->pd_canvaslist = x->gl_next;
+    if (x == pd_this->pd_canvases) pd_this->pd_canvases = x->gl_next;
     else
     {
         t_canvas *z;
-        for (z = pd_this->pd_canvaslist; z->gl_next != x; z = z->gl_next)
+        for (z = pd_this->pd_canvases; z->gl_next != x; z = z->gl_next)
             ;
         z->gl_next = x->gl_next;
     }
@@ -333,7 +333,7 @@ t_canvas *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
     int xloc = 0, yloc = GLIST_DEFCANVASYLOC;
     int font = (owner ? owner->gl_font : sys_defaultfont);
     glist_init(x);
-    x->gl_obj.te_type = T_OBJECT;
+    x->gl_obj.te_type = TYPE_OBJECT;
     if (!owner)
         canvas_addtolist(x);
     /* post("canvas %lx, owner %lx", x, owner); */
@@ -441,7 +441,7 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     char *str;
     t_glist *x = (t_glist *)pd_new(canvas_class);
     glist_init(x);
-    x->gl_obj.te_type = T_OBJECT;
+    x->gl_obj.te_type = TYPE_OBJECT;
     if (!*sym->s_name)
     {
         char buf[40];
@@ -1080,23 +1080,23 @@ static void canvas_dsp(t_canvas *x, t_signal **sp)
 static void canvas_start_dsp(void)
 {
     t_canvas *x;
-    if (pd_this->pd_dspstate) ugen_stop();
+    if (pd_this->pd_dspState) ugen_stop();
     else sys_gui("set ::var(isDsp) 1\n");
     ugen_start();
     
-    for (x = pd_this->pd_canvaslist; x; x = x->gl_next)
+    for (x = pd_this->pd_canvases; x; x = x->gl_next)
         canvas_dodsp(x, 1, 0);
     
-    pd_this->pd_dspstate = 1;
+    pd_this->pd_dspState = 1;
 }
 
 static void canvas_stop_dsp(void)
 {
-    if (pd_this->pd_dspstate)
+    if (pd_this->pd_dspState)
     {
         ugen_stop();
         sys_gui("set ::var(isDsp) 0\n");
-        pd_this->pd_dspstate = 0;
+        pd_this->pd_dspState = 0;
     }
 }
 
@@ -1107,7 +1107,7 @@ static void canvas_stop_dsp(void)
 
 int canvas_suspend_dsp(void)
 {
-    int rval = pd_this->pd_dspstate;
+    int rval = pd_this->pd_dspState;
     if (rval) canvas_stop_dsp();
     return (rval);
 }
@@ -1120,7 +1120,7 @@ void canvas_resume_dsp(int oldstate)
     /* this is equivalent to suspending and resuming in one step. */
 void canvas_update_dsp(void)
 {
-    if (pd_this->pd_dspstate) canvas_start_dsp();
+    if (pd_this->pd_dspState) canvas_start_dsp();
 }
 
 /* the "dsp" message to pd starts and stops DSP somputation, and, if
@@ -1138,19 +1138,19 @@ void glob_dsp(void *dummy, t_symbol *s, int argc, t_atom *argv)
     if (argc)
     {
         newstate = atom_getintarg(0, argc, argv);
-        if (newstate && !pd_this->pd_dspstate)
+        if (newstate && !pd_this->pd_dspState)
         {
             sys_set_audio_state(1);
             canvas_start_dsp();
         }
-        else if (!newstate && pd_this->pd_dspstate)
+        else if (!newstate && pd_this->pd_dspState)
         {
             canvas_stop_dsp();
             if (!audio_shouldkeepopen())
                 sys_set_audio_state(0);
         }
     }
-    else post("dsp state %d", pd_this->pd_dspstate);
+    else post("dsp state %d", pd_this->pd_dspState);
 }
 
 void *canvas_getblock(t_class *blockclass, t_canvas **canvasp)
@@ -1203,7 +1203,7 @@ void canvas_redrawallfortemplate(t_template *template, int action)
 {
     t_canvas *x;
         /* find all root canvases */
-    for (x = pd_this->pd_canvaslist; x; x = x->gl_next)
+    for (x = pd_this->pd_canvases; x; x = x->gl_next)
         glist_redrawall(x, action);
 }
 
@@ -1218,7 +1218,7 @@ void canvas_redrawallfortemplatecanvas(t_canvas *x, int action)
     {
         t_object *ob = pd_checkobject(&g->g_pd);
         t_atom *argv;
-        if (!ob || ob->te_type != T_OBJECT ||
+        if (!ob || ob->te_type != TYPE_OBJECT ||
             binbuf_getnatom(ob->te_binbuf) < 2)
             continue;
         argv = binbuf_getvec(ob->te_binbuf);

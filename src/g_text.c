@@ -47,7 +47,7 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     t_text *x = (t_text *)pd_new(text_class);
     t_atom at;
     x->te_width = 0;                            /* don't know it yet. */
-    x->te_type = T_TEXT;
+    x->te_type = TYPE_TEXT;
     x->te_binbuf = binbuf_new();
     if (argc > 1)
     {
@@ -124,7 +124,7 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
     x->te_xpix = xpix;
     x->te_ypix = ypix;
     x->te_width = width;
-    x->te_type = T_OBJECT;
+    x->te_type = TYPE_OBJECT;
     glist_add(gl, &x->te_g);
     if (selected)
     {
@@ -284,7 +284,7 @@ void canvas_numbox(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 void canvas_objfor(t_glist *gl, t_text *x, int argc, t_atom *argv)
 {
     x->te_width = 0;                            /* don't know it yet. */
-    x->te_type = T_OBJECT;
+    x->te_type = TYPE_OBJECT;
     x->te_binbuf = binbuf_new();
     x->te_xpix = atom_getfloatarg(0, argc, argv);
     x->te_ypix = atom_getfloatarg(1, argc, argv);
@@ -452,7 +452,7 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     x->m_messresponder.mr_pd = messresponder_class;
     x->m_messresponder.mr_outlet = outlet_new(&x->m_text, &s_float);
     x->m_text.te_width = 0;                             /* don't know it yet. */
-    x->m_text.te_type = T_MESSAGE;
+    x->m_text.te_type = TYPE_MESSAGE;
     x->m_text.te_binbuf = binbuf_new();
     x->m_glist = gl;
     x->m_clock = clock_new(x, (t_method)message_tick);
@@ -878,7 +878,7 @@ void canvas_atom(t_glist *gl, t_atomtype type,
     t_gatom *x = (t_gatom *)pd_new(gatom_class);
     t_atom at;
     x->a_text.te_width = 0;                        /* don't know it yet. */
-    x->a_text.te_type = T_ATOM;
+    x->a_text.te_type = TYPE_ATOM;
     x->a_text.te_binbuf = binbuf_new();
     x->a_glist = gl;
     x->a_atom.a_type = type;
@@ -988,13 +988,13 @@ static void text_getrect(t_gobj *z, t_glist *glist,
     int *xp1, int *yp1, int *xp2, int *yp2)
 {
     t_text *x = (t_text *)z;
-    int width, height, iscomment = (x->te_type == T_TEXT);
+    int width, height, iscomment = (x->te_type == TYPE_TEXT);
     t_float x1, y1, x2, y2;
 
         /* for number boxes, we know width and height a priori, and should
         report them here so that graphs can get swelled to fit. */
     
-    if (x->te_type == T_ATOM && x->te_width > 0)
+    if (x->te_type == TYPE_ATOM && x->te_width > 0)
     {
         int font = glist_getfont(glist);
         int fontwidth = sys_fontwidth(font), fontheight = sys_fontheight(font);
@@ -1074,7 +1074,7 @@ static void text_vis(t_gobj *z, t_glist *glist, int vis)
         if (gobj_shouldvis(&x->te_g, glist))
         {
             t_rtext *y = glist_findrtext(glist, x);
-            if (x->te_type == T_ATOM)
+            if (x->te_type == TYPE_ATOM)
                 glist_retext(glist, x);
             text_drawborder(x, glist, rtext_gettag(y),
                 rtext_width(y), rtext_height(y), 1);
@@ -1096,7 +1096,7 @@ static int text_click(t_gobj *z, struct _glist *glist,
     int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
     t_text *x = (t_text *)z;
-    if (x->te_type == T_OBJECT)
+    if (x->te_type == TYPE_OBJECT)
     {
         t_symbol *clicksym = gensym("click");
         if (zgetfn(&x->te_g.g_pd, clicksym))
@@ -1109,14 +1109,14 @@ static int text_click(t_gobj *z, struct _glist *glist,
         }
         else return (0);
     }
-    else if (x->te_type == T_ATOM)
+    else if (x->te_type == TYPE_ATOM)
     {
         if (doit)
             gatom_click((t_gatom *)x, (t_floatarg)xpix, (t_floatarg)ypix,
                 (t_floatarg)shift, (t_floatarg)0, (t_floatarg)alt);
         return (1);
     }
-    else if (x->te_type == T_MESSAGE)
+    else if (x->te_type == TYPE_MESSAGE)
     {
         if (doit)
             message_click((t_message *)x, (t_floatarg)xpix, (t_floatarg)ypix,
@@ -1129,7 +1129,7 @@ static int text_click(t_gobj *z, struct _glist *glist,
 void text_save(t_gobj *z, t_binbuf *b)
 {
     t_text *x = (t_text *)z;
-    if (x->te_type == T_OBJECT)
+    if (x->te_type == TYPE_OBJECT)
     {
             /* if we have a "saveto" method, and if we don't happen to be
             a canvas that's an abstraction, the saveto method does the work */
@@ -1149,13 +1149,13 @@ void text_save(t_gobj *z, t_binbuf *b)
         }
         binbuf_addbinbuf(b, x->te_binbuf);
     }
-    else if (x->te_type == T_MESSAGE)
+    else if (x->te_type == TYPE_MESSAGE)
     {
         binbuf_addv(b, "ssii", gensym("#X"), gensym("msg"),
             (int)x->te_xpix, (int)x->te_ypix);
         binbuf_addbinbuf(b, x->te_binbuf);
     }
-    else if (x->te_type == T_ATOM)
+    else if (x->te_type == TYPE_ATOM)
     {
         t_atomtype t = ((t_gatom *)x)->a_atom.a_type;
         t_symbol *sel = (t == A_SYMBOL ? gensym("symbolatom") :
@@ -1262,7 +1262,7 @@ void text_drawborder(t_text *x, t_glist *glist,
     text_getrect(&x->te_g, glist, &x1, &y1, &x2, &y2);
     width = x2 - x1;
     height = y2 - y1;
-    if (x->te_type == T_OBJECT)
+    if (x->te_type == TYPE_OBJECT)
     {
         char *pattern = ((pd_class(&x->te_g.g_pd) == text_class) ? "-" : "\"\"");
         if (firsttime)
@@ -1280,7 +1280,7 @@ void text_drawborder(t_text *x, t_glist *glist,
                 glist_getcanvas(glist), tag, pattern);
         }
     }
-    else if (x->te_type == T_MESSAGE)
+    else if (x->te_type == TYPE_MESSAGE)
     {
         if (firsttime)
             sys_vgui(".x%lx.c create line\
@@ -1296,7 +1296,7 @@ void text_drawborder(t_text *x, t_glist *glist,
                 x1, y1,  x2+4, y1,  x2, y1+4,  x2, y2-4,  x2+4, y2,
                 x1, y2,  x1, y1);
     }
-    else if (x->te_type == T_ATOM)
+    else if (x->te_type == TYPE_ATOM)
     {
         if (firsttime)
             sys_vgui(".x%lx.c create line\
@@ -1313,7 +1313,7 @@ void text_drawborder(t_text *x, t_glist *glist,
         /* for comments, just draw a bar on RHS if unlocked; when a visible
         canvas is unlocked we have to call this anew on all comments, and when
         locked we erase them all via the annoying "commentbar" tag. */
-    else if (x->te_type == T_TEXT && glist->gl_edit)
+    else if (x->te_type == TYPE_TEXT && glist->gl_edit)
     {
         if (firsttime)
             sys_vgui(".x%lx.c create line\
@@ -1345,16 +1345,16 @@ void glist_eraseio(t_glist *glist, t_object *ob, char *tag)
 
 void text_eraseborder(t_text *x, t_glist *glist, char *tag)
 {
-    if (x->te_type == T_TEXT && !glist->gl_edit) return;
+    if (x->te_type == TYPE_TEXT && !glist->gl_edit) return;
     sys_vgui(".x%lx.c delete %sR\n",
         glist_getcanvas(glist), tag);
     glist_eraseio(glist, x, tag);
 }
 
-    /* change text; if T_OBJECT, remake it.  */
+    /* change text; if TYPE_OBJECT, remake it.  */
 void text_setto(t_text *x, t_glist *glist, char *buf, int bufsize)
 {
-    if (x->te_type == T_OBJECT)
+    if (x->te_type == TYPE_OBJECT)
     {
         t_binbuf *b = binbuf_new();
         int natom1, natom2, widthwas = x->te_width;

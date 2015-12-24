@@ -24,14 +24,14 @@
 
 /* To manage several objects bound to the same symbol. */
 
-typedef struct _bindelem {
-    t_pd             *e_what;               /* MUST be the first. */
-    struct _bindelem *e_next;
-    } t_bindelem;
+typedef struct _bindelement {
+    t_pd                *e_what;            /* MUST be the first. */
+    struct _bindelement *e_next;
+    } t_bindelement;
 
 typedef struct _bindlist {
-    t_pd        b_pd;
-    t_bindelem  *b_list;
+    t_pd            b_pd;
+    t_bindelement   *b_list;
     } t_bindlist;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -69,37 +69,37 @@ static t_symbol *pd_loadingAbstraction;     /* Shared. */
 
 static void bindlist_bang (t_bindlist *x)
 {
-    t_bindelem *e = NULL;
+    t_bindelement *e = NULL;
     for (e = x->b_list; e; e = e->e_next) { pd_bang (e->e_what); }
 }
 
 static void bindlist_float (t_bindlist *x, t_float f)
 {
-    t_bindelem *e = NULL;
+    t_bindelement *e = NULL;
     for (e = x->b_list; e; e = e->e_next) { pd_float (e->e_what, f); }
 }
 
 static void bindlist_symbol (t_bindlist *x, t_symbol *s)
 {
-    t_bindelem *e = NULL;
+    t_bindelement *e = NULL;
     for (e = x->b_list; e; e = e->e_next) { pd_symbol (e->e_what, s); }
 }
 
 static void bindlist_pointer (t_bindlist *x, t_gpointer *gp)
 {
-    t_bindelem *e = NULL;
+    t_bindelement *e = NULL;
     for (e = x->b_list; e; e = e->e_next) { pd_pointer (e->e_what, gp); }
 }
 
 static void bindlist_list (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_bindelem *e = NULL;
+    t_bindelement *e = NULL;
     for (e = x->b_list; e; e = e->e_next) { pd_list (e->e_what, s, argc, argv); }
 }
 
 static void bindlist_anything (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_bindelem *e = NULL;
+    t_bindelement *e = NULL;
     for (e = x->b_list; e; e = e->e_next) { pd_typedmess (e->e_what, s, argc, argv); }
 }
 
@@ -127,22 +127,23 @@ static t_pdinstance *pdinstance_new()
 {
     t_pdinstance *x = (t_pdinstance *)getbytes (sizeof (t_pdinstance));
     
-    x->pd_systime               = 0;
-    x->pd_clock_setlist         = 0;
-    x->pd_dspchain              = 0;
-    x->pd_dspchainsize          = 0;
-    x->pd_canvaslist            = 0;
-    x->pd_dspstate              = 0;
-    x->pd_midiin_sym            = gensym ("#midiin");
-    x->pd_sysexin_sym           = gensym ("#sysexin");
-    x->pd_notein_sym            = gensym ("#notein");
-    x->pd_ctlin_sym             = gensym ("#ctlin");
-    x->pd_pgmin_sym             = gensym ("#pgmin");
-    x->pd_bendin_sym            = gensym ("#bendin");
-    x->pd_touchin_sym           = gensym ("#touchin");
-    x->pd_polytouchin_sym       = gensym ("#polytouchin");
-    x->pd_midiclkin_sym         = gensym ("#midiclkin");
-    x->pd_midirealtimein_sym    = gensym ("#midirealtimein");
+    x->pd_systime           = 0;
+    x->pd_clocks            = NULL;
+    x->pd_dspChain          = NULL;
+    x->pd_dspChainSize      = 0;
+    x->pd_dspState          = 0;
+    x->pd_canvases          = NULL;
+    x->pd_signals           = NULL;
+    x->sym_midiin           = gensym ("#midiin");
+    x->sym_sysexin          = gensym ("#sysexin");
+    x->sym_notein           = gensym ("#notein");
+    x->sym_ctlin            = gensym ("#ctlin");
+    x->sym_pgmin            = gensym ("#pgmin");
+    x->sym_bendin           = gensym ("#bendin");
+    x->sym_touchin          = gensym ("#touchin");
+    x->sym_polytouchin      = gensym ("#polytouchin");
+    x->sym_midiclkin        = gensym ("#midiclkin");
+    x->sym_midirealtimein   = gensym ("#midirealtimein");
     
     return x;
 }
@@ -238,15 +239,15 @@ void pd_bind (t_pd *x, t_symbol *s)
     
         if (*s->s_thing == bindlist_class) {
             t_bindlist *b = (t_bindlist *)s->s_thing;
-            t_bindelem *e = (t_bindelem *)getbytes (sizeof (t_bindelem));
+            t_bindelement *e = (t_bindelement *)getbytes (sizeof (t_bindelement));
             e->e_next = b->b_list;
             e->e_what = x;
             b->b_list = e;
             
         } else {
-            t_bindlist *b  = (t_bindlist *)pd_new (bindlist_class);
-            t_bindelem *e1 = (t_bindelem *)getbytes (sizeof (t_bindelem));
-            t_bindelem *e2 = (t_bindelem *)getbytes (sizeof (t_bindelem));
+            t_bindlist *b = (t_bindlist *)pd_new (bindlist_class);
+            t_bindelement *e1 = (t_bindelement *)getbytes (sizeof (t_bindelement));
+            t_bindelement *e2 = (t_bindelement *)getbytes (sizeof (t_bindelement));
             b->b_list  = e1;
             e1->e_what = x;
             e1->e_next = e2;
@@ -267,18 +268,18 @@ void pd_unbind (t_pd *x, t_symbol *s)
         
     } else if (s->s_thing && *s->s_thing == bindlist_class) {
     
-        t_bindlist *b  = (t_bindlist *)s->s_thing;
-        t_bindelem *e1 = NULL;
-        t_bindelem *e2 = NULL;
+        t_bindlist *b = (t_bindlist *)s->s_thing;
+        t_bindelement *e1 = NULL;
+        t_bindelement *e2 = NULL;
         
         if ((e1 = b->b_list)->e_what == x) {
             b->b_list = e1->e_next;
-            freebytes (e1, sizeof (t_bindelem));
+            freebytes (e1, sizeof (t_bindelement));
         } else {
             for (e1 = b->b_list; e2 = e1->e_next; e1 = e2) {
                 if (e2->e_what == x) {
                     e1->e_next = e2->e_next;
-                    freebytes (e2, sizeof (t_bindelem));
+                    freebytes (e2, sizeof (t_bindelement));
                     break;
                 }
             }
@@ -286,7 +287,7 @@ void pd_unbind (t_pd *x, t_symbol *s)
         
         if (!b->b_list->e_next) {                           /* Delete it if just one element remains. */
             s->s_thing = b->b_list->e_what;
-            freebytes (b->b_list, sizeof (t_bindelem));
+            freebytes (b->b_list, sizeof (t_bindelement));
             pd_free (&b->b_pd);
         }
         
@@ -306,7 +307,7 @@ t_pd *pd_findByClass (t_symbol *s, t_class *c)
     
     if (*s->s_thing == bindlist_class) {
         t_bindlist *b = (t_bindlist *)s->s_thing;
-        t_bindelem *e = NULL;
+        t_bindelement *e = NULL;
         
         for (e = b->b_list; e; e = e->e_next) {
             if (*e->e_what == c) { PD_ASSERT (x == NULL); x = e->e_what; }

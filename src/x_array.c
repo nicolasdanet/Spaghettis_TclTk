@@ -288,7 +288,7 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
             post_error ("array: stale or empty pointer");
             return (0);
         }
-        if (gs->gs_type == GP_ARRAY)
+        if (gs->gs_type == POINTER_ARRAY)
             vec = x->tc_gp.gp_un.gp_w;
         else vec = x->tc_gp.gp_un.gp_scalar->sc_vec;
 
@@ -298,18 +298,18 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
             post_error ("array: no field named %s", x->tc_field->s_name);
             return (0);
         }
-        if (type != DT_ARRAY)
+        if (type != DATA_ARRAY)
         {
             post_error ("array: field %s not of type array",
                 x->tc_field->s_name);
             return (0);
         }
-        if (gs->gs_type == GP_GLIST)
+        if (gs->gs_type == POINTER_GLIST)
             *glist = gs->gs_un.gs_glist;
         else
         {
             t_array *owner_array = gs->gs_un.gs_array;
-            while (owner_array->a_gp.gp_stub->gs_type == GP_ARRAY)
+            while (owner_array->a_gp.gp_stub->gs_type == POINTER_ARRAY)
                 owner_array = owner_array->a_gp.gp_stub->gs_un.gs_array;
             *glist = owner_array->a_gp.gp_stub->gs_un.gs_glist;
         }
@@ -529,7 +529,7 @@ static int array_rangeop_getrange(t_array_rangeop *x,
         return (0);
     template = template_findbyname(a->a_templatesym);
     if (!template_find_field(template, x->x_elemfield, &fieldonset,
-        &type, &arraytype) || type != DT_FLOAT)
+        &type, &arraytype) || type != DATA_FLOAT)
     {
         post_error ("can't find field %s in struct %s",
             x->x_elemfield->s_name, a->a_templatesym->s_name);

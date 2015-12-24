@@ -70,11 +70,11 @@ void clock_unset(t_clock *x)
 {
     if (x->c_settime >= 0)
     {
-        if (x == pd_this->pd_clock_setlist)
-            pd_this->pd_clock_setlist = x->c_next;
+        if (x == pd_this->pd_clocks)
+            pd_this->pd_clocks = x->c_next;
         else
         {
-            t_clock *x2 = pd_this->pd_clock_setlist;
+            t_clock *x2 = pd_this->pd_clocks;
             while (x2->c_next != x) x2 = x2->c_next;
             x2->c_next = x->c_next;
         }
@@ -88,12 +88,12 @@ void clock_set(t_clock *x, double setticks)
     if (setticks < pd_this->pd_systime) setticks = pd_this->pd_systime;
     clock_unset(x);
     x->c_settime = setticks;
-    if (pd_this->pd_clock_setlist && 
-        pd_this->pd_clock_setlist->c_settime <= setticks)
+    if (pd_this->pd_clocks && 
+        pd_this->pd_clocks->c_settime <= setticks)
     {
         t_clock *cbefore, *cafter;
-        for (cbefore = pd_this->pd_clock_setlist, 
-            cafter = pd_this->pd_clock_setlist->c_next;
+        for (cbefore = pd_this->pd_clocks, 
+            cafter = pd_this->pd_clocks->c_next;
                 cbefore; cbefore = cafter, cafter = cbefore->c_next)
         {
             if (!cafter || cafter->c_settime > setticks)
@@ -104,7 +104,7 @@ void clock_set(t_clock *x, double setticks)
             }
         }
     }
-    else x->c_next = pd_this->pd_clock_setlist, pd_this->pd_clock_setlist = x;
+    else x->c_next = pd_this->pd_clocks, pd_this->pd_clocks = x;
 }
 
     /* set the clock to call back after a delay in msec */
@@ -419,12 +419,12 @@ void sched_tick( void)
 {
     double next_sys_time = pd_this->pd_systime + sys_time_per_dsp_tick;
     int countdown = 5000;
-    while (pd_this->pd_clock_setlist && 
-        pd_this->pd_clock_setlist->c_settime < next_sys_time)
+    while (pd_this->pd_clocks && 
+        pd_this->pd_clocks->c_settime < next_sys_time)
     {
-        t_clock *c = pd_this->pd_clock_setlist;
+        t_clock *c = pd_this->pd_clocks;
         pd_this->pd_systime = c->c_settime;
-        clock_unset(pd_this->pd_clock_setlist);
+        clock_unset(pd_this->pd_clocks);
         outlet_setstacklim();
         (*c->c_fn)(c->c_owner);
         if (!countdown--)

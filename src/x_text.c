@@ -329,12 +329,12 @@ static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
         binbuf_clear(b);
         binbuf_add(b, binbuf_getnatom(x->x_textbuf.b_binbuf),
             binbuf_getvec(x->x_textbuf.b_binbuf));
-        if (gs->gs_type == GP_GLIST)
+        if (gs->gs_type == POINTER_GLIST)
             scalar_redraw(gp->gp_un.gp_scalar, gs->gs_un.gs_glist);  
         else
         {
             t_array *owner_array = gs->gs_un.gs_array;
-            while (owner_array->a_gp.gp_stub->gs_type == GP_ARRAY)
+            while (owner_array->a_gp.gp_stub->gs_type == POINTER_ARRAY)
                 owner_array = owner_array->a_gp.gp_stub->gs_un.gs_array;
             scalar_redraw(owner_array->a_gp.gp_un.gp_scalar,
                 owner_array->a_gp.gp_stub->gs_un.gs_glist);  
@@ -462,7 +462,7 @@ static t_binbuf *text_client_getbuf(t_text_client *x)
             post_error ("text: stale or empty pointer");
             return (0);
         }
-        if (gs->gs_type == GP_ARRAY)
+        if (gs->gs_type == POINTER_ARRAY)
             vec = x->tc_gp.gp_un.gp_w;
         else vec = x->tc_gp.gp_un.gp_scalar->sc_vec;
 
@@ -472,7 +472,7 @@ static t_binbuf *text_client_getbuf(t_text_client *x)
             post_error ("text: no field named %s", x->tc_field->s_name);
             return (0);
         }
-        if (type != DT_TEXT)
+        if (type != DATA_TEXT)
         {
             post_error ("text: field %s not of type text", x->tc_field->s_name);
             return (0);
@@ -506,12 +506,12 @@ static  void text_client_senditup(t_text_client *x)
             post_error ("text: stale or empty pointer");
             return;
         }
-        if (gs->gs_type == GP_GLIST)
+        if (gs->gs_type == POINTER_GLIST)
             scalar_redraw(x->tc_gp.gp_un.gp_scalar, gs->gs_un.gs_glist);  
         else
         {
             t_array *owner_array = gs->gs_un.gs_array;
-            while (owner_array->a_gp.gp_stub->gs_type == GP_ARRAY)
+            while (owner_array->a_gp.gp_stub->gs_type == POINTER_ARRAY)
                 owner_array = owner_array->a_gp.gp_stub->gs_un.gs_array;
             scalar_redraw(owner_array->a_gp.gp_un.gp_scalar,
                 owner_array->a_gp.gp_stub->gs_un.gs_glist);  

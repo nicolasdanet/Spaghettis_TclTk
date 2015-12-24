@@ -25,13 +25,13 @@ void word_init(t_word *wp, t_template *template, t_gpointer *gp)
     for (i = 0; i < nitems; i++, datatypes++, wp++)
     {
         int type = datatypes->ds_type;
-        if (type == DT_FLOAT)
+        if (type == DATA_FLOAT)
             wp->w_float = 0; 
-        else if (type == DT_SYMBOL)
+        else if (type == DATA_SYMBOL)
             wp->w_symbol = &s_symbol;
-        else if (type == DT_ARRAY)
+        else if (type == DATA_ARRAY)
             wp->w_array = array_new(datatypes->ds_arraytemplate, gp);
-        else if (type == DT_TEXT)
+        else if (type == DATA_TEXT)
             wp->w_binbuf = binbuf_new();
     }
 }
@@ -44,7 +44,7 @@ void word_restore(t_word *wp, t_template *template,
     for (i = 0; i < nitems; i++, datatypes++, wp++)
     {
         int type = datatypes->ds_type;
-        if (type == DT_FLOAT)
+        if (type == DATA_FLOAT)
         {
             t_float f;
             if (argc)
@@ -55,7 +55,7 @@ void word_restore(t_word *wp, t_template *template,
             else f = 0;
             wp->w_float = f; 
         }
-        else if (type == DT_SYMBOL)
+        else if (type == DATA_SYMBOL)
         {
             t_symbol *s;
             if (argc)
@@ -77,9 +77,9 @@ void word_free(t_word *wp, t_template *template)
     t_dataslot *dt;
     for (dt = template->t_vec, i = 0; i < template->t_n; i++, dt++)
     {
-        if (dt->ds_type == DT_ARRAY)
+        if (dt->ds_type == DATA_ARRAY)
             array_free(wp[i].w_array);
-        else if (dt->ds_type == DT_TEXT)
+        else if (dt->ds_type == DATA_TEXT)
             binbuf_free(wp[i].w_binbuf);
     }
 }
@@ -90,7 +90,7 @@ static int template_cancreate(t_template *template)
     t_dataslot *datatypes = template->t_vec;
     t_template *elemtemplate;
     for (i = 0; i < nitems; i++, datatypes++)
-        if (datatypes->ds_type == DT_ARRAY &&
+        if (datatypes->ds_type == DATA_ARRAY &&
             (!(elemtemplate = template_findbyname(datatypes->ds_arraytemplate))
                 || !template_cancreate(elemtemplate)))
     {
@@ -257,10 +257,10 @@ static void scalar_displace(t_gobj *z, t_glist *glist, int dx, int dy)
         return;
     }
     gotx = template_find_field(template, gensym("x"), &xonset, &xtype, &zz);
-    if (gotx && (xtype != DT_FLOAT))
+    if (gotx && (xtype != DATA_FLOAT))
         gotx = 0;
     goty = template_find_field(template, gensym("y"), &yonset, &ytype, &zz);
-    if (goty && (ytype != DT_FLOAT))
+    if (goty && (ytype != DATA_FLOAT))
         goty = 0;
     if (gotx)
         *(t_float *)(((char *)(x->sc_vec)) + xonset) +=

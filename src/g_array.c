@@ -77,7 +77,7 @@ void array_resize_and_redraw(t_array *array, t_glist *glist, int n)
 {
     t_array *a2 = array;
     int vis = glist_isvisible(glist);
-    while (a2->a_gp.gp_stub->gs_type == GP_ARRAY)
+    while (a2->a_gp.gp_stub->gs_type == POINTER_ARRAY)
         a2 = a2->a_gp.gp_stub->gs_un.gs_array;
     if (vis)
         gobj_vis(&a2->a_gp.gp_un.gp_scalar->sc_g, glist, 0);
@@ -204,7 +204,7 @@ t_array *garray_getarray(t_garray *x)
         post_error ("array: template %s has no 'z' field", templatesym->s_name);
         return (0);
     }
-    if (ztype != DT_ARRAY)
+    if (ztype != DATA_ARRAY)
     {
         post_error ("array: template %s, 'z' field is not an array",
             templatesym->s_name);
@@ -222,7 +222,7 @@ static t_array *garray_getarray_floatonly(t_garray *x,
     t_symbol *arraytype;
     t_template *template = template_findbyname(a->a_templatesym);
     if (!template_find_field(template, gensym("y"), &yonset,
-        &type, &arraytype) || type != DT_FLOAT)
+        &type, &arraytype) || type != DATA_FLOAT)
             return (0);
     *yonsetp = yonset;
     *elemsizep = a->a_elemsize;
@@ -313,7 +313,7 @@ t_garray *graph_array(t_glist *gl, t_symbol *s, t_symbol *templateargsym,
         post_error ("array: template %s has no 'z' field", templatesym->s_name);
         return (0);
     }
-    if (ztype != DT_ARRAY)
+    if (ztype != DATA_ARRAY)
     {
         post_error ("array: template %s, 'z' field is not an array",
             templatesym->s_name);
@@ -593,7 +593,7 @@ static void garray_free(t_garray *x)
 
 void array_redraw(t_array *a, t_glist *glist)
 {
-    while (a->a_gp.gp_stub->gs_type == GP_ARRAY)
+    while (a->a_gp.gp_stub->gs_type == POINTER_ARRAY)
         a = a->a_gp.gp_stub->gs_un.gs_array;
     scalar_redraw(a->a_gp.gp_un.gp_scalar, glist);
 }

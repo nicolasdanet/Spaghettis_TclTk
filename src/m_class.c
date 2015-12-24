@@ -217,7 +217,7 @@ t_class *class_new(t_symbol *s, t_newmethod newmethod, t_method freemethod,
     c->c_name = c->c_helpName = s;
     c->c_size = size;
     c->c_methods = getbytes(0);
-    c->c_nMethods = 0;
+    c->c_methodsSize = 0;
     c->c_methodFree = (t_method)freemethod;
     c->c_methodBang = pd_defaultbang;
     c->c_methodPointer = pd_defaultpointer;
@@ -319,7 +319,7 @@ void class_addmethod(t_class *c, t_method fn, t_symbol *sel,
     else
     {
         int i;
-        for (i = 0; i < c->c_nMethods; i++)
+        for (i = 0; i < c->c_methodsSize; i++)
             if (c->c_methods[i].me_name == sel)
         {
             char nbuf[80];
@@ -332,23 +332,23 @@ void class_addmethod(t_class *c, t_method fn, t_symbol *sel,
                 sel->s_name, c->c_name->s_name, nbuf);
         }
         c->c_methods = resizebytes(c->c_methods,
-            c->c_nMethods * sizeof(*c->c_methods),
-            (c->c_nMethods + 1) * sizeof(*c->c_methods));
-        m = c->c_methods +  c->c_nMethods;
-        c->c_nMethods++;
+            c->c_methodsSize * sizeof(*c->c_methods),
+            (c->c_methodsSize + 1) * sizeof(*c->c_methods));
+        m = c->c_methods +  c->c_methodsSize;
+        c->c_methodsSize++;
         m->me_name = sel;
-        m->me_fun = (t_gotfn)fn;
+        m->me_function = (t_gotfn)fn;
         nargs = 0;
         while (argtype != A_NULL && nargs < PD_ARGUMENTS)
         {
-            m->me_arg[nargs++] = argtype;
+            m->me_arguments[nargs++] = argtype;
             argtype = va_arg(ap, t_atomtype);
         }
         if (argtype != A_NULL)
             post_error ("%s_%s: only 5 arguments are typecheckable; use A_GIMME",
                 c->c_name->s_name, sel->s_name);
         va_end(ap);
-        m->me_arg[nargs] = A_NULL;
+        m->me_arguments[nargs] = A_NULL;
     }
     return;
 phooey:
@@ -685,15 +685,15 @@ void pd_typedmess(t_pd *x, t_symbol *s, int argc, t_atom *argv)
             (*c->c_methodSymbol)(x, &s_);
         return;
     }
-    for (i = c->c_nMethods, m = c->c_methods; i--; m++)
+    for (i = c->c_methodsSize, m = c->c_methods; i--; m++)
         if (m->me_name == s)
     {
-        wp = m->me_arg;
+        wp = m->me_arguments;
         if (*wp == A_GIMME)
         {
             if (x == &pd_objectmaker)
-                newest = (*((t_newgimme)(m->me_fun)))(s, argc, argv);
-            else (*((t_messgimme)(m->me_fun)))(x, s, argc, argv);
+                newest = (*((t_newgimme)(m->me_function)))(s, argc, argv);
+            else (*((t_messgimme)(m->me_function)))(x, s, argc, argv);
             return;
         }
         if (argc > PD_ARGUMENTS) argc = PD_ARGUMENTS;
@@ -757,21 +757,21 @@ void pd_typedmess(t_pd *x, t_symbol *s, int argc, t_atom *argv)
         }
         switch (narg)
         {
-        case 0 : bonzo = (*(t_fun0)(m->me_fun))
+        case 0 : bonzo = (*(t_fun0)(m->me_function))
             (ad[0], ad[1], ad[2], ad[3], ad[4]); break;
-        case 1 : bonzo = (*(t_fun1)(m->me_fun))
+        case 1 : bonzo = (*(t_fun1)(m->me_function))
             (ai[0], ad[0], ad[1], ad[2], ad[3], ad[4]); break;
-        case 2 : bonzo = (*(t_fun2)(m->me_fun))
+        case 2 : bonzo = (*(t_fun2)(m->me_function))
             (ai[0], ai[1], ad[0], ad[1], ad[2], ad[3], ad[4]); break;
-        case 3 : bonzo = (*(t_fun3)(m->me_fun))
+        case 3 : bonzo = (*(t_fun3)(m->me_function))
             (ai[0], ai[1], ai[2], ad[0], ad[1], ad[2], ad[3], ad[4]); break;
-        case 4 : bonzo = (*(t_fun4)(m->me_fun))
+        case 4 : bonzo = (*(t_fun4)(m->me_function))
             (ai[0], ai[1], ai[2], ai[3],
                 ad[0], ad[1], ad[2], ad[3], ad[4]); break;
-        case 5 : bonzo = (*(t_fun5)(m->me_fun))
+        case 5 : bonzo = (*(t_fun5)(m->me_function))
             (ai[0], ai[1], ai[2], ai[3], ai[4],
                 ad[0], ad[1], ad[2], ad[3], ad[4]); break;
-        case 6 : bonzo = (*(t_fun6)(m->me_fun))
+        case 6 : bonzo = (*(t_fun6)(m->me_function))
             (ai[0], ai[1], ai[2], ai[3], ai[4], ai[5],
                 ad[0], ad[1], ad[2], ad[3], ad[4]); break;
         default: bonzo = 0;
@@ -850,8 +850,8 @@ t_gotfn getfn(t_pd *x, t_symbol *s)
     t_methodentry *m;
     int i;
 
-    for (i = c->c_nMethods, m = c->c_methods; i--; m++)
-        if (m->me_name == s) return(m->me_fun);
+    for (i = c->c_methodsSize, m = c->c_methods; i--; m++)
+        if (m->me_name == s) return(m->me_function);
     post_error ("%s: no method for message '%s'", c->c_name->s_name, s->s_name);
     return((t_gotfn)nullfn);
 }
@@ -862,7 +862,7 @@ t_gotfn zgetfn(t_pd *x, t_symbol *s)
     t_methodentry *m;
     int i;
 
-    for (i = c->c_nMethods, m = c->c_methods; i--; m++)
-        if (m->me_name == s) return(m->me_fun);
+    for (i = c->c_methodsSize, m = c->c_methods; i--; m++)
+        if (m->me_name == s) return(m->me_function);
     return(0);
 }

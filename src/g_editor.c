@@ -123,7 +123,7 @@ int gobj_shouldvis(t_gobj *x, struct _glist *glist)
             (ob->te_g.g_pd != canvas_class &&
                 ob->te_g.g_pd->c_behavior != &text_widgetbehavior) ||
             (ob->te_g.g_pd == canvas_class && (((t_glist *)ob)->gl_isgraph)) ||
-            (glist->gl_goprect && (ob->te_type == T_TEXT)));
+            (glist->gl_goprect && (ob->te_type == TYPE_TEXT)));
     }
     else return (1);
 }
@@ -790,7 +790,7 @@ void canvas_reload(t_symbol *name, t_symbol *dir, t_gobj *except)
     int dspwas = canvas_suspend_dsp();
     glist_reloading = 1;
         /* find all root canvases */
-    for (x = pd_this->pd_canvaslist; x; x = x->gl_next)
+    for (x = pd_this->pd_canvases; x; x = x->gl_next)
         glist_doreload(x, name, dir, except);
     glist_reloading = 0;
     canvas_resume_dsp(dspwas);
@@ -1967,7 +1967,7 @@ void glob_verifyquit(void *dummy, t_floatarg f)
 {
     t_glist *g, *g2;
         /* find all root canvases */
-    for (g = pd_this->pd_canvaslist; g; g = g->gl_next)
+    for (g = pd_this->pd_canvases; g; g = g->gl_next)
         if (g2 = glist_finddirty(g))
     {
         canvas_vis(g2, 1);
@@ -2523,10 +2523,10 @@ void canvas_connect(t_canvas *x, t_floatarg fwhoout, t_floatarg foutno,
     
         /* if object creation failed, make dummy inlets or outlets
         as needed */ 
-    if (pd_class(&src->g_pd) == text_class && objsrc->te_type == T_OBJECT)
+    if (pd_class(&src->g_pd) == text_class && objsrc->te_type == TYPE_OBJECT)
         while (outno >= obj_noutlets(objsrc))
             outlet_new(objsrc, 0);
-    if (pd_class(&sink->g_pd) == text_class && objsink->te_type == T_OBJECT)
+    if (pd_class(&sink->g_pd) == text_class && objsink->te_type == TYPE_OBJECT)
         while (inno >= obj_ninlets(objsink))
             inlet_new(objsink, &objsink->te_g.g_pd, 0, 0);
 
@@ -2684,7 +2684,7 @@ void canvas_editmode(t_canvas *x, t_floatarg state)
         t_object *ob;
         canvas_setcursor(x, CURSOR_EDIT_NOTHING);
         for (g = x->gl_list; g; g = g->g_next)
-            if ((ob = pd_checkobject(&g->g_pd)) && ob->te_type == T_TEXT)
+            if ((ob = pd_checkobject(&g->g_pd)) && ob->te_type == TYPE_TEXT)
         {
             t_rtext *y = glist_findrtext(x, ob);
             text_drawborder(ob, x,
