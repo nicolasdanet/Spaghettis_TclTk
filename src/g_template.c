@@ -16,6 +16,7 @@ extern t_class *garray_class;
 extern t_class *scalar_class;
 extern t_pd pd_canvasmaker;
 extern t_class *canvas_class;
+extern t_pdinstance *pd_this;
 
 /*
 This file contains text objects you would put in a canvas to define a
@@ -438,7 +439,7 @@ void template_conform(t_template *tfrom, t_template *tto)
     if (doit)
     {
         t_glist *gl;
-        for (gl = pd_getcanvaslist(); gl; gl = gl->gl_next)
+        for (gl = pd_this->pd_canvaslist; gl; gl = gl->gl_next)
             template_conformglist(tfrom, tto, gl, conformaction);
     }
     freebytes(conformaction, sizeof(int) * nto);

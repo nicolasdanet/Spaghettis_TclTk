@@ -290,7 +290,6 @@ PD_DLL void     pd_pointer          (t_pd *x, t_gpointer *gp);
 PD_DLL void     pd_float            (t_pd *x, t_float f);
 PD_DLL void     pd_symbol           (t_pd *x, t_symbol *s);
 PD_DLL void     pd_list             (t_pd *x, t_symbol *s, int argc, t_atom *argv);
-PD_DLL void     pd_anything         (t_pd *x, t_symbol *s, int argc, t_atom *argv);
 PD_DLL void     pd_typedmess        (t_pd *x, t_symbol *s, int argc, t_atom *argv);
 PD_DLL void     pd_forwardmess      (t_pd *x, int argc, t_atom *argv);
 PD_DLL void     pd_vmess            (t_pd *x, t_symbol *s, char *fmt, ...);
@@ -652,11 +651,6 @@ PD_DLL void sys_queuegui            (void *client, t_glist *glist, t_guicallback
 PD_DLL void sys_unqueuegui          (void *client);
 PD_DLL void gfxstub_new             (t_pd *owner, void *key, const char *cmd);
 PD_DLL void gfxstub_deleteforkey    (void *key);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-PD_DLL t_canvas *pd_getcanvaslist   (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -45,7 +45,7 @@ extern int sys_sleepgrain;
 char pd_compiletime[] = __TIME__;
 char pd_compiledate[] = __DATE__;
 
-void pd_init(void);
+void pd_initialize(void);
 int sys_argparse(int argc, char **argv);
 void sys_findprogdir(char *progname);
 void sys_setsignalhandlers( void);
@@ -272,7 +272,7 @@ int sys_main(int argc, char **argv)
     }
 # endif /* _MSC_VER */
 #endif  /* WIN32 */
-    pd_init();                                  /* start the message system */
+    pd_initialize();                                  /* start the message system */
     sys_findprogdir(argv[0]);                   /* set sys_progname, guipath */
     for (i = noprefs = 0; i < argc; i++)        /* prescan args for noprefs */
         if (!strcmp(argv[i], "-noprefs"))

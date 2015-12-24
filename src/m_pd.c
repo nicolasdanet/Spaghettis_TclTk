@@ -107,7 +107,7 @@ static void bindlist_anything (t_bindlist *x, t_symbol *s, int argc, t_atom *arg
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void m_pd_setup (void)
+void pd_setup (void)
 {
     bindlist_class = class_new (gensym ("bindlist"), NULL, NULL, sizeof (t_bindlist), CLASS_PURE, 0);
     
@@ -117,6 +117,49 @@ void m_pd_setup (void)
     class_addpointer (bindlist_class, (t_method)bindlist_pointer);
     class_addlist (bindlist_class, (t_method)bindlist_list);
     class_addanything (bindlist_class, (t_method)bindlist_anything);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_pdinstance *pdinstance_new()
+{
+    t_pdinstance *x = (t_pdinstance *)getbytes (sizeof (t_pdinstance));
+    
+    x->pd_systime               = 0;
+    x->pd_clock_setlist         = 0;
+    x->pd_dspchain              = 0;
+    x->pd_dspchainsize          = 0;
+    x->pd_canvaslist            = 0;
+    x->pd_dspstate              = 0;
+    x->pd_midiin_sym            = gensym ("#midiin");
+    x->pd_sysexin_sym           = gensym ("#sysexin");
+    x->pd_notein_sym            = gensym ("#notein");
+    x->pd_ctlin_sym             = gensym ("#ctlin");
+    x->pd_pgmin_sym             = gensym ("#pgmin");
+    x->pd_bendin_sym            = gensym ("#bendin");
+    x->pd_touchin_sym           = gensym ("#touchin");
+    x->pd_polytouchin_sym       = gensym ("#polytouchin");
+    x->pd_midiclkin_sym         = gensym ("#midiclkin");
+    x->pd_midirealtimein_sym    = gensym ("#midirealtimein");
+    
+    return x;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void pd_initialize (void)
+{
+    pd_this = pdinstance_new();
+    
+    mess_init();
+    obj_init();
+    conf_init();
+    glob_init();
+    garray_init();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -244,7 +287,7 @@ void pd_unbind (t_pd *x, t_symbol *s)
         if (!b->b_list->e_next) {                           /* Delete it if just one element remains. */
             s->s_thing = b->b_list->e_what;
             freebytes (b->b_list, sizeof (t_bindelem));
-            pd_free(&b->b_pd);
+            pd_free (&b->b_pd);
         }
         
     } else { PD_BUG; }
@@ -322,60 +365,6 @@ int pd_setLoadingAbstraction (t_symbol *s)
     pd_loadingAbstraction = s;
     
     return 0;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static t_symbol *midi_gensym (const char *prefix, const char *name)
-{
-    char buf[80];
-    strcpy(buf, prefix);
-    strncat(buf, name, 79 - strlen(buf));
-    return (gensym(buf));
-}
-
-static t_pdinstance *pdinstance_donew(int useprefix)
-{
-    t_pdinstance *x = (t_pdinstance *)getbytes(sizeof(t_pdinstance));
-    char midiprefix[80];
-    if (useprefix)
-        sprintf(midiprefix, "%p", x);
-    else midiprefix[0] = 0;
-    x->pd_systime = 0;
-    x->pd_clock_setlist = 0;
-    x->pd_dspchain = 0;
-    x->pd_dspchainsize = 0;
-    x->pd_canvaslist = 0;
-    x->pd_dspstate = 0;
-    x->pd_midiin_sym = midi_gensym(midiprefix, "#midiin");
-    x->pd_sysexin_sym = midi_gensym(midiprefix, "#sysexin");
-    x->pd_notein_sym = midi_gensym(midiprefix, "#notein");
-    x->pd_ctlin_sym = midi_gensym(midiprefix, "#ctlin");
-    x->pd_pgmin_sym = midi_gensym(midiprefix, "#pgmin");
-    x->pd_bendin_sym = midi_gensym(midiprefix, "#bendin");
-    x->pd_touchin_sym = midi_gensym(midiprefix, "#touchin");
-    x->pd_polytouchin_sym = midi_gensym(midiprefix, "#polytouchin");
-    x->pd_midiclkin_sym = midi_gensym(midiprefix, "#midiclkin");
-    x->pd_midirealtimein_sym = midi_gensym(midiprefix, "#midirealtimein");
-    return (x);
-}
-
-void pd_init(void)
-{
-    if (!pd_this)
-        pd_this = pdinstance_donew(0);
-    mess_init();
-    obj_init();
-    conf_init();
-    glob_init();
-    garray_init();
-}
-
-PD_DLL t_canvas *pd_getcanvaslist(void)
-{
-    return (pd_this->pd_canvaslist);
 }
 
 // -----------------------------------------------------------------------------------------------------------

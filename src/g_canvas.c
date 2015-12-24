@@ -1084,7 +1084,7 @@ static void canvas_start_dsp(void)
     else sys_gui("set ::var(isDsp) 1\n");
     ugen_start();
     
-    for (x = pd_getcanvaslist(); x; x = x->gl_next)
+    for (x = pd_this->pd_canvaslist; x; x = x->gl_next)
         canvas_dodsp(x, 1, 0);
     
     pd_this->pd_dspstate = 1;
@@ -1203,7 +1203,7 @@ void canvas_redrawallfortemplate(t_template *template, int action)
 {
     t_canvas *x;
         /* find all root canvases */
-    for (x = pd_getcanvaslist(); x; x = x->gl_next)
+    for (x = pd_this->pd_canvaslist; x; x = x->gl_next)
         glist_redrawall(x, action);
 }
 

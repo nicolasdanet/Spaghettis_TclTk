@@ -23,6 +23,7 @@ extern t_class *vinlet_class;
 extern t_class *voutlet_class;
 extern int sys_defaultfont;
 extern t_widgetbehavior text_widgetbehavior;
+extern t_pdinstance *pd_this;
 
 void glist_readfrombinbuf(t_glist *x, t_binbuf *b, char *filename,
     int selectem);
@@ -789,7 +790,7 @@ void canvas_reload(t_symbol *name, t_symbol *dir, t_gobj *except)
     int dspwas = canvas_suspend_dsp();
     glist_reloading = 1;
         /* find all root canvases */
-    for (x = pd_getcanvaslist(); x; x = x->gl_next)
+    for (x = pd_this->pd_canvaslist; x; x = x->gl_next)
         glist_doreload(x, name, dir, except);
     glist_reloading = 0;
     canvas_resume_dsp(dspwas);
@@ -1966,7 +1967,7 @@ void glob_verifyquit(void *dummy, t_floatarg f)
 {
     t_glist *g, *g2;
         /* find all root canvases */
-    for (g = pd_getcanvaslist(); g; g = g->gl_next)
+    for (g = pd_this->pd_canvaslist; g; g = g->gl_next)
         if (g2 = glist_finddirty(g))
     {
         canvas_vis(g2, 1);
