@@ -1447,7 +1447,7 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
     return (newb);
 }
 
-void pd_doloadbang(void);
+void pd_doLoadbang (void);
 
 /* LATER make this evaluate the file on-the-fly. */
 /* LATER figure out how to log errors */
@@ -1500,7 +1500,7 @@ t_pd *glob_evalfile(t_pd *ignore, t_symbol *name, t_symbol *dir)
         x = s__X.s_thing;
         pd_vmess(x, gensym("pop"), "i", 1);
     }
-    pd_doloadbang();
+    pd_doLoadbang();
     canvas_resume_dsp(dspstate);
     s__X.s_thing = boundx;
     return x;

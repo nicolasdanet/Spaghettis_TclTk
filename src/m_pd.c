@@ -49,12 +49,17 @@ typedef struct _gstack {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+t_pdinstance *pd_this;                      /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class  *bindlist_class;            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_gstack *pd_gstackHead;             /* Shared. */
+static t_gstack *pd_stackHead;              /* Shared. */
 static t_pd     *pd_lastPopped;             /* Shared. */
 static t_symbol *pd_loadingAbstraction;     /* Shared. */
 
@@ -155,6 +160,35 @@ void pd_free (t_pd *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void pd_bang (t_pd *x)
+{
+    (*(*x)->c_methodBang)(x);
+}
+
+void pd_float (t_pd *x, t_float f)
+{
+    (*(*x)->c_methodFloat)(x, f);
+}
+
+void pd_pointer (t_pd *x, t_gpointer *gp)
+{
+    (*(*x)->c_methodPointer)(x, gp);
+}
+
+void pd_symbol (t_pd *x, t_symbol *s)
+{
+    (*(*x)->c_methodSymbol)(x, s);
+}
+
+void pd_list (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+{
+    (*(*x)->c_methodList)(x, &s_list, argc, argv);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void pd_bind (t_pd *x, t_symbol *s)
 {
     if (s->s_thing) {
@@ -243,84 +277,58 @@ t_pd *pd_findByClass (t_symbol *s, t_class *c)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int pd_setloadingabstraction(t_symbol *sym)
+void pd_push (t_pd *x)
 {
-    t_gstack *foo = pd_gstackHead;
-    for (foo = pd_gstackHead; foo; foo = foo->g_next)
-        if (foo->g_loadingAbstraction == sym)
-            return (1);
-    pd_loadingAbstraction = sym;
-    return (0);
+    t_gstack *p = (t_gstack *)getbytes (sizeof (t_gstack));
+    p->g_what = s__X.s_thing;
+    p->g_next = pd_stackHead;
+    p->g_loadingAbstraction = pd_loadingAbstraction;
+    pd_loadingAbstraction = NULL;
+    pd_stackHead = p;
+    s__X.s_thing = x;
+}
+
+void pd_pop (t_pd *x)
+{
+    if (!pd_stackHead || s__X.s_thing != x) { PD_BUG; }
+    else {
+        t_gstack *p = pd_stackHead;
+        s__X.s_thing = p->g_what;
+        pd_stackHead = p->g_next;
+        freebytes (p, sizeof (t_gstack));
+        pd_lastPopped = x;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void pd_pushsym(t_pd *x)
+void pd_doLoadbang (void)
 {
-    t_gstack *y = (t_gstack *)getbytes(sizeof(*y));
-    y->g_what = s__X.s_thing;
-    y->g_next = pd_gstackHead;
-    y->g_loadingAbstraction = pd_loadingAbstraction;
-    pd_loadingAbstraction = 0;
-    pd_gstackHead = y;
-    s__X.s_thing = x;
+    if (pd_lastPopped) { pd_vmess (pd_lastPopped, gensym ("loadbang"), ""); }
+    
+    pd_lastPopped = NULL;
 }
 
-void pd_popsym(t_pd *x)
+int pd_setLoadingAbstraction (t_symbol *s)
 {
-    if (!pd_gstackHead || s__X.s_thing != x) { PD_BUG; }
-    else {
-        t_gstack *headwas = pd_gstackHead;
-        s__X.s_thing = headwas->g_what;
-        pd_gstackHead = headwas->g_next;
-        freebytes(headwas, sizeof(*headwas));
-        pd_lastPopped = x;
+    t_gstack *p = pd_stackHead;
+    
+    for (p = pd_stackHead; p; p = p->g_next) {
+        if (p->g_loadingAbstraction == s) { return 1; }
     }
+    
+    pd_loadingAbstraction = s;
+    
+    return 0;
 }
 
-void pd_doloadbang(void)
-{
-    if (pd_lastPopped)
-        pd_vmess(pd_lastPopped, gensym("loadbang"), "");
-    pd_lastPopped = 0;
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void pd_bang(t_pd *x)
-{
-    (*(*x)->c_methodBang)(x);
-}
-
-void pd_float(t_pd *x, t_float f)
-{
-    (*(*x)->c_methodFloat)(x, f);
-}
-
-void pd_pointer(t_pd *x, t_gpointer *gp)
-{
-    (*(*x)->c_methodPointer)(x, gp);
-}
-
-void pd_symbol(t_pd *x, t_symbol *s)
-{
-    (*(*x)->c_methodSymbol)(x, s);
-}
-
-void pd_list(t_pd *x, t_symbol *s, int argc, t_atom *argv)
-{
-    (*(*x)->c_methodList)(x, &s_list, argc, argv);
-}
-
-void mess_init(void);
-void obj_init(void);
-void conf_init(void);
-void glob_init(void);
-void garray_init(void);
-
-t_pdinstance *pd_this;      /* Shared. */
-
-static t_symbol *midi_gensym(const char *prefix, const char *name)
+static t_symbol *midi_gensym (const char *prefix, const char *name)
 {
     char buf[80];
     strcpy(buf, prefix);

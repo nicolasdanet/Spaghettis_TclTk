@@ -542,7 +542,7 @@ void canvas_popabstraction(t_canvas *x);
 extern t_pd *newest;
 
 t_symbol* pathsearch(t_symbol *s,char* ext);
-int pd_setloadingabstraction(t_symbol *sym);
+int pd_setLoadingAbstraction (t_symbol *sym);
 
     /* this routine is called when a new "object" is requested whose class Pd
     doesn't know.  Pd tries to load it as an extern, then as an abstraction. */
@@ -574,7 +574,7 @@ void new_anything(void *dummy, t_symbol *s, int argc, t_atom *argv)
                     dirbuf, &nameptr, PD_STRING, 0)) >= 0)
     {
         close (fd);
-        if (!pd_setloadingabstraction(s))
+        if (!pd_setLoadingAbstraction (s))
         {
             t_pd *was = s__X.s_thing;
             canvas_setargs(argc, argv);

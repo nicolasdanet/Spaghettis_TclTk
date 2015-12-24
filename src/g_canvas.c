@@ -133,12 +133,12 @@ t_canvas *canvas_getcurrent(void)
 
 void canvas_setcurrent(t_canvas *x)
 {
-    pd_pushsym(&x->gl_obj.te_g.g_pd);
+    pd_push(&x->gl_obj.te_g.g_pd);
 }
 
 void canvas_unsetcurrent(t_canvas *x)
 {
-    pd_popsym(&x->gl_obj.te_g.g_pd);
+    pd_pop(&x->gl_obj.te_g.g_pd);
 }
 
 t_canvasenvironment *canvas_getenv(t_canvas *x)
@@ -405,7 +405,7 @@ t_canvas *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
     x->gl_willvis = vis;
     x->gl_edit = !strncmp(x->gl_name->s_name, "Untitled", 8);
     x->gl_font = sys_nearestfontsize(font);
-    pd_pushsym(&x->gl_obj.te_g.g_pd);
+    pd_push(&x->gl_obj.te_g.g_pd);
     return(x);
 }
 
@@ -493,7 +493,7 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     x->gl_obj.te_binbuf = binbuf_new();
     binbuf_addv(x->gl_obj.te_binbuf, "s", gensym("graph"));
     if (!menu)
-        pd_pushsym(&x->gl_obj.te_g.g_pd);
+        pd_push(&x->gl_obj.te_g.g_pd);
     glist_add(g, &x->gl_obj.te_g);
     return (x);
 }
@@ -833,7 +833,7 @@ static void canvas_pop(t_canvas *x, t_floatarg fvis)
 {
     if (fvis != 0)
         canvas_vis(x, 1);
-    pd_popsym(&x->gl_obj.te_g.g_pd);
+    pd_pop(&x->gl_obj.te_g.g_pd);
     canvas_resortinlets(x);
     canvas_resortoutlets(x);
     x->gl_loading = 0;
@@ -923,7 +923,7 @@ static void canvas_relocate(t_canvas *x, t_symbol *canvasgeom,
 void canvas_popabstraction(t_canvas *x)
 {
     newest = &x->gl_obj.te_g.g_pd;
-    pd_popsym(&x->gl_obj.te_g.g_pd);
+    pd_pop(&x->gl_obj.te_g.g_pd);
     x->gl_loading = 0;
     canvas_resortinlets(x);
     canvas_resortoutlets(x);
