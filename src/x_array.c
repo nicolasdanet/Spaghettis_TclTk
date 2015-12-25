@@ -7,6 +7,7 @@
 #include "m_pd.h"
 #include "m_private.h"
 #include "m_macros.h"
+#include "m_alloca.h"
 #include "g_canvas.h"
 #include <string.h>
 #include <stdio.h>
@@ -18,28 +19,6 @@
 #endif
 extern t_pd *newest;    /* OK - this should go into a .h file now :) */
 extern t_class *garray_class;
-
-#ifdef HAVE_ALLOCA_H        /* ifdef nonsense to find include for alloca() */
-# include <alloca.h>        /* linux, mac, mingw, cygwin */
-#elif defined _MSC_VER
-# include <malloc.h>        /* MSVC */
-#else
-# include <stddef.h>        /* BSDs for example */
-#endif                      /* end alloca() ifdef nonsense */
-
-#ifndef HAVE_ALLOCA     /* can work without alloca() but we never need it */
-#define HAVE_ALLOCA 1
-#endif
-#define TEXT_NGETBYTE 100 /* bigger that this we use alloc, not alloca */
-#if HAVE_ALLOCA
-#define ATOMS_ALLOCA(x, n) ((x) = (t_atom *)((n) < TEXT_NGETBYTE ?  \
-        alloca((n) * sizeof(t_atom)) : getbytes((n) * sizeof(t_atom))))
-#define ATOMS_FREEA(x, n) ( \
-    ((n) < TEXT_NGETBYTE || (freebytes((x), (n) * sizeof(t_atom)), 0)))
-#else
-#define ATOMS_ALLOCA(x, n) ((x) = (t_atom *)getbytes((n) * sizeof(t_atom)))
-#define ATOMS_FREEA(x, n) (freebytes((x), (n) * sizeof(t_atom)))
-#endif
 
 /* -- "table" - classic "array define" object by Guenter Geiger --*/
 

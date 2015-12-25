@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "m_pd.h"
 #include "m_macros.h"
+#include "m_alloca.h"
 #include "s_system.h"
 #include <stdio.h>
 #include <errno.h>
@@ -567,30 +568,6 @@ done:
 }
 
 #define SMALLMSG 5
-#define HUGEMSG 1000
-
-#ifndef HAVE_ALLOCA     /* can work without alloca() but we never need it */
-#define HAVE_ALLOCA 1
-#endif
-
-#ifdef HAVE_ALLOCA
-
-#ifdef HAVE_ALLOCA_H        /* ifdef nonsense to find include for alloca() */
-# include <alloca.h>        /* linux, mac, mingw, cygwin */
-#elif defined _MSC_VER
-# include <malloc.h>        /* MSVC */
-#else
-# include <stddef.h>        /* BSDs for example */
-#endif                      /* end alloca() ifdef nonsense */
-
-#define ATOMS_ALLOCA(x, n) ((x) = (t_atom *)((n) < HUGEMSG ?  \
-        alloca((n) * sizeof(t_atom)) : getbytes((n) * sizeof(t_atom))))
-#define ATOMS_FREEA(x, n) ( \
-    ((n) < HUGEMSG || (freebytes((x), (n) * sizeof(t_atom)), 0)))
-#else
-#define ATOMS_ALLOCA(x, n) ((x) = (t_atom *)getbytes((n) * sizeof(t_atom)))
-#define ATOMS_FREEA(x, n) (freebytes((x), (n) * sizeof(t_atom)))
-#endif
 
 void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
 {

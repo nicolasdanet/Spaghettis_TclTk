@@ -30,12 +30,6 @@ extern t_class *garray_class;
 
 #define MAXSFCHANS 64
 
-#ifdef _LARGEFILE64_SOURCE
-# define open open64
-# define lseek lseek64
-#define off_t __off64_t
-#endif
-
 /* Microsoft Visual Studio does not define these... arg */
 #ifdef _MSC_VER
 #define off_t long

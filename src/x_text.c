@@ -8,6 +8,7 @@ moment it also defines "text" but it may later be better to split this off. */
 #include "m_pd.h"
 #include "m_private.h"
 #include "m_macros.h"
+#include "m_alloca.h"
 #include "g_canvas.h"    /* just for glist_getfont, bother */
 #include "s_system.h"    /* just for sys_hostfontsize, phooey */
 #include <string.h>
@@ -22,28 +23,6 @@ extern t_pd *newest;
 extern t_pd pd_canvasmaker;
 
 static t_class *text_define_class;
-
-#ifdef HAVE_ALLOCA_H        /* ifdef nonsense to find include for alloca() */
-# include <alloca.h>        /* linux, mac, mingw, cygwin */
-#elif defined _MSC_VER
-# include <malloc.h>        /* MSVC */
-#else
-# include <stddef.h>        /* BSDs for example */
-#endif                      /* end alloca() ifdef nonsense */
-
-#ifndef HAVE_ALLOCA     /* can work without alloca() but we never need it */
-#define HAVE_ALLOCA 1
-#endif
-#define TEXT_NGETBYTE 100 /* bigger that this we use alloc, not alloca */
-#if HAVE_ALLOCA
-#define ATOMS_ALLOCA(x, n) ((x) = (t_atom *)((n) < TEXT_NGETBYTE ?  \
-        alloca((n) * sizeof(t_atom)) : getbytes((n) * sizeof(t_atom))))
-#define ATOMS_FREEA(x, n) ( \
-    ((n) < TEXT_NGETBYTE || (freebytes((x), (n) * sizeof(t_atom)), 0)))
-#else
-#define ATOMS_ALLOCA(x, n) ((x) = (t_atom *)getbytes((n) * sizeof(t_atom)))
-#define ATOMS_FREEA(x, n) (freebytes((x), (n) * sizeof(t_atom)))
-#endif
 
 /* --- common code for text define, textfile, and qlist for storing text -- */
 

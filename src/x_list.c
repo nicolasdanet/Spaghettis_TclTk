@@ -4,24 +4,11 @@
 
 #include "m_pd.h"
 #include "m_macros.h"
-/* #include <string.h> */
+#include "m_alloca.h"
 
-#ifdef HAVE_ALLOCA_H        /* ifdef nonsense to find include for alloca() */
-# include <alloca.h>        /* linux, mac, mingw, cygwin */
-#elif defined _MSC_VER
-# include <malloc.h>        /* MSVC */
-#else
-# include <stddef.h>        /* BSDs for example */
-#endif                      /* end alloca() ifdef nonsense */
 #include <string.h>
 
 extern t_pd *newest;
-
-#ifndef HAVE_ALLOCA     /* can work without alloca() but we never need it */
-#define HAVE_ALLOCA 1
-#endif
-
-#define LIST_NGETBYTE 100 /* bigger that this we use alloc, not alloca */
 
 /* the "list" object family.
 
@@ -62,16 +49,6 @@ typedef struct _alist
     int l_npointer;     /* number of pointers */
     t_listelem *l_vec;  /* pointer to items */
 } t_alist;
-
-#if HAVE_ALLOCA
-#define ATOMS_ALLOCA(x, n) ((x) = (t_atom *)((n) < LIST_NGETBYTE ?  \
-        alloca((n) * sizeof(t_atom)) : getbytes((n) * sizeof(t_atom))))
-#define ATOMS_FREEA(x, n) ( \
-    ((n) < LIST_NGETBYTE || (freebytes((x), (n) * sizeof(t_atom)), 0)))
-#else
-#define ATOMS_ALLOCA(x, n) ((x) = (t_atom *)getbytes((n) * sizeof(t_atom)))
-#define ATOMS_FREEA(x, n) (freebytes((x), (n) * sizeof(t_atom)))
-#endif
 
 static void atoms_copy(int argc, t_atom *from, t_atom *to)
 {
@@ -549,19 +526,11 @@ static void list_tosymbol_list(t_list_tosymbol *x, t_symbol *s,
     int argc, t_atom *argv)
 {
     int i;
-#if HAVE_ALLOCA
     char *str = alloca(argc + 1);
-#else
-    char *str = getbytes(argc + 1);
-#endif
     for (i = 0; i < argc; i++)
         str[i] = (char)atom_getfloatarg(i, argc, argv);
     str[argc] = 0;
     outlet_symbol(x->x_obj.te_outlet, gensym(str));
-#if HAVE_ALLOCA
-#else
-    freebytes(str, argc+1);
-#endif
 }
 
 static void list_tosymbol_setup(void)

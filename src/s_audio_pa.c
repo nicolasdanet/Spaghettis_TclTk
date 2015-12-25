@@ -22,6 +22,7 @@
 */
 
 #include "m_pd.h"
+#include "m_alloca.h"
 #include "s_system.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,14 +36,6 @@
 #ifndef _WIN32          /* for the "dup2" workaround -- do we still need it? */
 #include <unistd.h>
 #endif
-
-#ifdef HAVE_ALLOCA_H        /* ifdef nonsense to find include for alloca() */
-# include <alloca.h>        /* linux, mac, mingw, cygwin */
-#elif defined _MSC_VER
-# include <malloc.h>        /* MSVC */
-#else
-# include <stddef.h>        /* BSDs for example */
-#endif                      /* end alloca() ifdef nonsense */
 
 #if 1
 #define FAKEBLOCKING

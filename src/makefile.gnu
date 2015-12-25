@@ -33,7 +33,7 @@ libpdtcldir = $(libpddir)/tcl
 # Preprocessor flags.
 
 CPPFLAGS = -DINSTALL_PREFIX=\"$(prefix)\" \
-    -DHAVE_LIBDL_H -DHAVE_UNISTD_H -DHAVE_ALLOCA_H \
+    -DHAVE_LIBDL_H -DHAVE_UNISTD_H \
     -DUSEAPI_ALSA -DUSEAPI_OSS \
     -DNDEBUG
 

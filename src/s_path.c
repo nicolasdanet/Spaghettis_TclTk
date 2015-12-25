@@ -23,30 +23,16 @@
 #include <windows.h>
 #endif
 
-#ifdef HAVE_ALLOCA_H        /* ifdef nonsense to find include for alloca() */
-# include <alloca.h>        /* linux, mac, mingw, cygwin */
-#elif defined _MSC_VER
-# include <malloc.h>        /* MSVC */
-#else
-# include <stddef.h>        /* BSDs for example */
-#endif                      /* end alloca() ifdef nonsense */
-
 #include <string.h>
 #include "m_pd.h"
 #include "m_private.h"
 #include "m_macros.h"
+#include "m_alloca.h"
 #include "s_system.h"
 #include "s_utf8.h"
 #include <stdio.h>
 #include <fcntl.h>
 #include <ctype.h>
-
-#ifdef _LARGEFILE64_SOURCE
-# define open  open64
-# define lseek lseek64
-# define fstat fstat64
-# define stat  stat64
-#endif
 
 t_namelist *sys_externlist;     /* Shared. */
 t_namelist *sys_searchpath;     /* Shared. */

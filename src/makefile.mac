@@ -40,7 +40,7 @@ libpdtcldir = $(libpddir)/tcl
 # Preprocessor flags.
 
 CPPFLAGS = -DINSTALL_PREFIX=\"$(prefix)\" \
-    -DHAVE_LIBDL_H -DHAVE_UNISTD_H -DHAVE_ALLOCA_H \
+    -DHAVE_LIBDL_H -DHAVE_UNISTD_H \
     -I/usr/X11R6/include \
     -I$(PA_DIR)/include -I$(PA_DIR)/src/common -I$(PA_DIR)/src/os/mac_osx \
     -I$(PM_DIR)/pm_common -I$(PM_DIR)/pm_mac -I$(PM_DIR)/porttime \
