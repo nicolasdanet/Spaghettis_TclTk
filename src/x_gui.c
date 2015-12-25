@@ -9,9 +9,6 @@ away before the panel does... */
 #include "m_macros.h"
 #include <stdio.h>
 #include <string.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
 
 /* --------------------- graphics responder  ---------------- */
 

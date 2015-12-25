@@ -10,12 +10,13 @@
 #include "s_system.h"
 #include <stdio.h>
 #include <errno.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+
 #ifdef _WIN32
-#include <io.h>
+    #include <io.h>
+#else
+    #include <unistd.h>
 #endif
+
 #include <fcntl.h>
 #include <string.h>
 #include <stdarg.h>

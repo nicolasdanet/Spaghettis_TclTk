@@ -9,12 +9,13 @@
 #include "g_canvas.h"
 #include <string.h>
 #include <stdio.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+
 #ifdef _WIN32
-#include <io.h>
+    #include <io.h>
+#else
+    #include <unistd.h>
 #endif
+
 extern t_pd *newest;
 extern t_class *scalar_class;
 

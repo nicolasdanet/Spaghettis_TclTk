@@ -8,19 +8,17 @@
 #include "s_system.h"
 #include "m_private.h"
 #include "m_macros.h"
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#include <sys/time.h>
-#ifdef HAVE_BSTRING_H
-#include <bstring.h>
-#endif
-#endif
+
 #ifdef _WIN32
-#include <winsock.h>
-#include <sys/types.h>
-#include <sys/timeb.h> 
-#include <wtypes.h>
+    #include <winsock.h>
+    #include <sys/types.h>
+    #include <sys/timeb.h> 
+    #include <wtypes.h>
+#else
+    #include <unistd.h>
+    #include <sys/time.h>
 #endif
+
 #include <string.h>
 #include <stdio.h>
 #include <signal.h>

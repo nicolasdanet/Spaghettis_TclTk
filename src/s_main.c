@@ -14,14 +14,14 @@
 #include <fcntl.h>
 #include <stdlib.h>
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
 #ifdef _WIN32
-#include <io.h>
-#include <windows.h>
-#include <winbase.h>
+    #include <io.h>
+    #include <windows.h>
+    #include <winbase.h>
+#else
+    #include <unistd.h>
 #endif
+
 #ifdef _MSC_VER  /* This is only for Microsoft's compiler, not cygwin, e.g. */
 #define snprintf sprintf_s
 #endif
@@ -400,10 +400,8 @@ static char *(usagemessage[]) = {
 "-send \"msg...\"   -- send a message at startup, after patches are loaded\n",
 "-prefs           -- load preferences on startup (true by default)\n",
 "-noprefs         -- suppress loading preferences on startup\n",
-#ifdef HAVE_UNISTD_H
 "-rt or -realtime -- use real-time priority\n",
 "-nrt             -- don't use real-time priority\n",
-#endif
 "-sleep           -- sleep when idle, don't spin (true by default)\n",
 "-nosleep         -- spin, don't sleep (may lower latency on multi-CPUs)\n",
 "-schedlib <file> -- plug in external scheduler\n",
@@ -927,7 +925,6 @@ int sys_argparse(int argc, char **argv)
             argv += 2;
             argc -= 2;
         }*/
-#ifdef HAVE_UNISTD_H
         else if (!strcmp(*argv, "-rt") || !strcmp(*argv, "-realtime"))
         {
             sys_hipriority = 1;
@@ -938,7 +935,6 @@ int sys_argparse(int argc, char **argv)
             sys_hipriority = 0;
             argc--; argv++;
         }
-#endif
         else if (!strcmp(*argv, "-sleep"))
         {
             sys_nosleep = 0;

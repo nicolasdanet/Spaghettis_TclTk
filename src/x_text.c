@@ -13,12 +13,13 @@ moment it also defines "text" but it may later be better to split this off. */
 #include "s_system.h"    /* just for sys_hostfontsize, phooey */
 #include <string.h>
 #include <stdio.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+
 #ifdef _WIN32
-#include <io.h>
+    #include <io.h>
+#else
+    #include <unistd.h>
 #endif
+
 extern t_pd *newest;
 extern t_pd pd_canvasmaker;
 

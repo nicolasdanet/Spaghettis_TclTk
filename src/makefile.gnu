@@ -32,10 +32,7 @@ libpdtcldir = $(libpddir)/tcl
 
 # Preprocessor flags.
 
-CPPFLAGS = -DINSTALL_PREFIX=\"$(prefix)\" \
-    -DHAVE_LIBDL_H -DHAVE_UNISTD_H \
-    -DUSEAPI_ALSA -DUSEAPI_OSS \
-    -DNDEBUG
+CPPFLAGS = -DINSTALL_PREFIX=\"$(prefix)\" -DUSEAPI_ALSA -DUSEAPI_OSS -DNDEBUG
 
 # Linker flags.
 

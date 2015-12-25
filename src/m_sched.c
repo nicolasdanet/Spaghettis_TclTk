@@ -51,10 +51,6 @@ struct _clock
     t_float c_unit;         /* >0 if in TIMEUNITS; <0 if in samples */
 };
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-
 t_clock *clock_new(void *owner, t_method fn)
 {
     t_clock *x = (t_clock *)getbytes(sizeof *x);

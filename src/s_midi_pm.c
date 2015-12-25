@@ -10,11 +10,9 @@
 #include "m_pd.h"
 #include "s_system.h"
 #include <stdio.h>
-#ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-#endif
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>

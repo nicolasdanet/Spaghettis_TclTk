@@ -11,13 +11,14 @@ readsf~ and writesf~ are defined which confine disk operations to a separate
 thread so that they can be used in real time.  The readsf~ and writesf~
 objects use Posix-like threads.  */
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#include <pthread.h>
 #ifdef _WIN32
-#include <io.h>
+    #include <io.h>
+#else
+    #include <unistd.h>
 #endif
+
+
+#include <pthread.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>

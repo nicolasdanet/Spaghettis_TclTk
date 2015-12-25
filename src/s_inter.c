@@ -23,9 +23,7 @@ that didn't really belong anywhere. */
 #include <sys/types.h>
 #include <sys/stat.h>
 #endif
-#ifdef HAVE_BSTRING_H
-#include <bstring.h>
-#endif
+
 #ifdef _WIN32
 #include <io.h>
 #include <fcntl.h>
@@ -567,11 +565,10 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
 
 void sys_closesocket(int fd)
 {
-#ifdef HAVE_UNISTD_H
-    close(fd);
-#endif
 #ifdef _WIN32
     closesocket(fd);
+#else
+    close(fd);
 #endif
 }
 

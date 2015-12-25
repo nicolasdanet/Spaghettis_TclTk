@@ -14,13 +14,14 @@
 #define DEBUG(x)
 
 #include <stdlib.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+
 #include <sys/stat.h>
+
 #ifdef _WIN32
-#include <io.h>
-#include <windows.h>
+    #include <io.h>
+    #include <windows.h>
+#else
+    #include <unistd.h>
 #endif
 
 #include <string.h>
@@ -278,7 +279,7 @@ int sys_trytoopenone(const char *dir, const char *name, const char* ext,
     if ((fd=sys_open(dirresult, O_RDONLY)) >= 0)
     {
             /* in unix, further check that it's not a directory */
-#ifdef HAVE_UNISTD_H
+#ifndef _WIN32
         struct stat statbuf;
         int ok =  ((fstat(fd, &statbuf) >= 0) &&
             !S_ISDIR(statbuf.st_mode));

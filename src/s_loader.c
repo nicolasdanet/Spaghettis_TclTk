@@ -2,26 +2,27 @@
 * For information on usage and redistribution, and for a DISCLAIMER OF ALL
 * WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-#ifdef HAVE_LIBDL_H
 #include <dlfcn.h>
-#endif
-#ifdef HAVE_UNISTD_H
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#endif
+
 #ifdef _WIN32
-#include <io.h>
-#include <windows.h>
+    #include <io.h>
+    #include <windows.h>
+#else
+    #include <stdlib.h>
+    #include <unistd.h>
+    #include <sys/types.h>
 #endif
+
 #ifdef __APPLE__
 #include <mach-o/dyld.h> 
 #endif
+
 #include <string.h>
 #include "m_pd.h"
 #include "s_system.h"
 #include <stdio.h>
 #include <sys/stat.h>
+
 #ifdef _MSC_VER  /* This is only for Microsoft's compiler, not cygwin, e.g. */
 #define snprintf sprintf_s
 #define stat _stat
@@ -216,7 +217,7 @@ gotone:
              makeout = (t_xxx)GetProcAddress(ntdll, "setup");
         SetDllDirectory(NULL); /* reset DLL dir to nothing */
     }
-#elif defined HAVE_LIBDL_H
+#else
     dlobj = dlopen(filename, RTLD_NOW | RTLD_GLOBAL);
     if (!dlobj)
     {
@@ -227,8 +228,6 @@ gotone:
     makeout = (t_xxx)dlsym(dlobj,  symname);
     if(!makeout)
         makeout = (t_xxx)dlsym(dlobj,  "setup");
-#else
-#warning "No dynamic loading mechanism specified, libdl or WIN32 required for loading externals!"
 #endif
 
     if (!makeout)
@@ -315,7 +314,7 @@ int sys_run_scheduler(const char *externalschedlibname,
             externalmainfunc =
                 (t_externalschedlibmain)GetProcAddress(ntdll, "main");
     }
-#elif defined HAVE_LIBDL_H
+#else
     {
         void *dlobj;
         dlobj = dlopen(filename, RTLD_NOW | RTLD_GLOBAL);
@@ -328,8 +327,6 @@ int sys_run_scheduler(const char *externalschedlibname,
         externalmainfunc = (t_externalschedlibmain)dlsym(dlobj,
             "pd_extern_sched");
     }
-#else
-    return (0);
 #endif
     if (externalmainfunc)
         return((*externalmainfunc)(sys_extraflagsstring));

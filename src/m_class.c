@@ -7,11 +7,11 @@
 #include "m_macros.h"
 #include "s_system.h"
 #include <stdlib.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+
 #ifdef _WIN32
-#include <io.h>
+    #include <io.h>
+#else
+    #include <unistd.h>
 #endif
 
 #include <stdarg.h>
