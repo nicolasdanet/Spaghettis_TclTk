@@ -49,7 +49,7 @@ void post_log (const char *fmt, ...)
     va_end (ap);
     
     if (t >= 0 && t < PD_STRING) { 
-        openlog (PD_NAME, LOG_CONS|LOG_PID|LOG_PERROR, LOG_USER);
+        openlog (PD_NAME, LOG_CONS | LOG_PID | LOG_PERROR, LOG_USER);
         syslog (LOG_ERR, "%s", buf);
         closelog();
     }

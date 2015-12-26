@@ -185,9 +185,9 @@ t_pd *pd_new (t_class *c)
 void pd_free (t_pd *x)
 {
     t_class *c = *x;
-    
-    if (c->c_methodFree) (*(t_gotfn)(c->c_methodFree))(x);
-    
+
+    if (c->c_methodFree) { (*(t_gotfn)(c->c_methodFree))(x); }
+
     if (c->c_isBox) {
         while (((t_object *)x)->te_outlet) { outlet_free (((t_object *)x)->te_outlet); }
         while (((t_object *)x)->te_inlet)  { inlet_free (((t_object *)x)->te_inlet);   }
@@ -196,7 +196,7 @@ void pd_free (t_pd *x)
             binbuf_free (((t_object *)x)->te_binbuf); 
         }
     }
-    
+
     if (c->c_size) { freebytes (x, c->c_size); }
 }
 
@@ -302,8 +302,8 @@ t_pd *pd_findByClass (t_symbol *s, t_class *c)
 {
     t_pd *x = NULL;
     
-    if (!s->s_thing) return (NULL);
-    if (*s->s_thing == c) return (s->s_thing);
+    if (!s->s_thing)  { return (NULL); }
+    if (*s->s_thing == c) { return (s->s_thing); }
     
     if (*s->s_thing == bindlist_class) {
         t_bindlist *b = (t_bindlist *)s->s_thing;
