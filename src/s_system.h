@@ -66,9 +66,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if defined  ( _WIN32 )
+#if PD_WINDOWS
     #define AUDIO_DEFAULT_ADVANCE   80
-#elif defined ( __APPLE__ )
+#elif PD_APPLE
     #define AUDIO_DEFAULT_ADVANCE   5
 #else
     #define AUDIO_DEFAULT_ADVANCE   25

@@ -14,6 +14,79 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* < http://sourceforge.net/p/predef/wiki/OperatingSystems/ > */
+
+#if defined ( _WIN32 ) || defined ( _WIN64 )
+    #define     PD_WINDOWS      1
+#elif defined ( __CYGWIN__ ) 
+    #define     PD_CYGWIN       1
+#elif defined ( ANDROID ) || defined ( __ANDROID__ )
+    #define     PD_ANDROID      1
+#elif defined ( LINUX ) || defined ( __linux__ )
+    #define     PD_LINUX        1
+#elif defined ( __APPLE__ )
+    #define     PD_APPLE        1
+    #if defined ( TARGET_OS_IPHONE ) || defined ( TARGET_IPHONE_SIMULATOR )
+        #define PD_IOS          1
+    #else
+        #define PD_OSX          1
+    #endif
+#elif defined ( __FreeBSD__ ) || defined ( __FreeBSD_kernel__ )
+    #define     PD_BSD          1
+#elif defined ( __GNU__ )
+    #define     PD_HURD         1
+#else
+    #error "Unknown platform!"
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* < http://sourceforge.net/p/predef/wiki/Compilers/ > */
+
+#if defined ( __clang__ )
+    #define     PD_CLANG        1
+    #define     PD_GCC          1
+#elif defined ( __GNUC__ )
+    #define     PD_GCC          1
+#elif defined ( _MSC_VER )
+    #define     PD_MSVC         1
+#elif defined ( __MINGW32__ ) || defined ( __MINGW64__ )
+    #define     PD_MINGW        1
+#else
+  #error "Unknown compiler!"
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* < http://sourceforge.net/p/predef/wiki/Architectures/ > */
+
+#if defined ( __i386__ )
+    #define     PD_CPU_x86      1
+#elif defined ( __x86_64__ )
+    #define     PD_CPU_AMD64    1
+#elif defined ( __arm__ )
+    #define     PD_CPU_ARM      1
+#else
+    #error "Unknown processor!"
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if defined ( __LP64__ ) || defined ( _LP64 )
+    #define     PD_LP64         1
+#elif defined ( _WIN64 )
+    #define     PD_LLP64        1
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #if defined ( __cplusplus )
 
@@ -25,7 +98,9 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PD_DEBUG            /* Log false assertions. */
+#ifndef PD_DEBUG
+#define PD_DEBUG            1                       /* Log false assertions. */
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -49,8 +124,8 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#ifdef _WIN32
-    #ifdef PD_INTERNAL
+#if PD_WINDOWS
+    #if PD_EXPORT
         #define PD_DLL      __declspec(dllexport) extern
     #else
         #define PD_DLL      __declspec(dllimport) extern 
@@ -86,7 +161,7 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#ifdef _WIN64
+#if PD_LLP64
     typedef long long       t_int;              /* A pointer-size integer (LLP64). */
 #else
     typedef long            t_int;              /* Ditto (LP64 / ILP64). */
@@ -650,7 +725,7 @@ PD_DLL void gfxstub_deleteforkey    (void *key);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if defined (__cplusplus)
+#if defined ( __cplusplus )
 
 }
 

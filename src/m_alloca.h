@@ -17,7 +17,7 @@
 #pragma mark -
 
 #ifndef PD_WITH_ALLOCA
-#define PD_WITH_ALLOCA 1        /* Message passing uses alloca function. */
+#define PD_WITH_ALLOCA  1       /* Message passing uses alloca function. */
 #endif
    
 // -----------------------------------------------------------------------------------------------------------

@@ -22,7 +22,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#ifdef PD_DEBUG
+#if PD_DEBUG
 
     #define PD_BUG          post_log ("Error / %s / line %d", PD_SHORT_FILE, __LINE__)
     
@@ -76,10 +76,10 @@ typedef void (*t_gotfn5)(void *x, void *arg1, void *arg2, void *arg3, void *arg4
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#ifndef _MSC_VER
+#if ! ( PD_MSVC )
 
-    #if defined ( __i386__ ) || defined ( __x86_64__ ) || defined ( __arm__ )
-
+    #if ( PD_CPU_x86 || PD_CPU_AMD64 || PD_CPU_ARM )
+        
         typedef union {
             t_float f;
             unsigned int ui;
@@ -118,7 +118,7 @@ typedef void (*t_gotfn5)(void *x, void *arg1, void *arg2, void *arg3, void *arg4
         #define PD_BIG_OR_SMALL(f)      ((((*(unsigned int*)&(f)) & 0x60000000) == 0) || \
                                             (((*(unsigned int*)&(f)) & 0x60000000) == 0x60000000))
 
-#endif // _MSC_VER
+#endif // PD_MSVC
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
