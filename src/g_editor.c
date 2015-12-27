@@ -1771,8 +1771,8 @@ void canvas_key(t_canvas *x, t_symbol *s, int ac, t_atom *av)
     {
         t_atom at[2];
         at[0] = av[0];
-        SETFLOAT(at, down);
-        SETSYMBOL(at+1, gotkeysym);
+        SET_FLOAT(at, down);
+        SET_SYMBOL(at+1, gotkeysym);
         pd_list(keynamesym->s_thing, 0, 2, at);
     }
     if (!x || !x->gl_editor)  /* if that 'invis'ed the window, we'd better stop. */

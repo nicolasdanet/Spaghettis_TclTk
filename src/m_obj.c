@@ -96,7 +96,7 @@ static void inlet_pointer(t_inlet *x, t_gpointer *gp)
     else if (x->i_symfrom == &s_list)
     {
         t_atom a;
-        SETPOINTER(&a, gp);
+        SET_POINTER(&a, gp);
         inlet_list(x, &s_pointer, 1, &a);
     }
     else inlet_wrong(x, &s_pointer);
@@ -113,7 +113,7 @@ static void inlet_float(t_inlet *x, t_float f)
     else if (x->i_symfrom == &s_list)
     {
         t_atom a;
-        SETFLOAT(&a, f);
+        SET_FLOAT(&a, f);
         inlet_list(x, &s_float, 1, &a);
     }
     else inlet_wrong(x, &s_float);
@@ -127,7 +127,7 @@ static void inlet_symbol(t_inlet *x, t_symbol *s)
     else if (x->i_symfrom == &s_list)
     {
         t_atom a;
-        SETSYMBOL(&a, s);
+        SET_SYMBOL(&a, s);
         inlet_list(x, &s_symbol, 1, &a);
     }
     else inlet_wrong(x, &s_symbol);

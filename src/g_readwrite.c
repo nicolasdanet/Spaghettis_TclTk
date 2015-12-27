@@ -401,7 +401,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_binbuf *b,
     if (!amarrayelement)
     {
         t_atom templatename;
-        SETSYMBOL(&templatename, gensym(templatesym->s_name + 3));
+        SET_SYMBOL(&templatename, gensym(templatesym->s_name + 3));
         binbuf_add(b, 1, &templatename);
     }
     if (!template) { PD_BUG; }
@@ -414,14 +414,14 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_binbuf *b,
             a = (t_atom *)resizebytes(a,
                 natom * sizeof(*a), (natom + 1) * sizeof (*a));
             if (template->t_vec[i].ds_type == DATA_FLOAT)
-                SETFLOAT(a + natom, w[i].w_float);
-            else SETSYMBOL(a + natom,  w[i].w_symbol);
+                SET_FLOAT(a + natom, w[i].w_float);
+            else SET_SYMBOL(a + natom,  w[i].w_symbol);
             natom++;
         }
     }
         /* array elements have to have at least something */
     if (natom == 0 && amarrayelement)
-        SETSYMBOL(a + natom,  &s_bang), natom++;
+        SET_SYMBOL(a + natom,  &s_bang), natom++;
     binbuf_add(b, natom, a);
     binbuf_addsemi(b);
     freebytes(a, natom * sizeof(*a));

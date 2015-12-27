@@ -484,7 +484,7 @@ static void *get_new(t_symbol *why, int argc, t_atom *argv)
     {
         varcount = 1;
         varvec = &at;
-        SETSYMBOL(&at, &s_);
+        SET_SYMBOL(&at, &s_);
     }
     else varcount = argc - 1, varvec = argv + 1;
     x->x_variables
@@ -616,7 +616,7 @@ static void *set_new(t_symbol *why, int argc, t_atom *argv)
     {
         varcount = 1;
         varvec = &at;
-        SETSYMBOL(&at, &s_);
+        SET_SYMBOL(&at, &s_);
     }
     else varcount = argc - 1, varvec = argv + 1;
     x->x_variables
@@ -1147,7 +1147,7 @@ static void *append_new(t_symbol *why, int argc, t_atom *argv)
     {
         varcount = 1;
         varvec = &at;
-        SETSYMBOL(&at, &s_);
+        SET_SYMBOL(&at, &s_);
     }
     else varcount = argc - 1, varvec = argv + 1;
     x->x_variables

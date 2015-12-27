@@ -275,13 +275,13 @@ typedef struct _gobj {
     } t_gobj;
 
 typedef struct _scalar {
-    t_gobj          sc_g;                       /* MUST be the first. */
+    t_gobj          sc_g;
     t_symbol        *sc_template;
-    t_word          sc_vec[1];                  /* Indeterminate-length array (see above link). */
+    t_word          sc_vec[1];                  /* See above link. */
     } t_scalar;
 
 typedef struct _text {
-    t_gobj          te_g;                       /* MUST be the first. */
+    t_gobj          te_g;
     t_binbuf        *te_binbuf;
     t_outlet        *te_outlet;
     t_inlet         *te_inlet;
@@ -337,7 +337,6 @@ PD_DLL void     *copybytes          (void *src, size_t nbytes);
 PD_DLL void     *resizebytes        (void *x, size_t oldsize, size_t newsize);
 PD_DLL void     freebytes           (void *x, size_t nbytes);
 
-PD_DLL void     nullfn              (void);
 PD_DLL t_gotfn  getfn               (t_pd *x, t_symbol *s);
 PD_DLL t_gotfn  zgetfn              (t_pd *x, t_symbol *s);
 

@@ -266,7 +266,7 @@ static void garray_fittograph(t_garray *x, int n, int style)
         if (gl->gl_nxlabels == 2 && !strcmp(gl->gl_xlabel[0]->s_name, "0"))
         {
             t_atom a;
-            SETFLOAT(&a, n-1);
+            SET_FLOAT(&a, n-1);
             gl->gl_xlabel[1] = atom_gensym(&a);
             glist_redraw(gl);
         }

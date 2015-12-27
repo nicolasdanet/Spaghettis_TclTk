@@ -452,7 +452,7 @@ static void *pipe_new(t_symbol *s, int argc, t_atom *argv)
     {
         argv = &defarg;
         argc = 1;
-        SETFLOAT(&defarg, 0);
+        SET_FLOAT(&defarg, 0);
     }
     x->x_n = argc;
     vec = x->x_vec = (t_pipeout *)getbytes(argc * sizeof(*x->x_vec));
@@ -477,7 +477,7 @@ static void *pipe_new(t_symbol *s, int argc, t_atom *argv)
             char c = *ap->a_w.w_symbol->s_name;
             if (c == 's')
             {
-                SETSYMBOL(&vp->p_atom, &s_symbol);
+                SET_SYMBOL(&vp->p_atom, &s_symbol);
                 vp->p_outlet = outlet_new(&x->x_obj, &s_symbol);
                 if (i) symbolinlet_new(&x->x_obj, &vp->p_atom.a_w.w_symbol);
             }
@@ -494,7 +494,7 @@ static void *pipe_new(t_symbol *s, int argc, t_atom *argv)
             {
                 if (c != 'f') post_error ("pipe: %s: bad type",
                     ap->a_w.w_symbol->s_name);
-                SETFLOAT(&vp->p_atom, 0);
+                SET_FLOAT(&vp->p_atom, 0);
                 vp->p_outlet = outlet_new(&x->x_obj, &s_float);
                 if (i) floatinlet_new(&x->x_obj, &vp->p_atom.a_w.w_float);
             }

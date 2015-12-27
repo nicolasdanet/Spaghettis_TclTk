@@ -234,7 +234,7 @@ static void scalar_select(t_gobj *z, t_glist *owner, int state)
     t_gpointer gp;
     gpointer_init(&gp);
     gpointer_setglist(&gp, owner, x);
-    SETPOINTER(&at, &gp);
+    SET_POINTER(&at, &gp);
     if (tmpl = template_findbyname(templatesym))
         template_notify(tmpl, (state ? gensym("select") : gensym("deselect")),
             1, &at);
@@ -270,9 +270,9 @@ static void scalar_displace(t_gobj *z, t_glist *glist, int dx, int dy)
             dy * (glist_pixelstoy(glist, 1) - glist_pixelstoy(glist, 0));
     gpointer_init(&gp);
     gpointer_setglist(&gp, glist, x);
-    SETPOINTER(&at[0], &gp);
-    SETFLOAT(&at[1], (t_float)dx);
-    SETFLOAT(&at[2], (t_float)dy);
+    SET_POINTER(&at[0], &gp);
+    SET_FLOAT(&at[1], (t_float)dx);
+    SET_FLOAT(&at[2], (t_float)dy);
     template_notify(template, gensym("displace"), 2, at);
     scalar_redraw(x, glist);
 }
@@ -350,8 +350,8 @@ int scalar_doclick(t_word *data, t_template *template, t_scalar *sc,
     t_atom at[2];
     t_float basex = template_getfloat(template, gensym("x"), data, 0);
     t_float basey = template_getfloat(template, gensym("y"), data, 0);
-    SETFLOAT(at, basex + xloc);
-    SETFLOAT(at+1, basey + yloc);
+    SET_FLOAT(at, basex + xloc);
+    SET_FLOAT(at+1, basey + yloc);
     if (doit)
         template_notifyforscalar(template, owner, 
             sc, gensym("click"), 2, at);

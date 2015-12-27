@@ -945,12 +945,12 @@ static void *subcanvas_new(t_symbol *s)
     t_atom a[6];
     t_canvas *x, *z = canvas_getcurrent();
     if (!*s->s_name) s = gensym("/SUBPATCH/");
-    SETFLOAT(a, 0);
-    SETFLOAT(a+1, GLIST_DEFCANVASYLOC);
-    SETFLOAT(a+2, GLIST_DEFCANVASWIDTH);
-    SETFLOAT(a+3, GLIST_DEFCANVASHEIGHT);
-    SETSYMBOL(a+4, s);
-    SETFLOAT(a+5, 1);
+    SET_FLOAT(a, 0);
+    SET_FLOAT(a+1, GLIST_DEFCANVASYLOC);
+    SET_FLOAT(a+2, GLIST_DEFCANVASWIDTH);
+    SET_FLOAT(a+3, GLIST_DEFCANVASHEIGHT);
+    SET_SYMBOL(a+4, s);
+    SET_FLOAT(a+5, 1);
     x = canvas_new(0, 0, 6, a);
     x->gl_owner = z;
     canvas_pop(x, 1);

@@ -40,12 +40,12 @@ static void *table_donew(t_symbol *s, int size, int flags,
     }
     if (size < 1)
         size = 100;
-    SETFLOAT(a, 0);
-    SETFLOAT(a+1, 50);
-    SETFLOAT(a+2, xpix + 100);
-    SETFLOAT(a+3, ypix + 100);
-    SETSYMBOL(a+4, s);
-    SETFLOAT(a+5, 0);
+    SET_FLOAT(a, 0);
+    SET_FLOAT(a+1, 50);
+    SET_FLOAT(a+2, xpix + 100);
+    SET_FLOAT(a+3, ypix + 100);
+    SET_SYMBOL(a+4, s);
+    SET_FLOAT(a+5, 0);
     x = canvas_new(0, 0, 6, a);
 
     x->gl_owner = z;
@@ -591,7 +591,7 @@ static void array_get_bang(t_array_rangeop *x)
         return;
     ATOMS_ALLOCA(outv, nitem);
     for (i = 0, itemp = firstitem; i < nitem; i++, itemp += stride)
-        SETFLOAT(&outv[i],  *(t_float *)itemp);
+        SET_FLOAT(&outv[i],  *(t_float *)itemp);
     outlet_list(x->x_outlet, 0, nitem, outv);
 }
 

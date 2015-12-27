@@ -424,7 +424,7 @@ static void *select_new(t_symbol *s, int argc, t_atom *argv)
     if (argc == 0)
     {
         argc = 1;
-        SETFLOAT(&a, 0);
+        SET_FLOAT(&a, 0);
         argv = &a;
     }
     if (argc == 1)
@@ -609,7 +609,7 @@ static void *route_new(t_symbol *s, int argc, t_atom *argv)
     if (argc == 0)
     {
         argc = 1;
-        SETFLOAT(&a, 0);
+        SET_FLOAT(&a, 0);
         argv = &a;
     }
     x->x_type = argv[0].a_type;
@@ -665,8 +665,8 @@ static void *pack_new(t_symbol *s, int argc, t_atom *argv)
     {
         argv = defarg;
         argc = 2;
-        SETFLOAT(&defarg[0], 0);
-        SETFLOAT(&defarg[1], 0);
+        SET_FLOAT(&defarg[0], 0);
+        SET_FLOAT(&defarg[1], 0);
     }
 
     x->x_n = argc;
@@ -692,7 +692,7 @@ static void *pack_new(t_symbol *s, int argc, t_atom *argv)
             char c = *ap->a_w.w_symbol->s_name;
             if (c == 's')
             {
-                SETSYMBOL(vp, &s_symbol);
+                SET_SYMBOL(vp, &s_symbol);
                 if (i) symbolinlet_new(&x->x_obj, &vp->a_w.w_symbol);
             }
             else if (c == 'p')
@@ -707,7 +707,7 @@ static void *pack_new(t_symbol *s, int argc, t_atom *argv)
             {
                 if (c != 'f') post_error ("pack: %s: bad type",
                     ap->a_w.w_symbol->s_name);
-                SETFLOAT(vp, 0);
+                SET_FLOAT(vp, 0);
                 if (i) floatinlet_new(&x->x_obj, &vp->a_w.w_float);
             }
         }
@@ -792,7 +792,7 @@ static void pack_anything(t_pack *x, t_symbol *s, int ac, t_atom *av)
     int i;
     for (i = 0; i < ac; i++)
         av2[i + 1] = av[i];
-    SETSYMBOL(av2, s);
+    SET_SYMBOL(av2, s);
     obj_list(&x->x_obj, 0, ac+1, av2);
     freebytes(av2, (ac + 1) * sizeof(t_atom));
 }
@@ -847,8 +847,8 @@ static void *unpack_new(t_symbol *s, int argc, t_atom *argv)
     {
         argv = defarg;
         argc = 2;
-        SETFLOAT(&defarg[0], 0);
-        SETFLOAT(&defarg[1], 0);
+        SET_FLOAT(&defarg[0], 0);
+        SET_FLOAT(&defarg[1], 0);
     }
     x->x_n = argc;
     x->x_vec = (t_unpackout *)getbytes(argc * sizeof(*x->x_vec));
@@ -910,7 +910,7 @@ static void unpack_anything(t_unpack *x, t_symbol *s, int ac, t_atom *av)
     int i;
     for (i = 0; i < ac; i++)
         av2[i + 1] = av[i];
-    SETSYMBOL(av2, s);
+    SET_SYMBOL(av2, s);
     unpack_list(x, 0, ac+1, av2);
     freebytes(av2, (ac + 1) * sizeof(t_atom));
 }
@@ -961,8 +961,8 @@ static void *trigger_new(t_symbol *s, int argc, t_atom *argv)
     {
         argv = defarg;
         argc = 2;
-        SETSYMBOL(&defarg[0], &s_bang);
-        SETSYMBOL(&defarg[1], &s_bang);
+        SET_SYMBOL(&defarg[0], &s_bang);
+        SET_SYMBOL(&defarg[1], &s_bang);
     }
     x->x_n = argc;
     x->x_vec = (t_triggerout *)getbytes(argc * sizeof(*x->x_vec));
@@ -1042,21 +1042,21 @@ static void trigger_bang(t_trigger *x)
 static void trigger_pointer(t_trigger *x, t_gpointer *gp)
 {
     t_atom at;
-    SETPOINTER(&at, gp);
+    SET_POINTER(&at, gp);
     trigger_list(x, 0, 1, &at);
 }
 
 static void trigger_float(t_trigger *x, t_float f)
 {
     t_atom at;
-    SETFLOAT(&at, f);
+    SET_FLOAT(&at, f);
     trigger_list(x, 0, 1, &at);
 }
 
 static void trigger_symbol(t_trigger *x, t_symbol *s)
 {
     t_atom at;
-    SETSYMBOL(&at, s);
+    SET_SYMBOL(&at, s);
     trigger_list(x, 0, 1, &at);
 }
 

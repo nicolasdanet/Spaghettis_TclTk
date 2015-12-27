@@ -104,7 +104,7 @@ static void netsend_readbin(t_netsend *x, int fd)
     {
         t_atom *ap = (t_atom *)alloca(ret * sizeof(t_atom));
         for (i = 0; i < ret; i++)
-            SETFLOAT(ap+i, inbuf[i]);
+            SET_FLOAT(ap+i, inbuf[i]);
         outlet_list(x->x_msgout, 0, ret, ap);
     }
     else
@@ -260,7 +260,7 @@ static int netsend_dosend(t_netsend *x, int sockfd,
         t_atom at;
         b = binbuf_new();
         binbuf_add(b, argc, argv);
-        SETSEMICOLON(&at);
+        SET_SEMICOLON(&at);
         binbuf_add(b, 1, &at);
         binbuf_gettext(b, &buf, &length);
     }

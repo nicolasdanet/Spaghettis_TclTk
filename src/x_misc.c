@@ -421,7 +421,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
         dataonset, nfield); */
     for (i = j = 0; i < typeonset-1 && argv[i].a_w.w_float != 0 &&
         j < outc; j++)
-            SETSYMBOL(outv+j, grabstring(argc, argv, &i, 1));
+            SET_SYMBOL(outv+j, grabstring(argc, argv, &i, 1));
     for (i = typeonset, k = dataonset; i < typeonset + nfield; i++)
     {
         union
@@ -445,7 +445,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
                 PD_BUG;
                 return;
             }
-            SETFLOAT(outv+j, f);
+            SET_FLOAT(outv+j, f);
             j++; k += 4;
             break;
         case 'i':
@@ -456,7 +456,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
                 PD_BUG;
                 return;
             }
-            SETFLOAT(outv+j, READINT(argv+k));
+            SET_FLOAT(outv+j, READINT(argv+k));
             j++; k += 4;
             break;
         case 's':
@@ -465,7 +465,7 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
                 PD_BUG;
                 return;
             }
-            SETSYMBOL(outv+j, grabstring(argc, argv, &k, 0));
+            SET_SYMBOL(outv+j, grabstring(argc, argv, &k, 0));
             j++;
             break;
         case 'b':
@@ -482,10 +482,10 @@ static void oscparse_list(t_oscparse *x, t_symbol *s, int argc, t_atom *argv)
             }
             if (k + blobsize > argc)
                 goto tooshort;
-            SETFLOAT(outv+j, blobsize);
+            SET_FLOAT(outv+j, blobsize);
             j++;
             for (j2 = 0; j2 < blobsize; j++, j2++, k++)
-                SETFLOAT(outv+j, argv[k].a_w.w_float);
+                SET_FLOAT(outv+j, argv[k].a_w.w_float);
             k = ROUNDUPTO4(k);
             break;
         default:
@@ -559,23 +559,23 @@ static void oscformat_format(t_oscformat *x, t_symbol *s)
     x->x_format = s;
 }
 
-#define WRITEINT(msg, i)    SETFLOAT((msg),   (((i) >> 24) & 0xff)); \
-                            SETFLOAT((msg)+1, (((i) >> 16) & 0xff)); \
-                            SETFLOAT((msg)+2, (((i) >>  8) & 0xff)); \
-                            SETFLOAT((msg)+3, (((i)      ) & 0xff))
+#define WRITEINT(msg, i)    SET_FLOAT((msg),   (((i) >> 24) & 0xff)); \
+                            SET_FLOAT((msg)+1, (((i) >> 16) & 0xff)); \
+                            SET_FLOAT((msg)+2, (((i) >>  8) & 0xff)); \
+                            SET_FLOAT((msg)+3, (((i)      ) & 0xff))
 
 static void putstring(t_atom *msg, int *ip, const char *s)
 {
     const char *sp = s;
     do
     {
-        SETFLOAT(&msg[*ip], *sp & 0xff);
+        SET_FLOAT(&msg[*ip], *sp & 0xff);
         (*ip)++;
     }
     while (*sp++);
     while (*ip & 3)
     {
-        SETFLOAT(&msg[*ip], 0);
+        SET_FLOAT(&msg[*ip], 0);
         (*ip)++;
     }
 }
@@ -615,7 +615,7 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
     msgsize = datastart + msgindex;
     msg = (t_atom *)alloca(msgsize * sizeof(t_atom));
     putstring(msg, &typeindex, x->x_pathbuf);
-    SETFLOAT(&msg[typeindex], ',');
+    SET_FLOAT(&msg[typeindex], ',');
     typeindex++;
         /* pass 2: fill in types and data portion of packet */
     for (j = 0, sp = formatp, msgindex = datastart; j < argc;)
@@ -625,7 +625,7 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
         else if (argv[j].a_type == A_SYMBOL)
             typecode = 's';
         else typecode = 'f';
-        SETFLOAT(&msg[typeindex], typecode & 0xff);
+        SET_FLOAT(&msg[typeindex], typecode & 0xff);
         typeindex++;
         if (typecode == 'f')
         {
@@ -657,7 +657,7 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
             WRITEINT(msg+msgindex, blobsize);
             msgindex += 4;
             for (blobindex = 0; blobindex < blobsize; blobindex++)
-                SETFLOAT(msg+msgindex+blobindex,
+                SET_FLOAT(msg+msgindex+blobindex,
                     (argv[j+1+blobindex].a_type == A_FLOAT ?
                         argv[j+1+blobindex].a_w.w_float :
                         (argv[j+1+blobindex].a_type == A_SYMBOL ?
@@ -665,15 +665,15 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
                             0)));
             j += blobsize;
             while (blobsize & 3)
-                SETFLOAT(msg+msgindex+blobsize, 0), blobsize++;
+                SET_FLOAT(msg+msgindex+blobsize, 0), blobsize++;
             msgindex += blobsize;
         }
         j++;
     }
-    SETFLOAT(&msg[typeindex], 0);
+    SET_FLOAT(&msg[typeindex], 0);
     typeindex++;
     while (typeindex & 3)
-        SETFLOAT(&msg[typeindex], 0), typeindex++;
+        SET_FLOAT(&msg[typeindex], 0), typeindex++;
     if (typeindex != datastart || msgindex != msgsize) { PD_BUG; }
     /* else post("datastart %d, msgsize %d", datastart, msgsize); */
     outlet_list(x->x_obj.te_outlet, 0, msgsize, msg);

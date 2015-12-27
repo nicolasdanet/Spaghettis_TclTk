@@ -78,8 +78,8 @@ void binbuf_text(t_binbuf *x, char *text, size_t size)
         while ((textp != etext) && (*textp == ' ' || *textp == '\n'
             || *textp == '\r' || *textp == '\t')) textp++;
         if (textp == etext) break;
-        if (*textp == ';') SETSEMICOLON(ap), textp++;
-        else if (*textp == ',') SETCOMMA(ap), textp++;
+        if (*textp == ';') SET_SEMICOLON(ap), textp++;
+        else if (*textp == ',') SET_COMMA(ap), textp++;
         else
         {
                 /* it's an atom other than a comma or semi */
@@ -168,7 +168,7 @@ void binbuf_text(t_binbuf *x, char *text, size_t size)
 #endif
             if (floatstate == 2 || floatstate == 4 || floatstate == 5 ||
                 floatstate == 8)
-                    SETFLOAT(ap, atof(buf));
+                    SET_FLOAT(ap, atof(buf));
                 /* LATER try to figure out how to mix "$" and "\$" correctly;
                 here, the backslashes were already stripped so we assume all
                 "$" chars are real dollars.  In fact, we only know at least one
@@ -181,10 +181,10 @@ void binbuf_text(t_binbuf *x, char *text, size_t size)
                     if (*bufp < '0' || *bufp > '9')
                         dollar = 0;
                 if (dollar)
-                    SETDOLLAR(ap, atoi(buf+1));
-                else SETDOLLARSYMBOL(ap, gensym(buf));
+                    SET_DOLLAR(ap, atoi(buf+1));
+                else SET_DOLLARSYMBOL(ap, gensym(buf));
             }
-            else SETSYMBOL(ap, gensym(buf));
+            else SET_SYMBOL(ap, gensym(buf));
         }
         ap++;
         natom++;
@@ -280,11 +280,11 @@ void binbuf_addv(t_binbuf *x, char *fmt, ...)
         }
         switch(*fp++)
         {
-        case 'i': SETFLOAT(at, va_arg(ap, int)); break;
-        case 'f': SETFLOAT(at, va_arg(ap, double)); break;
-        case 's': SETSYMBOL(at, va_arg(ap, t_symbol *)); break;
-        case ';': SETSEMICOLON(at); break;
-        case ',': SETCOMMA(at); break;
+        case 'i': SET_FLOAT(at, va_arg(ap, int)); break;
+        case 'f': SET_FLOAT(at, va_arg(ap, double)); break;
+        case 's': SET_SYMBOL(at, va_arg(ap, t_symbol *)); break;
+        case ';': SET_SEMICOLON(at); break;
+        case ',': SET_COMMA(at); break;
         default: goto done;
         }
         at++;
@@ -313,18 +313,18 @@ void binbuf_addbinbuf(t_binbuf *x, t_binbuf *y)
         case A_FLOAT:
             break;
         case A_SEMICOLON:
-            SETSYMBOL(ap, gensym(";"));
+            SET_SYMBOL(ap, gensym(";"));
             break;
         case A_COMMA:
-            SETSYMBOL(ap, gensym(","));
+            SET_SYMBOL(ap, gensym(","));
             break;
         case A_DOLLAR:
             sprintf(tbuf, "$%d", ap->a_w.w_index);
-            SETSYMBOL(ap, gensym(tbuf));
+            SET_SYMBOL(ap, gensym(tbuf));
             break;
         case A_DOLLARSYMBOL:
             atom_string(ap, tbuf, PD_STRING);
-            SETSYMBOL(ap, gensym(tbuf));
+            SET_SYMBOL(ap, gensym(tbuf));
             break;
         case A_SYMBOL:
             for (s = ap->a_w.w_symbol->s_name, fixit = 0; *s; s++)
@@ -333,7 +333,7 @@ void binbuf_addbinbuf(t_binbuf *x, t_binbuf *y)
             if (fixit)
             {
                 atom_string(ap, tbuf, PD_STRING);
-                SETSYMBOL(ap, gensym(tbuf));
+                SET_SYMBOL(ap, gensym(tbuf));
             }
             break;
         default:
@@ -347,7 +347,7 @@ void binbuf_addbinbuf(t_binbuf *x, t_binbuf *y)
 void binbuf_addsemi(t_binbuf *x)
 {
     t_atom a;
-    SETSEMICOLON(&a);
+    SET_SEMICOLON(&a);
     binbuf_add(x, 1, &a);
 }
 
@@ -372,8 +372,8 @@ void binbuf_restore(t_binbuf *x, int argc, t_atom *argv)
         if (argv->a_type == A_SYMBOL)
         {
             char *str = argv->a_w.w_symbol->s_name, *str2;
-            if (!strcmp(str, ";")) SETSEMICOLON(ap);
-            else if (!strcmp(str, ",")) SETCOMMA(ap);
+            if (!strcmp(str, ";")) SET_SEMICOLON(ap);
+            else if (!strcmp(str, ",")) SET_COMMA(ap);
             else if ((str2 = strchr(str, '$')) && str2[1] >= '0'
                 && str2[1] <= '9')
             {
@@ -387,12 +387,12 @@ void binbuf_restore(t_binbuf *x, int argc, t_atom *argv)
                     break;
                 }
                 if (dollsym)
-                    SETDOLLARSYMBOL(ap, gensym(str));
+                    SET_DOLLARSYMBOL(ap, gensym(str));
                 else
                 {
                     int dollar = 0;
                     sscanf(argv->a_w.w_symbol->s_name + 1, "%d", &dollar);
-                    SETDOLLAR(ap, dollar);
+                    SET_DOLLAR(ap, dollar);
                 }
             }
             else if (strchr(argv->a_w.w_symbol->s_name, '\\'))
@@ -410,7 +410,7 @@ void binbuf_restore(t_binbuf *x, int argc, t_atom *argv)
                     else *sp1++ = *sp2, slashed = 0;
                 }
                 *sp1 = 0;
-                SETSYMBOL(ap, gensym(buf));
+                SET_SYMBOL(ap, gensym(buf));
             }
             else *ap = *argv;
             argv++;
@@ -515,7 +515,7 @@ t_symbol *binbuf_realizedollsym(t_symbol *s, int ac, t_atom *av, int tonew)
     char*substr;
     int next=0, i=PD_STRING;
     t_atom dollarnull;
-    SETFLOAT(&dollarnull, canvas_getdollarzero());
+    SET_FLOAT(&dollarnull, canvas_getdollarzero());
     while(i--)buf2[i]=0;
 
 #if 1
@@ -683,7 +683,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
                     a symbol.  This is needed so you can pass them to "expr." */
                 if (target == &pd_objectMaker)
                 {
-                    SETSYMBOL(msp, gensym(";"));
+                    SET_SYMBOL(msp, gensym(";"));
                     break;
                 }
                 else
@@ -694,7 +694,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
             case A_COMMA:
                 if (target == &pd_objectMaker)
                 {
-                    SETSYMBOL(msp, gensym(","));
+                    SET_SYMBOL(msp, gensym(","));
                     break;
                 }
                 else goto gotmess;
@@ -706,16 +706,16 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
                 if (at->a_w.w_index > 0 && at->a_w.w_index <= argc)
                     *msp = argv[at->a_w.w_index-1];
                 else if (at->a_w.w_index == 0)
-                    SETFLOAT(msp, canvas_getdollarzero());
+                    SET_FLOAT(msp, canvas_getdollarzero());
                 else
                 {
                     if (target == &pd_objectMaker)
-                        SETFLOAT(msp, 0);
+                        SET_FLOAT(msp, 0);
                     else
                     {
                         post_error ("$%d: argument number out of range",
                             at->a_w.w_index);
-                        SETFLOAT(msp, 0);
+                        SET_FLOAT(msp, 0);
                     }
                 }
                 break;
@@ -725,9 +725,9 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
                 if (!s9)
                 {
                     post_error ("%s: argument number out of range", at->a_w.w_symbol->s_name);
-                    SETSYMBOL(msp, at->a_w.w_symbol);
+                    SET_SYMBOL(msp, at->a_w.w_symbol);
                 }
-                else SETSYMBOL(msp, s9);
+                else SET_SYMBOL(msp, s9);
                 break;
             default:
                 PD_BUG;
@@ -995,13 +995,13 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                 {
                     char buf[100];
                     sprintf(buf, "$%d", nextmess[i].a_w.w_index);
-                    SETSYMBOL(nextmess+i, gensym(buf));
+                    SET_SYMBOL(nextmess+i, gensym(buf));
                 }
                 else if (nextmess[i].a_type == A_DOLLARSYMBOL)
                 {
                     char buf[100];
                     sprintf(buf, "%s", nextmess[i].a_w.w_symbol->s_name);
-                    SETSYMBOL(nextmess+i, gensym(buf));
+                    SET_SYMBOL(nextmess+i, gensym(buf));
                 }
             }
             if (!strcmp(first, "#N"))
@@ -1063,28 +1063,28 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                     }
                     if (classname == gensym("table"))
                         classname = gensym("TABLE");
-                    SETSYMBOL(outmess, gensym("#X"));
-                    SETSYMBOL(outmess + 1, gensym("obj"));
+                    SET_SYMBOL(outmess, gensym("#X"));
+                    SET_SYMBOL(outmess + 1, gensym("obj"));
                     outmess[2] = nextmess[2];
                     outmess[3] = nextmess[3];
-                    SETSYMBOL(outmess+4, classname);
+                    SET_SYMBOL(outmess+4, classname);
                     for (i = 7; i < natom; i++)
                         outmess[i-2] = nextmess[i];
-                    SETSEMICOLON(outmess + natom - 2);
+                    SET_SEMICOLON(outmess + natom - 2);
                     binbuf_add(newb, natom - 1, outmess);
                     nobj++;
                 }
                 else if (!strcmp(second, "message") || 
                     !strcmp(second, "comment"))
                 {
-                    SETSYMBOL(outmess, gensym("#X"));
-                    SETSYMBOL(outmess + 1, gensym(
+                    SET_SYMBOL(outmess, gensym("#X"));
+                    SET_SYMBOL(outmess + 1, gensym(
                         (strcmp(second, "message") ? "text" : "msg")));
                     outmess[2] = nextmess[2];
                     outmess[3] = nextmess[3];
                     for (i = 6; i < natom; i++)
                         outmess[i-2] = nextmess[i];
-                    SETSEMICOLON(outmess + natom - 2);
+                    SET_SEMICOLON(outmess + natom - 2);
                     binbuf_add(newb, natom - 1, outmess);
                     nobj++;
                 }
@@ -1245,16 +1245,16 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                     && (ISSYMBOL (&nextmess[4], "pd")))
                 {
                     binbuf_addv(newb, "ss;", gensym("#P"), gensym("pop"));
-                    SETSYMBOL(outmess, gensym("#P"));
-                    SETSYMBOL(outmess + 1, gensym("newobj"));
+                    SET_SYMBOL(outmess, gensym("#P"));
+                    SET_SYMBOL(outmess + 1, gensym("newobj"));
                     outmess[2] = nextmess[2];
                     outmess[3] = nextmess[3];
-                    SETFLOAT(outmess + 4, 50.*(natom-5));
-                    SETFLOAT(outmess + 5, fontsize);
-                    SETSYMBOL(outmess + 6, gensym("p"));
+                    SET_FLOAT(outmess + 4, 50.*(natom-5));
+                    SET_FLOAT(outmess + 5, fontsize);
+                    SET_SYMBOL(outmess + 6, gensym("p"));
                     for (i = 5; i < natom; i++)
                         outmess[i+2] = nextmess[i];
-                    SETSEMICOLON(outmess + natom + 2);
+                    SET_SEMICOLON(outmess + natom + 2);
                     binbuf_add(newb, natom + 3, outmess);
                     if (stackdepth) stackdepth--;
                     nobj = stack[stackdepth];
@@ -1332,46 +1332,46 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                               (classname == gensym("t")) )
                     {
                         t_symbol *arg;
-                        SETSYMBOL(outmess, gensym("#P"));
-                        SETSYMBOL(outmess + 1, gensym("newex"));
+                        SET_SYMBOL(outmess, gensym("#P"));
+                        SET_SYMBOL(outmess + 1, gensym("newex"));
                         outmess[2] = nextmess[2];
                         outmess[3] = nextmess[3];
-                        SETFLOAT(outmess + 4, 50.*(natom-4));
-                        SETFLOAT(outmess + 5, fontsize);
+                        SET_FLOAT(outmess + 4, 50.*(natom-4));
+                        SET_FLOAT(outmess + 5, fontsize);
                         outmess[6] = nextmess[4];
                         for (i = 5; i < natom; i++) {
                             arg = atom_getsymbolarg(i, natom, nextmess);
                             if (arg == gensym("a"))
-                                SETSYMBOL(outmess + i + 2, gensym("l"));
+                                SET_SYMBOL(outmess + i + 2, gensym("l"));
                             else if (arg == gensym("anything"))
-                                SETSYMBOL(outmess + i + 2, gensym("l"));
+                                SET_SYMBOL(outmess + i + 2, gensym("l"));
                             else if (arg == gensym("bang"))
-                                SETSYMBOL(outmess + i + 2, gensym("b"));
+                                SET_SYMBOL(outmess + i + 2, gensym("b"));
                             else if (arg == gensym("float"))
-                                SETSYMBOL(outmess + i + 2, gensym("f"));
+                                SET_SYMBOL(outmess + i + 2, gensym("f"));
                             else if (arg == gensym("list"))
-                                SETSYMBOL(outmess + i + 2, gensym("l"));
+                                SET_SYMBOL(outmess + i + 2, gensym("l"));
                             else if (arg == gensym("symbol"))
-                                SETSYMBOL(outmess + i + 2, gensym("s"));
+                                SET_SYMBOL(outmess + i + 2, gensym("s"));
                             else 
                                 outmess[i+2] = nextmess[i];
                         }
-                        SETSEMICOLON(outmess + natom + 2);
+                        SET_SEMICOLON(outmess + natom + 2);
                         binbuf_add(newb, natom + 3, outmess);
                     }
                     else
                     {
-                        SETSYMBOL(outmess, gensym("#P"));
-                        SETSYMBOL(outmess + 1, gensym("newex"));
+                        SET_SYMBOL(outmess, gensym("#P"));
+                        SET_SYMBOL(outmess + 1, gensym("newex"));
                         outmess[2] = nextmess[2];
                         outmess[3] = nextmess[3];
-                        SETFLOAT(outmess + 4, 50.*(natom-4));
-                        SETFLOAT(outmess + 5, fontsize);
+                        SET_FLOAT(outmess + 4, 50.*(natom-4));
+                        SET_FLOAT(outmess + 5, fontsize);
                         for (i = 4; i < natom; i++)
                             outmess[i+2] = nextmess[i];
                         if (classname == gensym("osc~"))
-                            SETSYMBOL(outmess + 6, gensym("cycle~"));
-                        SETSEMICOLON(outmess + natom + 2);
+                            SET_SYMBOL(outmess + 6, gensym("cycle~"));
+                        SET_SEMICOLON(outmess + natom + 2);
                         binbuf_add(newb, natom + 3, outmess);
                     }
                     nobj++;
@@ -1380,16 +1380,16 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                 else if (!strcmp(second, "msg") || 
                     !strcmp(second, "text"))
                 {
-                    SETSYMBOL(outmess, gensym("#P"));
-                    SETSYMBOL(outmess + 1, gensym(
+                    SET_SYMBOL(outmess, gensym("#P"));
+                    SET_SYMBOL(outmess + 1, gensym(
                         (strcmp(second, "msg") ? "comment" : "message")));
                     outmess[2] = nextmess[2];
                     outmess[3] = nextmess[3];
-                    SETFLOAT(outmess + 4, 50.*(natom-4));
-                    SETFLOAT(outmess + 5, fontsize);
+                    SET_FLOAT(outmess + 4, 50.*(natom-4));
+                    SET_FLOAT(outmess + 5, fontsize);
                     for (i = 4; i < natom; i++)
                         outmess[i+2] = nextmess[i];
-                    SETSEMICOLON(outmess + natom + 2);
+                    SET_SEMICOLON(outmess + natom + 2);
                     binbuf_add(newb, natom + 3, outmess);
                     nobj++;
                 }
@@ -1501,7 +1501,7 @@ void binbuf_savetext(t_binbuf *bfrom, t_binbuf *bto)
         {
             char buf[PD_STRING+1];
             atom_string(&ap[k], buf, PD_STRING);
-            SETSYMBOL(&at, gensym(buf));
+            SET_SYMBOL(&at, gensym(buf));
             binbuf_add(bto, 1, &at);
         }
     }

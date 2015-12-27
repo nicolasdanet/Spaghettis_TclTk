@@ -712,8 +712,8 @@ static void text_set_list(t_text_set *x,
         (void)binbuf_resize(b, newsize);
         vec = binbuf_getvec(b);
         if (addsemi)
-            SETSEMICOLON(&vec[n]);
-        SETSEMICOLON(&vec[newsize-1]);
+            SET_SEMICOLON(&vec[n]);
+        SET_SEMICOLON(&vec[newsize-1]);
         start = n+addsemi;
     }
     else
@@ -724,7 +724,7 @@ static void text_set_list(t_text_set *x,
     for (i = 0; i < argc; i++)
     {
         if (argv[i].a_type == A_POINTER)
-            SETSYMBOL(&vec[start+i], gensym("(pointer)"));
+            SET_SYMBOL(&vec[start+i], gensym("(pointer)"));
         else vec[start+i] = argv[i];
     }
     text_client_senditup(&x->x_tc);
@@ -1263,7 +1263,7 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
             if (atno < 0 || atno >= argc)
             {
                 post_error ("argument $%d out of range", atno+1);
-                SETFLOAT(outvec+i, 0);
+                SET_FLOAT(outvec+i, 0);
             }
             else outvec[i] = argv[atno];
         }
@@ -1272,12 +1272,12 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
             t_symbol *s =
                 binbuf_realizedollsym(ap->a_w.w_symbol, argc, argv, 0);
             if (s)
-                SETSYMBOL(outvec+i, s);
+                SET_SYMBOL(outvec+i, s);
             else
             {
                 post_error ("$%s: not enough arguments supplied",
                     ap->a_w.w_symbol->s_name);
-                SETSYMBOL(outvec+i, &s_symbol);
+                SET_SYMBOL(outvec+i, &s_symbol);
             }
         }
         else { PD_BUG; }
@@ -1301,7 +1301,7 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
         if (x->x_lastto)
         {
             memmove(outvec+1, outvec, nfield * sizeof(*outvec));
-            SETSYMBOL(outvec, x->x_lastto);
+            SET_SYMBOL(outvec, x->x_lastto);
             n2++;
         }
         if (!gotcomma)
@@ -1636,7 +1636,7 @@ static void qlist_tick(t_qlist *x)
 static void qlist_add(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_atom a;
-    SETSEMICOLON(&a);
+    SET_SEMICOLON(&a);
     binbuf_add(x->x_binbuf, argc, argv);
     binbuf_add(x->x_binbuf, 1, &a);
 }

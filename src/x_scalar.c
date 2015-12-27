@@ -54,12 +54,12 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
     }
     
         /* make a canvas... */
-    SETFLOAT(a, 0);
-    SETFLOAT(a+1, 50);
-    SETFLOAT(a+2, 600);
-    SETFLOAT(a+3, 400);
-    SETSYMBOL(a+4, s);
-    SETFLOAT(a+5, 0);
+    SET_FLOAT(a, 0);
+    SET_FLOAT(a+1, 50);
+    SET_FLOAT(a+2, 600);
+    SET_FLOAT(a+3, 400);
+    SET_SYMBOL(a+4, s);
+    SET_FLOAT(a+5, 0);
     x = canvas_new(0, 0, 6, a);
 
     x->gl_owner = z;

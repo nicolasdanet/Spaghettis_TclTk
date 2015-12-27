@@ -32,8 +32,8 @@ static void *dac_new(t_symbol *s, int argc, t_atom *argv)
     {
         argv = defarg;
         argc = 2;
-        SETFLOAT(&defarg[0], 1);
-        SETFLOAT(&defarg[1], 2);
+        SET_FLOAT(&defarg[0], 1);
+        SET_FLOAT(&defarg[1], 2);
     }
     x->x_n = argc;
     x->x_vec = (t_int *)getbytes(argc * sizeof(*x->x_vec));
@@ -102,8 +102,8 @@ static void *adc_new(t_symbol *s, int argc, t_atom *argv)
     {
         argv = defarg;
         argc = 2;
-        SETFLOAT(&defarg[0], 1);
-        SETFLOAT(&defarg[1], 2);
+        SET_FLOAT(&defarg[0], 1);
+        SET_FLOAT(&defarg[1], 2);
     }
     x->x_n = argc;
     x->x_vec = (t_int *)getbytes(argc * sizeof(*x->x_vec));

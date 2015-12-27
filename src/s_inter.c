@@ -910,10 +910,10 @@ int sys_startgui(const char *libdir)
             strcpy(cmdbuf, ".");
         
 #endif
-        SETSYMBOL(zz, gensym(cmdbuf));
+        SET_SYMBOL(zz, gensym(cmdbuf));
         for (i = 0; i < (int)NDEFAULTFONT; i++)
-            SETFLOAT(zz+i+1, defaultfontshit[i]);
-        // SETFLOAT(zz+NDEFAULTFONT+1,0);
+            SET_FLOAT(zz+i+1, defaultfontshit[i]);
+        // SET_FLOAT(zz+NDEFAULTFONT+1,0);
         glob_initfromgui(0, 0, NDEFAULTFONT+1, zz);
     }
     else if (sys_guisetportnumber)  /* GUI exists and sent us a port number */

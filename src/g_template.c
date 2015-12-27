@@ -475,7 +475,7 @@ void template_notifyforscalar(t_template *template, t_glist *owner,
     t_gpointer gp;
     gpointer_init(&gp);
     gpointer_setglist(&gp, owner, sc);
-    SETPOINTER(argv, &gp);
+    SET_POINTER(argv, &gp);
     template_notify(template, s, argc, argv);
     gpointer_unset(&gp);
 }
@@ -2440,8 +2440,8 @@ static void drawnumber_getbuf(t_drawnumber *x, t_word *data,
         {
             t_atom at;
             if (type == DATA_FLOAT)
-                SETFLOAT(&at, ((t_word *)((char *)data + onset))->w_float);
-            else SETSYMBOL(&at, ((t_word *)((char *)data + onset))->w_symbol);
+                SET_FLOAT(&at, ((t_word *)((char *)data + onset))->w_float);
+            else SET_SYMBOL(&at, ((t_word *)((char *)data + onset))->w_symbol);
             atom_string(&at, buf + nchars, DRAWNUMBER_BUFSIZE - nchars);
         }
     }

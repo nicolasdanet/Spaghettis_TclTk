@@ -59,8 +59,87 @@ static t_symbol *class_externalDirectory = &s_;     /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void class_defaultFloat  (t_pd *x, t_float f);
-static void class_defaultList   (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+static void class_defaultFloat      (t_pd *x, t_float f);
+static void class_defaultList       (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+static void class_defaultAnything   (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void class_defaultSave(t_gobj *z, t_binbuf *b)
+{
+    PD_BUG;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void class_defaultBang (t_pd *x)
+{
+    if ((*(*x)->c_methodList) != class_defaultList) { (*(*x)->c_methodList) (x, NULL, 0, NULL); }
+    else { 
+        (*(*x)->c_methodAny) (x, &s_bang, 0, NULL);
+    }
+}
+
+static void class_defaultPointer(t_pd *x, t_gpointer *gp)
+{
+    t_atom a;
+    SET_POINTER(&a, gp);
+        
+    if ((*(*x)->c_methodList) != class_defaultList) { (*(*x)->c_methodList) (x, NULL, 1, &a); }
+    else {
+        (*(*x)->c_methodAny) (x, &s_pointer, 1, &a);
+    }
+}
+
+static void class_defaultFloat(t_pd *x, t_float f)
+{
+    t_atom a;
+    SET_FLOAT(&a, f);
+        
+    if ((*(*x)->c_methodList) != class_defaultList) { (*(*x)->c_methodList) (x, NULL, 1, &a); }
+    else {
+        (*(*x)->c_methodAny) (x, &s_float, 1, &a);
+    }
+}
+
+static void class_defaultSymbol(t_pd *x, t_symbol *s)
+{
+    t_atom a;
+    SET_SYMBOL(&a, s);
+        
+    if ((*(*x)->c_methodList) != class_defaultList) { (*(*x)->c_methodList) (x, NULL, 1, &a); }
+    else {
+        (*(*x)->c_methodAny) (x, &s_symbol, 1, &a);
+    }
+}
+
+static void class_defaultList (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == 0 && (*(*x)->c_methodBang) != class_defaultBang) { (*(*x)->c_methodBang) (x); return; }
+    
+    if (argc == 1) {
+    
+        if (IS_FLOAT (argv) && (*(*x)->c_methodFloat) != class_defaultFloat) {
+            (*(*x)->c_methodFloat) (x, GET_FLOAT (argv)); return;
+            
+        } else if (IS_SYMBOL (argv) && (*(*x)->c_methodSymbol) != class_defaultSymbol) {
+            (*(*x)->c_methodSymbol) (x, GET_SYMBOL (argv)); return;
+            
+        } else if (IS_POINTER (argv) && (*(*x)->c_methodPointer) != class_defaultPointer) {
+            (*(*x)->c_methodPointer) (x, GET_POINTER (argv)); return;
+        }
+    }
+
+    if ((*(*x)->c_methodAny) != class_defaultAnything) { (*(*x)->c_methodAny) (x, &s_list, argc, argv); }
+    else if ((*x)->c_isBox) { obj_list ((t_object *)x, s, argc, argv); }
+    else { 
+        class_defaultAnything (x, &s_list, argc, argv); 
+    }
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -71,109 +150,9 @@ static void class_defaultAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     post_error ("%s: no method for \"%s\"", (*x)->c_name->s_name, s->s_name);
 }
 
-static void class_defaultBang (t_pd *x)
-{
-    if (*(*x)->c_methodList != class_defaultList) { (*(*x)->c_methodList)(x, NULL, 0, NULL); }
-    else { 
-        (*(*x)->c_methodAny)(x, &s_bang, 0, NULL);
-    }
-}
-
-static void pd_defaultpointer(t_pd *x, t_gpointer *gp)
-{
-    if (*(*x)->c_methodList != class_defaultList)
-    {
-        t_atom at;
-        SETPOINTER(&at, gp);
-        (*(*x)->c_methodList)(x, 0, 1, &at);
-    }
-    else
-    {
-        t_atom at;
-        SETPOINTER(&at, gp);
-        (*(*x)->c_methodAny)(x, &s_pointer, 1, &at);
-    }
-}
-
-static void class_defaultFloat(t_pd *x, t_float f)
-{
-    if (*(*x)->c_methodList != class_defaultList)
-    {
-        t_atom at;
-        SETFLOAT(&at, f);
-        (*(*x)->c_methodList)(x, 0, 1, &at);
-    }
-    else
-    {
-        t_atom at;
-        SETFLOAT(&at, f);
-        (*(*x)->c_methodAny)(x, &s_float, 1, &at);
-    }
-}
-
-static void pd_defaultsymbol(t_pd *x, t_symbol *s)
-{
-    if (*(*x)->c_methodList != class_defaultList)
-    {
-        t_atom at;
-        SETSYMBOL(&at, s);
-        (*(*x)->c_methodList)(x, 0, 1, &at);
-    }
-    else
-    {
-        t_atom at;
-        SETSYMBOL(&at, s);
-        (*(*x)->c_methodAny)(x, &s_symbol, 1, &at);
-    }
-}
-
-void obj_list(t_object *x, t_symbol *s, int argc, t_atom *argv);
-static void class_nosavefn(t_gobj *z, t_binbuf *b);
-
-    /* handle "list" messages to Pds without explicit list methods defined. */
-static void class_defaultList(t_pd *x, t_symbol *s, int argc, t_atom *argv)
-{
-            /* a list with no elements is handled by the 'bang' method if
-            one exists. */
-    if (argc == 0 && *(*x)->c_methodBang != class_defaultBang)
-    {
-        (*(*x)->c_methodBang)(x);
-        return;
-    }
-            /* a list with one element which is a number can be handled by a
-            "float" method if any is defined; same for "symbol", "pointer". */
-    if (argc == 1)
-    {
-        if (argv->a_type == A_FLOAT &&
-        *(*x)->c_methodFloat != class_defaultFloat)
-        {
-            (*(*x)->c_methodFloat)(x, argv->a_w.w_float);
-            return;
-        }
-        else if (argv->a_type == A_SYMBOL &&
-            *(*x)->c_methodSymbol != pd_defaultsymbol)
-        {
-            (*(*x)->c_methodSymbol)(x, argv->a_w.w_symbol);
-            return;
-        }
-        else if (argv->a_type == A_POINTER &&
-            *(*x)->c_methodPointer != pd_defaultpointer)
-        {
-            (*(*x)->c_methodPointer)(x, argv->a_w.w_gpointer);
-            return;
-        }
-    }
-        /* Next try for an "anything" method */
-    if ((*x)->c_methodAny != class_defaultAnything)
-        (*(*x)->c_methodAny)(x, &s_list, argc, argv);
-
-        /* if the object is patchable (i.e., can have proper inlets)
-            send it on to obj_list which will unpack the list into the inlets */
-    else if ((*x)->c_isBox)
-        obj_list((t_object *)x, s, argc, argv);
-            /* otherwise gove up and complain. */
-    else class_defaultAnything(x, &s_list, argc, argv);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* for now we assume that all "gobjs" are text unless explicitly
     overridden later by calling class_setbehavior().  I'm not sure
@@ -242,9 +221,9 @@ t_class *class_new(t_symbol *s, t_newmethod newmethod, t_method freemethod,
     c->c_methodsSize = 0;
     c->c_methodFree = (t_method)freemethod;
     c->c_methodBang = class_defaultBang;
-    c->c_methodPointer = pd_defaultpointer;
+    c->c_methodPointer = class_defaultPointer;
     c->c_methodFloat = class_defaultFloat;
-    c->c_methodSymbol = pd_defaultsymbol;
+    c->c_methodSymbol = class_defaultSymbol;
     c->c_methodList = class_defaultList;
     c->c_methodAny = class_defaultAnything;
     c->c_behavior = (typeflag == CLASS_BOX ? &text_widgetBehavior : 0);
@@ -255,7 +234,7 @@ t_class *class_new(t_symbol *s, t_newmethod newmethod, t_method freemethod,
     c->c_isDrawCommand = 0;
     c->c_floatSignalIn = 0;
     c->c_externDirectory = class_externalDirectory;
-    c->c_fnSave = (typeflag == CLASS_BOX ? text_save : class_nosavefn);
+    c->c_fnSave = (typeflag == CLASS_BOX ? text_save : class_defaultSave);
 #if 0 
     post("class: %s", c->c_name->s_name);
 #endif
@@ -478,11 +457,6 @@ void class_set_extern_dir(t_symbol *s)
 char *class_gethelpdir(t_class *c)
 {
     return (c->c_externDirectory->s_name);
-}
-
-static void class_nosavefn(t_gobj *z, t_binbuf *b)
-{
-    PD_BUG;
 }
 
 void class_setsavefn(t_class *c, t_savefn f)
@@ -829,10 +803,10 @@ void pd_vmess(t_pd *x, t_symbol *sel, char *fmt, ...)
         }
         switch(*fp++)
         {
-        case 'f': SETFLOAT(at, va_arg(ap, double)); break;
-        case 's': SETSYMBOL(at, va_arg(ap, t_symbol *)); break;
-        case 'i': SETFLOAT(at, va_arg(ap, t_int)); break;       
-        case 'p': SETPOINTER(at, va_arg(ap, t_gpointer *)); break;
+        case 'f': SET_FLOAT(at, va_arg(ap, double)); break;
+        case 's': SET_SYMBOL(at, va_arg(ap, t_symbol *)); break;
+        case 'i': SET_FLOAT(at, va_arg(ap, t_int)); break;       
+        case 'p': SET_POINTER(at, va_arg(ap, t_gpointer *)); break;
         default: goto done;
         }
         at++;
@@ -877,7 +851,7 @@ void pd_emptylist(t_pd *x)
     else (*(*x)->c_methodAny)(x, &s_bang, 0, 0);
 }
 
-void nullfn(void) {}
+void nullfn (void) {}
 
 t_gotfn getfn(t_pd *x, t_symbol *s)
 {

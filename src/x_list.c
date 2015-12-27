@@ -116,7 +116,7 @@ static void alist_anything(t_alist *x, t_symbol *s, int argc, t_atom *argv)
     }
     x->l_n = argc+1;
     x->l_npointer = 0;
-    SETSYMBOL(&x->l_vec[0].l_a, s);
+    SET_SYMBOL(&x->l_vec[0].l_a, s);
     for (i = 0; i < argc; i++)
     {
         x->l_vec[i+1].l_a = argv[i];
@@ -216,7 +216,7 @@ static void list_append_anything(t_list_append *x, t_symbol *s,
     t_atom *outv;
     int n, outc = x->x_alist.l_n + argc + 1;
     ATOMS_ALLOCA(outv, outc);
-    SETSYMBOL(outv, s);
+    SET_SYMBOL(outv, s);
     atoms_copy(argc, argv, outv + 1);
     if (x->x_alist.l_npointer)
     {
@@ -300,7 +300,7 @@ static void list_prepend_anything(t_list_prepend *x, t_symbol *s,
     t_atom *outv;
     int n, outc = x->x_alist.l_n + argc + 1;
     ATOMS_ALLOCA(outv, outc);
-    SETSYMBOL(outv + x->x_alist.l_n, s);
+    SET_SYMBOL(outv + x->x_alist.l_n, s);
     atoms_copy(argc, argv, outv + x->x_alist.l_n + 1);
     if (x->x_alist.l_npointer)
     {
@@ -376,7 +376,7 @@ static void list_split_anything(t_list_split *x, t_symbol *s,
 {
     t_atom *outv;
     ATOMS_ALLOCA(outv, argc+1);
-    SETSYMBOL(outv, s);
+    SET_SYMBOL(outv, s);
     atoms_copy(argc, argv, outv + 1);
     list_split_list(x, &s_list, argc+1, outv);
     ATOMS_FREEA(outv, argc+1);
@@ -493,7 +493,7 @@ static void list_fromsymbol_symbol(t_list_fromsymbol *x, t_symbol *s)
     int n, outc = strlen(s->s_name);
     ATOMS_ALLOCA(outv, outc);
     for (n = 0; n < outc; n++)
-        SETFLOAT(outv + n, (unsigned char)s->s_name[n]);
+        SET_FLOAT(outv + n, (unsigned char)s->s_name[n]);
     outlet_list(x->x_obj.te_outlet, &s_list, outc, outv);
     ATOMS_FREEA(outv, outc);
 }

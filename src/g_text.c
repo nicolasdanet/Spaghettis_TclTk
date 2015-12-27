@@ -56,7 +56,7 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         if (argc > 2) binbuf_restore(x->te_binbuf, argc-2, argv+2);
         else
         {
-            SETSYMBOL(&at, gensym("comment"));
+            SET_SYMBOL(&at, gensym("comment"));
             binbuf_restore(x->te_binbuf, 1, &at);
         }
         glist_add(gl, &x->te_g);
@@ -65,7 +65,7 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     {
         int xpix, ypix;
         pd_vmess((t_pd *)glist_getcanvas(gl), gensym("editmode"), "i", 1);
-        SETSYMBOL(&at, gensym("comment"));
+        SET_SYMBOL(&at, gensym("comment"));
         glist_noselect(gl);
         glist_getnextxy(gl, &xpix, &ypix);
         x->te_xpix = xpix-1;
@@ -227,7 +227,7 @@ void canvas_iems(t_glist *gl, t_symbol *guiobjname)
 
     pd_vmess(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
     glist_noselect(gl);
-    SETSYMBOL(&at, guiobjname);
+    SET_SYMBOL(&at, guiobjname);
     binbuf_restore(b, 1, &at);
     glist_getnextxy(gl, &xpix, &ypix);
     canvas_objtext(gl, xpix, ypix, 0, 1, b);
@@ -345,14 +345,14 @@ static void message_bang(t_message *x)
 static void message_float(t_message *x, t_float f)
 {
     t_atom at;
-    SETFLOAT(&at, f);
+    SET_FLOAT(&at, f);
     binbuf_eval(x->m_text.te_binbuf, &x->m_messresponder.mr_pd, 1, &at);
 }
 
 static void message_symbol(t_message *x, t_symbol *s)
 {
     t_atom at;
-    SETSYMBOL(&at, s);
+    SET_SYMBOL(&at, s);
     binbuf_eval(x->m_text.te_binbuf, &x->m_messresponder.mr_pd, 1, &at);
 }
 
@@ -384,7 +384,7 @@ static void message_add(t_message *x, t_symbol *s, int argc, t_atom *argv)
 static void message_addcomma(t_message *x)
 {
     t_atom a;
-    SETCOMMA(&a);
+    SET_COMMA(&a);
     binbuf_add(x->m_text.te_binbuf, 1, &a);
     glist_retext(x->m_glist, &x->m_text);
 }
@@ -400,7 +400,7 @@ static void message_adddollar(t_message *x, t_floatarg f)
     int n = f;
     if (n < 0)
         n = 0;
-    SETDOLLAR(&a, n);
+    SET_DOLLAR(&a, n);
     binbuf_add(x->m_text.te_binbuf, 1, &a);
     glist_retext(x->m_glist, &x->m_text);
 }
@@ -412,7 +412,7 @@ static void message_adddollsym(t_message *x, t_symbol *s)
     buf[0] = '$';
     strncpy(buf+1, s->s_name, PD_STRING-2);
     buf[PD_STRING-1] = 0;
-    SETDOLLARSYMBOL(&a, gensym(buf));
+    SET_DOLLARSYMBOL(&a, gensym(buf));
     binbuf_add(x->m_text.te_binbuf, 1, &a);
     glist_retext(x->m_glist, &x->m_text);
 }
@@ -596,7 +596,7 @@ static void gatom_bang(t_gatom *x)
 static void gatom_float(t_gatom *x, t_float f)
 {
     t_atom at;
-    SETFLOAT(&at, f);
+    SET_FLOAT(&at, f);
     gatom_set(x, 0, 1, &at);
     gatom_bang(x);
 }
@@ -616,7 +616,7 @@ static void gatom_clipfloat(t_gatom *x, t_float f)
 static void gatom_symbol(t_gatom *x, t_symbol *s)
 {
     t_atom at;
-    SETSYMBOL(&at, s);
+    SET_SYMBOL(&at, s);
     gatom_set(x, 0, 1, &at);
     gatom_bang(x);
 }
@@ -720,7 +720,7 @@ static void gatom_key(void *z, t_floatarg f)
 redraw:
         /* LATER figure out how to avoid creating all these symbols! */
     sprintf(sbuf, "%s...", x->a_buf);
-    SETSYMBOL(&at, gensym(sbuf));
+    SET_SYMBOL(&at, gensym(sbuf));
     binbuf_clear(x->a_text.te_binbuf);
     binbuf_add(x->a_text.te_binbuf, 1, &at);
     glist_retext(x->a_glist, &x->a_text);
@@ -893,13 +893,13 @@ void canvas_atom(t_glist *gl, t_atomtype type,
     {
         x->a_atom.a_w.w_float = 0;
         x->a_text.te_width = 5;
-        SETFLOAT(&at, 0);
+        SET_FLOAT(&at, 0);
     }
     else
     {
         x->a_atom.a_w.w_symbol = &s_symbol;
         x->a_text.te_width = 10;
-        SETSYMBOL(&at, &s_symbol);
+        SET_SYMBOL(&at, &s_symbol);
     }
     binbuf_add(x->a_text.te_binbuf, 1, &at);
     if (argc > 1)
