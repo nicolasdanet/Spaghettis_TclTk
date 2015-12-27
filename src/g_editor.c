@@ -17,12 +17,12 @@
 
 extern t_class *garray_class;
 extern t_class *scalar_class;
-extern t_pd pd_canvasmaker;
+extern t_pd pd_canvasMaker;
 extern t_class *canvas_class;
 extern t_class *vinlet_class;
 extern t_class *voutlet_class;
 extern int sys_defaultfont;
-extern t_widgetbehavior text_widgetbehavior;
+extern t_widgetbehavior text_widgetBehavior;
 extern t_pdinstance *pd_this;
 
 void glist_readfrombinbuf(t_glist *x, t_binbuf *b, char *filename,
@@ -121,7 +121,7 @@ int gobj_shouldvis(t_gobj *x, struct _glist *glist)
         (goprect) style. */
         return (glist->gl_havewindow ||
             (ob->te_g.g_pd != canvas_class &&
-                ob->te_g.g_pd->c_behavior != &text_widgetbehavior) ||
+                ob->te_g.g_pd->c_behavior != &text_widgetBehavior) ||
             (ob->te_g.g_pd == canvas_class && (((t_glist *)ob)->gl_isgraph)) ||
             (glist->gl_goprect && (ob->te_type == TYPE_TEXT)));
     }
@@ -1339,7 +1339,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
             int noutlet;
                 /* resize?  only for "true" text boxes or canvases*/
             if (ob && !x->gl_editor->e_selection &&
-                (ob->te_g.g_pd->c_behavior == &text_widgetbehavior ||
+                (ob->te_g.g_pd->c_behavior == &text_widgetBehavior ||
                     pd_checkglist(&ob->te_g.g_pd)) &&
                         xpos >= x2-4 && ypos < y2-4)
             {
@@ -1897,7 +1897,7 @@ void canvas_motion(t_canvas *x, t_floatarg xpos, t_floatarg ypos,
             int wantwidth = xpos - x11;
             t_gotfn sizefn;
             t_object *ob = pd_checkobject(&y1->g_pd);
-            if (ob && ob->te_g.g_pd->c_behavior == &text_widgetbehavior ||
+            if (ob && ob->te_g.g_pd->c_behavior == &text_widgetBehavior ||
                     (pd_checkglist(&ob->te_g.g_pd) &&
                         !((t_canvas *)ob)->gl_isgraph))
             {
@@ -2390,7 +2390,7 @@ static void canvas_dopaste(t_canvas *x, t_binbuf *b)
         *boundn = s__N.s_thing;
     asym->s_thing = 0;
     s__X.s_thing = &x->gl_obj.te_g.g_pd;
-    s__N.s_thing = &pd_canvasmaker;
+    s__N.s_thing = &pd_canvasMaker;
 
     canvas_editmode(x, 1.);
     glist_noselect(x);

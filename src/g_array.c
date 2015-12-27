@@ -11,7 +11,7 @@
 #include "g_canvas.h"
 #include <math.h>
 
-extern t_pd pd_canvasmaker;
+extern t_pd pd_canvasMaker;
 extern int glist_valid;
 
 /* jsarlo { */
@@ -143,12 +143,12 @@ void garray_init( void)
     
     glob_setfilename(0, gensym("_float_template"), gensym("."));
     binbuf_text(b, garray_floattemplatefile, strlen(garray_floattemplatefile));
-    binbuf_eval(b, &pd_canvasmaker, 0, 0);
+    binbuf_eval(b, &pd_canvasMaker, 0, 0);
     pd_vmess(s__X.s_thing, gensym("pop"), "i", 0);
     
     glob_setfilename(0, gensym("_float_array_template"), gensym("."));
     binbuf_text(b, garray_arraytemplatefile, strlen(garray_arraytemplatefile));
-    binbuf_eval(b, &pd_canvasmaker, 0, 0);
+    binbuf_eval(b, &pd_canvasMaker, 0, 0);
     garray_arraytemplatecanvas = s__X.s_thing;
     pd_vmess(s__X.s_thing, gensym("pop"), "i", 0);
 

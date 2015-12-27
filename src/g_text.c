@@ -19,7 +19,7 @@
 
 #include "s_utf8.h"
 
-extern t_pd pd_objectmaker;
+extern t_pd pd_objectMaker;
 extern t_class *canvas_class;
 extern t_class *vinlet_class;
 extern t_class *voutlet_class;
@@ -98,7 +98,7 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
     newest = 0;
     canvas_setcurrent((t_canvas *)gl);
     canvas_getargs(&argc, &argv);
-    binbuf_eval(b, &pd_objectmaker, argc, argv);
+    binbuf_eval(b, &pd_objectMaker, argc, argv);
     if (binbuf_getnatom(b))
     {
         if (!newest)
@@ -1182,7 +1182,7 @@ void text_save(t_gobj *z, t_binbuf *b)
 }
 
     /* this one is for everyone but "gatoms"; it's imposed in m_class.c */
-t_widgetbehavior text_widgetbehavior =
+t_widgetbehavior text_widgetBehavior =      /* Shared. */
 {
     text_getrect,
     text_displace,

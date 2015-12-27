@@ -14,7 +14,7 @@
 
 extern t_class *garray_class;
 extern t_class *scalar_class;
-extern t_pd pd_canvasmaker;
+extern t_pd pd_canvasMaker;
 extern t_class *canvas_class;
 extern t_pdinstance *pd_this;
 
@@ -539,7 +539,7 @@ static void template_setup(void)
 {
     template_class = class_new(gensym("template"), 0, (t_method)template_free,
         sizeof(t_template), CLASS_PURE, 0);
-    class_addmethod(pd_canvasmaker, (t_method)template_usetemplate,
+    class_addmethod(pd_canvasMaker, (t_method)template_usetemplate,
         gensym("struct"), A_GIMME, 0);
         
 }

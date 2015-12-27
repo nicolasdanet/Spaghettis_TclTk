@@ -21,7 +21,7 @@ moment it also defines "text" but it may later be better to split this off. */
 #endif
 
 extern t_pd *newest;
-extern t_pd pd_canvasmaker;
+extern t_pd pd_canvasMaker;
 
 static t_class *text_define_class;
 
@@ -1795,7 +1795,7 @@ static void text_template_init( void)
     
     glob_setfilename(0, gensym("_text_template"), gensym("."));
     binbuf_text(b, text_templatefile, strlen(text_templatefile));
-    binbuf_eval(b, &pd_canvasmaker, 0, 0);
+    binbuf_eval(b, &pd_canvasMaker, 0, 0);
     pd_vmess(s__X.s_thing, gensym("pop"), "i", 0);
     
     glob_setfilename(0, &s_, &s_);

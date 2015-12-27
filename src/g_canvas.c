@@ -21,7 +21,7 @@ to be different but are now unified except for some fossilized names.) */
 
 extern t_class *scalar_class;
 extern t_pdinstance *pd_this;
-extern t_pd pd_canvasmaker;
+extern t_pd pd_canvasMaker;
 extern int glist_reloading;
 extern int sys_defaultfont;
 extern t_symbol *sys_libdir;
@@ -1545,7 +1545,7 @@ void g_canvas_setup(void)
             /* here is the real creator function, invoked in patch files
             by sending the "canvas" message to #N, which is bound
             to pd_camvasmaker. */
-    class_addmethod(pd_canvasmaker, (t_method)canvas_new, gensym("canvas"),
+    class_addmethod(pd_canvasMaker, (t_method)canvas_new, gensym("canvas"),
         A_GIMME, 0);
     class_addmethod(canvas_class, (t_method)canvas_restore,
         gensym("restore"), A_GIMME, 0);

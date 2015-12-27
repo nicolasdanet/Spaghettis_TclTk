@@ -1,65 +1,87 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
+
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #include "m_pd.h"
 #include "m_private.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include <stdlib.h>
 
-#ifdef _WIN32
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if PD_WINDOWS
     #include <io.h>
 #else
     #include <unistd.h>
 #endif
 
-#include <stdarg.h>
-#include <string.h>
-#include <stdio.h>
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-extern t_widgetbehavior text_widgetbehavior;
-
-#ifdef _MSC_VER  /* This is only for Microsoft's compiler, not cygwin, e.g. */
-#define snprintf sprintf_s
+#ifdef PD_MSVC
+    #define snprintf sprintf_s
 #endif
 
-static t_symbol *class_loadsym;     /* name under which an extern is invoked */
-static void pd_defaultfloat(t_pd *x, t_float f);
-static void pd_defaultlist(t_pd *x, t_symbol *s, int argc, t_atom *argv);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-t_pd pd_objectmaker;    /* factory for creating "object" boxes */   /* Shared. */
-t_pd pd_canvasmaker;    /* factory for creating canvases */ /* Shared. */
+extern t_widgetbehavior text_widgetBehavior;
 
-static t_symbol *class_extern_dir = &s_;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void pd_defaultanything(t_pd *x, t_symbol *s, int argc, t_atom *argv)
+t_pd pd_objectMaker;                                /* Shared. */
+t_pd pd_canvasMaker;                                /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_symbol *class_externalSymbol;              /* Shared. */
+static t_symbol *class_externalDirectory = &s_;     /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void class_defaultFloat  (t_pd *x, t_float f);
+static void class_defaultList   (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void class_defaultAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
-    post_error ("%s: no method for '%s'", (*x)->c_name->s_name, s->s_name);
+    post_error ("%s: no method for \"%s\"", (*x)->c_name->s_name, s->s_name);
 }
 
-static void pd_defaultbang(t_pd *x)
+static void class_defaultBang (t_pd *x)
 {
-    if (*(*x)->c_methodList != pd_defaultlist)
-        (*(*x)->c_methodList)(x, 0, 0, 0);
-    else (*(*x)->c_methodAny)(x, &s_bang, 0, 0);
-}
-
-    /* am empty list calls the 'bang' method unless it's the default
-    bang method -- that might turn around and call our 'list' method
-    which could be an infinite recorsion.  Fall through to calling our
-    'anything' method.  That had better not turn around and call us with
-    an empty list.  */
-void pd_emptylist(t_pd *x)
-{
-    if (*(*x)->c_methodBang != pd_defaultbang)
-        (*(*x)->c_methodBang)(x);
-    else (*(*x)->c_methodAny)(x, &s_bang, 0, 0);
+    if (*(*x)->c_methodList != class_defaultList) { (*(*x)->c_methodList)(x, NULL, 0, NULL); }
+    else { 
+        (*(*x)->c_methodAny)(x, &s_bang, 0, NULL);
+    }
 }
 
 static void pd_defaultpointer(t_pd *x, t_gpointer *gp)
 {
-    if (*(*x)->c_methodList != pd_defaultlist)
+    if (*(*x)->c_methodList != class_defaultList)
     {
         t_atom at;
         SETPOINTER(&at, gp);
@@ -73,9 +95,9 @@ static void pd_defaultpointer(t_pd *x, t_gpointer *gp)
     }
 }
 
-static void pd_defaultfloat(t_pd *x, t_float f)
+static void class_defaultFloat(t_pd *x, t_float f)
 {
-    if (*(*x)->c_methodList != pd_defaultlist)
+    if (*(*x)->c_methodList != class_defaultList)
     {
         t_atom at;
         SETFLOAT(&at, f);
@@ -91,7 +113,7 @@ static void pd_defaultfloat(t_pd *x, t_float f)
 
 static void pd_defaultsymbol(t_pd *x, t_symbol *s)
 {
-    if (*(*x)->c_methodList != pd_defaultlist)
+    if (*(*x)->c_methodList != class_defaultList)
     {
         t_atom at;
         SETSYMBOL(&at, s);
@@ -109,11 +131,11 @@ void obj_list(t_object *x, t_symbol *s, int argc, t_atom *argv);
 static void class_nosavefn(t_gobj *z, t_binbuf *b);
 
     /* handle "list" messages to Pds without explicit list methods defined. */
-static void pd_defaultlist(t_pd *x, t_symbol *s, int argc, t_atom *argv)
+static void class_defaultList(t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
             /* a list with no elements is handled by the 'bang' method if
             one exists. */
-    if (argc == 0 && *(*x)->c_methodBang != pd_defaultbang)
+    if (argc == 0 && *(*x)->c_methodBang != class_defaultBang)
     {
         (*(*x)->c_methodBang)(x);
         return;
@@ -123,7 +145,7 @@ static void pd_defaultlist(t_pd *x, t_symbol *s, int argc, t_atom *argv)
     if (argc == 1)
     {
         if (argv->a_type == A_FLOAT &&
-        *(*x)->c_methodFloat != pd_defaultfloat)
+        *(*x)->c_methodFloat != class_defaultFloat)
         {
             (*(*x)->c_methodFloat)(x, argv->a_w.w_float);
             return;
@@ -142,7 +164,7 @@ static void pd_defaultlist(t_pd *x, t_symbol *s, int argc, t_atom *argv)
         }
     }
         /* Next try for an "anything" method */
-    if ((*x)->c_methodAny != pd_defaultanything)
+    if ((*x)->c_methodAny != class_defaultAnything)
         (*(*x)->c_methodAny)(x, &s_list, argc, argv);
 
         /* if the object is patchable (i.e., can have proper inlets)
@@ -150,7 +172,7 @@ static void pd_defaultlist(t_pd *x, t_symbol *s, int argc, t_atom *argv)
     else if ((*x)->c_isBox)
         obj_list((t_object *)x, s, argc, argv);
             /* otherwise gove up and complain. */
-    else pd_defaultanything(x, &s_list, argc, argv);
+    else class_defaultAnything(x, &s_list, argc, argv);
 }
 
     /* for now we assume that all "gobjs" are text unless explicitly
@@ -195,21 +217,21 @@ t_class *class_new(t_symbol *s, t_newmethod newmethod, t_method freemethod,
         *vp = va_arg(ap, t_atomtype);
     }
     va_end(ap);
-    if (pd_objectmaker && newmethod)
+    if (pd_objectMaker && newmethod)
     {
             /* add a "new" method by the name specified by the object */
-        class_addmethod(pd_objectmaker, (t_method)newmethod, s,
+        class_addmethod(pd_objectMaker, (t_method)newmethod, s,
             vec[0], vec[1], vec[2], vec[3], vec[4], vec[5]);
-        if (class_loadsym)
+        if (class_externalSymbol)
         {
                 /* if we're loading an extern it might have been invoked by a
                 longer file name; in this case, make this an admissible name
                 too. */
-            char *loadstring = class_loadsym->s_name,
+            char *loadstring = class_externalSymbol->s_name,
                 l1 = strlen(s->s_name), l2 = strlen(loadstring);
             if (l2 > l1 && !strcmp(s->s_name, loadstring + (l2 - l1)))
-                class_addmethod(pd_objectmaker, (t_method)newmethod,
-                    class_loadsym,
+                class_addmethod(pd_objectMaker, (t_method)newmethod,
+                    class_externalSymbol,
                     vec[0], vec[1], vec[2], vec[3], vec[4], vec[5]);
         }
     }
@@ -219,20 +241,20 @@ t_class *class_new(t_symbol *s, t_newmethod newmethod, t_method freemethod,
     c->c_methods = getbytes(0);
     c->c_methodsSize = 0;
     c->c_methodFree = (t_method)freemethod;
-    c->c_methodBang = pd_defaultbang;
+    c->c_methodBang = class_defaultBang;
     c->c_methodPointer = pd_defaultpointer;
-    c->c_methodFloat = pd_defaultfloat;
+    c->c_methodFloat = class_defaultFloat;
     c->c_methodSymbol = pd_defaultsymbol;
-    c->c_methodList = pd_defaultlist;
-    c->c_methodAny = pd_defaultanything;
-    c->c_behavior = (typeflag == CLASS_BOX ? &text_widgetbehavior : 0);
+    c->c_methodList = class_defaultList;
+    c->c_methodAny = class_defaultAnything;
+    c->c_behavior = (typeflag == CLASS_BOX ? &text_widgetBehavior : 0);
     c->c_behaviorParent = 0;
     c->c_hasFirstInlet = ((flags & CLASS_NOINLET) == 0);
     c->c_isBox = (typeflag == CLASS_BOX);
     c->c_isGraphic = (typeflag >= CLASS_GRAPHIC);
     c->c_isDrawCommand = 0;
     c->c_floatSignalIn = 0;
-    c->c_externDirectory = class_extern_dir;
+    c->c_externDirectory = class_externalDirectory;
     c->c_fnSave = (typeflag == CLASS_BOX ? text_save : class_nosavefn);
 #if 0 
     post("class: %s", c->c_name->s_name);
@@ -267,7 +289,7 @@ void class_addcreator(t_newmethod newmethod, t_symbol *s,
         *vp = va_arg(ap, t_atomtype);
     } 
     va_end(ap);
-    class_addmethod(pd_objectmaker, (t_method)newmethod, s,
+    class_addmethod(pd_objectMaker, (t_method)newmethod, s,
         vec[0], vec[1], vec[2], vec[3], vec[4], vec[5]);
 }
 
@@ -290,7 +312,7 @@ void class_addmethod(t_class *c, t_method fn, t_symbol *sel,
         c->c_floatSignalIn = -1;
     }
         /* check for special cases.  "Pointer" is missing here so that
-        pd_objectmaker's pointer method can be typechecked differently.  */
+        pd_objectMaker's pointer method can be typechecked differently.  */
     if (sel == &s_bang)
     {
         if (argtype) goto phooey;
@@ -325,7 +347,7 @@ void class_addmethod(t_class *c, t_method fn, t_symbol *sel,
             char nbuf[80];
             snprintf(nbuf, 80, "%s_aliased", sel->s_name);
             c->c_methods[i].me_name = gensym(nbuf);
-            if (c == pd_objectmaker)
+            if (c == pd_objectMaker)
                 post("warning: class '%s' overwritten; old one renamed '%s'",
                     sel->s_name, nbuf);
             else post("warning: old method '%s' for class '%s' renamed '%s'",
@@ -441,7 +463,7 @@ void class_domainsignalin(t_class *c, int onset)
     if (onset <= 0) onset = -1;
     else
     {
-        if (c->c_methodFloat != pd_defaultfloat)
+        if (c->c_methodFloat != class_defaultFloat)
             post("warning: %s: float method overwritten", c->c_name->s_name);
         c->c_methodFloat = (t_floatmethod)pd_floatforsignal;
     }
@@ -450,7 +472,7 @@ void class_domainsignalin(t_class *c, int onset)
 
 void class_set_extern_dir(t_symbol *s)
 {
-    class_extern_dir = s;
+    class_externalDirectory = s;
 }
 
 char *class_gethelpdir(t_class *c)
@@ -555,7 +577,7 @@ void new_anything(void *dummy, t_symbol *s, int argc, t_atom *argv)
       return;
     }
     newest = 0;
-    class_loadsym = s;
+    class_externalSymbol = s;
     if (sys_load_lib(canvas_getcurrent(), s->s_name))
     {
         tryingalready++;
@@ -563,7 +585,7 @@ void new_anything(void *dummy, t_symbol *s, int argc, t_atom *argv)
         tryingalready--;
         return;
     }
-    class_loadsym = 0;
+    class_externalSymbol = 0;
     /* for class/class.pd support, to match class/class.pd_linux  */
     snprintf(classslashclass, PD_STRING, "%s/%s", s->s_name, s->s_name);
     if ((fd = canvas_open(canvas_getcurrent(), s->s_name, ".pd",
@@ -612,14 +634,14 @@ void mess_init(void)
     t_symbol **sp;
     int i;
 
-    if (pd_objectmaker) return;    
+    if (pd_objectMaker) return;    
     for (i = sizeof(symlist)/sizeof(*symlist), sp = symlist; i--; sp++)
         (void) dogensym((*sp)->s_name, *sp);
-    pd_objectmaker = class_new(gensym("objectmaker"), 0, 0, sizeof(t_pd),
+    pd_objectMaker = class_new(gensym("objectmaker"), 0, 0, sizeof(t_pd),
         CLASS_DEFAULT, A_NULL);
-    pd_canvasmaker = class_new(gensym("classmaker"), 0, 0, sizeof(t_pd),
+    pd_canvasMaker = class_new(gensym("classmaker"), 0, 0, sizeof(t_pd),
         CLASS_DEFAULT, A_NULL);
-    class_addanything(pd_objectmaker, (t_method)new_anything);
+    class_addanything(pd_objectMaker, (t_method)new_anything);
 }
 
 t_pd *newest;
@@ -658,7 +680,7 @@ void pd_typedmess(t_pd *x, t_symbol *s, int argc, t_atom *argv)
     
         /* check for messages that are handled by fixed slots in the class
         structure.  We don't catch "pointer" though so that sending "pointer"
-        to pd_objectmaker doesn't require that we supply a pointer value. */
+        to pd_objectMaker doesn't require that we supply a pointer value. */
     if (s == &s_float)
     {
         if (!argc) (*c->c_methodFloat)(x, 0.);
@@ -691,13 +713,13 @@ void pd_typedmess(t_pd *x, t_symbol *s, int argc, t_atom *argv)
         wp = m->me_arguments;
         if (*wp == A_GIMME)
         {
-            if (x == &pd_objectmaker)
+            if (x == &pd_objectMaker)
                 newest = (*((t_newgimme)(m->me_function)))(s, argc, argv);
             else (*((t_messgimme)(m->me_function)))(x, s, argc, argv);
             return;
         }
         if (argc > PD_ARGUMENTS) argc = PD_ARGUMENTS;
-        if (x != &pd_objectmaker) *(ap++) = (t_int)x, narg++;
+        if (x != &pd_objectMaker) *(ap++) = (t_int)x, narg++;
         while (wanttype = *wp++)
         {
             switch (wanttype)
@@ -741,7 +763,7 @@ void pd_typedmess(t_pd *x, t_symbol *s, int argc, t_atom *argv)
                             as zero here; cheat and bash it to the null
                             symbol.  Unfortunately, this lets real zeros
                             pass as symbols too, which seems wrong... */
-                    else if (x == &pd_objectmaker && argv->a_type == A_FLOAT
+                    else if (x == &pd_objectMaker && argv->a_type == A_FLOAT
                         && argv->a_w.w_float == 0)
                         *ap = (t_int)(&s_);
                     else goto badarg;
@@ -776,7 +798,7 @@ void pd_typedmess(t_pd *x, t_symbol *s, int argc, t_atom *argv)
                 ad[0], ad[1], ad[2], ad[3], ad[4]); break;
         default: bonzo = 0;
         }
-        if (x == &pd_objectmaker)
+        if (x == &pd_objectMaker)
             newest = bonzo;
         return;
     }
@@ -842,6 +864,19 @@ void pd_forwardmess(t_pd *x, int argc, t_atom *argv)
 
 }
 
+    /* am empty list calls the 'bang' method unless it's the default
+    bang method -- that might turn around and call our 'list' method
+    which could be an infinite recorsion.  Fall through to calling our
+    'anything' method.  That had better not turn around and call us with
+    an empty list.  */
+    
+void pd_emptylist(t_pd *x)
+{
+    if (*(*x)->c_methodBang != class_defaultBang)
+        (*(*x)->c_methodBang)(x);
+    else (*(*x)->c_methodAny)(x, &s_bang, 0, 0);
+}
+
 void nullfn(void) {}
 
 t_gotfn getfn(t_pd *x, t_symbol *s)
@@ -866,3 +901,6 @@ t_gotfn zgetfn(t_pd *x, t_symbol *s)
         if (m->me_name == s) return(m->me_function);
     return(0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
