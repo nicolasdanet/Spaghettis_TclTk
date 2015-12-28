@@ -133,11 +133,11 @@ void sighip_setup(void)
     sighip_class = class_new(gensym("hip~"), (t_newmethod)sighip_new, 0,
         sizeof(t_sighip), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sighip_class, t_sighip, x_f);
-    class_addmethod(sighip_class, (t_method)sighip_dsp,
+    class_addMethod(sighip_class, (t_method)sighip_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_addmethod(sighip_class, (t_method)sighip_ft1,
+    class_addMethod(sighip_class, (t_method)sighip_ft1,
         gensym("ft1"), A_FLOAT, 0);
-    class_addmethod(sighip_class, (t_method)sighip_clear, gensym("clear"), 0);
+    class_addMethod(sighip_class, (t_method)sighip_clear, gensym("clear"), 0);
 }
 
 /* ---------------- lop~ - 1-pole lopass filter. ----------------- */
@@ -224,11 +224,11 @@ void siglop_setup(void)
     siglop_class = class_new(gensym("lop~"), (t_newmethod)siglop_new, 0,
         sizeof(t_siglop), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(siglop_class, t_siglop, x_f);
-    class_addmethod(siglop_class, (t_method)siglop_dsp,
+    class_addMethod(siglop_class, (t_method)siglop_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_addmethod(siglop_class, (t_method)siglop_ft1,
+    class_addMethod(siglop_class, (t_method)siglop_ft1,
         gensym("ft1"), A_FLOAT, 0);
-    class_addmethod(siglop_class, (t_method)siglop_clear, gensym("clear"), 0);
+    class_addMethod(siglop_class, (t_method)siglop_clear, gensym("clear"), 0);
 }
 
 /* ---------------- bp~ - 2-pole bandpass filter. ----------------- */
@@ -359,13 +359,13 @@ void sigbp_setup(void)
     sigbp_class = class_new(gensym("bp~"), (t_newmethod)sigbp_new, 0,
         sizeof(t_sigbp), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigbp_class, t_sigbp, x_f);
-    class_addmethod(sigbp_class, (t_method)sigbp_dsp,
+    class_addMethod(sigbp_class, (t_method)sigbp_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_addmethod(sigbp_class, (t_method)sigbp_ft1,
+    class_addMethod(sigbp_class, (t_method)sigbp_ft1,
         gensym("ft1"), A_FLOAT, 0);
-    class_addmethod(sigbp_class, (t_method)sigbp_ft2,
+    class_addMethod(sigbp_class, (t_method)sigbp_ft2,
         gensym("ft2"), A_FLOAT, 0);
-    class_addmethod(sigbp_class, (t_method)sigbp_clear, gensym("clear"), 0);
+    class_addMethod(sigbp_class, (t_method)sigbp_clear, gensym("clear"), 0);
 }
 
 /* ---------------- biquad~ - raw biquad filter ----------------- */
@@ -486,12 +486,12 @@ void sigbiquad_setup(void)
     sigbiquad_class = class_new(gensym("biquad~"), (t_newmethod)sigbiquad_new,
         0, sizeof(t_sigbiquad), 0, A_GIMME, 0);
     CLASS_SIGNAL(sigbiquad_class, t_sigbiquad, x_f);
-    class_addmethod(sigbiquad_class, (t_method)sigbiquad_dsp,
+    class_addMethod(sigbiquad_class, (t_method)sigbiquad_dsp,
         gensym("dsp"), A_CANT, 0);
     class_addlist(sigbiquad_class, sigbiquad_list);
-    class_addmethod(sigbiquad_class, (t_method)sigbiquad_set, gensym("set"),
+    class_addMethod(sigbiquad_class, (t_method)sigbiquad_set, gensym("set"),
         A_GIMME, 0);
-    class_addmethod(sigbiquad_class, (t_method)sigbiquad_set, gensym("clear"),
+    class_addMethod(sigbiquad_class, (t_method)sigbiquad_set, gensym("clear"),
         A_GIMME, 0);
 }
 
@@ -564,11 +564,11 @@ void sigsamphold_setup(void)
     sigsamphold_class = class_new(gensym("samphold~"),
         (t_newmethod)sigsamphold_new, 0, sizeof(t_sigsamphold), 0, 0);
     CLASS_SIGNAL(sigsamphold_class, t_sigsamphold, x_f);
-    class_addmethod(sigsamphold_class, (t_method)sigsamphold_set,
+    class_addMethod(sigsamphold_class, (t_method)sigsamphold_set,
         gensym("set"), A_DEFFLOAT, 0);
-    class_addmethod(sigsamphold_class, (t_method)sigsamphold_reset,
+    class_addMethod(sigsamphold_class, (t_method)sigsamphold_reset,
         gensym("reset"), A_GIMME, 0);
-    class_addmethod(sigsamphold_class, (t_method)sigsamphold_dsp,
+    class_addMethod(sigsamphold_class, (t_method)sigsamphold_dsp,
         gensym("dsp"), A_CANT, 0);
 }
 
@@ -637,11 +637,11 @@ void sigrpole_setup(void)
     sigrpole_class = class_new(gensym("rpole~"),
         (t_newmethod)sigrpole_new, 0, sizeof(t_sigrpole), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigrpole_class, t_sigrpole, x_f);
-    class_addmethod(sigrpole_class, (t_method)sigrpole_set,
+    class_addMethod(sigrpole_class, (t_method)sigrpole_set,
         gensym("set"), A_DEFFLOAT, 0);
-    class_addmethod(sigrpole_class, (t_method)sigrpole_clear,
+    class_addMethod(sigrpole_class, (t_method)sigrpole_clear,
         gensym("clear"), 0);
-    class_addmethod(sigrpole_class, (t_method)sigrpole_dsp,
+    class_addMethod(sigrpole_class, (t_method)sigrpole_dsp,
         gensym("dsp"), A_CANT, 0);
 }
 
@@ -709,11 +709,11 @@ void sigrzero_setup(void)
     sigrzero_class = class_new(gensym("rzero~"),
         (t_newmethod)sigrzero_new, 0, sizeof(t_sigrzero), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigrzero_class, t_sigrzero, x_f);
-    class_addmethod(sigrzero_class, (t_method)sigrzero_set,
+    class_addMethod(sigrzero_class, (t_method)sigrzero_set,
         gensym("set"), A_DEFFLOAT, 0);
-    class_addmethod(sigrzero_class, (t_method)sigrzero_clear,
+    class_addMethod(sigrzero_class, (t_method)sigrzero_clear,
         gensym("clear"), 0);
-    class_addmethod(sigrzero_class, (t_method)sigrzero_dsp,
+    class_addMethod(sigrzero_class, (t_method)sigrzero_dsp,
         gensym("dsp"), A_CANT, 0);
 }
 
@@ -782,11 +782,11 @@ void sigrzero_rev_setup(void)
         (t_newmethod)sigrzero_rev_new, 0, sizeof(t_sigrzero_rev),
         0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigrzero_rev_class, t_sigrzero_rev, x_f);
-    class_addmethod(sigrzero_rev_class, (t_method)sigrzero_rev_set,
+    class_addMethod(sigrzero_rev_class, (t_method)sigrzero_rev_set,
         gensym("set"), A_DEFFLOAT, 0);
-    class_addmethod(sigrzero_rev_class, (t_method)sigrzero_rev_clear,
+    class_addMethod(sigrzero_rev_class, (t_method)sigrzero_rev_clear,
         gensym("clear"), 0);
-    class_addmethod(sigrzero_rev_class, (t_method)sigrzero_rev_dsp,
+    class_addMethod(sigrzero_rev_class, (t_method)sigrzero_rev_dsp,
         gensym("dsp"), A_CANT, 0);
 }
 
@@ -875,11 +875,11 @@ void sigcpole_setup(void)
         (t_newmethod)sigcpole_new, 0, sizeof(t_sigcpole), 0, 
             A_DEFFLOAT, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigcpole_class, t_sigcpole, x_f);
-    class_addmethod(sigcpole_class, (t_method)sigcpole_set,
+    class_addMethod(sigcpole_class, (t_method)sigcpole_set,
         gensym("set"), A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addmethod(sigcpole_class, (t_method)sigcpole_clear,
+    class_addMethod(sigcpole_class, (t_method)sigcpole_clear,
         gensym("clear"), 0);
-    class_addmethod(sigcpole_class, (t_method)sigcpole_dsp,
+    class_addMethod(sigcpole_class, (t_method)sigcpole_dsp,
         gensym("dsp"), A_CANT, 0);
 }
 
@@ -965,11 +965,11 @@ void sigczero_setup(void)
         (t_newmethod)sigczero_new, 0, sizeof(t_sigczero), 0, 
             A_DEFFLOAT, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigczero_class, t_sigczero, x_f);
-    class_addmethod(sigczero_class, (t_method)sigczero_set,
+    class_addMethod(sigczero_class, (t_method)sigczero_set,
         gensym("set"), A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addmethod(sigczero_class, (t_method)sigczero_clear,
+    class_addMethod(sigczero_class, (t_method)sigczero_clear,
         gensym("clear"), 0);
-    class_addmethod(sigczero_class, (t_method)sigczero_dsp,
+    class_addMethod(sigczero_class, (t_method)sigczero_dsp,
         gensym("dsp"), A_CANT, 0);
 }
 
@@ -1057,11 +1057,11 @@ void sigczero_rev_setup(void)
         (t_newmethod)sigczero_rev_new, 0, sizeof(t_sigczero_rev), 0, 
             A_DEFFLOAT, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigczero_rev_class, t_sigczero_rev, x_f);
-    class_addmethod(sigczero_rev_class, (t_method)sigczero_rev_set,
+    class_addMethod(sigczero_rev_class, (t_method)sigczero_rev_set,
         gensym("set"), A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addmethod(sigczero_rev_class, (t_method)sigczero_rev_clear,
+    class_addMethod(sigczero_rev_class, (t_method)sigczero_rev_clear,
         gensym("clear"), 0);
-    class_addmethod(sigczero_rev_class, (t_method)sigczero_rev_dsp,
+    class_addMethod(sigczero_rev_class, (t_method)sigczero_rev_dsp,
         gensym("dsp"), A_CANT, 0);
 }
 

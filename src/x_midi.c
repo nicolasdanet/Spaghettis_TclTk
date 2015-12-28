@@ -983,9 +983,9 @@ static void makenote_setup(void)
         (t_newmethod)makenote_new, (t_method)makenote_clear,
         sizeof(t_makenote), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addfloat(makenote_class, makenote_float);
-    class_addmethod(makenote_class, (t_method)makenote_stop, gensym("stop"),
+    class_addMethod(makenote_class, (t_method)makenote_stop, gensym("stop"),
         0);
-    class_addmethod(makenote_class, (t_method)makenote_clear, gensym("clear"),
+    class_addMethod(makenote_class, (t_method)makenote_clear, gensym("clear"),
         0);
 }
 
@@ -1155,8 +1155,8 @@ static void poly_setup(void)
         (t_newmethod)poly_new, (t_method)poly_free,
         sizeof(t_poly), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addfloat(poly_class, poly_float);
-    class_addmethod(poly_class, (t_method)poly_stop, gensym("stop"), 0);
-    class_addmethod(poly_class, (t_method)poly_clear, gensym("clear"), 0);
+    class_addMethod(poly_class, (t_method)poly_stop, gensym("stop"), 0);
+    class_addMethod(poly_class, (t_method)poly_clear, gensym("clear"), 0);
 }
 
 /* -------------------------- bag -------------------------- */
@@ -1249,8 +1249,8 @@ static void bag_setup(void)
         (t_newmethod)bag_new, (t_method)bag_clear,
         sizeof(t_bag), 0, 0);
     class_addfloat(bag_class, bag_float);
-    class_addmethod(bag_class, (t_method)bag_flush, gensym("flush"), 0);
-    class_addmethod(bag_class, (t_method)bag_clear, gensym("clear"), 0);
+    class_addMethod(bag_class, (t_method)bag_flush, gensym("flush"), 0);
+    class_addMethod(bag_class, (t_method)bag_clear, gensym("clear"), 0);
 }
 
 void sys_setmidiprefix(const char *prefix)

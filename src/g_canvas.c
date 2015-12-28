@@ -1545,91 +1545,91 @@ void g_canvas_setup(void)
             /* here is the real creator function, invoked in patch files
             by sending the "canvas" message to #N, which is bound
             to pd_camvasmaker. */
-    class_addmethod(pd_canvasMaker, (t_method)canvas_new, gensym("canvas"),
+    class_addMethod(pd_canvasMaker, (t_method)canvas_new, gensym("canvas"),
         A_GIMME, 0);
-    class_addmethod(canvas_class, (t_method)canvas_restore,
+    class_addMethod(canvas_class, (t_method)canvas_restore,
         gensym("restore"), A_GIMME, 0);
-    class_addmethod(canvas_class, (t_method)canvas_coords,
+    class_addMethod(canvas_class, (t_method)canvas_coords,
         gensym("coords"), A_GIMME, 0);
 
 /* -------------------------- objects ----------------------------- */
-    class_addmethod(canvas_class, (t_method)canvas_obj,
+    class_addMethod(canvas_class, (t_method)canvas_obj,
         gensym("obj"), A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_msg,
+    class_addMethod(canvas_class, (t_method)canvas_msg,
         gensym("msg"), A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_floatatom,
+    class_addMethod(canvas_class, (t_method)canvas_floatatom,
         gensym("floatatom"), A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_symbolatom,
+    class_addMethod(canvas_class, (t_method)canvas_symbolatom,
         gensym("symbolatom"), A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)glist_text,
+    class_addMethod(canvas_class, (t_method)glist_text,
         gensym("text"), A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)glist_glist, gensym("graph"),
+    class_addMethod(canvas_class, (t_method)glist_glist, gensym("graph"),
         A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)glist_scalar,
+    class_addMethod(canvas_class, (t_method)glist_scalar,
         gensym("scalar"), A_GIMME, A_NULL);
 
 /* -------------- IEMGUI: button, toggle, slider, etc.  ------------ */
-    class_addmethod(canvas_class, (t_method)canvas_bng, gensym("bng"),
+    class_addMethod(canvas_class, (t_method)canvas_bng, gensym("bng"),
                     A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_toggle, gensym("toggle"),
+    class_addMethod(canvas_class, (t_method)canvas_toggle, gensym("toggle"),
                     A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_vslider, gensym("vslider"),
+    class_addMethod(canvas_class, (t_method)canvas_vslider, gensym("vslider"),
                     A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_hslider, gensym("hslider"),
+    class_addMethod(canvas_class, (t_method)canvas_hslider, gensym("hslider"),
                     A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_hradio, gensym("hradio"),
+    class_addMethod(canvas_class, (t_method)canvas_hradio, gensym("hradio"),
                     A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_vradio, gensym("vradio"),
+    class_addMethod(canvas_class, (t_method)canvas_vradio, gensym("vradio"),
                     A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_vumeter, gensym("vumeter"),
+    class_addMethod(canvas_class, (t_method)canvas_vumeter, gensym("vumeter"),
                     A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_mycnv, gensym("mycnv"),
+    class_addMethod(canvas_class, (t_method)canvas_mycnv, gensym("mycnv"),
                     A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_numbox, gensym("numbox"),
+    class_addMethod(canvas_class, (t_method)canvas_numbox, gensym("numbox"),
                     A_GIMME, A_NULL);
 
 /* ------------------------ gui stuff --------------------------- */
-    class_addmethod(canvas_class, (t_method)canvas_pop, gensym("pop"),
+    class_addMethod(canvas_class, (t_method)canvas_pop, gensym("pop"),
         A_DEFFLOAT, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_loadbang,
+    class_addMethod(canvas_class, (t_method)canvas_loadbang,
         gensym("loadbang"), A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_setbounds,
+    class_addMethod(canvas_class, (t_method)canvas_setbounds,
         gensym("setbounds"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_relocate,
+    class_addMethod(canvas_class, (t_method)canvas_relocate,
         gensym("relocate"), A_SYMBOL, A_SYMBOL, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_vis,
+    class_addMethod(canvas_class, (t_method)canvas_vis,
         gensym("vis"), A_FLOAT, A_NULL);
-    class_addmethod(canvas_class, (t_method)glist_menu_open,
+    class_addMethod(canvas_class, (t_method)glist_menu_open,
         gensym("menu-open"), A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_map,
+    class_addMethod(canvas_class, (t_method)canvas_map,
         gensym("map"), A_FLOAT, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_dirty,
+    class_addMethod(canvas_class, (t_method)canvas_dirty,
         gensym("dirty"), A_FLOAT, A_NULL);
     class_setpropertiesfn(canvas_class, canvas_properties);
 
 /* ---------------------- list handling ------------------------ */
-    class_addmethod(canvas_class, (t_method)glist_clear, gensym("clear"),
+    class_addMethod(canvas_class, (t_method)glist_clear, gensym("clear"),
         A_NULL);
 
 /* ----- subcanvases, which you get by typing "pd" in a box ---- */
     class_addCreator((t_newmethod)subcanvas_new, gensym("pd"), A_DEFSYMBOL, 0);
     class_addCreator((t_newmethod)subcanvas_new, gensym("page"),  A_DEFSYMBOL, 0);
 
-    class_addmethod(canvas_class, (t_method)canvas_click,
+    class_addMethod(canvas_class, (t_method)canvas_click,
         gensym("click"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addmethod(canvas_class, (t_method)canvas_dsp,
+    class_addMethod(canvas_class, (t_method)canvas_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_addmethod(canvas_class, (t_method)canvas_rename_method,
+    class_addMethod(canvas_class, (t_method)canvas_rename_method,
         gensym("rename"), A_GIMME, 0);
 
 /*---------------------------- declare ------------------- */
     declare_class = class_new(gensym("declare"), (t_newmethod)declare_new,
         (t_method)declare_free, sizeof(t_declare), CLASS_NOINLET, A_GIMME, 0);
-    class_addmethod(canvas_class, (t_method)canvas_declare,
+    class_addMethod(canvas_class, (t_method)canvas_declare,
         gensym("declare"), A_GIMME, 0);
 
 /*--------------- future message to set formatting  -------------- */
-    class_addmethod(canvas_class, (t_method)canvas_f,
+    class_addMethod(canvas_class, (t_method)canvas_f,
         gensym("f"), A_GIMME, 0);
 /* -------------- setups from other files for canvas_class ---------------- */
     g_graph_setup();
@@ -1645,15 +1645,15 @@ void canvas_readwrite_for_class(t_class *c);
 
 void canvas_add_for_class(t_class *c)
 {
-    class_addmethod(c, (t_method)canvas_restore,
+    class_addMethod(c, (t_method)canvas_restore,
         gensym("restore"), A_GIMME, 0);
-    class_addmethod(c, (t_method)canvas_click,
+    class_addMethod(c, (t_method)canvas_click,
         gensym("click"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addmethod(c, (t_method)canvas_dsp,
+    class_addMethod(c, (t_method)canvas_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_addmethod(c, (t_method)canvas_map,
+    class_addMethod(c, (t_method)canvas_map,
         gensym("map"), A_FLOAT, A_NULL);
-    class_addmethod(c, (t_method)canvas_setbounds,
+    class_addMethod(c, (t_method)canvas_setbounds,
         gensym("setbounds"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     canvas_editor_for_class(c);
     canvas_readwrite_for_class(c);

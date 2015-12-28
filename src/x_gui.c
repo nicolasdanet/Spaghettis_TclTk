@@ -167,13 +167,13 @@ static void gfxstub_setup(void)
     gfxstub_class = class_new(gensym("gfxstub"), 0, (t_method)gfxstub_free,
         sizeof(t_gfxstub), CLASS_PURE, 0);
     class_addanything(gfxstub_class, gfxstub_anything);
-    class_addmethod(gfxstub_class, (t_method)gfxstub_signoff,
+    class_addMethod(gfxstub_class, (t_method)gfxstub_signoff,
         gensym("signoff"), 0);
-    class_addmethod(gfxstub_class, (t_method)gfxstub_data,
+    class_addMethod(gfxstub_class, (t_method)gfxstub_data,
         gensym("data"), A_GIMME, 0);
-    class_addmethod(gfxstub_class, (t_method)gfxstub_end,
+    class_addMethod(gfxstub_class, (t_method)gfxstub_end,
         gensym("end"), 0);
-    class_addmethod(gfxstub_class, (t_method)gfxstub_cancel,
+    class_addMethod(gfxstub_class, (t_method)gfxstub_cancel,
         gensym("cancel"), 0);
 }
 
@@ -227,7 +227,7 @@ static void openpanel_setup(void)
         sizeof(t_openpanel), 0, 0);
     class_addbang(openpanel_class, openpanel_bang);
     class_addsymbol(openpanel_class, openpanel_symbol);
-    class_addmethod(openpanel_class, (t_method)openpanel_callback,
+    class_addMethod(openpanel_class, (t_method)openpanel_callback,
         gensym("callback"), A_SYMBOL, 0);
 }
 
@@ -282,7 +282,7 @@ static void savepanel_setup(void)
         sizeof(t_savepanel), 0, 0);
     class_addbang(savepanel_class, savepanel_bang);
     class_addsymbol(savepanel_class, savepanel_symbol);
-    class_addmethod(savepanel_class, (t_method)savepanel_callback,
+    class_addMethod(savepanel_class, (t_method)savepanel_callback,
         gensym("callback"), A_SYMBOL, 0);
 }
 

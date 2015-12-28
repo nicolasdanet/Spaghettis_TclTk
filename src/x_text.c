@@ -1808,19 +1808,19 @@ void x_qlist_setup(void )
     text_define_class = class_new(gensym("text define"),
         (t_newmethod)text_define_new,
         (t_method)text_define_free, sizeof(t_text_define), 0, A_GIMME, 0);
-    class_addmethod(text_define_class, (t_method)textbuf_open,
+    class_addMethod(text_define_class, (t_method)textbuf_open,
         gensym("click"), 0);
-    class_addmethod(text_define_class, (t_method)textbuf_close,
+    class_addMethod(text_define_class, (t_method)textbuf_close,
         gensym("close"), 0);
-    class_addmethod(text_define_class, (t_method)textbuf_addline, 
+    class_addMethod(text_define_class, (t_method)textbuf_addline, 
         gensym("addline"), A_GIMME, 0);
-    class_addmethod(text_define_class, (t_method)text_define_set,
+    class_addMethod(text_define_class, (t_method)text_define_set,
         gensym("set"), A_GIMME, 0);
-    class_addmethod(text_define_class, (t_method)text_define_clear,
+    class_addMethod(text_define_class, (t_method)text_define_clear,
         gensym("clear"), 0);
-    class_addmethod(text_define_class, (t_method)textbuf_write,
+    class_addMethod(text_define_class, (t_method)textbuf_write,
         gensym("write"), A_GIMME, 0);
-    class_addmethod(text_define_class, (t_method)textbuf_read,
+    class_addMethod(text_define_class, (t_method)textbuf_read,
         gensym("read"), A_GIMME, 0);
     class_setsavefn(text_define_class, text_define_save);
     class_addbang(text_define_class, text_define_bang);
@@ -1868,72 +1868,72 @@ void x_qlist_setup(void )
     text_sequence_class = class_new(gensym("text sequence"),
         (t_newmethod)text_sequence_new, (t_method)text_sequence_free,
             sizeof(t_text_sequence), 0, A_GIMME, 0);
-    class_addmethod(text_sequence_class, (t_method)text_sequence_step, 
+    class_addMethod(text_sequence_class, (t_method)text_sequence_step, 
         gensym("step"), 0);
-    class_addmethod(text_sequence_class, (t_method)text_sequence_line, 
+    class_addMethod(text_sequence_class, (t_method)text_sequence_line, 
         gensym("line"), A_FLOAT, 0);
-    class_addmethod(text_sequence_class, (t_method)text_sequence_auto, 
+    class_addMethod(text_sequence_class, (t_method)text_sequence_auto, 
         gensym("auto"), 0);
-    class_addmethod(text_sequence_class, (t_method)text_sequence_stop, 
+    class_addMethod(text_sequence_class, (t_method)text_sequence_stop, 
         gensym("stop"), 0);
-    class_addmethod(text_sequence_class, (t_method)text_sequence_args, 
+    class_addMethod(text_sequence_class, (t_method)text_sequence_args, 
         gensym("args"), A_GIMME, 0);
-    class_addmethod(text_sequence_class, (t_method)text_sequence_tempo, 
+    class_addMethod(text_sequence_class, (t_method)text_sequence_tempo, 
         gensym("tempo"), A_FLOAT, A_SYMBOL, 0);
     class_addlist(text_sequence_class, text_sequence_list);
     class_sethelpsymbol(text_sequence_class, gensym("text-object"));
 
     qlist_class = class_new(gensym("qlist"), (t_newmethod)qlist_new,
         (t_method)qlist_free, sizeof(t_qlist), 0, 0);
-    class_addmethod(qlist_class, (t_method)qlist_rewind, gensym("rewind"), 0);
-    class_addmethod(qlist_class, (t_method)qlist_next,
+    class_addMethod(qlist_class, (t_method)qlist_rewind, gensym("rewind"), 0);
+    class_addMethod(qlist_class, (t_method)qlist_next,
         gensym("next"), A_DEFFLOAT, 0);  
-    class_addmethod(qlist_class, (t_method)qlist_set, gensym("set"),
+    class_addMethod(qlist_class, (t_method)qlist_set, gensym("set"),
         A_GIMME, 0);
-    class_addmethod(qlist_class, (t_method)qlist_clear, gensym("clear"), 0);
-    class_addmethod(qlist_class, (t_method)qlist_add, gensym("add"),
+    class_addMethod(qlist_class, (t_method)qlist_clear, gensym("clear"), 0);
+    class_addMethod(qlist_class, (t_method)qlist_add, gensym("add"),
         A_GIMME, 0);
-    class_addmethod(qlist_class, (t_method)qlist_add2, gensym("add2"),
+    class_addMethod(qlist_class, (t_method)qlist_add2, gensym("add2"),
         A_GIMME, 0);
-    class_addmethod(qlist_class, (t_method)qlist_add, gensym("append"),
+    class_addMethod(qlist_class, (t_method)qlist_add, gensym("append"),
         A_GIMME, 0);
-    class_addmethod(qlist_class, (t_method)qlist_read, gensym("read"),
+    class_addMethod(qlist_class, (t_method)qlist_read, gensym("read"),
         A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addmethod(qlist_class, (t_method)qlist_write, gensym("write"),
+    class_addMethod(qlist_class, (t_method)qlist_write, gensym("write"),
         A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addmethod(qlist_class, (t_method)textbuf_open, gensym("click"), 0);
-    class_addmethod(qlist_class, (t_method)textbuf_close, gensym("close"), 0);
-    class_addmethod(qlist_class, (t_method)textbuf_addline, 
+    class_addMethod(qlist_class, (t_method)textbuf_open, gensym("click"), 0);
+    class_addMethod(qlist_class, (t_method)textbuf_close, gensym("close"), 0);
+    class_addMethod(qlist_class, (t_method)textbuf_addline, 
         gensym("addline"), A_GIMME, 0);
-    class_addmethod(qlist_class, (t_method)qlist_print, gensym("print"),
+    class_addMethod(qlist_class, (t_method)qlist_print, gensym("print"),
         A_DEFSYMBOL, 0);
-    class_addmethod(qlist_class, (t_method)qlist_tempo,
+    class_addMethod(qlist_class, (t_method)qlist_tempo,
         gensym("tempo"), A_FLOAT, 0);
     class_addbang(qlist_class, qlist_bang);
 
     textfile_class = class_new(gensym("textfile"), (t_newmethod)textfile_new,
         (t_method)textbuf_free, sizeof(t_qlist), 0, 0);
-    class_addmethod(textfile_class, (t_method)textfile_rewind, gensym("rewind"),
+    class_addMethod(textfile_class, (t_method)textfile_rewind, gensym("rewind"),
         0);
-    class_addmethod(textfile_class, (t_method)qlist_set, gensym("set"),
+    class_addMethod(textfile_class, (t_method)qlist_set, gensym("set"),
         A_GIMME, 0);
-    class_addmethod(textfile_class, (t_method)qlist_clear, gensym("clear"), 0);
-    class_addmethod(textfile_class, (t_method)qlist_add, gensym("add"),
+    class_addMethod(textfile_class, (t_method)qlist_clear, gensym("clear"), 0);
+    class_addMethod(textfile_class, (t_method)qlist_add, gensym("add"),
         A_GIMME, 0);
-    class_addmethod(textfile_class, (t_method)qlist_add2, gensym("add2"),
+    class_addMethod(textfile_class, (t_method)qlist_add2, gensym("add2"),
         A_GIMME, 0);
-    class_addmethod(textfile_class, (t_method)qlist_add, gensym("append"),
+    class_addMethod(textfile_class, (t_method)qlist_add, gensym("append"),
         A_GIMME, 0);
-    class_addmethod(textfile_class, (t_method)qlist_read, gensym("read"), 
+    class_addMethod(textfile_class, (t_method)qlist_read, gensym("read"), 
         A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addmethod(textfile_class, (t_method)qlist_write, gensym("write"), 
+    class_addMethod(textfile_class, (t_method)qlist_write, gensym("write"), 
         A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addmethod(textfile_class, (t_method)textbuf_open, gensym("click"), 0);
-    class_addmethod(textfile_class, (t_method)textbuf_close, gensym("close"), 
+    class_addMethod(textfile_class, (t_method)textbuf_open, gensym("click"), 0);
+    class_addMethod(textfile_class, (t_method)textbuf_close, gensym("close"), 
         0);
-    class_addmethod(textfile_class, (t_method)textbuf_addline, 
+    class_addMethod(textfile_class, (t_method)textbuf_addline, 
         gensym("addline"), A_GIMME, 0);
-    class_addmethod(textfile_class, (t_method)qlist_print, gensym("print"),
+    class_addMethod(textfile_class, (t_method)qlist_print, gensym("print"),
         A_DEFSYMBOL, 0);
     class_addbang(textfile_class, textfile_bang);
 }

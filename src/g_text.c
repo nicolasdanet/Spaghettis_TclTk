@@ -1414,21 +1414,21 @@ void g_text_setup(void)
     class_addlist(message_class, message_list);
     class_addanything(message_class, message_list);
 
-    class_addmethod(message_class, (t_method)message_click, gensym("click"),
+    class_addMethod(message_class, (t_method)message_click, gensym("click"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addmethod(message_class, (t_method)message_set, gensym("set"),
+    class_addMethod(message_class, (t_method)message_set, gensym("set"),
         A_GIMME, 0);
-    class_addmethod(message_class, (t_method)message_add, gensym("add"),
+    class_addMethod(message_class, (t_method)message_add, gensym("add"),
         A_GIMME, 0);
-    class_addmethod(message_class, (t_method)message_add2, gensym("add2"),
+    class_addMethod(message_class, (t_method)message_add2, gensym("add2"),
         A_GIMME, 0);
-    class_addmethod(message_class, (t_method)message_addcomma,
+    class_addMethod(message_class, (t_method)message_addcomma,
         gensym("addcomma"), 0);
-    class_addmethod(message_class, (t_method)message_addsemi,
+    class_addMethod(message_class, (t_method)message_addsemi,
         gensym("addsemi"), 0);
-    class_addmethod(message_class, (t_method)message_adddollar,
+    class_addMethod(message_class, (t_method)message_adddollar,
         gensym("adddollar"), A_FLOAT, 0);
-    class_addmethod(message_class, (t_method)message_adddollsym,
+    class_addMethod(message_class, (t_method)message_adddollsym,
         gensym("adddollsym"), A_SYMBOL, 0);
 
     messresponder_class = class_new(gensym("messresponder"), 0, 0,
@@ -1445,11 +1445,11 @@ void g_text_setup(void)
     class_addfloat(gatom_class, gatom_float);
     class_addsymbol(gatom_class, gatom_symbol);
     class_addlist(gatom_class, gatom_list);
-    class_addmethod(gatom_class, (t_method)gatom_set, gensym("set"),
+    class_addMethod(gatom_class, (t_method)gatom_set, gensym("set"),
         A_GIMME, 0);
-    class_addmethod(gatom_class, (t_method)gatom_click, gensym("click"),
+    class_addMethod(gatom_class, (t_method)gatom_click, gensym("click"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addmethod(gatom_class, (t_method)gatom_param, gensym("param"),
+    class_addMethod(gatom_class, (t_method)gatom_param, gensym("param"),
         A_GIMME, 0);
     class_setwidget(gatom_class, &gatom_widgetbehavior);
     class_setpropertiesfn(gatom_class, gatom_properties);

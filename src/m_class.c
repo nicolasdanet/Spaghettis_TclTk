@@ -91,7 +91,7 @@ static void class_defaultBang (t_pd *x)
 static void class_defaultPointer(t_pd *x, t_gpointer *gp)
 {
     t_atom a;
-    SET_POINTER(&a, gp);
+    SET_POINTER (&a, gp);
         
     if ((*(*x)->c_methodList) != class_defaultList) { (*(*x)->c_methodList) (x, NULL, 1, &a); }
     else {
@@ -102,7 +102,7 @@ static void class_defaultPointer(t_pd *x, t_gpointer *gp)
 static void class_defaultFloat(t_pd *x, t_float f)
 {
     t_atom a;
-    SET_FLOAT(&a, f);
+    SET_FLOAT (&a, f);
         
     if ((*(*x)->c_methodList) != class_defaultList) { (*(*x)->c_methodList) (x, NULL, 1, &a); }
     else {
@@ -113,7 +113,7 @@ static void class_defaultFloat(t_pd *x, t_float f)
 static void class_defaultSymbol(t_pd *x, t_symbol *s)
 {
     t_atom a;
-    SET_SYMBOL(&a, s);
+    SET_SYMBOL (&a, s);
         
     if ((*(*x)->c_methodList) != class_defaultList) { (*(*x)->c_methodList) (x, NULL, 1, &a); }
     else {
@@ -183,11 +183,11 @@ t_class *class_new (t_symbol *s,
         *vp = va_arg (ap, t_atomtype);
     }
     
-    va_end(ap);
+    va_end (ap);
     
     if (pd_objectMaker && newMethod) {
     //
-    class_addmethod (pd_objectMaker, (t_method)newMethod, s, arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]);
+    class_addMethod (pd_objectMaker, (t_method)newMethod, s, arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]);
     //
     }
     
@@ -236,94 +236,76 @@ void class_addCreator (t_newmethod newmethod, t_symbol *s, t_atomtype type1, ...
     
     va_end (ap);
     
-    class_addmethod (pd_objectMaker, (t_method)newmethod, s, arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]);
+    class_addMethod (pd_objectMaker, (t_method)newmethod, s, arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]);
 }
 
-void class_addmethod(t_class *c, t_method fn, t_symbol *sel,
-    t_atomtype arg1, ...)
+void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ...)
 {
     va_list ap;
-    t_methodentry *m;
-    t_atomtype argtype = arg1;
-    int nargs;
+    t_atomtype argtype = type1;
+    t_methodentry *m = NULL;
+    size_t oldSize, newSize;
+    int i, n = 0;
+        
+    va_start (ap, type1);
     
-    va_start(ap, arg1);
-        /* "signal" method specifies that we take audio signals but
-        that we don't want automatic float to signal conversion.  This
-        is obsolete; you should now use the CLASS_SIGNAL macro. */
-    if (sel == &s_signal)
-    {
-        if (c->c_floatSignalIn)
-            post("warning: signal method overrides class_mainsignalin");
+    if (s == &s_signal) { 
+        PD_OBSOLETE; PD_ASSERT (!c->c_floatSignalIn);
         c->c_floatSignalIn = -1;
     }
-        /* check for special cases.  "Pointer" is missing here so that
-        pd_objectMaker's pointer method can be typechecked differently.  */
-    if (sel == &s_bang)
-    {
-        if (argtype) goto phooey;
-        class_addbang(c, fn);
+        
+    if (s == &s_bang) {
+        if (argtype) { PD_BUG; return; }
+        class_addbang (c, fn);
+        
+    } else if (s == &s_float) {
+        if (argtype != A_FLOAT || va_arg (ap, t_atomtype)) { PD_BUG; return; }
+        class_addfloat (c, fn);
+        
+    } else if (s == &s_symbol) {
+        if (argtype != A_SYMBOL || va_arg (ap, t_atomtype)) { PD_BUG; return; }
+        class_addsymbol (c, fn);
+        
+    } else if (s == &s_list) {
+        if (argtype != A_GIMME) { PD_BUG; return; }
+        class_addlist (c, fn);
+        
+    } else if (s == &s_anything) {
+        if (argtype != A_GIMME) { PD_BUG; return; }
+        class_addanything (c, fn);
+        
+    } else {
+    //
+    
+    for (i = 0; i < c->c_methodsSize; i++) {
+        if (c->c_methods[i].me_name == s) { PD_OBSOLETE; return; }
     }
-    else if (sel == &s_float)
-    {
-        if (argtype != A_FLOAT || va_arg(ap, t_atomtype)) goto phooey;
-        class_addfloat(c, fn);
+    
+    oldSize = c->c_methodsSize * sizeof (t_methodentry);
+    newSize = (c->c_methodsSize + 1) * sizeof (t_methodentry);
+    
+    c->c_methods = resizebytes (c->c_methods, oldSize, newSize);
+    
+    m = c->c_methods + c->c_methodsSize;
+    c->c_methodsSize++;
+    m->me_name = s;
+    m->me_function = (t_gotfn)fn;
+
+    while (argtype != A_NULL && n < PD_ARGUMENTS) {
+        m->me_arguments[n] = argtype;
+        n++;
+        argtype = va_arg (ap, t_atomtype);
     }
-    else if (sel == &s_symbol)
-    {
-        if (argtype != A_SYMBOL || va_arg(ap, t_atomtype)) goto phooey;
-        class_addsymbol(c, fn);
+    
+    PD_ASSERT (argtype == A_NULL);
+
+    va_end (ap);
+    
+    m->me_arguments[n] = A_NULL;
+    //
     }
-    else if (sel == &s_list)
-    {
-        if (argtype != A_GIMME) goto phooey;
-        class_addlist(c, fn);
-    }
-    else if (sel == &s_anything)
-    {
-        if (argtype != A_GIMME) goto phooey;
-        class_addanything(c, fn);
-    }
-    else
-    {
-        int i;
-        for (i = 0; i < c->c_methodsSize; i++)
-            if (c->c_methods[i].me_name == sel)
-        {
-            char nbuf[80];
-            snprintf(nbuf, 80, "%s_aliased", sel->s_name);
-            c->c_methods[i].me_name = gensym(nbuf);
-            if (c == pd_objectMaker)
-                post("warning: class '%s' overwritten; old one renamed '%s'",
-                    sel->s_name, nbuf);
-            else post("warning: old method '%s' for class '%s' renamed '%s'",
-                sel->s_name, c->c_name->s_name, nbuf);
-        }
-        c->c_methods = resizebytes(c->c_methods,
-            c->c_methodsSize * sizeof(*c->c_methods),
-            (c->c_methodsSize + 1) * sizeof(*c->c_methods));
-        m = c->c_methods +  c->c_methodsSize;
-        c->c_methodsSize++;
-        m->me_name = sel;
-        m->me_function = (t_gotfn)fn;
-        nargs = 0;
-        while (argtype != A_NULL && nargs < PD_ARGUMENTS)
-        {
-            m->me_arguments[nargs++] = argtype;
-            argtype = va_arg(ap, t_atomtype);
-        }
-        if (argtype != A_NULL)
-            post_error ("%s_%s: only 5 arguments are typecheckable; use A_GIMME",
-                c->c_name->s_name, sel->s_name);
-        va_end(ap);
-        m->me_arguments[nargs] = A_NULL;
-    }
-    return;
-phooey:
-    PD_BUG;
 }
 
-    /* Instead of these, see the "class_addfloat", etc.,  macros in m_pd.h */
 void class_addbang(t_class *c, t_method fn)
 {
     c->c_methodBang = (t_bangmethod)fn;

@@ -67,7 +67,7 @@ static void sigsend_setup(void)
         (t_method)sigsend_free, sizeof(t_sigsend), 0, A_DEFSYMBOL, 0);
     class_addCreator((t_newmethod)sigsend_new, gensym("s~"), A_DEFSYMBOL, 0);
     CLASS_SIGNAL(sigsend_class, t_sigsend, x_f);
-    class_addmethod(sigsend_class, (t_method)sigsend_dsp,
+    class_addMethod(sigsend_class, (t_method)sigsend_dsp,
         gensym("dsp"), A_CANT, 0);
 }
 
@@ -181,9 +181,9 @@ static void sigreceive_setup(void)
         (t_newmethod)sigreceive_new, 0,
         sizeof(t_sigreceive), 0, A_DEFSYMBOL, 0);
     class_addCreator((t_newmethod)sigreceive_new, gensym("r~"), A_DEFSYMBOL, 0);
-    class_addmethod(sigreceive_class, (t_method)sigreceive_set, gensym("set"),
+    class_addMethod(sigreceive_class, (t_method)sigreceive_set, gensym("set"),
         A_SYMBOL, 0);
-    class_addmethod(sigreceive_class, (t_method)sigreceive_dsp,
+    class_addMethod(sigreceive_class, (t_method)sigreceive_dsp,
         gensym("dsp"), A_CANT, 0);
     class_sethelpsymbol(sigreceive_class, gensym("send~"));
 }
@@ -259,7 +259,7 @@ static void sigcatch_setup(void)
 {
     sigcatch_class = class_new(gensym("catch~"), (t_newmethod)sigcatch_new,
         (t_method)sigcatch_free, sizeof(t_sigcatch), CLASS_NOINLET, A_DEFSYMBOL, 0);
-    class_addmethod(sigcatch_class, (t_method)sigcatch_dsp,
+    class_addMethod(sigcatch_class, (t_method)sigcatch_dsp,
         gensym("dsp"), A_CANT, 0);
     class_sethelpsymbol(sigcatch_class, gensym("throw~"));
 }
@@ -343,10 +343,10 @@ static void sigthrow_setup(void)
 {
     sigthrow_class = class_new(gensym("throw~"), (t_newmethod)sigthrow_new, 0,
         sizeof(t_sigthrow), 0, A_DEFSYMBOL, 0);
-    class_addmethod(sigthrow_class, (t_method)sigthrow_set, gensym("set"),
+    class_addMethod(sigthrow_class, (t_method)sigthrow_set, gensym("set"),
         A_SYMBOL, 0);
     CLASS_SIGNAL(sigthrow_class, t_sigthrow, x_f);
-    class_addmethod(sigthrow_class, (t_method)sigthrow_dsp,
+    class_addMethod(sigthrow_class, (t_method)sigthrow_dsp,
         gensym("dsp"), A_CANT, 0);
 }
 

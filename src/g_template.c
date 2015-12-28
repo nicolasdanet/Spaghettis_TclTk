@@ -539,7 +539,7 @@ static void template_setup(void)
 {
     template_class = class_new(gensym("template"), 0, (t_method)template_free,
         sizeof(t_template), CLASS_PURE, 0);
-    class_addmethod(pd_canvasMaker, (t_method)template_usetemplate,
+    class_addMethod(pd_canvasMaker, (t_method)template_usetemplate,
         gensym("struct"), A_GIMME, 0);
         
 }

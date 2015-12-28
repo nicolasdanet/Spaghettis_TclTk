@@ -537,7 +537,7 @@ PD_DLL t_class  *class_new                  (t_symbol *name,
                                                 t_atomtype type1, ...);
                                                 
 PD_DLL void     class_addCreator            (t_newmethod newmethod, t_symbol *s, t_atomtype type1, ...);
-PD_DLL void     class_addmethod             (t_class *c, t_method fn, t_symbol *sel, t_atomtype arg1, ...);
+PD_DLL void     class_addMethod             (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ...);
 PD_DLL void     class_addbang               (t_class *c, t_method fn);
 PD_DLL void     class_addpointer            (t_class *c, t_method fn);
 PD_DLL void     class_addfloat              (t_class *c, t_method fn);

@@ -88,7 +88,7 @@ static void random_setup(void)
     random_class = class_new(gensym("random"), (t_newmethod)random_new, 0,
         sizeof(t_random), 0, A_DEFFLOAT, 0);
     class_addbang(random_class, random_bang);
-    class_addmethod(random_class, (t_method)random_seed,
+    class_addMethod(random_class, (t_method)random_seed,
         gensym("seed"), A_FLOAT, 0);
 }
 
@@ -118,7 +118,7 @@ static void loadbang_setup(void)
 {
     loadbang_class = class_new(gensym("loadbang"), (t_newmethod)loadbang_new, 0,
         sizeof(t_loadbang), CLASS_NOINLET, 0);
-    class_addmethod(loadbang_class, (t_method)loadbang_loadbang,
+    class_addMethod(loadbang_class, (t_method)loadbang_loadbang,
         gensym("loadbang"), 0);
 }
 
@@ -276,7 +276,7 @@ static void cputime_setup(void)
     cputime_class = class_new(gensym("cputime"), (t_newmethod)cputime_new, 0,
         sizeof(t_cputime), 0, 0);
     class_addbang(cputime_class, cputime_bang);
-    class_addmethod(cputime_class, (t_method)cputime_bang2, gensym("bang2"), 0);
+    class_addMethod(cputime_class, (t_method)cputime_bang2, gensym("bang2"), 0);
 }
 
 /* -------------------------- realtime ------------------------------ */
@@ -314,7 +314,7 @@ static void realtime_setup(void)
     realtime_class = class_new(gensym("realtime"), (t_newmethod)realtime_new, 0,
         sizeof(t_realtime), 0, 0);
     class_addbang(realtime_class, realtime_bang);
-    class_addmethod(realtime_class, (t_method)realtime_bang2, gensym("bang2"),
+    class_addMethod(realtime_class, (t_method)realtime_bang2, gensym("bang2"),
         0);
 }
 
@@ -708,9 +708,9 @@ void oscformat_setup(void)
 {
     oscformat_class = class_new(gensym("oscformat"), (t_newmethod)oscformat_new,
         (t_method)oscformat_free, sizeof(t_oscformat), 0, A_GIMME, 0);
-    class_addmethod(oscformat_class, (t_method)oscformat_set,
+    class_addMethod(oscformat_class, (t_method)oscformat_set,
         gensym("set"), A_GIMME, 0);
-    class_addmethod(oscformat_class, (t_method)oscformat_format,
+    class_addMethod(oscformat_class, (t_method)oscformat_format,
         gensym("format"), A_DEFSYMBOL, 0);
     class_addlist(oscformat_class, oscformat_list);
 }

@@ -287,9 +287,9 @@ void block_tilde_setup(void)
             sizeof(t_block), 0, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addCreator((t_newmethod)switch_new, gensym("switch~"),
         A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addmethod(block_class, (t_method)block_set, gensym("set"), 
+    class_addMethod(block_class, (t_method)block_set, gensym("set"), 
         A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addmethod(block_class, (t_method)block_dsp, gensym("dsp"), A_CANT, 0);
+    class_addMethod(block_class, (t_method)block_dsp, gensym("dsp"), A_CANT, 0);
     class_addfloat(block_class, block_float);
     class_addbang(block_class, block_bang);
 }

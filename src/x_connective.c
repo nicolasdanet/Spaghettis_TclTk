@@ -51,7 +51,7 @@ void pdint_setup(void)
     pdint_class = class_new(gensym("int"), (t_newmethod)pdint_new, 0,
         sizeof(t_pdint), 0, A_DEFFLOAT, 0);
     class_addCreator((t_newmethod)pdint_new, gensym("i"), A_DEFFLOAT, 0);
-    class_addmethod(pdint_class, (t_method)pdint_send, gensym("send"),
+    class_addMethod(pdint_class, (t_method)pdint_send, gensym("send"),
         A_SYMBOL, 0);
     class_addbang(pdint_class, pdint_bang);
     class_addfloat(pdint_class, pdint_float);
@@ -107,7 +107,7 @@ void pdfloat_setup(void)
     pdfloat_class = class_new(gensym("float"), (t_newmethod)pdfloat_new, 0,
         sizeof(t_pdfloat), 0, A_FLOAT, 0);
     class_addCreator((t_newmethod)pdfloat_new2, gensym("f"), A_DEFFLOAT, 0);
-    class_addmethod(pdfloat_class, (t_method)pdfloat_send, gensym("send"),
+    class_addMethod(pdfloat_class, (t_method)pdfloat_send, gensym("send"),
         A_SYMBOL, 0);
     class_addbang(pdfloat_class, pdfloat_bang);
     class_addfloat(pdfloat_class, (t_method)pdfloat_float);
@@ -1220,7 +1220,7 @@ static void until_setup(void)
         sizeof(t_until), 0, 0);
     class_addbang(until_class, until_bang);
     class_addfloat(until_class, until_float);
-    class_addmethod(until_class, (t_method)until_bang2, gensym("bang2"), 0);
+    class_addMethod(until_class, (t_method)until_bang2, gensym("bang2"), 0);
 }
 
 /* ----------------------- makefilename --------------------- */
@@ -1324,7 +1324,7 @@ static void makefilename_setup(void)
         sizeof(t_makefilename), 0, A_DEFSYMBOL, 0);
     class_addfloat(makefilename_class, makefilename_float);
     class_addsymbol(makefilename_class, makefilename_symbol);
-    class_addmethod(makefilename_class, (t_method)makefilename_set,
+    class_addMethod(makefilename_class, (t_method)makefilename_set,
         gensym("set"), A_SYMBOL, 0);
 }
 
@@ -1413,7 +1413,7 @@ void change_setup(void)
         sizeof(t_change), 0, A_DEFFLOAT, 0);
     class_addbang(change_class, change_bang);
     class_addfloat(change_class, change_float);
-    class_addmethod(change_class, (t_method)change_set, gensym("set"),
+    class_addMethod(change_class, (t_method)change_set, gensym("set"),
         A_DEFFLOAT, 0);
 }
 

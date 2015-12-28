@@ -67,7 +67,7 @@ static void print_setup(void)
     print_class = class_new(gensym("print~"), (t_newmethod)print_new, 0,
         sizeof(t_print), 0, A_DEFSYMBOL, 0);
     CLASS_SIGNAL(print_class, t_print, x_f);
-    class_addmethod(print_class, (t_method)print_dsp, gensym("dsp"), 0);
+    class_addMethod(print_class, (t_method)print_dsp, gensym("dsp"), 0);
     class_addbang(print_class, print_bang);
     class_addfloat(print_class, print_float);
 }
@@ -116,7 +116,7 @@ static void bang_tilde_setup(void)
 {
     bang_tilde_class = class_new(gensym("bang~"), (t_newmethod)bang_tilde_new,
         (t_method)bang_tilde_free, sizeof(t_bang), 0, 0);
-    class_addmethod(bang_tilde_class, (t_method)bang_tilde_dsp,
+    class_addMethod(bang_tilde_class, (t_method)bang_tilde_dsp,
         gensym("dsp"), 0);
 }
 

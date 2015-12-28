@@ -706,18 +706,18 @@ void g_vumeter_setup(void)
                          sizeof(t_vu), 0, A_GIMME, 0);
     class_addbang(vu_class,vu_bang);
     class_addfloat(vu_class,vu_float);
-    class_addmethod(vu_class, (t_method)vu_ft1, gensym("ft1"), A_FLOAT, 0);
-    class_addmethod(vu_class, (t_method)vu_dialog, gensym("dialog"),
+    class_addMethod(vu_class, (t_method)vu_ft1, gensym("ft1"), A_FLOAT, 0);
+    class_addMethod(vu_class, (t_method)vu_dialog, gensym("dialog"),
                     A_GIMME, 0);
-    class_addmethod(vu_class, (t_method)vu_size, gensym("size"), A_GIMME, 0);
-    class_addmethod(vu_class, (t_method)vu_scale, gensym("scale"), A_DEFFLOAT, 0);
-    class_addmethod(vu_class, (t_method)vu_delta, gensym("delta"), A_GIMME, 0);
-    class_addmethod(vu_class, (t_method)vu_pos, gensym("pos"), A_GIMME, 0);
-    class_addmethod(vu_class, (t_method)vu_color, gensym("color"), A_GIMME, 0);
-    class_addmethod(vu_class, (t_method)vu_receive, gensym("receive"), A_DEFSYMBOL, 0);
-    class_addmethod(vu_class, (t_method)vu_label, gensym("label"), A_DEFSYMBOL, 0);
-    class_addmethod(vu_class, (t_method)vu_label_pos, gensym("label_pos"), A_GIMME, 0);
-    class_addmethod(vu_class, (t_method)vu_label_font, gensym("label_font"), A_GIMME, 0);
+    class_addMethod(vu_class, (t_method)vu_size, gensym("size"), A_GIMME, 0);
+    class_addMethod(vu_class, (t_method)vu_scale, gensym("scale"), A_DEFFLOAT, 0);
+    class_addMethod(vu_class, (t_method)vu_delta, gensym("delta"), A_GIMME, 0);
+    class_addMethod(vu_class, (t_method)vu_pos, gensym("pos"), A_GIMME, 0);
+    class_addMethod(vu_class, (t_method)vu_color, gensym("color"), A_GIMME, 0);
+    class_addMethod(vu_class, (t_method)vu_receive, gensym("receive"), A_DEFSYMBOL, 0);
+    class_addMethod(vu_class, (t_method)vu_label, gensym("label"), A_DEFSYMBOL, 0);
+    class_addMethod(vu_class, (t_method)vu_label_pos, gensym("label_pos"), A_GIMME, 0);
+    class_addMethod(vu_class, (t_method)vu_label_font, gensym("label_font"), A_GIMME, 0);
     vu_widgetbehavior.w_getrectfn =    vu_getrect;
     vu_widgetbehavior.w_displacefn =   iem_displace;
     vu_widgetbehavior.w_selectfn =     iem_select;

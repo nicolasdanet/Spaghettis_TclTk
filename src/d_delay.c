@@ -134,7 +134,7 @@ static void sigdelwrite_setup(void)
         (t_newmethod)sigdelwrite_new, (t_method)sigdelwrite_free,
         sizeof(t_sigdelwrite), 0, A_DEFSYMBOL, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigdelwrite_class, t_sigdelwrite, x_f);
-    class_addmethod(sigdelwrite_class, (t_method)sigdelwrite_dsp,
+    class_addMethod(sigdelwrite_class, (t_method)sigdelwrite_dsp,
         gensym("dsp"), A_CANT, 0);
 }
 
@@ -227,7 +227,7 @@ static void sigdelread_setup(void)
     sigdelread_class = class_new(gensym("delread~"),
         (t_newmethod)sigdelread_new, 0,
         sizeof(t_sigdelread), 0, A_DEFSYMBOL, A_DEFFLOAT, 0);
-    class_addmethod(sigdelread_class, (t_method)sigdelread_dsp,
+    class_addMethod(sigdelread_class, (t_method)sigdelread_dsp,
         gensym("dsp"), A_CANT, 0);
     class_addfloat(sigdelread_class, (t_method)sigdelread_float);
 }
@@ -320,7 +320,7 @@ static void sigvd_setup(void)
 {
     sigvd_class = class_new(gensym("vd~"), (t_newmethod)sigvd_new, 0,
         sizeof(t_sigvd), 0, A_DEFSYMBOL, 0);
-    class_addmethod(sigvd_class, (t_method)sigvd_dsp, gensym("dsp"), A_CANT, 0);
+    class_addMethod(sigvd_class, (t_method)sigvd_dsp, gensym("dsp"), A_CANT, 0);
     CLASS_SIGNAL(sigvd_class, t_sigvd, x_f);
 }
 

@@ -130,10 +130,10 @@ static void delay_setup(void)
     class_addCreator((t_newmethod)delay_new, gensym("del"),
         A_DEFFLOAT, A_DEFFLOAT, A_DEFSYMBOL, 0);
     class_addbang(delay_class, delay_bang);
-    class_addmethod(delay_class, (t_method)delay_stop, gensym("stop"), 0);
-    class_addmethod(delay_class, (t_method)delay_ft1,
+    class_addMethod(delay_class, (t_method)delay_stop, gensym("stop"), 0);
+    class_addMethod(delay_class, (t_method)delay_ft1,
         gensym("ft1"), A_FLOAT, 0);
-    class_addmethod(delay_class, (t_method)delay_tempo,
+    class_addMethod(delay_class, (t_method)delay_tempo,
         gensym("tempo"), A_FLOAT, A_SYMBOL, 0);
     class_addfloat(delay_class, (t_method)delay_float);
 }
@@ -212,10 +212,10 @@ static void metro_setup(void)
         (t_method)metro_free, sizeof(t_metro), 0,
             A_DEFFLOAT, A_DEFFLOAT, A_DEFSYMBOL, 0);
     class_addbang(metro_class, metro_bang);
-    class_addmethod(metro_class, (t_method)metro_stop, gensym("stop"), 0);
-    class_addmethod(metro_class, (t_method)metro_ft1, gensym("ft1"),
+    class_addMethod(metro_class, (t_method)metro_stop, gensym("stop"), 0);
+    class_addMethod(metro_class, (t_method)metro_ft1, gensym("ft1"),
         A_FLOAT, 0);
-    class_addmethod(metro_class, (t_method)metro_tempo,
+    class_addMethod(metro_class, (t_method)metro_tempo,
         gensym("tempo"), A_FLOAT, A_SYMBOL, 0);
     class_addfloat(metro_class, (t_method)metro_float);
 }
@@ -330,11 +330,11 @@ static void line_setup(void)
 {
     line_class = class_new(gensym("line"), (t_newmethod)line_new,
         (t_method)line_free, sizeof(t_line), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addmethod(line_class, (t_method)line_ft1,
+    class_addMethod(line_class, (t_method)line_ft1,
         gensym("ft1"), A_FLOAT, 0);
-    class_addmethod(line_class, (t_method)line_stop,
+    class_addMethod(line_class, (t_method)line_stop,
         gensym("stop"), 0);
-    class_addmethod(line_class, (t_method)line_set,
+    class_addMethod(line_class, (t_method)line_set,
         gensym("set"), A_FLOAT, 0);
     class_addfloat(line_class, (t_method)line_float);
 }
@@ -390,8 +390,8 @@ static void timer_setup(void)
     timer_class = class_new(gensym("timer"), (t_newmethod)timer_new, 0,
         sizeof(t_timer), 0, A_DEFFLOAT, A_DEFSYMBOL, 0);
     class_addbang(timer_class, timer_bang);
-    class_addmethod(timer_class, (t_method)timer_bang2, gensym("bang2"), 0);
-    class_addmethod(timer_class, (t_method)timer_tempo,
+    class_addMethod(timer_class, (t_method)timer_bang2, gensym("bang2"), 0);
+    class_addMethod(timer_class, (t_method)timer_tempo,
         gensym("tempo"), A_FLOAT, A_SYMBOL, 0);
 }
 
@@ -632,8 +632,8 @@ static void pipe_setup(void)
         (t_newmethod)pipe_new, (t_method)pipe_free,
         sizeof(t_pipe), 0, A_GIMME, 0);
     class_addlist(pipe_class, pipe_list);
-    class_addmethod(pipe_class, (t_method)pipe_flush, gensym("flush"), 0);
-    class_addmethod(pipe_class, (t_method)pipe_clear, gensym("clear"), 0);
+    class_addMethod(pipe_class, (t_method)pipe_flush, gensym("flush"), 0);
+    class_addMethod(pipe_class, (t_method)pipe_clear, gensym("clear"), 0);
 }
 
 void x_time_setup(void)

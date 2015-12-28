@@ -828,13 +828,13 @@ void x_array_setup(void )
     array_define_class = class_new(gensym("array define"), 0,
         (t_method)canvas_free, sizeof(t_canvas), 0, 0);
     canvas_add_for_class(array_define_class);
-    class_addmethod(array_define_class, (t_method)array_define_send,
+    class_addMethod(array_define_class, (t_method)array_define_send,
         gensym("send"), A_SYMBOL, 0);
     class_addanything(array_define_class, array_define_anything);
     class_sethelpsymbol(array_define_class, gensym("array"));
     class_setsavefn(array_define_class, array_define_save);
 
-    class_addmethod(array_define_class, (t_method)array_define_ignore,
+    class_addMethod(array_define_class, (t_method)array_define_ignore,
         gensym("editmode"), A_GIMME, 0);
 
     class_addCreator((t_newmethod)arrayobj_new, gensym("array"), A_GIMME, 0);
@@ -878,7 +878,7 @@ void x_array_setup(void )
     array_random_class = class_new(gensym("array random"),
         (t_newmethod)array_random_new, (t_method)array_client_free,
             sizeof(t_array_random), 0, A_GIMME, 0);
-    class_addmethod(array_random_class, (t_method)array_random_seed,
+    class_addMethod(array_random_class, (t_method)array_random_seed,
         gensym("seed"), A_FLOAT, 0);
     class_addfloat(array_random_class, array_random_float);
     class_addbang(array_random_class, array_random_bang);

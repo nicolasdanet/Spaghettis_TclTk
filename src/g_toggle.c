@@ -444,23 +444,23 @@ void g_toggle_setup(void)
     class_addCreator((t_newmethod)toggle_new, gensym("toggle"), A_GIMME, 0);
     class_addbang(toggle_class, toggle_bang);
     class_addfloat(toggle_class, toggle_float);
-    class_addmethod(toggle_class, (t_method)toggle_click, gensym("click"),
+    class_addMethod(toggle_class, (t_method)toggle_click, gensym("click"),
                     A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addmethod(toggle_class, (t_method)toggle_dialog, gensym("dialog"),
+    class_addMethod(toggle_class, (t_method)toggle_dialog, gensym("dialog"),
                     A_GIMME, 0);
-    class_addmethod(toggle_class, (t_method)toggle_loadbang, gensym("loadbang"), 0);
-    class_addmethod(toggle_class, (t_method)toggle_set, gensym("set"), A_FLOAT, 0);
-    class_addmethod(toggle_class, (t_method)toggle_size, gensym("size"), A_GIMME, 0);
-    class_addmethod(toggle_class, (t_method)toggle_delta, gensym("delta"), A_GIMME, 0);
-    class_addmethod(toggle_class, (t_method)toggle_pos, gensym("pos"), A_GIMME, 0);
-    class_addmethod(toggle_class, (t_method)toggle_color, gensym("color"), A_GIMME, 0);
-    class_addmethod(toggle_class, (t_method)toggle_send, gensym("send"), A_DEFSYMBOL, 0);
-    class_addmethod(toggle_class, (t_method)toggle_receive, gensym("receive"), A_DEFSYMBOL, 0);
-    class_addmethod(toggle_class, (t_method)toggle_label, gensym("label"), A_DEFSYMBOL, 0);
-    class_addmethod(toggle_class, (t_method)toggle_label_pos, gensym("label_pos"), A_GIMME, 0);
-    class_addmethod(toggle_class, (t_method)toggle_label_font, gensym("label_font"), A_GIMME, 0);
-    class_addmethod(toggle_class, (t_method)toggle_init, gensym("init"), A_FLOAT, 0);
-    class_addmethod(toggle_class, (t_method)toggle_nonzero, gensym("nonzero"), A_FLOAT, 0);
+    class_addMethod(toggle_class, (t_method)toggle_loadbang, gensym("loadbang"), 0);
+    class_addMethod(toggle_class, (t_method)toggle_set, gensym("set"), A_FLOAT, 0);
+    class_addMethod(toggle_class, (t_method)toggle_size, gensym("size"), A_GIMME, 0);
+    class_addMethod(toggle_class, (t_method)toggle_delta, gensym("delta"), A_GIMME, 0);
+    class_addMethod(toggle_class, (t_method)toggle_pos, gensym("pos"), A_GIMME, 0);
+    class_addMethod(toggle_class, (t_method)toggle_color, gensym("color"), A_GIMME, 0);
+    class_addMethod(toggle_class, (t_method)toggle_send, gensym("send"), A_DEFSYMBOL, 0);
+    class_addMethod(toggle_class, (t_method)toggle_receive, gensym("receive"), A_DEFSYMBOL, 0);
+    class_addMethod(toggle_class, (t_method)toggle_label, gensym("label"), A_DEFSYMBOL, 0);
+    class_addMethod(toggle_class, (t_method)toggle_label_pos, gensym("label_pos"), A_GIMME, 0);
+    class_addMethod(toggle_class, (t_method)toggle_label_font, gensym("label_font"), A_GIMME, 0);
+    class_addMethod(toggle_class, (t_method)toggle_init, gensym("init"), A_FLOAT, 0);
+    class_addMethod(toggle_class, (t_method)toggle_nonzero, gensym("nonzero"), A_FLOAT, 0);
     toggle_widgetbehavior.w_getrectfn = toggle_getrect;
     toggle_widgetbehavior.w_displacefn = iem_displace;
     toggle_widgetbehavior.w_selectfn = iem_select;

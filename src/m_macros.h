@@ -25,6 +25,7 @@
 #if PD_DEBUG
 
     #define PD_BUG          post_log ("Error / %s / line %d", PD_SHORT_FILE, __LINE__)
+    #define PD_OBSOLETE     post_log ("Obsolete / %s / line %d", PD_SHORT_FILE, __LINE__)
     
     #define PD_ASSERT(x)    if (!(x)) { \
                                 post_log ("Assert / %s / line %d", PD_SHORT_FILE, __LINE__); \
@@ -33,6 +34,7 @@
 #else
     
     #define PD_BUG
+    #define PD_OBSOLETE
     #define PD_ASSERT(x)
 
 #endif // PD_DEBUG

@@ -1204,43 +1204,43 @@ void g_array_setup(void)
     garray_class = class_new(gensym("array"), 0, (t_method)garray_free,
         sizeof(t_garray), CLASS_GRAPHIC, 0);
     class_setwidget(garray_class, &garray_widgetbehavior);
-    class_addmethod(garray_class, (t_method)garray_const, gensym("const"),
+    class_addMethod(garray_class, (t_method)garray_const, gensym("const"),
         A_DEFFLOAT, A_NULL);
     class_addlist(garray_class, garray_list);
-    class_addmethod(garray_class, (t_method)garray_bounds, gensym("bounds"),
+    class_addMethod(garray_class, (t_method)garray_bounds, gensym("bounds"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addmethod(garray_class, (t_method)garray_xticks, gensym("xticks"),
+    class_addMethod(garray_class, (t_method)garray_xticks, gensym("xticks"),
         A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addmethod(garray_class, (t_method)garray_xlabel, gensym("xlabel"),
+    class_addMethod(garray_class, (t_method)garray_xlabel, gensym("xlabel"),
         A_GIMME, 0);
-    class_addmethod(garray_class, (t_method)garray_yticks, gensym("yticks"),
+    class_addMethod(garray_class, (t_method)garray_yticks, gensym("yticks"),
         A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addmethod(garray_class, (t_method)garray_ylabel, gensym("ylabel"),
+    class_addMethod(garray_class, (t_method)garray_ylabel, gensym("ylabel"),
         A_GIMME, 0);
-    class_addmethod(garray_class, (t_method)garray_rename, gensym("rename"),
+    class_addMethod(garray_class, (t_method)garray_rename, gensym("rename"),
         A_SYMBOL, 0);
-    class_addmethod(garray_class, (t_method)garray_read, gensym("read"),
+    class_addMethod(garray_class, (t_method)garray_read, gensym("read"),
         A_SYMBOL, A_NULL);
-    class_addmethod(garray_class, (t_method)garray_write, gensym("write"),
+    class_addMethod(garray_class, (t_method)garray_write, gensym("write"),
         A_SYMBOL, A_NULL);
-    class_addmethod(garray_class, (t_method)garray_resize, gensym("resize"),
+    class_addMethod(garray_class, (t_method)garray_resize, gensym("resize"),
         A_FLOAT, A_NULL);
-    class_addmethod(garray_class, (t_method)garray_print, gensym("print"),
+    class_addMethod(garray_class, (t_method)garray_print, gensym("print"),
         A_NULL);
-    class_addmethod(garray_class, (t_method)garray_sinesum, gensym("sinesum"),
+    class_addMethod(garray_class, (t_method)garray_sinesum, gensym("sinesum"),
         A_GIMME, 0);
-    class_addmethod(garray_class, (t_method)garray_cosinesum,
+    class_addMethod(garray_class, (t_method)garray_cosinesum,
         gensym("cosinesum"), A_GIMME, 0);
-    class_addmethod(garray_class, (t_method)garray_normalize,
+    class_addMethod(garray_class, (t_method)garray_normalize,
         gensym("normalize"), A_DEFFLOAT, 0);
-    class_addmethod(garray_class, (t_method)garray_arraydialog,
+    class_addMethod(garray_class, (t_method)garray_arraydialog,
         gensym("arraydialog"), A_SYMBOL, A_FLOAT, A_FLOAT, A_NULL);
 /* jsarlo { */
-    class_addmethod(garray_class, (t_method)garray_arrayviewlist_new,
+    class_addMethod(garray_class, (t_method)garray_arrayviewlist_new,
         gensym("arrayviewlistnew"), A_NULL);
-    class_addmethod(garray_class, (t_method)garray_arrayviewlist_fillpage,
+    class_addMethod(garray_class, (t_method)garray_arrayviewlist_fillpage,
         gensym("arrayviewlistfillpage"), A_FLOAT, A_DEFFLOAT, A_NULL);
-    class_addmethod(garray_class, (t_method)garray_arrayviewlist_close,
+    class_addMethod(garray_class, (t_method)garray_arrayviewlist_close,
       gensym("arrayviewclose"), A_NULL);
 /* } jsarlo */
     class_setsavefn(garray_class, garray_save);

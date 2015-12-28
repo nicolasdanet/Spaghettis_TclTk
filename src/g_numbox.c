@@ -853,43 +853,43 @@ void g_numbox_setup(void)
     class_addbang(my_numbox_class,my_numbox_bang);
     class_addfloat(my_numbox_class,my_numbox_float);
     class_addlist(my_numbox_class, my_numbox_list);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_click,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_click,
         gensym("click"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_motion,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_motion,
         gensym("motion"), A_FLOAT, A_FLOAT, 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_dialog,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_dialog,
         gensym("dialog"), A_GIMME, 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_loadbang,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_loadbang,
         gensym("loadbang"), 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_set,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_set,
         gensym("set"), A_FLOAT, 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_size,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_size,
         gensym("size"), A_GIMME, 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_delta,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_delta,
         gensym("delta"), A_GIMME, 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_pos,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_pos,
         gensym("pos"), A_GIMME, 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_range,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_range,
         gensym("range"), A_GIMME, 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_color,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_color,
         gensym("color"), A_GIMME, 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_send,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_send,
         gensym("send"), A_DEFSYMBOL, 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_receive,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_receive,
         gensym("receive"), A_DEFSYMBOL, 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_label,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_label,
         gensym("label"), A_DEFSYMBOL, 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_label_pos,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_label_pos,
         gensym("label_pos"), A_GIMME, 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_label_font,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_label_font,
         gensym("label_font"), A_GIMME, 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_log,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_log,
         gensym("log"), 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_lin,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_lin,
         gensym("lin"), 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_init,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_init,
         gensym("init"), A_FLOAT, 0);
-    class_addmethod(my_numbox_class, (t_method)my_numbox_log_height,
+    class_addMethod(my_numbox_class, (t_method)my_numbox_log_height,
         gensym("log_height"), A_FLOAT, 0);
     my_numbox_widgetbehavior.w_getrectfn =    my_numbox_getrect;
     my_numbox_widgetbehavior.w_displacefn =   iem_displace;

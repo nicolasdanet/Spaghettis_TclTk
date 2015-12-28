@@ -553,39 +553,39 @@ void g_vradio_setup(void)
         (t_method)vradio_ff, sizeof(t_vradio), 0, A_GIMME, 0);
     class_addbang(vradio_class, vradio_bang);
     class_addfloat(vradio_class, vradio_float);
-    class_addmethod(vradio_class, (t_method)vradio_click, gensym("click"),
+    class_addMethod(vradio_class, (t_method)vradio_click, gensym("click"),
                     A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addmethod(vradio_class, (t_method)vradio_dialog, gensym("dialog"),
+    class_addMethod(vradio_class, (t_method)vradio_dialog, gensym("dialog"),
                     A_GIMME, 0);
-    class_addmethod(vradio_class, (t_method)vradio_loadbang,
+    class_addMethod(vradio_class, (t_method)vradio_loadbang,
         gensym("loadbang"), 0);
-    class_addmethod(vradio_class, (t_method)vradio_set,
+    class_addMethod(vradio_class, (t_method)vradio_set,
         gensym("set"), A_FLOAT, 0);
-    class_addmethod(vradio_class, (t_method)vradio_size,
+    class_addMethod(vradio_class, (t_method)vradio_size,
         gensym("size"), A_GIMME, 0);
-    class_addmethod(vradio_class, (t_method)vradio_delta,
+    class_addMethod(vradio_class, (t_method)vradio_delta,
         gensym("delta"), A_GIMME, 0);
-    class_addmethod(vradio_class, (t_method)vradio_pos,
+    class_addMethod(vradio_class, (t_method)vradio_pos,
         gensym("pos"), A_GIMME, 0);
-    class_addmethod(vradio_class, (t_method)vradio_color,
+    class_addMethod(vradio_class, (t_method)vradio_color,
         gensym("color"), A_GIMME, 0);
-    class_addmethod(vradio_class, (t_method)vradio_send,
+    class_addMethod(vradio_class, (t_method)vradio_send,
         gensym("send"), A_DEFSYMBOL, 0);
-    class_addmethod(vradio_class, (t_method)vradio_receive,
+    class_addMethod(vradio_class, (t_method)vradio_receive,
         gensym("receive"), A_DEFSYMBOL, 0);
-    class_addmethod(vradio_class, (t_method)vradio_label,
+    class_addMethod(vradio_class, (t_method)vradio_label,
         gensym("label"), A_DEFSYMBOL, 0);
-    class_addmethod(vradio_class, (t_method)vradio_label_pos,
+    class_addMethod(vradio_class, (t_method)vradio_label_pos,
         gensym("label_pos"), A_GIMME, 0);
-    class_addmethod(vradio_class, (t_method)vradio_label_font,
+    class_addMethod(vradio_class, (t_method)vradio_label_font,
         gensym("label_font"), A_GIMME, 0);
-    class_addmethod(vradio_class, (t_method)vradio_init,
+    class_addMethod(vradio_class, (t_method)vradio_init,
         gensym("init"), A_FLOAT, 0);
-    class_addmethod(vradio_class, (t_method)vradio_number,
+    class_addMethod(vradio_class, (t_method)vradio_number,
         gensym("number"), A_FLOAT, 0);
-    class_addmethod(vradio_class, (t_method)vradio_single_change,
+    class_addMethod(vradio_class, (t_method)vradio_single_change,
         gensym("single_change"), 0);
-    class_addmethod(vradio_class, (t_method)vradio_double_change,
+    class_addMethod(vradio_class, (t_method)vradio_double_change,
         gensym("double_change"), 0);
     vradio_widgetbehavior.w_getrectfn = vradio_getrect;
     vradio_widgetbehavior.w_displacefn = iem_displace;

@@ -439,16 +439,16 @@ static void ptrobj_setup(void)
 {
     ptrobj_class = class_new(gensym("pointer"), (t_newmethod)ptrobj_new,
         (t_method)ptrobj_free, sizeof(t_ptrobj), 0, A_GIMME, 0);
-    class_addmethod(ptrobj_class, (t_method)ptrobj_next, gensym("next"), 0); 
-    class_addmethod(ptrobj_class, (t_method)ptrobj_send, gensym("send"), 
+    class_addMethod(ptrobj_class, (t_method)ptrobj_next, gensym("next"), 0); 
+    class_addMethod(ptrobj_class, (t_method)ptrobj_send, gensym("send"), 
         A_SYMBOL, 0); 
-    class_addmethod(ptrobj_class, (t_method)ptrobj_traverse, gensym("traverse"),
+    class_addMethod(ptrobj_class, (t_method)ptrobj_traverse, gensym("traverse"),
         A_SYMBOL, 0); 
-    class_addmethod(ptrobj_class, (t_method)ptrobj_vnext, gensym("vnext"), 
+    class_addMethod(ptrobj_class, (t_method)ptrobj_vnext, gensym("vnext"), 
         A_DEFFLOAT, 0); 
-    class_addmethod(ptrobj_class, (t_method)ptrobj_sendwindow,
+    class_addMethod(ptrobj_class, (t_method)ptrobj_sendwindow,
         gensym("send-window"), A_GIMME, 0); 
-    class_addmethod(ptrobj_class, (t_method)ptrobj_rewind,
+    class_addMethod(ptrobj_class, (t_method)ptrobj_rewind,
         gensym("rewind"), 0); 
     class_addpointer(ptrobj_class, ptrobj_pointer); 
     class_addbang(ptrobj_class, ptrobj_bang); 
@@ -573,7 +573,7 @@ static void get_setup(void)
     get_class = class_new(gensym("get"), (t_newmethod)get_new,
         (t_method)get_free, sizeof(t_get), 0, A_GIMME, 0);
     class_addpointer(get_class, get_pointer); 
-    class_addmethod(get_class, (t_method)get_set, gensym("set"),
+    class_addMethod(get_class, (t_method)get_set, gensym("set"),
         A_SYMBOL, A_SYMBOL, 0); 
 }
 
@@ -739,7 +739,7 @@ static void set_setup(void)
     class_addfloat(set_class, set_float); 
     class_addsymbol(set_class, set_symbol); 
     class_addbang(set_class, set_bang); 
-    class_addmethod(set_class, (t_method)set_set, gensym("set"),
+    class_addMethod(set_class, (t_method)set_set, gensym("set"),
         A_SYMBOL, A_SYMBOL, 0); 
 }
 
@@ -855,7 +855,7 @@ static void elem_setup(void)
     elem_class = class_new(gensym("element"), (t_newmethod)elem_new,
         (t_method)elem_free, sizeof(t_elem), 0, A_DEFSYMBOL, A_DEFSYMBOL, 0);
     class_addfloat(elem_class, elem_float); 
-    class_addmethod(elem_class, (t_method)elem_set, gensym("set"),
+    class_addMethod(elem_class, (t_method)elem_set, gensym("set"),
         A_SYMBOL, A_SYMBOL, 0); 
 }
 
@@ -938,7 +938,7 @@ static void getsize_setup(void)
     getsize_class = class_new(gensym("getsize"), (t_newmethod)getsize_new, 0,
         sizeof(t_getsize), 0, A_DEFSYMBOL, A_DEFSYMBOL, 0);
     class_addpointer(getsize_class, getsize_pointer); 
-    class_addmethod(getsize_class, (t_method)getsize_set, gensym("set"),
+    class_addMethod(getsize_class, (t_method)getsize_set, gensym("set"),
         A_SYMBOL, A_SYMBOL, 0); 
 }
 
@@ -1111,7 +1111,7 @@ static void setsize_setup(void)
         (t_method)setsize_free, sizeof(t_setsize), 0,
         A_DEFSYMBOL, A_DEFSYMBOL, A_DEFFLOAT, 0);
     class_addfloat(setsize_class, setsize_float);
-    class_addmethod(setsize_class, (t_method)setsize_set, gensym("set"),
+    class_addMethod(setsize_class, (t_method)setsize_set, gensym("set"),
         A_SYMBOL, A_SYMBOL, 0); 
 
 }
@@ -1264,7 +1264,7 @@ static void append_setup(void)
     append_class = class_new(gensym("append"), (t_newmethod)append_new,
         (t_method)append_free, sizeof(t_append), 0, A_GIMME, 0);
     class_addfloat(append_class, append_float); 
-    class_addmethod(append_class, (t_method)append_set, gensym("set"),
+    class_addMethod(append_class, (t_method)append_set, gensym("set"),
         A_SYMBOL, A_SYMBOL, 0); 
 }
 

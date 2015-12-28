@@ -525,22 +525,22 @@ void g_bang_setup(void)
     class_addpointer(bng_class, bng_pointer);
     class_addlist(bng_class, bng_list);
     class_addanything(bng_class, bng_anything);
-    class_addmethod(bng_class, (t_method)bng_click, gensym("click"),
+    class_addMethod(bng_class, (t_method)bng_click, gensym("click"),
                     A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addmethod(bng_class, (t_method)bng_dialog, gensym("dialog"),
+    class_addMethod(bng_class, (t_method)bng_dialog, gensym("dialog"),
                     A_GIMME, 0);
-    class_addmethod(bng_class, (t_method)bng_loadbang, gensym("loadbang"), 0);
-    class_addmethod(bng_class, (t_method)bng_size, gensym("size"), A_GIMME, 0);
-    class_addmethod(bng_class, (t_method)bng_delta, gensym("delta"), A_GIMME, 0);
-    class_addmethod(bng_class, (t_method)bng_pos, gensym("pos"), A_GIMME, 0);
-    class_addmethod(bng_class, (t_method)bng_flashtime, gensym("flashtime"), A_GIMME, 0);
-    class_addmethod(bng_class, (t_method)bng_color, gensym("color"), A_GIMME, 0);
-    class_addmethod(bng_class, (t_method)bng_send, gensym("send"), A_DEFSYMBOL, 0);
-    class_addmethod(bng_class, (t_method)bng_receive, gensym("receive"), A_DEFSYMBOL, 0);
-    class_addmethod(bng_class, (t_method)bng_label, gensym("label"), A_DEFSYMBOL, 0);
-    class_addmethod(bng_class, (t_method)bng_label_pos, gensym("label_pos"), A_GIMME, 0);
-    class_addmethod(bng_class, (t_method)bng_label_font, gensym("label_font"), A_GIMME, 0);
-    class_addmethod(bng_class, (t_method)bng_init, gensym("init"), A_FLOAT, 0);
+    class_addMethod(bng_class, (t_method)bng_loadbang, gensym("loadbang"), 0);
+    class_addMethod(bng_class, (t_method)bng_size, gensym("size"), A_GIMME, 0);
+    class_addMethod(bng_class, (t_method)bng_delta, gensym("delta"), A_GIMME, 0);
+    class_addMethod(bng_class, (t_method)bng_pos, gensym("pos"), A_GIMME, 0);
+    class_addMethod(bng_class, (t_method)bng_flashtime, gensym("flashtime"), A_GIMME, 0);
+    class_addMethod(bng_class, (t_method)bng_color, gensym("color"), A_GIMME, 0);
+    class_addMethod(bng_class, (t_method)bng_send, gensym("send"), A_DEFSYMBOL, 0);
+    class_addMethod(bng_class, (t_method)bng_receive, gensym("receive"), A_DEFSYMBOL, 0);
+    class_addMethod(bng_class, (t_method)bng_label, gensym("label"), A_DEFSYMBOL, 0);
+    class_addMethod(bng_class, (t_method)bng_label_pos, gensym("label_pos"), A_GIMME, 0);
+    class_addMethod(bng_class, (t_method)bng_label_font, gensym("label_font"), A_GIMME, 0);
+    class_addMethod(bng_class, (t_method)bng_init, gensym("init"), A_FLOAT, 0);
     bng_widgetbehavior.w_getrectfn = bng_getrect;
     bng_widgetbehavior.w_displacefn = iem_displace;
     bng_widgetbehavior.w_selectfn = iem_select;

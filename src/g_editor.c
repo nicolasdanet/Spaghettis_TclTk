@@ -2771,64 +2771,64 @@ static void glist_setlastxy(t_glist *gl, int xval, int yval)
 void g_editor_setup(void)
 {
 /* ------------------------ events ---------------------------------- */
-    class_addmethod(canvas_class, (t_method)canvas_mouse, gensym("mouse"),
+    class_addMethod(canvas_class, (t_method)canvas_mouse, gensym("mouse"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_mouseup, gensym("mouseup"),
+    class_addMethod(canvas_class, (t_method)canvas_mouseup, gensym("mouseup"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_key, gensym("key"),
+    class_addMethod(canvas_class, (t_method)canvas_key, gensym("key"),
         A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_motion, gensym("motion"),
+    class_addMethod(canvas_class, (t_method)canvas_motion, gensym("motion"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
 
 /* ------------------------ menu actions ---------------------------- */
-    class_addmethod(canvas_class, (t_method)canvas_menuclose,
+    class_addMethod(canvas_class, (t_method)canvas_menuclose,
         gensym("menuclose"), A_DEFFLOAT, 0);
-    class_addmethod(canvas_class, (t_method)canvas_cut,
+    class_addMethod(canvas_class, (t_method)canvas_cut,
         gensym("cut"), A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_copy,
+    class_addMethod(canvas_class, (t_method)canvas_copy,
         gensym("copy"), A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_paste,
+    class_addMethod(canvas_class, (t_method)canvas_paste,
         gensym("paste"), A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_duplicate,
+    class_addMethod(canvas_class, (t_method)canvas_duplicate,
         gensym("duplicate"), A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_selectall,
+    class_addMethod(canvas_class, (t_method)canvas_selectall,
         gensym("selectall"), A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_reselect,
+    class_addMethod(canvas_class, (t_method)canvas_reselect,
         gensym("reselect"), A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_undo,
+    class_addMethod(canvas_class, (t_method)canvas_undo,
         gensym("undo"), A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_redo,
+    class_addMethod(canvas_class, (t_method)canvas_redo,
         gensym("redo"), A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_tidy,
+    class_addMethod(canvas_class, (t_method)canvas_tidy,
         gensym("tidy"), A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_texteditor,
+    class_addMethod(canvas_class, (t_method)canvas_texteditor,
         gensym("texteditor"), A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_editmode,
+    class_addMethod(canvas_class, (t_method)canvas_editmode,
         gensym("editmode"), A_DEFFLOAT, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_print,
+    class_addMethod(canvas_class, (t_method)canvas_print,
         gensym("print"), A_SYMBOL, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_menufont,
+    class_addMethod(canvas_class, (t_method)canvas_menufont,
         gensym("menufont"), A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_font,
+    class_addMethod(canvas_class, (t_method)canvas_font,
         gensym("font"), A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    /*class_addmethod(canvas_class, (t_method)canvas_find,
+    /*class_addMethod(canvas_class, (t_method)canvas_find,
         gensym("find"), A_SYMBOL, A_FLOAT, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_find_again,
+    class_addMethod(canvas_class, (t_method)canvas_find_again,
         gensym("findagain"), A_NULL);*/
-    class_addmethod(canvas_class, (t_method)canvas_find_parent,
+    class_addMethod(canvas_class, (t_method)canvas_find_parent,
         gensym("findparent"), A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_done_popup,
+    class_addMethod(canvas_class, (t_method)canvas_done_popup,
         gensym("done-popup"), A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addmethod(canvas_class, (t_method)canvas_donecanvasdialog,
+    class_addMethod(canvas_class, (t_method)canvas_donecanvasdialog,
         gensym("donecanvasdialog"), A_GIMME, A_NULL);
-    class_addmethod(canvas_class, (t_method)glist_arraydialog,
+    class_addMethod(canvas_class, (t_method)glist_arraydialog,
         gensym("arraydialog"), A_SYMBOL, A_FLOAT, A_FLOAT, A_NULL);
 
 /* -------------- connect method used in reading files ------------------ */
-    class_addmethod(canvas_class, (t_method)canvas_connect,
+    class_addMethod(canvas_class, (t_method)canvas_connect,
         gensym("connect"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
 
-    class_addmethod(canvas_class, (t_method)canvas_disconnect,
+    class_addMethod(canvas_class, (t_method)canvas_disconnect,
         gensym("disconnect"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
 /* -------------- copy buffer ------------------ */
     copy_binbuf = binbuf_new();
@@ -2836,18 +2836,18 @@ void g_editor_setup(void)
 
 void canvas_editor_for_class(t_class *c)
 {
-    class_addmethod(c, (t_method)canvas_mouse, gensym("mouse"),
+    class_addMethod(c, (t_method)canvas_mouse, gensym("mouse"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addmethod(c, (t_method)canvas_mouseup, gensym("mouseup"),
+    class_addMethod(c, (t_method)canvas_mouseup, gensym("mouseup"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addmethod(c, (t_method)canvas_key, gensym("key"),
+    class_addMethod(c, (t_method)canvas_key, gensym("key"),
         A_GIMME, A_NULL);
-    class_addmethod(c, (t_method)canvas_motion, gensym("motion"),
+    class_addMethod(c, (t_method)canvas_motion, gensym("motion"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
 
 /* ------------------------ menu actions ---------------------------- */
-    class_addmethod(c, (t_method)canvas_menuclose,
+    class_addMethod(c, (t_method)canvas_menuclose,
         gensym("menuclose"), A_DEFFLOAT, 0);
-    class_addmethod(c, (t_method)canvas_find_parent,
+    class_addMethod(c, (t_method)canvas_find_parent,
         gensym("findparent"), A_NULL);
 }

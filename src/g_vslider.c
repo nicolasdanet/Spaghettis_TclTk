@@ -605,28 +605,28 @@ void g_vslider_setup(void)
     class_addCreator((t_newmethod)vslider_new, gensym("vslider"), A_GIMME, 0);
     class_addbang(vslider_class,vslider_bang);
     class_addfloat(vslider_class,vslider_float);
-    class_addmethod(vslider_class, (t_method)vslider_click, gensym("click"),
+    class_addMethod(vslider_class, (t_method)vslider_click, gensym("click"),
                     A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addmethod(vslider_class, (t_method)vslider_motion, gensym("motion"),
+    class_addMethod(vslider_class, (t_method)vslider_motion, gensym("motion"),
                     A_FLOAT, A_FLOAT, 0);
-    class_addmethod(vslider_class, (t_method)vslider_dialog, gensym("dialog"),
+    class_addMethod(vslider_class, (t_method)vslider_dialog, gensym("dialog"),
                     A_GIMME, 0);
-    class_addmethod(vslider_class, (t_method)vslider_loadbang, gensym("loadbang"), 0);
-    class_addmethod(vslider_class, (t_method)vslider_set, gensym("set"), A_FLOAT, 0);
-    class_addmethod(vslider_class, (t_method)vslider_size, gensym("size"), A_GIMME, 0);
-    class_addmethod(vslider_class, (t_method)vslider_delta, gensym("delta"), A_GIMME, 0);
-    class_addmethod(vslider_class, (t_method)vslider_pos, gensym("pos"), A_GIMME, 0);
-    class_addmethod(vslider_class, (t_method)vslider_range, gensym("range"), A_GIMME, 0);
-    class_addmethod(vslider_class, (t_method)vslider_color, gensym("color"), A_GIMME, 0);
-    class_addmethod(vslider_class, (t_method)vslider_send, gensym("send"), A_DEFSYMBOL, 0);
-    class_addmethod(vslider_class, (t_method)vslider_receive, gensym("receive"), A_DEFSYMBOL, 0);
-    class_addmethod(vslider_class, (t_method)vslider_label, gensym("label"), A_DEFSYMBOL, 0);
-    class_addmethod(vslider_class, (t_method)vslider_label_pos, gensym("label_pos"), A_GIMME, 0);
-    class_addmethod(vslider_class, (t_method)vslider_label_font, gensym("label_font"), A_GIMME, 0);
-    class_addmethod(vslider_class, (t_method)vslider_log, gensym("log"), 0);
-    class_addmethod(vslider_class, (t_method)vslider_lin, gensym("lin"), 0);
-    class_addmethod(vslider_class, (t_method)vslider_init, gensym("init"), A_FLOAT, 0);
-    class_addmethod(vslider_class, (t_method)vslider_steady, gensym("steady"), A_FLOAT, 0);
+    class_addMethod(vslider_class, (t_method)vslider_loadbang, gensym("loadbang"), 0);
+    class_addMethod(vslider_class, (t_method)vslider_set, gensym("set"), A_FLOAT, 0);
+    class_addMethod(vslider_class, (t_method)vslider_size, gensym("size"), A_GIMME, 0);
+    class_addMethod(vslider_class, (t_method)vslider_delta, gensym("delta"), A_GIMME, 0);
+    class_addMethod(vslider_class, (t_method)vslider_pos, gensym("pos"), A_GIMME, 0);
+    class_addMethod(vslider_class, (t_method)vslider_range, gensym("range"), A_GIMME, 0);
+    class_addMethod(vslider_class, (t_method)vslider_color, gensym("color"), A_GIMME, 0);
+    class_addMethod(vslider_class, (t_method)vslider_send, gensym("send"), A_DEFSYMBOL, 0);
+    class_addMethod(vslider_class, (t_method)vslider_receive, gensym("receive"), A_DEFSYMBOL, 0);
+    class_addMethod(vslider_class, (t_method)vslider_label, gensym("label"), A_DEFSYMBOL, 0);
+    class_addMethod(vslider_class, (t_method)vslider_label_pos, gensym("label_pos"), A_GIMME, 0);
+    class_addMethod(vslider_class, (t_method)vslider_label_font, gensym("label_font"), A_GIMME, 0);
+    class_addMethod(vslider_class, (t_method)vslider_log, gensym("log"), 0);
+    class_addMethod(vslider_class, (t_method)vslider_lin, gensym("lin"), 0);
+    class_addMethod(vslider_class, (t_method)vslider_init, gensym("init"), A_FLOAT, 0);
+    class_addMethod(vslider_class, (t_method)vslider_steady, gensym("steady"), A_FLOAT, 0);
     vslider_widgetbehavior.w_getrectfn =    vslider_getrect;
     vslider_widgetbehavior.w_displacefn =   iem_displace;
     vslider_widgetbehavior.w_selectfn =     iem_select;
