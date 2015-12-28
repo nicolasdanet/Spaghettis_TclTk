@@ -218,35 +218,25 @@ t_class *class_new (t_symbol *s,
     return c;
 }
 
-    /* add a creation method, which is a function that returns a Pd object
-    suitable for putting in an object box.  We presume you've got a class it
-    can belong to, but this won't be used until the newmethod is actually
-    called back (and the new method explicitly takes care of this.) */
-
-void class_addcreator(t_newmethod newmethod, t_symbol *s, 
-    t_atomtype type1, ...)
+void class_addCreator (t_newmethod newmethod, t_symbol *s, t_atomtype type1, ...)
 {
     va_list ap;
-    t_atomtype vec[PD_ARGUMENTS+1], *vp = vec;
+    t_atomtype arg[PD_ARGUMENTS + 1] = { 0 };
+    t_atomtype *vp = arg;
     int count = 0;
     *vp = type1;
 
-    va_start(ap, type1);
-    while (*vp)
-    {
-        if (count == PD_ARGUMENTS)
-        {
-            post_error ("class %s: sorry: only %d creation args allowed",
-                s->s_name, PD_ARGUMENTS);
-            break;
-        }
-        vp++;
-        count++;
-        *vp = va_arg(ap, t_atomtype);
+    va_start (ap, type1);
+    
+    while (*vp) {
+        if (count == PD_ARGUMENTS) { PD_BUG; break; }
+        vp++; count++;
+        *vp = va_arg (ap, t_atomtype);
     } 
-    va_end(ap);
-    class_addmethod(pd_objectMaker, (t_method)newmethod, s,
-        vec[0], vec[1], vec[2], vec[3], vec[4], vec[5]);
+    
+    va_end (ap);
+    
+    class_addmethod (pd_objectMaker, (t_method)newmethod, s, arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]);
 }
 
 void class_addmethod(t_class *c, t_method fn, t_symbol *sel,

@@ -687,7 +687,7 @@ static void gtemplate_setup(void)
     gtemplate_class = class_new(gensym("struct"),
         (t_newmethod)gtemplate_new, (t_method)gtemplate_free,
         sizeof(t_gtemplate), CLASS_NOINLET, A_GIMME, 0);
-    class_addcreator((t_newmethod)gtemplate_new_old, gensym("template"),
+    class_addCreator((t_newmethod)gtemplate_new_old, gensym("template"),
         A_GIMME, 0);
 }
 
@@ -1310,11 +1310,11 @@ static void curve_setup(void)
     curve_class = class_new(gensym("drawpolygon"), (t_newmethod)curve_new,
         (t_method)curve_free, sizeof(t_curve), 0, A_GIMME, 0);
     class_setdrawcommand(curve_class);
-    class_addcreator((t_newmethod)curve_new, gensym("drawcurve"),
+    class_addCreator((t_newmethod)curve_new, gensym("drawcurve"),
         A_GIMME, 0);
-    class_addcreator((t_newmethod)curve_new, gensym("filledpolygon"),
+    class_addCreator((t_newmethod)curve_new, gensym("filledpolygon"),
         A_GIMME, 0);
-    class_addcreator((t_newmethod)curve_new, gensym("filledcurve"),
+    class_addCreator((t_newmethod)curve_new, gensym("filledcurve"),
         A_GIMME, 0);
     class_setparentwidget(curve_class, &curve_widgetbehavior);
     class_addfloat(curve_class, curve_float);
@@ -2703,9 +2703,9 @@ static void drawnumber_setup(void)
         sizeof(t_drawnumber), 0, A_GIMME, 0);
     class_setdrawcommand(drawnumber_class);
     class_addfloat(drawnumber_class, drawnumber_float);
-    class_addcreator((t_newmethod)drawnumber_new, gensym("drawsymbol"),
+    class_addCreator((t_newmethod)drawnumber_new, gensym("drawsymbol"),
         A_GIMME, 0);
-    class_addcreator((t_newmethod)drawnumber_new, gensym("drawnumber"),
+    class_addCreator((t_newmethod)drawnumber_new, gensym("drawnumber"),
         A_GIMME, 0);
     class_setparentwidget(drawnumber_class, &drawnumber_widgetbehavior);
 }

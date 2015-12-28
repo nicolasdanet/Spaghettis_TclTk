@@ -602,7 +602,7 @@ void g_hslider_setup(void)
     hslider_class = class_new(gensym("hsl"), (t_newmethod)hslider_new,
                               (t_method)hslider_free, sizeof(t_hslider), 0, A_GIMME, 0);
 #ifndef GGEE_HSLIDER_COMPATIBLE
-    class_addcreator((t_newmethod)hslider_new, gensym("hslider"), A_GIMME, 0);
+    class_addCreator((t_newmethod)hslider_new, gensym("hslider"), A_GIMME, 0);
 #endif
     class_addbang(hslider_class,hslider_bang);
     class_addfloat(hslider_class,hslider_float);

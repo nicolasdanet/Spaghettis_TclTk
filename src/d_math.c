@@ -165,7 +165,7 @@ void sigrsqrt_setup(void)
     sigrsqrt_class = class_new(gensym("rsqrt~"), (t_newmethod)sigrsqrt_new, 0,
         sizeof(t_sigrsqrt), 0, 0);
             /* an old name for it: */
-    class_addcreator(sigrsqrt_new, gensym("q8_rsqrt~"), 0);
+    class_addCreator(sigrsqrt_new, gensym("q8_rsqrt~"), 0);
     CLASS_SIGNAL(sigrsqrt_class, t_sigrsqrt, x_f);
     class_addmethod(sigrsqrt_class, (t_method)sigrsqrt_dsp,
         gensym("dsp"), A_CANT, 0);
@@ -222,7 +222,7 @@ void sigsqrt_setup(void)
 {
     sigsqrt_class = class_new(gensym("sqrt~"), (t_newmethod)sigsqrt_new, 0,
         sizeof(t_sigsqrt), 0, 0);
-    class_addcreator(sigsqrt_new, gensym("q8_sqrt~"), 0);   /* old name */
+    class_addCreator(sigsqrt_new, gensym("q8_sqrt~"), 0);   /* old name */
     CLASS_SIGNAL(sigsqrt_class, t_sigsqrt, x_f);
     class_addmethod(sigsqrt_class, (t_method)sigsqrt_dsp,
         gensym("dsp"), A_CANT, 0);

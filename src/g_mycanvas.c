@@ -360,7 +360,7 @@ void g_mycanvas_setup(void)
 {
     my_canvas_class = class_new(gensym("cnv"), (t_newmethod)my_canvas_new,
                                 (t_method)my_canvas_ff, sizeof(t_my_canvas), CLASS_NOINLET, A_GIMME, 0);
-    class_addcreator((t_newmethod)my_canvas_new, gensym("my_canvas"), A_GIMME, 0);
+    class_addCreator((t_newmethod)my_canvas_new, gensym("my_canvas"), A_GIMME, 0);
     class_addmethod(my_canvas_class, (t_method)my_canvas_dialog, gensym("dialog"), A_GIMME, 0);
     class_addmethod(my_canvas_class, (t_method)my_canvas_size, gensym("size"), A_GIMME, 0);
     class_addmethod(my_canvas_class, (t_method)my_canvas_delta, gensym("delta"), A_GIMME, 0);

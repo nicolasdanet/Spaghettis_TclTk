@@ -441,7 +441,7 @@ void g_toggle_setup(void)
 {
     toggle_class = class_new(gensym("tgl"), (t_newmethod)toggle_new,
                              (t_method)toggle_ff, sizeof(t_toggle), 0, A_GIMME, 0);
-    class_addcreator((t_newmethod)toggle_new, gensym("toggle"), A_GIMME, 0);
+    class_addCreator((t_newmethod)toggle_new, gensym("toggle"), A_GIMME, 0);
     class_addbang(toggle_class, toggle_bang);
     class_addfloat(toggle_class, toggle_float);
     class_addmethod(toggle_class, (t_method)toggle_click, gensym("click"),

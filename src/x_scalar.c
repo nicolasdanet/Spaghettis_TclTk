@@ -188,6 +188,6 @@ void x_scalar_setup(void )
     class_sethelpsymbol(scalar_define_class, gensym("scalar"));
     class_setsavefn(scalar_define_class, scalar_define_save);
 
-    class_addcreator((t_newmethod)scalarobj_new, gensym("scalar"), A_GIMME, 0);
+    class_addCreator((t_newmethod)scalarobj_new, gensym("scalar"), A_GIMME, 0);
 
 }

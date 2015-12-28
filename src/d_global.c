@@ -65,7 +65,7 @@ static void sigsend_setup(void)
 {
     sigsend_class = class_new(gensym("send~"), (t_newmethod)sigsend_new,
         (t_method)sigsend_free, sizeof(t_sigsend), 0, A_DEFSYMBOL, 0);
-    class_addcreator((t_newmethod)sigsend_new, gensym("s~"), A_DEFSYMBOL, 0);
+    class_addCreator((t_newmethod)sigsend_new, gensym("s~"), A_DEFSYMBOL, 0);
     CLASS_SIGNAL(sigsend_class, t_sigsend, x_f);
     class_addmethod(sigsend_class, (t_method)sigsend_dsp,
         gensym("dsp"), A_CANT, 0);
@@ -180,7 +180,7 @@ static void sigreceive_setup(void)
     sigreceive_class = class_new(gensym("receive~"),
         (t_newmethod)sigreceive_new, 0,
         sizeof(t_sigreceive), 0, A_DEFSYMBOL, 0);
-    class_addcreator((t_newmethod)sigreceive_new, gensym("r~"), A_DEFSYMBOL, 0);
+    class_addCreator((t_newmethod)sigreceive_new, gensym("r~"), A_DEFSYMBOL, 0);
     class_addmethod(sigreceive_class, (t_method)sigreceive_set, gensym("set"),
         A_SYMBOL, 0);
     class_addmethod(sigreceive_class, (t_method)sigreceive_dsp,

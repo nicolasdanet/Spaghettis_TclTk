@@ -602,7 +602,7 @@ void g_vslider_setup(void)
 {
     vslider_class = class_new(gensym("vsl"), (t_newmethod)vslider_new,
                               (t_method)vslider_free, sizeof(t_vslider), 0, A_GIMME, 0);
-    class_addcreator((t_newmethod)vslider_new, gensym("vslider"), A_GIMME, 0);
+    class_addCreator((t_newmethod)vslider_new, gensym("vslider"), A_GIMME, 0);
     class_addbang(vslider_class,vslider_bang);
     class_addfloat(vslider_class,vslider_float);
     class_addmethod(vslider_class, (t_method)vslider_click, gensym("click"),

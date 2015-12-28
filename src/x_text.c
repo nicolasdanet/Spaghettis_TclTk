@@ -1826,7 +1826,7 @@ void x_qlist_setup(void )
     class_addbang(text_define_class, text_define_bang);
     class_sethelpsymbol(text_define_class, gensym("text-object"));
 
-    class_addcreator((t_newmethod)text_new, gensym("text"), A_GIMME, 0);
+    class_addCreator((t_newmethod)text_new, gensym("text"), A_GIMME, 0);
 
     text_get_class = class_new(gensym("text get"),
         (t_newmethod)text_get_new, (t_method)text_client_free,

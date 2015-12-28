@@ -50,7 +50,7 @@ void pdint_setup(void)
 {
     pdint_class = class_new(gensym("int"), (t_newmethod)pdint_new, 0,
         sizeof(t_pdint), 0, A_DEFFLOAT, 0);
-    class_addcreator((t_newmethod)pdint_new, gensym("i"), A_DEFFLOAT, 0);
+    class_addCreator((t_newmethod)pdint_new, gensym("i"), A_DEFFLOAT, 0);
     class_addmethod(pdint_class, (t_method)pdint_send, gensym("send"),
         A_SYMBOL, 0);
     class_addbang(pdint_class, pdint_bang);
@@ -106,7 +106,7 @@ void pdfloat_setup(void)
 {
     pdfloat_class = class_new(gensym("float"), (t_newmethod)pdfloat_new, 0,
         sizeof(t_pdfloat), 0, A_FLOAT, 0);
-    class_addcreator((t_newmethod)pdfloat_new2, gensym("f"), A_DEFFLOAT, 0);
+    class_addCreator((t_newmethod)pdfloat_new2, gensym("f"), A_DEFFLOAT, 0);
     class_addmethod(pdfloat_class, (t_method)pdfloat_send, gensym("send"),
         A_SYMBOL, 0);
     class_addbang(pdfloat_class, pdfloat_bang);
@@ -202,7 +202,7 @@ void bang_setup(void)
 {
     bang_class = class_new(gensym("bang"), (t_newmethod)bang_new, 0,
         sizeof(t_bang), 0, 0);
-    class_addcreator((t_newmethod)bang_new2, gensym("b"), 0);
+    class_addCreator((t_newmethod)bang_new2, gensym("b"), 0);
     class_addbang(bang_class, bang_bang);
     class_addfloat(bang_class, bang_bang);
     class_addsymbol(bang_class, bang_bang);
@@ -263,7 +263,7 @@ static void send_setup(void)
 {
     send_class = class_new(gensym("send"), (t_newmethod)send_new, 0,
         sizeof(t_send), 0, A_DEFSYMBOL, 0);
-    class_addcreator((t_newmethod)send_new, gensym("s"), A_DEFSYMBOL, 0);
+    class_addCreator((t_newmethod)send_new, gensym("s"), A_DEFSYMBOL, 0);
     class_addbang(send_class, send_bang);
     class_addfloat(send_class, send_float);
     class_addsymbol(send_class, send_symbol);
@@ -329,7 +329,7 @@ static void receive_setup(void)
 {
     receive_class = class_new(gensym("receive"), (t_newmethod)receive_new, 
         (t_method)receive_free, sizeof(t_receive), CLASS_NOINLET, A_DEFSYMBOL, 0);
-    class_addcreator((t_newmethod)receive_new, gensym("r"), A_DEFSYMBOL, 0);
+    class_addCreator((t_newmethod)receive_new, gensym("r"), A_DEFSYMBOL, 0);
     class_addbang(receive_class, receive_bang);
     class_addfloat(receive_class, (t_method)receive_float);
     class_addsymbol(receive_class, receive_symbol);
@@ -477,8 +477,8 @@ void select_setup(void)
     class_addfloat(sel2_class, sel2_float);
     class_addsymbol(sel2_class, sel2_symbol);
 
-    class_addcreator((t_newmethod)select_new, gensym("select"),  A_GIMME, 0);
-    class_addcreator((t_newmethod)select_new, gensym("sel"),  A_GIMME, 0);
+    class_addCreator((t_newmethod)select_new, gensym("select"),  A_GIMME, 0);
+    class_addCreator((t_newmethod)select_new, gensym("sel"),  A_GIMME, 0);
 }
 
 /* -------------------------- route ------------------------------ */
@@ -1069,7 +1069,7 @@ static void trigger_setup(void)
 {
     trigger_class = class_new(gensym("trigger"), (t_newmethod)trigger_new,
         (t_method)trigger_free, sizeof(t_trigger), 0, A_GIMME, 0);
-    class_addcreator((t_newmethod)trigger_new, gensym("t"), A_GIMME, 0);
+    class_addCreator((t_newmethod)trigger_new, gensym("t"), A_GIMME, 0);
     class_addlist(trigger_class, trigger_list);
     class_addbang(trigger_class, trigger_bang);
     class_addpointer(trigger_class, trigger_pointer);
@@ -1366,7 +1366,7 @@ void swap_setup(void)
 {
     swap_class = class_new(gensym("swap"), (t_newmethod)swap_new, 0,
         sizeof(t_swap), 0, A_DEFFLOAT, 0);
-    class_addcreator((t_newmethod)swap_new, gensym("fswap"), A_DEFFLOAT, 0);
+    class_addCreator((t_newmethod)swap_new, gensym("fswap"), A_DEFFLOAT, 0);
     class_addbang(swap_class, swap_bang);
     class_addfloat(swap_class, swap_float);
 }
@@ -1529,7 +1529,7 @@ static void value_setup(void)
     value_class = class_new(gensym("value"), (t_newmethod)value_new,
         (t_method)value_ff,
         sizeof(t_value), 0, A_DEFSYMBOL, 0);
-    class_addcreator((t_newmethod)value_new, gensym("v"), A_DEFSYMBOL, 0);
+    class_addCreator((t_newmethod)value_new, gensym("v"), A_DEFSYMBOL, 0);
     class_addbang(value_class, value_bang);
     class_addfloat(value_class, value_float);
     vcommon_class = class_new(gensym("value"), 0, 0,

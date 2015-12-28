@@ -837,9 +837,9 @@ void x_array_setup(void )
     class_addmethod(array_define_class, (t_method)array_define_ignore,
         gensym("editmode"), A_GIMME, 0);
 
-    class_addcreator((t_newmethod)arrayobj_new, gensym("array"), A_GIMME, 0);
+    class_addCreator((t_newmethod)arrayobj_new, gensym("array"), A_GIMME, 0);
 
-    class_addcreator((t_newmethod)table_new, gensym("table"),
+    class_addCreator((t_newmethod)table_new, gensym("table"),
         A_DEFSYMBOL, A_DEFFLOAT, 0);
 
     array_size_class = class_new(gensym("array size"),

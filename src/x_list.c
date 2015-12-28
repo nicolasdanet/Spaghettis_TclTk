@@ -583,5 +583,5 @@ void x_list_setup(void)
     list_length_setup();
     list_fromsymbol_setup();
     list_tosymbol_setup();
-    class_addcreator((t_newmethod)list_new, &s_list, A_GIMME, 0);
+    class_addCreator((t_newmethod)list_new, &s_list, A_GIMME, 0);
 }

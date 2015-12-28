@@ -285,7 +285,7 @@ void block_tilde_setup(void)
 {
     block_class = class_new(gensym("block~"), (t_newmethod)block_new, 0,
             sizeof(t_block), 0, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addcreator((t_newmethod)switch_new, gensym("switch~"),
+    class_addCreator((t_newmethod)switch_new, gensym("switch~"),
         A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addmethod(block_class, (t_method)block_set, gensym("set"), 
         A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
