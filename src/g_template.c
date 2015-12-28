@@ -1597,7 +1597,7 @@ static void plot_getrect(t_gobj *z, t_glist *glist,
                 for (y = elemtemplatecanvas->gl_list; y; y = y->g_next)
                 {
                     int xx1, xx2, yy1, yy2;
-                    t_parentwidgetbehavior *wb = pd_getParentWidget(&y->g_pd);
+                    t_parentwidgetbehavior *wb = class_getParentWidget(pd_class (&y->g_pd));
                     if (!wb) continue;
                     (*wb->w_parentgetrectfn)(y, glist,
                         (t_word *)((char *)(array->a_vec) + elemsize * i),
@@ -1890,7 +1890,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     fielddesc_cvttocoord(yfielddesc, yval);
                 for (y = elemtemplatecanvas->gl_list; y; y = y->g_next)
                 {
-                    t_parentwidgetbehavior *wb = pd_getParentWidget(&y->g_pd);
+                    t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
                     if (!wb) continue;
                     (*wb->w_parentvisfn)(y, glist,
                         (t_word *)(elem + elemsize * i),
@@ -1910,7 +1910,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                 t_gobj *y;
                 for (y = elemtemplatecanvas->gl_list; y; y = y->g_next)
                 {
-                    t_parentwidgetbehavior *wb = pd_getParentWidget(&y->g_pd);
+                    t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
                     if (!wb) continue;
                     (*wb->w_parentvisfn)(y, glist,
                         (t_word *)(elem + elemsize * i), elemtemplate,

@@ -234,12 +234,12 @@ typedef struct _symbol {
 // -----------------------------------------------------------------------------------------------------------
 
 typedef union word {
-    t_float     w_float;
-    int         w_index;
-    t_symbol    *w_symbol;
-    t_gpointer  *w_gpointer;
-    t_array     *w_array;
-    t_binbuf    *w_binbuf;
+    t_float         w_float;
+    int             w_index;
+    t_symbol        *w_symbol;
+    t_gpointer      *w_gpointer;
+    t_array         *w_array;
+    t_binbuf        *w_binbuf;
     } t_word;
 
 typedef enum {
@@ -258,8 +258,8 @@ typedef enum {
     } t_atomtype;
 
 typedef struct _atom {
-    t_atomtype a_type;
-    union word a_w;
+    t_atomtype      a_type;
+    union word      a_w;
     } t_atom;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -308,6 +308,8 @@ typedef void *(*t_newmethod)(void);
 #pragma mark -
 
 typedef void (*t_gotfn)(void *x);
+typedef void (*t_savefn)(t_gobj *x, t_binbuf *b);
+typedef void (*t_propertiesfn)(t_gobj *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -337,9 +339,6 @@ PD_DLL void     *copybytes          (void *src, size_t nbytes);
 PD_DLL void     *resizebytes        (void *x, size_t oldsize, size_t newsize);
 PD_DLL void     freebytes           (void *x, size_t nbytes);
 
-PD_DLL t_gotfn  getfn               (t_pd *x, t_symbol *s);
-PD_DLL t_gotfn  zgetfn              (t_pd *x, t_symbol *s);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -362,6 +361,63 @@ PD_DLL void     pd_list             (t_pd *x, t_symbol *s, int argc, t_atom *arg
 PD_DLL void     pd_typedmess        (t_pd *x, t_symbol *s, int argc, t_atom *argv);
 PD_DLL void     pd_forwardmess      (t_pd *x, int argc, t_atom *argv);
 PD_DLL void     pd_vmess            (t_pd *x, t_symbol *s, char *fmt, ...);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+PD_DLL t_gotfn  getfn               (t_pd *x, t_symbol *s);
+PD_DLL t_gotfn  zgetfn              (t_pd *x, t_symbol *s);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define CLASS_SIGNAL(c, t, field)           class_domainsignalin (c, (char *)(&((t *)0)->field) - (char *)0)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+PD_DLL t_class  *class_new                  (t_symbol *name,
+                                                t_newmethod newMethod,
+                                                t_method freeMethod,
+                                                size_t size,
+                                                int flags,
+                                                t_atomtype type1, ...);
+                                                
+PD_DLL void     class_addCreator            (t_newmethod newmethod, t_symbol *s, t_atomtype type1, ...);
+PD_DLL void     class_addMethod             (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ...);
+PD_DLL void     class_addBang               (t_class *c, t_method fn);
+PD_DLL void     class_addPointer            (t_class *c, t_method fn);
+PD_DLL void     class_addFloat              (t_class *c, t_method fn);
+PD_DLL void     class_addSymbol             (t_class *c, t_method fn);
+PD_DLL void     class_addList               (t_class *c, t_method fn);
+PD_DLL void     class_addAnything           (t_class *c, t_method fn);
+PD_DLL void     class_setHelpName           (t_class *c, t_symbol *s);
+PD_DLL void     class_setWidget             (t_class *c, t_widgetbehavior *w);
+PD_DLL void     class_setParentWidget       (t_class *c, t_parentwidgetbehavior *w);
+
+PD_DLL char     *class_getName              (t_class *c);
+PD_DLL char     *class_getHelpName          (t_class *c);
+PD_DLL char     *class_gethelpdir           (t_class *c);
+PD_DLL void     class_setdrawcommand        (t_class *c);
+PD_DLL int      class_isdrawcommand         (t_class *c);
+PD_DLL void     class_domainsignalin        (t_class *c, int onset);
+PD_DLL void     class_set_extern_dir        (t_symbol *s);
+
+PD_DLL void     class_setsavefn             (t_class *c, t_savefn f);
+PD_DLL t_savefn class_getsavefn             (t_class *c);
+PD_DLL void     obj_saveformat              (t_object *x, t_binbuf *bb);
+
+PD_DLL int            class_hasPropertiesfn (t_class *c); 
+PD_DLL t_propertiesfn class_getpropertiesfn (t_class *c);
+PD_DLL void           class_setpropertiesfn (t_class *c, t_propertiesfn f);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+PD_DLL t_parentwidgetbehavior *class_getParentWidget    (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -505,65 +561,6 @@ PD_DLL void     glob_setfilename            (void *dummy, t_symbol *name, t_symb
 
 PD_DLL int      sys_fontwidth               (int fontsize);
 PD_DLL int      sys_fontheight              (int fontsize);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-PD_DLL t_parentwidgetbehavior *pd_getParentWidget   (t_pd *x);
-PD_DLL t_parentwidgetbehavior *class_parentwidget   (t_class *c);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define CLASS_SIGNAL(c, type, field)    class_domainsignalin(c, (char *)(&((type *)0)->field) - (char *)0)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-typedef void (*t_savefn)(t_gobj *x, t_binbuf *b);
-typedef void (*t_propertiesfn)(t_gobj *x, t_glist *glist);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-PD_DLL t_class  *class_new                  (t_symbol *name,
-                                                t_newmethod newMethod,
-                                                t_method freeMethod,
-                                                size_t size,
-                                                int flags,
-                                                t_atomtype type1, ...);
-                                                
-PD_DLL void     class_addCreator            (t_newmethod newmethod, t_symbol *s, t_atomtype type1, ...);
-PD_DLL void     class_addMethod             (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ...);
-PD_DLL void     class_addBang               (t_class *c, t_method fn);
-PD_DLL void     class_addPointer            (t_class *c, t_method fn);
-PD_DLL void     class_addFloat              (t_class *c, t_method fn);
-PD_DLL void     class_addSymbol             (t_class *c, t_method fn);
-PD_DLL void     class_addList               (t_class *c, t_method fn);
-PD_DLL void     class_addAnything           (t_class *c, t_method fn);
-PD_DLL void     class_setHelpName         (t_class *c, t_symbol *s);
-PD_DLL void     class_setWidget             (t_class *c, t_widgetbehavior *w);
-PD_DLL void     class_setParentWidget       (t_class *c, t_parentwidgetbehavior *w);
-
-PD_DLL char     *class_getName              (t_class *c);
-PD_DLL char     *class_getHelpName          (t_class *c);
-PD_DLL char     *class_gethelpdir           (t_class *c);
-PD_DLL void     class_setdrawcommand        (t_class *c);
-PD_DLL int      class_isdrawcommand         (t_class *c);
-PD_DLL void     class_domainsignalin        (t_class *c, int onset);
-PD_DLL void     class_set_extern_dir        (t_symbol *s);
-
-PD_DLL void     class_setsavefn             (t_class *c, t_savefn f);
-PD_DLL t_savefn class_getsavefn             (t_class *c);
-PD_DLL void     obj_saveformat              (t_object *x, t_binbuf *bb);
-
-
-PD_DLL int            class_hasPropertiesfn (t_class *c); 
-PD_DLL t_propertiesfn class_getpropertiesfn (t_class *c);
-PD_DLL void           class_setpropertiesfn (t_class *c, t_propertiesfn f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

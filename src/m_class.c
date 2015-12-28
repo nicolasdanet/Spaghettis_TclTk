@@ -382,9 +382,9 @@ char *class_getHelpName (t_class *c)
     return c->c_helpName->s_name;
 }
 
-t_parentwidgetbehavior *pd_getParentWidget (t_pd *x)
+t_parentwidgetbehavior *class_getParentWidget (t_class *c)
 {
-    return (*x)->c_behaviorParent;
+    return c->c_behaviorParent;
 }
 
 // -----------------------------------------------------------------------------------------------------------
