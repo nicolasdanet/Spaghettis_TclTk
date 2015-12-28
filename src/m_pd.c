@@ -302,8 +302,8 @@ t_pd *pd_findByClass (t_symbol *s, t_class *c)
 {
     t_pd *x = NULL;
     
-    if (!s->s_thing)  { return (NULL); }
-    if (*s->s_thing == c) { return (s->s_thing); }
+    if (!s->s_thing) { return NULL; }
+    if (*s->s_thing == c) { return s->s_thing; }
     
     if (*s->s_thing == bindlist_class) {
         t_bindlist *b = (t_bindlist *)s->s_thing;

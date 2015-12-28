@@ -877,7 +877,7 @@ static t_gobj *canvas_findhitbox(t_canvas *x, int xpos, int ypos,
 static void canvas_rightclick(t_canvas *x, int xpos, int ypos, t_gobj *y)
 {
     int canprop, canopen;
-    canprop = (!y || (y && class_getpropertiesfn(pd_class(&y->g_pd))));
+    canprop = (!y || (y && class_haspropertiesfn(pd_class(&y->g_pd))));
     canopen = (y && zgetfn(&y->g_pd, gensym("menu-open")));
     sys_vgui("::ui_menu::showPopup .x%lx %d %d %d %d\n",
         x, xpos, ypos, canprop, canopen);
@@ -1186,7 +1186,7 @@ static void canvas_done_popup(t_canvas *x, t_float which, t_float xpos, t_float 
         {
             if (which == 0)     /* properties */
             {
-                if (!class_getpropertiesfn(pd_class(&y->g_pd)))
+                if (!class_haspropertiesfn(pd_class(&y->g_pd)))
                     continue;
                 (*class_getpropertiesfn(pd_class(&y->g_pd)))(y, x);
                 return;

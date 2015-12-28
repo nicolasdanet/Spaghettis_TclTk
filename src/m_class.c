@@ -53,7 +53,6 @@ t_pd pd_canvasMaker;                                /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_symbol *class_externalSymbol;              /* Shared. */
 static t_symbol *class_externalDirectory = &s_;     /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -67,7 +66,12 @@ static void class_defaultAnything   (t_pd *x, t_symbol *s, int argc, t_atom *arg
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void class_defaultSave(t_gobj *z, t_binbuf *b)
+static void class_defaultSave (t_gobj *z, t_binbuf *b)
+{
+    PD_BUG;
+}
+
+static void class_defaultProperties (t_gobj *z, t_glist *glist)
 {
     PD_BUG;
 }
@@ -124,10 +128,10 @@ static void class_defaultList (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     if (argc == 1) {
     
         if (IS_FLOAT (argv) && (*(*x)->c_methodFloat) != class_defaultFloat) {
-            (*(*x)->c_methodFloat) (x, GET_FLOAT (argv)); return;
+            (*(*x)->c_methodFloat) (x, GET_FLOAT (argv));     return;
             
         } else if (IS_SYMBOL (argv) && (*(*x)->c_methodSymbol) != class_defaultSymbol) {
-            (*(*x)->c_methodSymbol) (x, GET_SYMBOL (argv)); return;
+            (*(*x)->c_methodSymbol) (x, GET_SYMBOL (argv));   return;
             
         } else if (IS_POINTER (argv) && (*(*x)->c_methodPointer) != class_defaultPointer) {
             (*(*x)->c_methodPointer) (x, GET_POINTER (argv)); return;
@@ -147,98 +151,71 @@ static void class_defaultList (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
 static void class_defaultAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
-    post_error ("%s: no method for \"%s\"", (*x)->c_name->s_name, s->s_name);
+    post_error ("%s: unknown method \"%s\"", (*x)->c_name->s_name, s->s_name);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* for now we assume that all "gobjs" are text unless explicitly
-    overridden later by calling class_setbehavior().  I'm not sure
-    how to deal with Pds that aren't gobjs; shouldn't there be a
-    way to check that at run time?  Perhaps the presence of a "newmethod"
-    should be our cue, or perhaps the "tiny" flag.  */
-
-    /* another matter.  This routine does two unrelated things: it creates
-    a Pd class, but also adds a "new" method to create an instance of it.
-    These are combined for historical reasons and for brevity in writing
-    objects.  To avoid adding a "new" method send a null function pointer.
-    To add additional ones, use class_addcreator below.  Some "classes", like
-    "select", are actually two classes of the same name, one for the single-
-    argument form, one for the multiple one; see select_setup() to find out
-    how this is handled.  */
-
-extern void text_save(t_gobj *z, t_binbuf *b);
-
-t_class *class_new(t_symbol *s, t_newmethod newmethod, t_method freemethod,
-    size_t size, int flags, t_atomtype type1, ...)
+t_class *class_new (t_symbol *s, 
+    t_newmethod newMethod, 
+    t_method freeMethod, 
+    size_t size, 
+    int flags, 
+    t_atomtype type1, ...)
 {
     va_list ap;
-    t_atomtype vec[PD_ARGUMENTS+1], *vp = vec;
+    t_atomtype arg[PD_ARGUMENTS + 1] = { 0 };
+    t_atomtype *vp = arg;
     int count = 0;
-    t_class *c;
-    int typeflag = flags & 3;
-    if (!typeflag) typeflag = CLASS_BOX;
+    t_class *c = NULL;
+    int typeflag = flags & (CLASS_PURE | CLASS_GRAPHIC | CLASS_BOX);
+    if (!typeflag) { typeflag = CLASS_BOX; }
+    
     *vp = type1;
 
-    va_start(ap, type1);
-    while (*vp)
-    {
-        if (count == PD_ARGUMENTS)
-        {
-            post_error ("class %s: sorry: only %d args typechecked; use A_GIMME",
-                s->s_name, PD_ARGUMENTS);
-            break;
-        }
-        vp++;
-        count++;
-        *vp = va_arg(ap, t_atomtype);
+    va_start (ap, type1);
+    
+    while (*vp) {
+        if (count == PD_ARGUMENTS) { PD_BUG; break; }
+        vp++; count++;
+        *vp = va_arg (ap, t_atomtype);
     }
+    
     va_end(ap);
-    if (pd_objectMaker && newmethod)
-    {
-            /* add a "new" method by the name specified by the object */
-        class_addmethod(pd_objectMaker, (t_method)newmethod, s,
-            vec[0], vec[1], vec[2], vec[3], vec[4], vec[5]);
-        if (class_externalSymbol)
-        {
-                /* if we're loading an extern it might have been invoked by a
-                longer file name; in this case, make this an admissible name
-                too. */
-            char *loadstring = class_externalSymbol->s_name,
-                l1 = strlen(s->s_name), l2 = strlen(loadstring);
-            if (l2 > l1 && !strcmp(s->s_name, loadstring + (l2 - l1)))
-                class_addmethod(pd_objectMaker, (t_method)newmethod,
-                    class_externalSymbol,
-                    vec[0], vec[1], vec[2], vec[3], vec[4], vec[5]);
-        }
+    
+    if (pd_objectMaker && newMethod) {
+    //
+    class_addmethod (pd_objectMaker, (t_method)newMethod, s, arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]);
+    //
     }
-    c = (t_class *)getbytes(sizeof(*c));
-    c->c_name = c->c_helpName = s;
-    c->c_size = size;
-    c->c_methods = getbytes(0);
-    c->c_methodsSize = 0;
-    c->c_methodFree = (t_method)freemethod;
-    c->c_methodBang = class_defaultBang;
-    c->c_methodPointer = class_defaultPointer;
-    c->c_methodFloat = class_defaultFloat;
-    c->c_methodSymbol = class_defaultSymbol;
-    c->c_methodList = class_defaultList;
-    c->c_methodAny = class_defaultAnything;
-    c->c_behavior = (typeflag == CLASS_BOX ? &text_widgetBehavior : 0);
-    c->c_behaviorParent = 0;
-    c->c_hasFirstInlet = ((flags & CLASS_NOINLET) == 0);
-    c->c_isBox = (typeflag == CLASS_BOX);
-    c->c_isGraphic = (typeflag >= CLASS_GRAPHIC);
-    c->c_isDrawCommand = 0;
-    c->c_floatSignalIn = 0;
-    c->c_externDirectory = class_externalDirectory;
-    c->c_fnSave = (typeflag == CLASS_BOX ? text_save : class_defaultSave);
-#if 0 
-    post("class: %s", c->c_name->s_name);
-#endif
-    return (c);
+    
+    c = (t_class *)getbytes (sizeof (t_class));
+    c->c_name               = s;
+    c->c_helpName           = s;
+    c->c_externDirectory    = class_externalDirectory;
+    c->c_size               = size;
+    c->c_methods            = getbytes (0);                 /* Allocate 1 byte of memory. */
+    c->c_methodsSize        = 0;
+    c->c_methodFree         = freeMethod;
+    c->c_methodBang         = class_defaultBang;
+    c->c_methodPointer      = class_defaultPointer;
+    c->c_methodFloat        = class_defaultFloat;
+    c->c_methodSymbol       = class_defaultSymbol;
+    c->c_methodList         = class_defaultList;
+    c->c_methodAny          = class_defaultAnything;
+    c->c_behavior           = (typeflag == CLASS_BOX ? &text_widgetBehavior : NULL);
+    c->c_behaviorParent     = NULL;
+    c->c_fnSave             = (typeflag == CLASS_BOX ? text_save : class_defaultSave);
+    c->c_fnProperties       = class_defaultProperties;
+    c->c_floatSignalIn      = 0;
+    c->c_isGraphic          = (typeflag >= CLASS_GRAPHIC);
+    c->c_isBox              = (typeflag == CLASS_BOX);
+    c->c_hasFirstInlet      = ((flags & CLASS_NOINLET) == 0);
+    c->c_isDrawCommand      = 0;
+
+    return c;
 }
 
     /* add a creation method, which is a function that returns a Pd object
@@ -474,10 +451,17 @@ void class_setpropertiesfn(t_class *c, t_propertiesfn f)
     c->c_fnProperties = f;
 }
 
-t_propertiesfn class_getpropertiesfn(t_class *c)
+t_propertiesfn class_haspropertiesfn (t_class *c)
+{
+    return (c->c_fnProperties != class_defaultProperties);
+}
+
+t_propertiesfn class_getpropertiesfn (t_class *c)
 {
     return (c->c_fnProperties);
 }
+
+
 
 /* ---------------- the symbol table ------------------------ */
 
@@ -551,7 +535,6 @@ void new_anything(void *dummy, t_symbol *s, int argc, t_atom *argv)
       return;
     }
     newest = 0;
-    class_externalSymbol = s;
     if (sys_load_lib(canvas_getcurrent(), s->s_name))
     {
         tryingalready++;
@@ -559,7 +542,6 @@ void new_anything(void *dummy, t_symbol *s, int argc, t_atom *argv)
         tryingalready--;
         return;
     }
-    class_externalSymbol = 0;
     /* for class/class.pd support, to match class/class.pd_linux  */
     snprintf(classslashclass, PD_STRING, "%s/%s", s->s_name, s->s_name);
     if ((fd = canvas_open(canvas_getcurrent(), s->s_name, ".pd",

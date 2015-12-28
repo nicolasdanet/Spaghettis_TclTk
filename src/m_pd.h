@@ -243,8 +243,8 @@ typedef union word {
     } t_word;
 
 typedef enum {
-    A_NULL,
-    A_FLOAT,
+    A_NULL          = 0,
+    A_FLOAT         = 1,
     A_SYMBOL,
     A_POINTER,
     A_SEMICOLON,
@@ -277,7 +277,7 @@ typedef struct _gobj {
 typedef struct _scalar {
     t_gobj          sc_g;
     t_symbol        *sc_template;
-    t_word          sc_vec[1];                  /* See above link. */
+    t_word          sc_vec[1];                  /* Indeterminate size (see above link). */
     } t_scalar;
 
 typedef struct _text {
@@ -530,11 +530,11 @@ typedef void (*t_propertiesfn)(t_gobj *x, t_glist *glist);
 #pragma mark -
 
 PD_DLL t_class  *class_new                  (t_symbol *name,
-                                                t_newmethod newmethod,
-                                                t_method freemethod,
+                                                t_newmethod newMethod,
+                                                t_method freeMethod,
                                                 size_t size,
                                                 int flags,
-                                                t_atomtype arg1, ...);
+                                                t_atomtype type1, ...);
                                                 
 PD_DLL void     class_addcreator            (t_newmethod newmethod, t_symbol *s, t_atomtype type1, ...);
 PD_DLL void     class_addmethod             (t_class *c, t_method fn, t_symbol *sel, t_atomtype arg1, ...);
@@ -560,8 +560,10 @@ PD_DLL void     class_setsavefn             (t_class *c, t_savefn f);
 PD_DLL t_savefn class_getsavefn             (t_class *c);
 PD_DLL void     obj_saveformat              (t_object *x, t_binbuf *bb);
 
-PD_DLL void           class_setpropertiesfn (t_class *c, t_propertiesfn f);
+
+PD_DLL int            class_hasPropertiesfn (t_class *c); 
 PD_DLL t_propertiesfn class_getpropertiesfn (t_class *c);
+PD_DLL void           class_setpropertiesfn (t_class *c, t_propertiesfn f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
