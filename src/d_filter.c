@@ -488,7 +488,7 @@ void sigbiquad_setup(void)
     CLASS_SIGNAL(sigbiquad_class, t_sigbiquad, x_f);
     class_addMethod(sigbiquad_class, (t_method)sigbiquad_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_addlist(sigbiquad_class, sigbiquad_list);
+    class_addList(sigbiquad_class, sigbiquad_list);
     class_addMethod(sigbiquad_class, (t_method)sigbiquad_set, gensym("set"),
         A_GIMME, 0);
     class_addMethod(sigbiquad_class, (t_method)sigbiquad_set, gensym("clear"),

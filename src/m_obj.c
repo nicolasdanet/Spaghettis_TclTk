@@ -272,27 +272,27 @@ void obj_init(void)
 {
     inlet_class = class_new(gensym("inlet"), 0, 0,
         sizeof(t_inlet), CLASS_PURE, 0);
-    class_addbang(inlet_class, inlet_bang);
-    class_addpointer(inlet_class, inlet_pointer);
-    class_addfloat(inlet_class, inlet_float);
-    class_addsymbol(inlet_class, inlet_symbol);
-    class_addlist(inlet_class, inlet_list);
-    class_addanything(inlet_class, inlet_anything);
+    class_addBang(inlet_class, inlet_bang);
+    class_addPointer(inlet_class, inlet_pointer);
+    class_addFloat(inlet_class, inlet_float);
+    class_addSymbol(inlet_class, inlet_symbol);
+    class_addList(inlet_class, inlet_list);
+    class_addAnything(inlet_class, inlet_anything);
 
     pointerinlet_class = class_new(gensym("inlet"), 0, 0,
         sizeof(t_inlet), CLASS_PURE, 0);
-    class_addpointer(pointerinlet_class, pointerinlet_pointer);
-    class_addanything(pointerinlet_class, inlet_wrong);
+    class_addPointer(pointerinlet_class, pointerinlet_pointer);
+    class_addAnything(pointerinlet_class, inlet_wrong);
     
     floatinlet_class = class_new(gensym("inlet"), 0, 0,
         sizeof(t_inlet), CLASS_PURE, 0);
-    class_addfloat(floatinlet_class, (t_method)floatinlet_float);
-    class_addanything(floatinlet_class, inlet_wrong);
+    class_addFloat(floatinlet_class, (t_method)floatinlet_float);
+    class_addAnything(floatinlet_class, inlet_wrong);
 
     symbolinlet_class = class_new(gensym("inlet"), 0, 0,
         sizeof(t_inlet), CLASS_PURE, 0);
-    class_addsymbol(symbolinlet_class, symbolinlet_symbol);
-    class_addanything(symbolinlet_class, inlet_wrong);
+    class_addSymbol(symbolinlet_class, symbolinlet_symbol);
+    class_addAnything(symbolinlet_class, inlet_wrong);
 
 }
 

@@ -704,8 +704,8 @@ void g_vumeter_setup(void)
 {
     vu_class = class_new(gensym("vu"), (t_newmethod)vu_new, (t_method)vu_free,
                          sizeof(t_vu), 0, A_GIMME, 0);
-    class_addbang(vu_class,vu_bang);
-    class_addfloat(vu_class,vu_float);
+    class_addBang(vu_class,vu_bang);
+    class_addFloat(vu_class,vu_float);
     class_addMethod(vu_class, (t_method)vu_ft1, gensym("ft1"), A_FLOAT, 0);
     class_addMethod(vu_class, (t_method)vu_dialog, gensym("dialog"),
                     A_GIMME, 0);
@@ -725,8 +725,8 @@ void g_vumeter_setup(void)
     vu_widgetbehavior.w_deletefn =     iem_delete;
     vu_widgetbehavior.w_visfn =        iem_vis;
     vu_widgetbehavior.w_clickfn =      NULL;
-    class_setwidget(vu_class,&vu_widgetbehavior);
-    class_sethelpsymbol(vu_class, gensym("vu"));
+    class_setWidget(vu_class,&vu_widgetbehavior);
+    class_setHelpName(vu_class, gensym("vu"));
     class_setsavefn(vu_class, vu_save);
     class_setpropertiesfn(vu_class, vu_properties);
 }

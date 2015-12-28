@@ -127,7 +127,7 @@ static void sigfft_setup(void)
     CLASS_SIGNAL(sigifft_class, t_sigfft, x_f);
     class_addMethod(sigifft_class, (t_method)sigifft_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(sigifft_class, gensym("fft~"));
+    class_setHelpName(sigifft_class, gensym("fft~"));
 }
 
 /* ----------------------- rfft~ -------------------------------- */
@@ -185,7 +185,7 @@ static void sigrfft_setup(void)
     CLASS_SIGNAL(sigrfft_class, t_sigrfft, x_f);
     class_addMethod(sigrfft_class, (t_method)sigrfft_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(sigrfft_class, gensym("fft~"));
+    class_setHelpName(sigrfft_class, gensym("fft~"));
 }
 
 /* ----------------------- rifft~ -------------------------------- */
@@ -246,7 +246,7 @@ static void sigrifft_setup(void)
     CLASS_SIGNAL(sigrifft_class, t_sigrifft, x_f);
     class_addMethod(sigrifft_class, (t_method)sigrifft_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(sigrifft_class, gensym("fft~"));
+    class_setHelpName(sigrifft_class, gensym("fft~"));
 }
 
 /* ----------------------- framp~ -------------------------------- */

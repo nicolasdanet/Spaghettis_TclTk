@@ -109,7 +109,7 @@ int gobj_shouldvis(t_gobj *x, struct _glist *glist)
             m = y1, y1 = y2, y2 = m;
         gobj_getrect(x, glist, &gx1, &gy1, &gx2, &gy2);
         /* post("graph %d %d %d %d, %s %d %d %d %d",
-            x1, x2, y1, y2, class_gethelpname(x->g_pd), gx1, gx2, gy1, gy2); */
+            x1, x2, y1, y2, class_getHelpName(x->g_pd), gx1, gx2, gy1, gy2); */
         if (gx1 < x1 || gx1 > x2 || gx2 < x1 || gx2 > x2 ||
             gy1 < y1 || gy1 > y2 || gy2 < y1 || gy2 > y2)
                 return (0);
@@ -1214,7 +1214,7 @@ static void canvas_done_popup(t_canvas *x, t_float which, t_float xpos, t_float 
                 }
                 else
                 {
-                    strcpy(namebuf, class_gethelpname(pd_class(&y->g_pd)));
+                    strcpy(namebuf, class_getHelpName(pd_class(&y->g_pd)));
                     dir = class_gethelpdir(pd_class(&y->g_pd));
                 }
                 if (strlen(namebuf) < 4 ||
@@ -2543,8 +2543,8 @@ void canvas_connect(t_canvas *x, t_floatarg fwhoout, t_floatarg foutno,
 bad:
     post("%s %d %d %d %d (%s->%s) connection failed", 
         x->gl_name->s_name, nout, outno, nin, inno,
-            (src? class_getname(pd_class(&src->g_pd)) : "???"),
-            (sink? class_getname(pd_class(&sink->g_pd)) : "???"));
+            (src? class_getName(pd_class(&src->g_pd)) : "???"),
+            (sink? class_getName(pd_class(&sink->g_pd)) : "???"));
 }
 
 #define XTOLERANCE 18

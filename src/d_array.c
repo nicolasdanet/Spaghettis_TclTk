@@ -133,7 +133,7 @@ static void tabwrite_tilde_setup(void)
         gensym("stop"), 0);
     class_addMethod(tabwrite_tilde_class, (t_method)tabwrite_tilde_start,
         gensym("start"), A_DEFFLOAT, 0);
-    class_addbang(tabwrite_tilde_class, tabwrite_tilde_bang);
+    class_addBang(tabwrite_tilde_class, tabwrite_tilde_bang);
 }
 
 /* ------------ tabplay~ - non-transposing sample playback --------------- */
@@ -264,7 +264,7 @@ static void tabplay_tilde_setup(void)
         gensym("stop"), 0);
     class_addMethod(tabplay_tilde_class, (t_method)tabplay_tilde_set,
         gensym("set"), A_DEFSYMBOL, 0);
-    class_addlist(tabplay_tilde_class, tabplay_tilde_list);
+    class_addList(tabplay_tilde_class, tabplay_tilde_list);
 }
 
 /******************** tabread~ ***********************/
@@ -903,7 +903,7 @@ static void tabread_setup(void)
 {
     tabread_class = class_new(gensym("tabread"), (t_newmethod)tabread_new,
         0, sizeof(t_tabread), 0, A_DEFSYMBOL, 0);
-    class_addfloat(tabread_class, (t_method)tabread_float);
+    class_addFloat(tabread_class, (t_method)tabread_float);
     class_addMethod(tabread_class, (t_method)tabread_set, gensym("set"),
         A_SYMBOL, 0);
 }
@@ -971,7 +971,7 @@ static void tabread4_setup(void)
 {
     tabread4_class = class_new(gensym("tabread4"), (t_newmethod)tabread4_new,
         0, sizeof(t_tabread4), 0, A_DEFSYMBOL, 0);
-    class_addfloat(tabread4_class, (t_method)tabread4_float);
+    class_addFloat(tabread4_class, (t_method)tabread4_float);
     class_addMethod(tabread4_class, (t_method)tabread4_set, gensym("set"),
         A_SYMBOL, 0);
 }
@@ -1027,7 +1027,7 @@ void tabwrite_setup(void)
 {
     tabwrite_class = class_new(gensym("tabwrite"), (t_newmethod)tabwrite_new,
         0, sizeof(t_tabwrite), 0, A_DEFSYMBOL, 0);
-    class_addfloat(tabwrite_class, (t_method)tabwrite_float);
+    class_addFloat(tabwrite_class, (t_method)tabwrite_float);
     class_addMethod(tabwrite_class, (t_method)tabwrite_set, gensym("set"),
         A_SYMBOL, 0);
 }

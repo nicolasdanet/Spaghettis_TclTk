@@ -68,8 +68,8 @@ static void print_setup(void)
         sizeof(t_print), 0, A_DEFSYMBOL, 0);
     CLASS_SIGNAL(print_class, t_print, x_f);
     class_addMethod(print_class, (t_method)print_dsp, gensym("dsp"), 0);
-    class_addbang(print_class, print_bang);
-    class_addfloat(print_class, print_float);
+    class_addBang(print_class, print_bang);
+    class_addFloat(print_class, print_float);
 }
 
 /* ------------------------ bang~ -------------------------- */

@@ -774,11 +774,11 @@ void d_math_setup(void)
     log_tilde_setup();
     abs_tilde_setup();
 
-    class_sethelpsymbol(mtof_tilde_class, s);
-    class_sethelpsymbol(ftom_tilde_class, s);
-    class_sethelpsymbol(dbtorms_tilde_class, s);
-    class_sethelpsymbol(rmstodb_tilde_class, s);
-    class_sethelpsymbol(dbtopow_tilde_class, s);
-    class_sethelpsymbol(powtodb_tilde_class, s);
+    class_setHelpName(mtof_tilde_class, s);
+    class_setHelpName(ftom_tilde_class, s);
+    class_setHelpName(dbtorms_tilde_class, s);
+    class_setHelpName(rmstodb_tilde_class, s);
+    class_setHelpName(dbtopow_tilde_class, s);
+    class_setHelpName(powtodb_tilde_class, s);
 }
 

@@ -185,7 +185,7 @@ static void sigreceive_setup(void)
         A_SYMBOL, 0);
     class_addMethod(sigreceive_class, (t_method)sigreceive_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(sigreceive_class, gensym("send~"));
+    class_setHelpName(sigreceive_class, gensym("send~"));
 }
 
 /* ----------------------------- catch~ ----------------------------- */
@@ -261,7 +261,7 @@ static void sigcatch_setup(void)
         (t_method)sigcatch_free, sizeof(t_sigcatch), CLASS_NOINLET, A_DEFSYMBOL, 0);
     class_addMethod(sigcatch_class, (t_method)sigcatch_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(sigcatch_class, gensym("throw~"));
+    class_setHelpName(sigcatch_class, gensym("throw~"));
 }
 
 /* ----------------------------- throw~ ----------------------------- */

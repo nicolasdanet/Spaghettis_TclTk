@@ -82,11 +82,11 @@ static void print_setup(void)
 {
     print_class = class_new(gensym("print"), (t_newmethod)print_new, 0,
         sizeof(t_print), 0, A_GIMME, 0);
-    class_addbang(print_class, print_bang);
-    class_addfloat(print_class, print_float);
-    class_addpointer(print_class, print_pointer);
-    class_addlist(print_class, print_list);
-    class_addanything(print_class, print_anything);
+    class_addBang(print_class, print_bang);
+    class_addFloat(print_class, print_float);
+    class_addPointer(print_class, print_pointer);
+    class_addList(print_class, print_list);
+    class_addAnything(print_class, print_anything);
 }
 
 void x_interface_setup(void)

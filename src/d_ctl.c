@@ -79,7 +79,7 @@ static void sig_tilde_setup(void)
 {
     sig_tilde_class = class_new(gensym("sig~"), (t_newmethod)sig_tilde_new, 0,
         sizeof(t_sig), 0, A_DEFFLOAT, 0);
-    class_addfloat(sig_tilde_class, (t_method)sig_tilde_float);
+    class_addFloat(sig_tilde_class, (t_method)sig_tilde_float);
     class_addMethod(sig_tilde_class, (t_method)sig_tilde_dsp,
         gensym("dsp"), A_CANT, 0);
 }
@@ -220,7 +220,7 @@ static void line_tilde_setup(void)
 {
     line_tilde_class = class_new(gensym("line~"), line_tilde_new, 0,
         sizeof(t_line), 0, 0);
-    class_addfloat(line_tilde_class, (t_method)line_tilde_float);
+    class_addFloat(line_tilde_class, (t_method)line_tilde_float);
     class_addMethod(line_tilde_class, (t_method)line_tilde_dsp,
         gensym("dsp"), A_CANT, 0);
     class_addMethod(line_tilde_class, (t_method)line_tilde_stop,
@@ -415,7 +415,7 @@ static void vline_tilde_setup(void)
 {
     vline_tilde_class = class_new(gensym("vline~"), vline_tilde_new, 
         (t_method)vline_tilde_stop, sizeof(t_vline), 0, 0);
-    class_addfloat(vline_tilde_class, (t_method)vline_tilde_float);
+    class_addFloat(vline_tilde_class, (t_method)vline_tilde_float);
     class_addMethod(vline_tilde_class, (t_method)vline_tilde_dsp,
         gensym("dsp"), A_CANT, 0);
     class_addMethod(vline_tilde_class, (t_method)vline_tilde_stop,
@@ -474,7 +474,7 @@ static void snapshot_tilde_setup(void)
         gensym("dsp"), A_CANT, 0);
     class_addMethod(snapshot_tilde_class, (t_method)snapshot_tilde_set,
         gensym("set"), A_DEFFLOAT, 0);
-    class_addbang(snapshot_tilde_class, snapshot_tilde_bang);
+    class_addBang(snapshot_tilde_class, snapshot_tilde_bang);
 }
 
 /* -------------------------- vsnapshot~ ------------------------------ */
@@ -560,7 +560,7 @@ static void vsnapshot_tilde_setup(void)
     CLASS_SIGNAL(vsnapshot_tilde_class, t_vsnapshot, x_f);
     class_addMethod(vsnapshot_tilde_class, (t_method)vsnapshot_tilde_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_addbang(vsnapshot_tilde_class, vsnapshot_tilde_bang);
+    class_addBang(vsnapshot_tilde_class, vsnapshot_tilde_bang);
 }
 
 

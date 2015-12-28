@@ -604,8 +604,8 @@ void g_hslider_setup(void)
 #ifndef GGEE_HSLIDER_COMPATIBLE
     class_addCreator((t_newmethod)hslider_new, gensym("hslider"), A_GIMME, 0);
 #endif
-    class_addbang(hslider_class,hslider_bang);
-    class_addfloat(hslider_class,hslider_float);
+    class_addBang(hslider_class,hslider_bang);
+    class_addFloat(hslider_class,hslider_float);
     class_addMethod(hslider_class, (t_method)hslider_click, gensym("click"),
                     A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(hslider_class, (t_method)hslider_motion, gensym("motion"),
@@ -634,8 +634,8 @@ void g_hslider_setup(void)
     hslider_widgetbehavior.w_deletefn =     iem_delete;
     hslider_widgetbehavior.w_visfn =        iem_vis;
     hslider_widgetbehavior.w_clickfn =      hslider_newclick;
-    class_setwidget(hslider_class, &hslider_widgetbehavior);
-    class_sethelpsymbol(hslider_class, gensym("hsl"));
+    class_setWidget(hslider_class, &hslider_widgetbehavior);
+    class_setHelpName(hslider_class, gensym("hsl"));
     class_setsavefn(hslider_class, hslider_save);
     class_setpropertiesfn(hslider_class, hslider_properties);
 }

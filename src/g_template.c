@@ -1316,8 +1316,8 @@ static void curve_setup(void)
         A_GIMME, 0);
     class_addCreator((t_newmethod)curve_new, gensym("filledcurve"),
         A_GIMME, 0);
-    class_setparentwidget(curve_class, &curve_widgetbehavior);
-    class_addfloat(curve_class, curve_float);
+    class_setParentWidget(curve_class, &curve_widgetbehavior);
+    class_addFloat(curve_class, curve_float);
 }
 
 /* --------- plots for showing arrays --------------- */
@@ -1597,7 +1597,7 @@ static void plot_getrect(t_gobj *z, t_glist *glist,
                 for (y = elemtemplatecanvas->gl_list; y; y = y->g_next)
                 {
                     int xx1, xx2, yy1, yy2;
-                    t_parentwidgetbehavior *wb = pd_getparentwidget(&y->g_pd);
+                    t_parentwidgetbehavior *wb = pd_getParentWidget(&y->g_pd);
                     if (!wb) continue;
                     (*wb->w_parentgetrectfn)(y, glist,
                         (t_word *)((char *)(array->a_vec) + elemsize * i),
@@ -1890,7 +1890,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     fielddesc_cvttocoord(yfielddesc, yval);
                 for (y = elemtemplatecanvas->gl_list; y; y = y->g_next)
                 {
-                    t_parentwidgetbehavior *wb = pd_getparentwidget(&y->g_pd);
+                    t_parentwidgetbehavior *wb = pd_getParentWidget(&y->g_pd);
                     if (!wb) continue;
                     (*wb->w_parentvisfn)(y, glist,
                         (t_word *)(elem + elemsize * i),
@@ -1910,7 +1910,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                 t_gobj *y;
                 for (y = elemtemplatecanvas->gl_list; y; y = y->g_next)
                 {
-                    t_parentwidgetbehavior *wb = pd_getparentwidget(&y->g_pd);
+                    t_parentwidgetbehavior *wb = pd_getParentWidget(&y->g_pd);
                     if (!wb) continue;
                     (*wb->w_parentvisfn)(y, glist,
                         (t_word *)(elem + elemsize * i), elemtemplate,
@@ -2319,8 +2319,8 @@ static void plot_setup(void)
     plot_class = class_new(gensym("plot"), (t_newmethod)plot_new, 0,
         sizeof(t_plot), 0, A_GIMME, 0);
     class_setdrawcommand(plot_class);
-    class_addfloat(plot_class, plot_float);
-    class_setparentwidget(plot_class, &plot_widgetbehavior);
+    class_addFloat(plot_class, plot_float);
+    class_setParentWidget(plot_class, &plot_widgetbehavior);
 }
 
 /* ---------------- drawnumber: draw a number (or symbol) ---------------- */
@@ -2702,12 +2702,12 @@ static void drawnumber_setup(void)
         (t_newmethod)drawnumber_new, (t_method)drawnumber_free,
         sizeof(t_drawnumber), 0, A_GIMME, 0);
     class_setdrawcommand(drawnumber_class);
-    class_addfloat(drawnumber_class, drawnumber_float);
+    class_addFloat(drawnumber_class, drawnumber_float);
     class_addCreator((t_newmethod)drawnumber_new, gensym("drawsymbol"),
         A_GIMME, 0);
     class_addCreator((t_newmethod)drawnumber_new, gensym("drawnumber"),
         A_GIMME, 0);
-    class_setparentwidget(drawnumber_class, &drawnumber_widgetbehavior);
+    class_setParentWidget(drawnumber_class, &drawnumber_widgetbehavior);
 }
 
 /* ---------------------- setup function ---------------------------- */

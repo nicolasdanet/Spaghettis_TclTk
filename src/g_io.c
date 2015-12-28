@@ -284,15 +284,15 @@ static void vinlet_setup(void)
     vinlet_class = class_new(gensym("inlet"), (t_newmethod)vinlet_new,
         (t_method)vinlet_free, sizeof(t_vinlet), CLASS_NOINLET, A_DEFSYMBOL, 0);
     class_addCreator((t_newmethod)vinlet_newsig, gensym("inlet~"), A_DEFSYMBOL, 0);
-    class_addbang(vinlet_class, vinlet_bang);
-    class_addpointer(vinlet_class, vinlet_pointer);
-    class_addfloat(vinlet_class, vinlet_float);
-    class_addsymbol(vinlet_class, vinlet_symbol);
-    class_addlist(vinlet_class, vinlet_list);
-    class_addanything(vinlet_class, vinlet_anything);
+    class_addBang(vinlet_class, vinlet_bang);
+    class_addPointer(vinlet_class, vinlet_pointer);
+    class_addFloat(vinlet_class, vinlet_float);
+    class_addSymbol(vinlet_class, vinlet_symbol);
+    class_addList(vinlet_class, vinlet_list);
+    class_addAnything(vinlet_class, vinlet_anything);
     class_addMethod(vinlet_class, (t_method)vinlet_dsp, 
         gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(vinlet_class, gensym("pd"));
+    class_setHelpName(vinlet_class, gensym("pd"));
 }
 
 /* ------------------------- voutlet -------------------------- */
@@ -602,15 +602,15 @@ static void voutlet_setup(void)
     voutlet_class = class_new(gensym("outlet"), (t_newmethod)voutlet_new,
         (t_method)voutlet_free, sizeof(t_voutlet), CLASS_NOINLET, A_DEFSYMBOL, 0);
     class_addCreator((t_newmethod)voutlet_newsig, gensym("outlet~"), A_DEFSYMBOL, 0);
-    class_addbang(voutlet_class, voutlet_bang);
-    class_addpointer(voutlet_class, voutlet_pointer);
-    class_addfloat(voutlet_class, (t_method)voutlet_float);
-    class_addsymbol(voutlet_class, voutlet_symbol);
-    class_addlist(voutlet_class, voutlet_list);
-    class_addanything(voutlet_class, voutlet_anything);
+    class_addBang(voutlet_class, voutlet_bang);
+    class_addPointer(voutlet_class, voutlet_pointer);
+    class_addFloat(voutlet_class, (t_method)voutlet_float);
+    class_addSymbol(voutlet_class, voutlet_symbol);
+    class_addList(voutlet_class, voutlet_list);
+    class_addAnything(voutlet_class, voutlet_anything);
     class_addMethod(voutlet_class, (t_method)voutlet_dsp, 
         gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(voutlet_class, gensym("pd"));
+    class_setHelpName(voutlet_class, gensym("pd"));
 }
 
 

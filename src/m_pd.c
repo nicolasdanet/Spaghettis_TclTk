@@ -111,12 +111,12 @@ void pd_setup (void)
 {
     bindlist_class = class_new (gensym ("bindlist"), NULL, NULL, sizeof (t_bindlist), CLASS_PURE, 0);
     
-    class_addbang (bindlist_class, (t_method)bindlist_bang);
-    class_addfloat (bindlist_class, (t_method)bindlist_float);
-    class_addsymbol (bindlist_class, (t_method)bindlist_symbol);
-    class_addpointer (bindlist_class, (t_method)bindlist_pointer);
-    class_addlist (bindlist_class, (t_method)bindlist_list);
-    class_addanything (bindlist_class, (t_method)bindlist_anything);
+    class_addBang (bindlist_class, (t_method)bindlist_bang);
+    class_addFloat (bindlist_class, (t_method)bindlist_float);
+    class_addSymbol (bindlist_class, (t_method)bindlist_symbol);
+    class_addPointer (bindlist_class, (t_method)bindlist_pointer);
+    class_addList (bindlist_class, (t_method)bindlist_list);
+    class_addAnything (bindlist_class, (t_method)bindlist_anything);
 }
 
 // -----------------------------------------------------------------------------------------------------------

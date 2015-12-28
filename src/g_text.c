@@ -1404,15 +1404,15 @@ void g_text_setup(void)
 {
     text_class = class_new(gensym("text"), 0, 0, sizeof(t_text),
         CLASS_NOINLET | CLASS_BOX, 0);
-    class_addanything(text_class, text_anything);
+    class_addAnything(text_class, text_anything);
 
     message_class = class_new(gensym("message"), 0, (t_method)message_free,
         sizeof(t_message), CLASS_BOX, 0);
-    class_addbang(message_class, message_bang);
-    class_addfloat(message_class, message_float);
-    class_addsymbol(message_class, message_symbol);
-    class_addlist(message_class, message_list);
-    class_addanything(message_class, message_list);
+    class_addBang(message_class, message_bang);
+    class_addFloat(message_class, message_float);
+    class_addSymbol(message_class, message_symbol);
+    class_addList(message_class, message_list);
+    class_addAnything(message_class, message_list);
 
     class_addMethod(message_class, (t_method)message_click, gensym("click"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
@@ -1433,25 +1433,25 @@ void g_text_setup(void)
 
     messresponder_class = class_new(gensym("messresponder"), 0, 0,
         sizeof(t_text), CLASS_PURE, 0);
-    class_addbang(messresponder_class, messresponder_bang);
-    class_addfloat(messresponder_class, (t_method) messresponder_float);
-    class_addsymbol(messresponder_class, messresponder_symbol);
-    class_addlist(messresponder_class, messresponder_list);
-    class_addanything(messresponder_class, messresponder_anything);
+    class_addBang(messresponder_class, messresponder_bang);
+    class_addFloat(messresponder_class, (t_method) messresponder_float);
+    class_addSymbol(messresponder_class, messresponder_symbol);
+    class_addList(messresponder_class, messresponder_list);
+    class_addAnything(messresponder_class, messresponder_anything);
 
     gatom_class = class_new(gensym("gatom"), 0, (t_method)gatom_free,
         sizeof(t_gatom), CLASS_NOINLET | CLASS_BOX, 0);
-    class_addbang(gatom_class, gatom_bang);
-    class_addfloat(gatom_class, gatom_float);
-    class_addsymbol(gatom_class, gatom_symbol);
-    class_addlist(gatom_class, gatom_list);
+    class_addBang(gatom_class, gatom_bang);
+    class_addFloat(gatom_class, gatom_float);
+    class_addSymbol(gatom_class, gatom_symbol);
+    class_addList(gatom_class, gatom_list);
     class_addMethod(gatom_class, (t_method)gatom_set, gensym("set"),
         A_GIMME, 0);
     class_addMethod(gatom_class, (t_method)gatom_click, gensym("click"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(gatom_class, (t_method)gatom_param, gensym("param"),
         A_GIMME, 0);
-    class_setwidget(gatom_class, &gatom_widgetbehavior);
+    class_setWidget(gatom_class, &gatom_widgetbehavior);
     class_setpropertiesfn(gatom_class, gatom_properties);
 }
 

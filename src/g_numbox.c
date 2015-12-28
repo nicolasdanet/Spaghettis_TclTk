@@ -850,9 +850,9 @@ void g_numbox_setup(void)
         (t_method)my_numbox_free, sizeof(t_my_numbox), 0, A_GIMME, 0);
     class_addCreator((t_newmethod)my_numbox_new, gensym("my_numbox"),
         A_GIMME, 0);
-    class_addbang(my_numbox_class,my_numbox_bang);
-    class_addfloat(my_numbox_class,my_numbox_float);
-    class_addlist(my_numbox_class, my_numbox_list);
+    class_addBang(my_numbox_class,my_numbox_bang);
+    class_addFloat(my_numbox_class,my_numbox_float);
+    class_addList(my_numbox_class, my_numbox_list);
     class_addMethod(my_numbox_class, (t_method)my_numbox_click,
         gensym("click"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(my_numbox_class, (t_method)my_numbox_motion,
@@ -898,8 +898,8 @@ void g_numbox_setup(void)
     my_numbox_widgetbehavior.w_deletefn =     iem_delete;
     my_numbox_widgetbehavior.w_visfn =        iem_vis;
     my_numbox_widgetbehavior.w_clickfn =      my_numbox_newclick;
-    class_setwidget(my_numbox_class, &my_numbox_widgetbehavior);
-    class_sethelpsymbol(my_numbox_class, gensym("nbx"));
+    class_setWidget(my_numbox_class, &my_numbox_widgetbehavior);
+    class_setHelpName(my_numbox_class, gensym("nbx"));
     class_setsavefn(my_numbox_class, my_numbox_save);
     class_setpropertiesfn(my_numbox_class, my_numbox_properties);
 }

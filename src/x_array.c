@@ -457,7 +457,7 @@ static void *array_rangeop_new(t_class *class,
         }
         else
         {
-            post_error ("%s: unknown flag ...", class_getname(class));
+            post_error ("%s: unknown flag ...", class_getName(class));
             post_atoms(argc, argv);
         }
         argc--; argv++;
@@ -466,7 +466,7 @@ static void *array_rangeop_new(t_class *class,
     {
         if (x->x_struct)
         {
-            post_error ("%s: extra names after -s..", class_getname(class));
+            post_error ("%s: extra names after -s..", class_getName(class));
             post_atoms(argc, argv);
         }
         else x->x_sym = argv->a_w.w_symbol;
@@ -484,7 +484,7 @@ static void *array_rangeop_new(t_class *class,
     }
     if (argc && warnextra)
     {
-        post("warning: %s ignoring extra argument: ", class_getname(class));
+        post("warning: %s ignoring extra argument: ", class_getName(class));
         post_atoms(argc, argv);
     }
     if (x->x_struct)
@@ -830,8 +830,8 @@ void x_array_setup(void )
     canvas_add_for_class(array_define_class);
     class_addMethod(array_define_class, (t_method)array_define_send,
         gensym("send"), A_SYMBOL, 0);
-    class_addanything(array_define_class, array_define_anything);
-    class_sethelpsymbol(array_define_class, gensym("array"));
+    class_addAnything(array_define_class, array_define_anything);
+    class_setHelpName(array_define_class, gensym("array"));
     class_setsavefn(array_define_class, array_define_save);
 
     class_addMethod(array_define_class, (t_method)array_define_ignore,
@@ -845,56 +845,56 @@ void x_array_setup(void )
     array_size_class = class_new(gensym("array size"),
         (t_newmethod)array_size_new, (t_method)array_client_free,
             sizeof(t_array_size), 0, A_GIMME, 0);
-    class_addbang(array_size_class, array_size_bang);
-    class_addfloat(array_size_class, array_size_float);
-    class_sethelpsymbol(array_size_class, gensym("array"));
+    class_addBang(array_size_class, array_size_bang);
+    class_addFloat(array_size_class, array_size_float);
+    class_setHelpName(array_size_class, gensym("array"));
 
     array_sum_class = class_new(gensym("array sum"),
         (t_newmethod)array_sum_new, (t_method)array_client_free,
             sizeof(t_array_sum), 0, A_GIMME, 0);
-    class_addbang(array_sum_class, array_sum_bang);
-    class_addfloat(array_sum_class, array_sum_float);
-    class_sethelpsymbol(array_sum_class, gensym("array"));
+    class_addBang(array_sum_class, array_sum_bang);
+    class_addFloat(array_sum_class, array_sum_float);
+    class_setHelpName(array_sum_class, gensym("array"));
 
     array_get_class = class_new(gensym("array get"),
         (t_newmethod)array_get_new, (t_method)array_client_free,
             sizeof(t_array_get), 0, A_GIMME, 0);
-    class_addbang(array_get_class, array_get_bang);
-    class_addfloat(array_get_class, array_get_float);
-    class_sethelpsymbol(array_get_class, gensym("array"));
+    class_addBang(array_get_class, array_get_bang);
+    class_addFloat(array_get_class, array_get_float);
+    class_setHelpName(array_get_class, gensym("array"));
 
     array_set_class = class_new(gensym("array set"),
         (t_newmethod)array_set_new, (t_method)array_client_free,
             sizeof(t_array_set), 0, A_GIMME, 0);
-    class_addlist(array_set_class, array_set_list);
-    class_sethelpsymbol(array_set_class, gensym("array"));
+    class_addList(array_set_class, array_set_list);
+    class_setHelpName(array_set_class, gensym("array"));
 
     array_quantile_class = class_new(gensym("array quantile"),
         (t_newmethod)array_quantile_new, (t_method)array_client_free,
             sizeof(t_array_quantile), 0, A_GIMME, 0);
-    class_addfloat(array_quantile_class, array_quantile_float);
-    class_sethelpsymbol(array_quantile_class, gensym("array"));
+    class_addFloat(array_quantile_class, array_quantile_float);
+    class_setHelpName(array_quantile_class, gensym("array"));
 
     array_random_class = class_new(gensym("array random"),
         (t_newmethod)array_random_new, (t_method)array_client_free,
             sizeof(t_array_random), 0, A_GIMME, 0);
     class_addMethod(array_random_class, (t_method)array_random_seed,
         gensym("seed"), A_FLOAT, 0);
-    class_addfloat(array_random_class, array_random_float);
-    class_addbang(array_random_class, array_random_bang);
-    class_sethelpsymbol(array_random_class, gensym("array"));
+    class_addFloat(array_random_class, array_random_float);
+    class_addBang(array_random_class, array_random_bang);
+    class_setHelpName(array_random_class, gensym("array"));
 
     array_max_class = class_new(gensym("array max"),
         (t_newmethod)array_max_new, (t_method)array_client_free,
             sizeof(t_array_max), 0, A_GIMME, 0);
-    class_addfloat(array_max_class, array_max_float);
-    class_addbang(array_max_class, array_max_bang);
-    class_sethelpsymbol(array_max_class, gensym("array"));
+    class_addFloat(array_max_class, array_max_float);
+    class_addBang(array_max_class, array_max_bang);
+    class_setHelpName(array_max_class, gensym("array"));
 
     array_min_class = class_new(gensym("array min"),
         (t_newmethod)array_min_new, (t_method)array_client_free,
             sizeof(t_array_min), 0, A_GIMME, 0);
-    class_addfloat(array_min_class, array_min_float);
-    class_addbang(array_min_class, array_min_bang);
-    class_sethelpsymbol(array_min_class, gensym("array"));
+    class_addFloat(array_min_class, array_min_float);
+    class_addBang(array_min_class, array_min_bang);
+    class_setHelpName(array_min_class, gensym("array"));
 }

@@ -134,13 +134,13 @@ static void plus_setup(void)
         sizeof(t_plus), 0, A_GIMME, 0);
     class_addMethod(plus_class, (t_method)plus_dsp, gensym("dsp"), A_CANT, 0);
     CLASS_SIGNAL(plus_class, t_plus, x_f);
-    class_sethelpsymbol(plus_class, gensym("max~"));
+    class_setHelpName(plus_class, gensym("max~"));
     scalarplus_class = class_new(gensym("+~"), 0, 0,
         sizeof(t_scalarplus), 0, 0);
     CLASS_SIGNAL(scalarplus_class, t_scalarplus, x_f);
     class_addMethod(scalarplus_class, (t_method)scalarplus_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(scalarplus_class, gensym("max~"));
+    class_setHelpName(scalarplus_class, gensym("max~"));
 }
 
 /* ----------------------------- minus ----------------------------- */
@@ -264,13 +264,13 @@ static void minus_setup(void)
         sizeof(t_minus), 0, A_GIMME, 0);
     CLASS_SIGNAL(minus_class, t_minus, x_f);
     class_addMethod(minus_class, (t_method)minus_dsp, gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(minus_class, gensym("max~"));
+    class_setHelpName(minus_class, gensym("max~"));
     scalarminus_class = class_new(gensym("-~"), 0, 0,
         sizeof(t_scalarminus), 0, 0);
     CLASS_SIGNAL(scalarminus_class, t_scalarminus, x_f);
     class_addMethod(scalarminus_class, (t_method)scalarminus_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(scalarminus_class, gensym("max~"));
+    class_setHelpName(scalarminus_class, gensym("max~"));
 }
 
 /* ----------------------------- times ----------------------------- */
@@ -395,13 +395,13 @@ static void times_setup(void)
         sizeof(t_times), 0, A_GIMME, 0);
     CLASS_SIGNAL(times_class, t_times, x_f);
     class_addMethod(times_class, (t_method)times_dsp, gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(times_class, gensym("max~"));
+    class_setHelpName(times_class, gensym("max~"));
     scalartimes_class = class_new(gensym("*~"), 0, 0,
         sizeof(t_scalartimes), 0, 0);
     CLASS_SIGNAL(scalartimes_class, t_scalartimes, x_f);
     class_addMethod(scalartimes_class, (t_method)scalartimes_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(scalartimes_class, gensym("max~"));
+    class_setHelpName(scalartimes_class, gensym("max~"));
 }
 
 /* ----------------------------- over ----------------------------- */
@@ -537,13 +537,13 @@ static void over_setup(void)
         sizeof(t_over), 0, A_GIMME, 0);
     CLASS_SIGNAL(over_class, t_over, x_f);
     class_addMethod(over_class, (t_method)over_dsp, gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(over_class, gensym("max~"));
+    class_setHelpName(over_class, gensym("max~"));
     scalarover_class = class_new(gensym("/~"), 0, 0,
         sizeof(t_scalarover), 0, 0);
     CLASS_SIGNAL(scalarover_class, t_scalarover, x_f);
     class_addMethod(scalarover_class, (t_method)scalarover_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(scalarover_class, gensym("max~"));
+    class_setHelpName(scalarover_class, gensym("max~"));
 }
 
 /* ----------------------------- max ----------------------------- */
@@ -679,13 +679,13 @@ static void max_setup(void)
         sizeof(t_max), 0, A_GIMME, 0);
     CLASS_SIGNAL(max_class, t_max, x_f);
     class_addMethod(max_class, (t_method)max_dsp, gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(max_class, gensym("max~"));
+    class_setHelpName(max_class, gensym("max~"));
     scalarmax_class = class_new(gensym("max~"), 0, 0,
         sizeof(t_scalarmax), 0, 0);
     CLASS_SIGNAL(scalarmax_class, t_scalarmax, x_f);
     class_addMethod(scalarmax_class, (t_method)scalarmax_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(scalarmax_class, gensym("max~"));
+    class_setHelpName(scalarmax_class, gensym("max~"));
 }
 
 /* ----------------------------- min ----------------------------- */
@@ -821,13 +821,13 @@ static void min_setup(void)
         sizeof(t_min), 0, A_GIMME, 0);
     CLASS_SIGNAL(min_class, t_min, x_f);
     class_addMethod(min_class, (t_method)min_dsp, gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(min_class, gensym("max~"));
+    class_setHelpName(min_class, gensym("max~"));
     scalarmin_class = class_new(gensym("min~"), 0, 0,
         sizeof(t_scalarmin), 0, 0);
     CLASS_SIGNAL(scalarmin_class, t_scalarmin, x_f);
     class_addMethod(scalarmin_class, (t_method)scalarmin_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_sethelpsymbol(scalarmin_class, gensym("max~"));
+    class_setHelpName(scalarmin_class, gensym("max~"));
 }
 
 /* ----------------------- global setup routine ---------------- */

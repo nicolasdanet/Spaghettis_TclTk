@@ -185,7 +185,7 @@ static void scalar_getrect(t_gobj *z, t_glist *owner,
         x2 = y2 = -0x7fffffff;
         for (y = templatecanvas->gl_list; y; y = y->g_next)
         {
-            t_parentwidgetbehavior *wb = pd_getparentwidget(&y->g_pd);
+            t_parentwidgetbehavior *wb = pd_getParentWidget(&y->g_pd);
             int nx1, ny1, nx2, ny2;
             if (!wb) continue;
             (*wb->w_parentgetrectfn)(y, owner,
@@ -312,7 +312,7 @@ static void scalar_vis(t_gobj *z, t_glist *owner, int vis)
 
     for (y = templatecanvas->gl_list; y; y = y->g_next)
     {
-        t_parentwidgetbehavior *wb = pd_getparentwidget(&y->g_pd);
+        t_parentwidgetbehavior *wb = pd_getParentWidget(&y->g_pd);
         if (!wb) continue;
         (*wb->w_parentvisfn)(y, owner, x->sc_vec, template, basex, basey, vis);
     }
@@ -357,7 +357,7 @@ int scalar_doclick(t_word *data, t_template *template, t_scalar *sc,
             sc, gensym("click"), 2, at);
     for (y = templatecanvas->gl_list; y; y = y->g_next)
     {
-        t_parentwidgetbehavior *wb = pd_getparentwidget(&y->g_pd);
+        t_parentwidgetbehavior *wb = pd_getParentWidget(&y->g_pd);
         if (!wb) continue;
         if (hit = (*wb->w_parentclickfn)(y, owner,
             data, template, sc, ap, basex + xloc, basey + yloc,
@@ -444,7 +444,7 @@ void g_scalar_setup(void)
 {
     scalar_class = class_new(gensym("scalar"), 0, (t_method)scalar_free, 0,
         CLASS_GRAPHIC, 0);
-    class_setwidget(scalar_class, &scalar_widgetbehavior);
+    class_setWidget(scalar_class, &scalar_widgetbehavior);
     class_setsavefn(scalar_class, scalar_save);
     class_setpropertiesfn(scalar_class, scalar_properties);
 }

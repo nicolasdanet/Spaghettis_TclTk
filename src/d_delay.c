@@ -229,7 +229,7 @@ static void sigdelread_setup(void)
         sizeof(t_sigdelread), 0, A_DEFSYMBOL, A_DEFFLOAT, 0);
     class_addMethod(sigdelread_class, (t_method)sigdelread_dsp,
         gensym("dsp"), A_CANT, 0);
-    class_addfloat(sigdelread_class, (t_method)sigdelread_float);
+    class_addFloat(sigdelread_class, (t_method)sigdelread_float);
 }
 
 

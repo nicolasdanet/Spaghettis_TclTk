@@ -87,7 +87,7 @@ static void random_setup(void)
 {
     random_class = class_new(gensym("random"), (t_newmethod)random_new, 0,
         sizeof(t_random), 0, A_DEFFLOAT, 0);
-    class_addbang(random_class, random_bang);
+    class_addBang(random_class, random_bang);
     class_addMethod(random_class, (t_method)random_seed,
         gensym("seed"), A_FLOAT, 0);
 }
@@ -192,7 +192,7 @@ static void serial_setup(void)
 {
     serial_class = class_new(gensym("serial"), (t_newmethod)serial_new, 0,
         sizeof(t_serial), 0, A_DEFFLOAT, 0);
-    class_addfloat(serial_class, serial_float);
+    class_addFloat(serial_class, serial_float);
 }
 
 /* -------------------------- cputime ------------------------------ */
@@ -275,7 +275,7 @@ static void cputime_setup(void)
 {
     cputime_class = class_new(gensym("cputime"), (t_newmethod)cputime_new, 0,
         sizeof(t_cputime), 0, 0);
-    class_addbang(cputime_class, cputime_bang);
+    class_addBang(cputime_class, cputime_bang);
     class_addMethod(cputime_class, (t_method)cputime_bang2, gensym("bang2"), 0);
 }
 
@@ -313,7 +313,7 @@ static void realtime_setup(void)
 {
     realtime_class = class_new(gensym("realtime"), (t_newmethod)realtime_new, 0,
         sizeof(t_realtime), 0, 0);
-    class_addbang(realtime_class, realtime_bang);
+    class_addBang(realtime_class, realtime_bang);
     class_addMethod(realtime_class, (t_method)realtime_bang2, gensym("bang2"),
         0);
 }
@@ -510,7 +510,7 @@ void oscparse_setup(void)
 {
     oscparse_class = class_new(gensym("oscparse"), (t_newmethod)oscparse_new,
         0, sizeof(t_oscparse), 0, A_GIMME, 0);
-    class_addlist(oscparse_class, oscparse_list);
+    class_addList(oscparse_class, oscparse_list);
 }
 
 /* --------- oscformat - format simple OSC messages -------------- */
@@ -712,7 +712,7 @@ void oscformat_setup(void)
         gensym("set"), A_GIMME, 0);
     class_addMethod(oscformat_class, (t_method)oscformat_format,
         gensym("format"), A_DEFSYMBOL, 0);
-    class_addlist(oscformat_class, oscformat_list);
+    class_addList(oscformat_class, oscformat_list);
 }
 
 void x_misc_setup(void)

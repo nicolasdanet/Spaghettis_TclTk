@@ -88,7 +88,7 @@ static void class_defaultBang (t_pd *x)
     }
 }
 
-static void class_defaultPointer(t_pd *x, t_gpointer *gp)
+static void class_defaultPointer (t_pd *x, t_gpointer *gp)
 {
     t_atom a;
     SET_POINTER (&a, gp);
@@ -99,7 +99,7 @@ static void class_defaultPointer(t_pd *x, t_gpointer *gp)
     }
 }
 
-static void class_defaultFloat(t_pd *x, t_float f)
+static void class_defaultFloat (t_pd *x, t_float f)
 {
     t_atom a;
     SET_FLOAT (&a, f);
@@ -110,7 +110,7 @@ static void class_defaultFloat(t_pd *x, t_float f)
     }
 }
 
-static void class_defaultSymbol(t_pd *x, t_symbol *s)
+static void class_defaultSymbol (t_pd *x, t_symbol *s)
 {
     t_atom a;
     SET_SYMBOL (&a, s);
@@ -123,18 +123,31 @@ static void class_defaultSymbol(t_pd *x, t_symbol *s)
 
 static void class_defaultList (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 0 && (*(*x)->c_methodBang) != class_defaultBang) { (*(*x)->c_methodBang) (x); return; }
+    if (argc == 0) {
+        if ((*(*x)->c_methodBang) != class_defaultBang) { (*(*x)->c_methodBang) (x); return; }
+    }
     
     if (argc == 1) {
     
-        if (IS_FLOAT (argv) && (*(*x)->c_methodFloat) != class_defaultFloat) {
-            (*(*x)->c_methodFloat) (x, GET_FLOAT (argv));     return;
+        if (IS_FLOAT (argv)) {
+            if ((*(*x)->c_methodFloat) != class_defaultFloat) {
+                (*(*x)->c_methodFloat) (x, GET_FLOAT (argv));
+                return;
+            }
+        }
             
-        } else if (IS_SYMBOL (argv) && (*(*x)->c_methodSymbol) != class_defaultSymbol) {
-            (*(*x)->c_methodSymbol) (x, GET_SYMBOL (argv));   return;
+        if (IS_SYMBOL (argv)) { 
+            if ((*(*x)->c_methodSymbol) != class_defaultSymbol) {
+                (*(*x)->c_methodSymbol) (x, GET_SYMBOL (argv));
+                return;
+            }
+        }
             
-        } else if (IS_POINTER (argv) && (*(*x)->c_methodPointer) != class_defaultPointer) {
-            (*(*x)->c_methodPointer) (x, GET_POINTER (argv)); return;
+        if (IS_POINTER (argv)) {
+            if ((*(*x)->c_methodPointer) != class_defaultPointer) {
+                (*(*x)->c_methodPointer) (x, GET_POINTER (argv)); 
+                return;
+            }
         }
     }
 
@@ -256,23 +269,23 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
         
     if (s == &s_bang) {
         if (argtype) { PD_BUG; return; }
-        class_addbang (c, fn);
+        class_addBang (c, fn);
         
     } else if (s == &s_float) {
-        if (argtype != A_FLOAT || va_arg (ap, t_atomtype)) { PD_BUG; return; }
-        class_addfloat (c, fn);
+        if (argtype != A_FLOAT || va_arg (ap, t_atomtype))  { PD_BUG; return; }
+        class_addFloat (c, fn);
         
     } else if (s == &s_symbol) {
         if (argtype != A_SYMBOL || va_arg (ap, t_atomtype)) { PD_BUG; return; }
-        class_addsymbol (c, fn);
+        class_addSymbol (c, fn);
         
     } else if (s == &s_list) {
         if (argtype != A_GIMME) { PD_BUG; return; }
-        class_addlist (c, fn);
+        class_addList (c, fn);
         
     } else if (s == &s_anything) {
         if (argtype != A_GIMME) { PD_BUG; return; }
-        class_addanything (c, fn);
+        class_addAnything (c, fn);
         
     } else {
     //
@@ -306,67 +319,79 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
     }
 }
 
-void class_addbang(t_class *c, t_method fn)
+void class_addBang (t_class *c, t_method fn)
 {
     c->c_methodBang = (t_bangmethod)fn;
 }
 
-void class_addpointer(t_class *c, t_method fn)
+void class_addPointer (t_class *c, t_method fn)
 {
     c->c_methodPointer = (t_pointermethod)fn;
 }
 
-void class_addfloat(t_class *c, t_method fn)
+void class_addFloat (t_class *c, t_method fn)
 {
     c->c_methodFloat = (t_floatmethod)fn;
 }
 
-void class_addsymbol(t_class *c, t_method fn)
+void class_addSymbol (t_class *c, t_method fn)
 {
     c->c_methodSymbol = (t_symbolmethod)fn;
 }
 
-void class_addlist(t_class *c, t_method fn)
+void class_addList (t_class *c, t_method fn)
 {
     c->c_methodList = (t_listmethod)fn;
 }
 
-void class_addanything(t_class *c, t_method fn)
+void class_addAnything (t_class *c, t_method fn)
 {
     c->c_methodAny = (t_anymethod)fn;
 }
 
-void class_setwidget(t_class *c, t_widgetbehavior *w)
-{
-    c->c_behavior = w;
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void class_setparentwidget(t_class *c, t_parentwidgetbehavior *pw)
-{
-    c->c_behaviorParent = pw;
-}
-
-char *class_getname(t_class *c)
-{
-    return (c->c_name->s_name);
-}
-
-char *class_gethelpname(t_class *c)
-{
-    return (c->c_helpName->s_name);
-}
-
-void class_sethelpsymbol(t_class *c, t_symbol *s)
+void class_setHelpName (t_class *c, t_symbol *s)
 {
     c->c_helpName = s;
 }
 
-t_parentwidgetbehavior *pd_getparentwidget(t_pd *x)
+void class_setWidget (t_class *c, t_widgetbehavior *w)
 {
-    return ((*x)->c_behaviorParent);
+    c->c_behavior = w;
 }
 
-void class_setdrawcommand(t_class *c)
+void class_setParentWidget (t_class *c, t_parentwidgetbehavior *pw)
+{
+    c->c_behaviorParent = pw;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+char *class_getName (t_class *c)
+{
+    return c->c_name->s_name;
+}
+
+char *class_getHelpName (t_class *c)
+{
+    return c->c_helpName->s_name;
+}
+
+t_parentwidgetbehavior *pd_getParentWidget (t_pd *x)
+{
+    return (*x)->c_behaviorParent;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void class_setdrawcommand (t_class *c)
 {
     c->c_isDrawCommand = 1;
 }
@@ -569,7 +594,7 @@ void mess_init(void)
         CLASS_DEFAULT, A_NULL);
     pd_canvasMaker = class_new(gensym("classmaker"), 0, 0, sizeof(t_pd),
         CLASS_DEFAULT, A_NULL);
-    class_addanything(pd_objectMaker, (t_method)new_anything);
+    class_addAnything(pd_objectMaker, (t_method)new_anything);
 }
 
 t_pd *newest;

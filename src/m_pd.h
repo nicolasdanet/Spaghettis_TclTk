@@ -509,7 +509,7 @@ PD_DLL int      sys_fontheight              (int fontsize);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-PD_DLL t_parentwidgetbehavior *pd_getparentwidget   (t_pd *x);
+PD_DLL t_parentwidgetbehavior *pd_getParentWidget   (t_pd *x);
 PD_DLL t_parentwidgetbehavior *class_parentwidget   (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -538,18 +538,18 @@ PD_DLL t_class  *class_new                  (t_symbol *name,
                                                 
 PD_DLL void     class_addCreator            (t_newmethod newmethod, t_symbol *s, t_atomtype type1, ...);
 PD_DLL void     class_addMethod             (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ...);
-PD_DLL void     class_addbang               (t_class *c, t_method fn);
-PD_DLL void     class_addpointer            (t_class *c, t_method fn);
-PD_DLL void     class_addfloat              (t_class *c, t_method fn);
-PD_DLL void     class_addsymbol             (t_class *c, t_method fn);
-PD_DLL void     class_addlist               (t_class *c, t_method fn);
-PD_DLL void     class_addanything           (t_class *c, t_method fn);
-PD_DLL void     class_sethelpsymbol         (t_class *c, t_symbol *s);
-PD_DLL void     class_setwidget             (t_class *c, t_widgetbehavior *w);
-PD_DLL void     class_setparentwidget       (t_class *c, t_parentwidgetbehavior *w);
+PD_DLL void     class_addBang               (t_class *c, t_method fn);
+PD_DLL void     class_addPointer            (t_class *c, t_method fn);
+PD_DLL void     class_addFloat              (t_class *c, t_method fn);
+PD_DLL void     class_addSymbol             (t_class *c, t_method fn);
+PD_DLL void     class_addList               (t_class *c, t_method fn);
+PD_DLL void     class_addAnything           (t_class *c, t_method fn);
+PD_DLL void     class_setHelpName         (t_class *c, t_symbol *s);
+PD_DLL void     class_setWidget             (t_class *c, t_widgetbehavior *w);
+PD_DLL void     class_setParentWidget       (t_class *c, t_parentwidgetbehavior *w);
 
-PD_DLL char     *class_getname              (t_class *c);
-PD_DLL char     *class_gethelpname          (t_class *c);
+PD_DLL char     *class_getName              (t_class *c);
+PD_DLL char     *class_getHelpName          (t_class *c);
 PD_DLL char     *class_gethelpdir           (t_class *c);
 PD_DLL void     class_setdrawcommand        (t_class *c);
 PD_DLL int      class_isdrawcommand         (t_class *c);

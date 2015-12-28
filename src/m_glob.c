@@ -73,7 +73,7 @@ void max_default(t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
     char str[80];
-    post("%s: unknown message %s ", class_getname(pd_class(x)),
+    post("%s: unknown message %s ", class_getName(pd_class(x)),
         s->s_name);
     for (i = 0; i < argc; i++)
     {
@@ -102,7 +102,7 @@ void glob_init(void)
 {
     maxclass = class_new(gensym("max"), 0, 0, sizeof(t_pd),
         CLASS_DEFAULT, A_NULL);
-    class_addanything(maxclass, max_default);
+    class_addAnything(maxclass, max_default);
     pd_bind(&maxclass, gensym("max"));
 
     glob_pdobject = class_new(gensym("pd"), 0, 0, sizeof(t_pd),
@@ -158,7 +158,7 @@ void glob_init(void)
     class_addMethod(glob_pdobject, (t_method)glob_watchdog,
         gensym("watchdog"), 0);
 #endif
-    class_addanything(glob_pdobject, max_default);
+    class_addAnything(glob_pdobject, max_default);
     pd_bind(&glob_pdobject, gensym("pd"));
 }
 

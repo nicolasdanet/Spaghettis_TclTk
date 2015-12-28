@@ -704,8 +704,8 @@ static void clip_setup(void)
 {
     clip_class = class_new(gensym("clip"), (t_newmethod)clip_new, 0,
         sizeof(t_clip), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addfloat(clip_class, clip_float);
-    class_addbang(clip_class, clip_bang);
+    class_addFloat(clip_class, clip_float);
+    class_addBang(clip_class, clip_bang);
 }
 
 void x_arithmetic_setup(void)
@@ -716,197 +716,197 @@ void x_arithmetic_setup(void)
 
     binop1_plus_class = class_new(gensym("+"), (t_newmethod)binop1_plus_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop1_plus_class, binop1_plus_bang);
-    class_addfloat(binop1_plus_class, (t_method)binop1_plus_float);
-    class_sethelpsymbol(binop1_plus_class, binop1_sym);
+    class_addBang(binop1_plus_class, binop1_plus_bang);
+    class_addFloat(binop1_plus_class, (t_method)binop1_plus_float);
+    class_setHelpName(binop1_plus_class, binop1_sym);
     
     binop1_minus_class = class_new(gensym("-"),
         (t_newmethod)binop1_minus_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop1_minus_class, binop1_minus_bang);
-    class_addfloat(binop1_minus_class, (t_method)binop1_minus_float);
-    class_sethelpsymbol(binop1_minus_class, binop1_sym);
+    class_addBang(binop1_minus_class, binop1_minus_bang);
+    class_addFloat(binop1_minus_class, (t_method)binop1_minus_float);
+    class_setHelpName(binop1_minus_class, binop1_sym);
 
     binop1_times_class = class_new(gensym("*"),
         (t_newmethod)binop1_times_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop1_times_class, binop1_times_bang);
-    class_addfloat(binop1_times_class, (t_method)binop1_times_float);
-    class_sethelpsymbol(binop1_times_class, binop1_sym);
+    class_addBang(binop1_times_class, binop1_times_bang);
+    class_addFloat(binop1_times_class, (t_method)binop1_times_float);
+    class_setHelpName(binop1_times_class, binop1_sym);
 
     binop1_div_class = class_new(gensym("/"),
         (t_newmethod)binop1_div_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop1_div_class, binop1_div_bang);
-    class_addfloat(binop1_div_class, (t_method)binop1_div_float);
-    class_sethelpsymbol(binop1_div_class, binop1_sym);
+    class_addBang(binop1_div_class, binop1_div_bang);
+    class_addFloat(binop1_div_class, (t_method)binop1_div_float);
+    class_setHelpName(binop1_div_class, binop1_sym);
 
     binop1_pow_class = class_new(gensym("pow"),
         (t_newmethod)binop1_pow_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop1_pow_class, binop1_pow_bang);
-    class_addfloat(binop1_pow_class, (t_method)binop1_pow_float);
-    class_sethelpsymbol(binop1_pow_class, binop1_sym);
+    class_addBang(binop1_pow_class, binop1_pow_bang);
+    class_addFloat(binop1_pow_class, (t_method)binop1_pow_float);
+    class_setHelpName(binop1_pow_class, binop1_sym);
 
     binop1_max_class = class_new(gensym("max"),
         (t_newmethod)binop1_max_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop1_max_class, binop1_max_bang);
-    class_addfloat(binop1_max_class, (t_method)binop1_max_float);
-    class_sethelpsymbol(binop1_max_class, binop1_sym);
+    class_addBang(binop1_max_class, binop1_max_bang);
+    class_addFloat(binop1_max_class, (t_method)binop1_max_float);
+    class_setHelpName(binop1_max_class, binop1_sym);
 
     binop1_min_class = class_new(gensym("min"),
         (t_newmethod)binop1_min_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop1_min_class, binop1_min_bang);
-    class_addfloat(binop1_min_class, (t_method)binop1_min_float);
-    class_sethelpsymbol(binop1_min_class, binop1_sym);
+    class_addBang(binop1_min_class, binop1_min_bang);
+    class_addFloat(binop1_min_class, (t_method)binop1_min_float);
+    class_setHelpName(binop1_min_class, binop1_sym);
 
         /* ------------------ binop2 ----------------------- */
 
     binop2_ee_class = class_new(gensym("=="), (t_newmethod)binop2_ee_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop2_ee_class, binop2_ee_bang);
-    class_addfloat(binop2_ee_class, (t_method)binop2_ee_float);
-    class_sethelpsymbol(binop2_ee_class, binop23_sym);
+    class_addBang(binop2_ee_class, binop2_ee_bang);
+    class_addFloat(binop2_ee_class, (t_method)binop2_ee_float);
+    class_setHelpName(binop2_ee_class, binop23_sym);
 
     binop2_ne_class = class_new(gensym("!="), (t_newmethod)binop2_ne_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop2_ne_class, binop2_ne_bang);
-    class_addfloat(binop2_ne_class, (t_method)binop2_ne_float);
-    class_sethelpsymbol(binop2_ne_class, binop23_sym);
+    class_addBang(binop2_ne_class, binop2_ne_bang);
+    class_addFloat(binop2_ne_class, (t_method)binop2_ne_float);
+    class_setHelpName(binop2_ne_class, binop23_sym);
 
     binop2_gt_class = class_new(gensym(">"), (t_newmethod)binop2_gt_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop2_gt_class, binop2_gt_bang);
-    class_addfloat(binop2_gt_class, (t_method)binop2_gt_float);
-    class_sethelpsymbol(binop2_gt_class, binop23_sym);
+    class_addBang(binop2_gt_class, binop2_gt_bang);
+    class_addFloat(binop2_gt_class, (t_method)binop2_gt_float);
+    class_setHelpName(binop2_gt_class, binop23_sym);
 
     binop2_lt_class = class_new(gensym("<"), (t_newmethod)binop2_lt_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop2_lt_class, binop2_lt_bang);
-    class_addfloat(binop2_lt_class, (t_method)binop2_lt_float);
-    class_sethelpsymbol(binop2_lt_class, binop23_sym);
+    class_addBang(binop2_lt_class, binop2_lt_bang);
+    class_addFloat(binop2_lt_class, (t_method)binop2_lt_float);
+    class_setHelpName(binop2_lt_class, binop23_sym);
 
     binop2_ge_class = class_new(gensym(">="), (t_newmethod)binop2_ge_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop2_ge_class, binop2_ge_bang);
-    class_addfloat(binop2_ge_class, (t_method)binop2_ge_float);
-    class_sethelpsymbol(binop2_ge_class, binop23_sym);
+    class_addBang(binop2_ge_class, binop2_ge_bang);
+    class_addFloat(binop2_ge_class, (t_method)binop2_ge_float);
+    class_setHelpName(binop2_ge_class, binop23_sym);
 
     binop2_le_class = class_new(gensym("<="), (t_newmethod)binop2_le_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop2_le_class, binop2_le_bang);
-    class_addfloat(binop2_le_class, (t_method)binop2_le_float);
-    class_sethelpsymbol(binop2_le_class, binop23_sym);
+    class_addBang(binop2_le_class, binop2_le_bang);
+    class_addFloat(binop2_le_class, (t_method)binop2_le_float);
+    class_setHelpName(binop2_le_class, binop23_sym);
 
         /* ------------------ binop3 ----------------------- */
 
     binop3_ba_class = class_new(gensym("&"), (t_newmethod)binop3_ba_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop3_ba_class, binop2_ba_bang);
-    class_addfloat(binop3_ba_class, (t_method)binop2_ba_float);
-    class_sethelpsymbol(binop3_ba_class, binop23_sym);
+    class_addBang(binop3_ba_class, binop2_ba_bang);
+    class_addFloat(binop3_ba_class, (t_method)binop2_ba_float);
+    class_setHelpName(binop3_ba_class, binop23_sym);
 
     binop3_la_class = class_new(gensym("&&"), (t_newmethod)binop3_la_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop3_la_class, binop2_la_bang);
-    class_addfloat(binop3_la_class, (t_method)binop2_la_float);
-    class_sethelpsymbol(binop3_la_class, binop23_sym);
+    class_addBang(binop3_la_class, binop2_la_bang);
+    class_addFloat(binop3_la_class, (t_method)binop2_la_float);
+    class_setHelpName(binop3_la_class, binop23_sym);
 
     binop3_bo_class = class_new(gensym("|"), (t_newmethod)binop3_bo_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop3_bo_class, binop2_bo_bang);
-    class_addfloat(binop3_bo_class, (t_method)binop2_bo_float);
-    class_sethelpsymbol(binop3_bo_class, binop23_sym);
+    class_addBang(binop3_bo_class, binop2_bo_bang);
+    class_addFloat(binop3_bo_class, (t_method)binop2_bo_float);
+    class_setHelpName(binop3_bo_class, binop23_sym);
 
     binop3_lo_class = class_new(gensym("||"), (t_newmethod)binop3_lo_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop3_lo_class, binop2_lo_bang);
-    class_addfloat(binop3_lo_class, (t_method)binop2_lo_float);
-    class_sethelpsymbol(binop3_lo_class, binop23_sym);
+    class_addBang(binop3_lo_class, binop2_lo_bang);
+    class_addFloat(binop3_lo_class, (t_method)binop2_lo_float);
+    class_setHelpName(binop3_lo_class, binop23_sym);
 
     binop3_ls_class = class_new(gensym("<<"), (t_newmethod)binop3_ls_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop3_ls_class, binop2_ls_bang);
-    class_addfloat(binop3_ls_class, (t_method)binop2_ls_float);
-    class_sethelpsymbol(binop3_ls_class, binop23_sym);
+    class_addBang(binop3_ls_class, binop2_ls_bang);
+    class_addFloat(binop3_ls_class, (t_method)binop2_ls_float);
+    class_setHelpName(binop3_ls_class, binop23_sym);
 
     binop3_rs_class = class_new(gensym(">>"), (t_newmethod)binop3_rs_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop3_rs_class, binop2_rs_bang);
-    class_addfloat(binop3_rs_class, (t_method)binop2_rs_float);
-    class_sethelpsymbol(binop3_rs_class, binop23_sym);
+    class_addBang(binop3_rs_class, binop2_rs_bang);
+    class_addFloat(binop3_rs_class, (t_method)binop2_rs_float);
+    class_setHelpName(binop3_rs_class, binop23_sym);
 
     binop3_pc_class = class_new(gensym("%"), (t_newmethod)binop3_pc_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop3_pc_class, binop2_pc_bang);
-    class_addfloat(binop3_pc_class, (t_method)binop2_pc_float);
-    class_sethelpsymbol(binop3_pc_class, binop23_sym);
+    class_addBang(binop3_pc_class, binop2_pc_bang);
+    class_addFloat(binop3_pc_class, (t_method)binop2_pc_float);
+    class_setHelpName(binop3_pc_class, binop23_sym);
 
     binop3_mod_class = class_new(gensym("mod"), (t_newmethod)binop3_mod_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop3_mod_class, binop3_mod_bang);
-    class_addfloat(binop3_mod_class, (t_method)binop3_mod_float);
-    class_sethelpsymbol(binop3_mod_class, binop23_sym);
+    class_addBang(binop3_mod_class, binop3_mod_bang);
+    class_addFloat(binop3_mod_class, (t_method)binop3_mod_float);
+    class_setHelpName(binop3_mod_class, binop23_sym);
 
     binop3_div_class = class_new(gensym("div"), (t_newmethod)binop3_div_new, 0,
         sizeof(t_binop), 0, A_DEFFLOAT, 0);
-    class_addbang(binop3_div_class, binop3_div_bang);
-    class_addfloat(binop3_div_class, (t_method)binop3_div_float);
-    class_sethelpsymbol(binop3_div_class, binop23_sym);
+    class_addBang(binop3_div_class, binop3_div_bang);
+    class_addFloat(binop3_div_class, (t_method)binop3_div_float);
+    class_setHelpName(binop3_div_class, binop23_sym);
 
         /* ------------------- math functions --------------- */
     
     sin_class = class_new(gensym("sin"), sin_new, 0,
         sizeof(t_object), 0, 0);
-    class_addfloat(sin_class, (t_method)sin_float);
-    class_sethelpsymbol(sin_class, math_sym);
+    class_addFloat(sin_class, (t_method)sin_float);
+    class_setHelpName(sin_class, math_sym);
     
     cos_class = class_new(gensym("cos"), cos_new, 0,
         sizeof(t_object), 0, 0);
-    class_addfloat(cos_class, (t_method)cos_float);
-    class_sethelpsymbol(cos_class, math_sym);
+    class_addFloat(cos_class, (t_method)cos_float);
+    class_setHelpName(cos_class, math_sym);
     
     tan_class = class_new(gensym("tan"), tan_new, 0,
         sizeof(t_object), 0, 0);
-    class_addfloat(tan_class, (t_method)tan_float);
-    class_sethelpsymbol(tan_class, math_sym);
+    class_addFloat(tan_class, (t_method)tan_float);
+    class_setHelpName(tan_class, math_sym);
 
     atan_class = class_new(gensym("atan"), atan_new, 0,
         sizeof(t_object), 0, 0);
-    class_addfloat(atan_class, (t_method)atan_float);
-    class_sethelpsymbol(atan_class, math_sym);
+    class_addFloat(atan_class, (t_method)atan_float);
+    class_setHelpName(atan_class, math_sym);
 
     atan2_class = class_new(gensym("atan2"), atan2_new, 0,
         sizeof(t_atan2), 0, 0);
-    class_addfloat(atan2_class, (t_method)atan2_float);    
-    class_sethelpsymbol(atan2_class, math_sym);
+    class_addFloat(atan2_class, (t_method)atan2_float);    
+    class_setHelpName(atan2_class, math_sym);
 
     sqrt_class = class_new(gensym("sqrt"), sqrt_new, 0,
         sizeof(t_object), 0, 0);
-    class_addfloat(sqrt_class, (t_method)sqrt_float);
-    class_sethelpsymbol(sqrt_class, math_sym);
+    class_addFloat(sqrt_class, (t_method)sqrt_float);
+    class_setHelpName(sqrt_class, math_sym);
 
     log_class = class_new(gensym("log"), log_new, 0,
         sizeof(t_object), 0, 0);
-    class_addfloat(log_class, (t_method)log_float);    
-    class_sethelpsymbol(log_class, math_sym);
+    class_addFloat(log_class, (t_method)log_float);    
+    class_setHelpName(log_class, math_sym);
 
     exp_class = class_new(gensym("exp"), exp_new, 0,
         sizeof(t_object), 0, 0);
-    class_addfloat(exp_class, (t_method)exp_float);
-    class_sethelpsymbol(exp_class, math_sym);
+    class_addFloat(exp_class, (t_method)exp_float);
+    class_setHelpName(exp_class, math_sym);
 
     abs_class = class_new(gensym("abs"), abs_new, 0,
         sizeof(t_object), 0, 0);
-    class_addfloat(abs_class, (t_method)abs_float);    
-    class_sethelpsymbol(abs_class, math_sym);
+    class_addFloat(abs_class, (t_method)abs_float);    
+    class_setHelpName(abs_class, math_sym);
 
     wrap_class = class_new(gensym("wrap"), wrap_new, 0,
         sizeof(t_object), 0, 0);
-    class_addfloat(wrap_class, (t_method)wrap_float);    
-    class_sethelpsymbol(wrap_class, math_sym);
+    class_addFloat(wrap_class, (t_method)wrap_float);    
+    class_setHelpName(wrap_class, math_sym);
 
 /* ------------------------  misc ------------------------ */
 

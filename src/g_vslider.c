@@ -603,8 +603,8 @@ void g_vslider_setup(void)
     vslider_class = class_new(gensym("vsl"), (t_newmethod)vslider_new,
                               (t_method)vslider_free, sizeof(t_vslider), 0, A_GIMME, 0);
     class_addCreator((t_newmethod)vslider_new, gensym("vslider"), A_GIMME, 0);
-    class_addbang(vslider_class,vslider_bang);
-    class_addfloat(vslider_class,vslider_float);
+    class_addBang(vslider_class,vslider_bang);
+    class_addFloat(vslider_class,vslider_float);
     class_addMethod(vslider_class, (t_method)vslider_click, gensym("click"),
                     A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(vslider_class, (t_method)vslider_motion, gensym("motion"),
@@ -634,8 +634,8 @@ void g_vslider_setup(void)
     vslider_widgetbehavior.w_deletefn =     iem_delete;
     vslider_widgetbehavior.w_visfn =        iem_vis;
     vslider_widgetbehavior.w_clickfn =      vslider_newclick;
-    class_setwidget(vslider_class, &vslider_widgetbehavior);
-    class_sethelpsymbol(vslider_class, gensym("vsl"));
+    class_setWidget(vslider_class, &vslider_widgetbehavior);
+    class_setHelpName(vslider_class, gensym("vsl"));
     class_setsavefn(vslider_class, vslider_save);
     class_setpropertiesfn(vslider_class, vslider_properties);
 }

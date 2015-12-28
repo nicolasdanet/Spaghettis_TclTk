@@ -442,8 +442,8 @@ void g_toggle_setup(void)
     toggle_class = class_new(gensym("tgl"), (t_newmethod)toggle_new,
                              (t_method)toggle_ff, sizeof(t_toggle), 0, A_GIMME, 0);
     class_addCreator((t_newmethod)toggle_new, gensym("toggle"), A_GIMME, 0);
-    class_addbang(toggle_class, toggle_bang);
-    class_addfloat(toggle_class, toggle_float);
+    class_addBang(toggle_class, toggle_bang);
+    class_addFloat(toggle_class, toggle_float);
     class_addMethod(toggle_class, (t_method)toggle_click, gensym("click"),
                     A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(toggle_class, (t_method)toggle_dialog, gensym("dialog"),
@@ -468,8 +468,8 @@ void g_toggle_setup(void)
     toggle_widgetbehavior.w_deletefn = iem_delete;
     toggle_widgetbehavior.w_visfn = iem_vis;
     toggle_widgetbehavior.w_clickfn = toggle_newclick;
-    class_setwidget(toggle_class, &toggle_widgetbehavior);
-    class_sethelpsymbol(toggle_class, gensym("tgl"));
+    class_setWidget(toggle_class, &toggle_widgetbehavior);
+    class_setHelpName(toggle_class, gensym("tgl"));
     class_setsavefn(toggle_class, toggle_save);
     class_setpropertiesfn(toggle_class, toggle_properties);
 }

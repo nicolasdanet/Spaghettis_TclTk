@@ -53,8 +53,8 @@ void pdint_setup(void)
     class_addCreator((t_newmethod)pdint_new, gensym("i"), A_DEFFLOAT, 0);
     class_addMethod(pdint_class, (t_method)pdint_send, gensym("send"),
         A_SYMBOL, 0);
-    class_addbang(pdint_class, pdint_bang);
-    class_addfloat(pdint_class, pdint_float);
+    class_addBang(pdint_class, pdint_bang);
+    class_addFloat(pdint_class, pdint_float);
 }
 
 /* -------------------------- float ------------------------------ */
@@ -109,8 +109,8 @@ void pdfloat_setup(void)
     class_addCreator((t_newmethod)pdfloat_new2, gensym("f"), A_DEFFLOAT, 0);
     class_addMethod(pdfloat_class, (t_method)pdfloat_send, gensym("send"),
         A_SYMBOL, 0);
-    class_addbang(pdfloat_class, pdfloat_bang);
-    class_addfloat(pdfloat_class, (t_method)pdfloat_float);
+    class_addBang(pdfloat_class, pdfloat_bang);
+    class_addFloat(pdfloat_class, (t_method)pdfloat_float);
 }
 
 /* -------------------------- symbol ------------------------------ */
@@ -167,9 +167,9 @@ void pdsymbol_setup(void)
 {
     pdsymbol_class = class_new(gensym("symbol"), (t_newmethod)pdsymbol_new, 0,
         sizeof(t_pdsymbol), 0, A_SYMBOL, 0);
-    class_addbang(pdsymbol_class, pdsymbol_bang);
-    class_addsymbol(pdsymbol_class, pdsymbol_symbol);
-    class_addanything(pdsymbol_class, pdsymbol_anything);
+    class_addBang(pdsymbol_class, pdsymbol_bang);
+    class_addSymbol(pdsymbol_class, pdsymbol_symbol);
+    class_addAnything(pdsymbol_class, pdsymbol_anything);
 }
 
 /* -------------------------- bang ------------------------------ */
@@ -203,11 +203,11 @@ void bang_setup(void)
     bang_class = class_new(gensym("bang"), (t_newmethod)bang_new, 0,
         sizeof(t_bang), 0, 0);
     class_addCreator((t_newmethod)bang_new2, gensym("b"), 0);
-    class_addbang(bang_class, bang_bang);
-    class_addfloat(bang_class, bang_bang);
-    class_addsymbol(bang_class, bang_bang);
-    class_addlist(bang_class, bang_bang);
-    class_addanything(bang_class, bang_bang);
+    class_addBang(bang_class, bang_bang);
+    class_addFloat(bang_class, bang_bang);
+    class_addSymbol(bang_class, bang_bang);
+    class_addList(bang_class, bang_bang);
+    class_addAnything(bang_class, bang_bang);
 }
 
 /* -------------------- send ------------------------------ */
@@ -264,12 +264,12 @@ static void send_setup(void)
     send_class = class_new(gensym("send"), (t_newmethod)send_new, 0,
         sizeof(t_send), 0, A_DEFSYMBOL, 0);
     class_addCreator((t_newmethod)send_new, gensym("s"), A_DEFSYMBOL, 0);
-    class_addbang(send_class, send_bang);
-    class_addfloat(send_class, send_float);
-    class_addsymbol(send_class, send_symbol);
-    class_addpointer(send_class, send_pointer);
-    class_addlist(send_class, send_list);
-    class_addanything(send_class, send_anything);
+    class_addBang(send_class, send_bang);
+    class_addFloat(send_class, send_float);
+    class_addSymbol(send_class, send_symbol);
+    class_addPointer(send_class, send_pointer);
+    class_addList(send_class, send_list);
+    class_addAnything(send_class, send_anything);
 }
 /* -------------------- receive ------------------------------ */
 
@@ -330,12 +330,12 @@ static void receive_setup(void)
     receive_class = class_new(gensym("receive"), (t_newmethod)receive_new, 
         (t_method)receive_free, sizeof(t_receive), CLASS_NOINLET, A_DEFSYMBOL, 0);
     class_addCreator((t_newmethod)receive_new, gensym("r"), A_DEFSYMBOL, 0);
-    class_addbang(receive_class, receive_bang);
-    class_addfloat(receive_class, (t_method)receive_float);
-    class_addsymbol(receive_class, receive_symbol);
-    class_addpointer(receive_class, receive_pointer);
-    class_addlist(receive_class, receive_list);
-    class_addanything(receive_class, receive_anything);
+    class_addBang(receive_class, receive_bang);
+    class_addFloat(receive_class, (t_method)receive_float);
+    class_addSymbol(receive_class, receive_symbol);
+    class_addPointer(receive_class, receive_pointer);
+    class_addList(receive_class, receive_list);
+    class_addAnything(receive_class, receive_anything);
 }
 
 /* -------------------------- select ------------------------------ */
@@ -469,13 +469,13 @@ void select_setup(void)
 {
     sel1_class = class_new(gensym("select"), 0, 0,
         sizeof(t_sel1), 0, 0);
-    class_addfloat(sel1_class, sel1_float);
-    class_addsymbol(sel1_class, sel1_symbol);
+    class_addFloat(sel1_class, sel1_float);
+    class_addSymbol(sel1_class, sel1_symbol);
 
     sel2_class = class_new(gensym("select"), 0, (t_method)sel2_free,
         sizeof(t_sel2), 0, 0);
-    class_addfloat(sel2_class, sel2_float);
-    class_addsymbol(sel2_class, sel2_symbol);
+    class_addFloat(sel2_class, sel2_float);
+    class_addSymbol(sel2_class, sel2_symbol);
 
     class_addCreator((t_newmethod)select_new, gensym("select"),  A_GIMME, 0);
     class_addCreator((t_newmethod)select_new, gensym("sel"),  A_GIMME, 0);
@@ -636,8 +636,8 @@ void route_setup(void)
 {
     route_class = class_new(gensym("route"), (t_newmethod)route_new,
         (t_method)route_free, sizeof(t_route), 0, A_GIMME, 0);
-    class_addlist(route_class, route_list);
-    class_addanything(route_class, route_anything);
+    class_addList(route_class, route_list);
+    class_addAnything(route_class, route_anything);
 }
 
 /* -------------------------- pack ------------------------------ */
@@ -812,12 +812,12 @@ static void pack_setup(void)
 {
     pack_class = class_new(gensym("pack"), (t_newmethod)pack_new,
         (t_method)pack_free, sizeof(t_pack), 0, A_GIMME, 0);
-    class_addbang(pack_class, pack_bang);
-    class_addpointer(pack_class, pack_pointer);
-    class_addfloat(pack_class, pack_float);
-    class_addsymbol(pack_class, pack_symbol);
-    class_addlist(pack_class, pack_list);
-    class_addanything(pack_class, pack_anything);
+    class_addBang(pack_class, pack_bang);
+    class_addPointer(pack_class, pack_pointer);
+    class_addFloat(pack_class, pack_float);
+    class_addSymbol(pack_class, pack_symbol);
+    class_addList(pack_class, pack_list);
+    class_addAnything(pack_class, pack_anything);
 }
 
 /* -------------------------- unpack ------------------------------ */
@@ -924,8 +924,8 @@ static void unpack_setup(void)
 {
     unpack_class = class_new(gensym("unpack"), (t_newmethod)unpack_new,
         (t_method)unpack_free, sizeof(t_unpack), 0, A_GIMME, 0);
-    class_addlist(unpack_class, unpack_list);
-    class_addanything(unpack_class, unpack_anything);
+    class_addList(unpack_class, unpack_list);
+    class_addAnything(unpack_class, unpack_anything);
 }
 
 /* -------------------------- trigger ------------------------------ */
@@ -1070,12 +1070,12 @@ static void trigger_setup(void)
     trigger_class = class_new(gensym("trigger"), (t_newmethod)trigger_new,
         (t_method)trigger_free, sizeof(t_trigger), 0, A_GIMME, 0);
     class_addCreator((t_newmethod)trigger_new, gensym("t"), A_GIMME, 0);
-    class_addlist(trigger_class, trigger_list);
-    class_addbang(trigger_class, trigger_bang);
-    class_addpointer(trigger_class, trigger_pointer);
-    class_addfloat(trigger_class, (t_method)trigger_float);
-    class_addsymbol(trigger_class, trigger_symbol);
-    class_addanything(trigger_class, trigger_anything);
+    class_addList(trigger_class, trigger_list);
+    class_addBang(trigger_class, trigger_bang);
+    class_addPointer(trigger_class, trigger_pointer);
+    class_addFloat(trigger_class, (t_method)trigger_float);
+    class_addSymbol(trigger_class, trigger_symbol);
+    class_addAnything(trigger_class, trigger_anything);
 }
 
 /* -------------------------- spigot ------------------------------ */
@@ -1130,12 +1130,12 @@ static void spigot_setup(void)
 {
     spigot_class = class_new(gensym("spigot"), (t_newmethod)spigot_new, 0,
         sizeof(t_spigot), 0, A_DEFFLOAT, 0);
-    class_addbang(spigot_class, spigot_bang);
-    class_addpointer(spigot_class, spigot_pointer);
-    class_addfloat(spigot_class, spigot_float);
-    class_addsymbol(spigot_class, spigot_symbol);
-    class_addlist(spigot_class, spigot_list);
-    class_addanything(spigot_class, spigot_anything);
+    class_addBang(spigot_class, spigot_bang);
+    class_addPointer(spigot_class, spigot_pointer);
+    class_addFloat(spigot_class, spigot_float);
+    class_addSymbol(spigot_class, spigot_symbol);
+    class_addList(spigot_class, spigot_list);
+    class_addAnything(spigot_class, spigot_anything);
 }
 
 /* --------------------------- moses ----------------------------- */
@@ -1168,7 +1168,7 @@ static void moses_setup(void)
 {
     moses_class = class_new(gensym("moses"), (t_newmethod)moses_new, 0,
         sizeof(t_moses), 0, A_DEFFLOAT, 0);
-    class_addfloat(moses_class, moses_float);
+    class_addFloat(moses_class, moses_float);
 }
 
 /* ----------------------- until --------------------- */
@@ -1218,8 +1218,8 @@ static void until_setup(void)
 {
     until_class = class_new(gensym("until"), (t_newmethod)until_new, 0,
         sizeof(t_until), 0, 0);
-    class_addbang(until_class, until_bang);
-    class_addfloat(until_class, until_float);
+    class_addBang(until_class, until_bang);
+    class_addFloat(until_class, until_float);
     class_addMethod(until_class, (t_method)until_bang2, gensym("bang2"), 0);
 }
 
@@ -1322,8 +1322,8 @@ static void makefilename_setup(void)
     makefilename_class = class_new(gensym("makefilename"),
     (t_newmethod)makefilename_new, 0,
         sizeof(t_makefilename), 0, A_DEFSYMBOL, 0);
-    class_addfloat(makefilename_class, makefilename_float);
-    class_addsymbol(makefilename_class, makefilename_symbol);
+    class_addFloat(makefilename_class, makefilename_float);
+    class_addSymbol(makefilename_class, makefilename_symbol);
     class_addMethod(makefilename_class, (t_method)makefilename_set,
         gensym("set"), A_SYMBOL, 0);
 }
@@ -1367,8 +1367,8 @@ void swap_setup(void)
     swap_class = class_new(gensym("swap"), (t_newmethod)swap_new, 0,
         sizeof(t_swap), 0, A_DEFFLOAT, 0);
     class_addCreator((t_newmethod)swap_new, gensym("fswap"), A_DEFFLOAT, 0);
-    class_addbang(swap_class, swap_bang);
-    class_addfloat(swap_class, swap_float);
+    class_addBang(swap_class, swap_bang);
+    class_addFloat(swap_class, swap_float);
 }
 
 /* -------------------------- change ------------------------------ */
@@ -1411,8 +1411,8 @@ void change_setup(void)
 {
     change_class = class_new(gensym("change"), (t_newmethod)change_new, 0,
         sizeof(t_change), 0, A_DEFFLOAT, 0);
-    class_addbang(change_class, change_bang);
-    class_addfloat(change_class, change_float);
+    class_addBang(change_class, change_bang);
+    class_addFloat(change_class, change_float);
     class_addMethod(change_class, (t_method)change_set, gensym("set"),
         A_DEFFLOAT, 0);
 }
@@ -1530,11 +1530,11 @@ static void value_setup(void)
         (t_method)value_ff,
         sizeof(t_value), 0, A_DEFSYMBOL, 0);
     class_addCreator((t_newmethod)value_new, gensym("v"), A_DEFSYMBOL, 0);
-    class_addbang(value_class, value_bang);
-    class_addfloat(value_class, value_float);
+    class_addBang(value_class, value_bang);
+    class_addFloat(value_class, value_float);
     vcommon_class = class_new(gensym("value"), 0, 0,
         sizeof(t_vcommon), CLASS_PURE, 0);
-    class_addfloat(vcommon_class, vcommon_float);
+    class_addFloat(vcommon_class, vcommon_float);
 }
 
 /* -------------- overall setup routine for this file ----------------- */

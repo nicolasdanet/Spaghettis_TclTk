@@ -166,7 +166,7 @@ static void gfxstub_setup(void)
 {
     gfxstub_class = class_new(gensym("gfxstub"), 0, (t_method)gfxstub_free,
         sizeof(t_gfxstub), CLASS_PURE, 0);
-    class_addanything(gfxstub_class, gfxstub_anything);
+    class_addAnything(gfxstub_class, gfxstub_anything);
     class_addMethod(gfxstub_class, (t_method)gfxstub_signoff,
         gensym("signoff"), 0);
     class_addMethod(gfxstub_class, (t_method)gfxstub_data,
@@ -225,8 +225,8 @@ static void openpanel_setup(void)
     openpanel_class = class_new(gensym("openpanel"),
         (t_newmethod)openpanel_new, (t_method)openpanel_free,
         sizeof(t_openpanel), 0, 0);
-    class_addbang(openpanel_class, openpanel_bang);
-    class_addsymbol(openpanel_class, openpanel_symbol);
+    class_addBang(openpanel_class, openpanel_bang);
+    class_addSymbol(openpanel_class, openpanel_symbol);
     class_addMethod(openpanel_class, (t_method)openpanel_callback,
         gensym("callback"), A_SYMBOL, 0);
 }
@@ -280,8 +280,8 @@ static void savepanel_setup(void)
     savepanel_class = class_new(gensym("savepanel"),
         (t_newmethod)savepanel_new, (t_method)savepanel_free,
         sizeof(t_savepanel), 0, 0);
-    class_addbang(savepanel_class, savepanel_bang);
-    class_addsymbol(savepanel_class, savepanel_symbol);
+    class_addBang(savepanel_class, savepanel_bang);
+    class_addSymbol(savepanel_class, savepanel_symbol);
     class_addMethod(savepanel_class, (t_method)savepanel_callback,
         gensym("callback"), A_SYMBOL, 0);
 }
@@ -369,22 +369,22 @@ static void key_setup(void)
     key_class = class_new(gensym("key"),
         (t_newmethod)key_new, (t_method)key_free,
         sizeof(t_key), CLASS_NOINLET, 0);
-    class_addfloat(key_class, key_float);
+    class_addFloat(key_class, key_float);
     key_sym = gensym("#key");
 
     keyup_class = class_new(gensym("keyup"),
         (t_newmethod)keyup_new, (t_method)keyup_free,
         sizeof(t_keyup), CLASS_NOINLET, 0);
-    class_addfloat(keyup_class, keyup_float);
+    class_addFloat(keyup_class, keyup_float);
     keyup_sym = gensym("#keyup");
-    class_sethelpsymbol(keyup_class, gensym("key"));
+    class_setHelpName(keyup_class, gensym("key"));
     
     keyname_class = class_new(gensym("keyname"),
         (t_newmethod)keyname_new, (t_method)keyname_free,
         sizeof(t_keyname), CLASS_NOINLET, 0);
-    class_addlist(keyname_class, keyname_list);
+    class_addList(keyname_class, keyname_list);
     keyname_sym = gensym("#keyname");
-    class_sethelpsymbol(keyname_class, gensym("key"));
+    class_setHelpName(keyname_class, gensym("key"));
 }
 
 /* -------------------------- setup routine ------------------------------ */

@@ -1082,7 +1082,7 @@ extern void canvas_menuarray(t_glist *canvas);
 
 void g_graph_setup_class(t_class *c)
 {
-    class_setwidget(c, &graph_widgetbehavior);
+    class_setWidget(c, &graph_widgetbehavior);
     class_addMethod(c, (t_method)graph_bounds, gensym("bounds"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(c, (t_method)graph_xticks, gensym("xticks"),

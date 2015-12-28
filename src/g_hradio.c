@@ -549,8 +549,8 @@ void g_hradio_setup(void)
 {
     hradio_class = class_new(gensym("hradio"), (t_newmethod)hradio_new,
         (t_method)hradio_ff, sizeof(t_hradio), 0, A_GIMME, 0);
-    class_addbang(hradio_class, hradio_bang);
-    class_addfloat(hradio_class, hradio_float);
+    class_addBang(hradio_class, hradio_bang);
+    class_addFloat(hradio_class, hradio_float);
     class_addMethod(hradio_class, (t_method)hradio_click, gensym("click"),
                     A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(hradio_class, (t_method)hradio_dialog, gensym("dialog"),
@@ -592,8 +592,8 @@ void g_hradio_setup(void)
     hradio_widgetbehavior.w_deletefn = iem_delete;
     hradio_widgetbehavior.w_visfn = iem_vis;
     hradio_widgetbehavior.w_clickfn = hradio_newclick;
-    class_setwidget(hradio_class, &hradio_widgetbehavior);
-    class_sethelpsymbol(hradio_class, gensym("hradio"));
+    class_setWidget(hradio_class, &hradio_widgetbehavior);
+    class_setHelpName(hradio_class, gensym("hradio"));
     class_setsavefn(hradio_class, hradio_save);
     class_setpropertiesfn(hradio_class, hradio_properties);
 }

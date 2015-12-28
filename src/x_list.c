@@ -163,8 +163,8 @@ static void alist_setup(void)
 {
     alist_class = class_new(gensym("list inlet"),
         0, 0, sizeof(t_alist), 0, 0);
-    class_addlist(alist_class, alist_list);
-    class_addanything(alist_class, alist_anything);
+    class_addList(alist_class, alist_list);
+    class_addAnything(alist_class, alist_anything);
 }
 
 /* ------------- list append --------------------- */
@@ -244,9 +244,9 @@ static void list_append_setup(void)
     list_append_class = class_new(gensym("list append"),
         (t_newmethod)list_append_new, (t_method)list_append_free,
         sizeof(t_list_append), 0, A_GIMME, 0);
-    class_addlist(list_append_class, list_append_list);
-    class_addanything(list_append_class, list_append_anything);
-    class_sethelpsymbol(list_append_class, &s_list);
+    class_addList(list_append_class, list_append_list);
+    class_addAnything(list_append_class, list_append_anything);
+    class_setHelpName(list_append_class, &s_list);
 }
 
 /* ------------- list prepend --------------------- */
@@ -328,9 +328,9 @@ static void list_prepend_setup(void)
     list_prepend_class = class_new(gensym("list prepend"),
         (t_newmethod)list_prepend_new, (t_method)list_prepend_free,
         sizeof(t_list_prepend), 0, A_GIMME, 0);
-    class_addlist(list_prepend_class, list_prepend_list);
-    class_addanything(list_prepend_class, list_prepend_anything);
-    class_sethelpsymbol(list_prepend_class, &s_list);
+    class_addList(list_prepend_class, list_prepend_list);
+    class_addAnything(list_prepend_class, list_prepend_anything);
+    class_setHelpName(list_prepend_class, &s_list);
 }
 
 /* ------------- list split --------------------- */
@@ -387,9 +387,9 @@ static void list_split_setup(void)
     list_split_class = class_new(gensym("list split"),
         (t_newmethod)list_split_new, 0,
         sizeof(t_list_split), 0, A_DEFFLOAT, 0);
-    class_addlist(list_split_class, list_split_list);
-    class_addanything(list_split_class, list_split_anything);
-    class_sethelpsymbol(list_split_class, &s_list);
+    class_addList(list_split_class, list_split_list);
+    class_addAnything(list_split_class, list_split_anything);
+    class_setHelpName(list_split_class, &s_list);
 }
 
 /* ------------- list trim --------------------- */
@@ -428,9 +428,9 @@ static void list_trim_setup(void)
     list_trim_class = class_new(gensym("list trim"),
         (t_newmethod)list_trim_new, 0,
         sizeof(t_list_trim), 0, 0);
-    class_addlist(list_trim_class, list_trim_list);
-    class_addanything(list_trim_class, list_trim_anything);
-    class_sethelpsymbol(list_trim_class, &s_list);
+    class_addList(list_trim_class, list_trim_list);
+    class_addAnything(list_trim_class, list_trim_anything);
+    class_setHelpName(list_trim_class, &s_list);
 }
 
 /* ------------- list length --------------------- */
@@ -466,9 +466,9 @@ static void list_length_setup(void)
     list_length_class = class_new(gensym("list length"),
         (t_newmethod)list_length_new, 0,
         sizeof(t_list_length), 0, 0);
-    class_addlist(list_length_class, list_length_list);
-    class_addanything(list_length_class, list_length_anything);
-    class_sethelpsymbol(list_length_class, &s_list);
+    class_addList(list_length_class, list_length_list);
+    class_addAnything(list_length_class, list_length_anything);
+    class_setHelpName(list_length_class, &s_list);
 }
 
 /* ------------- list fromsymbol --------------------- */
@@ -502,8 +502,8 @@ static void list_fromsymbol_setup(void)
 {
     list_fromsymbol_class = class_new(gensym("list fromsymbol"),
         (t_newmethod)list_fromsymbol_new, 0, sizeof(t_list_fromsymbol), 0, 0);
-    class_addsymbol(list_fromsymbol_class, list_fromsymbol_symbol);
-    class_sethelpsymbol(list_fromsymbol_class, &s_list);
+    class_addSymbol(list_fromsymbol_class, list_fromsymbol_symbol);
+    class_setHelpName(list_fromsymbol_class, &s_list);
 }
 
 /* ------------- list tosymbol --------------------- */
@@ -537,8 +537,8 @@ static void list_tosymbol_setup(void)
 {
     list_tosymbol_class = class_new(gensym("list tosymbol"),
         (t_newmethod)list_tosymbol_new, 0, sizeof(t_list_tosymbol), 0, 0);
-    class_addlist(list_tosymbol_class, list_tosymbol_list);
-    class_sethelpsymbol(list_tosymbol_class, &s_list);
+    class_addList(list_tosymbol_class, list_tosymbol_list);
+    class_setHelpName(list_tosymbol_class, &s_list);
 }
 
 /* ------------- list ------------------- */

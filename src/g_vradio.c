@@ -551,8 +551,8 @@ void g_vradio_setup(void)
 {
     vradio_class = class_new(gensym("vradio"), (t_newmethod)vradio_new,
         (t_method)vradio_ff, sizeof(t_vradio), 0, A_GIMME, 0);
-    class_addbang(vradio_class, vradio_bang);
-    class_addfloat(vradio_class, vradio_float);
+    class_addBang(vradio_class, vradio_bang);
+    class_addFloat(vradio_class, vradio_float);
     class_addMethod(vradio_class, (t_method)vradio_click, gensym("click"),
                     A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(vradio_class, (t_method)vradio_dialog, gensym("dialog"),
@@ -594,8 +594,8 @@ void g_vradio_setup(void)
     vradio_widgetbehavior.w_deletefn = iem_delete;
     vradio_widgetbehavior.w_visfn = iem_vis;
     vradio_widgetbehavior.w_clickfn = vradio_newclick;
-    class_setwidget(vradio_class, &vradio_widgetbehavior);
-    class_sethelpsymbol(vradio_class, gensym("vradio"));
+    class_setWidget(vradio_class, &vradio_widgetbehavior);
+    class_setHelpName(vradio_class, gensym("vradio"));
     class_setsavefn(vradio_class, vradio_save);
     class_setpropertiesfn(vradio_class, vradio_properties);
 }
