@@ -20,7 +20,7 @@ moment it also defines "text" but it may later be better to split this off. */
     #include <unistd.h>
 #endif
 
-extern t_pd *newest;
+extern t_pd *pd_newest;
 extern t_pd pd_canvasMaker;
 
 static t_class *text_define_class;
@@ -1441,33 +1441,33 @@ static void text_sequence_free(t_text_sequence *x)
 static void *text_new(t_symbol *s, int argc, t_atom *argv)
 {
     if (!argc || argv[0].a_type != A_SYMBOL)
-        newest = text_define_new(s, argc, argv);
+        pd_newest = text_define_new(s, argc, argv);
     else
     {
         char *str = argv[0].a_w.w_symbol->s_name;
         if (!strcmp(str, "d") || !strcmp(str, "define"))
-            newest = text_define_new(s, argc-1, argv+1);
+            pd_newest = text_define_new(s, argc-1, argv+1);
         else if (!strcmp(str, "get"))
-            newest = text_get_new(s, argc-1, argv+1);
+            pd_newest = text_get_new(s, argc-1, argv+1);
         else if (!strcmp(str, "set"))
-            newest = text_set_new(s, argc-1, argv+1);
+            pd_newest = text_set_new(s, argc-1, argv+1);
         else if (!strcmp(str, "size"))
-            newest = text_size_new(s, argc-1, argv+1);
+            pd_newest = text_size_new(s, argc-1, argv+1);
         else if (!strcmp(str, "tolist"))
-            newest = text_tolist_new(s, argc-1, argv+1);
+            pd_newest = text_tolist_new(s, argc-1, argv+1);
         else if (!strcmp(str, "fromlist"))
-            newest = text_fromlist_new(s, argc-1, argv+1);
+            pd_newest = text_fromlist_new(s, argc-1, argv+1);
         else if (!strcmp(str, "search"))
-            newest = text_search_new(s, argc-1, argv+1);
+            pd_newest = text_search_new(s, argc-1, argv+1);
         else if (!strcmp(str, "sequence"))
-            newest = text_sequence_new(s, argc-1, argv+1);
+            pd_newest = text_sequence_new(s, argc-1, argv+1);
         else 
         {
             post_error ("list %s: unknown function", str);
-            newest = 0;
+            pd_newest = 0;
         }
     }
-    return (newest);
+    return (pd_newest);
 }
 
 /*  the qlist and textfile objects, as of 0.44, are 'derived' from

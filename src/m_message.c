@@ -29,11 +29,17 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define SYMBOL_HASH_SIZE    1024                /* Must be power of two. */
+#define MESSAGE_HASH_SIZE           1024                /* Must be a power of two. */
+#define MESSAGE_MAXIMUM_RECURSIVE   1000
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+extern t_pd *pd_newest;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 extern t_pd pd_objectMaker;
 extern t_pd pd_canvasMaker;
@@ -41,7 +47,25 @@ extern t_pd pd_canvasMaker;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_symbol *symHash[SYMBOL_HASH_SIZE];     /* Shared. */
+t_symbol s_pointer  = { "pointer"   , NULL, NULL };         /* Shared. */
+t_symbol s_float    = { "float"     , NULL, NULL };
+t_symbol s_symbol   = { "symbol"    , NULL, NULL };
+t_symbol s_bang     = { "bang"      , NULL, NULL };
+t_symbol s_list     = { "list"      , NULL, NULL };
+t_symbol s_anything = { "anything"  , NULL, NULL };
+t_symbol s_signal   = { "signal"    , NULL, NULL };
+t_symbol s__N       = { "#N"        , NULL, NULL };
+t_symbol s__X       = { "#X"        , NULL, NULL };
+t_symbol s_x        = { "x"         , NULL, NULL };
+t_symbol s_y        = { "y"         , NULL, NULL };
+t_symbol s_         = { ""          , NULL, NULL };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static int message_recursiveDepth;                          /* Shared. */
+
+static t_symbol *message_hashTable[MESSAGE_HASH_SIZE];      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -62,7 +86,9 @@ t_symbol *generateSymbol (const char *s, t_symbol *alreadyAllocatedSymbol)
         s2++;
     }
     
-    sym1 = symHash + (hash & (SYMBOL_HASH_SIZE - 1));
+    PD_ASSERT (length < PD_STRING);
+    
+    sym1 = message_hashTable + (hash & (MESSAGE_HASH_SIZE - 1));
     
     while (sym2 = *sym1) {
         if (!strcmp (sym2->s_name, s)) { return sym2; }
@@ -92,41 +118,20 @@ t_symbol *gensym (const char *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_symbol *addfileextent(t_symbol *s)
-{
-    char namebuf[PD_STRING], *str = s->s_name;
-    int ln = strlen(str);
-    if (!strcmp(str + ln - 3, ".pd")) return (s);
-    strcpy(namebuf, str);
-    strcpy(namebuf+ln, ".pd");
-    return (gensym(namebuf));
-}
-
-#define MAXOBJDEPTH 1000
-static int tryingalready;
-
-void canvas_popabstraction(t_canvas *x);
-extern t_pd *newest;
-
-t_symbol* pathsearch(t_symbol *s,char* ext);
-int pd_setLoadingAbstraction (t_symbol *sym);
-
-    /* this routine is called when a new "object" is requested whose class Pd
-    doesn't know.  Pd tries to load it as an extern, then as an abstraction. */
-void new_anything(void *dummy, t_symbol *s, int argc, t_atom *argv)
+static void new_anything(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int fd;
     char dirbuf[PD_STRING], classslashclass[PD_STRING], *nameptr;
-    if (tryingalready>MAXOBJDEPTH){
-      post_error ("maximum object loading depth %d reached", MAXOBJDEPTH);
+    if (message_recursiveDepth>MESSAGE_MAXIMUM_RECURSIVE){
+      post_error ("maximum object loading depth %d reached", MESSAGE_MAXIMUM_RECURSIVE);
       return;
     }
-    newest = 0;
+    pd_newest = 0;
     if (sys_load_lib(canvas_getcurrent(), s->s_name))
     {
-        tryingalready++;
+        message_recursiveDepth++;
         pd_typedmess(dummy, s, argc, argv);
-        tryingalready--;
+        message_recursiveDepth--;
         return;
     }
     /* for class/class.pd support, to match class/class.pd_linux  */
@@ -151,29 +156,27 @@ void new_anything(void *dummy, t_symbol *s, int argc, t_atom *argv)
         }
         else post_error ("%s: can't load abstraction within itself\n", s->s_name);
     }
-    else newest = 0;
+    else pd_newest = 0;
 }
-
-/* Shared. */
-
-t_symbol  s_pointer =   {"pointer", 0, 0};
-t_symbol  s_float =     {"float", 0, 0};
-t_symbol  s_symbol =    {"symbol", 0, 0};
-t_symbol  s_bang =      {"bang", 0, 0};
-t_symbol  s_list =      {"list", 0, 0};
-t_symbol  s_anything =  {"anything", 0, 0};
-t_symbol  s_signal =    {"signal", 0, 0};
-t_symbol  s__N =        {"#N", 0, 0};
-t_symbol  s__X =        {"#X", 0, 0};
-t_symbol  s_x =         {"x", 0, 0};
-t_symbol  s_y =         {"y", 0, 0};
-t_symbol  s_ =          {"", 0, 0};
-
-static t_symbol *symlist[] = { &s_pointer, &s_float, &s_symbol, &s_bang,
-    &s_list, &s_anything, &s_signal, &s__N, &s__X, &s_x, &s_y, &s_};
 
 void mess_init(void)
 {
+    t_symbol *symlist[] = 
+    { 
+        &s_pointer,
+        &s_float,
+        &s_symbol,
+        &s_bang,
+        &s_list,
+        &s_anything,
+        &s_signal,
+        &s__N,
+        &s__X,
+        &s_x,
+        &s_y,
+        &s_
+    };
+    
     t_symbol **sp;
     int i;
 
@@ -187,7 +190,7 @@ void mess_init(void)
     class_addAnything(pd_objectMaker, (t_method)new_anything);
 }
 
-t_pd *newest;
+
 
     /* horribly, we need prototypes for each of the artificial function
     calls in pd_typedmess(), to keep the compiler quiet. */
@@ -257,7 +260,7 @@ void pd_typedmess(t_pd *x, t_symbol *s, int argc, t_atom *argv)
         if (*wp == A_GIMME)
         {
             if (x == &pd_objectMaker)
-                newest = (*((t_newgimme)(m->me_function)))(s, argc, argv);
+                pd_newest = (*((t_newgimme)(m->me_function)))(s, argc, argv);
             else (*((t_messgimme)(m->me_function)))(x, s, argc, argv);
             return;
         }
@@ -342,7 +345,7 @@ void pd_typedmess(t_pd *x, t_symbol *s, int argc, t_atom *argv)
         default: bonzo = 0;
         }
         if (x == &pd_objectMaker)
-            newest = bonzo;
+            pd_newest = bonzo;
         return;
     }
     (*c->c_methodAny)(x, s, argc, argv);

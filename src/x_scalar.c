@@ -16,7 +16,7 @@
     #include <unistd.h>
 #endif
 
-extern t_pd *newest;
+extern t_pd *pd_newest;
 extern t_class *scalar_class;
 
 t_class *scalar_define_class;
@@ -89,7 +89,7 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
         saved file or copy buffer */
     pd_bind(&x->gl_obj.te_g.g_pd, asym); 
 noscalar:
-    newest = &x->gl_obj.te_g.g_pd;     /* mimic action of canvas_pop() */
+    pd_newest = &x->gl_obj.te_g.g_pd;     /* mimic action of canvas_pop() */
     pd_pop(&x->gl_obj.te_g.g_pd);
     x->gl_loading = 0;
     
@@ -157,19 +157,19 @@ static void scalar_define_save(t_gobj *z, t_binbuf *bb)
 static void *scalarobj_new(t_symbol *s, int argc, t_atom *argv)
 {
     if (!argc || argv[0].a_type != A_SYMBOL)
-        newest = scalar_define_new(s, argc, argv);
+        pd_newest = scalar_define_new(s, argc, argv);
     else
     {
         char *str = argv[0].a_w.w_symbol->s_name;
         if (!strcmp(str, "d") || !strcmp(str, "define"))
-            newest = scalar_define_new(s, argc-1, argv+1);
+            pd_newest = scalar_define_new(s, argc-1, argv+1);
         else 
         {
             post_error ("scalar %s: unknown function", str);
-            newest = 0;
+            pd_newest = 0;
         }
     }
-    return (newest);
+    return (pd_newest);
 }
 
 void canvas_add_for_class(t_class *c);

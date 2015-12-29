@@ -51,7 +51,7 @@ desktops because the borders have both window title area and menus. */
 
 /* ---------------------- variables --------------------------- */
 
-extern t_pd *newest;
+extern t_pd *pd_newest;
 
 t_class *canvas_class;  /* Shared. */
 
@@ -922,7 +922,7 @@ static void canvas_relocate(t_canvas *x, t_symbol *canvasgeom,
 
 void canvas_popabstraction(t_canvas *x)
 {
-    newest = &x->gl_obj.te_g.g_pd;
+    pd_newest = &x->gl_obj.te_g.g_pd;
     pd_pop(&x->gl_obj.te_g.g_pd);
     x->gl_loading = 0;
     canvas_resortinlets(x);

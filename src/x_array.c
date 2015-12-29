@@ -18,7 +18,7 @@
     #include <unistd.h>
 #endif
 
-extern t_pd *newest;    /* OK - this should go into a .h file now :) */
+extern t_pd *pd_newest;    /* OK - this should go into a .h file now :) */
 extern t_class *garray_class;
 
 /* -- "table" - classic "array define" object by Guenter Geiger --*/
@@ -56,7 +56,7 @@ static void *table_donew(t_symbol *s, int size, int flags,
 
     graph_array(gl, s, &s_float, size, flags);
 
-    newest = &x->gl_obj.te_g.g_pd;     /* mimic action of canvas_pop() */
+    pd_newest = &x->gl_obj.te_g.g_pd;     /* mimic action of canvas_pop() */
     pd_pop(&x->gl_obj.te_g.g_pd);
     x->gl_loading = 0;
 
@@ -788,35 +788,35 @@ static void array_min_float(t_array_min *x, t_floatarg f)
 static void *arrayobj_new(t_symbol *s, int argc, t_atom *argv)
 {
     if (!argc || argv[0].a_type != A_SYMBOL)
-        newest = array_define_new(s, argc, argv);
+        pd_newest = array_define_new(s, argc, argv);
     else
     {
         char *str = argv[0].a_w.w_symbol->s_name;
         if (!strcmp(str, "d") || !strcmp(str, "define"))
-            newest = array_define_new(s, argc-1, argv+1);
+            pd_newest = array_define_new(s, argc-1, argv+1);
         else if (!strcmp(str, "size"))
-            newest = array_size_new(s, argc-1, argv+1);
+            pd_newest = array_size_new(s, argc-1, argv+1);
         else if (!strcmp(str, "sum"))
-            newest = array_sum_new(s, argc-1, argv+1);
+            pd_newest = array_sum_new(s, argc-1, argv+1);
         else if (!strcmp(str, "get"))
-            newest = array_get_new(s, argc-1, argv+1);
+            pd_newest = array_get_new(s, argc-1, argv+1);
         else if (!strcmp(str, "set"))
-            newest = array_set_new(s, argc-1, argv+1);
+            pd_newest = array_set_new(s, argc-1, argv+1);
         else if (!strcmp(str, "quantile"))
-            newest = array_quantile_new(s, argc-1, argv+1);
+            pd_newest = array_quantile_new(s, argc-1, argv+1);
         else if (!strcmp(str, "random"))
-            newest = array_random_new(s, argc-1, argv+1);
+            pd_newest = array_random_new(s, argc-1, argv+1);
         else if (!strcmp(str, "max"))
-            newest = array_max_new(s, argc-1, argv+1);
+            pd_newest = array_max_new(s, argc-1, argv+1);
         else if (!strcmp(str, "min"))
-            newest = array_min_new(s, argc-1, argv+1);
+            pd_newest = array_min_new(s, argc-1, argv+1);
         else 
         {
             post_error ("array %s: unknown function", str);
-            newest = 0;
+            pd_newest = 0;
         }
     }
-    return (newest);
+    return (pd_newest);
 }
 
 void canvas_add_for_class(t_class *c);
