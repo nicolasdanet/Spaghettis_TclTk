@@ -176,7 +176,7 @@ void open_via_helppath  (const char *name, const char *dir);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void mess_init          (void);
+void message_initialize (void);
 void obj_init           (void);
 void conf_init          (void);
 void glob_init          (void);

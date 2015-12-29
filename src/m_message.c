@@ -21,6 +21,30 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+typedef t_pd *(*t_newgimme)(t_symbol *s, int argc, t_atom *argv);
+typedef void (*t_messgimme)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define MESSAGE_FLOATS  t_floatarg, t_floatarg, t_floatarg, t_floatarg, t_floatarg
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+typedef t_pd *(*t_fun0)(                                            MESSAGE_FLOATS);
+typedef t_pd *(*t_fun1)(t_int,                                      MESSAGE_FLOATS);
+typedef t_pd *(*t_fun2)(t_int, t_int,                               MESSAGE_FLOATS);
+typedef t_pd *(*t_fun3)(t_int, t_int, t_int,                        MESSAGE_FLOATS);
+typedef t_pd *(*t_fun4)(t_int, t_int, t_int, t_int,                 MESSAGE_FLOATS);
+typedef t_pd *(*t_fun5)(t_int, t_int, t_int, t_int, t_int,          MESSAGE_FLOATS);
+typedef t_pd *(*t_fun6)(t_int, t_int, t_int, t_int, t_int, t_int,   MESSAGE_FLOATS);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define MESSAGE_HASH_SIZE           1024                /* Must be a power of two. */
 #define MESSAGE_MAXIMUM_RECURSIVE   1000
 
@@ -154,60 +178,43 @@ static void new_anything (void *dummy, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void mess_init(void)
+void message_initialize (void)
 {
-    t_symbol *symlist[] = 
-    { 
-        &s_pointer,
-        &s_float,
-        &s_symbol,
-        &s_bang,
-        &s_list,
-        &s_anything,
-        &s_signal,
-        &s__N,
-        &s__X,
-        &s_x,
-        &s_y,
-        &s_
-    };
+    t_symbol *symbols[12] = 
+        { 
+            &s_pointer,
+            &s_float,
+            &s_symbol,
+            &s_bang,
+            &s_list,
+            &s_anything,
+            &s_signal,
+            &s__N,
+            &s__X,
+            &s_x,
+            &s_y,
+            &s_
+        };
     
-    t_symbol **sp;
+    if (pd_objectMaker) { PD_BUG; }
+    else {
+    //
     int i;
-
-    if (pd_objectMaker) return;    
-    for (i = sizeof(symlist)/sizeof(*symlist), sp = symlist; i--; sp++)
-        (void) generateSymbol((*sp)->s_name, *sp);
-    pd_objectMaker = class_new(gensym("objectmaker"), 0, 0, sizeof(t_pd),
-        CLASS_DEFAULT, A_NULL);
-    pd_canvasMaker = class_new(gensym("classmaker"), 0, 0, sizeof(t_pd),
-        CLASS_DEFAULT, A_NULL);
-    class_addAnything(pd_objectMaker, (t_method)new_anything);
+    for (i = 0; i < 12; i++) { generateSymbol (symbols[i]->s_name, symbols[i]); }
+        
+    pd_objectMaker = class_new (gensym ("objectmaker"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
+    pd_canvasMaker = class_new (gensym ("classmaker"),  NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
+    
+    class_addAnything (pd_objectMaker, (t_method)new_anything);
+    //
+    }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-
-    /* horribly, we need prototypes for each of the artificial function
-    calls in pd_typedmess(), to keep the compiler quiet. */
-typedef t_pd *(*t_newgimme)(t_symbol *s, int argc, t_atom *argv);
-typedef void(*t_messgimme)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
-
-typedef t_pd *(*t_fun0)(
-    t_floatarg d1, t_floatarg d2, t_floatarg d3, t_floatarg d4, t_floatarg d5);
-typedef t_pd *(*t_fun1)(t_int i1,
-    t_floatarg d1, t_floatarg d2, t_floatarg d3, t_floatarg d4, t_floatarg d5);
-typedef t_pd *(*t_fun2)(t_int i1, t_int i2,
-    t_floatarg d1, t_floatarg d2, t_floatarg d3, t_floatarg d4, t_floatarg d5);
-typedef t_pd *(*t_fun3)(t_int i1, t_int i2, t_int i3,
-    t_floatarg d1, t_floatarg d2, t_floatarg d3, t_floatarg d4, t_floatarg d5);
-typedef t_pd *(*t_fun4)(t_int i1, t_int i2, t_int i3, t_int i4,
-    t_floatarg d1, t_floatarg d2, t_floatarg d3, t_floatarg d4, t_floatarg d5);
-typedef t_pd *(*t_fun5)(t_int i1, t_int i2, t_int i3, t_int i4, t_int i5,
-    t_floatarg d1, t_floatarg d2, t_floatarg d3, t_floatarg d4, t_floatarg d5);
-typedef t_pd *(*t_fun6)(t_int i1, t_int i2, t_int i3, t_int i4, t_int i5, t_int i6,
-    t_floatarg d1, t_floatarg d2, t_floatarg d3, t_floatarg d4, t_floatarg d5);
-
-void pd_typedmess(t_pd *x, t_symbol *s, int argc, t_atom *argv)
+void pd_typedmess (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_method *f;
     t_class *c = *x;

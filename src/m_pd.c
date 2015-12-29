@@ -167,7 +167,7 @@ void pd_initialize (void)
 {
     pd_this = pdinstance_new();
     
-    mess_init();
+    message_initialize();
     obj_init();
     conf_init();
     glob_init();
