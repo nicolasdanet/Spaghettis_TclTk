@@ -254,7 +254,7 @@ void obj_list(t_object *x, t_symbol *s, int argc, t_atom *argv)
     t_inlet *ip = ((t_object *)x)->te_inlet;
     if (!argc) 
     {
-        pd_emptylist(&x->te_g.g_pd);
+        pd_empty(&x->te_g.g_pd);
         return;
     }
     for (count = argc-1, ap = argv+1; ip && count--; ap++, ip = ip->i_next)

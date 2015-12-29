@@ -126,7 +126,6 @@ struct _pdinstance {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void pd_emptylist       (t_pd *x);
 void outlet_setstacklim (void);
 
 void text_save          (t_gobj *z, t_binbuf *b);

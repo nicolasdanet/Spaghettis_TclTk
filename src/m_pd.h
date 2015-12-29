@@ -356,6 +356,7 @@ PD_DLL void     pd_pointer          (t_pd *x, t_gpointer *gp);
 PD_DLL void     pd_float            (t_pd *x, t_float f);
 PD_DLL void     pd_symbol           (t_pd *x, t_symbol *s);
 PD_DLL void     pd_list             (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+PD_DLL void     pd_empty            (t_pd *x);
 PD_DLL void     pd_typedmess        (t_pd *x, t_symbol *s, int argc, t_atom *argv);
 PD_DLL void     pd_forwardmess      (t_pd *x, int argc, t_atom *argv);
 PD_DLL void     pd_vmess            (t_pd *x, t_symbol *s, char *fmt, ...);
@@ -393,6 +394,7 @@ PD_DLL void     class_addSymbol             (t_class *c, t_method fn);
 PD_DLL void     class_addList               (t_class *c, t_method fn);
 PD_DLL void     class_addAnything           (t_class *c, t_method fn);
 
+PD_DLL int      class_hasBangMethod         (t_class *c);
 PD_DLL int      class_hasDrawCommand        (t_class *c);
 PD_DLL int      class_hasPropertiesFunction (t_class *c); 
 

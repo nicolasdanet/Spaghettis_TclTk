@@ -229,6 +229,14 @@ void pd_list (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     (*(*x)->c_methodList)(x, &s_list, argc, argv);
 }
 
+void pd_empty (t_pd *x)
+{
+    if (class_hasBangMethod (pd_class (x))) { (*(*x)->c_methodBang) (x); }
+    else {
+        (*(*x)->c_methodAny) (x, &s_bang, 0, NULL);
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
