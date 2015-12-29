@@ -373,7 +373,7 @@ PD_DLL t_gotfn  zgetfn              (t_pd *x, t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define CLASS_SIGNAL(c, t, field)           class_domainsignalin (c, (char *)(&((t *)0)->field) - (char *)0)
+#define CLASS_SIGNAL(c, t, field)           class_addSignal (c, (char *)(&((t *)0)->field) - (char *)0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -385,7 +385,8 @@ PD_DLL t_class  *class_new                  (t_symbol *name,
                                                 size_t size,
                                                 int flags,
                                                 t_atomtype type1, ...);
-                                                
+
+PD_DLL void     class_addSignal             (t_class *c, int offset);
 PD_DLL void     class_addCreator            (t_newmethod newmethod, t_symbol *s, t_atomtype type1, ...);
 PD_DLL void     class_addMethod             (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ...);
 PD_DLL void     class_addBang               (t_class *c, t_method fn);
@@ -401,9 +402,9 @@ PD_DLL void     class_setParentWidget       (t_class *c, t_parentwidgetbehavior 
 PD_DLL char     *class_getName              (t_class *c);
 PD_DLL char     *class_getHelpName          (t_class *c);
 PD_DLL char     *class_gethelpdir           (t_class *c);
-PD_DLL void     class_setdrawcommand        (t_class *c);
-PD_DLL int      class_isdrawcommand         (t_class *c);
-PD_DLL void     class_domainsignalin        (t_class *c, int onset);
+PD_DLL void     class_setDrawCommand        (t_class *c);
+PD_DLL int      class_hasDrawCommand        (t_class *c);
+
 PD_DLL void     class_set_extern_dir        (t_symbol *s);
 
 PD_DLL void     class_setsavefn             (t_class *c, t_savefn f);

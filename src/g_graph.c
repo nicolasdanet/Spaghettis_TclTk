@@ -56,7 +56,7 @@ void glist_add(t_glist *x, t_gobj *y)
     }
     if (glist_isvisible(x))
         gobj_vis(y, x, 1);
-    if (class_isdrawcommand(y->g_pd)) 
+    if (class_hasDrawCommand(y->g_pd)) 
         canvas_redrawallfortemplate(template_findbyname(canvas_makebindsym(
             glist_getcanvas(x)->gl_name)), 0);
 }
@@ -79,7 +79,7 @@ void glist_delete(t_glist *x, t_gobj *y)
     t_gotfn chkdsp = zgetfn(&y->g_pd, gensym("dsp"));
     t_canvas *canvas = glist_getcanvas(x);
     t_rtext *rtext = 0;
-    int drawcommand = class_isdrawcommand(y->g_pd);
+    int drawcommand = class_hasDrawCommand(y->g_pd);
     int wasdeleting;
     
     wasdeleting = canvas_setdeleting(canvas, 1);

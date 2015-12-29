@@ -66,6 +66,17 @@ static void class_defaultAnything   (t_pd *x, t_symbol *s, int argc, t_atom *arg
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void class_floatForSignal (t_pd *x, t_float f)
+{
+    int offset = (*x)->c_floatSignalIn;
+    PD_ASSERT (offset > 0);
+    *(t_float *)(((char *)x) + offset) = f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void class_defaultSave (t_gobj *z, t_binbuf *b)
 {
     PD_BUG;
@@ -226,9 +237,18 @@ t_class *class_new (t_symbol *s,
     c->c_isGraphic          = (typeflag >= CLASS_GRAPHIC);
     c->c_isBox              = (typeflag == CLASS_BOX);
     c->c_hasFirstInlet      = ((flags & CLASS_NOINLET) == 0);
-    c->c_isDrawCommand      = 0;
+    c->c_hasDrawCommand     = 0;
 
     return c;
+}
+
+void class_addSignal (t_class *c, int offset)
+{
+    if (offset <= 0) { PD_BUG; }
+    else {
+        c->c_floatSignalIn = offset;
+        c->c_methodFloat = class_floatForSignal;
+    }
 }
 
 void class_addCreator (t_newmethod newmethod, t_symbol *s, t_atomtype type1, ...)
@@ -262,10 +282,7 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
         
     va_start (ap, type1);
     
-    if (s == &s_signal) { 
-        PD_OBSOLETE; PD_ASSERT (!c->c_floatSignalIn);
-        c->c_floatSignalIn = -1;
-    }
+    if (s == &s_signal) { PD_OBSOLETE; return; }
         
     if (s == &s_bang) {
         if (argtype) { PD_BUG; return; }
@@ -319,6 +336,9 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 void class_addBang (t_class *c, t_method fn)
 {
     c->c_methodBang = (t_bangmethod)fn;
@@ -353,6 +373,15 @@ void class_addAnything (t_class *c, t_method fn)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int class_hasDrawCommand (t_class *c)
+{
+    return (c->c_hasDrawCommand);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void class_setHelpName (t_class *c, t_symbol *s)
 {
     c->c_helpName = s;
@@ -366,6 +395,11 @@ void class_setWidget (t_class *c, t_widgetbehavior *w)
 void class_setParentWidget (t_class *c, t_parentwidgetbehavior *pw)
 {
     c->c_behaviorParent = pw;
+}
+
+void class_setDrawCommand (t_class *c)
+{
+    c->c_hasDrawCommand = 1;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -390,38 +424,6 @@ t_parentwidgetbehavior *class_getParentWidget (t_class *c)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void class_setdrawcommand (t_class *c)
-{
-    c->c_isDrawCommand = 1;
-}
-
-int class_isdrawcommand(t_class *c)
-{
-    return (c->c_isDrawCommand);
-}
-
-static void pd_floatforsignal(t_pd *x, t_float f)
-{
-    int offset = (*x)->c_floatSignalIn;
-    if (offset > 0)
-        *(t_float *)(((char *)x) + offset) = f;
-    else
-        post_error ("%s: float unexpected for signal input",
-            (*x)->c_name->s_name);
-}
-
-void class_domainsignalin(t_class *c, int onset)
-{
-    if (onset <= 0) onset = -1;
-    else
-    {
-        if (c->c_methodFloat != class_defaultFloat)
-            post("warning: %s: float method overwritten", c->c_name->s_name);
-        c->c_methodFloat = (t_floatmethod)pd_floatforsignal;
-    }
-    c->c_floatSignalIn = onset;
-}
 
 void class_set_extern_dir(t_symbol *s)
 {

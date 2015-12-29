@@ -1309,7 +1309,7 @@ static void curve_setup(void)
 {
     curve_class = class_new(gensym("drawpolygon"), (t_newmethod)curve_new,
         (t_method)curve_free, sizeof(t_curve), 0, A_GIMME, 0);
-    class_setdrawcommand(curve_class);
+    class_setDrawCommand(curve_class);
     class_addCreator((t_newmethod)curve_new, gensym("drawcurve"),
         A_GIMME, 0);
     class_addCreator((t_newmethod)curve_new, gensym("filledpolygon"),
@@ -2318,7 +2318,7 @@ static void plot_setup(void)
 {
     plot_class = class_new(gensym("plot"), (t_newmethod)plot_new, 0,
         sizeof(t_plot), 0, A_GIMME, 0);
-    class_setdrawcommand(plot_class);
+    class_setDrawCommand(plot_class);
     class_addFloat(plot_class, plot_float);
     class_setParentWidget(plot_class, &plot_widgetbehavior);
 }
@@ -2701,7 +2701,7 @@ static void drawnumber_setup(void)
     drawnumber_class = class_new(gensym("drawtext"),
         (t_newmethod)drawnumber_new, (t_method)drawnumber_free,
         sizeof(t_drawnumber), 0, A_GIMME, 0);
-    class_setdrawcommand(drawnumber_class);
+    class_setDrawCommand(drawnumber_class);
     class_addFloat(drawnumber_class, drawnumber_float);
     class_addCreator((t_newmethod)drawnumber_new, gensym("drawsymbol"),
         A_GIMME, 0);

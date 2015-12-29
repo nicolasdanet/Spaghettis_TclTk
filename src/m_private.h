@@ -88,7 +88,7 @@ struct _class {
     char                    c_isGraphic;
     char                    c_isBox;
     char                    c_hasFirstInlet;
-    char                    c_isDrawCommand;
+    char                    c_hasDrawCommand;
     };
 
 // -----------------------------------------------------------------------------------------------------------
