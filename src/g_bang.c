@@ -550,6 +550,6 @@ void g_bang_setup(void)
     bng_widgetbehavior.w_clickfn = bng_newclick;
     class_setWidget(bng_class, &bng_widgetbehavior);
     class_setHelpName(bng_class, gensym("bng"));
-    class_setsavefn(bng_class, bng_save);
-    class_setpropertiesfn(bng_class, bng_properties);
+    class_setSaveFunction(bng_class, bng_save);
+    class_setPropertiesFunction(bng_class, bng_properties);
 }

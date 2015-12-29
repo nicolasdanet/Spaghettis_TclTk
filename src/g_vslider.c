@@ -636,6 +636,6 @@ void g_vslider_setup(void)
     vslider_widgetbehavior.w_clickfn =      vslider_newclick;
     class_setWidget(vslider_class, &vslider_widgetbehavior);
     class_setHelpName(vslider_class, gensym("vsl"));
-    class_setsavefn(vslider_class, vslider_save);
-    class_setpropertiesfn(vslider_class, vslider_properties);
+    class_setSaveFunction(vslider_class, vslider_save);
+    class_setPropertiesFunction(vslider_class, vslider_properties);
 }

@@ -47,6 +47,12 @@ PD_STRUCT _widgetbehavior;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+typedef void (*t_gotfn)(void *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 typedef struct _methodentry {
     t_symbol    *me_name;
     t_gotfn     me_function;
@@ -55,6 +61,7 @@ typedef struct _methodentry {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 typedef void (*t_bangmethod)(t_pd *x);
 typedef void (*t_pointermethod)(t_pd *x, t_gpointer *gp);
@@ -69,7 +76,7 @@ typedef void (*t_anymethod)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
 struct _class {
     t_symbol                *c_name;
     t_symbol                *c_helpName;
-    t_symbol                *c_externDirectory;
+    t_symbol                *c_externalDirectory;
     size_t                  c_size;
     t_methodentry           *c_methods;
     int                     c_methodsSize;
@@ -124,6 +131,12 @@ void outlet_setstacklim (void);
 
 void text_save          (t_gobj *z, t_binbuf *b);
 void obj_list           (t_object *x, t_symbol *s, int argc, t_atom *argv);
+
+void pd_push            (t_pd *x);
+void pd_pop             (t_pd *x);
+
+t_gotfn  getfn          (t_pd *x, t_symbol *s);
+t_gotfn  zgetfn         (t_pd *x, t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

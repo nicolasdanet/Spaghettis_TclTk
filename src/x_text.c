@@ -1822,7 +1822,7 @@ void x_qlist_setup(void )
         gensym("write"), A_GIMME, 0);
     class_addMethod(text_define_class, (t_method)textbuf_read,
         gensym("read"), A_GIMME, 0);
-    class_setsavefn(text_define_class, text_define_save);
+    class_setSaveFunction(text_define_class, text_define_save);
     class_addBang(text_define_class, text_define_bang);
     class_setHelpName(text_define_class, gensym("text-object"));
 

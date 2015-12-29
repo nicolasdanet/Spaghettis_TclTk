@@ -832,7 +832,7 @@ void x_array_setup(void )
         gensym("send"), A_SYMBOL, 0);
     class_addAnything(array_define_class, array_define_anything);
     class_setHelpName(array_define_class, gensym("array"));
-    class_setsavefn(array_define_class, array_define_save);
+    class_setSaveFunction(array_define_class, array_define_save);
 
     class_addMethod(array_define_class, (t_method)array_define_ignore,
         gensym("editmode"), A_GIMME, 0);

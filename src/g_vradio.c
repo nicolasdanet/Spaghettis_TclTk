@@ -596,6 +596,6 @@ void g_vradio_setup(void)
     vradio_widgetbehavior.w_clickfn = vradio_newclick;
     class_setWidget(vradio_class, &vradio_widgetbehavior);
     class_setHelpName(vradio_class, gensym("vradio"));
-    class_setsavefn(vradio_class, vradio_save);
-    class_setpropertiesfn(vradio_class, vradio_properties);
+    class_setSaveFunction(vradio_class, vradio_save);
+    class_setPropertiesFunction(vradio_class, vradio_properties);
 }

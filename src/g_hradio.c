@@ -594,6 +594,6 @@ void g_hradio_setup(void)
     hradio_widgetbehavior.w_clickfn = hradio_newclick;
     class_setWidget(hradio_class, &hradio_widgetbehavior);
     class_setHelpName(hradio_class, gensym("hradio"));
-    class_setsavefn(hradio_class, hradio_save);
-    class_setpropertiesfn(hradio_class, hradio_properties);
+    class_setSaveFunction(hradio_class, hradio_save);
+    class_setPropertiesFunction(hradio_class, hradio_properties);
 }

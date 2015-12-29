@@ -383,6 +383,6 @@ void g_mycanvas_setup(void)
     my_canvas_widgetbehavior.w_clickfn = NULL;
     class_setWidget(my_canvas_class, &my_canvas_widgetbehavior);
     class_setHelpName(my_canvas_class, gensym("cnv"));
-    class_setsavefn(my_canvas_class, my_canvas_save);
-    class_setpropertiesfn(my_canvas_class, my_canvas_properties);
+    class_setSaveFunction(my_canvas_class, my_canvas_save);
+    class_setPropertiesFunction(my_canvas_class, my_canvas_properties);
 }

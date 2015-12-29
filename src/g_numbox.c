@@ -900,6 +900,6 @@ void g_numbox_setup(void)
     my_numbox_widgetbehavior.w_clickfn =      my_numbox_newclick;
     class_setWidget(my_numbox_class, &my_numbox_widgetbehavior);
     class_setHelpName(my_numbox_class, gensym("nbx"));
-    class_setsavefn(my_numbox_class, my_numbox_save);
-    class_setpropertiesfn(my_numbox_class, my_numbox_properties);
+    class_setSaveFunction(my_numbox_class, my_numbox_save);
+    class_setPropertiesFunction(my_numbox_class, my_numbox_properties);
 }

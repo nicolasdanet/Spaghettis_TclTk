@@ -636,6 +636,6 @@ void g_hslider_setup(void)
     hslider_widgetbehavior.w_clickfn =      hslider_newclick;
     class_setWidget(hslider_class, &hslider_widgetbehavior);
     class_setHelpName(hslider_class, gensym("hsl"));
-    class_setsavefn(hslider_class, hslider_save);
-    class_setpropertiesfn(hslider_class, hslider_properties);
+    class_setSaveFunction(hslider_class, hslider_save);
+    class_setPropertiesFunction(hslider_class, hslider_properties);
 }

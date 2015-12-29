@@ -445,6 +445,6 @@ void g_scalar_setup(void)
     scalar_class = class_new(gensym("scalar"), 0, (t_method)scalar_free, 0,
         CLASS_GRAPHIC, 0);
     class_setWidget(scalar_class, &scalar_widgetbehavior);
-    class_setsavefn(scalar_class, scalar_save);
-    class_setpropertiesfn(scalar_class, scalar_properties);
+    class_setSaveFunction(scalar_class, scalar_save);
+    class_setPropertiesFunction(scalar_class, scalar_properties);
 }

@@ -727,6 +727,6 @@ void g_vumeter_setup(void)
     vu_widgetbehavior.w_clickfn =      NULL;
     class_setWidget(vu_class,&vu_widgetbehavior);
     class_setHelpName(vu_class, gensym("vu"));
-    class_setsavefn(vu_class, vu_save);
-    class_setpropertiesfn(vu_class, vu_properties);
+    class_setSaveFunction(vu_class, vu_save);
+    class_setPropertiesFunction(vu_class, vu_properties);
 }

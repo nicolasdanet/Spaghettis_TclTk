@@ -1605,7 +1605,7 @@ void g_canvas_setup(void)
         gensym("map"), A_FLOAT, A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_dirty,
         gensym("dirty"), A_FLOAT, A_NULL);
-    class_setpropertiesfn(canvas_class, canvas_properties);
+    class_setPropertiesFunction(canvas_class, canvas_properties);
 
 /* ---------------------- list handling ------------------------ */
     class_addMethod(canvas_class, (t_method)glist_clear, gensym("clear"),

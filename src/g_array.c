@@ -1243,7 +1243,7 @@ void g_array_setup(void)
     class_addMethod(garray_class, (t_method)garray_arrayviewlist_close,
       gensym("arrayviewclose"), A_NULL);
 /* } jsarlo */
-    class_setsavefn(garray_class, garray_save);
+    class_setSaveFunction(garray_class, garray_save);
 }
 
 

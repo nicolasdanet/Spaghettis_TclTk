@@ -1452,7 +1452,7 @@ void g_text_setup(void)
     class_addMethod(gatom_class, (t_method)gatom_param, gensym("param"),
         A_GIMME, 0);
     class_setWidget(gatom_class, &gatom_widgetbehavior);
-    class_setpropertiesfn(gatom_class, gatom_properties);
+    class_setPropertiesFunction(gatom_class, gatom_properties);
 }
 
 

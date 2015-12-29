@@ -470,6 +470,6 @@ void g_toggle_setup(void)
     toggle_widgetbehavior.w_clickfn = toggle_newclick;
     class_setWidget(toggle_class, &toggle_widgetbehavior);
     class_setHelpName(toggle_class, gensym("tgl"));
-    class_setsavefn(toggle_class, toggle_save);
-    class_setpropertiesfn(toggle_class, toggle_properties);
+    class_setSaveFunction(toggle_class, toggle_save);
+    class_setPropertiesFunction(toggle_class, toggle_properties);
 }

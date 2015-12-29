@@ -182,6 +182,15 @@ static void class_defaultAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void class_setExternalDirectory (t_symbol *s)
+{
+    class_externalDirectory = s;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_class *class_new (t_symbol *s, 
     t_newmethod newMethod, 
     t_method freeMethod, 
@@ -218,7 +227,7 @@ t_class *class_new (t_symbol *s,
     c = (t_class *)getbytes (sizeof (t_class));
     c->c_name               = s;
     c->c_helpName           = s;
-    c->c_externDirectory    = class_externalDirectory;
+    c->c_externalDirectory  = class_externalDirectory;
     c->c_size               = size;
     c->c_methods            = getbytes (0);                 /* Allocate 1 byte of memory. */
     c->c_methodsSize        = 0;
@@ -375,7 +384,12 @@ void class_addAnything (t_class *c, t_method fn)
 
 int class_hasDrawCommand (t_class *c)
 {
-    return (c->c_hasDrawCommand);
+    return c->c_hasDrawCommand;
+}
+
+int class_hasPropertiesFunction (t_class *c)
+{
+    return (c->c_fnProperties != class_defaultProperties);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -402,6 +416,16 @@ void class_setDrawCommand (t_class *c)
     c->c_hasDrawCommand = 1;
 }
 
+void class_setSaveFunction (t_class *c, t_savefn f)
+{
+    c->c_fnSave = f;
+}
+
+void class_setPropertiesFunction (t_class *c, t_propertiesfn f)
+{
+    c->c_fnProperties = f;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -416,51 +440,24 @@ char *class_getHelpName (t_class *c)
     return c->c_helpName->s_name;
 }
 
+char *class_getHelpDirectory(t_class *c)
+{
+    return (c->c_externalDirectory->s_name);
+}
+
 t_parentwidgetbehavior *class_getParentWidget (t_class *c)
 {
     return c->c_behaviorParent;
 }
 
+t_propertiesfn class_getPropertiesFunction (t_class *c)
+{
+    return c->c_fnProperties;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void class_set_extern_dir(t_symbol *s)
-{
-    class_externalDirectory = s;
-}
-
-char *class_gethelpdir(t_class *c)
-{
-    return (c->c_externDirectory->s_name);
-}
-
-void class_setsavefn(t_class *c, t_savefn f)
-{
-    c->c_fnSave = f;
-}
-
-t_savefn class_getsavefn(t_class *c)
-{
-    return (c->c_fnSave);
-}
-
-void class_setpropertiesfn(t_class *c, t_propertiesfn f)
-{
-    c->c_fnProperties = f;
-}
-
-t_propertiesfn class_haspropertiesfn (t_class *c)
-{
-    return (c->c_fnProperties != class_defaultProperties);
-}
-
-t_propertiesfn class_getpropertiesfn (t_class *c)
-{
-    return (c->c_fnProperties);
-}
-
-
 
 /* ---------------- the symbol table ------------------------ */
 
