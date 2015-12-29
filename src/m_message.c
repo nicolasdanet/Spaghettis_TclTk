@@ -11,24 +11,11 @@
 #include "m_pd.h"
 #include "m_private.h"
 #include "m_macros.h"
-#include "s_system.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 #include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if PD_WINDOWS
-    #include <io.h>
-#else
-    #include <unistd.h>
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -42,50 +29,68 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define SYMBOL_HASH_SIZE    1024                /* Must be power of two. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 extern t_pd pd_objectMaker;
 extern t_pd pd_canvasMaker;
 
-/* ---------------- the symbol table ------------------------ */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-#define HASHSIZE 1024
+static t_symbol *symHash[SYMBOL_HASH_SIZE];     /* Shared. */
 
-static t_symbol *symhash[HASHSIZE];
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-t_symbol *dogensym(const char *s, t_symbol *oldsym)
+/* < http://www.cse.yorku.ca/~oz/hash.html > */
+
+t_symbol *generateSymbol (const char *s, t_symbol *alreadyAllocatedSymbol)
 {
-    t_symbol **sym1, *sym2;
+    t_symbol **sym1 = NULL;
+    t_symbol *sym2  = NULL;
     unsigned int hash = 5381;
-    int length = 0;
+    size_t length = 0;
     const char *s2 = s;
-    while (*s2) /* djb2 hash algo */
-    {
-        hash = ((hash << 5) + hash) + *s2;
+    
+    while (*s2) {
+        hash = ((hash << 5) + hash) + *s2;      /* Bernstein djb2 hash algorithm. */
         length++;
         s2++;
     }
-    sym1 = symhash + (hash & (HASHSIZE-1));
-    while (sym2 = *sym1)
-    {
-        if (!strcmp(sym2->s_name, s)) return(sym2);
+    
+    sym1 = symHash + (hash & (SYMBOL_HASH_SIZE - 1));
+    
+    while (sym2 = *sym1) {
+        if (!strcmp (sym2->s_name, s)) { return sym2; }
         sym1 = &sym2->s_next;
     }
-    if (oldsym) sym2 = oldsym;
-    else
-    {
-        sym2 = (t_symbol *)getbytes(sizeof(*sym2));
-        sym2->s_name = getbytes(length+1);
-        sym2->s_next = 0;
-        sym2->s_thing = 0;
-        strcpy(sym2->s_name, s);
+    
+    if (alreadyAllocatedSymbol) { sym2 = alreadyAllocatedSymbol; }
+    else {
+        sym2 = (t_symbol *)getbytes (sizeof (t_symbol));
+        sym2->s_name  = (char *)getbytes (length + 1);
+        sym2->s_next  = NULL;
+        sym2->s_thing = NULL;
+        strcpy (sym2->s_name, s);
     }
-    *sym1 = sym2;
-    return (sym2);
+    
+    *sym1 = sym2; 
+    
+    return sym2;
 }
 
-t_symbol *gensym(const char *s)
+t_symbol *gensym (const char *s)
 {
-    return(dogensym(s, 0));
+    return (generateSymbol (s, NULL));
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static t_symbol *addfileextent(t_symbol *s)
 {
@@ -174,7 +179,7 @@ void mess_init(void)
 
     if (pd_objectMaker) return;    
     for (i = sizeof(symlist)/sizeof(*symlist), sp = symlist; i--; sp++)
-        (void) dogensym((*sp)->s_name, *sp);
+        (void) generateSymbol((*sp)->s_name, *sp);
     pd_objectMaker = class_new(gensym("objectmaker"), 0, 0, sizeof(t_pd),
         CLASS_DEFAULT, A_NULL);
     pd_canvasMaker = class_new(gensym("classmaker"), 0, 0, sizeof(t_pd),
