@@ -21,14 +21,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#ifdef PD_MSVC
-    #define snprintf sprintf_s
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 #define MESSAGE_HASH_SIZE           1024                /* Must be a power of two. */
 #define MESSAGE_MAXIMUM_RECURSIVE   1000
 
@@ -118,46 +110,49 @@ t_symbol *gensym (const char *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void new_anything(void *dummy, t_symbol *s, int argc, t_atom *argv)
+static void new_anything (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    int fd;
-    char dirbuf[PD_STRING], classslashclass[PD_STRING], *nameptr;
-    if (message_recursiveDepth>MESSAGE_MAXIMUM_RECURSIVE){
-      post_error ("maximum object loading depth %d reached", MESSAGE_MAXIMUM_RECURSIVE);
-      return;
-    }
-    pd_newest = 0;
-    if (sys_load_lib(canvas_getcurrent(), s->s_name))
-    {
+    int f;
+    char buf[PD_STRING] = { 0 };
+    char *name = NULL;
+    
+    if (message_recursiveDepth > MESSAGE_MAXIMUM_RECURSIVE) { PD_BUG; return; }
+
+    pd_newest = NULL;
+    
+    if (sys_load_lib (canvas_getcurrent(), s->s_name)) {
         message_recursiveDepth++;
-        pd_typedmess(dummy, s, argc, argv);
+        pd_typedmess (dummy, s, argc, argv);
         message_recursiveDepth--;
         return;
     }
-    /* for class/class.pd support, to match class/class.pd_linux  */
-    snprintf(classslashclass, PD_STRING, "%s/%s", s->s_name, s->s_name);
-    if ((fd = canvas_open(canvas_getcurrent(), s->s_name, ".pd",
-        dirbuf, &nameptr, PD_STRING, 0)) >= 0 ||
-            (fd = canvas_open(canvas_getcurrent(), s->s_name, ".pat",
-                dirbuf, &nameptr, PD_STRING, 0)) >= 0 ||
-               (fd = canvas_open(canvas_getcurrent(), classslashclass, ".pd",
-                    dirbuf, &nameptr, PD_STRING, 0)) >= 0)
-    {
-        close (fd);
-        if (!pd_setLoadingAbstraction (s))
-        {
-            t_pd *was = s__X.s_thing;
-            canvas_setargs(argc, argv);
-            binbuf_evalfile(gensym(nameptr), gensym(dirbuf));
-            if (s__X.s_thing && was != s__X.s_thing)
-                canvas_popabstraction((t_canvas *)(s__X.s_thing));
-            else s__X.s_thing = was;
-            canvas_setargs(0, 0);
+
+    if ((f = canvas_open (canvas_getcurrent(), s->s_name, ".pd", buf, &name, PD_STRING, 0)) >= 0) {
+        
+        close (f);
+        
+        if (pd_setLoadingAbstraction (s)) { 
+            post_error ("%s: can't load abstraction within itself\n", s->s_name);
+            
+        } else {
+            t_pd *t = s__X.s_thing;
+            canvas_setargs (argc, argv);
+            binbuf_evalfile (gensym (name), gensym (buf));
+            if (s__X.s_thing && t != s__X.s_thing) { canvas_popabstraction ((t_canvas *)(s__X.s_thing)); }
+            else { 
+                s__X.s_thing = t; 
+            }
+            canvas_setargs (0, NULL);
         }
-        else post_error ("%s: can't load abstraction within itself\n", s->s_name);
+
+    } else { 
+        pd_newest = NULL;
     }
-    else pd_newest = 0;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void mess_init(void)
 {
