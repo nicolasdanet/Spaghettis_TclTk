@@ -380,6 +380,7 @@ PD_DLL t_class  *class_new                  (t_symbol *name,
 PD_DLL void     class_addSignal             (t_class *c, int offset);
 PD_DLL void     class_addCreator            (t_newmethod newmethod, t_symbol *s, t_atomtype type1, ...);
 PD_DLL void     class_addMethod             (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ...);
+
 PD_DLL void     class_addBang               (t_class *c, t_method fn);
 PD_DLL void     class_addPointer            (t_class *c, t_method fn);
 PD_DLL void     class_addFloat              (t_class *c, t_method fn);
@@ -387,26 +388,12 @@ PD_DLL void     class_addSymbol             (t_class *c, t_method fn);
 PD_DLL void     class_addList               (t_class *c, t_method fn);
 PD_DLL void     class_addAnything           (t_class *c, t_method fn);
 
-PD_DLL int      class_hasBang               (t_class *c);
-PD_DLL int      class_hasDrawCommand        (t_class *c);
-PD_DLL int      class_hasPropertiesFunction (t_class *c); 
-
 PD_DLL void     class_setHelpName           (t_class *c, t_symbol *s);
-PD_DLL void     class_setWidget             (t_class *c, t_widgetbehavior *w);
-PD_DLL void     class_setParentWidget       (t_class *c, t_parentwidgetbehavior *w);
-PD_DLL void     class_setDrawCommand        (t_class *c);
 PD_DLL void     class_setSaveFunction       (t_class *c, t_savefn f);
-PD_DLL void     class_setPropertiesFunction (t_class *c, t_propertiesfn f);
 
 PD_DLL char     *class_getName              (t_class *c);
 PD_DLL char     *class_getHelpName          (t_class *c);
 PD_DLL char     *class_getHelpDirectory     (t_class *c);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-PD_DLL t_parentwidgetbehavior   *class_getParentWidget          (t_class *c);
-PD_DLL t_propertiesfn           class_getPropertiesFunction     (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

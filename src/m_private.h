@@ -142,6 +142,20 @@ void    canvas_popabstraction       (t_canvas *x);
 
 void    class_setExternalDirectory  (t_symbol *s);
 t_gotfn class_getMethod             (t_class *c, t_symbol *s);
+int     class_hasMethod             (t_class *c, t_symbol *s);
+int     class_hasBang               (t_class *c);
+int     class_hasDrawCommand        (t_class *c);
+int     class_hasPropertiesFunction (t_class *c); 
+void    class_setWidget             (t_class *c, t_widgetbehavior *w);
+void    class_setParentWidget       (t_class *c, t_parentwidgetbehavior *w);
+void    class_setDrawCommand        (t_class *c);
+void    class_setPropertiesFunction (t_class *c, t_propertiesfn f);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_parentwidgetbehavior   *class_getParentWidget          (t_class *c);
+t_propertiesfn           class_getPropertiesFunction     (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

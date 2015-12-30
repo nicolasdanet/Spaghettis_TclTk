@@ -273,7 +273,7 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
     
     if (s == &s_signal) { PD_OBSOLETE; return; }
     
-    /* Note that "pointer" is not catched (related to pointer object creation).*/
+    /* Note that "pointer" is not catched (related to creation of the pointer object). */
     
     if (s == &s_bang) {
         if (argtype) { PD_BUG; return; }
@@ -379,6 +379,11 @@ t_gotfn class_getMethod (t_class *c, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+int class_hasMethod (t_class *c, t_symbol *s)
+{
+    return (class_getMethod (c, s) != NULL);
+}
 
 int class_hasBang (t_class *c)
 {

@@ -1099,7 +1099,7 @@ static int text_click(t_gobj *z, struct _glist *glist,
     if (x->te_type == TYPE_OBJECT)
     {
         t_symbol *clicksym = gensym("click");
-        if (class_getMethod (pd_class (&x->te_g.g_pd), clicksym))
+        if (class_hasMethod (pd_class (&x->te_g.g_pd), clicksym))
         {
             if (doit)
                 pd_variadicMessage(&x->te_g.g_pd, clicksym, "fffff",
@@ -1133,7 +1133,7 @@ void text_save(t_gobj *z, t_binbuf *b)
     {
             /* if we have a "saveto" method, and if we don't happen to be
             a canvas that's an abstraction, the saveto method does the work */
-        if (class_getMethod (pd_class (&x->te_g.g_pd), gensym("saveto")) &&
+        if (class_hasMethod (pd_class (&x->te_g.g_pd), gensym("saveto")) &&
             !((pd_class(&x->te_g.g_pd) == canvas_class) && 
                 (canvas_isabstraction((t_canvas *)x)
                     || canvas_istable((t_canvas *)x))))
