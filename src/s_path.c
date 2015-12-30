@@ -492,7 +492,7 @@ void open_via_helppath(const char *name, const char *dir)
         /* 1. "objectname-help.pd" */
     strncpy(realname, name, PD_STRING-10);
     realname[PD_STRING-10] = 0;
-    if (strlen(realname) > 3 && !strcmp(realname+strlen(realname)-3, ".pd"))
+    if (strlen(realname) > 3 && !strcmp(realname+strlen(realname)-3, PD_FILE))
         realname[strlen(realname)-3] = 0;
     strcat(realname, "-help.pd");
     if ((fd = do_open_via_path(usedir, realname, "", dirbuf, &basename, 

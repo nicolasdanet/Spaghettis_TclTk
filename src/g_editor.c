@@ -1218,8 +1218,8 @@ static void canvas_done_popup(t_canvas *x, t_float which, t_float xpos, t_float 
                     dir = class_getHelpDirectory(pd_class(&y->g_pd));
                 }
                 if (strlen(namebuf) < 4 ||
-                    strcmp(namebuf + strlen(namebuf) - 3, ".pd"))
-                        strcat(namebuf, ".pd");
+                    strcmp(namebuf + strlen(namebuf) - 3, PD_FILE))
+                        strcat(namebuf, PD_FILE);
                 open_via_helppath(namebuf, dir);
                 return;
             }
