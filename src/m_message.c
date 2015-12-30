@@ -28,18 +28,18 @@ typedef void (*t_messgimme)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MESSAGE_FLOATS  t_floatarg, t_floatarg, t_floatarg, t_floatarg, t_floatarg
+#define MESSAGE_FLOATARGS   t_floatarg, t_floatarg, t_floatarg, t_floatarg, t_floatarg
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-typedef t_pd *(*t_fun0)(                                            MESSAGE_FLOATS);
-typedef t_pd *(*t_fun1)(t_int,                                      MESSAGE_FLOATS);
-typedef t_pd *(*t_fun2)(t_int, t_int,                               MESSAGE_FLOATS);
-typedef t_pd *(*t_fun3)(t_int, t_int, t_int,                        MESSAGE_FLOATS);
-typedef t_pd *(*t_fun4)(t_int, t_int, t_int, t_int,                 MESSAGE_FLOATS);
-typedef t_pd *(*t_fun5)(t_int, t_int, t_int, t_int, t_int,          MESSAGE_FLOATS);
-typedef t_pd *(*t_fun6)(t_int, t_int, t_int, t_int, t_int, t_int,   MESSAGE_FLOATS);
+typedef t_pd *(*t_fun0)(                                            MESSAGE_FLOATARGS);
+typedef t_pd *(*t_fun1)(t_int,                                      MESSAGE_FLOATARGS);
+typedef t_pd *(*t_fun2)(t_int, t_int,                               MESSAGE_FLOATARGS);
+typedef t_pd *(*t_fun3)(t_int, t_int, t_int,                        MESSAGE_FLOATARGS);
+typedef t_pd *(*t_fun4)(t_int, t_int, t_int, t_int,                 MESSAGE_FLOATARGS);
+typedef t_pd *(*t_fun5)(t_int, t_int, t_int, t_int, t_int,          MESSAGE_FLOATARGS);
+typedef t_pd *(*t_fun6)(t_int, t_int, t_int, t_int, t_int, t_int,   MESSAGE_FLOATARGS);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -216,146 +216,142 @@ void message_initialize (void)
 
 void pd_typedmess (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_method *f;
     t_class *c = *x;
-    t_methodentry *m;
-    t_atomtype *wp, wanttype;
+    t_methodentry *m = NULL;
     int i;
-    t_int ai[PD_ARGUMENTS+1], *ap = ai;
-    t_floatarg ad[PD_ARGUMENTS+1], *dp = ad;
-    int narg = 0;
-    t_pd *bonzo;
     
-        /* check for messages that are handled by fixed slots in the class
-        structure.  We don't catch "pointer" though so that sending "pointer"
-        to pd_objectMaker doesn't require that we supply a pointer value. */
-    if (s == &s_float)
-    {
-        if (!argc) (*c->c_methodFloat)(x, 0.);
-        else if (argv->a_type == A_FLOAT)
-            (*c->c_methodFloat)(x, argv->a_w.w_float);
-        else goto badarg;
-        return;
-    }
-    if (s == &s_bang)
-    {
-        (*c->c_methodBang)(x);
-        return;
-    }
-    if (s == &s_list)
-    {
-        (*c->c_methodList)(x, s, argc, argv);
-        return;
-    }
-    if (s == &s_symbol)
-    {
-        if (argc && argv->a_type == A_SYMBOL)
-            (*c->c_methodSymbol)(x, argv->a_w.w_symbol);
-        else
-            (*c->c_methodSymbol)(x, &s_);
-        return;
-    }
-    for (i = c->c_methodsSize, m = c->c_methods; i--; m++)
-        if (m->me_name == s)
-    {
-        wp = m->me_arguments;
-        if (*wp == A_GIMME)
-        {
-            if (x == &pd_objectMaker)
-                pd_newest = (*((t_newgimme)(m->me_function)))(s, argc, argv);
-            else (*((t_messgimme)(m->me_function)))(x, s, argc, argv);
-            return;
+    if (s == &s_float) {
+        if (!argc) { (*c->c_methodFloat) (x, 0.0); }
+        else if (IS_FLOAT (argv)) { (*c->c_methodFloat) (x, GET_FLOAT (argv)); }
+        else { 
+            goto err; 
         }
-        if (argc > PD_ARGUMENTS) argc = PD_ARGUMENTS;
-        if (x != &pd_objectMaker) *(ap++) = (t_int)x, narg++;
-        while (wanttype = *wp++)
-        {
-            switch (wanttype)
-            {
-            case A_POINTER:
-                if (!argc) goto badarg;
-                else
-                {
-                    if (argv->a_type == A_POINTER)
-                        *ap = (t_int)(argv->a_w.w_gpointer);
-                    else goto badarg;
-                    argc--;
-                    argv++;
-                }
-                narg++;
-                ap++;
-                break;
-            case A_FLOAT:
-                if (!argc) goto badarg;
-            case A_DEFFLOAT:
-                if (!argc) *dp = 0;
-                else
-                {
-                    if (argv->a_type == A_FLOAT)
-                        *dp = argv->a_w.w_float;
-                    else goto badarg;
-                    argc--;
-                    argv++;
-                }
-                dp++;
-                break;
-            case A_SYMBOL:
-                if (!argc) goto badarg;
-            case A_DEFSYMBOL:
-                if (!argc) *ap = (t_int)(&s_);
-                else
-                {
-                    if (argv->a_type == A_SYMBOL)
-                        *ap = (t_int)(argv->a_w.w_symbol);
-                            /* if it's an unfilled "dollar" argument it appears
-                            as zero here; cheat and bash it to the null
-                            symbol.  Unfortunately, this lets real zeros
-                            pass as symbols too, which seems wrong... */
-                    else if (x == &pd_objectMaker && argv->a_type == A_FLOAT
-                        && argv->a_w.w_float == 0)
-                        *ap = (t_int)(&s_);
-                    else goto badarg;
-                    argc--;
-                    argv++;
-                }
-                narg++;
-                ap++;
-                break;
-            default:
-                goto badarg;
-            }
+        return;
+        
+    } else if (s == &s_bang)   {
+        (*c->c_methodBang) (x); return;
+        
+    } else if (s == &s_list)   {
+        (*c->c_methodList) (x, s, argc, argv); return;
+        
+    } else if (s == &s_symbol) {
+        if (argc && IS_SYMBOL (argv)) { (*c->c_methodSymbol) (x, GET_SYMBOL (argv)); }
+        else {
+            (*c->c_methodSymbol) (x, &s_);
         }
-        switch (narg)
-        {
-        case 0 : bonzo = (*(t_fun0)(m->me_function))
-            (ad[0], ad[1], ad[2], ad[3], ad[4]); break;
-        case 1 : bonzo = (*(t_fun1)(m->me_function))
-            (ai[0], ad[0], ad[1], ad[2], ad[3], ad[4]); break;
-        case 2 : bonzo = (*(t_fun2)(m->me_function))
-            (ai[0], ai[1], ad[0], ad[1], ad[2], ad[3], ad[4]); break;
-        case 3 : bonzo = (*(t_fun3)(m->me_function))
-            (ai[0], ai[1], ai[2], ad[0], ad[1], ad[2], ad[3], ad[4]); break;
-        case 4 : bonzo = (*(t_fun4)(m->me_function))
-            (ai[0], ai[1], ai[2], ai[3],
-                ad[0], ad[1], ad[2], ad[3], ad[4]); break;
-        case 5 : bonzo = (*(t_fun5)(m->me_function))
-            (ai[0], ai[1], ai[2], ai[3], ai[4],
-                ad[0], ad[1], ad[2], ad[3], ad[4]); break;
-        case 6 : bonzo = (*(t_fun6)(m->me_function))
-            (ai[0], ai[1], ai[2], ai[3], ai[4], ai[5],
-                ad[0], ad[1], ad[2], ad[3], ad[4]); break;
-        default: bonzo = 0;
-        }
-        if (x == &pd_objectMaker)
-            pd_newest = bonzo;
         return;
     }
-    (*c->c_methodAny)(x, s, argc, argv);
+    
+    /* Note that "pointer" is not catched. */
+    /* Consequently a pointer value is not required to create a pointer object. */
+
+    for (i = c->c_methodsSize, m = c->c_methods; i--; m++) {
+    //
+    if (m->me_name == s) {
+    //
+    t_atomtype t;
+    t_gotfn f = m->me_function;
+    t_int ai[PD_ARGUMENTS + 1];
+    t_floatarg af[PD_ARGUMENTS + 1];
+    t_int *ip = ai;
+    t_floatarg *fp = af;
+    int n = 0;
+    t_pd *o = NULL;
+    
+    t_atomtype *p = m->me_arguments;
+    
+    if (*p == A_GIMME) {
+        if (x == &pd_objectMaker) { pd_newest = (*((t_newgimme)m->me_function)) (s, argc, argv); }
+        else { 
+            (*((t_messgimme)m->me_function)) (x, s, argc, argv); 
+        }
+        return;
+    }
+    
+    if (x != &pd_objectMaker) { *(ip++) = (t_int)x; n++;     }
+    if (argc > PD_ARGUMENTS)  { PD_BUG; argc = PD_ARGUMENTS; }
+        
+    while (t = *p++) {
+    //
+    switch (t) {
+    //
+    case A_POINTER   :  if (!argc) { goto err; }
+                        else {
+                            if (IS_POINTER (argv)) { *ip = (t_int)GET_POINTER (argv); }
+                            else { 
+                                goto err; 
+                            }
+                            argc--; argv++;
+                        }
+                        n++; ip++; break;
+                        
+    case A_FLOAT     :  if (!argc) { goto err;  }               /* Notice missing break. */
+    case A_DEFFLOAT  :  if (!argc) { *fp = 0.0; }
+                        else {
+                            if (IS_FLOAT (argv)) { *fp = GET_FLOAT (argv); }
+                            else { 
+                                goto err; 
+                            }
+                            argc--; argv++;
+                        }
+                        fp++; break;
+                        
+    case A_SYMBOL    :  if (!argc) { goto err; }                /* Ditto. */
+    case A_DEFSYMBOL :  if (!argc) { *ip = (t_int)&s_; }
+                        else {
+                            if (IS_SYMBOL (argv)) { *ip = (t_int)GET_SYMBOL (argv); }
+                            else if (x == &pd_objectMaker && IS_FLOAT (argv) && GET_FLOAT (argv) == 0.0) {
+                                *ip = (t_int)&s_;
+                            } else { 
+                                goto err;
+                            }
+                            argc--; argv++;
+                        }
+                        n++; ip++; break;
+                            
+    default          :  goto err;
+    //
+    }
+    //
+    }
+
+    switch (n) {
+    //
+    case 0 : o = (*(t_fun0)f) (af[0], af[1], af[2], af[3], af[4]);
+             break;
+    case 1 : o = (*(t_fun1)f) (ai[0], af[0], af[1], af[2], af[3], af[4]);
+             break;
+    case 2 : o = (*(t_fun2)f) (ai[0], ai[1], af[0], af[1], af[2], af[3], af[4]);
+             break;
+    case 3 : o = (*(t_fun3)f) (ai[0], ai[1], ai[2], af[0], af[1], af[2], af[3], af[4]);
+             break;
+    case 4 : o = (*(t_fun4)f) (ai[0], ai[1], ai[2], ai[3], af[0], af[1], af[2], af[3], af[4]);
+             break;
+    case 5 : o = (*(t_fun5)f) (ai[0], ai[1], ai[2], ai[3], ai[4], af[0], af[1], af[2], af[3], af[4]);
+             break;
+    case 6 : o = (*(t_fun6)f) (ai[0], ai[1], ai[2], ai[3], ai[4], ai[5], af[0], af[1], af[2], af[3], af[4]);
+             break;
+    //
+    }
+    
+    if (x == &pd_objectMaker) { pd_newest = o; }
+    
     return;
-badarg:
-    post_error ("Bad arguments for message '%s' to object '%s'",
-        s->s_name, c->c_name->s_name);
+    //
+    }
+    //
+    }
+    
+    (*c->c_methodAny) (x, s, argc, argv);
+    
+    return;
+    
+err:
+    post_error ("%s: bad arguments for method \"%s\"", c->c_name->s_name, s->s_name);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
     /* convenience routine giving a stdarg interface to pd_typedmess().  Only
     ten args supported; it seems unlikely anyone will need more since
