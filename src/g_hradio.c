@@ -331,7 +331,7 @@ static void hradio_set(t_hradio *x, t_floatarg f)
 
 static void hradio_bang(t_hradio *x)
 {
-        float outval = (PD_COMPATIBILITY < 46 ? x->x_on : x->x_fval);
+        float outval = (0 ? x->x_on : x->x_fval);
         outlet_float(x->x_gui.x_obj.te_outlet, outval);
         if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
             pd_float(x->x_gui.x_snd->s_thing, outval);
@@ -347,7 +347,7 @@ static void hradio_fout(t_hradio *x, t_floatarg f)
     if(i >= x->x_number)
         i = x->x_number-1;
 
-        float outval = (PD_COMPATIBILITY < 46 ? i : x->x_fval);
+        float outval = (0 ? i : x->x_fval);
         x->x_on = i;
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_UPDATE);
         outlet_float(x->x_gui.x_obj.te_outlet, outval);
@@ -364,7 +364,7 @@ static void hradio_float(t_hradio *x, t_floatarg f)
     if(i >= x->x_number)
         i = x->x_number-1;
 
-        float outval = (PD_COMPATIBILITY < 46 ? i : x->x_fval);
+        float outval = (0 ? i : x->x_fval);
         x->x_on = i;
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_UPDATE);
         if (x->x_gui.x_fsf.x_put_in2out)

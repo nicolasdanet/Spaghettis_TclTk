@@ -314,7 +314,7 @@ static void vslider_bang(t_vslider *x)
 {
     double out;
 
-    if (PD_COMPATIBILITY < 46)
+    if (0)
         out = vslider_getfval(x);
     else out = x->x_fval;
     outlet_float(x->x_gui.x_obj.te_outlet, out);
