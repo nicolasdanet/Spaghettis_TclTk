@@ -70,7 +70,7 @@ static void guiconnect_anything(t_guiconnect *x,
     t_symbol *s, int ac, t_atom *av)
 {
     if (x->x_who)
-        pd_typedmess(x->x_who, s, ac, av);
+        pd_message(x->x_who, s, ac, av);
 }
 
     /* the GUI calls this when it disappears.  (If there's any chance the

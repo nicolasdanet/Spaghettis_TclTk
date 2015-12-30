@@ -111,7 +111,7 @@ static void bindlist_list (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
 static void bindlist_anything (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_bindelement *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_typedmess (e->e_what, s, argc, argv); }
+    for (e = x->b_list; e; e = e->e_next) { pd_message (e->e_what, s, argc, argv); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -369,7 +369,7 @@ void pd_pop (t_pd *x)
 
 void pd_doLoadbang (void)
 {
-    if (pd_lastPopped) { pd_vmess (pd_lastPopped, gensym ("loadbang"), ""); }
+    if (pd_lastPopped) { pd_variadicMessage (pd_lastPopped, gensym ("loadbang"), ""); }
     
     pd_lastPopped = NULL;
 }

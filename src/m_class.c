@@ -268,7 +268,9 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
     va_start (ap, type1);
     
     if (s == &s_signal) { PD_OBSOLETE; return; }
-        
+    
+    /* Note that "pointer" is not catched. */
+    
     if (s == &s_bang) {
         if (argtype) { PD_BUG; return; }
         class_addBang (c, fn);

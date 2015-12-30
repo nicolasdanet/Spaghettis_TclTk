@@ -68,7 +68,7 @@ typedef struct _pdfloat
 
     /* "float," "symbol," and "bang" are special because
     they're created by short-circuited messages to the "new"
-    object which are handled specially in pd_typedmess(). */
+    object which are handled specially in pd_message(). */
 
 static void *pdfloat_new(t_pd *dummy, t_float f)
 {
@@ -247,7 +247,7 @@ static void send_list(t_send *x, t_symbol *s, int argc, t_atom *argv)
 
 static void send_anything(t_send *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->x_sym->s_thing) pd_typedmess(x->x_sym->s_thing, s, argc, argv);
+    if (x->x_sym->s_thing) pd_message(x->x_sym->s_thing, s, argc, argv);
 }
 
 static void *send_new(t_symbol *s)

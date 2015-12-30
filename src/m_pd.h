@@ -356,22 +356,13 @@ PD_DLL void     pd_pointer          (t_pd *x, t_gpointer *gp);
 PD_DLL void     pd_float            (t_pd *x, t_float f);
 PD_DLL void     pd_symbol           (t_pd *x, t_symbol *s);
 PD_DLL void     pd_list             (t_pd *x, t_symbol *s, int argc, t_atom *argv);
-PD_DLL void     pd_empty            (t_pd *x);
-PD_DLL void     pd_typedmess        (t_pd *x, t_symbol *s, int argc, t_atom *argv);
-PD_DLL void     pd_forwardmess      (t_pd *x, int argc, t_atom *argv);
-PD_DLL void     pd_vmess            (t_pd *x, t_symbol *s, char *fmt, ...);
+PD_DLL void     pd_message          (t_pd *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #define CLASS_SIGNAL(c, t, field)           class_addSignal (c, (char *)(&((t *)0)->field) - (char *)0)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-PD_DLL void     class_setExternalDirectory  (t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

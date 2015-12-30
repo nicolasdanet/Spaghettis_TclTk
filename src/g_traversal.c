@@ -358,7 +358,7 @@ static void ptrobj_sendwindow(t_ptrobj *x, t_symbol *s, int argc, t_atom *argv)
     }
     canvas = (t_pd *)glist_getcanvas(glist);
     if (argc && argv->a_type == A_SYMBOL)
-        pd_typedmess(canvas, argv->a_w.w_symbol, argc-1, argv+1);
+        pd_message(canvas, argv->a_w.w_symbol, argc-1, argv+1);
     else { post_error ("send-window: no message?"); }
 }
 

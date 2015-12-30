@@ -81,7 +81,7 @@ static void inlet_list(t_inlet *x, t_symbol *s, int argc, t_atom *argv);
 static void inlet_bang(t_inlet *x)
 {
     if (x->i_symfrom == &s_bang) 
-        pd_vmess(x->i_dest, x->i_symto, "");
+        pd_variadicMessage(x->i_dest, x->i_symto, "");
     else if (!x->i_symfrom) pd_bang(x->i_dest);
     else if (x->i_symfrom == &s_list)
         inlet_list(x, &s_bang, 0, 0);
@@ -91,7 +91,7 @@ static void inlet_bang(t_inlet *x)
 static void inlet_pointer(t_inlet *x, t_gpointer *gp)
 {
     if (x->i_symfrom == &s_pointer) 
-        pd_vmess(x->i_dest, x->i_symto, "p", gp);
+        pd_variadicMessage(x->i_dest, x->i_symto, "p", gp);
     else if (!x->i_symfrom) pd_pointer(x->i_dest, gp);
     else if (x->i_symfrom == &s_list)
     {
@@ -105,7 +105,7 @@ static void inlet_pointer(t_inlet *x, t_gpointer *gp)
 static void inlet_float(t_inlet *x, t_float f)
 {
     if (x->i_symfrom == &s_float)
-        pd_vmess(x->i_dest, x->i_symto, "f", (t_floatarg)f);
+        pd_variadicMessage(x->i_dest, x->i_symto, "f", (t_floatarg)f);
     else if (x->i_symfrom == &s_signal)
         x->i_un.iu_floatsignalvalue = f;
     else if (!x->i_symfrom)
@@ -122,7 +122,7 @@ static void inlet_float(t_inlet *x, t_float f)
 static void inlet_symbol(t_inlet *x, t_symbol *s)
 {
     if (x->i_symfrom == &s_symbol) 
-        pd_vmess(x->i_dest, x->i_symto, "s", s);
+        pd_variadicMessage(x->i_dest, x->i_symto, "s", s);
     else if (!x->i_symfrom) pd_symbol(x->i_dest, s);
     else if (x->i_symfrom == &s_list)
     {
@@ -138,7 +138,7 @@ static void inlet_list(t_inlet *x, t_symbol *s, int argc, t_atom *argv)
     t_atom at;
     if (x->i_symfrom == &s_list || x->i_symfrom == &s_float
         || x->i_symfrom == &s_symbol || x->i_symfrom == &s_pointer)
-            pd_typedmess(x->i_dest, x->i_symto, argc, argv);
+            pd_message(x->i_dest, x->i_symto, argc, argv);
     else if (!x->i_symfrom) pd_list(x->i_dest, s, argc, argv);
     else if (!argc)
       inlet_bang(x);
@@ -152,9 +152,9 @@ static void inlet_list(t_inlet *x, t_symbol *s, int argc, t_atom *argv)
 static void inlet_anything(t_inlet *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (x->i_symfrom == s)
-        pd_typedmess(x->i_dest, x->i_symto, argc, argv);
+        pd_message(x->i_dest, x->i_symto, argc, argv);
     else if (!x->i_symfrom)
-        pd_typedmess(x->i_dest, s, argc, argv);
+        pd_message(x->i_dest, s, argc, argv);
     else inlet_wrong(x, s);
 }
 
@@ -419,7 +419,7 @@ void outlet_anything(t_outlet *x, t_symbol *s, int argc, t_atom *argv)
         outlet_stackerror(x);
     else
     for (oc = x->o_connections; oc; oc = oc->oc_next)
-        pd_typedmess(oc->oc_to, s, argc, argv);
+        pd_message(oc->oc_to, s, argc, argv);
     --stackcount;
 }
 

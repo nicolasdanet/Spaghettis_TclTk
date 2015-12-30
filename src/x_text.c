@@ -1332,7 +1332,7 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
         if (to)
         {
             if (nleft > 0 && vecleft[0].a_type == A_SYMBOL)
-                pd_typedmess(to, vecleft->a_w.w_symbol, nleft-1, vecleft+1);
+                pd_message(to, vecleft->a_w.w_symbol, nleft-1, vecleft+1);
             else pd_list(to, 0, nleft, vecleft);
         }
     }
@@ -1589,9 +1589,9 @@ static void qlist_donext(t_qlist *x, int drop, int automatic)
         if (!drop)
         {   
             if (ap->a_type == A_FLOAT)
-                pd_typedmess(target, &s_list, count, ap);
+                pd_message(target, &s_list, count, ap);
             else if (ap->a_type == A_SYMBOL)
-                pd_typedmess(target, ap->a_w.w_symbol, count-1, ap+1);
+                pd_message(target, ap->a_w.w_symbol, count-1, ap+1);
         }
         if (x->x_rewound)
         {
@@ -1796,7 +1796,7 @@ static void text_template_init( void)
     glob_setfilename(0, gensym("_text_template"), gensym("."));
     binbuf_text(b, text_templatefile, strlen(text_templatefile));
     binbuf_eval(b, &pd_canvasMaker, 0, 0);
-    pd_vmess(s__X.s_thing, gensym("pop"), "i", 0);
+    pd_variadicMessage(s__X.s_thing, gensym("pop"), "i", 0);
     
     glob_setfilename(0, &s_, &s_);
     binbuf_free(b);  

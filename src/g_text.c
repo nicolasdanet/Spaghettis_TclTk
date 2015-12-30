@@ -64,7 +64,7 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     else
     {
         int xpix, ypix;
-        pd_vmess((t_pd *)glist_getcanvas(gl), gensym("editmode"), "i", 1);
+        pd_variadicMessage((t_pd *)glist_getcanvas(gl), gensym("editmode"), "i", 1);
         SET_SYMBOL(&at, gensym("comment"));
         glist_noselect(gl);
         glist_getnextxy(gl, &xpix, &ypix);
@@ -208,7 +208,7 @@ void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         t_binbuf *b = binbuf_new();
         int connectme, xpix, ypix, indx, nobj;
         canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
-        pd_vmess(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
+        pd_variadicMessage(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
         canvas_objtext(gl, xpix, ypix, 0, 1, b);
         if (connectme)
             canvas_connect(gl, indx, 0, nobj, 0);
@@ -225,7 +225,7 @@ void canvas_iems(t_glist *gl, t_symbol *guiobjname)
     t_binbuf *b = binbuf_new();
     int xpix, ypix;
 
-    pd_vmess(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
+    pd_variadicMessage(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
     glist_noselect(gl);
     SET_SYMBOL(&at, guiobjname);
     binbuf_restore(b, 1, &at);
@@ -470,7 +470,7 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         int connectme, xpix, ypix, indx, nobj;
         canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
         
-        pd_vmess(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
+        pd_variadicMessage(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
         x->m_text.te_xpix = xpix;
         x->m_text.te_ypix = ypix;
         glist_add(gl, &x->m_text.te_g);
@@ -938,7 +938,7 @@ void canvas_atom(t_glist *gl, t_atomtype type,
         outlet_new(&x->a_text,
             x->a_atom.a_type == A_FLOAT ? &s_float: &s_symbol);
         inlet_new(&x->a_text, &x->a_text.te_g.g_pd, 0, 0);
-        pd_vmess(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
+        pd_variadicMessage(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
         x->a_text.te_xpix = xpix;
         x->a_text.te_ypix = ypix;
         glist_add(gl, &x->a_text.te_g);
@@ -1102,7 +1102,7 @@ static int text_click(t_gobj *z, struct _glist *glist,
         if (zgetfn(&x->te_g.g_pd, clicksym))
         {
             if (doit)
-                pd_vmess(&x->te_g.g_pd, clicksym, "fffff",
+                pd_variadicMessage(&x->te_g.g_pd, clicksym, "fffff",
                     (double)xpix, (double)ypix,
                         (double)shift, (double)0, (double)alt);
             return (1);
@@ -1370,7 +1370,7 @@ void text_setto(t_text *x, t_glist *glist, char *buf, int bufsize)
              vec2[0].a_type == A_SYMBOL
             && !strcmp(vec2[0].a_w.w_symbol->s_name, "pd"))
         {
-            pd_typedmess(&x->te_g.g_pd, gensym("rename"), natom2-1, vec2+1);
+            pd_message(&x->te_g.g_pd, gensym("rename"), natom2-1, vec2+1);
             binbuf_free(x->te_binbuf);
             x->te_binbuf = b;
         }

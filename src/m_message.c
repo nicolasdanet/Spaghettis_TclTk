@@ -47,6 +47,7 @@ typedef t_pd *(*t_fun6)(t_int, t_int, t_int, t_int, t_int, t_int,   MESSAGE_FLOA
 
 #define MESSAGE_HASH_SIZE           1024                /* Must be a power of two. */
 #define MESSAGE_MAXIMUM_RECURSIVE   1000
+#define MESSAGE_MAXIMUM_ARGUMENTS   10
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -146,7 +147,7 @@ static void new_anything (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     if (sys_load_lib (canvas_getcurrent(), s->s_name)) {
         message_recursiveDepth++;
-        pd_typedmess (dummy, s, argc, argv);
+        pd_message (dummy, s, argc, argv);
         message_recursiveDepth--;
         return;
     }
@@ -214,7 +215,7 @@ void message_initialize (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void pd_typedmess (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_class *c = *x;
     t_methodentry *m = NULL;
@@ -243,7 +244,7 @@ void pd_typedmess (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     }
     
     /* Note that "pointer" is not catched. */
-    /* Consequently a pointer value is not required to create a pointer object. */
+    /* A pointer value is not required to create a pointer object. */
 
     for (i = c->c_methodsSize, m = c->c_methods; i--; m++) {
     //
@@ -251,8 +252,8 @@ void pd_typedmess (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     //
     t_atomtype t;
     t_gotfn f = m->me_function;
-    t_int ai[PD_ARGUMENTS + 1];
-    t_floatarg af[PD_ARGUMENTS + 1];
+    t_int ai[PD_ARGUMENTS + 1] = { 0 };
+    t_floatarg af[PD_ARGUMENTS + 1] = { 0 };
     t_int *ip = ai;
     t_floatarg *fp = af;
     int n = 0;
@@ -353,90 +354,74 @@ err:
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-    /* convenience routine giving a stdarg interface to pd_typedmess().  Only
-    ten args supported; it seems unlikely anyone will need more since
-    longer messages are likely to be programmatically generated anyway. */
-void pd_vmess(t_pd *x, t_symbol *sel, char *fmt, ...)
+/* < http://stackoverflow.com/a/11270603 > */
+
+void pd_variadicMessage (t_pd *x, t_symbol *s, char *fmt, ...)
 {
     va_list ap;
-    t_atom arg[10], *at = arg;
-    int nargs = 0;
-    char *fp = fmt;
-
-    va_start(ap, fmt);
-    while (1)
-    {
-        if (nargs >= 10)
-        {
-            post_error ("pd_vmess: only 10 allowed");
-            break;
-        }
-        switch(*fp++)
-        {
-        case 'f': SET_FLOAT(at, va_arg(ap, double)); break;
-        case 's': SET_SYMBOL(at, va_arg(ap, t_symbol *)); break;
-        case 'i': SET_FLOAT(at, va_arg(ap, t_int)); break;       
-        case 'p': SET_POINTER(at, va_arg(ap, t_gpointer *)); break;
-        default: goto done;
-        }
-        at++;
-        nargs++;
-    }
-done:
-    va_end(ap);
-    pd_typedmess(x, sel, nargs, arg);
-}
-
-void pd_forwardmess(t_pd *x, int argc, t_atom *argv)
-{
-    if (argc)
-    {
-        t_atomtype t = argv->a_type;
-        if (t == A_SYMBOL) pd_typedmess(x, argv->a_w.w_symbol, argc-1, argv+1);
-        else if (t == A_POINTER)
-        {
-            if (argc == 1) pd_pointer(x, argv->a_w.w_gpointer);
-            else pd_list(x, &s_list, argc, argv);
-        }
-        else if (t == A_FLOAT)
-        {
-            if (argc == 1) pd_float(x, argv->a_w.w_float);
-            else pd_list(x, &s_list, argc, argv);
-        }
-        else { PD_BUG; }
-    }
-
-}
-
-    /* am empty list calls the 'bang' method unless it's the default
-    bang method -- that might turn around and call our 'list' method
-    which could be an infinite recorsion.  Fall through to calling our
-    'anything' method.  That had better not turn around and call us with
-    an empty list.  */
+    t_atom arg[MESSAGE_MAXIMUM_ARGUMENTS] = { 0 };
+    t_atom *a = arg;
+    int n = 0;
+    char *p = fmt;
+    int k = 1; 
     
-void nullfn (void) {}
-
-t_gotfn getfn(t_pd *x, t_symbol *s)
-{
-    t_class *c = *x;
-    t_methodentry *m;
-    int i;
-
-    for (i = c->c_methodsSize, m = c->c_methods; i--; m++)
-        if (m->me_name == s) return(m->me_function);
-    post_error ("%s: no method for message '%s'", c->c_name->s_name, s->s_name);
-    return((t_gotfn)nullfn);
+    va_start (ap, fmt);
+    
+    while (k) {
+    
+        if (n >= MESSAGE_MAXIMUM_ARGUMENTS) { PD_BUG; break; }
+        
+        switch (*p++) {
+            case 'f'    : SET_FLOAT   (a, va_arg (ap, double));       break;
+            case 's'    : SET_SYMBOL  (a, va_arg (ap, t_symbol *));   break;
+            case 'i'    : SET_FLOAT   (a, va_arg (ap, t_int));        break;       
+            case 'p'    : SET_POINTER (a, va_arg (ap, t_gpointer *)); break;
+            default     : k = 0;
+        }
+        
+        if (k) { a++; n++; }
+    }
+    
+    va_end (ap);
+    
+    pd_message (x, s, n, arg);
 }
 
-t_gotfn zgetfn(t_pd *x, t_symbol *s)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void pd_nothing (void *x)
+{
+    (void)x;
+}
+
+t_gotfn getfn (t_pd *x, t_symbol *s)
 {
     t_class *c = *x;
     t_methodentry *m;
     int i;
 
-    for (i = c->c_methodsSize, m = c->c_methods; i--; m++)
-        if (m->me_name == s) return(m->me_function);
-    return(0);
+    for (i = c->c_methodsSize, m = c->c_methods; i--; m++) {
+        if (m->me_name == s) { return (m->me_function); }
+    }
+    
+    PD_BUG;
+    
+    return pd_nothing;
+}
+
+t_gotfn zgetfn (t_pd *x, t_symbol *s)
+{
+    t_class *c = *x;
+    t_methodentry *m;
+    int i;
+
+    for (i = c->c_methodsSize, m = c->c_methods; i--; m++) {
+        if (m->me_name == s) { return (m->me_function); }
+    }
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------

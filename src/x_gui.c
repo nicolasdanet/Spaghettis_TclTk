@@ -154,7 +154,7 @@ static void gfxstub_end(t_gfxstub *x)
 static void gfxstub_anything(t_gfxstub *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (x->x_owner)
-        pd_typedmess(x->x_owner, s, argc, argv);
+        pd_message(x->x_owner, s, argc, argv);
 }
 
 static void gfxstub_free(t_gfxstub *x)

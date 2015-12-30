@@ -133,12 +133,16 @@ void    obj_list                    (t_object *x, t_symbol *s, int argc, t_atom 
 
 void    pd_push                     (t_pd *x);
 void    pd_pop                      (t_pd *x);
+void    pd_empty                    (t_pd *x);
+void    pd_variadicMessage          (t_pd *x, t_symbol *s, char *fmt, ...);
 int     pd_setLoadingAbstraction    (t_symbol *s);
 
 t_gotfn getfn                       (t_pd *x, t_symbol *s);
 t_gotfn zgetfn                      (t_pd *x, t_symbol *s);
 
 void    canvas_popabstraction       (t_canvas *x);
+
+void    class_setExternalDirectory  (t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

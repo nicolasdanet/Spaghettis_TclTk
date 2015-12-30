@@ -744,7 +744,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
             switch (mstack->a_type)
             {
             case A_SYMBOL:
-                pd_typedmess(target, mstack->a_w.w_symbol, nargs-1, mstack+1);
+                pd_message(target, mstack->a_w.w_symbol, nargs-1, mstack+1);
                 break;
             case A_FLOAT:
                 if (nargs == 1) pd_float(target, mstack->a_w.w_float);
@@ -1476,7 +1476,7 @@ t_pd *glob_evalfile(t_pd *ignore, t_symbol *name, t_symbol *dir)
     while ((x != s__X.s_thing) && s__X.s_thing) 
     {
         x = s__X.s_thing;
-        pd_vmess(x, gensym("pop"), "i", 1);
+        pd_variadicMessage(x, gensym("pop"), "i", 1);
     }
     pd_doLoadbang();
     canvas_resume_dsp(dspstate);
