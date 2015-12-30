@@ -387,7 +387,7 @@ PD_DLL void     class_addSymbol             (t_class *c, t_method fn);
 PD_DLL void     class_addList               (t_class *c, t_method fn);
 PD_DLL void     class_addAnything           (t_class *c, t_method fn);
 
-PD_DLL int      class_hasBangMethod         (t_class *c);
+PD_DLL int      class_hasBang               (t_class *c);
 PD_DLL int      class_hasDrawCommand        (t_class *c);
 PD_DLL int      class_hasPropertiesFunction (t_class *c); 
 

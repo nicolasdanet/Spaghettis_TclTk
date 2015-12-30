@@ -236,7 +236,7 @@ void glist_deselect(t_glist *x, t_gobj *y)
                 }
                 gobj_activate(y, x, 0);
             }
-            if (zgetfn(&y->g_pd, gensym("dsp")))
+            if (class_getMethod (pd_class (&y->g_pd), gensym("dsp")))
                 fixdsp = canvas_suspend_dsp();
         }
         if ((sel = x->gl_editor->e_selection)->sel_what == y)
@@ -878,7 +878,7 @@ static void canvas_rightclick(t_canvas *x, int xpos, int ypos, t_gobj *y)
 {
     int canprop, canopen;
     canprop = (!y || (y && class_hasPropertiesFunction (pd_class(&y->g_pd))));
-    canopen = (y && zgetfn(&y->g_pd, gensym("menu-open")));
+    canopen = (y && class_getMethod (pd_class (&y->g_pd), gensym("menu-open")));
     sys_vgui("::ui_menu::showPopup .x%lx %d %d %d %d\n",
         x, xpos, ypos, canprop, canopen);
 }
@@ -1193,7 +1193,7 @@ static void canvas_done_popup(t_canvas *x, t_float which, t_float xpos, t_float 
             }
             else if (which == 1)    /* open */
             {
-                if (!zgetfn(&y->g_pd, gensym("menu-open")))
+                if (!class_getMethod (pd_class (&y->g_pd), gensym("menu-open")))
                     continue;
                 pd_variadicMessage(&y->g_pd, gensym("menu-open"), "");
                 return;

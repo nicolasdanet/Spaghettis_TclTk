@@ -86,12 +86,12 @@ typedef void (*t_gotfn3)(void *x, void *arg1, void *arg2, void *arg3);
 typedef void (*t_gotfn4)(void *x, void *arg1, void *arg2, void *arg3, void *arg4);
 typedef void (*t_gotfn5)(void *x, void *arg1, void *arg2, void *arg3, void *arg4, void *arg5);
     
-#define mess0(x, s)                 ((*getfn ((x), (s)))((x)))
-#define mess1(x, s, a)              ((*(t_gotfn1)getfn ((x), (s)))((x), (a)))
-#define mess2(x, s, a, b)           ((*(t_gotfn2)getfn ((x), (s)))((x), (a), (b)))
-#define mess3(x, s, a, b, c)        ((*(t_gotfn3)getfn ((x), (s)))((x), (a), (b), (c)))
-#define mess4(x, s, a, b, c, d)     ((*(t_gotfn4)getfn ((x), (s)))((x), (a), (b), (c), (d)))
-#define mess5(x, s, a, b, c, d, e)  ((*(t_gotfn5)getfn ((x), (s)))((x), (a), (b), (c), (d), (e)))
+#define mess0(x, s)                 ((*class_getMethod (*(x), (s)))((x)))
+#define mess1(x, s, a)              ((*(t_gotfn1)class_getMethod (*(x), (s)))((x), (a)))
+#define mess2(x, s, a, b)           ((*(t_gotfn2)class_getMethod (*(x), (s)))((x), (a), (b)))
+#define mess3(x, s, a, b, c)        ((*(t_gotfn3)class_getMethod (*(x), (s)))((x), (a), (b), (c)))
+#define mess4(x, s, a, b, c, d)     ((*(t_gotfn4)class_getMethod (*(x), (s)))((x), (a), (b), (c), (d)))
+#define mess5(x, s, a, b, c, d, e)  ((*(t_gotfn5)class_getMethod (*(x), (s)))((x), (a), (b), (c), (d), (e)))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

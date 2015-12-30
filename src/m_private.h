@@ -138,12 +138,10 @@ void    pd_variadicMessage          (t_pd *x, t_symbol *s, char *fmt, ...);
 void    pd_performLoadbang          (void);
 int     pd_setLoadingAbstraction    (t_symbol *s);
 
-t_gotfn getfn                       (t_pd *x, t_symbol *s);
-t_gotfn zgetfn                      (t_pd *x, t_symbol *s);
-
 void    canvas_popabstraction       (t_canvas *x);
 
 void    class_setExternalDirectory  (t_symbol *s);
+t_gotfn class_getMethod             (t_class *c, t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

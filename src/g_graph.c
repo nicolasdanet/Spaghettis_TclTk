@@ -77,7 +77,7 @@ void glist_delete(t_glist *x, t_gobj *y)
 {
     t_gobj *g;
     t_object *ob;
-    t_gotfn chkdsp = zgetfn(&y->g_pd, gensym("dsp"));
+    t_gotfn chkdsp = class_getMethod (pd_class (&y->g_pd), gensym("dsp"));
     t_canvas *canvas = glist_getcanvas(x);
     t_rtext *rtext = 0;
     int drawcommand = class_hasDrawCommand(y->g_pd);
@@ -152,7 +152,7 @@ void glist_clear(t_glist *x)
     {
             /* to avoid unnecessary DSP resorting, we suspend DSP
             only if we hit a patchable object. */
-        if (!suspended && pd_checkobject(&y->g_pd) && zgetfn(&y->g_pd, dspsym))
+        if (!suspended && pd_checkobject(&y->g_pd) && class_getMethod (pd_class (&y->g_pd), dspsym))
         {
             dspstate = canvas_suspend_dsp();
             suspended = 1;

@@ -242,7 +242,7 @@ void pd_list (t_pd *x, int argc, t_atom *argv)
 
 void pd_empty (t_pd *x)
 {
-    if (class_hasBangMethod (pd_class (x))) { (*(*x)->c_methodBang) (x); }
+    if (class_hasBang (pd_class (x))) { (*(*x)->c_methodBang) (x); }
     else {
         (*(*x)->c_methodAny) (x, &s_bang, 0, NULL);
     }

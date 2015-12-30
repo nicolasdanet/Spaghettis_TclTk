@@ -893,7 +893,7 @@ void canvas_loadbangsubpatches(t_canvas *x)
     }
     for (y = x->gl_list; y; y = y->g_next)
         if ((pd_class(&y->g_pd) != canvas_class) &&
-            zgetfn(&y->g_pd, s))
+            class_getMethod(pd_class (&y->g_pd), s))
                 pd_variadicMessage(&y->g_pd, s, "");
 }
 
@@ -1058,7 +1058,7 @@ static void canvas_dodsp(t_canvas *x, int toplevel, t_signal **sp)
         /* find all the "dsp" boxes and add them to the graph */
     
     for (y = x->gl_list; y; y = y->g_next)
-        if ((ob = pd_checkobject(&y->g_pd)) && zgetfn(&y->g_pd, dspsym))
+        if ((ob = pd_checkobject(&y->g_pd)) && class_getMethod (pd_class (&y->g_pd), dspsym))
             ugen_add(dc, ob);
 
         /* ... and all dsp interconnections */

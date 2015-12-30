@@ -257,6 +257,10 @@ void class_addCreator (t_newmethod newmethod, t_symbol *s, t_atomtype type1, ...
     class_addMethod (pd_objectMaker, (t_method)newmethod, s, arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ...)
 {
     va_list ap;
@@ -269,7 +273,7 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
     
     if (s == &s_signal) { PD_OBSOLETE; return; }
     
-    /* Note that "pointer" is not catched. */
+    /* Note that "pointer" is not catched (related to pointer object creation).*/
     
     if (s == &s_bang) {
         if (argtype) { PD_BUG; return; }
@@ -360,10 +364,30 @@ void class_addAnything (t_class *c, t_method fn)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int class_hasBangMethod (t_class *c)
+t_gotfn class_getMethod (t_class *c, t_symbol *s)
+{
+    t_methodentry *m;
+    int i;
+
+    for (i = c->c_methodsSize, m = c->c_methods; i--; m++) { 
+        if (m->me_name == s) { return (m->me_function); }
+    }
+    
+    return NULL;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int class_hasBang (t_class *c)
 {
     return (c->c_methodBang != class_defaultBang);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int class_hasDrawCommand (t_class *c)
 {
