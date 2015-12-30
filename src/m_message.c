@@ -33,13 +33,13 @@ typedef void (*t_messgimme)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-typedef t_pd *(*t_fun0)(                                            MESSAGE_FLOATARGS);
-typedef t_pd *(*t_fun1)(t_int,                                      MESSAGE_FLOATARGS);
-typedef t_pd *(*t_fun2)(t_int, t_int,                               MESSAGE_FLOATARGS);
-typedef t_pd *(*t_fun3)(t_int, t_int, t_int,                        MESSAGE_FLOATARGS);
-typedef t_pd *(*t_fun4)(t_int, t_int, t_int, t_int,                 MESSAGE_FLOATARGS);
-typedef t_pd *(*t_fun5)(t_int, t_int, t_int, t_int, t_int,          MESSAGE_FLOATARGS);
-typedef t_pd *(*t_fun6)(t_int, t_int, t_int, t_int, t_int, t_int,   MESSAGE_FLOATARGS);
+typedef t_pd *(*t_fun0) (                                           MESSAGE_FLOATARGS); // --
+typedef t_pd *(*t_fun1) (t_int,                                     MESSAGE_FLOATARGS);
+typedef t_pd *(*t_fun2) (t_int, t_int,                              MESSAGE_FLOATARGS);
+typedef t_pd *(*t_fun3) (t_int, t_int, t_int,                       MESSAGE_FLOATARGS);
+typedef t_pd *(*t_fun4) (t_int, t_int, t_int, t_int,                MESSAGE_FLOATARGS);
+typedef t_pd *(*t_fun5) (t_int, t_int, t_int, t_int, t_int,         MESSAGE_FLOATARGS);
+typedef t_pd *(*t_fun6) (t_int, t_int, t_int, t_int, t_int, t_int,  MESSAGE_FLOATARGS);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -157,7 +157,7 @@ static void new_anything (void *dummy, t_symbol *s, int argc, t_atom *argv)
         close (f);
         
         if (pd_setLoadingAbstraction (s)) { 
-            post_error ("%s: can't load abstraction within itself\n", s->s_name);
+            post_error ("%s: can't load abstraction within itself\n", s->s_name); // --
             
         } else {
             t_pd *t = s__X.s_thing;
@@ -348,7 +348,7 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     return;
     
 err:
-    post_error ("%s: bad arguments for method \"%s\"", c->c_name->s_name, s->s_name);
+    post_error ("%s: bad arguments for method \"%s\"", c->c_name->s_name, s->s_name);   // --
 }
 
 // -----------------------------------------------------------------------------------------------------------

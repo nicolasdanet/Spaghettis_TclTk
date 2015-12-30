@@ -151,7 +151,7 @@ static void class_defaultList (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
 static void class_defaultAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
-    post_error ("%s: unknown method \"%s\"", (*x)->c_name->s_name, s->s_name);
+    post_error ("%s: unknown method \"%s\"", (*x)->c_name->s_name, s->s_name);  // --
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -423,7 +423,7 @@ char *class_getHelpName (t_class *c)
     return c->c_helpName->s_name;
 }
 
-char *class_getHelpDirectory(t_class *c)
+char *class_getHelpDirectory (t_class *c)
 {
     return (c->c_externalDirectory->s_name);
 }
