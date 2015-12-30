@@ -1333,7 +1333,7 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
         {
             if (nleft > 0 && vecleft[0].a_type == A_SYMBOL)
                 pd_message(to, vecleft->a_w.w_symbol, nleft-1, vecleft+1);
-            else pd_list(to, 0, nleft, vecleft);
+            else pd_list(to, nleft, vecleft);
         }
     }
     ATOMS_FREEA(outvec, nfield+1);

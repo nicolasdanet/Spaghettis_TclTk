@@ -182,7 +182,7 @@ static void my_canvas_get_pos(t_my_canvas *x)
     {
         x->x_at[0].a_w.w_float = text_xpix(&x->x_gui.x_obj, x->x_gui.x_glist);
         x->x_at[1].a_w.w_float = text_ypix(&x->x_gui.x_obj, x->x_gui.x_glist);
-        pd_list(x->x_gui.x_snd->s_thing, &s_list, 2, x->x_at);
+        pd_list(x->x_gui.x_snd->s_thing, 2, x->x_at);
     }
 }
 

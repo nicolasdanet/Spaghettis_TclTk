@@ -85,7 +85,7 @@ void inmidi_byte(int portno, int byte)
     {
         SET_FLOAT(at, byte);
         SET_FLOAT(at+1, portno);
-        pd_list(pd_this->sym_midiin->s_thing, 0, 2, at);
+        pd_list(pd_this->sym_midiin->s_thing, 2, at);
     }
 }
 
@@ -96,7 +96,7 @@ void inmidi_sysex(int portno, int byte)
     {
         SET_FLOAT(at, byte);
         SET_FLOAT(at+1, portno);
-        pd_list(pd_this->sym_sysexin->s_thing, 0, 2, at);
+        pd_list(pd_this->sym_sysexin->s_thing, 2, at);
     }
 }
 
@@ -164,7 +164,7 @@ void inmidi_noteon(int portno, int channel, int pitch, int velo)
         SET_FLOAT(at, pitch);
         SET_FLOAT(at+1, velo);
         SET_FLOAT(at+2, (channel + (portno << 4) + 1));
-        pd_list(pd_this->sym_notein->s_thing, &s_list, 3, at);
+        pd_list(pd_this->sym_notein->s_thing, 3, at);
     }
 }
 
@@ -235,7 +235,7 @@ void inmidi_controlchange(int portno, int channel, int ctlnumber, int value)
         SET_FLOAT(at, ctlnumber);
         SET_FLOAT(at+1, value);
         SET_FLOAT(at+2, (channel + (portno << 4) + 1));
-        pd_list(pd_this->sym_ctlin->s_thing, &s_list, 3, at);
+        pd_list(pd_this->sym_ctlin->s_thing, 3, at);
     }
 }
 
@@ -298,7 +298,7 @@ void inmidi_programchange(int portno, int channel, int value)
         t_atom at[2];
         SET_FLOAT(at, value + 1);
         SET_FLOAT(at+1, (channel + (portno << 4) + 1));
-        pd_list(pd_this->sym_pgmin->s_thing, &s_list, 2, at);
+        pd_list(pd_this->sym_pgmin->s_thing, 2, at);
     }
 }
 
@@ -360,7 +360,7 @@ void inmidi_pitchbend(int portno, int channel, int value)
         t_atom at[2];
         SET_FLOAT(at, value);
         SET_FLOAT(at+1, (channel + (portno << 4) + 1));
-        pd_list(pd_this->sym_bendin->s_thing, &s_list, 2, at);
+        pd_list(pd_this->sym_bendin->s_thing, 2, at);
     }
 }
 
@@ -423,7 +423,7 @@ void inmidi_aftertouch(int portno, int channel, int value)
         t_atom at[2];
         SET_FLOAT(at, value);
         SET_FLOAT(at+1, (channel + (portno << 4) + 1));
-        pd_list(pd_this->sym_touchin->s_thing, &s_list, 2, at);
+        pd_list(pd_this->sym_touchin->s_thing, 2, at);
     }
 }
 
@@ -493,7 +493,7 @@ void inmidi_polyaftertouch(int portno, int channel, int pitch, int value)
         SET_FLOAT(at, pitch);
         SET_FLOAT(at+1, value);
         SET_FLOAT(at+2, (channel + (portno << 4) + 1));
-        pd_list(pd_this->sym_polytouchin->s_thing, &s_list, 3, at);
+        pd_list(pd_this->sym_polytouchin->s_thing, 3, at);
     }
 }
 
@@ -560,7 +560,7 @@ void inmidi_clk(double timing)
         else SET_FLOAT(at, 0);
 
         SET_FLOAT(at+1, diff);
-        pd_list(pd_this->sym_midiclkin->s_thing, &s_list, 2, at);
+        pd_list(pd_this->sym_midiclkin->s_thing, 2, at);
         prev = timing;
     }
 }
@@ -616,7 +616,7 @@ void inmidi_realtimein(int portno, int SysMsg)
         t_atom at[2];
         SET_FLOAT(at, portno);
         SET_FLOAT(at+1, SysMsg);
-        pd_list(pd_this->sym_midirealtimein->s_thing, &s_list, 2, at);
+        pd_list(pd_this->sym_midirealtimein->s_thing, 2, at);
     }
 }
 

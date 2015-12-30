@@ -105,7 +105,7 @@ static void bindlist_pointer (t_bindlist *x, t_gpointer *gp)
 static void bindlist_list (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_bindelement *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_list (e->e_what, s, argc, argv); }
+    for (e = x->b_list; e; e = e->e_next) { pd_list (e->e_what, argc, argv); }
 }
 
 static void bindlist_anything (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
@@ -217,27 +217,27 @@ void pd_free (t_pd *x)
 
 void pd_bang (t_pd *x)
 {
-    (*(*x)->c_methodBang)(x);
+    (*(*x)->c_methodBang) (x);
 }
 
 void pd_float (t_pd *x, t_float f)
 {
-    (*(*x)->c_methodFloat)(x, f);
+    (*(*x)->c_methodFloat) (x, f);
 }
 
 void pd_pointer (t_pd *x, t_gpointer *gp)
 {
-    (*(*x)->c_methodPointer)(x, gp);
+    (*(*x)->c_methodPointer) (x, gp);
 }
 
 void pd_symbol (t_pd *x, t_symbol *s)
 {
-    (*(*x)->c_methodSymbol)(x, s);
+    (*(*x)->c_methodSymbol) (x, s);
 }
 
-void pd_list (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+void pd_list (t_pd *x, int argc, t_atom *argv)
 {
-    (*(*x)->c_methodList)(x, &s_list, argc, argv);
+    (*(*x)->c_methodList) (x, &s_list, argc, argv);
 }
 
 void pd_empty (t_pd *x)
@@ -367,7 +367,7 @@ void pd_pop (t_pd *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void pd_doLoadbang (void)
+void pd_performLoadbang (void)
 {
     if (pd_lastPopped) { pd_variadicMessage (pd_lastPopped, gensym ("loadbang"), ""); }
     

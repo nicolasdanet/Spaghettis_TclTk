@@ -357,7 +357,7 @@ PD_DLL void     pd_bang             (t_pd *x);
 PD_DLL void     pd_pointer          (t_pd *x, t_gpointer *gp);
 PD_DLL void     pd_float            (t_pd *x, t_float f);
 PD_DLL void     pd_symbol           (t_pd *x, t_symbol *s);
-PD_DLL void     pd_list             (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+PD_DLL void     pd_list             (t_pd *x, int argc, t_atom *argv);
 PD_DLL void     pd_message          (t_pd *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------

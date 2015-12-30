@@ -748,7 +748,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
                 break;
             case A_FLOAT:
                 if (nargs == 1) pd_float(target, mstack->a_w.w_float);
-                else pd_list(target, 0, nargs, mstack);
+                else pd_list(target, nargs, mstack);
                 break;
             }
         }
@@ -1425,8 +1425,6 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
     return (newb);
 }
 
-void pd_doLoadbang (void);
-
 /* LATER make this evaluate the file on-the-fly. */
 /* LATER figure out how to log errors */
 void binbuf_evalfile(t_symbol *name, t_symbol *dir)
@@ -1478,7 +1476,7 @@ t_pd *glob_evalfile(t_pd *ignore, t_symbol *name, t_symbol *dir)
         x = s__X.s_thing;
         pd_variadicMessage(x, gensym("pop"), "i", 1);
     }
-    pd_doLoadbang();
+    pd_performLoadbang();
     canvas_resume_dsp(dspstate);
     s__X.s_thing = boundx;
     return x;

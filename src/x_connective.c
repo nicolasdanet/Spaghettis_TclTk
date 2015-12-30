@@ -242,7 +242,7 @@ static void send_pointer(t_send *x, t_gpointer *gp)
 
 static void send_list(t_send *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->x_sym->s_thing) pd_list(x->x_sym->s_thing, s, argc, argv);
+    if (x->x_sym->s_thing) pd_list(x->x_sym->s_thing, argc, argv);
 }
 
 static void send_anything(t_send *x, t_symbol *s, int argc, t_atom *argv)

@@ -139,7 +139,7 @@ static void inlet_list(t_inlet *x, t_symbol *s, int argc, t_atom *argv)
     if (x->i_symfrom == &s_list || x->i_symfrom == &s_float
         || x->i_symfrom == &s_symbol || x->i_symfrom == &s_pointer)
             pd_message(x->i_dest, x->i_symto, argc, argv);
-    else if (!x->i_symfrom) pd_list(x->i_dest, s, argc, argv);
+    else if (!x->i_symfrom) pd_list (x->i_dest, argc, argv);
     else if (!argc)
       inlet_bang(x);
     else if (argc==1 && argv->a_type == A_FLOAT)
@@ -408,7 +408,7 @@ void outlet_list(t_outlet *x, t_symbol *s, int argc, t_atom *argv)
         outlet_stackerror(x);
     else
     for (oc = x->o_connections; oc; oc = oc->oc_next)
-        pd_list(oc->oc_to, s, argc, argv);
+        pd_list(oc->oc_to, argc, argv);
     --stackcount;
 }
 
