@@ -47,7 +47,6 @@ PD_STRUCT _widgetbehavior;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_gotfn)(void *x);
 typedef void (*t_savefn)(t_gobj *x, t_binbuf *b);
 typedef void (*t_propertiesfn)(t_gobj *x, t_glist *glist);
 typedef void (*t_callbackfn)(t_gobj *x, t_glist *glist);
@@ -58,7 +57,7 @@ typedef void (*t_callbackfn)(t_gobj *x, t_glist *glist);
 
 typedef struct _entry {
     t_symbol    *me_name;
-    t_gotfn     me_function;
+    t_method    me_method;
     t_atomtype  me_arguments[PD_ARGUMENTS + 1];
     } t_entry;
 
@@ -143,22 +142,22 @@ int     pd_setLoadingAbstraction    (t_symbol *s);
 
 void    canvas_popabstraction       (t_canvas *x);
 
-void    class_setExternalDirectory  (t_symbol *s);
-t_gotfn class_getMethod             (t_class *c, t_symbol *s);
-int     class_hasMethod             (t_class *c, t_symbol *s);
-int     class_hasBang               (t_class *c);
-int     class_hasDrawCommand        (t_class *c);
-int     class_hasPropertiesFunction (t_class *c); 
-void    class_setWidget             (t_class *c, t_widgetbehavior *w);
-void    class_setParentWidget       (t_class *c, t_parentwidgetbehavior *w);
-void    class_setDrawCommand        (t_class *c);
-void    class_setHelpName           (t_class *c, t_symbol *s);
-void    class_setPropertiesFunction (t_class *c, t_propertiesfn f);
-void    class_setSaveFunction       (t_class *c, t_savefn f);
+void        class_setExternalDirectory  (t_symbol *s);
+t_method    class_getMethod             (t_class *c, t_symbol *s);
+int         class_hasMethod             (t_class *c, t_symbol *s);
+int         class_hasBang               (t_class *c);
+int         class_hasDrawCommand        (t_class *c);
+int         class_hasPropertiesFunction (t_class *c); 
+void        class_setWidget             (t_class *c, t_widgetbehavior *w);
+void        class_setParentWidget       (t_class *c, t_parentwidgetbehavior *w);
+void        class_setDrawCommand        (t_class *c);
+void        class_setHelpName           (t_class *c, t_symbol *s);
+void        class_setPropertiesFunction (t_class *c, t_propertiesfn f);
+void        class_setSaveFunction       (t_class *c, t_savefn f);
 
-char    *class_getName              (t_class *c);
-char    *class_getHelpName          (t_class *c);
-char    *class_getHelpDirectory     (t_class *c);
+char        *class_getName              (t_class *c);
+char        *class_getHelpName          (t_class *c);
+char        *class_getHelpDirectory     (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -197,7 +197,7 @@ void pd_free (t_pd *x)
 {
     t_class *c = *x;
 
-    if (c->c_methodFree) { (*(t_gotfn)(c->c_methodFree))(x); }
+    if (c->c_methodFree) { (*(c->c_methodFree))(x); }
 
     if (c->c_isBox) {
         while (((t_object *)x)->te_outlet) { outlet_free (((t_object *)x)->te_outlet); }

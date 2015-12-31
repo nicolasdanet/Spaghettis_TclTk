@@ -251,7 +251,7 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     if (m->me_name == s) {
     //
     t_atomtype t;
-    t_gotfn f = m->me_function;
+    t_method f = m->me_method;
     t_int ai[PD_ARGUMENTS + 1] = { 0 };
     t_floatarg af[PD_ARGUMENTS + 1] = { 0 };
     t_int *ip = ai;
@@ -262,9 +262,9 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     t_atomtype *p = m->me_arguments;
     
     if (*p == A_GIMME) {
-        if (x == &pd_objectMaker) { pd_newest = (*((t_newgimme)m->me_function)) (s, argc, argv); }
+        if (x == &pd_objectMaker) { pd_newest = (*((t_newgimme)m->me_method)) (s, argc, argv); }
         else { 
-            (*((t_messgimme)m->me_function)) (x, s, argc, argv); 
+            (*((t_messgimme)m->me_method)) (x, s, argc, argv); 
         }
         return;
     }

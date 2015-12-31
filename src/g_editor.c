@@ -1895,7 +1895,7 @@ void canvas_motion(t_canvas *x, t_floatarg xpos, t_floatarg ypos,
                 &x11, &y11, &x12, &y12))
         {
             int wantwidth = xpos - x11;
-            t_gotfn sizefn;
+            //t_gotfn sizefn;
             t_object *ob = pd_checkobject(&y1->g_pd);
             if (ob && ob->te_g.g_pd->c_behavior == &text_widgetBehavior ||
                     (pd_checkglist(&ob->te_g.g_pd) &&

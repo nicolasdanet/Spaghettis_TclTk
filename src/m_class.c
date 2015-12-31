@@ -310,7 +310,7 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
     m = c->c_methods + c->c_methodsSize;
     c->c_methodsSize++;
     m->me_name = s;
-    m->me_function = (t_gotfn)fn;
+    m->me_method = fn;
 
     while (argtype != A_NULL && n < PD_ARGUMENTS) {
         m->me_arguments[n] = argtype;
@@ -364,13 +364,13 @@ void class_addAnything (t_class *c, t_method fn)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_gotfn class_getMethod (t_class *c, t_symbol *s)
+t_method class_getMethod (t_class *c, t_symbol *s)
 {
     t_entry *m;
     int i;
 
     for (i = c->c_methodsSize, m = c->c_methods; i--; m++) { 
-        if (m->me_name == s) { return (m->me_function); }
+        if (m->me_name == s) { return (m->me_method); }
     }
     
     return NULL;
