@@ -46,7 +46,7 @@ typedef t_pd *(*t_fun6) (t_int, t_int, t_int, t_int, t_int, t_int,  MESSAGE_FLOA
 #pragma mark -
 
 #define MESSAGE_HASH_SIZE           1024                /* Must be a power of two. */
-#define MESSAGE_MAXIMUM_RECURSIVE   1000
+#define MESSAGE_MAXIMUM_RECURSION   1000
 #define MESSAGE_MAXIMUM_ARGUMENTS   10
 
 // -----------------------------------------------------------------------------------------------------------
@@ -141,7 +141,7 @@ static void new_anything (void *dummy, t_symbol *s, int argc, t_atom *argv)
     char buf[PD_STRING] = { 0 };
     char *name = NULL;
     
-    if (message_recursiveDepth > MESSAGE_MAXIMUM_RECURSIVE) { PD_BUG; return; }
+    if (message_recursiveDepth > MESSAGE_MAXIMUM_RECURSION) { PD_BUG; return; }
 
     pd_newest = NULL;
     

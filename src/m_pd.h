@@ -391,10 +391,6 @@ PD_DLL void     class_addAnything           (t_class *c, t_method fn);
 PD_DLL void     class_setHelpName           (t_class *c, t_symbol *s);
 PD_DLL void     class_setSaveFunction       (t_class *c, t_savefn f);
 
-PD_DLL char     *class_getName              (t_class *c);
-PD_DLL char     *class_getHelpName          (t_class *c);
-PD_DLL char     *class_getHelpDirectory     (t_class *c);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

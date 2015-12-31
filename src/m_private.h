@@ -151,6 +151,10 @@ void    class_setParentWidget       (t_class *c, t_parentwidgetbehavior *w);
 void    class_setDrawCommand        (t_class *c);
 void    class_setPropertiesFunction (t_class *c, t_propertiesfn f);
 
+char    *class_getName              (t_class *c);
+char    *class_getHelpName          (t_class *c);
+char    *class_getHelpDirectory     (t_class *c);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
