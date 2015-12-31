@@ -218,7 +218,7 @@ void message_initialize (void)
 void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_class *c = *x;
-    t_methodentry *m = NULL;
+    t_entry *m = NULL;
     int i;
     
     if (s == &s_float) {

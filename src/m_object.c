@@ -1,23 +1,28 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/* this file handles Max-style patchable objects, i.e., objects which
-can interconnect via inlets and outlets; also, the (terse) generic
-behavior for "gobjs" appears at the end of this file.  */
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #include "m_pd.h"
 #include "m_private.h"
 #include "m_macros.h"
 
-union inletunion
-{
-    t_symbol *iu_symto;
-    t_gpointer *iu_pointerslot;
-    t_float *iu_floatslot;
-    t_symbol **iu_symslot;
-    t_float iu_floatsignalvalue;
-};
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+union inletunion {
+    t_symbol    *iu_symto;
+    t_gpointer  *iu_pointerslot;
+    t_float     *iu_floatslot;
+    t_symbol    **iu_symslot;
+    t_float     iu_floatsignalvalue;
+    };
 
 struct _inlet
 {
@@ -178,7 +183,7 @@ static void pointerinlet_pointer(t_inlet *x, t_gpointer *gp)
 {
     gpointer_unset(x->i_pointerslot);
     *(x->i_pointerslot) = *gp;
-    if (gp->gp_stub) gp->gp_stub->gs_refcount++;
+    if (gp->gp_stub) gp->gp_stub->gs_count++;
 }
 
 t_inlet *pointerinlet_new(t_object *owner, t_gpointer *gp)

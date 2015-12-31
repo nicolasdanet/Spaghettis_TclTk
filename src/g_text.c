@@ -51,8 +51,8 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     x->te_binbuf = binbuf_new();
     if (argc > 1)
     {
-        x->te_xpix = atom_getfloatarg(0, argc, argv);
-        x->te_ypix = atom_getfloatarg(1, argc, argv);
+        x->te_xCoordinate = atom_getfloatarg(0, argc, argv);
+        x->te_yCoordinate = atom_getfloatarg(1, argc, argv);
         if (argc > 2) binbuf_restore(x->te_binbuf, argc-2, argv+2);
         else
         {
@@ -68,8 +68,8 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         SET_SYMBOL(&at, gensym("comment"));
         glist_noselect(gl);
         glist_getnextxy(gl, &xpix, &ypix);
-        x->te_xpix = xpix-1;
-        x->te_ypix = ypix-1;
+        x->te_xCoordinate = xpix-1;
+        x->te_yCoordinate = ypix-1;
         binbuf_restore(x->te_binbuf, 1, &at);
         glist_add(gl, &x->te_g);
         glist_noselect(gl);
@@ -121,8 +121,8 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
         }
     }
     x->te_binbuf = b;
-    x->te_xpix = xpix;
-    x->te_ypix = ypix;
+    x->te_xCoordinate = xpix;
+    x->te_yCoordinate = ypix;
     x->te_width = width;
     x->te_type = TYPE_OBJECT;
     glist_add(gl, &x->te_g);
@@ -286,8 +286,8 @@ void canvas_objfor(t_glist *gl, t_text *x, int argc, t_atom *argv)
     x->te_width = 0;                            /* don't know it yet. */
     x->te_type = TYPE_OBJECT;
     x->te_binbuf = binbuf_new();
-    x->te_xpix = atom_getfloatarg(0, argc, argv);
-    x->te_ypix = atom_getfloatarg(1, argc, argv);
+    x->te_xCoordinate = atom_getfloatarg(0, argc, argv);
+    x->te_yCoordinate = atom_getfloatarg(1, argc, argv);
     if (argc > 2) binbuf_restore(x->te_binbuf, argc-2, argv+2);
     glist_add(gl, &x->te_g);
 }
@@ -458,8 +458,8 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     x->m_clock = clock_new(x, (t_method)message_tick);
     if (argc > 1)
     {
-        x->m_text.te_xpix = atom_getfloatarg(0, argc, argv);
-        x->m_text.te_ypix = atom_getfloatarg(1, argc, argv);
+        x->m_text.te_xCoordinate = atom_getfloatarg(0, argc, argv);
+        x->m_text.te_yCoordinate = atom_getfloatarg(1, argc, argv);
         if (argc > 2) binbuf_restore(x->m_text.te_binbuf, argc-2, argv+2);
         glist_add(gl, &x->m_text.te_g);
     }
@@ -471,8 +471,8 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
         
         pd_variadicMessage(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
-        x->m_text.te_xpix = xpix;
-        x->m_text.te_ypix = ypix;
+        x->m_text.te_xCoordinate = xpix;
+        x->m_text.te_yCoordinate = ypix;
         glist_add(gl, &x->m_text.te_g);
         glist_noselect(gl);
         glist_select(gl, &x->m_text.te_g);
@@ -906,8 +906,8 @@ void canvas_atom(t_glist *gl, t_atomtype type,
         /* create from file. x, y, width, low-range, high-range, flags,
             label, receive-name, send-name */
     {
-        x->a_text.te_xpix = atom_getfloatarg(0, argc, argv);
-        x->a_text.te_ypix = atom_getfloatarg(1, argc, argv);
+        x->a_text.te_xCoordinate = atom_getfloatarg(0, argc, argv);
+        x->a_text.te_yCoordinate = atom_getfloatarg(1, argc, argv);
         x->a_text.te_width = atom_getintarg(2, argc, argv);
             /* sanity check because some very old patches have trash in this
             field... remove this in 2003 or so: */
@@ -939,8 +939,8 @@ void canvas_atom(t_glist *gl, t_atomtype type,
             x->a_atom.a_type == A_FLOAT ? &s_float: &s_symbol);
         inlet_new(&x->a_text, &x->a_text.te_g.g_pd, 0, 0);
         pd_variadicMessage(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
-        x->a_text.te_xpix = xpix;
-        x->a_text.te_ypix = ypix;
+        x->a_text.te_xCoordinate = xpix;
+        x->a_text.te_yCoordinate = ypix;
         glist_add(gl, &x->a_text.te_g);
         glist_noselect(gl);
         glist_select(gl, &x->a_text.te_g);
@@ -1031,8 +1031,8 @@ static void text_displace(t_gobj *z, t_glist *glist,
     int dx, int dy)
 {
     t_text *x = (t_text *)z;
-    x->te_xpix += dx;
-    x->te_ypix += dy;
+    x->te_xCoordinate += dx;
+    x->te_yCoordinate += dy;
     if (glist_isvisible(glist))
     {
         t_rtext *y = glist_findrtext(glist, x);
@@ -1140,19 +1140,19 @@ void text_save(t_gobj *z, t_binbuf *b)
         {  
             mess1(&x->te_g.g_pd, gensym("saveto"), b);
             binbuf_addv(b, "ssii", gensym("#X"), gensym("restore"),
-                (int)x->te_xpix, (int)x->te_ypix);
+                (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }
         else    /* otherwise just save the text */
         {
             binbuf_addv(b, "ssii", gensym("#X"), gensym("obj"),
-                (int)x->te_xpix, (int)x->te_ypix);
+                (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }
         binbuf_addbinbuf(b, x->te_binbuf);
     }
     else if (x->te_type == TYPE_MESSAGE)
     {
         binbuf_addv(b, "ssii", gensym("#X"), gensym("msg"),
-            (int)x->te_xpix, (int)x->te_ypix);
+            (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         binbuf_addbinbuf(b, x->te_binbuf);
     }
     else if (x->te_type == TYPE_ATOM)
@@ -1164,7 +1164,7 @@ void text_save(t_gobj *z, t_binbuf *b)
         t_symbol *symfrom = gatom_escapit(((t_gatom *)x)->a_symfrom);
         t_symbol *symto = gatom_escapit(((t_gatom *)x)->a_symto);
         binbuf_addv(b, "ssiiifffsss", gensym("#X"), sel,
-            (int)x->te_xpix, (int)x->te_ypix, (int)x->te_width,
+            (int)x->te_xCoordinate, (int)x->te_yCoordinate, (int)x->te_width,
             (double)((t_gatom *)x)->a_draglo,
             (double)((t_gatom *)x)->a_draghi,
             (double)((t_gatom *)x)->a_wherelabel,
@@ -1173,7 +1173,7 @@ void text_save(t_gobj *z, t_binbuf *b)
     else        
     {
         binbuf_addv(b, "ssii", gensym("#X"), gensym("text"),
-            (int)x->te_xpix, (int)x->te_ypix);
+            (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         binbuf_addbinbuf(b, x->te_binbuf);
     }
     if (x->te_width)
@@ -1376,7 +1376,7 @@ void text_setto(t_text *x, t_glist *glist, char *buf, int bufsize)
         }
         else  /* normally, just destroy the old one and make a new one. */
         {
-            int xwas = x->te_xpix, ywas = x->te_ypix;
+            int xwas = x->te_xCoordinate, ywas = x->te_yCoordinate;
             glist_delete(glist, &x->te_g);
             canvas_objtext(glist, xwas, ywas, widthwas, 0, b);
             canvas_restoreconnections(glist_getcanvas(glist));

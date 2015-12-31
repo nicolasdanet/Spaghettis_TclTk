@@ -356,8 +356,8 @@ void iem_size(void *x, t_iem *iem)
 
 void iem_delta(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 {
-    iem->x_obj.te_xpix += (int)atom_getintarg(0, ac, av);
-    iem->x_obj.te_ypix += (int)atom_getintarg(1, ac, av);
+    iem->x_obj.te_xCoordinate += (int)atom_getintarg(0, ac, av);
+    iem->x_obj.te_yCoordinate += (int)atom_getintarg(1, ac, av);
     if(glist_isvisible(iem->x_glist))
     {
         (*iem->x_draw)(x, iem->x_glist, IEM_DRAW_MOVE);
@@ -367,8 +367,8 @@ void iem_delta(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 
 void iem_pos(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 {
-    iem->x_obj.te_xpix = (int)atom_getintarg(0, ac, av);
-    iem->x_obj.te_ypix = (int)atom_getintarg(1, ac, av);
+    iem->x_obj.te_xCoordinate = (int)atom_getintarg(0, ac, av);
+    iem->x_obj.te_yCoordinate = (int)atom_getintarg(1, ac, av);
     if(glist_isvisible(iem->x_glist))
     {
         (*iem->x_draw)(x, iem->x_glist, IEM_DRAW_MOVE);
@@ -394,8 +394,8 @@ void iem_displace(t_gobj *z, t_glist *glist, int dx, int dy)
 {
     t_iem *x = (t_iem *)z;
 
-    x->x_obj.te_xpix += dx;
-    x->x_obj.te_ypix += dy;
+    x->x_obj.te_xCoordinate += dx;
+    x->x_obj.te_yCoordinate += dy;
     (*x->x_draw)((void *)z, glist, IEM_DRAW_MOVE);
     canvas_fixlines(glist, (t_text *)z);
 }

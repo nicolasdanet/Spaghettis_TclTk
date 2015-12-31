@@ -169,7 +169,7 @@ void array_define_save(t_gobj *z, t_binbuf *bb)
     t_glist *x = (t_glist *)z;
     t_glist *gl = (x->gl_list ? pd_checkglist(&x->gl_list->g_pd) : 0);
     binbuf_addv(bb, "ssff", &s__X, gensym("obj"),
-        (float)x->gl_obj.te_xpix, (float)x->gl_obj.te_ypix);
+        (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
     binbuf_addbinbuf(bb, x->gl_obj.te_binbuf);
     binbuf_addsemi(bb);
 
@@ -270,7 +270,7 @@ static t_array *array_client_getbuf(t_array_client *x, t_glist **glist)
         }
         if (gs->gs_type == POINTER_ARRAY)
             vec = x->tc_gp.gp_un.gp_w;
-        else vec = x->tc_gp.gp_un.gp_scalar->sc_vec;
+        else vec = x->tc_gp.gp_un.gp_scalar->sc_vector;
 
         if (!template_find_field(template,
             x->tc_field, &onset, &type, &arraytype))

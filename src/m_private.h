@@ -48,16 +48,19 @@ PD_STRUCT _widgetbehavior;
 #pragma mark -
 
 typedef void (*t_gotfn)(void *x);
+typedef void (*t_savefn)(t_gobj *x, t_binbuf *b);
+typedef void (*t_propertiesfn)(t_gobj *x, t_glist *glist);
+typedef void (*t_callbackfn)(t_gobj *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef struct _methodentry {
+typedef struct _entry {
     t_symbol    *me_name;
     t_gotfn     me_function;
     t_atomtype  me_arguments[PD_ARGUMENTS + 1];
-    } t_methodentry;
+    } t_entry;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -78,7 +81,7 @@ struct _class {
     t_symbol                *c_helpName;
     t_symbol                *c_externalDirectory;
     size_t                  c_size;
-    t_methodentry           *c_methods;
+    t_entry                 *c_methods;
     int                     c_methodsSize;
     t_method                c_methodFree;
     t_bangmethod            c_methodBang;
@@ -107,8 +110,8 @@ struct _pdinstance {
     t_int       *pd_dspChain;
     int         pd_dspChainSize;
     int         pd_dspState;
-    t_canvas    *pd_canvases;
     t_signal    *pd_signals;
+    t_canvas    *pd_canvases;
     //
     t_symbol    *sym_midiin;
     t_symbol    *sym_sysexin;
@@ -149,7 +152,9 @@ int     class_hasPropertiesFunction (t_class *c);
 void    class_setWidget             (t_class *c, t_widgetbehavior *w);
 void    class_setParentWidget       (t_class *c, t_parentwidgetbehavior *w);
 void    class_setDrawCommand        (t_class *c);
+void    class_setHelpName           (t_class *c, t_symbol *s);
 void    class_setPropertiesFunction (t_class *c, t_propertiesfn f);
+void    class_setSaveFunction       (t_class *c, t_savefn f);
 
 char    *class_getName              (t_class *c);
 char    *class_getHelpName          (t_class *c);
@@ -202,6 +207,18 @@ void obj_init           (void);
 void conf_init          (void);
 void glob_init          (void);
 void garray_init        (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void sys_vgui               (char *fmt, ...);
+void sys_gui                (char *s);
+void sys_pretendguibytes    (int n);
+void sys_queuegui           (void *client, t_glist *glist, t_callbackfn f);
+void sys_unqueuegui         (void *client);
+void gfxstub_new            (t_pd *owner, void *key, const char *cmd);
+void gfxstub_deleteforkey   (void *key);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

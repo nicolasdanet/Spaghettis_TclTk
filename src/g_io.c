@@ -134,7 +134,7 @@ static void vinlet_dsp(t_vinlet *x, t_signal **sp)
     }
     else
     {
-        dsp_add(vinlet_perform, 3, x, outsig->s_vec, outsig->s_vecsize);
+        dsp_add(vinlet_perform, 3, x, outsig->s_vector, outsig->s_vectorSize);
         x->x_read = x->x_buf;
     }
 }
@@ -174,8 +174,8 @@ void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
         /* no buffer means we're not a signal inlet */
     if (!x->x_buf)
         return;
-    x->x_updown.downsample = downsample;
-    x->x_updown.upsample   = upsample;
+    x->x_updown.r_downSample = downsample;
+    x->x_updown.r_upSample   = upsample;
 
         /* if the "reblock" flag is set, arrange to copy data in from the
         parent. */
@@ -193,7 +193,7 @@ void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
         if (parentsigs)
         {
             insig = parentsigs[inlet_getsignalindex(x->x_inlet)];
-            parentvecsize = insig->s_vecsize;
+            parentvecsize = insig->s_vectorSize;
             re_parentvecsize = parentvecsize * upsample / downsample;
         }
         else
@@ -223,20 +223,20 @@ void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
               (x->x_hop - prologphase * re_parentvecsize);
 
             if (upsample * downsample == 1)
-                    dsp_add(vinlet_doprolog, 3, x, insig->s_vec,
+                    dsp_add(vinlet_doprolog, 3, x, insig->s_vector,
                         re_parentvecsize);
             else {
-              int method = (x->x_updown.method == 3?
-                (0 ? 0 : 1) : x->x_updown.method);
-              resamplefrom_dsp(&x->x_updown, insig->s_vec, parentvecsize,
+              int method = (x->x_updown.r_type == 3?
+                (0 ? 0 : 1) : x->x_updown.r_type);
+              resamplefrom_dsp(&x->x_updown, insig->s_vector, parentvecsize,
                 re_parentvecsize, method);
-              dsp_add(vinlet_doprolog, 3, x, x->x_updown.s_vec,
+              dsp_add(vinlet_doprolog, 3, x, x->x_updown.r_vector,
                 re_parentvecsize);
         }
 
             /* if the input signal's reference count is zero, we have
                to free it here because we didn't in ugen_doit(). */
-            if (!insig->s_refcount)
+            if (!insig->s_count)
                 signal_makereusable(insig);
         }
         else memset((char *)(x->x_buf), 0, bufsize * sizeof(*x->x_buf));
@@ -269,12 +269,12 @@ static void *vinlet_newsig(t_symbol *s)
      * up till now we provide several upsampling methods and 1 single downsampling method (no filtering !)
      */
     if (s == gensym("hold"))
-        x->x_updown.method=1;       /* up: sample and hold */
+        x->x_updown.r_type=1;       /* up: sample and hold */
     else if (s == gensym("lin") || s == gensym("linear"))
-        x->x_updown.method=2;       /* up: linear interpolation */
+        x->x_updown.r_type=2;       /* up: linear interpolation */
     else if (s == gensym("pad"))
-        x->x_updown.method=0;       /* up: zero-padding */
-    else x->x_updown.method=3;      /* sample/hold unless version<0.44 */
+        x->x_updown.r_type=0;       /* up: zero-padding */
+    else x->x_updown.r_type=3;      /* sample/hold unless version<0.44 */
 
     return (x);
 }
@@ -412,8 +412,8 @@ static t_int *voutlet_doepilog(t_int *w)
 
     int n = (int)(w[3]);
     t_sample *in = x->x_empty;
-    if (x->x_updown.downsample != x->x_updown.upsample)
-        out = x->x_updown.s_vec;
+    if (x->x_updown.r_downSample != x->x_updown.r_upSample)
+        out = x->x_updown.r_vector;
 
 #if 0
     if (tot < 5) post("outlet in %lx out %lx n %lx", in, out, n), tot++;
@@ -429,7 +429,7 @@ static t_int *voutlet_doepilog_resampling(t_int *w)
     t_voutlet *x = (t_voutlet *)(w[1]);
     int n = (int)(w[2]);
     t_sample *in  = x->x_empty;
-    t_sample *out = x->x_updown.s_vec;
+    t_sample *out = x->x_updown.r_vector;
 
 #if 0
     if (tot < 5) post("outlet in %lx out %lx n %lx", in, out, n), tot++;
@@ -453,8 +453,8 @@ void voutlet_dspprolog(struct _voutlet *x, t_signal **parentsigs,
         /* no buffer means we're not a signal outlet */
     if (!x->x_buf)
         return;
-    x->x_updown.downsample=downsample;
-    x->x_updown.upsample=upsample;
+    x->x_updown.r_downSample=downsample;
+    x->x_updown.r_upSample=upsample;
     x->x_justcopyout = (switched && !reblock);
     if (reblock)
     {
@@ -474,16 +474,16 @@ static void voutlet_dsp(t_voutlet *x, t_signal **sp)
     if (!x->x_buf) return;
     insig = sp[0];
     if (x->x_justcopyout)
-        dsp_add_copy(insig->s_vec, x->x_directsignal->s_vec, insig->s_n);
+        dsp_add_copy(insig->s_vector, x->x_directsignal->s_vector, insig->s_blockSize);
     else if (x->x_directsignal)
     {
             /* if we're just going to make the signal available on the
             parent patch, hand it off to the parent signal. */
-        /* this is done elsewhere--> sp[0]->s_refcount++; */
+        /* this is done elsewhere--> sp[0]->s_count++; */
         signal_setborrowed(x->x_directsignal, sp[0]);
     }
     else
-        dsp_add(voutlet_perform, 3, x, insig->s_vec, insig->s_n);
+        dsp_add(voutlet_perform, 3, x, insig->s_vector, insig->s_blockSize);
 }
 
         /* set up epilog DSP code.  If we're reblocking, this is the
@@ -494,8 +494,8 @@ void voutlet_dspepilog(struct _voutlet *x, t_signal **parentsigs,
     int downsample, int upsample, int reblock, int switched)
 {
     if (!x->x_buf) return;  /* this shouldn't be necesssary... */
-    x->x_updown.downsample=downsample;
-    x->x_updown.upsample=upsample;
+    x->x_updown.r_downSample=downsample;
+    x->x_updown.r_upSample=upsample;
     if (reblock)
     {
         t_signal *insig, *outsig;
@@ -505,7 +505,7 @@ void voutlet_dspepilog(struct _voutlet *x, t_signal **parentsigs,
         if (parentsigs)
         {
             outsig = parentsigs[outlet_getsignalindex(x->x_parentoutlet)];
-            parentvecsize = outsig->s_vecsize;
+            parentvecsize = outsig->s_vectorSize;
             re_parentvecsize = parentvecsize * upsample / downsample;
         }
         else
@@ -543,14 +543,14 @@ void voutlet_dspepilog(struct _voutlet *x, t_signal **parentsigs,
             /* set epilog pointer and schedule it */
             x->x_empty = x->x_buf + re_parentvecsize * epilogphase;
             if (upsample * downsample == 1)
-                dsp_add(voutlet_doepilog, 3, x, outsig->s_vec,
+                dsp_add(voutlet_doepilog, 3, x, outsig->s_vector,
                     re_parentvecsize);
             else
             {
-                int method = (x->x_updown.method == 3?
-                    (0 ? 0 : 1) : x->x_updown.method);
+                int method = (x->x_updown.r_type == 3?
+                    (0 ? 0 : 1) : x->x_updown.r_type);
                 dsp_add(voutlet_doepilog_resampling, 2, x, re_parentvecsize);
-                resampleto_dsp(&x->x_updown, outsig->s_vec, re_parentvecsize,
+                resampleto_dsp(&x->x_updown, outsig->s_vector, re_parentvecsize,
                     parentvecsize, method);
             }
         }
@@ -564,7 +564,7 @@ void voutlet_dspepilog(struct _voutlet *x, t_signal **parentsigs,
         {
             t_signal *outsig =
                 parentsigs[outlet_getsignalindex(x->x_parentoutlet)];
-            dsp_add_zero(outsig->s_vec, outsig->s_n);
+            dsp_add_zero(outsig->s_vector, outsig->s_blockSize);
         }
     }
 }
@@ -587,11 +587,11 @@ static void *voutlet_newsig(t_symbol *s)
      *
      * up till now we provide several upsampling methods and 1 single downsampling method (no filtering !)
      */
-    if (s == gensym("hold"))x->x_updown.method=1;        /* up: sample and hold */
-    else if (s == gensym("lin"))x->x_updown.method=2;    /* up: linear interpolation */
-    else if (s == gensym("linear"))x->x_updown.method=2; /* up: linear interpolation */
-    else if (s == gensym("pad"))x->x_updown.method=0;    /* up: zero pad */
-    else x->x_updown.method=3;                           /* up: zero-padding; down: ignore samples inbetween */
+    if (s == gensym("hold"))x->x_updown.r_type=1;        /* up: sample and hold */
+    else if (s == gensym("lin"))x->x_updown.r_type=2;    /* up: linear interpolation */
+    else if (s == gensym("linear"))x->x_updown.r_type=2; /* up: linear interpolation */
+    else if (s == gensym("pad"))x->x_updown.r_type=0;    /* up: zero pad */
+    else x->x_updown.r_type=3;                           /* up: zero-padding; down: ignore samples inbetween */
 
     return (x);
 }

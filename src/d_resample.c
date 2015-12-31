@@ -80,7 +80,7 @@ t_int *upsampling_perform_linear(t_int *w)
   int length   = parent*up;
   int n;
   t_sample *fp;
-  t_sample a=*x->buffer, b=*in;
+  t_sample a=*x->r_buffer, b=*in;
 
   
   for (n=0; n<length; n++) {
@@ -94,7 +94,7 @@ t_int *upsampling_perform_linear(t_int *w)
     a=(index)?*(fp-1):a;
   }
 
-  *x->buffer = a;
+  *x->r_buffer = a;
   return (w+6);
 }
 
@@ -104,22 +104,22 @@ t_int *upsampling_perform_linear(t_int *w)
 
 void resample_init(t_resample *x)
 {
-  x->method=0;
+  x->r_type=0;
 
-  x->downsample=x->upsample=1;
+  x->r_downSample=x->r_upSample=1;
 
-  x->s_n = x->coefsize = x->bufsize = 0;
-  x->s_vec = x->coeffs = x->buffer  = 0;
+  x->r_vectorSize = x->r_coefficientsSize = x->r_bufferSize = 0;
+  x->r_vector = x->r_coefficients = x->r_buffer  = 0;
 }
 
 void resample_free(t_resample *x)
 {
-  if (x->s_n) freebytes(x->s_vec, x->s_n*sizeof(*x->s_vec));
-  if (x->coefsize) freebytes(x->coeffs, x->coefsize*sizeof(*x->coeffs));
-  if (x->bufsize) freebytes(x->buffer, x->bufsize*sizeof(*x->buffer));
+  if (x->r_vectorSize) freebytes(x->r_vector, x->r_vectorSize*sizeof(*x->r_vector));
+  if (x->r_coefficientsSize) freebytes(x->r_coefficients, x->r_coefficientsSize*sizeof(*x->r_coefficients));
+  if (x->r_bufferSize) freebytes(x->r_buffer, x->r_bufferSize*sizeof(*x->r_buffer));
 
-  x->s_n = x->coefsize = x->bufsize = 0;
-  x->s_vec = x->coeffs = x->buffer  = 0;
+  x->r_vectorSize = x->r_coefficientsSize = x->r_bufferSize = 0;
+  x->r_vector = x->r_coefficients = x->r_buffer  = 0;
 }
 
 
@@ -156,10 +156,10 @@ void resample_dsp(t_resample *x,
       dsp_add(upsampling_perform_hold, 4, in, out, outsize/insize, insize);
       break;
     case 2:
-      if (x->bufsize != 1) {
-        freebytes(x->buffer, x->bufsize*sizeof(*x->buffer));
-        x->bufsize = 1;
-        x->buffer = getbytes(x->bufsize*sizeof(*x->buffer));
+      if (x->r_bufferSize != 1) {
+        freebytes(x->r_buffer, x->r_bufferSize*sizeof(*x->r_buffer));
+        x->r_bufferSize = 1;
+        x->r_buffer = getbytes(x->r_bufferSize*sizeof(*x->r_buffer));
       }
       dsp_add(upsampling_perform_linear, 5, x, in, out, outsize/insize, insize);
       break;
@@ -174,21 +174,21 @@ void resamplefrom_dsp(t_resample *x,
                            int insize, int outsize, int method)
 {
   if (insize==outsize) {
-   freebytes(x->s_vec, x->s_n * sizeof(*x->s_vec));
-    x->s_n = 0;
-    x->s_vec = in;
+   freebytes(x->r_vector, x->r_vectorSize * sizeof(*x->r_vector));
+    x->r_vectorSize = 0;
+    x->r_vector = in;
     return;
   }
 
-  if (x->s_n != outsize) {
-    t_sample *buf=x->s_vec;
-    freebytes(buf, x->s_n * sizeof(*buf));
+  if (x->r_vectorSize != outsize) {
+    t_sample *buf=x->r_vector;
+    freebytes(buf, x->r_vectorSize * sizeof(*buf));
     buf = (t_sample *)getbytes(outsize * sizeof(*buf));
-    x->s_vec = buf;
-    x->s_n   = outsize;
+    x->r_vector = buf;
+    x->r_vectorSize   = outsize;
   }
 
-  resample_dsp(x, in, insize, x->s_vec, x->s_n, method);
+  resample_dsp(x, in, insize, x->r_vector, x->r_vectorSize, method);
   return;
 }
 
@@ -197,21 +197,21 @@ void resampleto_dsp(t_resample *x,
                          int insize, int outsize, int method)
 {
   if (insize==outsize) {
-    if (x->s_n)freebytes(x->s_vec, x->s_n * sizeof(*x->s_vec));
-    x->s_n = 0;
-    x->s_vec = out;
+    if (x->r_vectorSize)freebytes(x->r_vector, x->r_vectorSize * sizeof(*x->r_vector));
+    x->r_vectorSize = 0;
+    x->r_vector = out;
     return;
   }
 
-  if (x->s_n != insize) {
-    t_sample *buf=x->s_vec;
-    freebytes(buf, x->s_n * sizeof(*buf));
+  if (x->r_vectorSize != insize) {
+    t_sample *buf=x->r_vector;
+    freebytes(buf, x->r_vectorSize * sizeof(*buf));
     buf = (t_sample *)getbytes(insize * sizeof(*buf));
-    x->s_vec = buf;
-    x->s_n   = insize;
+    x->r_vector = buf;
+    x->r_vectorSize   = insize;
   }
 
-  resample_dsp(x, x->s_vec, x->s_n, out, outsize, method);
+  resample_dsp(x, x->r_vector, x->r_vectorSize, out, outsize, method);
 
   return;
 }

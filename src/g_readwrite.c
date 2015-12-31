@@ -156,7 +156,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
     glist_add(x, &sc->sc_g);
     
     nline = canvas_scanbinbuf(natoms, vec, &message, p_nextmsg);
-    glist_readatoms(x, natoms, vec, p_nextmsg, templatesym, sc->sc_vec, 
+    glist_readatoms(x, natoms, vec, p_nextmsg, templatesym, sc->sc_vector, 
         nline, vec + message);
     if (wasvis)
     {
@@ -339,7 +339,7 @@ void canvas_dataproperties(t_canvas *x, t_scalar *sc, t_binbuf *b)
         && (template = template_findbyname(((t_scalar *)newone)->sc_template)))
     {
             /* copy new one to old one and deete new one */
-        memcpy(&((t_scalar *)oldone)->sc_vec, &((t_scalar *)newone)->sc_vec,
+        memcpy(&((t_scalar *)oldone)->sc_vector, &((t_scalar *)newone)->sc_vector,
             template->t_n * sizeof(t_word));
         pd_free(&newone->g_pd);
         if (glist_isvisible(x))
@@ -450,7 +450,7 @@ static void glist_writelist(t_gobj *y, t_binbuf *b)
         if (pd_class(&y->g_pd) == scalar_class)
         {
             canvas_writescalar(((t_scalar *)y)->sc_template,
-                ((t_scalar *)y)->sc_vec, b, 0);
+                ((t_scalar *)y)->sc_vector, b, 0);
         }
     }
 }
@@ -493,7 +493,7 @@ static void canvas_addtemplatesforlist(t_gobj *y,
         if (pd_class(&y->g_pd) == scalar_class)
         {
             canvas_addtemplatesforscalar(((t_scalar *)y)->sc_template,
-                ((t_scalar *)y)->sc_vec, p_ntemplates, p_templatevec);
+                ((t_scalar *)y)->sc_vector, p_ntemplates, p_templatevec);
         }
     }
 }
@@ -513,7 +513,7 @@ t_binbuf *glist_writetobinbuf(t_glist *x, int wholething)
             (wholething || glist_isselected(x, y)))
         {
             canvas_addtemplatesforscalar(((t_scalar *)y)->sc_template,
-                ((t_scalar *)y)->sc_vec,  &ntemplates, &templatevec);
+                ((t_scalar *)y)->sc_vector,  &ntemplates, &templatevec);
         }
     }
     binbuf_addv(b, "s;", gensym("data"));
@@ -550,7 +550,7 @@ t_binbuf *glist_writetobinbuf(t_glist *x, int wholething)
             (wholething || glist_isselected(x, y)))
         {
             canvas_writescalar(((t_scalar *)y)->sc_template,
-                ((t_scalar *)y)->sc_vec,  b, 0);
+                ((t_scalar *)y)->sc_vector,  b, 0);
         }
     }
     return (b);
@@ -664,7 +664,7 @@ static void canvas_collecttemplatesfor(t_canvas *x, int *ntemplatesp,
         if ((pd_class(&y->g_pd) == scalar_class) &&
             (wholething || glist_isselected(x, y)))
                 canvas_addtemplatesforscalar(((t_scalar *)y)->sc_template,
-                    ((t_scalar *)y)->sc_vec,  ntemplatesp, templatevecp);
+                    ((t_scalar *)y)->sc_vector,  ntemplatesp, templatevecp);
         else if ((pd_class(&y->g_pd) == canvas_class) &&
             (wholething || glist_isselected(x, y)))
                 canvas_collecttemplatesfor((t_canvas *)y,

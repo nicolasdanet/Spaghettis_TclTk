@@ -265,7 +265,7 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
 {
     va_list ap;
     t_atomtype argtype = type1;
-    t_methodentry *m = NULL;
+    t_entry *m = NULL;
     size_t oldSize, newSize;
     int i, n = 0;
         
@@ -302,8 +302,8 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
         if (c->c_methods[i].me_name == s) { PD_OBSOLETE; return; }
     }
     
-    oldSize = c->c_methodsSize * sizeof (t_methodentry);
-    newSize = (c->c_methodsSize + 1) * sizeof (t_methodentry);
+    oldSize = c->c_methodsSize * sizeof (t_entry);
+    newSize = (c->c_methodsSize + 1) * sizeof (t_entry);
     
     c->c_methods = resizebytes (c->c_methods, oldSize, newSize);
     
@@ -366,7 +366,7 @@ void class_addAnything (t_class *c, t_method fn)
 
 t_gotfn class_getMethod (t_class *c, t_symbol *s)
 {
-    t_methodentry *m;
+    t_entry *m;
     int i;
 
     for (i = c->c_methodsSize, m = c->c_methods; i--; m++) { 

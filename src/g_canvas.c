@@ -476,8 +476,8 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     x->gl_x2 = x2;
     x->gl_y1 = y1;
     x->gl_y2 = y2;
-    x->gl_obj.te_xpix = px1;
-    x->gl_obj.te_ypix = py1;
+    x->gl_obj.te_xCoordinate = px1;
+    x->gl_obj.te_yCoordinate = py1;
     x->gl_pixwidth = px2 - px1;
     x->gl_pixheight = py2 - py1;
     x->gl_font =  (canvas_getcurrent() ?

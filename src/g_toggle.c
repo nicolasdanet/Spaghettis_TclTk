@@ -207,8 +207,8 @@ static void toggle_save(t_gobj *z, t_binbuf *b)
 
     iem_save(&x->x_gui, srl, bflcol);
     binbuf_addv(b, "ssiisiisssiiiiiiiff", gensym("#X"),gensym("obj"),
-                (int)x->x_gui.x_obj.te_xpix,
-                (int)x->x_gui.x_obj.te_ypix,
+                (int)x->x_gui.x_obj.te_xCoordinate,
+                (int)x->x_gui.x_obj.te_yCoordinate,
                 gensym("tgl"), x->x_gui.x_w,
                 iem_symargstoint(&x->x_gui.x_isa),
                 srl[0], srl[1], srl[2],

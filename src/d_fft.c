@@ -84,11 +84,11 @@ static t_int *sigifft_perform(t_int *w)
 
 static void sigfft_dspx(t_sigfft *x, t_signal **sp, t_int *(*f)(t_int *w))
 {
-    int n = sp[0]->s_n;
-    t_sample *in1 = sp[0]->s_vec;
-    t_sample *in2 = sp[1]->s_vec;
-    t_sample *out1 = sp[2]->s_vec;
-    t_sample *out2 = sp[3]->s_vec;
+    int n = sp[0]->s_blockSize;
+    t_sample *in1 = sp[0]->s_vector;
+    t_sample *in2 = sp[1]->s_vector;
+    t_sample *out1 = sp[2]->s_vector;
+    t_sample *out2 = sp[3]->s_vector;
     if (out1 == in2 && out2 == in1)
         dsp_add(sigfft_swap, 3, out1, out2, n);
     else if (out1 == in2)
@@ -101,7 +101,7 @@ static void sigfft_dspx(t_sigfft *x, t_signal **sp, t_int *(*f)(t_int *w))
         if (out1 != in1) dsp_add(copy_perform, 3, in1, out1, n);
         if (out2 != in2) dsp_add(copy_perform, 3, in2, out2, n);
     }
-    dsp_add(f, 3, sp[2]->s_vec, sp[3]->s_vec, n);
+    dsp_add(f, 3, sp[2]->s_vector, sp[3]->s_vector, n);
 }
 
 static void sigfft_dsp(t_sigfft *x, t_signal **sp)
@@ -159,10 +159,10 @@ static t_int *sigrfft_perform(t_int *w)
 
 static void sigrfft_dsp(t_sigrfft *x, t_signal **sp)
 {
-    int n = sp[0]->s_n, n2 = (n>>1);
-    t_sample *in1 = sp[0]->s_vec;
-    t_sample *out1 = sp[1]->s_vec;
-    t_sample *out2 = sp[2]->s_vec;
+    int n = sp[0]->s_blockSize, n2 = (n>>1);
+    t_sample *in1 = sp[0]->s_vector;
+    t_sample *out1 = sp[1]->s_vector;
+    t_sample *out2 = sp[2]->s_vector;
     if (n < 4)
     {
         post_error ("fft: minimum 4 points");
@@ -217,10 +217,10 @@ static t_int *sigrifft_perform(t_int *w)
 
 static void sigrifft_dsp(t_sigrifft *x, t_signal **sp)
 {
-    int n = sp[0]->s_n, n2 = (n>>1);
-    t_sample *in1 = sp[0]->s_vec;
-    t_sample *in2 = sp[1]->s_vec;
-    t_sample *out1 = sp[2]->s_vec;
+    int n = sp[0]->s_blockSize, n2 = (n>>1);
+    t_sample *in1 = sp[0]->s_vector;
+    t_sample *in2 = sp[1]->s_vector;
+    t_sample *out1 = sp[2]->s_vector;
     if (n < 4)
     {
         post_error ("fft: minimum 4 points");
@@ -317,15 +317,15 @@ t_int *sigsqrt_perform(t_int *w);
 
 static void sigframp_dsp(t_sigframp *x, t_signal **sp)
 {
-    int n = sp[0]->s_n, n2 = (n>>1);
+    int n = sp[0]->s_blockSize, n2 = (n>>1);
     if (n < 4)
     {
         post_error ("framp: minimum 4 points");
         return;
     }
-    dsp_add(sigframp_perform, 5, sp[0]->s_vec, sp[1]->s_vec,
-        sp[2]->s_vec, sp[3]->s_vec, n2);
-    dsp_add(sigsqrt_perform, 3, sp[3]->s_vec, sp[3]->s_vec, n2);
+    dsp_add(sigframp_perform, 5, sp[0]->s_vector, sp[1]->s_vector,
+        sp[2]->s_vector, sp[3]->s_vector, n2);
+    dsp_add(sigsqrt_perform, 3, sp[3]->s_vector, sp[3]->s_vector, n2);
 }
 
 static void sigframp_setup(void)

@@ -275,16 +275,16 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
             /* see scalar_new() for comment about the gpointer. */
         gpointer_init(&gp);
         x = (t_scalar *)getbytes(sizeof(t_scalar) +
-            (tto->t_n - 1) * sizeof(*x->sc_vec));
+            (tto->t_n - 1) * sizeof(*x->sc_vector));
         x->sc_g.g_pd = scalar_class;
         x->sc_template = tfrom->t_sym;
         gpointer_setglist(&gp, glist, x);
             /* Here we initialize to the new template, but array and list
             elements will still belong to old template. */
-        word_init(x->sc_vec, tto, &gp);
+        word_init(x->sc_vector, tto, &gp);
 
         template_conformwords(tfrom, tto, conformaction,
-            scfrom->sc_vec, x->sc_vec);
+            scfrom->sc_vector, x->sc_vector);
             
             /* replace the old one with the new one in the list */
         if (glist->gl_list == &scfrom->sc_g)
@@ -321,7 +321,7 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
         if (ds->ds_type == DATA_ARRAY)
         {
             template_conformarray(tfrom, tto, conformaction, 
-                x->sc_vec[i].w_array);
+                x->sc_vector[i].w_array);
         }
     }
     return (x);

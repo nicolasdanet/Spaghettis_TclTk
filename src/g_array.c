@@ -210,7 +210,7 @@ t_array *garray_getarray(t_garray *x)
             templatesym->s_name);
         return (0);
     }
-    return (sc->sc_vec[zonset].w_array);
+    return (sc->sc_vector[zonset].w_array);
 }
 
     /* get the "array" structure and furthermore check it's float */
@@ -330,11 +330,11 @@ t_garray *graph_array(t_glist *gl, t_symbol *s, t_symbol *templateargsym,
 
     if (n <= 0)
         n = 100;
-    array_resize(x->x_scalar->sc_vec[zonset].w_array, n);
+    array_resize(x->x_scalar->sc_vector[zonset].w_array, n);
 
-    template_setfloat(template, gensym("style"), x->x_scalar->sc_vec,
+    template_setfloat(template, gensym("style"), x->x_scalar->sc_vector,
         style, 1);
-    template_setfloat(template, gensym("linewidth"), x->x_scalar->sc_vec, 
+    template_setfloat(template, gensym("linewidth"), x->x_scalar->sc_vector, 
         ((style == PLOT_POINTS) ? 2 : 1), 1);
 
            /* bashily unbind #A -- this would create garbage if #A were
@@ -373,7 +373,7 @@ void garray_properties(t_garray *x)
     t_array *a = garray_getarray(x);
     t_scalar *sc = x->x_scalar;
     int style = template_getfloat(template_findbyname(sc->sc_template),
-        gensym("style"), x->x_scalar->sc_vec, 1);
+        gensym("style"), x->x_scalar->sc_vector, 1);
     int filestyle = (style == 0 ? PLOT_POLYGONS :
         (style == 1 ? PLOT_POINTS : style));
 
@@ -417,7 +417,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_floatarg fsize,
         (filestyle == 1 ? PLOT_POINTS : filestyle));
     t_float stylewas = template_getfloat(
         template_findbyname(x->x_scalar->sc_template),
-            gensym("style"), x->x_scalar->sc_vec, 1);
+            gensym("style"), x->x_scalar->sc_vector, 1);
     if (0) // deleteit
     {
         int wasused = x->x_usedindsp;
@@ -474,7 +474,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_floatarg fsize,
         else if (style != stylewas)
             garray_fittograph(x, size, style);
         template_setfloat(scalartemplate, gensym("style"),
-            x->x_scalar->sc_vec, (t_float)style, 0);
+            x->x_scalar->sc_vector, (t_float)style, 0);
 
         garray_setsaveit(x, (saveit != 0));
         garray_redraw(x);
@@ -760,7 +760,7 @@ static void garray_save(t_gobj *z, t_binbuf *b)
         return;
     }
     style = template_getfloat(scalartemplate, gensym("style"),
-            x->x_scalar->sc_vec, 0);    
+            x->x_scalar->sc_vector, 0);    
     filestyle = (style == PLOT_POINTS ? 1 : 
         (style == PLOT_POLYGONS ? 0 : style)); 
     binbuf_addv(b, "sssisi;", gensym("#X"), gensym("array"),
@@ -1180,7 +1180,7 @@ void garray_resize_long(t_garray *x, long n)
         n = 1;
     garray_fittograph(x, n, template_getfloat(
         template_findbyname(x->x_scalar->sc_template),
-            gensym("style"), x->x_scalar->sc_vec, 1));
+            gensym("style"), x->x_scalar->sc_vector, 1));
     array_resize_and_redraw(array, x->x_glist, n);
     if (x->x_usedindsp)
         canvas_update_dsp();

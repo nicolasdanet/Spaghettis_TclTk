@@ -430,7 +430,7 @@ static void vu_save(t_gobj *z, t_binbuf *b)
 
     iem_save(&x->x_gui, srl, bflcol);
     binbuf_addv(b, "ssiisiissiiiiiiii", gensym("#X"),gensym("obj"),
-                (int)x->x_gui.x_obj.te_xpix, (int)x->x_gui.x_obj.te_ypix,
+                (int)x->x_gui.x_obj.te_xCoordinate, (int)x->x_gui.x_obj.te_yCoordinate,
                 gensym("vu"), x->x_gui.x_w, x->x_gui.x_h,
                 srl[1], srl[2],
                 x->x_gui.x_ldx, x->x_gui.x_ldy,

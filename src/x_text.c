@@ -259,8 +259,8 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
     textbuf_init(&x->x_textbuf);
         /* set up a scalar and a pointer to it that we can output */
     x->x_scalar = scalar_new(canvas_getcurrent(), gensym("pd-text"));
-    binbuf_free(x->x_scalar->sc_vec[2].w_binbuf);
-    x->x_scalar->sc_vec[2].w_binbuf = x->x_binbuf;
+    binbuf_free(x->x_scalar->sc_vector[2].w_binbuf);
+    x->x_scalar->sc_vector[2].w_binbuf = x->x_binbuf;
     x->x_out = outlet_new(&x->x_ob, &s_pointer);
     gpointer_init(&x->x_gp);
     x->x_canvas = canvas_getcurrent();
@@ -341,7 +341,7 @@ static void text_define_save(t_gobj *z, t_binbuf *bb)
 {
     t_text_define *x = (t_text_define *)z;
     binbuf_addv(bb, "ssff", &s__X, gensym("obj"),
-        (float)x->x_ob.te_xpix, (float)x->x_ob.te_ypix);
+        (float)x->x_ob.te_xCoordinate, (float)x->x_ob.te_yCoordinate);
     binbuf_addbinbuf(bb, x->x_ob.te_binbuf);
     binbuf_addsemi(bb);
     if (x->x_keep)
@@ -444,7 +444,7 @@ static t_binbuf *text_client_getbuf(t_text_client *x)
         }
         if (gs->gs_type == POINTER_ARRAY)
             vec = x->tc_gp.gp_un.gp_w;
-        else vec = x->tc_gp.gp_un.gp_scalar->sc_vec;
+        else vec = x->tc_gp.gp_un.gp_scalar->sc_vector;
 
         if (!template_find_field(template,
             x->tc_field, &onset, &type, &arraytype))

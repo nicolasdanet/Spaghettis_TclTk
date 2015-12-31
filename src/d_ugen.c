@@ -227,7 +227,7 @@ static void block_bang(t_block *x)
         t_int *ip;
         x->x_return = 1;
         for (ip = pd_this->pd_dspChain + x->x_chainonset; ip; )
-            ip = (*(t_perfroutine)(*ip))(ip);
+            ip = (*(t_perform)(*ip))(ip);
         x->x_return = 0;
     }
     else post_error ("bang to block~ or on-state switch~ has no effect");
@@ -301,7 +301,7 @@ static t_int dsp_done(t_int *w)
     return (0);
 }
 
-void dsp_add(t_perfroutine f, int n, ...)
+void dsp_add(t_perform f, int n, ...)
 {
     int newsize = pd_this->pd_dspChainSize + n+1, i;
     va_list ap;
@@ -318,7 +318,7 @@ void dsp_add(t_perfroutine f, int n, ...)
 }
 
     /* at Guenter's suggestion, here's a vectorized version */
-void dsp_addv(t_perfroutine f, int n, t_int *vec)
+void dsp_addv(t_perform f, int n, t_int *vec)
 {
     int newsize = pd_this->pd_dspChainSize + n+1, i;
     
@@ -336,7 +336,7 @@ void dsp_tick(void)
     if (pd_this->pd_dspChain)
     {
         t_int *ip;
-        for (ip = pd_this->pd_dspChain; ip; ) ip = (*(t_perfroutine)(*ip))(ip);
+        for (ip = pd_this->pd_dspChain; ip; ) ip = (*(t_perform)(*ip))(ip);
         dsp_phase++;
     }
 }
@@ -367,9 +367,9 @@ void signal_cleanup(void)
     int i;
     while (sig = pd_this->pd_signals)
     {
-        pd_this->pd_signals = sig->s_nextused;
-        if (!sig->s_isborrowed)
-            freebytes(sig->s_vec, sig->s_vecsize * sizeof (*sig->s_vec));
+        pd_this->pd_signals = sig->s_nextUsed;
+        if (!sig->s_isBorrowed)
+            freebytes(sig->s_vector, sig->s_vectorSize * sizeof (*sig->s_vector));
         freebytes(sig, sizeof *sig);
     }
     for (i = 0; i <= MAXLOGSIG; i++)
@@ -380,10 +380,10 @@ void signal_cleanup(void)
     /* mark the signal "reusable." */
 void signal_makereusable(t_signal *sig)
 {
-    int logn = ilog2(sig->s_vecsize);
+    int logn = ilog2(sig->s_vectorSize);
 #if 1
     t_signal *s5;
-    for (s5 = signal_freeborrowed; s5; s5 = s5->s_nextfree)
+    for (s5 = signal_freeborrowed; s5; s5 = s5->s_nextFree)
     {
         if (s5 == sig)
         {
@@ -391,7 +391,7 @@ void signal_makereusable(t_signal *sig)
             return;
         }
     }
-    for (s5 = signal_freelist[logn]; s5; s5 = s5->s_nextfree)
+    for (s5 = signal_freelist[logn]; s5; s5 = s5->s_nextFree)
     {
         if (s5 == sig)
         {
@@ -400,17 +400,17 @@ void signal_makereusable(t_signal *sig)
         }
     }
 #endif
-    if (ugen_loud) post("free %lx: %d", sig, sig->s_isborrowed);
-    if (sig->s_isborrowed)
+    if (ugen_loud) post("free %lx: %d", sig, sig->s_isBorrowed);
+    if (sig->s_isBorrowed)
     {
             /* if the signal is borrowed, decrement the borrowed-from signal's
                 reference count, possibly marking it reusable too */
-        t_signal *s2 = sig->s_borrowedfrom;
+        t_signal *s2 = sig->s_borrowedFrom;
         if ((s2 == sig) || !s2) { PD_BUG; }
-        s2->s_refcount--;
-        if (!s2->s_refcount)
+        s2->s_count--;
+        if (!s2->s_count)
             signal_makereusable(s2);
-        sig->s_nextfree = signal_freeborrowed;
+        sig->s_nextFree = signal_freeborrowed;
         signal_freeborrowed = sig;
     }
     else
@@ -418,7 +418,7 @@ void signal_makereusable(t_signal *sig)
             /* if it's a real signal (not borrowed), put it on the free list
                 so we can reuse it. */
         if (signal_freelist[logn] == sig) { PD_BUG; }
-        sig->s_nextfree = signal_freelist[logn];
+        sig->s_nextFree = signal_freelist[logn];
         signal_freelist[logn] = sig;
     }
 }
@@ -445,51 +445,51 @@ t_signal *signal_new(int n, t_float sr)
 
         /* first try to reclaim one from the free list */
     if (ret = *whichlist)
-        *whichlist = ret->s_nextfree;
+        *whichlist = ret->s_nextFree;
     else
     {
             /* LATER figure out what to do for out-of-space here! */
         ret = (t_signal *)getbytes(sizeof *ret);
         if (n)
         {
-            ret->s_vec = (t_sample *)getbytes(vecsize * sizeof (*ret->s_vec));
-            ret->s_isborrowed = 0;
+            ret->s_vector = (t_sample *)getbytes(vecsize * sizeof (*ret->s_vector));
+            ret->s_isBorrowed = 0;
         }
         else
         {
-            ret->s_vec = 0;
-            ret->s_isborrowed = 1;
+            ret->s_vector = 0;
+            ret->s_isBorrowed = 1;
         }
-        ret->s_nextused = pd_this->pd_signals;
+        ret->s_nextUsed = pd_this->pd_signals;
         pd_this->pd_signals = ret;
     }
-    ret->s_n = n;
-    ret->s_vecsize = vecsize;
-    ret->s_sr = sr;
-    ret->s_refcount = 0;
-    ret->s_borrowedfrom = 0;
-    if (ugen_loud) post("new %lx: %d", ret, ret->s_isborrowed);
+    ret->s_blockSize = n;
+    ret->s_vectorSize = vecsize;
+    ret->s_sampleRate = sr;
+    ret->s_count = 0;
+    ret->s_borrowedFrom = 0;
+    if (ugen_loud) post("new %lx: %d", ret, ret->s_isBorrowed);
     return (ret);
 }
 
 static t_signal *signal_newlike(const t_signal *sig)
 {
-    return (signal_new(sig->s_n, sig->s_sr));
+    return (signal_new(sig->s_blockSize, sig->s_sampleRate));
 }
 
 void signal_setborrowed(t_signal *sig, t_signal *sig2)
 {
-    if (!sig->s_isborrowed || sig->s_borrowedfrom) { PD_BUG; }
+    if (!sig->s_isBorrowed || sig->s_borrowedFrom) { PD_BUG; }
     if (sig == sig2) { PD_BUG; }
-    sig->s_borrowedfrom = sig2;
-    sig->s_vec = sig2->s_vec;
-    sig->s_n = sig2->s_n;
-    sig->s_vecsize = sig2->s_vecsize;
+    sig->s_borrowedFrom = sig2;
+    sig->s_vector = sig2->s_vector;
+    sig->s_blockSize = sig2->s_blockSize;
+    sig->s_vectorSize = sig2->s_vectorSize;
 }
 
 int signal_compatible(t_signal *s1, t_signal *s2)
 {
-    return (s1->s_n == s2->s_n && s1->s_sr == s2->s_sr);
+    return (s1->s_blockSize == s2->s_blockSize && s1->s_sampleRate == s2->s_sampleRate);
 }
 
 /* ------------------ ugen ("unit generator") sorting ----------------- */
@@ -585,19 +585,19 @@ void glob_foo(void *dummy, t_symbol *s, int argc, t_atom *argv)
     int i, count;
     t_signal *sig;
     for (count = 0, sig = pd_this->pd_signals; sig;
-        count++, sig = sig->s_nextused)
+        count++, sig = sig->s_nextUsed)
             ;
     post("used signals %d", count);
     for (i = 0; i < MAXLOGSIG; i++)
     {
         for (count = 0, sig = signal_freelist[i]; sig;
-            count++, sig = sig->s_nextfree)
+            count++, sig = sig->s_nextFree)
                 ;
         if (count)
             post("size %d: free %d", (1 << i), count);
     }
     for (count = 0, sig = signal_freeborrowed; sig;
-        count++, sig = sig->s_nextfree)
+        count++, sig = sig->s_nextFree)
             ;
     post("free borrowed %d", count);
 
@@ -737,11 +737,11 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
             /* post("%s: unconnected signal inlet set to zero",
                 class_getName(u->u_obj->te_g.g_pd)); */
             if (scalar = obj_findsignalscalar(u->u_obj, i))
-                dsp_add_scalarcopy(scalar, s3->s_vec, s3->s_n);
+                dsp_add_scalarcopy(scalar, s3->s_vector, s3->s_blockSize);
             else
-                dsp_add_zero(s3->s_vec, s3->s_n);
+                dsp_add_zero(s3->s_vector, s3->s_blockSize);
             uin->i_signal = s3;
-            s3->s_refcount = 1;
+            s3->s_count = 1;
         }
     }
     insig = (t_signal **)getbytes((u->u_nin + u->u_nout) * sizeof(t_signal *));
@@ -750,14 +750,14 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
     {
         int newrefcount;
         *sig = uin->i_signal;
-        newrefcount = --(*sig)->s_refcount;
+        newrefcount = --(*sig)->s_count;
             /* if the reference count went to zero, we free the signal now,
             unless it's a subcanvas or outlet; these might keep the
             signal around to send to objects connected to them.  In this
             case we increment the reference count; the corresponding decrement
             is in sig_makereusable(). */
         if (nofreesigs)
-            (*sig)->s_refcount++;
+            (*sig)->s_count++;
         else if (!newrefcount)
             signal_makereusable(*sig);
     }
@@ -777,7 +777,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
         }
         else
             *sig = uout->o_signal = signal_new(dc->dc_calcsize, dc->dc_srate);
-        (*sig)->s_refcount = uout->o_nconnect;
+        (*sig)->s_count = uout->o_nconnect;
     }
         /* now call the DSP scheduling routine for the ugen.  This
         routine must fill in "borrowed" signal outputs in case it's either
@@ -791,7 +791,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
 
     for (sig = outsig, uout = u->u_out, i = u->u_nout; i--; sig++, uout++)
     {
-        if (!(*sig)->s_refcount)
+        if (!(*sig)->s_count)
             signal_makereusable(*sig);
     }
     if (ugen_loud)
@@ -819,8 +819,8 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
                 /* if there's already someone here, sum the two */
             if (s2 = uin->i_signal)
             {
-                s1->s_refcount--;
-                s2->s_refcount--;
+                s1->s_count--;
+                s2->s_count--;
                 if (!signal_compatible(s1, s2))
                 {
                     post_error ("%s: incompatible signal inputs",
@@ -828,11 +828,11 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
                     return;
                 }
                 s3 = signal_newlike(s1);
-                dsp_add_plus(s1->s_vec, s2->s_vec, s3->s_vec, s1->s_n);
+                dsp_add_plus(s1->s_vector, s2->s_vector, s3->s_vector, s1->s_blockSize);
                 uin->i_signal = s3;
-                s3->s_refcount = 1;
-                if (!s1->s_refcount) signal_makereusable(s1);
-                if (!s2->s_refcount) signal_makereusable(s2);
+                s3->s_count = 1;
+                if (!s1->s_count) signal_makereusable(s1);
+                if (!s2->s_count) signal_makereusable(s2);
             }
             else uin->i_signal = s1;
             uin->i_ngot++;
@@ -979,14 +979,14 @@ void ugen_done_graph(t_dspcontext *dc)
         for (i = 0, sigp = dc->dc_iosigs + dc->dc_ninlets; i < dc->dc_noutlets;
             i++, sigp++)
         {
-            if ((*sigp)->s_isborrowed && !(*sigp)->s_borrowedfrom)
+            if ((*sigp)->s_isBorrowed && !(*sigp)->s_borrowedFrom)
             {
                 signal_setborrowed(*sigp,
                     signal_new(parent_vecsize, parent_srate));
-                (*sigp)->s_refcount++;
+                (*sigp)->s_count++;
 
                 if (ugen_loud) post("set %lx->%lx", *sigp,
-                    (*sigp)->s_borrowedfrom);
+                    (*sigp)->s_borrowedFrom);
             }
         }
     }
@@ -1060,15 +1060,15 @@ void ugen_done_graph(t_dspcontext *dc)
         for (i = 0, sigp = dc->dc_iosigs + dc->dc_ninlets; i < dc->dc_noutlets;
             i++, sigp++)
         {
-            if ((*sigp)->s_isborrowed && !(*sigp)->s_borrowedfrom)
+            if ((*sigp)->s_isBorrowed && !(*sigp)->s_borrowedFrom)
             {
                 t_signal *s3 = signal_new(parent_vecsize, parent_srate);
                 signal_setborrowed(*sigp, s3);
-                (*sigp)->s_refcount++;
-                dsp_add_zero(s3->s_vec, s3->s_n);
+                (*sigp)->s_count++;
+                dsp_add_zero(s3->s_vector, s3->s_blockSize);
                 if (ugen_loud)
                     post("oops, belatedly set %lx->%lx", *sigp,
-                        (*sigp)->s_borrowedfrom);
+                        (*sigp)->s_borrowedFrom);
             }
         }
         break;   /* don't need to keep looking. */

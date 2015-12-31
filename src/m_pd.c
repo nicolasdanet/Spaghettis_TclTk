@@ -143,8 +143,8 @@ static t_pdinstance *pdinstance_new()
     x->pd_dspChain          = NULL;
     x->pd_dspChainSize      = 0;
     x->pd_dspState          = 0;
-    x->pd_canvases          = NULL;
     x->pd_signals           = NULL;
+    x->pd_canvases          = NULL;
     x->sym_midiin           = gensym ("#midiin");
     x->sym_sysexin          = gensym ("#sysexin");
     x->sym_notein           = gensym ("#notein");

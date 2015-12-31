@@ -2097,12 +2097,12 @@ static void readsf_dsp(t_readsf *x, t_signal **sp)
 {
     int i, noutlets = x->x_noutlets;
     pthread_mutex_lock(&x->x_mutex);
-    x->x_vecsize = sp[0]->s_n;
+    x->x_vecsize = sp[0]->s_blockSize;
     
     x->x_sigperiod = (x->x_fifosize /
         (x->x_bytespersample * x->x_sfchannels * x->x_vecsize));
     for (i = 0; i < noutlets; i++)
-        x->x_outvec[i] = sp[i]->s_vec;
+        x->x_outvec[i] = sp[i]->s_vector;
     pthread_mutex_unlock(&x->x_mutex);
     dsp_add(readsf_perform, 1, x);
 }
@@ -2578,12 +2578,12 @@ static void writesf_dsp(t_writesf *x, t_signal **sp)
 {
     int i, ninlets = x->x_sfchannels;
     pthread_mutex_lock(&x->x_mutex);
-    x->x_vecsize = sp[0]->s_n;
+    x->x_vecsize = sp[0]->s_blockSize;
     x->x_sigperiod = (x->x_fifosize /
             (16 * x->x_bytespersample * x->x_sfchannels * x->x_vecsize));
     for (i = 0; i < ninlets; i++)
-        x->x_outvec[i] = sp[i]->s_vec;
-    x->x_insamplerate = sp[0]->s_sr;
+        x->x_outvec[i] = sp[i]->s_vector;
+    x->x_insamplerate = sp[0]->s_sampleRate;
     pthread_mutex_unlock(&x->x_mutex);
     dsp_add(writesf_perform, 1, x);
 }

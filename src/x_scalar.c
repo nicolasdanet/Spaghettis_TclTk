@@ -137,7 +137,7 @@ static void scalar_define_save(t_gobj *z, t_binbuf *bb)
 {
     t_glist *x = (t_glist *)z;
     binbuf_addv(bb, "ssff", &s__X, gensym("obj"),
-        (float)x->gl_obj.te_xpix, (float)x->gl_obj.te_ypix);
+        (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
     binbuf_addbinbuf(bb, x->gl_obj.te_binbuf);
     binbuf_addsemi(bb);
     if (x->gl_private && x->gl_list &&
@@ -146,7 +146,7 @@ static void scalar_define_save(t_gobj *z, t_binbuf *bb)
         t_binbuf *b2 = binbuf_new();
         t_scalar *sc = (t_scalar *)(x->gl_list);
         binbuf_addv(bb, "ss", gensym("#A"), gensym("set"));
-        canvas_writescalar(sc->sc_template, sc->sc_vec, b2, 0);
+        canvas_writescalar(sc->sc_template, sc->sc_vector, b2, 0);
         binbuf_addbinbuf(bb, b2);
         binbuf_addsemi(bb);
         binbuf_free(b2);

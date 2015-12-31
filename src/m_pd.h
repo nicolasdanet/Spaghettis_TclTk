@@ -211,7 +211,7 @@ typedef struct _gstub {
         t_array *gs_array;
     } gs_un;
     int gs_type;
-    int gs_refcount;
+    int gs_count;
     } t_gstub;
 
 typedef struct _gpointer {
@@ -279,7 +279,7 @@ typedef struct _gobj {
 typedef struct _scalar {
     t_gobj          sc_g;
     t_symbol        *sc_template;
-    t_word          sc_vec[1];                  /* Indeterminate size (see above link). */
+    t_word          sc_vector[1];               /* Indeterminate size (see above link). */
     } t_scalar;
 
 typedef struct _text {
@@ -287,8 +287,8 @@ typedef struct _text {
     t_binbuf        *te_binbuf;
     t_outlet        *te_outlet;
     t_inlet         *te_inlet;
-    int             te_xpix;
-    int             te_ypix;
+    int             te_xCoordinate;
+    int             te_yCoordinate;
     int             te_width; 
     int             te_type;
     } t_text;
@@ -304,13 +304,6 @@ typedef struct _text t_object;
 
 typedef void (*t_method)(void);
 typedef void *(*t_newmethod)(void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-typedef void (*t_savefn)(t_gobj *x, t_binbuf *b);
-typedef void (*t_propertiesfn)(t_gobj *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -387,9 +380,6 @@ PD_DLL void     class_addFloat              (t_class *c, t_method fn);
 PD_DLL void     class_addSymbol             (t_class *c, t_method fn);
 PD_DLL void     class_addList               (t_class *c, t_method fn);
 PD_DLL void     class_addAnything           (t_class *c, t_method fn);
-
-PD_DLL void     class_setHelpName           (t_class *c, t_symbol *s);
-PD_DLL void     class_setSaveFunction       (t_class *c, t_savefn f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -591,21 +581,21 @@ PD_DLL int  sys_trylock (void);
 typedef float t_sample;
 
 typedef struct _signal {
-    int                 s_n;
-    t_sample            *s_vec;
-    t_float             s_sr;
-    int                 s_refcount;
-    int                 s_isborrowed;
-    struct _signal      *s_borrowedfrom;
-    struct _signal      *s_nextfree;
-    struct _signal      *s_nextused;
-    int                 s_vecsize;
+    int                 s_blockSize;
+    int                 s_vectorSize;
+    t_sample            *s_vector;
+    t_float             s_sampleRate;
+    int                 s_count;
+    int                 s_isBorrowed;
+    struct _signal      *s_borrowedFrom;
+    struct _signal      *s_nextFree;
+    struct _signal      *s_nextUsed;
     } t_signal;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef t_int *(*t_perfroutine)(t_int *args);
+typedef t_int *(*t_perform)(t_int *args);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -625,8 +615,8 @@ PD_DLL t_float  sys_getsr           (void);
 PD_DLL int      sys_get_inchannels  (void);
 PD_DLL int      sys_get_outchannels (void);
 
-PD_DLL void     dsp_add             (t_perfroutine f, int n, ...);
-PD_DLL void     dsp_addv            (t_perfroutine f, int n, t_int *vec);
+PD_DLL void     dsp_add             (t_perform f, int n, ...);
+PD_DLL void     dsp_addv            (t_perform f, int n, t_int *vec);
 PD_DLL void     pd_fft              (t_float *buf, int npoints, int inverse);
 PD_DLL int      ilog2               (int n);
 
@@ -645,15 +635,15 @@ PD_DLL void     canvas_update_dsp   (void);
 #pragma mark -
 
 typedef struct _resample {
-    int         method;
-    int         downsample;
-    int         upsample;
-    t_sample    *s_vec;
-    int         s_n;
-    t_sample    *coeffs;
-    int         coefsize;
-    t_sample    *buffer;
-    int         bufsize;
+    int         r_type;
+    int         r_downSample;
+    int         r_upSample;
+    int         r_vectorSize;
+    int         r_coefficientsSize;
+    int         r_bufferSize;
+    t_sample    *r_vector;
+    t_sample    *r_coefficients;
+    t_sample    *r_buffer;
     } t_resample;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -679,24 +669,6 @@ PD_DLL t_float dbtorms  (t_float);
 PD_DLL t_float dbtopow  (t_float);
 PD_DLL t_float q8_sqrt  (t_float);
 PD_DLL t_float q8_rsqrt (t_float);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-typedef void (*t_guicallbackfn)(t_gobj *client, t_glist *glist);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-PD_DLL void sys_vgui                (char *fmt, ...);
-PD_DLL void sys_gui                 (char *s);
-PD_DLL void sys_pretendguibytes     (int n);
-PD_DLL void sys_queuegui            (void *client, t_glist *glist, t_guicallbackfn f);
-PD_DLL void sys_unqueuegui          (void *client);
-PD_DLL void gfxstub_new             (t_pd *owner, void *key, const char *cmd);
-PD_DLL void gfxstub_deleteforkey    (void *key);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

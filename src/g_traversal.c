@@ -44,7 +44,7 @@ t_gstub *gstub_new(t_glist *gl, t_array *a)
         gs->gs_type = POINTER_ARRAY;
         gs->gs_un.gs_array = a;
     }
-    gs->gs_refcount = 0;
+    gs->gs_count = 0;
     return (gs);
 }
 
@@ -55,7 +55,7 @@ gone and the refcount goes to zero, we can free the gstub safely. */
 
 static void gstub_dis(t_gstub *gs)
 {
-    int refcount = --gs->gs_refcount;
+    int refcount = --gs->gs_count;
     if ((!refcount) && gs->gs_type == POINTER_NONE)
         freebytes(gs, sizeof (*gs));
     else if (refcount < 0) { PD_BUG; }
@@ -68,8 +68,8 @@ otherwise we wait for the last gstub_dis() to free it. */
 void gstub_cutoff(t_gstub *gs)
 {
     gs->gs_type = POINTER_NONE;
-    if (gs->gs_refcount < 0) { PD_BUG; }
-    if (!gs->gs_refcount) freebytes(gs, sizeof (*gs));
+    if (gs->gs_count < 0) { PD_BUG; }
+    if (!gs->gs_count) freebytes(gs, sizeof (*gs));
 }
 
 /* call this to verify that a pointer is fresh, i.e., that it either
@@ -122,7 +122,7 @@ void gpointer_copy(const t_gpointer *gpfrom, t_gpointer *gpto)
 {
     *gpto = *gpfrom;
     if (gpto->gp_stub)
-        gpto->gp_stub->gs_refcount++;
+        gpto->gp_stub->gs_count++;
     else { PD_BUG; }
 }
 
@@ -145,7 +145,7 @@ void gpointer_setglist(t_gpointer *gp, t_glist *glist, t_scalar *x)
     gp->gp_stub = gs = glist->gl_stub;
     gp->gp_valid = glist->gl_valid;
     gp->gp_un.gp_scalar = x;
-    gs->gs_refcount++;
+    gs->gs_count++;
 }
 
 void gpointer_setarray(t_gpointer *gp, t_array *array, t_word *w)
@@ -155,7 +155,7 @@ void gpointer_setarray(t_gpointer *gp, t_array *array, t_word *w)
     gp->gp_stub = gs = array->a_stub;
     gp->gp_valid = array->a_valid;
     gp->gp_un.gp_w = w;
-    gs->gs_refcount++;
+    gs->gs_count++;
 }
 
 void gpointer_init(t_gpointer *gp)
@@ -201,7 +201,7 @@ t_binbuf *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
     }
     if (gs->gs_type == POINTER_ARRAY)
         vec = gp->gp_un.gp_w;
-    else vec = gp->gp_un.gp_scalar->sc_vec;
+    else vec = gp->gp_un.gp_scalar->sc_vector;
     return (vec[onset].w_binbuf);
 }
 
@@ -542,7 +542,7 @@ static void get_pointer(t_get *x, t_gpointer *gp)
         return;
     }
     if (gs->gs_type == POINTER_ARRAY) vec = gp->gp_un.gp_w;
-    else vec = gp->gp_un.gp_scalar->sc_vec;
+    else vec = gp->gp_un.gp_scalar->sc_vector;
     for (i = nitems - 1, vp = x->x_variables + i; i >= 0; i--, vp--)
     {
         int onset, type;
@@ -688,7 +688,7 @@ static void set_bang(t_set *x)
         return;
     if (gs->gs_type == POINTER_ARRAY)
         vec = gp->gp_un.gp_w;
-    else vec = gp->gp_un.gp_scalar->sc_vec;
+    else vec = gp->gp_un.gp_scalar->sc_vector;
     if (x->x_issymbol)
         for (i = 0, vp = x->x_variables; i < nitems; i++, vp++)
             template_setsymbol(template, vp->gv_sym, vec, vp->gv_w.w_symbol, 1);
@@ -807,7 +807,7 @@ static void elem_float(t_elem *x, t_float f)
         return;
     }
     if (gparent->gp_stub->gs_type == POINTER_ARRAY) w = gparent->gp_un.gp_w;
-    else w = gparent->gp_un.gp_scalar->sc_vec;
+    else w = gparent->gp_un.gp_scalar->sc_vector;
     if (!template)
     {
         post_error ("element: couldn't find template %s", templatesym->s_name);
@@ -927,7 +927,7 @@ static void getsize_pointer(t_getsize *x, t_gpointer *gp)
         return;
     }
     if (gs->gs_type == POINTER_ARRAY) w = gp->gp_un.gp_w;
-    else w = gp->gp_un.gp_scalar->sc_vec;
+    else w = gp->gp_un.gp_scalar->sc_vector;
     
     array = *(t_array **)(((char *)w) + onset);
     outlet_float(x->x_obj.te_outlet, (t_float)(array->a_n));
@@ -1019,7 +1019,7 @@ static void setsize_float(t_setsize *x, t_float f)
         return;
     }
     if (gs->gs_type == POINTER_ARRAY) w = gp->gp_un.gp_w;
-    else w = gp->gp_un.gp_scalar->sc_vec;
+    else w = gp->gp_un.gp_scalar->sc_vector;
 
     if (!(elemtemplate = template_findbyname(elemtemplatesym)))
     {
@@ -1239,7 +1239,7 @@ static void append_float(t_append *x, t_float f)
     }
 
     gp->gp_un.gp_scalar = sc;
-    vec = sc->sc_vec;
+    vec = sc->sc_vector;
     for (i = 0, vp = x->x_variables; i < nitems; i++, vp++)
     {
         template_setfloat(template, vp->gv_sym, vec, vp->gv_f, 1);

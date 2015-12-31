@@ -121,11 +121,11 @@ t_scalar *scalar_new(t_glist *owner, t_symbol *templatesym)
     if (!template_cancreate(template))
         return (0);
     x = (t_scalar *)getbytes(sizeof(t_scalar) +
-        (template->t_n - 1) * sizeof(*x->sc_vec));
+        (template->t_n - 1) * sizeof(*x->sc_vector));
     x->sc_g.g_pd = scalar_class;
     x->sc_template = templatesym;
     gpointer_setglist(&gp, owner, x);
-    word_init(x->sc_vec, template, &gp);
+    word_init(x->sc_vector, template, &gp);
     return (x);
 }
 
@@ -159,8 +159,8 @@ void glist_scalar(t_glist *glist,
 void scalar_getbasexy(t_scalar *x, t_float *basex, t_float *basey)
 {
     t_template *template = template_findbyname(x->sc_template);
-    *basex = template_getfloat(template, gensym("x"), x->sc_vec, 0);
-    *basey = template_getfloat(template, gensym("y"), x->sc_vec, 0);
+    *basex = template_getfloat(template, gensym("x"), x->sc_vector, 0);
+    *basey = template_getfloat(template, gensym("y"), x->sc_vector, 0);
 }
 
 static void scalar_getrect(t_gobj *z, t_glist *owner,
@@ -189,7 +189,7 @@ static void scalar_getrect(t_gobj *z, t_glist *owner,
             int nx1, ny1, nx2, ny2;
             if (!wb) continue;
             (*wb->w_parentgetrectfn)(y, owner,
-                x->sc_vec, template, basex, basey,
+                x->sc_vector, template, basex, basey,
                 &nx1, &ny1, &nx2, &ny2);
             if (nx1 < x1) x1 = nx1;
             if (ny1 < y1) y1 = ny1;
@@ -263,10 +263,10 @@ static void scalar_displace(t_gobj *z, t_glist *glist, int dx, int dy)
     if (goty && (ytype != DATA_FLOAT))
         goty = 0;
     if (gotx)
-        *(t_float *)(((char *)(x->sc_vec)) + xonset) +=
+        *(t_float *)(((char *)(x->sc_vector)) + xonset) +=
             dx * (glist_pixelstox(glist, 1) - glist_pixelstox(glist, 0));
     if (goty)
-        *(t_float *)(((char *)(x->sc_vec)) + yonset) +=
+        *(t_float *)(((char *)(x->sc_vector)) + yonset) +=
             dy * (glist_pixelstoy(glist, 1) - glist_pixelstoy(glist, 0));
     gpointer_init(&gp);
     gpointer_setglist(&gp, glist, x);
@@ -314,7 +314,7 @@ static void scalar_vis(t_gobj *z, t_glist *owner, int vis)
     {
         t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
         if (!wb) continue;
-        (*wb->w_parentvisfn)(y, owner, x->sc_vec, template, basex, basey, vis);
+        (*wb->w_parentvisfn)(y, owner, x->sc_vector, template, basex, basey, vis);
     }
     if (glist_isselected(owner, &x->sc_g))
     {
@@ -372,7 +372,7 @@ static int scalar_click(t_gobj *z, struct _glist *owner,
 {
     t_scalar *x = (t_scalar *)z;
     t_template *template = template_findbyname(x->sc_template);
-    return (scalar_doclick(x->sc_vec, template, x, 0,
+    return (scalar_doclick(x->sc_vector, template, x, 0,
         owner, 0, 0, xpix, ypix, shift, alt, dbl, doit));
 }
 
@@ -382,7 +382,7 @@ static void scalar_save(t_gobj *z, t_binbuf *b)
     t_binbuf *b2 = binbuf_new();
     t_atom a, *argv;
     int i, argc;
-    canvas_writescalar(x->sc_template, x->sc_vec, b2, 0);
+    canvas_writescalar(x->sc_template, x->sc_vector, b2, 0);
     binbuf_addv(b, "ss", &s__X, gensym("scalar"));
     binbuf_addbinbuf(b, b2);
     binbuf_addsemi(b);
@@ -431,11 +431,11 @@ static void scalar_free(t_scalar *x)
         post_error ("scalar: couldn't find template %s", templatesym->s_name);
         return;
     }
-    word_free(x->sc_vec, template);
+    word_free(x->sc_vector, template);
     gfxstub_deleteforkey(x);
         /* the "size" field in the class is zero, so Pd doesn't try to free
         us automatically (see pd_free()) */
-    freebytes(x, sizeof(t_scalar) + (template->t_n - 1) * sizeof(*x->sc_vec));
+    freebytes(x, sizeof(t_scalar) + (template->t_n - 1) * sizeof(*x->sc_vector));
 }
 
 /* ----------------- setup function ------------------- */

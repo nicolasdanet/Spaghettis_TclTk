@@ -607,25 +607,25 @@ t_float glist_dpixtody(t_glist *x, t_float dypix)
 int text_xpix(t_text *x, t_glist *glist)
 {
     if (glist->gl_havewindow || !glist->gl_isgraph)
-        return (x->te_xpix);
+        return (x->te_xCoordinate);
     else if (glist->gl_goprect)
         return (glist_xtopixels(glist, glist->gl_x1) +
-            x->te_xpix - glist->gl_xmargin);
+            x->te_xCoordinate - glist->gl_xmargin);
     else return (glist_xtopixels(glist, 
             glist->gl_x1 + (glist->gl_x2 - glist->gl_x1) * 
-                x->te_xpix / (glist->gl_screenx2 - glist->gl_screenx1)));
+                x->te_xCoordinate / (glist->gl_screenx2 - glist->gl_screenx1)));
 }
 
 int text_ypix(t_text *x, t_glist *glist)
 {
     if (glist->gl_havewindow || !glist->gl_isgraph)
-        return (x->te_ypix);
+        return (x->te_yCoordinate);
     else if (glist->gl_goprect)
         return (glist_ytopixels(glist, glist->gl_y1) +
-            x->te_ypix - glist->gl_ymargin);
+            x->te_yCoordinate - glist->gl_ymargin);
     else return (glist_ytopixels(glist, 
             glist->gl_y1 + (glist->gl_y2 - glist->gl_y1) * 
-                x->te_ypix / (glist->gl_screeny2 - glist->gl_screeny1)));
+                x->te_yCoordinate / (glist->gl_screeny2 - glist->gl_screeny1)));
 }
 
     /* redraw all the items in a glist.  We construe this to mean
@@ -936,8 +936,8 @@ static void graph_displace(t_gobj *z, t_glist *glist, int dx, int dy)
         text_widgetBehavior.w_displacefn(z, glist, dx, dy);
     else
     {
-        x->gl_obj.te_xpix += dx;
-        x->gl_obj.te_ypix += dy;
+        x->gl_obj.te_xCoordinate += dx;
+        x->gl_obj.te_yCoordinate += dy;
         glist_redraw(x);
         canvas_fixlines(glist, &x->gl_obj);
     }

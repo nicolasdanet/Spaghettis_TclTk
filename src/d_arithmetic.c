@@ -115,17 +115,17 @@ void dsp_add_plus(t_sample *in1, t_sample *in2, t_sample *out, int n)
 
 static void plus_dsp(t_plus *x, t_signal **sp)
 {
-    dsp_add_plus(sp[0]->s_vec, sp[1]->s_vec, sp[2]->s_vec, sp[0]->s_n);
+    dsp_add_plus(sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_blockSize);
 }
 
 static void scalarplus_dsp(t_scalarplus *x, t_signal **sp)
 {
-    if (sp[0]->s_n&7)
-        dsp_add(scalarplus_perform, 4, sp[0]->s_vec, &x->x_g,
-            sp[1]->s_vec, sp[0]->s_n);
+    if (sp[0]->s_blockSize&7)
+        dsp_add(scalarplus_perform, 4, sp[0]->s_vector, &x->x_g,
+            sp[1]->s_vector, sp[0]->s_blockSize);
     else        
-        dsp_add(scalarplus_perf8, 4, sp[0]->s_vec, &x->x_g,
-            sp[1]->s_vec, sp[0]->s_n);
+        dsp_add(scalarplus_perf8, 4, sp[0]->s_vector, &x->x_g,
+            sp[1]->s_vector, sp[0]->s_blockSize);
 }
 
 static void plus_setup(void)
@@ -240,22 +240,22 @@ t_int *scalarminus_perf8(t_int *w)
 
 static void minus_dsp(t_minus *x, t_signal **sp)
 {
-    if (sp[0]->s_n&7)
+    if (sp[0]->s_blockSize&7)
         dsp_add(minus_perform, 4,
-            sp[0]->s_vec, sp[1]->s_vec, sp[2]->s_vec, sp[0]->s_n);
+            sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_blockSize);
     else        
         dsp_add(minus_perf8, 4,
-            sp[0]->s_vec, sp[1]->s_vec, sp[2]->s_vec, sp[0]->s_n);
+            sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_blockSize);
 }
 
 static void scalarminus_dsp(t_scalarminus *x, t_signal **sp)
 {
-    if (sp[0]->s_n&7)
-        dsp_add(scalarminus_perform, 4, sp[0]->s_vec, &x->x_g,
-            sp[1]->s_vec, sp[0]->s_n);
+    if (sp[0]->s_blockSize&7)
+        dsp_add(scalarminus_perform, 4, sp[0]->s_vector, &x->x_g,
+            sp[1]->s_vector, sp[0]->s_blockSize);
     else        
-        dsp_add(scalarminus_perf8, 4, sp[0]->s_vec, &x->x_g,
-            sp[1]->s_vec, sp[0]->s_n);
+        dsp_add(scalarminus_perf8, 4, sp[0]->s_vector, &x->x_g,
+            sp[1]->s_vector, sp[0]->s_blockSize);
 }
 
 static void minus_setup(void)
@@ -371,22 +371,22 @@ t_int *scalartimes_perf8(t_int *w)
 
 static void times_dsp(t_times *x, t_signal **sp)
 {
-    if (sp[0]->s_n&7)
+    if (sp[0]->s_blockSize&7)
         dsp_add(times_perform, 4,
-            sp[0]->s_vec, sp[1]->s_vec, sp[2]->s_vec, sp[0]->s_n);
+            sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_blockSize);
     else        
         dsp_add(times_perf8, 4,
-            sp[0]->s_vec, sp[1]->s_vec, sp[2]->s_vec, sp[0]->s_n);
+            sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_blockSize);
 }
 
 static void scalartimes_dsp(t_scalartimes *x, t_signal **sp)
 {
-    if (sp[0]->s_n&7)
-        dsp_add(scalartimes_perform, 4, sp[0]->s_vec, &x->x_g,
-            sp[1]->s_vec, sp[0]->s_n);
+    if (sp[0]->s_blockSize&7)
+        dsp_add(scalartimes_perform, 4, sp[0]->s_vector, &x->x_g,
+            sp[1]->s_vector, sp[0]->s_blockSize);
     else        
-        dsp_add(scalartimes_perf8, 4, sp[0]->s_vec, &x->x_g,
-            sp[1]->s_vec, sp[0]->s_n);
+        dsp_add(scalartimes_perf8, 4, sp[0]->s_vector, &x->x_g,
+            sp[1]->s_vector, sp[0]->s_blockSize);
 }
 
 static void times_setup(void)
@@ -513,22 +513,22 @@ t_int *scalarover_perf8(t_int *w)
 
 static void over_dsp(t_over *x, t_signal **sp)
 {
-    if (sp[0]->s_n&7)
+    if (sp[0]->s_blockSize&7)
         dsp_add(over_perform, 4,
-            sp[0]->s_vec, sp[1]->s_vec, sp[2]->s_vec, sp[0]->s_n);
+            sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_blockSize);
     else        
         dsp_add(over_perf8, 4,
-            sp[0]->s_vec, sp[1]->s_vec, sp[2]->s_vec, sp[0]->s_n);
+            sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_blockSize);
 }
 
 static void scalarover_dsp(t_scalarover *x, t_signal **sp)
 {
-    if (sp[0]->s_n&7)
-        dsp_add(scalarover_perform, 4, sp[0]->s_vec, &x->x_g,
-            sp[1]->s_vec, sp[0]->s_n);
+    if (sp[0]->s_blockSize&7)
+        dsp_add(scalarover_perform, 4, sp[0]->s_vector, &x->x_g,
+            sp[1]->s_vector, sp[0]->s_blockSize);
     else        
-        dsp_add(scalarover_perf8, 4, sp[0]->s_vec, &x->x_g,
-            sp[1]->s_vec, sp[0]->s_n);
+        dsp_add(scalarover_perf8, 4, sp[0]->s_vector, &x->x_g,
+            sp[1]->s_vector, sp[0]->s_blockSize);
 }
 
 static void over_setup(void)
@@ -655,22 +655,22 @@ t_int *scalarmax_perf8(t_int *w)
 
 static void max_dsp(t_max *x, t_signal **sp)
 {
-    if (sp[0]->s_n&7)
+    if (sp[0]->s_blockSize&7)
         dsp_add(max_perform, 4,
-            sp[0]->s_vec, sp[1]->s_vec, sp[2]->s_vec, sp[0]->s_n);
+            sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_blockSize);
     else        
         dsp_add(max_perf8, 4,
-            sp[0]->s_vec, sp[1]->s_vec, sp[2]->s_vec, sp[0]->s_n);
+            sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_blockSize);
 }
 
 static void scalarmax_dsp(t_scalarmax *x, t_signal **sp)
 {
-    if (sp[0]->s_n&7)
-        dsp_add(scalarmax_perform, 4, sp[0]->s_vec, &x->x_g,
-            sp[1]->s_vec, sp[0]->s_n);
+    if (sp[0]->s_blockSize&7)
+        dsp_add(scalarmax_perform, 4, sp[0]->s_vector, &x->x_g,
+            sp[1]->s_vector, sp[0]->s_blockSize);
     else        
-        dsp_add(scalarmax_perf8, 4, sp[0]->s_vec, &x->x_g,
-            sp[1]->s_vec, sp[0]->s_n);
+        dsp_add(scalarmax_perf8, 4, sp[0]->s_vector, &x->x_g,
+            sp[1]->s_vector, sp[0]->s_blockSize);
 }
 
 static void max_setup(void)
@@ -797,22 +797,22 @@ t_int *scalarmin_perf8(t_int *w)
 
 static void min_dsp(t_min *x, t_signal **sp)
 {
-    if (sp[0]->s_n&7)
+    if (sp[0]->s_blockSize&7)
         dsp_add(min_perform, 4,
-            sp[0]->s_vec, sp[1]->s_vec, sp[2]->s_vec, sp[0]->s_n);
+            sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_blockSize);
     else        
         dsp_add(min_perf8, 4,
-            sp[0]->s_vec, sp[1]->s_vec, sp[2]->s_vec, sp[0]->s_n);
+            sp[0]->s_vector, sp[1]->s_vector, sp[2]->s_vector, sp[0]->s_blockSize);
 }
 
 static void scalarmin_dsp(t_scalarmin *x, t_signal **sp)
 {
-    if (sp[0]->s_n&7)
-        dsp_add(scalarmin_perform, 4, sp[0]->s_vec, &x->x_g,
-            sp[1]->s_vec, sp[0]->s_n);
+    if (sp[0]->s_blockSize&7)
+        dsp_add(scalarmin_perform, 4, sp[0]->s_vector, &x->x_g,
+            sp[1]->s_vector, sp[0]->s_blockSize);
     else        
-        dsp_add(scalarmin_perf8, 4, sp[0]->s_vec, &x->x_g,
-            sp[1]->s_vec, sp[0]->s_n);
+        dsp_add(scalarmin_perf8, 4, sp[0]->s_vector, &x->x_g,
+            sp[1]->s_vector, sp[0]->s_blockSize);
 }
 
 static void min_setup(void)
