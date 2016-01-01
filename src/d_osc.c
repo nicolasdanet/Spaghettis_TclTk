@@ -209,7 +209,7 @@ static void cos_maketable(void)
     union tabfudge tf;
     
     if (cos_table) return;
-    cos_table = (float *)sys_getMemory(sizeof(float) * (COSTABSIZE+1));
+    cos_table = (float *)PD_MEMORY_GET(sizeof(float) * (COSTABSIZE+1));
     for (i = COSTABSIZE + 1, fp = cos_table, phase = 0; i--;
         fp++, phase += phsinc)
             *fp = cos(phase);

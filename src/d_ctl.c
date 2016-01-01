@@ -302,7 +302,7 @@ static t_int *vline_tilde_perform(t_int *w)
                 x->x_target = s->s_target;
                 x->x_targettime = s->s_targettime;
                 x->x_list = s->s_next;
-                sys_freeMemory(s, sizeof(*s));
+                PD_MEMORY_FREE(s, sizeof(*s));
                 s = x->x_list;
                 goto checknext;
             }
@@ -321,7 +321,7 @@ static void vline_tilde_stop(t_vline *x)
 {
     t_vseg *s1, *s2;
     for (s1 = x->x_list; s1; s1 = s2)
-        s2 = s1->s_next, sys_freeMemory(s1, sizeof(*s1));
+        s2 = s1->s_next, PD_MEMORY_FREE(s1, sizeof(*s1));
     x->x_list = 0;
     x->x_inc = 0;
     x->x_inlet1 = x->x_inlet2 = 0;
@@ -346,7 +346,7 @@ static void vline_tilde_float(t_vline *x, t_float f)
         vline_tilde_stop(x);
         return;
     }
-    snew = (t_vseg *)sys_getMemory(sizeof(*snew));
+    snew = (t_vseg *)PD_MEMORY_GET(sizeof(*snew));
         /* check if we supplant the first item in the list.  We supplant
         an item by having an earlier starttime, or an equal starttime unless
         the equal one was instantaneous and the new one isn't (in which case
@@ -378,7 +378,7 @@ static void vline_tilde_float(t_vline *x, t_float f)
     while (deletefrom)
     {
         s1 = deletefrom->s_next;
-        sys_freeMemory(deletefrom, sizeof(*deletefrom));
+        PD_MEMORY_FREE(deletefrom, sizeof(*deletefrom));
         deletefrom = s1;
     }
     snew->s_next = 0;
@@ -521,8 +521,8 @@ static void vsnapshot_tilde_dsp(t_vsnapshot *x, t_signal **sp)
     if (n != x->x_n)
     {
         if (x->x_vec)
-            sys_freeMemory(x->x_vec, x->x_n * sizeof(t_sample));
-        x->x_vec = (t_sample *)sys_getMemory(n * sizeof(t_sample));
+            PD_MEMORY_FREE(x->x_vec, x->x_n * sizeof(t_sample));
+        x->x_vec = (t_sample *)PD_MEMORY_GET(n * sizeof(t_sample));
         x->x_gotone = 0;
         x->x_n = n;
     }
@@ -549,7 +549,7 @@ static void vsnapshot_tilde_bang(t_vsnapshot *x)
 static void vsnapshot_tilde_ff(t_vsnapshot *x)
 {
     if (x->x_vec)
-        sys_freeMemory(x->x_vec, x->x_n * sizeof(t_sample));
+        PD_MEMORY_FREE(x->x_vec, x->x_n * sizeof(t_sample));
 }
 
 static void vsnapshot_tilde_setup(void)
@@ -600,7 +600,7 @@ static void *env_tilde_new(t_floatarg fnpoints, t_floatarg fperiod)
     if (period < 1) period = npoints/2;
     if (period < npoints / MAXOVERLAP + 1)
         period = npoints / MAXOVERLAP + 1;
-    if (!(buf = sys_getMemory(sizeof(t_sample) * (npoints + INITVSTAKEN))))
+    if (!(buf = PD_MEMORY_GET(sizeof(t_sample) * (npoints + INITVSTAKEN))))
     {
         post_error ("env: couldn't allocate buffer");
         return (0);
@@ -666,7 +666,7 @@ static void env_tilde_dsp(t_sigenv *x, t_signal **sp)
     else x->x_realperiod = x->x_period;
     if (sp[0]->s_blockSize > x->x_allocforvs)
     {
-        void *xx = sys_getMemoryResize(x->x_buf,
+        void *xx = PD_MEMORY_RESIZE(x->x_buf,
             (x->x_npoints + x->x_allocforvs) * sizeof(t_sample),
             (x->x_npoints + sp[0]->s_blockSize) * sizeof(t_sample));
         if (!xx)
@@ -688,7 +688,7 @@ static void env_tilde_tick(t_sigenv *x) /* callback function for the clock */
 static void env_tilde_ff(t_sigenv *x)           /* cleanup on free */
 {
     clock_free(x->x_clock);
-    sys_freeMemory(x->x_buf, (x->x_npoints + x->x_allocforvs) * sizeof(*x->x_buf));
+    PD_MEMORY_FREE(x->x_buf, (x->x_npoints + x->x_allocforvs) * sizeof(*x->x_buf));
 }
 
 

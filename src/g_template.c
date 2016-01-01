@@ -69,7 +69,7 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
 {
     t_template *x = (t_template *)pd_new(template_class);
     x->t_n = 0;
-    x->t_vec = (t_dataslot *)sys_getMemory(0);
+    x->t_vec = (t_dataslot *)PD_MEMORY_GET(0);
     while (argc > 0)
     {
         int newtype, oldn, newn;
@@ -104,7 +104,7 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
             goto bad;
         }
         newn = (oldn = x->t_n) + 1;
-        x->t_vec = (t_dataslot *)sys_getMemoryResize(x->t_vec,
+        x->t_vec = (t_dataslot *)PD_MEMORY_RESIZE(x->t_vec,
             oldn * sizeof(*x->t_vec), newn * sizeof(*x->t_vec));
         x->t_n = newn;
         x->t_vec[oldn].ds_type = newtype;
@@ -274,7 +274,7 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
     {
             /* see scalar_new() for comment about the gpointer. */
         gpointer_init(&gp);
-        x = (t_scalar *)sys_getMemory(sizeof(t_scalar) +
+        x = (t_scalar *)PD_MEMORY_GET(sizeof(t_scalar) +
             (tto->t_n - 1) * sizeof(*x->sc_vector));
         x->sc_g.g_pd = scalar_class;
         x->sc_template = tfrom->t_sym;
@@ -338,7 +338,7 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
         /* the array elements must all be conformed */
         int oldelemsize = sizeof(t_word) * tfrom->t_n,
             newelemsize = sizeof(t_word) * tto->t_n;
-        char *newarray = sys_getMemory(newelemsize * a->a_n);
+        char *newarray = PD_MEMORY_GET(newelemsize * a->a_n);
         char *oldarray = a->a_vec;
         if (a->a_elemsize != oldelemsize) { PD_BUG; }
         for (i = 0; i < a->a_n; i++)
@@ -351,7 +351,7 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
         }
         scalartemplate = tto;
         a->a_vec = newarray;
-        sys_freeMemory(oldarray, oldelemsize * a->a_n);
+        PD_MEMORY_FREE(oldarray, oldelemsize * a->a_n);
     }
     else scalartemplate = template_findbyname(a->a_templatesym);
         /* convert all arrays and sublist fields in each element of the array */
@@ -399,8 +399,8 @@ static void template_conformglist(t_template *tfrom, t_template *tto,
 void template_conform(t_template *tfrom, t_template *tto)
 {
     int nto = tto->t_n, nfrom = tfrom->t_n, i, j,
-        *conformaction = (int *)sys_getMemory(sizeof(int) * nto),
-        *conformedfrom = (int *)sys_getMemory(sizeof(int) * nfrom), doit = 0;
+        *conformaction = (int *)PD_MEMORY_GET(sizeof(int) * nto),
+        *conformedfrom = (int *)PD_MEMORY_GET(sizeof(int) * nfrom), doit = 0;
     for (i = 0; i < nto; i++)
         conformaction[i] = -1;
     for (i = 0; i < nfrom; i++)
@@ -442,8 +442,8 @@ void template_conform(t_template *tfrom, t_template *tto)
         for (gl = pd_this->pd_canvases; gl; gl = gl->gl_next)
             template_conformglist(tfrom, tto, gl, conformaction);
     }
-    sys_freeMemory(conformaction, sizeof(int) * nto);
-    sys_freeMemory(conformedfrom, sizeof(int) * nfrom);
+    PD_MEMORY_FREE(conformaction, sizeof(int) * nto);
+    PD_MEMORY_FREE(conformedfrom, sizeof(int) * nfrom);
 }
 
 t_template *template_findbyname(t_symbol *s)
@@ -532,7 +532,7 @@ void template_free(t_template *x)
 {
     if (*x->t_sym->s_name)
         pd_unbind(&x->t_pdobj, x->t_sym);
-    sys_freeMemory(x->t_vec, x->t_n * sizeof(*x->t_vec));
+    PD_MEMORY_FREE(x->t_vec, x->t_n * sizeof(*x->t_vec));
 }
 
 static void template_setup(void)
@@ -562,7 +562,7 @@ static void *gtemplate_donew(t_symbol *sym, int argc, t_atom *argv)
     x->x_next = 0;
     x->x_sym = sym;
     x->x_argc = argc;
-    x->x_argv = (t_atom *)sys_getMemory(argc * sizeof(t_atom));
+    x->x_argv = (t_atom *)PD_MEMORY_GET(argc * sizeof(t_atom));
     for (i = 0; i < argc; i++)
         x->x_argv[i] = argv[i];
 
@@ -679,7 +679,7 @@ static void gtemplate_free(t_gtemplate *x)
             }
         }
     }
-    sys_freeMemory(x->x_argv, sizeof(t_atom) * x->x_argc);
+    PD_MEMORY_FREE(x->x_argv, sizeof(t_atom) * x->x_argc);
 }
 
 static void gtemplate_setup(void)
@@ -1006,7 +1006,7 @@ static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
     if (argc < 0) argc = 0;
     nxy =  (argc + (argc & 1));
     x->x_npoints = (nxy>>1);
-    x->x_vec = (t_fielddesc *)sys_getMemory(nxy * sizeof(t_fielddesc));
+    x->x_vec = (t_fielddesc *)PD_MEMORY_GET(nxy * sizeof(t_fielddesc));
     for (i = 0, fd = x->x_vec; i < argc; i++, fd++, argv++)
         fielddesc_setfloatarg(fd, 1, argv);
     if (argc & 1) fielddesc_setfloat_const(fd, 0);
@@ -1302,7 +1302,7 @@ t_parentwidgetbehavior curve_widgetbehavior =
 
 static void curve_free(t_curve *x)
 {
-    sys_freeMemory(x->x_vec, 2 * x->x_npoints * sizeof(*x->x_vec));
+    PD_MEMORY_FREE(x->x_vec, 2 * x->x_npoints * sizeof(*x->x_vec));
 }
 
 static void curve_setup(void)
@@ -2434,7 +2434,7 @@ static void drawnumber_getbuf(t_drawnumber *x, t_word *data,
             buf[nchars+ncopy] = 0;
             if (nchars+ncopy == DRAWNUMBER_BUFSIZE-1)
                 strcpy(buf+(DRAWNUMBER_BUFSIZE-4), "...");
-            sys_freeMemory(buf2, size2);
+            PD_MEMORY_FREE(buf2, size2);
         }
         else
         {

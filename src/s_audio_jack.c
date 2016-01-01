@@ -221,7 +221,7 @@ static char** jack_get_clients(void)
 
         if( client_seen == 0 )
         {
-            jack_client_names[num_clients] = (char*)sys_getMemory(strlen(tmp_client_name) + 1);
+            jack_client_names[num_clients] = (char*)PD_MEMORY_GET(strlen(tmp_client_name) + 1);
 
             /* The alsa_pcm client should go in spot 0.  If this
              * is the alsa_pcm client AND we are NOT about to put

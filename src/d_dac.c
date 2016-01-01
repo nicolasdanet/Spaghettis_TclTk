@@ -36,7 +36,7 @@ static void *dac_new(t_symbol *s, int argc, t_atom *argv)
         SET_FLOAT(&defarg[1], 2);
     }
     x->x_n = argc;
-    x->x_vec = (t_int *)sys_getMemory(argc * sizeof(*x->x_vec));
+    x->x_vec = (t_int *)PD_MEMORY_GET(argc * sizeof(*x->x_vec));
     for (i = 0; i < argc; i++)
         x->x_vec[i] = atom_getintarg(i, argc, argv);
     for (i = 1; i < argc; i++)
@@ -70,7 +70,7 @@ static void dac_set(t_dac *x, t_symbol *s, int argc, t_atom *argv)
 
 static void dac_free(t_dac *x)
 {
-    sys_freeMemory(x->x_vec, x->x_n * sizeof(*x->x_vec));
+    PD_MEMORY_FREE(x->x_vec, x->x_n * sizeof(*x->x_vec));
 }
 
 static void dac_setup(void)
@@ -106,7 +106,7 @@ static void *adc_new(t_symbol *s, int argc, t_atom *argv)
         SET_FLOAT(&defarg[1], 2);
     }
     x->x_n = argc;
-    x->x_vec = (t_int *)sys_getMemory(argc * sizeof(*x->x_vec));
+    x->x_vec = (t_int *)PD_MEMORY_GET(argc * sizeof(*x->x_vec));
     for (i = 0; i < argc; i++)
         x->x_vec[i] = atom_getintarg(i, argc, argv);
     for (i = 0; i < argc; i++)
@@ -186,7 +186,7 @@ static void adc_set(t_adc *x, t_symbol *s, int argc, t_atom *argv)
 
 static void adc_free(t_adc *x)
 {
-    sys_freeMemory(x->x_vec, x->x_n * sizeof(*x->x_vec));
+    PD_MEMORY_FREE(x->x_vec, x->x_n * sizeof(*x->x_vec));
 }
 
 static void adc_setup(void)

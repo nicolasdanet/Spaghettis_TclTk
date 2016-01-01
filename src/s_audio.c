@@ -170,11 +170,11 @@ void sys_setchsr(int chin, int chout, int sr)
                 (AUDIO_DEFAULT_BLOCK*sizeof(t_sample));
 
     if (sys_soundin)
-        sys_freeMemory(sys_soundin, 
+        PD_MEMORY_FREE(sys_soundin, 
             (sys_inchannels? sys_inchannels : 2) *
                 (AUDIO_DEFAULT_BLOCK*sizeof(t_sample)));
     if (sys_soundout)
-        sys_freeMemory(sys_soundout, 
+        PD_MEMORY_FREE(sys_soundout, 
             (sys_outchannels? sys_outchannels : 2) *
                 (AUDIO_DEFAULT_BLOCK*sizeof(t_sample)));
     sys_inchannels = chin;
@@ -184,10 +184,10 @@ void sys_setchsr(int chin, int chout, int sr)
     if (sys_advance_samples < AUDIO_DEFAULT_BLOCK)
         sys_advance_samples = AUDIO_DEFAULT_BLOCK;
 
-    sys_soundin = (t_sample *)sys_getMemory(inbytes);
+    sys_soundin = (t_sample *)PD_MEMORY_GET(inbytes);
     memset(sys_soundin, 0, inbytes);
 
-    sys_soundout = (t_sample *)sys_getMemory(outbytes);
+    sys_soundout = (t_sample *)PD_MEMORY_GET(outbytes);
     memset(sys_soundout, 0, outbytes);
 
     if (0)

@@ -114,9 +114,9 @@ void resample_init(t_resample *x)
 
 void resample_free(t_resample *x)
 {
-  if (x->r_vectorSize) sys_freeMemory(x->r_vector, x->r_vectorSize*sizeof(*x->r_vector));
-  if (x->r_coefficientsSize) sys_freeMemory(x->r_coefficients, x->r_coefficientsSize*sizeof(*x->r_coefficients));
-  if (x->r_bufferSize) sys_freeMemory(x->r_buffer, x->r_bufferSize*sizeof(*x->r_buffer));
+  if (x->r_vectorSize) PD_MEMORY_FREE(x->r_vector, x->r_vectorSize*sizeof(*x->r_vector));
+  if (x->r_coefficientsSize) PD_MEMORY_FREE(x->r_coefficients, x->r_coefficientsSize*sizeof(*x->r_coefficients));
+  if (x->r_bufferSize) PD_MEMORY_FREE(x->r_buffer, x->r_bufferSize*sizeof(*x->r_buffer));
 
   x->r_vectorSize = x->r_coefficientsSize = x->r_bufferSize = 0;
   x->r_vector = x->r_coefficients = x->r_buffer  = 0;
@@ -157,9 +157,9 @@ void resample_dsp(t_resample *x,
       break;
     case 2:
       if (x->r_bufferSize != 1) {
-        sys_freeMemory(x->r_buffer, x->r_bufferSize*sizeof(*x->r_buffer));
+        PD_MEMORY_FREE(x->r_buffer, x->r_bufferSize*sizeof(*x->r_buffer));
         x->r_bufferSize = 1;
-        x->r_buffer = sys_getMemory(x->r_bufferSize*sizeof(*x->r_buffer));
+        x->r_buffer = PD_MEMORY_GET(x->r_bufferSize*sizeof(*x->r_buffer));
       }
       dsp_add(upsampling_perform_linear, 5, x, in, out, outsize/insize, insize);
       break;
@@ -174,7 +174,7 @@ void resamplefrom_dsp(t_resample *x,
                            int insize, int outsize, int method)
 {
   if (insize==outsize) {
-   sys_freeMemory(x->r_vector, x->r_vectorSize * sizeof(*x->r_vector));
+   PD_MEMORY_FREE(x->r_vector, x->r_vectorSize * sizeof(*x->r_vector));
     x->r_vectorSize = 0;
     x->r_vector = in;
     return;
@@ -182,8 +182,8 @@ void resamplefrom_dsp(t_resample *x,
 
   if (x->r_vectorSize != outsize) {
     t_sample *buf=x->r_vector;
-    sys_freeMemory(buf, x->r_vectorSize * sizeof(*buf));
-    buf = (t_sample *)sys_getMemory(outsize * sizeof(*buf));
+    PD_MEMORY_FREE(buf, x->r_vectorSize * sizeof(*buf));
+    buf = (t_sample *)PD_MEMORY_GET(outsize * sizeof(*buf));
     x->r_vector = buf;
     x->r_vectorSize   = outsize;
   }
@@ -197,7 +197,7 @@ void resampleto_dsp(t_resample *x,
                          int insize, int outsize, int method)
 {
   if (insize==outsize) {
-    if (x->r_vectorSize)sys_freeMemory(x->r_vector, x->r_vectorSize * sizeof(*x->r_vector));
+    if (x->r_vectorSize)PD_MEMORY_FREE(x->r_vector, x->r_vectorSize * sizeof(*x->r_vector));
     x->r_vectorSize = 0;
     x->r_vector = out;
     return;
@@ -205,8 +205,8 @@ void resampleto_dsp(t_resample *x,
 
   if (x->r_vectorSize != insize) {
     t_sample *buf=x->r_vector;
-    sys_freeMemory(buf, x->r_vectorSize * sizeof(*buf));
-    buf = (t_sample *)sys_getMemory(insize * sizeof(*buf));
+    PD_MEMORY_FREE(buf, x->r_vectorSize * sizeof(*buf));
+    buf = (t_sample *)PD_MEMORY_GET(insize * sizeof(*buf));
     x->r_vector = buf;
     x->r_vectorSize   = insize;
   }

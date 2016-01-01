@@ -58,7 +58,7 @@ static void textbuf_senditup(t_textbuf *x)
         i = (j-txt)+1;
     }
     sys_vgui("::ui_text::dirty .x%lx 0\n", x);
-    sys_freeMemory(txt, ntxt);
+    PD_MEMORY_FREE(txt, ntxt);
 }
 
 static void textbuf_open(t_textbuf *x)
@@ -891,7 +891,7 @@ static void *text_search_new(t_symbol *s, int argc, t_atom *argv)
     if (nkey == 0)
         nkey = 1;
     x->x_nkeys = nkey;
-    x->x_keyvec = (t_key *)sys_getMemory(nkey * sizeof(*x->x_keyvec));
+    x->x_keyvec = (t_key *)PD_MEMORY_GET(nkey * sizeof(*x->x_keyvec));
     if (!argc)
         x->x_keyvec[0].k_field = 0, x->x_keyvec[0].k_binop = KB_EQ; 
     else for (i = key = 0, nextop = -1; i < argc; i++)
@@ -1173,7 +1173,7 @@ static void *text_sequence_new(t_symbol *s, int argc, t_atom *argv)
         pointerinlet_new(&x->x_tc.tc_obj, &x->x_tc.tc_gp);
     else symbolinlet_new(&x->x_tc.tc_obj, &x->x_tc.tc_sym);
     x->x_argc = 0;
-    x->x_argv = (t_atom *)sys_getMemory(0);
+    x->x_argv = (t_atom *)PD_MEMORY_GET(0);
     x->x_onset = 0x7fffffff;
     x->x_mainout = (!global ? outlet_new(&x->x_obj, &s_list) : 0);
     x->x_waitout = (global || x->x_waitsym || x->x_waitargc ?
@@ -1414,7 +1414,7 @@ static void text_sequence_args(t_text_sequence *x, t_symbol *s,
     int argc, t_atom *argv)
 {
     int i;
-    x->x_argv = sys_getMemoryResize(x->x_argv,
+    x->x_argv = PD_MEMORY_RESIZE(x->x_argv,
         x->x_argc * sizeof(t_atom), argc * sizeof(t_atom));
     for (i = 0; i < argc; i++)
         x->x_argv[i] = argv[i];
@@ -1432,7 +1432,7 @@ static void text_sequence_tempo(t_text_sequence *x,
 
 static void text_sequence_free(t_text_sequence *x)
 {
-    sys_freeMemory(x->x_argv, sizeof(t_atom) * x->x_argc);
+    PD_MEMORY_FREE(x->x_argv, sizeof(t_atom) * x->x_argc);
     clock_free(x->x_clock);
     text_client_free(&x->x_tc);
 }

@@ -108,9 +108,9 @@ void canvas_setargs(int argc, t_atom *argv)
         happens if an abstraction is loaded but never gets as far
         as calling canvas_new(). */
     if (canvas_newargv)
-        sys_freeMemory(canvas_newargv, canvas_newargc * sizeof(t_atom));
+        PD_MEMORY_FREE(canvas_newargv, canvas_newargc * sizeof(t_atom));
     canvas_newargc = argc;
-    canvas_newargv = sys_getMemoryCopy(argv, argc * sizeof(t_atom));
+    canvas_newargv = PD_MEMORY_GET_COPY(argv, argc * sizeof(t_atom));
 }
 
 void glob_setfilename(void *dummy, t_symbol *filesym, t_symbol *dirsym)
@@ -317,8 +317,8 @@ void glist_init(t_glist *x)
     memset(((char *)x) + sizeof(x->gl_obj.te_g.g_pd), 0, sizeof(*x) - sizeof(x->gl_obj.te_g.g_pd));
     x->gl_stub = gstub_new(x, 0);
     x->gl_valid = ++glist_valid;
-    x->gl_xlabel = (t_symbol **)sys_getMemory(0);
-    x->gl_ylabel = (t_symbol **)sys_getMemory(0);
+    x->gl_xlabel = (t_symbol **)PD_MEMORY_GET(0);
+    x->gl_ylabel = (t_symbol **)PD_MEMORY_GET(0);
 }
 
     /* make a new glist.  It will either be a "root" canvas or else
@@ -361,9 +361,9 @@ t_canvas *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
     {
         static int dollarzero = 1000;
         t_canvasenvironment *env = x->gl_env =
-            (t_canvasenvironment *)sys_getMemory(sizeof(*x->gl_env));
+            (t_canvasenvironment *)PD_MEMORY_GET(sizeof(*x->gl_env));
         if (!canvas_newargv)
-            canvas_newargv = sys_getMemory(0);
+            canvas_newargv = PD_MEMORY_GET(0);
         env->ce_dir = canvas_newdirectory;
         env->ce_argc = canvas_newargc;
         env->ce_argv = canvas_newargv;
@@ -741,12 +741,12 @@ void canvas_free(t_canvas *x)
 
     if (x->gl_env)
     {
-        sys_freeMemory(x->gl_env->ce_argv, x->gl_env->ce_argc * sizeof(t_atom));
-        sys_freeMemory(x->gl_env, sizeof(*x->gl_env));
+        PD_MEMORY_FREE(x->gl_env->ce_argv, x->gl_env->ce_argc * sizeof(t_atom));
+        PD_MEMORY_FREE(x->gl_env, sizeof(*x->gl_env));
     }
     canvas_resume_dsp(dspstate);
-    sys_freeMemory(x->gl_xlabel, x->gl_nxlabels * sizeof(*(x->gl_xlabel)));
-    sys_freeMemory(x->gl_ylabel, x->gl_nylabels * sizeof(*(x->gl_ylabel)));
+    PD_MEMORY_FREE(x->gl_xlabel, x->gl_nxlabels * sizeof(*(x->gl_xlabel)));
+    PD_MEMORY_FREE(x->gl_ylabel, x->gl_nylabels * sizeof(*(x->gl_ylabel)));
     gstub_cutoff(x->gl_stub);
     gfxstub_deleteforkey(x);        /* probably unnecessary */
     if (!x->gl_owner)

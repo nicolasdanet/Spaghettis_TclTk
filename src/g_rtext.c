@@ -53,7 +53,7 @@ struct _rtext
 
 t_rtext *rtext_new(t_glist *glist, t_text *who)
 {
-    t_rtext *x = (t_rtext *)sys_getMemory(sizeof *x);
+    t_rtext *x = (t_rtext *)PD_MEMORY_GET(sizeof *x);
     int w = 0, h = 0, indx;
     x->x_height = -1;
     x->x_text = who;
@@ -87,8 +87,8 @@ void rtext_free(t_rtext *x)
         }
     }
     if (rtext_entered == x) rtext_entered = 0;
-    sys_freeMemory(x->x_buf, x->x_bufsize);
-    sys_freeMemory(x, sizeof *x);
+    PD_MEMORY_FREE(x->x_buf, x->x_bufsize);
+    PD_MEMORY_FREE(x, sizeof *x);
 }
 
 char *rtext_gettag(t_rtext *x)
@@ -211,7 +211,7 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
     findx = (*widthp + (fontwidth/2)) / fontwidth;
     findy = *heightp / fontheight;
     if (x->x_bufsize >= 100)
-         tempbuf = (char *)sys_getMemory(2 * x->x_bufsize + 1);
+         tempbuf = (char *)PD_MEMORY_GET(2 * x->x_bufsize + 1);
     else tempbuf = smallbuf;
     while (x_bufsize_c - inindex_c > 0)
     {
@@ -345,14 +345,14 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
     *widthp = pixwide;
     *heightp = pixhigh;
     if (tempbuf != smallbuf)
-        sys_freeMemory(tempbuf, 2 * x->x_bufsize + 1);
+        PD_MEMORY_FREE(tempbuf, 2 * x->x_bufsize + 1);
 }
 
 void rtext_retext(t_rtext *x)
 {
     int w = 0, h = 0, indx;
     t_text *text = x->x_text;
-    sys_freeMemory(x->x_buf, x->x_bufsize);
+    PD_MEMORY_FREE(x->x_buf, x->x_bufsize);
     binbuf_gettext(text->te_binbuf, &x->x_buf, &x->x_bufsize);
         /* special case: for number boxes, try to pare the number down
         to the specified width of the box. */
@@ -382,19 +382,19 @@ void rtext_retext(t_rtext *x)
             for (s1 = nextchar - wantreduce, s2 = s1 + wantreduce;
                 s2 < ebuf; s1++, s2++)
                     *s1 = *s2;
-            x->x_buf = sys_getMemoryResize(x->x_buf, bufsize, text->te_width);
+            x->x_buf = PD_MEMORY_RESIZE(x->x_buf, bufsize, text->te_width);
             bufsize = text->te_width;
             goto done;
         giveup:
                 /* give up and bash it to "+" or "-" */
             x->x_buf[0] = (atomp->a_w.w_float < 0 ? '-' : '+');
-            x->x_buf = sys_getMemoryResize(x->x_buf, bufsize, 1);
+            x->x_buf = PD_MEMORY_RESIZE(x->x_buf, bufsize, 1);
             bufsize = 1;
         }
         else if (bufsize > text->te_width)
         {
             x->x_buf[text->te_width - 1] = '>';
-            x->x_buf = sys_getMemoryResize(x->x_buf, bufsize, text->te_width);
+            x->x_buf = PD_MEMORY_RESIZE(x->x_buf, bufsize, text->te_width);
             bufsize = text->te_width;
         }
     done:
@@ -507,7 +507,7 @@ void rtext_key(t_rtext *x, int keynum, t_symbol *keysym)
         for (i = x->x_selend; i < x->x_bufsize; i++)
             x->x_buf[i- ndel] = x->x_buf[i];
         newsize = x->x_bufsize - ndel;
-        x->x_buf = sys_getMemoryResize(x->x_buf, x->x_bufsize, newsize);
+        x->x_buf = PD_MEMORY_RESIZE(x->x_buf, x->x_bufsize, newsize);
         x->x_bufsize = newsize;
 
 /* at Guenter's suggestion, use 'n>31' to test wither a character might
@@ -522,7 +522,7 @@ be printable in whatever 8-bit character set we find ourselves. */
         if (n == '\n' || (n > 31 && n < 127))
         {
             newsize = x->x_bufsize+1;
-            x->x_buf = sys_getMemoryResize(x->x_buf, x->x_bufsize, newsize);
+            x->x_buf = PD_MEMORY_RESIZE(x->x_buf, x->x_bufsize, newsize);
             for (i = x->x_bufsize; i > x->x_selstart; i--)
                 x->x_buf[i] = x->x_buf[i-1];
             x->x_buf[x->x_selstart] = n;
@@ -534,7 +534,7 @@ be printable in whatever 8-bit character set we find ourselves. */
         {
             int ch_nbytes = u8_wc_nbytes(n);
             newsize = x->x_bufsize + ch_nbytes;
-            x->x_buf = sys_getMemoryResize(x->x_buf, x->x_bufsize, newsize);
+            x->x_buf = PD_MEMORY_RESIZE(x->x_buf, x->x_bufsize, newsize);
             for (i = newsize-1; i > x->x_selstart; i--)
                 x->x_buf[i] = x->x_buf[i-ch_nbytes];
             x->x_bufsize = newsize;

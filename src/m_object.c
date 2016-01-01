@@ -174,7 +174,7 @@ void inlet_free(t_inlet *x)
         x2->i_next = x->i_next;
         break;
     }
-    sys_freeMemory(x, sizeof(*x));
+    PD_MEMORY_FREE(x, sizeof(*x));
 }
 
 /* ----- pointerinlets, floatinlets, syminlets: optimized inlets ------- */
@@ -339,7 +339,7 @@ struct _outlet
 
 t_outlet *outlet_new(t_object *owner, t_symbol *s)
 {
-    t_outlet *x = (t_outlet *)sys_getMemory(sizeof(*x)), *y, *y2;
+    t_outlet *x = (t_outlet *)PD_MEMORY_GET(sizeof(*x)), *y, *y2;
     x->o_owner = owner;
     x->o_next = 0;
     if (y = owner->te_outlet)
@@ -445,7 +445,7 @@ void outlet_free(t_outlet *x)
         x2->o_next = x->o_next;
         break;
     }
-    sys_freeMemory(x, sizeof(*x));
+    PD_MEMORY_FREE(x, sizeof(*x));
 }
 
 t_outconnect *obj_connect(t_object *source, int outno,
@@ -472,7 +472,7 @@ t_outconnect *obj_connect(t_object *source, int outno,
     if (!i) return (0);
     to = &i->i_pd;
 doit:
-    oc = (t_outconnect *)sys_getMemory(sizeof(*oc));
+    oc = (t_outconnect *)PD_MEMORY_GET(sizeof(*oc));
     oc->oc_next = 0;
     oc->oc_to = to;
         /* append it to the end of the list */
@@ -514,7 +514,7 @@ doit:
     if (oc->oc_to == to)
     {
         o->o_connections = oc->oc_next;
-        sys_freeMemory(oc, sizeof(*oc));
+        PD_MEMORY_FREE(oc, sizeof(*oc));
         goto done;
     }
     while (oc2 = oc->oc_next)
@@ -522,7 +522,7 @@ doit:
         if (oc2->oc_to == to)
         {
             oc->oc_next = oc2->oc_next;
-            sys_freeMemory(oc2, sizeof(*oc2));
+            PD_MEMORY_FREE(oc2, sizeof(*oc2));
             goto done;
         }
         oc = oc2;

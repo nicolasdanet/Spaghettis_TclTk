@@ -188,7 +188,7 @@ void glist_select(t_glist *x, t_gobj *y)
 {
     if (x->gl_editor)
     {
-        t_selection *sel = (t_selection *)sys_getMemory(sizeof(*sel));
+        t_selection *sel = (t_selection *)PD_MEMORY_GET(sizeof(*sel));
         if (x->gl_editor->e_selectedline)
             glist_deselectline(x);
             /* LATER #ifdef out the following check */
@@ -243,7 +243,7 @@ void glist_deselect(t_glist *x, t_gobj *y)
         {
             x->gl_editor->e_selection = x->gl_editor->e_selection->sel_next;
             gobj_select(sel->sel_what, x, 0);
-            sys_freeMemory(sel, sizeof(*sel));
+            PD_MEMORY_FREE(sel, sizeof(*sel));
         }
         else
         {
@@ -254,7 +254,7 @@ void glist_deselect(t_glist *x, t_gobj *y)
                 {
                     sel->sel_next = sel2->sel_next;
                     gobj_select(sel2->sel_what, x, 0);
-                    sys_freeMemory(sel2, sizeof(*sel2));
+                    PD_MEMORY_FREE(sel2, sizeof(*sel2));
                     break;
                 }
             }
@@ -292,14 +292,14 @@ void glist_selectall(t_glist *x)
         glist_noselect(x);
         if (x->gl_list)
         {
-            t_selection *sel = (t_selection *)sys_getMemory(sizeof(*sel));
+            t_selection *sel = (t_selection *)PD_MEMORY_GET(sizeof(*sel));
             t_gobj *y = x->gl_list;
             x->gl_editor->e_selection = sel;
             sel->sel_what = y;
             gobj_select(y, x, 1);
             while (y = y->g_next)
             {
-                t_selection *sel2 = (t_selection *)sys_getMemory(sizeof(*sel2));
+                t_selection *sel2 = (t_selection *)PD_MEMORY_GET(sizeof(*sel2));
                 sel->sel_next = sel2;
                 sel = sel2;
                 sel->sel_what = y;
@@ -432,7 +432,7 @@ typedef struct _undo_connect
 static void *canvas_undo_set_disconnect(t_canvas *x,
     int index1, int outno, int index2, int inno)
 {
-    t_undo_connect *buf = (t_undo_connect *)sys_getMemory(sizeof(*buf));
+    t_undo_connect *buf = (t_undo_connect *)PD_MEMORY_GET(sizeof(*buf));
     buf->u_index1 = index1;
     buf->u_outletno = outno;
     buf->u_index2 = index2;
@@ -474,7 +474,7 @@ static void canvas_undo_disconnect(t_canvas *x, void *z, int action)
             buf->u_index2, buf->u_inletno);
     }
     else if (action == UNDO_FREE)
-        sys_freeMemory(buf, sizeof(*buf));
+        PD_MEMORY_FREE(buf, sizeof(*buf));
 }
 
     /* connect just calls disconnect actions backward... */
@@ -516,7 +516,7 @@ static void *canvas_undo_set_cut(t_canvas *x, int mode)
     t_linetraverser t;
     t_outconnect *oc;
     int nnotsel= glist_selectionindex(x, 0, 0);
-    buf = (t_undo_cut *)sys_getMemory(sizeof(*buf));
+    buf = (t_undo_cut *)PD_MEMORY_GET(sizeof(*buf));
     buf->u_mode = mode;
     buf->u_redotextbuf = 0;
 
@@ -613,7 +613,7 @@ static void canvas_undo_cut(t_canvas *x, void *z, int action)
             binbuf_free(buf->u_reconnectbuf);
         if (buf->u_redotextbuf)
             binbuf_free(buf->u_redotextbuf);
-        sys_freeMemory(buf, sizeof(*buf));
+        PD_MEMORY_FREE(buf, sizeof(*buf));
     }
 }
 
@@ -638,9 +638,9 @@ static void *canvas_undo_set_move(t_canvas *x, int selected)
 {
     int x1, y1, x2, y2, i, indx;
     t_gobj *y;
-    t_undo_move *buf =  (t_undo_move *)sys_getMemory(sizeof(*buf));
+    t_undo_move *buf =  (t_undo_move *)PD_MEMORY_GET(sizeof(*buf));
     buf->u_n = selected ? glist_selectionindex(x, 0, 1) : glist_getindex(x, 0);
-    buf->u_vec = (t_undo_move_elem *)sys_getMemory(sizeof(*buf->u_vec) *
+    buf->u_vec = (t_undo_move_elem *)PD_MEMORY_GET(sizeof(*buf->u_vec) *
         (selected ? glist_selectionindex(x, 0, 1) : glist_getindex(x, 0)));
     if (selected)
     {
@@ -692,8 +692,8 @@ static void canvas_undo_move(t_canvas *x, void *z, int action)
     }
     else if (action == UNDO_FREE)
     {
-        sys_freeMemory(buf->u_vec, buf->u_n * sizeof(*buf->u_vec));
-        sys_freeMemory(buf, sizeof(*buf));
+        PD_MEMORY_FREE(buf->u_vec, buf->u_n * sizeof(*buf->u_vec));
+        PD_MEMORY_FREE(buf, sizeof(*buf));
     }
 }
 
@@ -706,7 +706,7 @@ typedef struct _undo_paste
 
 static void *canvas_undo_set_paste(t_canvas *x)
 {
-    t_undo_paste *buf =  (t_undo_paste *)sys_getMemory(sizeof(*buf));
+    t_undo_paste *buf =  (t_undo_paste *)PD_MEMORY_GET(sizeof(*buf));
     buf->u_index = glist_getindex(x, 0);
     return (buf);
 }
@@ -732,7 +732,7 @@ static void canvas_undo_paste(t_canvas *x, void *z, int action)
                 gobj_displace(sel->sel_what, x, 10, 10);
     }
 else if (action == UNDO_FREE)
-        sys_freeMemory(buf, sizeof(*buf));
+        PD_MEMORY_FREE(buf, sizeof(*buf));
 }
 
     /* recursively check for abstractions to reload as result of a save. 
@@ -888,7 +888,7 @@ static void canvas_rightclick(t_canvas *x, int xpos, int ypos, t_gobj *y)
 static t_editor *editor_new(t_glist *owner)
 {
     char buf[40];
-    t_editor *x = (t_editor *)sys_getMemory(sizeof(*x));
+    t_editor *x = (t_editor *)PD_MEMORY_GET(sizeof(*x));
     x->e_connectbuf = binbuf_new();
     x->e_deleted = binbuf_new();
     x->e_glist = owner;
@@ -906,7 +906,7 @@ static void editor_free(t_editor *x, t_glist *y)
     binbuf_free(x->e_deleted);
     if (x->e_clock)
         clock_free(x->e_clock);
-    sys_freeMemory((void *)x, sizeof(*x));
+    PD_MEMORY_FREE((void *)x, sizeof(*x));
 }
 
     /* recursively create or destroy all editors of a glist and its 

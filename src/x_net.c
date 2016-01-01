@@ -299,7 +299,7 @@ static int netsend_dosend(t_netsend *x, int sockfd,
     done:
     if (!x->x_bin)
     {
-        sys_freeMemory(buf, length);
+        PD_MEMORY_FREE(buf, length);
         binbuf_free(b);
     }
     return (fail);
@@ -343,7 +343,7 @@ static void netreceive_notify(t_netreceive *x, int fd)
         {
             memmove(x->x_connections+i, x->x_connections+(i+1),
                 sizeof(int) * (x->x_nconnections - (i+1)));
-            x->x_connections = (int *)sys_getMemoryResize(x->x_connections,
+            x->x_connections = (int *)PD_MEMORY_RESIZE(x->x_connections,
                 x->x_nconnections * sizeof(int), 
                     (x->x_nconnections-1) * sizeof(int));
             x->x_nconnections--;
@@ -360,7 +360,7 @@ static void netreceive_connectpoll(t_netreceive *x)
     {
         int nconnections = x->x_nconnections+1;
         
-        x->x_connections = (int *)sys_getMemoryResize(x->x_connections,
+        x->x_connections = (int *)PD_MEMORY_RESIZE(x->x_connections,
             x->x_nconnections * sizeof(int), nconnections * sizeof(int));
         x->x_connections[x->x_nconnections] = fd;
         if (x->x_ns.x_bin)
@@ -384,7 +384,7 @@ static void netreceive_closeall(t_netreceive *x)
         sys_rmpollfn(x->x_connections[i]);
         sys_closesocket(x->x_connections[i]);
     }
-    x->x_connections = (int *)sys_getMemoryResize(x->x_connections, 
+    x->x_connections = (int *)PD_MEMORY_RESIZE(x->x_connections, 
         x->x_nconnections * sizeof(int), 0);
     x->x_nconnections = 0;
     if (x->x_ns.x_sockfd >= 0)
@@ -501,7 +501,7 @@ static void *netreceive_new(t_symbol *s, int argc, t_atom *argv)
     x->x_old = 0;
     x->x_ns.x_bin = 0;
     x->x_nconnections = 0;
-    x->x_connections = (int *)sys_getMemory(0);
+    x->x_connections = (int *)PD_MEMORY_GET(0);
     x->x_ns.x_sockfd = -1;
     if (argc && argv->a_type == A_FLOAT)
     {

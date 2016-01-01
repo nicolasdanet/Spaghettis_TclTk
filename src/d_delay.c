@@ -43,7 +43,7 @@ static void sigdelwrite_updatesr (t_sigdelwrite *x, t_float sr) /* added by Math
     nsamps += ((- nsamps) & (SAMPBLK - 1));
     nsamps += DEFDELVS;
     if (x->x_cspace.c_n != nsamps) {
-      x->x_cspace.c_vec = (t_sample *)sys_getMemoryResize(x->x_cspace.c_vec,
+      x->x_cspace.c_vec = (t_sample *)PD_MEMORY_RESIZE(x->x_cspace.c_vec,
         (x->x_cspace.c_n + XTRASAMPS) * sizeof(t_sample),
         (         nsamps + XTRASAMPS) * sizeof(t_sample));
       x->x_cspace.c_n = nsamps;
@@ -77,7 +77,7 @@ static void *sigdelwrite_new(t_symbol *s, t_floatarg msec)
     x->x_sym = s;
     x->x_deltime = msec;
     x->x_cspace.c_n = 0;
-    x->x_cspace.c_vec = sys_getMemory(XTRASAMPS * sizeof(t_sample));
+    x->x_cspace.c_vec = PD_MEMORY_GET(XTRASAMPS * sizeof(t_sample));
     x->x_sortno = 0;
     x->x_vecsize = 0;
     x->x_f = 0;
@@ -124,7 +124,7 @@ static void sigdelwrite_dsp(t_sigdelwrite *x, t_signal **sp)
 static void sigdelwrite_free(t_sigdelwrite *x)
 {
     pd_unbind(&x->x_obj.te_g.g_pd, x->x_sym);
-    sys_freeMemory(x->x_cspace.c_vec,
+    PD_MEMORY_FREE(x->x_cspace.c_vec,
         (x->x_cspace.c_n + XTRASAMPS) * sizeof(t_sample));
 }
 

@@ -33,18 +33,18 @@
 #if PD_WITH_ALLOCA
 
     #define ATOMS_ALLOCA(x, n)  \
-        (x) = (t_atom *)((n) < 64 ? alloca ((n) * sizeof (t_atom)) : sys_getMemory ((n) * sizeof (t_atom)))
+        (x) = (t_atom *)((n) < 64 ? alloca ((n) * sizeof (t_atom)) : PD_MEMORY_GET ((n) * sizeof (t_atom)))
         
     #define ATOMS_FREEA(x, n)   \
-        if (n >= 64) { sys_freeMemory ((x), (n) * sizeof (t_atom)); }
+        if (n >= 64) { PD_MEMORY_FREE ((x), (n) * sizeof (t_atom)); }
     
 #else
 
     #define ATOMS_ALLOCA(x, n)  \
-        (x) = (t_atom *)sys_getMemory ((n) * sizeof (t_atom))
+        (x) = (t_atom *)PD_MEMORY_GET ((n) * sizeof (t_atom))
         
     #define ATOMS_FREEA(x, n)   \
-        sys_freeMemory ((x), (n) * sizeof (t_atom))
+        PD_MEMORY_FREE ((x), (n) * sizeof (t_atom))
 
 #endif // PD_WITH_ALLOCA
 
