@@ -15,7 +15,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void *raw_getMemory (size_t n)
+void *sys_getMemory (size_t n)
 {
     void *r = calloc (n < 1 ? 1 : n, 1);
 
@@ -25,7 +25,7 @@ void *raw_getMemory (size_t n)
     return r;
 }
 
-void *raw_getMemoryCopy (void *src, size_t n)
+void *sys_getMemoryCopy (void *src, size_t n)
 {
     void *r = PD_MEMORY_GET (n);
     
@@ -34,7 +34,7 @@ void *raw_getMemoryCopy (void *src, size_t n)
     return r;
 }
 
-void *raw_getMemoryResize (void *ptr, size_t oldSize, size_t newSize)
+void *sys_getMemoryResize (void *ptr, size_t oldSize, size_t newSize)
 {
     void *r = NULL;
     
@@ -51,7 +51,7 @@ void *raw_getMemoryResize (void *ptr, size_t oldSize, size_t newSize)
     return r;
 }
 
-void raw_freeMemory (void *ptr, size_t n)
+void sys_freeMemory (void *ptr, size_t n)
 {
     (void)n;
     
