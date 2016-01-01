@@ -286,7 +286,7 @@ int sys_main(int argc, char **argv)
     if (sys_argparse(argc-1, argv+1))           /* parse cmd line */
         return (1);
     sys_afterargparse();                    /* post-argparse settings */
-    if (0 || sys_version) fprintf(stderr, "%s-%s compiled %s %s\n",
+    if (0 || sys_version) fprintf(stderr, "%s %s compiled %s %s\n",
         PD_NAME, PD_VERSION, pd_compiletime, pd_compiledate);
     if (sys_version)    /* if we were just asked our version, exit here. */
         return (0);

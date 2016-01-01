@@ -107,8 +107,8 @@ extern "C" {
 #pragma mark -
 
 #define PD_NAME             "PureData"
+#define PD_VERSION          "Alpha"
 #define PD_FILE             ".pd"
-#define PD_VERSION          "0.46.7"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ extern "C" {
         #define PD_DLL      __declspec(dllimport) extern 
     #endif
 #else
-    #define PD_DLL          __attribute__((visibility("default"))) extern
+    #define PD_DLL          __attribute__((visibility ("default"))) extern
 #endif
 
 // -----------------------------------------------------------------------------------------------------------

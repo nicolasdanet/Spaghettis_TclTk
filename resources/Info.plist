@@ -30,7 +30,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Pd</string>
 	<key>CFBundleGetInfoString</key>
-	<string>PureData 0.46.7,
+	<string>PureData Alpha,
 Copyright © 1989-2009 Tcl Core Team,
 Copyright © 2002-2009 Daniel A. Steffen,
 Copyright © 2001-2009 Apple Inc.,
@@ -46,7 +46,7 @@ Copyright © 2001-2002 Jim Ingham &amp; Ian Reid</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.46.7</string>
+	<string>0.9</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>LSMinimumSystemVersion</key>
