@@ -139,8 +139,21 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+#include <syslog.h>
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if PD_WINDOWS
+    #include <io.h>
+#else
+    #include <unistd.h>
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -327,8 +340,7 @@ PD_DLL t_symbol s_;
 
 PD_DLL t_symbol *gensym             (const char *s);
 
-PD_DLL void     *getbytes           (size_t nbytes);
-PD_DLL void     *getzbytes          (size_t nbytes);
+PD_DLL void     *getbytes           (size_t n);
 PD_DLL void     *copybytes          (void *src, size_t nbytes);
 PD_DLL void     *resizebytes        (void *x, size_t oldsize, size_t newsize);
 
