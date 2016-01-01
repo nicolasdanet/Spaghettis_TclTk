@@ -455,13 +455,13 @@ static void *pipe_new(t_symbol *s, int argc, t_atom *argv)
         SET_FLOAT(&defarg, 0);
     }
     x->x_n = argc;
-    vec = x->x_vec = (t_pipeout *)getbytes(argc * sizeof(*x->x_vec));
+    vec = x->x_vec = (t_pipeout *)sys_getMemory(argc * sizeof(*x->x_vec));
 
     for (i = argc, ap = argv; i--; ap++)
         if (ap->a_type == A_SYMBOL && *ap->a_w.w_symbol->s_name == 'p')
             nptr++;
 
-    gp = x->x_gp = (t_gpointer *)getbytes(nptr * sizeof (*gp));
+    gp = x->x_gp = (t_gpointer *)sys_getMemory(nptr * sizeof (*gp));
     x->x_nptr = nptr;
 
     for (i = 0, vp = vec, ap = argv; i < argc; i++, ap++, vp++)
@@ -513,9 +513,9 @@ static void hang_free(t_hang *h)
     int i;
     for (gp = h->h_gp, i = x->x_nptr; i--; gp++)
         gpointer_unset(gp);
-    freebytes(h->h_gp, x->x_nptr * sizeof(*h->h_gp));
+    sys_freeMemory(h->h_gp, x->x_nptr * sizeof(*h->h_gp));
     clock_free(h->h_clock);
-    freebytes(h, sizeof(*h) + (x->x_n - 1) * sizeof(*h->h_vec));
+    sys_freeMemory(h, sizeof(*h) + (x->x_n - 1) * sizeof(*h->h_vec));
 }
 
 static void hang_tick(t_hang *h)
@@ -554,13 +554,13 @@ static void hang_tick(t_hang *h)
 static void pipe_list(t_pipe *x, t_symbol *s, int ac, t_atom *av)
 {
     t_hang *h = (t_hang *)
-        getbytes(sizeof(*h) + (x->x_n - 1) * sizeof(*h->h_vec));
+        sys_getMemory(sizeof(*h) + (x->x_n - 1) * sizeof(*h->h_vec));
     t_gpointer *gp, *gp2;
     t_pipeout *p;
     int i, n = x->x_n;
     t_atom *ap;
     t_word *w;
-    h->h_gp = (t_gpointer *)getbytes(x->x_nptr * sizeof(t_gpointer));
+    h->h_gp = (t_gpointer *)sys_getMemory(x->x_nptr * sizeof(t_gpointer));
     if (ac > n)
     {
         if (av[n].a_type == A_FLOAT)
@@ -623,7 +623,7 @@ static void pipe_clear(t_pipe *x)
 static void pipe_free(t_pipe *x)
 {
     pipe_clear(x);
-    freebytes(x->x_vec, x->x_n * sizeof(*x->x_vec));
+    sys_freeMemory(x->x_vec, x->x_n * sizeof(*x->x_vec));
 }
 
 static void pipe_setup(void)

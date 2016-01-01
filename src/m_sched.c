@@ -53,7 +53,7 @@ struct _clock
 
 t_clock *clock_new(void *owner, t_method fn)
 {
-    t_clock *x = (t_clock *)getbytes(sizeof *x);
+    t_clock *x = (t_clock *)sys_getMemory(sizeof *x);
     x->c_settime = -1;
     x->c_owner = owner;
     x->c_fn = (t_clockmethod)fn;
@@ -174,7 +174,7 @@ double clock_getsystimeafter(double delaytime)
 void clock_free(t_clock *x)
 {
     clock_unset(x);
-    freebytes(x, sizeof *x);
+    sys_freeMemory(x, sizeof *x);
 }
 
 /* the following routines maintain a real-execution-time histogram of the

@@ -77,14 +77,14 @@ static void alist_clear(t_alist *x)
             gpointer_unset(x->l_vec[i].l_a.a_w.w_gpointer);
     }
     if (x->l_vec)
-        freebytes(x->l_vec, x->l_n * sizeof(*x->l_vec));
+        sys_freeMemory(x->l_vec, x->l_n * sizeof(*x->l_vec));
 }
 
 static void alist_list(t_alist *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
     alist_clear(x);
-    if (!(x->l_vec = (t_listelem *)getbytes(argc * sizeof(*x->l_vec))))
+    if (!(x->l_vec = (t_listelem *)sys_getMemory(argc * sizeof(*x->l_vec))))
     {
         x->l_n = 0;
         post_error ("list_alloc: out of memory");
@@ -108,7 +108,7 @@ static void alist_anything(t_alist *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
     alist_clear(x);
-    if (!(x->l_vec = (t_listelem *)getbytes((argc+1) * sizeof(*x->l_vec))))
+    if (!(x->l_vec = (t_listelem *)sys_getMemory((argc+1) * sizeof(*x->l_vec))))
     {
         x->l_n = 0;
         post_error ("list_alloc: out of memory");
@@ -143,7 +143,7 @@ static void alist_clone(t_alist *x, t_alist *y)
     y->l_pd = alist_class;
     y->l_n = x->l_n;
     y->l_npointer = x->l_npointer;
-    if (!(y->l_vec = (t_listelem *)getbytes(y->l_n * sizeof(*y->l_vec))))
+    if (!(y->l_vec = (t_listelem *)sys_getMemory(y->l_n * sizeof(*y->l_vec))))
     {
         y->l_n = 0;
         post_error ("list_alloc: out of memory");

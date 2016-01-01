@@ -83,7 +83,7 @@ int sys_onloadlist(char *classname) /* return true if already loaded */
 
 void sys_putonloadlist(char *classname) /* add to list of loaded modules */
 {
-    t_loadlist *ll = (t_loadlist *)getbytes(sizeof(*ll));
+    t_loadlist *ll = (t_loadlist *)sys_getMemory(sizeof(*ll));
     ll->ll_name = gensym(classname);
     ll->ll_next = sys_loaded;
     sys_loaded = ll;
@@ -263,7 +263,7 @@ void sys_register_loader(loader_t loader)
             q = q->next;
         else
         {
-            q->next = (loader_queue_t *)getbytes(sizeof(loader_queue_t));
+            q->next = (loader_queue_t *)sys_getMemory(sizeof(loader_queue_t));
             q->next->loader = loader;
             q->next->next = NULL;
             break;

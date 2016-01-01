@@ -306,7 +306,7 @@ void dsp_add(t_perform f, int n, ...)
     int newsize = pd_this->pd_dspChainSize + n+1, i;
     va_list ap;
 
-    pd_this->pd_dspChain = resizebytes(pd_this->pd_dspChain, 
+    pd_this->pd_dspChain = sys_getMemoryResize(pd_this->pd_dspChain, 
         pd_this->pd_dspChainSize * sizeof (t_int), newsize * sizeof (t_int));
     pd_this->pd_dspChain[pd_this->pd_dspChainSize-1] = (t_int)f;
     va_start(ap, n);
@@ -322,7 +322,7 @@ void dsp_addv(t_perform f, int n, t_int *vec)
 {
     int newsize = pd_this->pd_dspChainSize + n+1, i;
     
-    pd_this->pd_dspChain = resizebytes(pd_this->pd_dspChain, 
+    pd_this->pd_dspChain = sys_getMemoryResize(pd_this->pd_dspChain, 
         pd_this->pd_dspChainSize * sizeof (t_int), newsize * sizeof (t_int));
     pd_this->pd_dspChain[pd_this->pd_dspChainSize-1] = (t_int)f;
     for (i = 0; i < n; i++)
@@ -369,8 +369,8 @@ void signal_cleanup(void)
     {
         pd_this->pd_signals = sig->s_nextUsed;
         if (!sig->s_isBorrowed)
-            freebytes(sig->s_vector, sig->s_vectorSize * sizeof (*sig->s_vector));
-        freebytes(sig, sizeof *sig);
+            sys_freeMemory(sig->s_vector, sig->s_vectorSize * sizeof (*sig->s_vector));
+        sys_freeMemory(sig, sizeof *sig);
     }
     for (i = 0; i <= MAXLOGSIG; i++)
         signal_freelist[i] = 0;
@@ -449,10 +449,10 @@ t_signal *signal_new(int n, t_float sr)
     else
     {
             /* LATER figure out what to do for out-of-space here! */
-        ret = (t_signal *)getbytes(sizeof *ret);
+        ret = (t_signal *)sys_getMemory(sizeof *ret);
         if (n)
         {
-            ret->s_vector = (t_sample *)getbytes(vecsize * sizeof (*ret->s_vector));
+            ret->s_vector = (t_sample *)sys_getMemory(vecsize * sizeof (*ret->s_vector));
             ret->s_isBorrowed = 0;
         }
         else
@@ -556,7 +556,7 @@ void ugen_stop(void)
     int i;
     if (pd_this->pd_dspChain)
     {
-        freebytes(pd_this->pd_dspChain, 
+        sys_freeMemory(pd_this->pd_dspChain, 
             pd_this->pd_dspChainSize * sizeof (t_int));
         pd_this->pd_dspChain = 0;
     }
@@ -568,7 +568,7 @@ void ugen_start(void)
 {
     ugen_stop();
     ugen_sortno++;
-    pd_this->pd_dspChain = (t_int *)getbytes(sizeof(*pd_this->pd_dspChain));
+    pd_this->pd_dspChain = (t_int *)sys_getMemory(sizeof(*pd_this->pd_dspChain));
     pd_this->pd_dspChain[0] = (t_int)dsp_done;
     pd_this->pd_dspChainSize = 1;
     if (ugen_currentcontext) { PD_BUG; }
@@ -609,7 +609,7 @@ void glob_foo(void *dummy, t_symbol *s, int argc, t_atom *argv)
 t_dspcontext *ugen_start_graph(int toplevel, t_signal **sp,
     int ninlets, int noutlets)
 {
-    t_dspcontext *dc = (t_dspcontext *)getbytes(sizeof(*dc));
+    t_dspcontext *dc = (t_dspcontext *)sys_getMemory(sizeof(*dc));
     t_float parent_srate, srate;
     int parent_vecsize, vecsize;
 
@@ -634,7 +634,7 @@ t_dspcontext *ugen_start_graph(int toplevel, t_signal **sp,
     /* first the canvas calls this to create all the boxes... */
 void ugen_add(t_dspcontext *dc, t_object *obj)
 {
-    t_ugenbox *x = (t_ugenbox *)getbytes(sizeof *x);
+    t_ugenbox *x = (t_ugenbox *)sys_getMemory(sizeof *x);
     int i;
     t_sigoutlet *uout;
     t_siginlet *uin;
@@ -643,11 +643,11 @@ void ugen_add(t_dspcontext *dc, t_object *obj)
     dc->dc_ugenlist = x;
     x->u_obj = obj;
     x->u_nin = obj_nsiginlets(obj);
-    x->u_in = getbytes(x->u_nin * sizeof (*x->u_in));
+    x->u_in = sys_getMemory(x->u_nin * sizeof (*x->u_in));
     for (uin = x->u_in, i = x->u_nin; i--; uin++)
         uin->i_nconnect = 0;
     x->u_nout = obj_nsigoutlets(obj);
-    x->u_out = getbytes(x->u_nout * sizeof (*x->u_out));
+    x->u_out = sys_getMemory(x->u_nout * sizeof (*x->u_out));
     for (uout = x->u_out, i = x->u_nout; i--; uout++)
         uout->o_connections = 0, uout->o_nconnect = 0;
 }
@@ -681,7 +681,7 @@ void ugen_connect(t_dspcontext *dc, t_object *x1, int outno, t_object *x2,
     uin = u2->u_in + siginno;
 
         /* add a new connection to the outlet's list */
-    oc = (t_sigoutconnect *)getbytes(sizeof *oc);
+    oc = (t_sigoutconnect *)sys_getMemory(sizeof *oc);
     oc->oc_next = uout->o_connections;
     uout->o_connections = oc;
     oc->oc_who = u2;
@@ -744,7 +744,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
             s3->s_count = 1;
         }
     }
-    insig = (t_signal **)getbytes((u->u_nin + u->u_nout) * sizeof(t_signal *));
+    insig = (t_signal **)sys_getMemory((u->u_nin + u->u_nout) * sizeof(t_signal *));
     outsig = insig + u->u_nin;
     for (sig = insig, uin = u->u_in, i = u->u_nin; i--; sig++, uin++)
     {
@@ -850,7 +850,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
         notyet: ;
         }
     }
-    freebytes(insig,(u->u_nin + u->u_nout) * sizeof(t_signal *));
+    sys_freeMemory(insig,(u->u_nin + u->u_nout) * sizeof(t_signal *));
     u->u_done = 1;
 }
 
@@ -1120,22 +1120,22 @@ void ugen_done_graph(t_dspcontext *dc)
             while (oc)
             {
                 oc2 = oc->oc_next;
-                freebytes(oc, sizeof *oc);
+                sys_freeMemory(oc, sizeof *oc);
                 oc = oc2;
             }
         }
-        freebytes(dc->dc_ugenlist->u_out, dc->dc_ugenlist->u_nout *
+        sys_freeMemory(dc->dc_ugenlist->u_out, dc->dc_ugenlist->u_nout *
             sizeof (*dc->dc_ugenlist->u_out));
-        freebytes(dc->dc_ugenlist->u_in, dc->dc_ugenlist->u_nin *
+        sys_freeMemory(dc->dc_ugenlist->u_in, dc->dc_ugenlist->u_nin *
             sizeof(*dc->dc_ugenlist->u_in));
         u = dc->dc_ugenlist;
         dc->dc_ugenlist = u->u_next;
-        freebytes(u, sizeof *u);
+        sys_freeMemory(u, sizeof *u);
     }
     if (ugen_currentcontext == dc)
         ugen_currentcontext = dc->dc_parentcontext;
     else { PD_BUG; }
-    freebytes(dc, sizeof(*dc));
+    sys_freeMemory(dc, sizeof(*dc));
 
 }
 

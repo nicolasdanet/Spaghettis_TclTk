@@ -26,14 +26,14 @@ scalars (g_scalar.c); their graphical behavior is defined accordingly. */
 
 t_array *array_new(t_symbol *templatesym, t_gpointer *parent)
 {
-    t_array *x = (t_array *)getbytes(sizeof (*x));
+    t_array *x = (t_array *)sys_getMemory(sizeof (*x));
     t_template *template;
     t_gpointer *gp;
     template = template_findbyname(templatesym);
     x->a_templatesym = templatesym;
     x->a_n = 1;
     x->a_elemsize = sizeof(t_word) * template->t_n;
-    x->a_vec = (char *)getbytes(x->a_elemsize);
+    x->a_vec = (char *)sys_getMemory(x->a_elemsize);
         /* note here we blithely copy a gpointer instead of "setting" a
         new one; this gpointer isn't accounted for and needn't be since
         we'll be deleted before the thing pointed to gets deleted anyway;
@@ -58,7 +58,7 @@ void array_resize(t_array *x, int n)
     oldn = x->a_n;
     elemsize = sizeof(t_word) * template->t_n;
 
-    x->a_vec = (char *)resizebytes(x->a_vec, oldn * elemsize, n * elemsize);
+    x->a_vec = (char *)sys_getMemoryResize(x->a_vec, oldn * elemsize, n * elemsize);
     x->a_n = n;
     if (n > oldn)
     {
@@ -98,8 +98,8 @@ void array_free(t_array *x)
         t_word *wp = (t_word *)(x->a_vec + x->a_elemsize * i);
         word_free(wp, scalartemplate);
     }
-    freebytes(x->a_vec, x->a_elemsize * x->a_n);
-    freebytes(x, sizeof *x);
+    sys_freeMemory(x->a_vec, x->a_elemsize * x->a_n);
+    sys_freeMemory(x, sizeof *x);
 }
 
 /* --------------------- graphical arrays (garrays) ------------------- */
@@ -947,13 +947,13 @@ static void garray_sinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
     npoints = atom_getfloatarg(0, argc, argv);
     argv++, argc--;
     
-    svec = (t_float *)getbytes(sizeof(t_float) * argc);
+    svec = (t_float *)sys_getMemory(sizeof(t_float) * argc);
     if (!svec) return;
     
     for (i = 0; i < argc; i++)
         svec[i] = atom_getfloatarg(i, argc, argv);
     garray_dofo(x, npoints, 0, argc, svec, 1);
-    freebytes(svec, sizeof(t_float) * argc);
+    sys_freeMemory(svec, sizeof(t_float) * argc);
 }
 
 static void garray_cosinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
@@ -971,13 +971,13 @@ static void garray_cosinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
     npoints = atom_getfloatarg(0, argc, argv);
     argv++, argc--;
     
-    svec = (t_float *)getbytes(sizeof(t_float) * argc);
+    svec = (t_float *)sys_getMemory(sizeof(t_float) * argc);
     if (!svec) return;
 
     for (i = 0; i < argc; i++)
         svec[i] = atom_getfloatarg(i, argc, argv);
     garray_dofo(x, npoints, 0, argc, svec, 0);
-    freebytes(svec, sizeof(t_float) * argc);
+    sys_freeMemory(svec, sizeof(t_float) * argc);
 }
 
 static void garray_normalize(t_garray *x, t_float f)

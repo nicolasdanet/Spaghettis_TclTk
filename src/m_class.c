@@ -195,12 +195,12 @@ t_class *class_new (t_symbol *s,
     //
     }
     
-    c = (t_class *)getbytes (sizeof (t_class));
+    c = (t_class *)sys_getMemory (sizeof (t_class));
     c->c_name               = s;
     c->c_helpName           = s;
     c->c_externalDirectory  = class_externalDirectory;
     c->c_size               = size;
-    c->c_methods            = getbytes (0);                 /* Allocate 1 byte of memory. */
+    c->c_methods            = sys_getMemory (0);                 /* Allocate 1 byte of memory. */
     c->c_methodsSize        = 0;
     c->c_methodFree         = freeMethod;
     c->c_methodBang         = class_defaultBang;
@@ -300,7 +300,7 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
     oldSize = c->c_methodsSize * sizeof (t_entry);
     newSize = (c->c_methodsSize + 1) * sizeof (t_entry);
     
-    c->c_methods = resizebytes (c->c_methods, oldSize, newSize);
+    c->c_methods = sys_getMemoryResize (c->c_methods, oldSize, newSize);
     
     m = c->c_methods + c->c_methodsSize;
     c->c_methodsSize++;

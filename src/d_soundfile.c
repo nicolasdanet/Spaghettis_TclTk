@@ -1908,7 +1908,7 @@ static void *readsf_new(t_floatarg fnchannels, t_floatarg fbufsize)
         bufsize = MINBUFSIZE;
     else if (bufsize > MAXBUFSIZE)
         bufsize = MAXBUFSIZE;
-    buf = getbytes(bufsize);
+    buf = sys_getMemory(bufsize);
     if (!buf) return (0);
     
     x = (t_readsf *)pd_new(readsf_class);
@@ -2136,7 +2136,7 @@ static void readsf_free(t_readsf *x)
     pthread_cond_destroy(&x->x_requestcondition);
     pthread_cond_destroy(&x->x_answercondition);
     pthread_mutex_destroy(&x->x_mutex);
-    freebytes(x->x_buf, x->x_bufsize);
+    sys_freeMemory(x->x_buf, x->x_bufsize);
     clock_free(x->x_clock);
 }
 
@@ -2412,7 +2412,7 @@ static void *writesf_new(t_floatarg fnchannels, t_floatarg fbufsize)
         bufsize = MINBUFSIZE;
     else if (bufsize > MAXBUFSIZE)
         bufsize = MAXBUFSIZE;
-    buf = getbytes(bufsize);
+    buf = sys_getMemory(bufsize);
     if (!buf) return (0);
     
     x = (t_writesf *)pd_new(writesf_class);
@@ -2620,7 +2620,7 @@ static void writesf_free(t_writesf *x)
     pthread_cond_destroy(&x->x_requestcondition);
     pthread_cond_destroy(&x->x_answercondition);
     pthread_mutex_destroy(&x->x_mutex);
-    freebytes(x->x_buf, x->x_bufsize);
+    sys_freeMemory(x->x_buf, x->x_bufsize);
 }
 
 static void writesf_setup(void)

@@ -157,9 +157,9 @@ may be added; othewise they're dropped.  */
 t_namelist *namelist_append(t_namelist *listwas, const char *s, int allowdup)
 {
     t_namelist *nl, *nl2;
-    nl2 = (t_namelist *)(getbytes(sizeof(*nl)));
+    nl2 = (t_namelist *)(sys_getMemory(sizeof(*nl)));
     nl2->nl_next = 0;
-    nl2->nl_string = (char *)getbytes(strlen(s) + 1);
+    nl2->nl_string = (char *)sys_getMemory(strlen(s) + 1);
     strcpy(nl2->nl_string, s);
     sys_unbashfilename(nl2->nl_string, nl2->nl_string);
     if (!listwas)
@@ -210,8 +210,8 @@ void namelist_free(t_namelist *listwas)
     for (nl = listwas; nl; nl = nl2)
     {
         nl2 = nl->nl_next;
-        freebytes(nl->nl_string, strlen(nl->nl_string) + 1);
-        freebytes(nl, sizeof(*nl));
+        sys_freeMemory(nl->nl_string, strlen(nl->nl_string) + 1);
+        sys_freeMemory(nl, sizeof(*nl));
     }
 }
 

@@ -33,7 +33,7 @@ extern t_class *canvas_class;
 
 t_gstub *gstub_new(t_glist *gl, t_array *a)
 {
-    t_gstub *gs = getbytes(sizeof(*gs));
+    t_gstub *gs = sys_getMemory(sizeof(*gs));
     if (gl)
     {
         gs->gs_type = POINTER_GLIST;
@@ -57,7 +57,7 @@ static void gstub_dis(t_gstub *gs)
 {
     int refcount = --gs->gs_count;
     if ((!refcount) && gs->gs_type == POINTER_NONE)
-        freebytes(gs, sizeof (*gs));
+        sys_freeMemory(gs, sizeof (*gs));
     else if (refcount < 0) { PD_BUG; }
 }
 
@@ -69,7 +69,7 @@ void gstub_cutoff(t_gstub *gs)
 {
     gs->gs_type = POINTER_NONE;
     if (gs->gs_count < 0) { PD_BUG; }
-    if (!gs->gs_count) freebytes(gs, sizeof (*gs));
+    if (!gs->gs_count) sys_freeMemory(gs, sizeof (*gs));
 }
 
 /* call this to verify that a pointer is fresh, i.e., that it either
@@ -244,7 +244,7 @@ static void *ptrobj_new(t_symbol *classname, int argc, t_atom *argv)
     t_typedout *to;
     int n;
     gpointer_init(&x->x_gp);
-    x->x_typedout = to = (t_typedout *)getbytes(argc * sizeof (*to));
+    x->x_typedout = to = (t_typedout *)sys_getMemory(argc * sizeof (*to));
     x->x_ntypedout = n = argc;
     for (; n--; to++)
     {
@@ -431,7 +431,7 @@ static void ptrobj_rewind(t_ptrobj *x)
 
 static void ptrobj_free(t_ptrobj *x)
 {
-    freebytes(x->x_typedout, x->x_ntypedout * sizeof (*x->x_typedout));
+    sys_freeMemory(x->x_typedout, x->x_ntypedout * sizeof (*x->x_typedout));
     gpointer_unset(&x->x_gp);
 }
 
@@ -488,7 +488,7 @@ static void *get_new(t_symbol *why, int argc, t_atom *argv)
     }
     else varcount = argc - 1, varvec = argv + 1;
     x->x_variables
-        = (t_getvariable *)getbytes(varcount * sizeof (*x->x_variables));
+        = (t_getvariable *)sys_getMemory(varcount * sizeof (*x->x_variables));
     x->x_nout = varcount;
     for (i = 0, sp = x->x_variables; i < varcount; i++, sp++)
     {
@@ -565,7 +565,7 @@ static void get_pointer(t_get *x, t_gpointer *gp)
 
 static void get_free(t_get *x)
 {
-    freebytes(x->x_variables, x->x_nout * sizeof (*x->x_variables));
+    sys_freeMemory(x->x_variables, x->x_nout * sizeof (*x->x_variables));
 }
 
 static void get_setup(void)
@@ -620,7 +620,7 @@ static void *set_new(t_symbol *why, int argc, t_atom *argv)
     }
     else varcount = argc - 1, varvec = argv + 1;
     x->x_variables
-        = (t_setvariable *)getbytes(varcount * sizeof (*x->x_variables));
+        = (t_setvariable *)sys_getMemory(varcount * sizeof (*x->x_variables));
     x->x_nin = varcount;
     for (i = 0, sp = x->x_variables; i < varcount; i++, sp++)
     {
@@ -728,7 +728,7 @@ static void set_symbol(t_set *x, t_symbol *s)
 
 static void set_free(t_set *x)
 {
-    freebytes(x->x_variables, x->x_nin * sizeof (*x->x_variables));
+    sys_freeMemory(x->x_variables, x->x_nin * sizeof (*x->x_variables));
     gpointer_unset(&x->x_gp);
 }
 
@@ -1068,7 +1068,7 @@ static void setsize_float(t_setsize *x, t_float f)
                 word_free((t_word *)elem, elemtemplate);
     }
         /* resize the array  */
-    array->a_vec = (char *)resizebytes(array->a_vec,
+    array->a_vec = (char *)sys_getMemoryResize(array->a_vec,
         elemsize * nitems, elemsize * newsize);
     array->a_n = newsize;
         /* if growing, initialize new scalars */
@@ -1151,7 +1151,7 @@ static void *append_new(t_symbol *why, int argc, t_atom *argv)
     }
     else varcount = argc - 1, varvec = argv + 1;
     x->x_variables
-        = (t_appendvariable *)getbytes(varcount * sizeof (*x->x_variables));
+        = (t_appendvariable *)sys_getMemory(varcount * sizeof (*x->x_variables));
     x->x_nin = varcount;
     for (i = 0, sp = x->x_variables; i < varcount; i++, sp++)
     {
@@ -1255,7 +1255,7 @@ static void append_float(t_append *x, t_float f)
 
 static void append_free(t_append *x)
 {
-    freebytes(x->x_variables, x->x_nin * sizeof (*x->x_variables));
+    sys_freeMemory(x->x_variables, x->x_nin * sizeof (*x->x_variables));
     gpointer_unset(&x->x_gp);
 }
 

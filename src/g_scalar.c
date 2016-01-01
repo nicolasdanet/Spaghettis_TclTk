@@ -120,7 +120,7 @@ t_scalar *scalar_new(t_glist *owner, t_symbol *templatesym)
     }
     if (!template_cancreate(template))
         return (0);
-    x = (t_scalar *)getbytes(sizeof(t_scalar) +
+    x = (t_scalar *)sys_getMemory(sizeof(t_scalar) +
         (template->t_n - 1) * sizeof(*x->sc_vector));
     x->sc_g.g_pd = scalar_class;
     x->sc_template = templatesym;
@@ -400,13 +400,13 @@ static void scalar_properties(t_gobj *z, struct _glist *owner)
     b = glist_writetobinbuf(owner, 0);
     binbuf_gettext(b, &buf, &bufsize);
     binbuf_free(b);
-    buf = resizebytes(buf, bufsize, bufsize+1);
+    buf = sys_getMemoryResize(buf, bufsize, bufsize+1);
     buf[bufsize] = 0;
     sprintf(buf2, "::ui_data::show %%s {");
     gfxstub_new((t_pd *)owner, x, buf2);
     sys_gui(buf);
     sys_gui("}\n");
-    freebytes(buf, bufsize+1);
+    sys_freeMemory(buf, bufsize+1);
 }
 
 static t_widgetbehavior scalar_widgetbehavior =
@@ -435,7 +435,7 @@ static void scalar_free(t_scalar *x)
     gfxstub_deleteforkey(x);
         /* the "size" field in the class is zero, so Pd doesn't try to free
         us automatically (see pd_free()) */
-    freebytes(x, sizeof(t_scalar) + (template->t_n - 1) * sizeof(*x->sc_vector));
+    sys_freeMemory(x, sizeof(t_scalar) + (template->t_n - 1) * sizeof(*x->sc_vector));
 }
 
 /* ----------------- setup function ------------------- */

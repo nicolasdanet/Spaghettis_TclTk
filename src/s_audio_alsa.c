@@ -893,10 +893,10 @@ static char **alsa_names = 0;
 void alsa_adddev(char *name)
 {
     if (alsa_nnames)
-        alsa_names = (char **)resizebytes(alsa_names,
+        alsa_names = (char **)sys_getMemoryResize(alsa_names,
             alsa_nnames * sizeof(char *),
             (alsa_nnames+1) * sizeof(char *));
-    else alsa_names = (char **)getbytes(sizeof(char *));
+    else alsa_names = (char **)sys_getMemory(sizeof(char *));
     alsa_names[alsa_nnames] = gensym(name)->s_name;
     alsa_nnames++;
 }

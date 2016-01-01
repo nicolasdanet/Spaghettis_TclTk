@@ -130,7 +130,7 @@ void pd_setup (void)
 
 static t_pdinstance *pdinstance_new()
 {
-    t_pdinstance *x = (t_pdinstance *)getbytes (sizeof (t_pdinstance));
+    t_pdinstance *x = (t_pdinstance *)sys_getMemory (sizeof (t_pdinstance));
     
     x->pd_systime           = 0;
     x->pd_clocks            = NULL;
@@ -178,7 +178,7 @@ t_pd *pd_new (t_class *c)
     
     PD_ASSERT (c != NULL);
 
-    x = (t_pd *)getbytes (c->c_size);
+    x = (t_pd *)sys_getMemory (c->c_size);
     
     *x = c;
     
@@ -202,7 +202,7 @@ void pd_free (t_pd *x)
         }
     }
 
-    if (c->c_size) { freebytes (x, c->c_size); }
+    if (c->c_size) { sys_freeMemory (x, c->c_size); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -252,15 +252,15 @@ void pd_bind (t_pd *x, t_symbol *s)
     
         if (*s->s_thing == bindlist_class) {
             t_bindlist *b = (t_bindlist *)s->s_thing;
-            t_bindelement *e = (t_bindelement *)getbytes (sizeof (t_bindelement));
+            t_bindelement *e = (t_bindelement *)sys_getMemory (sizeof (t_bindelement));
             e->e_next = b->b_list;
             e->e_what = x;
             b->b_list = e;
             
         } else {
             t_bindlist *b = (t_bindlist *)pd_new (bindlist_class);
-            t_bindelement *e1 = (t_bindelement *)getbytes (sizeof (t_bindelement));
-            t_bindelement *e2 = (t_bindelement *)getbytes (sizeof (t_bindelement));
+            t_bindelement *e1 = (t_bindelement *)sys_getMemory (sizeof (t_bindelement));
+            t_bindelement *e2 = (t_bindelement *)sys_getMemory (sizeof (t_bindelement));
             b->b_list  = e1;
             e1->e_what = x;
             e1->e_next = e2;
@@ -287,12 +287,12 @@ void pd_unbind (t_pd *x, t_symbol *s)
         
         if ((e1 = b->b_list)->e_what == x) {
             b->b_list = e1->e_next;
-            freebytes (e1, sizeof (t_bindelement));
+            sys_freeMemory (e1, sizeof (t_bindelement));
         } else {
             for (e1 = b->b_list; e2 = e1->e_next; e1 = e2) {
                 if (e2->e_what == x) {
                     e1->e_next = e2->e_next;
-                    freebytes (e2, sizeof (t_bindelement));
+                    sys_freeMemory (e2, sizeof (t_bindelement));
                     break;
                 }
             }
@@ -300,7 +300,7 @@ void pd_unbind (t_pd *x, t_symbol *s)
         
         if (!b->b_list->e_next) {                           /* Delete it if just one element remains. */
             s->s_thing = b->b_list->e_what;
-            freebytes (b->b_list, sizeof (t_bindelement));
+            sys_freeMemory (b->b_list, sizeof (t_bindelement));
             pd_free (&b->b_pd);
         }
         
@@ -336,7 +336,7 @@ t_pd *pd_findByClass (t_symbol *s, t_class *c)
 
 void pd_push (t_pd *x)
 {
-    t_gstack *p = (t_gstack *)getbytes (sizeof (t_gstack));
+    t_gstack *p = (t_gstack *)sys_getMemory (sizeof (t_gstack));
     p->g_what = s__X.s_thing;
     p->g_next = pd_stackHead;
     p->g_loadingAbstraction = pd_loadingAbstraction;
@@ -352,7 +352,7 @@ void pd_pop (t_pd *x)
         t_gstack *p = pd_stackHead;
         s__X.s_thing = p->g_what;
         pd_stackHead = p->g_next;
-        freebytes (p, sizeof (t_gstack));
+        sys_freeMemory (p, sizeof (t_gstack));
         pd_lastPopped = x;
     }
 }

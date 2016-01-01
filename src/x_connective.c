@@ -415,7 +415,7 @@ static void sel2_symbol(t_sel2 *x, t_symbol *s)
 
 static void sel2_free(t_sel2 *x)
 {
-    freebytes(x->x_vec, x->x_nelement * sizeof(*x->x_vec));
+    sys_freeMemory(x->x_vec, x->x_nelement * sizeof(*x->x_vec));
 }
 
 static void *select_new(t_symbol *s, int argc, t_atom *argv)
@@ -450,7 +450,7 @@ static void *select_new(t_symbol *s, int argc, t_atom *argv)
         t_selectelement *e;
         t_sel2 *x = (t_sel2 *)pd_new(sel2_class);
         x->x_nelement = argc;
-        x->x_vec = (t_selectelement *)getbytes(argc * sizeof(*x->x_vec));
+        x->x_vec = (t_selectelement *)sys_getMemory(argc * sizeof(*x->x_vec));
         x->x_type = argv[0].a_type;
         for (n = 0, e = x->x_vec; n < argc; n++, e++)
         {
@@ -597,7 +597,7 @@ static void route_list(t_route *x, t_symbol *sel, int argc, t_atom *argv)
 
 static void route_free(t_route *x)
 {
-    freebytes(x->x_vec, x->x_nelement * sizeof(*x->x_vec));
+    sys_freeMemory(x->x_vec, x->x_nelement * sizeof(*x->x_vec));
 }
 
 static void *route_new(t_symbol *s, int argc, t_atom *argv)
@@ -614,7 +614,7 @@ static void *route_new(t_symbol *s, int argc, t_atom *argv)
     }
     x->x_type = argv[0].a_type;
     x->x_nelement = argc;
-    x->x_vec = (t_routeelement *)getbytes(argc * sizeof(*x->x_vec));
+    x->x_vec = (t_routeelement *)sys_getMemory(argc * sizeof(*x->x_vec));
     for (n = 0, e = x->x_vec; n < argc; n++, e++)
     {
         e->e_outlet = outlet_new(&x->x_obj, &s_list);
@@ -670,14 +670,14 @@ static void *pack_new(t_symbol *s, int argc, t_atom *argv)
     }
 
     x->x_n = argc;
-    vec = x->x_vec = (t_atom *)getbytes(argc * sizeof(*x->x_vec));
-    x->x_outvec = (t_atom *)getbytes(argc * sizeof(*x->x_outvec));
+    vec = x->x_vec = (t_atom *)sys_getMemory(argc * sizeof(*x->x_vec));
+    x->x_outvec = (t_atom *)sys_getMemory(argc * sizeof(*x->x_outvec));
 
     for (i = argc, ap = argv; i--; ap++)
         if (ap->a_type == A_SYMBOL && *ap->a_w.w_symbol->s_name == 'p')
             nptr++;
 
-    gp = x->x_gpointer = (t_gpointer *)getbytes(nptr * sizeof (*gp));
+    gp = x->x_gpointer = (t_gpointer *)sys_getMemory(nptr * sizeof (*gp));
     x->x_nptr = nptr;
 
     for (i = 0, vp = x->x_vec, ap = argv; i < argc; i++, ap++, vp++)
@@ -734,7 +734,7 @@ static void pack_bang(t_pack *x)
             /* LATER figure out how to deal with reentrancy and pointers... */
         if (x->x_nptr)
             post("pack_bang: warning: reentry with pointers unprotected");
-        outvec = getbytes(size);
+        outvec = sys_getMemory(size);
         reentered = 1;
     }
     else
@@ -745,7 +745,7 @@ static void pack_bang(t_pack *x)
     memcpy(outvec, x->x_vec, size);
     outlet_list(x->x_obj.te_outlet, &s_list, x->x_n, outvec);
     if (reentered)
-        freebytes(outvec, size);
+        sys_freeMemory(outvec, size);
     else x->x_outvec = outvec;
 }
 
@@ -788,13 +788,13 @@ static void pack_list(t_pack *x, t_symbol *s, int ac, t_atom *av)
 
 static void pack_anything(t_pack *x, t_symbol *s, int ac, t_atom *av)
 {
-    t_atom *av2 = (t_atom *)getbytes((ac + 1) * sizeof(t_atom));
+    t_atom *av2 = (t_atom *)sys_getMemory((ac + 1) * sizeof(t_atom));
     int i;
     for (i = 0; i < ac; i++)
         av2[i + 1] = av[i];
     SET_SYMBOL(av2, s);
     obj_list(&x->x_obj, 0, ac+1, av2);
-    freebytes(av2, (ac + 1) * sizeof(t_atom));
+    sys_freeMemory(av2, (ac + 1) * sizeof(t_atom));
 }
 
 static void pack_free(t_pack *x)
@@ -803,9 +803,9 @@ static void pack_free(t_pack *x)
     int i;
     for (gp = x->x_gpointer, i = x->x_nptr; i--; gp++)
         gpointer_unset(gp);
-    freebytes(x->x_vec, x->x_n * sizeof(*x->x_vec));
-    freebytes(x->x_outvec, x->x_n * sizeof(*x->x_outvec));
-    freebytes(x->x_gpointer, x->x_nptr * sizeof(*x->x_gpointer));
+    sys_freeMemory(x->x_vec, x->x_n * sizeof(*x->x_vec));
+    sys_freeMemory(x->x_outvec, x->x_n * sizeof(*x->x_outvec));
+    sys_freeMemory(x->x_gpointer, x->x_nptr * sizeof(*x->x_gpointer));
 }
 
 static void pack_setup(void)
@@ -851,7 +851,7 @@ static void *unpack_new(t_symbol *s, int argc, t_atom *argv)
         SET_FLOAT(&defarg[1], 0);
     }
     x->x_n = argc;
-    x->x_vec = (t_unpackout *)getbytes(argc * sizeof(*x->x_vec));
+    x->x_vec = (t_unpackout *)sys_getMemory(argc * sizeof(*x->x_vec));
     for (i = 0, ap = argv, u = x->x_vec; i < argc; u++, ap++, i++)
     {
         t_atomtype type = ap->a_type;
@@ -906,18 +906,18 @@ static void unpack_list(t_unpack *x, t_symbol *s, int argc, t_atom *argv)
 
 static void unpack_anything(t_unpack *x, t_symbol *s, int ac, t_atom *av)
 {
-    t_atom *av2 = (t_atom *)getbytes((ac + 1) * sizeof(t_atom));
+    t_atom *av2 = (t_atom *)sys_getMemory((ac + 1) * sizeof(t_atom));
     int i;
     for (i = 0; i < ac; i++)
         av2[i + 1] = av[i];
     SET_SYMBOL(av2, s);
     unpack_list(x, 0, ac+1, av2);
-    freebytes(av2, (ac + 1) * sizeof(t_atom));
+    sys_freeMemory(av2, (ac + 1) * sizeof(t_atom));
 }
 
 static void unpack_free(t_unpack *x)
 {
-    freebytes(x->x_vec, x->x_n * sizeof(*x->x_vec));
+    sys_freeMemory(x->x_vec, x->x_n * sizeof(*x->x_vec));
 }
 
 static void unpack_setup(void)
@@ -965,7 +965,7 @@ static void *trigger_new(t_symbol *s, int argc, t_atom *argv)
         SET_SYMBOL(&defarg[1], &s_bang);
     }
     x->x_n = argc;
-    x->x_vec = (t_triggerout *)getbytes(argc * sizeof(*x->x_vec));
+    x->x_vec = (t_triggerout *)sys_getMemory(argc * sizeof(*x->x_vec));
     for (i = 0, ap = argv, u = x->x_vec; i < argc; u++, ap++, i++)
     {
         t_atomtype thistype = ap->a_type;
@@ -1062,7 +1062,7 @@ static void trigger_symbol(t_trigger *x, t_symbol *s)
 
 static void trigger_free(t_trigger *x)
 {
-    freebytes(x->x_vec, x->x_n * sizeof(*x->x_vec));
+    sys_freeMemory(x->x_vec, x->x_n * sizeof(*x->x_vec));
 }
 
 static void trigger_setup(void)

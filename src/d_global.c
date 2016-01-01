@@ -28,7 +28,7 @@ static void *sigsend_new(t_symbol *s)
     pd_bind(&x->x_obj.te_g.g_pd, s);
     x->x_sym = s;
     x->x_n = DEFSENDVS;
-    x->x_vec = (t_sample *)getbytes(DEFSENDVS * sizeof(t_sample));
+    x->x_vec = (t_sample *)sys_getMemory(DEFSENDVS * sizeof(t_sample));
     memset((char *)(x->x_vec), 0, DEFSENDVS * sizeof(t_sample));
     x->x_f = 0;
     return (x);
@@ -58,7 +58,7 @@ static void sigsend_dsp(t_sigsend *x, t_signal **sp)
 static void sigsend_free(t_sigsend *x)
 {
     pd_unbind(&x->x_obj.te_g.g_pd, x->x_sym);
-    freebytes(x->x_vec, x->x_n * sizeof(t_sample));
+    sys_freeMemory(x->x_vec, x->x_n * sizeof(t_sample));
 }
 
 static void sigsend_setup(void)
@@ -205,7 +205,7 @@ static void *sigcatch_new(t_symbol *s)
     pd_bind(&x->x_obj.te_g.g_pd, s);
     x->x_sym = s;
     x->x_n = DEFSENDVS;
-    x->x_vec = (t_sample *)getbytes(DEFSENDVS * sizeof(t_sample));
+    x->x_vec = (t_sample *)sys_getMemory(DEFSENDVS * sizeof(t_sample));
     memset((char *)(x->x_vec), 0, DEFSENDVS * sizeof(t_sample));
     outlet_new(&x->x_obj, &s_signal);
     return (x);
@@ -252,7 +252,7 @@ static void sigcatch_dsp(t_sigcatch *x, t_signal **sp)
 static void sigcatch_free(t_sigcatch *x)
 {
     pd_unbind(&x->x_obj.te_g.g_pd, x->x_sym);
-    freebytes(x->x_vec, x->x_n * sizeof(t_sample));
+    sys_freeMemory(x->x_vec, x->x_n * sizeof(t_sample));
 }
 
 static void sigcatch_setup(void)

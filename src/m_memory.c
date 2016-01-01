@@ -1,89 +1,62 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-#include <stdlib.h>
-#include <string.h>
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #include "m_pd.h"
-#include "m_private.h"
+#include "m_macros.h"
 
-/* #define LOUD */
-#ifdef LOUD
-#include <stdio.h>
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-/* #define DEBUGMEM */
-#ifdef DEBUGMEM
-static int totalmem = 0;
-#endif
-
-void *getbytes(size_t nbytes)
+void *sys_getMemory (size_t n)
 {
-    void *ret;
-    if (nbytes < 1) nbytes = 1;
-    ret = (void *)calloc(nbytes, 1);
-#ifdef LOUD
-    fprintf(stderr, "new  %lx %d\n", (int)ret, nbytes);
-#endif /* LOUD */
-#ifdef DEBUGMEM
-    totalmem += nbytes;
-#endif
-    if (!ret)
-        post("pd: getbytes() failed -- out of memory");
-    return (ret);
+    void *r = calloc (n < 1 ? 1 : n, 1);
+
+    PD_ASSERT (r != NULL);
+    PD_ABORT  (r == NULL);
+    
+    return r;
 }
 
-void *getzbytes(size_t nbytes)  /* obsolete name */
+void *sys_getMemoryCopy (void *src, size_t n)
 {
-    return (getbytes(nbytes));
+    void *r = sys_getMemory (n);
+    
+    if (n > 0) { memcpy (r, src, n); }
+    
+    return r;
 }
 
-void *copybytes(void *src, size_t nbytes)
+void *sys_getMemoryResize (void *ptr, size_t oldSize, size_t newSize)
 {
-    void *ret;
-    ret = getbytes(nbytes);
-    if (nbytes)
-        memcpy(ret, src, nbytes);
-    return (ret);
+    void *r = NULL;
+    
+    if (oldSize < 1) { oldSize = 1; }
+    if (newSize < 1) { newSize = 1; }
+    
+    r = realloc (ptr, newSize);
+    
+    PD_ASSERT (r != NULL);
+    PD_ABORT  (r == NULL);
+    
+    if (newSize > oldSize) { memset (((char *)r) + oldSize, 0, newSize - oldSize); }
+    
+    return r;
 }
 
-void *resizebytes(void *old, size_t oldsize, size_t newsize)
+void sys_freeMemory (void *ptr, size_t n)
 {
-    void *ret;
-    if (newsize < 1) newsize = 1;
-    if (oldsize < 1) oldsize = 1;
-    ret = (void *)realloc((char *)old, newsize);
-    if (newsize > oldsize && ret)
-        memset(((char *)ret) + oldsize, 0, newsize - oldsize);
-#ifdef LOUD
-    fprintf(stderr, "resize %lx %d --> %lx %d\n", (int)old, oldsize, (int)ret, newsize);
-#endif /* LOUD */
-#ifdef DEBUGMEM
-    totalmem += (newsize - oldsize);
-#endif
-    if (!ret)
-        post("pd: resizebytes() failed -- out of memory");
-    return (ret);
+    (void)n;
+    
+    free (ptr);
 }
 
-void freebytes(void *fatso, size_t nbytes)
-{
-    if (nbytes == 0)
-        nbytes = 1;
-#ifdef LOUD
-    fprintf(stderr, "free %lx %d\n", (int)fatso, nbytes);
-#endif /* LOUD */
-#ifdef DEBUGMEM
-    totalmem -= nbytes;
-#endif
-    free(fatso);
-}
-
-#ifdef DEBUGMEM
-#include <stdio.h>
-
-void glob_foo(void *dummy, t_symbol *s, int argc, t_atom *argv)
-{
-    fprintf(stderr, "total mem %d\n", totalmem);
-}
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

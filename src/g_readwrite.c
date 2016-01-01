@@ -196,7 +196,7 @@ void glist_readfrombinbuf(t_glist *x, t_binbuf *b, char *filename, int selectem)
     {
         t_template *newtemplate, *existtemplate;
         t_symbol *templatesym;
-        t_atom *templateargs = getbytes(0);
+        t_atom *templateargs = sys_getMemory(0);
         int ntemplateargs = 0, newnargs;
         nline = canvas_scanbinbuf(natoms, vec, &message, &nextmsg);
         if (nline < 2)
@@ -219,7 +219,7 @@ void glist_readfrombinbuf(t_glist *x, t_binbuf *b, char *filename, int selectem)
             if (nline != 2 && nline != 3)
                 break;
             newnargs = ntemplateargs + nline;
-            templateargs = (t_atom *)resizebytes(templateargs,
+            templateargs = (t_atom *)sys_getMemoryResize(templateargs,
                 sizeof(*templateargs) * ntemplateargs,
                 sizeof(*templateargs) * newnargs);
             templateargs[ntemplateargs] = vec[message];
@@ -232,11 +232,11 @@ void glist_readfrombinbuf(t_glist *x, t_binbuf *b, char *filename, int selectem)
         {
             post_error ("%s: template not found in current patch",
                 templatesym->s_name);
-            freebytes(templateargs, sizeof (*templateargs) * ntemplateargs);
+            sys_freeMemory(templateargs, sizeof (*templateargs) * ntemplateargs);
             return;
         }
         newtemplate = template_new(templatesym, ntemplateargs, templateargs);
-        freebytes(templateargs, sizeof (*templateargs) * ntemplateargs);
+        sys_freeMemory(templateargs, sizeof (*templateargs) * ntemplateargs);
         if (!template_match(existtemplate, newtemplate))
         {
             post_error ("%s: template doesn't match current one",
@@ -380,7 +380,7 @@ void canvas_doaddtemplate(t_symbol *templatesym,
     for (i = 0; i < n; i++)
         if (templatevec[i] == templatesym)
             return;
-    templatevec = (t_symbol **)resizebytes(templatevec,
+    templatevec = (t_symbol **)sys_getMemoryResize(templatevec,
         n * sizeof(*templatevec), (n+1) * sizeof(*templatevec));
     templatevec[n] = templatesym;
     *p_templatevec = templatevec;
@@ -396,7 +396,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_binbuf *b,
 {
     t_dataslot *ds;
     t_template *template = template_findbyname(templatesym);
-    t_atom *a = (t_atom *)getbytes(0);
+    t_atom *a = (t_atom *)sys_getMemory(0);
     int i, n = template->t_n, natom = 0;
     if (!amarrayelement)
     {
@@ -411,7 +411,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_binbuf *b,
         if (template->t_vec[i].ds_type == DATA_FLOAT ||
             template->t_vec[i].ds_type == DATA_SYMBOL)
         {
-            a = (t_atom *)resizebytes(a,
+            a = (t_atom *)sys_getMemoryResize(a,
                 natom * sizeof(*a), (natom + 1) * sizeof (*a));
             if (template->t_vec[i].ds_type == DATA_FLOAT)
                 SET_FLOAT(a + natom, w[i].w_float);
@@ -424,7 +424,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_binbuf *b,
         SET_SYMBOL(a + natom,  &s_bang), natom++;
     binbuf_add(b, natom, a);
     binbuf_addsemi(b);
-    freebytes(a, natom * sizeof(*a));
+    sys_freeMemory(a, natom * sizeof(*a));
     for (i = 0; i < n; i++)
     {
         if (template->t_vec[i].ds_type == DATA_ARRAY)
@@ -502,7 +502,7 @@ static void canvas_addtemplatesforlist(t_gobj *y,
 t_binbuf *glist_writetobinbuf(t_glist *x, int wholething)
 {
     int i;
-    t_symbol **templatevec = getbytes(0);
+    t_symbol **templatevec = sys_getMemory(0);
     int ntemplates = 0;
     t_gobj *y;
     t_binbuf *b = binbuf_new();
@@ -561,7 +561,7 @@ static void glist_write(t_glist *x, t_symbol *filename, t_symbol *format)
     int cr = 0, i;
     t_binbuf *b;
     char buf[PD_STRING];
-    t_symbol **templatevec = getbytes(0);
+    t_symbol **templatevec = sys_getMemory(0);
     int ntemplates = 0;
     t_gobj *y;
     t_canvas *canvas = glist_getcanvas(x);
@@ -675,7 +675,7 @@ static void canvas_collecttemplatesfor(t_canvas *x, int *ntemplatesp,
     /* save the templates needed by a canvas to a binbuf. */
 static void canvas_savetemplatesto(t_canvas *x, t_binbuf *b, int wholething)
 {
-    t_symbol **templatevec = getbytes(0);
+    t_symbol **templatevec = sys_getMemory(0);
     int i, ntemplates = 0;
     t_gobj *y;
     canvas_collecttemplatesfor(x, &ntemplates, &templatevec, wholething);

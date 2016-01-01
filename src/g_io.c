@@ -86,7 +86,7 @@ static void vinlet_free(t_vinlet *x)
 {
     canvas_rminlet(x->x_canvas, x->x_inlet);
     if (x->x_buf)
-        freebytes(x->x_buf, x->x_bufsize * sizeof(*x->x_buf));
+        sys_freeMemory(x->x_buf, x->x_bufsize * sizeof(*x->x_buf));
     resample_free(&x->x_updown);
 }
 
@@ -208,8 +208,8 @@ void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
         if (bufsize != (oldbufsize = x->x_bufsize))
         {
             t_float *buf = x->x_buf;
-            freebytes(buf, oldbufsize * sizeof(*buf));
-            buf = (t_float *)getbytes(bufsize * sizeof(*buf));
+            sys_freeMemory(buf, oldbufsize * sizeof(*buf));
+            buf = (t_float *)sys_getMemory(bufsize * sizeof(*buf));
             memset((char *)buf, 0, bufsize * sizeof(*buf));
             x->x_bufsize = bufsize;
             x->x_endbuf = buf + bufsize;
@@ -255,7 +255,7 @@ static void *vinlet_newsig(t_symbol *s)
     t_vinlet *x = (t_vinlet *)pd_new(vinlet_class);
     x->x_canvas = canvas_getcurrent();
     x->x_inlet = canvas_addinlet(x->x_canvas, &x->x_obj.te_g.g_pd, &s_signal);
-    x->x_endbuf = x->x_buf = (t_float *)getbytes(0);
+    x->x_endbuf = x->x_buf = (t_float *)sys_getMemory(0);
     x->x_bufsize = 0;
     x->x_directsignal = 0;
     outlet_new(&x->x_obj, &s_signal);
@@ -365,7 +365,7 @@ static void voutlet_free(t_voutlet *x)
 {
     canvas_rmoutlet(x->x_canvas, x->x_parentoutlet);
     if (x->x_buf)
-        freebytes(x->x_buf, x->x_bufsize * sizeof(*x->x_buf));
+        sys_freeMemory(x->x_buf, x->x_bufsize * sizeof(*x->x_buf));
     resample_free(&x->x_updown);
 }
 
@@ -523,8 +523,8 @@ void voutlet_dspepilog(struct _voutlet *x, t_signal **parentsigs,
         if (bufsize != (oldbufsize = x->x_bufsize))
         {
             t_sample *buf = x->x_buf;
-            freebytes(buf, oldbufsize * sizeof(*buf));
-            buf = (t_sample *)getbytes(bufsize * sizeof(*buf));
+            sys_freeMemory(buf, oldbufsize * sizeof(*buf));
+            buf = (t_sample *)sys_getMemory(bufsize * sizeof(*buf));
             memset((char *)buf, 0, bufsize * sizeof(*buf));
             x->x_bufsize = bufsize;
             x->x_endbuf = buf + bufsize;
@@ -576,7 +576,7 @@ static void *voutlet_newsig(t_symbol *s)
     x->x_parentoutlet = canvas_addoutlet(x->x_canvas,
         &x->x_obj.te_g.g_pd, &s_signal);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-    x->x_endbuf = x->x_buf = (t_sample *)getbytes(0);
+    x->x_endbuf = x->x_buf = (t_sample *)sys_getMemory(0);
     x->x_bufsize = 0;
 
     resample_init(&x->x_updown);

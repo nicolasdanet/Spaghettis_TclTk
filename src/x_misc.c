@@ -537,7 +537,7 @@ static void oscformat_set(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
         atom_string(&argv[i], where, PD_STRING-1);
         if ((newsize = strlen(buf) + strlen(x->x_pathbuf) + 1) > x->x_pathsize)
         {
-            x->x_pathbuf = resizebytes(x->x_pathbuf, x->x_pathsize, newsize);
+            x->x_pathbuf = sys_getMemoryResize(x->x_pathbuf, x->x_pathsize, newsize);
             x->x_pathsize = newsize;
         }
         strcat(x->x_pathbuf, buf);
@@ -681,14 +681,14 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
 
 static void oscformat_free(t_oscformat *x)
 {
-    freebytes(x->x_pathbuf, x->x_pathsize);
+    sys_freeMemory(x->x_pathbuf, x->x_pathsize);
 }
 
 static void *oscformat_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_oscformat *x = (t_oscformat *)pd_new(oscformat_class);
     outlet_new(&x->x_obj, gensym("list"));
-    x->x_pathbuf = getbytes(1);
+    x->x_pathbuf = sys_getMemory(1);
     x->x_pathsize = 1;
     *x->x_pathbuf = 0;
     x->x_format = &s_;

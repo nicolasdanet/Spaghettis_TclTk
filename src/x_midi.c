@@ -935,7 +935,7 @@ static void makenote_tick(t_hang *hang)
         }
     }
     clock_free(hang->h_clock);
-    freebytes(hang, sizeof(*hang));
+    sys_freeMemory(hang, sizeof(*hang));
 }
 
 static void makenote_float(t_makenote *x, t_float f)
@@ -944,7 +944,7 @@ static void makenote_float(t_makenote *x, t_float f)
     if (!x->x_velo) return;
     outlet_float(x->x_velout, x->x_velo);
     outlet_float(x->x_pitchout, f);
-    hang = (t_hang *)getbytes(sizeof *hang);
+    hang = (t_hang *)sys_getMemory(sizeof *hang);
     hang->h_next = x->x_hang;
     x->x_hang = hang;
     hang->h_pitch = f;
@@ -962,7 +962,7 @@ static void makenote_stop(t_makenote *x)
         outlet_float(x->x_pitchout, hang->h_pitch);
         x->x_hang = hang->h_next;
         clock_free(hang->h_clock);
-        freebytes(hang, sizeof(*hang));
+        sys_freeMemory(hang, sizeof(*hang));
     }
 }
 
@@ -973,7 +973,7 @@ static void makenote_clear(t_makenote *x)
     {
         x->x_hang = hang->h_next;
         clock_free(hang->h_clock);
-        freebytes(hang, sizeof(*hang));
+        sys_freeMemory(hang, sizeof(*hang));
     }
 }
 
@@ -1055,7 +1055,7 @@ static void *poly_new(t_float fnvoice, t_float fsteal)
     t_voice *v;
     if (n < 1) n = 1;
     x->x_n = n;
-    x->x_vec = (t_voice *)getbytes(n * sizeof(*x->x_vec));
+    x->x_vec = (t_voice *)sys_getMemory(n * sizeof(*x->x_vec));
     for (v = x->x_vec, i = n; i--; v++)
         v->v_pitch = v->v_used = v->v_serial = 0;
     x->x_vel = 0;
@@ -1146,7 +1146,7 @@ static void poly_clear(t_poly *x)
 
 static void poly_free(t_poly *x)
 {
-    freebytes(x->x_vec, x->x_n * sizeof (*x->x_vec));
+    sys_freeMemory(x->x_vec, x->x_n * sizeof (*x->x_vec));
 }
 
 static void poly_setup(void)
@@ -1191,7 +1191,7 @@ static void bag_float(t_bag *x, t_float f)
     t_bagelem *bagelem, *e2, *e3;
     if (x->x_velo != 0)
     {
-        bagelem = (t_bagelem *)getbytes(sizeof *bagelem);
+        bagelem = (t_bagelem *)sys_getMemory(sizeof *bagelem);
         bagelem->e_next = 0;
         bagelem->e_value = f;
         if (!x->x_first) x->x_first = bagelem;
@@ -1209,14 +1209,14 @@ static void bag_float(t_bag *x, t_float f)
         {
             bagelem = x->x_first;
             x->x_first = x->x_first->e_next;
-            freebytes(bagelem, sizeof(*bagelem));
+            sys_freeMemory(bagelem, sizeof(*bagelem));
             return;
         }
         for (e2 = x->x_first; e3 = e2->e_next; e2 = e3)
             if (e3->e_value == f)
         {
             e2->e_next = e3->e_next;
-            freebytes(e3, sizeof(*e3));
+            sys_freeMemory(e3, sizeof(*e3));
             return;
         }
     }
@@ -1229,7 +1229,7 @@ static void bag_flush(t_bag *x)
     {
         outlet_float(x->x_obj.te_outlet, bagelem->e_value);
         x->x_first = bagelem->e_next;
-        freebytes(bagelem, sizeof(*bagelem));
+        sys_freeMemory(bagelem, sizeof(*bagelem));
     }
 }
 
@@ -1239,7 +1239,7 @@ static void bag_clear(t_bag *x)
     while (bagelem = x->x_first)
     {
         x->x_first = bagelem->e_next;
-        freebytes(bagelem, sizeof(*bagelem));
+        sys_freeMemory(bagelem, sizeof(*bagelem));
     }
 }
 

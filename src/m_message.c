@@ -109,8 +109,8 @@ t_symbol *generateSymbol (const char *s, t_symbol *alreadyAllocatedSymbol)
     
     if (alreadyAllocatedSymbol) { sym2 = alreadyAllocatedSymbol; }
     else {
-        sym2 = (t_symbol *)getbytes (sizeof (t_symbol));
-        sym2->s_name  = (char *)getbytes (length + 1);
+        sym2 = (t_symbol *)sys_getMemory (sizeof (t_symbol));
+        sym2->s_name  = (char *)sys_getMemory (length + 1);
         sym2->s_next  = NULL;
         sym2->s_thing = NULL;
         strcpy (sym2->s_name, s);
