@@ -131,7 +131,7 @@ struct _pdinstance {
 void    outlet_setstacklim          (void);
 
 void    text_save                   (t_gobj *z, t_binbuf *b);
-void    object_list                    (t_object *x, t_symbol *s, int argc, t_atom *argv);
+void    object_list                 (t_object *x, t_symbol *s, int argc, t_atom *argv);
 
 void    pd_push                     (t_pd *x);
 void    pd_pop                      (t_pd *x);
@@ -202,7 +202,7 @@ void open_via_helppath  (const char *name, const char *dir);
 #pragma mark -
 
 void message_initialize (void);
-void obj_init           (void);
+void object_initialize  (void);
 void conf_init          (void);
 void glob_init          (void);
 void garray_init        (void);

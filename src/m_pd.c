@@ -19,12 +19,12 @@
 /* To manage several objects bound to the same symbol. */
 
 typedef struct _bindelement {
-    t_pd                *e_what;            /* MUST be the first. */
+    t_pd                *e_what;                    /* MUST be the first. */
     struct _bindelement *e_next;
     } t_bindelement;
 
 typedef struct _bindlist {
-    t_pd            b_pd;
+    t_pd            b_pd;                           /* MUST be the first. */
     t_bindelement   *b_list;
     } t_bindlist;
 
@@ -35,7 +35,7 @@ typedef struct _bindlist {
 /* To maintain bindings for the #X symbol during nestable loads. */
 
 typedef struct _gstack {
-    t_pd            *g_what;
+    t_pd            *g_what;                        /* MUST be the first. */
     t_symbol        *g_loadingAbstraction;
     struct _gstack  *g_next;
     } t_gstack;
@@ -162,7 +162,7 @@ void pd_initialize (void)
     pd_this = pdinstance_new();
     
     message_initialize();
-    obj_init();
+    object_initialize();
     conf_init();
     glob_init();
     garray_init();

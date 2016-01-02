@@ -18,7 +18,7 @@
 
 struct _inlet
 {
-    t_pd            i_pd;
+    t_pd            i_pd;                   /* MUST be the first. */
     struct _inlet   *i_next;
     t_object        *i_owner;
     t_pd            *i_destination;
@@ -133,19 +133,19 @@ static void object_inletAnything (t_inlet *x, t_symbol *s, int argc, t_atom *arg
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void object_pointerInlet (t_inlet *x, t_gpointer *gp)
+static void object_pointerInletPointer (t_inlet *x, t_gpointer *gp)
 {
     gpointer_unset (x->i_un.i_pointer);
     *(x->i_un.i_pointer) = *gp;
     if (gp->gp_stub) { gp->gp_stub->gs_count++; }
 }
 
-static void object_floatInlet (t_inlet *x, t_float f)
+static void object_floatInletFloat (t_inlet *x, t_float f)
 {
     *(x->i_un.i_float) = f;
 }
 
-static void object_symbolInlet (t_inlet *x, t_symbol *s)
+static void object_symbolInletSymbol (t_inlet *x, t_symbol *s)
 {
     *(x->i_un.i_symbol) = s;
 }
@@ -202,7 +202,7 @@ void inlet_free (t_inlet *x)
 
 t_inlet *signalinlet_new (t_object *owner, t_float f)
 {
-    t_inlet *x = inlet_new (owner, &owner->te_g.g_pd, &s_signal, &s_signal);
+    t_inlet *x = inlet_new (owner, (t_pd *)owner, &s_signal, &s_signal);
     
     x->i_un.i_signal = f;
     
@@ -275,53 +275,55 @@ t_inlet *symbolinlet_new(t_object *owner, t_symbol **sp)
 
 void object_list (t_object *x, t_symbol *s, int argc, t_atom *argv)
 {
+    if (!argc) { pd_empty ((t_pd *)x); }
+    else {
+    //
     int count;
     t_atom *ap = NULL;
     t_inlet *ip = x->te_inlet;
     
-    if (!argc)  {
-        pd_empty ((t_pd *)x);
-        return;
+    for (count = argc - 1, ap = argv + 1; ip && count--; ap++, ip = ip->i_next) {
+        if (IS_POINTER (ap))    { pd_pointer ((t_pd *)ip, GET_POINTER (ap)); }
+        else if (IS_FLOAT (ap)) { pd_float ((t_pd *)ip, GET_FLOAT (ap)); }
+        else {
+            pd_symbol ((t_pd *)ip, GET_SYMBOL (ap));
+        }
     }
     
-    for (count = argc-1, ap = argv+1; ip && count--; ap++, ip = ip->i_next)
-    {
-        if (ap->a_type == A_POINTER) pd_pointer(&ip->i_pd, ap->a_w.w_gpointer);
-        else if (ap->a_type == A_FLOAT) pd_float(&ip->i_pd, ap->a_w.w_float);
-        else pd_symbol(&ip->i_pd, ap->a_w.w_symbol);
+    if (IS_POINTER (argv))      { pd_pointer ((t_pd *)x, GET_POINTER (argv)); }
+    else if (IS_FLOAT (argv))   { pd_float ((t_pd *)x, GET_FLOAT (argv)); }
+    else {
+        pd_symbol ((t_pd *)x, GET_SYMBOL (argv));
     }
-    if (argv->a_type == A_POINTER) pd_pointer((t_pd *)x, argv->a_w.w_gpointer);
-    else if (argv->a_type == A_FLOAT) pd_float((t_pd *)x, argv->a_w.w_float);
-    else pd_symbol((t_pd *)x, argv->a_w.w_symbol);
+    //
+    }
 } 
 
-void obj_init(void)
+void object_initialize (void)
 {
-    inlet_class = class_new(gensym("inlet"), 0, 0,
-        sizeof(t_inlet), CLASS_PURE, 0);
-    class_addBang(inlet_class, object_inletBang);
-    class_addPointer(inlet_class, object_inletPointer);
-    class_addFloat(inlet_class, object_inletFloat);
-    class_addSymbol(inlet_class, object_inletSymbol);
-    class_addList(inlet_class, object_inletList);
-    class_addAnything(inlet_class, object_inletAnything);
-
-    pointerinlet_class = class_new(gensym("inlet"), 0, 0,
-        sizeof(t_inlet), CLASS_PURE, 0);
-    class_addPointer(pointerinlet_class, object_pointerInlet);
-    class_addAnything(pointerinlet_class, object_inletWrong);
+    inlet_class         = class_new (gensym ("inlet"), NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
+    pointerinlet_class  = class_new (gensym ("inlet"), NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
+    floatinlet_class    = class_new (gensym ("inlet"), NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
+    symbolinlet_class   = class_new (gensym ("inlet"), NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
     
-    floatinlet_class = class_new(gensym("inlet"), 0, 0,
-        sizeof(t_inlet), CLASS_PURE, 0);
-    class_addFloat(floatinlet_class, (t_method)object_floatInlet);
-    class_addAnything(floatinlet_class, object_inletWrong);
-
-    symbolinlet_class = class_new(gensym("inlet"), 0, 0,
-        sizeof(t_inlet), CLASS_PURE, 0);
-    class_addSymbol(symbolinlet_class, object_symbolInlet);
-    class_addAnything(symbolinlet_class, object_inletWrong);
-
+    class_addBang (inlet_class, object_inletBang);
+    class_addPointer (inlet_class, object_inletPointer);
+    class_addFloat (inlet_class, object_inletFloat);
+    class_addSymbol (inlet_class, object_inletSymbol);
+    class_addList (inlet_class, object_inletList);
+    class_addAnything (inlet_class, object_inletAnything);
+    
+    class_addPointer (pointerinlet_class, object_pointerInletPointer);
+    class_addAnything (pointerinlet_class, object_inletWrong);
+    class_addFloat (floatinlet_class, object_floatInletFloat);
+    class_addAnything (floatinlet_class, object_inletWrong);
+    class_addSymbol (symbolinlet_class, object_symbolInletSymbol);
+    class_addAnything (symbolinlet_class, object_inletWrong);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* --------------------------- outlets ------------------------------ */
 
