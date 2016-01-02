@@ -164,7 +164,7 @@ jack_srate (jack_nframes_t srate, void *arg)
 }
 
 
-void glob_audio_setapi(void *dummy, t_floatarg f);
+void glob_audio_setapi(void *dummy, t_float f);
 
 static void
 jack_shutdown (void *arg)

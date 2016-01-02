@@ -19,7 +19,7 @@ typedef struct _binop
 
 /* ------------------ binop1:  +, -, *, / ----------------------------- */
 
-static void *binop1_new(t_class *floatclass, t_floatarg f)
+static void *binop1_new(t_class *floatclass, t_float f)
 {
     t_binop *x = (t_binop *)pd_new(floatclass);
     outlet_new(&x->x_obj, &s_float);
@@ -33,7 +33,7 @@ static void *binop1_new(t_class *floatclass, t_floatarg f)
 
 static t_class *binop1_plus_class;
 
-static void *binop1_plus_new(t_floatarg f)
+static void *binop1_plus_new(t_float f)
 {
     return (binop1_new(binop1_plus_class, f));
 }
@@ -52,7 +52,7 @@ static void binop1_plus_float(t_binop *x, t_float f)
 
 static t_class *binop1_minus_class;
 
-static void *binop1_minus_new(t_floatarg f)
+static void *binop1_minus_new(t_float f)
 {
     return (binop1_new(binop1_minus_class, f));
 }
@@ -71,7 +71,7 @@ static void binop1_minus_float(t_binop *x, t_float f)
 
 static t_class *binop1_times_class;
 
-static void *binop1_times_new(t_floatarg f)
+static void *binop1_times_new(t_float f)
 {
     return (binop1_new(binop1_times_class, f));
 }
@@ -90,7 +90,7 @@ static void binop1_times_float(t_binop *x, t_float f)
 
 static t_class *binop1_div_class;
 
-static void *binop1_div_new(t_floatarg f)
+static void *binop1_div_new(t_float f)
 {
     return (binop1_new(binop1_div_class, f));
 }
@@ -112,7 +112,7 @@ static void binop1_div_float(t_binop *x, t_float f)
 
 static t_class *binop1_pow_class;
 
-static void *binop1_pow_new(t_floatarg f)
+static void *binop1_pow_new(t_float f)
 {
     return (binop1_new(binop1_pow_class, f));
 }
@@ -134,7 +134,7 @@ static void binop1_pow_float(t_binop *x, t_float f)
 
 static t_class *binop1_max_class;
 
-static void *binop1_max_new(t_floatarg f)
+static void *binop1_max_new(t_float f)
 {
     return (binop1_new(binop1_max_class, f));
 }
@@ -156,7 +156,7 @@ static void binop1_max_float(t_binop *x, t_float f)
 
 static t_class *binop1_min_class;
 
-static void *binop1_min_new(t_floatarg f)
+static void *binop1_min_new(t_float f)
 {
     return (binop1_new(binop1_min_class, f));
 }
@@ -176,7 +176,7 @@ static void binop1_min_float(t_binop *x, t_float f)
 
 /* ------------------ binop2: ==, !=, >, <, >=, <=. -------------------- */
 
-static void *binop2_new(t_class *floatclass, t_floatarg f)
+static void *binop2_new(t_class *floatclass, t_float f)
 {
     t_binop *x = (t_binop *)pd_new(floatclass);
     outlet_new(&x->x_obj, &s_float);
@@ -190,7 +190,7 @@ static void *binop2_new(t_class *floatclass, t_floatarg f)
 
 static t_class *binop2_ee_class;
 
-static void *binop2_ee_new(t_floatarg f)
+static void *binop2_ee_new(t_float f)
 {
     return (binop2_new(binop2_ee_class, f));
 }
@@ -209,7 +209,7 @@ static void binop2_ee_float(t_binop *x, t_float f)
 
 static t_class *binop2_ne_class;
 
-static void *binop2_ne_new(t_floatarg f)
+static void *binop2_ne_new(t_float f)
 {
     return (binop2_new(binop2_ne_class, f));
 }
@@ -228,7 +228,7 @@ static void binop2_ne_float(t_binop *x, t_float f)
 
 static t_class *binop2_gt_class;
 
-static void *binop2_gt_new(t_floatarg f)
+static void *binop2_gt_new(t_float f)
 {
     return (binop2_new(binop2_gt_class, f));
 }
@@ -247,7 +247,7 @@ static void binop2_gt_float(t_binop *x, t_float f)
 
 static t_class *binop2_lt_class;
 
-static void *binop2_lt_new(t_floatarg f)
+static void *binop2_lt_new(t_float f)
 {
     return (binop2_new(binop2_lt_class, f));
 }
@@ -266,7 +266,7 @@ static void binop2_lt_float(t_binop *x, t_float f)
 
 static t_class *binop2_ge_class;
 
-static void *binop2_ge_new(t_floatarg f)
+static void *binop2_ge_new(t_float f)
 {
     return (binop2_new(binop2_ge_class, f));
 }
@@ -285,7 +285,7 @@ static void binop2_ge_float(t_binop *x, t_float f)
 
 static t_class *binop2_le_class;
 
-static void *binop2_le_new(t_floatarg f)
+static void *binop2_le_new(t_float f)
 {
     return (binop2_new(binop2_le_class, f));
 }
@@ -302,7 +302,7 @@ static void binop2_le_float(t_binop *x, t_float f)
 
 /* ------------- binop3: &, |, &&, ||, <<, >>, %, mod, div ------------------ */
 
-static void *binop3_new(t_class *fixclass, t_floatarg f)
+static void *binop3_new(t_class *fixclass, t_float f)
 {
     t_binop *x = (t_binop *)pd_new(fixclass);
     outlet_new(&x->x_obj, &s_float);
@@ -316,7 +316,7 @@ static void *binop3_new(t_class *fixclass, t_floatarg f)
 
 static t_class *binop3_ba_class;
 
-static void *binop3_ba_new(t_floatarg f)
+static void *binop3_ba_new(t_float f)
 {
     return (binop3_new(binop3_ba_class, f));
 }
@@ -335,7 +335,7 @@ static void binop2_ba_float(t_binop *x, t_float f)
 
 static t_class *binop3_la_class;
 
-static void *binop3_la_new(t_floatarg f)
+static void *binop3_la_new(t_float f)
 {
     return (binop3_new(binop3_la_class, f));
 }
@@ -354,7 +354,7 @@ static void binop2_la_float(t_binop *x, t_float f)
 
 static t_class *binop3_bo_class;
 
-static void *binop3_bo_new(t_floatarg f)
+static void *binop3_bo_new(t_float f)
 {
     return (binop3_new(binop3_bo_class, f));
 }
@@ -373,7 +373,7 @@ static void binop2_bo_float(t_binop *x, t_float f)
 
 static t_class *binop3_lo_class;
 
-static void *binop3_lo_new(t_floatarg f)
+static void *binop3_lo_new(t_float f)
 {
     return (binop3_new(binop3_lo_class, f));
 }
@@ -392,7 +392,7 @@ static void binop2_lo_float(t_binop *x, t_float f)
 
 static t_class *binop3_ls_class;
 
-static void *binop3_ls_new(t_floatarg f)
+static void *binop3_ls_new(t_float f)
 {
     return (binop3_new(binop3_ls_class, f));
 }
@@ -411,7 +411,7 @@ static void binop2_ls_float(t_binop *x, t_float f)
 
 static t_class *binop3_rs_class;
 
-static void *binop3_rs_new(t_floatarg f)
+static void *binop3_rs_new(t_float f)
 {
     return (binop3_new(binop3_rs_class, f));
 }
@@ -430,7 +430,7 @@ static void binop2_rs_float(t_binop *x, t_float f)
 
 static t_class *binop3_pc_class;
 
-static void *binop3_pc_new(t_floatarg f)
+static void *binop3_pc_new(t_float f)
 {
     return (binop3_new(binop3_pc_class, f));
 }
@@ -456,7 +456,7 @@ static void binop2_pc_float(t_binop *x, t_float f)
 
 static t_class *binop3_mod_class;
 
-static void *binop3_mod_new(t_floatarg f)
+static void *binop3_mod_new(t_float f)
 {
     return (binop3_new(binop3_mod_class, f));
 }
@@ -481,7 +481,7 @@ static void binop3_mod_float(t_binop *x, t_float f)
 
 static t_class *binop3_div_class;
 
-static void *binop3_div_new(t_floatarg f)
+static void *binop3_div_new(t_float f)
 {
     return (binop3_new(binop3_div_class, f));
 }
@@ -676,7 +676,7 @@ typedef struct _clip
     t_float x_f3;
 } t_clip;
 
-static void *clip_new(t_floatarg f1, t_floatarg f2)
+static void *clip_new(t_float f1, t_float f2)
 {
     t_clip *x = (t_clip *)pd_new(clip_class);
     floatinlet_new(&x->x_ob, &x->x_f2);

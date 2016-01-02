@@ -940,12 +940,12 @@ void canvas_destroy_editor(t_glist *x)
 }
 
 void canvas_reflecttitle(t_canvas *x);
-void canvas_map(t_canvas *x, t_floatarg f);
+void canvas_map(t_canvas *x, t_float f);
 
     /* we call this when we want the window to become visible, mapped, and
     in front of all windows; or with "f" zero, when we want to get rid of
     the window. */
-void canvas_vis(t_canvas *x, t_floatarg f)
+void canvas_vis(t_canvas *x, t_float f)
 {
     char buf[30];
     int flag = (f != 0);
@@ -1468,8 +1468,8 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
     }
 }
 
-void canvas_mouse(t_canvas *x, t_floatarg xpos, t_floatarg ypos,
-    t_floatarg which, t_floatarg mod)
+void canvas_mouse(t_canvas *x, t_float xpos, t_float ypos,
+    t_float which, t_float mod)
 {
     canvas_doclick(x, xpos, ypos, which, mod, 1);
 }
@@ -1612,7 +1612,7 @@ static void canvas_doregion(t_canvas *x, int xpos, int ypos, int doit)
 }
 
 void canvas_mouseup(t_canvas *x,
-    t_floatarg fxpos, t_floatarg fypos, t_floatarg fwhich)
+    t_float fxpos, t_float fypos, t_float fwhich)
 {
     int xpos = fxpos, ypos = fypos, which = fwhich;
     /* post("mouseup %d %d %d", xpos, ypos, which); */
@@ -1846,8 +1846,8 @@ static void delay_move(t_canvas *x)
     x->gl_editor->e_ywas = x->gl_editor->e_ynew;
 }
 
-void canvas_motion(t_canvas *x, t_floatarg xpos, t_floatarg ypos,
-    t_floatarg fmod)
+void canvas_motion(t_canvas *x, t_float xpos, t_float ypos,
+    t_float fmod)
 { 
     /* post("motion %d %d", xpos, ypos); */
     int mod = fmod;
@@ -1963,7 +1963,7 @@ static t_glist *glist_finddirty(t_glist *x)
 
     /* quit, after calling glist_finddirty() on all toplevels and verifying
     the user really wants to discard changes  */
-void glob_verifyquit(void *dummy, t_floatarg f)
+void glob_verifyquit(void *dummy, t_float f)
 {
     t_glist *g, *g2;
         /* find all root canvases */
@@ -1987,7 +1987,7 @@ void glob_verifyquit(void *dummy, t_floatarg f)
         2 - verified - mark this one clean, then continue as in 1
         3 - verified - mark this one clean, then verify-and-quit
     */
-void canvas_menuclose(t_canvas *x, t_floatarg fforce)
+void canvas_menuclose(t_canvas *x, t_float fforce)
 {
     int force = fforce;
     t_glist *g;
@@ -2118,7 +2118,7 @@ static int canvas_dofind(t_canvas *x, int *myindexp)
 }
 
 /*
-static void canvas_find(t_canvas *x, t_symbol *s, t_floatarg wholeword)
+static void canvas_find(t_canvas *x, t_symbol *s, t_float wholeword)
 {
     int myindex = 0, found;
     t_symbol *decodedsym = sys_decodedialog(s);
@@ -2502,8 +2502,8 @@ static void canvas_reselect(t_canvas *x)
 
 extern t_class *text_class;
 
-void canvas_connect(t_canvas *x, t_floatarg fwhoout, t_floatarg foutno,
-    t_floatarg fwhoin, t_floatarg finno)
+void canvas_connect(t_canvas *x, t_float fwhoout, t_float foutno,
+    t_float fwhoin, t_float finno)
 {
     int whoout = fwhoout, outno = foutno, whoin = fwhoin, inno = finno;
     t_gobj *src = 0, *sink = 0;
@@ -2673,7 +2673,7 @@ void glob_key(void *dummy, t_symbol *s, int ac, t_atom *av)
     canvas_key(0, s, ac, av);
 }
 
-void canvas_editmode(t_canvas *x, t_floatarg state)
+void canvas_editmode(t_canvas *x, t_float state)
 {
     if (x->gl_edit == (unsigned int) state)
         return;
@@ -2706,8 +2706,8 @@ void canvas_editmode(t_canvas *x, t_floatarg state)
 }
 
     /* called by canvas_font below */
-static void canvas_dofont(t_canvas *x, t_floatarg font, t_floatarg xresize,
-    t_floatarg yresize)
+static void canvas_dofont(t_canvas *x, t_float font, t_float xresize,
+    t_float yresize)
 {
     t_gobj *y;
     x->gl_font = font;
@@ -2732,8 +2732,8 @@ static void canvas_dofont(t_canvas *x, t_floatarg font, t_floatarg xresize,
 }
 
     /* canvas_menufont calls up a TK dialog which calls this back */
-static void canvas_font(t_canvas *x, t_floatarg font, t_floatarg resize,
-    t_floatarg whichresize)
+static void canvas_font(t_canvas *x, t_float font, t_float resize,
+    t_float whichresize)
 {
     t_float realresize, realresx = 1, realresy = 1;
     t_canvas *x2 = canvas_getroot(x);

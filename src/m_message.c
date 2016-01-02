@@ -23,18 +23,18 @@ typedef void (*t_messgimme)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MESSAGE_FLOATARGS   t_floatarg, t_floatarg, t_floatarg, t_floatarg, t_floatarg
+#define MESSAGE_FLOATS  t_float, t_float, t_float, t_float, t_float
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-typedef t_pd *(*t_fun0) (                                           MESSAGE_FLOATARGS); // --
-typedef t_pd *(*t_fun1) (t_int,                                     MESSAGE_FLOATARGS);
-typedef t_pd *(*t_fun2) (t_int, t_int,                              MESSAGE_FLOATARGS);
-typedef t_pd *(*t_fun3) (t_int, t_int, t_int,                       MESSAGE_FLOATARGS);
-typedef t_pd *(*t_fun4) (t_int, t_int, t_int, t_int,                MESSAGE_FLOATARGS);
-typedef t_pd *(*t_fun5) (t_int, t_int, t_int, t_int, t_int,         MESSAGE_FLOATARGS);
-typedef t_pd *(*t_fun6) (t_int, t_int, t_int, t_int, t_int, t_int,  MESSAGE_FLOATARGS);
+typedef t_pd *(*t_fun0) (                                           MESSAGE_FLOATS); // --
+typedef t_pd *(*t_fun1) (t_int,                                     MESSAGE_FLOATS);
+typedef t_pd *(*t_fun2) (t_int, t_int,                              MESSAGE_FLOATS);
+typedef t_pd *(*t_fun3) (t_int, t_int, t_int,                       MESSAGE_FLOATS);
+typedef t_pd *(*t_fun4) (t_int, t_int, t_int, t_int,                MESSAGE_FLOATS);
+typedef t_pd *(*t_fun5) (t_int, t_int, t_int, t_int, t_int,         MESSAGE_FLOATS);
+typedef t_pd *(*t_fun6) (t_int, t_int, t_int, t_int, t_int, t_int,  MESSAGE_FLOATS);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -248,9 +248,9 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     t_atomtype t;
     t_method f = m->me_method;
     t_int ai[PD_ARGUMENTS + 1] = { 0 };
-    t_floatarg af[PD_ARGUMENTS + 1] = { 0 };
+    t_float af[PD_ARGUMENTS + 1] = { 0 };
     t_int *ip = ai;
-    t_floatarg *fp = af;
+    t_float *fp = af;
     int n = 0;
     t_pd *o = NULL;
     

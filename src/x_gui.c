@@ -304,7 +304,7 @@ static void *key_new( void)
     return (x);
 }
 
-static void key_float(t_key *x, t_floatarg f)
+static void key_float(t_key *x, t_float f)
 {
     outlet_float(x->x_obj.te_outlet, f);
 }
@@ -327,7 +327,7 @@ static void *keyup_new( void)
     return (x);
 }
 
-static void keyup_float(t_keyup *x, t_floatarg f)
+static void keyup_float(t_keyup *x, t_float f)
 {
     outlet_float(x->x_obj.te_outlet, f);
 }

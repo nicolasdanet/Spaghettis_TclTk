@@ -65,7 +65,7 @@ typedef struct _phasor
     float x_f;      /* scalar frequency */
 } t_phasor;
 
-static void *phasor_new(t_floatarg f)
+static void *phasor_new(t_float f)
 {
     t_phasor *x = (t_phasor *)pd_new(phasor_class);
     x->x_f = f;
@@ -242,7 +242,7 @@ typedef struct _osc
     float x_f;      /* frequency if scalar */
 } t_osc;
 
-static void *osc_new(t_floatarg f)
+static void *osc_new(t_float f)
 {
     t_osc *x = (t_osc *)pd_new(osc_class);
     x->x_f = f;
@@ -352,7 +352,7 @@ typedef struct sigvcf
 
 t_class *sigvcf_class;
 
-static void *sigvcf_new(t_floatarg q)
+static void *sigvcf_new(t_float q)
 {
     t_sigvcf *x = (t_sigvcf *)pd_new(sigvcf_class);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
@@ -368,7 +368,7 @@ static void *sigvcf_new(t_floatarg q)
     return (x);
 }
 
-static void sigvcf_ft1(t_sigvcf *x, t_floatarg f)
+static void sigvcf_ft1(t_sigvcf *x, t_float f)
 {
     x->x_ctl->c_q = (f > 0 ? f : 0.f);
 }

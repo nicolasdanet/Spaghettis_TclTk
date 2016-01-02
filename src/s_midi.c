@@ -627,10 +627,10 @@ void sys_set_midi_api(int which)
         post("sys_midiapi %d", sys_midiapi);
 }
 
-void glob_midi_properties(t_pd *dummy, t_floatarg flongform);
+void glob_midi_properties(t_pd *dummy, t_float flongform);
 void midi_alsa_setndevs(int in, int out);
 
-void glob_midi_setapi(void *dummy, t_floatarg f)
+void glob_midi_setapi(void *dummy, t_float f)
 {
     int newapi = f;
     if (newapi != sys_midiapi)
@@ -653,7 +653,7 @@ void glob_midi_setapi(void *dummy, t_floatarg f)
 extern t_class *glob_pdobject;
 
     /* start an midi settings dialog window */
-void glob_midi_properties(t_pd *dummy, t_floatarg flongform)
+void glob_midi_properties(t_pd *dummy, t_float flongform)
 {
     char buf[1024 + 2 * MAXNDEV*(DEVDESCSIZE+4)];
         /* these are the devices you're using: */

@@ -281,7 +281,7 @@ from the menu and in the file format for patches.  LATER replace this
 by a more coherent (and general) invocation. */
 
 t_garray *graph_array(t_glist *gl, t_symbol *s, t_symbol *templateargsym,
-    t_floatarg fsize, t_floatarg fflags)
+    t_float fsize, t_float fflags)
 {
     int n = fsize, i, zz, nwords, zonset, ztype, saveit;
     t_symbol *zarraytype, *asym = gensym("#A");
@@ -391,8 +391,8 @@ void garray_properties(t_garray *x)
 
     /* this is called back from the dialog window to create a garray. 
     The otherflag requests that we find an existing graph to put it in. */
-void glist_arraydialog(t_glist *parent, t_symbol *name, t_floatarg size,
-    t_floatarg fflags)
+void glist_arraydialog(t_glist *parent, t_symbol *name, t_float size,
+    t_float fflags)
 {
     t_glist *gl;
     t_garray *a;
@@ -407,8 +407,8 @@ void glist_arraydialog(t_glist *parent, t_symbol *name, t_floatarg size,
 }
 
     /* this is called from the properties dialog window for an existing array */
-void garray_arraydialog(t_garray *x, t_symbol *name, t_floatarg fsize,
-    t_floatarg fflags)
+void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize,
+    t_float fflags)
 {
     int flags = fflags;
     int saveit = ((flags & 1) != 0);
@@ -886,7 +886,7 @@ void garray_setsaveit(t_garray *x, int saveit)
 }
 
 /*------------------- Pd messages ------------------------ */
-static void garray_const(t_garray *x, t_floatarg g)
+static void garray_const(t_garray *x, t_float g)
 {
     int yonset, i, elemsize;
     t_array *array = garray_getarray_floatonly(x, &yonset, &elemsize);
@@ -1053,21 +1053,21 @@ static void garray_list(t_garray *x, t_symbol *s, int argc, t_atom *argv)
 }
 
     /* forward a "bounds" message to the owning graph */
-static void garray_bounds(t_garray *x, t_floatarg x1, t_floatarg y1,
-    t_floatarg x2, t_floatarg y2)
+static void garray_bounds(t_garray *x, t_float x1, t_float y1,
+    t_float x2, t_float y2)
 {
     pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, gensym("bounds"), "ffff", x1, y1, x2, y2);
 }
 
     /* same for "xticks", etc */
 static void garray_xticks(t_garray *x,
-    t_floatarg point, t_floatarg inc, t_floatarg f)
+    t_float point, t_float inc, t_float f)
 {
     pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, gensym("xticks"), "fff", point, inc, f);
 }
 
 static void garray_yticks(t_garray *x,
-    t_floatarg point, t_floatarg inc, t_floatarg f)
+    t_float point, t_float inc, t_float f)
 {
     pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, gensym("yticks"), "fff", point, inc, f);
 }
@@ -1187,7 +1187,7 @@ void garray_resize_long(t_garray *x, long n)
 }
 
     /* float version to use as Pd method */
-void garray_resize(t_garray *x, t_floatarg f)
+void garray_resize(t_garray *x, t_float f)
 {
     garray_resize_long(x, f);
 }

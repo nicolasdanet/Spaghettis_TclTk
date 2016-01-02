@@ -152,7 +152,7 @@ static void netsend_doit(void *z, t_binbuf *b)
 
 
 static void netsend_connect(t_netsend *x, t_symbol *hostname,
-    t_floatarg fportno)
+    t_float fportno)
 {
     struct sockaddr_in server;
     struct hostent *hp;
@@ -395,7 +395,7 @@ static void netreceive_closeall(t_netreceive *x)
     x->x_ns.x_sockfd = -1;
 }
 
-static void netreceive_listen(t_netreceive *x, t_floatarg fportno)
+static void netreceive_listen(t_netreceive *x, t_float fportno)
 {
     int portno = fportno, intarg;
     struct sockaddr_in server;

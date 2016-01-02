@@ -29,7 +29,7 @@ extern int sys_noloadbang;
 
 /*------------------ global functions -------------------------*/
 
-static void my_numbox_key(void *z, t_floatarg fkey);
+static void my_numbox_key(void *z, t_float fkey);
 static void my_numbox_draw_update(t_gobj *client, t_glist *glist);
 
 /* ------------ nmx gui-my number box ----------------------- */
@@ -516,7 +516,7 @@ static void my_numbox_dialog(t_my_numbox *x, t_symbol *s, int argc,
     canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
 }
 
-static void my_numbox_motion(t_my_numbox *x, t_floatarg dx, t_floatarg dy)
+static void my_numbox_motion(t_my_numbox *x, t_float dx, t_float dy)
 {
     double k2=1.0;
 
@@ -532,8 +532,8 @@ static void my_numbox_motion(t_my_numbox *x, t_floatarg dx, t_floatarg dy)
     clock_unset(x->x_clock_reset);
 }
 
-static void my_numbox_click(t_my_numbox *x, t_floatarg xpos, t_floatarg ypos,
-                            t_floatarg shift, t_floatarg ctrl, t_floatarg alt)
+static void my_numbox_click(t_my_numbox *x, t_float xpos, t_float ypos,
+                            t_float shift, t_float ctrl, t_float alt)
 {
     glist_grab(x->x_gui.x_glist, &x->x_gui.x_obj.te_g,
         (t_glistmotionfn)my_numbox_motion, my_numbox_key, xpos, ypos);
@@ -546,8 +546,8 @@ static int my_numbox_newclick(t_gobj *z, struct _glist *glist,
 
     if(doit)
     {
-        my_numbox_click( x, (t_floatarg)xpix, (t_floatarg)ypix,
-            (t_floatarg)shift, 0, (t_floatarg)alt);
+        my_numbox_click( x, (t_float)xpix, (t_float)ypix,
+            (t_float)shift, 0, (t_float)alt);
         if(shift)
             x->x_gui.x_fsf.x_finemoved = 1;
         else
@@ -571,7 +571,7 @@ static int my_numbox_newclick(t_gobj *z, struct _glist *glist,
     return (1);
 }
 
-static void my_numbox_set(t_my_numbox *x, t_floatarg f)
+static void my_numbox_set(t_my_numbox *x, t_float f)
 {
     if(x->x_val != f)
     {
@@ -581,7 +581,7 @@ static void my_numbox_set(t_my_numbox *x, t_floatarg f)
     }
 }
 
-static void my_numbox_log_height(t_my_numbox *x, t_floatarg lh)
+static void my_numbox_log_height(t_my_numbox *x, t_float lh)
 {
     if(lh < 10.0)
         lh = 10.0;
@@ -593,7 +593,7 @@ static void my_numbox_log_height(t_my_numbox *x, t_floatarg lh)
     
 }
 
-static void my_numbox_float(t_my_numbox *x, t_floatarg f)
+static void my_numbox_float(t_my_numbox *x, t_float f)
 {
     my_numbox_set(x, f);
     if(x->x_gui.x_fsf.x_put_in2out)
@@ -681,7 +681,7 @@ static void my_numbox_lin(t_my_numbox *x)
     x->x_lin0_log1 = 0;
 }
 
-static void my_numbox_init(t_my_numbox *x, t_floatarg f)
+static void my_numbox_init(t_my_numbox *x, t_float f)
 {
     x->x_gui.x_isa.x_loadinit = (f==0.0)?0:1;
 }
@@ -695,7 +695,7 @@ static void my_numbox_loadbang(t_my_numbox *x)
     }
 }
 
-static void my_numbox_key(void *z, t_floatarg fkey)
+static void my_numbox_key(void *z, t_float fkey)
 {
     t_my_numbox *x = z;
     char c=fkey;

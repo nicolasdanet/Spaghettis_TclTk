@@ -315,7 +315,7 @@ static void vradio_dialog(t_vradio *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static void vradio_set(t_vradio *x, t_floatarg f)
+static void vradio_set(t_vradio *x, t_float f)
 {
     int i=(int)f;
     int old;
@@ -338,7 +338,7 @@ static void vradio_bang(t_vradio *x)
             pd_float(x->x_gui.x_snd->s_thing, outval);
 }
 
-static void vradio_fout(t_vradio *x, t_floatarg f)
+static void vradio_fout(t_vradio *x, t_float f)
 {
     int i=(int)f;
 
@@ -356,7 +356,7 @@ static void vradio_fout(t_vradio *x, t_floatarg f)
             pd_float(x->x_gui.x_snd->s_thing, outval);
 }
 
-static void vradio_float(t_vradio *x, t_floatarg f)
+static void vradio_float(t_vradio *x, t_float f)
 {
     int i=(int)f;
 
@@ -377,8 +377,8 @@ static void vradio_float(t_vradio *x, t_floatarg f)
         }
 }
 
-static void vradio_click(t_vradio *x, t_floatarg xpos, t_floatarg ypos,
-    t_floatarg shift, t_floatarg ctrl, t_floatarg alt)
+static void vradio_click(t_vradio *x, t_float xpos, t_float ypos,
+    t_float shift, t_float ctrl, t_float alt)
 {
     int yy =  (int)ypos - text_ypix(&x->x_gui.x_obj, x->x_gui.x_glist);
 
@@ -389,8 +389,8 @@ static int vradio_newclick(t_gobj *z, struct _glist *glist,
     int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
     if(doit)
-        vradio_click((t_vradio *)z, (t_floatarg)xpix, (t_floatarg)ypix,
-            (t_floatarg)shift, 0, (t_floatarg)alt);
+        vradio_click((t_vradio *)z, (t_float)xpix, (t_float)ypix,
+            (t_float)shift, 0, (t_float)alt);
     return (1);
 }
 
@@ -400,7 +400,7 @@ static void vradio_loadbang(t_vradio *x)
         vradio_bang(x);
 }
 
-static void vradio_number(t_vradio *x, t_floatarg num)
+static void vradio_number(t_vradio *x, t_float num)
 {
     int n=(int)num;
 
@@ -449,7 +449,7 @@ static void vradio_label_pos(t_vradio *x, t_symbol *s, int ac, t_atom *av)
 static void vradio_label_font(t_vradio *x, t_symbol *s, int ac, t_atom *av)
 {iem_label_font((void *)x, &x->x_gui, s, ac, av);}
 
-static void vradio_init(t_vradio *x, t_floatarg f)
+static void vradio_init(t_vradio *x, t_float f)
 {
     x->x_gui.x_isa.x_loadinit = (f==0.0)?0:1;
 }

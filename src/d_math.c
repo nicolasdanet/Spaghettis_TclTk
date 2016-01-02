@@ -21,7 +21,7 @@ typedef struct _clip
     t_float x_hi;
 } t_clip;
 
-static void *clip_new(t_floatarg lo, t_floatarg hi)
+static void *clip_new(t_float lo, t_float hi)
 {
     t_clip *x = (t_clip *)pd_new(clip_class);
     x->x_lo = lo;
@@ -574,7 +574,7 @@ typedef struct _pow_tilde
     t_float x_f;
 } t_pow_tilde;
 
-static void *pow_tilde_new(t_floatarg f)
+static void *pow_tilde_new(t_float f)
 {
     t_pow_tilde *x = (t_pow_tilde *)pd_new(pow_tilde_class);
     signalinlet_new(&x->x_obj, f);

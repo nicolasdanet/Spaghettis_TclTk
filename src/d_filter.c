@@ -27,9 +27,9 @@ typedef struct sighip
 } t_sighip;
 
 t_class *sighip_class;
-static void sighip_ft1(t_sighip *x, t_floatarg f);
+static void sighip_ft1(t_sighip *x, t_float f);
 
-static void *sighip_new(t_floatarg f)
+static void *sighip_new(t_float f)
 {
     t_sighip *x = (t_sighip *)pd_new(sighip_class);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("float"), gensym("ft1"));
@@ -42,7 +42,7 @@ static void *sighip_new(t_floatarg f)
     return (x);
 }
 
-static void sighip_ft1(t_sighip *x, t_floatarg f)
+static void sighip_ft1(t_sighip *x, t_float f)
 {
     if (f < 0) f = 0;
     x->x_hz = f;
@@ -123,7 +123,7 @@ static void sighip_dsp(t_sighip *x, t_signal **sp)
             4, sp[0]->s_vector, sp[1]->s_vector, x->x_ctl, sp[0]->s_blockSize);
 }
 
-static void sighip_clear(t_sighip *x, t_floatarg q)
+static void sighip_clear(t_sighip *x, t_float q)
 {
     x->x_cspace.c_x = 0;
 }
@@ -160,9 +160,9 @@ typedef struct siglop
 
 t_class *siglop_class;
 
-static void siglop_ft1(t_siglop *x, t_floatarg f);
+static void siglop_ft1(t_siglop *x, t_float f);
 
-static void *siglop_new(t_floatarg f)
+static void *siglop_new(t_float f)
 {
     t_siglop *x = (t_siglop *)pd_new(siglop_class);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("float"), gensym("ft1"));
@@ -175,7 +175,7 @@ static void *siglop_new(t_floatarg f)
     return (x);
 }
 
-static void siglop_ft1(t_siglop *x, t_floatarg f)
+static void siglop_ft1(t_siglop *x, t_float f)
 {
     if (f < 0) f = 0;
     x->x_hz = f;
@@ -186,7 +186,7 @@ static void siglop_ft1(t_siglop *x, t_floatarg f)
         x->x_ctl->c_coef = 0;
 }
 
-static void siglop_clear(t_siglop *x, t_floatarg q)
+static void siglop_clear(t_siglop *x, t_float q)
 {
     x->x_cspace.c_x = 0;
 }
@@ -255,9 +255,9 @@ typedef struct sigbp
 
 t_class *sigbp_class;
 
-static void sigbp_docoef(t_sigbp *x, t_floatarg f, t_floatarg q);
+static void sigbp_docoef(t_sigbp *x, t_float f, t_float q);
 
-static void *sigbp_new(t_floatarg f, t_floatarg q)
+static void *sigbp_new(t_float f, t_float q)
 {
     t_sigbp *x = (t_sigbp *)pd_new(sigbp_class);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("float"), gensym("ft1"));
@@ -282,7 +282,7 @@ static t_float sigbp_qcos(t_float f)
     else return (0);
 }
 
-static void sigbp_docoef(t_sigbp *x, t_floatarg f, t_floatarg q)
+static void sigbp_docoef(t_sigbp *x, t_float f, t_float q)
 {
     t_float r, oneminusr, omega;
     if (f < 0.001) f = 10;
@@ -301,17 +301,17 @@ static void sigbp_docoef(t_sigbp *x, t_floatarg f, t_floatarg q)
         r, omega, x->x_ctl->c_coef1, x->x_ctl->c_coef2); */
 }
 
-static void sigbp_ft1(t_sigbp *x, t_floatarg f)
+static void sigbp_ft1(t_sigbp *x, t_float f)
 {
     sigbp_docoef(x, f, x->x_q);
 }
 
-static void sigbp_ft2(t_sigbp *x, t_floatarg q)
+static void sigbp_ft2(t_sigbp *x, t_float q)
 {
     sigbp_docoef(x, x->x_freq, q);
 }
 
-static void sigbp_clear(t_sigbp *x, t_floatarg q)
+static void sigbp_clear(t_sigbp *x, t_float q)
 {
     x->x_ctl->c_x1 = x->x_ctl->c_x2 = 0;
 }

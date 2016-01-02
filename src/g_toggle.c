@@ -275,17 +275,17 @@ static void toggle_dialog(t_toggle *x, t_symbol *s, int argc, t_atom *argv)
     canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
 }
 
-static void toggle_click(t_toggle *x, t_floatarg xpos, t_floatarg ypos, t_floatarg shift, t_floatarg ctrl, t_floatarg alt)
+static void toggle_click(t_toggle *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt)
 {toggle_bang(x);}
 
 static int toggle_newclick(t_gobj *z, struct _glist *glist, int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
     if(doit)
-        toggle_click((t_toggle *)z, (t_floatarg)xpix, (t_floatarg)ypix, (t_floatarg)shift, 0, (t_floatarg)alt);
+        toggle_click((t_toggle *)z, (t_float)xpix, (t_float)ypix, (t_float)shift, 0, (t_float)alt);
     return (1);
 }
 
-static void toggle_set(t_toggle *x, t_floatarg f)
+static void toggle_set(t_toggle *x, t_float f)
 {
     int old = (x->x_on != 0);
     x->x_on = f;
@@ -295,7 +295,7 @@ static void toggle_set(t_toggle *x, t_floatarg f)
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_UPDATE);
 }
 
-static void toggle_float(t_toggle *x, t_floatarg f)
+static void toggle_float(t_toggle *x, t_float f)
 {
     toggle_set(x, f);
     if(x->x_gui.x_fsf.x_put_in2out)
@@ -306,7 +306,7 @@ static void toggle_float(t_toggle *x, t_floatarg f)
     }
 }
 
-static void toggle_fout(t_toggle *x, t_floatarg f)
+static void toggle_fout(t_toggle *x, t_float f)
 {
     toggle_set(x, f);
     outlet_float(x->x_gui.x_obj.te_outlet, x->x_on);
@@ -351,12 +351,12 @@ static void toggle_label_font(t_toggle *x, t_symbol *s, int ac, t_atom *av)
 static void toggle_label_pos(t_toggle *x, t_symbol *s, int ac, t_atom *av)
 {iem_label_pos((void *)x, &x->x_gui, s, ac, av);}
 
-static void toggle_init(t_toggle *x, t_floatarg f)
+static void toggle_init(t_toggle *x, t_float f)
 {
     x->x_gui.x_isa.x_loadinit = (f==0.0)?0:1;
 }
 
-static void toggle_nonzero(t_toggle *x, t_floatarg f)
+static void toggle_nonzero(t_toggle *x, t_float f)
 {
     if(f != 0.0)
         x->x_nonzero = f;

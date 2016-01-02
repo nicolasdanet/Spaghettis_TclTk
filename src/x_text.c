@@ -565,7 +565,7 @@ static void *text_get_new(t_symbol *s, int argc, t_atom *argv)
     return (x);
 }
 
-static void text_get_float(t_text_get *x, t_floatarg f)
+static void text_get_float(t_text_get *x, t_float f)
 {
     t_binbuf *b = text_client_getbuf(&x->x_tc);
     int start, end, n, startfield, nfield;
@@ -774,7 +774,7 @@ static void text_size_bang(t_text_size *x)
     outlet_float(x->x_out1, cnt);
 }
 
-static void text_size_float(t_text_size *x, t_floatarg f)
+static void text_size_float(t_text_size *x, t_float f)
 {
     t_binbuf *b = text_client_getbuf(&x->x_tc);
     int start, end, n;
@@ -1117,7 +1117,7 @@ typedef struct _text_sequence
 
 static void text_sequence_tick(t_text_sequence *x);
 static void text_sequence_tempo(t_text_sequence *x,
-    t_symbol *unitname, t_floatarg tempo);
+    t_symbol *unitname, t_float tempo);
 void parsetimeunits(void *x, t_float amount, t_symbol *unitname,
     t_float *unit, int *samps); /* time unit parsing from x_time.c */
 
@@ -1391,7 +1391,7 @@ static void text_sequence_step(t_text_sequence *x)
     text_sequence_doit(x, x->x_argc, x->x_argv);
 }
 
-static void text_sequence_line(t_text_sequence *x, t_floatarg f)
+static void text_sequence_line(t_text_sequence *x, t_float f)
 {
     t_binbuf *b = text_client_getbuf(&x->x_tc), *b2;
     int n, start, end;
@@ -1422,7 +1422,7 @@ static void text_sequence_args(t_text_sequence *x, t_symbol *s,
 }
 
 static void text_sequence_tempo(t_text_sequence *x,
-    t_symbol *unitname, t_floatarg tempo)
+    t_symbol *unitname, t_float tempo)
 {
     t_float unit;
     int samps;
@@ -1608,7 +1608,7 @@ end:
     outlet_bang(x->x_bangout);
 }
 
-static void qlist_next(t_qlist *x, t_floatarg drop)
+static void qlist_next(t_qlist *x, t_float drop)
 {
     qlist_donext(x, drop != 0, 0);
 }

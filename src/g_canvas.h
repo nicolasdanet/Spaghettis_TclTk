@@ -95,8 +95,8 @@ PD_STRUCT _fielddesc;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef void (*t_glistkeyfn)(void *z, t_floatarg key);
-typedef void (*t_glistmotionfn)(void *z, t_floatarg dx, t_floatarg dy);
+typedef void (*t_glistkeyfn)(void *z, t_float key);
+typedef void (*t_glistmotionfn)(void *z, t_float dx, t_float dy);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -381,8 +381,8 @@ t_glist *glist_addglist         (t_glist *x,
 
 void     glist_arraydialog      (t_glist *parent,
                                     t_symbol *name,
-                                    t_floatarg size,
-                                    t_floatarg saveit);
+                                    t_float size,
+                                    t_float saveit);
 
 t_binbuf *glist_writetobinbuf   (t_glist *x, int wholething);
 int      glist_isgraph          (t_glist *x);
@@ -473,7 +473,7 @@ void     canvas_setcurrent                  (t_canvas *x);
 void     canvas_unsetcurrent                (t_canvas *x);
 t_symbol *canvas_realizedollar              (t_canvas *x, t_symbol *s);
 t_canvas *canvas_getroot                    (t_canvas *x);
-void     canvas_dirty                       (t_canvas *x, t_floatarg n);
+void     canvas_dirty                       (t_canvas *x, t_float n);
 int      canvas_getfont                     (t_canvas *x);
 t_int    *canvas_recurapply                 (t_canvas *x,
                                                 t_canvasapply *fn,
@@ -485,11 +485,11 @@ void     canvas_resortinlets            (t_canvas *x);
 void     canvas_resortoutlets           (t_canvas *x);
 void     canvas_free                    (t_canvas *x);
 void     canvas_updatewindowlist        (void);
-void     canvas_editmode                (t_canvas *x, t_floatarg state);
+void     canvas_editmode                (t_canvas *x, t_float state);
 int      canvas_isabstraction           (t_canvas *x);
 int      canvas_istable                 (t_canvas *x);
 int      canvas_showtext                (t_canvas *x);
-void     canvas_vis                     (t_canvas *x, t_floatarg f);
+void     canvas_vis                     (t_canvas *x, t_float f);
 
 t_canvasenvironment *canvas_getenv      (t_canvas *x);
 
@@ -513,10 +513,10 @@ void     canvas_setundo                 (t_canvas *x,
 void     canvas_noundo                  (t_canvas *x);
 int      canvas_getindex                (t_canvas *x, t_gobj *y);
 void     canvas_connect                 (t_canvas *x,
-                                            t_floatarg fwhoout,
-                                            t_floatarg foutno,
-                                            t_floatarg fwhoin,
-                                            t_floatarg finno);
+                                            t_float fwhoout,
+                                            t_float foutno,
+                                            t_float fwhoin,
+                                            t_float finno);
 
 void     canvas_disconnect              (t_canvas *x,
                                             t_float index1,
@@ -567,8 +567,8 @@ t_template   *garray_template           (t_garray *x);
 t_garray     *graph_array               (t_glist *gl,
                                             t_symbol *s,
                                             t_symbol *tmpl,
-                                            t_floatarg f,
-                                            t_floatarg saveit);
+                                            t_float f,
+                                            t_float saveit);
 
 t_array      *array_new                 (t_symbol *templatesym, t_gpointer *parent);
 void         array_resize               (t_array *x, int n);

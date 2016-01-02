@@ -686,7 +686,7 @@ static void sys_listaudiodevs(void )
 
 
     /* start an audio settings dialog window */
-void glob_audio_properties(t_pd *dummy, t_floatarg flongform)
+void glob_audio_properties(t_pd *dummy, t_float flongform)
 {
     char buf[1024 + 2 * MAXNDEV*(DEVDESCSIZE+4)];
         /* these are the devices you're using: */
@@ -905,7 +905,7 @@ void sys_set_audio_api(int which)
         post("sys_audioapi set to %d", sys_audioapi);
 }
 
-void glob_audio_setapi(void *dummy, t_floatarg f)
+void glob_audio_setapi(void *dummy, t_float f)
 {
     int newapi = f;
     if (newapi)

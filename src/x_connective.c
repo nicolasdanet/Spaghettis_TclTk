@@ -20,7 +20,7 @@ typedef struct _pdint
     t_float x_f;
 } t_pdint;
 
-static void *pdint_new(t_floatarg f)
+static void *pdint_new(t_float f)
 {
     t_pdint *x = (t_pdint *)pd_new(pdint_class);
     x->x_f = f;
@@ -80,7 +80,7 @@ static void *pdfloat_new(t_pd *dummy, t_float f)
     return (x);
 }
 
-static void *pdfloat_new2(t_floatarg f)
+static void *pdfloat_new2(t_float f)
 {
     return (pdfloat_new(0, f));
 }
@@ -1087,7 +1087,7 @@ typedef struct _spigot
     t_float x_state;
 } t_spigot;
 
-static void *spigot_new(t_floatarg f)
+static void *spigot_new(t_float f)
 {
     t_spigot *x = (t_spigot *)pd_new(spigot_class);
     floatinlet_new(&x->x_obj, &x->x_state);
@@ -1148,7 +1148,7 @@ typedef struct _moses
     t_float x_y;
 } t_moses;
 
-static void *moses_new(t_floatarg f)
+static void *moses_new(t_float f)
 {
     t_moses *x = (t_moses *)pd_new(moses_class);
     floatinlet_new(&x->x_ob, &x->x_y);
@@ -1282,7 +1282,7 @@ static void *makefilename_new(t_symbol *s)
     return (x);
 }
 
-static void makefilename_float(t_makefilename *x, t_floatarg f)
+static void makefilename_float(t_makefilename *x, t_float f)
 {
     char buf[PD_STRING];
     if (x->x_accept == A_FLOAT) {
@@ -1339,7 +1339,7 @@ typedef struct _swap
     t_float x_f2;
 } t_swap;
 
-static void *swap_new(t_floatarg f)
+static void *swap_new(t_float f)
 {
     t_swap *x = (t_swap *)pd_new(swap_class);
     x->x_f2 = f;
@@ -1380,7 +1380,7 @@ typedef struct _change
     t_float x_f;
 } t_change;
 
-static void *change_new(t_floatarg f)
+static void *change_new(t_float f)
 {
     t_change *x = (t_change *)pd_new(change_class);
     x->x_f = f;

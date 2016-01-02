@@ -63,7 +63,7 @@ static void canvas_dosetbounds(t_canvas *x, int x1, int y1, int x2, int y2);
 void canvas_reflecttitle(t_canvas *x);
 static void canvas_addtolist(t_canvas *x);
 static void canvas_takeofflist(t_canvas *x);
-static void canvas_pop(t_canvas *x, t_floatarg fvis);
+static void canvas_pop(t_canvas *x, t_float fvis);
 static void canvas_bind(t_canvas *x);
 static void canvas_unbind(t_canvas *x);
 
@@ -607,7 +607,7 @@ void canvas_reflecttitle(t_canvas *x)
 }
 
     /* mark a glist dirty or clean */
-void canvas_dirty(t_canvas *x, t_floatarg n)
+void canvas_dirty(t_canvas *x, t_float n)
 {
     t_canvas *x2 = canvas_getroot(x);
     if (glist_reloading)
@@ -637,7 +637,7 @@ void canvas_drawredrect(t_canvas *x, int doit)
     /* the window becomes "mapped" (visible and not miniaturized) or
     "unmapped" (either miniaturized or just plain gone.)  This should be
     called from the GUI after the fact to "notify" us that we're mapped. */
-void canvas_map(t_canvas *x, t_floatarg f)
+void canvas_map(t_canvas *x, t_float f)
 {
     int flag = (f != 0);
     t_gobj *y;
@@ -829,7 +829,7 @@ void canvas_deletelinesforio(t_canvas *x, t_text *text,
     }
 }
 
-static void canvas_pop(t_canvas *x, t_floatarg fvis)
+static void canvas_pop(t_canvas *x, t_float fvis)
 {
     if (fvis != 0)
         canvas_vis(x, 1);
@@ -958,8 +958,8 @@ static void *subcanvas_new(t_symbol *s)
 }
 
 static void canvas_click(t_canvas *x,
-    t_floatarg xpos, t_floatarg ypos,
-        t_floatarg shift, t_floatarg ctrl, t_floatarg alt)
+    t_float xpos, t_float ypos,
+        t_float shift, t_float ctrl, t_float alt)
 {
     canvas_vis(x, 1);
 }

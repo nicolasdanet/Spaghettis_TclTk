@@ -63,7 +63,7 @@ static void *table_donew(t_symbol *s, int size, int flags,
     return (x);
 }
 
-static void *table_new(t_symbol *s, t_floatarg f)
+static void *table_new(t_symbol *s, t_float f)
 {
     return (table_donew(s, f, 0, 500, 300));
 }
@@ -80,7 +80,7 @@ int canvas_istable(t_canvas *x)
 
 t_class *array_define_class;
 
-static void array_define_yrange(t_glist *x, t_floatarg ylo, t_floatarg yhi)
+static void array_define_yrange(t_glist *x, t_float ylo, t_float yhi)
 {
     t_glist *gl = (x->gl_list ? pd_checkglist(&x->gl_list->g_pd) : 0);
     if (gl && gl->gl_list && pd_class(&gl->gl_list->g_pd) == garray_class)
@@ -372,7 +372,7 @@ static void array_size_bang(t_array_size *x)
         outlet_float(x->x_outlet, a->a_n);
 }
 
-static void array_size_float(t_array_size *x, t_floatarg f)
+static void array_size_float(t_array_size *x, t_float f)
 {
     t_glist *glist;
     t_array *a = array_client_getbuf(&x->x_tc, &glist);
@@ -563,7 +563,7 @@ static void array_sum_bang(t_array_rangeop *x)
     outlet_float(x->x_outlet, sum);
 }
 
-static void array_sum_float(t_array_rangeop *x, t_floatarg f)
+static void array_sum_float(t_array_rangeop *x, t_float f)
 {
     x->x_onset = f;
     array_sum_bang(x);
@@ -595,7 +595,7 @@ static void array_get_bang(t_array_rangeop *x)
     outlet_list(x->x_outlet, 0, nitem, outv);
 }
 
-static void array_get_float(t_array_rangeop *x, t_floatarg f)
+static void array_get_float(t_array_rangeop *x, t_float f)
 {
     x->x_onset = f;
     array_get_bang(x);
@@ -640,7 +640,7 @@ static void *array_quantile_new(t_symbol *s, int argc, t_atom *argv)
     return (x);
 }
 
-static void array_quantile_float(t_array_rangeop *x, t_floatarg f)
+static void array_quantile_float(t_array_rangeop *x, t_float f)
 {
     char *itemp, *firstitem;
     int stride, nitem, arrayonset, i;
@@ -679,7 +679,7 @@ static void *array_random_new(t_symbol *s, int argc, t_atom *argv)
     return (x);
 }
 
-static void array_random_seed(t_array_random *x, t_floatarg f)
+static void array_random_seed(t_array_random *x, t_float f)
 {
     x->x_state = f;
 }
@@ -696,7 +696,7 @@ static void array_random_bang(t_array_random *x)
     array_quantile_float(&x->x_r, (1./4294967296.0) * (double)(x->x_state));
 }
 
-static void array_random_float(t_array_random *x, t_floatarg f)
+static void array_random_float(t_array_random *x, t_float f)
 {
     x->x_r.x_onset = f;
     array_random_bang(x);
@@ -737,7 +737,7 @@ static void array_max_bang(t_array_max *x)
     outlet_float(x->x_out1, bestf);
 }
 
-static void array_max_float(t_array_max *x, t_floatarg f)
+static void array_max_float(t_array_max *x, t_float f)
 {
     x->x_rangeop.x_onset = f;
     array_max_bang(x);
@@ -778,7 +778,7 @@ static void array_min_bang(t_array_min *x)
     outlet_float(x->x_out1, bestf);
 }
 
-static void array_min_float(t_array_min *x, t_floatarg f)
+static void array_min_float(t_array_min *x, t_float f)
 {
     x->x_rangeop.x_onset = f;
     array_min_bang(x);

@@ -336,7 +336,7 @@ static void bng_dialog(t_bng *x, t_symbol *s, int argc, t_atom *argv)
     canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
 }
 
-static void bng_click(t_bng *x, t_floatarg xpos, t_floatarg ypos, t_floatarg shift, t_floatarg ctrl, t_floatarg alt)
+static void bng_click(t_bng *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt)
 {
     bng_set(x);
     bng_bout2(x);
@@ -345,11 +345,11 @@ static void bng_click(t_bng *x, t_floatarg xpos, t_floatarg ypos, t_floatarg shi
 static int bng_newclick(t_gobj *z, struct _glist *glist, int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
     if(doit)
-        bng_click((t_bng *)z, (t_floatarg)xpix, (t_floatarg)ypix, (t_floatarg)shift, 0, (t_floatarg)alt);
+        bng_click((t_bng *)z, (t_float)xpix, (t_float)ypix, (t_float)shift, 0, (t_float)alt);
     return (1);
 }
 
-static void bng_float(t_bng *x, t_floatarg f)
+static void bng_float(t_bng *x, t_float f)
 {bng_bang2(x);}
 
 static void bng_symbol(t_bng *x, t_symbol *s)
@@ -412,7 +412,7 @@ static void bng_label_pos(t_bng *x, t_symbol *s, int ac, t_atom *av)
 static void bng_label_font(t_bng *x, t_symbol *s, int ac, t_atom *av)
 {iem_label_font((void *)x, &x->x_gui, s, ac, av);}
 
-static void bng_init(t_bng *x, t_floatarg f)
+static void bng_init(t_bng *x, t_float f)
 {
     x->x_gui.x_isa.x_loadinit = (f==0.0)?0:1;
 }

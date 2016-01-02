@@ -113,7 +113,7 @@ typedef struct _notein
     t_outlet *x_outlet3;
 } t_notein;
 
-static void *notein_new(t_floatarg f)
+static void *notein_new(t_float f)
 {
     t_notein *x = (t_notein *)pd_new(notein_class);
     x->x_channel = f;
@@ -251,7 +251,7 @@ typedef struct _pgmin
     t_outlet *x_outlet2;
 } t_pgmin;
 
-static void *pgmin_new(t_floatarg f)
+static void *pgmin_new(t_float f)
 {
     t_pgmin *x = (t_pgmin *)pd_new(pgmin_class);
     x->x_channel = f;
@@ -314,7 +314,7 @@ typedef struct _bendin
     t_outlet *x_outlet2;
 } t_bendin;
 
-static void *bendin_new(t_floatarg f)
+static void *bendin_new(t_float f)
 {
     t_bendin *x = (t_bendin *)pd_new(bendin_class);
     x->x_channel = f;
@@ -376,7 +376,7 @@ typedef struct _touchin
     t_outlet *x_outlet2;
 } t_touchin;
 
-static void *touchin_new(t_floatarg f)
+static void *touchin_new(t_float f)
 {
     t_touchin *x = (t_touchin *)pd_new(touchin_class);
     x->x_channel = f;
@@ -440,7 +440,7 @@ typedef struct _polytouchin
     t_outlet *x_outlet3;
 } t_polytouchin;
 
-static void *polytouchin_new(t_floatarg f)
+static void *polytouchin_new(t_float f)
 {
     t_polytouchin *x = (t_polytouchin *)pd_new(polytouchin_class);
     x->x_channel = f;
@@ -508,7 +508,7 @@ typedef struct _midiclkin
     t_outlet *x_outlet2;
 } t_midiclkin;
 
-static void *midiclkin_new(t_floatarg f)
+static void *midiclkin_new(t_float f)
 {
     t_midiclkin *x = (t_midiclkin *)pd_new(midiclkin_class);
     x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
@@ -632,7 +632,7 @@ typedef struct _midiout
     t_float x_portno;
 } t_midiout;
 
-static void *midiout_new(t_floatarg portno)
+static void *midiout_new(t_float portno)
 {
     t_midiout *x = (t_midiout *)pd_new(midiout_class);
     if (portno <= 0) portno = 1;
@@ -641,7 +641,7 @@ static void *midiout_new(t_floatarg portno)
     return (x);
 }
 
-static void midiout_float(t_midiout *x, t_floatarg f)
+static void midiout_float(t_midiout *x, t_float f)
 {
     outmidi_byte(x->x_portno - 1, f);
 }
@@ -665,7 +665,7 @@ typedef struct _noteout
     t_float x_channel;
 } t_noteout;
 
-static void *noteout_new(t_floatarg channel)
+static void *noteout_new(t_float channel)
 {
     t_noteout *x = (t_noteout *)pd_new(noteout_class);
     x->x_velo = 0;
@@ -705,7 +705,7 @@ typedef struct _ctlout
     t_float x_channel;
 } t_ctlout;
 
-static void *ctlout_new(t_floatarg ctl, t_floatarg channel)
+static void *ctlout_new(t_float ctl, t_float channel)
 {
     t_ctlout *x = (t_ctlout *)pd_new(ctlout_class);
     x->x_ctl = ctl;
@@ -744,7 +744,7 @@ typedef struct _pgmout
     t_float x_channel;
 } t_pgmout;
 
-static void *pgmout_new(t_floatarg channel)
+static void *pgmout_new(t_float channel)
 {
     t_pgmout *x = (t_pgmout *)pd_new(pgmout_class);
     if (channel <= 0) channel = 1;
@@ -753,7 +753,7 @@ static void *pgmout_new(t_floatarg channel)
     return (x);
 }
 
-static void pgmout_float(t_pgmout *x, t_floatarg f)
+static void pgmout_float(t_pgmout *x, t_float f)
 {
     int binchan = x->x_channel - 1;
     int n = f - 1;
@@ -784,7 +784,7 @@ typedef struct _bendout
     t_float x_channel;
 } t_bendout;
 
-static void *bendout_new(t_floatarg channel)
+static void *bendout_new(t_float channel)
 {
     t_bendout *x = (t_bendout *)pd_new(bendout_class);
     if (channel <= 0) channel = 1;
@@ -820,7 +820,7 @@ typedef struct _touchout
     t_float x_channel;
 } t_touchout;
 
-static void *touchout_new(t_floatarg channel)
+static void *touchout_new(t_float channel)
 {
     t_touchout *x = (t_touchout *)pd_new(touchout_class);
     if (channel <= 0) channel = 1;
@@ -856,7 +856,7 @@ typedef struct _polytouchout
     t_float x_pitch;
 } t_polytouchout;
 
-static void *polytouchout_new(t_floatarg channel)
+static void *polytouchout_new(t_float channel)
 {
     t_polytouchout *x = (t_polytouchout *)pd_new(polytouchout_class);
     if (channel <= 0) channel = 1;
@@ -906,7 +906,7 @@ typedef struct _makenote
     t_hang *x_hang;
 } t_makenote;
 
-static void *makenote_new(t_floatarg velo, t_floatarg dur)
+static void *makenote_new(t_float velo, t_float dur)
 {
     t_makenote *x = (t_makenote *)pd_new(makenote_class);
     x->x_velo = velo;

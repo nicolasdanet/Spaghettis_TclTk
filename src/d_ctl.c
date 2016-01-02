@@ -67,7 +67,7 @@ static void sig_tilde_dsp(t_sig *x, t_signal **sp)
     dsp_add(sig_tilde_perform, 3, &x->x_f, sp[0]->s_vector, sp[0]->s_blockSize);
 }
 
-static void *sig_tilde_new(t_floatarg f)
+static void *sig_tilde_new(t_float f)
 {
     t_sig *x = (t_sig *)pd_new(sig_tilde_class);
     x->x_f = f;
@@ -460,7 +460,7 @@ static void snapshot_tilde_bang(t_snapshot *x)
     outlet_float(x->x_obj.te_outlet, x->x_value);
 }
 
-static void snapshot_tilde_set(t_snapshot *x, t_floatarg f)
+static void snapshot_tilde_set(t_snapshot *x, t_float f)
 {
     x->x_value = f;
 }
@@ -588,7 +588,7 @@ typedef struct sigenv
 t_class *env_tilde_class;
 static void env_tilde_tick(t_sigenv *x);
 
-static void *env_tilde_new(t_floatarg fnpoints, t_floatarg fperiod)
+static void *env_tilde_new(t_float fnpoints, t_float fperiod)
 {
     int npoints = fnpoints;
     int period = fperiod;
@@ -723,11 +723,11 @@ typedef struct _threshold_tilde
 
 static void threshold_tilde_tick(t_threshold_tilde *x);
 static void threshold_tilde_set(t_threshold_tilde *x,
-    t_floatarg hithresh, t_floatarg hideadtime,
-    t_floatarg lothresh, t_floatarg lodeadtime);
+    t_float hithresh, t_float hideadtime,
+    t_float lothresh, t_float lodeadtime);
 
-static t_threshold_tilde *threshold_tilde_new(t_floatarg hithresh,
-    t_floatarg hideadtime, t_floatarg lothresh, t_floatarg lodeadtime)
+static t_threshold_tilde *threshold_tilde_new(t_float hithresh,
+    t_float hideadtime, t_float lothresh, t_float lodeadtime)
 {
     t_threshold_tilde *x = (t_threshold_tilde *)
         pd_new(threshold_tilde_class);
@@ -745,8 +745,8 @@ static t_threshold_tilde *threshold_tilde_new(t_floatarg hithresh,
 
     /* "set" message to specify thresholds and dead times */
 static void threshold_tilde_set(t_threshold_tilde *x,
-    t_floatarg hithresh, t_floatarg hideadtime,
-    t_floatarg lothresh, t_floatarg lodeadtime)
+    t_float hithresh, t_float hideadtime,
+    t_float lothresh, t_float lodeadtime)
 {
     if (lothresh > hithresh)
         lothresh = hithresh;
@@ -758,7 +758,7 @@ static void threshold_tilde_set(t_threshold_tilde *x,
 
     /* number in inlet sets state -- note incompatible with JMAX which used
     "int" message for this, impossible here because of auto signal conversion */
-static void threshold_tilde_ft1(t_threshold_tilde *x, t_floatarg f)
+static void threshold_tilde_ft1(t_threshold_tilde *x, t_float f)
 {
     x->x_state = (f != 0);
     x->x_deadwait = 0;

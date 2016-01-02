@@ -56,7 +56,7 @@ static int makeseed(void)
     return (random_nextseed & 0x7fffffff);
 }
 
-static void *random_new(t_floatarg f)
+static void *random_new(t_float f)
 {
     t_random *x = (t_random *)pd_new(random_class);
     x->x_f = f;
@@ -178,7 +178,7 @@ static void serial_float(t_serial *x, t_float f)
     sys_gui(message);
 }
 
-static void *serial_new(t_floatarg fportno)
+static void *serial_new(t_float fportno)
 {
     int portno = fportno;
     t_serial *x = (t_serial *)pd_new(serial_class);

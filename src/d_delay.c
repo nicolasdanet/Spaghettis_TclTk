@@ -69,7 +69,7 @@ static void sigdelwrite_checkvecsize(t_sigdelwrite *x, int vecsize)
 #endif
 }
 
-static void *sigdelwrite_new(t_symbol *s, t_floatarg msec)
+static void *sigdelwrite_new(t_symbol *s, t_float msec)
 {
     t_sigdelwrite *x = (t_sigdelwrite *)pd_new(sigdelwrite_class);
     if (!*s->s_name) s = gensym("delwrite~");
@@ -154,7 +154,7 @@ typedef struct _sigdelread
 
 static void sigdelread_float(t_sigdelread *x, t_float f);
 
-static void *sigdelread_new(t_symbol *s, t_floatarg f)
+static void *sigdelread_new(t_symbol *s, t_float f)
 {
     t_sigdelread *x = (t_sigdelread *)pd_new(sigdelread_class);
     x->x_sym = s;

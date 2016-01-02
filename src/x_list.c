@@ -346,7 +346,7 @@ typedef struct _list_split
     t_outlet *x_out3;
 } t_list_split;
 
-static void *list_split_new(t_floatarg f)
+static void *list_split_new(t_float f)
 {
     t_list_split *x = (t_list_split *)pd_new(list_split_class);
     x->x_out1 = outlet_new(&x->x_obj, &s_list);

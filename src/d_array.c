@@ -105,7 +105,7 @@ static void tabwrite_tilde_bang(t_tabwrite_tilde *x)
     x->x_phase = 0;
 }
 
-static void tabwrite_tilde_start(t_tabwrite_tilde *x, t_floatarg f)
+static void tabwrite_tilde_start(t_tabwrite_tilde *x, t_float f)
 {
     x->x_phase = (f > 0 ? f : 0);
 }

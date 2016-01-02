@@ -438,8 +438,8 @@ void canvas_resortoutlets(t_canvas *x)
 /* ----------calculating coordinates and controlling appearance --------- */
 
 
-static void graph_bounds(t_glist *x, t_floatarg x1, t_floatarg y1,
-    t_floatarg x2, t_floatarg y2)
+static void graph_bounds(t_glist *x, t_float x1, t_float y1,
+    t_float x2, t_float y2)
 {
     x->gl_x1 = x1;
     x->gl_x2 = x2;
@@ -456,7 +456,7 @@ static void graph_bounds(t_glist *x, t_floatarg x1, t_floatarg y1,
 }
 
 static void graph_xticks(t_glist *x,
-    t_floatarg point, t_floatarg inc, t_floatarg f)
+    t_float point, t_float inc, t_float f)
 {
     x->gl_xtick.k_point = point;
     x->gl_xtick.k_inc = inc;
@@ -465,7 +465,7 @@ static void graph_xticks(t_glist *x,
 }
 
 static void graph_yticks(t_glist *x,
-    t_floatarg point, t_floatarg inc, t_floatarg f)
+    t_float point, t_float inc, t_float f)
 {
     x->gl_ytick.k_point = point;
     x->gl_ytick.k_inc = inc;
@@ -984,7 +984,7 @@ static void graph_delete(t_gobj *z, t_glist *glist)
 
 static t_float graph_lastxpix, graph_lastypix;
 
-static void graph_motion(void *z, t_floatarg dx, t_floatarg dy)
+static void graph_motion(void *z, t_float dx, t_float dy)
 {
     t_glist *x = (t_glist *)z;
     t_float newxpix = graph_lastxpix + dx, newypix = graph_lastypix + dy;

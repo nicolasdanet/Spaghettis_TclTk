@@ -128,11 +128,11 @@ typedef struct _block
     int x_return;       /* stop right after this block (for one-shots) */
 } t_block;
 
-static void block_set(t_block *x, t_floatarg fvecsize, t_floatarg foverlap,
-    t_floatarg fupsample);
+static void block_set(t_block *x, t_float fvecsize, t_float foverlap,
+    t_float fupsample);
 
-static void *block_new(t_floatarg fvecsize, t_floatarg foverlap,
-                       t_floatarg fupsample)
+static void *block_new(t_float fvecsize, t_float foverlap,
+                       t_float fupsample)
 {
     t_block *x = (t_block *)pd_new(block_class);
     x->x_phase = 0;
@@ -144,8 +144,8 @@ static void *block_new(t_floatarg fvecsize, t_floatarg foverlap,
     return (x);
 }
 
-static void block_set(t_block *x, t_floatarg fcalcsize, t_floatarg foverlap,
-    t_floatarg fupsample)
+static void block_set(t_block *x, t_float fcalcsize, t_float foverlap,
+    t_float fupsample)
 {
     int upsample, downsample;
     int calcsize = fcalcsize;
@@ -205,8 +205,8 @@ static void block_set(t_block *x, t_floatarg fcalcsize, t_floatarg foverlap,
     canvas_resume_dsp(dspstate);
 }
 
-static void *switch_new(t_floatarg fvecsize, t_floatarg foverlap,
-                        t_floatarg fupsample)
+static void *switch_new(t_float fvecsize, t_float foverlap,
+                        t_float fupsample)
 {
     t_block *x = (t_block *)(block_new(fvecsize, foverlap, fupsample));
     x->x_switched = 1;
@@ -214,7 +214,7 @@ static void *switch_new(t_floatarg fvecsize, t_floatarg foverlap,
     return (x);
 }
 
-static void block_float(t_block *x, t_floatarg f)
+static void block_float(t_block *x, t_float f)
 {
     if (x->x_switched)
         x->x_switchon = (f != 0);

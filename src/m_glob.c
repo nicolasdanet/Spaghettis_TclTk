@@ -16,20 +16,20 @@ int sys_perf;   /* true if we should query user on close and quit */
 over.  Some others are prototyped in m_private.h as well. */
 
 void glob_menunew(void *dummy, t_symbol *name, t_symbol *dir);
-void glob_verifyquit(void *dummy, t_floatarg f);
+void glob_verifyquit(void *dummy, t_float f);
 void glob_dsp(void *dummy, t_symbol *s, int argc, t_atom *argv);
-void glob_meters(void *dummy, t_floatarg f);
+void glob_meters(void *dummy, t_float f);
 void glob_key(void *dummy, t_symbol *s, int ac, t_atom *av);
 void glob_audiostatus(void *dummy);
-void glob_audio_properties(t_pd *dummy, t_floatarg flongform);
+void glob_audio_properties(t_pd *dummy, t_float flongform);
 void glob_audio_dialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
-void glob_audio_setapi(t_pd *dummy, t_floatarg f);
-void glob_midi_properties(t_pd *dummy, t_floatarg flongform);
+void glob_audio_setapi(t_pd *dummy, t_float f);
+void glob_midi_properties(t_pd *dummy, t_float flongform);
 void glob_midi_dialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
-void glob_midi_setapi(t_pd *dummy, t_floatarg f);
-void glob_start_path_dialog(t_pd *dummy, t_floatarg flongform);
+void glob_midi_setapi(t_pd *dummy, t_float f);
+void glob_start_path_dialog(t_pd *dummy, t_float flongform);
 void glob_path_dialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
-void glob_start_startup_dialog(t_pd *dummy, t_floatarg flongform);
+void glob_start_startup_dialog(t_pd *dummy, t_float flongform);
 void glob_startup_dialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
 void glob_ping(t_pd *dummy);
 // void glob_plugindispatch(t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
@@ -41,7 +41,7 @@ static void glob_helpintro(t_pd *dummy)
     open_via_helppath("intro.pd", "");
 }
 
-static void glob_compatibility(t_pd *dummy, t_floatarg level)
+static void glob_compatibility(t_pd *dummy, t_float level)
 {
     // int dspwas = canvas_suspend_dsp();
     // pd_compatibilitylevel = 0.5 + 100. * level;
@@ -49,7 +49,7 @@ static void glob_compatibility(t_pd *dummy, t_floatarg level)
 }
 
 #ifdef _WIN32
-void glob_audio(void *dummy, t_floatarg adc, t_floatarg dac);
+void glob_audio(void *dummy, t_float adc, t_float dac);
 #endif
 
 /* a method you add for debugging printout */

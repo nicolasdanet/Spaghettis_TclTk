@@ -1014,7 +1014,7 @@ static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
     return (x);
 }
 
-void curve_float(t_curve *x, t_floatarg f)
+void curve_float(t_curve *x, t_float f)
 {
     int viswas;
     if (x->x_vis.fd_type != A_FLOAT || x->x_vis.fd_var)
@@ -1195,7 +1195,7 @@ static t_gpointer curve_motion_gpointer;
     /* LATER protect against the template changing or the scalar disappearing
     probably by attaching a gpointer here ... */
 
-static void curve_motion(void *z, t_floatarg dx, t_floatarg dy)
+static void curve_motion(void *z, t_float dx, t_float dy)
 {
     t_curve *x = (t_curve *)z;
     t_fielddesc *f = x->x_vec + curve_motion_field;
@@ -1407,7 +1407,7 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
     return (x);
 }
 
-void plot_float(t_plot *x, t_floatarg f)
+void plot_float(t_plot *x, t_float f)
 {
     int viswas;
     if (x->x_vis.fd_type != A_FLOAT || x->x_vis.fd_var)
@@ -1945,7 +1945,7 @@ static int array_motion_fatten;
     /* LATER protect against the template changing or the scalar disappearing
     probably by attaching a gpointer here ... */
 
-static void array_motion(void *z, t_floatarg dx, t_floatarg dy)
+static void array_motion(void *z, t_float dx, t_float dy)
 {
     array_motion_xcumulative += dx * array_motion_xperpix;
     array_motion_ycumulative += dy * array_motion_yperpix;
@@ -2380,7 +2380,7 @@ static void *drawnumber_new(t_symbol *classsym, int argc, t_atom *argv)
     return (x);
 }
 
-void drawnumber_float(t_drawnumber *x, t_floatarg f)
+void drawnumber_float(t_drawnumber *x, t_float f)
 {
     int viswas;
     if (x->x_vis.fd_type != A_FLOAT || x->x_vis.fd_var)
@@ -2548,7 +2548,7 @@ static t_gpointer drawnumber_motion_gpointer;
 static int drawnumber_motion_type;
 static int drawnumber_motion_firstkey;
 
-static void drawnumber_motion(void *z, t_floatarg dx, t_floatarg dy)
+static void drawnumber_motion(void *z, t_float dx, t_float dy)
 {
     t_drawnumber *x = (t_drawnumber *)z;
     t_atom at;
@@ -2576,7 +2576,7 @@ static void drawnumber_motion(void *z, t_floatarg dx, t_floatarg dy)
         array_redraw(drawnumber_motion_array, drawnumber_motion_glist);
 }
 
-static void drawnumber_key(void *z, t_floatarg fkey)
+static void drawnumber_key(void *z, t_float fkey)
 {
     t_drawnumber *x = (t_drawnumber *)z;
     int key = fkey;

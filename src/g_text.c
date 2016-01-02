@@ -394,7 +394,7 @@ static void message_addsemi(t_message *x)
     message_add(x, 0, 0, 0);
 }
 
-static void message_adddollar(t_message *x, t_floatarg f)
+static void message_adddollar(t_message *x, t_float f)
 {
     t_atom a;
     int n = f;
@@ -418,8 +418,8 @@ static void message_adddollsym(t_message *x, t_symbol *s)
 }
 
 static void message_click(t_message *x,
-    t_floatarg xpos, t_floatarg ypos, t_floatarg shift,
-        t_floatarg ctrl, t_floatarg alt)
+    t_float xpos, t_float ypos, t_float shift,
+        t_float ctrl, t_float alt)
 {
     message_float(x, 0);
     if (glist_isvisible(x->m_glist))
@@ -634,7 +634,7 @@ static void gatom_list(t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     else { post_error ("gatom_list: need float or symbol"); }
 }
 
-static void gatom_motion(void *z, t_floatarg dx, t_floatarg dy)
+static void gatom_motion(void *z, t_float dx, t_float dy)
 {
     t_gatom *x = (t_gatom *)z;
     if (dy == 0) return;
@@ -659,7 +659,7 @@ static void gatom_motion(void *z, t_floatarg dx, t_floatarg dy)
     }
 }
 
-static void gatom_key(void *z, t_floatarg f)
+static void gatom_key(void *z, t_float f)
 {
     t_gatom *x = (t_gatom *)z;
     int c = f;
@@ -727,8 +727,8 @@ redraw:
 }
 
 static void gatom_click(t_gatom *x,
-    t_floatarg xpos, t_floatarg ypos, t_floatarg shift, t_floatarg ctrl,
-    t_floatarg alt)
+    t_float xpos, t_float ypos, t_float shift, t_float ctrl,
+    t_float alt)
 {
     if (x->a_text.te_width == 1)
     {
@@ -1112,15 +1112,15 @@ static int text_click(t_gobj *z, struct _glist *glist,
     else if (x->te_type == TYPE_ATOM)
     {
         if (doit)
-            gatom_click((t_gatom *)x, (t_floatarg)xpix, (t_floatarg)ypix,
-                (t_floatarg)shift, (t_floatarg)0, (t_floatarg)alt);
+            gatom_click((t_gatom *)x, (t_float)xpix, (t_float)ypix,
+                (t_float)shift, (t_float)0, (t_float)alt);
         return (1);
     }
     else if (x->te_type == TYPE_MESSAGE)
     {
         if (doit)
-            message_click((t_message *)x, (t_floatarg)xpix, (t_floatarg)ypix,
-                (t_floatarg)shift, (t_floatarg)0, (t_floatarg)alt);
+            message_click((t_message *)x, (t_float)xpix, (t_float)ypix,
+                (t_float)shift, (t_float)0, (t_float)alt);
         return (1);
     }
     else return (0);

@@ -183,7 +183,6 @@ extern "C" {
 #endif
 
 typedef float               t_float;            /* A float type. */
-typedef float               t_floatarg;         /* A float type parameter. */
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -486,7 +485,7 @@ PD_DLL int      garray_getfloatwords        (t_garray *x, int *size, t_word **ve
 PD_DLL void     garray_redraw               (t_garray *x);
 PD_DLL int      garray_npoints              (t_garray *x);
 PD_DLL char     *garray_vec                 (t_garray *x);
-PD_DLL void     garray_resize               (t_garray *x, t_floatarg f);
+PD_DLL void     garray_resize               (t_garray *x, t_float f);
 PD_DLL void     garray_resize_long          (t_garray *x, long n);
 PD_DLL void     garray_usedindsp            (t_garray *x);
 PD_DLL void     garray_setsaveit            (t_garray *x, int saveit);

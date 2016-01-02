@@ -955,7 +955,7 @@ typedef struct _setsize
 } t_setsize;
 
 static void *setsize_new(t_symbol *templatesym, t_symbol *fieldsym,
-    t_floatarg newsize)
+    t_float newsize)
 {
     t_setsize *x = (t_setsize *)pd_new(setsize_class);
     x->x_templatesym = template_getbindsym(templatesym);

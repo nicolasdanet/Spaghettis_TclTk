@@ -289,7 +289,7 @@ static void hslider_properties(t_gobj *z, t_glist *owner)
     gfxstub_new(&x->x_gui.x_obj.te_g.g_pd, x, buf);
 }
 
-static void hslider_set(t_hslider *x, t_floatarg f)    /* bugfix */
+static void hslider_set(t_hslider *x, t_float f)    /* bugfix */
 {
     int old = x->x_val;
     double g;
@@ -369,7 +369,7 @@ static void hslider_dialog(t_hslider *x, t_symbol *s, int argc, t_atom *argv)
     canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
 }
 
-static void hslider_motion(t_hslider *x, t_floatarg dx, t_floatarg dy)
+static void hslider_motion(t_hslider *x, t_float dx, t_float dy)
 {
     int old = x->x_val;
 
@@ -398,8 +398,8 @@ static void hslider_motion(t_hslider *x, t_floatarg dx, t_floatarg dy)
     }
 }
 
-static void hslider_click(t_hslider *x, t_floatarg xpos, t_floatarg ypos,
-                          t_floatarg shift, t_floatarg ctrl, t_floatarg alt)
+static void hslider_click(t_hslider *x, t_float xpos, t_float ypos,
+                          t_float shift, t_float ctrl, t_float alt)
 {
     if(!x->x_steady)
         x->x_val = (int)(100.0 * (xpos - text_xpix(&x->x_gui.x_obj, x->x_gui.x_glist)));
@@ -422,8 +422,8 @@ static int hslider_newclick(t_gobj *z, struct _glist *glist,
 
     if(doit)
     {
-        hslider_click( x, (t_floatarg)xpix, (t_floatarg)ypix, (t_floatarg)shift,
-                       0, (t_floatarg)alt);
+        hslider_click( x, (t_float)xpix, (t_float)ypix, (t_float)shift,
+                       0, (t_float)alt);
         if(shift)
             x->x_gui.x_fsf.x_finemoved = 1;
         else
@@ -482,17 +482,17 @@ static void hslider_lin(t_hslider *x)
     x->x_k = (x->x_max - x->x_min)/(double)(x->x_gui.x_w - 1);
 }
 
-static void hslider_init(t_hslider *x, t_floatarg f)
+static void hslider_init(t_hslider *x, t_float f)
 {
     x->x_gui.x_isa.x_loadinit = (f==0.0)?0:1;
 }
 
-static void hslider_steady(t_hslider *x, t_floatarg f)
+static void hslider_steady(t_hslider *x, t_float f)
 {
     x->x_steady = (f==0.0)?0:1;
 }
 
-static void hslider_float(t_hslider *x, t_floatarg f)
+static void hslider_float(t_hslider *x, t_float f)
 {
     double out;
 

@@ -314,7 +314,7 @@ static void hradio_dialog(t_hradio *x, t_symbol *s, int argc, t_atom *argv)
 
 }
 
-static void hradio_set(t_hradio *x, t_floatarg f)
+static void hradio_set(t_hradio *x, t_float f)
 {
     int i=(int)f;
 
@@ -337,7 +337,7 @@ static void hradio_bang(t_hradio *x)
             pd_float(x->x_gui.x_snd->s_thing, outval);
 }
 
-static void hradio_fout(t_hradio *x, t_floatarg f)
+static void hradio_fout(t_hradio *x, t_float f)
 {
     int i=(int)f;
 
@@ -355,7 +355,7 @@ static void hradio_fout(t_hradio *x, t_floatarg f)
             pd_float(x->x_gui.x_snd->s_thing, outval);
 }
 
-static void hradio_float(t_hradio *x, t_floatarg f)
+static void hradio_float(t_hradio *x, t_float f)
 {
     int i=(int)f;
     x->x_fval = f;
@@ -375,7 +375,7 @@ static void hradio_float(t_hradio *x, t_floatarg f)
         }
 }
 
-static void hradio_click(t_hradio *x, t_floatarg xpos, t_floatarg ypos, t_floatarg shift, t_floatarg ctrl, t_floatarg alt)
+static void hradio_click(t_hradio *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt)
 {
     int xx = (int)xpos - (int)text_xpix(&x->x_gui.x_obj, x->x_gui.x_glist);
 
@@ -385,7 +385,7 @@ static void hradio_click(t_hradio *x, t_floatarg xpos, t_floatarg ypos, t_floata
 static int hradio_newclick(t_gobj *z, struct _glist *glist, int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
     if(doit)
-        hradio_click((t_hradio *)z, (t_floatarg)xpix, (t_floatarg)ypix, (t_floatarg)shift, 0, (t_floatarg)alt);
+        hradio_click((t_hradio *)z, (t_float)xpix, (t_float)ypix, (t_float)shift, 0, (t_float)alt);
     return (1);
 }
 
@@ -395,7 +395,7 @@ static void hradio_loadbang(t_hradio *x)
         hradio_bang(x);
 }
 
-static void hradio_number(t_hradio *x, t_floatarg num)
+static void hradio_number(t_hradio *x, t_float num)
 {
     int n=(int)num;
 
@@ -444,7 +444,7 @@ static void hradio_label_pos(t_hradio *x, t_symbol *s, int ac, t_atom *av)
 static void hradio_label_font(t_hradio *x, t_symbol *s, int ac, t_atom *av)
 {iem_label_font((void *)x, &x->x_gui, s, ac, av);}
 
-static void hradio_init(t_hradio *x, t_floatarg f)
+static void hradio_init(t_hradio *x, t_float f)
 {
     x->x_gui.x_isa.x_loadinit = (f==0.0)?0:1;
 }

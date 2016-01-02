@@ -1893,7 +1893,7 @@ static void *readsf_child_main(void *zz)
 
 static void readsf_tick(t_readsf *x);
 
-static void *readsf_new(t_floatarg fnchannels, t_floatarg fbufsize)
+static void *readsf_new(t_float fnchannels, t_float fbufsize)
 {
     t_readsf *x;
     int nchannels = fnchannels, bufsize = fbufsize, i;
@@ -2046,7 +2046,7 @@ static void readsf_stop(t_readsf *x)
     pthread_mutex_unlock(&x->x_mutex);
 }
 
-static void readsf_float(t_readsf *x, t_floatarg f)
+static void readsf_float(t_readsf *x, t_float f)
 {
     if (f != 0)
         readsf_start(x);
@@ -2397,7 +2397,7 @@ static void *writesf_child_main(void *zz)
 
 static void writesf_tick(t_writesf *x);
 
-static void *writesf_new(t_floatarg fnchannels, t_floatarg fbufsize)
+static void *writesf_new(t_float fnchannels, t_float fbufsize)
 {
     t_writesf *x;
     int nchannels = fnchannels, bufsize = fbufsize, i;

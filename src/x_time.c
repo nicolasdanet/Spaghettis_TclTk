@@ -70,7 +70,7 @@ typedef struct _delay
     double x_deltime;
 } t_delay;
 
-static void delay_ft1(t_delay *x, t_floatarg g)
+static void delay_ft1(t_delay *x, t_float g)
 {
     if (g < 0) g = 0;
     x->x_deltime = g;
@@ -97,7 +97,7 @@ static void delay_float(t_delay *x, t_float f)
     delay_bang(x);
 }
 
-static void delay_tempo(t_delay *x, t_symbol *unitname, t_floatarg tempo)
+static void delay_tempo(t_delay *x, t_symbol *unitname, t_float tempo)
 {
     t_float unit;
     int samps;
@@ -110,7 +110,7 @@ static void delay_free(t_delay *x)
     clock_free(x->x_clock);
 }
 
-static void *delay_new(t_symbol *unitname, t_floatarg f, t_floatarg tempo)
+static void *delay_new(t_symbol *unitname, t_float f, t_float tempo)
 {
     t_delay *x = (t_delay *)pd_new(delay_class);
     delay_ft1(x, f);
@@ -149,7 +149,7 @@ typedef struct _metro
     int x_hit;
 } t_metro;
 
-static void metro_ft1(t_metro *x, t_floatarg g)
+static void metro_ft1(t_metro *x, t_float g)
 {
     if (g <= 0) /* as of 0.45, we're willing to try any positive time value */
         g = 1;  /* but default to 1 (arbitrary and probably not so good) */
@@ -180,7 +180,7 @@ static void metro_stop(t_metro *x)
     metro_float(x, 0);
 }
 
-static void metro_tempo(t_metro *x, t_symbol *unitname, t_floatarg tempo)
+static void metro_tempo(t_metro *x, t_symbol *unitname, t_float tempo)
 {
     t_float unit;
     int samps;
@@ -193,7 +193,7 @@ static void metro_free(t_metro *x)
     clock_free(x->x_clock);
 }
 
-static void *metro_new(t_symbol *unitname, t_floatarg f, t_floatarg tempo)
+static void *metro_new(t_symbol *unitname, t_float f, t_float tempo)
 {
     t_metro *x = (t_metro *)pd_new(metro_class);
     metro_ft1(x, f);
@@ -288,7 +288,7 @@ static void line_float(t_line *x, t_float f)
     x->x_gotinlet = 0;
 }
 
-static void line_ft1(t_line *x, t_floatarg g)
+static void line_ft1(t_line *x, t_float g)
 {
     x->x_in1val = g;
     x->x_gotinlet = 1;
@@ -300,7 +300,7 @@ static void line_stop(t_line *x)
     clock_unset(x->x_clock);
 }
 
-static void line_set(t_line *x, t_floatarg f)
+static void line_set(t_line *x, t_float f)
 {
     clock_unset(x->x_clock);
     x->x_targetval = x->x_setval = f;
@@ -311,7 +311,7 @@ static void line_free(t_line *x)
     clock_free(x->x_clock);
 }
 
-static void *line_new(t_floatarg f, t_floatarg grain)
+static void *line_new(t_float f, t_float grain)
 {
     t_line *x = (t_line *)pd_new(line_class);
     x->x_targetval = x->x_setval = f;
@@ -364,7 +364,7 @@ static void timer_bang2(t_timer *x)
             + x->x_moreelapsed);
 }
 
-static void timer_tempo(t_timer *x, t_symbol *unitname, t_floatarg tempo)
+static void timer_tempo(t_timer *x, t_symbol *unitname, t_float tempo)
 {
     x->x_moreelapsed +=  clock_gettimesincewithunits(x->x_settime,
         x->x_unit, x->x_samps);
@@ -372,7 +372,7 @@ static void timer_tempo(t_timer *x, t_symbol *unitname, t_floatarg tempo)
     parsetimeunits(x, tempo, unitname, &x->x_unit, &x->x_samps);
 }
 
-static void *timer_new(t_symbol *unitname, t_floatarg tempo)
+static void *timer_new(t_symbol *unitname, t_float tempo)
 {
     t_timer *x = (t_timer *)pd_new(timer_class);
     x->x_unit = 1;

@@ -348,7 +348,7 @@ static void vslider_dialog(t_vslider *x, t_symbol *s, int argc, t_atom *argv)
     canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
 }
 
-static void vslider_motion(t_vslider *x, t_floatarg dx, t_floatarg dy)
+static void vslider_motion(t_vslider *x, t_float dx, t_float dy)
 {
     int old = x->x_val;
 
@@ -377,8 +377,8 @@ static void vslider_motion(t_vslider *x, t_floatarg dx, t_floatarg dy)
     }
 }
 
-static void vslider_click(t_vslider *x, t_floatarg xpos, t_floatarg ypos,
-                          t_floatarg shift, t_floatarg ctrl, t_floatarg alt)
+static void vslider_click(t_vslider *x, t_float xpos, t_float ypos,
+                          t_float shift, t_float ctrl, t_float alt)
 {
     if(!x->x_steady)
         x->x_val = (int)(100.0 * (x->x_gui.x_h + text_ypix(&x->x_gui.x_obj, x->x_gui.x_glist) - ypos));
@@ -401,8 +401,8 @@ static int vslider_newclick(t_gobj *z, struct _glist *glist,
 
     if(doit)
     {
-        vslider_click( x, (t_floatarg)xpix, (t_floatarg)ypix, (t_floatarg)shift,
-                       0, (t_floatarg)alt);
+        vslider_click( x, (t_float)xpix, (t_float)ypix, (t_float)shift,
+                       0, (t_float)alt);
         if(shift)
             x->x_gui.x_fsf.x_finemoved = 1;
         else
@@ -411,7 +411,7 @@ static int vslider_newclick(t_gobj *z, struct _glist *glist,
     return (1);
 }
 
-static void vslider_set(t_vslider *x, t_floatarg f)
+static void vslider_set(t_vslider *x, t_float f)
 {
     int old = x->x_val;
     double g;
@@ -441,7 +441,7 @@ static void vslider_set(t_vslider *x, t_floatarg f)
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_UPDATE);
 }
 
-static void vslider_float(t_vslider *x, t_floatarg f)
+static void vslider_float(t_vslider *x, t_float f)
 {
     vslider_set(x, f);
     if(x->x_gui.x_fsf.x_put_in2out)
@@ -498,12 +498,12 @@ static void vslider_lin(t_vslider *x)
     x->x_k = (x->x_max - x->x_min)/(double)(x->x_gui.x_h - 1);
 }
 
-static void vslider_init(t_vslider *x, t_floatarg f)
+static void vslider_init(t_vslider *x, t_float f)
 {
     x->x_gui.x_isa.x_loadinit = (f==0.0)?0:1;
 }
 
-static void vslider_steady(t_vslider *x, t_floatarg f)
+static void vslider_steady(t_vslider *x, t_float f)
 {
     x->x_steady = (f==0.0)?0:1;
 }

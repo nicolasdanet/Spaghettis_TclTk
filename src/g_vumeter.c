@@ -451,7 +451,7 @@ void vu_check_height(t_vu *x, int h)
     x->x_gui.x_h = IEM_VUMETER_STEPS * n;
 }
 
-static void vu_scale(t_vu *x, t_floatarg fscale)
+static void vu_scale(t_vu *x, t_float fscale)
 {
     int i, scale = (int)fscale;
 
@@ -575,7 +575,7 @@ static void vu_label_pos(t_vu *x, t_symbol *s, int ac, t_atom *av)
 static void vu_label_font(t_vu *x, t_symbol *s, int ac, t_atom *av)
 {iem_label_font((void *)x, &x->x_gui, s, ac, av);}
 
-static void vu_float(t_vu *x, t_floatarg rms)
+static void vu_float(t_vu *x, t_float rms)
 {
     int i;
     int old = x->x_rms;
@@ -597,7 +597,7 @@ static void vu_float(t_vu *x, t_floatarg rms)
         sys_queuegui(x, x->x_gui.x_glist, vu_draw_update);
 }
 
-static void vu_ft1(t_vu *x, t_floatarg peak)
+static void vu_ft1(t_vu *x, t_float peak)
 {
     int i;
     int old = x->x_peak;
