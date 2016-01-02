@@ -280,7 +280,7 @@ void object_list (t_object *x, t_symbol *s, int argc, t_atom *argv)
     t_inlet *ip = x->te_inlet;
     
     if (!argc)  {
-        pd_empty (&x->te_g.g_pd);
+        pd_empty ((t_pd *)x);
         return;
     }
     
@@ -290,9 +290,9 @@ void object_list (t_object *x, t_symbol *s, int argc, t_atom *argv)
         else if (ap->a_type == A_FLOAT) pd_float(&ip->i_pd, ap->a_w.w_float);
         else pd_symbol(&ip->i_pd, ap->a_w.w_symbol);
     }
-    if (argv->a_type == A_POINTER) pd_pointer(&x->te_g.g_pd, argv->a_w.w_gpointer);
-    else if (argv->a_type == A_FLOAT) pd_float(&x->te_g.g_pd, argv->a_w.w_float);
-    else pd_symbol(&x->te_g.g_pd, argv->a_w.w_symbol);
+    if (argv->a_type == A_POINTER) pd_pointer((t_pd *)x, argv->a_w.w_gpointer);
+    else if (argv->a_type == A_FLOAT) pd_float((t_pd *)x, argv->a_w.w_float);
+    else pd_symbol((t_pd *)x, argv->a_w.w_symbol);
 } 
 
 void obj_init(void)

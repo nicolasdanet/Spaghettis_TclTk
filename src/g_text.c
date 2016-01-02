@@ -132,9 +132,9 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
         glist_select(gl, &x->te_g);
         gobj_activate(&x->te_g, gl, 1);
     }
-    if (pd_class(&x->te_g.g_pd) == vinlet_class)
+    if (pd_class((t_pd *)x) == vinlet_class)
         canvas_resortinlets(glist_getcanvas(gl));
-    if (pd_class(&x->te_g.g_pd) == voutlet_class)
+    if (pd_class((t_pd *)x) == voutlet_class)
         canvas_resortoutlets(glist_getcanvas(gl));
     canvas_unsetcurrent((t_canvas *)gl);
 }
@@ -1099,10 +1099,10 @@ static int text_click(t_gobj *z, struct _glist *glist,
     if (x->te_type == TYPE_OBJECT)
     {
         t_symbol *clicksym = gensym("click");
-        if (class_hasMethod (pd_class (&x->te_g.g_pd), clicksym))
+        if (class_hasMethod (pd_class ((t_pd *)x), clicksym))
         {
             if (doit)
-                pd_vMessage(&x->te_g.g_pd, clicksym, "fffff",
+                pd_vMessage((t_pd *)x, clicksym, "fffff",
                     (double)xpix, (double)ypix,
                         (double)shift, (double)0, (double)alt);
             return (1);
@@ -1133,12 +1133,12 @@ void text_save(t_gobj *z, t_binbuf *b)
     {
             /* if we have a "saveto" method, and if we don't happen to be
             a canvas that's an abstraction, the saveto method does the work */
-        if (class_hasMethod (pd_class (&x->te_g.g_pd), gensym("saveto")) &&
-            !((pd_class(&x->te_g.g_pd) == canvas_class) && 
+        if (class_hasMethod (pd_class ((t_pd *)x), gensym("saveto")) &&
+            !((pd_class((t_pd *)x) == canvas_class) && 
                 (canvas_isabstraction((t_canvas *)x)
                     || canvas_istable((t_canvas *)x))))
         {  
-            mess1(&x->te_g.g_pd, gensym("saveto"), b);
+            mess1((t_pd *)x, gensym("saveto"), b);
             binbuf_addv(b, "ssii", gensym("#X"), gensym("restore"),
                 (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }
@@ -1264,7 +1264,7 @@ void text_drawborder(t_text *x, t_glist *glist,
     height = y2 - y1;
     if (x->te_type == TYPE_OBJECT)
     {
-        char *pattern = ((pd_class(&x->te_g.g_pd) == text_class) ? "-" : "\"\"");
+        char *pattern = ((pd_class((t_pd *)x) == text_class) ? "-" : "\"\"");
         if (firsttime)
             sys_vgui(".x%lx.c create line\
  %d %d %d %d %d %d %d %d %d %d -dash %s -tags [list %sR obj]\n",
@@ -1326,7 +1326,7 @@ void text_drawborder(t_text *x, t_glist *glist,
     }
         /* draw inlets/outlets */
     
-    if (ob = pd_checkobject(&x->te_g.g_pd))
+    if (ob = pd_checkobject((t_pd *)x))
         glist_drawio(glist, ob, firsttime, tag, x1, y1, x2, y2);
 }
 
@@ -1370,7 +1370,7 @@ void text_setto(t_text *x, t_glist *glist, char *buf, int bufsize)
              vec2[0].a_type == A_SYMBOL
             && !strcmp(vec2[0].a_w.w_symbol->s_name, "pd"))
         {
-            pd_message(&x->te_g.g_pd, gensym("rename"), natom2-1, vec2+1);
+            pd_message((t_pd *)x, gensym("rename"), natom2-1, vec2+1);
             binbuf_free(x->te_binbuf);
             x->te_binbuf = b;
         }
