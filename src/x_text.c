@@ -1796,7 +1796,7 @@ static void text_template_init( void)
     glob_setfilename(0, gensym("_text_template"), gensym("."));
     binbuf_text(b, text_templatefile, strlen(text_templatefile));
     binbuf_eval(b, &pd_canvasMaker, 0, 0);
-    pd_variadicMessage(s__X.s_thing, gensym("pop"), "i", 0);
+    pd_vMessage(s__X.s_thing, gensym("pop"), "i", 0);
     
     glob_setfilename(0, &s_, &s_);
     binbuf_free(b);  

@@ -86,12 +86,12 @@ static void array_define_yrange(t_glist *x, t_floatarg ylo, t_floatarg yhi)
     if (gl && gl->gl_list && pd_class(&gl->gl_list->g_pd) == garray_class)
     {
         int n = garray_getarray((t_garray *)gl->gl_list)->a_n;
-        pd_variadicMessage(&x->gl_list->g_pd, gensym("bounds"),
+        pd_vMessage(&x->gl_list->g_pd, gensym("bounds"),
             "ffff", 0., yhi, (double)(n == 1 ? n : n-1), ylo);
-        pd_variadicMessage(&x->gl_list->g_pd, gensym("xlabel"),
+        pd_vMessage(&x->gl_list->g_pd, gensym("xlabel"),
             "fff", ylo + glist_pixelstoy(gl, 2) - glist_pixelstoy(gl, 0),
                 0., (float)(n-1));
-        pd_variadicMessage(&x->gl_list->g_pd, gensym("ylabel"),
+        pd_vMessage(&x->gl_list->g_pd, gensym("ylabel"),
             "fff", glist_pixelstox(gl, 0) - glist_pixelstox(gl, 5), ylo, yhi);
     }
     else { PD_BUG; }

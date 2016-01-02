@@ -1195,7 +1195,7 @@ static void canvas_done_popup(t_canvas *x, t_float which, t_float xpos, t_float 
             {
                 if (!class_hasMethod (pd_class (&y->g_pd), gensym("menu-open")))
                     continue;
-                pd_variadicMessage(&y->g_pd, gensym("menu-open"), "");
+                pd_vMessage(&y->g_pd, gensym("menu-open"), "");
                 return;
             }
             else    /* help */
@@ -1646,7 +1646,7 @@ void canvas_mouseup(t_canvas *x,
                 canvas_isabstraction((t_glist *)g) &&
                     (gl2 = glist_finddirty((t_glist *)g)))
             {
-                pd_variadicMessage(&gl2->gl_obj.te_g.g_pd, gensym("menu-open"), "");
+                pd_vMessage(&gl2->gl_obj.te_g.g_pd, gensym("menu-open"), "");
                 x->gl_editor->e_onmotion = ACTION_NONE;
                 sys_vgui(
 "::ui_confirm::checkAction .x%lx { Discard changes to %s? } { ::ui_connect::pdsend .x%lx dirty 0 } { no }\n",
@@ -1998,7 +1998,7 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         g = glist_finddirty(x);
         if (g)
         {
-            pd_variadicMessage(&g->gl_obj.te_g.g_pd, gensym("menu-open"), "");
+            pd_vMessage(&g->gl_obj.te_g.g_pd, gensym("menu-open"), "");
             sys_vgui("::ui_confirm::checkClose .x%lx { ::ui_connect::pdsend $top menusave 1 } { ::ui_connect::pdsend .x%lx menuclose 2 } {}\n",
                      canvas_getroot(g), g);
             return;
@@ -2020,7 +2020,7 @@ void canvas_menuclose(t_canvas *x, t_floatarg fforce)
         g = glist_finddirty(x);
         if (g)
         {
-            pd_variadicMessage(&g->gl_obj.te_g.g_pd, gensym("menu-open"), "");
+            pd_vMessage(&g->gl_obj.te_g.g_pd, gensym("menu-open"), "");
             sys_vgui("::ui_confirm::checkClose .x%lx { ::ui_connect::pdsend $top menusave 1 } { ::ui_connect::pdsend .x%lx menuclose 2 } {}\n",
                      canvas_getroot(x), g);
             return;
@@ -2102,7 +2102,7 @@ static int canvas_dofind(t_canvas *x, int *myindexp)
                 if (*myindexp == canvas_find_index)
                 {
                     glist_noselect(x);
-                    pd_variadicMessage(&x->gl_obj.te_g.g_pd, gensym("menu-open"), "");
+                    pd_vMessage(&x->gl_obj.te_g.g_pd, gensym("menu-open"), "");
                     canvas_editmode(x, 1.);
                     glist_select(x, y);
                     didit = 1;

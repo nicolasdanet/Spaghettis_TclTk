@@ -1474,7 +1474,7 @@ t_pd *glob_evalfile(t_pd *ignore, t_symbol *name, t_symbol *dir)
     while ((x != s__X.s_thing) && s__X.s_thing) 
     {
         x = s__X.s_thing;
-        pd_variadicMessage(x, gensym("pop"), "i", 1);
+        pd_vMessage(x, gensym("pop"), "i", 1);
     }
     pd_performLoadbang();
     canvas_resume_dsp(dspstate);

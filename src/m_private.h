@@ -136,7 +136,7 @@ void    obj_list                    (t_object *x, t_symbol *s, int argc, t_atom 
 void    pd_push                     (t_pd *x);
 void    pd_pop                      (t_pd *x);
 void    pd_empty                    (t_pd *x);
-void    pd_variadicMessage          (t_pd *x, t_symbol *s, char *fmt, ...);
+void    pd_vMessage                 (t_pd *x, t_symbol *s, char *fmt, ...);
 void    pd_performLoadbang          (void);
 int     pd_setLoadingAbstraction    (t_symbol *s);
 

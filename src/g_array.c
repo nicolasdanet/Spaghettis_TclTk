@@ -144,13 +144,13 @@ void garray_init( void)
     glob_setfilename(0, gensym("_float_template"), gensym("."));
     binbuf_text(b, garray_floattemplatefile, strlen(garray_floattemplatefile));
     binbuf_eval(b, &pd_canvasMaker, 0, 0);
-    pd_variadicMessage(s__X.s_thing, gensym("pop"), "i", 0);
+    pd_vMessage(s__X.s_thing, gensym("pop"), "i", 0);
     
     glob_setfilename(0, gensym("_float_array_template"), gensym("."));
     binbuf_text(b, garray_arraytemplatefile, strlen(garray_arraytemplatefile));
     binbuf_eval(b, &pd_canvasMaker, 0, 0);
     garray_arraytemplatecanvas = s__X.s_thing;
-    pd_variadicMessage(s__X.s_thing, gensym("pop"), "i", 0);
+    pd_vMessage(s__X.s_thing, gensym("pop"), "i", 0);
 
     glob_setfilename(0, &s_, &s_);
     binbuf_free(b);  
@@ -256,7 +256,7 @@ static void garray_fittograph(t_garray *x, int n, int style)
     t_glist *gl = x->x_glist;
     if (gl->gl_list == &x->x_gobj && !x->x_gobj.g_next)
     {
-        pd_variadicMessage(&gl->gl_obj.te_g.g_pd, gensym("bounds"), "ffff",
+        pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym("bounds"), "ffff",
             0., gl->gl_y1, (double)
                 (style == PLOT_POINTS || n == 1 ? n : n-1),
                     gl->gl_y2);
@@ -1056,20 +1056,20 @@ static void garray_list(t_garray *x, t_symbol *s, int argc, t_atom *argv)
 static void garray_bounds(t_garray *x, t_floatarg x1, t_floatarg y1,
     t_floatarg x2, t_floatarg y2)
 {
-    pd_variadicMessage(&x->x_glist->gl_obj.te_g.g_pd, gensym("bounds"), "ffff", x1, y1, x2, y2);
+    pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, gensym("bounds"), "ffff", x1, y1, x2, y2);
 }
 
     /* same for "xticks", etc */
 static void garray_xticks(t_garray *x,
     t_floatarg point, t_floatarg inc, t_floatarg f)
 {
-    pd_variadicMessage(&x->x_glist->gl_obj.te_g.g_pd, gensym("xticks"), "fff", point, inc, f);
+    pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, gensym("xticks"), "fff", point, inc, f);
 }
 
 static void garray_yticks(t_garray *x,
     t_floatarg point, t_floatarg inc, t_floatarg f)
 {
-    pd_variadicMessage(&x->x_glist->gl_obj.te_g.g_pd, gensym("yticks"), "fff", point, inc, f);
+    pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, gensym("yticks"), "fff", point, inc, f);
 }
 
 static void garray_xlabel(t_garray *x, t_symbol *s, int argc, t_atom *argv)

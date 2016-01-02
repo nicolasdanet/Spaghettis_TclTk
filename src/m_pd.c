@@ -363,7 +363,7 @@ void pd_pop (t_pd *x)
 
 void pd_performLoadbang (void)
 {
-    if (pd_lastPopped) { pd_variadicMessage (pd_lastPopped, gensym ("loadbang"), ""); }
+    if (pd_lastPopped) { pd_vMessage (pd_lastPopped, gensym ("loadbang"), ""); }
     
     pd_lastPopped = NULL;
 }

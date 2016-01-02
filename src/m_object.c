@@ -24,11 +24,11 @@ struct _inlet
     t_pd            *i_destination;
     t_symbol        *i_symbolFrom;
     union {
+        t_float     i_signalValue;
         t_symbol    *i_symbolTo;
         t_gpointer  *i_slotPointer;
         t_float     *i_slotFloat;
         t_symbol    **i_slotSymbol;
-        t_float     i_signalValue;
     } i_un;
 };
 
@@ -43,119 +43,133 @@ static t_class *symbolinlet_class;          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_inlet *inlet_new (t_object *owner, t_pd *dest, t_symbol *s1, t_symbol *s2)
+static void inlet_list (t_inlet *x, t_symbol *s, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void inlet_wrong (t_inlet *x, t_symbol *s)
 {
-    t_inlet *x = (t_inlet *)pd_new(inlet_class), *y, *y2;
+    post_error (PD_TRANSLATE ("inlet / Unexpected \"%s\""), s->s_name);
+}
+
+static void inlet_bang (t_inlet *x)
+{
+    if (x->i_symbolFrom == &s_bang)         { pd_vMessage (x->i_destination, x->i_un.i_symbolTo, ""); }
+    else if (x->i_symbolFrom == NULL)       { pd_bang (x->i_destination); }
+    else if (x->i_symbolFrom == &s_list)    { inlet_list (x, &s_bang, 0, NULL); }
+    else {
+        inlet_wrong (x, &s_bang);
+    }
+}
+
+static void inlet_pointer (t_inlet *x, t_gpointer *gp)
+{
+    if (x->i_symbolFrom == &s_pointer)      { pd_vMessage (x->i_destination, x->i_un.i_symbolTo, "p", gp); }
+    else if (x->i_symbolFrom == NULL)       { pd_pointer(x->i_destination, gp); }
+    else if (x->i_symbolFrom == &s_list)    {
+        t_atom a;
+        SET_POINTER (&a, gp);
+        inlet_list (x, &s_pointer, 1, &a);
+
+    } else {
+        inlet_wrong (x, &s_pointer);
+    }
+}
+
+static void inlet_float (t_inlet *x, t_float f)
+{
+    if (x->i_symbolFrom == &s_float)        { pd_vMessage (x->i_destination, x->i_un.i_symbolTo, "f", f); }
+    else if (x->i_symbolFrom == &s_signal)  { x->i_un.i_signalValue = f; }
+    else if (x->i_symbolFrom == NULL)       { pd_float (x->i_destination, f); }
+    else if (x->i_symbolFrom == &s_list)    {
+        t_atom a;
+        SET_FLOAT (&a, f);
+        inlet_list (x, &s_float, 1, &a);
+    } else { 
+        inlet_wrong (x, &s_float);
+    }
+}
+
+static void inlet_symbol (t_inlet *x, t_symbol *s)
+{
+    if (x->i_symbolFrom == &s_symbol)       { pd_vMessage (x->i_destination, x->i_un.i_symbolTo, "s", s); }
+    else if (x->i_symbolFrom == NULL)       { pd_symbol (x->i_destination, s); }
+    else if (x->i_symbolFrom == &s_list)    {
+        t_atom a;
+        SET_SYMBOL (&a, s);
+        inlet_list (x, &s_symbol, 1, &a);
+    } else { 
+        inlet_wrong (x, &s_symbol);
+    }
+}
+
+static void inlet_list (t_inlet *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (x->i_symbolFrom == &s_list 
+        || x->i_symbolFrom == &s_float 
+        || x->i_symbolFrom == &s_symbol 
+        || x->i_symbolFrom == &s_pointer)   { pd_message (x->i_destination, x->i_un.i_symbolTo, argc, argv); }
+    else if (x->i_symbolFrom == NULL)       { pd_list (x->i_destination, argc, argv);  }
+    else if (!argc)                         { inlet_bang (x); }
+    else if (argc == 1 && IS_FLOAT (argv))  { inlet_float (x, atom_getfloat (argv));   }
+    else if (argc == 1 && IS_SYMBOL (argv)) { inlet_symbol (x, atom_getsymbol (argv)); }
+    else { 
+        inlet_wrong(x, &s_list);
+    }
+}
+
+static void inlet_anything (t_inlet *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (x->i_symbolFrom == s)               { pd_message (x->i_destination, x->i_un.i_symbolTo, argc, argv); }
+    else if (x->i_symbolFrom == NULL)       { pd_message (x->i_destination, s, argc, argv); }
+    else {
+        inlet_wrong(x, s);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_inlet *inlet_new (t_object *owner, t_pd *destination, t_symbol *s1, t_symbol *s2)
+{
+    t_inlet *x = (t_inlet *)pd_new (inlet_class);
+    t_inlet *y1 = NULL;
+    t_inlet *y2 = NULL;
+    
     x->i_owner = owner;
-    x->i_destination = dest;
-    if (s1 == &s_signal)
-        x->i_un.i_signalValue = 0;
-    else x->i_un.i_symbolTo = s2;
+    x->i_destination = destination;
+    
+    if (s1 == &s_signal) { x->i_un.i_signalValue = 0.0; }
+    else { 
+        x->i_un.i_symbolTo = s2;
+    }
+    
     x->i_symbolFrom = s1;
-    x->i_next = 0;
-    if (y = owner->te_inlet)
-    {
-        while (y2 = y->i_next) y = y2;
-        y->i_next = x;
+    x->i_next = NULL;
+    
+    if (y1 = owner->te_inlet) { while (y2 = y1->i_next) { y1 = y2; } y1->i_next = x; } 
+    else { 
+        owner->te_inlet = x;
     }
-    else owner->te_inlet = x;
-    return (x);
+    
+    return x;
 }
 
-t_inlet *signalinlet_new(t_object *owner, t_float f)
+t_inlet *signalinlet_new (t_object *owner, t_float f)
 {
-    t_inlet *x = inlet_new(owner, &owner->te_g.g_pd, &s_signal, &s_signal);
+    t_inlet *x = inlet_new (owner, &owner->te_g.g_pd, &s_signal, &s_signal);
+    
     x->i_un.i_signalValue = f;
-    return (x);
+    
+    return x;
 }
 
-static void inlet_wrong(t_inlet *x, t_symbol *s)
-{
-    post_error ("inlet: expected '%s' but got '%s'", x->i_symbolFrom->s_name, s->s_name);
-}
-
-static void inlet_list(t_inlet *x, t_symbol *s, int argc, t_atom *argv);
-
-    /* LATER figure out how to make these efficient: */
-static void inlet_bang(t_inlet *x)
-{
-    if (x->i_symbolFrom == &s_bang) 
-        pd_variadicMessage(x->i_destination, x->i_un.i_symbolTo, "");
-    else if (!x->i_symbolFrom) pd_bang(x->i_destination);
-    else if (x->i_symbolFrom == &s_list)
-        inlet_list(x, &s_bang, 0, 0);
-    else inlet_wrong(x, &s_bang);
-}
-
-static void inlet_pointer(t_inlet *x, t_gpointer *gp)
-{
-    if (x->i_symbolFrom == &s_pointer) 
-        pd_variadicMessage(x->i_destination, x->i_un.i_symbolTo, "p", gp);
-    else if (!x->i_symbolFrom) pd_pointer(x->i_destination, gp);
-    else if (x->i_symbolFrom == &s_list)
-    {
-        t_atom a;
-        SET_POINTER(&a, gp);
-        inlet_list(x, &s_pointer, 1, &a);
-    }
-    else inlet_wrong(x, &s_pointer);
-}
-
-static void inlet_float(t_inlet *x, t_float f)
-{
-    if (x->i_symbolFrom == &s_float)
-        pd_variadicMessage(x->i_destination, x->i_un.i_symbolTo, "f", (t_floatarg)f);
-    else if (x->i_symbolFrom == &s_signal)
-        x->i_un.i_signalValue = f;
-    else if (!x->i_symbolFrom)
-        pd_float(x->i_destination, f);
-    else if (x->i_symbolFrom == &s_list)
-    {
-        t_atom a;
-        SET_FLOAT(&a, f);
-        inlet_list(x, &s_float, 1, &a);
-    }
-    else inlet_wrong(x, &s_float);
-}
-
-static void inlet_symbol(t_inlet *x, t_symbol *s)
-{
-    if (x->i_symbolFrom == &s_symbol) 
-        pd_variadicMessage(x->i_destination, x->i_un.i_symbolTo, "s", s);
-    else if (!x->i_symbolFrom) pd_symbol(x->i_destination, s);
-    else if (x->i_symbolFrom == &s_list)
-    {
-        t_atom a;
-        SET_SYMBOL(&a, s);
-        inlet_list(x, &s_symbol, 1, &a);
-    }
-    else inlet_wrong(x, &s_symbol);
-}
-
-static void inlet_list(t_inlet *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_atom at;
-    if (x->i_symbolFrom == &s_list || x->i_symbolFrom == &s_float
-        || x->i_symbolFrom == &s_symbol || x->i_symbolFrom == &s_pointer)
-            pd_message(x->i_destination, x->i_un.i_symbolTo, argc, argv);
-    else if (!x->i_symbolFrom) pd_list (x->i_destination, argc, argv);
-    else if (!argc)
-      inlet_bang(x);
-    else if (argc==1 && argv->a_type == A_FLOAT)
-      inlet_float(x, atom_getfloat(argv));
-    else if (argc==1 && argv->a_type == A_SYMBOL)
-      inlet_symbol(x, atom_getsymbol(argv));
-    else inlet_wrong(x, &s_list);
-}
-
-static void inlet_anything(t_inlet *x, t_symbol *s, int argc, t_atom *argv)
-{
-    if (x->i_symbolFrom == s)
-        pd_message(x->i_destination, x->i_un.i_symbolTo, argc, argv);
-    else if (!x->i_symbolFrom)
-        pd_message(x->i_destination, s, argc, argv);
-    else inlet_wrong(x, s);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void inlet_free(t_inlet *x)
 {

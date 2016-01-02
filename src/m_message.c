@@ -351,7 +351,7 @@ err:
 
 /* < http://stackoverflow.com/a/11270603 > */
 
-void pd_variadicMessage (t_pd *x, t_symbol *s, char *fmt, ...)
+void pd_vMessage (t_pd *x, t_symbol *s, char *fmt, ...)
 {
     va_list ap;
     t_atom arg[MESSAGE_MAXIMUM_ARGUMENTS] = { 0 };
