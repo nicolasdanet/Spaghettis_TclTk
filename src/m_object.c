@@ -179,40 +179,6 @@ t_inlet *inlet_new (t_object *owner, t_pd *destination, t_symbol *s1, t_symbol *
     return x;
 }
 
-t_inlet *signalinlet_new (t_object *owner, t_float f)
-{
-    t_inlet *x = inlet_new (owner, &owner->te_g.g_pd, &s_signal, &s_signal);
-    
-    x->i_un.i_signal = f;
-    
-    return x;
-}
-
-t_inlet *pointerinlet_new (t_object *owner, t_gpointer *gp)
-{
-    t_inlet *x = (t_inlet *)pd_new (pointerinlet_class);
-    t_inlet *y1 = NULL;
-    t_inlet *y2 = NULL;
-    
-    x->i_owner = owner;
-    x->i_destination = NULL;
-    
-    x->i_symbolFrom = &s_pointer;
-    x->i_un.i_pointer = gp;
-    x->i_next = NULL;
-    
-    if (y1 = owner->te_inlet) { while (y2 = y1->i_next) { y1 = y2; } y1->i_next = x; }
-    else {
-        owner->te_inlet = x;
-    }
-    
-    return x;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void inlet_free (t_inlet *x)
 {
     t_object *y = x->i_owner;
@@ -234,57 +200,90 @@ void inlet_free (t_inlet *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* ----- pointerinlets, floatinlets, syminlets: optimized inlets ------- */
-
-t_inlet *floatinlet_new(t_object *owner, t_float *fp)
+t_inlet *signalinlet_new (t_object *owner, t_float f)
 {
-    t_inlet *x = (t_inlet *)pd_new(floatinlet_class), *y, *y2;
+    t_inlet *x = inlet_new (owner, &owner->te_g.g_pd, &s_signal, &s_signal);
+    
+    x->i_un.i_signal = f;
+    
+    return x;
+}
+
+t_inlet *pointerinlet_new (t_object *owner, t_gpointer *gp)
+{
+    t_inlet *x = (t_inlet *)pd_new (pointerinlet_class);
+    t_inlet *y1 = NULL;
+    t_inlet *y2 = NULL;
+    
     x->i_owner = owner;
-    x->i_destination = 0;
+    x->i_destination = NULL;
+    x->i_symbolFrom = &s_pointer;
+    x->i_un.i_pointer = gp;
+    x->i_next = NULL;
+    
+    if (y1 = owner->te_inlet) { while (y2 = y1->i_next) { y1 = y2; } y1->i_next = x; }
+    else {
+        owner->te_inlet = x;
+    }
+    
+    return x;
+}
+
+t_inlet *floatinlet_new (t_object *owner, t_float *fp)
+{
+    t_inlet *x = (t_inlet *)pd_new (floatinlet_class);
+    t_inlet *y1 = NULL;
+    t_inlet *y2 = NULL;
+    
+    x->i_owner = owner;
+    x->i_destination = NULL;
     x->i_symbolFrom = &s_float;
     x->i_un.i_float = fp;
-    x->i_next = 0;
-    if (y = owner->te_inlet)
-    {
-        while (y2 = y->i_next) y = y2;
-        y->i_next = x;
+    x->i_next = NULL;
+    
+    if (y1 = owner->te_inlet) { while (y2 = y1->i_next) { y1 = y2; } y1->i_next = x; }
+    else {
+        owner->te_inlet = x;
     }
-    else owner->te_inlet = x;
-    return (x);
+    
+    return x;
 }
 
 t_inlet *symbolinlet_new(t_object *owner, t_symbol **sp)
 {
-    t_inlet *x = (t_inlet *)pd_new(symbolinlet_class), *y, *y2;
+    t_inlet *x = (t_inlet *)pd_new (symbolinlet_class);
+    t_inlet *y1 = NULL;
+    t_inlet *y2 = NULL;
+    
     x->i_owner = owner;
-    x->i_destination = 0;
+    x->i_destination = NULL;
     x->i_symbolFrom = &s_symbol;
     x->i_un.i_symbol = sp;
-    x->i_next = 0;
-    if (y = owner->te_inlet)
-    {
-        while (y2 = y->i_next) y = y2;
-        y->i_next = x;
+    x->i_next = NULL;
+    
+    if (y1 = owner->te_inlet) { while (y2 = y1->i_next) { y1 = y2; } y1->i_next = x; }
+    else {
+        owner->te_inlet = x;
     }
-    else owner->te_inlet = x;
-    return (x);
+    
+    return x;
 }
 
-/* ---------------------- routine to handle lists ---------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-    /* objects interpret lists by feeding them to the individual inlets.
-    Before you call this check that the object doesn't have a more
-    specific way to handle lists. */
-void obj_list(t_object *x, t_symbol *s, int argc, t_atom *argv)
+void object_list (t_object *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_atom *ap;
     int count;
-    t_inlet *ip = ((t_object *)x)->te_inlet;
-    if (!argc) 
-    {
-        pd_empty(&x->te_g.g_pd);
+    t_atom *ap = NULL;
+    t_inlet *ip = x->te_inlet;
+    
+    if (!argc)  {
+        pd_empty (&x->te_g.g_pd);
         return;
     }
+    
     for (count = argc-1, ap = argv+1; ip && count--; ap++, ip = ip->i_next)
     {
         if (ap->a_type == A_POINTER) pd_pointer(&ip->i_pd, ap->a_w.w_gpointer);

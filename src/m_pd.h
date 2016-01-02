@@ -519,7 +519,7 @@ PD_DLL void     outlet_list                 (t_outlet *x, t_symbol *s, int argc,
 PD_DLL void     outlet_anything             (t_outlet *x, t_symbol *s, int argc, t_atom *argv);
 PD_DLL void     outlet_free                 (t_outlet *x);
 
-PD_DLL void     obj_list                    (t_object *x, t_symbol *s, int argc, t_atom *argv);
+PD_DLL void     object_list                    (t_object *x, t_symbol *s, int argc, t_atom *argv);
 
 PD_DLL t_symbol *outlet_getsymbol           (t_outlet *x);
 PD_DLL t_object *pd_checkobject             (t_pd *x);

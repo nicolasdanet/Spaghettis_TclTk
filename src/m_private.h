@@ -131,7 +131,7 @@ struct _pdinstance {
 void    outlet_setstacklim          (void);
 
 void    text_save                   (t_gobj *z, t_binbuf *b);
-void    obj_list                    (t_object *x, t_symbol *s, int argc, t_atom *argv);
+void    object_list                    (t_object *x, t_symbol *s, int argc, t_atom *argv);
 
 void    pd_push                     (t_pd *x);
 void    pd_pop                      (t_pd *x);

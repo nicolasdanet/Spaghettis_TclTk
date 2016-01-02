@@ -783,7 +783,7 @@ static void pack_symbol(t_pack *x, t_symbol *s)
 
 static void pack_list(t_pack *x, t_symbol *s, int ac, t_atom *av)
 {
-    obj_list(&x->x_obj, 0, ac, av);
+    object_list(&x->x_obj, 0, ac, av);
 }
 
 static void pack_anything(t_pack *x, t_symbol *s, int ac, t_atom *av)
@@ -793,7 +793,7 @@ static void pack_anything(t_pack *x, t_symbol *s, int ac, t_atom *av)
     for (i = 0; i < ac; i++)
         av2[i + 1] = av[i];
     SET_SYMBOL(av2, s);
-    obj_list(&x->x_obj, 0, ac+1, av2);
+    object_list(&x->x_obj, 0, ac+1, av2);
     PD_MEMORY_FREE(av2, (ac + 1) * sizeof(t_atom));
 }
 

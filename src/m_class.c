@@ -134,7 +134,7 @@ static void class_defaultList (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     }
 
     if ((*(*x)->c_methodAny) != class_defaultAnything) { (*(*x)->c_methodAny) (x, &s_list, argc, argv); }
-    else if ((*x)->c_isBox) { obj_list ((t_object *)x, s, argc, argv); }
+    else if ((*x)->c_isBox) { object_list ((t_object *)x, s, argc, argv); }
     else { 
         class_defaultAnything (x, &s_list, argc, argv); 
     }
