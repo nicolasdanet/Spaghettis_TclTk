@@ -51,7 +51,7 @@ static void object_inletList (t_inlet *x, t_symbol *s, int argc, t_atom *argv);
 
 static void object_inletWrong (t_inlet *x, t_symbol *s)
 {
-    post_error (PD_TRANSLATE ("inlet / Unexpected \"%s\""), s->s_name);
+    post_error (PD_TRANSLATE ("inlet / Unexpected \"%s\"."), s->s_name);
 }
 
 static void object_inletBang (t_inlet *x)

@@ -39,7 +39,7 @@ static void class_defaultAnything   (t_pd *x, t_symbol *s, int argc, t_atom *arg
 
 static void class_floatForSignal (t_pd *x, t_float f)
 {
-    int offset = (*x)->c_floatSignalIn;
+    int offset = pd_class (x)->c_floatSignalIn;
     PD_ASSERT (offset > 0);
     *(t_float *)(((char *)x) + offset) = f;
 }
@@ -64,77 +64,87 @@ static void class_defaultProperties (t_gobj *z, t_glist *glist)
 
 static void class_defaultBang (t_pd *x)
 {
-    if ((*(*x)->c_methodList) != class_defaultList) { (*(*x)->c_methodList) (x, NULL, 0, NULL); }
+    t_class *c = pd_class (x);
+    
+    if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, NULL, 0, NULL); }
     else { 
-        (*(*x)->c_methodAny) (x, &s_bang, 0, NULL);
+        (*c->c_methodAny) (x, &s_bang, 0, NULL);
     }
 }
 
 static void class_defaultPointer (t_pd *x, t_gpointer *gp)
 {
+    t_class *c = pd_class (x);
+        
     t_atom a;
     SET_POINTER (&a, gp);
         
-    if ((*(*x)->c_methodList) != class_defaultList) { (*(*x)->c_methodList) (x, NULL, 1, &a); }
+    if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, NULL, 1, &a); }
     else {
-        (*(*x)->c_methodAny) (x, &s_pointer, 1, &a);
+        (*c->c_methodAny) (x, &s_pointer, 1, &a);
     }
 }
 
 static void class_defaultFloat (t_pd *x, t_float f)
 {
+    t_class *c = pd_class (x);
+    
     t_atom a;
     SET_FLOAT (&a, f);
         
-    if ((*(*x)->c_methodList) != class_defaultList) { (*(*x)->c_methodList) (x, NULL, 1, &a); }
+    if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, NULL, 1, &a); }
     else {
-        (*(*x)->c_methodAny) (x, &s_float, 1, &a);
+        (*c->c_methodAny) (x, &s_float, 1, &a);
     }
 }
 
 static void class_defaultSymbol (t_pd *x, t_symbol *s)
 {
+    t_class *c = pd_class (x);
+    
     t_atom a;
     SET_SYMBOL (&a, s);
         
-    if ((*(*x)->c_methodList) != class_defaultList) { (*(*x)->c_methodList) (x, NULL, 1, &a); }
+    if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, NULL, 1, &a); }
     else {
-        (*(*x)->c_methodAny) (x, &s_symbol, 1, &a);
+        (*c->c_methodAny) (x, &s_symbol, 1, &a);
     }
 }
 
 static void class_defaultList (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
+    t_class *c = pd_class (x);
+    
     if (argc == 0) {
-        if ((*(*x)->c_methodBang) != class_defaultBang) { (*(*x)->c_methodBang) (x); return; }
+        if ((*c->c_methodBang) != class_defaultBang) { (*c->c_methodBang) (x); return; }
     }
     
     if (argc == 1) {
     
         if (IS_FLOAT (argv)) {
-            if ((*(*x)->c_methodFloat) != class_defaultFloat) {
-                (*(*x)->c_methodFloat) (x, GET_FLOAT (argv));
+            if ((*c->c_methodFloat) != class_defaultFloat) {
+                (*c->c_methodFloat) (x, GET_FLOAT (argv));
                 return;
             }
         }
             
         if (IS_SYMBOL (argv)) { 
-            if ((*(*x)->c_methodSymbol) != class_defaultSymbol) {
-                (*(*x)->c_methodSymbol) (x, GET_SYMBOL (argv));
+            if ((*c->c_methodSymbol) != class_defaultSymbol) {
+                (*c->c_methodSymbol) (x, GET_SYMBOL (argv));
                 return;
             }
         }
             
         if (IS_POINTER (argv)) {
-            if ((*(*x)->c_methodPointer) != class_defaultPointer) {
-                (*(*x)->c_methodPointer) (x, GET_POINTER (argv)); 
+            if ((*c->c_methodPointer) != class_defaultPointer) {
+                (*c->c_methodPointer) (x, GET_POINTER (argv)); 
                 return;
             }
         }
     }
 
-    if ((*(*x)->c_methodAny) != class_defaultAnything) { (*(*x)->c_methodAny) (x, &s_list, argc, argv); }
-    else if ((*x)->c_isBox) { object_list ((t_object *)x, s, argc, argv); }
+    if ((*c->c_methodAny) != class_defaultAnything) { (*c->c_methodAny) (x, &s_list, argc, argv); }
+    else if (c->c_isBox) { object_list ((t_object *)x, s, argc, argv); }
     else { 
         class_defaultAnything (x, &s_list, argc, argv); 
     }
@@ -146,7 +156,7 @@ static void class_defaultList (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
 static void class_defaultAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
-    post_error (PD_TRANSLATE ("%s / Unknown method \"%s\"."), (*x)->c_name->s_name, s->s_name);
+    post_error (PD_TRANSLATE ("%s / Unknown method \"%s\"."), pd_class (x)->c_name->s_name, s->s_name);
 }
 
 // -----------------------------------------------------------------------------------------------------------

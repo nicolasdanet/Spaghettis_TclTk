@@ -189,7 +189,7 @@ t_pd *pd_new (t_class *c)
 
 void pd_free (t_pd *x)
 {
-    t_class *c = *x;
+    t_class *c = pd_class (x);
 
     if (c->c_methodFree) { (*(c->c_methodFree))(x); }
 
@@ -211,34 +211,34 @@ void pd_free (t_pd *x)
 
 void pd_bang (t_pd *x)
 {
-    (*(*x)->c_methodBang) (x);
+    (*(pd_class (x)->c_methodBang)) (x);
 }
 
 void pd_float (t_pd *x, t_float f)
 {
-    (*(*x)->c_methodFloat) (x, f);
+    (*(pd_class (x)->c_methodFloat)) (x, f);
 }
 
 void pd_pointer (t_pd *x, t_gpointer *gp)
 {
-    (*(*x)->c_methodPointer) (x, gp);
+    (*(pd_class (x)->c_methodPointer)) (x, gp);
 }
 
 void pd_symbol (t_pd *x, t_symbol *s)
 {
-    (*(*x)->c_methodSymbol) (x, s);
+    (*(pd_class (x)->c_methodSymbol)) (x, s);
 }
 
 void pd_list (t_pd *x, int argc, t_atom *argv)
 {
-    (*(*x)->c_methodList) (x, &s_list, argc, argv);
+    (*(pd_class (x)->c_methodList)) (x, &s_list, argc, argv);
 }
 
 void pd_empty (t_pd *x)
 {
-    if (class_hasBang (pd_class (x))) { (*(*x)->c_methodBang) (x); }
+    if (class_hasBang (pd_class (x))) { (*(pd_class (x)->c_methodBang)) (x); }
     else {
-        (*(*x)->c_methodAny) (x, &s_bang, 0, NULL);
+        (*(pd_class (x)->c_methodAny)) (x, &s_bang, 0, NULL);
     }
 }
 

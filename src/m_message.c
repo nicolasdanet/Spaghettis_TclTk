@@ -28,7 +28,7 @@ typedef void (*t_messgimme)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-typedef t_pd *(*t_fun0) (                                           MESSAGE_FLOATS); // --
+typedef t_pd *(*t_fun0) (                                           MESSAGE_FLOATS);    // --
 typedef t_pd *(*t_fun1) (t_int,                                     MESSAGE_FLOATS);
 typedef t_pd *(*t_fun2) (t_int, t_int,                              MESSAGE_FLOATS);
 typedef t_pd *(*t_fun3) (t_int, t_int, t_int,                       MESSAGE_FLOATS);
@@ -130,7 +130,7 @@ t_symbol *gensym (const char *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void new_anything (void *dummy, t_symbol *s, int argc, t_atom *argv)
+static void new_anything (t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int f;
     char buf[PD_STRING] = { 0 };
@@ -212,8 +212,8 @@ void message_initialize (void)
 
 void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_class *c = *x;
     t_entry *m = NULL;
+    t_class *c = pd_class (x);
     int i;
     
     if (s == &s_float) {
