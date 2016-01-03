@@ -1551,7 +1551,7 @@ void canvas_doconnect(t_canvas *x, int xpos, int ypos, int which, int doit)
             }
             if (doit)
             {
-                oc = obj_connect(ob1, closest1, ob2, closest2);
+                oc = object_connect(ob1, closest1, ob2, closest2);
                 lx1 = x11 + (noutlet1 > 1 ?
                         ((x12-x11-INLETS_WIDTH) * closest1)/(noutlet1-1) : 0)
                              + INLETS_MIDDLE;
@@ -2530,7 +2530,7 @@ void canvas_connect(t_canvas *x, t_float fwhoout, t_float foutno,
         while (inno >= obj_ninlets(objsink))
             inlet_new(objsink, &objsink->te_g.g_pd, 0, 0);
 
-    if (!(oc = obj_connect(objsrc, outno, objsink, inno))) goto bad;
+    if (!(oc = object_connect(objsrc, outno, objsink, inno))) goto bad;
     if (glist_isvisible(x))
     {
         sys_vgui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",

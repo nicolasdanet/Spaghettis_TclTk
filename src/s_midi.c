@@ -300,7 +300,6 @@ static void sys_dispatchnextmidiin( void)
     if (!midi_inqueue[midi_intail].q_onebyte) { PD_BUG; }
     if (portno < 0 || portno >= MIDI_MAXIMUM_IN) { PD_BUG; }
     parserp = parser + portno;
-    outlet_setstacklim();
     
     if (byte >= 0xf8)
         inmidi_realtimein(portno, byte);

@@ -128,12 +128,6 @@ struct _pdinstance {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    outlet_setstacklim          (void);
-
-void    text_save                   (t_gobj *z, t_binbuf *b);
-void    object_list                 (t_object *x, t_symbol *s, int argc, t_atom *argv);
-int     outlet_isSignal             (t_outlet *x);
-
 void    pd_push                     (t_pd *x);
 void    pd_pop                      (t_pd *x);
 void    pd_empty                    (t_pd *x);
@@ -141,7 +135,19 @@ void    pd_vMessage                 (t_pd *x, t_symbol *s, char *fmt, ...);
 void    pd_performLoadbang          (void);
 int     pd_setLoadingAbstraction    (t_symbol *s);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int     outlet_isSignal             (t_outlet *x);
+
+void    text_save                   (t_gobj *z, t_binbuf *b);
+
 void    canvas_popabstraction       (t_canvas *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void        class_setExternalDirectory  (t_symbol *s);
 t_method    class_getMethod             (t_class *c, t_symbol *s);
@@ -163,12 +169,14 @@ char        *class_getHelpDirectory     (t_class *c);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_parentwidgetbehavior   *class_getParentWidget          (t_class *c);
+t_parentwidgetbehavior  *class_getParentWidget          (t_class *c);
 t_propertiesfn           class_getPropertiesFunction     (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+void            object_list                 (t_object *x, t_symbol *s, int argc, t_atom *argv);
 
 t_outconnect    *obj_starttraverseoutlet    (t_object *x, t_outlet **op, int nout);
 t_outconnect    *obj_nexttraverseoutlet     (t_outconnect *lastconnect, 
@@ -176,7 +184,7 @@ t_outconnect    *obj_nexttraverseoutlet     (t_outconnect *lastconnect,
                                                 t_inlet **inletp, 
                                                 int *whichp);
 
-t_outconnect    *obj_connect                (t_object *source, int outno, t_object *sink, int inno);
+t_outconnect    *object_connect             (t_object *source, int outno, t_object *sink, int inno);
 void            obj_disconnect              (t_object *source, int outno, t_object *sink, int inno);
 
 int obj_noutlets                            (t_object *x);

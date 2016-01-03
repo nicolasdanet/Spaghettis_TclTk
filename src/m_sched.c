@@ -78,18 +78,6 @@ void clock_unset(t_clock *x)
     }
 }
 
-static int object_eventNumber;
-
-void outlet_setstacklim(void)
-{
-    object_eventNumber++;
-}
-
-int sched_geteventno (void)
-{
-    return (object_eventNumber);
-}
-
     /* set the clock to call back at an absolute system time */
 void clock_set(t_clock *x, double setticks)
 {
@@ -433,7 +421,6 @@ void sched_tick( void)
         t_clock *c = pd_this->pd_clocks;
         pd_this->pd_systime = c->c_settime;
         clock_unset(pd_this->pd_clocks);
-        outlet_setstacklim();
         (*c->c_fn)(c->c_owner);
         if (!countdown--)
         {

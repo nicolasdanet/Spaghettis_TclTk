@@ -584,7 +584,6 @@ PD_DLL void post_atoms      (int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL int      sched_geteventno    (void);
 PD_DLL double   sys_getrealtime     (void);
 PD_DLL int      sys_isreadablefile  (const char *name);
 PD_DLL int      sys_isabsolutepath  (const char *dir);

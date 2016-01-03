@@ -76,7 +76,7 @@ static void object_inletList (t_inlet *x, t_symbol *s, int argc, t_atom *argv);
 
 static void object_errorUnexpected (t_inlet *x, t_symbol *s)
 {
-    post_error (PD_TRANSLATE ("inlet: unexpected '%s'"), s->s_name);   // --
+    post_error (PD_TRANSLATE ("inlet: unexpected '%s'"), s->s_name);    // --
 }
 
 static void object_errorStackOverflow (t_outlet *x)
@@ -491,8 +491,7 @@ void object_list (t_object *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_outconnect *obj_connect(t_object *source, int outno,
-    t_object *sink, int inno)
+t_outconnect *object_connect (t_object *source, int outno, t_object *sink, int inno)
 {
     t_inlet *i;
     t_outlet *o;

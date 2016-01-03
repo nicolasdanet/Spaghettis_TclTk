@@ -485,7 +485,6 @@ static void socketreceiver_getudp(t_socketreceiver *x, int fd)
             if (semi) 
                 *semi = 0;
             binbuf_text(inbinbuf, buf, strlen(buf));
-            outlet_setstacklim();
             if (x->sr_socketreceivefn)
                 (*x->sr_socketreceivefn)(x->sr_owner, inbinbuf);
             else { PD_BUG; }
@@ -551,7 +550,6 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
                 if (x->sr_inhead >= INBUFSIZE) x->sr_inhead = 0;
                 while (socketreceiver_doread(x))
                 {
-                    outlet_setstacklim();
                     if (x->sr_socketreceivefn)
                         (*x->sr_socketreceivefn)(x->sr_owner, inbinbuf);
                     else binbuf_eval(inbinbuf, 0, 0, 0);
