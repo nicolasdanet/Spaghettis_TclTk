@@ -489,66 +489,69 @@ void object_list (t_object *x, t_symbol *s, int argc, t_atom *argv)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
-t_outconnect *object_connect (t_object *source, int outno, t_object *sink, int inno)
+t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
 {
-    t_inlet *i;
-    t_outlet *o;
-    t_pd *to;
-    t_outconnect *oc, *oc2;
-    
-    for (o = source->te_outlet; o && outno; o = o->o_next, outno--) ;
-    if (!o) return (0);
-    
-    if (sink->te_g.g_pd->c_hasFirstInlet)
-    {
-        if (!inno)
-        {
-            to = &sink->te_g.g_pd;
-            goto doit;
-        }
-        else inno--;
-    }
-    for (i = sink->te_inlet; i && inno; i = i->i_next, inno--) ;
-    if (!i) return (0);
-    to = &i->i_pd;
-doit:
-    oc = (t_outconnect *)PD_MEMORY_GET(sizeof(*oc));
-    oc->oc_next = 0;
-    oc->oc_to = to;
-        /* append it to the end of the list */
-        /* LATER we might cache the last "oc" to make this faster. */
-    if ((oc2 = o->o_connections))
-    {
-        while (oc2->oc_next) oc2 = oc2->oc_next;
-        oc2->oc_next = oc;
-    }
-    else o->o_connections = oc;
-    if (o->o_symbol == &s_signal) canvas_update_dsp();
+    t_outlet *o = NULL;
 
-    return (oc);
+    PD_ASSERT (m >= 0);
+    PD_ASSERT (n >= 0);
+    
+    for (o = src->te_outlet; o && m; o = o->o_next, m--) {}
+    
+    if (o == NULL) { return NULL; }
+    else {
+    //
+    t_pd *to = NULL;
+    t_inlet *i = NULL;
+    t_outconnect *oc1 = NULL;
+    t_outconnect *oc2 = NULL;
+    
+    if (dest->te_g.g_pd->c_hasFirstInlet) { if (!n) { to = &dest->te_g.g_pd; } else { n--; } }
+    
+    if (to == NULL) {
+        for (i = dest->te_inlet; i && n; i = i->i_next, n--) {}
+        if (i == NULL) { return NULL; }
+        else {
+            to = &i->i_pd;
+        }
+    }
+
+    oc1 = (t_outconnect *)PD_MEMORY_GET (sizeof (t_outconnect));
+    oc1->oc_next = NULL;
+    oc1->oc_to = to;
+
+    if ((oc2 = o->o_connections)) { while (oc2->oc_next) { oc2 = oc2->oc_next; } oc2->oc_next = oc1; }
+    else {
+        o->o_connections = oc1;
+    }
+    
+    if (outlet_isSignal (o)) { canvas_update_dsp(); }
+
+    return oc1;
+    //
+    }
 }
 
-void obj_disconnect(t_object *source, int outno, t_object *sink, int inno)
+void obj_disconnect(t_object *src, int m, t_object *dest, int n)
 {
     t_inlet *i;
     t_outlet *o;
     t_pd *to;
     t_outconnect *oc, *oc2;
     
-    for (o = source->te_outlet; o && outno; o = o->o_next, outno--)
+    for (o = src->te_outlet; o && m; o = o->o_next, m--)
     if (!o) return;
-    if (sink->te_g.g_pd->c_hasFirstInlet)
+    if (dest->te_g.g_pd->c_hasFirstInlet)
     {
-        if (!inno)
+        if (!n)
         {
-            to = &sink->te_g.g_pd;
+            to = &dest->te_g.g_pd;
             goto doit;
         }
-        else inno--;
+        else n--;
     }
-    for (i = sink->te_inlet; i && inno; i = i->i_next, inno--) ;
+    for (i = dest->te_inlet; i && n; i = i->i_next, n--) ;
     if (!i) return;
     to = &i->i_pd;
 doit:

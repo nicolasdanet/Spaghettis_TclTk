@@ -139,8 +139,6 @@ int     pd_setLoadingAbstraction    (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int     outlet_isSignal             (t_outlet *x);
-
 void    text_save                   (t_gobj *z, t_binbuf *b);
 
 void    canvas_popabstraction       (t_canvas *x);
@@ -184,8 +182,8 @@ t_outconnect    *obj_nexttraverseoutlet     (t_outconnect *lastconnect,
                                                 t_inlet **inletp, 
                                                 int *whichp);
 
-t_outconnect    *object_connect             (t_object *source, int outno, t_object *sink, int inno);
-void            obj_disconnect              (t_object *source, int outno, t_object *sink, int inno);
+t_outconnect    *object_connect             (t_object *src, int m, t_object *dest, int n);
+void            obj_disconnect              (t_object *src, int m, t_object *dest, int n);
 
 int obj_noutlets                            (t_object *x);
 int obj_ninlets                             (t_object *x);
@@ -195,6 +193,12 @@ int obj_nsiginlets                          (t_object *x);
 int obj_nsigoutlets                         (t_object *x);
 int obj_siginletindex                       (t_object *x, int m);
 int obj_sigoutletindex                      (t_object *x, int m);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int outlet_isSignal                         (t_outlet *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
