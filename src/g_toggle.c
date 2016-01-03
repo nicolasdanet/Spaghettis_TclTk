@@ -73,11 +73,11 @@ void toggle_draw_new(t_toggle *x, t_glist *glist)
              x->x_gui.x_fontsize,
              x->x_gui.x_lcol, x);
 
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
+        /*sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
              canvas, xx, yy + x->x_gui.x_h-1, xx + INLETS_WIDTH, yy + x->x_gui.x_h, x, 0);
 
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
-             canvas, xx, yy, xx + INLETS_WIDTH, yy+1, x, 0);
+             canvas, xx, yy, xx + INLETS_WIDTH, yy+1, x, 0);*/
 }
 
 void toggle_draw_move(t_toggle *x, t_glist *glist)
@@ -100,12 +100,10 @@ void toggle_draw_move(t_toggle *x, t_glist *glist)
              canvas, x, xx+w+1, yy + x->x_gui.x_h-w-1, xx + x->x_gui.x_w-w, yy+w);
     sys_vgui(".x%lx.c coords %lxLABEL %d %d\n",
              canvas, x, xx+x->x_gui.x_ldx, yy+x->x_gui.x_ldy);
-    if(!x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
+    /*sys_vgui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
              canvas, x, 0, xx, yy + x->x_gui.x_h-1, xx + INLETS_WIDTH, yy + x->x_gui.x_h);
-    if(!x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
-             canvas, x, 0, xx, yy, xx + INLETS_WIDTH, yy+1);
+    sys_vgui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
+             canvas, x, 0, xx, yy, xx + INLETS_WIDTH, yy+1);*/
 }
 
 void toggle_draw_erase(t_toggle* x, t_glist* glist)
@@ -116,10 +114,8 @@ void toggle_draw_erase(t_toggle* x, t_glist* glist)
     sys_vgui(".x%lx.c delete %lxX1\n", canvas, x);
     sys_vgui(".x%lx.c delete %lxX2\n", canvas, x);
     sys_vgui(".x%lx.c delete %lxLABEL\n", canvas, x);
-    if(!x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    if(!x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+    //sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
+    //sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
 }
 
 void toggle_draw_config(t_toggle* x, t_glist* glist)
@@ -144,13 +140,13 @@ void toggle_draw_io(t_toggle* x, t_glist* glist)
     int ypos=text_ypix(&x->x_gui.x_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
-    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
+    /*sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
         canvas, xpos,
         ypos + x->x_gui.x_h-1, xpos + INLETS_WIDTH,
         ypos + x->x_gui.x_h, x, 0);
     sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
         canvas, xpos, ypos,
-        xpos + INLETS_WIDTH, ypos+1, x, 0);
+        xpos + INLETS_WIDTH, ypos+1, x, 0);*/
 }
 
 void toggle_draw_select(t_toggle* x, t_glist* glist)

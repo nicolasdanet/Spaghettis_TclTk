@@ -85,11 +85,11 @@ void hradio_draw_new(t_hradio *x, t_glist *glist)
              x->x_gui.x_fontsize,
              x->x_gui.x_lcol, x);
 
-    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
+    /*sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
              canvas, xx11b, yy12-1, xx11b + INLETS_WIDTH, yy12, x, 0);
 
     sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
-             canvas, xx11b, yy11, xx11b + INLETS_WIDTH, yy11+1, x, 0);
+             canvas, xx11b, yy11, xx11b + INLETS_WIDTH, yy11+1, x, 0);*/
 
 }
 
@@ -117,12 +117,10 @@ void hradio_draw_move(t_hradio *x, t_glist *glist)
     }
     sys_vgui(".x%lx.c coords %lxLABEL %d %d\n",
              canvas, x, xx11b+x->x_gui.x_ldx, yy11+x->x_gui.x_ldy);
-    if(!x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
+    /*sys_vgui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
              canvas, x, 0, xx11b, yy12-1, xx11b + INLETS_WIDTH, yy12);
-    if(!x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
-             canvas, x, 0, xx11b, yy11, xx11b + INLETS_WIDTH, yy11+1);
+    sys_vgui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
+             canvas, x, 0, xx11b, yy11, xx11b + INLETS_WIDTH, yy11+1);*/
 }
 
 void hradio_draw_erase(t_hradio* x, t_glist* glist)
@@ -136,10 +134,8 @@ void hradio_draw_erase(t_hradio* x, t_glist* glist)
         sys_vgui(".x%lx.c delete %lxBUT%d\n", canvas, x, i);
     }
     sys_vgui(".x%lx.c delete %lxLABEL\n", canvas, x);
-    if(!x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    if(!x->x_gui.x_fsf.x_rcv_able)
-    sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+    //sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
+    //sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
 }
 
 void hradio_draw_config(t_hradio* x, t_glist* glist)
@@ -167,7 +163,7 @@ void hradio_draw_io(t_hradio* x, t_glist* glist)
     int xpos=text_xpix(&x->x_gui.x_obj, glist);
     int ypos=text_ypix(&x->x_gui.x_obj, glist);
 
-    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
+    /*sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
         canvas,
         xpos, ypos + x->x_gui.x_w-1,
         xpos + INLETS_WIDTH, ypos + x->x_gui.x_w,
@@ -175,7 +171,7 @@ void hradio_draw_io(t_hradio* x, t_glist* glist)
     sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
         canvas,
         xpos, ypos,
-        xpos + INLETS_WIDTH, ypos+1, x, 0);
+        xpos + INLETS_WIDTH, ypos+1, x, 0);*/
 }
 
 void hradio_draw_select(t_hradio* x, t_glist* glist)

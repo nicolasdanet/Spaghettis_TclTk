@@ -211,7 +211,7 @@ static void my_numbox_draw_new(t_my_numbox *x, t_glist *glist)
         x->x_buf, x->x_gui.x_fontsize,
         x->x_gui.x_fcol, x);
 
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
+        /*sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
              canvas,
              xpos, ypos + x->x_gui.x_h-1,
              xpos+INLETS_WIDTH, ypos + x->x_gui.x_h,
@@ -221,7 +221,7 @@ static void my_numbox_draw_new(t_my_numbox *x, t_glist *glist)
              canvas,
              xpos, ypos,
              xpos+INLETS_WIDTH, ypos+1,
-             x, 0);
+             x, 0);*/
 }
 
 static void my_numbox_draw_move(t_my_numbox *x, t_glist *glist)
@@ -245,16 +245,14 @@ static void my_numbox_draw_move(t_my_numbox *x, t_glist *glist)
              canvas, x, xpos+x->x_gui.x_ldx, ypos+x->x_gui.x_ldy);
     sys_vgui(".x%lx.c coords %lxNUMBER %d %d\n",
              canvas, x, xpos+half+2, ypos+half+d);
-   if(!x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
+    /*sys_vgui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
              canvas, x, 0,
              xpos, ypos + x->x_gui.x_h-1,
              xpos+INLETS_WIDTH, ypos + x->x_gui.x_h);
-   if(!x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
+    sys_vgui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
              canvas, x, 0,
              xpos, ypos,
-             xpos+INLETS_WIDTH, ypos+1);
+             xpos+INLETS_WIDTH, ypos+1);*/
 }
 
 static void my_numbox_draw_erase(t_my_numbox* x,t_glist* glist)
@@ -265,10 +263,8 @@ static void my_numbox_draw_erase(t_my_numbox* x,t_glist* glist)
     sys_vgui(".x%lx.c delete %lxBASE2\n", canvas, x);
     sys_vgui(".x%lx.c delete %lxLABEL\n", canvas, x);
     sys_vgui(".x%lx.c delete %lxNUMBER\n", canvas, x);
-    if(!x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    if(!x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+    //sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
+    //sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
 }
 
 static void my_numbox_draw_config(t_my_numbox* x,t_glist* glist)
@@ -294,7 +290,7 @@ static void my_numbox_draw_io(t_my_numbox* x, t_glist* glist)
     int ypos=text_ypix(&x->x_gui.x_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
-    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
+    /*sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
         canvas,
         xpos, ypos + x->x_gui.x_h-1,
         xpos+INLETS_WIDTH, ypos + x->x_gui.x_h,
@@ -303,7 +299,7 @@ static void my_numbox_draw_io(t_my_numbox* x, t_glist* glist)
         canvas,
         xpos, ypos,
         xpos+INLETS_WIDTH, ypos+1,
-        x, 0);
+        x, 0);*/
 }
 
 static void my_numbox_draw_select(t_my_numbox *x, t_glist *glist)

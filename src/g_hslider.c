@@ -73,13 +73,13 @@ static void hslider_draw_new(t_hslider *x, t_glist *glist)
              x->x_gui.x_fontsize,
              x->x_gui.x_lcol, x);
 
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
+        /*sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
              canvas, xpos-3, ypos + x->x_gui.x_h-1,
              xpos+4, ypos + x->x_gui.x_h, x, 0);
 
         sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
              canvas, xpos-3, ypos,
-             xpos+4, ypos+1, x, 0);
+             xpos+4, ypos+1, x, 0);*/
 }
 
 static void hslider_draw_move(t_hslider *x, t_glist *glist)
@@ -98,16 +98,14 @@ static void hslider_draw_move(t_hslider *x, t_glist *glist)
              r, ypos + x->x_gui.x_h);
     sys_vgui(".x%lx.c coords %lxLABEL %d %d\n",
              canvas, x, xpos+x->x_gui.x_ldx, ypos+x->x_gui.x_ldy);
-    if(!x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
+    /*sys_vgui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
              canvas, x, 0,
              xpos-3, ypos + x->x_gui.x_h-1,
              xpos+4, ypos + x->x_gui.x_h);
-    if(!x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
+    sys_vgui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
              canvas, x, 0,
              xpos-3, ypos,
-             xpos+4, ypos+1);
+             xpos+4, ypos+1);*/
 }
 
 static void hslider_draw_erase(t_hslider* x,t_glist* glist)
@@ -117,10 +115,8 @@ static void hslider_draw_erase(t_hslider* x,t_glist* glist)
     sys_vgui(".x%lx.c delete %lxBASE\n", canvas, x);
     sys_vgui(".x%lx.c delete %lxKNOB\n", canvas, x);
     sys_vgui(".x%lx.c delete %lxLABEL\n", canvas, x);
-    if(!x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    if(!x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+    //sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
+    //sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
 }
 
 static void hslider_draw_config(t_hslider* x,t_glist* glist)
@@ -141,13 +137,13 @@ static void hslider_draw_io(t_hslider* x, t_glist* glist)
     int ypos=text_ypix(&x->x_gui.x_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
-    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
+    /*sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
         canvas, xpos-3, ypos + x->x_gui.x_h-1,
         xpos+4, ypos + x->x_gui.x_h, x, 0);
 
     sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
         canvas, xpos-3, ypos,
-        xpos+4, ypos+1, x, 0);
+        xpos+4, ypos+1, x, 0);*/
 }
 
 static void hslider_draw_select(t_hslider* x,t_glist* glist)

@@ -70,13 +70,13 @@ void bng_draw_new(t_bng *x, t_glist *glist)
              strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"",
              x->x_gui.x_fontsize,
              x->x_gui.x_lcol, x);
-    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
+    /*sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
              canvas, xpos,
              ypos + x->x_gui.x_h-1, xpos + INLETS_WIDTH,
              ypos + x->x_gui.x_h, x, 0);
     sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
              canvas, xpos, ypos,
-             xpos + INLETS_WIDTH, ypos+1, x, 0);
+             xpos + INLETS_WIDTH, ypos+1, x, 0);*/
 }
 
 void bng_draw_move(t_bng *x, t_glist *glist)
@@ -95,15 +95,14 @@ void bng_draw_move(t_bng *x, t_glist *glist)
              x->x_flashed?x->x_gui.x_fcol:x->x_gui.x_bcol);
     sys_vgui(".x%lx.c coords %lxLABEL %d %d\n",
              canvas, x, xpos+x->x_gui.x_ldx, ypos+x->x_gui.x_ldy);
-    if(!x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
+    /*
+    sys_vgui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
              canvas, x, 0, xpos,
              ypos + x->x_gui.x_h-1, xpos + INLETS_WIDTH,
              ypos + x->x_gui.x_h);
-    if(!x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
+    sys_vgui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
              canvas, x, 0, xpos, ypos,
-             xpos + INLETS_WIDTH, ypos+1);
+             xpos + INLETS_WIDTH, ypos+1);*/
 }
 
 void bng_draw_erase(t_bng* x, t_glist* glist)
@@ -113,10 +112,8 @@ void bng_draw_erase(t_bng* x, t_glist* glist)
     sys_vgui(".x%lx.c delete %lxBASE\n", canvas, x);
     sys_vgui(".x%lx.c delete %lxBUT\n", canvas, x);
     sys_vgui(".x%lx.c delete %lxLABEL\n", canvas, x);
-    if(!x->x_gui.x_fsf.x_snd_able)
-        sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    if(!x->x_gui.x_fsf.x_rcv_able)
-        sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+    //sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
+    //sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
 }
 
 void bng_draw_config(t_bng* x, t_glist* glist)
@@ -137,14 +134,14 @@ void bng_draw_io(t_bng* x, t_glist* glist)
     int xpos=text_xpix(&x->x_gui.x_obj, glist);
     int ypos=text_ypix(&x->x_gui.x_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
-
+    /*
     sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
         canvas, xpos,
         ypos + x->x_gui.x_h-1, xpos + INLETS_WIDTH,
         ypos + x->x_gui.x_h, x, 0);
     sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
         canvas, xpos, ypos,
-        xpos + INLETS_WIDTH, ypos+1, x, 0);
+        xpos + INLETS_WIDTH, ypos+1, x, 0); */
 }
 
 void bng_draw_select(t_bng* x, t_glist* glist)
