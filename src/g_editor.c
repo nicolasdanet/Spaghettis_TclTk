@@ -454,7 +454,7 @@ void canvas_disconnect(t_canvas *x,
             sinkno == index2 && t.tr_inno == inno)
         {
             sys_vgui(".x%lx.c delete l%lx\n", x, oc);
-            obj_disconnect(t.tr_ob, t.tr_outno, t.tr_ob2, t.tr_inno);
+            object_disconnect(t.tr_ob, t.tr_outno, t.tr_ob2, t.tr_inno);
             break;
         }
     }

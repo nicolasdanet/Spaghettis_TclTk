@@ -802,7 +802,7 @@ void canvas_deletelines(t_canvas *x, t_text *text)
                 sys_vgui(".x%lx.c delete l%lx\n",
                     glist_getcanvas(x), oc);
             }
-            obj_disconnect(t.tr_ob, t.tr_outno, t.tr_ob2, t.tr_inno);
+            object_disconnect(t.tr_ob, t.tr_outno, t.tr_ob2, t.tr_inno);
         }
     }
 }
@@ -824,7 +824,7 @@ void canvas_deletelinesforio(t_canvas *x, t_text *text,
                 sys_vgui(".x%lx.c delete l%lx\n",
                     glist_getcanvas(x), oc);
             }
-            obj_disconnect(t.tr_ob, t.tr_outno, t.tr_ob2, t.tr_inno);
+            object_disconnect(t.tr_ob, t.tr_outno, t.tr_ob2, t.tr_inno);
         }
     }
 }

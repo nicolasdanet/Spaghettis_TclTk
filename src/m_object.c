@@ -499,7 +499,7 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
     
     for (o = src->te_outlet; o && m; o = o->o_next, m--) {}
     
-    if (o == NULL) { return NULL; }
+    if (o == NULL) { PD_BUG; return NULL; }
     else {
     //
     t_pd *to = NULL;
@@ -511,7 +511,7 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
     
     if (to == NULL) {
         for (i = dest->te_inlet; i && n; i = i->i_next, n--) {}
-        if (i == NULL) { return NULL; }
+        if (i == NULL) { PD_BUG; return NULL; }
         else {
             to = (t_pd *)i;
         }
@@ -533,50 +533,53 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
     }
 }
 
-void obj_disconnect(t_object *src, int m, t_object *dest, int n)
+void object_disconnect (t_object *src, int m, t_object *dest, int n)
 {
-    t_inlet *i;
-    t_outlet *o;
-    t_pd *to;
-    t_outconnect *oc, *oc2;
+    t_outlet *o = NULL;
+        
+    for (o = src->te_outlet; o && m; o = o->o_next, m--) {}
     
-    for (o = src->te_outlet; o && m; o = o->o_next, m--)
-    if (!o) return;
-    if (dest->te_g.g_pd->c_hasFirstInlet)
-    {
-        if (!n)
-        {
-            to = &dest->te_g.g_pd;
-            goto doit;
+    if (o == NULL) { PD_BUG; }
+    else {
+    //
+    t_pd *to = NULL;
+    t_inlet *i = NULL;
+    t_outconnect *oc1 = NULL;
+    t_outconnect *oc2 = NULL;
+    
+    if (pd_class (dest)->c_hasFirstInlet) { if (!n) { to = (t_pd *)dest; } else { n--; } }
+    
+    if (to == NULL) {
+        for (i = dest->te_inlet; i && n; i = i->i_next, n--) {}
+        if (i == NULL) { PD_BUG; return; }
+        to = (t_pd *)i;
+    }
+
+    oc1 = o->o_connections;
+    
+    if (oc1 == NULL) { PD_BUG; return; }
+    
+    if (oc1->oc_to == to) {
+        o->o_connections = oc1->oc_next;
+        PD_MEMORY_FREE (oc1, sizeof (t_outconnect));
+    } else {
+        while (oc2 = oc1->oc_next) {
+            if (oc2->oc_to == to) {
+                oc1->oc_next = oc2->oc_next;
+                PD_MEMORY_FREE (oc2, sizeof (t_outconnect));
+                break;
+            }
+            oc1 = oc2;
         }
-        else n--;
     }
-    for (i = dest->te_inlet; i && n; i = i->i_next, n--) ;
-    if (!i) return;
-    to = &i->i_pd;
-doit:
-    if (!(oc = o->o_connections)) return;
-    if (oc->oc_to == to)
-    {
-        o->o_connections = oc->oc_next;
-        PD_MEMORY_FREE(oc, sizeof(*oc));
-        goto done;
+
+    if (outlet_isSignal (o)) { canvas_update_dsp(); }
+    //
     }
-    while (oc2 = oc->oc_next)
-    {
-        if (oc2->oc_to == to)
-        {
-            oc->oc_next = oc2->oc_next;
-            PD_MEMORY_FREE(oc2, sizeof(*oc2));
-            goto done;
-        }
-        oc = oc2;
-    }
-done:
-    if (o->o_symbol == &s_signal) canvas_update_dsp();
 }
 
-/* ------ traversal routines for code that can't see our structures ------ */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 int obj_noutlets(t_object *x)
 {

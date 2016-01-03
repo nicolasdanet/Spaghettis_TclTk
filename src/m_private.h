@@ -183,7 +183,7 @@ t_outconnect    *obj_nexttraverseoutlet     (t_outconnect *lastconnect,
                                                 int *whichp);
 
 t_outconnect    *object_connect             (t_object *src, int m, t_object *dest, int n);
-void            obj_disconnect              (t_object *src, int m, t_object *dest, int n);
+void            object_disconnect           (t_object *src, int m, t_object *dest, int n);
 
 int obj_noutlets                            (t_object *x);
 int obj_ninlets                             (t_object *x);
