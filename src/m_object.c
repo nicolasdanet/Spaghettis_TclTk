@@ -507,13 +507,13 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
     t_outconnect *oc1 = NULL;
     t_outconnect *oc2 = NULL;
     
-    if (dest->te_g.g_pd->c_hasFirstInlet) { if (!n) { to = &dest->te_g.g_pd; } else { n--; } }
+    if (pd_class (dest)->c_hasFirstInlet) { if (!n) { to = (t_pd *)dest; } else { n--; } }
     
     if (to == NULL) {
         for (i = dest->te_inlet; i && n; i = i->i_next, n--) {}
         if (i == NULL) { return NULL; }
         else {
-            to = &i->i_pd;
+            to = (t_pd *)i;
         }
     }
 
