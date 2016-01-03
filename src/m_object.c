@@ -489,6 +489,7 @@ void object_list (t_object *x, t_symbol *s, int argc, t_atom *argv)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
 {
@@ -499,8 +500,7 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
     
     for (o = src->te_outlet; o && m; o = o->o_next, m--) {}
     
-    if (o == NULL) { PD_BUG; return NULL; }
-    else {
+    if (o != NULL) { 
     //
     t_pd *to = NULL;
     t_inlet *i = NULL;
@@ -511,7 +511,7 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
     
     if (to == NULL) {
         for (i = dest->te_inlet; i && n; i = i->i_next, n--) {}
-        if (i == NULL) { PD_BUG; return NULL; }
+        if  (i == NULL) { return NULL; }
         else {
             to = (t_pd *)i;
         }
@@ -536,11 +536,13 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
 void object_disconnect (t_object *src, int m, t_object *dest, int n)
 {
     t_outlet *o = NULL;
-        
+    
+    PD_ASSERT (m >= 0);
+    PD_ASSERT (n >= 0);
+    
     for (o = src->te_outlet; o && m; o = o->o_next, m--) {}
     
-    if (o == NULL) { PD_BUG; }
-    else {
+    if (o != NULL) {
     //
     t_pd *to = NULL;
     t_inlet *i = NULL;
@@ -551,7 +553,7 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
     
     if (to == NULL) {
         for (i = dest->te_inlet; i && n; i = i->i_next, n--) {}
-        if (i == NULL) { PD_BUG; return; }
+        if  (i == NULL) { return; }
         to = (t_pd *)i;
     }
 
@@ -582,58 +584,68 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int obj_noutlets(t_object *x)
+int object_numberOfInlets (t_object *x)
 {
-    int n;
-    t_outlet *o;
-    for (o = x->te_outlet, n = 0; o; o = o->o_next) n++;
-    return (n);
+    int n = 0;
+    t_inlet *i = NULL;
+    if (pd_class (x)->c_hasFirstInlet) { n++; }
+    for (i = x->te_inlet; i; i = i->i_next)  { n++; }
+    return n;
 }
 
-int obj_ninlets(t_object *x)
+int object_numberOfOutlets (t_object *x)
 {
-    int n;
-    t_inlet *i;
-    for (i = x->te_inlet, n = 0; i; i = i->i_next) n++;
-    if (x->te_g.g_pd->c_hasFirstInlet) n++;
-    return (n);
+    int n = 0;
+    t_outlet *o = NULL;
+    for (o = x->te_outlet; o; o = o->o_next) { n++; }
+    return n;
 }
 
-t_outconnect *obj_starttraverseoutlet(t_object *x, t_outlet **op, int nout)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_outconnect *object_traverseOutletStart (t_object *x, t_outlet **ptr, int n)
 {
     t_outlet *o = x->te_outlet;
-    while (nout-- && o) o = o->o_next;
-    *op = o;
-    if (o) return (o->o_connections);
-    else return (0);
+    
+    while (n-- && o) { o = o->o_next; }
+    
+    *ptr = o;
+    
+    if (o) { return (o->o_connections); }
+    else {
+        return NULL;
+    }
 }
 
-t_outconnect *obj_nexttraverseoutlet(t_outconnect *lastconnect,
-    t_object **destp, t_inlet **inletp, int *whichp)
+t_outconnect *object_traverseOutletNext (t_outconnect *last, t_object **dest, t_inlet **ptr, int *n)
 {
-    t_pd *y;
-    y = lastconnect->oc_to;
-    
+    t_pd *y = last->oc_to;
+
     t_class *c = pd_class (y);
     
     if (c == inlet_class || c == pointerinlet_class || c == floatinlet_class || c == symbolinlet_class) {
-        int n;
-        t_inlet *i = (t_inlet *)y, *i2;
-        t_object *dest = i->i_owner;
-        for (n = dest->te_g.g_pd->c_hasFirstInlet, i2 = dest->te_inlet;
-            i2 && i2 != i; i2 = i2->i_next) n++;
-        *whichp = n;
-        *destp = dest;
-        *inletp = i;
+        t_inlet *i1 = (t_inlet *)y;
+        t_inlet *i2 = NULL;
+        t_object *o = i1->i_owner;
+        int k = pd_class (o)->c_hasFirstInlet;
+        for (i2 = o->te_inlet; i2 && i2 != i1; i2 = i2->i_next) { k++; }
+        *n    = k;
+        *ptr  = i1;
+        *dest = o;
+        
+    } else {
+        *n    = 0;
+        *ptr  = NULL;
+        *dest = ((t_object *)y);
     }
-    else
-    {
-        *whichp = 0;
-        *inletp = 0;
-        *destp = ((t_object *)y);
-    }
-    return (lastconnect->oc_next);
+    
+    return last->oc_next;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
     /* this one checks that a pd is indeed a patchable object, and returns
     it, correctly typed, or zero if the check failed. */
@@ -642,6 +654,10 @@ t_object *pd_checkobject(t_pd *x)
     if ((*x)->c_isBox) return ((t_object *)x);
     else return (0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* move an inlet or outlet to the head of the list */
 void obj_moveinletfirst(t_object *x, t_inlet *i)

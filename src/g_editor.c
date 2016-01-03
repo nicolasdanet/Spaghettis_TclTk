@@ -1359,7 +1359,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
                 else canvas_setcursor(x, CURSOR_EDIT_RESIZE);
             }
                 /* look for an outlet */
-            else if (ob && (noutlet = obj_noutlets(ob)) && ypos >= y2-4)
+            else if (ob && (noutlet = object_numberOfOutlets(ob)) && ypos >= y2-4)
             {
                 int width = x2 - x1;
                 int nout1 = (noutlet > 1 ? noutlet - 1 : 1);
@@ -1507,8 +1507,8 @@ void canvas_doconnect(t_canvas *x, int xpos, int ypos, int which, int doit)
         t_object *ob2 = pd_checkobject(&y2->g_pd);
         int noutlet1, ninlet2;
         if (ob1 && ob2 && ob1 != ob2 &&
-            (noutlet1 = obj_noutlets(ob1))
-            && (ninlet2 = obj_ninlets(ob2)))
+            (noutlet1 = object_numberOfOutlets(ob1))
+            && (ninlet2 = object_numberOfInlets(ob2)))
         {
             int width1 = x12 - x11, closest1, hotspot1;
             int width2 = x22 - x21, closest2, hotspot2;
@@ -2524,10 +2524,10 @@ void canvas_connect(t_canvas *x, t_float fwhoout, t_float foutno,
         /* if object creation failed, make dummy inlets or outlets
         as needed */ 
     if (pd_class(&src->g_pd) == text_class && objsrc->te_type == TYPE_OBJECT)
-        while (outno >= obj_noutlets(objsrc))
+        while (outno >= object_numberOfOutlets(objsrc))
             outlet_new(objsrc, 0);
     if (pd_class(&sink->g_pd) == text_class && objsink->te_type == TYPE_OBJECT)
-        while (inno >= obj_ninlets(objsink))
+        while (inno >= object_numberOfInlets(objsink))
             inlet_new(objsink, &objsink->te_g.g_pd, 0, 0);
 
     if (!(oc = object_connect(objsrc, outno, objsink, inno))) goto bad;

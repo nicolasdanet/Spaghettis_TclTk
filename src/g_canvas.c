@@ -263,7 +263,7 @@ t_outconnect *linetraverser_next(t_linetraverser *t)
                 if (ob = pd_checkobject(&y->g_pd)) break;
             if (!ob) return (0);
             t->tr_ob = ob;
-            t->tr_nout = obj_noutlets(ob);
+            t->tr_nout = object_numberOfOutlets(ob);
             outno = 0;
             if (glist_isvisible(t->tr_x))
                 gobj_getrect(y, t->tr_x,
@@ -271,12 +271,12 @@ t_outconnect *linetraverser_next(t_linetraverser *t)
             else t->tr_x11 = t->tr_y11 = t->tr_x12 = t->tr_y12 = 0;
         }
         t->tr_nextoutno = outno + 1;
-        rval = obj_starttraverseoutlet(t->tr_ob, &t->tr_outlet, outno);
+        rval = object_traverseOutletStart(t->tr_ob, &t->tr_outlet, outno);
         t->tr_outno = outno;
     }
-    t->tr_nextoc = obj_nexttraverseoutlet(rval, &t->tr_ob2,
+    t->tr_nextoc = object_traverseOutletNext(rval, &t->tr_ob2,
         &t->tr_inlet, &t->tr_inno);
-    t->tr_nin = obj_ninlets(t->tr_ob2);
+    t->tr_nin = object_numberOfInlets(t->tr_ob2);
     if (!t->tr_nin) { PD_BUG; }
     if (glist_isvisible(t->tr_x))
     {

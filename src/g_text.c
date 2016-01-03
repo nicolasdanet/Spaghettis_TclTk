@@ -1216,7 +1216,7 @@ static t_widgetbehavior gatom_widgetbehavior =
 void glist_drawio(t_glist *glist, t_object *ob, int firsttime,
     char *tag, int x1, int y1, int x2, int y2)
 {
-    int n = obj_noutlets(ob), nplus = (n == 1 ? 1 : n-1), i;
+    int n = object_numberOfOutlets(ob), nplus = (n == 1 ? 1 : n-1), i;
     int width = x2 - x1;
     for (i = 0; i < n; i++)
     {
@@ -1234,7 +1234,7 @@ void glist_drawio(t_glist *glist, t_object *ob, int firsttime,
                 onset, y2 - 1,
                 onset + INLETS_WIDTH, y2);
     }
-    n = obj_ninlets(ob);
+    n = object_numberOfInlets(ob);
     nplus = (n == 1 ? 1 : n-1);
     for (i = 0; i < n; i++)
     {
@@ -1333,11 +1333,11 @@ void text_drawborder(t_text *x, t_glist *glist,
 void glist_eraseio(t_glist *glist, t_object *ob, char *tag)
 {
     int i, n;
-    n = obj_noutlets(ob);
+    n = object_numberOfOutlets(ob);
     for (i = 0; i < n; i++)
         sys_vgui(".x%lx.c delete %so%d\n",
             glist_getcanvas(glist), tag, i);
-    n = obj_ninlets(ob);
+    n = object_numberOfInlets(ob);
     for (i = 0; i < n; i++)
         sys_vgui(".x%lx.c delete %si%d\n",
             glist_getcanvas(glist), tag, i);

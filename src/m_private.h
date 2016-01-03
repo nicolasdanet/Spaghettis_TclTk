@@ -168,31 +168,29 @@ char        *class_getHelpDirectory     (t_class *c);
 // -----------------------------------------------------------------------------------------------------------
 
 t_parentwidgetbehavior  *class_getParentWidget          (t_class *c);
-t_propertiesfn           class_getPropertiesFunction     (t_class *c);
+t_propertiesfn           class_getPropertiesFunction    (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            object_list                 (t_object *x, t_symbol *s, int argc, t_atom *argv);
+t_outconnect    *object_traverseOutletStart     (t_object *x, t_outlet **ptr, int n);
+t_outconnect    *object_traverseOutletNext      (t_outconnect *last, t_object **dest, t_inlet **ptr, int *n);
+t_outconnect    *object_connect                 (t_object *src, int m, t_object *dest, int n);
 
-t_outconnect    *obj_starttraverseoutlet    (t_object *x, t_outlet **op, int nout);
-t_outconnect    *obj_nexttraverseoutlet     (t_outconnect *lastconnect, 
-                                                t_object **destp, 
-                                                t_inlet **inletp, 
-                                                int *whichp);
+void            object_disconnect               (t_object *src, int m, t_object *dest, int n);
+int             object_numberOfInlets           (t_object *x);
+int             object_numberOfOutlets          (t_object *x);
 
-t_outconnect    *object_connect             (t_object *src, int m, t_object *dest, int n);
-void            object_disconnect           (t_object *src, int m, t_object *dest, int n);
 
-int obj_noutlets                            (t_object *x);
-int obj_ninlets                             (t_object *x);
 int obj_issignalinlet                       (t_object *x, int m);
 int obj_issignaloutlet                      (t_object *x, int m);
 int obj_nsiginlets                          (t_object *x);
 int obj_nsigoutlets                         (t_object *x);
 int obj_siginletindex                       (t_object *x, int m);
 int obj_sigoutletindex                      (t_object *x, int m);
+
+void            object_list                     (t_object *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
