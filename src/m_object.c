@@ -562,14 +562,15 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
     if (oc1->oc_to == to) {
         o->o_connections = oc1->oc_next;
         PD_MEMORY_FREE (oc1, sizeof (t_outconnect));
+        
     } else {
         while (oc2 = oc1->oc_next) {
-            if (oc2->oc_to == to) {
+            if (oc2->oc_to != to) { oc1 = oc2; }
+            else {
                 oc1->oc_next = oc2->oc_next;
                 PD_MEMORY_FREE (oc2, sizeof (t_outconnect));
                 break;
             }
-            oc1 = oc2;
         }
     }
 
