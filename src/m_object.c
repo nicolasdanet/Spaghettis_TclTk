@@ -21,7 +21,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int object_stackCount;               /* Shared. */
+static int object_stackCount;                   /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -74,12 +74,12 @@ static void object_inletList (t_inlet *x, t_symbol *s, int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void object_wrongInlet (t_inlet *x, t_symbol *s)
+static void object_errorUnexpected (t_inlet *x, t_symbol *s)
 {
     post_error (PD_TRANSLATE ("inlet: unexpected '%s'"), s->s_name);   // --
 }
 
-static void object_wrongOutlet (t_outlet *x)
+static void object_errorStackOverflow (t_outlet *x)
 {
     post_error (PD_TRANSLATE ("inlet: stack overflow"));    // --
 }
@@ -94,7 +94,7 @@ static void object_inletBang (t_inlet *x)
     else if (x->i_symbolFrom == NULL)       { pd_bang (x->i_destination); }
     else if (x->i_symbolFrom == &s_list)    { object_inletList (x, &s_bang, 0, NULL); }
     else {
-        object_wrongInlet (x, &s_bang);
+        object_errorUnexpected (x, &s_bang);
     }
 }
 
@@ -108,7 +108,7 @@ static void object_inletPointer (t_inlet *x, t_gpointer *gp)
         object_inletList (x, &s_pointer, 1, &a);
 
     } else {
-        object_wrongInlet (x, &s_pointer);
+        object_errorUnexpected (x, &s_pointer);
     }
 }
 
@@ -122,7 +122,7 @@ static void object_inletFloat (t_inlet *x, t_float f)
         SET_FLOAT (&a, f);
         object_inletList (x, &s_float, 1, &a);
     } else { 
-        object_wrongInlet (x, &s_float);
+        object_errorUnexpected (x, &s_float);
     }
 }
 
@@ -135,7 +135,7 @@ static void object_inletSymbol (t_inlet *x, t_symbol *s)
         SET_SYMBOL (&a, s);
         object_inletList (x, &s_symbol, 1, &a);
     } else { 
-        object_wrongInlet (x, &s_symbol);
+        object_errorUnexpected (x, &s_symbol);
     }
 }
 
@@ -150,7 +150,7 @@ static void object_inletList (t_inlet *x, t_symbol *s, int argc, t_atom *argv)
     else if (argc == 1 && IS_FLOAT (argv))  { object_inletFloat (x, atom_getfloat (argv));   }
     else if (argc == 1 && IS_SYMBOL (argv)) { object_inletSymbol (x, atom_getsymbol (argv)); }
     else { 
-        object_wrongInlet (x, &s_list);
+        object_errorUnexpected (x, &s_list);
     }
 }
 
@@ -159,7 +159,7 @@ static void object_inletAnything (t_inlet *x, t_symbol *s, int argc, t_atom *arg
     if (x->i_symbolFrom == s)               { pd_message (x->i_destination, x->i_un.i_symbolTo, argc, argv); }
     else if (x->i_symbolFrom == NULL)       { pd_message (x->i_destination, s, argc, argv); }
     else {
-        object_wrongInlet (x, s);
+        object_errorUnexpected (x, s);
     }
 }
 
@@ -357,72 +357,102 @@ int outlet_isSignal (t_outlet *x)
 
 void outlet_bang (t_outlet *x)
 {
-    t_outconnect *oc;
-    if(++object_stackCount >= OBJECT_MAXIMUM_ITERATION)
-        object_wrongOutlet(x);
-    else 
-    for (oc = x->o_connections; oc; oc = oc->oc_next)
-        pd_bang(oc->oc_to);
-    --object_stackCount;
-}
-
-void outlet_pointer(t_outlet *x, t_gpointer *gp)
-{
-    t_outconnect *oc;
-    t_gpointer gpointer;
-    if(++object_stackCount >= OBJECT_MAXIMUM_ITERATION)
-        object_wrongOutlet(x);
-    else
-    {
-        gpointer = *gp;
-        for (oc = x->o_connections; oc; oc = oc->oc_next)
-            pd_pointer(oc->oc_to, &gpointer);
+    t_outconnect *oc = NULL;
+    
+    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { object_errorStackOverflow (x); }
+    else {
+        for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_bang (oc->oc_to); }
     }
+    
     --object_stackCount;
 }
 
-void outlet_float(t_outlet *x, t_float f)
+void outlet_pointer (t_outlet *x, t_gpointer *gp)
 {
-    t_outconnect *oc;
-    if(++object_stackCount >= OBJECT_MAXIMUM_ITERATION)
-        object_wrongOutlet(x);
-    else
-    for (oc = x->o_connections; oc; oc = oc->oc_next)
-        pd_float(oc->oc_to, f);
+    t_outconnect *oc = NULL;
+    t_gpointer gpointer;
+    
+    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { object_errorStackOverflow (x); }
+    else {
+        gpointer = *gp;
+        for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_pointer (oc->oc_to, &gpointer); }
+    }
+    
     --object_stackCount;
 }
 
-void outlet_symbol(t_outlet *x, t_symbol *s)
+void outlet_float (t_outlet *x, t_float f)
 {
-    t_outconnect *oc;
-    if(++object_stackCount >= OBJECT_MAXIMUM_ITERATION)
-        object_wrongOutlet(x);
-    else
-    for (oc = x->o_connections; oc; oc = oc->oc_next)
-        pd_symbol(oc->oc_to, s);
+    t_outconnect *oc = NULL;
+    
+    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { object_errorStackOverflow (x); }
+    else {
+        for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_float (oc->oc_to, f); }
+    }
+    
     --object_stackCount;
 }
 
-void outlet_list(t_outlet *x, t_symbol *s, int argc, t_atom *argv)
+void outlet_symbol (t_outlet *x, t_symbol *s)
 {
-    t_outconnect *oc;
-    if(++object_stackCount >= OBJECT_MAXIMUM_ITERATION)
-        object_wrongOutlet(x);
-    else
-    for (oc = x->o_connections; oc; oc = oc->oc_next)
-        pd_list(oc->oc_to, argc, argv);
+    t_outconnect *oc = NULL;
+    
+    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { object_errorStackOverflow (x); }
+    else {
+        for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_symbol (oc->oc_to, s); }
+    }
+    
     --object_stackCount;
 }
 
-void outlet_anything(t_outlet *x, t_symbol *s, int argc, t_atom *argv)
+void outlet_list (t_outlet *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_outconnect *oc;
-    if(++object_stackCount >= OBJECT_MAXIMUM_ITERATION)
-        object_wrongOutlet(x);
-    else
-    for (oc = x->o_connections; oc; oc = oc->oc_next)
-        pd_message(oc->oc_to, s, argc, argv);
+    t_outconnect *oc = NULL;
+    
+    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { object_errorStackOverflow (x); }
+    else {
+        for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_list (oc->oc_to, argc, argv); }
+    }
+    
     --object_stackCount;
+}
+
+void outlet_anything (t_outlet *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_outconnect *oc = NULL;
+    
+    if (++object_stackCount >= OBJECT_MAXIMUM_ITERATION)  { object_errorStackOverflow (x); }
+    else {
+        for (oc = x->o_connections; oc; oc = oc->oc_next) { pd_message (oc->oc_to, s, argc, argv); }
+    }
+    
+    --object_stackCount;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void object_initialize (void)
+{
+    inlet_class         = class_new (gensym ("inlet"), NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
+    pointerinlet_class  = class_new (gensym ("inlet"), NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
+    floatinlet_class    = class_new (gensym ("inlet"), NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
+    symbolinlet_class   = class_new (gensym ("inlet"), NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
+    
+    class_addBang (inlet_class,             (t_method)object_inletBang);
+    class_addPointer (inlet_class,          (t_method)object_inletPointer);
+    class_addFloat (inlet_class,            (t_method)object_inletFloat);
+    class_addSymbol (inlet_class,           (t_method)object_inletSymbol);
+    class_addList (inlet_class,             (t_method)object_inletList);
+    class_addAnything (inlet_class,         (t_method)object_inletAnything);
+    
+    class_addPointer (pointerinlet_class,   (t_method)object_pointerInletPointer);
+    class_addAnything (pointerinlet_class,  (t_method)object_errorUnexpected);
+    class_addFloat (floatinlet_class,       (t_method)object_floatInletFloat);
+    class_addAnything (floatinlet_class,    (t_method)object_errorUnexpected);
+    class_addSymbol (symbolinlet_class,     (t_method)object_symbolInletSymbol);
+    class_addAnything (symbolinlet_class,   (t_method)object_errorUnexpected);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -439,11 +469,13 @@ void object_list (t_object *x, t_symbol *s, int argc, t_atom *argv)
     t_inlet *ip = x->te_inlet;
     
     for (count = argc - 1, ap = argv + 1; ip && count--; ap++, ip = ip->i_next) {
-        if (IS_POINTER (ap))    { pd_pointer ((t_pd *)ip, GET_POINTER (ap)); }
-        else if (IS_FLOAT (ap)) { pd_float ((t_pd *)ip, GET_FLOAT (ap)); }
-        else {
-            pd_symbol ((t_pd *)ip, GET_SYMBOL (ap));
-        }
+    //
+    if (IS_POINTER (ap))        { pd_pointer ((t_pd *)ip, GET_POINTER (ap)); }
+    else if (IS_FLOAT (ap))     { pd_float ((t_pd *)ip, GET_FLOAT (ap)); }
+    else {
+        pd_symbol ((t_pd *)ip, GET_SYMBOL (ap));
+    }
+    //
     }
     
     if (IS_POINTER (argv))      { pd_pointer ((t_pd *)x, GET_POINTER (argv)); }
@@ -455,27 +487,9 @@ void object_list (t_object *x, t_symbol *s, int argc, t_atom *argv)
     }
 } 
 
-void object_initialize (void)
-{
-    inlet_class         = class_new (gensym ("inlet"), NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
-    pointerinlet_class  = class_new (gensym ("inlet"), NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
-    floatinlet_class    = class_new (gensym ("inlet"), NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
-    symbolinlet_class   = class_new (gensym ("inlet"), NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
-    
-    class_addBang (inlet_class, object_inletBang);
-    class_addPointer (inlet_class, object_inletPointer);
-    class_addFloat (inlet_class, object_inletFloat);
-    class_addSymbol (inlet_class, object_inletSymbol);
-    class_addList (inlet_class, object_inletList);
-    class_addAnything (inlet_class, object_inletAnything);
-    
-    class_addPointer (pointerinlet_class, object_pointerInletPointer);
-    class_addAnything (pointerinlet_class, object_wrongInlet);
-    class_addFloat (floatinlet_class, object_floatInletFloat);
-    class_addAnything (floatinlet_class, object_wrongInlet);
-    class_addSymbol (symbolinlet_class, object_symbolInletSymbol);
-    class_addAnything (symbolinlet_class, object_wrongInlet);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_outconnect *obj_connect(t_object *source, int outno,
     t_object *sink, int inno)

@@ -16,8 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* To manage several objects bound to the same symbol. */
-
 typedef struct _bindelement {
     t_pd                *e_what;                    /* MUST be the first. */
     struct _bindelement *e_next;
@@ -31,8 +29,6 @@ typedef struct _bindlist {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-/* To maintain bindings for the #X symbol during nestable loads. */
 
 typedef struct _gstack {
     t_pd            *g_what;                        /* MUST be the first. */
@@ -116,12 +112,12 @@ void pd_setup (void)
 {
     bindlist_class = class_new (gensym ("bindlist"), NULL, NULL, sizeof (t_bindlist), CLASS_PURE, 0);
     
-    class_addBang (bindlist_class, (t_method)bindlist_bang);
-    class_addFloat (bindlist_class, (t_method)bindlist_float);
-    class_addSymbol (bindlist_class, (t_method)bindlist_symbol);
-    class_addPointer (bindlist_class, (t_method)bindlist_pointer);
-    class_addList (bindlist_class, (t_method)bindlist_list);
-    class_addAnything (bindlist_class, (t_method)bindlist_anything);
+    class_addBang (bindlist_class,      (t_method)bindlist_bang);
+    class_addFloat (bindlist_class,     (t_method)bindlist_float);
+    class_addSymbol (bindlist_class,    (t_method)bindlist_symbol);
+    class_addPointer (bindlist_class,   (t_method)bindlist_pointer);
+    class_addList (bindlist_class,      (t_method)bindlist_list);
+    class_addAnything (bindlist_class,  (t_method)bindlist_anything);
 }
 
 // -----------------------------------------------------------------------------------------------------------
