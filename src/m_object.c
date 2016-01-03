@@ -234,7 +234,7 @@ void inlet_free (t_inlet *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_inlet *signalinlet_new (t_object *owner, t_float f)
+t_inlet *inlet_newSignal (t_object *owner, t_float f)
 {
     t_inlet *x = inlet_new (owner, (t_pd *)owner, &s_signal, &s_signal);
     
@@ -243,7 +243,7 @@ t_inlet *signalinlet_new (t_object *owner, t_float f)
     return x;
 }
 
-t_inlet *pointerinlet_new (t_object *owner, t_gpointer *gp)
+t_inlet *inlet_newPointer (t_object *owner, t_gpointer *gp)
 {
     t_inlet *x = (t_inlet *)pd_new (pointerinlet_class);
     t_inlet *y1 = NULL;
@@ -263,7 +263,7 @@ t_inlet *pointerinlet_new (t_object *owner, t_gpointer *gp)
     return x;
 }
 
-t_inlet *floatinlet_new (t_object *owner, t_float *fp)
+t_inlet *inlet_newFloat (t_object *owner, t_float *fp)
 {
     t_inlet *x = (t_inlet *)pd_new (floatinlet_class);
     t_inlet *y1 = NULL;
@@ -283,7 +283,7 @@ t_inlet *floatinlet_new (t_object *owner, t_float *fp)
     return x;
 }
 
-t_inlet *symbolinlet_new(t_object *owner, t_symbol **sp)
+t_inlet *inlet_newSymbol(t_object *owner, t_symbol **sp)
 {
     t_inlet *x = (t_inlet *)pd_new (symbolinlet_class);
     t_inlet *y1 = NULL;

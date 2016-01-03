@@ -27,8 +27,8 @@ static void *clip_new(t_float lo, t_float hi)
     x->x_lo = lo;
     x->x_hi = hi;
     outlet_new(&x->x_obj, gensym("signal"));
-    floatinlet_new(&x->x_obj, &x->x_lo);
-    floatinlet_new(&x->x_obj, &x->x_hi);
+    inlet_newFloat(&x->x_obj, &x->x_lo);
+    inlet_newFloat(&x->x_obj, &x->x_hi);
     x->x_f = 0;
     return (x);
 }
@@ -577,7 +577,7 @@ typedef struct _pow_tilde
 static void *pow_tilde_new(t_float f)
 {
     t_pow_tilde *x = (t_pow_tilde *)pd_new(pow_tilde_class);
-    signalinlet_new(&x->x_obj, f);
+    inlet_newSignal(&x->x_obj, f);
     outlet_new(&x->x_obj, &s_signal);
     x->x_f = 0;
     

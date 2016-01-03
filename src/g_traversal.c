@@ -253,7 +253,7 @@ static void *ptrobj_new(t_symbol *classname, int argc, t_atom *argv)
     }
     x->x_otherout = outlet_new(&x->x_obj, &s_pointer);
     x->x_bangout = outlet_new(&x->x_obj, &s_bang);
-    pointerinlet_new(&x->x_obj, &x->x_gp);
+    inlet_newPointer(&x->x_obj, &x->x_gp);
     return (x);
 }
 
@@ -631,11 +631,11 @@ static void *set_new(t_symbol *why, int argc, t_atom *argv)
         if (i)
         {
             if (x->x_issymbol)
-                symbolinlet_new(&x->x_obj, &sp->gv_w.w_symbol);
-            else floatinlet_new(&x->x_obj, &sp->gv_w.w_float);
+                inlet_newSymbol(&x->x_obj, &sp->gv_w.w_symbol);
+            else inlet_newFloat(&x->x_obj, &sp->gv_w.w_float);
         }
     }
-    pointerinlet_new(&x->x_obj, &x->x_gp);
+    inlet_newPointer(&x->x_obj, &x->x_gp);
     gpointer_init(&x->x_gp);
     return (x);
 }
@@ -763,7 +763,7 @@ static void *elem_new(t_symbol *templatesym, t_symbol *fieldsym)
     x->x_fieldsym = fieldsym;
     gpointer_init(&x->x_gp);
     gpointer_init(&x->x_gparent);
-    pointerinlet_new(&x->x_obj, &x->x_gparent);
+    inlet_newPointer(&x->x_obj, &x->x_gparent);
     outlet_new(&x->x_obj, &s_pointer);
     return (x);
 }
@@ -962,7 +962,7 @@ static void *setsize_new(t_symbol *templatesym, t_symbol *fieldsym,
     x->x_fieldsym = fieldsym;
     gpointer_init(&x->x_gp);
     
-    pointerinlet_new(&x->x_obj, &x->x_gp);
+    inlet_newPointer(&x->x_obj, &x->x_gp);
     return (x);
 }
 
@@ -1157,9 +1157,9 @@ static void *append_new(t_symbol *why, int argc, t_atom *argv)
     {
         sp->gv_sym = atom_getsymbolarg(i, varcount, varvec);
         sp->gv_f = 0;
-        if (i) floatinlet_new(&x->x_obj, &sp->gv_f);
+        if (i) inlet_newFloat(&x->x_obj, &sp->gv_f);
     }
-    pointerinlet_new(&x->x_obj, &x->x_gp);
+    inlet_newPointer(&x->x_obj, &x->x_gp);
     outlet_new(&x->x_obj, &s_pointer);
     gpointer_init(&x->x_gp);
     return (x);

@@ -241,7 +241,7 @@ void class_addSignal (t_class *c, int offset)
     }
 }
 
-void class_addCreator (t_newmethod newmethod, t_symbol *s, t_atomtype type1, ...)
+void class_addCreator (t_newmethod newMethod, t_symbol *s, t_atomtype type1, ...)
 {
     va_list ap;
     t_atomtype arg[PD_ARGUMENTS + 1] = { 0 };
@@ -259,7 +259,7 @@ void class_addCreator (t_newmethod newmethod, t_symbol *s, t_atomtype type1, ...
     
     va_end (ap);
     
-    class_addMethod (pd_objectMaker, (t_method)newmethod, s, arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]);
+    class_addMethod (pd_objectMaker, (t_method)newMethod, s, arg[0], arg[1], arg[2], arg[3], arg[4], arg[5]);
 }
 
 // -----------------------------------------------------------------------------------------------------------

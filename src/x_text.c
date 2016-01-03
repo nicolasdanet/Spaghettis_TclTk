@@ -527,8 +527,8 @@ static void *text_get_new(t_symbol *s, int argc, t_atom *argv)
     t_text_get *x = (t_text_get *)pd_new(text_get_class);
     x->x_out1 = outlet_new(&x->x_obj, &s_list);
     x->x_out2 = outlet_new(&x->x_obj, &s_float);
-    floatinlet_new(&x->x_obj, &x->x_f1);
-    floatinlet_new(&x->x_obj, &x->x_f2);
+    inlet_newFloat(&x->x_obj, &x->x_f1);
+    inlet_newFloat(&x->x_obj, &x->x_f2);
     x->x_f1 = -1;
     x->x_f2 = 1;
     text_client_argparse(&x->x_tc, &argc, &argv, "text get");
@@ -560,8 +560,8 @@ static void *text_get_new(t_symbol *s, int argc, t_atom *argv)
         post_atoms(argc, argv);
     }
     if (x->x_struct)
-        pointerinlet_new(&x->x_obj, &x->x_gp);
-    else symbolinlet_new(&x->x_obj, &x->x_tc.tc_sym);
+        inlet_newPointer(&x->x_obj, &x->x_gp);
+    else inlet_newSymbol(&x->x_obj, &x->x_tc.tc_sym);
     return (x);
 }
 
@@ -622,8 +622,8 @@ t_class *text_set_class;
 static void *text_set_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_text_set *x = (t_text_set *)pd_new(text_set_class);
-    floatinlet_new(&x->x_obj, &x->x_f1);
-    floatinlet_new(&x->x_obj, &x->x_f2);
+    inlet_newFloat(&x->x_obj, &x->x_f1);
+    inlet_newFloat(&x->x_obj, &x->x_f2);
     x->x_f1 = 0;
     x->x_f2 = -1;
     text_client_argparse(&x->x_tc, &argc, &argv, "text get");
@@ -655,8 +655,8 @@ static void *text_set_new(t_symbol *s, int argc, t_atom *argv)
         post_atoms(argc, argv);
     }
     if (x->x_struct)
-        pointerinlet_new(&x->x_obj, &x->x_gp);
-    else symbolinlet_new(&x->x_obj, &x->x_tc.tc_sym);
+        inlet_newPointer(&x->x_obj, &x->x_gp);
+    else inlet_newSymbol(&x->x_obj, &x->x_tc.tc_sym);
     return (x);
 }
 
@@ -750,8 +750,8 @@ static void *text_size_new(t_symbol *s, int argc, t_atom *argv)
         post_atoms(argc, argv);
     }
     if (x->x_struct)
-        pointerinlet_new(&x->x_obj, &x->x_gp);
-    else symbolinlet_new(&x->x_obj, &x->x_tc.tc_sym);
+        inlet_newPointer(&x->x_obj, &x->x_gp);
+    else inlet_newSymbol(&x->x_obj, &x->x_tc.tc_sym);
     return (x);
 }
 
@@ -804,8 +804,8 @@ static void *text_tolist_new(t_symbol *s, int argc, t_atom *argv)
         post_atoms(argc, argv);
     }
     if (x->tc_struct)
-        pointerinlet_new(&x->tc_obj, &x->tc_gp);
-    else symbolinlet_new(&x->tc_obj, &x->tc_sym);
+        inlet_newPointer(&x->tc_obj, &x->tc_gp);
+    else inlet_newSymbol(&x->tc_obj, &x->tc_sym);
     return (x);
 }
 
@@ -837,8 +837,8 @@ static void *text_fromlist_new(t_symbol *s, int argc, t_atom *argv)
         post_atoms(argc, argv);
     }
     if (x->tc_struct)
-        pointerinlet_new(&x->tc_obj, &x->tc_gp);
-    else symbolinlet_new(&x->tc_obj, &x->tc_sym);
+        inlet_newPointer(&x->tc_obj, &x->tc_gp);
+    else inlet_newSymbol(&x->tc_obj, &x->tc_sym);
     return (x);
 }
 
@@ -923,8 +923,8 @@ static void *text_search_new(t_symbol *s, int argc, t_atom *argv)
         }
     }
     if (x->x_struct)
-        pointerinlet_new(&x->x_obj, &x->x_gp);
-    else symbolinlet_new(&x->x_obj, &x->x_tc.tc_sym);
+        inlet_newPointer(&x->x_obj, &x->x_gp);
+    else inlet_newSymbol(&x->x_obj, &x->x_tc.tc_sym);
     return (x);
 }
 
@@ -1170,8 +1170,8 @@ static void *text_sequence_new(t_symbol *s, int argc, t_atom *argv)
         post_atoms(argc, argv);
     }
     if (x->x_tc.tc_struct)
-        pointerinlet_new(&x->x_tc.tc_obj, &x->x_tc.tc_gp);
-    else symbolinlet_new(&x->x_tc.tc_obj, &x->x_tc.tc_sym);
+        inlet_newPointer(&x->x_tc.tc_obj, &x->x_tc.tc_gp);
+    else inlet_newSymbol(&x->x_tc.tc_obj, &x->x_tc.tc_sym);
     x->x_argc = 0;
     x->x_argv = (t_atom *)PD_MEMORY_GET(0);
     x->x_onset = 0x7fffffff;

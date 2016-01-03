@@ -23,7 +23,7 @@ static void *binop1_new(t_class *floatclass, t_float f)
 {
     t_binop *x = (t_binop *)pd_new(floatclass);
     outlet_new(&x->x_obj, &s_float);
-    floatinlet_new(&x->x_obj, &x->x_f2);
+    inlet_newFloat(&x->x_obj, &x->x_f2);
     x->x_f1 = 0;
     x->x_f2 = f;
     return (x);
@@ -180,7 +180,7 @@ static void *binop2_new(t_class *floatclass, t_float f)
 {
     t_binop *x = (t_binop *)pd_new(floatclass);
     outlet_new(&x->x_obj, &s_float);
-    floatinlet_new(&x->x_obj, &x->x_f2);
+    inlet_newFloat(&x->x_obj, &x->x_f2);
     x->x_f1 = 0;
     x->x_f2 = f;
     return (x);
@@ -306,7 +306,7 @@ static void *binop3_new(t_class *fixclass, t_float f)
 {
     t_binop *x = (t_binop *)pd_new(fixclass);
     outlet_new(&x->x_obj, &s_float);
-    floatinlet_new(&x->x_obj, &x->x_f2);
+    inlet_newFloat(&x->x_obj, &x->x_f2);
     x->x_f1 = 0;
     x->x_f2 = f;
     return (x);
@@ -573,7 +573,7 @@ typedef struct _atan2
 static void *atan2_new(void)
 {
     t_atan2 *x = (t_atan2 *)pd_new(atan2_class);
-    floatinlet_new(&x->x_ob, &x->x_f);
+    inlet_newFloat(&x->x_ob, &x->x_f);
     x->x_f = 0;
     outlet_new(&x->x_ob, &s_float);
     return (x);
@@ -679,8 +679,8 @@ typedef struct _clip
 static void *clip_new(t_float f1, t_float f2)
 {
     t_clip *x = (t_clip *)pd_new(clip_class);
-    floatinlet_new(&x->x_ob, &x->x_f2);
-    floatinlet_new(&x->x_ob, &x->x_f3);
+    inlet_newFloat(&x->x_ob, &x->x_f2);
+    inlet_newFloat(&x->x_ob, &x->x_f3);
     outlet_new(&x->x_ob, &s_float);
     x->x_f2 = f1;
     x->x_f3 = f2;

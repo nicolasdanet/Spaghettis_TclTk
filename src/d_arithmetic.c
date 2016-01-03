@@ -32,7 +32,7 @@ static void *plus_new(t_symbol *s, int argc, t_atom *argv)
     if (argc) 
     {
         t_scalarplus *x = (t_scalarplus *)pd_new(scalarplus_class);
-        floatinlet_new(&x->x_obj, &x->x_g);
+        inlet_newFloat(&x->x_obj, &x->x_g);
         x->x_g = atom_getfloatarg(0, argc, argv);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;
@@ -165,7 +165,7 @@ static void *minus_new(t_symbol *s, int argc, t_atom *argv)
     if (argc) 
     {
         t_scalarminus *x = (t_scalarminus *)pd_new(scalarminus_class);
-        floatinlet_new(&x->x_obj, &x->x_g);
+        inlet_newFloat(&x->x_obj, &x->x_g);
         x->x_g = atom_getfloatarg(0, argc, argv);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;
@@ -296,7 +296,7 @@ static void *times_new(t_symbol *s, int argc, t_atom *argv)
     if (argc) 
     {
         t_scalartimes *x = (t_scalartimes *)pd_new(scalartimes_class);
-        floatinlet_new(&x->x_obj, &x->x_g);
+        inlet_newFloat(&x->x_obj, &x->x_g);
         x->x_g = atom_getfloatarg(0, argc, argv);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;
@@ -426,7 +426,7 @@ static void *over_new(t_symbol *s, int argc, t_atom *argv)
     if (argc) 
     {
         t_scalarover *x = (t_scalarover *)pd_new(scalarover_class);
-        floatinlet_new(&x->x_obj, &x->x_g);
+        inlet_newFloat(&x->x_obj, &x->x_g);
         x->x_g = atom_getfloatarg(0, argc, argv);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;
@@ -568,7 +568,7 @@ static void *max_new(t_symbol *s, int argc, t_atom *argv)
     if (argc) 
     {
         t_scalarmax *x = (t_scalarmax *)pd_new(scalarmax_class);
-        floatinlet_new(&x->x_obj, &x->x_g);
+        inlet_newFloat(&x->x_obj, &x->x_g);
         x->x_g = atom_getfloatarg(0, argc, argv);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;
@@ -710,7 +710,7 @@ static void *min_new(t_symbol *s, int argc, t_atom *argv)
     if (argc) 
     {
         t_scalarmin *x = (t_scalarmin *)pd_new(scalarmin_class);
-        floatinlet_new(&x->x_obj, &x->x_g);
+        inlet_newFloat(&x->x_obj, &x->x_g);
         x->x_g = atom_getfloatarg(0, argc, argv);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;

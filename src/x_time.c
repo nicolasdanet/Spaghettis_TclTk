@@ -322,7 +322,7 @@ static void *line_new(t_float f, t_float grain)
     x->x_grain = grain;
     outlet_new(&x->x_obj, gensym("float"));
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("float"), gensym("ft1"));
-    floatinlet_new(&x->x_obj, &x->x_grain);
+    inlet_newFloat(&x->x_obj, &x->x_grain);
     return (x);
 }
 
@@ -470,7 +470,7 @@ static void *pipe_new(t_symbol *s, int argc, t_atom *argv)
         {
             vp->p_atom = *ap;
             vp->p_outlet = outlet_new(&x->x_obj, &s_float);
-            if (i) floatinlet_new(&x->x_obj, &vp->p_atom.a_w.w_float);
+            if (i) inlet_newFloat(&x->x_obj, &vp->p_atom.a_w.w_float);
         }
         else if (ap->a_type == A_SYMBOL)
         {
@@ -479,7 +479,7 @@ static void *pipe_new(t_symbol *s, int argc, t_atom *argv)
             {
                 SET_SYMBOL(&vp->p_atom, &s_symbol);
                 vp->p_outlet = outlet_new(&x->x_obj, &s_symbol);
-                if (i) symbolinlet_new(&x->x_obj, &vp->p_atom.a_w.w_symbol);
+                if (i) inlet_newSymbol(&x->x_obj, &vp->p_atom.a_w.w_symbol);
             }
             else if (c == 'p')
             {
@@ -487,7 +487,7 @@ static void *pipe_new(t_symbol *s, int argc, t_atom *argv)
                 vp->p_atom.a_w.w_gpointer = gp;
                 gpointer_init(gp);
                 vp->p_outlet = outlet_new(&x->x_obj, &s_pointer);
-                if (i) pointerinlet_new(&x->x_obj, gp);
+                if (i) inlet_newPointer(&x->x_obj, gp);
                 gp++;
             }
             else
@@ -496,11 +496,11 @@ static void *pipe_new(t_symbol *s, int argc, t_atom *argv)
                     ap->a_w.w_symbol->s_name);
                 SET_FLOAT(&vp->p_atom, 0);
                 vp->p_outlet = outlet_new(&x->x_obj, &s_float);
-                if (i) floatinlet_new(&x->x_obj, &vp->p_atom.a_w.w_float);
+                if (i) inlet_newFloat(&x->x_obj, &vp->p_atom.a_w.w_float);
             }
         }
     }
-    floatinlet_new(&x->x_obj, &x->x_deltime);
+    inlet_newFloat(&x->x_obj, &x->x_deltime);
     x->x_hang = 0;
     x->x_deltime = deltime;
     return (x);

@@ -384,7 +384,7 @@ static void *tabread4_tilde_new(t_symbol *s)
     x->x_arrayname = s;
     x->x_vec = 0;
     outlet_new(&x->x_obj, gensym("signal"));
-    floatinlet_new(&x->x_obj, &x->x_onset);
+    inlet_newFloat(&x->x_obj, &x->x_onset);
     x->x_f = 0;
     x->x_onset = 0;
     return (x);
@@ -1019,7 +1019,7 @@ static void *tabwrite_new(t_symbol *s)
     t_tabwrite *x = (t_tabwrite *)pd_new(tabwrite_class);
     x->x_ft1 = 0;
     x->x_arrayname = s;
-    floatinlet_new(&x->x_obj, &x->x_ft1);
+    inlet_newFloat(&x->x_obj, &x->x_ft1);
     return (x);
 }
 

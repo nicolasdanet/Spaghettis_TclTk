@@ -61,7 +61,7 @@ static void *random_new(t_float f)
     t_random *x = (t_random *)pd_new(random_class);
     x->x_f = f;
     x->x_state = makeseed();
-    floatinlet_new(&x->x_obj, &x->x_f);
+    inlet_newFloat(&x->x_obj, &x->x_f);
     outlet_new(&x->x_obj, &s_float);
     return (x);
 }

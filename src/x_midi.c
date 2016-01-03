@@ -637,7 +637,7 @@ static void *midiout_new(t_float portno)
     t_midiout *x = (t_midiout *)pd_new(midiout_class);
     if (portno <= 0) portno = 1;
     x->x_portno = portno;
-    floatinlet_new(&x->x_obj, &x->x_portno);
+    inlet_newFloat(&x->x_obj, &x->x_portno);
     return (x);
 }
 
@@ -671,8 +671,8 @@ static void *noteout_new(t_float channel)
     x->x_velo = 0;
     if (channel < 1) channel = 1;
     x->x_channel = channel;
-    floatinlet_new(&x->x_obj, &x->x_velo);
-    floatinlet_new(&x->x_obj, &x->x_channel);
+    inlet_newFloat(&x->x_obj, &x->x_velo);
+    inlet_newFloat(&x->x_obj, &x->x_channel);
     return (x);
 }
 
@@ -711,8 +711,8 @@ static void *ctlout_new(t_float ctl, t_float channel)
     x->x_ctl = ctl;
     if (channel <= 0) channel = 1;
     x->x_channel = channel;
-    floatinlet_new(&x->x_obj, &x->x_ctl);
-    floatinlet_new(&x->x_obj, &x->x_channel);
+    inlet_newFloat(&x->x_obj, &x->x_ctl);
+    inlet_newFloat(&x->x_obj, &x->x_channel);
     return (x);
 }
 
@@ -749,7 +749,7 @@ static void *pgmout_new(t_float channel)
     t_pgmout *x = (t_pgmout *)pd_new(pgmout_class);
     if (channel <= 0) channel = 1;
     x->x_channel = channel;
-    floatinlet_new(&x->x_obj, &x->x_channel);
+    inlet_newFloat(&x->x_obj, &x->x_channel);
     return (x);
 }
 
@@ -789,7 +789,7 @@ static void *bendout_new(t_float channel)
     t_bendout *x = (t_bendout *)pd_new(bendout_class);
     if (channel <= 0) channel = 1;
     x->x_channel = channel;
-    floatinlet_new(&x->x_obj, &x->x_channel);
+    inlet_newFloat(&x->x_obj, &x->x_channel);
     return (x);
 }
 
@@ -825,7 +825,7 @@ static void *touchout_new(t_float channel)
     t_touchout *x = (t_touchout *)pd_new(touchout_class);
     if (channel <= 0) channel = 1;
     x->x_channel = channel;
-    floatinlet_new(&x->x_obj, &x->x_channel);
+    inlet_newFloat(&x->x_obj, &x->x_channel);
     return (x);
 }
 
@@ -862,8 +862,8 @@ static void *polytouchout_new(t_float channel)
     if (channel <= 0) channel = 1;
     x->x_channel = channel;
     x->x_pitch = 0;
-    floatinlet_new(&x->x_obj, &x->x_pitch);
-    floatinlet_new(&x->x_obj, &x->x_channel);
+    inlet_newFloat(&x->x_obj, &x->x_pitch);
+    inlet_newFloat(&x->x_obj, &x->x_channel);
     return (x);
 }
 
@@ -911,8 +911,8 @@ static void *makenote_new(t_float velo, t_float dur)
     t_makenote *x = (t_makenote *)pd_new(makenote_class);
     x->x_velo = velo;
     x->x_dur = dur;
-    floatinlet_new(&x->x_obj, &x->x_velo);
-    floatinlet_new(&x->x_obj, &x->x_dur);
+    inlet_newFloat(&x->x_obj, &x->x_velo);
+    inlet_newFloat(&x->x_obj, &x->x_dur);
     x->x_pitchout = outlet_new(&x->x_obj, &s_float);
     x->x_velout = outlet_new(&x->x_obj, &s_float);
     x->x_hang = 0;
@@ -1004,7 +1004,7 @@ typedef struct _stripnote
 static void *stripnote_new(void )
 {
     t_stripnote *x = (t_stripnote *)pd_new(stripnote_class);
-    floatinlet_new(&x->x_obj, &x->x_velo);
+    inlet_newFloat(&x->x_obj, &x->x_velo);
     x->x_pitchout = outlet_new(&x->x_obj, &s_float);
     x->x_velout = outlet_new(&x->x_obj, &s_float);
     return (x);
@@ -1060,7 +1060,7 @@ static void *poly_new(t_float fnvoice, t_float fsteal)
         v->v_pitch = v->v_used = v->v_serial = 0;
     x->x_vel = 0;
     x->x_steal = (fsteal != 0);
-    floatinlet_new(&x->x_obj, &x->x_vel);
+    inlet_newFloat(&x->x_obj, &x->x_vel);
     outlet_new(&x->x_obj, &s_float);
     x->x_pitchout = outlet_new(&x->x_obj, &s_float);
     x->x_velout = outlet_new(&x->x_obj, &s_float);
@@ -1180,7 +1180,7 @@ static void *bag_new(void )
 {
     t_bag *x = (t_bag *)pd_new(bag_class);
     x->x_velo = 0;
-    floatinlet_new(&x->x_obj, &x->x_velo);
+    inlet_newFloat(&x->x_obj, &x->x_velo);
     outlet_new(&x->x_obj, &s_float);
     x->x_first = 0;
     return (x);

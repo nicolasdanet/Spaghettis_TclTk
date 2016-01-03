@@ -352,7 +352,7 @@ static void *list_split_new(t_float f)
     x->x_out1 = outlet_new(&x->x_obj, &s_list);
     x->x_out2 = outlet_new(&x->x_obj, &s_list);
     x->x_out3 = outlet_new(&x->x_obj, &s_list);
-    floatinlet_new(&x->x_obj, &x->x_f);
+    inlet_newFloat(&x->x_obj, &x->x_f);
     x->x_f = f;
     return (x);
 }

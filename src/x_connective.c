@@ -25,7 +25,7 @@ static void *pdint_new(t_float f)
     t_pdint *x = (t_pdint *)pd_new(pdint_class);
     x->x_f = f;
     outlet_new(&x->x_obj, &s_float);
-    floatinlet_new(&x->x_obj, &x->x_f);
+    inlet_newFloat(&x->x_obj, &x->x_f);
     return (x);
 }
 
@@ -75,7 +75,7 @@ static void *pdfloat_new(t_pd *dummy, t_float f)
     t_pdfloat *x = (t_pdfloat *)pd_new(pdfloat_class);
     x->x_f = f;
     outlet_new(&x->x_obj, &s_float);
-    floatinlet_new(&x->x_obj, &x->x_f);
+    inlet_newFloat(&x->x_obj, &x->x_f);
     pd_newest = &x->x_obj.te_g.g_pd;
     return (x);
 }
@@ -127,7 +127,7 @@ static void *pdsymbol_new(t_pd *dummy, t_symbol *s)
     t_pdsymbol *x = (t_pdsymbol *)pd_new(pdsymbol_class);
     x->x_s = s;
     outlet_new(&x->x_obj, &s_symbol);
-    symbolinlet_new(&x->x_obj, &x->x_s);
+    inlet_newSymbol(&x->x_obj, &x->x_s);
     pd_newest = &x->x_obj.te_g.g_pd;
     return (x);
 }
@@ -254,7 +254,7 @@ static void *send_new(t_symbol *s)
 {
     t_send *x = (t_send *)pd_new(send_class);
     if (!*s->s_name)
-        symbolinlet_new(&x->x_obj, &x->x_sym);
+        inlet_newSymbol(&x->x_obj, &x->x_sym);
     x->x_sym = s;
     return (x);
 }
@@ -434,12 +434,12 @@ static void *select_new(t_symbol *s, int argc, t_atom *argv)
         x->x_outlet1 = outlet_new(&x->x_obj, &s_bang);
         if (argv->a_type == A_FLOAT)
         {
-            floatinlet_new(&x->x_obj, &x->x_atom.a_w.w_float);
+            inlet_newFloat(&x->x_obj, &x->x_atom.a_w.w_float);
             x->x_outlet2 = outlet_new(&x->x_obj, &s_float);
         }
         else
         {
-            symbolinlet_new(&x->x_obj, &x->x_atom.a_w.w_symbol);
+            inlet_newSymbol(&x->x_obj, &x->x_atom.a_w.w_symbol);
             x->x_outlet2 = outlet_new(&x->x_obj, &s_symbol);
         }
         return (x);
@@ -625,8 +625,8 @@ static void *route_new(t_symbol *s, int argc, t_atom *argv)
     if (argc == 1)
     {
         if (argv->a_type == A_FLOAT)
-            floatinlet_new(&x->x_obj, &x->x_vec->e_w.w_float);
-        else symbolinlet_new(&x->x_obj, &x->x_vec->e_w.w_symbol);
+            inlet_newFloat(&x->x_obj, &x->x_vec->e_w.w_float);
+        else inlet_newSymbol(&x->x_obj, &x->x_vec->e_w.w_symbol);
     }
     x->x_rejectout = outlet_new(&x->x_obj, &s_list);
     return (x);
@@ -685,7 +685,7 @@ static void *pack_new(t_symbol *s, int argc, t_atom *argv)
         if (ap->a_type == A_FLOAT)
         {
             *vp = *ap;
-            if (i) floatinlet_new(&x->x_obj, &vp->a_w.w_float);
+            if (i) inlet_newFloat(&x->x_obj, &vp->a_w.w_float);
         }
         else if (ap->a_type == A_SYMBOL)
         {
@@ -693,14 +693,14 @@ static void *pack_new(t_symbol *s, int argc, t_atom *argv)
             if (c == 's')
             {
                 SET_SYMBOL(vp, &s_symbol);
-                if (i) symbolinlet_new(&x->x_obj, &vp->a_w.w_symbol);
+                if (i) inlet_newSymbol(&x->x_obj, &vp->a_w.w_symbol);
             }
             else if (c == 'p')
             {
                 vp->a_type = A_POINTER;
                 vp->a_w.w_gpointer = gp;
                 gpointer_init(gp);
-                if (i) pointerinlet_new(&x->x_obj, gp);
+                if (i) inlet_newPointer(&x->x_obj, gp);
                 gp++;
             }
             else
@@ -708,7 +708,7 @@ static void *pack_new(t_symbol *s, int argc, t_atom *argv)
                 if (c != 'f') post_error ("pack: %s: bad type",
                     ap->a_w.w_symbol->s_name);
                 SET_FLOAT(vp, 0);
-                if (i) floatinlet_new(&x->x_obj, &vp->a_w.w_float);
+                if (i) inlet_newFloat(&x->x_obj, &vp->a_w.w_float);
             }
         }
     }
@@ -1090,7 +1090,7 @@ typedef struct _spigot
 static void *spigot_new(t_float f)
 {
     t_spigot *x = (t_spigot *)pd_new(spigot_class);
-    floatinlet_new(&x->x_obj, &x->x_state);
+    inlet_newFloat(&x->x_obj, &x->x_state);
     outlet_new(&x->x_obj, 0);
     x->x_state = f;
     return (x);
@@ -1151,7 +1151,7 @@ typedef struct _moses
 static void *moses_new(t_float f)
 {
     t_moses *x = (t_moses *)pd_new(moses_class);
-    floatinlet_new(&x->x_ob, &x->x_y);
+    inlet_newFloat(&x->x_ob, &x->x_y);
     outlet_new(&x->x_ob, &s_float);
     x->x_out2 = outlet_new(&x->x_ob, &s_float);
     x->x_y = f;
@@ -1346,7 +1346,7 @@ static void *swap_new(t_float f)
     x->x_f1 = 0;
     outlet_new(&x->x_obj, &s_float);
     x->x_out2 = outlet_new(&x->x_obj, &s_float);
-    floatinlet_new(&x->x_obj, &x->x_f2);
+    inlet_newFloat(&x->x_obj, &x->x_f2);
     return (x);
 }
 

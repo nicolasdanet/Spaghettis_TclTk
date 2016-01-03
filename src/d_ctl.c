@@ -210,7 +210,7 @@ static void *line_tilde_new(void)
 {
     t_line *x = (t_line *)pd_new(line_tilde_class);
     outlet_new(&x->x_obj, gensym("signal"));
-    floatinlet_new(&x->x_obj, &x->x_inletvalue);
+    inlet_newFloat(&x->x_obj, &x->x_inletvalue);
     x->x_ticksleft = x->x_retarget = 0;
     x->x_value = x->x_target = x->x_inletvalue = x->x_inletwas = 0;
     return (x);
@@ -399,8 +399,8 @@ static void *vline_tilde_new(void)
 {
     t_vline *x = (t_vline *)pd_new(vline_tilde_class);
     outlet_new(&x->x_obj, gensym("signal"));
-    floatinlet_new(&x->x_obj, &x->x_inlet1);
-    floatinlet_new(&x->x_obj, &x->x_inlet2);
+    inlet_newFloat(&x->x_obj, &x->x_inlet1);
+    inlet_newFloat(&x->x_obj, &x->x_inlet2);
     x->x_inlet1 = x->x_inlet2 = 0;
     x->x_value = x->x_inc = 0;
     x->x_referencetime = x->x_lastlogicaltime = x->x_nextblocktime =

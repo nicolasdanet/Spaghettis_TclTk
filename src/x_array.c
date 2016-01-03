@@ -358,8 +358,8 @@ static void *array_size_new(t_symbol *s, int argc, t_atom *argv)
         post_atoms(argc, argv);
     }
     if (x->x_struct)
-        pointerinlet_new(&x->x_tc.tc_obj, &x->x_gp);
-    else symbolinlet_new(&x->x_tc.tc_obj, &x->x_tc.tc_sym);
+        inlet_newPointer(&x->x_tc.tc_obj, &x->x_gp);
+    else inlet_newSymbol(&x->x_tc.tc_obj, &x->x_tc.tc_sym);
     outlet_new(&x->x_tc.tc_obj, &s_float);
     return (x);
 }
@@ -433,9 +433,9 @@ static void *array_rangeop_new(t_class *class,
     x->x_onset = 0;
     x->x_n = -1;
     if (onsetin)
-        floatinlet_new(&x->x_tc.tc_obj, &x->x_onset);
+        inlet_newFloat(&x->x_tc.tc_obj, &x->x_onset);
     if (nin)
-        floatinlet_new(&x->x_tc.tc_obj, &x->x_n);
+        inlet_newFloat(&x->x_tc.tc_obj, &x->x_n);
     while (argc && argv->a_type == A_SYMBOL &&
         *argv->a_w.w_symbol->s_name == '-')
     {
@@ -488,8 +488,8 @@ static void *array_rangeop_new(t_class *class,
         post_atoms(argc, argv);
     }
     if (x->x_struct)
-        pointerinlet_new(&x->x_tc.tc_obj, &x->x_gp);
-    else symbolinlet_new(&x->x_tc.tc_obj, &x->x_tc.tc_sym);
+        inlet_newPointer(&x->x_tc.tc_obj, &x->x_gp);
+    else inlet_newSymbol(&x->x_tc.tc_obj, &x->x_tc.tc_sym);
     *argcp = argc;
     *argvp = argv;
     return (x);
