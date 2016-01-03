@@ -765,7 +765,7 @@ static void canvas_drawlines(t_canvas *x)
             sys_vgui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
                     glist_getcanvas(x),
                         t.tr_lx1, t.tr_ly1, t.tr_lx2, t.tr_ly2, 
-                            (outlet_getsymbol(t.tr_outlet) == &s_signal ? 2:1),
+                            (outlet_isSignal(t.tr_outlet) ? 2:1),
                                 oc);
     }
 }

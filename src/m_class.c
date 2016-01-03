@@ -156,7 +156,7 @@ static void class_defaultList (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
 static void class_defaultAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
-    post_error (PD_TRANSLATE ("%s / Unknown method \"%s\"."), pd_class (x)->c_name->s_name, s->s_name);
+    post_error (PD_TRANSLATE ("%s: unknown method '%s'"), pd_class (x)->c_name->s_name, s->s_name); // --
 }
 
 // -----------------------------------------------------------------------------------------------------------

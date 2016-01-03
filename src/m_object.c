@@ -16,20 +16,45 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define OBJECT_MAXIMUM_ITERATION    1000
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static int object_stackCount;               /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 struct _inlet
 {
-    t_pd            i_pd;                   /* MUST be the first. */
-    struct _inlet   *i_next;
-    t_object        *i_owner;
-    t_pd            *i_destination;
-    t_symbol        *i_symbolFrom;
+    t_pd                i_pd;                   /* MUST be the first. */
+    struct _inlet       *i_next;
+    t_object            *i_owner;
+    t_pd                *i_destination;
+    t_symbol            *i_symbolFrom;
     union {
-        t_symbol    *i_symbolTo;
-        t_gpointer  *i_pointer;
-        t_float     *i_float;
-        t_symbol    **i_symbol;
-        t_float     i_signal;
+        t_symbol        *i_symbolTo;
+        t_gpointer      *i_pointer;
+        t_float         *i_float;
+        t_symbol        **i_symbol;
+        t_float         i_signal;
     } i_un;
+};
+
+struct _outconnect
+{
+    struct _outconnect  *oc_next;
+    t_pd                *oc_to;
+};
+
+struct _outlet
+{
+    struct _outlet      *o_next;
+    t_object            *o_owner;
+    t_outconnect        *o_connections;
+    t_symbol            *o_symbol;
 };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -49,10 +74,19 @@ static void object_inletList (t_inlet *x, t_symbol *s, int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void object_inletWrong (t_inlet *x, t_symbol *s)
+static void object_wrongInlet (t_inlet *x, t_symbol *s)
 {
-    post_error (PD_TRANSLATE ("inlet / Unexpected \"%s\"."), s->s_name);
+    post_error (PD_TRANSLATE ("inlet: unexpected '%s'"), s->s_name);   // --
 }
+
+static void object_wrongOutlet (t_outlet *x)
+{
+    post_error (PD_TRANSLATE ("inlet: stack overflow"));    // --
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void object_inletBang (t_inlet *x)
 {
@@ -60,7 +94,7 @@ static void object_inletBang (t_inlet *x)
     else if (x->i_symbolFrom == NULL)       { pd_bang (x->i_destination); }
     else if (x->i_symbolFrom == &s_list)    { object_inletList (x, &s_bang, 0, NULL); }
     else {
-        object_inletWrong (x, &s_bang);
+        object_wrongInlet (x, &s_bang);
     }
 }
 
@@ -74,7 +108,7 @@ static void object_inletPointer (t_inlet *x, t_gpointer *gp)
         object_inletList (x, &s_pointer, 1, &a);
 
     } else {
-        object_inletWrong (x, &s_pointer);
+        object_wrongInlet (x, &s_pointer);
     }
 }
 
@@ -88,7 +122,7 @@ static void object_inletFloat (t_inlet *x, t_float f)
         SET_FLOAT (&a, f);
         object_inletList (x, &s_float, 1, &a);
     } else { 
-        object_inletWrong (x, &s_float);
+        object_wrongInlet (x, &s_float);
     }
 }
 
@@ -101,7 +135,7 @@ static void object_inletSymbol (t_inlet *x, t_symbol *s)
         SET_SYMBOL (&a, s);
         object_inletList (x, &s_symbol, 1, &a);
     } else { 
-        object_inletWrong (x, &s_symbol);
+        object_wrongInlet (x, &s_symbol);
     }
 }
 
@@ -116,7 +150,7 @@ static void object_inletList (t_inlet *x, t_symbol *s, int argc, t_atom *argv)
     else if (argc == 1 && IS_FLOAT (argv))  { object_inletFloat (x, atom_getfloat (argv));   }
     else if (argc == 1 && IS_SYMBOL (argv)) { object_inletSymbol (x, atom_getsymbol (argv)); }
     else { 
-        object_inletWrong (x, &s_list);
+        object_wrongInlet (x, &s_list);
     }
 }
 
@@ -125,7 +159,7 @@ static void object_inletAnything (t_inlet *x, t_symbol *s, int argc, t_atom *arg
     if (x->i_symbolFrom == s)               { pd_message (x->i_destination, x->i_un.i_symbolTo, argc, argv); }
     else if (x->i_symbolFrom == NULL)       { pd_message (x->i_destination, s, argc, argv); }
     else {
-        object_inletWrong (x, s);
+        object_wrongInlet (x, s);
     }
 }
 
@@ -273,6 +307,128 @@ t_inlet *symbolinlet_new(t_object *owner, t_symbol **sp)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_outlet *outlet_new (t_object *owner, t_symbol *s)
+{
+    t_outlet *x = (t_outlet *)PD_MEMORY_GET (sizeof (t_outlet));
+    t_outlet *y1 = NULL;
+    t_outlet *y2 = NULL;
+    
+    x->o_next  = NULL;
+    x->o_owner = owner;
+
+    if (y1 = owner->te_outlet) { while (y2 = y1->o_next) { y1 = y2; } y1->o_next = x; }
+    else {
+        owner->te_outlet = x;
+    }
+    
+    x->o_connections = NULL;
+    x->o_symbol = s;
+    
+    return x;
+}
+
+void outlet_free (t_outlet *x)
+{
+    t_object *y = x->o_owner;
+    t_outlet *x2 = NULL;
+    
+    if (y->te_outlet == x) { y->te_outlet = x->o_next; }
+    else {
+        for (x2 = y->te_outlet; x2; x2 = x2->o_next) {
+            if (x2->o_next == x) { x2->o_next = x->o_next; break; }
+        }
+    }
+    
+    PD_MEMORY_FREE (x, sizeof (t_outlet));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int outlet_isSignal (t_outlet *x)
+{
+    return (x->o_symbol == &s_signal);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void outlet_bang (t_outlet *x)
+{
+    t_outconnect *oc;
+    if(++object_stackCount >= OBJECT_MAXIMUM_ITERATION)
+        object_wrongOutlet(x);
+    else 
+    for (oc = x->o_connections; oc; oc = oc->oc_next)
+        pd_bang(oc->oc_to);
+    --object_stackCount;
+}
+
+void outlet_pointer(t_outlet *x, t_gpointer *gp)
+{
+    t_outconnect *oc;
+    t_gpointer gpointer;
+    if(++object_stackCount >= OBJECT_MAXIMUM_ITERATION)
+        object_wrongOutlet(x);
+    else
+    {
+        gpointer = *gp;
+        for (oc = x->o_connections; oc; oc = oc->oc_next)
+            pd_pointer(oc->oc_to, &gpointer);
+    }
+    --object_stackCount;
+}
+
+void outlet_float(t_outlet *x, t_float f)
+{
+    t_outconnect *oc;
+    if(++object_stackCount >= OBJECT_MAXIMUM_ITERATION)
+        object_wrongOutlet(x);
+    else
+    for (oc = x->o_connections; oc; oc = oc->oc_next)
+        pd_float(oc->oc_to, f);
+    --object_stackCount;
+}
+
+void outlet_symbol(t_outlet *x, t_symbol *s)
+{
+    t_outconnect *oc;
+    if(++object_stackCount >= OBJECT_MAXIMUM_ITERATION)
+        object_wrongOutlet(x);
+    else
+    for (oc = x->o_connections; oc; oc = oc->oc_next)
+        pd_symbol(oc->oc_to, s);
+    --object_stackCount;
+}
+
+void outlet_list(t_outlet *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_outconnect *oc;
+    if(++object_stackCount >= OBJECT_MAXIMUM_ITERATION)
+        object_wrongOutlet(x);
+    else
+    for (oc = x->o_connections; oc; oc = oc->oc_next)
+        pd_list(oc->oc_to, argc, argv);
+    --object_stackCount;
+}
+
+void outlet_anything(t_outlet *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_outconnect *oc;
+    if(++object_stackCount >= OBJECT_MAXIMUM_ITERATION)
+        object_wrongOutlet(x);
+    else
+    for (oc = x->o_connections; oc; oc = oc->oc_next)
+        pd_message(oc->oc_to, s, argc, argv);
+    --object_stackCount;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void object_list (t_object *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (!argc) { pd_empty ((t_pd *)x); }
@@ -314,162 +470,11 @@ void object_initialize (void)
     class_addAnything (inlet_class, object_inletAnything);
     
     class_addPointer (pointerinlet_class, object_pointerInletPointer);
-    class_addAnything (pointerinlet_class, object_inletWrong);
+    class_addAnything (pointerinlet_class, object_wrongInlet);
     class_addFloat (floatinlet_class, object_floatInletFloat);
-    class_addAnything (floatinlet_class, object_inletWrong);
+    class_addAnything (floatinlet_class, object_wrongInlet);
     class_addSymbol (symbolinlet_class, object_symbolInletSymbol);
-    class_addAnything (symbolinlet_class, object_inletWrong);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-/* --------------------------- outlets ------------------------------ */
-
-static int stackcount = 0; /* iteration counter */
-#define STACKITER 1000 /* maximum iterations allowed */
-
-static int outlet_eventno;
-
-    /* set a stack limit (on each incoming event that can set off messages)
-    for the outlet functions to check to prevent stack overflow from message
-    recursion */
-        
-void outlet_setstacklim(void)
-{
-    outlet_eventno++;
-}
-
-    /* get a number unique to the (clock, MIDI, GUI, etc.) event we're on */
-int sched_geteventno( void)
-{
-    return (outlet_eventno);
-}
-
-struct _outconnect
-{
-    struct _outconnect *oc_next;
-    t_pd *oc_to;
-};
-
-struct _outlet
-{
-    t_object *o_owner;
-    struct _outlet *o_next;
-    t_outconnect *o_connections;
-    t_symbol *o_sym;
-};
-
-t_outlet *outlet_new(t_object *owner, t_symbol *s)
-{
-    t_outlet *x = (t_outlet *)PD_MEMORY_GET(sizeof(*x)), *y, *y2;
-    x->o_owner = owner;
-    x->o_next = 0;
-    if (y = owner->te_outlet)
-    {
-        while (y2 = y->o_next) y = y2;
-        y->o_next = x;
-    }
-    else owner->te_outlet = x;
-    x->o_connections = 0;
-    x->o_sym = s;
-    return (x);
-}
-
-static void outlet_stackerror(t_outlet *x)
-{
-    post_error ("stack overflow");
-}
-
-void outlet_bang(t_outlet *x)
-{
-    t_outconnect *oc;
-    if(++stackcount >= STACKITER)
-        outlet_stackerror(x);
-    else 
-    for (oc = x->o_connections; oc; oc = oc->oc_next)
-        pd_bang(oc->oc_to);
-    --stackcount;
-}
-
-void outlet_pointer(t_outlet *x, t_gpointer *gp)
-{
-    t_outconnect *oc;
-    t_gpointer gpointer;
-    if(++stackcount >= STACKITER)
-        outlet_stackerror(x);
-    else
-    {
-        gpointer = *gp;
-        for (oc = x->o_connections; oc; oc = oc->oc_next)
-            pd_pointer(oc->oc_to, &gpointer);
-    }
-    --stackcount;
-}
-
-void outlet_float(t_outlet *x, t_float f)
-{
-    t_outconnect *oc;
-    if(++stackcount >= STACKITER)
-        outlet_stackerror(x);
-    else
-    for (oc = x->o_connections; oc; oc = oc->oc_next)
-        pd_float(oc->oc_to, f);
-    --stackcount;
-}
-
-void outlet_symbol(t_outlet *x, t_symbol *s)
-{
-    t_outconnect *oc;
-    if(++stackcount >= STACKITER)
-        outlet_stackerror(x);
-    else
-    for (oc = x->o_connections; oc; oc = oc->oc_next)
-        pd_symbol(oc->oc_to, s);
-    --stackcount;
-}
-
-void outlet_list(t_outlet *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_outconnect *oc;
-    if(++stackcount >= STACKITER)
-        outlet_stackerror(x);
-    else
-    for (oc = x->o_connections; oc; oc = oc->oc_next)
-        pd_list(oc->oc_to, argc, argv);
-    --stackcount;
-}
-
-void outlet_anything(t_outlet *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_outconnect *oc;
-    if(++stackcount >= STACKITER)
-        outlet_stackerror(x);
-    else
-    for (oc = x->o_connections; oc; oc = oc->oc_next)
-        pd_message(oc->oc_to, s, argc, argv);
-    --stackcount;
-}
-
-    /* get the outlet's declared symbol */
-t_symbol *outlet_getsymbol(t_outlet *x)
-{
-    return (x->o_sym);
-}
-
-void outlet_free(t_outlet *x)
-{
-    t_object *y = x->o_owner;
-    t_outlet *x2;
-    if (y->te_outlet == x) y->te_outlet = x->o_next;
-    else for (x2 = y->te_outlet; x2; x2 = x2->o_next)
-        if (x2->o_next == x)
-    {
-        x2->o_next = x->o_next;
-        break;
-    }
-    PD_MEMORY_FREE(x, sizeof(*x));
+    class_addAnything (symbolinlet_class, object_wrongInlet);
 }
 
 t_outconnect *obj_connect(t_object *source, int outno,
@@ -507,7 +512,7 @@ doit:
         oc2->oc_next = oc;
     }
     else o->o_connections = oc;
-    if (o->o_sym == &s_signal) canvas_update_dsp();
+    if (o->o_symbol == &s_signal) canvas_update_dsp();
 
     return (oc);
 }
@@ -552,7 +557,7 @@ doit:
         oc = oc2;
     }
 done:
-    if (o->o_sym == &s_signal) canvas_update_dsp();
+    if (o->o_symbol == &s_signal) canvas_update_dsp();
 }
 
 /* ------ traversal routines for code that can't see our structures ------ */
@@ -698,7 +703,7 @@ int obj_nsigoutlets(t_object *x)
     int n;
     t_outlet *o;
     for (o = x->te_outlet, n = 0; o; o = o->o_next)
-        if (o->o_sym == &s_signal) n++;
+        if (o->o_symbol == &s_signal) n++;
     return (n);
 }
 
@@ -707,7 +712,7 @@ int obj_sigoutletindex(t_object *x, int m)
     int n;
     t_outlet *o2;
     for (o2 = x->te_outlet, n = 0; o2; o2 = o2->o_next, m--)
-        if (o2->o_sym == &s_signal)
+        if (o2->o_symbol == &s_signal)
     {
         if (m == 0) return (n);
         n++;
@@ -720,7 +725,7 @@ int obj_issignaloutlet(t_object *x, int m)
     int n;
     t_outlet *o2;
     for (o2 = x->te_outlet, n = 0; o2 && m--; o2 = o2->o_next);
-    return (o2 && (o2->o_sym == &s_signal));
+    return (o2 && (o2->o_symbol == &s_signal));
 }
 
 t_float *obj_findsignalscalar(t_object *x, int m)
@@ -763,7 +768,7 @@ int outlet_getsignalindex(t_outlet *x)
     int n = 0;
     t_outlet *o;
     for (o = x->o_owner->te_outlet, n = 0; o && o != x; o = o->o_next) 
-        if (o->o_sym == &s_signal) n++;
+        if (o->o_symbol == &s_signal) n++;
     return (n);
 }
 

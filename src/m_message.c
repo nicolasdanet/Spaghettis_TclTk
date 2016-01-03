@@ -152,7 +152,7 @@ static void new_anything (t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
         close (f);
         
         if (pd_setLoadingAbstraction (s)) { 
-            post_error (PD_TRANSLATE ("%s / Can't load abstraction within itself.\n"), s->s_name);
+            post_error (PD_TRANSLATE ("%s: can't load abstraction within itself"), s->s_name);  // --
             
         } else {
             t_pd *t = s__X.s_thing;
@@ -343,7 +343,7 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     return;
     
 err:
-    post_error (PD_TRANSLATE ("%s / Bad arguments for method \"%s\"."), c->c_name->s_name, s->s_name);
+    post_error (PD_TRANSLATE ("%s: bad arguments for method '%s'"), c->c_name->s_name, s->s_name);  // --
 }
 
 // -----------------------------------------------------------------------------------------------------------
