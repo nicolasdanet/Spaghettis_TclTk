@@ -444,12 +444,6 @@ PD_DLL void     outlet_anything             (t_outlet *x, t_symbol *s, int argc,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL void     obj_saveformat              (t_object *x, t_binbuf *bb);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 PD_DLL t_float  atom_getfloat               (t_atom *a);
 PD_DLL t_int    atom_getint                 (t_atom *a);
 PD_DLL t_float  atom_getfloatarg            (int which, int argc, t_atom *argv);

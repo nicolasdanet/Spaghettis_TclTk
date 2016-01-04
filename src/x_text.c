@@ -350,7 +350,7 @@ static void text_define_save(t_gobj *z, t_binbuf *bb)
         binbuf_addbinbuf(bb, x->x_binbuf);
         binbuf_addsemi(bb);
     }
-    obj_saveformat(&x->x_ob, bb);
+    object_saveWidth(&x->x_ob, bb);
 }
 
 static void text_define_free(t_text_define *x)

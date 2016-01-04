@@ -619,6 +619,10 @@ int object_numberOfSignalOutlets (t_object *x)
     return n;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int object_indexOfSignalInlet (t_object *x, int m)
 {
     int n = 0;
@@ -627,7 +631,8 @@ int object_indexOfSignalInlet (t_object *x, int m)
     PD_ASSERT (m >= 0);
         
     if (pd_class (x)->c_hasFirstInlet && pd_class (x)->c_floatSignalIn) {
-        if (!m--) { return 0; } else { n++; }
+        if (!m) { return 0; } else { n++; } 
+        m--;
     }
     
     for (i = x->te_inlet; i; i = i->i_next, m--) {
@@ -685,6 +690,38 @@ int object_isSignalOutlet (t_object *x, int m)
     for (o = x->te_outlet; o && m--; o = o->o_next) {}
     
     return (o && (o->o_symbol == &s_signal));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int object_getSignalInletIndex (t_inlet *x)
+{
+    int n = 0;
+    t_inlet *i = NULL;
+    
+    PD_ASSERT (x->i_symbolFrom == &s_signal);
+    
+    for (i = x->i_owner->te_inlet; i && i != x; i = i->i_next) { 
+        if (i->i_symbolFrom == &s_signal) { n++; }
+    }
+    
+    return n;
+}
+
+int object_getSignalOutletIndex (t_outlet *x)
+{
+    int n = 0;
+    t_outlet *o = NULL;
+    
+    PD_ASSERT (x->o_symbol == &s_signal);
+    
+    for (o = x->o_owner->te_outlet; o && o != x; o = o->o_next) {
+        if (o->o_symbol == &s_signal) { n++; }
+    }
+    
+    return n;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -770,53 +807,38 @@ void object_moveOutletFirst (t_object *x, t_outlet *o)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_float *obj_findsignalscalar(t_object *x, int m)
+void object_saveWidth (t_object *x, t_binbuf *bb)
 {
-    int n = 0;
-    t_inlet *i;
-    if (x->te_g.g_pd->c_hasFirstInlet && x->te_g.g_pd->c_floatSignalIn)
-    {
-        if (!m--)
-            return (x->te_g.g_pd->c_floatSignalIn > 0 ?
-                (t_float *)(((char *)x) + x->te_g.g_pd->c_floatSignalIn) : 0);
-        n++;
-    }
-    for (i = x->te_inlet; i; i = i->i_next, m--)
-        if (i->i_symbolFrom == &s_signal)
-    {
-        if (m == 0)
-            return (&i->i_un.i_signal);
-        n++;
-    }
-    return (0);
+    if (x->te_width) { binbuf_addv (bb, "ssf;", &s__X, gensym ("f"), (t_float)x->te_width); }
 }
 
-/* and these are only used in g_io.c... */
-
-int inlet_getsignalindex(t_inlet *x)
+t_float *object_getSignalValueAtIndex (t_object *x, int m)
 {
     int n = 0;
-    t_inlet *i;
+    t_inlet *i = NULL;
     
-    if (x->i_symbolFrom != &s_signal) { PD_BUG; }
+    if (pd_class(x)->c_hasFirstInlet && pd_class(x)->c_floatSignalIn) {
+        if (!m) {
+            if (pd_class(x)->c_floatSignalIn > 0) {
+                return (t_float *)(((char *)x) + pd_class(x)->c_floatSignalIn);
+            } else {
+                PD_BUG; return NULL;
+            }
+        }
+        m--; n++;
+    }
     
-    for (i = x->i_owner->te_inlet, n = 0; i && i != x; i = i->i_next)
-        if (i->i_symbolFrom == &s_signal) n++;
-    return (n);
+    for (i = x->te_inlet; i; i = i->i_next, m--) {
+        if (i->i_symbolFrom == &s_signal) {
+            if (m == 0) { return &i->i_un.i_signal; }
+            else {
+                n++;
+            }
+        }
+    }
+    
+    return NULL;
 }
 
-int outlet_getsignalindex(t_outlet *x)
-{
-    int n = 0;
-    t_outlet *o;
-    for (o = x->o_owner->te_outlet, n = 0; o && o != x; o = o->o_next) 
-        if (o->o_symbol == &s_signal) n++;
-    return (n);
-}
-
-void obj_saveformat(t_object *x, t_binbuf *bb)
-{
-    if (x->te_width)
-        binbuf_addv(bb, "ssf;", &s__X, gensym("f"), (float)x->te_width);
-}
-
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

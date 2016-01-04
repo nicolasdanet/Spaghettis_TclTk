@@ -23,7 +23,7 @@ extern t_pdinstance *pd_this;
 extern t_class *canvas_class;
 
 extern t_class *vinlet_class, *voutlet_class;
-t_float *obj_findsignalscalar(t_object *x, int m);
+
 static int ugen_loud;
 
 PD_STRUCT _vinlet;
@@ -736,7 +736,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
             s3 = signal_new(dc->dc_calcsize, dc->dc_srate);
             /* post("%s: unconnected signal inlet set to zero",
                 class_getName(u->u_obj->te_g.g_pd)); */
-            if (scalar = obj_findsignalscalar(u->u_obj, i))
+            if (scalar = object_getSignalValueAtIndex(u->u_obj, i))
                 dsp_add_scalarcopy(scalar, s3->s_vector, s3->s_blockSize);
             else
                 dsp_add_zero(s3->s_vector, s3->s_blockSize);

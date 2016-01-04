@@ -163,8 +163,6 @@ t_int *vinlet_doprolog(t_int *w)
     return (w+4);
 }
 
-int inlet_getsignalindex(t_inlet *x);
-
         /* set up prolog DSP code  */
 void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
     int myvecsize, int calcsize, int phase, int period, int frequency,
@@ -192,7 +190,7 @@ void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
         prologphase = (phase - 1) & (period - 1);
         if (parentsigs)
         {
-            insig = parentsigs[inlet_getsignalindex(x->x_inlet)];
+            insig = parentsigs[object_getSignalInletIndex(x->x_inlet)];
             parentvecsize = insig->s_vectorSize;
             re_parentvecsize = parentvecsize * upsample / downsample;
         }
@@ -246,7 +244,7 @@ void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
     {
             /* no reblocking; in this case our output signal is "borrowed"
             and merely needs to be pointed to the real one. */
-        x->x_directsignal = parentsigs[inlet_getsignalindex(x->x_inlet)];
+        x->x_directsignal = parentsigs[object_getSignalInletIndex(x->x_inlet)];
     }
 }
 
@@ -440,7 +438,7 @@ static t_int *voutlet_doepilog_resampling(t_int *w)
     return (w+3);
 }
 
-int outlet_getsignalindex(t_outlet *x);
+
 
         /* prolog for outlets -- store pointer to the outlet on the
         parent, which, if "reblock" is false, will want to refer
@@ -464,7 +462,7 @@ void voutlet_dspprolog(struct _voutlet *x, t_signal **parentsigs,
     {
         if (!parentsigs) { PD_BUG; }
         x->x_directsignal =
-            parentsigs[outlet_getsignalindex(x->x_parentoutlet)];
+            parentsigs[object_getSignalOutletIndex(x->x_parentoutlet)];
     }
 }
 
@@ -504,7 +502,7 @@ void voutlet_dspepilog(struct _voutlet *x, t_signal **parentsigs,
         int bigperiod, epilogphase, blockphase;
         if (parentsigs)
         {
-            outsig = parentsigs[outlet_getsignalindex(x->x_parentoutlet)];
+            outsig = parentsigs[object_getSignalOutletIndex(x->x_parentoutlet)];
             parentvecsize = outsig->s_vectorSize;
             re_parentvecsize = parentvecsize * upsample / downsample;
         }
@@ -563,7 +561,7 @@ void voutlet_dspepilog(struct _voutlet *x, t_signal **parentsigs,
         if (parentsigs)
         {
             t_signal *outsig =
-                parentsigs[outlet_getsignalindex(x->x_parentoutlet)];
+                parentsigs[object_getSignalOutletIndex(x->x_parentoutlet)];
             dsp_add_zero(outsig->s_vector, outsig->s_blockSize);
         }
     }
