@@ -47,10 +47,10 @@ void glist_add(t_glist *x, t_gobj *y)
         for (y2 = x->gl_list; y2->g_next; y2 = y2->g_next);
         y2->g_next = y;
     }
-    if (x->gl_editor && (ob = pd_checkobject(&y->g_pd)))
+    if (x->gl_editor && (ob = pd_ifBox(&y->g_pd)))
         rtext_new(x, ob);
     if (x->gl_editor && x->gl_isgraph && !x->gl_goprect
-        && pd_checkobject(&y->g_pd))
+        && pd_ifBox(&y->g_pd))
     {
         x->gl_goprect = 1;
         canvas_drawredrect(x, 1);
@@ -122,7 +122,7 @@ void glist_delete(t_glist *x, t_gobj *y)
     {
         gobj_vis(y, x, 0);
     }
-    if (x->gl_editor && (ob = pd_checkobject(&y->g_pd)))
+    if (x->gl_editor && (ob = pd_ifBox(&y->g_pd)))
         rtext = rtext_new(x, ob);
     if (x->gl_list == y) x->gl_list = y->g_next;
     else for (g = x->gl_list; g; g = g->g_next)
@@ -152,7 +152,7 @@ void glist_clear(t_glist *x)
     {
             /* to avoid unnecessary DSP resorting, we suspend DSP
             only if we hit a patchable object. */
-        if (!suspended && pd_checkobject(&y->g_pd) && class_hasMethod (pd_class (&y->g_pd), dspsym))
+        if (!suspended && pd_ifBox(&y->g_pd) && class_hasMethod (pd_class (&y->g_pd), dspsym))
         {
             dspstate = canvas_suspend_dsp();
             suspended = 1;
@@ -911,7 +911,7 @@ static void graph_getrect(t_gobj *z, t_glist *glist,
                     box.  And ignore "text" objects which aren't shown on 
                     parent */
                 if (pd_class(&g->g_pd) == garray_class ||
-                    pd_checkobject(&g->g_pd))
+                    pd_ifBox(&g->g_pd))
                         continue;
                 gobj_getrect(g, x, &x21, &y21, &x22, &y22);
                 if (x22 > x2) 

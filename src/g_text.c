@@ -103,7 +103,7 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
     {
         if (!pd_newest)
             x = 0;
-        else if (!(x = pd_checkobject(pd_newest)))
+        else if (!(x = pd_ifBox(pd_newest)))
         {
             binbuf_print(b);
             post_error ("... didn't return a patchable object");
@@ -1326,7 +1326,7 @@ void text_drawborder(t_text *x, t_glist *glist,
     }
         /* draw inlets/outlets */
     
-    if (ob = pd_checkobject((t_pd *)x))
+    if (ob = pd_ifBox((t_pd *)x))
         glist_drawio(glist, ob, firsttime, tag, x1, y1, x2, y2);
 }
 

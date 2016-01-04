@@ -260,7 +260,7 @@ t_outconnect *linetraverser_next(t_linetraverser *t)
             if (!t->tr_ob) y = t->tr_x->gl_list;
             else y = t->tr_ob->te_g.g_next;
             for (; y; y = y->g_next)
-                if (ob = pd_checkobject(&y->g_pd)) break;
+                if (ob = pd_ifBox(&y->g_pd)) break;
             if (!ob) return (0);
             t->tr_ob = ob;
             t->tr_nout = object_numberOfOutlets(ob);
@@ -553,7 +553,7 @@ static void canvas_dosetbounds(t_canvas *x, int x1, int y1, int x2, int y2)
             /* and move text objects accordingly; they should stick
             to the bottom, not the top. */
         for (y = x->gl_list; y; y = y->g_next)
-            if (pd_checkobject(&y->g_pd))
+            if (pd_ifBox(&y->g_pd))
                 gobj_displace(y, x, 0, heightchange);
         canvas_redraw(x);
     }
@@ -1058,7 +1058,7 @@ static void canvas_dodsp(t_canvas *x, int toplevel, t_signal **sp)
         /* find all the "dsp" boxes and add them to the graph */
     
     for (y = x->gl_list; y; y = y->g_next)
-        if ((ob = pd_checkobject(&y->g_pd)) && class_hasMethod (pd_class (&y->g_pd), dspsym))
+        if ((ob = pd_ifBox(&y->g_pd)) && class_hasMethod (pd_class (&y->g_pd), dspsym))
             ugen_add(dc, ob);
 
         /* ... and all dsp interconnections */
@@ -1216,7 +1216,7 @@ void canvas_redrawallfortemplatecanvas(t_canvas *x, int action)
     t_symbol *s1 = gensym("struct");
     for (g = x->gl_list; g; g = g->g_next)
     {
-        t_object *ob = pd_checkobject(&g->g_pd);
+        t_object *ob = pd_ifBox(&g->g_pd);
         t_atom *argv;
         if (!ob || ob->te_type != TYPE_OBJECT ||
             binbuf_getnatom(ob->te_binbuf) < 2)
@@ -1490,7 +1490,7 @@ static void canvas_f(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
         return;
     for (g = x->gl_list; g2 = g->g_next; g = g2)
         ;
-    if (ob = pd_checkobject(&g->g_pd))
+    if (ob = pd_ifBox(&g->g_pd))
     {
         ob->te_width = atom_getfloatarg(0, argc, argv);
         if (glist_isvisible(x))

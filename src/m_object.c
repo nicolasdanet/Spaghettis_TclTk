@@ -646,17 +646,6 @@ t_outconnect *object_traverseOutletNext (t_outconnect *last, t_object **dest, t_
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-    /* this one checks that a pd is indeed a patchable object, and returns
-    it, correctly typed, or zero if the check failed. */
-t_object *pd_checkobject(t_pd *x)
-{
-    if ((*x)->c_isBox) return ((t_object *)x);
-    else return (0);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
     /* move an inlet or outlet to the head of the list */
