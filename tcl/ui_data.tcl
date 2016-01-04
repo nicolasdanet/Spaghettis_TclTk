@@ -54,7 +54,7 @@ proc _create {top content} {
 
 proc closed {top} {
 
-    ::ui_data::_apply $top
+    # ::ui_data::_apply $top
     ::cancel $top
 }
 
