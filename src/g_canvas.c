@@ -1052,8 +1052,8 @@ static void canvas_dodsp(t_canvas *x, int toplevel, t_signal **sp)
         If we aren't toplevel, there are already other dspcontexts around. */
 
     dc = ugen_start_graph(toplevel, sp,
-        obj_nsiginlets(&x->gl_obj),
-        obj_nsigoutlets(&x->gl_obj));
+        object_numberOfSignalInlets(&x->gl_obj),
+        object_numberOfSignalOutlets(&x->gl_obj));
 
         /* find all the "dsp" boxes and add them to the graph */
     
@@ -1064,7 +1064,7 @@ static void canvas_dodsp(t_canvas *x, int toplevel, t_signal **sp)
         /* ... and all dsp interconnections */
     linetraverser_start(&t, x);
     while (oc = linetraverser_next(&t))
-        if (obj_issignaloutlet(t.tr_ob, t.tr_outno))
+        if (object_isSignalOutlet(t.tr_ob, t.tr_outno))
             ugen_connect(dc, t.tr_ob, t.tr_outno, t.tr_ob2, t.tr_inno);
 
         /* finally, sort them and add them to the DSP chain */

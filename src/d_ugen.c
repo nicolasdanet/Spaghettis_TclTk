@@ -642,11 +642,11 @@ void ugen_add(t_dspcontext *dc, t_object *obj)
     x->u_next = dc->dc_ugenlist;
     dc->dc_ugenlist = x;
     x->u_obj = obj;
-    x->u_nin = obj_nsiginlets(obj);
+    x->u_nin = object_numberOfSignalInlets(obj);
     x->u_in = PD_MEMORY_GET(x->u_nin * sizeof (*x->u_in));
     for (uin = x->u_in, i = x->u_nin; i--; uin++)
         uin->i_nconnect = 0;
-    x->u_nout = obj_nsigoutlets(obj);
+    x->u_nout = object_numberOfSignalOutlets(obj);
     x->u_out = PD_MEMORY_GET(x->u_nout * sizeof (*x->u_out));
     for (uout = x->u_out, i = x->u_nout; i--; uout++)
         uout->o_connections = 0, uout->o_nconnect = 0;
@@ -660,8 +660,8 @@ void ugen_connect(t_dspcontext *dc, t_object *x1, int outno, t_object *x2,
     t_sigoutlet *uout;
     t_siginlet *uin;
     t_sigoutconnect *oc;
-    int sigoutno = obj_sigoutletindex(x1, outno);
-    int siginno = obj_siginletindex(x2, inno);
+    int sigoutno = object_indexOfSignalOutlet(x1, outno);
+    int siginno = object_indexOfSignalInlet(x2, inno);
     if (ugen_loud)
         post("%s -> %s: %d->%d",
             class_getName(x1->te_g.g_pd),

@@ -1371,7 +1371,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
                 {
                     if (doit)
                     {
-                        int issignal = obj_issignaloutlet(ob, closest);
+                        int issignal = object_isSignalOutlet(ob, closest);
                         x->gl_editor->e_onmotion = ACTION_CONNECT;
                         x->gl_editor->e_xwas = xpos;
                         x->gl_editor->e_ywas = ypos;
@@ -1541,8 +1541,8 @@ void canvas_doconnect(t_canvas *x, int xpos, int ypos, int which, int doit)
                 canvas_setcursor(x, CURSOR_EDIT_NOTHING);
                 return;
             }
-            if (obj_issignaloutlet(ob1, closest1) &&
-                !obj_issignalinlet(ob2, closest2))
+            if (object_isSignalOutlet(ob1, closest1) &&
+                !object_isSignalInlet(ob2, closest2))
             {
                 if (doit)
                     post_error ("can't connect signal outlet to control inlet");
@@ -1563,7 +1563,7 @@ void canvas_doconnect(t_canvas *x, int xpos, int ypos, int which, int doit)
                 sys_vgui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
                     glist_getcanvas(x),
                         lx1, ly1, lx2, ly2,
-                            (obj_issignaloutlet(ob1, closest1) ? 2 : 1), oc);
+                            (object_isSignalOutlet(ob1, closest1) ? 2 : 1), oc);
                 canvas_dirty(x, 1);
                 canvas_setundo(x, canvas_undo_connect,
                     canvas_undo_set_connect(x, 
@@ -2535,7 +2535,7 @@ void canvas_connect(t_canvas *x, t_float fwhoout, t_float foutno,
     {
         sys_vgui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
             glist_getcanvas(x), 0, 0, 0, 0,
-            (obj_issignaloutlet(objsrc, outno) ? 2 : 1),oc);
+            (object_isSignalOutlet(objsrc, outno) ? 2 : 1),oc);
         canvas_fixlines(x, objsrc);
     }
     return;

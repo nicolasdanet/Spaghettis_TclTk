@@ -174,29 +174,28 @@ t_propertiesfn           class_getPropertiesFunction    (t_class *c);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_outconnect    *object_traverseOutletStart     (t_object *x, t_outlet **ptr, int n);
-t_outconnect    *object_traverseOutletNext      (t_outconnect *last, t_object **dest, t_inlet **ptr, int *n);
-t_outconnect    *object_connect                 (t_object *src, int m, t_object *dest, int n);
-
-void            object_disconnect               (t_object *src, int m, t_object *dest, int n);
+void            object_list                     (t_object *x, t_symbol *s, int argc, t_atom *argv);
 int             object_numberOfInlets           (t_object *x);
 int             object_numberOfOutlets          (t_object *x);
+int             object_numberOfSignalInlets     (t_object *x);
+int             object_numberOfSignalOutlets    (t_object *x);
+int             object_indexOfSignalInlet       (t_object *x, int m);
+int             object_indexOfSignalOutlet      (t_object *x, int m);
+int             object_isSignalInlet            (t_object *x, int m);
+int             object_isSignalOutlet           (t_object *x, int m);
+void            object_moveInletFirst           (t_object *x, t_inlet *i);
+void            object_moveOutletFirst          (t_object *x, t_outlet *i);
+void            object_disconnect               (t_object *src, int m, t_object *dest, int n);
 
-
-int obj_issignalinlet                       (t_object *x, int m);
-int obj_issignaloutlet                      (t_object *x, int m);
-int obj_nsiginlets                          (t_object *x);
-int obj_nsigoutlets                         (t_object *x);
-int obj_siginletindex                       (t_object *x, int m);
-int obj_sigoutletindex                      (t_object *x, int m);
-
-void            object_list                     (t_object *x, t_symbol *s, int argc, t_atom *argv);
+t_outconnect    *object_connect                 (t_object *src, int m, t_object *dest, int n);
+t_outconnect    *object_traverseOutletStart     (t_object *x, t_outlet **ptr, int n);
+t_outconnect    *object_traverseOutletNext      (t_outconnect *last, t_object **dest, t_inlet **ptr, int *n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int outlet_isSignal                         (t_outlet *x);
+int outlet_isSignal                             (t_outlet *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

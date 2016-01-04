@@ -321,7 +321,7 @@ void canvas_rminlet(t_canvas *x, t_inlet *ip)
 }
 
 extern t_inlet *vinlet_getit(t_pd *x);
-extern void obj_moveinletfirst(t_object *x, t_inlet *i);
+
 
 void canvas_resortinlets(t_canvas *x)
 {
@@ -355,7 +355,7 @@ void canvas_resortinlets(t_canvas *x)
         *maxp = 0;
         ip = vinlet_getit(&y->g_pd);
         
-        obj_moveinletfirst(&x->gl_obj, ip);
+        object_moveInletFirst(&x->gl_obj, ip);
     }
     PD_MEMORY_FREE(vec, ninlets * sizeof(*vec));
     if (x->gl_owner && glist_isvisible(x->gl_owner))
@@ -394,7 +394,6 @@ void canvas_rmoutlet(t_canvas *x, t_outlet *op)
 }
 
 extern t_outlet *voutlet_getit(t_pd *x);
-extern void obj_moveoutletfirst(t_object *x, t_outlet *i);
 
 void canvas_resortoutlets(t_canvas *x)
 {
@@ -428,7 +427,7 @@ void canvas_resortoutlets(t_canvas *x)
         *maxp = 0;
         ip = voutlet_getit(&y->g_pd);
         
-        obj_moveoutletfirst(&x->gl_obj, ip);
+        object_moveOutletFirst(&x->gl_obj, ip);
     }
     PD_MEMORY_FREE(vec, noutlets * sizeof(*vec));
     if (x->gl_owner && glist_isvisible(x->gl_owner))
