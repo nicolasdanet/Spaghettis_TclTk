@@ -39,7 +39,7 @@ static void class_defaultAnything   (t_pd *x, t_symbol *s, int argc, t_atom *arg
 
 static void class_floatForSignal (t_pd *x, t_float f)
 {
-    int offset = pd_class (x)->c_floatSignalIn;
+    int offset = pd_class (x)->c_signalOffset;
     PD_ASSERT (offset > 0);
     *(t_float *)(((char *)x) + offset) = f;
 }
@@ -223,7 +223,7 @@ t_class *class_new (t_symbol *s,
     c->c_behaviorParent     = NULL;
     c->c_fnSave             = (typeflag == CLASS_BOX ? text_save : class_defaultSave);
     c->c_fnProperties       = class_defaultProperties;
-    c->c_floatSignalIn      = 0;
+    c->c_signalOffset      = 0;
     c->c_isGraphic          = (typeflag >= CLASS_GRAPHIC);
     c->c_isBox              = (typeflag == CLASS_BOX);
     c->c_hasFirstInlet      = ((flags & CLASS_NOINLET) == 0);
@@ -236,7 +236,7 @@ void class_addSignal (t_class *c, int offset)
 {
     if (offset <= 0) { PD_BUG; }
     else {
-        c->c_floatSignalIn = offset;
+        c->c_signalOffset = offset;
         c->c_methodFloat = class_floatForSignal;
     }
 }
