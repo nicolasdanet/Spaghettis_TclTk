@@ -1072,6 +1072,7 @@ static void garray_yticks(t_garray *x,
     pd_vMessage(&x->x_glist->gl_obj.te_g.g_pd, gensym("yticks"), "fff", point, inc, f);
 }
 
+/*
 static void garray_xlabel(t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
     pd_message(&x->x_glist->gl_obj.te_g.g_pd, s, argc, argv);
@@ -1080,7 +1081,7 @@ static void garray_xlabel(t_garray *x, t_symbol *s, int argc, t_atom *argv)
 static void garray_ylabel(t_garray *x, t_symbol *s, int argc, t_atom *argv)
 {
     pd_message(&x->x_glist->gl_obj.te_g.g_pd, s, argc, argv);
-}
+}*/
     /* change the name of a garray. */
 static void garray_rename(t_garray *x, t_symbol *s)
 {
@@ -1211,12 +1212,12 @@ void g_array_setup(void)
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     class_addMethod(garray_class, (t_method)garray_xticks, gensym("xticks"),
         A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addMethod(garray_class, (t_method)garray_xlabel, gensym("xlabel"),
-        A_GIMME, 0);
+    /*class_addMethod(garray_class, (t_method)garray_xlabel, gensym("xlabel"),
+        A_GIMME, 0);*/
     class_addMethod(garray_class, (t_method)garray_yticks, gensym("yticks"),
         A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addMethod(garray_class, (t_method)garray_ylabel, gensym("ylabel"),
-        A_GIMME, 0);
+    /*class_addMethod(garray_class, (t_method)garray_ylabel, gensym("ylabel"),
+        A_GIMME, 0);*/
     class_addMethod(garray_class, (t_method)garray_rename, gensym("rename"),
         A_SYMBOL, 0);
     class_addMethod(garray_class, (t_method)garray_read, gensym("read"),

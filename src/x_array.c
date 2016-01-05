@@ -88,11 +88,11 @@ static void array_define_yrange(t_glist *x, t_float ylo, t_float yhi)
         int n = garray_getarray((t_garray *)gl->gl_list)->a_n;
         pd_vMessage(&x->gl_list->g_pd, gensym("bounds"),
             "ffff", 0., yhi, (double)(n == 1 ? n : n-1), ylo);
-        pd_vMessage(&x->gl_list->g_pd, gensym("xlabel"),
+        /*pd_vMessage(&x->gl_list->g_pd, gensym("xlabel"),
             "fff", ylo + glist_pixelstoy(gl, 2) - glist_pixelstoy(gl, 0),
                 0., (float)(n-1));
         pd_vMessage(&x->gl_list->g_pd, gensym("ylabel"),
-            "fff", glist_pixelstox(gl, 0) - glist_pixelstox(gl, 5), ylo, yhi);
+            "fff", glist_pixelstox(gl, 0) - glist_pixelstox(gl, 5), ylo, yhi);*/
     }
     else { PD_BUG; }
 }
