@@ -61,7 +61,7 @@ SRC = g_canvas.c g_graph.c g_text.c g_rtext.c g_array.c g_template.c g_io.c \
     g_iem.c g_bang.c g_hradio.c g_hslider.c g_mycanvas.c g_numbox.c \
     g_toggle.c g_vradio.c g_vslider.c g_vumeter.c \
     m_utils.c m_pd.c m_message.c m_class.c m_object.c m_atom.c m_memory.c m_binbuf.c \
-    m_setup.c m_glob.c m_sched.c \
+    m_setup.c m_global.c m_sched.c \
     s_main.c s_inter.c s_file.c s_post.c \
     s_loader.c s_path.c s_entry.c s_audio.c s_midi.c s_utf8.c s_ringbuffer.c \
     d_ugen.c d_ctl.c d_arithmetic.c d_osc.c d_filter.c d_dac.c d_misc.c \
