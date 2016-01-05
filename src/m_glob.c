@@ -77,7 +77,7 @@ void max_default(t_pd *x, t_symbol *s, int argc, t_atom *argv)
         s->s_name);
     for (i = 0; i < argc; i++)
     {
-        atom_string(argv+i, str, 80);
+        atom_toString(argv+i, str, 80);
         post("%s", str);
     }
 }
@@ -89,7 +89,7 @@ void max_default(t_pd *x, t_symbol *s, int argc, t_atom *argv)
     sys_vgui("pdtk_plugin_dispatch ");
     for (i = 0; i < argc; i++)
     {
-        atom_string(argv+i, str, 80);
+        atom_toString(argv+i, str, 80);
         sys_vgui("%s", str);
         if (i < argc-1) {
             sys_vgui(" ");

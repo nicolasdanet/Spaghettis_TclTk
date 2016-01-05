@@ -109,11 +109,11 @@ void iem_verify_snd_ne_rcv(t_iem *iem)
 t_symbol *iem_new_dogetname(t_iem *iem, int indx, t_atom *argv)
 {
     if (IS_SYMBOL(argv, indx))
-        return (atom_getsymbolarg(indx, 100000, argv));
+        return (atom_getSymbolAtIndex(indx, 100000, argv));
     else if (IS_FLOAT(argv, indx))
     {
         char str[80];
-        sprintf(str, "%d", (int)atom_getintarg(indx, 100000, argv));
+        sprintf(str, "%d", (int)(t_int)atom_getFloatAtIndex(indx, 100000, argv));
         return (gensym(str));
     }
     else return (gensym("empty"));
@@ -158,7 +158,7 @@ static void iem_init_sym2dollararg(t_iem *iem, t_symbol **symp,
         if (binbuf_getnatom(b) > indx)
         {
             char buf[80];
-            atom_string(binbuf_getvec(b) + indx, buf, 80);
+            atom_toString(binbuf_getvec(b) + indx, buf, 80);
             *symp = gensym(buf);
         }
         else if (fallback)
@@ -324,8 +324,8 @@ void iem_label(void *x, t_iem *iem, t_symbol *s)
 
 void iem_label_pos(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 {
-    iem->x_ldx = (int)atom_getintarg(0, ac, av);
-    iem->x_ldy = (int)atom_getintarg(1, ac, av);
+    iem->x_ldx = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
+    iem->x_ldy = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
     if(glist_isvisible(iem->x_glist))
         sys_vgui(".x%lx.c coords %lxLABEL %d %d\n",
                  glist_getcanvas(iem->x_glist), x,
@@ -335,7 +335,7 @@ void iem_label_pos(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 
 void iem_label_font(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 {
-    int f = (int)atom_getintarg(1, ac, av);
+    int f = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
     if(f < 4)
         f = 4;
     iem->x_fontsize = f;
@@ -356,8 +356,8 @@ void iem_size(void *x, t_iem *iem)
 
 void iem_delta(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 {
-    iem->x_obj.te_xCoordinate += (int)atom_getintarg(0, ac, av);
-    iem->x_obj.te_yCoordinate += (int)atom_getintarg(1, ac, av);
+    iem->x_obj.te_xCoordinate += (int)(t_int)atom_getFloatAtIndex(0, ac, av);
+    iem->x_obj.te_yCoordinate += (int)(t_int)atom_getFloatAtIndex(1, ac, av);
     if(glist_isvisible(iem->x_glist))
     {
         (*iem->x_draw)(x, iem->x_glist, IEM_DRAW_MOVE);
@@ -367,8 +367,8 @@ void iem_delta(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 
 void iem_pos(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 {
-    iem->x_obj.te_xCoordinate = (int)atom_getintarg(0, ac, av);
-    iem->x_obj.te_yCoordinate = (int)atom_getintarg(1, ac, av);
+    iem->x_obj.te_xCoordinate = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
+    iem->x_obj.te_yCoordinate = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
     if(glist_isvisible(iem->x_glist))
     {
         (*iem->x_draw)(x, iem->x_glist, IEM_DRAW_MOVE);
@@ -378,14 +378,14 @@ void iem_pos(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 
 void iem_color(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 {
-    iem->x_bcol = iem_compatible_col(atom_getintarg(0, ac, av));
+    iem->x_bcol = iem_compatible_col((t_int)atom_getFloatAtIndex(0, ac, av));
     if(ac > 2)
     {
-        iem->x_fcol = iem_compatible_col(atom_getintarg(1, ac, av));
-        iem->x_lcol = iem_compatible_col(atom_getintarg(2, ac, av));
+        iem->x_fcol = iem_compatible_col((t_int)atom_getFloatAtIndex(1, ac, av));
+        iem->x_lcol = iem_compatible_col((t_int)atom_getFloatAtIndex(2, ac, av));
     }
     else
-        iem->x_lcol = iem_compatible_col(atom_getintarg(1, ac, av));
+        iem->x_lcol = iem_compatible_col((t_int)atom_getFloatAtIndex(1, ac, av));
     if(glist_isvisible(iem->x_glist))
         (*iem->x_draw)(x, iem->x_glist, IEM_DRAW_CONFIG);
 }
@@ -447,34 +447,34 @@ void iem_properties(t_iem *iem, t_symbol **srl)
 void iem_dialog(t_iem *iem, t_symbol **srl, int argc, t_atom *argv)
 {
     char str[144];
-    int init = (int)atom_getintarg(5, argc, argv);
-    int ldx = (int)atom_getintarg(10, argc, argv);
-    int ldy = (int)atom_getintarg(11, argc, argv);
-    int fs = (int)atom_getintarg(12, argc, argv);
-    int bcol = (int)atom_getintarg(13, argc, argv);
-    int fcol = (int)atom_getintarg(14, argc, argv);
-    int lcol = (int)atom_getintarg(15, argc, argv);
+    int init = (int)(t_int)atom_getFloatAtIndex(5, argc, argv);
+    int ldx = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
+    int ldy = (int)(t_int)atom_getFloatAtIndex(11, argc, argv);
+    int fs = (int)(t_int)atom_getFloatAtIndex(12, argc, argv);
+    int bcol = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
+    int fcol = (int)(t_int)atom_getFloatAtIndex(14, argc, argv);
+    int lcol = (int)(t_int)atom_getFloatAtIndex(15, argc, argv);
     int sndable=1, rcvable=1;
 
     if(IS_SYMBOL(argv,7))
-        srl[0] = atom_getsymbolarg(7, argc, argv);
+        srl[0] = atom_getSymbolAtIndex(7, argc, argv);
     else if(IS_FLOAT(argv,7))
     {
-        sprintf(str, "%d", (int)atom_getintarg(7, argc, argv));
+        sprintf(str, "%d", (int)(t_int)atom_getFloatAtIndex(7, argc, argv));
         srl[0] = gensym(str);
     }
     if(IS_SYMBOL(argv,8))
-        srl[1] = atom_getsymbolarg(8, argc, argv);
+        srl[1] = atom_getSymbolAtIndex(8, argc, argv);
     else if(IS_FLOAT(argv,8))
     {
-        sprintf(str, "%d", (int)atom_getintarg(8, argc, argv));
+        sprintf(str, "%d", (int)(t_int)atom_getFloatAtIndex(8, argc, argv));
         srl[1] = gensym(str);
     }
     if(IS_SYMBOL(argv,9))
-        srl[2] = atom_getsymbolarg(9, argc, argv);
+        srl[2] = atom_getSymbolAtIndex(9, argc, argv);
     else if(IS_FLOAT(argv,9))
     {
-        sprintf(str, "%d", (int)atom_getintarg(9, argc, argv));
+        sprintf(str, "%d", (int)(t_int)atom_getFloatAtIndex(9, argc, argv));
         srl[2] = gensym(str);
     }
     if(init != 0) init = 1;

@@ -73,7 +73,7 @@ void post_atoms (int argc, t_atom *argv)
     
     for (i = 0; i < argc; i++) {
         char buf[PD_STRING];
-        atom_string (argv + i, buf, PD_STRING);
+        atom_toString (argv + i, buf, PD_STRING);
         post ("%s", buf);
     }
 }

@@ -1153,8 +1153,8 @@ static void *text_sequence_new(t_symbol *s, int argc, t_atom *argv)
             global = 1;
         else if (!strcmp(argv->a_w.w_symbol->s_name, "-t") && argc >= 3)
         {
-            text_sequence_tempo(x, atom_getsymbolarg(2, argc, argv),
-                atom_getfloatarg(1, argc, argv));
+            text_sequence_tempo(x, atom_getSymbolAtIndex(2, argc, argv),
+                atom_getFloatAtIndex(1, argc, argv));
              argc -= 2; argv += 2;
         }
         else

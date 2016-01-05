@@ -195,7 +195,7 @@ open(), read(), etc, calls to be served somehow from the GUI too. */
 
 void glob_initfromgui(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    char *cwd = atom_getsymbolarg(0, argc, argv)->s_name;
+    char *cwd = atom_getSymbolAtIndex(0, argc, argv)->s_name;
     t_namelist *nl;
     unsigned int i;
     int j;
@@ -209,15 +209,15 @@ void glob_initfromgui(void *dummy, t_symbol *s, int argc, t_atom *argv)
         int wantwidth = sys_fontlist[i].fi_maxwidth;
         for (j = 0; j < nhostfont; j++)
         {
-            if (atom_getintarg(3 * j + 3, argc, argv) <= wantheight &&
-                atom_getintarg(3 * j + 2, argc, argv) <= wantwidth)
+            if ((t_int)atom_getFloatAtIndex(3 * j + 3, argc, argv) <= wantheight &&
+                (t_int)atom_getFloatAtIndex(3 * j + 2, argc, argv) <= wantwidth)
                     best = j;
         }
             /* best is now the host font index for the desired font index i. */
         sys_fontlist[i].fi_hostfontsize =
-            atom_getintarg(3 * best + 1, argc, argv);
-        sys_fontlist[i].fi_width = atom_getintarg(3 * best + 2, argc, argv);
-        sys_fontlist[i].fi_height = atom_getintarg(3 * best + 3, argc, argv);
+            (t_int)atom_getFloatAtIndex(3 * best + 1, argc, argv);
+        sys_fontlist[i].fi_width = (t_int)atom_getFloatAtIndex(3 * best + 2, argc, argv);
+        sys_fontlist[i].fi_height = (t_int)atom_getFloatAtIndex(3 * best + 3, argc, argv);
     }
 #if 0
     for (i = 0; i < 6; i++)

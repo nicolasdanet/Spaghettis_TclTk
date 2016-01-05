@@ -340,20 +340,20 @@ t_canvas *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
 
     if (argc == 5)  /* toplevel: x, y, w, h, font */
     {
-        xloc = atom_getintarg(0, argc, argv);
-        yloc = atom_getintarg(1, argc, argv);
-        width = atom_getintarg(2, argc, argv);
-        height = atom_getintarg(3, argc, argv);
-        font = atom_getintarg(4, argc, argv);
+        xloc = (t_int)atom_getFloatAtIndex(0, argc, argv);
+        yloc = (t_int)atom_getFloatAtIndex(1, argc, argv);
+        width = (t_int)atom_getFloatAtIndex(2, argc, argv);
+        height = (t_int)atom_getFloatAtIndex(3, argc, argv);
+        font = (t_int)atom_getFloatAtIndex(4, argc, argv);
     }
     else if (argc == 6)  /* subwindow: x, y, w, h, name, vis */
     {
-        xloc = atom_getintarg(0, argc, argv);
-        yloc = atom_getintarg(1, argc, argv);
-        width = atom_getintarg(2, argc, argv);
-        height = atom_getintarg(3, argc, argv);
-        s = atom_getsymbolarg(4, argc, argv);
-        vis = atom_getintarg(5, argc, argv);
+        xloc = (t_int)atom_getFloatAtIndex(0, argc, argv);
+        yloc = (t_int)atom_getFloatAtIndex(1, argc, argv);
+        width = (t_int)atom_getFloatAtIndex(2, argc, argv);
+        height = (t_int)atom_getFloatAtIndex(3, argc, argv);
+        s = atom_getSymbolAtIndex(4, argc, argv);
+        vis = (t_int)atom_getFloatAtIndex(5, argc, argv);
     }
         /* (otherwise assume we're being created from the menu.) */
 
@@ -413,19 +413,19 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect);
 
 static void canvas_coords(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 {
-    x->gl_x1 = atom_getfloatarg(0, argc, argv);
-    x->gl_y1 = atom_getfloatarg(1, argc, argv);
-    x->gl_x2 = atom_getfloatarg(2, argc, argv);
-    x->gl_y2 = atom_getfloatarg(3, argc, argv);
-    x->gl_pixwidth = atom_getintarg(4, argc, argv);
-    x->gl_pixheight = atom_getintarg(5, argc, argv);
+    x->gl_x1 = atom_getFloatAtIndex(0, argc, argv);
+    x->gl_y1 = atom_getFloatAtIndex(1, argc, argv);
+    x->gl_x2 = atom_getFloatAtIndex(2, argc, argv);
+    x->gl_y2 = atom_getFloatAtIndex(3, argc, argv);
+    x->gl_pixwidth = (t_int)atom_getFloatAtIndex(4, argc, argv);
+    x->gl_pixheight = (t_int)atom_getFloatAtIndex(5, argc, argv);
     if (argc <= 7)
-        canvas_setgraph(x, atom_getintarg(6, argc, argv), 1);
+        canvas_setgraph(x, (t_int)atom_getFloatAtIndex(6, argc, argv), 1);
     else
     {
-        x->gl_xmargin = atom_getintarg(7, argc, argv);
-        x->gl_ymargin = atom_getintarg(8, argc, argv);
-        canvas_setgraph(x, atom_getintarg(6, argc, argv), 0);
+        x->gl_xmargin = (t_int)atom_getFloatAtIndex(7, argc, argv);
+        x->gl_ymargin = (t_int)atom_getFloatAtIndex(8, argc, argv);
+        canvas_setgraph(x, (t_int)atom_getFloatAtIndex(6, argc, argv), 0);
     }
 }
 
@@ -501,15 +501,15 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     /* call glist_addglist from a Pd message */
 void glist_glist(t_glist *g, t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *sym = atom_getsymbolarg(0, argc, argv);   
-    t_float x1 = atom_getfloatarg(1, argc, argv);  
-    t_float y1 = atom_getfloatarg(2, argc, argv);  
-    t_float x2 = atom_getfloatarg(3, argc, argv);  
-    t_float y2 = atom_getfloatarg(4, argc, argv);  
-    t_float px1 = atom_getfloatarg(5, argc, argv);  
-    t_float py1 = atom_getfloatarg(6, argc, argv);  
-    t_float px2 = atom_getfloatarg(7, argc, argv);  
-    t_float py2 = atom_getfloatarg(8, argc, argv);
+    t_symbol *sym = atom_getSymbolAtIndex(0, argc, argv);   
+    t_float x1 = atom_getFloatAtIndex(1, argc, argv);  
+    t_float y1 = atom_getFloatAtIndex(2, argc, argv);  
+    t_float x2 = atom_getFloatAtIndex(3, argc, argv);  
+    t_float y2 = atom_getFloatAtIndex(4, argc, argv);  
+    t_float px1 = atom_getFloatAtIndex(5, argc, argv);  
+    t_float py1 = atom_getFloatAtIndex(6, argc, argv);  
+    t_float px2 = atom_getFloatAtIndex(7, argc, argv);  
+    t_float py2 = atom_getFloatAtIndex(8, argc, argv);
     glist_addglist(g, sym, x1, y1, x2, y2, px1, py1, px2, py2);
 }
 
@@ -596,7 +596,7 @@ void canvas_reflecttitle(t_canvas *x)
                 break;
             if (i != 0)
                 strcat(namebuf, " ");
-            atom_string(&env->ce_argv[i], namebuf + strlen(namebuf), 
+            atom_toString(&env->ce_argv[i], namebuf + strlen(namebuf), 
                 PD_STRING/2);
         }
         strcat(namebuf, ")");
@@ -1137,7 +1137,7 @@ void glob_dsp(void *dummy, t_symbol *s, int argc, t_atom *argv)
     int newstate;
     if (argc)
     {
-        newstate = atom_getintarg(0, argc, argv);
+        newstate = (t_int)atom_getFloatAtIndex(0, argc, argv);
         if (newstate && !pd_this->pd_dspState)
         {
             sys_set_audio_state(1);
@@ -1390,26 +1390,26 @@ static void canvas_declare(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
 #endif
     for (i = 0; i < argc; i++)
     {
-        char *flag = atom_getsymbolarg(i, argc, argv)->s_name;
+        char *flag = atom_getSymbolAtIndex(i, argc, argv)->s_name;
         if ((argc > i+1) && !strcmp(flag, "-path"))
         {
             e->ce_path = namelist_append(e->ce_path, 
-                atom_getsymbolarg(i+1, argc, argv)->s_name, 0);
+                atom_getSymbolAtIndex(i+1, argc, argv)->s_name, 0);
             i++;
         }
         else if ((argc > i+1) && !strcmp(flag, "-stdpath"))
         {
-            canvas_stdpath(e, atom_getsymbolarg(i+1, argc, argv)->s_name);
+            canvas_stdpath(e, atom_getSymbolAtIndex(i+1, argc, argv)->s_name);
             i++;
         }
         else if ((argc > i+1) && !strcmp(flag, "-lib"))
         {
-            sys_load_lib(x, atom_getsymbolarg(i+1, argc, argv)->s_name);
+            sys_load_lib(x, atom_getSymbolAtIndex(i+1, argc, argv)->s_name);
             i++;
         }
         else if ((argc > i+1) && !strcmp(flag, "-stdlib"))
         {
-            canvas_stdlib(e, atom_getsymbolarg(i+1, argc, argv)->s_name);
+            canvas_stdlib(e, atom_getSymbolAtIndex(i+1, argc, argv)->s_name);
             i++;
         }
         else post("declare: %s: unknown declaration", flag);
@@ -1492,7 +1492,7 @@ static void canvas_f(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
         ;
     if (ob = pd_ifBox(&g->g_pd))
     {
-        ob->te_width = atom_getfloatarg(0, argc, argv);
+        ob->te_width = atom_getFloatAtIndex(0, argc, argv);
         if (glist_isvisible(x))
         {
             gobj_vis(g, x, 0);

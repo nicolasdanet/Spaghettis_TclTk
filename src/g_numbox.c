@@ -482,12 +482,12 @@ static void my_numbox_dialog(t_my_numbox *x, t_symbol *s, int argc,
     t_atom *argv)
 {
     t_symbol *srl[3];
-    int w = (int)atom_getintarg(0, argc, argv);
-    int h = (int)atom_getintarg(1, argc, argv);
-    double min = (double)atom_getfloatarg(2, argc, argv);
-    double max = (double)atom_getfloatarg(3, argc, argv);
-    int lilo = (int)atom_getintarg(4, argc, argv);
-    int log_height = (int)atom_getintarg(6, argc, argv);
+    int w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
+    int h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
+    double min = (double)atom_getFloatAtIndex(2, argc, argv);
+    double max = (double)atom_getFloatAtIndex(3, argc, argv);
+    int lilo = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
+    int log_height = (int)(t_int)atom_getFloatAtIndex(6, argc, argv);
 
     if(lilo != 0) lilo = 1;
     x->x_lin0_log1 = lilo;
@@ -600,13 +600,13 @@ static void my_numbox_size(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
 {
     int h, w;
 
-    w = (int)atom_getintarg(0, ac, av);
+    w = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
     if(w < 1)
         w = 1;
     x->x_gui.x_w = w;
     if(ac > 1)
     {
-        h = (int)atom_getintarg(1, ac, av);
+        h = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
         if(h < 8)
             h = 8;
         x->x_gui.x_h = h;
@@ -623,8 +623,8 @@ static void my_numbox_pos(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
 
 static void my_numbox_range(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
 {
-    if(my_numbox_check_minmax(x, (double)atom_getfloatarg(0, ac, av),
-                              (double)atom_getfloatarg(1, ac, av)))
+    if(my_numbox_check_minmax(x, (double)atom_getFloatAtIndex(0, ac, av),
+                              (double)atom_getFloatAtIndex(1, ac, av)))
     {
         sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
         /*my_numbox_bang(x);*/
@@ -649,12 +649,12 @@ static void my_numbox_label_pos(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
 static void my_numbox_label_font(t_my_numbox *x,
     t_symbol *s, int ac, t_atom *av)
 {
-    int f = (int)atom_getintarg(1, ac, av);
+    int f = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
 
     if(f < 4)
         f = 4;
     x->x_gui.x_fontsize = f;
-    f = (int)atom_getintarg(0, ac, av);
+    f = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
     if((f < 0) || (f > 2))
         f = 0;
     x->x_gui.x_fsf.x_font_style = f;
@@ -741,7 +741,7 @@ static void my_numbox_list(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
 {
     if (IS_FLOAT(av,0))
     {
-        my_numbox_set(x, atom_getfloatarg(0, ac, av));
+        my_numbox_set(x, atom_getFloatAtIndex(0, ac, av));
         my_numbox_bang(x);
     }
 }
@@ -767,26 +767,26 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
        &&IS_FLOAT(argv,11)&&IS_FLOAT(argv,12)&&IS_FLOAT(argv,13)
        &&IS_FLOAT(argv,14)&&IS_FLOAT(argv,15)&&IS_FLOAT(argv,16))
     {
-        w = (int)atom_getintarg(0, argc, argv);
-        h = (int)atom_getintarg(1, argc, argv);
-        min = (double)atom_getfloatarg(2, argc, argv);
-        max = (double)atom_getfloatarg(3, argc, argv);
-        lilo = (int)atom_getintarg(4, argc, argv);
-        iem_inttosymargs(&x->x_gui.x_isa, atom_getintarg(5, argc, argv));
+        w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
+        h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
+        min = (double)atom_getFloatAtIndex(2, argc, argv);
+        max = (double)atom_getFloatAtIndex(3, argc, argv);
+        lilo = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
+        iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(5, argc, argv));
         iem_new_getnames(&x->x_gui, 6, argv);
-        ldx = (int)atom_getintarg(9, argc, argv);
-        ldy = (int)atom_getintarg(10, argc, argv);
-        iem_inttofstyle(&x->x_gui.x_fsf, atom_getintarg(11, argc, argv));
-        fs = (int)atom_getintarg(12, argc, argv);
-        bflcol[0] = (int)atom_getintarg(13, argc, argv);
-        bflcol[1] = (int)atom_getintarg(14, argc, argv);
-        bflcol[2] = (int)atom_getintarg(15, argc, argv);
-        v = atom_getfloatarg(16, argc, argv);
+        ldx = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
+        ldy = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
+        iem_inttofstyle(&x->x_gui.x_fsf, (t_int)atom_getFloatAtIndex(11, argc, argv));
+        fs = (int)(t_int)atom_getFloatAtIndex(12, argc, argv);
+        bflcol[0] = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
+        bflcol[1] = (int)(t_int)atom_getFloatAtIndex(14, argc, argv);
+        bflcol[2] = (int)(t_int)atom_getFloatAtIndex(15, argc, argv);
+        v = atom_getFloatAtIndex(16, argc, argv);
     }
     else iem_new_getnames(&x->x_gui, 6, 0);
     if((argc == 18)&&IS_FLOAT(argv,17))
     {
-        log_height = (int)atom_getintarg(17, argc, argv);
+        log_height = (int)(t_int)atom_getFloatAtIndex(17, argc, argv);
     }
     x->x_gui.x_draw = (t_iemfunptr)my_numbox_draw;
     x->x_gui.x_fsf.x_snd_able = 1;

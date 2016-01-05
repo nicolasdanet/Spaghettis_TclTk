@@ -528,7 +528,7 @@ static void list_tosymbol_list(t_list_tosymbol *x, t_symbol *s,
     int i;
     char *str = alloca(argc + 1);
     for (i = 0; i < argc; i++)
-        str[i] = (char)atom_getfloatarg(i, argc, argv);
+        str[i] = (char)atom_getFloatAtIndex(i, argc, argv);
     str[argc] = 0;
     outlet_symbol(x->x_obj.te_outlet, gensym(str));
 }
@@ -555,7 +555,7 @@ static void *list_new(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
         else if (s2 == gensym("prepend"))
             pd_newest = list_prepend_new(s, argc-1, argv+1);
         else if (s2 == gensym("split"))
-            pd_newest = list_split_new(atom_getfloatarg(1, argc, argv));
+            pd_newest = list_split_new(atom_getFloatAtIndex(1, argc, argv));
         else if (s2 == gensym("trim"))
             pd_newest = list_trim_new();
         else if (s2 == gensym("length"))

@@ -596,7 +596,7 @@ static void canvas_saveto(t_canvas *x, t_binbuf *b)
         t_binbuf *bz = binbuf_new();
         t_symbol *patchsym;
         binbuf_addbinbuf(bz, x->gl_obj.te_binbuf);
-        patchsym = atom_getsymbolarg(1, binbuf_getnatom(bz), binbuf_getvec(bz));
+        patchsym = atom_getSymbolAtIndex(1, binbuf_getnatom(bz), binbuf_getvec(bz));
         binbuf_free(bz);
         binbuf_addv(b, "ssiiiisi;", gensym("#N"), gensym("canvas"),
             (int)(x->gl_screenx1),

@@ -254,8 +254,8 @@ static void toggle_bang(t_toggle *x)
 static void toggle_dialog(t_toggle *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *srl[3];
-    int a = (int)atom_getintarg(0, argc, argv);
-    t_float nonzero = (t_float)atom_getfloatarg(2, argc, argv);
+    int a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
+    t_float nonzero = (t_float)atom_getFloatAtIndex(2, argc, argv);
 
     if(nonzero == 0.0)
         nonzero = 1.0;
@@ -318,7 +318,7 @@ static void toggle_loadbang(t_toggle *x)
 
 static void toggle_size(t_toggle *x, t_symbol *s, int ac, t_atom *av)
 {
-    x->x_gui.x_w = iem_clip_size((int)atom_getintarg(0, ac, av));
+    x->x_gui.x_w = iem_clip_size((int)(t_int)atom_getFloatAtIndex(0, ac, av));
     x->x_gui.x_h = x->x_gui.x_w;
     iem_size((void *)x, &x->x_gui);
 }
@@ -380,21 +380,21 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
        &&IS_FLOAT(argv,7)&&IS_FLOAT(argv,8)&&IS_FLOAT(argv,9)
        &&IS_FLOAT(argv,10)&&IS_FLOAT(argv,11)&&IS_FLOAT(argv,12))
     {
-        a = (int)atom_getintarg(0, argc, argv);
-        iem_inttosymargs(&x->x_gui.x_isa, atom_getintarg(1, argc, argv));
+        a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
+        iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(1, argc, argv));
         iem_new_getnames(&x->x_gui, 2, argv);
-        ldx = (int)atom_getintarg(5, argc, argv);
-        ldy = (int)atom_getintarg(6, argc, argv);
-        iem_inttofstyle(&x->x_gui.x_fsf, atom_getintarg(7, argc, argv));
-        fs = (int)atom_getintarg(8, argc, argv);
-        bflcol[0] = (int)atom_getintarg(9, argc, argv);
-        bflcol[1] = (int)atom_getintarg(10, argc, argv);
-        bflcol[2] = (int)atom_getintarg(11, argc, argv);
-        on = (t_float)atom_getfloatarg(12, argc, argv);
+        ldx = (int)(t_int)atom_getFloatAtIndex(5, argc, argv);
+        ldy = (int)(t_int)atom_getFloatAtIndex(6, argc, argv);
+        iem_inttofstyle(&x->x_gui.x_fsf, (t_int)atom_getFloatAtIndex(7, argc, argv));
+        fs = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
+        bflcol[0] = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
+        bflcol[1] = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
+        bflcol[2] = (int)(t_int)atom_getFloatAtIndex(11, argc, argv);
+        on = (t_float)atom_getFloatAtIndex(12, argc, argv);
     }
     else iem_new_getnames(&x->x_gui, 2, 0);
     if((argc == 14)&&IS_FLOAT(argv,13))
-        nonzero = (t_float)atom_getfloatarg(13, argc, argv);
+        nonzero = (t_float)atom_getFloatAtIndex(13, argc, argv);
     x->x_gui.x_draw = (t_iemfunptr)toggle_draw;
 
     x->x_gui.x_fsf.x_snd_able = 1;

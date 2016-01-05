@@ -444,16 +444,11 @@ PD_DLL void     outlet_anything             (t_outlet *x, t_symbol *s, int argc,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL t_float  atom_getfloat               (t_atom *a);
-PD_DLL t_int    atom_getint                 (t_atom *a);
-PD_DLL t_float  atom_getfloatarg            (int which, int argc, t_atom *argv);
-PD_DLL t_int    atom_getintarg              (int which, int argc, t_atom *argv);
+PD_DLL t_float  atom_getFloat               (t_atom *a);
+PD_DLL t_float  atom_getFloatAtIndex        (int n, int argc, t_atom *argv);
 
-PD_DLL t_symbol *atom_getsymbol             (t_atom *a);
-PD_DLL t_symbol *atom_getsymbolarg          (int which, int argc, t_atom *argv);
-
-PD_DLL void     atom_string                 (t_atom *a, char *buf, unsigned int bufsize);
-PD_DLL t_symbol *atom_gensym                (t_atom *a);
+PD_DLL t_symbol *atom_getSymbol             (t_atom *a);
+PD_DLL t_symbol *atom_getSymbolAtIndex      (int n, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

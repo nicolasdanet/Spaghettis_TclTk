@@ -511,9 +511,9 @@ static void vu_properties(t_gobj *z, t_glist *owner)
 static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *srl[3];
-    int w = (int)atom_getintarg(0, argc, argv);
-    int h = (int)atom_getintarg(1, argc, argv);
-    int scale = (int)atom_getintarg(4, argc, argv);
+    int w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
+    int h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
+    int scale = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
 
     srl[0] = gensym("empty");
     iem_dialog(&x->x_gui, srl, argc, argv);
@@ -532,9 +532,9 @@ static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
 
 static void vu_size(t_vu *x, t_symbol *s, int ac, t_atom *av)
 {
-    x->x_gui.x_w = iem_clip_size((int)atom_getintarg(0, ac, av));
+    x->x_gui.x_w = iem_clip_size((int)(t_int)atom_getFloatAtIndex(0, ac, av));
     if(ac > 1)
-        vu_check_height(x, (int)atom_getintarg(1, ac, av));
+        vu_check_height(x, (int)(t_int)atom_getFloatAtIndex(1, ac, av));
     if(glist_isvisible(x->x_gui.x_glist))
     {
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_MOVE);
@@ -635,20 +635,20 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
        &&IS_FLOAT(argv,6)&&IS_FLOAT(argv,7)
        &&IS_FLOAT(argv,8)&&IS_FLOAT(argv,9)&&IS_FLOAT(argv,10))
     {
-        w = (int)atom_getintarg(0, argc, argv);
-        h = (int)atom_getintarg(1, argc, argv);
+        w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
+        h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
         iem_new_getnames(&x->x_gui, 1, argv);
-        ldx = (int)atom_getintarg(4, argc, argv);
-        ldy = (int)atom_getintarg(5, argc, argv);
-        iem_inttofstyle(&x->x_gui.x_fsf, atom_getintarg(6, argc, argv));
-        fs = (int)atom_getintarg(7, argc, argv);
-        bflcol[0] = (int)atom_getintarg(8, argc, argv);
-        bflcol[2] = (int)atom_getintarg(9, argc, argv);
-        scale = (int)atom_getintarg(10, argc, argv);
+        ldx = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
+        ldy = (int)(t_int)atom_getFloatAtIndex(5, argc, argv);
+        iem_inttofstyle(&x->x_gui.x_fsf, (t_int)atom_getFloatAtIndex(6, argc, argv));
+        fs = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
+        bflcol[0] = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
+        bflcol[2] = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
+        scale = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
     }
     else iem_new_getnames(&x->x_gui, 1, 0);
     if((argc == 12)&&IS_FLOAT(argv,11))
-        iem_inttosymargs(&x->x_gui.x_isa, atom_getintarg(11, argc, argv));
+        iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(11, argc, argv));
     x->x_gui.x_draw = (t_iemfunptr)vu_draw;
 
     x->x_gui.x_fsf.x_snd_able = 0;

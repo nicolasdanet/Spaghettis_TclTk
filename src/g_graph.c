@@ -472,13 +472,14 @@ static void graph_yticks(t_glist *x,
     glist_redraw(x);
 }
 
+/*
 static void graph_xlabel(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
     if (argc < 1) post_error ("graph_xlabel: no y value given");
     else
     {
-        x->gl_xlabely = atom_getfloat(argv);
+        x->gl_xlabely = atom_getFloat(argv);
         argv++; argc--;
         x->gl_xlabel = (t_symbol **)PD_MEMORY_RESIZE(x->gl_xlabel, 
             x->gl_nxlabels * sizeof (t_symbol *), argc * sizeof (t_symbol *));
@@ -494,7 +495,7 @@ static void graph_ylabel(t_glist *x, t_symbol *s, int argc, t_atom *argv)
     if (argc < 1) post_error ("graph_ylabel: no x value given");
     else
     {
-        x->gl_ylabelx = atom_getfloat(argv);
+        x->gl_ylabelx = atom_getFloat(argv);
         argv++; argc--;
         x->gl_ylabel = (t_symbol **)PD_MEMORY_RESIZE(x->gl_ylabel, 
             x->gl_nylabels * sizeof (t_symbol *), argc * sizeof (t_symbol *));
@@ -503,6 +504,7 @@ static void graph_ylabel(t_glist *x, t_symbol *s, int argc, t_atom *argv)
     }
     glist_redraw(x);
 }
+*/
 
 /****** routines to convert pixels to X or Y value and vice versa ******/
 
@@ -1087,12 +1089,12 @@ void g_graph_setup_class(t_class *c)
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(c, (t_method)graph_xticks, gensym("xticks"),
         A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addMethod(c, (t_method)graph_xlabel, gensym("xlabel"),
-        A_GIMME, 0);
+    /* class_addMethod(c, (t_method)graph_xlabel, gensym("xlabel"),
+        A_GIMME, 0); */
     class_addMethod(c, (t_method)graph_yticks, gensym("yticks"),
         A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addMethod(c, (t_method)graph_ylabel, gensym("ylabel"),
-        A_GIMME, 0);
+    /* class_addMethod(c, (t_method)graph_ylabel, gensym("ylabel"),
+        A_GIMME, 0); */
     class_addMethod(c, (t_method)graph_array, gensym("array"),
         A_SYMBOL, A_FLOAT, A_SYMBOL, A_DEFFLOAT, A_NULL);
     class_addMethod(c, (t_method)canvas_menuarray,

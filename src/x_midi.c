@@ -40,8 +40,8 @@ static void *midiin_new( void)
 
 static void midiin_list(t_midiin *x, t_symbol *s, int ac, t_atom *av)
 {
-    outlet_float(x->x_outlet2, atom_getfloatarg(1, ac, av) + 1);
-    outlet_float(x->x_outlet1, atom_getfloatarg(0, ac, av));
+    outlet_float(x->x_outlet2, atom_getFloatAtIndex(1, ac, av) + 1);
+    outlet_float(x->x_outlet1, atom_getFloatAtIndex(0, ac, av));
 }
 
 static void midiin_free(t_midiin *x)
@@ -126,9 +126,9 @@ static void *notein_new(t_float f)
 
 static void notein_list(t_notein *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_float pitch = atom_getfloatarg(0, argc, argv);
-    t_float velo = atom_getfloatarg(1, argc, argv);
-    t_float channel = atom_getfloatarg(2, argc, argv);
+    t_float pitch = atom_getFloatAtIndex(0, argc, argv);
+    t_float velo = atom_getFloatAtIndex(1, argc, argv);
+    t_float channel = atom_getFloatAtIndex(2, argc, argv);
     if (x->x_channel != 0)
     {
         if (channel != x->x_channel) return;
@@ -187,8 +187,8 @@ static void *ctlin_new(t_symbol *s, int argc, t_atom *argv)
     int ctlno, channel;
     t_ctlin *x = (t_ctlin *)pd_new(ctlin_class);
     if (!argc) ctlno = -1;
-    else ctlno = atom_getfloatarg(0, argc, argv);
-    channel = atom_getfloatarg(1, argc, argv);
+    else ctlno = atom_getFloatAtIndex(0, argc, argv);
+    channel = atom_getFloatAtIndex(1, argc, argv);
     x->x_channel = channel;
     x->x_ctlno = ctlno;
     x->x_outlet1 = outlet_new(&x->x_obj, &s_float);
@@ -203,9 +203,9 @@ static void *ctlin_new(t_symbol *s, int argc, t_atom *argv)
 
 static void ctlin_list(t_ctlin *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_float ctlnumber = atom_getfloatarg(0, argc, argv);
-    t_float value = atom_getfloatarg(1, argc, argv);
-    t_float channel = atom_getfloatarg(2, argc, argv);
+    t_float ctlnumber = atom_getFloatAtIndex(0, argc, argv);
+    t_float value = atom_getFloatAtIndex(1, argc, argv);
+    t_float channel = atom_getFloatAtIndex(2, argc, argv);
     if (x->x_ctlno >= 0 && x->x_ctlno != ctlnumber) return;
     if (x->x_channel > 0  && x->x_channel != channel) return;
     if (x->x_channel == 0) outlet_float(x->x_outlet3, channel);
@@ -263,8 +263,8 @@ static void *pgmin_new(t_float f)
 
 static void pgmin_list(t_pgmin *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_float value = atom_getfloatarg(0, argc, argv);
-    t_float channel = atom_getfloatarg(1, argc, argv);
+    t_float value = atom_getFloatAtIndex(0, argc, argv);
+    t_float channel = atom_getFloatAtIndex(1, argc, argv);
     if (x->x_channel != 0)
     {
         if (channel != x->x_channel) return;
@@ -326,8 +326,8 @@ static void *bendin_new(t_float f)
 
 static void bendin_list(t_bendin *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_float value = atom_getfloatarg(0, argc, argv);
-    t_float channel = atom_getfloatarg(1, argc, argv);
+    t_float value = atom_getFloatAtIndex(0, argc, argv);
+    t_float channel = atom_getFloatAtIndex(1, argc, argv);
     if (x->x_channel != 0)
     {
         if (channel != x->x_channel) return;
@@ -388,8 +388,8 @@ static void *touchin_new(t_float f)
 
 static void touchin_list(t_touchin *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_float value = atom_getfloatarg(0, argc, argv);
-    t_float channel = atom_getfloatarg(1, argc, argv);
+    t_float value = atom_getFloatAtIndex(0, argc, argv);
+    t_float channel = atom_getFloatAtIndex(1, argc, argv);
     if (x->x_channel)
     {
         if (channel != x->x_channel) return;
@@ -454,9 +454,9 @@ static void *polytouchin_new(t_float f)
 static void polytouchin_list(t_polytouchin *x, t_symbol *s, int argc,
     t_atom *argv)
 {
-    t_float pitch = atom_getfloatarg(0, argc, argv);
-    t_float value = atom_getfloatarg(1, argc, argv);
-    t_float channel = atom_getfloatarg(2, argc, argv);
+    t_float pitch = atom_getFloatAtIndex(0, argc, argv);
+    t_float value = atom_getFloatAtIndex(1, argc, argv);
+    t_float channel = atom_getFloatAtIndex(2, argc, argv);
     if (x->x_channel != 0)
     {
         if (channel != x->x_channel) return;
@@ -519,8 +519,8 @@ static void *midiclkin_new(t_float f)
 
 static void midiclkin_list(t_midiclkin *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_float value = atom_getfloatarg(0, argc, argv);
-    t_float count = atom_getfloatarg(1, argc, argv);
+    t_float value = atom_getFloatAtIndex(0, argc, argv);
+    t_float count = atom_getFloatAtIndex(1, argc, argv);
     outlet_float(x->x_outlet2, count);
     outlet_float(x->x_outlet1, value);
 }
@@ -588,8 +588,8 @@ static void *midirealtimein_new( void)
 static void midirealtimein_list(t_midirealtimein *x, t_symbol *s,
     int argc, t_atom *argv)
 {
-    t_float portno = atom_getfloatarg(0, argc, argv);
-    t_float byte = atom_getfloatarg(1, argc, argv);
+    t_float portno = atom_getFloatAtIndex(0, argc, argv);
+    t_float byte = atom_getFloatAtIndex(1, argc, argv);
 
     outlet_float(x->x_outlet2, portno);
     outlet_float(x->x_outlet1, byte);

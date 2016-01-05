@@ -281,9 +281,9 @@ static void hradio_properties(t_gobj *z, t_glist *owner)
 static void hradio_dialog(t_hradio *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *srl[3];
-    int a = (int)atom_getintarg(0, argc, argv);
-    int chg = (int)atom_getintarg(4, argc, argv);
-    int num = (int)atom_getintarg(6, argc, argv);
+    int a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
+    int chg = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
+    int num = (int)(t_int)atom_getFloatAtIndex(6, argc, argv);
 
     if(chg != 0) chg = 1;
     x->x_change = chg;
@@ -411,7 +411,7 @@ static void hradio_number(t_hradio *x, t_float num)
 
 static void hradio_size(t_hradio *x, t_symbol *s, int ac, t_atom *av)
 {
-    x->x_gui.x_w = iem_clip_size((int)atom_getintarg(0, ac, av));
+    x->x_gui.x_w = iem_clip_size((int)(t_int)atom_getFloatAtIndex(0, ac, av));
     x->x_gui.x_h = x->x_gui.x_w;
     iem_size((void *)x, &x->x_gui);
 }
@@ -474,19 +474,19 @@ static void *hradio_donew(t_symbol *s, int argc, t_atom *argv)
        &&IS_FLOAT(argv,9)&&IS_FLOAT(argv,10)&&IS_FLOAT(argv,11)
        &&IS_FLOAT(argv,12)&&IS_FLOAT(argv,13)&&IS_FLOAT(argv,14))
     {
-        a = (int)atom_getintarg(0, argc, argv);
-        chg = (int)atom_getintarg(1, argc, argv);
-        iem_inttosymargs(&x->x_gui.x_isa, atom_getintarg(2, argc, argv));
-        num = (int)atom_getintarg(3, argc, argv);
+        a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
+        chg = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
+        iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(2, argc, argv));
+        num = (int)(t_int)atom_getFloatAtIndex(3, argc, argv);
         iem_new_getnames(&x->x_gui, 4, argv);
-        ldx = (int)atom_getintarg(7, argc, argv);
-        ldy = (int)atom_getintarg(8, argc, argv);
-        iem_inttofstyle(&x->x_gui.x_fsf, atom_getintarg(9, argc, argv));
-        fs = (int)atom_getintarg(10, argc, argv);
-        bflcol[0] = (int)atom_getintarg(11, argc, argv);
-        bflcol[1] = (int)atom_getintarg(12, argc, argv);
-        bflcol[2] = (int)atom_getintarg(13, argc, argv);
-        fval = atom_getfloatarg(14, argc, argv);
+        ldx = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
+        ldy = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
+        iem_inttofstyle(&x->x_gui.x_fsf, (t_int)atom_getFloatAtIndex(9, argc, argv));
+        fs = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
+        bflcol[0] = (int)(t_int)atom_getFloatAtIndex(11, argc, argv);
+        bflcol[1] = (int)(t_int)atom_getFloatAtIndex(12, argc, argv);
+        bflcol[2] = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
+        fval = atom_getFloatAtIndex(14, argc, argv);
     }
     else iem_new_getnames(&x->x_gui, 4, 0);
     x->x_gui.x_draw = (t_iemfunptr)hradio_draw;

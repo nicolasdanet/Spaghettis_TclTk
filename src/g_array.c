@@ -263,13 +263,13 @@ static void garray_fittograph(t_garray *x, int n, int style)
         
             /* hack - if the xlabels seem to want to be from 0 to table size-1,
             update the second label */
-        if (gl->gl_nxlabels == 2 && !strcmp(gl->gl_xlabel[0]->s_name, "0"))
+        /*if (gl->gl_nxlabels == 2 && !strcmp(gl->gl_xlabel[0]->s_name, "0"))
         {
             t_atom a;
             SET_FLOAT(&a, n-1);
             gl->gl_xlabel[1] = atom_gensym(&a);
             glist_redraw(gl);
-        }
+        }*/
             /* close any dialogs that might have the wrong info now... */
         gfxstub_deleteforkey(gl);
     }
@@ -944,14 +944,14 @@ static void garray_sinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
         return;
     }
 
-    npoints = atom_getfloatarg(0, argc, argv);
+    npoints = atom_getFloatAtIndex(0, argc, argv);
     argv++, argc--;
     
     svec = (t_float *)PD_MEMORY_GET(sizeof(t_float) * argc);
     if (!svec) return;
     
     for (i = 0; i < argc; i++)
-        svec[i] = atom_getfloatarg(i, argc, argv);
+        svec[i] = atom_getFloatAtIndex(i, argc, argv);
     garray_dofo(x, npoints, 0, argc, svec, 1);
     PD_MEMORY_FREE(svec, sizeof(t_float) * argc);
 }
@@ -968,14 +968,14 @@ static void garray_cosinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
         return;
     }
 
-    npoints = atom_getfloatarg(0, argc, argv);
+    npoints = atom_getFloatAtIndex(0, argc, argv);
     argv++, argc--;
     
     svec = (t_float *)PD_MEMORY_GET(sizeof(t_float) * argc);
     if (!svec) return;
 
     for (i = 0; i < argc; i++)
-        svec[i] = atom_getfloatarg(i, argc, argv);
+        svec[i] = atom_getFloatAtIndex(i, argc, argv);
     garray_dofo(x, npoints, 0, argc, svec, 0);
     PD_MEMORY_FREE(svec, sizeof(t_float) * argc);
 }
@@ -1029,7 +1029,7 @@ static void garray_list(t_garray *x, t_symbol *s, int argc, t_atom *argv)
     if (argc < 2) return;
     else
     {
-        int firstindex = atom_getfloat(argv);
+        int firstindex = atom_getFloat(argv);
         argc--;
         argv++;
             /* drop negative x values */
@@ -1047,7 +1047,7 @@ static void garray_list(t_garray *x, t_symbol *s, int argc, t_atom *argv)
         }
         for (i = 0; i < argc; i++)
             *((t_float *)(array->a_vec + elemsize * (i + firstindex)) + yonset)
-                = atom_getfloat(argv + i);
+                = atom_getFloat(argv + i);
     }
     garray_redraw(x);
 }

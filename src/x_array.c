@@ -114,8 +114,8 @@ static void *array_define_new(t_symbol *s, int argc, t_atom *argv)
             argc >= 3 && argv[1].a_type == A_FLOAT &&
                 argv[2].a_type == A_FLOAT)
         {
-            ylo = atom_getfloatarg(1, argc, argv);
-            yhi = atom_getfloatarg(2, argc, argv);
+            ylo = atom_getFloatAtIndex(1, argc, argv);
+            yhi = atom_getFloatAtIndex(2, argc, argv);
             if (ylo == yhi)
                 ylo = -1, yhi = 1;
             argc -= 2; argv += 2;
@@ -124,9 +124,9 @@ static void *array_define_new(t_symbol *s, int argc, t_atom *argv)
             argc >= 3 && argv[1].a_type == A_FLOAT &&
                 argv[2].a_type == A_FLOAT)
         {
-            if ((xpix = atom_getfloatarg(1, argc, argv)) < 10)
+            if ((xpix = atom_getFloatAtIndex(1, argc, argv)) < 10)
                 xpix = 10;
-            if ((ypix = atom_getfloatarg(2, argc, argv)) < 10)
+            if ((ypix = atom_getFloatAtIndex(2, argc, argv)) < 10)
                 ypix = 10;
             argc -= 2; argv += 2;
         }
@@ -623,7 +623,7 @@ static void array_set_list(t_array_rangeop *x, t_symbol *s,
     if (nitem > argc)
         nitem = argc;
     for (i = 0, itemp = firstitem; i < nitem; i++, itemp += stride)
-        *(t_float *)itemp = atom_getfloatarg(i, argc, argv);
+        *(t_float *)itemp = atom_getFloatAtIndex(i, argc, argv);
     array_client_senditup(&x->x_tc);
 }
 

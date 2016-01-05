@@ -217,7 +217,7 @@ void binbuf_gettext(t_binbuf *x, char **bufp, int *lengthp)
         int newlength;
         if ((ap->a_type == A_SEMICOLON || ap->a_type == A_COMMA) &&
                 length && buf[length-1] == ' ') length--;
-        atom_string(ap, string, PD_STRING);
+        atom_toString(ap, string, PD_STRING);
         newlength = length + strlen(string) + 1;
         if (!(newbuf = PD_MEMORY_RESIZE(buf, length, newlength))) break;
         buf = newbuf;
@@ -323,7 +323,7 @@ void binbuf_addbinbuf(t_binbuf *x, t_binbuf *y)
             SET_SYMBOL(ap, gensym(tbuf));
             break;
         case A_DOLLARSYMBOL:
-            atom_string(ap, tbuf, PD_STRING);
+            atom_toString(ap, tbuf, PD_STRING);
             SET_SYMBOL(ap, gensym(tbuf));
             break;
         case A_SYMBOL:
@@ -332,7 +332,7 @@ void binbuf_addbinbuf(t_binbuf *x, t_binbuf *y)
                     fixit = 1;
             if (fixit)
             {
-                atom_string(ap, tbuf, PD_STRING);
+                atom_toString(ap, tbuf, PD_STRING);
                 SET_SYMBOL(ap, gensym(tbuf));
             }
             break;
@@ -497,10 +497,10 @@ int binbuf_expanddollsym(char*s, char*buf,t_atom dollar0, int ac, t_atom *av, in
       sprintf(buf, "$%d", argno);
     }
   else if (argno == 0){ /* $0 */
-    atom_string(&dollar0, buf, PD_STRING/2-1);
+    atom_toString(&dollar0, buf, PD_STRING/2-1);
   }
   else{ /* fine! */
-    atom_string(av+(argno-1), buf, PD_STRING/2-1);
+    atom_toString(av+(argno-1), buf, PD_STRING/2-1);
   }
   return (arglen-1);
 }
@@ -653,7 +653,7 @@ void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
                     goto cleanup;
                 }
             }
-            else s = atom_getsymbol(at);
+            else s = atom_getSymbol(at);
             if (!(target = s->s_thing))
             {
                 post_error ("%s: no such object", s->s_name);
@@ -904,7 +904,7 @@ int binbuf_write(t_binbuf *x, char *filename, char *dir, int crflag)
             bp > sbuf && bp[-1] == ' ') bp--;
         if (!crflag || ap->a_type != A_SEMICOLON)
         {
-            atom_string(ap, bp, (ep-bp)-2);
+            atom_toString(ap, bp, (ep-bp)-2);
             length = strlen(bp);
             bp += length;
             ncolumn += length;
@@ -1018,12 +1018,12 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                     nobj = 0;
                     binbuf_addv(newb, "ssfffff;", 
                         gensym("#N"), gensym("canvas"),
-                            atom_getfloatarg(2, natom, nextmess),
-                            atom_getfloatarg(3, natom, nextmess),
-                            atom_getfloatarg(4, natom, nextmess) -
-                                atom_getfloatarg(2, natom, nextmess),
-                            atom_getfloatarg(5, natom, nextmess) -
-                                atom_getfloatarg(3, natom, nextmess),
+                            atom_getFloatAtIndex(2, natom, nextmess),
+                            atom_getFloatAtIndex(3, natom, nextmess),
+                            atom_getFloatAtIndex(4, natom, nextmess) -
+                                atom_getFloatAtIndex(2, natom, nextmess),
+                            atom_getFloatAtIndex(5, natom, nextmess) -
+                                atom_getFloatAtIndex(3, natom, nextmess),
                             (t_float)sys_defaultfont);
                 }
             }
@@ -1042,9 +1042,9 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                 {
                     binbuf_addv(newb, "ssffss;",
                         gensym("#X"), gensym("restore"),
-                        atom_getfloatarg(2, natom, nextmess),
-                        atom_getfloatarg(3, natom, nextmess),
-                        gensym("pd"), atom_getsymbolarg(7, natom, nextmess));
+                        atom_getFloatAtIndex(2, natom, nextmess),
+                        atom_getFloatAtIndex(3, natom, nextmess),
+                        gensym("pd"), atom_getSymbolAtIndex(7, natom, nextmess));
                     if (stackdepth) stackdepth--;
                     nobj = stack[stackdepth];
                     nobj++;
@@ -1052,7 +1052,7 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                 else if (!strcmp(second, "newex") || !strcmp(second, "newobj"))
                 {
                     t_symbol *classname =
-                        atom_getsymbolarg(6, natom, nextmess);
+                        atom_getSymbolAtIndex(6, natom, nextmess);
                     if (classname == gensym("trigger") ||
                         classname == gensym("t"))
                     {
@@ -1092,8 +1092,8 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                 {
                     binbuf_addv(newb, "ssffs;",
                         gensym("#X"), gensym("obj"),
-                        atom_getfloatarg(2, natom, nextmess),
-                        atom_getfloatarg(3, natom, nextmess),
+                        atom_getFloatAtIndex(2, natom, nextmess),
+                        atom_getFloatAtIndex(3, natom, nextmess),
                         gensym("bng"));
                     nobj++;
                 }
@@ -1101,25 +1101,25 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                 {
                     binbuf_addv(newb, "ssff;",
                         gensym("#X"), gensym("floatatom"),
-                        atom_getfloatarg(2, natom, nextmess),
-                        atom_getfloatarg(3, natom, nextmess));
+                        atom_getFloatAtIndex(2, natom, nextmess),
+                        atom_getFloatAtIndex(3, natom, nextmess));
                     nobj++;
                 }
                 else if (!strcmp(second, "slider"))
                 {
-                    t_float inc = atom_getfloatarg(7, natom, nextmess);
+                    t_float inc = atom_getFloatAtIndex(7, natom, nextmess);
                     if (inc <= 0)
                         inc = 1;
                     binbuf_addv(newb, "ssffsffffffsssfffffffff;",
                         gensym("#X"), gensym("obj"),
-                        atom_getfloatarg(2, natom, nextmess),
-                        atom_getfloatarg(3, natom, nextmess),
+                        atom_getFloatAtIndex(2, natom, nextmess),
+                        atom_getFloatAtIndex(3, natom, nextmess),
                         gensym("vsl"),
-                        atom_getfloatarg(4, natom, nextmess),
-                        atom_getfloatarg(5, natom, nextmess),
-                        atom_getfloatarg(6, natom, nextmess),
-                        atom_getfloatarg(6, natom, nextmess)
-                            + (atom_getfloatarg(5, natom, nextmess) - 1) * inc,
+                        atom_getFloatAtIndex(4, natom, nextmess),
+                        atom_getFloatAtIndex(5, natom, nextmess),
+                        atom_getFloatAtIndex(6, natom, nextmess),
+                        atom_getFloatAtIndex(6, natom, nextmess)
+                            + (atom_getFloatAtIndex(5, natom, nextmess) - 1) * inc,
                         0., 0.,
                         gensym("empty"), gensym("empty"), gensym("empty"),
                         0., -8., 0., 8., -262144., -1., -1., 0., 1.);
@@ -1129,8 +1129,8 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                 {
                     binbuf_addv(newb, "ssffs;",
                         gensym("#X"), gensym("obj"),
-                        atom_getfloatarg(2, natom, nextmess),
-                        atom_getfloatarg(3, natom, nextmess),
+                        atom_getFloatAtIndex(2, natom, nextmess),
+                        atom_getFloatAtIndex(3, natom, nextmess),
                         gensym("tgl"));
                     nobj++;
                 }
@@ -1138,8 +1138,8 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                 {
                     binbuf_addv(newb, "ssffs;",
                         gensym("#X"), gensym("obj"),
-                        atom_getfloatarg(2, natom, nextmess),
-                        atom_getfloatarg(3, natom, nextmess),
+                        atom_getFloatAtIndex(2, natom, nextmess),
+                        atom_getFloatAtIndex(3, natom, nextmess),
                         gensym((natom > 5 ? "inlet~" : "inlet"))); 
                     nobj++;
                 }
@@ -1147,8 +1147,8 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                 {
                     binbuf_addv(newb, "ssffs;",
                         gensym("#X"), gensym("obj"),
-                        atom_getfloatarg(2, natom, nextmess),
-                        atom_getfloatarg(3, natom, nextmess),
+                        atom_getFloatAtIndex(2, natom, nextmess),
+                        atom_getFloatAtIndex(3, natom, nextmess),
                         gensym((natom > 5 ? "outlet~" : "outlet"))); 
                     nobj++;
                 }
@@ -1157,16 +1157,16 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                     third = (nextmess+2)->a_w.w_symbol->s_name;
                     if (!strcmp(third, "hslider"))
                     {
-                        t_float range = atom_getfloatarg(7, natom, nextmess);
-                        t_float multiplier = atom_getfloatarg(8, natom, nextmess);
-                        t_float offset = atom_getfloatarg(9, natom, nextmess);
+                        t_float range = atom_getFloatAtIndex(7, natom, nextmess);
+                        t_float multiplier = atom_getFloatAtIndex(8, natom, nextmess);
+                        t_float offset = atom_getFloatAtIndex(9, natom, nextmess);
                         binbuf_addv(newb, "ssffsffffffsssfffffffff;",
                                     gensym("#X"), gensym("obj"),
-                                    atom_getfloatarg(3, natom, nextmess),
-                                    atom_getfloatarg(4, natom, nextmess),
+                                    atom_getFloatAtIndex(3, natom, nextmess),
+                                    atom_getFloatAtIndex(4, natom, nextmess),
                                     gensym("hsl"),
-                                    atom_getfloatarg(6, natom, nextmess),
-                                    atom_getfloatarg(5, natom, nextmess),
+                                    atom_getFloatAtIndex(6, natom, nextmess),
+                                    atom_getFloatAtIndex(5, natom, nextmess),
                                     offset,
                                     range + offset,
                                     0., 0.,
@@ -1175,16 +1175,16 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                    }
                     else if (!strcmp(third, "uslider"))
                     {
-                        t_float range = atom_getfloatarg(7, natom, nextmess);
-                        t_float multiplier = atom_getfloatarg(8, natom, nextmess);
-                        t_float offset = atom_getfloatarg(9, natom, nextmess);
+                        t_float range = atom_getFloatAtIndex(7, natom, nextmess);
+                        t_float multiplier = atom_getFloatAtIndex(8, natom, nextmess);
+                        t_float offset = atom_getFloatAtIndex(9, natom, nextmess);
                         binbuf_addv(newb, "ssffsffffffsssfffffffff;",
                                     gensym("#X"), gensym("obj"),
-                                    atom_getfloatarg(3, natom, nextmess),
-                                    atom_getfloatarg(4, natom, nextmess),
+                                    atom_getFloatAtIndex(3, natom, nextmess),
+                                    atom_getFloatAtIndex(4, natom, nextmess),
                                     gensym("vsl"),
-                                    atom_getfloatarg(5, natom, nextmess),
-                                    atom_getfloatarg(6, natom, nextmess),
+                                    atom_getFloatAtIndex(5, natom, nextmess),
+                                    atom_getFloatAtIndex(6, natom, nextmess),
                                     offset,
                                     range + offset,
                                     0., 0.,
@@ -1194,9 +1194,9 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                     else
                         binbuf_addv(newb, "ssffs;",
                                     gensym("#X"), gensym("obj"),
-                                    atom_getfloatarg(3, natom, nextmess),
-                                    atom_getfloatarg(4, natom, nextmess),
-                                    atom_getsymbolarg(2, natom, nextmess));
+                                    atom_getFloatAtIndex(3, natom, nextmess),
+                                    atom_getFloatAtIndex(4, natom, nextmess),
+                                    atom_getSymbolAtIndex(2, natom, nextmess));
                     nobj++;
                 }
                 else if (!strcmp(second, "connect")||
@@ -1204,10 +1204,10 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                 {
                     binbuf_addv(newb, "ssffff;",
                         gensym("#X"), gensym("connect"),
-                        nobj - atom_getfloatarg(2, natom, nextmess) - 1,
-                        atom_getfloatarg(3, natom, nextmess),
-                        nobj - atom_getfloatarg(4, natom, nextmess) - 1,
-                        atom_getfloatarg(5, natom, nextmess)); 
+                        nobj - atom_getFloatAtIndex(2, natom, nextmess) - 1,
+                        atom_getFloatAtIndex(3, natom, nextmess),
+                        nobj - atom_getFloatAtIndex(4, natom, nextmess) - 1,
+                        atom_getFloatAtIndex(5, natom, nextmess)); 
                 }
             }
         }
@@ -1227,16 +1227,16 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                     stackdepth++;
                     nobj = 0;
                     if(!gotfontsize) { /* only the first canvas sets the font size */
-                        fontsize = atom_getfloatarg(6, natom, nextmess);
+                        fontsize = atom_getFloatAtIndex(6, natom, nextmess);
                         gotfontsize = 1;
                     }
-                    x = atom_getfloatarg(2, natom, nextmess);
-                    y = atom_getfloatarg(3, natom, nextmess);
+                    x = atom_getFloatAtIndex(2, natom, nextmess);
+                    y = atom_getFloatAtIndex(3, natom, nextmess);
                     binbuf_addv(newb, "ssffff;", 
                         gensym("#N"), gensym("vpatcher"),
                             x, y,
-                            atom_getfloatarg(4, natom, nextmess) + x,
-                            atom_getfloatarg(5, natom, nextmess) + y);
+                            atom_getFloatAtIndex(4, natom, nextmess) + x,
+                            atom_getFloatAtIndex(5, natom, nextmess) + y);
                 }
             }
             if (!strcmp(first, "#X"))
@@ -1263,66 +1263,66 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                 else if (!strcmp(second, "obj"))
                 {
                     t_symbol *classname =
-                        atom_getsymbolarg(4, natom, nextmess);
+                        atom_getSymbolAtIndex(4, natom, nextmess);
                     if (classname == gensym("inlet"))
                         binbuf_addv(newb, "ssfff;", gensym("#P"),
                             gensym("inlet"),
-                            atom_getfloatarg(2, natom, nextmess),
-                            atom_getfloatarg(3, natom, nextmess),
+                            atom_getFloatAtIndex(2, natom, nextmess),
+                            atom_getFloatAtIndex(3, natom, nextmess),
                             10. + fontsize);
                     else if (classname == gensym("inlet~"))
                         binbuf_addv(newb, "ssffff;", gensym("#P"),
                             gensym("inlet"),
-                            atom_getfloatarg(2, natom, nextmess),
-                            atom_getfloatarg(3, natom, nextmess),
+                            atom_getFloatAtIndex(2, natom, nextmess),
+                            atom_getFloatAtIndex(3, natom, nextmess),
                             10. + fontsize, 1.);
                     else if (classname == gensym("outlet"))
                         binbuf_addv(newb, "ssfff;", gensym("#P"),
                             gensym("outlet"),
-                            atom_getfloatarg(2, natom, nextmess),
-                            atom_getfloatarg(3, natom, nextmess),
+                            atom_getFloatAtIndex(2, natom, nextmess),
+                            atom_getFloatAtIndex(3, natom, nextmess),
                             10. + fontsize);
                     else if (classname == gensym("outlet~"))
                         binbuf_addv(newb, "ssffff;", gensym("#P"),
                             gensym("outlet"),
-                            atom_getfloatarg(2, natom, nextmess),
-                            atom_getfloatarg(3, natom, nextmess),
+                            atom_getFloatAtIndex(2, natom, nextmess),
+                            atom_getFloatAtIndex(3, natom, nextmess),
                             10. + fontsize, 1.);
                     else if (classname == gensym("bng"))
                         binbuf_addv(newb, "ssffff;", gensym("#P"),
                             gensym("button"),
-                            atom_getfloatarg(2, natom, nextmess),
-                            atom_getfloatarg(3, natom, nextmess),
-                            atom_getfloatarg(5, natom, nextmess), 0.);
+                            atom_getFloatAtIndex(2, natom, nextmess),
+                            atom_getFloatAtIndex(3, natom, nextmess),
+                            atom_getFloatAtIndex(5, natom, nextmess), 0.);
                     else if (classname == gensym("tgl"))
                         binbuf_addv(newb, "ssffff;", gensym("#P"),
                             gensym("toggle"),
-                            atom_getfloatarg(2, natom, nextmess),
-                            atom_getfloatarg(3, natom, nextmess),
-                            atom_getfloatarg(5, natom, nextmess), 0.);
+                            atom_getFloatAtIndex(2, natom, nextmess),
+                            atom_getFloatAtIndex(3, natom, nextmess),
+                            atom_getFloatAtIndex(5, natom, nextmess), 0.);
                     else if (classname == gensym("vsl"))
                         binbuf_addv(newb, "ssffffff;", gensym("#P"),
                             gensym("slider"),
-                            atom_getfloatarg(2, natom, nextmess),
-                            atom_getfloatarg(3, natom, nextmess),
-                            atom_getfloatarg(5, natom, nextmess),
-                            atom_getfloatarg(6, natom, nextmess),
-                            (atom_getfloatarg(8, natom, nextmess) -
-                                atom_getfloatarg(7, natom, nextmess)) /
-                                    (atom_getfloatarg(6, natom, nextmess) == 1? 1 :
-                                         atom_getfloatarg(6, natom, nextmess) - 1),
-                            atom_getfloatarg(7, natom, nextmess));
+                            atom_getFloatAtIndex(2, natom, nextmess),
+                            atom_getFloatAtIndex(3, natom, nextmess),
+                            atom_getFloatAtIndex(5, natom, nextmess),
+                            atom_getFloatAtIndex(6, natom, nextmess),
+                            (atom_getFloatAtIndex(8, natom, nextmess) -
+                                atom_getFloatAtIndex(7, natom, nextmess)) /
+                                    (atom_getFloatAtIndex(6, natom, nextmess) == 1? 1 :
+                                         atom_getFloatAtIndex(6, natom, nextmess) - 1),
+                            atom_getFloatAtIndex(7, natom, nextmess));
                     else if (classname == gensym("hsl")) 
                     {
-                        t_float slmin = atom_getfloatarg(7, natom, nextmess);
-                        t_float slmax = atom_getfloatarg(8, natom, nextmess);
+                        t_float slmin = atom_getFloatAtIndex(7, natom, nextmess);
+                        t_float slmax = atom_getFloatAtIndex(8, natom, nextmess);
                         binbuf_addv(newb, "sssffffffff;", gensym("#P"),
                             gensym("user"),
                             gensym("hslider"),
-                            atom_getfloatarg(2, natom, nextmess),
-                            atom_getfloatarg(3, natom, nextmess),
-                            atom_getfloatarg(6, natom, nextmess),
-                            atom_getfloatarg(5, natom, nextmess),
+                            atom_getFloatAtIndex(2, natom, nextmess),
+                            atom_getFloatAtIndex(3, natom, nextmess),
+                            atom_getFloatAtIndex(6, natom, nextmess),
+                            atom_getFloatAtIndex(5, natom, nextmess),
                             slmax - slmin + 1, /* range */
                             1.,            /* multiplier */
                             slmin,         /* offset */
@@ -1340,7 +1340,7 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                         SET_FLOAT(outmess + 5, fontsize);
                         outmess[6] = nextmess[4];
                         for (i = 5; i < natom; i++) {
-                            arg = atom_getsymbolarg(i, natom, nextmess);
+                            arg = atom_getSymbolAtIndex(i, natom, nextmess);
                             if (arg == gensym("a"))
                                 SET_SYMBOL(outmess + i + 2, gensym("l"));
                             else if (arg == gensym("anything"))
@@ -1395,12 +1395,12 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                 }
                 else if (!strcmp(second, "floatatom"))
                 {
-                    t_float width = atom_getfloatarg(4, natom, nextmess)*fontsize;
+                    t_float width = atom_getFloatAtIndex(4, natom, nextmess)*fontsize;
                     if(width<8) width = 150; /* if pd width=0, set it big */
                     binbuf_addv(newb, "ssfff;",
                         gensym("#P"), gensym("flonum"),
-                        atom_getfloatarg(2, natom, nextmess),
-                        atom_getfloatarg(3, natom, nextmess),
+                        atom_getFloatAtIndex(2, natom, nextmess),
+                        atom_getFloatAtIndex(3, natom, nextmess),
                         width);
                     nobj++;
                 }
@@ -1408,10 +1408,10 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
                 {
                     binbuf_addv(newb, "ssffff;",
                         gensym("#P"), gensym("connect"),
-                        nobj - atom_getfloatarg(2, natom, nextmess) - 1,
-                        atom_getfloatarg(3, natom, nextmess),
-                        nobj - atom_getfloatarg(4, natom, nextmess) - 1,
-                        atom_getfloatarg(5, natom, nextmess)); 
+                        nobj - atom_getFloatAtIndex(2, natom, nextmess) - 1,
+                        atom_getFloatAtIndex(3, natom, nextmess),
+                        nobj - atom_getFloatAtIndex(4, natom, nextmess) - 1,
+                        atom_getFloatAtIndex(5, natom, nextmess)); 
                 }
             }
         }
@@ -1498,7 +1498,7 @@ void binbuf_savetext(t_binbuf *bfrom, t_binbuf *bto)
         else
         {
             char buf[PD_STRING+1];
-            atom_string(&ap[k], buf, PD_STRING);
+            atom_toString(&ap[k], buf, PD_STRING);
             SET_SYMBOL(&at, gensym(buf));
             binbuf_add(bto, 1, &at);
         }

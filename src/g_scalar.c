@@ -49,7 +49,7 @@ void word_restore(t_word *wp, t_template *template,
             t_float f;
             if (argc)
             {
-                f =  atom_getfloat(argv);
+                f =  atom_getFloat(argv);
                 argv++, argc--;
             }
             else f = 0;
@@ -60,7 +60,7 @@ void word_restore(t_word *wp, t_template *template,
             t_symbol *s;
             if (argc)
             {
-                s =  atom_getsymbol(argv);
+                s = atom_getSymbol(argv);
                 argv++, argc--;
             }
             else s = &s_;
@@ -136,14 +136,14 @@ void glist_scalar(t_glist *glist,
     t_symbol *classname, int argc, t_atom *argv)
 {
     t_symbol *templatesym =
-        canvas_makebindsym(atom_getsymbolarg(0, argc, argv));
+        canvas_makebindsym(atom_getSymbolAtIndex(0, argc, argv));
     t_binbuf *b;
     int natoms, nextmsg = 0;
     t_atom *vec;
     if (!template_findbyname(templatesym))
     {
         post_error ("%s: no such template",
-            atom_getsymbolarg(0, argc, argv)->s_name);
+            atom_getSymbolAtIndex(0, argc, argv)->s_name);
         return;
     }
 

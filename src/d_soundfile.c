@@ -2061,12 +2061,12 @@ static void readsf_float(t_readsf *x, t_float f)
 
 static void readsf_open(t_readsf *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *filesym = atom_getsymbolarg(0, argc, argv);
-    t_float onsetframes = atom_getfloatarg(1, argc, argv);
-    t_float headerbytes = atom_getfloatarg(2, argc, argv);
-    t_float channels = atom_getfloatarg(3, argc, argv);
-    t_float bytespersamp = atom_getfloatarg(4, argc, argv);
-    t_symbol *endian = atom_getsymbolarg(5, argc, argv);
+    t_symbol *filesym = atom_getSymbolAtIndex(0, argc, argv);
+    t_float onsetframes = atom_getFloatAtIndex(1, argc, argv);
+    t_float headerbytes = atom_getFloatAtIndex(2, argc, argv);
+    t_float channels = atom_getFloatAtIndex(3, argc, argv);
+    t_float bytespersamp = atom_getFloatAtIndex(4, argc, argv);
+    t_symbol *endian = atom_getSymbolAtIndex(5, argc, argv);
     if (!*filesym->s_name)
         return;
     pthread_mutex_lock(&x->x_mutex);

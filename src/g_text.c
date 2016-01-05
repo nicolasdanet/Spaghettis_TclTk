@@ -51,8 +51,8 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     x->te_binbuf = binbuf_new();
     if (argc > 1)
     {
-        x->te_xCoordinate = atom_getfloatarg(0, argc, argv);
-        x->te_yCoordinate = atom_getfloatarg(1, argc, argv);
+        x->te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
+        x->te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
         if (argc > 2) binbuf_restore(x->te_binbuf, argc-2, argv+2);
         else
         {
@@ -196,8 +196,8 @@ void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     {
         t_binbuf *b = binbuf_new();
         binbuf_restore(b, argc-2, argv+2);
-        canvas_objtext(gl, atom_getintarg(0, argc, argv),
-            atom_getintarg(1, argc, argv), 0, 0, b);
+        canvas_objtext(gl, (t_int)atom_getFloatAtIndex(0, argc, argv),
+            (t_int)atom_getFloatAtIndex(1, argc, argv), 0, 0, b);
     }
         /* JMZ: don't go into interactive mode in a closed canvas */
     else if (!glist_isvisible(gl))
@@ -286,8 +286,8 @@ void canvas_objfor(t_glist *gl, t_text *x, int argc, t_atom *argv)
     x->te_width = 0;                            /* don't know it yet. */
     x->te_type = TYPE_OBJECT;
     x->te_binbuf = binbuf_new();
-    x->te_xCoordinate = atom_getfloatarg(0, argc, argv);
-    x->te_yCoordinate = atom_getfloatarg(1, argc, argv);
+    x->te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
+    x->te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
     if (argc > 2) binbuf_restore(x->te_binbuf, argc-2, argv+2);
     glist_add(gl, &x->te_g);
 }
@@ -458,8 +458,8 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     x->m_clock = clock_new(x, (t_method)message_tick);
     if (argc > 1)
     {
-        x->m_text.te_xCoordinate = atom_getfloatarg(0, argc, argv);
-        x->m_text.te_yCoordinate = atom_getfloatarg(1, argc, argv);
+        x->m_text.te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
+        x->m_text.te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
         if (argc > 2) binbuf_restore(x->m_text.te_binbuf, argc-2, argv+2);
         glist_add(gl, &x->m_text.te_g);
     }
@@ -555,10 +555,10 @@ static void gatom_set(t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     int changed = 0;
     if (!argc) return;
     if (x->a_atom.a_type == A_FLOAT)
-        x->a_atom.a_w.w_float = atom_getfloat(argv),
+        x->a_atom.a_w.w_float = atom_getFloat(argv),
             changed = (x->a_atom.a_w.w_float != oldatom.a_w.w_float);
     else if (x->a_atom.a_type == A_SYMBOL)
-        x->a_atom.a_w.w_symbol = atom_getsymbol(argv),
+        x->a_atom.a_w.w_symbol = atom_getSymbol(argv),
             changed = (x->a_atom.a_w.w_symbol != oldatom.a_w.w_symbol);
     if (changed)
         gatom_retext(x, 1);
@@ -758,13 +758,13 @@ static void gatom_click(t_gatom *x,
     /* message back from dialog window */
 static void gatom_param(t_gatom *x, t_symbol *sel, int argc, t_atom *argv)
 {
-    t_float width = atom_getfloatarg(0, argc, argv);
-    t_float draglo = atom_getfloatarg(1, argc, argv);
-    t_float draghi = atom_getfloatarg(2, argc, argv);
-    t_symbol *symto = gatom_unescapit(atom_getsymbolarg(3, argc, argv));
-    t_symbol *symfrom = gatom_unescapit(atom_getsymbolarg(4, argc, argv));
-    t_symbol *label = gatom_unescapit(atom_getsymbolarg(5, argc, argv));
-    t_float wherelabel = atom_getfloatarg(6, argc, argv);
+    t_float width = atom_getFloatAtIndex(0, argc, argv);
+    t_float draglo = atom_getFloatAtIndex(1, argc, argv);
+    t_float draghi = atom_getFloatAtIndex(2, argc, argv);
+    t_symbol *symto = gatom_unescapit(atom_getSymbolAtIndex(3, argc, argv));
+    t_symbol *symfrom = gatom_unescapit(atom_getSymbolAtIndex(4, argc, argv));
+    t_symbol *label = gatom_unescapit(atom_getSymbolAtIndex(5, argc, argv));
+    t_float wherelabel = atom_getFloatAtIndex(6, argc, argv);
 
     gobj_vis(&x->a_text.te_g, x->a_glist, 0);
     if (!*symfrom->s_name && *x->a_symfrom->s_name)
@@ -906,23 +906,23 @@ void canvas_atom(t_glist *gl, t_atomtype type,
         /* create from file. x, y, width, low-range, high-range, flags,
             label, receive-name, send-name */
     {
-        x->a_text.te_xCoordinate = atom_getfloatarg(0, argc, argv);
-        x->a_text.te_yCoordinate = atom_getfloatarg(1, argc, argv);
-        x->a_text.te_width = atom_getintarg(2, argc, argv);
+        x->a_text.te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
+        x->a_text.te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
+        x->a_text.te_width = (t_int)atom_getFloatAtIndex(2, argc, argv);
             /* sanity check because some very old patches have trash in this
             field... remove this in 2003 or so: */
         if (x->a_text.te_width < 0 || x->a_text.te_width > 500)
             x->a_text.te_width = 4;
-        x->a_draglo = atom_getfloatarg(3, argc, argv);
-        x->a_draghi = atom_getfloatarg(4, argc, argv);
-        x->a_wherelabel = (((int)atom_getfloatarg(5, argc, argv)) & 3);
-        x->a_label = gatom_unescapit(atom_getsymbolarg(6, argc, argv));
-        x->a_symfrom = gatom_unescapit(atom_getsymbolarg(7, argc, argv));
+        x->a_draglo = atom_getFloatAtIndex(3, argc, argv);
+        x->a_draghi = atom_getFloatAtIndex(4, argc, argv);
+        x->a_wherelabel = (((int)atom_getFloatAtIndex(5, argc, argv)) & 3);
+        x->a_label = gatom_unescapit(atom_getSymbolAtIndex(6, argc, argv));
+        x->a_symfrom = gatom_unescapit(atom_getSymbolAtIndex(7, argc, argv));
         if (*x->a_symfrom->s_name)
             pd_bind(&x->a_text.te_g.g_pd,
                 canvas_realizedollar(x->a_glist, x->a_symfrom));
 
-        x->a_symto = gatom_unescapit(atom_getsymbolarg(8, argc, argv));
+        x->a_symto = gatom_unescapit(atom_getSymbolAtIndex(8, argc, argv));
         x->a_expanded_to = canvas_realizedollar(x->a_glist, x->a_symto);
         if (x->a_symto == &s_)
             outlet_new(&x->a_text,

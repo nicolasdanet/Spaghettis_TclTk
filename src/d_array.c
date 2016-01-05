@@ -228,8 +228,8 @@ static void tabplay_tilde_dsp(t_tabplay_tilde *x, t_signal **sp)
 static void tabplay_tilde_list(t_tabplay_tilde *x, t_symbol *s,
     int argc, t_atom *argv)
 {
-    long start = atom_getfloatarg(0, argc, argv);
-    long length = atom_getfloatarg(1, argc, argv);
+    long start = atom_getFloatAtIndex(0, argc, argv);
+    long length = atom_getFloatAtIndex(1, argc, argv);
     if (start < 0) start = 0;
     if (length <= 0)
         x->x_limit = 0x7fffffff;

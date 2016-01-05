@@ -355,8 +355,8 @@ static void *keyname_new( void)
 
 static void keyname_list(t_keyname *x, t_symbol *s, int ac, t_atom *av)
 {
-    outlet_symbol(x->x_outlet2, atom_getsymbolarg(1, ac, av));
-    outlet_float(x->x_outlet1, atom_getfloatarg(0, ac, av));
+    outlet_symbol(x->x_outlet2, atom_getSymbolAtIndex(1, ac, av));
+    outlet_float(x->x_outlet1, atom_getFloatAtIndex(0, ac, av));
 }
 
 static void keyname_free(t_keyname *x)

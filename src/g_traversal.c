@@ -249,7 +249,7 @@ static void *ptrobj_new(t_symbol *classname, int argc, t_atom *argv)
     for (; n--; to++)
     {
         to->to_outlet = outlet_new(&x->x_obj, &s_pointer);
-        to->to_type = template_getbindsym(atom_getsymbol(argv++));
+        to->to_type = template_getbindsym(atom_getSymbol(argv++));
     }
     x->x_otherout = outlet_new(&x->x_obj, &s_pointer);
     x->x_bangout = outlet_new(&x->x_obj, &s_bang);
@@ -479,7 +479,7 @@ static void *get_new(t_symbol *why, int argc, t_atom *argv)
     t_atom at, *varvec;
     t_getvariable *sp;
 
-    x->x_templatesym = template_getbindsym(atom_getsymbolarg(0, argc, argv));
+    x->x_templatesym = template_getbindsym(atom_getSymbolAtIndex(0, argc, argv));
     if (argc < 2)
     {
         varcount = 1;
@@ -492,7 +492,7 @@ static void *get_new(t_symbol *why, int argc, t_atom *argv)
     x->x_nout = varcount;
     for (i = 0, sp = x->x_variables; i < varcount; i++, sp++)
     {
-        sp->gv_sym = atom_getsymbolarg(i, varcount, varvec);
+        sp->gv_sym = atom_getSymbolAtIndex(i, varcount, varvec);
         sp->gv_outlet = outlet_new(&x->x_obj, 0);
             /* LATER connect with the template and set the outlet's type
             correctly.  We can't yet guarantee that the template is there
@@ -611,7 +611,7 @@ static void *set_new(t_symbol *why, int argc, t_atom *argv)
         argv++;
     }
     else x->x_issymbol = 0;
-    x->x_templatesym = template_getbindsym(atom_getsymbolarg(0, argc, argv));
+    x->x_templatesym = template_getbindsym(atom_getSymbolAtIndex(0, argc, argv));
     if (argc < 2)
     {
         varcount = 1;
@@ -624,7 +624,7 @@ static void *set_new(t_symbol *why, int argc, t_atom *argv)
     x->x_nin = varcount;
     for (i = 0, sp = x->x_variables; i < varcount; i++, sp++)
     {
-        sp->gv_sym = atom_getsymbolarg(i, varcount, varvec);
+        sp->gv_sym = atom_getSymbolAtIndex(i, varcount, varvec);
         if (x->x_issymbol)
             sp->gv_w.w_symbol = &s_;
         else sp->gv_w.w_float = 0;
@@ -1142,7 +1142,7 @@ static void *append_new(t_symbol *why, int argc, t_atom *argv)
     t_atom at, *varvec;
     t_appendvariable *sp;
 
-    x->x_templatesym = template_getbindsym(atom_getsymbolarg(0, argc, argv));
+    x->x_templatesym = template_getbindsym(atom_getSymbolAtIndex(0, argc, argv));
     if (argc < 2)
     {
         varcount = 1;
@@ -1155,7 +1155,7 @@ static void *append_new(t_symbol *why, int argc, t_atom *argv)
     x->x_nin = varcount;
     for (i = 0, sp = x->x_variables; i < varcount; i++, sp++)
     {
-        sp->gv_sym = atom_getsymbolarg(i, varcount, varvec);
+        sp->gv_sym = atom_getSymbolAtIndex(i, varcount, varvec);
         sp->gv_f = 0;
         if (i) inlet_newFloat(&x->x_obj, &sp->gv_f);
     }

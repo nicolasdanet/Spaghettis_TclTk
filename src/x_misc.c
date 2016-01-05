@@ -534,7 +534,7 @@ static void oscformat_set(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
     {
         char *where = (argv[i].a_type == A_SYMBOL &&
             *argv[i].a_w.w_symbol->s_name == '/' ? buf : buf+1);
-        atom_string(&argv[i], where, PD_STRING-1);
+        atom_toString(&argv[i], where, PD_STRING-1);
         if ((newsize = strlen(buf) + strlen(x->x_pathbuf) + 1) > x->x_pathsize)
         {
             x->x_pathbuf = PD_MEMORY_RESIZE(x->x_pathbuf, x->x_pathsize, newsize);
@@ -634,13 +634,13 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
                 float z_f;
                 uint32_t z_i;
             } z;
-            z.z_f = atom_getfloat(&argv[j]);
+            z.z_f = atom_getFloat(&argv[j]);
             WRITEINT(msg+msgindex, z.z_i);
             msgindex += 4;
         }
         else if (typecode == 'i')
         {
-            int dat = atom_getfloat(&argv[j]);
+            int dat = atom_getFloat(&argv[j]);
             WRITEINT(msg+msgindex, dat);
             msgindex += 4;
         }

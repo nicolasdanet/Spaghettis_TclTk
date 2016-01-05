@@ -147,8 +147,8 @@ static void object_inletList (t_inlet *x, t_symbol *s, int argc, t_atom *argv)
         || x->i_symbolFrom == &s_pointer)   { pd_message (x->i_destination, x->i_un.i_symbolTo, argc, argv); }
     else if (x->i_symbolFrom == NULL)       { pd_list (x->i_destination, argc, argv);  }
     else if (!argc)                         { object_inletBang (x); }
-    else if (argc == 1 && IS_FLOAT (argv))  { object_inletFloat (x, atom_getfloat (argv));   }
-    else if (argc == 1 && IS_SYMBOL (argv)) { object_inletSymbol (x, atom_getsymbol (argv)); }
+    else if (argc == 1 && IS_FLOAT (argv))  { object_inletFloat (x, atom_getFloat (argv));   }
+    else if (argc == 1 && IS_SYMBOL (argv)) { object_inletSymbol (x, atom_getSymbol (argv)); }
     else { 
         object_errorUnexpected (x, &s_list);
     }

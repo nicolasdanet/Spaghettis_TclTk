@@ -456,8 +456,8 @@ static void *select_new(t_symbol *s, int argc, t_atom *argv)
         {
             e->e_outlet = outlet_new(&x->x_obj, &s_bang);
             if ((x->x_type = argv->a_type) == A_FLOAT)
-                e->e_w.w_float = atom_getfloatarg(n, argc, argv);
-            else e->e_w.w_symbol = atom_getsymbolarg(n, argc, argv);
+                e->e_w.w_float = atom_getFloatAtIndex(n, argc, argv);
+            else e->e_w.w_symbol = atom_getSymbolAtIndex(n, argc, argv);
         }
         x->x_rejectout = outlet_new(&x->x_obj, &s_float);
         return (x);
@@ -529,7 +529,7 @@ static void route_list(t_route *x, t_symbol *sel, int argc, t_atom *argv)
         if (!argc) return;
         if (argv->a_type != A_FLOAT)
             goto rejected;
-        f = atom_getfloat(argv);
+        f = atom_getFloat(argv);
         for (nelement = x->x_nelement, e = x->x_vec; nelement--; e++)
             if (e->e_w.w_float == f)
         {
@@ -619,8 +619,8 @@ static void *route_new(t_symbol *s, int argc, t_atom *argv)
     {
         e->e_outlet = outlet_new(&x->x_obj, &s_list);
         if (x->x_type == A_FLOAT)
-            e->e_w.w_float = atom_getfloatarg(n, argc, argv);
-        else e->e_w.w_symbol = atom_getsymbolarg(n, argc, argv);
+            e->e_w.w_float = atom_getFloatAtIndex(n, argc, argv);
+        else e->e_w.w_symbol = atom_getSymbolAtIndex(n, argc, argv);
     }
     if (argc == 1)
     {
@@ -1004,12 +1004,12 @@ static void trigger_list(t_trigger *x, t_symbol *s, int argc, t_atom *argv)
     for (i = x->x_n, u = x->x_vec + i; u--, i--;)
     {
         if (u->u_type == TR_FLOAT)
-            outlet_float(u->u_outlet, (argc ? atom_getfloat(argv) : 0));
+            outlet_float(u->u_outlet, (argc ? atom_getFloat(argv) : 0));
         else if (u->u_type == TR_BANG)
             outlet_bang(u->u_outlet);
         else if (u->u_type == TR_SYMBOL)
             outlet_symbol(u->u_outlet,
-                (argc ? atom_getsymbol(argv) : &s_symbol));
+                (argc ? atom_getSymbol(argv) : &s_symbol));
         else if (u->u_type == TR_POINTER)
         {
             if (!argc || argv->a_type != TR_POINTER)

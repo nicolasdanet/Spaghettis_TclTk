@@ -492,7 +492,7 @@ static void *template_usetemplate(void *dummy, t_symbol *s,
 {
     t_template *x;
     t_symbol *templatesym =
-        canvas_makebindsym(atom_getsymbolarg(0, argc, argv));
+        canvas_makebindsym(atom_getSymbolAtIndex(0, argc, argv));
     if (!argc)
         return (0);
     argc--; argv++;
@@ -613,7 +613,7 @@ static void *gtemplate_donew(t_symbol *sym, int argc, t_atom *argv)
 
 static void *gtemplate_new(t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *sym = atom_getsymbolarg(0, argc, argv);
+    t_symbol *sym = atom_getSymbolAtIndex(0, argc, argv);
     if (argc >= 1)
         argc--; argv++;
     if (sym->s_name[0] == '-')
@@ -982,7 +982,7 @@ static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
     fielddesc_setfloat_const(&x->x_vis, 1);
     while (1)
     {
-        t_symbol *firstarg = atom_getsymbolarg(0, argc, argv);
+        t_symbol *firstarg = atom_getSymbolAtIndex(0, argc, argv);
         if (!strcmp(firstarg->s_name, "-v") && argc > 1)
         {
             fielddesc_setfloatarg(&x->x_vis, 1, argv+1);
@@ -1356,7 +1356,7 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
     fielddesc_setfloat_const(&x->x_scalarvis, 1);
     while (1)
     {
-        t_symbol *firstarg = atom_getsymbolarg(0, argc, argv);
+        t_symbol *firstarg = atom_getSymbolAtIndex(0, argc, argv);
         if (!strcmp(firstarg->s_name, "curve") ||
             !strcmp(firstarg->s_name, "-c"))
         {
@@ -2354,7 +2354,7 @@ static void *drawnumber_new(t_symbol *classsym, int argc, t_atom *argv)
     x->x_canvas = canvas_getcurrent();
     while (1)
     {
-        t_symbol *firstarg = atom_getsymbolarg(0, argc, argv);
+        t_symbol *firstarg = atom_getSymbolAtIndex(0, argc, argv);
         if (!strcmp(firstarg->s_name, "-v") && argc > 1)
         {
             fielddesc_setfloatarg(&x->x_vis, 1, argv+1);
@@ -2364,7 +2364,7 @@ static void *drawnumber_new(t_symbol *classsym, int argc, t_atom *argv)
     }
         /* next argument is name of field to draw - we don't know its type yet
         but fielddesc_setfloatarg() will do fine here. */
-    x->x_fieldname = atom_getsymbolarg(0, argc, argv);
+    x->x_fieldname = atom_getSymbolAtIndex(0, argc, argv);
     if (argc)
         argc--, argv++;
     if (argc) fielddesc_setfloatarg(&x->x_xloc, argc--, argv++);
@@ -2374,7 +2374,7 @@ static void *drawnumber_new(t_symbol *classsym, int argc, t_atom *argv)
     if (argc) fielddesc_setfloatarg(&x->x_color, argc--, argv++);
     else fielddesc_setfloat_const(&x->x_color, 1);
     if (argc)
-        x->x_label = atom_getsymbolarg(0, argc, argv);
+        x->x_label = atom_getSymbolAtIndex(0, argc, argv);
     else x->x_label = &s_;
 
     return (x);
@@ -2442,7 +2442,7 @@ static void drawnumber_getbuf(t_drawnumber *x, t_word *data,
             if (type == DATA_FLOAT)
                 SET_FLOAT(&at, ((t_word *)((char *)data + onset))->w_float);
             else SET_SYMBOL(&at, ((t_word *)((char *)data + onset))->w_symbol);
-            atom_string(&at, buf + nchars, DRAWNUMBER_BUFSIZE - nchars);
+            atom_toString(&at, buf + nchars, DRAWNUMBER_BUFSIZE - nchars);
         }
     }
 }

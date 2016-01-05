@@ -252,7 +252,7 @@ static int netsend_dosend(t_netsend *x, int sockfd,
         int i;
         buf = alloca(argc);
         for (i = 0; i < argc; i++)
-            ((unsigned char *)buf)[i] = atom_getfloatarg(i, argc, argv);
+            ((unsigned char *)buf)[i] = atom_getFloatAtIndex(i, argc, argv);
         length = argc;
     }
     else
@@ -505,10 +505,10 @@ static void *netreceive_new(t_symbol *s, int argc, t_atom *argv)
     x->x_ns.x_sockfd = -1;
     if (argc && argv->a_type == A_FLOAT)
     {
-        portno = atom_getfloatarg(0, argc, argv);
-        x->x_ns.x_protocol = (atom_getfloatarg(1, argc, argv) != 0 ?
+        portno = atom_getFloatAtIndex(0, argc, argv);
+        x->x_ns.x_protocol = (atom_getFloatAtIndex(1, argc, argv) != 0 ?
             SOCK_DGRAM : SOCK_STREAM);
-        x->x_old = (!strcmp(atom_getsymbolarg(2, argc, argv)->s_name, "old"));
+        x->x_old = (!strcmp(atom_getSymbolAtIndex(2, argc, argv)->s_name, "old"));
         argc = 0;
     }
     else 

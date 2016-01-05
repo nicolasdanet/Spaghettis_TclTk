@@ -23,7 +23,7 @@ static void *print_new(t_symbol *sel, int argc, t_atom *argv)
         x->x_sym = gensym("print");
     else if (argc == 1 && argv->a_type == A_SYMBOL)
     {
-        t_symbol *s = atom_getsymbolarg(0, argc, argv);
+        t_symbol *s = atom_getSymbolAtIndex(0, argc, argv);
         if (!strcmp(s->s_name, "-n"))
             x->x_sym = &s_;
         else x->x_sym = s;

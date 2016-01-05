@@ -1104,17 +1104,17 @@ static void canvas_donecanvasdialog(t_glist *x,
     t_float xperpix, yperpix, x1, y1, x2, y2, xpix, ypix, xmargin, ymargin; 
     int graphme, redraw = 0;
 
-    xperpix = atom_getfloatarg(0, argc, argv);
-    yperpix = atom_getfloatarg(1, argc, argv);
-    graphme = (int)(atom_getfloatarg(2, argc, argv));
-    x1 = atom_getfloatarg(3, argc, argv);
-    y1 = atom_getfloatarg(4, argc, argv);
-    x2 = atom_getfloatarg(5, argc, argv);
-    y2 = atom_getfloatarg(6, argc, argv);
-    xpix = atom_getfloatarg(7, argc, argv);
-    ypix = atom_getfloatarg(8, argc, argv);
-    xmargin = atom_getfloatarg(9, argc, argv);
-    ymargin = atom_getfloatarg(10, argc, argv);
+    xperpix = atom_getFloatAtIndex(0, argc, argv);
+    yperpix = atom_getFloatAtIndex(1, argc, argv);
+    graphme = (int)(atom_getFloatAtIndex(2, argc, argv));
+    x1 = atom_getFloatAtIndex(3, argc, argv);
+    y1 = atom_getFloatAtIndex(4, argc, argv);
+    x2 = atom_getFloatAtIndex(5, argc, argv);
+    y2 = atom_getFloatAtIndex(6, argc, argv);
+    xpix = atom_getFloatAtIndex(7, argc, argv);
+    ypix = atom_getFloatAtIndex(8, argc, argv);
+    xmargin = atom_getFloatAtIndex(9, argc, argv);
+    ymargin = atom_getFloatAtIndex(10, argc, argv);
     
     x->gl_pixwidth = xpix;
     x->gl_pixheight = ypix;
@@ -1209,7 +1209,7 @@ static void canvas_done_popup(t_canvas *x, t_float which, t_float xpos, t_float 
                     t_atom *av = binbuf_getvec(ob->te_binbuf);
                     if (ac < 1)
                         return;
-                    atom_string(av, namebuf, PD_STRING);
+                    atom_toString(av, namebuf, PD_STRING);
                     dir = canvas_getdir((t_canvas *)y)->s_name;
                 }
                 else
@@ -1703,8 +1703,8 @@ void canvas_key(t_canvas *x, t_symbol *s, int ac, t_atom *av)
         return;
 
     canvas_undo_already_set_move = 0;
-    down = (atom_getfloat(av) != 0);  /* nonzero if it's a key down */
-    shift = (atom_getfloat(av+2) != 0);  /* nonzero if shift-ed */
+    down = (atom_getFloat(av) != 0);  /* nonzero if it's a key down */
+    shift = (atom_getFloat(av+2) != 0);  /* nonzero if shift-ed */
     if (av[1].a_type == A_SYMBOL)
         gotkeysym = av[1].a_w.w_symbol;
     else if (av[1].a_type == A_FLOAT)

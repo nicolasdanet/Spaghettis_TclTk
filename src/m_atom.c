@@ -1,72 +1,61 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
+
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #include "m_pd.h"
 #include "m_macros.h"
-#include <stdio.h>
-#include <string.h>
 
-    /* convenience routines for checking and getting values of
-        atoms.  There's no "pointer" version since there's nothing
-        safe to return if there's an error. */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-t_float atom_getfloat(t_atom *a)
+t_float atom_getFloat (t_atom *a)
 {
-    if (a->a_type == A_FLOAT) return (a->a_w.w_float);
-    else return (0);
+    if (IS_FLOAT (a)) { return GET_FLOAT (a); }
+    else {
+        return 0.0;
+    }
 }
 
-t_int atom_getint(t_atom *a)
+t_float atom_getFloatAtIndex (int n, int argc, t_atom *argv)
 {
-    return (atom_getfloat(a));
+    if (n >= 0 && n < argc) { argv += n; return atom_getFloat (argv); }
+    else {
+        return 0.0;
+    }
 }
 
-t_symbol *atom_getsymbol(t_atom *a)  /* LATER think about this more carefully */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_symbol *atom_getSymbol (t_atom *a)
 {
-    char buf[30];
-    if (a->a_type == A_SYMBOL) return (a->a_w.w_symbol);
-    else return (&s_float);
+    if (IS_SYMBOL (a)) { return GET_SYMBOL (a); }
+    else { 
+        return (&s_);
+    }
 }
 
-t_symbol *atom_gensym(t_atom *a)  /* this works  better for graph labels */
+t_symbol *atom_getSymbolAtIndex (int n, int argc, t_atom *argv)
 {
-    char buf[30];
-    if (a->a_type == A_SYMBOL) return (a->a_w.w_symbol);
-    else if (a->a_type == A_FLOAT)
-        sprintf(buf, "%g", a->a_w.w_float);
-    else strcpy(buf, "???");
-    return (gensym(buf));
+    if (n >= 0 && n < argc) { argv += n; return atom_getSymbol (argv); }
+    else {
+        return (&s_);
+    }
 }
 
-t_float atom_getfloatarg(int which, int argc, t_atom *argv)
-{
-    if (argc <= which) return (0);
-    argv += which;
-    if (argv->a_type == A_FLOAT) return (argv->a_w.w_float);
-    else return (0);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-t_int atom_getintarg(int which, int argc, t_atom *argv)
-{
-    return (atom_getfloatarg(which, argc, argv));
-}
-
-t_symbol *atom_getsymbolarg(int which, int argc, t_atom *argv)
-{
-    if (argc <= which) return (&s_);
-    argv += which;
-    if (argv->a_type == A_SYMBOL) return (argv->a_w.w_symbol);
-    else return (&s_);
-}
-
-/* convert an atom into a string, in the reverse sense of binbuf_text (q.v.)
-* special attention is paid to symbols containing the special characters
-* ';', ',', '$', and '\'; these are quoted with a preceding '\', except that
-* the '$' only gets quoted at the beginning of the string.
-*/
-
-void atom_string(t_atom *a, char *buf, unsigned int bufsize)
+void atom_toString (t_atom *a, char *buf, unsigned int bufsize)
 {
     char tbuf[30];
     switch(a->a_type)
@@ -128,3 +117,6 @@ void atom_string(t_atom *a, char *buf, unsigned int bufsize)
         PD_BUG;
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

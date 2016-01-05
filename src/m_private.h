@@ -139,14 +139,6 @@ int         pd_setLoadingAbstraction    (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    text_save                   (t_gobj *z, t_binbuf *b);
-
-void    canvas_popabstraction       (t_canvas *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void        class_setExternalDirectory  (t_symbol *s);
 t_method    class_getMethod             (t_class *c, t_symbol *s);
 int         class_hasMethod             (t_class *c, t_symbol *s);
@@ -200,27 +192,35 @@ t_float         *object_getSignalValueAtIndex   (t_object *x, int m);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int outlet_isSignal                             (t_outlet *x);
+int outlet_isSignal             (t_outlet *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_pd *glob_evalfile     (t_pd *ignore, t_symbol *name, t_symbol *dir);
-
-void glob_initfromgui   (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void glob_quit          (void *dummy);
-void open_via_helppath  (const char *name, const char *dir);
+void atom_toString              (t_atom *a, char *s, size_t size);
+void text_save                  (t_gobj *z, t_binbuf *b);
+void canvas_popabstraction      (t_canvas *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void message_initialize (void);
-void object_initialize  (void);
-void conf_init          (void);
-void glob_init          (void);
-void garray_init        (void);
+t_pd *glob_evalfile         (t_pd *ignore, t_symbol *name, t_symbol *dir);
+
+void glob_initfromgui       (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void glob_quit              (void *dummy);
+void open_via_helppath      (const char *name, const char *dir);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void message_initialize     (void);
+void object_initialize      (void);
+void conf_init              (void);
+void glob_init              (void);
+void garray_init            (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

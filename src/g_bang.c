@@ -319,9 +319,9 @@ static void bng_bang2(t_bng *x)/*wird immer gesendet, wenn moeglich*/
 static void bng_dialog(t_bng *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *srl[3];
-    int a = (int)atom_getintarg(0, argc, argv);
-    int fthold = (int)atom_getintarg(2, argc, argv);
-    int ftbreak = (int)atom_getintarg(3, argc, argv);
+    int a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
+    int fthold = (int)(t_int)atom_getFloatAtIndex(2, argc, argv);
+    int ftbreak = (int)(t_int)atom_getFloatAtIndex(3, argc, argv);
     iem_dialog(&x->x_gui, srl, argc, argv);
 
     x->x_gui.x_w = iem_clip_size(a);
@@ -374,7 +374,7 @@ static void bng_loadbang(t_bng *x)
 
 static void bng_size(t_bng *x, t_symbol *s, int ac, t_atom *av)
 {
-    x->x_gui.x_w = iem_clip_size((int)atom_getintarg(0, ac, av));
+    x->x_gui.x_w = iem_clip_size((int)(t_int)atom_getFloatAtIndex(0, ac, av));
     x->x_gui.x_h = x->x_gui.x_w;
     iem_size((void *)x, &x->x_gui);
 }
@@ -387,8 +387,8 @@ static void bng_pos(t_bng *x, t_symbol *s, int ac, t_atom *av)
 
 static void bng_flashtime(t_bng *x, t_symbol *s, int ac, t_atom *av)
 {
-    bng_check_minmax(x, (int)atom_getintarg(0, ac, av),
-                     (int)atom_getintarg(1, ac, av));
+    bng_check_minmax(x, (int)(t_int)atom_getFloatAtIndex(0, ac, av),
+                     (int)(t_int)atom_getFloatAtIndex(1, ac, av));
 }
 
 static void bng_color(t_bng *x, t_symbol *s, int ac, t_atom *av)
@@ -455,18 +455,18 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
        &&IS_FLOAT(argv,12)&&IS_FLOAT(argv,13))
     {
 
-        a = (int)atom_getintarg(0, argc, argv);
-        fthold = (int)atom_getintarg(1, argc, argv);
-        ftbreak = (int)atom_getintarg(2, argc, argv);
-        iem_inttosymargs(&x->x_gui.x_isa, atom_getintarg(3, argc, argv));
+        a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
+        fthold = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
+        ftbreak = (int)(t_int)atom_getFloatAtIndex(2, argc, argv);
+        iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(3, argc, argv));
         iem_new_getnames(&x->x_gui, 4, argv);
-        ldx = (int)atom_getintarg(7, argc, argv);
-        ldy = (int)atom_getintarg(8, argc, argv);
-        iem_inttofstyle(&x->x_gui.x_fsf, atom_getintarg(9, argc, argv));
-        fs = (int)atom_getintarg(10, argc, argv);
-        bflcol[0] = (int)atom_getintarg(11, argc, argv);
-        bflcol[1] = (int)atom_getintarg(12, argc, argv);
-        bflcol[2] = (int)atom_getintarg(13, argc, argv);
+        ldx = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
+        ldy = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
+        iem_inttofstyle(&x->x_gui.x_fsf, (t_int)atom_getFloatAtIndex(9, argc, argv));
+        fs = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
+        bflcol[0] = (int)(t_int)atom_getFloatAtIndex(11, argc, argv);
+        bflcol[1] = (int)(t_int)atom_getFloatAtIndex(12, argc, argv);
+        bflcol[2] = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
     }
     else iem_new_getnames(&x->x_gui, 4, 0);
 

@@ -342,12 +342,12 @@ static void hslider_bang(t_hslider *x)
 static void hslider_dialog(t_hslider *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *srl[3];
-    int w = (int)atom_getintarg(0, argc, argv);
-    int h = (int)atom_getintarg(1, argc, argv);
-    double min = (double)atom_getfloatarg(2, argc, argv);
-    double max = (double)atom_getfloatarg(3, argc, argv);
-    int lilo = (int)atom_getintarg(4, argc, argv);
-    int steady = (int)atom_getintarg(16, argc, argv);
+    int w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
+    int h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
+    double min = (double)atom_getFloatAtIndex(2, argc, argv);
+    double max = (double)atom_getFloatAtIndex(3, argc, argv);
+    int lilo = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
+    int steady = (int)(t_int)atom_getFloatAtIndex(16, argc, argv);
 
     if(lilo != 0) lilo = 1;
     x->x_lin0_log1 = lilo;
@@ -430,9 +430,9 @@ static int hslider_newclick(t_gobj *z, struct _glist *glist,
 
 static void hslider_size(t_hslider *x, t_symbol *s, int ac, t_atom *av)
 {
-    hslider_check_width(x, (int)atom_getintarg(0, ac, av));
+    hslider_check_width(x, (int)(t_int)atom_getFloatAtIndex(0, ac, av));
     if(ac > 1)
-        x->x_gui.x_h = iem_clip_size((int)atom_getintarg(1, ac, av));
+        x->x_gui.x_h = iem_clip_size((int)(t_int)atom_getFloatAtIndex(1, ac, av));
     iem_size((void *)x, &x->x_gui);
 }
 
@@ -444,8 +444,8 @@ static void hslider_pos(t_hslider *x, t_symbol *s, int ac, t_atom *av)
 
 static void hslider_range(t_hslider *x, t_symbol *s, int ac, t_atom *av)
 {
-    hslider_check_minmax(x, (double)atom_getfloatarg(0, ac, av),
-                         (double)atom_getfloatarg(1, ac, av));
+    hslider_check_minmax(x, (double)atom_getFloatAtIndex(0, ac, av),
+                         (double)atom_getFloatAtIndex(1, ac, av));
 }
 
 static void hslider_color(t_hslider *x, t_symbol *s, int ac, t_atom *av)
@@ -530,25 +530,25 @@ static void *hslider_new(t_symbol *s, int argc, t_atom *argv)
        &&IS_FLOAT(argv,11)&&IS_FLOAT(argv,12)&&IS_FLOAT(argv,13)
        &&IS_FLOAT(argv,14)&&IS_FLOAT(argv,15)&&IS_FLOAT(argv,16))
     {
-        w = (int)atom_getintarg(0, argc, argv);
-        h = (int)atom_getintarg(1, argc, argv);
-        min = (double)atom_getfloatarg(2, argc, argv);
-        max = (double)atom_getfloatarg(3, argc, argv);
-        lilo = (int)atom_getintarg(4, argc, argv);
-        iem_inttosymargs(&x->x_gui.x_isa, atom_getintarg(5, argc, argv));
+        w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
+        h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
+        min = (double)atom_getFloatAtIndex(2, argc, argv);
+        max = (double)atom_getFloatAtIndex(3, argc, argv);
+        lilo = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
+        iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(5, argc, argv));
         iem_new_getnames(&x->x_gui, 6, argv);
-        ldx = (int)atom_getintarg(9, argc, argv);
-        ldy = (int)atom_getintarg(10, argc, argv);
-        iem_inttofstyle(&x->x_gui.x_fsf, atom_getintarg(11, argc, argv));
-        fs = (int)atom_getintarg(12, argc, argv);
-        bflcol[0] = (int)atom_getintarg(13, argc, argv);
-        bflcol[1] = (int)atom_getintarg(14, argc, argv);
-        bflcol[2] = (int)atom_getintarg(15, argc, argv);
-        v = atom_getfloatarg(16, argc, argv);
+        ldx = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
+        ldy = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
+        iem_inttofstyle(&x->x_gui.x_fsf, (t_int)atom_getFloatAtIndex(11, argc, argv));
+        fs = (int)(t_int)atom_getFloatAtIndex(12, argc, argv);
+        bflcol[0] = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
+        bflcol[1] = (int)(t_int)atom_getFloatAtIndex(14, argc, argv);
+        bflcol[2] = (int)(t_int)atom_getFloatAtIndex(15, argc, argv);
+        v = atom_getFloatAtIndex(16, argc, argv);
     }
     else iem_new_getnames(&x->x_gui, 6, 0);
     if((argc == 18)&&IS_FLOAT(argv,17))
-        steady = (int)atom_getintarg(17, argc, argv);
+        steady = (int)(t_int)atom_getFloatAtIndex(17, argc, argv);
 
     x->x_gui.x_draw = (t_iemfunptr)hslider_draw;
 

@@ -33,7 +33,7 @@ static void *plus_new(t_symbol *s, int argc, t_atom *argv)
     {
         t_scalarplus *x = (t_scalarplus *)pd_new(scalarplus_class);
         inlet_newFloat(&x->x_obj, &x->x_g);
-        x->x_g = atom_getfloatarg(0, argc, argv);
+        x->x_g = atom_getFloatAtIndex(0, argc, argv);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;
         return (x);
@@ -166,7 +166,7 @@ static void *minus_new(t_symbol *s, int argc, t_atom *argv)
     {
         t_scalarminus *x = (t_scalarminus *)pd_new(scalarminus_class);
         inlet_newFloat(&x->x_obj, &x->x_g);
-        x->x_g = atom_getfloatarg(0, argc, argv);
+        x->x_g = atom_getFloatAtIndex(0, argc, argv);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;
         return (x);
@@ -297,7 +297,7 @@ static void *times_new(t_symbol *s, int argc, t_atom *argv)
     {
         t_scalartimes *x = (t_scalartimes *)pd_new(scalartimes_class);
         inlet_newFloat(&x->x_obj, &x->x_g);
-        x->x_g = atom_getfloatarg(0, argc, argv);
+        x->x_g = atom_getFloatAtIndex(0, argc, argv);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;
         return (x);
@@ -427,7 +427,7 @@ static void *over_new(t_symbol *s, int argc, t_atom *argv)
     {
         t_scalarover *x = (t_scalarover *)pd_new(scalarover_class);
         inlet_newFloat(&x->x_obj, &x->x_g);
-        x->x_g = atom_getfloatarg(0, argc, argv);
+        x->x_g = atom_getFloatAtIndex(0, argc, argv);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;
         return (x);
@@ -569,7 +569,7 @@ static void *max_new(t_symbol *s, int argc, t_atom *argv)
     {
         t_scalarmax *x = (t_scalarmax *)pd_new(scalarmax_class);
         inlet_newFloat(&x->x_obj, &x->x_g);
-        x->x_g = atom_getfloatarg(0, argc, argv);
+        x->x_g = atom_getFloatAtIndex(0, argc, argv);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;
         return (x);
@@ -711,7 +711,7 @@ static void *min_new(t_symbol *s, int argc, t_atom *argv)
     {
         t_scalarmin *x = (t_scalarmin *)pd_new(scalarmin_class);
         inlet_newFloat(&x->x_obj, &x->x_g);
-        x->x_g = atom_getfloatarg(0, argc, argv);
+        x->x_g = atom_getFloatAtIndex(0, argc, argv);
         outlet_new(&x->x_obj, &s_signal);
         x->x_f = 0;
         return (x);

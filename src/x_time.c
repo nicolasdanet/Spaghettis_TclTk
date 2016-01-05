@@ -440,7 +440,7 @@ static void *pipe_new(t_symbol *s, int argc, t_atom *argv)
         if (argv[argc-1].a_type != A_FLOAT)
         {
             char stupid[80];
-            atom_string(&argv[argc-1], stupid, 79);
+            atom_toString(&argv[argc-1], stupid, 79);
             post_error ("pipe: %s: bad time delay value", stupid);
             deltime = 0;
         }
@@ -573,8 +573,8 @@ static void pipe_list(t_pipe *x, t_symbol *s, int ac, t_atom *av)
     {
         switch (p->p_atom.a_type)
         {
-        case A_FLOAT: p->p_atom.a_w.w_float = atom_getfloat(ap); break;
-        case A_SYMBOL: p->p_atom.a_w.w_symbol = atom_getsymbol(ap); break;
+        case A_FLOAT: p->p_atom.a_w.w_float = atom_getFloat(ap); break;
+        case A_SYMBOL: p->p_atom.a_w.w_symbol = atom_getSymbol(ap); break;
         case A_POINTER:
             gpointer_unset(gp);
             if (ap->a_type != A_POINTER)
