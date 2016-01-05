@@ -28,7 +28,7 @@ void post (const char *fmt, ...)
     
     if (t >= 0 && t < PD_STRING) { sys_vgui ("::ui_console::post {%s}\n", buf); }   // --
     else {
-        post_error (PD_TRANSLATE ("post: too many characters per line"));   // --
+        post_error (PD_TRANSLATE ("console: too many characters per line"));   // --
     }
 }
 

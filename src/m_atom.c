@@ -63,7 +63,7 @@ static int atom_toStringSymbol (t_atom *a, char *s, size_t size)
     int err = 0;
     
     for (p = GET_SYMBOL (a)->s_name; *p; p++, length++) {
-        if (*p == ';' || *p == ',' || *p == '\\' || (*p == '$' && p[1] >= '0' && p[1] <= '9')) {
+        if (*p == ';' || *p == ',' || *p == '\\' || (*p == '$' && p[1] >= '0' && p[1] <= '9')) {    // --
             quote = 1;
         }
     }
@@ -77,7 +77,7 @@ static int atom_toStringSymbol (t_atom *a, char *s, size_t size)
         
         while (base < end && *p) {
         //
-        if (*p == ';' || *p == ',' || *p == '\\' || (*p == '$' && p[1] >= '0' && p[1] <= '9')) {
+        if (*p == ';' || *p == ',' || *p == '\\' || (*p == '$' && p[1] >= '0' && p[1] <= '9')) {    // --
             *base++ = '\\';
         }
         *base++ = *p++;
@@ -101,12 +101,12 @@ int atom_toString (t_atom *a, char *s, size_t size)
     
     switch (a->a_type) {
         case A_SEMICOLON    : err = utils_strncpy (s, size, ";");                       break;
-        case A_COMMA        : err = utils_strncpy (s, size, ",");                       break;
+        case A_COMMA        : err = utils_strncpy (s, size, ",");                       break;  // --
         case A_POINTER      : err = utils_strncpy (s, size, s_pointer.s_name);          break;
         case A_FLOAT        : err = utils_snprintf (s, size, "%g", GET_FLOAT (a));      break;
         case A_SYMBOL       : err = atom_toStringSymbol (a, s, size);                   break;
         case A_DOLLAR       : err = utils_snprintf (s, size, "$%d", a->a_w.w_index);    break;
-        case A_DOLLARSYMBOL : err = utils_strncpy (s, size, GET_SYMBOL(a)->s_name);     break;
+        case A_DOLLARSYMBOL : err = utils_strncpy (s, size, GET_SYMBOL (a)->s_name);    break;
     }
     
     PD_ASSERT (err == 0);
