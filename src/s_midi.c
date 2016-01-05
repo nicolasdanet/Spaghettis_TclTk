@@ -629,7 +629,7 @@ void sys_set_midi_api(int which)
 void glob_midi_properties(t_pd *dummy, t_float flongform);
 void midi_alsa_setndevs(int in, int out);
 
-void glob_midi_setapi(void *dummy, t_float f)
+void glob_midi_setapi(t_pd *dummy, t_float f)
 {
     int newapi = f;
     if (newapi != sys_midiapi)
@@ -649,7 +649,7 @@ void glob_midi_setapi(void *dummy, t_float f)
     glob_midi_properties(0, (midi_nmidiindev > 1 || midi_nmidioutdev > 1));
 }
 
-extern t_class *glob_pdobject;
+extern t_class *global_object;
 
     /* start an midi settings dialog window */
 void glob_midi_properties(t_pd *dummy, t_float flongform)
@@ -726,7 +726,7 @@ void glob_midi_properties(t_pd *dummy, t_float flongform)
         midioutdev5, midioutdev6, midioutdev7, midioutdev8, midioutdev9);
 
     gfxstub_deleteforkey(0);
-    gfxstub_new(&glob_pdobject, (void *)glob_midi_properties, buf);
+    gfxstub_new(&global_object, (void *)glob_midi_properties, buf);
 }
 
     /* new values from dialog window */

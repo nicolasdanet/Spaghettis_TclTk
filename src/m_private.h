@@ -198,7 +198,6 @@ int outlet_isSignal             (t_outlet *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int  atom_toString              (t_atom *a, char *s, size_t size);
 void text_save                  (t_gobj *z, t_binbuf *b);
 void canvas_popabstraction      (t_canvas *x);
 
@@ -206,11 +205,31 @@ void canvas_popabstraction      (t_canvas *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_pd *glob_evalfile         (t_pd *ignore, t_symbol *name, t_symbol *dir);
+t_pd *glob_evalfile             (t_pd *ignore, t_symbol *name, t_symbol *dir);
 
-void glob_initfromgui       (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void glob_quit              (void *dummy);
-void open_via_helppath      (const char *name, const char *dir);
+void glob_menunew               (void *dummy, t_symbol *name, t_symbol *dir);
+void glob_verifyquit            (void *dummy, t_float f);
+void glob_dsp                   (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void glob_meters                (void *dummy, t_float f);
+void glob_key                   (void *dummy, t_symbol *s, int ac, t_atom *av);
+void glob_audiostatus           (void *dummy);
+void glob_audio_properties      (t_pd *dummy, t_float flongform);
+void glob_audio_dialog          (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
+void glob_audio_setapi          (t_pd *dummy, t_float f);
+void glob_midi_properties       (t_pd *dummy, t_float flongform);
+void glob_midi_dialog           (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
+void glob_midi_setapi           (t_pd *dummy, t_float f);
+void glob_start_path_dialog     (t_pd *dummy, t_float flongform);
+void glob_path_dialog           (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
+void glob_start_startup_dialog  (t_pd *dummy, t_float flongform);
+void glob_startup_dialog        (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
+void glob_ping                  (t_pd *dummy);
+void glob_watchdog              (t_pd *dummy);
+void glob_savepreferences       (t_pd *dummy);
+
+void glob_initfromgui           (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void glob_quit                  (void *dummy);
+void open_via_helppath          (const char *name, const char *dir);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

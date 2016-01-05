@@ -29,7 +29,7 @@ typedef long t_pa_sample;
 #define MAXNDEV 20
 #define DEVDESCSIZE 80
 
-extern t_class *glob_pdobject;
+extern t_class *global_object;
 
 static void audio_getdevs(char *indevlist, int *nindevs,
     char *outdevlist, int *noutdevs, int *canmulti, int *cancallback, 
@@ -751,7 +751,7 @@ void glob_audio_properties(t_pd *dummy, t_float flongform)
         rate, advance, canmulti, (cancallback ? callback : -1),
         blocksize);
     gfxstub_deleteforkey(0);
-    gfxstub_new(&glob_pdobject, (void *)glob_audio_properties, buf);
+    gfxstub_new(&global_object, (void *)glob_audio_properties, buf);
 }
 
 extern int pa_foo;

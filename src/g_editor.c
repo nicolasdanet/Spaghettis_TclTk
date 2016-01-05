@@ -1937,9 +1937,6 @@ void canvas_startmotion(t_canvas *x)
     x->gl_editor->e_ywas = yval; 
 }
 
-/* ----------------------------- window stuff ----------------------- */
-extern int sys_perf;
-
 void canvas_print(t_canvas *x, t_symbol *s)
 {
     if (*s->s_name) sys_vgui(".x%lx.c postscript -file %s\n", x, s->s_name);
@@ -1974,7 +1971,7 @@ void glob_verifyquit(void *dummy, t_float f)
                      canvas_getroot(g2), g2);
         return;
     }
-    if (f == 0 && sys_perf)
+    if (f == 0 && 0)
         sys_vgui("::ui_confirm::checkAction .console { Really quit? } { ::ui_connect::pdsend pd quit } { yes }\n");
     else glob_quit(0);
 }
@@ -2002,7 +1999,7 @@ void canvas_menuclose(t_canvas *x, t_float fforce)
                      canvas_getroot(g), g);
             return;
         }
-        else if (sys_perf)
+        else if (0)
         {
             sys_vgui("::ui_confirm::checkAction .x%lx { Close this window? } { ::ui_connect::pdsend .x%lx menuclose 1 } { yes }\n",
                      canvas_getroot(x), x);

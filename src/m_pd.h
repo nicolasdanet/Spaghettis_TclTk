@@ -453,11 +453,13 @@ PD_DLL void     outlet_anything             (t_outlet *x, t_symbol *s, int argc,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+PD_DLL t_symbol *atom_getSymbol             (t_atom *a);
+PD_DLL t_symbol *atom_getSymbolAtIndex      (int n, int argc, t_atom *argv);
+
 PD_DLL t_float  atom_getFloat               (t_atom *a);
 PD_DLL t_float  atom_getFloatAtIndex        (int n, int argc, t_atom *argv);
 
-PD_DLL t_symbol *atom_getSymbol             (t_atom *a);
-PD_DLL t_symbol *atom_getSymbolAtIndex      (int n, int argc, t_atom *argv);
+PD_DLL int      atom_toString               (t_atom *a, char *s, size_t size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -40,7 +40,7 @@ t_namelist *sys_searchpath;     /* Shared. */
 t_namelist *sys_staticpath;     /* Shared. */
 t_namelist *sys_helppath;       /* Shared. */
 
-extern t_class *glob_pdobject;
+extern t_class *global_object;
 extern int sys_defeatrt;
 extern t_symbol *sys_flags;
 
@@ -703,13 +703,13 @@ void sys_set_extrapath(void)
 }
 
     /* start a search path dialog window */
-void glob_start_path_dialog(t_pd *dummy)
+void glob_start_path_dialog (t_pd *dummy, t_float flongform)
 {
      char buf[PD_STRING];
 
     sys_set_searchpath();
     sprintf(buf, "::ui_path::show %%s\n");
-    gfxstub_new(&glob_pdobject, (void *)glob_start_path_dialog, buf);
+    gfxstub_new(&global_object, (void *)glob_start_path_dialog, buf);
 }
 
     /* new values from dialog window */
@@ -741,14 +741,14 @@ void sys_set_startup( void)
 }
 
     /* start a startup dialog window */
-void glob_start_startup_dialog(t_pd *dummy)
+void glob_start_startup_dialog (t_pd *dummy, t_float flongform)
 {
     char buf[PD_STRING];
 
     sys_set_startup();
     /* sprintf(buf, "::dialog_startup::pdtk_startup_dialog %%s %d \"%s\"\n", sys_defeatrt,
         sys_flags->s_name);
-    gfxstub_new(&glob_pdobject, (void *)glob_start_startup_dialog, buf); */
+    gfxstub_new(&global_object, (void *)glob_start_startup_dialog, buf); */
 }
 
     /* new values from dialog window */

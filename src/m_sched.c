@@ -261,7 +261,7 @@ static char *(oss_errornames[]) = {
 "data late"
 };
 
-void glob_audiostatus(void)
+void glob_audiostatus (void *dummy)
 {
     int dev, nresync, nresyncphase, i;
     nresync = (oss_nresync >= NRESYNC ? NRESYNC : oss_nresync);
