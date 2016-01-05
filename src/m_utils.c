@@ -15,30 +15,30 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int utils_strncpy (char *destination, size_t size, const char *source)
+int utils_strncpy (char *dest, size_t size, const char *src)
 {
-    size_t s = strlen (source);
+    size_t s = strlen (src);
     
-    strncpy (destination, source, PD_MIN (s, size));
-    destination[PD_MIN (size - 1, s)] = 0;
+    strncpy (dest, src, PD_MIN (s, size));
+    dest[PD_MIN (size - 1, s)] = 0;
     
-    if (s < size) { return 1; }
+    if (s < size) { return 0; }
     else {
-        return 0;
+        return 1;
     }
 }
 
-int utils_strncat (char *destination, size_t size, const char *source)
+int utils_strncat (char *dest, size_t size, const char *src)
 {
-    size_t d = strlen (destination);
-    size_t s = strlen (source);
+    size_t d = strlen (dest);
+    size_t s = strlen (src);
     size_t n = (size - 1) - d;
     
-    strncat (destination, source, PD_MIN (s, n));
+    strncat (dest, src, PD_MIN (s, n));
     
-    if (s <= n) { return 1; }
+    if (s <= n) { return 0; }
     else {
-        return 0;
+        return 1;
     }
 }
 
@@ -46,34 +46,34 @@ int utils_strncat (char *destination, size_t size, const char *source)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int utils_snprintf (char *destination, size_t size, const char *format, ...)
+int utils_snprintf (char *dest, size_t size, const char *format, ...)
 {
     int t;
     va_list args;
     
     va_start (args, format);
-    t = vsnprintf (destination, size, format, args);
+    t = vsnprintf (dest, size, format, args);
     va_end (args);
     
-    if (t >= 0 && (size_t)t < size) { return 1; }
+    if (t >= 0 && (size_t)t < size) { return 0; }
     else {
-        return 0;
+        return 1;
     }
 }
 
-int utils_snprintfCat (char *destination, size_t size, const char *format, ...)
+int utils_snprintfCat (char *dest, size_t size, const char *format, ...)
 {
     int t;
     va_list args;
-    size_t d = strlen (destination);
+    size_t d = strlen (dest);
     
     va_start (args, format);
-    t = vsnprintf (destination + d, size - d, format, args);
+    t = vsnprintf (dest + d, size - d, format, args);
     va_end (args);
     
-    if (t >= 0 && (size_t)t < (size - d)) { return 1; }
+    if (t >= 0 && (size_t)t < (size - d)) { return 0; }
     else {
-        return 0;
+        return 1;
     }
 }
 

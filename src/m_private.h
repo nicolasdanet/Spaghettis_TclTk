@@ -198,7 +198,7 @@ int outlet_isSignal             (t_outlet *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void atom_toString              (t_atom *a, char *s, size_t size);
+int  atom_toString              (t_atom *a, char *s, size_t size);
 void text_save                  (t_gobj *z, t_binbuf *b);
 void canvas_popabstraction      (t_canvas *x);
 

@@ -362,10 +362,10 @@ PD_DLL void     sys_freeMemory          (void *ptr, size_t n);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL int      utils_strncpy           (char *destination, size_t size, const char *source);
-PD_DLL int      utils_strncat           (char *destination, size_t size, const char *source);
-PD_DLL int      utils_snprintf          (char *destination, size_t size, const char *format, ...);
-PD_DLL int      utils_snprintfCat       (char *destination, size_t size, const char *format, ...);
+PD_DLL int      utils_strncpy           (char *dest, size_t size, const char *src);
+PD_DLL int      utils_strncat           (char *dest, size_t size, const char *src);
+PD_DLL int      utils_snprintf          (char *dest, size_t size, const char *format, ...);
+PD_DLL int      utils_snprintfCat       (char *dest, size_t size, const char *format, ...);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
