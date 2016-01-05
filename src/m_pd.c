@@ -159,7 +159,7 @@ void pd_initialize (void)
     
     message_initialize();
     object_initialize();
-    conf_init();
+    setup_initialize();
     glob_init();
     garray_init();
 }

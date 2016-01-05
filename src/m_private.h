@@ -218,7 +218,7 @@ void open_via_helppath      (const char *name, const char *dir);
 
 void message_initialize     (void);
 void object_initialize      (void);
-void conf_init              (void);
+void setup_initialize       (void);
 void glob_init              (void);
 void garray_init            (void);
 
