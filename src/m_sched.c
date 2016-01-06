@@ -309,7 +309,7 @@ void sys_log_error(int type)
 static int sched_lastinclip, sched_lastoutclip,
     sched_lastindb, sched_lastoutdb;
 
-void glob_watchdog(t_pd *dummy);
+void global_watchdog(t_pd *dummy);
 
 static void sched_pollformeters( void)
 {
@@ -321,7 +321,7 @@ static void sched_pollformeters( void)
 #if defined(__linux__) || defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
     if (sys_nogui && sys_hipriority && (sched_diddsp - sched_nextpingtime > 0))
     {
-        glob_watchdog(0);
+        global_watchdog(0);
             /* ping every 2 seconds */
         sched_nextpingtime = sched_diddsp +
             2 * (int)(sys_dacsr /(double)sys_schedblocksize);

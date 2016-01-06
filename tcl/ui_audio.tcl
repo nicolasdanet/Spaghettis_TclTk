@@ -276,7 +276,7 @@ proc _apply {top} {
     
     _forceValues
     
-    ::ui_connect::pdsend "pd audio-dialog \
+    ::ui_connect::pdsend "pd _audioDialog \
             $audioInDevice(1) \
             $audioInDevice(2) \
             $audioInDevice(3) \
@@ -298,7 +298,7 @@ proc _apply {top} {
             $audioCallback \
             $audioBlockSize"
     
-    ::ui_connect::pdsend "pd save-preferences"
+    ::ui_connect::pdsend "pd _savePreferences"
 }
 
 # ------------------------------------------------------------------------------------------------------------

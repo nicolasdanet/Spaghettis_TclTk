@@ -756,7 +756,7 @@ void global_audioProperties(t_pd *dummy, t_float flongform)
 
 extern int pa_foo;
     /* new values from dialog window */
-void glob_audio_dialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
+void global_audioDialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int naudioindev, audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
     int naudiooutdev, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
@@ -905,7 +905,7 @@ void sys_set_audio_api(int which)
         post("sys_audioapi set to %d", sys_audioapi);
 }
 
-void glob_audio_setapi(void *dummy, t_float f)
+void global_audioAPI(void *dummy, t_float f)
 {
     int newapi = f;
     if (newapi)

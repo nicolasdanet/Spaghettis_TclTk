@@ -164,7 +164,7 @@ jack_srate (jack_nframes_t srate, void *arg)
 }
 
 
-void glob_audio_setapi(void *dummy, t_float f);
+void global_audioAPI(void *dummy, t_float f);
 
 static void
 jack_shutdown (void *arg)
@@ -175,7 +175,7 @@ jack_shutdown (void *arg)
   //jack_client_close(jack_client); /* likely to hang if the server shut down */
   jack_client = NULL;
 
-  glob_audio_setapi(NULL, API_NONE); // set pd_whichapi 0
+  global_audioAPI(NULL, API_NONE); // set pd_whichapi 0
 }
 
 static int jack_xrun(void* arg) {

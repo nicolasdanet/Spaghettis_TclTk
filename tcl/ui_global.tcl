@@ -141,12 +141,12 @@ proc ifAqua {a b} {
 
 proc ping {} {
 
-    ::ui_connect::pdsend "pd ping"
+    ::ui_connect::pdsend "pd _ping"
 }
 
 proc watchdog {} {
 
-    ::ui_connect::pdsend "pd watchdog"; after 2000 { ::watchdog }
+    ::ui_connect::pdsend "pd _watchdog"; after 2000 { ::watchdog }
 }
 
 # ------------------------------------------------------------------------------------------------------------

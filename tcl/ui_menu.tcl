@@ -327,7 +327,7 @@ proc _media {m} {
     
     $m add command \
         -label [_ "MIDI..."] \
-        -command { ::ui_connect::pdsend "pd midi-properties" }
+        -command { ::ui_connect::pdsend "pd _midiProperties" }
     $m add command \
         -label [_ "Audio..."] \
         -command { ::ui_connect::pdsend "pd _audioProperties" }
@@ -339,7 +339,7 @@ proc _media {m} {
                 -label [string totitle $name] \
                 -variable ::var(apiMidi) \
                 -value $value \
-                -command { ::ui_connect::pdsend "pd midi-setapi $::var(apiMidi)" }
+                -command { ::ui_connect::pdsend "pd _midiAPI $::var(apiMidi)" }
         }
     }
     
@@ -351,7 +351,7 @@ proc _media {m} {
                 -label [string totitle $name] \
                 -variable ::var(apiAudio) \
                 -value $value \
-                -command { ::ui_connect::pdsend "pd audio-setapi $::var(apiAudio)" }
+                -command { ::ui_connect::pdsend "pd _audioAPI $::var(apiAudio)" }
         }
     }
     
@@ -370,7 +370,7 @@ proc _tools {m} {
         -label [_ "Path"] \
         -variable ::var(isPath) \
         -command { 
-            if {$::var(isPath)} { ::ui_connect::pdsend "pd start-path-dialog" } else { ::ui_path::hide } 
+            if {$::var(isPath)} { ::ui_connect::pdsend "pd _pathDialog" } else { ::ui_path::hide } 
         }
 }
 

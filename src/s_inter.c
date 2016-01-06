@@ -728,7 +728,7 @@ static int sys_flushtogui( void)
     return (1);
 }
 
-void glob_ping(t_pd *dummy)
+void global_ping(t_pd *dummy)
 {
     sys_waitingforping = 0;
 }
@@ -854,7 +854,7 @@ void sys_init_fdpoll(void)
 static int sys_watchfd;
 
 #if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
-void glob_watchdog(t_pd *dummy)
+void global_watchdog(t_pd *dummy)
 {
     if (write(sys_watchfd, "\n", 1) < 1)
     {

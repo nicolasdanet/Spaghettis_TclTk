@@ -106,8 +106,8 @@ proc _apply {} {
     
     foreach path [.path.f.paths.list get 0 end] { lappend ::var(searchPath) [::encoded $path] }
 
-    ::ui_connect::pdsend "pd path-dialog $::var(searchPath)"
-    ::ui_connect::pdsend "pd save-preferences"
+    ::ui_connect::pdsend "pd _path $::var(searchPath)"
+    ::ui_connect::pdsend "pd _savePreferences"
 }
 
 # ------------------------------------------------------------------------------------------------------------

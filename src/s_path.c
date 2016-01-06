@@ -703,17 +703,17 @@ void sys_set_extrapath(void)
 }
 
     /* start a search path dialog window */
-void glob_start_path_dialog (t_pd *dummy, t_float flongform)
+void global_pathDialog (t_pd *dummy, t_float flongform)
 {
      char buf[PD_STRING];
 
     sys_set_searchpath();
     sprintf(buf, "::ui_path::show %%s\n");
-    gfxstub_new(&global_object, (void *)glob_start_path_dialog, buf);
+    gfxstub_new(&global_object, (void *)global_pathDialog, buf);
 }
 
     /* new values from dialog window */
-void glob_path_dialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
+void global_setPath(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
     namelist_free(sys_searchpath);
@@ -752,7 +752,7 @@ void glob_start_startup_dialog (t_pd *dummy, t_float flongform)
 }
 
     /* new values from dialog window */
-void glob_startup_dialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
+static void glob_startup_dialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
     namelist_free(sys_externlist);

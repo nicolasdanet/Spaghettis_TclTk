@@ -626,10 +626,10 @@ void sys_set_midi_api(int which)
         post("sys_midiapi %d", sys_midiapi);
 }
 
-void glob_midi_properties(t_pd *dummy, t_float flongform);
+void global_midiProperties(t_pd *dummy, t_float flongform);
 void midi_alsa_setndevs(int in, int out);
 
-void glob_midi_setapi(t_pd *dummy, t_float f)
+void global_midiAPI(t_pd *dummy, t_float f)
 {
     int newapi = f;
     if (newapi != sys_midiapi)
@@ -646,13 +646,13 @@ void glob_midi_setapi(t_pd *dummy, t_float f)
 #ifdef USEAPI_ALSA
     midi_alsa_setndevs(midi_nmidiindev, midi_nmidioutdev);
 #endif
-    glob_midi_properties(0, (midi_nmidiindev > 1 || midi_nmidioutdev > 1));
+    global_midiProperties(0, (midi_nmidiindev > 1 || midi_nmidioutdev > 1));
 }
 
 extern t_class *global_object;
 
     /* start an midi settings dialog window */
-void glob_midi_properties(t_pd *dummy, t_float flongform)
+void global_midiProperties(t_pd *dummy, t_float flongform)
 {
     char buf[1024 + 2 * MAXNDEV*(DEVDESCSIZE+4)];
         /* these are the devices you're using: */
@@ -726,11 +726,11 @@ void glob_midi_properties(t_pd *dummy, t_float flongform)
         midioutdev5, midioutdev6, midioutdev7, midioutdev8, midioutdev9);
 
     gfxstub_deleteforkey(0);
-    gfxstub_new(&global_object, (void *)glob_midi_properties, buf);
+    gfxstub_new(&global_object, (void *)global_midiProperties, buf);
 }
 
     /* new values from dialog window */
-void glob_midi_dialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
+void global_midiDialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int nmidiindev, midiindev[MIDI_MAXIMUM_IN];
     int nmidioutdev, midioutdev[MIDI_MAXIMUM_OUT];

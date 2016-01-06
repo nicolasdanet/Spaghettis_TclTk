@@ -205,24 +205,22 @@ void canvas_popabstraction      (t_canvas *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_pd *global_open          (t_pd *ignore, t_symbol *name, t_symbol *dir);
+t_pd *global_open           (t_pd *ignore, t_symbol *name, t_symbol *dir);
 
-void global_new            (void *dummy, t_symbol *name, t_symbol *dir);
+void global_new             (void *dummy, t_symbol *name, t_symbol *dir);
 void global_dsp                 (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void global_key                 (void *dummy, t_symbol *s, int ac, t_atom *av);
 void global_audioProperties     (t_pd *dummy, t_float flongform);
-void glob_audio_dialog          (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
-void glob_audio_setapi          (t_pd *dummy, t_float f);
-void glob_midi_properties       (t_pd *dummy, t_float flongform);
-void glob_midi_dialog           (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
-void glob_midi_setapi           (t_pd *dummy, t_float f);
-void glob_start_path_dialog     (t_pd *dummy, t_float flongform);
-void glob_path_dialog           (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
-void glob_start_startup_dialog  (t_pd *dummy, t_float flongform);
-void glob_startup_dialog        (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
-void glob_ping                  (t_pd *dummy);
-void glob_watchdog              (t_pd *dummy);
-void glob_savepreferences       (t_pd *dummy);
+void global_audioDialog          (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_audioAPI          (t_pd *dummy, t_float f);
+void global_midiProperties       (t_pd *dummy, t_float flongform);
+void global_midiDialog           (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_midiAPI           (t_pd *dummy, t_float f);
+void global_pathDialog     (t_pd *dummy, t_float flongform);
+void global_setPath           (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_ping                  (t_pd *dummy);
+void global_watchdog              (t_pd *dummy);
+void global_savePreferences       (t_pd *dummy);
 
 void global_gui                 (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void global_shouldQuit          (void *dummy);

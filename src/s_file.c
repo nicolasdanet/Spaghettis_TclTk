@@ -468,7 +468,7 @@ void sys_loadpreferences( void)
 #endif
 }
 
-void glob_savepreferences(t_pd *dummy)
+void global_savePreferences(t_pd *dummy)
 {
     int naudioindev, audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
     int naudiooutdev, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
