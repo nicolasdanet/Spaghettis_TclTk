@@ -686,7 +686,7 @@ static void sys_listaudiodevs(void )
 
 
     /* start an audio settings dialog window */
-void glob_audio_properties(t_pd *dummy, t_float flongform)
+void global_audioProperties(t_pd *dummy, t_float flongform)
 {
     char buf[1024 + 2 * MAXNDEV*(DEVDESCSIZE+4)];
         /* these are the devices you're using: */
@@ -751,7 +751,7 @@ void glob_audio_properties(t_pd *dummy, t_float flongform)
         rate, advance, canmulti, (cancallback ? callback : -1),
         blocksize);
     gfxstub_deleteforkey(0);
-    gfxstub_new(&global_object, (void *)glob_audio_properties, buf);
+    gfxstub_new(&global_object, (void *)global_audioProperties, buf);
 }
 
 extern int pa_foo;
@@ -925,7 +925,7 @@ void glob_audio_setapi(void *dummy, t_float f)
             audio_audiochindev[0] = audio_audiochoutdev[0] = SYS_DEFAULTCH;
             sys_reopen_audio();
         }
-        glob_audio_properties(0, 0);
+        global_audioProperties(0, 0);
     }
     else if (audio_isopen())
     {

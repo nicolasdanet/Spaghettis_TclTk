@@ -205,15 +205,12 @@ void canvas_popabstraction      (t_canvas *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_pd *glob_evalfile             (t_pd *ignore, t_symbol *name, t_symbol *dir);
+t_pd *global_open          (t_pd *ignore, t_symbol *name, t_symbol *dir);
 
-void glob_menunew               (void *dummy, t_symbol *name, t_symbol *dir);
-void glob_verifyquit            (void *dummy, t_float f);
-void glob_dsp                   (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void glob_meters                (void *dummy, t_float f);
-void glob_key                   (void *dummy, t_symbol *s, int ac, t_atom *av);
-void glob_audiostatus           (void *dummy);
-void glob_audio_properties      (t_pd *dummy, t_float flongform);
+void global_new            (void *dummy, t_symbol *name, t_symbol *dir);
+void global_dsp                 (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_key                 (void *dummy, t_symbol *s, int ac, t_atom *av);
+void global_audioProperties     (t_pd *dummy, t_float flongform);
 void glob_audio_dialog          (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
 void glob_audio_setapi          (t_pd *dummy, t_float f);
 void glob_midi_properties       (t_pd *dummy, t_float flongform);
@@ -227,8 +224,9 @@ void glob_ping                  (t_pd *dummy);
 void glob_watchdog              (t_pd *dummy);
 void glob_savepreferences       (t_pd *dummy);
 
-void glob_initfromgui           (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void glob_quit                  (void *dummy);
+void global_gui                 (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_shouldQuit          (void *dummy);
+void global_quit                (void *dummy);
 void open_via_helppath          (const char *name, const char *dir);
 
 // -----------------------------------------------------------------------------------------------------------

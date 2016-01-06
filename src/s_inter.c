@@ -912,7 +912,7 @@ int sys_startgui(const char *libdir)
         for (i = 0; i < (int)NDEFAULTFONT; i++)
             SET_FLOAT(zz+i+1, defaultfontshit[i]);
         // SET_FLOAT(zz+NDEFAULTFONT+1,0);
-        glob_initfromgui(0, 0, NDEFAULTFONT+1, zz);
+        global_gui(0, 0, NDEFAULTFONT+1, zz);
     }
     else if (sys_guisetportnumber)  /* GUI exists and sent us a port number */
     {
@@ -1294,7 +1294,7 @@ int sys_startgui(const char *libdir)
 extern void sys_exit(void);
 
 /* This is called when something bad has happened, like a segfault.
-Call glob_quit() below to exit cleanly.
+Call global_quit() below to exit cleanly.
 LATER try to save dirty documents even in the bad case. */
 void sys_bail(int n)
 {
@@ -1315,7 +1315,7 @@ void sys_bail(int n)
     else _exit(1);
 }
 
-void glob_quit(void *dummy)
+void global_quit(void *dummy)
 {
     sys_close_audio();
     sys_close_midi();

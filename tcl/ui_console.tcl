@@ -78,7 +78,7 @@ proc _create {} {
 
 proc closed {} {
 
-    ::ui_connect::pdsend "pd verifyquit"
+    ::ui_connect::pdsend "pd _quit"
 }
 
 # ------------------------------------------------------------------------------------------------------------

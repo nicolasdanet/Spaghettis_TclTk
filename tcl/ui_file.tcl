@@ -49,7 +49,7 @@ proc newPatch {} {
     variable untitledNumber
     variable directoryNew
     
-    ::ui_connect::pdsend "pd menunew $untitledName-$untitledNumber [::escaped $directoryNew]"
+    ::ui_connect::pdsend "pd new $untitledName-$untitledNumber [::escaped $directoryNew]"
     
     incr untitledNumber 
 }

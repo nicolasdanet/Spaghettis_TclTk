@@ -119,7 +119,7 @@ void glob_setfilename(void *dummy, t_symbol *filesym, t_symbol *dirsym)
     canvas_newdirectory = dirsym;
 }
 
-void glob_menunew(void *dummy, t_symbol *filesym, t_symbol *dirsym)
+void global_new(void *dummy, t_symbol *filesym, t_symbol *dirsym)
 {
     glob_setfilename(dummy, filesym, dirsym);
     canvas_new(0, 0, 0, 0);
@@ -1132,7 +1132,7 @@ and can perhaps regard this is a design flaw in jack that we're working around
 here.  The function audio_shouldkeepopen() is provided by s_audio.c to tell
 us that we should elide the step of closing audio when DSP is turned off.*/
 
-void glob_dsp(void *dummy, t_symbol *s, int argc, t_atom *argv)
+void global_dsp(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int newstate;
     if (argc)

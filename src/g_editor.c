@@ -1959,7 +1959,7 @@ static t_glist *glist_finddirty(t_glist *x)
 
     /* quit, after calling glist_finddirty() on all toplevels and verifying
     the user really wants to discard changes  */
-void glob_verifyquit(void *dummy, t_float f)
+void global_shouldQuit(void *dummy)
 {
     t_glist *g, *g2;
         /* find all root canvases */
@@ -1971,9 +1971,9 @@ void glob_verifyquit(void *dummy, t_float f)
                      canvas_getroot(g2), g2);
         return;
     }
-    if (f == 0 && 0)
+    if (0)
         sys_vgui("::ui_confirm::checkAction .console { Really quit? } { ::ui_connect::pdsend pd quit } { yes }\n");
-    else glob_quit(0);
+    else global_quit(0);
 }
 
     /* close a window (or possibly quit Pd), checking for dirty flags.
@@ -2026,7 +2026,7 @@ void canvas_menuclose(t_canvas *x, t_float fforce)
     else if (force == 3)
     {
         canvas_dirty(x, 0);
-        glob_verifyquit(0, 1);
+        global_shouldQuit(0);
     }
 }
 
@@ -2663,7 +2663,7 @@ static void canvas_texteditor(t_canvas *x)
     
 }
 
-void glob_key(void *dummy, t_symbol *s, int ac, t_atom *av)
+void global_key (void *dummy, t_symbol *s, int ac, t_atom *av)
 {
         /* canvas_key checks for zero */
     canvas_key(0, s, ac, av);

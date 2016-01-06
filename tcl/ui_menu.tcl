@@ -204,7 +204,7 @@ proc _file {m} {
     $m add command \
         -label [_ "Quit"] \
         -accelerator "${accelerator}+Q" \
-        -command { ::ui_connect::pdsend "pd verifyquit" }
+        -command { ::ui_connect::pdsend "pd _quit" }
     }
 }
 
@@ -330,7 +330,7 @@ proc _media {m} {
         -command { ::ui_connect::pdsend "pd midi-properties" }
     $m add command \
         -label [_ "Audio..."] \
-        -command { ::ui_connect::pdsend "pd audio-properties" }
+        -command { ::ui_connect::pdsend "pd _audioProperties" }
     $m add separator
     
     foreach e $::var(apiMidiAvailables) {

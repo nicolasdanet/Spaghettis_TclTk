@@ -179,7 +179,7 @@ static void openit(const char *dirname, const char *filename)
     if (fd >= 0)
     {
         close (fd);
-        glob_evalfile(0, gensym(nameptr), gensym(dirbuf));
+        global_open(0, gensym(nameptr), gensym(dirbuf));
     }
     else
         post_error ("%s: can't open", filename);
@@ -193,7 +193,7 @@ from; for instance we could be some kind of RT embedded system.  However, to
 really make this make sense we would have to implement
 open(), read(), etc, calls to be served somehow from the GUI too. */
 
-void glob_initfromgui(void *dummy, t_symbol *s, int argc, t_atom *argv)
+void global_gui(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     char *cwd = atom_getSymbolAtIndex(0, argc, argv)->s_name;
     t_namelist *nl;

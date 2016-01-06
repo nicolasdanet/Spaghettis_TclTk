@@ -256,7 +256,7 @@ proc initialize {audioAPIs midiAPIs} {
         
     # Respond to executable.
     
-    ::ui_connect::pdsend "pd init [::escaped [pwd]] $measured"
+    ::ui_connect::pdsend "pd _gui [::escaped [pwd]] $measured"
     
     # Open pended files.
     

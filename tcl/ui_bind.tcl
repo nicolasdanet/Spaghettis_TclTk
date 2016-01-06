@@ -122,7 +122,7 @@ proc initialize {} {
     bind all <Shift-KeyPress>               { ::ui_bind::_key %W %K %A 1 1  }
     bind all <Shift-KeyRelease>             { ::ui_bind::_key %W %K %A 0 1  }
     
-    bind all <<Quit>>                       { ::ui_connect::pdsend "pd verifyquit" }
+    bind all <<Quit>>                       { ::ui_connect::pdsend "pd _quit" }
 }
 
 # ------------------------------------------------------------------------------------------------------------

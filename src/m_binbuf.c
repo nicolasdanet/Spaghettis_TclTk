@@ -1458,7 +1458,7 @@ void binbuf_evalfile(t_symbol *name, t_symbol *dir)
     canvas_resume_dsp(dspstate);
 }
 
-t_pd *glob_evalfile(t_pd *ignore, t_symbol *name, t_symbol *dir)
+t_pd *global_open(t_pd *ignore, t_symbol *name, t_symbol *dir)
 {
     t_pd *x = 0;
         /* even though binbuf_evalfile appears to take care of dspstate,

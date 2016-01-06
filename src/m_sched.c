@@ -261,6 +261,7 @@ static char *(oss_errornames[]) = {
 "data late"
 };
 
+/*
 void glob_audiostatus (void *dummy)
 {
     int dev, nresync, nresyncphase, i;
@@ -283,7 +284,7 @@ void glob_audiostatus (void *dummy)
             oss_errornames[errtype]);
         nresyncphase--;
     }
-}
+} */
 
 static int sched_diored;
 static int sched_dioredtime;
@@ -359,15 +360,6 @@ static void sched_pollformeters( void)
     }
     sched_nextmeterpolltime =
         sched_diddsp + (int)(sys_dacsr /(double)sys_schedblocksize);
-}
-
-void glob_meters(void *dummy, t_float f)
-{
-    if (f == 0)
-        sys_getmeters(0, 0);
-    sched_meterson = (f != 0);
-    sched_lastinclip = sched_lastoutclip = sched_lastindb = sched_lastoutdb =
-        -1;
 }
 
 void dsp_tick(void);
