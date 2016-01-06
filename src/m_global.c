@@ -19,78 +19,29 @@ t_class *global_object;     /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void glob_helpintro(t_pd *dummy)
+void global_default (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
-    open_via_helppath("intro.pd", "");
+    post_error (PD_TRANSLATE ("%s: unknown method '%s'"), class_getName (pd_class (x)), s->s_name);
 }
 
-static void glob_compatibility(t_pd *dummy, t_float level)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void global_initialize (void)
 {
-    // int dspwas = canvas_suspend_dsp();
-    // pd_compatibilitylevel = 0.5 + 100. * level;
-    // canvas_resume_dsp(dspwas);
-}
-
-#ifdef _WIN32
-void glob_audio(void *dummy, t_float adc, t_float dac);
-#endif
-
-/* a method you add for debugging printout */
-void glob_foo(void *dummy, t_symbol *s, int argc, t_atom *argv);
-
-#if 1
-void glob_foo(void *dummy, t_symbol *s, int argc, t_atom *argv)
-{
-    post("foo 1");
-    printf("barbarbar 2\n");
-    post("foo 3");
-}
-#endif
-
-void max_default(t_pd *x, t_symbol *s, int argc, t_atom *argv)
-{
-    int i;
-    char str[80];
-    post("%s: unknown message %s ", class_getName(pd_class(x)),
-        s->s_name);
-    for (i = 0; i < argc; i++)
-    {
-        atom_toString(argv+i, str, 80);
-        post("%s", str);
-    }
-}
-
-/*void glob_plugindispatch(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
-{
-    int i;
-    char str[80];
-    sys_vgui("pdtk_plugin_dispatch ");
-    for (i = 0; i < argc; i++)
-    {
-        atom_toString(argv+i, str, 80);
-        sys_vgui("%s", str);
-        if (i < argc-1) {
-            sys_vgui(" ");
-        }
-    }
-    sys_vgui("\n");
-}*/
-
-void glob_init(void)
-{
-    global_object = class_new(gensym("pd"), 0, 0, sizeof(t_pd),
-        CLASS_DEFAULT, A_NULL);
-    class_addMethod(global_object, (t_method)glob_initfromgui, gensym("init"),
-        A_GIMME, 0);
-    class_addMethod(global_object, (t_method)glob_menunew, gensym("menunew"),
-        A_SYMBOL, A_SYMBOL, 0);
+    global_object = class_new (gensym ("pd"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
+        
+    class_addMethod (global_object, (t_method)glob_initfromgui, gensym ("init"), A_GIMME, A_NULL);
+    class_addMethod (global_object, (t_method)glob_menunew, gensym ("menunew"), A_SYMBOL, A_SYMBOL, A_NULL);
+    
     class_addMethod(global_object, (t_method)glob_evalfile, gensym("open"),
         A_SYMBOL, A_SYMBOL, 0);
     class_addMethod(global_object, (t_method)glob_quit, gensym("quit"), 0);
     class_addMethod(global_object, (t_method)glob_verifyquit,
         gensym("verifyquit"), A_DEFFLOAT, 0);
-    class_addMethod(global_object, (t_method)glob_foo, gensym("foo"), A_GIMME, 0);
     class_addMethod(global_object, (t_method)glob_dsp, gensym("dsp"), A_GIMME, 0);
     class_addMethod(global_object, (t_method)glob_meters, gensym("meters"),
         A_FLOAT, 0);
@@ -120,17 +71,11 @@ void glob_init(void)
     class_addMethod(global_object, (t_method)glob_ping, gensym("ping"), 0);
     class_addMethod(global_object, (t_method)glob_savepreferences,
         gensym("save-preferences"), 0);
-    class_addMethod(global_object, (t_method)glob_compatibility,
-        gensym("compatibility"), A_FLOAT, 0);
-    /*class_addMethod(global_object, (t_method)glob_plugindispatch,
-        gensym("plugin-dispatch"), A_GIMME, 0);*/
-    class_addMethod(global_object, (t_method)glob_helpintro,
-        gensym("help-intro"), A_GIMME, 0);
 #if defined(__linux__) || defined(__FreeBSD_kernel__)
     class_addMethod(global_object, (t_method)glob_watchdog,
         gensym("watchdog"), 0);
 #endif
-    class_addAnything(global_object, max_default);
+    class_addAnything(global_object, global_default);
     pd_bind(&global_object, gensym("pd"));
 }
 

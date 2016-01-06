@@ -257,9 +257,6 @@ int sys_main(int argc, char **argv)
 {
     int i, noprefs;
     sys_extraflags = 0;
-#if PD_DEBUG
-    fprintf(stderr, "Pd: COMPILED FOR DEBUGGING\n");
-#endif
     /* use Win32 "binary" mode by default since we don't want the
      * translation that Win32 does by default */
 #ifdef _WIN32

@@ -370,14 +370,6 @@ void glob_meters(void *dummy, t_float f)
         -1;
 }
 
-#if 0
-void glob_foo(void *dummy, t_symbol *s, int argc, t_atom *argv)
-{
-    if (argc) sys_clearhist();
-    else sys_printhist();
-}
-#endif
-
 void dsp_tick(void);
 
 static int sched_useaudio = SCHEDULER_NONE;

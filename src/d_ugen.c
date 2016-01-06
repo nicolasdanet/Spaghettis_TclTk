@@ -579,32 +579,6 @@ int ugen_getsortno(void)
     return (ugen_sortno);
 }
 
-#if 0
-void glob_foo(void *dummy, t_symbol *s, int argc, t_atom *argv)
-{
-    int i, count;
-    t_signal *sig;
-    for (count = 0, sig = pd_this->pd_signals; sig;
-        count++, sig = sig->s_nextUsed)
-            ;
-    post("used signals %d", count);
-    for (i = 0; i < MAXLOGSIG; i++)
-    {
-        for (count = 0, sig = signal_freelist[i]; sig;
-            count++, sig = sig->s_nextFree)
-                ;
-        if (count)
-            post("size %d: free %d", (1 << i), count);
-    }
-    for (count = 0, sig = signal_freeborrowed; sig;
-        count++, sig = sig->s_nextFree)
-            ;
-    post("free borrowed %d", count);
-
-    ugen_loud = argc;  
-}
-#endif
-
     /* start building the graph for a canvas */
 t_dspcontext *ugen_start_graph(int toplevel, t_signal **sp,
     int ninlets, int noutlets)
