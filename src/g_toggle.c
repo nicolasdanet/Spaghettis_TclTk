@@ -195,7 +195,7 @@ static void toggle_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int *x
     *yp2 = *yp1 + x->x_gui.x_h;
 }
 
-static void toggle_save(t_gobj *z, t_binbuf *b)
+static void toggle_save(t_gobj *z, t_buffer *b)
 {
     t_toggle *x = (t_toggle *)z;
     int bflcol[3];

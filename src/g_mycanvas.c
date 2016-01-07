@@ -133,7 +133,7 @@ static void my_canvas_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int
     *yp2 = *yp1 + x->x_gui.x_h;
 }
 
-static void my_canvas_save(t_gobj *z, t_binbuf *b)
+static void my_canvas_save(t_gobj *z, t_buffer *b)
 {
     t_my_canvas *x = (t_my_canvas *)z;
     int bflcol[3];

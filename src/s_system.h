@@ -337,7 +337,7 @@ PD_STRUCT _socketreceiver;
 
 typedef void (*t_fdpollfn)(void *ptr, int fd);
 typedef void (*t_socketnotifier)(void *x, int n);
-typedef void (*t_socketreceivefn)(void *x, t_binbuf *b);
+typedef void (*t_socketreceivefn)(void *x, t_buffer *b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

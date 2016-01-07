@@ -47,7 +47,7 @@ PD_STRUCT _widgetbehavior;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_savefn)(t_gobj *x, t_binbuf *b);
+typedef void (*t_savefn)(t_gobj *x, t_buffer *b);
 typedef void (*t_propertiesfn)(t_gobj *x, t_glist *glist);
 typedef void (*t_callbackfn)(t_gobj *x, t_glist *glist);
 
@@ -167,7 +167,7 @@ t_propertiesfn           class_getPropertiesFunction    (t_class *c);
 #pragma mark -
 
 void            object_list                     (t_object *x, t_symbol *s, int argc, t_atom *argv);
-void            object_saveWidth                (t_object *x, t_binbuf *bb);
+void            object_saveWidth                (t_object *x, t_buffer *b);
 int             object_numberOfInlets           (t_object *x);
 int             object_numberOfOutlets          (t_object *x);
 int             object_numberOfSignalInlets     (t_object *x);
@@ -192,39 +192,34 @@ t_float         *object_getSignalValueAtIndex   (t_object *x, int m);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int outlet_isSignal             (t_outlet *x);
+t_pd *global_open               (t_pd *dummy, t_symbol *name, t_symbol *dir);
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void text_save                  (t_gobj *z, t_binbuf *b);
-void canvas_popabstraction      (t_canvas *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_pd *global_open           (t_pd *ignore, t_symbol *name, t_symbol *dir);
-
-void global_new             (void *dummy, t_symbol *name, t_symbol *dir);
+void global_new                 (void *dummy, t_symbol *name, t_symbol *dir);
 void global_dsp                 (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void global_key                 (void *dummy, t_symbol *s, int ac, t_atom *av);
-void global_audioProperties     (t_pd *dummy, t_float flongform);
-void global_audioDialog          (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_audioAPI          (t_pd *dummy, t_float f);
-void global_midiProperties       (t_pd *dummy, t_float flongform);
-void global_midiDialog           (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_midiAPI           (t_pd *dummy, t_float f);
-void global_pathDialog     (t_pd *dummy, t_float flongform);
-void global_setPath           (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_ping                  (t_pd *dummy);
-void global_watchdog              (t_pd *dummy);
-void global_savePreferences       (t_pd *dummy);
+void global_quit                (void *dummy);
 
 void global_gui                 (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_audioProperties     (t_pd *dummy, t_float flongform);
+void global_midiProperties      (t_pd *dummy, t_float flongform);
+void global_audioDialog         (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_midiDialog          (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_audioAPI            (t_pd *dummy, t_float f);
+void global_midiAPI             (t_pd *dummy, t_float f);
+void global_pathDialog          (t_pd *dummy, t_float flongform);
+void global_setPath             (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_ping                (t_pd *dummy);
+void global_watchdog            (t_pd *dummy);
+void global_savePreferences     (t_pd *dummy);
 void global_shouldQuit          (void *dummy);
-void global_quit                (void *dummy);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int  outlet_isSignal            (t_outlet *x);
+void text_save                  (t_gobj *z, t_buffer *b);
+void canvas_popabstraction      (t_canvas *x);
 void open_via_helppath          (const char *name, const char *dir);
 
 // -----------------------------------------------------------------------------------------------------------

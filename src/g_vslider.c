@@ -202,7 +202,7 @@ static void vslider_getrect(t_gobj *z, t_glist *glist,
     *yp2 = *yp1 + x->x_gui.x_h + 5;
 }
 
-static void vslider_save(t_gobj *z, t_binbuf *b)
+static void vslider_save(t_gobj *z, t_buffer *b)
 {
     t_vslider *x = (t_vslider *)z;
     int bflcol[3];

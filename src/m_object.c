@@ -807,7 +807,7 @@ void object_moveOutletFirst (t_object *x, t_outlet *o)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void object_saveWidth (t_object *x, t_binbuf *bb)
+void object_saveWidth (t_object *x, t_buffer *bb)
 {
     if (x->te_width) { binbuf_addv (bb, "ssf;", &s__X, gensym ("f"), (t_float)x->te_width); }
 }

@@ -25,18 +25,18 @@ extern int sys_defaultfont;
 extern t_widgetbehavior text_widgetBehavior;
 extern t_pdinstance *pd_this;
 
-void glist_readfrombinbuf(t_glist *x, t_binbuf *b, char *filename,
+void glist_readfrombinbuf(t_glist *x, t_buffer *b, char *filename,
     int selectem);
 
 /* ------------------ forward declarations --------------- */
 static void canvas_doclear(t_canvas *x);
 static void glist_setlastxy(t_glist *gl, int xval, int yval);
 static void glist_donewloadbangs(t_glist *x);
-static t_binbuf *canvas_docopy(t_canvas *x);
-static void canvas_dopaste(t_canvas *x, t_binbuf *b);
+static t_buffer *canvas_docopy(t_canvas *x);
+static void canvas_dopaste(t_canvas *x, t_buffer *b);
 static void canvas_paste(t_canvas *x);
 static void canvas_clearline(t_canvas *x);
-static t_binbuf *copy_binbuf;
+static t_buffer *copy_binbuf;
 static char *canvas_textcopybuf;
 static int canvas_textcopybufsize;
 static t_glist *glist_finddirty(t_glist *x);
@@ -74,7 +74,7 @@ void gobj_delete(t_gobj *x, t_glist *glist)
         (*x->g_pd->c_behavior->w_deletefn)(x, glist);
 }
 
-void gobj_save (t_gobj *x, t_binbuf *b)
+void gobj_save (t_gobj *x, t_buffer *b)
 {
     t_class *c = x->g_pd;
     if (c->c_fnSave)
@@ -503,9 +503,9 @@ static void canvas_undo_connect(t_canvas *x, void *z, int action)
 
 typedef struct _undo_cut        
 {
-    t_binbuf *u_objectbuf;      /* the object cleared or typed into */
-    t_binbuf *u_reconnectbuf;   /* connections into and out of object */
-    t_binbuf *u_redotextbuf;    /* buffer to paste back for redo if TEXT */
+    t_buffer *u_objectbuf;      /* the object cleared or typed into */
+    t_buffer *u_reconnectbuf;   /* connections into and out of object */
+    t_buffer *u_redotextbuf;    /* buffer to paste back for redo if TEXT */
     int u_mode;                 /* from flags above */
 } t_undo_cut;
 
@@ -1205,8 +1205,8 @@ static void canvas_done_popup(t_canvas *x, t_float which, t_float xpos, t_float 
                     canvas_isabstraction((t_canvas *)y))
                 {
                     t_object *ob = (t_object *)y;
-                    int ac = binbuf_getnatom(ob->te_binbuf);
-                    t_atom *av = binbuf_getvec(ob->te_binbuf);
+                    int ac = binbuf_getnatom(ob->te_buffer);
+                    t_atom *av = binbuf_getvec(ob->te_buffer);
                     if (ac < 1)
                         return;
                     atom_toString(av, namebuf, PD_STRING);
@@ -2041,7 +2041,7 @@ static void canvas_menufont(t_canvas *x)
 }
 
 static int canvas_find_index, canvas_find_wholeword;
-static t_binbuf *canvas_findbuf;
+static t_buffer *canvas_findbuf;
 
     /* function to support searching */
 static int atoms_match(int inargc, t_atom *inargv, int searchargc,
@@ -2091,8 +2091,8 @@ static int canvas_dofind(t_canvas *x, int *myindexp)
         t_object *ob = 0;
         if (ob = pd_ifBox(&y->g_pd))
         {
-            if (atoms_match(binbuf_getnatom(ob->te_binbuf), 
-                binbuf_getvec(ob->te_binbuf), findargc, findargv,
+            if (atoms_match(binbuf_getnatom(ob->te_buffer), 
+                binbuf_getvec(ob->te_buffer), findargc, findargv,
                     canvas_find_wholeword))
             {
                 if (*myindexp == canvas_find_index)
@@ -2213,12 +2213,12 @@ void canvas_restoreconnections(t_canvas *x)
     s__X.s_thing = boundx;
 }
 
-static t_binbuf *canvas_docopy(t_canvas *x)
+static t_buffer *canvas_docopy(t_canvas *x)
 {
     t_gobj *y;
     t_linetraverser t;
     t_outconnect *oc;
-    t_binbuf *b = binbuf_new();
+    t_buffer *b = binbuf_new();
     for (y = x->gl_list; y; y = y->g_next)
     {
         if (glist_isselected(x, y))
@@ -2376,7 +2376,7 @@ static void glist_donewloadbangs(t_glist *x)
     }
 }
 
-static void canvas_dopaste(t_canvas *x, t_binbuf *b)
+static void canvas_dopaste(t_canvas *x, t_buffer *b)
 {
     t_gobj *newgobj, *last, *g2;
     int dspstate = canvas_suspend_dsp(), nbox, count;

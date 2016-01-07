@@ -120,8 +120,8 @@ typedef struct _editor {
     t_gobj              *e_grab;
     t_glistmotionfn     e_motionfn;
     t_glistkeyfn        e_keyfn;
-    t_binbuf            *e_connectbuf;
-    t_binbuf            *e_deleted;
+    t_buffer            *e_connectbuf;
+    t_buffer            *e_deleted;
     t_guiconnect        *e_guiconnect;
     t_glist             *e_glist;
     int                 e_xwas;
@@ -328,7 +328,7 @@ void gobj_properties    (t_gobj *x, t_glist *gl);
 int  gobj_shouldvis     (t_gobj *x, t_glist *gl);
 void gobj_vis           (t_gobj *x, t_glist *gl, int flag);
 int  gobj_click         (t_gobj *x, t_glist *gl, int xpix, int ypix, int shift, int alt, int dbl, int b);
-void gobj_save          (t_gobj *x, t_binbuf *b);
+void gobj_save          (t_gobj *x, t_buffer *b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -384,7 +384,7 @@ void     glist_arraydialog      (t_glist *parent,
                                     t_float size,
                                     t_float saveit);
 
-t_binbuf *glist_writetobinbuf   (t_glist *x, int wholething);
+t_buffer *glist_writetobinbuf   (t_glist *x, int wholething);
 int      glist_isgraph          (t_glist *x);
 void     glist_redraw           (t_glist *x);
 void     glist_drawio           (t_glist *x,
@@ -595,7 +595,7 @@ void     word_restore           (t_word *wp, t_template *tmpl, int argc, t_atom 
 void     word_free              (t_word *wp, t_template *tmpl);
 void     scalar_getbasexy       (t_scalar *x, t_float *basex, t_float *basey);
 void     scalar_redraw          (t_scalar *x, t_glist *glist);
-void     canvas_writescalar     (t_symbol *templatesym, t_word *w, t_binbuf *b, int amarrayelement);
+void     canvas_writescalar     (t_symbol *templatesym, t_word *w, t_buffer *b, int amarrayelement);
 int      canvas_readscalar      (t_glist *x, int natoms, t_atom *vec, int *p_nextmsg, int selectit);
 
 // -----------------------------------------------------------------------------------------------------------

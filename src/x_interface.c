@@ -32,7 +32,7 @@ static void *print_new(t_symbol *sel, int argc, t_atom *argv)
     {
         int bufsize;
         char *buf;
-        t_binbuf *bb = binbuf_new();
+        t_buffer *bb = binbuf_new();
         binbuf_add(bb, argc, argv);
         binbuf_gettext(bb, &buf, &bufsize);
         buf = PD_MEMORY_RESIZE(buf, bufsize, bufsize+1);

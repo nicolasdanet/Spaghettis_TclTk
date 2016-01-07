@@ -71,8 +71,8 @@ static void *table_new(t_symbol *s, t_float f)
     /* return true if the "canvas" object is a "table". */
 int canvas_istable(t_canvas *x)
 {
-    t_atom *argv = (x->gl_obj.te_binbuf? binbuf_getvec(x->gl_obj.te_binbuf):0);
-    int argc = (x->gl_obj.te_binbuf? binbuf_getnatom(x->gl_obj.te_binbuf) : 0);
+    t_atom *argv = (x->gl_obj.te_buffer? binbuf_getvec(x->gl_obj.te_buffer):0);
+    int argc = (x->gl_obj.te_buffer? binbuf_getnatom(x->gl_obj.te_buffer) : 0);
     int istable = (argc && argv[0].a_type == A_SYMBOL &&
         argv[0].a_w.w_symbol == gensym("table"));
     return (istable);
@@ -162,15 +162,15 @@ static void *array_define_new(t_symbol *s, int argc, t_atom *argv)
     return (x);
 }
 
-void garray_savecontentsto(t_garray *x, t_binbuf *b);
+void garray_savecontentsto(t_garray *x, t_buffer *b);
 
-void array_define_save(t_gobj *z, t_binbuf *bb)
+void array_define_save(t_gobj *z, t_buffer *bb)
 {
     t_glist *x = (t_glist *)z;
     t_glist *gl = (x->gl_list ? pd_checkglist(&x->gl_list->g_pd) : 0);
     binbuf_addv(bb, "ssff", &s__X, gensym("obj"),
         (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
-    binbuf_addbinbuf(bb, x->gl_obj.te_binbuf);
+    binbuf_addbinbuf(bb, x->gl_obj.te_buffer);
     binbuf_addsemi(bb);
 
     garray_savecontentsto((t_garray *)gl->gl_list, bb);

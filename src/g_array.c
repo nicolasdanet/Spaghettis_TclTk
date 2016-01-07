@@ -136,7 +136,7 @@ and float-arrays. */
 
 void garray_init( void)
 {
-    t_binbuf *b;
+    t_buffer *b;
     if (garray_arraytemplatecanvas)
         return;
     b = binbuf_new();
@@ -718,7 +718,7 @@ static int garray_click(t_gobj *z, t_glist *glist,
 
 #define ARRAYWRITECHUNKSIZE 1000
 
-void garray_savecontentsto(t_garray *x, t_binbuf *b)
+void garray_savecontentsto(t_garray *x, t_buffer *b)
 {
     if (x->x_saveit)
     {
@@ -740,7 +740,7 @@ void garray_savecontentsto(t_garray *x, t_binbuf *b)
     }
 }
 
-static void garray_save(t_gobj *z, t_binbuf *b)
+static void garray_save(t_gobj *z, t_buffer *b)
 {
     int style, filestyle;
     t_garray *x = (t_garray *)z;

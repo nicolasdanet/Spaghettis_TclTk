@@ -194,7 +194,7 @@ static void hslider_getrect(t_gobj *z, t_glist *glist,
     *yp2 = *yp1 + x->x_gui.x_h;
 }
 
-static void hslider_save(t_gobj *z, t_binbuf *b)
+static void hslider_save(t_gobj *z, t_buffer *b)
 {
     t_hslider *x = (t_hslider *)z;
     int bflcol[3];

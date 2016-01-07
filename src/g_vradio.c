@@ -231,7 +231,7 @@ static void vradio_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int *x
     *yp2 = *yp1 + x->x_gui.x_h*x->x_number;
 }
 
-static void vradio_save(t_gobj *z, t_binbuf *b)
+static void vradio_save(t_gobj *z, t_buffer *b)
 {
     t_vradio *x = (t_vradio *)z;
     int bflcol[3];

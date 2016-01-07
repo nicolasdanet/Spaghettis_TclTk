@@ -369,7 +369,7 @@ static void my_numbox_getrect(t_gobj *z, t_glist *glist,
     *yp2 = *yp1 + x->x_gui.x_h;
 }
 
-static void my_numbox_save(t_gobj *z, t_binbuf *b)
+static void my_numbox_save(t_gobj *z, t_buffer *b)
 {
     t_my_numbox *x = (t_my_numbox *)z;
     int bflcol[3];

@@ -114,7 +114,7 @@ static void netsend_readbin(t_netsend *x, int fd)
     }
 }
 
-static void netsend_doit(void *z, t_binbuf *b)
+static void netsend_doit(void *z, t_buffer *b)
 {
     t_atom messbuf[1024];
     t_netsend *x = (t_netsend *)z;
@@ -246,7 +246,7 @@ static int netsend_dosend(t_netsend *x, int sockfd,
 {
     char *buf, *bp;
     int length, sent, fail = 0;
-    t_binbuf *b = 0;
+    t_buffer *b = 0;
     if (x->x_bin)
     {
         int i;

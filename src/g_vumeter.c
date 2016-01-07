@@ -411,7 +411,7 @@ static void vu_getrect(t_gobj *z, t_glist *glist,
     *yp2 = *yp1 + x->x_gui.x_h + 4;
 }
 
-static void vu_save(t_gobj *z, t_binbuf *b)
+static void vu_save(t_gobj *z, t_buffer *b)
 {
     t_vu *x = (t_vu *)z;
     int bflcol[3];

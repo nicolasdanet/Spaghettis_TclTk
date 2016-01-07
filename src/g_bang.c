@@ -192,7 +192,7 @@ static void bng_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int *xp2,
     *yp2 = *yp1 + x->x_gui.x_h;
 }
 
-static void bng_save(t_gobj *z, t_binbuf *b)
+static void bng_save(t_gobj *z, t_buffer *b)
 {
     t_bng *x = (t_bng *)z;
     int bflcol[3];

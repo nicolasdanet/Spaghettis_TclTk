@@ -1,76 +1,77 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
 
-#include <stdlib.h>
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #include "m_pd.h"
 #include "m_macros.h"
 #include "m_alloca.h"
 #include "s_system.h"
-#include <stdio.h>
-#include <errno.h>
 
-#ifdef _WIN32
-    #include <io.h>
-#else
-    #include <unistd.h>
-#endif
-
-#include <fcntl.h>
-#include <string.h>
-#include <stdarg.h>
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 extern t_pd pd_objectMaker;
 extern t_pd pd_canvasMaker;
 extern int sys_defaultfont;
 
-struct _binbuf
-{
-    int b_n;
-    t_atom *b_vec;
-};
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-t_binbuf *binbuf_new(void)
+struct _buffer {
+    int     b_size;
+    t_atom  *b_vector;
+    };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_buffer *binbuf_new (void)
 {
-    t_binbuf *x = (t_binbuf *)PD_MEMORY_GET(sizeof(*x));
-    x->b_n = 0;
-    x->b_vec = PD_MEMORY_GET(0);
+    t_buffer *x = (t_buffer *)PD_MEMORY_GET(sizeof(*x));
+    x->b_size = 0;
+    x->b_vector = PD_MEMORY_GET(0);
     return (x);
 }
 
-void binbuf_free(t_binbuf *x)
+void binbuf_free(t_buffer *x)
 {
-    PD_MEMORY_FREE(x->b_vec, x->b_n * sizeof(*x->b_vec));
+    PD_MEMORY_FREE(x->b_vector, x->b_size * sizeof(*x->b_vector));
     PD_MEMORY_FREE(x,  sizeof(*x));
 }
 
-t_binbuf *binbuf_duplicate(t_binbuf *y)
+t_buffer *binbuf_duplicate(t_buffer *y)
 {
-    t_binbuf *x = (t_binbuf *)PD_MEMORY_GET(sizeof(*x));
-    x->b_n = y->b_n;
-    x->b_vec = PD_MEMORY_GET(x->b_n * sizeof(*x->b_vec));
-    memcpy(x->b_vec, y->b_vec, x->b_n * sizeof(*x->b_vec));
+    t_buffer *x = (t_buffer *)PD_MEMORY_GET(sizeof(*x));
+    x->b_size = y->b_size;
+    x->b_vector = PD_MEMORY_GET(x->b_size * sizeof(*x->b_vector));
+    memcpy(x->b_vector, y->b_vector, x->b_size * sizeof(*x->b_vector));
     return (x);
 }
 
-void binbuf_clear(t_binbuf *x)
+void binbuf_clear(t_buffer *x)
 {
-    x->b_vec = PD_MEMORY_RESIZE(x->b_vec, x->b_n * sizeof(*x->b_vec), 0);
-    x->b_n = 0;
+    x->b_vector = PD_MEMORY_RESIZE(x->b_vector, x->b_size * sizeof(*x->b_vector), 0);
+    x->b_size = 0;
 }
 
     /* convert text to a binbuf */
-void binbuf_text(t_binbuf *x, char *text, size_t size)
+void binbuf_text(t_buffer *x, char *text, size_t size)
 {
     char buf[PD_STRING+1], *bufp, *ebuf = buf+PD_STRING;
     const char *textp = text, *etext = text+size;
     t_atom *ap;
     int nalloc = 16, natom = 0;
-    PD_MEMORY_FREE(x->b_vec, x->b_n * sizeof(*x->b_vec));
-    x->b_vec = PD_MEMORY_GET(nalloc * sizeof(*x->b_vec));
-    ap = x->b_vec;
-    x->b_n = 0;
+    PD_MEMORY_FREE(x->b_vector, x->b_size * sizeof(*x->b_vector));
+    x->b_vector = PD_MEMORY_GET(nalloc * sizeof(*x->b_vector));
+    ap = x->b_vector;
+    x->b_size = 0;
     while (1)
     {
         int type;
@@ -190,21 +191,21 @@ void binbuf_text(t_binbuf *x, char *text, size_t size)
         natom++;
         if (natom == nalloc)
         {
-            x->b_vec = PD_MEMORY_RESIZE(x->b_vec, nalloc * sizeof(*x->b_vec),
-                nalloc * (2*sizeof(*x->b_vec)));
+            x->b_vector = PD_MEMORY_RESIZE(x->b_vector, nalloc * sizeof(*x->b_vector),
+                nalloc * (2*sizeof(*x->b_vector)));
             nalloc = nalloc * 2;
-            ap = x->b_vec + natom;
+            ap = x->b_vector + natom;
         }
         if (textp == etext) break;
     }
     /* reallocate the vector to exactly the right size */
-    x->b_vec = PD_MEMORY_RESIZE(x->b_vec, nalloc * sizeof(*x->b_vec),
-        natom * sizeof(*x->b_vec));
-    x->b_n = natom;
+    x->b_vector = PD_MEMORY_RESIZE(x->b_vector, nalloc * sizeof(*x->b_vector),
+        natom * sizeof(*x->b_vector));
+    x->b_size = natom;
 }
 
     /* convert a binbuf to text; no null termination. */
-void binbuf_gettext(t_binbuf *x, char **bufp, int *lengthp)
+void binbuf_gettext(t_buffer *x, char **bufp, int *lengthp)
 {
     char *buf = PD_MEMORY_GET(0), *newbuf;
     int length = 0;
@@ -212,7 +213,7 @@ void binbuf_gettext(t_binbuf *x, char **bufp, int *lengthp)
     t_atom *ap;
     int indx;
 
-    for (ap = x->b_vec, indx = x->b_n; indx--; ap++)
+    for (ap = x->b_vector, indx = x->b_size; indx--; ap++)
     {
         int newlength;
         if ((ap->a_type == A_SEMICOLON || ap->a_type == A_COMMA) &&
@@ -241,13 +242,13 @@ void binbuf_gettext(t_binbuf *x, char **bufp, int *lengthp)
 /* LATER improve the out-of-space behavior below.  Also fix this so that
 writing to file doesn't buffer everything together. */
 
-void binbuf_add(t_binbuf *x, int argc, t_atom *argv)
+void binbuf_add(t_buffer *x, int argc, t_atom *argv)
 {
-    int newsize = x->b_n + argc, i;
+    int newsize = x->b_size + argc, i;
     t_atom *ap;
-    if (ap = PD_MEMORY_RESIZE(x->b_vec, x->b_n * sizeof(*x->b_vec),
-        newsize * sizeof(*x->b_vec)))
-            x->b_vec = ap;
+    if (ap = PD_MEMORY_RESIZE(x->b_vector, x->b_size * sizeof(*x->b_vector),
+        newsize * sizeof(*x->b_vector)))
+            x->b_vector = ap;
     else
     {
         post_error ("binbuf_addmessage: out of space");
@@ -257,13 +258,13 @@ void binbuf_add(t_binbuf *x, int argc, t_atom *argv)
     post("binbuf_add: ");
     post_atoms(argc, argv);
 #endif
-    for (ap = x->b_vec + x->b_n, i = argc; i--; ap++)
+    for (ap = x->b_vector + x->b_size, i = argc; i--; ap++)
         *ap = *(argv++);
-    x->b_n = newsize;
+    x->b_size = newsize;
 }
 
 #define MAXADDMESSV 100
-void binbuf_addv(t_binbuf *x, char *fmt, ...)
+void binbuf_addv(t_buffer *x, char *fmt, ...)
 {
     va_list ap;
     t_atom arg[MAXADDMESSV], *at =arg;
@@ -299,13 +300,13 @@ done:
 symbols ";", "'",; and inside symbols, characters ';', ',' and '$' get
 escaped.  LATER also figure out about escaping white space */
 
-void binbuf_addbinbuf(t_binbuf *x, t_binbuf *y)
+void binbuf_addbinbuf(t_buffer *x, t_buffer *y)
 {
-    t_binbuf *z = binbuf_new();
+    t_buffer *z = binbuf_new();
     int i, fixit;
     t_atom *ap;
-    binbuf_add(z, y->b_n, y->b_vec);
-    for (i = 0, ap = z->b_vec; i < z->b_n; i++, ap++)
+    binbuf_add(z, y->b_size, y->b_vector);
+    for (i = 0, ap = z->b_vector; i < z->b_size; i++, ap++)
     {
         char tbuf[PD_STRING], *s;
         switch (ap->a_type)
@@ -341,10 +342,10 @@ void binbuf_addbinbuf(t_binbuf *x, t_binbuf *y)
         }
     }
     
-    binbuf_add(x, z->b_n, z->b_vec);
+    binbuf_add(x, z->b_size, z->b_vector);
 }
 
-void binbuf_addsemi(t_binbuf *x)
+void binbuf_addsemi(t_buffer *x)
 {
     t_atom a;
     SET_SEMICOLON(&a);
@@ -354,20 +355,20 @@ void binbuf_addsemi(t_binbuf *x)
 /* Supply atoms to a binbuf from a message, making the opposite changes
 from binbuf_addbinbuf.  The symbol ";" goes to a semicolon, etc. */
 
-void binbuf_restore(t_binbuf *x, int argc, t_atom *argv)
+void binbuf_restore(t_buffer *x, int argc, t_atom *argv)
 {
-    int newsize = x->b_n + argc, i;
+    int newsize = x->b_size + argc, i;
     t_atom *ap;
-    if (ap = PD_MEMORY_RESIZE(x->b_vec, x->b_n * sizeof(*x->b_vec),
-        newsize * sizeof(*x->b_vec)))
-            x->b_vec = ap;
+    if (ap = PD_MEMORY_RESIZE(x->b_vector, x->b_size * sizeof(*x->b_vector),
+        newsize * sizeof(*x->b_vector)))
+            x->b_vector = ap;
     else
     {
         post_error ("binbuf_addmessage: out of space");
         return;
     }
 
-    for (ap = x->b_vec + x->b_n, i = argc; i--; ap++)
+    for (ap = x->b_vector + x->b_size, i = argc; i--; ap++)
     {
         if (argv->a_type == A_SYMBOL)
         {
@@ -417,42 +418,42 @@ void binbuf_restore(t_binbuf *x, int argc, t_atom *argv)
         }
         else *ap = *(argv++);
     }
-    x->b_n = newsize;
+    x->b_size = newsize;
 }
 
-void binbuf_print(t_binbuf *x)
+void binbuf_print(t_buffer *x)
 {
     int i, startedpost = 0, newline = 1;
-    for (i = 0; i < x->b_n; i++)
+    for (i = 0; i < x->b_size; i++)
     {
         if (newline)
         {
             post("");
             startedpost = 1;
         }
-        post_atoms(1, x->b_vec + i);
-        if (x->b_vec[i].a_type == A_SEMICOLON)
+        post_atoms(1, x->b_vector + i);
+        if (x->b_vector[i].a_type == A_SEMICOLON)
             newline = 1;
         else newline = 0; 
     }
 }
 
-int binbuf_getnatom(t_binbuf *x)
+int binbuf_getnatom(t_buffer *x)
 {
-    return (x->b_n);
+    return (x->b_size);
 }
 
-t_atom *binbuf_getvec(t_binbuf *x)
+t_atom *binbuf_getvec(t_buffer *x)
 {
-    return (x->b_vec);
+    return (x->b_vector);
 }
 
-int binbuf_resize(t_binbuf *x, int newsize)
+int binbuf_resize(t_buffer *x, int newsize)
 {
-    t_atom *new = PD_MEMORY_RESIZE(x->b_vec,
-        x->b_n * sizeof(*x->b_vec), newsize * sizeof(*x->b_vec));
+    t_atom *new = PD_MEMORY_RESIZE(x->b_vector,
+        x->b_size * sizeof(*x->b_vector), newsize * sizeof(*x->b_vector));
     if (new)
-        x->b_vec = new, x->b_n = newsize;
+        x->b_vector = new, x->b_size = newsize;
     return (new != 0);
 }
 
@@ -570,11 +571,11 @@ done:
 
 #define SMALLMSG 5
 
-void binbuf_eval(t_binbuf *x, t_pd *target, int argc, t_atom *argv)
+void binbuf_eval(t_buffer *x, t_pd *target, int argc, t_atom *argv)
 {
     t_atom smallstack[SMALLMSG], *mstack, *msp;
-    t_atom *at = x->b_vec;
-    int ac = x->b_n;
+    t_atom *at = x->b_vector;
+    int ac = x->b_size;
     int nargs, maxnargs = 0;
     if (ac <= SMALLMSG)
         mstack = smallstack;
@@ -763,7 +764,7 @@ broken:
          ATOMS_FREEA(mstack, maxnargs);
 }
 
-int binbuf_read(t_binbuf *b, char *filename, char *dirname, int crflag)
+int binbuf_read(t_buffer *b, char *filename, char *dirname, int crflag)
 {
     long length;
     int fd;
@@ -809,7 +810,7 @@ int binbuf_read(t_binbuf *b, char *filename, char *dirname, int crflag)
     binbuf_text(b, buf, length);
 
 #if 0
-    post("binbuf_read "); post_atoms(b->b_n, b->b_vec);
+    post("binbuf_read "); post_atoms(b->b_size, b->b_vector);
 #endif
 
     PD_MEMORY_FREE(buf, length);
@@ -818,7 +819,7 @@ int binbuf_read(t_binbuf *b, char *filename, char *dirname, int crflag)
 }
 
     /* read a binbuf from a file, via the search patch of a canvas */
-int binbuf_read_via_canvas(t_binbuf *b, char *filename, t_canvas *canvas,
+int binbuf_read_via_canvas(t_buffer *b, char *filename, t_canvas *canvas,
     int crflag)
 {
     int filedesc;
@@ -836,7 +837,7 @@ int binbuf_read_via_canvas(t_binbuf *b, char *filename, t_canvas *canvas,
 }
 
     /* old version */
-int binbuf_read_via_path(t_binbuf *b, char *filename, char *dirname,
+int binbuf_read_via_path(t_buffer *b, char *filename, char *dirname,
     int crflag)
 {
     int filedesc;
@@ -854,11 +855,11 @@ int binbuf_read_via_path(t_binbuf *b, char *filename, char *dirname,
 }
 
 #define WBUFSIZE 4096
-static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd);
+static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd);
 
     /* write a binbuf to a text file.  If "crflag" is set we suppress
     semicolons. */
-int binbuf_write(t_binbuf *x, char *filename, char *dir, int crflag)
+int binbuf_write(t_buffer *x, char *filename, char *dir, int crflag)
 {
     FILE *f = 0;
     char sbuf[WBUFSIZE], fbuf[PD_STRING], *bp = sbuf, *ep = sbuf + WBUFSIZE;
@@ -883,7 +884,7 @@ int binbuf_write(t_binbuf *x, char *filename, char *dir, int crflag)
         /* sys_unixerror(fbuf); */
         goto fail;
     }
-    for (ap = x->b_vec, indx = x->b_n; indx--; ap++)
+    for (ap = x->b_vector, indx = x->b_size; indx--; ap++)
     {
         int length;
             /* estimate how many characters will be needed.  Printing out
@@ -954,11 +955,11 @@ from Pd to Max hasn't been tested for patches with subpatches yet!  */
 #define ISSYMBOL(a, b) ((a)->a_type == A_SYMBOL && \
     !strcmp((a)->a_w.w_symbol->s_name, (b)))
 
-static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
+static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
 {
-    t_binbuf *newb = binbuf_new();
-    t_atom *vec = oldb->b_vec;
-    t_int n = oldb->b_n, nextindex, stackdepth = 0, stack[MAXSTACK],
+    t_buffer *newb = binbuf_new();
+    t_atom *vec = oldb->b_vector;
+    t_int n = oldb->b_size, nextindex, stackdepth = 0, stack[MAXSTACK],
         nobj = 0, i, gotfontsize = 0;
     t_atom outmess[MAXSTACK], *nextmess;
     t_float fontsize = 10;
@@ -1429,7 +1430,7 @@ static t_binbuf *binbuf_convert(t_binbuf *oldb, int maxtopd)
 /* LATER figure out how to log errors */
 void binbuf_evalfile(t_symbol *name, t_symbol *dir)
 {
-    t_binbuf *b = binbuf_new();
+    t_buffer *b = binbuf_new();
     int import = !strcmp(name->s_name + strlen(name->s_name) - 4, ".pat") ||
         !strcmp(name->s_name + strlen(name->s_name) - 4, ".mxt");
     int dspstate = canvas_suspend_dsp();
@@ -1445,7 +1446,7 @@ void binbuf_evalfile(t_symbol *name, t_symbol *dir)
         s__N.s_thing = &pd_canvasMaker;
         if (import)
         {
-            t_binbuf *newb = binbuf_convert(b, 1);
+            t_buffer *newb = binbuf_convert(b, 1);
             binbuf_free(b);
             b = newb;
         }
@@ -1483,7 +1484,7 @@ t_pd *global_open(t_pd *ignore, t_symbol *name, t_symbol *dir)
 }
 
     /* save a text object to a binbuf for a file or copy buf */
-void binbuf_savetext(t_binbuf *bfrom, t_binbuf *bto)
+void binbuf_savetext(t_buffer *bfrom, t_buffer *bto)
 {
     int k, n = binbuf_getnatom(bfrom);
     t_atom *ap = binbuf_getvec(bfrom), at;
@@ -1506,3 +1507,5 @@ void binbuf_savetext(t_binbuf *bfrom, t_binbuf *bto)
     binbuf_addsemi(bto);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

@@ -130,7 +130,7 @@ static void gfxstub_signoff(t_gfxstub *x)
     pd_free(&x->x_pd);
 }
 
-static t_binbuf *gfxstub_binbuf;
+static t_buffer *gfxstub_binbuf;
 
     /* a series of "data" messages rebuilds a scalar */
 static void gfxstub_data(t_gfxstub *x, t_symbol *s, int argc, t_atom *argv)

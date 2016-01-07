@@ -48,16 +48,16 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     t_atom at;
     x->te_width = 0;                            /* don't know it yet. */
     x->te_type = TYPE_TEXT;
-    x->te_binbuf = binbuf_new();
+    x->te_buffer = binbuf_new();
     if (argc > 1)
     {
         x->te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
         x->te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
-        if (argc > 2) binbuf_restore(x->te_binbuf, argc-2, argv+2);
+        if (argc > 2) binbuf_restore(x->te_buffer, argc-2, argv+2);
         else
         {
             SET_SYMBOL(&at, gensym("comment"));
-            binbuf_restore(x->te_binbuf, 1, &at);
+            binbuf_restore(x->te_buffer, 1, &at);
         }
         glist_add(gl, &x->te_g);
     }
@@ -70,7 +70,7 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         glist_getnextxy(gl, &xpix, &ypix);
         x->te_xCoordinate = xpix-1;
         x->te_yCoordinate = ypix-1;
-        binbuf_restore(x->te_binbuf, 1, &at);
+        binbuf_restore(x->te_buffer, 1, &at);
         glist_add(gl, &x->te_g);
         glist_noselect(gl);
         glist_select(gl, &x->te_g);
@@ -90,7 +90,7 @@ extern t_pd *pd_newest;
 void canvas_getargs(int *argcp, t_atom **argvp);
 
 static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
-    int selected, t_binbuf *b)
+    int selected, t_buffer *b)
 {
     t_text *x;
     int argc;
@@ -120,7 +120,7 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
             post_error ("... couldn't create");
         }
     }
-    x->te_binbuf = b;
+    x->te_buffer = b;
     x->te_xCoordinate = xpix;
     x->te_yCoordinate = ypix;
     x->te_width = width;
@@ -194,7 +194,7 @@ void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     t_text *x;
     if (argc >= 2)
     {
-        t_binbuf *b = binbuf_new();
+        t_buffer *b = binbuf_new();
         binbuf_restore(b, argc-2, argv+2);
         canvas_objtext(gl, (t_int)atom_getFloatAtIndex(0, argc, argv),
             (t_int)atom_getFloatAtIndex(1, argc, argv), 0, 0, b);
@@ -205,7 +205,7 @@ void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     else
     {
             /* interactively create new obect */
-        t_binbuf *b = binbuf_new();
+        t_buffer *b = binbuf_new();
         int connectme, xpix, ypix, indx, nobj;
         canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
         pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
@@ -222,7 +222,7 @@ void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 void canvas_iems(t_glist *gl, t_symbol *guiobjname)
 {
     t_atom at;
-    t_binbuf *b = binbuf_new();
+    t_buffer *b = binbuf_new();
     int xpix, ypix;
 
     pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
@@ -285,10 +285,10 @@ void canvas_objfor(t_glist *gl, t_text *x, int argc, t_atom *argv)
 {
     x->te_width = 0;                            /* don't know it yet. */
     x->te_type = TYPE_OBJECT;
-    x->te_binbuf = binbuf_new();
+    x->te_buffer = binbuf_new();
     x->te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
     x->te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
-    if (argc > 2) binbuf_restore(x->te_binbuf, argc-2, argv+2);
+    if (argc > 2) binbuf_restore(x->te_buffer, argc-2, argv+2);
     glist_add(gl, &x->te_g);
 }
 
@@ -339,45 +339,45 @@ static void messresponder_anything(t_messresponder *x,
 
 static void message_bang(t_message *x)
 {
-    binbuf_eval(x->m_text.te_binbuf, &x->m_messresponder.mr_pd, 0, 0);
+    binbuf_eval(x->m_text.te_buffer, &x->m_messresponder.mr_pd, 0, 0);
 }
 
 static void message_float(t_message *x, t_float f)
 {
     t_atom at;
     SET_FLOAT(&at, f);
-    binbuf_eval(x->m_text.te_binbuf, &x->m_messresponder.mr_pd, 1, &at);
+    binbuf_eval(x->m_text.te_buffer, &x->m_messresponder.mr_pd, 1, &at);
 }
 
 static void message_symbol(t_message *x, t_symbol *s)
 {
     t_atom at;
     SET_SYMBOL(&at, s);
-    binbuf_eval(x->m_text.te_binbuf, &x->m_messresponder.mr_pd, 1, &at);
+    binbuf_eval(x->m_text.te_buffer, &x->m_messresponder.mr_pd, 1, &at);
 }
 
 static void message_list(t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    binbuf_eval(x->m_text.te_binbuf, &x->m_messresponder.mr_pd, argc, argv);
+    binbuf_eval(x->m_text.te_buffer, &x->m_messresponder.mr_pd, argc, argv);
 }
 
 static void message_set(t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    binbuf_clear(x->m_text.te_binbuf);
-    binbuf_add(x->m_text.te_binbuf, argc, argv);
+    binbuf_clear(x->m_text.te_buffer);
+    binbuf_add(x->m_text.te_buffer, argc, argv);
     glist_retext(x->m_glist, &x->m_text);
 }
 
 static void message_add2(t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    binbuf_add(x->m_text.te_binbuf, argc, argv);
+    binbuf_add(x->m_text.te_buffer, argc, argv);
     glist_retext(x->m_glist, &x->m_text);
 }
 
 static void message_add(t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    binbuf_add(x->m_text.te_binbuf, argc, argv);
-    binbuf_addsemi(x->m_text.te_binbuf);
+    binbuf_add(x->m_text.te_buffer, argc, argv);
+    binbuf_addsemi(x->m_text.te_buffer);
     glist_retext(x->m_glist, &x->m_text);
 }
 
@@ -385,7 +385,7 @@ static void message_addcomma(t_message *x)
 {
     t_atom a;
     SET_COMMA(&a);
-    binbuf_add(x->m_text.te_binbuf, 1, &a);
+    binbuf_add(x->m_text.te_buffer, 1, &a);
     glist_retext(x->m_glist, &x->m_text);
 }
 
@@ -401,7 +401,7 @@ static void message_adddollar(t_message *x, t_float f)
     if (n < 0)
         n = 0;
     SET_DOLLAR(&a, n);
-    binbuf_add(x->m_text.te_binbuf, 1, &a);
+    binbuf_add(x->m_text.te_buffer, 1, &a);
     glist_retext(x->m_glist, &x->m_text);
 }
 
@@ -413,7 +413,7 @@ static void message_adddollsym(t_message *x, t_symbol *s)
     strncpy(buf+1, s->s_name, PD_STRING-2);
     buf[PD_STRING-1] = 0;
     SET_DOLLARSYMBOL(&a, gensym(buf));
-    binbuf_add(x->m_text.te_binbuf, 1, &a);
+    binbuf_add(x->m_text.te_buffer, 1, &a);
     glist_retext(x->m_glist, &x->m_text);
 }
 
@@ -453,14 +453,14 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     x->m_messresponder.mr_outlet = outlet_new(&x->m_text, &s_float);
     x->m_text.te_width = 0;                             /* don't know it yet. */
     x->m_text.te_type = TYPE_MESSAGE;
-    x->m_text.te_binbuf = binbuf_new();
+    x->m_text.te_buffer = binbuf_new();
     x->m_glist = gl;
     x->m_clock = clock_new(x, (t_method)message_tick);
     if (argc > 1)
     {
         x->m_text.te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
         x->m_text.te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
-        if (argc > 2) binbuf_restore(x->m_text.te_binbuf, argc-2, argv+2);
+        if (argc > 2) binbuf_restore(x->m_text.te_buffer, argc-2, argv+2);
         glist_add(gl, &x->m_text.te_g);
     }
     else if (!glist_isvisible(gl))
@@ -543,8 +543,8 @@ static void gatom_redraw(t_gobj *client, t_glist *glist)
 
 static void gatom_retext(t_gatom *x, int senditup)
 {
-    binbuf_clear(x->a_text.te_binbuf);
-    binbuf_add(x->a_text.te_binbuf, 1, &x->a_atom);
+    binbuf_clear(x->a_text.te_buffer);
+    binbuf_add(x->a_text.te_buffer, 1, &x->a_atom);
     if (senditup && glist_isvisible(x->a_glist))
         sys_queuegui(x, x->a_glist, gatom_redraw);
 }
@@ -721,8 +721,8 @@ redraw:
         /* LATER figure out how to avoid creating all these symbols! */
     sprintf(sbuf, "%s...", x->a_buf);
     SET_SYMBOL(&at, gensym(sbuf));
-    binbuf_clear(x->a_text.te_binbuf);
-    binbuf_add(x->a_text.te_binbuf, 1, &at);
+    binbuf_clear(x->a_text.te_buffer);
+    binbuf_add(x->a_text.te_buffer, 1, &at);
     glist_retext(x->a_glist, &x->a_text);
 }
 
@@ -879,7 +879,7 @@ void canvas_atom(t_glist *gl, t_atomtype type,
     t_atom at;
     x->a_text.te_width = 0;                        /* don't know it yet. */
     x->a_text.te_type = TYPE_ATOM;
-    x->a_text.te_binbuf = binbuf_new();
+    x->a_text.te_buffer = binbuf_new();
     x->a_glist = gl;
     x->a_atom.a_type = type;
     x->a_toggle = 1;
@@ -901,7 +901,7 @@ void canvas_atom(t_glist *gl, t_atomtype type,
         x->a_text.te_width = 10;
         SET_SYMBOL(&at, &s_symbol);
     }
-    binbuf_add(x->a_text.te_binbuf, 1, &at);
+    binbuf_add(x->a_text.te_buffer, 1, &at);
     if (argc > 1)
         /* create from file. x, y, width, low-range, high-range, flags,
             label, receive-name, send-name */
@@ -1126,7 +1126,7 @@ static int text_click(t_gobj *z, struct _glist *glist,
     else return (0);
 }
 
-void text_save(t_gobj *z, t_binbuf *b)
+void text_save(t_gobj *z, t_buffer *b)
 {
     t_text *x = (t_text *)z;
     if (x->te_type == TYPE_OBJECT)
@@ -1147,13 +1147,13 @@ void text_save(t_gobj *z, t_binbuf *b)
             binbuf_addv(b, "ssii", gensym("#X"), gensym("obj"),
                 (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }
-        binbuf_addbinbuf(b, x->te_binbuf);
+        binbuf_addbinbuf(b, x->te_buffer);
     }
     else if (x->te_type == TYPE_MESSAGE)
     {
         binbuf_addv(b, "ssii", gensym("#X"), gensym("msg"),
             (int)x->te_xCoordinate, (int)x->te_yCoordinate);
-        binbuf_addbinbuf(b, x->te_binbuf);
+        binbuf_addbinbuf(b, x->te_buffer);
     }
     else if (x->te_type == TYPE_ATOM)
     {
@@ -1174,7 +1174,7 @@ void text_save(t_gobj *z, t_binbuf *b)
     {
         binbuf_addv(b, "ssii", gensym("#X"), gensym("text"),
             (int)x->te_xCoordinate, (int)x->te_yCoordinate);
-        binbuf_addbinbuf(b, x->te_binbuf);
+        binbuf_addbinbuf(b, x->te_buffer);
     }
     if (x->te_width)
         binbuf_addv(b, ",si", gensym("f"), (int)x->te_width);
@@ -1356,12 +1356,12 @@ void text_setto(t_text *x, t_glist *glist, char *buf, int bufsize)
 {
     if (x->te_type == TYPE_OBJECT)
     {
-        t_binbuf *b = binbuf_new();
+        t_buffer *b = binbuf_new();
         int natom1, natom2, widthwas = x->te_width;
         t_atom *vec1, *vec2;
         binbuf_text(b, buf, bufsize);
-        natom1 = binbuf_getnatom(x->te_binbuf);
-        vec1 = binbuf_getvec(x->te_binbuf);
+        natom1 = binbuf_getnatom(x->te_buffer);
+        vec1 = binbuf_getvec(x->te_buffer);
         natom2 = binbuf_getnatom(b);
         vec2 = binbuf_getvec(b);
             /* special case: if  pd args change just pass the message on. */
@@ -1371,8 +1371,8 @@ void text_setto(t_text *x, t_glist *glist, char *buf, int bufsize)
             && !strcmp(vec2[0].a_w.w_symbol->s_name, "pd"))
         {
             pd_message((t_pd *)x, gensym("rename"), natom2-1, vec2+1);
-            binbuf_free(x->te_binbuf);
-            x->te_binbuf = b;
+            binbuf_free(x->te_buffer);
+            x->te_buffer = b;
         }
         else  /* normally, just destroy the old one and make a new one. */
         {
@@ -1390,7 +1390,7 @@ void text_setto(t_text *x, t_glist *glist, char *buf, int bufsize)
             && !strcmp(vec2[0].a_w.w_symbol->s_name, "pd"))
                 canvas_updatewindowlist();
     }
-    else binbuf_text(x->te_binbuf, buf, bufsize);
+    else binbuf_text(x->te_buffer, buf, bufsize);
 }
 
     /* this gets called when a message gets sent to an object whose creation

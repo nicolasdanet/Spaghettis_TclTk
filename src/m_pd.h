@@ -139,6 +139,8 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include <errno.h>
+#include <fcntl.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -191,7 +193,7 @@ PD_STRUCT _array;
 PD_STRUCT _class;
 PD_STRUCT _outlet;
 PD_STRUCT _inlet;
-PD_STRUCT _binbuf;
+PD_STRUCT _buffer;
 PD_STRUCT _clock;
 PD_STRUCT _outconnect;
 PD_STRUCT _glist;
@@ -204,7 +206,7 @@ PD_STRUCT _pdinstance;
 #define t_class                 struct _class
 #define t_outlet                struct _outlet
 #define t_inlet                 struct _inlet
-#define t_binbuf                struct _binbuf
+#define t_buffer                struct _buffer
 #define t_clock                 struct _clock
 #define t_outconnect            struct _outconnect
 #define t_glist                 struct _glist
@@ -253,7 +255,7 @@ typedef union word {
     t_symbol        *w_symbol;
     t_gpointer      *w_gpointer;
     t_array         *w_array;
-    t_binbuf        *w_binbuf;
+    t_buffer        *w_buffer;
     } t_word;
 
 typedef enum {
@@ -296,7 +298,7 @@ typedef struct _scalar {
 
 typedef struct _text {
     t_gobj          te_g;                       /* MUST be the first. */
-    t_binbuf        *te_binbuf;
+    t_buffer        *te_buffer;
     t_outlet        *te_outlet;
     t_inlet         *te_inlet;
     int             te_xCoordinate;
@@ -464,28 +466,28 @@ PD_DLL int      atom_toString               (t_atom *a, char *s, size_t size);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-PD_DLL t_binbuf *binbuf_new                 (void);
-PD_DLL t_binbuf *binbuf_duplicate           (t_binbuf *y);
+PD_DLL t_buffer *binbuf_new                 (void);
+PD_DLL t_buffer *binbuf_duplicate           (t_buffer *y);
 
-PD_DLL void     binbuf_free                 (t_binbuf *x);
+PD_DLL void     binbuf_free                 (t_buffer *x);
 
-PD_DLL void     binbuf_text                 (t_binbuf *x, char *text, size_t size);
-PD_DLL void     binbuf_gettext              (t_binbuf *x, char **bufp, int *lengthp);
-PD_DLL void     binbuf_clear                (t_binbuf *x);
-PD_DLL void     binbuf_add                  (t_binbuf *x, int argc, t_atom *argv);
-PD_DLL void     binbuf_addv                 (t_binbuf *x, char *fmt, ...);
-PD_DLL void     binbuf_addbinbuf            (t_binbuf *x, t_binbuf *y);
-PD_DLL void     binbuf_addsemi              (t_binbuf *x);
-PD_DLL void     binbuf_restore              (t_binbuf *x, int argc, t_atom *argv);
-PD_DLL void     binbuf_print                (t_binbuf *x);
-PD_DLL int      binbuf_getnatom             (t_binbuf *x);
-PD_DLL t_atom   *binbuf_getvec              (t_binbuf *x);
-PD_DLL int      binbuf_resize               (t_binbuf *x, int newsize);
-PD_DLL void     binbuf_eval                 (t_binbuf *x, t_pd *target, int argc, t_atom *argv);
-PD_DLL int      binbuf_read                 (t_binbuf *b, char *filename, char *dirname, int crflag);
-PD_DLL int      binbuf_read_via_canvas      (t_binbuf *b, char *filename, t_canvas *canvas, int crflag);
-PD_DLL int      binbuf_read_via_path        (t_binbuf *b, char *filename, char *dirname, int crflag);
-PD_DLL int      binbuf_write                (t_binbuf *x, char *filename, char *dir, int crflag);
+PD_DLL void     binbuf_text                 (t_buffer *x, char *text, size_t size);
+PD_DLL void     binbuf_gettext              (t_buffer *x, char **bufp, int *lengthp);
+PD_DLL void     binbuf_clear                (t_buffer *x);
+PD_DLL void     binbuf_add                  (t_buffer *x, int argc, t_atom *argv);
+PD_DLL void     binbuf_addv                 (t_buffer *x, char *fmt, ...);
+PD_DLL void     binbuf_addbinbuf            (t_buffer *x, t_buffer *y);
+PD_DLL void     binbuf_addsemi              (t_buffer *x);
+PD_DLL void     binbuf_restore              (t_buffer *x, int argc, t_atom *argv);
+PD_DLL void     binbuf_print                (t_buffer *x);
+PD_DLL int      binbuf_getnatom             (t_buffer *x);
+PD_DLL t_atom   *binbuf_getvec              (t_buffer *x);
+PD_DLL int      binbuf_resize               (t_buffer *x, int newsize);
+PD_DLL void     binbuf_eval                 (t_buffer *x, t_pd *target, int argc, t_atom *argv);
+PD_DLL int      binbuf_read                 (t_buffer *b, char *filename, char *dirname, int crflag);
+PD_DLL int      binbuf_read_via_canvas      (t_buffer *b, char *filename, t_canvas *canvas, int crflag);
+PD_DLL int      binbuf_read_via_path        (t_buffer *b, char *filename, char *dirname, int crflag);
+PD_DLL int      binbuf_write                (t_buffer *x, char *filename, char *dir, int crflag);
 PD_DLL void     binbuf_evalfile             (t_symbol *name, t_symbol *dir);
 PD_DLL t_symbol *binbuf_realizedollsym      (t_symbol *s, int ac, t_atom *av, int tonew);
 
@@ -545,7 +547,7 @@ PD_DLL t_symbol *canvas_getcurrentdir       (void);
 PD_DLL t_glist  *canvas_getcurrent          (void);
 PD_DLL t_symbol *canvas_getdir              (t_glist *x);
 
-PD_DLL void     canvas_dataproperties       (t_glist *x, t_scalar *sc, t_binbuf *b);
+PD_DLL void     canvas_dataproperties       (t_glist *x, t_scalar *sc, t_buffer *b);
 PD_DLL int      canvas_open                 (t_canvas *x,
                                                 const char *name,
                                                 const char *ext,

@@ -104,7 +104,7 @@ static t_fdpoll *sys_fdpoll;
 static int sys_maxfd;
 static int sys_guisock;
 
-static t_binbuf *inbinbuf;
+static t_buffer *inbinbuf;
 static t_socketreceiver *sys_socketreceiver;
 extern int sys_addhist(int phase);
 void sys_set_searchpath(void);

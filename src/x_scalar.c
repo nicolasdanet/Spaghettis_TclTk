@@ -119,7 +119,7 @@ static void scalar_define_set(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (x->gl_list && pd_class(&x->gl_list->g_pd) == scalar_class)
     {
-        t_binbuf *b = binbuf_new();
+        t_buffer *b = binbuf_new();
         int nextmsg = 0, natoms;
         t_atom *vec;
         glist_clear(x);
@@ -133,17 +133,17 @@ static void scalar_define_set(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 }
 
     /* save to a binbuf (for file save or copy) */
-static void scalar_define_save(t_gobj *z, t_binbuf *bb)
+static void scalar_define_save(t_gobj *z, t_buffer *bb)
 {
     t_glist *x = (t_glist *)z;
     binbuf_addv(bb, "ssff", &s__X, gensym("obj"),
         (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
-    binbuf_addbinbuf(bb, x->gl_obj.te_binbuf);
+    binbuf_addbinbuf(bb, x->gl_obj.te_buffer);
     binbuf_addsemi(bb);
     if (x->gl_private && x->gl_list &&
         pd_class(&x->gl_list->g_pd) == scalar_class)
     {
-        t_binbuf *b2 = binbuf_new();
+        t_buffer *b2 = binbuf_new();
         t_scalar *sc = (t_scalar *)(x->gl_list);
         binbuf_addv(bb, "ss", gensym("#A"), gensym("set"));
         canvas_writescalar(sc->sc_template, sc->sc_vector, b2, 0);

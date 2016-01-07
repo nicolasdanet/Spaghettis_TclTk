@@ -30,7 +30,7 @@ static t_class *text_define_class;
 typedef struct _textbuf
 {
     t_object b_ob;
-    t_binbuf *b_binbuf;
+    t_buffer *b_binbuf;
     t_canvas *b_canvas;
     t_guiconnect *b_guiconnect;
 } t_textbuf;
@@ -93,7 +93,7 @@ static void textbuf_close(t_textbuf *x)
 
 static void textbuf_addline(t_textbuf *b, t_symbol *s, int argc, t_atom *argv)
 {
-    t_binbuf *z = binbuf_new();
+    t_buffer *z = binbuf_new();
     binbuf_restore(z, argc, argv);
     binbuf_add(b->b_binbuf, binbuf_getnatom(z), binbuf_getvec(z));
     binbuf_free(z);
@@ -259,8 +259,8 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
     textbuf_init(&x->x_textbuf);
         /* set up a scalar and a pointer to it that we can output */
     x->x_scalar = scalar_new(canvas_getcurrent(), gensym("pd-text"));
-    binbuf_free(x->x_scalar->sc_vector[2].w_binbuf);
-    x->x_scalar->sc_vector[2].w_binbuf = x->x_binbuf;
+    binbuf_free(x->x_scalar->sc_vector[2].w_buffer);
+    x->x_scalar->sc_vector[2].w_buffer = x->x_binbuf;
     x->x_out = outlet_new(&x->x_ob, &s_pointer);
     gpointer_init(&x->x_gp);
     x->x_canvas = canvas_getcurrent();
@@ -281,7 +281,7 @@ static void text_define_clear(t_text_define *x)
 }
 
     /* from g_traversal.c - maybe put in a header? */
-t_binbuf *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
+t_buffer *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
     const char *fname);
 
     /* these are unused; they copy text from this object to and from a text
@@ -289,7 +289,7 @@ t_binbuf *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
 static void text_define_frompointer(t_text_define *x, t_gpointer *gp,
     t_symbol *s)
 {
-    t_binbuf *b = pointertobinbuf(&x->x_textbuf.b_ob.te_g.g_pd,
+    t_buffer *b = pointertobinbuf(&x->x_textbuf.b_ob.te_g.g_pd,
         gp, s, "text_frompointer");
     if (b)
     {
@@ -301,7 +301,7 @@ static void text_define_frompointer(t_text_define *x, t_gpointer *gp,
 
 static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
 {
-    t_binbuf *b = pointertobinbuf(&x->x_textbuf.b_ob.te_g.g_pd,
+    t_buffer *b = pointertobinbuf(&x->x_textbuf.b_ob.te_g.g_pd,
         gp, s, "text_topointer");
     if (b)
     {
@@ -337,12 +337,12 @@ void text_define_set(t_text_define *x, t_symbol *s, int argc, t_atom *argv)
 }
 
 
-static void text_define_save(t_gobj *z, t_binbuf *bb)
+static void text_define_save(t_gobj *z, t_buffer *bb)
 {
     t_text_define *x = (t_text_define *)z;
     binbuf_addv(bb, "ssff", &s__X, gensym("obj"),
         (float)x->x_ob.te_xCoordinate, (float)x->x_ob.te_yCoordinate);
-    binbuf_addbinbuf(bb, x->x_ob.te_binbuf);
+    binbuf_addbinbuf(bb, x->x_ob.te_buffer);
     binbuf_addsemi(bb);
     if (x->x_keep)
     {
@@ -410,7 +410,7 @@ static void text_client_argparse(t_text_client *x, int *argcp, t_atom **argvp,
 
     /* find the binbuf for this object.  This should be reusable for other
     objects.  Prints an error  message and returns 0 on failure. */
-static t_binbuf *text_client_getbuf(t_text_client *x)
+static t_buffer *text_client_getbuf(t_text_client *x)
 {
     if (x->tc_sym)       /* named text object */
     {
@@ -457,7 +457,7 @@ static t_binbuf *text_client_getbuf(t_text_client *x)
             post_error ("text: field %s not of type text", x->tc_field->s_name);
             return (0);
         }
-        return (*(t_binbuf **)(((char *)vec) + onset));
+        return (*(t_buffer **)(((char *)vec) + onset));
     }
     else return (0);    /* shouldn't happen */
 }
@@ -567,7 +567,7 @@ static void *text_get_new(t_symbol *s, int argc, t_atom *argv)
 
 static void text_get_float(t_text_get *x, t_float f)
 {
-    t_binbuf *b = text_client_getbuf(&x->x_tc);
+    t_buffer *b = text_client_getbuf(&x->x_tc);
     int start, end, n, startfield, nfield;
     t_atom *vec;
     if (!b)
@@ -663,7 +663,7 @@ static void *text_set_new(t_symbol *s, int argc, t_atom *argv)
 static void text_set_list(t_text_set *x,
     t_symbol *s, int argc, t_atom *argv)
 {
-    t_binbuf *b = text_client_getbuf(&x->x_tc);
+    t_buffer *b = text_client_getbuf(&x->x_tc);
     int start, end, n, lineno = x->x_f1, fieldno = x->x_f2, i;
     t_atom *vec;
     if (!b)
@@ -757,7 +757,7 @@ static void *text_size_new(t_symbol *s, int argc, t_atom *argv)
 
 static void text_size_bang(t_text_size *x)
 {
-    t_binbuf *b = text_client_getbuf(&x->x_tc);
+    t_buffer *b = text_client_getbuf(&x->x_tc);
     int n, i, cnt = 0;
     t_atom *vec;
     if (!b)
@@ -776,7 +776,7 @@ static void text_size_bang(t_text_size *x)
 
 static void text_size_float(t_text_size *x, t_float f)
 {
-    t_binbuf *b = text_client_getbuf(&x->x_tc);
+    t_buffer *b = text_client_getbuf(&x->x_tc);
     int start, end, n;
     t_atom *vec;
     if (!b)
@@ -811,7 +811,7 @@ static void *text_tolist_new(t_symbol *s, int argc, t_atom *argv)
 
 static void text_tolist_bang(t_text_tolist *x)
 {
-    t_binbuf *b = text_client_getbuf(x), *b2;
+    t_buffer *b = text_client_getbuf(x), *b2;
     int n, i, cnt = 0;
     t_atom *vec;
     if (!b)
@@ -845,7 +845,7 @@ static void *text_fromlist_new(t_symbol *s, int argc, t_atom *argv)
 static void text_fromlist_list(t_text_fromlist *x,
     t_symbol *s, int argc, t_atom *argv)
 {
-    t_binbuf *b = text_client_getbuf(x);
+    t_buffer *b = text_client_getbuf(x);
     if (!b)
        return;
     binbuf_clear(b);
@@ -931,7 +931,7 @@ static void *text_search_new(t_symbol *s, int argc, t_atom *argv)
 static void text_search_list(t_text_search *x,
     t_symbol *s, int argc, t_atom *argv)
 {
-    t_binbuf *b = text_client_getbuf(&x->x_tc);
+    t_buffer *b = text_client_getbuf(&x->x_tc);
     int i, j, n, lineno, bestline = -1, beststart, bestn, thisstart, thisn,
         nkeys = x->x_nkeys, failed = 0;
     t_atom *vec;
@@ -1192,7 +1192,7 @@ static void *text_sequence_new(t_symbol *s, int argc, t_atom *argv)
 
 static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
 {
-    t_binbuf *b = text_client_getbuf(&x->x_tc), *b2;
+    t_buffer *b = text_client_getbuf(&x->x_tc), *b2;
     int n, i, onset, nfield, wait, eatsemi = 1, gotcomma = 0;
     t_atom *vec, *outvec, *ap;
     if (!b)
@@ -1393,7 +1393,7 @@ static void text_sequence_step(t_text_sequence *x)
 
 static void text_sequence_line(t_text_sequence *x, t_float f)
 {
-    t_binbuf *b = text_client_getbuf(&x->x_tc), *b2;
+    t_buffer *b = text_client_getbuf(&x->x_tc), *b2;
     int n, start, end;
     t_atom *vec;
     if (!b)
@@ -1788,7 +1788,7 @@ enough incompatibility that I'll just get away with it. */
 
 static void text_template_init( void)
 {
-    t_binbuf *b;
+    t_buffer *b;
     if (text_templatecanvas)
         return;
     b = binbuf_new();

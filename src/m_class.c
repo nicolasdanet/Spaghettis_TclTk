@@ -48,7 +48,7 @@ static void class_floatForSignal (t_pd *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void class_defaultSave (t_gobj *z, t_binbuf *b)
+static void class_defaultSave (t_gobj *z, t_buffer *b)
 {
     PD_BUG;
 }

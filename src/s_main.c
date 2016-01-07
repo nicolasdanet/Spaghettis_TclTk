@@ -241,7 +241,7 @@ void global_gui(void *dummy, t_symbol *s, int argc, t_atom *argv)
         /* send messages specified with "-send" args */
     for  (nl = sys_messagelist; nl; nl = nl->nl_next)
     {
-        t_binbuf *b = binbuf_new();
+        t_buffer *b = binbuf_new();
         binbuf_text(b, nl->nl_string, strlen(nl->nl_string));
         binbuf_eval(b, 0, 0, 0);
         binbuf_free(b);

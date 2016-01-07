@@ -230,7 +230,7 @@ static void hradio_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int *x
     *yp2 = *yp1 + x->x_gui.x_h;
 }
 
-static void hradio_save(t_gobj *z, t_binbuf *b)
+static void hradio_save(t_gobj *z, t_buffer *b)
 {
     t_hradio *x = (t_hradio *)z;
     int bflcol[3];

@@ -154,7 +154,7 @@ static void iem_init_sym2dollararg(t_iem *iem, t_symbol **symp,
 {
     if (!*symp)
     {
-        t_binbuf *b = iem->x_obj.te_binbuf;
+        t_buffer *b = iem->x_obj.te_buffer;
         if (binbuf_getnatom(b) > indx)
         {
             char buf[80];

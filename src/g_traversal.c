@@ -167,13 +167,13 @@ void gpointer_init(t_gpointer *gp)
 
 /*********  random utility function to find a binbuf in a datum */
 
-t_binbuf *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
+t_buffer *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
     const char *fname)
 {
     t_symbol *templatesym = gpointer_gettemplatesym(gp), *arraytype;
     t_template *template;
     int onset, type;
-    t_binbuf *b;
+    t_buffer *b;
     t_gstub *gs = gp->gp_stub;
     t_word *vec;
     if (!templatesym)
@@ -202,7 +202,7 @@ t_binbuf *pointertobinbuf(t_pd *x, t_gpointer *gp, t_symbol *s,
     if (gs->gs_type == POINTER_ARRAY)
         vec = gp->gp_un.gp_w;
     else vec = gp->gp_un.gp_scalar->sc_vector;
-    return (vec[onset].w_binbuf);
+    return (vec[onset].w_buffer);
 }
 
     /* templates are named using the name-bashing by which canvases bind
