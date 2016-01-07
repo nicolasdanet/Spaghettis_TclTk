@@ -241,10 +241,10 @@ void global_gui(void *dummy, t_symbol *s, int argc, t_atom *argv)
         /* send messages specified with "-send" args */
     for  (nl = sys_messagelist; nl; nl = nl->nl_next)
     {
-        t_buffer *b = binbuf_new();
-        binbuf_text(b, nl->nl_string, strlen(nl->nl_string));
+        t_buffer *b = buffer_new();
+        buffer_fromString(b, nl->nl_string, strlen(nl->nl_string));
         binbuf_eval(b, 0, 0, 0);
-        binbuf_free(b);
+        buffer_free(b);
     }
     namelist_free(sys_messagelist);
     sys_messagelist = 0;

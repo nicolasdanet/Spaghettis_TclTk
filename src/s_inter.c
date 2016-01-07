@@ -442,7 +442,7 @@ static int socketreceiver_doread(t_socketreceiver *x)
         if (c == ';' && (!indx || inbuf[indx-1] != '\\'))
         {
             intail = (indx+1)&(INBUFSIZE-1);
-            binbuf_text(inbinbuf, messbuf, bp - messbuf);
+            buffer_fromString(inbinbuf, messbuf, bp - messbuf);
             if (sys_debuglevel & DEBUG_MESSDOWN)
             {
                 write(2,  messbuf, bp - messbuf);
@@ -484,7 +484,7 @@ static void socketreceiver_getudp(t_socketreceiver *x, int fd)
             char *semi = strchr(buf, ';');
             if (semi) 
                 *semi = 0;
-            binbuf_text(inbinbuf, buf, strlen(buf));
+            buffer_fromString(inbinbuf, buf, strlen(buf));
             if (x->sr_socketreceivefn)
                 (*x->sr_socketreceivefn)(x->sr_owner, inbinbuf);
             else { PD_BUG; }
@@ -846,7 +846,7 @@ void sys_init_fdpoll(void)
     /* create an empty FD poll list */
     sys_fdpoll = (t_fdpoll *)PD_MEMORY_GET(0);
     sys_nfdpoll = 0;
-    inbinbuf = binbuf_new();
+    inbinbuf = buffer_new();
 }
 
 /* --------------------- starting up the GUI connection ------------- */

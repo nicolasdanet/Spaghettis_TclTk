@@ -139,21 +139,21 @@ void garray_init( void)
     t_buffer *b;
     if (garray_arraytemplatecanvas)
         return;
-    b = binbuf_new();
+    b = buffer_new();
     
     glob_setfilename(0, gensym("_float_template"), gensym("."));
-    binbuf_text(b, garray_floattemplatefile, strlen(garray_floattemplatefile));
+    buffer_fromString(b, garray_floattemplatefile, strlen(garray_floattemplatefile));
     binbuf_eval(b, &pd_canvasMaker, 0, 0);
     pd_vMessage(s__X.s_thing, gensym("pop"), "i", 0);
     
     glob_setfilename(0, gensym("_float_array_template"), gensym("."));
-    binbuf_text(b, garray_arraytemplatefile, strlen(garray_arraytemplatefile));
+    buffer_fromString(b, garray_arraytemplatefile, strlen(garray_arraytemplatefile));
     binbuf_eval(b, &pd_canvasMaker, 0, 0);
     garray_arraytemplatecanvas = s__X.s_thing;
     pd_vMessage(s__X.s_thing, gensym("pop"), "i", 0);
 
     glob_setfilename(0, &s_, &s_);
-    binbuf_free(b);  
+    buffer_free(b);  
 }
 
 /* create a new scalar attached to a symbol.  Used to make floating-point

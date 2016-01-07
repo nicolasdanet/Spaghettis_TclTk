@@ -258,11 +258,11 @@ static int netsend_dosend(t_netsend *x, int sockfd,
     else
     {
         t_atom at;
-        b = binbuf_new();
+        b = buffer_new();
         binbuf_add(b, argc, argv);
         SET_SEMICOLON(&at);
         binbuf_add(b, 1, &at);
-        binbuf_gettext(b, &buf, &length);
+        buffer_toString(b, &buf, &length);
     }
     for (bp = buf, sent = 0; sent < length;)
     {
@@ -300,7 +300,7 @@ static int netsend_dosend(t_netsend *x, int sockfd,
     if (!x->x_bin)
     {
         PD_MEMORY_FREE(buf, length);
-        binbuf_free(b);
+        buffer_free(b);
     }
     return (fail);
 }

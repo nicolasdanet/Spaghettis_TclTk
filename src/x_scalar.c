@@ -119,7 +119,7 @@ static void scalar_define_set(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (x->gl_list && pd_class(&x->gl_list->g_pd) == scalar_class)
     {
-        t_buffer *b = binbuf_new();
+        t_buffer *b = buffer_new();
         int nextmsg = 0, natoms;
         t_atom *vec;
         glist_clear(x);
@@ -127,7 +127,7 @@ static void scalar_define_set(t_glist *x, t_symbol *s, int argc, t_atom *argv)
         natoms = binbuf_getnatom(b);
         vec = binbuf_getvec(b);
         canvas_readscalar(x, natoms, vec, &nextmsg, 0);
-        binbuf_free(b);
+        buffer_free(b);
     }
     else { PD_BUG; }
 }
@@ -143,13 +143,13 @@ static void scalar_define_save(t_gobj *z, t_buffer *bb)
     if (x->gl_private && x->gl_list &&
         pd_class(&x->gl_list->g_pd) == scalar_class)
     {
-        t_buffer *b2 = binbuf_new();
+        t_buffer *b2 = buffer_new();
         t_scalar *sc = (t_scalar *)(x->gl_list);
         binbuf_addv(bb, "ss", gensym("#A"), gensym("set"));
         canvas_writescalar(sc->sc_template, sc->sc_vector, b2, 0);
         binbuf_addbinbuf(bb, b2);
         binbuf_addsemi(bb);
-        binbuf_free(b2);
+        buffer_free(b2);
     }
 }
 

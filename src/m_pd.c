@@ -194,7 +194,7 @@ void pd_free (t_pd *x)
         while (((t_object *)x)->te_inlet)  { inlet_free (((t_object *)x)->te_inlet);   }
         
         if (((t_object *)x)->te_buffer) { 
-            binbuf_free (((t_object *)x)->te_buffer); 
+            buffer_free (((t_object *)x)->te_buffer); 
         }
     }
 

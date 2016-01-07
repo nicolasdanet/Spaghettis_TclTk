@@ -101,13 +101,13 @@ static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
         }
         else if (template->t_vec[i].ds_type == DATA_TEXT)
         {
-            t_buffer *z = binbuf_new();
+            t_buffer *z = buffer_new();
             int first = *p_nextmsg, last;
             for (last = first; last < natoms && vec[last].a_type != A_SEMICOLON;
                 last++);
             binbuf_restore(z, last-first, vec+first);
             binbuf_add(w[i].w_buffer, binbuf_getnatom(z), binbuf_getvec(z));
-            binbuf_free(z);
+            buffer_free(z);
             last++;
             if (last > natoms) last = natoms;
             *p_nextmsg = last;
@@ -188,7 +188,7 @@ void glist_readfrombinbuf(t_glist *x, t_buffer *b, char *filename, int selectem)
         strcmp(vec[message].a_w.w_symbol->s_name, "data"))
     {
         post_error ("%s: file apparently of wrong type", filename);
-        binbuf_free(b);
+        buffer_free(b);
         return;
     }
         /* read in templates and check for consistency */
@@ -255,7 +255,7 @@ void glist_readfrombinbuf(t_glist *x, t_buffer *b, char *filename, int selectem)
 static void glist_doread(t_glist *x, t_symbol *filename, t_symbol *format,
     int clearme)
 {
-    t_buffer *b = binbuf_new();
+    t_buffer *b = buffer_new();
     t_canvas *canvas = glist_getcanvas(x);
     int wasvis = glist_isvisible(canvas);
     int cr = 0, natoms, nline, message, nextmsg = 0, i, j;
@@ -269,7 +269,7 @@ static void glist_doread(t_glist *x, t_symbol *filename, t_symbol *format,
     if (binbuf_read_via_canvas(b, filename->s_name, canvas, cr))
     {
         post_error ("read failed");
-        binbuf_free(b);
+        buffer_free(b);
         return;
     }
     if (wasvis)
@@ -279,7 +279,7 @@ static void glist_doread(t_glist *x, t_symbol *filename, t_symbol *format,
     glist_readfrombinbuf(x, b, filename->s_name, 0);
     if (wasvis)
         canvas_vis(canvas, 1);
-    binbuf_free(b);
+    buffer_free(b);
 }
 
 void glist_read(t_glist *x, t_symbol *filename, t_symbol *format)
@@ -505,7 +505,7 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
     t_symbol **templatevec = PD_MEMORY_GET(0);
     int ntemplates = 0;
     t_gobj *y;
-    t_buffer *b = binbuf_new();
+    t_buffer *b = buffer_new();
 
     for (y = x->gl_list; y; y = y->g_next)
     {
@@ -576,7 +576,7 @@ static void glist_write(t_glist *x, t_symbol *filename, t_symbol *format)
     {
         if (binbuf_write(b, buf, "", cr))
             post_error ("%s: write failed", filename->s_name);
-        binbuf_free(b);
+        buffer_free(b);
     }
 }
 
@@ -593,11 +593,11 @@ static void canvas_saveto(t_canvas *x, t_buffer *b)
     if (x->gl_owner && !x->gl_env)
     {
         /* have to go to original binbuf to find out how we were named. */
-        t_buffer *bz = binbuf_new();
+        t_buffer *bz = buffer_new();
         t_symbol *patchsym;
         binbuf_addbinbuf(bz, x->gl_obj.te_buffer);
         patchsym = atom_getSymbolAtIndex(1, binbuf_getnatom(bz), binbuf_getvec(bz));
-        binbuf_free(bz);
+        buffer_free(bz);
         binbuf_addv(b, "ssiiiisi;", gensym("#N"), gensym("canvas"),
             (int)(x->gl_screenx1),
             (int)(x->gl_screeny1),
@@ -718,7 +718,7 @@ void canvas_reload(t_symbol *name, t_symbol *dir, t_gobj *except);
 static void canvas_savetofile(t_canvas *x, t_symbol *filename, t_symbol *dir,
     float fdestroy)
 {
-    t_buffer *b = binbuf_new();
+    t_buffer *b = buffer_new();
     canvas_savetemplatesto(x, b, 1);
     canvas_saveto(x, b);
     if (binbuf_write(b, filename->s_name, dir->s_name, 0)) { /* sys_ouch */ }
@@ -736,7 +736,7 @@ static void canvas_savetofile(t_canvas *x, t_symbol *filename, t_symbol *dir,
         if (fdestroy != 0)
             pd_vMessage(&x->gl_obj.te_g.g_pd, gensym("menuclose"), "f", 1.);
     }
-    binbuf_free(b);
+    buffer_free(b);
 }
 
 static void canvas_menusaveas(t_canvas *x, float fdestroy)

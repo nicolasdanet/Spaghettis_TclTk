@@ -136,7 +136,7 @@ static t_buffer *gfxstub_binbuf;
 static void gfxstub_data(t_gfxstub *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (!gfxstub_binbuf)
-        gfxstub_binbuf = binbuf_new();
+        gfxstub_binbuf = buffer_new();
     binbuf_add(gfxstub_binbuf, argc, argv);
     binbuf_addsemi(gfxstub_binbuf);
 }
@@ -145,7 +145,7 @@ static void gfxstub_end(t_gfxstub *x)
 {
     canvas_dataproperties((t_canvas *)x->x_owner,
         (t_scalar *)x->x_key, gfxstub_binbuf);
-    binbuf_free(gfxstub_binbuf);
+    buffer_free(gfxstub_binbuf);
     gfxstub_binbuf = 0;
 }
 

@@ -32,14 +32,14 @@ static void *print_new(t_symbol *sel, int argc, t_atom *argv)
     {
         int bufsize;
         char *buf;
-        t_buffer *bb = binbuf_new();
+        t_buffer *bb = buffer_new();
         binbuf_add(bb, argc, argv);
-        binbuf_gettext(bb, &buf, &bufsize);
+        buffer_toString(bb, &buf, &bufsize);
         buf = PD_MEMORY_RESIZE(buf, bufsize, bufsize+1);
         buf[bufsize] = 0;
         x->x_sym = gensym(buf);
         PD_MEMORY_FREE(buf, bufsize+1);
-        binbuf_free(bb);
+        buffer_free(bb);
     }
     return (x);
 }

@@ -521,7 +521,7 @@ static void *canvas_undo_set_cut(t_canvas *x, int mode)
     buf->u_redotextbuf = 0;
 
         /* store connections into/out of the selection */
-    buf->u_reconnectbuf = binbuf_new();
+    buf->u_reconnectbuf = buffer_new();
     linetraverser_start(&t, x);
     while (oc = linetraverser_next(&t))
     {
@@ -608,11 +608,11 @@ static void canvas_undo_cut(t_canvas *x, void *z, int action)
     else if (action == UNDO_FREE)
     {
         if (buf->u_objectbuf)
-            binbuf_free(buf->u_objectbuf);
+            buffer_free(buf->u_objectbuf);
         if (buf->u_reconnectbuf)
-            binbuf_free(buf->u_reconnectbuf);
+            buffer_free(buf->u_reconnectbuf);
         if (buf->u_redotextbuf)
-            binbuf_free(buf->u_redotextbuf);
+            buffer_free(buf->u_redotextbuf);
         PD_MEMORY_FREE(buf, sizeof(*buf));
     }
 }
@@ -889,8 +889,8 @@ static t_editor *editor_new(t_glist *owner)
 {
     char buf[40];
     t_editor *x = (t_editor *)PD_MEMORY_GET(sizeof(*x));
-    x->e_connectbuf = binbuf_new();
-    x->e_deleted = binbuf_new();
+    x->e_connectbuf = buffer_new();
+    x->e_deleted = buffer_new();
     x->e_glist = owner;
     sprintf(buf, ".x%lx", (t_int)owner);
     x->e_guiconnect = guiconnect_new(&owner->gl_obj.te_g.g_pd, gensym(buf));
@@ -902,8 +902,8 @@ static void editor_free(t_editor *x, t_glist *y)
 {
     glist_noselect(y);
     guiconnect_notarget(x->e_guiconnect, 1000);
-    binbuf_free(x->e_connectbuf);
-    binbuf_free(x->e_deleted);
+    buffer_free(x->e_connectbuf);
+    buffer_free(x->e_deleted);
     if (x->e_clock)
         clock_free(x->e_clock);
     PD_MEMORY_FREE((void *)x, sizeof(*x));
@@ -2119,8 +2119,8 @@ static void canvas_find(t_canvas *x, t_symbol *s, t_float wholeword)
     int myindex = 0, found;
     t_symbol *decodedsym = sys_decodedialog(s);
     if (!canvas_findbuf)
-        canvas_findbuf = binbuf_new();
-    binbuf_text(canvas_findbuf, decodedsym->s_name, strlen(decodedsym->s_name));
+        canvas_findbuf = buffer_new();
+    buffer_fromString(canvas_findbuf, decodedsym->s_name, strlen(decodedsym->s_name));
     canvas_find_index = 0;
     canvas_find_wholeword = wholeword;
     canvas_whichfind = x;
@@ -2191,7 +2191,7 @@ void canvas_stowconnections(t_canvas *x)
     else x->gl_list = nonhead, nontail->g_next = selhead;
 
         /* add connections to binbuf */
-    binbuf_clear(x->gl_editor->e_connectbuf);
+    buffer_clear(x->gl_editor->e_connectbuf);
     linetraverser_start(&t, x);
     while (oc = linetraverser_next(&t))
     {
@@ -2218,7 +2218,7 @@ static t_buffer *canvas_docopy(t_canvas *x)
     t_gobj *y;
     t_linetraverser t;
     t_outconnect *oc;
-    t_buffer *b = binbuf_new();
+    t_buffer *b = buffer_new();
     for (y = x->gl_list; y; y = y->g_next)
     {
         if (glist_isselected(x, y))
@@ -2242,7 +2242,7 @@ static void canvas_copy(t_canvas *x)
 {
     if (!x->gl_editor || !x->gl_editor->e_selection)
         return;
-    binbuf_free(copy_binbuf);
+    buffer_free(copy_binbuf);
     copy_binbuf = canvas_docopy(x);
     if (x->gl_editor->e_textedfor)
     {
@@ -2827,7 +2827,7 @@ void g_editor_setup(void)
     class_addMethod(canvas_class, (t_method)canvas_disconnect,
         gensym("disconnect"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
 /* -------------- copy buffer ------------------ */
-    copy_binbuf = binbuf_new();
+    copy_binbuf = buffer_new();
 }
 
 void canvas_editor_for_class(t_class *c)

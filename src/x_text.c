@@ -37,7 +37,7 @@ typedef struct _textbuf
 
 static void textbuf_init(t_textbuf *x)
 {
-    x->b_binbuf = binbuf_new();
+    x->b_binbuf = buffer_new();
     x->b_canvas = canvas_getcurrent();
 }
 
@@ -47,7 +47,7 @@ static void textbuf_senditup(t_textbuf *x)
     char *txt;
     if (!x->b_guiconnect)
         return;
-    binbuf_gettext(x->b_binbuf, &txt, &ntxt);
+    buffer_toString(x->b_binbuf, &txt, &ntxt);
     sys_vgui("::ui_text::clear .x%lx\n", x);
     for (i = 0; i < ntxt; )
     {
@@ -93,10 +93,10 @@ static void textbuf_close(t_textbuf *x)
 
 static void textbuf_addline(t_textbuf *b, t_symbol *s, int argc, t_atom *argv)
 {
-    t_buffer *z = binbuf_new();
+    t_buffer *z = buffer_new();
     binbuf_restore(z, argc, argv);
     binbuf_add(b->b_binbuf, binbuf_getnatom(z), binbuf_getvec(z));
-    binbuf_free(z);
+    buffer_free(z);
     textbuf_senditup(b);
 }
 
@@ -177,7 +177,7 @@ static void textbuf_write(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
 static void textbuf_free(t_textbuf *x)
 {
     t_pd *x2;
-    binbuf_free(x->b_binbuf);
+    buffer_free(x->b_binbuf);
     if (x->b_guiconnect)
     {
         sys_vgui("destroy .x%lx\n", x);
@@ -259,7 +259,7 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
     textbuf_init(&x->x_textbuf);
         /* set up a scalar and a pointer to it that we can output */
     x->x_scalar = scalar_new(canvas_getcurrent(), gensym("pd-text"));
-    binbuf_free(x->x_scalar->sc_vector[2].w_buffer);
+    buffer_free(x->x_scalar->sc_vector[2].w_buffer);
     x->x_scalar->sc_vector[2].w_buffer = x->x_binbuf;
     x->x_out = outlet_new(&x->x_ob, &s_pointer);
     gpointer_init(&x->x_gp);
@@ -276,7 +276,7 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
 
 static void text_define_clear(t_text_define *x)
 {
-    binbuf_clear(x->x_binbuf);
+    buffer_clear(x->x_binbuf);
     textbuf_senditup(&x->x_textbuf);
 }
 
@@ -294,7 +294,7 @@ static void text_define_frompointer(t_text_define *x, t_gpointer *gp,
     if (b)
     {
         t_gstub *gs = gp->gp_stub;
-        binbuf_clear(x->x_textbuf.b_binbuf);
+        buffer_clear(x->x_textbuf.b_binbuf);
         binbuf_add(x->x_textbuf.b_binbuf, binbuf_getnatom(b), binbuf_getvec(b));
     } 
 }
@@ -306,7 +306,7 @@ static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
     if (b)
     {
         t_gstub *gs = gp->gp_stub;
-        binbuf_clear(b);
+        buffer_clear(b);
         binbuf_add(b, binbuf_getnatom(x->x_textbuf.b_binbuf),
             binbuf_getvec(x->x_textbuf.b_binbuf));
         if (gs->gs_type == POINTER_GLIST)
@@ -816,10 +816,10 @@ static void text_tolist_bang(t_text_tolist *x)
     t_atom *vec;
     if (!b)
        return;
-    b2 = binbuf_new();
+    b2 = buffer_new();
     binbuf_addbinbuf(b2, b);
     outlet_list(x->tc_obj.te_outlet, 0, binbuf_getnatom(b2), binbuf_getvec(b2));
-    binbuf_free(b2);
+    buffer_free(b2);
 }
 
 /* ------------- text_fromlist object - set text from a list -------- */
@@ -848,7 +848,7 @@ static void text_fromlist_list(t_text_fromlist *x,
     t_buffer *b = text_client_getbuf(x);
     if (!b)
        return;
-    binbuf_clear(b);
+    buffer_clear(b);
     binbuf_restore(b, argc, argv);
     text_client_senditup(x);
 }
@@ -1649,7 +1649,7 @@ static void qlist_add2(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
 static void qlist_clear(t_qlist *x)
 {
     qlist_rewind(x);
-    binbuf_clear(x->x_binbuf);
+    buffer_clear(x->x_binbuf);
 }
 
 static void qlist_set(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
@@ -1791,15 +1791,15 @@ static void text_template_init( void)
     t_buffer *b;
     if (text_templatecanvas)
         return;
-    b = binbuf_new();
+    b = buffer_new();
     
     glob_setfilename(0, gensym("_text_template"), gensym("."));
-    binbuf_text(b, text_templatefile, strlen(text_templatefile));
+    buffer_fromString(b, text_templatefile, strlen(text_templatefile));
     binbuf_eval(b, &pd_canvasMaker, 0, 0);
     pd_vMessage(s__X.s_thing, gensym("pop"), "i", 0);
     
     glob_setfilename(0, &s_, &s_);
-    binbuf_free(b);  
+    buffer_free(b);  
 }
 
 void x_qlist_setup(void )

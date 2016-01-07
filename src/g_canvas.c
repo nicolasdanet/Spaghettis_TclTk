@@ -490,7 +490,7 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     canvas_bind(x);
     x->gl_isgraph = 1;
     x->gl_goprect = 0;
-    x->gl_obj.te_buffer = binbuf_new();
+    x->gl_obj.te_buffer = buffer_new();
     binbuf_addv(x->gl_obj.te_buffer, "s", gensym("graph"));
     if (!menu)
         pd_push(&x->gl_obj.te_g.g_pd);

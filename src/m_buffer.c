@@ -32,37 +32,35 @@ struct _buffer {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_buffer *binbuf_new (void)
+t_buffer *buffer_new (void)
 {
-    t_buffer *x = (t_buffer *)PD_MEMORY_GET(sizeof(*x));
-    x->b_size = 0;
-    x->b_vector = PD_MEMORY_GET(0);
-    return (x);
+    t_buffer *x = (t_buffer *)PD_MEMORY_GET (sizeof (t_buffer));
+    PD_ASSERT (x->b_size == 0);
+    x->b_vector = PD_MEMORY_GET (0);
+    return x;
 }
 
-void binbuf_free(t_buffer *x)
+void buffer_free (t_buffer *x)
 {
-    PD_MEMORY_FREE(x->b_vector, x->b_size * sizeof(*x->b_vector));
-    PD_MEMORY_FREE(x,  sizeof(*x));
+    PD_MEMORY_FREE (x->b_vector, x->b_size * sizeof (t_atom));
+    PD_MEMORY_FREE (x, sizeof (t_buffer));
 }
 
-t_buffer *binbuf_duplicate(t_buffer *y)
-{
-    t_buffer *x = (t_buffer *)PD_MEMORY_GET(sizeof(*x));
-    x->b_size = y->b_size;
-    x->b_vector = PD_MEMORY_GET(x->b_size * sizeof(*x->b_vector));
-    memcpy(x->b_vector, y->b_vector, x->b_size * sizeof(*x->b_vector));
-    return (x);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void binbuf_clear(t_buffer *x)
+void buffer_clear (t_buffer *x)
 {
-    x->b_vector = PD_MEMORY_RESIZE(x->b_vector, x->b_size * sizeof(*x->b_vector), 0);
+    x->b_vector = PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), 0);
     x->b_size = 0;
 }
 
-    /* convert text to a binbuf */
-void binbuf_text(t_buffer *x, char *text, size_t size)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void buffer_fromString (t_buffer *x, char *text, size_t size)
 {
     char buf[PD_STRING+1], *bufp, *ebuf = buf+PD_STRING;
     const char *textp = text, *etext = text+size;
@@ -165,7 +163,7 @@ void binbuf_text(t_buffer *x, char *text, size_t size)
                     && *textp != '\t' &&*textp != ',' && *textp != ';')));
             *bufp = 0;
 #if 0
-            post("binbuf_text: buf %s", buf);
+            post("buffer_fromString: buf %s", buf);
 #endif
             if (floatstate == 2 || floatstate == 4 || floatstate == 5 ||
                 floatstate == 8)
@@ -204,8 +202,11 @@ void binbuf_text(t_buffer *x, char *text, size_t size)
     x->b_size = natom;
 }
 
+
+
+
     /* convert a binbuf to text; no null termination. */
-void binbuf_gettext(t_buffer *x, char **bufp, int *lengthp)
+void buffer_toString(t_buffer *x, char **bufp, int *lengthp)
 {
     char *buf = PD_MEMORY_GET(0), *newbuf;
     int length = 0;
@@ -238,6 +239,10 @@ void binbuf_gettext(t_buffer *x, char **bufp, int *lengthp)
     *bufp = buf;
     *lengthp = length;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* LATER improve the out-of-space behavior below.  Also fix this so that
 writing to file doesn't buffer everything together. */
@@ -302,7 +307,7 @@ escaped.  LATER also figure out about escaping white space */
 
 void binbuf_addbinbuf(t_buffer *x, t_buffer *y)
 {
-    t_buffer *z = binbuf_new();
+    t_buffer *z = buffer_new();
     int i, fixit;
     t_atom *ap;
     binbuf_add(z, y->b_size, y->b_vector);
@@ -807,7 +812,7 @@ int binbuf_read(t_buffer *b, char *filename, char *dirname, int crflag)
             if (buf[i] == '\n')
                 buf[i] = ';';
     }
-    binbuf_text(b, buf, length);
+    buffer_fromString(b, buf, length);
 
 #if 0
     post("binbuf_read "); post_atoms(b->b_size, b->b_vector);
@@ -934,12 +939,12 @@ int binbuf_write(t_buffer *x, char *filename, char *dir, int crflag)
     }
 
     if (deleteit)
-        binbuf_free(x);
+        buffer_free(x);
     fclose(f);
     return (0);
 fail:
     if (deleteit)
-        binbuf_free(x);
+        buffer_free(x);
     if (f)
         fclose(f);
     return (1);
@@ -957,7 +962,7 @@ from Pd to Max hasn't been tested for patches with subpatches yet!  */
 
 static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
 {
-    t_buffer *newb = binbuf_new();
+    t_buffer *newb = buffer_new();
     t_atom *vec = oldb->b_vector;
     t_int n = oldb->b_size, nextindex, stackdepth = 0, stack[MAXSTACK],
         nobj = 0, i, gotfontsize = 0;
@@ -1430,7 +1435,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
 /* LATER figure out how to log errors */
 void binbuf_evalfile(t_symbol *name, t_symbol *dir)
 {
-    t_buffer *b = binbuf_new();
+    t_buffer *b = buffer_new();
     int import = !strcmp(name->s_name + strlen(name->s_name) - 4, ".pat") ||
         !strcmp(name->s_name + strlen(name->s_name) - 4, ".mxt");
     int dspstate = canvas_suspend_dsp();
@@ -1447,7 +1452,7 @@ void binbuf_evalfile(t_symbol *name, t_symbol *dir)
         if (import)
         {
             t_buffer *newb = binbuf_convert(b, 1);
-            binbuf_free(b);
+            buffer_free(b);
             b = newb;
         }
         binbuf_eval(b, 0, 0, 0);
@@ -1455,7 +1460,7 @@ void binbuf_evalfile(t_symbol *name, t_symbol *dir)
         s__N.s_thing = boundn;
     }
     glob_setfilename(0, &s_, &s_);
-    binbuf_free(b);
+    buffer_free(b);
     canvas_resume_dsp(dspstate);
 }
 

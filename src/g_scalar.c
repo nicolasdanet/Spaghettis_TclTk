@@ -32,7 +32,7 @@ void word_init(t_word *wp, t_template *template, t_gpointer *gp)
         else if (type == DATA_ARRAY)
             wp->w_array = array_new(datatypes->ds_arraytemplate, gp);
         else if (type == DATA_TEXT)
-            wp->w_buffer = binbuf_new();
+            wp->w_buffer = buffer_new();
     }
 }
 
@@ -80,7 +80,7 @@ void word_free(t_word *wp, t_template *template)
         if (dt->ds_type == DATA_ARRAY)
             array_free(wp[i].w_array);
         else if (dt->ds_type == DATA_TEXT)
-            binbuf_free(wp[i].w_buffer);
+            buffer_free(wp[i].w_buffer);
     }
 }
 
@@ -147,12 +147,12 @@ void glist_scalar(t_glist *glist,
         return;
     }
 
-    b = binbuf_new();
+    b = buffer_new();
     binbuf_restore(b, argc, argv);
     natoms = binbuf_getnatom(b);
     vec = binbuf_getvec(b);
     canvas_readscalar(glist, natoms, vec, &nextmsg, 0);
-    binbuf_free(b);
+    buffer_free(b);
 }
 
 /* -------------------- widget behavior for scalar ------------ */
@@ -379,14 +379,14 @@ static int scalar_click(t_gobj *z, struct _glist *owner,
 static void scalar_save(t_gobj *z, t_buffer *b)
 {
     t_scalar *x = (t_scalar *)z;
-    t_buffer *b2 = binbuf_new();
+    t_buffer *b2 = buffer_new();
     t_atom a, *argv;
     int i, argc;
     canvas_writescalar(x->sc_template, x->sc_vector, b2, 0);
     binbuf_addv(b, "ss", &s__X, gensym("scalar"));
     binbuf_addbinbuf(b, b2);
     binbuf_addsemi(b);
-    binbuf_free(b2);
+    buffer_free(b2);
 }
 
 static void scalar_properties(t_gobj *z, struct _glist *owner)
@@ -398,8 +398,8 @@ static void scalar_properties(t_gobj *z, struct _glist *owner)
     glist_noselect(owner);
     glist_select(owner, z);
     b = glist_writetobinbuf(owner, 0);
-    binbuf_gettext(b, &buf, &bufsize);
-    binbuf_free(b);
+    buffer_toString(b, &buf, &bufsize);
+    buffer_free(b);
     buf = PD_MEMORY_RESIZE(buf, bufsize, bufsize+1);
     buf[bufsize] = 0;
     sprintf(buf2, "::ui_data::show %%s {");

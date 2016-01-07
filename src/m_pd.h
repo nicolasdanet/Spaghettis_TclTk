@@ -465,15 +465,16 @@ PD_DLL int      atom_toString               (t_atom *a, char *s, size_t size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-PD_DLL t_buffer *binbuf_new                 (void);
-PD_DLL t_buffer *binbuf_duplicate           (t_buffer *y);
+PD_DLL t_buffer *buffer_new                 (void);
 
-PD_DLL void     binbuf_free                 (t_buffer *x);
+PD_DLL void     buffer_free                 (t_buffer *x);
+PD_DLL void     buffer_clear                (t_buffer *x);
 
-PD_DLL void     binbuf_text                 (t_buffer *x, char *text, size_t size);
-PD_DLL void     binbuf_gettext              (t_buffer *x, char **bufp, int *lengthp);
-PD_DLL void     binbuf_clear                (t_buffer *x);
+PD_DLL void     buffer_fromString           (t_buffer *x, char *s, size_t size);
+PD_DLL void     buffer_toString             (t_buffer *x, char **s, int *size);
+
 PD_DLL void     binbuf_add                  (t_buffer *x, int argc, t_atom *argv);
 PD_DLL void     binbuf_addv                 (t_buffer *x, char *fmt, ...);
 PD_DLL void     binbuf_addbinbuf            (t_buffer *x, t_buffer *y);
@@ -493,6 +494,7 @@ PD_DLL t_symbol *binbuf_realizedollsym      (t_symbol *s, int ac, t_atom *av, in
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 PD_DLL t_clock  *clock_new                  (void *owner, t_method fn);
 PD_DLL void     clock_free                  (t_clock *x);
