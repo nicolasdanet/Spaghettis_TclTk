@@ -209,21 +209,20 @@ t_float         *object_getSignalValueAtIndex   (t_object *x, int m);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_pd *global_open               (t_pd *dummy, t_symbol *name, t_symbol *dir);
-
-void global_new                 (void *dummy, t_symbol *name, t_symbol *dir);
+void global_open                (void *dummy, t_symbol *name, t_symbol *directory);
+void global_new                 (void *dummy, t_symbol *name, t_symbol *directory);
 void global_dsp                 (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_key                 (void *dummy, t_symbol *s, int ac, t_atom *av);
+void global_key                 (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void global_quit                (void *dummy);
 
 void global_gui                 (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_audioProperties     (t_pd *dummy, t_float flongform);
-void global_midiProperties      (t_pd *dummy, t_float flongform);
+void global_audioProperties     (t_pd *dummy, t_float f);
+void global_midiProperties      (t_pd *dummy, t_float f);
 void global_audioDialog         (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
 void global_midiDialog          (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
 void global_audioAPI            (t_pd *dummy, t_float f);
 void global_midiAPI             (t_pd *dummy, t_float f);
-void global_pathDialog          (t_pd *dummy, t_float flongform);
+void global_pathDialog          (t_pd *dummy, t_float f);
 void global_setPath             (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
 void global_ping                (t_pd *dummy);
 void global_watchdog            (t_pd *dummy);
