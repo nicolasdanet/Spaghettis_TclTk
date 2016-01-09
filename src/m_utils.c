@@ -19,6 +19,8 @@ int utils_strncpy (char *dest, size_t size, const char *src)
 {
     size_t s = strlen (src);
     
+    PD_ASSERT (size > 0);
+    
     strncpy (dest, src, PD_MIN (s, size));
     dest[PD_MIN (size - 1, s)] = 0;
     
@@ -33,6 +35,8 @@ int utils_strncat (char *dest, size_t size, const char *src)
     size_t d = strlen (dest);
     size_t s = strlen (src);
     size_t n = (size - 1) - d;
+    
+    PD_ASSERT (size > d);
     
     strncat (dest, src, PD_MIN (s, n));
     
@@ -110,7 +114,6 @@ int utils_isDollarNumber (char *s)
 int utils_startsWithDollarNumber (char *s)
 {
     PD_ASSERT (s[0] != 0);
-    PD_ASSERT (s[1] != 0);
     
     if (s[0] != '$' || s[1] < '0' || s[1] > '9') { return 0; }
     

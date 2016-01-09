@@ -58,12 +58,14 @@ t_symbol *atom_getSymbolAtIndex (int n, int argc, t_atom *argv)
 static int atom_symbolToQuotedString (t_atom *a, char *s, size_t size)
 {
     char *p = NULL;
-    size_t length = 0;
     int quote = 0;
     int err = 0;
     
-    for (p = GET_SYMBOL (a)->s_name; *p; p++, length++) {
-        if (*p == ';' || *p == ',' || *p == '\\' || (*p == '$' && p[1] >= '0' && p[1] <= '9')) {    // --
+    if (size < 2) { err = 1; }
+    else {
+    //
+    for (p = GET_SYMBOL (a)->s_name; *p; p++) {
+        if (utils_isStatementEnd (*p) || utils_isEscape (*p) || utils_startsWithDollarNumber (p)) {
             quote = 1; break; 
         }
     }
@@ -71,13 +73,13 @@ static int atom_symbolToQuotedString (t_atom *a, char *s, size_t size)
     if (quote) {
     
         char *base = s;
-        char *end = s + (size - 2);
+        char *last = s + (size - 2);
         
         p = GET_SYMBOL (a)->s_name;
         
-        while (base < end && *p) {
+        while (base < last && *p) {
         //
-        if (*p == ';' || *p == ',' || *p == '\\' || (*p == '$' && p[1] >= '0' && p[1] <= '9')) {    // --
+        if (utils_isStatementEnd (*p) || utils_isEscape (*p) || utils_startsWithDollarNumber (p)) {
             *base++ = '\\';
         }
         *base++ = *p++;
@@ -91,6 +93,8 @@ static int atom_symbolToQuotedString (t_atom *a, char *s, size_t size)
     } else {
         err = utils_strncpy (s, size, GET_SYMBOL (a)->s_name);
     }
+    //
+    }
     
     return err;
 }
@@ -99,9 +103,11 @@ static int atom_symbolToQuotedString (t_atom *a, char *s, size_t size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int atom_toString (t_atom *a, char *s, size_t size)
+void atom_toString (t_atom *a, char *s, size_t size)
 {
     int err = 1;
+    
+    PD_ASSERT (size > 1);
     
     switch (a->a_type) {
         case A_SEMICOLON    : err = utils_strncpy (s, size, ";");                       break;
@@ -112,10 +118,8 @@ int atom_toString (t_atom *a, char *s, size_t size)
         case A_DOLLAR       : err = utils_snprintf (s, size, "$%d", a->a_w.w_index);    break;
         case A_DOLLARSYMBOL : err = utils_strncpy (s, size, GET_SYMBOL (a)->s_name);    break;
     }
-    
+
     PD_ASSERT (err == 0);
-    
-    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------

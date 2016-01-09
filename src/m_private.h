@@ -128,17 +128,6 @@ struct _pdinstance {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int  utils_isStatementEnd           (char c);
-int  utils_isEscape                 (char c);
-int  utils_isWhitespace             (char c);
-
-int  utils_isDollarNumber           (char *s);
-int  utils_startsWithDollarNumber   (char *s);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void pd_push                        (t_pd *x);
 void pd_pop                         (t_pd *x);
 void pd_empty                       (t_pd *x);
@@ -151,22 +140,38 @@ int  pd_setLoadingAbstraction       (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        class_setExternalDirectory      (t_symbol *s);
-t_method    class_getMethod                 (t_class *c, t_symbol *s);
-int         class_hasMethod                 (t_class *c, t_symbol *s);
-int         class_hasBang                   (t_class *c);
-int         class_hasDrawCommand            (t_class *c);
-int         class_hasPropertiesFunction     (t_class *c); 
-void        class_setWidget                 (t_class *c, t_widgetbehavior *w);
-void        class_setParentWidget           (t_class *c, t_parentwidgetbehavior *w);
-void        class_setDrawCommand            (t_class *c);
-void        class_setHelpName               (t_class *c, t_symbol *s);
-void        class_setPropertiesFunction     (t_class *c, t_propertiesfn f);
-void        class_setSaveFunction           (t_class *c, t_savefn f);
+int  utils_strncpy                  (char *dest, size_t size, const char *src);
+int  utils_strncat                  (char *dest, size_t size, const char *src);
+int  utils_snprintf                 (char *dest, size_t size, const char *format, ...);
+int  utils_snprintfCat              (char *dest, size_t size, const char *format, ...);
 
-char        *class_getName                  (t_class *c);
-char        *class_getHelpName              (t_class *c);
-char        *class_getHelpDirectory         (t_class *c);
+int  utils_isStatementEnd           (char c);
+int  utils_isEscape                 (char c);
+int  utils_isWhitespace             (char c);
+
+int  utils_isDollarNumber           (char *s);
+int  utils_startsWithDollarNumber   (char *s);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        class_setExternalDirectory                  (t_symbol *s);
+t_method    class_getMethod                             (t_class *c, t_symbol *s);
+int         class_hasMethod                             (t_class *c, t_symbol *s);
+int         class_hasBang                               (t_class *c);
+int         class_hasDrawCommand                        (t_class *c);
+int         class_hasPropertiesFunction                 (t_class *c); 
+void        class_setWidget                             (t_class *c, t_widgetbehavior *w);
+void        class_setParentWidget                       (t_class *c, t_parentwidgetbehavior *w);
+void        class_setDrawCommand                        (t_class *c);
+void        class_setHelpName                           (t_class *c, t_symbol *s);
+void        class_setPropertiesFunction                 (t_class *c, t_propertiesfn f);
+void        class_setSaveFunction                       (t_class *c, t_savefn f);
+
+char        *class_getName                              (t_class *c);
+char        *class_getHelpName                          (t_class *c);
+char        *class_getHelpDirectory                     (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -229,6 +234,12 @@ void global_shouldQuit          (void *dummy);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void atom_toString              (t_atom *a, char *s, size_t size);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void buffer_withString          (t_buffer *x, char *s, int size);
 void buffer_toString            (t_buffer *x, char **s, int *size);
 
@@ -245,11 +256,11 @@ void open_via_helppath          (const char *name, const char *dir);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void message_initialize     (void);
-void object_initialize      (void);
-void setup_initialize       (void);
-void global_initialize      (void);
-void garray_init            (void);
+void message_initialize         (void);
+void object_initialize          (void);
+void setup_initialize           (void);
+void global_initialize          (void);
+void garray_init                (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

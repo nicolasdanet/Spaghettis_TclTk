@@ -364,16 +364,8 @@ PD_DLL void     sys_freeMemory          (void *ptr, size_t n);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL int      utils_strncpy           (char *dest, size_t size, const char *src);
-PD_DLL int      utils_strncat           (char *dest, size_t size, const char *src);
-PD_DLL int      utils_snprintf          (char *dest, size_t size, const char *format, ...);
-PD_DLL int      utils_snprintfCat       (char *dest, size_t size, const char *format, ...);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 PD_DLL t_pd     *pd_new                 (t_class *c);
+PD_DLL t_pd     *pd_findByClass         (t_symbol *s, t_class *c);
 
 PD_DLL void     pd_free                 (t_pd *x);
 PD_DLL void     pd_bang                 (t_pd *x);
@@ -382,13 +374,6 @@ PD_DLL void     pd_float                (t_pd *x, t_float f);
 PD_DLL void     pd_symbol               (t_pd *x, t_symbol *s);
 PD_DLL void     pd_list                 (t_pd *x, int argc, t_atom *argv);
 PD_DLL void     pd_message              (t_pd *x, t_symbol *s, int argc, t_atom *argv);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-PD_DLL t_pd     *pd_findByClass         (t_symbol *s, t_class *c);
-
 PD_DLL void     pd_bind                 (t_pd *x, t_symbol *s);
 PD_DLL void     pd_unbind               (t_pd *x, t_symbol *s);
 
@@ -460,8 +445,6 @@ PD_DLL t_symbol *atom_getSymbolAtIndex      (int n, int argc, t_atom *argv);
 
 PD_DLL t_float  atom_getFloat               (t_atom *a);
 PD_DLL t_float  atom_getFloatAtIndex        (int n, int argc, t_atom *argv);
-
-PD_DLL int      atom_toString               (t_atom *a, char *s, size_t size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
