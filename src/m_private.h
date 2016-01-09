@@ -123,38 +123,50 @@ struct _pdinstance {
     t_symbol    *sym_midiclkin;
     t_symbol    *sym_midirealtimein;
     };
-    
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        pd_push                     (t_pd *x);
-void        pd_pop                      (t_pd *x);
-void        pd_empty                    (t_pd *x);
-void        pd_vMessage                 (t_pd *x, t_symbol *s, char *fmt, ...);
-void        pd_performLoadbang          (void);
-int         pd_setLoadingAbstraction    (t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        class_setExternalDirectory  (t_symbol *s);
-t_method    class_getMethod             (t_class *c, t_symbol *s);
-int         class_hasMethod             (t_class *c, t_symbol *s);
-int         class_hasBang               (t_class *c);
-int         class_hasDrawCommand        (t_class *c);
-int         class_hasPropertiesFunction (t_class *c); 
-void        class_setWidget             (t_class *c, t_widgetbehavior *w);
-void        class_setParentWidget       (t_class *c, t_parentwidgetbehavior *w);
-void        class_setDrawCommand        (t_class *c);
-void        class_setHelpName           (t_class *c, t_symbol *s);
-void        class_setPropertiesFunction (t_class *c, t_propertiesfn f);
-void        class_setSaveFunction       (t_class *c, t_savefn f);
+int  utils_isStatementEnd           (char c);
+int  utils_isEscape                 (char c);
+int  utils_isWhitespace             (char c);
 
-char        *class_getName              (t_class *c);
-char        *class_getHelpName          (t_class *c);
-char        *class_getHelpDirectory     (t_class *c);
+int  utils_isDollarNumber           (char *s);
+int  utils_startsWithDollarNumber   (char *s);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void pd_push                        (t_pd *x);
+void pd_pop                         (t_pd *x);
+void pd_empty                       (t_pd *x);
+void pd_vMessage                    (t_pd *x, t_symbol *s, char *fmt, ...);
+
+void pd_performLoadbang             (void);
+int  pd_setLoadingAbstraction       (t_symbol *s);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        class_setExternalDirectory      (t_symbol *s);
+t_method    class_getMethod                 (t_class *c, t_symbol *s);
+int         class_hasMethod                 (t_class *c, t_symbol *s);
+int         class_hasBang                   (t_class *c);
+int         class_hasDrawCommand            (t_class *c);
+int         class_hasPropertiesFunction     (t_class *c); 
+void        class_setWidget                 (t_class *c, t_widgetbehavior *w);
+void        class_setParentWidget           (t_class *c, t_parentwidgetbehavior *w);
+void        class_setDrawCommand            (t_class *c);
+void        class_setHelpName               (t_class *c, t_symbol *s);
+void        class_setPropertiesFunction     (t_class *c, t_propertiesfn f);
+void        class_setSaveFunction           (t_class *c, t_savefn f);
+
+char        *class_getName                  (t_class *c);
+char        *class_getHelpName              (t_class *c);
+char        *class_getHelpDirectory         (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

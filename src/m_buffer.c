@@ -81,6 +81,19 @@ void buffer_clear (t_buffer *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static int buffer_isValidCharacter (char c)
+{
+    return (!utils_isWhitespace (c) && !utils_isStatementEnd (c));
+}
+
+static int buffer_isValidState (int floatState)
+{
+    return (floatState == FLOAT_STATE_INTEGER_DIGIT // --
+            || floatState == FLOAT_STATE_DOT
+            || floatState == FLOAT_STATE_FRACTIONAL_DIGIT
+            || floatState == FLOAT_STATE_EXPONENTIAL_DIGIT);
+}
+
 static int buffer_nextState (int floatState, char c)
 {
     int digit       = (c >= '0' && c <= '9');
@@ -156,31 +169,6 @@ static int buffer_nextState (int floatState, char c)
     return k;
 }
 
-static int buffer_isValidState (int floatState)
-{
-    return (floatState == FLOAT_STATE_INTEGER_DIGIT // --
-            || floatState == FLOAT_STATE_DOT
-            || floatState == FLOAT_STATE_FRACTIONAL_DIGIT
-            || floatState == FLOAT_STATE_EXPONENTIAL_DIGIT);
-}
-
-static int buffer_isValidCharacter (char c)
-{
-    return (c != ' ' && c != '\n' && c != '\r' && c != '\t' && c != ',' && c != ';');
-}
-
-static int buffer_isWhitespace (char c)
-{
-    return (c == ' ' || c == '\n' || c == '\r' || c == '\t');
-}
-
-static int buffer_isDollarWithNumber (char *c)
-{
-    if (*c != '$') { return 0; } while (*(++c)) { if (*c < '0' || *c > '9') { return 0; } }
-    
-    return 1;
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -203,7 +191,7 @@ void buffer_withString (t_buffer *x, char *s, int size)
     
     while (1) {
     //
-    while (buffer_isWhitespace (*text) && (text != tBound)) { text++; }   /* Skip whitespaces. */
+    while (utils_isWhitespace (*text) && (text != tBound)) { text++; }   /* Skip whitespaces. */
     
     if (text == tBound)    { break; }
     else if (*text == ';') { SET_SEMICOLON (a); text++; }
@@ -223,11 +211,10 @@ void buffer_withString (t_buffer *x, char *s, int size)
         //
         char c = *p = *text++;
         
-        lastSlash = slash; slash = (c == '\\');
+        lastSlash = slash; slash = utils_isEscape (c);
 
         if (floatState >= 0) { floatState = buffer_nextState (floatState, c); }
-        
-        if (c == '$' && !lastSlash && (text != tBound && (*text >= '0' && *text <= '9'))) { dollar = 1; }
+        if (!lastSlash && text != tBound && utils_startsWithDollarNumber (text - 1)) { dollar = 1; }
         
         if (!slash)         { p++; }
         else if (lastSlash) { p++; slash = 0; }
@@ -240,7 +227,7 @@ void buffer_withString (t_buffer *x, char *s, int size)
             SET_FLOAT (a, atof (buf));
                         
         } else if (dollar) {
-            if (buffer_isDollarWithNumber (buf)) { SET_DOLLAR (a, atoi (buf + 1)); }
+            if (utils_isDollarNumber (buf)) { SET_DOLLAR (a, atoi (buf + 1)); }
             else { 
                 SET_DOLLARSYMBOL (a, gensym (buf));
             }
