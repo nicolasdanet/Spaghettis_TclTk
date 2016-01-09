@@ -209,7 +209,6 @@ t_class *class_new (t_symbol *s,
     c->c_name               = s;
     c->c_helpName           = s;
     c->c_externalDirectory  = class_externalDirectory;
-    c->c_size               = size;
     c->c_methods            = PD_MEMORY_GET (0);                 /* Allocate 1 byte of memory. */
     c->c_methodsSize        = 0;
     c->c_methodFree         = freeMethod;
@@ -228,6 +227,7 @@ t_class *class_new (t_symbol *s,
     c->c_isBox              = (typeflag == CLASS_BOX);
     c->c_hasFirstInlet      = ((flags & CLASS_NOINLET) == 0);
     c->c_hasDrawCommand     = 0;
+    c->c_size               = size;
 
     return c;
 }

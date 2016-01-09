@@ -79,7 +79,6 @@ struct _class {
     t_symbol                *c_name;
     t_symbol                *c_helpName;
     t_symbol                *c_externalDirectory;
-    size_t                  c_size;
     t_entry                 *c_methods;
     int                     c_methodsSize;
     t_method                c_methodFree;
@@ -98,6 +97,7 @@ struct _class {
     char                    c_isBox;
     char                    c_hasFirstInlet;
     char                    c_hasDrawCommand;
+    size_t                  c_size;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -212,6 +212,13 @@ void global_ping                (t_pd *dummy);
 void global_watchdog            (t_pd *dummy);
 void global_savePreferences     (t_pd *dummy);
 void global_shouldQuit          (void *dummy);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void buffer_withString          (t_buffer *x, char *s, int size);
+void buffer_toString            (t_buffer *x, char **s, int *size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

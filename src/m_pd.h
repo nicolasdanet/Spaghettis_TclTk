@@ -472,9 +472,6 @@ PD_DLL t_buffer *buffer_new                 (void);
 PD_DLL void     buffer_free                 (t_buffer *x);
 PD_DLL void     buffer_clear                (t_buffer *x);
 
-PD_DLL void     buffer_fromString           (t_buffer *x, char *s, size_t size);
-PD_DLL void     buffer_toString             (t_buffer *x, char **s, int *size);
-
 PD_DLL void     binbuf_add                  (t_buffer *x, int argc, t_atom *argv);
 PD_DLL void     binbuf_addv                 (t_buffer *x, char *fmt, ...);
 PD_DLL void     binbuf_addbinbuf            (t_buffer *x, t_buffer *y);

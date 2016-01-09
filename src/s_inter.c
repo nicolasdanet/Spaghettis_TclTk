@@ -442,7 +442,7 @@ static int socketreceiver_doread(t_socketreceiver *x)
         if (c == ';' && (!indx || inbuf[indx-1] != '\\'))
         {
             intail = (indx+1)&(INBUFSIZE-1);
-            buffer_fromString(inbinbuf, messbuf, bp - messbuf);
+            buffer_withString(inbinbuf, messbuf, bp - messbuf);
             if (sys_debuglevel & DEBUG_MESSDOWN)
             {
                 write(2,  messbuf, bp - messbuf);
@@ -484,7 +484,7 @@ static void socketreceiver_getudp(t_socketreceiver *x, int fd)
             char *semi = strchr(buf, ';');
             if (semi) 
                 *semi = 0;
-            buffer_fromString(inbinbuf, buf, strlen(buf));
+            buffer_withString(inbinbuf, buf, strlen(buf));
             if (x->sr_socketreceivefn)
                 (*x->sr_socketreceivefn)(x->sr_owner, inbinbuf);
             else { PD_BUG; }

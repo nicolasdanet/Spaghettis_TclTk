@@ -15,10 +15,32 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 extern t_pd pd_objectMaker;
 extern t_pd pd_canvasMaker;
 extern int sys_defaultfont;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define BUFFER_PREALLOCATED_ATOMS       64
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+enum {
+    FLOAT_STATE_ERROR                   = -1,
+    FLOAT_STATE_START                   =  0,
+    FLOAT_STATE_MINUS                   =  1,
+    FLOAT_STATE_INTEGER_DIGIT           =  2,
+    FLOAT_STATE_LEADING_DOT             =  3,
+    FLOAT_STATE_DOT                     =  4,
+    FLOAT_STATE_FRACTIONAL_DIGIT        =  5,
+    FLOAT_STATE_EXPONENTIAL             =  6,
+    FLOAT_STATE_EXPONENTIAL_SIGN        =  7,
+    FLOAT_STATE_EXPONENTIAL_DIGIT       =  8
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -35,7 +57,6 @@ struct _buffer {
 t_buffer *buffer_new (void)
 {
     t_buffer *x = (t_buffer *)PD_MEMORY_GET (sizeof (t_buffer));
-    PD_ASSERT (x->b_size == 0);
     x->b_vector = PD_MEMORY_GET (0);
     return x;
 }
@@ -52,158 +73,205 @@ void buffer_free (t_buffer *x)
 
 void buffer_clear (t_buffer *x)
 {
-    x->b_vector = PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), 0);
     x->b_size = 0;
+    x->b_vector = PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void buffer_fromString (t_buffer *x, char *text, size_t size)
+static int buffer_nextState (int floatState, char c)
 {
-    char buf[PD_STRING+1], *bufp, *ebuf = buf+PD_STRING;
-    const char *textp = text, *etext = text+size;
-    t_atom *ap;
-    int nalloc = 16, natom = 0;
-    PD_MEMORY_FREE(x->b_vector, x->b_size * sizeof(*x->b_vector));
-    x->b_vector = PD_MEMORY_GET(nalloc * sizeof(*x->b_vector));
-    ap = x->b_vector;
-    x->b_size = 0;
-    while (1)
-    {
-        int type;
-            /* skip leading space */
-        while ((textp != etext) && (*textp == ' ' || *textp == '\n'
-            || *textp == '\r' || *textp == '\t')) textp++;
-        if (textp == etext) break;
-        if (*textp == ';') SET_SEMICOLON(ap), textp++;
-        else if (*textp == ',') SET_COMMA(ap), textp++;
-        else
-        {
-                /* it's an atom other than a comma or semi */
-            char c;
-            int floatstate = 0, slash = 0, lastslash = 0, dollar = 0;
-            bufp = buf;
-            do
-            {
-                c = *bufp = *textp++;
-                lastslash = slash;
-                slash = (c == '\\');
-
-                if (floatstate >= 0)
-                {
-                    int digit = (c >= '0' && c <= '9'),
-                        dot = (c == '.'), minus = (c == '-'),
-                        plusminus = (minus || (c == '+')),
-                        expon = (c == 'e' || c == 'E');
-                    if (floatstate == 0)    /* beginning */
-                    {
-                        if (minus) floatstate = 1;
-                        else if (digit) floatstate = 2;
-                        else if (dot) floatstate = 3;
-                        else floatstate = -1;
-                    }
-                    else if (floatstate == 1)   /* got minus */
-                    {
-                        if (digit) floatstate = 2;
-                        else if (dot) floatstate = 3;
-                        else floatstate = -1;
-                    }
-                    else if (floatstate == 2)   /* got digits */
-                    {
-                        if (dot) floatstate = 4;
-                        else if (expon) floatstate = 6;
-                        else if (!digit) floatstate = -1;
-                    }
-                    else if (floatstate == 3)   /* got '.' without digits */
-                    {
-                        if (digit) floatstate = 5;
-                        else floatstate = -1;
-                    }
-                    else if (floatstate == 4)   /* got '.' after digits */
-                    {
-                        if (digit) floatstate = 5;
-                        else if (expon) floatstate = 6;
-                        else floatstate = -1;
-                    }
-                    else if (floatstate == 5)   /* got digits after . */
-                    {
-                        if (expon) floatstate = 6;
-                        else if (!digit) floatstate = -1;
-                    }
-                    else if (floatstate == 6)   /* got 'e' */
-                    {
-                        if (plusminus) floatstate = 7;
-                        else if (digit) floatstate = 8;
-                        else floatstate = -1;
-                    }
-                    else if (floatstate == 7)   /* got plus or minus */
-                    {
-                        if (digit) floatstate = 8;
-                        else floatstate = -1;
-                    }
-                    else if (floatstate == 8)   /* got digits */
-                    {
-                        if (!digit) floatstate = -1;
-                    }
-                }
-                if (!lastslash && c == '$' && (textp != etext && 
-                    textp[0] >= '0' && textp[0] <= '9'))
-                        dollar = 1;
-                if (!slash) bufp++;
-                else if (lastslash)
-                {
-                    bufp++;
-                    slash = 0;
-                }
-            }
-            while (textp != etext && bufp != ebuf && 
-                (slash || (*textp != ' ' && *textp != '\n' && *textp != '\r'
-                    && *textp != '\t' &&*textp != ',' && *textp != ';')));
-            *bufp = 0;
-#if 0
-            post("buffer_fromString: buf %s", buf);
-#endif
-            if (floatstate == 2 || floatstate == 4 || floatstate == 5 ||
-                floatstate == 8)
-                    SET_FLOAT(ap, atof(buf));
-                /* LATER try to figure out how to mix "$" and "\$" correctly;
-                here, the backslashes were already stripped so we assume all
-                "$" chars are real dollars.  In fact, we only know at least one
-                was. */
-            else if (dollar)
-            {
-                if (buf[0] != '$') 
-                    dollar = 0;
-                for (bufp = buf+1; *bufp; bufp++)
-                    if (*bufp < '0' || *bufp > '9')
-                        dollar = 0;
-                if (dollar)
-                    SET_DOLLAR(ap, atoi(buf+1));
-                else SET_DOLLARSYMBOL(ap, gensym(buf));
-            }
-            else SET_SYMBOL(ap, gensym(buf));
+    int digit       = (c >= '0' && c <= '9');
+    int dot         = (c == '.');
+    int minus       = (c == '-');
+    int plus        = (c == '+');
+    int exponential = (c == 'e' || c == 'E');
+    
+    int k = floatState;
+    
+    PD_ASSERT (k != FLOAT_STATE_ERROR);
+    
+    if (floatState == FLOAT_STATE_START)                    {
+        if (minus)                                          { k = FLOAT_STATE_MINUS; }
+        else if (digit)                                     { k = FLOAT_STATE_INTEGER_DIGIT; }
+        else if (dot)                                       { k = FLOAT_STATE_LEADING_DOT; }
+        else {
+            k = FLOAT_STATE_ERROR;
         }
-        ap++;
-        natom++;
-        if (natom == nalloc)
-        {
-            x->b_vector = PD_MEMORY_RESIZE(x->b_vector, nalloc * sizeof(*x->b_vector),
-                nalloc * (2*sizeof(*x->b_vector)));
-            nalloc = nalloc * 2;
-            ap = x->b_vector + natom;
+        
+    } else if (floatState == FLOAT_STATE_MINUS)             {
+        if (digit)                                          { k = FLOAT_STATE_INTEGER_DIGIT; }
+        else if (dot)                                       { k = FLOAT_STATE_LEADING_DOT; }
+        else { 
+            k = FLOAT_STATE_ERROR;
         }
-        if (textp == etext) break;
+        
+    } else if (floatState == FLOAT_STATE_INTEGER_DIGIT)     {
+        if (dot)                                            { k = FLOAT_STATE_DOT; }
+        else if (exponential)                               { k = FLOAT_STATE_EXPONENTIAL; }
+        else if (!digit) {
+            k = FLOAT_STATE_ERROR;
+        }
+        
+    } else if (floatState == FLOAT_STATE_LEADING_DOT)       {
+        if (digit)                                          { k = FLOAT_STATE_FRACTIONAL_DIGIT; }
+        else {
+            k = FLOAT_STATE_ERROR;
+        }
+        
+    } else if (floatState == FLOAT_STATE_DOT)               {
+        if (digit)                                          { k = FLOAT_STATE_FRACTIONAL_DIGIT; }
+        else if (exponential)                               { k = FLOAT_STATE_EXPONENTIAL; }
+        else {
+            k = FLOAT_STATE_ERROR;
+        }
+        
+    } else if (floatState == FLOAT_STATE_FRACTIONAL_DIGIT)  {
+        if (exponential)                                    { k = FLOAT_STATE_EXPONENTIAL; }
+        else if (!digit) {
+            k = FLOAT_STATE_ERROR;
+        }
+        
+    } else if (floatState == FLOAT_STATE_EXPONENTIAL)       {
+        if (plus || minus)                                  { k = FLOAT_STATE_EXPONENTIAL_SIGN; }
+        else if (digit)                                     { k = FLOAT_STATE_EXPONENTIAL_DIGIT; }
+        else {
+            k = FLOAT_STATE_ERROR;
+        }
+        
+    } else if (floatState == FLOAT_STATE_EXPONENTIAL_SIGN)  {
+        if (digit)                                          { k = FLOAT_STATE_EXPONENTIAL_DIGIT; }
+        else {
+            k = FLOAT_STATE_ERROR;
+        }
+        
+    } else if (floatState == FLOAT_STATE_EXPONENTIAL_DIGIT) {
+        if (!digit) {
+            k = FLOAT_STATE_ERROR;
+        }
     }
-    /* reallocate the vector to exactly the right size */
-    x->b_vector = PD_MEMORY_RESIZE(x->b_vector, nalloc * sizeof(*x->b_vector),
-        natom * sizeof(*x->b_vector));
-    x->b_size = natom;
+
+    return k;
 }
 
+static int buffer_isValidState (int floatState)
+{
+    return (floatState == FLOAT_STATE_INTEGER_DIGIT // --
+            || floatState == FLOAT_STATE_DOT
+            || floatState == FLOAT_STATE_FRACTIONAL_DIGIT
+            || floatState == FLOAT_STATE_EXPONENTIAL_DIGIT);
+}
 
+static int buffer_isValidCharacter (char c)
+{
+    return (c != ' ' && c != '\n' && c != '\r' && c != '\t' && c != ',' && c != ';');
+}
 
+static int buffer_isWhitespace (char c)
+{
+    return (c == ' ' || c == '\n' || c == '\r' || c == '\t');
+}
+
+static int buffer_isDollarWithNumber (char *c)
+{
+    if (*c != '$') { return 0; } while (*(++c)) { if (*c < '0' || *c > '9') { return 0; } }
+    
+    return 1;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void buffer_withString (t_buffer *x, char *s, int size)
+{
+    int length = 0;
+    int allocated = BUFFER_PREALLOCATED_ATOMS;
+    t_atom *a = NULL;
+    
+    const char *text = s;
+    const char *tBound = s + size;
+    
+    PD_ASSERT (size > 0);
+    
+    PD_MEMORY_FREE (x->b_vector, x->b_size * sizeof (t_atom));
+    x->b_vector = PD_MEMORY_GET (allocated * sizeof (t_atom));
+    a = x->b_vector;
+    x->b_size = length;         /* Inconsistency corrected later. */
+    
+    while (1) {
+    //
+    while (buffer_isWhitespace (*text) && (text != tBound)) { text++; }   /* Skip whitespaces. */
+    
+    if (text == tBound)    { break; }
+    else if (*text == ';') { SET_SEMICOLON (a); text++; }
+    else if (*text == ',') { SET_COMMA (a);     text++; }
+    else {
+        
+        char buf[PD_STRING + 1] = { 0 };
+        char *p = buf;
+        char *pBound = buf + PD_STRING;
+        
+        int floatState = 0;
+        int slash = 0;
+        int lastSlash = 0;
+        int dollar = 0;
+        
+        do {
+        //
+        char c = *p = *text++;
+        
+        lastSlash = slash; slash = (c == '\\');
+
+        if (floatState >= 0) { floatState = buffer_nextState (floatState, c); }
+        
+        if (c == '$' && !lastSlash && (text != tBound && (*text >= '0' && *text <= '9'))) { dollar = 1; }
+        
+        if (!slash)         { p++; }
+        else if (lastSlash) { p++; slash = 0; }
+        //
+        } while (text != tBound && p != pBound && (slash || (buffer_isValidCharacter (*text))));
+                
+        *p = 0;
+
+        if (buffer_isValidState (floatState)) {
+            SET_FLOAT (a, atof (buf));
+                        
+        } else if (dollar) {
+            if (buffer_isDollarWithNumber (buf)) { SET_DOLLAR (a, atoi (buf + 1)); }
+            else { 
+                SET_DOLLARSYMBOL (a, gensym (buf));
+            }
+            
+        } else {
+            SET_SYMBOL (a, gensym (buf));
+        }
+    }
+    
+    a++;
+    length++;
+    
+    if (length == allocated) {
+        size_t oldSize = allocated * sizeof (t_atom);
+        x->b_vector = PD_MEMORY_RESIZE (x->b_vector, oldSize, oldSize * 2);
+        allocated = allocated * 2;
+        a = x->b_vector + length;
+    }
+    
+    if (text == tBound) { break; }
+    //
+    }
+    
+    /* Crop to truly used memory. */
+    
+    x->b_size = length;
+    x->b_vector = PD_MEMORY_RESIZE (x->b_vector, allocated * sizeof (t_atom), length * sizeof (t_atom));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
     /* convert a binbuf to text; no null termination. */
 void buffer_toString(t_buffer *x, char **bufp, int *lengthp)
@@ -812,7 +880,7 @@ int binbuf_read(t_buffer *b, char *filename, char *dirname, int crflag)
             if (buf[i] == '\n')
                 buf[i] = ';';
     }
-    buffer_fromString(b, buf, length);
+    buffer_withString(b, buf, length);
 
 #if 0
     post("binbuf_read "); post_atoms(b->b_size, b->b_vector);
