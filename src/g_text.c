@@ -363,20 +363,20 @@ static void message_list(t_message *x, t_symbol *s, int argc, t_atom *argv)
 
 static void message_set(t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    buffer_clear(x->m_text.te_buffer);
-    binbuf_add(x->m_text.te_buffer, argc, argv);
+    buffer_reset(x->m_text.te_buffer);
+    buffer_append(x->m_text.te_buffer, argc, argv);
     glist_retext(x->m_glist, &x->m_text);
 }
 
 static void message_add2(t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    binbuf_add(x->m_text.te_buffer, argc, argv);
+    buffer_append(x->m_text.te_buffer, argc, argv);
     glist_retext(x->m_glist, &x->m_text);
 }
 
 static void message_add(t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    binbuf_add(x->m_text.te_buffer, argc, argv);
+    buffer_append(x->m_text.te_buffer, argc, argv);
     binbuf_addsemi(x->m_text.te_buffer);
     glist_retext(x->m_glist, &x->m_text);
 }
@@ -385,7 +385,7 @@ static void message_addcomma(t_message *x)
 {
     t_atom a;
     SET_COMMA(&a);
-    binbuf_add(x->m_text.te_buffer, 1, &a);
+    buffer_append(x->m_text.te_buffer, 1, &a);
     glist_retext(x->m_glist, &x->m_text);
 }
 
@@ -401,7 +401,7 @@ static void message_adddollar(t_message *x, t_float f)
     if (n < 0)
         n = 0;
     SET_DOLLAR(&a, n);
-    binbuf_add(x->m_text.te_buffer, 1, &a);
+    buffer_append(x->m_text.te_buffer, 1, &a);
     glist_retext(x->m_glist, &x->m_text);
 }
 
@@ -413,7 +413,7 @@ static void message_adddollsym(t_message *x, t_symbol *s)
     strncpy(buf+1, s->s_name, PD_STRING-2);
     buf[PD_STRING-1] = 0;
     SET_DOLLARSYMBOL(&a, gensym(buf));
-    binbuf_add(x->m_text.te_buffer, 1, &a);
+    buffer_append(x->m_text.te_buffer, 1, &a);
     glist_retext(x->m_glist, &x->m_text);
 }
 
@@ -543,8 +543,8 @@ static void gatom_redraw(t_gobj *client, t_glist *glist)
 
 static void gatom_retext(t_gatom *x, int senditup)
 {
-    buffer_clear(x->a_text.te_buffer);
-    binbuf_add(x->a_text.te_buffer, 1, &x->a_atom);
+    buffer_reset(x->a_text.te_buffer);
+    buffer_append(x->a_text.te_buffer, 1, &x->a_atom);
     if (senditup && glist_isvisible(x->a_glist))
         sys_queuegui(x, x->a_glist, gatom_redraw);
 }
@@ -721,8 +721,8 @@ redraw:
         /* LATER figure out how to avoid creating all these symbols! */
     sprintf(sbuf, "%s...", x->a_buf);
     SET_SYMBOL(&at, gensym(sbuf));
-    buffer_clear(x->a_text.te_buffer);
-    binbuf_add(x->a_text.te_buffer, 1, &at);
+    buffer_reset(x->a_text.te_buffer);
+    buffer_append(x->a_text.te_buffer, 1, &at);
     glist_retext(x->a_glist, &x->a_text);
 }
 
@@ -901,7 +901,7 @@ void canvas_atom(t_glist *gl, t_atomtype type,
         x->a_text.te_width = 10;
         SET_SYMBOL(&at, &s_symbol);
     }
-    binbuf_add(x->a_text.te_buffer, 1, &at);
+    buffer_append(x->a_text.te_buffer, 1, &at);
     if (argc > 1)
         /* create from file. x, y, width, low-range, high-range, flags,
             label, receive-name, send-name */

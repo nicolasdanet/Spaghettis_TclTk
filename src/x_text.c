@@ -95,7 +95,7 @@ static void textbuf_addline(t_textbuf *b, t_symbol *s, int argc, t_atom *argv)
 {
     t_buffer *z = buffer_new();
     binbuf_restore(z, argc, argv);
-    binbuf_add(b->b_binbuf, binbuf_getnatom(z), binbuf_getvec(z));
+    buffer_append(b->b_binbuf, binbuf_getnatom(z), binbuf_getvec(z));
     buffer_free(z);
     textbuf_senditup(b);
 }
@@ -276,7 +276,7 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
 
 static void text_define_clear(t_text_define *x)
 {
-    buffer_clear(x->x_binbuf);
+    buffer_reset(x->x_binbuf);
     textbuf_senditup(&x->x_textbuf);
 }
 
@@ -294,8 +294,8 @@ static void text_define_frompointer(t_text_define *x, t_gpointer *gp,
     if (b)
     {
         t_gstub *gs = gp->gp_stub;
-        buffer_clear(x->x_textbuf.b_binbuf);
-        binbuf_add(x->x_textbuf.b_binbuf, binbuf_getnatom(b), binbuf_getvec(b));
+        buffer_reset(x->x_textbuf.b_binbuf);
+        buffer_append(x->x_textbuf.b_binbuf, binbuf_getnatom(b), binbuf_getvec(b));
     } 
 }
 
@@ -306,8 +306,8 @@ static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
     if (b)
     {
         t_gstub *gs = gp->gp_stub;
-        buffer_clear(b);
-        binbuf_add(b, binbuf_getnatom(x->x_textbuf.b_binbuf),
+        buffer_reset(b);
+        buffer_append(b, binbuf_getnatom(x->x_textbuf.b_binbuf),
             binbuf_getvec(x->x_textbuf.b_binbuf));
         if (gs->gs_type == POINTER_GLIST)
             scalar_redraw(gp->gp_un.gp_scalar, gs->gs_un.gs_glist);  
@@ -848,7 +848,7 @@ static void text_fromlist_list(t_text_fromlist *x,
     t_buffer *b = text_client_getbuf(x);
     if (!b)
        return;
-    buffer_clear(b);
+    buffer_reset(b);
     binbuf_restore(b, argc, argv);
     text_client_senditup(x);
 }
@@ -1637,19 +1637,19 @@ static void qlist_add(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_atom a;
     SET_SEMICOLON(&a);
-    binbuf_add(x->x_binbuf, argc, argv);
-    binbuf_add(x->x_binbuf, 1, &a);
+    buffer_append(x->x_binbuf, argc, argv);
+    buffer_append(x->x_binbuf, 1, &a);
 }
 
 static void qlist_add2(t_qlist *x, t_symbol *s, int argc, t_atom *argv)
 {
-    binbuf_add(x->x_binbuf, argc, argv);
+    buffer_append(x->x_binbuf, argc, argv);
 }
 
 static void qlist_clear(t_qlist *x)
 {
     qlist_rewind(x);
-    buffer_clear(x->x_binbuf);
+    buffer_reset(x->x_binbuf);
 }
 
 static void qlist_set(t_qlist *x, t_symbol *s, int argc, t_atom *argv)

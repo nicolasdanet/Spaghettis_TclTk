@@ -2191,7 +2191,7 @@ void canvas_stowconnections(t_canvas *x)
     else x->gl_list = nonhead, nontail->g_next = selhead;
 
         /* add connections to binbuf */
-    buffer_clear(x->gl_editor->e_connectbuf);
+    buffer_reset(x->gl_editor->e_connectbuf);
     linetraverser_start(&t, x);
     while (oc = linetraverser_next(&t))
     {

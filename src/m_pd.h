@@ -348,34 +348,34 @@ PD_DLL t_symbol s_;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL t_symbol *gensym                 (const char *s);
+PD_DLL t_symbol *gensym                     (const char *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL void     *sys_getMemory          (size_t n);
-PD_DLL void     *sys_getMemoryCopy      (void *src, size_t n);
-PD_DLL void     *sys_getMemoryResize    (void *ptr, size_t oldSize, size_t newSize);
+PD_DLL void     *sys_getMemory              (size_t n);
+PD_DLL void     *sys_getMemoryCopy          (void *src, size_t n);
+PD_DLL void     *sys_getMemoryResize        (void *ptr, size_t oldSize, size_t newSize);
 
-PD_DLL void     sys_freeMemory          (void *ptr, size_t n);
+PD_DLL void     sys_freeMemory              (void *ptr, size_t n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL t_pd     *pd_new                 (t_class *c);
-PD_DLL t_pd     *pd_findByClass         (t_symbol *s, t_class *c);
+PD_DLL t_pd     *pd_new                     (t_class *c);
+PD_DLL t_pd     *pd_findByClass             (t_symbol *s, t_class *c);
 
-PD_DLL void     pd_free                 (t_pd *x);
-PD_DLL void     pd_bang                 (t_pd *x);
-PD_DLL void     pd_pointer              (t_pd *x, t_gpointer *gp);
-PD_DLL void     pd_float                (t_pd *x, t_float f);
-PD_DLL void     pd_symbol               (t_pd *x, t_symbol *s);
-PD_DLL void     pd_list                 (t_pd *x, int argc, t_atom *argv);
-PD_DLL void     pd_message              (t_pd *x, t_symbol *s, int argc, t_atom *argv);
-PD_DLL void     pd_bind                 (t_pd *x, t_symbol *s);
-PD_DLL void     pd_unbind               (t_pd *x, t_symbol *s);
+PD_DLL void     pd_free                     (t_pd *x);
+PD_DLL void     pd_bang                     (t_pd *x);
+PD_DLL void     pd_pointer                  (t_pd *x, t_gpointer *gp);
+PD_DLL void     pd_float                    (t_pd *x, t_float f);
+PD_DLL void     pd_symbol                   (t_pd *x, t_symbol *s);
+PD_DLL void     pd_list                     (t_pd *x, int argc, t_atom *argv);
+PD_DLL void     pd_message                  (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+PD_DLL void     pd_bind                     (t_pd *x, t_symbol *s);
+PD_DLL void     pd_unbind                   (t_pd *x, t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -453,9 +453,10 @@ PD_DLL t_float  atom_getFloatAtIndex        (int n, int argc, t_atom *argv);
 PD_DLL t_buffer *buffer_new                 (void);
 
 PD_DLL void     buffer_free                 (t_buffer *x);
-PD_DLL void     buffer_clear                (t_buffer *x);
+PD_DLL void     buffer_reset                (t_buffer *x);
 
-PD_DLL void     binbuf_add                  (t_buffer *x, int argc, t_atom *argv);
+PD_DLL void     buffer_append               (t_buffer *x, int argc, t_atom *argv);
+
 PD_DLL void     binbuf_addv                 (t_buffer *x, char *fmt, ...);
 PD_DLL void     binbuf_addbinbuf            (t_buffer *x, t_buffer *y);
 PD_DLL void     binbuf_addsemi              (t_buffer *x);

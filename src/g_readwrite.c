@@ -106,7 +106,7 @@ static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
             for (last = first; last < natoms && vec[last].a_type != A_SEMICOLON;
                 last++);
             binbuf_restore(z, last-first, vec+first);
-            binbuf_add(w[i].w_buffer, binbuf_getnatom(z), binbuf_getvec(z));
+            buffer_append(w[i].w_buffer, binbuf_getnatom(z), binbuf_getvec(z));
             buffer_free(z);
             last++;
             if (last > natoms) last = natoms;
@@ -402,7 +402,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_buffer *b,
     {
         t_atom templatename;
         SET_SYMBOL(&templatename, gensym(templatesym->s_name + 3));
-        binbuf_add(b, 1, &templatename);
+        buffer_append(b, 1, &templatename);
     }
     if (!template) { PD_BUG; }
         /* write the atoms (floats and symbols) */
@@ -422,7 +422,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_buffer *b,
         /* array elements have to have at least something */
     if (natom == 0 && amarrayelement)
         SET_SYMBOL(a + natom,  &s_bang), natom++;
-    binbuf_add(b, natom, a);
+    buffer_append(b, natom, a);
     binbuf_addsemi(b);
     PD_MEMORY_FREE(a, natom * sizeof(*a));
     for (i = 0; i < n; i++)

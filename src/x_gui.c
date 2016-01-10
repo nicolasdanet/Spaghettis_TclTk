@@ -137,7 +137,7 @@ static void gfxstub_data(t_gfxstub *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (!gfxstub_binbuf)
         gfxstub_binbuf = buffer_new();
-    binbuf_add(gfxstub_binbuf, argc, argv);
+    buffer_append(gfxstub_binbuf, argc, argv);
     binbuf_addsemi(gfxstub_binbuf);
 }
     /* the "end" message terminates rebuilding the scalar */

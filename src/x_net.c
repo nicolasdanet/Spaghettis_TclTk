@@ -259,9 +259,9 @@ static int netsend_dosend(t_netsend *x, int sockfd,
     {
         t_atom at;
         b = buffer_new();
-        binbuf_add(b, argc, argv);
+        buffer_append(b, argc, argv);
         SET_SEMICOLON(&at);
-        binbuf_add(b, 1, &at);
+        buffer_append(b, 1, &at);
         buffer_toStringUnzero(b, &buf, &length);
     }
     for (bp = buf, sent = 0; sent < length;)

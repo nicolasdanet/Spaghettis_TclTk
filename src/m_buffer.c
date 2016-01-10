@@ -71,10 +71,22 @@ void buffer_free (t_buffer *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void buffer_clear (t_buffer *x)
+void buffer_reset (t_buffer *x)
 {
     x->b_size = 0;
     x->b_vector = PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), 0);
+}
+
+void buffer_append (t_buffer *x, int argc, t_atom *argv)
+{
+    t_atom *a = NULL;
+    int i, n = x->b_size + argc;
+
+    PD_ASSERT (argc >= 0);
+    
+    x->b_vector = PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
+
+    for (a = x->b_vector + x->b_size; argc--; a++) { *a = *(argv++); } x->b_size = n;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -282,7 +294,9 @@ void buffer_toStringUnzero (t_buffer *x, char **s, int *size)
     //
     }
     
-    if (length && buf[length - 1] == ' ') { buf = PD_MEMORY_RESIZE (buf, length, length - 1); length--; }
+    if (length && buf[length - 1] == ' ') { 
+        buf = PD_MEMORY_RESIZE (buf, length, length - 1); length--; 
+    }
     
     *s = buf;
     *size = length;
@@ -292,31 +306,8 @@ void buffer_toStringUnzero (t_buffer *x, char **s, int *size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* LATER improve the out-of-space behavior below.  Also fix this so that
-writing to file doesn't buffer everything together. */
-
-void binbuf_add(t_buffer *x, int argc, t_atom *argv)
-{
-    int newsize = x->b_size + argc, i;
-    t_atom *ap;
-    if (ap = PD_MEMORY_RESIZE(x->b_vector, x->b_size * sizeof(*x->b_vector),
-        newsize * sizeof(*x->b_vector)))
-            x->b_vector = ap;
-    else
-    {
-        post_error ("binbuf_addmessage: out of space");
-        return;
-    }
-#if 0
-    post("binbuf_add: ");
-    post_atoms(argc, argv);
-#endif
-    for (ap = x->b_vector + x->b_size, i = argc; i--; ap++)
-        *ap = *(argv++);
-    x->b_size = newsize;
-}
-
 #define MAXADDMESSV 100
+
 void binbuf_addv(t_buffer *x, char *fmt, ...)
 {
     va_list ap;
@@ -346,7 +337,7 @@ void binbuf_addv(t_buffer *x, char *fmt, ...)
     }
 done:
     va_end(ap);
-    binbuf_add(x, nargs, arg);
+    buffer_append(x, nargs, arg);
 }
 
 /* add a binbuf to another one for saving.  Semicolons and commas go to
@@ -358,7 +349,7 @@ void binbuf_addbinbuf(t_buffer *x, t_buffer *y)
     t_buffer *z = buffer_new();
     int i, fixit;
     t_atom *ap;
-    binbuf_add(z, y->b_size, y->b_vector);
+    buffer_append(z, y->b_size, y->b_vector);
     for (i = 0, ap = z->b_vector; i < z->b_size; i++, ap++)
     {
         char tbuf[PD_STRING], *s;
@@ -395,14 +386,14 @@ void binbuf_addbinbuf(t_buffer *x, t_buffer *y)
         }
     }
     
-    binbuf_add(x, z->b_size, z->b_vector);
+    buffer_append(x, z->b_size, z->b_vector);
 }
 
 void binbuf_addsemi(t_buffer *x)
 {
     t_atom a;
     SET_SEMICOLON(&a);
-    binbuf_add(x, 1, &a);
+    buffer_append(x, 1, &a);
 }
 
 /* Supply atoms to a binbuf from a message, making the opposite changes
@@ -1125,7 +1116,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                     for (i = 7; i < natom; i++)
                         outmess[i-2] = nextmess[i];
                     SET_SEMICOLON(outmess + natom - 2);
-                    binbuf_add(newb, natom - 1, outmess);
+                    buffer_append(newb, natom - 1, outmess);
                     nobj++;
                 }
                 else if (!strcmp(second, "message") || 
@@ -1139,7 +1130,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                     for (i = 6; i < natom; i++)
                         outmess[i-2] = nextmess[i];
                     SET_SEMICOLON(outmess + natom - 2);
-                    binbuf_add(newb, natom - 1, outmess);
+                    buffer_append(newb, natom - 1, outmess);
                     nobj++;
                 }
                 else if (!strcmp(second, "button"))
@@ -1309,7 +1300,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                     for (i = 5; i < natom; i++)
                         outmess[i+2] = nextmess[i];
                     SET_SEMICOLON(outmess + natom + 2);
-                    binbuf_add(newb, natom + 3, outmess);
+                    buffer_append(newb, natom + 3, outmess);
                     if (stackdepth) stackdepth--;
                     nobj = stack[stackdepth];
                     nobj++;
@@ -1411,7 +1402,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                                 outmess[i+2] = nextmess[i];
                         }
                         SET_SEMICOLON(outmess + natom + 2);
-                        binbuf_add(newb, natom + 3, outmess);
+                        buffer_append(newb, natom + 3, outmess);
                     }
                     else
                     {
@@ -1426,7 +1417,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                         if (classname == gensym("osc~"))
                             SET_SYMBOL(outmess + 6, gensym("cycle~"));
                         SET_SEMICOLON(outmess + natom + 2);
-                        binbuf_add(newb, natom + 3, outmess);
+                        buffer_append(newb, natom + 3, outmess);
                     }
                     nobj++;
                 
@@ -1444,7 +1435,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                     for (i = 4; i < natom; i++)
                         outmess[i+2] = nextmess[i];
                     SET_SEMICOLON(outmess + natom + 2);
-                    binbuf_add(newb, natom + 3, outmess);
+                    buffer_append(newb, natom + 3, outmess);
                     nobj++;
                 }
                 else if (!strcmp(second, "floatatom"))
@@ -1547,13 +1538,13 @@ void binbuf_savetext(t_buffer *bfrom, t_buffer *bto)
                 !strchr(ap[k].a_w.w_symbol->s_name, ';') &&
                 !strchr(ap[k].a_w.w_symbol->s_name, ',') &&
                 !strchr(ap[k].a_w.w_symbol->s_name, '$'))
-                    binbuf_add(bto, 1, &ap[k]);
+                    buffer_append(bto, 1, &ap[k]);
         else
         {
             char buf[PD_STRING+1];
             atom_toString(&ap[k], buf, PD_STRING);
             SET_SYMBOL(&at, gensym(buf));
-            binbuf_add(bto, 1, &at);
+            buffer_append(bto, 1, &at);
         }
     }
     binbuf_addsemi(bto);
