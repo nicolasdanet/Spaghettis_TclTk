@@ -141,9 +141,7 @@ int  pd_setLoadingAbstraction       (t_symbol *s);
 #pragma mark -
 
 int  utils_strncpy                  (char *dest, size_t size, const char *src);
-int  utils_strncat                  (char *dest, size_t size, const char *src);
 int  utils_snprintf                 (char *dest, size_t size, const char *format, ...);
-int  utils_snprintfCat              (char *dest, size_t size, const char *format, ...);
 
 int  utils_isStatementEnd           (char c);
 int  utils_isEscape                 (char c);
@@ -240,7 +238,7 @@ void atom_toString              (t_atom *a, char *s, size_t size);
 #pragma mark -
 
 void buffer_withString          (t_buffer *x, char *s, int size);
-void buffer_toString            (t_buffer *x, char **s, int *size);
+void buffer_toStringUnzero            (t_buffer *x, char **s, int *size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -265,13 +263,13 @@ void garray_init                (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_vgui               (char *fmt, ...);
-void sys_gui                (char *s);
-void sys_pretendguibytes    (int n);
-void sys_queuegui           (void *client, t_glist *glist, t_callbackfn f);
-void sys_unqueuegui         (void *client);
-void gfxstub_new            (t_pd *owner, void *key, const char *cmd);
-void gfxstub_deleteforkey   (void *key);
+void sys_vgui                   (char *fmt, ...);
+void sys_gui                    (char *s);
+void sys_pretendguibytes        (int n);
+void sys_queuegui               (void *client, t_glist *glist, t_callbackfn f);
+void sys_unqueuegui             (void *client);
+void gfxstub_new                (t_pd *owner, void *key, const char *cmd);
+void gfxstub_deleteforkey       (void *key);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

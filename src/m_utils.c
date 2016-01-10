@@ -30,26 +30,6 @@ int utils_strncpy (char *dest, size_t size, const char *src)
     }
 }
 
-int utils_strncat (char *dest, size_t size, const char *src)
-{
-    size_t d = strlen (dest);
-    size_t s = strlen (src);
-    size_t n = (size - 1) - d;
-    
-    PD_ASSERT (size > d);
-    
-    strncat (dest, src, PD_MIN (s, n));
-    
-    if (s <= n) { return 0; }
-    else {
-        return 1;
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 int utils_snprintf (char *dest, size_t size, const char *format, ...)
 {
     int t;
@@ -60,22 +40,6 @@ int utils_snprintf (char *dest, size_t size, const char *format, ...)
     va_end (args);
     
     if (t >= 0 && (size_t)t < size) { return 0; }
-    else {
-        return 1;
-    }
-}
-
-int utils_snprintfCat (char *dest, size_t size, const char *format, ...)
-{
-    int t;
-    va_list args;
-    size_t d = strlen (dest);
-    
-    va_start (args, format);
-    t = vsnprintf (dest + d, size - d, format, args);
-    va_end (args);
-    
-    if (t >= 0 && (size_t)t < (size - d)) { return 0; }
     else {
         return 1;
     }

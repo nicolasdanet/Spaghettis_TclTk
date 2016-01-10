@@ -253,46 +253,41 @@ void buffer_withString (t_buffer *x, char *s, int size)
     
     /* Crop to truly used memory. */
     
-    x->b_size = length;
+    x->b_size   = length;
     x->b_vector = PD_MEMORY_RESIZE (x->b_vector, allocated * sizeof (t_atom), length * sizeof (t_atom));
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-    /* convert a binbuf to text; no null termination. */
-void buffer_toString(t_buffer *x, char **bufp, int *lengthp)
+void buffer_toStringUnzero (t_buffer *x, char **s, int *size)
 {
-    char *buf = PD_MEMORY_GET(0), *newbuf;
+    char *buf = PD_MEMORY_GET (0);
     int length = 0;
-    char string[PD_STRING];
-    t_atom *ap;
-    int indx;
+    t_atom *a = NULL;
+    int i = x->b_size;
 
-    for (ap = x->b_vector, indx = x->b_size; indx--; ap++)
-    {
-        int newlength;
-        if ((ap->a_type == A_SEMICOLON || ap->a_type == A_COMMA) &&
-                length && buf[length-1] == ' ') length--;
-        atom_toString(ap, string, PD_STRING);
-        newlength = length + strlen(string) + 1;
-        if (!(newbuf = PD_MEMORY_RESIZE(buf, length, newlength))) break;
-        buf = newbuf;
-        strcpy(buf + length, string);
-        length = newlength;
-        if (ap->a_type == A_SEMICOLON) buf[length-1] = '\n';
-        else buf[length-1] = ' ';
+    for (a = x->b_vector; i--; a++) {
+    //
+    char t[PD_STRING] = { 0 };
+    int n = length;
+        
+    atom_toString (a, t, PD_STRING);
+    n += strlen (t) + 1;
+    buf = PD_MEMORY_RESIZE (buf, length, n);
+    strcpy (buf + length, t);
+    length = n;
+    if (IS_SEMICOLON (a)) { buf[length - 1] = '\n'; }
+    else { 
+        buf[length - 1] = ' ';
     }
-    if (length && buf[length-1] == ' ')
-    {
-        if (newbuf = PD_MEMORY_RESIZE(buf, length, length-1))
-        {
-            buf = newbuf;
-            length--;
-        }
+    //
     }
-    *bufp = buf;
-    *lengthp = length;
+    
+    if (length && buf[length - 1] == ' ') { buf = PD_MEMORY_RESIZE (buf, length, length - 1); length--; }
+    
+    *s = buf;
+    *size = length;
 }
 
 // -----------------------------------------------------------------------------------------------------------

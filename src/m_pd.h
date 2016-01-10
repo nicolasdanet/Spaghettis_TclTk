@@ -342,7 +342,7 @@ PD_DLL t_symbol s_;
 #define PD_MEMORY_GET(n)                                sys_getMemory (n)
 #define PD_MEMORY_GET_COPY(src, n)                      sys_getMemoryCopy (src, n)
 #define PD_MEMORY_RESIZE(ptr, oldSize, newSize)         sys_getMemoryResize (ptr, oldSize, newSize)
-#define PD_MEMORY_FREE(ptr, n)                          sys_freeMemory(ptr, n)
+#define PD_MEMORY_FREE(ptr, n)                          sys_freeMemory (ptr, n)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -107,19 +107,17 @@ void atom_toString (t_atom *a, char *s, size_t size)
 {
     int err = 1;
     
-    PD_ASSERT (size > 1);
-    
     switch (a->a_type) {
-        case A_SEMICOLON    : err = utils_strncpy (s, size, ";");                       break;
-        case A_COMMA        : err = utils_strncpy (s, size, ",");                       break;  // --
-        case A_POINTER      : err = utils_strncpy (s, size, s_pointer.s_name);          break;
-        case A_FLOAT        : err = utils_snprintf (s, size, "%g", GET_FLOAT (a));      break;
         case A_SYMBOL       : err = atom_symbolToQuotedString (a, s, size);             break;
-        case A_DOLLAR       : err = utils_snprintf (s, size, "$%d", a->a_w.w_index);    break;
+        case A_FLOAT        : err = utils_snprintf (s, size, "%g", GET_FLOAT (a));      break;
+        case A_DOLLAR       : err = utils_snprintf (s, size, "$%d", GET_DOLLAR (a));    break;
         case A_DOLLARSYMBOL : err = utils_strncpy (s, size, GET_SYMBOL (a)->s_name);    break;
+        case A_SEMICOLON    : err = utils_strncpy (s, size, ";");                       break;
+        case A_COMMA        : err = utils_strncpy (s, size, ",");                       break;
+        case A_POINTER      : err = utils_strncpy (s, size, s_pointer.s_name);          break;
     }
 
-    PD_ASSERT (err == 0);
+    PD_ASSERT (!err);
 }
 
 // -----------------------------------------------------------------------------------------------------------

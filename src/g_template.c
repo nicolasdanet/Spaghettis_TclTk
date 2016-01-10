@@ -2426,7 +2426,7 @@ static void drawnumber_getbuf(t_drawnumber *x, t_word *data,
         {
             char *buf2;
             int size2, ncopy;
-            buffer_toString(((t_word *)((char *)data + onset))->w_buffer,
+            buffer_toStringUnzero(((t_word *)((char *)data + onset))->w_buffer,
                 &buf2, &size2);
             ncopy = (size2 > DRAWNUMBER_BUFSIZE-1-nchars ? 
                 DRAWNUMBER_BUFSIZE-1-nchars: size2);

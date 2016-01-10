@@ -47,7 +47,7 @@ static void textbuf_senditup(t_textbuf *x)
     char *txt;
     if (!x->b_guiconnect)
         return;
-    buffer_toString(x->b_binbuf, &txt, &ntxt);
+    buffer_toStringUnzero(x->b_binbuf, &txt, &ntxt);
     sys_vgui("::ui_text::clear .x%lx\n", x);
     for (i = 0; i < ntxt; )
     {

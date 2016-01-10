@@ -78,11 +78,14 @@
 #define GET_POINTER(atom)           ((atom)->a_w.w_gpointer)
 #define GET_FLOAT(atom)             ((atom)->a_w.w_float)
 #define GET_SYMBOL(atom)            ((atom)->a_w.w_symbol)
+#define GET_DOLLAR(atom)            ((atom)->a_w.w_index)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define IS_SEMICOLON(atom)          ((atom)->a_type == A_SEMICOLON)
+#define IS_COMMA(atom)              ((atom)->a_type == A_COMMA)
 #define IS_POINTER(atom)            ((atom)->a_type == A_POINTER)
 #define IS_FLOAT(atom)              ((atom)->a_type == A_FLOAT)
 #define IS_SYMBOL(atom)             ((atom)->a_type == A_SYMBOL)

@@ -398,7 +398,7 @@ static void scalar_properties(t_gobj *z, struct _glist *owner)
     glist_noselect(owner);
     glist_select(owner, z);
     b = glist_writetobinbuf(owner, 0);
-    buffer_toString(b, &buf, &bufsize);
+    buffer_toStringUnzero(b, &buf, &bufsize);
     buffer_free(b);
     buf = PD_MEMORY_RESIZE(buf, bufsize, bufsize+1);
     buf[bufsize] = 0;
