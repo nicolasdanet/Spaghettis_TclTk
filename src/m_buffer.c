@@ -25,6 +25,7 @@ extern int sys_defaultfont;
 // -----------------------------------------------------------------------------------------------------------
 
 #define BUFFER_PREALLOCATED_ATOMS       64
+#define BUFFER_MAXIMUM_ARGUMENTS        100
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -87,6 +88,85 @@ void buffer_append (t_buffer *x, int argc, t_atom *argv)
     x->b_vector = PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
 
     for (a = x->b_vector + x->b_size; argc--; a++) { *a = *(argv++); } x->b_size = n;
+}
+
+/* < http://stackoverflow.com/a/11270603 > */
+
+void buffer_vAppend (t_buffer *x, char *fmt, ...)
+{
+    va_list ap;
+    t_atom args[BUFFER_MAXIMUM_ARGUMENTS];
+    t_atom *a = args;
+    int n = 0;
+    char *p = fmt;
+    int k = 1;
+    
+    va_start (ap, fmt);
+    
+    while (k) {
+
+        if (n >= BUFFER_MAXIMUM_ARGUMENTS) { PD_BUG; break; }
+
+        switch (*p++) {
+            case 'i'    : SET_FLOAT     (a, va_arg (ap, int));          break;
+            case 'f'    : SET_FLOAT     (a, va_arg (ap, double));       break;
+            case 's'    : SET_SYMBOL    (a, va_arg (ap, t_symbol *));   break;
+            case ';'    : SET_SEMICOLON (a);                            break;
+            case ','    : SET_COMMA     (a);                            break;
+            default     : k = 0;
+        }
+        
+        if (k) { a++; n++; }
+    }
+    
+    va_end (ap);
+    
+    buffer_append (x, n, args);
+}
+
+void buffer_appendBuffer (t_buffer *x, t_buffer *y)
+{
+    t_buffer *z = buffer_new();
+    int i, fixit;
+    t_atom *ap;
+    buffer_append(z, y->b_size, y->b_vector);
+    for (i = 0, ap = z->b_vector; i < z->b_size; i++, ap++)
+    {
+        char tbuf[PD_STRING], *s;
+        switch (ap->a_type)
+        {
+        case A_FLOAT:
+            break;
+        case A_SEMICOLON:
+            SET_SYMBOL(ap, gensym(";"));
+            break;
+        case A_COMMA:
+            SET_SYMBOL(ap, gensym(","));
+            break;
+        case A_DOLLAR:
+            sprintf(tbuf, "$%d", ap->a_w.w_index);
+            SET_SYMBOL(ap, gensym(tbuf));
+            break;
+        case A_DOLLARSYMBOL:
+            atom_toString(ap, tbuf, PD_STRING);
+            SET_SYMBOL(ap, gensym(tbuf));
+            break;
+        case A_SYMBOL:
+            for (s = ap->a_w.w_symbol->s_name, fixit = 0; *s; s++)
+                if (*s == ';' || *s == ',' || *s == '$')
+                    fixit = 1;
+            if (fixit)
+            {
+                atom_toString(ap, tbuf, PD_STRING);
+                SET_SYMBOL(ap, gensym(tbuf));
+            }
+            break;
+        default:
+            PD_BUG;
+        }
+    }
+    
+    buffer_append(x, z->b_size, z->b_vector);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -306,89 +386,6 @@ void buffer_toStringUnzero (t_buffer *x, char **s, int *size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MAXADDMESSV 100
-
-void binbuf_addv(t_buffer *x, char *fmt, ...)
-{
-    va_list ap;
-    t_atom arg[MAXADDMESSV], *at =arg;
-    int nargs = 0;
-    char *fp = fmt;
-
-    va_start(ap, fmt);
-    while (1)
-    {
-        if (nargs >= MAXADDMESSV)
-        {
-            post_error ("binbuf_addmessv: only %d allowed", MAXADDMESSV);
-            break;
-        }
-        switch(*fp++)
-        {
-        case 'i': SET_FLOAT(at, va_arg(ap, int)); break;
-        case 'f': SET_FLOAT(at, va_arg(ap, double)); break;
-        case 's': SET_SYMBOL(at, va_arg(ap, t_symbol *)); break;
-        case ';': SET_SEMICOLON(at); break;
-        case ',': SET_COMMA(at); break;
-        default: goto done;
-        }
-        at++;
-        nargs++;
-    }
-done:
-    va_end(ap);
-    buffer_append(x, nargs, arg);
-}
-
-/* add a binbuf to another one for saving.  Semicolons and commas go to
-symbols ";", "'",; and inside symbols, characters ';', ',' and '$' get
-escaped.  LATER also figure out about escaping white space */
-
-void binbuf_addbinbuf(t_buffer *x, t_buffer *y)
-{
-    t_buffer *z = buffer_new();
-    int i, fixit;
-    t_atom *ap;
-    buffer_append(z, y->b_size, y->b_vector);
-    for (i = 0, ap = z->b_vector; i < z->b_size; i++, ap++)
-    {
-        char tbuf[PD_STRING], *s;
-        switch (ap->a_type)
-        {
-        case A_FLOAT:
-            break;
-        case A_SEMICOLON:
-            SET_SYMBOL(ap, gensym(";"));
-            break;
-        case A_COMMA:
-            SET_SYMBOL(ap, gensym(","));
-            break;
-        case A_DOLLAR:
-            sprintf(tbuf, "$%d", ap->a_w.w_index);
-            SET_SYMBOL(ap, gensym(tbuf));
-            break;
-        case A_DOLLARSYMBOL:
-            atom_toString(ap, tbuf, PD_STRING);
-            SET_SYMBOL(ap, gensym(tbuf));
-            break;
-        case A_SYMBOL:
-            for (s = ap->a_w.w_symbol->s_name, fixit = 0; *s; s++)
-                if (*s == ';' || *s == ',' || *s == '$')
-                    fixit = 1;
-            if (fixit)
-            {
-                atom_toString(ap, tbuf, PD_STRING);
-                SET_SYMBOL(ap, gensym(tbuf));
-            }
-            break;
-        default:
-            PD_BUG;
-        }
-    }
-    
-    buffer_append(x, z->b_size, z->b_vector);
-}
-
 void binbuf_addsemi(t_buffer *x)
 {
     t_atom a;
@@ -397,7 +394,7 @@ void binbuf_addsemi(t_buffer *x)
 }
 
 /* Supply atoms to a binbuf from a message, making the opposite changes
-from binbuf_addbinbuf.  The symbol ";" goes to a semicolon, etc. */
+from buffer_appendBuffer.  The symbol ";" goes to a semicolon, etc. */
 
 void binbuf_restore(t_buffer *x, int argc, t_atom *argv)
 {
@@ -1008,7 +1005,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
     t_atom outmess[MAXSTACK], *nextmess;
     t_float fontsize = 10;
     if (!maxtopd)
-        binbuf_addv(newb, "ss;", gensym("max"), gensym("v2"));
+        buffer_vAppend(newb, "ss;", gensym("max"), gensym("v2"));
     for (nextindex = 0; nextindex < n; )
     {
         int endmess, natom;
@@ -1061,7 +1058,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                     stack[stackdepth] = nobj;
                     stackdepth++;
                     nobj = 0;
-                    binbuf_addv(newb, "ssfffff;", 
+                    buffer_vAppend(newb, "ssfffff;", 
                         gensym("#N"), gensym("canvas"),
                             atom_getFloatAtIndex(2, natom, nextmess),
                             atom_getFloatAtIndex(3, natom, nextmess),
@@ -1085,7 +1082,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                     && (ISSYMBOL(&nextmess[6], "patcher") ||
                         ISSYMBOL(&nextmess[6], "p")))
                 {
-                    binbuf_addv(newb, "ssffss;",
+                    buffer_vAppend(newb, "ssffss;",
                         gensym("#X"), gensym("restore"),
                         atom_getFloatAtIndex(2, natom, nextmess),
                         atom_getFloatAtIndex(3, natom, nextmess),
@@ -1135,7 +1132,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                 }
                 else if (!strcmp(second, "button"))
                 {
-                    binbuf_addv(newb, "ssffs;",
+                    buffer_vAppend(newb, "ssffs;",
                         gensym("#X"), gensym("obj"),
                         atom_getFloatAtIndex(2, natom, nextmess),
                         atom_getFloatAtIndex(3, natom, nextmess),
@@ -1144,7 +1141,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                 }
                 else if (!strcmp(second, "number") || !strcmp(second, "flonum"))
                 {
-                    binbuf_addv(newb, "ssff;",
+                    buffer_vAppend(newb, "ssff;",
                         gensym("#X"), gensym("floatatom"),
                         atom_getFloatAtIndex(2, natom, nextmess),
                         atom_getFloatAtIndex(3, natom, nextmess));
@@ -1155,7 +1152,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                     t_float inc = atom_getFloatAtIndex(7, natom, nextmess);
                     if (inc <= 0)
                         inc = 1;
-                    binbuf_addv(newb, "ssffsffffffsssfffffffff;",
+                    buffer_vAppend(newb, "ssffsffffffsssfffffffff;",
                         gensym("#X"), gensym("obj"),
                         atom_getFloatAtIndex(2, natom, nextmess),
                         atom_getFloatAtIndex(3, natom, nextmess),
@@ -1172,7 +1169,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                 }
                 else if (!strcmp(second, "toggle"))
                 {
-                    binbuf_addv(newb, "ssffs;",
+                    buffer_vAppend(newb, "ssffs;",
                         gensym("#X"), gensym("obj"),
                         atom_getFloatAtIndex(2, natom, nextmess),
                         atom_getFloatAtIndex(3, natom, nextmess),
@@ -1181,7 +1178,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                 }
                 else if (!strcmp(second, "inlet"))
                 {
-                    binbuf_addv(newb, "ssffs;",
+                    buffer_vAppend(newb, "ssffs;",
                         gensym("#X"), gensym("obj"),
                         atom_getFloatAtIndex(2, natom, nextmess),
                         atom_getFloatAtIndex(3, natom, nextmess),
@@ -1190,7 +1187,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                 }
                 else if (!strcmp(second, "outlet"))
                 {
-                    binbuf_addv(newb, "ssffs;",
+                    buffer_vAppend(newb, "ssffs;",
                         gensym("#X"), gensym("obj"),
                         atom_getFloatAtIndex(2, natom, nextmess),
                         atom_getFloatAtIndex(3, natom, nextmess),
@@ -1205,7 +1202,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                         t_float range = atom_getFloatAtIndex(7, natom, nextmess);
                         t_float multiplier = atom_getFloatAtIndex(8, natom, nextmess);
                         t_float offset = atom_getFloatAtIndex(9, natom, nextmess);
-                        binbuf_addv(newb, "ssffsffffffsssfffffffff;",
+                        buffer_vAppend(newb, "ssffsffffffsssfffffffff;",
                                     gensym("#X"), gensym("obj"),
                                     atom_getFloatAtIndex(3, natom, nextmess),
                                     atom_getFloatAtIndex(4, natom, nextmess),
@@ -1223,7 +1220,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                         t_float range = atom_getFloatAtIndex(7, natom, nextmess);
                         t_float multiplier = atom_getFloatAtIndex(8, natom, nextmess);
                         t_float offset = atom_getFloatAtIndex(9, natom, nextmess);
-                        binbuf_addv(newb, "ssffsffffffsssfffffffff;",
+                        buffer_vAppend(newb, "ssffsffffffsssfffffffff;",
                                     gensym("#X"), gensym("obj"),
                                     atom_getFloatAtIndex(3, natom, nextmess),
                                     atom_getFloatAtIndex(4, natom, nextmess),
@@ -1237,7 +1234,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                                     0., -8., 0., 8., -262144., -1., -1., 0., 1.);
                     }
                     else
-                        binbuf_addv(newb, "ssffs;",
+                        buffer_vAppend(newb, "ssffs;",
                                     gensym("#X"), gensym("obj"),
                                     atom_getFloatAtIndex(3, natom, nextmess),
                                     atom_getFloatAtIndex(4, natom, nextmess),
@@ -1247,7 +1244,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                 else if (!strcmp(second, "connect")||
                     !strcmp(second, "fasten"))
                 {
-                    binbuf_addv(newb, "ssffff;",
+                    buffer_vAppend(newb, "ssffff;",
                         gensym("#X"), gensym("connect"),
                         nobj - atom_getFloatAtIndex(2, natom, nextmess) - 1,
                         atom_getFloatAtIndex(3, natom, nextmess),
@@ -1277,7 +1274,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                     }
                     x = atom_getFloatAtIndex(2, natom, nextmess);
                     y = atom_getFloatAtIndex(3, natom, nextmess);
-                    binbuf_addv(newb, "ssffff;", 
+                    buffer_vAppend(newb, "ssffff;", 
                         gensym("#N"), gensym("vpatcher"),
                             x, y,
                             atom_getFloatAtIndex(4, natom, nextmess) + x,
@@ -1289,7 +1286,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                 if (natom >= 5 && !strcmp(second, "restore")
                     && (ISSYMBOL (&nextmess[4], "pd")))
                 {
-                    binbuf_addv(newb, "ss;", gensym("#P"), gensym("pop"));
+                    buffer_vAppend(newb, "ss;", gensym("#P"), gensym("pop"));
                     SET_SYMBOL(outmess, gensym("#P"));
                     SET_SYMBOL(outmess + 1, gensym("newobj"));
                     outmess[2] = nextmess[2];
@@ -1310,43 +1307,43 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                     t_symbol *classname =
                         atom_getSymbolAtIndex(4, natom, nextmess);
                     if (classname == gensym("inlet"))
-                        binbuf_addv(newb, "ssfff;", gensym("#P"),
+                        buffer_vAppend(newb, "ssfff;", gensym("#P"),
                             gensym("inlet"),
                             atom_getFloatAtIndex(2, natom, nextmess),
                             atom_getFloatAtIndex(3, natom, nextmess),
                             10. + fontsize);
                     else if (classname == gensym("inlet~"))
-                        binbuf_addv(newb, "ssffff;", gensym("#P"),
+                        buffer_vAppend(newb, "ssffff;", gensym("#P"),
                             gensym("inlet"),
                             atom_getFloatAtIndex(2, natom, nextmess),
                             atom_getFloatAtIndex(3, natom, nextmess),
                             10. + fontsize, 1.);
                     else if (classname == gensym("outlet"))
-                        binbuf_addv(newb, "ssfff;", gensym("#P"),
+                        buffer_vAppend(newb, "ssfff;", gensym("#P"),
                             gensym("outlet"),
                             atom_getFloatAtIndex(2, natom, nextmess),
                             atom_getFloatAtIndex(3, natom, nextmess),
                             10. + fontsize);
                     else if (classname == gensym("outlet~"))
-                        binbuf_addv(newb, "ssffff;", gensym("#P"),
+                        buffer_vAppend(newb, "ssffff;", gensym("#P"),
                             gensym("outlet"),
                             atom_getFloatAtIndex(2, natom, nextmess),
                             atom_getFloatAtIndex(3, natom, nextmess),
                             10. + fontsize, 1.);
                     else if (classname == gensym("bng"))
-                        binbuf_addv(newb, "ssffff;", gensym("#P"),
+                        buffer_vAppend(newb, "ssffff;", gensym("#P"),
                             gensym("button"),
                             atom_getFloatAtIndex(2, natom, nextmess),
                             atom_getFloatAtIndex(3, natom, nextmess),
                             atom_getFloatAtIndex(5, natom, nextmess), 0.);
                     else if (classname == gensym("tgl"))
-                        binbuf_addv(newb, "ssffff;", gensym("#P"),
+                        buffer_vAppend(newb, "ssffff;", gensym("#P"),
                             gensym("toggle"),
                             atom_getFloatAtIndex(2, natom, nextmess),
                             atom_getFloatAtIndex(3, natom, nextmess),
                             atom_getFloatAtIndex(5, natom, nextmess), 0.);
                     else if (classname == gensym("vsl"))
-                        binbuf_addv(newb, "ssffffff;", gensym("#P"),
+                        buffer_vAppend(newb, "ssffffff;", gensym("#P"),
                             gensym("slider"),
                             atom_getFloatAtIndex(2, natom, nextmess),
                             atom_getFloatAtIndex(3, natom, nextmess),
@@ -1361,7 +1358,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                     {
                         t_float slmin = atom_getFloatAtIndex(7, natom, nextmess);
                         t_float slmax = atom_getFloatAtIndex(8, natom, nextmess);
-                        binbuf_addv(newb, "sssffffffff;", gensym("#P"),
+                        buffer_vAppend(newb, "sssffffffff;", gensym("#P"),
                             gensym("user"),
                             gensym("hslider"),
                             atom_getFloatAtIndex(2, natom, nextmess),
@@ -1442,7 +1439,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                 {
                     t_float width = atom_getFloatAtIndex(4, natom, nextmess)*fontsize;
                     if(width<8) width = 150; /* if pd width=0, set it big */
-                    binbuf_addv(newb, "ssfff;",
+                    buffer_vAppend(newb, "ssfff;",
                         gensym("#P"), gensym("flonum"),
                         atom_getFloatAtIndex(2, natom, nextmess),
                         atom_getFloatAtIndex(3, natom, nextmess),
@@ -1451,7 +1448,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
                 }
                 else if (!strcmp(second, "connect"))
                 {
-                    binbuf_addv(newb, "ssffff;",
+                    buffer_vAppend(newb, "ssffff;",
                         gensym("#P"), gensym("connect"),
                         nobj - atom_getFloatAtIndex(2, natom, nextmess) - 1,
                         atom_getFloatAtIndex(3, natom, nextmess),
@@ -1463,7 +1460,7 @@ static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
         nextindex = endmess + 1;
     }
     if (!maxtopd)
-        binbuf_addv(newb, "ss;", gensym("#P"), gensym("pop"));
+        buffer_vAppend(newb, "ss;", gensym("#P"), gensym("pop"));
 #if 0
     binbuf_write(newb, "import-result.pd", "/tmp", 0);
 #endif

@@ -237,8 +237,9 @@ void atom_toString              (t_atom *a, char *s, size_t size);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void buffer_vAppend             (t_buffer *x, char *fmt, ...);
 void buffer_withString          (t_buffer *x, char *s, int size);
-void buffer_toStringUnzero            (t_buffer *x, char **s, int *size);
+void buffer_toStringUnzero      (t_buffer *x, char **s, int *size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -731,10 +731,10 @@ void garray_savecontentsto(t_garray *x, t_buffer *b)
             int chunk = n - n2, i;
             if (chunk > ARRAYWRITECHUNKSIZE)
                 chunk = ARRAYWRITECHUNKSIZE;
-            binbuf_addv(b, "si", gensym("#A"), n2);
+            buffer_vAppend(b, "si", gensym("#A"), n2);
             for (i = 0; i < chunk; i++)
-                binbuf_addv(b, "f", ((t_word *)(array->a_vec))[n2+i].w_float);
-            binbuf_addv(b, ";");
+                buffer_vAppend(b, "f", ((t_word *)(array->a_vec))[n2+i].w_float);
+            buffer_vAppend(b, ";");
             n2 += chunk;
         }
     }
@@ -763,7 +763,7 @@ static void garray_save(t_gobj *z, t_buffer *b)
             x->x_scalar->sc_vector, 0);    
     filestyle = (style == PLOT_POINTS ? 1 : 
         (style == PLOT_POLYGONS ? 0 : style)); 
-    binbuf_addv(b, "sssisi;", gensym("#X"), gensym("array"),
+    buffer_vAppend(b, "sssisi;", gensym("#X"), gensym("array"),
         x->x_name, array->a_n, &s_float,
             x->x_saveit + 2 * filestyle + 8*x->x_hidename);
     garray_savecontentsto(x, b);

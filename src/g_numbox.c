@@ -382,7 +382,7 @@ static void my_numbox_save(t_gobj *z, t_buffer *b)
         clock_unset(x->x_clock_reset);
         sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
     }
-    binbuf_addv(b, "ssiisiiffiisssiiiiiiifi", gensym("#X"),gensym("obj"),
+    buffer_vAppend(b, "ssiisiiffiisssiiiiiiifi", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.x_obj.te_xCoordinate, (int)x->x_gui.x_obj.te_yCoordinate,
                 gensym("nbx"), x->x_gui.x_w, x->x_gui.x_h,
                 (t_float)x->x_min, (t_float)x->x_max,
@@ -392,7 +392,7 @@ static void my_numbox_save(t_gobj *z, t_buffer *b)
                 iem_fstyletoint(&x->x_gui.x_fsf), x->x_gui.x_fontsize,
                 bflcol[0], bflcol[1], bflcol[2],
                 x->x_val, x->x_log_height);
-    binbuf_addv(b, ";");
+    buffer_vAppend(b, ";");
 }
 
 int my_numbox_check_minmax(t_my_numbox *x, double min, double max)

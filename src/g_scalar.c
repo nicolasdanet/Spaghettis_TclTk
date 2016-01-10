@@ -383,8 +383,8 @@ static void scalar_save(t_gobj *z, t_buffer *b)
     t_atom a, *argv;
     int i, argc;
     canvas_writescalar(x->sc_template, x->sc_vector, b2, 0);
-    binbuf_addv(b, "ss", &s__X, gensym("scalar"));
-    binbuf_addbinbuf(b, b2);
+    buffer_vAppend(b, "ss", &s__X, gensym("scalar"));
+    buffer_appendBuffer(b, b2);
     binbuf_addsemi(b);
     buffer_free(b2);
 }

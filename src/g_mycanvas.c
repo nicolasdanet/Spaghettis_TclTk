@@ -140,13 +140,13 @@ static void my_canvas_save(t_gobj *z, t_buffer *b)
     t_symbol *srl[3];
 
     iem_save(&x->x_gui, srl, bflcol);
-    binbuf_addv(b, "ssiisiiisssiiiiiii", gensym("#X"),gensym("obj"),
+    buffer_vAppend(b, "ssiisiiisssiiiiiii", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.x_obj.te_xCoordinate, (int)x->x_gui.x_obj.te_yCoordinate,
                 gensym("cnv"), x->x_gui.x_w, x->x_vis_w, x->x_vis_h,
                 srl[0], srl[1], srl[2], x->x_gui.x_ldx, x->x_gui.x_ldy,
                 iem_fstyletoint(&x->x_gui.x_fsf), x->x_gui.x_fontsize,
                 bflcol[0], bflcol[2], iem_symargstoint(&x->x_gui.x_isa));
-    binbuf_addv(b, ";");
+    buffer_vAppend(b, ";");
 }
 
 static void my_canvas_properties(t_gobj *z, t_glist *owner)

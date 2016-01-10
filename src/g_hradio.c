@@ -237,7 +237,7 @@ static void hradio_save(t_gobj *z, t_buffer *b)
     t_symbol *srl[3];
 
     iem_save(&x->x_gui, srl, bflcol);
-    binbuf_addv(b, "ssiisiiiisssiiiiiiif", gensym("#X"),gensym("obj"),
+    buffer_vAppend(b, "ssiisiiiisssiiiiiiif", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.x_obj.te_xCoordinate, (int)x->x_gui.x_obj.te_yCoordinate,
                 gensym("hradio"),
                 x->x_gui.x_w,
@@ -246,7 +246,7 @@ static void hradio_save(t_gobj *z, t_buffer *b)
                 x->x_gui.x_ldx, x->x_gui.x_ldy,
                 iem_fstyletoint(&x->x_gui.x_fsf), x->x_gui.x_fontsize,
                 bflcol[0], bflcol[1], bflcol[2], x->x_fval);
-    binbuf_addv(b, ";");
+    buffer_vAppend(b, ";");
 }
 
 static void hradio_properties(t_gobj *z, t_glist *owner)

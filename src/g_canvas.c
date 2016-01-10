@@ -491,7 +491,7 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     x->gl_isgraph = 1;
     x->gl_goprect = 0;
     x->gl_obj.te_buffer = buffer_new();
-    binbuf_addv(x->gl_obj.te_buffer, "s", gensym("graph"));
+    buffer_vAppend(x->gl_obj.te_buffer, "s", gensym("graph"));
     if (!menu)
         pd_push(&x->gl_obj.te_g.g_pd);
     glist_add(g, &x->gl_obj.te_g);
@@ -1273,9 +1273,9 @@ void canvas_savedeclarationsto(t_canvas *x, t_buffer *b)
     {
         if (pd_class(&y->g_pd) == declare_class)
         {
-            binbuf_addv(b, "s", gensym("#X"));
-            binbuf_addbinbuf(b, ((t_declare *)y)->x_obj.te_buffer);
-            binbuf_addv(b, ";");
+            buffer_vAppend(b, "s", gensym("#X"));
+            buffer_appendBuffer(b, ((t_declare *)y)->x_obj.te_buffer);
+            buffer_vAppend(b, ";");
         }
         else if (pd_class(&y->g_pd) == canvas_class)
             canvas_savedeclarationsto((t_canvas *)y, b);

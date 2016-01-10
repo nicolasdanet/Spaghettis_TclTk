@@ -199,7 +199,7 @@ static void bng_save(t_gobj *z, t_buffer *b)
     t_symbol *srl[3];
 
     iem_save(&x->x_gui, srl, bflcol);
-    binbuf_addv(b, "ssiisiiiisssiiiiiii", gensym("#X"),gensym("obj"),
+    buffer_vAppend(b, "ssiisiiiisssiiiiiii", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.x_obj.te_xCoordinate, (int)x->x_gui.x_obj.te_yCoordinate,
                 gensym("bng"), x->x_gui.x_w,
                 x->x_flashtime_hold, x->x_flashtime_break,
@@ -208,7 +208,7 @@ static void bng_save(t_gobj *z, t_buffer *b)
                 x->x_gui.x_ldx, x->x_gui.x_ldy,
                 iem_fstyletoint(&x->x_gui.x_fsf), x->x_gui.x_fontsize,
                 bflcol[0], bflcol[1], bflcol[2]);
-    binbuf_addv(b, ";");
+    buffer_vAppend(b, ";");
 }
 
 void bng_check_minmax(t_bng *x, int ftbreak, int fthold)

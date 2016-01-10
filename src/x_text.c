@@ -340,14 +340,14 @@ void text_define_set(t_text_define *x, t_symbol *s, int argc, t_atom *argv)
 static void text_define_save(t_gobj *z, t_buffer *bb)
 {
     t_text_define *x = (t_text_define *)z;
-    binbuf_addv(bb, "ssff", &s__X, gensym("obj"),
+    buffer_vAppend(bb, "ssff", &s__X, gensym("obj"),
         (float)x->x_ob.te_xCoordinate, (float)x->x_ob.te_yCoordinate);
-    binbuf_addbinbuf(bb, x->x_ob.te_buffer);
+    buffer_appendBuffer(bb, x->x_ob.te_buffer);
     binbuf_addsemi(bb);
     if (x->x_keep)
     {
-        binbuf_addv(bb, "ss", gensym("#A"), gensym("set"));
-        binbuf_addbinbuf(bb, x->x_binbuf);
+        buffer_vAppend(bb, "ss", gensym("#A"), gensym("set"));
+        buffer_appendBuffer(bb, x->x_binbuf);
         binbuf_addsemi(bb);
     }
     object_saveWidth(&x->x_ob, bb);
@@ -817,7 +817,7 @@ static void text_tolist_bang(t_text_tolist *x)
     if (!b)
        return;
     b2 = buffer_new();
-    binbuf_addbinbuf(b2, b);
+    buffer_appendBuffer(b2, b);
     outlet_list(x->tc_obj.te_outlet, 0, binbuf_getnatom(b2), binbuf_getvec(b2));
     buffer_free(b2);
 }

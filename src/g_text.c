@@ -1139,21 +1139,21 @@ void text_save(t_gobj *z, t_buffer *b)
                     || canvas_istable((t_canvas *)x))))
         {  
             mess1((t_pd *)x, gensym("saveto"), b);
-            binbuf_addv(b, "ssii", gensym("#X"), gensym("restore"),
+            buffer_vAppend(b, "ssii", gensym("#X"), gensym("restore"),
                 (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }
         else    /* otherwise just save the text */
         {
-            binbuf_addv(b, "ssii", gensym("#X"), gensym("obj"),
+            buffer_vAppend(b, "ssii", gensym("#X"), gensym("obj"),
                 (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }
-        binbuf_addbinbuf(b, x->te_buffer);
+        buffer_appendBuffer(b, x->te_buffer);
     }
     else if (x->te_type == TYPE_MESSAGE)
     {
-        binbuf_addv(b, "ssii", gensym("#X"), gensym("msg"),
+        buffer_vAppend(b, "ssii", gensym("#X"), gensym("msg"),
             (int)x->te_xCoordinate, (int)x->te_yCoordinate);
-        binbuf_addbinbuf(b, x->te_buffer);
+        buffer_appendBuffer(b, x->te_buffer);
     }
     else if (x->te_type == TYPE_ATOM)
     {
@@ -1163,7 +1163,7 @@ void text_save(t_gobj *z, t_buffer *b)
         t_symbol *label = gatom_escapit(((t_gatom *)x)->a_label);
         t_symbol *symfrom = gatom_escapit(((t_gatom *)x)->a_symfrom);
         t_symbol *symto = gatom_escapit(((t_gatom *)x)->a_symto);
-        binbuf_addv(b, "ssiiifffsss", gensym("#X"), sel,
+        buffer_vAppend(b, "ssiiifffsss", gensym("#X"), sel,
             (int)x->te_xCoordinate, (int)x->te_yCoordinate, (int)x->te_width,
             (double)((t_gatom *)x)->a_draglo,
             (double)((t_gatom *)x)->a_draghi,
@@ -1172,13 +1172,13 @@ void text_save(t_gobj *z, t_buffer *b)
     }           
     else        
     {
-        binbuf_addv(b, "ssii", gensym("#X"), gensym("text"),
+        buffer_vAppend(b, "ssii", gensym("#X"), gensym("text"),
             (int)x->te_xCoordinate, (int)x->te_yCoordinate);
-        binbuf_addbinbuf(b, x->te_buffer);
+        buffer_appendBuffer(b, x->te_buffer);
     }
     if (x->te_width)
-        binbuf_addv(b, ",si", gensym("f"), (int)x->te_width);
-    binbuf_addv(b, ";");
+        buffer_vAppend(b, ",si", gensym("f"), (int)x->te_width);
+    buffer_vAppend(b, ";");
 }
 
     /* this one is for everyone but "gatoms"; it's imposed in m_class.c */

@@ -168,9 +168,9 @@ void array_define_save(t_gobj *z, t_buffer *bb)
 {
     t_glist *x = (t_glist *)z;
     t_glist *gl = (x->gl_list ? pd_checkglist(&x->gl_list->g_pd) : 0);
-    binbuf_addv(bb, "ssff", &s__X, gensym("obj"),
+    buffer_vAppend(bb, "ssff", &s__X, gensym("obj"),
         (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
-    binbuf_addbinbuf(bb, x->gl_obj.te_buffer);
+    buffer_appendBuffer(bb, x->gl_obj.te_buffer);
     binbuf_addsemi(bb);
 
     garray_savecontentsto((t_garray *)gl->gl_list, bb);

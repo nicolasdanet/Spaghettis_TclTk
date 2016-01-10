@@ -136,18 +136,18 @@ static void scalar_define_set(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 static void scalar_define_save(t_gobj *z, t_buffer *bb)
 {
     t_glist *x = (t_glist *)z;
-    binbuf_addv(bb, "ssff", &s__X, gensym("obj"),
+    buffer_vAppend(bb, "ssff", &s__X, gensym("obj"),
         (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
-    binbuf_addbinbuf(bb, x->gl_obj.te_buffer);
+    buffer_appendBuffer(bb, x->gl_obj.te_buffer);
     binbuf_addsemi(bb);
     if (x->gl_private && x->gl_list &&
         pd_class(&x->gl_list->g_pd) == scalar_class)
     {
         t_buffer *b2 = buffer_new();
         t_scalar *sc = (t_scalar *)(x->gl_list);
-        binbuf_addv(bb, "ss", gensym("#A"), gensym("set"));
+        buffer_vAppend(bb, "ss", gensym("#A"), gensym("set"));
         canvas_writescalar(sc->sc_template, sc->sc_vector, b2, 0);
-        binbuf_addbinbuf(bb, b2);
+        buffer_appendBuffer(bb, b2);
         binbuf_addsemi(bb);
         buffer_free(b2);
     }

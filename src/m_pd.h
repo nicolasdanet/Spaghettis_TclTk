@@ -456,9 +456,8 @@ PD_DLL void     buffer_free                 (t_buffer *x);
 PD_DLL void     buffer_reset                (t_buffer *x);
 
 PD_DLL void     buffer_append               (t_buffer *x, int argc, t_atom *argv);
+PD_DLL void     buffer_appendBuffer         (t_buffer *x, t_buffer *y);
 
-PD_DLL void     binbuf_addv                 (t_buffer *x, char *fmt, ...);
-PD_DLL void     binbuf_addbinbuf            (t_buffer *x, t_buffer *y);
 PD_DLL void     binbuf_addsemi              (t_buffer *x);
 PD_DLL void     binbuf_restore              (t_buffer *x, int argc, t_atom *argv);
 PD_DLL void     binbuf_print                (t_buffer *x);

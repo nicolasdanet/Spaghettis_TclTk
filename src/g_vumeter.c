@@ -418,7 +418,7 @@ static void vu_save(t_gobj *z, t_buffer *b)
     t_symbol *srl[3];
 
     iem_save(&x->x_gui, srl, bflcol);
-    binbuf_addv(b, "ssiisiissiiiiiiii", gensym("#X"),gensym("obj"),
+    buffer_vAppend(b, "ssiisiissiiiiiiii", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.x_obj.te_xCoordinate, (int)x->x_gui.x_obj.te_yCoordinate,
                 gensym("vu"), x->x_gui.x_w, x->x_gui.x_h,
                 srl[1], srl[2],
@@ -426,7 +426,7 @@ static void vu_save(t_gobj *z, t_buffer *b)
                 iem_fstyletoint(&x->x_gui.x_fsf), x->x_gui.x_fontsize,
                 bflcol[0], bflcol[2], x->x_scale,
                 iem_symargstoint(&x->x_gui.x_isa));
-    binbuf_addv(b, ";");
+    buffer_vAppend(b, ";");
 }
 
 void vu_check_height(t_vu *x, int h)

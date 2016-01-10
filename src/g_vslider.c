@@ -209,7 +209,7 @@ static void vslider_save(t_gobj *z, t_buffer *b)
     t_symbol *srl[3];
 
     iem_save(&x->x_gui, srl, bflcol);
-    binbuf_addv(b, "ssiisiiffiisssiiiiiiiii", gensym("#X"),gensym("obj"),
+    buffer_vAppend(b, "ssiisiiffiisssiiiiiiiii", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.x_obj.te_xCoordinate, (int)x->x_gui.x_obj.te_yCoordinate,
                 gensym("vsl"), x->x_gui.x_w, x->x_gui.x_h,
                 (t_float)x->x_min, (t_float)x->x_max,
@@ -219,7 +219,7 @@ static void vslider_save(t_gobj *z, t_buffer *b)
                 iem_fstyletoint(&x->x_gui.x_fsf), x->x_gui.x_fontsize,
                 bflcol[0], bflcol[1], bflcol[2],
                 x->x_val, x->x_steady);
-    binbuf_addv(b, ";");
+    buffer_vAppend(b, ";");
 }
 
 void vslider_check_height(t_vslider *x, int h)

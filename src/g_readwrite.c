@@ -516,13 +516,13 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
                 ((t_scalar *)y)->sc_vector,  &ntemplates, &templatevec);
         }
     }
-    binbuf_addv(b, "s;", gensym("data"));
+    buffer_vAppend(b, "s;", gensym("data"));
     for (i = 0; i < ntemplates; i++)
     {
         t_template *template = template_findbyname(templatevec[i]);
         int j, m = template->t_n;
             /* drop "pd-" prefix from template symbol to print it: */
-        binbuf_addv(b, "ss;", gensym("template"),
+        buffer_vAppend(b, "ss;", gensym("template"),
             gensym(templatevec[i]->s_name + 3));
         for (j = 0; j < m; j++)
         {
@@ -536,9 +536,9 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
                 default: type = &s_float; PD_BUG;
             }
             if (template->t_vec[j].ds_type == DATA_ARRAY)
-                binbuf_addv(b, "sss;", type, template->t_vec[j].ds_name,
+                buffer_vAppend(b, "sss;", type, template->t_vec[j].ds_name,
                     gensym(template->t_vec[j].ds_arraytemplate->s_name + 3));
-            else binbuf_addv(b, "ss;", type, template->t_vec[j].ds_name);
+            else buffer_vAppend(b, "ss;", type, template->t_vec[j].ds_name);
         }
         binbuf_addsemi(b);
     }
@@ -595,10 +595,10 @@ static void canvas_saveto(t_canvas *x, t_buffer *b)
         /* have to go to original binbuf to find out how we were named. */
         t_buffer *bz = buffer_new();
         t_symbol *patchsym;
-        binbuf_addbinbuf(bz, x->gl_obj.te_buffer);
+        buffer_appendBuffer(bz, x->gl_obj.te_buffer);
         patchsym = atom_getSymbolAtIndex(1, binbuf_getnatom(bz), binbuf_getvec(bz));
         buffer_free(bz);
-        binbuf_addv(b, "ssiiiisi;", gensym("#N"), gensym("canvas"),
+        buffer_vAppend(b, "ssiiiisi;", gensym("#N"), gensym("canvas"),
             (int)(x->gl_screenx1),
             (int)(x->gl_screeny1),
             (int)(x->gl_screenx2 - x->gl_screenx1),
@@ -609,7 +609,7 @@ static void canvas_saveto(t_canvas *x, t_buffer *b)
         /* root or abstraction */
     else 
     {
-        binbuf_addv(b, "ssiiiii;", gensym("#N"), gensym("canvas"),
+        buffer_vAppend(b, "ssiiiii;", gensym("#N"), gensym("canvas"),
             (int)(x->gl_screenx1),
             (int)(x->gl_screeny1),
             (int)(x->gl_screenx2 - x->gl_screenx1),
@@ -625,7 +625,7 @@ static void canvas_saveto(t_canvas *x, t_buffer *b)
     {
         int srcno = canvas_getindex(x, &t.tr_ob->te_g);
         int sinkno = canvas_getindex(x, &t.tr_ob2->te_g);
-        binbuf_addv(b, "ssiiii;", gensym("#X"), gensym("connect"),
+        buffer_vAppend(b, "ssiiii;", gensym("#X"), gensym("connect"),
             srcno, t.tr_outno, sinkno, t.tr_inno);
     }
         /* unless everything is the default (as in ordinary subpatches)
@@ -637,14 +637,14 @@ static void canvas_saveto(t_canvas *x, t_buffer *b)
                 /* if we have a graph-on-parent rectangle, we're new style.
                 The format is arranged so
                 that old versions of Pd can at least do something with it. */
-            binbuf_addv(b, "ssfffffffff;", gensym("#X"), gensym("coords"),
+            buffer_vAppend(b, "ssfffffffff;", gensym("#X"), gensym("coords"),
                 x->gl_x1, x->gl_y1,
                 x->gl_x2, x->gl_y2,
                 (t_float)x->gl_pixwidth, (t_float)x->gl_pixheight,
                 (t_float)((x->gl_hidetext)?2.:1.),
                 (t_float)x->gl_xmargin, (t_float)x->gl_ymargin); 
                     /* otherwise write in 0.38-compatible form */
-        else binbuf_addv(b, "ssfffffff;", gensym("#X"), gensym("coords"),
+        else buffer_vAppend(b, "ssfffffff;", gensym("#X"), gensym("coords"),
                 x->gl_x1, x->gl_y1,
                 x->gl_x2, x->gl_y2,
                 (t_float)x->gl_pixwidth, (t_float)x->gl_pixheight,
@@ -689,7 +689,7 @@ static void canvas_savetemplatesto(t_canvas *x, t_buffer *b, int wholething)
             continue;
         }
             /* drop "pd-" prefix from template symbol to print */
-        binbuf_addv(b, "sss", &s__N, gensym("struct"),
+        buffer_vAppend(b, "sss", &s__N, gensym("struct"),
             gensym(templatevec[i]->s_name + 3));
         for (j = 0; j < m; j++)
         {
@@ -703,9 +703,9 @@ static void canvas_savetemplatesto(t_canvas *x, t_buffer *b, int wholething)
                 default: type = &s_float; PD_BUG;
             }
             if (template->t_vec[j].ds_type == DATA_ARRAY)
-                binbuf_addv(b, "sss", type, template->t_vec[j].ds_name,
+                buffer_vAppend(b, "sss", type, template->t_vec[j].ds_name,
                     gensym(template->t_vec[j].ds_arraytemplate->s_name + 3));
-            else binbuf_addv(b, "ss", type, template->t_vec[j].ds_name);
+            else buffer_vAppend(b, "ss", type, template->t_vec[j].ds_name);
         }
         binbuf_addsemi(b);
     }

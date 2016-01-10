@@ -529,7 +529,7 @@ static void *canvas_undo_set_cut(t_canvas *x, int mode)
         int issel2 = glist_isselected(x, &t.tr_ob2->te_g);
         if (issel1 != issel2)
         {
-            binbuf_addv(buf->u_reconnectbuf, "ssiiii;",
+            buffer_vAppend(buf->u_reconnectbuf, "ssiiii;",
                 gensym("#X"), gensym("connect"),
                 (issel1 ? nnotsel : 0)
                     + glist_selectionindex(x, &t.tr_ob->te_g, issel1),
@@ -2198,7 +2198,7 @@ void canvas_stowconnections(t_canvas *x)
         int s1 = glist_isselected(x, &t.tr_ob->te_g);
         int s2 = glist_isselected(x, &t.tr_ob2->te_g);
         if (s1 != s2)
-            binbuf_addv(x->gl_editor->e_connectbuf, "ssiiii;",
+            buffer_vAppend(x->gl_editor->e_connectbuf, "ssiiii;",
                 gensym("#X"), gensym("connect"),
                     glist_getindex(x, &t.tr_ob->te_g), t.tr_outno,
                         glist_getindex(x, &t.tr_ob2->te_g), t.tr_inno);
@@ -2230,7 +2230,7 @@ static t_buffer *canvas_docopy(t_canvas *x)
         if (glist_isselected(x, &t.tr_ob->te_g)
             && glist_isselected(x, &t.tr_ob2->te_g))
         {
-            binbuf_addv(b, "ssiiii;", gensym("#X"), gensym("connect"),
+            buffer_vAppend(b, "ssiiii;", gensym("#X"), gensym("connect"),
                 glist_selectionindex(x, &t.tr_ob->te_g, 1), t.tr_outno,
                 glist_selectionindex(x, &t.tr_ob2->te_g, 1), t.tr_inno);
         }
