@@ -1274,7 +1274,7 @@ void canvas_savedeclarationsto(t_canvas *x, t_buffer *b)
         if (pd_class(&y->g_pd) == declare_class)
         {
             buffer_vAppend(b, "s", gensym("#X"));
-            buffer_appendBuffer(b, ((t_declare *)y)->x_obj.te_buffer);
+            buffer_serialize(b, ((t_declare *)y)->x_obj.te_buffer);
             buffer_vAppend(b, ";");
         }
         else if (pd_class(&y->g_pd) == canvas_class)

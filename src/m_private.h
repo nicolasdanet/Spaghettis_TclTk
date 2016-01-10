@@ -143,9 +143,9 @@ int  pd_setLoadingAbstraction       (t_symbol *s);
 int  utils_strncpy                  (char *dest, size_t size, const char *src);
 int  utils_snprintf                 (char *dest, size_t size, const char *format, ...);
 
-int  utils_isStatementEnd           (char c);
-int  utils_isEscape                 (char c);
-int  utils_isWhitespace             (char c);
+int  utils_isTokenEnd               (char c);
+int  utils_isTokenEscape            (char c);
+int  utils_isTokenWhitespace        (char c);
 
 int  utils_isDollarNumber           (char *s);
 int  utils_startsWithDollarNumber   (char *s);
@@ -191,8 +191,8 @@ int             object_indexOfSignalInlet       (t_object *x, int m);
 int             object_indexOfSignalOutlet      (t_object *x, int m);
 int             object_isSignalInlet            (t_object *x, int m);
 int             object_isSignalOutlet           (t_object *x, int m);
-int             object_getIndexOfSignalInlet      (t_inlet *x);
-int             object_getIndexOfSignalOutlet     (t_outlet *x);
+int             object_getIndexOfSignalInlet    (t_inlet *x);
+int             object_getIndexOfSignalOutlet   (t_outlet *x);
 void            object_moveInletFirst           (t_object *x, t_inlet *i);
 void            object_moveOutletFirst          (t_object *x, t_outlet *i);
 void            object_disconnect               (t_object *src, int m, t_object *dest, int n);
@@ -238,8 +238,9 @@ void atom_toString              (t_atom *a, char *s, size_t size);
 #pragma mark -
 
 void buffer_vAppend             (t_buffer *x, char *fmt, ...);
+void buffer_serialize           (t_buffer *x, t_buffer *y);
 void buffer_withString          (t_buffer *x, char *s, int size);
-void buffer_toStringUnzero      (t_buffer *x, char **s, int *size);
+void buffer_toStringUnzeroed    (t_buffer *x, char **s, int *size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

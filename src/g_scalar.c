@@ -384,7 +384,7 @@ static void scalar_save(t_gobj *z, t_buffer *b)
     int i, argc;
     canvas_writescalar(x->sc_template, x->sc_vector, b2, 0);
     buffer_vAppend(b, "ss", &s__X, gensym("scalar"));
-    buffer_appendBuffer(b, b2);
+    buffer_serialize(b, b2);
     binbuf_addsemi(b);
     buffer_free(b2);
 }
@@ -398,7 +398,7 @@ static void scalar_properties(t_gobj *z, struct _glist *owner)
     glist_noselect(owner);
     glist_select(owner, z);
     b = glist_writetobinbuf(owner, 0);
-    buffer_toStringUnzero(b, &buf, &bufsize);
+    buffer_toStringUnzeroed(b, &buf, &bufsize);
     buffer_free(b);
     buf = PD_MEMORY_RESIZE(buf, bufsize, bufsize+1);
     buf[bufsize] = 0;

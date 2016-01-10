@@ -80,14 +80,42 @@ void buffer_reset (t_buffer *x)
 
 void buffer_append (t_buffer *x, int argc, t_atom *argv)
 {
+    if (argc > 0) {
+    //
     t_atom *a = NULL;
     int i, n = x->b_size + argc;
 
-    PD_ASSERT (argc >= 0);
-    
     x->b_vector = PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
 
     for (a = x->b_vector + x->b_size; argc--; a++) { *a = *(argv++); } x->b_size = n;
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void buffer_serialize (t_buffer *x, t_buffer *y)
+{
+    t_buffer *copy = buffer_new();
+    int i;
+
+    buffer_append (copy, y->b_size, y->b_vector);
+    
+    for (i = 0; i < copy->b_size; i++) {
+    //
+    t_atom *a = copy->b_vector + i;
+    
+    if (!IS_FLOAT (a)) {
+        char buf[PD_STRING] = { 0 };
+        atom_toString (a, buf, PD_STRING);
+        SET_SYMBOL (a, gensym (buf));
+    }
+    //
+    }
+    
+    buffer_append (x, copy->b_size, copy->b_vector);
 }
 
 /* < http://stackoverflow.com/a/11270603 > */
@@ -124,58 +152,13 @@ void buffer_vAppend (t_buffer *x, char *fmt, ...)
     buffer_append (x, n, args);
 }
 
-void buffer_appendBuffer (t_buffer *x, t_buffer *y)
-{
-    t_buffer *z = buffer_new();
-    int i, fixit;
-    t_atom *ap;
-    buffer_append(z, y->b_size, y->b_vector);
-    for (i = 0, ap = z->b_vector; i < z->b_size; i++, ap++)
-    {
-        char tbuf[PD_STRING], *s;
-        switch (ap->a_type)
-        {
-        case A_FLOAT:
-            break;
-        case A_SEMICOLON:
-            SET_SYMBOL(ap, gensym(";"));
-            break;
-        case A_COMMA:
-            SET_SYMBOL(ap, gensym(","));
-            break;
-        case A_DOLLAR:
-            sprintf(tbuf, "$%d", ap->a_w.w_index);
-            SET_SYMBOL(ap, gensym(tbuf));
-            break;
-        case A_DOLLARSYMBOL:
-            atom_toString(ap, tbuf, PD_STRING);
-            SET_SYMBOL(ap, gensym(tbuf));
-            break;
-        case A_SYMBOL:
-            for (s = ap->a_w.w_symbol->s_name, fixit = 0; *s; s++)
-                if (*s == ';' || *s == ',' || *s == '$')
-                    fixit = 1;
-            if (fixit)
-            {
-                atom_toString(ap, tbuf, PD_STRING);
-                SET_SYMBOL(ap, gensym(tbuf));
-            }
-            break;
-        default:
-            PD_BUG;
-        }
-    }
-    
-    buffer_append(x, z->b_size, z->b_vector);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 static int buffer_isValidCharacter (char c)
 {
-    return (!utils_isWhitespace (c) && !utils_isStatementEnd (c));
+    return (!utils_isTokenWhitespace (c) && !utils_isTokenEnd (c));
 }
 
 static int buffer_isValidState (int floatState)
@@ -283,7 +266,7 @@ void buffer_withString (t_buffer *x, char *s, int size)
     
     while (1) {
     //
-    while (utils_isWhitespace (*text) && (text != tBound)) { text++; }   /* Skip whitespaces. */
+    while (utils_isTokenWhitespace (*text) && (text != tBound)) { text++; }   /* Skip whitespaces. */
     
     if (text == tBound)    { break; }
     else if (*text == ';') { SET_SEMICOLON (a); text++; }
@@ -303,7 +286,7 @@ void buffer_withString (t_buffer *x, char *s, int size)
         //
         char c = *p = *text++;
         
-        lastSlash = slash; slash = utils_isEscape (c);
+        lastSlash = slash; slash = utils_isTokenEscape (c);
 
         if (floatState >= 0) { floatState = buffer_nextState (floatState, c); }
         if (!lastSlash && text != tBound && utils_startsWithDollarNumber (text - 1)) { dollar = 1; }
@@ -352,7 +335,7 @@ void buffer_withString (t_buffer *x, char *s, int size)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void buffer_toStringUnzero (t_buffer *x, char **s, int *size)
+void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)
 {
     char *buf = PD_MEMORY_GET (0);
     int i, length = 0;
@@ -394,7 +377,7 @@ void binbuf_addsemi(t_buffer *x)
 }
 
 /* Supply atoms to a binbuf from a message, making the opposite changes
-from buffer_appendBuffer.  The symbol ";" goes to a semicolon, etc. */
+from buffer_serialize.  The symbol ";" goes to a semicolon, etc. */
 
 void binbuf_restore(t_buffer *x, int argc, t_atom *argv)
 {

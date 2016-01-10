@@ -595,7 +595,7 @@ static void canvas_saveto(t_canvas *x, t_buffer *b)
         /* have to go to original binbuf to find out how we were named. */
         t_buffer *bz = buffer_new();
         t_symbol *patchsym;
-        buffer_appendBuffer(bz, x->gl_obj.te_buffer);
+        buffer_serialize(bz, x->gl_obj.te_buffer);
         patchsym = atom_getSymbolAtIndex(1, binbuf_getnatom(bz), binbuf_getvec(bz));
         buffer_free(bz);
         buffer_vAppend(b, "ssiiiisi;", gensym("#N"), gensym("canvas"),

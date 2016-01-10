@@ -138,7 +138,7 @@ static void scalar_define_save(t_gobj *z, t_buffer *bb)
     t_glist *x = (t_glist *)z;
     buffer_vAppend(bb, "ssff", &s__X, gensym("obj"),
         (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
-    buffer_appendBuffer(bb, x->gl_obj.te_buffer);
+    buffer_serialize(bb, x->gl_obj.te_buffer);
     binbuf_addsemi(bb);
     if (x->gl_private && x->gl_list &&
         pd_class(&x->gl_list->g_pd) == scalar_class)
@@ -147,7 +147,7 @@ static void scalar_define_save(t_gobj *z, t_buffer *bb)
         t_scalar *sc = (t_scalar *)(x->gl_list);
         buffer_vAppend(bb, "ss", gensym("#A"), gensym("set"));
         canvas_writescalar(sc->sc_template, sc->sc_vector, b2, 0);
-        buffer_appendBuffer(bb, b2);
+        buffer_serialize(bb, b2);
         binbuf_addsemi(bb);
         buffer_free(b2);
     }

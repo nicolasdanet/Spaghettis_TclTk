@@ -34,7 +34,7 @@ static void *print_new(t_symbol *sel, int argc, t_atom *argv)
         char *buf;
         t_buffer *bb = buffer_new();
         buffer_append(bb, argc, argv);
-        buffer_toStringUnzero(bb, &buf, &bufsize);
+        buffer_toStringUnzeroed(bb, &buf, &bufsize);
         buf = PD_MEMORY_RESIZE(buf, bufsize, bufsize+1);
         buf[bufsize] = 0;
         x->x_sym = gensym(buf);

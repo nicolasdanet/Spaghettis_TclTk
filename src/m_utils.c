@@ -49,17 +49,17 @@ int utils_snprintf (char *dest, size_t size, const char *format, ...)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int utils_isStatementEnd (char c) 
+int utils_isTokenEnd (char c) 
 {
     return (c == ',' || c == ';');
 }
 
-int utils_isEscape (char c)
+int utils_isTokenEscape (char c)
 {
     return (c == '\\');
 }
 
-int utils_isWhitespace (char c)
+int utils_isTokenWhitespace (char c)
 {
     return (c == ' ' || c == '\n' || c == '\r' || c == '\t');
 }

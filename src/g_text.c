@@ -1147,13 +1147,13 @@ void text_save(t_gobj *z, t_buffer *b)
             buffer_vAppend(b, "ssii", gensym("#X"), gensym("obj"),
                 (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }
-        buffer_appendBuffer(b, x->te_buffer);
+        buffer_serialize(b, x->te_buffer);
     }
     else if (x->te_type == TYPE_MESSAGE)
     {
         buffer_vAppend(b, "ssii", gensym("#X"), gensym("msg"),
             (int)x->te_xCoordinate, (int)x->te_yCoordinate);
-        buffer_appendBuffer(b, x->te_buffer);
+        buffer_serialize(b, x->te_buffer);
     }
     else if (x->te_type == TYPE_ATOM)
     {
@@ -1174,7 +1174,7 @@ void text_save(t_gobj *z, t_buffer *b)
     {
         buffer_vAppend(b, "ssii", gensym("#X"), gensym("text"),
             (int)x->te_xCoordinate, (int)x->te_yCoordinate);
-        buffer_appendBuffer(b, x->te_buffer);
+        buffer_serialize(b, x->te_buffer);
     }
     if (x->te_width)
         buffer_vAppend(b, ",si", gensym("f"), (int)x->te_width);

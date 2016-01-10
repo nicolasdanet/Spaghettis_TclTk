@@ -61,7 +61,7 @@ t_rtext *rtext_new(t_glist *glist, t_text *who)
     x->x_next = glist->gl_editor->e_rtext;
     x->x_selstart = x->x_selend = x->x_active =
         x->x_drawnwidth = x->x_drawnheight = 0;
-    buffer_toStringUnzero(who->te_buffer, &x->x_buf, &x->x_bufsize);
+    buffer_toStringUnzeroed(who->te_buffer, &x->x_buf, &x->x_bufsize);
     glist->gl_editor->e_rtext = x;
     sprintf(x->x_tag, ".x%lx.t%lx", (t_int)glist_getcanvas(x->x_glist),
         (t_int)x);
@@ -353,7 +353,7 @@ void rtext_retext(t_rtext *x)
     int w = 0, h = 0, indx;
     t_text *text = x->x_text;
     PD_MEMORY_FREE(x->x_buf, x->x_bufsize);
-    buffer_toStringUnzero(text->te_buffer, &x->x_buf, &x->x_bufsize);
+    buffer_toStringUnzeroed(text->te_buffer, &x->x_buf, &x->x_bufsize);
         /* special case: for number boxes, try to pare the number down
         to the specified width of the box. */
     if (text->te_width > 0 && text->te_type == TYPE_ATOM &&

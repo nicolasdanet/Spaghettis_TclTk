@@ -262,7 +262,7 @@ static int netsend_dosend(t_netsend *x, int sockfd,
         buffer_append(b, argc, argv);
         SET_SEMICOLON(&at);
         buffer_append(b, 1, &at);
-        buffer_toStringUnzero(b, &buf, &length);
+        buffer_toStringUnzeroed(b, &buf, &length);
     }
     for (bp = buf, sent = 0; sent < length;)
     {

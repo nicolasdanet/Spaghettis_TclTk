@@ -47,7 +47,7 @@ static void textbuf_senditup(t_textbuf *x)
     char *txt;
     if (!x->b_guiconnect)
         return;
-    buffer_toStringUnzero(x->b_binbuf, &txt, &ntxt);
+    buffer_toStringUnzeroed(x->b_binbuf, &txt, &ntxt);
     sys_vgui("::ui_text::clear .x%lx\n", x);
     for (i = 0; i < ntxt; )
     {
@@ -342,12 +342,12 @@ static void text_define_save(t_gobj *z, t_buffer *bb)
     t_text_define *x = (t_text_define *)z;
     buffer_vAppend(bb, "ssff", &s__X, gensym("obj"),
         (float)x->x_ob.te_xCoordinate, (float)x->x_ob.te_yCoordinate);
-    buffer_appendBuffer(bb, x->x_ob.te_buffer);
+    buffer_serialize(bb, x->x_ob.te_buffer);
     binbuf_addsemi(bb);
     if (x->x_keep)
     {
         buffer_vAppend(bb, "ss", gensym("#A"), gensym("set"));
-        buffer_appendBuffer(bb, x->x_binbuf);
+        buffer_serialize(bb, x->x_binbuf);
         binbuf_addsemi(bb);
     }
     object_saveWidth(&x->x_ob, bb);
@@ -817,7 +817,7 @@ static void text_tolist_bang(t_text_tolist *x)
     if (!b)
        return;
     b2 = buffer_new();
-    buffer_appendBuffer(b2, b);
+    buffer_serialize(b2, b);
     outlet_list(x->tc_obj.te_outlet, 0, binbuf_getnatom(b2), binbuf_getvec(b2));
     buffer_free(b2);
 }
