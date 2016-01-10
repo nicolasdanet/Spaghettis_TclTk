@@ -263,21 +263,19 @@ void buffer_withString (t_buffer *x, char *s, int size)
 void buffer_toStringUnzero (t_buffer *x, char **s, int *size)
 {
     char *buf = PD_MEMORY_GET (0);
-    int length = 0;
-    t_atom *a = NULL;
-    int i = x->b_size;
+    int i, length = 0;
 
-    for (a = x->b_vector; i--; a++) {
+    for (i = 0; i < x->b_size; i++) {
     //
     char t[PD_STRING] = { 0 };
     int n = length;
         
-    atom_toString (a, t, PD_STRING);
+    atom_toString (x->b_vector + i, t, PD_STRING);
     n += strlen (t) + 1;
     buf = PD_MEMORY_RESIZE (buf, length, n);
     strcpy (buf + length, t);
     length = n;
-    if (IS_SEMICOLON (a)) { buf[length - 1] = '\n'; }
+    if (IS_SEMICOLON (x->b_vector + i)) { buf[length - 1] = '\n'; }
     else { 
         buf[length - 1] = ' ';
     }

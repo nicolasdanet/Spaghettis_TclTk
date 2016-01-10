@@ -465,15 +465,15 @@ void object_list (t_object *x, t_symbol *s, int argc, t_atom *argv)
     else {
     //
     int count;
-    t_atom *ap = NULL;
-    t_inlet *ip = x->te_inlet;
+    t_atom *a = NULL;
+    t_inlet *i = x->te_inlet;
     
-    for (count = argc - 1, ap = argv + 1; ip && count--; ap++, ip = ip->i_next) {
+    for (count = argc - 1, a = argv + 1; i && count--; a++, i = i->i_next) {
     //
-    if (IS_POINTER (ap))        { pd_pointer ((t_pd *)ip, GET_POINTER (ap)); }
-    else if (IS_FLOAT (ap))     { pd_float ((t_pd *)ip, GET_FLOAT (ap)); }
+    if (IS_POINTER (a))        { pd_pointer ((t_pd *)i, GET_POINTER (a)); }
+    else if (IS_FLOAT (a))     { pd_float ((t_pd *)i, GET_FLOAT (a)); }
     else {
-        pd_symbol ((t_pd *)ip, GET_SYMBOL (ap));
+        pd_symbol ((t_pd *)i, GET_SYMBOL (a));
     }
     //
     }
@@ -696,7 +696,7 @@ int object_isSignalOutlet (t_object *x, int m)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int object_getSignalInletIndex (t_inlet *x)
+int object_getIndexOfSignalInlet (t_inlet *x)
 {
     int n = 0;
     t_inlet *i = NULL;
@@ -710,7 +710,7 @@ int object_getSignalInletIndex (t_inlet *x)
     return n;
 }
 
-int object_getSignalOutletIndex (t_outlet *x)
+int object_getIndexOfSignalOutlet (t_outlet *x)
 {
     int n = 0;
     t_outlet *o = NULL;

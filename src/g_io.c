@@ -190,7 +190,7 @@ void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
         prologphase = (phase - 1) & (period - 1);
         if (parentsigs)
         {
-            insig = parentsigs[object_getSignalInletIndex(x->x_inlet)];
+            insig = parentsigs[object_getIndexOfSignalInlet(x->x_inlet)];
             parentvecsize = insig->s_vectorSize;
             re_parentvecsize = parentvecsize * upsample / downsample;
         }
@@ -244,7 +244,7 @@ void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
     {
             /* no reblocking; in this case our output signal is "borrowed"
             and merely needs to be pointed to the real one. */
-        x->x_directsignal = parentsigs[object_getSignalInletIndex(x->x_inlet)];
+        x->x_directsignal = parentsigs[object_getIndexOfSignalInlet(x->x_inlet)];
     }
 }
 
@@ -462,7 +462,7 @@ void voutlet_dspprolog(struct _voutlet *x, t_signal **parentsigs,
     {
         if (!parentsigs) { PD_BUG; }
         x->x_directsignal =
-            parentsigs[object_getSignalOutletIndex(x->x_parentoutlet)];
+            parentsigs[object_getIndexOfSignalOutlet(x->x_parentoutlet)];
     }
 }
 
@@ -502,7 +502,7 @@ void voutlet_dspepilog(struct _voutlet *x, t_signal **parentsigs,
         int bigperiod, epilogphase, blockphase;
         if (parentsigs)
         {
-            outsig = parentsigs[object_getSignalOutletIndex(x->x_parentoutlet)];
+            outsig = parentsigs[object_getIndexOfSignalOutlet(x->x_parentoutlet)];
             parentvecsize = outsig->s_vectorSize;
             re_parentvecsize = parentvecsize * upsample / downsample;
         }
@@ -561,7 +561,7 @@ void voutlet_dspepilog(struct _voutlet *x, t_signal **parentsigs,
         if (parentsigs)
         {
             t_signal *outsig =
-                parentsigs[object_getSignalOutletIndex(x->x_parentoutlet)];
+                parentsigs[object_getIndexOfSignalOutlet(x->x_parentoutlet)];
             dsp_add_zero(outsig->s_vector, outsig->s_blockSize);
         }
     }
