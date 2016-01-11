@@ -147,8 +147,12 @@ int  utils_isTokenEnd               (char c);
 int  utils_isTokenEscape            (char c);
 int  utils_isTokenWhitespace        (char c);
 
-int  utils_isDollarNumber           (char *s);
-int  utils_startsWithDollarNumber   (char *s);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int  dollar_isDollarNumber          (char *s);
+int  dollar_startsWithDollarNumber  (char *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

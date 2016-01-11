@@ -295,7 +295,7 @@ void buffer_parseString (t_buffer *x, char *s, int size, int allocated)
         lastSlash = slash; slash = utils_isTokenEscape (c);
 
         if (floatState >= 0) { floatState = buffer_nextState (floatState, c); }
-        if (!lastSlash && text != tBound && utils_startsWithDollarNumber (text - 1)) { dollar = 1; }
+        if (!lastSlash && text != tBound && dollar_startsWithDollarNumber (text - 1)) { dollar = 1; }
         
         if (!slash)         { p++; }
         else if (lastSlash) { p++; slash = 0; }
@@ -308,7 +308,7 @@ void buffer_parseString (t_buffer *x, char *s, int size, int allocated)
             SET_FLOAT (a, atof (buf));
                         
         } else if (dollar) {
-            if (utils_isDollarNumber (buf)) { SET_DOLLAR (a, atoi (buf + 1)); }
+            if (dollar_isDollarNumber (buf)) { SET_DOLLAR (a, atoi (buf + 1)); }
             else { 
                 SET_DOLLARSYMBOL (a, gensym (buf));
             }
@@ -553,6 +553,10 @@ t_symbol *binbuf_realizedollsym(t_symbol *s, int ac, t_atom *av, int tonew)
 done:
     return (gensym(buf2));
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #define SMALLMSG 5
 
@@ -840,7 +844,6 @@ int binbuf_read_via_path(t_buffer *b, char *filename, char *dirname,
 }
 
 #define WBUFSIZE 4096
-static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd);
 
     /* write a binbuf to a text file.  If "crflag" is set we suppress
     semicolons. */
@@ -856,12 +859,13 @@ int binbuf_write(t_buffer *x, char *filename, char *dir, int crflag)
     if (*dir)
         strcat(fbuf, dir), strcat(fbuf, "/");
     strcat(fbuf, filename);
-    if (!strcmp(filename + strlen(filename) - 4, ".pat") ||
+    
+    /*if (!strcmp(filename + strlen(filename) - 4, ".pat") ||
         !strcmp(filename + strlen(filename) - 4, ".mxt"))
     {
         x = binbuf_convert(x, 0);
         deleteit = 1;
-    }
+    }*/
     
     if (!(f = sys_fopen(fbuf, "w")))
     {
@@ -940,484 +944,13 @@ from Pd to Max hasn't been tested for patches with subpatches yet!  */
 #define ISSYMBOL(a, b) ((a)->a_type == A_SYMBOL && \
     !strcmp((a)->a_w.w_symbol->s_name, (b)))
 
-static t_buffer *binbuf_convert(t_buffer *oldb, int maxtopd)
-{
-    t_buffer *newb = buffer_new();
-    t_atom *vec = oldb->b_vector;
-    t_int n = oldb->b_size, nextindex, stackdepth = 0, stack[MAXSTACK],
-        nobj = 0, i, gotfontsize = 0;
-    t_atom outmess[MAXSTACK], *nextmess;
-    t_float fontsize = 10;
-    if (!maxtopd)
-        buffer_vAppend(newb, "ss;", gensym("max"), gensym("v2"));
-    for (nextindex = 0; nextindex < n; )
-    {
-        int endmess, natom;
-        char *first, *second, *third;
-        for (endmess = nextindex; endmess < n && vec[endmess].a_type != A_SEMICOLON;
-            endmess++)
-                ;
-        if (endmess == n) break;
-        if (endmess == nextindex || endmess == nextindex + 1
-            || vec[nextindex].a_type != A_SYMBOL ||
-                vec[nextindex+1].a_type != A_SYMBOL)
-        {
-            nextindex = endmess + 1;
-            continue;
-        }
-        natom = endmess - nextindex;
-        if (natom > MAXSTACK-10) natom = MAXSTACK-10;
-        nextmess = vec + nextindex;
-        first = nextmess->a_w.w_symbol->s_name;
-        second = (nextmess+1)->a_w.w_symbol->s_name;
-        if (maxtopd)
-        {
-                /* case 1: importing a ".pat" file into Pd. */
-                
-                /* dollar signs in file translate to symbols */
-            for (i = 0; i < natom; i++)
-            {
-                if (nextmess[i].a_type == A_DOLLAR)
-                {
-                    char buf[100];
-                    sprintf(buf, "$%d", nextmess[i].a_w.w_index);
-                    SET_SYMBOL(nextmess+i, gensym(buf));
-                }
-                else if (nextmess[i].a_type == A_DOLLARSYMBOL)
-                {
-                    char buf[100];
-                    sprintf(buf, "%s", nextmess[i].a_w.w_symbol->s_name);
-                    SET_SYMBOL(nextmess+i, gensym(buf));
-                }
-            }
-            if (!strcmp(first, "#N"))
-            {
-                if (!strcmp(second, "vpatcher"))
-                {
-                    if (stackdepth >= MAXSTACK)
-                    {
-                        post_error ("stack depth exceeded: too many embedded patches");
-                        return (newb);
-                    }
-                    stack[stackdepth] = nobj;
-                    stackdepth++;
-                    nobj = 0;
-                    buffer_vAppend(newb, "ssfffff;", 
-                        gensym("#N"), gensym("canvas"),
-                            atom_getFloatAtIndex(2, natom, nextmess),
-                            atom_getFloatAtIndex(3, natom, nextmess),
-                            atom_getFloatAtIndex(4, natom, nextmess) -
-                                atom_getFloatAtIndex(2, natom, nextmess),
-                            atom_getFloatAtIndex(5, natom, nextmess) -
-                                atom_getFloatAtIndex(3, natom, nextmess),
-                            (t_float)sys_defaultfont);
-                }
-            }
-            if (!strcmp(first, "#P"))
-            {
-                    /* drop initial "hidden" flag */
-                if (!strcmp(second, "hidden"))
-                {
-                    nextmess++;
-                    natom--;
-                    second = (nextmess+1)->a_w.w_symbol->s_name;
-                }
-                if (natom >= 7 && !strcmp(second, "newobj")
-                    && (ISSYMBOL(&nextmess[6], "patcher") ||
-                        ISSYMBOL(&nextmess[6], "p")))
-                {
-                    buffer_vAppend(newb, "ssffss;",
-                        gensym("#X"), gensym("restore"),
-                        atom_getFloatAtIndex(2, natom, nextmess),
-                        atom_getFloatAtIndex(3, natom, nextmess),
-                        gensym("pd"), atom_getSymbolAtIndex(7, natom, nextmess));
-                    if (stackdepth) stackdepth--;
-                    nobj = stack[stackdepth];
-                    nobj++;
-                }
-                else if (!strcmp(second, "newex") || !strcmp(second, "newobj"))
-                {
-                    t_symbol *classname =
-                        atom_getSymbolAtIndex(6, natom, nextmess);
-                    if (classname == gensym("trigger") ||
-                        classname == gensym("t"))
-                    {
-                        for (i = 7; i < natom; i++)
-                            if (nextmess[i].a_type == A_SYMBOL &&
-                                nextmess[i].a_w.w_symbol == gensym("i"))
-                                    nextmess[i].a_w.w_symbol = gensym("f");
-                    }
-                    if (classname == gensym("table"))
-                        classname = gensym("TABLE");
-                    SET_SYMBOL(outmess, gensym("#X"));
-                    SET_SYMBOL(outmess + 1, gensym("obj"));
-                    outmess[2] = nextmess[2];
-                    outmess[3] = nextmess[3];
-                    SET_SYMBOL(outmess+4, classname);
-                    for (i = 7; i < natom; i++)
-                        outmess[i-2] = nextmess[i];
-                    SET_SEMICOLON(outmess + natom - 2);
-                    buffer_append(newb, natom - 1, outmess);
-                    nobj++;
-                }
-                else if (!strcmp(second, "message") || 
-                    !strcmp(second, "comment"))
-                {
-                    SET_SYMBOL(outmess, gensym("#X"));
-                    SET_SYMBOL(outmess + 1, gensym(
-                        (strcmp(second, "message") ? "text" : "msg")));
-                    outmess[2] = nextmess[2];
-                    outmess[3] = nextmess[3];
-                    for (i = 6; i < natom; i++)
-                        outmess[i-2] = nextmess[i];
-                    SET_SEMICOLON(outmess + natom - 2);
-                    buffer_append(newb, natom - 1, outmess);
-                    nobj++;
-                }
-                else if (!strcmp(second, "button"))
-                {
-                    buffer_vAppend(newb, "ssffs;",
-                        gensym("#X"), gensym("obj"),
-                        atom_getFloatAtIndex(2, natom, nextmess),
-                        atom_getFloatAtIndex(3, natom, nextmess),
-                        gensym("bng"));
-                    nobj++;
-                }
-                else if (!strcmp(second, "number") || !strcmp(second, "flonum"))
-                {
-                    buffer_vAppend(newb, "ssff;",
-                        gensym("#X"), gensym("floatatom"),
-                        atom_getFloatAtIndex(2, natom, nextmess),
-                        atom_getFloatAtIndex(3, natom, nextmess));
-                    nobj++;
-                }
-                else if (!strcmp(second, "slider"))
-                {
-                    t_float inc = atom_getFloatAtIndex(7, natom, nextmess);
-                    if (inc <= 0)
-                        inc = 1;
-                    buffer_vAppend(newb, "ssffsffffffsssfffffffff;",
-                        gensym("#X"), gensym("obj"),
-                        atom_getFloatAtIndex(2, natom, nextmess),
-                        atom_getFloatAtIndex(3, natom, nextmess),
-                        gensym("vsl"),
-                        atom_getFloatAtIndex(4, natom, nextmess),
-                        atom_getFloatAtIndex(5, natom, nextmess),
-                        atom_getFloatAtIndex(6, natom, nextmess),
-                        atom_getFloatAtIndex(6, natom, nextmess)
-                            + (atom_getFloatAtIndex(5, natom, nextmess) - 1) * inc,
-                        0., 0.,
-                        gensym("empty"), gensym("empty"), gensym("empty"),
-                        0., -8., 0., 8., -262144., -1., -1., 0., 1.);
-                    nobj++;
-                }
-                else if (!strcmp(second, "toggle"))
-                {
-                    buffer_vAppend(newb, "ssffs;",
-                        gensym("#X"), gensym("obj"),
-                        atom_getFloatAtIndex(2, natom, nextmess),
-                        atom_getFloatAtIndex(3, natom, nextmess),
-                        gensym("tgl"));
-                    nobj++;
-                }
-                else if (!strcmp(second, "inlet"))
-                {
-                    buffer_vAppend(newb, "ssffs;",
-                        gensym("#X"), gensym("obj"),
-                        atom_getFloatAtIndex(2, natom, nextmess),
-                        atom_getFloatAtIndex(3, natom, nextmess),
-                        gensym((natom > 5 ? "inlet~" : "inlet"))); 
-                    nobj++;
-                }
-                else if (!strcmp(second, "outlet"))
-                {
-                    buffer_vAppend(newb, "ssffs;",
-                        gensym("#X"), gensym("obj"),
-                        atom_getFloatAtIndex(2, natom, nextmess),
-                        atom_getFloatAtIndex(3, natom, nextmess),
-                        gensym((natom > 5 ? "outlet~" : "outlet"))); 
-                    nobj++;
-                }
-                else if (!strcmp(second, "user"))
-                {
-                    third = (nextmess+2)->a_w.w_symbol->s_name;
-                    if (!strcmp(third, "hslider"))
-                    {
-                        t_float range = atom_getFloatAtIndex(7, natom, nextmess);
-                        t_float multiplier = atom_getFloatAtIndex(8, natom, nextmess);
-                        t_float offset = atom_getFloatAtIndex(9, natom, nextmess);
-                        buffer_vAppend(newb, "ssffsffffffsssfffffffff;",
-                                    gensym("#X"), gensym("obj"),
-                                    atom_getFloatAtIndex(3, natom, nextmess),
-                                    atom_getFloatAtIndex(4, natom, nextmess),
-                                    gensym("hsl"),
-                                    atom_getFloatAtIndex(6, natom, nextmess),
-                                    atom_getFloatAtIndex(5, natom, nextmess),
-                                    offset,
-                                    range + offset,
-                                    0., 0.,
-                                    gensym("empty"), gensym("empty"), gensym("empty"),
-                                    0., -8., 0., 8., -262144., -1., -1., 0., 1.); 
-                   }
-                    else if (!strcmp(third, "uslider"))
-                    {
-                        t_float range = atom_getFloatAtIndex(7, natom, nextmess);
-                        t_float multiplier = atom_getFloatAtIndex(8, natom, nextmess);
-                        t_float offset = atom_getFloatAtIndex(9, natom, nextmess);
-                        buffer_vAppend(newb, "ssffsffffffsssfffffffff;",
-                                    gensym("#X"), gensym("obj"),
-                                    atom_getFloatAtIndex(3, natom, nextmess),
-                                    atom_getFloatAtIndex(4, natom, nextmess),
-                                    gensym("vsl"),
-                                    atom_getFloatAtIndex(5, natom, nextmess),
-                                    atom_getFloatAtIndex(6, natom, nextmess),
-                                    offset,
-                                    range + offset,
-                                    0., 0.,
-                                    gensym("empty"), gensym("empty"), gensym("empty"),
-                                    0., -8., 0., 8., -262144., -1., -1., 0., 1.);
-                    }
-                    else
-                        buffer_vAppend(newb, "ssffs;",
-                                    gensym("#X"), gensym("obj"),
-                                    atom_getFloatAtIndex(3, natom, nextmess),
-                                    atom_getFloatAtIndex(4, natom, nextmess),
-                                    atom_getSymbolAtIndex(2, natom, nextmess));
-                    nobj++;
-                }
-                else if (!strcmp(second, "connect")||
-                    !strcmp(second, "fasten"))
-                {
-                    buffer_vAppend(newb, "ssffff;",
-                        gensym("#X"), gensym("connect"),
-                        nobj - atom_getFloatAtIndex(2, natom, nextmess) - 1,
-                        atom_getFloatAtIndex(3, natom, nextmess),
-                        nobj - atom_getFloatAtIndex(4, natom, nextmess) - 1,
-                        atom_getFloatAtIndex(5, natom, nextmess)); 
-                }
-            }
-        }
-        else        /* Pd to Max */
-        {
-            if (!strcmp(first, "#N"))
-            {
-                if (!strcmp(second, "canvas"))
-                {
-                    t_float x, y;
-                    if (stackdepth >= MAXSTACK)
-                    {
-                        post_error ("stack depth exceeded: too many embedded patches");
-                        return (newb);
-                    }
-                    stack[stackdepth] = nobj;
-                    stackdepth++;
-                    nobj = 0;
-                    if(!gotfontsize) { /* only the first canvas sets the font size */
-                        fontsize = atom_getFloatAtIndex(6, natom, nextmess);
-                        gotfontsize = 1;
-                    }
-                    x = atom_getFloatAtIndex(2, natom, nextmess);
-                    y = atom_getFloatAtIndex(3, natom, nextmess);
-                    buffer_vAppend(newb, "ssffff;", 
-                        gensym("#N"), gensym("vpatcher"),
-                            x, y,
-                            atom_getFloatAtIndex(4, natom, nextmess) + x,
-                            atom_getFloatAtIndex(5, natom, nextmess) + y);
-                }
-            }
-            if (!strcmp(first, "#X"))
-            {
-                if (natom >= 5 && !strcmp(second, "restore")
-                    && (ISSYMBOL (&nextmess[4], "pd")))
-                {
-                    buffer_vAppend(newb, "ss;", gensym("#P"), gensym("pop"));
-                    SET_SYMBOL(outmess, gensym("#P"));
-                    SET_SYMBOL(outmess + 1, gensym("newobj"));
-                    outmess[2] = nextmess[2];
-                    outmess[3] = nextmess[3];
-                    SET_FLOAT(outmess + 4, 50.*(natom-5));
-                    SET_FLOAT(outmess + 5, fontsize);
-                    SET_SYMBOL(outmess + 6, gensym("p"));
-                    for (i = 5; i < natom; i++)
-                        outmess[i+2] = nextmess[i];
-                    SET_SEMICOLON(outmess + natom + 2);
-                    buffer_append(newb, natom + 3, outmess);
-                    if (stackdepth) stackdepth--;
-                    nobj = stack[stackdepth];
-                    nobj++;
-                }
-                else if (!strcmp(second, "obj"))
-                {
-                    t_symbol *classname =
-                        atom_getSymbolAtIndex(4, natom, nextmess);
-                    if (classname == gensym("inlet"))
-                        buffer_vAppend(newb, "ssfff;", gensym("#P"),
-                            gensym("inlet"),
-                            atom_getFloatAtIndex(2, natom, nextmess),
-                            atom_getFloatAtIndex(3, natom, nextmess),
-                            10. + fontsize);
-                    else if (classname == gensym("inlet~"))
-                        buffer_vAppend(newb, "ssffff;", gensym("#P"),
-                            gensym("inlet"),
-                            atom_getFloatAtIndex(2, natom, nextmess),
-                            atom_getFloatAtIndex(3, natom, nextmess),
-                            10. + fontsize, 1.);
-                    else if (classname == gensym("outlet"))
-                        buffer_vAppend(newb, "ssfff;", gensym("#P"),
-                            gensym("outlet"),
-                            atom_getFloatAtIndex(2, natom, nextmess),
-                            atom_getFloatAtIndex(3, natom, nextmess),
-                            10. + fontsize);
-                    else if (classname == gensym("outlet~"))
-                        buffer_vAppend(newb, "ssffff;", gensym("#P"),
-                            gensym("outlet"),
-                            atom_getFloatAtIndex(2, natom, nextmess),
-                            atom_getFloatAtIndex(3, natom, nextmess),
-                            10. + fontsize, 1.);
-                    else if (classname == gensym("bng"))
-                        buffer_vAppend(newb, "ssffff;", gensym("#P"),
-                            gensym("button"),
-                            atom_getFloatAtIndex(2, natom, nextmess),
-                            atom_getFloatAtIndex(3, natom, nextmess),
-                            atom_getFloatAtIndex(5, natom, nextmess), 0.);
-                    else if (classname == gensym("tgl"))
-                        buffer_vAppend(newb, "ssffff;", gensym("#P"),
-                            gensym("toggle"),
-                            atom_getFloatAtIndex(2, natom, nextmess),
-                            atom_getFloatAtIndex(3, natom, nextmess),
-                            atom_getFloatAtIndex(5, natom, nextmess), 0.);
-                    else if (classname == gensym("vsl"))
-                        buffer_vAppend(newb, "ssffffff;", gensym("#P"),
-                            gensym("slider"),
-                            atom_getFloatAtIndex(2, natom, nextmess),
-                            atom_getFloatAtIndex(3, natom, nextmess),
-                            atom_getFloatAtIndex(5, natom, nextmess),
-                            atom_getFloatAtIndex(6, natom, nextmess),
-                            (atom_getFloatAtIndex(8, natom, nextmess) -
-                                atom_getFloatAtIndex(7, natom, nextmess)) /
-                                    (atom_getFloatAtIndex(6, natom, nextmess) == 1? 1 :
-                                         atom_getFloatAtIndex(6, natom, nextmess) - 1),
-                            atom_getFloatAtIndex(7, natom, nextmess));
-                    else if (classname == gensym("hsl")) 
-                    {
-                        t_float slmin = atom_getFloatAtIndex(7, natom, nextmess);
-                        t_float slmax = atom_getFloatAtIndex(8, natom, nextmess);
-                        buffer_vAppend(newb, "sssffffffff;", gensym("#P"),
-                            gensym("user"),
-                            gensym("hslider"),
-                            atom_getFloatAtIndex(2, natom, nextmess),
-                            atom_getFloatAtIndex(3, natom, nextmess),
-                            atom_getFloatAtIndex(6, natom, nextmess),
-                            atom_getFloatAtIndex(5, natom, nextmess),
-                            slmax - slmin + 1, /* range */
-                            1.,            /* multiplier */
-                            slmin,         /* offset */
-                            0.);
-                    }
-                    else if ( (classname == gensym("trigger")) ||
-                              (classname == gensym("t")) )
-                    {
-                        t_symbol *arg;
-                        SET_SYMBOL(outmess, gensym("#P"));
-                        SET_SYMBOL(outmess + 1, gensym("newex"));
-                        outmess[2] = nextmess[2];
-                        outmess[3] = nextmess[3];
-                        SET_FLOAT(outmess + 4, 50.*(natom-4));
-                        SET_FLOAT(outmess + 5, fontsize);
-                        outmess[6] = nextmess[4];
-                        for (i = 5; i < natom; i++) {
-                            arg = atom_getSymbolAtIndex(i, natom, nextmess);
-                            if (arg == gensym("a"))
-                                SET_SYMBOL(outmess + i + 2, gensym("l"));
-                            else if (arg == gensym("anything"))
-                                SET_SYMBOL(outmess + i + 2, gensym("l"));
-                            else if (arg == gensym("bang"))
-                                SET_SYMBOL(outmess + i + 2, gensym("b"));
-                            else if (arg == gensym("float"))
-                                SET_SYMBOL(outmess + i + 2, gensym("f"));
-                            else if (arg == gensym("list"))
-                                SET_SYMBOL(outmess + i + 2, gensym("l"));
-                            else if (arg == gensym("symbol"))
-                                SET_SYMBOL(outmess + i + 2, gensym("s"));
-                            else 
-                                outmess[i+2] = nextmess[i];
-                        }
-                        SET_SEMICOLON(outmess + natom + 2);
-                        buffer_append(newb, natom + 3, outmess);
-                    }
-                    else
-                    {
-                        SET_SYMBOL(outmess, gensym("#P"));
-                        SET_SYMBOL(outmess + 1, gensym("newex"));
-                        outmess[2] = nextmess[2];
-                        outmess[3] = nextmess[3];
-                        SET_FLOAT(outmess + 4, 50.*(natom-4));
-                        SET_FLOAT(outmess + 5, fontsize);
-                        for (i = 4; i < natom; i++)
-                            outmess[i+2] = nextmess[i];
-                        if (classname == gensym("osc~"))
-                            SET_SYMBOL(outmess + 6, gensym("cycle~"));
-                        SET_SEMICOLON(outmess + natom + 2);
-                        buffer_append(newb, natom + 3, outmess);
-                    }
-                    nobj++;
-                
-                }
-                else if (!strcmp(second, "msg") || 
-                    !strcmp(second, "text"))
-                {
-                    SET_SYMBOL(outmess, gensym("#P"));
-                    SET_SYMBOL(outmess + 1, gensym(
-                        (strcmp(second, "msg") ? "comment" : "message")));
-                    outmess[2] = nextmess[2];
-                    outmess[3] = nextmess[3];
-                    SET_FLOAT(outmess + 4, 50.*(natom-4));
-                    SET_FLOAT(outmess + 5, fontsize);
-                    for (i = 4; i < natom; i++)
-                        outmess[i+2] = nextmess[i];
-                    SET_SEMICOLON(outmess + natom + 2);
-                    buffer_append(newb, natom + 3, outmess);
-                    nobj++;
-                }
-                else if (!strcmp(second, "floatatom"))
-                {
-                    t_float width = atom_getFloatAtIndex(4, natom, nextmess)*fontsize;
-                    if(width<8) width = 150; /* if pd width=0, set it big */
-                    buffer_vAppend(newb, "ssfff;",
-                        gensym("#P"), gensym("flonum"),
-                        atom_getFloatAtIndex(2, natom, nextmess),
-                        atom_getFloatAtIndex(3, natom, nextmess),
-                        width);
-                    nobj++;
-                }
-                else if (!strcmp(second, "connect"))
-                {
-                    buffer_vAppend(newb, "ssffff;",
-                        gensym("#P"), gensym("connect"),
-                        nobj - atom_getFloatAtIndex(2, natom, nextmess) - 1,
-                        atom_getFloatAtIndex(3, natom, nextmess),
-                        nobj - atom_getFloatAtIndex(4, natom, nextmess) - 1,
-                        atom_getFloatAtIndex(5, natom, nextmess)); 
-                }
-            }
-        }
-        nextindex = endmess + 1;
-    }
-    if (!maxtopd)
-        buffer_vAppend(newb, "ss;", gensym("#P"), gensym("pop"));
-#if 0
-    binbuf_write(newb, "import-result.pd", "/tmp", 0);
-#endif
-    return (newb);
-}
-
 /* LATER make this evaluate the file on-the-fly. */
 /* LATER figure out how to log errors */
 void binbuf_evalfile(t_symbol *name, t_symbol *dir)
 {
     t_buffer *b = buffer_new();
-    int import = !strcmp(name->s_name + strlen(name->s_name) - 4, ".pat") ||
-        !strcmp(name->s_name + strlen(name->s_name) - 4, ".mxt");
+    /*int import = !strcmp(name->s_name + strlen(name->s_name) - 4, ".pat") ||
+        !strcmp(name->s_name + strlen(name->s_name) - 4, ".mxt");*/
     int dspstate = canvas_suspend_dsp();
         /* set filename so that new canvases can pick them up */
     glob_setfilename(0, name, dir);
@@ -1429,12 +962,12 @@ void binbuf_evalfile(t_symbol *name, t_symbol *dir)
         t_pd *bounda = gensym("#A")->s_thing, *boundn = s__N.s_thing;
         gensym("#A")->s_thing = 0;
         s__N.s_thing = &pd_canvasMaker;
-        if (import)
+        /*if (import)
         {
             t_buffer *newb = binbuf_convert(b, 1);
             buffer_free(b);
             b = newb;
-        }
+        }*/
         binbuf_eval(b, 0, 0, 0);
         gensym("#A")->s_thing = bounda;
         s__N.s_thing = boundn;
