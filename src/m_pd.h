@@ -456,12 +456,9 @@ PD_DLL t_atom   *buffer_getAtoms            (t_buffer *x);
 PD_DLL void     buffer_free                 (t_buffer *x);
 PD_DLL void     buffer_reset                (t_buffer *x);
 PD_DLL void     buffer_append               (t_buffer *x, int argc, t_atom *argv);
+
 PD_DLL int      buffer_getSize              (t_buffer *x);
 
-PD_DLL void     binbuf_print                (t_buffer *x);
-
-
-PD_DLL int      binbuf_resize               (t_buffer *x, int newsize);
 PD_DLL void     binbuf_eval                 (t_buffer *x, t_pd *target, int argc, t_atom *argv);
 PD_DLL int      binbuf_read                 (t_buffer *b, char *filename, char *dirname, int crflag);
 PD_DLL int      binbuf_read_via_canvas      (t_buffer *b, char *filename, t_canvas *canvas, int crflag);

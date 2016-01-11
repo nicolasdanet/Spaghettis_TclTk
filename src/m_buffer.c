@@ -88,8 +88,7 @@ t_atom *buffer_getAtoms (t_buffer *x)
 
 void buffer_reset (t_buffer *x)
 {
-    x->b_size = 0;
-    x->b_vector = PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), 0);
+    buffer_resize (x, 0);
 }
 
 void buffer_append (t_buffer *x, int argc, t_atom *argv)
@@ -109,6 +108,14 @@ void buffer_append (t_buffer *x, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+void buffer_resize (t_buffer *x, int n)
+{
+    PD_ASSERT (n >= 0);
+    
+    x->b_size   = n;
+    x->b_vector = PD_MEMORY_RESIZE (x->b_vector, x->b_size * sizeof (t_atom), n * sizeof (t_atom));
+}
 
 /* < http://stackoverflow.com/a/11270603 > */
 
@@ -420,32 +427,6 @@ void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void binbuf_print(t_buffer *x)
-{
-    int i, startedpost = 0, newline = 1;
-    for (i = 0; i < x->b_size; i++)
-    {
-        if (newline)
-        {
-            post("");
-            startedpost = 1;
-        }
-        post_atoms(1, x->b_vector + i);
-        if (x->b_vector[i].a_type == A_SEMICOLON)
-            newline = 1;
-        else newline = 0; 
-    }
-}
-
-int binbuf_resize(t_buffer *x, int newsize)
-{
-    t_atom *new = PD_MEMORY_RESIZE(x->b_vector,
-        x->b_size * sizeof(*x->b_vector), newsize * sizeof(*x->b_vector));
-    if (new)
-        x->b_vector = new, x->b_size = newsize;
-    return (new != 0);
-}
 
 int canvas_getdollarzero( void);
 

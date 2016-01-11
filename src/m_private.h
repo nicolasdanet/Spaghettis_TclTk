@@ -238,6 +238,7 @@ void atom_toString              (t_atom *a, char *s, int size);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void buffer_resize              (t_buffer *x, int n);
 void buffer_vAppend             (t_buffer *x, char *fmt, ...);
 void buffer_appendSemicolon     (t_buffer *x);
 void buffer_parseString         (t_buffer *x, char *s, int size, int allocated);

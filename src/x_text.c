@@ -684,12 +684,12 @@ static void text_set_list(t_text_set *x,
                 int oldn = n;
                 n = n + (argc - (end-start));
                 if (n > oldn)
-                    (void)binbuf_resize(b, n);
+                    buffer_resize(b, n);
                 vec = buffer_getAtoms(b);
                 memmove(&vec[start + argc], &vec[end],
                     sizeof(*vec) * (oldn - end));
                 if (n < oldn)
-                    (void)binbuf_resize(b, n);
+                    buffer_resize(b, n);
             }
         }
         else
@@ -709,7 +709,7 @@ static void text_set_list(t_text_set *x,
     {
         int addsemi = (n && vec[n-1].a_type != A_SEMICOLON &&
             vec[n-1].a_type != A_COMMA), newsize = n + addsemi + argc + 1;
-        (void)binbuf_resize(b, newsize);
+        buffer_resize(b, newsize);
         vec = buffer_getAtoms(b);
         if (addsemi)
             SET_SEMICOLON(&vec[n]);
@@ -1686,12 +1686,6 @@ static void qlist_write(t_qlist *x, t_symbol *filename, t_symbol *format)
             post_error ("%s: write failed", filename->s_name);
 }
 
-static void qlist_print(t_qlist *x)
-{
-    post("--------- textfile or qlist contents: -----------");
-    binbuf_print(x->x_binbuf);
-}
-
 static void qlist_tempo(t_qlist *x, t_float f)
 {
     t_float newtempo;
@@ -1905,8 +1899,8 @@ void x_qlist_setup(void )
     class_addMethod(qlist_class, (t_method)textbuf_close, gensym("close"), 0);
     class_addMethod(qlist_class, (t_method)textbuf_addline, 
         gensym("addline"), A_GIMME, 0);
-    class_addMethod(qlist_class, (t_method)qlist_print, gensym("print"),
-        A_DEFSYMBOL, 0);
+    /*class_addMethod(qlist_class, (t_method)qlist_print, gensym("print"),
+        A_DEFSYMBOL, 0);*/
     class_addMethod(qlist_class, (t_method)qlist_tempo,
         gensym("tempo"), A_FLOAT, 0);
     class_addBang(qlist_class, qlist_bang);
@@ -1933,8 +1927,8 @@ void x_qlist_setup(void )
         0);
     class_addMethod(textfile_class, (t_method)textbuf_addline, 
         gensym("addline"), A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_print, gensym("print"),
-        A_DEFSYMBOL, 0);
+    /*class_addMethod(textfile_class, (t_method)qlist_print, gensym("print"),
+        A_DEFSYMBOL, 0);*/
     class_addBang(textfile_class, textfile_bang);
 }
 
