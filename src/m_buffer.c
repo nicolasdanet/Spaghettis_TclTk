@@ -141,98 +141,6 @@ void buffer_vAppend (t_buffer *x, char *fmt, ...)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void buffer_serialize (t_buffer *x, t_buffer *y)
-{
-    t_buffer *copy = buffer_new();
-    int i;
-
-    buffer_append (copy, y->b_size, y->b_vector);
-    
-    for (i = 0; i < copy->b_size; i++) {
-    //
-    t_atom *a = copy->b_vector + i;
-    
-    if (!IS_FLOAT (a)) {
-        char buf[PD_STRING] = { 0 };
-        atom_toString (a, buf, PD_STRING);
-        SET_SYMBOL (a, gensym (buf));
-    }
-    //
-    }
-    
-    buffer_append (x, copy->b_size, copy->b_vector);
-}
-
-void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
-{
-    int newsize = x->b_size + argc, i;
-    t_atom *ap;
-    if (ap = PD_MEMORY_RESIZE(x->b_vector, x->b_size * sizeof(*x->b_vector),
-        newsize * sizeof(*x->b_vector)))
-            x->b_vector = ap;
-    else
-    {
-        post_error ("binbuf_addmessage: out of space");
-        return;
-    }
-
-    for (ap = x->b_vector + x->b_size, i = argc; i--; ap++)
-    {
-        if (argv->a_type == A_SYMBOL)
-        {
-            char *str = argv->a_w.w_symbol->s_name, *str2;
-            if (!strcmp(str, ";")) SET_SEMICOLON(ap);
-            else if (!strcmp(str, ",")) SET_COMMA(ap);
-            else if ((str2 = strchr(str, '$')) && str2[1] >= '0'
-                && str2[1] <= '9')
-            {
-                int dollsym = 0;
-                if (*str != '$')
-                    dollsym = 1;
-                else for (str2 = str + 1; *str2; str2++)
-                    if (*str2 < '0' || *str2 > '9')
-                {
-                    dollsym = 1;
-                    break;
-                }
-                if (dollsym)
-                    SET_DOLLARSYMBOL(ap, gensym(str));
-                else
-                {
-                    int dollar = 0;
-                    sscanf(argv->a_w.w_symbol->s_name + 1, "%d", &dollar);
-                    SET_DOLLAR(ap, dollar);
-                }
-            }
-            else if (strchr(argv->a_w.w_symbol->s_name, '\\'))
-            {
-                char buf[PD_STRING], *sp1, *sp2;
-                int slashed = 0;
-                for (sp1 = buf, sp2 = argv->a_w.w_symbol->s_name;
-                    *sp2 && sp1 < buf + (PD_STRING-1);
-                        sp2++)
-                {
-                    if (slashed)
-                        *sp1++ = *sp2;
-                    else if (*sp2 == '\\')
-                        slashed = 1;
-                    else *sp1++ = *sp2, slashed = 0;
-                }
-                *sp1 = 0;
-                SET_SYMBOL(ap, gensym(buf));
-            }
-            else *ap = *argv;
-            argv++;
-        }
-        else *ap = *(argv++);
-    }
-    x->b_size = newsize;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static int buffer_isValidCharacter (char c)
 {
     return (!utils_isTokenWhitespace (c) && !utils_isTokenEnd (c));
@@ -321,14 +229,9 @@ static int buffer_nextState (int floatState, char c)
     return k;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void buffer_withString (t_buffer *x, char *s, int size)
+static void buffer_parseString (t_buffer *x, char *s, int size, int allocated)
 {
     int length = 0;
-    int allocated = BUFFER_PREALLOCATED_ATOMS;
     t_atom *a = NULL;
     
     const char *text = s;
@@ -339,11 +242,11 @@ void buffer_withString (t_buffer *x, char *s, int size)
     PD_MEMORY_FREE (x->b_vector, x->b_size * sizeof (t_atom));
     x->b_vector = PD_MEMORY_GET (allocated * sizeof (t_atom));
     a = x->b_vector;
-    x->b_size = length;         /* Inconsistency corrected later. */
+    x->b_size = length;     /* Inconsistency corrected later. */
     
     while (1) {
     //
-    while (utils_isTokenWhitespace (*text) && (text != tBound)) { text++; }   /* Skip whitespaces. */
+    while (utils_isTokenWhitespace (*text) && (text != tBound)) { text++; }         /* Skip whitespaces. */
     
     if (text == tBound)    { break; }
     else if (*text == ';') { SET_SEMICOLON (a); text++; }
@@ -411,6 +314,12 @@ void buffer_withString (t_buffer *x, char *s, int size)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void buffer_withString (t_buffer *x, char *s, int size)
+{
+    buffer_parseString (x, s, size, BUFFER_PREALLOCATED_ATOMS);
+}
 
 void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)
 {
@@ -440,6 +349,100 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)
     
     *s = buf;
     *size = length;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void buffer_serialize (t_buffer *x, t_buffer *y)
+{
+    t_buffer *copy = buffer_new();
+    int i;
+
+    buffer_append (copy, y->b_size, y->b_vector);
+    
+    for (i = 0; i < copy->b_size; i++) {
+    //
+    t_atom *a = copy->b_vector + i;
+    
+    PD_ASSERT (!IS_POINTER (a));
+    
+    if (!IS_FLOAT (a)) {
+        char buf[PD_STRING] = { 0 };
+        atom_toString (a, buf, PD_STRING);
+        SET_SYMBOL (a, gensym (buf));
+    }
+    //
+    }
+    
+    buffer_append (x, copy->b_size, copy->b_vector);
+}
+
+void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
+{
+    int newsize = x->b_size + argc, i;
+    t_atom *ap;
+    if (ap = PD_MEMORY_RESIZE(x->b_vector, x->b_size * sizeof(*x->b_vector),
+        newsize * sizeof(*x->b_vector)))
+            x->b_vector = ap;
+    else
+    {
+        post_error ("binbuf_addmessage: out of space");
+        return;
+    }
+
+    for (ap = x->b_vector + x->b_size, i = argc; i--; ap++)
+    {
+        if (argv->a_type == A_SYMBOL)
+        {
+            char *str = argv->a_w.w_symbol->s_name, *str2;
+            if (!strcmp(str, ";")) SET_SEMICOLON(ap);
+            else if (!strcmp(str, ",")) SET_COMMA(ap);
+            else if ((str2 = strchr(str, '$')) && str2[1] >= '0'
+                && str2[1] <= '9')
+            {
+                int dollsym = 0;
+                if (*str != '$')
+                    dollsym = 1;
+                else for (str2 = str + 1; *str2; str2++)
+                    if (*str2 < '0' || *str2 > '9')
+                {
+                    dollsym = 1;
+                    break;
+                }
+                if (dollsym)
+                    SET_DOLLARSYMBOL(ap, gensym(str));
+                else
+                {
+                    int dollar = 0;
+                    sscanf(argv->a_w.w_symbol->s_name + 1, "%d", &dollar);
+                    SET_DOLLAR(ap, dollar);
+                }
+            }
+            else if (strchr(argv->a_w.w_symbol->s_name, '\\'))
+            {
+                char buf[PD_STRING], *sp1, *sp2;
+                int slashed = 0;
+                for (sp1 = buf, sp2 = argv->a_w.w_symbol->s_name;
+                    *sp2 && sp1 < buf + (PD_STRING-1);
+                        sp2++)
+                {
+                    if (slashed)
+                        *sp1++ = *sp2;
+                    else if (*sp2 == '\\')
+                        slashed = 1;
+                    else *sp1++ = *sp2, slashed = 0;
+                }
+                *sp1 = 0;
+                SET_SYMBOL(ap, gensym(buf));
+            }
+            else *ap = *argv;
+            argv++;
+        }
+        else *ap = *(argv++);
+    }
+    x->b_size = newsize;
 }
 
 // -----------------------------------------------------------------------------------------------------------
