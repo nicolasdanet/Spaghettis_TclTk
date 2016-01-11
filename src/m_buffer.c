@@ -444,8 +444,6 @@ void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int canvas_getdollarzero( void);
-
 /* JMZ:
  * s points to the first character after the $
  * (e.g. if the org.symbol is "$1-bla", then s will point to "1-bla")

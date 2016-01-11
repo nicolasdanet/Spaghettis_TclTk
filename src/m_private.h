@@ -256,6 +256,7 @@ void buffer_deserialize         (t_buffer *x, int argc, t_atom *argv);
 int  outlet_isSignal            (t_outlet *x);
 void text_save                  (t_gobj *z, t_buffer *b);
 void canvas_popabstraction      (t_canvas *x);
+int  canvas_getdollarzero       (void);
 void open_via_helppath          (const char *name, const char *dir);
 void post_atoms                 (int argc, t_atom *argv);
 

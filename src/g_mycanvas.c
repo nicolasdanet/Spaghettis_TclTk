@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "m_pd.h"
+#include "m_private.h"
 #include "g_canvas.h"
 
 #include "g_iem.h"
