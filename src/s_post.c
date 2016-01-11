@@ -70,6 +70,28 @@ void post_error (const char *fmt, ...)
 
 void post_atoms (int argc, t_atom *argv)
 {
+    t_buffer *t = buffer_new();
+    
+    buffer_append (t, argc, argv);
+    
+    if (buffer_getSize (t)) {
+    //
+    char *s = NULL;
+    int size = 0;
+    
+    buffer_toString (t, &s, &size);
+    post ("%s", s);
+    
+    PD_MEMORY_FREE (s, size);
+    //
+    }
+    
+    buffer_free (t);
+}
+
+/*
+void post_atoms (int argc, t_atom *argv)
+{
     int i;
     
     for (i = 0; i < argc; i++) {
@@ -78,6 +100,7 @@ void post_atoms (int argc, t_atom *argv)
         post ("%s", buf);
     }
 }
+*/
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

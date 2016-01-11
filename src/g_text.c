@@ -105,7 +105,7 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
             x = 0;
         else if (!(x = pd_ifBox(pd_newest)))
         {
-            //buffer_post(b);
+            buffer_post(b);
             post_error ("... didn't return a patchable object");
         }
     }
@@ -116,7 +116,7 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
         x = (t_text *)pd_new(text_class);
         if (buffer_getSize(b))
         {
-            //buffer_post(b);
+            buffer_post(b);
             post_error ("... couldn't create");
         }
     }

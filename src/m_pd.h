@@ -552,8 +552,6 @@ PD_DLL void post            (const char *fmt, ...);
 PD_DLL void post_log        (const char *fmt, ...);
 PD_DLL void post_error      (const char *fmt, ...);
 
-PD_DLL void post_atoms      (int argc, t_atom *argv);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

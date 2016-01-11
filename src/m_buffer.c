@@ -109,6 +109,11 @@ void buffer_append (t_buffer *x, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void buffer_post (t_buffer *x)
+{
+    post_atoms (x->b_size, x->b_vector);
+}
+
 void buffer_resize (t_buffer *x, int n)
 {
     PD_ASSERT (n >= 0);
@@ -348,20 +353,19 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)
     int i, length = 0;
 
     for (i = 0; i < x->b_size; i++) {
-    //
-    char t[PD_STRING] = { 0 };
-    int n = length;
-        
-    atom_toString (x->b_vector + i, t, PD_STRING);
-    n += strlen (t) + 1;
-    buf = PD_MEMORY_RESIZE (buf, length, n);
-    strcpy (buf + length, t);
-    length = n;
-    if (IS_SEMICOLON (x->b_vector + i)) { buf[length - 1] = '\n'; }
-    else { 
-        buf[length - 1] = ' ';
-    }
-    //
+
+        char t[PD_STRING] = { 0 };
+        int n = length;
+            
+        atom_toString (x->b_vector + i, t, PD_STRING);
+        n += strlen (t) + 1;
+        buf = PD_MEMORY_RESIZE (buf, length, n);
+        strcpy (buf + length, t);
+        length = n;
+        if (IS_SEMICOLON (x->b_vector + i)) { buf[length - 1] = '\n'; }
+        else { 
+            buf[length - 1] = ' ';
+        }
     }
     
     if (length && buf[length - 1] == ' ') { 
@@ -370,6 +374,18 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)
     
     *s = buf;
     *size = length;
+}
+
+void buffer_toString (t_buffer *x, char **s, int *size)
+{
+    char *buf = NULL;
+    int n, length = 0;
+    
+    buffer_toStringUnzeroed (x, &buf, &length);
+    n = length + 1; buf = PD_MEMORY_RESIZE (buf, length, n); buf[n - 1] = 0;
+    
+    *s = buf; 
+    *size = n;
 }
 
 // -----------------------------------------------------------------------------------------------------------

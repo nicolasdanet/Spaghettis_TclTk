@@ -238,12 +238,14 @@ void atom_toString              (t_atom *a, char *s, int size);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void buffer_post                (t_buffer *x);
 void buffer_resize              (t_buffer *x, int n);
 void buffer_vAppend             (t_buffer *x, char *fmt, ...);
 void buffer_appendSemicolon     (t_buffer *x);
 void buffer_parseString         (t_buffer *x, char *s, int size, int allocated);
 void buffer_withString          (t_buffer *x, char *s, int size);
 void buffer_toStringUnzeroed    (t_buffer *x, char **s, int *size);
+void buffer_toString            (t_buffer *x, char **s, int *size);
 void buffer_serialize           (t_buffer *x, t_buffer *y);
 void buffer_deserialize         (t_buffer *x, int argc, t_atom *argv);
 
@@ -255,6 +257,7 @@ int  outlet_isSignal            (t_outlet *x);
 void text_save                  (t_gobj *z, t_buffer *b);
 void canvas_popabstraction      (t_canvas *x);
 void open_via_helppath          (const char *name, const char *dir);
+void post_atoms                 (int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
