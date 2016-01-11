@@ -72,6 +72,20 @@ void buffer_free (t_buffer *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int buffer_getSize (t_buffer *x)
+{
+    return x->b_size;
+}
+
+t_atom *buffer_getAtoms (t_buffer *x)
+{
+    return x->b_vector;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void buffer_reset (t_buffer *x)
 {
     x->b_size = 0;
@@ -90,13 +104,6 @@ void buffer_append (t_buffer *x, int argc, t_atom *argv)
     for (a = x->b_vector + x->b_size; argc--; a++) { *a = *(argv++); } x->b_size = n;
     //
     }
-}
-
-void buffer_appendSemicolon (t_buffer *x)
-{
-    t_atom a;
-    SET_SEMICOLON (&a);
-    buffer_append (x, 1, &a);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -135,6 +142,13 @@ void buffer_vAppend (t_buffer *x, char *fmt, ...)
     va_end (ap);
     
     buffer_append (x, n, args);
+}
+
+void buffer_appendSemicolon (t_buffer *x)
+{
+    t_atom a;
+    SET_SEMICOLON (&a);
+    buffer_append (x, 1, &a);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -229,7 +243,7 @@ static int buffer_nextState (int floatState, char c)
     return k;
 }
 
-static void buffer_parseString (t_buffer *x, char *s, int size, int allocated)
+void buffer_parseString (t_buffer *x, char *s, int size, int allocated)
 {
     int length = 0;
     t_atom *a = NULL;
@@ -295,14 +309,14 @@ static void buffer_parseString (t_buffer *x, char *s, int size, int allocated)
     a++;
     length++;
     
+    if (text == tBound) { break; }
+    
     if (length == allocated) {
         size_t oldSize = allocated * sizeof (t_atom);
         x->b_vector = PD_MEMORY_RESIZE (x->b_vector, oldSize, oldSize * 2);
         allocated = allocated * 2;
         a = x->b_vector + length;
     }
-    
-    if (text == tBound) { break; }
     //
     }
     
@@ -464,16 +478,6 @@ void binbuf_print(t_buffer *x)
             newline = 1;
         else newline = 0; 
     }
-}
-
-int binbuf_getnatom(t_buffer *x)
-{
-    return (x->b_size);
-}
-
-t_atom *binbuf_getvec(t_buffer *x)
-{
-    return (x->b_vector);
 }
 
 int binbuf_resize(t_buffer *x, int newsize)
@@ -1513,8 +1517,8 @@ void global_open(void *dummy, t_symbol *name, t_symbol *dir)
     /* save a text object to a binbuf for a file or copy buf */
 void binbuf_savetext(t_buffer *bfrom, t_buffer *bto)
 {
-    int k, n = binbuf_getnatom(bfrom);
-    t_atom *ap = binbuf_getvec(bfrom), at;
+    int k, n = buffer_getSize(bfrom);
+    t_atom *ap = buffer_getAtoms(bfrom), at;
     for (k = 0; k < n; k++)
     {
         if (ap[k].a_type == A_FLOAT ||

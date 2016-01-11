@@ -231,7 +231,8 @@ void global_shouldQuit          (void *dummy);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void atom_toString              (t_atom *a, char *s, size_t size);
+void atom_withString            (t_atom *a, char *s, int size);
+void atom_toString              (t_atom *a, char *s, int size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -239,6 +240,7 @@ void atom_toString              (t_atom *a, char *s, size_t size);
 
 void buffer_vAppend             (t_buffer *x, char *fmt, ...);
 void buffer_appendSemicolon     (t_buffer *x);
+void buffer_parseString         (t_buffer *x, char *s, int size, int allocated);
 void buffer_serialize           (t_buffer *x, t_buffer *y);
 void buffer_deserialize         (t_buffer *x, int argc, t_atom *argv);
 void buffer_withString          (t_buffer *x, char *s, int size);

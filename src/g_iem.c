@@ -155,10 +155,10 @@ static void iem_init_sym2dollararg(t_iem *iem, t_symbol **symp,
     if (!*symp)
     {
         t_buffer *b = iem->x_obj.te_buffer;
-        if (binbuf_getnatom(b) > indx)
+        if (buffer_getSize(b) > indx)
         {
             char buf[80];
-            atom_toString(binbuf_getvec(b) + indx, buf, 80);
+            atom_toString(buffer_getAtoms(b) + indx, buf, 80);
             *symp = gensym(buf);
         }
         else if (fallback)

@@ -124,8 +124,8 @@ static void scalar_define_set(t_glist *x, t_symbol *s, int argc, t_atom *argv)
         t_atom *vec;
         glist_clear(x);
         buffer_deserialize(b, argc, argv);
-        natoms = binbuf_getnatom(b);
-        vec = binbuf_getvec(b);
+        natoms = buffer_getSize(b);
+        vec = buffer_getAtoms(b);
         canvas_readscalar(x, natoms, vec, &nextmsg, 0);
         buffer_free(b);
     }

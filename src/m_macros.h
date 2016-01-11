@@ -63,6 +63,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define SET_NULL(atom)              ((atom)->a_type = A_NULL)
 #define SET_SEMICOLON(atom)         ((atom)->a_type = A_SEMICOLON, (atom)->a_w.w_index = 0)
 #define SET_COMMA(atom)             ((atom)->a_type = A_COMMA, (atom)->a_w.w_index = 0)
 #define SET_POINTER(atom, gp)       ((atom)->a_type = A_POINTER, (atom)->a_w.w_gpointer = (gp))

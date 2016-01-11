@@ -106,7 +106,7 @@ static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
             for (last = first; last < natoms && vec[last].a_type != A_SEMICOLON;
                 last++);
             buffer_deserialize(z, last-first, vec+first);
-            buffer_append(w[i].w_buffer, binbuf_getnatom(z), binbuf_getvec(z));
+            buffer_append(w[i].w_buffer, buffer_getSize(z), buffer_getAtoms(z));
             buffer_free(z);
             last++;
             if (last > natoms) last = natoms;
@@ -178,8 +178,8 @@ void glist_readfrombinbuf(t_glist *x, t_buffer *b, char *filename, int selectem)
     t_atom *vec;
     t_gobj *gobj;
 
-    natoms = binbuf_getnatom(b);
-    vec = binbuf_getvec(b);
+    natoms = buffer_getSize(b);
+    vec = buffer_getAtoms(b);
 
     
             /* check for file type */
@@ -596,7 +596,7 @@ static void canvas_saveto(t_canvas *x, t_buffer *b)
         t_buffer *bz = buffer_new();
         t_symbol *patchsym;
         buffer_serialize(bz, x->gl_obj.te_buffer);
-        patchsym = atom_getSymbolAtIndex(1, binbuf_getnatom(bz), binbuf_getvec(bz));
+        patchsym = atom_getSymbolAtIndex(1, buffer_getSize(bz), buffer_getAtoms(bz));
         buffer_free(bz);
         buffer_vAppend(b, "ssiiiisi;", gensym("#N"), gensym("canvas"),
             (int)(x->gl_screenx1),

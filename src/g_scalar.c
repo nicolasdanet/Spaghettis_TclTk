@@ -149,8 +149,8 @@ void glist_scalar(t_glist *glist,
 
     b = buffer_new();
     buffer_deserialize(b, argc, argv);
-    natoms = binbuf_getnatom(b);
-    vec = binbuf_getvec(b);
+    natoms = buffer_getSize(b);
+    vec = buffer_getAtoms(b);
     canvas_readscalar(glist, natoms, vec, &nextmsg, 0);
     buffer_free(b);
 }

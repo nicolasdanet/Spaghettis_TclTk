@@ -118,8 +118,8 @@ static void netsend_doit(void *z, t_buffer *b)
 {
     t_atom messbuf[1024];
     t_netsend *x = (t_netsend *)z;
-    int msg, natom = binbuf_getnatom(b);
-    t_atom *at = binbuf_getvec(b);
+    int msg, natom = buffer_getSize(b);
+    t_atom *at = buffer_getAtoms(b);
     for (msg = 0; msg < natom;)
     {
         int emsg;

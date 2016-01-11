@@ -1002,8 +1002,8 @@ int canvas_isabstraction(t_canvas *x)
 /* JMZ: add a flag to gop-abstractions to hide the title */
 int canvas_showtext(t_canvas *x)
 {
-    t_atom *argv = (x->gl_obj.te_buffer? binbuf_getvec(x->gl_obj.te_buffer):0);
-    int argc = (x->gl_obj.te_buffer? binbuf_getnatom(x->gl_obj.te_buffer) : 0);
+    t_atom *argv = (x->gl_obj.te_buffer? buffer_getAtoms(x->gl_obj.te_buffer):0);
+    int argc = (x->gl_obj.te_buffer? buffer_getSize(x->gl_obj.te_buffer) : 0);
     int isarray = (argc && argv[0].a_type == A_SYMBOL &&
         argv[0].a_w.w_symbol == gensym("graph"));
     if(x->gl_hidetext)
@@ -1219,9 +1219,9 @@ void canvas_redrawallfortemplatecanvas(t_canvas *x, int action)
         t_object *ob = pd_ifBox(&g->g_pd);
         t_atom *argv;
         if (!ob || ob->te_type != TYPE_OBJECT ||
-            binbuf_getnatom(ob->te_buffer) < 2)
+            buffer_getSize(ob->te_buffer) < 2)
             continue;
-        argv = binbuf_getvec(ob->te_buffer);
+        argv = buffer_getAtoms(ob->te_buffer);
         if (argv[0].a_type != A_SYMBOL || argv[1].a_type != A_SYMBOL
             || argv[0].a_w.w_symbol != s1)
                 continue;
