@@ -171,7 +171,7 @@ void array_define_save(t_gobj *z, t_buffer *bb)
     buffer_vAppend(bb, "ssff", &s__X, gensym("obj"),
         (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
     buffer_serialize(bb, x->gl_obj.te_buffer);
-    binbuf_addsemi(bb);
+    buffer_appendSemicolon(bb);
 
     garray_savecontentsto((t_garray *)gl->gl_list, bb);
     object_saveWidth(&x->gl_obj, bb);

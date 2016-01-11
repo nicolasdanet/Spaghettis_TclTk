@@ -105,7 +105,7 @@ static void glist_readatoms(t_glist *x, int natoms, t_atom *vec,
             int first = *p_nextmsg, last;
             for (last = first; last < natoms && vec[last].a_type != A_SEMICOLON;
                 last++);
-            binbuf_restore(z, last-first, vec+first);
+            buffer_deserialize(z, last-first, vec+first);
             buffer_append(w[i].w_buffer, binbuf_getnatom(z), binbuf_getvec(z));
             buffer_free(z);
             last++;
@@ -423,7 +423,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_buffer *b,
     if (natom == 0 && amarrayelement)
         SET_SYMBOL(a + natom,  &s_bang), natom++;
     buffer_append(b, natom, a);
-    binbuf_addsemi(b);
+    buffer_appendSemicolon(b);
     PD_MEMORY_FREE(a, natom * sizeof(*a));
     for (i = 0; i < n; i++)
     {
@@ -436,7 +436,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_buffer *b,
             for (j = 0; j < nitems; j++)
                 canvas_writescalar(arraytemplatesym,
                     (t_word *)(((char *)a->a_vec) + elemsize * j), b, 1);
-            binbuf_addsemi(b);
+            buffer_appendSemicolon(b);
         }
         else if (template->t_vec[i].ds_type == DATA_TEXT)
             binbuf_savetext(w[i].w_buffer, b);
@@ -540,9 +540,9 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
                     gensym(template->t_vec[j].ds_arraytemplate->s_name + 3));
             else buffer_vAppend(b, "ss;", type, template->t_vec[j].ds_name);
         }
-        binbuf_addsemi(b);
+        buffer_appendSemicolon(b);
     }
-    binbuf_addsemi(b);
+    buffer_appendSemicolon(b);
         /* now write out the objects themselves */
     for (y = x->gl_list; y; y = y->g_next)
     {
@@ -707,7 +707,7 @@ static void canvas_savetemplatesto(t_canvas *x, t_buffer *b, int wholething)
                     gensym(template->t_vec[j].ds_arraytemplate->s_name + 3));
             else buffer_vAppend(b, "ss", type, template->t_vec[j].ds_name);
         }
-        binbuf_addsemi(b);
+        buffer_appendSemicolon(b);
     }
 }
 

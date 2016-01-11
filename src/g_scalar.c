@@ -148,7 +148,7 @@ void glist_scalar(t_glist *glist,
     }
 
     b = buffer_new();
-    binbuf_restore(b, argc, argv);
+    buffer_deserialize(b, argc, argv);
     natoms = binbuf_getnatom(b);
     vec = binbuf_getvec(b);
     canvas_readscalar(glist, natoms, vec, &nextmsg, 0);
@@ -385,7 +385,7 @@ static void scalar_save(t_gobj *z, t_buffer *b)
     canvas_writescalar(x->sc_template, x->sc_vector, b2, 0);
     buffer_vAppend(b, "ss", &s__X, gensym("scalar"));
     buffer_serialize(b, b2);
-    binbuf_addsemi(b);
+    buffer_appendSemicolon(b);
     buffer_free(b2);
 }
 

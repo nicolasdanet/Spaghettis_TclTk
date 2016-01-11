@@ -123,7 +123,7 @@ static void scalar_define_set(t_glist *x, t_symbol *s, int argc, t_atom *argv)
         int nextmsg = 0, natoms;
         t_atom *vec;
         glist_clear(x);
-        binbuf_restore(b, argc, argv);
+        buffer_deserialize(b, argc, argv);
         natoms = binbuf_getnatom(b);
         vec = binbuf_getvec(b);
         canvas_readscalar(x, natoms, vec, &nextmsg, 0);
@@ -139,7 +139,7 @@ static void scalar_define_save(t_gobj *z, t_buffer *bb)
     buffer_vAppend(bb, "ssff", &s__X, gensym("obj"),
         (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
     buffer_serialize(bb, x->gl_obj.te_buffer);
-    binbuf_addsemi(bb);
+    buffer_appendSemicolon(bb);
     if (x->gl_private && x->gl_list &&
         pd_class(&x->gl_list->g_pd) == scalar_class)
     {
@@ -148,7 +148,7 @@ static void scalar_define_save(t_gobj *z, t_buffer *bb)
         buffer_vAppend(bb, "ss", gensym("#A"), gensym("set"));
         canvas_writescalar(sc->sc_template, sc->sc_vector, b2, 0);
         buffer_serialize(bb, b2);
-        binbuf_addsemi(bb);
+        buffer_appendSemicolon(bb);
         buffer_free(b2);
     }
 }

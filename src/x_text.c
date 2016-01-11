@@ -94,7 +94,7 @@ static void textbuf_close(t_textbuf *x)
 static void textbuf_addline(t_textbuf *b, t_symbol *s, int argc, t_atom *argv)
 {
     t_buffer *z = buffer_new();
-    binbuf_restore(z, argc, argv);
+    buffer_deserialize(z, argc, argv);
     buffer_append(b->b_binbuf, binbuf_getnatom(z), binbuf_getvec(z));
     buffer_free(z);
     textbuf_senditup(b);
@@ -332,7 +332,7 @@ void text_define_bang(t_text_define *x)
     /* set from a list */
 void text_define_set(t_text_define *x, t_symbol *s, int argc, t_atom *argv)
 {
-    binbuf_restore(x->x_binbuf, argc, argv);
+    buffer_deserialize(x->x_binbuf, argc, argv);
     textbuf_senditup(&x->x_textbuf);
 }
 
@@ -343,12 +343,12 @@ static void text_define_save(t_gobj *z, t_buffer *bb)
     buffer_vAppend(bb, "ssff", &s__X, gensym("obj"),
         (float)x->x_ob.te_xCoordinate, (float)x->x_ob.te_yCoordinate);
     buffer_serialize(bb, x->x_ob.te_buffer);
-    binbuf_addsemi(bb);
+    buffer_appendSemicolon(bb);
     if (x->x_keep)
     {
         buffer_vAppend(bb, "ss", gensym("#A"), gensym("set"));
         buffer_serialize(bb, x->x_binbuf);
-        binbuf_addsemi(bb);
+        buffer_appendSemicolon(bb);
     }
     object_saveWidth(&x->x_ob, bb);
 }
@@ -849,7 +849,7 @@ static void text_fromlist_list(t_text_fromlist *x,
     if (!b)
        return;
     buffer_reset(b);
-    binbuf_restore(b, argc, argv);
+    buffer_deserialize(b, argc, argv);
     text_client_senditup(x);
 }
 

@@ -53,11 +53,11 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     {
         x->te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
         x->te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
-        if (argc > 2) binbuf_restore(x->te_buffer, argc-2, argv+2);
+        if (argc > 2) buffer_deserialize(x->te_buffer, argc-2, argv+2);
         else
         {
             SET_SYMBOL(&at, gensym("comment"));
-            binbuf_restore(x->te_buffer, 1, &at);
+            buffer_deserialize(x->te_buffer, 1, &at);
         }
         glist_add(gl, &x->te_g);
     }
@@ -70,7 +70,7 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         glist_getnextxy(gl, &xpix, &ypix);
         x->te_xCoordinate = xpix-1;
         x->te_yCoordinate = ypix-1;
-        binbuf_restore(x->te_buffer, 1, &at);
+        buffer_deserialize(x->te_buffer, 1, &at);
         glist_add(gl, &x->te_g);
         glist_noselect(gl);
         glist_select(gl, &x->te_g);
@@ -195,7 +195,7 @@ void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     if (argc >= 2)
     {
         t_buffer *b = buffer_new();
-        binbuf_restore(b, argc-2, argv+2);
+        buffer_deserialize(b, argc-2, argv+2);
         canvas_objtext(gl, (t_int)atom_getFloatAtIndex(0, argc, argv),
             (t_int)atom_getFloatAtIndex(1, argc, argv), 0, 0, b);
     }
@@ -228,7 +228,7 @@ void canvas_iems(t_glist *gl, t_symbol *guiobjname)
     pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
     glist_noselect(gl);
     SET_SYMBOL(&at, guiobjname);
-    binbuf_restore(b, 1, &at);
+    buffer_deserialize(b, 1, &at);
     glist_getnextxy(gl, &xpix, &ypix);
     canvas_objtext(gl, xpix, ypix, 0, 1, b);
     canvas_startmotion(glist_getcanvas(gl));
@@ -288,7 +288,7 @@ void canvas_objfor(t_glist *gl, t_text *x, int argc, t_atom *argv)
     x->te_buffer = buffer_new();
     x->te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
     x->te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
-    if (argc > 2) binbuf_restore(x->te_buffer, argc-2, argv+2);
+    if (argc > 2) buffer_deserialize(x->te_buffer, argc-2, argv+2);
     glist_add(gl, &x->te_g);
 }
 
@@ -377,7 +377,7 @@ static void message_add2(t_message *x, t_symbol *s, int argc, t_atom *argv)
 static void message_add(t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
     buffer_append(x->m_text.te_buffer, argc, argv);
-    binbuf_addsemi(x->m_text.te_buffer);
+    buffer_appendSemicolon(x->m_text.te_buffer);
     glist_retext(x->m_glist, &x->m_text);
 }
 
@@ -460,7 +460,7 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     {
         x->m_text.te_xCoordinate = atom_getFloatAtIndex(0, argc, argv);
         x->m_text.te_yCoordinate = atom_getFloatAtIndex(1, argc, argv);
-        if (argc > 2) binbuf_restore(x->m_text.te_buffer, argc-2, argv+2);
+        if (argc > 2) buffer_deserialize(x->m_text.te_buffer, argc-2, argv+2);
         glist_add(gl, &x->m_text.te_g);
     }
     else if (!glist_isvisible(gl))

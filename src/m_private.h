@@ -238,7 +238,9 @@ void atom_toString              (t_atom *a, char *s, size_t size);
 #pragma mark -
 
 void buffer_vAppend             (t_buffer *x, char *fmt, ...);
+void buffer_appendSemicolon     (t_buffer *x);
 void buffer_serialize           (t_buffer *x, t_buffer *y);
+void buffer_deserialize         (t_buffer *x, int argc, t_atom *argv);
 void buffer_withString          (t_buffer *x, char *s, int size);
 void buffer_toStringUnzeroed    (t_buffer *x, char **s, int *size);
 
