@@ -104,7 +104,7 @@ static int atom_symbolToQuotedString (t_atom *a, char *s, int size)
 #pragma mark -
 
 void atom_withString (t_atom *a, char *s, int size)
-{/*
+{
     t_buffer *t = buffer_new();
     
     buffer_parseString (t, s, size, 1);
@@ -114,7 +114,7 @@ void atom_withString (t_atom *a, char *s, int size)
         *a = *(buffer_getAtoms (t));
     }
     
-    buffer_free (t);*/
+    buffer_free (t);
 }
 
 void atom_toString (t_atom *a, char *s, int size)

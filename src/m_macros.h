@@ -85,6 +85,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define IS_NULL(atom)               ((atom)->a_type == A_NULL)
 #define IS_SEMICOLON(atom)          ((atom)->a_type == A_SEMICOLON)
 #define IS_COMMA(atom)              ((atom)->a_type == A_COMMA)
 #define IS_POINTER(atom)            ((atom)->a_type == A_POINTER)
