@@ -296,7 +296,7 @@ void buffer_parseString (t_buffer *x, char *s, int size, int allocated)
         lastSlash = slash; slash = utils_isTokenEscape (c);
 
         if (floatState >= 0) { floatState = buffer_nextState (floatState, c); }
-        if (!lastSlash && text != tBound && dollar_startsWithDollarNumber (text - 1)) { dollar = 1; }
+        if (!lastSlash && text != tBound && dollar_pointsToDollarNumber (text - 1)) { dollar = 1; }
         
         if (!slash)         { p++; }
         else if (lastSlash) { p++; slash = 0; }
@@ -522,7 +522,7 @@ void binbuf_eval(t_buffer *x, t_pd *target, int argc, t_atom *argv)
             }
             else if (at->a_type == A_DOLLARSYMBOL)
             {
-                if (!(s = dollar_substitute(at->a_w.w_symbol,
+                if (!(s = dollar_substituteDollarSymbol(at->a_w.w_symbol,
                     argc, argv, 0)))
                 {
                     post_error ("$%s: not enough arguments supplied",
@@ -597,7 +597,7 @@ void binbuf_eval(t_buffer *x, t_pd *target, int argc, t_atom *argv)
                 }
                 break;
             case A_DOLLARSYMBOL:
-                s9 = dollar_substitute(at->a_w.w_symbol, argc, argv,
+                s9 = dollar_substituteDollarSymbol(at->a_w.w_symbol, argc, argv,
                     target == &pd_objectMaker);
                 if (!s9)
                 {

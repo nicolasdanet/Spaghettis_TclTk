@@ -23,7 +23,7 @@ int dollar_isDollarNumber (char *s)
     return 1;
 }
 
-int dollar_startsWithDollarNumber (char *s)
+int dollar_pointsToDollarNumber (char *s)
 {
     PD_ASSERT (s[0] != 0);
     
@@ -36,66 +36,64 @@ int dollar_startsWithDollarNumber (char *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* JMZ:
- * s points to the first character after the $
- * (e.g. if the org.symbol is "$1-bla", then s will point to "1-bla")
- * (e.g. org.symbol="hu-$1mu", s="1mu")
- * LATER: think about more complex $args, like ${$1+3}
- *
- * the return value holds the length of the $arg (in most cases: 1)
- * buf holds the expanded $arg
- *
- * if some error occured, "-1" is returned
- *
- * e.g. "$1-bla" with list "10 20 30"
- * s="1-bla"
- * buf="10"
- * return value = 1; (s+1=="-bla")
- */
-static int dollar_expand(char*s, char*buf,t_atom dollar0, int ac, t_atom *av, int tonew)
+static int dollar_substitute (char *s, char *buf, int size, int argc, t_atom *argv, int tonew)
 {
-  int argno=atol(s);
-  int arglen=0;
-  char*cs=s;
-  char c=*cs;
-  *buf=0;
+    int n = (int)atol (s);
+    char *ptr = s;
+    char c = 0;
+    int length = 0;
+    
+    *buf = 0;
+    c = *ptr;
+    
+    while (c && (c >= '0') && (c <= '9')) { c = *ptr++; length++; }
 
-  while(c&&(c>='0')&&(c<='9')){
-    c=*cs++;
-    arglen++;
-  }
-
-  if (cs==s) { /* invalid $-expansion (like "$bla") */
-    sprintf(buf, "$");
-    return 0;
-  }
-  else if (argno < 0 || argno > ac) /* undefined argument */
-    {
-      if(!tonew)return 0;
-      sprintf(buf, "$%d", argno);
+    /* Dollar expansion invalid (like "$bla"). */
+    /* Dollar number argument is out of bound. */
+    /* Dollar zero expansion. */
+    /* Dollar number expansion. */
+    
+    if (ptr == s) {                                         
+        int err = utils_snprintf (buf, size, "$");
+        PD_ASSERT (!err);
+        return 0;
+        
+    } else if (n < 0 || n > argc) {                         
+        if (!tonew) { return 0; } 
+        else {
+            int err = utils_snprintf (buf, size, "$%d", n);
+            PD_ASSERT (!err);
+        }
+        
+    } else if (n == 0) {                                    
+        t_atom a;
+        SET_FLOAT (&a, canvas_getdollarzero());
+        atom_toString (&a, buf, size);
+        
+    } else {                                                
+        atom_toString (argv + (n - 1), buf, size);
     }
-  else if (argno == 0){ /* $0 */
-    atom_toString(&dollar0, buf, PD_STRING/2-1);
-  }
-  else{ /* fine! */
-    atom_toString(av+(argno-1), buf, PD_STRING/2-1);
-  }
-  return (arglen-1);
+    
+    return (length - 1);
 }
 
-/* LATER remove the dependence on the current canvas for $0; should be another
-argument. */
-t_symbol *dollar_substitute(t_symbol *s, int ac, t_atom *av, int tonew)
+t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv, int tonew)
 {
-    char buf[PD_STRING];
-    char buf2[PD_STRING];
+    char buf[PD_STRING] = { 0 };
+    char buf2[PD_STRING] = { 0 };
     char*str=s->s_name;
     char*substr;
     int next=0, i=PD_STRING;
-    t_atom dollarnull;
-    SET_FLOAT(&dollarnull, canvas_getdollarzero());
+
     while(i--)buf2[i]=0;
 
+    t_symbol *sym = NULL;
+    
+    if (s && s->s_name) { post_log ("? %s", s->s_name); }
+    else {
+        PD_BUG;
+    }
+    
 #if 1
     /* JMZ: currently, a symbol is detected to be A_DOLLARSYMBOL if it starts with '$'
      * the leading $ is stripped and the rest stored in "s"
@@ -113,13 +111,13 @@ t_symbol *dollar_substitute(t_symbol *s, int ac, t_atom *av, int tonew)
 
 #endif
 
-    while((next=dollar_expand(str, buf, dollarnull, ac, av, tonew))>=0)
+    while((next=dollar_substitute (str, buf, PD_STRING, argc, argv, tonew))>=0)
     {
         /*
         * JMZ: i am not sure what this means, so i might have broken it
         * it seems like that if "tonew" is set and the $arg cannot be expanded
         * (or the dollarsym is in reality a A_DOLLAR)
-        * 0 is returned from dollar_substitute
+        * 0 is returned from dollar_substituteDollarSymbol
         * this happens, when expanding in a message-box, but does not happen
         * when the A_DOLLARSYMBOL is the name of a subpatch
         */
@@ -143,8 +141,60 @@ t_symbol *dollar_substitute(t_symbol *s, int ac, t_atom *av, int tonew)
         }
     }
 done:
-    return (gensym(buf2));
+    sym = gensym (buf2);
+    
+    if (sym && sym->s_name) { post_log ("! %s", sym->s_name); }
+    else {
+        PD_BUG;
+    }
+    
+    return (sym);
 }
+
+/*
+t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv, int tonew)
+{
+    char buf[PD_STRING] = { 0 };
+    char result[PD_STRING] = { 0 };
+    char *str = s->s_name;
+    char *substr = NULL;
+    int next = 0;
+
+    substr = strchr (str, '$');
+    
+    if (!substr) { return s; }
+    if ((substr - str) >= PD_STRING) { return s; }
+
+    strncat (result, str, (substr - str));
+    str = substr + 1;
+
+    while ((next = dollar_substitute (str, buf, PD_STRING, argc, argv, tonew)) >= 0) {
+
+        if(!tonew&&(0==next)&&(0==*buf))
+        {
+            return 0; 
+        }
+
+        strncat(result, buf, PD_STRING/2-1);
+        str+=next;
+        substr=strchr(str, '$');
+        if(substr)
+        {
+            strncat(result, str, (substr-str));
+            str=substr+1;
+        } 
+        else
+        {
+            strcat(result, str);
+            goto done;
+        }
+        
+    }
+    
+done:
+    return gensym (result);
+}
+*/
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -32,7 +32,7 @@
 #else
     
     #define PD_BUG
-    #define PD_ASSERT(x)
+    #define PD_ASSERT(x)    ((void)(x))
 
 #endif // PD_DEBUG
 

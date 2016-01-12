@@ -151,10 +151,10 @@ int  utils_isTokenWhitespace        (char c);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol    *dollar_substitute                (t_symbol *s, int argc, t_atom *argv, int tonew);
+t_symbol    *dollar_substituteDollarSymbol              (t_symbol *s, int argc, t_atom *argv, int tonew);
 
-int         dollar_isDollarNumber           (char *s);
-int         dollar_startsWithDollarNumber   (char *s);
+int         dollar_isDollarNumber                       (char *s);
+int         dollar_pointsToDollarNumber                 (char *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -187,27 +187,30 @@ t_propertiesfn           class_getPropertiesFunction    (t_class *c);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            object_list                     (t_object *x, t_symbol *s, int argc, t_atom *argv);
-void            object_saveWidth                (t_object *x, t_buffer *b);
-int             object_numberOfInlets           (t_object *x);
-int             object_numberOfOutlets          (t_object *x);
-int             object_numberOfSignalInlets     (t_object *x);
-int             object_numberOfSignalOutlets    (t_object *x);
-int             object_indexOfSignalInlet       (t_object *x, int m);
-int             object_indexOfSignalOutlet      (t_object *x, int m);
-int             object_isSignalInlet            (t_object *x, int m);
-int             object_isSignalOutlet           (t_object *x, int m);
-int             object_getIndexOfSignalInlet    (t_inlet *x);
-int             object_getIndexOfSignalOutlet   (t_outlet *x);
-void            object_moveInletFirst           (t_object *x, t_inlet *i);
-void            object_moveOutletFirst          (t_object *x, t_outlet *i);
-void            object_disconnect               (t_object *src, int m, t_object *dest, int n);
+void            object_list                             (t_object *x, t_symbol *s, int argc, t_atom *argv);
+void            object_saveWidth                        (t_object *x, t_buffer *b);
+int             object_numberOfInlets                   (t_object *x);
+int             object_numberOfOutlets                  (t_object *x);
+int             object_numberOfSignalInlets             (t_object *x);
+int             object_numberOfSignalOutlets            (t_object *x);
+int             object_indexOfSignalInlet               (t_object *x, int m);
+int             object_indexOfSignalOutlet              (t_object *x, int m);
+int             object_isSignalInlet                    (t_object *x, int m);
+int             object_isSignalOutlet                   (t_object *x, int m);
+int             object_getIndexOfSignalInlet            (t_inlet *x);
+int             object_getIndexOfSignalOutlet           (t_outlet *x);
+void            object_moveInletFirst                   (t_object *x, t_inlet *i);
+void            object_moveOutletFirst                  (t_object *x, t_outlet *i);
+void            object_disconnect                       (t_object *src, int m, t_object *dest, int n);
 
-t_outconnect    *object_connect                 (t_object *src, int m, t_object *dest, int n);
-t_outconnect    *object_traverseOutletStart     (t_object *x, t_outlet **ptr, int n);
-t_outconnect    *object_traverseOutletNext      (t_outconnect *last, t_object **dest, t_inlet **ptr, int *n);
+t_outconnect    *object_connect                         (t_object *src, int m, t_object *dest, int n);
+t_outconnect    *object_traverseOutletStart             (t_object *x, t_outlet **ptr, int n);
+t_outconnect    *object_traverseOutletNext              (t_outconnect *last,
+                                                            t_object **dest,
+                                                            t_inlet **ptr,
+                                                            int *n);
 
-t_float         *object_getSignalValueAtIndex   (t_object *x, int m);
+t_float         *object_getSignalValueAtIndex           (t_object *x, int m);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -259,12 +262,18 @@ void buffer_deserialize         (t_buffer *x, int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int  outlet_isSignal            (t_outlet *x);
-void text_save                  (t_gobj *z, t_buffer *b);
-void canvas_popabstraction      (t_canvas *x);
-int  canvas_getdollarzero       (void);
-void open_via_helppath          (const char *name, const char *dir);
-void post_atoms                 (int argc, t_atom *argv);
+void sys_vgui                   (char *fmt, ...);
+void sys_gui                    (char *s);
+void sys_pretendguibytes        (int n);
+void sys_queuegui               (void *client, t_glist *glist, t_callbackfn f);
+void sys_unqueuegui             (void *client);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void gfxstub_new                (t_pd *owner, void *key, const char *cmd);
+void gfxstub_deleteforkey       (void *key);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -280,13 +289,12 @@ void garray_init                (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_vgui                   (char *fmt, ...);
-void sys_gui                    (char *s);
-void sys_pretendguibytes        (int n);
-void sys_queuegui               (void *client, t_glist *glist, t_callbackfn f);
-void sys_unqueuegui             (void *client);
-void gfxstub_new                (t_pd *owner, void *key, const char *cmd);
-void gfxstub_deleteforkey       (void *key);
+int  outlet_isSignal            (t_outlet *x);
+void text_save                  (t_gobj *z, t_buffer *b);
+void canvas_popabstraction      (t_canvas *x);
+int  canvas_getdollarzero       (void);
+void open_via_helppath          (const char *name, const char *dir);
+void post_atoms                 (int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

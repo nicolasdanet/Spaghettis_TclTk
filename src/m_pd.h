@@ -99,7 +99,7 @@ extern "C" {
 #pragma mark -
 
 #ifndef PD_DEBUG
-#define PD_DEBUG            1                       /* Log false assertions. */
+#define PD_DEBUG            1                   /* False assertions logged. */
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
