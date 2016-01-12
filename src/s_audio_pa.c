@@ -22,6 +22,8 @@
 */
 
 #include "m_pd.h"
+#include "m_private.h"
+#include "m_macros.h"
 #include "m_alloca.h"
 #include "s_system.h"
 #include <stdio.h>

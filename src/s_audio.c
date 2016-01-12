@@ -7,6 +7,8 @@
 */
 
 #include "m_pd.h"
+#include "m_private.h"
+#include "m_macros.h"
 #include "s_system.h"
 #include <stdio.h>
 #ifdef _WIN32
@@ -905,7 +907,7 @@ void sys_set_audio_api(int which)
         post("sys_audioapi set to %d", sys_audioapi);
 }
 
-void global_audioAPI(void *dummy, t_float f)
+void global_audioAPI(t_pd *dummy, t_float f)
 {
     int newapi = f;
     if (newapi)

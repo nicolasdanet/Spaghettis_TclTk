@@ -6,6 +6,8 @@
 */
 
 #include "m_pd.h"
+#include "m_private.h"
+#include "m_macros.h"
 #include <math.h>
 #define LOGTEN 2.302585092994
 

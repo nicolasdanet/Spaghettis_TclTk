@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "m_pd.h"
+#include "m_private.h"
+#include "m_macros.h"
 #include "s_system.h"
 #include <jack/weakjack.h>
 #include <jack/jack.h>
@@ -162,9 +164,6 @@ jack_srate (jack_nframes_t srate, void *arg)
         sys_dacsr = srate;
         return 0;
 }
-
-
-void global_audioAPI(void *dummy, t_float f);
 
 static void
 jack_shutdown (void *arg)

@@ -173,7 +173,7 @@ t_symbol *canvas_realizedollar(t_canvas *x, t_symbol *s)
     {
         t_canvasenvironment *env = canvas_getenv(x);
         canvas_setcurrent(x);
-        ret = binbuf_realizedollsym(s, env->ce_argc, env->ce_argv, 1);
+        ret = dollar_substitute(s, env->ce_argc, env->ce_argv, 1);
         canvas_unsetcurrent(x);
     }
     else ret = s;
@@ -851,7 +851,7 @@ void canvas_restore(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
         if (ap->a_type == A_SYMBOL)
         {
             t_canvasenvironment *e = canvas_getenv(canvas_getcurrent());
-            canvas_rename(x, binbuf_realizedollsym(ap->a_w.w_symbol,
+            canvas_rename(x, dollar_substitute(ap->a_w.w_symbol,
                 e->ce_argc, e->ce_argv, 1), 0);
         }
     }
@@ -982,7 +982,7 @@ static void canvas_rename_method(t_canvas *x, t_symbol *s, int ac, t_atom *av)
     {
         t_canvasenvironment *e = canvas_getenv(x);
         canvas_setcurrent(x);
-        canvas_rename(x, binbuf_realizedollsym(av->a_w.w_symbol,
+        canvas_rename(x, dollar_substitute(av->a_w.w_symbol,
             e->ce_argc, e->ce_argv, 1), 0); 
         canvas_unsetcurrent(x);
     }

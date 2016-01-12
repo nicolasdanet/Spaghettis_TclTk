@@ -26,6 +26,8 @@ objects use Posix-like threads.  */
 #include <math.h>
 
 #include "m_pd.h"
+#include "m_private.h"
+#include "m_macros.h"
 
 extern t_class *garray_class;
 

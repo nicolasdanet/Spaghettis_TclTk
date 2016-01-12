@@ -17,6 +17,8 @@
 #include <alsa/asoundlib.h>
 
 #include "m_pd.h"
+#include "m_private.h"
+#include "m_macros.h"
 #include "s_system.h"
 #include <errno.h>
 #include <stdio.h>

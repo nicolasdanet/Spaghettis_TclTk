@@ -5,6 +5,7 @@
 /*  send~, delread~, throw~, catch~ */
 
 #include "m_pd.h"
+#include "m_private.h"
 #include "m_macros.h"
 extern int ugen_getsortno(void);
 

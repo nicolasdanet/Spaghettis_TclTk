@@ -12,6 +12,8 @@ put out a "float" as in sliders, toggles, etc. */
 #include <stdio.h>
 #include <ctype.h>
 #include "m_pd.h"
+#include "m_private.h"
+#include "m_macros.h"
 #include "g_canvas.h"
 
 #include "g_iem.h"

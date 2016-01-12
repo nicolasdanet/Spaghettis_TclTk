@@ -14,6 +14,8 @@
 #include <errno.h>
 #include <alsa/asoundlib.h>
 #include "m_pd.h"
+#include "m_private.h"
+#include "m_macros.h"
 #include "s_system.h"
 
 //the maximum length of input messages

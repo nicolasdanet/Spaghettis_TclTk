@@ -7,6 +7,7 @@
 /* LATER make tabread4 and tabread~ */
 
 #include "m_pd.h"
+#include "m_private.h"
 #include "m_macros.h"
 
 extern t_class *garray_class;

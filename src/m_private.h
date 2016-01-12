@@ -151,8 +151,10 @@ int  utils_isTokenWhitespace        (char c);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int  dollar_isDollarNumber          (char *s);
-int  dollar_startsWithDollarNumber  (char *s);
+t_symbol    *dollar_substitute                (t_symbol *s, int argc, t_atom *argv, int tonew);
+
+int         dollar_isDollarNumber           (char *s);
+int         dollar_startsWithDollarNumber   (char *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

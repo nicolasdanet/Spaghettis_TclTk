@@ -9,6 +9,8 @@ to reset the value.
 */
 
 #include "m_pd.h"
+#include "m_private.h"
+#include "m_macros.h"
 
 /* ----------------------------- plus ----------------------------- */
 static t_class *plus_class, *scalarplus_class;

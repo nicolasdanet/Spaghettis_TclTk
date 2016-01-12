@@ -10,6 +10,8 @@ around (so is better suited to one-off dialogs)
 */
 
 #include "m_pd.h"
+#include "m_private.h"
+#include "m_macros.h"
 #include "g_canvas.h"
 
 struct _guiconnect

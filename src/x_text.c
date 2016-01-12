@@ -1270,7 +1270,7 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
         else if (type == A_DOLLARSYMBOL)
         {
             t_symbol *s =
-                binbuf_realizedollsym(ap->a_w.w_symbol, argc, argv, 0);
+                dollar_substitute(ap->a_w.w_symbol, argc, argv, 0);
             if (s)
                 SET_SYMBOL(outvec+i, s);
             else

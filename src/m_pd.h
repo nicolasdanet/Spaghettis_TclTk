@@ -465,7 +465,6 @@ PD_DLL int      binbuf_read_via_canvas      (t_buffer *b, char *filename, t_canv
 PD_DLL int      binbuf_read_via_path        (t_buffer *b, char *filename, char *dirname, int crflag);
 PD_DLL int      binbuf_write                (t_buffer *x, char *filename, char *dir, int crflag);
 PD_DLL void     binbuf_evalfile             (t_symbol *name, t_symbol *dir);
-PD_DLL t_symbol *binbuf_realizedollsym      (t_symbol *s, int ac, t_atom *av, int tonew);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

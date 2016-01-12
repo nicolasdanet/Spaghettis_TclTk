@@ -5,6 +5,7 @@
 /*  "filters", both linear and nonlinear. 
 */
 #include "m_pd.h"
+#include "m_private.h"
 #include "m_macros.h"
 #include <math.h>
 
