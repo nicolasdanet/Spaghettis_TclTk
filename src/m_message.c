@@ -130,7 +130,7 @@ t_symbol *gensym (const char *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void new_anything (t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
+static void new_anything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     int f;
     char buf[PD_STRING] = { 0 };
@@ -142,7 +142,7 @@ static void new_anything (t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
     
     if (sys_load_lib (canvas_getcurrent(), s->s_name)) {
         message_recursiveDepth++;
-        pd_message (dummy, s, argc, argv);
+        pd_message (x, s, argc, argv);
         message_recursiveDepth--;
         return;
     }

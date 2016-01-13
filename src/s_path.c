@@ -703,7 +703,7 @@ void sys_set_extrapath(void)
 }
 
     /* start a search path dialog window */
-void global_pathDialog (t_pd *dummy, t_float flongform)
+void global_pathDialog (void *dummy, t_float flongform)
 {
      char buf[PD_STRING];
 
@@ -713,7 +713,7 @@ void global_pathDialog (t_pd *dummy, t_float flongform)
 }
 
     /* new values from dialog window */
-void global_setPath(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
+void global_setPath(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
     namelist_free(sys_searchpath);
@@ -741,7 +741,7 @@ void sys_set_startup( void)
 }
 
     /* start a startup dialog window */
-void glob_start_startup_dialog (t_pd *dummy, t_float flongform)
+void glob_start_startup_dialog (void *dummy, t_float flongform)
 {
     char buf[PD_STRING];
 
@@ -752,7 +752,7 @@ void glob_start_startup_dialog (t_pd *dummy, t_float flongform)
 }
 
     /* new values from dialog window */
-static void glob_startup_dialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
+static void glob_startup_dialog(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
     namelist_free(sys_externlist);

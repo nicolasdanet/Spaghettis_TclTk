@@ -628,10 +628,10 @@ void sys_set_midi_api(int which)
         post("sys_midiapi %d", sys_midiapi);
 }
 
-void global_midiProperties(t_pd *dummy, t_float flongform);
+void global_midiProperties(void *dummy, t_float flongform);
 void midi_alsa_setndevs(int in, int out);
 
-void global_midiAPI(t_pd *dummy, t_float f)
+void global_midiAPI(void *dummy, t_float f)
 {
     int newapi = f;
     if (newapi != sys_midiapi)
@@ -654,7 +654,7 @@ void global_midiAPI(t_pd *dummy, t_float f)
 extern t_class *global_object;
 
     /* start an midi settings dialog window */
-void global_midiProperties(t_pd *dummy, t_float flongform)
+void global_midiProperties(void *dummy, t_float flongform)
 {
     char buf[1024 + 2 * MAXNDEV*(DEVDESCSIZE+4)];
         /* these are the devices you're using: */
@@ -732,7 +732,7 @@ void global_midiProperties(t_pd *dummy, t_float flongform)
 }
 
     /* new values from dialog window */
-void global_midiDialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
+void global_midiDialog(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int nmidiindev, midiindev[MIDI_MAXIMUM_IN];
     int nmidioutdev, midioutdev[MIDI_MAXIMUM_OUT];

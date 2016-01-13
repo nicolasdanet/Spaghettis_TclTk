@@ -309,7 +309,7 @@ void sys_log_error(int type)
 static int sched_lastinclip, sched_lastoutclip,
     sched_lastindb, sched_lastoutdb;
 
-void global_watchdog(t_pd *dummy);
+void global_watchdog(void *dummy);
 
 static void sched_pollformeters( void)
 {

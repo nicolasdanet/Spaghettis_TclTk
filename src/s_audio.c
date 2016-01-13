@@ -688,7 +688,7 @@ static void sys_listaudiodevs(void )
 
 
     /* start an audio settings dialog window */
-void global_audioProperties(t_pd *dummy, t_float flongform)
+void global_audioProperties(void *dummy, t_float flongform)
 {
     char buf[1024 + 2 * MAXNDEV*(DEVDESCSIZE+4)];
         /* these are the devices you're using: */
@@ -758,7 +758,7 @@ void global_audioProperties(t_pd *dummy, t_float flongform)
 
 extern int pa_foo;
     /* new values from dialog window */
-void global_audioDialog(t_pd *dummy, t_symbol *s, int argc, t_atom *argv)
+void global_audioDialog(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int naudioindev, audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
     int naudiooutdev, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
@@ -907,7 +907,7 @@ void sys_set_audio_api(int which)
         post("sys_audioapi set to %d", sys_audioapi);
 }
 
-void global_audioAPI(t_pd *dummy, t_float f)
+void global_audioAPI(void *dummy, t_float f)
 {
     int newapi = f;
     if (newapi)

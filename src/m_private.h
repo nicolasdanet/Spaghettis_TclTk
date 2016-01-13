@@ -225,17 +225,17 @@ void global_key                 (void *dummy, t_symbol *s, int argc, t_atom *arg
 void global_quit                (void *dummy);
 
 void global_gui                 (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_audioProperties     (t_pd *dummy, t_float f);
-void global_midiProperties      (t_pd *dummy, t_float f);
-void global_audioDialog         (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_midiDialog          (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_audioAPI            (t_pd *dummy, t_float f);
-void global_midiAPI             (t_pd *dummy, t_float f);
-void global_pathDialog          (t_pd *dummy, t_float f);
-void global_setPath             (t_pd *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_ping                (t_pd *dummy);
-void global_watchdog            (t_pd *dummy);
-void global_savePreferences     (t_pd *dummy);
+void global_audioProperties     (void *dummy, t_float f);
+void global_midiProperties      (void *dummy, t_float f);
+void global_audioDialog         (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_midiDialog          (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_audioAPI            (void *dummy, t_float f);
+void global_midiAPI             (void *dummy, t_float f);
+void global_pathDialog          (void *dummy, t_float f);
+void global_setPath             (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_ping                (void *dummy);
+void global_watchdog            (void *dummy);
+void global_savePreferences     (void *dummy);
 void global_shouldQuit          (void *dummy);
 
 // -----------------------------------------------------------------------------------------------------------
