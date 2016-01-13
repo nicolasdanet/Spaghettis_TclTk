@@ -81,7 +81,7 @@ void clock_unset(t_clock *x)
     /* set the clock to call back at an absolute system time */
 void clock_set(t_clock *x, double setticks)
 {
-    if (setticks < pd_this->pd_systime) setticks = pd_this->pd_systime;
+    if (setticks < pd_this->pd_time) setticks = pd_this->pd_time;
     clock_unset(x);
     x->c_settime = setticks;
     if (pd_this->pd_clocks && 
@@ -107,8 +107,8 @@ void clock_set(t_clock *x, double setticks)
 void clock_delay(t_clock *x, double delaytime)
 {
     clock_set(x, (x->c_unit > 0 ?
-        pd_this->pd_systime + x->c_unit * delaytime : 
-            pd_this->pd_systime - (x->c_unit*(TIMEUNITPERSECOND/sys_dacsr)) * delaytime));
+        pd_this->pd_time + x->c_unit * delaytime : 
+            pd_this->pd_time - (x->c_unit*(TIMEUNITPERSECOND/sys_dacsr)) * delaytime));
 }
 
     /* set the time unit in msec or (if 'samps' is set) in samples.  This
@@ -126,7 +126,7 @@ void clock_setunit(t_clock *x, double timeunit, int sampflag)
     
         /* figure out time left in the units we were in */
     timeleft = (x->c_settime < 0 ? -1 :
-        (x->c_settime - pd_this->pd_systime)/((x->c_unit > 0)? x->c_unit :
+        (x->c_settime - pd_this->pd_time)/((x->c_unit > 0)? x->c_unit :
             (x->c_unit*(TIMEUNITPERSECOND/sys_dacsr))));
     if (sampflag)
         x->c_unit = -timeunit;  /* negate to flag sample-based */
@@ -139,16 +139,16 @@ void clock_setunit(t_clock *x, double timeunit, int sampflag)
     use clock_gettimesince() to measure intervals from time of this call. */
 double clock_getlogicaltime( void)
 {
-    return (pd_this->pd_systime);
+    return (pd_this->pd_time);
 }
 
     /* OBSOLETE (misleading) function name kept for compatibility */
-double clock_getsystime( void) { return (pd_this->pd_systime); }
+double clock_getsystime( void) { return (pd_this->pd_time); }
 
     /* elapsed time in milliseconds since the given system time */
 double clock_gettimesince(double prevsystime)
 {
-    return ((pd_this->pd_systime - prevsystime)/TIMEUNITPERMSEC);
+    return ((pd_this->pd_time - prevsystime)/TIMEUNITPERMSEC);
 }
 
     /* elapsed time in units, ala clock_setunit(), since given system time */
@@ -160,15 +160,15 @@ double clock_gettimesincewithunits(double prevsystime,
             units == 1 and (sys_time - prevsystime) is an integer number of
             DSP ticks, the result will be exact. */
     if (sampflag)
-        return ((pd_this->pd_systime - prevsystime)/
+        return ((pd_this->pd_time - prevsystime)/
             ((TIMEUNITPERSECOND/sys_dacsr)*units));
-    else return ((pd_this->pd_systime - prevsystime)/(TIMEUNITPERMSEC*units));
+    else return ((pd_this->pd_time - prevsystime)/(TIMEUNITPERMSEC*units));
 }
 
     /* what value the system clock will have after a delay */
 double clock_getsystimeafter(double delaytime)
 {
-    return (pd_this->pd_systime + TIMEUNITPERMSEC * delaytime);
+    return (pd_this->pd_time + TIMEUNITPERMSEC * delaytime);
 }
 
 void clock_free(t_clock *x)
@@ -397,13 +397,13 @@ void sched_set_using_audio(int flag)
     /* take the scheduler forward one DSP tick, also handling clock timeouts */
 void sched_tick( void)
 {
-    double next_sys_time = pd_this->pd_systime + sys_time_per_dsp_tick;
+    double next_sys_time = pd_this->pd_time + sys_time_per_dsp_tick;
     int countdown = 5000;
     while (pd_this->pd_clocks && 
         pd_this->pd_clocks->c_settime < next_sys_time)
     {
         t_clock *c = pd_this->pd_clocks;
-        pd_this->pd_systime = c->c_settime;
+        pd_this->pd_time = c->c_settime;
         clock_unset(pd_this->pd_clocks);
         (*c->c_fn)(c->c_owner);
         if (!countdown--)
@@ -414,7 +414,7 @@ void sched_tick( void)
         if (sys_quit)
             return;
     }
-    pd_this->pd_systime = next_sys_time;
+    pd_this->pd_time = next_sys_time;
     dsp_tick();
     sched_diddsp++;
 }
@@ -565,13 +565,13 @@ static void m_callbackscheduler(void)
     sys_initmidiqueue();
     while (!sys_quit)
     {
-        double timewas = pd_this->pd_systime;
+        double timewas = pd_this->pd_time;
 #ifdef _WIN32
         Sleep(1000);
 #else
         sleep(1);
 #endif
-        if (pd_this->pd_systime == timewas)
+        if (pd_this->pd_time == timewas)
         {
             sys_lock();
             sys_pollgui();

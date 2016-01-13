@@ -104,11 +104,11 @@ struct _class {
 // -----------------------------------------------------------------------------------------------------------
 
 struct _pdinstance {
-    double      pd_systime;
+    double      pd_time;
+    int         pd_state;
+    int         pd_chainSize;
+    t_int       *pd_chain;
     t_clock     *pd_clocks;
-    t_int       *pd_dspChain;
-    int         pd_dspChainSize;
-    int         pd_dspState;
     t_signal    *pd_signals;
     t_canvas    *pd_canvases;
     //

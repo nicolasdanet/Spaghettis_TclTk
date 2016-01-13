@@ -128,11 +128,11 @@ static t_pdinstance *pdinstance_new()
 {
     t_pdinstance *x = (t_pdinstance *)PD_MEMORY_GET (sizeof (t_pdinstance));
     
-    x->pd_systime           = 0;
+    x->pd_time              = 0;
+    x->pd_state             = 0;
+    x->pd_chainSize         = 0;
+    x->pd_chain             = NULL;
     x->pd_clocks            = NULL;
-    x->pd_dspChain          = NULL;
-    x->pd_dspChainSize      = 0;
-    x->pd_dspState          = 0;
     x->pd_signals           = NULL;
     x->pd_canvases          = NULL;
     x->sym_midiin           = gensym ("#midiin");

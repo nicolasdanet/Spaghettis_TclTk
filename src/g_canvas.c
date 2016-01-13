@@ -1080,23 +1080,23 @@ static void canvas_dsp(t_canvas *x, t_signal **sp)
 static void canvas_start_dsp(void)
 {
     t_canvas *x;
-    if (pd_this->pd_dspState) ugen_stop();
+    if (pd_this->pd_state) ugen_stop();
     else sys_gui("set ::var(isDsp) 1\n");
     ugen_start();
     
     for (x = pd_this->pd_canvases; x; x = x->gl_next)
         canvas_dodsp(x, 1, 0);
     
-    pd_this->pd_dspState = 1;
+    pd_this->pd_state = 1;
 }
 
 static void canvas_stop_dsp(void)
 {
-    if (pd_this->pd_dspState)
+    if (pd_this->pd_state)
     {
         ugen_stop();
         sys_gui("set ::var(isDsp) 0\n");
-        pd_this->pd_dspState = 0;
+        pd_this->pd_state = 0;
     }
 }
 
@@ -1107,7 +1107,7 @@ static void canvas_stop_dsp(void)
 
 int canvas_suspend_dsp(void)
 {
-    int rval = pd_this->pd_dspState;
+    int rval = pd_this->pd_state;
     if (rval) canvas_stop_dsp();
     return (rval);
 }
@@ -1120,7 +1120,7 @@ void canvas_resume_dsp(int oldstate)
     /* this is equivalent to suspending and resuming in one step. */
 void canvas_update_dsp(void)
 {
-    if (pd_this->pd_dspState) canvas_start_dsp();
+    if (pd_this->pd_state) canvas_start_dsp();
 }
 
 /* the "dsp" message to pd starts and stops DSP somputation, and, if
@@ -1138,19 +1138,19 @@ void global_dsp(void *dummy, t_symbol *s, int argc, t_atom *argv)
     if (argc)
     {
         newstate = (t_int)atom_getFloatAtIndex(0, argc, argv);
-        if (newstate && !pd_this->pd_dspState)
+        if (newstate && !pd_this->pd_state)
         {
             sys_set_audio_state(1);
             canvas_start_dsp();
         }
-        else if (!newstate && pd_this->pd_dspState)
+        else if (!newstate && pd_this->pd_state)
         {
             canvas_stop_dsp();
             if (!audio_shouldkeepopen())
                 sys_set_audio_state(0);
         }
     }
-    else post("dsp state %d", pd_this->pd_dspState);
+    else post("dsp state %d", pd_this->pd_state);
 }
 
 void *canvas_getblock(t_class *blockclass, t_canvas **canvasp)
