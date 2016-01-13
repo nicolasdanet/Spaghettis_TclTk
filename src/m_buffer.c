@@ -357,8 +357,8 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)
     //
     char t[PD_STRING] = { 0 };
     int n = length;
-        
-    atom_toString (x->b_vector + i, t, PD_STRING);
+    int err = atom_toString (x->b_vector + i, t, PD_STRING);
+    PD_ASSERT (!err);
     n += strlen (t) + 1;
     buf = PD_MEMORY_RESIZE (buf, length, n);
     strcpy (buf + length, t);
@@ -411,7 +411,8 @@ void buffer_serialize (t_buffer *x, t_buffer *y)
     
     if (!IS_FLOAT (a)) {
         char t[PD_STRING] = { 0 };
-        atom_toString (a, t, PD_STRING);
+        int err = atom_toString (a, t, PD_STRING);
+        PD_ASSERT (!err);
         SET_SYMBOL (a, gensym (t));
     }
     //

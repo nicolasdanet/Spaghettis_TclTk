@@ -42,6 +42,7 @@ static int dollar_substitute (char *s, char *buf, int size, int argc, t_atom *ar
     char *ptr = s;
     char c = 0;
     int length = 0;
+    int err = 0;
     
     *buf = 0;
     
@@ -57,26 +58,24 @@ static int dollar_substitute (char *s, char *buf, int size, int argc, t_atom *ar
     if (n < 0 || n > argc) { return 0; }
 
     if (ptr == s) {                                       
-        utils_snprintf (buf, size, "$");            /* Unsubstituted dollars are preserved. */
+        err = utils_snprintf (buf, size, "$");                  /* Unsubstituted dollars are preserved. */
         return 0;
 
     } else if (n == 0) {                                    
         t_atom a;
         SET_FLOAT (&a, canvas_getdollarzero());
-        atom_toString (&a, buf, size);
+        err = atom_toString (&a, buf, size);
         PD_ASSERT (length == 1);
         
     } else {                                                
-        atom_toString (argv + (n - 1), buf, size);
+        err = atom_toString (argv + (n - 1), buf, size);
     }
     
-    return length;
+    return (err ? -1 : length);
 }
 
 t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *substituted = NULL;
-    
     char t[PD_STRING] = { 0 };
     char result[PD_STRING] = { 0 };
     char *str = s->s_name;
@@ -84,11 +83,9 @@ t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv)
     int next = 0;
     int err = 0;
     
-    if (s && s->s_name) { post_log ("? %s", s->s_name); } else { PD_BUG; }
-    
     substr = strchr (str, '$');
     
-    if (!substr) { return (s); }
+    if (!substr) { return s; }
     else {
         err |= utils_strncat (result, PD_STRING, str, (substr - str));
         str = substr + 1;
@@ -111,13 +108,10 @@ t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv)
     //
     }
     
-    PD_ASSERT (!err);
-    
-    substituted = gensym (result);
-    
-    if (substituted && substituted->s_name) { post_log ("! %s", substituted->s_name); } else { PD_BUG; }
-    
-    return (substituted);
+    if (err) { return NULL; } 
+    else {
+        return (gensym (result));
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

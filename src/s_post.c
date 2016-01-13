@@ -90,18 +90,5 @@ void post_atoms (int argc, t_atom *argv)
     buffer_free (t);
 }
 
-/*
-void post_atoms (int argc, t_atom *argv)
-{
-    int i;
-    
-    for (i = 0; i < argc; i++) {
-        char buf[PD_STRING];
-        atom_toString (argv + i, buf, PD_STRING);
-        post ("%s", buf);
-    }
-}
-*/
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

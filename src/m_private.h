@@ -243,7 +243,7 @@ void global_shouldQuit          (void *dummy);
 #pragma mark -
 
 void atom_withString            (t_atom *a, char *s, int size);
-void atom_toString              (t_atom *a, char *s, int size);
+int  atom_toString              (t_atom *a, char *s, int size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

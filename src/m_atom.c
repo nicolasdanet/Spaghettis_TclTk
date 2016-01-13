@@ -118,7 +118,7 @@ void atom_withString (t_atom *a, char *s, int size)
     buffer_free (t);
 }
 
-void atom_toString (t_atom *a, char *s, int size)
+int atom_toString (t_atom *a, char *s, int size)
 {
     int err = 1;
     
@@ -134,7 +134,7 @@ void atom_toString (t_atom *a, char *s, int size)
         case A_POINTER      : err = utils_strncpy (s,  (size_t)size, s_pointer.s_name);         break;
     }
 
-    PD_ASSERT (!err);
+    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------
