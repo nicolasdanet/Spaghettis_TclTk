@@ -243,7 +243,7 @@ void global_gui(void *dummy, t_symbol *s, int argc, t_atom *argv)
     {
         t_buffer *b = buffer_new();
         buffer_withString(b, nl->nl_string, strlen(nl->nl_string));
-        binbuf_eval(b, 0, 0, 0);
+        buffer_eval(b, 0, 0, 0);
         buffer_free(b);
     }
     namelist_free(sys_messagelist);

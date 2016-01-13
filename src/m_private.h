@@ -259,6 +259,7 @@ void buffer_toStringUnzeroed    (t_buffer *x, char **s, int *size);
 void buffer_toString            (t_buffer *x, char **s, int *size);
 void buffer_serialize           (t_buffer *x, t_buffer *y);
 void buffer_deserialize         (t_buffer *x, int argc, t_atom *argv);
+void buffer_eval                (t_buffer *x, t_pd *target, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -449,200 +449,167 @@ void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define SMALLMSG 5
-
-void binbuf_eval(t_buffer *x, t_pd *target, int argc, t_atom *argv)
+void buffer_eval (t_buffer *x, t_pd *target, int argc, t_atom *argv)
 {
-    t_atom smallstack[SMALLMSG], *mstack, *msp;
-    t_atom *at = x->b_vector;
-    int ac = x->b_size;
-    int nargs, maxnargs = 0;
-    if (ac <= SMALLMSG)
-        mstack = smallstack;
+    int size = x->b_size;
+    t_atom *v = x->b_vector;
+    t_atom *atoms = NULL;
+    t_atom *p = NULL;
+    int args = 0;
+
+    ATOMS_ALLOCA (atoms, x->b_size);
+    
+    p = atoms;
+    
+    while (1) {
+    //
+    t_pd *nexttarget = NULL;
+
+    while (!target) {
+    //
+    t_symbol *s = NULL;
+    
+    while (size && (IS_SEMICOLON (v) || IS_COMMA (v))) { size--; v++; }
+    
+    if (!size) { break; }
+    
+    if (IS_DOLLAR (v)) {
+    
+        int n = GET_DOLLAR (v);
+        
+        if (n <= 0 || n > argc || !IS_SYMBOL (argv + n - 1)) {
+            post_error (PD_TRANSLATE ("$%d: invalid argument substitution"), n);
+            goto cleanup; 
+            
+        } else { 
+            s = GET_SYMBOL (argv + n - 1); 
+        }
+        
+    } else if (IS_DOLLARSYMBOL (v)) {
+        if (!(s = dollar_substituteDollarSymbol (GET_DOLLARSYMBOL (v), argc, argv))) {
+            post_error (PD_TRANSLATE ("$%s: invalid argument substitution"), GET_DOLLARSYMBOL (v)->s_name);
+            goto cleanup;
+        }
+        
+    } else { 
+        s = atom_getSymbol (v);
+    }
+    
+    if (!(target = s->s_thing)) {
+        post_error ("%s: no such object", s->s_name);
+    cleanup:
+        do v++, size--;
+        while (size && v->a_type != A_SEMICOLON);
+            /* LATER eat args until semicolon and continue */
+        continue;
+    }
     else
     {
-#if 1
-            /* count number of args in biggest message.  The wierd
-            treatment of "pd_objectMaker" is because when the message
-            goes out to objectmaker, commas and semis are passed
-            on as regular args (see below).  We're tacitly assuming here
-            that the pd_objectMaker target can't come up via a named
-            destination in the message, only because the original "target"
-            points there. */
-        if (target == &pd_objectMaker)
-            maxnargs = ac;
-        else
-        {
-            int i, j = (target ? 0 : -1);
-            for (i = 0; i < ac; i++)
-            {
-                if (at[i].a_type == A_SEMICOLON)
-                    j = -1;
-                else if (at[i].a_type == A_COMMA)
-                    j = 0;
-                else if (++j > maxnargs)
-                    maxnargs = j;
-            }
-        }
-        if (maxnargs <= SMALLMSG)
-            mstack = smallstack;
-        else ATOMS_ALLOCA(mstack, maxnargs);
-#else
-            /* just pessimistically allocate enough to hold everything
-            at once.  This turned out to run slower in a simple benchmark
-            I tried, perhaps because the extra memory allocation
-            hurt the cache hit rate. */
-        maxnargs = ac;
-        ATOMS_ALLOCA(mstack, maxnargs);
-#endif
-
+        v++, size--;
+        break;
     }
-    msp = mstack;
+    //
+    }
+    
+    if (!size) break;
+    
+    args = 0;
+    nexttarget = target;
     while (1)
     {
-        t_pd *nexttarget;
-            /* get a target. */
-        while (!target)
+        t_symbol *s9;
+        if (!size) goto gotmess;
+        switch (v->a_type)
         {
-            t_symbol *s;
-            while (ac && (at->a_type == A_SEMICOLON || at->a_type == A_COMMA))
-                ac--,  at++;
-            if (!ac) break;
-            if (at->a_type == A_DOLLAR)
+        case A_SEMICOLON:
+                /* semis and commas in new message just get bashed to
+                a symbol.  This is needed so you can pass them to "expr." */
+            if (target == &pd_objectMaker)
             {
-                if (at->a_w.w_index <= 0 || at->a_w.w_index > argc)
-                {
-                    post_error ("$%d: not enough arguments supplied",
-                            at->a_w.w_index);
-                    goto cleanup; 
-                }
-                else if (argv[at->a_w.w_index-1].a_type != A_SYMBOL)
-                {
-                    post_error ("$%d: symbol needed as message destination",
-                        at->a_w.w_index);
-                    goto cleanup; 
-                }
-                else s = argv[at->a_w.w_index-1].a_w.w_symbol;
-            }
-            else if (at->a_type == A_DOLLARSYMBOL)
-            {
-                if (!(s = dollar_substituteDollarSymbol(at->a_w.w_symbol,
-                    argc, argv /*, 0*/)))
-                {
-                    post_error ("$%s: not enough arguments supplied",
-                        at->a_w.w_symbol->s_name);
-                    goto cleanup;
-                }
-            }
-            else s = atom_getSymbol(at);
-            if (!(target = s->s_thing))
-            {
-                post_error ("%s: no such object", s->s_name);
-            cleanup:
-                do at++, ac--;
-                while (ac && at->a_type != A_SEMICOLON);
-                    /* LATER eat args until semicolon and continue */
-                continue;
+                SET_SYMBOL(p, gensym(";"));
+                break;
             }
             else
             {
-                at++, ac--;
+                nexttarget = 0;
+                goto gotmess;
+            }
+        case A_COMMA:
+            if (target == &pd_objectMaker)
+            {
+                SET_SYMBOL(p, gensym(","));
                 break;
             }
-        }
-        if (!ac) break;
-        nargs = 0;
-        nexttarget = target;
-        while (1)
-        {
-            t_symbol *s9;
-            if (!ac) goto gotmess;
-            switch (at->a_type)
+            else goto gotmess;
+        case A_FLOAT:
+        case A_SYMBOL:
+            *p = *v;
+            break;
+        case A_DOLLAR:
+            if (v->a_w.w_index > 0 && v->a_w.w_index <= argc)
+                *p = argv[v->a_w.w_index-1];
+            else if (v->a_w.w_index == 0)
+                SET_FLOAT(p, canvas_getdollarzero());
+            else
             {
-            case A_SEMICOLON:
-                    /* semis and commas in new message just get bashed to
-                    a symbol.  This is needed so you can pass them to "expr." */
                 if (target == &pd_objectMaker)
-                {
-                    SET_SYMBOL(msp, gensym(";"));
-                    break;
-                }
+                    SET_FLOAT(p, 0);
                 else
                 {
-                    nexttarget = 0;
-                    goto gotmess;
+                    post_error ("$%d: argument number out of range",
+                        v->a_w.w_index);
+                    SET_FLOAT(p, 0);
                 }
-            case A_COMMA:
-                if (target == &pd_objectMaker)
-                {
-                    SET_SYMBOL(msp, gensym(","));
-                    break;
-                }
-                else goto gotmess;
-            case A_FLOAT:
-            case A_SYMBOL:
-                *msp = *at;
-                break;
-            case A_DOLLAR:
-                if (at->a_w.w_index > 0 && at->a_w.w_index <= argc)
-                    *msp = argv[at->a_w.w_index-1];
-                else if (at->a_w.w_index == 0)
-                    SET_FLOAT(msp, canvas_getdollarzero());
-                else
-                {
-                    if (target == &pd_objectMaker)
-                        SET_FLOAT(msp, 0);
-                    else
-                    {
-                        post_error ("$%d: argument number out of range",
-                            at->a_w.w_index);
-                        SET_FLOAT(msp, 0);
-                    }
-                }
-                break;
-            case A_DOLLARSYMBOL:
-                s9 = dollar_substituteDollarSymbol(at->a_w.w_symbol, argc, argv /*,
-                    target == &pd_objectMaker*/);
-                if (!s9)
-                {
-                    post_error ("%s: argument number out of range", at->a_w.w_symbol->s_name);
-                    SET_SYMBOL(msp, at->a_w.w_symbol);
-                }
-                else SET_SYMBOL(msp, s9);
-                break;
-            default:
-                PD_BUG;
-                goto broken;
             }
-            msp++;
-            ac--;
-            at++;
-            nargs++;
-        }
-    gotmess:
-        if (nargs)
-        {
-            switch (mstack->a_type)
+            break;
+        case A_DOLLARSYMBOL:
+            s9 = dollar_substituteDollarSymbol(v->a_w.w_symbol, argc, argv /*,
+                target == &pd_objectMaker*/);
+            if (!s9)
             {
-            case A_SYMBOL:
-                pd_message(target, mstack->a_w.w_symbol, nargs-1, mstack+1);
-                break;
-            case A_FLOAT:
-                if (nargs == 1) pd_float(target, mstack->a_w.w_float);
-                else pd_list(target, nargs, mstack);
-                break;
+                post_error ("%s: argument number out of range", v->a_w.w_symbol->s_name);
+                SET_SYMBOL(p, v->a_w.w_symbol);
             }
+            else SET_SYMBOL(p, s9);
+            break;
+        default:
+            PD_BUG;
+            goto broken;
         }
-        msp = mstack;
-        if (!ac) break;
-        target = nexttarget;
-        at++;
-        ac--;
+        p++;
+        size--;
+        v++;
+        args++;
     }
+gotmess:
+    if (args)
+    {
+        switch (atoms->a_type)
+        {
+        case A_SYMBOL:
+            pd_message(target, atoms->a_w.w_symbol, args-1, atoms+1);
+            break;
+        case A_FLOAT:
+            if (args == 1) pd_float(target, atoms->a_w.w_float);
+            else pd_list(target, args, atoms);
+            break;
+        }
+    }
+    p = atoms;
+    if (!size) break;
+    target = nexttarget;
+    v++;
+    size--;
+    //
+    }
+    
 broken: 
-    if (maxnargs > SMALLMSG)
-         ATOMS_FREEA(mstack, maxnargs);
+    ATOMS_FREEA (atoms, size);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int binbuf_read(t_buffer *b, char *filename, char *dirname, int crflag)
 {
@@ -859,7 +826,7 @@ void binbuf_evalfile(t_symbol *name, t_symbol *dir)
             buffer_free(b);
             b = newb;
         }*/
-        binbuf_eval(b, 0, 0, 0);
+        buffer_eval(b, 0, 0, 0);
         gensym("#A")->s_thing = bounda;
         s__N.s_thing = boundn;
     }

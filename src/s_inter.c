@@ -553,7 +553,7 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
                 {
                     if (x->sr_socketreceivefn)
                         (*x->sr_socketreceivefn)(x->sr_owner, inbinbuf);
-                    else binbuf_eval(inbinbuf, 0, 0, 0);
+                    else buffer_eval(inbinbuf, 0, 0, 0);
                     if (x->sr_inhead == x->sr_intail)
                         break;
                 }

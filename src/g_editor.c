@@ -585,7 +585,7 @@ static void canvas_undo_cut(t_canvas *x, void *z, int action)
             canvas_dopaste(x, buf->u_objectbuf);
         }
         s__X.s_thing = &x->gl_obj.te_g.g_pd;
-        binbuf_eval(buf->u_reconnectbuf, 0, 0, 0);
+        buffer_eval(buf->u_reconnectbuf, 0, 0, 0);
         s__X.s_thing = boundx;
     }
     else if (action == UNDO_REDO)
@@ -601,7 +601,7 @@ static void canvas_undo_cut(t_canvas *x, void *z, int action)
                 glist_delete(x, y1);
             canvas_dopaste(x, buf->u_redotextbuf);
             s__X.s_thing = &x->gl_obj.te_g.g_pd;
-            binbuf_eval(buf->u_reconnectbuf, 0, 0, 0);
+            buffer_eval(buf->u_reconnectbuf, 0, 0, 0);
             s__X.s_thing = boundx;
         }
     }
@@ -2209,7 +2209,7 @@ void canvas_restoreconnections(t_canvas *x)
 {
     t_pd *boundx = s__X.s_thing;
     s__X.s_thing = &x->gl_obj.te_g.g_pd;
-    binbuf_eval(x->gl_editor->e_connectbuf, 0, 0, 0);
+    buffer_eval(x->gl_editor->e_connectbuf, 0, 0, 0);
     s__X.s_thing = boundx;
 }
 
@@ -2395,7 +2395,7 @@ static void canvas_dopaste(t_canvas *x, t_buffer *b)
     paste_onset = nbox;
     paste_canvas = x;
 
-    binbuf_eval(b, 0, 0, 0);
+    buffer_eval(b, 0, 0, 0);
     for (g2 = x->gl_list, count = 0; g2; g2 = g2->g_next, count++)
         if (count >= nbox)
             glist_select(x, g2);

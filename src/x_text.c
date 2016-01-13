@@ -1789,7 +1789,7 @@ static void text_template_init( void)
     
     glob_setfilename(0, gensym("_text_template"), gensym("."));
     buffer_withString(b, text_templatefile, strlen(text_templatefile));
-    binbuf_eval(b, &pd_canvasMaker, 0, 0);
+    buffer_eval(b, &pd_canvasMaker, 0, 0);
     pd_vMessage(s__X.s_thing, gensym("pop"), "i", 0);
     
     glob_setfilename(0, &s_, &s_);

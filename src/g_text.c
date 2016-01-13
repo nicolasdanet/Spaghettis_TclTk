@@ -98,7 +98,7 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
     pd_newest = 0;
     canvas_setcurrent((t_canvas *)gl);
     canvas_getargs(&argc, &argv);
-    binbuf_eval(b, &pd_objectMaker, argc, argv);
+    buffer_eval(b, &pd_objectMaker, argc, argv);
     if (buffer_getSize(b))
     {
         if (!pd_newest)
@@ -339,26 +339,26 @@ static void messresponder_anything(t_messresponder *x,
 
 static void message_bang(t_message *x)
 {
-    binbuf_eval(x->m_text.te_buffer, &x->m_messresponder.mr_pd, 0, 0);
+    buffer_eval(x->m_text.te_buffer, &x->m_messresponder.mr_pd, 0, 0);
 }
 
 static void message_float(t_message *x, t_float f)
 {
     t_atom at;
     SET_FLOAT(&at, f);
-    binbuf_eval(x->m_text.te_buffer, &x->m_messresponder.mr_pd, 1, &at);
+    buffer_eval(x->m_text.te_buffer, &x->m_messresponder.mr_pd, 1, &at);
 }
 
 static void message_symbol(t_message *x, t_symbol *s)
 {
     t_atom at;
     SET_SYMBOL(&at, s);
-    binbuf_eval(x->m_text.te_buffer, &x->m_messresponder.mr_pd, 1, &at);
+    buffer_eval(x->m_text.te_buffer, &x->m_messresponder.mr_pd, 1, &at);
 }
 
 static void message_list(t_message *x, t_symbol *s, int argc, t_atom *argv)
 {
-    binbuf_eval(x->m_text.te_buffer, &x->m_messresponder.mr_pd, argc, argv);
+    buffer_eval(x->m_text.te_buffer, &x->m_messresponder.mr_pd, argc, argv);
 }
 
 static void message_set(t_message *x, t_symbol *s, int argc, t_atom *argv)
