@@ -354,19 +354,20 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)
     int i, length = 0;
 
     for (i = 0; i < x->b_size; i++) {
-
-        char t[PD_STRING] = { 0 };
-        int n = length;
-            
-        atom_toString (x->b_vector + i, t, PD_STRING);
-        n += strlen (t) + 1;
-        buf = PD_MEMORY_RESIZE (buf, length, n);
-        strcpy (buf + length, t);
-        length = n;
-        if (IS_SEMICOLON (x->b_vector + i)) { buf[length - 1] = '\n'; }
-        else { 
-            buf[length - 1] = ' ';
-        }
+    //
+    char t[PD_STRING] = { 0 };
+    int n = length;
+        
+    atom_toString (x->b_vector + i, t, PD_STRING);
+    n += strlen (t) + 1;
+    buf = PD_MEMORY_RESIZE (buf, length, n);
+    strcpy (buf + length, t);
+    length = n;
+    if (IS_SEMICOLON (x->b_vector + i)) { buf[length - 1] = '\n'; }
+    else { 
+        buf[length - 1] = ' ';
+    }
+    //
     }
     
     if (length && buf[length - 1] == ' ') { 
@@ -383,7 +384,9 @@ void buffer_toString (t_buffer *x, char **s, int *size)
     int n, length = 0;
     
     buffer_toStringUnzeroed (x, &buf, &length);
-    n = length + 1; buf = PD_MEMORY_RESIZE (buf, length, n); buf[n - 1] = 0;
+    n = length + 1; 
+    buf = PD_MEMORY_RESIZE (buf, length, n); 
+    buf[n - 1] = 0;
     
     *s = buf; 
     *size = n;
@@ -407,9 +410,9 @@ void buffer_serialize (t_buffer *x, t_buffer *y)
     PD_ASSERT (!IS_POINTER (a));
     
     if (!IS_FLOAT (a)) {
-        char buf[PD_STRING] = { 0 };
-        atom_toString (a, buf, PD_STRING);
-        SET_SYMBOL (a, gensym (buf));
+        char t[PD_STRING] = { 0 };
+        atom_toString (a, t, PD_STRING);
+        SET_SYMBOL (a, gensym (t));
     }
     //
     }
@@ -523,7 +526,7 @@ void binbuf_eval(t_buffer *x, t_pd *target, int argc, t_atom *argv)
             else if (at->a_type == A_DOLLARSYMBOL)
             {
                 if (!(s = dollar_substituteDollarSymbol(at->a_w.w_symbol,
-                    argc, argv, 0)))
+                    argc, argv /*, 0*/)))
                 {
                     post_error ("$%s: not enough arguments supplied",
                         at->a_w.w_symbol->s_name);
@@ -597,8 +600,8 @@ void binbuf_eval(t_buffer *x, t_pd *target, int argc, t_atom *argv)
                 }
                 break;
             case A_DOLLARSYMBOL:
-                s9 = dollar_substituteDollarSymbol(at->a_w.w_symbol, argc, argv,
-                    target == &pd_objectMaker);
+                s9 = dollar_substituteDollarSymbol(at->a_w.w_symbol, argc, argv /*,
+                    target == &pd_objectMaker*/);
                 if (!s9)
                 {
                     post_error ("%s: argument number out of range", at->a_w.w_symbol->s_name);

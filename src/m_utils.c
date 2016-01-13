@@ -31,6 +31,29 @@ int utils_strncpy (char *dest, size_t size, const char *src)
     }
 }
 
+int utils_strnadd (char *dest, size_t size, const char *src)
+{
+    return utils_strncat (dest, size, src, -1);
+}
+
+int utils_strncat (char *dest, size_t size, const char *src, int length)
+{
+    size_t d = strlen (dest);
+    size_t s = strlen (src);
+    size_t n = (size - 1) - d;
+    
+    PD_ASSERT (size > d);
+    
+    if (length >= 0) { s = PD_MIN (s, (size_t)length); }
+    
+    strncat (dest, src, PD_MIN (s, n));
+    
+    if (s <= n) { return 0; }
+    else {
+        return 1;
+    }
+}
+
 int utils_snprintf (char *dest, size_t size, const char *format, ...)
 {
     int t;

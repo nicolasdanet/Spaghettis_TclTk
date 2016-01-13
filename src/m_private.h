@@ -141,6 +141,8 @@ int  pd_setLoadingAbstraction       (t_symbol *s);
 #pragma mark -
 
 int  utils_strncpy                  (char *dest, size_t size, const char *src);
+int  utils_strnadd                  (char *dest, size_t size, const char *src);
+int  utils_strncat                  (char *dest, size_t size, const char *src, int length);
 int  utils_snprintf                 (char *dest, size_t size, const char *format, ...);
 
 int  utils_isTokenEnd               (char c);
@@ -151,7 +153,7 @@ int  utils_isTokenWhitespace        (char c);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol    *dollar_substituteDollarSymbol              (t_symbol *s, int argc, t_atom *argv, int tonew);
+t_symbol    *dollar_substituteDollarSymbol              (t_symbol *s, int argc, t_atom *argv);
 
 int         dollar_isDollarNumber                       (char *s);
 int         dollar_pointsToDollarNumber                 (char *s);

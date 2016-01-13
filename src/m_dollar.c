@@ -36,165 +36,89 @@ int dollar_pointsToDollarNumber (char *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int dollar_substitute (char *s, char *buf, int size, int argc, t_atom *argv, int tonew)
+static int dollar_substitute (char *s, char *buf, int size, int argc, t_atom *argv)
 {
-    int n = (int)atol (s);
+    int n = (int)atol (s);      /* Note that atol return zero for an invalid number. */
     char *ptr = s;
     char c = 0;
     int length = 0;
     
     *buf = 0;
+    
     c = *ptr;
     
-    while (c && (c >= '0') && (c <= '9')) { c = *ptr++; length++; }
+    while (c && (c >= '0') && (c <= '9')) { c = *(++ptr); length++; }
 
-    /* Dollar expansion invalid (like "$bla"). */
     /* Dollar number argument is out of bound. */
+    /* Dollar expansion invalid (like "$bla"). */
     /* Dollar zero expansion. */
     /* Dollar number expansion. */
     
-    if (ptr == s) {                                         
-        int err = utils_snprintf (buf, size, "$");
-        PD_ASSERT (!err);
+    if (n < 0 || n > argc) { return 0; }
+
+    if (ptr == s) {                                       
+        utils_snprintf (buf, size, "$");            /* Unsubstituted dollars are preserved. */
         return 0;
-        
-    } else if (n < 0 || n > argc) {                         
-        if (!tonew) { return 0; } 
-        else {
-            int err = utils_snprintf (buf, size, "$%d", n);
-            PD_ASSERT (!err);
-        }
-        
+
     } else if (n == 0) {                                    
         t_atom a;
         SET_FLOAT (&a, canvas_getdollarzero());
         atom_toString (&a, buf, size);
+        PD_ASSERT (length == 1);
         
     } else {                                                
         atom_toString (argv + (n - 1), buf, size);
     }
     
-    return (length - 1);
+    return length;
 }
 
-t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv, int tonew)
+t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv)
 {
-    char buf[PD_STRING] = { 0 };
-    char buf2[PD_STRING] = { 0 };
-    char*str=s->s_name;
-    char*substr;
-    int next=0, i=PD_STRING;
-
-    while(i--)buf2[i]=0;
-
-    t_symbol *sym = NULL;
+    t_symbol *substituted = NULL;
     
-    if (s && s->s_name) { post_log ("? %s", s->s_name); }
-    else {
-        PD_BUG;
-    }
-    
-#if 1
-    /* JMZ: currently, a symbol is detected to be A_DOLLARSYMBOL if it starts with '$'
-     * the leading $ is stripped and the rest stored in "s"
-     * i would suggest to NOT strip the leading $
-     * and make everything a A_DOLLARSYMBOL that contains(!) a $
-     *
-     * whenever this happened, enable this code
-     */
-    substr=strchr(str, '$');
-    if (!substr || substr-str >= PD_STRING)
-        return (s);
-
-    strncat(buf2, str, (substr-str));
-    str=substr+1;
-
-#endif
-
-    while((next=dollar_substitute (str, buf, PD_STRING, argc, argv, tonew))>=0)
-    {
-        /*
-        * JMZ: i am not sure what this means, so i might have broken it
-        * it seems like that if "tonew" is set and the $arg cannot be expanded
-        * (or the dollarsym is in reality a A_DOLLAR)
-        * 0 is returned from dollar_substituteDollarSymbol
-        * this happens, when expanding in a message-box, but does not happen
-        * when the A_DOLLARSYMBOL is the name of a subpatch
-        */
-        if(!tonew&&(0==next)&&(0==*buf))
-        {
-            return 0; /* JMZ: this should mimick the original behaviour */
-        }
-
-        strncat(buf2, buf, PD_STRING/2-1);
-        str+=next;
-        substr=strchr(str, '$');
-        if(substr)
-        {
-            strncat(buf2, str, (substr-str));
-            str=substr+1;
-        } 
-        else
-        {
-            strcat(buf2, str);
-            goto done;
-        }
-    }
-done:
-    sym = gensym (buf2);
-    
-    if (sym && sym->s_name) { post_log ("! %s", sym->s_name); }
-    else {
-        PD_BUG;
-    }
-    
-    return (sym);
-}
-
-/*
-t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv, int tonew)
-{
-    char buf[PD_STRING] = { 0 };
+    char t[PD_STRING] = { 0 };
     char result[PD_STRING] = { 0 };
     char *str = s->s_name;
     char *substr = NULL;
     int next = 0;
-
+    int err = 0;
+    
+    if (s && s->s_name) { post_log ("? %s", s->s_name); } else { PD_BUG; }
+    
     substr = strchr (str, '$');
     
-    if (!substr) { return s; }
-    if ((substr - str) >= PD_STRING) { return s; }
+    if (!substr) { return (s); }
+    else {
+        err |= utils_strncat (result, PD_STRING, str, (substr - str));
+        str = substr + 1;
+    }
 
-    strncat (result, str, (substr - str));
-    str = substr + 1;
+    while (!err && ((next = dollar_substitute (str, t, PD_STRING, argc, argv)) >= 0)) {
+    //
+    if ((next == 0) && (*t == 0)) { return NULL; }          /* Dollar number argument is out of bound. */
 
-    while ((next = dollar_substitute (str, buf, PD_STRING, argc, argv, tonew)) >= 0) {
-
-        if(!tonew&&(0==next)&&(0==*buf))
-        {
-            return 0; 
-        }
-
-        strncat(result, buf, PD_STRING/2-1);
-        str+=next;
-        substr=strchr(str, '$');
-        if(substr)
-        {
-            strncat(result, str, (substr-str));
-            str=substr+1;
-        } 
-        else
-        {
-            strcat(result, str);
-            goto done;
-        }
-        
+    err |= utils_strnadd (result, PD_STRING, t);
+    str += next;
+    
+    substr = strchr (str, '$');
+    
+    if (substr) { err |= utils_strncat (result, PD_STRING, str, (substr - str)); str = substr + 1; }
+    else {
+        err |= utils_strnadd (result, PD_STRING, str);
+        break;
+    }
+    //
     }
     
-done:
-    return gensym (result);
+    PD_ASSERT (!err);
+    
+    substituted = gensym (result);
+    
+    if (substituted && substituted->s_name) { post_log ("! %s", substituted->s_name); } else { PD_BUG; }
+    
+    return (substituted);
 }
-*/
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

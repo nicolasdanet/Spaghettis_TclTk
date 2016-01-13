@@ -173,7 +173,7 @@ t_symbol *canvas_realizedollar(t_canvas *x, t_symbol *s)
     {
         t_canvasenvironment *env = canvas_getenv(x);
         canvas_setcurrent(x);
-        ret = dollar_substituteDollarSymbol(s, env->ce_argc, env->ce_argv, 1);
+        ret = dollar_substituteDollarSymbol(s, env->ce_argc, env->ce_argv /*, 1*/);
         canvas_unsetcurrent(x);
     }
     else ret = s;
@@ -852,7 +852,7 @@ void canvas_restore(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
         {
             t_canvasenvironment *e = canvas_getenv(canvas_getcurrent());
             canvas_rename(x, dollar_substituteDollarSymbol(ap->a_w.w_symbol,
-                e->ce_argc, e->ce_argv, 1), 0);
+                e->ce_argc, e->ce_argv/*, 1*/), 0);
         }
     }
     canvas_pop(x, x->gl_willvis);
@@ -983,7 +983,7 @@ static void canvas_rename_method(t_canvas *x, t_symbol *s, int ac, t_atom *av)
         t_canvasenvironment *e = canvas_getenv(x);
         canvas_setcurrent(x);
         canvas_rename(x, dollar_substituteDollarSymbol(av->a_w.w_symbol,
-            e->ce_argc, e->ce_argv, 1), 0); 
+            e->ce_argc, e->ce_argv/*, 1*/), 0); 
         canvas_unsetcurrent(x);
     }
     else canvas_rename(x, gensym("Pd"), 0);
