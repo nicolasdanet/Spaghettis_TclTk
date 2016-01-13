@@ -467,7 +467,7 @@ static t_symbol *buffer_getSymbolSubstituted (t_atom *v, int argc, t_atom *argv)
     return s;
 }
 
-void buffer_eval (t_buffer *x, t_pd *target, int argc, t_atom *argv)
+void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
 {
     int size = x->b_size;
     t_atom *v = x->b_vector;
@@ -481,9 +481,9 @@ void buffer_eval (t_buffer *x, t_pd *target, int argc, t_atom *argv)
     
     while (1) {
     //
-    t_pd *nexttarget = NULL;
+    t_pd *nextObject = NULL;
 
-    while (!target) {
+    while (!object) {
     //
     t_symbol *s = NULL;
     
@@ -494,12 +494,9 @@ void buffer_eval (t_buffer *x, t_pd *target, int argc, t_atom *argv)
         break;
     }
     
-    if (s == NULL || !(target = s->s_thing)) {
-        if (s) { post_error (PD_TRANSLATE ("%s: no such object"), s->s_name); } // --
-        else {
-            post_error (PD_TRANSLATE ("$: invalid substitution"));  // --
-        }
-        do { size--; v++; } while (size && IS_SEMICOLON (v));
+    if (s == NULL || !(object = s->s_thing)) {
+        if (s)  { post_error (PD_TRANSLATE ("%s: no such object"), s->s_name); }    // --
+        else    { post_error (PD_TRANSLATE ("$: invalid substitution")); }          // --
         
     } else {
         size--; v++;
@@ -511,7 +508,7 @@ void buffer_eval (t_buffer *x, t_pd *target, int argc, t_atom *argv)
     if (!size) { break; }
     
     args = 0;
-    nexttarget = target;
+    nextObject = object;
     
     while (1)
     {
@@ -522,18 +519,18 @@ void buffer_eval (t_buffer *x, t_pd *target, int argc, t_atom *argv)
         case A_SEMICOLON:
                 /* semis and commas in new message just get bashed to
                 a symbol.  This is needed so you can pass them to "expr." */
-            if (target == &pd_objectMaker)
+            if (object == &pd_objectMaker)
             {
                 SET_SYMBOL(p, gensym(";"));
                 break;
             }
             else
             {
-                nexttarget = 0;
+                nextObject = 0;
                 goto gotmess;
             }
         case A_COMMA:
-            if (target == &pd_objectMaker)
+            if (object == &pd_objectMaker)
             {
                 SET_SYMBOL(p, gensym(","));
                 break;
@@ -550,7 +547,7 @@ void buffer_eval (t_buffer *x, t_pd *target, int argc, t_atom *argv)
                 SET_FLOAT(p, canvas_getdollarzero());
             else
             {
-                if (target == &pd_objectMaker)
+                if (object == &pd_objectMaker)
                     SET_FLOAT(p, 0);
                 else
                 {
@@ -585,17 +582,17 @@ gotmess:
         switch (atoms->a_type)
         {
         case A_SYMBOL:
-            pd_message(target, atoms->a_w.w_symbol, args-1, atoms+1);
+            pd_message(object, atoms->a_w.w_symbol, args-1, atoms+1);
             break;
         case A_FLOAT:
-            if (args == 1) pd_float(target, atoms->a_w.w_float);
-            else pd_list(target, args, atoms);
+            if (args == 1) pd_float(object, atoms->a_w.w_float);
+            else pd_list(object, args, atoms);
             break;
         }
     }
     p = atoms;
     if (!size) break;
-    target = nexttarget;
+    object = nextObject;
     v++;
     size--;
     //
