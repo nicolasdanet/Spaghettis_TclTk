@@ -449,6 +449,24 @@ void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static t_symbol *buffer_getSymbolSubstituted (t_atom *v, int argc, t_atom *argv)
+{
+    t_symbol *s = NULL;
+    
+    if (IS_DOLLAR (v)) {
+        int n = GET_DOLLAR (v);
+        if (n > 0 && n <= argc && IS_SYMBOL (argv + n - 1)) { s = GET_SYMBOL (argv + n - 1); }
+        
+    } else if (IS_DOLLARSYMBOL (v)) {
+        s = dollar_substituteDollarSymbol (GET_DOLLARSYMBOL (v), argc, argv);
+        
+    } else { 
+        s = atom_getSymbol (v);
+    }
+    
+    return s;
+}
+
 void buffer_eval (t_buffer *x, t_pd *target, int argc, t_atom *argv)
 {
     int size = x->b_size;
@@ -471,50 +489,30 @@ void buffer_eval (t_buffer *x, t_pd *target, int argc, t_atom *argv)
     
     while (size && (IS_SEMICOLON (v) || IS_COMMA (v))) { size--; v++; }
     
-    if (!size) { break; }
-    
-    if (IS_DOLLAR (v)) {
-    
-        int n = GET_DOLLAR (v);
-        
-        if (n <= 0 || n > argc || !IS_SYMBOL (argv + n - 1)) {
-            post_error (PD_TRANSLATE ("$%d: invalid argument substitution"), n);
-            goto cleanup; 
-            
-        } else { 
-            s = GET_SYMBOL (argv + n - 1); 
-        }
-        
-    } else if (IS_DOLLARSYMBOL (v)) {
-        if (!(s = dollar_substituteDollarSymbol (GET_DOLLARSYMBOL (v), argc, argv))) {
-            post_error (PD_TRANSLATE ("$%s: invalid argument substitution"), GET_DOLLARSYMBOL (v)->s_name);
-            goto cleanup;
-        }
-        
-    } else { 
-        s = atom_getSymbol (v);
+    if (size) { s = buffer_getSymbolSubstituted (v, argc, argv); }
+    else {
+        break;
     }
     
-    if (!(target = s->s_thing)) {
-        post_error ("%s: no such object", s->s_name);
-    cleanup:
-        do v++, size--;
-        while (size && v->a_type != A_SEMICOLON);
-            /* LATER eat args until semicolon and continue */
-        continue;
-    }
-    else
-    {
-        v++, size--;
+    if (s == NULL || !(target = s->s_thing)) {
+        if (s) { post_error (PD_TRANSLATE ("%s: no such object"), s->s_name); } // --
+        else {
+            post_error (PD_TRANSLATE ("$: invalid substitution"));  // --
+        }
+        do { size--; v++; } while (size && IS_SEMICOLON (v));
+        
+    } else {
+        size--; v++;
         break;
     }
     //
     }
     
-    if (!size) break;
+    if (!size) { break; }
     
     args = 0;
     nexttarget = target;
+    
     while (1)
     {
         t_symbol *s9;
