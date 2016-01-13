@@ -296,7 +296,7 @@ void buffer_parseString (t_buffer *x, char *s, int size, int allocated)
         lastSlash = slash; slash = utils_isTokenEscape (c);
 
         if (floatState >= 0) { floatState = buffer_nextState (floatState, c); }
-        if (!lastSlash && text != tBound && dollar_pointsToDollarNumber (text - 1)) { dollar = 1; }
+        if (!lastSlash && text != tBound && dollar_isPointingToDollarNumber (text - 1)) { dollar = 1; }
         
         if (!slash)         { p++; }
         else if (lastSlash) { p++; slash = 0; }
@@ -357,7 +357,7 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)
     //
     char t[PD_STRING] = { 0 };
     int n = length;
-    int err = atom_toString (x->b_vector + i, t, PD_STRING);
+    t_error err = atom_toString (x->b_vector + i, t, PD_STRING);
     PD_ASSERT (!err);
     n += strlen (t) + 1;
     buf = PD_MEMORY_RESIZE (buf, length, n);
@@ -411,7 +411,7 @@ void buffer_serialize (t_buffer *x, t_buffer *y)
     
     if (!IS_FLOAT (a)) {
         char t[PD_STRING] = { 0 };
-        int err = atom_toString (a, t, PD_STRING);
+        t_error err = atom_toString (a, t, PD_STRING);
         PD_ASSERT (!err);
         SET_SYMBOL (a, gensym (t));
     }
@@ -436,8 +436,8 @@ void buffer_deserialize (t_buffer *x, int argc, t_atom *argv)
     if (!IS_SYMBOL (argv + i)) { *a = *(argv + i); }
     else {
         char *s = GET_SYMBOL (argv + i)->s_name;
-        atom_withString (a, s, strlen (s));
-        PD_ASSERT (!IS_NULL (a));
+        t_error err = atom_withString (a, s, strlen (s));
+        PD_ASSERT (!err);
     }
     //
     }

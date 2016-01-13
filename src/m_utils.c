@@ -16,7 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int utils_strncpy (char *dest, size_t size, const char *src)
+t_error utils_strncpy (char *dest, size_t size, const char *src)
 {
     size_t s = strlen (src);
     
@@ -25,18 +25,18 @@ int utils_strncpy (char *dest, size_t size, const char *src)
     strncpy (dest, src, PD_MIN (s, size));
     dest[PD_MIN (size - 1, s)] = 0;
     
-    if (s < size) { return 0; }
+    if (s < size) { return PD_ERROR_NONE; }
     else {
-        return 1;
+        return PD_ERROR;
     }
 }
 
-int utils_strnadd (char *dest, size_t size, const char *src)
+t_error utils_strnadd (char *dest, size_t size, const char *src)
 {
     return utils_strncat (dest, size, src, -1);
 }
 
-int utils_strncat (char *dest, size_t size, const char *src, int length)
+t_error utils_strncat (char *dest, size_t size, const char *src, int length)
 {
     size_t d = strlen (dest);
     size_t s = strlen (src);
@@ -48,13 +48,13 @@ int utils_strncat (char *dest, size_t size, const char *src, int length)
     
     strncat (dest, src, PD_MIN (s, n));
     
-    if (s <= n) { return 0; }
+    if (s <= n) { return PD_ERROR_NONE; }
     else {
-        return 1;
+        return PD_ERROR;
     }
 }
 
-int utils_snprintf (char *dest, size_t size, const char *format, ...)
+t_error utils_snprintf (char *dest, size_t size, const char *format, ...)
 {
     int t;
     va_list args;
@@ -63,9 +63,9 @@ int utils_snprintf (char *dest, size_t size, const char *format, ...)
     t = vsnprintf (dest, size, format, args);
     va_end (args);
     
-    if (t >= 0 && (size_t)t < size) { return 0; }
+    if (t >= 0 && (size_t)t < size) { return PD_ERROR_NONE; }
     else {
-        return 1;
+        return PD_ERROR;
     }
 }
 

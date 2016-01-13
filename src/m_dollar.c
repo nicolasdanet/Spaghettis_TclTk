@@ -23,7 +23,7 @@ int dollar_isDollarNumber (char *s)
     return 1;
 }
 
-int dollar_pointsToDollarNumber (char *s)
+int dollar_isPointingToDollarNumber (char *s)
 {
     PD_ASSERT (s[0] != 0);
     
@@ -42,7 +42,7 @@ static int dollar_substitute (char *s, char *buf, int size, int argc, t_atom *ar
     char *ptr = s;
     char c = 0;
     int length = 0;
-    int err = 0;
+    t_error err = PD_ERROR_NONE;
     
     *buf = 0;
     
@@ -81,7 +81,7 @@ t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv)
     char *str = s->s_name;
     char *substr = NULL;
     int next = 0;
-    int err = 0;
+    t_error err = PD_ERROR_NONE;
     
     substr = strchr (str, '$');
     
@@ -110,7 +110,7 @@ t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv)
     
     if (err) { return NULL; } 
     else {
-        return (gensym (result));
+        return gensym (result);
     }
 }
 

@@ -140,10 +140,10 @@ int  pd_setLoadingAbstraction       (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int  utils_strncpy                  (char *dest, size_t size, const char *src);
-int  utils_strnadd                  (char *dest, size_t size, const char *src);
-int  utils_strncat                  (char *dest, size_t size, const char *src, int length);
-int  utils_snprintf                 (char *dest, size_t size, const char *format, ...);
+t_error utils_strncpy               (char *dest, size_t size, const char *src);
+t_error utils_strnadd               (char *dest, size_t size, const char *src);
+t_error utils_strncat               (char *dest, size_t size, const char *src, int length);
+t_error utils_snprintf              (char *dest, size_t size, const char *format, ...);
 
 int  utils_isTokenEnd               (char c);
 int  utils_isTokenEscape            (char c);
@@ -156,7 +156,7 @@ int  utils_isTokenWhitespace        (char c);
 t_symbol    *dollar_substituteDollarSymbol              (t_symbol *s, int argc, t_atom *argv);
 
 int         dollar_isDollarNumber                       (char *s);
-int         dollar_pointsToDollarNumber                 (char *s);
+int         dollar_isPointingToDollarNumber             (char *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -242,8 +242,8 @@ void global_shouldQuit          (void *dummy);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void atom_withString            (t_atom *a, char *s, int size);
-int  atom_toString              (t_atom *a, char *s, int size);
+t_error atom_withString         (t_atom *a, char *s, int size);
+t_error atom_toString           (t_atom *a, char *s, int size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

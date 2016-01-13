@@ -56,17 +56,17 @@ t_symbol *atom_getSymbolAtIndex (int n, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int atom_symbolToQuotedString (t_atom *a, char *s, int size)
+static t_error atom_symbolToQuotedString (t_atom *a, char *s, int size)
 {
     char *p = NULL;
     int quote = 0;
-    int err = 0;
+    t_error err = PD_ERROR_NONE;
     
-    if (size < 2) { err = 1; }
+    if (size < 2) { err = PD_ERROR; }
     else {
     //
     for (p = GET_SYMBOL (a)->s_name; *p; p++) {
-        if (utils_isTokenEnd (*p) || utils_isTokenEscape (*p) || dollar_pointsToDollarNumber (p)) {
+        if (utils_isTokenEnd (*p) || utils_isTokenEscape (*p) || dollar_isPointingToDollarNumber (p)) {
             quote = 1; break; 
         }
     }
@@ -80,14 +80,14 @@ static int atom_symbolToQuotedString (t_atom *a, char *s, int size)
         
         while (base < last && *p) {
         //
-        if (utils_isTokenEnd (*p) || utils_isTokenEscape (*p) || dollar_pointsToDollarNumber (p)) {
+        if (utils_isTokenEnd (*p) || utils_isTokenEscape (*p) || dollar_isPointingToDollarNumber (p)) {
             *base++ = '\\';
         }
         *base++ = *p++;
         //
         }
         
-        if (*p) { err = 1; }
+        if (*p) { err = PD_ERROR; }
         
         *base = 0;
 
@@ -104,7 +104,7 @@ static int atom_symbolToQuotedString (t_atom *a, char *s, int size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void atom_withString (t_atom *a, char *s, int size)
+t_error atom_withString (t_atom *a, char *s, int size)
 {
     t_buffer *t = buffer_new();
     
@@ -116,11 +116,16 @@ void atom_withString (t_atom *a, char *s, int size)
     }
     
     buffer_free (t);
+    
+    if (IS_NULL (a)) { return PD_ERROR; }
+    else {
+        return PD_ERROR_NONE;
+    }
 }
 
-int atom_toString (t_atom *a, char *s, int size)
+t_error atom_toString (t_atom *a, char *s, int size)
 {
-    int err = 1;
+    t_error err = PD_ERROR;
     
     PD_ASSERT (size > 0);
     
