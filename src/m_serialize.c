@@ -166,7 +166,7 @@ void buffer_parseString (t_buffer *x, char *s, int size, int allocated)
         lastSlash = slash; slash = utils_isTokenEscape (c);
 
         if (floatState >= 0) { floatState = buffer_nextState (floatState, c); }
-        if (!lastSlash && text != tBound && dollar_isPointingToDollarNumber (text - 1)) { dollar = 1; }
+        if (!lastSlash && text != tBound && dollar_isPointingToDollarAndNumber (text - 1)) { dollar = 1; }
         
         if (!slash)         { p++; }
         else if (lastSlash) { p++; slash = 0; }

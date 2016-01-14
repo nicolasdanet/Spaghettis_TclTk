@@ -16,26 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int dollar_isDollarNumber (char *s)
-{
-    if (*s != '$') { return 0; } while (*(++s)) { if (*s < '0' || *s > '9') { return 0; } }
-    
-    return 1;
-}
-
-int dollar_isPointingToDollarNumber (char *s)
-{
-    PD_ASSERT (s[0] != 0);
-    
-    if (s[0] != '$' || s[1] < '0' || s[1] > '9') { return 0; }
-    
-    return 1;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static int dollar_substitute (char *s, char *buf, int size, int argc, t_atom *argv)
 {
     int n = (int)atol (s);      /* Note that atol return zero for an invalid number. */
@@ -74,6 +54,30 @@ static int dollar_substitute (char *s, char *buf, int size, int argc, t_atom *ar
     return (err ? -1 : length);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int dollar_isDollarNumber (char *s)
+{
+    if (*s != '$') { return 0; } while (*(++s)) { if (*s < '0' || *s > '9') { return 0; } }
+    
+    return 1;
+}
+
+int dollar_isPointingToDollarAndNumber (char *s)
+{
+    PD_ASSERT (s[0] != 0);
+    
+    if (s[0] != '$' || s[1] < '0' || s[1] > '9') { return 0; }
+    
+    return 1;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv)
 {
     char t[PD_STRING] = { 0 };
@@ -111,6 +115,20 @@ t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv)
     if (err) { post_error (PD_TRANSLATE ("$: invalid substitution")); return NULL; }    // --
     else {
         return gensym (result);
+    }
+}
+
+void dollar_substituteDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *argv)
+{
+    int n = GET_DOLLAR (dollar);
+        
+    PD_ASSERT (IS_DOLLAR (dollar));
+    
+    if (n > 0 && n <= argc) { *a = *(argv + n - 1); }
+    else if (n == 0)        { SET_FLOAT (a, canvas_getdollarzero()); }
+    else {
+        post_error (PD_TRANSLATE ("$: invalid substitution"));
+        SET_FLOAT (a, 0.0);
     }
 }
 

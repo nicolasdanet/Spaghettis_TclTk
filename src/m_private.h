@@ -165,8 +165,9 @@ int  utils_isTokenWhitespace        (char c);
 
 t_symbol    *dollar_substituteDollarSymbol              (t_symbol *s, int argc, t_atom *argv);
 
+void        dollar_substituteDollarNumber               (t_atom *dollar, t_atom *a, int argc, t_atom *argv);
 int         dollar_isDollarNumber                       (char *s);
-int         dollar_isPointingToDollarNumber             (char *s);
+int         dollar_isPointingToDollarAndNumber          (char *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

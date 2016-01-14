@@ -66,7 +66,7 @@ static t_error atom_symbolToQuotedString (t_atom *a, char *s, int size)
     else {
     //
     for (p = GET_SYMBOL (a)->s_name; *p; p++) {
-        if (utils_isTokenEnd (*p) || utils_isTokenEscape (*p) || dollar_isPointingToDollarNumber (p)) {
+        if (utils_isTokenEnd (*p) || utils_isTokenEscape (*p) || dollar_isPointingToDollarAndNumber (p)) {
             quote = 1; break; 
         }
     }
@@ -80,7 +80,7 @@ static t_error atom_symbolToQuotedString (t_atom *a, char *s, int size)
         
         while (base < last && *p) {
         //
-        if (utils_isTokenEnd (*p) || utils_isTokenEscape (*p) || dollar_isPointingToDollarNumber (p)) {
+        if (utils_isTokenEnd (*p) || utils_isTokenEscape (*p) || dollar_isPointingToDollarAndNumber (p)) {
             *base++ = '\\';
         }
         *base++ = *p++;

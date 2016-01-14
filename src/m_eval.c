@@ -45,7 +45,7 @@ static t_symbol *buffer_getSymbolSubstituted (t_atom *v, int argc, t_atom *argv)
 static int buffer_getMessage (t_atom *v, t_pd *object, t_pd **next, t_atom *m, int argc, t_atom *argv)
 {
     t_symbol *s = NULL;
-    int n, end = 0;
+    int end = 0;
     
     switch (v->a_type) {
     //
@@ -59,18 +59,9 @@ static int buffer_getMessage (t_atom *v, t_pd *object, t_pd **next, t_atom *m, i
                                 end = 1; 
                             }
                             break;
-    case A_FLOAT        :   *m = *v;
-                            break;
-    case A_SYMBOL       :   *m = *v;
-                            break;
-    case A_DOLLAR       :   n = GET_DOLLAR (v);
-                            if (n > 0 && n <= argc) { *m = *(argv + n - 1); }
-                            else if (n == 0) { SET_FLOAT (m, canvas_getdollarzero()); }
-                            else {
-                                post_error (PD_TRANSLATE ("$: invalid substitution"));
-                                SET_FLOAT (m, 0); 
-                            }
-                            break;
+    case A_FLOAT        :   *m = *v; break;
+    case A_SYMBOL       :   *m = *v; break;
+    case A_DOLLAR       :   dollar_substituteDollarNumber (v, m, argc, argv); break;
     case A_DOLLARSYMBOL :   s = dollar_substituteDollarSymbol (GET_DOLLARSYMBOL (v), argc, argv);
                             if (s) { SET_SYMBOL (m, s); }
                             else {
@@ -132,18 +123,18 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
     }
     
     if (args) {
-        switch (message->a_type) {
-            case A_SYMBOL   :   pd_message (object, GET_SYMBOL (message), args - 1, message + 1); break;
-            case A_FLOAT    :   if (args == 1) { pd_float (object, GET_FLOAT (message)); }
-                                else { 
-                                    pd_list (object, args, message); 
-                                } break;
+        if (IS_SYMBOL (message)) { pd_message (object, GET_SYMBOL (message), args - 1, message + 1); }
+        else if (IS_FLOAT (message)) {
+            if (args == 1) { pd_float (object, GET_FLOAT (message)); }
+            else { 
+                pd_list (object, args, message); 
+            }
         }
     }
     
     if (!size) { break; }
     
-    object = next;
+    object = next;  /* Set to NULL to fetch another object. */
     size--;
     v++;
     //
