@@ -110,6 +110,21 @@ void buffer_append (t_buffer *x, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void buffer_log (t_buffer *x)       /* Handy to debug. */
+{
+    if (x->b_size) {
+    //
+    char *s = NULL;
+    int size = 0;
+    
+    buffer_toString (x, &s, &size);
+    post_log ("%s", s);
+    
+    PD_MEMORY_FREE (s, size);
+    //
+    }
+}
+
 void buffer_post (t_buffer *x)
 {
     post_atoms (x->b_size, x->b_vector);
@@ -467,23 +482,66 @@ static t_symbol *buffer_getSymbolSubstituted (t_atom *v, int argc, t_atom *argv)
     return s;
 }
 
+static int buffer_getMessage (t_atom *v, t_pd *object, t_pd **next, t_atom *m, int argc, t_atom *argv)
+{
+    t_symbol *s = NULL;
+    int n, end = 0;
+    
+    switch (v->a_type) {
+    //
+    case A_SEMICOLON    :   if (object == &pd_objectMaker) { SET_SYMBOL (m, gensym (";")); }
+                            else { 
+                                *next = NULL; end = 1; 
+                            }
+                            break;
+    case A_COMMA        :   if (object == &pd_objectMaker) { SET_SYMBOL (m, gensym (",")); }
+                            else { 
+                                end = 1; 
+                            }
+                            break;
+    case A_FLOAT        :   *m = *v;
+                            break;
+    case A_SYMBOL       :   *m = *v;
+                            break;
+    case A_DOLLAR       :   n = GET_DOLLAR (v);
+                            if (n > 0 && n <= argc) { *m = *(argv + n - 1); }
+                            else if (n == 0) { SET_FLOAT (m, canvas_getdollarzero()); }
+                            else {
+                                post_error (PD_TRANSLATE ("$: invalid substitution"));
+                                SET_FLOAT (m, 0); 
+                            }
+                            break;
+    case A_DOLLARSYMBOL :   s = dollar_substituteDollarSymbol (GET_DOLLARSYMBOL (v), argc, argv);
+                            if (s) { SET_SYMBOL (m, s); }
+                            else {
+                                SET_SYMBOL (m, GET_DOLLARSYMBOL (v));
+                            }
+                            break;
+    default :               end = 1; PD_BUG; 
+    //
+    }
+    
+    return end;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
 {
     int size = x->b_size;
     t_atom *v = x->b_vector;
-    t_atom *atoms = NULL;
-    t_atom *p = NULL;
+    t_atom *message = NULL;
+    t_atom *m = NULL;
+    t_pd *next = NULL;
     int args = 0;
-
-    ATOMS_ALLOCA (atoms, x->b_size);
     
-    p = atoms;
+    ATOMS_ALLOCA (message, x->b_size);
     
     while (1) {
     //
-    t_pd *nextObject = NULL;
-
-    while (!object) {
+    while (!object) {       
     //
     t_symbol *s = NULL;
     
@@ -495,111 +553,43 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
     }
     
     if (s == NULL || !(object = s->s_thing)) {
-        if (s)  { post_error (PD_TRANSLATE ("%s: no such object"), s->s_name); }    // --
-        else    { post_error (PD_TRANSLATE ("$: invalid substitution")); }          // --
-        
+        if (s) { post_error (PD_TRANSLATE ("%s: no such object"), s->s_name); }     // --
     } else {
-        size--; v++;
-        break;
+        size--; v++; break;
     }
     //
+    }
+    
+    m    = message; 
+    args = 0;
+    next = object;
+        
+    while (1) {
+        if (!size || buffer_getMessage (v, object, &next, m, argc, argv)) { break; }
+        else {
+            m++; args++; size--; v++;
+        }
+    }
+    
+    if (args) {
+        switch (message->a_type) {
+            case A_SYMBOL   :   pd_message (object, GET_SYMBOL (message), args - 1, message + 1); break;
+            case A_FLOAT    :   if (args == 1) { pd_float (object, GET_FLOAT (message)); }
+                                else { 
+                                    pd_list (object, args, message); 
+                                } break;
+        }
     }
     
     if (!size) { break; }
     
-    args = 0;
-    nextObject = object;
-    
-    while (1)
-    {
-        t_symbol *s9;
-        if (!size) goto gotmess;
-        switch (v->a_type)
-        {
-        case A_SEMICOLON:
-                /* semis and commas in new message just get bashed to
-                a symbol.  This is needed so you can pass them to "expr." */
-            if (object == &pd_objectMaker)
-            {
-                SET_SYMBOL(p, gensym(";"));
-                break;
-            }
-            else
-            {
-                nextObject = 0;
-                goto gotmess;
-            }
-        case A_COMMA:
-            if (object == &pd_objectMaker)
-            {
-                SET_SYMBOL(p, gensym(","));
-                break;
-            }
-            else goto gotmess;
-        case A_FLOAT:
-        case A_SYMBOL:
-            *p = *v;
-            break;
-        case A_DOLLAR:
-            if (v->a_w.w_index > 0 && v->a_w.w_index <= argc)
-                *p = argv[v->a_w.w_index-1];
-            else if (v->a_w.w_index == 0)
-                SET_FLOAT(p, canvas_getdollarzero());
-            else
-            {
-                if (object == &pd_objectMaker)
-                    SET_FLOAT(p, 0);
-                else
-                {
-                    post_error ("$%d: argument number out of range",
-                        v->a_w.w_index);
-                    SET_FLOAT(p, 0);
-                }
-            }
-            break;
-        case A_DOLLARSYMBOL:
-            s9 = dollar_substituteDollarSymbol(v->a_w.w_symbol, argc, argv /*,
-                target == &pd_objectMaker*/);
-            if (!s9)
-            {
-                post_error ("%s: argument number out of range", v->a_w.w_symbol->s_name);
-                SET_SYMBOL(p, v->a_w.w_symbol);
-            }
-            else SET_SYMBOL(p, s9);
-            break;
-        default:
-            PD_BUG;
-            goto broken;
-        }
-        p++;
-        size--;
-        v++;
-        args++;
-    }
-gotmess:
-    if (args)
-    {
-        switch (atoms->a_type)
-        {
-        case A_SYMBOL:
-            pd_message(object, atoms->a_w.w_symbol, args-1, atoms+1);
-            break;
-        case A_FLOAT:
-            if (args == 1) pd_float(object, atoms->a_w.w_float);
-            else pd_list(object, args, atoms);
-            break;
-        }
-    }
-    p = atoms;
-    if (!size) break;
-    object = nextObject;
-    v++;
+    object = next;
     size--;
+    v++;
     //
     }
     
-broken: 
-    ATOMS_FREEA (atoms, size);
+    ATOMS_FREEA (message, x->b_size);
 }
 
 // -----------------------------------------------------------------------------------------------------------

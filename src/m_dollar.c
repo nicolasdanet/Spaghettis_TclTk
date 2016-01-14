@@ -108,7 +108,7 @@ t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv)
     //
     }
     
-    if (err) { return NULL; } 
+    if (err) { post_error (PD_TRANSLATE ("$: invalid substitution")); return NULL; }    // --
     else {
         return gensym (result);
     }
