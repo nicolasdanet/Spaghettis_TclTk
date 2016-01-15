@@ -24,22 +24,15 @@ extern t_pd pd_canvasMaker;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_symbol *buffer_getSymbolSubstituted (t_atom *v, int argc, t_atom *argv)
-{
-    t_symbol *s = NULL;
-    
-    if (IS_DOLLAR (v)) {
-        int n = GET_DOLLAR (v);
-        if (n > 0 && n <= argc && IS_SYMBOL (argv + n - 1)) { s = GET_SYMBOL (argv + n - 1); }
-        
-    } else if (IS_DOLLARSYMBOL (v)) {
-        s = dollar_substituteDollarSymbol (GET_DOLLARSYMBOL (v), argc, argv);
-        
-    } else { 
-        s = atom_getSymbol (v);
+static t_symbol *buffer_getObject (t_atom *v, int argc, t_atom *argv)
+{   
+    if (IS_DOLLARSYMBOL (v)) { return dollar_substituteDollarSymbol (GET_DOLLARSYMBOL (v), argc, argv); }
+    else if (IS_DOLLAR  (v)) {
+        t_symbol *s = atom_getSymbolAtIndex (GET_DOLLAR (v) - 1, argc, argv); 
+        return (s == &s_ ? NULL : s);
     }
-    
-    return s;
+
+    return atom_getSymbol (v);
 }
 
 static int buffer_getMessage (t_atom *v, t_pd *object, t_pd **next, t_atom *m, int argc, t_atom *argv)
@@ -92,23 +85,25 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
     
     while (1) {
     //
-    while (!object) {       
-    //
-    t_symbol *s = NULL;
-    
-    while (size && (IS_SEMICOLON (v) || IS_COMMA (v))) { size--; v++; }
-    
-    if (size) { s = buffer_getSymbolSubstituted (v, argc, argv); }
-    else {
-        break;
-    }
-    
-    if (s == NULL || !(object = s->s_thing)) {
-        if (s) { post_error (PD_TRANSLATE ("%s: no such object"), s->s_name); }     // --
-    } else {
-        size--; v++; break;
-    }
-    //
+    while (!object) {  
+         
+        t_symbol *s = NULL;
+        
+        while (size && (IS_SEMICOLON (v) || IS_COMMA (v))) { size--; v++; }
+        
+        if (size) { s = buffer_getObject (v, argc, argv); }
+        else {
+            break;
+        }
+        
+        if (s == NULL || !(object = s->s_thing)) {
+            if (s) { post_error (PD_TRANSLATE ("%s: no such object"), s->s_name); }     // --
+            else {
+                PD_BUG;
+            }
+        } else {
+            size--; v++; break;
+        }
     }
     
     m    = message; 
@@ -134,7 +129,7 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
     
     if (!size) { break; }
     
-    object = next;  /* Set to NULL to fetch another object. */
+    object = next;
     size--;
     v++;
     //
@@ -147,7 +142,7 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int binbuf_read(t_buffer *b, char *filename, char *dirname, int crflag)
+static int binbuf_read(t_buffer *b, char *filename, char *dirname, int crflag)
 {
     long length;
     int fd;
@@ -209,24 +204,6 @@ int binbuf_read_via_canvas(t_buffer *b, char *filename, t_canvas *canvas,
     char buf[PD_STRING], *bufptr;
     if ((filedesc = canvas_open(canvas, filename, "",
         buf, &bufptr, PD_STRING, 0)) < 0)
-    {
-        post_error ("%s: can't open", filename);
-        return (1);
-    }
-    else close (filedesc);
-    if (binbuf_read(b, bufptr, buf, crflag))
-        return (1);
-    else return (0);
-}
-
-    /* old version */
-int binbuf_read_via_path(t_buffer *b, char *filename, char *dirname,
-    int crflag)
-{
-    int filedesc;
-    char buf[PD_STRING], *bufptr;
-    if ((filedesc = open_via_path(
-        dirname, filename, "", buf, &bufptr, PD_STRING, 0)) < 0)
     {
         post_error ("%s: can't open", filename);
         return (1);
@@ -327,16 +304,6 @@ fail:
         fclose(f);
     return (1);
 }
-
-/* The following routine attempts to convert from max to pd or back.  The
-max to pd direction is working OK but you will need to make lots of 
-abstractions for objects like "gate" which don't exist in Pd.  conversion
-from Pd to Max hasn't been tested for patches with subpatches yet!  */
-
-#define MAXSTACK 1000
-
-#define ISSYMBOL(a, b) ((a)->a_type == A_SYMBOL && \
-    !strcmp((a)->a_w.w_symbol->s_name, (b)))
 
 /* LATER make this evaluate the file on-the-fly. */
 /* LATER figure out how to log errors */

@@ -26,7 +26,7 @@ t_float atom_getFloat (t_atom *a)
 
 t_float atom_getFloatAtIndex (int n, int argc, t_atom *argv)
 {
-    if (n >= 0 && n < argc) { argv += n; return atom_getFloat (argv); }
+    if (n >= 0 && n < argc) { return atom_getFloat (argv + n); }
     else {
         return 0.0;
     }
@@ -46,7 +46,7 @@ t_symbol *atom_getSymbol (t_atom *a)
 
 t_symbol *atom_getSymbolAtIndex (int n, int argc, t_atom *argv)
 {
-    if (n >= 0 && n < argc) { argv += n; return atom_getSymbol (argv); }
+    if (n >= 0 && n < argc) { return atom_getSymbol (argv + n); }
     else {
         return (&s_);
     }
