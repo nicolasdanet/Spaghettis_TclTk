@@ -150,14 +150,20 @@ int  pd_setLoadingAbstraction       (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error utils_strncpy               (char *dest, size_t size, const char *src);
-t_error utils_strnadd               (char *dest, size_t size, const char *src);
-t_error utils_strncat               (char *dest, size_t size, const char *src, int length);
-t_error utils_snprintf              (char *dest, size_t size, const char *format, ...);
+t_error utils_strncpy                   (char *dest, size_t size, const char *src);
+t_error utils_strnadd                   (char *dest, size_t size, const char *src);
+t_error utils_strncat                   (char *dest, size_t size, const char *src, int length);
+t_error utils_snprintf                  (char *dest, size_t size, const char *format, ...);
 
-int  utils_isTokenEnd               (char c);
-int  utils_isTokenEscape            (char c);
-int  utils_isTokenWhitespace        (char c);
+int     utils_isTokenEnd                (char c);
+int     utils_isTokenEscape             (char c);
+int     utils_isTokenWhitespace         (char c);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error path_withNameAndDirectory       (char *dest, size_t size, const char *name, const char *directory);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

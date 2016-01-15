@@ -142,48 +142,47 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int buffer_read (t_buffer *b, char *filename, char *dirname)
+static t_error buffer_fromFile (t_buffer *x, char *name, char *directory)
 {
-    long length;
-    int fd;
-    int readret;
-    char *buf;
-    char namebuf[PD_STRING];
+    t_error err = PD_ERROR;
     
-    namebuf[0] = 0;
-    if (*dirname)
-        strcat(namebuf, dirname), strcat(namebuf, "/");
-    strcat(namebuf, filename);
+    char filename[PD_STRING] = { 0 };
+
+    if (!(err = path_withNameAndDirectory (filename, PD_STRING, name, directory))) {
+    //
+    int f;
     
-    if ((fd = sys_open(namebuf, 0)) < 0)
-    {
-        fprintf(stderr, "open: ");
-        perror(namebuf);
-        return (1);
+    err = ((f = sys_open (filename, 0)) < 0);
+    
+    if (err) { PD_BUG; }
+    else {
+    //
+    off_t length;
+    
+    err |= ((length = lseek (f, 0, SEEK_END)) < 0);
+    err |= (lseek (f, 0, SEEK_SET) < 0); 
+    
+    if (err) { PD_BUG; }
+    else {
+        char *t = PD_MEMORY_GET ((size_t)length + 1);
+        err = (read (f, t, length) != length);
+        PD_ASSERT (t[length] == 0);
+        if (err) { PD_BUG; } else { buffer_withString (x, t, length); }
+        PD_MEMORY_FREE (t, length + 1);
     }
-    if ((length = lseek(fd, 0, SEEK_END)) < 0 || lseek(fd, 0, SEEK_SET) < 0 
-        || !(buf = PD_MEMORY_GET(length)))
-    {
-        fprintf(stderr, "lseek: ");
-        perror(namebuf);
-        close(fd);
-        return(1);
+    
+    close (f);
+    //
     }
-    if ((readret = read(fd, buf, length)) < length)
-    {
-        fprintf(stderr, "read (%d %ld) -> %d\n", fd, length, readret);
-        perror(namebuf);
-        close(fd);
-        PD_MEMORY_FREE(buf, length);
-        return(1);
+    //
     }
-
-    buffer_withString(b, buf, length);
-
-    PD_MEMORY_FREE(buf, length);
-    close(fd);
-    return (0);
+    
+    return err;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* read a binbuf from a file, via the search patch of a canvas */
 int binbuf_read_via_canvas(t_buffer *b, char *filename, t_canvas *canvas)
@@ -197,10 +196,14 @@ int binbuf_read_via_canvas(t_buffer *b, char *filename, t_canvas *canvas)
         return (1);
     }
     else close (filedesc);
-    if (buffer_read(b, bufptr, buf))
+    if (buffer_fromFile(b, bufptr, buf))
         return (1);
     else return (0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #define WBUFSIZE 4096
 
@@ -306,7 +309,7 @@ void binbuf_evalfile(t_symbol *name, t_symbol *dir)
     int dspstate = canvas_suspend_dsp();
         /* set filename so that new canvases can pick them up */
     glob_setfilename(0, name, dir);
-    if (buffer_read(b, name->s_name, dir->s_name))
+    if (buffer_fromFile(b, name->s_name, dir->s_name))
         post_error ("%s: read failed; %s", name->s_name, strerror(errno));
     else
     {

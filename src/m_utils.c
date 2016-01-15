@@ -90,3 +90,21 @@ int utils_isTokenWhitespace (char c)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error path_withNameAndDirectory (char *dest, size_t size, const char *name, const char *directory)
+{
+    t_error err = PD_ERROR;
+    
+    if (*name && *directory) {
+        err = PD_ERROR_NONE;
+        err |= utils_strncpy (dest, size, directory);
+        err |= utils_strnadd (dest, size, "/");
+        err |= utils_strnadd (dest, size, name);
+    }
+    
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
