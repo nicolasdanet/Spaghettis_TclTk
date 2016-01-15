@@ -110,9 +110,9 @@ t_error atom_withString (t_atom *a, char *s, int size)
     
     buffer_parseString (t, s, size, 1);
     
-    if (buffer_getSize (t) != 1) { SET_NULL (a); }
+    if (buffer_size (t) != 1) { SET_NULL (a); }
     else {
-        *a = *(buffer_getAtoms (t));
+        *a = *(buffer_atoms (t));
     }
     
     buffer_free (t);

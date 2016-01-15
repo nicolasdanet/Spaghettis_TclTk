@@ -95,7 +95,7 @@ static void textbuf_addline(t_textbuf *b, t_symbol *s, int argc, t_atom *argv)
 {
     t_buffer *z = buffer_new();
     buffer_deserialize(z, argc, argv);
-    buffer_append(b->b_binbuf, buffer_getSize(z), buffer_getAtoms(z));
+    buffer_append(b->b_binbuf, buffer_size(z), buffer_atoms(z));
     buffer_free(z);
     textbuf_senditup(b);
 }
@@ -131,7 +131,7 @@ static void textbuf_read(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
         post("warning: text define ignoring extra argument: ");
         post_atoms(argc, argv);
     }
-    if (binbuf_read_via_canvas(x->b_binbuf, filename->s_name, x->b_canvas))
+    if (buffer_read(x->b_binbuf, filename->s_name, x->b_canvas))
             post_error ("%s: read failed", filename->s_name);
     textbuf_senditup(x);
 }
@@ -295,7 +295,7 @@ static void text_define_frompointer(t_text_define *x, t_gpointer *gp,
     {
         t_gstub *gs = gp->gp_stub;
         buffer_reset(x->x_textbuf.b_binbuf);
-        buffer_append(x->x_textbuf.b_binbuf, buffer_getSize(b), buffer_getAtoms(b));
+        buffer_append(x->x_textbuf.b_binbuf, buffer_size(b), buffer_atoms(b));
     } 
 }
 
@@ -307,8 +307,8 @@ static void text_define_topointer(t_text_define *x, t_gpointer *gp, t_symbol *s)
     {
         t_gstub *gs = gp->gp_stub;
         buffer_reset(b);
-        buffer_append(b, buffer_getSize(x->x_textbuf.b_binbuf),
-            buffer_getAtoms(x->x_textbuf.b_binbuf));
+        buffer_append(b, buffer_size(x->x_textbuf.b_binbuf),
+            buffer_atoms(x->x_textbuf.b_binbuf));
         if (gs->gs_type == POINTER_GLIST)
             scalar_redraw(gp->gp_un.gp_scalar, gs->gs_un.gs_glist);  
         else
@@ -572,8 +572,8 @@ static void text_get_float(t_text_get *x, t_float f)
     t_atom *vec;
     if (!b)
        return;
-    vec = buffer_getAtoms(b);
-    n = buffer_getSize(b);
+    vec = buffer_atoms(b);
+    n = buffer_size(b);
     startfield = x->x_f1;
     nfield = x->x_f2;
     if (text_nthline(n, vec, f, &start, &end))
@@ -668,8 +668,8 @@ static void text_set_list(t_text_set *x,
     t_atom *vec;
     if (!b)
        return;
-    vec = buffer_getAtoms(b);
-    n = buffer_getSize(b);
+    vec = buffer_atoms(b);
+    n = buffer_size(b);
     if (lineno < 0)
     {
         post_error ("text set: line number (%d) < 0", lineno);
@@ -685,7 +685,7 @@ static void text_set_list(t_text_set *x,
                 n = n + (argc - (end-start));
                 if (n > oldn)
                     buffer_resize(b, n);
-                vec = buffer_getAtoms(b);
+                vec = buffer_atoms(b);
                 memmove(&vec[start + argc], &vec[end],
                     sizeof(*vec) * (oldn - end));
                 if (n < oldn)
@@ -710,7 +710,7 @@ static void text_set_list(t_text_set *x,
         int addsemi = (n && vec[n-1].a_type != A_SEMICOLON &&
             vec[n-1].a_type != A_COMMA), newsize = n + addsemi + argc + 1;
         buffer_resize(b, newsize);
-        vec = buffer_getAtoms(b);
+        vec = buffer_atoms(b);
         if (addsemi)
             SET_SEMICOLON(&vec[n]);
         SET_SEMICOLON(&vec[newsize-1]);
@@ -762,8 +762,8 @@ static void text_size_bang(t_text_size *x)
     t_atom *vec;
     if (!b)
        return;
-    vec = buffer_getAtoms(b);
-    n = buffer_getSize(b);
+    vec = buffer_atoms(b);
+    n = buffer_size(b);
     for (i = 0; i < n; i++)
     {
         if (vec[i].a_type == A_SEMICOLON || vec[i].a_type == A_COMMA)
@@ -781,8 +781,8 @@ static void text_size_float(t_text_size *x, t_float f)
     t_atom *vec;
     if (!b)
        return;
-    vec = buffer_getAtoms(b);
-    n = buffer_getSize(b);
+    vec = buffer_atoms(b);
+    n = buffer_size(b);
     if (text_nthline(n, vec, f, &start, &end))
         outlet_float(x->x_out1, end-start);
     else outlet_float(x->x_out1, -1);
@@ -818,7 +818,7 @@ static void text_tolist_bang(t_text_tolist *x)
        return;
     b2 = buffer_new();
     buffer_serialize(b2, b);
-    outlet_list(x->tc_obj.te_outlet, 0, buffer_getSize(b2), buffer_getAtoms(b2));
+    outlet_list(x->tc_obj.te_outlet, 0, buffer_size(b2), buffer_atoms(b2));
     buffer_free(b2);
 }
 
@@ -943,8 +943,8 @@ static void text_search_list(t_text_search *x,
         post_error ("need %d keys, only got %d in list",
             nkeys, argc);
     }
-    vec = buffer_getAtoms(b);
-    n = buffer_getSize(b);
+    vec = buffer_atoms(b);
+    n = buffer_size(b);
     if (nkeys < 1) { PD_BUG; }
     for (i = lineno = thisstart = 0; i < n; i++)
     {
@@ -1197,8 +1197,8 @@ static void text_sequence_doit(t_text_sequence *x, int argc, t_atom *argv)
     t_atom *vec, *outvec, *ap;
     if (!b)
         goto nosequence;
-    vec = buffer_getAtoms(b);
-    n = buffer_getSize(b);
+    vec = buffer_atoms(b);
+    n = buffer_size(b);
     if (x->x_onset >= n)
     {
     nosequence:
@@ -1399,8 +1399,8 @@ static void text_sequence_line(t_text_sequence *x, t_float f)
     if (!b)
        return;
     x->x_lastto = 0;
-    vec = buffer_getAtoms(b);
-    n = buffer_getSize(b);
+    vec = buffer_atoms(b);
+    n = buffer_size(b);
     if (!text_nthline(n, vec, f, &start, &end))
     {
         post_error ("text sequence: line number %d out of range", (int)f);
@@ -1530,9 +1530,9 @@ static void qlist_donext(t_qlist *x, int drop, int automatic)
     x->x_innext = 1;
     while (1)
     {
-        int argc = buffer_getSize(x->x_binbuf),
+        int argc = buffer_size(x->x_binbuf),
             count, onset = x->x_onset, onset2, wasrewound;
-        t_atom *argv = buffer_getAtoms(x->x_binbuf);
+        t_atom *argv = buffer_atoms(x->x_binbuf);
         t_atom *ap = argv + onset, *ap2;
         if (onset >= argc) goto end;
         while (ap->a_type == A_SEMICOLON || ap->a_type == A_COMMA)
@@ -1666,7 +1666,7 @@ static void qlist_read(t_qlist *x, t_symbol *filename, t_symbol *format)
     else if (*format->s_name)
         post_error ("qlist_read: unknown flag: %s", format->s_name);
 
-    if (binbuf_read_via_canvas(x->x_binbuf, filename->s_name, x->x_canvas))
+    if (buffer_read(x->x_binbuf, filename->s_name, x->x_canvas))
             post_error ("%s: read failed", filename->s_name);
     x->x_onset = 0x7fffffff;
     x->x_rewound = 1;
@@ -1735,9 +1735,9 @@ static void *textfile_new( void)
 
 static void textfile_bang(t_qlist *x)
 {
-    int argc = buffer_getSize(x->x_binbuf),
+    int argc = buffer_size(x->x_binbuf),
         count, onset = x->x_onset, onset2;
-    t_atom *argv = buffer_getAtoms(x->x_binbuf);
+    t_atom *argv = buffer_atoms(x->x_binbuf);
     t_atom *ap = argv + onset, *ap2;
     while (onset < argc &&
         (ap->a_type == A_SEMICOLON || ap->a_type == A_COMMA))

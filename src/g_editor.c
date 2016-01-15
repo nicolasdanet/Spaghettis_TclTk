@@ -1205,8 +1205,8 @@ static void canvas_done_popup(t_canvas *x, t_float which, t_float xpos, t_float 
                     canvas_isabstraction((t_canvas *)y))
                 {
                     t_object *ob = (t_object *)y;
-                    int ac = buffer_getSize(ob->te_buffer);
-                    t_atom *av = buffer_getAtoms(ob->te_buffer);
+                    int ac = buffer_size(ob->te_buffer);
+                    t_atom *av = buffer_atoms(ob->te_buffer);
                     if (ac < 1)
                         return;
                     atom_toString(av, namebuf, PD_STRING);
@@ -2084,15 +2084,15 @@ static int atoms_match(int inargc, t_atom *inargv, int searchargc,
 static int canvas_dofind(t_canvas *x, int *myindexp)
 {
     t_gobj *y;
-    int findargc = buffer_getSize(canvas_findbuf), didit = 0;
-    t_atom *findargv = buffer_getAtoms(canvas_findbuf);
+    int findargc = buffer_size(canvas_findbuf), didit = 0;
+    t_atom *findargv = buffer_atoms(canvas_findbuf);
     for (y = x->gl_list; y; y = y->g_next)
     {
         t_object *ob = 0;
         if (ob = pd_ifBox(&y->g_pd))
         {
-            if (atoms_match(buffer_getSize(ob->te_buffer), 
-                buffer_getAtoms(ob->te_buffer), findargc, findargv,
+            if (atoms_match(buffer_size(ob->te_buffer), 
+                buffer_atoms(ob->te_buffer), findargc, findargv,
                     canvas_find_wholeword))
             {
                 if (*myindexp == canvas_find_index)

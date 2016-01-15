@@ -71,8 +71,8 @@ static void *table_new(t_symbol *s, t_float f)
     /* return true if the "canvas" object is a "table". */
 int canvas_istable(t_canvas *x)
 {
-    t_atom *argv = (x->gl_obj.te_buffer? buffer_getAtoms(x->gl_obj.te_buffer):0);
-    int argc = (x->gl_obj.te_buffer? buffer_getSize(x->gl_obj.te_buffer) : 0);
+    t_atom *argv = (x->gl_obj.te_buffer? buffer_atoms(x->gl_obj.te_buffer):0);
+    int argc = (x->gl_obj.te_buffer? buffer_size(x->gl_obj.te_buffer) : 0);
     int istable = (argc && argv[0].a_type == A_SYMBOL &&
         argv[0].a_w.w_symbol == gensym("table"));
     return (istable);

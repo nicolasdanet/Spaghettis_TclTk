@@ -142,7 +142,7 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error buffer_fromFile (t_buffer *x, char *name, char *directory)
+static t_error buffer_withFile (t_buffer *x, char *name, char *directory)
 {
     t_error err = PD_ERROR;
     
@@ -184,19 +184,18 @@ static t_error buffer_fromFile (t_buffer *x, char *name, char *directory)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* read a binbuf from a file, via the search patch of a canvas */
-int binbuf_read_via_canvas(t_buffer *b, char *filename, t_canvas *canvas)
+t_error buffer_read (t_buffer *x, char *name, t_canvas *canvas)
 {
     int filedesc;
     char buf[PD_STRING], *bufptr;
-    if ((filedesc = canvas_open(canvas, filename, "",
+    if ((filedesc = canvas_open(canvas, name, "",
         buf, &bufptr, PD_STRING, 0)) < 0)
     {
-        post_error ("%s: can't open", filename);
+        post_error ("%s: can't open", name);
         return (1);
     }
     else close (filedesc);
-    if (buffer_fromFile(b, bufptr, buf))
+    if (buffer_withFile(x, bufptr, buf))
         return (1);
     else return (0);
 }
@@ -309,7 +308,7 @@ void binbuf_evalfile(t_symbol *name, t_symbol *dir)
     int dspstate = canvas_suspend_dsp();
         /* set filename so that new canvases can pick them up */
     glob_setfilename(0, name, dir);
-    if (buffer_fromFile(b, name->s_name, dir->s_name))
+    if (buffer_withFile(b, name->s_name, dir->s_name))
         post_error ("%s: read failed; %s", name->s_name, strerror(errno));
     else
     {
@@ -358,8 +357,8 @@ void global_open(void *dummy, t_symbol *name, t_symbol *dir)
     /* save a text object to a binbuf for a file or copy buf */
 void binbuf_savetext(t_buffer *bfrom, t_buffer *bto)
 {
-    int k, n = buffer_getSize(bfrom);
-    t_atom *ap = buffer_getAtoms(bfrom), at;
+    int k, n = buffer_size(bfrom);
+    t_atom *ap = buffer_atoms(bfrom), at;
     for (k = 0; k < n; k++)
     {
         if (ap[k].a_type == A_FLOAT ||

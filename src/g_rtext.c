@@ -359,8 +359,8 @@ void rtext_retext(t_rtext *x)
     if (text->te_width > 0 && text->te_type == TYPE_ATOM &&
         x->x_bufsize > text->te_width)
     {
-        t_atom *atomp = buffer_getAtoms(text->te_buffer);
-        int natom = buffer_getSize(text->te_buffer);
+        t_atom *atomp = buffer_atoms(text->te_buffer);
+        int natom = buffer_size(text->te_buffer);
         int bufsize = x->x_bufsize;
         if (natom == 1 && atomp->a_type == A_FLOAT)
         {

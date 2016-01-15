@@ -465,15 +465,13 @@ PD_DLL t_float  atom_getFloatAtIndex        (int n, int argc, t_atom *argv);
 #pragma mark -
 
 PD_DLL t_buffer *buffer_new                 (void);
-PD_DLL t_atom   *buffer_getAtoms            (t_buffer *x);
+PD_DLL t_atom   *buffer_atoms               (t_buffer *x);
 
 PD_DLL void     buffer_free                 (t_buffer *x);
+PD_DLL int      buffer_size                 (t_buffer *x);
 PD_DLL void     buffer_reset                (t_buffer *x);
 PD_DLL void     buffer_append               (t_buffer *x, int argc, t_atom *argv);
 
-PD_DLL int      buffer_getSize              (t_buffer *x);
-
-PD_DLL int      binbuf_read_via_canvas      (t_buffer *b, char *filename, t_canvas *canvas);
 PD_DLL int      binbuf_write                (t_buffer *x, char *filename, char *dir);
 PD_DLL void     binbuf_evalfile             (t_symbol *name, t_symbol *dir);
 

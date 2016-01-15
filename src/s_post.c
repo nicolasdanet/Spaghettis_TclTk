@@ -75,7 +75,7 @@ void post_atoms (int argc, t_atom *argv)
     
     buffer_append (t, argc, argv);
     
-    if (buffer_getSize (t)) {
+    if (buffer_size (t)) {
     //
     char *s = NULL;
     int size = 0;

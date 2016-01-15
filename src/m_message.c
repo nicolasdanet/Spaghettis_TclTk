@@ -133,8 +133,9 @@ t_symbol *gensym (const char *s)
 static void new_anything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     int f;
-    char buf[PD_STRING] = { 0 };
-    char *name = NULL;
+    char directory[PD_STRING] = { 0 };
+    char *filename = NULL;
+    t_error err = PD_ERROR_NONE;
     
     if (message_recursiveDepth > MESSAGE_MAXIMUM_RECURSION) { PD_BUG; return; }
 
@@ -146,27 +147,28 @@ static void new_anything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         message_recursiveDepth--;
         return;
     }
-
-    if ((f = canvas_open (canvas_getcurrent(), s->s_name, PD_FILE, buf, &name, PD_STRING, 0)) >= 0) {
+    
+    err = (f = canvas_open (canvas_getcurrent(), s->s_name, PD_FILE, directory, &filename, PD_STRING, 0)) < 0;
+    
+    if (err) { pd_newest = NULL; }
+    else {
+    //
+    close (f);
+    
+    if (pd_setLoadingAbstraction (s)) { 
+        post_error (PD_TRANSLATE ("%s: can't load abstraction within itself"), s->s_name);  // --
         
-        close (f);
-        
-        if (pd_setLoadingAbstraction (s)) { 
-            post_error (PD_TRANSLATE ("%s: can't load abstraction within itself"), s->s_name);  // --
-            
-        } else {
-            t_pd *t = s__X.s_thing;
-            canvas_setargs (argc, argv);
-            binbuf_evalfile (gensym (name), gensym (buf));
-            if (s__X.s_thing && t != s__X.s_thing) { canvas_popabstraction ((t_canvas *)(s__X.s_thing)); }
-            else { 
-                s__X.s_thing = t; 
-            }
-            canvas_setargs (0, NULL);
+    } else {
+        t_pd *t = s__X.s_thing;
+        canvas_setargs (argc, argv);
+        binbuf_evalfile (gensym (filename), gensym (directory));
+        if (s__X.s_thing && t != s__X.s_thing) { canvas_popabstraction ((t_canvas *)(s__X.s_thing)); }
+        else { 
+            s__X.s_thing = t; 
         }
-
-    } else { 
-        pd_newest = NULL;
+        canvas_setargs (0, NULL);
+    }
+    //
     }
 }
 

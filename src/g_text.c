@@ -99,7 +99,7 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
     canvas_setcurrent((t_canvas *)gl);
     canvas_getargs(&argc, &argv);
     buffer_eval(b, &pd_objectMaker, argc, argv);
-    if (buffer_getSize(b))
+    if (buffer_size(b))
     {
         if (!pd_newest)
             x = 0;
@@ -114,7 +114,7 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
     {
             /* LATER make the color reflect this */
         x = (t_text *)pd_new(text_class);
-        if (buffer_getSize(b))
+        if (buffer_size(b))
         {
             buffer_post(b);
             post_error ("... couldn't create");
@@ -1360,10 +1360,10 @@ void text_setto(t_text *x, t_glist *glist, char *buf, int bufsize)
         int natom1, natom2, widthwas = x->te_width;
         t_atom *vec1, *vec2;
         buffer_withString(b, buf, bufsize);
-        natom1 = buffer_getSize(x->te_buffer);
-        vec1 = buffer_getAtoms(x->te_buffer);
-        natom2 = buffer_getSize(b);
-        vec2 = buffer_getAtoms(b);
+        natom1 = buffer_size(x->te_buffer);
+        vec1 = buffer_atoms(x->te_buffer);
+        natom2 = buffer_size(b);
+        vec2 = buffer_atoms(b);
             /* special case: if  pd args change just pass the message on. */
         if (natom1 >= 1 && natom2 >= 1 && vec1[0].a_type == A_SYMBOL
             && !strcmp(vec1[0].a_w.w_symbol->s_name, "pd") &&

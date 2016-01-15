@@ -39,12 +39,12 @@ void buffer_free (t_buffer *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int buffer_getSize (t_buffer *x)
+int buffer_size (t_buffer *x)
 {
     return x->b_size;
 }
 
-t_atom *buffer_getAtoms (t_buffer *x)
+t_atom *buffer_atoms (t_buffer *x)
 {
     return x->b_vector;
 }
