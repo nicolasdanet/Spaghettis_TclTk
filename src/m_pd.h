@@ -473,8 +473,8 @@ PD_DLL void     buffer_append               (t_buffer *x, int argc, t_atom *argv
 
 PD_DLL int      buffer_getSize              (t_buffer *x);
 
-PD_DLL int      binbuf_read_via_canvas      (t_buffer *b, char *filename, t_canvas *canvas, int crflag);
-PD_DLL int      binbuf_write                (t_buffer *x, char *filename, char *dir, int crflag);
+PD_DLL int      binbuf_read_via_canvas      (t_buffer *b, char *filename, t_canvas *canvas);
+PD_DLL int      binbuf_write                (t_buffer *x, char *filename, char *dir);
 PD_DLL void     binbuf_evalfile             (t_symbol *name, t_symbol *dir);
 
 // -----------------------------------------------------------------------------------------------------------

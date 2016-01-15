@@ -261,12 +261,12 @@ static void glist_doread(t_glist *x, t_symbol *filename, t_symbol *format,
     int cr = 0, natoms, nline, message, nextmsg = 0, i, j;
     t_atom *vec;
 
-    if (!strcmp(format->s_name, "cr"))
+    /*if (!strcmp(format->s_name, "cr"))
         cr = 1;
     else if (*format->s_name)
-        post_error ("qlist_read: unknown flag: %s", format->s_name);
+        post_error ("qlist_read: unknown flag: %s", format->s_name); */
     
-    if (binbuf_read_via_canvas(b, filename->s_name, canvas, cr))
+    if (binbuf_read_via_canvas(b, filename->s_name, canvas))
     {
         post_error ("read failed");
         buffer_free(b);
@@ -574,7 +574,7 @@ static void glist_write(t_glist *x, t_symbol *filename, t_symbol *format)
     b = glist_writetobinbuf(x, 1);
     if (b)
     {
-        if (binbuf_write(b, buf, "", cr))
+        if (binbuf_write(b, buf, ""))
             post_error ("%s: write failed", filename->s_name);
         buffer_free(b);
     }
@@ -721,7 +721,7 @@ static void canvas_savetofile(t_canvas *x, t_symbol *filename, t_symbol *dir,
     t_buffer *b = buffer_new();
     canvas_savetemplatesto(x, b, 1);
     canvas_saveto(x, b);
-    if (binbuf_write(b, filename->s_name, dir->s_name, 0)) { /* sys_ouch */ }
+    if (binbuf_write(b, filename->s_name, dir->s_name)) { /* sys_ouch */ }
     else {
             /* if not an abstraction, reset title bar and directory */ 
         if (!x->gl_owner)

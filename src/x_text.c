@@ -131,7 +131,7 @@ static void textbuf_read(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
         post("warning: text define ignoring extra argument: ");
         post_atoms(argc, argv);
     }
-    if (binbuf_read_via_canvas(x->b_binbuf, filename->s_name, x->b_canvas, cr))
+    if (binbuf_read_via_canvas(x->b_binbuf, filename->s_name, x->b_canvas))
             post_error ("%s: read failed", filename->s_name);
     textbuf_senditup(x);
 }
@@ -170,7 +170,7 @@ static void textbuf_write(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
     }
     canvas_makefilename(x->b_canvas, filename->s_name,
         buf, PD_STRING);
-    if (binbuf_write(x->b_binbuf, buf, "", cr))
+    if (binbuf_write(x->b_binbuf, buf, ""))
             post_error ("%s: write failed", filename->s_name);
 }
 
@@ -1666,7 +1666,7 @@ static void qlist_read(t_qlist *x, t_symbol *filename, t_symbol *format)
     else if (*format->s_name)
         post_error ("qlist_read: unknown flag: %s", format->s_name);
 
-    if (binbuf_read_via_canvas(x->x_binbuf, filename->s_name, x->x_canvas, cr))
+    if (binbuf_read_via_canvas(x->x_binbuf, filename->s_name, x->x_canvas))
             post_error ("%s: read failed", filename->s_name);
     x->x_onset = 0x7fffffff;
     x->x_rewound = 1;
@@ -1682,7 +1682,7 @@ static void qlist_write(t_qlist *x, t_symbol *filename, t_symbol *format)
         cr = 1;
     else if (*format->s_name)
         post_error ("qlist_read: unknown flag: %s", format->s_name);
-    if (binbuf_write(x->x_binbuf, buf, "", cr))
+    if (binbuf_write(x->x_binbuf, buf, ""))
             post_error ("%s: write failed", filename->s_name);
 }
 

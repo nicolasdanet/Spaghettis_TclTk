@@ -142,7 +142,7 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int binbuf_read(t_buffer *b, char *filename, char *dirname, int crflag)
+static int buffer_read (t_buffer *b, char *filename, char *dirname)
 {
     long length;
     int fd;
@@ -177,19 +177,8 @@ static int binbuf_read(t_buffer *b, char *filename, char *dirname, int crflag)
         PD_MEMORY_FREE(buf, length);
         return(1);
     }
-        /* optionally map carriage return to semicolon */
-    if (crflag)
-    {
-        int i;
-        for (i = 0; i < length; i++)
-            if (buf[i] == '\n')
-                buf[i] = ';';
-    }
-    buffer_withString(b, buf, length);
 
-#if 0
-    post("binbuf_read "); post_atoms(b->b_size, b->b_vector);
-#endif
+    buffer_withString(b, buf, length);
 
     PD_MEMORY_FREE(buf, length);
     close(fd);
@@ -197,8 +186,7 @@ static int binbuf_read(t_buffer *b, char *filename, char *dirname, int crflag)
 }
 
     /* read a binbuf from a file, via the search patch of a canvas */
-int binbuf_read_via_canvas(t_buffer *b, char *filename, t_canvas *canvas,
-    int crflag)
+int binbuf_read_via_canvas(t_buffer *b, char *filename, t_canvas *canvas)
 {
     int filedesc;
     char buf[PD_STRING], *bufptr;
@@ -209,7 +197,7 @@ int binbuf_read_via_canvas(t_buffer *b, char *filename, t_canvas *canvas,
         return (1);
     }
     else close (filedesc);
-    if (binbuf_read(b, bufptr, buf, crflag))
+    if (buffer_read(b, bufptr, buf))
         return (1);
     else return (0);
 }
@@ -218,14 +206,17 @@ int binbuf_read_via_canvas(t_buffer *b, char *filename, t_canvas *canvas,
 
     /* write a binbuf to a text file.  If "crflag" is set we suppress
     semicolons. */
-int binbuf_write(t_buffer *x, char *filename, char *dir, int crflag)
+    
+int binbuf_write(t_buffer *x, char *filename, char *dir)
 {
     FILE *f = 0;
     char sbuf[WBUFSIZE], fbuf[PD_STRING], *bp = sbuf, *ep = sbuf + WBUFSIZE;
     t_atom *ap;
     int indx, deleteit = 0;
     int ncolumn = 0;
-
+    
+    int crflag = 0;
+    
     fbuf[0] = 0;
     if (*dir)
         strcat(fbuf, dir), strcat(fbuf, "/");
@@ -315,7 +306,7 @@ void binbuf_evalfile(t_symbol *name, t_symbol *dir)
     int dspstate = canvas_suspend_dsp();
         /* set filename so that new canvases can pick them up */
     glob_setfilename(0, name, dir);
-    if (binbuf_read(b, name->s_name, dir->s_name, 0))
+    if (buffer_read(b, name->s_name, dir->s_name))
         post_error ("%s: read failed; %s", name->s_name, strerror(errno));
     else
     {
