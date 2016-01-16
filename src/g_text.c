@@ -1359,7 +1359,7 @@ void text_setto(t_text *x, t_glist *glist, char *buf, int bufsize)
         t_buffer *b = buffer_new();
         int natom1, natom2, widthwas = x->te_width;
         t_atom *vec1, *vec2;
-        buffer_withString(b, buf, bufsize);
+        buffer_withStringUnzeroed(b, buf, bufsize);
         natom1 = buffer_size(x->te_buffer);
         vec1 = buffer_atoms(x->te_buffer);
         natom2 = buffer_size(b);
@@ -1390,7 +1390,7 @@ void text_setto(t_text *x, t_glist *glist, char *buf, int bufsize)
             && !strcmp(vec2[0].a_w.w_symbol->s_name, "pd"))
                 canvas_updatewindowlist();
     }
-    else buffer_withString(x->te_buffer, buf, bufsize);
+    else buffer_withStringUnzeroed(x->te_buffer, buf, bufsize);
 }
 
     /* this gets called when a message gets sent to an object whose creation

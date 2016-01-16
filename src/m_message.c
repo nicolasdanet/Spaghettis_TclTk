@@ -134,7 +134,7 @@ static void new_anything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     int f;
     char directory[PD_STRING] = { 0 };
-    char *filename = NULL;
+    char *name = NULL;
     t_error err = PD_ERROR_NONE;
     
     if (message_recursiveDepth > MESSAGE_MAXIMUM_RECURSION) { PD_BUG; return; }
@@ -148,7 +148,7 @@ static void new_anything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         return;
     }
     
-    err = (f = canvas_open (canvas_getcurrent(), s->s_name, PD_FILE, directory, &filename, PD_STRING, 0)) < 0;
+    err = (f = canvas_open (canvas_getcurrent(), s->s_name, PD_FILE, directory, &name, PD_STRING, 0)) < 0;
     
     if (err) { pd_newest = NULL; }
     else {
@@ -161,7 +161,7 @@ static void new_anything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     } else {
         t_pd *t = s__X.s_thing;
         canvas_setargs (argc, argv);
-        binbuf_evalfile (gensym (filename), gensym (directory));
+        binbuf_evalfile (gensym (name), gensym (directory));
         if (s__X.s_thing && t != s__X.s_thing) { canvas_popabstraction ((t_canvas *)(s__X.s_thing)); }
         else { 
             s__X.s_thing = t; 

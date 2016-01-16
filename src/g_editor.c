@@ -2120,7 +2120,7 @@ static void canvas_find(t_canvas *x, t_symbol *s, t_float wholeword)
     t_symbol *decodedsym = sys_decodedialog(s);
     if (!canvas_findbuf)
         canvas_findbuf = buffer_new();
-    buffer_withString(canvas_findbuf, decodedsym->s_name, strlen(decodedsym->s_name));
+    buffer_withStringUnzeroed(canvas_findbuf, decodedsym->s_name, strlen(decodedsym->s_name));
     canvas_find_index = 0;
     canvas_find_wholeword = wholeword;
     canvas_whichfind = x;

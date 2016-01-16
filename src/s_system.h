@@ -171,7 +171,7 @@ void        sys_loadpreferences             (void);
 void        sys_savepreferences             (void);
 int         sys_nearestfontsize             (int fontsize);
 int         sys_hostfontsize                (int fontsize);
-int         sys_load_lib                    (t_canvas *canvas, char *filename);
+int         sys_load_lib                    (t_canvas *canvas, char *name);
 void        sys_register_loader             (loader_t loader);
 
 // -----------------------------------------------------------------------------------------------------------

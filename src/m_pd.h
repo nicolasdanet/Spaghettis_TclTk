@@ -579,10 +579,10 @@ PD_DLL int      open_via_path       (const char *dir,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-PD_DLL int  sys_open    (const char *path, int oflag, ...);
+PD_DLL int  sys_open    (const char *filepath, int oflag, ...);
 PD_DLL int  sys_close   (int fd);
 
-PD_DLL FILE *sys_fopen  (const char *filename, const char *mode);
+PD_DLL FILE *sys_fopen  (const char *name, const char *mode);
 PD_DLL int  sys_fclose  (FILE *stream);
 
 // -----------------------------------------------------------------------------------------------------------

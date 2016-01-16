@@ -1788,7 +1788,7 @@ static void text_template_init( void)
     b = buffer_new();
     
     glob_setfilename(0, gensym("_text_template"), gensym("."));
-    buffer_withString(b, text_templatefile, strlen(text_templatefile));
+    buffer_withStringUnzeroed(b, text_templatefile, strlen(text_templatefile));
     buffer_eval(b, &pd_canvasMaker, 0, 0);
     pd_vMessage(s__X.s_thing, gensym("pop"), "i", 0);
     
