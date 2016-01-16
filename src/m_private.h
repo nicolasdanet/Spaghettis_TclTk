@@ -235,7 +235,6 @@ t_float         *object_getSignalValueAtIndex           (t_object *x, int m);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void global_open                    (void *dummy, t_symbol *name, t_symbol *directory);
 void global_new                     (void *dummy, t_symbol *name, t_symbol *directory);
 void global_dsp                     (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void global_key                     (void *dummy, t_symbol *s, int argc, t_atom *argv);
@@ -280,6 +279,8 @@ void    buffer_deserialize          (t_buffer *x, int argc, t_atom *argv);
 void    buffer_eval                 (t_buffer *x, t_pd *target, int argc, t_atom *argv);
 t_error buffer_read                 (t_buffer *x, char *name, t_canvas *canvas);
 t_error buffer_write                (t_buffer *x, char *name, char *directory);
+t_error buffer_evalFile             (t_symbol *name, t_symbol *directory);
+void    buffer_openFile             (void *dummy, t_symbol *name, t_symbol *directory);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

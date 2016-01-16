@@ -179,7 +179,7 @@ static void openit(const char *dirname, const char *filename)
     if (fd >= 0)
     {
         close (fd);
-        global_open(0, gensym(nameptr), gensym(dirbuf));
+        buffer_openFile(0, gensym(nameptr), gensym(dirbuf));
     }
     else
         post_error ("%s: can't open", filename);

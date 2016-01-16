@@ -511,7 +511,7 @@ void open_via_helppath(const char *name, const char *dir)
     return;
 gotone:
     close (fd);
-    global_open(0, gensym((char*)basename), gensym(dirbuf));
+    buffer_openFile(0, gensym((char*)basename), gensym(dirbuf));
 }
 
 
