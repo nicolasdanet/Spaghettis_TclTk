@@ -32,15 +32,15 @@ extern t_pd pd_canvasMaker;
 
 enum {
     FLOAT_STATE_ERROR                   = -1,
-    FLOAT_STATE_START                   =  0,
-    FLOAT_STATE_MINUS                   =  1,
-    FLOAT_STATE_INTEGER_DIGIT           =  2,
-    FLOAT_STATE_LEADING_DOT             =  3,
-    FLOAT_STATE_DOT                     =  4,
-    FLOAT_STATE_FRACTIONAL_DIGIT        =  5,
-    FLOAT_STATE_EXPONENTIAL             =  6,
-    FLOAT_STATE_EXPONENTIAL_SIGN        =  7,
-    FLOAT_STATE_EXPONENTIAL_DIGIT       =  8
+    FLOAT_STATE_START                   = 0,
+    FLOAT_STATE_MINUS                   = 1,
+    FLOAT_STATE_INTEGER_DIGIT,
+    FLOAT_STATE_LEADING_DOT,
+    FLOAT_STATE_DOT,
+    FLOAT_STATE_FRACTIONAL_DIGIT,
+    FLOAT_STATE_EXPONENTIAL,
+    FLOAT_STATE_EXPONENTIAL_SIGN,
+    FLOAT_STATE_EXPONENTIAL_DIGIT
     };
     
 // -----------------------------------------------------------------------------------------------------------

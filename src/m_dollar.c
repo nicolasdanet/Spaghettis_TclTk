@@ -127,7 +127,7 @@ void dollar_substituteDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom 
     if (n > 0 && n <= argc) { *a = *(argv + n - 1); }
     else if (n == 0)        { SET_FLOAT (a, canvas_getdollarzero()); }
     else {
-        post_error (PD_TRANSLATE ("$: invalid substitution"));
+        post_error (PD_TRANSLATE ("$: invalid substitution"));  // --
         SET_FLOAT (a, 0.0);
     }
 }
