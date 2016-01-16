@@ -259,8 +259,6 @@ void global_shouldQuit          (void *dummy);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-size_t  atom_toStringEstimate   (t_atom *a);
-
 t_error atom_withString         (t_atom *a, char *s, int size);
 t_error atom_toString           (t_atom *a, char *s, int size);
 

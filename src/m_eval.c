@@ -236,7 +236,7 @@ t_error buffer_write (t_buffer *x, char *name, char *directory)
     //
     t_atom *a = x->b_vector + i;
     
-    if (end - ptr < atom_toStringEstimate (a)) { err |= (fwrite (buf, ptr - buf, 1, f) < 1); ptr = buf; }
+    if (end - ptr < (BUFFER_WRITE_SIZE / 2)) { err |= (fwrite (buf, ptr - buf, 1, f) < 1); ptr = buf; }
     
     if ((IS_SEMICOLON (a) || IS_COMMA (a)) && (ptr > buf) && (*(ptr - 1) == ' ')) { ptr--; }
     

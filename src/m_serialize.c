@@ -232,10 +232,6 @@ void buffer_toString (t_buffer *x, char **s, int *size)
     *size = n;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)
 {
     char *buf = PD_MEMORY_GET (0);
@@ -258,9 +254,7 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)
     //
     }
     
-    if (length && buf[length - 1] == ' ') { 
-        buf = PD_MEMORY_RESIZE (buf, length, length - 1); length--; 
-    }
+    if (length && buf[length - 1] == ' ') { buf = PD_MEMORY_RESIZE (buf, length, length - 1); length--; }
     
     *s = buf;
     *size = length;
