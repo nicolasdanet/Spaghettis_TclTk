@@ -346,6 +346,7 @@ PD_DLL t_symbol s_anything;
 PD_DLL t_symbol s_signal;
 PD_DLL t_symbol s__N;
 PD_DLL t_symbol s__X;
+PD_DLL t_symbol s__A;
 PD_DLL t_symbol s_x;
 PD_DLL t_symbol s_y;
 PD_DLL t_symbol s_;

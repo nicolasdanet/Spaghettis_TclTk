@@ -68,6 +68,7 @@ t_symbol s_anything = { "anything"  , NULL, NULL };
 t_symbol s_signal   = { "signal"    , NULL, NULL };
 t_symbol s__N       = { "#N"        , NULL, NULL };
 t_symbol s__X       = { "#X"        , NULL, NULL };
+t_symbol s__A       = { "#A"        , NULL, NULL };
 t_symbol s_x        = { "x"         , NULL, NULL };
 t_symbol s_y        = { "y"         , NULL, NULL };
 t_symbol s_         = { ""          , NULL, NULL };
@@ -178,7 +179,7 @@ static void new_anything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
 void message_initialize (void)
 {
-    t_symbol *symbols[12] = 
+    t_symbol *symbols[13] = 
         { 
             &s_pointer,
             &s_float,
@@ -189,6 +190,7 @@ void message_initialize (void)
             &s_signal,
             &s__N,
             &s__X,
+            &s__A,
             &s_x,
             &s_y,
             &s_
@@ -198,7 +200,7 @@ void message_initialize (void)
     else {
     //
     int i;
-    for (i = 0; i < 12; i++) { generateSymbol (symbols[i]->s_name, symbols[i]); }
+    for (i = 0; i < 13; i++) { generateSymbol (symbols[i]->s_name, symbols[i]); }
         
     pd_objectMaker = class_new (gensym ("objectmaker"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
     pd_canvasMaker = class_new (gensym ("classmaker"),  NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);

@@ -689,14 +689,14 @@ t_error buffer_evalFile (t_symbol *name, t_symbol *directory)
     if (err) { post_error (PD_TRANSLATE ("%s: fails to read"), name->s_name); }     // --
     else {
     //
-    t_pd *boundA = gensym ("#A")->s_thing;
+    t_pd *boundA = s__A.s_thing;
     t_pd *boundN = s__N.s_thing;
     
-    gensym ("#A")->s_thing = NULL; 
+    s__A.s_thing = NULL; 
     s__N.s_thing = &pd_canvasMaker;
     buffer_eval (t, NULL, 0, NULL);
     
-    gensym("#A")->s_thing = boundA;
+    s__A.s_thing = boundA;
     s__N.s_thing = boundN;
     //
     }
