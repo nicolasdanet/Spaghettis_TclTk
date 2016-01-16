@@ -96,7 +96,7 @@ t_error path_withNameAndDirectory (char *dest, size_t size, const char *name, co
 {
     t_error err = PD_ERROR;
     
-    if (*name && *directory) {
+    if (*name) {
         err = PD_ERROR_NONE;
         err |= utils_strncpy (dest, size, directory);
         err |= utils_strnadd (dest, size, "/");

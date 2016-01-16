@@ -24,6 +24,12 @@ extern t_pd pd_canvasMaker;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define BUFFER_WRITE_SIZE   4096
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static t_symbol *buffer_getObject (t_atom *v, int argc, t_atom *argv)
 {   
     if (IS_DOLLARSYMBOL (v)) { return dollar_substituteDollarSymbol (GET_DOLLARSYMBOL (v), argc, argv); }
@@ -61,7 +67,7 @@ static int buffer_getMessage (t_atom *v, t_pd *object, t_pd **next, t_atom *m, i
                                 SET_SYMBOL (m, GET_DOLLARSYMBOL (v));
                             }
                             break;
-    default :               end = 1; PD_BUG; 
+    default             :   end = 1; PD_BUG; 
     //
     }
     
@@ -150,9 +156,9 @@ static t_error buffer_withFile (t_buffer *x, char *name, char *directory)
 
     if (!(err = path_withNameAndDirectory (filename, PD_STRING, name, directory))) {
     //
-    int f;
+    int f = sys_open (filename, 0);
     
-    err = ((f = sys_open (filename, 0)) < 0);
+    err = (f < 0);
     
     if (err) { PD_BUG; }
     else {
@@ -186,117 +192,81 @@ static t_error buffer_withFile (t_buffer *x, char *name, char *directory)
 
 t_error buffer_read (t_buffer *x, char *name, t_canvas *canvas)
 {
-    int filedesc;
-    char buf[PD_STRING], *bufptr;
-    if ((filedesc = canvas_open(canvas, name, "",
-        buf, &bufptr, PD_STRING, 0)) < 0)
-    {
-        post_error ("%s: can't open", name);
-        return (1);
+    t_error err = PD_ERROR;
+    
+    char *filename = NULL;
+    char directory[PD_STRING] = { 0 };
+    
+    int f = canvas_open (canvas, name, "", directory, &filename, PD_STRING, 0);
+    
+    err = (f < 0);
+    
+    if (err) { post_error (PD_TRANSLATE ("%s: can't open"), name); }
+    else {
+        close (f);
+        err = buffer_withFile (x, filename, directory);
     }
-    else close (filedesc);
-    if (buffer_withFile(x, bufptr, buf))
-        return (1);
-    else return (0);
+    
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_error buffer_write (t_buffer *x, char *name, char *directory)
+{
+    t_error err = PD_ERROR;
+
+    char filename[PD_STRING] = { 0 };
+
+    if (!(err = path_withNameAndDirectory (filename, PD_STRING, name, directory))) {
+    //
+    FILE *f = 0;
+
+    err = !(f = sys_fopen (filename, "w"));
+    
+    if (!err) {
+    //
+    char buf[BUFFER_WRITE_SIZE] = { 0 };
+    char *ptr = buf;
+    char *end = buf + BUFFER_WRITE_SIZE;
+    int i;
+        
+    for (i = 0; i < x->b_size; i++) {
+    //
+    t_atom *a = x->b_vector + i;
+    
+    if (end - ptr < atom_toStringEstimate (a)) { err |= (fwrite (buf, ptr - buf, 1, f) < 1); ptr = buf; }
+    
+    if ((IS_SEMICOLON (a) || IS_COMMA (a)) && (ptr > buf) && (*(ptr - 1) == ' ')) { ptr--; }
+    
+    err |= atom_toString (a, ptr, end - ptr - 2);
+    ptr += strlen (ptr);
+    
+    if (IS_SEMICOLON (a)) { *ptr++ = '\n'; }
+    else {
+        *ptr++ = ' ';
+    }
+    //
+    }
+    
+    err |= (fwrite (buf, ptr - buf, 1, f) < 1);
+    err |= (fflush (f) != 0) ;
+
+    PD_ASSERT (!err);
+    
+    fclose (f);
+    //
+    }
+    //
+    }
+    
+    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-#define WBUFSIZE 4096
-
-    /* write a binbuf to a text file.  If "crflag" is set we suppress
-    semicolons. */
-    
-int binbuf_write(t_buffer *x, char *filename, char *dir)
-{
-    FILE *f = 0;
-    char sbuf[WBUFSIZE], fbuf[PD_STRING], *bp = sbuf, *ep = sbuf + WBUFSIZE;
-    t_atom *ap;
-    int indx, deleteit = 0;
-    int ncolumn = 0;
-    
-    int crflag = 0;
-    
-    fbuf[0] = 0;
-    if (*dir)
-        strcat(fbuf, dir), strcat(fbuf, "/");
-    strcat(fbuf, filename);
-    
-    /*if (!strcmp(filename + strlen(filename) - 4, ".pat") ||
-        !strcmp(filename + strlen(filename) - 4, ".mxt"))
-    {
-        x = binbuf_convert(x, 0);
-        deleteit = 1;
-    }*/
-    
-    if (!(f = sys_fopen(fbuf, "w")))
-    {
-        fprintf(stderr, "open: ");
-        /* sys_unixerror(fbuf); */
-        goto fail;
-    }
-    for (ap = x->b_vector, indx = x->b_size; indx--; ap++)
-    {
-        int length;
-            /* estimate how many characters will be needed.  Printing out
-            symbols may need extra characters for inserting backslashes. */
-        if (ap->a_type == A_SYMBOL || ap->a_type == A_DOLLARSYMBOL)
-            length = 80 + strlen(ap->a_w.w_symbol->s_name);
-        else length = 40;
-        if (ep - bp < length)
-        {
-            if (fwrite(sbuf, bp-sbuf, 1, f) < 1)
-            {
-                /* sys_unixerror(fbuf); */
-                goto fail;
-            }
-            bp = sbuf;
-        }
-        if ((ap->a_type == A_SEMICOLON || ap->a_type == A_COMMA) &&
-            bp > sbuf && bp[-1] == ' ') bp--;
-        if (!crflag || ap->a_type != A_SEMICOLON)
-        {
-            atom_toString(ap, bp, (ep-bp)-2);
-            length = strlen(bp);
-            bp += length;
-            ncolumn += length;
-        }
-        if (ap->a_type == A_SEMICOLON || (!crflag && ncolumn > 65))
-        {
-            *bp++ = '\n';
-            ncolumn = 0;
-        }
-        else
-        {
-            *bp++ = ' ';
-            ncolumn++;
-        }
-    }
-    if (fwrite(sbuf, bp-sbuf, 1, f) < 1)
-    {
-        /* sys_unixerror(fbuf); */
-        goto fail;
-    }
-
-    if (fflush(f) != 0) 
-    {
-        /* sys_unixerror(fbuf); */
-        goto fail;
-    }
-
-    if (deleteit)
-        buffer_free(x);
-    fclose(f);
-    return (0);
-fail:
-    if (deleteit)
-        buffer_free(x);
-    if (f)
-        fclose(f);
-    return (1);
-}
 
 /* LATER make this evaluate the file on-the-fly. */
 /* LATER figure out how to log errors */

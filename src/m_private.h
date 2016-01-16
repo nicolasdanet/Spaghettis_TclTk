@@ -259,6 +259,8 @@ void global_shouldQuit          (void *dummy);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+size_t  atom_toStringEstimate   (t_atom *a);
+
 t_error atom_withString         (t_atom *a, char *s, int size);
 t_error atom_toString           (t_atom *a, char *s, int size);
 
@@ -279,6 +281,7 @@ void    buffer_serialize        (t_buffer *x, t_buffer *y);
 void    buffer_deserialize      (t_buffer *x, int argc, t_atom *argv);
 void    buffer_eval             (t_buffer *x, t_pd *target, int argc, t_atom *argv);
 t_error buffer_read             (t_buffer *x, char *name, t_canvas *canvas);
+t_error buffer_write            (t_buffer *x, char *name, char *directory);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

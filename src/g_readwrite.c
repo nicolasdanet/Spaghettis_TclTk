@@ -574,7 +574,7 @@ static void glist_write(t_glist *x, t_symbol *filename, t_symbol *format)
     b = glist_writetobinbuf(x, 1);
     if (b)
     {
-        if (binbuf_write(b, buf, ""))
+        if (buffer_write(b, buf, ""))
             post_error ("%s: write failed", filename->s_name);
         buffer_free(b);
     }
@@ -721,7 +721,7 @@ static void canvas_savetofile(t_canvas *x, t_symbol *filename, t_symbol *dir,
     t_buffer *b = buffer_new();
     canvas_savetemplatesto(x, b, 1);
     canvas_saveto(x, b);
-    if (binbuf_write(b, filename->s_name, dir->s_name)) { /* sys_ouch */ }
+    if (buffer_write(b, filename->s_name, dir->s_name)) { /* sys_ouch */ }
     else {
             /* if not an abstraction, reset title bar and directory */ 
         if (!x->gl_owner)

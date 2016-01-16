@@ -170,7 +170,7 @@ static void textbuf_write(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
     }
     canvas_makefilename(x->b_canvas, filename->s_name,
         buf, PD_STRING);
-    if (binbuf_write(x->b_binbuf, buf, ""))
+    if (buffer_write(x->b_binbuf, buf, ""))
             post_error ("%s: write failed", filename->s_name);
 }
 
@@ -1682,7 +1682,7 @@ static void qlist_write(t_qlist *x, t_symbol *filename, t_symbol *format)
         cr = 1;
     else if (*format->s_name)
         post_error ("qlist_read: unknown flag: %s", format->s_name);
-    if (binbuf_write(x->x_binbuf, buf, ""))
+    if (buffer_write(x->x_binbuf, buf, ""))
             post_error ("%s: write failed", filename->s_name);
 }
 

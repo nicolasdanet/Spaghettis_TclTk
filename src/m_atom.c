@@ -100,6 +100,15 @@ static t_error atom_symbolToQuotedString (t_atom *a, char *s, int size)
     return err;
 }
 
+size_t atom_toStringEstimate (t_atom *a)
+{
+    if (IS_DOLLARSYMBOL (a)) { return (80 + strlen (GET_DOLLARSYMBOL (a)->s_name)); }
+    else if (IS_SYMBOL  (a)) { return (80 + strlen (GET_SYMBOL (a)->s_name)); }
+    else {
+        return 40;
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
