@@ -551,64 +551,6 @@ static t_error buffer_fromFile (t_buffer *x, char *name, char *directory)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error buffer_read (t_buffer *x, char *name, t_canvas *canvas)
-{
-    t_error err = PD_ERROR;
-    
-    char *filepath = NULL;
-    char directory[PD_STRING] = { 0 };
-    
-    int f = canvas_open (canvas, name, "", directory, &filepath, PD_STRING, 0);
-    
-    err = (f < 0);
-    
-    if (err) { post_error (PD_TRANSLATE ("%s: can't open"), name); }    // --
-    else {
-        close (f);
-        err = buffer_fromFile (x, filepath, directory);
-    }
-    
-    return err;
-}
-
-t_error buffer_write (t_buffer *x, char *name, char *directory)
-{
-    t_error err = PD_ERROR;
-
-    char filepath[PD_STRING] = { 0 };
-
-    if (!(err = path_withNameAndDirectory (filepath, PD_STRING, name, directory))) {
-    //
-    FILE *f = 0;
-
-    err = !(f = sys_fopen (filepath, "w"));
-    
-    if (!err) {
-    //
-    char *s = NULL;
-    int size = 0;
-    
-    buffer_toStringUnzeroed (x, &s, &size);
-
-    err |= (fwrite (s, size, 1, f) < 1);
-    err |= (fflush (f) != 0);
-
-    PD_ASSERT (!err);
-    PD_MEMORY_FREE (s, size);
-        
-    fclose (f);
-    //
-    }
-    //
-    }
-    
-    return err;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
 {
     int size = x->b_size;
@@ -675,6 +617,64 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
     ATOMS_FREEA (message, x->b_size);
 }
 
+t_error buffer_read (t_buffer *x, char *name, t_canvas *canvas)
+{
+    t_error err = PD_ERROR;
+    
+    char *filepath = NULL;
+    char directory[PD_STRING] = { 0 };
+    
+    int f = canvas_open (canvas, name, "", directory, &filepath, PD_STRING, 0);
+    
+    err = (f < 0);
+    
+    if (err) { post_error (PD_TRANSLATE ("%s: can't open"), name); }    // --
+    else {
+        close (f);
+        err = buffer_fromFile (x, filepath, directory);
+    }
+    
+    return err;
+}
+
+t_error buffer_write (t_buffer *x, char *name, char *directory)
+{
+    t_error err = PD_ERROR;
+
+    char filepath[PD_STRING] = { 0 };
+
+    if (!(err = path_withNameAndDirectory (filepath, PD_STRING, name, directory))) {
+    //
+    FILE *f = 0;
+
+    err = !(f = sys_fopen (filepath, "w"));
+    
+    if (!err) {
+    //
+    char *s = NULL;
+    int size = 0;
+    
+    buffer_toStringUnzeroed (x, &s, &size);
+
+    err |= (fwrite (s, size, 1, f) < 1);
+    err |= (fflush (f) != 0);
+
+    PD_ASSERT (!err);
+    PD_MEMORY_FREE (s, size);
+        
+    fclose (f);
+    //
+    }
+    //
+    }
+    
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_error buffer_evalFile (t_symbol *name, t_symbol *directory)
 {
     t_error err = PD_ERROR;
@@ -728,34 +728,6 @@ void buffer_openFile (void *dummy, t_symbol *name, t_symbol *directory)
     
     canvas_resume_dsp (state);
     s__X.s_thing = boundX;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-    /* save a text object to a binbuf for a file or copy buf */
-void binbuf_savetext(t_buffer *bfrom, t_buffer *bto)
-{
-    int k, n = buffer_size(bfrom);
-    t_atom *ap = buffer_atoms(bfrom), at;
-    for (k = 0; k < n; k++)
-    {
-        if (ap[k].a_type == A_FLOAT ||
-            ap[k].a_type == A_SYMBOL &&
-                !strchr(ap[k].a_w.w_symbol->s_name, ';') &&
-                !strchr(ap[k].a_w.w_symbol->s_name, ',') &&
-                !strchr(ap[k].a_w.w_symbol->s_name, '$'))
-                    buffer_append(bto, 1, &ap[k]);
-        else
-        {
-            char buf[PD_STRING+1];
-            atom_toString(&ap[k], buf, PD_STRING);
-            SET_SYMBOL(&at, gensym(buf));
-            buffer_append(bto, 1, &at);
-        }
-    }
-    buffer_appendSemicolon(bto);
 }
 
 // -----------------------------------------------------------------------------------------------------------

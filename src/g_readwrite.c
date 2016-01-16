@@ -389,7 +389,29 @@ void canvas_doaddtemplate(t_symbol *templatesym,
 
 static void glist_writelist(t_gobj *y, t_buffer *b);
 
-void binbuf_savetext(t_buffer *bfrom, t_buffer *bto);
+    /* save a text object to a binbuf for a file or copy buf */
+static void binbuf_savetext(t_buffer *bfrom, t_buffer *bto)
+{
+    int k, n = buffer_size(bfrom);
+    t_atom *ap = buffer_atoms(bfrom), at;
+    for (k = 0; k < n; k++)
+    {
+        if (ap[k].a_type == A_FLOAT ||
+            ap[k].a_type == A_SYMBOL &&
+                !strchr(ap[k].a_w.w_symbol->s_name, ';') &&
+                !strchr(ap[k].a_w.w_symbol->s_name, ',') &&
+                !strchr(ap[k].a_w.w_symbol->s_name, '$'))
+                    buffer_append(bto, 1, &ap[k]);
+        else
+        {
+            char buf[PD_STRING+1];
+            atom_toString(&ap[k], buf, PD_STRING);
+            SET_SYMBOL(&at, gensym(buf));
+            buffer_append(bto, 1, &at);
+        }
+    }
+    buffer_appendSemicolon(bto);
+}
 
 void canvas_writescalar(t_symbol *templatesym, t_word *w, t_buffer *b,
     int amarrayelement)

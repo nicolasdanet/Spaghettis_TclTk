@@ -16,7 +16,7 @@
 #include "m_class.c"
 #include "m_object.c"
 #include "m_atom.c"
-
+#include "m_buffer.c"
 #include "m_setup.c"
 #include "m_global.c"
 
