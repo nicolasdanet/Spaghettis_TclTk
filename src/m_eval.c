@@ -68,6 +68,10 @@ static int buffer_getMessage (t_atom *v, t_pd *object, t_pd **next, t_atom *m, i
     return end;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static t_error buffer_fromFile (t_buffer *x, char *name, char *directory)
 {
     t_error err = PD_ERROR;
@@ -243,7 +247,7 @@ t_error buffer_read (t_buffer *x, char *name, t_canvas *canvas)
     
     err = (f < 0);
     
-    if (err) { post_error (PD_TRANSLATE ("%s: can't open"), name); }
+    if (err) { post_error (PD_TRANSLATE ("%s: can't open"), name); }    // --
     else {
         close (f);
         err = buffer_fromFile (x, filepath, directory);
@@ -289,58 +293,6 @@ t_error buffer_write (t_buffer *x, char *name, char *directory)
     return err;
 }
 
-/*
-t_error buffer_write (t_buffer *x, char *name, char *directory)
-{
-    t_error err = PD_ERROR;
-
-    char filepath[PD_STRING] = { 0 };
-
-    if (!(err = path_withNameAndDirectory (filepath, PD_STRING, name, directory))) {
-    //
-    FILE *f = 0;
-
-    err = !(f = sys_fopen (filepath, "w"));
-    
-    if (!err) {
-    //
-    char buf[BUFFER_WRITE_SIZE] = { 0 };
-    char *ptr = buf;
-    char *end = buf + BUFFER_WRITE_SIZE;
-    int i;
-        
-    for (i = 0; i < x->b_size; i++) {
-    //
-    t_atom *a = x->b_vector + i;
-    
-    if (end - ptr < (BUFFER_WRITE_SIZE / 2)) { err |= (fwrite (buf, ptr - buf, 1, f) < 1); ptr = buf; }
-    
-    if ((IS_SEMICOLON (a) || IS_COMMA (a)) && (ptr > buf) && (*(ptr - 1) == ' ')) { ptr--; }
-    
-    err |= atom_toString (a, ptr, end - ptr - 2);
-    ptr += strlen (ptr);
-    
-    if (IS_SEMICOLON (a)) { *ptr++ = '\n'; }
-    else {
-        *ptr++ = ' ';
-    }
-    //
-    }
-    
-    err |= (fwrite (buf, ptr - buf, 1, f) < 1);
-    err |= (fflush (f) != 0) ;
-
-    PD_ASSERT (!err);
-    
-    fclose (f);
-    //
-    }
-    //
-    }
-    
-    return err;
-}
-*/
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

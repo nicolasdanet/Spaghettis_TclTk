@@ -162,6 +162,17 @@ void buffer_appendSemicolon (t_buffer *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static int buffer_isMalformed (char *s, int size)
+{
+    if (size < 0) { return 1; }
+    else {
+        int i;
+        for (i = 0; i < size; i++) { if (s[i] == 0) { return 1; } }
+    }
+    
+    return 0;
+}
+
 static int buffer_isValidCharacter (char c)
 {
     return (!utils_isTokenWhitespace (c) && !utils_isTokenEnd (c));
@@ -260,8 +271,8 @@ void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int allocated)
     
     const char *text = s;
     const char *tBound = s + size;
-    
-    PD_ASSERT (size > 0);
+
+    if (buffer_isMalformed (s, size)) { PD_BUG; return; }
     
     PD_MEMORY_FREE (x->b_vector, x->b_size * sizeof (t_atom));
     x->b_vector = PD_MEMORY_GET (allocated * sizeof (t_atom));
@@ -315,11 +326,9 @@ void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int allocated)
             SET_SYMBOL (a, gensym (buf));
         }
     }
-    
+
     a++;
     length++;
-    
-    if (text == tBound) { break; }
     
     if (length == allocated) {
         size_t oldSize = allocated * sizeof (t_atom);
