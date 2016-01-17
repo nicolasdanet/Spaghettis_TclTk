@@ -354,10 +354,6 @@ void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int allocated)
     x->b_vector = PD_MEMORY_RESIZE (x->b_vector, allocated * sizeof (t_atom), length * sizeof (t_atom));
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void buffer_withStringUnzeroed (t_buffer *x, char *s, int size)
 {
     buffer_parseStringUnzeroed (x, s, size, BUFFER_PREALLOCATED_ATOMS);
@@ -370,20 +366,33 @@ void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)
 
     for (i = 0; i < x->b_size; i++) {
     //
+    int n;
+    t_error err;
     char t[PD_STRING] = { 0 };
-    int n = length;
-    t_error err = atom_toString (x->b_vector + i, t, PD_STRING);
-    PD_ASSERT (!err);
-    n += strlen (t) + 1;
-    buf = PD_MEMORY_RESIZE (buf, length, n);
+    t_atom *a = x->b_vector + i;
+    
+    /* Remove whitespace before a semicolon or a comma for cosmetic purpose. */
+    
+    if (IS_SEMICOLON (a) || IS_COMMA (a)) {
+    //
+    if (length && buf[length - 1] == ' ') { buf = PD_MEMORY_RESIZE (buf, length, length - 1); length--; }
+    //
+    }
+    
+    err = atom_toString (a, t, PD_STRING); PD_ASSERT (!err);
+    n = strlen (t) + 1;
+    buf = PD_MEMORY_RESIZE (buf, length, length + n);
     strcpy (buf + length, t);
-    length = n;
-    if (IS_SEMICOLON (x->b_vector + i)) { buf[length - 1] = '\n'; }
+    length += n;
+    
+    if (IS_SEMICOLON (a)) { buf[length - 1] = '\n'; }
     else { 
         buf[length - 1] = ' ';
     }
     //
     }
+    
+    /* Remove ending whitespace. */
     
     if (length && buf[length - 1] == ' ') { buf = PD_MEMORY_RESIZE (buf, length, length - 1); length--; }
     
@@ -505,10 +514,6 @@ static int buffer_getMessage (t_atom *v, t_pd *object, t_pd **next, t_atom *m, i
     
     return end;
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static t_error buffer_fromFile (t_buffer *x, char *name, char *directory)
 {
