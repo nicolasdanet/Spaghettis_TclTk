@@ -99,7 +99,15 @@ extern "C" {
 #pragma mark -
 
 #ifndef PD_DEBUG
-#define PD_DEBUG            1                   /* False assertions logged. */
+#define PD_DEBUG            1           /* False assertions logged. */
+#endif
+
+#ifndef PD_WITH_ALLOCA
+#define PD_WITH_ALLOCA      1           /* Message passing uses alloca function. */
+#endif
+
+#ifndef PD_WITH_LOCK
+#define PD_WITH_LOCK        1           /* Use lock (with pthread mutex). */
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -153,6 +161,7 @@ extern "C" {
 
 #if PD_WINDOWS
     #include <io.h>
+    #include <windows.h>
 #else
     #include <unistd.h>
 #endif

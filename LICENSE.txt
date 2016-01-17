@@ -19,7 +19,7 @@ Additional terms:
         You may use, copy, modify this code for any purpose and without fee.
         You may distribute this ORIGINAL package.
 
-    src/s_buffer.c:
+    src/s_ringbuffer.c:
 
         Author: Phil Burk < http://www.softsynth.com >.
  

@@ -8,20 +8,13 @@
 #include "m_private.h"
 #include "m_macros.h"
 #include "s_system.h"
-#ifdef _WIN32
-#include <windows.h>
-#endif
 
     /* LATER consider making this variable.  It's now the LCM of all sample
     rates we expect to see: 32000, 44100, 48000, 88200, 96000. */
 #define TIMEUNITPERMSEC (32. * 441.)
 #define TIMEUNITPERSECOND (TIMEUNITPERMSEC * 1000.)
 
-#ifndef THREAD_LOCKING
-#define THREAD_LOCKING 1
-#endif
-
-#if THREAD_LOCKING
+#if PD_WITH_LOCK
 #include "pthread.h"
 #endif
 
@@ -439,7 +432,7 @@ static void m_pollingscheduler( void)
     sys_time_per_dsp_tick = (TIMEUNITPERSECOND) *
         ((double)sys_schedblocksize) / sys_dacsr;
 
-#if THREAD_LOCKING
+#if PD_WITH_LOCK
         sys_lock();
 #endif
 
@@ -460,7 +453,7 @@ static void m_pollingscheduler( void)
     waitfortick:
         if (sched_useaudio != SCHEDULER_NONE)
         {
-#if THREAD_LOCKING
+#if PD_WITH_LOCK
             /* T.Grill - send_dacs may sleep -> 
                 unlock thread lock make that time available 
                 - could messaging do any harm while sys_send_dacs is running?
@@ -468,7 +461,7 @@ static void m_pollingscheduler( void)
             sys_unlock();
 #endif
             timeforward = sys_send_dacs();
-#if THREAD_LOCKING
+#if PD_WITH_LOCK
             /* T.Grill - done */
             sys_lock();
 #endif
@@ -527,11 +520,11 @@ static void m_pollingscheduler( void)
         if (!didsomething)
         {
             sched_pollformeters();
-#if THREAD_LOCKING
+#if PD_WITH_LOCK
             sys_unlock();   /* unlock while we idle */
 #endif
             if (timeforward != DACS_SLEPT) { sys_microsleep(sys_sleepgrain); }
-#if THREAD_LOCKING
+#if PD_WITH_LOCK
             sys_lock();
 #endif
             sys_addhist(5);
@@ -539,7 +532,7 @@ static void m_pollingscheduler( void)
         }
     }
 
-#if THREAD_LOCKING
+#if PD_WITH_LOCK
     sys_unlock();
 #endif
 }
@@ -612,7 +605,7 @@ int m_batchmain(void)
 
 /* ------------ thread locking ------------------- */
 
-#if THREAD_LOCKING
+#if PD_WITH_LOCK
 static pthread_mutex_t sys_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void sys_lock(void)
