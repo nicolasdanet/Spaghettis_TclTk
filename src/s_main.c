@@ -32,12 +32,10 @@ extern t_namelist *sys_externlist;
 extern t_namelist *sys_searchpath;
 extern t_namelist *sys_helppath;
 
-extern int sys_schedblocksize;
 extern t_sample *sys_soundout;
 extern t_sample *sys_soundin;
 extern t_float sys_dacsr;
 extern int sys_schedadvance;
-extern int sys_sleepgrain;
 
 #define stringify(s) str(s)
 #define str(s) #s
@@ -594,11 +592,12 @@ int sys_argparse(int argc, char **argv)
             sys_main_blocksize = atoi(argv[1]);
             argc -= 2; argv += 2;
         }
+        /*
         else if (!strcmp(*argv, "-sleepgrain") && (argc > 1))
         {
-            sys_sleepgrain = 1000 * atof(argv[1]);
+            scheduler_sleepGrain = 1000 * atof(argv[1]);
             argc -= 2; argv += 2;
-        }
+        }*/
         else if (!strcmp(*argv, "-nodac"))
         {
             sys_nsoundout=0;

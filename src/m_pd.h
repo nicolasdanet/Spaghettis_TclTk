@@ -500,6 +500,7 @@ PD_DLL double   clock_getsystimeafter       (double delaytime);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 PD_DLL void     gpointer_init               (t_gpointer *gp);
 PD_DLL void     gpointer_copy               (const t_gpointer *gpfrom, t_gpointer *gpto);
