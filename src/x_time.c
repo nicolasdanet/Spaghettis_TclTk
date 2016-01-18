@@ -139,6 +139,8 @@ static void delay_setup(void)
         gensym("ft1"), A_FLOAT, 0);
     class_addMethod(delay_class, (t_method)delay_tempo,
         gensym("tempo"), A_FLOAT, A_SYMBOL, 0);
+    class_addMethod(delay_class, (t_method)delay_tempo,
+        gensym("unit"), A_FLOAT, A_SYMBOL, 0);
     class_addFloat(delay_class, (t_method)delay_float);
 }
 
@@ -224,6 +226,8 @@ static void metro_setup(void)
         A_FLOAT, 0);
     class_addMethod(metro_class, (t_method)metro_tempo,
         gensym("tempo"), A_FLOAT, A_SYMBOL, 0);
+    class_addMethod(metro_class, (t_method)metro_tempo,
+        gensym("unit"), A_FLOAT, A_SYMBOL, 0);
     class_addFloat(metro_class, (t_method)metro_float);
 }
 
@@ -400,6 +404,8 @@ static void timer_setup(void)
     class_addMethod(timer_class, (t_method)timer_bang2, gensym("bang2"), 0);
     class_addMethod(timer_class, (t_method)timer_tempo,
         gensym("tempo"), A_FLOAT, A_SYMBOL, 0);
+    class_addMethod(timer_class, (t_method)timer_tempo,
+        gensym("unit"), A_FLOAT, A_SYMBOL, 0);
 }
 
 

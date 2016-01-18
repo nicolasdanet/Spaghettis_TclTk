@@ -1877,6 +1877,8 @@ void x_qlist_setup(void )
         gensym("args"), A_GIMME, 0);
     class_addMethod(text_sequence_class, (t_method)text_sequence_tempo, 
         gensym("tempo"), A_FLOAT, A_SYMBOL, 0);
+    class_addMethod(text_sequence_class, (t_method)text_sequence_tempo, 
+        gensym("unit"), A_FLOAT, A_SYMBOL, 0);
     class_addList(text_sequence_class, text_sequence_list);
     class_setHelpName(text_sequence_class, gensym("text-object"));
 
@@ -1906,6 +1908,8 @@ void x_qlist_setup(void )
         A_DEFSYMBOL, 0);*/
     class_addMethod(qlist_class, (t_method)qlist_tempo,
         gensym("tempo"), A_FLOAT, 0);
+    class_addMethod(qlist_class, (t_method)qlist_tempo,
+        gensym("unit"), A_FLOAT, 0);
     class_addBang(qlist_class, qlist_bang);
 
     textfile_class = class_new(gensym("textfile"), (t_newmethod)textfile_new,
