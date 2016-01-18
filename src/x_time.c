@@ -11,7 +11,7 @@
 #include <string.h>
 
     /* parse a time unit such as "5 msec", "60 perminute", or "1 sample" to
-    a form usable by clock_setunit)( and clock_gettimesincewithunits().
+    a form usable by clock_setUnit)( and clock_gettimesincewithunits().
     This brute-force search through symbols really ought not to be done on
     the fly for incoming 'tempo' messages, hmm...  This isn't public because
     its interface migth want to change - but it's used in x_text.c as well
@@ -103,7 +103,10 @@ static void delay_tempo(t_delay *x, t_symbol *unitname, t_float tempo)
     t_float unit;
     int samps;
     parsetimeunits(x, tempo, unitname, &unit, &samps);
-    clock_setunit(x->x_clock, unit, samps);
+    if (samps) { clock_setUnitAsSamples (x->x_clock, unit); }
+    else {
+        clock_setUnitAsMilliseconds (x->x_clock, unit);
+    }
 }
 
 static void delay_free(t_delay *x)
@@ -186,7 +189,10 @@ static void metro_tempo(t_metro *x, t_symbol *unitname, t_float tempo)
     t_float unit;
     int samps;
     parsetimeunits(x, tempo, unitname, &unit, &samps);
-    clock_setunit(x->x_clock, unit, samps);
+    if (samps) { clock_setUnitAsSamples (x->x_clock, unit); }
+    else {
+        clock_setUnitAsMilliseconds (x->x_clock, unit);
+    }
 }
 
 static void metro_free(t_metro *x)

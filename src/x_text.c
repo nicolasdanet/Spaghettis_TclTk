@@ -1427,7 +1427,10 @@ static void text_sequence_tempo(t_text_sequence *x,
     t_float unit;
     int samps;
     parsetimeunits(x, tempo, unitname, &unit, &samps);
-    clock_setunit(x->x_clock, unit, samps);
+    if (samps) { clock_setUnitAsSamples (x->x_clock, unit); }
+    else {
+        clock_setUnitAsMilliseconds (x->x_clock, unit);
+    }
 }
 
 static void text_sequence_free(t_text_sequence *x)

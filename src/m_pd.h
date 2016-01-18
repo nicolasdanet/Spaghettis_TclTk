@@ -488,10 +488,9 @@ PD_DLL void     buffer_append               (t_buffer *x, int argc, t_atom *argv
 
 PD_DLL t_clock  *clock_new                  (void *owner, t_method fn);
 PD_DLL void     clock_free                  (t_clock *x);
-PD_DLL void     clock_set                   (t_clock *x, double systime);
-PD_DLL void     clock_delay                 (t_clock *x, double delaytime);
 PD_DLL void     clock_unset                 (t_clock *x);
-PD_DLL void     clock_setunit               (t_clock *x, double timeunit, int sampflag);
+PD_DLL void     clock_delay                 (t_clock *x, double delay);
+
 PD_DLL double   clock_getlogicaltime        (void);
 PD_DLL double   clock_getsystime            (void);
 PD_DLL double   clock_gettimesince          (double prevsystime);

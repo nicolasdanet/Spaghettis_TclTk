@@ -286,6 +286,13 @@ void    buffer_openFile             (void *dummy, t_symbol *name, t_symbol *dire
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void clock_setUnitAsSamples         (t_clock *x, double samples);
+void clock_setUnitAsMilliseconds    (t_clock *x, double ms);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void sys_vgui                       (char *fmt, ...);
 void sys_gui                        (char *s);
 void sys_pretendguibytes            (int n);

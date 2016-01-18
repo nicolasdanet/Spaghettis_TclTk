@@ -26,8 +26,8 @@
 
 /* Notice that values below are related to LCM (32000, 44100, 48000, 88200, 96000). */
     
-#define SCHEDULER_UNITS_PER_MILLISECOND     (32.0 * 441.0)
-#define SCHEDULER_UNITS_PER_SECOND          (SCHEDULER_UNITS_PER_MILLISECOND * 1000.0)
+#define SCHEDULER_TICKS_PER_MILLISECOND     (double)(32.0 * 441.0)
+#define SCHEDULER_TICKS_PER_SECOND          (SCHEDULER_TICKS_PER_MILLISECOND * 1000.0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -66,8 +66,8 @@ typedef void (*t_clockfn)(void *client);
 #pragma mark -
 
 struct _clock {
-    double          c_time;
-    t_float         c_unit;
+    double          c_time;     /* Set as negative for unset clocks. */
+    double          c_unit;     /* A positive value is in ticks, a negative value is in number of samples. */
     t_clockfn       c_fn;
     void            *c_owner;
     struct _clock   *c_next;
@@ -80,8 +80,8 @@ t_clock *clock_new (void *owner, t_method fn)
 {
     t_clock *x = (t_clock *)PD_MEMORY_GET (sizeof (t_clock));
     
-    x->c_time   = -1;
-    x->c_unit   = SCHEDULER_UNITS_PER_MILLISECOND;
+    x->c_time   = -1.0;
+    x->c_unit   = SCHEDULER_TICKS_PER_MILLISECOND;
     x->c_fn     = (t_clockfn)fn;
     x->c_owner  = owner;
     x->c_next   = NULL;
@@ -96,78 +96,101 @@ void clock_free (t_clock *x)
     PD_MEMORY_FREE (x, sizeof (t_clock));
 }
 
-void clock_unset(t_clock *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void clock_unset (t_clock *x)
 {
-    if (x->c_time >= 0)
-    {
-        if (x == pd_this->pd_clocks)
-            pd_this->pd_clocks = x->c_next;
-        else
-        {
-            t_clock *x2 = pd_this->pd_clocks;
-            while (x2->c_next != x) x2 = x2->c_next;
-            x2->c_next = x->c_next;
+    if (x->c_time >= 0.0) {
+        if (x == pd_this->pd_clocks) { pd_this->pd_clocks = x->c_next; }
+        else {
+            t_clock *c = pd_this->pd_clocks;
+            while (c->c_next != x) { c = c->c_next; } c->c_next = x->c_next;
         }
-        x->c_time = -1;
+        x->c_time = -1.0;
     }
 }
 
-    /* set the clock to call back at an absolute system time */
-void clock_set(t_clock *x, double setticks)
+static void clock_set (t_clock *x, double time)
 {
-    if (setticks < pd_this->pd_time) setticks = pd_this->pd_time;
-    clock_unset(x);
-    x->c_time = setticks;
-    if (pd_this->pd_clocks && 
-        pd_this->pd_clocks->c_time <= setticks)
-    {
-        t_clock *cbefore, *cafter;
-        for (cbefore = pd_this->pd_clocks, 
-            cafter = pd_this->pd_clocks->c_next;
-                cbefore; cbefore = cafter, cafter = cbefore->c_next)
-        {
-            if (!cafter || cafter->c_time > setticks)
-            {
-                cbefore->c_next = x;
-                x->c_next = cafter;
-                return;
+    if (time < pd_this->pd_time) { time = pd_this->pd_time; }
+    
+    clock_unset (x);
+    
+    x->c_time = time;
+    
+    if (pd_this->pd_clocks && pd_this->pd_clocks->c_time <= time) {
+    
+        t_clock *m = NULL;
+        t_clock *n = NULL;
+        
+        for (m = pd_this->pd_clocks, n = pd_this->pd_clocks->c_next; m; m = n, n = m->c_next) {
+            if (!n || n->c_time > time) {
+                m->c_next = x; x->c_next = n; return;
             }
         }
+        
+    } else {
+        x->c_next = pd_this->pd_clocks; pd_this->pd_clocks = x;
     }
-    else x->c_next = pd_this->pd_clocks, pd_this->pd_clocks = x;
 }
 
-    /* set the clock to call back after a delay in msec */
-void clock_delay(t_clock *x, double delaytime)
+void clock_delay (t_clock *x, double delay)     /* Could be in milliseconds or in samples. */
 {
-    clock_set(x, (x->c_unit > 0 ?
-        pd_this->pd_time + x->c_unit * delaytime : 
-            pd_this->pd_time - (x->c_unit*(SCHEDULER_UNITS_PER_SECOND/sys_dacsr)) * delaytime));
-}
-
-    /* set the time unit in msec or (if 'samps' is set) in samples.  This
-    is flagged by setting c_unit negative.  If the clock is currently set,
-    recalculate the delay based on the new unit and reschedule */
-void clock_setunit(t_clock *x, double timeunit, int sampflag)
-{
-    double timeleft;
-    if (timeunit <= 0)
-        timeunit = 1;
-    /* if no change, return to avoid truncation errors recalculating delay */
-    if ((sampflag && (timeunit == -x->c_unit)) ||
-        (!sampflag && (timeunit == x->c_unit * SCHEDULER_UNITS_PER_MILLISECOND)))
-            return;
+    double d, time;
     
-        /* figure out time left in the units we were in */
-    timeleft = (x->c_time < 0 ? -1 :
-        (x->c_time - pd_this->pd_time)/((x->c_unit > 0)? x->c_unit :
-            (x->c_unit*(SCHEDULER_UNITS_PER_SECOND/sys_dacsr))));
-    if (sampflag)
-        x->c_unit = -timeunit;  /* negate to flag sample-based */
-    else x->c_unit = timeunit * SCHEDULER_UNITS_PER_MILLISECOND;
-    if (timeleft >= 0)  /* reschedule if already set */
-        clock_delay(x, timeleft);
+    if (x->c_unit > 0) { d = x->c_unit; }
+    else {
+        d = -(x->c_unit * (SCHEDULER_TICKS_PER_SECOND / sys_dacsr));
+    }
+
+    time = pd_this->pd_time + (d * delay);
+    
+    clock_set (x, time);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void clock_setUnit (t_clock *x, double unit, int isSamples)
+{
+    double timeLeft = -1.0;
+    
+    if (unit <= 0.0) { unit = 1.0; }
+    
+    if (isSamples) { if (unit == -x->c_unit) { return; } }
+    else { 
+        if (unit == x->c_unit * SCHEDULER_TICKS_PER_MILLISECOND) { return; }
+    }
+    
+    if (x->c_time >= 0.0) { 
+        double d = (x->c_unit > 0) ? x->c_unit : (x->c_unit * (SCHEDULER_TICKS_PER_SECOND / sys_dacsr));
+        timeLeft = (x->c_time - pd_this->pd_time) / d;
+    }
+    
+    if (isSamples) { x->c_unit = -unit; }
+    else {
+        x->c_unit = unit * SCHEDULER_TICKS_PER_MILLISECOND; 
+    }
+    
+    if (timeLeft >= 0.0) { clock_delay (x, timeLeft); }
+}
+
+void clock_setUnitAsSamples (t_clock *x, double samples) 
+{
+    clock_setUnit (x, samples, 1);
+}
+
+void clock_setUnitAsMilliseconds (t_clock *x, double ms) 
+{
+    clock_setUnit (x, ms, 0);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* get current logical time.  We don't specify what units this is in;
     use clock_gettimesince() to measure intervals from time of this call. */
@@ -182,27 +205,27 @@ double clock_getsystime( void) { return (pd_this->pd_time); }
     /* elapsed time in milliseconds since the given system time */
 double clock_gettimesince(double prevsystime)
 {
-    return ((pd_this->pd_time - prevsystime)/SCHEDULER_UNITS_PER_MILLISECOND);
+    return ((pd_this->pd_time - prevsystime)/SCHEDULER_TICKS_PER_MILLISECOND);
 }
 
-    /* elapsed time in units, ala clock_setunit(), since given system time */
+    /* elapsed time in units, ala clock_setUnit(), since given system time */
 double clock_gettimesincewithunits(double prevsystime,
     double units, int sampflag)
 {
-            /* If in samples, divide SCHEDULER_UNITS_PER_SECOND/sys_dacsr first (at
+            /* If in samples, divide SCHEDULER_TICKS_PER_SECOND/sys_dacsr first (at
             cost of an extra division) since it's probably an integer and if
             units == 1 and (sys_time - prevsystime) is an integer number of
             DSP ticks, the result will be exact. */
     if (sampflag)
         return ((pd_this->pd_time - prevsystime)/
-            ((SCHEDULER_UNITS_PER_SECOND/sys_dacsr)*units));
-    else return ((pd_this->pd_time - prevsystime)/(SCHEDULER_UNITS_PER_MILLISECOND*units));
+            ((SCHEDULER_TICKS_PER_SECOND/sys_dacsr)*units));
+    else return ((pd_this->pd_time - prevsystime)/(SCHEDULER_TICKS_PER_MILLISECOND*units));
 }
 
     /* what value the system clock will have after a delay */
 double clock_getsystimeafter(double delaytime)
 {
-    return (pd_this->pd_time + SCHEDULER_UNITS_PER_MILLISECOND * delaytime);
+    return (pd_this->pd_time + SCHEDULER_TICKS_PER_MILLISECOND * delaytime);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -421,7 +444,7 @@ void sched_set_using_audio(int flag)
                 post("sorry, can't turn off callbacks yet; restart Pd");
                     /* not right yet! */
         
-    sys_time_per_dsp_tick = (SCHEDULER_UNITS_PER_SECOND) *
+    sys_time_per_dsp_tick = (SCHEDULER_TICKS_PER_SECOND) *
         ((double)scheduler_blockSize) / sys_dacsr;
     // sys_vgui("::ui_console::pdtk_pd_audio %s\n", flag ? "on" : "off");
 }
@@ -468,7 +491,7 @@ void sys_initmidiqueue( void);
 static void m_pollingscheduler( void)
 {
     int idlecount = 0;
-    sys_time_per_dsp_tick = (SCHEDULER_UNITS_PER_SECOND) *
+    sys_time_per_dsp_tick = (SCHEDULER_TICKS_PER_SECOND) *
         ((double)scheduler_blockSize) / sys_dacsr;
 
 #if PD_WITH_LOCK
@@ -635,7 +658,7 @@ int m_mainloop(void)
 
 int m_batchmain(void)
 {
-    sys_time_per_dsp_tick = (SCHEDULER_UNITS_PER_SECOND) *
+    sys_time_per_dsp_tick = (SCHEDULER_TICKS_PER_SECOND) *
         ((double)scheduler_blockSize) / sys_dacsr;
     while (scheduler_quit != SCHEDULER_QUIT)
         sched_tick();
