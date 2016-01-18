@@ -58,7 +58,7 @@ static double sys_whenupdate;
 
 void sys_initmidiqueue( void)
 {
-    sys_midiinittime = clock_getlogicaltime();
+    sys_midiinittime = scheduler_getTicks();
     sys_dactimeminusrealtime = sys_adctimeminusrealtime = 0;
 }
 
@@ -68,10 +68,10 @@ void sys_initmidiqueue( void)
 void sys_setmiditimediff(double inbuftime, double outbuftime)
 {
     double dactimeminusrealtime =
-        .001 * clock_gettimesince(sys_midiinittime)
+        .001 * scheduler_getMillisecondsSince(sys_midiinittime)
             - outbuftime - sys_getrealtime();
     double adctimeminusrealtime =
-        .001 * clock_gettimesince(sys_midiinittime)
+        .001 * scheduler_getMillisecondsSince(sys_midiinittime)
             + inbuftime - sys_getrealtime();
     if (dactimeminusrealtime > sys_newdactimeminusrealtime)
         sys_newdactimeminusrealtime = dactimeminusrealtime;
@@ -143,7 +143,7 @@ void sys_pollmidioutqueue( void)
         {
             post("out: del %f, midiRT %f logicaltime %f, RT %f dacminusRT %f",
                 (midi_outqueue[midi_outtail].q_time - midirealtime),
-                    midirealtime, .001 * clock_gettimesince(sys_midiinittime),
+                    midirealtime, .001 * scheduler_getMillisecondsSince(sys_midiinittime),
                         sys_getrealtime(), sys_dactimeminusrealtime);
             db = 1;
         }
@@ -169,7 +169,7 @@ static void sys_queuemidimess(int portno, int onebyte, int a, int b, int c)
     midi_outqueue[midi_outhead].q_byte2 = b;
     midi_outqueue[midi_outhead].q_byte3 = c;
     midi_outqueue[midi_outhead].q_time =
-        .001 * clock_gettimesince(sys_midiinittime);
+        .001 * scheduler_getMillisecondsSince(sys_midiinittime);
     midi_outhead = newhead;
     sys_pollmidioutqueue();
 }
@@ -397,7 +397,7 @@ void sys_pollmidiinqueue( void)
 #ifdef TEST_DEJITTER
     static int db = 0;
 #endif
-    double logicaltime = .001 * clock_gettimesince(sys_midiinittime);
+    double logicaltime = .001 * scheduler_getMillisecondsSince(sys_midiinittime);
 #ifdef TEST_DEJITTER
     if (midi_inhead == midi_intail)
         db = 0;

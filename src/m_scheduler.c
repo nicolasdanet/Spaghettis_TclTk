@@ -192,40 +192,34 @@ void clock_setUnitAsMilliseconds (t_clock *x, double ms)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* get current logical time.  We don't specify what units this is in;
-    use clock_gettimesince() to measure intervals from time of this call. */
-double clock_getlogicaltime( void)
+double scheduler_getTicks (void)
 {
-    return (pd_this->pd_time);
+    return pd_this->pd_time;
 }
 
-    /* OBSOLETE (misleading) function name kept for compatibility */
-double clock_getsystime( void) { return (pd_this->pd_time); }
-
-    /* elapsed time in milliseconds since the given system time */
-double clock_gettimesince(double prevsystime)
+double scheduler_getTicksAfter (double ms)
 {
-    return ((pd_this->pd_time - prevsystime)/SCHEDULER_TICKS_PER_MILLISECOND);
+    return (pd_this->pd_time + (SCHEDULER_TICKS_PER_MILLISECOND * ms));
 }
 
-    /* elapsed time in units, ala clock_setUnit(), since given system time */
-double clock_gettimesincewithunits(double prevsystime,
-    double units, int sampflag)
+double scheduler_getUnitsSince (double ticks, double unit, int isSamples)
 {
-            /* If in samples, divide SCHEDULER_TICKS_PER_SECOND/sys_dacsr first (at
-            cost of an extra division) since it's probably an integer and if
-            units == 1 and (sys_time - prevsystime) is an integer number of
-            DSP ticks, the result will be exact. */
-    if (sampflag)
-        return ((pd_this->pd_time - prevsystime)/
-            ((SCHEDULER_TICKS_PER_SECOND/sys_dacsr)*units));
-    else return ((pd_this->pd_time - prevsystime)/(SCHEDULER_TICKS_PER_MILLISECOND*units));
+    double d, elapsed = pd_this->pd_time - ticks;
+    PD_ASSERT (elapsed >= 0.0);
+    
+    if (isSamples) { d = SCHEDULER_TICKS_PER_SECOND / sys_dacsr; } 
+    else { 
+        d = SCHEDULER_TICKS_PER_MILLISECOND;
+    }
+    
+    return (elapsed / (d * unit));
 }
 
-    /* what value the system clock will have after a delay */
-double clock_getsystimeafter(double delaytime)
+double scheduler_getMillisecondsSince (double ticks)
 {
-    return (pd_this->pd_time + SCHEDULER_TICKS_PER_MILLISECOND * delaytime);
+    double elapsed = pd_this->pd_time - ticks;
+    PD_ASSERT (elapsed >= 0.0);
+    return (elapsed / SCHEDULER_TICKS_PER_MILLISECOND);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -434,7 +428,7 @@ void sched_set_using_audio(int flag)
     if (flag == SCHEDULER_NONE)
     {
         sched_referencerealtime = sys_getrealtime();
-        sched_referencelogicaltime = clock_getlogicaltime();
+        sched_referencelogicaltime = scheduler_getTicks();
     }
         if (flag == SCHEDULER_CALLBACK &&
             sched_useaudio != SCHEDULER_CALLBACK)
@@ -558,7 +552,7 @@ static void m_pollingscheduler( void)
         else
         {
             if (1000. * (sys_getrealtime() - sched_referencerealtime)
-                > clock_gettimesince(sched_referencelogicaltime))
+                > scheduler_getMillisecondsSince(sched_referencelogicaltime))
                     timeforward = DACS_YES;
             else timeforward = DACS_NO;
         }

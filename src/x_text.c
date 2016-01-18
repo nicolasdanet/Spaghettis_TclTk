@@ -1556,7 +1556,7 @@ static void qlist_donext(t_qlist *x, int drop, int automatic)
             {
                 clock_delay(x->x_clock,
                     x->x_clockdelay = ap->a_w.w_float * x->x_tempo);
-                x->x_whenclockset = clock_getsystime();
+                x->x_whenclockset = scheduler_getTicks();
             }
             else outlet_list(x->x_ob.te_outlet, 0, onset2-onset, ap);
             x->x_innext = 0;
@@ -1623,7 +1623,7 @@ static void qlist_bang(t_qlist *x)
         up to do this non-reentrantly after a delay of 0 */
     if (x->x_innext)
     {
-        x->x_whenclockset = clock_getsystime();
+        x->x_whenclockset = scheduler_getTicks();
         x->x_clockdelay = 0;
         clock_delay(x->x_clock, 0);
     }
@@ -1697,7 +1697,7 @@ static void qlist_tempo(t_qlist *x, t_float f)
     newtempo = 1./f;
     if (x->x_whenclockset != 0)
     {
-        t_float elapsed = clock_gettimesince(x->x_whenclockset);
+        t_float elapsed = scheduler_getMillisecondsSince(x->x_whenclockset);
         t_float left = x->x_clockdelay - elapsed;
         if (left < 0) left = 0;
         left *= newtempo / x->x_tempo;

@@ -11,7 +11,7 @@
 #include <string.h>
 
     /* parse a time unit such as "5 msec", "60 perminute", or "1 sample" to
-    a form usable by clock_setUnit)( and clock_gettimesincewithunits().
+    a form usable by clock_setUnit)( and scheduler_getUnitsSince().
     This brute-force search through symbols really ought not to be done on
     the fly for incoming 'tempo' messages, hmm...  This isn't public because
     its interface migth want to change - but it's used in x_text.c as well
@@ -247,8 +247,8 @@ typedef struct _line
 
 static void line_tick(t_line *x)
 {
-    double timenow = clock_getsystime();
-    double msectogo = - clock_gettimesince(x->x_targettime);
+    double timenow = scheduler_getTicks();
+    double msectogo = - scheduler_getMillisecondsSince(x->x_targettime);
     if (msectogo < 1E-9)
     {
         outlet_float(x->x_obj.te_outlet, x->x_targetval);
@@ -267,7 +267,7 @@ static void line_tick(t_line *x)
 
 static void line_float(t_line *x, t_float f)
 {
-    double timenow = clock_getsystime();
+    double timenow = scheduler_getTicks();
     if (x->x_gotinlet && x->x_in1val > 0)
     {
         if (timenow > x->x_targettime) x->x_setval = x->x_targetval;
@@ -275,7 +275,7 @@ static void line_float(t_line *x, t_float f)
             (timenow - x->x_prevtime)
             * (x->x_targetval - x->x_setval);
         x->x_prevtime = timenow;
-        x->x_targettime = clock_getsystimeafter(x->x_in1val);
+        x->x_targettime = scheduler_getTicksAfter(x->x_in1val);
         x->x_targetval = f;
         line_tick(x);
         x->x_gotinlet = 0;
@@ -325,7 +325,7 @@ static void *line_new(t_float f, t_float grain)
     x->x_gotinlet = 0;
     x->x_1overtimediff = 1;
     x->x_clock = clock_new(x, (t_method)line_tick);
-    x->x_targettime = x->x_prevtime = clock_getsystime();
+    x->x_targettime = x->x_prevtime = scheduler_getTicks();
     x->x_grain = grain;
     outlet_new(&x->x_obj, gensym("float"));
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("float"), gensym("ft1"));
@@ -360,22 +360,22 @@ typedef struct _timer
 
 static void timer_bang(t_timer *x)
 {
-    x->x_settime = clock_getsystime();
+    x->x_settime = scheduler_getTicks();
     x->x_moreelapsed = 0;
 }
 
 static void timer_bang2(t_timer *x)
 {
     outlet_float(x->x_obj.te_outlet,
-        clock_gettimesincewithunits(x->x_settime, x->x_unit, x->x_samps)
+        scheduler_getUnitsSince(x->x_settime, x->x_unit, x->x_samps)
             + x->x_moreelapsed);
 }
 
 static void timer_tempo(t_timer *x, t_symbol *unitname, t_float tempo)
 {
-    x->x_moreelapsed +=  clock_gettimesincewithunits(x->x_settime,
+    x->x_moreelapsed +=  scheduler_getUnitsSince(x->x_settime,
         x->x_unit, x->x_samps);
-    x->x_settime = clock_getsystime();
+    x->x_settime = scheduler_getTicks();
     parsetimeunits(x, tempo, unitname, &x->x_unit, &x->x_samps);
 }
 

@@ -491,12 +491,6 @@ PD_DLL void     clock_free                  (t_clock *x);
 PD_DLL void     clock_unset                 (t_clock *x);
 PD_DLL void     clock_delay                 (t_clock *x, double delay);
 
-PD_DLL double   clock_getlogicaltime        (void);
-PD_DLL double   clock_getsystime            (void);
-PD_DLL double   clock_gettimesince          (double prevsystime);
-PD_DLL double   clock_gettimesincewithunits (double prevsystime, double units, int sampflag);
-PD_DLL double   clock_getsystimeafter       (double delaytime);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

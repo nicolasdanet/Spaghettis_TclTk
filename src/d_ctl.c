@@ -265,7 +265,7 @@ static t_int *vline_tilde_perform(t_int *w)
     double inc = x->x_inc;
     double msecpersamp = x->x_msecpersamp;
     double samppermsec = x->x_samppermsec;
-    double timenow, logicaltimenow = clock_gettimesince(x->x_referencetime);
+    double timenow, logicaltimenow = scheduler_getMillisecondsSince(x->x_referencetime);
     t_vseg *s = x->x_list;
     if (logicaltimenow != x->x_lastlogicaltime)
     {
@@ -332,7 +332,7 @@ static void vline_tilde_stop(t_vline *x)
 
 static void vline_tilde_float(t_vline *x, t_float f)
 {
-    double timenow = clock_gettimesince(x->x_referencetime);
+    double timenow = scheduler_getMillisecondsSince(x->x_referencetime);
     t_float inlet1 = (x->x_inlet1 < 0 ? 0 : x->x_inlet1);
     t_float inlet2 = x->x_inlet2;
     double starttime = timenow + inlet2;
@@ -405,7 +405,7 @@ static void *vline_tilde_new(void)
     x->x_inlet1 = x->x_inlet2 = 0;
     x->x_value = x->x_inc = 0;
     x->x_referencetime = x->x_lastlogicaltime = x->x_nextblocktime =
-        clock_getlogicaltime();
+        scheduler_getTicks();
     x->x_list = 0;
     x->x_samppermsec = 0;
     x->x_targettime = 1e20;
@@ -511,7 +511,7 @@ static t_int *vsnapshot_tilde_perform(t_int *w)
     int n = x->x_n, i;
     for (i = 0; i < n; i++)
         out[i] = in[i];
-    x->x_time = clock_getlogicaltime();
+    x->x_time = scheduler_getTicks();
     x->x_gotone = 1;
     return (w+3);
 }
@@ -536,7 +536,7 @@ static void vsnapshot_tilde_bang(t_vsnapshot *x)
     t_sample val;
     if (x->x_gotone)
     {
-        int indx = clock_gettimesince(x->x_time) * x->x_sampspermsec;
+        int indx = scheduler_getMillisecondsSince(x->x_time) * x->x_sampspermsec;
         if (indx < 0)
             indx = 0;
         else if (indx >= x->x_n)

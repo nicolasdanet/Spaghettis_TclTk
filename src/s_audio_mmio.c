@@ -274,7 +274,7 @@ static double initsystime = -1;
     /* call this whenever we reset audio */
 static void nt_resetmidisync(void)
 {
-    initsystime = clock_getsystime();
+    initsystime = scheduler_getTicks();
     nt_hibuftime = sys_getrealtime();
 }
 
@@ -290,7 +290,7 @@ static void nt_midisync(void)
     jittersec = (nt_dacjitterbufsallowed > nt_adcjitterbufsallowed ?
         nt_dacjitterbufsallowed : nt_adcjitterbufsallowed)
             * nt_realdacblksize / sys_getsr();
-    diff = sys_getrealtime() - 0.001 * clock_gettimesince(initsystime);
+    diff = sys_getrealtime() - 0.001 * scheduler_getMillisecondsSince(initsystime);
     if (diff > nt_hibuftime) nt_hibuftime = diff;
     if (diff < nt_hibuftime - jittersec)
     {

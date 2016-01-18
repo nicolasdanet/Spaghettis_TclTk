@@ -286,46 +286,55 @@ void    buffer_openFile             (void *dummy, t_symbol *name, t_symbol *dire
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void clock_setUnitAsSamples         (t_clock *x, double samples);
-void clock_setUnitAsMilliseconds    (t_clock *x, double ms);
+void    clock_setUnitAsSamples              (t_clock *x, double samples);
+void    clock_setUnitAsMilliseconds         (t_clock *x, double ms);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_vgui                       (char *fmt, ...);
-void sys_gui                        (char *s);
-void sys_pretendguibytes            (int n);
-void sys_queuegui                   (void *client, t_glist *glist, t_callbackfn f);
-void sys_unqueuegui                 (void *client);
+double  scheduler_getTicks                  (void);
+double  scheduler_getTicksAfter             (double delaytime);
+double  scheduler_getMillisecondsSince      (double ticks);
+double  scheduler_getUnitsSince             (double ticks, double unit, int isSamples);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void gfxstub_new                    (t_pd *owner, void *key, const char *cmd);
-void gfxstub_deleteforkey           (void *key);
+void sys_vgui                   (char *fmt, ...);
+void sys_gui                    (char *s);
+void sys_pretendguibytes        (int n);
+void sys_queuegui               (void *client, t_glist *glist, t_callbackfn f);
+void sys_unqueuegui             (void *client);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void message_initialize             (void);
-void object_initialize              (void);
-void setup_initialize               (void);
-void global_initialize              (void);
-void garray_init                    (void);
+void gfxstub_new                (t_pd *owner, void *key, const char *cmd);
+void gfxstub_deleteforkey       (void *key);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int  outlet_isSignal                (t_outlet *x);
-void text_save                      (t_gobj *z, t_buffer *b);
-void canvas_popabstraction          (t_canvas *x);
-int  canvas_getdollarzero           (void);
-void open_via_helppath              (const char *name, const char *dir);
-void post_atoms                     (int argc, t_atom *argv);
+void message_initialize         (void);
+void object_initialize          (void);
+void setup_initialize           (void);
+void global_initialize          (void);
+void garray_init                (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int  outlet_isSignal            (t_outlet *x);
+void text_save                  (t_gobj *z, t_buffer *b);
+void canvas_popabstraction      (t_canvas *x);
+int  canvas_getdollarzero       (void);
+void open_via_helppath          (const char *name, const char *dir);
+void post_atoms                 (int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
