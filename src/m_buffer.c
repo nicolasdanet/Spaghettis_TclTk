@@ -581,14 +581,18 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
         }
         
         if (s == NULL || !(object = s->s_thing)) {
-            if (s) { post_error (PD_TRANSLATE ("%s: no such object"), s->s_name); }     // --
+            if (!s) { post_error (PD_TRANSLATE ("$: invalid substitution")); }  // --
             else {
-                PD_BUG;
+                post_error (PD_TRANSLATE ("%s: no such object"), s->s_name);    // --
             }
+            do { size--; v++; } while (size && !IS_SEMICOLON (v));
+            
         } else {
             size--; v++; break;
         }
     }
+    
+    PD_ASSERT ((object != NULL) || (size == 0));
     
     m    = message; 
     args = 0;
