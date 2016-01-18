@@ -274,7 +274,7 @@ static double initsystime = -1;
     /* call this whenever we reset audio */
 static void nt_resetmidisync(void)
 {
-    initsystime = scheduler_getTicks();
+    initsystime = scheduler_getSystime();
     nt_hibuftime = sys_getrealtime();
 }
 

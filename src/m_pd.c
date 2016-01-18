@@ -128,7 +128,7 @@ static t_pdinstance *pdinstance_new()
 {
     t_pdinstance *x = (t_pdinstance *)PD_MEMORY_GET (sizeof (t_pdinstance));
     
-    x->pd_time              = 0.0;
+    x->pd_systime           = 0.0;
     x->pd_state             = 0;
     x->pd_chainSize         = 0;
     x->pd_chain             = NULL;

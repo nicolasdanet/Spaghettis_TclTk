@@ -26,8 +26,8 @@
 
 /* Notice that values below are related to LCM (32000, 44100, 48000, 88200, 96000). */
     
-#define SCHEDULER_TICKS_PER_MILLISECOND     (double)(32.0 * 441.0)
-#define SCHEDULER_TICKS_PER_SECOND          (SCHEDULER_TICKS_PER_MILLISECOND * 1000.0)
+#define SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND     (double)(32.0 * 441.0)
+#define SCHEDULER_SYSTIME_TICKS_PER_SECOND          (SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND * 1000.0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ typedef void (*t_clockfn)(void *client);
 #pragma mark -
 
 struct _clock {
-    double          c_time;     /* Set as negative for unset clocks. */
+    double          c_systime;  /* Set as negative for unset clocks. */
     double          c_unit;     /* A positive value is in ticks, a negative value is in number of samples. */
     t_clockfn       c_fn;
     void            *c_owner;
@@ -80,11 +80,11 @@ t_clock *clock_new (void *owner, t_method fn)
 {
     t_clock *x = (t_clock *)PD_MEMORY_GET (sizeof (t_clock));
     
-    x->c_time   = -1.0;
-    x->c_unit   = SCHEDULER_TICKS_PER_MILLISECOND;
-    x->c_fn     = (t_clockfn)fn;
-    x->c_owner  = owner;
-    x->c_next   = NULL;
+    x->c_systime = -1.0;
+    x->c_unit    = SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND;
+    x->c_fn      = (t_clockfn)fn;
+    x->c_owner   = owner;
+    x->c_next    = NULL;
 
     return x;
 }
@@ -102,31 +102,31 @@ void clock_free (t_clock *x)
 
 void clock_unset (t_clock *x)
 {
-    if (x->c_time >= 0.0) {
+    if (x->c_systime >= 0.0) {
         if (x == pd_this->pd_clocks) { pd_this->pd_clocks = x->c_next; }
         else {
             t_clock *c = pd_this->pd_clocks;
             while (c->c_next != x) { c = c->c_next; } c->c_next = x->c_next;
         }
-        x->c_time = -1.0;
+        x->c_systime = -1.0;
     }
 }
 
 static void clock_set (t_clock *x, double time)
 {
-    if (time < pd_this->pd_time) { time = pd_this->pd_time; }
+    if (time < pd_this->pd_systime) { time = pd_this->pd_systime; }
     
     clock_unset (x);
     
-    x->c_time = time;
+    x->c_systime = time;
     
-    if (pd_this->pd_clocks && pd_this->pd_clocks->c_time <= time) {
+    if (pd_this->pd_clocks && pd_this->pd_clocks->c_systime <= time) {
     
         t_clock *m = NULL;
         t_clock *n = NULL;
         
         for (m = pd_this->pd_clocks, n = pd_this->pd_clocks->c_next; m; m = n, n = m->c_next) {
-            if (!n || n->c_time > time) {
+            if (!n || n->c_systime > time) {
                 m->c_next = x; x->c_next = n; return;
             }
         }
@@ -142,10 +142,10 @@ void clock_delay (t_clock *x, double delay)     /* Could be in milliseconds or i
     
     if (x->c_unit > 0) { d = x->c_unit; }
     else {
-        d = -(x->c_unit * (SCHEDULER_TICKS_PER_SECOND / sys_dacsr));
+        d = -(x->c_unit * (SCHEDULER_SYSTIME_TICKS_PER_SECOND / sys_dacsr));
     }
 
-    time = pd_this->pd_time + (d * delay);
+    time = pd_this->pd_systime + (d * delay);
     
     clock_set (x, time);
 }
@@ -162,17 +162,19 @@ static void clock_setUnit (t_clock *x, double unit, int isSamples)
     
     if (isSamples) { if (unit == -x->c_unit) { return; } }
     else { 
-        if (unit == x->c_unit * SCHEDULER_TICKS_PER_MILLISECOND) { return; }
+        if (unit == x->c_unit * SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND) { return; }
     }
     
-    if (x->c_time >= 0.0) { 
-        double d = (x->c_unit > 0) ? x->c_unit : (x->c_unit * (SCHEDULER_TICKS_PER_SECOND / sys_dacsr));
-        timeLeft = (x->c_time - pd_this->pd_time) / d;
+    if (x->c_systime >= 0.0) {
+    //
+    double d = (x->c_unit > 0) ? x->c_unit : (x->c_unit * (SCHEDULER_SYSTIME_TICKS_PER_SECOND / sys_dacsr));
+    timeLeft = (x->c_systime - pd_this->pd_systime) / d;
+    //
     }
     
     if (isSamples) { x->c_unit = -unit; }
     else {
-        x->c_unit = unit * SCHEDULER_TICKS_PER_MILLISECOND; 
+        x->c_unit = unit * SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND; 
     }
     
     if (timeLeft >= 0.0) { clock_delay (x, timeLeft); }
@@ -192,34 +194,35 @@ void clock_setUnitAsMilliseconds (t_clock *x, double ms)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-double scheduler_getTicks (void)
+double scheduler_getSystime (void)
 {
-    return pd_this->pd_time;
+    return pd_this->pd_systime;
 }
 
-double scheduler_getTicksAfter (double ms)
+double scheduler_getSystimeAfter (double ms)
 {
-    return (pd_this->pd_time + (SCHEDULER_TICKS_PER_MILLISECOND * ms));
+    return (pd_this->pd_systime + (SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND * ms));
 }
 
-double scheduler_getUnitsSince (double ticks, double unit, int isSamples)
+double scheduler_getUnitsSince (double systime, double unit, int isSamples)
 {
-    double d, elapsed = pd_this->pd_time - ticks;
+    double d, elapsed = pd_this->pd_systime - systime;
+    
     PD_ASSERT (elapsed >= 0.0);
     
-    if (isSamples) { d = SCHEDULER_TICKS_PER_SECOND / sys_dacsr; } 
+    if (isSamples) { d = SCHEDULER_SYSTIME_TICKS_PER_SECOND / sys_dacsr; } 
     else { 
-        d = SCHEDULER_TICKS_PER_MILLISECOND;
+        d = SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND;
     }
     
     return (elapsed / (d * unit));
 }
 
-double scheduler_getMillisecondsSince (double ticks)
+double scheduler_getMillisecondsSince (double systime)
 {
-    double elapsed = pd_this->pd_time - ticks;
+    double elapsed = pd_this->pd_systime - systime;
     PD_ASSERT (elapsed >= 0.0);
-    return (elapsed / SCHEDULER_TICKS_PER_MILLISECOND);
+    return (elapsed / SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -428,7 +431,7 @@ void sched_set_using_audio(int flag)
     if (flag == SCHEDULER_NONE)
     {
         sched_referencerealtime = sys_getrealtime();
-        sched_referencelogicaltime = scheduler_getTicks();
+        sched_referencelogicaltime = scheduler_getSystime();
     }
         if (flag == SCHEDULER_CALLBACK &&
             sched_useaudio != SCHEDULER_CALLBACK)
@@ -438,7 +441,7 @@ void sched_set_using_audio(int flag)
                 post("sorry, can't turn off callbacks yet; restart Pd");
                     /* not right yet! */
         
-    sys_time_per_dsp_tick = (SCHEDULER_TICKS_PER_SECOND) *
+    sys_time_per_dsp_tick = (SCHEDULER_SYSTIME_TICKS_PER_SECOND) *
         ((double)scheduler_blockSize) / sys_dacsr;
     // sys_vgui("::ui_console::pdtk_pd_audio %s\n", flag ? "on" : "off");
 }
@@ -446,13 +449,13 @@ void sched_set_using_audio(int flag)
     /* take the scheduler forward one DSP tick, also handling clock timeouts */
 void sched_tick( void)
 {
-    double next_sys_time = pd_this->pd_time + sys_time_per_dsp_tick;
+    double next_sys_time = pd_this->pd_systime + sys_time_per_dsp_tick;
     int countdown = 5000;
     while (pd_this->pd_clocks && 
-        pd_this->pd_clocks->c_time < next_sys_time)
+        pd_this->pd_clocks->c_systime < next_sys_time)
     {
         t_clock *c = pd_this->pd_clocks;
-        pd_this->pd_time = c->c_time;
+        pd_this->pd_systime = c->c_systime;
         clock_unset(pd_this->pd_clocks);
         (*c->c_fn)(c->c_owner);
         if (!countdown--)
@@ -463,7 +466,7 @@ void sched_tick( void)
         if (scheduler_quit)
             return;
     }
-    pd_this->pd_time = next_sys_time;
+    pd_this->pd_systime = next_sys_time;
     dsp_tick();
     sched_diddsp++;
 }
@@ -485,7 +488,7 @@ void sys_initmidiqueue( void);
 static void m_pollingscheduler( void)
 {
     int idlecount = 0;
-    sys_time_per_dsp_tick = (SCHEDULER_TICKS_PER_SECOND) *
+    sys_time_per_dsp_tick = (SCHEDULER_SYSTIME_TICKS_PER_SECOND) *
         ((double)scheduler_blockSize) / sys_dacsr;
 
 #if PD_WITH_LOCK
@@ -614,13 +617,13 @@ static void m_callbackscheduler(void)
     sys_initmidiqueue();
     while (!scheduler_quit)
     {
-        double timewas = pd_this->pd_time;
+        double timewas = pd_this->pd_systime;
 #ifdef _WIN32
         Sleep(1000);
 #else
         sleep(1);
 #endif
-        if (pd_this->pd_time == timewas)
+        if (pd_this->pd_systime == timewas)
         {
             sys_lock();
             sys_pollgui();
@@ -652,7 +655,7 @@ int m_mainloop(void)
 
 int m_batchmain(void)
 {
-    sys_time_per_dsp_tick = (SCHEDULER_TICKS_PER_SECOND) *
+    sys_time_per_dsp_tick = (SCHEDULER_SYSTIME_TICKS_PER_SECOND) *
         ((double)scheduler_blockSize) / sys_dacsr;
     while (scheduler_quit != SCHEDULER_QUIT)
         sched_tick();

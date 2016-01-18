@@ -104,7 +104,7 @@ struct _class {
 // -----------------------------------------------------------------------------------------------------------
 
 struct _pdinstance {
-    double      pd_time;
+    double      pd_systime;
     int         pd_state;
     int         pd_chainSize;
     t_int       *pd_chain;
@@ -293,10 +293,10 @@ void    clock_setUnitAsMilliseconds         (t_clock *x, double ms);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-double  scheduler_getTicks                  (void);
-double  scheduler_getTicksAfter             (double delaytime);
-double  scheduler_getMillisecondsSince      (double ticks);
-double  scheduler_getUnitsSince             (double ticks, double unit, int isSamples);
+double  scheduler_getSystime                (void);
+double  scheduler_getSystimeAfter           (double ms);
+double  scheduler_getMillisecondsSince      (double systime);
+double  scheduler_getUnitsSince             (double systime, double unit, int isSamples);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

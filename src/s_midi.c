@@ -58,7 +58,7 @@ static double sys_whenupdate;
 
 void sys_initmidiqueue( void)
 {
-    sys_midiinittime = scheduler_getTicks();
+    sys_midiinittime = scheduler_getSystime();
     sys_dactimeminusrealtime = sys_adctimeminusrealtime = 0;
 }
 

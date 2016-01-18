@@ -405,7 +405,7 @@ static void *vline_tilde_new(void)
     x->x_inlet1 = x->x_inlet2 = 0;
     x->x_value = x->x_inc = 0;
     x->x_referencetime = x->x_lastlogicaltime = x->x_nextblocktime =
-        scheduler_getTicks();
+        scheduler_getSystime();
     x->x_list = 0;
     x->x_samppermsec = 0;
     x->x_targettime = 1e20;
@@ -511,7 +511,7 @@ static t_int *vsnapshot_tilde_perform(t_int *w)
     int n = x->x_n, i;
     for (i = 0; i < n; i++)
         out[i] = in[i];
-    x->x_time = scheduler_getTicks();
+    x->x_time = scheduler_getSystime();
     x->x_gotone = 1;
     return (w+3);
 }

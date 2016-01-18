@@ -247,7 +247,7 @@ typedef struct _line
 
 static void line_tick(t_line *x)
 {
-    double timenow = scheduler_getTicks();
+    double timenow = scheduler_getSystime();
     double msectogo = - scheduler_getMillisecondsSince(x->x_targettime);
     if (msectogo < 1E-9)
     {
@@ -267,7 +267,7 @@ static void line_tick(t_line *x)
 
 static void line_float(t_line *x, t_float f)
 {
-    double timenow = scheduler_getTicks();
+    double timenow = scheduler_getSystime();
     if (x->x_gotinlet && x->x_in1val > 0)
     {
         if (timenow > x->x_targettime) x->x_setval = x->x_targetval;
@@ -275,7 +275,7 @@ static void line_float(t_line *x, t_float f)
             (timenow - x->x_prevtime)
             * (x->x_targetval - x->x_setval);
         x->x_prevtime = timenow;
-        x->x_targettime = scheduler_getTicksAfter(x->x_in1val);
+        x->x_targettime = scheduler_getSystimeAfter(x->x_in1val);
         x->x_targetval = f;
         line_tick(x);
         x->x_gotinlet = 0;
@@ -325,7 +325,7 @@ static void *line_new(t_float f, t_float grain)
     x->x_gotinlet = 0;
     x->x_1overtimediff = 1;
     x->x_clock = clock_new(x, (t_method)line_tick);
-    x->x_targettime = x->x_prevtime = scheduler_getTicks();
+    x->x_targettime = x->x_prevtime = scheduler_getSystime();
     x->x_grain = grain;
     outlet_new(&x->x_obj, gensym("float"));
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("float"), gensym("ft1"));
@@ -360,7 +360,7 @@ typedef struct _timer
 
 static void timer_bang(t_timer *x)
 {
-    x->x_settime = scheduler_getTicks();
+    x->x_settime = scheduler_getSystime();
     x->x_moreelapsed = 0;
 }
 
@@ -375,7 +375,7 @@ static void timer_tempo(t_timer *x, t_symbol *unitname, t_float tempo)
 {
     x->x_moreelapsed +=  scheduler_getUnitsSince(x->x_settime,
         x->x_unit, x->x_samps);
-    x->x_settime = scheduler_getTicks();
+    x->x_settime = scheduler_getSystime();
     parsetimeunits(x, tempo, unitname, &x->x_unit, &x->x_samps);
 }
 
