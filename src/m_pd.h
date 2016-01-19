@@ -98,8 +98,8 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#ifndef PD_DEBUG
-#define PD_DEBUG            1           /* False assertions logged. */
+#ifndef PD_WITH_DEBUG
+#define PD_WITH_DEBUG       1           /* False assertions logged. */
 #endif
 
 #ifndef PD_WITH_ALLOCA
@@ -107,7 +107,7 @@ extern "C" {
 #endif
 
 #ifndef PD_WITH_LOCK
-#define PD_WITH_LOCK        1           /* Use lock (with pthread mutex). */
+#define PD_WITH_LOCK        1           /* Scheduler uses locks (with pthread mutex). */
 #endif
 
 // -----------------------------------------------------------------------------------------------------------

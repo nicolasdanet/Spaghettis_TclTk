@@ -235,52 +235,52 @@ t_float         *object_getSignalValueAtIndex           (t_object *x, int m);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void global_new                     (void *dummy, t_symbol *name, t_symbol *directory);
-void global_dsp                     (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_key                     (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_quit                    (void *dummy);
+void global_new                             (void *dummy, t_symbol *name, t_symbol *directory);
+void global_dsp                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_key                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_quit                            (void *dummy);
 
-void global_gui                     (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_audioProperties         (void *dummy, t_float f);
-void global_midiProperties          (void *dummy, t_float f);
-void global_audioDialog             (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_midiDialog              (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_audioAPI                (void *dummy, t_float f);
-void global_midiAPI                 (void *dummy, t_float f);
-void global_pathDialog              (void *dummy, t_float f);
-void global_setPath                 (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_ping                    (void *dummy);
-void global_watchdog                (void *dummy);
-void global_savePreferences         (void *dummy);
-void global_shouldQuit              (void *dummy);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_error atom_withStringUnzeroed     (t_atom *a, char *s, int size);
-t_error atom_toString               (t_atom *a, char *s, int size);
+void global_gui                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_audioProperties                 (void *dummy, t_float f);
+void global_midiProperties                  (void *dummy, t_float f);
+void global_audioDialog                     (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_midiDialog                      (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_audioAPI                        (void *dummy, t_float f);
+void global_midiAPI                         (void *dummy, t_float f);
+void global_pathDialog                      (void *dummy, t_float f);
+void global_setPath                         (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void global_ping                            (void *dummy);
+void global_watchdog                        (void *dummy);
+void global_savePreferences                 (void *dummy);
+void global_shouldQuit                      (void *dummy);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    buffer_log                  (t_buffer *x);
-void    buffer_post                 (t_buffer *x);
-void    buffer_resize               (t_buffer *x, int n);
-void    buffer_vAppend              (t_buffer *x, char *fmt, ...);
-void    buffer_appendSemicolon      (t_buffer *x);
-void    buffer_parseStringUnzeroed  (t_buffer *x, char *s, int size, int allocated);
-void    buffer_toString             (t_buffer *x, char **s, int *size);
-void    buffer_toStringUnzeroed     (t_buffer *x, char **s, int *size);
-void    buffer_withStringUnzeroed   (t_buffer *x, char *s, int size);
-void    buffer_serialize            (t_buffer *x, t_buffer *y);
-void    buffer_deserialize          (t_buffer *x, int argc, t_atom *argv);
-void    buffer_eval                 (t_buffer *x, t_pd *target, int argc, t_atom *argv);
-t_error buffer_read                 (t_buffer *x, char *name, t_canvas *canvas);
-t_error buffer_write                (t_buffer *x, char *name, char *directory);
-t_error buffer_evalFile             (t_symbol *name, t_symbol *directory);
-void    buffer_openFile             (void *dummy, t_symbol *name, t_symbol *directory);
+t_error atom_withStringUnzeroed             (t_atom *a, char *s, int size);
+t_error atom_toString                       (t_atom *a, char *s, int size);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void    buffer_log                          (t_buffer *x);
+void    buffer_post                         (t_buffer *x);
+void    buffer_resize                       (t_buffer *x, int n);
+void    buffer_vAppend                      (t_buffer *x, char *fmt, ...);
+void    buffer_appendSemicolon              (t_buffer *x);
+void    buffer_parseStringUnzeroed          (t_buffer *x, char *s, int size, int allocated);
+void    buffer_toString                     (t_buffer *x, char **s, int *size);
+void    buffer_toStringUnzeroed             (t_buffer *x, char **s, int *size);
+void    buffer_withStringUnzeroed           (t_buffer *x, char *s, int size);
+void    buffer_serialize                    (t_buffer *x, t_buffer *y);
+void    buffer_deserialize                  (t_buffer *x, int argc, t_atom *argv);
+void    buffer_eval                         (t_buffer *x, t_pd *target, int argc, t_atom *argv);
+t_error buffer_read                         (t_buffer *x, char *name, t_canvas *canvas);
+t_error buffer_write                        (t_buffer *x, char *name, char *directory);
+t_error buffer_evalFile                     (t_symbol *name, t_symbol *directory);
+void    buffer_openFile                     (void *dummy, t_symbol *name, t_symbol *directory);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
