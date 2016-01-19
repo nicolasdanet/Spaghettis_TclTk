@@ -190,13 +190,10 @@ static int sys_domicrosleep(int microsec, int pollem)
         for (i = 0; i < sys_nfdpoll; i++)
             if (FD_ISSET(sys_fdpoll[i].fdp_fd, &readset))
         {
-#ifdef PD_WITH_LOCK
-            //sys_lock();
-#endif
+            //SCHEDULER_LOCK;   /* Wrong. */
             (*sys_fdpoll[i].fdp_fn)(sys_fdpoll[i].fdp_ptr, sys_fdpoll[i].fdp_fd);
-#ifdef PD_WITH_LOCK
-            //sys_unlock();
-#endif
+            //SCHEDULER_UNLOCK;
+            
             didsomething = 1;
         }
         return (didsomething);

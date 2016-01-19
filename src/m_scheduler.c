@@ -16,9 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if PD_WITH_LOCK
-    #include <pthread.h>
-#endif
+#include <pthread.h>
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -37,6 +35,22 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if PD_WITH_LOCK
+
+#define SCHEDULER_LOCK      scheduler_lock()
+#define SCHEDULER_UNLOCK    scheduler_unlock()
+    
+#else
+    
+#define SCHEDULER_LOCK
+#define SCHEDULER_UNLOCK
+    
+#endif // PD_WITH_LOCK
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 extern int      sys_nogui;
 extern int      sys_hipriority;
@@ -51,9 +65,14 @@ extern t_pdinstance *pd_this;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static int scheduler_quit;                                  /* Shared. */
 static int scheduler_sleepGrain;                            /* Shared. */
 static int scheduler_blockSize = AUDIO_DEFAULT_BLOCK;       /* Shared. */
-static int scheduler_quit;                                  /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static pthread_mutex_t sys_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -66,8 +85,8 @@ typedef void (*t_clockfn)(void *client);
 #pragma mark -
 
 struct _clock {
-    double          c_systime;  /* Set as negative for unset clocks. */
-    double          c_unit;     /* A positive value is in ticks, a negative value is in number of samples. */
+    double          c_systime;      /* Negative for unset clocks. */
+    double          c_unit;         /* A positive value is in ticks, negative for number of samples. */
     t_clockfn       c_fn;
     void            *c_owner;
     struct _clock   *c_next;
@@ -80,11 +99,11 @@ t_clock *clock_new (void *owner, t_method fn)
 {
     t_clock *x = (t_clock *)PD_MEMORY_GET (sizeof (t_clock));
     
-    x->c_systime = -1.0;
-    x->c_unit    = SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND;
-    x->c_fn      = (t_clockfn)fn;
-    x->c_owner   = owner;
-    x->c_next    = NULL;
+    x->c_systime    = -1.0;
+    x->c_unit       = SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND;
+    x->c_fn         = (t_clockfn)fn;
+    x->c_owner      = owner;
+    x->c_next       = NULL;
 
     return x;
 }
@@ -223,6 +242,20 @@ double scheduler_getMillisecondsSince (double systime)
     double elapsed = pd_this->pd_systime - systime;
     PD_ASSERT (elapsed >= 0.0);
     return (elapsed / SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void scheduler_lock (void)
+{
+    pthread_mutex_lock (&sys_mutex);
+}
+
+void scheduler_unlock (void)
+{
+    pthread_mutex_unlock (&sys_mutex);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -491,9 +524,7 @@ static void m_pollingscheduler( void)
     sys_time_per_dsp_tick = (SCHEDULER_SYSTIME_TICKS_PER_SECOND) *
         ((double)scheduler_blockSize) / sys_dacsr;
 
-#if PD_WITH_LOCK
-        sys_lock();
-#endif
+        SCHEDULER_LOCK;
 
     sys_clearhist();
     if (scheduler_sleepGrain < 100)
@@ -512,18 +543,16 @@ static void m_pollingscheduler( void)
     waitfortick:
         if (sched_useaudio != SCHEDULER_NONE)
         {
-#if PD_WITH_LOCK
             /* T.Grill - send_dacs may sleep -> 
                 unlock thread lock make that time available 
                 - could messaging do any harm while sys_send_dacs is running?
             */
-            sys_unlock();
-#endif
+            SCHEDULER_UNLOCK;
             timeforward = sys_send_dacs();
-#if PD_WITH_LOCK
+
             /* T.Grill - done */
-            sys_lock();
-#endif
+            SCHEDULER_LOCK;
+
                 /* if dacs remain "idle" for 1 sec, they're hung up. */
             if (timeforward != 0)
                 idlecount = 0;
@@ -579,26 +608,24 @@ static void m_pollingscheduler( void)
         if (!didsomething)
         {
             sched_pollformeters();
-#if PD_WITH_LOCK
-            sys_unlock();   /* unlock while we idle */
-#endif
+
+            SCHEDULER_UNLOCK;   /* unlock while we idle */
+
             if (timeforward != DACS_SLEPT) { sys_microsleep(scheduler_sleepGrain); }
-#if PD_WITH_LOCK
-            sys_lock();
-#endif
+
+            SCHEDULER_LOCK;
+
             sys_addhist(5);
             sched_didnothing++;
         }
     }
 
-#if PD_WITH_LOCK
-    sys_unlock();
-#endif
+    SCHEDULER_UNLOCK;
 }
 
 void sched_audio_callbackfn(void)
 {
-    sys_lock();
+    scheduler_lock();
     sys_setmiditimediff(0, 1e-6 * sys_schedadvance);
     sys_addhist(1);
     sched_tick();
@@ -609,7 +636,7 @@ void sched_audio_callbackfn(void)
     sys_addhist(5);
     sched_pollformeters();
     sys_addhist(0);
-    sys_unlock();
+    scheduler_unlock();
 }
 
 static void m_callbackscheduler(void)
@@ -625,10 +652,10 @@ static void m_callbackscheduler(void)
 #endif
         if (pd_this->pd_systime == timewas)
         {
-            sys_lock();
+            scheduler_lock();
             sys_pollgui();
             sched_tick();
-            sys_unlock();
+            scheduler_unlock();
         }
     }
 }
@@ -661,34 +688,6 @@ int m_batchmain(void)
         sched_tick();
     return (0);
 }
-
-/* ------------ thread locking ------------------- */
-
-#if PD_WITH_LOCK
-static pthread_mutex_t sys_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-void sys_lock(void)
-{
-    pthread_mutex_lock(&sys_mutex);
-}
-
-void sys_unlock(void)
-{
-    pthread_mutex_unlock(&sys_mutex);
-}
-
-int sys_trylock(void)
-{
-    return pthread_mutex_trylock(&sys_mutex);
-}
-
-#else
-
-void sys_lock(void) {}
-void sys_unlock(void) {}
-int sys_trylock(void) {return (1);}
-
-#endif
 
 void sys_exit(void)
 {
