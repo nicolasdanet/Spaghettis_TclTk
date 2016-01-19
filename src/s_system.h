@@ -307,7 +307,14 @@ void sys_alsa_do_open_midi      (int nmidiindev,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_log_error              (int type);
+void dsp_tick                   (void);
+void sys_pollmidiqueue          (void);
+void sys_initmidiqueue          (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void sched_set_using_audio      (int flag);
 void sys_microsleep             (int microsec);
 void sys_init_fdpoll            (void);
@@ -318,12 +325,8 @@ int  sys_pollgui                (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_clearhist              (void);
-void sys_initmidiqueue          (void);
-int  sys_addhist                (int phase);
 void sys_setmiditimediff        (double inbuftime, double outbuftime);
 void sched_tick                 (void);
-void sys_pollmidiqueue          (void);
 int  sys_pollgui                (void);
 void sys_setchsr                (int chin, int chout, int sr);
 

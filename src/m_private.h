@@ -138,13 +138,13 @@ struct _buffer {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void pd_push                        (t_pd *x);
-void pd_pop                         (t_pd *x);
-void pd_empty                       (t_pd *x);
-void pd_vMessage                    (t_pd *x, t_symbol *s, char *fmt, ...);
+void pd_push                            (t_pd *x);
+void pd_pop                             (t_pd *x);
+void pd_empty                           (t_pd *x);
+void pd_vMessage                        (t_pd *x, t_symbol *s, char *fmt, ...);
 
-void pd_performLoadbang             (void);
-int  pd_setLoadingAbstraction       (t_symbol *s);
+void pd_performLoadbang                 (void);
+int  pd_setLoadingAbstraction           (t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -298,11 +298,8 @@ double  scheduler_getSystimeAfter           (double ms);
 double  scheduler_getMillisecondsSince      (double systime);
 double  scheduler_getUnitsSince             (double systime, double unit, int isSamples);
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-void    scheduler_lock      (void);
-void    scheduler_unlock    (void);
+void    scheduler_lock                      (void);
+void    scheduler_unlock                    (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -571,7 +571,7 @@ int alsa_send_dacs(void)
             else post("ALSA: write: %s\n",
                          snd_strerror(errno));
     #endif
-            sys_log_error(ERROR_DATA_LATE);
+            //sys_log_error(ERROR_DATA_LATE);
             if (result == -EPIPE)
             {
                 result = snd_pcm_prepare(alsa_indev[iodev].a_handle);
@@ -592,7 +592,7 @@ int alsa_send_dacs(void)
                     callno, (int)(1000 * (timenow - timelast))), fflush(stderr);
     #endif
             timenow = sys_getrealtime();
-            sys_log_error(ERROR_DAC_SLEPT);
+            //sys_log_error(ERROR_DAC_SLEPT);
         }
     }
 
@@ -613,7 +613,7 @@ int alsa_send_dacs(void)
             else post("snd_pcm_read %d %d returned only %d\n",
                          callno, xferno, result);
 #endif
-            sys_log_error(ERROR_DATA_LATE);
+            //sys_log_error(ERROR_DATA_LATE);
             if (result == -EPIPE)
             {
                 result = snd_pcm_prepare(alsa_indev[iodev].a_handle);
@@ -670,7 +670,7 @@ int alsa_send_dacs(void)
         post("alsa_send_dacs took %d msec\n",
             (int)(1000 * (sys_getrealtime() - timenow)));
 #endif
-        sys_log_error(ERROR_ADC_SLEPT);
+        //sys_log_error(ERROR_ADC_SLEPT);
     }
     {
         static int checkcountdown = 0;
@@ -798,7 +798,7 @@ static void alsa_checkiosync( void)
             if (thisphase > maxphase)
                 maxphase = thisphase;
             if (outdelay < 0)
-                sys_log_error(ERROR_DATA_LATE), alreadylogged = 1;
+                /* sys_log_error(ERROR_DATA_LATE) */ alreadylogged = 1;
         }
         for (iodev = 0; iodev < alsa_nindev; iodev++)
         {
@@ -857,7 +857,7 @@ static void alsa_checkiosync( void)
             {
                 alsa_putzeros(iodev, 1);
                 if (!alreadylogged)
-                    sys_log_error(ERROR_RESYNC), alreadylogged = 1;
+                    /* sys_log_error(ERROR_RESYNC) */ alreadylogged = 1;
 #ifdef DEBUG_ALSA_XFER
                 post("putz %d %d %d %d",
                     callno, xferno, (int)thisphase, (int)minphase);
@@ -873,7 +873,7 @@ static void alsa_checkiosync( void)
             {
                 alsa_getzeros(iodev, 1);
                 if (!alreadylogged)
-                    sys_log_error(ERROR_RESYNC), alreadylogged = 1;
+                    /* sys_log_error(ERROR_RESYNC) */ alreadylogged = 1;
 #ifdef DEBUG_ALSA_XFER
                 post("getz %d %d %d %d",
                     callno, xferno, (int)thisphase, (int)minphase);

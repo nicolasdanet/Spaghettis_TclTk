@@ -349,7 +349,7 @@ void sys_set_audio_settings(int naudioindev, int *audioindev, int nchindev,
         nrealoutdev++;
     }
     sys_schedadvance = advance * 1000;
-    sys_log_error(ERROR_NONE);
+    //sys_log_error(ERROR_NONE);
     audio_nextinchans = inchans;
     audio_nextoutchans = outchans;
     sys_setchsr(audio_nextinchans, audio_nextoutchans, rate);

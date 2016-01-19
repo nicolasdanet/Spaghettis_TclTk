@@ -507,7 +507,7 @@ int jack_send_dacs(void)
     if (!sys_inchannels && !sys_outchannels) return (DACS_NO); 
     if (jack_dio_error)
     {
-        sys_log_error(ERROR_RESYNC);
+        //sys_log_error(ERROR_RESYNC);
         jack_dio_error = 0;
     }
     pthread_mutex_lock(&jack_mutex);

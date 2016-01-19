@@ -689,7 +689,7 @@ int oss_send_dacs(void)
             if (linux_adcs[dev].d_space != 0) continue;
 
                 /* here's the bad case.  Give up and resync. */
-            sys_log_error(ERROR_DATA_LATE);
+            //sys_log_error(ERROR_DATA_LATE);
             oss_doresync();
             return (DACS_NO);
         }
@@ -716,7 +716,7 @@ int oss_send_dacs(void)
             /* return zero to tell the scheduler we're idle. */
         return (DACS_NO);
     badsync:
-        sys_log_error(ERROR_RESYNC);
+        //sys_log_error(ERROR_RESYNC);
         oss_doresync();
         return (DACS_NO);
         
@@ -751,9 +751,9 @@ int oss_send_dacs(void)
                 OSS_XFERSIZE(nchannels, linux_dacs[dev].d_bytespersamp));
             if ((timenow = sys_getrealtime()) - timeref > 0.002)
             {
-                if (!oss_blockmode)
-                    sys_log_error(ERROR_DAC_SLEPT);
-                else rtnval = DACS_SLEPT;
+                if (!oss_blockmode) {
+                    /* sys_log_error(ERROR_DAC_SLEPT); */
+                } else { rtnval = DACS_SLEPT; }
             }
             timeref = timenow;
         }
@@ -772,10 +772,11 @@ int oss_send_dacs(void)
 
         if ((timenow = sys_getrealtime()) - timeref > 0.002)
         {
-            if (!oss_blockmode)
-                sys_log_error(ERROR_ADC_SLEPT);
-            else
+            if (!oss_blockmode) {
+                /* sys_log_error(ERROR_ADC_SLEPT); */
+            } else {
                 rtnval = DACS_SLEPT;
+            }
         }
         timeref = timenow;
 
