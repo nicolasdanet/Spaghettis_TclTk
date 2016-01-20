@@ -325,7 +325,6 @@ int  sys_pollgui                (void);
 #pragma mark -
 
 void sys_setmiditimediff        (double inbuftime, double outbuftime);
-void sched_tick                 (void);
 int  sys_pollgui                (void);
 void sys_setchsr                (int chin, int chout, int sr);
 

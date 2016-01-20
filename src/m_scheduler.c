@@ -66,8 +66,6 @@ extern t_pdinstance *pd_this;
 // -----------------------------------------------------------------------------------------------------------
 
 static int      scheduler_quit;                                             /* Shared. */
-static int      scheduler_didDSP;                                           /* Shared. */
-static int      scheduler_nextPing;                                         /* Shared. */
 static int      scheduler_sleepGrain;                                       /* Shared. */
 static int      scheduler_blockSize     = AUDIO_DEFAULT_BLOCK;              /* Shared. */
 static int      scheduler_audioMode     = SCHEDULER_AUDIO_NONE;             /* Shared. */
@@ -75,6 +73,16 @@ static int      scheduler_audioMode     = SCHEDULER_AUDIO_NONE;             /* S
 static double   scheduler_realTime;                                         /* Shared. */
 static double   scheduler_logicalTime;                                      /* Shared. */
 static double   scheduler_systimePerDSPTick;                                /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if PD_WITH_WATCHDOG 
+
+static int      scheduler_didDSP;                                           /* Shared. */
+static int      scheduler_nextPing;                                         /* Shared. */
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -276,6 +284,35 @@ static double scheduler_getSystimePerDSPTick (void)
     return (SCHEDULER_SYSTIME_CLOCKS_PER_SECOND * ((double)scheduler_blockSize / sys_dacsr));
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void scheduler_tick (void)
+{
+    double nextSystime = pd_this->pd_systime + scheduler_systimePerDSPTick;
+    
+    while (pd_this->pd_clocks && pd_this->pd_clocks->c_systime < nextSystime) {
+    //
+    t_clock *c = pd_this->pd_clocks;
+    pd_this->pd_systime = c->c_systime;
+    clock_unset (c);
+    (*c->c_fn)(c->c_owner);
+    if (scheduler_quit) { return; }
+    //
+    }
+    
+    pd_this->pd_systime = nextSystime;
+    
+    dsp_tick();
+    
+    #if PD_WITH_WATCHDOG
+    
+    scheduler_didDSP++;
+        
+    #endif
+}
+
 static void scheduler_pollWatchdog (void)
 {
     # if PD_WITH_WATCHDOG
@@ -316,31 +353,6 @@ void scheduler_setAudio (int flag)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-    /* take the scheduler forward one DSP tick, also handling clock timeouts */
-void sched_tick( void)
-{
-    double next_sys_time = pd_this->pd_systime + scheduler_systimePerDSPTick;
-    int countdown = 5000;
-    while (pd_this->pd_clocks && 
-        pd_this->pd_clocks->c_systime < next_sys_time)
-    {
-        t_clock *c = pd_this->pd_clocks;
-        pd_this->pd_systime = c->c_systime;
-        clock_unset(pd_this->pd_clocks);
-        (*c->c_fn)(c->c_owner);
-        if (!countdown--)
-        {
-            countdown = 5000;
-            sys_pollgui();
-        }
-        if (scheduler_quit)
-            return;
-    }
-    pd_this->pd_systime = next_sys_time;
-    dsp_tick();
-    scheduler_didDSP++;
-}
 
 /*
 Here is Pd's "main loop."  This routine dispatches clock timeouts and DSP
@@ -423,7 +435,7 @@ static void m_pollingscheduler( void)
         }
         sys_setmiditimediff(0, 1e-6 * sys_schedadvance);
         if (timeforward != DACS_NO)
-            sched_tick();
+            scheduler_tick();
         if (timeforward == DACS_YES)
             didsomething = 1;
 
@@ -456,7 +468,7 @@ void sched_audio_callbackfn(void)
 {
     scheduler_lock();
     sys_setmiditimediff(0, 1e-6 * sys_schedadvance);
-    sched_tick();
+    scheduler_tick();
     sys_pollmidiqueue();
     sys_pollgui();
     scheduler_pollWatchdog();
@@ -478,7 +490,7 @@ static void m_callbackscheduler(void)
         {
             scheduler_lock();
             sys_pollgui();
-            sched_tick();
+            scheduler_tick();
             scheduler_unlock();
         }
     }
@@ -509,7 +521,7 @@ int m_batchmain(void)
     scheduler_systimePerDSPTick = (SCHEDULER_SYSTIME_CLOCKS_PER_SECOND) *
         ((double)scheduler_blockSize) / sys_dacsr;
     while (scheduler_quit != SCHEDULER_QUIT)
-        sched_tick();
+        scheduler_tick();
     return (0);
 }
 
