@@ -22,7 +22,7 @@
 */
 
 #include "m_pd.h"
-#include "m_private.h"
+#include "m_core.h"
 #include "m_macros.h"
 #include "m_alloca.h"
 #include "s_system.h"
@@ -53,7 +53,7 @@
     /* LATER try to figure out how to handle default devices in portaudio;
     the way s_audio.c handles them isn't going to work here. */
 
-    /* public interface declared in m_private.h */
+    /* public interface declared in m_core.h */
 
     /* implementation */
 

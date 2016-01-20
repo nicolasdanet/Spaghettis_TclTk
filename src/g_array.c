@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdio.h>      /* for read/write to files */
 #include "m_pd.h"
-#include "m_private.h"
+#include "m_core.h"
 #include "m_macros.h"
 #include "g_canvas.h"
 #include <math.h>

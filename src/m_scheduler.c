@@ -9,7 +9,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #include "m_pd.h"
-#include "m_private.h"
+#include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
 
@@ -24,8 +24,8 @@
 
 /* Notice that values below are related to LCM (32000, 44100, 48000, 88200, 96000). */
     
-#define SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND     (double)(32.0 * 441.0)
-#define SCHEDULER_SYSTIME_TICKS_PER_SECOND          (SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND * 1000.0)
+#define SCHEDULER_SYSTIME_CLOCKS_PER_MILLISECOND    (double)(32.0 * 441.0)
+#define SCHEDULER_SYSTIME_CLOCKS_PER_SECOND         (SCHEDULER_SYSTIME_CLOCKS_PER_MILLISECOND * 1000.0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -69,7 +69,7 @@ static int      scheduler_quit;                                             /* S
 static int      scheduler_didDSP;                                           /* Shared. */
 static int      scheduler_sleepGrain;                                       /* Shared. */
 static int      scheduler_blockSize     = AUDIO_DEFAULT_BLOCK;              /* Shared. */
-static int      scheduler_useAudio      = SCHEDULER_NONE;                   /* Shared. */
+static int      scheduler_useAudio      = SCHEDULER_AUDIO_NONE;             /* Shared. */
 
 static double   scheduler_realTime;                                         /* Shared. */
 static double   scheduler_logicalTime;                                      /* Shared. */
@@ -106,7 +106,7 @@ t_clock *clock_new (void *owner, t_method fn)
     t_clock *x = (t_clock *)PD_MEMORY_GET (sizeof (t_clock));
     
     x->c_systime    = -1.0;
-    x->c_unit       = SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND;
+    x->c_unit       = SCHEDULER_SYSTIME_CLOCKS_PER_MILLISECOND;
     x->c_fn         = (t_clockfn)fn;
     x->c_owner      = owner;
     x->c_next       = NULL;
@@ -167,7 +167,7 @@ void clock_delay (t_clock *x, double delay)     /* Could be in milliseconds or i
     
     if (x->c_unit > 0) { d = x->c_unit; }
     else {
-        d = -(x->c_unit * (SCHEDULER_SYSTIME_TICKS_PER_SECOND / sys_dacsr));
+        d = -(x->c_unit * (SCHEDULER_SYSTIME_CLOCKS_PER_SECOND / sys_dacsr));
     }
 
     time = pd_this->pd_systime + (d * delay);
@@ -187,19 +187,19 @@ static void clock_setUnit (t_clock *x, double unit, int isSamples)
     
     if (isSamples) { if (unit == -x->c_unit) { return; } }
     else { 
-        if (unit == x->c_unit * SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND) { return; }
+        if (unit == x->c_unit * SCHEDULER_SYSTIME_CLOCKS_PER_MILLISECOND) { return; }
     }
     
     if (x->c_systime >= 0.0) {
     //
-    double d = (x->c_unit > 0) ? x->c_unit : (x->c_unit * (SCHEDULER_SYSTIME_TICKS_PER_SECOND / sys_dacsr));
+    double d = (x->c_unit > 0) ? x->c_unit : (x->c_unit * (SCHEDULER_SYSTIME_CLOCKS_PER_SECOND / sys_dacsr));
     timeLeft = (x->c_systime - pd_this->pd_systime) / d;
     //
     }
     
     if (isSamples) { x->c_unit = -unit; }
     else {
-        x->c_unit = unit * SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND; 
+        x->c_unit = unit * SCHEDULER_SYSTIME_CLOCKS_PER_MILLISECOND; 
     }
     
     if (timeLeft >= 0.0) { clock_delay (x, timeLeft); }
@@ -226,7 +226,7 @@ double scheduler_getSystime (void)
 
 double scheduler_getSystimeAfter (double ms)
 {
-    return (pd_this->pd_systime + (SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND * ms));
+    return (pd_this->pd_systime + (SCHEDULER_SYSTIME_CLOCKS_PER_MILLISECOND * ms));
 }
 
 double scheduler_getUnitsSince (double systime, double unit, int isSamples)
@@ -235,9 +235,9 @@ double scheduler_getUnitsSince (double systime, double unit, int isSamples)
     
     PD_ASSERT (elapsed >= 0.0);
     
-    if (isSamples) { d = SCHEDULER_SYSTIME_TICKS_PER_SECOND / sys_dacsr; } 
+    if (isSamples) { d = SCHEDULER_SYSTIME_CLOCKS_PER_SECOND / sys_dacsr; } 
     else { 
-        d = SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND;
+        d = SCHEDULER_SYSTIME_CLOCKS_PER_MILLISECOND;
     }
     
     return (elapsed / (d * unit));
@@ -246,8 +246,10 @@ double scheduler_getUnitsSince (double systime, double unit, int isSamples)
 double scheduler_getMillisecondsSince (double systime)
 {
     double elapsed = pd_this->pd_systime - systime;
+    
     PD_ASSERT (elapsed >= 0.0);
-    return (elapsed / SCHEDULER_SYSTIME_TICKS_PER_MILLISECOND);
+    
+    return (elapsed / SCHEDULER_SYSTIME_CLOCKS_PER_MILLISECOND);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -328,20 +330,20 @@ void sched_reopenmeplease(void)   /* request from s_audio for deferred reopen */
 void sched_set_using_audio(int flag)
 {
     scheduler_useAudio = flag;
-    if (flag == SCHEDULER_NONE)
+    if (flag == SCHEDULER_AUDIO_NONE)
     {
         scheduler_realTime = sys_getrealtime();
         scheduler_logicalTime = scheduler_getSystime();
     }
-        if (flag == SCHEDULER_CALLBACK &&
-            scheduler_useAudio != SCHEDULER_CALLBACK)
+        if (flag == SCHEDULER_AUDIO_CALLBACK &&
+            scheduler_useAudio != SCHEDULER_AUDIO_CALLBACK)
                 scheduler_quit = SCHEDULER_RESTART;
-        if (flag != SCHEDULER_CALLBACK &&
-            scheduler_useAudio == SCHEDULER_CALLBACK)
+        if (flag != SCHEDULER_AUDIO_CALLBACK &&
+            scheduler_useAudio == SCHEDULER_AUDIO_CALLBACK)
                 post("sorry, can't turn off callbacks yet; restart Pd");
                     /* not right yet! */
         
-    scheduler_systimePerDSPTick = (SCHEDULER_SYSTIME_TICKS_PER_SECOND) *
+    scheduler_systimePerDSPTick = (SCHEDULER_SYSTIME_CLOCKS_PER_SECOND) *
         ((double)scheduler_blockSize) / sys_dacsr;
     // sys_vgui("::ui_console::pdtk_pd_audio %s\n", flag ? "on" : "off");
 }
@@ -385,7 +387,7 @@ the audio I/O system is still busy with previous transfers.
 static void m_pollingscheduler( void)
 {
     int idlecount = 0;
-    scheduler_systimePerDSPTick = (SCHEDULER_SYSTIME_TICKS_PER_SECOND) *
+    scheduler_systimePerDSPTick = (SCHEDULER_SYSTIME_CLOCKS_PER_SECOND) *
         ((double)scheduler_blockSize) / sys_dacsr;
 
         SCHEDULER_LOCK;
@@ -403,7 +405,7 @@ static void m_pollingscheduler( void)
         int timeforward;
 
     waitfortick:
-        if (scheduler_useAudio != SCHEDULER_NONE)
+        if (scheduler_useAudio != SCHEDULER_AUDIO_NONE)
         {
             /* T.Grill - send_dacs may sleep -> 
                 unlock thread lock make that time available 
@@ -424,7 +426,7 @@ static void m_pollingscheduler( void)
                 if (!(idlecount & 31))
                 {
                     static double idletime;
-                    if (scheduler_useAudio != SCHEDULER_POLL)
+                    if (scheduler_useAudio != SCHEDULER_AUDIO_POLL)
                     {
                             PD_BUG;
                             return;
@@ -437,7 +439,7 @@ static void m_pollingscheduler( void)
                     {
                         post_error ("audio I/O stuck... closing audio\n");
                         sys_close_audio();
-                        sched_set_using_audio(SCHEDULER_NONE);
+                        sched_set_using_audio(SCHEDULER_AUDIO_NONE);
                         goto waitfortick;
                     }
                 }
@@ -517,7 +519,7 @@ int m_mainloop(void)
 {
     while (scheduler_quit != SCHEDULER_QUIT)
     {
-        if (scheduler_useAudio == SCHEDULER_CALLBACK)
+        if (scheduler_useAudio == SCHEDULER_AUDIO_CALLBACK)
             m_callbackscheduler();
         else m_pollingscheduler();
         if (scheduler_quit == SCHEDULER_RESTART)
@@ -535,7 +537,7 @@ int m_mainloop(void)
 
 int m_batchmain(void)
 {
-    scheduler_systimePerDSPTick = (SCHEDULER_SYSTIME_TICKS_PER_SECOND) *
+    scheduler_systimePerDSPTick = (SCHEDULER_SYSTIME_CLOCKS_PER_SECOND) *
         ((double)scheduler_blockSize) / sys_dacsr;
     while (scheduler_quit != SCHEDULER_QUIT)
         sched_tick();

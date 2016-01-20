@@ -20,7 +20,7 @@ for another, more permissive-sounding copyright notice.  -MSP
 
 /* ---------- Pd interface to OOURA FFT; imitate Mayer API ---------- */
 #include "m_pd.h"
-#include "m_private.h"
+#include "m_core.h"
 #include "m_macros.h"
 
 #define FFTFLT double

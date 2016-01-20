@@ -6,7 +6,7 @@
 "wave" devices, which is how ADAT boards appear to the WAVE API. */
 
 #include "m_pd.h"
-#include "m_private.h"
+#include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
 #include <stdio.h>

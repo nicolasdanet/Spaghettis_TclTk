@@ -6,10 +6,10 @@
 that didn't really belong anywhere. */
 
 #include "m_pd.h"
-#include "m_private.h"
+#include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "m_private.h"
+#include "m_core.h"
 #include "g_canvas.h"   /* for GUI queueing stuff */
 #ifndef _WIN32
 #include <unistd.h>

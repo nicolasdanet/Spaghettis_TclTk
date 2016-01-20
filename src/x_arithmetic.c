@@ -7,7 +7,7 @@ done on floats; the logical and bitwise binops convert their
 inputs to int and their outputs back to float. */
 
 #include "m_pd.h"
-#include "m_private.h"
+#include "m_core.h"
 #include "m_macros.h"
 #include <math.h>
 

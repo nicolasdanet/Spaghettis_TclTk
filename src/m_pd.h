@@ -99,15 +99,26 @@ extern "C" {
 #pragma mark -
 
 #ifndef PD_WITH_DEBUG
-#define PD_WITH_DEBUG       1           /* False assertions logged. */
+#define PD_WITH_DEBUG           1           /* False assertions logged. */
 #endif
 
 #ifndef PD_WITH_ALLOCA
-#define PD_WITH_ALLOCA      1           /* Message passing uses alloca function. */
+#define PD_WITH_ALLOCA          1           /* Message passing uses alloca function. */
 #endif
 
 #ifndef PD_WITH_LOCK
-#define PD_WITH_LOCK        1           /* Scheduler uses locks (with pthread mutex). */
+#define PD_WITH_LOCK            1           /* Scheduler uses locks (with pthread mutex). */
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if (PD_LINUX || PD_BSD || PD_HURD)
+
+#ifndef PD_WITH_WATCHDOG
+#define PD_WITH_WATCHDOG        1
+#endif
+
 #endif
 
 // -----------------------------------------------------------------------------------------------------------

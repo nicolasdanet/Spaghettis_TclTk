@@ -5,10 +5,10 @@
 /* Clock functions (which should move, but where?) and MIDI queueing */
 
 #include "m_pd.h"
-#include "m_private.h"
+#include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "m_private.h"
+#include "m_core.h"
 #include "m_macros.h"
 
 #ifdef _WIN32

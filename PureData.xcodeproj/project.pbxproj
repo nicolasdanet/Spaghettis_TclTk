@@ -266,7 +266,7 @@
 		378971E01C4F716700263434 /* m_object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_object.c; path = src/m_object.c; sourceTree = "<group>"; };
 		378971E11C4F716700263434 /* m_pd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_pd.c; path = src/m_pd.c; sourceTree = "<group>"; };
 		378971E21C4F716700263434 /* m_pd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_pd.h; path = src/m_pd.h; sourceTree = "<group>"; };
-		378971E31C4F716700263434 /* m_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_private.h; path = src/m_private.h; sourceTree = "<group>"; };
+		378971E31C4F716700263434 /* m_core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_core.h; path = src/m_core.h; sourceTree = "<group>"; };
 		378971E41C4F716700263434 /* m_scheduler.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_scheduler.c; path = src/m_scheduler.c; sourceTree = "<group>"; };
 		378971E51C4F716700263434 /* m_setup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_setup.c; path = src/m_setup.c; sourceTree = "<group>"; };
 		378971E61C4F716700263434 /* m_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_utils.c; path = src/m_utils.c; sourceTree = "<group>"; };
@@ -463,7 +463,7 @@
 			isa = PBXGroup;
 			children = (
 				378971E21C4F716700263434 /* m_pd.h */,
-				378971E31C4F716700263434 /* m_private.h */,
+				378971E31C4F716700263434 /* m_core.h */,
 				378971DD1C4F716700263434 /* m_macros.h */,
 				378971D71C4F716700263434 /* m_alloca.h */,
 				378971E61C4F716700263434 /* m_utils.c */,

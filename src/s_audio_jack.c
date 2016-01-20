@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "m_pd.h"
-#include "m_private.h"
+#include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
 #include <jack/weakjack.h>

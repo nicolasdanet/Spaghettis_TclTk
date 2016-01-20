@@ -9,7 +9,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #include "m_pd.h"
-#include "m_private.h"
+#include "m_core.h"
 #include "m_macros.h"
 
 // -----------------------------------------------------------------------------------------------------------
@@ -39,8 +39,8 @@ void global_initialize (void)
     class_addMethod (c, (t_method)global_dsp,               gensym ("dsp"),  A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_key,               gensym ("key"),  A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_quit,              gensym ("quit"), A_NULL);
-    class_addMethod (c, (t_method)global_gui,               gensym ("_gui"), A_GIMME, A_NULL);
     
+    class_addMethod (c, (t_method)global_gui,               gensym ("_gui"),             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_audioProperties,   gensym ("_audioProperties"), A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)global_midiProperties,    gensym ("_midiProperties"),  A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)global_audioDialog,       gensym ("_audioDialog"),     A_GIMME, A_NULL);
@@ -53,7 +53,7 @@ void global_initialize (void)
     class_addMethod (c, (t_method)global_ping,              gensym ("_ping"),            A_NULL);
     class_addMethod (c, (t_method)global_savePreferences,   gensym ("_savePreferences"), A_NULL);
     
-    #if (PD_LINUX || PD_BSD)
+    #if PD_WITH_WATCHDOG
     
     class_addMethod (c, (t_method)global_watchdog, gensym ("_watchdog"), A_NULL);
         

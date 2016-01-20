@@ -7,7 +7,7 @@
 */
 
 #include "m_pd.h"
-#include "m_private.h"
+#include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
 #include <stdio.h>
@@ -395,7 +395,7 @@ void sys_close_audio(void)
         post("sys_close_audio: unknown API %d", sys_audioapiopened);
     sys_inchannels = sys_outchannels = 0;
     sys_audioapiopened = -1;
-    sched_set_using_audio(SCHEDULER_NONE);
+    sched_set_using_audio(SCHEDULER_AUDIO_NONE);
     audio_state = 0;
     audio_callback_is_open = 0;
 
@@ -414,7 +414,7 @@ void sys_reopen_audio( void)
     sys_setchsr(audio_nextinchans, audio_nextoutchans, rate);
     if (!naudioindev && !naudiooutdev)
     {
-        sched_set_using_audio(SCHEDULER_NONE);
+        sched_set_using_audio(SCHEDULER_AUDIO_NONE);
         return;
     }
 #ifdef USEAPI_PORTAUDIO
@@ -474,7 +474,7 @@ void sys_reopen_audio( void)
     if (outcome)    /* failed */
     {
         audio_state = 0;
-        sched_set_using_audio(SCHEDULER_NONE);
+        sched_set_using_audio(SCHEDULER_AUDIO_NONE);
         sys_audioapiopened = -1;
         audio_callback_is_open = 0;
     }
@@ -483,7 +483,7 @@ void sys_reopen_audio( void)
                 /* fprintf(stderr, "started w/callback %d\n", callback); */
         audio_state = 1;
         sched_set_using_audio(
-            (callback ? SCHEDULER_CALLBACK : SCHEDULER_POLL));
+            (callback ? SCHEDULER_AUDIO_CALLBACK : SCHEDULER_AUDIO_POLL));
         sys_audioapiopened = sys_audioapi;
         audio_callback_is_open = callback;
     }
