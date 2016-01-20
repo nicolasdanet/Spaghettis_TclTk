@@ -3,4 +3,5 @@ bin/
 makefile.dependencies
 build/
 Application/
-*.xcodeproj
+*.mode2v3
+*.pbxuser
