@@ -315,7 +315,6 @@ void sys_initmidiqueue          (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sched_set_using_audio      (int flag);
 void sys_microsleep             (int microsec);
 void sys_init_fdpoll            (void);
 void sys_bail                   (int exitcode);

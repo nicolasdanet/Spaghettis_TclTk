@@ -67,9 +67,10 @@ extern t_pdinstance *pd_this;
 
 static int      scheduler_quit;                                             /* Shared. */
 static int      scheduler_didDSP;                                           /* Shared. */
+static int      scheduler_nextPing;                                         /* Shared. */
 static int      scheduler_sleepGrain;                                       /* Shared. */
 static int      scheduler_blockSize     = AUDIO_DEFAULT_BLOCK;              /* Shared. */
-static int      scheduler_useAudio      = SCHEDULER_AUDIO_NONE;             /* Shared. */
+static int      scheduler_audioMode     = SCHEDULER_AUDIO_NONE;             /* Shared. */
 
 static double   scheduler_realTime;                                         /* Shared. */
 static double   scheduler_logicalTime;                                      /* Shared. */
@@ -270,83 +271,51 @@ void scheduler_unlock (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void sched_pollformeters(void)
+static double scheduler_getSystimePerDSPTick (void)
 {
-    int inclip, outclip, indb, outdb;
-    static int sched_nextmeterpolltime, sched_nextpingtime;
-
-        /* if there's no GUI but we're running in "realtime", here is
-        where we arrange to ping the watchdog every 2 seconds. */
-#if defined(__linux__) || defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
-    if (sys_nogui && sys_hipriority && (scheduler_didDSP - sched_nextpingtime > 0))
-    {
-        global_watchdog(0);
-            /* ping every 2 seconds */
-        sched_nextpingtime = scheduler_didDSP +
-            2 * (int)(sys_dacsr /(double)scheduler_blockSize);
-    }
-#endif
-
-    if (scheduler_didDSP - sched_nextmeterpolltime < 0)
-        return;
-    /*
-    if (sched_diored && (scheduler_didDSP - sched_dioredtime > 0))
-    {
-        // sys_vgui("::ui_console::pdtk_pd_dio 0\n");
-        sched_diored = 0;
-    }*/
-    if (0 /* sched_meterson */)
-    {
-        t_sample inmax, outmax;
-        sys_getmeters(&inmax, &outmax);
-        indb = 0.5 + rmstodb(inmax);
-        outdb = 0.5 + rmstodb(outmax);
-        inclip = (inmax > 0.999);
-        outclip = (outmax >= 1.0);
-    }
-    else
-    {
-        indb = outdb = 0;
-        inclip = outclip = 0;
-    }/*
-    if (inclip != sched_lastinclip || outclip != sched_lastoutclip
-        || indb != sched_lastindb || outdb != sched_lastoutdb)
-    {
-        sys_vgui("pdtk_pd_meters %d %d %d %d\n", indb, outdb, inclip, outclip);
-        sched_lastinclip = inclip;
-        sched_lastoutclip = outclip;
-        sched_lastindb = indb;
-        sched_lastoutdb = outdb;
-    }*/
-    sched_nextmeterpolltime =
-        scheduler_didDSP + (int)(sys_dacsr /(double)scheduler_blockSize);
+    return (SCHEDULER_SYSTIME_CLOCKS_PER_SECOND * ((double)scheduler_blockSize / sys_dacsr));
 }
 
-void sched_reopenmeplease(void)   /* request from s_audio for deferred reopen */
+static void scheduler_pollWatchdog (void)
+{
+    # if PD_WITH_WATCHDOG
+    
+    if (sys_nogui && sys_hipriority && (scheduler_didDSP - scheduler_nextPing > 0)) {
+        global_watchdog (NULL);
+        scheduler_nextPing = scheduler_didDSP + (2 * (int)(sys_dacsr /(double)scheduler_blockSize));
+    }
+    
+    #endif
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void scheduler_needToRestart (void)
 {
     scheduler_quit = SCHEDULER_RESTART;
 }
 
-void sched_set_using_audio(int flag)
+void scheduler_setAudio (int flag)
 {
-    scheduler_useAudio = flag;
-    if (flag == SCHEDULER_AUDIO_NONE)
-    {
-        scheduler_realTime = sys_getrealtime();
-        scheduler_logicalTime = scheduler_getSystime();
+    PD_ASSERT (flag != SCHEDULER_AUDIO_CALLBACK);           /* Not fully implemented yet. */
+    PD_ABORT  (flag == SCHEDULER_AUDIO_CALLBACK);
+
+    if (flag == SCHEDULER_AUDIO_NONE) {
+    //
+    scheduler_realTime = sys_getrealtime();
+    scheduler_logicalTime = scheduler_getSystime();
+    //
     }
-        if (flag == SCHEDULER_AUDIO_CALLBACK &&
-            scheduler_useAudio != SCHEDULER_AUDIO_CALLBACK)
-                scheduler_quit = SCHEDULER_RESTART;
-        if (flag != SCHEDULER_AUDIO_CALLBACK &&
-            scheduler_useAudio == SCHEDULER_AUDIO_CALLBACK)
-                post("sorry, can't turn off callbacks yet; restart Pd");
-                    /* not right yet! */
-        
-    scheduler_systimePerDSPTick = (SCHEDULER_SYSTIME_CLOCKS_PER_SECOND) *
-        ((double)scheduler_blockSize) / sys_dacsr;
-    // sys_vgui("::ui_console::pdtk_pd_audio %s\n", flag ? "on" : "off");
+    
+    scheduler_audioMode = flag;
+    scheduler_systimePerDSPTick = scheduler_getSystimePerDSPTick();
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* take the scheduler forward one DSP tick, also handling clock timeouts */
 void sched_tick( void)
@@ -405,7 +374,7 @@ static void m_pollingscheduler( void)
         int timeforward;
 
     waitfortick:
-        if (scheduler_useAudio != SCHEDULER_AUDIO_NONE)
+        if (scheduler_audioMode != SCHEDULER_AUDIO_NONE)
         {
             /* T.Grill - send_dacs may sleep -> 
                 unlock thread lock make that time available 
@@ -426,7 +395,7 @@ static void m_pollingscheduler( void)
                 if (!(idlecount & 31))
                 {
                     static double idletime;
-                    if (scheduler_useAudio != SCHEDULER_AUDIO_POLL)
+                    if (scheduler_audioMode != SCHEDULER_AUDIO_POLL)
                     {
                             PD_BUG;
                             return;
@@ -439,7 +408,7 @@ static void m_pollingscheduler( void)
                     {
                         post_error ("audio I/O stuck... closing audio\n");
                         sys_close_audio();
-                        sched_set_using_audio(SCHEDULER_AUDIO_NONE);
+                        scheduler_setAudio(SCHEDULER_AUDIO_NONE);
                         goto waitfortick;
                     }
                 }
@@ -468,7 +437,7 @@ static void m_pollingscheduler( void)
             /* test for idle; if so, do graphics updates. */
         if (!didsomething)
         {
-            sched_pollformeters();
+            scheduler_pollWatchdog();
 
             SCHEDULER_UNLOCK;   /* unlock while we idle */
 
@@ -490,7 +459,7 @@ void sched_audio_callbackfn(void)
     sched_tick();
     sys_pollmidiqueue();
     sys_pollgui();
-    sched_pollformeters();
+    scheduler_pollWatchdog();
     scheduler_unlock();
 }
 
@@ -519,7 +488,7 @@ int m_mainloop(void)
 {
     while (scheduler_quit != SCHEDULER_QUIT)
     {
-        if (scheduler_useAudio == SCHEDULER_AUDIO_CALLBACK)
+        if (scheduler_audioMode == SCHEDULER_AUDIO_CALLBACK)
             m_callbackscheduler();
         else m_pollingscheduler();
         if (scheduler_quit == SCHEDULER_RESTART)

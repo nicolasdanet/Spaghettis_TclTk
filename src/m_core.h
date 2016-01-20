@@ -301,6 +301,9 @@ double  scheduler_getUnitsSince             (double systime, double unit, int is
 void    scheduler_lock                      (void);
 void    scheduler_unlock                    (void);
 
+void    scheduler_needToRestart             (void);
+void    scheduler_setAudio                  (int flag);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
