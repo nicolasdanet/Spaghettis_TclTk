@@ -121,7 +121,7 @@ cd "${rep}"                                                     || exit 1
 
 # Install default preferences.
 
-[ -e "${preferences}/${org}" ] || { echo "Install preferences ..."; cp "${default}" "${preferences}"; }
+echo "Install preferences ..."; cp "${default}" "${preferences}";
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
