@@ -297,13 +297,14 @@ double  scheduler_getSystime                (void);
 double  scheduler_getSystimeAfter           (double ms);
 double  scheduler_getMillisecondsSince      (double systime);
 double  scheduler_getUnitsSince             (double systime, double unit, int isSamples);
-
-void    scheduler_lock                      (void);
-void    scheduler_unlock                    (void);
-
 void    scheduler_setAudioMode              (int flag);
 void    scheduler_needToRestart             (void);
 void    scheduler_needToExit                (void);
+void    scheduler_lock                      (void);
+void    scheduler_unlock                    (void);
+void    scheduler_audioCallback             (void);
+int     scheduler_main                      (void);
+int     scheduler_mainForBatchProcessing    (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

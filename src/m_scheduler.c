@@ -282,7 +282,7 @@ void scheduler_unlock (void)
 
 void scheduler_setAudioMode (int flag)
 {
-    PD_ASSERT (flag != SCHEDULER_AUDIO_CALLBACK);           /* Not fully implemented yet. */
+    PD_ASSERT (flag != SCHEDULER_AUDIO_CALLBACK);           /* Not fully tested yet. */
     PD_ABORT  (flag == SCHEDULER_AUDIO_CALLBACK);
 
     scheduler_audioMode = flag;
@@ -325,12 +325,14 @@ static void scheduler_pollStuck (int init)
     
     if (init) { idleTime = sys_getrealtime(); }
     else {
-        if (sys_getrealtime() - idleTime > 1.0) {
-            post_error (PD_TRANSLATE ("audio: I/O stuck... closing audio"));
-            sys_close_audio();
-            scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
-            scheduler_quit = SCHEDULER_RESTART;
-        }
+    //
+    if (sys_getrealtime() - idleTime > 1.0) {
+        post_error (PD_TRANSLATE ("audio: I/O stuck... closing audio"));    // --
+        sys_close_audio();
+        scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
+        scheduler_quit = SCHEDULER_RESTART;
+    }
+    //
     }
 }
 
@@ -363,7 +365,7 @@ static void scheduler_tick (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void scheduler_loop (void)
+static void scheduler_withLoop (void)
 {
     double realTime, logicalTime;
     int idleCount = 0;
@@ -396,10 +398,11 @@ static void scheduler_loop (void)
         else if (!(++idleCount & 31)) { scheduler_pollStuck (idleCount == 32); }
         
     } else {
-        double realElapsed = (sys_getrealtime() - realTime) * 1000.;
-        double logicalElpased = scheduler_getMillisecondsSince (logicalTime);
+    
+        double realElapsed = (sys_getrealtime() - realTime) * 1000.0;
+        double logicalElapsed = scheduler_getMillisecondsSince (logicalTime);
 
-        if (realElapsed > logicalElpased) { timeForward = DACS_YES; }
+        if (realElapsed > logicalElapsed) { timeForward = DACS_YES; }
         else {
             timeForward = DACS_NO;
         }
@@ -407,37 +410,74 @@ static void scheduler_loop (void)
     
     if (!scheduler_quit) {
     //
-    sys_setmiditimediff(0, 1e-6 * sys_schedadvance);
-    if (timeForward != DACS_NO)
-        scheduler_tick();
-    if (timeForward == DACS_YES)
-        didSomething = 1;
+    sys_setmiditimediff (0.0, 1e-6 * sys_schedadvance);
+    
+    if (timeForward != DACS_NO)  { scheduler_tick(); }
+    if (timeForward == DACS_YES) { didSomething = 1; }
 
     sys_pollmidiqueue();
-    if (sys_pollgui())
-    {
-        if (!didSomething) {}
-            //sched_didpoll++;
-        didSomething = 1;
-    }
-        /* test for idle; if so, do graphics updates. */
-    if (!didSomething)
-    {
-        scheduler_pollWatchdog();
+    
+    if (sys_pollgui()) { didSomething = 1; }
 
-        SCHEDULER_UNLOCK;   /* unlock while we idle */
+    if (!didSomething) {
+    //
+    scheduler_pollWatchdog();
 
-        if (timeForward != DACS_SLEPT) { sys_microsleep(scheduler_sleepGrain); }
-
-        SCHEDULER_LOCK;
-
-        //sched_didnothing++;
+    SCHEDULER_UNLOCK;
+    if (timeForward != DACS_SLEPT) { sys_microsleep (scheduler_sleepGrain); }
+    SCHEDULER_LOCK;
+    //
     }
     //
     }
     //
     }
 
+    SCHEDULER_UNLOCK;
+}
+
+static void scheduler_withCallback (void)
+{
+    sys_initmidiqueue();
+    
+    while (!scheduler_quit) {
+    //
+    double logicalTime = pd_this->pd_systime;
+    
+    #if PD_WINDOWS
+        Sleep (1000);
+    #else
+        sleep (1);
+    #endif
+    
+    if (pd_this->pd_systime == logicalTime) {
+    //
+    SCHEDULER_LOCK;
+    
+    sys_pollgui();
+    scheduler_tick();
+    
+    SCHEDULER_UNLOCK;
+    //
+    }
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void scheduler_audioCallback (void)
+{
+    SCHEDULER_LOCK;
+    
+    sys_setmiditimediff (0.0, 1e-6 * sys_schedadvance);
+    scheduler_tick();
+    sys_pollmidiqueue();
+    sys_pollgui();
+    scheduler_pollWatchdog();
+    
     SCHEDULER_UNLOCK;
 }
 
@@ -445,65 +485,31 @@ static void scheduler_loop (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sched_audio_callbackfn(void)
+int scheduler_main (void)
 {
-    SCHEDULER_LOCK;
-    sys_setmiditimediff(0, 1e-6 * sys_schedadvance);
-    scheduler_tick();
-    sys_pollmidiqueue();
-    sys_pollgui();
-    scheduler_pollWatchdog();
-    SCHEDULER_UNLOCK;
-}
-
-static void m_callbackscheduler(void)
-{
-    sys_initmidiqueue();
-    while (!scheduler_quit)
-    {
-        double timewas = pd_this->pd_systime;
-#ifdef _WIN32
-        Sleep(1000);
-#else
-        sleep(1);
-#endif
-        if (pd_this->pd_systime == timewas)
-        {
-            SCHEDULER_LOCK;
-            sys_pollgui();
-            scheduler_tick();
-            SCHEDULER_UNLOCK;
-        }
+    while (scheduler_quit != SCHEDULER_QUIT) {
+    //
+    if (scheduler_audioMode == SCHEDULER_AUDIO_CALLBACK) { scheduler_withCallback(); }
+    else {
+        scheduler_withLoop();
     }
-}
-
-int m_mainloop(void)
-{
-    while (scheduler_quit != SCHEDULER_QUIT)
-    {
-        if (scheduler_audioMode == SCHEDULER_AUDIO_CALLBACK)
-            m_callbackscheduler();
-        else scheduler_loop();
-        if (scheduler_quit == SCHEDULER_RESTART)
-        {
-            scheduler_quit = 0;
-            if (audio_isopen())
-            {
-                sys_close_audio();
-                sys_reopen_audio();
-            }
-        }
+    
+    if (scheduler_quit == SCHEDULER_RESTART) {
+        if (audio_isopen()) { sys_close_audio(); sys_reopen_audio(); } scheduler_quit = SCHEDULER_RUN;
     }
-    return (0);
+    //
+    }
+    
+    return 0;
 }
 
-int m_batchmain(void)
+int scheduler_mainForBatchProcessing (void)
 {
-    scheduler_systimePerDSPTick = (SCHEDULER_SYSTIME_CLOCKS_PER_SECOND) *
-        ((double)scheduler_blockSize) / sys_dacsr;
-    while (scheduler_quit != SCHEDULER_QUIT)
-        scheduler_tick();
-    return (0);
+    scheduler_systimePerDSPTick = scheduler_getSystimePerDSPTick();
+    
+    while (scheduler_quit != SCHEDULER_QUIT) { scheduler_tick(); }
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------

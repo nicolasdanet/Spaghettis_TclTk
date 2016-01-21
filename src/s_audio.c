@@ -76,7 +76,6 @@ static int audio_blocksize;
 
 static int audio_callback_is_open;  /* reflects true actual state */
 static int audio_nextinchans, audio_nextoutchans;
-void sched_audio_callbackfn(void);
 
 int audio_isopen(void)
 {
@@ -427,7 +426,7 @@ void sys_reopen_audio( void)
             sys_soundout, blksize, sys_advance_samples/blksize, 
              (naudioindev > 0 ? audioindev[0] : 0),
               (naudiooutdev > 0 ? audiooutdev[0] : 0),
-               (callback ? sched_audio_callbackfn : 0));
+               (callback ? scheduler_audioCallback : 0));
     }
     else
 #endif
@@ -435,7 +434,7 @@ void sys_reopen_audio( void)
     if (sys_audioapi == API_JACK) 
         outcome = jack_open_audio((naudioindev > 0 ? chindev[0] : 0),
             (naudiooutdev > 0 ? choutdev[0] : 0), rate,
-                (callback ? sched_audio_callbackfn : 0));
+                (callback ? scheduler_audioCallback : 0));
 
     else
 #endif    

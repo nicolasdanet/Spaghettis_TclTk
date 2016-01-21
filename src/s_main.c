@@ -49,8 +49,6 @@ void sys_findprogdir(char *progname);
 void sys_setsignalhandlers( void);
 int sys_startgui(const char *guipath);
 int sys_rcfile(void);
-int m_mainloop(void);
-int m_batchmain(void);
 void sys_addhelppath(char *p);
 #ifdef USEAPI_ALSA
 void alsa_adddev(char *name);
@@ -289,7 +287,7 @@ int sys_main(int argc, char **argv)
     if (sys_startgui(sys_libdir->s_name))       /* start the gui */
         return (1);
     if (sys_batch)
-        return (m_batchmain());
+        return (scheduler_mainForBatchProcessing());
     else
     {
             /* open audio and MIDI */
@@ -297,7 +295,7 @@ int sys_main(int argc, char **argv)
         if (audio_shouldkeepopen())
             sys_reopen_audio();
             /* run scheduler until it quits */
-        return (m_mainloop());
+        return (scheduler_main());
     }
 }
 
