@@ -21,6 +21,7 @@
 #include "m_buffer.c"
 #include "m_setup.c"
 #include "m_global.c"
+#include "m_scheduler.c"
 
 /* System. */
 
