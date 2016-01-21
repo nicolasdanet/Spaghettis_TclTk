@@ -30,6 +30,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#define SCHEDULER_RUN       0
 #define SCHEDULER_QUIT      1
 #define SCHEDULER_RESTART   2
 
@@ -284,9 +285,32 @@ static double scheduler_getSystimePerDSPTick (void)
     return (SCHEDULER_SYSTIME_CLOCKS_PER_SECOND * ((double)scheduler_blockSize / sys_dacsr));
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+static void scheduler_pollWatchdog (void)
+{
+    # if PD_WITH_WATCHDOG
+    
+    if (sys_nogui && sys_hipriority && (scheduler_didDSP - scheduler_nextPing > 0)) {
+        global_watchdog (NULL);
+        scheduler_nextPing = scheduler_didDSP + (2 * (int)(sys_dacsr / (double)scheduler_blockSize));
+    }
+    
+    #endif
+}
+
+static void scheduler_pollStuck (int init)
+{
+    static double idleTime;
+    
+    if (init) { idleTime = sys_getrealtime(); }
+    else {
+        if (sys_getrealtime() - idleTime > 1.0) {
+            post_error (PD_TRANSLATE ("audio: I/O stuck... closing audio"));
+            sys_close_audio();
+            scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
+            scheduler_quit = SCHEDULER_RESTART;
+        }
+    }
+}
 
 static void scheduler_tick (void)
 {
@@ -313,28 +337,86 @@ static void scheduler_tick (void)
     #endif
 }
 
-static void scheduler_pollWatchdog (void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void scheduler_loop (void)
 {
-    # if PD_WITH_WATCHDOG
+    int idleCount = 0;
     
-    if (sys_nogui && sys_hipriority && (scheduler_didDSP - scheduler_nextPing > 0)) {
-        global_watchdog (NULL);
-        scheduler_nextPing = scheduler_didDSP + (2 * (int)(sys_dacsr /(double)scheduler_blockSize));
+    scheduler_systimePerDSPTick = scheduler_getSystimePerDSPTick();
+
+    SCHEDULER_LOCK;
+
+    scheduler_sleepGrain = PD_CLAMP (sys_schedadvance / 4, 100, 5000);
+
+    sys_initmidiqueue();
+    
+    while (!scheduler_quit) {
+    //
+    int timeForward, didSomething = 0;
+
+    if (scheduler_audioMode != SCHEDULER_AUDIO_NONE) {
+
+        SCHEDULER_UNLOCK;
+        timeForward = sys_send_dacs();
+        SCHEDULER_LOCK;
+
+        if (timeForward) { idleCount = 0; }
+        else if (!(++idleCount & 31)) { scheduler_pollStuck (idleCount == 32); }
+        
+    } else {
+        double realTime = (sys_getrealtime() - scheduler_realTime) * 1000.;
+        double logicalTime = scheduler_getMillisecondsSince (scheduler_logicalTime);
+
+        if (realTime > logicalTime) { timeForward = DACS_YES; }
+        else {
+            timeForward = DACS_NO;
+        }
     }
     
-    #endif
+    if (!scheduler_quit) {
+    //
+    sys_setmiditimediff(0, 1e-6 * sys_schedadvance);
+    if (timeForward != DACS_NO)
+        scheduler_tick();
+    if (timeForward == DACS_YES)
+        didSomething = 1;
+
+    sys_pollmidiqueue();
+    if (sys_pollgui())
+    {
+        if (!didSomething) {}
+            //sched_didpoll++;
+        didSomething = 1;
+    }
+        /* test for idle; if so, do graphics updates. */
+    if (!didSomething)
+    {
+        scheduler_pollWatchdog();
+
+        SCHEDULER_UNLOCK;   /* unlock while we idle */
+
+        if (timeForward != DACS_SLEPT) { sys_microsleep(scheduler_sleepGrain); }
+
+        SCHEDULER_LOCK;
+
+        //sched_didnothing++;
+    }
+    //
+    }
+    //
+    }
+
+    SCHEDULER_UNLOCK;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void scheduler_needToRestart (void)
-{
-    scheduler_quit = SCHEDULER_RESTART;
-}
-
-void scheduler_setAudio (int flag)
+void scheduler_setAudioMode (int flag)
 {
     PD_ASSERT (flag != SCHEDULER_AUDIO_CALLBACK);           /* Not fully implemented yet. */
     PD_ABORT  (flag == SCHEDULER_AUDIO_CALLBACK);
@@ -350,129 +432,24 @@ void scheduler_setAudio (int flag)
     scheduler_systimePerDSPTick = scheduler_getSystimePerDSPTick();
 }
 
+void scheduler_needToRestart (void)
+{
+    scheduler_quit = SCHEDULER_RESTART;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/*
-Here is Pd's "main loop."  This routine dispatches clock timeouts and DSP
-"ticks" deterministically, and polls for input from MIDI and the GUI.  If
-we're left idle we also poll for graphics updates; but these are considered
-lower priority than the rest.
-
-The time source is normally the audio I/O subsystem via the "sys_send_dacs()"
-call.  This call returns true if samples were transferred; false means that
-the audio I/O system is still busy with previous transfers.
-*/
-
-static void m_pollingscheduler( void)
-{
-    int idlecount = 0;
-    scheduler_systimePerDSPTick = (SCHEDULER_SYSTIME_CLOCKS_PER_SECOND) *
-        ((double)scheduler_blockSize) / sys_dacsr;
-
-        SCHEDULER_LOCK;
-
-    if (scheduler_sleepGrain < 100)
-        scheduler_sleepGrain = sys_schedadvance/4;
-    if (scheduler_sleepGrain < 100)
-        scheduler_sleepGrain = 100;
-    else if (scheduler_sleepGrain > 5000)
-        scheduler_sleepGrain = 5000;
-    sys_initmidiqueue();
-    while (!scheduler_quit)
-    {
-        int didsomething = 0;
-        int timeforward;
-
-    waitfortick:
-        if (scheduler_audioMode != SCHEDULER_AUDIO_NONE)
-        {
-            /* T.Grill - send_dacs may sleep -> 
-                unlock thread lock make that time available 
-                - could messaging do any harm while sys_send_dacs is running?
-            */
-            SCHEDULER_UNLOCK;
-            timeforward = sys_send_dacs();
-
-            /* T.Grill - done */
-            SCHEDULER_LOCK;
-
-                /* if dacs remain "idle" for 1 sec, they're hung up. */
-            if (timeforward != 0)
-                idlecount = 0;
-            else
-            {
-                idlecount++;
-                if (!(idlecount & 31))
-                {
-                    static double idletime;
-                    if (scheduler_audioMode != SCHEDULER_AUDIO_POLL)
-                    {
-                            PD_BUG;
-                            return;
-                    }
-                        /* on 32nd idle, start a clock watch;  every
-                        32 ensuing idles, check it */
-                    if (idlecount == 32)
-                        idletime = sys_getrealtime();
-                    else if (sys_getrealtime() - idletime > 1.)
-                    {
-                        post_error ("audio I/O stuck... closing audio\n");
-                        sys_close_audio();
-                        scheduler_setAudio(SCHEDULER_AUDIO_NONE);
-                        goto waitfortick;
-                    }
-                }
-            }
-        }
-        else
-        {
-            if (1000. * (sys_getrealtime() - scheduler_realTime)
-                > scheduler_getMillisecondsSince(scheduler_logicalTime))
-                    timeforward = DACS_YES;
-            else timeforward = DACS_NO;
-        }
-        sys_setmiditimediff(0, 1e-6 * sys_schedadvance);
-        if (timeforward != DACS_NO)
-            scheduler_tick();
-        if (timeforward == DACS_YES)
-            didsomething = 1;
-
-        sys_pollmidiqueue();
-        if (sys_pollgui())
-        {
-            if (!didsomething) {}
-                //sched_didpoll++;
-            didsomething = 1;
-        }
-            /* test for idle; if so, do graphics updates. */
-        if (!didsomething)
-        {
-            scheduler_pollWatchdog();
-
-            SCHEDULER_UNLOCK;   /* unlock while we idle */
-
-            if (timeforward != DACS_SLEPT) { sys_microsleep(scheduler_sleepGrain); }
-
-            SCHEDULER_LOCK;
-
-            //sched_didnothing++;
-        }
-    }
-
-    SCHEDULER_UNLOCK;
-}
-
 void sched_audio_callbackfn(void)
 {
-    scheduler_lock();
+    SCHEDULER_LOCK;
     sys_setmiditimediff(0, 1e-6 * sys_schedadvance);
     scheduler_tick();
     sys_pollmidiqueue();
     sys_pollgui();
     scheduler_pollWatchdog();
-    scheduler_unlock();
+    SCHEDULER_UNLOCK;
 }
 
 static void m_callbackscheduler(void)
@@ -488,10 +465,10 @@ static void m_callbackscheduler(void)
 #endif
         if (pd_this->pd_systime == timewas)
         {
-            scheduler_lock();
+            SCHEDULER_LOCK;
             sys_pollgui();
             scheduler_tick();
-            scheduler_unlock();
+            SCHEDULER_UNLOCK;
         }
     }
 }
@@ -502,7 +479,7 @@ int m_mainloop(void)
     {
         if (scheduler_audioMode == SCHEDULER_AUDIO_CALLBACK)
             m_callbackscheduler();
-        else m_pollingscheduler();
+        else scheduler_loop();
         if (scheduler_quit == SCHEDULER_RESTART)
         {
             scheduler_quit = 0;
