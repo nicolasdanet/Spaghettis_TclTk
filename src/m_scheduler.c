@@ -280,6 +280,28 @@ void scheduler_unlock (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void scheduler_setAudioMode (int flag)
+{
+    PD_ASSERT (flag != SCHEDULER_AUDIO_CALLBACK);           /* Not fully implemented yet. */
+    PD_ABORT  (flag == SCHEDULER_AUDIO_CALLBACK);
+
+    scheduler_audioMode = flag;
+}
+
+void scheduler_needToRestart (void)
+{
+    scheduler_quit = SCHEDULER_RESTART;
+}
+
+void scheduler_needToExit (void)
+{
+    scheduler_quit = SCHEDULER_QUIT;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static double scheduler_getSystimePerDSPTick (void)
 {
     return (SCHEDULER_SYSTIME_CLOCKS_PER_SECOND * ((double)scheduler_blockSize / sys_dacsr));
@@ -343,15 +365,22 @@ static void scheduler_tick (void)
 
 static void scheduler_loop (void)
 {
+    double realTime, logicalTime;
     int idleCount = 0;
+        
+    if (scheduler_audioMode == SCHEDULER_AUDIO_NONE) {
+    //
+    realTime = sys_getrealtime();
+    logicalTime = scheduler_getSystime();
+    //
+    }
     
+    scheduler_sleepGrain = PD_CLAMP (sys_schedadvance / 4, 100, 5000);
     scheduler_systimePerDSPTick = scheduler_getSystimePerDSPTick();
 
-    SCHEDULER_LOCK;
-
-    scheduler_sleepGrain = PD_CLAMP (sys_schedadvance / 4, 100, 5000);
-
     sys_initmidiqueue();
+    
+    SCHEDULER_LOCK;
     
     while (!scheduler_quit) {
     //
@@ -367,10 +396,10 @@ static void scheduler_loop (void)
         else if (!(++idleCount & 31)) { scheduler_pollStuck (idleCount == 32); }
         
     } else {
-        double realTime = (sys_getrealtime() - scheduler_realTime) * 1000.;
-        double logicalTime = scheduler_getMillisecondsSince (scheduler_logicalTime);
+        double realElapsed = (sys_getrealtime() - realTime) * 1000.;
+        double logicalElpased = scheduler_getMillisecondsSince (logicalTime);
 
-        if (realTime > logicalTime) { timeForward = DACS_YES; }
+        if (realElapsed > logicalElpased) { timeForward = DACS_YES; }
         else {
             timeForward = DACS_NO;
         }
@@ -410,31 +439,6 @@ static void scheduler_loop (void)
     }
 
     SCHEDULER_UNLOCK;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void scheduler_setAudioMode (int flag)
-{
-    PD_ASSERT (flag != SCHEDULER_AUDIO_CALLBACK);           /* Not fully implemented yet. */
-    PD_ABORT  (flag == SCHEDULER_AUDIO_CALLBACK);
-
-    if (flag == SCHEDULER_AUDIO_NONE) {
-    //
-    scheduler_realTime = sys_getrealtime();
-    scheduler_logicalTime = scheduler_getSystime();
-    //
-    }
-    
-    scheduler_audioMode = flag;
-    scheduler_systimePerDSPTick = scheduler_getSystimePerDSPTick();
-}
-
-void scheduler_needToRestart (void)
-{
-    scheduler_quit = SCHEDULER_RESTART;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -500,11 +504,6 @@ int m_batchmain(void)
     while (scheduler_quit != SCHEDULER_QUIT)
         scheduler_tick();
     return (0);
-}
-
-void sys_exit(void)
-{
-    scheduler_quit = SCHEDULER_QUIT;
 }
 
 // -----------------------------------------------------------------------------------------------------------

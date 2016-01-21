@@ -489,8 +489,6 @@ static void socketreceiver_getudp(t_socketreceiver *x, int fd)
     }
 }
 
-void sys_exit(void);
-
 void socketreceiver_read(t_socketreceiver *x, int fd)
 {
     if (x->sr_udp)   /* UDP ("datagram") socket protocol */
@@ -530,7 +528,7 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
                 if (x == sys_socketreceiver)
                 {
                     fprintf(stderr, "pd: exiting\n");
-                    sys_exit();
+                    scheduler_needToExit();
                     return;
                 }
                 else
@@ -1287,8 +1285,6 @@ int sys_startgui(const char *libdir)
     }
     return (0);
 }
-
-extern void sys_exit(void);
 
 /* This is called when something bad has happened, like a segfault.
 Call global_quit() below to exit cleanly.

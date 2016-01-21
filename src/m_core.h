@@ -303,6 +303,7 @@ void    scheduler_unlock                    (void);
 
 void    scheduler_setAudioMode              (int flag);
 void    scheduler_needToRestart             (void);
+void    scheduler_needToExit                (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
