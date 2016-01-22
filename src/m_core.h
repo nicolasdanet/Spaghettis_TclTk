@@ -14,32 +14,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define TYPE_TEXT               0
-#define TYPE_OBJECT             1
-#define TYPE_MESSAGE            2
-#define TYPE_ATOM               3
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define DATA_FLOAT              0
-#define DATA_SYMBOL             1
-#define DATA_TEXT               2
-#define DATA_ARRAY              3
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define POINTER_NONE            0
-#define POINTER_GLIST           1
-#define POINTER_ARRAY           2
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 PD_STRUCT _widgetbehavior;
 
@@ -150,6 +124,15 @@ int  pd_setLoadingAbstraction           (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void setup_initialize                   (void);
+void object_initialize                  (void);
+void global_initialize                  (void);
+void message_initialize                 (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_error utils_strncpy                   (char *dest, size_t size, const char *src);
 t_error utils_strnadd                   (char *dest, size_t size, const char *src);
 t_error utils_strncat                   (char *dest, size_t size, const char *src, int length);
@@ -235,11 +218,16 @@ t_float         *object_getSignalValueAtIndex           (t_object *x, int m);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int  outlet_isSignal                        (t_outlet *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void global_new                             (void *dummy, t_symbol *name, t_symbol *directory);
 void global_dsp                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void global_key                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void global_quit                            (void *dummy);
-
 void global_gui                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void global_audioProperties                 (void *dummy, t_float f);
 void global_midiProperties                  (void *dummy, t_float f);
@@ -310,39 +298,18 @@ int     scheduler_mainForBatchProcessing    (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_vgui                   (char *fmt, ...);
-void sys_gui                    (char *s);
-void sys_pretendguibytes        (int n);
-void sys_queuegui               (void *client, t_glist *glist, t_callbackfn f);
-void sys_unqueuegui             (void *client);
+void    sys_vgui                            (char *fmt, ...);
+void    sys_gui                             (char *s);
+void    sys_pretendguibytes                 (int n);
+void    sys_queuegui                        (void *client, t_glist *glist, t_callbackfn f);
+void    sys_unqueuegui                      (void *client);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void gfxstub_new                (t_pd *owner, void *key, const char *cmd);
-void gfxstub_deleteforkey       (void *key);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void message_initialize         (void);
-void object_initialize          (void);
-void setup_initialize           (void);
-void global_initialize          (void);
-void garray_init                (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int  outlet_isSignal            (t_outlet *x);
-void text_save                  (t_gobj *z, t_buffer *b);
-void canvas_popabstraction      (t_canvas *x);
-int  canvas_getdollarzero       (void);
-void open_via_helppath          (const char *name, const char *dir);
-void post_atoms                 (int argc, t_atom *argv);
+void    gfxstub_new                         (t_pd *owner, void *key, const char *cmd);
+void    gfxstub_deleteforkey                (void *key);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

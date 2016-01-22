@@ -126,7 +126,7 @@ extern "C" {
 #pragma mark -
 
 #define PD_NAME             "PureData"
-#define PD_VERSION          "Alpha"
+#define PD_VERSION          "0.9"
 #define PD_FILE             ".pd"
 
 // -----------------------------------------------------------------------------------------------------------

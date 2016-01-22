@@ -30,6 +30,32 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define TYPE_TEXT                   0
+#define TYPE_OBJECT                 1
+#define TYPE_MESSAGE                2
+#define TYPE_ATOM                   3
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define DATA_FLOAT                  0
+#define DATA_SYMBOL                 1
+#define DATA_TEXT                   2
+#define DATA_ARRAY                  3
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define POINTER_NONE                0
+#define POINTER_GLIST               1
+#define POINTER_ARRAY               2
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define ACTION_NONE                 0
 #define ACTION_MOVE                 1
 #define ACTION_CONNECT              2
@@ -402,6 +428,8 @@ void     glist_eraseio          (t_glist *glist, t_object *ob, char *tag);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void canvas_popabstraction      (t_canvas *x);
+int  canvas_getdollarzero       (void);
 void canvas_create_editor       (t_glist *x);
 void canvas_destroy_editor      (t_glist *x);
 void canvas_deletelinesforio    (t_canvas *x, t_text *text, t_inlet *inp, t_outlet *outp);
@@ -410,6 +438,7 @@ void canvas_deletelinesforio    (t_canvas *x, t_text *text, t_inlet *inp, t_outl
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void text_save          (t_gobj *z, t_buffer *b);
 void text_setto         (t_text *x, t_glist *glist, char *buf, int bufsize);
 void text_drawborder    (t_text *x, t_glist *glist, char *tag, int width, int height, int firsttime);
 void text_eraseborder   (t_text *x, t_glist *glist, char *tag);
@@ -563,12 +592,15 @@ void         guiconnect_notarget        (t_guiconnect *x, double timedelay);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+
 t_template   *garray_template           (t_garray *x);
 t_garray     *graph_array               (t_glist *gl,
                                             t_symbol *s,
                                             t_symbol *tmpl,
                                             t_float f,
                                             t_float saveit);
+
+void        garray_init                 (void);
 
 t_array      *array_new                 (t_symbol *templatesym, t_gpointer *parent);
 void         array_resize               (t_array *x, int n);

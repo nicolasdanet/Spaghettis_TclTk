@@ -149,6 +149,13 @@ typedef int (*loader_t)(t_canvas *canvas, char *classname);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void post_atoms                             (int argc, t_atom *argv);
+void open_via_helppath                      (const char *name, const char *dir);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void        sys_setextrapath                (const char *p);
 int         sys_open_absolute               (const char *name,
                                                 const char* ext,
