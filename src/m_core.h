@@ -23,7 +23,7 @@ PD_STRUCT _widgetbehavior;
 
 typedef void (*t_savefn)(t_gobj *x, t_buffer *b);
 typedef void (*t_propertiesfn)(t_gobj *x, t_glist *glist);
-typedef void (*t_callbackfn)(t_gobj *x, t_glist *glist);
+typedef void (*t_guifn)(t_gobj *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -301,7 +301,7 @@ int     scheduler_mainForBatchProcessing    (void);
 void    sys_vgui                            (char *fmt, ...);
 void    sys_gui                             (char *s);
 void    sys_pretendguibytes                 (int n);
-void    sys_queuegui                        (void *client, t_glist *glist, t_callbackfn f);
+void    sys_queuegui                        (void *client, t_glist *glist, t_guifn f);
 void    sys_unqueuegui                      (void *client);
 
 // -----------------------------------------------------------------------------------------------------------

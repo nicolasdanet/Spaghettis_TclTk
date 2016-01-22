@@ -574,7 +574,7 @@ typedef struct _guiqueue
 {
     void *gq_client;
     t_glist *gq_glist;
-    t_callbackfn gq_fn;
+    t_guifn gq_fn;
     struct _guiqueue *gq_next;
 } t_guiqueue;
 
@@ -786,7 +786,7 @@ void sys_pretendguibytes(int n)
     sys_bytessincelastping += n;
 }
 
-void sys_queuegui(void *client, t_glist *glist, t_callbackfn f)
+void sys_queuegui(void *client, t_glist *glist, t_guifn f)
 {
     t_guiqueue **gqnextptr, *gq;
     if (!sys_guiqueuehead)

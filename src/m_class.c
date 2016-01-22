@@ -223,7 +223,7 @@ t_class *class_new (t_symbol *s,
     c->c_behaviorParent     = NULL;
     c->c_fnSave             = (typeflag == CLASS_BOX ? text_save : class_defaultSave);
     c->c_fnProperties       = class_defaultProperties;
-    c->c_signalOffset      = 0;
+    c->c_signalOffset       = 0;
     c->c_isGraphic          = (typeflag >= CLASS_GRAPHIC);
     c->c_isBox              = (typeflag == CLASS_BOX);
     c->c_hasFirstInlet      = ((flags & CLASS_NOINLET) == 0);
@@ -279,7 +279,7 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
     
     if (s == &s_signal) { PD_BUG; return; }
     
-    /* Note that "pointer" is not catched (related to creation of the pointer object). */
+    /* Note that "pointer" is not catched. */
     
     if (s == &s_bang) {
         if (argtype) { PD_BUG; return; }
@@ -372,11 +372,11 @@ void class_addAnything (t_class *c, t_method fn)
 
 t_method class_getMethod (t_class *c, t_symbol *s)
 {
-    t_entry *m;
+    t_entry *m = NULL;
     int i;
 
-    for (i = c->c_methodsSize, m = c->c_methods; i--; m++) { 
-        if (m->me_name == s) { return (m->me_method); }
+    for (i = c->c_methodsSize, m = c->c_methods; i--; m++) {
+        if (m->me_name == s) { return m->me_method; }
     }
     
     return NULL;
