@@ -120,6 +120,8 @@ void pd_vMessage                        (t_pd *x, t_symbol *s, char *fmt, ...);
 void pd_performLoadbang                 (void);
 int  pd_setLoadingAbstraction           (t_symbol *s);
 
+void pd_initialize                      (void);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

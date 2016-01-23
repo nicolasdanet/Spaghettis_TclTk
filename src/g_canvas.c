@@ -24,7 +24,7 @@ extern t_pdinstance *pd_this;
 extern t_pd pd_canvasMaker;
 extern int glist_reloading;
 extern int sys_defaultfont;
-extern t_symbol *sys_libdir;
+extern t_symbol *main_libDirectory;
 
     /* LATER consider adding font size to this struct (see glist_getfont()) */
 struct _canvasenvironment
@@ -1290,7 +1290,7 @@ static void canvas_completepath(char *from, char *to, int bufsize)
     }
     else
     {   // if not absolute path, append Pd lib dir
-        strncpy(to, sys_libdir->s_name, bufsize-4);
+        strncpy(to, main_libDirectory->s_name, bufsize-4);
         to[bufsize-3] = '\0';
         strcat(to, "/");
     }

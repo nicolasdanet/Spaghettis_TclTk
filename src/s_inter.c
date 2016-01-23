@@ -72,10 +72,9 @@ typedef int socklen_t;
 #define LOCALHOST "localhost"
 #endif
 
-extern int sys_debuglevel;
-extern int sys_nogui;
-extern char *sys_guicmd;
-extern int sys_hipriority;
+extern int main_noGUI;
+extern char *main_commandToLaunchGUI;
+extern int main_highPriority;
 extern int sys_audioapi;
 
 typedef struct _fdpoll
@@ -98,7 +97,7 @@ struct _socketreceiver
     t_socketreceivefn sr_socketreceivefn;
 };
 
-extern int sys_guisetportnumber;
+extern int main_portNumber;
 
 static int sys_nfdpoll;
 static t_fdpoll *sys_fdpoll;
@@ -163,7 +162,7 @@ double sys_getrealtime(void)
 #endif
 }
 
-extern int sys_nosleep;
+extern int main_noSleep;
 
 static int sys_domicrosleep(int microsec, int pollem)
 {
@@ -171,7 +170,7 @@ static int sys_domicrosleep(int microsec, int pollem)
     int i, didsomething = 0;
     t_fdpoll *fp;
     timout.tv_sec = 0;
-    timout.tv_usec = (sys_nosleep ? 0 : microsec);
+    timout.tv_usec = (main_noSleep ? 0 : microsec);
     if (pollem)
     {
         fd_set readset, writeset, exceptset;
@@ -440,7 +439,7 @@ static int socketreceiver_doread(t_socketreceiver *x)
         {
             intail = (indx+1)&(INBUFSIZE-1);
             buffer_withStringUnzeroed(inbinbuf, messbuf, bp - messbuf);
-            if (sys_debuglevel & DEBUG_MESSDOWN)
+            if (0 /*sys_debuglevel*/ & DEBUG_MESSDOWN)
             {
                 write(2,  messbuf, bp - messbuf);
                 write(2, "\n", 1);
@@ -641,7 +640,7 @@ void sys_vgui(char *fmt, ...)
     int msglen, bytesleft, headwas, nwrote;
     va_list ap;
 
-    if (sys_nogui)
+    if (main_noGUI)
         return;
     if (!sys_guibuf)
     {
@@ -678,7 +677,7 @@ void sys_vgui(char *fmt, ...)
         if (msglen >= sys_guibufsize - sys_guibufhead)
             msglen = sys_guibufsize - sys_guibufhead;
     }
-    if (sys_debuglevel & DEBUG_MESSUP)
+    if (0 /*sys_debuglevel*/ & DEBUG_MESSUP)
         fprintf(stderr, "%s",  sys_guibuf + sys_guibufhead);
     sys_guibufhead += msglen;
     sys_bytessincelastping += msglen;
@@ -764,7 +763,7 @@ static int sys_flushqueue(void )
     /* flush output buffer and update queue to gui in small time slices */
 static int sys_poll_togui(void) /* returns 1 if did anything */
 {
-    if (sys_nogui)
+    if (main_noGUI)
         return (0);
         /* in case there is stuff still in the buffer, try to flush it. */
     sys_flushtogui();
@@ -889,7 +888,7 @@ int sys_startgui(const char *libdir)
     if (WSAStartup(version, &nobby)) sys_sockerror("WSAstartup");
 #endif /* _WIN32 */
 
-    if (sys_nogui)
+    if (main_noGUI)
     {
             /* fake the GUI's message giving cwd and font sizes; then
             skip starting the GUI up. */
@@ -909,7 +908,7 @@ int sys_startgui(const char *libdir)
         // SET_FLOAT(zz+NDEFAULTFONT+1,0);
         global_gui(0, 0, NDEFAULTFONT+1, zz);
     }
-    else if (sys_guisetportnumber)  /* GUI exists and sent us a port number */
+    else if (main_portNumber)  /* GUI exists and sent us a port number */
     {
         struct sockaddr_in server;
         struct hostent *hp;
@@ -947,7 +946,7 @@ int sys_startgui(const char *libdir)
         memcpy((char *)&server.sin_addr, (char *)hp->h_addr, hp->h_length);
 
         /* assign client port number */
-        server.sin_port = htons((unsigned short)sys_guisetportnumber);
+        server.sin_port = htons((unsigned short)main_portNumber);
 
             /* try to connect */
         if (connect(sys_guisock, (struct sockaddr *) &server, sizeof (server))
@@ -1010,7 +1009,7 @@ int sys_startgui(const char *libdir)
 
 
 #ifndef _WIN32
-        if (!sys_guicmd)
+        if (!main_commandToLaunchGUI)
         {
 #ifdef __APPLE__
             int i;
@@ -1069,11 +1068,11 @@ int sys_startgui(const char *libdir)
                  libdir, libdir, (getenv("HOME") ? "" : " HOME=/tmp"),
                     libdir, portno);
 #endif /* __APPLE__ */
-            sys_guicmd = cmdbuf;
+            main_commandToLaunchGUI = cmdbuf;
         }
 
         if (0) 
-            fprintf(stderr, "%s", sys_guicmd);
+            fprintf(stderr, "%s", main_commandToLaunchGUI);
 
         childpid = fork();
         if (childpid < 0)
@@ -1103,7 +1102,7 @@ int sys_startgui(const char *libdir)
                 }
             }
 #endif /* NOT __APPLE__ */
-            execl("/bin/sh", "sh", "-c", sys_guicmd, (char*)0);
+            execl("/bin/sh", "sh", "-c", main_commandToLaunchGUI, (char*)0);
             perror("pd: exec");
             fprintf(stderr, "Perhaps tcl and tk aren't yet installed?\n");
             _exit(1);
@@ -1144,11 +1143,11 @@ int sys_startgui(const char *libdir)
                 @audio - memlock unlimited
         in the system limits file, perhaps /etc/limits.conf or
         /etc/security/limits.conf */
-    if (sys_hipriority == -1)
-        sys_hipriority = 1;
+    if (main_highPriority == -1)
+        main_highPriority = 1;
 
     sprintf(cmdbuf, "%s/bin/pdwatchdog", libdir);
-    if (sys_hipriority)
+    if (main_highPriority)
     {
         struct stat statbuf;
         if (stat(cmdbuf, &statbuf) < 0)
@@ -1156,13 +1155,13 @@ int sys_startgui(const char *libdir)
             fprintf(stderr,
               "disabling real-time priority due to missing pdwatchdog (%s)\n",
                 cmdbuf);
-            sys_hipriority = 0;
+            main_highPriority = 0;
         }
     }
     else if (0)
         post("not setting real-time priority");
     
-    if (sys_hipriority)
+    if (main_highPriority)
     {
             /* To prevent lockup, we fork off a watchdog process with
             higher real-time priority than ours.  The GUI has to send
@@ -1230,7 +1229,7 @@ int sys_startgui(const char *libdir)
         fprintf(stderr, "pd: couldn't set high priority class\n");
 #endif
 #ifdef __APPLE__
-    if (sys_hipriority)
+    if (main_highPriority)
     {
         struct sched_param param;
         int policy = SCHED_RR;
@@ -1243,7 +1242,7 @@ int sys_startgui(const char *libdir)
     }
 #endif /* __APPLE__ */
 
-    if (!sys_nogui && !sys_guisetportnumber)
+    if (!main_noGUI && !main_portNumber)
     {
         if (0)
             fprintf(stderr, "Waiting for connection request... \n");
@@ -1259,7 +1258,7 @@ int sys_startgui(const char *libdir)
             fprintf(stderr, "... connected\n");
         sys_guibufhead = sys_guibuftail = 0;
     }
-    if (!sys_nogui)
+    if (!main_noGUI)
     {
         char buf[256], buf2[256];
         sys_socketreceiver = socketreceiver_new(0, 0, 0, 0);
@@ -1268,7 +1267,7 @@ int sys_startgui(const char *libdir)
 
             /* here is where we start the pinging. */
 #if defined(__linux__) || defined(__FreeBSD_kernel__)
-        if (sys_hipriority)
+        if (main_highPriority)
             sys_gui("::watchdog\n");
 #endif
         sys_get_audio_apis(buf);
@@ -1312,7 +1311,7 @@ void global_quit(void *dummy)
 {
     sys_close_audio();
     sys_close_midi();
-    if (!sys_nogui)
+    if (!main_noGUI)
     {
         sys_closesocket(sys_guisock);
         sys_rmpollfn(sys_guisock);
@@ -1330,7 +1329,7 @@ void sys_stopgui( void)
         sys_closesocket(sys_guisock);
         sys_rmpollfn(sys_guisock);
         sys_guisock = -1;
-        sys_guicmd = 0;
+        main_commandToLaunchGUI = 0;
     }
-    sys_nogui = 1;
+    main_noGUI = 1;
 }

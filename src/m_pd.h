@@ -158,6 +158,7 @@ extern "C" {
 
 #include <errno.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -171,6 +172,7 @@ extern "C" {
 #if PD_WINDOWS
     #include <io.h>
     #include <windows.h>
+    #include <winbase.h>
 #else
     #include <unistd.h>
 #endif

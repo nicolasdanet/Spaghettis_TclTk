@@ -38,7 +38,7 @@ static t_class *vradio_class;
 
 /* widget helper functions */
 
-extern int sys_noloadbang;
+extern int main_noLoadbang;
 
 void vradio_draw_update(t_gobj *client, t_glist *glist)
 {
@@ -394,7 +394,7 @@ static int vradio_newclick(t_gobj *z, struct _glist *glist,
 
 static void vradio_loadbang(t_vradio *x)
 {
-    if(!sys_noloadbang && x->x_gui.x_isa.x_loadinit)
+    if(!main_noLoadbang && x->x_gui.x_isa.x_loadinit)
         vradio_bang(x);
 }
 

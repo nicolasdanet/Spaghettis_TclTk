@@ -32,7 +32,7 @@
 t_widgetbehavior toggle_widgetbehavior;
 static t_class *toggle_class;
 
-extern int sys_noloadbang;
+extern int main_noLoadbang;
 
 /* widget helper functions */
 
@@ -314,7 +314,7 @@ static void toggle_fout(t_toggle *x, t_float f)
 
 static void toggle_loadbang(t_toggle *x)
 {
-    if(!sys_noloadbang && x->x_gui.x_isa.x_loadinit)
+    if(!main_noLoadbang && x->x_gui.x_isa.x_loadinit)
         toggle_fout(x, (t_float)x->x_on);
 }
 

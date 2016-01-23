@@ -35,7 +35,7 @@
 t_widgetbehavior hslider_widgetbehavior;
 static t_class *hslider_class;
 
-extern int sys_noloadbang;
+extern int main_noLoadbang;
 
 /* widget helper functions */
 
@@ -501,7 +501,7 @@ static void hslider_float(t_hslider *x, t_float f)
 
 static void hslider_loadbang(t_hslider *x)
 {
-    if(!sys_noloadbang && x->x_gui.x_isa.x_loadinit)
+    if(!main_noLoadbang && x->x_gui.x_isa.x_loadinit)
     {
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_UPDATE);
         hslider_bang(x);

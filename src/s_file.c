@@ -33,8 +33,8 @@
 extern int sys_usestdpath;
 extern t_namelist *sys_externlist;
 extern t_namelist *sys_searchpath;
-extern t_symbol *sys_libdir;
-extern int sys_hipriority;
+extern t_symbol *main_libDirectory;
+extern int main_highPriority;
 extern int sys_audioapi;
 
 int sys_defeatrt;               /* Shared. */
@@ -60,7 +60,7 @@ static void sys_initloadpreferences( void)
     struct stat statbuf;
 
     snprintf(default_prefs_file, PD_STRING, "%s/default.puredata", 
-        sys_libdir->s_name);
+        main_libDirectory->s_name);
     snprintf(user_prefs_file, PD_STRING, "%s/.puredata", 
         (homedir ? homedir : "."));
     if (stat(user_prefs_file, &statbuf) == 0) 
@@ -243,7 +243,7 @@ static int sys_getpreference(const char *key, char *value, int size)
    /* the 'defaults' command expects the filename without .plist at the
         end */
     snprintf(embedded_prefs, PD_STRING, "%s/../org.puredata.puredata",
-        sys_libdir->s_name);
+        main_libDirectory->s_name);
     snprintf(user_prefs, PD_STRING,
         "%s/Library/Preferences/org.puredata.puredata.plist", homedir);
     if (stat(user_prefs, &statbuf) == 0)
@@ -457,15 +457,15 @@ void sys_loadpreferences( void)
     sys_doflags();
 
     if (sys_defeatrt)
-        sys_hipriority = 0;
+        main_highPriority = 0;
     else
 #if defined(__linux__) || defined(__CYGWIN__)
-        sys_hipriority = 1;
+        main_highPriority = 1;
 #else
 #if defined(_WIN32) || defined(ANDROID)
-        sys_hipriority = 0;
+        main_highPriority = 0;
 #else
-        sys_hipriority = 1;
+        main_highPriority = 1;
 #endif
 #endif
 }

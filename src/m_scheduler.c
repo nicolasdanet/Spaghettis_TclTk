@@ -53,8 +53,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int      sys_nogui;
-extern int      sys_hipriority;
+extern int      main_noGUI;
+extern int      main_highPriority;
 extern int      sys_schedadvance;
 extern t_float  sys_dacsr;
 
@@ -311,7 +311,7 @@ static void scheduler_pollWatchdog (void)
 {
     # if PD_WITH_WATCHDOG
     
-    if (sys_nogui && sys_hipriority && (scheduler_didDSP - scheduler_nextPing > 0)) {
+    if (main_noGUI && main_highPriority && (scheduler_didDSP - scheduler_nextPing > 0)) {
         global_watchdog (NULL);
         scheduler_nextPing = scheduler_didDSP + (2 * (int)(sys_dacsr / (double)scheduler_blockSize));
     }

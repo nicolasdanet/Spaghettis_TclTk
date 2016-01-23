@@ -284,6 +284,7 @@ int sys_load_lib(t_canvas *canvas, char *classname)
     return ok;
 }
 
+/*
 int sys_run_scheduler(const char *externalschedlibname,
     const char *sys_extraflagsstring)
 {
@@ -294,7 +295,7 @@ int sys_run_scheduler(const char *externalschedlibname,
     snprintf(filename, sizeof(filename), "%s%s", externalschedlibname,
         sys_dllextent);
     sys_bashfilename(filename, filename);
-        /* if first-choice file extent can't 'stat', go for second */
+        
     if (stat(filename, &statbuf) < 0)
     {
         snprintf(filename, sizeof(filename), "%s%s", externalschedlibname,
@@ -339,3 +340,4 @@ int sys_run_scheduler(const char *externalschedlibname,
         return (0);
     }
 }
+*/
