@@ -446,6 +446,7 @@
 		371655A51BA3469200ABDE22 /* PureData */ = {
 			isa = PBXGroup;
 			children = (
+				378971E21C4F716700263434 /* m_pd.h */,
 				3722C5331C4F920B00D2BF6F /* Core */,
 				3722C5341C4F921F00D2BF6F /* System */,
 				3722C5351C4F924900D2BF6F /* Graphics */,
@@ -462,10 +463,9 @@
 		3722C5331C4F920B00D2BF6F /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				378971E21C4F716700263434 /* m_pd.h */,
-				378971E31C4F716700263434 /* m_core.h */,
 				378971DD1C4F716700263434 /* m_macros.h */,
 				378971D71C4F716700263434 /* m_alloca.h */,
+				378971E31C4F716700263434 /* m_core.h */,
 				378971E61C4F716700263434 /* m_utils.c */,
 				378971DB1C4F716700263434 /* m_dollar.c */,
 				378971DE1C4F716700263434 /* m_memory.c */,
