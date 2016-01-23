@@ -428,7 +428,7 @@ void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         }
         
         if (!err) {
-            (*c->c_methodAny) (x, s, argc, argv); 
+            (*c->c_methodAnything) (x, s, argc, argv); 
             return; 
         }
     }

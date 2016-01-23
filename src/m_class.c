@@ -69,7 +69,7 @@ static void class_defaultBang (t_pd *x)
     
     if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, NULL, 0, NULL); }
     else { 
-        (*c->c_methodAny) (x, &s_bang, 0, NULL);
+        (*c->c_methodAnything) (x, &s_bang, 0, NULL);
     }
 }
 
@@ -82,7 +82,7 @@ static void class_defaultPointer (t_pd *x, t_gpointer *gp)
         
     if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, NULL, 1, &a); }
     else {
-        (*c->c_methodAny) (x, &s_pointer, 1, &a);
+        (*c->c_methodAnything) (x, &s_pointer, 1, &a);
     }
 }
 
@@ -95,7 +95,7 @@ static void class_defaultFloat (t_pd *x, t_float f)
         
     if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, NULL, 1, &a); }
     else {
-        (*c->c_methodAny) (x, &s_float, 1, &a);
+        (*c->c_methodAnything) (x, &s_float, 1, &a);
     }
 }
 
@@ -108,7 +108,7 @@ static void class_defaultSymbol (t_pd *x, t_symbol *s)
         
     if ((*c->c_methodList) != class_defaultList) { (*c->c_methodList) (x, NULL, 1, &a); }
     else {
-        (*c->c_methodAny) (x, &s_symbol, 1, &a);
+        (*c->c_methodAnything) (x, &s_symbol, 1, &a);
     }
 }
 
@@ -144,7 +144,7 @@ static void class_defaultList (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         }
     }
 
-    if ((*c->c_methodAny) != class_defaultAnything) { (*c->c_methodAny) (x, &s_list, argc, argv); }
+    if ((*c->c_methodAnything) != class_defaultAnything) { (*c->c_methodAnything) (x, &s_list, argc, argv); }
     else if (c->c_isBox) { object_list ((t_object *)x, s, argc, argv); }
     else { 
         class_defaultAnything (x, &s_list, argc, argv); 
@@ -218,7 +218,7 @@ t_class *class_new (t_symbol *s,
     c->c_methodFloat        = class_defaultFloat;
     c->c_methodSymbol       = class_defaultSymbol;
     c->c_methodList         = class_defaultList;
-    c->c_methodAny          = class_defaultAnything;
+    c->c_methodAnything     = class_defaultAnything;
     c->c_behavior           = (typeflag == CLASS_BOX ? &text_widgetBehavior : NULL);
     c->c_behaviorParent     = NULL;
     c->c_fnSave             = (typeflag == CLASS_BOX ? text_save : class_defaultSave);
@@ -341,11 +341,6 @@ void class_addBang (t_class *c, t_method fn)
     c->c_methodBang = (t_bangmethod)fn;
 }
 
-void class_addPointer (t_class *c, t_method fn)
-{
-    c->c_methodPointer = (t_pointermethod)fn;
-}
-
 void class_addFloat (t_class *c, t_method fn)
 {
     c->c_methodFloat = (t_floatmethod)fn;
@@ -363,7 +358,12 @@ void class_addList (t_class *c, t_method fn)
 
 void class_addAnything (t_class *c, t_method fn)
 {
-    c->c_methodAny = (t_anymethod)fn;
+    c->c_methodAnything = (t_anythingmethod)fn;
+}
+
+void class_addPointer (t_class *c, t_method fn)
+{
+    c->c_methodPointer = (t_pointermethod)fn;
 }
 
 // -----------------------------------------------------------------------------------------------------------

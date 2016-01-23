@@ -33,9 +33,9 @@ struct _inlet
     struct _inlet       *i_next;
     t_object            *i_owner;
     t_pd                *i_destination;
-    t_symbol            *i_symbolFrom;
+    t_symbol            *i_from;
     union {
-        t_symbol        *i_symbolTo;
+        t_symbol        *i_to;
         t_gpointer      *i_pointer;
         t_float         *i_float;
         t_symbol        **i_symbol;
@@ -90,9 +90,9 @@ static void object_errorStackOverflow (t_outlet *x)
 
 static void inlet_forBang (t_inlet *x)
 {
-    if (x->i_symbolFrom == &s_bang)         { pd_vMessage (x->i_destination, x->i_un.i_symbolTo, ""); }
-    else if (x->i_symbolFrom == NULL)       { pd_bang (x->i_destination); }
-    else if (x->i_symbolFrom == &s_list)    { inlet_forList (x, &s_bang, 0, NULL); }
+    if (x->i_from == &s_bang)               { pd_vMessage (x->i_destination, x->i_un.i_to, ""); }
+    else if (x->i_from == NULL)             { pd_bang (x->i_destination); }
+    else if (x->i_from == &s_list)          { inlet_forList (x, &s_bang, 0, NULL); }
     else {
         object_errorUnexpected (x, &s_bang);
     }
@@ -100,9 +100,9 @@ static void inlet_forBang (t_inlet *x)
 
 static void inlet_forPointer (t_inlet *x, t_gpointer *gp)
 {
-    if (x->i_symbolFrom == &s_pointer)      { pd_vMessage (x->i_destination, x->i_un.i_symbolTo, "p", gp); }
-    else if (x->i_symbolFrom == NULL)       { pd_pointer (x->i_destination, gp); }
-    else if (x->i_symbolFrom == &s_list)    {
+    if (x->i_from == &s_pointer)            { pd_vMessage (x->i_destination, x->i_un.i_to, "p", gp); }
+    else if (x->i_from == NULL)             { pd_pointer (x->i_destination, gp); }
+    else if (x->i_from == &s_list) {
         t_atom a;
         SET_POINTER (&a, gp);
         inlet_forList (x, &s_pointer, 1, &a);
@@ -114,10 +114,10 @@ static void inlet_forPointer (t_inlet *x, t_gpointer *gp)
 
 static void inlet_forFloat (t_inlet *x, t_float f)
 {
-    if (x->i_symbolFrom == &s_float)        { pd_vMessage (x->i_destination, x->i_un.i_symbolTo, "f", f); }
-    else if (x->i_symbolFrom == &s_signal)  { x->i_un.i_signal = f; }
-    else if (x->i_symbolFrom == NULL)       { pd_float (x->i_destination, f); }
-    else if (x->i_symbolFrom == &s_list)    {
+    if (x->i_from == &s_float)              { pd_vMessage (x->i_destination, x->i_un.i_to, "f", f); }
+    else if (x->i_from == &s_signal)        { x->i_un.i_signal = f; }
+    else if (x->i_from == NULL)             { pd_float (x->i_destination, f); }
+    else if (x->i_from == &s_list) {
         t_atom a;
         SET_FLOAT (&a, f);
         inlet_forList (x, &s_float, 1, &a);
@@ -128,9 +128,9 @@ static void inlet_forFloat (t_inlet *x, t_float f)
 
 static void inlet_forSymbol (t_inlet *x, t_symbol *s)
 {
-    if (x->i_symbolFrom == &s_symbol)       { pd_vMessage (x->i_destination, x->i_un.i_symbolTo, "s", s); }
-    else if (x->i_symbolFrom == NULL)       { pd_symbol (x->i_destination, s); }
-    else if (x->i_symbolFrom == &s_list)    {
+    if (x->i_from == &s_symbol)             { pd_vMessage (x->i_destination, x->i_un.i_to, "s", s); }
+    else if (x->i_from == NULL)             { pd_symbol (x->i_destination, s); }
+    else if (x->i_from == &s_list) {
         t_atom a;
         SET_SYMBOL (&a, s);
         inlet_forList (x, &s_symbol, 1, &a);
@@ -141,11 +141,11 @@ static void inlet_forSymbol (t_inlet *x, t_symbol *s)
 
 static void inlet_forList (t_inlet *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->i_symbolFrom == &s_list  // --
-        || x->i_symbolFrom == &s_float 
-        || x->i_symbolFrom == &s_symbol 
-        || x->i_symbolFrom == &s_pointer)   { pd_message (x->i_destination, x->i_un.i_symbolTo, argc, argv); }
-    else if (x->i_symbolFrom == NULL)       { pd_list (x->i_destination, argc, argv);  }
+    if (x->i_from == &s_list)               { pd_message (x->i_destination, x->i_un.i_to, argc, argv); }
+    else if (x->i_from == &s_float)         { pd_message (x->i_destination, x->i_un.i_to, argc, argv); }
+    else if (x->i_from == &s_symbol)        { pd_message (x->i_destination, x->i_un.i_to, argc, argv); }
+    else if (x->i_from == &s_pointer)       { pd_message (x->i_destination, x->i_un.i_to, argc, argv); }
+    else if (x->i_from == NULL)             { pd_list (x->i_destination, argc, argv);  }
     else if (!argc)                         { inlet_forBang (x); }
     else if (argc == 1 && IS_FLOAT (argv))  { inlet_forFloat (x, atom_getFloat (argv));   }
     else if (argc == 1 && IS_SYMBOL (argv)) { inlet_forSymbol (x, atom_getSymbol (argv)); }
@@ -156,8 +156,8 @@ static void inlet_forList (t_inlet *x, t_symbol *s, int argc, t_atom *argv)
 
 static void inlet_forAnything (t_inlet *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->i_symbolFrom == s)               { pd_message (x->i_destination, x->i_un.i_symbolTo, argc, argv); }
-    else if (x->i_symbolFrom == NULL)       { pd_message (x->i_destination, s, argc, argv); }
+    if (x->i_from == s)                     { pd_message (x->i_destination, x->i_un.i_to, argc, argv); }
+    else if (x->i_from == NULL)             { pd_message (x->i_destination, s, argc, argv); }
     else {
         object_errorUnexpected (x, s);
     }
@@ -179,7 +179,7 @@ static void symbolinlet_forSymbol (t_inlet *x, t_symbol *s)
 
 static void pointerinlet_forPointer (t_inlet *x, t_gpointer *gp)
 {
-    gpointer_unset (x->i_un.i_pointer);
+    gpointer_unset (x->i_un.i_pointer); 
     *(x->i_un.i_pointer) = *gp;
     if (gp->gp_stub) { gp->gp_stub->gs_count++; }
 }
@@ -199,10 +199,10 @@ t_inlet *inlet_new (t_object *owner, t_pd *destination, t_symbol *s1, t_symbol *
     
     if (s1 == &s_signal) { x->i_un.i_signal = 0.0; }
     else { 
-        x->i_un.i_symbolTo = s2;
+        x->i_un.i_to = s2;
     }
     
-    x->i_symbolFrom = s1;
+    x->i_from = s1;
     x->i_next = NULL;
     
     if (y1 = owner->te_inlet) { while (y2 = y1->i_next) { y1 = y2; } y1->i_next = x; } 
@@ -251,7 +251,7 @@ t_inlet *inlet_newPointer (t_object *owner, t_gpointer *gp)
     
     x->i_owner = owner;
     x->i_destination = NULL;
-    x->i_symbolFrom = &s_pointer;
+    x->i_from = &s_pointer;
     x->i_un.i_pointer = gp;
     x->i_next = NULL;
     
@@ -271,7 +271,7 @@ t_inlet *inlet_newFloat (t_object *owner, t_float *fp)
     
     x->i_owner = owner;
     x->i_destination = NULL;
-    x->i_symbolFrom = &s_float;
+    x->i_from = &s_float;
     x->i_un.i_float = fp;
     x->i_next = NULL;
     
@@ -291,7 +291,7 @@ t_inlet *inlet_newSymbol (t_object *owner, t_symbol **sp)
     
     x->i_owner = owner;
     x->i_destination = NULL;
-    x->i_symbolFrom = &s_symbol;
+    x->i_from = &s_symbol;
     x->i_un.i_symbol = sp;
     x->i_next = NULL;
     
@@ -608,7 +608,7 @@ int object_numberOfSignalInlets (t_object *x)
     int n = 0;
     t_inlet *i = NULL;
     if (pd_class (x)->c_hasFirstInlet && pd_class (x)->c_signalOffset) { n++; }
-    for (i = x->te_inlet; i; i = i->i_next) { if (i->i_symbolFrom == &s_signal) { n++; } }
+    for (i = x->te_inlet; i; i = i->i_next) { if (i->i_from == &s_signal) { n++; } }
     return n;
 }
 
@@ -637,7 +637,7 @@ int object_indexOfSignalInlet (t_object *x, int m)
     }
     
     for (i = x->te_inlet; i; i = i->i_next, m--) {
-        if (i->i_symbolFrom == &s_signal) { 
+        if (i->i_from == &s_signal) { 
             if (m == 0) { return n; } 
             else { 
                 n++; 
@@ -680,7 +680,7 @@ int object_isSignalInlet (t_object *x, int m)
     
     for (i = x->te_inlet; i && m; i = i->i_next, m--) { }
     
-    return (i && (i->i_symbolFrom == &s_signal));
+    return (i && (i->i_from == &s_signal));
 }
 
 int object_isSignalOutlet (t_object *x, int m)
@@ -702,10 +702,10 @@ int object_getIndexOfSignalInlet (t_inlet *x)
     int n = 0;
     t_inlet *i = NULL;
     
-    PD_ASSERT (x->i_symbolFrom == &s_signal);
+    PD_ASSERT (x->i_from == &s_signal);
     
     for (i = x->i_owner->te_inlet; i && i != x; i = i->i_next) { 
-        if (i->i_symbolFrom == &s_signal) { n++; }
+        if (i->i_from == &s_signal) { n++; }
     }
     
     return n;
@@ -830,7 +830,7 @@ t_float *object_getSignalValueAtIndex (t_object *x, int m)
     }
     
     for (i = x->te_inlet; i; i = i->i_next, m--) {
-        if (i->i_symbolFrom == &s_signal) {
+        if (i->i_from == &s_signal) {
             if (m == 0) { return &i->i_un.i_signal; }
             else {
                 n++;

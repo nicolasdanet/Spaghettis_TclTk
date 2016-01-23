@@ -216,11 +216,6 @@ void pd_float (t_pd *x, t_float f)
     (*(pd_class (x)->c_methodFloat)) (x, f);
 }
 
-void pd_pointer (t_pd *x, t_gpointer *gp)
-{
-    (*(pd_class (x)->c_methodPointer)) (x, gp);
-}
-
 void pd_symbol (t_pd *x, t_symbol *s)
 {
     (*(pd_class (x)->c_methodSymbol)) (x, s);
@@ -231,11 +226,16 @@ void pd_list (t_pd *x, int argc, t_atom *argv)
     (*(pd_class (x)->c_methodList)) (x, &s_list, argc, argv);
 }
 
+void pd_pointer (t_pd *x, t_gpointer *gp)
+{
+    (*(pd_class (x)->c_methodPointer)) (x, gp);
+}
+
 void pd_empty (t_pd *x)
 {
     if (class_hasBang (pd_class (x))) { (*(pd_class (x)->c_methodBang)) (x); }
     else {
-        (*(pd_class (x)->c_methodAny)) (x, &s_bang, 0, NULL);
+        (*(pd_class (x)->c_methodAnything)) (x, &s_bang, 0, NULL);
     }
 }
 

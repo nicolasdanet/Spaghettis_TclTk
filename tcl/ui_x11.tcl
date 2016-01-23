@@ -23,7 +23,7 @@ ttk::style configure PureData.TFrame
 ttk::style configure PureData.TLabelframe
 ttk::style configure PureData.TEntry
 ttk::style configure PureData.TMenubutton
-ttk::style configure PureData.TLabel 		-padding 3
+ttk::style configure PureData.TLabel        -padding 3
 ttk::style configure PureData.TCheckbutton  -padding 3
 ttk::style configure PureData.TRadiobutton
 

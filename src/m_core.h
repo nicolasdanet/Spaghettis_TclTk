@@ -40,11 +40,11 @@ typedef struct _entry {
 #pragma mark -
 
 typedef void (*t_bangmethod)(t_pd *x);
-typedef void (*t_pointermethod)(t_pd *x, t_gpointer *gp);
 typedef void (*t_floatmethod)(t_pd *x, t_float f);
 typedef void (*t_symbolmethod)(t_pd *x, t_symbol *s);
 typedef void (*t_listmethod)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
-typedef void (*t_anymethod)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
+typedef void (*t_anythingmethod)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
+typedef void (*t_pointermethod)(t_pd *x, t_gpointer *gp);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -57,11 +57,11 @@ struct _class {
     int                     c_methodsSize;
     t_method                c_methodFree;
     t_bangmethod            c_methodBang;
-    t_pointermethod         c_methodPointer;
     t_floatmethod           c_methodFloat;
     t_symbolmethod          c_methodSymbol;
     t_listmethod            c_methodList;
-    t_anymethod             c_methodAny;
+    t_anythingmethod        c_methodAnything;
+    t_pointermethod         c_methodPointer;
     t_widgetbehavior        *c_behavior;
     t_parentwidgetbehavior  *c_behaviorParent;
     t_savefn                c_fnSave;
