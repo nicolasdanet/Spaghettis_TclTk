@@ -1,36 +1,43 @@
-/* In MSW, this is all there is to pd; the rest sits in a "pdlib" dll so
-that externs can link back to functions defined in pd. */
-
-int sys_main(int argc, char **argv);
 
 /* 
- * gcc does not support the __try stuff, only MSVC.  Also, MinGW allows you to
- * use main() instead of WinMain(). <hans@at.or.at>
- */
-#if defined(_MSC_VER) && !defined(COMMANDVERSION)
-#include <windows.h>
-#include <stdio.h>
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
 
-int WINAPI WinMain(HINSTANCE hInstance,
-                               HINSTANCE hPrevInstance,
-                               LPSTR lpCmdLine,
-                               int nCmdShow)
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#include "m_pd.h"
+#include "m_core.h"
+#include "m_macros.h"
+#include "s_system.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if PD_MSVC
+
+int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 { 
     __try {
-        sys_main(__argc,__argv);
+        sys_main (__argc, __argv);
     }
-    __finally
-    { 
-        printf("caught an exception; stopping\n");
+    __finally { 
+        ;
     }
-    return (0);
+    
+    return 0;
 }
 
-#else /* not _MSC_VER ... */
-int main(int argc, char **argv)
+#else
+
+int main (int argc, char **argv)
 {
-    return (sys_main(argc, argv));
+    return (sys_main (argc, argv));
 }
-#endif /* _MSC_VER */
 
+#endif // PD_MSVC
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

@@ -138,6 +138,7 @@ void        namelist_free                   (t_namelist *namelist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int  sys_main                               (int argc, char **argv);
 int  sys_argparse                           (int argc, char **argv);
 void sys_findprogdir                        (char *progname);
 
@@ -157,8 +158,6 @@ typedef int (*loader_t)(t_canvas *canvas, char *classname);
 
 void post_atoms                             (int argc, t_atom *argv);
 void open_via_helppath                      (const char *name, const char *dir);
-
-
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
