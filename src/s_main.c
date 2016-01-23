@@ -348,7 +348,7 @@ static char *(usagemessage[]) = {
 "-mmio            -- use MMIO audio API (default for Windows)\n",
 #endif
 
-"      (default audio API for this platform:  ", API_STRING, ")\n\n",
+"      (default audio API for this platform:  ", API_DEFAULT_STRING, ")\n\n",
 
 "\nMIDI configuration flags:\n",
 "-midiindev ...   -- midi in device list; e.g., \"1,3\" for first and third\n",

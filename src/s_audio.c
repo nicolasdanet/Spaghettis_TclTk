@@ -897,7 +897,7 @@ void sys_set_audio_api(int which)
     if (!ok)
     {
         post("API %d not supported, reverting to %d (%s)",
-            which, API_DEFAULT, API_STRING);
+            which, API_DEFAULT, API_DEFAULT_STRING);
         which = API_DEFAULT;
     }
     sys_audioapi = which;

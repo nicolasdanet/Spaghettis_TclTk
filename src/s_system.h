@@ -16,107 +16,96 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define DACS_NO                     0
-#define DACS_YES                    1 
-#define DACS_SLEPT                  2
+#define DACS_NO                             0
+#define DACS_YES                            1 
+#define DACS_SLEPT                          2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define ERROR_NONE                      0
-#define ERROR_ADC_SLEPT                 1
-#define ERROR_DAC_SLEPT                 2
-#define ERROR_RESYNC                    3
-#define ERROR_DATA_LATE                 4
+#define SCHEDULER_AUDIO_NONE                0
+#define SCHEDULER_AUDIO_POLL                1 
+#define SCHEDULER_AUDIO_CALLBACK            2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define SCHEDULER_AUDIO_NONE            0
-#define SCHEDULER_AUDIO_POLL            1 
-#define SCHEDULER_AUDIO_CALLBACK        2
+#define MIDI_MAXIMUM_IN                     16
+#define MIDI_MAXIMUM_OUT                    16
+
+#define AUDIO_MAXIMUM_IN                    4
+#define AUDIO_MAXIMUM_OUT                   4
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MIDI_MAXIMUM_IN                 16
-#define MIDI_MAXIMUM_OUT                16
-
-#define MIDI_DEFAULT_DEVICE             0
+#define MIDI_DEFAULT_DEVICE                 0
+#define AUDIO_DEFAULT_DEVICE                0
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define AUDIO_MAXIMUM_IN                4
-#define AUDIO_MAXIMUM_OUT               4
-
-#define AUDIO_DEFAULT_DEVICE            0
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define AUDIO_DEFAULT_BLOCK             64
-#define AUDIO_DEFAULT_SAMPLING          44100
+#define AUDIO_DEFAULT_BLOCK                 64
+#define AUDIO_DEFAULT_SAMPLING              44100
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 #if PD_WINDOWS
-    #define AUDIO_DEFAULT_ADVANCE       80
+    #define AUDIO_DEFAULT_ADVANCE           80
 #elif PD_APPLE
-    #define AUDIO_DEFAULT_ADVANCE       5
+    #define AUDIO_DEFAULT_ADVANCE           5
 #else
-    #define AUDIO_DEFAULT_ADVANCE       25
+    #define AUDIO_DEFAULT_ADVANCE           25
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define API_NONE                        0
-#define API_ALSA                        1
-#define API_OSS                         2
-#define API_MMIO                        3
-#define API_PORTAUDIO                   4
-#define API_JACK                        5
-#define API_DUMMY                       9
+#define API_NONE                            0
+#define API_ALSA                            1
+#define API_OSS                             2
+#define API_MMIO                            3
+#define API_PORTAUDIO                       4
+#define API_JACK                            5
+#define API_DUMMY                           9
 
-//#define API_SGI                       6
-//#define API_AUDIOUNIT                 7
-//#define API_ESD                       8
+//#define API_SGI                           6
+//#define API_AUDIOUNIT                     7
+//#define API_ESD                           8
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #if defined ( USEAPI_MMIO )
-    #define API_DEFAULT     API_MMIO
-    #define API_STRING      "MMIO"
+    #define API_DEFAULT                     API_MMIO
+    #define API_DEFAULT_STRING              "MMIO"
     
 #elif defined ( USEAPI_ALSA )
-    #define API_DEFAULT     API_ALSA
-    #define API_STRING      "ALSA"
+    #define API_DEFAULT                     API_ALSA
+    #define API_DEFAULT_STRING              "ALSA"
     
 #elif defined ( USEAPI_OSS )
-    #define API_DEFAULT     API_OSS
-    #define API_STRING      "OSS"
+    #define API_DEFAULT                     API_OSS
+    #define API_DEFAULT_STRING              "OSS"
     
 #elif defined ( USEAPI_PORTAUDIO )
-    #define API_DEFAULT     API_PORTAUDIO
-    #define API_STRING      "PortAudio"
+    #define API_DEFAULT                     API_PORTAUDIO
+    #define API_DEFAULT_STRING              "PortAudio"
     
 #elif defined ( USEAPI_JACK )
-    #define API_DEFAULT     API_JACK
-    #define API_STRING      "JACK"
+    #define API_DEFAULT                     API_JACK
+    #define API_DEFAULT_STRING              "JACK"
     
 #elif defined ( USEAPI_DUMMY )
-    #define API_DEFAULT     API_DUMMY
-    #define API_STRING      "Dummy"
+    #define API_DEFAULT                     API_DUMMY
+    #define API_DEFAULT_STRING              "Dummy"
 #else
     #error "Unknown Audio API"
 #endif 
