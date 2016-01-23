@@ -17,8 +17,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+typedef void (*t_gimme)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
 typedef t_pd *(*t_newgimme)(t_symbol *s, int argc, t_atom *argv);
-typedef void (*t_messgimme)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -29,13 +29,22 @@ typedef void (*t_messgimme)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-typedef t_pd *(*t_fun0) (                                           MESSAGE_FLOATS);    // --
-typedef t_pd *(*t_fun1) (t_int,                                     MESSAGE_FLOATS);
-typedef t_pd *(*t_fun2) (t_int, t_int,                              MESSAGE_FLOATS);
-typedef t_pd *(*t_fun3) (t_int, t_int, t_int,                       MESSAGE_FLOATS);
-typedef t_pd *(*t_fun4) (t_int, t_int, t_int, t_int,                MESSAGE_FLOATS);
-typedef t_pd *(*t_fun5) (t_int, t_int, t_int, t_int, t_int,         MESSAGE_FLOATS);
-typedef t_pd *(*t_fun6) (t_int, t_int, t_int, t_int, t_int, t_int,  MESSAGE_FLOATS);
+
+typedef void (*t_method0) (                                                 MESSAGE_FLOATS);    // --
+typedef void (*t_method1) (t_int,                                           MESSAGE_FLOATS);
+typedef void (*t_method2) (t_int, t_int,                                    MESSAGE_FLOATS);
+typedef void (*t_method3) (t_int, t_int, t_int,                             MESSAGE_FLOATS);
+typedef void (*t_method4) (t_int, t_int, t_int, t_int,                      MESSAGE_FLOATS);
+typedef void (*t_method5) (t_int, t_int, t_int, t_int, t_int,               MESSAGE_FLOATS);
+typedef void (*t_method6) (t_int, t_int, t_int, t_int, t_int, t_int,        MESSAGE_FLOATS);
+
+typedef t_pd *(*t_newmethod0) (                                             MESSAGE_FLOATS);    // --
+typedef t_pd *(*t_newmethod1) (t_int,                                       MESSAGE_FLOATS);
+typedef t_pd *(*t_newmethod2) (t_int, t_int,                                MESSAGE_FLOATS);
+typedef t_pd *(*t_newmethod3) (t_int, t_int, t_int,                         MESSAGE_FLOATS);
+typedef t_pd *(*t_newmethod4) (t_int, t_int, t_int, t_int,                  MESSAGE_FLOATS);
+typedef t_pd *(*t_newmethod5) (t_int, t_int, t_int, t_int, t_int,           MESSAGE_FLOATS);
+typedef t_pd *(*t_newmethod6) (t_int, t_int, t_int, t_int, t_int, t_int,    MESSAGE_FLOATS);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -215,139 +224,215 @@ void message_initialize (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+static void pd_messageExecuteObject (t_pd *x, t_method f, int n, t_int *ai, t_float *af)
 {
-    t_entry *m = NULL;
-    t_class *c = pd_class (x);
-    int i;
+    switch (n) {
+    //
+    case 0 : 
+        (*(t_method0)f) (af[0], af[1], af[2], af[3], af[4]);
+        break;
+    case 1 : 
+        (*(t_method1)f) (ai[0], af[0], af[1], af[2], af[3], af[4]);
+        break;
+    case 2 : 
+        (*(t_method2)f) (ai[0], ai[1], af[0], af[1], af[2], af[3], af[4]);
+        break;
+    case 3 : 
+        (*(t_method3)f) (ai[0], ai[1], ai[2], af[0], af[1], af[2], af[3], af[4]);
+        break;
+    case 4 : 
+        (*(t_method4)f) (ai[0], ai[1], ai[2], ai[3], af[0], af[1], af[2], af[3], af[4]);
+        break;
+    case 5 : 
+        (*(t_method5)f) (ai[0], ai[1], ai[2], ai[3], ai[4], af[0], af[1], af[2], af[3], af[4]);
+        break;
+    case 6 : 
+        (*(t_method6)f) (ai[0], ai[1], ai[2], ai[3], ai[4], ai[5], af[0], af[1], af[2], af[3], af[4]);
+        break;
+    //
+    }
+}
+
+static void pd_messageExecuteMaker (t_pd *x, t_method f, int n, t_int *ai, t_float *af)
+{
+    t_pd *o = NULL;
+
+    switch (n) {
+    //
+    case 0 : 
+        o = (*(t_newmethod0)f) (af[0], af[1], af[2], af[3], af[4]);
+        break;
+    case 1 : 
+        o = (*(t_newmethod1)f) (ai[0], af[0], af[1], af[2], af[3], af[4]);
+        break;
+    case 2 : 
+        o = (*(t_newmethod2)f) (ai[0], ai[1], af[0], af[1], af[2], af[3], af[4]);
+        break;
+    case 3 : 
+        o = (*(t_newmethod3)f) (ai[0], ai[1], ai[2], af[0], af[1], af[2], af[3], af[4]);
+        break;
+    case 4 : 
+        o = (*(t_newmethod4)f) (ai[0], ai[1], ai[2], ai[3], af[0], af[1], af[2], af[3], af[4]);
+        break;
+    case 5 : 
+        o = (*(t_newmethod5)f) (ai[0], ai[1], ai[2], ai[3], ai[4], af[0], af[1], af[2], af[3], af[4]);
+        break;
+    case 6 : 
+        o = (*(t_newmethod6)f) (ai[0], ai[1], ai[2], ai[3], ai[4], ai[5], af[0], af[1], af[2], af[3], af[4]);
+        break;
+    //
+    }
     
+    pd_newest = o;
+}
+
+static void pd_messageExecute (t_pd *x, t_method f, int n, t_int *ai, t_float *af)
+{
+    if (x == &pd_objectMaker) { pd_messageExecuteMaker (x, f, n, ai, af); }
+    else {
+        pd_messageExecuteObject (x, f, n, ai, af);
+    }
+}
+
+static t_error pd_messageSlots (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    t_class *c = pd_class (x);
+        
     if (s == &s_float) {
         if (!argc) { (*c->c_methodFloat) (x, 0.0); }
         else if (IS_FLOAT (argv)) { (*c->c_methodFloat) (x, GET_FLOAT (argv)); }
         else { 
-            goto err; 
+            err = PD_ERROR; 
         }
-        return;
         
     } else if (s == &s_bang)   {
-        (*c->c_methodBang) (x); return;
+        (*c->c_methodBang) (x);
         
     } else if (s == &s_list)   {
-        (*c->c_methodList) (x, s, argc, argv); return;
+        (*c->c_methodList) (x, s, argc, argv);
         
     } else if (s == &s_symbol) {
         if (argc && IS_SYMBOL (argv)) { (*c->c_methodSymbol) (x, GET_SYMBOL (argv)); }
         else {
             (*c->c_methodSymbol) (x, &s_);
         }
-        return;
     }
     
-    /* Note that "pointer" is not catched. */
-    /* A pointer value is not required to create a pointer object. */
+    return err;
+}
 
-    for (i = c->c_methodsSize, m = c->c_methods; i--; m++) {
-    //
-    if (m->me_name == s) {
-    //
+static t_error pd_messageMethods (t_entry *m, t_pd *x, t_symbol *s, int argc, t_atom *argv)
+{
     t_atomtype t;
     t_method f = m->me_method;
-    t_int ai[PD_ARGUMENTS + 1] = { 0 };
+    t_int   ai[PD_ARGUMENTS + 1] = { 0 };
     t_float af[PD_ARGUMENTS + 1] = { 0 };
-    t_int *ip = ai;
+    t_int   *ip = ai;
     t_float *fp = af;
     int n = 0;
-    t_pd *o = NULL;
     
     t_atomtype *p = m->me_arguments;
     
     if (*p == A_GIMME) {
         if (x == &pd_objectMaker) { pd_newest = (*((t_newgimme)m->me_method)) (s, argc, argv); }
         else { 
-            (*((t_messgimme)m->me_method)) (x, s, argc, argv); 
+            (*((t_gimme)m->me_method)) (x, s, argc, argv); 
         }
-        return;
+        return PD_ERROR_NONE;
     }
     
-    if (x != &pd_objectMaker) { *(ip++) = (t_int)x; n++;     }
+    if (x != &pd_objectMaker) { *ip = (t_int)x; ip++; n++;   }
     if (argc > PD_ARGUMENTS)  { PD_BUG; argc = PD_ARGUMENTS; }
         
     while (t = *p++) {
     //
     switch (t) {
     //
-    case A_POINTER   :  if (!argc) { goto err; }
+    case A_POINTER   :  if (!argc) { return PD_ERROR; }
                         else {
                             if (IS_POINTER (argv)) { *ip = (t_int)GET_POINTER (argv); }
                             else { 
-                                goto err; 
+                                return PD_ERROR; 
                             }
                             argc--; argv++;
                         }
                         n++; ip++; break;
                         
-    case A_FLOAT     :  if (!argc) { goto err;  }               /* Notice missing break. */
+    case A_FLOAT     :  if (!argc) { return PD_ERROR; }         /* Notice that break is missing. */
     case A_DEFFLOAT  :  if (!argc) { *fp = 0.0; }
                         else {
                             if (IS_FLOAT (argv)) { *fp = GET_FLOAT (argv); }
                             else { 
-                                goto err; 
+                                return PD_ERROR; 
                             }
                             argc--; argv++;
                         }
                         fp++; break;
                         
-    case A_SYMBOL    :  if (!argc) { goto err; }                /* Ditto. */
+    case A_SYMBOL    :  if (!argc) { return PD_ERROR;  }        /* Ditto. */
     case A_DEFSYMBOL :  if (!argc) { *ip = (t_int)&s_; }
                         else {
                             if (IS_SYMBOL (argv)) { *ip = (t_int)GET_SYMBOL (argv); }
-                            else if (x == &pd_objectMaker && IS_FLOAT (argv) && GET_FLOAT (argv) == 0.0) {
-                                *ip = (t_int)&s_;
-                            } else { 
-                                goto err;
+                            else { 
+                                return PD_ERROR;
                             }
                             argc--; argv++;
                         }
                         n++; ip++; break;
                             
-    default          :  goto err;
+    default          :  return PD_ERROR;
     //
     }
     //
     }
 
-    switch (n) {
-    //
-    case 0 : o = (*(t_fun0)f) (af[0], af[1], af[2], af[3], af[4]);
-             break;
-    case 1 : o = (*(t_fun1)f) (ai[0], af[0], af[1], af[2], af[3], af[4]);
-             break;
-    case 2 : o = (*(t_fun2)f) (ai[0], ai[1], af[0], af[1], af[2], af[3], af[4]);
-             break;
-    case 3 : o = (*(t_fun3)f) (ai[0], ai[1], ai[2], af[0], af[1], af[2], af[3], af[4]);
-             break;
-    case 4 : o = (*(t_fun4)f) (ai[0], ai[1], ai[2], ai[3], af[0], af[1], af[2], af[3], af[4]);
-             break;
-    case 5 : o = (*(t_fun5)f) (ai[0], ai[1], ai[2], ai[3], ai[4], af[0], af[1], af[2], af[3], af[4]);
-             break;
-    case 6 : o = (*(t_fun6)f) (ai[0], ai[1], ai[2], ai[3], ai[4], ai[5], af[0], af[1], af[2], af[3], af[4]);
-             break;
-    //
+    pd_messageExecute (x, f, n, ai, af);
+    
+    return PD_ERROR_NONE;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void pd_message (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_error err = PD_ERROR_NONE;
+
+    t_class *c = pd_class (x);
+        
+    /* Note that "pointer" is not catched. */
+
+    if (s == &s_bang || s == &s_float || s == &s_symbol || s == &s_list) {
+        err = pd_messageSlots (x, s, argc, argv);
+        if (!err) { 
+            return; 
+        }  
     }
     
-    if (x == &pd_objectMaker) { pd_newest = o; }
+    if (!err) {
     
-    return;
-    //
+        t_entry *m = NULL;
+        int i;
+            
+        for (i = c->c_methodsSize, m = c->c_methods; i--; m++) {
+            if (m->me_name == s) {
+                err = pd_messageMethods (m, x, s, argc, argv); 
+                if (!err) { return; } 
+                else {
+                    break;
+                }
+            }
+        }
+        
+        if (!err) {
+            (*c->c_methodAny) (x, s, argc, argv); 
+            return; 
+        }
     }
-    //
-    }
-    
-    (*c->c_methodAny) (x, s, argc, argv);
-    
-    return;
-    
-err:
+
     post_error (PD_TRANSLATE ("%s: bad arguments for method '%s'"), c->c_name->s_name, s->s_name);  // --
 }
 
