@@ -135,6 +135,15 @@ typedef struct _pathlist {
     char                *nl_string;
     } t_pathlist;
 
+typedef struct _fontinfo {
+    int fi_fontsize;
+    int fi_maxwidth;
+    int fi_maxheight;
+    int fi_hostfontsize;
+    int fi_width;
+    int fi_height;
+    } t_fontinfo;
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

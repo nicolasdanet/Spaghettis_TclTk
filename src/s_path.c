@@ -35,7 +35,6 @@
 #include <fcntl.h>
 #include <ctype.h>
 
-t_pathlist *sys_externlist;     /* Shared. */
 t_pathlist *sys_searchpath;     /* Shared. */
 t_pathlist *sys_staticpath;     /* Shared. */
 t_pathlist *sys_helppath;       /* Shared. */
@@ -651,7 +650,7 @@ void glob_start_startup_dialog (void *dummy, t_float flongform)
     gfxstub_new(&global_object, (void *)glob_start_startup_dialog, buf); */
 }
 
-    /* new values from dialog window */
+/*
 static void glob_startup_dialog(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
@@ -666,5 +665,5 @@ static void glob_startup_dialog(void *dummy, t_symbol *s, int argc, t_atom *argv
             sys_externlist = pathlist_newAppendFiles(sys_externlist, s->s_name, PATHLIST_SEPARATOR);
     }
 }
-
+*/
 

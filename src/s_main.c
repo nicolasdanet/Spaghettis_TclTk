@@ -29,12 +29,12 @@ extern t_pdinstance     *pd_this;
 extern t_sample         *sys_soundin;
 extern t_sample         *sys_soundout;
 extern t_pathlist       *sys_helppath;
-extern t_pathlist       *sys_externlist;
 extern t_pathlist       *sys_searchpath;
 
 extern t_float          sys_dacsr;
 extern int              sys_usestdpath;
 extern int              sys_schedadvance;
+extern int              sys_defaultfont;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -56,12 +56,9 @@ int         main_highPriority = -1;                                     /* Share
 
 char        *main_commandToLaunchGUI;                                   /* Shared. */
 t_symbol    *main_libDirectory;                                         /* Shared. */
-
+ 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-static t_pathlist   *main_openList;                                     /* Shared. */
-
 static int          main_batch;                                         /* Shared. */
 static int          main_version;                                       /* Shared. */
 static int          main_devices;                                       /* Shared. */
@@ -87,155 +84,101 @@ static int          main_channelOut[AUDIO_MAXIMUM_OUT]  = { 0 };        /* Share
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _fontinfo
-{
-    int fi_fontsize;
-    int fi_maxwidth;
-    int fi_maxheight;
-    int fi_hostfontsize;
-    int fi_width;
-    int fi_height;
-} t_fontinfo;
-
-    /* these give the nominal point size and maximum height of the characters
-    in the six fonts.  */
-
-static t_fontinfo sys_fontlist[] = {
-    {8, 6, 10, 1, 1, 1}, {10, 7, 13, 1, 1, 1}, {12, 9, 16, 1, 1, 1},
-    {16, 10, 21, 1, 1, 1}, {24, 15, 25, 1, 1, 1}, {36, 25, 45, 1, 1, 1}};
-#define NFONT (sizeof(sys_fontlist)/sizeof(*sys_fontlist))
-
-/* here are the actual font size structs on msp's systems:
-MSW:
-font 8 5 9 8 5 11
-font 10 7 13 10 6 13
-font 12 9 16 14 8 16
-font 16 10 20 16 10 18
-font 24 15 25 16 10 18
-font 36 25 42 36 22 41
-
-linux:
-font 8 5 9 8 5 9
-font 10 7 13 12 7 13
-font 12 9 16 14 9 15
-font 16 10 20 16 10 19
-font 24 15 25 24 15 24
-font 36 25 42 36 22 41
-*/
-
-static t_fontinfo *sys_findfont(int fontsize)
-{
-    unsigned int i;
-    t_fontinfo *fi;
-    for (i = 0, fi = sys_fontlist; i < (NFONT-1); i++, fi++)
-        if (fontsize < fi[1].fi_fontsize) return (fi);
-    return (sys_fontlist + (NFONT-1));
-}
-
-int sys_nearestfontsize(int fontsize)
-{
-    return (sys_findfont(fontsize)->fi_fontsize);
-}
-
-int sys_hostfontsize(int fontsize)
-{
-    return (sys_findfont(fontsize)->fi_hostfontsize);
-}
-
-int sys_fontwidth(int fontsize)
-{
-    return (sys_findfont(fontsize)->fi_width);
-}
-
-int sys_fontheight(int fontsize)
-{
-    return (sys_findfont(fontsize)->fi_height);
-}
-
-int sys_defaultfont;    /* Shared. */
 #define DEFAULTFONT 12
 
-static void openit(const char *dirname, const char *filename)
-{
-    char dirbuf[PD_STRING], *nameptr;
-    int fd = open_via_path(dirname, filename, "", dirbuf, &nameptr,
-        PD_STRING, 0);
-    if (fd >= 0)
-    {
-        close (fd);
-        buffer_openFile(0, gensym(nameptr), gensym(dirbuf));
-    }
-    else
-        post_error ("%s: can't open", filename);
-}
-
-/* this is called from the gui process.  The first argument is the cwd, and
-succeeding args give the widths and heights of known fonts.  We wait until 
-these are known to open files and send messages specified on the command line.
-We ask the GUI to specify the "cwd" in case we don't have a local OS to get it
-from; for instance we could be some kind of RT embedded system.  However, to
-really make this make sense we would have to implement
-open(), read(), etc, calls to be served somehow from the GUI too. */
-
-void global_gui(void *dummy, t_symbol *s, int argc, t_atom *argv)
-{
-    char *cwd = atom_getSymbolAtIndex(0, argc, argv)->s_name;
-    t_pathlist *nl;
-    unsigned int i;
-    int j;
-    int nhostfont = (argc-1)/3;
-    /* */
-    if (argc != 1 + 3 * nhostfont) { PD_BUG; }
-    for (i = 0; i < NFONT; i++)
-    {
-        int best = 0;
-        int wantheight = sys_fontlist[i].fi_maxheight;
-        int wantwidth = sys_fontlist[i].fi_maxwidth;
-        for (j = 0; j < nhostfont; j++)
-        {
-            if ((t_int)atom_getFloatAtIndex(3 * j + 3, argc, argv) <= wantheight &&
-                (t_int)atom_getFloatAtIndex(3 * j + 2, argc, argv) <= wantwidth)
-                    best = j;
-        }
-            /* best is now the host font index for the desired font index i. */
-        sys_fontlist[i].fi_hostfontsize =
-            (t_int)atom_getFloatAtIndex(3 * best + 1, argc, argv);
-        sys_fontlist[i].fi_width = (t_int)atom_getFloatAtIndex(3 * best + 2, argc, argv);
-        sys_fontlist[i].fi_height = (t_int)atom_getFloatAtIndex(3 * best + 3, argc, argv);
-    }
-#if 0
-    for (i = 0; i < 6; i++)
-        fprintf(stderr, "font (%d %d %d) -> (%d %d %d)\n",
-            sys_fontlist[i].fi_fontsize,
-            sys_fontlist[i].fi_maxwidth,
-            sys_fontlist[i].fi_maxheight,
-            sys_fontlist[i].fi_hostfontsize,
-            sys_fontlist[i].fi_width,
-            sys_fontlist[i].fi_height);
+#ifdef _WIN32
+static int sys_mmio = 1;
+#else
+static int sys_mmio = 0;
 #endif
-        /* load dynamic libraries specified with "-lib" args */
-    for  (nl = sys_externlist; nl; nl = nl->nl_next)
-        if (!sys_load_lib(0, nl->nl_string))
-            post("%s: can't load library", nl->nl_string);
-        /* open patches specifies with "-open" args */
-    for  (nl = main_openList; nl; nl = nl->nl_next)
-        openit(cwd, nl->nl_string);
-    pathlist_free(main_openList);
-    main_openList = 0;
 
-    /*
-    for  (nl = main_messageList; nl; nl = nl->nl_next)
+static void sys_afterargparse(void)
+{
+    char sbuf[PD_STRING];
+    int i;
+    int naudioindev, audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
+    int naudiooutdev, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
+    int nchindev, nchoutdev, rate, advance, callback, blocksize;
+    int nmidiindev = 0, midiindev[MIDI_MAXIMUM_IN];
+    int nmidioutdev = 0, midioutdev[MIDI_MAXIMUM_OUT];
+        /* correct to make audio and MIDI device lists zero based.  On
+        MMIO, however, "1" really means the second device (the first one
+        is "mapper" which is was not included when the command args were
+        set up, so we leave it that way for compatibility. */
+    if (!sys_mmio)
     {
-        t_buffer *b = buffer_new();
-        buffer_withStringUnzeroed(b, nl->nl_string, strlen(nl->nl_string));
-        buffer_eval(b, 0, 0, 0);
-        buffer_free(b);
+        for (i = 0; i < main_numberOfAudioIn; i++)
+            main_audioIn[i]--;
+        for (i = 0; i < main_numberOfAudioOut; i++)
+            main_audioOut[i]--;
     }
-    pathlist_free(main_messageList);
-    main_messageList = 0;*/
+    for (i = 0; i < main_numberOfMidiIn; i++)
+        main_midiIn[i]--;
+    for (i = 0; i < main_numberOfMidiOut; i++)
+        main_midiOut[i]--;
+    if (main_devices)
+        sys_listdevs();
+        
+            /* get the current audio parameters.  These are set
+            by the preferences mechanism (sys_loadpreferences()) or
+            else are the default.  Overwrite them with any results
+            of argument parsing, and store them again. */
+    sys_get_audio_params(&naudioindev, audioindev, chindev,
+        &naudiooutdev, audiooutdev, choutdev, &rate, &advance,
+            &callback, &blocksize);
+    if (main_numberOfChannelIn >= 0)
+    {
+        nchindev = main_numberOfChannelIn;
+        for (i = 0; i < nchindev; i++)
+            chindev[i] = main_channelIn[i];
+    }
+    else nchindev = naudioindev;
+    if (main_numberOfAudioIn >= 0)
+    {
+        naudioindev = main_numberOfAudioIn;
+        for (i = 0; i < naudioindev; i++)
+            audioindev[i] = main_audioIn[i];
+    }
+    
+    if (main_numberOfChannelOut >= 0)
+    {
+        nchoutdev = main_numberOfChannelOut;
+        for (i = 0; i < nchoutdev; i++)
+            choutdev[i] = main_channelOut[i];
+    }
+    else nchoutdev = naudiooutdev;
+    if (main_numberOfAudioOut >= 0)
+    {
+        naudiooutdev = main_numberOfAudioOut;
+        for (i = 0; i < naudiooutdev; i++)
+            audiooutdev[i] = main_audioOut[i];
+    }
+    sys_get_midi_params(&nmidiindev, midiindev, &nmidioutdev, midioutdev);
+    if (main_numberOfMidiIn >= 0)
+    {
+        nmidiindev = main_numberOfMidiIn;
+        for (i = 0; i < nmidiindev; i++)
+            midiindev[i] = main_midiIn[i];
+    }
+    if (main_numberOfMidiOut >= 0)
+    {
+        nmidioutdev = main_numberOfMidiOut;
+        for (i = 0; i < nmidioutdev; i++)
+            midioutdev[i] = main_midiOut[i];
+    }
+    if (main_advance)
+        advance = main_advance;
+    if (main_sampleRate)
+        rate = main_sampleRate;
+    if (main_callback)
+        callback = main_callback;
+    if (main_blockSize)
+        blocksize = main_blockSize;
+    sys_set_audio_settings(naudioindev, audioindev, nchindev, chindev,
+        naudiooutdev, audiooutdev, nchoutdev, choutdev, rate, advance, 
+        callback, blocksize);
+    sys_open_midi(nmidiindev, midiindev, nmidioutdev, midioutdev, 0);
 }
-
-static void sys_afterargparse(void);
 
 /* this is called from main() in s_entry.c */
 int sys_main(int argc, char **argv)
@@ -395,6 +338,11 @@ static char *(usagemessage[]) = {
 "-compatibility <f> -- set back-compatibility to version <f>\n",
 };
 
+static void sys_addreferencepath(void)
+{
+    char sbuf[PD_STRING];
+}
+
 static void sys_parsedevlist(int *np, int *vecp, int max, char *str)
 {
     int n = 0;
@@ -508,12 +456,6 @@ void sys_findprogdir(char *progname)
     }
 #endif
 }
-
-#ifdef _WIN32
-static int sys_mmio = 1;
-#else
-static int sys_mmio = 0;
-#endif
 
 int sys_argparse(int argc, char **argv)
 {
@@ -777,16 +719,16 @@ int sys_argparse(int argc, char **argv)
             sys_helppath = pathlist_newAppendFiles(sys_helppath, argv[1], PATHLIST_SEPARATOR);
             argc -= 2; argv += 2;
         }
-        else if (!strcmp(*argv, "-open") && argc > 1)
+        /*else if (!strcmp(*argv, "-open") && argc > 1)
         {
             main_openList = pathlist_newAppendFiles(main_openList, argv[1], PATHLIST_SEPARATOR);
             argc -= 2; argv += 2;
-        }
-        else if (!strcmp(*argv, "-lib") && argc > 1)
+        }*/
+        /*else if (!strcmp(*argv, "-lib") && argc > 1)
         {
             sys_externlist = pathlist_newAppendFiles(sys_externlist, argv[1], PATHLIST_SEPARATOR);
             argc -= 2; argv += 2;
-        }
+        }*/
         else if ((!strcmp(*argv, "-font-size") || !strcmp(*argv, "-font"))
             && argc > 1)
         {
@@ -1032,8 +974,8 @@ int sys_argparse(int argc, char **argv)
 #endif
     if (!sys_defaultfont)
         sys_defaultfont = DEFAULTFONT;
-    for (; argc > 0; argc--, argv++) 
-        main_openList = pathlist_newAppendFiles(main_openList, *argv, PATHLIST_SEPARATOR);
+    /*for (; argc > 0; argc--, argv++) 
+        main_openList = pathlist_newAppendFiles(main_openList, *argv, PATHLIST_SEPARATOR);*/
 
 
     return (0);
@@ -1047,98 +989,7 @@ int sys_getblksize(void)
     /* stuff to do, once, after calling sys_argparse() -- which may itself
     be called more than once (first from "settings, second from .pdrc, then
     from command-line arguments */
-static void sys_afterargparse(void)
-{
-    char sbuf[PD_STRING];
-    int i;
-    int naudioindev, audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
-    int naudiooutdev, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
-    int nchindev, nchoutdev, rate, advance, callback, blocksize;
-    int nmidiindev = 0, midiindev[MIDI_MAXIMUM_IN];
-    int nmidioutdev = 0, midioutdev[MIDI_MAXIMUM_OUT];
-        /* correct to make audio and MIDI device lists zero based.  On
-        MMIO, however, "1" really means the second device (the first one
-        is "mapper" which is was not included when the command args were
-        set up, so we leave it that way for compatibility. */
-    if (!sys_mmio)
-    {
-        for (i = 0; i < main_numberOfAudioIn; i++)
-            main_audioIn[i]--;
-        for (i = 0; i < main_numberOfAudioOut; i++)
-            main_audioOut[i]--;
-    }
-    for (i = 0; i < main_numberOfMidiIn; i++)
-        main_midiIn[i]--;
-    for (i = 0; i < main_numberOfMidiOut; i++)
-        main_midiOut[i]--;
-    if (main_devices)
-        sys_listdevs();
-        
-            /* get the current audio parameters.  These are set
-            by the preferences mechanism (sys_loadpreferences()) or
-            else are the default.  Overwrite them with any results
-            of argument parsing, and store them again. */
-    sys_get_audio_params(&naudioindev, audioindev, chindev,
-        &naudiooutdev, audiooutdev, choutdev, &rate, &advance,
-            &callback, &blocksize);
-    if (main_numberOfChannelIn >= 0)
-    {
-        nchindev = main_numberOfChannelIn;
-        for (i = 0; i < nchindev; i++)
-            chindev[i] = main_channelIn[i];
-    }
-    else nchindev = naudioindev;
-    if (main_numberOfAudioIn >= 0)
-    {
-        naudioindev = main_numberOfAudioIn;
-        for (i = 0; i < naudioindev; i++)
-            audioindev[i] = main_audioIn[i];
-    }
-    
-    if (main_numberOfChannelOut >= 0)
-    {
-        nchoutdev = main_numberOfChannelOut;
-        for (i = 0; i < nchoutdev; i++)
-            choutdev[i] = main_channelOut[i];
-    }
-    else nchoutdev = naudiooutdev;
-    if (main_numberOfAudioOut >= 0)
-    {
-        naudiooutdev = main_numberOfAudioOut;
-        for (i = 0; i < naudiooutdev; i++)
-            audiooutdev[i] = main_audioOut[i];
-    }
-    sys_get_midi_params(&nmidiindev, midiindev, &nmidioutdev, midioutdev);
-    if (main_numberOfMidiIn >= 0)
-    {
-        nmidiindev = main_numberOfMidiIn;
-        for (i = 0; i < nmidiindev; i++)
-            midiindev[i] = main_midiIn[i];
-    }
-    if (main_numberOfMidiOut >= 0)
-    {
-        nmidioutdev = main_numberOfMidiOut;
-        for (i = 0; i < nmidioutdev; i++)
-            midioutdev[i] = main_midiOut[i];
-    }
-    if (main_advance)
-        advance = main_advance;
-    if (main_sampleRate)
-        rate = main_sampleRate;
-    if (main_callback)
-        callback = main_callback;
-    if (main_blockSize)
-        blocksize = main_blockSize;
-    sys_set_audio_settings(naudioindev, audioindev, nchindev, chindev,
-        naudiooutdev, audiooutdev, nchoutdev, choutdev, rate, advance, 
-        callback, blocksize);
-    sys_open_midi(nmidiindev, midiindev, nmidioutdev, midioutdev, 0);
-}
 
-static void sys_addreferencepath(void)
-{
-    char sbuf[PD_STRING];
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

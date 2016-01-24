@@ -31,7 +31,6 @@
 #endif
 
 extern int sys_usestdpath;
-extern t_pathlist *sys_externlist;
 extern t_pathlist *sys_searchpath;
 extern t_symbol *main_libDirectory;
 extern int main_highPriority;
@@ -436,7 +435,7 @@ void sys_loadpreferences( void)
     /*if (sys_getpreference("verbose", prefbuf, PD_STRING))
         sscanf(prefbuf, "%d", &sys_verbose); */
 
-        /* startup settings */
+    /*
     if (sys_getpreference("nloadlib", prefbuf, PD_STRING))
         sscanf(prefbuf, "%d", &maxi);
     else maxi = 0x7fffffff;
@@ -447,6 +446,7 @@ void sys_loadpreferences( void)
             break;
         sys_externlist = pathlist_newAppendFiles(sys_externlist, prefbuf, PATHLIST_SEPARATOR);
     }
+    */
     if (sys_getpreference("defeatrt", prefbuf, PD_STRING))
         sscanf(prefbuf, "%d", &sys_defeatrt);
     if (sys_getpreference("flags", prefbuf, PD_STRING))
@@ -571,14 +571,14 @@ void global_savePreferences(void *dummy)
     //sys_putpreference("verbose", buf1);
     
         /* startup */
-    for (i = 0; 1; i++)
+    /*for (i = 0; 1; i++)
     {
         char *pathelem = pathlist_getFileAtIndex(sys_externlist, i);
         if (!pathelem)
             break;
         sprintf(buf1, "loadlib%d", i+1);
         sys_putpreference(buf1, pathelem);
-    }
+    }*/
     sprintf(buf1, "%d", i);
     sys_putpreference("nloadlib", buf1);
     sprintf(buf1, "%d", sys_defeatrt);
