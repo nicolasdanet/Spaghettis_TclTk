@@ -17,17 +17,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#if PD_WINDOWS
-    #define NAMELIST_SEPARATOR ';'
-#else
-    #define NAMELIST_SEPARATOR ':'
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static const char *namelist_getNextFile (char *dest, size_t length, const char *src, char delimiter)
+static const char *pathlist_getNextFile (char *dest, size_t length, const char *src, char delimiter)
 {
     size_t i;
 
@@ -45,12 +35,12 @@ static const char *namelist_getNextFile (char *dest, size_t length, const char *
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_namelist *namelist_newAppend (t_namelist *x, const char *s)
+t_pathlist *pathlist_newAppend (t_pathlist *x, const char *s)
 {
-    t_namelist *nl1 = x;
-    t_namelist *nl2 = NULL;
+    t_pathlist *nl1 = x;
+    t_pathlist *nl2 = NULL;
     
-    nl2 = (t_namelist *)(PD_MEMORY_GET (sizeof (t_namelist)));
+    nl2 = (t_pathlist *)(PD_MEMORY_GET (sizeof (t_pathlist)));
     nl2->nl_next   = NULL;
     nl2->nl_string = (char *)PD_MEMORY_GET (strlen (s) + 1);
     
@@ -71,26 +61,26 @@ t_namelist *namelist_newAppend (t_namelist *x, const char *s)
 
 /* add a colon-separated list of names to a namelist */
 
-t_namelist *namelist_append_files(t_namelist *listwas, const char *s)
+t_pathlist *namelist_append_files(t_pathlist *listwas, const char *s)
 {
     const char *npos;
     char temp[PD_STRING];
-    t_namelist *nl = listwas, *rtn = listwas;
+    t_pathlist *nl = listwas, *rtn = listwas;
     
     npos = s;
     do
     {
-        npos = namelist_getNextFile (temp, sizeof(temp), npos, NAMELIST_SEPARATOR);
+        npos = pathlist_getNextFile (temp, sizeof(temp), npos, PATHLIST_SEPARATOR);
         if (! *temp) continue;
-        nl = namelist_newAppend(nl, temp);
+        nl = pathlist_newAppend(nl, temp);
     }
         while (npos);
     return (nl);
 }
 
-void namelist_free(t_namelist *listwas)
+void namelist_free(t_pathlist *listwas)
 {
-    t_namelist *nl, *nl2;
+    t_pathlist *nl, *nl2;
     for (nl = listwas; nl; nl = nl2)
     {
         nl2 = nl->nl_next;
@@ -99,10 +89,10 @@ void namelist_free(t_namelist *listwas)
     }
 }
 
-char *namelist_get(t_namelist *namelist, int n)
+char *namelist_get(t_pathlist *namelist, int n)
 {
     int i;
-    t_namelist *nl;
+    t_pathlist *nl;
     for (i = 0, nl = namelist; i < n && nl; i++, nl = nl->nl_next)
         ;
     return (nl ? nl->nl_string : 0);

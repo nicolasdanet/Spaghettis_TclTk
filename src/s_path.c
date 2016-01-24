@@ -35,10 +35,10 @@
 #include <fcntl.h>
 #include <ctype.h>
 
-t_namelist *sys_externlist;     /* Shared. */
-t_namelist *sys_searchpath;     /* Shared. */
-t_namelist *sys_staticpath;     /* Shared. */
-t_namelist *sys_helppath;       /* Shared. */
+t_pathlist *sys_externlist;     /* Shared. */
+t_pathlist *sys_searchpath;     /* Shared. */
+t_pathlist *sys_staticpath;     /* Shared. */
+t_pathlist *sys_helppath;       /* Shared. */
 
 extern t_class *global_object;
 extern int sys_defeatrt;
@@ -133,24 +133,24 @@ void sys_setextrapath(const char *p)
     /* add standard place for users to install stuff first */
 #ifdef __gnu_linux__
     sys_expandpath("~/pd-externals", pathbuf, PD_STRING);
-    sys_staticpath = namelist_newAppend(0, pathbuf);
-    sys_staticpath = namelist_newAppend(sys_staticpath, "/usr/local/lib/pd-externals");
+    sys_staticpath = pathlist_newAppend(0, pathbuf);
+    sys_staticpath = pathlist_newAppend(sys_staticpath, "/usr/local/lib/pd-externals");
 #endif
 
 #ifdef __APPLE__
     sys_expandpath("~/Library/Pd", pathbuf, PD_STRING);
-    sys_staticpath = namelist_newAppend(0, pathbuf);
-    sys_staticpath = namelist_newAppend(sys_staticpath, "/Library/Pd");
+    sys_staticpath = pathlist_newAppend(0, pathbuf);
+    sys_staticpath = pathlist_newAppend(sys_staticpath, "/Library/Pd");
 #endif
 
 #ifdef _WIN32
     sys_expandpath("%AppData%/Pd", pathbuf, PD_STRING);
-    sys_staticpath = namelist_newAppend(0, pathbuf);
+    sys_staticpath = pathlist_newAppend(0, pathbuf);
     sys_expandpath("%CommonProgramFiles%/Pd", pathbuf, PD_STRING);
-    sys_staticpath = namelist_newAppend(sys_staticpath, pathbuf);
+    sys_staticpath = pathlist_newAppend(sys_staticpath, pathbuf);
 #endif
     /* add built-in "extra" path last so its checked last */
-    sys_staticpath = namelist_newAppend(sys_staticpath, p);
+    sys_staticpath = pathlist_newAppend(sys_staticpath, p);
 }
 
     /* try to open a file in the directory "dir", named "name""ext",
@@ -250,9 +250,9 @@ canvas-specific path. */
 
 static int do_open_via_path(const char *dir, const char *name,
     const char *ext, char *dirresult, char **nameresult, unsigned int size,
-    int bin, t_namelist *searchpath)
+    int bin, t_pathlist *searchpath)
 {
-    t_namelist *nl;
+    t_pathlist *nl;
     int fd = -1;
 
         /* first check if "name" is absolute (and if so, try to open) */
@@ -580,7 +580,7 @@ t_symbol *sys_decodedialog(t_symbol *s)
 void sys_set_searchpath( void)
 {
     int i;
-    t_namelist *nl;
+    t_pathlist *nl;
 
     sys_gui("set ::tmp_path {}\n");
     for (nl = sys_searchpath, i = 0; nl; nl = nl->nl_next, i++)
@@ -593,7 +593,7 @@ void sys_set_extrapath(void)
 {
     /*
     int i;
-    t_namelist *nl;
+    t_pathlist *nl;
 
     sys_gui("set ::tmp_path {}\n");
     for (nl = sys_staticpath, i = 0; nl; nl = nl->nl_next, i++)
@@ -632,7 +632,7 @@ void global_setPath(void *dummy, t_symbol *s, int argc, t_atom *argv)
 void sys_set_startup( void)
 {
     //int i;
-    //t_namelist *nl;
+    //t_pathlist *nl;
 
     // sys_vgui("set ::var(startupFlags) {%s}\n", sys_flags->s_name);
     // sys_gui("set ::var(startupLibraries) {}\n");

@@ -120,20 +120,30 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef struct _namelist {
-    struct _namelist    *nl_next;
-    char                *nl_string;
-    } t_namelist;
+#if PD_WINDOWS
+    #define PATHLIST_SEPARATOR              ';'
+#else
+    #define PATHLIST_SEPARATOR              ':'
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_namelist  *namelist_newAppend             (t_namelist *x, const char *s);
-t_namelist  *namelist_append_files          (t_namelist *x, const char *s);
-char        *namelist_get                   (t_namelist *x, int n);
+typedef struct _pathlist {
+    struct _pathlist    *nl_next;
+    char                *nl_string;
+    } t_pathlist;
 
-void        namelist_free                   (t_namelist *x);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_pathlist  *pathlist_newAppend             (t_pathlist *x, const char *s);
+t_pathlist  *namelist_append_files          (t_pathlist *x, const char *s);
+char        *namelist_get                   (t_pathlist *x, int n);
+
+void        namelist_free                   (t_pathlist *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

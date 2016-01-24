@@ -28,9 +28,9 @@
 extern t_pdinstance     *pd_this;
 extern t_sample         *sys_soundin;
 extern t_sample         *sys_soundout;
-extern t_namelist       *sys_helppath;
-extern t_namelist       *sys_externlist;
-extern t_namelist       *sys_searchpath;
+extern t_pathlist       *sys_helppath;
+extern t_pathlist       *sys_externlist;
+extern t_pathlist       *sys_searchpath;
 
 extern t_float          sys_dacsr;
 extern int              sys_usestdpath;
@@ -60,7 +60,7 @@ t_symbol    *main_libDirectory;                                         /* Share
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_namelist   *main_openList;                                     /* Shared. */
+static t_pathlist   *main_openList;                                     /* Shared. */
 
 static int          main_batch;                                         /* Shared. */
 static int          main_version;                                       /* Shared. */
@@ -180,7 +180,7 @@ open(), read(), etc, calls to be served somehow from the GUI too. */
 void global_gui(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     char *cwd = atom_getSymbolAtIndex(0, argc, argv)->s_name;
-    t_namelist *nl;
+    t_pathlist *nl;
     unsigned int i;
     int j;
     int nhostfont = (argc-1)/3;
@@ -864,7 +864,7 @@ int sys_argparse(int argc, char **argv)
         /*
         else if (!strcmp(*argv, "-send") && argc > 1)
         {
-            main_messageList = namelist_newAppend(main_messageList, argv[1], 1);
+            main_messageList = pathlist_newAppend(main_messageList, argv[1], 1);
             argc -= 2; argv += 2;
         }*/
         else if (!strcmp(*argv, "-listdev"))

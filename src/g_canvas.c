@@ -33,7 +33,7 @@ struct _canvasenvironment
     int ce_argc;           /* number of "$" arguments */
     t_atom *ce_argv;       /* array of "$" arguments */
     int ce_dollarzero;     /* value of "$0" */
-    t_namelist *ce_path;   /* search path */
+    t_pathlist *ce_path;   /* search path */
 };
 
 #define GLIST_DEFCANVASWIDTH 450
@@ -1318,22 +1318,22 @@ static int check_exists(const char*path)
 }
 #endif
 
-extern t_namelist *sys_staticpath;
+extern t_pathlist *sys_staticpath;
 
 static void canvas_stdpath(t_canvasenvironment *e, char *stdpath)
 {
-    t_namelist*nl;
+    t_pathlist*nl;
     char strbuf[PD_STRING];
     if (sys_isabsolutepath(stdpath))
     {
-        e->ce_path = namelist_newAppend(e->ce_path, stdpath);
+        e->ce_path = pathlist_newAppend(e->ce_path, stdpath);
         return;
     }
 
     canvas_completepath(stdpath, strbuf, PD_STRING);
     if (check_exists(strbuf))
     {
-        e->ce_path = namelist_newAppend(e->ce_path, strbuf);
+        e->ce_path = pathlist_newAppend(e->ce_path, strbuf);
         return;
     }
     /* strip    "extra/"-prefix */
@@ -1346,14 +1346,14 @@ static void canvas_stdpath(t_canvasenvironment *e, char *stdpath)
         strbuf[PD_STRING-1]=0;
         if (check_exists(strbuf))
         {
-            e->ce_path = namelist_newAppend(e->ce_path, strbuf);
+            e->ce_path = pathlist_newAppend(e->ce_path, strbuf);
             return;
         }
     }
 }
 static void canvas_stdlib(t_canvasenvironment *e, char *stdlib)
 {
-    t_namelist*nl;
+    t_pathlist*nl;
     char strbuf[PD_STRING];
     if (sys_isabsolutepath(stdlib))
     {
@@ -1393,7 +1393,7 @@ static void canvas_declare(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
         char *flag = atom_getSymbolAtIndex(i, argc, argv)->s_name;
         if ((argc > i+1) && !strcmp(flag, "-path"))
         {
-            e->ce_path = namelist_newAppend(e->ce_path, atom_getSymbolAtIndex(i+1, argc, argv)->s_name);
+            e->ce_path = pathlist_newAppend(e->ce_path, atom_getSymbolAtIndex(i+1, argc, argv)->s_name);
             i++;
         }
         else if ((argc > i+1) && !strcmp(flag, "-stdpath"))
@@ -1431,7 +1431,7 @@ static void canvas_declare(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
 int canvas_open(t_canvas *x, const char *name, const char *ext,
     char *dirresult, char **nameresult, unsigned int size, int bin)
 {
-    t_namelist *nl, thislist;
+    t_pathlist *nl, thislist;
     int fd = -1;
     char listbuf[PD_STRING];
     t_canvas *y;
@@ -1445,7 +1445,7 @@ int canvas_open(t_canvas *x, const char *name, const char *ext,
     for (y = x; y; y = y->gl_owner)
         if (y->gl_env)
     {
-        t_namelist *nl;
+        t_pathlist *nl;
         t_canvas *x2 = x;
         char *dir;
         while (x2 && x2->gl_owner)

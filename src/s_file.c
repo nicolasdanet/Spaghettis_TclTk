@@ -31,8 +31,8 @@
 #endif
 
 extern int sys_usestdpath;
-extern t_namelist *sys_externlist;
-extern t_namelist *sys_searchpath;
+extern t_pathlist *sys_externlist;
+extern t_pathlist *sys_searchpath;
 extern t_symbol *main_libDirectory;
 extern int main_highPriority;
 extern int sys_audioapi;
