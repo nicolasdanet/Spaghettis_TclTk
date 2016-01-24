@@ -25,6 +25,10 @@
 
 /* System. */
 
+#include "s_entry.c"
+#include "s_pathlist.c"
+#include "s_font.c"
+ 
 /* Graphics. */
 
 /* Control. */
