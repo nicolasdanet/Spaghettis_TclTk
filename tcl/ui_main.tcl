@@ -161,7 +161,7 @@ set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pd
 
 set var(fontFamily)             [::getDefaultFamily]
 set var(fontWeight)             [::getDefaultWeight]
-set var(fontSizes)              "8 10 12 14 16 18 20 24 36"
+set var(fontSizes)              "8 9 10 11 12 14 16 18 20 24 36"
 
 set var(isPath)                 0
 set var(isInitialized)          0
@@ -236,15 +236,17 @@ proc initialize {audioAPIs midiAPIs} {
     set ::var(apiAudioAvailables) $audioAPIs
     set ::var(apiMidiAvailables)  $midiAPIs
     
-    # Create fonts (determine horizontal and vertical spacing in pixels). 
+    # Create fonts (determine average horizontal and vertical spacing in pixels). 
     
     set measured ""
     
     foreach size $::var(fontSizes) {
         set f [::getFont $size]
         font create $f -family $::var(fontFamily) -weight $::var(fontWeight) -size [expr {-($size)}]
+        set lorem [font measure $f "TheQuickBrownFoxJumpsOverTheLazyDog"]
+        set ipsum [string length   "TheQuickBrownFoxJumpsOverTheLazyDog"]
         lappend measured $size 
-        lappend measured [font measure $f M]
+        lappend measured [expr {($lorem / $ipsum) + 1}]
         lappend measured [font metrics $f -linespace]
     }
 
@@ -254,9 +256,9 @@ proc initialize {audioAPIs midiAPIs} {
     
     focus .console
         
-    # Respond to executable.
+    # Respond to executable with measured fonts.
     
-    ::ui_connect::pdsend "pd _gui [::escaped [pwd]] $measured"
+    ::ui_connect::pdsend "pd _font $measured"
     
     # Open pended files.
     

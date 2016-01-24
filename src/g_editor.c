@@ -21,7 +21,7 @@ extern t_pd pd_canvasMaker;
 extern t_class *canvas_class;
 extern t_class *vinlet_class;
 extern t_class *voutlet_class;
-extern int font_size;
+extern int font_defaultSize;
 extern t_widgetbehavior text_widgetBehavior;
 extern t_pdinstance *pd_this;
 
@@ -1900,7 +1900,7 @@ void canvas_motion(t_canvas *x, t_float xpos, t_float ypos,
                     (pd_checkglist(&ob->te_g.g_pd) &&
                         !((t_canvas *)ob)->gl_isgraph))
             {
-                wantwidth = wantwidth / font_getNearestHostFontWidth(glist_getfont(x));
+                wantwidth = wantwidth / font_getHostFontWidth(glist_getfont(x));
                 if (wantwidth < 1)
                     wantwidth = 1;
                 ob->te_width = wantwidth;
@@ -2743,7 +2743,7 @@ static void canvas_font(t_canvas *x, t_float font, t_float resize,
     if (whichresize != 3) realresx = realresize;
     if (whichresize != 2) realresy = realresize;
     canvas_dofont(x2, font, realresx, realresy);
-    font_size = font;
+    font_defaultSize = font;
 }
 
 static t_glist *canvas_last_glist;

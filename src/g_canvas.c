@@ -23,7 +23,7 @@ extern t_class *scalar_class;
 extern t_pdinstance *pd_this;
 extern t_pd pd_canvasMaker;
 extern int glist_reloading;
-extern int font_size;
+extern int font_defaultSize;
 extern t_symbol *main_libDirectory;
 
     /* LATER consider adding font size to this struct (see glist_getfont()) */
@@ -331,7 +331,7 @@ t_canvas *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
     t_symbol *s = &s_;
     int vis = 0, width = GLIST_DEFCANVASWIDTH, height = GLIST_DEFCANVASHEIGHT;
     int xloc = 0, yloc = GLIST_DEFCANVASYLOC;
-    int font = (owner ? owner->gl_font : font_size);
+    int font = (owner ? owner->gl_font : font_defaultSize);
     glist_init(x);
     x->gl_obj.te_type = TYPE_OBJECT;
     if (!owner)
@@ -481,7 +481,7 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     x->gl_pixwidth = px2 - px1;
     x->gl_pixheight = py2 - py1;
     x->gl_font =  (canvas_getcurrent() ?
-        canvas_getcurrent()->gl_font : font_size);
+        canvas_getcurrent()->gl_font : font_defaultSize);
     x->gl_screenx1 = 0;
     x->gl_screeny1 = GLIST_DEFCANVASYLOC;
     x->gl_screenx2 = 450;

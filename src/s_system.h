@@ -135,15 +135,6 @@ typedef struct _pathlist {
     char                *nl_string;
     } t_pathlist;
 
-typedef struct _fontinfo {
-    int fi_size;
-    int fi_width;
-    int fi_height;
-    int fi_hostSize;
-    int fi_hostWidth;
-    int fi_hostHeight;
-    } t_fontinfo;
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -158,10 +149,12 @@ void        pathlist_free                   (t_pathlist *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        font_withMeasured               (void *dummy, t_symbol *s, int argc, t_atom *argv);
+
 int         font_getNearestFontSize         (int fontSize);
-int         font_getNearestHostFontSize     (int fontSize);
-int         font_getNearestHostFontWidth    (int fontSize);
-int         font_getNearestHostFontHeight   (int fontSize);
+int         font_getHostFontSize            (int fontSize);
+int         font_getHostFontWidth           (int fontSize);
+int         font_getHostFontHeight          (int fontSize);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

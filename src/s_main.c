@@ -730,7 +730,7 @@ int sys_argparse(int argc, char **argv)
         else if ((!strcmp(*argv, "-font-size") || !strcmp(*argv, "-font"))
             && argc > 1)
         {
-            font_size = font_getNearestFontSize(atoi(argv[1]));
+            font_defaultSize = font_getNearestFontSize(atoi(argv[1]));
             argc -= 2;
             argv += 2;
         }*/
@@ -970,8 +970,8 @@ int sys_argparse(int argc, char **argv)
         /* we need to tell Windows to output UTF-8 */
         SetConsoleOutputCP(CP_UTF8);
 #endif
-    /*if (!font_size)
-        font_size = DEFAULTFONT; */
+    /*if (!font_defaultSize)
+        font_defaultSize = DEFAULTFONT; */
     /*for (; argc > 0; argc--, argv++) 
         main_openList = pathlist_newAppendFiles(main_openList, *argv, PATHLIST_SEPARATOR);*/
 

@@ -10,7 +10,7 @@ moment it also defines "text" but it may later be better to split this off. */
 #include "m_macros.h"
 #include "m_alloca.h"
 #include "g_canvas.h"    /* just for glist_getfont, bother */
-#include "s_system.h"    /* just for font_getNearestHostFontSize, phooey */
+#include "s_system.h"    /* just for font_getHostFontSize, phooey */
 #include <string.h>
 #include <stdio.h>
 
@@ -74,7 +74,7 @@ static void textbuf_open(t_textbuf *x)
         char buf[40];
         sys_vgui("::ui_text::show .x%lx\n",
             x /*, 600, 340, "myname", "text",
-                 font_getNearestHostFontSize(glist_getfont(x->b_canvas))*/);
+                 font_getHostFontSize(glist_getfont(x->b_canvas))*/);
         sprintf(buf, ".x%lx", (unsigned long)x);
         x->b_guiconnect = guiconnect_new(&x->b_ob.te_g.g_pd, gensym(buf));
         textbuf_senditup(x);

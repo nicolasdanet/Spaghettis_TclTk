@@ -230,7 +230,6 @@ void global_new                             (void *dummy, t_symbol *name, t_symb
 void global_dsp                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void global_key                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void global_quit                            (void *dummy);
-void global_gui                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void global_audioProperties                 (void *dummy, t_float f);
 void global_midiProperties                  (void *dummy, t_float f);
 void global_audioDialog                     (void *dummy, t_symbol *s, int argc, t_atom *argv);

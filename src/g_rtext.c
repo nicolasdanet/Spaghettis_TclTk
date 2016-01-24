@@ -206,8 +206,8 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
         ((t_glist *)(x->x_text))->gl_goprect)
             font =  glist_getfont((t_glist *)(x->x_text));
     else font = glist_getfont(x->x_glist);
-    fontwidth = font_getNearestHostFontWidth(font);
-    fontheight = font_getNearestHostFontHeight(font);
+    fontwidth = font_getHostFontWidth(font);
+    fontheight = font_getHostFontHeight(font);
     findx = (*widthp + (fontwidth/2)) / fontwidth;
     findy = *heightp / fontheight;
     if (x->x_bufsize >= 100)
@@ -309,7 +309,7 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
         sys_vgui("::ui_object::newText .x%lx.c {%s %s text} %f %f {%.*s} %d %s\n",
             canvas, x->x_tag, rtext_gettype(x)->s_name,
             dispx + LMARGIN, dispy + TMARGIN,
-            outchars_b, tempbuf, font_getNearestHostFontSize(font),
+            outchars_b, tempbuf, font_getHostFontSize(font),
             (glist_isselected(x->x_glist,
                 &x->x_glist->gl_obj.te_g)? "blue" : "black"));
     }

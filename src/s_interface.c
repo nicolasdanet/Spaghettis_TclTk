@@ -906,7 +906,7 @@ int sys_startgui(const char *libdir)
         for (i = 0; i < (int)NDEFAULTFONT; i++)
             SET_FLOAT(zz+i+1, defaultfontshit[i]);
         // SET_FLOAT(zz+NDEFAULTFONT+1,0);
-        global_gui(0, 0, NDEFAULTFONT+1, zz);
+        font_withMeasured(0, 0, NDEFAULTFONT+1, zz);
     }
     else if (main_portNumber)  /* GUI exists and sent us a port number */
     {

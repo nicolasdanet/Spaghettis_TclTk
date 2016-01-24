@@ -597,28 +597,9 @@
 			children = (
 				3789717F1C4F712A00263434 /* AppMain.tcl */,
 				378971801C4F712A00263434 /* pkgIndex.tcl */,
-				378971811C4F712A00263434 /* ui_apple.tcl */,
-				378971821C4F712A00263434 /* ui_aqua.tcl */,
-				378971831C4F712A00263434 /* ui_array.tcl */,
-				378971841C4F712A00263434 /* ui_atom.tcl */,
-				378971851C4F712A00263434 /* ui_audio.tcl */,
-				378971861C4F712A00263434 /* ui_bind.tcl */,
-				378971871C4F712A00263434 /* ui_canvas.tcl */,
-				378971881C4F712A00263434 /* ui_confirm.tcl */,
-				378971891C4F712A00263434 /* ui_connect.tcl */,
-				3789718A1C4F712A00263434 /* ui_console.tcl */,
-				3789718B1C4F712A00263434 /* ui_data.tcl */,
-				3789718C1C4F712A00263434 /* ui_file.tcl */,
-				3789718D1C4F712A00263434 /* ui_global.tcl */,
-				3789718E1C4F712A00263434 /* ui_iem.tcl */,
-				3789718F1C4F712A00263434 /* ui_main.tcl */,
-				378971901C4F712A00263434 /* ui_menu.tcl */,
-				378971911C4F712A00263434 /* ui_midi.tcl */,
-				378971921C4F712A00263434 /* ui_object.tcl */,
-				378971931C4F712A00263434 /* ui_patch.tcl */,
-				378971941C4F712A00263434 /* ui_path.tcl */,
-				378971951C4F712A00263434 /* ui_text.tcl */,
-				378971961C4F712A00263434 /* ui_x11.tcl */,
+				37D2882B1C55121F0041C5C2 /* Main */,
+				37D2882E1C5512570041C5C2 /* Patch */,
+				37D2882F1C5512820041C5C2 /* Dialog */,
 			);
 			name = Tcl;
 			path = tcl;
@@ -660,6 +641,49 @@
 				378971EC1C4F716700263434 /* s_audio_dummy.c */,
 			);
 			name = Audio;
+			sourceTree = "<group>";
+		};
+		37D2882B1C55121F0041C5C2 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				378971811C4F712A00263434 /* ui_apple.tcl */,
+				378971821C4F712A00263434 /* ui_aqua.tcl */,
+				378971961C4F712A00263434 /* ui_x11.tcl */,
+				3789718D1C4F712A00263434 /* ui_global.tcl */,
+				3789718F1C4F712A00263434 /* ui_main.tcl */,
+				378971901C4F712A00263434 /* ui_menu.tcl */,
+				3789718A1C4F712A00263434 /* ui_console.tcl */,
+				378971861C4F712A00263434 /* ui_bind.tcl */,
+				3789718C1C4F712A00263434 /* ui_file.tcl */,
+				378971891C4F712A00263434 /* ui_connect.tcl */,
+				378971881C4F712A00263434 /* ui_confirm.tcl */,
+			);
+			name = Main;
+			sourceTree = "<group>";
+		};
+		37D2882E1C5512570041C5C2 /* Patch */ = {
+			isa = PBXGroup;
+			children = (
+				378971931C4F712A00263434 /* ui_patch.tcl */,
+				378971921C4F712A00263434 /* ui_object.tcl */,
+			);
+			name = Patch;
+			sourceTree = "<group>";
+		};
+		37D2882F1C5512820041C5C2 /* Dialog */ = {
+			isa = PBXGroup;
+			children = (
+				378971941C4F712A00263434 /* ui_path.tcl */,
+				378971911C4F712A00263434 /* ui_midi.tcl */,
+				378971851C4F712A00263434 /* ui_audio.tcl */,
+				3789718E1C4F712A00263434 /* ui_iem.tcl */,
+				3789718B1C4F712A00263434 /* ui_data.tcl */,
+				378971951C4F712A00263434 /* ui_text.tcl */,
+				378971831C4F712A00263434 /* ui_array.tcl */,
+				378971841C4F712A00263434 /* ui_atom.tcl */,
+				378971871C4F712A00263434 /* ui_canvas.tcl */,
+			);
+			name = Dialog;
 			sourceTree = "<group>";
 		};
 		C6A0FF2B0290797F04C91782 /* Documentation */ = {
