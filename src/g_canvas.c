@@ -1326,14 +1326,14 @@ static void canvas_stdpath(t_canvasenvironment *e, char *stdpath)
     char strbuf[PD_STRING];
     if (sys_isabsolutepath(stdpath))
     {
-        e->ce_path = namelist_append(e->ce_path, stdpath, 0);
+        e->ce_path = namelist_newAppend(e->ce_path, stdpath);
         return;
     }
 
     canvas_completepath(stdpath, strbuf, PD_STRING);
     if (check_exists(strbuf))
     {
-        e->ce_path = namelist_append(e->ce_path, strbuf, 0);
+        e->ce_path = namelist_newAppend(e->ce_path, strbuf);
         return;
     }
     /* strip    "extra/"-prefix */
@@ -1346,7 +1346,7 @@ static void canvas_stdpath(t_canvasenvironment *e, char *stdpath)
         strbuf[PD_STRING-1]=0;
         if (check_exists(strbuf))
         {
-            e->ce_path = namelist_append(e->ce_path, strbuf, 0);
+            e->ce_path = namelist_newAppend(e->ce_path, strbuf);
             return;
         }
     }
@@ -1393,8 +1393,7 @@ static void canvas_declare(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
         char *flag = atom_getSymbolAtIndex(i, argc, argv)->s_name;
         if ((argc > i+1) && !strcmp(flag, "-path"))
         {
-            e->ce_path = namelist_append(e->ce_path, 
-                atom_getSymbolAtIndex(i+1, argc, argv)->s_name, 0);
+            e->ce_path = namelist_newAppend(e->ce_path, atom_getSymbolAtIndex(i+1, argc, argv)->s_name);
             i++;
         }
         else if ((argc > i+1) && !strcmp(flag, "-stdpath"))

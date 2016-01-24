@@ -61,7 +61,6 @@ t_symbol    *main_libDirectory;                                         /* Share
 // -----------------------------------------------------------------------------------------------------------
 
 static t_namelist   *main_openList;                                     /* Shared. */
-static t_namelist   *main_messageList;                                  /* Shared. */
 
 static int          main_batch;                                         /* Shared. */
 static int          main_version;                                       /* Shared. */
@@ -223,7 +222,8 @@ void global_gui(void *dummy, t_symbol *s, int argc, t_atom *argv)
         openit(cwd, nl->nl_string);
     namelist_free(main_openList);
     main_openList = 0;
-        /* send messages specified with "-send" args */
+
+    /*
     for  (nl = main_messageList; nl; nl = nl->nl_next)
     {
         t_buffer *b = buffer_new();
@@ -232,7 +232,7 @@ void global_gui(void *dummy, t_symbol *s, int argc, t_atom *argv)
         buffer_free(b);
     }
     namelist_free(main_messageList);
-    main_messageList = 0;
+    main_messageList = 0;*/
 }
 
 static void sys_afterargparse(void);
@@ -861,11 +861,12 @@ int sys_argparse(int argc, char **argv)
             main_commandToLaunchGUI = argv[1];
             argc -= 2; argv += 2;
         }*/
+        /*
         else if (!strcmp(*argv, "-send") && argc > 1)
         {
-            main_messageList = namelist_append(main_messageList, argv[1], 1);
+            main_messageList = namelist_newAppend(main_messageList, argv[1], 1);
             argc -= 2; argv += 2;
-        }
+        }*/
         else if (!strcmp(*argv, "-listdev"))
         {
             main_devices = 1;

@@ -156,6 +156,7 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
@@ -579,8 +580,6 @@ PD_DLL void post_error      (const char *fmt, ...);
 PD_DLL double   sys_getrealtime     (void);
 PD_DLL int      sys_isreadablefile  (const char *name);
 PD_DLL int      sys_isabsolutepath  (const char *dir);
-PD_DLL void     sys_bashfilename    (const char *from, char *to);
-PD_DLL void     sys_unbashfilename  (const char *from, char *to);
 PD_DLL int      open_via_path       (const char *dir, 
                                         const char *name,
                                         const char *ext,

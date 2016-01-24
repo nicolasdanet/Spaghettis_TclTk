@@ -85,7 +85,7 @@
 		3789724C1C4F716800263434 /* s_audio.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971F11C4F716700263434 /* s_audio.c */; };
 		3789724D1C4F716800263434 /* s_entry.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971F21C4F716700263434 /* s_entry.c */; };
 		3789724E1C4F716800263434 /* s_file.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971F31C4F716700263434 /* s_file.c */; };
-		3789724F1C4F716800263434 /* s_inter.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971F41C4F716700263434 /* s_inter.c */; };
+		3789724F1C4F716800263434 /* s_interface.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971F41C4F716700263434 /* s_interface.c */; };
 		378972501C4F716800263434 /* s_loader.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971F51C4F716700263434 /* s_loader.c */; };
 		378972511C4F716800263434 /* s_main.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971F61C4F716700263434 /* s_main.c */; };
 		378972551C4F716800263434 /* s_midi_pm.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971FA1C4F716700263434 /* s_midi_pm.c */; };
@@ -127,6 +127,7 @@
 		379A42FD1BA4291200C1CED0 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 379A42091BA3F51100C1CED0 /* AudioToolbox.framework */; };
 		379A42FE1BA4291200C1CED0 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 379A420B1BA3F51C00C1CED0 /* Carbon.framework */; };
 		379A42FF1BA4291200C1CED0 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 379A420D1BA3F52D00C1CED0 /* CoreMIDI.framework */; };
+		37E0BC371C53E0B700114412 /* s_namelist.c in Sources */ = {isa = PBXBuildFile; fileRef = 37E0BC361C53E0B700114412 /* s_namelist.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -281,7 +282,7 @@
 		378971F11C4F716700263434 /* s_audio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio.c; path = src/s_audio.c; sourceTree = "<group>"; };
 		378971F21C4F716700263434 /* s_entry.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_entry.c; path = src/s_entry.c; sourceTree = "<group>"; };
 		378971F31C4F716700263434 /* s_file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_file.c; path = src/s_file.c; sourceTree = "<group>"; };
-		378971F41C4F716700263434 /* s_inter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_inter.c; path = src/s_inter.c; sourceTree = "<group>"; };
+		378971F41C4F716700263434 /* s_interface.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_interface.c; path = src/s_interface.c; sourceTree = "<group>"; };
 		378971F51C4F716700263434 /* s_loader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_loader.c; path = src/s_loader.c; sourceTree = "<group>"; };
 		378971F61C4F716700263434 /* s_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_main.c; path = src/s_main.c; sourceTree = "<group>"; };
 		378971F71C4F716700263434 /* s_midi_alsa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_midi_alsa.c; path = src/s_midi_alsa.c; sourceTree = "<group>"; };
@@ -320,6 +321,7 @@
 		379A42D61BA427B900C1CED0 /* pdsend */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pdsend; sourceTree = BUILT_PRODUCTS_DIR; };
 		379A42F11BA428D000C1CED0 /* pdreceive */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pdreceive; sourceTree = BUILT_PRODUCTS_DIR; };
 		379A43041BA4291200C1CED0 /* pdwatchdog */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pdwatchdog; sourceTree = BUILT_PRODUCTS_DIR; };
+		37E0BC361C53E0B700114412 /* s_namelist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_namelist.c; path = src/s_namelist.c; sourceTree = "<group>"; };
 		8DD76FB20486AB0100D96B5E /* pd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pd; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -489,8 +491,9 @@
 				378972021C4F716700263434 /* s_utf8.h */,
 				378971FF1C4F716700263434 /* s_ringbuffer.h */,
 				378971F21C4F716700263434 /* s_entry.c */,
+				37E0BC361C53E0B700114412 /* s_namelist.c */,
 				378971F61C4F716700263434 /* s_main.c */,
-				378971F41C4F716700263434 /* s_inter.c */,
+				378971F41C4F716700263434 /* s_interface.c */,
 				378971F51C4F716700263434 /* s_loader.c */,
 				378971F31C4F716700263434 /* s_file.c */,
 				378971FC1C4F716700263434 /* s_path.c */,
@@ -862,7 +865,7 @@
 				3789724C1C4F716800263434 /* s_audio.c in Sources */,
 				3789724D1C4F716800263434 /* s_entry.c in Sources */,
 				3789724E1C4F716800263434 /* s_file.c in Sources */,
-				3789724F1C4F716800263434 /* s_inter.c in Sources */,
+				3789724F1C4F716800263434 /* s_interface.c in Sources */,
 				378972501C4F716800263434 /* s_loader.c in Sources */,
 				378972511C4F716800263434 /* s_main.c in Sources */,
 				378972551C4F716800263434 /* s_midi_pm.c in Sources */,
@@ -884,6 +887,7 @@
 				378972681C4F716800263434 /* x_scalar.c in Sources */,
 				378972691C4F716800263434 /* x_text.c in Sources */,
 				3789726A1C4F716800263434 /* x_time.c in Sources */,
+				37E0BC371C53E0B700114412 /* s_namelist.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

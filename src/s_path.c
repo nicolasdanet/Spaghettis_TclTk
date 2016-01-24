@@ -45,7 +45,7 @@ extern int sys_defeatrt;
 extern t_symbol *sys_flags;
 
     /* change '/' characters to the system's native file separator */
-void sys_bashfilename(const char *from, char *to)
+void sys_bashfilename(char *from, char *to)
 {
     char c;
     while (c = *from++)
@@ -59,7 +59,7 @@ void sys_bashfilename(const char *from, char *to)
 }
 
     /* change the system's native file separator to '/' characters  */
-void sys_unbashfilename(const char *from, char *to)
+void sys_unbashfilename(char *from, char *to)
 {
     char c;
     while (c = *from++)
@@ -124,106 +124,6 @@ static void sys_expandpath(const char *from, char *to, int bufsize)
 #endif    
 }
 
-/*******************  Utility functions used below ******************/
-
-/*!
- * \brief copy until delimiter
- * 
- * \arg to destination buffer
- * \arg to_len destination buffer length
- * \arg from source buffer
- * \arg delim string delimiter to stop copying on
- *
- * \return position after delimiter in string.  If it was the last
- *         substring, return NULL.
- */
-static const char *strtokcpy(char *to, size_t to_len, const char *from, char delim)
-{
-    unsigned int i = 0;
-
-        for (; i < (to_len - 1) && from[i] && from[i] != delim; i++)
-                to[i] = from[i];
-        to[i] = '\0';
-
-        if (i && from[i] != '\0')
-                return from + i + 1;
-
-        return NULL;
-}
-
-/* add a single item to a namelist.  If "allowdup" is true, duplicates
-may be added; othewise they're dropped.  */
-
-t_namelist *namelist_append(t_namelist *listwas, const char *s, int allowdup)
-{
-    t_namelist *nl, *nl2;
-    nl2 = (t_namelist *)(PD_MEMORY_GET(sizeof(*nl)));
-    nl2->nl_next = 0;
-    nl2->nl_string = (char *)PD_MEMORY_GET(strlen(s) + 1);
-    strcpy(nl2->nl_string, s);
-    sys_unbashfilename(nl2->nl_string, nl2->nl_string);
-    if (!listwas)
-        return (nl2);
-    else
-    {
-        for (nl = listwas; ;)
-        {
-            if (!allowdup && !strcmp(nl->nl_string, s))
-                return (listwas);
-            if (!nl->nl_next)
-                break;
-            nl = nl->nl_next;
-        }
-        nl->nl_next = nl2;
-    }
-    return (listwas);
-}
-
-/* add a colon-separated list of names to a namelist */
-
-#ifdef _WIN32
-#define SEPARATOR ';'   /* in MSW the natural separator is semicolon instead */
-#else
-#define SEPARATOR ':'
-#endif
-
-t_namelist *namelist_append_files(t_namelist *listwas, const char *s)
-{
-    const char *npos;
-    char temp[PD_STRING];
-    t_namelist *nl = listwas, *rtn = listwas;
-    
-    npos = s;
-    do
-    {
-        npos = strtokcpy(temp, sizeof(temp), npos, SEPARATOR);
-        if (! *temp) continue;
-        nl = namelist_append(nl, temp, 0);
-    }
-        while (npos);
-    return (nl);
-}
-
-void namelist_free(t_namelist *listwas)
-{
-    t_namelist *nl, *nl2;
-    for (nl = listwas; nl; nl = nl2)
-    {
-        nl2 = nl->nl_next;
-        PD_MEMORY_FREE(nl->nl_string, strlen(nl->nl_string) + 1);
-        PD_MEMORY_FREE(nl, sizeof(*nl));
-    }
-}
-
-char *namelist_get(t_namelist *namelist, int n)
-{
-    int i;
-    t_namelist *nl;
-    for (i = 0, nl = namelist; i < n && nl; i++, nl = nl->nl_next)
-        ;
-    return (nl ? nl->nl_string : 0);
-}
-
 int sys_usestdpath = 1;     /* Shared. */
 
 void sys_setextrapath(const char *p)
@@ -233,24 +133,24 @@ void sys_setextrapath(const char *p)
     /* add standard place for users to install stuff first */
 #ifdef __gnu_linux__
     sys_expandpath("~/pd-externals", pathbuf, PD_STRING);
-    sys_staticpath = namelist_append(0, pathbuf, 0);
-    sys_staticpath = namelist_append(sys_staticpath, "/usr/local/lib/pd-externals", 0);
+    sys_staticpath = namelist_newAppend(0, pathbuf);
+    sys_staticpath = namelist_newAppend(sys_staticpath, "/usr/local/lib/pd-externals");
 #endif
 
 #ifdef __APPLE__
     sys_expandpath("~/Library/Pd", pathbuf, PD_STRING);
-    sys_staticpath = namelist_append(0, pathbuf, 0);
-    sys_staticpath = namelist_append(sys_staticpath, "/Library/Pd", 0);
+    sys_staticpath = namelist_newAppend(0, pathbuf);
+    sys_staticpath = namelist_newAppend(sys_staticpath, "/Library/Pd");
 #endif
 
 #ifdef _WIN32
     sys_expandpath("%AppData%/Pd", pathbuf, PD_STRING);
-    sys_staticpath = namelist_append(0, pathbuf, 0);
+    sys_staticpath = namelist_newAppend(0, pathbuf);
     sys_expandpath("%CommonProgramFiles%/Pd", pathbuf, PD_STRING);
-    sys_staticpath = namelist_append(sys_staticpath, pathbuf, 0);
+    sys_staticpath = namelist_newAppend(sys_staticpath, pathbuf);
 #endif
     /* add built-in "extra" path last so its checked last */
-    sys_staticpath = namelist_append(sys_staticpath, p, 0);
+    sys_staticpath = namelist_newAppend(sys_staticpath, p);
 }
 
     /* try to open a file in the directory "dir", named "name""ext",

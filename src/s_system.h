@@ -129,10 +129,11 @@ typedef struct _namelist {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_namelist  *namelist_append                (t_namelist *namelist, const char *s, int allowdup);
-t_namelist  *namelist_append_files          (t_namelist *namelist, const char *s);
-char        *namelist_get                   (t_namelist *namelist, int n);
-void        namelist_free                   (t_namelist *namelist);
+t_namelist  *namelist_newAppend             (t_namelist *x, const char *s);
+t_namelist  *namelist_append_files          (t_namelist *x, const char *s);
+char        *namelist_get                   (t_namelist *x, int n);
+
+void        namelist_free                   (t_namelist *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -158,6 +159,9 @@ typedef int (*loader_t)(t_canvas *canvas, char *classname);
 
 void post_atoms                             (int argc, t_atom *argv);
 void open_via_helppath                      (const char *name, const char *dir);
+
+void sys_bashfilename                       (char *from, char *to);
+void sys_unbashfilename                     (char *from, char *to);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
