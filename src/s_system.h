@@ -140,10 +140,10 @@ typedef struct _pathlist {
 #pragma mark -
 
 t_pathlist  *pathlist_newAppend             (t_pathlist *x, const char *s);
-t_pathlist  *namelist_append_files          (t_pathlist *x, const char *s);
-char        *namelist_get                   (t_pathlist *x, int n);
+t_pathlist  *pathlist_newAppendFiles        (t_pathlist *x, const char *s, char delimiter);
+char        *pathlist_getFileAtIndex        (t_pathlist *x, int n);
 
-void        namelist_free                   (t_pathlist *x);
+void        pathlist_free                   (t_pathlist *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

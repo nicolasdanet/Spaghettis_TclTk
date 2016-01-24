@@ -220,7 +220,7 @@ void global_gui(void *dummy, t_symbol *s, int argc, t_atom *argv)
         /* open patches specifies with "-open" args */
     for  (nl = main_openList; nl; nl = nl->nl_next)
         openit(cwd, nl->nl_string);
-    namelist_free(main_openList);
+    pathlist_free(main_openList);
     main_openList = 0;
 
     /*
@@ -231,7 +231,7 @@ void global_gui(void *dummy, t_symbol *s, int argc, t_atom *argv)
         buffer_eval(b, 0, 0, 0);
         buffer_free(b);
     }
-    namelist_free(main_messageList);
+    pathlist_free(main_messageList);
     main_messageList = 0;*/
 }
 
@@ -759,7 +759,7 @@ int sys_argparse(int argc, char **argv)
         }
         else if (!strcmp(*argv, "-path") && (argc > 1))
         {
-            sys_searchpath = namelist_append_files(sys_searchpath, argv[1]);
+            sys_searchpath = pathlist_newAppendFiles(sys_searchpath, argv[1], PATHLIST_SEPARATOR);
             argc -= 2; argv += 2;
         }
         else if (!strcmp(*argv, "-nostdpath"))
@@ -774,17 +774,17 @@ int sys_argparse(int argc, char **argv)
         }
         else if (!strcmp(*argv, "-helppath"))
         {
-            sys_helppath = namelist_append_files(sys_helppath, argv[1]);
+            sys_helppath = pathlist_newAppendFiles(sys_helppath, argv[1], PATHLIST_SEPARATOR);
             argc -= 2; argv += 2;
         }
         else if (!strcmp(*argv, "-open") && argc > 1)
         {
-            main_openList = namelist_append_files(main_openList, argv[1]);
+            main_openList = pathlist_newAppendFiles(main_openList, argv[1], PATHLIST_SEPARATOR);
             argc -= 2; argv += 2;
         }
         else if (!strcmp(*argv, "-lib") && argc > 1)
         {
-            sys_externlist = namelist_append_files(sys_externlist, argv[1]);
+            sys_externlist = pathlist_newAppendFiles(sys_externlist, argv[1], PATHLIST_SEPARATOR);
             argc -= 2; argv += 2;
         }
         else if ((!strcmp(*argv, "-font-size") || !strcmp(*argv, "-font"))
@@ -1033,7 +1033,7 @@ int sys_argparse(int argc, char **argv)
     if (!sys_defaultfont)
         sys_defaultfont = DEFAULTFONT;
     for (; argc > 0; argc--, argv++) 
-        main_openList = namelist_append_files(main_openList, *argv);
+        main_openList = pathlist_newAppendFiles(main_openList, *argv, PATHLIST_SEPARATOR);
 
 
     return (0);

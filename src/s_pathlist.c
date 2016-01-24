@@ -37,65 +37,72 @@ static const char *pathlist_getNextFile (char *dest, size_t length, const char *
 
 t_pathlist *pathlist_newAppend (t_pathlist *x, const char *s)
 {
-    t_pathlist *nl1 = x;
-    t_pathlist *nl2 = NULL;
+    t_pathlist *l1 = x;
+    t_pathlist *l2 = NULL;
     
-    nl2 = (t_pathlist *)(PD_MEMORY_GET (sizeof (t_pathlist)));
-    nl2->nl_next   = NULL;
-    nl2->nl_string = (char *)PD_MEMORY_GET (strlen (s) + 1);
+    l2 = (t_pathlist *)(PD_MEMORY_GET (sizeof (t_pathlist)));
+    l2->nl_next   = NULL;
+    l2->nl_string = (char *)PD_MEMORY_GET (strlen (s) + 1);
     
-    strcpy (nl2->nl_string, s);
-    sys_unbashfilename (nl2->nl_string, nl2->nl_string);
+    strcpy (l2->nl_string, s);
+    sys_unbashfilename (l2->nl_string, l2->nl_string);
     
-    if (!nl1) { return nl2; }
+    if (!l1) { return l2; }
     else {
         do {
-            if (!strcmp (nl1->nl_string, s)) { namelist_free (nl2); return x; }     /* Avoid duplicate. */
-        } while (nl1->nl_next && (nl1 = nl1->nl_next));
+            if (!strcmp (l1->nl_string, s)) { pathlist_free (l2); return x; }       /* Avoid duplicate. */
+        } while (l1->nl_next && (l1 = l1->nl_next));
         
-        nl1->nl_next = nl2;
+        l1->nl_next = l2;
     }
     
     return x;
 }
 
-/* add a colon-separated list of names to a namelist */
-
-t_pathlist *namelist_append_files(t_pathlist *listwas, const char *s)
+void pathlist_free (t_pathlist *x)
 {
-    const char *npos;
-    char temp[PD_STRING];
-    t_pathlist *nl = listwas, *rtn = listwas;
+    t_pathlist *l1 = NULL;
+    t_pathlist *l2 = NULL;
     
-    npos = s;
-    do
-    {
-        npos = pathlist_getNextFile (temp, sizeof(temp), npos, PATHLIST_SEPARATOR);
-        if (! *temp) continue;
-        nl = pathlist_newAppend(nl, temp);
+    for (l1 = x; l1; l1 = l2) {
+    //
+    l2 = l1->nl_next;
+    PD_MEMORY_FREE (l1->nl_string, strlen (l1->nl_string) + 1);
+    PD_MEMORY_FREE (l1, sizeof (t_pathlist));
+    //
     }
-        while (npos);
-    return (nl);
 }
 
-void namelist_free(t_pathlist *listwas)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_pathlist *pathlist_newAppendFiles (t_pathlist *x, const char *s, char delimiter)
 {
-    t_pathlist *nl, *nl2;
-    for (nl = listwas; nl; nl = nl2)
-    {
-        nl2 = nl->nl_next;
-        PD_MEMORY_FREE(nl->nl_string, strlen(nl->nl_string) + 1);
-        PD_MEMORY_FREE(nl, sizeof(*nl));
-    }
+    char t[PD_STRING];
+    t_pathlist *l = x;
+    const char *p = s;
+    
+    do {
+        p = pathlist_getNextFile (t, PD_STRING, p, delimiter);
+        if (*t) { 
+            l = pathlist_newAppend (l, t); 
+        }
+    } while (p);
+    
+    return l;
 }
 
-char *namelist_get(t_pathlist *namelist, int n)
+/* It is rather inefficient to traverse the list. */
+
+char *pathlist_getFileAtIndex (t_pathlist *namelist, int n)
 {
     int i;
-    t_pathlist *nl;
-    for (i = 0, nl = namelist; i < n && nl; i++, nl = nl->nl_next)
-        ;
-    return (nl ? nl->nl_string : 0);
+    t_pathlist *l = namelist;
+    
+    for (i = 0; i < n && l; i++, l = l->nl_next) { }
+    
+    return (l ? l->nl_string : NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------

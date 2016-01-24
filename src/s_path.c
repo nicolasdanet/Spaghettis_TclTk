@@ -129,7 +129,7 @@ int sys_usestdpath = 1;     /* Shared. */
 void sys_setextrapath(const char *p)
 {
     char pathbuf[PD_STRING];
-    namelist_free(sys_staticpath);
+    pathlist_free(sys_staticpath);
     /* add standard place for users to install stuff first */
 #ifdef __gnu_linux__
     sys_expandpath("~/pd-externals", pathbuf, PD_STRING);
@@ -616,7 +616,7 @@ void global_pathDialog (void *dummy, t_float flongform)
 void global_setPath(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
-    namelist_free(sys_searchpath);
+    pathlist_free(sys_searchpath);
     sys_searchpath = 0;
     //sys_usestdpath = (t_int)atom_getFloatAtIndex(0, argc, argv);
     //sys_verbose = (t_int)atom_getFloatAtIndex(1, argc, argv);
@@ -624,7 +624,7 @@ void global_setPath(void *dummy, t_symbol *s, int argc, t_atom *argv)
     {
         t_symbol *s = sys_decodedialog(atom_getSymbolAtIndex(i, argc, argv));
         if (*s->s_name)
-            sys_searchpath = namelist_append_files(sys_searchpath, s->s_name);
+            sys_searchpath = pathlist_newAppendFiles(sys_searchpath, s->s_name, PATHLIST_SEPARATOR);
     }
 }
 
@@ -655,7 +655,7 @@ void glob_start_startup_dialog (void *dummy, t_float flongform)
 static void glob_startup_dialog(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
-    namelist_free(sys_externlist);
+    pathlist_free(sys_externlist);
     sys_externlist = 0;
     sys_defeatrt = (t_int)atom_getFloatAtIndex(0, argc, argv);
     sys_flags = sys_decodedialog(atom_getSymbolAtIndex(1, argc, argv));
@@ -663,7 +663,7 @@ static void glob_startup_dialog(void *dummy, t_symbol *s, int argc, t_atom *argv
     {
         t_symbol *s = sys_decodedialog(atom_getSymbolAtIndex(i+2, argc, argv));
         if (*s->s_name)
-            sys_externlist = namelist_append_files(sys_externlist, s->s_name);
+            sys_externlist = pathlist_newAppendFiles(sys_externlist, s->s_name, PATHLIST_SEPARATOR);
     }
 }
 
