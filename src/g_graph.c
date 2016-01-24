@@ -12,7 +12,7 @@ to this file... */
 #include "m_macros.h"
 
 #include "g_canvas.h"
-#include "s_system.h"    /* for sys_hostfontsize */
+#include "s_system.h"    /* for font_getNearestHostFontSize */
 #include <stdio.h>
 #include <string.h>
 
@@ -742,11 +742,11 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             if (g->g_pd == garray_class &&
                 !garray_getname((t_garray *)g, &arrayname))
         {
-            i -= sys_fontheight(glist_getfont(x));
+            i -= font_getNearestHostFontHeight(glist_getfont(x));
             sys_vgui(".x%lx.c create text %d %d -text {%s} -anchor nw\
              -font [::getFont %d] -tags [list %s label graph]\n",
              (long)glist_getcanvas(x), x1, i, arrayname->s_name,
-                sys_hostfontsize(glist_getfont(x)), tag);
+                font_getNearestHostFontSize(glist_getfont(x)), tag);
         }
         
             /* draw ticks on horizontal borders.  If lperb field is

@@ -136,12 +136,12 @@ typedef struct _pathlist {
     } t_pathlist;
 
 typedef struct _fontinfo {
-    int fi_fontsize;
-    int fi_maxwidth;
-    int fi_maxheight;
-    int fi_hostfontsize;
+    int fi_size;
     int fi_width;
     int fi_height;
+    int fi_hostSize;
+    int fi_hostWidth;
+    int fi_hostHeight;
     } t_fontinfo;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -153,6 +153,15 @@ t_pathlist  *pathlist_newAppendFiles        (t_pathlist *x, const char *s, char 
 char        *pathlist_getFileAtIndex        (t_pathlist *x, int n);
 
 void        pathlist_free                   (t_pathlist *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int         font_getNearestFontSize         (int fontSize);
+int         font_getNearestHostFontSize     (int fontSize);
+int         font_getNearestHostFontWidth    (int fontSize);
+int         font_getNearestHostFontHeight   (int fontSize);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -206,8 +215,6 @@ int         sys_trytoopenone                (const char *dir,
 t_symbol    *sys_decodedialog               (t_symbol *s);
 void        sys_loadpreferences             (void);
 void        sys_savepreferences             (void);
-int         sys_nearestfontsize             (int fontsize);
-int         sys_hostfontsize                (int fontsize);
 int         sys_load_lib                    (t_canvas *canvas, char *name);
 void        sys_register_loader             (loader_t loader);
 

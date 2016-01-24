@@ -34,7 +34,6 @@ extern t_pathlist       *sys_searchpath;
 extern t_float          sys_dacsr;
 extern int              sys_usestdpath;
 extern int              sys_schedadvance;
-extern int              sys_defaultfont;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -83,8 +82,6 @@ static int          main_channelOut[AUDIO_MAXIMUM_OUT]  = { 0 };        /* Share
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-#define DEFAULTFONT 12
 
 #ifdef _WIN32
 static int sys_mmio = 1;
@@ -729,13 +726,14 @@ int sys_argparse(int argc, char **argv)
             sys_externlist = pathlist_newAppendFiles(sys_externlist, argv[1], PATHLIST_SEPARATOR);
             argc -= 2; argv += 2;
         }*/
+        /*
         else if ((!strcmp(*argv, "-font-size") || !strcmp(*argv, "-font"))
             && argc > 1)
         {
-            sys_defaultfont = sys_nearestfontsize(atoi(argv[1]));
+            font_size = font_getNearestFontSize(atoi(argv[1]));
             argc -= 2;
             argv += 2;
-        }
+        }*/
         /*else if ((!strcmp(*argv, "-font-face") || !strcmp(*argv, "-typeface"))
             && argc > 1)
         {
@@ -972,8 +970,8 @@ int sys_argparse(int argc, char **argv)
         /* we need to tell Windows to output UTF-8 */
         SetConsoleOutputCP(CP_UTF8);
 #endif
-    if (!sys_defaultfont)
-        sys_defaultfont = DEFAULTFONT;
+    /*if (!font_size)
+        font_size = DEFAULTFONT; */
     /*for (; argc > 0; argc--, argv++) 
         main_openList = pathlist_newAppendFiles(main_openList, *argv, PATHLIST_SEPARATOR);*/
 

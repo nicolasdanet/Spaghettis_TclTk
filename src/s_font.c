@@ -17,60 +17,72 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_fontinfo sys_fontlist[] = {
-    {8, 6, 10, 1, 1, 1}, {10, 7, 13, 1, 1, 1}, {12, 9, 16, 1, 1, 1},
-    {16, 10, 21, 1, 1, 1}, {24, 15, 25, 1, 1, 1}, {36, 25, 45, 1, 1, 1}};
-#define NFONT (sizeof(sys_fontlist)/sizeof(*sys_fontlist))
+#define FONT_LIST_SIZE      5
+#define FONT_DEFAULT_SIZE   12
 
-/* here are the actual font size structs on msp's systems:
-MSW:
-font 8 5 9 8 5 11
-font 10 7 13 10 6 13
-font 12 9 16 14 8 16
-font 16 10 20 16 10 18
-font 24 15 25 16 10 18
-font 36 25 42 36 22 41
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-linux:
-font 8 5 9 8 5 9
-font 10 7 13 12 7 13
-font 12 9 16 14 9 15
-font 16 10 20 16 10 19
-font 24 15 25 24 15 24
-font 36 25 42 36 22 41
-*/
+int font_size = FONT_DEFAULT_SIZE;                  /* Shared. */
 
-static t_fontinfo *sys_findfont(int fontsize)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_fontinfo font_fontList[FONT_LIST_SIZE] = 
+    {
+        { 8,   6, 10, 1, 1, 1 }, 
+        { 10,  7, 13, 1, 1, 1 }, 
+        { 12,  9, 16, 1, 1, 1 },
+        { 16, 10, 21, 1, 1, 1 }, 
+        { 24, 15, 25, 1, 1, 1 }, 
+        { 36, 25, 45, 1, 1, 1 }
+    };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_fontinfo *font_getNearestFontInfo (int fontSize)
 {
-    unsigned int i;
-    t_fontinfo *fi;
-    for (i = 0, fi = sys_fontlist; i < (NFONT-1); i++, fi++)
-        if (fontsize < fi[1].fi_fontsize) return (fi);
-    return (sys_fontlist + (NFONT-1));
+    int i;
+    t_fontinfo *info = font_fontList;
+    
+    for (i = 0; i < (FONT_LIST_SIZE - 1); i++, info++) {
+        if (fontSize < (info + 1)->fi_size) { return (info); }
+    }
+    
+    return (font_fontList + (FONT_LIST_SIZE - 1));
 }
 
-int sys_nearestfontsize(int fontsize)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int font_getNearestFontSize (int fontSize)
 {
-    return (sys_findfont(fontsize)->fi_fontsize);
+    return (font_getNearestFontInfo(fontSize)->fi_size);
 }
 
-int sys_hostfontsize(int fontsize)
+int font_getNearestHostFontSize (int fontSize)
 {
-    return (sys_findfont(fontsize)->fi_hostfontsize);
+    return (font_getNearestFontInfo (fontSize)->fi_hostSize);
 }
 
-int sys_fontwidth(int fontsize)
+int font_getNearestHostFontWidth (int fontSize)
 {
-    return (sys_findfont(fontsize)->fi_width);
+    return (font_getNearestFontInfo (fontSize)->fi_hostWidth);
 }
 
-int sys_fontheight(int fontsize)
+int font_getNearestHostFontHeight (int fontSize)
 {
-    return (sys_findfont(fontsize)->fi_height);
+    return (font_getNearestFontInfo (fontSize)->fi_hostHeight);
 }
 
-int sys_defaultfont;    /* Shared. */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
+/*
 static void openit(const char *dirname, const char *filename)
 {
     char dirbuf[PD_STRING], *nameptr;
@@ -84,6 +96,7 @@ static void openit(const char *dirname, const char *filename)
     else
         post_error ("%s: can't open", filename);
 }
+*/
 
 /* this is called from the gui process.  The first argument is the cwd, and
 succeeding args give the widths and heights of known fonts.  We wait until 
@@ -102,11 +115,11 @@ void global_gui(void *dummy, t_symbol *s, int argc, t_atom *argv)
     int nhostfont = (argc-1)/3;
     /* */
     if (argc != 1 + 3 * nhostfont) { PD_BUG; }
-    for (i = 0; i < NFONT; i++)
+    for (i = 0; i < FONT_LIST_SIZE; i++)
     {
         int best = 0;
-        int wantheight = sys_fontlist[i].fi_maxheight;
-        int wantwidth = sys_fontlist[i].fi_maxwidth;
+        int wantheight = font_fontList[i].fi_height;
+        int wantwidth = font_fontList[i].fi_width;
         for (j = 0; j < nhostfont; j++)
         {
             if ((t_int)atom_getFloatAtIndex(3 * j + 3, argc, argv) <= wantheight &&
@@ -114,20 +127,20 @@ void global_gui(void *dummy, t_symbol *s, int argc, t_atom *argv)
                     best = j;
         }
             /* best is now the host font index for the desired font index i. */
-        sys_fontlist[i].fi_hostfontsize =
+        font_fontList[i].fi_hostSize =
             (t_int)atom_getFloatAtIndex(3 * best + 1, argc, argv);
-        sys_fontlist[i].fi_width = (t_int)atom_getFloatAtIndex(3 * best + 2, argc, argv);
-        sys_fontlist[i].fi_height = (t_int)atom_getFloatAtIndex(3 * best + 3, argc, argv);
+        font_fontList[i].fi_hostWidth = (t_int)atom_getFloatAtIndex(3 * best + 2, argc, argv);
+        font_fontList[i].fi_hostHeight = (t_int)atom_getFloatAtIndex(3 * best + 3, argc, argv);
     }
 #if 0
     for (i = 0; i < 6; i++)
         fprintf(stderr, "font (%d %d %d) -> (%d %d %d)\n",
-            sys_fontlist[i].fi_fontsize,
-            sys_fontlist[i].fi_maxwidth,
-            sys_fontlist[i].fi_maxheight,
-            sys_fontlist[i].fi_hostfontsize,
-            sys_fontlist[i].fi_width,
-            sys_fontlist[i].fi_height);
+            font_fontList[i].fi_size,
+            font_fontList[i].fi_width,
+            font_fontList[i].fi_height,
+            font_fontList[i].fi_hostSize,
+            font_fontList[i].fi_hostWidth,
+            font_fontList[i].fi_hostHeight);
 #endif
         /* load dynamic libraries specified with "-lib" args */
     /*for  (nl = sys_externlist; nl; nl = nl->nl_next)

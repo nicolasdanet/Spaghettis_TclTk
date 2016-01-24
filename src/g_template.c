@@ -9,7 +9,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "s_system.h"    /* for sys_hostfontsize */
+#include "s_system.h"    /* for font_getNearestHostFontSize */
 #include "g_canvas.h"
 
 extern t_class *garray_class;
@@ -2467,8 +2467,8 @@ static void drawnumber_getrect(t_gobj *z, t_glist *glist,
     yloc = glist_ytopixels(glist,
         basey + fielddesc_getcoord(&x->x_yloc, template, data, 0));
     font = glist_getfont(glist);
-    fontwidth = sys_fontwidth(font);
-        fontheight = sys_fontheight(font);
+    fontwidth = font_getNearestHostFontWidth(font);
+        fontheight = font_getNearestHostFontHeight(font);
     drawnumber_getbuf(x, data, template, buf);
     width = 0;
     height = 1;
@@ -2532,7 +2532,7 @@ static void drawnumber_vis(t_gobj *z, t_glist *glist,
         sys_vgui(".x%lx.c create text %d %d -anchor nw -fill %s -text {%s}",
                 glist_getcanvas(glist), xloc, yloc, colorstring, buf);
         sys_vgui(" -font [::getFont %d]",
-                 sys_hostfontsize(glist_getfont(glist)));
+                 font_getNearestHostFontSize(glist_getfont(glist)));
         sys_vgui(" -tags [list drawnumber%lx label]\n", data);
     }
     else sys_vgui(".x%lx.c delete drawnumber%lx\n", glist_getcanvas(glist), data);
