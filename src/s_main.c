@@ -730,7 +730,7 @@ int sys_argparse(int argc, char **argv)
         else if ((!strcmp(*argv, "-font-size") || !strcmp(*argv, "-font"))
             && argc > 1)
         {
-            font_defaultSize = font_getNearestFontSize(atoi(argv[1]));
+            font_defaultSize = font_getNearestValidFontSize(atoi(argv[1]));
             argc -= 2;
             argv += 2;
         }*/

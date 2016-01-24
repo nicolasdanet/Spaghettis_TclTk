@@ -404,7 +404,7 @@ t_canvas *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
     }
     x->gl_willvis = vis;
     x->gl_edit = !strncmp(x->gl_name->s_name, "Untitled", 8);
-    x->gl_font = font_getNearestFontSize(font);
+    x->gl_font = font_getNearestValidFontSize(font);
     pd_push(&x->gl_obj.te_g.g_pd);
     return(x);
 }

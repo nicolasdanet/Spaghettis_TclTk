@@ -35,19 +35,19 @@ typedef struct _fontinfo {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int font_defaultSize = 12;                                     /* Shared. */
+int font_defaultSize = 12;                              /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 static t_fontinfo font_fontList[FONT_LIST_SIZE] =       /* Shared. */
     {
-        { 8,   6, 10, 0, 0, 0 }, 
-        { 10,  7, 13, 0, 0, 0 }, 
-        { 12,  9, 16, 0, 0, 0 },
-        { 16, 10, 21, 0, 0, 0 }, 
-        { 24, 15, 25, 0, 0, 0 }, 
-        { 36, 25, 45, 0, 0, 0 }
+        { 8,   6, 10,   8,   6, 10 }, 
+        { 10,  7, 13,   10,  7, 13 }, 
+        { 12,  9, 16,   12,  9, 16 },
+        { 16, 10, 21,   16, 10, 21 }, 
+        { 24, 15, 25,   24, 15, 25 }, 
+        { 36, 25, 45,   36, 25, 45 }
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -72,16 +72,18 @@ static t_fontinfo *font_getNearest (int fontSize)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int font_getNearestFontSize (int fontSize)
+int font_getNearestValidFontSize (int size)
 {
-    return (font_getNearest (fontSize)->fi_size);
+    return (font_getNearest (size)->fi_size);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int font_getHostFontSize (int fontSize)
 {
     int k = font_getNearest (fontSize)->fi_hostSize;
-    
-    PD_ASSERT (k);
     
     return PD_MAX (k, 1);
 }
@@ -90,16 +92,12 @@ int font_getHostFontWidth (int fontSize)
 {
     int k = font_getNearest (fontSize)->fi_hostWidth;
     
-    PD_ASSERT (k);
-    
     return PD_MAX (k, 1);
 }
 
 int font_getHostFontHeight (int fontSize)
 {
     int k = font_getNearest (fontSize)->fi_hostHeight;
-    
-    PD_ASSERT (k);
     
     return PD_MAX (k, 1);
 }
@@ -108,7 +106,7 @@ int font_getHostFontHeight (int fontSize)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void font_withMeasured (void *dummy, t_symbol *s, int argc, t_atom *argv)
+void font_withHostMeasured (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int i, j;
     int n = argc / 3;

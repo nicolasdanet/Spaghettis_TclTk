@@ -862,8 +862,14 @@ void global_watchdog(void *dummy)
 
 #define MAXFONTS 21
 static int defaultfontshit[MAXFONTS] = {
-    8, 5, 9, 10, 6, 10, 12, 7, 13, 14, 9, 17, 16, 10, 19, 24, 15, 28,
-        24, 15, 28};
+    8, 5, 9, 
+    10, 6, 10, 
+    12, 7, 13, 
+    14, 9, 17, 
+    16, 10, 19, 
+    24, 15, 28,
+    24, 15, 28};
+    
 #define NDEFAULTFONT (sizeof(defaultfontshit)/sizeof(*defaultfontshit))
 
 int sys_startgui(const char *libdir)
@@ -888,26 +894,7 @@ int sys_startgui(const char *libdir)
     if (WSAStartup(version, &nobby)) sys_sockerror("WSAstartup");
 #endif /* _WIN32 */
 
-    if (main_noGUI)
-    {
-            /* fake the GUI's message giving cwd and font sizes; then
-            skip starting the GUI up. */
-        t_atom zz[NDEFAULTFONT+1];
-        int i;
-#ifdef _WIN32
-        if (GetCurrentDirectory(PD_STRING, cmdbuf) == 0)
-            strcpy(cmdbuf, ".");
-#else
-        if (!getcwd(cmdbuf, PD_STRING))
-            strcpy(cmdbuf, ".");
-        
-#endif
-        SET_SYMBOL(zz, gensym(cmdbuf));
-        for (i = 0; i < (int)NDEFAULTFONT; i++)
-            SET_FLOAT(zz+i+1, defaultfontshit[i]);
-        // SET_FLOAT(zz+NDEFAULTFONT+1,0);
-        font_withMeasured(0, 0, NDEFAULTFONT+1, zz);
-    }
+    if (main_noGUI) { }
     else if (main_portNumber)  /* GUI exists and sent us a port number */
     {
         struct sockaddr_in server;
