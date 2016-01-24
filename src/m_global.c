@@ -21,9 +21,14 @@ t_class *global_object;     /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void global_default (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+static void global_default (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     post_error (PD_TRANSLATE ("%s: unknown method '%s'"), class_getName (pd_class (x)), s->s_name); // --
+}
+
+static void global_dummy (void *dummy)
+{
+    ;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -52,6 +57,7 @@ void global_initialize (void)
     class_addMethod (c, (t_method)global_shouldQuit,        gensym ("_quit"),            A_NULL);
     class_addMethod (c, (t_method)global_ping,              gensym ("_ping"),            A_NULL);
     class_addMethod (c, (t_method)global_savePreferences,   gensym ("_savePreferences"), A_NULL);
+    class_addMethod (c, (t_method)global_dummy,             gensym ("_dummy"),           A_NULL);
     
     #if PD_WITH_WATCHDOG
     

@@ -60,9 +60,10 @@ proc _create {} {
 
     foreach item $::var(searchPath) { .path.f.paths.list insert end $item }
     
-    bind .path.f.paths.list <BackSpace>         "::ui_path::_deleteItems"
-    bind .path.f.paths.list <Double-Button-1>   "::ui_path::_addItem"
-    bind .path.f.paths.list <Triple-Button-1>   {}
+    bind .path.f.paths.list <BackSpace>             "::ui_path::_deleteItems"
+    bind .path.f.paths.list <Double-Button-1>       "::ui_path::_addItem"
+    bind .path.f.paths.list <Triple-Button-1>       { ::ui_connect::pdsend "pd _dummy" }
+    bind .path.f.paths.list <Quadruple-Button-1>    { ::ui_connect::pdsend "pd _dummy" }
     
     wm protocol .path WM_DELETE_WINDOW { ::ui_path::closed }
 }
