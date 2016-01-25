@@ -24,8 +24,6 @@
 
 #define IEM_NUMBER_COLOR_EDITED            16711680
 
-extern int main_noLoadbang;
-
 /*------------------ global varaibles -------------------------*/
 
 
@@ -686,7 +684,7 @@ static void my_numbox_init(t_my_numbox *x, t_float f)
 
 static void my_numbox_loadbang(t_my_numbox *x)
 {
-    if(!main_noLoadbang && x->x_gui.x_isa.x_loadinit)
+    if(x->x_gui.x_isa.x_loadinit)
     {
         sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
         my_numbox_bang(x);

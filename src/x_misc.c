@@ -38,8 +38,6 @@
 /* -------------------------- random ------------------------------ */
 /* this is strictly homebrew and untested. */
 
-extern int main_noLoadbang;
-
 static t_class *random_class;
 
 typedef struct _random
@@ -111,8 +109,7 @@ static void *loadbang_new(void)
 
 static void loadbang_loadbang(t_loadbang *x)
 {
-    if (!main_noLoadbang)
-        outlet_bang(x->x_obj.te_outlet);
+    outlet_bang(x->x_obj.te_outlet);
 }
 
 static void loadbang_setup(void)

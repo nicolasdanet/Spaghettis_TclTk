@@ -293,7 +293,6 @@ void    scheduler_lock                      (void);
 void    scheduler_unlock                    (void);
 void    scheduler_audioCallback             (void);
 int     scheduler_main                      (void);
-int     scheduler_mainForBatchProcessing    (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

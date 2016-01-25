@@ -36,9 +36,6 @@
 t_widgetbehavior bng_widgetbehavior;
 static t_class *bng_class;
 
-extern int main_noLoadbang;
-extern int main_noLoadbang;
-
 /*  widget helper functions  */
 
 
@@ -367,7 +364,7 @@ static void bng_anything(t_bng *x, t_symbol *s, int argc, t_atom *argv)
 
 static void bng_loadbang(t_bng *x)
 {
-    if(!main_noLoadbang && x->x_gui.x_isa.x_loadinit)
+    if(x->x_gui.x_isa.x_loadinit)
     {
         bng_set(x);
         bng_bout2(x);

@@ -73,10 +73,12 @@ typedef int socklen_t;
 #endif
 
 extern int main_noGUI;
-extern char *main_commandToLaunchGUI;
+
 extern int main_highPriority;
 extern int sys_audioapi;
 
+static char *main_commandToLaunchGUI;
+ 
 typedef struct _fdpoll
 {
     int fdp_fd;
@@ -162,15 +164,13 @@ double sys_getrealtime(void)
 #endif
 }
 
-extern int main_noSleep;
-
 static int sys_domicrosleep(int microsec, int pollem)
 {
     struct timeval timout;
     int i, didsomething = 0;
     t_fdpoll *fp;
     timout.tv_sec = 0;
-    timout.tv_usec = (main_noSleep ? 0 : microsec);
+    timout.tv_usec = microsec;
     if (pollem)
     {
         fd_set readset, writeset, exceptset;

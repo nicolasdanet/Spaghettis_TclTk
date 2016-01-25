@@ -36,8 +36,6 @@ put out a "float" as in sliders, toggles, etc. */
 t_widgetbehavior hradio_widgetbehavior;
 static t_class *hradio_class;
 
-extern int main_noLoadbang;
-
 /* widget helper functions */
 
 void hradio_draw_update(t_gobj *client, t_glist *glist)
@@ -390,7 +388,7 @@ static int hradio_newclick(t_gobj *z, struct _glist *glist, int xpix, int ypix, 
 
 static void hradio_loadbang(t_hradio *x)
 {
-    if(!main_noLoadbang && x->x_gui.x_isa.x_loadinit)
+    if(x->x_gui.x_isa.x_loadinit)
         hradio_bang(x);
 }
 

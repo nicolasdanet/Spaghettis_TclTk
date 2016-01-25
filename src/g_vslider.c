@@ -34,8 +34,6 @@
 t_widgetbehavior vslider_widgetbehavior;
 static t_class *vslider_class;
 
-extern int main_noLoadbang;
-
 /* widget helper functions */
 
 static void vslider_draw_update(t_gobj *client, t_glist *glist)
@@ -508,7 +506,7 @@ static void vslider_steady(t_vslider *x, t_float f)
 
 static void vslider_loadbang(t_vslider *x)
 {
-    if(!main_noLoadbang && x->x_gui.x_isa.x_loadinit)
+    if(x->x_gui.x_isa.x_loadinit)
     {
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_UPDATE);
         vslider_bang(x);

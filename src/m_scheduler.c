@@ -503,14 +503,5 @@ int scheduler_main (void)
     return 0;
 }
 
-int scheduler_mainForBatchProcessing (void)
-{
-    scheduler_systimePerDSPTick = scheduler_getSystimePerDSPTick();
-    
-    while (scheduler_quit != SCHEDULER_QUIT) { scheduler_tick(); }
-    
-    return 0;
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
