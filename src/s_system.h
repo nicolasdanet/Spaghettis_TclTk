@@ -160,7 +160,6 @@ int  font_getHostFontHeight                 (int fontSize);
 #pragma mark -
 
 int  main_entry                             (int argc, char **argv);
-int  sys_argparse                           (int argc, char **argv);
 void sys_findprogdir                        (char *progname);
 
 void sys_setsignalhandlers                  (void);

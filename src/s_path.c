@@ -40,7 +40,7 @@ t_pathlist *sys_staticpath;     /* Shared. */
 t_pathlist *sys_helppath;       /* Shared. */
 
 extern t_class *global_object;
-extern t_symbol *sys_flags;
+//extern t_symbol *sys_flags;
 
     /* change '/' characters to the system's native file separator */
 void sys_bashfilename(char *from, char *to)
@@ -416,8 +416,9 @@ gotone:
 /* Startup file reading for linux and __APPLE__.  As of 0.38 this will be
 deprecated in favor of the "settings" mechanism */
 
-int sys_argparse(int argc, char **argv);
+//int main_parseArguments(int argc, char **argv);
 
+/*
 void sys_doflags( void)
 {
     int i, beginstring = 0, state = 0, len = strlen(sys_flags->s_name);
@@ -456,10 +457,10 @@ void sys_doflags( void)
             }
         }
     }
-    if (sys_argparse(rcargc, rcargv))
+    if (main_parseArguments(rcargc, rcargv))
         post_error ("error parsing startup arguments");
 }
-
+*/
 /* undo pdtl_encodedialog.  This allows dialogs to send spaces, commas,
     dollars, and semis down here. */
 t_symbol *sys_decodedialog(t_symbol *s)

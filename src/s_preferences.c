@@ -35,8 +35,8 @@ extern t_pathlist *sys_searchpath;
 extern t_symbol *main_libDirectory;
 extern int sys_audioapi;
 
-t_symbol *sys_flags = &s_;      /* Shared. */
-void sys_doflags( void);
+//t_symbol *sys_flags = &s_;      /* Shared. */
+//void sys_doflags( void);
 
     /* Hmm... maybe better would be to #if on not-apple-or-windows  */
 #if defined(__linux__) || defined(__CYGWIN__) || defined(__FreeBSD_kernel__) \
@@ -447,12 +447,12 @@ void sys_loadpreferences( void)
     */
     /* if (sys_getpreference("defeatrt", prefbuf, PD_STRING))
         sscanf(prefbuf, "%d", &sys_defeatrt);*/
-    if (sys_getpreference("flags", prefbuf, PD_STRING))
+    /*if (sys_getpreference("flags", prefbuf, PD_STRING))
     {
         if (strcmp(prefbuf, "."))
             sys_flags = gensym(prefbuf);
-    }
-    sys_doflags();
+    }*/
+    //sys_doflags();
 }
 
 void global_savePreferences(void *dummy)
@@ -564,12 +564,12 @@ void global_savePreferences(void *dummy)
         sprintf(buf1, "loadlib%d", i+1);
         sys_putpreference(buf1, pathelem);
     }*/
-    sprintf(buf1, "%d", i);
-    sys_putpreference("nloadlib", buf1);
+    //sprintf(buf1, "%d", i);
+    //sys_putpreference("nloadlib", buf1);
     //sprintf(buf1, "%d", sys_defeatrt);
     //sys_putpreference("defeatrt", buf1);
-    sys_putpreference("flags", 
-        (sys_flags ? sys_flags->s_name : ""));
+    //sys_putpreference("flags", 
+      //  (sys_flags ? sys_flags->s_name : ""));
     sys_donesavepreferences();
     
 }
