@@ -310,7 +310,7 @@ static void scheduler_pollWatchdog (void)
     #if PD_WITH_WATCHDOG
     #if PD_WITH_NOGUI
     #if PD_WITH_REALTIME
-    
+        
     if ((scheduler_didDSP - scheduler_nextPing) > 0) {
         global_watchdog (NULL);
         scheduler_nextPing = scheduler_didDSP + (2 * (int)(sys_dacsr / (double)scheduler_blockSize));
@@ -329,10 +329,10 @@ static void scheduler_pollStuck (int init)
     else {
     //
     if (sys_getrealtime() - idleTime > 1.0) {
-        post_error (PD_TRANSLATE ("audio: I/O stuck... closing audio"));    // --
         sys_close_audio();
         scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
         scheduler_quit = SCHEDULER_RESTART;
+        post_error (PD_TRANSLATE ("audio: I/O stuck"));     // --
     }
     //
     }

@@ -149,23 +149,22 @@ void        pathlist_free                   (t_pathlist *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        font_withHostMeasured           (void *dummy, t_symbol *s, int argc, t_atom *argv);
-int         font_getNearestValidFontSize    (int size);
-int         font_getHostFontSize            (int fontSize);
-int         font_getHostFontWidth           (int fontSize);
-int         font_getHostFontHeight          (int fontSize);
+void font_withHostMeasured                  (void *dummy, t_symbol *s, int argc, t_atom *argv);
+int  font_getNearestValidFontSize           (int size);
+int  font_getHostFontSize                   (int fontSize);
+int  font_getHostFontWidth                  (int fontSize);
+int  font_getHostFontHeight                 (int fontSize);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int  sys_main                               (int argc, char **argv);
+int  main_entry                             (int argc, char **argv);
 int  sys_argparse                           (int argc, char **argv);
 void sys_findprogdir                        (char *progname);
 
 void sys_setsignalhandlers                  (void);
 int  sys_startgui                           (const char *guipath);
-int  sys_rcfile                             (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

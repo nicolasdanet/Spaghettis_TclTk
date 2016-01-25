@@ -144,6 +144,8 @@ int     utils_isTokenEnd                (char c);
 int     utils_isTokenEscape             (char c);
 int     utils_isTokenWhitespace         (char c);
 
+t_error utils_version                   (char *dest, size_t size);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

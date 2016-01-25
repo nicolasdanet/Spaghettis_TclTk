@@ -17,8 +17,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-char        main_compileTime[] = __TIME__;                              /* Shared. */
-char        main_compileDate[] = __DATE__;                              /* Shared. */
+t_symbol    *main_libDirectory;                                         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -28,61 +27,56 @@ int         main_portNumber;                                            /* Share
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_symbol    *main_libDirectory;                                         /* Shared. */
- 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static int  main_version;                                               /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* this is called from main() in s_entry.c */
-int sys_main(int argc, char **argv)
+static void main_entryPlatformSpecific (void)
 {
-    int i, noprefs;
-    //main_extra = 0;
-    /* use Win32 "binary" mode by default since we don't want the
-     * translation that Win32 does by default */
-#ifdef _WIN32
-# ifdef _MSC_VER /* MS Visual Studio */
-    _set_fmode( _O_BINARY );
-# else  /* MinGW */
-    {
-        extern int _fmode;
-        _fmode = _O_BINARY;
-    }
-# endif /* _MSC_VER */
-#endif  /* WIN32 */
-    pd_initialize();                                  /* start the message system */
-    sys_findprogdir(argv[0]);                   /* set sys_progname, guipath */
-    for (i = noprefs = 0; i < argc; i++)        /* prescan args for noprefs */
-        if (!strcmp(argv[i], "-noprefs"))
-            noprefs = 1;
-    if (!noprefs)
-        sys_loadpreferences();                  /* load default settings */
-#ifndef _WIN32
-    if (!noprefs)
-        sys_rcfile();                           /* parse the startup file */
-#endif
-    if (sys_argparse(argc-1, argv+1))           /* parse cmd line */
-        return (1);
+    #if PD_WINDOWS
+    #if PD_MSVC
+        _set_fmode( _O_BINARY );
+    #else
+        { extern int _fmode; _fmode = _O_BINARY; }
+    #endif
+    #endif
+}
 
-    if (0 || main_version) fprintf(stderr, "%s %s compiled %s %s\n",
-        PD_NAME, PD_VERSION, main_compileTime, main_compileDate);
-    if (main_version)    /* if we were just asked our version, exit here. */
-        return (0);
+static t_error main_entryVersion (void)
+{
+    char t[PD_STRING];
+    t_error err = utils_version (t, PD_STRING);
+    if (!err) { fprintf (stdout, "%s\n", t); }
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+int main_entry (int argc, char **argv)
+{
+    main_entryPlatformSpecific();
+    
+    pd_initialize();
+    sys_findprogdir (argv[0]);
+    sys_loadpreferences();
+
+    if (sys_argparse (argc - 1, argv + 1)) { return 1; }
+    if (main_version) { return main_entryVersion(); }
+    
     sys_setsignalhandlers();
-    if (sys_startgui(main_libDirectory->s_name))       /* start the gui */
-        return (1);
-
+    
+    if (sys_startgui (main_libDirectory->s_name)) { return 1; }
     sys_reopen_midi();
-    if (audio_shouldkeepopen())
-        sys_reopen_audio();
-            /* run scheduler until it quits */
+    if (audio_shouldkeepopen()) { sys_reopen_audio(); }
+
     return (scheduler_main());
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static char *(usagemessage[]) = {
 "usage: pd [-flags] [file]...\n",

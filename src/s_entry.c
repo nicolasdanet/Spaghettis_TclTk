@@ -21,7 +21,7 @@
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 { 
     __try {
-        sys_main (__argc, __argv);
+        main_entry (__argc, __argv);
     }
     __finally { 
         ;
@@ -34,7 +34,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 int main (int argc, char **argv)
 {
-    return (sys_main (argc, argv));
+    return (main_entry (argc, argv));
 }
 
 #endif // PD_MSVC
