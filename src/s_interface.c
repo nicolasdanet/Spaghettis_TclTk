@@ -72,8 +72,6 @@ typedef int socklen_t;
 #define LOCALHOST "localhost"
 #endif
 
-extern int main_noGUI;
-
 extern int main_highPriority;
 extern int sys_audioapi;
 
@@ -640,7 +638,7 @@ void sys_vgui(char *fmt, ...)
     int msglen, bytesleft, headwas, nwrote;
     va_list ap;
 
-    if (main_noGUI)
+    if (PD_WITH_NOGUI)
         return;
     if (!sys_guibuf)
     {
@@ -763,7 +761,7 @@ static int sys_flushqueue(void )
     /* flush output buffer and update queue to gui in small time slices */
 static int sys_poll_togui(void) /* returns 1 if did anything */
 {
-    if (main_noGUI)
+    if (PD_WITH_NOGUI)
         return (0);
         /* in case there is stuff still in the buffer, try to flush it. */
     sys_flushtogui();
@@ -894,7 +892,7 @@ int sys_startgui(const char *libdir)
     if (WSAStartup(version, &nobby)) sys_sockerror("WSAstartup");
 #endif /* _WIN32 */
 
-    if (main_noGUI) { }
+    if (PD_WITH_NOGUI) { }
     else if (main_portNumber)  /* GUI exists and sent us a port number */
     {
         struct sockaddr_in server;
@@ -1229,7 +1227,7 @@ int sys_startgui(const char *libdir)
     }
 #endif /* __APPLE__ */
 
-    if (!main_noGUI && !main_portNumber)
+    if (!PD_WITH_NOGUI && !main_portNumber)
     {
         if (0)
             fprintf(stderr, "Waiting for connection request... \n");
@@ -1245,7 +1243,7 @@ int sys_startgui(const char *libdir)
             fprintf(stderr, "... connected\n");
         sys_guibufhead = sys_guibuftail = 0;
     }
-    if (!main_noGUI)
+    if (!PD_WITH_NOGUI)
     {
         char buf[256], buf2[256];
         sys_socketreceiver = socketreceiver_new(0, 0, 0, 0);
@@ -1298,25 +1296,10 @@ void global_quit(void *dummy)
 {
     sys_close_audio();
     sys_close_midi();
-    if (!main_noGUI)
+    if (!PD_WITH_NOGUI)
     {
         sys_closesocket(sys_guisock);
         sys_rmpollfn(sys_guisock);
     }
     exit(0); 
-}
-
- /* more work needed here - for some reason we can't restart the gui after
- shutting it down this way.  I think the second 'init' message never makes
- it because the to-gui buffer isn't re-initialized. */
-void sys_stopgui( void)
-{
-    if (sys_guisock >= 0)
-    {
-        sys_closesocket(sys_guisock);
-        sys_rmpollfn(sys_guisock);
-        sys_guisock = -1;
-        main_commandToLaunchGUI = 0;
-    }
-    main_noGUI = 1;
 }
