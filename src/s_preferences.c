@@ -33,10 +33,8 @@
 extern int sys_usestdpath;
 extern t_pathlist *sys_searchpath;
 extern t_symbol *main_libDirectory;
-extern int main_highPriority;
 extern int sys_audioapi;
 
-int sys_defeatrt;               /* Shared. */
 t_symbol *sys_flags = &s_;      /* Shared. */
 void sys_doflags( void);
 
@@ -447,27 +445,14 @@ void sys_loadpreferences( void)
         sys_externlist = pathlist_newAppendFiles(sys_externlist, prefbuf, PATHLIST_SEPARATOR);
     }
     */
-    if (sys_getpreference("defeatrt", prefbuf, PD_STRING))
-        sscanf(prefbuf, "%d", &sys_defeatrt);
+    /* if (sys_getpreference("defeatrt", prefbuf, PD_STRING))
+        sscanf(prefbuf, "%d", &sys_defeatrt);*/
     if (sys_getpreference("flags", prefbuf, PD_STRING))
     {
         if (strcmp(prefbuf, "."))
             sys_flags = gensym(prefbuf);
     }
     sys_doflags();
-
-    if (sys_defeatrt)
-        main_highPriority = 0;
-    else
-#if defined(__linux__) || defined(__CYGWIN__)
-        main_highPriority = 1;
-#else
-#if defined(_WIN32) || defined(ANDROID)
-        main_highPriority = 0;
-#else
-        main_highPriority = 1;
-#endif
-#endif
 }
 
 void global_savePreferences(void *dummy)
@@ -581,8 +566,8 @@ void global_savePreferences(void *dummy)
     }*/
     sprintf(buf1, "%d", i);
     sys_putpreference("nloadlib", buf1);
-    sprintf(buf1, "%d", sys_defeatrt);
-    sys_putpreference("defeatrt", buf1);
+    //sprintf(buf1, "%d", sys_defeatrt);
+    //sys_putpreference("defeatrt", buf1);
     sys_putpreference("flags", 
         (sys_flags ? sys_flags->s_name : ""));
     sys_donesavepreferences();

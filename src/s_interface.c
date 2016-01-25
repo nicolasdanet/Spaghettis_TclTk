@@ -72,7 +72,6 @@ typedef int socklen_t;
 #define LOCALHOST "localhost"
 #endif
 
-extern int main_highPriority;
 extern int sys_audioapi;
 
 static char *main_commandToLaunchGUI;
@@ -1128,25 +1127,21 @@ int sys_startgui(const char *libdir)
                 @audio - memlock unlimited
         in the system limits file, perhaps /etc/limits.conf or
         /etc/security/limits.conf */
-    if (main_highPriority == -1)
-        main_highPriority = 1;
 
     sprintf(cmdbuf, "%s/bin/pdwatchdog", libdir);
-    if (main_highPriority)
+    if (PD_WITH_REALTIME)
     {
         struct stat statbuf;
         if (stat(cmdbuf, &statbuf) < 0)
         {
-            fprintf(stderr,
-              "disabling real-time priority due to missing pdwatchdog (%s)\n",
-                cmdbuf);
-            main_highPriority = 0;
+            PD_BUG;
+            PD_ABORT (1);
         }
     }
     else if (0)
         post("not setting real-time priority");
     
-    if (main_highPriority)
+    if (PD_WITH_REALTIME)
     {
             /* To prevent lockup, we fork off a watchdog process with
             higher real-time priority than ours.  The GUI has to send
@@ -1214,7 +1209,7 @@ int sys_startgui(const char *libdir)
         fprintf(stderr, "pd: couldn't set high priority class\n");
 #endif
 #ifdef __APPLE__
-    if (main_highPriority)
+    if (PD_WITH_REALTIME)
     {
         struct sched_param param;
         int policy = SCHED_RR;
@@ -1252,7 +1247,7 @@ int sys_startgui(const char *libdir)
 
             /* here is where we start the pinging. */
 #if defined(__linux__) || defined(__FreeBSD_kernel__)
-        if (main_highPriority)
+        if (PD_WITH_REALTIME)
             sys_gui("::watchdog\n");
 #endif
         sys_get_audio_apis(buf);

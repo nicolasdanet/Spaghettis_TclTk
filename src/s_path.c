@@ -40,7 +40,6 @@ t_pathlist *sys_staticpath;     /* Shared. */
 t_pathlist *sys_helppath;       /* Shared. */
 
 extern t_class *global_object;
-extern int sys_defeatrt;
 extern t_symbol *sys_flags;
 
     /* change '/' characters to the system's native file separator */

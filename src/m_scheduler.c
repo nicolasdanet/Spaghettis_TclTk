@@ -53,7 +53,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int      main_highPriority;
 extern int      sys_schedadvance;
 extern t_float  sys_dacsr;
 
@@ -308,14 +307,16 @@ static double scheduler_getSystimePerDSPTick (void)
 
 static void scheduler_pollWatchdog (void)
 {
-    # if PD_WITH_WATCHDOG
-    # if PD_WITH_NOGUI
+    #if PD_WITH_WATCHDOG
+    #if PD_WITH_NOGUI
+    #if PD_WITH_REALTIME
     
-    if (main_highPriority && (scheduler_didDSP - scheduler_nextPing > 0)) {
+    if ((scheduler_didDSP - scheduler_nextPing) > 0) {
         global_watchdog (NULL);
         scheduler_nextPing = scheduler_didDSP + (2 * (int)(sys_dacsr / (double)scheduler_blockSize));
     }
     
+    #endif
     #endif
     #endif
 }
