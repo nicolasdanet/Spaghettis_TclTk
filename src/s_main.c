@@ -17,17 +17,17 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol    *main_libDirectory;                                         /* Shared. */
+t_symbol    *main_rootDirectory;        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int         main_portNumber;                                            /* Shared. */
+int         main_portNumber;            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int  main_version;                                               /* Shared. */
+static int  main_version;               /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -94,6 +94,9 @@ static t_error main_parseArguments (int argc, char **argv)
     return err;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 /* 
     In "simple" installations, the layout is
     
@@ -108,7 +111,10 @@ static t_error main_parseArguments (int argc, char **argv)
         .../lib/pd/tcl/ui_main.tcl
 
 */
-    
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_error main_findRootDirectory (char *progname)
 {
     t_error err = PD_ERROR_NONE;
@@ -143,15 +149,15 @@ static t_error main_findRootDirectory (char *progname)
     if (!err) {
     //
     #if PD_WINDOWS
-        main_libDirectory = gensym (buf2);      /* Dirname of the executable's parent directory. */
+        main_rootDirectory = gensym (buf2);      /* Dirname of the executable's parent directory. */
     #else
-        struct stat statbuf;
+        struct stat t;
         err |= utils_strncpy (buf1, PD_STRING, buf2);
         err |= utils_strnadd (buf1, PD_STRING, "/lib/pd");
         
-        if (stat (buf1, &statbuf) >= 0) { main_libDirectory = gensym (buf1); }      /* Complexe. */
+        if (stat (buf1, &t) >= 0) { main_rootDirectory = gensym (buf1); }           /* Complexe. */
         else {
-            main_libDirectory = gensym (buf2);                                      /* Simple. */
+            main_rootDirectory = gensym (buf2);                                     /* Simple. */
         }
     #endif
     //
@@ -175,10 +181,10 @@ int main_entry (int argc, char **argv)
     }
         
     pd_initialize();
-    sys_loadpreferences();
+    preferences_load();
     sys_setsignalhandlers();
     
-    if (sys_startgui (main_libDirectory->s_name))   { return 1; }
+    if (sys_startgui (main_rootDirectory->s_name))  { return 1; }
     sys_reopen_midi();
     if (audio_shouldkeepopen()) { sys_reopen_audio(); }
 

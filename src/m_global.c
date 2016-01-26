@@ -57,7 +57,7 @@ void global_initialize (void)
     class_addMethod (c, (t_method)global_pathDialog,        gensym ("_pathDialog"),      A_NULL);
     class_addMethod (c, (t_method)global_shouldQuit,        gensym ("_quit"),            A_NULL);
     class_addMethod (c, (t_method)global_ping,              gensym ("_ping"),            A_NULL);
-    class_addMethod (c, (t_method)global_savePreferences,   gensym ("_savePreferences"), A_NULL);
+    class_addMethod (c, (t_method)preferences_save,         gensym ("_savePreferences"), A_NULL);
     class_addMethod (c, (t_method)global_dummy,             gensym ("_dummy"),           A_NULL);
     
     #if PD_WITH_WATCHDOG

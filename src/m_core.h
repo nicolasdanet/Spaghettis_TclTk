@@ -242,7 +242,6 @@ void global_pathDialog                      (void *dummy, t_float f);
 void global_setPath                         (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void global_ping                            (void *dummy);
 void global_watchdog                        (void *dummy);
-void global_savePreferences                 (void *dummy);
 void global_shouldQuit                      (void *dummy);
 
 // -----------------------------------------------------------------------------------------------------------

@@ -155,6 +155,17 @@ int  font_getHostFontHeight                 (int fontSize);
 
 int  main_entry                             (int argc, char **argv);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void preferences_load                       (void);
+void preferences_save                       (void *dummy);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void sys_setsignalhandlers                  (void);
 int  sys_startgui                           (const char *guipath);
 
@@ -196,8 +207,6 @@ int         sys_trytoopenone                (const char *dir,
                                                 int bin);
                             
 t_symbol    *sys_decodedialog               (t_symbol *s);
-void        sys_loadpreferences             (void);
-void        sys_savepreferences             (void);
 int         sys_load_lib                    (t_canvas *canvas, char *name);
 void        sys_register_loader             (loader_t loader);
 

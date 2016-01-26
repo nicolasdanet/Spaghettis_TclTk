@@ -31,7 +31,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_symbol     *main_libDirectory;
+extern t_symbol     *main_rootDirectory;
 extern t_pathlist   *sys_searchpath;
 
 extern int sys_audioapi;
@@ -54,7 +54,7 @@ static void sys_initloadpreferences( void)
     struct stat statbuf;
 
     snprintf(default_prefs_file, PD_STRING, "%s/default.puredata", 
-        main_libDirectory->s_name);
+        main_rootDirectory->s_name);
     snprintf(user_prefs_file, PD_STRING, "%s/.puredata", 
         (homedir ? homedir : "."));
     if (stat(user_prefs_file, &statbuf) == 0) 
@@ -245,7 +245,7 @@ static int sys_getpreference(const char *key, char *value, int size)
    /* the 'defaults' command expects the filename without .plist at the
         end */
     snprintf(embedded_prefs, PD_STRING, "%s/../org.puredata.puredata",
-        main_libDirectory->s_name);
+        main_rootDirectory->s_name);
     snprintf(user_prefs, PD_STRING,
         "%s/Library/Preferences/org.puredata.puredata.plist", homedir);
     if (stat(user_prefs, &statbuf) == 0)
@@ -298,7 +298,7 @@ static void sys_donesavepreferences( void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark-
 
-void sys_loadpreferences (void)
+void preferences_load (void)
 {
     int naudioindev, audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
     int naudiooutdev, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
@@ -463,7 +463,7 @@ void sys_loadpreferences (void)
     //sys_doflags();
 }
 
-void global_savePreferences(void *dummy)
+void preferences_save (void *dummy)
 {
     int naudioindev, audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
     int naudiooutdev, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
