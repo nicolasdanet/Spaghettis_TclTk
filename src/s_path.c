@@ -122,7 +122,7 @@ static void sys_expandpath(const char *from, char *to, int bufsize)
 #endif    
 }
 
-int sys_usestdpath = 1;     /* Shared. */
+// int sys_usestdpath = 1;
 
 void sys_setextrapath(const char *p)
 {
@@ -269,7 +269,7 @@ static int do_open_via_path(const char *dir, const char *name,
                 return (fd);
 
         /* next look in built-in paths like "extra" */
-    if (sys_usestdpath)
+    if (1 /*sys_usestdpath*/)
         for (nl = sys_staticpath; nl; nl = nl->nl_next)
             if ((fd = sys_trytoopenone(nl->nl_string, name, ext,
                 dirresult, nameresult, size, bin)) >= 0)

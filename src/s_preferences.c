@@ -1,51 +1,48 @@
-/* Copyright (c) 1997-2004 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/*
- * this file implements a mechanism for storing and retrieving preferences.
- * Should later be renamed "preferences.c" or something.
- *
- * In unix this is handled by the "~/.puredata" file, in windows by
- * the registry, and in MacOS by the Preferences system.
- */
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
 
-#ifdef _WIN32
-    #include <windows.h>
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if PD_WINDOWS
     #include <tchar.h>
-#else
-    #include <sys/stat.h>
 #endif
 
-#ifdef _MSC_VER  /* This is only for Microsoft's compiler, not cygwin, e.g. */
-#define snprintf sprintf_s
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if PD_MSVC
+    #define snprintf sprintf_s
 #endif
 
-extern int sys_usestdpath;
-extern t_pathlist *sys_searchpath;
-extern t_symbol *main_libDirectory;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+extern t_symbol     *main_libDirectory;
+extern t_pathlist   *sys_searchpath;
+
 extern int sys_audioapi;
 
-//t_symbol *sys_flags = &s_;      /* Shared. */
-//void sys_doflags( void);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark-
 
-    /* Hmm... maybe better would be to #if on not-apple-or-windows  */
-#if defined(__linux__) || defined(__CYGWIN__) || defined(__FreeBSD_kernel__) \
-|| defined(__GNU__) || defined(ANDROID)
-
-/*****  linux/android/BSD etc: read and write to ~/.puredata file ******/
+#if ( PD_LINUX || PD_CYGWIN || PD_BSD || PD_HURD || PD_ANDROID )
 
 static char *sys_prefbuf;
-static int sys_prefbufsize;
 
 static void sys_initloadpreferences( void)
 {
@@ -164,9 +161,13 @@ static void sys_donesavepreferences( void)
     }
 }
 
-#endif /* __linux__ || __CYGWIN__ || __FreeBSD_kernel__ || __GNU__ */
+#endif
 
-#ifdef _WIN32
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark-
+
+#if PD_WINDOWS
 
 static void sys_initloadpreferences( void)
 {
@@ -221,9 +222,13 @@ static void sys_donesavepreferences( void)
 {
 }
 
-#endif /* _WIN32 */
+#endif
 
-#ifdef __APPLE__
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark-
+
+#if PD_APPLE
 
 static void sys_initloadpreferences( void)
 {
@@ -287,10 +292,13 @@ static void sys_donesavepreferences( void)
 {
 }
 
-#endif /* __APPLE__ */
+#endif
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark-
 
-void sys_loadpreferences( void)
+void sys_loadpreferences (void)
 {
     int naudioindev, audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
     int naudiooutdev, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
@@ -427,8 +435,8 @@ void sys_loadpreferences( void)
             break;
         sys_searchpath = pathlist_newAppendFiles(sys_searchpath, prefbuf, PATHLIST_SEPARATOR);
     }
-    if (sys_getpreference("standardpath", prefbuf, PD_STRING))
-        sscanf(prefbuf, "%d", &sys_usestdpath);
+    /*if (sys_getpreference("standardpath", prefbuf, PD_STRING))
+        sscanf(prefbuf, "%d", &sys_usestdpath);*/
         
     /*if (sys_getpreference("verbose", prefbuf, PD_STRING))
         sscanf(prefbuf, "%d", &sys_verbose); */
@@ -550,8 +558,8 @@ void global_savePreferences(void *dummy)
     }
     sprintf(buf1, "%d", i);
     sys_putpreference("npath", buf1);
-    sprintf(buf1, "%d", sys_usestdpath);
-    sys_putpreference("standardpath", buf1);
+    //sprintf(buf1, "%d", sys_usestdpath);
+    //sys_putpreference("standardpath", buf1);
     //sprintf(buf1, "%d", sys_verbose);
     //sys_putpreference("verbose", buf1);
     
@@ -571,5 +579,7 @@ void global_savePreferences(void *dummy)
     //sys_putpreference("flags", 
       //  (sys_flags ? sys_flags->s_name : ""));
     sys_donesavepreferences();
-    
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

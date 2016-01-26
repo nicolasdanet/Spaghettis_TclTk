@@ -194,6 +194,8 @@ extern "C" {
     #include <windows.h>
     #include <winbase.h>
 #else
+    #include <sys/stat.h>
+    #include <sys/types.h>
     #include <unistd.h>
 #endif
 
