@@ -1039,7 +1039,7 @@ int sys_startgui(const char *libdir)
                     if (stat(wish_paths[i], &statbuf) >= 0)
                         break;
                 }
-                sprintf(cmdbuf, "\"%s\" \"%s/%spd-gui.tcl\" %d\n", 
+                sprintf(cmdbuf, "\"%s\" \"%s/%sui_main.tcl\" %d\n", 
                         wish_paths[i], libdir, PDGUIDIR, portno);
             }
 #else /* __APPLE__ */

@@ -14,6 +14,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "s_system.h"
 #include <stdlib.h>
 #include <stdarg.h>
 
@@ -890,7 +891,7 @@ void ugen_done_graph(t_dspcontext *dc)
     else
     {
         parent_srate = sys_getsr();
-        parent_vecsize = sys_getblksize();
+        parent_vecsize = AUDIO_DEFAULT_BLOCK;
     }
     if (blk)
     {

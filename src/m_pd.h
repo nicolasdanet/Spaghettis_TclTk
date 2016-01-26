@@ -646,7 +646,6 @@ PD_DLL void     dsp_add_copy        (t_sample *in, t_sample *out, int n);
 PD_DLL void     dsp_add_scalarcopy  (t_float *in, t_sample *out, int n);
 PD_DLL void     dsp_add_zero        (t_sample *out, int n);
 
-PD_DLL int      sys_getblksize      (void);
 PD_DLL t_float  sys_getsr           (void);
 PD_DLL int      sys_get_inchannels  (void);
 PD_DLL int      sys_get_outchannels (void);
