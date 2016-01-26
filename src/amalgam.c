@@ -28,6 +28,7 @@
 #include "s_entry.c"
 #include "s_pathlist.c"
 #include "s_font.c"
+#include "s_main.c"
 
 #include "s_post.c"
 
