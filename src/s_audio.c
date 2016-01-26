@@ -397,7 +397,7 @@ void sys_close_audio(void)
     audio_state = 0;
     audio_callback_is_open = 0;
 
-    sys_vgui("set ::var(apiAudio) 0\n");
+    // sys_vgui("set ::var(apiAudio) 0\n");
 }
 
     /* open audio using whatever parameters were last used */
