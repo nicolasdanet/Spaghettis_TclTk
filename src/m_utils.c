@@ -100,7 +100,7 @@ int utils_isTokenWhitespace (char c)
 
 t_error utils_version (char *dest, size_t size)
 {
-    t_error err = utils_snprintf (dest, size, "%s %s / %s %s", PD_NAME, PD_VERSION, utils_time, utils_date);
+    t_error err = utils_snprintf (dest, size, "%s %s / %s / %s", PD_NAME, PD_VERSION, utils_date, utils_time);
     
     #if PD_WITH_DEBUG
         err |= utils_strnadd (dest, size, " / DEBUG");

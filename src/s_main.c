@@ -47,13 +47,16 @@ static void main_entryPlatformSpecific (void)
     #endif
 }
 
-static t_error main_entryVersion (void)
+static t_error main_entryVersion (int console)
 {
     char t[PD_STRING];
     t_error err = utils_version (t, PD_STRING);
     
-    if (!err) { 
-        fprintf (stdout, "%s\n", t); 
+    if (!err) {
+        if (!console) { fprintf (stdout, "%s\n", t); }
+        else {
+            post ("%s", t);
+        }
     }
     
     return err;
@@ -168,7 +171,7 @@ int main_entry (int argc, char **argv)
     if (main_findRootDirectory (argv[0]))           { return 1; }
     if (main_parseArguments (argc - 1, argv + 1))   { return 1; }
     if (main_version) { 
-        return main_entryVersion(); 
+        return main_entryVersion (0); 
     }
         
     pd_initialize();
@@ -179,6 +182,8 @@ int main_entry (int argc, char **argv)
     sys_reopen_midi();
     if (audio_shouldkeepopen()) { sys_reopen_audio(); }
 
+    main_entryVersion (1);
+    
     return (scheduler_main());
 }
 
