@@ -301,18 +301,18 @@ static void preferences_setKey(const char *key, const char *value)
 void preferences_load (void)
 {
     int i;
-    int numberOfPath                    = 0;
-    int audioApi                        = API_DEFAULT;
-    int callback                        = 0;
-    int sampleRate                      = AUDIO_DEFAULT_SAMPLING;
-    int advance                         = AUDIO_DEFAULT_ADVANCE;
-    int blockSize                       = AUDIO_DEFAULT_BLOCK;
-    
     int noAudioIn                       = 0;
     int noAudioOut                      = 0;
     int noMidiIn                        = 0;
     int noMidiOut                       = 0;
     
+    int audioApi                        = API_DEFAULT;
+    int callback                        = 0;
+    int sampleRate                      = AUDIO_DEFAULT_SAMPLING;
+    int advance                         = AUDIO_DEFAULT_ADVANCE;
+    int blockSize                       = AUDIO_DEFAULT_BLOCK;
+    int numberOfPath                    = 0;
+
     int numberOfAudioIn                 = 0;
     int numberOfAudioOut                = 0;
     int numberOfMidiIn                  = 0;
@@ -330,18 +330,21 @@ void preferences_load (void)
 
     preferences_loadBegin();
     
-    if (preferences_getKey ("npath",     value, PD_STRING)) { sscanf (value, "%d", &numberOfPath); }
+    /* Properties. */
+    
+    noAudioIn   = (preferences_getKey ("noaudioin",  value, PD_STRING) && !strcmp (value, "True"));
+    noAudioOut  = (preferences_getKey ("noaudioout", value, PD_STRING) && !strcmp (value, "True"));
+    noMidiIn    = (preferences_getKey ("nomidiin",   value, PD_STRING) && !strcmp (value, "True"));
+    noMidiOut   = (preferences_getKey ("nomidiout",  value, PD_STRING) && !strcmp (value, "True"));
     
     if (preferences_getKey ("audioapi",  value, PD_STRING)) { sscanf (value, "%d", &audioApi);     }
     if (preferences_getKey ("callback",  value, PD_STRING)) { sscanf (value, "%d", &callback);     }
     if (preferences_getKey ("rate",      value, PD_STRING)) { sscanf (value, "%d", &sampleRate);   }
     if (preferences_getKey ("audiobuf",  value, PD_STRING)) { sscanf (value, "%d", &advance);      }
     if (preferences_getKey ("blocksize", value, PD_STRING)) { sscanf (value, "%d", &blockSize);    }
-
-    noAudioIn   = (preferences_getKey ("noaudioin",  value, PD_STRING) && !strcmp (value, "True"));
-    noAudioOut  = (preferences_getKey ("noaudioout", value, PD_STRING) && !strcmp (value, "True"));
-    noMidiIn    = (preferences_getKey ("nomidiin",   value, PD_STRING) && !strcmp (value, "True"));
-    noMidiOut   = (preferences_getKey ("nomidiout",  value, PD_STRING) && !strcmp (value, "True"));
+    if (preferences_getKey ("npath",     value, PD_STRING)) { sscanf (value, "%d", &numberOfPath); }
+    
+    /* Search paths. */
     
     for (i = 0; i < numberOfPath; i++) {
     //
@@ -353,6 +356,8 @@ void preferences_load (void)
     //
     }
     
+    /* Audio devices. */
+    
     if (!noAudioIn) {
     //
     for (i = 0; i < AUDIO_MAXIMUM_IN; i++) {
@@ -361,16 +366,18 @@ void preferences_load (void)
     
     if (!preferences_getKey (key, value, PD_STRING)) { break; }
     else {
-        if (sscanf (value, "%d %d", &audioIn[i], &channelIn[i]) < 2) { break; }
-        else {       
-            utils_snprintf (key, PD_STRING, "audioindevname%d", i + 1);
-            if (preferences_getKey (key, value, PD_STRING)) {
-                int device; 
-                if ((device = sys_audiodevnametonumber (0, value)) >= 0) { audioIn[i] = device; }
-            }
-            numberOfAudioIn++;
-            }
+    //
+    if (sscanf (value, "%d %d", &audioIn[i], &channelIn[i]) < 2) { break; }
+    else {       
+        utils_snprintf (key, PD_STRING, "audioindevname%d", i + 1);
+        if (preferences_getKey (key, value, PD_STRING)) {
+            int device; 
+            if ((device = sys_audiodevnametonumber (0, value)) >= 0) { audioIn[i] = device; }
         }
+        numberOfAudioIn++;
+        }
+    }
+    //
     //
     }
     
@@ -386,22 +393,26 @@ void preferences_load (void)
     
     if (!preferences_getKey (key, value, PD_STRING)) { break; }
     else {
-        if (sscanf (value, "%d %d", &audioOut[i], &channelOut[i]) < 2) { break; }
-        else {
-            utils_snprintf (key, PD_STRING, "audiooutdevname%d", i + 1);
-            if (preferences_getKey (key, value, PD_STRING)) {
-                int device;
-                if ((device = sys_audiodevnametonumber (1, value)) >= 0) { audioOut[i] = device; }
-            }
-            numberOfAudioOut++;
-            }
+    //
+    if (sscanf (value, "%d %d", &audioOut[i], &channelOut[i]) < 2) { break; }
+    else {
+        utils_snprintf (key, PD_STRING, "audiooutdevname%d", i + 1);
+        if (preferences_getKey (key, value, PD_STRING)) {
+            int device;
+            if ((device = sys_audiodevnametonumber (1, value)) >= 0) { audioOut[i] = device; }
         }
+        numberOfAudioOut++;
+        }
+    }
+    //
     //
     }
         
     if (numberOfAudioOut == 0) { numberOfAudioOut = -1; }
     //
     }
+    
+    /* MIDI devices. */
     
     if (!noMidiIn) {
     //
@@ -470,25 +481,25 @@ void preferences_load (void)
 void preferences_save (void *dummy)
 {
     int i;
-    int callback;
-    int sampleRate;
-    int advance;
-    int blockSize;
+    int callback                        = 0;
+    int sampleRate                      = AUDIO_DEFAULT_SAMPLING;
+    int advance                         = AUDIO_DEFAULT_ADVANCE;
+    int blockSize                       = AUDIO_DEFAULT_BLOCK;
     
-    int numberOfAudioIn;
-    int numberOfAudioOut;
-    int numberOfMidiIn;
-    int numberOfMidiOut;
+    int numberOfAudioIn                 = 0;
+    int numberOfAudioOut                = 0;
+    int numberOfMidiIn                  = 0;
+    int numberOfMidiOut                 = 0;
     
-    int audioIn[AUDIO_MAXIMUM_IN];
-    int audioOut[AUDIO_MAXIMUM_OUT];
-    int midiIn[MIDI_MAXIMUM_IN];
-    int midiOut[MIDI_MAXIMUM_OUT];
-    int channelIn[AUDIO_MAXIMUM_IN];
-    int channelOut[AUDIO_MAXIMUM_OUT];
+    int audioIn[AUDIO_MAXIMUM_IN]       = { 0 };
+    int audioOut[AUDIO_MAXIMUM_OUT]     = { 0 };
+    int midiIn[MIDI_MAXIMUM_IN]         = { 0 };
+    int midiOut[MIDI_MAXIMUM_OUT]       = { 0 };
+    int channelIn[AUDIO_MAXIMUM_IN]     = { 0 };
+    int channelOut[AUDIO_MAXIMUM_OUT]   = { 0 };
     
-    char key[PD_STRING];
-    char value[PD_STRING];
+    char key[PD_STRING]                 = { 0 };
+    char value[PD_STRING]               = { 0 };
     
     preferences_saveBegin();
 
@@ -505,16 +516,20 @@ void preferences_save (void *dummy)
     
     sys_get_midi_params (&numberOfMidiIn, midiIn, &numberOfMidiOut, midiOut);
     
+    /* Properties. */
+    
+    preferences_setKey ("noaudioin",    (numberOfAudioIn <= 0 ?  "True" : "False"));
+    preferences_setKey ("noaudioout",   (numberOfAudioOut <= 0 ? "True" : "False"));
+    preferences_setKey ("nomidiin",     (numberOfMidiIn <= 0 ?   "True" : "False"));
+    preferences_setKey ("nomidiout",    (numberOfMidiOut <= 0 ?  "True" : "False"));
+    
     utils_snprintf (value, PD_STRING, "%d", sys_audioapi);  preferences_setKey ("audioapi",  value);
     utils_snprintf (value, PD_STRING, "%d", callback);      preferences_setKey ("callback",  value);
     utils_snprintf (value, PD_STRING, "%d", sampleRate);    preferences_setKey ("rate",      value);
     utils_snprintf (value, PD_STRING, "%d", advance);       preferences_setKey ("audiobuf",  value);
     utils_snprintf (value, PD_STRING, "%d", blockSize);     preferences_setKey ("blocksize", value);
     
-    preferences_setKey ("noaudioin",    (numberOfAudioIn <= 0 ?  "True" : "False"));
-    preferences_setKey ("noaudioout",   (numberOfAudioOut <= 0 ? "True" : "False"));
-    preferences_setKey ("nomidiin",     (numberOfMidiIn <= 0 ?   "True" : "False"));
-    preferences_setKey ("nomidiout",    (numberOfMidiOut <= 0 ?  "True" : "False"));
+    /* Search paths. */
     
     for (i = 0; 1; i++) {
     //
@@ -527,7 +542,9 @@ void preferences_save (void *dummy)
     //
     }
     
-    utils_snprintf (value, PD_STRING, "%d", i); preferences_setKey ("npath", value);
+    utils_snprintf (value, PD_STRING, "%d", i);             preferences_setKey ("npath",     value);
+    
+    /* Audio devices. */
     
     for (i = 0; i < numberOfAudioIn; i++) {
     //
@@ -553,6 +570,8 @@ void preferences_save (void *dummy)
     //
     }
 
+    /* MIDI devices. */
+    
     for (i = 0; i < numberOfMidiIn; i++) {
     //
     utils_snprintf (key, PD_STRING, "midiindev%d", i + 1);
