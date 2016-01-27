@@ -44,7 +44,7 @@ extern int sys_audioapi;
 
 static char *sys_prefbuf;
 
-static void preferences_loadInitialize (void)
+static void preferences_loadBegin (void)
 {
     char filenamebuf[PD_STRING], *homedir = getenv("HOME");
     int fd, length;
@@ -129,7 +129,7 @@ static int preferences_getKey(const char *key, char *value, int size)
 
 static FILE *sys_prefsavefp;
 
-static void sys_initsavepreferences( void)
+static void preferences_saveBegin (void)
 {
     char filenamebuf[PD_STRING],
         *homedir = getenv("HOME");
@@ -145,20 +145,20 @@ static void sys_initsavepreferences( void)
     }
 }
 
-static void sys_putpreference(const char *key, const char *value)
-{
-    if (sys_prefsavefp)
-        fprintf(sys_prefsavefp, "%s: %s\n",
-            key, value);
-}
-
-static void sys_donesavepreferences( void)
+static void preferences_saveClose (void)
 {
     if (sys_prefsavefp)
     {
         fclose(sys_prefsavefp);
         sys_prefsavefp = 0;
     }
+}
+
+static void preferences_setKey(const char *key, const char *value)
+{
+    if (sys_prefsavefp)
+        fprintf(sys_prefsavefp, "%s: %s\n",
+            key, value);
 }
 
 #endif
@@ -169,7 +169,7 @@ static void sys_donesavepreferences( void)
 
 #if PD_WINDOWS
 
-static void preferences_loadInitialize (void)
+static void preferences_loadBegin (void)
 {
 }
 
@@ -197,11 +197,15 @@ static int preferences_getKey(const char *key, char *value, int size)
     return (1);
 }
 
-static void sys_initsavepreferences( void)
+static void preferences_saveBegin (void)
 {
 }
 
-static void sys_putpreference(const char *key, const char *value)
+static void preferences_saveClose (void)
+{
+}
+
+static void preferences_setKey(const char *key, const char *value)
 {
     HKEY hkey;
     LONG err = RegCreateKeyEx(HKEY_LOCAL_MACHINE,
@@ -218,10 +222,6 @@ static void sys_putpreference(const char *key, const char *value)
     RegCloseKey(hkey);
 }
 
-static void sys_donesavepreferences( void)
-{
-}
-
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -230,7 +230,7 @@ static void sys_donesavepreferences( void)
 
 #if PD_APPLE
 
-static void preferences_loadInitialize (void)
+static void preferences_loadBegin (void)
 {
 }
 
@@ -276,20 +276,20 @@ static int preferences_getKey(const char *key, char *value, int size)
     return(1);
 }
 
-static void sys_initsavepreferences( void)
+static void preferences_saveBegin (void)
 {
 }
 
-static void sys_putpreference(const char *key, const char *value)
+static void preferences_saveClose (void)
+{
+}
+
+static void preferences_setKey(const char *key, const char *value)
 {
     char cmdbuf[PD_STRING];
     snprintf(cmdbuf, PD_STRING, 
         "defaults write org.puredata.puredata %s \"%s\" 2> /dev/null\n", key, value);
     system(cmdbuf);
-}
-
-static void sys_donesavepreferences( void)
-{
 }
 
 #endif
@@ -302,11 +302,11 @@ void preferences_load (void)
 {
     int i;
     int numberOfPath                    = 0;
+    int audioApi                        = API_DEFAULT;
     int callback                        = 0;
     int sampleRate                      = AUDIO_DEFAULT_SAMPLING;
     int advance                         = AUDIO_DEFAULT_ADVANCE;
     int blockSize                       = AUDIO_DEFAULT_BLOCK;
-    int audioApi                        = API_DEFAULT;
     
     int noAudioIn                       = 0;
     int noAudioOut                      = 0;
@@ -328,15 +328,16 @@ void preferences_load (void)
     char key[PD_STRING]                 = { 0 };
     char value[PD_STRING]               = { 0 };
 
-    preferences_loadInitialize();
+    preferences_loadBegin();
     
     if (preferences_getKey ("npath",     value, PD_STRING)) { sscanf (value, "%d", &numberOfPath); }
+    
+    if (preferences_getKey ("audioapi",  value, PD_STRING)) { sscanf (value, "%d", &audioApi);     }
     if (preferences_getKey ("callback",  value, PD_STRING)) { sscanf (value, "%d", &callback);     }
     if (preferences_getKey ("rate",      value, PD_STRING)) { sscanf (value, "%d", &sampleRate);   }
     if (preferences_getKey ("audiobuf",  value, PD_STRING)) { sscanf (value, "%d", &advance);      }
     if (preferences_getKey ("blocksize", value, PD_STRING)) { sscanf (value, "%d", &blockSize);    }
-    if (preferences_getKey ("audioapi",  value, PD_STRING)) { sscanf (value, "%d", &audioApi);     }
-    
+
     noAudioIn   = (preferences_getKey ("noaudioin",  value, PD_STRING) && !strcmp (value, "True"));
     noAudioOut  = (preferences_getKey ("noaudioout", value, PD_STRING) && !strcmp (value, "True"));
     noMidiIn    = (preferences_getKey ("nomidiin",   value, PD_STRING) && !strcmp (value, "True"));
@@ -468,120 +469,115 @@ void preferences_load (void)
 
 void preferences_save (void *dummy)
 {
-    int numberOfAudioIn;
-    int audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
-    int numberOfAudioOut, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
-    int i, rate, advance, callback, blocksize;
-    char buf1[PD_STRING], buf2[PD_STRING];
-    int numberOfMidiIn, midiindev[MIDI_MAXIMUM_IN];
-    int numberOfMidiOut, midioutdev[MIDI_MAXIMUM_OUT];
-
-    sys_initsavepreferences();
-
-        /* audio settings */
-    sprintf(buf1, "%d", sys_audioapi);
-    sys_putpreference("audioapi", buf1);
-
-    sys_get_audio_params(&numberOfAudioIn, audioindev, chindev,
-        &numberOfAudioOut, audiooutdev, choutdev, &rate, &advance, &callback,
-            &blocksize);
-
-    sys_putpreference("noaudioin", (numberOfAudioIn <= 0 ? "True" : "False"));
-    for (i = 0; i < numberOfAudioIn; i++)
-    {
-        sprintf(buf1, "audioindev%d", i+1);
-        sprintf(buf2, "%d %d", audioindev[i], chindev[i]);
-        sys_putpreference(buf1, buf2);
-        sprintf(buf1, "audioindevname%d", i+1);
-        sys_audiodevnumbertoname(0, audioindev[i], buf2, PD_STRING);
-        if (! *buf2)
-            strcat(buf2, "?");
-        sys_putpreference(buf1, buf2);
-    }
-    sys_putpreference("noaudioout", (numberOfAudioOut <= 0 ? "True" : "False"));
-    for (i = 0; i < numberOfAudioOut; i++)
-    {
-        sprintf(buf1, "audiooutdev%d", i+1);
-        sprintf(buf2, "%d %d", audiooutdev[i], choutdev[i]);
-        sys_putpreference(buf1, buf2);
-        sprintf(buf1, "audiooutdevname%d", i+1);
-        sys_audiodevnumbertoname(1, audiooutdev[i], buf2, PD_STRING);
-        if (! *buf2)
-            strcat(buf2, "?");
-        sys_putpreference(buf1, buf2);
-   }
-
-    sprintf(buf1, "%d", advance);
-    sys_putpreference("audiobuf", buf1);
-
-    sprintf(buf1, "%d", rate);
-    sys_putpreference("rate", buf1);
-
-    sprintf(buf1, "%d", callback);
-    sys_putpreference("callback", buf1);
-
-    sprintf(buf1, "%d", blocksize);
-    sys_putpreference("blocksize", buf1);
-
-        /* MIDI settings */
-    sys_get_midi_params(&numberOfMidiIn, midiindev, &numberOfMidiOut, midioutdev);
-    sys_putpreference("nomidiin", (numberOfMidiIn <= 0 ? "True" : "False"));
-    for (i = 0; i < numberOfMidiIn; i++)
-    {
-        sprintf(buf1, "midiindev%d", i+1);
-        sprintf(buf2, "%d", midiindev[i]);
-        sys_putpreference(buf1, buf2);
-        sprintf(buf1, "midiindevname%d", i+1);
-        sys_mididevnumbertoname(0, midiindev[i], buf2, PD_STRING);
-        if (! *buf2)
-            strcat(buf2, "?");
-        sys_putpreference(buf1, buf2);
-    }
-    sys_putpreference("nomidiout", (numberOfMidiOut <= 0 ? "True" : "False"));
-    for (i = 0; i < numberOfMidiOut; i++)
-    {
-        sprintf(buf1, "midioutdev%d", i+1);
-        sprintf(buf2, "%d", midioutdev[i]);
-        sys_putpreference(buf1, buf2);
-        sprintf(buf1, "midioutdevname%d", i+1);
-        sys_mididevnumbertoname(1, midioutdev[i], buf2, PD_STRING);
-        if (! *buf2)
-            strcat(buf2, "?");
-        sys_putpreference(buf1, buf2);
-    }
-        /* file search path */
-
-    for (i = 0; 1; i++)
-    {
-        char *pathelem = pathlist_getFileAtIndex(sys_searchpath, i);
-        if (!pathelem)
-            break;
-        sprintf(buf1, "path%d", i+1);
-        sys_putpreference(buf1, pathelem);
-    }
-    sprintf(buf1, "%d", i);
-    sys_putpreference("npath", buf1);
-    //sprintf(buf1, "%d", sys_usestdpath);
-    //sys_putpreference("standardpath", buf1);
-    //sprintf(buf1, "%d", sys_verbose);
-    //sys_putpreference("verbose", buf1);
+    int i;
+    int callback;
+    int sampleRate;
+    int advance;
+    int blockSize;
     
-        /* startup */
-    /*for (i = 0; 1; i++)
-    {
-        char *pathelem = pathlist_getFileAtIndex(sys_externlist, i);
-        if (!pathelem)
-            break;
-        sprintf(buf1, "loadlib%d", i+1);
-        sys_putpreference(buf1, pathelem);
-    }*/
-    //sprintf(buf1, "%d", i);
-    //sys_putpreference("nloadlib", buf1);
-    //sprintf(buf1, "%d", sys_defeatrt);
-    //sys_putpreference("defeatrt", buf1);
-    //sys_putpreference("flags", 
-      //  (sys_flags ? sys_flags->s_name : ""));
-    sys_donesavepreferences();
+    int numberOfAudioIn;
+    int numberOfAudioOut;
+    int numberOfMidiIn;
+    int numberOfMidiOut;
+    
+    int audioIn[AUDIO_MAXIMUM_IN];
+    int audioOut[AUDIO_MAXIMUM_OUT];
+    int midiIn[MIDI_MAXIMUM_IN];
+    int midiOut[MIDI_MAXIMUM_OUT];
+    int channelIn[AUDIO_MAXIMUM_IN];
+    int channelOut[AUDIO_MAXIMUM_OUT];
+    
+    char key[PD_STRING];
+    char value[PD_STRING];
+    
+    preferences_saveBegin();
+
+    sys_get_audio_params (&numberOfAudioIn,
+                            audioIn, 
+                            channelIn,
+                            &numberOfAudioOut, 
+                            audioOut, 
+                            channelOut, 
+                            &sampleRate, 
+                            &advance, 
+                            &callback,
+                            &blockSize);
+    
+    sys_get_midi_params (&numberOfMidiIn, midiIn, &numberOfMidiOut, midiOut);
+    
+    utils_snprintf (value, PD_STRING, "%d", sys_audioapi);  preferences_setKey ("audioapi",  value);
+    utils_snprintf (value, PD_STRING, "%d", callback);      preferences_setKey ("callback",  value);
+    utils_snprintf (value, PD_STRING, "%d", sampleRate);    preferences_setKey ("rate",      value);
+    utils_snprintf (value, PD_STRING, "%d", advance);       preferences_setKey ("audiobuf",  value);
+    utils_snprintf (value, PD_STRING, "%d", blockSize);     preferences_setKey ("blocksize", value);
+    
+    preferences_setKey ("noaudioin",    (numberOfAudioIn <= 0 ?  "True" : "False"));
+    preferences_setKey ("noaudioout",   (numberOfAudioOut <= 0 ? "True" : "False"));
+    preferences_setKey ("nomidiin",     (numberOfMidiIn <= 0 ?   "True" : "False"));
+    preferences_setKey ("nomidiout",    (numberOfMidiOut <= 0 ?  "True" : "False"));
+    
+    for (i = 0; 1; i++) {
+    //
+    char *path = pathlist_getFileAtIndex (sys_searchpath, i);
+    if (!path) { break; }
+    else {
+        utils_snprintf (key, PD_STRING, "path%d", i + 1);
+        preferences_setKey (key, path);
+    }
+    //
+    }
+    
+    utils_snprintf (value, PD_STRING, "%d", i); preferences_setKey ("npath", value);
+    
+    for (i = 0; i < numberOfAudioIn; i++) {
+    //
+    utils_snprintf (key, PD_STRING, "audioindev%d", i + 1);
+    utils_snprintf (value, PD_STRING, "%d %d", audioIn[i], channelIn[i]);
+    preferences_setKey (key, value);
+    utils_snprintf (key, PD_STRING, "audioindevname%d", i + 1);
+    sys_audiodevnumbertoname (0, audioIn[i], value, PD_STRING);
+    if (*value == 0) { utils_strnadd (value, PD_STRING, "?"); }
+    preferences_setKey (key, value);
+    //
+    }
+
+    for (i = 0; i < numberOfAudioOut; i++) {
+    //
+    utils_snprintf (key, PD_STRING, "audiooutdev%d", i + 1);
+    utils_snprintf (value, PD_STRING, "%d %d", audioOut[i], channelOut[i]);
+    preferences_setKey (key, value);
+    utils_snprintf (key, PD_STRING, "audiooutdevname%d", i + 1);
+    sys_audiodevnumbertoname (1, audioOut[i], value, PD_STRING);
+    if (*value == 0) { utils_strnadd (value, PD_STRING, "?"); }
+    preferences_setKey (key, value);
+    //
+    }
+
+    for (i = 0; i < numberOfMidiIn; i++) {
+    //
+    utils_snprintf (key, PD_STRING, "midiindev%d", i + 1);
+    utils_snprintf (value, PD_STRING, "%d", midiIn[i]);
+    preferences_setKey (key, value);
+    utils_snprintf (key, PD_STRING, "midiindevname%d", i + 1);
+    sys_mididevnumbertoname (0, midiIn[i], value, PD_STRING);
+    if (*value == 0) { utils_strnadd (value, PD_STRING, "?"); }
+    preferences_setKey (key, value);
+    //
+    }
+
+    for (i = 0; i < numberOfMidiOut; i++) {
+    //
+    utils_snprintf (key, PD_STRING, "midioutdev%d", i + 1);
+    utils_snprintf (value, PD_STRING, "%d", midiOut[i]);
+    preferences_setKey (key, value);
+    utils_snprintf (key, PD_STRING, "midioutdevname%d", i + 1);
+    sys_mididevnumbertoname (1, midiOut[i], value, PD_STRING);
+    if (*value == 0) { utils_strnadd (value, PD_STRING, "?"); }
+    preferences_setKey (key, value);
+    //
+    }
+
+    preferences_saveClose();
 }
 
 // -----------------------------------------------------------------------------------------------------------
