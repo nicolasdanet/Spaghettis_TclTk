@@ -245,6 +245,8 @@ static int preferences_getKey (const char *k, char *v, int length)
     char t[PD_STRING] = { 0 };
     t_error err = utils_snprintf (t, PD_STRING, "defaults read org.puredata.puredata %s 2> /dev/null\n", k);
     
+    PD_ASSERT (length > 2);
+    
     if (err) { PD_BUG; }
     else {
     //
@@ -252,16 +254,19 @@ static int preferences_getKey (const char *k, char *v, int length)
     int i = 0;
         
     while (i < length) {
-        int n = fread (v + i, 1, length - i, f);
+        int n = fread (v + i, 1, length - 1 - i, f);
         if (n <= 0) { break; }
-        i += n;
+        else { 
+            i += n; 
+        }
     }
     
     pclose (f);
     
-    if (i >= 1) {
-        if (i >= length) { i = length - 1; }
-        v[i] = 0; if (v[i - 1] == '\n') { v[i - 1] = 0; }
+    PD_ASSERT (i < length);
+    
+    if (i > 1) {                                                /* Values are ended with a newline. */
+        v[i] = 0; if (v[i - 1] == '\n') { v[i - 1] = 0; }       /* Remove it. */
         return 1;
     }
     //
@@ -524,11 +529,11 @@ void preferences_save (void *dummy)
     preferences_setKey ("nomidiin",     (numberOfMidiIn <= 0 ?   "True" : "False"));
     preferences_setKey ("nomidiout",    (numberOfMidiOut <= 0 ?  "True" : "False"));
     
-    utils_snprintf (value, PD_STRING, "%d", sys_audioapi);  preferences_setKey ("audioapi",  value);
-    utils_snprintf (value, PD_STRING, "%d", callback);      preferences_setKey ("callback",  value);
-    utils_snprintf (value, PD_STRING, "%d", sampleRate);    preferences_setKey ("rate",      value);
-    utils_snprintf (value, PD_STRING, "%d", advance);       preferences_setKey ("audiobuf",  value);
-    utils_snprintf (value, PD_STRING, "%d", blockSize);     preferences_setKey ("blocksize", value);
+    utils_snprintf (value, PD_STRING, "%d", sys_audioapi);      preferences_setKey ("audioapi",  value);
+    utils_snprintf (value, PD_STRING, "%d", callback);          preferences_setKey ("callback",  value);
+    utils_snprintf (value, PD_STRING, "%d", sampleRate);        preferences_setKey ("rate",      value);
+    utils_snprintf (value, PD_STRING, "%d", advance);           preferences_setKey ("audiobuf",  value);
+    utils_snprintf (value, PD_STRING, "%d", blockSize);         preferences_setKey ("blocksize", value);
     
     /* Search paths. */
     
@@ -537,8 +542,7 @@ void preferences_save (void *dummy)
     char *path = pathlist_getFileAtIndex (sys_searchpath, i);
     if (!path) { break; }
     else {
-        utils_snprintf (key, PD_STRING, "path%d", i + 1);
-        preferences_setKey (key, path);
+        utils_snprintf (key, PD_STRING, "path%d", i + 1);       preferences_setKey (key, path);
     }
     //
     }
@@ -582,7 +586,7 @@ void preferences_save (void *dummy)
     preferences_setKey (key, value);
     //
     }
-
+    
     for (i = 0; i < numberOfMidiOut; i++) {
     //
     utils_snprintf (key, PD_STRING, "midioutdev%d", i + 1);
