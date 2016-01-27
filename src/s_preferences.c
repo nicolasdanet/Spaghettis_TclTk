@@ -556,7 +556,6 @@ void preferences_save (void *dummy)
     preferences_setKey (key, value);
     utils_snprintf (key, PD_STRING, "audioindevname%d", i + 1);
     sys_audiodevnumbertoname (0, audioIn[i], value, PD_STRING);
-    if (*value == 0) { utils_strnadd (value, PD_STRING, "?"); }
     preferences_setKey (key, value);
     //
     }
@@ -568,7 +567,6 @@ void preferences_save (void *dummy)
     preferences_setKey (key, value);
     utils_snprintf (key, PD_STRING, "audiooutdevname%d", i + 1);
     sys_audiodevnumbertoname (1, audioOut[i], value, PD_STRING);
-    if (*value == 0) { utils_strnadd (value, PD_STRING, "?"); }
     preferences_setKey (key, value);
     //
     }
@@ -582,7 +580,6 @@ void preferences_save (void *dummy)
     preferences_setKey (key, value);
     utils_snprintf (key, PD_STRING, "midiindevname%d", i + 1);
     sys_mididevnumbertoname (0, midiIn[i], value, PD_STRING);
-    if (*value == 0) { utils_strnadd (value, PD_STRING, "?"); }
     preferences_setKey (key, value);
     //
     }
@@ -594,7 +591,6 @@ void preferences_save (void *dummy)
     preferences_setKey (key, value);
     utils_snprintf (key, PD_STRING, "midioutdevname%d", i + 1);
     sys_mididevnumbertoname (1, midiOut[i], value, PD_STRING);
-    if (*value == 0) { utils_strnadd (value, PD_STRING, "?"); }
     preferences_setKey (key, value);
     //
     }
