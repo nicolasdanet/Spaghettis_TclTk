@@ -232,67 +232,70 @@ static void preferences_setKey(const char *key, const char *value)
 
 static void preferences_loadBegin (void)
 {
+    ;
 }
 
 static void preferences_loadClose (void)
 {
+    ;
 }
 
-static int preferences_getKey(const char *key, char *value, int size)
+static int preferences_getKey (const char *k, char *v, int length)
 {
-    char cmdbuf[256];
-    int nread = 0, nleft = size;
-    char embedded_prefs[PD_STRING];
-    char user_prefs[PD_STRING];
-    char *homedir = getenv("HOME");
-    struct stat statbuf;
-   /* the 'defaults' command expects the filename without .plist at the
-        end */
-    snprintf(embedded_prefs, PD_STRING, "%s/../org.puredata.puredata",
-        main_rootDirectory->s_name);
-    snprintf(user_prefs, PD_STRING,
-        "%s/Library/Preferences/org.puredata.puredata.plist", homedir);
-    if (stat(user_prefs, &statbuf) == 0)
-        snprintf(cmdbuf, 256, "defaults read org.puredata.puredata %s 2> /dev/null\n",
-            key);
-    else snprintf(cmdbuf, 256, "defaults read %s %s 2> /dev/null\n",
-            embedded_prefs, key);
-    FILE *fp = popen(cmdbuf, "r");
-    while (nread < size)
-    {
-        int newread = fread(value+nread, 1, size-nread, fp);
-        if (newread <= 0)
-            break;
-        nread += newread;
+    char t[PD_STRING] = { 0 };
+    t_error err = utils_snprintf (t, PD_STRING, "defaults read org.puredata.puredata %s 2> /dev/null\n", k);
+    
+    if (err) { PD_BUG; }
+    else {
+    //
+    FILE *f = popen (t, "r");
+    int i = 0;
+        
+    while (i < length) {
+        int n = fread (v + i, 1, length - i, f);
+        if (n <= 0) { break; }
+        i += n;
     }
-    pclose(fp);
-    if (nread < 1)
-        return (0);
-    if (nread >= size)
-        nread = size-1;
-    value[nread] = 0;
-    if (value[nread-1] == '\n')     /* remove newline character at end */
-        value[nread-1] = 0;
-    return(1);
+    
+    pclose (f);
+    
+    if (i >= 1) {
+        if (i >= length) { i = length - 1; }
+        v[i] = 0; if (v[i - 1] == '\n') { v[i - 1] = 0; }
+        return 1;
+    }
+    //
+    }
+    
+    return 0;
 }
 
 static void preferences_saveBegin (void)
 {
+    ;
 }
 
 static void preferences_saveClose (void)
 {
+    ;
 }
 
-static void preferences_setKey(const char *key, const char *value)
+static void preferences_setKey (const char *k, const char *v)
 {
-    char cmdbuf[PD_STRING];
-    snprintf(cmdbuf, PD_STRING, 
-        "defaults write org.puredata.puredata %s \"%s\" 2> /dev/null\n", key, value);
-    system(cmdbuf);
+    t_error err = PD_ERROR_NONE;
+    
+    char t[PD_STRING] = { 0 };
+    
+    err = utils_snprintf (t, PD_STRING, "defaults write org.puredata.puredata %s \"%s\"", k, v);
+    err |= utils_strnadd (t, PD_STRING, " 2> /dev/null\n");
+    
+    if (!err) { system (t); }
+    else {
+        PD_BUG;
+    }
 }
 
-#endif
+#endif // PD_APPLE
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
