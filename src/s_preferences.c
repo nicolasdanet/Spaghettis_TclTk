@@ -179,7 +179,7 @@ static void preferences_loadClose (void)
     ;
 }
 
-static int preferences_getKey(const char *key, char *value, int size)
+static int preferences_getKey (const char *key, char *value, int size)
 {
     HKEY hkey;
     DWORD bigsize = size;
@@ -206,7 +206,7 @@ static void preferences_saveClose (void)
     ;
 }
 
-static void preferences_setKey(const char *key, const char *value)
+static void preferences_setKey (const char *key, const char *value)
 {
     HKEY hkey;
     LONG err = RegCreateKeyEx (HKEY_LOCAL_MACHINE,
@@ -251,12 +251,12 @@ static void preferences_loadClose (void)
     ;
 }
 
-static int preferences_getKey (const char *key, char *value, int length)
+static int preferences_getKey (const char *key, char *value, int size)
 {
     char t[PD_STRING] = { 0 };
     t_error err = utils_snprintf (t, PD_STRING, "defaults read org.puredata.puredata %s 2> /dev/null\n", key);
     
-    PD_ASSERT (length > 2);
+    PD_ASSERT (size > 2);
     
     if (err) { PD_BUG; }
     else {
@@ -264,8 +264,8 @@ static int preferences_getKey (const char *key, char *value, int length)
     FILE *f = popen (t, "r");
     int i = 0;
         
-    while (i < length) {
-        int n = fread (value + i, 1, length - 1 - i, f);
+    while (i < size) {
+        int n = fread (value + i, 1, size - 1 - i, f);
         if (n <= 0) { break; }
         else { 
             i += n; 
@@ -274,7 +274,7 @@ static int preferences_getKey (const char *key, char *value, int length)
     
     pclose (f);
     
-    PD_ASSERT (i < length);
+    PD_ASSERT (i < size);
     
     if (i > 1) {                                                        /* Values are ended by a newline. */
         value[i] = 0; if (value[i - 1] == '\n') { value[i - 1] = 0; }   /* Remove it. */
