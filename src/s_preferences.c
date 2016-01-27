@@ -171,55 +171,66 @@ static void preferences_setKey(const char *key, const char *value)
 
 static void preferences_loadBegin (void)
 {
+    ;
 }
 
 static void preferences_loadClose (void)
 {
+    ;
 }
 
 static int preferences_getKey(const char *key, char *value, int size)
 {
     HKEY hkey;
     DWORD bigsize = size;
-    LONG err = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-        "Software\\Pd", 0,  KEY_QUERY_VALUE, &hkey);
-    if (err != ERROR_SUCCESS)
-    {
-        return (0);
-    }
-    err = RegQueryValueEx(hkey, key, 0, 0, value, &bigsize);
-    if (err != ERROR_SUCCESS)
-    {
-        RegCloseKey(hkey);
-        return (0);
-    }
-    RegCloseKey(hkey);
-    return (1);
+    LONG err = RegOpenKeyEx (HKEY_LOCAL_MACHINE, "Software\\Pd", 0, KEY_QUERY_VALUE, &hkey);
+    
+    if (err != ERROR_SUCCESS) { return 0; }
+    
+    err = RegQueryValueExv (hkey, key, 0, 0, value, &bigsize);
+    
+    if (err != ERROR_SUCCESS) { RegCloseKey (hkey); return 0; }
+    
+    RegCloseKey (hkey);
+    
+    return 1;
 }
 
 static void preferences_saveBegin (void)
 {
+    ;
 }
 
 static void preferences_saveClose (void)
 {
+    ;
 }
 
 static void preferences_setKey(const char *key, const char *value)
 {
     HKEY hkey;
-    LONG err = RegCreateKeyEx(HKEY_LOCAL_MACHINE,
-        "Software\\Pd", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE,
-        NULL, &hkey, NULL);
-    if (err != ERROR_SUCCESS)
-    {
-        post_error ("unable to create registry entry: %s\n", key);
+    LONG err = RegCreateKeyEx (HKEY_LOCAL_MACHINE,
+                                "Software\\Pd",
+                                0,
+                                NULL,
+                                REG_OPTION_NON_VOLATILE,
+                                KEY_SET_VALUE,
+                                NULL,
+                                &hkey,
+                                NULL);
+                                
+    if (err != ERROR_SUCCESS) {
+        post_error ("preferences: unable to create %s entry\n", key);
         return;
     }
-    err = RegSetValueEx(hkey, key, 0, REG_EXPAND_SZ, value, strlen(value)+1);
-    if (err != ERROR_SUCCESS)
-        post_error ("unable to set registry entry: %s\n", key);
-    RegCloseKey(hkey);
+    
+    err = RegSetValueEx (hkey, key, 0, REG_EXPAND_SZ, value, strlen (value) + 1);
+    
+    if (err != ERROR_SUCCESS) {
+        post_error ("preferences: unable to set %s entry\n", key);
+    }
+    
+    RegCloseKey (hkey);
 }
 
 #endif
@@ -240,10 +251,10 @@ static void preferences_loadClose (void)
     ;
 }
 
-static int preferences_getKey (const char *k, char *v, int length)
+static int preferences_getKey (const char *key, char *value, int length)
 {
     char t[PD_STRING] = { 0 };
-    t_error err = utils_snprintf (t, PD_STRING, "defaults read org.puredata.puredata %s 2> /dev/null\n", k);
+    t_error err = utils_snprintf (t, PD_STRING, "defaults read org.puredata.puredata %s 2> /dev/null\n", key);
     
     PD_ASSERT (length > 2);
     
@@ -254,7 +265,7 @@ static int preferences_getKey (const char *k, char *v, int length)
     int i = 0;
         
     while (i < length) {
-        int n = fread (v + i, 1, length - 1 - i, f);
+        int n = fread (value + i, 1, length - 1 - i, f);
         if (n <= 0) { break; }
         else { 
             i += n; 
@@ -265,8 +276,8 @@ static int preferences_getKey (const char *k, char *v, int length)
     
     PD_ASSERT (i < length);
     
-    if (i > 1) {                                                /* Values are ended with a newline. */
-        v[i] = 0; if (v[i - 1] == '\n') { v[i - 1] = 0; }       /* Remove it. */
+    if (i > 1) {                                                        /* Values are ended by a newline. */
+        value[i] = 0; if (value[i - 1] == '\n') { value[i - 1] = 0; }   /* Remove it. */
         return 1;
     }
     //
@@ -285,13 +296,13 @@ static void preferences_saveClose (void)
     ;
 }
 
-static void preferences_setKey (const char *k, const char *v)
+static void preferences_setKey (const char *key, const char *value)
 {
     t_error err = PD_ERROR_NONE;
     
     char t[PD_STRING] = { 0 };
     
-    err = utils_snprintf (t, PD_STRING, "defaults write org.puredata.puredata %s \"%s\"", k, v);
+    err = utils_snprintf (t, PD_STRING, "defaults write org.puredata.puredata %s \"%s\"", key, value);
     err |= utils_strnadd (t, PD_STRING, " 2> /dev/null\n");
     
     if (!err) { system (t); }
