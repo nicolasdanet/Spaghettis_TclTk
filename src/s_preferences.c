@@ -311,7 +311,6 @@ void preferences_load (void)
     int sampleRate                      = AUDIO_DEFAULT_SAMPLING;
     int advance                         = AUDIO_DEFAULT_ADVANCE;
     int blockSize                       = AUDIO_DEFAULT_BLOCK;
-    int numberOfPath                    = 0;
 
     int numberOfAudioIn                 = 0;
     int numberOfAudioOut                = 0;
@@ -342,11 +341,10 @@ void preferences_load (void)
     if (preferences_getKey ("rate",      value, PD_STRING)) { sscanf (value, "%d", &sampleRate);   }
     if (preferences_getKey ("audiobuf",  value, PD_STRING)) { sscanf (value, "%d", &advance);      }
     if (preferences_getKey ("blocksize", value, PD_STRING)) { sscanf (value, "%d", &blockSize);    }
-    if (preferences_getKey ("npath",     value, PD_STRING)) { sscanf (value, "%d", &numberOfPath); }
     
     /* Search paths. */
     
-    for (i = 0; i < numberOfPath; i++) {
+    for (i = 0; 1; i++) {
     //
     utils_snprintf (key, PD_STRING, "path%d", i + 1);
     if (!preferences_getKey (key, value, PD_STRING)) { break; }
@@ -541,8 +539,6 @@ void preferences_save (void *dummy)
     }
     //
     }
-    
-    utils_snprintf (value, PD_STRING, "%d", i);             preferences_setKey ("npath",     value);
     
     /* Audio devices. */
     
