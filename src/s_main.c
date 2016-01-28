@@ -37,7 +37,7 @@ static void main_entryPlatformSpecific (void)
     #if PD_WINDOWS
     
     #if PD_MSVC
-        _set_fmode ( _O_BINARY );
+        _set_fmode (_O_BINARY);
     #else
         { extern int _fmode; _fmode = _O_BINARY; }
     #endif
@@ -88,7 +88,7 @@ static t_error main_parseArguments (int argc, char **argv)
     }
 
     if (err) {
-        fprintf (stderr, "Usage: pd [ --version ] [ -guiport port ]\n"); 
+        fprintf (stderr, "Usage: pd [ --version ] [ -guiport port ]\n");    // --
     }
     
     return err;

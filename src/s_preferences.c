@@ -22,14 +22,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#if PD_MSVC
-    #define snprintf sprintf_s
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 extern t_pathlist   *sys_searchpath;
 
@@ -39,10 +31,10 @@ extern int sys_audioapi;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark-
 
-//#if ( PD_LINUX || PD_CYGWIN || PD_BSD || PD_HURD || PD_ANDROID )
-#if 1
+#if ( PD_LINUX || PD_CYGWIN || PD_BSD || PD_HURD || PD_ANDROID )
 
-static char *preferences_buffer;                        /* Shared. */
+static char *preferences_loadBuffer;                        /* Shared. */
+static FILE *preferences_saveFile;                          /* Shared. */
 
 static t_error preferences_loadBegin (void)
 {
@@ -66,13 +58,13 @@ static t_error preferences_loadBegin (void)
     
     if (!err) {
     //
-    preferences_buffer = PD_MEMORY_GET (length + 2);
-    preferences_buffer[0] = '\n';
-    err |= (read (f, preferences_buffer + 1, length) < length);
+    preferences_loadBuffer = PD_MEMORY_GET (length + 2);
+    preferences_loadBuffer[0] = '\n';
+    err |= (read (f, preferences_loadBuffer + 1, length) < length);
     //
     }
     
-    if (err) { preferences_buffer[0] = 0; PD_BUG; }
+    if (err) { preferences_loadBuffer[0] = 0; PD_BUG; }
     
     close (f);
     //
@@ -85,82 +77,69 @@ static t_error preferences_loadBegin (void)
 
 static void preferences_loadClose (void)
 {
-    if (preferences_buffer) { 
-        PD_MEMORY_FREE (preferences_buffer, 1234); preferences_buffer = NULL; 
+    if (preferences_loadBuffer) { 
+        PD_MEMORY_FREE (preferences_loadBuffer, 1234); preferences_loadBuffer = NULL; 
+    }
+}
+
+static t_error preferences_saveBegin (void)
+{
+    char *home = getenv ("HOME");
+    char filepath[PD_STRING] = { 0 };
+    t_error err = PD_ERROR_NONE;
+    
+    err = (!home);
+
+    if (!err) {
+        err = utils_snprintf (filepath, PD_STRING, "%s/.puredatarc", home);
+        if (!err) { 
+            err = ((preferences_saveFile = fopen (filepath, "w")) == NULL); 
+        }
+    }
+    
+    return err;
+}
+
+static void preferences_saveClose (void)
+{
+    if (preferences_saveFile) { 
+        fclose (preferences_saveFile); preferences_saveFile = NULL; 
     }
 }
 
 static int preferences_getKey (const char *key, char *value, int size)
 {
-    char search[PD_STRING] = { 0 };
+    char t[PD_STRING] = { 0 };
     char *p = NULL;
     char *pEnd = NULL;
-    t_error err = utils_snprintf (search, PD_STRING, "\n%s:", key);
+    t_error err = utils_snprintf (t, PD_STRING, "\n%s:", key);
 
-    PD_ASSERT (preferences_buffer != NULL);
+    PD_ASSERT (preferences_loadBuffer != NULL);
     PD_ASSERT (!err);
     
-    p = strstr (preferences_buffer, search);
+    p = strstr (preferences_loadBuffer, t);
     
     if (p) {
     //
-    *value = 0;
-        
-    p += strlen (search);
+    *value = 0; p += strlen (t);
     
-    while (*p == ' ' || *p == '\t') { 
-        p++; 
+    while (*p == ' ' || *p == '\t') { p++; }
+    for (pEnd = p; *pEnd && *pEnd != '\n'; pEnd++) { } 
+    
+    if (*pEnd == '\n') { 
+        pEnd--; 
     }
     
-    for (pEnd = p; *pEnd && *pEnd != '\n'; pEnd++) { }
-    
-    if (*pEnd == '\n') { pEnd--; }
-    
-    err = utils_strncat (value, size, p, pEnd + 1 - p);
-    
-    post_log ("? %s %s", key, value);
-    
-    if (!err) { return 1; }
+    if (!utils_strncat (value, size, p, pEnd + 1 - p)) { return 1; }
     //
     }
     
     return 0;
 }
 
-static FILE *sys_prefsavefp;
-
-static t_error preferences_saveBegin (void)
+static void preferences_setKey (const char *key, const char *value)
 {
-    char filenamebuf[PD_STRING],
-        *homedir = getenv("HOME");
-    FILE *fp;
-
-    if (!homedir)
-        return;
-    snprintf(filenamebuf, PD_STRING, "%s/.puredatarc", homedir);
-    filenamebuf[PD_STRING-1] = 0;
-    if ((sys_prefsavefp = fopen(filenamebuf, "w")) == NULL)
-    {
-        post_error ("%s: %s", filenamebuf, strerror(errno));
-    }
-    
-    return PD_ERROR_NONE;
-}
-
-static void preferences_saveClose (void)
-{
-    if (sys_prefsavefp)
-    {
-        fclose(sys_prefsavefp);
-        sys_prefsavefp = 0;
-    }
-}
-
-static void preferences_setKey(const char *key, const char *value)
-{
-    if (sys_prefsavefp)
-        fprintf(sys_prefsavefp, "%s: %s\n",
-            key, value);
+    if (preferences_saveFile) { fprintf (preferences_saveFile, "%s: %s\n", key, value); }   // --
 }
 
 #endif
@@ -178,7 +157,15 @@ static t_error preferences_loadBegin (void)
 
 static void preferences_loadClose (void)
 {
-    ;
+}
+
+static t_error preferences_saveBegin (void)
+{
+    return PD_ERROR_NONE;
+}
+
+static void preferences_saveClose (void)
+{
 }
 
 static int preferences_getKey (const char *key, char *value, int size)
@@ -198,16 +185,6 @@ static int preferences_getKey (const char *key, char *value, int size)
     return 1;
 }
 
-static t_error preferences_saveBegin (void)
-{
-    return PD_ERROR_NONE;
-}
-
-static void preferences_saveClose (void)
-{
-    ;
-}
-
 static void preferences_setKey (const char *key, const char *value)
 {
     HKEY hkey;
@@ -222,14 +199,14 @@ static void preferences_setKey (const char *key, const char *value)
                                 NULL);
                                 
     if (err != ERROR_SUCCESS) {
-        post_error ("preferences: unable to create %s entry\n", key);
+        post_error (PD_TRANSLATE ("preferences: unable to create %s entry\n"), key);    // --
         return;
     }
     
     err = RegSetValueEx (hkey, key, 0, REG_EXPAND_SZ, value, strlen (value) + 1);
     
     if (err != ERROR_SUCCESS) {
-        post_error ("preferences: unable to set %s entry\n", key);
+        post_error (PD_TRANSLATE ("preferences: unable to set %s entry\n"), key);   // --
     }
     
     RegCloseKey (hkey);
@@ -241,8 +218,7 @@ static void preferences_setKey (const char *key, const char *value)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark-
 
-//#if PD_APPLE
-#if 0
+#if PD_APPLE
 
 static t_error preferences_loadBegin (void)
 {
@@ -251,7 +227,15 @@ static t_error preferences_loadBegin (void)
 
 static void preferences_loadClose (void)
 {
-    ;
+}
+
+static t_error preferences_saveBegin (void)
+{
+    return PD_ERROR_NONE;
+}
+
+static void preferences_saveClose (void)
+{
 }
 
 static int preferences_getKey (const char *key, char *value, int size)
@@ -287,16 +271,6 @@ static int preferences_getKey (const char *key, char *value, int size)
     }
     
     return 0;
-}
-
-static t_error preferences_saveBegin (void)
-{
-    return PD_ERROR_NONE;
-}
-
-static void preferences_saveClose (void)
-{
-    ;
 }
 
 static void preferences_setKey (const char *key, const char *value)

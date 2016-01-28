@@ -95,10 +95,10 @@ t_pathlist *pathlist_newAppendFiles (t_pathlist *x, const char *s, char delimite
 
 /* It is rather inefficient to traverse the list. */
 
-char *pathlist_getFileAtIndex (t_pathlist *namelist, int n)
+char *pathlist_getFileAtIndex (t_pathlist *x, int n)
 {
     int i;
-    t_pathlist *l = namelist;
+    t_pathlist *l = x;
     
     for (i = 0; i < n && l; i++, l = l->nl_next) { }
     

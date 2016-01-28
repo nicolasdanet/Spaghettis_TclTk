@@ -23,9 +23,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
     __try {
         main_entry (__argc, __argv);
     }
-    __finally { 
-        ;
-    }
+    __finally { }
     
     return 0;
 }
