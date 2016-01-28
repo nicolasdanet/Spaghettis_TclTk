@@ -31,7 +31,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_symbol     *main_rootDirectory;
 extern t_pathlist   *sys_searchpath;
 
 extern int sys_audioapi;
@@ -40,96 +39,98 @@ extern int sys_audioapi;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark-
 
-#if ( PD_LINUX || PD_CYGWIN || PD_BSD || PD_HURD || PD_ANDROID )
+//#if ( PD_LINUX || PD_CYGWIN || PD_BSD || PD_HURD || PD_ANDROID )
+#if 1
 
-static char *sys_prefbuf;
+static char *preferences_buffer;                        /* Shared. */
 
-static void preferences_loadBegin (void)
+static t_error preferences_loadBegin (void)
 {
-    char filenamebuf[PD_STRING], *homedir = getenv("HOME");
-    int fd, length;
-    char user_prefs_file[PD_STRING]; /* user prefs file */
-        /* default prefs embedded in the package */
-    char default_prefs_file[PD_STRING];
-    struct stat statbuf;
-
-    snprintf(default_prefs_file, PD_STRING, "%s/default.puredata", 
-        main_rootDirectory->s_name);
-    snprintf(user_prefs_file, PD_STRING, "%s/.puredata", 
-        (homedir ? homedir : "."));
-    if (stat(user_prefs_file, &statbuf) == 0) 
-        strncpy(filenamebuf, user_prefs_file, PD_STRING);
-    else if (stat(default_prefs_file, &statbuf) == 0)
-        strncpy(filenamebuf, default_prefs_file, PD_STRING);
-    else return;
-    filenamebuf[PD_STRING-1] = 0;
-    if ((fd = open(filenamebuf, 0)) < 0)
-    {
-        if (0)
-            perror(filenamebuf);
-        return;
+    char *home = getenv ("HOME");
+    char filepath[PD_STRING] = { 0 };
+    t_error err = utils_snprintf (filepath, PD_STRING, "%s/.puredatarc", (home ? home : "."));
+    struct stat t;
+    
+    if (!err) { err |= (stat (filepath, &t) != 0); }
+    if (!err) {
+    //
+    int f;
+    
+    err |= ((f = open (filepath, 0)) < 0);
+    
+    if (!err) {
+    //
+    off_t length;
+    
+    err |= ((length = lseek (f, 0, SEEK_END)) < 0);
+    err |= (lseek (f, 0, SEEK_SET) < 0); 
+    
+    if (!err) {
+    //
+    preferences_buffer = PD_MEMORY_GET (length + 2);
+    preferences_buffer[0] = '\n';
+    err |= (read (f, preferences_buffer + 1, length) < length);
+    //
     }
-    length = lseek(fd, 0, 2);
-    if (length < 0)
-    {
-        if (0)
-            perror(filenamebuf);
-        close(fd);
-        return;
+    
+    if (err) { preferences_buffer[0] = 0; PD_BUG; }
+    
+    close (f);
+    //
     }
-    lseek(fd, 0, 0);
-    if (!(sys_prefbuf = malloc(length + 2)))
-    {
-        post_error ("couldn't allocate memory for preferences buffer");
-        close(fd);
-        return;
+    //
     }
-    sys_prefbuf[0] = '\n';
-    if (read(fd, sys_prefbuf+1, length) < length)
-    {
-        perror(filenamebuf);
-        sys_prefbuf[0] = 0;
-        close(fd);
-        return;
-    }
-    sys_prefbuf[length+1] = 0;
-    close(fd);
-    if (0)
-        post("success reading preferences from: %s", filenamebuf);
+    
+    return err;
 }
 
 static void preferences_loadClose (void)
 {
-    if (sys_prefbuf)
-        free(sys_prefbuf);
+    if (preferences_buffer) { 
+        PD_MEMORY_FREE (preferences_buffer, 1234); preferences_buffer = NULL; 
+    }
 }
 
-static int preferences_getKey(const char *key, char *value, int size)
+static int preferences_getKey (const char *key, char *value, int size)
 {
-    char searchfor[80], *where, *whereend;
-    if (!sys_prefbuf)
-        return (0);
-    sprintf(searchfor, "\n%s:", key);
-    where = strstr(sys_prefbuf, searchfor);
-    if (!where)
-        return (0);
-    where += strlen(searchfor);
-    while (*where == ' ' || *where == '\t')
-        where++;
-    for (whereend = where; *whereend && *whereend != '\n'; whereend++)
-        ;
-    if (*whereend == '\n')
-        whereend--;
-    if (whereend > where + size - 1)
-        whereend = where + size - 1;
-    strncpy(value, where, whereend+1-where);
-    value[whereend+1-where] = 0;
-    return (1);
+    char search[PD_STRING] = { 0 };
+    char *p = NULL;
+    char *pEnd = NULL;
+    t_error err = utils_snprintf (search, PD_STRING, "\n%s:", key);
+
+    PD_ASSERT (preferences_buffer != NULL);
+    PD_ASSERT (!err);
+    
+    p = strstr (preferences_buffer, search);
+    
+    if (p) {
+    //
+    *value = 0;
+        
+    p += strlen (search);
+    
+    while (*p == ' ' || *p == '\t') { 
+        p++; 
+    }
+    
+    for (pEnd = p; *pEnd && *pEnd != '\n'; pEnd++) { }
+    
+    if (*pEnd == '\n') { pEnd--; }
+    
+    err = utils_strncat (value, size, p, pEnd + 1 - p);
+    
+    post_log ("? %s %s", key, value);
+    
+    if (!err) { return 1; }
+    //
+    }
+    
+    return 0;
 }
 
 static FILE *sys_prefsavefp;
 
-static void preferences_saveBegin (void)
+static t_error preferences_saveBegin (void)
 {
     char filenamebuf[PD_STRING],
         *homedir = getenv("HOME");
@@ -137,12 +138,14 @@ static void preferences_saveBegin (void)
 
     if (!homedir)
         return;
-    snprintf(filenamebuf, PD_STRING, "%s/.puredata", homedir);
+    snprintf(filenamebuf, PD_STRING, "%s/.puredatarc", homedir);
     filenamebuf[PD_STRING-1] = 0;
     if ((sys_prefsavefp = fopen(filenamebuf, "w")) == NULL)
     {
         post_error ("%s: %s", filenamebuf, strerror(errno));
     }
+    
+    return PD_ERROR_NONE;
 }
 
 static void preferences_saveClose (void)
@@ -169,9 +172,9 @@ static void preferences_setKey(const char *key, const char *value)
 
 #if PD_WINDOWS
 
-static void preferences_loadBegin (void)
+static t_error preferences_loadBegin (void)
 {
-    ;
+    return PD_ERROR_NONE;
 }
 
 static void preferences_loadClose (void)
@@ -196,9 +199,9 @@ static int preferences_getKey (const char *key, char *value, int size)
     return 1;
 }
 
-static void preferences_saveBegin (void)
+static t_error preferences_saveBegin (void)
 {
-    ;
+    return PD_ERROR_NONE;
 }
 
 static void preferences_saveClose (void)
@@ -239,11 +242,12 @@ static void preferences_setKey (const char *key, const char *value)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark-
 
-#if PD_APPLE
+//#if PD_APPLE
+#if 0
 
-static void preferences_loadBegin (void)
+static t_error preferences_loadBegin (void)
 {
-    ;
+    return PD_ERROR_NONE;
 }
 
 static void preferences_loadClose (void)
@@ -286,9 +290,9 @@ static int preferences_getKey (const char *key, char *value, int size)
     return 0;
 }
 
-static void preferences_saveBegin (void)
+static t_error preferences_saveBegin (void)
 {
-    ;
+    return PD_ERROR_NONE;
 }
 
 static void preferences_saveClose (void)
@@ -319,7 +323,6 @@ static void preferences_setKey (const char *key, const char *value)
 
 void preferences_load (void)
 {
-    int i;
     int noAudioIn                       = 0;
     int noAudioOut                      = 0;
     int noMidiIn                        = 0;
@@ -345,9 +348,11 @@ void preferences_load (void)
     
     char key[PD_STRING]                 = { 0 };
     char value[PD_STRING]               = { 0 };
-
-    preferences_loadBegin();
     
+    if (preferences_loadBegin() == PD_ERROR_NONE) {
+    //
+    int i;
+
     /* Properties. */
     
     noAudioIn   = (preferences_getKey ("noaudioin",  value, PD_STRING) && !strcmp (value, "True"));
@@ -474,6 +479,8 @@ void preferences_load (void)
     }
     //
     }
+    //
+    }
     
     sys_set_audio_api (audioApi);
     
@@ -497,6 +504,8 @@ void preferences_load (void)
 
 void preferences_save (void *dummy)
 {
+    if (preferences_saveBegin() == PD_ERROR_NONE) {
+    //
     int i;
     int callback                        = 0;
     int sampleRate                      = AUDIO_DEFAULT_SAMPLING;
@@ -518,8 +527,6 @@ void preferences_save (void *dummy)
     char key[PD_STRING]                 = { 0 };
     char value[PD_STRING]               = { 0 };
     
-    preferences_saveBegin();
-
     sys_get_audio_params (&numberOfAudioIn,
                             audioIn, 
                             channelIn,
@@ -605,7 +612,9 @@ void preferences_save (void *dummy)
     preferences_setKey (key, value);
     //
     }
-
+    //
+    }
+    
     preferences_saveClose();
 }
 
