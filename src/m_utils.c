@@ -117,6 +117,11 @@ t_error utils_version (char *dest, size_t size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int path_isFileExist (const char *filepath)
+{
+    struct stat t; return (stat (filepath, &t) == 0);
+}
+
 t_error path_withNameAndDirectory (char *dest, size_t size, const char *name, const char *directory)
 {
     t_error err = PD_ERROR;

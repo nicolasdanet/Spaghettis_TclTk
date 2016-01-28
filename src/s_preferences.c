@@ -49,9 +49,8 @@ static t_error preferences_loadBegin (void)
     char *home = getenv ("HOME");
     char filepath[PD_STRING] = { 0 };
     t_error err = utils_snprintf (filepath, PD_STRING, "%s/.puredatarc", (home ? home : "."));
-    struct stat t;
     
-    if (!err) { err |= (stat (filepath, &t) != 0); }
+    if (!err) { err |= !path_isFileExist (filepath); }
     if (!err) {
     //
     int f;

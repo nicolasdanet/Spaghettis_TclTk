@@ -150,6 +150,7 @@ t_error utils_version                   (char *dest, size_t size);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int     path_isFileExist                (const char *filepath);
 t_error path_withNameAndDirectory       (char *dest, size_t size, const char *name, const char *directory);
 
 // -----------------------------------------------------------------------------------------------------------

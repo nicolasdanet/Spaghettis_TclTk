@@ -151,11 +151,10 @@ static t_error main_findRootDirectory (char *progname)
     #if PD_WINDOWS
         main_rootDirectory = gensym (buf2);      /* Dirname of the executable's parent directory. */
     #else
-        struct stat t;
         err |= utils_strncpy (buf1, PD_STRING, buf2);
         err |= utils_strnadd (buf1, PD_STRING, "/lib/pd");
         
-        if (stat (buf1, &t) >= 0) { main_rootDirectory = gensym (buf1); }           /* Complexe. */
+        if (path_isFileExist (buf1)) { main_rootDirectory = gensym (buf1); }        /* Complexe. */
         else {
             main_rootDirectory = gensym (buf2);                                     /* Simple. */
         }
