@@ -75,7 +75,7 @@ static t_error main_parseArguments (int argc, char **argv)
     if (!strcmp (*argv, "--version")) { 
         main_version = 1; argc--; argv++; 
 
-    } else if (!strcmp (*argv, "-guiport") && (argc > 1)) {
+    } else if (!strcmp (*argv, "-port") && (argc > 1)) {
         if (sscanf (argv[1], "%d", &main_portNumber) >= 1) { argc -= 2; argv += 2; }
         else {
             err = PD_ERROR;
@@ -88,7 +88,7 @@ static t_error main_parseArguments (int argc, char **argv)
     }
 
     if (err) {
-        fprintf (stderr, "Usage: pd [ --version ] [ -guiport port ]\n");    // --
+        fprintf (stderr, "Usage: pd [ --version ] [ -port port ]\n");    // --
     }
     
     return err;

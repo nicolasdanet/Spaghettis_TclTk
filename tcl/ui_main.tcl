@@ -222,7 +222,7 @@ proc main {argc argv} {
     } else {
         ::ui_connect::serverSocket
         set executable [file join [file dirname [info script]] "../bin/pd"]
-        exec -- $executable -guiport $::var(tcpPort) &
+        exec -- $executable -port $::var(tcpPort) &
     }
 }
 
