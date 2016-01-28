@@ -32,23 +32,16 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MIDI_MAXIMUM_IN                     16
-#define MIDI_MAXIMUM_OUT                    16
-
-#define AUDIO_MAXIMUM_IN                    4
-#define AUDIO_MAXIMUM_OUT                   4
+#define MAXIMUM_MIDI_IN                     16
+#define MAXIMUM_MIDI_OUT                    16
+#define MAXIMUM_AUDIO_IN                    4
+#define MAXIMUM_AUDIO_OUT                   4
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MIDI_DEFAULT_DEVICE                 0
 #define AUDIO_DEFAULT_DEVICE                0
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 #define AUDIO_DEFAULT_BLOCK                 64
 #define AUDIO_DEFAULT_SAMPLING              44100
 
@@ -124,10 +117,40 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+typedef void (*t_pollfn)            (void *ptr, int fd);
+typedef void (*t_socketnotifyfn)    (void *x, int n);
+typedef void (*t_socketreceivefn)   (void *x, t_buffer *b);
+typedef int  (*t_loader)            (t_canvas *canvas, char *classname);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+typedef struct _fdpoll {
+    int         fdp_fd;
+    t_pollfn    fdp_fn;
+    void        *fdp_ptr;
+    } t_fdpoll;
+
+typedef struct _socketreceiver {
+    char                *sr_inbuf;
+    int                 sr_inhead;
+    int                 sr_intail;
+    void                *sr_owner;
+    int                 sr_udp;
+    t_socketnotifyfn    sr_notifier;
+    t_socketreceivefn   sr_socketreceivefn;
+    } t_socketreceiver;
+
 typedef struct _pathlist {
     struct _pathlist    *nl_next;
     char                *nl_string;
     } t_pathlist;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef int t_fontsize;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -143,11 +166,11 @@ void        pathlist_free                   (t_pathlist *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void font_withHostMeasured                  (void *dummy, t_symbol *s, int argc, t_atom *argv);
-int  font_getNearestValidFontSize           (int size);
-int  font_getHostFontSize                   (int fontSize);
-int  font_getHostFontWidth                  (int fontSize);
-int  font_getHostFontHeight                 (int fontSize);
+void        font_withHostMeasured           (void *dummy, t_symbol *s, int argc, t_atom *argv);
+t_fontsize  font_getNearestValidFontSize    (int size);
+int         font_getHostFontSize            (t_fontsize fontSize);
+int         font_getHostFontWidth           (t_fontsize fontSize);
+int         font_getHostFontHeight          (t_fontsize fontSize);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -168,12 +191,6 @@ void preferences_save                       (void *dummy);
 
 void sys_setsignalhandlers                  (void);
 int  sys_startgui                           (const char *guipath);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-typedef int (*loader_t)(t_canvas *canvas, char *classname);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -208,7 +225,7 @@ int         sys_trytoopenone                (const char *dir,
                             
 t_symbol    *sys_decodedialog               (t_symbol *s);
 int         sys_load_lib                    (t_canvas *canvas, char *name);
-void        sys_register_loader             (loader_t loader);
+void        sys_register_loader             (t_loader loader);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -368,19 +385,7 @@ void sys_setchsr                (int chin, int chout, int sr);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_STRUCT _socketreceiver;
-
-#define t_socketreceiver struct _socketreceiver
-
-typedef void (*t_fdpollfn)(void *ptr, int fd);
-typedef void (*t_socketnotifier)(void *x, int n);
-typedef void (*t_socketreceivefn)(void *x, t_buffer *b);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_socketreceiver *socketreceiver_new (void *owner, t_socketnotifier notifier, t_socketreceivefn fn, int udp);
+t_socketreceiver *socketreceiver_new (void *owner, t_socketnotifyfn notifier, t_socketreceivefn fn, int udp);
 void             socketreceiver_read (t_socketreceiver *x, int fd);
 void             sys_sockerror       (char *s);
 void             sys_closesocket     (int fd);
@@ -388,7 +393,7 @@ void             sys_closesocket     (int fd);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void sys_addpollfn      (int fd, t_fdpollfn fn, void *ptr);
+void sys_addpollfn      (int fd, t_pollfn fn, void *ptr);
 void sys_rmpollfn       (int fd);
 
 // -----------------------------------------------------------------------------------------------------------

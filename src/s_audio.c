@@ -62,13 +62,13 @@ static int audio_state;
 
     /* last requested parameters */
 static int audio_naudioindev = -1;
-static int audio_audioindev[AUDIO_MAXIMUM_IN];
-static int audio_audiochindev[AUDIO_MAXIMUM_IN];
-static char audio_indevnames[MIDI_MAXIMUM_IN * DEVDESCSIZE];
+static int audio_audioindev[MAXIMUM_AUDIO_IN];
+static int audio_audiochindev[MAXIMUM_AUDIO_IN];
+static char audio_indevnames[MAXIMUM_MIDI_IN * DEVDESCSIZE];
 static int audio_naudiooutdev = -1;
-static int audio_audiooutdev[AUDIO_MAXIMUM_OUT];
-static int audio_audiochoutdev[AUDIO_MAXIMUM_OUT];
-static char audio_outdevnames[MIDI_MAXIMUM_IN * DEVDESCSIZE];
+static int audio_audiooutdev[MAXIMUM_AUDIO_OUT];
+static int audio_audiochoutdev[MAXIMUM_AUDIO_OUT];
+static char audio_outdevnames[MAXIMUM_MIDI_IN * DEVDESCSIZE];
 static int audio_rate;
 static int audio_advance = -1;
 static int audio_callback;
@@ -206,8 +206,8 @@ void sys_set_audio_settings(int naudioindev, int *audioindev, int nchindev,
     int i, *ip;
     int defaultchannels = SYS_DEFAULTCH;
     int inchans, outchans, nrealindev, nrealoutdev;
-    int realindev[AUDIO_MAXIMUM_IN], realoutdev[AUDIO_MAXIMUM_OUT];
-    int realinchans[AUDIO_MAXIMUM_IN], realoutchans[AUDIO_MAXIMUM_OUT];
+    int realindev[MAXIMUM_AUDIO_IN], realoutdev[MAXIMUM_AUDIO_OUT];
+    int realinchans[MAXIMUM_AUDIO_IN], realoutchans[MAXIMUM_AUDIO_OUT];
 
     char indevlist[MAXNDEV*DEVDESCSIZE], outdevlist[MAXNDEV*DEVDESCSIZE];
     int indevs = 0, outdevs = 0, canmulti = 0, cancallback = 0;
@@ -240,7 +240,7 @@ void sys_set_audio_settings(int naudioindev, int *audioindev, int nchindev,
         }
         else
         {
-            for (i = 0; i < AUDIO_MAXIMUM_IN; i++)
+            for (i = 0; i < MAXIMUM_AUDIO_IN; i++)
                 audioindev[i] = i;
             naudioindev = nchindev;
         }
@@ -290,7 +290,7 @@ void sys_set_audio_settings(int naudioindev, int *audioindev, int nchindev,
         }
         else
         {
-            for (i = 0; i < AUDIO_MAXIMUM_OUT; i++)
+            for (i = 0; i < MAXIMUM_AUDIO_OUT; i++)
                 audiooutdev[i] = i;
             naudiooutdev = nchoutdev;
         }
@@ -399,8 +399,8 @@ void sys_close_audio(void)
     /* open audio using whatever parameters were last used */
 void sys_reopen_audio( void)
 {
-    int naudioindev, audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
-    int naudiooutdev, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
+    int naudioindev, audioindev[MAXIMUM_AUDIO_IN], chindev[MAXIMUM_AUDIO_IN];
+    int naudiooutdev, audiooutdev[MAXIMUM_AUDIO_OUT], choutdev[MAXIMUM_AUDIO_OUT];
     int rate, advance, callback, blocksize, outcome = 0;
     sys_get_audio_params(&naudioindev, audioindev, chindev,
         &naudiooutdev, audiooutdev, choutdev, &rate, &advance, &callback,
@@ -686,8 +686,8 @@ void global_audioProperties(void *dummy, t_float flongform)
 {
     char buf[1024 + 2 * MAXNDEV*(DEVDESCSIZE+4)];
         /* these are the devices you're using: */
-    int naudioindev, audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
-    int naudiooutdev, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
+    int naudioindev, audioindev[MAXIMUM_AUDIO_IN], chindev[MAXIMUM_AUDIO_IN];
+    int naudiooutdev, audiooutdev[MAXIMUM_AUDIO_OUT], choutdev[MAXIMUM_AUDIO_OUT];
     int audioindev1, audioindev2, audioindev3, audioindev4,
         audioinchan1, audioinchan2, audioinchan3, audioinchan4,
         audiooutdev1, audiooutdev2, audiooutdev3, audiooutdev4,
@@ -754,8 +754,8 @@ extern int pa_foo;
     /* new values from dialog window */
 void global_audioDialog(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    int naudioindev, audioindev[AUDIO_MAXIMUM_IN], chindev[AUDIO_MAXIMUM_IN];
-    int naudiooutdev, audiooutdev[AUDIO_MAXIMUM_OUT], choutdev[AUDIO_MAXIMUM_OUT];
+    int naudioindev, audioindev[MAXIMUM_AUDIO_IN], chindev[MAXIMUM_AUDIO_IN];
+    int naudiooutdev, audiooutdev[MAXIMUM_AUDIO_OUT], choutdev[MAXIMUM_AUDIO_OUT];
     int rate, advance, audioon, i, nindev, noutdev;
     int audioindev1, audioinchan1, audiooutdev1, audiooutchan1;
     int newaudioindev[4], newaudioinchan[4],

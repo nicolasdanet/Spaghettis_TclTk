@@ -1,100 +1,79 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/* Pd side of the Pd/Pd-gui interface.  Also, some system interface routines
-that didn't really belong anywhere. */
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "m_core.h"
-#include "g_canvas.h"   /* for GUI queueing stuff */
-#ifndef _WIN32
-#include <unistd.h>
+#include "g_canvas.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if PD_WINDOWS
+
+    #include <process.h>
+    #include <winsock.h>
+
+    typedef int socklen_t;
+    
+    #define EADDRINUSE WSAEADDRINUSE
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if !PD_WINDOWS
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <netdb.h>
-#include <stdlib.h>
 #include <sys/time.h>
 #include <sys/mman.h>
 #include <sys/resource.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+
 #endif
 
-#ifdef _WIN32
-#include <io.h>
-#include <fcntl.h>
-#include <process.h>
-#include <winsock.h>
-#include <windows.h>
-typedef int socklen_t;
-#define EADDRINUSE WSAEADDRINUSE
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-#include <stdarg.h>
-#include <signal.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <string.h>
-#include <stdio.h>
+#if PD_APPLE
 
-#ifdef __APPLE__
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <pthread.h>
 #include <glob.h>
+#include <pthread.h>
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if ( PD_LINUX || PD_BSD || PD_HURD )
+    #define INTERFACE_LOCALHOST     "127.0.0.1"
 #else
-#include <stdlib.h>
+    #define INTERFACE_LOCALHOST     "localhost"
 #endif
 
-#define DEBUG_MESSUP 1      /* messages up from pd to pd-gui */
-#define DEBUG_MESSDOWN 2    /* messages down from pd-gui to pd */
-
-#ifndef PDBINDIR
-#define PDBINDIR "bin/"
-#endif
-
-#ifndef PDGUIDIR
-#define PDGUIDIR "tcl/"
-#endif
-
-#ifndef WISHAPP
-#define WISHAPP "wish85.exe"
-#endif
-
-#if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
-#define LOCALHOST "127.0.0.1"
-#else
-#define LOCALHOST "localhost"
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 extern int sys_audioapi;
 
 static char *main_commandToLaunchGUI;
- 
-typedef struct _fdpoll
-{
-    int fdp_fd;
-    t_fdpollfn fdp_fn;
-    void *fdp_ptr;
-} t_fdpoll;
+
 
 #define INBUFSIZE 4096
-
-struct _socketreceiver
-{
-    char *sr_inbuf;
-    int sr_inhead;
-    int sr_intail;
-    void *sr_owner;
-    int sr_udp;
-    t_socketnotifier sr_notifier;
-    t_socketreceivefn sr_socketreceivefn;
-};
 
 extern int main_portNumber;
 
@@ -359,7 +338,7 @@ void sys_sockerror(char *s)
     post("%s: %s (%d)\n", s, strerror(err), err);
 }
 
-void sys_addpollfn(int fd, t_fdpollfn fn, void *ptr)
+void sys_addpollfn(int fd, t_pollfn fn, void *ptr)
 {
     int nfd = sys_nfdpoll;
     int size = nfd * sizeof(t_fdpoll);
@@ -397,7 +376,7 @@ void sys_rmpollfn(int fd)
     post("warning: %d removed from poll list but not found", fd);
 }
 
-t_socketreceiver *socketreceiver_new(void *owner, t_socketnotifier notifier,
+t_socketreceiver *socketreceiver_new(void *owner, t_socketnotifyfn notifier,
     t_socketreceivefn socketreceivefn, int udp)
 {
     t_socketreceiver *x = (t_socketreceiver *)PD_MEMORY_GET(sizeof(*x));
@@ -436,11 +415,11 @@ static int socketreceiver_doread(t_socketreceiver *x)
         {
             intail = (indx+1)&(INBUFSIZE-1);
             buffer_withStringUnzeroed(inbinbuf, messbuf, bp - messbuf);
-            if (0 /*sys_debuglevel*/ & DEBUG_MESSDOWN)
-            {
-                write(2,  messbuf, bp - messbuf);
-                write(2, "\n", 1);
-            }
+            //if (0 /*sys_debuglevel*/ & DEBUG_MESSDOWN)
+            //{
+            //    write(2,  messbuf, bp - messbuf);
+            //    write(2, "\n", 1);
+            //}
             x->sr_inhead = inhead;
             x->sr_intail = intail;
             return (1);
@@ -674,8 +653,8 @@ void sys_vgui(char *fmt, ...)
         if (msglen >= sys_guibufsize - sys_guibufhead)
             msglen = sys_guibufsize - sys_guibufhead;
     }
-    if (0 /*sys_debuglevel*/ & DEBUG_MESSUP)
-        fprintf(stderr, "%s",  sys_guibuf + sys_guibufhead);
+    //if (0 /*sys_debuglevel*/ & DEBUG_MESSUP)
+    //    fprintf(stderr, "%s",  sys_guibuf + sys_guibufhead);
     sys_guibufhead += msglen;
     sys_bytessincelastping += msglen;
 }
@@ -919,7 +898,7 @@ int sys_startgui(const char *libdir)
         /* connect socket using hostname provided in command line */
         server.sin_family = AF_INET;
 
-        hp = gethostbyname(LOCALHOST);
+        hp = gethostbyname(INTERFACE_LOCALHOST);
 
         if (hp == 0)
         {
@@ -1040,7 +1019,7 @@ int sys_startgui(const char *libdir)
                         break;
                 }
                 sprintf(cmdbuf, "\"%s\" \"%s/%sui_main.tcl\" %d\n", 
-                        wish_paths[i], libdir, PDGUIDIR, portno);
+                        wish_paths[i], libdir, PD_TCL_DIRECTORY, portno);
             }
 #else /* __APPLE__ */
             /* sprintf the wish command with needed environment variables.
@@ -1048,7 +1027,7 @@ int sys_startgui(const char *libdir)
             if necessary we put that in here too. */
             sprintf(cmdbuf,
   "TCL_LIBRARY=\"%s/lib/tcl/library\" TK_LIBRARY=\"%s/lib/tk/library\"%s \
-  wish \"%s/" PDGUIDIR "/ui_main.tcl\" %d\n",
+  wish \"%s/" PD_TCL_DIRECTORY "/ui_main.tcl\" %d\n",
                  libdir, libdir, (getenv("HOME") ? "" : " HOME=/tmp"),
                     libdir, portno);
 #endif /* __APPLE__ */
@@ -1096,16 +1075,16 @@ int sys_startgui(const char *libdir)
         
         strcpy(scriptbuf, "\"");
         strcat(scriptbuf, libdir);
-        strcat(scriptbuf, "/" PDGUIDIR "ui_main.tcl\"");
+        strcat(scriptbuf, "/" PD_TCL_DIRECTORY "ui_main.tcl\"");
         sys_bashfilename(scriptbuf, scriptbuf);
         
         sprintf(portbuf, "%d", portno);
 
         strcpy(wishbuf, libdir);
-        strcat(wishbuf, "/" PDBINDIR WISHAPP);
+        strcat(wishbuf, "/" PD_BIN_DIRECTORY PD_EXE_WISH);
         sys_bashfilename(wishbuf, wishbuf);
         
-        spawnret = _spawnl(P_NOWAIT, wishbuf, WISHAPP, scriptbuf, portbuf, 0);
+        spawnret = _spawnl(P_NOWAIT, wishbuf, PD_EXE_WISH, scriptbuf, portbuf, 0);
         if (spawnret < 0)
         {
             perror("spawnl");
@@ -1242,7 +1221,7 @@ int sys_startgui(const char *libdir)
     {
         char buf[256], buf2[256];
         sys_socketreceiver = socketreceiver_new(0, 0, 0, 0);
-        sys_addpollfn(sys_guisock, (t_fdpollfn)socketreceiver_read,
+        sys_addpollfn(sys_guisock, (t_pollfn)socketreceiver_read,
             sys_socketreceiver);
 
             /* here is where we start the pinging. */
@@ -1298,3 +1277,6 @@ void global_quit(void *dummy)
     }
     exit(0); 
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

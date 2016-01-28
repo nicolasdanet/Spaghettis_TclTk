@@ -312,12 +312,12 @@ void preferences_load (void)
     int numberOfMidiIn                  = 0;
     int numberOfMidiOut                 = 0;
 
-    int audioIn[AUDIO_MAXIMUM_IN]       = { 0 };
-    int audioOut[AUDIO_MAXIMUM_OUT]     = { 0 };
-    int midiIn[MIDI_MAXIMUM_IN]         = { 0 };
-    int midiOut[MIDI_MAXIMUM_OUT]       = { 0 };
-    int channelIn[AUDIO_MAXIMUM_IN]     = { 0 };
-    int channelOut[AUDIO_MAXIMUM_OUT]   = { 0 };
+    int audioIn[MAXIMUM_AUDIO_IN]       = { 0 };
+    int audioOut[MAXIMUM_AUDIO_OUT]     = { 0 };
+    int midiIn[MAXIMUM_MIDI_IN]         = { 0 };
+    int midiOut[MAXIMUM_MIDI_OUT]       = { 0 };
+    int channelIn[MAXIMUM_AUDIO_IN]     = { 0 };
+    int channelOut[MAXIMUM_AUDIO_OUT]   = { 0 };
     
     char key[PD_STRING]                 = { 0 };
     char value[PD_STRING]               = { 0 };
@@ -355,7 +355,7 @@ void preferences_load (void)
     
     if (!noAudioIn) {
     //
-    for (i = 0; i < AUDIO_MAXIMUM_IN; i++) {
+    for (i = 0; i < MAXIMUM_AUDIO_IN; i++) {
     //
     utils_snprintf (key, PD_STRING, "AudioInDevice%d", i + 1);
     
@@ -382,7 +382,7 @@ void preferences_load (void)
     
     if (!noAudioOut) {
     //
-    for (i = 0; i < AUDIO_MAXIMUM_OUT; i++) {
+    for (i = 0; i < MAXIMUM_AUDIO_OUT; i++) {
     //
     utils_snprintf (key, PD_STRING, "AudioOutDevice%d", i + 1);
     
@@ -411,7 +411,7 @@ void preferences_load (void)
     
     if (!noMidiIn) {
     //
-    for (i = 0; i < MIDI_MAXIMUM_IN; i++) {
+    for (i = 0; i < MAXIMUM_MIDI_IN; i++) {
     //
     int device;
     
@@ -433,7 +433,7 @@ void preferences_load (void)
 
     if (!noMidiOut) {
     //
-    for (i = 0; i < MIDI_MAXIMUM_OUT; i++) {
+    for (i = 0; i < MAXIMUM_MIDI_OUT; i++) {
     //
     int device;
     
@@ -490,12 +490,12 @@ void preferences_save (void *dummy)
     int numberOfMidiIn                  = 0;
     int numberOfMidiOut                 = 0;
     
-    int audioIn[AUDIO_MAXIMUM_IN]       = { 0 };
-    int audioOut[AUDIO_MAXIMUM_OUT]     = { 0 };
-    int midiIn[MIDI_MAXIMUM_IN]         = { 0 };
-    int midiOut[MIDI_MAXIMUM_OUT]       = { 0 };
-    int channelIn[AUDIO_MAXIMUM_IN]     = { 0 };
-    int channelOut[AUDIO_MAXIMUM_OUT]   = { 0 };
+    int audioIn[MAXIMUM_AUDIO_IN]       = { 0 };
+    int audioOut[MAXIMUM_AUDIO_OUT]     = { 0 };
+    int midiIn[MAXIMUM_MIDI_IN]         = { 0 };
+    int midiOut[MAXIMUM_MIDI_OUT]       = { 0 };
+    int channelIn[MAXIMUM_AUDIO_IN]     = { 0 };
+    int channelOut[MAXIMUM_AUDIO_OUT]   = { 0 };
     
     char key[PD_STRING]                 = { 0 };
     char value[PD_STRING]               = { 0 };

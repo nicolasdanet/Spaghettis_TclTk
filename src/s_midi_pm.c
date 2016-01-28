@@ -44,8 +44,8 @@
 #define MIDIACTIVESENSE   0xfe  /* 0 */
 #define MIDIRESET         0xff  /* 0 */
 
-static PmStream *mac_midiindevlist[MIDI_MAXIMUM_IN];
-static PmStream *mac_midioutdevlist[MIDI_MAXIMUM_OUT];
+static PmStream *mac_midiindevlist[MAXIMUM_MIDI_IN];
+static PmStream *mac_midioutdevlist[MAXIMUM_MIDI_OUT];
 static int mac_nmidiindev;
 static int mac_nmidioutdev;
 

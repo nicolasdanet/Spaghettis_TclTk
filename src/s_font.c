@@ -72,7 +72,7 @@ static t_fontinfo *font_getNearest (int fontSize)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int font_getNearestValidFontSize (int size)
+t_fontsize font_getNearestValidFontSize (int size)
 {
     return (font_getNearest (size)->fi_size);
 }
@@ -81,21 +81,21 @@ int font_getNearestValidFontSize (int size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int font_getHostFontSize (int fontSize)
+int font_getHostFontSize (t_fontsize fontSize)
 {
     int k = font_getNearest (fontSize)->fi_hostSize;
     
     return PD_MAX (k, 1);
 }
 
-int font_getHostFontWidth (int fontSize)
+int font_getHostFontWidth (t_fontsize fontSize)
 {
     int k = font_getNearest (fontSize)->fi_hostWidth;
     
     return PD_MAX (k, 1);
 }
 
-int font_getHostFontHeight (int fontSize)
+int font_getHostFontHeight (t_fontsize fontSize)
 {
     int k = font_getNearest (fontSize)->fi_hostHeight;
     

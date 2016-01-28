@@ -146,6 +146,10 @@ extern "C" {
 #define PD_VERSION              "0.9"
 #define PD_FILE                 ".pd"
 
+#define PD_EXE_WISH             "wish85.exe"
+#define PD_BIN_DIRECTORY        "bin/"
+#define PD_TCL_DIRECTORY        "tcl/"
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -179,6 +183,7 @@ extern "C" {
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdint.h>

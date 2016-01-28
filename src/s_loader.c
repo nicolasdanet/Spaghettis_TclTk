@@ -247,14 +247,14 @@ gotone:
 
 /* linked list of loaders */
 typedef struct loader_queue {
-    loader_t loader;
+    t_loader loader;
     struct loader_queue *next;
 } loader_queue_t;
 
 static loader_queue_t loaders = {sys_do_load_lib, NULL};
 
 /* register class loader function */
-void sys_register_loader(loader_t loader)
+void sys_register_loader(t_loader loader)
 {
     loader_queue_t *q = &loaders;
     while (1)
