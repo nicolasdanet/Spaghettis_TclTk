@@ -41,7 +41,7 @@ static void *print_new(t_symbol *sel, int argc, t_atom *argv)
         buf = PD_MEMORY_RESIZE(buf, bufsize, bufsize+1);
         buf[bufsize] = 0;
         x->x_sym = gensym(buf);
-        PD_MEMORY_FREE(buf, bufsize+1);
+        PD_MEMORY_FREE(buf);
         buffer_free(bb);
     }
     return (x);

@@ -357,7 +357,7 @@ void canvas_resortinlets(t_canvas *x)
         
         object_moveInletFirst(&x->gl_obj, ip);
     }
-    PD_MEMORY_FREE(vec, ninlets * sizeof(*vec));
+    PD_MEMORY_FREE(vec);
     if (x->gl_owner && glist_isvisible(x->gl_owner))
         canvas_fixlines(x->gl_owner, &x->gl_obj);
 }
@@ -429,7 +429,7 @@ void canvas_resortoutlets(t_canvas *x)
         
         object_moveOutletFirst(&x->gl_obj, ip);
     }
-    PD_MEMORY_FREE(vec, noutlets * sizeof(*vec));
+    PD_MEMORY_FREE(vec);
     if (x->gl_owner && glist_isvisible(x->gl_owner))
         canvas_fixlines(x->gl_owner, &x->gl_obj);
 }

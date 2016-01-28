@@ -303,7 +303,7 @@ static t_int *vline_tilde_perform(t_int *w)
                 x->x_target = s->s_target;
                 x->x_targettime = s->s_targettime;
                 x->x_list = s->s_next;
-                PD_MEMORY_FREE(s, sizeof(*s));
+                PD_MEMORY_FREE(s);
                 s = x->x_list;
                 goto checknext;
             }
@@ -322,7 +322,7 @@ static void vline_tilde_stop(t_vline *x)
 {
     t_vseg *s1, *s2;
     for (s1 = x->x_list; s1; s1 = s2)
-        s2 = s1->s_next, PD_MEMORY_FREE(s1, sizeof(*s1));
+        s2 = s1->s_next, PD_MEMORY_FREE(s1);
     x->x_list = 0;
     x->x_inc = 0;
     x->x_inlet1 = x->x_inlet2 = 0;
@@ -379,7 +379,7 @@ static void vline_tilde_float(t_vline *x, t_float f)
     while (deletefrom)
     {
         s1 = deletefrom->s_next;
-        PD_MEMORY_FREE(deletefrom, sizeof(*deletefrom));
+        PD_MEMORY_FREE(deletefrom);
         deletefrom = s1;
     }
     snew->s_next = 0;
@@ -522,7 +522,7 @@ static void vsnapshot_tilde_dsp(t_vsnapshot *x, t_signal **sp)
     if (n != x->x_n)
     {
         if (x->x_vec)
-            PD_MEMORY_FREE(x->x_vec, x->x_n * sizeof(t_sample));
+            PD_MEMORY_FREE(x->x_vec);
         x->x_vec = (t_sample *)PD_MEMORY_GET(n * sizeof(t_sample));
         x->x_gotone = 0;
         x->x_n = n;
@@ -550,7 +550,7 @@ static void vsnapshot_tilde_bang(t_vsnapshot *x)
 static void vsnapshot_tilde_ff(t_vsnapshot *x)
 {
     if (x->x_vec)
-        PD_MEMORY_FREE(x->x_vec, x->x_n * sizeof(t_sample));
+        PD_MEMORY_FREE(x->x_vec);
 }
 
 static void vsnapshot_tilde_setup(void)
@@ -689,7 +689,7 @@ static void env_tilde_tick(t_sigenv *x) /* callback function for the clock */
 static void env_tilde_ff(t_sigenv *x)           /* cleanup on free */
 {
     clock_free(x->x_clock);
-    PD_MEMORY_FREE(x->x_buf, (x->x_npoints + x->x_allocforvs) * sizeof(*x->x_buf));
+    PD_MEMORY_FREE(x->x_buf);
 }
 
 

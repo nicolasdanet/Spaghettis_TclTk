@@ -2138,7 +2138,7 @@ static void readsf_free(t_readsf *x)
     pthread_cond_destroy(&x->x_requestcondition);
     pthread_cond_destroy(&x->x_answercondition);
     pthread_mutex_destroy(&x->x_mutex);
-    PD_MEMORY_FREE(x->x_buf, x->x_bufsize);
+    PD_MEMORY_FREE(x->x_buf);
     clock_free(x->x_clock);
 }
 
@@ -2622,7 +2622,7 @@ static void writesf_free(t_writesf *x)
     pthread_cond_destroy(&x->x_requestcondition);
     pthread_cond_destroy(&x->x_answercondition);
     pthread_mutex_destroy(&x->x_mutex);
-    PD_MEMORY_FREE(x->x_buf, x->x_bufsize);
+    PD_MEMORY_FREE(x->x_buf);
 }
 
 static void writesf_setup(void)

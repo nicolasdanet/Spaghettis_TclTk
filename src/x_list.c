@@ -78,7 +78,7 @@ static void alist_clear(t_alist *x)
             gpointer_unset(x->l_vec[i].l_a.a_w.w_gpointer);
     }
     if (x->l_vec)
-        PD_MEMORY_FREE(x->l_vec, x->l_n * sizeof(*x->l_vec));
+        PD_MEMORY_FREE(x->l_vec);
 }
 
 static void alist_list(t_alist *x, t_symbol *s, int argc, t_atom *argv)

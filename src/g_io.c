@@ -87,7 +87,7 @@ static void vinlet_free(t_vinlet *x)
 {
     canvas_rminlet(x->x_canvas, x->x_inlet);
     if (x->x_buf)
-        PD_MEMORY_FREE(x->x_buf, x->x_bufsize * sizeof(*x->x_buf));
+        PD_MEMORY_FREE(x->x_buf);
     resample_free(&x->x_updown);
 }
 
@@ -207,7 +207,7 @@ void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
         if (bufsize != (oldbufsize = x->x_bufsize))
         {
             t_float *buf = x->x_buf;
-            PD_MEMORY_FREE(buf, oldbufsize * sizeof(*buf));
+            PD_MEMORY_FREE(buf);
             buf = (t_float *)PD_MEMORY_GET(bufsize * sizeof(*buf));
             memset((char *)buf, 0, bufsize * sizeof(*buf));
             x->x_bufsize = bufsize;
@@ -364,7 +364,7 @@ static void voutlet_free(t_voutlet *x)
 {
     canvas_rmoutlet(x->x_canvas, x->x_parentoutlet);
     if (x->x_buf)
-        PD_MEMORY_FREE(x->x_buf, x->x_bufsize * sizeof(*x->x_buf));
+        PD_MEMORY_FREE(x->x_buf);
     resample_free(&x->x_updown);
 }
 
@@ -522,7 +522,7 @@ void voutlet_dspepilog(struct _voutlet *x, t_signal **parentsigs,
         if (bufsize != (oldbufsize = x->x_bufsize))
         {
             t_sample *buf = x->x_buf;
-            PD_MEMORY_FREE(buf, oldbufsize * sizeof(*buf));
+            PD_MEMORY_FREE(buf);
             buf = (t_sample *)PD_MEMORY_GET(bufsize * sizeof(*buf));
             memset((char *)buf, 0, bufsize * sizeof(*buf));
             x->x_bufsize = bufsize;

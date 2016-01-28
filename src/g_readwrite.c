@@ -233,11 +233,11 @@ void glist_readfrombinbuf(t_glist *x, t_buffer *b, char *filename, int selectem)
         {
             post_error ("%s: template not found in current patch",
                 templatesym->s_name);
-            PD_MEMORY_FREE(templateargs, sizeof (*templateargs) * ntemplateargs);
+            PD_MEMORY_FREE(templateargs);
             return;
         }
         newtemplate = template_new(templatesym, ntemplateargs, templateargs);
-        PD_MEMORY_FREE(templateargs, sizeof (*templateargs) * ntemplateargs);
+        PD_MEMORY_FREE(templateargs);
         if (!template_match(existtemplate, newtemplate))
         {
             post_error ("%s: template doesn't match current one",
@@ -447,7 +447,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_buffer *b,
         SET_SYMBOL(a + natom,  &s_bang), natom++;
     buffer_append(b, natom, a);
     buffer_appendSemicolon(b);
-    PD_MEMORY_FREE(a, natom * sizeof(*a));
+    PD_MEMORY_FREE(a);
     for (i = 0; i < n; i++)
     {
         if (template->t_vec[i].ds_type == DATA_ARRAY)

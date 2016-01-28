@@ -227,7 +227,7 @@ void inlet_free (t_inlet *x)
         }
     }
     
-    PD_MEMORY_FREE (x, sizeof (t_inlet));
+    PD_MEMORY_FREE (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -339,7 +339,7 @@ void outlet_free (t_outlet *x)
         }
     }
     
-    PD_MEMORY_FREE (x, sizeof (t_outlet));
+    PD_MEMORY_FREE (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -564,14 +564,14 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
     
     if (oc1->oc_to == to) {
         o->o_connections = oc1->oc_next;
-        PD_MEMORY_FREE (oc1, sizeof (t_outconnect));
+        PD_MEMORY_FREE (oc1);
         
     } else {
         while (oc2 = oc1->oc_next) {
             if (oc2->oc_to != to) { oc1 = oc2; }
             else {
                 oc1->oc_next = oc2->oc_next;
-                PD_MEMORY_FREE (oc2, sizeof (t_outconnect));
+                PD_MEMORY_FREE (oc2);
                 break;
             }
         }

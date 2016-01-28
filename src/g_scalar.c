@@ -406,7 +406,7 @@ static void scalar_properties(t_gobj *z, struct _glist *owner)
     gfxstub_new((t_pd *)owner, x, buf2);
     sys_gui(buf);
     sys_gui("}\n");
-    PD_MEMORY_FREE(buf, bufsize+1);
+    PD_MEMORY_FREE(buf);
 }
 
 static t_widgetbehavior scalar_widgetbehavior =
@@ -435,7 +435,7 @@ static void scalar_free(t_scalar *x)
     gfxstub_deleteforkey(x);
         /* the "size" field in the class is zero, so Pd doesn't try to free
         us automatically (see pd_free()) */
-    PD_MEMORY_FREE(x, sizeof(t_scalar) + (template->t_n - 1) * sizeof(*x->sc_vector));
+    PD_MEMORY_FREE(x);
 }
 
 /* ----------------- setup function ------------------- */

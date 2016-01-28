@@ -56,8 +56,8 @@ t_buffer *buffer_new (void)
 
 void buffer_free (t_buffer *x)
 {
-    PD_MEMORY_FREE (x->b_vector, x->b_size * sizeof (t_atom));
-    PD_MEMORY_FREE (x, sizeof (t_buffer));
+    PD_MEMORY_FREE (x->b_vector);
+    PD_MEMORY_FREE (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -107,7 +107,7 @@ void buffer_log (t_buffer *x)       /* Handy to debug. */
     buffer_toString (x, &s, &size);
     post_log ("%s", s);
     
-    PD_MEMORY_FREE (s, size);
+    PD_MEMORY_FREE (s);
     //
     }
 }
@@ -283,7 +283,7 @@ void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int allocated)
 
     if (buffer_isMalformed (s, size)) { PD_BUG; return; }
     
-    PD_MEMORY_FREE (x->b_vector, x->b_size * sizeof (t_atom));
+    PD_MEMORY_FREE (x->b_vector);
     x->b_vector = PD_MEMORY_GET (allocated * sizeof (t_atom));
     a = x->b_vector;
     x->b_size = length;     /* Inconsistency corrected later. */
@@ -540,7 +540,7 @@ static t_error buffer_fromFile (t_buffer *x, char *name, char *directory)
         char *t = PD_MEMORY_GET ((size_t)length);
         err = (read (f, t, length) != length);
         if (err) { PD_BUG; } else { buffer_withStringUnzeroed (x, t, (int)length); }
-        PD_MEMORY_FREE (t, length);
+        PD_MEMORY_FREE (t);
     }
     
     close (f);
@@ -669,7 +669,7 @@ t_error buffer_write (t_buffer *x, char *name, char *directory)
     err |= (fflush (f) != 0);
 
     PD_ASSERT (!err);
-    PD_MEMORY_FREE (s, size);
+    PD_MEMORY_FREE (s);
         
     fclose (f);
     //

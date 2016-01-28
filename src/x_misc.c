@@ -679,7 +679,7 @@ static void oscformat_list(t_oscformat *x, t_symbol *s, int argc, t_atom *argv)
 
 static void oscformat_free(t_oscformat *x)
 {
-    PD_MEMORY_FREE(x->x_pathbuf, x->x_pathsize);
+    PD_MEMORY_FREE(x->x_pathbuf);
 }
 
 static void *oscformat_new(t_symbol *s, int argc, t_atom *argv)

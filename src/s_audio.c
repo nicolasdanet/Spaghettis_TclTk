@@ -170,13 +170,9 @@ void sys_setchsr(int chin, int chout, int sr)
                 (AUDIO_DEFAULT_BLOCK*sizeof(t_sample));
 
     if (sys_soundin)
-        PD_MEMORY_FREE(sys_soundin, 
-            (sys_inchannels? sys_inchannels : 2) *
-                (AUDIO_DEFAULT_BLOCK*sizeof(t_sample)));
+        PD_MEMORY_FREE(sys_soundin);
     if (sys_soundout)
-        PD_MEMORY_FREE(sys_soundout, 
-            (sys_outchannels? sys_outchannels : 2) *
-                (AUDIO_DEFAULT_BLOCK*sizeof(t_sample)));
+        PD_MEMORY_FREE(sys_soundout);
     sys_inchannels = chin;
     sys_outchannels = chout;
     sys_dacsr = sr;

@@ -370,8 +370,8 @@ void signal_cleanup(void)
     {
         pd_this->pd_signals = sig->s_nextUsed;
         if (!sig->s_isBorrowed)
-            PD_MEMORY_FREE(sig->s_vector, sig->s_vectorSize * sizeof (*sig->s_vector));
-        PD_MEMORY_FREE(sig, sizeof *sig);
+            PD_MEMORY_FREE(sig->s_vector);
+        PD_MEMORY_FREE(sig);
     }
     for (i = 0; i <= MAXLOGSIG; i++)
         signal_freelist[i] = 0;
@@ -557,8 +557,7 @@ void ugen_stop(void)
     int i;
     if (pd_this->pd_chain)
     {
-        PD_MEMORY_FREE(pd_this->pd_chain, 
-            pd_this->pd_chainSize * sizeof (t_int));
+        PD_MEMORY_FREE(pd_this->pd_chain);
         pd_this->pd_chain = 0;
     }
     signal_cleanup();
@@ -825,7 +824,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
         notyet: ;
         }
     }
-    PD_MEMORY_FREE(insig,(u->u_nin + u->u_nout) * sizeof(t_signal *));
+    PD_MEMORY_FREE(insig);
     u->u_done = 1;
 }
 
@@ -1095,22 +1094,20 @@ void ugen_done_graph(t_dspcontext *dc)
             while (oc)
             {
                 oc2 = oc->oc_next;
-                PD_MEMORY_FREE(oc, sizeof *oc);
+                PD_MEMORY_FREE(oc);
                 oc = oc2;
             }
         }
-        PD_MEMORY_FREE(dc->dc_ugenlist->u_out, dc->dc_ugenlist->u_nout *
-            sizeof (*dc->dc_ugenlist->u_out));
-        PD_MEMORY_FREE(dc->dc_ugenlist->u_in, dc->dc_ugenlist->u_nin *
-            sizeof(*dc->dc_ugenlist->u_in));
+        PD_MEMORY_FREE(dc->dc_ugenlist->u_out);
+        PD_MEMORY_FREE(dc->dc_ugenlist->u_in);
         u = dc->dc_ugenlist;
         dc->dc_ugenlist = u->u_next;
-        PD_MEMORY_FREE(u, sizeof *u);
+        PD_MEMORY_FREE(u);
     }
     if (ugen_currentcontext == dc)
         ugen_currentcontext = dc->dc_parentcontext;
     else { PD_BUG; }
-    PD_MEMORY_FREE(dc, sizeof(*dc));
+    PD_MEMORY_FREE(dc);
 
 }
 

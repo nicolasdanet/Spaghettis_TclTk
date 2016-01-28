@@ -199,7 +199,7 @@ void pd_free (t_pd *x)
         }
     }
 
-    if (c->c_size) { PD_MEMORY_FREE (x, c->c_size); }
+    if (c->c_size) { PD_MEMORY_FREE (x); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -284,12 +284,12 @@ void pd_unbind (t_pd *x, t_symbol *s)
         
         if ((e1 = b->b_list)->e_what == x) {
             b->b_list = e1->e_next;
-            PD_MEMORY_FREE (e1, sizeof (t_bindelement));
+            PD_MEMORY_FREE (e1);
         } else {
             for (e1 = b->b_list; e2 = e1->e_next; e1 = e2) {
                 if (e2->e_what == x) {
                     e1->e_next = e2->e_next;
-                    PD_MEMORY_FREE (e2, sizeof (t_bindelement));
+                    PD_MEMORY_FREE (e2);
                     break;
                 }
             }
@@ -297,7 +297,7 @@ void pd_unbind (t_pd *x, t_symbol *s)
         
         if (!b->b_list->e_next) {                           /* Delete it if just one element remains. */
             s->s_thing = b->b_list->e_what;
-            PD_MEMORY_FREE (b->b_list, sizeof (t_bindelement));
+            PD_MEMORY_FREE (b->b_list);
             pd_free (&b->b_pd);
         }
         
@@ -349,7 +349,7 @@ void pd_pop (t_pd *x)
         t_gstack *p = pd_stackHead;
         s__X.s_thing = p->g_what;
         pd_stackHead = p->g_next;
-        PD_MEMORY_FREE (p, sizeof (t_gstack));
+        PD_MEMORY_FREE (p);
         pd_lastPopped = x;
     }
 }

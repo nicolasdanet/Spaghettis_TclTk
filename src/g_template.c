@@ -351,7 +351,7 @@ static void template_conformarray(t_template *tfrom, t_template *tto,
         }
         scalartemplate = tto;
         a->a_vec = newarray;
-        PD_MEMORY_FREE(oldarray, oldelemsize * a->a_n);
+        PD_MEMORY_FREE(oldarray);
     }
     else scalartemplate = template_findbyname(a->a_templatesym);
         /* convert all arrays and sublist fields in each element of the array */
@@ -442,8 +442,8 @@ void template_conform(t_template *tfrom, t_template *tto)
         for (gl = pd_this->pd_canvases; gl; gl = gl->gl_next)
             template_conformglist(tfrom, tto, gl, conformaction);
     }
-    PD_MEMORY_FREE(conformaction, sizeof(int) * nto);
-    PD_MEMORY_FREE(conformedfrom, sizeof(int) * nfrom);
+    PD_MEMORY_FREE(conformaction);
+    PD_MEMORY_FREE(conformedfrom);
 }
 
 t_template *template_findbyname(t_symbol *s)
@@ -532,7 +532,7 @@ void template_free(t_template *x)
 {
     if (*x->t_sym->s_name)
         pd_unbind(&x->t_pdobj, x->t_sym);
-    PD_MEMORY_FREE(x->t_vec, x->t_n * sizeof(*x->t_vec));
+    PD_MEMORY_FREE(x->t_vec);
 }
 
 static void template_setup(void)
@@ -679,7 +679,7 @@ static void gtemplate_free(t_gtemplate *x)
             }
         }
     }
-    PD_MEMORY_FREE(x->x_argv, sizeof(t_atom) * x->x_argc);
+    PD_MEMORY_FREE(x->x_argv);
 }
 
 static void gtemplate_setup(void)
@@ -1302,7 +1302,7 @@ t_parentwidgetbehavior curve_widgetbehavior =
 
 static void curve_free(t_curve *x)
 {
-    PD_MEMORY_FREE(x->x_vec, 2 * x->x_npoints * sizeof(*x->x_vec));
+    PD_MEMORY_FREE(x->x_vec);
 }
 
 static void curve_setup(void)
@@ -2434,7 +2434,7 @@ static void drawnumber_getbuf(t_drawnumber *x, t_word *data,
             buf[nchars+ncopy] = 0;
             if (nchars+ncopy == DRAWNUMBER_BUFSIZE-1)
                 strcpy(buf+(DRAWNUMBER_BUFSIZE-4), "...");
-            PD_MEMORY_FREE(buf2, size2);
+            PD_MEMORY_FREE(buf2);
         }
         else
         {

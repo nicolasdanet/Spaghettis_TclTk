@@ -24,7 +24,7 @@
         (x) = (t_atom *)((n) < 64 ? alloca ((n) * sizeof (t_atom)) : PD_MEMORY_GET ((n) * sizeof (t_atom)))
         
     #define ATOMS_FREEA(x, n)   \
-        if (n >= 64) { PD_MEMORY_FREE ((x), (n) * sizeof (t_atom)); }
+        if (n >= 64) { PD_MEMORY_FREE ((x)); }
     
 #else
 
@@ -32,7 +32,7 @@
         (x) = (t_atom *)PD_MEMORY_GET ((n) * sizeof (t_atom))
         
     #define ATOMS_FREEA(x, n)   \
-        PD_MEMORY_FREE ((x), (n) * sizeof (t_atom))
+        PD_MEMORY_FREE ((x))
 
 #endif // PD_WITH_ALLOCA
 

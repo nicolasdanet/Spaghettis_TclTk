@@ -71,7 +71,7 @@ static void dac_set(t_dac *x, t_symbol *s, int argc, t_atom *argv)
 
 static void dac_free(t_dac *x)
 {
-    PD_MEMORY_FREE(x->x_vec, x->x_n * sizeof(*x->x_vec));
+    PD_MEMORY_FREE(x->x_vec);
 }
 
 static void dac_setup(void)
@@ -187,7 +187,7 @@ static void adc_set(t_adc *x, t_symbol *s, int argc, t_atom *argv)
 
 static void adc_free(t_adc *x)
 {
-    PD_MEMORY_FREE(x->x_vec, x->x_n * sizeof(*x->x_vec));
+    PD_MEMORY_FREE(x->x_vec);
 }
 
 static void adc_setup(void)

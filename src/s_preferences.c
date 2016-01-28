@@ -78,7 +78,7 @@ static t_error preferences_loadBegin (void)
 static void preferences_loadClose (void)
 {
     if (preferences_loadBuffer) { 
-        PD_MEMORY_FREE (preferences_loadBuffer, 1234); preferences_loadBuffer = NULL; 
+        PD_MEMORY_FREE (preferences_loadBuffer); preferences_loadBuffer = NULL; 
     }
 }
 

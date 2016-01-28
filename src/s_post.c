@@ -83,7 +83,7 @@ void post_atoms (int argc, t_atom *argv)
     buffer_toString (t, &s, &size);
     post ("%s", s);
     
-    PD_MEMORY_FREE (s, size);
+    PD_MEMORY_FREE (s);
     //
     }
     

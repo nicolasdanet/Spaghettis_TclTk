@@ -67,8 +67,8 @@ void pathlist_free (t_pathlist *x)
     for (l1 = x; l1; l1 = l2) {
     //
     l2 = l1->nl_next;
-    PD_MEMORY_FREE (l1->nl_string, strlen (l1->nl_string) + 1);
-    PD_MEMORY_FREE (l1, sizeof (t_pathlist));
+    PD_MEMORY_FREE (l1->nl_string);
+    PD_MEMORY_FREE (l1);
     //
     }
 }

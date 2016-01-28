@@ -243,7 +243,7 @@ void glist_deselect(t_glist *x, t_gobj *y)
         {
             x->gl_editor->e_selection = x->gl_editor->e_selection->sel_next;
             gobj_select(sel->sel_what, x, 0);
-            PD_MEMORY_FREE(sel, sizeof(*sel));
+            PD_MEMORY_FREE(sel);
         }
         else
         {
@@ -254,7 +254,7 @@ void glist_deselect(t_glist *x, t_gobj *y)
                 {
                     sel->sel_next = sel2->sel_next;
                     gobj_select(sel2->sel_what, x, 0);
-                    PD_MEMORY_FREE(sel2, sizeof(*sel2));
+                    PD_MEMORY_FREE(sel2);
                     break;
                 }
             }
@@ -474,7 +474,7 @@ static void canvas_undo_disconnect(t_canvas *x, void *z, int action)
             buf->u_index2, buf->u_inletno);
     }
     else if (action == UNDO_FREE)
-        PD_MEMORY_FREE(buf, sizeof(*buf));
+        PD_MEMORY_FREE(buf);
 }
 
     /* connect just calls disconnect actions backward... */
@@ -613,7 +613,7 @@ static void canvas_undo_cut(t_canvas *x, void *z, int action)
             buffer_free(buf->u_reconnectbuf);
         if (buf->u_redotextbuf)
             buffer_free(buf->u_redotextbuf);
-        PD_MEMORY_FREE(buf, sizeof(*buf));
+        PD_MEMORY_FREE(buf);
     }
 }
 
@@ -692,8 +692,8 @@ static void canvas_undo_move(t_canvas *x, void *z, int action)
     }
     else if (action == UNDO_FREE)
     {
-        PD_MEMORY_FREE(buf->u_vec, buf->u_n * sizeof(*buf->u_vec));
-        PD_MEMORY_FREE(buf, sizeof(*buf));
+        PD_MEMORY_FREE(buf->u_vec);
+        PD_MEMORY_FREE(buf);
     }
 }
 
@@ -732,7 +732,7 @@ static void canvas_undo_paste(t_canvas *x, void *z, int action)
                 gobj_displace(sel->sel_what, x, 10, 10);
     }
 else if (action == UNDO_FREE)
-        PD_MEMORY_FREE(buf, sizeof(*buf));
+        PD_MEMORY_FREE(buf);
 }
 
     /* recursively check for abstractions to reload as result of a save. 
@@ -906,7 +906,7 @@ static void editor_free(t_editor *x, t_glist *y)
     buffer_free(x->e_deleted);
     if (x->e_clock)
         clock_free(x->e_clock);
-    PD_MEMORY_FREE((void *)x, sizeof(*x));
+    PD_MEMORY_FREE((void *)x);
 }
 
     /* recursively create or destroy all editors of a glist and its 

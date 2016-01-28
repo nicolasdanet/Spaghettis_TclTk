@@ -87,8 +87,8 @@ void rtext_free(t_rtext *x)
         }
     }
     if (rtext_entered == x) rtext_entered = 0;
-    PD_MEMORY_FREE(x->x_buf, x->x_bufsize);
-    PD_MEMORY_FREE(x, sizeof *x);
+    PD_MEMORY_FREE(x->x_buf);
+    PD_MEMORY_FREE(x);
 }
 
 char *rtext_gettag(t_rtext *x)
@@ -345,14 +345,14 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
     *widthp = pixwide;
     *heightp = pixhigh;
     if (tempbuf != smallbuf)
-        PD_MEMORY_FREE(tempbuf, 2 * x->x_bufsize + 1);
+        PD_MEMORY_FREE(tempbuf);
 }
 
 void rtext_retext(t_rtext *x)
 {
     int w = 0, h = 0, indx;
     t_text *text = x->x_text;
-    PD_MEMORY_FREE(x->x_buf, x->x_bufsize);
+    PD_MEMORY_FREE(x->x_buf);
     buffer_toStringUnzeroed(text->te_buffer, &x->x_buf, &x->x_bufsize);
         /* special case: for number boxes, try to pare the number down
         to the specified width of the box. */

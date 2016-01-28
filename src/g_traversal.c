@@ -57,7 +57,7 @@ static void gstub_dis(t_gstub *gs)
 {
     int refcount = --gs->gs_count;
     if ((!refcount) && gs->gs_type == POINTER_NONE)
-        PD_MEMORY_FREE(gs, sizeof (*gs));
+        PD_MEMORY_FREE(gs);
     else if (refcount < 0) { PD_BUG; }
 }
 
@@ -69,7 +69,7 @@ void gstub_cutoff(t_gstub *gs)
 {
     gs->gs_type = POINTER_NONE;
     if (gs->gs_count < 0) { PD_BUG; }
-    if (!gs->gs_count) PD_MEMORY_FREE(gs, sizeof (*gs));
+    if (!gs->gs_count) PD_MEMORY_FREE(gs);
 }
 
 /* call this to verify that a pointer is fresh, i.e., that it either
@@ -431,7 +431,7 @@ static void ptrobj_rewind(t_ptrobj *x)
 
 static void ptrobj_free(t_ptrobj *x)
 {
-    PD_MEMORY_FREE(x->x_typedout, x->x_ntypedout * sizeof (*x->x_typedout));
+    PD_MEMORY_FREE(x->x_typedout);
     gpointer_unset(&x->x_gp);
 }
 
@@ -565,7 +565,7 @@ static void get_pointer(t_get *x, t_gpointer *gp)
 
 static void get_free(t_get *x)
 {
-    PD_MEMORY_FREE(x->x_variables, x->x_nout * sizeof (*x->x_variables));
+    PD_MEMORY_FREE(x->x_variables);
 }
 
 static void get_setup(void)
@@ -728,7 +728,7 @@ static void set_symbol(t_set *x, t_symbol *s)
 
 static void set_free(t_set *x)
 {
-    PD_MEMORY_FREE(x->x_variables, x->x_nin * sizeof (*x->x_variables));
+    PD_MEMORY_FREE(x->x_variables);
     gpointer_unset(&x->x_gp);
 }
 
@@ -1255,7 +1255,7 @@ static void append_float(t_append *x, t_float f)
 
 static void append_free(t_append *x)
 {
-    PD_MEMORY_FREE(x->x_variables, x->x_nin * sizeof (*x->x_variables));
+    PD_MEMORY_FREE(x->x_variables);
     gpointer_unset(&x->x_gp);
 }
 

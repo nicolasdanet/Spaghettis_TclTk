@@ -59,7 +59,7 @@ static void sigsend_dsp(t_sigsend *x, t_signal **sp)
 static void sigsend_free(t_sigsend *x)
 {
     pd_unbind(&x->x_obj.te_g.g_pd, x->x_sym);
-    PD_MEMORY_FREE(x->x_vec, x->x_n * sizeof(t_sample));
+    PD_MEMORY_FREE(x->x_vec);
 }
 
 static void sigsend_setup(void)
@@ -253,7 +253,7 @@ static void sigcatch_dsp(t_sigcatch *x, t_signal **sp)
 static void sigcatch_free(t_sigcatch *x)
 {
     pd_unbind(&x->x_obj.te_g.g_pd, x->x_sym);
-    PD_MEMORY_FREE(x->x_vec, x->x_n * sizeof(t_sample));
+    PD_MEMORY_FREE(x->x_vec);
 }
 
 static void sigcatch_setup(void)

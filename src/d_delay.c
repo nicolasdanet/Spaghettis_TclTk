@@ -125,8 +125,7 @@ static void sigdelwrite_dsp(t_sigdelwrite *x, t_signal **sp)
 static void sigdelwrite_free(t_sigdelwrite *x)
 {
     pd_unbind(&x->x_obj.te_g.g_pd, x->x_sym);
-    PD_MEMORY_FREE(x->x_cspace.c_vec,
-        (x->x_cspace.c_n + XTRASAMPS) * sizeof(t_sample));
+    PD_MEMORY_FREE(x->x_cspace.c_vec);
 }
 
 static void sigdelwrite_setup(void)

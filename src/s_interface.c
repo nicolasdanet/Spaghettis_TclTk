@@ -413,7 +413,7 @@ t_socketreceiver *socketreceiver_new(void *owner, t_socketnotifier notifier,
 void socketreceiver_free(t_socketreceiver *x)
 {
     free(x->sr_inbuf);
-    PD_MEMORY_FREE(x, sizeof(*x));
+    PD_MEMORY_FREE(x);
 }
 
     /* this is in a separately called subroutine so that the buffer isn't
@@ -747,7 +747,7 @@ static int sys_flushqueue(void )
             t_guiqueue *headwas = sys_guiqueuehead;
             sys_guiqueuehead = headwas->gq_next;
             (*headwas->gq_fn)(headwas->gq_client, headwas->gq_glist);
-            PD_MEMORY_FREE(headwas, sizeof(*headwas));
+            PD_MEMORY_FREE(headwas);
             if (sys_bytessincelastping >= wherestop)
                 break;
         }
@@ -812,7 +812,7 @@ void sys_unqueuegui(void *client)
     {
         gq = sys_guiqueuehead;
         sys_guiqueuehead = sys_guiqueuehead->gq_next;
-        PD_MEMORY_FREE(gq, sizeof(*gq));
+        PD_MEMORY_FREE(gq);
     }
     if (!sys_guiqueuehead)
         return;
@@ -820,7 +820,7 @@ void sys_unqueuegui(void *client)
         if (gq2->gq_client == client)
     {
         gq->gq_next = gq2->gq_next;
-        PD_MEMORY_FREE(gq2, sizeof(*gq2));
+        PD_MEMORY_FREE(gq2);
         break;
     }
 }

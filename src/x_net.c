@@ -300,7 +300,7 @@ static int netsend_dosend(t_netsend *x, int sockfd,
     done:
     if (!x->x_bin)
     {
-        PD_MEMORY_FREE(buf, length);
+        PD_MEMORY_FREE(buf);
         buffer_free(b);
     }
     return (fail);

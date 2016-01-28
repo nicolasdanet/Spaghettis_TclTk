@@ -108,7 +108,7 @@ void canvas_setargs(int argc, t_atom *argv)
         happens if an abstraction is loaded but never gets as far
         as calling canvas_new(). */
     if (canvas_newargv)
-        PD_MEMORY_FREE(canvas_newargv, canvas_newargc * sizeof(t_atom));
+        PD_MEMORY_FREE(canvas_newargv);
     canvas_newargc = argc;
     canvas_newargv = PD_MEMORY_GET_COPY(argv, argc * sizeof(t_atom));
 }
@@ -741,12 +741,12 @@ void canvas_free(t_canvas *x)
 
     if (x->gl_env)
     {
-        PD_MEMORY_FREE(x->gl_env->ce_argv, x->gl_env->ce_argc * sizeof(t_atom));
-        PD_MEMORY_FREE(x->gl_env, sizeof(*x->gl_env));
+        PD_MEMORY_FREE(x->gl_env->ce_argv);
+        PD_MEMORY_FREE(x->gl_env);
     }
     canvas_resume_dsp(dspstate);
-    PD_MEMORY_FREE(x->gl_xlabel, x->gl_nxlabels * sizeof(*(x->gl_xlabel)));
-    PD_MEMORY_FREE(x->gl_ylabel, x->gl_nylabels * sizeof(*(x->gl_ylabel)));
+    PD_MEMORY_FREE(x->gl_xlabel);
+    PD_MEMORY_FREE(x->gl_ylabel);
     gstub_cutoff(x->gl_stub);
     gfxstub_deleteforkey(x);        /* probably unnecessary */
     if (!x->gl_owner)

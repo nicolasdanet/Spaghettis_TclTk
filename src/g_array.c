@@ -98,8 +98,8 @@ void array_free(t_array *x)
         t_word *wp = (t_word *)(x->a_vec + x->a_elemsize * i);
         word_free(wp, scalartemplate);
     }
-    PD_MEMORY_FREE(x->a_vec, x->a_elemsize * x->a_n);
-    PD_MEMORY_FREE(x, sizeof *x);
+    PD_MEMORY_FREE(x->a_vec);
+    PD_MEMORY_FREE(x);
 }
 
 /* --------------------- graphical arrays (garrays) ------------------- */
@@ -953,7 +953,7 @@ static void garray_sinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
     for (i = 0; i < argc; i++)
         svec[i] = atom_getFloatAtIndex(i, argc, argv);
     garray_dofo(x, npoints, 0, argc, svec, 1);
-    PD_MEMORY_FREE(svec, sizeof(t_float) * argc);
+    PD_MEMORY_FREE(svec);
 }
 
 static void garray_cosinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
@@ -977,7 +977,7 @@ static void garray_cosinesum(t_garray *x, t_symbol *s, int argc, t_atom *argv)
     for (i = 0; i < argc; i++)
         svec[i] = atom_getFloatAtIndex(i, argc, argv);
     garray_dofo(x, npoints, 0, argc, svec, 0);
-    PD_MEMORY_FREE(svec, sizeof(t_float) * argc);
+    PD_MEMORY_FREE(svec);
 }
 
 static void garray_normalize(t_garray *x, t_float f)

@@ -526,9 +526,9 @@ static void hang_free(t_hang *h)
     int i;
     for (gp = h->h_gp, i = x->x_nptr; i--; gp++)
         gpointer_unset(gp);
-    PD_MEMORY_FREE(h->h_gp, x->x_nptr * sizeof(*h->h_gp));
+    PD_MEMORY_FREE(h->h_gp);
     clock_free(h->h_clock);
-    PD_MEMORY_FREE(h, sizeof(*h) + (x->x_n - 1) * sizeof(*h->h_vec));
+    PD_MEMORY_FREE(h);
 }
 
 static void hang_tick(t_hang *h)
@@ -636,7 +636,7 @@ static void pipe_clear(t_pipe *x)
 static void pipe_free(t_pipe *x)
 {
     pipe_clear(x);
-    PD_MEMORY_FREE(x->x_vec, x->x_n * sizeof(*x->x_vec));
+    PD_MEMORY_FREE(x->x_vec);
 }
 
 static void pipe_setup(void)

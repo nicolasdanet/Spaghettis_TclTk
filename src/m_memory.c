@@ -52,10 +52,8 @@ void *sys_getMemoryResize (void *ptr, size_t oldSize, size_t newSize)
     return r;
 }
 
-void sys_freeMemory (void *ptr, size_t n)
+void sys_freeMemory (void *ptr)
 {
-    (void)n;
-    
     free (ptr);
 }
 

@@ -416,7 +416,7 @@ static void sel2_symbol(t_sel2 *x, t_symbol *s)
 
 static void sel2_free(t_sel2 *x)
 {
-    PD_MEMORY_FREE(x->x_vec, x->x_nelement * sizeof(*x->x_vec));
+    PD_MEMORY_FREE(x->x_vec);
 }
 
 static void *select_new(t_symbol *s, int argc, t_atom *argv)
@@ -598,7 +598,7 @@ static void route_list(t_route *x, t_symbol *sel, int argc, t_atom *argv)
 
 static void route_free(t_route *x)
 {
-    PD_MEMORY_FREE(x->x_vec, x->x_nelement * sizeof(*x->x_vec));
+    PD_MEMORY_FREE(x->x_vec);
 }
 
 static void *route_new(t_symbol *s, int argc, t_atom *argv)
@@ -746,7 +746,7 @@ static void pack_bang(t_pack *x)
     memcpy(outvec, x->x_vec, size);
     outlet_list(x->x_obj.te_outlet, &s_list, x->x_n, outvec);
     if (reentered)
-        PD_MEMORY_FREE(outvec, size);
+        PD_MEMORY_FREE(outvec);
     else x->x_outvec = outvec;
 }
 
@@ -795,7 +795,7 @@ static void pack_anything(t_pack *x, t_symbol *s, int ac, t_atom *av)
         av2[i + 1] = av[i];
     SET_SYMBOL(av2, s);
     object_list(&x->x_obj, 0, ac+1, av2);
-    PD_MEMORY_FREE(av2, (ac + 1) * sizeof(t_atom));
+    PD_MEMORY_FREE(av2);
 }
 
 static void pack_free(t_pack *x)
@@ -804,9 +804,9 @@ static void pack_free(t_pack *x)
     int i;
     for (gp = x->x_gpointer, i = x->x_nptr; i--; gp++)
         gpointer_unset(gp);
-    PD_MEMORY_FREE(x->x_vec, x->x_n * sizeof(*x->x_vec));
-    PD_MEMORY_FREE(x->x_outvec, x->x_n * sizeof(*x->x_outvec));
-    PD_MEMORY_FREE(x->x_gpointer, x->x_nptr * sizeof(*x->x_gpointer));
+    PD_MEMORY_FREE(x->x_vec);
+    PD_MEMORY_FREE(x->x_outvec);
+    PD_MEMORY_FREE(x->x_gpointer);
 }
 
 static void pack_setup(void)
@@ -913,12 +913,12 @@ static void unpack_anything(t_unpack *x, t_symbol *s, int ac, t_atom *av)
         av2[i + 1] = av[i];
     SET_SYMBOL(av2, s);
     unpack_list(x, 0, ac+1, av2);
-    PD_MEMORY_FREE(av2, (ac + 1) * sizeof(t_atom));
+    PD_MEMORY_FREE(av2);
 }
 
 static void unpack_free(t_unpack *x)
 {
-    PD_MEMORY_FREE(x->x_vec, x->x_n * sizeof(*x->x_vec));
+    PD_MEMORY_FREE(x->x_vec);
 }
 
 static void unpack_setup(void)
@@ -1063,7 +1063,7 @@ static void trigger_symbol(t_trigger *x, t_symbol *s)
 
 static void trigger_free(t_trigger *x)
 {
-    PD_MEMORY_FREE(x->x_vec, x->x_n * sizeof(*x->x_vec));
+    PD_MEMORY_FREE(x->x_vec);
 }
 
 static void trigger_setup(void)

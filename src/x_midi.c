@@ -935,7 +935,7 @@ static void makenote_tick(t_hang *hang)
         }
     }
     clock_free(hang->h_clock);
-    PD_MEMORY_FREE(hang, sizeof(*hang));
+    PD_MEMORY_FREE(hang);
 }
 
 static void makenote_float(t_makenote *x, t_float f)
@@ -962,7 +962,7 @@ static void makenote_stop(t_makenote *x)
         outlet_float(x->x_pitchout, hang->h_pitch);
         x->x_hang = hang->h_next;
         clock_free(hang->h_clock);
-        PD_MEMORY_FREE(hang, sizeof(*hang));
+        PD_MEMORY_FREE(hang);
     }
 }
 
@@ -973,7 +973,7 @@ static void makenote_clear(t_makenote *x)
     {
         x->x_hang = hang->h_next;
         clock_free(hang->h_clock);
-        PD_MEMORY_FREE(hang, sizeof(*hang));
+        PD_MEMORY_FREE(hang);
     }
 }
 
@@ -1146,7 +1146,7 @@ static void poly_clear(t_poly *x)
 
 static void poly_free(t_poly *x)
 {
-    PD_MEMORY_FREE(x->x_vec, x->x_n * sizeof (*x->x_vec));
+    PD_MEMORY_FREE(x->x_vec);
 }
 
 static void poly_setup(void)
@@ -1209,14 +1209,14 @@ static void bag_float(t_bag *x, t_float f)
         {
             bagelem = x->x_first;
             x->x_first = x->x_first->e_next;
-            PD_MEMORY_FREE(bagelem, sizeof(*bagelem));
+            PD_MEMORY_FREE(bagelem);
             return;
         }
         for (e2 = x->x_first; e3 = e2->e_next; e2 = e3)
             if (e3->e_value == f)
         {
             e2->e_next = e3->e_next;
-            PD_MEMORY_FREE(e3, sizeof(*e3));
+            PD_MEMORY_FREE(e3);
             return;
         }
     }
@@ -1229,7 +1229,7 @@ static void bag_flush(t_bag *x)
     {
         outlet_float(x->x_obj.te_outlet, bagelem->e_value);
         x->x_first = bagelem->e_next;
-        PD_MEMORY_FREE(bagelem, sizeof(*bagelem));
+        PD_MEMORY_FREE(bagelem);
     }
 }
 
@@ -1239,7 +1239,7 @@ static void bag_clear(t_bag *x)
     while (bagelem = x->x_first)
     {
         x->x_first = bagelem->e_next;
-        PD_MEMORY_FREE(bagelem, sizeof(*bagelem));
+        PD_MEMORY_FREE(bagelem);
     }
 }
 

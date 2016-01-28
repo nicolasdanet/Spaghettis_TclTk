@@ -126,7 +126,7 @@ void clock_free (t_clock *x)
 {
     clock_unset (x);
     
-    PD_MEMORY_FREE (x, sizeof (t_clock));
+    PD_MEMORY_FREE (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

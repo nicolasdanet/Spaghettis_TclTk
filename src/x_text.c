@@ -58,7 +58,7 @@ static void textbuf_senditup(t_textbuf *x)
         i = (j-txt)+1;
     }
     sys_vgui("::ui_text::dirty .x%lx 0\n", x);
-    PD_MEMORY_FREE(txt, ntxt);
+    PD_MEMORY_FREE(txt);
 }
 
 static void textbuf_open(t_textbuf *x)
@@ -1435,7 +1435,7 @@ static void text_sequence_tempo(t_text_sequence *x,
 
 static void text_sequence_free(t_text_sequence *x)
 {
-    PD_MEMORY_FREE(x->x_argv, sizeof(t_atom) * x->x_argc);
+    PD_MEMORY_FREE(x->x_argv);
     clock_free(x->x_clock);
     text_client_free(&x->x_tc);
 }
