@@ -45,12 +45,15 @@ t_error utils_strnadd (char *dest, size_t size, const char *src)
 t_error utils_strncat (char *dest, size_t size, const char *src, int length)
 {
     size_t d = strlen (dest);
-    size_t s = strlen (src);
     size_t n = (size - 1) - d;
-    
+    size_t s = 0;
+        
     PD_ASSERT (size > d);
     
-    if (length >= 0) { s = PD_MIN (s, (size_t)length); }
+    if (length < 0) { s = strlen (src); }
+    else {
+        const char *t = src; while (*t && s < length) { s++; t++; }
+    }
     
     strncat (dest, src, PD_MIN (s, n));
     
