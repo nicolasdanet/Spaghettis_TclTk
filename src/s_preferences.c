@@ -146,11 +146,6 @@ static void preferences_setKey (const char *key, const char *value)
     if (preferences_saveFile) { fprintf (preferences_saveFile, "%s: %s\n", key, value); }   // --
 }
 
-static void preferences_resetKey (const char *key)
-{
-    preferences_setKey (key, "");
-}
-
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -219,11 +214,6 @@ static void preferences_setKey (const char *key, const char *value)
     }
     
     RegCloseKey (hkey);
-}
-
-static void preferences_resetKey (const char *key)
-{
-    preferences_setKey (key, "");
 }
 
 #endif
