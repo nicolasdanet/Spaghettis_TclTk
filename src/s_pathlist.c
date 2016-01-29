@@ -17,7 +17,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static const char *pathlist_getNextFile (char *dest, size_t length, const char *src, char delimiter)
+static const char *pathlist_getNextFileDelimited (char *dest, size_t length, const char *src, char delimiter)
 {
     size_t i;
 
@@ -77,24 +77,6 @@ void pathlist_free (t_pathlist *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_pathlist *pathlist_newAppendFiles (t_pathlist *x, const char *s, char delimiter)
-{
-    char t[PD_STRING];
-    t_pathlist *l = x;
-    const char *p = s;
-    
-    do {
-        p = pathlist_getNextFile (t, PD_STRING, p, delimiter);
-        if (*t) { 
-            l = pathlist_newAppend (l, t); 
-        }
-    } while (p);
-    
-    return l;
-}
-
-/* It is rather inefficient to traverse the list. */
-
 char *pathlist_getFileAtIndex (t_pathlist *x, int n)
 {
     int i;
@@ -103,6 +85,36 @@ char *pathlist_getFileAtIndex (t_pathlist *x, int n)
     for (i = 0; i < n && l; i++, l = l->pl_next) { }
     
     return (l ? l->pl_string : NULL);
+}
+
+char *pathlist_getFile (t_pathlist *x)
+{
+    return (x ? x->pl_string : NULL);
+}
+
+t_pathlist *pathlist_getNext (t_pathlist *x)
+{
+    return (x ? x->pl_next : NULL);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_pathlist *pathlist_newAppendFiles (t_pathlist *x, const char *s, char delimiter)
+{
+    char t[PD_STRING];
+    t_pathlist *l = x;
+    const char *p = s;
+    
+    do {
+        p = pathlist_getNextFileDelimited (t, PD_STRING, p, delimiter);
+        if (*t) { 
+            l = pathlist_newAppend (l, t); 
+        }
+    } while (p);
+    
+    return l;
 }
 
 // -----------------------------------------------------------------------------------------------------------

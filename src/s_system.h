@@ -159,6 +159,8 @@ typedef int t_fontsize;
 t_pathlist  *pathlist_newAppend             (t_pathlist *x, const char *s);
 t_pathlist  *pathlist_newAppendFiles        (t_pathlist *x, const char *s, char delimiter);
 char        *pathlist_getFileAtIndex        (t_pathlist *x, int n);
+char        *pathlist_getFile               (t_pathlist *x);
+t_pathlist  *pathlist_getNext               (t_pathlist *x);
 
 void        pathlist_free                   (t_pathlist *x);
 

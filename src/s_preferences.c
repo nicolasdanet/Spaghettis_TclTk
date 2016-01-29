@@ -130,7 +130,11 @@ static int preferences_getKey (const char *key, char *value, int size)
         pEnd--; 
     }
     
-    if (!utils_strncat (value, size, p, pEnd + 1 - p)) { return 1; }
+    size_t length = pEnd + 1 - p;
+    
+    if (length > 0) { 
+        if (!utils_strncat (value, size, p, length)) { return 1; }
+    }
     //
     }
     
@@ -171,12 +175,12 @@ static void preferences_saveClose (void)
 static int preferences_getKey (const char *key, char *value, int size)
 {
     HKEY hkey;
-    DWORD bigsize = size;
+    DWORD n = size;
     LONG err = RegOpenKeyEx (HKEY_LOCAL_MACHINE, "Software\\Pd", 0, KEY_QUERY_VALUE, &hkey);
     
     if (err != ERROR_SUCCESS) { return 0; }
     
-    err = RegQueryValueExv (hkey, key, 0, 0, value, &bigsize);
+    err = RegQueryValueEx (hkey, key, 0, 0, value, &n);
     
     if (err != ERROR_SUCCESS) { RegCloseKey (hkey); return 0; }
     
@@ -206,7 +210,7 @@ static void preferences_setKey (const char *key, const char *value)
     err = RegSetValueEx (hkey, key, 0, REG_EXPAND_SZ, value, strlen (value) + 1);
     
     if (err != ERROR_SUCCESS) {
-        post_error (PD_TRANSLATE ("preferences: unable to set %s entry\n"), key);   // --
+        post_error (PD_TRANSLATE ("preferences: unable to set %s entry\n"), key);       // --
     }
     
     RegCloseKey (hkey);
@@ -480,6 +484,8 @@ void preferences_save (void *dummy)
     if (preferences_saveBegin() == PD_ERROR_NONE) {
     //
     int i;
+    t_pathlist *list;
+    
     int callback                        = 0;
     int sampleRate                      = AUDIO_DEFAULT_SAMPLING;
     int advance                         = AUDIO_DEFAULT_ADVANCE;
@@ -528,16 +534,19 @@ void preferences_save (void *dummy)
     
     /* Search paths. */
     
+    list = sys_searchpath;
+    
     for (i = 0; 1; i++) {
     //
-    char *path = pathlist_getFileAtIndex (sys_searchpath, i);
+    char *path = pathlist_getFile (list);
     if (!path) { break; }
     else {
         utils_snprintf (key, PD_STRING, "Path%d", i + 1);       preferences_setKey (key, path);
+        list = pathlist_getNext (list);
     }
     //
     }
-    
+
     /* Audio devices. */
     
     for (i = 0; i < numberOfAudioIn; i++) {
