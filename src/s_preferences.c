@@ -315,11 +315,6 @@ static void preferences_resetKey (const char *key)
 
 void preferences_load (void)
 {
-    int noAudioIn                       = 0;
-    int noAudioOut                      = 0;
-    int noMidiIn                        = 0;
-    int noMidiOut                       = 0;
-    
     int audioApi                        = API_DEFAULT;
     int callback                        = 0;
     int sampleRate                      = AUDIO_DEFAULT_SAMPLING;
@@ -347,11 +342,6 @@ void preferences_load (void)
 
     /* Properties. */
     
-    noAudioIn   = (preferences_getKey ("NoAudioIn",  value, PD_STRING) && !strcmp (value, "True"));
-    noAudioOut  = (preferences_getKey ("NoAudioOut", value, PD_STRING) && !strcmp (value, "True"));
-    noMidiIn    = (preferences_getKey ("NoMidiIn",   value, PD_STRING) && !strcmp (value, "True"));
-    noMidiOut   = (preferences_getKey ("NoMidiOut",  value, PD_STRING) && !strcmp (value, "True"));
-    
     if (preferences_getKey ("AudioApi",     value, PD_STRING)) { sscanf (value, "%d", &audioApi);     }
     if (preferences_getKey ("Callback",     value, PD_STRING)) { sscanf (value, "%d", &callback);     }
     if (preferences_getKey ("SampleRate",   value, PD_STRING)) { sscanf (value, "%d", &sampleRate);   }
@@ -372,8 +362,6 @@ void preferences_load (void)
     
     /* Audio devices. */
     
-    if (!noAudioIn) {
-    //
     for (i = 0; i < MAXIMUM_AUDIO_IN; i++) {
     //
     utils_snprintf (key, PD_STRING, "AudioInDevice%d", i + 1);
@@ -396,11 +384,7 @@ void preferences_load (void)
     }
     
     if (numberOfAudioIn == 0) { numberOfAudioIn = -1; }
-    //
-    }
     
-    if (!noAudioOut) {
-    //
     for (i = 0; i < MAXIMUM_AUDIO_OUT; i++) {
     //
     utils_snprintf (key, PD_STRING, "AudioOutDevice%d", i + 1);
@@ -423,13 +407,9 @@ void preferences_load (void)
     }
         
     if (numberOfAudioOut == 0) { numberOfAudioOut = -1; }
-    //
-    }
     
     /* MIDI devices. */
     
-    if (!noMidiIn) {
-    //
     for (i = 0; i < MAXIMUM_MIDI_IN; i++) {
     //
     int device;
@@ -447,11 +427,7 @@ void preferences_load (void)
     numberOfMidiIn++;
     //
     }
-    //
-    }
 
-    if (!noMidiOut) {
-    //
     for (i = 0; i < MAXIMUM_MIDI_OUT; i++) {
     //
     int device;
@@ -467,8 +443,6 @@ void preferences_load (void)
         else if (sscanf (value, "%d", &midiOut[i]) < 1)  { break; }
     }
     numberOfMidiOut++;
-    //
-    }
     //
     }
     //
@@ -536,11 +510,6 @@ void preferences_save (void *dummy)
     
     /* Properties. */
     
-    preferences_setKey ("NoAudioIn",    (numberOfAudioIn <= 0 ?  "True" : "False"));
-    preferences_setKey ("NoAudioOut",   (numberOfAudioOut <= 0 ? "True" : "False"));
-    preferences_setKey ("NoMidiIn",     (numberOfMidiIn <= 0 ?   "True" : "False"));
-    preferences_setKey ("NoMidiOut",    (numberOfMidiOut <= 0 ?  "True" : "False"));
-    
     utils_snprintf (value, PD_STRING, "%d", sys_audioapi);      preferences_setKey ("AudioApi",   value);
     utils_snprintf (value, PD_STRING, "%d", callback);          preferences_setKey ("Callback",   value);
     utils_snprintf (value, PD_STRING, "%d", sampleRate);        preferences_setKey ("SampleRate", value);
@@ -563,8 +532,10 @@ void preferences_save (void *dummy)
     //
     }
     
+    #if PD_APPLE
     utils_snprintf (key, PD_STRING, "Path%d", i + 1);                   preferences_resetKey (key);
-
+    #endif
+    
     /* Audio devices. */
     
     for (i = 0; i < numberOfAudioIn; i++) {
@@ -578,8 +549,10 @@ void preferences_save (void *dummy)
     //
     }
 
+    #if PD_APPLE
     utils_snprintf (key, PD_STRING, "AudioInDevice%d", i + 1);          preferences_resetKey (key);
     utils_snprintf (key, PD_STRING, "AudioInDeviceName%d", i + 1);      preferences_resetKey (key);
+    #endif
     
     for (i = 0; i < numberOfAudioOut; i++) {
     //
@@ -592,9 +565,11 @@ void preferences_save (void *dummy)
     //
     }
 
+    #if PD_APPLE
     utils_snprintf (key, PD_STRING, "AudioOutDevice%d", i + 1);         preferences_resetKey (key);
     utils_snprintf (key, PD_STRING, "AudioOutDeviceName%d", i + 1);     preferences_resetKey (key);
-        
+    #endif
+    
     /* MIDI devices. */
     
     for (i = 0; i < numberOfMidiIn; i++) {
@@ -608,8 +583,10 @@ void preferences_save (void *dummy)
     //
     }
     
+    #if PD_APPLE
     utils_snprintf (key, PD_STRING, "MidiInDevice%d", i + 1);           preferences_resetKey (key);
     utils_snprintf (key, PD_STRING, "MidiInDeviceName%d", i + 1);       preferences_resetKey (key);
+    #endif
     
     for (i = 0; i < numberOfMidiOut; i++) {
     //
@@ -622,8 +599,10 @@ void preferences_save (void *dummy)
     //
     }
     
+    #if PD_APPLE
     utils_snprintf (key, PD_STRING, "MidiOutDevice%d", i + 1);          preferences_resetKey (key);
     utils_snprintf (key, PD_STRING, "MidiOutDeviceName%d", i + 1);      preferences_resetKey (key);
+    #endif
     //
     }
     
