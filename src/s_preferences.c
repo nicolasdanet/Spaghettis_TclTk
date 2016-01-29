@@ -146,6 +146,11 @@ static void preferences_setKey (const char *key, const char *value)
     if (preferences_saveFile) { fprintf (preferences_saveFile, "%s: %s\n", key, value); }   // --
 }
 
+static void preferences_resetKey (const char *key)
+{
+    preferences_setKey (key, "");
+}
+
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -214,6 +219,11 @@ static void preferences_setKey (const char *key, const char *value)
     }
     
     RegCloseKey (hkey);
+}
+
+static void preferences_resetKey (const char *key)
+{
+    preferences_setKey (key, "");
 }
 
 #endif
@@ -531,11 +541,11 @@ void preferences_save (void *dummy)
     preferences_setKey ("NoMidiIn",     (numberOfMidiIn <= 0 ?   "True" : "False"));
     preferences_setKey ("NoMidiOut",    (numberOfMidiOut <= 0 ?  "True" : "False"));
     
-    utils_snprintf (value, PD_STRING, "%d", sys_audioapi);      preferences_setKey ("AudioApi",     value);
-    utils_snprintf (value, PD_STRING, "%d", callback);          preferences_setKey ("Callback",     value);
-    utils_snprintf (value, PD_STRING, "%d", sampleRate);        preferences_setKey ("SampleRate",   value);
-    utils_snprintf (value, PD_STRING, "%d", advance);           preferences_setKey ("Advance",      value);
-    utils_snprintf (value, PD_STRING, "%d", blockSize);         preferences_setKey ("BlockSize",    value);
+    utils_snprintf (value, PD_STRING, "%d", sys_audioapi);      preferences_setKey ("AudioApi",   value);
+    utils_snprintf (value, PD_STRING, "%d", callback);          preferences_setKey ("Callback",   value);
+    utils_snprintf (value, PD_STRING, "%d", sampleRate);        preferences_setKey ("SampleRate", value);
+    utils_snprintf (value, PD_STRING, "%d", advance);           preferences_setKey ("Advance",    value);
+    utils_snprintf (value, PD_STRING, "%d", blockSize);         preferences_setKey ("BlockSize",  value);
     
     /* Search paths. */
     
