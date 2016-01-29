@@ -292,6 +292,11 @@ static void preferences_setKey (const char *key, const char *value)
     }
 }
 
+static void preferences_resetKey (const char *key)
+{
+    preferences_setKey (key, "");
+}
+
 #endif // PD_APPLE
 
 // -----------------------------------------------------------------------------------------------------------
@@ -541,11 +546,14 @@ void preferences_save (void *dummy)
     char *path = pathlist_getFile (list);
     if (!path) { break; }
     else {
-        utils_snprintf (key, PD_STRING, "Path%d", i + 1);       preferences_setKey (key, path);
+        utils_snprintf (key, PD_STRING, "Path%d", i + 1); 
+        preferences_setKey (key, path);
         list = pathlist_getNext (list);
     }
     //
     }
+    
+    utils_snprintf (key, PD_STRING, "Path%d", i + 1);                   preferences_resetKey (key);
 
     /* Audio devices. */
     
@@ -560,6 +568,9 @@ void preferences_save (void *dummy)
     //
     }
 
+    utils_snprintf (key, PD_STRING, "AudioInDevice%d", i + 1);          preferences_resetKey (key);
+    utils_snprintf (key, PD_STRING, "AudioInDeviceName%d", i + 1);      preferences_resetKey (key);
+    
     for (i = 0; i < numberOfAudioOut; i++) {
     //
     utils_snprintf (key, PD_STRING, "AudioOutDevice%d", i + 1);
@@ -571,6 +582,9 @@ void preferences_save (void *dummy)
     //
     }
 
+    utils_snprintf (key, PD_STRING, "AudioOutDevice%d", i + 1);         preferences_resetKey (key);
+    utils_snprintf (key, PD_STRING, "AudioOutDeviceName%d", i + 1);     preferences_resetKey (key);
+        
     /* MIDI devices. */
     
     for (i = 0; i < numberOfMidiIn; i++) {
@@ -584,6 +598,9 @@ void preferences_save (void *dummy)
     //
     }
     
+    utils_snprintf (key, PD_STRING, "MidiInDevice%d", i + 1);           preferences_resetKey (key);
+    utils_snprintf (key, PD_STRING, "MidiInDeviceName%d", i + 1);       preferences_resetKey (key);
+    
     for (i = 0; i < numberOfMidiOut; i++) {
     //
     utils_snprintf (key, PD_STRING, "MidiOutDevice%d", i + 1);
@@ -594,6 +611,9 @@ void preferences_save (void *dummy)
     preferences_setKey (key, value);
     //
     }
+    
+    utils_snprintf (key, PD_STRING, "MidiOutDevice%d", i + 1);          preferences_resetKey (key);
+    utils_snprintf (key, PD_STRING, "MidiOutDeviceName%d", i + 1);      preferences_resetKey (key);
     //
     }
     
