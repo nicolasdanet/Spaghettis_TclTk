@@ -117,20 +117,18 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_pollfn)    (void *p, int fd);
-typedef void (*t_notifyfn)  (void *x, int n);
-typedef void (*t_receivefn) (void *x, t_buffer *b);
-typedef int  (*t_loader)    (t_canvas *canvas, char *classname);
+typedef void (*t_pollfn)        (void *p, int fd);
+typedef void (*t_notifyfn)      (void *x, int n);
+typedef void (*t_receivefn)     (void *x, t_buffer *b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef struct _fdpoll {
-    void        *fdp_p;
-    int         fdp_fd;
-    t_pollfn    fdp_fn;
-    } t_fdpoll;
+typedef int  (*t_loader)        (t_canvas *canvas, char *classname);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 typedef struct _socketreceiver {
     void        *sr_owner;
@@ -203,6 +201,14 @@ void open_via_helppath                      (const char *name, const char *dir);
 
 void sys_bashfilename                       (char *from, char *to);
 void sys_unbashfilename                     (char *from, char *to);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void sys_set_searchpath                     (void);
+void sys_set_extrapath                      (void);
+void sys_set_startup                        (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

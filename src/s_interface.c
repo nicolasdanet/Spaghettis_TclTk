@@ -34,13 +34,13 @@
 
 #if !PD_WINDOWS
 
-#include <sys/socket.h>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
-#include <netdb.h>
-#include <sys/time.h>
 #include <sys/mman.h>
 #include <sys/resource.h>
+#include <sys/socket.h>
+#include <sys/time.h>
 
 #endif
 
@@ -68,34 +68,45 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-extern int sys_audioapi;
+#define INTERFACE_BUFFER_SIZE       4096
 
-static char *main_commandToLaunchGUI;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-#define INBUFSIZE 4096
+typedef struct _fdpoll {
+    void        *fdp_p;
+    int         fdp_fd;
+    t_pollfn    fdp_fn;
+    } t_fdpoll;
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-extern int main_portNumber;
-
-static int sys_nfdpoll;
-static t_fdpoll *sys_fdpoll;
-static int sys_maxfd;
-static int sys_guisock;
-
-static t_buffer *inbinbuf;
-static t_socketreceiver *sys_socketreceiver;
-
-void sys_set_searchpath(void);
-void sys_set_extrapath(void);
-void sys_set_startup(void);
+extern int  sys_audioapi;
+extern int  main_portNumber;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#ifdef _WIN32
+static t_buffer             *interface_inBuffer;
+static t_socketreceiver     *interface_inReceiver;
+static t_fdpoll             *interface_pollers;
+
+static int                  interface_pollersSize;
+static int                  interface_maximumFileDescriptor;
+static int                  interface_guiSocket;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if PD_WINDOWS
+
 static LARGE_INTEGER nt_inittime;
 static double nt_freq = 0;
 
-static void sys_initntclock(void)
+static void sys_initntclock (void)
 {
     LARGE_INTEGER f1;
     LARGE_INTEGER now;
@@ -120,7 +131,10 @@ double nt_tixtotime(LARGE_INTEGER *dumbass)
     return (((double)(dumbass->QuadPart - nt_inittime.QuadPart)) / nt_freq);
 }
 #endif
-#endif /* _WIN32 */
+#endif // PD_WINDOWS
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
     /* get "real time" in seconds; take the
     first time we get called as a reference time of zero. */
@@ -154,19 +168,19 @@ static int sys_domicrosleep(int microsec, int pollem)
         FD_ZERO(&writeset);
         FD_ZERO(&readset);
         FD_ZERO(&exceptset);
-        for (fp = sys_fdpoll, i = sys_nfdpoll; i--; fp++)
+        for (fp = interface_pollers, i = interface_pollersSize; i--; fp++)
             FD_SET(fp->fdp_fd, &readset);
 #ifdef _WIN32
-        if (sys_maxfd == 0)
+        if (interface_maximumFileDescriptor == 0)
                 Sleep(microsec/1000);
         else
 #endif
-        select(sys_maxfd+1, &readset, &writeset, &exceptset, &timout);
-        for (i = 0; i < sys_nfdpoll; i++)
-            if (FD_ISSET(sys_fdpoll[i].fdp_fd, &readset))
+        select(interface_maximumFileDescriptor+1, &readset, &writeset, &exceptset, &timout);
+        for (i = 0; i < interface_pollersSize; i++)
+            if (FD_ISSET(interface_pollers[i].fdp_fd, &readset))
         {
             //SCHEDULER_LOCK;   /* Wrong. */
-            (*sys_fdpoll[i].fdp_fn)(sys_fdpoll[i].fdp_p, sys_fdpoll[i].fdp_fd);
+            (*interface_pollers[i].fdp_fn)(interface_pollers[i].fdp_p, interface_pollers[i].fdp_fd);
             //SCHEDULER_UNLOCK;
             
             didsomething = 1;
@@ -176,7 +190,7 @@ static int sys_domicrosleep(int microsec, int pollem)
     else
     {
 #ifdef _WIN32
-        if (sys_maxfd == 0)
+        if (interface_maximumFileDescriptor == 0)
               Sleep(microsec/1000);
         else
 #endif
@@ -341,25 +355,25 @@ void sys_sockerror(char *s)
 
 void sys_addpollfn(int fd, t_pollfn fn, void *ptr)
 {
-    int nfd = sys_nfdpoll;
+    int nfd = interface_pollersSize;
     int size = nfd * sizeof(t_fdpoll);
     t_fdpoll *fp;
-    sys_fdpoll = (t_fdpoll *)PD_MEMORY_RESIZE(sys_fdpoll, size,
+    interface_pollers = (t_fdpoll *)PD_MEMORY_RESIZE(interface_pollers, size,
         size + sizeof(t_fdpoll));
-    fp = sys_fdpoll + nfd;
+    fp = interface_pollers + nfd;
     fp->fdp_fd = fd;
     fp->fdp_fn = fn;
     fp->fdp_p = ptr;
-    sys_nfdpoll = nfd + 1;
-    if (fd >= sys_maxfd) sys_maxfd = fd + 1;
+    interface_pollersSize = nfd + 1;
+    if (fd >= interface_maximumFileDescriptor) interface_maximumFileDescriptor = fd + 1;
 }
 
 void sys_rmpollfn(int fd)
 {
-    int nfd = sys_nfdpoll;
+    int nfd = interface_pollersSize;
     int i, size = nfd * sizeof(t_fdpoll);
     t_fdpoll *fp;
-    for (i = nfd, fp = sys_fdpoll; i--; fp++)
+    for (i = nfd, fp = interface_pollers; i--; fp++)
     {
         if (fp->fdp_fd == fd)
         {
@@ -368,9 +382,9 @@ void sys_rmpollfn(int fd)
                 fp[0] = fp[1];
                 fp++;
             }
-            sys_fdpoll = (t_fdpoll *)PD_MEMORY_RESIZE(sys_fdpoll, size,
+            interface_pollers = (t_fdpoll *)PD_MEMORY_RESIZE(interface_pollers, size,
                 size - sizeof(t_fdpoll));
-            sys_nfdpoll = nfd - 1;
+            interface_pollersSize = nfd - 1;
             return;
         }
     }
@@ -386,7 +400,7 @@ t_socketreceiver *socketreceiver_new(void *owner, t_notifyfn notifier,
     x->sr_fnNotify = notifier;
     x->sr_fnReceive = socketreceivefn;
     x->sr_isUdp = udp;
-    if (!(x->sr_inBuffer = malloc(INBUFSIZE))) { PD_BUG; }
+    if (!(x->sr_inBuffer = malloc(INTERFACE_BUFFER_SIZE))) { PD_BUG; }
     return (x);
 }
 
@@ -400,13 +414,13 @@ void socketreceiver_free(t_socketreceiver *x)
     sitting on the stack while the messages are getting passed. */
 static int socketreceiver_doread(t_socketreceiver *x)
 {
-    char messbuf[INBUFSIZE], *bp = messbuf;
+    char messbuf[INTERFACE_BUFFER_SIZE], *bp = messbuf;
     int indx, first = 1;
     int inhead = x->sr_inHead;
     int intail = x->sr_inTail;
     char *inbuf = x->sr_inBuffer;
     for (indx = intail; first || (indx != inhead);
-        first = 0, (indx = (indx+1)&(INBUFSIZE-1)))
+        first = 0, (indx = (indx+1)&(INTERFACE_BUFFER_SIZE-1)))
     {
             /* if we hit a semi that isn't preceeded by a \, it's a message
             boundary.  LATER we should deal with the possibility that the
@@ -414,8 +428,8 @@ static int socketreceiver_doread(t_socketreceiver *x)
         char c = *bp++ = inbuf[indx];
         if (c == ';' && (!indx || inbuf[indx-1] != '\\'))
         {
-            intail = (indx+1)&(INBUFSIZE-1);
-            buffer_withStringUnzeroed(inbinbuf, messbuf, bp - messbuf);
+            intail = (indx+1)&(INTERFACE_BUFFER_SIZE-1);
+            buffer_withStringUnzeroed(interface_inBuffer, messbuf, bp - messbuf);
             //if (0 /*sys_debuglevel*/ & DEBUG_MESSDOWN)
             //{
             //    write(2,  messbuf, bp - messbuf);
@@ -431,8 +445,8 @@ static int socketreceiver_doread(t_socketreceiver *x)
 
 static void socketreceiver_getudp(t_socketreceiver *x, int fd)
 {
-    char buf[INBUFSIZE+1];
-    int ret = recv(fd, buf, INBUFSIZE, 0);
+    char buf[INTERFACE_BUFFER_SIZE+1];
+    int ret = recv(fd, buf, INTERFACE_BUFFER_SIZE, 0);
     if (ret < 0)
     {
         sys_sockerror("recv");
@@ -457,9 +471,9 @@ static void socketreceiver_getudp(t_socketreceiver *x, int fd)
             char *semi = strchr(buf, ';');
             if (semi) 
                 *semi = 0;
-            buffer_withStringUnzeroed(inbinbuf, buf, strlen(buf));
+            buffer_withStringUnzeroed(interface_inBuffer, buf, strlen(buf));
             if (x->sr_fnReceive)
-                (*x->sr_fnReceive)(x->sr_owner, inbinbuf);
+                (*x->sr_fnReceive)(x->sr_owner, interface_inBuffer);
             else { PD_BUG; }
         }
     }
@@ -473,7 +487,7 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
     {
         char *semi;
         int readto =
-            (x->sr_inHead >= x->sr_inTail ? INBUFSIZE : x->sr_inTail-1);
+            (x->sr_inHead >= x->sr_inTail ? INTERFACE_BUFFER_SIZE : x->sr_inTail-1);
         int ret;
 
             /* the input buffer might be full.  If so, drop the whole thing */
@@ -481,7 +495,7 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
         {
             fprintf(stderr, "pd: dropped message from gui\n");
             x->sr_inHead = x->sr_inTail = 0;
-            readto = INBUFSIZE;
+            readto = INTERFACE_BUFFER_SIZE;
         }
         else
         {
@@ -490,7 +504,7 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
             if (ret < 0)
             {
                 sys_sockerror("recv");
-                if (x == sys_socketreceiver) sys_bail(1);
+                if (x == interface_inReceiver) sys_bail(1);
                 else
                 {
                     if (x->sr_fnNotify)
@@ -501,7 +515,7 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
             }
             else if (ret == 0)
             {
-                if (x == sys_socketreceiver)
+                if (x == interface_inReceiver)
                 {
                     fprintf(stderr, "pd: exiting\n");
                     scheduler_needToExit();
@@ -518,12 +532,12 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
             else
             {
                 x->sr_inHead += ret;
-                if (x->sr_inHead >= INBUFSIZE) x->sr_inHead = 0;
+                if (x->sr_inHead >= INTERFACE_BUFFER_SIZE) x->sr_inHead = 0;
                 while (socketreceiver_doread(x))
                 {
                     if (x->sr_fnReceive)
-                        (*x->sr_fnReceive)(x->sr_owner, inbinbuf);
-                    else buffer_eval(inbinbuf, 0, 0, 0);
+                        (*x->sr_fnReceive)(x->sr_owner, interface_inBuffer);
+                    else buffer_eval(interface_inBuffer, 0, 0, 0);
                     if (x->sr_inHead == x->sr_inTail)
                         break;
                 }
@@ -589,7 +603,7 @@ static void sys_trytogetmoreguibuf(int newsize)
         int written = 0;
         while (1)
         {
-            int res = send(sys_guisock,
+            int res = send(interface_guiSocket,
                 sys_guibuf + sys_guibuftail + written, bytestowrite, 0);
             if (res < 0)
             {
@@ -669,7 +683,7 @@ static int sys_flushtogui( void)
 {
     int writesize = sys_guibufhead - sys_guibuftail, nwrote = 0;
     if (writesize > 0)
-        nwrote = send(sys_guisock, sys_guibuf + sys_guibuftail, writesize, 0);
+        nwrote = send(interface_guiSocket, sys_guibuf + sys_guibuftail, writesize, 0);
 
 #if 0   
     if (writesize)
@@ -812,12 +826,12 @@ int sys_pollgui(void)
 
 void sys_init_fdpoll(void)
 {
-    if (sys_fdpoll)
+    if (interface_pollers)
         return;
     /* create an empty FD poll list */
-    sys_fdpoll = (t_fdpoll *)PD_MEMORY_GET(0);
-    sys_nfdpoll = 0;
-    inbinbuf = buffer_new();
+    interface_pollers = (t_fdpoll *)PD_MEMORY_GET(0);
+    interface_pollersSize = 0;
+    interface_inBuffer = buffer_new();
 }
 
 /* --------------------- starting up the GUI connection ------------- */
@@ -851,6 +865,7 @@ static int defaultfontshit[MAXFONTS] = {
 
 int sys_startgui(const char *libdir)
 {
+    char *interface_commandToLaunchGUI;
     char cmdbuf[4*PD_STRING];
     struct sockaddr_in server;
     int msgsock;
@@ -877,7 +892,7 @@ int sys_startgui(const char *libdir)
         struct sockaddr_in server;
         struct hostent *hp;
 #ifdef __APPLE__
-            /* sys_guisock might be 1 or 2, which will have offensive results
+            /* interface_guiSocket might be 1 or 2, which will have offensive results
             if somebody writes to stdout or stderr - so we just open a few
             files to try to fill fds 0 through 2.  (I tried using dup()
             instead, which would seem the logical way to do this, but couldn't
@@ -892,8 +907,8 @@ int sys_startgui(const char *libdir)
             close(burnfd3);
 #endif
         /* create a socket */
-        sys_guisock = socket(AF_INET, SOCK_STREAM, 0);
-        if (sys_guisock < 0)
+        interface_guiSocket = socket(AF_INET, SOCK_STREAM, 0);
+        if (interface_guiSocket < 0)
             sys_sockerror("socket");
         
         /* connect socket using hostname provided in command line */
@@ -913,7 +928,7 @@ int sys_startgui(const char *libdir)
         server.sin_port = htons((unsigned short)main_portNumber);
 
             /* try to connect */
-        if (connect(sys_guisock, (struct sockaddr *) &server, sizeof (server))
+        if (connect(interface_guiSocket, (struct sockaddr *) &server, sizeof (server))
             < 0)
         {
             sys_sockerror("connecting stream socket");
@@ -973,7 +988,7 @@ int sys_startgui(const char *libdir)
 
 
 #ifndef _WIN32
-        if (!main_commandToLaunchGUI)
+        if (!interface_commandToLaunchGUI)
         {
 #ifdef __APPLE__
             int i;
@@ -1032,11 +1047,8 @@ int sys_startgui(const char *libdir)
                  libdir, libdir, (getenv("HOME") ? "" : " HOME=/tmp"),
                     libdir, portno);
 #endif /* __APPLE__ */
-            main_commandToLaunchGUI = cmdbuf;
+            interface_commandToLaunchGUI = cmdbuf;
         }
-
-        if (0) 
-            fprintf(stderr, "%s", main_commandToLaunchGUI);
 
         childpid = fork();
         if (childpid < 0)
@@ -1066,7 +1078,7 @@ int sys_startgui(const char *libdir)
                 }
             }
 #endif /* NOT __APPLE__ */
-            execl("/bin/sh", "sh", "-c", main_commandToLaunchGUI, (char*)0);
+            execl("/bin/sh", "sh", "-c", interface_commandToLaunchGUI, (char*)0);
             perror("pd: exec");
             fprintf(stderr, "Perhaps tcl and tk aren't yet installed?\n");
             _exit(1);
@@ -1208,12 +1220,12 @@ int sys_startgui(const char *libdir)
             fprintf(stderr, "Waiting for connection request... \n");
         if (listen(xsock, 5) < 0) sys_sockerror("listen");
 
-        sys_guisock = accept(xsock, (struct sockaddr *) &server, 
+        interface_guiSocket = accept(xsock, (struct sockaddr *) &server, 
             (socklen_t *)&len);
 #ifdef OOPS
         sys_closesocket(xsock);
 #endif
-        if (sys_guisock < 0) sys_sockerror("accept");
+        if (interface_guiSocket < 0) sys_sockerror("accept");
         if (0)
             fprintf(stderr, "... connected\n");
         sys_guibufhead = sys_guibuftail = 0;
@@ -1221,9 +1233,9 @@ int sys_startgui(const char *libdir)
     if (!PD_WITH_NOGUI)
     {
         char buf[256], buf2[256];
-        sys_socketreceiver = socketreceiver_new(0, 0, 0, 0);
-        sys_addpollfn(sys_guisock, (t_pollfn)socketreceiver_read,
-            sys_socketreceiver);
+        interface_inReceiver = socketreceiver_new(0, 0, 0, 0);
+        sys_addpollfn(interface_guiSocket, (t_pollfn)socketreceiver_read,
+            interface_inReceiver);
 
             /* here is where we start the pinging. */
 #if defined(__linux__) || defined(__FreeBSD_kernel__)
@@ -1255,7 +1267,7 @@ void sys_bail(int n)
     {
         reentered = 1;
 #if !defined(__linux__) && !defined(__FreeBSD_kernel__) && !defined(__GNU__) /* sys_close_audio() hangs if you're in a signal? */
-        fprintf(stderr ,"sys_guisock %d - ", sys_guisock);
+        fprintf(stderr ,"interface_guiSocket %d - ", interface_guiSocket);
         fprintf(stderr, "closing audio...\n");
         sys_close_audio();
         fprintf(stderr, "closing MIDI...\n");
@@ -1273,8 +1285,8 @@ void global_quit(void *dummy)
     sys_close_midi();
     if (!PD_WITH_NOGUI)
     {
-        sys_closesocket(sys_guisock);
-        sys_rmpollfn(sys_guisock);
+        sys_closesocket(interface_guiSocket);
+        sys_rmpollfn(interface_guiSocket);
     }
     exit(0); 
 }

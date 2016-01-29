@@ -202,16 +202,11 @@ static void preferences_setKey (const char *key, const char *value)
                                 &hkey,
                                 NULL);
                                 
-    if (err != ERROR_SUCCESS) {
-        post_error (PD_TRANSLATE ("preferences: unable to create %s entry\n"), key);    // --
-        return;
-    }
+    if (err != ERROR_SUCCESS) { PD_BUG; return; }
     
     err = RegSetValueEx (hkey, key, 0, REG_EXPAND_SZ, value, strlen (value) + 1);
     
-    if (err != ERROR_SUCCESS) {
-        post_error (PD_TRANSLATE ("preferences: unable to set %s entry\n"), key);       // --
-    }
+    if (err != ERROR_SUCCESS) { PD_BUG; }
     
     RegCloseKey (hkey);
 }

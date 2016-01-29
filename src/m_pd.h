@@ -354,7 +354,7 @@ typedef struct _gobj {
 typedef struct _scalar {
     t_gobj          sc_g;                       /* MUST be the first. */
     t_symbol        *sc_template;
-    t_word          sc_vector[1];               /* Indeterminate size (see above link). */
+    t_word          sc_vector[1];               /* Indeterminate size array (see above link). */
     } t_scalar;
 
 typedef struct _text {
