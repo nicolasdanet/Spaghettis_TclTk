@@ -117,34 +117,34 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_pollfn)            (void *ptr, int fd);
-typedef void (*t_socketnotifyfn)    (void *x, int n);
-typedef void (*t_socketreceivefn)   (void *x, t_buffer *b);
-typedef int  (*t_loader)            (t_canvas *canvas, char *classname);
+typedef void (*t_pollfn)    (void *p, int fd);
+typedef void (*t_notifyfn)  (void *x, int n);
+typedef void (*t_receivefn) (void *x, t_buffer *b);
+typedef int  (*t_loader)    (t_canvas *canvas, char *classname);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 typedef struct _fdpoll {
+    void        *fdp_p;
     int         fdp_fd;
     t_pollfn    fdp_fn;
-    void        *fdp_ptr;
     } t_fdpoll;
 
 typedef struct _socketreceiver {
-    char                *sr_inbuf;
-    int                 sr_inhead;
-    int                 sr_intail;
-    void                *sr_owner;
-    int                 sr_udp;
-    t_socketnotifyfn    sr_notifier;
-    t_socketreceivefn   sr_socketreceivefn;
+    void        *sr_owner;
+    char        *sr_inBuffer;
+    int         sr_inHead;
+    int         sr_inTail;
+    int         sr_isUdp;
+    t_notifyfn  sr_fnNotify;
+    t_receivefn sr_fnReceive;
     } t_socketreceiver;
 
 typedef struct _pathlist {
-    struct _pathlist    *nl_next;
-    char                *nl_string;
+    struct _pathlist    *pl_next;
+    char                *pl_string;
     } t_pathlist;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -385,7 +385,7 @@ void sys_setchsr                (int chin, int chout, int sr);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_socketreceiver *socketreceiver_new (void *owner, t_socketnotifyfn notifier, t_socketreceivefn fn, int udp);
+t_socketreceiver *socketreceiver_new (void *owner, t_notifyfn notifier, t_receivefn fn, int udp);
 void             socketreceiver_read (t_socketreceiver *x, int fd);
 void             sys_sockerror       (char *s);
 void             sys_closesocket     (int fd);

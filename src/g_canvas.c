@@ -1340,9 +1340,9 @@ static void canvas_stdpath(t_canvasenvironment *e, char *stdpath)
     if (!strncmp("extra/", stdpath, 6))
         stdpath+=6;
     /* check whether the given subdir is in one of the standard-paths */
-    for (nl=sys_staticpath; nl; nl=nl->nl_next)
+    for (nl=sys_staticpath; nl; nl=nl->pl_next)
     {
-        snprintf(strbuf, PD_STRING-1, "%s/%s/", nl->nl_string, stdpath);
+        snprintf(strbuf, PD_STRING-1, "%s/%s/", nl->pl_string, stdpath);
         strbuf[PD_STRING-1]=0;
         if (check_exists(strbuf))
         {
@@ -1370,9 +1370,9 @@ static void canvas_stdlib(t_canvasenvironment *e, char *stdlib)
         stdlib+=6;
 
     /* check whether the given library is located in one of the standard-paths */
-    for (nl=sys_staticpath; nl; nl=nl->nl_next)
+    for (nl=sys_staticpath; nl; nl=nl->pl_next)
     {
-        snprintf(strbuf, PD_STRING-1, "%s/%s", nl->nl_string, stdlib);
+        snprintf(strbuf, PD_STRING-1, "%s/%s", nl->pl_string, stdlib);
         strbuf[PD_STRING-1]=0;
         if (sys_load_lib(0, strbuf))
             return;
@@ -1451,10 +1451,10 @@ int canvas_open(t_canvas *x, const char *name, const char *ext,
         while (x2 && x2->gl_owner)
             x2 = x2->gl_owner;
         dir = (x2 ? canvas_getdir(x2)->s_name : ".");
-        for (nl = y->gl_env->ce_path; nl; nl = nl->nl_next)
+        for (nl = y->gl_env->ce_path; nl; nl = nl->pl_next)
         {
             char realname[PD_STRING];
-            if (sys_isabsolutepath(nl->nl_string))
+            if (sys_isabsolutepath(nl->pl_string))
             {
                 realname[0] = '\0';
             }
@@ -1464,7 +1464,7 @@ int canvas_open(t_canvas *x, const char *name, const char *ext,
                 realname[PD_STRING-3] = 0;
                 strcat(realname, "/");
             }
-            strncat(realname, nl->nl_string, PD_STRING-strlen(realname));
+            strncat(realname, nl->pl_string, PD_STRING-strlen(realname));
             realname[PD_STRING-1] = 0;
             if ((fd = sys_trytoopenone(realname, name, ext,
                 dirresult, nameresult, size, bin)) >= 0)

@@ -72,7 +72,6 @@ extern int sys_audioapi;
 
 static char *main_commandToLaunchGUI;
 
-
 #define INBUFSIZE 4096
 
 extern int main_portNumber;
@@ -84,11 +83,13 @@ static int sys_guisock;
 
 static t_buffer *inbinbuf;
 static t_socketreceiver *sys_socketreceiver;
+
 void sys_set_searchpath(void);
 void sys_set_extrapath(void);
 void sys_set_startup(void);
 
-/* ----------- functions for timing, signals, priorities, etc  --------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #ifdef _WIN32
 static LARGE_INTEGER nt_inittime;
@@ -165,7 +166,7 @@ static int sys_domicrosleep(int microsec, int pollem)
             if (FD_ISSET(sys_fdpoll[i].fdp_fd, &readset))
         {
             //SCHEDULER_LOCK;   /* Wrong. */
-            (*sys_fdpoll[i].fdp_fn)(sys_fdpoll[i].fdp_ptr, sys_fdpoll[i].fdp_fd);
+            (*sys_fdpoll[i].fdp_fn)(sys_fdpoll[i].fdp_p, sys_fdpoll[i].fdp_fd);
             //SCHEDULER_UNLOCK;
             
             didsomething = 1;
@@ -348,7 +349,7 @@ void sys_addpollfn(int fd, t_pollfn fn, void *ptr)
     fp = sys_fdpoll + nfd;
     fp->fdp_fd = fd;
     fp->fdp_fn = fn;
-    fp->fdp_ptr = ptr;
+    fp->fdp_p = ptr;
     sys_nfdpoll = nfd + 1;
     if (fd >= sys_maxfd) sys_maxfd = fd + 1;
 }
@@ -376,22 +377,22 @@ void sys_rmpollfn(int fd)
     post("warning: %d removed from poll list but not found", fd);
 }
 
-t_socketreceiver *socketreceiver_new(void *owner, t_socketnotifyfn notifier,
-    t_socketreceivefn socketreceivefn, int udp)
+t_socketreceiver *socketreceiver_new(void *owner, t_notifyfn notifier,
+    t_receivefn socketreceivefn, int udp)
 {
     t_socketreceiver *x = (t_socketreceiver *)PD_MEMORY_GET(sizeof(*x));
-    x->sr_inhead = x->sr_intail = 0;
+    x->sr_inHead = x->sr_inTail = 0;
     x->sr_owner = owner;
-    x->sr_notifier = notifier;
-    x->sr_socketreceivefn = socketreceivefn;
-    x->sr_udp = udp;
-    if (!(x->sr_inbuf = malloc(INBUFSIZE))) { PD_BUG; }
+    x->sr_fnNotify = notifier;
+    x->sr_fnReceive = socketreceivefn;
+    x->sr_isUdp = udp;
+    if (!(x->sr_inBuffer = malloc(INBUFSIZE))) { PD_BUG; }
     return (x);
 }
 
 void socketreceiver_free(t_socketreceiver *x)
 {
-    free(x->sr_inbuf);
+    free(x->sr_inBuffer);
     PD_MEMORY_FREE(x);
 }
 
@@ -401,9 +402,9 @@ static int socketreceiver_doread(t_socketreceiver *x)
 {
     char messbuf[INBUFSIZE], *bp = messbuf;
     int indx, first = 1;
-    int inhead = x->sr_inhead;
-    int intail = x->sr_intail;
-    char *inbuf = x->sr_inbuf;
+    int inhead = x->sr_inHead;
+    int intail = x->sr_inTail;
+    char *inbuf = x->sr_inBuffer;
     for (indx = intail; first || (indx != inhead);
         first = 0, (indx = (indx+1)&(INBUFSIZE-1)))
     {
@@ -420,8 +421,8 @@ static int socketreceiver_doread(t_socketreceiver *x)
             //    write(2,  messbuf, bp - messbuf);
             //    write(2, "\n", 1);
             //}
-            x->sr_inhead = inhead;
-            x->sr_intail = intail;
+            x->sr_inHead = inhead;
+            x->sr_inTail = intail;
             return (1);
         }
     }
@@ -457,8 +458,8 @@ static void socketreceiver_getudp(t_socketreceiver *x, int fd)
             if (semi) 
                 *semi = 0;
             buffer_withStringUnzeroed(inbinbuf, buf, strlen(buf));
-            if (x->sr_socketreceivefn)
-                (*x->sr_socketreceivefn)(x->sr_owner, inbinbuf);
+            if (x->sr_fnReceive)
+                (*x->sr_fnReceive)(x->sr_owner, inbinbuf);
             else { PD_BUG; }
         }
     }
@@ -466,34 +467,34 @@ static void socketreceiver_getudp(t_socketreceiver *x, int fd)
 
 void socketreceiver_read(t_socketreceiver *x, int fd)
 {
-    if (x->sr_udp)   /* UDP ("datagram") socket protocol */
+    if (x->sr_isUdp)   /* UDP ("datagram") socket protocol */
         socketreceiver_getudp(x, fd);
     else  /* TCP ("streaming") socket protocol */
     {
         char *semi;
         int readto =
-            (x->sr_inhead >= x->sr_intail ? INBUFSIZE : x->sr_intail-1);
+            (x->sr_inHead >= x->sr_inTail ? INBUFSIZE : x->sr_inTail-1);
         int ret;
 
             /* the input buffer might be full.  If so, drop the whole thing */
-        if (readto == x->sr_inhead)
+        if (readto == x->sr_inHead)
         {
             fprintf(stderr, "pd: dropped message from gui\n");
-            x->sr_inhead = x->sr_intail = 0;
+            x->sr_inHead = x->sr_inTail = 0;
             readto = INBUFSIZE;
         }
         else
         {
-            ret = recv(fd, x->sr_inbuf + x->sr_inhead,
-                readto - x->sr_inhead, 0);
+            ret = recv(fd, x->sr_inBuffer + x->sr_inHead,
+                readto - x->sr_inHead, 0);
             if (ret < 0)
             {
                 sys_sockerror("recv");
                 if (x == sys_socketreceiver) sys_bail(1);
                 else
                 {
-                    if (x->sr_notifier)
-                        (*x->sr_notifier)(x->sr_owner, fd);
+                    if (x->sr_fnNotify)
+                        (*x->sr_fnNotify)(x->sr_owner, fd);
                     sys_rmpollfn(fd);
                     sys_closesocket(fd);
                 }
@@ -509,21 +510,21 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
                 else
                 {
                     post("EOF on socket %d\n", fd);
-                    if (x->sr_notifier) (*x->sr_notifier)(x->sr_owner, fd);
+                    if (x->sr_fnNotify) (*x->sr_fnNotify)(x->sr_owner, fd);
                     sys_rmpollfn(fd);
                     sys_closesocket(fd);
                 }
             }
             else
             {
-                x->sr_inhead += ret;
-                if (x->sr_inhead >= INBUFSIZE) x->sr_inhead = 0;
+                x->sr_inHead += ret;
+                if (x->sr_inHead >= INBUFSIZE) x->sr_inHead = 0;
                 while (socketreceiver_doread(x))
                 {
-                    if (x->sr_socketreceivefn)
-                        (*x->sr_socketreceivefn)(x->sr_owner, inbinbuf);
+                    if (x->sr_fnReceive)
+                        (*x->sr_fnReceive)(x->sr_owner, inbinbuf);
                     else buffer_eval(inbinbuf, 0, 0, 0);
-                    if (x->sr_inhead == x->sr_intail)
+                    if (x->sr_inHead == x->sr_inTail)
                         break;
                 }
             }

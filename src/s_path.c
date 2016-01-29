@@ -263,15 +263,15 @@ static int do_open_via_path(const char *dir, const char *name,
             return (fd);
 
         /* next go through the search path */
-    for (nl = searchpath; nl; nl = nl->nl_next)
-        if ((fd = sys_trytoopenone(nl->nl_string, name, ext,
+    for (nl = searchpath; nl; nl = nl->pl_next)
+        if ((fd = sys_trytoopenone(nl->pl_string, name, ext,
             dirresult, nameresult, size, bin)) >= 0)
                 return (fd);
 
         /* next look in built-in paths like "extra" */
     if (1 /*sys_usestdpath*/)
-        for (nl = sys_staticpath; nl; nl = nl->nl_next)
-            if ((fd = sys_trytoopenone(nl->nl_string, name, ext,
+        for (nl = sys_staticpath; nl; nl = nl->pl_next)
+            if ((fd = sys_trytoopenone(nl->pl_string, name, ext,
                 dirresult, nameresult, size, bin)) >= 0)
                     return (fd);
 
@@ -500,8 +500,8 @@ void sys_set_searchpath( void)
     t_pathlist *nl;
 
     sys_gui("set ::tmp_path {}\n");
-    for (nl = sys_searchpath, i = 0; nl; nl = nl->nl_next, i++)
-        sys_vgui("lappend ::tmp_path {%s}\n", nl->nl_string);
+    for (nl = sys_searchpath, i = 0; nl; nl = nl->pl_next, i++)
+        sys_vgui("lappend ::tmp_path {%s}\n", nl->pl_string);
     sys_gui("set ::var(searchPath) $::tmp_path\n");
 }
 
@@ -513,8 +513,8 @@ void sys_set_extrapath(void)
     t_pathlist *nl;
 
     sys_gui("set ::tmp_path {}\n");
-    for (nl = sys_staticpath, i = 0; nl; nl = nl->nl_next, i++)
-        sys_vgui("lappend ::tmp_path {%s}\n", nl->nl_string);
+    for (nl = sys_staticpath, i = 0; nl; nl = nl->pl_next, i++)
+        sys_vgui("lappend ::tmp_path {%s}\n", nl->pl_string);
     sys_gui("set ::sys_staticpath $::tmp_path\n");
     */
 }
@@ -553,8 +553,8 @@ void sys_set_startup( void)
 
     // sys_vgui("set ::var(startupFlags) {%s}\n", sys_flags->s_name);
     // sys_gui("set ::var(startupLibraries) {}\n");
-    // for (nl = sys_externlist, i = 0; nl; nl = nl->nl_next, i++)
-        // sys_vgui("lappend ::var(startupLibraries) {%s}\n", nl->nl_string);
+    // for (nl = sys_externlist, i = 0; nl; nl = nl->pl_next, i++)
+        // sys_vgui("lappend ::var(startupLibraries) {%s}\n", nl->pl_string);
 }
 
     /* start a startup dialog window */

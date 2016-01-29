@@ -41,19 +41,19 @@ t_pathlist *pathlist_newAppend (t_pathlist *x, const char *s)
     t_pathlist *l2 = NULL;
     
     l2 = (t_pathlist *)(PD_MEMORY_GET (sizeof (t_pathlist)));
-    l2->nl_next   = NULL;
-    l2->nl_string = (char *)PD_MEMORY_GET (strlen (s) + 1);
+    l2->pl_next   = NULL;
+    l2->pl_string = (char *)PD_MEMORY_GET (strlen (s) + 1);
     
-    strcpy (l2->nl_string, s);
-    sys_unbashfilename (l2->nl_string, l2->nl_string);
+    strcpy (l2->pl_string, s);
+    sys_unbashfilename (l2->pl_string, l2->pl_string);
     
     if (!l1) { return l2; }
     else {
         do {
-            if (!strcmp (l1->nl_string, s)) { pathlist_free (l2); return x; }       /* Avoid duplicate. */
-        } while (l1->nl_next && (l1 = l1->nl_next));
+            if (!strcmp (l1->pl_string, s)) { pathlist_free (l2); return x; }       /* Avoid duplicate. */
+        } while (l1->pl_next && (l1 = l1->pl_next));
         
-        l1->nl_next = l2;
+        l1->pl_next = l2;
     }
     
     return x;
@@ -66,8 +66,8 @@ void pathlist_free (t_pathlist *x)
     
     for (l1 = x; l1; l1 = l2) {
     //
-    l2 = l1->nl_next;
-    PD_MEMORY_FREE (l1->nl_string);
+    l2 = l1->pl_next;
+    PD_MEMORY_FREE (l1->pl_string);
     PD_MEMORY_FREE (l1);
     //
     }
@@ -100,9 +100,9 @@ char *pathlist_getFileAtIndex (t_pathlist *x, int n)
     int i;
     t_pathlist *l = x;
     
-    for (i = 0; i < n && l; i++, l = l->nl_next) { }
+    for (i = 0; i < n && l; i++, l = l->pl_next) { }
     
-    return (l ? l->nl_string : NULL);
+    return (l ? l->pl_string : NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------

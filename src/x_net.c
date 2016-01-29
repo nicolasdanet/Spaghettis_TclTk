@@ -369,7 +369,7 @@ static void netreceive_connectpoll(t_netreceive *x)
         else
         {
             t_socketreceiver *y = socketreceiver_new((void *)x, 
-            (t_socketnotifyfn)netreceive_notify,
+            (t_notifyfn)netreceive_notify,
                 (x->x_ns.x_msgout ? netsend_doit : 0), 0);
             sys_addpollfn(fd, (t_pollfn)socketreceiver_read, y);
         }
@@ -459,7 +459,7 @@ static void netreceive_listen(t_netreceive *x, t_float fportno)
         else
         {
             t_socketreceiver *y = socketreceiver_new((void *)x, 
-                (t_socketnotifyfn)netreceive_notify,
+                (t_notifyfn)netreceive_notify,
                     (x->x_ns.x_msgout ? netsend_doit : 0), 1);
             sys_addpollfn(x->x_ns.x_sockfd, (t_pollfn)socketreceiver_read, y);
             x->x_ns.x_connectout = 0;

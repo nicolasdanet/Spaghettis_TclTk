@@ -28,17 +28,17 @@ standard output. */
 #define SOCKET_ERROR -1
 #endif
 
-typedef struct _fdpoll
+typedef struct _poll
 {
-    int fdp_fd;
-    char *fdp_outbuf;/*output message buffer*/ 
-    int fdp_outlen;     /*length of output message*/
-    int fdp_discard;/*buffer overflow: output message is incomplete, discard it*/
-    int fdp_gotsemi;/*last char from input was a semicolon*/
-} t_fdpoll;
+    int p_fd;
+    char *p_outbuf;/*output message buffer*/ 
+    int p_outlen;     /*length of output message*/
+    int p_discard;/*buffer overflow: output message is incomplete, discard it*/
+    int p_gotsemi;/*last char from input was a semicolon*/
+} t_poll;
 
 static int nfdpoll;
-static t_fdpoll *fdpoll;
+static t_poll *fdpoll;
 static int maxfd;
 static int sockfd;
 static int protocol;
@@ -113,15 +113,15 @@ usage:
 static void addport(int fd)
 {
     int nfd = nfdpoll;
-    t_fdpoll *fp;
-    fdpoll = (t_fdpoll *)realloc(fdpoll,
-        (nfdpoll+1) * sizeof(t_fdpoll));
+    t_poll *fp;
+    fdpoll = (t_poll *)realloc(fdpoll,
+        (nfdpoll+1) * sizeof(t_poll));
     fp = fdpoll + nfdpoll;
-    fp->fdp_fd = fd;
+    fp->p_fd = fd;
     nfdpoll++;
     if (fd >= maxfd) maxfd = fd + 1;
-    fp->fdp_outlen = fp->fdp_discard = fp->fdp_gotsemi = 0;
-    if (!(fp->fdp_outbuf = (char*) malloc(BUFSIZE)))
+    fp->p_outlen = fp->p_discard = fp->p_gotsemi = 0;
+    if (!(fp->p_outbuf = (char*) malloc(BUFSIZE)))
     {
         fprintf(stderr, "out of memory");
         exit(1);
@@ -129,24 +129,24 @@ static void addport(int fd)
     printf("number_connected %d;\n", nfdpoll);
 }
 
-static void rmport(t_fdpoll *x)
+static void rmport(t_poll *x)
 {
     int nfd = nfdpoll;
-    int i, size = nfdpoll * sizeof(t_fdpoll);
-    t_fdpoll *fp;
+    int i, size = nfdpoll * sizeof(t_poll);
+    t_poll *fp;
     for (i = nfdpoll, fp = fdpoll; i--; fp++)
     {
         if (fp == x)
         {
-            x_closesocket(fp->fdp_fd);
-            free(fp->fdp_outbuf);
+            x_closesocket(fp->p_fd);
+            free(fp->p_outbuf);
             while (i--)
             {
                 fp[0] = fp[1];
                 fp++;
             }
-            fdpoll = (t_fdpoll *)realloc(fdpoll,
-                (nfdpoll-1) * sizeof(t_fdpoll));
+            fdpoll = (t_poll *)realloc(fdpoll,
+                (nfdpoll-1) * sizeof(t_poll));
             nfdpoll--;
             printf("number_connected %d;\n", nfdpoll);
             return;
@@ -192,48 +192,48 @@ static void udpread(void)
         makeoutput(buf, ret);
 }
 
-static int tcpmakeoutput(t_fdpoll *x, char *inbuf, int len)
+static int tcpmakeoutput(t_poll *x, char *inbuf, int len)
 {
     int i;
-    int outlen = x->fdp_outlen;
-    char *outbuf = x->fdp_outbuf;
+    int outlen = x->p_outlen;
+    char *outbuf = x->p_outbuf;
     
     for (i = 0 ; i < len ; i++)
     {
         char c = inbuf[i];
         
-        if((c != '\n') || (!x->fdp_gotsemi))
+        if((c != '\n') || (!x->p_gotsemi))
             outbuf[outlen++] = c;
-        x->fdp_gotsemi = 0; 
+        x->p_gotsemi = 0; 
         if (outlen >= (BUFSIZE-1)) /*output buffer overflow; reserve 1 for '\n' */
         {
             fprintf(stderr, "pdreceive: message too long; discarding\n");
             outlen = 0;
-            x->fdp_discard = 1;
+            x->p_discard = 1;
         }  
             /* search for a semicolon.   */
         if (c == ';')
         {
             outbuf[outlen++] = '\n';
-            if (!x->fdp_discard)
+            if (!x->p_discard)
                makeoutput(outbuf, outlen);
 
             outlen = 0;
-            x->fdp_discard = 0;
-            x->fdp_gotsemi = 1;
+            x->p_discard = 0;
+            x->p_gotsemi = 1;
         } /* if (c == ';') */
     } /* for */
 
-    x->fdp_outlen = outlen;
+    x->p_outlen = outlen;
     return (0);
 }
 
-static void tcpread(t_fdpoll *x)
+static void tcpread(t_poll *x)
 {
     int  ret;
     char inbuf[BUFSIZE];
 
-    ret = recv(x->fdp_fd, inbuf, BUFSIZE, 0);
+    ret = recv(x->p_fd, inbuf, BUFSIZE, 0);
     if (ret < 0)
     {
         sockerror("recv (tcp)");
@@ -247,7 +247,7 @@ static void tcpread(t_fdpoll *x)
 static void dopoll(void)
 {
     int i;
-    t_fdpoll *fp;
+    t_poll *fp;
     fd_set readset, writeset, exceptset;
     FD_ZERO(&writeset);
     FD_ZERO(&readset);
@@ -257,7 +257,7 @@ static void dopoll(void)
     if (protocol == SOCK_STREAM)
     {
         for (fp = fdpoll, i = nfdpoll; i--; fp++)
-            FD_SET(fp->fdp_fd, &readset);
+            FD_SET(fp->p_fd, &readset);
     }
     if (select(maxfd+1, &readset, &writeset, &exceptset, 0) < 0)
     {
@@ -267,7 +267,7 @@ static void dopoll(void)
     if (protocol == SOCK_STREAM)
     {
         for (i = 0; i < nfdpoll; i++)
-            if (FD_ISSET(fdpoll[i].fdp_fd, &readset))
+            if (FD_ISSET(fdpoll[i].p_fd, &readset))
                 tcpread(&fdpoll[i]);
         if (FD_ISSET(sockfd, &readset))
             doconnect();
