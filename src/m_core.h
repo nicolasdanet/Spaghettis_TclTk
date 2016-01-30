@@ -135,10 +135,10 @@ void message_initialize                 (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error utils_strncpy                   (char *dest, size_t size, const char *src);
-t_error utils_strnadd                   (char *dest, size_t size, const char *src);
-t_error utils_strncat                   (char *dest, size_t size, const char *src, int length);
-t_error utils_snprintf                  (char *dest, size_t size, const char *format, ...);
+t_error string_copy                     (char *dest, size_t size, const char *src);
+t_error string_add                      (char *dest, size_t size, const char *src);
+t_error string_append                   (char *dest, size_t size, const char *src, int length);
+t_error string_sprintf                  (char *dest, size_t size, const char *format, ...);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

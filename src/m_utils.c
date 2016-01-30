@@ -22,7 +22,7 @@ static char utils_date[] = __DATE__;    /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error utils_strncpy (char *dest, size_t size, const char *src)
+t_error string_copy (char *dest, size_t size, const char *src)
 {
     size_t s = strlen (src);
     
@@ -37,12 +37,12 @@ t_error utils_strncpy (char *dest, size_t size, const char *src)
     }
 }
 
-t_error utils_strnadd (char *dest, size_t size, const char *src)
+t_error string_add (char *dest, size_t size, const char *src)
 {
-    return utils_strncat (dest, size, src, -1);
+    return string_append (dest, size, src, -1);
 }
 
-t_error utils_strncat (char *dest, size_t size, const char *src, int length)
+t_error string_append (char *dest, size_t size, const char *src, int length)
 {
     size_t d = strlen (dest);
     size_t n = (size - 1) - d;
@@ -63,7 +63,7 @@ t_error utils_strncat (char *dest, size_t size, const char *src, int length)
     }
 }
 
-t_error utils_snprintf (char *dest, size_t size, const char *format, ...)
+t_error string_sprintf (char *dest, size_t size, const char *format, ...)
 {
     int t;
     va_list args;
@@ -103,14 +103,14 @@ int utils_isTokenWhitespace (char c)
 
 t_error utils_version (char *dest, size_t size)
 {
-    t_error err = utils_snprintf (dest, size, "%s %s / %s / %s", PD_NAME, PD_VERSION, utils_date, utils_time);
+    t_error err = string_sprintf (dest, size, "%s %s / %s / %s", PD_NAME, PD_VERSION, utils_date, utils_time);
     
     #if PD_WITH_DEBUG
-        err |= utils_strnadd (dest, size, " / DEBUG");
+        err |= string_add (dest, size, " / DEBUG");
     #endif
     
     #if PD_WITH_REALTIME
-        err |= utils_strnadd (dest, size, " / RT");
+        err |= string_add (dest, size, " / RT");
     #endif
     
     return err;
@@ -131,9 +131,9 @@ t_error path_withNameAndDirectory (char *dest, size_t size, const char *name, co
     
     if (*name) {
         err = PD_ERROR_NONE;
-        err |= utils_strncpy (dest, size, directory);
-        err |= utils_strnadd (dest, size, "/");
-        err |= utils_strnadd (dest, size, name);
+        err |= string_copy (dest, size, directory);
+        err |= string_add (dest, size, "/");
+        err |= string_add (dest, size, name);
     }
     
     return err;

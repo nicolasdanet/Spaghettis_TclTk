@@ -81,7 +81,7 @@ proc create {top width height coordinates editable} {
 
 proc willClose {top} {
 
-    ::ui_connect::pdsend "$top menuclose 0"
+    ::ui_interface::pdsend "$top menuclose 0"
 }
 
 proc closed {top} {

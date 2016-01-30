@@ -206,7 +206,7 @@ proc _apply {top} {
         
     ::ui_atom::_forceValues $top
     
-    ::ui_connect::pdsend "$top param \
+    ::ui_interface::pdsend "$top param \
             $atomWidth($top) \
             $atomLow($top) \
             $atomHigh($top) \

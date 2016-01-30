@@ -147,7 +147,7 @@ proc _apply {top} {
     
     ::ui_array::_forceSize $top
     
-    ::ui_connect::pdsend "$top arraydialog \
+    ::ui_interface::pdsend "$top arraydialog \
             [::sanitized [::dollarToRaute [::withEmpty $arrayName($top)]]] \
             $arraySize($top) \
             [expr {$arraySave($top) + (2 * $arrayDraw($top))}]"

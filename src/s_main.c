@@ -127,21 +127,21 @@ static t_error main_findRootDirectory (char *progname)
         buf2[PD_STRING - 1] = 0;
         sys_unbashfilename (buf2, buf1);
     #else
-        err |= utils_strncpy (buf1, PD_STRING, progname);
+        err |= string_copy (buf1, PD_STRING, progname);
     #endif
     
     *buf2 = 0;
     
     slash = strrchr (buf1, '/');
     
-    if (!slash) { err |= utils_strnadd (buf2, PD_STRING, ".."); }
+    if (!slash) { err |= string_add (buf2, PD_STRING, ".."); }
     else {
         *slash = 0;
-        if ((slash = strrchr (buf1, '/'))) { err |= utils_strncat (buf2, PD_STRING, buf1, slash - buf1); }
+        if ((slash = strrchr (buf1, '/'))) { err |= string_append (buf2, PD_STRING, buf1, slash - buf1); }
         else {
-            if (*buf1 == '.') { err |= utils_strnadd (buf2, PD_STRING, ".."); }
+            if (*buf1 == '.') { err |= string_add (buf2, PD_STRING, ".."); }
             else {
-                err |= utils_strnadd (buf2, PD_STRING, ".");
+                err |= string_add (buf2, PD_STRING, ".");
             }
         }
     }
@@ -151,8 +151,8 @@ static t_error main_findRootDirectory (char *progname)
     #if PD_WINDOWS
         main_rootDirectory = gensym (buf2);      /* Dirname of the executable's parent directory. */
     #else
-        err |= utils_strncpy (buf1, PD_STRING, buf2);
-        err |= utils_strnadd (buf1, PD_STRING, "/lib/pd");
+        err |= string_copy (buf1, PD_STRING, buf2);
+        err |= string_add (buf1, PD_STRING, "/lib/pd");
         
         if (path_isFileExist (buf1)) { main_rootDirectory = gensym (buf1); }        /* Complexe. */
         else {

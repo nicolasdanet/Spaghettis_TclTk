@@ -36,7 +36,7 @@ proc ::tk::mac::OpenDocument {args} {
 
 proc ::tk::mac::Quit {args} {
 
-    ::ui_connect::pdsend "pd _quit"
+    ::ui_interface::pdsend "pd _quit"
 }
 
 # ------------------------------------------------------------------------------------------------------------

@@ -198,7 +198,7 @@ proc _apply {top} {
     
     _forceValues
     
-    ::ui_connect::pdsend "pd _midiDialog \
+    ::ui_interface::pdsend "pd _midiDialog \
             $midiInDevice(1) \
             $midiInDevice(2) \
             $midiInDevice(3) \
@@ -220,7 +220,7 @@ proc _apply {top} {
             $midiAlsaIn \
             $midiAlsaOut"
     
-    ::ui_connect::pdsend "pd _savePreferences"
+    ::ui_interface::pdsend "pd _savePreferences"
 }
 
 # ------------------------------------------------------------------------------------------------------------

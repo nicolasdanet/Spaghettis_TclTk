@@ -12,12 +12,12 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-package provide ui_connect 1.0
+package provide ui_interface 1.0
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-namespace eval ::ui_connect:: {
+namespace eval ::ui_interface:: {
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ proc _configureSocket {sock} {
     
     # Set the callback executed while receiving data. 
     
-    fileevent $sock readable { ::ui_connect::_readSocket }
+    fileevent $sock readable { ::ui_interface::_readSocket }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -73,12 +73,12 @@ proc _configureSocket {sock} {
 
 proc _configureClientSocket {} { 
     variable tcpSocket
-    ::ui_connect::_configureSocket $tcpSocket 
+    ::ui_interface::_configureSocket $tcpSocket 
 }
 
 proc _configureServerSocket {channel host port} {
     variable tcpSocket $channel
-    ::ui_connect::_configureSocket $tcpSocket
+    ::ui_interface::_configureSocket $tcpSocket
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -92,12 +92,12 @@ proc clientSocket {port host} {
         error "Connection to the TCP server $host:$port failed."
     }
 
-    ::ui_connect::_configureClientSocket
+    ::ui_interface::_configureClientSocket
 }
 
 proc serverSocket {} {
 
-    if {[catch { set sock [socket -server ::ui_connect::_configureServerSocket -myaddr localhost 0] }]} {
+    if {[catch { set sock [socket -server ::ui_interface::_configureServerSocket -myaddr localhost 0] }]} {
         error "Creation of the TCP server failed."
     }
     

@@ -66,11 +66,11 @@ proc _apply {top} {
     for {set i 1} {[$top.text compare $i.end < end]} {incr i 1} {
         set line [$top.text get $i.0 $i.end]
         if {$line != ""} {
-            ::ui_connect::pdsend "$top data $line"
+            ::ui_interface::pdsend "$top data $line"
         }
     }
     
-    ::ui_connect::pdsend "$top end"
+    ::ui_interface::pdsend "$top end"
 }
 
 # ------------------------------------------------------------------------------------------------------------

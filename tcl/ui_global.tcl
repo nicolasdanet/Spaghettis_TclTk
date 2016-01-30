@@ -141,12 +141,12 @@ proc ifAqua {a b} {
 
 proc ping {} {
 
-    ::ui_connect::pdsend "pd _ping"
+    ::ui_interface::pdsend "pd _ping"
 }
 
 proc watchdog {} {
 
-    ::ui_connect::pdsend "pd _watchdog"; after 2000 { ::watchdog }
+    ::ui_interface::pdsend "pd _watchdog"; after 2000 { ::watchdog }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -157,7 +157,7 @@ proc cancel {w} {
     set top [winfo toplevel $w]
     set class [winfo class $top]
     
-    if {$class eq "PdDialog" || $class eq "PdData"} { ::ui_connect::pdsend "$top cancel" }
+    if {$class eq "PdDialog" || $class eq "PdData"} { ::ui_interface::pdsend "$top cancel" }
 }
 
 # ------------------------------------------------------------------------------------------------------------

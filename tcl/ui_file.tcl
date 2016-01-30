@@ -49,7 +49,7 @@ proc newPatch {} {
     variable untitledNumber
     variable directoryNew
     
-    ::ui_connect::pdsend "pd new $untitledName-$untitledNumber [::escaped $directoryNew]"
+    ::ui_interface::pdsend "pd new $untitledName-$untitledNumber [::escaped $directoryNew]"
     
     incr untitledNumber 
 }
@@ -80,7 +80,7 @@ proc openFile {filename} {
     
     if {[file exists $filename]} {
     if {[lsearch -exact $::var(filesExtensions) $extension] > -1} {
-        ::ui_connect::pdsend "pd open [::escaped $basename] [::escaped $directory]"
+        ::ui_interface::pdsend "pd open [::escaped $basename] [::escaped $directory]"
         set directoryOpen $directory
         return
     }
@@ -108,7 +108,7 @@ proc saveAs {target filename directory destroy} {
     if {$filename ne ""} {
         set basename  [file tail $filename]
         set directory [file normalize [file dirname $filename]]
-        ::ui_connect::pdsend "$target savetofile [::escaped $basename] [::escaped $directory] $destroy"
+        ::ui_interface::pdsend "$target savetofile [::escaped $basename] [::escaped $directory] $destroy"
         set directoryNew $directory
     }
 }
@@ -124,7 +124,7 @@ proc openPanel {target directory} {
     set filename [tk_getOpenFile -initialdir $directory]
     
     if {$filename ne ""} {
-        ::ui_connect::pdsend "$target callback [::escaped $filename]"
+        ::ui_interface::pdsend "$target callback [::escaped $filename]"
     }
 }
 
@@ -139,7 +139,7 @@ proc savePanel {target directory} {
     set filename [tk_getSaveFile -initialdir $directory]
     
     if {$filename ne ""} {
-        ::ui_connect::pdsend "$target callback [::escaped $filename]"
+        ::ui_interface::pdsend "$target callback [::escaped $filename]"
     }
 }
 

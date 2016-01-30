@@ -95,11 +95,11 @@ package require ui_audio
 package require ui_bind
 package require ui_canvas
 package require ui_confirm
-package require ui_connect
 package require ui_console
 package require ui_data
 package require ui_file
 package require ui_iem
+package require ui_interface
 package require ui_menu
 package require ui_midi
 package require ui_object
@@ -217,10 +217,10 @@ proc main {argc argv} {
     if {$argc == 1 && [string is int $argv]} {
         set ::var(tcpHost) "localhost"
         set ::var(tcpPort) $argv
-        ::ui_connect::clientSocket $::var(tcpPort) $::var(tcpHost)
+        ::ui_interface::clientSocket $::var(tcpPort) $::var(tcpHost)
         
     } else {
-        ::ui_connect::serverSocket
+        ::ui_interface::serverSocket
         set executable [file join [file dirname [info script]] "../bin/pd"]
         exec -- $executable -port $::var(tcpPort) &
     }
@@ -258,7 +258,7 @@ proc initialize {audioAPIs midiAPIs} {
         
     # Respond to executable with measured fonts.
     
-    ::ui_connect::pdsend "pd _font $measured"
+    ::ui_interface::pdsend "pd _font $measured"
     
     # Open pended files.
     

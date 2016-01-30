@@ -92,7 +92,7 @@ static t_error atom_symbolToQuotedString (t_atom *a, char *s, int size)
         *base = 0;
 
     } else {
-        err = utils_strncpy (s, size, GET_SYMBOL (a)->s_name);
+        err = string_copy (s, size, GET_SYMBOL (a)->s_name);
     }
     //
     }
@@ -131,12 +131,12 @@ t_error atom_toString (t_atom *a, char *s, int size)
     
     switch (a->a_type) {
         case A_SYMBOL       : err = atom_symbolToQuotedString (a, s, size);                     break;
-        case A_FLOAT        : err = utils_snprintf (s, (size_t)size, "%g", GET_FLOAT (a));      break;
-        case A_DOLLAR       : err = utils_snprintf (s, (size_t)size, "$%d", GET_DOLLAR (a));    break;
-        case A_DOLLARSYMBOL : err = utils_strncpy (s,  (size_t)size, GET_SYMBOL (a)->s_name);   break;
-        case A_SEMICOLON    : err = utils_strncpy (s,  (size_t)size, ";");                      break;
-        case A_COMMA        : err = utils_strncpy (s,  (size_t)size, ",");                      break;
-        case A_POINTER      : err = utils_strncpy (s,  (size_t)size, s_pointer.s_name);         break;
+        case A_FLOAT        : err = string_sprintf (s, (size_t)size, "%g", GET_FLOAT (a));      break;
+        case A_DOLLAR       : err = string_sprintf (s, (size_t)size, "$%d", GET_DOLLAR (a));    break;
+        case A_DOLLARSYMBOL : err = string_copy (s,  (size_t)size, GET_SYMBOL (a)->s_name);     break;
+        case A_SEMICOLON    : err = string_copy (s,  (size_t)size, ";");                        break;
+        case A_COMMA        : err = string_copy (s,  (size_t)size, ",");                        break;
+        case A_POINTER      : err = string_copy (s,  (size_t)size, s_pointer.s_name);           break;
     }
 
     return err;

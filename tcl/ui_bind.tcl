@@ -122,7 +122,7 @@ proc initialize {} {
     bind all <Shift-KeyPress>               { ::ui_bind::_key %W %K %A 1 1  }
     bind all <Shift-KeyRelease>             { ::ui_bind::_key %W %K %A 0 1  }
     
-    bind all <<Quit>>                       { ::ui_connect::pdsend "pd _quit" }
+    bind all <<Quit>>                       { ::ui_interface::pdsend "pd _quit" }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -181,19 +181,19 @@ proc _focusIn {top} {
 proc _motion {c x y m} {
 
     set top [winfo toplevel $c]
-    ::ui_connect::pdsend "$top motion [$c canvasx $x] [$c canvasy $y] $m"
+    ::ui_interface::pdsend "$top motion [$c canvasx $x] [$c canvasy $y] $m"
 }
 
 proc _mouse {c x y b f} {
 
     set top [winfo toplevel $c]
-    ::ui_connect::pdsend "$top mouse [$c canvasx $x] [$c canvasy $y] $b $f"
+    ::ui_interface::pdsend "$top mouse [$c canvasx $x] [$c canvasy $y] $b $f"
 }
 
 proc _mouseUp {c x y b} {
 
     set top [winfo toplevel $c]
-    ::ui_connect::pdsend "$top mouseup [$c canvasx $x] [$c canvasy $y] $b"
+    ::ui_interface::pdsend "$top mouseup [$c canvasx $x] [$c canvasy $y] $b"
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -219,7 +219,7 @@ proc _key {w keysym iso isPress isShift} {
     
     if {[winfo class $top] eq "PdPatch"} { set selector "$top" } else { set selector "pd" }
     
-    ::ui_connect::pdsend "$selector key $isPress $k $isShift" 
+    ::ui_interface::pdsend "$selector key $isPress $k $isShift" 
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -232,7 +232,7 @@ proc _resized {top width height x y} {
     if {$width > 1 && $height > 1} { 
     
         ::ui_patch::updateScrollRegion $top.c
-        ::ui_connect::pdsend "$top setbounds $x $y [expr {$x + $width}] [expr {$y + $height}]"
+        ::ui_interface::pdsend "$top setbounds $x $y [expr {$x + $width}] [expr {$y + $height}]"
     }
 }
 
@@ -241,12 +241,12 @@ proc _resized {top width height x y} {
 
 proc _mapped {top} {
 
-    ::ui_connect::pdsend "$top map 1"
+    ::ui_interface::pdsend "$top map 1"
 }
 
 proc _unmapped {top} {
 
-    ::ui_connect::pdsend "$top map 0"
+    ::ui_interface::pdsend "$top map 0"
 }
 
 # ------------------------------------------------------------------------------------------------------------

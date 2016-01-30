@@ -34,7 +34,7 @@ proc show {top} {
 
 proc release {top} {
 
-    destroy $top; ::ui_connect::pdsend "$top signoff"
+    destroy $top; ::ui_interface::pdsend "$top signoff"
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ proc closed {top} {
         ::ui_confirm::checkClose $top { ::ui_text::_save $top } {} { return -level 2 }
     }
 
-    ::ui_connect::pdsend "$top close"
+    ::ui_interface::pdsend "$top close"
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -106,12 +106,12 @@ proc _modified {top} {
 
 proc _save {top} {
 
-    ::ui_connect::pdsend "$top clear"
+    ::ui_interface::pdsend "$top clear"
         
     for {set i 1} {[$top.text compare $i.end < end]} {incr i 1} {
         set line [$top.text get $i.0 $i.end]
         if {$line != ""} {
-            ::ui_connect::pdsend "$top addline [::escaped $line]"
+            ::ui_interface::pdsend "$top addline [::escaped $line]"
         }
     }
     

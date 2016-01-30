@@ -39,7 +39,7 @@ static int dollar_substitute (char *s, char *buf, int size, int argc, t_atom *ar
     if (n < 0 || n > argc) { return 0; }
 
     if (ptr == s) {                                       
-        err = utils_snprintf (buf, size, "$");                  /* Unsubstituted dollars are preserved. */
+        err = string_sprintf (buf, size, "$");                  /* Unsubstituted dollars are preserved. */
         return 0;
 
     } else if (n == 0) {                                    
@@ -92,7 +92,7 @@ t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv)
     
     if (!substr) { return s; }
     else {
-        err |= utils_strncat (result, PD_STRING, str, (substr - str));
+        err |= string_append (result, PD_STRING, str, (substr - str));
         str = substr + 1;
     }
 
@@ -100,14 +100,14 @@ t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv)
     //
     if ((next == 0) && (*t == 0)) { return NULL; }          /* Dollar number argument is out of bound. */
 
-    err |= utils_strnadd (result, PD_STRING, t);
+    err |= string_add (result, PD_STRING, t);
     str += next;
     
     substr = strchr (str, '$');
     
-    if (substr) { err |= utils_strncat (result, PD_STRING, str, (substr - str)); str = substr + 1; }
+    if (substr) { err |= string_append (result, PD_STRING, str, (substr - str)); str = substr + 1; }
     else {
-        err |= utils_strnadd (result, PD_STRING, str);
+        err |= string_add (result, PD_STRING, str);
         break;
     }
     //

@@ -62,8 +62,8 @@ proc _create {} {
     
     bind .path.f.paths.list <BackSpace>             "::ui_path::_deleteItems"
     bind .path.f.paths.list <Double-Button-1>       "::ui_path::_addItem"
-    bind .path.f.paths.list <Triple-Button-1>       { ::ui_connect::pdsend "pd _dummy" }
-    bind .path.f.paths.list <Quadruple-Button-1>    { ::ui_connect::pdsend "pd _dummy" }
+    bind .path.f.paths.list <Triple-Button-1>       { ::ui_interface::pdsend "pd _dummy" }
+    bind .path.f.paths.list <Quadruple-Button-1>    { ::ui_interface::pdsend "pd _dummy" }
     
     wm protocol .path WM_DELETE_WINDOW { ::ui_path::closed }
 }
@@ -107,8 +107,8 @@ proc _apply {} {
     
     foreach path [.path.f.paths.list get 0 end] { lappend ::var(searchPath) [::encoded $path] }
 
-    ::ui_connect::pdsend "pd _path $::var(searchPath)"
-    ::ui_connect::pdsend "pd _savePreferences"
+    ::ui_interface::pdsend "pd _path $::var(searchPath)"
+    ::ui_interface::pdsend "pd _savePreferences"
 }
 
 # ------------------------------------------------------------------------------------------------------------

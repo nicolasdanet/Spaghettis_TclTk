@@ -40,7 +40,7 @@ static t_error preferences_loadBegin (void)
 {
     char *home = getenv ("HOME");
     char filepath[PD_STRING] = { 0 };
-    t_error err = utils_snprintf (filepath, PD_STRING, "%s/.puredatarc", (home ? home : "."));
+    t_error err = string_sprintf (filepath, PD_STRING, "%s/.puredatarc", (home ? home : "."));
     
     if (!err) { err |= !path_isFileExist (filepath); }
     if (!err) {
@@ -91,7 +91,7 @@ static t_error preferences_saveBegin (void)
     err = (!home);
 
     if (!err) {
-        err = utils_snprintf (filepath, PD_STRING, "%s/.puredatarc", home);
+        err = string_sprintf (filepath, PD_STRING, "%s/.puredatarc", home);
         if (!err) { 
             err = ((preferences_saveFile = fopen (filepath, "w")) == NULL); 
         }
@@ -112,7 +112,7 @@ static int preferences_getKey (const char *key, char *value, int size)
     char t[PD_STRING] = { 0 };
     char *p = NULL;
     char *pEnd = NULL;
-    t_error err = utils_snprintf (t, PD_STRING, "\n%s:", key);
+    t_error err = string_sprintf (t, PD_STRING, "\n%s:", key);
 
     PD_ASSERT (preferences_loadBuffer != NULL);
     PD_ASSERT (!err);
@@ -133,7 +133,7 @@ static int preferences_getKey (const char *key, char *value, int size)
     size_t length = pEnd + 1 - p;
     
     if (length > 0) { 
-        if (!utils_strncat (value, size, p, length)) { return 1; }
+        if (!string_append (value, size, p, length)) { return 1; }
     }
     //
     }
@@ -240,7 +240,7 @@ static void preferences_saveClose (void)
 static int preferences_getKey (const char *key, char *value, int size)
 {
     char t[PD_STRING] = { 0 };
-    t_error err = utils_snprintf (t, PD_STRING, "defaults read org.puredata.puredata %s 2> /dev/null\n", key);
+    t_error err = string_sprintf (t, PD_STRING, "defaults read org.puredata.puredata %s 2> /dev/null\n", key);
     
     PD_ASSERT (size > 2);
     
@@ -278,8 +278,8 @@ static void preferences_setKey (const char *key, const char *value)
     
     char t[PD_STRING] = { 0 };
     
-    err = utils_snprintf (t, PD_STRING, "defaults write org.puredata.puredata %s \"%s\"", key, value);
-    err |= utils_strnadd (t, PD_STRING, " 2> /dev/null\n");
+    err = string_sprintf (t, PD_STRING, "defaults write org.puredata.puredata %s \"%s\"", key, value);
+    err |= string_add (t, PD_STRING, " 2> /dev/null\n");
     
     if (!err) { system (t); }
     else {
@@ -337,7 +337,7 @@ void preferences_load (void)
     
     for (i = 0; 1; i++) {
     //
-    utils_snprintf (key, PD_STRING, "Path%d", i + 1);
+    string_sprintf (key, PD_STRING, "Path%d", i + 1);
     if (!preferences_getKey (key, value, PD_STRING)) { break; }
     else {
         sys_searchpath = pathlist_newAppend (sys_searchpath, value);
@@ -349,14 +349,14 @@ void preferences_load (void)
     
     for (i = 0; i < MAXIMUM_AUDIO_IN; i++) {
     //
-    utils_snprintf (key, PD_STRING, "AudioInDevice%d", i + 1);
+    string_sprintf (key, PD_STRING, "AudioInDevice%d", i + 1);
     
     if (!preferences_getKey (key, value, PD_STRING)) { break; }
     else {
     //
     if (sscanf (value, "%d %d", &audioIn[i], &channelIn[i]) < 2) { break; }
     else {       
-        utils_snprintf (key, PD_STRING, "AudioInDeviceName%d", i + 1);
+        string_sprintf (key, PD_STRING, "AudioInDeviceName%d", i + 1);
         if (preferences_getKey (key, value, PD_STRING)) {
             int device; 
             if ((device = sys_audiodevnametonumber (0, value)) >= 0) { audioIn[i] = device; }
@@ -372,14 +372,14 @@ void preferences_load (void)
     
     for (i = 0; i < MAXIMUM_AUDIO_OUT; i++) {
     //
-    utils_snprintf (key, PD_STRING, "AudioOutDevice%d", i + 1);
+    string_sprintf (key, PD_STRING, "AudioOutDevice%d", i + 1);
     
     if (!preferences_getKey (key, value, PD_STRING)) { break; }
     else {
     //
     if (sscanf (value, "%d %d", &audioOut[i], &channelOut[i]) < 2) { break; }
     else {
-        utils_snprintf (key, PD_STRING, "AudioOutDeviceName%d", i + 1);
+        string_sprintf (key, PD_STRING, "AudioOutDeviceName%d", i + 1);
         if (preferences_getKey (key, value, PD_STRING)) {
             int device;
             if ((device = sys_audiodevnametonumber (1, value)) >= 0) { audioOut[i] = device; }
@@ -399,13 +399,13 @@ void preferences_load (void)
     //
     int device;
     
-    utils_snprintf (key, PD_STRING, "MidiInDeviceName%d", i + 1);
+    string_sprintf (key, PD_STRING, "MidiInDeviceName%d", i + 1);
     
     if (preferences_getKey (key, value, PD_STRING) && (device = sys_mididevnametonumber (0, value)) >= 0) {
         midiIn[i] = device;
         
     } else {
-        utils_snprintf (key, PD_STRING, "MidiInDevice%d", i + 1);
+        string_sprintf (key, PD_STRING, "MidiInDevice%d", i + 1);
         if (!preferences_getKey (key, value, PD_STRING)) { break; }
         else if (sscanf (value, "%d", &midiIn[i]) < 1)   { break; }
     }
@@ -417,13 +417,13 @@ void preferences_load (void)
     //
     int device;
     
-    utils_snprintf (key, PD_STRING, "MidiOutDeviceName%d", i + 1);
+    string_sprintf (key, PD_STRING, "MidiOutDeviceName%d", i + 1);
     
     if (preferences_getKey (key, value, PD_STRING) && (device = sys_mididevnametonumber (1, value)) >= 0) {
         midiOut[i] = device;
         
     } else {
-        utils_snprintf (key, PD_STRING, "MidiOutDevice%d", i + 1);
+        string_sprintf (key, PD_STRING, "MidiOutDevice%d", i + 1);
         if (!preferences_getKey (key, value, PD_STRING)) { break; }
         else if (sscanf (value, "%d", &midiOut[i]) < 1)  { break; }
     }
@@ -495,11 +495,11 @@ void preferences_save (void *dummy)
     
     /* Properties. */
     
-    utils_snprintf (value, PD_STRING, "%d", sys_audioapi);      preferences_setKey ("AudioApi",   value);
-    utils_snprintf (value, PD_STRING, "%d", callback);          preferences_setKey ("Callback",   value);
-    utils_snprintf (value, PD_STRING, "%d", sampleRate);        preferences_setKey ("SampleRate", value);
-    utils_snprintf (value, PD_STRING, "%d", advance);           preferences_setKey ("Advance",    value);
-    utils_snprintf (value, PD_STRING, "%d", blockSize);         preferences_setKey ("BlockSize",  value);
+    string_sprintf (value, PD_STRING, "%d", sys_audioapi);      preferences_setKey ("AudioApi",   value);
+    string_sprintf (value, PD_STRING, "%d", callback);          preferences_setKey ("Callback",   value);
+    string_sprintf (value, PD_STRING, "%d", sampleRate);        preferences_setKey ("SampleRate", value);
+    string_sprintf (value, PD_STRING, "%d", advance);           preferences_setKey ("Advance",    value);
+    string_sprintf (value, PD_STRING, "%d", blockSize);         preferences_setKey ("BlockSize",  value);
     
     /* Search paths. */
     
@@ -510,7 +510,7 @@ void preferences_save (void *dummy)
     char *path = pathlist_getFile (list);
     if (!path) { break; }
     else {
-        utils_snprintf (key, PD_STRING, "Path%d", i + 1); 
+        string_sprintf (key, PD_STRING, "Path%d", i + 1); 
         preferences_setKey (key, path);
         list = pathlist_getNext (list);
     }
@@ -518,75 +518,75 @@ void preferences_save (void *dummy)
     }
     
     #if PD_APPLE
-    utils_snprintf (key, PD_STRING, "Path%d", i + 1);                   preferences_resetKey (key);
+    string_sprintf (key, PD_STRING, "Path%d", i + 1);                   preferences_resetKey (key);
     #endif
     
     /* Audio devices. */
     
     for (i = 0; i < numberOfAudioIn; i++) {
     //
-    utils_snprintf (key, PD_STRING, "AudioInDevice%d", i + 1);
-    utils_snprintf (value, PD_STRING, "%d %d", audioIn[i], channelIn[i]);
+    string_sprintf (key, PD_STRING, "AudioInDevice%d", i + 1);
+    string_sprintf (value, PD_STRING, "%d %d", audioIn[i], channelIn[i]);
     preferences_setKey (key, value);
-    utils_snprintf (key, PD_STRING, "AudioInDeviceName%d", i + 1);
+    string_sprintf (key, PD_STRING, "AudioInDeviceName%d", i + 1);
     sys_audiodevnumbertoname (0, audioIn[i], value, PD_STRING);
     preferences_setKey (key, value);
     //
     }
 
     #if PD_APPLE
-    utils_snprintf (key, PD_STRING, "AudioInDevice%d", i + 1);          preferences_resetKey (key);
-    utils_snprintf (key, PD_STRING, "AudioInDeviceName%d", i + 1);      preferences_resetKey (key);
+    string_sprintf (key, PD_STRING, "AudioInDevice%d", i + 1);          preferences_resetKey (key);
+    string_sprintf (key, PD_STRING, "AudioInDeviceName%d", i + 1);      preferences_resetKey (key);
     #endif
     
     for (i = 0; i < numberOfAudioOut; i++) {
     //
-    utils_snprintf (key, PD_STRING, "AudioOutDevice%d", i + 1);
-    utils_snprintf (value, PD_STRING, "%d %d", audioOut[i], channelOut[i]);
+    string_sprintf (key, PD_STRING, "AudioOutDevice%d", i + 1);
+    string_sprintf (value, PD_STRING, "%d %d", audioOut[i], channelOut[i]);
     preferences_setKey (key, value);
-    utils_snprintf (key, PD_STRING, "AudioOutDeviceName%d", i + 1);
+    string_sprintf (key, PD_STRING, "AudioOutDeviceName%d", i + 1);
     sys_audiodevnumbertoname (1, audioOut[i], value, PD_STRING);
     preferences_setKey (key, value);
     //
     }
 
     #if PD_APPLE
-    utils_snprintf (key, PD_STRING, "AudioOutDevice%d", i + 1);         preferences_resetKey (key);
-    utils_snprintf (key, PD_STRING, "AudioOutDeviceName%d", i + 1);     preferences_resetKey (key);
+    string_sprintf (key, PD_STRING, "AudioOutDevice%d", i + 1);         preferences_resetKey (key);
+    string_sprintf (key, PD_STRING, "AudioOutDeviceName%d", i + 1);     preferences_resetKey (key);
     #endif
     
     /* MIDI devices. */
     
     for (i = 0; i < numberOfMidiIn; i++) {
     //
-    utils_snprintf (key, PD_STRING, "MidiInDevice%d", i + 1);
-    utils_snprintf (value, PD_STRING, "%d", midiIn[i]);
+    string_sprintf (key, PD_STRING, "MidiInDevice%d", i + 1);
+    string_sprintf (value, PD_STRING, "%d", midiIn[i]);
     preferences_setKey (key, value);
-    utils_snprintf (key, PD_STRING, "MidiInDeviceName%d", i + 1);
+    string_sprintf (key, PD_STRING, "MidiInDeviceName%d", i + 1);
     sys_mididevnumbertoname (0, midiIn[i], value, PD_STRING);
     preferences_setKey (key, value);
     //
     }
     
     #if PD_APPLE
-    utils_snprintf (key, PD_STRING, "MidiInDevice%d", i + 1);           preferences_resetKey (key);
-    utils_snprintf (key, PD_STRING, "MidiInDeviceName%d", i + 1);       preferences_resetKey (key);
+    string_sprintf (key, PD_STRING, "MidiInDevice%d", i + 1);           preferences_resetKey (key);
+    string_sprintf (key, PD_STRING, "MidiInDeviceName%d", i + 1);       preferences_resetKey (key);
     #endif
     
     for (i = 0; i < numberOfMidiOut; i++) {
     //
-    utils_snprintf (key, PD_STRING, "MidiOutDevice%d", i + 1);
-    utils_snprintf (value, PD_STRING, "%d", midiOut[i]);
+    string_sprintf (key, PD_STRING, "MidiOutDevice%d", i + 1);
+    string_sprintf (value, PD_STRING, "%d", midiOut[i]);
     preferences_setKey (key, value);
-    utils_snprintf (key, PD_STRING, "MidiOutDeviceName%d", i + 1);
+    string_sprintf (key, PD_STRING, "MidiOutDeviceName%d", i + 1);
     sys_mididevnumbertoname (1, midiOut[i], value, PD_STRING);
     preferences_setKey (key, value);
     //
     }
     
     #if PD_APPLE
-    utils_snprintf (key, PD_STRING, "MidiOutDevice%d", i + 1);          preferences_resetKey (key);
-    utils_snprintf (key, PD_STRING, "MidiOutDeviceName%d", i + 1);      preferences_resetKey (key);
+    string_sprintf (key, PD_STRING, "MidiOutDevice%d", i + 1);          preferences_resetKey (key);
+    string_sprintf (key, PD_STRING, "MidiOutDeviceName%d", i + 1);      preferences_resetKey (key);
     #endif
     //
     }

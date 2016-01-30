@@ -204,7 +204,7 @@ proc _file {m} {
     $m add command \
         -label [_ "Quit"] \
         -accelerator "${accelerator}+Q" \
-        -command { ::ui_connect::pdsend "pd _quit" }
+        -command { ::ui_interface::pdsend "pd _quit" }
     }
 }
 
@@ -327,10 +327,10 @@ proc _media {m} {
     
     $m add command \
         -label [_ "MIDI..."] \
-        -command { ::ui_connect::pdsend "pd _midiProperties" }
+        -command { ::ui_interface::pdsend "pd _midiProperties" }
     $m add command \
         -label [_ "Audio..."] \
-        -command { ::ui_connect::pdsend "pd _audioProperties" }
+        -command { ::ui_interface::pdsend "pd _audioProperties" }
     $m add separator
     
     foreach e $::var(apiMidiAvailables) {
@@ -339,7 +339,7 @@ proc _media {m} {
                 -label [string totitle $name] \
                 -variable ::var(apiMidi) \
                 -value $value \
-                -command { ::ui_connect::pdsend "pd _midiAPI $::var(apiMidi)" }
+                -command { ::ui_interface::pdsend "pd _midiAPI $::var(apiMidi)" }
         }
     }
     
@@ -351,7 +351,7 @@ proc _media {m} {
                 -label [string totitle $name] \
                 -variable ::var(apiAudio) \
                 -value $value \
-                -command { ::ui_connect::pdsend "pd _audioAPI $::var(apiAudio)" }
+                -command { ::ui_interface::pdsend "pd _audioAPI $::var(apiAudio)" }
         }
     }
     
@@ -361,7 +361,7 @@ proc _media {m} {
         -label [_ "Run DSP"] \
         -accelerator "${accelerator}+R" \
         -variable ::var(isDsp) \
-        -command { ::ui_connect::pdsend "pd dsp $::var(isDsp)" }
+        -command { ::ui_interface::pdsend "pd dsp $::var(isDsp)" }
 }
 
 proc _tools {m} {
@@ -370,7 +370,7 @@ proc _tools {m} {
         -label [_ "Path"] \
         -variable ::var(isPath) \
         -command { 
-            if {$::var(isPath)} { ::ui_connect::pdsend "pd _pathDialog" } else { ::ui_path::hide } 
+            if {$::var(isPath)} { ::ui_interface::pdsend "pd _pathDialog" } else { ::ui_path::hide } 
         }
 }
 
@@ -423,7 +423,7 @@ proc _handle {message} {
 
     set top [winfo toplevel $::var(windowFocused)]
     
-    if {[winfo class $top] eq "PdPatch"} { ::ui_connect::pdsend "$top $message" }
+    if {[winfo class $top] eq "PdPatch"} { ::ui_interface::pdsend "$top $message" }
 }
 
 # ------------------------------------------------------------------------------------------------------------
@@ -435,7 +435,7 @@ proc _close {} {
     
     switch -regexp -- [winfo class $top] {
         "PdPatch" { 
-            ::ui_connect::pdsend "$top menuclose 0"
+            ::ui_interface::pdsend "$top menuclose 0"
         }
         "PdDialog|PdText|PdData|PdTool" { 
             switch -- [::getTitle $top] {
@@ -467,7 +467,7 @@ proc _doPopup {top action} {
     variable popupX
     variable popupY
     
-    ::ui_connect::pdsend "$top done-popup $action $popupX $popupY"
+    ::ui_interface::pdsend "$top done-popup $action $popupX $popupY"
 }
 
 # ------------------------------------------------------------------------------------------------------------
