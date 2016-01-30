@@ -99,110 +99,112 @@ static int                  interface_guiSocket;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+#if PD_WINDOWS
+
+static LARGE_INTEGER        interface_NTTime;
+static double               interface_NTFrequency;
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #if PD_WINDOWS
 
-static LARGE_INTEGER nt_inittime;
-static double nt_freq = 0;
-
-static void sys_initntclock (void)
+static void interface_initializeClock (void)
 {
     LARGE_INTEGER f1;
     LARGE_INTEGER now;
-    QueryPerformanceCounter(&now);
-    if (!QueryPerformanceFrequency(&f1))
-    {
-          fprintf(stderr, "pd: QueryPerformanceFrequency failed\n");
-          f1.QuadPart = 1;
-    }
-    nt_freq = f1.QuadPart;
-    nt_inittime = now;
+    
+    QueryPerformanceCounter (&now);
+    
+    if (!QueryPerformanceFrequency (&f1)) { PD_BUG; f1.QuadPart = 1; }
+    
+    interface_NTTime = now;
+    interface_NTFrequency = f1.QuadPart;
 }
 
-#if 0
-    /* this is a version you can call if you did the QueryPerformanceCounter
-    call yourself.  Necessary for time tagging incoming MIDI at interrupt
-    level, for instance; but we're not doing that just now. */
+#endif // PD_WINDOWS
 
-double nt_tixtotime(LARGE_INTEGER *dumbass)
+static int interface_pollSockets (int microseconds)
 {
-    if (nt_freq == 0) sys_initntclock();
-    return (((double)(dumbass->QuadPart - nt_inittime.QuadPart)) / nt_freq);
+    int didSomething = 0;
+    struct timeval timeOut;
+    t_fdpoll *pollers = NULL;
+    int i;
+    
+    timeOut.tv_sec  = 0;
+    timeOut.tv_usec = microseconds;
+    
+    fd_set rSet;
+    fd_set wSet;
+    fd_set eSet;
+    
+    FD_ZERO (&rSet);
+    FD_ZERO (&wSet);
+    FD_ZERO (&eSet);
+    
+    for (pollers = interface_pollers, i = interface_pollersSize; i--; pollers++) {
+        FD_SET (pollers->fdp_fd, &rSet);
+    }
+
+    select (interface_maximumFileDescriptor + 1, &rSet, &wSet, &eSet, &timeOut);
+    
+    for (i = 0; i < interface_pollersSize; i++) {
+        if (FD_ISSET (interface_pollers[i].fdp_fd, &rSet)) {
+            (*interface_pollers[i].fdp_fn) (interface_pollers[i].fdp_p, interface_pollers[i].fdp_fd);
+            didSomething = 1;
+        }
+    }
+    
+    return didSomething;
 }
-#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if PD_WINDOWS
+
+double sys_getRealTime (void)    
+{
+    LARGE_INTEGER now;
+    
+    QueryPerformanceCounter (&now);
+    
+    if (interface_NTFrequency == 0) { interface_initializeClock(); }
+    
+    return (((double)(now.QuadPart - interface_NTTime.QuadPart)) / interface_NTFrequency);
+}
+
+#else 
+
+double sys_getRealTime (void)    
+{
+    static struct timeval start;
+    struct timeval now;
+    
+    gettimeofday (&now, NULL);
+    if (start.tv_sec == 0 && start.tv_usec == 0) { start = now; }
+    
+    return ((now.tv_sec - start.tv_sec) + (1.0 / 1000000.0) * (now.tv_usec - start.tv_usec));
+}
+
 #endif // PD_WINDOWS
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-    /* get "real time" in seconds; take the
-    first time we get called as a reference time of zero. */
-double sys_getrealtime(void)    
+void sys_pollSocketsBlocking (int microseconds)
 {
-#ifndef _WIN32
-    static struct timeval then;
-    struct timeval now;
-    gettimeofday(&now, 0);
-    if (then.tv_sec == 0 && then.tv_usec == 0) then = now;
-    return ((now.tv_sec - then.tv_sec) +
-        (1./1000000.) * (now.tv_usec - then.tv_usec));
-#else
-    LARGE_INTEGER now;
-    QueryPerformanceCounter(&now);
-    if (nt_freq == 0) sys_initntclock();
-    return (((double)(now.QuadPart - nt_inittime.QuadPart)) / nt_freq);
-#endif
+    interface_pollSockets (microseconds);
 }
 
-static int sys_domicrosleep(int microsec, int pollem)
-{
-    struct timeval timout;
-    int i, didsomething = 0;
-    t_fdpoll *fp;
-    timout.tv_sec = 0;
-    timout.tv_usec = microsec;
-    if (pollem)
-    {
-        fd_set readset, writeset, exceptset;
-        FD_ZERO(&writeset);
-        FD_ZERO(&readset);
-        FD_ZERO(&exceptset);
-        for (fp = interface_pollers, i = interface_pollersSize; i--; fp++)
-            FD_SET(fp->fdp_fd, &readset);
-#ifdef _WIN32
-        if (interface_maximumFileDescriptor == 0)
-                Sleep(microsec/1000);
-        else
-#endif
-        select(interface_maximumFileDescriptor+1, &readset, &writeset, &exceptset, &timout);
-        for (i = 0; i < interface_pollersSize; i++)
-            if (FD_ISSET(interface_pollers[i].fdp_fd, &readset))
-        {
-            //SCHEDULER_LOCK;   /* Wrong. */
-            (*interface_pollers[i].fdp_fn)(interface_pollers[i].fdp_p, interface_pollers[i].fdp_fd);
-            //SCHEDULER_UNLOCK;
-            
-            didsomething = 1;
-        }
-        return (didsomething);
-    }
-    else
-    {
-#ifdef _WIN32
-        if (interface_maximumFileDescriptor == 0)
-              Sleep(microsec/1000);
-        else
-#endif
-        select(0, 0, 0, 0, &timout);
-        return (0);
-    }
-}
-
-void sys_microsleep(int microsec)
-{
-    sys_domicrosleep(microsec, 1);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #if !defined(_WIN32) && !defined(__CYGWIN__)
 static void sys_signal(int signo, sig_t sigfun)
@@ -821,7 +823,7 @@ void sys_unqueuegui(void *client)
 
 int sys_pollgui(void)
 {
-    return (sys_domicrosleep(0, 1) || sys_poll_togui());
+    return (interface_pollSockets(0) || sys_poll_togui());
 }
 
 void sys_init_fdpoll(void)

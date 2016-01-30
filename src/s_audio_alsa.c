@@ -455,7 +455,7 @@ int alsa_send_dacs(void)
     transfersize = AUDIO_DEFAULT_BLOCK;
 
     timelast = timenow;
-    timenow = sys_getrealtime();
+    timenow = sys_getRealTime();
 
 #ifdef DEBUG_ALSA_XFER
     if (timenow - timelast > 0.050)
@@ -585,13 +585,13 @@ int alsa_send_dacs(void)
         /* zero out the output buffer */
         memset(sys_soundout, 0, AUDIO_DEFAULT_BLOCK * sizeof(*sys_soundout) *
                sys_outchannels);
-        if (sys_getrealtime() - timenow > 0.002)
+        if (sys_getRealTime() - timenow > 0.002)
         {
     #ifdef DEBUG_ALSA_XFER
             post("output %d took %d msec\n",
                     callno, (int)(1000 * (timenow - timelast))), fflush(stderr);
     #endif
-            timenow = sys_getrealtime();
+            timenow = sys_getRealTime();
             //sys_log_error(ERROR_DAC_SLEPT);
         }
     }
@@ -664,11 +664,11 @@ int alsa_send_dacs(void)
 #ifdef DEBUG_ALSA_XFER
     xferno++;
 #endif
-    if (sys_getrealtime() - timenow > 0.002)
+    if (sys_getRealTime() - timenow > 0.002)
     {
 #ifdef DEBUG_ALSA_XFER
         post("alsa_send_dacs took %d msec\n",
-            (int)(1000 * (sys_getrealtime() - timenow)));
+            (int)(1000 * (sys_getRealTime() - timenow)));
 #endif
         //sys_log_error(ERROR_ADC_SLEPT);
     }

@@ -189,6 +189,9 @@ void preferences_save                       (void *dummy);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+double  sys_getRealTime                     (void);
+void    sys_pollSocketsBlocking                      (int microseconds);
+
 void sys_setsignalhandlers                  (void);
 int  sys_startgui                           (const char *guipath);
 
@@ -376,7 +379,6 @@ void sys_initmidiqueue          (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_microsleep             (int microsec);
 void sys_init_fdpoll            (void);
 void sys_bail                   (int exitcode);
 int  sys_pollgui                (void);

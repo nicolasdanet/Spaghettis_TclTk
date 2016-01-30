@@ -325,10 +325,10 @@ static void scheduler_pollStuck (int init)
 {
     static double idleTime;
     
-    if (init) { idleTime = sys_getrealtime(); }
+    if (init) { idleTime = sys_getRealTime(); }
     else {
     //
-    if (sys_getrealtime() - idleTime > 1.0) {
+    if (sys_getRealTime() - idleTime > 1.0) {
         sys_close_audio();
         scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
         scheduler_quit = SCHEDULER_RESTART;
@@ -374,7 +374,7 @@ static void scheduler_withLoop (void)
         
     if (scheduler_audioMode == SCHEDULER_AUDIO_NONE) {
     //
-    realTime = sys_getrealtime();
+    realTime = sys_getRealTime();
     logicalTime = scheduler_getSystime();
     //
     }
@@ -401,7 +401,7 @@ static void scheduler_withLoop (void)
         
     } else {
     
-        double realElapsed = (sys_getrealtime() - realTime) * 1000.0;
+        double realElapsed = (sys_getRealTime() - realTime) * 1000.0;
         double logicalElapsed = scheduler_getMillisecondsSince (logicalTime);
 
         if (realElapsed > logicalElapsed) { timeForward = DACS_YES; }
@@ -426,7 +426,7 @@ static void scheduler_withLoop (void)
     scheduler_pollWatchdog();
 
     SCHEDULER_UNLOCK;
-    if (timeForward != DACS_SLEPT) { sys_microsleep (scheduler_sleepGrain); }
+    if (timeForward != DACS_SLEPT) { sys_pollSocketsBlocking (scheduler_sleepGrain); }
     SCHEDULER_LOCK;
     //
     }

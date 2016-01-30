@@ -269,9 +269,9 @@ static int netsend_dosend(t_netsend *x, int sockfd,
     {
         static double lastwarntime;
         static double pleasewarn;
-        double timebefore = sys_getrealtime();
+        double timebefore = sys_getRealTime();
         int res = send(sockfd, bp, length-sent, 0);
-        double timeafter = sys_getrealtime();
+        double timeafter = sys_getRealTime();
         int late = (timeafter - timebefore > 0.005);
         if (late || pleasewarn)
         {

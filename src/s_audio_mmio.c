@@ -275,7 +275,7 @@ static double initsystime = -1;
 static void nt_resetmidisync(void)
 {
     initsystime = scheduler_getSystime();
-    nt_hibuftime = sys_getrealtime();
+    nt_hibuftime = sys_getRealTime();
 }
 
     /* call this whenever we're idled waiting for audio to be ready. 
@@ -290,7 +290,7 @@ static void nt_midisync(void)
     jittersec = (nt_dacjitterbufsallowed > nt_adcjitterbufsallowed ?
         nt_dacjitterbufsallowed : nt_adcjitterbufsallowed)
             * nt_realdacblksize / sys_getsr();
-    diff = sys_getrealtime() - 0.001 * scheduler_getMillisecondsSince(initsystime);
+    diff = sys_getRealTime() - 0.001 * scheduler_getMillisecondsSince(initsystime);
     if (diff > nt_hibuftime) nt_hibuftime = diff;
     if (diff < nt_hibuftime - jittersec)
     {
@@ -299,13 +299,6 @@ static void nt_midisync(void)
     }
 }
 
-static double nt_midigettimefor(LARGE_INTEGER timestamp)
-{
-    /* this is broken now... used to work when "timestamp" was derived from
-        QueryPerformanceCounter() instead of the gates approved 
-            timeGetSystemTime() call in the MIDI callback routine below. */
-    return (nt_tixtotime(timestamp) - nt_hibuftime);
-}
 #endif      /* MIDI_TIMESTAMP */
 
 
@@ -481,13 +474,13 @@ void nt_logerror(int which)
     post("error %d %d", count, which);
     if (which < NOTHING) nt_errorcount++;
     if (which == RESYNC) nt_resynccount++;
-    if (sys_getrealtime() > nt_nextreporttime)
+    if (sys_getRealTime() > nt_nextreporttime)
     {
         post("%d audio I/O error%s", nt_errorcount,
             (nt_errorcount > 1 ? "s" : ""));
         if (nt_resynccount) post("DAC/ADC sync error");
         nt_errorcount = nt_resynccount = 0;
-        nt_nextreporttime = sys_getrealtime() - 5;
+        nt_nextreporttime = sys_getRealTime() - 5;
     }
 #endif
 }

@@ -553,7 +553,7 @@ int pa_send_dacs(void)
     }
 
 #else /* FAKEBLOCKING */
-    timebefore = sys_getrealtime();
+    timebefore = sys_getRealTime();
         /* write output */
     if (sys_outchannels)
     {
@@ -581,7 +581,7 @@ int pa_send_dacs(void)
                     k++, fp++, fp3 += sys_inchannels)
                         *fp = *fp3;
     }
-    if (sys_getrealtime() - timebefore > 0.002)
+    if (sys_getRealTime() - timebefore > 0.002)
     {
         rtnval = DACS_SLEPT;
     }

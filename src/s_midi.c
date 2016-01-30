@@ -69,21 +69,21 @@ void sys_setmiditimediff(double inbuftime, double outbuftime)
 {
     double dactimeminusrealtime =
         .001 * scheduler_getMillisecondsSince(sys_midiinittime)
-            - outbuftime - sys_getrealtime();
+            - outbuftime - sys_getRealTime();
     double adctimeminusrealtime =
         .001 * scheduler_getMillisecondsSince(sys_midiinittime)
-            + inbuftime - sys_getrealtime();
+            + inbuftime - sys_getRealTime();
     if (dactimeminusrealtime > sys_newdactimeminusrealtime)
         sys_newdactimeminusrealtime = dactimeminusrealtime;
     if (adctimeminusrealtime > sys_newadctimeminusrealtime)
         sys_newadctimeminusrealtime = adctimeminusrealtime;
-    if (sys_getrealtime() > sys_whenupdate)
+    if (sys_getRealTime() > sys_whenupdate)
     {
         sys_dactimeminusrealtime = sys_newdactimeminusrealtime;
         sys_adctimeminusrealtime = sys_newadctimeminusrealtime;
         sys_newdactimeminusrealtime = -1e20;
         sys_newadctimeminusrealtime = -1e20;
-        sys_whenupdate = sys_getrealtime() + 1;
+        sys_whenupdate = sys_getRealTime() + 1;
     }
 }
 
@@ -92,12 +92,12 @@ void sys_setmiditimediff(double inbuftime, double outbuftime)
     last time sys_setmiditimediff got called. */
 static double sys_getmidioutrealtime( void)
 {
-    return (sys_getrealtime() + sys_dactimeminusrealtime);
+    return (sys_getRealTime() + sys_dactimeminusrealtime);
 }
 
 static double sys_getmidiinrealtime( void)
 {
-    return (sys_getrealtime() + sys_adctimeminusrealtime);
+    return (sys_getRealTime() + sys_adctimeminusrealtime);
 }
 
 static void sys_putnext( void)
@@ -144,7 +144,7 @@ void sys_pollmidioutqueue( void)
             post("out: del %f, midiRT %f logicaltime %f, RT %f dacminusRT %f",
                 (midi_outqueue[midi_outtail].q_time - midirealtime),
                     midirealtime, .001 * scheduler_getMillisecondsSince(sys_midiinittime),
-                        sys_getrealtime(), sys_dactimeminusrealtime);
+                        sys_getRealTime(), sys_dactimeminusrealtime);
             db = 1;
         }
 #endif
@@ -409,7 +409,7 @@ void sys_pollmidiinqueue( void)
         {
             post("in del %f, logicaltime %f, RT %f adcminusRT %f",
                 (midi_inqueue[midi_intail].q_time - logicaltime),
-                    logicaltime, sys_getrealtime(), sys_adctimeminusrealtime);
+                    logicaltime, sys_getRealTime(), sys_adctimeminusrealtime);
             db = 1;
         }
 #endif
@@ -464,7 +464,7 @@ void sys_pollmidiqueue( void)
 {
 #if 0
     static double lasttime;
-    double newtime = sys_getrealtime();
+    double newtime = sys_getRealTime();
     if (newtime - lasttime > 0.007)
         post("delay %d", (int)(1000 * (newtime - lasttime)));
     lasttime = newtime;

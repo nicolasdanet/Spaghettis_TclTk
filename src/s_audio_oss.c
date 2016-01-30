@@ -684,7 +684,7 @@ int oss_send_dacs(void)
             if (linux_adcs[dev].d_space == 0)
         {
             audio_buf_info ainfo;
-            sys_microsleep(2000);
+            sys_pollSocketsBlocking(2000);
             oss_calcspace();
             if (linux_adcs[dev].d_space != 0) continue;
 
@@ -724,7 +724,7 @@ int oss_send_dacs(void)
 
         /* do output */
 
-    timeref = sys_getrealtime();
+    timeref = sys_getRealTime();
     for (dev=0, thischan = 0; dev < linux_noutdevs; dev++)
     {
         int nchannels = linux_dacs[dev].d_nchannels;
@@ -749,7 +749,7 @@ int oss_send_dacs(void)
             }
             linux_dacs_write(linux_dacs[dev].d_fd, buf,
                 OSS_XFERSIZE(nchannels, linux_dacs[dev].d_bytespersamp));
-            if ((timenow = sys_getrealtime()) - timeref > 0.002)
+            if ((timenow = sys_getRealTime()) - timeref > 0.002)
             {
                 if (!oss_blockmode) {
                     /* sys_log_error(ERROR_DAC_SLEPT); */
@@ -770,7 +770,7 @@ int oss_send_dacs(void)
         linux_adcs_read(linux_adcs[dev].d_fd, buf,
             OSS_XFERSIZE(nchannels, linux_adcs[dev].d_bytespersamp));
 
-        if ((timenow = sys_getrealtime()) - timeref > 0.002)
+        if ((timenow = sys_getRealTime()) - timeref > 0.002)
         {
             if (!oss_blockmode) {
                 /* sys_log_error(ERROR_ADC_SLEPT); */
