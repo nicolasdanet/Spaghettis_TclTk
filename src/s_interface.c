@@ -20,37 +20,9 @@
 
 #if PD_WINDOWS
 
-    #include <process.h>
-    #include <winsock.h>
-
     typedef int socklen_t;
     
     #define EADDRINUSE WSAEADDRINUSE
-
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if !PD_WINDOWS
-
-#include <netdb.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <sys/mman.h>
-#include <sys/resource.h>
-#include <sys/socket.h>
-#include <sys/time.h>
-
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if PD_APPLE
-
-#include <glob.h>
-#include <pthread.h>
 
 #endif
 
@@ -99,34 +71,7 @@ static int                  interface_guiSocket;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-#if PD_WINDOWS
-
-static LARGE_INTEGER        interface_NTTime;
-static double               interface_NTFrequency;
-
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-#if PD_WINDOWS
-
-static void interface_initializeClock (void)
-{
-    LARGE_INTEGER f1;
-    LARGE_INTEGER now;
-    
-    QueryPerformanceCounter (&now);
-    
-    if (!QueryPerformanceFrequency (&f1)) { PD_BUG; f1.QuadPart = 1; }
-    
-    interface_NTTime = now;
-    interface_NTFrequency = f1.QuadPart;
-}
-
-#endif // PD_WINDOWS
 
 static int interface_pollSockets (int microseconds)
 {
@@ -166,126 +111,9 @@ static int interface_pollSockets (int microseconds)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#if PD_WINDOWS
-
-double sys_getRealTime (void)    
-{
-    LARGE_INTEGER now;
-    
-    QueryPerformanceCounter (&now);
-    
-    if (interface_NTFrequency == 0) { interface_initializeClock(); }
-    
-    return (((double)(now.QuadPart - interface_NTTime.QuadPart)) / interface_NTFrequency);
-}
-
-#else 
-
-double sys_getRealTime (void)    
-{
-    static struct timeval start;
-    struct timeval now;
-    
-    gettimeofday (&now, NULL);
-    if (start.tv_sec == 0 && start.tv_usec == 0) { start = now; }
-    
-    return ((now.tv_sec - start.tv_sec) + (1.0 / 1000000.0) * (now.tv_usec - start.tv_usec));
-}
-
-#endif // PD_WINDOWS
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 void sys_pollSocketsBlocking (int microseconds)
 {
     interface_pollSockets (microseconds);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#if !defined(_WIN32) && !defined(__CYGWIN__)
-static void sys_signal(int signo, sig_t sigfun)
-{
-    struct sigaction action;
-    action.sa_flags = 0;
-    action.sa_handler = sigfun;
-    memset(&action.sa_mask, 0, sizeof(action.sa_mask));
-#if 0  /* GG says: don't use that */
-    action.sa_restorer = 0;
-#endif
-    if (sigaction(signo, &action, 0) < 0)
-        perror("sigaction");
-}
-
-static void sys_exithandler(int n)
-{
-    static int trouble = 0;
-    if (!trouble)
-    {
-        trouble = 1;
-        fprintf(stderr, "Pd: signal %d\n", n);
-        sys_bail(1);
-    }
-    else _exit(1);
-}
-
-static void sys_alarmhandler(int n)
-{
-    fprintf(stderr, "Pd: system call timed out\n");
-}
-
-static void sys_huphandler(int n)
-{
-    struct timeval timout;
-    timout.tv_sec = 0;
-    timout.tv_usec = 30000;
-    select(1, 0, 0, 0, &timout);
-}
-
-void sys_setalarm(int microsec)
-{
-    struct itimerval gonzo;
-    int sec = (int)(microsec/1000000);
-    microsec %= 1000000;
-#if 0
-    fprintf(stderr, "timer %d:%d\n", sec, microsec);
-#endif
-    gonzo.it_interval.tv_sec = 0;
-    gonzo.it_interval.tv_usec = 0;
-    gonzo.it_value.tv_sec = sec;
-    gonzo.it_value.tv_usec = microsec;
-    if (microsec)
-        sys_signal(SIGALRM, sys_alarmhandler);
-    else sys_signal(SIGALRM, SIG_IGN);
-    setitimer(ITIMER_REAL, &gonzo, 0);
-}
-
-#endif /* NOT _WIN32 && NOT __CYGWIN__ */
-
-    /* on startup, set various signal handlers */
-void sys_setsignalhandlers( void)
-{
-#if !defined(_WIN32) && !defined(__CYGWIN__)
-    signal(SIGHUP, sys_huphandler);
-    signal(SIGINT, sys_exithandler);
-    signal(SIGQUIT, sys_exithandler);
-    signal(SIGILL, sys_exithandler);
-# ifdef SIGIOT
-    signal(SIGIOT, sys_exithandler);
-# endif
-    signal(SIGFPE, SIG_IGN);
-    /* signal(SIGILL, sys_exithandler);
-    signal(SIGBUS, sys_exithandler);
-    signal(SIGSEGV, sys_exithandler); */
-    signal(SIGPIPE, SIG_IGN);
-    signal(SIGALRM, SIG_IGN);
-#if 0  /* GG says: don't use that */
-    signal(SIGSTKFLT, sys_exithandler);
-#endif
-#endif /* NOT _WIN32 && NOT __CYGWIN__ */
 }
 
 #if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__)

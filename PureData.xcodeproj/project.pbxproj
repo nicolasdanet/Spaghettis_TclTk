@@ -127,6 +127,8 @@
 		379A42FD1BA4291200C1CED0 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 379A42091BA3F51100C1CED0 /* AudioToolbox.framework */; };
 		379A42FE1BA4291200C1CED0 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 379A420B1BA3F51C00C1CED0 /* Carbon.framework */; };
 		379A42FF1BA4291200C1CED0 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 379A420D1BA3F52D00C1CED0 /* CoreMIDI.framework */; };
+		37C76DA51C5CF20D00AE4CBF /* s_handler.c in Sources */ = {isa = PBXBuildFile; fileRef = 37C76DA41C5CF20D00AE4CBF /* s_handler.c */; };
+		37C76E121C5CF93000AE4CBF /* s_time.c in Sources */ = {isa = PBXBuildFile; fileRef = 37C76E111C5CF93000AE4CBF /* s_time.c */; };
 		37D287111C54F1D70041C5C2 /* s_font.c in Sources */ = {isa = PBXBuildFile; fileRef = 37D287101C54F1D70041C5C2 /* s_font.c */; };
 		37E0BC371C53E0B700114412 /* s_pathlist.c in Sources */ = {isa = PBXBuildFile; fileRef = 37E0BC361C53E0B700114412 /* s_pathlist.c */; };
 /* End PBXBuildFile section */
@@ -322,6 +324,8 @@
 		379A42D61BA427B900C1CED0 /* pdsend */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pdsend; sourceTree = BUILT_PRODUCTS_DIR; };
 		379A42F11BA428D000C1CED0 /* pdreceive */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pdreceive; sourceTree = BUILT_PRODUCTS_DIR; };
 		379A43041BA4291200C1CED0 /* pdwatchdog */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pdwatchdog; sourceTree = BUILT_PRODUCTS_DIR; };
+		37C76DA41C5CF20D00AE4CBF /* s_handler.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_handler.c; path = src/s_handler.c; sourceTree = "<group>"; };
+		37C76E111C5CF93000AE4CBF /* s_time.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_time.c; path = src/s_time.c; sourceTree = "<group>"; };
 		37D287101C54F1D70041C5C2 /* s_font.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_font.c; path = src/s_font.c; sourceTree = "<group>"; };
 		37E0BC361C53E0B700114412 /* s_pathlist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_pathlist.c; path = src/s_pathlist.c; sourceTree = "<group>"; };
 		8DD76FB20486AB0100D96B5E /* pd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pd; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -470,9 +474,6 @@
 				378971E31C4F716700263434 /* m_core.h */,
 				378971DD1C4F716700263434 /* m_macros.h */,
 				378971D71C4F716700263434 /* m_alloca.h */,
-				378971E61C4F716700263434 /* m_utils.c */,
-				378971DB1C4F716700263434 /* m_dollar.c */,
-				378971DE1C4F716700263434 /* m_memory.c */,
 				378971E11C4F716700263434 /* m_pd.c */,
 				378971DF1C4F716700263434 /* m_message.c */,
 				378971DA1C4F716700263434 /* m_class.c */,
@@ -481,6 +482,9 @@
 				378971D91C4F716700263434 /* m_buffer.c */,
 				378971E51C4F716700263434 /* m_setup.c */,
 				378971DC1C4F716700263434 /* m_global.c */,
+				378971E61C4F716700263434 /* m_utils.c */,
+				378971DB1C4F716700263434 /* m_dollar.c */,
+				378971DE1C4F716700263434 /* m_memory.c */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -492,19 +496,21 @@
 				378972021C4F716700263434 /* s_utf8.h */,
 				378971FF1C4F716700263434 /* s_ringbuffer.h */,
 				378971F21C4F716700263434 /* s_entry.c */,
-				37E0BC361C53E0B700114412 /* s_pathlist.c */,
-				37D287101C54F1D70041C5C2 /* s_font.c */,
 				378971F61C4F716700263434 /* s_main.c */,
 				378971E41C4F716700263434 /* s_scheduler.c */,
+				37C76DA41C5CF20D00AE4CBF /* s_handler.c */,
+				37C76E111C5CF93000AE4CBF /* s_time.c */,
 				378971F41C4F716700263434 /* s_interface.c */,
 				378971F51C4F716700263434 /* s_loader.c */,
 				378971F31C4F716700263434 /* s_preferences.c */,
 				378971FC1C4F716700263434 /* s_path.c */,
+				378971FB1C4F716700263434 /* s_midi.c */,
+				378971F11C4F716700263434 /* s_audio.c */,
+				37E0BC361C53E0B700114412 /* s_pathlist.c */,
+				37D287101C54F1D70041C5C2 /* s_font.c */,
 				378971FD1C4F716700263434 /* s_post.c */,
 				378972011C4F716700263434 /* s_utf8.c */,
 				378971FE1C4F716700263434 /* s_ringbuffer.c */,
-				378971FB1C4F716700263434 /* s_midi.c */,
-				378971F11C4F716700263434 /* s_audio.c */,
 				3722C53E1C4F955500D2BF6F /* API */,
 			);
 			name = System;
@@ -916,6 +922,8 @@
 				3789726A1C4F716800263434 /* x_time.c in Sources */,
 				37E0BC371C53E0B700114412 /* s_pathlist.c in Sources */,
 				37D287111C54F1D70041C5C2 /* s_font.c in Sources */,
+				37C76DA51C5CF20D00AE4CBF /* s_handler.c in Sources */,
+				37C76E121C5CF93000AE4CBF /* s_time.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

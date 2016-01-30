@@ -195,14 +195,30 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 
 #if PD_WINDOWS
-    #include <io.h>
-    #include <windows.h>
-    #include <winbase.h>
+
+#include <io.h>
+#include <process.h>
+#include <tchar.h>
+#include <windows.h>
+#include <winbase.h>
+#include <winsock.h>
+    
 #else
-    #include <sys/stat.h>
-    #include <sys/types.h>
-    #include <unistd.h>
-#endif
+
+#include <glob.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <pthread.h>
+#include <sys/mman.h>
+#include <sys/resource.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+    
+#endif // PD_WINDOWS
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
