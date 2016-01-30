@@ -9,6 +9,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "s_system.h"
 #include "math.h"
 
 /* -------------------------- sig~ ------------------------------ */

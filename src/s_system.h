@@ -154,43 +154,70 @@ typedef int t_fontsize;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_pathlist  *pathlist_newAppend             (t_pathlist *x, const char *s);
-t_pathlist  *pathlist_newAppendFiles        (t_pathlist *x, const char *s, char delimiter);
-char        *pathlist_getFileAtIndex        (t_pathlist *x, int n);
-char        *pathlist_getFile               (t_pathlist *x);
-t_pathlist  *pathlist_getNext               (t_pathlist *x);
+t_pathlist  *pathlist_newAppend                 (t_pathlist *x, const char *s);
+t_pathlist  *pathlist_newAppendFiles            (t_pathlist *x, const char *s, char delimiter);
+char        *pathlist_getFileAtIndex            (t_pathlist *x, int n);
+char        *pathlist_getFile                   (t_pathlist *x);
+t_pathlist  *pathlist_getNext                   (t_pathlist *x);
 
-void        pathlist_free                   (t_pathlist *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        font_withHostMeasured           (void *dummy, t_symbol *s, int argc, t_atom *argv);
-t_fontsize  font_getNearestValidFontSize    (int size);
-int         font_getHostFontSize            (t_fontsize fontSize);
-int         font_getHostFontWidth           (t_fontsize fontSize);
-int         font_getHostFontHeight          (t_fontsize fontSize);
+void        pathlist_free                       (t_pathlist *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int  main_entry                             (int argc, char **argv);
+void        font_withHostMeasured               (void *dummy, t_symbol *s, int argc, t_atom *argv);
+t_fontsize  font_getNearestValidFontSize        (int size);
+int         font_getHostFontSize                (t_fontsize fontSize);
+int         font_getHostFontWidth               (t_fontsize fontSize);
+int         font_getHostFontHeight              (t_fontsize fontSize);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void preferences_load                       (void);
-void preferences_save                       (void *dummy);
+int         main_entry                          (int argc, char **argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-double  sys_getRealTime                     (void);
-void    sys_pollSocketsBlocking                      (int microseconds);
+void        clock_setUnitAsSamples              (t_clock *x, double samples);
+void        clock_setUnitAsMilliseconds         (t_clock *x, double ms);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+double      scheduler_getSystime                (void);
+double      scheduler_getSystimeAfter           (double ms);
+double      scheduler_getMillisecondsSince      (double systime);
+double      scheduler_getUnitsSince             (double systime, double unit, int isSamples);
+void        scheduler_setAudioMode              (int flag);
+void        scheduler_needToRestart             (void);
+void        scheduler_needToExit                (void);
+void        scheduler_lock                      (void);
+void        scheduler_unlock                    (void);
+void        scheduler_audioCallback             (void);
+int         scheduler_main                      (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+double      sys_getRealTime                     (void);
+void        sys_pollSocketsBlocking             (int microseconds);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        preferences_load                    (void);
+void        preferences_save                    (void *dummy);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void sys_setsignalhandlers                  (void);
 int  sys_startgui                           (const char *guipath);

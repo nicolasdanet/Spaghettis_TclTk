@@ -140,6 +140,10 @@ t_error utils_strnadd                   (char *dest, size_t size, const char *sr
 t_error utils_strncat                   (char *dest, size_t size, const char *src, int length);
 t_error utils_snprintf                  (char *dest, size_t size, const char *format, ...);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int     utils_isTokenEnd                (char c);
 int     utils_isTokenEscape             (char c);
 int     utils_isTokenWhitespace         (char c);
@@ -272,29 +276,6 @@ t_error buffer_read                         (t_buffer *x, char *name, t_canvas *
 t_error buffer_write                        (t_buffer *x, char *name, char *directory);
 t_error buffer_evalFile                     (t_symbol *name, t_symbol *directory);
 void    buffer_openFile                     (void *dummy, t_symbol *name, t_symbol *directory);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void    clock_setUnitAsSamples              (t_clock *x, double samples);
-void    clock_setUnitAsMilliseconds         (t_clock *x, double ms);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-double  scheduler_getSystime                (void);
-double  scheduler_getSystimeAfter           (double ms);
-double  scheduler_getMillisecondsSince      (double systime);
-double  scheduler_getUnitsSince             (double systime, double unit, int isSamples);
-void    scheduler_setAudioMode              (int flag);
-void    scheduler_needToRestart             (void);
-void    scheduler_needToExit                (void);
-void    scheduler_lock                      (void);
-void    scheduler_unlock                    (void);
-void    scheduler_audioCallback             (void);
-int     scheduler_main                      (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
