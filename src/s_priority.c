@@ -34,7 +34,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void priority_realTimeScheduling (int isWatchdog) 
+static t_error priority_realTimeScheduling (int isWatchdog) 
 {
     struct sched_param policy;
     int p1 = sched_get_priority_min (SCHED_FIFO);
@@ -47,12 +47,12 @@ static void priority_realTimeScheduling (int isWatchdog)
         policy.sched_priority = (isWatchdog ? p2 - 5 : p2 - 7);
     #endif
 
-    if (sched_setscheduler (0, SCHED_FIFO, &policy) == -1) { PD_BUG; }
+    return (sched_setscheduler (0, SCHED_FIFO, &policy) == -1);
 }
 
-static void priority_memoryLocking (void) 
+static t_error priority_memoryLocking (void) 
 {       
-    if (mlockall (MCL_CURRENT | MCL_FUTURE) == -1) { PD_BUG; }
+    return (mlockall (MCL_CURRENT | MCL_FUTURE) == -1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -61,13 +61,22 @@ static void priority_memoryLocking (void)
 
 void sys_setRealTimePolicy (int isWatchdog) 
 {
+    t_error err = PD_ERROR_NONE;
+    
     #ifdef PRIORITY_SCHEDULING
-        priority_realTimeScheduling (isWatchdog);
+        err |= priority_realTimeScheduling (isWatchdog);
     #endif
 
     #ifdef PRIORITY_MEMLOCK
-        priority_memoryLocking();
+        err |= priority_memoryLocking();
     #endif
+    
+    if (!isWatchdog) {
+        if (err) { post_log ("Real-time policy disabled"); }
+        else {
+            post_log ("Real-time policy enabled");
+        }
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
