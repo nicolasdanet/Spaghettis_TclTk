@@ -230,6 +230,7 @@ void        clock_setUnitAsMilliseconds         (t_clock *x, double ms);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        sys_setRealTimePolicy               (int isWatchdog);
 void        sys_setSignalHandlers               (void);
 double      sys_getRealTime                     (void);
 void        sys_pollSocketsBlocking             (int microseconds);
@@ -329,7 +330,6 @@ int         sys_audiodevnametonumber        (int output, const char *name);
 void        sys_audiodevnumbertoname        (int output, int devno, char *name, int namesize);
 
 int         sys_send_dacs                   (void);
-void        sys_set_priority                (int higher);
 void        sys_audiobuf                    (int nbufs);
 void        sys_getmeters                   (t_sample *inmax, t_sample *outmax);
 void        sys_listdevs                    (void);

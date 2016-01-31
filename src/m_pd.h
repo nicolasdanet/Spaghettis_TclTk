@@ -121,8 +121,16 @@ extern "C" {
 #define PD_WITH_WATCHDOG        1
 #endif
 
+#else
+
+#ifndef PD_WITH_WATCHDOG
+#define PD_WITH_WATCHDOG        0
 #endif
 
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #if (PD_LINUX || PD_BSD || PD_HURD || PD_CYGWIN || PD_APPLE)
 
@@ -212,6 +220,7 @@ extern "C" {
 #include <pthread.h>
 #include <sys/mman.h>
 #include <sys/resource.h>
+#include <sched.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/time.h>

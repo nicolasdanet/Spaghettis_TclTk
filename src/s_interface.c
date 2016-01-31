@@ -954,7 +954,7 @@ int sys_startgui(const char *libdir)
         }
         else if (!watchpid)             /* we're the child */
         {
-            sys_set_priority(1);
+            sys_setRealTimePolicy(1);
             setuid(getuid());      /* lose setuid priveliges */
             if (pipe9[1] != 0)
             {
@@ -970,7 +970,7 @@ int sys_startgui(const char *libdir)
         }
         else                            /* we're the parent */
         {
-            sys_set_priority(0);
+            sys_setRealTimePolicy(0);
             setuid(getuid());      /* lose setuid priveliges */
             close(pipe9[0]);
                 /* set close-on-exec so that watchdog will see an EOF when we

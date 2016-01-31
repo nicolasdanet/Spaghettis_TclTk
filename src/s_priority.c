@@ -15,55 +15,65 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+#if (PD_LINUX || PD_BSD || PD_HURD )
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
-
-#if defined(_POSIX_PRIORITY_SCHEDULING) || defined(_POSIX_MEMLOCK)
-#include <sched.h>
+#if defined ( _POSIX_MEMLOCK ) && ( _POSIX_MEMLOCK > 0 )
+    #define PRIORITY_MEMLOCK
 #endif
 
-void sys_set_priority(int higher) 
+#if defined ( _POSIX_PRIORITY_SCHEDULING ) && ( _POSIX_PRIORITY_SCHEDULING > 0 )
+    #define PRIORITY_SCHEDULING
+#endif 
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void priority_realTimeScheduling (int isWatchdog) 
 {
-#ifdef _POSIX_PRIORITY_SCHEDULING
-    struct sched_param par;
-    int p1 ,p2, p3;
-    p1 = sched_get_priority_min(SCHED_FIFO);
-    p2 = sched_get_priority_max(SCHED_FIFO);
-#ifdef USEAPI_JACK    
-    p3 = (higher ? p1 + 7 : p1 + 5);
-#else
-    p3 = (higher ? p2 - 5 : p2 - 7);
-#endif
-    par.sched_priority = p3;
-    if (sched_setscheduler(0,SCHED_FIFO,&par) < 0)
-    {
-        if (!higher)
-            post("priority %d scheduling failed; running at normal priority",
-                p3);
-        else fprintf(stderr, "priority %d scheduling failed.\n", p3);
-    }
-    else if (!higher && 0)
-        post("priority %d scheduling enabled.\n", p3);
-#endif
+    struct sched_param policy;
+    int p1 = sched_get_priority_min (SCHED_FIFO);
+    int p2 = sched_get_priority_max (SCHED_FIFO);
+    int p3;
+    
+    #ifdef USEAPI_JACK    
+        policy.sched_priority = (isWatchdog ? p1 + 7 : p1 + 5);
+    #else
+        policy.sched_priority = (isWatchdog ? p2 - 5 : p2 - 7);
+    #endif
 
-#ifdef REALLY_POSIX_MEMLOCK /* this doesn't work on Fedora 4, for example. */
-#ifdef _POSIX_MEMLOCK
-    /* tb: force memlock to physical memory { */
-    {
-        struct rlimit mlock_limit;
-        mlock_limit.rlim_cur=0;
-        mlock_limit.rlim_max=0;
-        setrlimit(RLIMIT_MEMLOCK,&mlock_limit);
-    }
-    /* } tb */
-    if (mlockall(MCL_FUTURE) != -1) 
-        fprintf(stderr, "memory locking enabled.\n");
-#endif
-#endif
+    if (sched_setscheduler (0, SCHED_FIFO, &policy) == -1) { PD_BUG; }
 }
 
-#endif /* __linux__ */
+static void priority_memoryLocking (void) 
+{       
+    if (mlockall (MCL_CURRENT | MCL_FUTURE) == -1) { PD_BUG; }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void sys_setRealTimePolicy (int isWatchdog) 
+{
+    #ifdef PRIORITY_SCHEDULING
+        priority_realTimeScheduling (isWatchdog);
+    #endif
+
+    #ifdef PRIORITY_MEMLOCK
+        priority_memoryLocking();
+    #endif
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

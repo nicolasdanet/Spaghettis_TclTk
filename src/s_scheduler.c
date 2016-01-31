@@ -356,8 +356,8 @@ t_error scheduler_main (void)
         if (audio_isopen()) { sys_close_audio(); sys_reopen_audio(); } scheduler_quit = SCHEDULER_RUN;
         
     } else {
-        sys_close_midi();
         sys_close_audio();
+        sys_close_midi();
         sys_closeguisocket();
     }
     //
