@@ -17,14 +17,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Notice that values below are related to LCM (32000, 44100, 48000, 88200, 96000). */
-    
-#define SCHEDULER_SYSTIME_CLOCKS_PER_MILLISECOND    (double)(32.0 * 441.0)
-#define SCHEDULER_SYSTIME_CLOCKS_PER_SECOND         (SCHEDULER_SYSTIME_CLOCKS_PER_MILLISECOND * 1000.0)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 #define SCHEDULER_RUN       0
 #define SCHEDULER_QUIT      1
 #define SCHEDULER_RESTART   2
@@ -87,141 +79,6 @@ static pthread_mutex_t sys_mutex = PTHREAD_MUTEX_INITIALIZER;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_clockfn)(void *client);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-struct _clock {
-    double          c_systime;      /* Negative for unset clocks. */
-    double          c_unit;         /* A positive value is in ticks, negative for number of samples. */
-    t_clockfn       c_fn;
-    void            *c_owner;
-    struct _clock   *c_next;
-    };
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-t_clock *clock_new (void *owner, t_method fn)
-{
-    t_clock *x = (t_clock *)PD_MEMORY_GET (sizeof (t_clock));
-    
-    x->c_systime    = -1.0;
-    x->c_unit       = SCHEDULER_SYSTIME_CLOCKS_PER_MILLISECOND;
-    x->c_fn         = (t_clockfn)fn;
-    x->c_owner      = owner;
-    x->c_next       = NULL;
-
-    return x;
-}
-
-void clock_free (t_clock *x)
-{
-    clock_unset (x);
-    
-    PD_MEMORY_FREE (x);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void clock_unset (t_clock *x)
-{
-    if (x->c_systime >= 0.0) {
-        if (x == pd_this->pd_clocks) { pd_this->pd_clocks = x->c_next; }
-        else {
-            t_clock *c = pd_this->pd_clocks;
-            while (c->c_next != x) { c = c->c_next; } c->c_next = x->c_next;
-        }
-        x->c_systime = -1.0;
-    }
-}
-
-static void clock_set (t_clock *x, double time)
-{
-    if (time < pd_this->pd_systime) { time = pd_this->pd_systime; }
-    
-    clock_unset (x);
-    
-    x->c_systime = time;
-    
-    if (pd_this->pd_clocks && pd_this->pd_clocks->c_systime <= time) {
-    
-        t_clock *m = NULL;
-        t_clock *n = NULL;
-        
-        for (m = pd_this->pd_clocks, n = pd_this->pd_clocks->c_next; m; m = n, n = m->c_next) {
-            if (!n || n->c_systime > time) {
-                m->c_next = x; x->c_next = n; return;
-            }
-        }
-        
-    } else {
-        x->c_next = pd_this->pd_clocks; pd_this->pd_clocks = x;
-    }
-}
-
-void clock_delay (t_clock *x, double delay)     /* Could be in milliseconds or in samples. */
-{
-    double d, time;
-    
-    if (x->c_unit > 0) { d = x->c_unit; }
-    else {
-        d = -(x->c_unit * (SCHEDULER_SYSTIME_CLOCKS_PER_SECOND / sys_dacsr));
-    }
-
-    time = pd_this->pd_systime + (d * delay);
-    
-    clock_set (x, time);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void clock_setUnit (t_clock *x, double unit, int isSamples)
-{
-    double timeLeft = -1.0;
-    
-    if (unit <= 0.0) { unit = 1.0; }
-    
-    if (isSamples) { if (unit == -x->c_unit) { return; } }
-    else { 
-        if (unit == x->c_unit * SCHEDULER_SYSTIME_CLOCKS_PER_MILLISECOND) { return; }
-    }
-    
-    if (x->c_systime >= 0.0) {
-    //
-    double d = (x->c_unit > 0) ? x->c_unit : (x->c_unit * (SCHEDULER_SYSTIME_CLOCKS_PER_SECOND / sys_dacsr));
-    timeLeft = (x->c_systime - pd_this->pd_systime) / d;
-    //
-    }
-    
-    if (isSamples) { x->c_unit = -unit; }
-    else {
-        x->c_unit = unit * SCHEDULER_SYSTIME_CLOCKS_PER_MILLISECOND; 
-    }
-    
-    if (timeLeft >= 0.0) { clock_delay (x, timeLeft); }
-}
-
-void clock_setUnitAsSamples (t_clock *x, double samples) 
-{
-    clock_setUnit (x, samples, 1);
-}
-
-void clock_setUnitAsMilliseconds (t_clock *x, double ms) 
-{
-    clock_setUnit (x, ms, 0);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 double scheduler_getSystime (void)
 {
     return pd_this->pd_systime;
@@ -229,7 +86,7 @@ double scheduler_getSystime (void)
 
 double scheduler_getSystimeAfter (double ms)
 {
-    return (pd_this->pd_systime + (SCHEDULER_SYSTIME_CLOCKS_PER_MILLISECOND * ms));
+    return (pd_this->pd_systime + (SYSTIME_CLOCKS_PER_MILLISECOND * ms));
 }
 
 double scheduler_getUnitsSince (double systime, double unit, int isSamples)
@@ -238,9 +95,9 @@ double scheduler_getUnitsSince (double systime, double unit, int isSamples)
     
     PD_ASSERT (elapsed >= 0.0);
     
-    if (isSamples) { d = SCHEDULER_SYSTIME_CLOCKS_PER_SECOND / sys_dacsr; } 
+    if (isSamples) { d = SYSTIME_CLOCKS_PER_SECOND / sys_dacsr; } 
     else { 
-        d = SCHEDULER_SYSTIME_CLOCKS_PER_MILLISECOND;
+        d = SYSTIME_CLOCKS_PER_MILLISECOND;
     }
     
     return (elapsed / (d * unit));
@@ -252,7 +109,7 @@ double scheduler_getMillisecondsSince (double systime)
     
     PD_ASSERT (elapsed >= 0.0);
     
-    return (elapsed / SCHEDULER_SYSTIME_CLOCKS_PER_MILLISECOND);
+    return (elapsed / SYSTIME_CLOCKS_PER_MILLISECOND);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -297,7 +154,7 @@ void scheduler_needToExit (void)
 
 static double scheduler_getSystimePerDSPTick (void)
 {
-    return (SCHEDULER_SYSTIME_CLOCKS_PER_SECOND * ((double)scheduler_blockSize / sys_dacsr));
+    return (SYSTIME_CLOCKS_PER_SECOND * ((double)scheduler_blockSize / sys_dacsr));
 }
 
 static void scheduler_pollWatchdog (void)

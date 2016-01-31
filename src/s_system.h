@@ -117,28 +117,53 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_pollfn)        (void *p, int fd);
-typedef void (*t_notifyfn)      (void *x, int n);
-typedef void (*t_receivefn)     (void *x, t_buffer *b);
+/* Notice that values below are related to LCM (32000, 44100, 48000, 88200, 96000). */
+    
+#define SYSTIME_CLOCKS_PER_MILLISECOND      (double)(32.0 * 441.0)
+#define SYSTIME_CLOCKS_PER_SECOND           (SYSTIME_CLOCKS_PER_MILLISECOND * 1000.0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef int  (*t_loader)        (t_canvas *canvas, char *classname);
+typedef void (*t_pollfn)            (void *p, int fd);
+typedef void (*t_notifyfn)          (void *x, int n);
+typedef void (*t_receivefn)         (void *x, t_buffer *b);
+typedef void (*t_clockfn)           (void *client);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+typedef int  (*t_loader)            (t_canvas *canvas, char *classname);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+struct _clock {
+    double          c_systime;      /* Negative for unset clocks. */
+    double          c_unit;         /* A positive value is in ticks, negative for number of samples. */
+    t_clockfn       c_fn;
+    void            *c_owner;
+    struct _clock   *c_next;
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _socketreceiver {
-    void        *sr_owner;
-    char        *sr_inBuffer;
-    int         sr_inHead;
-    int         sr_inTail;
-    int         sr_isUdp;
-    t_notifyfn  sr_fnNotify;
-    t_receivefn sr_fnReceive;
+    void            *sr_owner;
+    char            *sr_inBuffer;
+    int             sr_inHead;
+    int             sr_inTail;
+    int             sr_isUdp;
+    t_notifyfn      sr_fnNotify;
+    t_receivefn     sr_fnReceive;
     } t_socketreceiver;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 typedef struct _pathlist {
     struct _pathlist    *pl_next;
@@ -182,13 +207,6 @@ int         main_entry                          (int argc, char **argv);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        clock_setUnitAsSamples              (t_clock *x, double samples);
-void        clock_setUnitAsMilliseconds         (t_clock *x, double ms);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 double      scheduler_getSystime                (void);
 double      scheduler_getSystimeAfter           (double ms);
 double      scheduler_getMillisecondsSince      (double systime);
@@ -200,6 +218,13 @@ void        scheduler_lock                      (void);
 void        scheduler_unlock                    (void);
 void        scheduler_audioCallback             (void);
 t_error     scheduler_main                      (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        clock_setUnitAsSamples              (t_clock *x, double samples);
+void        clock_setUnitAsMilliseconds         (t_clock *x, double ms);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
