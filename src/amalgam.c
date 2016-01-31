@@ -20,7 +20,6 @@
 #include "m_global.c"
 #include "m_utils.c"
 #include "m_dollar.c"
-#include "m_memory.c"
 
 /* System. */
 
@@ -31,6 +30,8 @@
 #include "s_time.c"
 
 #include "s_preferences.c"
+
+#include "s_memory.c"
 #include "s_pathlist.c"
 #include "s_font.c"
 #include "s_post.c"
