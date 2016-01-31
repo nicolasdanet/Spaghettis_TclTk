@@ -1087,9 +1087,6 @@ int sys_startgui(const char *libdir)
     return (0);
 }
 
-/* This is called when something bad has happened, like a segfault.
-Call global_quit() below to exit cleanly.
-LATER try to save dirty documents even in the bad case. */
 void sys_bail(int n)
 {
     static int reentered = 0;

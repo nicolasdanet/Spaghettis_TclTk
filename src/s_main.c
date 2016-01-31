@@ -19,9 +19,6 @@
 
 t_symbol    *main_rootDirectory;        /* Shared. */
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 int         main_portNumber;            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -181,7 +178,7 @@ int main_entry (int argc, char **argv)
         
     pd_initialize();
     preferences_load();
-    sys_setsignalhandlers();
+    sys_setSignalHandlers();
     
     if (sys_startgui (main_rootDirectory->s_name))  { return 1; }
     sys_reopen_midi();
@@ -189,7 +186,9 @@ int main_entry (int argc, char **argv)
 
     main_entryVersion (1);
     
-    return (scheduler_main());
+    scheduler_main();
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------

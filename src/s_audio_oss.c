@@ -317,7 +317,7 @@ int oss_open_audio(int nindev,  int *indev,  int nchin,  int *chin,
             try to open it read/write */
         if (inindex >= 0)
         {
-            sys_setalarm(1000000);
+            //sys_setalarm(1000000);
             if ((fd = open(devname, O_RDWR | O_AUDIOFLAG)) == -1)
             {
                 post("%s (read/write): %s", devname, strerror(errno));
@@ -339,7 +339,7 @@ int oss_open_audio(int nindev,  int *indev,  int nchin,  int *chin,
             /* if that didn't happen or if it failed, try write-only */
         if (fd == -1)
         {
-            sys_setalarm(1000000);
+            //sys_setalarm(1000000);
             if ((fd = open(devname, O_WRONLY | O_AUDIOFLAG)) == -1)
             {
                 post("%s (writeonly): %s",
@@ -406,7 +406,7 @@ int oss_open_audio(int nindev,  int *indev,  int nchin,  int *chin,
             sprintf(devname, "/dev/dsp%d", thisdevice);
         else sprintf(devname, "/dev/dsp");
 
-        sys_setalarm(1000000);
+        //sys_setalarm(1000000);
 
             /* perhaps it's already open from the above? */
         if (linux_adcs[n].d_fd >= 0)
@@ -490,7 +490,7 @@ int oss_open_audio(int nindev,  int *indev,  int nchin,  int *chin,
                 linux_dacs[i].d_bytespersamp *
                     linux_dacs[i].d_nchannels * AUDIO_DEFAULT_BLOCK);
     }
-    sys_setalarm(0);
+    //sys_setalarm(0);
     sys_inchannels = inchannels;
     sys_outchannels = outchannels;
     return (0);

@@ -67,7 +67,7 @@ void sys_alsa_do_open_midi(int nmidiin, int *midiinvec,
     
     if (err!=0)
     {
-            sys_setalarm(1000000);
+            //sys_setalarm(1000000);
             post("couldn't open alsa sequencer");
             return;
     }
@@ -100,14 +100,14 @@ void sys_alsa_do_open_midi(int nmidiin, int *midiinvec,
     snd_seq_set_client_info(midi_handle,alsainfo);
     snd_seq_client_info_free(alsainfo);
     post("Opened Alsa Client %d in:%d out:%d",client,nmidiin,nmidiout);
-    sys_setalarm(0);
+    //sys_setalarm(0);
     snd_midi_event_new(ALSA_MAX_EVENT_SIZE,&midiev);
     alsa_nmidiout = nmidiout;
     alsa_nmidiin = nmidiin;
 
     return;
  error:
-    sys_setalarm(1000000);
+    //sys_setalarm(1000000);
     post("couldn't open alsa MIDI output device");
     return;
 }

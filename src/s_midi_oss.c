@@ -59,7 +59,7 @@ void sys_do_open_midi(int nmidiin, int *midiinvec,
             /* try to open the device for read/write. */
         if (outdevindex >= 0)
         {
-            sys_setalarm(1000000);
+            //sys_setalarm(1000000);
             fd = open(namebuf, O_RDWR | O_MIDIFLAG);
             if (0)
                 post("tried to open %s read/write; got %d\n",
@@ -70,7 +70,7 @@ void sys_do_open_midi(int nmidiin, int *midiinvec,
             /* OK, try read-only */
         if (fd < 0)
         {
-            sys_setalarm(1000000);
+            //sys_setalarm(1000000);
             fd = open(namebuf, O_RDONLY | O_MIDIFLAG);
             if (0)
                 post("tried to open %s read-only; got %d\n",
@@ -90,7 +90,7 @@ void sys_do_open_midi(int nmidiin, int *midiinvec,
         sprintf(namebuf, "/dev/midi%s", oss_outdevnames[devno]);
         if (fd < 0)
         {
-            sys_setalarm(1000000);
+            //sys_setalarm(1000000);
             fd = open(namebuf, O_WRONLY | O_MIDIFLAG);
             if (0)
                 post("tried to open %s write-only; got %d\n",
@@ -105,7 +105,7 @@ void sys_do_open_midi(int nmidiin, int *midiinvec,
         post("opened %d MIDI input device(s) and %d MIDI output device(s).",
             oss_nmidiin, oss_nmidiout);
 
-    sys_setalarm(0);
+    //sys_setalarm(0);
 }
 
 #define md_msglen(x) (((x)<0xC0)?2:((x)<0xE0)?1:((x)<0xF0)?2:\

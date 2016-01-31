@@ -199,12 +199,13 @@ void        scheduler_needToExit                (void);
 void        scheduler_lock                      (void);
 void        scheduler_unlock                    (void);
 void        scheduler_audioCallback             (void);
-int         scheduler_main                      (void);
+t_error     scheduler_main                      (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        sys_setSignalHandlers               (void);
 double      sys_getRealTime                     (void);
 void        sys_pollSocketsBlocking             (int microseconds);
 
@@ -219,7 +220,6 @@ void        preferences_save                    (void *dummy);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_setsignalhandlers                  (void);
 int  sys_startgui                           (const char *guipath);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -432,15 +432,6 @@ void             sys_closesocket     (int fd);
 
 void sys_addpollfn      (int fd, t_pollfn fn, void *ptr);
 void sys_rmpollfn       (int fd);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#if defined ( USEAPI_OSS ) || defined ( USEAPI_ALSA )
-
-void sys_setalarm       (int microsec);
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -482,7 +482,7 @@ void scheduler_audioCallback (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int scheduler_main (void)
+t_error scheduler_main (void)
 {
     while (scheduler_quit != SCHEDULER_QUIT) {
     //
@@ -497,7 +497,7 @@ int scheduler_main (void)
     //
     }
     
-    return 0;
+    return PD_ERROR_NONE;
 }
 
 // -----------------------------------------------------------------------------------------------------------
