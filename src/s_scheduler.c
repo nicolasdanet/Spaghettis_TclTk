@@ -51,7 +51,11 @@ extern t_pdinstance *pd_this;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int      scheduler_quit;                                             /* Shared. */
+static volatile sig_atomic_t scheduler_quit;                                /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static int      scheduler_sleepGrain;                                       /* Shared. */
 static int      scheduler_blockSize     = AUDIO_DEFAULT_BLOCK;              /* Shared. */
 static int      scheduler_audioMode     = SCHEDULER_AUDIO_NONE;             /* Shared. */
@@ -271,9 +275,9 @@ static void scheduler_withLoop (void)
 
     sys_pollmidiqueue();
     
-    if (sys_pollgui()) { didSomething = 1; }
+    if (!scheduler_quit && sys_pollgui()) { didSomething = 1; }
 
-    if (!didSomething) {
+    if (!scheduler_quit && !didSomething) {
     //
     scheduler_pollWatchdog();
 
@@ -304,7 +308,7 @@ static void scheduler_withCallback (void)
         sleep (1);
     #endif
     
-    if (pd_this->pd_systime == logicalTime) {
+    if (!scheduler_quit && (pd_this->pd_systime == logicalTime)) {
     //
     SCHEDULER_LOCK;
     
@@ -350,6 +354,11 @@ t_error scheduler_main (void)
     
     if (scheduler_quit == SCHEDULER_RESTART) {
         if (audio_isopen()) { sys_close_audio(); sys_reopen_audio(); } scheduler_quit = SCHEDULER_RUN;
+        
+    } else {
+        sys_close_midi();
+        sys_close_audio();
+        sys_closeguisocket();
     }
     //
     }

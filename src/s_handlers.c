@@ -42,7 +42,7 @@ void sys_setSignalHandlers (void)
 
 static void handlers_exit (int n)
 {
-    _exit (1);
+    scheduler_needToExit();
 }
 
 static void handlers_hup (int n)
@@ -56,6 +56,7 @@ static void handlers_hup (int n)
 void sys_setSignalHandlers (void)
 {
     signal (SIGHUP,  handlers_hup);
+    //signal (SIGTERM, handlers_exit);
     signal (SIGINT,  handlers_exit);
     signal (SIGQUIT, handlers_exit);
     signal (SIGILL,  handlers_exit);

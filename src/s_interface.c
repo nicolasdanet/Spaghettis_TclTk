@@ -376,6 +376,13 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
     }
 }
 
+void sys_closeguisocket()
+{
+    #if !PD_WITH_NOGUI
+        sys_closesocket (interface_guiSocket); sys_rmpollfn (interface_guiSocket);
+    #endif
+}
+
 void sys_closesocket(int fd)
 {
 #ifdef _WIN32
@@ -1106,16 +1113,9 @@ void sys_bail(int n)
     else _exit(1);
 }
 
-void global_quit(void *dummy)
+void global_quit (void *dummy)
 {
-    sys_close_audio();
-    sys_close_midi();
-    if (!PD_WITH_NOGUI)
-    {
-        sys_closesocket(interface_guiSocket);
-        sys_rmpollfn(interface_guiSocket);
-    }
-    exit(0); 
+    scheduler_needToExit();
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -186,9 +186,7 @@ int main_entry (int argc, char **argv)
 
     main_entryVersion (1);
     
-    scheduler_main();
-    
-    return 0;
+    return (scheduler_main());
 }
 
 // -----------------------------------------------------------------------------------------------------------
