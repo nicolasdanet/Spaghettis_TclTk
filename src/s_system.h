@@ -230,7 +230,7 @@ void        clock_setUnitAsMilliseconds         (t_clock *x, double ms);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        sys_setRealTimePolicy               (int isWatchdog);
+t_error     sys_setRealTimePolicy               (int isWatchdog);
 void        sys_setSignalHandlers               (void);
 double      sys_getRealTime                     (void);
 void        sys_pollSocketsBlocking             (int microseconds);

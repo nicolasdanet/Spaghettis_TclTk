@@ -59,7 +59,7 @@ static t_error priority_memoryLocking (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_setRealTimePolicy (int isWatchdog) 
+t_error sys_setRealTimePolicy (int isWatchdog) 
 {
     t_error err = PD_ERROR_NONE;
     
@@ -71,12 +71,7 @@ void sys_setRealTimePolicy (int isWatchdog)
         err |= priority_memoryLocking();
     #endif
     
-    if (!isWatchdog) {
-        if (err) { post_log ("Real-time policy disabled"); }
-        else {
-            post_log ("Real-time policy enabled");
-        }
-    }
+    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------
