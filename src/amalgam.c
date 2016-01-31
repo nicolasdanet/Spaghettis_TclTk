@@ -25,6 +25,7 @@
 
 #include "s_entry.c"
 #include "s_main.c"
+#include "s_priority.c"
 #include "s_scheduler.c"
 #include "s_handlers.c"
 #include "s_time.c"
