@@ -160,7 +160,7 @@ struct _clock {
 
 typedef struct _receiver {
     void            *r_owner;
-    char            *r_inBuffer;
+    char            *r_inRaw;
     int             r_inHead;
     int             r_inTail;
     int             r_fd;
@@ -259,17 +259,18 @@ void        receiver_read                       (t_receiver *x, int fd);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        interface_socketPollBlocking        (int microseconds);
-void        interface_socketPollNonBlocking     (void);
-void        interface_socketAddCallback         (int fd, t_pollfn fn, void *ptr);
-void        interface_socketRemoveCallback      (int fd);
+void interface_socketPollBlocking               (int microseconds);
+void interface_socketPollNonBlocking            (void);
+void interface_socketAddCallback                (int fd, t_pollfn fn, void *ptr);
+void interface_socketRemoveCallback             (int fd);
+void interface_socketCloseAndRemoveCallback     (int fd);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        preferences_load                    (void);
-void        preferences_save                    (void *dummy);
+void preferences_load                           (void);
+void preferences_save                           (void *dummy);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

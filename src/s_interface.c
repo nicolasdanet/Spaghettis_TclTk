@@ -128,7 +128,10 @@ void interface_socketAddCallback (int fd, t_pollfn fn, void *ptr)
     int n = interface_pollersSize;
     int oldSize = n * sizeof (t_fdpoll);
     int newSize = oldSize + sizeof (t_fdpoll);
+    int i;
     t_fdpoll *p = NULL;
+    
+    for (i = n, p = interface_pollers; i--; p++) { PD_ASSERT (p->fdp_fd != fd); }
     
     interface_pollers = (t_fdpoll *)PD_MEMORY_RESIZE (interface_pollers, oldSize, newSize);
         
@@ -163,6 +166,12 @@ void interface_socketRemoveCallback (int fd)
     }
     //
     }
+}
+
+void interface_socketCloseAndRemoveCallback (int fd)
+{
+    sys_closesocket (fd);
+    interface_socketRemoveCallback (fd);
 }
 
 // -----------------------------------------------------------------------------------------------------------

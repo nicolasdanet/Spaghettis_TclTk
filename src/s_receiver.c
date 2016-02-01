@@ -28,7 +28,7 @@ t_receiver *receiver_new (void *owner, int fd, t_notifyfn notify, t_receivefn re
     t_receiver *x = (t_receiver *)PD_MEMORY_GET (sizeof (t_receiver));
     
     x->r_owner      = owner;
-    x->r_inBuffer   = (char *)PD_MEMORY_GET (SOCKET_BUFFER_SIZE);
+    x->r_inRaw      = (char *)PD_MEMORY_GET (SOCKET_BUFFER_SIZE);
     x->r_inHead     = 0;
     x->r_inTail     = 0;
     x->r_fd         = fd;
@@ -45,7 +45,7 @@ void receiver_free (t_receiver *x)
 {
     interface_socketRemoveCallback (x->r_fd);
     
-    PD_MEMORY_FREE (x->r_inBuffer);
+    PD_MEMORY_FREE (x->r_inRaw);
     PD_MEMORY_FREE (x);
 }
 
@@ -59,7 +59,7 @@ static int socketreceiver_doread(t_receiver *x)
     int indx, first = 1;
     int inhead = x->r_inHead;
     int intail = x->r_inTail;
-    char *inbuf = x->r_inBuffer;
+    char *inbuf = x->r_inRaw;
     for (indx = intail; first || (indx != inhead);
         first = 0, (indx = (indx+1)&(SOCKET_BUFFER_SIZE-1)))
     {
@@ -88,47 +88,34 @@ static int socketreceiver_doread(t_receiver *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void receiver_readUDP (t_receiver *x, int fd)
+static t_error receiver_readUDP (t_receiver *x, int fd)
 {
     char t[SOCKET_BUFFER_SIZE + 1] = { 0 };
     ssize_t length = recv (fd, t, SOCKET_BUFFER_SIZE, 0);
+    t_error err = PD_ERROR;
     
-    if (length < 0) {
-        PD_BUG;
-        interface_socketRemoveCallback (fd);
-        sys_closesocket(fd);
+    if (length < 0) { interface_socketCloseAndRemoveCallback (fd); PD_BUG; }
+    else if (length > 0) {
+    //
+    t[length] = 0;
+    if (t[length - 1] == '\n') {
+    //
+    char *semicolon = strchr (t, ';');
+    if (semicolon) { *semicolon = 0; }
+    buffer_withStringUnzeroed (interface_inBuffer, t, strlen (t));
+    if (x->r_fnReceive) { (*x->r_fnReceive)(x->r_owner, interface_inBuffer); }
+    err == PD_ERROR_NONE;
+    //
     }
-    else if (length > 0)
-    {
-        t[length] = 0;
-#if 0
-        post("%s", t);
-#endif
-        if (t[length-1] != '\n')
-        {
-#if 0
-            t[length] = 0;
-            post_error ("dropped bad buffer %s\n", t);
-#endif
-        }
-        else
-        {
-            char *semi = strchr(t, ';');
-            if (semi) 
-                *semi = 0;
-            buffer_withStringUnzeroed(interface_inBuffer, t, strlen(t));
-            if (x->r_fnReceive)
-                (*x->r_fnReceive)(x->r_owner, interface_inBuffer);
-            else { PD_BUG; }
-        }
+    //
     }
+    
+    return err;
 }
 
 static void receiver_readTCP (t_receiver *x, int fd)
 {
-    char *semi;
-    int readto =
-        (x->r_inHead >= x->r_inTail ? SOCKET_BUFFER_SIZE : x->r_inTail-1);
+    int readto = (x->r_inHead >= x->r_inTail ? SOCKET_BUFFER_SIZE : x->r_inTail - 1);
     int ret;
 
         /* the input buffer might be full.  If so, drop the whole thing */
@@ -140,8 +127,7 @@ static void receiver_readTCP (t_receiver *x, int fd)
     }
     else
     {
-        ret = recv(fd, x->r_inBuffer + x->r_inHead,
-            readto - x->r_inHead, 0);
+        ret = recv(fd, x->r_inRaw + x->r_inHead, readto - x->r_inHead, 0);
         if (ret < 0)
         {
             PD_BUG;
