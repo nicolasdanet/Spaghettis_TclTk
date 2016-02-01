@@ -95,7 +95,7 @@ static void netsend_readbin(t_netsend *x, int fd)
     if (ret <= 0)
     {
         if (ret < 0)
-            sys_sockerror("recv");
+            PD_BUG;
         sys_rmpollfn(fd);
         sys_closesocket(fd);
         if (x->x_obj.te_g.g_pd == netreceive_class)
@@ -173,7 +173,7 @@ static void netsend_connect(t_netsend *x, t_symbol *hostname,
 #endif
     if (sockfd < 0)
     {
-        sys_sockerror("socket");
+        PD_BUG;
         return;
     }
     /* connect socket using hostname provided in command line */
@@ -212,7 +212,7 @@ static void netsend_connect(t_netsend *x, t_symbol *hostname,
         because it might block */
     if (connect(sockfd, (struct sockaddr *) &server, sizeof (server)) < 0)
     {
-        sys_sockerror("connecting stream socket");
+        PD_BUG;
         sys_closesocket(sockfd);
         return;
     }
@@ -287,7 +287,7 @@ static int netsend_dosend(t_netsend *x, int sockfd,
         }
         if (res <= 0)
         {
-            sys_sockerror("netsend");
+            PD_BUG;
             fail = 1;
             break;
         }
@@ -406,7 +406,7 @@ static void netreceive_listen(t_netreceive *x, t_float fportno)
     x->x_ns.x_sockfd = socket(AF_INET, x->x_ns.x_protocol, 0);
     if (x->x_ns.x_sockfd < 0)
     {
-        sys_sockerror("socket");
+        PD_BUG;
         return;
     }
 #if 0
@@ -446,7 +446,7 @@ static void netreceive_listen(t_netreceive *x, t_float fportno)
         /* name the socket */
     if (bind(x->x_ns.x_sockfd, (struct sockaddr *)&server, sizeof(server)) < 0)
     {
-        sys_sockerror("bind");
+        PD_BUG;
         sys_closesocket(x->x_ns.x_sockfd);
         x->x_ns.x_sockfd = -1;
         return;
@@ -469,7 +469,7 @@ static void netreceive_listen(t_netreceive *x, t_float fportno)
     {
         if (listen(x->x_ns.x_sockfd, 5) < 0)
         {
-            sys_sockerror("listen");
+            PD_BUG;
             sys_closesocket(x->x_ns.x_sockfd);
             x->x_ns.x_sockfd = -1;
         }

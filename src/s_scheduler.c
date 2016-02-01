@@ -20,6 +20,7 @@
 #define SCHEDULER_RUN       0
 #define SCHEDULER_QUIT      1
 #define SCHEDULER_RESTART   2
+#define SCHEDULER_ERROR     4
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -150,6 +151,11 @@ void scheduler_needToRestart (void)
 void scheduler_needToExit (void)
 {
     scheduler_quit = SCHEDULER_QUIT;
+}
+
+void scheduler_needToExitWithError (void)
+{
+    scheduler_quit = SCHEDULER_ERROR;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -363,7 +369,7 @@ t_error scheduler_main (void)
     //
     }
     
-    return PD_ERROR_NONE;
+    return (scheduler_quit == SCHEDULER_ERROR);
 }
 
 // -----------------------------------------------------------------------------------------------------------

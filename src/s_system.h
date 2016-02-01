@@ -214,6 +214,7 @@ double      scheduler_getUnitsSince             (double systime, double unit, in
 void        scheduler_setAudioMode              (int flag);
 void        scheduler_needToRestart             (void);
 void        scheduler_needToExit                (void);
+void        scheduler_needToExitWithError       (void);
 void        scheduler_lock                      (void);
 void        scheduler_unlock                    (void);
 void        scheduler_audioCallback             (void);
@@ -234,6 +235,7 @@ t_error     sys_setRealTimePolicy               (int isWatchdog);
 void        sys_setSignalHandlers               (void);
 double      sys_getRealTime                     (void);
 void        sys_pollSocketsBlocking             (int microseconds);
+void        sys_pollSocketsNonBlocking          (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -432,7 +434,6 @@ void sys_initmidiqueue          (void);
 #pragma mark -
 
 void sys_init_fdpoll            (void);
-void sys_bail                   (int exitcode);
 int  sys_pollgui                (void);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -449,7 +450,6 @@ void sys_setchsr                (int chin, int chout, int sr);
 
 t_socketreceiver *socketreceiver_new (void *owner, t_notifyfn notifier, t_receivefn fn, int udp);
 void             socketreceiver_read (t_socketreceiver *x, int fd);
-void             sys_sockerror       (char *s);
 void             sys_closesocket     (int fd);
 
 // -----------------------------------------------------------------------------------------------------------

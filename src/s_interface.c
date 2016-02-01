@@ -116,26 +116,14 @@ void sys_pollSocketsBlocking (int microseconds)
     interface_pollSockets (microseconds);
 }
 
+void sys_pollSocketsNonBlocking (void)
+{
+    interface_pollSockets (0);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void sys_sockerror(char *s)
-{
-#ifdef _WIN32
-    int err = WSAGetLastError();
-    if (err == 10054) return;
-    else if (err == 10044)
-    {
-        fprintf(stderr,
-            "Warning: you might not have TCP/IP \"networking\" turned on\n");
-        fprintf(stderr, "which is needed for Pd to talk to its GUI layer.\n");
-    }
-#else
-    int err = errno;
-#endif
-    post("%s: %s (%d)\n", s, strerror(err), err);
-}
 
 void sys_addpollfn(int fd, t_pollfn fn, void *ptr)
 {
@@ -174,6 +162,10 @@ void sys_rmpollfn(int fd)
     }
     post("warning: %d removed from poll list but not found", fd);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_socketreceiver *socketreceiver_new(void *owner, t_notifyfn notifier,
     t_receivefn socketreceivefn, int udp)
@@ -233,7 +225,7 @@ static void socketreceiver_getudp(t_socketreceiver *x, int fd)
     int ret = recv(fd, buf, INTERFACE_BUFFER_SIZE, 0);
     if (ret < 0)
     {
-        sys_sockerror("recv");
+        PD_BUG;
         sys_rmpollfn(fd);
         sys_closesocket(fd);
     }
@@ -287,8 +279,8 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
                 readto - x->sr_inHead, 0);
             if (ret < 0)
             {
-                sys_sockerror("recv");
-                if (x == interface_inReceiver) sys_bail(1);
+                PD_BUG;
+                if (x == interface_inReceiver) scheduler_needToExitWithError();
                 else
                 {
                     if (x->sr_fnNotify)
@@ -399,7 +391,7 @@ static void sys_trytogetmoreguibuf(int newsize)
             if (res < 0)
             {
                 perror("pd output pipe");
-                sys_bail(1);
+                scheduler_needToExitWithError();
             }
             else
             {
@@ -429,7 +421,7 @@ void sys_vgui(char *fmt, ...)
         if (!(sys_guibuf = malloc(GUI_ALLOCCHUNK)))
         {
             fprintf(stderr, "Pd: couldn't allocate GUI buffer\n");
-            sys_bail(1);
+            scheduler_needToExitWithError();
         }
         sys_guibufsize = GUI_ALLOCCHUNK;
         sys_guibufhead = sys_guibuftail = 0;
@@ -484,7 +476,7 @@ static int sys_flushtogui( void)
     if (nwrote < 0)
     {
         perror("pd-to-gui socket");
-        sys_bail(1);
+        scheduler_needToExitWithError();
     }
     else if (!nwrote)
         return (0);
@@ -635,7 +627,7 @@ void global_watchdog(void *dummy)
     if (write(sys_watchfd, "\n", 1) < 1)
     {
         fprintf(stderr, "pd: watchdog process died\n");
-        sys_bail(1);
+        scheduler_needToExitWithError();
     }
 }
 #endif
@@ -674,7 +666,7 @@ int sys_startgui(const char *libdir)
     sys_init_fdpoll();
 
 #ifdef _WIN32
-    if (WSAStartup(version, &nobby)) sys_sockerror("WSAstartup");
+    if (WSAStartup(version, &nobby)) PD_BUG;
 #endif /* _WIN32 */
 
     if (PD_WITH_NOGUI) { }
@@ -700,7 +692,7 @@ int sys_startgui(const char *libdir)
         /* create a socket */
         interface_guiSocket = socket(AF_INET, SOCK_STREAM, 0);
         if (interface_guiSocket < 0)
-            sys_sockerror("socket");
+            PD_BUG;
         
         /* connect socket using hostname provided in command line */
         server.sin_family = AF_INET;
@@ -722,7 +714,7 @@ int sys_startgui(const char *libdir)
         if (connect(interface_guiSocket, (struct sockaddr *) &server, sizeof (server))
             < 0)
         {
-            sys_sockerror("connecting stream socket");
+            PD_BUG;
             return (1);
         }
     }
@@ -738,7 +730,7 @@ int sys_startgui(const char *libdir)
 
         /* create a socket */
         xsock = socket(AF_INET, SOCK_STREAM, 0);
-        if (xsock < 0) sys_sockerror("socket");
+        if (xsock < 0) PD_BUG;
         intarg = 1;
         if (setsockopt(xsock, IPPROTO_TCP, TCP_NODELAY,
             &intarg, sizeof(intarg)) < 0)
@@ -858,7 +850,7 @@ int sys_startgui(const char *libdir)
                     file descriptors.  Somehow this doesn't make the MAC OSX
                         version of Wish happy...*/
             if (pipe(stdinpipe) < 0)
-                sys_sockerror("pipe");
+                PD_BUG;
             else
             {
                 if (stdinpipe[0] != 0)
@@ -940,7 +932,7 @@ int sys_startgui(const char *libdir)
         if (pipe(pipe9) < 0)
         {
             setuid(getuid());      /* lose setuid priveliges */
-            sys_sockerror("pipe");
+            PD_BUG;
             return (1);
         }
         watchpid = fork();
@@ -1009,14 +1001,14 @@ int sys_startgui(const char *libdir)
     {
         if (0)
             fprintf(stderr, "Waiting for connection request... \n");
-        if (listen(xsock, 5) < 0) sys_sockerror("listen");
+        if (listen(xsock, 5) < 0) PD_BUG;
 
         interface_guiSocket = accept(xsock, (struct sockaddr *) &server, 
             (socklen_t *)&len);
 #ifdef OOPS
         sys_closesocket(xsock);
 #endif
-        if (interface_guiSocket < 0) sys_sockerror("accept");
+        if (interface_guiSocket < 0) PD_BUG;
         if (0)
             fprintf(stderr, "... connected\n");
         sys_guibufhead = sys_guibuftail = 0;
@@ -1046,25 +1038,6 @@ int sys_startgui(const char *libdir)
         sys_vgui("set ::var(apiAudio) %d\n", sys_audioapi);
     }
     return (0);
-}
-
-void sys_bail(int n)
-{
-    static int reentered = 0;
-    if (!reentered)
-    {
-        reentered = 1;
-#if !defined(__linux__) && !defined(__FreeBSD_kernel__) && !defined(__GNU__) /* sys_close_audio() hangs if you're in a signal? */
-        fprintf(stderr ,"interface_guiSocket %d - ", interface_guiSocket);
-        fprintf(stderr, "closing audio...\n");
-        sys_close_audio();
-        fprintf(stderr, "closing MIDI...\n");
-        sys_close_midi();
-        fprintf(stderr, "... done.\n");
-#endif
-        exit(n);
-    }
-    else _exit(1);
 }
 
 void global_quit (void *dummy)
