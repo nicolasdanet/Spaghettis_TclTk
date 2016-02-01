@@ -163,6 +163,7 @@ typedef struct _receiver {
     char            *r_inBuffer;
     int             r_inHead;
     int             r_inTail;
+    int             r_fd;
     int             r_isUdp;
     t_notifyfn      r_fnNotify;
     t_receivefn     r_fnReceive;
@@ -245,7 +246,11 @@ double      sys_getRealTime                     (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_receiver  *receiver_new                       (void *o, t_notifyfn notify, t_receivefn receive, int udp);
+t_receiver  *receiver_new                       (void *owner,
+                                                    int fd,
+                                                    t_notifyfn notify, 
+                                                    t_receivefn receive, 
+                                                    int isUdp);
 
 void        receiver_free                       (t_receiver *x);
 void        receiver_read                       (t_receiver *x, int fd);
@@ -256,8 +261,8 @@ void        receiver_read                       (t_receiver *x, int fd);
 
 void        interface_socketPollBlocking        (int microseconds);
 void        interface_socketPollNonBlocking     (void);
-void        interface_socketAddPollCallback     (int fd, t_pollfn fn, void *ptr);
-void        interface_socketRemovePollCallback  (int fd);
+void        interface_socketAddCallback         (int fd, t_pollfn fn, void *ptr);
+void        interface_socketRemoveCallback      (int fd);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

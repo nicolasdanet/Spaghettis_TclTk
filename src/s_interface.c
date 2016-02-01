@@ -119,7 +119,11 @@ void interface_socketPollNonBlocking (void)
     interface_pollSockets (0);
 }
 
-void interface_socketAddPollCallback (int fd, t_pollfn fn, void *ptr)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void interface_socketAddCallback (int fd, t_pollfn fn, void *ptr)
 {
     int n = interface_pollersSize;
     int oldSize = n * sizeof (t_fdpoll);
@@ -137,7 +141,7 @@ void interface_socketAddPollCallback (int fd, t_pollfn fn, void *ptr)
     if (fd > interface_maximumFileDescriptor) { interface_maximumFileDescriptor = fd; }
 }
 
-void interface_socketRemovePollCallback (int fd)
+void interface_socketRemoveCallback (int fd)
 {
     int n = interface_pollersSize;
     int oldSize = n * sizeof (t_fdpoll);
@@ -159,8 +163,6 @@ void interface_socketRemovePollCallback (int fd)
     }
     //
     }
-
-    PD_BUG;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -170,7 +172,7 @@ void interface_socketRemovePollCallback (int fd)
 void sys_closeguisocket()
 {
     #if !PD_WITH_NOGUI
-        sys_closesocket (interface_guiSocket); interface_socketRemovePollCallback (interface_guiSocket);
+        sys_closesocket (interface_guiSocket); interface_socketRemoveCallback (interface_guiSocket);
     #endif
 }
 
@@ -861,9 +863,7 @@ int sys_startgui(const char *libdir)
     if (!PD_WITH_NOGUI)
     {
         char buf[256], buf2[256];
-        interface_inReceiver = receiver_new(0, 0, 0, 0);
-        interface_socketAddPollCallback(interface_guiSocket, (t_pollfn)receiver_read,
-            interface_inReceiver);
+        interface_inReceiver = receiver_new (NULL, interface_guiSocket, NULL, NULL, 0);
 
             /* here is where we start the pinging. */
 #if defined(__linux__) || defined(__FreeBSD_kernel__)

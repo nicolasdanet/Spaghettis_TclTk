@@ -23,7 +23,7 @@ extern t_receiver   *interface_inReceiver;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_receiver *receiver_new (void *owner, t_notifyfn notify, t_receivefn receive, int udp)
+t_receiver *receiver_new (void *owner, int fd, t_notifyfn notify, t_receivefn receive, int isUdp)
 {
     t_receiver *x = (t_receiver *)PD_MEMORY_GET (sizeof (t_receiver));
     
@@ -31,15 +31,20 @@ t_receiver *receiver_new (void *owner, t_notifyfn notify, t_receivefn receive, i
     x->r_inBuffer   = (char *)PD_MEMORY_GET (SOCKET_BUFFER_SIZE);
     x->r_inHead     = 0;
     x->r_inTail     = 0;
-    x->r_isUdp      = udp;
+    x->r_fd         = fd;
+    x->r_isUdp      = isUdp;
     x->r_fnNotify   = notify;
     x->r_fnReceive  = receive;
 
+    interface_socketAddCallback (x->r_fd, (t_pollfn)receiver_read, x);
+    
     return x;
 }
 
 void receiver_free (t_receiver *x)
 {
+    interface_socketRemoveCallback (x->r_fd);
+    
     PD_MEMORY_FREE (x->r_inBuffer);
     PD_MEMORY_FREE (x);
 }
@@ -48,8 +53,6 @@ void receiver_free (t_receiver *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* this is in a separately called subroutine so that the buffer isn't
-    sitting on the stack while the messages are getting passed. */
 static int socketreceiver_doread(t_receiver *x)
 {
     char messbuf[SOCKET_BUFFER_SIZE], *bp = messbuf;
@@ -81,38 +84,104 @@ static int socketreceiver_doread(t_receiver *x)
     return (0);
 }
 
-static void socketreceiver_getudp(t_receiver *x, int fd)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void receiver_readUDP (t_receiver *x, int fd)
 {
-    char buf[SOCKET_BUFFER_SIZE+1];
-    int ret = recv(fd, buf, SOCKET_BUFFER_SIZE, 0);
-    if (ret < 0)
-    {
+    char t[SOCKET_BUFFER_SIZE + 1] = { 0 };
+    ssize_t length = recv (fd, t, SOCKET_BUFFER_SIZE, 0);
+    
+    if (length < 0) {
         PD_BUG;
-        interface_socketRemovePollCallback(fd);
+        interface_socketRemoveCallback (fd);
         sys_closesocket(fd);
     }
-    else if (ret > 0)
+    else if (length > 0)
     {
-        buf[ret] = 0;
+        t[length] = 0;
 #if 0
-        post("%s", buf);
+        post("%s", t);
 #endif
-        if (buf[ret-1] != '\n')
+        if (t[length-1] != '\n')
         {
 #if 0
-            buf[ret] = 0;
-            post_error ("dropped bad buffer %s\n", buf);
+            t[length] = 0;
+            post_error ("dropped bad buffer %s\n", t);
 #endif
         }
         else
         {
-            char *semi = strchr(buf, ';');
+            char *semi = strchr(t, ';');
             if (semi) 
                 *semi = 0;
-            buffer_withStringUnzeroed(interface_inBuffer, buf, strlen(buf));
+            buffer_withStringUnzeroed(interface_inBuffer, t, strlen(t));
             if (x->r_fnReceive)
                 (*x->r_fnReceive)(x->r_owner, interface_inBuffer);
             else { PD_BUG; }
+        }
+    }
+}
+
+static void receiver_readTCP (t_receiver *x, int fd)
+{
+    char *semi;
+    int readto =
+        (x->r_inHead >= x->r_inTail ? SOCKET_BUFFER_SIZE : x->r_inTail-1);
+    int ret;
+
+        /* the input buffer might be full.  If so, drop the whole thing */
+    if (readto == x->r_inHead)
+    {
+        fprintf(stderr, "pd: dropped message from gui\n");
+        x->r_inHead = x->r_inTail = 0;
+        readto = SOCKET_BUFFER_SIZE;
+    }
+    else
+    {
+        ret = recv(fd, x->r_inBuffer + x->r_inHead,
+            readto - x->r_inHead, 0);
+        if (ret < 0)
+        {
+            PD_BUG;
+            if (x == interface_inReceiver) scheduler_needToExitWithError();
+            else
+            {
+                if (x->r_fnNotify)
+                    (*x->r_fnNotify)(x->r_owner, fd);
+                interface_socketRemoveCallback(fd);
+                sys_closesocket(fd);
+            }
+        }
+        else if (ret == 0)
+        {
+            if (x == interface_inReceiver)
+            {
+                fprintf(stderr, "pd: exiting\n");
+                scheduler_needToExit();
+                return;
+            }
+            else
+            {
+                post("EOF on socket %d\n", fd);
+                if (x->r_fnNotify) (*x->r_fnNotify)(x->r_owner, fd);
+                interface_socketRemoveCallback(fd);
+                sys_closesocket(fd);
+            }
+        }
+        else
+        {
+            x->r_inHead += ret;
+            if (x->r_inHead >= SOCKET_BUFFER_SIZE) x->r_inHead = 0;
+            while (socketreceiver_doread(x))
+            {
+                if (x->r_fnReceive)
+                    (*x->r_fnReceive)(x->r_owner, interface_inBuffer);
+                else buffer_eval(interface_inBuffer, 0, 0, 0);
+                if (x->r_inHead == x->r_inTail)
+                    break;
+            }
         }
     }
 }
@@ -123,68 +192,9 @@ static void socketreceiver_getudp(t_receiver *x, int fd)
 
 void receiver_read (t_receiver *x, int fd)
 {
-    if (x->r_isUdp)   /* UDP ("datagram") socket protocol */
-        socketreceiver_getudp(x, fd);
-    else  /* TCP ("streaming") socket protocol */
-    {
-        char *semi;
-        int readto =
-            (x->r_inHead >= x->r_inTail ? SOCKET_BUFFER_SIZE : x->r_inTail-1);
-        int ret;
-
-            /* the input buffer might be full.  If so, drop the whole thing */
-        if (readto == x->r_inHead)
-        {
-            fprintf(stderr, "pd: dropped message from gui\n");
-            x->r_inHead = x->r_inTail = 0;
-            readto = SOCKET_BUFFER_SIZE;
-        }
-        else
-        {
-            ret = recv(fd, x->r_inBuffer + x->r_inHead,
-                readto - x->r_inHead, 0);
-            if (ret < 0)
-            {
-                PD_BUG;
-                if (x == interface_inReceiver) scheduler_needToExitWithError();
-                else
-                {
-                    if (x->r_fnNotify)
-                        (*x->r_fnNotify)(x->r_owner, fd);
-                    interface_socketRemovePollCallback(fd);
-                    sys_closesocket(fd);
-                }
-            }
-            else if (ret == 0)
-            {
-                if (x == interface_inReceiver)
-                {
-                    fprintf(stderr, "pd: exiting\n");
-                    scheduler_needToExit();
-                    return;
-                }
-                else
-                {
-                    post("EOF on socket %d\n", fd);
-                    if (x->r_fnNotify) (*x->r_fnNotify)(x->r_owner, fd);
-                    interface_socketRemovePollCallback(fd);
-                    sys_closesocket(fd);
-                }
-            }
-            else
-            {
-                x->r_inHead += ret;
-                if (x->r_inHead >= SOCKET_BUFFER_SIZE) x->r_inHead = 0;
-                while (socketreceiver_doread(x))
-                {
-                    if (x->r_fnReceive)
-                        (*x->r_fnReceive)(x->r_owner, interface_inBuffer);
-                    else buffer_eval(interface_inBuffer, 0, 0, 0);
-                    if (x->r_inHead == x->r_inTail)
-                        break;
-                }
-            }
-        }
+    if (x->r_isUdp) { receiver_readUDP (x, fd); }       /* UDP ("datagram") socket protocol. */
+    else {  
+        receiver_readTCP (x, fd);                       /* TCP ("streaming") socket protocol. */
     }
 }
 
