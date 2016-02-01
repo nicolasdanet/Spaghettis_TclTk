@@ -684,7 +684,7 @@ int oss_send_dacs(void)
             if (linux_adcs[dev].d_space == 0)
         {
             audio_buf_info ainfo;
-            sys_pollSocketsBlocking(2000);
+            interface_socketPollBlocking(2000);
             oss_calcspace();
             if (linux_adcs[dev].d_space != 0) continue;
 

@@ -234,8 +234,15 @@ void        clock_setUnitAsMilliseconds         (t_clock *x, double ms);
 t_error     sys_setRealTimePolicy               (int isWatchdog);
 void        sys_setSignalHandlers               (void);
 double      sys_getRealTime                     (void);
-void        sys_pollSocketsBlocking             (int microseconds);
-void        sys_pollSocketsNonBlocking          (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        interface_socketPollBlocking        (int microseconds);
+void        interface_socketPollNonBlocking     (void);
+void        interface_socketAddCallback         (int fd, t_pollfn fn, void *ptr);
+void        interface_socketRemoveCallback      (int fd);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -451,12 +458,6 @@ void sys_setchsr                (int chin, int chout, int sr);
 t_socketreceiver *socketreceiver_new (void *owner, t_notifyfn notifier, t_receivefn fn, int udp);
 void             socketreceiver_read (t_socketreceiver *x, int fd);
 void             sys_closesocket     (int fd);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-void sys_addpollfn      (int fd, t_pollfn fn, void *ptr);
-void sys_rmpollfn       (int fd);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

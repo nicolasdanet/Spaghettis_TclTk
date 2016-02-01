@@ -288,7 +288,7 @@ static void scheduler_withLoop (void)
     scheduler_pollWatchdog();
 
     SCHEDULER_UNLOCK;
-    if (timeForward != DACS_SLEPT) { sys_pollSocketsBlocking (scheduler_sleepGrain); }
+    if (timeForward != DACS_SLEPT) { interface_socketPollBlocking (scheduler_sleepGrain); }
     SCHEDULER_LOCK;
     //
     }

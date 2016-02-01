@@ -111,56 +111,58 @@ static int interface_pollSockets (int microseconds)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_pollSocketsBlocking (int microseconds)
+void interface_socketPollBlocking (int microseconds)
 {
     interface_pollSockets (microseconds);
 }
 
-void sys_pollSocketsNonBlocking (void)
+void interface_socketPollNonBlocking (void)
 {
     interface_pollSockets (0);
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void sys_addpollfn(int fd, t_pollfn fn, void *ptr)
+void interface_socketAddCallback (int fd, t_pollfn fn, void *ptr)
 {
-    int nfd = interface_pollersSize;
-    int size = nfd * sizeof(t_fdpoll);
-    t_fdpoll *fp;
-    interface_pollers = (t_fdpoll *)PD_MEMORY_RESIZE(interface_pollers, size,
-        size + sizeof(t_fdpoll));
-    fp = interface_pollers + nfd;
-    fp->fdp_fd = fd;
-    fp->fdp_fn = fn;
-    fp->fdp_p = ptr;
-    interface_pollersSize = nfd + 1;
-    if (fd >= interface_maximumFileDescriptor) interface_maximumFileDescriptor = fd + 1;
+    int n = interface_pollersSize;
+    int oldSize = n * sizeof (t_fdpoll);
+    int newSize = oldSize + sizeof (t_fdpoll);
+    t_fdpoll *p = NULL;
+    
+    interface_pollers = (t_fdpoll *)PD_MEMORY_RESIZE (interface_pollers, oldSize, newSize);
+        
+    p = interface_pollers + n;
+    p->fdp_p = ptr;
+    p->fdp_fd = fd;
+    p->fdp_fn = fn;
+        
+    interface_pollersSize = n + 1;
+    if (fd > interface_maximumFileDescriptor) { interface_maximumFileDescriptor = fd; }
 }
 
-void sys_rmpollfn(int fd)
+void interface_socketRemoveCallback (int fd)
 {
-    int nfd = interface_pollersSize;
-    int i, size = nfd * sizeof(t_fdpoll);
-    t_fdpoll *fp;
-    for (i = nfd, fp = interface_pollers; i--; fp++)
-    {
-        if (fp->fdp_fd == fd)
-        {
-            while (i--)
-            {
-                fp[0] = fp[1];
-                fp++;
-            }
-            interface_pollers = (t_fdpoll *)PD_MEMORY_RESIZE(interface_pollers, size,
-                size - sizeof(t_fdpoll));
-            interface_pollersSize = nfd - 1;
-            return;
-        }
+    int n = interface_pollersSize;
+    int oldSize = n * sizeof (t_fdpoll);
+    int newSize = oldSize - sizeof (t_fdpoll);
+    int i;
+    t_fdpoll *p;
+    
+    PD_ASSERT (oldSize != 0);
+    
+    for (i = n, p = interface_pollers; i--; p++) {
+    //
+    if (p->fdp_fd == fd) {
+    //
+    while (i--) { *p = *(p + 1); p++; }
+    interface_pollers = (t_fdpoll *)PD_MEMORY_RESIZE (interface_pollers, oldSize, newSize);
+    interface_pollersSize = n - 1;
+    return;
+    //
     }
-    post("warning: %d removed from poll list but not found", fd);
+    //
+    }
+
+    PD_BUG;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -226,7 +228,7 @@ static void socketreceiver_getudp(t_socketreceiver *x, int fd)
     if (ret < 0)
     {
         PD_BUG;
-        sys_rmpollfn(fd);
+        interface_socketRemoveCallback(fd);
         sys_closesocket(fd);
     }
     else if (ret > 0)
@@ -285,7 +287,7 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
                 {
                     if (x->sr_fnNotify)
                         (*x->sr_fnNotify)(x->sr_owner, fd);
-                    sys_rmpollfn(fd);
+                    interface_socketRemoveCallback(fd);
                     sys_closesocket(fd);
                 }
             }
@@ -301,7 +303,7 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
                 {
                     post("EOF on socket %d\n", fd);
                     if (x->sr_fnNotify) (*x->sr_fnNotify)(x->sr_owner, fd);
-                    sys_rmpollfn(fd);
+                    interface_socketRemoveCallback(fd);
                     sys_closesocket(fd);
                 }
             }
@@ -325,7 +327,7 @@ void socketreceiver_read(t_socketreceiver *x, int fd)
 void sys_closeguisocket()
 {
     #if !PD_WITH_NOGUI
-        sys_closesocket (interface_guiSocket); sys_rmpollfn (interface_guiSocket);
+        sys_closesocket (interface_guiSocket); interface_socketRemoveCallback (interface_guiSocket);
     #endif
 }
 
@@ -1017,7 +1019,7 @@ int sys_startgui(const char *libdir)
     {
         char buf[256], buf2[256];
         interface_inReceiver = socketreceiver_new(0, 0, 0, 0);
-        sys_addpollfn(interface_guiSocket, (t_pollfn)socketreceiver_read,
+        interface_socketAddCallback(interface_guiSocket, (t_pollfn)socketreceiver_read,
             interface_inReceiver);
 
             /* here is where we start the pinging. */
