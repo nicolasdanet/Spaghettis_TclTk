@@ -133,7 +133,7 @@
 #pragma mark -
 
 typedef void (*t_pollfn)            (void *p, int fd);
-typedef void (*t_notifyfn)          (void *o, int n);
+typedef void (*t_notifyfn)          (void *o, int fd);
 typedef void (*t_receivefn)         (void *o, t_buffer *b);
 typedef void (*t_clockfn)           (void *o);
 
@@ -248,8 +248,8 @@ double      sys_getRealTime                     (void);
 
 t_receiver  *receiver_new                       (void *owner,
                                                     int fd,
-                                                    t_notifyfn notify, 
-                                                    t_receivefn receive, 
+                                                    t_notifyfn notify,          /* Socket closed. */
+                                                    t_receivefn receive,        /* Data received. */
                                                     int isUdp);
 
 void        receiver_free                       (t_receiver *x);
