@@ -29,6 +29,7 @@
 #include "s_priority.c"
 #include "s_handlers.c"
 #include "s_time.c"
+#include "s_receiver.c"
 
 #include "s_preferences.c"
 

@@ -126,6 +126,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define SOCKET_BUFFER_SIZE                  4096
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 typedef void (*t_pollfn)            (void *p, int fd);
 typedef void (*t_notifyfn)          (void *x, int n);
 typedef void (*t_receivefn)         (void *x, t_buffer *b);
@@ -241,8 +247,8 @@ double      sys_getRealTime                     (void);
 
 void        interface_socketPollBlocking        (int microseconds);
 void        interface_socketPollNonBlocking     (void);
-void        interface_socketAddCallback         (int fd, t_pollfn fn, void *ptr);
-void        interface_socketRemoveCallback      (int fd);
+void        interface_socketAddPollCallback     (int fd, t_pollfn fn, void *ptr);
+void        interface_socketRemovePollCallback  (int fd);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -96,7 +96,7 @@ static void netsend_readbin(t_netsend *x, int fd)
     {
         if (ret < 0)
             PD_BUG;
-        interface_socketRemoveCallback(fd);
+        interface_socketRemovePollCallback(fd);
         sys_closesocket(fd);
         if (x->x_obj.te_g.g_pd == netreceive_class)
             netreceive_notify((t_netreceive *)x, fd);
@@ -220,12 +220,12 @@ static void netsend_connect(t_netsend *x, t_symbol *hostname,
     if (x->x_msgout)    /* add polling function for return messages */
     {
         if (x->x_bin)
-            interface_socketAddCallback(sockfd, (t_pollfn)netsend_readbin, x);
+            interface_socketAddPollCallback(sockfd, (t_pollfn)netsend_readbin, x);
         else
         {
             t_socketreceiver *y =
                 socketreceiver_new((void *)x, 0, netsend_doit, 0);
-            interface_socketAddCallback(sockfd, (t_pollfn)socketreceiver_read, y);
+            interface_socketAddPollCallback(sockfd, (t_pollfn)socketreceiver_read, y);
         }
     }
     outlet_float(x->x_obj.te_outlet, 1);
@@ -235,7 +235,7 @@ static void netsend_disconnect(t_netsend *x)
 {
     if (x->x_sockfd >= 0)
     {
-        interface_socketRemoveCallback(x->x_sockfd);
+        interface_socketRemovePollCallback(x->x_sockfd);
         sys_closesocket(x->x_sockfd);
         x->x_sockfd = -1;
         outlet_float(x->x_obj.te_outlet, 0);
@@ -365,13 +365,13 @@ static void netreceive_connectpoll(t_netreceive *x)
             x->x_nconnections * sizeof(int), nconnections * sizeof(int));
         x->x_connections[x->x_nconnections] = fd;
         if (x->x_ns.x_bin)
-            interface_socketAddCallback(fd, (t_pollfn)netsend_readbin, x);
+            interface_socketAddPollCallback(fd, (t_pollfn)netsend_readbin, x);
         else
         {
             t_socketreceiver *y = socketreceiver_new((void *)x, 
             (t_notifyfn)netreceive_notify,
                 (x->x_ns.x_msgout ? netsend_doit : 0), 0);
-            interface_socketAddCallback(fd, (t_pollfn)socketreceiver_read, y);
+            interface_socketAddPollCallback(fd, (t_pollfn)socketreceiver_read, y);
         }
         outlet_float(x->x_ns.x_connectout, (x->x_nconnections = nconnections));
     }
@@ -382,7 +382,7 @@ static void netreceive_closeall(t_netreceive *x)
     int i;
     for (i = 0; i < x->x_nconnections; i++)
     {
-        interface_socketRemoveCallback(x->x_connections[i]);
+        interface_socketRemovePollCallback(x->x_connections[i]);
         sys_closesocket(x->x_connections[i]);
     }
     x->x_connections = (int *)PD_MEMORY_RESIZE(x->x_connections, 
@@ -390,7 +390,7 @@ static void netreceive_closeall(t_netreceive *x)
     x->x_nconnections = 0;
     if (x->x_ns.x_sockfd >= 0)
     {
-        interface_socketRemoveCallback(x->x_ns.x_sockfd);
+        interface_socketRemovePollCallback(x->x_ns.x_sockfd);
         sys_closesocket(x->x_ns.x_sockfd);
     }
     x->x_ns.x_sockfd = -1;
@@ -455,13 +455,13 @@ static void netreceive_listen(t_netreceive *x, t_float fportno)
     if (x->x_ns.x_protocol == SOCK_DGRAM)        /* datagram protocol */
     {
         if (x->x_ns.x_bin)
-            interface_socketAddCallback(x->x_ns.x_sockfd, (t_pollfn)netsend_readbin, x);
+            interface_socketAddPollCallback(x->x_ns.x_sockfd, (t_pollfn)netsend_readbin, x);
         else
         {
             t_socketreceiver *y = socketreceiver_new((void *)x, 
                 (t_notifyfn)netreceive_notify,
                     (x->x_ns.x_msgout ? netsend_doit : 0), 1);
-            interface_socketAddCallback(x->x_ns.x_sockfd, (t_pollfn)socketreceiver_read, y);
+            interface_socketAddPollCallback(x->x_ns.x_sockfd, (t_pollfn)socketreceiver_read, y);
             x->x_ns.x_connectout = 0;
         }
     }
@@ -475,7 +475,7 @@ static void netreceive_listen(t_netreceive *x, t_float fportno)
         }
         else
         {
-            interface_socketAddCallback(x->x_ns.x_sockfd, (t_pollfn)netreceive_connectpoll, x);
+            interface_socketAddPollCallback(x->x_ns.x_sockfd, (t_pollfn)netreceive_connectpoll, x);
             x->x_ns.x_connectout = outlet_new(&x->x_ns.x_obj, &s_float);
         }
     }

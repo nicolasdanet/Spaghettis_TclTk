@@ -40,12 +40,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define INTERFACE_BUFFER_SIZE       4096
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 typedef struct _fdpoll {
     void        *fdp_p;
     int         fdp_fd;
@@ -61,13 +55,17 @@ extern int  main_portNumber;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_buffer             *interface_inBuffer;
-static t_socketreceiver     *interface_inReceiver;
-static t_fdpoll             *interface_pollers;
+t_buffer            *interface_inBuffer;                        /* Shared. */
+t_socketreceiver    *interface_inReceiver;                      /* Shared. */
 
-static int                  interface_pollersSize;
-static int                  interface_maximumFileDescriptor;
-static int                  interface_guiSocket;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_fdpoll             *interface_pollers;                 /* Shared. */
+
+static int                  interface_pollersSize;              /* Shared. */
+static int                  interface_maximumFileDescriptor;    /* Shared. */
+static int                  interface_guiSocket;                /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -121,7 +119,7 @@ void interface_socketPollNonBlocking (void)
     interface_pollSockets (0);
 }
 
-void interface_socketAddCallback (int fd, t_pollfn fn, void *ptr)
+void interface_socketAddPollCallback (int fd, t_pollfn fn, void *ptr)
 {
     int n = interface_pollersSize;
     int oldSize = n * sizeof (t_fdpoll);
@@ -139,7 +137,7 @@ void interface_socketAddCallback (int fd, t_pollfn fn, void *ptr)
     if (fd > interface_maximumFileDescriptor) { interface_maximumFileDescriptor = fd; }
 }
 
-void interface_socketRemoveCallback (int fd)
+void interface_socketRemovePollCallback (int fd)
 {
     int n = interface_pollersSize;
     int oldSize = n * sizeof (t_fdpoll);
@@ -169,165 +167,10 @@ void interface_socketRemoveCallback (int fd)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_socketreceiver *socketreceiver_new(void *owner, t_notifyfn notifier,
-    t_receivefn socketreceivefn, int udp)
-{
-    t_socketreceiver *x = (t_socketreceiver *)PD_MEMORY_GET(sizeof(*x));
-    x->sr_inHead = x->sr_inTail = 0;
-    x->sr_owner = owner;
-    x->sr_fnNotify = notifier;
-    x->sr_fnReceive = socketreceivefn;
-    x->sr_isUdp = udp;
-    if (!(x->sr_inBuffer = malloc(INTERFACE_BUFFER_SIZE))) { PD_BUG; }
-    return (x);
-}
-
-void socketreceiver_free(t_socketreceiver *x)
-{
-    free(x->sr_inBuffer);
-    PD_MEMORY_FREE(x);
-}
-
-    /* this is in a separately called subroutine so that the buffer isn't
-    sitting on the stack while the messages are getting passed. */
-static int socketreceiver_doread(t_socketreceiver *x)
-{
-    char messbuf[INTERFACE_BUFFER_SIZE], *bp = messbuf;
-    int indx, first = 1;
-    int inhead = x->sr_inHead;
-    int intail = x->sr_inTail;
-    char *inbuf = x->sr_inBuffer;
-    for (indx = intail; first || (indx != inhead);
-        first = 0, (indx = (indx+1)&(INTERFACE_BUFFER_SIZE-1)))
-    {
-            /* if we hit a semi that isn't preceeded by a \, it's a message
-            boundary.  LATER we should deal with the possibility that the
-            preceeding \ might itself be escaped! */
-        char c = *bp++ = inbuf[indx];
-        if (c == ';' && (!indx || inbuf[indx-1] != '\\'))
-        {
-            intail = (indx+1)&(INTERFACE_BUFFER_SIZE-1);
-            buffer_withStringUnzeroed(interface_inBuffer, messbuf, bp - messbuf);
-            //if (0 /*sys_debuglevel*/ & DEBUG_MESSDOWN)
-            //{
-            //    write(2,  messbuf, bp - messbuf);
-            //    write(2, "\n", 1);
-            //}
-            x->sr_inHead = inhead;
-            x->sr_inTail = intail;
-            return (1);
-        }
-    }
-    return (0);
-}
-
-static void socketreceiver_getudp(t_socketreceiver *x, int fd)
-{
-    char buf[INTERFACE_BUFFER_SIZE+1];
-    int ret = recv(fd, buf, INTERFACE_BUFFER_SIZE, 0);
-    if (ret < 0)
-    {
-        PD_BUG;
-        interface_socketRemoveCallback(fd);
-        sys_closesocket(fd);
-    }
-    else if (ret > 0)
-    {
-        buf[ret] = 0;
-#if 0
-        post("%s", buf);
-#endif
-        if (buf[ret-1] != '\n')
-        {
-#if 0
-            buf[ret] = 0;
-            post_error ("dropped bad buffer %s\n", buf);
-#endif
-        }
-        else
-        {
-            char *semi = strchr(buf, ';');
-            if (semi) 
-                *semi = 0;
-            buffer_withStringUnzeroed(interface_inBuffer, buf, strlen(buf));
-            if (x->sr_fnReceive)
-                (*x->sr_fnReceive)(x->sr_owner, interface_inBuffer);
-            else { PD_BUG; }
-        }
-    }
-}
-
-void socketreceiver_read(t_socketreceiver *x, int fd)
-{
-    if (x->sr_isUdp)   /* UDP ("datagram") socket protocol */
-        socketreceiver_getudp(x, fd);
-    else  /* TCP ("streaming") socket protocol */
-    {
-        char *semi;
-        int readto =
-            (x->sr_inHead >= x->sr_inTail ? INTERFACE_BUFFER_SIZE : x->sr_inTail-1);
-        int ret;
-
-            /* the input buffer might be full.  If so, drop the whole thing */
-        if (readto == x->sr_inHead)
-        {
-            fprintf(stderr, "pd: dropped message from gui\n");
-            x->sr_inHead = x->sr_inTail = 0;
-            readto = INTERFACE_BUFFER_SIZE;
-        }
-        else
-        {
-            ret = recv(fd, x->sr_inBuffer + x->sr_inHead,
-                readto - x->sr_inHead, 0);
-            if (ret < 0)
-            {
-                PD_BUG;
-                if (x == interface_inReceiver) scheduler_needToExitWithError();
-                else
-                {
-                    if (x->sr_fnNotify)
-                        (*x->sr_fnNotify)(x->sr_owner, fd);
-                    interface_socketRemoveCallback(fd);
-                    sys_closesocket(fd);
-                }
-            }
-            else if (ret == 0)
-            {
-                if (x == interface_inReceiver)
-                {
-                    fprintf(stderr, "pd: exiting\n");
-                    scheduler_needToExit();
-                    return;
-                }
-                else
-                {
-                    post("EOF on socket %d\n", fd);
-                    if (x->sr_fnNotify) (*x->sr_fnNotify)(x->sr_owner, fd);
-                    interface_socketRemoveCallback(fd);
-                    sys_closesocket(fd);
-                }
-            }
-            else
-            {
-                x->sr_inHead += ret;
-                if (x->sr_inHead >= INTERFACE_BUFFER_SIZE) x->sr_inHead = 0;
-                while (socketreceiver_doread(x))
-                {
-                    if (x->sr_fnReceive)
-                        (*x->sr_fnReceive)(x->sr_owner, interface_inBuffer);
-                    else buffer_eval(interface_inBuffer, 0, 0, 0);
-                    if (x->sr_inHead == x->sr_inTail)
-                        break;
-                }
-            }
-        }
-    }
-}
-
 void sys_closeguisocket()
 {
     #if !PD_WITH_NOGUI
-        sys_closesocket (interface_guiSocket); interface_socketRemoveCallback (interface_guiSocket);
+        sys_closesocket (interface_guiSocket); interface_socketRemovePollCallback (interface_guiSocket);
     #endif
 }
 
@@ -1019,7 +862,7 @@ int sys_startgui(const char *libdir)
     {
         char buf[256], buf2[256];
         interface_inReceiver = socketreceiver_new(0, 0, 0, 0);
-        interface_socketAddCallback(interface_guiSocket, (t_pollfn)socketreceiver_read,
+        interface_socketAddPollCallback(interface_guiSocket, (t_pollfn)socketreceiver_read,
             interface_inReceiver);
 
             /* here is where we start the pinging. */
