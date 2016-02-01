@@ -223,9 +223,9 @@ static void netsend_connect(t_netsend *x, t_symbol *hostname,
             interface_socketAddPollCallback(sockfd, (t_pollfn)netsend_readbin, x);
         else
         {
-            t_socketreceiver *y =
-                socketreceiver_new((void *)x, 0, netsend_doit, 0);
-            interface_socketAddPollCallback(sockfd, (t_pollfn)socketreceiver_read, y);
+            t_receiver *y =
+                receiver_new((void *)x, 0, netsend_doit, 0);
+            interface_socketAddPollCallback(sockfd, (t_pollfn)receiver_read, y);
         }
     }
     outlet_float(x->x_obj.te_outlet, 1);
@@ -368,10 +368,10 @@ static void netreceive_connectpoll(t_netreceive *x)
             interface_socketAddPollCallback(fd, (t_pollfn)netsend_readbin, x);
         else
         {
-            t_socketreceiver *y = socketreceiver_new((void *)x, 
+            t_receiver *y = receiver_new((void *)x, 
             (t_notifyfn)netreceive_notify,
                 (x->x_ns.x_msgout ? netsend_doit : 0), 0);
-            interface_socketAddPollCallback(fd, (t_pollfn)socketreceiver_read, y);
+            interface_socketAddPollCallback(fd, (t_pollfn)receiver_read, y);
         }
         outlet_float(x->x_ns.x_connectout, (x->x_nconnections = nconnections));
     }
@@ -458,10 +458,10 @@ static void netreceive_listen(t_netreceive *x, t_float fportno)
             interface_socketAddPollCallback(x->x_ns.x_sockfd, (t_pollfn)netsend_readbin, x);
         else
         {
-            t_socketreceiver *y = socketreceiver_new((void *)x, 
+            t_receiver *y = receiver_new((void *)x, 
                 (t_notifyfn)netreceive_notify,
                     (x->x_ns.x_msgout ? netsend_doit : 0), 1);
-            interface_socketAddPollCallback(x->x_ns.x_sockfd, (t_pollfn)socketreceiver_read, y);
+            interface_socketAddPollCallback(x->x_ns.x_sockfd, (t_pollfn)receiver_read, y);
             x->x_ns.x_connectout = 0;
         }
     }

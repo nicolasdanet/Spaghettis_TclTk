@@ -133,9 +133,9 @@
 #pragma mark -
 
 typedef void (*t_pollfn)            (void *p, int fd);
-typedef void (*t_notifyfn)          (void *x, int n);
-typedef void (*t_receivefn)         (void *x, t_buffer *b);
-typedef void (*t_clockfn)           (void *client);
+typedef void (*t_notifyfn)          (void *o, int n);
+typedef void (*t_receivefn)         (void *o, t_buffer *b);
+typedef void (*t_clockfn)           (void *o);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -158,15 +158,15 @@ struct _clock {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _socketreceiver {
-    void            *sr_owner;
-    char            *sr_inBuffer;
-    int             sr_inHead;
-    int             sr_inTail;
-    int             sr_isUdp;
-    t_notifyfn      sr_fnNotify;
-    t_receivefn     sr_fnReceive;
-    } t_socketreceiver;
+typedef struct _receiver {
+    void            *r_owner;
+    char            *r_inBuffer;
+    int             r_inHead;
+    int             r_inTail;
+    int             r_isUdp;
+    t_notifyfn      r_fnNotify;
+    t_receivefn     r_fnReceive;
+    } t_receiver;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -240,6 +240,15 @@ void        clock_setUnitAsMilliseconds         (t_clock *x, double ms);
 t_error     sys_setRealTimePolicy               (int isWatchdog);
 void        sys_setSignalHandlers               (void);
 double      sys_getRealTime                     (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_receiver  *receiver_new                       (void *o, t_notifyfn notify, t_receivefn receive, int udp);
+
+void        receiver_free                       (t_receiver *x);
+void        receiver_read                       (t_receiver *x, int fd);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -461,8 +470,6 @@ void sys_setchsr                (int chin, int chout, int sr);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_socketreceiver *socketreceiver_new (void *owner, t_notifyfn notifier, t_receivefn fn, int udp);
-void             socketreceiver_read (t_socketreceiver *x, int fd);
 void             sys_closesocket     (int fd);
 
 // -----------------------------------------------------------------------------------------------------------

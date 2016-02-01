@@ -55,8 +55,8 @@ extern int  main_portNumber;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_buffer            *interface_inBuffer;                        /* Shared. */
-t_socketreceiver    *interface_inReceiver;                      /* Shared. */
+t_buffer    *interface_inBuffer;                                /* Shared. */
+t_receiver  *interface_inReceiver;                              /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -861,8 +861,8 @@ int sys_startgui(const char *libdir)
     if (!PD_WITH_NOGUI)
     {
         char buf[256], buf2[256];
-        interface_inReceiver = socketreceiver_new(0, 0, 0, 0);
-        interface_socketAddPollCallback(interface_guiSocket, (t_pollfn)socketreceiver_read,
+        interface_inReceiver = receiver_new(0, 0, 0, 0);
+        interface_socketAddPollCallback(interface_guiSocket, (t_pollfn)receiver_read,
             interface_inReceiver);
 
             /* here is where we start the pinging. */
