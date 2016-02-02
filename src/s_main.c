@@ -168,10 +168,15 @@ static t_error main_findRootDirectory (char *progname)
 
 int main_entry (int argc, char **argv)
 {
+    t_error err = PD_ERROR_NONE;
+    
     main_entryPlatformSpecific();
     
-    if (main_findRootDirectory (argv[0]))           { return 1; }
-    if (main_parseArguments (argc - 1, argv + 1))   { return 1; }
+    err |= main_findRootDirectory (argv[0]);
+    err |= main_parseArguments (argc - 1, argv + 1);
+    
+    if (!err) {
+    //
     if (main_version) { 
         return main_entryVersion (0); 
     }
@@ -180,13 +185,17 @@ int main_entry (int argc, char **argv)
     preferences_load();
     sys_setSignalHandlers();
     
-    if (sys_startgui (main_rootDirectory->s_name))  { return 1; }
+    if (sys_startgui (main_rootDirectory->s_name)) { return 1; }
     sys_reopen_midi();
     if (audio_shouldkeepopen()) { sys_reopen_audio(); }
 
-    main_entryVersion (1);
+    if (!(err |= main_entryVersion (1))) { err |= scheduler_main(); }
+
+    pd_release();
+    //
+    }
     
-    return (scheduler_main());
+    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------

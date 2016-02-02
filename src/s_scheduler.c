@@ -364,7 +364,6 @@ t_error scheduler_main (void)
     } else {
         sys_close_audio();
         sys_close_midi();
-        sys_closeguisocket();
     }
     //
     }

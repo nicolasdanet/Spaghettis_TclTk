@@ -167,22 +167,18 @@ void interface_socketRemoveCallback (int fd)
     }
 }
 
-void interface_socketCloseAndRemoveCallback (int fd)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void interface_release (void)
 {
-    sys_closesocket (fd);
-    interface_socketRemoveCallback (fd);
+    receiver_free (interface_guiReceiver);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void sys_closeguisocket()
-{
-    #if !PD_WITH_NOGUI
-        sys_closesocket (interface_guiSocket); interface_socketRemoveCallback (interface_guiSocket);
-    #endif
-}
 
 void sys_closesocket(int fd)
 {

@@ -133,9 +133,9 @@
 #pragma mark -
 
 typedef void (*t_pollfn)            (void *p, int fd);
-typedef void (*t_notifyfn)          (void *o, int fd);
-typedef void (*t_receivefn)         (void *o, t_buffer *b);
-typedef void (*t_clockfn)           (void *o);
+typedef void (*t_notifyfn)          (void *owner, int fd);
+typedef void (*t_receivefn)         (void *owner, t_buffer *b);
+typedef void (*t_clockfn)           (void *owner);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -160,12 +160,13 @@ struct _clock {
 
 typedef struct _receiver {
     void            *r_owner;
+    t_buffer        *r_message;
     char            *r_inRaw;
-    t_buffer        *r_inBuffer;
     int             r_inHead;
     int             r_inTail;
     int             r_fd;
     int             r_isUdp;
+    int             r_isClosed;
     t_notifyfn      r_fnNotify;
     t_receivefn     r_fnReceive;
     } t_receiver;
@@ -264,7 +265,7 @@ void interface_socketPollBlocking               (int microseconds);
 void interface_socketPollNonBlocking            (void);
 void interface_socketAddCallback                (int fd, t_pollfn fn, void *ptr);
 void interface_socketRemoveCallback             (int fd);
-void interface_socketCloseAndRemoveCallback     (int fd);
+void interface_release                          (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

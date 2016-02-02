@@ -22,17 +22,31 @@ extern t_receiver   *interface_guiReceiver;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void receiver_closeSocketAndRemoveCallback (t_receiver *x)
+{
+    if (!x->r_isClosed) {
+        sys_closesocket (x->r_fd);
+        interface_socketRemoveCallback (x->r_fd);
+        x->r_isClosed = 1;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_receiver *receiver_new (void *owner, int fd, t_notifyfn notify, t_receivefn receive, int isUdp)
 {
     t_receiver *x = (t_receiver *)PD_MEMORY_GET (sizeof (t_receiver));
     
     x->r_owner      = owner;
+    x->r_message    = buffer_new();
     x->r_inRaw      = (char *)PD_MEMORY_GET (SOCKET_BUFFER_SIZE);
-    x->r_inBuffer   = buffer_new();
     x->r_inHead     = 0;
     x->r_inTail     = 0;
     x->r_fd         = fd;
     x->r_isUdp      = isUdp;
+    x->r_isClosed   = 0;
     x->r_fnNotify   = notify;
     x->r_fnReceive  = receive;
 
@@ -43,9 +57,10 @@ t_receiver *receiver_new (void *owner, int fd, t_notifyfn notify, t_receivefn re
 
 void receiver_free (t_receiver *x)
 {
-    interface_socketRemoveCallback (x->r_fd);
+    receiver_closeSocketAndRemoveCallback (x);
     
-    buffer_free (x->r_inBuffer);
+    buffer_free (x->r_message);
+    
     PD_MEMORY_FREE (x->r_inRaw);
     PD_MEMORY_FREE (x);
 }
@@ -79,7 +94,7 @@ static int receiver_readHandleTCP (t_receiver *x)
 
     if (c == ';' && (first || !receiver_readHandleSemicolonEscaped (x, i))) {
         x->r_inTail = (i + 1) & (SOCKET_BUFFER_SIZE - 1);
-        buffer_withStringUnzeroed (x->r_inBuffer, t, p - t);
+        buffer_withStringUnzeroed (x->r_message, t, p - t);
         return 1;
     }
     //
@@ -101,7 +116,7 @@ static void receiver_readHandleDisconnect (t_receiver *x, int fd, int withError)
             (*x->r_fnNotify) (x->r_owner, fd); 
         }
 
-        interface_socketCloseAndRemoveCallback (fd);
+        receiver_closeSocketAndRemoveCallback (x);
     }
 }
 
@@ -125,8 +140,8 @@ static t_error receiver_readUDP (t_receiver *x, int fd)
     else {
         char *semicolon = strchr (t, ';');
         if (semicolon) { *semicolon = 0; }
-        buffer_withStringUnzeroed (x->r_inBuffer, t, strlen (t));
-        if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_inBuffer); }
+        buffer_withStringUnzeroed (x->r_message, t, strlen (t));
+        if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_message); }
         err == PD_ERROR_NONE;
     }
     //
@@ -153,9 +168,9 @@ static t_error receiver_readTCP (t_receiver *x, int fd)
         x->r_inHead += length; if (x->r_inHead >= SOCKET_BUFFER_SIZE) { x->r_inHead = 0; }
         
         while (receiver_readHandleTCP (x)) {
-            if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_inBuffer); }
+            if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_message); }
             else { 
-                buffer_eval (x->r_inBuffer, NULL, 0, NULL); 
+                buffer_eval (x->r_message, NULL, 0, NULL); 
             }
             if (x->r_inTail == x->r_inHead) { break; }
         }
@@ -172,9 +187,9 @@ static t_error receiver_readTCP (t_receiver *x, int fd)
 
 void receiver_read (t_receiver *x, int fd)
 {
-    if (x->r_isUdp) { receiver_readUDP (x, fd); }       /* UDP ("datagram") socket protocol. */
+    if (x->r_isUdp) { receiver_readUDP (x, fd); }       /* Without buffer. */
     else {  
-        receiver_readTCP (x, fd);                       /* TCP ("streaming") socket protocol. */
+        receiver_readTCP (x, fd);                       /* With buffer. */
     }
 }
 
