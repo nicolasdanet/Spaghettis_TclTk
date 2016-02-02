@@ -17,22 +17,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef struct _bindelement {
-    t_pd                *e_what;                    /* MUST be the first. */
-    struct _bindelement *e_next;
-    } t_bindelement;
-
-typedef struct _bindlist {
-    t_pd            b_pd;                           /* MUST be the first. */
-    t_bindelement   *b_list;
-    } t_bindlist;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 typedef struct _gstack {
-    t_pd            *g_what;                        /* MUST be the first. */
+    t_pd            *g_what;                    /* MUST be the first. */
     t_symbol        *g_loadingAbstraction;
     struct _gstack  *g_next;
     } t_gstack;
@@ -40,86 +26,30 @@ typedef struct _gstack {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_pd *pd_newest;                            /* Shared. */
+extern t_class  *bindlist_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_pd pd_objectMaker;                        /* Shared. */
-t_pd pd_canvasMaker;                        /* Shared. */
+t_pd *pd_newest;                                /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_pdinstance *pd_this;                      /* Shared. */
+t_pd pd_objectMaker;                            /* Shared. */
+t_pd pd_canvasMaker;                            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_gstack *pd_stackHead;              /* Shared. */
-static t_pd     *pd_lastPopped;             /* Shared. */
-static t_symbol *pd_loadingAbstraction;     /* Shared. */
+t_pdinstance *pd_this;                          /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class  *bindlist_class;            /* Shared. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void bindlist_bang (t_bindlist *x)
-{
-    t_bindelement *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_bang (e->e_what); }
-}
-
-static void bindlist_float (t_bindlist *x, t_float f)
-{
-    t_bindelement *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_float (e->e_what, f); }
-}
-
-static void bindlist_symbol (t_bindlist *x, t_symbol *s)
-{
-    t_bindelement *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_symbol (e->e_what, s); }
-}
-
-static void bindlist_pointer (t_bindlist *x, t_gpointer *gp)
-{
-    t_bindelement *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_pointer (e->e_what, gp); }
-}
-
-static void bindlist_list (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_bindelement *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_list (e->e_what, argc, argv); }
-}
-
-static void bindlist_anything (t_bindlist *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_bindelement *e = NULL;
-    for (e = x->b_list; e; e = e->e_next) { pd_message (e->e_what, s, argc, argv); }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void pd_setup (void)
-{
-    bindlist_class = class_new (gensym ("bindlist"), NULL, NULL, sizeof (t_bindlist), CLASS_PURE, 0);
-    
-    class_addBang (bindlist_class,      (t_method)bindlist_bang);
-    class_addFloat (bindlist_class,     (t_method)bindlist_float);
-    class_addSymbol (bindlist_class,    (t_method)bindlist_symbol);
-    class_addPointer (bindlist_class,   (t_method)bindlist_pointer);
-    class_addList (bindlist_class,      (t_method)bindlist_list);
-    class_addAnything (bindlist_class,  (t_method)bindlist_anything);
-}
+static t_gstack *pd_stackHead;                  /* Shared. */
+static t_pd     *pd_lastPopped;                 /* Shared. */
+static t_symbol *pd_loadingAbstraction;         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -252,7 +182,7 @@ void pd_bind (t_pd *x, t_symbol *s)
 {
     if (s->s_thing) {
     
-        if (*s->s_thing == bindlist_class) {
+        if (pd_class (s->s_thing) == bindlist_class) {
             t_bindlist *b = (t_bindlist *)s->s_thing;
             t_bindelement *e = (t_bindelement *)PD_MEMORY_GET (sizeof (t_bindelement));
             e->e_next = b->b_list;
@@ -281,8 +211,8 @@ void pd_unbind (t_pd *x, t_symbol *s)
     if (s->s_thing == x) { 
         s->s_thing = NULL; 
         
-    } else if (s->s_thing && *s->s_thing == bindlist_class) {
-    
+    } else if (s->s_thing && pd_class (s->s_thing) == bindlist_class) {
+        
         t_bindlist *b = (t_bindlist *)s->s_thing;
         t_bindelement *e1 = NULL;
         t_bindelement *e2 = NULL;
@@ -318,9 +248,9 @@ t_pd *pd_findByClass (t_symbol *s, t_class *c)
     t_pd *x = NULL;
     
     if (!s->s_thing) { return NULL; }
-    if (*s->s_thing == c) { return s->s_thing; }
+    if (pd_class (s->s_thing) == c) { return s->s_thing; }
     
-    if (*s->s_thing == bindlist_class) {
+    if (pd_class (s->s_thing) == bindlist_class) {
         t_bindlist *b = (t_bindlist *)s->s_thing;
         t_bindelement *e = NULL;
         

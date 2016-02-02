@@ -21,9 +21,9 @@ PD_STRUCT _widgetbehavior;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_savefn)(t_gobj *x, t_buffer *b);
-typedef void (*t_propertiesfn)(t_gobj *x, t_glist *glist);
-typedef void (*t_guifn)(t_gobj *x, t_glist *glist);
+typedef void (*t_savefn)        (t_gobj *x, t_buffer *b);
+typedef void (*t_propertiesfn)  (t_gobj *x, t_glist *glist);
+typedef void (*t_guifn)         (t_gobj *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -39,12 +39,12 @@ typedef struct _entry {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_bangmethod)(t_pd *x);
-typedef void (*t_floatmethod)(t_pd *x, t_float f);
-typedef void (*t_symbolmethod)(t_pd *x, t_symbol *s);
-typedef void (*t_listmethod)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
-typedef void (*t_anythingmethod)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
-typedef void (*t_pointermethod)(t_pd *x, t_gpointer *gp);
+typedef void (*t_bangmethod)        (t_pd *x);
+typedef void (*t_floatmethod)       (t_pd *x, t_float f);
+typedef void (*t_symbolmethod)      (t_pd *x, t_symbol *s);
+typedef void (*t_listmethod)        (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+typedef void (*t_anythingmethod)    (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+typedef void (*t_pointermethod)     (t_pd *x, t_gpointer *gp);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -97,6 +97,20 @@ struct _pdinstance {
     t_symbol    *sym_midiclkin;
     t_symbol    *sym_midirealtimein;
     };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+typedef struct _bindelement {
+    t_pd                *e_what;                    /* MUST be the first. */
+    struct _bindelement *e_next;
+    } t_bindelement;
+
+typedef struct _bindlist {
+    t_pd            b_pd;                           /* MUST be the first. */
+    t_bindelement   *b_list;
+    } t_bindlist;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

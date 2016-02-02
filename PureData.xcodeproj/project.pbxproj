@@ -32,6 +32,7 @@
 		3722C5301C4F91EB00D2BF6F /* u_pdreceive.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972031C4F716700263434 /* u_pdreceive.c */; };
 		3722C5311C4F91F500D2BF6F /* u_pdsend.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972041C4F716700263434 /* u_pdsend.c */; };
 		3722C5321C4F91FC00D2BF6F /* u_watchdog.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972051C4F716700263434 /* u_watchdog.c */; };
+		373D6CCA1C610AAF00106641 /* m_bindlist.c in Sources */ = {isa = PBXBuildFile; fileRef = 373D6CC91C610AAF00106641 /* m_bindlist.c */; };
 		378972141C4F716800263434 /* d_arithmetic.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B01C4F716700263434 /* d_arithmetic.c */; };
 		378972151C4F716800263434 /* d_array.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B11C4F716700263434 /* d_array.c */; };
 		378972161C4F716800263434 /* d_ctl.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B21C4F716700263434 /* d_ctl.c */; };
@@ -197,6 +198,7 @@
 		371655941BA3466000ABDE22 /* pmutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pmutil.c; path = portmidi/pm_common/pmutil.c; sourceTree = "<group>"; };
 		371655961BA3466600ABDE22 /* portmidi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = portmidi.c; path = portmidi/pm_common/portmidi.c; sourceTree = "<group>"; };
 		371655981BA3467500ABDE22 /* ptmacosx_cf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ptmacosx_cf.c; path = portmidi/porttime/ptmacosx_cf.c; sourceTree = "<group>"; };
+		373D6CC91C610AAF00106641 /* m_bindlist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_bindlist.c; path = src/m_bindlist.c; sourceTree = "<group>"; };
 		3789717F1C4F712A00263434 /* AppMain.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; path = AppMain.tcl; sourceTree = "<group>"; };
 		378971801C4F712A00263434 /* pkgIndex.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; path = pkgIndex.tcl; sourceTree = "<group>"; };
 		378971811C4F712A00263434 /* ui_apple.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; path = ui_apple.tcl; sourceTree = "<group>"; };
@@ -488,6 +490,7 @@
 				378971DC1C4F716700263434 /* m_global.c */,
 				378971E61C4F716700263434 /* m_utils.c */,
 				378971DB1C4F716700263434 /* m_dollar.c */,
+				373D6CC91C610AAF00106641 /* m_bindlist.c */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -932,6 +935,7 @@
 				37C76E121C5CF93000AE4CBF /* s_time.c in Sources */,
 				37E3E9661C5E1EDE00D9717B /* s_priority.c in Sources */,
 				37E3EB9C1C5F6ACA00D9717B /* s_receiver.c in Sources */,
+				373D6CCA1C610AAF00106641 /* m_bindlist.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
