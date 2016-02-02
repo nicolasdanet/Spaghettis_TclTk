@@ -161,6 +161,7 @@ struct _clock {
 typedef struct _receiver {
     void            *r_owner;
     char            *r_inRaw;
+    t_buffer        *r_inBuffer;
     int             r_inHead;
     int             r_inTail;
     int             r_fd;

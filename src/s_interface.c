@@ -55,8 +55,7 @@ extern int  main_portNumber;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_buffer    *interface_inBuffer;                                /* Shared. */
-t_receiver  *interface_inReceiver;                              /* Shared. */
+t_receiver  *interface_guiReceiver;                             /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -470,7 +469,6 @@ void sys_init_fdpoll(void)
     /* create an empty FD poll list */
     interface_pollers = (t_fdpoll *)PD_MEMORY_GET(0);
     interface_pollersSize = 0;
-    interface_inBuffer = buffer_new();
 }
 
 /* --------------------- starting up the GUI connection ------------- */
@@ -872,7 +870,7 @@ int sys_startgui(const char *libdir)
     if (!PD_WITH_NOGUI)
     {
         char buf[256], buf2[256];
-        interface_inReceiver = receiver_new (NULL, interface_guiSocket, NULL, NULL, 0);
+        interface_guiReceiver = receiver_new (NULL, interface_guiSocket, NULL, NULL, 0);
 
             /* here is where we start the pinging. */
 #if defined(__linux__) || defined(__FreeBSD_kernel__)

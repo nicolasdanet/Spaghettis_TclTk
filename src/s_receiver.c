@@ -16,8 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_buffer     *interface_inBuffer;
-extern t_receiver   *interface_inReceiver;
+extern t_receiver   *interface_guiReceiver;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -29,6 +28,7 @@ t_receiver *receiver_new (void *owner, int fd, t_notifyfn notify, t_receivefn re
     
     x->r_owner      = owner;
     x->r_inRaw      = (char *)PD_MEMORY_GET (SOCKET_BUFFER_SIZE);
+    x->r_inBuffer   = buffer_new();
     x->r_inHead     = 0;
     x->r_inTail     = 0;
     x->r_fd         = fd;
@@ -45,6 +45,7 @@ void receiver_free (t_receiver *x)
 {
     interface_socketRemoveCallback (x->r_fd);
     
+    buffer_free (x->r_inBuffer);
     PD_MEMORY_FREE (x->r_inRaw);
     PD_MEMORY_FREE (x);
 }
@@ -78,7 +79,7 @@ static int receiver_readHandleTCP (t_receiver *x)
 
     if (c == ';' && (first || !receiver_readHandleSemicolonEscaped (x, i))) {
         x->r_inTail = (i + 1) & (SOCKET_BUFFER_SIZE - 1);
-        buffer_withStringUnzeroed (interface_inBuffer, t, p - t);
+        buffer_withStringUnzeroed (x->r_inBuffer, t, p - t);
         return 1;
     }
     //
@@ -89,7 +90,7 @@ static int receiver_readHandleTCP (t_receiver *x)
 
 static void receiver_readHandleDisconnect (t_receiver *x, int fd, int withError)
 {
-    if (x == interface_inReceiver) { 
+    if (x == interface_guiReceiver) { 
         if (withError) { scheduler_needToExitWithError(); }
         else {
             scheduler_needToExit(); 
@@ -124,8 +125,8 @@ static t_error receiver_readUDP (t_receiver *x, int fd)
     else {
         char *semicolon = strchr (t, ';');
         if (semicolon) { *semicolon = 0; }
-        buffer_withStringUnzeroed (interface_inBuffer, t, strlen (t));
-        if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, interface_inBuffer); }
+        buffer_withStringUnzeroed (x->r_inBuffer, t, strlen (t));
+        if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_inBuffer); }
         err == PD_ERROR_NONE;
     }
     //
@@ -152,9 +153,9 @@ static t_error receiver_readTCP (t_receiver *x, int fd)
         x->r_inHead += length; if (x->r_inHead >= SOCKET_BUFFER_SIZE) { x->r_inHead = 0; }
         
         while (receiver_readHandleTCP (x)) {
-            if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, interface_inBuffer); }
+            if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_inBuffer); }
             else { 
-                buffer_eval (interface_inBuffer, NULL, 0, NULL); 
+                buffer_eval (x->r_inBuffer, NULL, 0, NULL); 
             }
             if (x->r_inTail == x->r_inHead) { break; }
         }
