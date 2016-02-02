@@ -53,37 +53,35 @@ void receiver_free (t_receiver *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static int receiver_readHandleSemicolonEscaped (t_receiver *x, int i)
+{
+    if (i == 0) {
+        return (x->r_inRaw[SOCKET_BUFFER_SIZE - 1] == '\\');
+    } else { 
+        return (x->r_inRaw[i - 1] == '\\');
+    }
+}
+
 static int receiver_readHandleTCP (t_receiver *x)
 {
     char t[SOCKET_BUFFER_SIZE] = { 0 };
     char *p = t;
-
-    int head  = x->r_inHead;
-    int tail  = x->r_inTail;
-    char *raw = x->r_inRaw;
+    int i, first = 1;
     
-    int first = 1;
-    int i;
+    PD_ASSERT ((x->r_inHead != x->r_inTail) || (x->r_inHead == 0 && x->r_inTail == 0));
         
-    for (i = tail; first || (i != head); first = 0, (i = (i+1) & (SOCKET_BUFFER_SIZE-1)))
-    {
-            /* if we hit a semi that isn't preceeded by a \, it's a message
-            boundary.  LATER we should deal with the possibility that the
-            preceeding \ might itself be escaped! */
-        char c = *p++ = raw[i];
-        if (c == ';' && (!i || raw[i-1] != '\\'))
-        {
-            tail = (i+1)&(SOCKET_BUFFER_SIZE-1);
-            buffer_withStringUnzeroed(interface_inBuffer, t, p - t);
-            //if (0 /*sys_debuglevel*/ & DEBUG_MESSDOWN)
-            //{
-            //    write(2,  messbuf, bp - messbuf);
-            //    write(2, "\n", 1);
-            //}
-            x->r_inHead = head;
-            x->r_inTail = tail;
-            return (1);
-        }
+    for (i = x->r_inTail; first || (i != x->r_inHead); first = 0, (i = (i + 1) & (SOCKET_BUFFER_SIZE - 1))) {
+    //
+    char c = *p = x->r_inRaw[i];
+    
+    p++;
+
+    if (c == ';' && (first || !receiver_readHandleSemicolonEscaped (x, i))) {
+        x->r_inTail = (i + 1) & (SOCKET_BUFFER_SIZE - 1);
+        buffer_withStringUnzeroed (interface_inBuffer, t, p - t);
+        return 1;
+    }
+    //
     }
     
     return 0;
