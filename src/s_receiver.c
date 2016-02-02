@@ -65,7 +65,7 @@ static int receiver_readHandleTCP (t_receiver *x)
     int first = 1;
     int i;
         
-    for (i = tail; first || (i != head); first = 0, (i = (i+1)&(SOCKET_BUFFER_SIZE-1)))
+    for (i = tail; first || (i != head); first = 0, (i = (i+1) & (SOCKET_BUFFER_SIZE-1)))
     {
             /* if we hit a semi that isn't preceeded by a \, it's a message
             boundary.  LATER we should deal with the possibility that the
@@ -116,8 +116,8 @@ static t_error receiver_readUDP (t_receiver *x, int fd)
     ssize_t length = recv (fd, t, SOCKET_BUFFER_SIZE, 0);
     t_error err = PD_ERROR;
     
-    if (length < 0)       { interface_socketCloseAndRemoveCallback (fd); PD_BUG; }
-    else if (length == 0) { /* Disconnected. */ }
+    if (length < 0)       { receiver_readHandleDisconnect (x, fd, 1); PD_BUG; }
+    else if (length == 0) { receiver_readHandleDisconnect (x, fd, 0); err = PD_ERROR_NONE; }
     else if (length > 0)  {
     //
     t[length] = 0;
@@ -147,8 +147,8 @@ static t_error receiver_readTCP (t_receiver *x, int fd)
     //
     int length = recv (fd, x->r_inRaw + x->r_inHead, sizeOfAvailableSpace, 0);
     
-    if (length < 0)       { receiver_readHandleDisconnect (x, fd, 0); PD_BUG; }
-    else if (length == 0) { receiver_readHandleDisconnect (x, fd, 1); err = PD_ERROR_NONE; }
+    if (length < 0)       { receiver_readHandleDisconnect (x, fd, 1); PD_BUG; }
+    else if (length == 0) { receiver_readHandleDisconnect (x, fd, 0); err = PD_ERROR_NONE; }
     else
     {
         x->r_inHead += length; if (x->r_inHead >= SOCKET_BUFFER_SIZE) { x->r_inHead = 0; }

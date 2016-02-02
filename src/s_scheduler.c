@@ -259,7 +259,7 @@ static void scheduler_withLoop (void)
         SCHEDULER_LOCK;
 
         if (timeForward) { idleCount = 0; }
-        else if (!(++idleCount & 31)) { scheduler_pollStuck (idleCount == 32); }
+        else if (!(++idleCount % 31)) { scheduler_pollStuck (idleCount == 32); }
         
     } else {
     
