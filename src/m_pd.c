@@ -80,6 +80,11 @@ static t_pdinstance *pdinstance_new()
     return x;
 }
 
+static pdinstance_free (t_pdinstance *x)
+{
+    PD_MEMORY_FREE (x);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -98,6 +103,9 @@ void pd_initialize (void)
 void pd_release (void)
 {
     interface_release();
+    message_release();
+    
+    pdinstance_free (pd_this);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -17,8 +17,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_gimme)(t_pd *x, t_symbol *s, int argc, t_atom *argv);
-typedef t_pd *(*t_newgimme)(t_symbol *s, int argc, t_atom *argv);
+typedef void (*t_gimme)     (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+typedef t_pd *(*t_newgimme) (t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -206,16 +206,61 @@ void message_initialize (void)
             &s_
         };
     
-    if (pd_objectMaker) { PD_BUG; }
-    else {
-    //
     int i;
     for (i = 0; i < 13; i++) { generateSymbol (symbols[i]->s_name, symbols[i]); }
-        
+    
+    PD_ASSERT (!pd_objectMaker);
+    
     pd_objectMaker = class_new (gensym ("objectmaker"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
     pd_canvasMaker = class_new (gensym ("classmaker"),  NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
     
     class_addAnything (pd_objectMaker, (t_method)new_anything);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static int message_isStatic (t_symbol *s)
+{
+    t_symbol *symbols[13] = 
+        { 
+            &s_pointer,
+            &s_float,
+            &s_symbol,
+            &s_bang,
+            &s_list,
+            &s_anything,
+            &s_signal,
+            &s__N,
+            &s__X,
+            &s__A,
+            &s_x,
+            &s_y,
+            &s_
+        };
+    
+    int i;
+    for (i = 0; i < 13; i++) { if (s == symbols[i]) { return 1; } }
+    
+    return 0;
+}
+
+void message_release (void)
+{
+    t_symbol **sym1 = NULL;
+    t_symbol *sym2  = NULL;
+    
+    int i;
+    
+    for (i = 0; i < MESSAGE_HASH_SIZE; i++) {
+    //
+    sym1 = message_hashTable + i;
+    
+    while (sym2 = *sym1) {
+        sym1 = &sym2->s_next;
+        if (!message_isStatic (sym2)) { PD_MEMORY_FREE (sym2->s_name); PD_MEMORY_FREE (sym2); }
+    }
     //
     }
 }
