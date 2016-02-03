@@ -301,7 +301,6 @@ void    buffer_openFile                     (void *dummy, t_symbol *name, t_symb
 
 void    sys_vgui                            (char *fmt, ...);
 void    sys_gui                             (char *s);
-void    sys_pretendguibytes                 (int n);
 void    sys_queuegui                        (void *client, t_glist *glist, t_guifn f);
 void    sys_unqueuegui                      (void *client);
 

@@ -47,12 +47,16 @@ static void handlers_exit (int n)
 
 static void handlers_hup (int n)        /* Watchdog barking. */
 {
+    #if PD_WITH_WATCHDOG
+    
     struct timeval timeOut;
     
     timeOut.tv_sec  = 0;
     timeOut.tv_usec = 30000;
     
     select (1, NULL, NULL, NULL, &timeOut);
+    
+    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -16,7 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_receiver   *interface_guiReceiver;
+extern t_receiver   *interface_inGuiReceiver;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ static int receiver_readHandleTCP (t_receiver *x)
 
 static void receiver_readHandleDisconnect (t_receiver *x, int fd, int withError)
 {
-    if (x == interface_guiReceiver) { 
+    if (x == interface_inGuiReceiver) { 
         if (withError) { scheduler_needToExitWithError(); }
         else {
             scheduler_needToExit(); 

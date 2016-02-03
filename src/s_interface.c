@@ -30,19 +30,19 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define INTERFACE_PORT                  5400
+#define INTERFACE_PORT                      5400
 
 #if ( PD_LINUX || PD_BSD || PD_HURD )
-    #define INTERFACE_LOCALHOST         "127.0.0.1"
+    #define INTERFACE_LOCALHOST             "127.0.0.1"
 #else
-    #define INTERFACE_LOCALHOST         "localhost"
+    #define INTERFACE_LOCALHOST             "localhost"
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define INTERFACE_GUI_BUFFER_SIZE       8192
+#define INTERFACE_GUI_BUFFER_SIZE           8192
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -70,24 +70,29 @@ extern int  main_portNumber;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_receiver  *interface_guiReceiver;                             /* Shared. */
+t_receiver  *interface_inGuiReceiver;                               /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_fdpoll             *interface_pollers;                 /* Shared. */
-static t_guiqueue           *interface_guiQueueHead;            /* Shared. */
-static char                 *interface_guiBuffer;               /* Shared. */
+static t_fdpoll             *interface_inPollers;                   /* Shared. */
 
-static int                  interface_guiBufferSize;            /* Shared. */
-static int                  interface_guiBufferHead;            /* Shared. */
-static int                  interface_guiBufferTail;            /* Shared. */
-static int                  interface_guiSocket;                /* Shared. */
-static int                  interface_watchdogPipe;             /* Shared. */
-static int                  interface_pollersSize;              /* Shared. */
-static int                  interface_maximumFileDescriptor;    /* Shared. */
-static int                  interface_isWaitingForPing;         /* Shared. */
-static int                  interface_bytesSinceLastPing;       /* Shared. */
+static int                  interface_inGuiSocket;                  /* Shared. */
+static int                  interface_inPollersSize;                /* Shared. */
+static int                  interface_inMaximumFileDescriptor;      /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static char                 *interface_outGuiBuffer;                /* Shared. */
+static t_guiqueue           *interface_outGuiQueueHead;             /* Shared. */
+
+static int                  interface_outGuiBufferSize;             /* Shared. */
+static int                  interface_outGuiBufferHead;             /* Shared. */
+static int                  interface_outGuiBufferTail;             /* Shared. */
+static int                  interface_outWatchdogPipe;              /* Shared. */
+static int                  interface_outIsWaitingForPing;          /* Shared. */
+static int                  interface_outBytesSinceLastPing;        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -111,15 +116,15 @@ static int interface_pollSockets (int microseconds)
     FD_ZERO (&wSet);
     FD_ZERO (&eSet);
     
-    for (pollers = interface_pollers, i = interface_pollersSize; i--; pollers++) {
+    for (pollers = interface_inPollers, i = interface_inPollersSize; i--; pollers++) {
         FD_SET (pollers->fdp_fd, &rSet);
     }
 
-    select (interface_maximumFileDescriptor + 1, &rSet, &wSet, &eSet, &timeOut);
+    select (interface_inMaximumFileDescriptor + 1, &rSet, &wSet, &eSet, &timeOut);
     
-    for (i = 0; i < interface_pollersSize; i++) {
-        if (FD_ISSET (interface_pollers[i].fdp_fd, &rSet)) {
-            (*interface_pollers[i].fdp_fn) (interface_pollers[i].fdp_p, interface_pollers[i].fdp_fd);
+    for (i = 0; i < interface_inPollersSize; i++) {
+        if (FD_ISSET (interface_inPollers[i].fdp_fd, &rSet)) {
+            (*interface_inPollers[i].fdp_fn) (interface_inPollers[i].fdp_p, interface_inPollers[i].fdp_fd);
             didSomething = 1;
         }
     }
@@ -143,28 +148,28 @@ void interface_socketPollNonBlocking (void)
 
 void interface_socketAddCallback (int fd, t_pollfn fn, void *ptr)
 {
-    int n = interface_pollersSize;
+    int n = interface_inPollersSize;
     int oldSize = n * sizeof (t_fdpoll);
     int newSize = oldSize + sizeof (t_fdpoll);
     int i;
     t_fdpoll *p = NULL;
     
-    for (i = n, p = interface_pollers; i--; p++) { PD_ASSERT (p->fdp_fd != fd); }
+    for (i = n, p = interface_inPollers; i--; p++) { PD_ASSERT (p->fdp_fd != fd); }
     
-    interface_pollers = (t_fdpoll *)PD_MEMORY_RESIZE (interface_pollers, oldSize, newSize);
+    interface_inPollers = (t_fdpoll *)PD_MEMORY_RESIZE (interface_inPollers, oldSize, newSize);
         
-    p = interface_pollers + n;
+    p = interface_inPollers + n;
     p->fdp_p = ptr;
     p->fdp_fd = fd;
     p->fdp_fn = fn;
         
-    interface_pollersSize = n + 1;
-    if (fd > interface_maximumFileDescriptor) { interface_maximumFileDescriptor = fd; }
+    interface_inPollersSize = n + 1;
+    if (fd > interface_inMaximumFileDescriptor) { interface_inMaximumFileDescriptor = fd; }
 }
 
 void interface_socketRemoveCallback (int fd)
 {
-    int n = interface_pollersSize;
+    int n = interface_inPollersSize;
     int oldSize = n * sizeof (t_fdpoll);
     int newSize = oldSize - sizeof (t_fdpoll);
     int i;
@@ -172,13 +177,13 @@ void interface_socketRemoveCallback (int fd)
     
     PD_ASSERT (oldSize != 0);
     
-    for (i = n, p = interface_pollers; i--; p++) {
+    for (i = n, p = interface_inPollers; i--; p++) {
     //
     if (p->fdp_fd == fd) {
     //
     while (i--) { *p = *(p + 1); p++; }
-    interface_pollers = (t_fdpoll *)PD_MEMORY_RESIZE (interface_pollers, oldSize, newSize);
-    interface_pollersSize = n - 1;
+    interface_inPollers = (t_fdpoll *)PD_MEMORY_RESIZE (interface_inPollers, oldSize, newSize);
+    interface_inPollersSize = n - 1;
     return;
     //
     }
@@ -201,7 +206,9 @@ void interface_socketClose (int fd)
 
 void interface_release (void)
 {
-    receiver_free (interface_guiReceiver);
+    receiver_free (interface_inGuiReceiver);
+    
+    PD_MEMORY_FREE (interface_inPollers);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -215,14 +222,14 @@ void interface_quit (void *dummy)
 
 void interface_ping (void *dummy)
 {
-    interface_isWaitingForPing = 0;
+    interface_outIsWaitingForPing = 0;
 }
 
-#if ( PD_LINUX || PD_BSD || PD_HURD )
+#if PD_WITH_WATCHDOG
 
 void interface_watchdog (void *dummy)
 {
-    if (write (interface_watchdogPipe, "\n", 1) < 1) { scheduler_needToExitWithError(); PD_BUG; }
+    if (write (interface_outWatchdogPipe, "\n", 1) < 1) { scheduler_needToExitWithError(); PD_BUG; }
 }
 
 #endif
@@ -233,20 +240,20 @@ void interface_watchdog (void *dummy)
 
 static void sys_trytogetmoreguibuf(int newsize)
 {
-    char *newbuf = realloc(interface_guiBuffer, newsize);
+    char *newbuf = realloc(interface_outGuiBuffer, newsize);
 #if 0
     static int sizewas;
     if (newsize > 70000 && sizewas < 70000)
     {
         int i;
-        for (i = interface_guiBufferTail; i < interface_guiBufferHead; i++)
-            fputc(interface_guiBuffer[i], stderr);
+        for (i = interface_outGuiBufferTail; i < interface_outGuiBufferHead; i++)
+            fputc(interface_outGuiBuffer[i], stderr);
     }
     sizewas = newsize;
 #endif
 #if 0
     fprintf(stderr, "new size %d (head %d, tail %d)\n",
-        newsize, interface_guiBufferHead, interface_guiBufferTail);
+        newsize, interface_outGuiBufferHead, interface_outGuiBufferTail);
 #endif
 
         /* if realloc fails, make a last-ditch attempt to stay alive by
@@ -254,12 +261,12 @@ static void sys_trytogetmoreguibuf(int newsize)
         this by intentionally setting newbuf to zero */
     if (!newbuf)
     {
-        int bytestowrite = interface_guiBufferTail - interface_guiBufferHead;
+        int bytestowrite = interface_outGuiBufferTail - interface_outGuiBufferHead;
         int written = 0;
         while (1)
         {
-            int res = send(interface_guiSocket,
-                interface_guiBuffer + interface_guiBufferTail + written, bytestowrite, 0);
+            int res = send(interface_inGuiSocket,
+                interface_outGuiBuffer + interface_outGuiBufferTail + written, bytestowrite, 0);
             if (res < 0)
             {
                 perror("pd output pipe");
@@ -272,12 +279,12 @@ static void sys_trytogetmoreguibuf(int newsize)
                     break;
             }
         }
-        interface_guiBufferHead = interface_guiBufferTail = 0;
+        interface_outGuiBufferHead = interface_outGuiBufferTail = 0;
     }
     else
     {
-        interface_guiBufferSize = newsize;
-        interface_guiBuffer = newbuf;
+        interface_outGuiBufferSize = newsize;
+        interface_outGuiBuffer = newbuf;
     }
 }
 
@@ -288,45 +295,45 @@ void sys_vgui(char *fmt, ...)
 
     if (PD_WITH_NOGUI)
         return;
-    if (!interface_guiBuffer)
+    if (!interface_outGuiBuffer)
     {
-        if (!(interface_guiBuffer = malloc(INTERFACE_GUI_BUFFER_SIZE)))
+        if (!(interface_outGuiBuffer = malloc(INTERFACE_GUI_BUFFER_SIZE)))
         {
             fprintf(stderr, "Pd: couldn't allocate GUI buffer\n");
             scheduler_needToExitWithError();
         }
-        interface_guiBufferSize = INTERFACE_GUI_BUFFER_SIZE;
-        interface_guiBufferHead = interface_guiBufferTail = 0;
+        interface_outGuiBufferSize = INTERFACE_GUI_BUFFER_SIZE;
+        interface_outGuiBufferHead = interface_outGuiBufferTail = 0;
     }
-    if (interface_guiBufferHead > interface_guiBufferSize - (INTERFACE_GUI_BUFFER_SIZE/2))
-        sys_trytogetmoreguibuf(interface_guiBufferSize + INTERFACE_GUI_BUFFER_SIZE);
+    if (interface_outGuiBufferHead > interface_outGuiBufferSize - (INTERFACE_GUI_BUFFER_SIZE/2))
+        sys_trytogetmoreguibuf(interface_outGuiBufferSize + INTERFACE_GUI_BUFFER_SIZE);
     va_start(ap, fmt);
-    msglen = vsnprintf(interface_guiBuffer + interface_guiBufferHead,
-        interface_guiBufferSize - interface_guiBufferHead, fmt, ap);
+    msglen = vsnprintf(interface_outGuiBuffer + interface_outGuiBufferHead,
+        interface_outGuiBufferSize - interface_outGuiBufferHead, fmt, ap);
     va_end(ap);
     if(msglen < 0) 
     {
         fprintf(stderr, "Pd: buffer space wasn't sufficient for long GUI string\n");
         return;
     }
-    if (msglen >= interface_guiBufferSize - interface_guiBufferHead)
+    if (msglen >= interface_outGuiBufferSize - interface_outGuiBufferHead)
     {
-        int msglen2, newsize = interface_guiBufferSize + 1 +
+        int msglen2, newsize = interface_outGuiBufferSize + 1 +
             (msglen > INTERFACE_GUI_BUFFER_SIZE ? msglen : INTERFACE_GUI_BUFFER_SIZE);
         sys_trytogetmoreguibuf(newsize);
 
         va_start(ap, fmt);
-        msglen2 = vsnprintf(interface_guiBuffer + interface_guiBufferHead,
-            interface_guiBufferSize - interface_guiBufferHead, fmt, ap);
+        msglen2 = vsnprintf(interface_outGuiBuffer + interface_outGuiBufferHead,
+            interface_outGuiBufferSize - interface_outGuiBufferHead, fmt, ap);
         va_end(ap);
         if (msglen2 != msglen) { PD_BUG; }
-        if (msglen >= interface_guiBufferSize - interface_guiBufferHead)
-            msglen = interface_guiBufferSize - interface_guiBufferHead;
+        if (msglen >= interface_outGuiBufferSize - interface_outGuiBufferHead)
+            msglen = interface_outGuiBufferSize - interface_outGuiBufferHead;
     }
     //if (0 /*sys_debuglevel*/ & DEBUG_MESSUP)
-    //    fprintf(stderr, "%s",  interface_guiBuffer + interface_guiBufferHead);
-    interface_guiBufferHead += msglen;
-    interface_bytesSinceLastPing += msglen;
+    //    fprintf(stderr, "%s",  interface_outGuiBuffer + interface_outGuiBufferHead);
+    interface_outGuiBufferHead += msglen;
+    interface_outBytesSinceLastPing += msglen;
 }
 
 void sys_gui(char *s)
@@ -336,9 +343,9 @@ void sys_gui(char *s)
 
 static int sys_flushtogui( void)
 {
-    int writesize = interface_guiBufferHead - interface_guiBufferTail, nwrote = 0;
+    int writesize = interface_outGuiBufferHead - interface_outGuiBufferTail, nwrote = 0;
     if (writesize > 0)
-        nwrote = send(interface_guiSocket, interface_guiBuffer + interface_guiBufferTail, writesize, 0);
+        nwrote = send(interface_inGuiSocket, interface_outGuiBuffer + interface_outGuiBufferTail, writesize, 0);
 
 #if 0   
     if (writesize)
@@ -352,17 +359,17 @@ static int sys_flushtogui( void)
     }
     else if (!nwrote)
         return (0);
-    else if (nwrote >= interface_guiBufferHead - interface_guiBufferTail)
-         interface_guiBufferHead = interface_guiBufferTail = 0;
+    else if (nwrote >= interface_outGuiBufferHead - interface_outGuiBufferTail)
+         interface_outGuiBufferHead = interface_outGuiBufferTail = 0;
     else if (nwrote)
     {
-        interface_guiBufferTail += nwrote;
-        if (interface_guiBufferTail > (interface_guiBufferSize >> 2))
+        interface_outGuiBufferTail += nwrote;
+        if (interface_outGuiBufferTail > (interface_outGuiBufferSize >> 2))
         {
-            memmove(interface_guiBuffer, interface_guiBuffer + interface_guiBufferTail,
-                interface_guiBufferHead - interface_guiBufferTail);
-            interface_guiBufferHead = interface_guiBufferHead - interface_guiBufferTail;
-            interface_guiBufferTail = 0;
+            memmove(interface_outGuiBuffer, interface_outGuiBuffer + interface_outGuiBufferTail,
+                interface_outGuiBufferHead - interface_outGuiBufferTail);
+            interface_outGuiBufferHead = interface_outGuiBufferHead - interface_outGuiBufferTail;
+            interface_outGuiBufferTail = 0;
         }
     }
     return (1);
@@ -372,29 +379,29 @@ static int sys_flushqueue(void )
 {
     const int INTERFACE_GUI_SLICE = 512;
     const int INTERFACE_GUI_BYTES = 1024;
-    int wherestop = interface_bytesSinceLastPing + INTERFACE_GUI_SLICE;
+    int wherestop = interface_outBytesSinceLastPing + INTERFACE_GUI_SLICE;
     if (wherestop + (INTERFACE_GUI_SLICE >> 1) > INTERFACE_GUI_BYTES)
         wherestop = 0x7fffffff;
-    if (interface_isWaitingForPing)
+    if (interface_outIsWaitingForPing)
         return (0);
-    if (!interface_guiQueueHead)
+    if (!interface_outGuiQueueHead)
         return (0);
     while (1)
     {
-        if (interface_bytesSinceLastPing >= INTERFACE_GUI_BYTES)
+        if (interface_outBytesSinceLastPing >= INTERFACE_GUI_BYTES)
         {
             sys_gui("::ping\n");
-            interface_bytesSinceLastPing = 0;
-            interface_isWaitingForPing = 1;
+            interface_outBytesSinceLastPing = 0;
+            interface_outIsWaitingForPing = 1;
             return (1);
         }
-        if (interface_guiQueueHead)
+        if (interface_outGuiQueueHead)
         {
-            t_guiqueue *headwas = interface_guiQueueHead;
-            interface_guiQueueHead = headwas->gq_next;
+            t_guiqueue *headwas = interface_outGuiQueueHead;
+            interface_outGuiQueueHead = headwas->gq_next;
             (*headwas->gq_fn)(headwas->gq_owner, headwas->gq_glist);
             PD_MEMORY_FREE(headwas);
-            if (interface_bytesSinceLastPing >= wherestop)
+            if (interface_outBytesSinceLastPing >= wherestop)
                 break;
         }
         else break;
@@ -411,7 +418,7 @@ static int sys_poll_togui(void) /* returns 1 if did anything */
         /* in case there is stuff still in the buffer, try to flush it. */
     sys_flushtogui();
         /* if the flush wasn't complete, wait. */
-    if (interface_guiBufferHead > interface_guiBufferTail)
+    if (interface_outGuiBufferHead > interface_outGuiBufferTail)
         return (0);
     
         /* check for queued updates */
@@ -421,21 +428,14 @@ static int sys_poll_togui(void) /* returns 1 if did anything */
     return (0);
 }
 
-    /* if some GUI object is having to do heavy computations, it can tell
-    us to back off from doing more updates by faking a big one itself. */
-void sys_pretendguibytes(int n)
-{
-    interface_bytesSinceLastPing += n;
-}
-
 void sys_queuegui(void *client, t_glist *glist, t_guifn f)
 {
     t_guiqueue **gqnextptr, *gq;
-    if (!interface_guiQueueHead)
-        gqnextptr = &interface_guiQueueHead;
+    if (!interface_outGuiQueueHead)
+        gqnextptr = &interface_outGuiQueueHead;
     else
     {
-        for (gq = interface_guiQueueHead; gq->gq_next; gq = gq->gq_next)
+        for (gq = interface_outGuiQueueHead; gq->gq_next; gq = gq->gq_next)
             if (gq->gq_owner == client)
                 return;
         if (gq->gq_owner == client)
@@ -454,15 +454,15 @@ void sys_queuegui(void *client, t_glist *glist, t_guifn f)
 void sys_unqueuegui(void *client)
 {
     t_guiqueue *gq, *gq2;
-    while (interface_guiQueueHead && interface_guiQueueHead->gq_owner == client)
+    while (interface_outGuiQueueHead && interface_outGuiQueueHead->gq_owner == client)
     {
-        gq = interface_guiQueueHead;
-        interface_guiQueueHead = interface_guiQueueHead->gq_next;
+        gq = interface_outGuiQueueHead;
+        interface_outGuiQueueHead = interface_outGuiQueueHead->gq_next;
         PD_MEMORY_FREE(gq);
     }
-    if (!interface_guiQueueHead)
+    if (!interface_outGuiQueueHead)
         return;
-    for (gq = interface_guiQueueHead; gq2 = gq->gq_next; gq = gq2)
+    for (gq = interface_outGuiQueueHead; gq2 = gq->gq_next; gq = gq2)
         if (gq2->gq_owner == client)
     {
         gq->gq_next = gq2->gq_next;
@@ -474,15 +474,6 @@ void sys_unqueuegui(void *client)
 int sys_pollgui(void)
 {
     return (interface_pollSockets(0) || sys_poll_togui());
-}
-
-void sys_init_fdpoll(void)
-{
-    if (interface_pollers)
-        return;
-    /* create an empty FD poll list */
-    interface_pollers = (t_fdpoll *)PD_MEMORY_GET(0);
-    interface_pollersSize = 0;
 }
 
 int sys_startgui(const char *libdir)
@@ -502,7 +493,9 @@ int sys_startgui(const char *libdir)
     int stdinpipe[2];
     pid_t childpid;
 #endif /* _WIN32 */
-    sys_init_fdpoll();
+
+    interface_inPollers = (t_fdpoll *)PD_MEMORY_GET(0);
+    interface_inPollersSize = 0;
 
 #ifdef _WIN32
     if (WSAStartup(version, &nobby)) PD_BUG;
@@ -514,7 +507,7 @@ int sys_startgui(const char *libdir)
         struct sockaddr_in server;
         struct hostent *hp;
 #ifdef __APPLE__
-            /* interface_guiSocket might be 1 or 2, which will have offensive results
+            /* interface_inGuiSocket might be 1 or 2, which will have offensive results
             if somebody writes to stdout or stderr - so we just open a few
             files to try to fill fds 0 through 2.  (I tried using dup()
             instead, which would seem the logical way to do this, but couldn't
@@ -529,8 +522,8 @@ int sys_startgui(const char *libdir)
             close(burnfd3);
 #endif
         /* create a socket */
-        interface_guiSocket = socket(AF_INET, SOCK_STREAM, 0);
-        if (interface_guiSocket < 0)
+        interface_inGuiSocket = socket(AF_INET, SOCK_STREAM, 0);
+        if (interface_inGuiSocket < 0)
             PD_BUG;
         
         /* connect socket using hostname provided in command line */
@@ -550,7 +543,7 @@ int sys_startgui(const char *libdir)
         server.sin_port = htons((unsigned short)main_portNumber);
 
             /* try to connect */
-        if (connect(interface_guiSocket, (struct sockaddr *) &server, sizeof (server))
+        if (connect(interface_inGuiSocket, (struct sockaddr *) &server, sizeof (server))
             < 0)
         {
             PD_BUG;
@@ -809,7 +802,7 @@ int sys_startgui(const char *libdir)
                 stupid child process (as seems to happen if jackd auto-starts
                 for us.) */
             fcntl(pipe9[1], F_SETFD, FD_CLOEXEC);
-            interface_watchdogPipe = pipe9[1];
+            interface_outWatchdogPipe = pipe9[1];
                 /* We also have to start the ping loop in the GUI;
                 this is done later when the socket is open. */
         }
@@ -842,20 +835,20 @@ int sys_startgui(const char *libdir)
             fprintf(stderr, "Waiting for connection request... \n");
         if (listen(xsock, 5) < 0) PD_BUG;
 
-        interface_guiSocket = accept(xsock, (struct sockaddr *) &server, 
+        interface_inGuiSocket = accept(xsock, (struct sockaddr *) &server, 
             (socklen_t *)&len);
 #ifdef OOPS
         interface_socketClose(xsock);
 #endif
-        if (interface_guiSocket < 0) PD_BUG;
+        if (interface_inGuiSocket < 0) PD_BUG;
         if (0)
             fprintf(stderr, "... connected\n");
-        interface_guiBufferHead = interface_guiBufferTail = 0;
+        interface_outGuiBufferHead = interface_outGuiBufferTail = 0;
     }
     if (!PD_WITH_NOGUI)
     {
         char buf[256], buf2[256];
-        interface_guiReceiver = receiver_new (NULL, interface_guiSocket, NULL, NULL, 0);
+        interface_inGuiReceiver = receiver_new (NULL, interface_inGuiSocket, NULL, NULL, 0);
 
             /* here is where we start the pinging. */
 #if defined(__linux__) || defined(__FreeBSD_kernel__)
