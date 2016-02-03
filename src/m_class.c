@@ -210,7 +210,7 @@ t_class *class_new (t_symbol *s,
     c->c_name               = s;
     c->c_helpName           = s;
     c->c_externalDirectory  = class_defaultExternalDirectory;
-    c->c_methods            = PD_MEMORY_GET (0);                 /* Allocate 1 byte of memory. */
+    c->c_methods            = (t_entry *)PD_MEMORY_GET (0);             /* Allocate 1 byte of memory. */
     c->c_methodsSize        = 0;
     c->c_methodFree         = freeMethod;
     c->c_methodBang         = class_defaultBang;

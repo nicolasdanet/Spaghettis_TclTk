@@ -204,10 +204,26 @@ void interface_socketClose (int fd)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void interface_initialize (void)
+{
+    #if !PD_WITH_NOGUI
+    
+    interface_outGuiBuffer      = (char *)PD_MEMORY_GET (INTERFACE_GUI_BUFFER_SIZE);
+    interface_outGuiBufferSize  = INTERFACE_GUI_BUFFER_SIZE;
+
+    #endif
+}
+
 void interface_release (void)
 {
-    receiver_free (interface_inGuiReceiver);
+    #if !PD_WITH_NOGUI
     
+    PD_MEMORY_FREE (interface_outGuiBuffer);
+    
+    #endif
+    
+    receiver_free (interface_inGuiReceiver);
+        
     PD_MEMORY_FREE (interface_inPollers);
 }
 
@@ -295,16 +311,7 @@ void sys_vgui(char *fmt, ...)
 
     if (PD_WITH_NOGUI)
         return;
-    if (!interface_outGuiBuffer)
-    {
-        if (!(interface_outGuiBuffer = malloc(INTERFACE_GUI_BUFFER_SIZE)))
-        {
-            fprintf(stderr, "Pd: couldn't allocate GUI buffer\n");
-            scheduler_needToExitWithError();
-        }
-        interface_outGuiBufferSize = INTERFACE_GUI_BUFFER_SIZE;
-        interface_outGuiBufferHead = interface_outGuiBufferTail = 0;
-    }
+
     if (interface_outGuiBufferHead > interface_outGuiBufferSize - (INTERFACE_GUI_BUFFER_SIZE/2))
         sys_trytogetmoreguibuf(interface_outGuiBufferSize + INTERFACE_GUI_BUFFER_SIZE);
     va_start(ap, fmt);

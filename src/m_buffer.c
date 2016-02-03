@@ -50,7 +50,7 @@ enum {
 t_buffer *buffer_new (void)
 {
     t_buffer *x = (t_buffer *)PD_MEMORY_GET (sizeof (t_buffer));
-    x->b_vector = PD_MEMORY_GET (0);
+    x->b_vector = (t_atom *)PD_MEMORY_GET (0);
     return x;
 }
 
@@ -284,7 +284,7 @@ void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int allocated)
     if (buffer_isMalformed (s, size)) { PD_BUG; return; }
     
     PD_MEMORY_FREE (x->b_vector);
-    x->b_vector = PD_MEMORY_GET (allocated * sizeof (t_atom));
+    x->b_vector = (t_atom *)PD_MEMORY_GET (allocated * sizeof (t_atom));
     a = x->b_vector;
     x->b_size = length;     /* Inconsistency corrected later. */
     
@@ -361,7 +361,7 @@ void buffer_withStringUnzeroed (t_buffer *x, char *s, int size)
 
 void buffer_toStringUnzeroed (t_buffer *x, char **s, int *size)
 {
-    char *buf = PD_MEMORY_GET (0);
+    char *buf = (char *)PD_MEMORY_GET (0);
     int i, length = 0;
 
     for (i = 0; i < x->b_size; i++) {
@@ -537,7 +537,7 @@ static t_error buffer_fromFile (t_buffer *x, char *name, char *directory)
     
     if (err) { PD_BUG; }
     else {
-        char *t = PD_MEMORY_GET ((size_t)length);
+        char *t = (char *)PD_MEMORY_GET ((size_t)length);
         err = (read (f, t, length) != length);
         if (err) { PD_BUG; } else { buffer_withStringUnzeroed (x, t, (int)length); }
         PD_MEMORY_FREE (t);

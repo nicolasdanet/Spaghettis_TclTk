@@ -182,6 +182,8 @@ int main_entry (int argc, char **argv)
     }
         
     pd_initialize();
+    interface_initialize();
+        
     preferences_load();
     sys_setSignalHandlers();
     
