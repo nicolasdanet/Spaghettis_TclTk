@@ -100,7 +100,7 @@ static void netsend_readbin(t_netsend *x, int fd)
         if (ret < 0)
             PD_BUG;
         interface_socketRemoveCallback(fd);
-        sys_closesocket(fd);
+        interface_socketClose(fd);
         if (x->x_obj.te_g.g_pd == netreceive_class)
             netreceive_notify((t_netreceive *)x, fd);
     }
@@ -216,7 +216,7 @@ static void netsend_connect(t_netsend *x, t_symbol *hostname,
     if (connect(sockfd, (struct sockaddr *) &server, sizeof (server)) < 0)
     {
         PD_BUG;
-        sys_closesocket(sockfd);
+        interface_socketClose(sockfd);
         return;
     }
     x->x_sockfd = sockfd;
@@ -237,7 +237,7 @@ static void netsend_disconnect(t_netsend *x)
     if (x->x_sockfd >= 0)
     {
         interface_socketRemoveCallback(x->x_sockfd);
-        sys_closesocket(x->x_sockfd);
+        interface_socketClose(x->x_sockfd);
         x->x_sockfd = -1;
         outlet_float(x->x_obj.te_outlet, 0);
     }
@@ -383,7 +383,7 @@ static void netreceive_closeall(t_netreceive *x)
     for (i = 0; i < x->x_nconnections; i++)
     {
         interface_socketRemoveCallback(x->x_connections[i]);
-        sys_closesocket(x->x_connections[i]);
+        interface_socketClose(x->x_connections[i]);
     }
     x->x_connections = (int *)PD_MEMORY_RESIZE(x->x_connections, 
         x->x_nconnections * sizeof(int), 0);
@@ -391,7 +391,7 @@ static void netreceive_closeall(t_netreceive *x)
     if (x->x_ns.x_sockfd >= 0)
     {
         interface_socketRemoveCallback(x->x_ns.x_sockfd);
-        sys_closesocket(x->x_ns.x_sockfd);
+        interface_socketClose(x->x_ns.x_sockfd);
     }
     x->x_ns.x_sockfd = -1;
 }
@@ -447,7 +447,7 @@ static void netreceive_listen(t_netreceive *x, t_float fportno)
     if (bind(x->x_ns.x_sockfd, (struct sockaddr *)&server, sizeof(server)) < 0)
     {
         PD_BUG;
-        sys_closesocket(x->x_ns.x_sockfd);
+        interface_socketClose(x->x_ns.x_sockfd);
         x->x_ns.x_sockfd = -1;
         return;
     }
@@ -468,7 +468,7 @@ static void netreceive_listen(t_netreceive *x, t_float fportno)
         if (listen(x->x_ns.x_sockfd, 5) < 0)
         {
             PD_BUG;
-            sys_closesocket(x->x_ns.x_sockfd);
+            interface_socketClose(x->x_ns.x_sockfd);
             x->x_ns.x_sockfd = -1;
         }
         else

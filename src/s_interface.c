@@ -30,11 +30,19 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define INTERFACE_PORT                  5400
+
 #if ( PD_LINUX || PD_BSD || PD_HURD )
-    #define INTERFACE_LOCALHOST     "127.0.0.1"
+    #define INTERFACE_LOCALHOST         "127.0.0.1"
 #else
-    #define INTERFACE_LOCALHOST     "localhost"
+    #define INTERFACE_LOCALHOST         "localhost"
 #endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define INTERFACE_GUI_BUFFER_SIZE       8192
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -45,7 +53,14 @@ typedef struct _fdpoll {
     int         fdp_fd;
     t_pollfn    fdp_fn;
     } t_fdpoll;
-    
+
+typedef struct _guiqueue {
+    void                *gq_owner;
+    t_glist             *gq_glist;
+    t_guifn             gq_fn;
+    struct _guiqueue    *gq_next;
+    } t_guiqueue;
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -61,10 +76,18 @@ t_receiver  *interface_guiReceiver;                             /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 static t_fdpoll             *interface_pollers;                 /* Shared. */
+static t_guiqueue           *interface_guiQueueHead;            /* Shared. */
+static char                 *interface_guiBuffer;               /* Shared. */
 
+static int                  interface_guiBufferSize;            /* Shared. */
+static int                  interface_guiBufferHead;            /* Shared. */
+static int                  interface_guiBufferTail;            /* Shared. */
+static int                  interface_guiSocket;                /* Shared. */
+static int                  interface_watchdogPipe;             /* Shared. */
 static int                  interface_pollersSize;              /* Shared. */
 static int                  interface_maximumFileDescriptor;    /* Shared. */
-static int                  interface_guiSocket;                /* Shared. */
+static int                  interface_isWaitingForPing;         /* Shared. */
+static int                  interface_bytesSinceLastPing;       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -118,10 +141,6 @@ void interface_socketPollNonBlocking (void)
     interface_pollSockets (0);
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void interface_socketAddCallback (int fd, t_pollfn fn, void *ptr)
 {
     int n = interface_pollersSize;
@@ -167,6 +186,15 @@ void interface_socketRemoveCallback (int fd)
     }
 }
 
+void interface_socketClose (int fd)
+{
+    #if PD_WINDOWS
+        closesocket (fd);
+    #else
+        close (fd);
+    #endif
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -180,52 +208,45 @@ void interface_release (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_closesocket(int fd)
+void interface_quit (void *dummy)
 {
-#ifdef _WIN32
-    closesocket(fd);
-#else
-    close(fd);
-#endif
+    scheduler_needToExit();
 }
 
-/* ---------------------- sending messages to the GUI ------------------ */
-#define GUI_ALLOCCHUNK 8192
-#define GUI_UPDATESLICE 512 /* how much we try to do in one idle period */
-#define GUI_BYTESPERPING 1024 /* how much we send up per ping */
-
-typedef struct _guiqueue
+void interface_ping (void *dummy)
 {
-    void *gq_client;
-    t_glist *gq_glist;
-    t_guifn gq_fn;
-    struct _guiqueue *gq_next;
-} t_guiqueue;
+    interface_isWaitingForPing = 0;
+}
 
-static t_guiqueue *sys_guiqueuehead;
-static char *sys_guibuf;
-static int sys_guibufhead;
-static int sys_guibuftail;
-static int sys_guibufsize;
-static int sys_waitingforping;
-static int sys_bytessincelastping;
+#if ( PD_LINUX || PD_BSD || PD_HURD )
+
+void interface_watchdog (void *dummy)
+{
+    if (write (interface_watchdogPipe, "\n", 1) < 1) { scheduler_needToExitWithError(); PD_BUG; }
+}
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void sys_trytogetmoreguibuf(int newsize)
 {
-    char *newbuf = realloc(sys_guibuf, newsize);
+    char *newbuf = realloc(interface_guiBuffer, newsize);
 #if 0
     static int sizewas;
     if (newsize > 70000 && sizewas < 70000)
     {
         int i;
-        for (i = sys_guibuftail; i < sys_guibufhead; i++)
-            fputc(sys_guibuf[i], stderr);
+        for (i = interface_guiBufferTail; i < interface_guiBufferHead; i++)
+            fputc(interface_guiBuffer[i], stderr);
     }
     sizewas = newsize;
 #endif
 #if 0
     fprintf(stderr, "new size %d (head %d, tail %d)\n",
-        newsize, sys_guibufhead, sys_guibuftail);
+        newsize, interface_guiBufferHead, interface_guiBufferTail);
 #endif
 
         /* if realloc fails, make a last-ditch attempt to stay alive by
@@ -233,12 +254,12 @@ static void sys_trytogetmoreguibuf(int newsize)
         this by intentionally setting newbuf to zero */
     if (!newbuf)
     {
-        int bytestowrite = sys_guibuftail - sys_guibufhead;
+        int bytestowrite = interface_guiBufferTail - interface_guiBufferHead;
         int written = 0;
         while (1)
         {
             int res = send(interface_guiSocket,
-                sys_guibuf + sys_guibuftail + written, bytestowrite, 0);
+                interface_guiBuffer + interface_guiBufferTail + written, bytestowrite, 0);
             if (res < 0)
             {
                 perror("pd output pipe");
@@ -251,12 +272,12 @@ static void sys_trytogetmoreguibuf(int newsize)
                     break;
             }
         }
-        sys_guibufhead = sys_guibuftail = 0;
+        interface_guiBufferHead = interface_guiBufferTail = 0;
     }
     else
     {
-        sys_guibufsize = newsize;
-        sys_guibuf = newbuf;
+        interface_guiBufferSize = newsize;
+        interface_guiBuffer = newbuf;
     }
 }
 
@@ -267,45 +288,45 @@ void sys_vgui(char *fmt, ...)
 
     if (PD_WITH_NOGUI)
         return;
-    if (!sys_guibuf)
+    if (!interface_guiBuffer)
     {
-        if (!(sys_guibuf = malloc(GUI_ALLOCCHUNK)))
+        if (!(interface_guiBuffer = malloc(INTERFACE_GUI_BUFFER_SIZE)))
         {
             fprintf(stderr, "Pd: couldn't allocate GUI buffer\n");
             scheduler_needToExitWithError();
         }
-        sys_guibufsize = GUI_ALLOCCHUNK;
-        sys_guibufhead = sys_guibuftail = 0;
+        interface_guiBufferSize = INTERFACE_GUI_BUFFER_SIZE;
+        interface_guiBufferHead = interface_guiBufferTail = 0;
     }
-    if (sys_guibufhead > sys_guibufsize - (GUI_ALLOCCHUNK/2))
-        sys_trytogetmoreguibuf(sys_guibufsize + GUI_ALLOCCHUNK);
+    if (interface_guiBufferHead > interface_guiBufferSize - (INTERFACE_GUI_BUFFER_SIZE/2))
+        sys_trytogetmoreguibuf(interface_guiBufferSize + INTERFACE_GUI_BUFFER_SIZE);
     va_start(ap, fmt);
-    msglen = vsnprintf(sys_guibuf + sys_guibufhead,
-        sys_guibufsize - sys_guibufhead, fmt, ap);
+    msglen = vsnprintf(interface_guiBuffer + interface_guiBufferHead,
+        interface_guiBufferSize - interface_guiBufferHead, fmt, ap);
     va_end(ap);
     if(msglen < 0) 
     {
         fprintf(stderr, "Pd: buffer space wasn't sufficient for long GUI string\n");
         return;
     }
-    if (msglen >= sys_guibufsize - sys_guibufhead)
+    if (msglen >= interface_guiBufferSize - interface_guiBufferHead)
     {
-        int msglen2, newsize = sys_guibufsize + 1 +
-            (msglen > GUI_ALLOCCHUNK ? msglen : GUI_ALLOCCHUNK);
+        int msglen2, newsize = interface_guiBufferSize + 1 +
+            (msglen > INTERFACE_GUI_BUFFER_SIZE ? msglen : INTERFACE_GUI_BUFFER_SIZE);
         sys_trytogetmoreguibuf(newsize);
 
         va_start(ap, fmt);
-        msglen2 = vsnprintf(sys_guibuf + sys_guibufhead,
-            sys_guibufsize - sys_guibufhead, fmt, ap);
+        msglen2 = vsnprintf(interface_guiBuffer + interface_guiBufferHead,
+            interface_guiBufferSize - interface_guiBufferHead, fmt, ap);
         va_end(ap);
         if (msglen2 != msglen) { PD_BUG; }
-        if (msglen >= sys_guibufsize - sys_guibufhead)
-            msglen = sys_guibufsize - sys_guibufhead;
+        if (msglen >= interface_guiBufferSize - interface_guiBufferHead)
+            msglen = interface_guiBufferSize - interface_guiBufferHead;
     }
     //if (0 /*sys_debuglevel*/ & DEBUG_MESSUP)
-    //    fprintf(stderr, "%s",  sys_guibuf + sys_guibufhead);
-    sys_guibufhead += msglen;
-    sys_bytessincelastping += msglen;
+    //    fprintf(stderr, "%s",  interface_guiBuffer + interface_guiBufferHead);
+    interface_guiBufferHead += msglen;
+    interface_bytesSinceLastPing += msglen;
 }
 
 void sys_gui(char *s)
@@ -315,9 +336,9 @@ void sys_gui(char *s)
 
 static int sys_flushtogui( void)
 {
-    int writesize = sys_guibufhead - sys_guibuftail, nwrote = 0;
+    int writesize = interface_guiBufferHead - interface_guiBufferTail, nwrote = 0;
     if (writesize > 0)
-        nwrote = send(interface_guiSocket, sys_guibuf + sys_guibuftail, writesize, 0);
+        nwrote = send(interface_guiSocket, interface_guiBuffer + interface_guiBufferTail, writesize, 0);
 
 #if 0   
     if (writesize)
@@ -331,52 +352,49 @@ static int sys_flushtogui( void)
     }
     else if (!nwrote)
         return (0);
-    else if (nwrote >= sys_guibufhead - sys_guibuftail)
-         sys_guibufhead = sys_guibuftail = 0;
+    else if (nwrote >= interface_guiBufferHead - interface_guiBufferTail)
+         interface_guiBufferHead = interface_guiBufferTail = 0;
     else if (nwrote)
     {
-        sys_guibuftail += nwrote;
-        if (sys_guibuftail > (sys_guibufsize >> 2))
+        interface_guiBufferTail += nwrote;
+        if (interface_guiBufferTail > (interface_guiBufferSize >> 2))
         {
-            memmove(sys_guibuf, sys_guibuf + sys_guibuftail,
-                sys_guibufhead - sys_guibuftail);
-            sys_guibufhead = sys_guibufhead - sys_guibuftail;
-            sys_guibuftail = 0;
+            memmove(interface_guiBuffer, interface_guiBuffer + interface_guiBufferTail,
+                interface_guiBufferHead - interface_guiBufferTail);
+            interface_guiBufferHead = interface_guiBufferHead - interface_guiBufferTail;
+            interface_guiBufferTail = 0;
         }
     }
     return (1);
 }
 
-void global_ping(void *dummy)
-{
-    sys_waitingforping = 0;
-}
-
 static int sys_flushqueue(void )
 {
-    int wherestop = sys_bytessincelastping + GUI_UPDATESLICE;
-    if (wherestop + (GUI_UPDATESLICE >> 1) > GUI_BYTESPERPING)
+    const int INTERFACE_GUI_SLICE = 512;
+    const int INTERFACE_GUI_BYTES = 1024;
+    int wherestop = interface_bytesSinceLastPing + INTERFACE_GUI_SLICE;
+    if (wherestop + (INTERFACE_GUI_SLICE >> 1) > INTERFACE_GUI_BYTES)
         wherestop = 0x7fffffff;
-    if (sys_waitingforping)
+    if (interface_isWaitingForPing)
         return (0);
-    if (!sys_guiqueuehead)
+    if (!interface_guiQueueHead)
         return (0);
     while (1)
     {
-        if (sys_bytessincelastping >= GUI_BYTESPERPING)
+        if (interface_bytesSinceLastPing >= INTERFACE_GUI_BYTES)
         {
             sys_gui("::ping\n");
-            sys_bytessincelastping = 0;
-            sys_waitingforping = 1;
+            interface_bytesSinceLastPing = 0;
+            interface_isWaitingForPing = 1;
             return (1);
         }
-        if (sys_guiqueuehead)
+        if (interface_guiQueueHead)
         {
-            t_guiqueue *headwas = sys_guiqueuehead;
-            sys_guiqueuehead = headwas->gq_next;
-            (*headwas->gq_fn)(headwas->gq_client, headwas->gq_glist);
+            t_guiqueue *headwas = interface_guiQueueHead;
+            interface_guiQueueHead = headwas->gq_next;
+            (*headwas->gq_fn)(headwas->gq_owner, headwas->gq_glist);
             PD_MEMORY_FREE(headwas);
-            if (sys_bytessincelastping >= wherestop)
+            if (interface_bytesSinceLastPing >= wherestop)
                 break;
         }
         else break;
@@ -393,7 +411,7 @@ static int sys_poll_togui(void) /* returns 1 if did anything */
         /* in case there is stuff still in the buffer, try to flush it. */
     sys_flushtogui();
         /* if the flush wasn't complete, wait. */
-    if (sys_guibufhead > sys_guibuftail)
+    if (interface_guiBufferHead > interface_guiBufferTail)
         return (0);
     
         /* check for queued updates */
@@ -407,26 +425,26 @@ static int sys_poll_togui(void) /* returns 1 if did anything */
     us to back off from doing more updates by faking a big one itself. */
 void sys_pretendguibytes(int n)
 {
-    sys_bytessincelastping += n;
+    interface_bytesSinceLastPing += n;
 }
 
 void sys_queuegui(void *client, t_glist *glist, t_guifn f)
 {
     t_guiqueue **gqnextptr, *gq;
-    if (!sys_guiqueuehead)
-        gqnextptr = &sys_guiqueuehead;
+    if (!interface_guiQueueHead)
+        gqnextptr = &interface_guiQueueHead;
     else
     {
-        for (gq = sys_guiqueuehead; gq->gq_next; gq = gq->gq_next)
-            if (gq->gq_client == client)
+        for (gq = interface_guiQueueHead; gq->gq_next; gq = gq->gq_next)
+            if (gq->gq_owner == client)
                 return;
-        if (gq->gq_client == client)
+        if (gq->gq_owner == client)
             return;
         gqnextptr = &gq->gq_next;
     }
     gq = PD_MEMORY_GET(sizeof(*gq));
     gq->gq_next = 0;
-    gq->gq_client = client;
+    gq->gq_owner = client;
     gq->gq_glist = glist;
     gq->gq_fn = f;
     gq->gq_next = 0;
@@ -436,16 +454,16 @@ void sys_queuegui(void *client, t_glist *glist, t_guifn f)
 void sys_unqueuegui(void *client)
 {
     t_guiqueue *gq, *gq2;
-    while (sys_guiqueuehead && sys_guiqueuehead->gq_client == client)
+    while (interface_guiQueueHead && interface_guiQueueHead->gq_owner == client)
     {
-        gq = sys_guiqueuehead;
-        sys_guiqueuehead = sys_guiqueuehead->gq_next;
+        gq = interface_guiQueueHead;
+        interface_guiQueueHead = interface_guiQueueHead->gq_next;
         PD_MEMORY_FREE(gq);
     }
-    if (!sys_guiqueuehead)
+    if (!interface_guiQueueHead)
         return;
-    for (gq = sys_guiqueuehead; gq2 = gq->gq_next; gq = gq2)
-        if (gq2->gq_client == client)
+    for (gq = interface_guiQueueHead; gq2 = gq->gq_next; gq = gq2)
+        if (gq2->gq_owner == client)
     {
         gq->gq_next = gq2->gq_next;
         PD_MEMORY_FREE(gq2);
@@ -467,35 +485,6 @@ void sys_init_fdpoll(void)
     interface_pollersSize = 0;
 }
 
-/* --------------------- starting up the GUI connection ------------- */
-
-static int sys_watchfd;
-
-#if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
-void global_watchdog(void *dummy)
-{
-    if (write(sys_watchfd, "\n", 1) < 1)
-    {
-        fprintf(stderr, "pd: watchdog process died\n");
-        scheduler_needToExitWithError();
-    }
-}
-#endif
-
-#define FIRSTPORTNUM 5400
-
-#define MAXFONTS 21
-static int defaultfontshit[MAXFONTS] = {
-    8, 5, 9, 
-    10, 6, 10, 
-    12, 7, 13, 
-    14, 9, 17, 
-    16, 10, 19, 
-    24, 15, 28,
-    24, 15, 28};
-    
-#define NDEFAULTFONT (sizeof(defaultfontshit)/sizeof(*defaultfontshit))
-
 int sys_startgui(const char *libdir)
 {
     char *interface_commandToLaunchGUI;
@@ -504,7 +493,7 @@ int sys_startgui(const char *libdir)
     int msgsock;
     char buf[15];
     int len = sizeof(server);
-    int ntry = 0, portno = FIRSTPORTNUM;
+    int ntry = 0, portno = INTERFACE_PORT;
     int xsock = -1, dumbo = -1;
 #ifdef _WIN32
     short version = MAKEWORD(2, 0);
@@ -820,7 +809,7 @@ int sys_startgui(const char *libdir)
                 stupid child process (as seems to happen if jackd auto-starts
                 for us.) */
             fcntl(pipe9[1], F_SETFD, FD_CLOEXEC);
-            sys_watchfd = pipe9[1];
+            interface_watchdogPipe = pipe9[1];
                 /* We also have to start the ping loop in the GUI;
                 this is done later when the socket is open. */
         }
@@ -856,12 +845,12 @@ int sys_startgui(const char *libdir)
         interface_guiSocket = accept(xsock, (struct sockaddr *) &server, 
             (socklen_t *)&len);
 #ifdef OOPS
-        sys_closesocket(xsock);
+        interface_socketClose(xsock);
 #endif
         if (interface_guiSocket < 0) PD_BUG;
         if (0)
             fprintf(stderr, "... connected\n");
-        sys_guibufhead = sys_guibuftail = 0;
+        interface_guiBufferHead = interface_guiBufferTail = 0;
     }
     if (!PD_WITH_NOGUI)
     {
@@ -886,11 +875,6 @@ int sys_startgui(const char *libdir)
         sys_vgui("set ::var(apiAudio) %d\n", sys_audioapi);
     }
     return (0);
-}
-
-void global_quit (void *dummy)
-{
-    scheduler_needToExit();
 }
 
 // -----------------------------------------------------------------------------------------------------------

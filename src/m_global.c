@@ -44,7 +44,7 @@ void global_initialize (void)
     class_addMethod (c, (t_method)buffer_openFile,          gensym ("open"), A_SYMBOL, A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)global_dsp,               gensym ("dsp"),  A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_key,               gensym ("key"),  A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)global_quit,              gensym ("quit"), A_NULL);
+    class_addMethod (c, (t_method)interface_quit,           gensym ("quit"), A_NULL);
     
     class_addMethod (c, (t_method)font_withHostMeasured,    gensym ("_font"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_audioProperties,   gensym ("_audioProperties"), A_DEFFLOAT, A_NULL);
@@ -56,13 +56,13 @@ void global_initialize (void)
     class_addMethod (c, (t_method)global_setPath,           gensym ("_path"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_pathDialog,        gensym ("_pathDialog"),      A_NULL);
     class_addMethod (c, (t_method)global_shouldQuit,        gensym ("_quit"),            A_NULL);
-    class_addMethod (c, (t_method)global_ping,              gensym ("_ping"),            A_NULL);
+    class_addMethod (c, (t_method)interface_ping,           gensym ("_ping"),            A_NULL);
     class_addMethod (c, (t_method)preferences_save,         gensym ("_savePreferences"), A_NULL);
     class_addMethod (c, (t_method)global_dummy,             gensym ("_dummy"),           A_NULL);
     
     #if PD_WITH_WATCHDOG
     
-    class_addMethod (c, (t_method)global_watchdog, gensym ("_watchdog"), A_NULL);
+    class_addMethod (c, (t_method)interface_watchdog, gensym ("_watchdog"), A_NULL);
         
     #endif
 

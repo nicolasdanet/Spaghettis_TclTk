@@ -1973,7 +1973,7 @@ void global_shouldQuit(void *dummy)
     }
     if (0)
         sys_vgui("::ui_confirm::checkAction .console { Really quit? } { ::ui_interface::pdsend pd quit } { yes }\n");
-    else global_quit(0);
+    else { interface_quit(0); }
 }
 
     /* close a window (or possibly quit Pd), checking for dirty flags.

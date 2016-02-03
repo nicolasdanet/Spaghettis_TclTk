@@ -25,7 +25,7 @@ extern t_receiver   *interface_guiReceiver;
 static void receiver_closeSocketAndRemoveCallback (t_receiver *x)
 {
     if (!x->r_isClosed) {
-        sys_closesocket (x->r_fd);
+        interface_socketClose (x->r_fd);
         interface_socketRemoveCallback (x->r_fd);
         x->r_isClosed = 1;
     }
