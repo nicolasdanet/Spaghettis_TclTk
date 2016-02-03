@@ -134,18 +134,20 @@ void pd_vMessage                        (t_pd *x, t_symbol *s, char *fmt, ...);
 void pd_performLoadbang                 (void);
 int  pd_setLoadingAbstraction           (t_symbol *s);
 
-void pd_initialize                      (void);
-void pd_release                         (void);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void pd_initialize                      (void);
 void setup_initialize                   (void);
 void object_initialize                  (void);
 void global_initialize                  (void);
 void message_initialize                 (void);
 
+void pd_release                         (void);
+void setup_release                      (void);
+void object_release                     (void);
+void global_release                     (void);
 void message_release                    (void);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -188,7 +190,7 @@ int         dollar_isPointingToDollarAndNumber          (char *s);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        class_setExternalDirectory                  (t_symbol *s);
+void        class_setDefaultExternalDirectory           (t_symbol *s);
 t_method    class_getMethod                             (t_class *c, t_symbol *s);
 int         class_hasMethod                             (t_class *c, t_symbol *s);
 int         class_hasBang                               (t_class *c);

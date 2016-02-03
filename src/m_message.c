@@ -212,7 +212,7 @@ void message_initialize (void)
     PD_ASSERT (!pd_objectMaker);
     
     pd_objectMaker = class_new (gensym ("objectmaker"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
-    pd_canvasMaker = class_new (gensym ("classmaker"),  NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
+    pd_canvasMaker = class_new (gensym ("canvasmaker"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
     
     class_addAnything (pd_objectMaker, (t_method)new_anything);
 }
@@ -221,7 +221,7 @@ void message_initialize (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int message_isStatic (t_symbol *s)
+static int message_isStaticSymbol (t_symbol *s)
 {
     t_symbol *symbols[13] = 
         { 
@@ -259,7 +259,7 @@ void message_release (void)
     
     while (sym2 = *sym1) {
         sym1 = &sym2->s_next;
-        if (!message_isStatic (sym2)) { PD_MEMORY_FREE (sym2->s_name); PD_MEMORY_FREE (sym2); }
+        if (!message_isStaticSymbol (sym2)) { PD_MEMORY_FREE (sym2->s_name); PD_MEMORY_FREE (sym2); }
     }
     //
     }

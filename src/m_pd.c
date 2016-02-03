@@ -102,7 +102,9 @@ void pd_initialize (void)
 
 void pd_release (void)
 {
-    interface_release();
+    global_release();
+    setup_release();
+    object_release();
     message_release();
     
     pdinstance_free (pd_this);

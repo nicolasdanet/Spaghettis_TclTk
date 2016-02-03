@@ -191,6 +191,7 @@ int main_entry (int argc, char **argv)
 
     if (!(err |= main_entryVersion (1))) { err |= scheduler_main(); }
 
+    interface_release();
     pd_release();
     //
     }

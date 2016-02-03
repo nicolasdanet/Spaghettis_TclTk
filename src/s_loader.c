@@ -92,7 +92,7 @@ void sys_putonloadlist(char *classname) /* add to list of loaded modules */
     /* post("put on list %s", classname); */
 }
 
-void class_setExternalDirectory(t_symbol *s);
+void class_setDefaultExternalDirectory(t_symbol *s);
 
 static int sys_do_load_lib(t_canvas *canvas, char *objectname)
 {
@@ -180,7 +180,7 @@ static int sys_do_load_lib(t_canvas *canvas, char *objectname)
     return (0);
 gotone:
     close(fd);
-    class_setExternalDirectory(gensym(dirbuf));
+    class_setDefaultExternalDirectory(gensym(dirbuf));
 
         /* rebuild the absolute pathname */
     strncpy(filename, dirbuf, PD_STRING);
@@ -211,7 +211,7 @@ gotone:
         if (!ntdll)
         {
             post("%s: couldn't load", filename);
-            class_setExternalDirectory(&s_);
+            class_setDefaultExternalDirectory(&s_);
             return (0);
         }
         makeout = (t_xxx)GetProcAddress(ntdll, symname);  
@@ -224,7 +224,7 @@ gotone:
     if (!dlobj)
     {
         post("%s: %s", filename, dlerror());
-        class_setExternalDirectory(&s_);
+        class_setDefaultExternalDirectory(&s_);
         return (0);
     }
     makeout = (t_xxx)dlsym(dlobj,  symname);
@@ -235,11 +235,11 @@ gotone:
     if (!makeout)
     {
         post("load_object: Symbol \"%s\" not found", symname);
-        class_setExternalDirectory(&s_);
+        class_setDefaultExternalDirectory(&s_);
         return 0;
     }
     (*makeout)();
-    class_setExternalDirectory(&s_);
+    class_setDefaultExternalDirectory(&s_);
     sys_putonloadlist(objectname);
     return (1);
 }

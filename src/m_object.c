@@ -456,6 +456,10 @@ void object_initialize (void)
     class_addAnything (pointerinlet_class,  (t_method)object_errorUnexpected);
 }
 
+void object_release (void)
+{
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

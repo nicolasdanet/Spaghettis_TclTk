@@ -25,7 +25,7 @@ extern t_widgetbehavior text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_symbol *class_externalDirectory = &s_;     /* Shared. */
+static t_symbol *class_defaultExternalDirectory = &s_;          /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -164,9 +164,9 @@ static void class_defaultAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void class_setExternalDirectory (t_symbol *s)
+void class_setDefaultExternalDirectory (t_symbol *s)
 {
-    class_externalDirectory = s;
+    class_defaultExternalDirectory = s;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -209,7 +209,7 @@ t_class *class_new (t_symbol *s,
     c = (t_class *)PD_MEMORY_GET (sizeof (t_class));
     c->c_name               = s;
     c->c_helpName           = s;
-    c->c_externalDirectory  = class_externalDirectory;
+    c->c_externalDirectory  = class_defaultExternalDirectory;
     c->c_methods            = PD_MEMORY_GET (0);                 /* Allocate 1 byte of memory. */
     c->c_methodsSize        = 0;
     c->c_methodFree         = freeMethod;
