@@ -94,6 +94,7 @@ void pd_initialize (void)
     pd_this = pdinstance_new();
     
     message_initialize();
+    bindlist_initialize();
     object_initialize();
     setup_initialize();
     global_initialize();
@@ -105,6 +106,7 @@ void pd_release (void)
     global_release();
     setup_release();
     object_release();
+    bindlist_release();
     message_release();
     
     pdinstance_free (pd_this);

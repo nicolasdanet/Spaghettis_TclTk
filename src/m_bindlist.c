@@ -61,7 +61,7 @@ static void bindlist_anything (t_bindlist *x, t_symbol *s, int argc, t_atom *arg
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void bindlist_setup (void)
+void bindlist_initialize (void)
 {
     bindlist_class = class_new (gensym ("bindlist"), NULL, NULL, sizeof (t_bindlist), CLASS_PURE, 0);
     
@@ -71,6 +71,10 @@ void bindlist_setup (void)
     class_addPointer (bindlist_class,   (t_method)bindlist_pointer);
     class_addList (bindlist_class,      (t_method)bindlist_list);
     class_addAnything (bindlist_class,  (t_method)bindlist_anything);
+}
+
+void bindlist_release (void)
+{
 }
 
 // -----------------------------------------------------------------------------------------------------------

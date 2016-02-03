@@ -143,12 +143,14 @@ void setup_initialize                   (void);
 void object_initialize                  (void);
 void global_initialize                  (void);
 void message_initialize                 (void);
+void bindlist_initialize                (void);
 
 void pd_release                         (void);
 void setup_release                      (void);
 void object_release                     (void);
 void global_release                     (void);
 void message_release                    (void);
+void bindlist_release                   (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
