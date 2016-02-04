@@ -381,7 +381,7 @@ void sys_vGui (char *format, ...)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int interface_flushGui (void)
+static int interface_flushBuffer (void)
 {
     size_t need = interface_outGuiBufferHead - interface_outGuiBufferTail;
     
@@ -410,6 +410,7 @@ static int interface_flushQueue (void)
 {
     const int INTERFACE_GUI_SLICE = 512;
     const int INTERFACE_GUI_BYTES = 1024;
+    
     int wherestop = interface_outBytesSinceLastPing + INTERFACE_GUI_SLICE;
     if (wherestop + (INTERFACE_GUI_SLICE >> 1) > INTERFACE_GUI_BYTES)
         wherestop = 0x7fffffff;
@@ -437,22 +438,18 @@ static int interface_flushQueue (void)
         }
         else break;
     }
-    interface_flushGui();
+
     return (1);
 }
 
-static int interface_flushGuiAndQueue (void)
+static int interface_flushBufferAndQueue (void)
 {
-    interface_flushGui();
+    int didSomething = 0;
+    
+    didSomething |= interface_flushQueue();
+    didSomething |= interface_flushBuffer();
 
-    if (interface_outGuiBufferHead > interface_outGuiBufferTail)
-        return (0);
-    
-        /* check for queued updates */
-    if (interface_flushQueue())
-        return (1);
-    
-    return (0);
+    return didSomething;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -470,7 +467,7 @@ int interface_pollSocketsOrFlushGui (void)
 
 int interface_pollSocketsOrFlushGui (void)
 {
-    return (interface_socketPollNonBlocking() || interface_flushGuiAndQueue());
+    return (interface_socketPollNonBlocking() || interface_flushBufferAndQueue());
 }
 
 #endif
