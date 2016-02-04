@@ -106,7 +106,7 @@ void gfxstub_deleteforkey(void *key)
         {
             if (y->x_key == key)
             {
-                sys_vgui("destroy .gfxstub%lx\n", y);
+                sys_vGui("destroy .gfxstub%lx\n", y);
                 y->x_owner = 0;
                 gfxstub_offlist(y);
                 didit = 1;
@@ -202,7 +202,7 @@ static void *openpanel_new( void)
 static void openpanel_symbol(t_openpanel *x, t_symbol *s)
 {
     char *path = (s && s->s_name) ? s->s_name : "\"\"";
-    sys_vgui("::ui_file::openPanel {%s} {%s}\n", x->x_s->s_name, path);
+    sys_vGui("::ui_file::openPanel {%s} {%s}\n", x->x_s->s_name, path);
 }
 
 static void openpanel_bang(t_openpanel *x)
@@ -258,7 +258,7 @@ static void *savepanel_new( void)
 static void savepanel_symbol(t_savepanel *x, t_symbol *s)
 {
     char *path = (s && s->s_name) ? s->s_name : "\"\"";
-    sys_vgui("::ui_file::savePanel {%s} {%s}\n", x->x_s->s_name, path);
+    sys_vGui("::ui_file::savePanel {%s} {%s}\n", x->x_s->s_name, path);
 }
 
 static void savepanel_bang(t_savepanel *x)

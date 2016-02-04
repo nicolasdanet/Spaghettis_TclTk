@@ -42,7 +42,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define INTERFACE_GUI_BUFFER_SIZE           8192
+#define INTERFACE_GUI_BUFFER_START_SIZE     32768
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -132,6 +132,14 @@ static int interface_pollSockets (int microseconds)
     return didSomething;
 }
 
+static void interface_increaseGuiBuffer()
+{
+    int oldSize = interface_outGuiBufferSize;
+    int newSize = oldSize * 2;
+    interface_outGuiBuffer = PD_MEMORY_RESIZE (interface_outGuiBuffer, oldSize, newSize);
+    interface_outGuiBufferSize = newSize;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -208,8 +216,8 @@ void interface_initialize (void)
 {
     #if !PD_WITH_NOGUI
     
-    interface_outGuiBuffer      = (char *)PD_MEMORY_GET (INTERFACE_GUI_BUFFER_SIZE);
-    interface_outGuiBufferSize  = INTERFACE_GUI_BUFFER_SIZE;
+    interface_outGuiBuffer      = (char *)PD_MEMORY_GET (INTERFACE_GUI_BUFFER_START_SIZE);
+    interface_outGuiBufferSize  = INTERFACE_GUI_BUFFER_START_SIZE;
 
     #endif
 }
@@ -254,99 +262,60 @@ void interface_watchdog (void *dummy)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void sys_trytogetmoreguibuf(int newsize)
-{
-    char *newbuf = realloc(interface_outGuiBuffer, newsize);
-#if 0
-    static int sizewas;
-    if (newsize > 70000 && sizewas < 70000)
-    {
-        int i;
-        for (i = interface_outGuiBufferTail; i < interface_outGuiBufferHead; i++)
-            fputc(interface_outGuiBuffer[i], stderr);
-    }
-    sizewas = newsize;
-#endif
-#if 0
-    fprintf(stderr, "new size %d (head %d, tail %d)\n",
-        newsize, interface_outGuiBufferHead, interface_outGuiBufferTail);
-#endif
+#if PD_WITH_NOGUI
 
-        /* if realloc fails, make a last-ditch attempt to stay alive by
-        synchronously writing out the existing contents.  LATER test
-        this by intentionally setting newbuf to zero */
-    if (!newbuf)
-    {
-        int bytestowrite = interface_outGuiBufferTail - interface_outGuiBufferHead;
-        int written = 0;
-        while (1)
-        {
-            int res = send(interface_inGuiSocket,
-                interface_outGuiBuffer + interface_outGuiBufferTail + written, bytestowrite, 0);
-            if (res < 0)
-            {
-                perror("pd output pipe");
-                scheduler_needToExitWithError();
-            }
-            else
-            {
-                written += res;
-                if (written >= bytestowrite)
-                    break;
-            }
-        }
-        interface_outGuiBufferHead = interface_outGuiBufferTail = 0;
-    }
-    else
-    {
-        interface_outGuiBufferSize = newsize;
-        interface_outGuiBuffer = newbuf;
-    }
+void sys_gui (char *s)
+{
 }
 
-void sys_vgui(char *fmt, ...)
+void sys_vGui (char *fmt, ...)
 {
-    int msglen, bytesleft, headwas, nwrote;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#else
+
+void sys_gui (char *s)
+{
+    sys_vGui ("%s", s);
+}
+
+void sys_vGui (char *format, ...)
+{
+    int bufferWasTooSmall = 1;
+    
+    do {
+    //
+    int t;
+    size_t size;
+    char *dest = NULL;
     va_list ap;
-
-    if (PD_WITH_NOGUI)
-        return;
-
-    if (interface_outGuiBufferHead > interface_outGuiBufferSize - (INTERFACE_GUI_BUFFER_SIZE/2))
-        sys_trytogetmoreguibuf(interface_outGuiBufferSize + INTERFACE_GUI_BUFFER_SIZE);
-    va_start(ap, fmt);
-    msglen = vsnprintf(interface_outGuiBuffer + interface_outGuiBufferHead,
-        interface_outGuiBufferSize - interface_outGuiBufferHead, fmt, ap);
-    va_end(ap);
-    if(msglen < 0) 
-    {
-        fprintf(stderr, "Pd: buffer space wasn't sufficient for long GUI string\n");
-        return;
+    
+    va_start (ap, format);
+    dest = interface_outGuiBuffer + interface_outGuiBufferHead;
+    size = interface_outGuiBufferSize - interface_outGuiBufferHead;
+    t = vsnprintf (dest, size, format, ap);
+    va_end (ap);
+    
+    if (t < 0) { PD_BUG; return; }
+    
+    if ((size_t)t >= size) { interface_increaseGuiBuffer(); }
+    else {
+        bufferWasTooSmall = 0;
+        interface_outGuiBufferHead += t;
+        interface_outBytesSinceLastPing += t;
     }
-    if (msglen >= interface_outGuiBufferSize - interface_outGuiBufferHead)
-    {
-        int msglen2, newsize = interface_outGuiBufferSize + 1 +
-            (msglen > INTERFACE_GUI_BUFFER_SIZE ? msglen : INTERFACE_GUI_BUFFER_SIZE);
-        sys_trytogetmoreguibuf(newsize);
-
-        va_start(ap, fmt);
-        msglen2 = vsnprintf(interface_outGuiBuffer + interface_outGuiBufferHead,
-            interface_outGuiBufferSize - interface_outGuiBufferHead, fmt, ap);
-        va_end(ap);
-        if (msglen2 != msglen) { PD_BUG; }
-        if (msglen >= interface_outGuiBufferSize - interface_outGuiBufferHead)
-            msglen = interface_outGuiBufferSize - interface_outGuiBufferHead;
-    }
-    //if (0 /*sys_debuglevel*/ & DEBUG_MESSUP)
-    //    fprintf(stderr, "%s",  interface_outGuiBuffer + interface_outGuiBufferHead);
-    interface_outGuiBufferHead += msglen;
-    interface_outBytesSinceLastPing += msglen;
+    //
+    } while (bufferWasTooSmall);
 }
 
-void sys_gui(char *s)
-{
-    sys_vgui("%s", s);
-}
+#endif // PD_WITH_NOGUI
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static int sys_flushtogui( void)
 {
@@ -868,11 +837,11 @@ int sys_startgui(const char *libdir)
         sys_set_extrapath();
         sys_set_startup();
                            /* ... and about font, medio APIS, etc */
-        sys_vgui("::initialize %s %s\n",
+        sys_vGui("::initialize %s %s\n",
                  buf, buf2); 
                  /* */
                  /* */
-        sys_vgui("set ::var(apiAudio) %d\n", sys_audioapi);
+        sys_vGui("set ::var(apiAudio) %d\n", sys_audioapi);
     }
     return (0);
 }

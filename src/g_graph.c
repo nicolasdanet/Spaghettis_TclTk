@@ -651,7 +651,7 @@ void glist_redraw(t_glist *x)
                 /* redraw all the lines */
             linetraverser_start(&t, x);
             while (oc = linetraverser_next(&t))
-                sys_vgui(".x%lx.c coords l%lx %d %d %d %d\n",
+                sys_vGui(".x%lx.c coords l%lx %d %d %d %d\n",
                     glist_getcanvas(x), oc,
                         t.tr_lx1, t.tr_ly1, t.tr_lx2, t.tr_ly2);
             canvas_drawredrect(x, 0);
@@ -705,14 +705,14 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
     {
         if (vis)
         {
-            sys_vgui(".x%lx.c create polygon\
+            sys_vGui(".x%lx.c create polygon\
  %d %d %d %d %d %d %d %d %d %d -tags [list %s graph] -fill #c0c0c0\n",
                 glist_getcanvas(x->gl_owner),
                 x1, y1, x1, y2, x2, y2, x2, y1, x1, y1, tag);
         }
         else
         {
-            sys_vgui(".x%lx.c delete %s\n",
+            sys_vGui(".x%lx.c delete %s\n",
                 glist_getcanvas(x->gl_owner), tag);
         }
         return;
@@ -731,7 +731,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             (x->gl_xlabely > 0.5*(x->gl_y1 + x->gl_y2) ? "s" : "n");
             
             /* draw a rectangle around the graph */
-        sys_vgui(".x%lx.c create line\
+        sys_vGui(".x%lx.c create line\
             %d %d %d %d %d %d %d %d %d %d -tags [list %s graph]\n",
             glist_getcanvas(x->gl_owner),
             x1, y1, x1, y2, x2, y2, x2, y1, x1, y1, tag);
@@ -743,7 +743,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
                 !garray_getname((t_garray *)g, &arrayname))
         {
             i -= font_getHostFontHeight(glist_getfont(x));
-            sys_vgui(".x%lx.c create text %d %d -text {%s} -anchor nw\
+            sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor nw\
              -font [::getFont %d] -tags [list %s label graph]\n",
              (long)glist_getcanvas(x), x1, i, arrayname->s_name,
                 font_getHostFontSize(glist_getfont(x)), tag);
@@ -762,11 +762,11 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
                     f += x->gl_xtick.k_inc)
             {
                 int tickpix = (i % x->gl_xtick.k_lperb ? 2 : 4);
-                sys_vgui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
+                sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     glist_getcanvas(x->gl_owner),
                     (int)glist_xtopixels(x, f), (int)upix,
                     (int)glist_xtopixels(x, f), (int)upix - tickpix, tag);
-                sys_vgui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
+                sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     glist_getcanvas(x->gl_owner),
                     (int)glist_xtopixels(x, f), (int)lpix,
                     (int)glist_xtopixels(x, f), (int)lpix + tickpix, tag);
@@ -776,11 +776,11 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
                     i++, f -= x->gl_xtick.k_inc)
             {
                 int tickpix = (i % x->gl_xtick.k_lperb ? 2 : 4);
-                sys_vgui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
+                sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     glist_getcanvas(x->gl_owner),
                     (int)glist_xtopixels(x, f), (int)upix,
                     (int)glist_xtopixels(x, f), (int)upix - tickpix, tag);
-                sys_vgui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
+                sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     glist_getcanvas(x->gl_owner),
                     (int)glist_xtopixels(x, f), (int)lpix,
                     (int)glist_xtopixels(x, f), (int)lpix + tickpix, tag);
@@ -799,11 +799,11 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
                     i++, f += x->gl_ytick.k_inc)
             {
                 int tickpix = (i % x->gl_ytick.k_lperb ? 2 : 4);
-                sys_vgui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
+                sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     glist_getcanvas(x->gl_owner),
                     x1, (int)glist_ytopixels(x, f), 
                     x1 + tickpix, (int)glist_ytopixels(x, f), tag);
-                sys_vgui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
+                sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     glist_getcanvas(x->gl_owner),
                     x2, (int)glist_ytopixels(x, f), 
                     x2 - tickpix, (int)glist_ytopixels(x, f), tag);
@@ -813,11 +813,11 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
                     i++, f -= x->gl_ytick.k_inc)
             {
                 int tickpix = (i % x->gl_ytick.k_lperb ? 2 : 4);
-                sys_vgui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
+                sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     glist_getcanvas(x->gl_owner),
                     x1, (int)glist_ytopixels(x, f), 
                     x1 + tickpix, (int)glist_ytopixels(x, f), tag);
-                sys_vgui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
+                sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
                     glist_getcanvas(x->gl_owner),
                     x2, (int)glist_ytopixels(x, f), 
                     x2 - tickpix, (int)glist_ytopixels(x, f), tag);
@@ -825,7 +825,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         }
             /* draw x labels */
         for (i = 0; i < x->gl_nxlabels; i++)
-            sys_vgui(".x%lx.c create text\
+            sys_vGui(".x%lx.c create text\
  %d %d -text {%s} -font [::getFont %d] -anchor %s -tags [list %s label graph]\n",
                 glist_getcanvas(x),
                 (int)glist_xtopixels(x, atof(x->gl_xlabel[i]->s_name)),
@@ -835,7 +835,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
 
             /* draw y labels */
         for (i = 0; i < x->gl_nylabels; i++)
-            sys_vgui(".x%lx.c create text\
+            sys_vGui(".x%lx.c create text\
  %d %d -text {%s} -font [::getFont %d] -anchor %s -tags [list %s label graph]\n",
                 glist_getcanvas(x),
                 (int)glist_xtopixels(x, x->gl_ylabelx),
@@ -849,7 +849,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
     }
     else
     {
-        sys_vgui(".x%lx.c delete %s\n",
+        sys_vGui(".x%lx.c delete %s\n",
             glist_getcanvas(x->gl_owner), tag);
         for (g = x->gl_list; g; g = g->g_next)
             gobj_vis(g, x, 0);
@@ -954,9 +954,9 @@ static void graph_select(t_gobj *z, t_glist *glist, int state)
         t_rtext *y = glist_findrtext(glist, &x->gl_obj);
         if (canvas_showtext(x))
             rtext_select(y, state);
-        sys_vgui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 
+        sys_vGui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 
         rtext_gettag(y), (state? "blue" : "black"));
-        sys_vgui(".x%lx.c itemconfigure graph%lx -fill %s\n",
+        sys_vGui(".x%lx.c itemconfigure graph%lx -fill %s\n",
             glist_getcanvas(glist), z, (state? "blue" : "black"));
     }
 }

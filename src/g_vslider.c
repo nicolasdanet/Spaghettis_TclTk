@@ -45,7 +45,7 @@ static void vslider_draw_update(t_gobj *client, t_glist *glist)
             (x->x_val + 50)/100;
         int xpos=text_xpix(&x->x_gui.x_obj, glist);
 
-        sys_vgui(".x%lx.c coords %lxKNOB %d %d %d %d\n",
+        sys_vGui(".x%lx.c coords %lxKNOB %d %d %d %d\n",
                  glist_getcanvas(glist), x, xpos+1, r,
                  xpos + x->x_gui.x_w, r);
     }
@@ -58,27 +58,27 @@ static void vslider_draw_new(t_vslider *x, t_glist *glist)
     int r = ypos + x->x_gui.x_h - (x->x_val + 50)/100;
     t_canvas *canvas=glist_getcanvas(glist);
 
-    sys_vgui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
+    sys_vGui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
              canvas, xpos, ypos-2,
              xpos + x->x_gui.x_w, ypos + x->x_gui.x_h+3,
              x->x_gui.x_bcol, x);
-    sys_vgui(".x%lx.c create line %d %d %d %d -width 3 -fill #%6.6x -tags %lxKNOB\n",
+    sys_vGui(".x%lx.c create line %d %d %d %d -width 3 -fill #%6.6x -tags %lxKNOB\n",
              canvas, xpos+1, r,
              xpos + x->x_gui.x_w, r, x->x_gui.x_fcol, x);
-    sys_vgui(".x%lx.c create text %d %d -text {%s} -anchor w \
+    sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor w \
              -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",
              canvas, xpos+x->x_gui.x_ldx, ypos+x->x_gui.x_ldy,
              strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"",
              x->x_gui.x_fontsize,
              x->x_gui.x_lcol, x);
 
-        /*sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
+        /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
              canvas,
              xpos, ypos + x->x_gui.x_h+2,
              xpos+7, ypos + x->x_gui.x_h+3,
              x, 0);
 
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
+        sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
              canvas,
              xpos, ypos-2,
              xpos+7, ypos-1,
@@ -92,20 +92,20 @@ static void vslider_draw_move(t_vslider *x, t_glist *glist)
     int r = ypos + x->x_gui.x_h - (x->x_val + 50)/100;
     t_canvas *canvas=glist_getcanvas(glist);
 
-    sys_vgui(".x%lx.c coords %lxBASE %d %d %d %d\n",
+    sys_vGui(".x%lx.c coords %lxBASE %d %d %d %d\n",
              canvas, x,
              xpos, ypos-2,
              xpos + x->x_gui.x_w, ypos + x->x_gui.x_h+3);
-    sys_vgui(".x%lx.c coords %lxKNOB %d %d %d %d\n",
+    sys_vGui(".x%lx.c coords %lxKNOB %d %d %d %d\n",
              canvas, x, xpos+1, r,
              xpos + x->x_gui.x_w, r);
-    sys_vgui(".x%lx.c coords %lxLABEL %d %d\n",
+    sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
              canvas, x, xpos+x->x_gui.x_ldx, ypos+x->x_gui.x_ldy);
-    /*sys_vgui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
+    /*sys_vGui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
              canvas, x, 0,
              xpos, ypos + x->x_gui.x_h+2,
              xpos+7, ypos + x->x_gui.x_h+3);
-    sys_vgui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
+    sys_vGui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
              canvas, x, 0,
              xpos, ypos-2,
              xpos+7, ypos-1);*/
@@ -115,24 +115,24 @@ static void vslider_draw_erase(t_vslider* x,t_glist* glist)
 {
     t_canvas *canvas=glist_getcanvas(glist);
 
-    sys_vgui(".x%lx.c delete %lxBASE\n", canvas, x);
-    sys_vgui(".x%lx.c delete %lxKNOB\n", canvas, x);
-    sys_vgui(".x%lx.c delete %lxLABEL\n", canvas, x);
-    //sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    //sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+    sys_vGui(".x%lx.c delete %lxBASE\n", canvas, x);
+    sys_vGui(".x%lx.c delete %lxKNOB\n", canvas, x);
+    sys_vGui(".x%lx.c delete %lxLABEL\n", canvas, x);
+    //sys_vGui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
+    //sys_vGui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
 }
 
 static void vslider_draw_config(t_vslider* x,t_glist* glist)
 {
     t_canvas *canvas=glist_getcanvas(glist);
 
-    sys_vgui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
+    sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
              canvas, x, x->x_gui.x_fontsize, 
              x->x_gui.x_fsf.x_selected?IEM_COLOR_SELECTED:x->x_gui.x_lcol,
              strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"");
-    sys_vgui(".x%lx.c itemconfigure %lxKNOB -fill #%6.6x\n", canvas,
+    sys_vGui(".x%lx.c itemconfigure %lxKNOB -fill #%6.6x\n", canvas,
              x, x->x_gui.x_fcol);
-    sys_vgui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas,
+    sys_vGui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas,
              x, x->x_gui.x_bcol);
 }
 
@@ -142,12 +142,12 @@ static void vslider_draw_io(t_vslider* x,t_glist* glist)
     int ypos=text_ypix(&x->x_gui.x_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
-    /*sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
+    /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
         canvas,
         xpos, ypos + x->x_gui.x_h+2,
         xpos+7, ypos + x->x_gui.x_h+3,
         x, 0);
-    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
+    sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
         canvas,
         xpos, ypos-2,
         xpos+7, ypos-1,
@@ -160,13 +160,13 @@ static void vslider_draw_select(t_vslider *x, t_glist *glist)
 
     if(x->x_gui.x_fsf.x_selected)
     {
-        sys_vgui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
-        sys_vgui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
+        sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
+        sys_vGui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
     }
     else
     {
-        sys_vgui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_NORMAL);
-        sys_vgui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, x->x_gui.x_lcol);
+        sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_NORMAL);
+        sys_vGui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, x->x_gui.x_lcol);
     }
 }
 

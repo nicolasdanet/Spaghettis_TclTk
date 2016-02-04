@@ -82,7 +82,7 @@ static void vu_update_rms(t_vu *x, t_glist *glist)
         int w4=x->x_gui.x_w/4, off=text_ypix(&x->x_gui.x_obj, glist)-1;
         int xpos=text_xpix(&x->x_gui.x_obj, glist), quad1=xpos+w4+1, quad3=xpos+x->x_gui.x_w-w4-1;
 
-        sys_vgui(".x%lx.c coords %lxRCOVER %d %d %d %d\n",
+        sys_vGui(".x%lx.c coords %lxRCOVER %d %d %d %d\n",
                  glist_getcanvas(glist), x, quad1, off, quad3,
                  off + (x->x_led_size+1)*(IEM_VUMETER_STEPS-x->x_rms));
     }
@@ -103,19 +103,19 @@ static void vu_update_peak(t_vu *x, t_glist *glist)
             int j=ypos + (x->x_led_size+1)*(IEM_VUMETER_STEPS+1-x->x_peak)
                 - (x->x_led_size+1)/2;
 
-            sys_vgui(".x%lx.c coords %lxPLED %d %d %d %d\n", canvas, x,
+            sys_vGui(".x%lx.c coords %lxPLED %d %d %d %d\n", canvas, x,
                      xpos, j,
                      xpos+x->x_gui.x_w+1, j);
-            sys_vgui(".x%lx.c itemconfigure %lxPLED -fill #%6.6x\n", canvas, x,
+            sys_vGui(".x%lx.c itemconfigure %lxPLED -fill #%6.6x\n", canvas, x,
                      iem_color_hex[i]);
         }
         else
         {
             int mid=xpos+x->x_gui.x_w/2;
 
-            sys_vgui(".x%lx.c itemconfigure %lxPLED -fill #%6.6x\n",
+            sys_vGui(".x%lx.c itemconfigure %lxPLED -fill #%6.6x\n",
                      canvas, x, x->x_gui.x_bcol);
-            sys_vgui(".x%lx.c coords %lxPLED %d %d %d %d\n",
+            sys_vGui(".x%lx.c coords %lxPLED %d %d %d %d\n",
                      canvas, x, mid, ypos+20,
                      mid, ypos+20);
         }
@@ -150,7 +150,7 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
     int k1=x->x_led_size+1, k2=IEM_VUMETER_STEPS+1, k3=k1/2;
     int led_col, yyy, i, k4=ypos-k3;
 
-    sys_vgui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
+    sys_vGui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
              canvas, xpos-1, ypos-2,
              xpos+x->x_gui.x_w+1,
              ypos+x->x_gui.x_h+2, x->x_gui.x_bcol, x);
@@ -158,7 +158,7 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
     {
         led_col = iem_vu_col[i];
         yyy = k4 + k1*(k2-i);
-        sys_vgui(".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxRLED%d\n",
+        sys_vGui(".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxRLED%d\n",
                  canvas, quad1, yyy, quad3, yyy, x->x_led_size, iem_color_hex[led_col], x, i);
     }
     if(x->x_scale)
@@ -166,36 +166,36 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
         i=IEM_VUMETER_STEPS+1;
         yyy = k4 + k1*(k2-i);
     }
-    sys_vgui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxRCOVER\n",
+    sys_vGui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxRCOVER\n",
              canvas, quad1, ypos-1, quad3-1,
              ypos-1 + k1*IEM_VUMETER_STEPS, x->x_gui.x_bcol, x->x_gui.x_bcol, x);
-    sys_vgui(".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxPLED\n",
+    sys_vGui(".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxPLED\n",
              canvas, mid, ypos+10,
              mid, ypos+10, x->x_led_size, x->x_gui.x_bcol, x);
-    sys_vgui(".x%lx.c create text %d %d -text {%s} -anchor w \
+    sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor w \
              -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",
              canvas, xpos+x->x_gui.x_ldx, ypos+x->x_gui.x_ldy,
              strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"",
              x->x_gui.x_fontsize,
              x->x_gui.x_lcol, x);
 
-        /*sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
+        /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
              canvas,
              xpos-1, ypos + x->x_gui.x_h+1,
              xpos + INLETS_WIDTH-1, ypos + x->x_gui.x_h+2,
              x, 0);
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]x\n",
+        sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]x\n",
              canvas,
              xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos + x->x_gui.x_h+1,
              xpos+x->x_gui.x_w+1, ypos + x->x_gui.x_h+2,
              x, 1);
 
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
+        sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
              canvas,
              xpos-1, ypos-2,
              xpos + INLETS_WIDTH-1, ypos-1,
              x, 0);
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
+        sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
              canvas,
              xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos-2,
              xpos+x->x_gui.x_w+1, ypos-1,
@@ -218,43 +218,43 @@ static void vu_draw_move(t_vu *x, t_glist *glist)
     int k1=x->x_led_size+1, k2=IEM_VUMETER_STEPS+1, k3=k1/2;
     int yyy, i, k4=ypos-k3;
 
-    sys_vgui(".x%lx.c coords %lxBASE %d %d %d %d\n",
+    sys_vGui(".x%lx.c coords %lxBASE %d %d %d %d\n",
              canvas, x, xpos-1, ypos-2,
              xpos+x->x_gui.x_w+1,ypos+x->x_gui.x_h+2);
     for(i=1; i<=IEM_VUMETER_STEPS; i++)
     {
         yyy = k4 + k1*(k2-i);
-        sys_vgui(".x%lx.c coords %lxRLED%d %d %d %d %d\n",
+        sys_vGui(".x%lx.c coords %lxRLED%d %d %d %d %d\n",
                  canvas, x, i, quad1, yyy, quad3, yyy);
         /*if(((i+2)&3) && (x->x_scale))*/
-            /*sys_vgui(".x%lx.c coords %lxSCALE%d %d %d\n",
+            /*sys_vGui(".x%lx.c coords %lxSCALE%d %d %d\n",
                      canvas, x, i, end, yyy+k3);*/
     }
     if(x->x_scale)
     {
         i=IEM_VUMETER_STEPS+1;
         yyy = k4 + k1*(k2-i);
-        /*sys_vgui(".x%lx.c coords %lxSCALE%d %d %d\n",
+        /*sys_vGui(".x%lx.c coords %lxSCALE%d %d %d\n",
                  canvas, x, i, end, yyy+k3);*/
     }
     x->x_updaterms = x->x_updatepeak = 1;
     sys_queuegui(x, glist, vu_draw_update);
-    sys_vgui(".x%lx.c coords %lxLABEL %d %d\n",
+    sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
              canvas, x, xpos+x->x_gui.x_ldx,
              ypos+x->x_gui.x_ldy);
-    /*sys_vgui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
+    /*sys_vGui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
              canvas, x, 0,
              xpos-1, ypos + x->x_gui.x_h+1,
              xpos + INLETS_WIDTH-1, ypos + x->x_gui.x_h+2);
-    sys_vgui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
+    sys_vGui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
              canvas, x, 1,
              xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos + x->x_gui.x_h+1,
                  xpos+x->x_gui.x_w+1, ypos + x->x_gui.x_h+2);
-    sys_vgui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
+    sys_vGui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
              canvas, x, 0,
              xpos-1, ypos-2,
              xpos + INLETS_WIDTH-1, ypos-1);
-    sys_vgui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
+    sys_vGui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
              canvas, x, 1,
              xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos-2,
              xpos+x->x_gui.x_w+1, ypos-1);*/
@@ -265,25 +265,25 @@ static void vu_draw_erase(t_vu* x,t_glist* glist)
     int i;
     t_canvas *canvas=glist_getcanvas(glist);
 
-    sys_vgui(".x%lx.c delete %lxBASE\n", canvas, x);
+    sys_vGui(".x%lx.c delete %lxBASE\n", canvas, x);
     for(i=1; i<=IEM_VUMETER_STEPS; i++)
     {
-        sys_vgui(".x%lx.c delete %lxRLED%d\n", canvas, x, i);
+        sys_vGui(".x%lx.c delete %lxRLED%d\n", canvas, x, i);
         /*if(((i+2)&3) && (x->x_scale))
-            sys_vgui(".x%lx.c delete %lxSCALE%d\n", canvas, x, i);*/
+            sys_vGui(".x%lx.c delete %lxSCALE%d\n", canvas, x, i);*/
     }
     if(x->x_scale)
     {
         i=IEM_VUMETER_STEPS+1;
-        /*sys_vgui(".x%lx.c delete %lxSCALE%d\n", canvas, x, i);*/
+        /*sys_vGui(".x%lx.c delete %lxSCALE%d\n", canvas, x, i);*/
     }
-    sys_vgui(".x%lx.c delete %lxPLED\n", canvas, x);
-    sys_vgui(".x%lx.c delete %lxRCOVER\n", canvas, x);
-    sys_vgui(".x%lx.c delete %lxLABEL\n", canvas, x);
-    //sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    //sys_vgui(".x%lx.c delete %lxOUT%d\n", canvas, x, 1);
-    //sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
-    //sys_vgui(".x%lx.c delete %lxIN%d\n", canvas, x, 1);
+    sys_vGui(".x%lx.c delete %lxPLED\n", canvas, x);
+    sys_vGui(".x%lx.c delete %lxRCOVER\n", canvas, x);
+    sys_vGui(".x%lx.c delete %lxLABEL\n", canvas, x);
+    //sys_vGui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
+    //sys_vGui(".x%lx.c delete %lxOUT%d\n", canvas, x, 1);
+    //sys_vGui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+    //sys_vGui(".x%lx.c delete %lxIN%d\n", canvas, x, 1);
 
 }
 
@@ -292,24 +292,24 @@ static void vu_draw_config(t_vu* x, t_glist* glist)
     int i;
     t_canvas *canvas=glist_getcanvas(glist);
 
-    sys_vgui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas, x, x->x_gui.x_bcol);
+    sys_vGui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas, x, x->x_gui.x_bcol);
     for(i=1; i<=IEM_VUMETER_STEPS; i++)
     {
-        sys_vgui(".x%lx.c itemconfigure %lxRLED%d -width %d\n", canvas, x, i,
+        sys_vGui(".x%lx.c itemconfigure %lxRLED%d -width %d\n", canvas, x, i,
                  x->x_led_size);
     }
     if(x->x_scale)
     {
         i=IEM_VUMETER_STEPS+1;
     }
-    sys_vgui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
+    sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
              canvas, x, x->x_gui.x_fontsize,
              x->x_gui.x_fsf.x_selected?IEM_COLOR_SELECTED:x->x_gui.x_lcol,
              strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"");
 
-    sys_vgui(".x%lx.c itemconfigure %lxRCOVER -fill #%6.6x -outline #%6.6x\n", canvas,
+    sys_vGui(".x%lx.c itemconfigure %lxRCOVER -fill #%6.6x -outline #%6.6x\n", canvas,
              x, x->x_gui.x_bcol, x->x_gui.x_bcol);
-    sys_vgui(".x%lx.c itemconfigure %lxPLED -width %d\n", canvas, x,
+    sys_vGui(".x%lx.c itemconfigure %lxPLED -width %d\n", canvas, x,
              x->x_led_size);
 }
 
@@ -319,23 +319,23 @@ static void vu_draw_io(t_vu* x, t_glist* glist)
     int ypos=text_ypix(&x->x_gui.x_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
-    /*sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
+    /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
          canvas,
          xpos-1, ypos + x->x_gui.x_h+1,
          xpos + INLETS_WIDTH-1, ypos + x->x_gui.x_h+2,
          x, 0);
-    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
+    sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
          canvas,
          xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos + x->x_gui.x_h+1,
          xpos+x->x_gui.x_w+1, ypos + x->x_gui.x_h+2,
          x, 1);
 
-    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
+    sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
          canvas,
          xpos-1, ypos-2,
          xpos + INLETS_WIDTH-1, ypos-1,
          x, 0);
-    sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
+    sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
          canvas,
          xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos-2,
          xpos+x->x_gui.x_w+1, ypos-1,
@@ -349,37 +349,37 @@ static void vu_draw_select(t_vu* x,t_glist* glist)
 
     if(x->x_gui.x_fsf.x_selected)
     {
-        sys_vgui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
+        sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
         for(i=1; i<=IEM_VUMETER_STEPS; i++)
         {
             /*if(((i+2)&3) && (x->x_scale))
-                sys_vgui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
+                sys_vGui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
                          canvas, x, i, IEM_COLOR_SELECTED);*/
         }
         if(x->x_scale)
         {
             i=IEM_VUMETER_STEPS+1;
-           /* sys_vgui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
+           /* sys_vGui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
                      canvas, x, i, IEM_COLOR_SELECTED);*/
         }
-        sys_vgui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
+        sys_vGui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
     }
     else
     {
-        sys_vgui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_NORMAL);
+        sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_NORMAL);
         for(i=1; i<=IEM_VUMETER_STEPS; i++)
         {
             /*if(((i+2)&3) && (x->x_scale))
-                sys_vgui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
+                sys_vGui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
                          canvas, x, i, x->x_gui.x_lcol);*/
         }
         if(x->x_scale)
         {
             i=IEM_VUMETER_STEPS+1;
-            /*sys_vgui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
+            /*sys_vGui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
                      canvas, x, i, x->x_gui.x_lcol);*/
         }
-        sys_vgui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, x->x_gui.x_lcol);
+        sys_vGui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, x->x_gui.x_lcol);
     }
 }
 
@@ -457,10 +457,10 @@ static void vu_scale(t_vu *x, t_float fscale)
             for(i=1; i<=IEM_VUMETER_STEPS; i++)
             {
                 /*if((i+2)&3)
-                    sys_vgui(".x%lx.c delete %lxSCALE%d\n", canvas, x, i);*/
+                    sys_vGui(".x%lx.c delete %lxSCALE%d\n", canvas, x, i);*/
             }
             i=IEM_VUMETER_STEPS+1;
-            /*sys_vgui(".x%lx.c delete %lxSCALE%d\n", canvas, x, i);*/
+            /*sys_vGui(".x%lx.c delete %lxSCALE%d\n", canvas, x, i);*/
         }
     }
     if(!x->x_scale && scale)

@@ -602,7 +602,7 @@ void canvas_reflecttitle(t_canvas *x)
         strcat(namebuf, ")");
     }
     else namebuf[0] = 0;*/
-    sys_vgui("::ui_patch::setTitle .x%lx {%s} {%s} %d\n",
+    sys_vGui("::ui_patch::setTitle .x%lx {%s} {%s} %d\n",
         x, canvas_getdir(x)->s_name, x->gl_name->s_name, x->gl_dirty);
 }
 
@@ -623,7 +623,7 @@ void canvas_dirty(t_canvas *x, t_float n)
 void canvas_drawredrect(t_canvas *x, int doit)
 {
     if (doit)
-        sys_vgui(".x%lx.c create line\
+        sys_vGui(".x%lx.c create line\
             %d %d %d %d %d %d %d %d %d %d -fill #ff8080 -tags GOP\n",
             glist_getcanvas(x),
             x->gl_xmargin, x->gl_ymargin,
@@ -631,7 +631,7 @@ void canvas_drawredrect(t_canvas *x, int doit)
             x->gl_xmargin + x->gl_pixwidth, x->gl_ymargin + x->gl_pixheight,
             x->gl_xmargin, x->gl_ymargin + x->gl_pixheight,
             x->gl_xmargin, x->gl_ymargin);
-    else sys_vgui(".x%lx.c delete GOP\n",  glist_getcanvas(x));
+    else sys_vGui(".x%lx.c delete GOP\n",  glist_getcanvas(x));
 }
 
     /* the window becomes "mapped" (visible and not miniaturized) or
@@ -659,7 +659,7 @@ void canvas_map(t_canvas *x, t_float f)
             canvas_drawlines(x);
             if (x->gl_isgraph && x->gl_goprect)
                 canvas_drawredrect(x, 1);
-            sys_vgui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
+            sys_vGui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
         }
     }
     else
@@ -667,7 +667,7 @@ void canvas_map(t_canvas *x, t_float f)
         if (glist_isvisible(x))
         {
                 /* just clear out the whole canvas */
-            sys_vgui(".x%lx.c delete all\n", x);
+            sys_vGui(".x%lx.c delete all\n", x);
             x->gl_mapped = 0;
         }
     }
@@ -762,7 +762,7 @@ static void canvas_drawlines(t_canvas *x)
     {
         linetraverser_start(&t, x);
         while (oc = linetraverser_next(&t))
-            sys_vgui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
+            sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
                     glist_getcanvas(x),
                         t.tr_lx1, t.tr_ly1, t.tr_lx2, t.tr_ly2, 
                             (outlet_isSignal(t.tr_outlet) ? 2:1),
@@ -780,7 +780,7 @@ void canvas_fixlines(t_canvas *x, t_text *text)
     {
         if (t.tr_ob == text || t.tr_ob2 == text)
         {
-            sys_vgui(".x%lx.c coords l%lx %d %d %d %d\n",
+            sys_vGui(".x%lx.c coords l%lx %d %d %d %d\n",
                 glist_getcanvas(x), oc,
                     t.tr_lx1, t.tr_ly1, t.tr_lx2, t.tr_ly2);
         }
@@ -799,7 +799,7 @@ void canvas_deletelines(t_canvas *x, t_text *text)
         {
             if (glist_isvisible(x))
             {
-                sys_vgui(".x%lx.c delete l%lx\n",
+                sys_vGui(".x%lx.c delete l%lx\n",
                     glist_getcanvas(x), oc);
             }
             object_disconnect(t.tr_ob, t.tr_outno, t.tr_ob2, t.tr_inno);
@@ -821,7 +821,7 @@ void canvas_deletelinesforio(t_canvas *x, t_text *text,
         {
             if (glist_isvisible(x))
             {
-                sys_vgui(".x%lx.c delete l%lx\n",
+                sys_vGui(".x%lx.c delete l%lx\n",
                     glist_getcanvas(x), oc);
             }
             object_disconnect(t.tr_ob, t.tr_outno, t.tr_ob2, t.tr_inno);

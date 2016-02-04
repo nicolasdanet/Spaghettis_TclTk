@@ -178,9 +178,9 @@ static int lastone(char *s, int c, int n)
     *   the GUI)
     */
 
-    /* LATER get this and sys_vgui to work together properly,
+    /* LATER get this and sys_vGui to work together properly,
         breaking up messages as needed.  As of now, there's
-        a limit of 1950 characters, imposed by sys_vgui(). */
+        a limit of 1950 characters, imposed by sys_vGui(). */
 #define UPBUFSIZE 4000
 #define BOXWIDTH 60
 
@@ -306,7 +306,7 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
     }
     if (action == SEND_FIRST)
     {
-        sys_vgui("::ui_object::newText .x%lx.c {%s %s text} %f %f {%.*s} %d %s\n",
+        sys_vGui("::ui_object::newText .x%lx.c {%s %s text} %f %f {%.*s} %d %s\n",
             canvas, x->x_tag, rtext_gettype(x)->s_name,
             dispx + LMARGIN, dispy + TMARGIN,
             outchars_b, tempbuf, font_getHostFontSize(font),
@@ -315,7 +315,7 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
     }
     else if (action == SEND_UPDATE)
     {
-        sys_vgui("::ui_object::setText .x%lx.c %s {%.*s}\n",
+        sys_vGui("::ui_object::setText .x%lx.c %s {%.*s}\n",
             canvas, x->x_tag, outchars_b, tempbuf);
         if (pixwide != x->x_drawnwidth || pixhigh != x->x_drawnheight) 
             text_drawborder(x->x_text, x->x_glist, x->x_tag,
@@ -324,18 +324,18 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
         {
             if (selend_b > selstart_b)
             {
-                sys_vgui(".x%lx.c select from %s %d\n", canvas, 
+                sys_vGui(".x%lx.c select from %s %d\n", canvas, 
                     x->x_tag, u8_charnum(x->x_buf, selstart_b));
-                sys_vgui(".x%lx.c select to %s %d\n", canvas, 
+                sys_vGui(".x%lx.c select to %s %d\n", canvas, 
                     x->x_tag, u8_charnum(x->x_buf, selend_b) - 1);
-                sys_vgui(".x%lx.c focus \"\"\n", canvas);        
+                sys_vGui(".x%lx.c focus \"\"\n", canvas);        
             }
             else
             {
-                sys_vgui(".x%lx.c select clear\n", canvas);
-                sys_vgui(".x%lx.c icursor %s %d\n", canvas, x->x_tag,
+                sys_vGui(".x%lx.c select clear\n", canvas);
+                sys_vGui(".x%lx.c icursor %s %d\n", canvas, x->x_tag,
                     u8_charnum(x->x_buf, selstart_b));
-                sys_vgui(".x%lx.c focus %s\n", canvas, x->x_tag);        
+                sys_vGui(".x%lx.c focus %s\n", canvas, x->x_tag);        
             }
         }
     }
@@ -437,12 +437,12 @@ void rtext_draw(t_rtext *x)
 
 void rtext_erase(t_rtext *x)
 {
-    sys_vgui(".x%lx.c delete %s\n", glist_getcanvas(x->x_glist), x->x_tag);
+    sys_vGui(".x%lx.c delete %s\n", glist_getcanvas(x->x_glist), x->x_tag);
 }
 
 void rtext_displace(t_rtext *x, int dx, int dy)
 {
-    sys_vgui(".x%lx.c move %s %d %d\n", glist_getcanvas(x->x_glist), 
+    sys_vGui(".x%lx.c move %s %d %d\n", glist_getcanvas(x->x_glist), 
         x->x_tag, dx, dy);
 }
 
@@ -450,7 +450,7 @@ void rtext_select(t_rtext *x, int state)
 {
     t_glist *glist = x->x_glist;
     t_canvas *canvas = glist_getcanvas(glist);
-    sys_vgui(".x%lx.c itemconfigure %s -fill %s\n", canvas, 
+    sys_vGui(".x%lx.c itemconfigure %s -fill %s\n", canvas, 
         x->x_tag, (state? "blue" : "black"));
 }
 
@@ -461,7 +461,7 @@ void rtext_activate(t_rtext *x, int state)
     t_canvas *canvas = glist_getcanvas(glist);
     if (state)
     {
-        sys_vgui("::ui_object::setEditing .x%lx %s 1\n", canvas, x->x_tag);
+        sys_vGui("::ui_object::setEditing .x%lx %s 1\n", canvas, x->x_tag);
         glist->gl_editor->e_textedfor = x;
         glist->gl_editor->e_textdirty = 0;
         x->x_dragfrom = x->x_selstart = 0;
@@ -470,7 +470,7 @@ void rtext_activate(t_rtext *x, int state)
     }
     else
     {
-        sys_vgui("::ui_object::setEditing .x%lx {} 0\n", canvas);
+        sys_vGui("::ui_object::setEditing .x%lx {} 0\n", canvas);
         if (glist->gl_editor->e_textedfor == x)
             glist->gl_editor->e_textedfor = 0;
         x->x_active = 0;

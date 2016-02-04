@@ -501,7 +501,7 @@ void sys_set_searchpath( void)
 
     sys_gui("set ::tmp_path {}\n");
     for (nl = sys_searchpath, i = 0; nl; nl = nl->pl_next, i++)
-        sys_vgui("lappend ::tmp_path {%s}\n", nl->pl_string);
+        sys_vGui("lappend ::tmp_path {%s}\n", nl->pl_string);
     sys_gui("set ::var(searchPath) $::tmp_path\n");
 }
 
@@ -514,7 +514,7 @@ void sys_set_extrapath(void)
 
     sys_gui("set ::tmp_path {}\n");
     for (nl = sys_staticpath, i = 0; nl; nl = nl->pl_next, i++)
-        sys_vgui("lappend ::tmp_path {%s}\n", nl->pl_string);
+        sys_vGui("lappend ::tmp_path {%s}\n", nl->pl_string);
     sys_gui("set ::sys_staticpath $::tmp_path\n");
     */
 }
@@ -551,10 +551,10 @@ void sys_set_startup( void)
     //int i;
     //t_pathlist *nl;
 
-    // sys_vgui("set ::var(startupFlags) {%s}\n", sys_flags->s_name);
+    // sys_vGui("set ::var(startupFlags) {%s}\n", sys_flags->s_name);
     // sys_gui("set ::var(startupLibraries) {}\n");
     // for (nl = sys_externlist, i = 0; nl; nl = nl->pl_next, i++)
-        // sys_vgui("lappend ::var(startupLibraries) {%s}\n", nl->pl_string);
+        // sys_vGui("lappend ::var(startupLibraries) {%s}\n", nl->pl_string);
 }
 
     /* start a startup dialog window */

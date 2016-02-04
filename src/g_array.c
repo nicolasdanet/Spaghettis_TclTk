@@ -506,7 +506,7 @@ void garray_arrayviewlist_new(t_garray *x)
     {
         yval = *(t_float *)(a->a_vec +
                elemsize * i + yonset);
-        sys_vgui(".%sArrayWindow.lb insert %d {%d) %g}\n",
+        sys_vGui(".%sArrayWindow.lb insert %d {%d) %g}\n",
                  x->x_realname->s_name,
                  i,
                  i,
@@ -533,17 +533,17 @@ void garray_arrayviewlist_fillpage(t_garray *x,
 
     if (page < 0) {
       page = 0;
-      sys_vgui("::ui_array::pdtk_array_listview_setpage %s %d\n",
+      sys_vGui("::ui_array::pdtk_array_listview_setpage %s %d\n",
                x->x_realname->s_name,
                (int)page);
     }
     else if ((page * ARRAYPAGESIZE) >= a->a_n) {
       page = (int)(((int)a->a_n - 1)/ (int)ARRAYPAGESIZE);
-      sys_vgui("::ui_array::pdtk_array_listview_setpage %s %d\n",
+      sys_vGui("::ui_array::pdtk_array_listview_setpage %s %d\n",
                x->x_realname->s_name,
                (int)page);
     }
-    sys_vgui(".%sArrayWindow.lb delete 0 %d\n",
+    sys_vGui(".%sArrayWindow.lb delete 0 %d\n",
              x->x_realname->s_name,
              ARRAYPAGESIZE - 1);
     for (i = page * ARRAYPAGESIZE;
@@ -552,13 +552,13 @@ void garray_arrayviewlist_fillpage(t_garray *x,
     {
         yval = *(t_float *)(a->a_vec + \
                elemsize * i + yonset);
-        sys_vgui(".%sArrayWindow.lb insert %d {%d) %g}\n",
+        sys_vGui(".%sArrayWindow.lb insert %d {%d) %g}\n",
                  x->x_realname->s_name,
                  i % ARRAYPAGESIZE,
                  i,
                  yval);
     }
-    sys_vgui(".%sArrayWindow.lb yview %d\n",
+    sys_vGui(".%sArrayWindow.lb yview %d\n",
              x->x_realname->s_name,
              topItem);*/
 }
@@ -566,7 +566,7 @@ void garray_arrayviewlist_fillpage(t_garray *x,
 void garray_arrayviewlist_close(t_garray *x)
 {
     x->x_listviewing = 0;
-    /*sys_vgui("::ui_array::pdtk_array_listview_closeWindow %s\n",
+    /*sys_vGui("::ui_array::pdtk_array_listview_closeWindow %s\n",
              x->x_realname->s_name);*/
 }
 /* } jsarlo */
@@ -807,7 +807,7 @@ void garray_redraw(t_garray *x)
     //else
     //{
       /* if (x->x_listviewing)
-        sys_vgui("::ui_array::pdtk_array_listview_fillpage %s\n",
+        sys_vGui("::ui_array::pdtk_array_listview_fillpage %s\n",
                  x->x_realname->s_name);*/
     //}
     /* } jsarlo */

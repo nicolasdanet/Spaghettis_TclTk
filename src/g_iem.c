@@ -319,7 +319,7 @@ void iem_label(void *x, t_iem *iem, t_symbol *s)
     iem->x_lab = canvas_realizedollar(iem->x_glist, iem->x_lab_unexpanded);
 
     if(glist_isvisible(iem->x_glist) && iem->x_lab != old)
-        sys_vgui(".x%lx.c itemconfigure %lxLABEL -text {%s} \n",
+        sys_vGui(".x%lx.c itemconfigure %lxLABEL -text {%s} \n",
                  glist_getcanvas(iem->x_glist), x,
                  strcmp(s->s_name, "empty")?iem->x_lab->s_name:"");
 }
@@ -329,7 +329,7 @@ void iem_label_pos(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
     iem->x_ldx = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
     iem->x_ldy = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
     if(glist_isvisible(iem->x_glist))
-        sys_vgui(".x%lx.c coords %lxLABEL %d %d\n",
+        sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
                  glist_getcanvas(iem->x_glist), x,
                  text_xpix((t_object *)x,iem->x_glist)+iem->x_ldx,
                  text_ypix((t_object *)x,iem->x_glist)+iem->x_ldy);
@@ -342,7 +342,7 @@ void iem_label_font(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
         f = 4;
     iem->x_fontsize = f;
     if(glist_isvisible(iem->x_glist))
-        sys_vgui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d]\n",
+        sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d]\n",
                  glist_getcanvas(iem->x_glist), x,
                  iem->x_fontsize);
 }

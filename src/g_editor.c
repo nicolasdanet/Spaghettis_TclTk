@@ -157,7 +157,7 @@ void glist_selectline(t_glist *x, t_outconnect *oc, int index1,
         x->gl_editor->e_selectline_index2 = index2;
         x->gl_editor->e_selectline_inno = inno;
         x->gl_editor->e_selectline_tag = oc;
-        sys_vgui(".x%lx.c itemconfigure l%lx -fill blue\n",
+        sys_vGui(".x%lx.c itemconfigure l%lx -fill blue\n",
             x, x->gl_editor->e_selectline_tag);
     }    
 }
@@ -167,7 +167,7 @@ void glist_deselectline(t_glist *x)
     if (x->gl_editor)
     {
         x->gl_editor->e_selectedline = 0;
-        sys_vgui(".x%lx.c itemconfigure l%lx -fill black\n",
+        sys_vGui(".x%lx.c itemconfigure l%lx -fill black\n",
             x, x->gl_editor->e_selectline_tag);
     }    
 }
@@ -372,9 +372,9 @@ void canvas_setundo(t_canvas *x, t_undofn undofn, void *buf,
     canvas_undo_name = name;
     /* if (x && glist_isvisible(x) && glist_istoplevel(x))
             //
-        sys_vgui("pdtk_undomenu .x%lx %s no\n", x, name);
+        sys_vGui("pdtk_undomenu .x%lx %s no\n", x, name);
     else if (hadone)
-        sys_vgui("pdtk_undomenu nobody no no\n"); */
+        sys_vGui("pdtk_undomenu nobody no no\n"); */
 }
 
     /* clear undo if it happens to be for the canvas x.
@@ -396,7 +396,7 @@ static void canvas_undo(t_canvas *x)
         (*canvas_undo_fn)(canvas_undo_canvas, canvas_undo_buf, UNDO_UNDO);
             /* enable redo in menu */
         /*if (glist_isvisible(x) && glist_istoplevel(x))
-            sys_vgui("pdtk_undomenu .x%lx no %s\n", x, canvas_undo_name); */
+            sys_vGui("pdtk_undomenu .x%lx no %s\n", x, canvas_undo_name); */
         canvas_undo_whatnext = UNDO_REDO;
     }
     canvas_resume_dsp(dspwas);
@@ -413,7 +413,7 @@ static void canvas_redo(t_canvas *x)
         (*canvas_undo_fn)(canvas_undo_canvas, canvas_undo_buf, UNDO_REDO);
             /* enable undo in menu */
         /*if (glist_isvisible(x) && glist_istoplevel(x))
-            sys_vgui("pdtk_undomenu .x%lx %s no\n", x, canvas_undo_name);*/
+            sys_vGui("pdtk_undomenu .x%lx %s no\n", x, canvas_undo_name);*/
         canvas_undo_whatnext = UNDO_UNDO;
     }
     canvas_resume_dsp(dspwas);
@@ -453,7 +453,7 @@ void canvas_disconnect(t_canvas *x,
         if (srcno == index1 && t.tr_outno == outno &&
             sinkno == index2 && t.tr_inno == inno)
         {
-            sys_vgui(".x%lx.c delete l%lx\n", x, oc);
+            sys_vGui(".x%lx.c delete l%lx\n", x, oc);
             object_disconnect(t.tr_ob, t.tr_outno, t.tr_ob2, t.tr_inno);
             break;
         }
@@ -820,7 +820,7 @@ void canvas_setcursor(t_canvas *x, unsigned int cursornum)
     }
     if (xwas != x || cursorwas != cursornum)
     {
-        sys_vgui(".x%lx configure -cursor %s\n", x, cursorlist[cursornum]);
+        sys_vGui(".x%lx configure -cursor %s\n", x, cursorlist[cursornum]);
         xwas = x;
         cursorwas = cursornum;
     }
@@ -879,7 +879,7 @@ static void canvas_rightclick(t_canvas *x, int xpos, int ypos, t_gobj *y)
     int canprop, canopen;
     canprop = (!y || (y && class_hasPropertiesFunction (pd_class(&y->g_pd))));
     canopen = (y && class_hasMethod (pd_class (&y->g_pd), gensym("menu-open")));
-    sys_vgui("::ui_menu::showPopup .x%lx %d %d %d %d\n",
+    sys_vGui("::ui_menu::showPopup .x%lx %d %d %d %d\n",
         x, xpos, ypos, canprop, canopen);
 }
 
@@ -957,7 +957,7 @@ void canvas_vis(t_canvas *x, t_float f)
          * so its ok to run it on a canvas that already has a gl_editor. */
         if (x->gl_editor && x->gl_havewindow)
         {           /* just put us in front */
-            sys_vgui("::bringToFront .x%lx\n", x);  
+            sys_vGui("::bringToFront .x%lx\n", x);  
         }
         else
         {
@@ -965,7 +965,7 @@ void canvas_vis(t_canvas *x, t_float f)
             int cbuflen;
             t_canvas *c = x;
             canvas_create_editor(x);
-            sys_vgui("::ui_patch::create .x%lx %d %d +%d+%d %d\n", x,
+            sys_vGui("::ui_patch::create .x%lx %d %d +%d+%d %d\n", x,
                 (int)(x->gl_screenx2 - x->gl_screenx1),
                 (int)(x->gl_screeny2 - x->gl_screeny1),
                 (int)(x->gl_screenx1), (int)(x->gl_screeny1),
@@ -1005,7 +1005,7 @@ void canvas_vis(t_canvas *x, t_float f)
         if (glist_isvisible(x))
             canvas_map(x, 0);
         canvas_destroy_editor(x);
-        sys_vgui("destroy .x%lx\n", x);
+        sys_vGui("destroy .x%lx\n", x);
         for (i = 1, x2 = x; x2; x2 = x2->gl_next, i++)
             ;
             /* if we're a graph on our parent, and if the parent exists
@@ -1375,7 +1375,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
                         x->gl_editor->e_onmotion = ACTION_CONNECT;
                         x->gl_editor->e_xwas = xpos;
                         x->gl_editor->e_ywas = ypos;
-                        sys_vgui(
+                        sys_vGui(
                           ".x%lx.c create line %d %d %d %d -width %d -tags x\n",
                                 x, xpos, ypos, xpos, ypos,
                                     (issignal ? 2 : 1));
@@ -1460,7 +1460,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
     if (doit)
     {
         if (!shiftmod) glist_noselect(x);
-        sys_vgui(".x%lx.c create rectangle %d %d %d %d -tags x\n",
+        sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags x\n",
               x, xpos, ypos, xpos, ypos);
         x->gl_editor->e_xwas = xpos;
         x->gl_editor->e_ywas = ypos;
@@ -1495,8 +1495,8 @@ void canvas_doconnect(t_canvas *x, int xpos, int ypos, int which, int doit)
     t_gobj *y2;
     int xwas = x->gl_editor->e_xwas,
         ywas = x->gl_editor->e_ywas;
-    if (doit) sys_vgui(".x%lx.c delete x\n", x);
-    else sys_vgui(".x%lx.c coords x %d %d %d %d\n",
+    if (doit) sys_vGui(".x%lx.c delete x\n", x);
+    else sys_vGui(".x%lx.c coords x %d %d %d %d\n",
             x, x->gl_editor->e_xwas,
                 x->gl_editor->e_ywas, xpos, ypos);
 
@@ -1560,7 +1560,7 @@ void canvas_doconnect(t_canvas *x, int xpos, int ypos, int which, int doit)
                         ((x22-x21-INLETS_WIDTH) * closest2)/(ninlet2-1) : 0)
                             + INLETS_MIDDLE;
                 ly2 = y21;
-                sys_vgui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
+                sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
                     glist_getcanvas(x),
                         lx1, ly1, lx2, ly2,
                             (object_isSignalOutlet(ob1, closest1) ? 2 : 1), oc);
@@ -1603,10 +1603,10 @@ static void canvas_doregion(t_canvas *x, int xpos, int ypos, int doit)
             loy = x->gl_editor->e_ywas, hiy = ypos;
         else hiy = x->gl_editor->e_ywas, loy = ypos;
         canvas_selectinrect(x, lox, loy, hix, hiy);
-        sys_vgui(".x%lx.c delete x\n", x);
+        sys_vGui(".x%lx.c delete x\n", x);
         x->gl_editor->e_onmotion = ACTION_NONE;
     }
-    else sys_vgui(".x%lx.c coords x %d %d %d %d\n",
+    else sys_vGui(".x%lx.c coords x %d %d %d %d\n",
             x, x->gl_editor->e_xwas,
                 x->gl_editor->e_ywas, xpos, ypos);
 }
@@ -1648,7 +1648,7 @@ void canvas_mouseup(t_canvas *x,
             {
                 pd_vMessage(&gl2->gl_obj.te_g.g_pd, gensym("menu-open"), "");
                 x->gl_editor->e_onmotion = ACTION_NONE;
-                sys_vgui(
+                sys_vGui(
 "::ui_confirm::checkAction .x%lx { Discard changes to %s? } { ::ui_interface::pdsend .x%lx dirty 0 } { no }\n",
                     canvas_getroot(gl2),
                         canvas_getroot(gl2)->gl_name->s_name, gl2);
@@ -1682,7 +1682,7 @@ static void canvas_displaceselection(t_canvas *x, int dx, int dy)
     }
     if (resortin) canvas_resortinlets(x);
     if (resortout) canvas_resortoutlets(x);
-    sys_vgui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
+    sys_vGui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
     if (x->gl_editor->e_selection)
         canvas_dirty(x, 1);
 }
@@ -1939,8 +1939,8 @@ void canvas_startmotion(t_canvas *x)
 
 void canvas_print(t_canvas *x, t_symbol *s)
 {
-    if (*s->s_name) sys_vgui(".x%lx.c postscript -file %s\n", x, s->s_name);
-    else sys_vgui(".x%lx.c postscript -file x.ps\n", x);
+    if (*s->s_name) sys_vGui(".x%lx.c postscript -file %s\n", x, s->s_name);
+    else sys_vGui(".x%lx.c postscript -file x.ps\n", x);
 }
 
     /* find a dirty sub-glist, if any, of this one (including itself) */
@@ -1967,12 +1967,12 @@ void global_shouldQuit(void *dummy)
         if (g2 = glist_finddirty(g))
     {
         canvas_vis(g2, 1);
-            sys_vgui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx menuclose 3 } {}\n",
+            sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx menuclose 3 } {}\n",
                      canvas_getroot(g2), g2);
         return;
     }
     if (0)
-        sys_vgui("::ui_confirm::checkAction .console { Really quit? } { ::ui_interface::pdsend pd quit } { yes }\n");
+        sys_vGui("::ui_confirm::checkAction .console { Really quit? } { ::ui_interface::pdsend pd quit } { yes }\n");
     else { interface_quit(0); }
 }
 
@@ -1995,13 +1995,13 @@ void canvas_menuclose(t_canvas *x, t_float fforce)
         if (g)
         {
             pd_vMessage(&g->gl_obj.te_g.g_pd, gensym("menu-open"), "");
-            sys_vgui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx menuclose 2 } {}\n",
+            sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx menuclose 2 } {}\n",
                      canvas_getroot(g), g);
             return;
         }
         else if (0)
         {
-            sys_vgui("::ui_confirm::checkAction .x%lx { Close this window? } { ::ui_interface::pdsend .x%lx menuclose 1 } { yes }\n",
+            sys_vGui("::ui_confirm::checkAction .x%lx { Close this window? } { ::ui_interface::pdsend .x%lx menuclose 1 } { yes }\n",
                      canvas_getroot(x), x);
         }
         else pd_free(&x->gl_obj.te_g.g_pd);
@@ -2017,7 +2017,7 @@ void canvas_menuclose(t_canvas *x, t_float fforce)
         if (g)
         {
             pd_vMessage(&g->gl_obj.te_g.g_pd, gensym("menu-open"), "");
-            sys_vgui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx menuclose 2 } {}\n",
+            sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx menuclose 2 } {}\n",
                      canvas_getroot(x), g);
             return;
         }
@@ -2127,7 +2127,7 @@ static void canvas_find(t_canvas *x, t_symbol *s, t_float wholeword)
     found = canvas_dofind(x, &myindex);
     if (found)
         canvas_find_index = 1;
-    sys_vgui("::dialog_find::pdtk_showfindresult .x%lx %d %d %d\n", x, found, canvas_find_index,
+    sys_vGui("::dialog_find::pdtk_showfindresult .x%lx %d %d %d\n", x, found, canvas_find_index,
         myindex);
 }
 
@@ -2137,7 +2137,7 @@ static void canvas_find_again(t_canvas *x)
     if (!canvas_findbuf || !canvas_whichfind)
         return;
     found = canvas_dofind(canvas_whichfind, &myindex);
-    sys_vgui("::dialog_find::pdtk_showfindresult .x%lx %d %d %d\n", x, found, ++canvas_find_index,
+    sys_vGui("::dialog_find::pdtk_showfindresult .x%lx %d %d %d\n", x, found, ++canvas_find_index,
         myindex);
 }
 */
@@ -2250,7 +2250,7 @@ static void canvas_copy(t_canvas *x)
         int bufsize;
         rtext_getseltext(x->gl_editor->e_textedfor, &buf, &bufsize);
         sys_gui("clipboard clear\n");
-        sys_vgui("clipboard append {%.*s}\n", bufsize, buf);
+        sys_vGui("clipboard append {%.*s}\n", bufsize, buf);
     }
 }
 
@@ -2358,7 +2358,7 @@ static void canvas_cut(t_canvas *x)
             canvas_undo_set_cut(x, UCUT_CUT), "cut");
         canvas_copy(x);
         canvas_doclear(x);
-        sys_vgui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
+        sys_vGui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
     }
 }
 
@@ -2402,7 +2402,7 @@ static void canvas_dopaste(t_canvas *x, t_buffer *b)
     paste_canvas = 0;
     canvas_resume_dsp(dspstate);
     canvas_dirty(x, 1);
-    sys_vgui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
+    sys_vGui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
     glist_donewloadbangs(x);
     asym->s_thing = bounda;
     s__X.s_thing = boundx;
@@ -2416,7 +2416,7 @@ static void canvas_paste(t_canvas *x)
     if (x->gl_editor->e_textedfor)
     {
         /* simulate keystrokes as if the copy buffer were typed in. */
-        // sys_vgui("::ui_object::pasteText .x%lx\n", x);
+        // sys_vGui("::ui_object::pasteText .x%lx\n", x);
     }
     else
     {
@@ -2529,7 +2529,7 @@ void canvas_connect(t_canvas *x, t_float fwhoout, t_float foutno,
     if (!(oc = object_connect(objsrc, outno, objsink, inno))) goto bad;
     if (glist_isvisible(x))
     {
-        sys_vgui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
+        sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
             glist_getcanvas(x), 0, 0, 0, 0,
             (object_isSignalOutlet(objsrc, outno) ? 2 : 1),oc);
         canvas_fixlines(x, objsrc);
@@ -2659,7 +2659,7 @@ static void canvas_texteditor(t_canvas *x)
     if (foo = x->gl_editor->e_textedfor)
         rtext_gettext(foo, &buf, &bufsize);
     else buf = "", bufsize = 0;
-    sys_vgui("pdtk_pd_texteditor {%.*s}\n", bufsize, buf);
+    sys_vGui("pdtk_pd_texteditor {%.*s}\n", bufsize, buf);
     
 }
 
@@ -2693,11 +2693,11 @@ void canvas_editmode(t_canvas *x, t_float state)
         if (glist_isvisible(x) && glist_istoplevel(x))
         {
             canvas_setcursor(x, CURSOR_NOTHING);
-            sys_vgui(".x%lx.c delete commentbar\n", glist_getcanvas(x));
+            sys_vGui(".x%lx.c delete commentbar\n", glist_getcanvas(x));
         }
     }
     if (glist_isvisible(x))
-      sys_vgui("::ui_patch::setEditMode .x%lx %d\n",
+      sys_vGui("::ui_patch::setEditMode .x%lx %d\n",
           glist_getcanvas(x), x->gl_edit);
 }
 

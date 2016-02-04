@@ -393,7 +393,7 @@ void sys_close_audio(void)
     audio_state = 0;
     audio_callback_is_open = 0;
 
-    // sys_vgui("set ::var(apiAudio) 0\n");
+    // sys_vGui("set ::var(apiAudio) 0\n");
 }
 
     /* open audio using whatever parameters were last used */
@@ -481,7 +481,7 @@ void sys_reopen_audio( void)
         sys_audioapiopened = sys_audioapi;
         audio_callback_is_open = callback;
     }
-    sys_vgui("set ::var(apiAudio) %d\n",  (outcome == 0 ? sys_audioapi : 0));
+    sys_vGui("set ::var(apiAudio) %d\n",  (outcome == 0 ? sys_audioapi : 0));
 }
 
 int sys_send_dacs(void)
@@ -702,12 +702,12 @@ void global_audioProperties(void *dummy, t_float flongform)
 
     sys_gui("set ::ui_audio::audioIn {}\n");
     for (i = 0; i < nindevs; i++)
-        sys_vgui("lappend ::ui_audio::audioIn {%s}\n",
+        sys_vGui("lappend ::ui_audio::audioIn {%s}\n",
             indevlist + i * DEVDESCSIZE);
 
     sys_gui("set ::ui_audio::audioOut {}\n");
     for (i = 0; i < noutdevs; i++)
-        sys_vgui("lappend ::ui_audio::audioOut {%s}\n",
+        sys_vGui("lappend ::ui_audio::audioOut {%s}\n",
             outdevlist + i * DEVDESCSIZE);
 
     sys_get_audio_params(&naudioindev, audioindev, chindev,

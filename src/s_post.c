@@ -27,7 +27,7 @@ void post (const char *fmt, ...)
     t = vsnprintf (buf, PD_STRING, fmt, ap);
     va_end (ap);
     
-    if (t >= 0 && t < PD_STRING) { sys_vgui ("::ui_console::post {%s}\n", buf); }   // --
+    if (t >= 0 && t < PD_STRING) { sys_vGui ("::ui_console::post {%s}\n", buf); }   // --
     else {
         post_error (PD_TRANSLATE ("console: too many characters per line"));   // --
     }
@@ -62,7 +62,7 @@ void post_error (const char *fmt, ...)
     
     PD_ASSERT (t >= 0 && t < PD_STRING);
 
-    sys_vgui ("::ui_console::post {%s}\n", buf);    // --
+    sys_vGui ("::ui_console::post {%s}\n", buf);    // --
 }
 
 // -----------------------------------------------------------------------------------------------------------

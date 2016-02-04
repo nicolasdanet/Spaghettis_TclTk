@@ -582,7 +582,7 @@ void sys_open_midi(int nmidiindev, int *midiindev,
     sys_save_midi_params(nmidiindev, midiindev,
         nmidioutdev, midioutdev);
 
-    sys_vgui("set ::var(apiMidi) %d\n", sys_midiapi);
+    sys_vGui("set ::var(apiMidi) %d\n", sys_midiapi);
 
 }
 
@@ -674,12 +674,12 @@ void global_midiProperties(void *dummy, t_float flongform)
 
     sys_gui("set ::ui_midi::midiIn {none}\n");
     for (i = 0; i < nindevs; i++)
-        sys_vgui("lappend ::ui_midi::midiIn {%s}\n",
+        sys_vGui("lappend ::ui_midi::midiIn {%s}\n",
             indevlist + i * DEVDESCSIZE);
 
     sys_gui("set ::ui_midi::midiOut {none}\n");
     for (i = 0; i < noutdevs; i++)
-        sys_vgui("lappend ::ui_midi::midiOut {%s}\n",
+        sys_vGui("lappend ::ui_midi::midiOut {%s}\n",
             outdevlist + i * DEVDESCSIZE);
 
     sys_get_midi_params(&nindev, midiindev, &noutdev, midioutdev);
