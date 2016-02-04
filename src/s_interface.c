@@ -143,7 +143,6 @@ static void interface_increaseGuiBuffer()
     PD_ABORT (newSize > INTERFACE_GUI_BUFFER_ABORT_SIZE);
     interface_outGuiBuffer = PD_MEMORY_RESIZE (interface_outGuiBuffer, oldSize, newSize);
     interface_outGuiBufferSize = newSize;
-    post_log ("Resized %d %d", oldSize, newSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------
