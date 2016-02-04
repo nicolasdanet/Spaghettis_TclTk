@@ -261,8 +261,8 @@ void        receiver_read                       (t_receiver *x, int fd);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void interface_socketPollBlocking               (int microseconds);
-void interface_socketPollNonBlocking            (void);
+int  interface_socketPollBlocking               (int microseconds);
+int  interface_socketPollNonBlocking            (void);
 void interface_socketAddCallback                (int fd, t_pollfn fn, void *ptr);
 void interface_socketRemoveCallback             (int fd);
 void interface_socketClose                      (int fd);
@@ -271,6 +271,7 @@ void interface_release                          (void);
 void interface_quit                             (void *dummy);
 void interface_ping                             (void *dummy);
 void interface_watchdog                         (void *dummy);
+int  interface_pollSocketsOrFlushGui            (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -468,14 +469,7 @@ void sys_initmidiqueue          (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int  sys_pollgui                (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void sys_setmiditimediff        (double inbuftime, double outbuftime);
-int  sys_pollgui                (void);
 void sys_setchsr                (int chin, int chout, int sr);
 
 // -----------------------------------------------------------------------------------------------------------

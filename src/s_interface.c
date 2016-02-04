@@ -136,22 +136,24 @@ static void interface_increaseGuiBuffer()
 {
     int oldSize = interface_outGuiBufferSize;
     int newSize = oldSize * 2;
+    PD_ASSERT (newSize <= (1024 * 1024)); PD_ABORT (newSize > (1024 * 1024));
     interface_outGuiBuffer = PD_MEMORY_RESIZE (interface_outGuiBuffer, oldSize, newSize);
     interface_outGuiBufferSize = newSize;
+    post_log ("Resized %d %d", oldSize, newSize);  
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void interface_socketPollBlocking (int microseconds)
+int interface_socketPollBlocking (int microseconds)
 {
-    interface_pollSockets (microseconds);
+    return interface_pollSockets (microseconds);
 }
 
-void interface_socketPollNonBlocking (void)
+int interface_socketPollNonBlocking (void)
 {
-    interface_pollSockets (0);
+    return interface_pollSockets (0);
 }
 
 void interface_socketAddCallback (int fd, t_pollfn fn, void *ptr)
@@ -253,7 +255,7 @@ void interface_ping (void *dummy)
 
 void interface_watchdog (void *dummy)
 {
-    if (write (interface_outWatchdogPipe, "\n", 1) < 1) { scheduler_needToExitWithError(); PD_BUG; }
+    if (write (interface_outWatchdogPipe, "\n", 1) < 1) { PD_BUG; scheduler_needToExitWithError(); }
 }
 
 #endif
@@ -317,41 +319,32 @@ void sys_vGui (char *format, ...)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int sys_flushtogui( void)
+static int interface_FlushGui (void)
 {
-    int writesize = interface_outGuiBufferHead - interface_outGuiBufferTail, nwrote = 0;
-    if (writesize > 0)
-        nwrote = send(interface_inGuiSocket, interface_outGuiBuffer + interface_outGuiBufferTail, writesize, 0);
+    size_t need = interface_outGuiBufferHead - interface_outGuiBufferTail;
+    
+    if (need > 0) {
+    //
+    char *p = interface_outGuiBuffer + interface_outGuiBufferTail;
+    ssize_t done = send (interface_inGuiSocket, (void *)p, need, 0);
 
-#if 0   
-    if (writesize)
-        fprintf(stderr, "wrote %d of %d\n", nwrote, writesize);
-#endif
-
-    if (nwrote < 0)
-    {
-        perror("pd-to-gui socket");
-        scheduler_needToExitWithError();
-    }
-    else if (!nwrote)
-        return (0);
-    else if (nwrote >= interface_outGuiBufferHead - interface_outGuiBufferTail)
-         interface_outGuiBufferHead = interface_outGuiBufferTail = 0;
-    else if (nwrote)
-    {
-        interface_outGuiBufferTail += nwrote;
-        if (interface_outGuiBufferTail > (interface_outGuiBufferSize >> 2))
-        {
-            memmove(interface_outGuiBuffer, interface_outGuiBuffer + interface_outGuiBufferTail,
-                interface_outGuiBufferHead - interface_outGuiBufferTail);
-            interface_outGuiBufferHead = interface_outGuiBufferHead - interface_outGuiBufferTail;
-            interface_outGuiBufferTail = 0;
+    if (done < 0) { PD_BUG; scheduler_needToExitWithError(); }
+    else {
+        if (done == 0) { return 0; }    
+        else if (done == need) { interface_outGuiBufferHead = interface_outGuiBufferTail = 0; }
+        else {
+            PD_ASSERT (done < need); interface_outGuiBufferTail += done;
         }
+        
+        return 1;
     }
-    return (1);
+    //
+    }
+    
+    return 0;
 }
 
-static int sys_flushqueue(void )
+static int interface_FlushQueue (void)
 {
     const int INTERFACE_GUI_SLICE = 512;
     const int INTERFACE_GUI_BYTES = 1024;
@@ -382,27 +375,27 @@ static int sys_flushqueue(void )
         }
         else break;
     }
-    sys_flushtogui();
+    interface_FlushGui();
     return (1);
 }
 
-    /* flush output buffer and update queue to gui in small time slices */
-static int sys_poll_togui(void) /* returns 1 if did anything */
+static int interface_FlushGuiAndQueue (void)
 {
-    if (PD_WITH_NOGUI)
-        return (0);
-        /* in case there is stuff still in the buffer, try to flush it. */
-    sys_flushtogui();
-        /* if the flush wasn't complete, wait. */
+    interface_FlushGui();
+
     if (interface_outGuiBufferHead > interface_outGuiBufferTail)
         return (0);
     
         /* check for queued updates */
-    if (sys_flushqueue())
+    if (interface_FlushQueue())
         return (1);
     
     return (0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void sys_queuegui(void *client, t_glist *glist, t_guifn f)
 {
@@ -447,10 +440,29 @@ void sys_unqueuegui(void *client)
     }
 }
 
-int sys_pollgui(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if PD_WITH_NOGUI
+
+int interface_pollSocketsOrFlushGui (void)
 {
-    return (interface_pollSockets(0) || sys_poll_togui());
+    return (interface_socketPollNonBlocking());
 }
+
+#else
+
+int interface_pollSocketsOrFlushGui (void)
+{
+    return (interface_socketPollNonBlocking() || interface_FlushGuiAndQueue());
+}
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int sys_startgui(const char *libdir)
 {
