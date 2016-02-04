@@ -246,21 +246,29 @@ void interface_guiQueueAddIfNotAlreadyThere (void *owner, t_glist *glist, t_guif
 
 void interface_guiQueueRemove (void *owner)
 {
-    t_guiqueue *gq, *gq2;
-    while (interface_outGuiQueue && interface_outGuiQueue->gq_p == owner)
-    {
-        gq = interface_outGuiQueue;
+    while (interface_outGuiQueue && interface_outGuiQueue->gq_p == owner) {
+        t_guiqueue *first = interface_outGuiQueue;
         interface_outGuiQueue = interface_outGuiQueue->gq_next;
-        PD_MEMORY_FREE(gq);
+        PD_MEMORY_FREE (first);
     }
-    if (!interface_outGuiQueue)
-        return;
-    for (gq = interface_outGuiQueue; gq2 = gq->gq_next; gq = gq2)
-        if (gq2->gq_p == owner)
-    {
-        gq->gq_next = gq2->gq_next;
-        PD_MEMORY_FREE(gq2);
-        break;
+    
+    if (interface_outGuiQueue) {
+        t_guiqueue *q1 = NULL;
+        t_guiqueue *q2 = NULL;
+        for (q1 = interface_outGuiQueue; q2 = q1->gq_next; q1 = q2) {
+            if (q2->gq_p == owner) { q1->gq_next = q2->gq_next; PD_MEMORY_FREE (q2); break; }
+        }
+    }
+}
+
+void interface_guiQueueRelease (void)
+{
+    while (interface_outGuiQueue) {
+    //
+    t_guiqueue *first = interface_outGuiQueue;
+    interface_outGuiQueue = interface_outGuiQueue->gq_next;
+    PD_MEMORY_FREE (first);
+    //
     }
 }
 
@@ -272,7 +280,7 @@ void interface_initialize (void)
 {
     #if !PD_WITH_NOGUI
     
-    interface_outGuiBuffer = (char *)PD_MEMORY_GET (INTERFACE_GUI_BUFFER_START_SIZE);
+    interface_outGuiBuffer     = (char *)PD_MEMORY_GET (INTERFACE_GUI_BUFFER_START_SIZE);
     interface_outGuiBufferSize = INTERFACE_GUI_BUFFER_START_SIZE;
 
     #endif
@@ -283,13 +291,11 @@ void interface_release (void)
     #if !PD_WITH_NOGUI
     
     PD_MEMORY_FREE (interface_outGuiBuffer);
+    interface_guiQueueRelease();
     
     #endif
     
-    PD_ASSERT (interface_outGuiQueue == NULL);
-    
     receiver_free (interface_inGuiReceiver);
-        
     PD_MEMORY_FREE (interface_inPollers);
 }
 
@@ -375,7 +381,7 @@ void sys_vGui (char *format, ...)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int interface_FlushGui (void)
+static int interface_flushGui (void)
 {
     size_t need = interface_outGuiBufferHead - interface_outGuiBufferTail;
     
@@ -400,7 +406,7 @@ static int interface_FlushGui (void)
     return 0;
 }
 
-static int interface_FlushQueue (void)
+static int interface_flushQueue (void)
 {
     const int INTERFACE_GUI_SLICE = 512;
     const int INTERFACE_GUI_BYTES = 1024;
@@ -431,19 +437,19 @@ static int interface_FlushQueue (void)
         }
         else break;
     }
-    interface_FlushGui();
+    interface_flushGui();
     return (1);
 }
 
-static int interface_FlushGuiAndQueue (void)
+static int interface_flushGuiAndQueue (void)
 {
-    interface_FlushGui();
+    interface_flushGui();
 
     if (interface_outGuiBufferHead > interface_outGuiBufferTail)
         return (0);
     
         /* check for queued updates */
-    if (interface_FlushQueue())
+    if (interface_flushQueue())
         return (1);
     
     return (0);
@@ -464,7 +470,7 @@ int interface_pollSocketsOrFlushGui (void)
 
 int interface_pollSocketsOrFlushGui (void)
 {
-    return (interface_socketPollNonBlocking() || interface_FlushGuiAndQueue());
+    return (interface_socketPollNonBlocking() || interface_flushGuiAndQueue());
 }
 
 #endif
