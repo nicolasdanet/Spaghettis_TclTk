@@ -271,7 +271,6 @@ void interface_guiQueueRemove                   (void *owner);
 void interface_initialize                       (void);
 void interface_release                          (void);
 void interface_quit                             (void *dummy);
-void interface_ping                             (void *dummy);
 void interface_watchdog                         (void *dummy);
 int  interface_pollSocketsOrFlushGui            (void);
 

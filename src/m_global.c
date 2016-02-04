@@ -56,7 +56,6 @@ void global_initialize (void)
     class_addMethod (c, (t_method)global_setPath,           gensym ("_path"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_pathDialog,        gensym ("_pathDialog"),      A_NULL);
     class_addMethod (c, (t_method)global_shouldQuit,        gensym ("_quit"),            A_NULL);
-    class_addMethod (c, (t_method)interface_ping,           gensym ("_ping"),            A_NULL);
     class_addMethod (c, (t_method)preferences_save,         gensym ("_savePreferences"), A_NULL);
     class_addMethod (c, (t_method)global_dummy,             gensym ("_dummy"),           A_NULL);
     

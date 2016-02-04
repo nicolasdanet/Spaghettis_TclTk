@@ -42,7 +42,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define INTERFACE_GUI_BUFFER_START_SIZE     32768
+#define INTERFACE_GUI_BUFFER_START_SIZE     (1024 * 128)
 #define INTERFACE_GUI_BUFFER_ABORT_SIZE     (1024 * 1024 * 1024)
 
 // -----------------------------------------------------------------------------------------------------------
@@ -90,8 +90,6 @@ static char                 *interface_outGuiBuffer;                /* Shared. *
 static int                  interface_outGuiBufferSize;             /* Shared. */
 static int                  interface_outGuiBufferHead;             /* Shared. */
 static int                  interface_outGuiBufferTail;             /* Shared. */
-static int                  interface_outIsWaitingForPing;          /* Shared. */
-static int                  interface_outBytesSinceLastPing;        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -145,6 +143,7 @@ static void interface_increaseGuiBuffer()
     PD_ABORT (newSize > INTERFACE_GUI_BUFFER_ABORT_SIZE);
     interface_outGuiBuffer = PD_MEMORY_RESIZE (interface_outGuiBuffer, oldSize, newSize);
     interface_outGuiBufferSize = newSize;
+    post_log ("Resized %d %d", oldSize, newSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -278,7 +277,7 @@ void interface_guiQueueRelease (void)
 
 void interface_initialize (void)
 {
-    #if !PD_WITH_NOGUI
+    #if ! ( PD_WITH_NOGUI )
     
     interface_outGuiBuffer     = (char *)PD_MEMORY_GET (INTERFACE_GUI_BUFFER_START_SIZE);
     interface_outGuiBufferSize = INTERFACE_GUI_BUFFER_START_SIZE;
@@ -288,7 +287,7 @@ void interface_initialize (void)
 
 void interface_release (void)
 {
-    #if !PD_WITH_NOGUI
+    #if ! ( PD_WITH_NOGUI )
     
     PD_MEMORY_FREE (interface_outGuiBuffer);
     interface_guiQueueRelease();
@@ -308,11 +307,6 @@ void interface_quit (void *dummy)
     scheduler_needToExit();
 }
 
-void interface_ping (void *dummy)
-{
-    interface_outIsWaitingForPing = 0;
-}
-
 #if PD_WITH_WATCHDOG
 
 void interface_watchdog (void *dummy)
@@ -321,6 +315,68 @@ void interface_watchdog (void *dummy)
 }
 
 #endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if ! ( PD_WITH_NOGUI )
+
+static int interface_flushBuffer (void)
+{
+    size_t need = interface_outGuiBufferHead - interface_outGuiBufferTail;
+    
+    if (need > 0) {
+    //
+    char *p = interface_outGuiBuffer + interface_outGuiBufferTail;
+    ssize_t done = send (interface_guiSocket, (void *)p, need, 0);
+
+    if (done < 0) { PD_BUG; scheduler_needToExitWithError(); }
+    else {
+        if (done == 0) { return 0; }    
+        else if (done == need) { interface_outGuiBufferHead = interface_outGuiBufferTail = 0; }
+        else {
+            PD_ASSERT (done < need); interface_outGuiBufferTail += done;
+        }
+        
+        return 1;
+    }
+    //
+    }
+    
+    return 0;
+}
+
+static int interface_flushQueue (void)
+{
+    if (interface_outGuiQueue) {
+    
+        while (interface_outGuiQueue) {
+        //
+        t_guiqueue *first = interface_outGuiQueue;
+        interface_outGuiQueue = interface_outGuiQueue->gq_next;
+        (*first->gq_fn) (first->gq_p, first->gq_glist);
+        PD_MEMORY_FREE (first);
+        //
+        }
+
+        return 1;
+    }
+    
+    return 0;
+}
+
+static int interface_flushBufferAndQueue (void)
+{
+    int didSomething = 0;
+    
+    didSomething |= interface_flushQueue();
+    didSomething |= interface_flushBuffer();
+
+    return didSomething;
+}
+
+#endif // !PD_WITH_NOGUI
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -369,88 +425,12 @@ void sys_vGui (char *format, ...)
     else {
         bufferWasTooSmall = 0;
         interface_outGuiBufferHead += t;
-        interface_outBytesSinceLastPing += t;
     }
     //
     } while (bufferWasTooSmall);
 }
 
 #endif // PD_WITH_NOGUI
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static int interface_flushBuffer (void)
-{
-    size_t need = interface_outGuiBufferHead - interface_outGuiBufferTail;
-    
-    if (need > 0) {
-    //
-    char *p = interface_outGuiBuffer + interface_outGuiBufferTail;
-    ssize_t done = send (interface_guiSocket, (void *)p, need, 0);
-
-    if (done < 0) { PD_BUG; scheduler_needToExitWithError(); }
-    else {
-        if (done == 0) { return 0; }    
-        else if (done == need) { interface_outGuiBufferHead = interface_outGuiBufferTail = 0; }
-        else {
-            PD_ASSERT (done < need); interface_outGuiBufferTail += done;
-        }
-        
-        return 1;
-    }
-    //
-    }
-    
-    return 0;
-}
-
-static int interface_flushQueue (void)
-{
-    const int INTERFACE_GUI_SLICE = 512;
-    const int INTERFACE_GUI_BYTES = 1024;
-    
-    int wherestop = interface_outBytesSinceLastPing + INTERFACE_GUI_SLICE;
-    if (wherestop + (INTERFACE_GUI_SLICE >> 1) > INTERFACE_GUI_BYTES)
-        wherestop = 0x7fffffff;
-    if (interface_outIsWaitingForPing)
-        return (0);
-    if (!interface_outGuiQueue)
-        return (0);
-    while (1)
-    {
-        if (interface_outBytesSinceLastPing >= INTERFACE_GUI_BYTES)
-        {
-            sys_gui("::ping\n");
-            interface_outBytesSinceLastPing = 0;
-            interface_outIsWaitingForPing = 1;
-            return (1);
-        }
-        if (interface_outGuiQueue)
-        {
-            t_guiqueue *headwas = interface_outGuiQueue;
-            interface_outGuiQueue = headwas->gq_next;
-            (*headwas->gq_fn)(headwas->gq_p, headwas->gq_glist);
-            PD_MEMORY_FREE(headwas);
-            if (interface_outBytesSinceLastPing >= wherestop)
-                break;
-        }
-        else break;
-    }
-
-    return (1);
-}
-
-static int interface_flushBufferAndQueue (void)
-{
-    int didSomething = 0;
-    
-    didSomething |= interface_flushQueue();
-    didSomething |= interface_flushBuffer();
-
-    return didSomething;
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
