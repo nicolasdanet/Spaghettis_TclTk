@@ -138,6 +138,13 @@ int  pd_setLoadingAbstraction           (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void sys_gui                            (char *s);
+void sys_vGui                           (char *format, ...);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void pd_initialize                      (void);
 void setup_initialize                   (void);
 void object_initialize                  (void);
@@ -294,15 +301,6 @@ t_error buffer_read                         (t_buffer *x, char *name, t_canvas *
 t_error buffer_write                        (t_buffer *x, char *name, char *directory);
 t_error buffer_evalFile                     (t_symbol *name, t_symbol *directory);
 void    buffer_openFile                     (void *dummy, t_symbol *name, t_symbol *directory);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void    sys_gui                             (char *s);
-void    sys_vGui                            (char *format, ...);
-void    sys_queuegui                        (void *client, t_glist *glist, t_guifn f);
-void    sys_unqueuegui                      (void *client);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

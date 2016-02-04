@@ -545,7 +545,7 @@ static void gatom_retext(t_gatom *x, int senditup)
     buffer_reset(x->a_text.te_buffer);
     buffer_append(x->a_text.te_buffer, 1, &x->a_atom);
     if (senditup && glist_isvisible(x->a_glist))
-        sys_queuegui(x, x->a_glist, gatom_redraw);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->a_glist, gatom_redraw);
 }
 
 static void gatom_set(t_gatom *x, t_symbol *s, int argc, t_atom *argv)
@@ -868,7 +868,7 @@ static void gatom_vis(t_gobj *z, t_glist *glist, int vis)
         else sys_vGui(".x%lx.c delete %lx.l\n", glist_getcanvas(glist), x);
     }
     if (!vis)
-        sys_unqueuegui(x);
+        interface_guiQueueRemove(x);
 }
 
 void canvas_atom(t_glist *gl, t_atomtype type,

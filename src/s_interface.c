@@ -43,6 +43,7 @@
 #pragma mark -
 
 #define INTERFACE_GUI_BUFFER_START_SIZE     32768
+#define INTERFACE_GUI_BUFFER_ABORT_SIZE     (1024 * 1024 * 1024)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -55,7 +56,7 @@ typedef struct _fdpoll {
     } t_fdpoll;
 
 typedef struct _guiqueue {
-    void                *gq_owner;
+    void                *gq_p;
     t_glist             *gq_glist;
     t_guifn             gq_fn;
     struct _guiqueue    *gq_next;
@@ -77,22 +78,26 @@ t_receiver  *interface_inGuiReceiver;                               /* Shared. *
 
 static t_fdpoll             *interface_inPollers;                   /* Shared. */
 
-static int                  interface_inGuiSocket;                  /* Shared. */
 static int                  interface_inPollersSize;                /* Shared. */
 static int                  interface_inMaximumFileDescriptor;      /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static t_guiqueue           *interface_outGuiQueue;                 /* Shared. */
 static char                 *interface_outGuiBuffer;                /* Shared. */
-static t_guiqueue           *interface_outGuiQueueHead;             /* Shared. */
 
 static int                  interface_outGuiBufferSize;             /* Shared. */
 static int                  interface_outGuiBufferHead;             /* Shared. */
 static int                  interface_outGuiBufferTail;             /* Shared. */
-static int                  interface_outWatchdogPipe;              /* Shared. */
 static int                  interface_outIsWaitingForPing;          /* Shared. */
 static int                  interface_outBytesSinceLastPing;        /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static int                  interface_guiSocket;                    /* Shared. */
+static int                  interface_watchdogPipe;                 /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -136,10 +141,10 @@ static void interface_increaseGuiBuffer()
 {
     int oldSize = interface_outGuiBufferSize;
     int newSize = oldSize * 2;
-    PD_ASSERT (newSize <= (1024 * 1024)); PD_ABORT (newSize > (1024 * 1024));
+    PD_ASSERT (newSize <= INTERFACE_GUI_BUFFER_ABORT_SIZE); 
+    PD_ABORT (newSize > INTERFACE_GUI_BUFFER_ABORT_SIZE);
     interface_outGuiBuffer = PD_MEMORY_RESIZE (interface_outGuiBuffer, oldSize, newSize);
     interface_outGuiBufferSize = newSize;
-    post_log ("Resized %d %d", oldSize, newSize);  
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -214,12 +219,61 @@ void interface_socketClose (int fd)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void interface_guiQueueAddIfNotAlreadyThere (void *owner, t_glist *glist, t_guifn f)
+{
+    t_guiqueue **qNext = NULL;
+    t_guiqueue *q = NULL;
+    
+    if (!interface_outGuiQueue) { qNext = &interface_outGuiQueue; }
+    else {
+        t_guiqueue *t = NULL;
+        for (t = interface_outGuiQueue; t->gq_next; t = t->gq_next) { if (t->gq_p == owner) { return; } }
+        if (t->gq_p == owner) { return; }
+        else {
+            qNext = &t->gq_next;
+        }
+    }
+    
+    q = (t_guiqueue *)PD_MEMORY_GET (sizeof (t_guiqueue));
+    
+    q->gq_p     = owner;
+    q->gq_glist = glist;
+    q->gq_fn    = f;
+    q->gq_next  = NULL;
+    
+    *qNext = q;
+}
+
+void interface_guiQueueRemove (void *owner)
+{
+    t_guiqueue *gq, *gq2;
+    while (interface_outGuiQueue && interface_outGuiQueue->gq_p == owner)
+    {
+        gq = interface_outGuiQueue;
+        interface_outGuiQueue = interface_outGuiQueue->gq_next;
+        PD_MEMORY_FREE(gq);
+    }
+    if (!interface_outGuiQueue)
+        return;
+    for (gq = interface_outGuiQueue; gq2 = gq->gq_next; gq = gq2)
+        if (gq2->gq_p == owner)
+    {
+        gq->gq_next = gq2->gq_next;
+        PD_MEMORY_FREE(gq2);
+        break;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void interface_initialize (void)
 {
     #if !PD_WITH_NOGUI
     
-    interface_outGuiBuffer      = (char *)PD_MEMORY_GET (INTERFACE_GUI_BUFFER_START_SIZE);
-    interface_outGuiBufferSize  = INTERFACE_GUI_BUFFER_START_SIZE;
+    interface_outGuiBuffer = (char *)PD_MEMORY_GET (INTERFACE_GUI_BUFFER_START_SIZE);
+    interface_outGuiBufferSize = INTERFACE_GUI_BUFFER_START_SIZE;
 
     #endif
 }
@@ -231,6 +285,8 @@ void interface_release (void)
     PD_MEMORY_FREE (interface_outGuiBuffer);
     
     #endif
+    
+    PD_ASSERT (interface_outGuiQueue == NULL);
     
     receiver_free (interface_inGuiReceiver);
         
@@ -255,7 +311,7 @@ void interface_ping (void *dummy)
 
 void interface_watchdog (void *dummy)
 {
-    if (write (interface_outWatchdogPipe, "\n", 1) < 1) { PD_BUG; scheduler_needToExitWithError(); }
+    if (write (interface_watchdogPipe, "\n", 1) < 1) { PD_BUG; scheduler_needToExitWithError(); }
 }
 
 #endif
@@ -326,7 +382,7 @@ static int interface_FlushGui (void)
     if (need > 0) {
     //
     char *p = interface_outGuiBuffer + interface_outGuiBufferTail;
-    ssize_t done = send (interface_inGuiSocket, (void *)p, need, 0);
+    ssize_t done = send (interface_guiSocket, (void *)p, need, 0);
 
     if (done < 0) { PD_BUG; scheduler_needToExitWithError(); }
     else {
@@ -353,7 +409,7 @@ static int interface_FlushQueue (void)
         wherestop = 0x7fffffff;
     if (interface_outIsWaitingForPing)
         return (0);
-    if (!interface_outGuiQueueHead)
+    if (!interface_outGuiQueue)
         return (0);
     while (1)
     {
@@ -364,11 +420,11 @@ static int interface_FlushQueue (void)
             interface_outIsWaitingForPing = 1;
             return (1);
         }
-        if (interface_outGuiQueueHead)
+        if (interface_outGuiQueue)
         {
-            t_guiqueue *headwas = interface_outGuiQueueHead;
-            interface_outGuiQueueHead = headwas->gq_next;
-            (*headwas->gq_fn)(headwas->gq_owner, headwas->gq_glist);
+            t_guiqueue *headwas = interface_outGuiQueue;
+            interface_outGuiQueue = headwas->gq_next;
+            (*headwas->gq_fn)(headwas->gq_p, headwas->gq_glist);
             PD_MEMORY_FREE(headwas);
             if (interface_outBytesSinceLastPing >= wherestop)
                 break;
@@ -391,53 +447,6 @@ static int interface_FlushGuiAndQueue (void)
         return (1);
     
     return (0);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void sys_queuegui(void *client, t_glist *glist, t_guifn f)
-{
-    t_guiqueue **gqnextptr, *gq;
-    if (!interface_outGuiQueueHead)
-        gqnextptr = &interface_outGuiQueueHead;
-    else
-    {
-        for (gq = interface_outGuiQueueHead; gq->gq_next; gq = gq->gq_next)
-            if (gq->gq_owner == client)
-                return;
-        if (gq->gq_owner == client)
-            return;
-        gqnextptr = &gq->gq_next;
-    }
-    gq = PD_MEMORY_GET(sizeof(*gq));
-    gq->gq_next = 0;
-    gq->gq_owner = client;
-    gq->gq_glist = glist;
-    gq->gq_fn = f;
-    gq->gq_next = 0;
-    *gqnextptr = gq;
-}
-
-void sys_unqueuegui(void *client)
-{
-    t_guiqueue *gq, *gq2;
-    while (interface_outGuiQueueHead && interface_outGuiQueueHead->gq_owner == client)
-    {
-        gq = interface_outGuiQueueHead;
-        interface_outGuiQueueHead = interface_outGuiQueueHead->gq_next;
-        PD_MEMORY_FREE(gq);
-    }
-    if (!interface_outGuiQueueHead)
-        return;
-    for (gq = interface_outGuiQueueHead; gq2 = gq->gq_next; gq = gq2)
-        if (gq2->gq_owner == client)
-    {
-        gq->gq_next = gq2->gq_next;
-        PD_MEMORY_FREE(gq2);
-        break;
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -495,7 +504,7 @@ int sys_startgui(const char *libdir)
         struct sockaddr_in server;
         struct hostent *hp;
 #ifdef __APPLE__
-            /* interface_inGuiSocket might be 1 or 2, which will have offensive results
+            /* interface_guiSocket might be 1 or 2, which will have offensive results
             if somebody writes to stdout or stderr - so we just open a few
             files to try to fill fds 0 through 2.  (I tried using dup()
             instead, which would seem the logical way to do this, but couldn't
@@ -510,8 +519,8 @@ int sys_startgui(const char *libdir)
             close(burnfd3);
 #endif
         /* create a socket */
-        interface_inGuiSocket = socket(AF_INET, SOCK_STREAM, 0);
-        if (interface_inGuiSocket < 0)
+        interface_guiSocket = socket(AF_INET, SOCK_STREAM, 0);
+        if (interface_guiSocket < 0)
             PD_BUG;
         
         /* connect socket using hostname provided in command line */
@@ -531,7 +540,7 @@ int sys_startgui(const char *libdir)
         server.sin_port = htons((unsigned short)main_portNumber);
 
             /* try to connect */
-        if (connect(interface_inGuiSocket, (struct sockaddr *) &server, sizeof (server))
+        if (connect(interface_guiSocket, (struct sockaddr *) &server, sizeof (server))
             < 0)
         {
             PD_BUG;
@@ -790,7 +799,7 @@ int sys_startgui(const char *libdir)
                 stupid child process (as seems to happen if jackd auto-starts
                 for us.) */
             fcntl(pipe9[1], F_SETFD, FD_CLOEXEC);
-            interface_outWatchdogPipe = pipe9[1];
+            interface_watchdogPipe = pipe9[1];
                 /* We also have to start the ping loop in the GUI;
                 this is done later when the socket is open. */
         }
@@ -823,12 +832,12 @@ int sys_startgui(const char *libdir)
             fprintf(stderr, "Waiting for connection request... \n");
         if (listen(xsock, 5) < 0) PD_BUG;
 
-        interface_inGuiSocket = accept(xsock, (struct sockaddr *) &server, 
+        interface_guiSocket = accept(xsock, (struct sockaddr *) &server, 
             (socklen_t *)&len);
 #ifdef OOPS
         interface_socketClose(xsock);
 #endif
-        if (interface_inGuiSocket < 0) PD_BUG;
+        if (interface_guiSocket < 0) PD_BUG;
         if (0)
             fprintf(stderr, "... connected\n");
         interface_outGuiBufferHead = interface_outGuiBufferTail = 0;
@@ -836,7 +845,7 @@ int sys_startgui(const char *libdir)
     if (!PD_WITH_NOGUI)
     {
         char buf[256], buf2[256];
-        interface_inGuiReceiver = receiver_new (NULL, interface_inGuiSocket, NULL, NULL, 0);
+        interface_inGuiReceiver = receiver_new (NULL, interface_guiSocket, NULL, NULL, 0);
 
             /* here is where we start the pinging. */
 #if defined(__linux__) || defined(__FreeBSD_kernel__)

@@ -13,6 +13,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "s_system.h"
 #include "g_canvas.h"
 
 #include "g_iem.h"
@@ -202,7 +203,7 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
              x, 1);*/
 
     x->x_updaterms = x->x_updatepeak = 1;
-    sys_queuegui(x, x->x_gui.x_glist, vu_draw_update);
+    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, vu_draw_update);
 }
 
 
@@ -238,7 +239,7 @@ static void vu_draw_move(t_vu *x, t_glist *glist)
                  canvas, x, i, end, yyy+k3);*/
     }
     x->x_updaterms = x->x_updatepeak = 1;
-    sys_queuegui(x, glist, vu_draw_update);
+    interface_guiQueueAddIfNotAlreadyThere(x, glist, vu_draw_update);
     sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
              canvas, x, xpos+x->x_gui.x_ldx,
              ypos+x->x_gui.x_ldy);
@@ -585,7 +586,7 @@ static void vu_float(t_vu *x, t_float rms)
     outlet_float(x->x_out_rms, rms);
     x->x_updaterms = 1;
     if(x->x_rms != old)
-        sys_queuegui(x, x->x_gui.x_glist, vu_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, vu_draw_update);
 }
 
 static void vu_ft1(t_vu *x, t_float peak)
@@ -606,7 +607,7 @@ static void vu_ft1(t_vu *x, t_float peak)
     x->x_fp = peak;
     x->x_updatepeak = 1;
     if(x->x_peak != old)
-        sys_queuegui(x, x->x_gui.x_glist, vu_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, vu_draw_update);
     outlet_float(x->x_out_peak, peak);
 }
 
@@ -615,7 +616,7 @@ static void vu_bang(t_vu *x)
     outlet_float(x->x_out_peak, x->x_fp);
     outlet_float(x->x_out_rms, x->x_fr);
     x->x_updaterms = x->x_updatepeak = 1;
-    sys_queuegui(x, x->x_gui.x_glist, vu_draw_update);
+    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, vu_draw_update);
 }
 
 static void *vu_new(t_symbol *s, int argc, t_atom *argv)

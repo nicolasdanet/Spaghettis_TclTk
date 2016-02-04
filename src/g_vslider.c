@@ -13,6 +13,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "s_system.h"
 #include "g_canvas.h"
 
 #include "g_iem.h"
@@ -173,7 +174,7 @@ static void vslider_draw_select(t_vslider *x, t_glist *glist)
 void vslider_draw(t_vslider *x, t_glist *glist, int mode)
 {
     if(mode == IEM_DRAW_UPDATE)
-        sys_queuegui(x, glist, vslider_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, glist, vslider_draw_update);
     else if(mode == IEM_DRAW_MOVE)
         vslider_draw_move(x, glist);
     else if(mode == IEM_DRAW_NEW)

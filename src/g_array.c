@@ -8,6 +8,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "s_system.h"
 #include "g_canvas.h"
 #include <math.h>
 
@@ -574,7 +575,7 @@ void garray_arrayviewlist_close(t_garray *x)
 static void garray_free(t_garray *x)
 {
     t_pd *x2;
-        sys_unqueuegui(&x->x_gobj);
+        interface_guiQueueRemove(&x->x_gobj);
     /* jsarlo { */
         if (x->x_listviewing)
     {
@@ -800,7 +801,7 @@ static void garray_doredraw(t_gobj *client, t_glist *glist)
 void garray_redraw(t_garray *x)
 {
     if (glist_isvisible(x->x_glist))
-        sys_queuegui(&x->x_gobj, x->x_glist, garray_doredraw);
+        interface_guiQueueAddIfNotAlreadyThere(&x->x_gobj, x->x_glist, garray_doredraw);
     /* jsarlo { */
     /* this happens in garray_vis() when array is visible for
        performance reasons */

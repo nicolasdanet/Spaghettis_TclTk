@@ -14,6 +14,7 @@ put out a "float" as in sliders, toggles, etc. */
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "s_system.h"
 #include "g_canvas.h"
 
 #include "g_iem.h"
@@ -204,7 +205,7 @@ void vradio_draw_select(t_vradio* x, t_glist* glist)
 void vradio_draw(t_vradio *x, t_glist *glist, int mode)
 {
     if(mode == IEM_DRAW_UPDATE)
-        sys_queuegui(x, glist, vradio_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, glist, vradio_draw_update);
     else if(mode == IEM_DRAW_MOVE)
         vradio_draw_move(x, glist);
     else if(mode == IEM_DRAW_NEW)

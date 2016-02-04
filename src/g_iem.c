@@ -424,7 +424,7 @@ void iem_vis(t_gobj *z, t_glist *glist, int vis)
     else
     {
         (*x->x_draw)((void *)z, glist, IEM_DRAW_ERASE);
-        sys_unqueuegui(z);
+        interface_guiQueueRemove(z);
     }
 }
 

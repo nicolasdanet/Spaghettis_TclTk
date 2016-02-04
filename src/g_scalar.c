@@ -14,6 +14,7 @@ can contain numbers, sublists, and arrays.
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "s_system.h"
 #include "g_canvas.h"
 
 t_class *scalar_class; /* Shared. */
@@ -321,7 +322,7 @@ static void scalar_vis(t_gobj *z, t_glist *owner, int vis)
         scalar_drawselectrect(x, owner, 0);
         scalar_drawselectrect(x, owner, 1);
     }
-    sys_unqueuegui(x);
+    interface_guiQueueRemove(x);
 }
 
 static void scalar_doredraw(t_gobj *client, t_glist *glist)
@@ -333,7 +334,7 @@ static void scalar_doredraw(t_gobj *client, t_glist *glist)
 void scalar_redraw(t_scalar *x, t_glist *glist)
 {
     if (glist_isvisible(glist))
-        sys_queuegui(x, glist, scalar_doredraw);
+        interface_guiQueueAddIfNotAlreadyThere(x, glist, scalar_doredraw);
 }
 
 extern void template_notifyforscalar(t_template *template, t_glist *owner,

@@ -11,6 +11,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "s_system.h"
 #include "g_canvas.h"
 
 #include "g_iem.h"
@@ -44,13 +45,13 @@ static void my_numbox_tick_reset(t_my_numbox *x)
     if(x->x_gui.x_fsf.x_change && x->x_gui.x_glist)
     {
         x->x_gui.x_fsf.x_change = 0;
-        sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
     }
 }
 
 static void my_numbox_tick_wait(t_my_numbox *x)
 {
-    sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
+    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
 }
 
 void my_numbox_clip(t_my_numbox *x)
@@ -313,7 +314,7 @@ static void my_numbox_draw_select(t_my_numbox *x, t_glist *glist)
             x->x_gui.x_fsf.x_change = 0;
             clock_unset(x->x_clock_reset);
             x->x_buf[0] = 0;
-            sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
+            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
         }
         sys_vGui(".x%lx.c itemconfigure %lxBASE1 -outline #%6.6x\n",
             canvas, x, IEM_COLOR_SELECTED);
@@ -340,7 +341,7 @@ static void my_numbox_draw_select(t_my_numbox *x, t_glist *glist)
 void my_numbox_draw(t_my_numbox *x, t_glist *glist, int mode)
 {
     if(mode == IEM_DRAW_UPDATE)
-        sys_queuegui(x, glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, glist, my_numbox_draw_update);
     else if(mode == IEM_DRAW_MOVE)
         my_numbox_draw_move(x, glist);
     else if(mode == IEM_DRAW_NEW)
@@ -380,7 +381,7 @@ static void my_numbox_save(t_gobj *z, t_buffer *b)
     {
         x->x_gui.x_fsf.x_change = 0;
         clock_unset(x->x_clock_reset);
-        sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
     }
     buffer_vAppend(b, "ssiisiiffiisssiiiiiiifi", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.x_obj.te_xCoordinate, (int)x->x_gui.x_obj.te_yCoordinate,
@@ -444,7 +445,7 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
     {
         x->x_gui.x_fsf.x_change = 0;
         clock_unset(x->x_clock_reset);
-        sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
 
     }
     sprintf(buf, "::ui_iem::create %%s Number \
@@ -523,7 +524,7 @@ static void my_numbox_motion(t_my_numbox *x, t_float dx, t_float dy)
     else
         x->x_val -= k2*dy;
     my_numbox_clip(x);
-    sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
+    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
     my_numbox_bang(x);
     clock_unset(x->x_clock_reset);
 }
@@ -561,7 +562,7 @@ static int my_numbox_newclick(t_gobj *z, struct _glist *glist,
             x->x_gui.x_fsf.x_change = 0;
             clock_unset(x->x_clock_reset);
             x->x_buf[0] = 0;
-            sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
+            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
         }
     }
     return (1);
@@ -573,7 +574,7 @@ static void my_numbox_set(t_my_numbox *x, t_float f)
     {
         x->x_val = f;
         my_numbox_clip(x);
-        sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
     }
 }
 
@@ -626,7 +627,7 @@ static void my_numbox_range(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
     if(my_numbox_check_minmax(x, (double)atom_getFloatAtIndex(0, ac, av),
                               (double)atom_getFloatAtIndex(1, ac, av)))
     {
-        sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
         /*my_numbox_bang(x);*/
     }
 }
@@ -667,7 +668,7 @@ static void my_numbox_log(t_my_numbox *x)
     x->x_lin0_log1 = 1;
     if(my_numbox_check_minmax(x, x->x_min, x->x_max))
     {
-        sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
         /*my_numbox_bang(x);*/
     }
 }
@@ -686,7 +687,7 @@ static void my_numbox_loadbang(t_my_numbox *x)
 {
     if(x->x_gui.x_isa.x_loadinit)
     {
-        sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
         my_numbox_bang(x);
     }
 }
@@ -702,7 +703,7 @@ static void my_numbox_key(void *z, t_float fkey)
     {
         x->x_gui.x_fsf.x_change = 0;
         clock_unset(x->x_clock_reset);
-        sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
         return;
     }
     if(((c>='0')&&(c<='9'))||(c=='.')||(c=='-')||
@@ -712,7 +713,7 @@ static void my_numbox_key(void *z, t_float fkey)
         {
             buf[0] = c;
             strcat(x->x_buf, buf);
-            sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
+            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
         }
     }
     else if((c=='\b')||(c==127))
@@ -722,7 +723,7 @@ static void my_numbox_key(void *z, t_float fkey)
         if(sl < 0)
             sl = 0;
         x->x_buf[sl] = 0;
-        sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
     }
     else if((c=='\n')||(c==13))
     {
@@ -732,7 +733,7 @@ static void my_numbox_key(void *z, t_float fkey)
         clock_unset(x->x_clock_reset);
         my_numbox_clip(x);
         my_numbox_bang(x);
-        sys_queuegui(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
     }
     clock_delay(x->x_clock_reset, 3000);
 }
