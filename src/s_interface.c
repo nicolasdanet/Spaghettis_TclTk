@@ -106,7 +106,7 @@ static int                  interface_watchdogPipe;                 /* Shared. *
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int interface_pollSockets (int microseconds)
+static int interface_monitorInOut (int microseconds)
 {
     int didSomething = 0;
     struct timeval timeOut;
@@ -154,17 +154,17 @@ static void interface_increaseGuiBuffer()
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int interface_socketPollBlocking (int microseconds)
+int interface_monitorBlocking (int microseconds)
 {
-    return interface_pollSockets (microseconds);
+    return interface_monitorInOut (microseconds);
 }
 
-int interface_socketPollNonBlocking (void)
+int interface_monitorNonBlocking (void)
 {
-    return interface_pollSockets (0);
+    return interface_monitorInOut (0);
 }
 
-void interface_socketAddCallback (int fd, t_pollfn fn, void *ptr)
+void interface_monitorAddPoller (int fd, t_pollfn fn, void *ptr)
 {
     int n = interface_inPollersSize;
     int oldSize = n * sizeof (t_fdpoll);
@@ -185,7 +185,7 @@ void interface_socketAddCallback (int fd, t_pollfn fn, void *ptr)
     if (fd > interface_inMaximumFileDescriptor) { interface_inMaximumFileDescriptor = fd; }
 }
 
-void interface_socketRemoveCallback (int fd)
+void interface_monitorRemovePoller (int fd)
 {
     int n = interface_inPollersSize;
     int oldSize = n * sizeof (t_fdpoll);
@@ -207,15 +207,6 @@ void interface_socketRemoveCallback (int fd)
     }
     //
     }
-}
-
-void interface_socketClose (int fd)
-{
-    #if PD_WINDOWS
-        closesocket (fd);
-    #else
-        close (fd);
-    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -273,6 +264,19 @@ void interface_guiQueueRelease (void)
     PD_MEMORY_FREE (first);
     //
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void interface_closeSocket (int fd)
+{
+    #if PD_WINDOWS
+        closesocket (fd);
+    #else
+        close (fd);
+    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -444,16 +448,16 @@ void sys_vGui (char *format, ...)
 
 #if PD_WITH_NOGUI
 
-int interface_pollSocketsOrFlushGui (void)
+int interface_pollOrFlushGui (void)
 {
-    return (interface_socketPollNonBlocking());
+    return (interface_monitorNonBlocking());
 }
 
 #else
 
-int interface_pollSocketsOrFlushGui (void)
+int interface_pollOrFlushGui (void)
 {
-    return (interface_socketPollNonBlocking() || interface_flushBufferAndQueue());
+    return (interface_monitorNonBlocking() || interface_flushBufferAndQueue());
 }
 
 #endif
@@ -795,7 +799,7 @@ t_error interface_start (void)
 
         interface_guiSocket = accept (xsock, (struct sockaddr *) &server, (socklen_t *)&length);
 #ifdef OOPS
-        interface_socketClose(xsock);
+        interface_closeSocket(xsock);
 #endif
         if (interface_guiSocket < 0) PD_BUG;
         if (0)

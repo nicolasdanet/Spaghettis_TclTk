@@ -25,8 +25,8 @@ extern t_receiver   *interface_inGuiReceiver;
 static void receiver_closeSocketAndRemoveCallback (t_receiver *x)
 {
     if (!x->r_isClosed) {
-        interface_socketClose (x->r_fd);
-        interface_socketRemoveCallback (x->r_fd);
+        interface_closeSocket (x->r_fd);
+        interface_monitorRemovePoller (x->r_fd);
         x->r_isClosed = 1;
     }
 }
@@ -50,7 +50,7 @@ t_receiver *receiver_new (void *owner, int fd, t_notifyfn notify, t_receivefn re
     x->r_fnNotify   = notify;
     x->r_fnReceive  = receive;
 
-    interface_socketAddCallback (x->r_fd, (t_pollfn)receiver_read, x);
+    interface_monitorAddPoller (x->r_fd, (t_pollfn)receiver_read, x);
     
     return x;
 }

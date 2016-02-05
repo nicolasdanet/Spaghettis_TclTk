@@ -261,14 +261,14 @@ void        receiver_read                       (t_receiver *x, int fd);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int     interface_socketPollBlocking            (int microseconds);
-int     interface_socketPollNonBlocking         (void);
-void    interface_socketAddCallback             (int fd, t_pollfn fn, void *ptr);
-void    interface_socketRemoveCallback          (int fd);
-void    interface_socketClose                   (int fd);
+int     interface_monitorBlocking               (int microseconds);
+int     interface_monitorNonBlocking            (void);
+void    interface_monitorAddPoller              (int fd, t_pollfn fn, void *ptr);
+void    interface_monitorRemovePoller           (int fd);
 void    interface_guiQueueAddIfNotAlreadyThere  (void *owner, t_glist *glist, t_guifn f);
 void    interface_guiQueueRemove                (void *owner);
-int     interface_pollSocketsOrFlushGui         (void);
+int     interface_pollOrFlushGui                (void);
+void    interface_closeSocket                   (int fd);
 void    interface_initialize                    (void);
 void    interface_release                       (void);
 void    interface_quit                          (void *dummy);

@@ -281,14 +281,14 @@ static void scheduler_withLoop (void)
 
     sys_pollmidiqueue();
     
-    if (!scheduler_quit && interface_pollSocketsOrFlushGui()) { didSomething = 1; }
+    if (!scheduler_quit && interface_pollOrFlushGui()) { didSomething = 1; }
 
     if (!scheduler_quit && !didSomething) {
     //
     scheduler_pollWatchdog();
 
     SCHEDULER_UNLOCK;
-    if (timeForward != DACS_SLEPT) { interface_socketPollBlocking (scheduler_sleepGrain); }
+    if (timeForward != DACS_SLEPT) { interface_monitorBlocking (scheduler_sleepGrain); }
     SCHEDULER_LOCK;
     //
     }
@@ -318,7 +318,7 @@ static void scheduler_withCallback (void)
     //
     SCHEDULER_LOCK;
     
-    interface_pollSocketsOrFlushGui();
+    interface_pollOrFlushGui();
     scheduler_tick();
     
     SCHEDULER_UNLOCK;
@@ -339,7 +339,7 @@ void scheduler_audioCallback (void)
     sys_setmiditimediff (0.0, 1e-6 * sys_schedadvance);
     scheduler_tick();
     sys_pollmidiqueue();
-    interface_pollSocketsOrFlushGui();
+    interface_pollOrFlushGui();
     scheduler_pollWatchdog();
     
     SCHEDULER_UNLOCK;
