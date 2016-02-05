@@ -187,12 +187,14 @@ int main_entry (int argc, char **argv)
     preferences_load();
     sys_setSignalHandlers();
     
-    if (sys_startgui (main_rootDirectory->s_name)) { return 1; }
-    sys_reopen_midi();
-    if (audio_shouldkeepopen()) { sys_reopen_audio(); }
-
-    if (!(err |= main_entryVersion (1))) { err |= scheduler_main(); }
-
+    PD_ASSERT (main_rootDirectory != NULL);
+    
+    if (!(err |= interface_start())) {
+        sys_reopen_midi();
+        if (audio_shouldkeepopen()) { sys_reopen_audio(); }
+        if (!(err |= main_entryVersion (1))) { err |= scheduler_main(); }
+    }
+    
     interface_release();
     pd_release();
     //

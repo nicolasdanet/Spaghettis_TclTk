@@ -65,8 +65,13 @@ typedef struct _guiqueue {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int  sys_audioapi;
-extern int  main_portNumber;
+extern t_symbol *main_rootDirectory;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+extern int sys_audioapi;
+extern int main_portNumber;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -455,8 +460,9 @@ int interface_pollSocketsOrFlushGui (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int sys_startgui(const char *libdir)
+t_error interface_start (void)
 {
+    const char *libdir = main_rootDirectory->s_name;
     char *interface_commandToLaunchGUI;
     char cmdbuf[4*PD_STRING];
     struct sockaddr_in server;
@@ -485,21 +491,7 @@ int sys_startgui(const char *libdir)
     {
         struct sockaddr_in server;
         struct hostent *hp;
-#ifdef __APPLE__
-            /* interface_guiSocket might be 1 or 2, which will have offensive results
-            if somebody writes to stdout or stderr - so we just open a few
-            files to try to fill fds 0 through 2.  (I tried using dup()
-            instead, which would seem the logical way to do this, but couldn't
-            get it to work.) */
-        int burnfd1 = open("/dev/null", 0), burnfd2 = open("/dev/null", 0),
-            burnfd3 = open("/dev/null", 0);
-        if (burnfd1 > 2)
-            close(burnfd1);
-        if (burnfd2 > 2)
-            close(burnfd2);
-        if (burnfd3 > 2)
-            close(burnfd3);
-#endif
+
         /* create a socket */
         interface_guiSocket = socket(AF_INET, SOCK_STREAM, 0);
         if (interface_guiSocket < 0)

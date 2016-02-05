@@ -261,18 +261,19 @@ void        receiver_read                       (t_receiver *x, int fd);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int  interface_socketPollBlocking               (int microseconds);
-int  interface_socketPollNonBlocking            (void);
-void interface_socketAddCallback                (int fd, t_pollfn fn, void *ptr);
-void interface_socketRemoveCallback             (int fd);
-void interface_socketClose                      (int fd);
-void interface_guiQueueAddIfNotAlreadyThere     (void *owner, t_glist *glist, t_guifn f);
-void interface_guiQueueRemove                   (void *owner);
-void interface_initialize                       (void);
-void interface_release                          (void);
-void interface_quit                             (void *dummy);
-void interface_watchdog                         (void *dummy);
-int  interface_pollSocketsOrFlushGui            (void);
+int     interface_socketPollBlocking            (int microseconds);
+int     interface_socketPollNonBlocking         (void);
+void    interface_socketAddCallback             (int fd, t_pollfn fn, void *ptr);
+void    interface_socketRemoveCallback          (int fd);
+void    interface_socketClose                   (int fd);
+void    interface_guiQueueAddIfNotAlreadyThere  (void *owner, t_glist *glist, t_guifn f);
+void    interface_guiQueueRemove                (void *owner);
+int     interface_pollSocketsOrFlushGui         (void);
+void    interface_initialize                    (void);
+void    interface_release                       (void);
+void    interface_quit                          (void *dummy);
+void    interface_watchdog                      (void *dummy);
+t_error interface_start                         (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -280,12 +281,6 @@ int  interface_pollSocketsOrFlushGui            (void);
 
 void preferences_load                           (void);
 void preferences_save                           (void *dummy);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int  sys_startgui                           (const char *guipath);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
