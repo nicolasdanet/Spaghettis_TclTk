@@ -154,7 +154,6 @@ extern "C" {
 #define PD_VERSION              "0.9"
 #define PD_FILE                 ".pd"
 
-#define PD_EXE_WISH             "wish85.exe"
 #define PD_BIN_DIRECTORY        "bin/"
 #define PD_TCL_DIRECTORY        "tcl/"
 
@@ -213,14 +212,13 @@ extern "C" {
     
 #else
 
-#include <glob.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <pthread.h>
+#include <sched.h>
 #include <sys/mman.h>
 #include <sys/resource.h>
-#include <sched.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/time.h>

@@ -70,8 +70,8 @@ extern t_symbol *main_rootDirectory;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int sys_audioapi;
-extern int main_portNumber;
+extern int  sys_audioapi;
+extern int  main_portNumber;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -281,11 +281,13 @@ void interface_guiQueueRelease (void)
 
 void interface_initialize (void)
 {
+    interface_inPollers = (t_fdpoll *)PD_MEMORY_GET (0);
+    
     #if ! ( PD_WITH_NOGUI )
     
     interface_outGuiBuffer     = (char *)PD_MEMORY_GET (INTERFACE_GUI_BUFFER_START_SIZE);
     interface_outGuiBufferSize = INTERFACE_GUI_BUFFER_START_SIZE;
-
+    
     #endif
 }
 
@@ -298,7 +300,7 @@ void interface_release (void)
     
     #endif
     
-    receiver_free (interface_inGuiReceiver);
+    if (interface_inGuiReceiver) { receiver_free (interface_inGuiReceiver); }
     PD_MEMORY_FREE (interface_inPollers);
 }
 
@@ -460,17 +462,202 @@ int interface_pollSocketsOrFlushGui (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static t_error interface_fetchGui (struct sockaddr_in *server)
+{
+    struct hostent *host = gethostbyname (INTERFACE_LOCALHOST);
+    t_error err = ((interface_guiSocket = socket (AF_INET, SOCK_STREAM, 0)) < 0);
+    
+    PD_ASSERT (!err);
+    
+    if (host && !err) {
+        server->sin_family = AF_INET;
+        server->sin_port = htons ((unsigned short)main_portNumber);
+        memcpy ((char *)&server->sin_addr, (char *)host->h_addr, host->h_length);
+        err |= connect (interface_guiSocket, (struct sockaddr *)server, sizeof (struct sockaddr_in));
+        PD_ASSERT (!err);
+    }
+    
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if PD_WINDOWS
+
+static t_error interface_launchGuiSpawnProcess (void) 
+{
+    t_error err = PD_ERROR_NONE;
+    
+    char path[PD_STRING] = { 0 };
+    char port[PD_STRING] = { 0 };
+    char wish[PD_STRING] = { 0 };
+
+    int spawned;
+
+    err |= string_copy (path, PD_STRING, "\"");
+    err |= string_add (path, PD_STRING, main_rootDirectory->s_name);
+    err |= string_add (path, PD_STRING, "/" PD_TCL_DIRECTORY "ui_main.tcl\"");
+    
+    err |= string_sprintf (port, PD_STRING, "%d", port);
+    
+    err |= string_copy (wish, PD_STRING, "\"");
+    err |= string_add (wish, PD_STRING, main_rootDirectory->s_name);
+    err |= string_add (wish, PD_STRING, "/" PD_BIN_DIRECTORY "wish85.exe\"");
+    
+    if (!err) {
+        sys_bashfilename (path, path);
+        sys_bashfilename (wish, wish);
+        err |= ((spawned = _spawnl (P_NOWAIT, wish, "wish85.exe", path, port, 0)) < 0);
+    }
+    
+    PD_ASSERT (!err);
+    
+    return err;
+}
+
+#else
+
+static t_error interface_launchGuiSpawnProcess (void) 
+{
+    t_error err = PD_ERROR_NONE;
+    
+    char command[PD_STRING] = { 0 };
+    
+#if PD_APPLE
+
+    char *wish[10] = 
+        {
+            "/Applications/Utilities/Wish.app/Contents/MacOS/Wish",
+            "/Applications/Utilities/Wish Shell.app/Contents/MacOS/Wish Shell",
+            "/Applications/Wish.app/Contents/MacOS/Wish",
+            "/Applications/Wish Shell.app/Contents/MacOS/Wish Shell",
+            "/Library/Frameworks/Tk.framework/Resources/Wish.app/Contents/MacOS/Wish",
+            "/Library/Frameworks/Tk.framework/Resources/Wish Shell.app/Contents/MacOS/Wish Shell",
+            "/System/Library/Frameworks/Tk.framework/Resources/Wish.app/Contents/MacOS/Wish",
+            "/System/Library/Frameworks/Tk.framework/Resources/Wish Shell.app/Contents/MacOS/Wish Shell",
+            "/usr/bin/wish"
+            "wish"
+        };
+    
+    int i; for (i = 0; i < 9; i++) { if (path_isFileExist (wish[i])) { break; } }
+    
+    err |= string_sprintf (command, PD_STRING, 
+            "\"%s\" \"%s/%sui_main.tcl\" %d\n", 
+            wish[i], 
+            main_rootDirectory->s_name, 
+            PD_TCL_DIRECTORY, 
+            main_portNumber);
+
+#else
+    
+    err |= string_sprintf (command, PD_STRING, 
+            "TCL_LIBRARY=\"%s/lib/tcl/library\" TK_LIBRARY=\"%s/lib/tk/library\"%s \
+            wish \"%s/" PD_TCL_DIRECTORY "/ui_main.tcl\" %d\n",
+            main_rootDirectory->s_name,
+            main_rootDirectory->s_name, 
+            (getenv ("HOME") ? "" : " HOME=/tmp"),
+            main_rootDirectory->s_name, 
+            main_portNumber);
+                    
+#endif // PD_APPLE
+
+    post_log ("%s", command);
+    
+    if (!err) {
+    //
+    pid_t pid = fork();
+    
+    if (pid < 0)   { err = PD_ERROR; PD_BUG; }
+    else if (!pid) {
+        setuid (getuid());                                              /* Lose setuid privileges. */
+        execl ("/bin/sh", "sh", "-c", command, NULL); _exit (1);
+    }
+    //
+    }
+       
+    return err;
+}
+
+#endif // PD_WINDOWS
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_error interface_launchGuiSocket (struct sockaddr_in *server)
+{
+    int f = -1;
+    t_error err = ((f = socket (AF_INET, SOCK_STREAM, 0)) < 0);
+        
+    #if PD_WINDOWS
+        char arg = 1;
+        err |= (setsockopt (f, IPPROTO_TCP, TCP_NODELAY, &arg, sizeof (char)) < 0);
+    #else
+        int arg = 1;
+        err |= (setsockopt (f, IPPROTO_TCP, TCP_NODELAY, &arg, sizeof (int)) < 0);
+    #endif
+
+    if (err) { PD_BUG; }
+    else {
+    //
+    main_portNumber = INTERFACE_PORT;
+    int n = 0;
+    
+    server->sin_family = AF_INET;
+    server->sin_addr.s_addr = INADDR_ANY;
+    server->sin_port = htons ((unsigned short)main_portNumber);
+
+    while (bind (f, (struct sockaddr *)server, sizeof (struct sockaddr_in)) < 0) {
+    //
+    #if PD_WINDOWS
+        int e = WSAGetLastError();
+    #else
+        int e = errno;
+    #endif
+
+    if ((n++ > 20) || (e != EADDRINUSE)) { err |= PD_ERROR; PD_BUG; break; } 
+    else {
+        server->sin_port = htons ((unsigned short)++main_portNumber);
+    }
+    //
+    }
+    //
+    }
+    
+    PD_ASSERT (!err);
+    
+    return err;
+}
+
+static t_error interface_launchGui (struct sockaddr_in *server)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    if (!(err |= interface_launchGuiSocket (server))) { err |= interface_launchGuiSpawnProcess(); }
+    
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_error interface_start (void)
 {
-    const char *libdir = main_rootDirectory->s_name;
-    char *interface_commandToLaunchGUI;
-    char cmdbuf[4*PD_STRING];
+    t_error err = PD_ERROR_NONE;
+    
+    char command[PD_STRING];
     struct sockaddr_in server;
+    
+    socklen_t length = sizeof (struct sockaddr_in);
+    
     int msgsock;
     char buf[15];
-    int len = sizeof(server);
+
     int ntry = 0, portno = INTERFACE_PORT;
     int xsock = -1, dumbo = -1;
+    
 #ifdef _WIN32
     short version = MAKEWORD(2, 0);
     WSADATA nobby;
@@ -479,221 +666,21 @@ t_error interface_start (void)
     pid_t childpid;
 #endif /* _WIN32 */
 
-    interface_inPollers = (t_fdpoll *)PD_MEMORY_GET(0);
-    interface_inPollersSize = 0;
-
 #ifdef _WIN32
     if (WSAStartup(version, &nobby)) PD_BUG;
 #endif /* _WIN32 */
 
-    if (PD_WITH_NOGUI) { }
-    else if (main_portNumber)  /* GUI exists and sent us a port number */
-    {
-        struct sockaddr_in server;
-        struct hostent *hp;
-
-        /* create a socket */
-        interface_guiSocket = socket(AF_INET, SOCK_STREAM, 0);
-        if (interface_guiSocket < 0)
-            PD_BUG;
-        
-        /* connect socket using hostname provided in command line */
-        server.sin_family = AF_INET;
-
-        hp = gethostbyname(INTERFACE_LOCALHOST);
-
-        if (hp == 0)
-        {
-            fprintf(stderr,
-                "localhost not found (inet protocol not installed?)\n");
-            return (1);
-        }
-        memcpy((char *)&server.sin_addr, (char *)hp->h_addr, hp->h_length);
-
-        /* assign client port number */
-        server.sin_port = htons((unsigned short)main_portNumber);
-
-            /* try to connect */
-        if (connect(interface_guiSocket, (struct sockaddr *) &server, sizeof (server))
-            < 0)
-        {
-            PD_BUG;
-            return (1);
-        }
+    #if !PD_WITH_NOGUI
+    
+    if (main_portNumber) { err = interface_fetchGui (&server); }            /* Wish first. */
+    else {
+        err = interface_launchGui (&server);                                /* Binary first. */
     }
-    else    /* default behavior: start up the GUI ourselves. */
-    {
-#ifdef _WIN32
-        char scriptbuf[PD_STRING+30], wishbuf[PD_STRING+30], portbuf[80];
-        int spawnret;
-        char intarg;
-#else
-        int intarg;
-#endif
+    
+    #endif 
 
-        /* create a socket */
-        xsock = socket(AF_INET, SOCK_STREAM, 0);
-        if (xsock < 0) PD_BUG;
-        intarg = 1;
-        if (setsockopt(xsock, IPPROTO_TCP, TCP_NODELAY,
-            &intarg, sizeof(intarg)) < 0)
-#ifndef _WIN32
-                post("setsockopt (TCP_NODELAY) failed\n")
-#endif
-                    ;
-        
-        
-        server.sin_family = AF_INET;
-        server.sin_addr.s_addr = INADDR_ANY;
-
-        /* assign server port number */
-        server.sin_port =  htons((unsigned short)portno);
-
-        /* name the socket */
-        while (bind(xsock, (struct sockaddr *)&server, sizeof(server)) < 0)
-        {
-#ifdef _WIN32
-            int err = WSAGetLastError();
-#else
-            int err = errno;
-#endif
-            if ((ntry++ > 20) || (err != EADDRINUSE))
-            {
-                perror("bind");
-                fprintf(stderr,
-                    "Pd needs your machine to be configured with\n");
-                fprintf(stderr,
-                  "'networking' turned on (see Pd's html doc for details.)\n");
-                return (1);
-            }
-            portno++;
-            server.sin_port = htons((unsigned short)(portno));
-        }
-
-        if (0) fprintf(stderr, "port %d\n", portno);
-
-
-#ifndef _WIN32
-        if (!interface_commandToLaunchGUI)
-        {
-#ifdef __APPLE__
-            int i;
-            struct stat statbuf;
-            glob_t glob_buffer;
-            char *homedir = getenv("HOME");
-            char embed_glob[FILENAME_MAX];
-            char home_filename[FILENAME_MAX];
-            char *wish_paths[10] = {
-                "(did not find a home directory)",
-                "/Applications/Utilities/Wish.app/Contents/MacOS/Wish",
-                "/Applications/Utilities/Wish Shell.app/Contents/MacOS/Wish Shell",
-                "/Applications/Wish.app/Contents/MacOS/Wish",
-                "/Applications/Wish Shell.app/Contents/MacOS/Wish Shell",
-                "/Library/Frameworks/Tk.framework/Resources/Wish.app/Contents/MacOS/Wish",
-                "/Library/Frameworks/Tk.framework/Resources/Wish Shell.app/Contents/MacOS/Wish Shell",
-                "/System/Library/Frameworks/Tk.framework/Resources/Wish.app/Contents/MacOS/Wish",
-                "/System/Library/Frameworks/Tk.framework/Resources/Wish Shell.app/Contents/MacOS/Wish Shell",
-                "/usr/bin/wish"
-            };
-            /* this glob is needed so the Wish executable can have the same
-             * filename as the Pd.app, i.e. 'Pd-0.42-3.app' should have a Wish
-             * executable called 'Pd-0.42-3.app/Contents/MacOS/Pd-0.42-3' */
-            sprintf(embed_glob, "%s/../MacOS/Pd*", libdir);
-            glob_buffer.gl_matchc = 1; /* we only need one match */
-            glob(embed_glob, GLOB_LIMIT, NULL, &glob_buffer);
-            /* If we are using a copy of Wish embedded in the Pd.app, then it
-             * will automatically load ui_main.tcl if that embedded Wish can
-             * find ../Resources/Scripts/AppMain.tcl, then Wish doesn't want
-             * to receive the ui_main.tcl as an argument.  Otherwise it needs
-             * to know how to find ui_main.tcl */
-            if (glob_buffer.gl_pathc > 0)
-                sprintf(cmdbuf, "\"%s\" %d\n", glob_buffer.gl_pathv[0], portno);
-            else
-            {
-                sprintf(home_filename,
-                        "%s/Applications/Wish.app/Contents/MacOS/Wish",homedir);
-                wish_paths[0] = home_filename;
-                for(i=0; i<10; i++)
-                {
-                    if (0)
-                        fprintf(stderr, "Trying Wish at \"%s\"\n", wish_paths[i]);
-                    if (stat(wish_paths[i], &statbuf) >= 0)
-                        break;
-                }
-                sprintf(cmdbuf, "\"%s\" \"%s/%sui_main.tcl\" %d\n", 
-                        wish_paths[i], libdir, PD_TCL_DIRECTORY, portno);
-            }
-#else /* __APPLE__ */
-            /* sprintf the wish command with needed environment variables.
-            For some reason the wish script fails if HOME isn't defined so
-            if necessary we put that in here too. */
-            sprintf(cmdbuf,
-  "TCL_LIBRARY=\"%s/lib/tcl/library\" TK_LIBRARY=\"%s/lib/tk/library\"%s \
-  wish \"%s/" PD_TCL_DIRECTORY "/ui_main.tcl\" %d\n",
-                 libdir, libdir, (getenv("HOME") ? "" : " HOME=/tmp"),
-                    libdir, portno);
-#endif /* __APPLE__ */
-            interface_commandToLaunchGUI = cmdbuf;
-        }
-
-        childpid = fork();
-        if (childpid < 0)
-        {
-            if (errno) perror("sys_startgui");
-            else fprintf(stderr, "sys_startgui failed\n");
-            return (1);
-        }
-        else if (!childpid)                     /* we're the child */
-        {
-            setuid(getuid());          /* lose setuid priveliges */
-#ifndef __APPLE__
-// TODO this seems unneeded on any platform hans@eds.org
-                /* the wish process in Unix will make a wish shell and
-                    read/write standard in and out unless we close the
-                    file descriptors.  Somehow this doesn't make the MAC OSX
-                        version of Wish happy...*/
-            if (pipe(stdinpipe) < 0)
-                PD_BUG;
-            else
-            {
-                if (stdinpipe[0] != 0)
-                {
-                    close (0);
-                    dup2(stdinpipe[0], 0);
-                    close(stdinpipe[0]);
-                }
-            }
-#endif /* NOT __APPLE__ */
-            execl("/bin/sh", "sh", "-c", interface_commandToLaunchGUI, (char*)0);
-            perror("pd: exec");
-            fprintf(stderr, "Perhaps tcl and tk aren't yet installed?\n");
-            _exit(1);
-       }
-#else /* NOT _WIN32 */
-        /* fprintf(stderr, "%s\n", libdir); */
-        
-        strcpy(scriptbuf, "\"");
-        strcat(scriptbuf, libdir);
-        strcat(scriptbuf, "/" PD_TCL_DIRECTORY "ui_main.tcl\"");
-        sys_bashfilename(scriptbuf, scriptbuf);
-        
-        sprintf(portbuf, "%d", portno);
-
-        strcpy(wishbuf, libdir);
-        strcat(wishbuf, "/" PD_BIN_DIRECTORY PD_EXE_WISH);
-        sys_bashfilename(wishbuf, wishbuf);
-        
-        spawnret = _spawnl(P_NOWAIT, wishbuf, PD_EXE_WISH, scriptbuf, portbuf, 0);
-        if (spawnret < 0)
-        {
-            perror("spawnl");
-            fprintf(stderr, "%s: couldn't load TCL\n", wishbuf);
-            return (1);
-        }
-
-#endif /* NOT _WIN32 */
-    }
-
+    if (err) { return err; }
+    
 #if defined(__linux__) || defined(__FreeBSD_kernel__)
         /* now that we've spun off the child process we can promote
         our process's priority, if we can and want to.  If not specfied
@@ -706,11 +693,11 @@ t_error interface_start (void)
         in the system limits file, perhaps /etc/limits.conf or
         /etc/security/limits.conf */
 
-    sprintf(cmdbuf, "%s/bin/pdwatchdog", libdir);
+    sprintf(command, "%s/bin/pdwatchdog", root);
     if (PD_WITH_REALTIME)
     {
         struct stat statbuf;
-        if (stat(cmdbuf, &statbuf) < 0)
+        if (stat(command, &statbuf) < 0)
         {
             PD_BUG;
             PD_ABORT (1);
@@ -743,8 +730,8 @@ t_error interface_start (void)
         {
             setuid(getuid());      /* lose setuid priveliges */
             if (errno)
-                perror("sys_startgui");
-            else fprintf(stderr, "sys_startgui failed\n");
+                perror("interface_start");
+            else fprintf(stderr, "interface_start failed\n");
             return (1);
         }
         else if (!watchpid)             /* we're the child */
@@ -758,8 +745,8 @@ t_error interface_start (void)
             }
             close(pipe9[1]);
 
-            if (0) fprintf(stderr, "%s\n", cmdbuf);
-            execl("/bin/sh", "sh", "-c", cmdbuf, (char*)0);
+            if (0) fprintf(stderr, "%s\n", command);
+            execl("/bin/sh", "sh", "-c", command, (char*)0);
             perror("pd: exec");
             _exit(1);
         }
@@ -806,8 +793,7 @@ t_error interface_start (void)
             fprintf(stderr, "Waiting for connection request... \n");
         if (listen(xsock, 5) < 0) PD_BUG;
 
-        interface_guiSocket = accept(xsock, (struct sockaddr *) &server, 
-            (socklen_t *)&len);
+        interface_guiSocket = accept (xsock, (struct sockaddr *) &server, (socklen_t *)&length);
 #ifdef OOPS
         interface_socketClose(xsock);
 #endif

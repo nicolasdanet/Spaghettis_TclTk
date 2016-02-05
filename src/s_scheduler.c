@@ -20,7 +20,7 @@
 #define SCHEDULER_RUN       0
 #define SCHEDULER_QUIT      1
 #define SCHEDULER_RESTART   2
-#define SCHEDULER_ERROR     4
+#define SCHEDULER_ERROR     3
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -351,7 +351,7 @@ void scheduler_audioCallback (void)
 
 t_error scheduler_main (void)
 {
-    while (scheduler_quit != SCHEDULER_QUIT) {
+    while (!scheduler_quit) {
     //
     if (scheduler_audioMode == SCHEDULER_AUDIO_CALLBACK) { scheduler_withCallback(); }
     else {
@@ -360,10 +360,10 @@ t_error scheduler_main (void)
     
     if (scheduler_quit == SCHEDULER_RESTART) {
         if (audio_isopen()) { sys_close_audio(); sys_reopen_audio(); } scheduler_quit = SCHEDULER_RUN;
-        
-    } else {
-        sys_close_audio();
-        sys_close_midi();
+    } 
+    
+    if (scheduler_quit == SCHEDULER_ERROR) {
+        if (audio_isopen()) { sys_close_audio(); } sys_close_midi();
     }
     //
     }
