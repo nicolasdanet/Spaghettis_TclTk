@@ -233,6 +233,12 @@ t_error     scheduler_main                      (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_error     priority_setPolicy                  (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void        clock_setUnitAsSamples              (t_clock *x, double samples);
 void        clock_setUnitAsMilliseconds         (t_clock *x, double ms);
 
@@ -240,7 +246,6 @@ void        clock_setUnitAsMilliseconds         (t_clock *x, double ms);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error     sys_setRealTimePolicy               (int isWatchdog);
 void        sys_setSignalHandlers               (void);
 double      sys_getRealTime                     (void);
 

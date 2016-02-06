@@ -676,12 +676,12 @@ static t_error interface_startGui (void)
     
     struct sockaddr_in server;
     int f = -1;
-    int launch = (main_portNumber == 0);    /* Wish launched if binary is executed first. */
+    int launch = (main_portNumber == 0);
     
-    if (!launch) { err = interface_fetchGui (&server); }    
+    if (!launch) { err = interface_fetchGui (&server); }        /* Wish first. */
     else {
     //
-    if (!(err = interface_launchGui (&server, &f))) {
+    if (!(err = interface_launchGui (&server, &f))) {           /* Executable first. */
         if (!(err = (listen (f, 5) < 0))) {
             socklen_t s = sizeof (struct sockaddr_in);
             err = ((interface_guiSocket = accept (f, (struct sockaddr *)&server, (socklen_t *)&s)) < 0);
@@ -719,21 +719,19 @@ static t_error interface_startGui (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#if PD_WITH_NOGUI
-
 t_error interface_start (void)
 {
-    return PD_ERROR_NONE;
-}
-
-#else 
+    #if PD_WITH_NOGUI
+        t_error err = PD_ERROR_NONE;
+    #else
+        t_error err = interface_startGui();
+    #endif
     
-t_error interface_start (void)
-{
-    return interface_startGui();
+    if (!err) { return priority_setPolicy(); }
+    else {
+        return err;
+    }
 }
-
-#endif // PD_WITH_NOGUI
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
