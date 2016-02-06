@@ -502,13 +502,13 @@ static t_error interface_launchGuiSpawnProcess (void)
 
     err |= string_copy (path, PD_STRING, "\"");
     err |= string_add (path, PD_STRING, main_rootDirectory->s_name);
-    err |= string_add (path, PD_STRING, "/" PD_TCL_DIRECTORY "ui_main.tcl\"");
+    err |= string_add (path, PD_STRING, "/tcl/ui_main.tcl\"");
     
     err |= string_sprintf (port, PD_STRING, "%d", port);
     
     err |= string_copy (wish, PD_STRING, "\"");
     err |= string_add (wish, PD_STRING, main_rootDirectory->s_name);
-    err |= string_add (wish, PD_STRING, "/" PD_BIN_DIRECTORY "wish85.exe\"");
+    err |= string_add (wish, PD_STRING, "/bin/wish85.exe\"");
     
     if (!err) {
         sys_bashfilename (path, path);
@@ -527,6 +527,7 @@ static t_error interface_launchGuiSpawnProcess (void)
 {
     t_error err = PD_ERROR_NONE;
     
+    char path[PD_STRING]    = { 0 };
     char command[PD_STRING] = { 0 };
     
 #if PD_APPLE
@@ -546,30 +547,35 @@ static t_error interface_launchGuiSpawnProcess (void)
         };
     
     int i; for (i = 0; i < 9; i++) { if (path_isFileExist (wish[i])) { break; } }
+
+#endif
+
+    err |= string_sprintf (path, PD_STRING, "%s/tcl/ui_main.tcl", main_rootDirectory->s_name);
     
+#if PD_APPLE
+
     err |= string_sprintf (command, PD_STRING, 
-            "\"%s\" \"%s/%sui_main.tcl\" %d\n", 
+            "\"%s\" \"%s\" %d\n", 
             wish[i], 
-            main_rootDirectory->s_name, 
-            PD_TCL_DIRECTORY, 
+            path, 
             main_portNumber);
 
 #else
     
     err |= string_sprintf (command, PD_STRING, 
-            "TCL_LIBRARY=\"%s/lib/tcl/library\" TK_LIBRARY=\"%s/lib/tk/library\"%s \
-            wish \"%s/" PD_TCL_DIRECTORY "/ui_main.tcl\" %d\n",
+            "TCL_LIBRARY=\"%s/lib/tcl/library\" TK_LIBRARY=\"%s/lib/tk/library\" %s wish \"%s\" %d\n",
             main_rootDirectory->s_name,
             main_rootDirectory->s_name, 
             (getenv ("HOME") ? "" : " HOME=/tmp"),
-            main_rootDirectory->s_name, 
+            path, 
             main_portNumber);
                     
 #endif // PD_APPLE
 
-    post_log ("%s", command);
-    
     if (!err) {
+    //
+    if (err = (path_isFileExist (path) == 0)) { PD_BUG; }
+    else {
     //
     pid_t pid = fork();
     
@@ -579,6 +585,8 @@ static t_error interface_launchGuiSpawnProcess (void)
             execl ("/bin/sh", "sh", "-c", command, NULL);
         }
         _exit (1);
+    }
+    //
     }
     //
     }
@@ -683,20 +691,20 @@ t_error interface_start (void)
     //
     }
     
+    if (!err) {
+        interface_inGuiReceiver = receiver_new (NULL, interface_guiSocket, NULL, NULL, 0);
+    }
+    
     /* Initialize. */
     
     if (!err) {
     
         char midi[PD_STRING]  = { 0 };
         char audio[PD_STRING] = { 0 };
-    
-        interface_inGuiReceiver = receiver_new (NULL, interface_guiSocket, NULL, NULL, 0);
-
+        
         sys_get_audio_apis (audio);
         sys_get_midi_apis (midi);
         sys_set_searchpath();
-        sys_set_extrapath();
-        sys_set_startup();
 
         sys_vGui ("::initialize %s %s\n", audio, midi); 
         sys_vGui ("set ::var(apiAudio) %d\n", sys_audioapi);
