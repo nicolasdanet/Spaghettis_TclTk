@@ -575,8 +575,10 @@ static t_error interface_launchGuiSpawnProcess (void)
     
     if (pid < 0)   { err = PD_ERROR; PD_BUG; }
     else if (!pid) {
-        setuid (getuid());                                              /* Lose setuid privileges. */
-        execl ("/bin/sh", "sh", "-c", command, NULL); _exit (1);
+        if (setuid (getuid()) != -1) {                          /* Lose setuid privileges. */
+            execl ("/bin/sh", "sh", "-c", command, NULL);
+        }
+        _exit (1);
     }
     //
     }
@@ -589,7 +591,7 @@ static t_error interface_launchGuiSpawnProcess (void)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_error interface_launchGuiSocket (struct sockaddr_in *server)
+static t_error interface_launchGuiSocket (struct sockaddr_in *server, int *fd)
 {
     int f = -1;
     t_error err = ((f = socket (AF_INET, SOCK_STREAM, 0)) < 0);
@@ -626,6 +628,8 @@ static t_error interface_launchGuiSocket (struct sockaddr_in *server)
     }
     //
     }
+    
+    if (!err) { *fd = f; }
     //
     }
     
@@ -634,11 +638,11 @@ static t_error interface_launchGuiSocket (struct sockaddr_in *server)
     return err;
 }
 
-static t_error interface_launchGui (struct sockaddr_in *server)
+static t_error interface_launchGui (struct sockaddr_in *server, int *fd)
 {
     t_error err = PD_ERROR_NONE;
     
-    if (!(err |= interface_launchGuiSocket (server))) { err |= interface_launchGuiSpawnProcess(); }
+    if (!(err |= interface_launchGuiSocket (server, fd))) { err |= interface_launchGuiSpawnProcess(); }
     
     return err;
 }
@@ -651,184 +655,56 @@ t_error interface_start (void)
 {
     t_error err = PD_ERROR_NONE;
     
-    char command[PD_STRING];
     struct sockaddr_in server;
-    
-    socklen_t length = sizeof (struct sockaddr_in);
-    
-    int msgsock;
-    char buf[15];
+    int f = -1;
+    int launch = (main_portNumber == 0);
+        
+    #if PD_WINDOWS
 
-    int ntry = 0, portno = INTERFACE_PORT;
-    int xsock = -1, dumbo = -1;
+    WSADATA d;
+    short version = MAKEWORD (2, 0);
     
-#ifdef _WIN32
-    short version = MAKEWORD(2, 0);
-    WSADATA nobby;
-#else
-    int stdinpipe[2];
-    pid_t childpid;
-#endif /* _WIN32 */
-
-#ifdef _WIN32
-    if (WSAStartup(version, &nobby)) PD_BUG;
-#endif /* _WIN32 */
-
-    #if !PD_WITH_NOGUI
+    if (WSAStartup (version, &d)) { PD_BUG; return PD_ERROR; }
     
-    if (main_portNumber) { err = interface_fetchGui (&server); }            /* Wish first. */
+    #endif
+
+    #if ! ( PD_WITH_NOGUI ) 
+    
+    if (!launch) { err = interface_fetchGui (&server); }        /* Wish first. */
     else {
-        err = interface_launchGui (&server);                                /* Binary first. */
+    //
+    if (!(err = interface_launchGui (&server, &f))) {           /* Binary first. */
+        if (!(err = (listen (f, 5) < 0))) {
+            socklen_t s = sizeof (struct sockaddr_in);
+            err = ((interface_guiSocket = accept (f, (struct sockaddr *)&server, (socklen_t *)&s)) < 0);
+        }
+        PD_ASSERT (!err);
+    }
+    //
     }
     
-    #endif 
-
-    if (err) { return err; }
+    /* Initialize. */
     
-#if defined(__linux__) || defined(__FreeBSD_kernel__)
-        /* now that we've spun off the child process we can promote
-        our process's priority, if we can and want to.  If not specfied
-        (-1), we assume real-time was wanted.  Afterward, just in case
-        someone made Pd setuid in order to get permission to do this,
-        unset setuid and lose root priveliges after doing this.  Starting
-        in Linux 2.6 this is accomplished by putting lines like:
-                @audio - rtprio 99
-                @audio - memlock unlimited
-        in the system limits file, perhaps /etc/limits.conf or
-        /etc/security/limits.conf */
-
-    sprintf(command, "%s/bin/pdwatchdog", root);
-    if (PD_WITH_REALTIME)
-    {
-        struct stat statbuf;
-        if (stat(command, &statbuf) < 0)
-        {
-            PD_BUG;
-            PD_ABORT (1);
-        }
-    }
-    else if (0)
-        post("not setting real-time priority");
+    if (!err) {
     
-    if (PD_WITH_REALTIME)
-    {
-            /* To prevent lockup, we fork off a watchdog process with
-            higher real-time priority than ours.  The GUI has to send
-            a stream of ping messages to the watchdog THROUGH the Pd
-            process which has to pick them up from the GUI and forward
-            them.  If any of these things aren't happening the watchdog
-            starts sending "stop" and "cont" signals to the Pd process
-            to make it timeshare with the rest of the system.  (Version
-            0.33P2 : if there's no GUI, the watchdog pinging is done
-            from the scheduler idle routine in this process instead.) */
-        int pipe9[2], watchpid;
-
-        if (pipe(pipe9) < 0)
-        {
-            setuid(getuid());      /* lose setuid priveliges */
-            PD_BUG;
-            return (1);
-        }
-        watchpid = fork();
-        if (watchpid < 0)
-        {
-            setuid(getuid());      /* lose setuid priveliges */
-            if (errno)
-                perror("interface_start");
-            else fprintf(stderr, "interface_start failed\n");
-            return (1);
-        }
-        else if (!watchpid)             /* we're the child */
-        {
-            sys_setRealTimePolicy(1);
-            setuid(getuid());      /* lose setuid priveliges */
-            if (pipe9[1] != 0)
-            {
-                dup2(pipe9[0], 0);
-                close(pipe9[0]);
-            }
-            close(pipe9[1]);
-
-            if (0) fprintf(stderr, "%s\n", command);
-            execl("/bin/sh", "sh", "-c", command, (char*)0);
-            perror("pd: exec");
-            _exit(1);
-        }
-        else                            /* we're the parent */
-        {
-            sys_setRealTimePolicy(0);
-            setuid(getuid());      /* lose setuid priveliges */
-            close(pipe9[0]);
-                /* set close-on-exec so that watchdog will see an EOF when we
-                close our copy - otherwise it might hang waiting for some
-                stupid child process (as seems to happen if jackd auto-starts
-                for us.) */
-            fcntl(pipe9[1], F_SETFD, FD_CLOEXEC);
-            interface_watchdogPipe = pipe9[1];
-                /* We also have to start the ping loop in the GUI;
-                this is done later when the socket is open. */
-        }
-    }
-
-    setuid(getuid());          /* lose setuid priveliges */
-#endif /* __linux__ */
-
-#ifdef _WIN32
-    if (!SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS))
-        fprintf(stderr, "pd: couldn't set high priority class\n");
-#endif
-#ifdef __APPLE__
-    if (PD_WITH_REALTIME)
-    {
-        struct sched_param param;
-        int policy = SCHED_RR;
-        int err;
-        param.sched_priority = 80; /* adjust 0 : 100 */
-
-        err = pthread_setschedparam(pthread_self(), policy, &param);
-        if (err)
-            post("warning: high priority scheduling failed\n");
-    }
-#endif /* __APPLE__ */
-
-    if (!PD_WITH_NOGUI && !main_portNumber)
-    {
-        if (0)
-            fprintf(stderr, "Waiting for connection request... \n");
-        if (listen(xsock, 5) < 0) PD_BUG;
-
-        interface_guiSocket = accept (xsock, (struct sockaddr *) &server, (socklen_t *)&length);
-#ifdef OOPS
-        interface_closeSocket(xsock);
-#endif
-        if (interface_guiSocket < 0) PD_BUG;
-        if (0)
-            fprintf(stderr, "... connected\n");
-        interface_outGuiBufferHead = interface_outGuiBufferTail = 0;
-    }
-    if (!PD_WITH_NOGUI)
-    {
-        char buf[256], buf2[256];
+        char midi[PD_STRING]  = { 0 };
+        char audio[PD_STRING] = { 0 };
+    
         interface_inGuiReceiver = receiver_new (NULL, interface_guiSocket, NULL, NULL, 0);
 
-            /* here is where we start the pinging. */
-#if defined(__linux__) || defined(__FreeBSD_kernel__)
-        if (PD_WITH_REALTIME)
-            sys_gui("::watchdog\n");
-#endif
-        sys_get_audio_apis(buf);
-        sys_get_midi_apis(buf2);
-        sys_set_searchpath();     /* tell GUI about path and startup flags */
+        sys_get_audio_apis (audio);
+        sys_get_midi_apis (midi);
+        sys_set_searchpath();
         sys_set_extrapath();
         sys_set_startup();
-                           /* ... and about font, medio APIS, etc */
-        sys_vGui("::initialize %s %s\n",
-                 buf, buf2); 
-                 /* */
-                 /* */
-        sys_vGui("set ::var(apiAudio) %d\n", sys_audioapi);
+
+        sys_vGui ("::initialize %s %s\n", audio, midi); 
+        sys_vGui ("set ::var(apiAudio) %d\n", sys_audioapi);
     }
-    return (0);
+    
+    #endif
+    
+    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------

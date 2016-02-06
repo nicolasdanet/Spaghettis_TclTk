@@ -93,6 +93,7 @@ static t_error main_parseArguments (int argc, char **argv)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* 
     In "simple" installations, the layout is
@@ -112,7 +113,39 @@ static t_error main_parseArguments (int argc, char **argv)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_error main_findRootDirectory (char *progname)
+/* < https://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe > */
+
+static t_error main_getExecutablePath (char *dest, size_t length)
+{
+    t_error err = PD_ERROR_NONE;
+    
+#if PD_WINDOWS
+
+    GetModuleFileName (NULL, dest, length);
+    dest[length - 1] = 0;
+        
+#elif PD_APPLE
+    
+    char *real = NULL;
+    char path[PATH_MAX + 1];
+	int size = sizeof (path);
+
+	err = (_NSGetExecutablePath (path, &size) != 0);
+    
+    if (!err) { 
+        if (real = realpath (path, NULL)) { err |= string_copy (dest, length, real); free (real); }
+    }
+    
+#else
+    
+    err = PD_ERROR; PD_BUG;
+    
+#endif
+    
+    return err;
+}
+
+static t_error main_getRootDirectory (void)
 {
     t_error err = PD_ERROR_NONE;
     char buf1[PD_STRING] = { 0 };
@@ -120,40 +153,31 @@ static t_error main_findRootDirectory (char *progname)
     char *slash = NULL; 
     
     #if PD_WINDOWS
-        GetModuleFileName (NULL, buf2, PD_STRING);
-        buf2[PD_STRING - 1] = 0;
+        err |= main_getExecutablePath (buf2, PD_STRING);
         sys_unbashfilename (buf2, buf1);
+        *buf2 = 0;
     #else
-        err |= string_copy (buf1, PD_STRING, progname);
+        err |= main_getExecutablePath (buf1, PD_STRING);
     #endif
     
-    *buf2 = 0;
+    /* Dirname of the executable's parent directory. */
     
-    slash = strrchr (buf1, '/');
-    
-    if (!slash) { err |= string_add (buf2, PD_STRING, ".."); }
-    else {
-        *slash = 0;
-        if ((slash = strrchr (buf1, '/'))) { err |= string_append (buf2, PD_STRING, buf1, slash - buf1); }
-        else {
-            if (*buf1 == '.') { err |= string_add (buf2, PD_STRING, ".."); }
-            else {
-                err |= string_add (buf2, PD_STRING, ".");
-            }
-        }
+    if (!err) { 
+        if (!(err |= !(slash = strrchr (buf1, '/')))) { *slash = 0; }
+        if (!(err |= !(slash = strrchr (buf1, '/')))) { *slash = 0; }
     }
-    
+
     if (!err) {
     //
     #if PD_WINDOWS
-        main_rootDirectory = gensym (buf2);      /* Dirname of the executable's parent directory. */
+        main_rootDirectory = gensym (buf1);
     #else
-        err |= string_copy (buf1, PD_STRING, buf2);
-        err |= string_add (buf1, PD_STRING, "/lib/pd");
+        err = string_copy (buf2, PD_STRING, buf1);
+        err |= string_add (buf2, PD_STRING, "/lib/pd");
         
-        if (path_isFileExist (buf1)) { main_rootDirectory = gensym (buf1); }        /* Complexe. */
+        if (!err && path_isFileExist (buf2)) { main_rootDirectory = gensym (buf2); }    /* Complexe. */
         else {
-            main_rootDirectory = gensym (buf2);                                     /* Simple. */
+            main_rootDirectory = gensym (buf1);                                         /* Simple. */
         }
     #endif
     //
@@ -172,7 +196,7 @@ int main_entry (int argc, char **argv)
     
     main_entryPlatformSpecific();
     
-    err |= main_findRootDirectory (argv[0]);
+    err |= main_getRootDirectory(); post_log ("! %s", main_rootDirectory->s_name);
     err |= main_parseArguments (argc - 1, argv + 1);
     
     if (!err) {
