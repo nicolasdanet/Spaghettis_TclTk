@@ -285,6 +285,15 @@ void interface_closeSocket (int fd)
 
 void interface_initialize (void)
 {
+    #if PD_WINDOWS
+
+    WSADATA d;
+    short version = MAKEWORD (2, 0);
+    
+    if (WSAStartup (version, &d)) { PD_BUG; return PD_ERROR; }
+    
+    #endif
+    
     interface_inPollers = (t_fdpoll *)PD_MEMORY_GET (0);
     
     #if ! ( PD_WITH_NOGUI )
@@ -659,29 +668,20 @@ static t_error interface_launchGui (struct sockaddr_in *server, int *fd)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error interface_start (void)
+#if ! ( PD_WITH_NOGUI )
+
+static t_error interface_startGui (void)
 {
     t_error err = PD_ERROR_NONE;
     
     struct sockaddr_in server;
     int f = -1;
-    int launch = (main_portNumber == 0);
-        
-    #if PD_WINDOWS
-
-    WSADATA d;
-    short version = MAKEWORD (2, 0);
+    int launch = (main_portNumber == 0);    /* Wish launched if binary is executed first. */
     
-    if (WSAStartup (version, &d)) { PD_BUG; return PD_ERROR; }
-    
-    #endif
-
-    #if ! ( PD_WITH_NOGUI ) 
-    
-    if (!launch) { err = interface_fetchGui (&server); }        /* Wish first. */
+    if (!launch) { err = interface_fetchGui (&server); }    
     else {
     //
-    if (!(err = interface_launchGui (&server, &f))) {           /* Binary first. */
+    if (!(err = interface_launchGui (&server, &f))) {
         if (!(err = (listen (f, 5) < 0))) {
             socklen_t s = sizeof (struct sockaddr_in);
             err = ((interface_guiSocket = accept (f, (struct sockaddr *)&server, (socklen_t *)&s)) < 0);
@@ -710,10 +710,30 @@ t_error interface_start (void)
         sys_vGui ("set ::var(apiAudio) %d\n", sys_audioapi);
     }
     
-    #endif
-    
     return err;
 }
+
+#endif // PD_WITH_NOGUI
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if PD_WITH_NOGUI
+
+t_error interface_start (void)
+{
+    return PD_ERROR_NONE;
+}
+
+#else 
+    
+t_error interface_start (void)
+{
+    return interface_startGui();
+}
+
+#endif // PD_WITH_NOGUI
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
