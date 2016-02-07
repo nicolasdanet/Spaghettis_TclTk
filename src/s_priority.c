@@ -137,7 +137,7 @@ static t_error priority_setRTPlatformSpecific (void)
     
     err = string_sprintf (command, "%s/bin/pdwatchdog", main_rootDirectory->s_name);
     
-    if (!err && !(err = path_isFileExist (command))) {
+    if (!err && !(err = (path_isFileExist (command) == 0))) {
     //
     int p[2];
 
@@ -156,6 +156,7 @@ static t_error priority_setRTPlatformSpecific (void)
 
     } else {                                                    /* We're the parent. */
         if (priority_setRealTime (0)) { PD_BUG; }
+        setuid (getuid());
         close (p[0]);
         fcntl (p[1], F_SETFD, FD_CLOEXEC);
         interface_watchdogPipe = p[1];
@@ -165,6 +166,8 @@ static t_error priority_setRTPlatformSpecific (void)
     //
     }
 
+    setuid (getuid());
+    
     return err;
 }
 

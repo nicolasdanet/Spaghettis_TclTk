@@ -734,7 +734,7 @@ t_error interface_start (void)
     
     if (!err) { err |= priority_setPolicy(); }
     
-    err |= (setuid (getuid()) < 0);     /* Main lose setuid privileges. */
+    setuid (getuid());
     
     return err;
 }
