@@ -24,9 +24,9 @@
 
 #if PD_WITH_DEBUG
 
-    #define PD_BUG          post_log ("Error / %s / line %d", PD_SHORT_FILE, __LINE__)
+    #define PD_BUG          post_log ("Error / %s / line %d.", PD_SHORT_FILE, __LINE__)
     #define PD_ASSERT(x)    if (!(x)) { \
-                                post_log ("Assert / %s / line %d", PD_SHORT_FILE, __LINE__); \
+                                post_log ("Assert / %s / line %d.", PD_SHORT_FILE, __LINE__); \
                             }
 
 #else
