@@ -108,11 +108,7 @@ t_error utils_version (char *dest, size_t size)
     #if PD_WITH_DEBUG
         err |= string_add (dest, size, " / DEBUG");
     #endif
-    
-    #if PD_WITH_REALTIME
-        err |= string_add (dest, size, " / RT");
-    #endif
-    
+
     return err;
 }
 

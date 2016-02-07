@@ -47,7 +47,7 @@ static void handlers_exit (int n)
 
 static void handlers_hup (int n)        /* Watchdog barking. */
 {
-    #if PD_WITH_WATCHDOG
+    #if PD_WATCHDOG
     
     struct timeval timeOut;
     

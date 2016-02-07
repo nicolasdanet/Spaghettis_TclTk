@@ -59,7 +59,7 @@ void global_initialize (void)
     class_addMethod (c, (t_method)preferences_save,         gensym ("_savePreferences"), A_NULL);
     class_addMethod (c, (t_method)global_dummy,             gensym ("_dummy"),           A_NULL);
     
-    #if PD_WITH_WATCHDOG
+    #if PD_WATCHDOG
     
     class_addMethod (c, (t_method)interface_watchdog, gensym ("_watchdog"), A_NULL);
         

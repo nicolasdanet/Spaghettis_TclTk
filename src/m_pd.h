@@ -115,23 +115,6 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if ( PD_LINUX || PD_BSD || PD_HURD )
-
-#ifndef PD_WITH_WATCHDOG
-#define PD_WITH_WATCHDOG        1
-#endif
-
-#else
-
-#ifndef PD_WITH_WATCHDOG
-#define PD_WITH_WATCHDOG        0
-#endif
-
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 #if ( PD_LINUX || PD_BSD || PD_HURD || PD_CYGWIN || PD_APPLE )
 
 #ifndef PD_WITH_REALTIME
@@ -145,6 +128,34 @@ extern "C" {
 #endif
 
 #endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if ( PD_WITH_REALTIME && ( PD_LINUX || PD_BSD || PD_HURD ) )
+
+#define PD_WATCHDOG             1
+
+#else
+
+#define PD_WATCHDOG             0
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* 
+    PD_WATCHDOG
+    
+    To prevent lockup, we fork off a watchdog process with higher real-time priority. 
+    The GUI has to send a stream of ping messages to the watchdog THROUGH the main process. 
+    If any of these things aren't happening the watchdog starts signals to make it timeshare 
+    with the rest of the system. If there's no GUI, the watchdog pinging is done from 
+    the scheduler idle routine instead.
+    
+*/
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

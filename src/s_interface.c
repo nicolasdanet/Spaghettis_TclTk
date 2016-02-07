@@ -326,7 +326,7 @@ void interface_quit (void *dummy)
     scheduler_needToExit();
 }
 
-#if PD_WITH_WATCHDOG
+#if PD_WATCHDOG
 
 void interface_watchdog (void *dummy)
 {
@@ -572,10 +572,7 @@ static t_error interface_launchGuiSpawnProcess (void)
 #else
     
     err |= string_sprintf (command, PD_STRING, 
-            "TCL_LIBRARY=\"%s/lib/tcl/library\" TK_LIBRARY=\"%s/lib/tk/library\" %s wish \"%s\" %d\n",
-            main_rootDirectory->s_name,
-            main_rootDirectory->s_name, 
-            (getenv ("HOME") ? "" : " HOME=/tmp"),
+            "wish \"%s\" %d\n",
             path, 
             main_portNumber);
                     
@@ -590,7 +587,7 @@ static t_error interface_launchGuiSpawnProcess (void)
     
     if (pid < 0)   { err = PD_ERROR; PD_BUG; }
     else if (!pid) {
-        if (setuid (getuid()) != -1) {                          /* Lose setuid privileges. */
+        if (setuid (getuid()) != -1) {                          /* Child lose setuid privileges. */
             execl ("/bin/sh", "sh", "-c", command, NULL);
         }
         _exit (1);
@@ -727,10 +724,11 @@ t_error interface_start (void)
         t_error err = interface_startGui();
     #endif
     
-    if (!err) { return priority_setPolicy(); }
-    else {
-        return err;
-    }
+    if (!err) { err |= priority_setPolicy(); }
+    
+    err |= (setuid (getuid()) < 0);     /* Main lose setuid privileges. */
+    
+    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------
