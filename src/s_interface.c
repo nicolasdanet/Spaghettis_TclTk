@@ -578,23 +578,11 @@ static t_error interface_launchGuiSpawnProcess (void)
             main_portNumber);
 
 #else
-    
-    err |= string_sprintf (command, PD_STRING, 
-            "TCL_LIBRARY=\"%s/lib/tcl/library\" TK_LIBRARY=\"%s/lib/tk/library\"%s \
-            wish \"%s\" %d\n",
-            main_rootDirectory->s_name,
-            main_rootDirectory->s_name, 
-            (getenv ("HOME") ? "" : " HOME=/tmp"),
-            path, 
-            main_portNumber);
-    
-    /*
+
     err |= string_sprintf (command, PD_STRING, 
             "wish \"%s\" %d\n",
             path, 
             main_portNumber);
-    */
-    post_log ("%s", command);
     
 #endif // PD_APPLE
 

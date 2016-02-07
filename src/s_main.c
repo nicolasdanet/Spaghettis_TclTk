@@ -221,7 +221,7 @@ int main_entry (int argc, char **argv)
     
     main_entryPlatformSpecific();
     
-    err |= main_getRootDirectory(); post_log ("%s", main_rootDirectory->s_name); 
+    err |= main_getRootDirectory(); 
     err |= main_parseArguments (argc - 1, argv + 1);
     
     if (!err) {
