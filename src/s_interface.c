@@ -732,9 +732,13 @@ t_error interface_start (void)
         t_error err = interface_startGui();
     #endif
     
+    PD_ASSERT (!err);
+    
     if (!err) { err |= priority_setPolicy(); }
     
-    setuid (getuid());
+    PD_ASSERT (!err);
+        
+    err |= (setuid (getuid()) < 0);
     
     return err;
 }

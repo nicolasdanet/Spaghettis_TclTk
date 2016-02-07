@@ -135,7 +135,7 @@ static t_error priority_setRTPlatformSpecific (void)
     
     char command[PD_STRING] = { 0 };
     
-    err = string_sprintf (command, "%s/bin/pdwatchdog", main_rootDirectory->s_name);
+    err = string_sprintf (command, PD_STRING, "%s/bin/pdwatchdog", main_rootDirectory->s_name);
     
     if (!err && !(err = (path_isFileExist (command) == 0))) {
     //
@@ -148,15 +148,17 @@ static t_error priority_setRTPlatformSpecific (void)
     if (pid < 0)   { PD_BUG; err = PD_ERROR; }
     else if (!pid) {                                            /* We're the child. */
         priority_setRealTime (1);
-        setuid (getuid());                                      /* Child lose setuid privileges. */
         if (p[1] != 0) { dup2 (p[0], 0); close (p[0]); }
         close (p[1]);
-        execl ("/bin/sh", "sh", "-c", command, NULL); 
+        if (setuid (getuid()) != -1) {
+            execl ("/bin/sh", "sh", "-c", command, NULL);       /* Child lose setuid privileges. */
+        }
         _exit(1);
 
     } else {                                                    /* We're the parent. */
-        if (priority_setRealTime (0)) { PD_BUG; }
-        setuid (getuid());
+        if (priority_setRealTime (0)) { 
+            post_log ("RT scheduling fails."); 
+        }
         close (p[0]);
         fcntl (p[1], F_SETFD, FD_CLOEXEC);
         interface_watchdogPipe = p[1];
@@ -166,8 +168,6 @@ static t_error priority_setRTPlatformSpecific (void)
     //
     }
 
-    setuid (getuid());
-    
     return err;
 }
 
