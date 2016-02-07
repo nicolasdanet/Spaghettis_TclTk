@@ -93,7 +93,6 @@ static t_error main_parseArguments (int argc, char **argv)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 /* 
     In "simple" installations, the layout is
@@ -112,38 +111,64 @@ static t_error main_parseArguments (int argc, char **argv)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* < https://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe > */
+/* < https://stackoverflow.com/questions/933850/how-to-find-the-location-of-the-executable-in-c > */
 
-static t_error main_getExecutablePath (char *dest, size_t length)
+#if PD_WINDOWS
+
+static t_error main_getExecutablePathPlatformSpecific (char *dest, size_t length)
+{
+    GetModuleFileName (NULL, dest, length); dest[length - 1] = 0;
+        
+    return PD_ERROR_NONE;
+}
+
+#elif PD_APPLE
+
+static t_error main_getExecutablePathPlatformSpecific (char *dest, size_t length)
 {
     t_error err = PD_ERROR_NONE;
     
-#if PD_WINDOWS
-
-    GetModuleFileName (NULL, dest, length);
-    dest[length - 1] = 0;
-        
-#elif PD_APPLE
-    
-    char *real = NULL;
-    char path[PATH_MAX + 1];
+    char path[PATH_MAX];
 	int size = sizeof (path);
 
 	err = (_NSGetExecutablePath (path, &size) != 0);
     
     if (!err) { 
-        if (real = realpath (path, NULL)) { err |= string_copy (dest, length, real); free (real); }
+        char *s = NULL;
+        if (s = realpath (path, NULL)) { err |= string_copy (dest, length, s); free (s); }
     }
-    
-#else
-    
-    err = PD_ERROR; PD_BUG;
-    
-#endif
     
     return err;
 }
+
+#elif PD_LINUX
+
+static t_error main_getExecutablePathPlatformSpecific (char *dest, size_t length)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    char path[PATH_MAX];
+    
+    ssize_t t = readlink ("/proc/self/exe", path, PATH_MAX);
+    
+    if (!(err = (t < 0 || t >= PATH_MAX))) {
+        char *s = NULL;
+        path[t] = 0;
+        if (s = realpath (path, NULL)) { err |= string_copy (dest, length, s); free (s); }
+    }
+    
+    return err;
+}
+
+#else
+    #error
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 static t_error main_getRootDirectory (void)
 {
@@ -153,11 +178,11 @@ static t_error main_getRootDirectory (void)
     char *slash = NULL; 
     
     #if PD_WINDOWS
-        err |= main_getExecutablePath (buf2, PD_STRING);
+        err |= main_getExecutablePathPlatformSpecific (buf2, PD_STRING);
         sys_unbashfilename (buf2, buf1);
         *buf2 = 0;
     #else
-        err |= main_getExecutablePath (buf1, PD_STRING);
+        err |= main_getExecutablePathPlatformSpecific (buf1, PD_STRING);
     #endif
     
     /* Dirname of the executable's parent directory. */
@@ -196,7 +221,7 @@ int main_entry (int argc, char **argv)
     
     main_entryPlatformSpecific();
     
-    err |= main_getRootDirectory();
+    err |= main_getRootDirectory(); post_log ("%s", main_rootDirectory->s_name); 
     err |= main_parseArguments (argc - 1, argv + 1);
     
     if (!err) {
