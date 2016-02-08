@@ -167,9 +167,11 @@ static t_error priority_setRTPlatformSpecific (void)
     
         /* We're the parent. */
         
-        if (priority_setRealTime (0)) { 
-            post_log ("RT scheduling fails."); 
+        if (!priority_setRealTime (0)) { post_log ("RT Enabled."); }
+        else {
+            post_log ("RT Disabled."); 
         }
+        
         close (p[0]);
         fcntl (p[1], F_SETFD, FD_CLOEXEC);
         interface_watchdogPipe = p[1];
