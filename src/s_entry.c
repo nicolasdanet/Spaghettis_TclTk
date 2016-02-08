@@ -32,8 +32,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 int main (int argc, char **argv)
 {
-    priority_abortIfRoot ();
-    
     return (main_entry (argc, argv));
 }
 

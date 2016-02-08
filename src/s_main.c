@@ -217,8 +217,10 @@ static t_error main_getRootDirectory (void)
 
 int main_entry (int argc, char **argv)
 {
-    t_error err = PD_ERROR_NONE;
+    t_error err = priority_privilegeStart();
     
+    if (!err && !(err = priority_privilegeDrop())) {
+    //
     main_entryPlatformSpecific();
     
     err |= main_getRootDirectory(); 
@@ -246,6 +248,8 @@ int main_entry (int argc, char **argv)
     
     interface_release();
     pd_release();
+    //
+    }
     //
     }
     

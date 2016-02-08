@@ -487,6 +487,7 @@ static t_error interface_fetchGui (struct sockaddr_in *server)
 {
     struct hostent *host = gethostbyname (INTERFACE_LOCALHOST);
     t_error err = ((interface_guiSocket = socket (AF_INET, SOCK_STREAM, 0)) < 0);
+    err |= (fcntl (interface_guiSocket, F_SETFD, FD_CLOEXEC) == -1);
     
     PD_ASSERT (!err);
     
@@ -595,7 +596,7 @@ static t_error interface_launchGuiSpawnProcess (void)
     
     if (pid < 0)   { err = PD_ERROR; PD_BUG; }
     else if (!pid) {
-        if (!priority_privilegeRelinquishment()) {               /* Child lose setuid privileges. */
+        if (!priority_privilegeRelinquish()) {               /* Child lose setuid privileges. */
             execl ("/bin/sh", "sh", "-c", command, NULL);
         }
         _exit (1);
@@ -617,7 +618,8 @@ static t_error interface_launchGuiSocket (struct sockaddr_in *server, int *fd)
 {
     int f = -1;
     t_error err = ((f = socket (AF_INET, SOCK_STREAM, 0)) < 0);
-        
+    err |= (fcntl (f, F_SETFD, FD_CLOEXEC) == -1);
+    
     #if PD_WINDOWS
         char arg = 1;
         err |= (setsockopt (f, IPPROTO_TCP, TCP_NODELAY, &arg, sizeof (char)) < 0);
@@ -734,14 +736,13 @@ t_error interface_start (void)
     
     PD_ASSERT (!err);
     
-    if (!err) { err |= priority_setPolicy(); }
+    if (!err && !(err = priority_privilegeRestore())) { 
+        err |= priority_setPolicy();
+        err |= priority_privilegeRelinquish();
+    }
     
     PD_ASSERT (!err);
         
-    err |= priority_privilegeRelinquishment();
-    
-    PD_ASSERT (!err);
-    
     return err;
 }
 

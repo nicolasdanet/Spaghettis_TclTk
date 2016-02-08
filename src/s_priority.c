@@ -16,6 +16,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static uid_t priority_euid;     /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #if PD_WATCHDOG
 
 // -----------------------------------------------------------------------------------------------------------
@@ -153,7 +158,7 @@ static t_error priority_setRTPlatformSpecific (void)
         priority_setRealTime (1);
         if (p[1] != 0) { dup2 (p[0], 0); close (p[0]); }        /* Watchdog reads onto the stdin. */
         close (p[1]);
-        if (!priority_privilegeRelinquishment()) {
+        if (!priority_privilegeRelinquish()) {
             execl ("/bin/sh", "sh", "-c", command, NULL);       /* Child lose setuid privileges. */
         }
         _exit(1);
@@ -190,16 +195,40 @@ static t_error priority_setRTPlatformSpecific (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void priority_abortIfRoot (void)
+t_error priority_privilegeStart (void)
 {
-    post_log ("Uid %d Euid %d", getuid(), geteuid());
+    priority_euid = geteuid();
     
-    PD_ASSERT (getuid() != 0); PD_ABORT (getuid() == 0);
+    PD_ASSERT (getuid() != 0);
+    
+    post_log ("Start / Uid %d Euid %d", getuid(), geteuid());
+    
+    return (getuid() == 0);
 }
 
 /* < https://www.securecoding.cert.org/confluence/x/WIAAAQ > */
 
-t_error priority_privilegeRelinquishment (void)
+t_error priority_privilegeDrop (void)
+{
+    t_error err = (seteuid (getuid()) != 0);
+    
+    post_log ("Drop / Uid %d Euid %d", getuid(), geteuid());
+        
+    return err;
+}
+
+t_error priority_privilegeRestore (void)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    if (geteuid() != priority_euid) { err = (seteuid (priority_euid) != 0); }
+    
+    post_log ("Restore / Uid %d Euid %d", getuid(), geteuid());
+    
+    return err;
+}
+
+t_error priority_privilegeRelinquish (void)
 {
     t_error err = (setuid (getuid()) != 0);
     
@@ -207,7 +236,7 @@ t_error priority_privilegeRelinquishment (void)
 
     PD_ASSERT (!err);
     
-    post_log ("? Uid %d Euid %d", getuid(), geteuid());
+    post_log ("Relinquish / Uid %d Euid %d", getuid(), geteuid());
     
     return err;
 }
