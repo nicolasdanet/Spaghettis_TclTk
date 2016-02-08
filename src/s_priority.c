@@ -232,10 +232,15 @@ t_error priority_privilegeRestore (void)
 
 t_error priority_privilegeRelinquish (void)
 {
-    t_error err = (setuid (getuid()) != 0);
+    t_error err = priority_privilegeRestore();
     
-    if (!err) { err = (setuid (0) != -1); }
-
+    if (!err) {
+        err = (setuid (getuid()) != 0);
+        if (!err) { 
+            err = (setuid (0) != -1); 
+        }
+    }
+    
     PD_ASSERT (!err);
     
     post_log ("Relinquish / Uid %d Euid %d", getuid(), geteuid());
