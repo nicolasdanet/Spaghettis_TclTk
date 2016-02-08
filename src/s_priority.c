@@ -146,16 +146,22 @@ static t_error priority_setRTPlatformSpecific (void)
     int pid = fork();
     
     if (pid < 0)   { PD_BUG; err = PD_ERROR; }
-    else if (!pid) {                                            /* We're the child. */
+    else if (!pid) {
+    
+        /* We're the child. */
+        
         priority_setRealTime (1);
-        if (p[1] != 0) { dup2 (p[0], 0); close (p[0]); }
+        if (p[1] != 0) { dup2 (p[0], 0); close (p[0]); }        /* Watchdog reads onto the stdin. */
         close (p[1]);
         if (priority_privilegeRelinquishment()) {
             execl ("/bin/sh", "sh", "-c", command, NULL);       /* Child lose setuid privileges. */
         }
         _exit(1);
 
-    } else {                                                    /* We're the parent. */
+    } else {
+    
+        /* We're the parent. */
+        
         if (priority_setRealTime (0)) { 
             post_log ("RT scheduling fails."); 
         }
