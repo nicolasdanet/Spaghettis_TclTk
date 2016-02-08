@@ -150,7 +150,7 @@ static t_error priority_setRTPlatformSpecific (void)
         priority_setRealTime (1);
         if (p[1] != 0) { dup2 (p[0], 0); close (p[0]); }
         close (p[1]);
-        if (setuid (getuid()) != -1) {
+        if (priority_privilegeRelinquishment()) {
             execl ("/bin/sh", "sh", "-c", command, NULL);       /* Child lose setuid privileges. */
         }
         _exit(1);
@@ -179,6 +179,32 @@ static t_error priority_setRTPlatformSpecific (void)
 }
 
 #endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void priority_abortIfRoot (void)
+{
+    post_log ("Uid %d Euid %d", getuid(), geteuid());
+    
+    PD_ASSERT (getuid() != 0); PD_ABORT (getuid() == 0);
+}
+
+/* < https://www.securecoding.cert.org/confluence/x/WIAAAQ > */
+
+t_error priority_privilegeRelinquishment (void)
+{
+    t_error err = (setuid (getuid()) != 0);
+    
+    if (!err) { err = (setuid (0) != -1); }
+
+    PD_ASSERT (!err);
+    
+    post_log ("? Uid %d Euid %d", getuid(), geteuid());
+    
+    return err;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

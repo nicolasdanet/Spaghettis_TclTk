@@ -595,7 +595,7 @@ static t_error interface_launchGuiSpawnProcess (void)
     
     if (pid < 0)   { err = PD_ERROR; PD_BUG; }
     else if (!pid) {
-        if (setuid (getuid()) != -1) {                          /* Child lose setuid privileges. */
+        if (!priority_privilegeRelinquishment()) {               /* Child lose setuid privileges. */
             execl ("/bin/sh", "sh", "-c", command, NULL);
         }
         _exit (1);
@@ -738,7 +738,9 @@ t_error interface_start (void)
     
     PD_ASSERT (!err);
         
-    err |= (setuid (getuid()) < 0);
+    err |= priority_privilegeRelinquishment();
+    
+    PD_ASSERT (!err);
     
     return err;
 }

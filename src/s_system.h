@@ -233,6 +233,8 @@ t_error     scheduler_main                      (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        priority_abortIfRoot                (void);
+t_error     priority_privilegeRelinquishment    (void);
 t_error     priority_setPolicy                  (void);
 
 // -----------------------------------------------------------------------------------------------------------
