@@ -153,7 +153,7 @@ static t_error priority_setRTPlatformSpecific (void)
         priority_setRealTime (1);
         if (p[1] != 0) { dup2 (p[0], 0); close (p[0]); }        /* Watchdog reads onto the stdin. */
         close (p[1]);
-        if (priority_privilegeRelinquishment()) {
+        if (!priority_privilegeRelinquishment()) {
             execl ("/bin/sh", "sh", "-c", command, NULL);       /* Child lose setuid privileges. */
         }
         _exit(1);
