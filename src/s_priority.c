@@ -203,7 +203,7 @@ t_error priority_privilegeStart (void)
 {
     priority_euid = geteuid();
     
-    PD_ASSERT (getuid() != 0);
+    PD_ASSERT (priority_euid != 0); PD_ABORT (priority_euid == 0);      /* Need a security audit first. */
         
     return (getuid() == 0);
 }
