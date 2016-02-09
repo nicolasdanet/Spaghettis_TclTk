@@ -21,19 +21,9 @@ PD_STRUCT _widgetbehavior;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_savefn)        (t_gobj *x, t_buffer *b);
-typedef void (*t_propertiesfn)  (t_gobj *x, t_glist *glist);
-typedef void (*t_guifn)         (t_gobj *x, t_glist *glist);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-typedef struct _entry {
-    t_symbol    *me_name;
-    t_method    me_method;
-    t_atomtype  me_arguments[PD_ARGUMENTS + 1];
-    } t_entry;
+typedef void (*t_savefn)            (t_gobj *x, t_buffer *b);
+typedef void (*t_propertiesfn)      (t_gobj *x, t_glist *glist);
+typedef void (*t_guifn)             (t_gobj *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -46,6 +36,16 @@ typedef void (*t_listmethod)        (t_pd *x, t_symbol *s, int argc, t_atom *arg
 typedef void (*t_anythingmethod)    (t_pd *x, t_symbol *s, int argc, t_atom *argv);
 typedef void (*t_pointermethod)     (t_pd *x, t_gpointer *gp);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+typedef struct _entry {
+    t_symbol    *me_name;
+    t_method    me_method;
+    t_atomtype  me_arguments[PD_ARGUMENTS + 1];
+    } t_entry;
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -103,13 +103,13 @@ struct _pdinstance {
 #pragma mark -
 
 typedef struct _bindelement {
-    t_pd                *e_what;                    /* MUST be the first. */
+    t_pd                *e_what;                        /* MUST be the first. */
     struct _bindelement *e_next;
     } t_bindelement;
 
 typedef struct _bindlist {
-    t_pd            b_pd;                           /* MUST be the first. */
-    t_bindelement   *b_list;
+    t_pd                b_pd;                           /* MUST be the first. */
+    t_bindelement       *b_list;
     } t_bindlist;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -126,64 +126,46 @@ struct _buffer {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void pd_push                            (t_pd *x);
-void pd_pop                             (t_pd *x);
-void pd_empty                           (t_pd *x);
-void pd_vMessage                        (t_pd *x, t_symbol *s, char *fmt, ...);
+void        pd_push                                     (t_pd *x);
+void        pd_pop                                      (t_pd *x);
+void        pd_empty                                    (t_pd *x);
+void        pd_vMessage                                 (t_pd *x, t_symbol *s, char *fmt, ...);
+void        pd_initialize                               (void);
+void        pd_release                                  (void);
 
-void pd_performLoadbang                 (void);
-int  pd_setLoadingAbstraction           (t_symbol *s);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void sys_gui                            (char *s);
-void sys_vGui                           (char *format, ...);
+void        pd_performLoadbang                          (void);
+int         pd_setLoadingAbstraction                    (t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void pd_initialize                      (void);
-void setup_initialize                   (void);
-void object_initialize                  (void);
-void global_initialize                  (void);
-void message_initialize                 (void);
-void bindlist_initialize                (void);
+void        sys_gui                                     (char *s);
+void        sys_vGui                                    (char *format, ...);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void pd_release                         (void);
-void setup_release                      (void);
-void object_release                     (void);
-void global_release                     (void);
-void message_release                    (void);
-void bindlist_release                   (void);
+void        gfxstub_new                                 (t_pd *owner, void *key, const char *cmd);
+void        gfxstub_deleteforkey                        (void *key);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error string_copy                     (char *dest, size_t size, const char *src);
-t_error string_add                      (char *dest, size_t size, const char *src);
-t_error string_append                   (char *dest, size_t size, const char *src, int length);
-t_error string_sprintf                  (char *dest, size_t size, const char *format, ...);
+t_error     string_copy                                 (char *dest, size_t size, const char *src);
+t_error     string_add                                  (char *dest, size_t size, const char *src);
+t_error     string_append                               (char *dest, size_t size, const char *src, int n);
+t_error     string_sprintf                              (char *dest, size_t size, const char *format, ...);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int     utils_isTokenEnd                (char c);
-int     utils_isTokenEscape             (char c);
-int     utils_isTokenWhitespace         (char c);
-
-t_error utils_version                   (char *dest, size_t size);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int     path_isFileExist                (const char *filepath);
-t_error path_withNameAndDirectory       (char *dest, size_t size, const char *name, const char *directory);
+int         utils_isTokenEnd                            (char c);
+int         utils_isTokenEscape                         (char c);
+int         utils_isTokenWhitespace                     (char c);
+t_error     utils_version                               (char *dest, size_t size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -255,59 +237,52 @@ t_float         *object_getSignalValueAtIndex           (t_object *x, int m);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int  outlet_isSignal                        (t_outlet *x);
+int         outlet_isSignal                             (t_outlet *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void global_new                             (void *dummy, t_symbol *name, t_symbol *directory);
-void global_dsp                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_key                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_audioProperties                 (void *dummy, t_float f);
-void global_midiProperties                  (void *dummy, t_float f);
-void global_audioDialog                     (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_midiDialog                      (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_audioAPI                        (void *dummy, t_float f);
-void global_midiAPI                         (void *dummy, t_float f);
-void global_pathDialog                      (void *dummy, t_float f);
-void global_setPath                         (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void global_shouldQuit                      (void *dummy);
+void        global_new                                  (void *dummy, t_symbol *name, t_symbol *directory);
+void        global_dsp                                  (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void        global_key                                  (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void        global_audioProperties                      (void *dummy, t_float f);
+void        global_midiProperties                       (void *dummy, t_float f);
+void        global_audioDialog                          (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void        global_midiDialog                           (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void        global_audioAPI                             (void *dummy, t_float f);
+void        global_midiAPI                              (void *dummy, t_float f);
+void        global_pathDialog                           (void *dummy, t_float f);
+void        global_setPath                              (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void        global_shouldQuit                           (void *dummy);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error atom_withStringUnzeroed             (t_atom *a, char *s, int size);
-t_error atom_toString                       (t_atom *a, char *s, int size);
+t_error     atom_withStringUnzeroed                     (t_atom *a, char *s, int size);
+t_error     atom_toString                               (t_atom *a, char *s, int size);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    buffer_log                          (t_buffer *x);
-void    buffer_post                         (t_buffer *x);
-void    buffer_resize                       (t_buffer *x, int n);
-void    buffer_vAppend                      (t_buffer *x, char *fmt, ...);
-void    buffer_appendSemicolon              (t_buffer *x);
-void    buffer_parseStringUnzeroed          (t_buffer *x, char *s, int size, int allocated);
-void    buffer_toString                     (t_buffer *x, char **s, int *size);
-void    buffer_toStringUnzeroed             (t_buffer *x, char **s, int *size);
-void    buffer_withStringUnzeroed           (t_buffer *x, char *s, int size);
-void    buffer_serialize                    (t_buffer *x, t_buffer *y);
-void    buffer_deserialize                  (t_buffer *x, int argc, t_atom *argv);
-void    buffer_eval                         (t_buffer *x, t_pd *target, int argc, t_atom *argv);
-t_error buffer_read                         (t_buffer *x, char *name, t_canvas *canvas);
-t_error buffer_write                        (t_buffer *x, char *name, char *directory);
-t_error buffer_evalFile                     (t_symbol *name, t_symbol *directory);
-void    buffer_openFile                     (void *dummy, t_symbol *name, t_symbol *directory);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void    gfxstub_new                         (t_pd *owner, void *key, const char *cmd);
-void    gfxstub_deleteforkey                (void *key);
+void        buffer_log                                  (t_buffer *x);
+void        buffer_post                                 (t_buffer *x);
+void        buffer_resize                               (t_buffer *x, int n);
+void        buffer_vAppend                              (t_buffer *x, char *fmt, ...);
+void        buffer_appendSemicolon                      (t_buffer *x);
+void        buffer_parseStringUnzeroed                  (t_buffer *x, char *s, int size, int allocated);
+void        buffer_toString                             (t_buffer *x, char **s, int *size);
+void        buffer_toStringUnzeroed                     (t_buffer *x, char **s, int *size);
+void        buffer_withStringUnzeroed                   (t_buffer *x, char *s, int size);
+void        buffer_serialize                            (t_buffer *x, t_buffer *y);
+void        buffer_deserialize                          (t_buffer *x, int argc, t_atom *argv);
+void        buffer_eval                                 (t_buffer *x, t_pd *target, int argc, t_atom *argv);
+t_error     buffer_read                                 (t_buffer *x, char *name, t_canvas *canvas);
+t_error     buffer_write                                (t_buffer *x, char *name, char *directory);
+t_error     buffer_evalFile                             (t_symbol *name, t_symbol *directory);
+void        buffer_openFile                             (void *dummy, t_symbol *name, t_symbol *directory);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

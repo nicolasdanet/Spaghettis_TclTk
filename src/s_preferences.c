@@ -16,7 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pathlist   *sys_searchpath;
+extern t_pathlist   *path_search;
 
 extern int sys_audioapi;
 
@@ -333,7 +333,7 @@ void preferences_load (void)
     string_sprintf (key, PD_STRING, "Path%d", i + 1);
     if (!preferences_getKey (key, value, PD_STRING)) { break; }
     else {
-        sys_searchpath = pathlist_newAppend (sys_searchpath, value);
+        path_search = pathlist_newAppend (path_search, value);
     }
     //
     }
@@ -496,7 +496,7 @@ void preferences_save (void *dummy)
     
     /* Search paths. */
     
-    list = sys_searchpath;
+    list = path_search;
     
     for (i = 0; 1; i++) {
     //

@@ -1,48 +1,59 @@
-/* Copyright (c) 1999 Guenter Geiger and others.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/*
- * This file implements the loader for linux, which includes
- * a little bit of path handling.
- *
- * Generalized by MSP to provide an open_via_path function
- * and lists of files for all purposes.
- */ 
+/* 
+    Copyright (c) 1999 Guenter Geiger and others.
+*/
 
-/* #define DEBUG(x) x */
-#define DEBUG(x)
+/* < https://opensource.org/licenses/BSD-3-Clause > */
 
-#include <stdlib.h>
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-#include <sys/stat.h>
-
-#ifdef _WIN32
-    #include <io.h>
-    #include <windows.h>
-#else
-    #include <unistd.h>
-#endif
-
-#include <string.h>
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "m_alloca.h"
 #include "s_system.h"
 #include "s_utf8.h"
-#include <stdio.h>
-#include <fcntl.h>
-#include <ctype.h>
 
-t_pathlist *sys_searchpath;     /* Shared. */
-t_pathlist *sys_staticpath;     /* Shared. */
-t_pathlist *sys_helppath;       /* Shared. */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 extern t_class *global_object;
-//extern t_symbol *sys_flags;
 
-    /* change '/' characters to the system's native file separator */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+t_pathlist *path_help;          /* Shared. */
+t_pathlist *path_extra;         /* Shared. */
+t_pathlist *path_search;        /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int path_isFileExist (const char *filepath)
+{
+    struct stat t; return (stat (filepath, &t) == 0);
+}
+
+t_error path_withNameAndDirectory (char *dest, size_t size, const char *name, const char *directory)
+{
+    t_error err = PD_ERROR;
+    
+    if (*name) {
+        err = PD_ERROR_NONE;
+        err |= string_copy (dest, size, directory);
+        err |= string_add (dest, size, "/");
+        err |= string_add (dest, size, name);
+    }
+    
+    return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void sys_bashfilename(char *from, char *to)
 {
     char c;
@@ -127,28 +138,28 @@ static void sys_expandpath(const char *from, char *to, int bufsize)
 void sys_setextrapath(const char *p)
 {
     char pathbuf[PD_STRING];
-    pathlist_free(sys_staticpath);
+    pathlist_free(path_extra);
     /* add standard place for users to install stuff first */
 #ifdef __gnu_linux__
     sys_expandpath("~/pd-externals", pathbuf, PD_STRING);
-    sys_staticpath = pathlist_newAppend(0, pathbuf);
-    sys_staticpath = pathlist_newAppend(sys_staticpath, "/usr/local/lib/pd-externals");
+    path_extra = pathlist_newAppend(0, pathbuf);
+    path_extra = pathlist_newAppend(path_extra, "/usr/local/lib/pd-externals");
 #endif
 
 #ifdef __APPLE__
     sys_expandpath("~/Library/Pd", pathbuf, PD_STRING);
-    sys_staticpath = pathlist_newAppend(0, pathbuf);
-    sys_staticpath = pathlist_newAppend(sys_staticpath, "/Library/Pd");
+    path_extra = pathlist_newAppend(0, pathbuf);
+    path_extra = pathlist_newAppend(path_extra, "/Library/Pd");
 #endif
 
 #ifdef _WIN32
     sys_expandpath("%AppData%/Pd", pathbuf, PD_STRING);
-    sys_staticpath = pathlist_newAppend(0, pathbuf);
+    path_extra = pathlist_newAppend(0, pathbuf);
     sys_expandpath("%CommonProgramFiles%/Pd", pathbuf, PD_STRING);
-    sys_staticpath = pathlist_newAppend(sys_staticpath, pathbuf);
+    path_extra = pathlist_newAppend(path_extra, pathbuf);
 #endif
     /* add built-in "extra" path last so its checked last */
-    sys_staticpath = pathlist_newAppend(sys_staticpath, p);
+    path_extra = pathlist_newAppend(path_extra, p);
 }
 
     /* try to open a file in the directory "dir", named "name""ext",
@@ -172,7 +183,6 @@ int sys_trytoopenone(const char *dir, const char *name, const char* ext,
     strcat(dirresult, name);
     strcat(dirresult, ext);
 
-    DEBUG(post("looking for %s",dirresult));
         /* see if we can open the file for reading */
     if ((fd=sys_open(dirresult, O_RDONLY)) >= 0)
     {
@@ -270,7 +280,7 @@ static int do_open_via_path(const char *dir, const char *name,
 
         /* next look in built-in paths like "extra" */
     if (1 /*sys_usestdpath*/)
-        for (nl = sys_staticpath; nl; nl = nl->pl_next)
+        for (nl = path_extra; nl; nl = nl->pl_next)
             if ((fd = sys_trytoopenone(nl->pl_string, name, ext,
                 dirresult, nameresult, size, bin)) >= 0)
                     return (fd);
@@ -285,7 +295,7 @@ int open_via_path(const char *dir, const char *name, const char *ext,
     char *dirresult, char **nameresult, unsigned int size, int bin)
 {
     return (do_open_via_path(dir, name, ext, dirresult, nameresult,
-        size, bin, sys_searchpath));
+        size, bin, path_search));
 }
 
     /* open a file with a UTF-8 filename
@@ -394,7 +404,7 @@ void open_via_helppath(const char *name, const char *dir)
         realname[strlen(realname)-3] = 0;
     strcat(realname, "-help.pd");
     if ((fd = do_open_via_path(usedir, realname, "", dirbuf, &basename, 
-        PD_STRING, 0, sys_helppath)) >= 0)
+        PD_STRING, 0, path_help)) >= 0)
             goto gotone;
 
         /* 2. "help-objectname.pd" */
@@ -402,7 +412,7 @@ void open_via_helppath(const char *name, const char *dir)
     strncat(realname, name, PD_STRING-10);
     realname[PD_STRING-1] = 0;
     if ((fd = do_open_via_path(usedir, realname, "", dirbuf, &basename, 
-        PD_STRING, 0, sys_helppath)) >= 0)
+        PD_STRING, 0, path_help)) >= 0)
             goto gotone;
 
     post("sorry, couldn't find help patch for \"%s\"", name);
@@ -500,7 +510,7 @@ void sys_set_searchpath( void)
     t_pathlist *nl;
 
     sys_gui("set ::tmp_path {}\n");
-    for (nl = sys_searchpath, i = 0; nl; nl = nl->pl_next, i++)
+    for (nl = path_search, i = 0; nl; nl = nl->pl_next, i++)
         sys_vGui("lappend ::tmp_path {%s}\n", nl->pl_string);
     sys_gui("set ::var(searchPath) $::tmp_path\n");
 }
@@ -513,9 +523,9 @@ void sys_set_extrapath(void)
     t_pathlist *nl;
 
     sys_gui("set ::tmp_path {}\n");
-    for (nl = sys_staticpath, i = 0; nl; nl = nl->pl_next, i++)
+    for (nl = path_extra, i = 0; nl; nl = nl->pl_next, i++)
         sys_vGui("lappend ::tmp_path {%s}\n", nl->pl_string);
-    sys_gui("set ::sys_staticpath $::tmp_path\n");
+    sys_gui("set ::path_extra $::tmp_path\n");
     */
 }
 
@@ -533,15 +543,15 @@ void global_pathDialog (void *dummy, t_float flongform)
 void global_setPath(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
-    pathlist_free(sys_searchpath);
-    sys_searchpath = 0;
+    pathlist_free(path_search);
+    path_search = 0;
     //sys_usestdpath = (t_int)atom_getFloatAtIndex(0, argc, argv);
     //sys_verbose = (t_int)atom_getFloatAtIndex(1, argc, argv);
     for (i = 0; i < argc; i++)
     {
         t_symbol *s = sys_decodedialog(atom_getSymbolAtIndex(i, argc, argv));
         if (*s->s_name)
-            sys_searchpath = pathlist_newAppendFiles(sys_searchpath, s->s_name, PATHLIST_SEPARATOR);
+            path_search = pathlist_newAppendFiles(path_search, s->s_name, PATHLIST_SEPARATOR);
     }
 }
 
@@ -585,3 +595,5 @@ static void glob_startup_dialog(void *dummy, t_symbol *s, int argc, t_atom *argv
 }
 */
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

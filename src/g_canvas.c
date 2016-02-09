@@ -1318,7 +1318,7 @@ static int check_exists(const char*path)
 }
 #endif
 
-extern t_pathlist *sys_staticpath;
+extern t_pathlist *path_extra;
 
 static void canvas_stdpath(t_canvasenvironment *e, char *stdpath)
 {
@@ -1340,7 +1340,7 @@ static void canvas_stdpath(t_canvasenvironment *e, char *stdpath)
     if (!strncmp("extra/", stdpath, 6))
         stdpath+=6;
     /* check whether the given subdir is in one of the standard-paths */
-    for (nl=sys_staticpath; nl; nl=nl->pl_next)
+    for (nl=path_extra; nl; nl=nl->pl_next)
     {
         snprintf(strbuf, PD_STRING-1, "%s/%s/", nl->pl_string, stdpath);
         strbuf[PD_STRING-1]=0;
@@ -1370,7 +1370,7 @@ static void canvas_stdlib(t_canvasenvironment *e, char *stdlib)
         stdlib+=6;
 
     /* check whether the given library is located in one of the standard-paths */
-    for (nl=sys_staticpath; nl; nl=nl->pl_next)
+    for (nl=path_extra; nl; nl=nl->pl_next)
     {
         snprintf(strbuf, PD_STRING-1, "%s/%s", nl->pl_string, stdlib);
         strbuf[PD_STRING-1]=0;

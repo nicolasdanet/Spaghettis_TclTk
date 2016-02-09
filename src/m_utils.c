@@ -42,22 +42,22 @@ t_error string_add (char *dest, size_t size, const char *src)
     return string_append (dest, size, src, -1);
 }
 
-t_error string_append (char *dest, size_t size, const char *src, int length)
+t_error string_append (char *dest, size_t size, const char *src, int n)
 {
     size_t d = strlen (dest);
-    size_t n = (size - 1) - d;
+    size_t k = (size - 1) - d;
     size_t s = 0;
         
     PD_ASSERT (size > d);
     
-    if (length < 0) { s = strlen (src); }
+    if (n < 0) { s = strlen (src); }
     else {
-        const char *t = src; while (*t && s < length) { s++; t++; }
+        const char *t = src; while (*t && s < n) { s++; t++; }
     }
     
-    strncat (dest, src, PD_MIN (s, n));
+    strncat (dest, src, PD_MIN (s, k));
     
-    if (s <= n) { return PD_ERROR_NONE; }
+    if (s <= k) { return PD_ERROR_NONE; }
     else {
         return PD_ERROR;
     }
@@ -109,29 +109,6 @@ t_error utils_version (char *dest, size_t size)
         err |= string_add (dest, size, " / DEBUG");
     #endif
 
-    return err;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int path_isFileExist (const char *filepath)
-{
-    struct stat t; return (stat (filepath, &t) == 0);
-}
-
-t_error path_withNameAndDirectory (char *dest, size_t size, const char *name, const char *directory)
-{
-    t_error err = PD_ERROR;
-    
-    if (*name) {
-        err = PD_ERROR_NONE;
-        err |= string_copy (dest, size, directory);
-        err |= string_add (dest, size, "/");
-        err |= string_add (dest, size, name);
-    }
-    
     return err;
 }
 

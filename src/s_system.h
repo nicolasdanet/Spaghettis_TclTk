@@ -16,89 +16,89 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define DACS_NO                             0
-#define DACS_YES                            1 
-#define DACS_SLEPT                          2
+#define DACS_NO                                 0
+#define DACS_YES                                1 
+#define DACS_SLEPT                              2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define SCHEDULER_AUDIO_NONE                0
-#define SCHEDULER_AUDIO_POLL                1 
-#define SCHEDULER_AUDIO_CALLBACK            2
+#define SCHEDULER_AUDIO_NONE                    0
+#define SCHEDULER_AUDIO_POLL                    1 
+#define SCHEDULER_AUDIO_CALLBACK                2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MAXIMUM_MIDI_IN                     16
-#define MAXIMUM_MIDI_OUT                    16
-#define MAXIMUM_AUDIO_IN                    4
-#define MAXIMUM_AUDIO_OUT                   4
+#define MAXIMUM_MIDI_IN                         16
+#define MAXIMUM_MIDI_OUT                        16
+#define MAXIMUM_AUDIO_IN                        4
+#define MAXIMUM_AUDIO_OUT                       4
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define AUDIO_DEFAULT_DEVICE                0
-#define AUDIO_DEFAULT_BLOCK                 64
-#define AUDIO_DEFAULT_SAMPLING              44100
+#define AUDIO_DEFAULT_DEVICE                    0
+#define AUDIO_DEFAULT_BLOCK                     64
+#define AUDIO_DEFAULT_SAMPLING                  44100
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 #if PD_WINDOWS
-    #define AUDIO_DEFAULT_ADVANCE           80
+    #define AUDIO_DEFAULT_ADVANCE               80
 #elif PD_APPLE
-    #define AUDIO_DEFAULT_ADVANCE           5
+    #define AUDIO_DEFAULT_ADVANCE               5
 #else
-    #define AUDIO_DEFAULT_ADVANCE           25
+    #define AUDIO_DEFAULT_ADVANCE               25
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define API_NONE                            0
-#define API_ALSA                            1
-#define API_OSS                             2
-#define API_MMIO                            3
-#define API_PORTAUDIO                       4
-#define API_JACK                            5
-#define API_DUMMY                           9
+#define API_NONE                                0
+#define API_ALSA                                1
+#define API_OSS                                 2
+#define API_MMIO                                3
+#define API_PORTAUDIO                           4
+#define API_JACK                                5
+#define API_DUMMY                               9
 
-//#define API_SGI                           6
-//#define API_AUDIOUNIT                     7
-//#define API_ESD                           8
+//#define API_SGI                               6
+//#define API_AUDIOUNIT                         7
+//#define API_ESD                               8
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #if defined ( USEAPI_MMIO )
-    #define API_DEFAULT                     API_MMIO
-    #define API_DEFAULT_STRING              "MMIO"
+    #define API_DEFAULT                         API_MMIO
+    #define API_DEFAULT_STRING                  "MMIO"
     
 #elif defined ( USEAPI_ALSA )
-    #define API_DEFAULT                     API_ALSA
-    #define API_DEFAULT_STRING              "ALSA"
+    #define API_DEFAULT                         API_ALSA
+    #define API_DEFAULT_STRING                  "ALSA"
     
 #elif defined ( USEAPI_OSS )
-    #define API_DEFAULT                     API_OSS
-    #define API_DEFAULT_STRING              "OSS"
+    #define API_DEFAULT                         API_OSS
+    #define API_DEFAULT_STRING                  "OSS"
     
 #elif defined ( USEAPI_PORTAUDIO )
-    #define API_DEFAULT                     API_PORTAUDIO
-    #define API_DEFAULT_STRING              "PortAudio"
+    #define API_DEFAULT                         API_PORTAUDIO
+    #define API_DEFAULT_STRING                  "PortAudio"
     
 #elif defined ( USEAPI_JACK )
-    #define API_DEFAULT                     API_JACK
-    #define API_DEFAULT_STRING              "JACK"
+    #define API_DEFAULT                         API_JACK
+    #define API_DEFAULT_STRING                  "JACK"
     
 #elif defined ( USEAPI_DUMMY )
-    #define API_DEFAULT                     API_DUMMY
-    #define API_DEFAULT_STRING              "Dummy"
+    #define API_DEFAULT                         API_DUMMY
+    #define API_DEFAULT_STRING                  "Dummy"
 #else
     #error "Unknown Audio API"
 #endif 
@@ -108,48 +108,48 @@
 #pragma mark -
 
 #if PD_WINDOWS
-    #define PATHLIST_SEPARATOR              ';'
+    #define PATHLIST_SEPARATOR                  ';'
 #else
-    #define PATHLIST_SEPARATOR              ':'
+    #define PATHLIST_SEPARATOR                  ':'
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Notice that values below are related to LCM (32000, 44100, 48000, 88200, 96000). */
+/* LCM (32000, 44100, 48000, 88200, 96000). */
     
-#define SYSTIME_CLOCKS_PER_MILLISECOND      (double)(32.0 * 441.0)
-#define SYSTIME_CLOCKS_PER_SECOND           (SYSTIME_CLOCKS_PER_MILLISECOND * 1000.0)
+#define SYSTIME_CLOCKS_PER_MILLISECOND          (double)(32.0 * 441.0)
+#define SYSTIME_CLOCKS_PER_SECOND               (SYSTIME_CLOCKS_PER_MILLISECOND * 1000.0)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define SOCKET_BUFFER_SIZE                  4096        /* Must be a power of two. */
+#define SOCKET_BUFFER_SIZE                      4096        /* Must be a power of two. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_pollfn)            (void *p, int fd);
-typedef void (*t_notifyfn)          (void *owner, int fd);
-typedef void (*t_receivefn)         (void *owner, t_buffer *b);
-typedef void (*t_clockfn)           (void *owner);
+typedef void (*t_pollfn)        (void *p, int fd);
+typedef void (*t_notifyfn)      (void *owner, int fd);
+typedef void (*t_receivefn)     (void *owner, t_buffer *b);
+typedef void (*t_clockfn)       (void *owner);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef int  (*t_loader)            (t_canvas *canvas, char *classname);
+typedef int  (*t_loader)        (t_canvas *canvas, char *classname);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 struct _clock {
-    double          c_systime;      /* Negative for unset clocks. */
-    double          c_unit;         /* A positive value is in ticks, negative for number of samples. */
+    double          c_systime;          /* Negative for unset clocks. */
+    double          c_unit;             /* A positive value is in ticks, negative for number of samples. */
     t_clockfn       c_fn;
     void            *c_owner;
     struct _clock   *c_next;
@@ -188,109 +188,119 @@ typedef int t_fontsize;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_pathlist  *pathlist_newAppend                 (t_pathlist *x, const char *s);
-t_pathlist  *pathlist_newAppendFiles            (t_pathlist *x, const char *s, char delimiter);
-char        *pathlist_getFileAtIndex            (t_pathlist *x, int n);
-char        *pathlist_getFile                   (t_pathlist *x);
-t_pathlist  *pathlist_getNext                   (t_pathlist *x);
+t_pathlist  *pathlist_newAppend                     (t_pathlist *x, const char *s);
+t_pathlist  *pathlist_newAppendFiles                (t_pathlist *x, const char *s, char delimiter);
+char        *pathlist_getFileAtIndex                (t_pathlist *x, int n);
+char        *pathlist_getFile                       (t_pathlist *x);
+t_pathlist  *pathlist_getNext                       (t_pathlist *x);
 
-void        pathlist_free                       (t_pathlist *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        font_withHostMeasured               (void *dummy, t_symbol *s, int argc, t_atom *argv);
-t_fontsize  font_getNearestValidFontSize        (int size);
-int         font_getHostFontSize                (t_fontsize fontSize);
-int         font_getHostFontWidth               (t_fontsize fontSize);
-int         font_getHostFontHeight              (t_fontsize fontSize);
+void        pathlist_free                           (t_pathlist *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int         main_entry                          (int argc, char **argv);
+void        font_withHostMeasured                   (void *dummy, t_symbol *s, int argc, t_atom *argv);
+t_fontsize  font_getNearestValidFontSize            (int size);
+int         font_getHostFontSize                    (t_fontsize fontSize);
+int         font_getHostFontWidth                   (t_fontsize fontSize);
+int         font_getHostFontHeight                  (t_fontsize fontSize);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-double      scheduler_getSystime                (void);
-double      scheduler_getSystimeAfter           (double ms);
-double      scheduler_getMillisecondsSince      (double systime);
-double      scheduler_getUnitsSince             (double systime, double unit, int isSamples);
-void        scheduler_setAudioMode              (int flag);
-void        scheduler_needToRestart             (void);
-void        scheduler_needToExit                (void);
-void        scheduler_needToExitWithError       (void);
-void        scheduler_lock                      (void);
-void        scheduler_unlock                    (void);
-void        scheduler_audioCallback             (void);
-t_error     scheduler_main                      (void);
+int         main_entry                              (int argc, char **argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error     priority_privilegeStart             (void);
-t_error     priority_privilegeDrop              (void);
-t_error     priority_privilegeRestore           (void);
-t_error     priority_privilegeRelinquish        (void);
-
-t_error     priority_setPolicy                  (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        clock_setUnitAsSamples              (t_clock *x, double samples);
-void        clock_setUnitAsMilliseconds         (t_clock *x, double ms);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        sys_setSignalHandlers               (void);
-double      sys_getRealTime                     (void);
+double      scheduler_getSystime                    (void);
+double      scheduler_getSystimeAfter               (double ms);
+double      scheduler_getMillisecondsSince          (double systime);
+double      scheduler_getUnitsSince                 (double systime, double unit, int isSamples);
+void        scheduler_setAudioMode                  (int flag);
+void        scheduler_needToRestart                 (void);
+void        scheduler_needToExit                    (void);
+void        scheduler_needToExitWithError           (void);
+void        scheduler_lock                          (void);
+void        scheduler_unlock                        (void);
+void        scheduler_audioCallback                 (void);
+t_error     scheduler_main                          (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_receiver  *receiver_new                       (void *owner,
-                                                    int fd,
-                                                    t_notifyfn notify,          /* Socket closed. */
-                                                    t_receivefn receive,        /* Data received. */
-                                                    int isUdp);
+t_error     priority_privilegeStart                 (void);
+t_error     priority_privilegeDrop                  (void);
+t_error     priority_privilegeRestore               (void);
+t_error     priority_privilegeRelinquish            (void);
 
-void        receiver_free                       (t_receiver *x);
-void        receiver_read                       (t_receiver *x, int fd);
+t_error     priority_setPolicy                      (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int     interface_monitorBlocking               (int microseconds);
-int     interface_monitorNonBlocking            (void);
-void    interface_monitorAddPoller              (int fd, t_pollfn fn, void *ptr);
-void    interface_monitorRemovePoller           (int fd);
-void    interface_guiQueueAddIfNotAlreadyThere  (void *owner, t_glist *glist, t_guifn f);
-void    interface_guiQueueRemove                (void *owner);
-int     interface_pollOrFlushGui                (void);
-void    interface_closeSocket                   (int fd);
-void    interface_initialize                    (void);
-void    interface_release                       (void);
-void    interface_quit                          (void *dummy);
-void    interface_watchdog                      (void *dummy);
-t_error interface_start                         (void);
+void        clock_setUnitAsSamples                  (t_clock *x, double samples);
+void        clock_setUnitAsMilliseconds             (t_clock *x, double ms);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void preferences_load                           (void);
-void preferences_save                           (void *dummy);
+void        sys_setSignalHandlers                   (void);
+double      sys_getRealTime                         (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_receiver  *receiver_new                           (void *owner,
+                                                        int fd,
+                                                        t_notifyfn notify,          /* Socket closed. */
+                                                        t_receivefn receive,        /* Data received. */
+                                                        int isUdp);
+
+void        receiver_free                           (t_receiver *x);
+void        receiver_read                           (t_receiver *x, int fd);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int         interface_monitorBlocking               (int microseconds);
+int         interface_monitorNonBlocking            (void);
+void        interface_monitorAddPoller              (int fd, t_pollfn fn, void *ptr);
+void        interface_monitorRemovePoller           (int fd);
+void        interface_guiQueueAddIfNotAlreadyThere  (void *owner, t_glist *glist, t_guifn f);
+void        interface_guiQueueRemove                (void *owner);
+int         interface_pollOrFlushGui                (void);
+void        interface_closeSocket                   (int fd);
+void        interface_initialize                    (void);
+void        interface_release                       (void);
+void        interface_quit                          (void *dummy);
+void        interface_watchdog                      (void *dummy);
+t_error     interface_start                         (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int         path_isFileExist                        (const char *filepath);
+t_error     path_withNameAndDirectory               (char *dest, 
+                                                        size_t size, 
+                                                        const char *name, 
+                                                        const char *directory);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        preferences_load                        (void);
+void        preferences_save                        (void *dummy);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
