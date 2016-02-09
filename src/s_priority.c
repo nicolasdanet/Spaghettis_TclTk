@@ -197,26 +197,20 @@ static t_error priority_setRTPlatformSpecific (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* < https://www.securecoding.cert.org/confluence/x/WIAAAQ > */
+
 t_error priority_privilegeStart (void)
 {
     priority_euid = geteuid();
     
     PD_ASSERT (getuid() != 0);
-    
-    post_log ("Start / Uid %d Euid %d", getuid(), geteuid());
-    
+        
     return (getuid() == 0);
 }
 
-/* < https://www.securecoding.cert.org/confluence/x/WIAAAQ > */
-
 t_error priority_privilegeDrop (void)
 {
-    t_error err = (seteuid (getuid()) != 0);
-    
-    post_log ("Drop / Uid %d Euid %d", getuid(), geteuid());
-        
-    return err;
+    return (seteuid (getuid()) != 0);
 }
 
 t_error priority_privilegeRestore (void)
@@ -224,8 +218,6 @@ t_error priority_privilegeRestore (void)
     t_error err = PD_ERROR_NONE;
     
     if (geteuid() != priority_euid) { err = (seteuid (priority_euid) != 0); }
-    
-    post_log ("Restore / Uid %d Euid %d", getuid(), geteuid());
     
     return err;
 }
@@ -242,8 +234,6 @@ t_error priority_privilegeRelinquish (void)
     }
     
     PD_ASSERT (!err);
-    
-    post_log ("Relinquish / Uid %d Euid %d", getuid(), geteuid());
     
     return err;
 }
