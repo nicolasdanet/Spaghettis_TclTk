@@ -24,22 +24,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#if PD_WITH_LOCK
-
-#define SCHEDULER_LOCK      scheduler_lock()
-#define SCHEDULER_UNLOCK    scheduler_unlock()
-    
-#else
-    
-#define SCHEDULER_LOCK
-#define SCHEDULER_UNLOCK
-    
-#endif // PD_WITH_LOCK
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 extern int      sys_schedadvance;
 extern t_float  sys_dacsr;
@@ -79,11 +63,6 @@ static int      scheduler_nextPing;                                         /* S
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-static pthread_mutex_t sys_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 double scheduler_getSystime (void)
@@ -117,20 +96,6 @@ double scheduler_getMillisecondsSince (double systime)
     PD_ASSERT (elapsed >= 0.0);
     
     return (elapsed / SYSTIME_CLOCKS_PER_MILLISECOND);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void scheduler_lock (void)
-{
-    pthread_mutex_lock (&sys_mutex);
-}
-
-void scheduler_unlock (void)
-{
-    pthread_mutex_unlock (&sys_mutex);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -248,17 +213,13 @@ static void scheduler_withLoop (void)
 
     sys_initmidiqueue();
     
-    SCHEDULER_LOCK;
-    
     while (!scheduler_quit) {
     //
     int timeForward, didSomething = 0;
 
     if (scheduler_audioMode != SCHEDULER_AUDIO_NONE) {
 
-        SCHEDULER_UNLOCK;
         timeForward = sys_send_dacs();
-        SCHEDULER_LOCK;
 
         if (timeForward) { idleCount = 0; }
         else if (!(++idleCount % 31)) { scheduler_pollStuck (idleCount == 32); }
@@ -289,17 +250,13 @@ static void scheduler_withLoop (void)
     //
     scheduler_pollWatchdog();
 
-    SCHEDULER_UNLOCK;
     if (timeForward != DACS_SLEPT) { interface_monitorBlocking (scheduler_sleepGrain); }
-    SCHEDULER_LOCK;
     //
     }
     //
     }
     //
     }
-
-    SCHEDULER_UNLOCK;
 }
 
 static void scheduler_withCallback (void)
@@ -308,24 +265,11 @@ static void scheduler_withCallback (void)
     
     while (!scheduler_quit) {
     //
-    double logicalTime = pd_this->pd_systime;
-    
     #if PD_WINDOWS
         Sleep (1000);
     #else
         sleep (1);
     #endif
-    
-    if (!scheduler_quit && (pd_this->pd_systime == logicalTime)) {
-    //
-    SCHEDULER_LOCK;
-    
-    interface_pollOrFlushGui();
-    scheduler_tick();
-    
-    SCHEDULER_UNLOCK;
-    //
-    }
     //
     }
 }
@@ -336,15 +280,11 @@ static void scheduler_withCallback (void)
 
 void scheduler_audioCallback (void)
 {
-    SCHEDULER_LOCK;
-    
     sys_setmiditimediff (0.0, 1e-6 * sys_schedadvance);
     scheduler_tick();
     sys_pollmidiqueue();
     interface_pollOrFlushGui();
     scheduler_pollWatchdog();
-    
-    SCHEDULER_UNLOCK;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -167,9 +167,9 @@ static t_error priority_setRTPlatformSpecific (void)
     
         /* We're the parent. */
         
-        if (!priority_setRealTime (0)) { post_log ("RT Enabled."); }
+        if (!priority_setRealTime (0)) { post_log ("RT Enabled"); }
         else {
-            post_log ("RT Disabled."); 
+            post_log ("RT Disabled"); 
         }
         
         close (p[0]);

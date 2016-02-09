@@ -32,13 +32,16 @@
 #include "s_time.c"
 #include "s_receiver.c"
 #include "s_interface.c"
-
+//#include "s_path.c"
+//#include "s_loader.c"
 #include "s_preferences.c"
-
+//#include "s_midi.c"
+//#include "s_audio.c"
 #include "s_memory.c"
 #include "s_pathlist.c"
 #include "s_font.c"
 #include "s_post.c"
+//#include "s_utf8.c"
 
 /* Graphics. */
 

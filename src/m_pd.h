@@ -104,10 +104,6 @@ extern "C" {
 #define PD_WITH_ALLOCA          1           /* Message passing uses alloca function. */
 #endif
 
-#ifndef PD_WITH_LOCK
-#define PD_WITH_LOCK            1           /* Scheduler uses locks (with pthread mutex). */
-#endif
-
 #ifndef PD_WITH_NOGUI           
 #define PD_WITH_NOGUI           0           /* Don't use the GUI. */
 #endif
@@ -149,11 +145,9 @@ extern "C" {
 /* 
     PD_WATCHDOG
     
-    To prevent lockup, we fork off a watchdog process with higher real-time priority. 
-    The GUI has to send a stream of ping messages to the watchdog THROUGH the main process. 
-    If any of these things aren't happening the watchdog starts signals to make it timeshare 
-    with the rest of the system. If there's no GUI, the watchdog pinging is done from 
-    the scheduler idle routine instead.
+    To prevent lockup, a watchdog process is forked with higher real-time priority. 
+    The GUI send a stream of ping messages to the watchdog THROUGH the main process. 
+    If pinging stops the watchdog start to SIGHUP to make the main process timeshare. 
     
 */
 
