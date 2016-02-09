@@ -153,6 +153,8 @@ clean:
 	@-rm -f "s_audio_jack.o"
 	@echo "Remove binaries ..."
 	@-rm -f $(BIN_DIR)/pd $(BIN_DIR)/pdsend $(BIN_DIR)/pdreceive $(BIN_DIR)/pdwatchdog
+	@echo "Remove bin directory ..."
+	@-rmdir $(BIN_DIR)
 
 install: all
 	@echo "Install binaries ..."
