@@ -69,7 +69,7 @@ void receiver_free (t_receiver *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int receiver_readHandleSemicolonEscaped (t_receiver *x, int i)
+static int receiver_readHandleIsSemicolonEscaped (t_receiver *x, int i)
 {
     if (i == 0) {
         return (x->r_inRaw[SOCKET_BUFFER_SIZE - 1] == '\\');
@@ -92,7 +92,7 @@ static int receiver_readHandleTCP (t_receiver *x)
     
     p++;
 
-    if (c == ';' && (first || !receiver_readHandleSemicolonEscaped (x, i))) {
+    if (c == ';' && (first || !receiver_readHandleIsSemicolonEscaped (x, i))) {
         x->r_inTail = (i + 1) & (SOCKET_BUFFER_SIZE - 1);
         buffer_withStringUnzeroed (x->r_message, t, p - t);
         return 1;

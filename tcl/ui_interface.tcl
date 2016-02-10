@@ -115,7 +115,7 @@ proc pdsend {args} {
     
     set message [join $args]
     
-    append message \; 
+    append message "\;"
     
     if {[catch { puts $tcpSocket $message }]} { error "Unable to post onto the TCP socket." }
 }

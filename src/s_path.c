@@ -439,37 +439,6 @@ void sys_doflags( void)
         post_error ("error parsing startup arguments");
 }
 */
-/* undo pdtl_encodedialog.  This allows dialogs to send spaces, commas,
-    dollars, and semis down here. */
-t_symbol *sys_decodedialog(t_symbol *s)
-{
-    char buf[PD_STRING], *sp = s->s_name;
-    int i;
-    if (*sp != '+') { PD_BUG; }
-    else sp++;
-    for (i = 0; i < PD_STRING-1; i++, sp++)
-    {
-        if (!sp[0])
-            break;
-        if (sp[0] == '+')
-        {
-            if (sp[1] == '_')
-                buf[i] = ' ', sp++;
-            else if (sp[1] == '+')
-                buf[i] = '+', sp++;
-            else if (sp[1] == 'c')
-                buf[i] = ',', sp++;
-            else if (sp[1] == 's')
-                buf[i] = ';', sp++;
-            else if (sp[1] == 'd')
-                buf[i] = '$', sp++;
-            else buf[i] = sp[0];
-        }
-        else buf[i] = sp[0];
-    }
-    buf[i] = 0;
-    return (gensym(buf));
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -500,6 +469,10 @@ void path_guiSearchPath (void)
     sys_vGui ("set ::var(searchPath) $::tmp_path\n");
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void path_setSearchPath (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
@@ -508,8 +481,8 @@ void path_setSearchPath (void *dummy, t_symbol *s, int argc, t_atom *argv)
     path_search = NULL;
     
     for (i = 0; i < argc; i++) {
-        t_symbol *s = atom_getSymbolAtIndex (i, argc, argv);
-        path_search = pathlist_newAppendFiles (path_search, sys_decodedialog (s), PATHLIST_SEPARATOR);
+        t_symbol *path = utils_decode (atom_getSymbolAtIndex (i, argc, argv));
+        path_search = pathlist_newAppend (path_search, path->s_name);
     }
 }
 

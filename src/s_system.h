@@ -107,16 +107,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#if PD_WINDOWS
-    #define PATHLIST_SEPARATOR                  ';'
-#else
-    #define PATHLIST_SEPARATOR                  ':'
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 /* LCM (32000, 44100, 48000, 88200, 96000). */
     
 #define SYSTIME_CLOCKS_PER_MILLISECOND          (double)(32.0 * 441.0)
@@ -188,8 +178,8 @@ typedef int t_fontsize;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_pathlist  *pathlist_newAppend                     (t_pathlist *x, const char *s);
-t_pathlist  *pathlist_newAppendFiles                (t_pathlist *x, t_symbol *s, char delimiter);
+t_pathlist  *pathlist_newAppend                  (t_pathlist *x, const char *s);
+t_pathlist  *pathlist_newAppendEncoded               (t_pathlist *x, t_symbol *s);
 char        *pathlist_getFileAtIndex                (t_pathlist *x, int n);
 char        *pathlist_getFile                       (t_pathlist *x);
 t_pathlist  *pathlist_getNext                       (t_pathlist *x);

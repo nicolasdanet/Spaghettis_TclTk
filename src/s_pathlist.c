@@ -17,26 +17,10 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static const char *pathlist_getNextFileDelimited (char *dest, size_t length, const char *src, char delimiter)
-{
-    size_t i;
-
-    for (i = 0; i < (length - 1) && src[i] && src[i] != delimiter; i++) { dest[i] = src[i]; }
-    
-    dest[i] = 0;
-
-    if (i && src[i] != 0) { return (src + i + 1); }
-    else {
-        return NULL;
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_pathlist *pathlist_newAppend (t_pathlist *x, const char *s)
 {
+    if (*s) {
+    //
     t_pathlist *l1 = x;
     t_pathlist *l2 = NULL;
     
@@ -54,6 +38,8 @@ t_pathlist *pathlist_newAppend (t_pathlist *x, const char *s)
         } while (l1->pl_next && (l1 = l1->pl_next));
         
         l1->pl_next = l2;
+    }
+    //
     }
     
     return x;
@@ -95,31 +81,6 @@ char *pathlist_getFile (t_pathlist *x)
 t_pathlist *pathlist_getNext (t_pathlist *x)
 {
     return (x ? x->pl_next : NULL);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_pathlist *pathlist_newAppendFiles (t_pathlist *x, t_symbol *s, char delimiter)
-{
-    t_pathlist *l = x;
-    
-    if (s && *s->s_name) {
-    //
-    char t[PD_STRING];
-    const char *p = s->s_name;
-    
-    do {
-        p = pathlist_getNextFileDelimited (t, PD_STRING, p, delimiter);
-        if (*t) { 
-            l = pathlist_newAppend (l, t); 
-        }
-    } while (p);
-    //
-    }
-    
-    return l;
 }
 
 // -----------------------------------------------------------------------------------------------------------

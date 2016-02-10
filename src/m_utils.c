@@ -82,6 +82,59 @@ t_error string_sprintf (char *dest, size_t size, const char *format, ...)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* A format to avoid slicing by the string parser. */
+
+t_symbol *utils_decode (t_symbol *s)
+{
+    if (!s) { PD_BUG; }
+    else {
+    //
+    char *p = s->s_name;
+    
+    PD_ASSERT (strlen (s->s_name) < PD_STRING);
+    
+    if (*p != '+') { PD_BUG; }
+    else {
+    //
+    int i;
+    char t[PD_STRING] = { 0 };
+    
+    p++;
+    
+    for (i = 0; i < PD_STRING - 1; i++, p++) {
+    //
+    if (*p == 0)   { break; }
+    if (*p == '+') {
+        if (p[1] == '_')        { t[i] = ' '; p++; }
+        else if (p[1] == '+')   { t[i] = '+'; p++; }
+        else if (p[1] == 'c')   { t[i] = ','; p++; }
+        else if (p[1] == 's')   { t[i] = ';'; p++; }
+        else if (p[1] == 'd')   { t[i] = '$'; p++; }
+        else {
+            t[i] = *p;
+        }
+            
+    } else { 
+        t[i] = *p;
+    }
+    //
+    }
+    
+    t[i] = 0;
+    
+    return (gensym (t));
+    //
+    }
+    //
+    }
+    
+    return &s_;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int utils_isTokenEnd (char c) 
 {
     return (c == ',' || c == ';');

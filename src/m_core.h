@@ -163,6 +163,8 @@ t_error     string_sprintf                              (char *dest, size_t size
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_symbol    *utils_decode                               (t_symbol *s);
+
 int         utils_isTokenEnd                            (char c);
 int         utils_isTokenEscape                         (char c);
 int         utils_isTokenWhitespace                     (char c);
