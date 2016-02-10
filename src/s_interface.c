@@ -711,7 +711,7 @@ static t_error interface_startGui (void)
         
         sys_get_audio_apis (audio);
         sys_get_midi_apis (midi);
-        sys_set_searchpath();
+        path_guiSearchPath();
 
         sys_vGui ("::initialize %s %s\n", audio, midi); 
         sys_vGui ("set ::var(apiAudio) %d\n", sys_audioapi);

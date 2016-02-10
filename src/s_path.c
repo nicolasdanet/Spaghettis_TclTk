@@ -471,45 +471,33 @@ t_symbol *sys_decodedialog(t_symbol *s)
     return (gensym(buf));
 }
 
-    /* send the user-specified search path to pd-gui */
-void sys_set_searchpath( void)
-{
-    int i;
-    t_pathlist *nl;
-
-    sys_gui("set ::tmp_path {}\n");
-    for (nl = path_search, i = 0; nl; nl = nl->pl_next, i++)
-        sys_vGui("lappend ::tmp_path {%s}\n", nl->pl_string);
-    sys_gui("set ::var(searchPath) $::tmp_path\n");
-}
-
-    /* send the hard-coded search path to pd-gui */
-void sys_set_extrapath(void)
-{
-    /*
-    int i;
-    t_pathlist *nl;
-
-    sys_gui("set ::tmp_path {}\n");
-    for (nl = path_extra, i = 0; nl; nl = nl->pl_next, i++)
-        sys_vGui("lappend ::tmp_path {%s}\n", nl->pl_string);
-    sys_gui("set ::path_extra $::tmp_path\n");
-    */
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void path_launchDialog (void *dummy)
+void path_guiDialog (void *dummy)
 {
     char t[PD_STRING];
 
-    sys_set_searchpath();
+    path_guiSearchPath();
     
     if (!string_sprintf (t, PD_STRING, "::ui_path::show %%s\n")) {
-        gfxstub_new (&global_object, (void *)path_launchDialog, t);
+        gfxstub_new (&global_object, (void *)path_guiDialog, t);
     }
+}
+
+void path_guiSearchPath (void)
+{
+    int i;
+    t_pathlist *l = NULL;
+
+    sys_vGui ("set ::tmp_path {}\n");
+    
+    for (l = path_search; l; l = pathlist_getNext (l)) {
+        sys_vGui ("lappend ::tmp_path {%s}\n", pathlist_getFile (l));
+    }
+    
+    sys_vGui ("set ::var(searchPath) $::tmp_path\n");
 }
 
 void path_setSearchPath (void *dummy, t_symbol *s, int argc, t_atom *argv)

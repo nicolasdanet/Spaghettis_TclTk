@@ -300,7 +300,8 @@ t_error     path_withNameAndDirectory               (char *dest,
                                                         
 t_error     path_expandEnvironment                  (const char *src, char *dest, size_t size);
 void        path_setSearchPath                      (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void        path_launchDialog                       (void *dummy);
+void        path_guiDialog                          (void *dummy);
+void        path_guiSearchPath                      (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -315,13 +316,6 @@ void        preferences_save                        (void *dummy);
 
 void post_atoms                             (int argc, t_atom *argv);
 void open_via_helppath                      (const char *name, const char *dir);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void sys_set_searchpath                     (void);
-void sys_set_extrapath                      (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
