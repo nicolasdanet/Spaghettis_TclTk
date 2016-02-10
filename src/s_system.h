@@ -290,7 +290,6 @@ t_error     path_withNameAndDirectory               (char *dest,
                                                         
 t_error     path_expandEnvironment                  (const char *src, char *dest, size_t size);
 void        path_setSearchPath                      (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void        path_guiDialog                          (void *dummy);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

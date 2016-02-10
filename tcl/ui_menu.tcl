@@ -370,7 +370,7 @@ proc _tools {m} {
         -label [_ "Path"] \
         -variable ::var(isPath) \
         -command { 
-            if {$::var(isPath)} { ::ui_interface::pdsend "pd _pathDialog" } else { ::ui_path::hide } 
+            if {$::var(isPath)} { ::ui_path::show } else { ::ui_path::hide } 
         }
 }
 

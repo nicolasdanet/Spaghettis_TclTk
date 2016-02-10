@@ -22,9 +22,7 @@ namespace eval ::ui_path:: {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# The parameter provided is not used. 
-
-proc show {{top {}}} { 
+proc show {} { 
     
     if {[winfo exists .path]} { ::bringToFront .path } else { ::ui_path::_create }
 }
@@ -67,6 +65,8 @@ proc _create {} {
     
     wm protocol .path WM_DELETE_WINDOW { ::ui_path::closed }
 }
+
+# The parameter provided is not used. 
 
 proc closed {{top {}}} {
 
