@@ -252,8 +252,6 @@ void        global_audioDialog                          (void *dummy, t_symbol *
 void        global_midiDialog                           (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void        global_audioAPI                             (void *dummy, t_float f);
 void        global_midiAPI                              (void *dummy, t_float f);
-void        global_pathDialog                           (void *dummy, t_float f);
-void        global_setPath                              (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void        global_shouldQuit                           (void *dummy);
 
 // -----------------------------------------------------------------------------------------------------------

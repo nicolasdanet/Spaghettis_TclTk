@@ -179,7 +179,7 @@ static t_error main_getRootDirectory (void)
     
     #if PD_WINDOWS
         err |= main_getExecutablePathPlatformSpecific (buf2, PD_STRING);
-        sys_unbashfilename (buf2, buf1);
+        path_backslashToSlashIfNecessary (buf2, buf1);
         *buf2 = 0;
     #else
         err |= main_getExecutablePathPlatformSpecific (buf1, PD_STRING);
@@ -239,7 +239,7 @@ int main_entry (int argc, char **argv)
     sys_setSignalHandlers();
     
     PD_ASSERT (main_rootDirectory != NULL);
-    
+
     if (!(err |= interface_start())) {
         sys_reopen_midi();
         if (audio_shouldkeepopen()) { sys_reopen_audio(); }

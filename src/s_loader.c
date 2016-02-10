@@ -192,7 +192,7 @@ gotone:
 #ifdef _WIN32
     {
         char dirname[PD_STRING], *s, *basename;
-        sys_bashfilename(filename, filename);
+        path_slashToBackslashIfNecessary(filename, filename);
         /* set the dirname as DllDirectory, meaning in the path for
            loading other DLLs so that dependent libraries can be included
            in the same folder as the external. SetDllDirectory() needs a
@@ -294,13 +294,13 @@ int sys_run_scheduler(const char *externalschedlibname,
     struct stat statbuf;
     snprintf(filename, sizeof(filename), "%s%s", externalschedlibname,
         sys_dllextent);
-    sys_bashfilename(filename, filename);
+    path_slashToBackslashIfNecessary(filename, filename);
         
     if (stat(filename, &statbuf) < 0)
     {
         snprintf(filename, sizeof(filename), "%s%s", externalschedlibname,
             sys_dllextent2);
-        sys_bashfilename(filename, filename);
+        path_slashToBackslashIfNecessary(filename, filename);
     }       
 #ifdef _WIN32
     {

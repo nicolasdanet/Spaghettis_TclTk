@@ -1284,7 +1284,7 @@ void canvas_savedeclarationsto(t_canvas *x, t_buffer *b)
 
 static void canvas_completepath(char *from, char *to, int bufsize)
 {
-    if (sys_isabsolutepath(from))
+    if (path_isAbsoluteWithEnvironment(from))
     {
         to[0] = '\0';
     }
@@ -1304,7 +1304,7 @@ static int check_exists(const char*path)
 {
     char pathbuf[PD_STRING];
     wchar_t ucs2path[PD_STRING];
-    sys_bashfilename(path, pathbuf);
+    path_slashToBackslashIfNecessary(path, pathbuf);
     u8_utf8toucs2(ucs2path, PD_STRING, pathbuf, PD_STRING-1);
     return (0 ==  _waccess(ucs2path, 0));
 }
@@ -1313,18 +1313,20 @@ static int check_exists(const char*path)
 static int check_exists(const char*path)
 {
     char pathbuf[PD_STRING];
-    sys_bashfilename(path, pathbuf);
+    path_slashToBackslashIfNecessary(path, pathbuf);
     return (0 == access(pathbuf, 0));
 }
 #endif
 
-extern t_pathlist *path_extra;
+//extern t_pathlist *path_extra;
+
+#if 0
 
 static void canvas_stdpath(t_canvasenvironment *e, char *stdpath)
 {
     t_pathlist*nl;
     char strbuf[PD_STRING];
-    if (sys_isabsolutepath(stdpath))
+    if (path_isAbsoluteWithEnvironment(stdpath))
     {
         e->ce_path = pathlist_newAppend(e->ce_path, stdpath);
         return;
@@ -1351,11 +1353,12 @@ static void canvas_stdpath(t_canvasenvironment *e, char *stdpath)
         }
     }
 }
+
 static void canvas_stdlib(t_canvasenvironment *e, char *stdlib)
 {
     t_pathlist*nl;
     char strbuf[PD_STRING];
-    if (sys_isabsolutepath(stdlib))
+    if (path_isAbsoluteWithEnvironment(stdlib))
     {
         sys_load_lib(0, stdlib);
         return;
@@ -1379,7 +1382,7 @@ static void canvas_stdlib(t_canvasenvironment *e, char *stdlib)
     }
 }
 
-
+#endif
 static void canvas_declare(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
@@ -1396,21 +1399,22 @@ static void canvas_declare(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
             e->ce_path = pathlist_newAppend(e->ce_path, atom_getSymbolAtIndex(i+1, argc, argv)->s_name);
             i++;
         }
-        else if ((argc > i+1) && !strcmp(flag, "-stdpath"))
+        /*else if ((argc > i+1) && !strcmp(flag, "-stdpath"))
         {
             canvas_stdpath(e, atom_getSymbolAtIndex(i+1, argc, argv)->s_name);
             i++;
-        }
+        }*/
         else if ((argc > i+1) && !strcmp(flag, "-lib"))
         {
             sys_load_lib(x, atom_getSymbolAtIndex(i+1, argc, argv)->s_name);
             i++;
         }
+        /*
         else if ((argc > i+1) && !strcmp(flag, "-stdlib"))
         {
             canvas_stdlib(e, atom_getSymbolAtIndex(i+1, argc, argv)->s_name);
             i++;
-        }
+        }*/
         else post("declare: %s: unknown declaration", flag);
     }
 }
@@ -1454,7 +1458,7 @@ int canvas_open(t_canvas *x, const char *name, const char *ext,
         for (nl = y->gl_env->ce_path; nl; nl = nl->pl_next)
         {
             char realname[PD_STRING];
-            if (sys_isabsolutepath(nl->pl_string))
+            if (path_isAbsoluteWithEnvironment(nl->pl_string))
             {
                 realname[0] = '\0';
             }

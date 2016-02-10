@@ -189,7 +189,7 @@ typedef int t_fontsize;
 #pragma mark -
 
 t_pathlist  *pathlist_newAppend                     (t_pathlist *x, const char *s);
-t_pathlist  *pathlist_newAppendFiles                (t_pathlist *x, const char *s, char delimiter);
+t_pathlist  *pathlist_newAppendFiles                (t_pathlist *x, t_symbol *s, char delimiter);
 char        *pathlist_getFileAtIndex                (t_pathlist *x, int n);
 char        *pathlist_getFile                       (t_pathlist *x);
 t_pathlist  *pathlist_getNext                       (t_pathlist *x);
@@ -289,11 +289,18 @@ t_error     interface_start                         (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        path_slashToBackslashIfNecessary        (char *src, char *dest);
+void        path_backslashToSlashIfNecessary        (char *src, char *dest);
 int         path_isFileExist                        (const char *filepath);
+int         path_isAbsoluteWithEnvironment          (const char *filepath);
 t_error     path_withNameAndDirectory               (char *dest, 
                                                         size_t size, 
                                                         const char *name, 
                                                         const char *directory);
+                                                        
+t_error     path_expandEnvironment                  (const char *src, char *dest, size_t size);
+void        path_setSearchPath                      (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void        path_launchDialog                       (void *dummy);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -309,22 +316,17 @@ void        preferences_save                        (void *dummy);
 void post_atoms                             (int argc, t_atom *argv);
 void open_via_helppath                      (const char *name, const char *dir);
 
-void sys_bashfilename                       (char *from, char *to);
-void sys_unbashfilename                     (char *from, char *to);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void sys_set_searchpath                     (void);
 void sys_set_extrapath                      (void);
-void sys_set_startup                        (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        sys_setextrapath                (const char *p);
 int         sys_open_absolute               (const char *name,
                                                 const char* ext,
                                                 char *dirresult,

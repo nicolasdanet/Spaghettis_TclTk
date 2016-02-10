@@ -633,7 +633,6 @@ PD_DLL void post_error      (const char *fmt, ...);
 #pragma mark -
 
 PD_DLL int      sys_isreadablefile  (const char *name);
-PD_DLL int      sys_isabsolutepath  (const char *dir);
 PD_DLL int      open_via_path       (const char *dir, 
                                         const char *name,
                                         const char *ext,

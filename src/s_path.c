@@ -24,8 +24,35 @@ extern t_class *global_object;
 // -----------------------------------------------------------------------------------------------------------
 
 t_pathlist *path_help;          /* Shared. */
-t_pathlist *path_extra;         /* Shared. */
 t_pathlist *path_search;        /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void path_slashToBackslashIfNecessary (char *src, char *dest)
+{
+    char c;
+    while (c = *src++) {
+        #if PD_WINDOWS
+        if (c == '/') { c = '\\'; }
+        #endif
+        *dest++ = c;
+    }
+    *dest = 0;
+}
+
+void path_backslashToSlashIfNecessary (char *src, char *dest)
+{
+    char c;
+    while (c = *src++) {
+        #if PD_WINDOWS
+        if (c == '\\') { c = '/'; }
+        #endif
+        *dest++ = c;
+    }
+    *dest = 0;
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -34,6 +61,19 @@ t_pathlist *path_search;        /* Shared. */
 int path_isFileExist (const char *filepath)
 {
     struct stat t; return (stat (filepath, &t) == 0);
+}
+
+int path_isAbsoluteWithEnvironment (const char *f)
+{
+    #if PD_WINDOWS
+    
+    return (f[0] == '/' || f[0] == '~' || f[0] == '%' || (f[1] == ':' && f[2] == '/'));
+    
+    #else
+    
+    return (f[0] == '/' || f[0] == '~');
+    
+    #endif
 }
 
 t_error path_withNameAndDirectory (char *dest, size_t size, const char *name, const char *directory)
@@ -54,113 +94,41 @@ t_error path_withNameAndDirectory (char *dest, size_t size, const char *name, co
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_bashfilename(char *from, char *to)
+#ifdef PD_WINDOWS
+
+t_error path_expandEnvironment (const char *src, char *dest, size_t size)
 {
-    char c;
-    while (c = *from++)
-    {
-#ifdef _WIN32
-        if (c == '/') c = '\\';
-#endif
-        *to++ = c;
-    }
-    *to = 0;
+    return PD_ERROR;
 }
 
-    /* change the system's native file separator to '/' characters  */
-void sys_unbashfilename(char *from, char *to)
-{
-    char c;
-    while (c = *from++)
-    {
-#ifdef _WIN32
-        if (c == '\\') c = '/';
-#endif
-        *to++ = c;
-    }
-    *to = 0;
-}
-
-/* test if path is absolute or relative, based on leading /, env vars, ~, etc */
-int sys_isabsolutepath(const char *dir)
-{
-    if (dir[0] == '/' || dir[0] == '~'
-#ifdef _WIN32
-        || dir[0] == '%' || (dir[1] == ':' && dir[2] == '/')
-#endif
-        )
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;            
-    }
-}
-
-/* expand env vars and ~ at the beginning of a path and make a copy to return */
-static void sys_expandpath(const char *from, char *to, int bufsize)
-{
-    if ((strlen(from) == 1 && from[0] == '~') || (strncmp(from,"~/", 2) == 0))
-    {
-#ifdef _WIN32
-        const char *home = getenv("USERPROFILE");
 #else
-        const char *home = getenv("HOME");
-#endif
-        if (home) 
-        {
-            strncpy(to, home, bufsize);
-            to[bufsize-1] = 0;
-            strncpy(to + strlen(to), from + 1, bufsize - strlen(to));
-            to[bufsize-1] = 0;
-        }
-        else *to = 0;
-    }
-    else
-    {
-        strncpy(to, from, bufsize);
-        to[bufsize-1] = 0;
-    }
-#ifdef _WIN32
-    {
-        char *buf = alloca(bufsize);
-        ExpandEnvironmentStrings(to, buf, bufsize-1);
-        buf[bufsize-1] = 0;
-        strncpy(to, buf, bufsize);
-        to[bufsize-1] = 0;
-    }
-#endif    
-}
 
-// int sys_usestdpath = 1;
-
-void sys_setextrapath(const char *p)
+t_error path_expandEnvironment (const char *src, char *dest, size_t size)
 {
-    char pathbuf[PD_STRING];
-    pathlist_free(path_extra);
-    /* add standard place for users to install stuff first */
-#ifdef __gnu_linux__
-    sys_expandpath("~/pd-externals", pathbuf, PD_STRING);
-    path_extra = pathlist_newAppend(0, pathbuf);
-    path_extra = pathlist_newAppend(path_extra, "/usr/local/lib/pd-externals");
-#endif
+    t_error err = PD_ERROR_NONE;
 
-#ifdef __APPLE__
-    sys_expandpath("~/Library/Pd", pathbuf, PD_STRING);
-    path_extra = pathlist_newAppend(0, pathbuf);
-    path_extra = pathlist_newAppend(path_extra, "/Library/Pd");
-#endif
+    if ((strlen (src) == 1 && src[0] == '~') || (strncmp (src, "~/", 2) == 0)) {
+    
+        const char *home = getenv ("HOME");
+        
+        if (!home) { *dest = 0; }
+        else {
+            err |= string_copy (dest, size, home);
+            err |= string_add (dest, size, src + 1);
+        }
 
-#ifdef _WIN32
-    sys_expandpath("%AppData%/Pd", pathbuf, PD_STRING);
-    path_extra = pathlist_newAppend(0, pathbuf);
-    sys_expandpath("%CommonProgramFiles%/Pd", pathbuf, PD_STRING);
-    path_extra = pathlist_newAppend(path_extra, pathbuf);
-#endif
-    /* add built-in "extra" path last so its checked last */
-    path_extra = pathlist_newAppend(path_extra, p);
+    } else {
+        err |= string_copy (dest, size, src);
+    }
+
+    return err;
 }
+
+#endif // PD_WINDOWS
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* try to open a file in the directory "dir", named "name""ext",
     for reading.  "Name" may have slashes.  The directory is copied to
@@ -176,7 +144,7 @@ int sys_trytoopenone(const char *dir, const char *name, const char* ext,
     char buf[PD_STRING];
     if (strlen(dir) + strlen(name) + strlen(ext) + 4 > size)
         return (-1);
-    sys_expandpath(dir, buf, PD_STRING);
+    path_expandEnvironment(dir, buf, PD_STRING);
     strcpy(dirresult, buf);
     if (*dirresult && dirresult[strlen(dirresult)-1] != '/')
         strcat(dirresult, "/");
@@ -203,7 +171,7 @@ int sys_trytoopenone(const char *dir, const char *name, const char* ext,
         {
             char *slash;
             if (0) post("tried %s and succeeded", dirresult);
-            sys_unbashfilename(dirresult, dirresult);
+            path_backslashToSlashIfNecessary(dirresult, dirresult);
             slash = strrchr(dirresult, '/');
             if (slash)
             {
@@ -227,7 +195,7 @@ int sys_trytoopenone(const char *dir, const char *name, const char* ext,
 int sys_open_absolute(const char *name, const char* ext,
     char *dirresult, char **nameresult, unsigned int size, int bin, int *fdp)
 {
-    if (sys_isabsolutepath(name))
+    if (path_isAbsoluteWithEnvironment(name))
     {
         char dirbuf[PD_STRING], *z = strrchr(name, '/');
         int dirlen;
@@ -279,11 +247,11 @@ static int do_open_via_path(const char *dir, const char *name,
                 return (fd);
 
         /* next look in built-in paths like "extra" */
-    if (1 /*sys_usestdpath*/)
+    /*if (0)
         for (nl = path_extra; nl; nl = nl->pl_next)
             if ((fd = sys_trytoopenone(nl->pl_string, name, ext,
                 dirresult, nameresult, size, bin)) >= 0)
-                    return (fd);
+                    return (fd);*/
 
     *dirresult = 0;
     *nameresult = dirresult;
@@ -308,7 +276,7 @@ int sys_open(const char *path, int oflag, ...)
     int i, fd;
     char pathbuf[PD_STRING];
     wchar_t ucs2path[PD_STRING];
-    sys_bashfilename(path, pathbuf);
+    path_slashToBackslashIfNecessary(path, pathbuf);
     u8_utf8toucs2(ucs2path, PD_STRING, pathbuf, PD_STRING-1);
     /* For the create mode, Win32 does not have the same possibilities,
      * so we ignore the argument and just hard-code read/write. */
@@ -324,7 +292,7 @@ FILE *sys_fopen(const char *filename, const char *mode)
     char namebuf[PD_STRING];
     wchar_t ucs2buf[PD_STRING];
     wchar_t ucs2mode[PD_STRING];
-    sys_bashfilename(filename, namebuf);
+    path_slashToBackslashIfNecessary(filename, namebuf);
     u8_utf8toucs2(ucs2buf, PD_STRING, namebuf, PD_STRING-1);
     /* mode only uses ASCII, so no need for a full conversion, just copy it */
     mbstowcs(ucs2mode, mode, PD_STRING);
@@ -336,7 +304,7 @@ int sys_open(const char *path, int oflag, ...)
 {
     int i, fd;
     char pathbuf[PD_STRING];
-    sys_bashfilename(path, pathbuf);
+    path_slashToBackslashIfNecessary(path, pathbuf);
     if (oflag & O_CREAT)
     {
         mode_t mode;
@@ -364,7 +332,7 @@ int sys_open(const char *path, int oflag, ...)
 FILE *sys_fopen(const char *filename, const char *mode)
 {
   char namebuf[PD_STRING];
-  sys_bashfilename(filename, namebuf);
+  path_slashToBackslashIfNecessary(filename, namebuf);
   return fopen(namebuf, mode);
 }
 #endif /* _WIN32 */
@@ -529,71 +497,33 @@ void sys_set_extrapath(void)
     */
 }
 
-    /* start a search path dialog window */
-void global_pathDialog (void *dummy, t_float flongform)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void path_launchDialog (void *dummy)
 {
-     char buf[PD_STRING];
+    char t[PD_STRING];
 
     sys_set_searchpath();
-    sprintf(buf, "::ui_path::show %%s\n");
-    gfxstub_new(&global_object, (void *)global_pathDialog, buf);
-}
-
-    /* new values from dialog window */
-void global_setPath(void *dummy, t_symbol *s, int argc, t_atom *argv)
-{
-    int i;
-    pathlist_free(path_search);
-    path_search = 0;
-    //sys_usestdpath = (t_int)atom_getFloatAtIndex(0, argc, argv);
-    //sys_verbose = (t_int)atom_getFloatAtIndex(1, argc, argv);
-    for (i = 0; i < argc; i++)
-    {
-        t_symbol *s = sys_decodedialog(atom_getSymbolAtIndex(i, argc, argv));
-        if (*s->s_name)
-            path_search = pathlist_newAppendFiles(path_search, s->s_name, PATHLIST_SEPARATOR);
+    
+    if (!string_sprintf (t, PD_STRING, "::ui_path::show %%s\n")) {
+        gfxstub_new (&global_object, (void *)path_launchDialog, t);
     }
 }
 
-    /* set the global list vars for startup libraries and flags */
-void sys_set_startup( void)
-{
-    //int i;
-    //t_pathlist *nl;
-
-    // sys_vGui("set ::var(startupFlags) {%s}\n", sys_flags->s_name);
-    // sys_gui("set ::var(startupLibraries) {}\n");
-    // for (nl = sys_externlist, i = 0; nl; nl = nl->pl_next, i++)
-        // sys_vGui("lappend ::var(startupLibraries) {%s}\n", nl->pl_string);
-}
-
-    /* start a startup dialog window */
-void glob_start_startup_dialog (void *dummy, t_float flongform)
-{
-    char buf[PD_STRING];
-
-    sys_set_startup();
-    /* sprintf(buf, "::dialog_startup::pdtk_startup_dialog %%s %d \"%s\"\n", sys_defeatrt,
-        sys_flags->s_name);
-    gfxstub_new(&global_object, (void *)glob_start_startup_dialog, buf); */
-}
-
-/*
-static void glob_startup_dialog(void *dummy, t_symbol *s, int argc, t_atom *argv)
+void path_setSearchPath (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
-    pathlist_free(sys_externlist);
-    sys_externlist = 0;
-    sys_defeatrt = (t_int)atom_getFloatAtIndex(0, argc, argv);
-    sys_flags = sys_decodedialog(atom_getSymbolAtIndex(1, argc, argv));
-    for (i = 0; i < argc-2; i++)
-    {
-        t_symbol *s = sys_decodedialog(atom_getSymbolAtIndex(i+2, argc, argv));
-        if (*s->s_name)
-            sys_externlist = pathlist_newAppendFiles(sys_externlist, s->s_name, PATHLIST_SEPARATOR);
+    
+    pathlist_free (path_search);
+    path_search = NULL;
+    
+    for (i = 0; i < argc; i++) {
+        t_symbol *s = atom_getSymbolAtIndex (i, argc, argv);
+        path_search = pathlist_newAppendFiles (path_search, sys_decodedialog (s), PATHLIST_SEPARATOR);
     }
 }
-*/
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

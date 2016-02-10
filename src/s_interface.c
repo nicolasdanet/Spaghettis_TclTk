@@ -529,8 +529,8 @@ static t_error interface_launchGuiSpawnProcess (void)
     err |= string_add (wish, PD_STRING, "/bin/wish85.exe\"");
     
     if (!err) {
-        sys_bashfilename (path, path);
-        sys_bashfilename (wish, wish);
+        path_slashToBackslashIfNecessary (path, path);
+        path_slashToBackslashIfNecessary (wish, wish);
         err |= ((spawned = _spawnl (P_NOWAIT, wish, "wish85.exe", path, port, 0)) < 0);
     }
     

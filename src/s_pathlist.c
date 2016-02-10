@@ -45,7 +45,7 @@ t_pathlist *pathlist_newAppend (t_pathlist *x, const char *s)
     l2->pl_string = (char *)PD_MEMORY_GET (strlen (s) + 1);
     
     strcpy (l2->pl_string, s);
-    sys_unbashfilename (l2->pl_string, l2->pl_string);
+    path_backslashToSlashIfNecessary (l2->pl_string, l2->pl_string);
     
     if (!l1) { return l2; }
     else {
@@ -101,11 +101,14 @@ t_pathlist *pathlist_getNext (t_pathlist *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_pathlist *pathlist_newAppendFiles (t_pathlist *x, const char *s, char delimiter)
+t_pathlist *pathlist_newAppendFiles (t_pathlist *x, t_symbol *s, char delimiter)
 {
-    char t[PD_STRING];
     t_pathlist *l = x;
-    const char *p = s;
+    
+    if (s && *s->s_name) {
+    //
+    char t[PD_STRING];
+    const char *p = s->s_name;
     
     do {
         p = pathlist_getNextFileDelimited (t, PD_STRING, p, delimiter);
@@ -113,6 +116,8 @@ t_pathlist *pathlist_newAppendFiles (t_pathlist *x, const char *s, char delimite
             l = pathlist_newAppend (l, t); 
         }
     } while (p);
+    //
+    }
     
     return l;
 }
