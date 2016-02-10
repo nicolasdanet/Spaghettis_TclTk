@@ -65,7 +65,8 @@ typedef struct _guiqueue {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_symbol *main_rootDirectory;
+extern t_symbol     *main_rootDirectory;
+extern t_pathlist   *path_search;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -706,14 +707,22 @@ static t_error interface_startGui (void)
     
     if (!err) {
     
+        t_pathlist *l = NULL;
+        
         char midi[PD_STRING]  = { 0 };
         char audio[PD_STRING] = { 0 };
         
         sys_get_audio_apis (audio);
         sys_get_midi_apis (midi);
-        path_guiSearchPath();
-
-        sys_vGui ("::initialize %s %s\n", audio, midi); 
+        
+        sys_vGui ("::initialize %s %s\n", audio, midi);
+        
+        for (l = path_search; l; l = pathlist_getNext (l)) {
+        //
+        sys_vGui ("lappend ::var(searchPath) {%s}\n", pathlist_getFile (l));
+        //
+        }
+        
         sys_vGui ("set ::var(apiAudio) %d\n", sys_audioapi);
     }
     

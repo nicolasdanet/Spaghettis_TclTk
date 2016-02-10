@@ -470,19 +470,5 @@ void path_guiDialog (void *dummy)
     }
 }
 
-void path_guiSearchPath (void)
-{
-    int i;
-    t_pathlist *l = NULL;
-
-    sys_vGui ("set ::tmp_path {}\n");
-    
-    for (l = path_search; l; l = pathlist_getNext (l)) {
-        sys_vGui ("lappend ::tmp_path {%s}\n", pathlist_getFile (l));
-    }
-    
-    sys_vGui ("set ::var(searchPath) $::tmp_path\n");
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
