@@ -93,7 +93,7 @@ t_symbol *utils_decode (t_symbol *s)
     
     PD_ASSERT (strlen (s->s_name) < PD_STRING);
     
-    if (*p != '+') { PD_BUG; }
+    if (*p != '@') { return s; }
     else {
     //
     int i;
@@ -104,9 +104,9 @@ t_symbol *utils_decode (t_symbol *s)
     for (i = 0; i < PD_STRING - 1; i++, p++) {
     //
     if (*p == 0)   { break; }
-    if (*p == '+') {
+    if (*p == '@') {
         if (p[1] == '_')        { t[i] = ' '; p++; }
-        else if (p[1] == '+')   { t[i] = '+'; p++; }
+        else if (p[1] == '@')   { t[i] = '@'; p++; }
         else if (p[1] == 'c')   { t[i] = ','; p++; }
         else if (p[1] == 's')   { t[i] = ';'; p++; }
         else if (p[1] == 'd')   { t[i] = '$'; p++; }

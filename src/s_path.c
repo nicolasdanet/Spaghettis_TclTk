@@ -444,12 +444,27 @@ void sys_doflags( void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void path_setSearchPath (void *dummy, t_symbol *s, int argc, t_atom *argv)
+{
+    int i;
+    
+    pathlist_free (path_search); 
+    path_search = NULL;
+    
+    for (i = 0; i < argc; i++) {
+        t_symbol *path = utils_decode (atom_getSymbolAtIndex (i, argc, argv));
+        path_search = pathlist_newAppend (path_search, path->s_name);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void path_guiDialog (void *dummy)
 {
     char t[PD_STRING];
 
-    path_guiSearchPath();
-    
     if (!string_sprintf (t, PD_STRING, "::ui_path::show %%s\n")) {
         gfxstub_new (&global_object, (void *)path_guiDialog, t);
     }
@@ -467,23 +482,6 @@ void path_guiSearchPath (void)
     }
     
     sys_vGui ("set ::var(searchPath) $::tmp_path\n");
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void path_setSearchPath (void *dummy, t_symbol *s, int argc, t_atom *argv)
-{
-    int i;
-    
-    pathlist_free (path_search);
-    path_search = NULL;
-    
-    for (i = 0; i < argc; i++) {
-        t_symbol *path = utils_decode (atom_getSymbolAtIndex (i, argc, argv));
-        path_search = pathlist_newAppend (path_search, path->s_name);
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
