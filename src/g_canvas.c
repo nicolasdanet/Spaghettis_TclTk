@@ -1475,7 +1475,7 @@ int canvas_open(t_canvas *x, const char *name, const char *ext,
                     return (fd);
         }
     }
-    return (file_openWithSearchPath((x ? canvas_getdir(x)->s_name : "."), name, ext,
+    return (file_openConsideringSearchPath((x ? canvas_getdir(x)->s_name : "."), name, ext,
         dirresult, nameresult, size));
 }
 

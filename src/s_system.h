@@ -289,7 +289,7 @@ int         file_openWithDirectoryAndName           (const char *directory,
                                                         char **nameResult,
                                                         size_t size);
                                                         
-int         file_openWithSearchPath                 (const char *directory, 
+int         file_openConsideringSearchPath          (const char *directory, 
                                                         const char *name,
                                                         const char *extension,
                                                         char *directoryResult,

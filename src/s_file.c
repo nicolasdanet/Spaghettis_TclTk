@@ -17,7 +17,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pathlist *path_help;
 extern t_pathlist *path_search;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -93,18 +92,21 @@ int file_openWithDirectoryAndName (const char *directory,
                                     size_t size)
 {
     int f = -1;
-    t_error err = path_withDirectoryAndName (directoryResult, size, directory, name, 1);
+    t_error err = PD_ERROR_NONE;
+    
+    PD_ASSERT (directory);
+    PD_ASSERT (name);
+    
+    err |= path_withDirectoryAndName (directoryResult, size, directory, name, 1);
     err |= string_add (directoryResult, size, extension);
 
     if (!err && (f = file_openRaw (directoryResult, O_RDONLY)) >= 0) {
     //
-    char *slash;
-    path_backslashToSlashIfNecessary (directoryResult, directoryResult);
-    slash = strrchr (directoryResult, '/');
-    if (!slash) { *nameResult = directoryResult; }
+    char *slash = NULL;
+    
+    if ((slash = strrchr (directoryResult, '/'))) { *slash = 0; *nameResult = slash + 1; }
     else {
-        *slash = 0;
-        *nameResult = slash + 1;
+        *nameResult = directoryResult; 
     }
     
     return f;  
@@ -117,13 +119,12 @@ int file_openWithDirectoryAndName (const char *directory,
     return -1;
 }
 
-static int file_openWithList (const char *directory, 
-                                    const char *name,
-                                    const char *extension, 
-                                    char *directoryResult, 
-                                    char **nameResult, 
-                                    size_t size,
-                                    t_pathlist *list)
+int file_openConsideringSearchPath (const char *directory, 
+                const char *name, 
+                const char *extension,
+                char *directoryResult, 
+                char **nameResult, 
+                size_t size)
 {
     int f = file_openWithDirectoryAndName (directory, name, extension, directoryResult, nameResult, size);
     
@@ -131,7 +132,7 @@ static int file_openWithList (const char *directory,
 
         t_pathlist *l = NULL;
             
-        for (l = list; l; l = pathlist_getNext (l)) {
+        for (l = path_search; l; l = pathlist_getNext (l)) {
             char *path = pathlist_getFile (l);
             f = file_openWithDirectoryAndName (path, name, extension, directoryResult, nameResult, size);
             if (f >= 0) { break; }
@@ -141,22 +142,9 @@ static int file_openWithList (const char *directory,
     return f;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int file_openWithSearchPath (const char *directory, 
-                const char *name, 
-                const char *extension,
-                char *directoryResult, 
-                char **nameResult, 
-                size_t size)
-{
-    return (file_openWithList (directory, name, extension, directoryResult, nameResult, size, path_search));
-}
-
 void file_openHelp (const char *directory, const char *name)
 {
+    #if 0
     char realname[PD_STRING], dirbuf[PD_STRING], *basename;
         /* make up a silly "dir" if none is supplied */
     const char *usedir = (*directory ? directory : "./");
@@ -185,6 +173,7 @@ void file_openHelp (const char *directory, const char *name)
 gotone:
     close (fd);
     buffer_openFile (0, gensym((char*)basename), gensym(dirbuf));
+    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------
