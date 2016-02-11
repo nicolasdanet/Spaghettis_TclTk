@@ -305,7 +305,8 @@ t_error scheduler_main (void)
     } 
     
     if (scheduler_quit == SCHEDULER_ERROR) {
-        if (audio_isopen()) { sys_close_audio(); } sys_close_midi();
+        sys_close_audio();
+        sys_close_midi();
     }
     //
     }

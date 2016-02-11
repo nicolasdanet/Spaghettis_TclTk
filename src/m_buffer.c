@@ -521,7 +521,7 @@ static t_error buffer_fromFile (t_buffer *x, char *name, char *directory)
     
     char filepath[PD_STRING] = { 0 };
 
-    if (!(err = path_withDirectoryAndName (filepath, PD_STRING, directory, name))) {
+    if (!(err = path_withDirectoryAndName (filepath, PD_STRING, directory, name, 0))) {
     //
     int f = file_openRaw (filepath, 0);
     
@@ -652,7 +652,7 @@ t_error buffer_write (t_buffer *x, char *name, char *directory)
 
     char filepath[PD_STRING] = { 0 };
 
-    if (!(err = path_withDirectoryAndName (filepath, PD_STRING, directory, name))) {
+    if (!(err = path_withDirectoryAndName (filepath, PD_STRING, directory, name, 0))) {
     //
     FILE *f = 0;
 

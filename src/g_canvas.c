@@ -1441,8 +1441,8 @@ int canvas_open(t_canvas *x, const char *name, const char *ext,
     t_canvas *y;
 
         /* first check if "name" is absolute (and if so, try to open) */
-    if ((fd = file_openWithAbsolutePath(name, ext, dirresult, nameresult, size)) >= 0)
-        return (fd);
+    /* if ((fd = file_openWithAbsolutePath(name, ext, dirresult, nameresult, size)) >= 0)
+        return (fd); */
     
         /* otherwise "name" is relative; start trying in directories named
         in this and parent environments */

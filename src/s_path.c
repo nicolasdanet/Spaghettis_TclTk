@@ -56,10 +56,32 @@ void path_backslashToSlashIfNecessary (char *src, char *dest)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* < https://stackoverflow.com/questions/3828192/checking-if-a-directory-exists-in-unix-system-call > */
+
+#if !PD_WINDOWS
+
 int path_isFileExist (const char *filepath)
 {
     struct stat t; return (stat (filepath, &t) == 0);
 }
+
+#endif
+
+/*
+#ifndef _WIN32
+        struct stat statbuf;
+        int ok =  ((fstat(f, &statbuf) >= 0) &&
+            !S_ISDIR(statbuf.st_mode));
+        if (!ok)
+        {
+            if (0) post("tried %s; stat failed or directory",
+                directoryResult);
+            close (f);
+            f = -1;
+        }
+        else
+#endif
+*/
 
 int path_isAbsoluteWithEnvironment (const char *f)
 {
@@ -74,13 +96,27 @@ int path_isAbsoluteWithEnvironment (const char *f)
     #endif
 }
 
-t_error path_withDirectoryAndName (char *dest, size_t size, const char *directory, const char *name)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error path_withDirectoryAndName (char *dest, 
+                                    size_t size, 
+                                    const char *directory, 
+                                    const char *name, 
+                                    int expandEnvironment)
 {
     t_error err = PD_ERROR;
     
     if (*name) {
+    
         err = PD_ERROR_NONE;
-        err |= string_copy (dest, size, directory);
+        
+        if (expandEnvironment) { err |= path_expandEnvironment (dest, size, directory); } 
+        else {
+            err |= string_copy (dest, size, directory);
+        }
+        
         err |= string_add (dest, size, "/");
         err |= string_add (dest, size, name);
     }
@@ -94,14 +130,14 @@ t_error path_withDirectoryAndName (char *dest, size_t size, const char *director
 
 #ifdef PD_WINDOWS
 
-t_error path_expandEnvironment (const char *src, char *dest, size_t size)
+t_error path_expandEnvironment (const char *dest, size_t size, char *src)
 {
-    return PD_ERROR;
+    return string_copy (dest, size, src);
 }
 
 #else
 
-t_error path_expandEnvironment (const char *src, char *dest, size_t size)
+t_error path_expandEnvironment (char *dest, size_t size, const char *src)
 {
     t_error err = PD_ERROR_NONE;
 

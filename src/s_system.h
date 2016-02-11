@@ -280,14 +280,8 @@ t_error     interface_start                         (void);
 #pragma mark -
 
 FILE        *file_openWrite                         (const char *filepath);
-FILE        *file_openMode                          (const char *filepath, const char *mode);
 int         file_openRaw                            (const char *filepath, int oflag);
-int         file_openWithAbsolutePath               (const char *filepath,
-                                                        const char* extension,
-                                                        char *directoryResult,
-                                                        char **nameResult,
-                                                        size_t size);
-                                                        
+
 int         file_openWithDirectoryAndName           (const char *directory,
                                                         const char *name,
                                                         const char *extension,
@@ -315,9 +309,10 @@ int         path_isAbsoluteWithEnvironment          (const char *filepath);
 t_error     path_withDirectoryAndName               (char *dest, 
                                                         size_t size, 
                                                         const char *directory, 
-                                                        const char *name);
+                                                        const char *name,
+                                                        int expandEnvironment);
                                                         
-t_error     path_expandEnvironment                  (const char *src, char *dest, size_t size);
+t_error     path_expandEnvironment                  (char *dest, size_t size, const char *src);
 void        path_setSearchPath                      (void *dummy, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
