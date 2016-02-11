@@ -64,10 +64,6 @@ FILE *file_openMode (const char *filepath, const char *mode)
     return _wfopen (ucs2path, ucs2mode);
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 #else
 
 int file_openRaw (const char *filepath, int oflag)
@@ -102,31 +98,31 @@ canvas-specific path. */
 
 static int file_openWithPathList (const char *dir, const char *name,
     const char *ext, char *dirresult, char **nameresult, size_t size,
-    int bin, t_pathlist *searchpath)
+    t_pathlist *searchpath)
 {
     t_pathlist *nl;
     int fd = -1;
 
         /* first check if "name" is absolute (and if so, try to open) */
-    if (file_openWithAbsolutePath(name, ext, dirresult, nameresult, size, bin, &fd))
+    if ((fd = file_openWithAbsolutePath(name, ext, dirresult, nameresult, size)) >= 0)
         return (fd);
     
         /* otherwise "name" is relative; try the directory "dir" first. */
     if ((fd = file_openWithDirectoryAndName(dir, name, ext,
-        dirresult, nameresult, size, bin)) >= 0)
+        dirresult, nameresult, size)) >= 0)
             return (fd);
 
         /* next go through the search path */
     for (nl = searchpath; nl; nl = nl->pl_next)
         if ((fd = file_openWithDirectoryAndName(nl->pl_string, name, ext,
-            dirresult, nameresult, size, bin)) >= 0)
+            dirresult, nameresult, size)) >= 0)
                 return (fd);
 
         /* next look in built-in paths like "extra" */
     /*if (0)
         for (nl = path_extra; nl; nl = nl->pl_next)
             if ((fd = file_openWithDirectoryAndName(nl->pl_string, name, ext,
-                dirresult, nameresult, size, bin)) >= 0)
+                dirresult, nameresult, size)) >= 0)
                     return (fd);*/
 
     *dirresult = 0;
@@ -146,7 +142,7 @@ static int file_openWithPathList (const char *dir, const char *name,
     on Windows). */
 
 int file_openWithDirectoryAndName (const char *dir, const char *name, const char* ext,
-    char *dirresult, char **nameresult, size_t size, int bin)
+    char *dirresult, char **nameresult, size_t size)
 {
     int fd;
     char buf[PD_STRING];
@@ -201,7 +197,7 @@ int file_openWithDirectoryAndName (const char *dir, const char *name, const char
     /* check if we were given an absolute pathname, if so try to open it
     and return 1 to signal the caller to cancel any path searches */
 int file_openWithAbsolutePath(const char *name, const char* ext,
-    char *dirresult, char **nameresult, size_t size, int bin, int *fdp)
+    char *dirresult, char **nameresult, size_t size)
 {
     if (path_isAbsoluteWithEnvironment(name))
     {
@@ -214,26 +210,24 @@ int file_openWithAbsolutePath(const char *name, const char* ext,
             dirlen = PD_STRING-1;
         strncpy(dirbuf, name, dirlen);
         dirbuf[dirlen] = 0;
-        *fdp = file_openWithDirectoryAndName(dirbuf, name+(dirlen+1), ext,
-            dirresult, nameresult, size, bin);
-        return (1);
+        return file_openWithDirectoryAndName(dirbuf, name+(dirlen+1), ext,
+            dirresult, nameresult, size);
     }
-    else return (0);
+    else return (-1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int file_openBySearchPath (const char *directory, 
+int file_openWithSearchPath (const char *directory, 
                                     const char *name, 
                                     const char *extension,
                                     char *directoryResult, 
                                     char **nameResult, 
-                                    size_t size, 
-                                    int isBinary)
+                                    size_t size)
 {   
-    return (file_openWithPathList (directory, name, extension, directoryResult, nameResult, size, isBinary, path_search));
+    return (file_openWithPathList (directory, name, extension, directoryResult, nameResult, size, path_search));
 }
 
 
@@ -251,7 +245,7 @@ void file_openHelp (const char *directory, const char *name)
         realname[strlen(realname)-3] = 0;
     strcat(realname, "-help.pd");
     if ((fd = file_openWithPathList(usedir, realname, "", dirbuf, &basename, 
-        PD_STRING, 0, path_help)) >= 0)
+        PD_STRING, path_help)) >= 0)
             goto gotone;
 
         /* 2. "help-objectname.pd" */
@@ -259,7 +253,7 @@ void file_openHelp (const char *directory, const char *name)
     strncat(realname, name, PD_STRING-10);
     realname[PD_STRING-1] = 0;
     if ((fd = file_openWithPathList(usedir, realname, "", dirbuf, &basename, 
-        PD_STRING, 0, path_help)) >= 0)
+        PD_STRING, path_help)) >= 0)
             goto gotone;
 
     post("sorry, couldn't find help patch for \"%s\"", name);

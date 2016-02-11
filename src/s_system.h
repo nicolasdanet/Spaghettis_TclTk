@@ -286,25 +286,21 @@ int         file_openWithAbsolutePath               (const char *filepath,
                                                         const char* extension,
                                                         char *directoryResult,
                                                         char **nameResult,
-                                                        size_t size,
-                                                        int isBinary,
-                                                        int *fdp);
+                                                        size_t size);
                                                         
 int         file_openWithDirectoryAndName           (const char *directory,
                                                         const char *name,
                                                         const char *extension,
                                                         char *directoryResult,
                                                         char **nameResult,
-                                                        size_t size,
-                                                        int isBinary);
+                                                        size_t size);
                                                         
-int         file_openBySearchPath                   (const char *directory, 
+int         file_openWithSearchPath                 (const char *directory, 
                                                         const char *name,
                                                         const char *extension,
                                                         char *directoryResult,
                                                         char **nameResult,
-                                                        size_t size,
-                                                        int isBinary);
+                                                        size_t size);
 
 void        file_openHelp                           (const char *directory, const char *name);
 
