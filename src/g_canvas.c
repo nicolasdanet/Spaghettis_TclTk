@@ -1300,21 +1300,21 @@ static void canvas_completepath(char *from, char *to, int bufsize)
 
 /* maybe we should rename check_exists() to sys_access() and move it to s_path */
 #ifdef _WIN32
-static int check_exists(const char*path)
+static int check_exists(const char *filepath)
 {
-    char pathbuf[PD_STRING];
+    char t[PD_STRING];
     wchar_t ucs2path[PD_STRING];
-    path_slashToBackslashIfNecessary(path, pathbuf);
-    u8_utf8toucs2(ucs2path, PD_STRING, pathbuf, PD_STRING-1);
+    
+    if (string_copy (t, PD_STRING, filepath)) { PD_BUG; }
+    path_slashToBackslashIfNecessary (t, t);
+    u8_utf8toucs2(ucs2path, PD_STRING, t, PD_STRING-1);
     return (0 ==  _waccess(ucs2path, 0));
 }
 #else
 #include <unistd.h>
-static int check_exists(const char*path)
+static int check_exists(const char *filepath)
 {
-    char pathbuf[PD_STRING];
-    path_slashToBackslashIfNecessary(path, pathbuf);
-    return (0 == access(pathbuf, 0));
+    return (0 == access (filepath, 0));
 }
 #endif
 
