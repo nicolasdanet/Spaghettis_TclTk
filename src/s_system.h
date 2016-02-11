@@ -279,6 +279,14 @@ t_error     interface_start                         (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+FILE        *file_openWrite                         (const char *filepath);
+FILE        *file_openMode                          (const char *filepath, const char *mode);
+int         file_openRaw                            (const char *filepath, int oflag);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void        path_slashToBackslashIfNecessary        (char *src, char *dest);
 void        path_backslashToSlashIfNecessary        (char *src, char *dest);
 int         path_isFileExist                        (const char *filepath);

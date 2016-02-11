@@ -32,6 +32,7 @@
 #include "s_time.c"
 #include "s_receiver.c"
 #include "s_interface.c"
+#include "s_file.c"
 //#include "s_path.c"
 //#include "s_loader.c"
 #include "s_preferences.c"

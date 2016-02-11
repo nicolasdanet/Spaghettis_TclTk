@@ -40,7 +40,7 @@ static t_error preferences_loadBegin (void)
     //
     int f;
     
-    err |= ((f = open (filepath, O_CLOEXEC)) < 0);
+    err |= ((f = file_openRaw (filepath, O_CLOEXEC)) < 0);
     
     if (!err) {
     //

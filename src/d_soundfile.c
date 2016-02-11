@@ -28,6 +28,7 @@ objects use Posix-like threads.  */
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
+#include "s_system.h"
 
 extern t_class *garray_class;
 
@@ -843,7 +844,7 @@ static int create_soundfile(t_canvas *canvas, const char *filename,
     }
 
     canvas_makefilename(canvas, filenamebuf, buf2, PD_STRING);
-    if ((fd = sys_open(buf2, O_WRONLY | O_CREAT | O_TRUNC, 0666)) < 0)
+    if ((fd = file_openRaw(buf2, O_WRONLY | O_CREAT | O_TRUNC)) < 0)
         return (-1);
 
     if (write(fd, headerbuf, headersize) < headersize)

@@ -1148,7 +1148,7 @@ static void garray_write(t_garray *x, t_symbol *filename)
     }
     canvas_makefilename(glist_getcanvas(x->x_glist), filename->s_name,
         buf, PD_STRING);
-    if (!(fd = sys_fopen(buf, "w")))
+    if (!(fd = file_openWrite(buf)))
     {
         post_error ("%s: can't create", buf);
         return;
