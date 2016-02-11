@@ -1284,7 +1284,7 @@ void canvas_savedeclarationsto(t_canvas *x, t_buffer *b)
 
 static void canvas_completepath(char *from, char *to, int bufsize)
 {
-    if (path_isAbsoluteWithEnvironment(from))
+    if (path_isAbsoluteConsideringEnvironment(from))
     {
         to[0] = '\0';
     }
@@ -1326,7 +1326,7 @@ static void canvas_stdpath(t_canvasenvironment *e, char *stdpath)
 {
     t_pathlist*nl;
     char strbuf[PD_STRING];
-    if (path_isAbsoluteWithEnvironment(stdpath))
+    if (path_isAbsoluteConsideringEnvironment(stdpath))
     {
         e->ce_path = pathlist_newAppend(e->ce_path, stdpath);
         return;
@@ -1358,7 +1358,7 @@ static void canvas_stdlib(t_canvasenvironment *e, char *stdlib)
 {
     t_pathlist*nl;
     char strbuf[PD_STRING];
-    if (path_isAbsoluteWithEnvironment(stdlib))
+    if (path_isAbsoluteConsideringEnvironment(stdlib))
     {
         sys_load_lib(0, stdlib);
         return;
@@ -1458,7 +1458,7 @@ int canvas_open(t_canvas *x, const char *name, const char *ext,
         for (nl = y->gl_env->ce_path; nl; nl = nl->pl_next)
         {
             char realname[PD_STRING];
-            if (path_isAbsoluteWithEnvironment(nl->pl_string))
+            if (path_isAbsoluteConsideringEnvironment(nl->pl_string))
             {
                 realname[0] = '\0';
             }

@@ -83,7 +83,7 @@ int path_isFileExist (const char *filepath)
 #endif
 */
 
-int path_isAbsoluteWithEnvironment (const char *f)
+int path_isAbsoluteConsideringEnvironment (const char *f)
 {
     #if PD_WINDOWS
     

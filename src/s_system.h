@@ -305,7 +305,7 @@ void        file_openHelp                           (const char *directory, cons
 void        path_slashToBackslashIfNecessary        (char *src, char *dest);
 void        path_backslashToSlashIfNecessary        (char *src, char *dest);
 int         path_isFileExist                        (const char *filepath);
-int         path_isAbsoluteWithEnvironment          (const char *filepath);
+int         path_isAbsoluteConsideringEnvironment   (const char *filepath);
 t_error     path_withDirectoryAndName               (char *dest, 
                                                         size_t size, 
                                                         const char *directory, 
