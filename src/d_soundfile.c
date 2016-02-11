@@ -425,7 +425,7 @@ badheader:
     return (-1);
 }
 
-    /* open a soundfile, using open_via_path().  This is used by readsf~ in
+    /* open a soundfile, using file_openBySearchPath().  This is used by readsf~ in
     a not-perfectly-threadsafe way.  LATER replace with a thread-hardened
     version of open_soundfile_via_canvas() */
 int open_soundfile(const char *dirname, const char *filename, int headersize,
@@ -434,7 +434,7 @@ int open_soundfile(const char *dirname, const char *filename, int headersize,
 {
     char buf[OBUFSIZE], *bufptr;
     int fd;
-    fd = open_via_path(dirname, filename, "", buf, &bufptr, PD_STRING, 1);
+    fd = file_openBySearchPath(dirname, filename, "", buf, &bufptr, PD_STRING, 1);
     if (fd < 0)
         return (-1);
     else return (open_soundfile_via_fd(fd, headersize, p_bytespersamp,

@@ -568,6 +568,14 @@ PD_DLL void     clock_delay                 (t_clock *x, double delay);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+PD_DLL void     post                        (const char *fmt, ...);
+PD_DLL void     post_log                    (const char *fmt, ...);
+PD_DLL void     post_error                  (const char *fmt, ...);
+                                       
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 PD_DLL void     gpointer_init               (t_gpointer *gp);
 PD_DLL void     gpointer_copy               (const t_gpointer *gpfrom, t_gpointer *gpto);
 PD_DLL void     gpointer_unset              (t_gpointer *gp);
@@ -617,6 +625,7 @@ PD_DLL int      canvas_open                 (t_canvas *x,
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 PD_DLL void     glob_setfilename            (void *dummy, t_symbol *name, t_symbol *dir);
 
@@ -624,23 +633,8 @@ PD_DLL void     glob_setfilename            (void *dummy, t_symbol *name, t_symb
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL void post            (const char *fmt, ...);
-PD_DLL void post_log        (const char *fmt, ...);
-PD_DLL void post_error      (const char *fmt, ...);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 PD_DLL int      sys_isreadablefile  (const char *name);
-PD_DLL int      open_via_path       (const char *dir, 
-                                        const char *name,
-                                        const char *ext,
-                                        char *dirresult,
-                                        char **nameresult,
-                                        unsigned int size,
-                                        int bin);
-                                    
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

@@ -1220,15 +1220,15 @@ static void canvas_done_popup(t_canvas *x, t_float which, t_float xpos, t_float 
                 if (strlen(namebuf) < 4 ||
                     strcmp(namebuf + strlen(namebuf) - 3, PD_FILE))
                         strcat(namebuf, PD_FILE);
-                open_via_helppath(namebuf, dir);
+                file_openHelp(dir, namebuf);
                 return;
             }
         }
     }
     if (which == 0)
         canvas_properties(&x->gl_obj.te_g, 0);
-    else if (which == 2)
-        open_via_helppath("intro.pd", canvas_getdir((t_canvas *)x)->s_name);
+    /*else if (which == 2)
+        file_openHelp("intro.pd", canvas_getdir((t_canvas *)x)->s_name);*/
 }
 
 #define NOMOD 0

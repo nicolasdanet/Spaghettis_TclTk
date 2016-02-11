@@ -1441,7 +1441,7 @@ int canvas_open(t_canvas *x, const char *name, const char *ext,
     t_canvas *y;
 
         /* first check if "name" is absolute (and if so, try to open) */
-    if (sys_open_absolute(name, ext, dirresult, nameresult, size, bin, &fd))
+    if (file_openWithAbsolutePath(name, ext, dirresult, nameresult, size, bin, &fd))
         return (fd);
     
         /* otherwise "name" is relative; start trying in directories named
@@ -1470,12 +1470,12 @@ int canvas_open(t_canvas *x, const char *name, const char *ext,
             }
             strncat(realname, nl->pl_string, PD_STRING-strlen(realname));
             realname[PD_STRING-1] = 0;
-            if ((fd = sys_trytoopenone(realname, name, ext,
+            if ((fd = file_openWithDirectoryAndName(realname, name, ext,
                 dirresult, nameresult, size, bin)) >= 0)
                     return (fd);
         }
     }
-    return (open_via_path((x ? canvas_getdir(x)->s_name : "."), name, ext,
+    return (file_openBySearchPath((x ? canvas_getdir(x)->s_name : "."), name, ext,
         dirresult, nameresult, size, bin));
 }
 

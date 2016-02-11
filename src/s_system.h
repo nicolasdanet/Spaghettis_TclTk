@@ -282,6 +282,31 @@ t_error     interface_start                         (void);
 FILE        *file_openWrite                         (const char *filepath);
 FILE        *file_openMode                          (const char *filepath, const char *mode);
 int         file_openRaw                            (const char *filepath, int oflag);
+int         file_openWithAbsolutePath               (const char *filepath,
+                                                        const char* extension,
+                                                        char *directoryResult,
+                                                        char **nameResult,
+                                                        size_t size,
+                                                        int isBinary,
+                                                        int *fdp);
+                                                        
+int         file_openWithDirectoryAndName           (const char *directory,
+                                                        const char *name,
+                                                        const char *extension,
+                                                        char *directoryResult,
+                                                        char **nameResult,
+                                                        size_t size,
+                                                        int isBinary);
+                                                        
+int         file_openBySearchPath                   (const char *directory, 
+                                                        const char *name,
+                                                        const char *extension,
+                                                        char *directoryResult,
+                                                        char **nameResult,
+                                                        size_t size,
+                                                        int isBinary);
+
+void        file_openHelp                           (const char *directory, const char *name);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -291,10 +316,10 @@ void        path_slashToBackslashIfNecessary        (char *src, char *dest);
 void        path_backslashToSlashIfNecessary        (char *src, char *dest);
 int         path_isFileExist                        (const char *filepath);
 int         path_isAbsoluteWithEnvironment          (const char *filepath);
-t_error     path_withNameAndDirectory               (char *dest, 
+t_error     path_withDirectoryAndName               (char *dest, 
                                                         size_t size, 
-                                                        const char *name, 
-                                                        const char *directory);
+                                                        const char *directory, 
+                                                        const char *name);
                                                         
 t_error     path_expandEnvironment                  (const char *src, char *dest, size_t size);
 void        path_setSearchPath                      (void *dummy, t_symbol *s, int argc, t_atom *argv);
@@ -311,28 +336,11 @@ void        preferences_save                        (void *dummy);
 #pragma mark -
 
 void post_atoms                             (int argc, t_atom *argv);
-void open_via_helppath                      (const char *name, const char *dir);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int         sys_open_absolute               (const char *name,
-                                                const char* ext,
-                                                char *dirresult,
-                                                char **nameresult,
-                                                unsigned int size,
-                                                int bin,
-                                                int *fdp);
-                            
-int         sys_trytoopenone                (const char *dir,
-                                                const char *name,
-                                                const char* ext,
-                                                char *dirresult,
-                                                char **nameresult,
-                                                unsigned int size,
-                                                int bin);
-                            
 t_symbol    *sys_decodedialog               (t_symbol *s);
 int         sys_load_lib                    (t_canvas *canvas, char *name);
 void        sys_register_loader             (t_loader loader);
