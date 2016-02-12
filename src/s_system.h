@@ -306,7 +306,6 @@ void        path_slashToBackslashIfNecessary        (char *dest, char *src);
 void        path_backslashToSlashIfNecessary        (char *dest, char *src);
 int         path_isFileExist                        (const char *filepath);
 int         path_isFileExistAsRegularFile           (const char *filepath);
-int         path_isDirectory                        (const char *filepath);
 int         path_isAbsoluteConsideringEnvironment   (const char *filepath);
 t_error     path_withDirectoryAndName               (char *dest, 
                                                         size_t size, 

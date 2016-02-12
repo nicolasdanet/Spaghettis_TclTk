@@ -55,8 +55,6 @@ void path_backslashToSlashIfNecessary (char *dest, char *src)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* < https://stackoverflow.com/questions/3828192/checking-if-a-directory-exists-in-unix-system-call > */
-
 #if !PD_WINDOWS
 
 int path_isFileExist (const char *filepath)
@@ -69,11 +67,9 @@ int path_isFileExistAsRegularFile (const char *filepath)
     struct stat t; return ((stat (filepath, &t) == 0) && S_ISREG (t.st_mode));
 }
 
-int path_isDirectory (const char *filepath)
-{
-    struct stat t; return ((stat (filepath, &t) == 0) && S_ISDIR (t.st_mode));
-}
-
+#else   
+    /* < https://msdn.microsoft.com/en-us/library/aa364944%28v=vs.85%29.aspx > */
+    #error
 #endif
 
 int path_isAbsoluteConsideringEnvironment (const char *f)

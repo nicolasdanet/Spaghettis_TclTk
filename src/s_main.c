@@ -29,7 +29,7 @@ static int  main_version;               /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void main_entryPlatformSpecific (void)
+static void main_entryNative (void)
 {
     #if PD_WINDOWS
     
@@ -118,7 +118,7 @@ static t_error main_parseArguments (int argc, char **argv)
 
 #if PD_WINDOWS
 
-static t_error main_getExecutablePathPlatformSpecific (char *dest, size_t length)
+static t_error main_getExecutablePathNative (char *dest, size_t length)
 {
     GetModuleFileName (NULL, dest, length); dest[length - 1] = 0;
         
@@ -127,7 +127,7 @@ static t_error main_getExecutablePathPlatformSpecific (char *dest, size_t length
 
 #elif PD_APPLE
 
-static t_error main_getExecutablePathPlatformSpecific (char *dest, size_t length)
+static t_error main_getExecutablePathNative (char *dest, size_t length)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -146,7 +146,7 @@ static t_error main_getExecutablePathPlatformSpecific (char *dest, size_t length
 
 #elif PD_LINUX
 
-static t_error main_getExecutablePathPlatformSpecific (char *dest, size_t length)
+static t_error main_getExecutablePathNative (char *dest, size_t length)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -178,10 +178,10 @@ static t_error main_getRootDirectory (void)
     char *slash = NULL; 
     
     #if PD_WINDOWS
-        err |= main_getExecutablePathPlatformSpecific (buf1, PD_STRING);
+        err |= main_getExecutablePathNative (buf1, PD_STRING);
         path_backslashToSlashIfNecessary (buf1, buf1);
     #else
-        err |= main_getExecutablePathPlatformSpecific (buf1, PD_STRING);
+        err |= main_getExecutablePathNative (buf1, PD_STRING);
     #endif
     
     /* Dirname of the executable's parent directory. */
@@ -220,7 +220,7 @@ int main_entry (int argc, char **argv)
     
     if (!err && !(err = priority_privilegeDrop())) {
     //
-    main_entryPlatformSpecific();
+    main_entryNative();
     
     err |= main_getRootDirectory(); 
     err |= main_parseArguments (argc - 1, argv + 1);

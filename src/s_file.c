@@ -25,7 +25,7 @@ extern t_pathlist *path_search;
 
 #if PD_WINDOWS
 
-static int file_openRawPlatformSpecific (const char *filepath, int oflag)
+static int file_openRawNative (const char *filepath, int oflag)
 {
     char t[PD_STRING]           = { 0 };
     wchar_t ucs2path[PD_STRING] = { 0 };
@@ -40,7 +40,7 @@ static int file_openRawPlatformSpecific (const char *filepath, int oflag)
     }
 }
 
-static FILE *file_openModePlatformSpecific (const char *filepath, const char *mode)
+static FILE *file_openModeNative (const char *filepath, const char *mode)
 {
     char t[PD_STRING]           = { 0 };
     wchar_t ucs2path[PD_STRING] = { 0 };
@@ -56,7 +56,7 @@ static FILE *file_openModePlatformSpecific (const char *filepath, const char *mo
 
 #else
 
-static int file_openRawPlatformSpecific (const char *filepath, int oflag)
+static int file_openRawNative (const char *filepath, int oflag)
 {
     if (oflag & O_CREAT) { return open (filepath, oflag, 0666); }
     else {
@@ -64,7 +64,7 @@ static int file_openRawPlatformSpecific (const char *filepath, int oflag)
     } 
 }
 
-static FILE *file_openModePlatformSpecific (const char *filepath, const char *mode)
+static FILE *file_openModeNative (const char *filepath, const char *mode)
 {
     return fopen (filepath, mode);
 }
@@ -79,12 +79,12 @@ int file_openRaw (const char *filepath, int oflag)
 {
     if (!(oflag & O_CREAT)) { if (!(path_isFileExistAsRegularFile (filepath))) { return -1; } }
     
-    return file_openRawPlatformSpecific (filepath, oflag);
+    return file_openRawNative (filepath, oflag);
 }
 
 FILE *file_openWrite (const char *filepath)
 {
-    return file_openModePlatformSpecific (filepath, "w");
+    return file_openModeNative (filepath, "w");
 }
 
 // -----------------------------------------------------------------------------------------------------------

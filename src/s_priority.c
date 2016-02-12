@@ -104,7 +104,7 @@ static t_error priority_setRealTime (int isWatchdog)
 
 #if PD_APPLE
 
-static t_error priority_setRTPlatformSpecific (void)
+static t_error priority_setRTNative (void)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -127,14 +127,14 @@ static t_error priority_setRTPlatformSpecific (void)
 
 #elif PD_WINDOWS
 
-static t_error priority_setRTPlatformSpecific (void)
+static t_error priority_setRTNative (void)
 {
     if (!SetPriorityClass (GetCurrentProcess(), HIGH_PRIORITY_CLASS)) { PD_BUG; }
 }
 
 #elif PD_WATCHDOG
 
-static t_error priority_setRTPlatformSpecific (void)
+static t_error priority_setRTNative (void)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -186,7 +186,7 @@ static t_error priority_setRTPlatformSpecific (void)
 
 #else
 
-static t_error priority_setRTPlatformSpecific (void)
+static t_error priority_setRTNative (void)
 {
     PD_BUG; return PD_ERROR_NONE;
 }
@@ -246,7 +246,7 @@ t_error priority_privilegeRelinquish (void)
 
 t_error priority_setPolicy (void)
 {
-    t_error err = priority_setRTPlatformSpecific();
+    t_error err = priority_setRTNative();
     
     #if PD_WATCHDOG
     #if ! ( PD_WITH_NOGUI )
