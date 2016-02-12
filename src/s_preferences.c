@@ -40,7 +40,7 @@ static t_error preferences_loadBegin (void)
     //
     int f;
     
-    err |= ((f = file_openRaw (filepath, 0)) < 0);
+    err |= ((f = file_openRaw (filepath, O_RDONLY)) < 0);
     
     if (!err) {
     //
@@ -86,7 +86,7 @@ static t_error preferences_saveBegin (void)
     if (!err) {
         err = string_sprintf (filepath, PD_STRING, "%s/.puredatarc", home);
         if (!err) { 
-            err = ((preferences_saveFile = fopen (filepath, "w")) == NULL); 
+            err = ((preferences_saveFile = file_openWrite (filepath)) == NULL); 
         }
     }
     

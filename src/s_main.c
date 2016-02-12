@@ -178,9 +178,8 @@ static t_error main_getRootDirectory (void)
     char *slash = NULL; 
     
     #if PD_WINDOWS
-        err |= main_getExecutablePathPlatformSpecific (buf2, PD_STRING);
-        path_backslashToSlashIfNecessary (buf2, buf1);
-        *buf2 = 0;
+        err |= main_getExecutablePathPlatformSpecific (buf1, PD_STRING);
+        path_backslashToSlashIfNecessary (buf1, buf1);
     #else
         err |= main_getExecutablePathPlatformSpecific (buf1, PD_STRING);
     #endif

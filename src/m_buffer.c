@@ -523,7 +523,7 @@ static t_error buffer_fromFile (t_buffer *x, char *name, char *directory)
 
     if (!(err = path_withDirectoryAndName (filepath, PD_STRING, directory, name, 0))) {
     //
-    int f = file_openRaw (filepath, 0);
+    int f = file_openRaw (filepath, O_RDONLY);
     
     err = (f < 0);
     

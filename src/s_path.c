@@ -27,7 +27,7 @@ t_pathlist *path_search;        /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void path_slashToBackslashIfNecessary (char *src, char *dest)
+void path_slashToBackslashIfNecessary (char *dest, char *src)
 {
     char c;
     while (c = *src++) {
@@ -39,7 +39,7 @@ void path_slashToBackslashIfNecessary (char *src, char *dest)
     *dest = 0;
 }
 
-void path_backslashToSlashIfNecessary (char *src, char *dest)
+void path_backslashToSlashIfNecessary (char *dest, char *src)
 {
     char c;
     while (c = *src++) {
@@ -64,23 +64,17 @@ int path_isFileExist (const char *filepath)
     struct stat t; return (stat (filepath, &t) == 0);
 }
 
-#endif
+int path_isFileExistAsRegularFile (const char *filepath)
+{
+    struct stat t; return ((stat (filepath, &t) == 0) && S_ISREG (t.st_mode));
+}
 
-/*
-#ifndef _WIN32
-        struct stat statbuf;
-        int ok =  ((fstat(f, &statbuf) >= 0) &&
-            !S_ISDIR(statbuf.st_mode));
-        if (!ok)
-        {
-            if (0) post("tried %s; stat failed or directory",
-                directoryResult);
-            close (f);
-            f = -1;
-        }
-        else
+int path_isDirectory (const char *filepath)
+{
+    struct stat t; return ((stat (filepath, &t) == 0) && S_ISDIR (t.st_mode));
+}
+
 #endif
-*/
 
 int path_isAbsoluteConsideringEnvironment (const char *f)
 {

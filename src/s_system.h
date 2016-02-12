@@ -178,8 +178,8 @@ typedef int t_fontsize;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_pathlist  *pathlist_newAppend                  (t_pathlist *x, const char *s);
-t_pathlist  *pathlist_newAppendEncoded               (t_pathlist *x, t_symbol *s);
+t_pathlist  *pathlist_newAppend                     (t_pathlist *x, const char *s);
+t_pathlist  *pathlist_newAppendEncoded              (t_pathlist *x, t_symbol *s);
 char        *pathlist_getFileAtIndex                (t_pathlist *x, int n);
 char        *pathlist_getFile                       (t_pathlist *x);
 t_pathlist  *pathlist_getNext                       (t_pathlist *x);
@@ -302,9 +302,11 @@ void        file_openHelp                           (const char *directory, cons
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        path_slashToBackslashIfNecessary        (char *src, char *dest);
-void        path_backslashToSlashIfNecessary        (char *src, char *dest);
+void        path_slashToBackslashIfNecessary        (char *dest, char *src);
+void        path_backslashToSlashIfNecessary        (char *dest, char *src);
 int         path_isFileExist                        (const char *filepath);
+int         path_isFileExistAsRegularFile           (const char *filepath);
+int         path_isDirectory                        (const char *filepath);
 int         path_isAbsoluteConsideringEnvironment   (const char *filepath);
 t_error     path_withDirectoryAndName               (char *dest, 
                                                         size_t size, 
