@@ -9,6 +9,7 @@ VPATH = ../obj
 
 BIN_DIR = ../bin
 TCL_DIR = ../tcl
+HELP_DIR = ../resources/help
 
 # Install paths.
 
@@ -18,6 +19,7 @@ TCL_DIR = ../tcl
 # /usr/local/include/m_pd.h
 # /usr/local/lib/pd/bin/pdwatchdog
 # /usr/local/lib/pd/tcl/*.tcl
+# /usr/local/lib/pd/help/*.pdhelp
 
 prefix = /usr/local
 exec_prefix = $(prefix)
@@ -29,6 +31,7 @@ libdir = $(exec_prefix)/lib
 libpddir = $(libdir)/pd
 libpdbindir = $(libpddir)/bin
 libpdtcldir = $(libpddir)/tcl
+libpdhelpdir = $(libpddir)/help
 
 # Preprocessor flags.
 
@@ -130,6 +133,11 @@ install: all
 	@echo "Install scripts ..."
 	install -d $(DESTDIR)$(libpdtcldir)
 	install $(TCL_DIR)/*.tcl $(DESTDIR)$(libpdtcldir)
+	@echo "Install help ..."
+	install -d $(DESTDIR)$(libpdhelpdir)
+	install $(HELP_DIR)/*.pdhelp $(DESTDIR)$(libpdhelpdir)
+	install $(HELP_DIR)/*.txt $(DESTDIR)$(libpdhelpdir)
+	install $(HELP_DIR)/*.aiff $(DESTDIR)$(libpdhelpdir)
 	@echo "Install headers ..."
 	install -d $(DESTDIR)$(includedir)
 	install -m644 m_pd.h $(DESTDIR)$(includedir)/m_pd.h
@@ -142,6 +150,8 @@ uninstall:
 	@echo "Uninstall pdwatchdog ..."
 	@echo "Uninstall scripts ..."
 	rm -f -r $(DESTDIR)$(libpddir)
+	@echo "Uninstall help ..."
+	rm -f -r $(DESTDIR)$(libpdhelpdir)
 	@echo "Uninstall headers ..."
 	rm -f $(DESTDIR)$(includedir)/m_pd.h
 

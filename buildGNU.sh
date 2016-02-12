@@ -48,6 +48,7 @@ isJack=$(dpkg-query -W -f='${Status}' libjack-dev 2>/dev/null | grep -c "ok inst
 folder="${rep}/build"
 bin="${rep}/bin"
 tcl="${rep}/tcl"
+help="${rep}/resources/help"
 patches="${rep}/resources/patches"
 
 # ------------------------------------------------------------------------------------------------------------
@@ -82,6 +83,7 @@ echo "Create folder ..."
 mkdir "${folder}"                       || exit 1
 cp -R "${bin}" "${folder}"              || exit 1
 cp -R "${tcl}" "${folder}"              || exit 1
+cp -R "${help}" "${folder}"             || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
