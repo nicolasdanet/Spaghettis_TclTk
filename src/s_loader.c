@@ -92,8 +92,6 @@ void sys_putonloadlist(char *classname) /* add to list of loaded modules */
     /* post("put on list %s", classname); */
 }
 
-void class_setDefaultExternalDirectory(t_symbol *s);
-
 static int sys_do_load_lib(t_canvas *canvas, char *objectname)
 {
     char symname[PD_STRING], filename[PD_STRING], dirbuf[PD_STRING],

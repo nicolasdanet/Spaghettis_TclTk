@@ -100,12 +100,14 @@ static t_error main_parseArguments (int argc, char **argv)
         .../bin/pd
         .../bin/pdwatchdog
         .../tcl/ui_main.tcl
+        .../help/
         
     In "complexe" installations, the layout is
     
         .../bin/pd
         .../lib/pd/bin/pdwatchdog
         .../lib/pd/tcl/ui_main.tcl
+        .../lib/pd/help/
 
 */
 

@@ -17,7 +17,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pathlist *path_search;
+extern t_pathlist   *path_search;
+extern t_symbol     *main_rootDirectory;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -49,6 +50,7 @@ static FILE *file_openModeNative (const char *filepath, const char *mode)
     if (string_copy (t, PD_STRING, filepath)) { PD_BUG; }
     path_slashToBackslashIfNecessary (t, t);
     u8_utf8toucs2 (ucs2path, PD_STRING, t, PD_STRING - 1);
+    
     mbstowcs (ucs2mode, mode, PD_STRING);
     
     return _wfopen (ucs2path, ucs2mode);
@@ -91,6 +93,36 @@ FILE *file_openWrite (const char *filepath)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void file_openHelp (const char *directory, const char *name)
+{
+    int f = -1;
+    char *nameResult = NULL;
+    char directoryResult[PD_STRING] = { 0 };
+    
+    if (*directory != 0) { 
+        f = file_openWithDirectoryAndName (directory, name, PD_HELP, directoryResult, &nameResult, PD_STRING);
+    }
+    
+    if (f < 0) {
+    //
+    char help[PD_STRING] = { 0 };
+    if (!string_sprintf (help, PD_STRING, "%s/help", main_rootDirectory->s_name)) {
+        f = file_openConsideringSearchPath (help, name, PD_HELP, directoryResult, &nameResult, PD_STRING);
+    }
+    //
+    }
+    
+    if (f < 0) { post_error (PD_TRANSLATE ("help: couldn't find patch for '%s'"), name); }
+    else {
+        close (f);
+        buffer_openFile (NULL, gensym (nameResult), gensym (directoryResult));
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int file_openWithDirectoryAndName (const char *directory, 
                                     const char *name, 
                                     const char *extension,
@@ -111,20 +143,22 @@ int file_openWithDirectoryAndName (const char *directory,
     //
     char *slash = NULL;
     
+    *nameResult = directoryResult;
+    
     if ((slash = strrchr (directoryResult, '/'))) { *slash = 0; *nameResult = slash + 1; }
-    else {
-        *nameResult = directoryResult; 
-    }
     
     return f;  
     //
     }
     
-    *directoryResult = 0;
     *nameResult = directoryResult;
+    *directoryResult = 0;
     
     return -1;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 int file_openConsideringSearchPath (const char *directory, 
                 const char *name, 
@@ -136,9 +170,7 @@ int file_openConsideringSearchPath (const char *directory,
     int f = file_openWithDirectoryAndName (directory, name, extension, directoryResult, nameResult, size);
     
     if (f < 0) {
-
         t_pathlist *l = NULL;
-            
         for (l = path_search; l; l = pathlist_getNext (l)) {
             char *path = pathlist_getFile (l);
             f = file_openWithDirectoryAndName (path, name, extension, directoryResult, nameResult, size);
@@ -147,40 +179,6 @@ int file_openConsideringSearchPath (const char *directory,
     }
 
     return f;
-}
-
-void file_openHelp (const char *directory, const char *name)
-{
-    #if 0
-    char realname[PD_STRING], dirbuf[PD_STRING], *basename;
-        /* make up a silly "dir" if none is supplied */
-    const char *usedir = (*directory ? directory : "./");
-    int fd;
-
-        /* 1. "objectname-help.pd" */
-    strncpy(realname, name, PD_STRING-10);
-    realname[PD_STRING-10] = 0;
-    if (strlen(realname) > 3 && !strcmp(realname+strlen(realname)-3, PD_FILE))
-        realname[strlen(realname)-3] = 0;
-    strcat(realname, "-help.pd");
-    if ((fd = file_openWithList(usedir, realname, "", dirbuf, &basename, 
-        PD_STRING, path_help)) >= 0)
-            goto gotone;
-
-        /* 2. "help-objectname.pd" */
-    strcpy(realname, "help-");
-    strncat(realname, name, PD_STRING-10);
-    realname[PD_STRING-1] = 0;
-    if ((fd = file_openWithList(usedir, realname, "", dirbuf, &basename, 
-        PD_STRING, path_help)) >= 0)
-            goto gotone;
-
-    post("sorry, couldn't find help patch for \"%s\"", name);
-    return;
-gotone:
-    close (fd);
-    buffer_openFile (0, gensym((char*)basename), gensym(dirbuf));
-    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------

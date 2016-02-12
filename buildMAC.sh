@@ -59,6 +59,7 @@ tcl="${rep}/tcl"
 org="org.puredata.puredata.plist"
 default="${rep}/resources/${org}"
 preferences="${HOME}/Library/Preferences"
+help="${rep}/resources/help"
 patches="${rep}/resources/patches"
 
 # ------------------------------------------------------------------------------------------------------------
@@ -112,6 +113,7 @@ echo "APPL????" > "${app}/Contents/PkgInfo"                     || exit 1
 mv "${app}/Contents/MacOS/Wish" "${app}/Contents/MacOS/Pd"      || exit 1
 cp -R "${bin}" "${app}/Contents/Resources/"                     || exit 1
 cp -R "${tcl}" "${app}/Contents/Resources/"                     || exit 1
+cp -R "${help}" "${app}/Contents/Resources/"                    || exit 1
 cd "${app}/Contents/Resources/"                                 || exit 1
 ln -s "tcl" "Scripts"                                           || exit 1
 cd "${rep}"                                                     || exit 1

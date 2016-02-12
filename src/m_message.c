@@ -159,7 +159,7 @@ static void new_anything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         return;
     }
     
-    err = (f = canvas_open (canvas_getcurrent(), s->s_name, PD_FILE, directory, &name, PD_STRING, 0)) < 0;
+    err = (f = canvas_open (canvas_getcurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING, 0)) < 0;
     
     if (err) { pd_newest = NULL; }
     else {

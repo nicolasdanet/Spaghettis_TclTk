@@ -1215,12 +1215,10 @@ static void canvas_done_popup(t_canvas *x, t_float which, t_float xpos, t_float 
                 else
                 {
                     strcpy(namebuf, class_getHelpName(pd_class(&y->g_pd)));
-                    dir = class_getHelpDirectory(pd_class(&y->g_pd));
+                    dir = class_getExternalDirectory(pd_class(&y->g_pd));
                 }
-                if (strlen(namebuf) < 4 ||
-                    strcmp(namebuf + strlen(namebuf) - 3, PD_FILE))
-                        strcat(namebuf, PD_FILE);
-                file_openHelp(dir, namebuf);
+
+                file_openHelp (dir, namebuf);
                 return;
             }
         }

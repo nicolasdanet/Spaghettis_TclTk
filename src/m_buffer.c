@@ -273,7 +273,7 @@ static int buffer_nextFloatState (int floatState, char c)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int allocated)
+void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int preallocated)
 {
     int length = 0;
     t_atom *a = NULL;
@@ -284,7 +284,7 @@ void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int allocated)
     if (buffer_isMalformed (s, size)) { PD_BUG; return; }
     
     PD_MEMORY_FREE (x->b_vector);
-    x->b_vector = (t_atom *)PD_MEMORY_GET (allocated * sizeof (t_atom));
+    x->b_vector = (t_atom *)PD_MEMORY_GET (preallocated * sizeof (t_atom));
     a = x->b_vector;
     x->b_size = length;     /* Inconsistency corrected later. */
     
@@ -339,10 +339,10 @@ void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int allocated)
     a++;
     length++;
     
-    if (length == allocated) {
-        size_t oldSize = allocated * sizeof (t_atom);
+    if (length == preallocated) {
+        size_t oldSize = preallocated * sizeof (t_atom);
         x->b_vector = PD_MEMORY_RESIZE (x->b_vector, oldSize, oldSize * 2);
-        allocated = allocated * 2;
+        preallocated = preallocated * 2;
         a = x->b_vector + length;
     }
     //
@@ -351,7 +351,7 @@ void buffer_parseStringUnzeroed (t_buffer *x, char *s, int size, int allocated)
     /* Crop to truly used memory. */
     
     x->b_size   = length;
-    x->b_vector = PD_MEMORY_RESIZE (x->b_vector, allocated * sizeof (t_atom), length * sizeof (t_atom));
+    x->b_vector = PD_MEMORY_RESIZE (x->b_vector, preallocated * sizeof (t_atom), length * sizeof (t_atom));
 }
 
 void buffer_withStringUnzeroed (t_buffer *x, char *s, int size)

@@ -458,7 +458,7 @@ char *class_getHelpName (t_class *c)
     return c->c_helpName->s_name;
 }
 
-char *class_getHelpDirectory (t_class *c)
+char *class_getExternalDirectory (t_class *c)
 {
     return (c->c_externalDirectory->s_name);
 }

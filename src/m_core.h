@@ -199,7 +199,7 @@ void        class_setSaveFunction                       (t_class *c, t_savefn f)
 
 char        *class_getName                              (t_class *c);
 char        *class_getHelpName                          (t_class *c);
-char        *class_getHelpDirectory                     (t_class *c);
+char        *class_getExternalDirectory                 (t_class *c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -273,7 +273,7 @@ void        buffer_post                                 (t_buffer *x);
 void        buffer_resize                               (t_buffer *x, int n);
 void        buffer_vAppend                              (t_buffer *x, char *fmt, ...);
 void        buffer_appendSemicolon                      (t_buffer *x);
-void        buffer_parseStringUnzeroed                  (t_buffer *x, char *s, int size, int allocated);
+void        buffer_parseStringUnzeroed                  (t_buffer *x, char *s, int size, int preallocated);
 void        buffer_toString                             (t_buffer *x, char **s, int *size);
 void        buffer_toStringUnzeroed                     (t_buffer *x, char **s, int *size);
 void        buffer_withStringUnzeroed                   (t_buffer *x, char *s, int size);
