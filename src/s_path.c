@@ -72,19 +72,6 @@ int path_isFileExistAsRegularFile (const char *filepath)
     #error
 #endif
 
-int path_isAbsoluteConsideringEnvironment (const char *f)
-{
-    #if PD_WINDOWS
-    
-    return (f[0] == '/' || f[0] == '~' || f[0] == '%' || (f[1] == ':' && f[2] == '/'));
-    
-    #else
-    
-    return (f[0] == '/' || f[0] == '~');
-    
-    #endif
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

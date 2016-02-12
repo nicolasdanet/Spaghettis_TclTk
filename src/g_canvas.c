@@ -1282,6 +1282,7 @@ void canvas_savedeclarationsto(t_canvas *x, t_buffer *b)
     }
 }
 
+/*
 static void canvas_completepath(char *from, char *to, int bufsize)
 {
     if (path_isAbsoluteConsideringEnvironment(from))
@@ -1297,6 +1298,7 @@ static void canvas_completepath(char *from, char *to, int bufsize)
     strncat(to, from, bufsize-strlen(to));
     to[bufsize-1] = '\0';
 }
+*/
 
 /* maybe we should rename check_exists() to sys_access() and move it to s_path */
 #ifdef _WIN32
@@ -1320,8 +1322,7 @@ static int check_exists(const char *filepath)
 
 //extern t_pathlist *path_extra;
 
-#if 0
-
+/*
 static void canvas_stdpath(t_canvasenvironment *e, char *stdpath)
 {
     t_pathlist*nl;
@@ -1338,10 +1339,10 @@ static void canvas_stdpath(t_canvasenvironment *e, char *stdpath)
         e->ce_path = pathlist_newAppend(e->ce_path, strbuf);
         return;
     }
-    /* strip    "extra/"-prefix */
+
     if (!strncmp("extra/", stdpath, 6))
         stdpath+=6;
-    /* check whether the given subdir is in one of the standard-paths */
+
     for (nl=path_extra; nl; nl=nl->pl_next)
     {
         snprintf(strbuf, PD_STRING-1, "%s/%s/", nl->pl_string, stdpath);
@@ -1368,11 +1369,9 @@ static void canvas_stdlib(t_canvasenvironment *e, char *stdlib)
     if (sys_load_lib(0, strbuf))
         return;
 
-    // strip    "extra/"-prefix
     if (!strncmp("extra/", stdlib, 6))
         stdlib+=6;
 
-    /* check whether the given library is located in one of the standard-paths */
     for (nl=path_extra; nl; nl=nl->pl_next)
     {
         snprintf(strbuf, PD_STRING-1, "%s/%s", nl->pl_string, stdlib);
@@ -1382,7 +1381,7 @@ static void canvas_stdlib(t_canvasenvironment *e, char *stdlib)
     }
 }
 
-#endif
+*/
 static void canvas_declare(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
@@ -1458,8 +1457,9 @@ int canvas_open(t_canvas *x, const char *name, const char *ext,
         for (nl = y->gl_env->ce_path; nl; nl = nl->pl_next)
         {
             char realname[PD_STRING];
-            if (path_isAbsoluteConsideringEnvironment(nl->pl_string))
+            if (0 /* path_isAbsoluteConsideringEnvironment(nl->pl_string)*/)
             {
+                post_log ("Toto");
                 realname[0] = '\0';
             }
             else
