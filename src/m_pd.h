@@ -247,12 +247,12 @@ extern "C" {
 
 #if PD_WINDOWS
 #if PD_BUILDING_APPLICATION
-    #define PD_DLL              __declspec(dllexport) extern
+    #define PD_DLL              __declspec(dllexport)
 #else
-    #define PD_DLL              __declspec(dllimport) extern 
+    #define PD_DLL              __declspec(dllimport) 
 #endif
 #else
-    #define PD_DLL              __attribute__ ((visibility ("default"))) extern
+    #define PD_DLL              __attribute__ ((visibility ("default")))
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -302,7 +302,6 @@ extern "C" {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 #if PD_APPLE
 
@@ -490,19 +489,19 @@ typedef void *(*t_newmethod)(void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_DLL t_symbol s_pointer;
-PD_DLL t_symbol s_float;
-PD_DLL t_symbol s_symbol;
-PD_DLL t_symbol s_bang;
-PD_DLL t_symbol s_list;
-PD_DLL t_symbol s_anything;
-PD_DLL t_symbol s_signal;
-PD_DLL t_symbol s__N;
-PD_DLL t_symbol s__X;
-PD_DLL t_symbol s__A;
-PD_DLL t_symbol s_x;
-PD_DLL t_symbol s_y;
-PD_DLL t_symbol s_;
+extern t_symbol s_pointer;
+extern t_symbol s_float;
+extern t_symbol s_symbol;
+extern t_symbol s_bang;
+extern t_symbol s_list;
+extern t_symbol s_anything;
+extern t_symbol s_signal;
+extern t_symbol s__N;
+extern t_symbol s__X;
+extern t_symbol s__A;
+extern t_symbol s_x;
+extern t_symbol s_y;
+extern t_symbol s_;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
