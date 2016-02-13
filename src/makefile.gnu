@@ -39,7 +39,7 @@ CPPFLAGS = -DINSTALL_PREFIX=\"$(prefix)\" -DUSEAPI_ALSA -DUSEAPI_OSS -DNDEBUG
 
 # Linker flags.
 
-LDFLAGS = -Wl,-export-dynamic $(ARCH)
+LDFLAGS = $(ARCH)
 
 LIB = -ldl -lm -lpthread -lasound
 
@@ -53,7 +53,7 @@ endif
 
 # Build flags.
 
-CFLAGS = -O3 -ffast-math -w $(ARCH)
+CFLAGS = -O3 -ffast-math -fvisibility=hidden -w $(ARCH)
 
 # The sources (filepath must NOT contain space).
 
