@@ -24,6 +24,7 @@ extern t_class *voutlet_class;
 extern int font_defaultSize;
 extern t_widgetbehavior text_widgetBehavior;
 extern t_pdinstance *pd_this;
+extern t_symbol *main_rootDirectory;
 
 void glist_readfrombinbuf(t_glist *x, t_buffer *b, char *filename,
     int selectem);
@@ -40,6 +41,36 @@ static t_buffer *copy_binbuf;
 static char *canvas_textcopybuf;
 static int canvas_textcopybufsize;
 static t_glist *glist_finddirty(t_glist *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void file_openHelp (const char *directory, const char *name)
+{
+    int f = -1;
+    char *nameResult = NULL;
+    char directoryResult[PD_STRING] = { 0 };
+    
+    if (*directory != 0) { 
+        f = file_openWithDirectoryAndName (directory, name, PD_HELP, directoryResult, &nameResult, PD_STRING);
+    }
+    
+    if (f < 0) {
+    //
+    char help[PD_STRING] = { 0 };
+    if (!string_sprintf (help, PD_STRING, "%s/help", main_rootDirectory->s_name)) {
+        f = file_openConsideringSearchPath (help, name, PD_HELP, directoryResult, &nameResult, PD_STRING);
+    }
+    //
+    }
+    
+    if (f < 0) { post_error (PD_TRANSLATE ("help: couldn't find patch for '%s'"), name); }
+    else {
+        close (f);
+        buffer_openFile (NULL, gensym (nameResult), gensym (directoryResult));
+    }
+}
 
 /* ---------------- generic widget behavior ------------------------- */
 

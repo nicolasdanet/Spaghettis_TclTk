@@ -282,8 +282,6 @@ t_error     interface_start                         (void);
 FILE        *file_openWrite                         (const char *filepath);
 int         file_openRaw                            (const char *filepath, int oflag);
 
-
-void        file_openHelp                           (const char *directory, const char *name);
 int         file_openWithDirectoryAndName           (const char *directory,
                                                         const char *name,
                                                         const char *extension,
