@@ -47,15 +47,19 @@ CPPFLAGS = -DINSTALL_PREFIX=\"$(prefix)\" \
     -I$(PA_DIR)/include -I$(PA_DIR)/src/common -I$(PA_DIR)/src/os/mac_osx \
     -I$(PM_DIR)/pm_common -I$(PM_DIR)/pm_mac -I$(PM_DIR)/porttime \
     -DUSEAPI_PORTAUDIO -DPA_USE_COREAUDIO \
-    -DNDEBUG
+    -DNDEBUG \
+    -DPD_BUILDING_APPLICATION
 
 # Linker flags.
 
-LDFLAGS = -framework CoreAudio -framework AudioUnit -framework AudioToolbox \
-    -framework Carbon -framework CoreMIDI \
+LDFLAGS = -framework CoreAudio \
+    -framework AudioUnit \
+    -framework AudioToolbox \
+    -framework Carbon \
+    -framework CoreMIDI \
     $(ARCH)
 
-LIB = -ldl -lm -lpthread
+LIB = -ldl -lpthread
 
 SRC_LIBS=
 
@@ -69,7 +73,7 @@ endif
 
 # Build flags.
 
-CFLAGS = -O3 -ffast-math -w $(ARCH)
+CFLAGS = -O3 -ffast-math -fvisibility=hidden -w $(ARCH)
 
 # The sources (filepath must NOT contain space).
 
