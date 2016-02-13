@@ -195,8 +195,39 @@ extern "C" {
 
 #define PD_NAME                 "PureData"
 #define PD_VERSION              "0.9"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define PD_PATCH                ".pd"
 #define PD_HELP                 ".pdhelp"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if ( PD_LINUX || PD_BSD || PD_HURD )
+    #if PD_64BIT
+        #define PD_PLUGIN       ".pdobject64"
+    #else
+        #define PD_PLUGIN       ".pdobject32"
+    #endif
+#elif PD_APPLE
+    #if PD_64BIT
+        #define PD_PLUGIN       ".pdbundle64"
+    #else
+        #define PD_PLUGIN       ".pdbundle32"
+    #endif
+#elif ( PD_WINDOWS || PD_CYGWIN )
+    #if PD_64BIT
+        #define PD_PLUGIN       ".pdlibrary64"
+    #else
+        #define PD_PLUGIN       ".pdlibrary32"
+    #endif
+#else
+    #define PD_PLUGIN           ".so"
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

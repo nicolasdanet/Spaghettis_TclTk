@@ -36,16 +36,6 @@ static t_loadlist   *loader_alreadyLoaded;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
-    static char sys_dllextent2[] = ".pd_linux";
-#elif defined(__APPLE__)
-    static char sys_dllextent2[] = ".pd_darwin";
-#elif defined (_WIN32) || defined(__CYGWIN__)
-    static char sys_dllextent2[] = ".dll";
-#else
-    static char sys_dllextent2[] = ".so";
-#endif
-
 int sys_onloadlist(char *classname) /* return true if already loaded */
 {
     t_symbol *s = gensym(classname);
@@ -117,7 +107,7 @@ static int sys_do_load_lib(t_canvas *canvas, char *objectname)
     fprintf(stderr, "lib: %s\n", classname);
 #endif
 
-    if ((fd = canvas_open(canvas, objectname, sys_dllextent2,
+    if ((fd = canvas_open(canvas, objectname, PD_PLUGIN,
         dirbuf, &nameptr, PD_STRING, 1)) >= 0)
             goto gotone;
         /* next try (objectname)/(classname).(sys_dllextent) ... */
@@ -126,7 +116,7 @@ static int sys_do_load_lib(t_canvas *canvas, char *objectname)
     strcat(filename, "/");
     strncat(filename, classname, PD_STRING-strlen(filename));
     filename[PD_STRING-1] = 0;
-    if ((fd = canvas_open(canvas, filename, sys_dllextent2,
+    if ((fd = canvas_open(canvas, filename, PD_PLUGIN,
         dirbuf, &nameptr, PD_STRING, 1)) >= 0)
             goto gotone;
 #ifdef ANDROID
