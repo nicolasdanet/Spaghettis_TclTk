@@ -1,83 +1,56 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-#include <dlfcn.h>
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
 
-#ifdef _WIN32
-    #include <io.h>
-    #include <windows.h>
-#else
-    #include <stdlib.h>
-    #include <unistd.h>
-    #include <sys/types.h>
-#endif
+/* < https://opensource.org/licenses/BSD-3-Clause > */
 
-#ifdef __APPLE__
-#include <mach-o/dyld.h> 
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-#include <string.h>
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include <stdio.h>
-#include <sys/stat.h>
 
-#ifdef _MSC_VER  /* This is only for Microsoft's compiler, not cygwin, e.g. */
-#define snprintf sprintf_s
-#define stat _stat
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 typedef void (*t_xxx)(void);
 
-/* naming convention for externs.  The names are kept distinct for those
-who wich to make "fat" externs compiled for many platforms.  Less specific
-fallbacks are provided, primarily for back-compatibility; these suffice if
-you are building a package which will run with a single set of compiled
-objects.  The specific name is the letter b, l, d, or m for  BSD, linux,
-darwin, or microsoft, followed by a more specific string, either "fat" for
-a fat binary or an indication of the instruction set. */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-#ifdef __FreeBSD__
-static char sys_dllextent[] = ".b_i386", sys_dllextent2[] = ".pd_freebsd";
-#elif defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
-static char sys_dllextent2[] = ".pd_linux";
-# ifdef __x86_64__
-static char sys_dllextent[] = ".l_ia64"; // this should be .l_x86_64 or .l_amd64
-# elif defined(__i386__) || defined(_M_IX86)
-static char sys_dllextent[] = ".l_i386";
-# elif defined(__arm__)
-static char sys_dllextent[] = ".l_arm";
-# else
-static char sys_dllextent[] = ".so";
-# endif
+typedef struct _loadlist {
+    struct _loadlist    *ll_next;
+    t_symbol            *ll_name;
+    } t_loadlist;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_loadlist   *loader_alreadyLoaded;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__GNU__)
+    static char sys_dllextent2[] = ".pd_linux";
 #elif defined(__APPLE__)
-# ifndef MACOSX3
-static char sys_dllextent[] = ".d_fat", sys_dllextent2[] = ".pd_darwin";
-# else
-static char sys_dllextent[] = ".d_ppc", sys_dllextent2[] = ".pd_darwin";
-# endif
-#elif defined(_WIN32) || defined(__CYGWIN__)
-static char sys_dllextent[] = ".m_i386", sys_dllextent2[] = ".dll";
+    static char sys_dllextent2[] = ".pd_darwin";
+#elif defined (_WIN32) || defined(__CYGWIN__)
+    static char sys_dllextent2[] = ".dll";
 #else
-static char sys_dllextent[] = ".so", sys_dllextent2[] = ".so";
+    static char sys_dllextent2[] = ".so";
 #endif
 
-    /* maintain list of loaded modules to avoid repeating loads */
-typedef struct _loadedlist
-{
-    struct _loadedlist *ll_next;
-    t_symbol *ll_name;
-} t_loadlist;
-
-static t_loadlist *sys_loaded;
 int sys_onloadlist(char *classname) /* return true if already loaded */
 {
     t_symbol *s = gensym(classname);
     t_loadlist *ll;
-    for (ll = sys_loaded; ll; ll = ll->ll_next)
+    for (ll = loader_alreadyLoaded; ll; ll = ll->ll_next)
         if (ll->ll_name == s)
             return (1);
     return (0);
@@ -87,8 +60,8 @@ void sys_putonloadlist(char *classname) /* add to list of loaded modules */
 {
     t_loadlist *ll = (t_loadlist *)PD_MEMORY_GET(sizeof(*ll));
     ll->ll_name = gensym(classname);
-    ll->ll_next = sys_loaded;
-    sys_loaded = ll;
+    ll->ll_next = loader_alreadyLoaded;
+    loader_alreadyLoaded = ll;
     /* post("put on list %s", classname); */
 }
 
@@ -143,11 +116,7 @@ static int sys_do_load_lib(t_canvas *canvas, char *objectname)
 #if 0
     fprintf(stderr, "lib: %s\n", classname);
 #endif
-        /* try looking in the path for (objectname).(sys_dllextent) ... */
-    if ((fd = canvas_open(canvas, objectname, sys_dllextent,
-        dirbuf, &nameptr, PD_STRING, 1)) >= 0)
-            goto gotone;
-        /* same, with the more generic sys_dllextent2 */
+
     if ((fd = canvas_open(canvas, objectname, sys_dllextent2,
         dirbuf, &nameptr, PD_STRING, 1)) >= 0)
             goto gotone;
@@ -157,9 +126,6 @@ static int sys_do_load_lib(t_canvas *canvas, char *objectname)
     strcat(filename, "/");
     strncat(filename, classname, PD_STRING-strlen(filename));
     filename[PD_STRING-1] = 0;
-    if ((fd = canvas_open(canvas, filename, sys_dllextent,
-        dirbuf, &nameptr, PD_STRING, 1)) >= 0)
-            goto gotone;
     if ((fd = canvas_open(canvas, filename, sys_dllextent2,
         dirbuf, &nameptr, PD_STRING, 1)) >= 0)
             goto gotone;
@@ -271,7 +237,10 @@ void sys_register_loader(t_loader loader)
     }   
 }
 
-int sys_load_lib(t_canvas *canvas, char *classname)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+int sys_load_lib (t_canvas *canvas, char *classname)
 {
     int dspstate = canvas_suspend_dsp();
     int ok = 0;
@@ -282,60 +251,5 @@ int sys_load_lib(t_canvas *canvas, char *classname)
     return ok;
 }
 
-/*
-int sys_run_scheduler(const char *externalschedlibname,
-    const char *sys_extraflagsstring)
-{
-    typedef int (*t_externalschedlibmain)(const char *);
-    t_externalschedlibmain externalmainfunc;
-    char filename[PD_STRING];
-    struct stat statbuf;
-    snprintf(filename, sizeof(filename), "%s%s", externalschedlibname,
-        sys_dllextent);
-    path_slashToBackslashIfNecessary(filename, filename);
-        
-    if (stat(filename, &statbuf) < 0)
-    {
-        snprintf(filename, sizeof(filename), "%s%s", externalschedlibname,
-            sys_dllextent2);
-        path_slashToBackslashIfNecessary(filename, filename);
-    }       
-#ifdef _WIN32
-    {
-        HINSTANCE ntdll = LoadLibrary(filename);
-        if (!ntdll)
-        {
-            fprintf(stderr, "%s: couldn't load external scheduler\n", filename);
-            post("%s: couldn't load external scheduler", filename);
-            return (1);
-        }
-        externalmainfunc =
-            (t_externalschedlibmain)GetProcAddress(ntdll, "pd_extern_sched");
-        if (!externalmainfunc)
-            externalmainfunc =
-                (t_externalschedlibmain)GetProcAddress(ntdll, "main");
-    }
-#else
-    {
-        void *dlobj;
-        dlobj = dlopen(filename, RTLD_NOW | RTLD_GLOBAL);
-        if (!dlobj)
-        {
-            post("%s: %s", filename, dlerror());
-            fprintf(stderr, "dlopen failed for %s: %s\n", filename, dlerror());
-            return (1);
-        }
-        externalmainfunc = (t_externalschedlibmain)dlsym(dlobj,
-            "pd_extern_sched");
-    }
-#endif
-    if (externalmainfunc)
-        return((*externalmainfunc)(sys_extraflagsstring));
-    else
-    {
-        fprintf(stderr, "%s: couldn't find pd_extern_sched() or main()\n",
-            filename);
-        return (0);
-    }
-}
-*/
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

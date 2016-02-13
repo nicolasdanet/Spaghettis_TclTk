@@ -158,6 +158,14 @@ t_error utils_version (char *dest, size_t size)
 {
     t_error err = string_sprintf (dest, size, "%s %s / %s / %s", PD_NAME, PD_VERSION, utils_date, utils_time);
     
+    #if PD_32BIT
+        err |= string_add (dest, size, " / 32-bit");
+    #endif
+    
+    #if PD_64BIT
+        err |= string_add (dest, size, " / 64-bit");
+    #endif
+    
     #if PD_WITH_DEBUG
         err |= string_add (dest, size, " / DEBUG");
     #endif

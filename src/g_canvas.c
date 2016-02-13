@@ -1382,6 +1382,7 @@ static void canvas_stdlib(t_canvasenvironment *e, char *stdlib)
 }
 
 */
+/*
 static void canvas_declare(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
@@ -1398,26 +1399,25 @@ static void canvas_declare(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
             e->ce_path = pathlist_newAppend(e->ce_path, atom_getSymbolAtIndex(i+1, argc, argv)->s_name);
             i++;
         }
-        /*else if ((argc > i+1) && !strcmp(flag, "-stdpath"))
+        else if ((argc > i+1) && !strcmp(flag, "-stdpath"))
         {
             canvas_stdpath(e, atom_getSymbolAtIndex(i+1, argc, argv)->s_name);
             i++;
-        }*/
+        }
         else if ((argc > i+1) && !strcmp(flag, "-lib"))
         {
             sys_load_lib(x, atom_getSymbolAtIndex(i+1, argc, argv)->s_name);
             i++;
         }
-        /*
         else if ((argc > i+1) && !strcmp(flag, "-stdlib"))
         {
             canvas_stdlib(e, atom_getSymbolAtIndex(i+1, argc, argv)->s_name);
             i++;
-        }*/
+        }
         else post("declare: %s: unknown declaration", flag);
     }
 }
-
+*/
     /* utility function to read a file, looking first down the canvas's search
     path (set with "declare" objects in the patch and recursively in calling
     patches), then down the system one.  The filename is the concatenation of
@@ -1628,8 +1628,8 @@ void g_canvas_setup(void)
 /*---------------------------- declare ------------------- */
     declare_class = class_new(gensym("declare"), (t_newmethod)declare_new,
         (t_method)declare_free, sizeof(t_declare), CLASS_NOINLET, A_GIMME, 0);
-    class_addMethod(canvas_class, (t_method)canvas_declare,
-        gensym("declare"), A_GIMME, 0);
+    /*class_addMethod(canvas_class, (t_method)canvas_declare,
+        gensym("declare"), A_GIMME, 0);*/
 
 /*--------------- future message to set formatting  -------------- */
     class_addMethod(canvas_class, (t_method)canvas_f,

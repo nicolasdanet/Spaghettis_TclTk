@@ -86,6 +86,44 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#if PD_WINDOWS
+
+    #if PD_MSVC
+    #ifdef _WIN64
+        #define PD_64BIT        1
+    #else
+        #define PD_32BIT        1
+    #endif
+    #endif
+
+    #if PD_MINGW
+    #ifdef __MINGW64__
+        #define PD_64BIT        1
+    #else
+        #define PD_32BIT        1
+    #endif
+    #endif
+    
+#else
+
+    #if defined ( __LP64__ ) || defined ( _LP64 ) || defined ( __arm64__ )
+        #define PD_64BIT        1
+    #else
+        #define PD_32BIT        1
+    #endif
+
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if ! ( PD_64BIT || PD_32BIT ) 
+    #error 
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #if defined ( __cplusplus )
 
 extern "C" {
@@ -177,19 +215,20 @@ extern "C" {
 #pragma mark -
 
 #if PD_WINDOWS
-    #if PD_EXPORT
-        #define PD_DLL          __declspec(dllexport) extern
-    #else
-        #define PD_DLL          __declspec(dllimport) extern 
-    #endif
+#if PD_BUILDING_APPLICATION
+    #define PD_DLL              __declspec(dllexport) extern
 #else
-    #define PD_DLL              __attribute__((visibility ("default"))) extern
+    #define PD_DLL              __declspec(dllimport) extern 
+#endif
+#else
+    #define PD_DLL              __attribute__ ((visibility ("default"))) extern
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 #include <ctype.h>
+#include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
