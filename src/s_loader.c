@@ -22,40 +22,66 @@ typedef void (*t_xxx)(void);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-typedef struct _loadlist {
+typedef struct _loadedlist {
     struct _loadlist    *ll_next;
     t_symbol            *ll_name;
-    } t_loadlist;
+    } t_loadedlist;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_loadlist   *loader_alreadyLoaded;
+static t_loadedlist     *loader_alreadyLoaded;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int sys_onloadlist(char *classname) /* return true if already loaded */
+static int loader_isAlreadyLoaded (char *o)
 {
-    t_symbol *s = gensym(classname);
-    t_loadlist *ll;
-    for (ll = loader_alreadyLoaded; ll; ll = ll->ll_next)
-        if (ll->ll_name == s)
-            return (1);
-    return (0);
+    t_loadedlist *l = NULL;
+    t_symbol *s = gensym (o);
+    
+    for (l = loader_alreadyLoaded; l; l = l->ll_next) { if (l->ll_name == s) { return 1; } }
+    
+    return 0;
 }
 
-void sys_putonloadlist(char *classname) /* add to list of loaded modules */
+static void loader_addLoaded (char *o)
 {
-    t_loadlist *ll = (t_loadlist *)PD_MEMORY_GET(sizeof(*ll));
-    ll->ll_name = gensym(classname);
-    ll->ll_next = loader_alreadyLoaded;
-    loader_alreadyLoaded = ll;
-    /* post("put on list %s", classname); */
+    t_loadedlist *l = (t_loadedlist *)PD_MEMORY_GET (sizeof (t_loadedlist));
+    
+    l->ll_name = gensym (o);
+    l->ll_next = loader_alreadyLoaded;
+    loader_alreadyLoaded = l;
 }
 
-static int sys_do_load_lib(t_canvas *canvas, char *objectname)
+static void loader_clearLoaded (void)
+{
+    t_loadedlist *l = loader_alreadyLoaded;
+    t_loadedlist *next = NULL;
+    
+    while (l) { next = l->ll_next; PD_MEMORY_FREE (l); l = next; }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void loader_initialize (void)
+{
+
+}
+
+void loader_release (void)
+{
+    loader_clearLoaded();
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_error loader_openExternal (t_canvas *canvas, char *objectname)
 {
     char symname[PD_STRING], filename[PD_STRING], dirbuf[PD_STRING],
         *classname, *nameptr, altsymname[PD_STRING];
@@ -68,7 +94,7 @@ static int sys_do_load_lib(t_canvas *canvas, char *objectname)
     if (classname = strrchr(objectname, '/'))
         classname++;
     else classname = objectname;
-    if (sys_onloadlist(objectname))
+    if (loader_isAlreadyLoaded(objectname))
     {
         post("%s: already loaded", objectname);
         return (1);
@@ -194,51 +220,21 @@ gotone:
     }
     (*makeout)();
     class_setDefaultExternalDirectory(&s_);
-    sys_putonloadlist(objectname);
+    loader_addLoaded(objectname);
     return (1);
 }
 
-
-/* linked list of loaders */
-typedef struct loader_queue {
-    t_loader loader;
-    struct loader_queue *next;
-} loader_queue_t;
-
-static loader_queue_t loaders = {sys_do_load_lib, NULL};
-
-/* register class loader function */
-void sys_register_loader(t_loader loader)
-{
-    loader_queue_t *q = &loaders;
-    while (1)
-    {   
-        if (q->loader == loader)    /* already loaded - nothing to do */
-            return;
-        else if (q->next) 
-            q = q->next;
-        else
-        {
-            q->next = (loader_queue_t *)PD_MEMORY_GET(sizeof(loader_queue_t));
-            q->next->loader = loader;
-            q->next->next = NULL;
-            break;
-        }
-    }   
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-int sys_load_lib (t_canvas *canvas, char *classname)
+t_error loader_loadExternal (t_canvas *canvas, char *name)
 {
-    int dspstate = canvas_suspend_dsp();
-    int ok = 0;
-    loader_queue_t *q;
-    for(q = &loaders; q; q = q->next)
-        if (ok = q->loader(canvas, classname)) break;
-    canvas_resume_dsp(dspstate);
-    return ok;
+    int dsp = canvas_suspend_dsp();
+    t_error err = loader_openExternal (canvas, name);
+    canvas_resume_dsp (dsp);
+    
+    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------

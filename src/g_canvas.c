@@ -1361,12 +1361,12 @@ static void canvas_stdlib(t_canvasenvironment *e, char *stdlib)
     char strbuf[PD_STRING];
     if (path_isAbsoluteConsideringEnvironment(stdlib))
     {
-        sys_load_lib(0, stdlib);
+        loader_loadExternal(0, stdlib);
         return;
     }
 
     canvas_completepath(stdlib, strbuf, PD_STRING);
-    if (sys_load_lib(0, strbuf))
+    if (loader_loadExternal(0, strbuf))
         return;
 
     if (!strncmp("extra/", stdlib, 6))
@@ -1376,7 +1376,7 @@ static void canvas_stdlib(t_canvasenvironment *e, char *stdlib)
     {
         snprintf(strbuf, PD_STRING-1, "%s/%s", nl->pl_string, stdlib);
         strbuf[PD_STRING-1]=0;
-        if (sys_load_lib(0, strbuf))
+        if (loader_loadExternal(0, strbuf))
             return;
     }
 }
@@ -1406,7 +1406,7 @@ static void canvas_declare(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
         }
         else if ((argc > i+1) && !strcmp(flag, "-lib"))
         {
-            sys_load_lib(x, atom_getSymbolAtIndex(i+1, argc, argv)->s_name);
+            loader_loadExternal(x, atom_getSymbolAtIndex(i+1, argc, argv)->s_name);
             i++;
         }
         else if ((argc > i+1) && !strcmp(flag, "-stdlib"))

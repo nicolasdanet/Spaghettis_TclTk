@@ -313,43 +313,43 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PD_STRING           1024                /* Maximum size for a string. */
-#define PD_ARGUMENTS        5                   /* Maximum number of typechecked arguments. */
+#define PD_STRING               1024                /* Maximum size for a string. */
+#define PD_ARGUMENTS            5                   /* Maximum number of typechecked arguments. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define CLASS_DEFAULT       0
-#define CLASS_PURE          1
-#define CLASS_GRAPHIC       2
-#define CLASS_BOX           3
-#define CLASS_NOINLET       8
+#define CLASS_DEFAULT           0
+#define CLASS_PURE              1
+#define CLASS_GRAPHIC           2
+#define CLASS_BOX               3
+#define CLASS_NOINLET           8
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #if PD_LLP64
-    typedef long long       t_int;              /* A pointer-size integer (LLP64). */
+    typedef long long           t_int;              /* A pointer-size integer (LLP64). */
 #else
-    typedef long            t_int;              /* Ditto (LP64 / ILP64). */
+    typedef long                t_int;              /* Ditto (LP64 / ILP64). */
 #endif
 
-typedef float               t_float;            /* A float type. */
+typedef float                   t_float;            /* A float type. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef int                 t_error;            /* An error. */
+typedef int                     t_error;            /* An error. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PD_ERROR            1
-#define PD_ERROR_NONE       0
+#define PD_ERROR                1
+#define PD_ERROR_NONE           0
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

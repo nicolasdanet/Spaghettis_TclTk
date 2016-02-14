@@ -32,6 +32,7 @@ void object_initialize      (void);
 void global_initialize      (void);
 void message_initialize     (void);
 void bindlist_initialize    (void);
+void loader_initialize      (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -42,6 +43,7 @@ void object_release         (void);
 void global_release         (void);
 void message_release        (void);
 void bindlist_release       (void);
+void loader_release         (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -118,11 +120,14 @@ void pd_initialize (void)
     object_initialize();
     setup_initialize();
     global_initialize();
+    loader_initialize();
     garray_init();
+
 }
 
 void pd_release (void)
 {
+    loader_release();
     global_release();
     setup_release();
     object_release();

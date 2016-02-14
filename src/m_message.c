@@ -152,7 +152,7 @@ static void new_anything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
     pd_newest = NULL;
     
-    if (sys_load_lib (canvas_getcurrent(), s->s_name)) {
+    if (loader_loadExternal (canvas_getcurrent(), s->s_name)) {
         message_recursiveDepth++;
         pd_message (x, s, argc, argv);
         message_recursiveDepth--;

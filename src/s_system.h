@@ -317,6 +317,12 @@ void        path_setSearchPath                      (void *dummy, t_symbol *s, i
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_error     loader_loadExternal                     (t_canvas *canvas, char *name);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void        preferences_load                        (void);
 void        preferences_save                        (void *dummy);
 
@@ -331,8 +337,6 @@ void post_atoms                             (int argc, t_atom *argv);
 #pragma mark -
 
 t_symbol    *sys_decodedialog               (t_symbol *s);
-int         sys_load_lib                    (t_canvas *canvas, char *name);
-void        sys_register_loader             (t_loader loader);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
