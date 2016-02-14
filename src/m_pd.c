@@ -25,28 +25,6 @@ typedef struct _gstack {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void setup_initialize       (void);
-void object_initialize      (void);
-void global_initialize      (void);
-void message_initialize     (void);
-void bindlist_initialize    (void);
-void loader_initialize      (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void setup_release          (void);
-void object_release         (void);
-void global_release         (void);
-void message_release        (void);
-void bindlist_release       (void);
-void loader_release         (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 extern t_class  *bindlist_class;
 
@@ -64,78 +42,9 @@ t_pd pd_canvasMaker;                            /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_pdinstance *pd_this;                          /* Shared. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static t_gstack *pd_stackHead;                  /* Shared. */
 static t_pd     *pd_lastPopped;                 /* Shared. */
 static t_symbol *pd_loadingAbstraction;         /* Shared. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static t_pdinstance *pdinstance_new()
-{
-    t_pdinstance *x = (t_pdinstance *)PD_MEMORY_GET (sizeof (t_pdinstance));
-    
-    x->pd_systime           = 0.0;
-    x->pd_state             = 0;
-    x->pd_chainSize         = 0;
-    x->pd_chain             = NULL;
-    x->pd_clocks            = NULL;
-    x->pd_signals           = NULL;
-    x->pd_canvases          = NULL;
-    x->sym_midiin           = gensym ("#midiin");
-    x->sym_sysexin          = gensym ("#sysexin");
-    x->sym_notein           = gensym ("#notein");
-    x->sym_ctlin            = gensym ("#ctlin");
-    x->sym_pgmin            = gensym ("#pgmin");
-    x->sym_bendin           = gensym ("#bendin");
-    x->sym_touchin          = gensym ("#touchin");
-    x->sym_polytouchin      = gensym ("#polytouchin");
-    x->sym_midiclkin        = gensym ("#midiclkin");
-    x->sym_midirealtimein   = gensym ("#midirealtimein");
-    
-    return x;
-}
-
-static pdinstance_free (t_pdinstance *x)
-{
-    PD_MEMORY_FREE (x);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void pd_initialize (void)
-{
-    pd_this = pdinstance_new();
-    
-    message_initialize();
-    bindlist_initialize();
-    object_initialize();
-    setup_initialize();
-    global_initialize();
-    loader_initialize();
-    garray_init();
-
-}
-
-void pd_release (void)
-{
-    loader_release();
-    global_release();
-    setup_release();
-    object_release();
-    bindlist_release();
-    message_release();
-    
-    pdinstance_free (pd_this);
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

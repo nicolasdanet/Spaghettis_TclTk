@@ -135,6 +135,7 @@
 		37E0BC371C53E0B700114412 /* s_pathlist.c in Sources */ = {isa = PBXBuildFile; fileRef = 37E0BC361C53E0B700114412 /* s_pathlist.c */; };
 		37E3E9661C5E1EDE00D9717B /* s_priority.c in Sources */ = {isa = PBXBuildFile; fileRef = 37E3E9651C5E1EDE00D9717B /* s_priority.c */; };
 		37E3EB9C1C5F6ACA00D9717B /* s_receiver.c in Sources */ = {isa = PBXBuildFile; fileRef = 37E3EB9B1C5F6ACA00D9717B /* s_receiver.c */; };
+		37F1820A1C70DBF8003D1A3A /* m_instance.c in Sources */ = {isa = PBXBuildFile; fileRef = 37F182091C70DBF8003D1A3A /* m_instance.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -336,6 +337,7 @@
 		37E0BC361C53E0B700114412 /* s_pathlist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_pathlist.c; path = src/s_pathlist.c; sourceTree = "<group>"; };
 		37E3E9651C5E1EDE00D9717B /* s_priority.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_priority.c; path = src/s_priority.c; sourceTree = "<group>"; };
 		37E3EB9B1C5F6ACA00D9717B /* s_receiver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_receiver.c; path = src/s_receiver.c; sourceTree = "<group>"; };
+		37F182091C70DBF8003D1A3A /* m_instance.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_instance.c; path = src/m_instance.c; sourceTree = "<group>"; };
 		8DD76FB20486AB0100D96B5E /* pd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pd; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -482,6 +484,7 @@
 				378971E31C4F716700263434 /* m_core.h */,
 				378971DD1C4F716700263434 /* m_macros.h */,
 				378971D71C4F716700263434 /* m_alloca.h */,
+				37F182091C70DBF8003D1A3A /* m_instance.c */,
 				378971E11C4F716700263434 /* m_pd.c */,
 				378971DF1C4F716700263434 /* m_message.c */,
 				378971DA1C4F716700263434 /* m_class.c */,
@@ -940,6 +943,7 @@
 				37E3EB9C1C5F6ACA00D9717B /* s_receiver.c in Sources */,
 				373D6CCA1C610AAF00106641 /* m_bindlist.c in Sources */,
 				378B47391C6C660B004099AA /* s_file.c in Sources */,
+				37F1820A1C70DBF8003D1A3A /* m_instance.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

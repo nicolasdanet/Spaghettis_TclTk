@@ -130,8 +130,6 @@ void        pd_push                                     (t_pd *x);
 void        pd_pop                                      (t_pd *x);
 void        pd_empty                                    (t_pd *x);
 void        pd_vMessage                                 (t_pd *x, t_symbol *s, char *fmt, ...);
-void        pd_initialize                               (void);
-void        pd_release                                  (void);
 
 void        pd_performLoadbang                          (void);
 int         pd_setLoadingAbstraction                    (t_symbol *s);
@@ -284,6 +282,15 @@ t_error     buffer_read                                 (t_buffer *x, char *name
 t_error     buffer_write                                (t_buffer *x, char *name, char *directory);
 t_error     buffer_evalFile                             (t_symbol *name, t_symbol *directory);
 void        buffer_openFile                             (void *dummy, t_symbol *name, t_symbol *directory);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        instance_initialize                         (void);
+void        instance_release                            (void);
+void        setup_initialize                            (void);
+void        setup_release                               (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

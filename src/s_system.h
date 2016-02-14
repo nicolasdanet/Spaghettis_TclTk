@@ -269,8 +269,6 @@ void        interface_guiQueueAddIfNotAlreadyThere  (void *owner, t_glist *glist
 void        interface_guiQueueRemove                (void *owner);
 int         interface_pollOrFlushGui                (void);
 void        interface_closeSocket                   (int fd);
-void        interface_initialize                    (void);
-void        interface_release                       (void);
 void        interface_quit                          (void *dummy);
 void        interface_watchdog                      (void *dummy);
 t_error     interface_start                         (void);

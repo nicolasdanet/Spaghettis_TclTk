@@ -233,8 +233,8 @@ int main_entry (int argc, char **argv)
         return main_entryVersion (0); 
     }
         
-    pd_initialize();
-    interface_initialize();
+    instance_initialize();
+    setup_initialize();
         
     preferences_load();
     sys_setSignalHandlers();
@@ -247,8 +247,8 @@ int main_entry (int argc, char **argv)
         if (!(err |= main_entryVersion (1))) { err |= scheduler_main(); }
     }
     
-    interface_release();
-    pd_release();
+    setup_release();
+    instance_release();
     //
     }
     //

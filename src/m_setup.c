@@ -15,58 +15,72 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void g_array_setup (void);
-void g_canvas_setup (void);
-void g_guiconnect_setup (void);
-void g_bang_setup (void);
-void g_hradio_setup (void);
-void g_hslider_setup (void);
-void g_mycanvas_setup (void);
-void g_numbox_setup (void);
-void g_toggle_setup (void);
-void g_vradio_setup (void);
-void g_vslider_setup (void);
-void g_vumeter_setup (void);
-void g_io_setup (void);
-void g_scalar_setup (void);
-void g_template_setup (void);
-void g_text_setup (void);
-void g_traversal_setup (void);
+void message_initialize     (void);
+void bindlist_initialize    (void);
+void object_initialize      (void);
+void global_initialize      (void);
+void loader_initialize      (void);
+void interface_initialize   (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void message_release        (void);
+void bindlist_release       (void);
+void object_release         (void);
+void global_release         (void);
+void loader_release         (void);
+void interface_release      (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void x_acoustics_setup (void);
-void x_interface_setup (void);
-void x_connective_setup (void);
-void x_time_setup (void);
-void x_arithmetic_setup (void);
-void x_array_setup (void);
-void x_midi_setup (void);
-void x_misc_setup (void);
-void x_net_setup (void);
-void x_qlist_setup (void);
-void x_gui_setup (void);
-void x_list_setup (void);
-void x_scalar_setup (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-void d_arithmetic_setup (void);
-void d_array_setup (void);
-void d_ctl_setup (void);
-void d_dac_setup (void);
-void d_delay_setup (void);
-void d_fft_setup (void);
-void d_filter_setup (void);
-void d_global_setup (void);
-void d_math_setup (void);
-void d_misc_setup (void);
-void d_osc_setup (void);
-void d_soundfile_setup (void);
-void d_ugen_setup (void);
+void g_array_setup          (void);
+void g_canvas_setup         (void);
+void g_guiconnect_setup     (void);
+void g_bang_setup           (void);
+void g_hradio_setup         (void);
+void g_hslider_setup        (void);
+void g_mycanvas_setup       (void);
+void g_numbox_setup         (void);
+void g_toggle_setup         (void);
+void g_vradio_setup         (void);
+void g_vslider_setup        (void);
+void g_vumeter_setup        (void);
+void g_io_setup             (void);
+void g_scalar_setup         (void);
+void g_template_setup       (void);
+void g_text_setup           (void);
+void g_traversal_setup      (void);
+void x_acoustics_setup      (void);
+void x_interface_setup      (void);
+void x_connective_setup     (void);
+void x_time_setup           (void);
+void x_arithmetic_setup     (void);
+void x_array_setup          (void);
+void x_midi_setup           (void);
+void x_misc_setup           (void);
+void x_net_setup            (void);
+void x_qlist_setup          (void);
+void x_gui_setup            (void);
+void x_list_setup           (void);
+void x_scalar_setup         (void);
+void d_arithmetic_setup     (void);
+void d_array_setup          (void);
+void d_ctl_setup            (void);
+void d_dac_setup            (void);
+void d_delay_setup          (void);
+void d_fft_setup            (void);
+void d_filter_setup         (void);
+void d_global_setup         (void);
+void d_math_setup           (void);
+void d_misc_setup           (void);
+void d_osc_setup            (void);
+void d_soundfile_setup      (void);
+void d_ugen_setup           (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -74,6 +88,10 @@ void d_ugen_setup (void);
 
 void setup_initialize (void)
 {
+    message_initialize();
+    bindlist_initialize();
+    object_initialize();
+    
     g_array_setup();
     g_canvas_setup();
     g_guiconnect_setup();
@@ -119,10 +137,22 @@ void setup_initialize (void)
     d_osc_setup();
     d_soundfile_setup();
     d_ugen_setup();
+    
+    global_initialize();
+    loader_initialize();
+    garray_init();
+    interface_initialize();
 }
 
 void setup_release (void)
 {
+    interface_release();
+    loader_release();
+    global_release();
+
+    object_release();
+    bindlist_release();
+    message_release();
 }
 
 // -----------------------------------------------------------------------------------------------------------

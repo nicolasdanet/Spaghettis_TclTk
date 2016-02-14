@@ -55,14 +55,6 @@ static void loader_addLoaded (char *o)
     loader_alreadyLoaded = l;
 }
 
-static void loader_clearLoaded (void)
-{
-    t_loadedlist *l = loader_alreadyLoaded;
-    t_loadedlist *next = NULL;
-    
-    while (l) { next = l->ll_next; PD_MEMORY_FREE (l); l = next; }
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -74,111 +66,106 @@ void loader_initialize (void)
 
 void loader_release (void)
 {
-    loader_clearLoaded();
+    t_loadedlist *l = loader_alreadyLoaded;
+
+    while (l) { t_loadedlist *next = l->ll_next; PD_MEMORY_FREE (l); l = next; }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error loader_openExternal (t_canvas *canvas, char *objectname)
+static t_error loader_openExternal (t_canvas *canvas, char *name)
 {
-    char symname[PD_STRING], filename[PD_STRING], dirbuf[PD_STRING],
-        *classname, *nameptr, altsymname[PD_STRING];
-    void *dlobj;
-    t_xxx makeout = NULL;
-    int i, hexmunge = 0, fd;
+    char stub[PD_STRING]            = { 0 };
+    char filepath[PD_STRING]        = { 0 };
+    char directoryResult[PD_STRING] = { 0 };
+    char *nameResult = NULL;
+    char *c = NULL;
+    void *object = NULL;
+    t_xxx constructor = NULL;
+    
+    int i;
+    int f;
+    
 #ifdef _WIN32
     HINSTANCE ntdll;
 #endif
-    if (classname = strrchr(objectname, '/'))
-        classname++;
-    else classname = objectname;
-    if (loader_isAlreadyLoaded(objectname))
+
+    if (c = strrchr(name, '/'))
+        c++;
+    else c = name;
+    
+    if (loader_isAlreadyLoaded(name))
     {
-        post("%s: already loaded", objectname);
+        post("%s: already loaded", name);
         return (1);
     }
-    for (i = 0, nameptr = classname; i < PD_STRING-7 && *nameptr; nameptr++)
+    for (i = 0, nameResult = c; i < PD_STRING-7 && *nameResult; nameResult++)
     {
-        char c = *nameptr;
+        char c = *nameResult;
         if ((c>='0' && c<='9') || (c>='A' && c<='Z')||
            (c>='a' && c<='z' )|| c == '_')
         {
-            symname[i] = c;
+            stub[i] = c;
             i++;
         }
             /* trailing tilde becomes "_tilde" */
-        else if (c == '~' && nameptr[1] == 0)
+        else if (c == '~' && nameResult[1] == 0)
         {
-            strcpy(symname+i, "_tilde");
-            i += strlen(symname+i);
+            strcpy(stub+i, "_tilde");
+            i += strlen(stub+i);
         }
-        else /* anything you can't put in a C symbol is sprintf'ed in hex */
+        else
         {
-            sprintf(symname+i, "0x%02x", c);
-            i += strlen(symname+i);
-            hexmunge = 1;
+            PD_BUG;
         }
     }
-    symname[i] = 0;
-    if (hexmunge)
-    {
-        memmove(symname+6, symname, strlen(symname)+1);
-        strncpy(symname, "setup_", 6);
-    }
-    else strcat(symname, "_setup");
+    stub[i] = 0;
+    strcat(stub, "_setup");
     
 #if 0
-    fprintf(stderr, "lib: %s\n", classname);
+    fprintf(stderr, "lib: %s\n", c);
 #endif
 
-    if ((fd = canvas_open(canvas, objectname, PD_PLUGIN,
-        dirbuf, &nameptr, PD_STRING, 1)) >= 0)
+    if ((f = canvas_open(canvas, name, PD_PLUGIN,
+        directoryResult, &nameResult, PD_STRING, 1)) >= 0)
             goto gotone;
-        /* next try (objectname)/(classname).(sys_dllextent) ... */
-    strncpy(filename, objectname, PD_STRING);
-    filename[PD_STRING-2] = 0;
-    strcat(filename, "/");
-    strncat(filename, classname, PD_STRING-strlen(filename));
-    filename[PD_STRING-1] = 0;
-    if ((fd = canvas_open(canvas, filename, PD_PLUGIN,
-        dirbuf, &nameptr, PD_STRING, 1)) >= 0)
-            goto gotone;
+
 #ifdef ANDROID
     /* Android libs always have a 'lib' prefix, '.so' suffix and don't allow ~ */
     char libname[PD_STRING] = "lib";
-    strncat(libname, objectname, PD_STRING - 4);
+    strncat(libname, name, PD_STRING - 4);
     int len = strlen(libname);
     if (libname[len-1] == '~' && len < PD_STRING - 6) {
         strcpy(libname+len-1, "_tilde");
     }
-    if ((fd = canvas_open(canvas, libname, ".so",
-        dirbuf, &nameptr, PD_STRING, 1)) >= 0)
+    if ((f = canvas_open(canvas, libname, ".so",
+        directoryResult, &nameResult, PD_STRING, 1)) >= 0)
             goto gotone;
 #endif
     return (0);
 gotone:
-    close(fd);
-    class_setDefaultExternalDirectory(gensym(dirbuf));
+    close(f);
+    class_setDefaultExternalDirectory(gensym(directoryResult));
 
         /* rebuild the absolute pathname */
-    strncpy(filename, dirbuf, PD_STRING);
-    filename[PD_STRING-2] = 0;
-    strcat(filename, "/");
-    strncat(filename, nameptr, PD_STRING-strlen(filename));
-    filename[PD_STRING-1] = 0;
+    strncpy(filepath, directoryResult, PD_STRING);
+    filepath[PD_STRING-2] = 0;
+    strcat(filepath, "/");
+    strncat(filepath, nameResult, PD_STRING-strlen(filepath));
+    filepath[PD_STRING-1] = 0;
 
 #ifdef _WIN32
     {
         char dirname[PD_STRING], *s, *basename;
-        path_slashToBackslashIfNecessary(filename, filename);
+        path_slashToBackslashIfNecessary(filepath, filepath);
         /* set the dirname as DllDirectory, meaning in the path for
            loading other DLLs so that dependent libraries can be included
            in the same folder as the external. SetDllDirectory() needs a
            minimum supported version of Windows XP SP1 for
            SetDllDirectory, so WINVER must be 0x0502 */
-        strncpy(dirname, filename, PD_STRING);
+        strncpy(dirname, filepath, PD_STRING);
         s = strrchr(dirname, '\\');
         basename = s;
         if (s && *s)
@@ -187,40 +174,40 @@ gotone:
            post_error ("Could not set '%s' as DllDirectory(), '%s' might not load.",
                  dirname, basename);
         /* now load the DLL for the external */
-        ntdll = LoadLibrary(filename);
+        ntdll = LoadLibrary(filepath);
         if (!ntdll)
         {
-            post("%s: couldn't load", filename);
+            post("%s: couldn't load", filepath);
             class_setDefaultExternalDirectory(&s_);
             return (0);
         }
-        makeout = (t_xxx)GetProcAddress(ntdll, symname);  
-        if (!makeout)
-             makeout = (t_xxx)GetProcAddress(ntdll, "setup");
+        constructor = (t_xxx)GetProcAddress(ntdll, stub);  
+        if (!constructor)
+             constructor = (t_xxx)GetProcAddress(ntdll, "setup");
         SetDllDirectory(NULL); /* reset DLL dir to nothing */
     }
 #else
-    dlobj = dlopen(filename, RTLD_NOW | RTLD_GLOBAL);
-    if (!dlobj)
+    object = dlopen(filepath, RTLD_NOW | RTLD_GLOBAL);
+    if (!object)
     {
-        post("%s: %s", filename, dlerror());
+        post("%s: %s", filepath, dlerror());
         class_setDefaultExternalDirectory(&s_);
         return (0);
     }
-    makeout = (t_xxx)dlsym(dlobj,  symname);
-    if(!makeout)
-        makeout = (t_xxx)dlsym(dlobj,  "setup");
+    constructor = (t_xxx)dlsym(object,  stub);
+    if(!constructor)
+        constructor = (t_xxx)dlsym(object,  "setup");
 #endif
 
-    if (!makeout)
+    if (!constructor)
     {
-        post("load_object: Symbol \"%s\" not found", symname);
+        post("load_object: Symbol \"%s\" not found", stub);
         class_setDefaultExternalDirectory(&s_);
         return 0;
     }
-    (*makeout)();
+    (*constructor)();
     class_setDefaultExternalDirectory(&s_);
-    loader_addLoaded(objectname);
+    loader_addLoaded(name);
     return (1);
 }
 
