@@ -7,7 +7,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
@@ -21,7 +20,6 @@ void message_initialize     (void);
 void bindlist_initialize    (void);
 void object_initialize      (void);
 void global_initialize      (void);
-void loader_initialize      (void);
 void interface_initialize   (void);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -29,14 +27,13 @@ void interface_initialize   (void);
 #pragma mark -
 
 void message_release        (void);
-void bindlist_release       (void);
-void object_release         (void);
 void global_release         (void);
 void loader_release         (void);
 void interface_release      (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void g_array_setup          (void);
 void g_canvas_setup         (void);
@@ -139,7 +136,6 @@ void setup_initialize (void)
     d_ugen_setup();
     
     global_initialize();
-    loader_initialize();
     garray_init();
     interface_initialize();
 }
@@ -149,9 +145,7 @@ void setup_release (void)
     interface_release();
     loader_release();
     global_release();
-
-    object_release();
-    bindlist_release();
+    
     message_release();
 }
 

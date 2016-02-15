@@ -35,7 +35,7 @@
 #include "s_interface.c"
 #include "s_file.c"
 #include "s_path.c"
-//#include "s_loader.c"
+#include "s_loader.c"
 #include "s_preferences.c"
 //#include "s_midi.c"
 //#include "s_audio.c"
