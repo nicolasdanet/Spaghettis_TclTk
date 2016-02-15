@@ -161,7 +161,7 @@ static t_error priority_setRTNative (void)
         if (!priority_privilegeRelinquish()) {
             execl ("/bin/sh", "sh", "-c", command, NULL);       /* Child lose setuid privileges. */
         }
-        _exit(1);
+        _exit (1);
 
     } else {
     

@@ -647,10 +647,12 @@ static t_error interface_launchGuiSocket (struct sockaddr_in *server, int *fd)
         int e = errno;
     #endif
 
-    if ((n++ > 20) || (e != EADDRINUSE)) { err |= PD_ERROR; PD_BUG; break; } 
+    if ((n > 20) || (e != EADDRINUSE)) { err |= PD_ERROR; PD_BUG; break; } 
     else {
         server->sin_port = htons ((unsigned short)++main_portNumber);
     }
+    
+    n++;
     //
     }
     
@@ -715,15 +717,15 @@ static t_error interface_startGui (void)
         sys_get_audio_apis (audio);
         sys_get_midi_apis (midi);
         
-        sys_vGui ("::initialize %s %s\n", audio, midi);
+        sys_vGui ("::initialize %s %s\n", audio, midi);     // --
         
         for (l = path_search; l; l = pathlist_getNext (l)) {
         //
-        sys_vGui ("lappend ::var(searchPath) {%s}\n", pathlist_getFile (l));
+        sys_vGui ("lappend ::var(searchPath) {%s}\n", pathlist_getFile (l));    // --
         //
         }
         
-        sys_vGui ("set ::var(apiAudio) %d\n", sys_audioapi);
+        sys_vGui ("set ::var(apiAudio) %d\n", sys_audioapi);    // --
     }
     
     return err;

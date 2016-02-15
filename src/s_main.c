@@ -132,17 +132,17 @@ static t_error main_getExecutablePathNative (char *dest, size_t length)
 static t_error main_getExecutablePathNative (char *dest, size_t length)
 {
     t_error err = PD_ERROR_NONE;
-    
-    char path[PATH_MAX];
-	int size = sizeof (path);
 
-	err = (_NSGetExecutablePath (path, &size) != 0);
+    char path[PATH_MAX];
+    int size = sizeof (path);
+
+    err = (_NSGetExecutablePath (path, &size) != 0);
     
     if (!err) { 
         char *s = NULL;
         if (s = realpath (path, NULL)) { err |= string_copy (dest, length, s); free (s); }
     }
-    
+
     return err;
 }
 

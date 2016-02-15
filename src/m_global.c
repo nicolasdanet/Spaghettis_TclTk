@@ -29,7 +29,6 @@ static void global_default (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
 static void global_dummy (void *dummy)
 {
-    ;
 }
 
 // -----------------------------------------------------------------------------------------------------------

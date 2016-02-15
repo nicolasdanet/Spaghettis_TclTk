@@ -66,7 +66,7 @@ static void handlers_hup (int n)        /* Watchdog barking. */
 void sys_setSignalHandlers (void)
 {
     signal (SIGHUP,  handlers_hup);
-    //signal (SIGTERM, handlers_exit);
+    // signal (SIGTERM, handlers_exit);
     signal (SIGINT,  handlers_exit);
     signal (SIGQUIT, handlers_exit);
     signal (SIGILL,  handlers_exit);
