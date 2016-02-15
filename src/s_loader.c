@@ -22,7 +22,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_stub) (t_symbol *s);
+typedef t_error (*t_stub) (t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -109,7 +109,10 @@ static t_handle loader_openExternalNative (char *filepath, t_symbol *root)
     
     if (!ctor)   { post_error (PD_TRANSLATE ("loader: stub not found")); }              // --
     else {
-        (*ctor) (root); return handle;
+        if ((*ctor) (root) == PD_ERROR_NONE) { return handle; }
+        else {
+            return NULL;
+        }
     }
     //
     }
@@ -128,7 +131,10 @@ static t_handle loader_openExternalNative (char *filepath, t_symbol *root)
     
     if (!ctor)   { post_error (PD_TRANSLATE ("loader: stub not found")); }              // --
     else {
-        (*ctor) (root); return handle;
+        if ((*ctor) (root) == PD_ERROR_NONE) { return handle; }
+        else {
+            return NULL;
+        }
     }
     //
     }
