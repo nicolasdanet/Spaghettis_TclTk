@@ -27,8 +27,8 @@ extern t_class *vinlet_class, *voutlet_class;
 
 static int ugen_loud;
 
-PD_STRUCT _vinlet;
-PD_STRUCT _voutlet;
+struct _vinlet;
+struct _voutlet;
 
 void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
     int myvecsize, int calcsize, int phase, int period, int frequency,

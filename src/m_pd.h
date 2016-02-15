@@ -123,15 +123,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-#if defined ( __cplusplus )
-
-extern "C" {
-
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #ifndef PD_WITH_DEBUG
@@ -176,18 +167,6 @@ extern "C" {
 #define PD_WATCHDOG             0
 
 #endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-/* 
-    PD_WATCHDOG
-    
-    To prevent lockup, a watchdog process is forked with higher real-time priority. 
-    The GUI send a stream of ping messages to the watchdog THROUGH the main process. 
-    If pinging stops the watchdog start to SIGHUP to make the main process timeshare. 
-    
-*/
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -239,12 +218,6 @@ extern "C" {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PD_STRUCT               struct
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 #if PD_WINDOWS
 #if PD_BUILDING_APPLICATION
     #define PD_DLL              __declspec(dllexport)
@@ -252,7 +225,17 @@ extern "C" {
     #define PD_DLL              __declspec(dllimport) 
 #endif
 #else
-    #define PD_DLL              __attribute__ ((visibility ("default")))
+    #define PD_DLL              __attribute__((visibility ("default")))
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if PD_WINDOWS
+    #define PD_STUB             __declspec(dllexport)
+#else
+    #define PD_STUB             __attribute__((visibility("default")))
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -355,18 +338,18 @@ typedef int                     t_error;            /* An error. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_STRUCT _array;
-PD_STRUCT _class;
-PD_STRUCT _outlet;
-PD_STRUCT _inlet;
-PD_STRUCT _buffer;
-PD_STRUCT _clock;
-PD_STRUCT _outconnect;
-PD_STRUCT _glist;
-PD_STRUCT _widgetbehavior;
-PD_STRUCT _parentwidgetbehavior;
-PD_STRUCT _garray;
-PD_STRUCT _pdinstance;
+struct _array;
+struct _class;
+struct _outlet;
+struct _inlet;
+struct _buffer;
+struct _clock;
+struct _outconnect;
+struct _glist;
+struct _widgetbehavior;
+struct _parentwidgetbehavior;
+struct _garray;
+struct _pdinstance;
 
 #define t_array                 struct _array
 #define t_class                 struct _class
@@ -510,6 +493,15 @@ extern t_symbol s_;
 #define PD_MEMORY_GET_COPY(src, n)                      sys_getMemoryCopy (src, n)
 #define PD_MEMORY_RESIZE(ptr, oldSize, newSize)         sys_getMemoryResize (ptr, oldSize, newSize)
 #define PD_MEMORY_FREE(ptr)                             sys_freeMemory (ptr)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if defined ( __cplusplus )
+
+extern "C" {
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

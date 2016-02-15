@@ -42,8 +42,7 @@ libpdhelpdir = $(libpddir)/help
 
 # Preprocessor flags.
 
-CPPFLAGS = -DINSTALL_PREFIX=\"$(prefix)\" \
-    -I/usr/X11R6/include \
+CPPFLAGS = -I/usr/X11R6/include \
     -I$(PA_DIR)/include -I$(PA_DIR)/src/common -I$(PA_DIR)/src/os/mac_osx \
     -I$(PM_DIR)/pm_common -I$(PM_DIR)/pm_mac -I$(PM_DIR)/porttime \
     -DUSEAPI_PORTAUDIO -DPA_USE_COREAUDIO \

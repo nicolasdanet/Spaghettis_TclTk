@@ -106,11 +106,11 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-PD_STRUCT _rtext;
-PD_STRUCT _gtemplate;
-PD_STRUCT _guiconnect;
-PD_STRUCT _canvasenvironment;
-PD_STRUCT _fielddesc;
+struct _rtext;
+struct _gtemplate;
+struct _guiconnect;
+struct _canvasenvironment;
+struct _fielddesc;
 
 #define t_rtext                     struct _rtext
 #define t_gtemplate                 struct _gtemplate

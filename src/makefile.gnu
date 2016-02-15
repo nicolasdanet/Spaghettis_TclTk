@@ -35,7 +35,7 @@ libpdhelpdir = $(libpddir)/help
 
 # Preprocessor flags.
 
-CPPFLAGS = -DINSTALL_PREFIX=\"$(prefix)\" -DUSEAPI_ALSA -DUSEAPI_OSS -DNDEBUG
+CPPFLAGS = -DUSEAPI_ALSA -DUSEAPI_OSS -DNDEBUG
 
 # Linker flags.
 
