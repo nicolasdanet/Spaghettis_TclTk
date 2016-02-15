@@ -241,7 +241,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if ! ( PD_BUILDING_APPLICATION )           /* Avoid namespace pollution building externals. */
+#if ! ( PD_BUILDING_APPLICATION )           /* Avoid namespace pollution. */
 
 #include <stdlib.h>
 
