@@ -955,7 +955,7 @@
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"INSTALL_PREFIX=\\\"/usr/local\\\"",
+					PD_BUILDING_APPLICATION,
 					USEAPI_PORTAUDIO,
 					PA_USE_COREAUDIO,
 				);
@@ -972,7 +972,6 @@
 				OTHER_CFLAGS = "-ffast-math";
 				OTHER_LDFLAGS = (
 					"-ldl",
-					"-lm",
 					"-lpthread",
 				);
 				PRODUCT_NAME = pd;
@@ -987,7 +986,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					"INSTALL_PREFIX=\\\"/usr/local\\\"",
+					PD_BUILDING_APPLICATION,
 					USEAPI_PORTAUDIO,
 					PA_USE_COREAUDIO,
 				);
@@ -1004,7 +1003,6 @@
 				OTHER_CFLAGS = "-ffast-math";
 				OTHER_LDFLAGS = (
 					"-ldl",
-					"-lm",
 					"-lpthread",
 				);
 				PRODUCT_NAME = pd;
