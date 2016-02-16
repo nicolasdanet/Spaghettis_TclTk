@@ -20,7 +20,7 @@ WARNINGS = -Wall -Wextra -Wshadow -Wshorten-64-to-32 -Wno-unused-parameter
 
 CPPFLAGS = -I$(PUREDATA)
 CFLAGS = -Os -fvisibility=hidden $(WARNINGS) $(ARCH)
-LDFLAGS = -bundle -flat_namespace -undefined suppress
+LDFLAGS = -bundle -flat_namespace -undefined suppress -bind_at_load
 
 # Targets.
 
