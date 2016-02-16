@@ -19,8 +19,8 @@ WARNINGS = -Wall -Wextra -Wshadow -Wshorten-64-to-32 -Wno-unused-parameter
 # Flags.
 
 CPPFLAGS = -I$(PUREDATA)
-LDFLAGS = $(ARCH)
-CFLAGS = -Os -fvisibility=hidden -flat_namespace -undefined suppress -bundle $(WARNINGS) $(ARCH)
+CFLAGS = -Os -fvisibility=hidden $(WARNINGS) $(ARCH)
+LDFLAGS = -bundle -flat_namespace -undefined suppress
 
 # Targets.
 
@@ -33,4 +33,4 @@ $(EXTERNALS):
 
 $(EXTERNALS)/hello: hello.c | $(EXTERNALS)
 	@echo "Build hello ..."
-	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $(EXTERNALS)/hello$(EXTENSION) hello.c
+	@$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $(EXTERNALS)/hello$(EXTENSION) hello.c

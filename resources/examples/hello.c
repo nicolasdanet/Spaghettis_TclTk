@@ -31,7 +31,7 @@ void hello_bang (t_hello *x);
 
 static t_class *hello_class;
 
-PD_STUB t_error initialize (t_symbol *s)
+PD_STUB t_error hello_setup (t_symbol *s)
 {
     t_class *c = NULL;
     
