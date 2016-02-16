@@ -83,6 +83,10 @@ static void loader_releaseLoaded (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void loader_initialize (void)
+{
+}
+
 void loader_release (void)
 {
     loader_releaseLoaded();

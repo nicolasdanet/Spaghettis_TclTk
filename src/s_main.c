@@ -234,10 +234,10 @@ int main_entry (int argc, char **argv)
     }
         
     instance_initialize();
-    setup_initialize();
-        
-    preferences_load();
     sys_setSignalHandlers();
+    
+    setup_initialize();
+    preferences_load();
     
     PD_ASSERT (main_rootDirectory != NULL);
 
