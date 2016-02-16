@@ -32,7 +32,7 @@
 				<string>pdbundle32</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>PureData plugin 32-bit</string>
+			<string>PureData object 32-bit</string>
 			<key>CFBundleTypeRole</key>
 			<string>None</string>
 		</dict>
@@ -42,7 +42,7 @@
 				<string>pdbundle64</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>PureData plugin 64-bit</string>
+			<string>PureData object 64-bit</string>
 			<key>CFBundleTypeRole</key>
 			<string>None</string>
 		</dict>
