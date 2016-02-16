@@ -98,7 +98,7 @@ void loader_release (void)
 
 #if PD_WINDOWS
 
-static t_handle loader_openExternalNative (char *filepath, t_symbol *root)
+static t_handle loader_openExternalNative (char *filepath, char* stub, t_symbol *root)
 {
     t_handle handle;
     
@@ -109,7 +109,7 @@ static t_handle loader_openExternalNative (char *filepath, t_symbol *root)
     if (!handle) { post_error (PD_TRANSLATE ("loader: invalid '%s'"), filepath); }      // --
     else {
     //
-    t_stub ctor = (t_stub)GetProcAddress (handle, "initialize");
+    t_stub ctor = (t_stub)GetProcAddress (handle, stub);
     
     if (!ctor)   { post_error (PD_TRANSLATE ("loader: stub not found")); }              // --
     else {
@@ -124,14 +124,14 @@ static t_handle loader_openExternalNative (char *filepath, t_symbol *root)
 
 #else
 
-static t_handle loader_openExternalNative (char *filepath, t_symbol *root)
+static t_handle loader_openExternalNative (char *filepath, char* stub, t_symbol *root)
 {
     t_handle handle = dlopen (filepath, RTLD_NOW | RTLD_GLOBAL);
     
     if (!handle) { post_error (PD_TRANSLATE ("loader: invalid '%s'"), filepath); }      // --
     else {
     //
-    t_stub ctor = (t_stub)dlsym (handle, "initialize");
+    t_stub ctor = (t_stub)dlsym (handle, stub);
     
     if (!ctor)   { post_error (PD_TRANSLATE ("loader: stub not found")); }              // --
     else {
@@ -150,6 +150,28 @@ static t_handle loader_openExternalNative (char *filepath, t_symbol *root)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+static t_error loaded_openExternalGetStubName (char *dest, size_t size, char *name)
+{
+    t_error err = PD_ERROR_NONE;
+    char *n = name;
+
+    while (*n && !err) {
+    //
+    char c = *n;
+    if (utils_isAlphanumericOrUnderscore (c)) { err |= string_append (dest, size, n, 1);  } 
+    else if ((c == '~') && (*(n + 1) == 0))   { err |= string_add (dest, size, "_tilde"); }
+    else {
+        err |= string_add (dest, size, "_");
+    }
+    n++;
+    //
+    }
+    
+    err |= string_add (dest, size, "_setup");
+    
+    return err;
+}
 
 static int loader_openExternal (t_canvas *canvas, char *name)
 {
@@ -171,7 +193,9 @@ static int loader_openExternal (t_canvas *canvas, char *name)
         close (f);
         class_setDefaultExternalDirectory (root);
         if (!path_withDirectoryAndName (filepath, PD_STRING, directoryResult, nameResult, 0)) {
-            if (handle = loader_openExternalNative (filepath, root)) {
+            char stub[PD_STRING] = { 0 };
+            t_error err = loaded_openExternalGetStubName (stub, PD_STRING, name);
+            if (!err && (handle = loader_openExternalNative (filepath, stub, root))) {
                 loader_addLoaded (name, handle);
             }
         }

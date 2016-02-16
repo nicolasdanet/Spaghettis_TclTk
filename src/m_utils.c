@@ -154,6 +154,15 @@ int utils_isTokenWhitespace (char c)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int utils_isAlphanumericOrUnderscore (char c)
+{
+    return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z')|| (c >='a' && c <='z') || (c == '_'));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_error utils_version (char *dest, size_t size)
 {
     t_error err = string_sprintf (dest, size, "%s %s / %s / %s", PD_NAME, PD_VERSION, utils_date, utils_time);

@@ -56,6 +56,7 @@ LDFLAGS = -framework CoreAudio \
     -framework AudioToolbox \
     -framework Carbon \
     -framework CoreMIDI \
+    -bind_at_load \
     $(ARCH)
 
 LIB = -ldl -lpthread
