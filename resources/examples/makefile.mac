@@ -1,0 +1,36 @@
+
+# Prelude.
+
+SHELL = /bin/sh
+
+export MACOSX_DEPLOYMENT_TARGET = 10.6
+
+# Make paths.
+
+VPATH = ../obj
+
+PUREDATA = ../../src
+EXTERNALS = ./externals
+
+# Warnings
+
+WARNINGS = -Wall -Wextra -Wshadow -Wshorten-64-to-32 -Wno-unused-parameter
+
+# Flags.
+
+CPPFLAGS = -I$(PUREDATA)
+LDFLAGS = $(ARCH)
+CFLAGS = -Os -fvisibility=hidden -flat_namespace -undefined suppress -bundle $(WARNINGS) $(ARCH)
+
+# Targets.
+
+.PHONY: all
+
+all: $(EXTERNALS)/hello
+
+$(EXTERNALS):
+	@test -d $(EXTERNALS) || mkdir -p $(EXTERNALS)
+
+$(EXTERNALS)/hello: hello.c | $(EXTERNALS)
+	@echo "Build hello ..."
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -o $(EXTERNALS)/hello$(EXTENSION) hello.c
