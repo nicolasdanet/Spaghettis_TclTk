@@ -26,6 +26,26 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>pdbundle32</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>PureData plugin 32-bit</string>
+			<key>CFBundleTypeRole</key>
+			<string>None</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>pdbundle64</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>PureData plugin 64-bit</string>
+			<key>CFBundleTypeRole</key>
+			<string>None</string>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>Pd</string>
