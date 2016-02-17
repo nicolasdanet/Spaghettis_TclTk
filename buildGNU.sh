@@ -96,7 +96,7 @@ cd "${rep}"                                                     || exit 1
 # Build the hello examples. 
 
 cd "${rep}/resources/examples"                                  || exit 1
-make -f makefile.mac "EXTENSION=${extension}"                   || exit 1
+make -f makefile.gnu "EXTENSION=${extension}"                   || exit 1
 cd "${rep}"                                                     || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
