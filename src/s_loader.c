@@ -106,12 +106,12 @@ static t_handle loader_openExternalNative (char *filepath, char* stub, t_symbol 
 
     handle = LoadLibrary (filepath);
     
-    if (!handle) { post_error (PD_TRANSLATE ("loader: invalid '%s'"), filepath); }      // --
+    if (!handle) { post_error (PD_TRANSLATE ("loader: invalid '%s' %s"), filepath, dlerror()); }    // --
     else {
     //
     t_stub ctor = (t_stub)GetProcAddress (handle, stub);
     
-    if (!ctor)   { post_error (PD_TRANSLATE ("loader: stub not found")); }              // --
+    if (!ctor)   { post_error (PD_TRANSLATE ("loader: stub not found")); }  // --
     else {
         if ((*ctor) (root) == PD_ERROR_NONE) { return handle; }
         else {
@@ -128,12 +128,12 @@ static t_handle loader_openExternalNative (char *filepath, char* stub, t_symbol 
 {
     t_handle handle = dlopen (filepath, RTLD_NOW | RTLD_GLOBAL);
     
-    if (!handle) { post_error (PD_TRANSLATE ("loader: invalid '%s'"), filepath); }      // --
+    if (!handle) { post_error (PD_TRANSLATE ("loader: invalid '%s' %s"), filepath, dlerror()); }    // --
     else {
     //
     t_stub ctor = (t_stub)dlsym (handle, stub);
     
-    if (!ctor)   { post_error (PD_TRANSLATE ("loader: stub not found")); }              // --
+    if (!ctor)   { post_error (PD_TRANSLATE ("loader: stub not found")); }  // --
     else {
         if ((*ctor) (root) == PD_ERROR_NONE) { return handle; }
         else {

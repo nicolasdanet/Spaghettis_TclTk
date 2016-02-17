@@ -39,8 +39,7 @@ CPPFLAGS = -DUSEAPI_ALSA -DUSEAPI_OSS -DNDEBUG -DPD_BUILDING_APPLICATION
 
 # Linker flags.
 
-LDFLAGS = $(ARCH)
-
+LDFLAGS = -rdynamic $(ARCH)
 LIB = -ldl -lm -lpthread -lasound
 
 # JACK 
