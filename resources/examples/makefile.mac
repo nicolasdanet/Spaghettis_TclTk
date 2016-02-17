@@ -3,6 +3,10 @@
 
 SHELL = /bin/sh
 
+ifndef EXTENSION
+    $(error EXTENSION must be provided)
+endif
+
 export MACOSX_DEPLOYMENT_TARGET = 10.6
 
 # Make paths.

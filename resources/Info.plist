@@ -12,7 +12,7 @@
 				<string>pd</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>PureData patch</string>
+			<string>PureData Patch</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 		</dict>
@@ -22,7 +22,7 @@
 				<string>pdhelp</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>PureData help</string>
+			<string>PureData Help</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 		</dict>
@@ -32,7 +32,7 @@
 				<string>pdbundle32</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>PureData object 32-bit</string>
+			<string>PureData Object 32-bit</string>
 			<key>CFBundleTypeRole</key>
 			<string>None</string>
 		</dict>
@@ -42,7 +42,7 @@
 				<string>pdbundle64</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>PureData object 64-bit</string>
+			<string>PureData Object 64-bit</string>
 			<key>CFBundleTypeRole</key>
 			<string>None</string>
 		</dict>

@@ -73,16 +73,18 @@ patches="${rep}/resources/patches"
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Architectures.
+# Default compiler architecture ( https://stackoverflow.com/questions/246007 ).
 
-arch="-arch ${HOSTTYPE}"
-echo "Build ${HOSTTYPE} ..."
+foo=$(mktemp build.XXXXXXXXXXXXXXXX)
+echo 'int main() { return 0; }' | cc -x c - -o ${foo}
+test=$(file ${foo})
+rm ${foo}
 
 # Externals suffix.
 
 extension=".pdbundle32"
 
-[ "${HOSTTYPE}" = "x86_64" ] && { extension=".pdbundle64"; }
+[[ "${test}" =~ "x86_64" ]] && { echo "Build 64-bit ..."; extension=".pdbundle64"; }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -93,9 +95,9 @@ cd "${rep}/src"                                                 || exit 1
 
 if [ -e "${jack}" ]; then
     echo "Build with JACK ..."
-    make -f makefile.mac "ARCH=${arch}" JACK=TRUE               || exit 1
+    make -f makefile.mac "JACK=TRUE"                            || exit 1
 else
-    make -f makefile.mac "ARCH=${arch}"                         || exit 1
+    make -f makefile.mac                                        || exit 1
 fi
 
 cd "${rep}"                                                     || exit 1
@@ -106,7 +108,7 @@ cd "${rep}"                                                     || exit 1
 # Build the hello examples. 
 
 cd "${rep}/resources/examples"                                  || exit 1
-make -f makefile.mac "ARCH=${arch}" "EXTENSION=${extension}"    || exit 1
+make -f makefile.mac "EXTENSION=${extension}"                   || exit 1
 cd "${rep}"                                                     || exit 1
 
 # ------------------------------------------------------------------------------------------------------------
@@ -138,7 +140,8 @@ cd "${rep}"                                                     || exit 1
 
 # Install default preferences.
 
-echo "Install preferences ..."; cp "${default}" "${preferences}";
+echo "Install preferences ..."; 
+cp "${default}" "${preferences}";
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
