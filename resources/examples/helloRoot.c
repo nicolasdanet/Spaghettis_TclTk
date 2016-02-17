@@ -13,14 +13,14 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Hello World. */
+/* The plug-in path. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 typedef struct _hello {
-    t_object    ob_;                            /* MUST be the first. */
+    t_object    ob_;
     } t_hello;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -28,7 +28,6 @@ typedef struct _hello {
 #pragma mark -
 
 void *hello_new (void);
-void hello_bang (t_hello *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -36,17 +35,11 @@ void hello_bang (t_hello *x);
 
 static t_class *hello_class;
 
-PD_STUB t_error hello_setup (t_symbol *s)       /* MUST be the name of the file with _setup appended. */
+PD_STUB t_error helloRoot_setup (t_symbol *s)
 {
-    t_class *c = NULL;
+    hello_class = class_new (gensym ("helloRoot"), hello_new, NULL, sizeof (t_hello), CLASS_DEFAULT, A_NULL);
     
-    /* Class MUST be the same as the file name. */
-    
-    c = class_new (gensym ("hello"), hello_new, NULL, sizeof (t_hello), CLASS_DEFAULT, A_NULL); 
-    
-    class_addBang (c, (t_method)hello_bang); 
-    
-    hello_class = c;
+    post ("I am %s", s->s_name);
     
     return PD_ERROR_NONE;
 }
@@ -57,14 +50,7 @@ PD_STUB t_error hello_setup (t_symbol *s)       /* MUST be the name of the file 
 
 void *hello_new (void)
 {
-    t_hello *x = (t_hello *)pd_new (hello_class);
-
-    return x;
-}
-
-void hello_bang (t_hello *x)
-{
-    post ("Hello world!");
+    return pd_new (hello_class);
 }
 
 // -----------------------------------------------------------------------------------------------------------

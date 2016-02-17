@@ -72,13 +72,6 @@ static void loader_addLoaded (char *o, t_handle handle)
     loader_alreadyLoaded = l;
 }
 
-static void loader_releaseLoaded (void)
-{
-    t_loadedlist *l = loader_alreadyLoaded;
-
-    while (l) { t_loadedlist *next = l->ll_next; PD_MEMORY_FREE (l); l = next; }
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -89,7 +82,25 @@ void loader_initialize (void)
 
 void loader_release (void)
 {
-    loader_releaseLoaded();
+    t_loadedlist *l = loader_alreadyLoaded;
+
+    while (l) {
+    //
+    t_loadedlist *next = l->ll_next;
+    
+    #if PD_WINDOWS
+        FreeLibrary (l->ll_handle);
+    #else
+        dlclose (l->ll_handle);
+    #endif
+    
+    PD_MEMORY_FREE (l);
+    
+    l = next; 
+    //
+    }
+    
+    post_log ("Closed");
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -151,7 +162,7 @@ static t_handle loader_openExternalNative (char *filepath, char* stub, t_symbol 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_error loaded_openExternalGetStubName (char *dest, size_t size, char *name)
+static t_error loader_openExternalGetStubName (char *dest, size_t size, char *name)
 {
     t_error err = PD_ERROR_NONE;
     char *n = name;
@@ -173,6 +184,10 @@ static t_error loaded_openExternalGetStubName (char *dest, size_t size, char *na
     return err;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static int loader_openExternal (t_canvas *canvas, char *name)
 {
     t_handle handle = NULL;
@@ -189,13 +204,12 @@ static int loader_openExternal (t_canvas *canvas, char *name)
     
     if (f >= 0) {
         char filepath[PD_STRING] = { 0 };
-        t_symbol *root = gensym (directoryResult);
         close (f);
-        class_setDefaultExternalDirectory (root);
+        class_setDefaultExternalDirectory (gensym (directoryResult));
         if (!path_withDirectoryAndName (filepath, PD_STRING, directoryResult, nameResult, 0)) {
             char stub[PD_STRING] = { 0 };
-            t_error err = loaded_openExternalGetStubName (stub, PD_STRING, name);
-            if (!err && (handle = loader_openExternalNative (filepath, stub, root))) {
+            t_error err = loader_openExternalGetStubName (stub, PD_STRING, name);
+            if (!err && (handle = loader_openExternalNative (filepath, stub, gensym (filepath)))) {
                 loader_addLoaded (name, handle);
             }
         }

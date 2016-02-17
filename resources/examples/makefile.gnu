@@ -16,7 +16,7 @@ EXTERNALS = ./externals
 
 # Warnings
 
-WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter -Wno-unknown-pragmas
+WARNINGS = -Wall -Wextra -Wshadow -Wno-unused-parameter
 
 # Flags.
 
@@ -28,7 +28,7 @@ LDFLAGS = -lm
 
 .PHONY: all
 
-all: $(EXTERNALS)/hello
+all: $(EXTERNALS)/hello $(EXTERNALS)/helloRoot
 
 $(EXTERNALS):
 	@test -d $(EXTERNALS) || mkdir -p $(EXTERNALS)
@@ -36,3 +36,7 @@ $(EXTERNALS):
 $(EXTERNALS)/hello: hello.c | $(EXTERNALS)
 	@echo "Build hello ..."
 	@$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $(EXTERNALS)/hello$(EXTENSION) hello.c
+
+$(EXTERNALS)/helloRoot: helloRoot.c | $(EXTERNALS)
+	@echo "Build helloRoot ..."
+	@$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -o $(EXTERNALS)/helloRoot$(EXTENSION) helloRoot.c
