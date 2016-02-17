@@ -51,6 +51,12 @@ static t_loadedlist     *loader_alreadyLoaded;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void loader_closeExternal (t_handle handle);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static int loader_isAlreadyLoaded (char *o)
 {
     t_loadedlist *l = NULL;
@@ -87,15 +93,8 @@ void loader_release (void)
     while (l) {
     //
     t_loadedlist *next = l->ll_next;
-    
-    #if PD_WINDOWS
-        FreeLibrary (l->ll_handle);
-    #else
-        dlclose (l->ll_handle);
-    #endif
-    
+    loader_closeExternal (l->ll_handle);
     PD_MEMORY_FREE (l);
-    
     l = next; 
     //
     }
@@ -125,12 +124,13 @@ static t_handle loader_openExternalNative (char *filepath, char* stub, t_symbol 
     if (!ctor)   { post_error (PD_TRANSLATE ("loader: stub not found")); }  // --
     else {
         if ((*ctor) (root) == PD_ERROR_NONE) { return handle; }
-        else {
-            return NULL;
-        }
     }
     //
     }
+    
+    if (handle) { loader_closeExternal (handle); }
+    
+    return NULL;
 }
 
 #else
@@ -147,12 +147,11 @@ static t_handle loader_openExternalNative (char *filepath, char* stub, t_symbol 
     if (!ctor)   { post_error (PD_TRANSLATE ("loader: stub not found")); }  // --
     else {
         if ((*ctor) (root) == PD_ERROR_NONE) { return handle; }
-        else {
-            return NULL;
-        }
     }
     //
     }
+    
+    if (handle) { loader_closeExternal (handle); }
     
     return NULL;
 }
@@ -219,6 +218,15 @@ static int loader_openExternal (t_canvas *canvas, char *name)
     }
     
     return (handle != NULL);
+}
+
+static void loader_closeExternal (t_handle handle)
+{
+    #if PD_WINDOWS
+        FreeLibrary (handle);
+    #else
+        dlclose (handle);
+    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------
