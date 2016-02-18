@@ -29,7 +29,7 @@ extern int sys_audioapi;
 static char *preferences_loadBuffer;                        /* Shared. */
 static FILE *preferences_saveFile;                          /* Shared. */
 
-static t_error preferences_loadBegin (void)
+static t_error preferences_loadBeginNative (void)
 {
     char *home = getenv ("HOME");
     char filepath[PD_STRING] = { 0 };
@@ -68,14 +68,14 @@ static t_error preferences_loadBegin (void)
     return err;
 }
 
-static void preferences_loadClose (void)
+static void preferences_loadCloseNative (void)
 {
     if (preferences_loadBuffer) { 
         PD_MEMORY_FREE (preferences_loadBuffer); preferences_loadBuffer = NULL; 
     }
 }
 
-static t_error preferences_saveBegin (void)
+static t_error preferences_saveBeginNative (void)
 {
     char *home = getenv ("HOME");
     char filepath[PD_STRING] = { 0 };
@@ -93,14 +93,14 @@ static t_error preferences_saveBegin (void)
     return err;
 }
 
-static void preferences_saveClose (void)
+static void preferences_saveCloseNative (void)
 {
     if (preferences_saveFile) { 
         fclose (preferences_saveFile); preferences_saveFile = NULL; 
     }
 }
 
-static int preferences_getKey (const char *key, char *value, int size)
+static int preferences_getKeyNative (const char *key, char *value, int size)
 {
     char t[PD_STRING] = { 0 };
     char *p = NULL;
@@ -134,9 +134,13 @@ static int preferences_getKey (const char *key, char *value, int size)
     return 0;
 }
 
-static void preferences_setKey (const char *key, const char *value)
+static void preferences_setKeyNative (const char *key, const char *value)
 {
     if (preferences_saveFile) { fprintf (preferences_saveFile, "%s: %s\n", key, value); }   // --
+}
+
+static void preferences_resetKeyNative (const char *key)
+{
 }
 
 #endif
@@ -147,25 +151,25 @@ static void preferences_setKey (const char *key, const char *value)
 
 #if PD_WINDOWS
 
-static t_error preferences_loadBegin (void)
+static t_error preferences_loadBeginNative (void)
 {
     return PD_ERROR_NONE;
 }
 
-static void preferences_loadClose (void)
+static void preferences_loadCloseNative (void)
 {
 }
 
-static t_error preferences_saveBegin (void)
+static t_error preferences_saveBeginNative (void)
 {
     return PD_ERROR_NONE;
 }
 
-static void preferences_saveClose (void)
+static void preferences_saveCloseNative (void)
 {
 }
 
-static int preferences_getKey (const char *key, char *value, int size)
+static int preferences_getKeyNative (const char *key, char *value, int size)
 {
     HKEY hkey;
     DWORD n = size;
@@ -182,7 +186,7 @@ static int preferences_getKey (const char *key, char *value, int size)
     return 1;
 }
 
-static void preferences_setKey (const char *key, const char *value)
+static void preferences_setKeyNative (const char *key, const char *value)
 {
     HKEY hkey;
     LONG err = RegCreateKeyEx (HKEY_LOCAL_MACHINE,
@@ -204,6 +208,10 @@ static void preferences_setKey (const char *key, const char *value)
     RegCloseKey (hkey);
 }
 
+static void preferences_resetKeyNative (const char *key)
+{
+}
+
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -212,25 +220,25 @@ static void preferences_setKey (const char *key, const char *value)
 
 #if PD_APPLE
 
-static t_error preferences_loadBegin (void)
+static t_error preferences_loadBeginNative (void)
 {
     return PD_ERROR_NONE;
 }
 
-static void preferences_loadClose (void)
+static void preferences_loadCloseNative (void)
 {
 }
 
-static t_error preferences_saveBegin (void)
+static t_error preferences_saveBeginNative (void)
 {
     return PD_ERROR_NONE;
 }
 
-static void preferences_saveClose (void)
+static void preferences_saveCloseNative (void)
 {
 }
 
-static int preferences_getKey (const char *key, char *value, int size)
+static int preferences_getKeyNative (const char *key, char *value, int size)
 {
     char t[PD_STRING] = { 0 };
     t_error err = string_sprintf (t, PD_STRING, "defaults read org.puredata.puredata %s 2> /dev/null\n", key);
@@ -265,7 +273,7 @@ static int preferences_getKey (const char *key, char *value, int size)
     return 0;
 }
 
-static void preferences_setKey (const char *key, const char *value)
+static void preferences_setKeyNative (const char *key, const char *value)
 {
     t_error err = PD_ERROR_NONE;
     
@@ -280,12 +288,51 @@ static void preferences_setKey (const char *key, const char *value)
     }
 }
 
-static void preferences_resetKey (const char *key)
+static void preferences_resetKeyNative (const char *key)
 {
-    preferences_setKey (key, "");
+    preferences_setKeyNative (key, "");
 }
 
 #endif // PD_APPLE
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark-
+
+static t_error preferences_loadBegin (void)
+{
+    return preferences_loadBeginNative();
+}
+
+static void preferences_loadClose (void)
+{
+    preferences_loadCloseNative();
+}
+
+static t_error preferences_saveBegin (void)
+{
+    return preferences_saveBeginNative();
+}
+
+static void preferences_saveClose (void)
+{
+    preferences_saveCloseNative();
+}
+
+static int preferences_getKey (const char *key, char *value, int size)
+{
+    return preferences_getKeyNative (key, value, size);
+}
+
+static void preferences_setKey (const char *key, const char *value)
+{
+    preferences_setKeyNative (key, value);
+}
+
+static void preferences_resetKey (const char *key)
+{
+    preferences_resetKeyNative (key);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
