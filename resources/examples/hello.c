@@ -36,7 +36,7 @@ void hello_bang (t_hello *x);
 
 static t_class *hello_class;
 
-PD_STUB t_error hello_setup (t_symbol *s)       /* MUST be the name of the file with _setup appended. */
+PD_STUB void hello_setup (t_symbol *s)       /* MUST be the name of the file with _setup appended. */
 {
     t_class *c = NULL;
     
@@ -47,8 +47,6 @@ PD_STUB t_error hello_setup (t_symbol *s)       /* MUST be the name of the file 
     class_addBang (c, (t_method)hello_bang); 
     
     hello_class = c;
-    
-    return PD_ERROR_NONE;
 }
 
 // -----------------------------------------------------------------------------------------------------------

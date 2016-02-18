@@ -44,13 +44,11 @@ void hello_release      (void) __attribute__ ((destructor));
 
 static t_class *hello_class;
 
-PD_STUB t_error helloRelease_setup (t_symbol *s)
+PD_STUB void helloRelease_setup (t_symbol *s)
 {
     int flags = CLASS_BOX | CLASS_NOINLET;
     
     hello_class = class_new (gensym ("helloRelease"), hello_new, NULL, sizeof (t_hello), flags, A_NULL);
-    
-    return PD_ERROR_NONE;
 }
 
 // -----------------------------------------------------------------------------------------------------------

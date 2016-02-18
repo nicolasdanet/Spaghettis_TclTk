@@ -22,7 +22,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef t_error (*t_stub) (t_symbol *s);
+typedef void (*t_stub) (t_symbol *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -116,14 +116,12 @@ static t_handle loader_openExternalNative (char *filepath, char* stub, t_symbol 
     
     if (!handle) { post_error (PD_TRANSLATE ("loader: invalid '%s' %s"), filepath, dlerror()); }    // --
     else {
-    //
-    t_stub ctor = (t_stub)GetProcAddress (handle, stub);
+        t_stub ctor = (t_stub)GetProcAddress (handle, stub);
     
-    if (!ctor)   { post_error (PD_TRANSLATE ("loader: stub not found")); }  // --
-    else {
-        if ((*ctor) (root) == PD_ERROR_NONE) { return handle; }
-    }
-    //
+        if (!ctor) { post_error (PD_TRANSLATE ("loader: stub not found")); }    // --
+        else {
+            (*ctor) (root); return handle;
+        }
     }
     
     if (handle) { loader_closeExternal (handle); }
@@ -139,14 +137,12 @@ static t_handle loader_openExternalNative (char *filepath, char* stub, t_symbol 
     
     if (!handle) { post_error (PD_TRANSLATE ("loader: invalid '%s' %s"), filepath, dlerror()); }    // --
     else {
-    //
-    t_stub ctor = (t_stub)dlsym (handle, stub);
-    
-    if (!ctor)   { post_error (PD_TRANSLATE ("loader: stub not found")); }  // --
-    else {
-        if ((*ctor) (root) == PD_ERROR_NONE) { return handle; }
-    }
-    //
+        t_stub ctor = (t_stub)dlsym (handle, stub);
+        
+        if (!ctor) { post_error (PD_TRANSLATE ("loader: stub not found")); }    // --
+        else {
+            (*ctor) (root); return handle;
+        }
     }
     
     if (handle) { loader_closeExternal (handle); }
