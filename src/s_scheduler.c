@@ -211,7 +211,7 @@ static void scheduler_withLoop (void)
     scheduler_sleepGrain = PD_CLAMP (sys_schedadvance / 4, 100, 5000);
     scheduler_systimePerDSPTick = scheduler_getSystimePerDSPTick();
 
-    sys_initmidiqueue();
+    midi_initialize();
     
     while (!scheduler_quit) {
     //
@@ -261,7 +261,7 @@ static void scheduler_withLoop (void)
 
 static void scheduler_withCallback (void)
 {
-    sys_initmidiqueue();
+    midi_initialize();
     
     while (!scheduler_quit) {
     //

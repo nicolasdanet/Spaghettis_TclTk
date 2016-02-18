@@ -1,89 +1,90 @@
-/* Copyright (c) 1997-1999 Miller Puckette and others.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/* Clock functions (which should move, but where?) and MIDI queueing */
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include "m_core.h"
-#include "m_macros.h"
 
-#ifdef _WIN32
-    #include <winsock.h>
-    #include <sys/types.h>
-    #include <sys/timeb.h> 
-    #include <wtypes.h>
-#else
-    #include <unistd.h>
-    #include <sys/time.h>
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-#include <string.h>
-#include <stdio.h>
-#include <signal.h>
+#define MIDI_QUEUE_SIZE     1024
 
-typedef struct _midiqelem
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+typedef struct _midiqelem {
+    double          q_time;
+    int             q_portNumber;
+    unsigned char   q_hasOneByte;
+    unsigned char   q_byte1;
+    unsigned char   q_byte2;
+    unsigned char   q_byte3;
+    } t_midiqelem;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_midiqelem  midi_outQueue[MIDI_QUEUE_SIZE];                         /* Shared. */
+static int          midi_outHead;                                           /* Shared. */
+static int          midi_outTail;                                           /* Shared. */
+
+static t_midiqelem  midi_inQueue[MIDI_QUEUE_SIZE];                          /* Shared. */
+static int          midi_inHead;                                            /* Shared. */
+static int          midi_inTail;                                            /* Shared. */
+
+static int          midi_api                        = API_DEFAULT_MIDI;     /* Shared. */
+static double       midi_systimeAtStart;                                    /* Shared. */
+static double       midi_dacTimeMinusRealTime;                              /* Shared. */
+static double       midi_adcTimeMinusRealTime;                              /* Shared. */
+static double       midi_newDacTimeMinusRealTime    = -1e20;                /* Shared. */
+static double       midi_newAdcTimeMinusRealTime    = -1e20;                /* Shared. */
+static double       midi_needToUpdateTime;                                  /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void midi_initialize (void)
 {
-    double q_time;
-    int q_portno;
-    unsigned char q_onebyte;
-    unsigned char q_byte1;
-    unsigned char q_byte2;
-    unsigned char q_byte3;
-} t_midiqelem;
-
-#define MIDIQSIZE 1024
-
-t_midiqelem midi_outqueue[MIDIQSIZE];
-int midi_outhead, midi_outtail;
-t_midiqelem midi_inqueue[MIDIQSIZE];
-int midi_inhead, midi_intail;
-static double sys_midiinittime;
-#define API_DEFAULTMIDI 0
-
-int sys_midiapi = API_DEFAULTMIDI;  /* Shared. */
-
-    /* this is our current estimate for at what "system" real time the
-    current logical time's output should occur. */
-static double sys_dactimeminusrealtime;
-    /* same for input, should be schduler advance earlier. */
-static double sys_adctimeminusrealtime;
-
-static double sys_newdactimeminusrealtime = -1e20;
-static double sys_newadctimeminusrealtime = -1e20;
-static double sys_whenupdate;
-
-void sys_initmidiqueue( void)
-{
-    sys_midiinittime = scheduler_getSystime();
-    sys_dactimeminusrealtime = sys_adctimeminusrealtime = 0;
+    midi_systimeAtStart         = scheduler_getSystime();
+    midi_dacTimeMinusRealTime   = 0.0;
+    midi_adcTimeMinusRealTime   = 0.0;
 }
 
     /* this is called from the OS dependent code from time to time when we
     think we know the delay (outbuftime) in seconds, at which the last-output
     audio sample will go out the door. */
-void sys_setmiditimediff(double inbuftime, double outbuftime)
+    
+void sys_setmiditimediff (double inbuftime, double outbuftime)
 {
     double dactimeminusrealtime =
-        .001 * scheduler_getMillisecondsSince(sys_midiinittime)
+        .001 * scheduler_getMillisecondsSince(midi_systimeAtStart)
             - outbuftime - sys_getRealTime();
     double adctimeminusrealtime =
-        .001 * scheduler_getMillisecondsSince(sys_midiinittime)
+        .001 * scheduler_getMillisecondsSince(midi_systimeAtStart)
             + inbuftime - sys_getRealTime();
-    if (dactimeminusrealtime > sys_newdactimeminusrealtime)
-        sys_newdactimeminusrealtime = dactimeminusrealtime;
-    if (adctimeminusrealtime > sys_newadctimeminusrealtime)
-        sys_newadctimeminusrealtime = adctimeminusrealtime;
-    if (sys_getRealTime() > sys_whenupdate)
+    if (dactimeminusrealtime > midi_newDacTimeMinusRealTime)
+        midi_newDacTimeMinusRealTime = dactimeminusrealtime;
+    if (adctimeminusrealtime > midi_newAdcTimeMinusRealTime)
+        midi_newAdcTimeMinusRealTime = adctimeminusrealtime;
+    if (sys_getRealTime() > midi_needToUpdateTime)
     {
-        sys_dactimeminusrealtime = sys_newdactimeminusrealtime;
-        sys_adctimeminusrealtime = sys_newadctimeminusrealtime;
-        sys_newdactimeminusrealtime = -1e20;
-        sys_newadctimeminusrealtime = -1e20;
-        sys_whenupdate = sys_getRealTime() + 1;
+        midi_dacTimeMinusRealTime = midi_newDacTimeMinusRealTime;
+        midi_adcTimeMinusRealTime = midi_newAdcTimeMinusRealTime;
+        midi_newDacTimeMinusRealTime = -1e20;
+        midi_newAdcTimeMinusRealTime = -1e20;
+        midi_needToUpdateTime = sys_getRealTime() + 1;
     }
 }
 
@@ -92,36 +93,36 @@ void sys_setmiditimediff(double inbuftime, double outbuftime)
     last time sys_setmiditimediff got called. */
 static double sys_getmidioutrealtime( void)
 {
-    return (sys_getRealTime() + sys_dactimeminusrealtime);
+    return (sys_getRealTime() + midi_dacTimeMinusRealTime);
 }
 
 static double sys_getmidiinrealtime( void)
 {
-    return (sys_getRealTime() + sys_adctimeminusrealtime);
+    return (sys_getRealTime() + midi_adcTimeMinusRealTime);
 }
 
 static void sys_putnext( void)
 {
-    int portno = midi_outqueue[midi_outtail].q_portno;
+    int portno = midi_outQueue[midi_outTail].q_portNumber;
 #ifdef USEAPI_ALSA
-    if (sys_midiapi == API_ALSA)
+    if (midi_api == API_ALSA)
       {
-        if (midi_outqueue[midi_outtail].q_onebyte)
-          sys_alsa_putmidibyte(portno, midi_outqueue[midi_outtail].q_byte1);
-        else sys_alsa_putmidimess(portno, midi_outqueue[midi_outtail].q_byte1,
-                             midi_outqueue[midi_outtail].q_byte2,
-                             midi_outqueue[midi_outtail].q_byte3);
+        if (midi_outQueue[midi_outTail].q_hasOneByte)
+          sys_alsa_putmidibyte(portno, midi_outQueue[midi_outTail].q_byte1);
+        else sys_alsa_putmidimess(portno, midi_outQueue[midi_outTail].q_byte1,
+                             midi_outQueue[midi_outTail].q_byte2,
+                             midi_outQueue[midi_outTail].q_byte3);
       }
     else
 #endif /* ALSA */
       {
-        if (midi_outqueue[midi_outtail].q_onebyte)
-          sys_putmidibyte(portno, midi_outqueue[midi_outtail].q_byte1);
-        else sys_putmidimess(portno, midi_outqueue[midi_outtail].q_byte1,
-                             midi_outqueue[midi_outtail].q_byte2,
-                             midi_outqueue[midi_outtail].q_byte3);
+        if (midi_outQueue[midi_outTail].q_hasOneByte)
+          sys_putmidibyte(portno, midi_outQueue[midi_outTail].q_byte1);
+        else sys_putmidimess(portno, midi_outQueue[midi_outTail].q_byte1,
+                             midi_outQueue[midi_outTail].q_byte2,
+                             midi_outQueue[midi_outTail].q_byte3);
       }
-    midi_outtail  = (midi_outtail + 1 == MIDIQSIZE ? 0 : midi_outtail + 1);
+    midi_outTail  = (midi_outTail + 1 == MIDI_QUEUE_SIZE ? 0 : midi_outTail + 1);
 }
 
 /*  #define TEST_DEJITTER */
@@ -133,22 +134,22 @@ void sys_pollmidioutqueue( void)
 #endif
     double midirealtime = sys_getmidioutrealtime();
 #ifdef TEST_DEJITTER
-    if (midi_outhead == midi_outtail)
+    if (midi_outHead == midi_outTail)
         db = 0;
 #endif
-    while (midi_outhead != midi_outtail)
+    while (midi_outHead != midi_outTail)
     {
 #ifdef TEST_DEJITTER
         if (!db)
         {
             post("out: del %f, midiRT %f logicaltime %f, RT %f dacminusRT %f",
-                (midi_outqueue[midi_outtail].q_time - midirealtime),
-                    midirealtime, .001 * scheduler_getMillisecondsSince(sys_midiinittime),
-                        sys_getRealTime(), sys_dactimeminusrealtime);
+                (midi_outQueue[midi_outTail].q_time - midirealtime),
+                    midirealtime, .001 * scheduler_getMillisecondsSince(midi_systimeAtStart),
+                        sys_getRealTime(), midi_dacTimeMinusRealTime);
             db = 1;
         }
 #endif
-        if (midi_outqueue[midi_outtail].q_time <= midirealtime)
+        if (midi_outQueue[midi_outTail].q_time <= midirealtime)
             sys_putnext();
         else break;
     }
@@ -157,20 +158,20 @@ void sys_pollmidioutqueue( void)
 static void sys_queuemidimess(int portno, int onebyte, int a, int b, int c)
 {
     t_midiqelem *midiqelem;
-    int newhead = midi_outhead +1;
-    if (newhead == MIDIQSIZE)
+    int newhead = midi_outHead +1;
+    if (newhead == MIDI_QUEUE_SIZE)
         newhead = 0;
             /* if FIFO is full flush an element to make room */
-    if (newhead == midi_outtail)
+    if (newhead == midi_outTail)
         sys_putnext();
-    midi_outqueue[midi_outhead].q_portno = portno;
-    midi_outqueue[midi_outhead].q_onebyte = onebyte;
-    midi_outqueue[midi_outhead].q_byte1 = a;
-    midi_outqueue[midi_outhead].q_byte2 = b;
-    midi_outqueue[midi_outhead].q_byte3 = c;
-    midi_outqueue[midi_outhead].q_time =
-        .001 * scheduler_getMillisecondsSince(sys_midiinittime);
-    midi_outhead = newhead;
+    midi_outQueue[midi_outHead].q_portNumber = portno;
+    midi_outQueue[midi_outHead].q_hasOneByte = onebyte;
+    midi_outQueue[midi_outHead].q_byte1 = a;
+    midi_outQueue[midi_outHead].q_byte2 = b;
+    midi_outQueue[midi_outHead].q_byte3 = c;
+    midi_outQueue[midi_outHead].q_time =
+        .001 * scheduler_getMillisecondsSince(midi_systimeAtStart);
+    midi_outHead = newhead;
     sys_pollmidioutqueue();
 }
 
@@ -241,7 +242,7 @@ void outmidi_mclk(int portno)
 void outmidi_byte(int portno, int value)
 {
 #ifdef USEAPI_ALSA
-  if (sys_midiapi == API_ALSA)
+  if (midi_api == API_ALSA)
     {
       sys_alsa_putmidibyte(portno, value);
     }
@@ -297,9 +298,9 @@ void inmidi_polyaftertouch(int portno, int channel, int pitch, int value);
 static void sys_dispatchnextmidiin( void)
 {
     static t_midiparser parser[MAXIMUM_MIDI_IN], *parserp;
-    int portno = midi_inqueue[midi_intail].q_portno,
-        byte = midi_inqueue[midi_intail].q_byte1;
-    if (!midi_inqueue[midi_intail].q_onebyte) { PD_BUG; }
+    int portno = midi_inQueue[midi_inTail].q_portNumber,
+        byte = midi_inQueue[midi_inTail].q_byte1;
+    if (!midi_inQueue[midi_inTail].q_hasOneByte) { PD_BUG; }
     if (portno < 0 || portno >= MAXIMUM_MIDI_IN) { PD_BUG; }
     parserp = parser + portno;
     
@@ -389,7 +390,7 @@ static void sys_dispatchnextmidiin( void)
             }
         }
     }  
-    midi_intail  = (midi_intail + 1 == MIDIQSIZE ? 0 : midi_intail + 1);
+    midi_inTail  = (midi_inTail + 1 == MIDI_QUEUE_SIZE ? 0 : midi_inTail + 1);
 }
 
 void sys_pollmidiinqueue( void)
@@ -397,32 +398,32 @@ void sys_pollmidiinqueue( void)
 #ifdef TEST_DEJITTER
     static int db = 0;
 #endif
-    double logicaltime = .001 * scheduler_getMillisecondsSince(sys_midiinittime);
+    double logicaltime = .001 * scheduler_getMillisecondsSince(midi_systimeAtStart);
 #ifdef TEST_DEJITTER
-    if (midi_inhead == midi_intail)
+    if (midi_inHead == midi_inTail)
         db = 0;
 #endif
-    while (midi_inhead != midi_intail)
+    while (midi_inHead != midi_inTail)
     {
 #ifdef TEST_DEJITTER
         if (!db)
         {
             post("in del %f, logicaltime %f, RT %f adcminusRT %f",
-                (midi_inqueue[midi_intail].q_time - logicaltime),
-                    logicaltime, sys_getRealTime(), sys_adctimeminusrealtime);
+                (midi_inQueue[midi_inTail].q_time - logicaltime),
+                    logicaltime, sys_getRealTime(), midi_adcTimeMinusRealTime);
             db = 1;
         }
 #endif
 #if 0
-        if (midi_inqueue[midi_intail].q_time <= logicaltime - 0.007)
+        if (midi_inQueue[midi_inTail].q_time <= logicaltime - 0.007)
             post("late %f",
-                1000 * (logicaltime - midi_inqueue[midi_intail].q_time));
+                1000 * (logicaltime - midi_inQueue[midi_inTail].q_time));
 #endif
-        if (midi_inqueue[midi_intail].q_time <= logicaltime)
+        if (midi_inQueue[midi_inTail].q_time <= logicaltime)
         {
 #if 0
             post("diff %f",
-                1000* (logicaltime - midi_inqueue[midi_intail].q_time));
+                1000* (logicaltime - midi_inQueue[midi_inTail].q_time));
 #endif
             sys_dispatchnextmidiin();
         }
@@ -439,11 +440,11 @@ void sys_midibytein(int portno, int byte)
 {
     static int warned = 0;
     t_midiqelem *midiqelem;
-    int newhead = midi_inhead +1;
-    if (newhead == MIDIQSIZE)
+    int newhead = midi_inHead +1;
+    if (newhead == MIDI_QUEUE_SIZE)
         newhead = 0;
             /* if FIFO is full flush an element to make room */
-    if (newhead == midi_intail)
+    if (newhead == midi_inTail)
     {
         if (!warned)
         {
@@ -452,11 +453,11 @@ void sys_midibytein(int portno, int byte)
         }
         sys_dispatchnextmidiin();
     }
-    midi_inqueue[midi_inhead].q_portno = portno;
-    midi_inqueue[midi_inhead].q_onebyte = 1;
-    midi_inqueue[midi_inhead].q_byte1 = byte;
-    midi_inqueue[midi_inhead].q_time = sys_getmidiinrealtime();
-    midi_inhead = newhead;
+    midi_inQueue[midi_inHead].q_portNumber = portno;
+    midi_inQueue[midi_inHead].q_hasOneByte = 1;
+    midi_inQueue[midi_inHead].q_byte1 = byte;
+    midi_inQueue[midi_inHead].q_time = sys_getmidiinrealtime();
+    midi_inHead = newhead;
     sys_pollmidiinqueue();
 }
 
@@ -470,7 +471,7 @@ void sys_pollmidiqueue( void)
     lasttime = newtime;
 #endif
 #ifdef USEAPI_ALSA
-      if (sys_midiapi == API_ALSA)
+      if (midi_api == API_ALSA)
         sys_alsa_poll_midi();
       else
 #endif /* ALSA */
@@ -507,7 +508,7 @@ void sys_get_midi_apis(char *buf)
     int n = 0;
     strcpy(buf, "{ ");
 #ifdef USEAPI_OSS
-    sprintf(buf + strlen(buf), "{OSS-MIDI %d} ", API_DEFAULTMIDI); n++;
+    sprintf(buf + strlen(buf), "{OSS-MIDI %d} ", API_DEFAULT_MIDI); n++;
 #endif
 #ifdef USEAPI_ALSA
     sprintf(buf + strlen(buf), "{ALSA-MIDI %d} ", API_ALSA); n++;
@@ -573,7 +574,7 @@ void sys_open_midi(int nmidiindev, int *midiindev,
         midi_oss_init();
 #endif
 #ifdef USEAPI_ALSA
-        if (sys_midiapi == API_ALSA)
+        if (midi_api == API_ALSA)
             sys_alsa_do_open_midi(nmidiindev, midiindev, nmidioutdev, midioutdev);
         else
 #endif /* ALSA */
@@ -582,7 +583,7 @@ void sys_open_midi(int nmidiindev, int *midiindev,
     sys_save_midi_params(nmidiindev, midiindev,
         nmidioutdev, midioutdev);
 
-    sys_vGui("set ::var(apiMidi) %d\n", sys_midiapi);
+    sys_vGui("set ::var(apiMidi) %d\n", midi_api);
 
 }
 
@@ -623,9 +624,9 @@ void sys_listmididevs(void )
 
 void sys_set_midi_api(int which)
 {
-     sys_midiapi = which;
+     midi_api = which;
      if (0)
-        post("sys_midiapi %d", sys_midiapi);
+        post("midi_api %d", midi_api);
 }
 
 void global_midiProperties(void *dummy, t_float flongform);
@@ -634,15 +635,15 @@ void midi_alsa_setndevs(int in, int out);
 void global_midiAPI(void *dummy, t_float f)
 {
     int newapi = f;
-    if (newapi != sys_midiapi)
+    if (newapi != midi_api)
     {
 #ifdef USEAPI_ALSA
-        if (sys_midiapi == API_ALSA)
+        if (midi_api == API_ALSA)
             sys_alsa_close_midi();
         else
 #endif
               sys_close_midi();
-        sys_midiapi = newapi;
+        midi_api = newapi;
         sys_reopen_midi();
     }
 #ifdef USEAPI_ALSA
@@ -707,7 +708,7 @@ void global_midiProperties(void *dummy, t_float flongform)
     midioutdev9 = (noutdev > 8 && midioutdev[8]>= 0 ? midioutdev[8]+1 : 0);
 
 #ifdef USEAPI_ALSA
-      if (sys_midiapi == API_ALSA)
+      if (midi_api == API_ALSA)
     sprintf(buf,
 "::ui_midi::show %%s \
 %d %d %d %d 0 0 0 0 0 \
@@ -769,7 +770,7 @@ void global_midiDialog(void *dummy, t_symbol *s, int argc, t_atom *argv)
             be able to restore the number of devices.  ALSA MIDI handling
             uses its own set of variables.  LATER figure out how to get
             this to work coherently */
-    if (sys_midiapi == API_ALSA)
+    if (midi_api == API_ALSA)
     {
         nindev = alsadevin;
         noutdev = alsadevout;
@@ -782,7 +783,7 @@ void global_midiDialog(void *dummy, t_symbol *s, int argc, t_atom *argv)
     sys_save_midi_params(nindev, newmidiindev,
         noutdev, newmidioutdev);
 #ifdef USEAPI_ALSA
-    if (sys_midiapi == API_ALSA)
+    if (midi_api == API_ALSA)
     {
         sys_alsa_close_midi();
         sys_open_midi(alsadevin, newmidiindev, alsadevout, newmidioutdev, 1);
@@ -802,7 +803,7 @@ void sys_get_midi_devs(char *indevlist, int *nindevs,
 {
 
 #ifdef USEAPI_ALSA
-  if (sys_midiapi == API_ALSA)
+  if (midi_api == API_ALSA)
     midi_alsa_getdevs(indevlist, nindevs, outdevlist, noutdevs, 
                       maxndevs, devdescsize);
   else

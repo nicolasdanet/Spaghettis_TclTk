@@ -76,6 +76,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define API_DEFAULT_MIDI                        0
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #if defined ( USEAPI_MMIO )
     #define API_DEFAULT                         API_MMIO
     #define API_DEFAULT_STRING                  "MMIO"
@@ -328,7 +334,14 @@ void        preferences_save                        (void *dummy);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void post_atoms                             (int argc, t_atom *argv);
+void        midi_initialize                         (void);
+void        sys_setmiditimediff                     (double inbuftime, double outbuftime);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        post_atoms                              (int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -422,7 +435,6 @@ void        sys_close_midi                  (void);
 void        sys_putmidimess                 (int portno, int a, int b, int c);
 void        sys_putmidibyte                 (int portno, int a);
 void        sys_poll_midi                   (void);
-void        sys_setmiditimediff             (double inbuftime, double outbuftime);
 void        sys_midibytein                  (int portno, int byte);
 
 void        midi_getdevs                    (char *indevlist,
@@ -470,13 +482,11 @@ void sys_alsa_do_open_midi      (int nmidiindev,
 
 void dsp_tick                   (void);
 void sys_pollmidiqueue          (void);
-void sys_initmidiqueue          (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_setmiditimediff        (double inbuftime, double outbuftime);
 void sys_setchsr                (int chin, int chout, int sr);
 
 // -----------------------------------------------------------------------------------------------------------

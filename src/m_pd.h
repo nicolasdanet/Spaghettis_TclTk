@@ -270,10 +270,12 @@
 
 #include <io.h>
 #include <process.h>
+#include <sys/timeb.h> 
 #include <tchar.h>
 #include <windows.h>
 #include <winbase.h>
 #include <winsock.h>
+#include <wtypes.h>
     
 #else
 
