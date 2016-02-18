@@ -37,9 +37,11 @@ static t_class *hello_class;
 
 PD_STUB t_error helloRoot_setup (t_symbol *s)
 {
-    hello_class = class_new (gensym ("helloRoot"), hello_new, NULL, sizeof (t_hello), CLASS_BOX, A_NULL);
+    int flags = CLASS_BOX | CLASS_NOINLET;      /* Avoid the default inlet. */
     
-    post ("I am %s", s->s_name);
+    hello_class = class_new (gensym ("helloRoot"), hello_new, NULL, sizeof (t_hello), flags, A_NULL);
+    
+    post ("My name is '%s'", s->s_name);        /* Absolute path of the external. */
     
     return PD_ERROR_NONE;
 }
