@@ -42,7 +42,7 @@ PD_STUB t_error hello_setup (t_symbol *s)       /* MUST be the name of the file 
     
     /* MUST contains (at least) a class with the file name. */
     
-    c = class_new (gensym ("hello"), hello_new, NULL, sizeof (t_hello), CLASS_DEFAULT, A_NULL); 
+    c = class_new (gensym ("hello"), hello_new, NULL, sizeof (t_hello), CLASS_BOX, A_NULL); 
     
     class_addBang (c, (t_method)hello_bang); 
     

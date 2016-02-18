@@ -13,7 +13,14 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* The plug-in path is something unique. */
+/* Clean up your room. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if PD_WINDOWS
+    #error "For now GCC only!"
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -27,7 +34,9 @@ typedef struct _hello {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void *hello_new (void);
+void *hello_new         (void);
+void hello_initialize   (void) __attribute__ ((constructor));
+void hello_release      (void) __attribute__ ((destructor));
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -35,11 +44,9 @@ void *hello_new (void);
 
 static t_class *hello_class;
 
-PD_STUB t_error helloRoot_setup (t_symbol *s)
+PD_STUB t_error helloRelease_setup (t_symbol *s)
 {
-    hello_class = class_new (gensym ("helloRoot"), hello_new, NULL, sizeof (t_hello), CLASS_BOX, A_NULL);
-    
-    post ("I am %s", s->s_name);
+    hello_class = class_new (gensym ("helloRelease"), hello_new, NULL, sizeof (t_hello), CLASS_BOX, A_NULL);
     
     return PD_ERROR_NONE;
 }
@@ -51,6 +58,20 @@ PD_STUB t_error helloRoot_setup (t_symbol *s)
 void *hello_new (void)
 {
     return pd_new (hello_class);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void hello_initialize (void) 
+{
+    post_log ("'- Clean up your room!'");       /* Before the first instantiation. */
+}
+
+void hello_release (void) 
+{
+    post_log ("'- Tomorrow?'");                 /* While application quitting. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
