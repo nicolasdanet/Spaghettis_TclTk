@@ -1078,7 +1078,7 @@ int alsamm_send_dacs(void)
   int inchannels = sys_inchannels;
   int outchannels = sys_outchannels;
 
-  timelast = sys_getRealTime();
+  timelast = sys_getRealTimeInSeconds();
 
 #ifdef ALSAMM_DEBUG
   if(dac_send++ < 0)
@@ -1344,7 +1344,7 @@ int alsamm_send_dacs(void)
   } /* for out devno < alsamm_outcards*/
   
   
-  if ((timenow = sys_getRealTime()) > (timelast + sleep_time))
+  if ((timenow = sys_getRealTimeInSeconds()) > (timelast + sleep_time))
     {
 
 #ifdef ALSAMM_DEBUG      

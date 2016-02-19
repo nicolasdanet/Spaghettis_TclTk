@@ -289,13 +289,13 @@ typedef struct _realtime
 
 static void realtime_bang(t_realtime *x)
 {
-    x->x_setrealtime = sys_getRealTime();
+    x->x_setrealtime = sys_getRealTimeInSeconds();
 }
 
 static void realtime_bang2(t_realtime *x)
 {
     outlet_float(x->x_obj.te_outlet,
-        (sys_getRealTime() - x->x_setrealtime) * 1000.);
+        (sys_getRealTimeInSeconds() - x->x_setrealtime) * 1000.);
 }
 
 static void *realtime_new(void)

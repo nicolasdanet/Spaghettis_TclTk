@@ -1299,7 +1299,7 @@ void canvas_doclick(t_canvas *x, int xpos, int ypos, int which,
     }
 
     if (doit && !runmode && xpos == canvas_upx && ypos == canvas_upy &&
-        sys_getRealTime() - canvas_upclicktime < DCLICKINTERVAL)
+        sys_getRealTimeInSeconds() - canvas_upclicktime < DCLICKINTERVAL)
             doublemod = 1;
     x->gl_editor->e_lastmoved = 0;
     if (doit)
@@ -1651,7 +1651,7 @@ void canvas_mouseup(t_canvas *x,
         return;
     }
 
-    canvas_upclicktime = sys_getRealTime();
+    canvas_upclicktime = sys_getRealTimeInSeconds();
     canvas_upx = xpos;
     canvas_upy = ypos;
 

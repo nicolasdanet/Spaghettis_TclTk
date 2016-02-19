@@ -212,8 +212,8 @@ int         main_entry                              (int argc, char **argv);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-double      scheduler_getSystime                    (void);
-double      scheduler_getSystimeAfter               (double ms);
+double      scheduler_getLogicalTime                (void);
+double      scheduler_getLogicalTimeAfter           (double ms);
 double      scheduler_getMillisecondsSince          (double systime);
 double      scheduler_getUnitsSince                 (double systime, double unit, int isSamples);
 void        scheduler_setAudioMode                  (int flag);
@@ -248,7 +248,7 @@ void        clock_setUnitAsMilliseconds             (t_clock *x, double ms);
 #pragma mark -
 
 void        sys_setSignalHandlers                   (void);
-double      sys_getRealTime                         (void);
+double      sys_getRealTimeInSeconds                         (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -335,7 +335,7 @@ void        preferences_save                        (void *dummy);
 #pragma mark -
 
 void        midi_initialize                         (void);
-void        sys_setmiditimediff                     (double inbuftime, double outbuftime);
+void        midi_setOffsets                         (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

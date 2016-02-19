@@ -502,7 +502,7 @@ int jack_send_dacs(void)
     int j;
     int rtnval =  DACS_YES;
     int timenow;
-    int timeref = sys_getRealTime();
+    int timeref = sys_getRealTimeInSeconds();
     if (!jack_client) return DACS_NO;
     if (!sys_inchannels && !sys_outchannels) return (DACS_NO); 
     if (jack_dio_error)
@@ -538,7 +538,7 @@ int jack_send_dacs(void)
     jack_filled += AUDIO_DEFAULT_BLOCK;
     pthread_mutex_unlock(&jack_mutex);
 
-    if ((timenow = sys_getRealTime()) - timeref > 0.002)
+    if ((timenow = sys_getRealTimeInSeconds()) - timeref > 0.002)
     {
         rtnval = DACS_SLEPT;
     }

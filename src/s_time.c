@@ -60,7 +60,7 @@ static void interface_initializeClock (void)
 
 #if PD_WINDOWS
 
-double sys_getRealTime (void)    
+double sys_getRealTimeInSeconds (void)    
 {
     LARGE_INTEGER now;
     
@@ -73,7 +73,7 @@ double sys_getRealTime (void)
 
 #else 
 
-double sys_getRealTime (void)    
+double sys_getRealTimeInSeconds (void)    
 {
     static struct timeval start;
     struct timeval now;

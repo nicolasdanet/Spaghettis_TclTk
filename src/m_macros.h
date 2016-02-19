@@ -116,6 +116,14 @@ typedef void (*t_gotfn5)(void *x, void *arg1, void *arg2, void *arg3, void *arg4
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define SECONDS_TO_MILLISECONDS(n)  ((n) * 1000.0);
+#define MILLISECONDS_TO_SECONDS(n)  ((n) * 1e-3);
+#define MICROSECONDS_TO_SECONDS(n)  ((n) * 1e-6);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #if ! ( PD_MSVC )
 
     #if ( PD_CPU_x86 || PD_CPU_AMD64 || PD_CPU_ARM )

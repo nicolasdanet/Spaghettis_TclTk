@@ -65,12 +65,12 @@ static int      scheduler_nextPing;                                         /* S
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-double scheduler_getSystime (void)
+double scheduler_getLogicalTime (void)
 {
     return pd_this->pd_systime;
 }
 
-double scheduler_getSystimeAfter (double ms)
+double scheduler_getLogicalTimeAfter (double ms)
 {
     return (pd_this->pd_systime + (SYSTIME_CLOCKS_PER_MILLISECOND * ms));
 }
@@ -152,10 +152,10 @@ static void scheduler_pollStuck (int init)
 {
     static double idleTime;
     
-    if (init) { idleTime = sys_getRealTime(); }
+    if (init) { idleTime = sys_getRealTimeInSeconds(); }
     else {
     //
-    if (sys_getRealTime() - idleTime > 1.0) {
+    if (sys_getRealTimeInSeconds() - idleTime > 1.0) {
         sys_close_audio();
         scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
         scheduler_quit = SCHEDULER_RESTART;
@@ -198,15 +198,10 @@ static void scheduler_tick (void)
 
 static void scheduler_withLoop (void)
 {
-    double realTime, logicalTime;
     int idleCount = 0;
         
-    if (scheduler_audioMode == SCHEDULER_AUDIO_NONE) {
-    //
-    realTime = sys_getRealTime();
-    logicalTime = scheduler_getSystime();
-    //
-    }
+    double realTimeAtStart = sys_getRealTimeInSeconds();
+    double logicalTimeAtStart  = scheduler_getLogicalTime();
     
     scheduler_sleepGrain = PD_CLAMP (sys_schedadvance / 4, 100, 5000);
     scheduler_systimePerDSPTick = scheduler_getSystimePerDSPTick();
@@ -226,10 +221,10 @@ static void scheduler_withLoop (void)
         
     } else {
     
-        double realElapsed = (sys_getRealTime() - realTime) * 1000.0;
-        double logicalElapsed = scheduler_getMillisecondsSince (logicalTime);
+        double realLapse = SECONDS_TO_MILLISECONDS (sys_getRealTimeInSeconds() - realTimeAtStart);
+        double logicalLapse = scheduler_getMillisecondsSince (logicalTimeAtStart);
 
-        if (realElapsed > logicalElapsed) { timeForward = DACS_YES; }
+        if (realLapse > logicalLapse) { timeForward = DACS_YES; }
         else {
             timeForward = DACS_NO;
         }
@@ -237,7 +232,7 @@ static void scheduler_withLoop (void)
     
     if (!scheduler_quit) {
     //
-    sys_setmiditimediff (0.0, 1e-6 * sys_schedadvance);
+    midi_setOffsets();
     
     if (timeForward != DACS_NO)  { scheduler_tick(); }
     if (timeForward == DACS_YES) { didSomething = 1; }
@@ -280,7 +275,7 @@ static void scheduler_withCallback (void)
 
 void scheduler_audioCallback (void)
 {
-    sys_setmiditimediff (0.0, 1e-6 * sys_schedadvance);
+    midi_setOffsets();
     scheduler_tick();
     sys_pollmidiqueue();
     interface_pollOrFlushGui();

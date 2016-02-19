@@ -17,7 +17,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MIDI_QUEUE_SIZE     1024
+#define MIDI_QUEUE_SIZE          1024
+#define MIDI_UNDEFINED_OFFSET   -1e20
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -35,6 +36,11 @@ typedef struct _midiqelem {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+extern int sys_schedadvance;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_midiqelem  midi_outQueue[MIDI_QUEUE_SIZE];                         /* Shared. */
 static int          midi_outHead;                                           /* Shared. */
 static int          midi_outTail;                                           /* Shared. */
@@ -43,12 +49,12 @@ static t_midiqelem  midi_inQueue[MIDI_QUEUE_SIZE];                          /* S
 static int          midi_inHead;                                            /* Shared. */
 static int          midi_inTail;                                            /* Shared. */
 
-static int          midi_api                        = API_DEFAULT_MIDI;     /* Shared. */
-static double       midi_systimeAtStart;                                    /* Shared. */
-static double       midi_dacTimeMinusRealTime;                              /* Shared. */
-static double       midi_adcTimeMinusRealTime;                              /* Shared. */
-static double       midi_newDacTimeMinusRealTime    = -1e20;                /* Shared. */
-static double       midi_newAdcTimeMinusRealTime    = -1e20;                /* Shared. */
+static int          midi_api                    = API_DEFAULT_MIDI;         /* Shared. */
+static double       midi_logicalTimeAtStart;                                /* Shared. */
+static double       midi_dacOffset;                                         /* Shared. */
+static double       midi_adcOffset;                                         /* Shared. */
+static double       midi_dacNewOffset           = MIDI_UNDEFINED_OFFSET;    /* Shared. */
+static double       midi_adcNewOffset           = MIDI_UNDEFINED_OFFSET;    /* Shared. */
 static double       midi_needToUpdateTime;                                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -57,48 +63,44 @@ static double       midi_needToUpdateTime;                                  /* S
 
 void midi_initialize (void)
 {
-    midi_systimeAtStart         = scheduler_getSystime();
-    midi_dacTimeMinusRealTime   = 0.0;
-    midi_adcTimeMinusRealTime   = 0.0;
+    midi_logicalTimeAtStart = scheduler_getLogicalTime();
+    midi_dacOffset          = 0.0;
+    midi_adcOffset          = 0.0;
 }
 
-    /* this is called from the OS dependent code from time to time when we
-    think we know the delay (outbuftime) in seconds, at which the last-output
-    audio sample will go out the door. */
-    
-void sys_setmiditimediff (double inbuftime, double outbuftime)
+void midi_setOffsets (void)
 {
-    double dactimeminusrealtime =
-        .001 * scheduler_getMillisecondsSince(midi_systimeAtStart)
-            - outbuftime - sys_getRealTime();
-    double adctimeminusrealtime =
-        .001 * scheduler_getMillisecondsSince(midi_systimeAtStart)
-            + inbuftime - sys_getRealTime();
-    if (dactimeminusrealtime > midi_newDacTimeMinusRealTime)
-        midi_newDacTimeMinusRealTime = dactimeminusrealtime;
-    if (adctimeminusrealtime > midi_newAdcTimeMinusRealTime)
-        midi_newAdcTimeMinusRealTime = adctimeminusrealtime;
-    if (sys_getRealTime() > midi_needToUpdateTime)
-    {
-        midi_dacTimeMinusRealTime = midi_newDacTimeMinusRealTime;
-        midi_adcTimeMinusRealTime = midi_newAdcTimeMinusRealTime;
-        midi_newDacTimeMinusRealTime = -1e20;
-        midi_newAdcTimeMinusRealTime = -1e20;
-        midi_needToUpdateTime = sys_getRealTime() + 1;
+    double realLapse    = sys_getRealTimeInSeconds();
+    double logicalLapse = MILLISECONDS_TO_SECONDS (scheduler_getMillisecondsSince (midi_logicalTimeAtStart));
+    
+    double dacOffset    = logicalLapse - realLapse - MICROSECONDS_TO_SECONDS (sys_schedadvance);
+    double adcOffset    = logicalLapse - realLapse;
+    
+    if (dacOffset > midi_dacNewOffset) { midi_dacNewOffset = dacOffset; }
+    if (adcOffset > midi_adcNewOffset) { midi_adcNewOffset = adcOffset; }
+        
+    if (realLapse > midi_needToUpdateTime) {
+    //
+    midi_dacOffset = midi_dacNewOffset;
+    midi_adcOffset = midi_adcNewOffset;
+    midi_dacNewOffset = MIDI_UNDEFINED_OFFSET;
+    midi_adcNewOffset = MIDI_UNDEFINED_OFFSET;
+    midi_needToUpdateTime = realLapse + 1.0;
+    //
     }
 }
 
     /* return the logical time of the DAC sample we believe is currently
     going out, based on how much "system time" has elapsed since the
-    last time sys_setmiditimediff got called. */
+    last time midi_setOffsets got called. */
 static double sys_getmidioutrealtime( void)
 {
-    return (sys_getRealTime() + midi_dacTimeMinusRealTime);
+    return (sys_getRealTimeInSeconds() + midi_dacOffset);
 }
 
 static double sys_getmidiinrealtime( void)
 {
-    return (sys_getRealTime() + midi_adcTimeMinusRealTime);
+    return (sys_getRealTimeInSeconds() + midi_adcOffset);
 }
 
 static void sys_putnext( void)
@@ -144,8 +146,8 @@ void sys_pollmidioutqueue( void)
         {
             post("out: del %f, midiRT %f logicaltime %f, RT %f dacminusRT %f",
                 (midi_outQueue[midi_outTail].q_time - midirealtime),
-                    midirealtime, .001 * scheduler_getMillisecondsSince(midi_systimeAtStart),
-                        sys_getRealTime(), midi_dacTimeMinusRealTime);
+                    midirealtime, .001 * scheduler_getMillisecondsSince(midi_logicalTimeAtStart),
+                        sys_getRealTimeInSeconds(), midi_dacOffset);
             db = 1;
         }
 #endif
@@ -170,7 +172,7 @@ static void sys_queuemidimess(int portno, int onebyte, int a, int b, int c)
     midi_outQueue[midi_outHead].q_byte2 = b;
     midi_outQueue[midi_outHead].q_byte3 = c;
     midi_outQueue[midi_outHead].q_time =
-        .001 * scheduler_getMillisecondsSince(midi_systimeAtStart);
+        .001 * scheduler_getMillisecondsSince(midi_logicalTimeAtStart);
     midi_outHead = newhead;
     sys_pollmidioutqueue();
 }
@@ -398,7 +400,7 @@ void sys_pollmidiinqueue( void)
 #ifdef TEST_DEJITTER
     static int db = 0;
 #endif
-    double logicaltime = .001 * scheduler_getMillisecondsSince(midi_systimeAtStart);
+    double logicaltime = .001 * scheduler_getMillisecondsSince(midi_logicalTimeAtStart);
 #ifdef TEST_DEJITTER
     if (midi_inHead == midi_inTail)
         db = 0;
@@ -410,7 +412,7 @@ void sys_pollmidiinqueue( void)
         {
             post("in del %f, logicaltime %f, RT %f adcminusRT %f",
                 (midi_inQueue[midi_inTail].q_time - logicaltime),
-                    logicaltime, sys_getRealTime(), midi_adcTimeMinusRealTime);
+                    logicaltime, sys_getRealTimeInSeconds(), midi_adcOffset);
             db = 1;
         }
 #endif
@@ -465,7 +467,7 @@ void sys_pollmidiqueue( void)
 {
 #if 0
     static double lasttime;
-    double newtime = sys_getRealTime();
+    double newtime = sys_getRealTimeInSeconds();
     if (newtime - lasttime > 0.007)
         post("delay %d", (int)(1000 * (newtime - lasttime)));
     lasttime = newtime;
