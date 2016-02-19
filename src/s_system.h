@@ -361,28 +361,28 @@ void        midi_setOffsets                         (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        inmidi_realtimein                       (int portno, int cmd);
-void        inmidi_byte                             (int portno, int byte);
-void        inmidi_sysex                            (int portno, int byte);
-void        inmidi_noteon                           (int portno, int channel, int pitch, int velo);
-void        inmidi_controlchange                    (int portno, int channel, int ctlnumber, int value);
-void        inmidi_programchange                    (int portno, int channel, int value);
-void        inmidi_pitchbend                        (int portno, int channel, int value);
-void        inmidi_aftertouch                       (int portno, int channel, int value);
-void        inmidi_polyaftertouch                   (int portno, int channel, int pitch, int value);
+void        inmidi_realtimein                       (int port, int command);
+void        inmidi_byte                             (int port, int byte);
+void        inmidi_sysex                            (int port, int byte);
+void        inmidi_noteon                           (int port, int channel, int pitch, int velocity);
+void        inmidi_controlchange                    (int port, int channel, int control, int value);
+void        inmidi_programchange                    (int port, int channel, int value);
+void        inmidi_pitchbend                        (int port, int channel, int value);
+void        inmidi_aftertouch                       (int port, int channel, int value);
+void        inmidi_polypressure                     (int port, int channel, int pitch, int value);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        outmidi_noteon                          (int portno, int channel, int pitch, int velo);
-void        outmidi_controlchange                   (int portno, int channel, int ctlno, int value);
-void        outmidi_programchange                   (int portno, int channel, int value);
-void        outmidi_pitchbend                       (int portno, int channel, int value);
-void        outmidi_aftertouch                      (int portno, int channel, int value);
-void        outmidi_polyaftertouch                  (int portno, int channel, int pitch, int value);
-void        outmidi_mclk                            (int portno);
-void        outmidi_byte                            (int portno, int value);
+void        outmidi_noteOn                          (int port, int channel, int pitch, int velocity);
+void        outmidi_controlChange                   (int port, int channel, int control, int value);
+void        outmidi_programChange                   (int port, int channel, int value);
+void        outmidi_pitchBend                       (int port, int channel, int value);
+void        outmidi_afterTouch                      (int port, int channel, int value);
+void        outmidi_polyPressure                    (int port, int channel, int pitch, int value);
+void        outmidi_clock                           (int port);
+void        outmidi_rawByte                         (int port, int value);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -478,10 +478,10 @@ void        sys_mididevnumbertoname         (int output, int devno, char *name, 
 
 void        sys_reopen_midi                 (void);
 void        sys_close_midi                  (void);
-void        sys_putmidimess                 (int portno, int a, int b, int c);
-void        sys_putmidibyte                 (int portno, int a);
+void        sys_putmidimess                 (int port, int a, int b, int c);
+void        sys_putmidibyte                 (int port, int a);
 void        sys_poll_midi                   (void);
-void        sys_midibytein                  (int portno, int byte);
+void        sys_midibytein                  (int port, int byte);
 
 void        midi_getdevs                    (char *indevlist,
                                                 int *nindevs,
@@ -499,11 +499,11 @@ void        sys_do_open_midi                (int nmidiindev,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_alsa_putmidimess       (int portno, int a, int b, int c);
-void sys_alsa_putmidibyte       (int portno, int a);
+void sys_alsa_putmidimess       (int port, int a, int b, int c);
+void sys_alsa_putmidibyte       (int port, int a);
 void sys_alsa_poll_midi         (void);
 void sys_alsa_setmiditimediff   (double inbuftime, double outbuftime);
-void sys_alsa_midibytein        (int portno, int byte);
+void sys_alsa_midibytein        (int port, int byte);
 void sys_alsa_close_midi        (void);
 
 void midi_alsa_getdevs          (char *indevlist,

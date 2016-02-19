@@ -478,7 +478,7 @@ static void polytouchin_setup(void)
     class_setHelpName(polytouchin_class, gensym("midiout"));
 }
 
-void inmidi_polyaftertouch(int portno, int channel, int pitch, int value)
+void inmidi_polypressure(int portno, int channel, int pitch, int value)
 {
     if (pd_this->sym_polytouchin->s_thing)
     {
@@ -634,7 +634,7 @@ static void *midiout_new(t_float portno)
 
 static void midiout_float(t_midiout *x, t_float f)
 {
-    outmidi_byte(x->x_portno - 1, f);
+    outmidi_rawByte (x->x_portno - 1, f);
 }
 
 static void midiout_setup(void)
@@ -672,7 +672,7 @@ static void noteout_float(t_noteout *x, t_float f)
     int binchan = x->x_channel - 1;
     if (binchan < 0)
         binchan = 0;
-    outmidi_noteon((binchan >> 4),
+    outmidi_noteOn((binchan >> 4),
         (binchan & 15), (int)f, (int)x->x_velo);
 }
 
@@ -712,7 +712,7 @@ static void ctlout_float(t_ctlout *x, t_float f)
     int binchan = x->x_channel - 1;
     if (binchan < 0)
         binchan = 0;
-    outmidi_controlchange((binchan >> 4),
+    outmidi_controlChange((binchan >> 4),
         (binchan & 15), (int)(x->x_ctl), (int)f);
 }
 
@@ -752,7 +752,7 @@ static void pgmout_float(t_pgmout *x, t_float f)
         binchan = 0;
     if (n < 0) n = 0;
     else if (n > 127) n = 127;
-    outmidi_programchange((binchan >> 4),
+    outmidi_programChange((binchan >> 4),
         (binchan & 15), n);
 }
 
@@ -790,7 +790,7 @@ static void bendout_float(t_bendout *x, t_float f)
     int n = (int)f +  8192;
     if (binchan < 0)
         binchan = 0;
-    outmidi_pitchbend((binchan >> 4), (binchan & 15), n);
+    outmidi_pitchBend((binchan >> 4), (binchan & 15), n);
 }
 
 static void bendout_setup(void)
@@ -825,7 +825,7 @@ static void touchout_float(t_touchout *x, t_float f)
     int binchan = x->x_channel - 1;
     if (binchan < 0)
         binchan = 0;
-    outmidi_aftertouch((binchan >> 4), (binchan & 15), (int)f);
+    outmidi_afterTouch((binchan >> 4), (binchan & 15), (int)f);
 }
 
 static void touchout_setup(void)
@@ -863,7 +863,7 @@ static void polytouchout_float(t_polytouchout *x, t_float n)
     int binchan = x->x_channel - 1;
     if (binchan < 0)
         binchan = 0;
-    outmidi_polyaftertouch((binchan >> 4), (binchan & 15), x->x_pitch, n);
+    outmidi_polyPressure((binchan >> 4), (binchan & 15), x->x_pitch, n);
 }
 
 static void polytouchout_setup(void)

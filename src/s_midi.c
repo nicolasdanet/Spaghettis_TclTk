@@ -195,98 +195,84 @@ static void midi_pollOut (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void outmidi_append (int portno, int onebyte, int a, int b, int c)
+/* If FIFO is full flush an element to make room. */
+
+static void outmidi_append (int port, int hasOneByte, int a, int b, int c)
 {
-    t_midiqelem *midiqelem;
-    int newhead = midi_outHead +1;
-    if (newhead == MIDI_QUEUE_SIZE)
-        newhead = 0;
-            /* if FIFO is full flush an element to make room */
-    if (newhead == midi_outTail)
-        midi_pushNext();
-    midi_outQueue[midi_outHead].q_portNumber = portno;
-    midi_outQueue[midi_outHead].q_hasOneByte = onebyte;
-    midi_outQueue[midi_outHead].q_byte1 = a;
-    midi_outQueue[midi_outHead].q_byte2 = b;
-    midi_outQueue[midi_outHead].q_byte3 = c;
-    midi_outQueue[midi_outHead].q_time =
-        .001 * scheduler_getMillisecondsSince(midi_logicalTimeAtStart);
-    midi_outHead = newhead;
+    t_midiqelem *e = NULL;
+    int newHead = (midi_outHead + 1 == MIDI_QUEUE_SIZE ? 0 : midi_outHead + 1);
+    if (newHead == midi_outTail) { midi_pushNext(); }
+    
+    e = midi_outQueue + midi_outHead;
+    
+    e->q_portNumber = port;
+    e->q_hasOneByte = hasOneByte;
+    e->q_byte1 = a;
+    e->q_byte2 = b;
+    e->q_byte3 = c;
+    e->q_time  = MILLISECONDS_TO_SECONDS (scheduler_getMillisecondsSince (midi_logicalTimeAtStart));
+        
+    midi_outHead = newHead;
+    
     midi_pollOut();
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void outmidi_noteon(int portno, int channel, int pitch, int velo)
+void outmidi_noteOn (int port, int channel, int pitch, int velocity)
 {
-    if (pitch < 0) pitch = 0;
-    else if (pitch > 127) pitch = 127;
-    if (velo < 0) velo = 0;
-    else if (velo > 127) velo = 127;
-    outmidi_append(portno, 0, MIDI_NOTEON + (channel & 0xf), pitch, velo);
+    pitch    = PD_CLAMP (pitch, 0, 127);
+    velocity = PD_CLAMP (velocity, 0, 127);
+
+    outmidi_append (port, 0, MIDI_NOTEON + (channel & 0xf), pitch, velocity);
 }
 
-void outmidi_controlchange(int portno, int channel, int ctl, int value)
+void outmidi_controlChange (int port, int channel, int control, int value)
 {
-    if (ctl < 0) ctl = 0;
-    else if (ctl > 127) ctl = 127;
-    if (value < 0) value = 0;
-    else if (value > 127) value = 127;
-    outmidi_append(portno, 0, MIDI_CONTROLCHANGE + (channel & 0xf),
-        ctl, value);
+    control = PD_CLAMP (control, 0, 127);
+    value   = PD_CLAMP (value, 0, 127);
+    
+    outmidi_append (port, 0, MIDI_CONTROLCHANGE + (channel & 0xf), control, value);
 }
 
-void outmidi_programchange(int portno, int channel, int value)
+void outmidi_programChange (int port, int channel, int value)
 {
-    if (value < 0) value = 0;
-    else if (value > 127) value = 127;
-    outmidi_append(portno, 0,
-        MIDI_PROGRAMCHANGE + (channel & 0xf), value, 0);
+    value = PD_CLAMP (value, 0, 127);
+    
+    outmidi_append (port, 0, MIDI_PROGRAMCHANGE + (channel & 0xf), value, 0);
 }
 
-void outmidi_pitchbend(int portno, int channel, int value)
+void outmidi_pitchBend (int port, int channel, int value)
 {
-    if (value < 0) value = 0;
-    else if (value > 16383) value = 16383;
-    outmidi_append(portno, 0, MIDI_PITCHBEND + (channel & 0xf),
-        (value & 127), ((value>>7) & 127));
+    value = PD_CLAMP (value, 0, 16383);
+    
+    outmidi_append (port, 0, MIDI_PITCHBEND + (channel & 0xf), (value & 127), ((value >> 7) & 127));
 }
 
-void outmidi_aftertouch(int portno, int channel, int value)
+void outmidi_afterTouch (int port, int channel, int value)
 {
-    if (value < 0) value = 0;
-    else if (value > 127) value = 127;
-    outmidi_append(portno, 0, MIDI_AFTERTOUCH + (channel & 0xf), value, 0);
+    value = PD_CLAMP (value, 0, 127);
+    
+    outmidi_append (port, 0, MIDI_AFTERTOUCH + (channel & 0xf), value, 0);
 }
 
-void outmidi_polyaftertouch(int portno, int channel, int pitch, int value)
+void outmidi_polyPressure (int port, int channel, int pitch, int value)
 {
-    if (pitch < 0) pitch = 0;
-    else if (pitch > 127) pitch = 127;
-    if (value < 0) value = 0;
-    else if (value > 127) value = 127;
-    outmidi_append(portno, 0, MIDI_POLYPRESSURE + (channel & 0xf),
-        pitch, value);
+    pitch = PD_CLAMP (pitch, 0, 127);
+    value = PD_CLAMP (value, 0, 127);
+    
+    outmidi_append (port, 0, MIDI_POLYPRESSURE + (channel & 0xf), pitch, value);
 }
 
-void outmidi_mclk(int portno)
+void outmidi_clock (int port)
 {
-   outmidi_append(portno, 1, 0xf8, 0,0);
+    outmidi_append (port, 1, MIDI_CLOCK, 0, 0);
 }
 
-void outmidi_byte(int portno, int value)
+void outmidi_rawByte (int port, int value)
 {
-#ifdef USEAPI_ALSA
-  if (midi_api == API_ALSA)
-    {
-      sys_alsa_putmidibyte(portno, value);
-    }
-  else
-#endif
-    {
-      sys_putmidibyte(portno, value);
-    }
+    midi_pushNextByte (port, value);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -350,7 +336,7 @@ static void sys_dispatchnextmidiin( void)
                 break;
             case MIDI_POLYPRESSURE:
                 if (gotbyte1)
-                    inmidi_polyaftertouch(portno, chan, byte1, byte),
+                    inmidi_polypressure(portno, chan, byte1, byte),
                         parserp->mp_gotByte1 = 0;
                 else parserp->mp_byte1 = byte, parserp->mp_gotByte1 = 1;
                 break;
