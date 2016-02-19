@@ -254,6 +254,7 @@
 #include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <float.h>
 #include <limits.h>
 #include <signal.h>
 #include <stdarg.h>

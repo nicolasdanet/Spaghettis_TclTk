@@ -28,8 +28,6 @@ typedef long t_pa_sample;
 #define SYS_BYTESPERCHAN (AUDIO_DEFAULT_BLOCK * SYS_SAMPLEWIDTH) 
 #define SYS_XFERSAMPS (SYS_DEFAULTCH*AUDIO_DEFAULT_BLOCK)
 #define SYS_XFERSIZE (SYS_SAMPLEWIDTH * SYS_XFERSAMPS)
-#define MAXNDEV 20
-#define DEVDESCSIZE 80
 
 extern t_class *global_object;
 
@@ -64,11 +62,11 @@ static int audio_state;
 static int audio_naudioindev = -1;
 static int audio_audioindev[MAXIMUM_AUDIO_IN];
 static int audio_audiochindev[MAXIMUM_AUDIO_IN];
-static char audio_indevnames[MAXIMUM_MIDI_IN * DEVDESCSIZE];
+static char audio_indevnames[MAXIMUM_MIDI_IN * MAXIMUM_DEVICE_DESCRIPTION];
 static int audio_naudiooutdev = -1;
 static int audio_audiooutdev[MAXIMUM_AUDIO_OUT];
 static int audio_audiochoutdev[MAXIMUM_AUDIO_OUT];
-static char audio_outdevnames[MAXIMUM_MIDI_IN * DEVDESCSIZE];
+static char audio_outdevnames[MAXIMUM_MIDI_IN * MAXIMUM_DEVICE_DESCRIPTION];
 static int audio_rate;
 static int audio_advance = -1;
 static int audio_callback;
@@ -94,7 +92,7 @@ void sys_get_audio_params(
     for (i = 0; i < audio_naudioindev; i++)
     {
         if ((devn = sys_audiodevnametonumber(0,
-            &audio_indevnames[i * DEVDESCSIZE])) >= 0)
+            &audio_indevnames[i * MAXIMUM_DEVICE_DESCRIPTION])) >= 0)
                 paudioindev[i] = devn;
         else paudioindev[i] = audio_audioindev[i];
         chindev[i] = audio_audiochindev[i];
@@ -103,7 +101,7 @@ void sys_get_audio_params(
     for (i = 0; i < audio_naudiooutdev; i++)
     {
         if ((devn = sys_audiodevnametonumber(1,
-            &audio_outdevnames[i * DEVDESCSIZE])) >= 0)
+            &audio_outdevnames[i * MAXIMUM_DEVICE_DESCRIPTION])) >= 0)
                 paudiooutdev[i] = devn;
         else paudiooutdev[i] = audio_audiooutdev[i];
         choutdev[i] = audio_audiochoutdev[i]; 
@@ -126,7 +124,7 @@ void sys_save_audio_params(
         audio_audioindev[i] = audioindev[i],
         audio_audiochindev[i] = chindev[i];
         sys_audiodevnumbertoname(0, audioindev[i],
-            &audio_indevnames[i * DEVDESCSIZE], DEVDESCSIZE);
+            &audio_indevnames[i * MAXIMUM_DEVICE_DESCRIPTION], MAXIMUM_DEVICE_DESCRIPTION);
     }
     audio_naudiooutdev = naudiooutdev;
     for (i = 0; i < naudiooutdev; i++)
@@ -134,7 +132,7 @@ void sys_save_audio_params(
         audio_audiooutdev[i] = audiooutdev[i],
         audio_audiochoutdev[i] = choutdev[i];
         sys_audiodevnumbertoname(1, audiooutdev[i],
-            &audio_outdevnames[i * DEVDESCSIZE], DEVDESCSIZE);
+            &audio_outdevnames[i * MAXIMUM_DEVICE_DESCRIPTION], MAXIMUM_DEVICE_DESCRIPTION);
     }
     audio_rate = rate;
     audio_advance = advance;
@@ -209,10 +207,10 @@ void sys_set_audio_settings(int naudioindev, int *audioindev, int nchindev,
     int realindev[MAXIMUM_AUDIO_IN], realoutdev[MAXIMUM_AUDIO_OUT];
     int realinchans[MAXIMUM_AUDIO_IN], realoutchans[MAXIMUM_AUDIO_OUT];
 
-    char indevlist[MAXNDEV*DEVDESCSIZE], outdevlist[MAXNDEV*DEVDESCSIZE];
+    char indevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION], outdevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION];
     int indevs = 0, outdevs = 0, canmulti = 0, cancallback = 0;
     audio_getdevs(indevlist, &indevs, outdevlist, &outdevs, &canmulti,
-        &cancallback, MAXNDEV, DEVDESCSIZE);
+        &cancallback, MAXIMUM_DEVICE_NUMBER, MAXIMUM_DEVICE_DESCRIPTION);
 
     if (rate < 1)
         rate = AUDIO_DEFAULT_SAMPLING;
@@ -649,11 +647,11 @@ static void audio_getdevs(char *indevlist, int *nindevs,
 
 static void sys_listaudiodevs(void )
 {
-    char indevlist[MAXNDEV*DEVDESCSIZE], outdevlist[MAXNDEV*DEVDESCSIZE];
+    char indevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION], outdevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION];
     int nindevs = 0, noutdevs = 0, i, canmulti = 0, cancallback = 0;
 
     audio_getdevs(indevlist, &nindevs, outdevlist, &noutdevs, &canmulti,
-        &cancallback, MAXNDEV, DEVDESCSIZE);
+        &cancallback, MAXIMUM_DEVICE_NUMBER, MAXIMUM_DEVICE_DESCRIPTION);
 
     if (!nindevs)
         post("no audio input devices found");
@@ -666,7 +664,7 @@ static void sys_listaudiodevs(void )
         post("audio input devices:");
         for (i = 0; i < nindevs; i++)
             post("%d. %s", i + (sys_audioapi != API_MMIO),
-                indevlist + i * DEVDESCSIZE);
+                indevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
     }
     if (!noutdevs)
         post("no audio output devices found");
@@ -675,7 +673,7 @@ static void sys_listaudiodevs(void )
         post("audio output devices:");
         for (i = 0; i < noutdevs; i++)
             post("%d. %s", i + (sys_audioapi != API_MMIO),
-                outdevlist + i * DEVDESCSIZE);
+                outdevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
     }
     post("API number %d\n", sys_audioapi);
 }
@@ -684,7 +682,7 @@ static void sys_listaudiodevs(void )
     /* start an audio settings dialog window */
 void global_audioProperties(void *dummy, t_float flongform)
 {
-    char buf[1024 + 2 * MAXNDEV*(DEVDESCSIZE+4)];
+    char buf[1024 + 2 * MAXIMUM_DEVICE_NUMBER*(MAXIMUM_DEVICE_DESCRIPTION+4)];
         /* these are the devices you're using: */
     int naudioindev, audioindev[MAXIMUM_AUDIO_IN], chindev[MAXIMUM_AUDIO_IN];
     int naudiooutdev, audiooutdev[MAXIMUM_AUDIO_OUT], choutdev[MAXIMUM_AUDIO_OUT];
@@ -694,21 +692,21 @@ void global_audioProperties(void *dummy, t_float flongform)
         audiooutchan1, audiooutchan2, audiooutchan3, audiooutchan4;
     int rate, advance, callback, blocksize;
         /* these are all the devices on your system: */
-    char indevlist[MAXNDEV*DEVDESCSIZE], outdevlist[MAXNDEV*DEVDESCSIZE];
+    char indevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION], outdevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION];
     int nindevs = 0, noutdevs = 0, canmulti = 0, cancallback = 0, i;
 
     audio_getdevs(indevlist, &nindevs, outdevlist, &noutdevs, &canmulti,
-         &cancallback, MAXNDEV, DEVDESCSIZE);
+         &cancallback, MAXIMUM_DEVICE_NUMBER, MAXIMUM_DEVICE_DESCRIPTION);
 
     sys_gui("set ::ui_audio::audioIn {}\n");
     for (i = 0; i < nindevs; i++)
         sys_vGui("lappend ::ui_audio::audioIn {%s}\n",
-            indevlist + i * DEVDESCSIZE);
+            indevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
 
     sys_gui("set ::ui_audio::audioOut {}\n");
     for (i = 0; i < noutdevs; i++)
         sys_vGui("lappend ::ui_audio::audioOut {%s}\n",
-            outdevlist + i * DEVDESCSIZE);
+            outdevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
 
     sys_get_audio_params(&naudioindev, audioindev, chindev,
         &naudiooutdev, audiooutdev, choutdev, &rate, &advance, &callback,
@@ -822,6 +820,7 @@ void sys_set_audio_settings_reopen(int naudioindev, int *audioindev, int nchinde
     else scheduler_needToRestart();
 }
 
+/*
 void sys_listdevs(void )
 {
 #ifdef USEAPI_PORTAUDIO
@@ -858,7 +857,7 @@ void sys_listdevs(void )
 
     sys_listmididevs();
 }
-
+*/
 void sys_get_audio_devs(char *indevlist, int *nindevs,
     char *outdevlist, int *noutdevs, int *canmulti, int *cancallback, 
                         int maxndev, int devdescsize)
@@ -994,20 +993,20 @@ void alsa_printstate( void);
 
 int sys_audiodevnametonumber(int output, const char *name)
 {
-    char indevlist[MAXNDEV*DEVDESCSIZE], outdevlist[MAXNDEV*DEVDESCSIZE];
+    char indevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION], outdevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION];
     int nindevs = 0, noutdevs = 0, i, canmulti, cancallback;
 
     sys_get_audio_devs(indevlist, &nindevs, outdevlist, &noutdevs,
-        &canmulti, &cancallback, MAXNDEV, DEVDESCSIZE);
+        &canmulti, &cancallback, MAXIMUM_DEVICE_NUMBER, MAXIMUM_DEVICE_DESCRIPTION);
 
     if (output)
     {
         for (i = 0; i < noutdevs; i++)
         {
             unsigned int comp = strlen(name);
-            if (comp > strlen(outdevlist + i * DEVDESCSIZE))
-                comp = strlen(outdevlist + i * DEVDESCSIZE);
-            if (!strncmp(name, outdevlist + i * DEVDESCSIZE, comp))
+            if (comp > strlen(outdevlist + i * MAXIMUM_DEVICE_DESCRIPTION))
+                comp = strlen(outdevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
+            if (!strncmp(name, outdevlist + i * MAXIMUM_DEVICE_DESCRIPTION, comp))
                 return (i);
         }
     }
@@ -1016,9 +1015,9 @@ int sys_audiodevnametonumber(int output, const char *name)
         for (i = 0; i < nindevs; i++)
         {
             unsigned int comp = strlen(name);
-            if (comp > strlen(indevlist + i * DEVDESCSIZE))
-                comp = strlen(indevlist + i * DEVDESCSIZE);
-            if (!strncmp(name, indevlist + i * DEVDESCSIZE, comp))
+            if (comp > strlen(indevlist + i * MAXIMUM_DEVICE_DESCRIPTION))
+                comp = strlen(indevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
+            if (!strncmp(name, indevlist + i * MAXIMUM_DEVICE_DESCRIPTION, comp))
                 return (i);
         }
     }
@@ -1031,7 +1030,7 @@ int sys_audiodevnametonumber(int output, const char *name)
 
 void sys_audiodevnumbertoname(int output, int devno, char *name, int namesize)
 {
-    char indevlist[MAXNDEV*DEVDESCSIZE], outdevlist[MAXNDEV*DEVDESCSIZE];
+    char indevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION], outdevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION];
     int nindevs = 0, noutdevs = 0, i, canmulti, cancallback;
     if (devno < 0)
     {
@@ -1039,11 +1038,11 @@ void sys_audiodevnumbertoname(int output, int devno, char *name, int namesize)
         return;
     }
     sys_get_audio_devs(indevlist, &nindevs, outdevlist, &noutdevs,
-        &canmulti, &cancallback, MAXNDEV, DEVDESCSIZE);
+        &canmulti, &cancallback, MAXIMUM_DEVICE_NUMBER, MAXIMUM_DEVICE_DESCRIPTION);
     if (output && (devno < noutdevs))
-        strncpy(name, outdevlist + devno * DEVDESCSIZE, namesize);
+        strncpy(name, outdevlist + devno * MAXIMUM_DEVICE_DESCRIPTION, namesize);
     else if (!output && (devno < nindevs))
-        strncpy(name, indevlist + devno * DEVDESCSIZE, namesize);
+        strncpy(name, indevlist + devno * MAXIMUM_DEVICE_DESCRIPTION, namesize);
     else *name = 0;
     name[namesize-1] = 0;
 }

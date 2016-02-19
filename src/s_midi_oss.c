@@ -220,7 +220,7 @@ void sys_close_midi()
     oss_nmidiin = oss_nmidiout = 0;
 }
 
-void midi_oss_init(void)     
+void midi_initializeOSS(void)     
 {
     int fd, devno;
     struct stat statbuf;
@@ -293,7 +293,7 @@ void midi_getdevs(char *indevlist, int *nindevs,
     char *outdevlist, int *noutdevs, int maxndev, int devdescsize)
 {
     int i, ndev;
-    midi_oss_init();
+    midi_initializeOSS();
         
     if ((ndev = oss_nmidiindevs) > maxndev)
         ndev = maxndev;

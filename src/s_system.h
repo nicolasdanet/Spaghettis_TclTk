@@ -41,6 +41,13 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define MAXIMUM_DEVICE_NUMBER                   20
+#define MAXIMUM_DEVICE_DESCRIPTION              80
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define AUDIO_DEFAULT_DEVICE                    0
 #define AUDIO_DEFAULT_BLOCK                     64
 #define AUDIO_DEFAULT_SAMPLING                  44100
@@ -335,6 +342,9 @@ void        preferences_save                        (void *dummy);
 #pragma mark -
 
 void        midi_initialize                         (void);
+void        midi_initializeOSS                      (void);
+void        midi_initializeALSA                     (void);
+
 void        midi_setOffsets                         (void);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -390,7 +400,6 @@ void        sys_audiodevnumbertoname        (int output, int devno, char *name, 
 int         sys_send_dacs                   (void);
 void        sys_audiobuf                    (int nbufs);
 void        sys_getmeters                   (t_sample *inmax, t_sample *outmax);
-void        sys_listdevs                    (void);
 void        sys_setblocksize                (int n);
 
 void        sys_get_audio_devs              (char *indevlist,
@@ -633,7 +642,6 @@ void dummy_listdevs         (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_listmididevs       (void);
 void sys_set_midi_api       (int whichapi);
 void sys_set_audio_api      (int whichapi);
 void sys_set_audio_state    (int onoff);

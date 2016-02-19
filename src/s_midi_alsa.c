@@ -222,7 +222,7 @@ void sys_alsa_close_midi()
 
 static int alsa_nmidiindevs = 1, alsa_nmidioutdevs = 1;
 
-void midi_alsa_init(void)     
+void midi_initializeALSA(void)     
 {
 }
 

@@ -17,8 +17,36 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MIDI_QUEUE_SIZE          1024
-#define MIDI_UNDEFINED_OFFSET   -1e20
+#define MIDI_NOTEOFF                    0x80
+#define MIDI_NOTEON                     0x90
+#define MIDI_POLYPRESSURE               0xa0
+#define MIDI_CONTROLCHANGE              0xb0
+#define MIDI_PROGRAMCHANGE              0xc0
+#define MIDI_AFTERTOUCH                 0xd0
+#define MIDI_PITCHBEND                  0xe0
+
+#define MIDI_STARTSYSEX                 0xf0
+#define MIDI_TIMECODE                   0xf1
+#define MIDI_SONGPOS                    0xf2
+#define MIDI_SONGSELECT                 0xf3
+#define MIDI_RESERVED1                  0xf4
+#define MIDI_RESERVED2                  0xf5
+#define MIDI_TUNEREQUEST                0xf6
+#define MIDI_ENDSYSEX                   0xf7
+#define MIDI_CLOCK                      0xf8
+#define MIDI_TICK                       0xf9
+#define MIDI_START                      0xfa
+#define MIDI_CONTINUE                   0xfb
+#define MIDI_STOP                       0xfc
+#define MIDI_ACTIVESENSE                0xfe
+#define MIDI_RESET                      0xff
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define MIDI_QUEUE_SIZE                 1024
+#define MIDI_UNDEFINED_OFFSET           (-(DBL_MAX))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -32,6 +60,12 @@ typedef struct _midiqelem {
     unsigned char   q_byte2;
     unsigned char   q_byte3;
     } t_midiqelem;
+
+typedef struct _midiparser {
+    int mp_status;
+    int mp_gotByte1;
+    int mp_byte1;
+    } t_midiparser;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -50,6 +84,7 @@ static int          midi_inHead;                                            /* S
 static int          midi_inTail;                                            /* Shared. */
 
 static int          midi_api                    = API_DEFAULT_MIDI;         /* Shared. */
+static double       midi_realTimeAtStart;                                   /* Shared. */
 static double       midi_logicalTimeAtStart;                                /* Shared. */
 static double       midi_dacOffset;                                         /* Shared. */
 static double       midi_adcOffset;                                         /* Shared. */
@@ -63,10 +98,15 @@ static double       midi_needToUpdateTime;                                  /* S
 
 void midi_initialize (void)
 {
+    midi_realTimeAtStart    = sys_getRealTimeInSeconds();
     midi_logicalTimeAtStart = scheduler_getLogicalTime();
     midi_dacOffset          = 0.0;
     midi_adcOffset          = 0.0;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void midi_setOffsets (void)
 {
@@ -81,27 +121,29 @@ void midi_setOffsets (void)
         
     if (realLapse > midi_needToUpdateTime) {
     //
-    midi_dacOffset = midi_dacNewOffset;
-    midi_adcOffset = midi_adcNewOffset;
+    midi_dacOffset    = midi_dacNewOffset;
+    midi_adcOffset    = midi_adcNewOffset;
     midi_dacNewOffset = MIDI_UNDEFINED_OFFSET;
     midi_adcNewOffset = MIDI_UNDEFINED_OFFSET;
+    
     midi_needToUpdateTime = realLapse + 1.0;
     //
     }
 }
 
-    /* return the logical time of the DAC sample we believe is currently
-    going out, based on how much "system time" has elapsed since the
-    last time midi_setOffsets got called. */
-static double sys_getmidioutrealtime( void)
+static double midi_getRealTimeIn (void)
+{
+    return (sys_getRealTimeInSeconds() + midi_adcOffset);
+}
+
+static double midi_getRealTimeOut (void)
 {
     return (sys_getRealTimeInSeconds() + midi_dacOffset);
 }
 
-static double sys_getmidiinrealtime( void)
-{
-    return (sys_getRealTimeInSeconds() + midi_adcOffset);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void sys_putnext( void)
 {
@@ -127,30 +169,12 @@ static void sys_putnext( void)
     midi_outTail  = (midi_outTail + 1 == MIDI_QUEUE_SIZE ? 0 : midi_outTail + 1);
 }
 
-/*  #define TEST_DEJITTER */
-
 void sys_pollmidioutqueue( void)
 {
-#ifdef TEST_DEJITTER
-    static int db = 0;
-#endif
-    double midirealtime = sys_getmidioutrealtime();
-#ifdef TEST_DEJITTER
-    if (midi_outHead == midi_outTail)
-        db = 0;
-#endif
+    double midirealtime = midi_getRealTimeOut();
+
     while (midi_outHead != midi_outTail)
     {
-#ifdef TEST_DEJITTER
-        if (!db)
-        {
-            post("out: del %f, midiRT %f logicaltime %f, RT %f dacminusRT %f",
-                (midi_outQueue[midi_outTail].q_time - midirealtime),
-                    midirealtime, .001 * scheduler_getMillisecondsSince(midi_logicalTimeAtStart),
-                        sys_getRealTimeInSeconds(), midi_dacOffset);
-            db = 1;
-        }
-#endif
         if (midi_outQueue[midi_outTail].q_time <= midirealtime)
             sys_putnext();
         else break;
@@ -177,12 +201,9 @@ static void sys_queuemidimess(int portno, int onebyte, int a, int b, int c)
     sys_pollmidioutqueue();
 }
 
-#define MIDI_NOTEON 144
-#define MIDI_POLYAFTERTOUCH 160
-#define MIDI_CONTROLCHANGE 176
-#define MIDI_PROGRAMCHANGE 192
-#define MIDI_AFTERTOUCH 208
-#define MIDI_PITCHBEND 224
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void outmidi_noteon(int portno, int channel, int pitch, int velo)
 {
@@ -232,7 +253,7 @@ void outmidi_polyaftertouch(int portno, int channel, int pitch, int value)
     else if (pitch > 127) pitch = 127;
     if (value < 0) value = 0;
     else if (value > 127) value = 127;
-    sys_queuemidimess(portno, 0, MIDI_POLYAFTERTOUCH + (channel & 0xf),
+    sys_queuemidimess(portno, 0, MIDI_POLYPRESSURE + (channel & 0xf),
         pitch, value);
 }
 
@@ -255,47 +276,9 @@ void outmidi_byte(int portno, int value)
     }
 }
 
-/* ------------------------- MIDI input queue handling ------------------ */
-typedef struct midiparser
-{
-    int mp_status;
-    int mp_gotbyte1;
-    int mp_byte1;
-} t_midiparser;
-
-#define MIDINOTEOFF       0x80  /* 2 following 'data bytes' */
-#define MIDINOTEON        0x90  /* 2 */
-#define MIDIPOLYTOUCH     0xa0  /* 2 */
-#define MIDICONTROLCHANGE 0xb0  /* 2 */
-#define MIDIPROGRAMCHANGE 0xc0  /* 1 */
-#define MIDICHANNELTOUCH  0xd0  /* 1 */
-#define MIDIPITCHBEND     0xe0  /* 2 */
-#define MIDISTARTSYSEX    0xf0  /* (until F7) */
-#define MIDITIMECODE      0xf1  /* 1 */
-#define MIDISONGPOS       0xf2  /* 2 */
-#define MIDISONGSELECT    0xf3  /* 1 */
-#define MIDIRESERVED1     0xf4  /* ? */
-#define MIDIRESERVED2     0xf5  /* ? */
-#define MIDITUNEREQUEST   0xf6  /* 0 */
-#define MIDIENDSYSEX      0xf7  /* 0 */
-#define MIDICLOCK         0xf8  /* 0 */
-#define MIDITICK          0xf9  /* 0 */
-#define MIDISTART         0xfa  /* 0 */
-#define MIDICONT          0xfb  /* 0 */
-#define MIDISTOP          0xfc  /* 0 */
-#define MIDIACTIVESENSE   0xfe  /* 0 */
-#define MIDIRESET         0xff  /* 0 */
-
-    /* functions in x_midi.c */
-void inmidi_realtimein(int portno, int cmd);
-void inmidi_byte(int portno, int byte);
-void inmidi_sysex(int portno, int byte);
-void inmidi_noteon(int portno, int channel, int pitch, int velo);
-void inmidi_controlchange(int portno, int channel, int ctlnumber, int value);
-void inmidi_programchange(int portno, int channel, int value);
-void inmidi_pitchbend(int portno, int channel, int value);
-void inmidi_aftertouch(int portno, int channel, int value);
-void inmidi_polyaftertouch(int portno, int channel, int pitch, int value);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void sys_dispatchnextmidiin( void)
 {
@@ -313,15 +296,15 @@ static void sys_dispatchnextmidiin( void)
         inmidi_byte(portno, byte);
         if (byte & 0x80)
         {
-            if (byte == MIDITUNEREQUEST || byte == MIDIRESERVED1 ||
-                byte == MIDIRESERVED2)
+            if (byte == MIDI_TUNEREQUEST || byte == MIDI_RESERVED1 ||
+                byte == MIDI_RESERVED2)
                     parserp->mp_status = 0;
-            else if (byte == MIDISTARTSYSEX)
+            else if (byte == MIDI_STARTSYSEX)
             {
                 inmidi_sysex(portno, byte);
                 parserp->mp_status = byte;
             }
-            else if (byte == MIDIENDSYSEX)
+            else if (byte == MIDI_ENDSYSEX)
             {
                 inmidi_sysex(portno, byte);
                 parserp->mp_status = 0;
@@ -330,64 +313,64 @@ static void sys_dispatchnextmidiin( void)
             {
                 parserp->mp_status = byte;
             }
-            parserp->mp_gotbyte1 = 0;
+            parserp->mp_gotByte1 = 0;
         }
         else
         {
             int cmd = (parserp->mp_status >= 0xf0 ? parserp->mp_status :
                 (parserp->mp_status & 0xf0));
             int chan = (parserp->mp_status & 0xf);
-            int byte1 = parserp->mp_byte1, gotbyte1 = parserp->mp_gotbyte1;
+            int byte1 = parserp->mp_byte1, gotbyte1 = parserp->mp_gotByte1;
             switch (cmd)
             {
-            case MIDINOTEOFF:
+            case MIDI_NOTEOFF:
                 if (gotbyte1)
                     inmidi_noteon(portno, chan, byte1, 0),
-                        parserp->mp_gotbyte1 = 0;
-                else parserp->mp_byte1 = byte, parserp->mp_gotbyte1 = 1;
+                        parserp->mp_gotByte1 = 0;
+                else parserp->mp_byte1 = byte, parserp->mp_gotByte1 = 1;
                 break;
-            case MIDINOTEON:
+            case MIDI_NOTEON:
                 if (gotbyte1)
                     inmidi_noteon(portno, chan, byte1, byte),
-                        parserp->mp_gotbyte1 = 0;
-                else parserp->mp_byte1 = byte, parserp->mp_gotbyte1 = 1;
+                        parserp->mp_gotByte1 = 0;
+                else parserp->mp_byte1 = byte, parserp->mp_gotByte1 = 1;
                 break;
-            case MIDIPOLYTOUCH:
+            case MIDI_POLYPRESSURE:
                 if (gotbyte1)
                     inmidi_polyaftertouch(portno, chan, byte1, byte),
-                        parserp->mp_gotbyte1 = 0;
-                else parserp->mp_byte1 = byte, parserp->mp_gotbyte1 = 1;
+                        parserp->mp_gotByte1 = 0;
+                else parserp->mp_byte1 = byte, parserp->mp_gotByte1 = 1;
                 break;
-            case MIDICONTROLCHANGE:
+            case MIDI_CONTROLCHANGE:
                 if (gotbyte1)
                     inmidi_controlchange(portno, chan, byte1, byte),
-                        parserp->mp_gotbyte1 = 0;
-                else parserp->mp_byte1 = byte, parserp->mp_gotbyte1 = 1;
+                        parserp->mp_gotByte1 = 0;
+                else parserp->mp_byte1 = byte, parserp->mp_gotByte1 = 1;
                 break;
-            case MIDIPROGRAMCHANGE:
+            case MIDI_PROGRAMCHANGE:
                 inmidi_programchange(portno, chan, byte);
                 break;
-            case MIDICHANNELTOUCH:
+            case MIDI_AFTERTOUCH:
                 inmidi_aftertouch(portno, chan, byte);
                 break;
-            case MIDIPITCHBEND:
+            case MIDI_PITCHBEND:
                 if (gotbyte1)
                     inmidi_pitchbend(portno, chan, ((byte << 7) + byte1)),
-                        parserp->mp_gotbyte1 = 0;
-                else parserp->mp_byte1 = byte, parserp->mp_gotbyte1 = 1;
+                        parserp->mp_gotByte1 = 0;
+                else parserp->mp_byte1 = byte, parserp->mp_gotByte1 = 1;
                 break;
-            case MIDISTARTSYSEX:
+            case MIDI_STARTSYSEX:
                 inmidi_sysex(portno, byte);
                 break;
                 
                 /* other kinds of messages are just dropped here.  We'll
                 need another status byte before we start letting MIDI in
                 again (no running status across "system" messages). */
-            case MIDITIMECODE:     /* 1 data byte*/
+            case MIDI_TIMECODE:     /* 1 data byte*/
                 break;
-            case MIDISONGPOS:       /* 2 */
+            case MIDI_SONGPOS:       /* 2 */
                 break;
-            case MIDISONGSELECT:    /* 1 */
+            case MIDI_SONGSELECT:    /* 1 */
                 break;
             }
         }
@@ -397,36 +380,12 @@ static void sys_dispatchnextmidiin( void)
 
 void sys_pollmidiinqueue( void)
 {
-#ifdef TEST_DEJITTER
-    static int db = 0;
-#endif
     double logicaltime = .001 * scheduler_getMillisecondsSince(midi_logicalTimeAtStart);
-#ifdef TEST_DEJITTER
-    if (midi_inHead == midi_inTail)
-        db = 0;
-#endif
+
     while (midi_inHead != midi_inTail)
     {
-#ifdef TEST_DEJITTER
-        if (!db)
-        {
-            post("in del %f, logicaltime %f, RT %f adcminusRT %f",
-                (midi_inQueue[midi_inTail].q_time - logicaltime),
-                    logicaltime, sys_getRealTimeInSeconds(), midi_adcOffset);
-            db = 1;
-        }
-#endif
-#if 0
-        if (midi_inQueue[midi_inTail].q_time <= logicaltime - 0.007)
-            post("late %f",
-                1000 * (logicaltime - midi_inQueue[midi_inTail].q_time));
-#endif
         if (midi_inQueue[midi_inTail].q_time <= logicaltime)
         {
-#if 0
-            post("diff %f",
-                1000* (logicaltime - midi_inQueue[midi_inTail].q_time));
-#endif
             sys_dispatchnextmidiin();
         }
         else break;
@@ -458,7 +417,7 @@ void sys_midibytein(int portno, int byte)
     midi_inQueue[midi_inHead].q_portNumber = portno;
     midi_inQueue[midi_inHead].q_hasOneByte = 1;
     midi_inQueue[midi_inHead].q_byte1 = byte;
-    midi_inQueue[midi_inHead].q_time = sys_getmidiinrealtime();
+    midi_inQueue[midi_inHead].q_time = midi_getRealTimeIn();
     midi_inHead = newhead;
     sys_pollmidiinqueue();
 }
@@ -482,28 +441,17 @@ void sys_pollmidiqueue( void)
     sys_pollmidiinqueue();
 }
 
-/******************** dialog window and device listing ********************/
-
-#define MAXNDEV 20
-#define DEVDESCSIZE 80
-
-#define DEVONSET 1  /* To agree with command line flags, normally start at 1 */
-
-
-#ifdef USEAPI_ALSA
-void midi_alsa_init( void);
-#endif
-#ifdef USEAPI_OSS
-void midi_oss_init( void);
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* last requested parameters */
 static int midi_nmidiindev;
 static int midi_midiindev[MAXIMUM_MIDI_IN];
-static char midi_indevnames[MAXIMUM_MIDI_IN * DEVDESCSIZE];
+static char midi_indevnames[MAXIMUM_MIDI_IN * MAXIMUM_DEVICE_DESCRIPTION];
 static int midi_nmidioutdev;
 static int midi_midioutdev[MAXIMUM_MIDI_OUT];
-static char midi_outdevnames[MAXIMUM_MIDI_IN * DEVDESCSIZE];
+static char midi_outdevnames[MAXIMUM_MIDI_IN * MAXIMUM_DEVICE_DESCRIPTION];
 
 void sys_get_midi_apis(char *buf)
 {
@@ -529,7 +477,7 @@ void sys_get_midi_params(int *pnmidiindev, int *pmidiindev,
     for (i = 0; i < midi_nmidiindev; i++)
     {
         if ((devn = sys_mididevnametonumber(0,
-            &midi_indevnames[i * DEVDESCSIZE])) >= 0)
+            &midi_indevnames[i * MAXIMUM_DEVICE_DESCRIPTION])) >= 0)
                 pmidiindev[i] = devn;
         else pmidiindev[i] = midi_midiindev[i]; 
     }
@@ -537,7 +485,7 @@ void sys_get_midi_params(int *pnmidiindev, int *pmidiindev,
     for (i = 0; i < midi_nmidioutdev; i++)
     {
         if ((devn = sys_mididevnametonumber(1,
-            &midi_outdevnames[i * DEVDESCSIZE])) >= 0)
+            &midi_outdevnames[i * MAXIMUM_DEVICE_DESCRIPTION])) >= 0)
                 pmidioutdev[i] = devn;
         else pmidioutdev[i] = midi_midioutdev[i]; 
     }
@@ -553,14 +501,14 @@ static void sys_save_midi_params(
     {
         midi_midiindev[i] = midiindev[i];
         sys_mididevnumbertoname(0, midiindev[i],
-            &midi_indevnames[i * DEVDESCSIZE], DEVDESCSIZE);
+            &midi_indevnames[i * MAXIMUM_DEVICE_DESCRIPTION], MAXIMUM_DEVICE_DESCRIPTION);
     }
     midi_nmidioutdev = nmidioutdev;
     for (i = 0; i < nmidioutdev; i++)
     {
         midi_midioutdev[i] = midioutdev[i]; 
         sys_mididevnumbertoname(1, midioutdev[i],
-            &midi_outdevnames[i * DEVDESCSIZE], DEVDESCSIZE);
+            &midi_outdevnames[i * MAXIMUM_DEVICE_DESCRIPTION], MAXIMUM_DEVICE_DESCRIPTION);
     }
 }
 
@@ -570,10 +518,10 @@ void sys_open_midi(int nmidiindev, int *midiindev,
     if (enable)
     {
 #ifdef USEAPI_ALSA
-        midi_alsa_init();
+        midi_initializeALSA();
 #endif
 #ifdef USEAPI_OSS
-        midi_oss_init();
+        midi_initializeOSS();
 #endif
 #ifdef USEAPI_ALSA
         if (midi_api == API_ALSA)
@@ -598,13 +546,14 @@ void sys_reopen_midi( void)
     sys_open_midi(nmidiindev, midiindev, nmidioutdev, midioutdev, 1);
 }
 
+/*
 void sys_listmididevs(void )
 {
-    char indevlist[MAXNDEV*DEVDESCSIZE], outdevlist[MAXNDEV*DEVDESCSIZE];
+    char indevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION], outdevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION];
     int nindevs = 0, noutdevs = 0, i;
 
     sys_get_midi_devs(indevlist, &nindevs, outdevlist, &noutdevs,
-        MAXNDEV, DEVDESCSIZE);
+        MAXIMUM_DEVICE_NUMBER, MAXIMUM_DEVICE_DESCRIPTION);
 
     if (!nindevs)
         post("no midi input devices found");
@@ -612,7 +561,7 @@ void sys_listmididevs(void )
     {
         post("MIDI input devices:");
         for (i = 0; i < nindevs; i++)
-            post("%d. %s", i+1, indevlist + i * DEVDESCSIZE);
+            post("%d. %s", i+1, indevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
     }
     if (!noutdevs)
         post("no midi output devices found");
@@ -620,10 +569,10 @@ void sys_listmididevs(void )
     {
         post("MIDI output devices:");
         for (i = 0; i < noutdevs; i++)
-            post("%d. %s", i+DEVONSET, outdevlist + i * DEVDESCSIZE);
+            post("%d. %s", i+DEVONSET, outdevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
     }
 }
-
+*/
 void sys_set_midi_api(int which)
 {
      midi_api = which;
@@ -659,7 +608,7 @@ extern t_class *global_object;
     /* start an midi settings dialog window */
 void global_midiProperties(void *dummy, t_float flongform)
 {
-    char buf[1024 + 2 * MAXNDEV*(DEVDESCSIZE+4)];
+    char buf[1024 + 2 * MAXIMUM_DEVICE_NUMBER*(MAXIMUM_DEVICE_DESCRIPTION+4)];
         /* these are the devices you're using: */
     int nindev, midiindev[MAXIMUM_MIDI_IN];
     int noutdev, midioutdev[MAXIMUM_MIDI_OUT];
@@ -669,21 +618,21 @@ void global_midiProperties(void *dummy, t_float flongform)
         midioutdev6, midioutdev7, midioutdev8, midioutdev9;
 
         /* these are all the devices on your system: */
-    char indevlist[MAXNDEV*DEVDESCSIZE], outdevlist[MAXNDEV*DEVDESCSIZE];
+    char indevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION], outdevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION];
     int nindevs = 0, noutdevs = 0, i;
 
     sys_get_midi_devs(indevlist, &nindevs, outdevlist, &noutdevs,
-        MAXNDEV, DEVDESCSIZE);
+        MAXIMUM_DEVICE_NUMBER, MAXIMUM_DEVICE_DESCRIPTION);
 
     sys_gui("set ::ui_midi::midiIn {none}\n");
     for (i = 0; i < nindevs; i++)
         sys_vGui("lappend ::ui_midi::midiIn {%s}\n",
-            indevlist + i * DEVDESCSIZE);
+            indevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
 
     sys_gui("set ::ui_midi::midiOut {none}\n");
     for (i = 0; i < noutdevs; i++)
         sys_vGui("lappend ::ui_midi::midiOut {%s}\n",
-            outdevlist + i * DEVDESCSIZE);
+            outdevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
 
     sys_get_midi_params(&nindev, midiindev, &noutdev, midioutdev);
 
@@ -818,39 +767,39 @@ void sys_get_midi_devs(char *indevlist, int *nindevs,
 
 int sys_mididevnametonumber(int output, const char *name)
 {
-    char indevlist[MAXNDEV*DEVDESCSIZE], outdevlist[MAXNDEV*DEVDESCSIZE];
+    char indevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION], outdevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION];
     int nindevs = 0, noutdevs = 0, i;
 
     sys_get_midi_devs(indevlist, &nindevs, outdevlist, &noutdevs,
-        MAXNDEV, DEVDESCSIZE);
+        MAXIMUM_DEVICE_NUMBER, MAXIMUM_DEVICE_DESCRIPTION);
 
     if (output)
     {
             /* try first for exact match */
         for (i = 0; i < noutdevs; i++)
-            if (!strcmp(name, outdevlist + i * DEVDESCSIZE))
+            if (!strcmp(name, outdevlist + i * MAXIMUM_DEVICE_DESCRIPTION))
                 return (i);
             /* failing that, a match up to end of shorter string */
         for (i = 0; i < noutdevs; i++)
         {
             unsigned int comp = strlen(name);
-            if (comp > strlen(outdevlist + i * DEVDESCSIZE))
-                comp = strlen(outdevlist + i * DEVDESCSIZE);
-            if (!strncmp(name, outdevlist + i * DEVDESCSIZE, comp))
+            if (comp > strlen(outdevlist + i * MAXIMUM_DEVICE_DESCRIPTION))
+                comp = strlen(outdevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
+            if (!strncmp(name, outdevlist + i * MAXIMUM_DEVICE_DESCRIPTION, comp))
                 return (i);
         }
     }
     else
     {
         for (i = 0; i < nindevs; i++)
-            if (!strcmp(name, indevlist + i * DEVDESCSIZE))
+            if (!strcmp(name, indevlist + i * MAXIMUM_DEVICE_DESCRIPTION))
                 return (i);
         for (i = 0; i < nindevs; i++)
         {
             unsigned int comp = strlen(name);
-            if (comp > strlen(indevlist + i * DEVDESCSIZE))
-                comp = strlen(indevlist + i * DEVDESCSIZE);
-            if (!strncmp(name, indevlist + i * DEVDESCSIZE, comp))
+            if (comp > strlen(indevlist + i * MAXIMUM_DEVICE_DESCRIPTION))
+                comp = strlen(indevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
+            if (!strncmp(name, indevlist + i * MAXIMUM_DEVICE_DESCRIPTION, comp))
                 return (i);
         }
     }
@@ -863,7 +812,7 @@ int sys_mididevnametonumber(int output, const char *name)
 
 void sys_mididevnumbertoname(int output, int devno, char *name, int namesize)
 {
-    char indevlist[MAXNDEV*DEVDESCSIZE], outdevlist[MAXNDEV*DEVDESCSIZE];
+    char indevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION], outdevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION];
     int nindevs = 0, noutdevs = 0, i;
     if (devno < 0)
     {
@@ -871,11 +820,11 @@ void sys_mididevnumbertoname(int output, int devno, char *name, int namesize)
         return;
     }
     sys_get_midi_devs(indevlist, &nindevs, outdevlist, &noutdevs,
-        MAXNDEV, DEVDESCSIZE);
+        MAXIMUM_DEVICE_NUMBER, MAXIMUM_DEVICE_DESCRIPTION);
     if (output && (devno < noutdevs))
-        strncpy(name, outdevlist + devno * DEVDESCSIZE, namesize);
+        strncpy(name, outdevlist + devno * MAXIMUM_DEVICE_DESCRIPTION, namesize);
     else if (!output && (devno < nindevs))
-        strncpy(name, indevlist + devno * DEVDESCSIZE, namesize);
+        strncpy(name, indevlist + devno * MAXIMUM_DEVICE_DESCRIPTION, namesize);
     else *name = 0;
     name[namesize-1] = 0;
 }
