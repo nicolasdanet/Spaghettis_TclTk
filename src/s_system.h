@@ -120,6 +120,16 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#if defined ( USEAPI_ALSA )
+    #define API_WITH_ALSA                       1
+#else
+    #define API_WITH_ALSA                       0
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* LCM (32000, 44100, 48000, 88200, 96000). */
     
 #define SYSTIME_CLOCKS_PER_MILLISECOND          (double)(32.0 * 441.0)
@@ -351,6 +361,33 @@ void        midi_setOffsets                         (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        inmidi_realtimein                       (int portno, int cmd);
+void        inmidi_byte                             (int portno, int byte);
+void        inmidi_sysex                            (int portno, int byte);
+void        inmidi_noteon                           (int portno, int channel, int pitch, int velo);
+void        inmidi_controlchange                    (int portno, int channel, int ctlnumber, int value);
+void        inmidi_programchange                    (int portno, int channel, int value);
+void        inmidi_pitchbend                        (int portno, int channel, int value);
+void        inmidi_aftertouch                       (int portno, int channel, int value);
+void        inmidi_polyaftertouch                   (int portno, int channel, int pitch, int value);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        outmidi_noteon                          (int portno, int channel, int pitch, int velo);
+void        outmidi_controlchange                   (int portno, int channel, int ctlno, int value);
+void        outmidi_programchange                   (int portno, int channel, int value);
+void        outmidi_pitchbend                       (int portno, int channel, int value);
+void        outmidi_aftertouch                      (int portno, int channel, int value);
+void        outmidi_polyaftertouch                  (int portno, int channel, int pitch, int value);
+void        outmidi_mclk                            (int portno);
+void        outmidi_byte                            (int portno, int value);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void        post_atoms                              (int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -462,8 +499,6 @@ void        sys_do_open_midi                (int nmidiindev,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#ifdef USEAPI_ALSA
-
 void sys_alsa_putmidimess       (int portno, int a, int b, int c);
 void sys_alsa_putmidibyte       (int portno, int a);
 void sys_alsa_poll_midi         (void);
@@ -483,8 +518,6 @@ void sys_alsa_do_open_midi      (int nmidiindev,
                                     int nmidioutdev,
                                     int *midioutdev);
     
-#endif // USEAPI_ALSA
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -671,20 +704,6 @@ void sys_save_audio_params  (int naudioindev,
                                 int advance,
                                 int callback,
                                 int blocksize);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void inmidi_realtimein          (int portno, int cmd);
-void inmidi_byte                (int portno, int byte);
-void inmidi_sysex               (int portno, int byte);
-void inmidi_noteon              (int portno, int channel, int pitch, int velo);
-void inmidi_controlchange       (int portno, int channel, int ctlnumber, int value);
-void inmidi_programchange       (int portno, int channel, int value);
-void inmidi_pitchbend           (int portno, int channel, int value);
-void inmidi_aftertouch          (int portno, int channel, int value);
-void inmidi_polyaftertouch      (int portno, int channel, int pitch, int value);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

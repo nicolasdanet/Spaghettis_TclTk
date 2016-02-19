@@ -7,14 +7,7 @@
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-void outmidi_noteon(int portno, int channel, int pitch, int velo);
-void outmidi_controlchange(int portno, int channel, int ctlno, int value);
-void outmidi_programchange(int portno, int channel, int value);
-void outmidi_pitchbend(int portno, int channel, int value);
-void outmidi_aftertouch(int portno, int channel, int value);
-void outmidi_polyaftertouch(int portno, int channel, int pitch, int value);
-void outmidi_mclk(int portno);
-void outmidi_byte(int portno, int value);
+#include "s_system.h"
 
 extern t_pdinstance *pd_this;
 
@@ -623,8 +616,6 @@ void inmidi_realtimein(int portno, int SysMsg)
 /* -------------------------- midiout -------------------------- */
 
 static t_class *midiout_class;
-
-void sys_putmidibyte(int portno, int byte);
 
 typedef struct _midiout
 {

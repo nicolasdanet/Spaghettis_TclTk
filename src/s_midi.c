@@ -131,57 +131,71 @@ void midi_setOffsets (void)
     }
 }
 
-static double midi_getRealTimeIn (void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static double midi_getTimeIn (void)
 {
     return (sys_getRealTimeInSeconds() + midi_adcOffset);
 }
 
-static double midi_getRealTimeOut (void)
+static double midi_getTimeOut (void)
 {
     return (sys_getRealTimeInSeconds() + midi_dacOffset);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
-static void sys_putnext( void)
+static void midi_pushNextByte (int port, int a)
 {
-    int portno = midi_outQueue[midi_outTail].q_portNumber;
-#ifdef USEAPI_ALSA
-    if (midi_api == API_ALSA)
-      {
-        if (midi_outQueue[midi_outTail].q_hasOneByte)
-          sys_alsa_putmidibyte(portno, midi_outQueue[midi_outTail].q_byte1);
-        else sys_alsa_putmidimess(portno, midi_outQueue[midi_outTail].q_byte1,
-                             midi_outQueue[midi_outTail].q_byte2,
-                             midi_outQueue[midi_outTail].q_byte3);
-      }
-    else
-#endif /* ALSA */
-      {
-        if (midi_outQueue[midi_outTail].q_hasOneByte)
-          sys_putmidibyte(portno, midi_outQueue[midi_outTail].q_byte1);
-        else sys_putmidimess(portno, midi_outQueue[midi_outTail].q_byte1,
-                             midi_outQueue[midi_outTail].q_byte2,
-                             midi_outQueue[midi_outTail].q_byte3);
-      }
-    midi_outTail  = (midi_outTail + 1 == MIDI_QUEUE_SIZE ? 0 : midi_outTail + 1);
-}
-
-void sys_pollmidioutqueue( void)
-{
-    double midirealtime = midi_getRealTimeOut();
-
-    while (midi_outHead != midi_outTail)
-    {
-        if (midi_outQueue[midi_outTail].q_time <= midirealtime)
-            sys_putnext();
-        else break;
+    if (API_WITH_ALSA && midi_api == API_ALSA) { sys_alsa_putmidibyte (port, a); }
+    else {
+        sys_putmidibyte (port, a);
     }
 }
 
-static void sys_queuemidimess(int portno, int onebyte, int a, int b, int c)
+static void midi_pushNextMessage (int port, int a, int b, int c)
+{
+    if (API_WITH_ALSA && midi_api == API_ALSA) { sys_alsa_putmidimess (port, a, b, c); }
+    else {
+        sys_putmidimess (port, a, b, c);
+    }
+}
+
+static void midi_pushNext (void)
+{
+    t_midiqelem *e = midi_outQueue + midi_outTail;
+        
+    if (e->q_hasOneByte) { midi_pushNextByte (e->q_portNumber, e->q_byte1); }
+    else {
+        midi_pushNextMessage (e->q_portNumber, e->q_byte1, e->q_byte2, e->q_byte3);
+    }   
+    
+    midi_outTail = (midi_outTail + 1 == MIDI_QUEUE_SIZE ? 0 : midi_outTail + 1);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void midi_pollOut (void)
+{
+    double t = midi_getTimeOut();
+
+    while (midi_outHead != midi_outTail) {
+        if (midi_outQueue[midi_outTail].q_time <= t) { midi_pushNext(); }
+        else { 
+            break;
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void outmidi_append (int portno, int onebyte, int a, int b, int c)
 {
     t_midiqelem *midiqelem;
     int newhead = midi_outHead +1;
@@ -189,7 +203,7 @@ static void sys_queuemidimess(int portno, int onebyte, int a, int b, int c)
         newhead = 0;
             /* if FIFO is full flush an element to make room */
     if (newhead == midi_outTail)
-        sys_putnext();
+        midi_pushNext();
     midi_outQueue[midi_outHead].q_portNumber = portno;
     midi_outQueue[midi_outHead].q_hasOneByte = onebyte;
     midi_outQueue[midi_outHead].q_byte1 = a;
@@ -198,12 +212,11 @@ static void sys_queuemidimess(int portno, int onebyte, int a, int b, int c)
     midi_outQueue[midi_outHead].q_time =
         .001 * scheduler_getMillisecondsSince(midi_logicalTimeAtStart);
     midi_outHead = newhead;
-    sys_pollmidioutqueue();
+    midi_pollOut();
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 void outmidi_noteon(int portno, int channel, int pitch, int velo)
 {
@@ -211,7 +224,7 @@ void outmidi_noteon(int portno, int channel, int pitch, int velo)
     else if (pitch > 127) pitch = 127;
     if (velo < 0) velo = 0;
     else if (velo > 127) velo = 127;
-    sys_queuemidimess(portno, 0, MIDI_NOTEON + (channel & 0xf), pitch, velo);
+    outmidi_append(portno, 0, MIDI_NOTEON + (channel & 0xf), pitch, velo);
 }
 
 void outmidi_controlchange(int portno, int channel, int ctl, int value)
@@ -220,7 +233,7 @@ void outmidi_controlchange(int portno, int channel, int ctl, int value)
     else if (ctl > 127) ctl = 127;
     if (value < 0) value = 0;
     else if (value > 127) value = 127;
-    sys_queuemidimess(portno, 0, MIDI_CONTROLCHANGE + (channel & 0xf),
+    outmidi_append(portno, 0, MIDI_CONTROLCHANGE + (channel & 0xf),
         ctl, value);
 }
 
@@ -228,7 +241,7 @@ void outmidi_programchange(int portno, int channel, int value)
 {
     if (value < 0) value = 0;
     else if (value > 127) value = 127;
-    sys_queuemidimess(portno, 0,
+    outmidi_append(portno, 0,
         MIDI_PROGRAMCHANGE + (channel & 0xf), value, 0);
 }
 
@@ -236,7 +249,7 @@ void outmidi_pitchbend(int portno, int channel, int value)
 {
     if (value < 0) value = 0;
     else if (value > 16383) value = 16383;
-    sys_queuemidimess(portno, 0, MIDI_PITCHBEND + (channel & 0xf),
+    outmidi_append(portno, 0, MIDI_PITCHBEND + (channel & 0xf),
         (value & 127), ((value>>7) & 127));
 }
 
@@ -244,7 +257,7 @@ void outmidi_aftertouch(int portno, int channel, int value)
 {
     if (value < 0) value = 0;
     else if (value > 127) value = 127;
-    sys_queuemidimess(portno, 0, MIDI_AFTERTOUCH + (channel & 0xf), value, 0);
+    outmidi_append(portno, 0, MIDI_AFTERTOUCH + (channel & 0xf), value, 0);
 }
 
 void outmidi_polyaftertouch(int portno, int channel, int pitch, int value)
@@ -253,13 +266,13 @@ void outmidi_polyaftertouch(int portno, int channel, int pitch, int value)
     else if (pitch > 127) pitch = 127;
     if (value < 0) value = 0;
     else if (value > 127) value = 127;
-    sys_queuemidimess(portno, 0, MIDI_POLYPRESSURE + (channel & 0xf),
+    outmidi_append(portno, 0, MIDI_POLYPRESSURE + (channel & 0xf),
         pitch, value);
 }
 
 void outmidi_mclk(int portno)
 {
-   sys_queuemidimess(portno, 1, 0xf8, 0,0);
+   outmidi_append(portno, 1, 0xf8, 0,0);
 }
 
 void outmidi_byte(int portno, int value)
@@ -417,7 +430,7 @@ void sys_midibytein(int portno, int byte)
     midi_inQueue[midi_inHead].q_portNumber = portno;
     midi_inQueue[midi_inHead].q_hasOneByte = 1;
     midi_inQueue[midi_inHead].q_byte1 = byte;
-    midi_inQueue[midi_inHead].q_time = midi_getRealTimeIn();
+    midi_inQueue[midi_inHead].q_time = midi_getTimeIn();
     midi_inHead = newhead;
     sys_pollmidiinqueue();
 }
@@ -437,7 +450,7 @@ void sys_pollmidiqueue( void)
       else
 #endif /* ALSA */
     sys_poll_midi();    /* OS dependent poll for MIDI input */
-    sys_pollmidioutqueue();
+    midi_pollOut();
     sys_pollmidiinqueue();
 }
 
