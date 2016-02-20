@@ -8,8 +8,63 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
+#include "s_midi.h"
 
 extern t_pdinstance *pd_this;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void outmidi_noteOn (int port, int channel, int pitch, int velocity)
+{
+    pitch    = PD_CLAMP (pitch, 0, 127);
+    velocity = PD_CLAMP (velocity, 0, 127);
+
+    midi_broadcast (port, 0, MIDI_NOTEON + (channel & 0xf), pitch, velocity);
+}
+
+void outmidi_controlChange (int port, int channel, int control, int value)
+{
+    control = PD_CLAMP (control, 0, 127);
+    value   = PD_CLAMP (value, 0, 127);
+    
+    midi_broadcast (port, 0, MIDI_CONTROLCHANGE + (channel & 0xf), control, value);
+}
+
+void outmidi_programChange (int port, int channel, int value)
+{
+    value = PD_CLAMP (value, 0, 127);
+    
+    midi_broadcast (port, 0, MIDI_PROGRAMCHANGE + (channel & 0xf), value, 0);
+}
+
+void outmidi_pitchBend (int port, int channel, int value)
+{
+    value = PD_CLAMP (value, 0, 16383);     // 0x3fff 
+    
+    midi_broadcast (port, 0, MIDI_PITCHBEND + (channel & 0xf), (value & 127), ((value >> 7) & 127));
+}
+
+void outmidi_afterTouch (int port, int channel, int value)
+{
+    value = PD_CLAMP (value, 0, 127);
+    
+    midi_broadcast (port, 0, MIDI_AFTERTOUCH + (channel & 0xf), value, 0);
+}
+
+void outmidi_polyPressure (int port, int channel, int pitch, int value)
+{
+    pitch = PD_CLAMP (pitch, 0, 127);
+    value = PD_CLAMP (value, 0, 127);
+    
+    midi_broadcast (port, 0, MIDI_POLYPRESSURE + (channel & 0xf), pitch, value);
+}
+
+void outmidi_clock (int port)
+{
+    midi_broadcast (port, 1, MIDI_CLOCK, 0, 0);
+}
 
 /* ----------------------- midiin and sysexin ------------------------- */
 
@@ -149,7 +204,7 @@ static void notein_setup(void)
     class_setHelpName(notein_class, gensym("midiout"));
 }
 
-void inmidi_noteon(int portno, int channel, int pitch, int velo)
+void inmidi_noteOn(int portno, int channel, int pitch, int velo)
 {
     if (pd_this->sym_notein->s_thing)
     {
@@ -220,7 +275,7 @@ static void ctlin_setup(void)
     class_setHelpName(ctlin_class, gensym("midiout"));
 }
 
-void inmidi_controlchange(int portno, int channel, int ctlnumber, int value)
+void inmidi_controlChange(int portno, int channel, int ctlnumber, int value)
 {
     if (pd_this->sym_ctlin->s_thing)
     {
@@ -284,7 +339,7 @@ static void pgmin_setup(void)
     class_setHelpName(pgmin_class, gensym("midiout"));
 }
 
-void inmidi_programchange(int portno, int channel, int value)
+void inmidi_programChange(int portno, int channel, int value)
 {
     if (pd_this->sym_pgmin->s_thing)
     {
@@ -346,7 +401,7 @@ static void bendin_setup(void)
     class_setHelpName(bendin_class, gensym("midiout"));
 }
 
-void inmidi_pitchbend(int portno, int channel, int value)
+void inmidi_pitchBend(int portno, int channel, int value)
 {
     if (pd_this->sym_bendin->s_thing)
     {
@@ -409,7 +464,7 @@ static void touchin_setup(void)
     class_setHelpName(touchin_class, gensym("midiout"));
 }
 
-void inmidi_aftertouch(int portno, int channel, int value)
+void inmidi_afterTouch(int portno, int channel, int value)
 {
     if (pd_this->sym_touchin->s_thing)
     {
@@ -478,7 +533,7 @@ static void polytouchin_setup(void)
     class_setHelpName(polytouchin_class, gensym("midiout"));
 }
 
-void inmidi_polypressure(int portno, int channel, int pitch, int value)
+void inmidi_polyPressure(int portno, int channel, int pitch, int value)
 {
     if (pd_this->sym_polytouchin->s_thing)
     {
@@ -602,7 +657,7 @@ static void midirealtimein_setup(void)
         class_setHelpName(midirealtimein_class, gensym("midiout"));
 }
 
-void inmidi_realtimein(int portno, int SysMsg)
+void inmidi_realTimeIn(int portno, int SysMsg)
 {
     if (pd_this->sym_midirealtimein->s_thing)
     {

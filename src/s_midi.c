@@ -12,34 +12,7 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define MIDI_NOTEOFF                    0x80
-#define MIDI_NOTEON                     0x90
-#define MIDI_POLYPRESSURE               0xa0
-#define MIDI_CONTROLCHANGE              0xb0
-#define MIDI_PROGRAMCHANGE              0xc0
-#define MIDI_AFTERTOUCH                 0xd0
-#define MIDI_PITCHBEND                  0xe0
-
-#define MIDI_STARTSYSEX                 0xf0
-#define MIDI_TIMECODE                   0xf1
-#define MIDI_SONGPOS                    0xf2
-#define MIDI_SONGSELECT                 0xf3
-#define MIDI_RESERVED1                  0xf4
-#define MIDI_RESERVED2                  0xf5
-#define MIDI_TUNEREQUEST                0xf6
-#define MIDI_ENDSYSEX                   0xf7
-#define MIDI_CLOCK                      0xf8
-#define MIDI_TICK                       0xf9
-#define MIDI_START                      0xfa
-#define MIDI_CONTINUE                   0xfb
-#define MIDI_STOP                       0xfc
-#define MIDI_ACTIVESENSE                0xfe
-#define MIDI_RESET                      0xff
+#include "s_midi.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -202,7 +175,7 @@ static void midi_dispatchNext (void)
     PD_ASSERT (midi_inQueue[midi_inTail].q_hasOneByte);
     PD_ASSERT (port >= 0 || port < MAXIMUM_MIDI_IN);
     
-    if (byte >= MIDI_CLOCK) { inmidi_realtimein (port, byte); }
+    if (byte >= MIDI_CLOCK) { inmidi_realTimeIn (port, byte); }
     else {
     //
     inmidi_byte (port, byte);
@@ -230,7 +203,7 @@ static void midi_dispatchNext (void)
         switch (command) {
         //
         case MIDI_NOTEOFF       :   if (p->mp_gotByte1) { 
-                                        inmidi_noteon (port, channel, byte1, 0);
+                                        inmidi_noteOn (port, channel, byte1, 0);
                                         p->mp_gotByte1 = 0; 
                                     } else {
                                         p->mp_byte1 = byte;
@@ -239,7 +212,7 @@ static void midi_dispatchNext (void)
                                     break;
             
         case MIDI_NOTEON        :   if (p->mp_gotByte1) { 
-                                        inmidi_noteon (port, channel, byte1, byte);
+                                        inmidi_noteOn (port, channel, byte1, byte);
                                         p->mp_gotByte1 = 0; 
                                     } else {
                                         p->mp_byte1 = byte;
@@ -248,7 +221,7 @@ static void midi_dispatchNext (void)
                                     break;
             
         case MIDI_POLYPRESSURE  :   if (p->mp_gotByte1) {
-                                        inmidi_polypressure (port, channel, byte1, byte);
+                                        inmidi_polyPressure (port, channel, byte1, byte);
                                         p->mp_gotByte1 = 0;
                                     } else {
                                         p->mp_byte1 = byte;
@@ -257,7 +230,7 @@ static void midi_dispatchNext (void)
                                     break;
                                     
         case MIDI_CONTROLCHANGE :   if (p->mp_gotByte1) {
-                                        inmidi_controlchange (port, channel, byte1, byte);
+                                        inmidi_controlChange (port, channel, byte1, byte);
                                         p->mp_gotByte1 = 0;
                                     } else {
                                         p->mp_byte1 = byte;
@@ -265,14 +238,14 @@ static void midi_dispatchNext (void)
                                     }
                                     break;
                                     
-        case MIDI_PROGRAMCHANGE :   inmidi_programchange (port, channel, byte);
+        case MIDI_PROGRAMCHANGE :   inmidi_programChange (port, channel, byte);
                                     break;
                                     
-        case MIDI_AFTERTOUCH    :   inmidi_aftertouch (port, channel, byte);
+        case MIDI_AFTERTOUCH    :   inmidi_afterTouch (port, channel, byte);
                                     break;
                                     
         case MIDI_PITCHBEND     :   if (p->mp_gotByte1) {
-                                        inmidi_pitchbend (port, channel, ((byte << 7) + byte1)); 
+                                        inmidi_pitchBend (port, channel, ((byte << 7) + byte1)); 
                                         p->mp_gotByte1 = 0;
                                     } else {
                                         p->mp_byte1 = byte;
@@ -372,60 +345,6 @@ void midi_broadcast (int port, int hasOneByte, int a, int b, int c)
     midi_outHead = newHead;
     
     midi_pollOut();
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void outmidi_noteOn (int port, int channel, int pitch, int velocity)
-{
-    pitch    = PD_CLAMP (pitch, 0, 127);
-    velocity = PD_CLAMP (velocity, 0, 127);
-
-    midi_broadcast (port, 0, MIDI_NOTEON + (channel & 0xf), pitch, velocity);
-}
-
-void outmidi_controlChange (int port, int channel, int control, int value)
-{
-    control = PD_CLAMP (control, 0, 127);
-    value   = PD_CLAMP (value, 0, 127);
-    
-    midi_broadcast (port, 0, MIDI_CONTROLCHANGE + (channel & 0xf), control, value);
-}
-
-void outmidi_programChange (int port, int channel, int value)
-{
-    value = PD_CLAMP (value, 0, 127);
-    
-    midi_broadcast (port, 0, MIDI_PROGRAMCHANGE + (channel & 0xf), value, 0);
-}
-
-void outmidi_pitchBend (int port, int channel, int value)
-{
-    value = PD_CLAMP (value, 0, 16383);     // 0x3fff 
-    
-    midi_broadcast (port, 0, MIDI_PITCHBEND + (channel & 0xf), (value & 127), ((value >> 7) & 127));
-}
-
-void outmidi_afterTouch (int port, int channel, int value)
-{
-    value = PD_CLAMP (value, 0, 127);
-    
-    midi_broadcast (port, 0, MIDI_AFTERTOUCH + (channel & 0xf), value, 0);
-}
-
-void outmidi_polyPressure (int port, int channel, int pitch, int value)
-{
-    pitch = PD_CLAMP (pitch, 0, 127);
-    value = PD_CLAMP (value, 0, 127);
-    
-    midi_broadcast (port, 0, MIDI_POLYPRESSURE + (channel & 0xf), pitch, value);
-}
-
-void outmidi_clock (int port)
-{
-    midi_broadcast (port, 1, MIDI_CLOCK, 0, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

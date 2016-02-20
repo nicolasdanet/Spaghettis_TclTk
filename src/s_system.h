@@ -364,13 +364,13 @@ void        midi_broadcast                          (int port, int hasOneByte, i
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        inmidi_noteon                           (int port, int channel, int pitch, int velocity);
-void        inmidi_controlchange                    (int port, int channel, int control, int value);
-void        inmidi_programchange                    (int port, int channel, int value);
-void        inmidi_pitchbend                        (int port, int channel, int value);
-void        inmidi_aftertouch                       (int port, int channel, int value);
-void        inmidi_polypressure                     (int port, int channel, int pitch, int value);
-void        inmidi_realtimein                       (int port, int command);
+void        inmidi_noteOn                           (int port, int channel, int pitch, int velocity);
+void        inmidi_controlChange                    (int port, int channel, int control, int value);
+void        inmidi_programChange                    (int port, int channel, int value);
+void        inmidi_pitchBend                        (int port, int channel, int value);
+void        inmidi_afterTouch                       (int port, int channel, int value);
+void        inmidi_polyPressure                     (int port, int channel, int pitch, int value);
+void        inmidi_realTimeIn                       (int port, int command);
 void        inmidi_byte                             (int port, int byte);
 void        inmidi_sysex                            (int port, int byte);
 
