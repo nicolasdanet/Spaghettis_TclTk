@@ -359,6 +359,12 @@ void        midi_poll                               (void);
 void        midi_receive                            (int port, int byte);
 void        midi_broadcast                          (int port, int hasOneByte, int a, int b, int c);
 
+t_error     midi_getAPIs                            (char *dest, size_t size);
+void        sys_get_midi_params                     (int *pnmidiindev,
+                                                        int *pmidiindev,
+                                                        int *pnmidioutdev,
+                                                        int *pmidioutdev);
+                                                
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -461,18 +467,12 @@ void        sys_open_midi                   (int nmidiin,
                                                 int *midioutvec,
                                                 int enable);
 
-void        sys_get_midi_apis               (char *buf);
 void        sys_get_midi_devs               (char *indevlist,
                                                 int *nindevs,
                                                 char *outdevlist,
                                                 int *noutdevs, 
                                                 int maxndev,
                                                 int devdescsize);
-                                                
-void        sys_get_midi_params             (int *pnmidiindev,
-                                                int *pmidiindev,
-                                                int *pnmidioutdev,
-                                                int *pmidioutdev);
                                                 
 int         sys_mididevnametonumber         (int output, const char *name);
 void        sys_mididevnumbertoname         (int output, int devno, char *name, int namesize);
@@ -506,6 +506,8 @@ void sys_alsa_poll_midi         (void);
 void sys_alsa_setmiditimediff   (double inbuftime, double outbuftime);
 void sys_alsa_midibytein        (int port, int byte);
 void sys_alsa_close_midi        (void);
+
+void midi_alsa_setndevs         (int i, int o);
 
 void midi_alsa_getdevs          (char *indevlist,
                                     int *nindevs,

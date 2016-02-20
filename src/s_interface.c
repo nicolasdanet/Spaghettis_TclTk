@@ -715,8 +715,10 @@ static t_error interface_startGui (void)
         char audio[PD_STRING] = { 0 };
         
         sys_get_audio_apis (audio);
-        sys_get_midi_apis (midi);
+        err |= midi_getAPIs (midi, PD_STRING);
         
+        if (!err) {
+        //
         sys_vGui ("::initialize %s %s\n", audio, midi);     // --
         
         for (l = path_search; l; l = pathlist_getNext (l)) {
@@ -726,6 +728,8 @@ static t_error interface_startGui (void)
         }
         
         sys_vGui ("set ::var(apiAudio) %d\n", sys_audioapi);    // --
+        //
+        }
     }
     
     return err;
