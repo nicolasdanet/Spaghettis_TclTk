@@ -354,22 +354,25 @@ void        preferences_save                        (void *dummy);
 void        midi_initialize                         (void);
 void        midi_initializeOSS                      (void);
 void        midi_initializeALSA                     (void);
-
-void        midi_setOffsets                         (void);
+void        midi_synchronise                        (void);
+void        midi_pollInOut                          (void);
+void        midi_send                               (int port, int byte);
+void        midi_receive                            (int port, int byte);
+void        midi_broadcast                          (int port, int hasOneByte, int a, int b, int c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        inmidi_realtimein                       (int port, int command);
-void        inmidi_byte                             (int port, int byte);
-void        inmidi_sysex                            (int port, int byte);
 void        inmidi_noteon                           (int port, int channel, int pitch, int velocity);
 void        inmidi_controlchange                    (int port, int channel, int control, int value);
 void        inmidi_programchange                    (int port, int channel, int value);
 void        inmidi_pitchbend                        (int port, int channel, int value);
 void        inmidi_aftertouch                       (int port, int channel, int value);
 void        inmidi_polypressure                     (int port, int channel, int pitch, int value);
+void        inmidi_realtimein                       (int port, int command);
+void        inmidi_byte                             (int port, int byte);
+void        inmidi_sysex                            (int port, int byte);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -382,7 +385,6 @@ void        outmidi_pitchBend                       (int port, int channel, int 
 void        outmidi_afterTouch                      (int port, int channel, int value);
 void        outmidi_polyPressure                    (int port, int channel, int pitch, int value);
 void        outmidi_clock                           (int port);
-void        outmidi_rawByte                         (int port, int value);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -481,7 +483,7 @@ void        sys_close_midi                  (void);
 void        sys_putmidimess                 (int port, int a, int b, int c);
 void        sys_putmidibyte                 (int port, int a);
 void        sys_poll_midi                   (void);
-void        sys_midibytein                  (int port, int byte);
+
 
 void        midi_getdevs                    (char *indevlist,
                                                 int *nindevs,
@@ -523,7 +525,6 @@ void sys_alsa_do_open_midi      (int nmidiindev,
 #pragma mark -
 
 void dsp_tick                   (void);
-void sys_pollmidiqueue          (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

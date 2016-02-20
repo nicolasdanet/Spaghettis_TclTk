@@ -84,6 +84,8 @@ static t_midiqelem  midi_inQueue[MIDI_QUEUE_SIZE];                          /* S
 static int          midi_inHead;                                            /* Shared. */
 static int          midi_inTail;                                            /* Shared. */
 
+static t_midiparser midi_parser[MAXIMUM_MIDI_IN];                           /* Shared. */
+    
 static double       midi_realTimeAtStart;                                   /* Shared. */
 static double       midi_logicalTimeAtStart;                                /* Shared. */
 static double       midi_dacOffset;                                         /* Shared. */
@@ -104,11 +106,7 @@ void midi_initialize (void)
     midi_adcOffset          = 0.0;
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void midi_setOffsets (void)
+void midi_synchronise (void)
 {
     double realLapse    = sys_getRealTimeInSeconds();
     double logicalLapse = MILLISECONDS_TO_SECONDS (scheduler_getMillisecondsSince (midi_logicalTimeAtStart));
@@ -195,9 +193,168 @@ static void midi_pollOut (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* If FIFO is full flush an element to make room. */
+static void midi_dispatchNext (void)
+{
+    int port = midi_inQueue[midi_inTail].q_portNumber;
+    int byte = midi_inQueue[midi_inTail].q_byte1;
+    t_midiparser *p = midi_parser + port;
+        
+    PD_ASSERT (midi_inQueue[midi_inTail].q_hasOneByte);
+    PD_ASSERT (port >= 0 || port < MAXIMUM_MIDI_IN);
+    
+    if (byte >= MIDI_CLOCK) { inmidi_realtimein (port, byte); }
+    else {
+    //
+    inmidi_byte (port, byte);
+    
+    if (byte & 0x80) {
+    
+        if (byte == MIDI_TUNEREQUEST || byte == MIDI_RESERVED1 || byte == MIDI_RESERVED2) {
+            p->mp_status = 0;
+        } else if (byte == MIDI_STARTSYSEX) {
+            inmidi_sysex (port, byte); p->mp_status = byte;
+        } else if (byte == MIDI_ENDSYSEX) {
+            inmidi_sysex (port, byte); p->mp_status = 0;
+        } else {
+            p->mp_status = byte;
+        }
+        
+        p->mp_gotByte1 = 0;
+        
+    } else {
+    
+        int command  = (p->mp_status >= MIDI_STARTSYSEX ? p->mp_status : (p->mp_status & 0xf0));
+        int channel  = (p->mp_status & 0xf);
+        int byte1    = p->mp_byte1;
+        
+        switch (command) {
+        //
+        case MIDI_NOTEOFF       :   if (p->mp_gotByte1) { 
+                                        inmidi_noteon (port, channel, byte1, 0);
+                                        p->mp_gotByte1 = 0; 
+                                    } else {
+                                        p->mp_byte1 = byte;
+                                        p->mp_gotByte1 = 1;
+                                    }
+                                    break;
+            
+        case MIDI_NOTEON        :   if (p->mp_gotByte1) { 
+                                        inmidi_noteon (port, channel, byte1, byte);
+                                        p->mp_gotByte1 = 0; 
+                                    } else {
+                                        p->mp_byte1 = byte;
+                                        p->mp_gotByte1 = 1;
+                                    }
+                                    break;
+            
+        case MIDI_POLYPRESSURE  :   if (p->mp_gotByte1) {
+                                        inmidi_polypressure (port, channel, byte1, byte);
+                                        p->mp_gotByte1 = 0;
+                                    } else {
+                                        p->mp_byte1 = byte;
+                                        p->mp_gotByte1 = 1;
+                                    }
+                                    break;
+                                    
+        case MIDI_CONTROLCHANGE :   if (p->mp_gotByte1) {
+                                        inmidi_controlchange (port, channel, byte1, byte);
+                                        p->mp_gotByte1 = 0;
+                                    } else {
+                                        p->mp_byte1 = byte;
+                                        p->mp_gotByte1 = 1;
+                                    }
+                                    break;
+                                    
+        case MIDI_PROGRAMCHANGE :   inmidi_programchange (port, channel, byte);
+                                    break;
+                                    
+        case MIDI_AFTERTOUCH    :   inmidi_aftertouch (port, channel, byte);
+                                    break;
+                                    
+        case MIDI_PITCHBEND     :   if (p->mp_gotByte1) {
+                                        inmidi_pitchbend (port, channel, ((byte << 7) + byte1)); 
+                                        p->mp_gotByte1 = 0;
+                                    } else {
+                                        p->mp_byte1 = byte;
+                                        p->mp_gotByte1 = 1;
+                                    }
+                                    break;
+                                    
+        case MIDI_STARTSYSEX    :   inmidi_sysex (port, byte);
+                                    break;
+            
+        default                 :   break;
+        //
+        }
+    }
+    //
+    }
+    
+    midi_inTail = (midi_inTail + 1 == MIDI_QUEUE_SIZE ? 0 : midi_inTail + 1);
+}
 
-static void outmidi_append (int port, int hasOneByte, int a, int b, int c)
+static void midi_pollIn (void)
+{
+    double logicalTime = MILLISECONDS_TO_SECONDS (scheduler_getMillisecondsSince (midi_logicalTimeAtStart));
+
+    while (midi_inHead != midi_inTail) {
+    //
+    if (midi_inQueue[midi_inTail].q_time <= logicalTime) { midi_dispatchNext(); }
+    else { 
+        break;
+    }
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void midi_pollInOut (void)
+{
+    if (API_WITH_ALSA && midi_api == API_ALSA) { sys_alsa_poll_midi(); }
+    else {
+        sys_poll_midi();
+    }
+    
+    midi_pollOut();
+    midi_pollIn();
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void midi_send (int port, int byte)
+{
+    midi_pushNextByte (port, byte);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* If FIFO is full dispatch or flush an element to make room. */
+
+void midi_receive (int port, int byte)
+{
+    t_midiqelem *e = NULL;
+    int newHead = (midi_inHead + 1 == MIDI_QUEUE_SIZE ? 0 : midi_inHead + 1);
+    if (newHead == midi_inTail) { midi_dispatchNext(); }
+    
+    e = midi_inQueue + midi_inHead;
+    
+    e->q_portNumber = port;
+    e->q_hasOneByte = 1;
+    e->q_byte1      = byte;
+    e->q_time       = midi_getTimeIn();
+    
+    midi_inHead = newHead;
+    
+    midi_pollIn();
+}
+
+void midi_broadcast (int port, int hasOneByte, int a, int b, int c)
 {
     t_midiqelem *e = NULL;
     int newHead = (midi_outHead + 1 == MIDI_QUEUE_SIZE ? 0 : midi_outHead + 1);
@@ -207,10 +364,10 @@ static void outmidi_append (int port, int hasOneByte, int a, int b, int c)
     
     e->q_portNumber = port;
     e->q_hasOneByte = hasOneByte;
-    e->q_byte1 = a;
-    e->q_byte2 = b;
-    e->q_byte3 = c;
-    e->q_time  = MILLISECONDS_TO_SECONDS (scheduler_getMillisecondsSince (midi_logicalTimeAtStart));
+    e->q_byte1      = a;
+    e->q_byte2      = b;
+    e->q_byte3      = c;
+    e->q_time       = MILLISECONDS_TO_SECONDS (scheduler_getMillisecondsSince (midi_logicalTimeAtStart));
         
     midi_outHead = newHead;
     
@@ -219,13 +376,14 @@ static void outmidi_append (int port, int hasOneByte, int a, int b, int c)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void outmidi_noteOn (int port, int channel, int pitch, int velocity)
 {
     pitch    = PD_CLAMP (pitch, 0, 127);
     velocity = PD_CLAMP (velocity, 0, 127);
 
-    outmidi_append (port, 0, MIDI_NOTEON + (channel & 0xf), pitch, velocity);
+    midi_broadcast (port, 0, MIDI_NOTEON + (channel & 0xf), pitch, velocity);
 }
 
 void outmidi_controlChange (int port, int channel, int control, int value)
@@ -233,28 +391,28 @@ void outmidi_controlChange (int port, int channel, int control, int value)
     control = PD_CLAMP (control, 0, 127);
     value   = PD_CLAMP (value, 0, 127);
     
-    outmidi_append (port, 0, MIDI_CONTROLCHANGE + (channel & 0xf), control, value);
+    midi_broadcast (port, 0, MIDI_CONTROLCHANGE + (channel & 0xf), control, value);
 }
 
 void outmidi_programChange (int port, int channel, int value)
 {
     value = PD_CLAMP (value, 0, 127);
     
-    outmidi_append (port, 0, MIDI_PROGRAMCHANGE + (channel & 0xf), value, 0);
+    midi_broadcast (port, 0, MIDI_PROGRAMCHANGE + (channel & 0xf), value, 0);
 }
 
 void outmidi_pitchBend (int port, int channel, int value)
 {
-    value = PD_CLAMP (value, 0, 16383);
+    value = PD_CLAMP (value, 0, 16383);     // 0x3fff 
     
-    outmidi_append (port, 0, MIDI_PITCHBEND + (channel & 0xf), (value & 127), ((value >> 7) & 127));
+    midi_broadcast (port, 0, MIDI_PITCHBEND + (channel & 0xf), (value & 127), ((value >> 7) & 127));
 }
 
 void outmidi_afterTouch (int port, int channel, int value)
 {
     value = PD_CLAMP (value, 0, 127);
     
-    outmidi_append (port, 0, MIDI_AFTERTOUCH + (channel & 0xf), value, 0);
+    midi_broadcast (port, 0, MIDI_AFTERTOUCH + (channel & 0xf), value, 0);
 }
 
 void outmidi_polyPressure (int port, int channel, int pitch, int value)
@@ -262,182 +420,12 @@ void outmidi_polyPressure (int port, int channel, int pitch, int value)
     pitch = PD_CLAMP (pitch, 0, 127);
     value = PD_CLAMP (value, 0, 127);
     
-    outmidi_append (port, 0, MIDI_POLYPRESSURE + (channel & 0xf), pitch, value);
+    midi_broadcast (port, 0, MIDI_POLYPRESSURE + (channel & 0xf), pitch, value);
 }
 
 void outmidi_clock (int port)
 {
-    outmidi_append (port, 1, MIDI_CLOCK, 0, 0);
-}
-
-void outmidi_rawByte (int port, int value)
-{
-    midi_pushNextByte (port, value);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void sys_dispatchnextmidiin( void)
-{
-    static t_midiparser parser[MAXIMUM_MIDI_IN], *parserp;
-    int portno = midi_inQueue[midi_inTail].q_portNumber,
-        byte = midi_inQueue[midi_inTail].q_byte1;
-    if (!midi_inQueue[midi_inTail].q_hasOneByte) { PD_BUG; }
-    if (portno < 0 || portno >= MAXIMUM_MIDI_IN) { PD_BUG; }
-    parserp = parser + portno;
-    
-    if (byte >= 0xf8)
-        inmidi_realtimein(portno, byte);
-    else
-    {
-        inmidi_byte(portno, byte);
-        if (byte & 0x80)
-        {
-            if (byte == MIDI_TUNEREQUEST || byte == MIDI_RESERVED1 ||
-                byte == MIDI_RESERVED2)
-                    parserp->mp_status = 0;
-            else if (byte == MIDI_STARTSYSEX)
-            {
-                inmidi_sysex(portno, byte);
-                parserp->mp_status = byte;
-            }
-            else if (byte == MIDI_ENDSYSEX)
-            {
-                inmidi_sysex(portno, byte);
-                parserp->mp_status = 0;
-            }
-            else
-            {
-                parserp->mp_status = byte;
-            }
-            parserp->mp_gotByte1 = 0;
-        }
-        else
-        {
-            int cmd = (parserp->mp_status >= 0xf0 ? parserp->mp_status :
-                (parserp->mp_status & 0xf0));
-            int chan = (parserp->mp_status & 0xf);
-            int byte1 = parserp->mp_byte1, gotbyte1 = parserp->mp_gotByte1;
-            switch (cmd)
-            {
-            case MIDI_NOTEOFF:
-                if (gotbyte1)
-                    inmidi_noteon(portno, chan, byte1, 0),
-                        parserp->mp_gotByte1 = 0;
-                else parserp->mp_byte1 = byte, parserp->mp_gotByte1 = 1;
-                break;
-            case MIDI_NOTEON:
-                if (gotbyte1)
-                    inmidi_noteon(portno, chan, byte1, byte),
-                        parserp->mp_gotByte1 = 0;
-                else parserp->mp_byte1 = byte, parserp->mp_gotByte1 = 1;
-                break;
-            case MIDI_POLYPRESSURE:
-                if (gotbyte1)
-                    inmidi_polypressure(portno, chan, byte1, byte),
-                        parserp->mp_gotByte1 = 0;
-                else parserp->mp_byte1 = byte, parserp->mp_gotByte1 = 1;
-                break;
-            case MIDI_CONTROLCHANGE:
-                if (gotbyte1)
-                    inmidi_controlchange(portno, chan, byte1, byte),
-                        parserp->mp_gotByte1 = 0;
-                else parserp->mp_byte1 = byte, parserp->mp_gotByte1 = 1;
-                break;
-            case MIDI_PROGRAMCHANGE:
-                inmidi_programchange(portno, chan, byte);
-                break;
-            case MIDI_AFTERTOUCH:
-                inmidi_aftertouch(portno, chan, byte);
-                break;
-            case MIDI_PITCHBEND:
-                if (gotbyte1)
-                    inmidi_pitchbend(portno, chan, ((byte << 7) + byte1)),
-                        parserp->mp_gotByte1 = 0;
-                else parserp->mp_byte1 = byte, parserp->mp_gotByte1 = 1;
-                break;
-            case MIDI_STARTSYSEX:
-                inmidi_sysex(portno, byte);
-                break;
-                
-                /* other kinds of messages are just dropped here.  We'll
-                need another status byte before we start letting MIDI in
-                again (no running status across "system" messages). */
-            case MIDI_TIMECODE:     /* 1 data byte*/
-                break;
-            case MIDI_SONGPOS:       /* 2 */
-                break;
-            case MIDI_SONGSELECT:    /* 1 */
-                break;
-            }
-        }
-    }  
-    midi_inTail  = (midi_inTail + 1 == MIDI_QUEUE_SIZE ? 0 : midi_inTail + 1);
-}
-
-void sys_pollmidiinqueue( void)
-{
-    double logicaltime = .001 * scheduler_getMillisecondsSince(midi_logicalTimeAtStart);
-
-    while (midi_inHead != midi_inTail)
-    {
-        if (midi_inQueue[midi_inTail].q_time <= logicaltime)
-        {
-            sys_dispatchnextmidiin();
-        }
-        else break;
-    }
-}
-
-    /* this should be called from the system dependent MIDI code when a byte
-    comes in, as a result of our calling sys_poll_midi.  We stick it on a
-    timetag queue and dispatch it at the appropriate logical time. */
-
-
-void sys_midibytein(int portno, int byte)
-{
-    static int warned = 0;
-    t_midiqelem *midiqelem;
-    int newhead = midi_inHead +1;
-    if (newhead == MIDI_QUEUE_SIZE)
-        newhead = 0;
-            /* if FIFO is full flush an element to make room */
-    if (newhead == midi_inTail)
-    {
-        if (!warned)
-        {
-            post("warning: MIDI timing FIFO overflowed");
-            warned = 1;
-        }
-        sys_dispatchnextmidiin();
-    }
-    midi_inQueue[midi_inHead].q_portNumber = portno;
-    midi_inQueue[midi_inHead].q_hasOneByte = 1;
-    midi_inQueue[midi_inHead].q_byte1 = byte;
-    midi_inQueue[midi_inHead].q_time = midi_getTimeIn();
-    midi_inHead = newhead;
-    sys_pollmidiinqueue();
-}
-
-void sys_pollmidiqueue( void)
-{
-#if 0
-    static double lasttime;
-    double newtime = sys_getRealTimeInSeconds();
-    if (newtime - lasttime > 0.007)
-        post("delay %d", (int)(1000 * (newtime - lasttime)));
-    lasttime = newtime;
-#endif
-#ifdef USEAPI_ALSA
-      if (midi_api == API_ALSA)
-        sys_alsa_poll_midi();
-      else
-#endif /* ALSA */
-    sys_poll_midi();    /* OS dependent poll for MIDI input */
-    midi_pollOut();
-    sys_pollmidiinqueue();
+    midi_broadcast (port, 1, MIDI_CLOCK, 0, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -634,7 +634,7 @@ static void *midiout_new(t_float portno)
 
 static void midiout_float(t_midiout *x, t_float f)
 {
-    outmidi_rawByte (x->x_portno - 1, f);
+    midi_send (x->x_portno - 1, f);
 }
 
 static void midiout_setup(void)

@@ -239,25 +239,25 @@ int nd_sysex_mode=0;
 void nd_sysex_inword(int midiindev, int status, int data1, int data2, int data3)
 {
     if (nd_sysex_mode) {
-        sys_midibytein(midiindev, status);
+        midi_receive(midiindev, status);
         if (status == 0xF7)
             nd_sysex_mode = 0;
     }
 
     if (nd_sysex_mode) {
-        sys_midibytein(midiindev, data1);
+        midi_receive(midiindev, data1);
         if (data1 == 0xF7)
             nd_sysex_mode = 0;
     }
 
     if (nd_sysex_mode) {
-        sys_midibytein(midiindev, data2);
+        midi_receive(midiindev, data2);
         if (data2 == 0xF7)
             nd_sysex_mode = 0;
     }
 
     if (nd_sysex_mode) {
-        sys_midibytein(midiindev, data3);
+        midi_receive(midiindev, data3);
         if (data3 == 0xF7)
             nd_sysex_mode = 0;
     }
@@ -292,23 +292,23 @@ void sys_poll_midi(void)
                 case MIDICONTROLCHANGE:
                 case MIDIPITCHBEND:
                 case MIDISONGPOS:
-                    sys_midibytein(i, status);
-                    sys_midibytein(i, data1);
-                    sys_midibytein(i, data2);
+                    midi_receive(i, status);
+                    midi_receive(i, data1);
+                    midi_receive(i, data2);
                     break; 
                 case MIDIPROGRAMCHANGE:
                 case MIDICHANNELTOUCH:
                 case MIDITIMECODE:
                 case MIDISONGSELECT:
-                    sys_midibytein(i, status);
-                    sys_midibytein(i, data1);
+                    midi_receive(i, status);
+                    midi_receive(i, data1);
                     break;
                 case MIDISTARTSYSEX:
                     nd_sysex_mode=1;
                     nd_sysex_inword(i, status, data1, data2, data3);
                     break; 
                 default:
-                    sys_midibytein(i, status);
+                    midi_receive(i, status);
                     break;
                 }
             }

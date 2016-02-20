@@ -202,7 +202,7 @@ void sys_alsa_poll_midi(void)
        count = snd_midi_event_decode(midiev,buf,sizeof(buf),midievent);
        alsa_source = midievent->dest.port;
        for(i=0;i<count;i++)
-           sys_midibytein(alsa_source, (buf[i] & 0xff));
+           midi_receive(alsa_source, (buf[i] & 0xff));
        //post("received %d midi bytes\n",count);
    }
 }

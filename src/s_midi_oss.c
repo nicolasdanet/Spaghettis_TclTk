@@ -172,7 +172,7 @@ void sys_poll_midi(void)
             int ret = read(oss_midiinfd[i], &c, 1);
             if (ret <= 0)
                 fprintf(stderr, "Midi read error\n");
-            else sys_midibytein(i, (c & 0xff));
+            else midi_receive(i, (c & 0xff));
             did = 1;
         }
     }
@@ -202,7 +202,7 @@ void sys_poll_midi(void)
             }
             else if (ret != 0)
             {
-                sys_midibytein(i, (c & 0xff));
+                midi_receive(i, (c & 0xff));
                 did = 1;
             }
         }

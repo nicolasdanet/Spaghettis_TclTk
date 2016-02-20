@@ -232,12 +232,12 @@ static void scheduler_withLoop (void)
     
     if (!scheduler_quit) {
     //
-    midi_setOffsets();
+    midi_synchronise();
     
     if (timeForward != DACS_NO)  { scheduler_tick(); }
     if (timeForward == DACS_YES) { didSomething = 1; }
 
-    sys_pollmidiqueue();
+    midi_pollInOut();
     
     if (!scheduler_quit && interface_pollOrFlushGui()) { didSomething = 1; }
 
@@ -275,9 +275,9 @@ static void scheduler_withCallback (void)
 
 void scheduler_audioCallback (void)
 {
-    midi_setOffsets();
+    midi_synchronise();
     scheduler_tick();
-    sys_pollmidiqueue();
+    midi_pollInOut();
     interface_pollOrFlushGui();
     scheduler_pollWatchdog();
 }
