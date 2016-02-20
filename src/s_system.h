@@ -265,7 +265,7 @@ void        clock_setUnitAsMilliseconds             (t_clock *x, double ms);
 #pragma mark -
 
 void        sys_setSignalHandlers                   (void);
-double      sys_getRealTimeInSeconds                         (void);
+double      sys_getRealTimeInSeconds                (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -355,8 +355,7 @@ void        midi_initialize                         (void);
 void        midi_initializeOSS                      (void);
 void        midi_initializeALSA                     (void);
 void        midi_synchronise                        (void);
-void        midi_pollInOut                          (void);
-void        midi_send                               (int port, int byte);
+void        midi_poll                               (void);
 void        midi_receive                            (int port, int byte);
 void        midi_broadcast                          (int port, int hasOneByte, int a, int b, int c);
 

@@ -81,7 +81,7 @@ void midi_initialize (void)
 
 void midi_synchronise (void)
 {
-    double realLapse    = sys_getRealTimeInSeconds();
+    double realLapse    = sys_getRealTimeInSeconds() - midi_realTimeAtStart;
     double logicalLapse = MILLISECONDS_TO_SECONDS (scheduler_getMillisecondsSince (midi_logicalTimeAtStart));
     
     double dacOffset    = logicalLapse - realLapse - MICROSECONDS_TO_SECONDS (sys_schedadvance);
@@ -145,21 +145,6 @@ static void midi_pushNext (void)
     }   
     
     midi_outTail = (midi_outTail + 1 == MIDI_QUEUE_SIZE ? 0 : midi_outTail + 1);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-static void midi_pollOut (void)
-{
-    double t = midi_getTimeOut();
-
-    while (midi_outHead != midi_outTail) {
-        if (midi_outQueue[midi_outTail].q_time <= t) { midi_pushNext(); }
-        else { 
-            break;
-        }
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -266,13 +251,17 @@ static void midi_dispatchNext (void)
     midi_inTail = (midi_inTail + 1 == MIDI_QUEUE_SIZE ? 0 : midi_inTail + 1);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void midi_pollIn (void)
 {
-    double logicalTime = MILLISECONDS_TO_SECONDS (scheduler_getMillisecondsSince (midi_logicalTimeAtStart));
+    double t = MILLISECONDS_TO_SECONDS (scheduler_getMillisecondsSince (midi_logicalTimeAtStart));
 
     while (midi_inHead != midi_inTail) {
     //
-    if (midi_inQueue[midi_inTail].q_time <= logicalTime) { midi_dispatchNext(); }
+    if (midi_inQueue[midi_inTail].q_time <= t) { midi_dispatchNext(); }
     else { 
         break;
     }
@@ -280,11 +269,19 @@ static void midi_pollIn (void)
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+static void midi_pollOut (void)
+{
+    double t = midi_getTimeOut();
 
-void midi_pollInOut (void)
+    while (midi_outHead != midi_outTail) {
+        if (midi_outQueue[midi_outTail].q_time <= t) { midi_pushNext(); }
+        else { 
+            break;
+        }
+    }
+}
+
+void midi_poll (void)
 {
     if (API_WITH_ALSA && midi_api == API_ALSA) { sys_alsa_poll_midi(); }
     else {
@@ -298,14 +295,6 @@ void midi_pollInOut (void)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void midi_send (int port, int byte)
-{
-    midi_pushNextByte (port, byte);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 /* If FIFO is full dispatch or flush an element to make room. */
 

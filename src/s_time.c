@@ -28,8 +28,8 @@ extern t_pdinstance *pd_this;
 
 #if PD_WINDOWS
 
-static LARGE_INTEGER    interface_NTTime;
-static double           interface_NTFrequency;
+static LARGE_INTEGER    time_NTTime;
+static double           time_NTFrequency;
 
 #endif
 
@@ -39,7 +39,7 @@ static double           interface_NTFrequency;
 
 #if PD_WINDOWS
 
-static void interface_initializeClock (void)
+static void time_initializeClock (void)
 {
     LARGE_INTEGER f1;
     LARGE_INTEGER now;
@@ -48,8 +48,8 @@ static void interface_initializeClock (void)
     
     if (!QueryPerformanceFrequency (&f1)) { PD_BUG; f1.QuadPart = 1; }
     
-    interface_NTTime = now;
-    interface_NTFrequency = f1.QuadPart;
+    time_NTTime = now;
+    time_NTFrequency = f1.QuadPart;
 }
 
 #endif // PD_WINDOWS
@@ -66,9 +66,9 @@ double sys_getRealTimeInSeconds (void)
     
     QueryPerformanceCounter (&now);
     
-    if (interface_NTFrequency == 0) { interface_initializeClock(); }
+    if (time_NTFrequency == 0) { time_initializeClock(); }
     
-    return (((double)(now.QuadPart - interface_NTTime.QuadPart)) / interface_NTFrequency);
+    return (((double)(now.QuadPart - time_NTTime.QuadPart)) / time_NTFrequency);
 }
 
 #else 

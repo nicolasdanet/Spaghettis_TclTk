@@ -199,9 +199,9 @@ static void scheduler_tick (void)
 static void scheduler_withLoop (void)
 {
     int idleCount = 0;
-        
-    double realTimeAtStart = sys_getRealTimeInSeconds();
-    double logicalTimeAtStart  = scheduler_getLogicalTime();
+    
+    double realTimeAtStart    = sys_getRealTimeInSeconds();
+    double logicalTimeAtStart = scheduler_getLogicalTime();
     
     scheduler_sleepGrain = PD_CLAMP (sys_schedadvance / 4, 100, 5000);
     scheduler_systimePerDSPTick = scheduler_getSystimePerDSPTick();
@@ -237,7 +237,7 @@ static void scheduler_withLoop (void)
     if (timeForward != DACS_NO)  { scheduler_tick(); }
     if (timeForward == DACS_YES) { didSomething = 1; }
 
-    midi_pollInOut();
+    midi_poll();
     
     if (!scheduler_quit && interface_pollOrFlushGui()) { didSomething = 1; }
 
@@ -277,7 +277,7 @@ void scheduler_audioCallback (void)
 {
     midi_synchronise();
     scheduler_tick();
-    midi_pollInOut();
+    midi_poll();
     interface_pollOrFlushGui();
     scheduler_pollWatchdog();
 }
