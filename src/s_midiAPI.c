@@ -250,85 +250,92 @@ void midi_outNumberToName (int n, char *dest, size_t size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void midi_requireDialog (void *dummy)
+static void midi_requireDialogInitialize (void)
 {
-    char t[PD_STRING] = { 0 };
+    int  m = 0;
+    int  n = 0;
+    char i[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION] = { 0 };
+    char o[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION] = { 0 };
     
-    int numberOfDevicesIn  = 0;
-    int numberOfDevicesOut = 0;
-    int devicesIn[MAXIMUM_MIDI_IN]   = { 0 };
-    int devicesOut[MAXIMUM_MIDI_OUT] = { 0 };
-    
-    char indevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION] = { 0 };
-    char outdevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION] = { 0 };
-    
-    int nindevs = 0, noutdevs = 0, i;
+    int k;
 
-    midi_getLists (indevlist, &nindevs, outdevlist, &noutdevs);
+    midi_getLists (i, &m, o, &n);
 
     sys_gui("set ::ui_midi::midiIn {none}\n");
-    for (i = 0; i < nindevs; i++)
-        sys_vGui("lappend ::ui_midi::midiIn {%s}\n",
-            indevlist + i * MAXIMUM_DESCRIPTION);
-
     sys_gui("set ::ui_midi::midiOut {none}\n");
-    for (i = 0; i < noutdevs; i++)
-        sys_vGui("lappend ::ui_midi::midiOut {%s}\n",
-            outdevlist + i * MAXIMUM_DESCRIPTION);
-
-    midi_getDevices(&numberOfDevicesIn, devicesIn, &numberOfDevicesOut, devicesOut);
-
-    /*if (nindev > 1 || noutdev > 1)
-        flongform = 1;*/
-
-    int midiindev1, midiindev2, midiindev3, midiindev4, midiindev5,
-        midiindev6, midiindev7, midiindev8, midiindev9,
-        midioutdev1, midioutdev2, midioutdev3, midioutdev4, midioutdev5,
-        midioutdev6, midioutdev7, midioutdev8, midioutdev9;
-        
-    midiindev1 = (numberOfDevicesIn > 0 &&  devicesIn[0]>= 0 ? devicesIn[0]+1 : 0);
-    midiindev2 = (numberOfDevicesIn > 1 &&  devicesIn[1]>= 0 ? devicesIn[1]+1 : 0);
-    midiindev3 = (numberOfDevicesIn > 2 &&  devicesIn[2]>= 0 ? devicesIn[2]+1 : 0);
-    midiindev4 = (numberOfDevicesIn > 3 &&  devicesIn[3]>= 0 ? devicesIn[3]+1 : 0);
-    midiindev5 = (numberOfDevicesIn > 4 &&  devicesIn[4]>= 0 ? devicesIn[4]+1 : 0);
-    midiindev6 = (numberOfDevicesIn > 5 &&  devicesIn[5]>= 0 ? devicesIn[5]+1 : 0);
-    midiindev7 = (numberOfDevicesIn > 6 &&  devicesIn[6]>= 0 ? devicesIn[6]+1 : 0);
-    midiindev8 = (numberOfDevicesIn > 7 &&  devicesIn[7]>= 0 ? devicesIn[7]+1 : 0);
-    midiindev9 = (numberOfDevicesIn > 8 &&  devicesIn[8]>= 0 ? devicesIn[8]+1 : 0);
-    midioutdev1 = (numberOfDevicesOut > 0 && devicesOut[0]>= 0 ? devicesOut[0]+1 : 0); 
-    midioutdev2 = (numberOfDevicesOut > 1 && devicesOut[1]>= 0 ? devicesOut[1]+1 : 0); 
-    midioutdev3 = (numberOfDevicesOut > 2 && devicesOut[2]>= 0 ? devicesOut[2]+1 : 0); 
-    midioutdev4 = (numberOfDevicesOut > 3 && devicesOut[3]>= 0 ? devicesOut[3]+1 : 0); 
-    midioutdev5 = (numberOfDevicesOut > 4 && devicesOut[4]>= 0 ? devicesOut[4]+1 : 0);
-    midioutdev6 = (numberOfDevicesOut > 5 && devicesOut[5]>= 0 ? devicesOut[5]+1 : 0);
-    midioutdev7 = (numberOfDevicesOut > 6 && devicesOut[6]>= 0 ? devicesOut[6]+1 : 0);
-    midioutdev8 = (numberOfDevicesOut > 7 && devicesOut[7]>= 0 ? devicesOut[7]+1 : 0);
-    midioutdev9 = (numberOfDevicesOut > 8 && devicesOut[8]>= 0 ? devicesOut[8]+1 : 0);
-
-#ifdef USEAPI_ALSA
-      if (midi_api == API_ALSA)
-    sprintf(t,
-"::ui_midi::show %%s \
-%d %d %d %d 0 0 0 0 0 \
-%d %d %d %d 0 0 0 0 0 \
-1\n",
-        midiindev1, midiindev2, midiindev3, midiindev4, 
-        midioutdev1, midioutdev2, midioutdev3, midioutdev4);
-      else
-#endif
-    sprintf(t,
-"::ui_midi::show %%s \
-%d %d %d %d %d %d %d %d %d \
-%d %d %d %d %d %d %d %d %d \
-0\n",
-        midiindev1, midiindev2, midiindev3, midiindev4, 
-        midiindev5, midiindev6, midiindev7, midiindev8, midiindev9, 
-        midioutdev1, midioutdev2, midioutdev3, midioutdev4, 
-        midioutdev5, midioutdev6, midioutdev7, midioutdev8, midioutdev9);
-
-    gfxstub_deleteforkey(0);
-    gfxstub_new(&global_object, (void *)midi_requireDialog, t);
+    
+    for (k = 0; k < m; k++) { sys_vGui ("lappend ::ui_midi::midiIn {%s}\n",  i + (k * MAXIMUM_DESCRIPTION)); }
+    for (k = 0; k < n; k++) { sys_vGui ("lappend ::ui_midi::midiOut {%s}\n", o + (k * MAXIMUM_DESCRIPTION)); }
 }
+
+void midi_requireDialog (void *dummy)
+{
+    int m = 0;
+    int n = 0;
+    int i[MAXIMUM_MIDI_IN]  = { 0 };
+    int o[MAXIMUM_MIDI_OUT] = { 0 };
+    
+    midi_requireDialogInitialize();
+    
+    midi_getDevices (&m, i, &n, o);
+    
+    {
+        t_error err = PD_ERROR_NONE;
+        
+        char t[PD_STRING] = { 0 };
+            
+        int i1 = (m > 0 && i[0]>= 0 ? i[0] + 1 : 0);
+        int i2 = (m > 1 && i[1]>= 0 ? i[1] + 1 : 0);
+        int i3 = (m > 2 && i[2]>= 0 ? i[2] + 1 : 0);
+        int i4 = (m > 3 && i[3]>= 0 ? i[3] + 1 : 0);
+        int i5 = (m > 4 && i[4]>= 0 ? i[4] + 1 : 0);
+        int i6 = (m > 5 && i[5]>= 0 ? i[5] + 1 : 0);
+        int i7 = (m > 6 && i[6]>= 0 ? i[6] + 1 : 0);
+        int i8 = (m > 7 && i[7]>= 0 ? i[7] + 1 : 0);
+        int i9 = (m > 8 && i[8]>= 0 ? i[8] + 1 : 0);
+        
+        int o1 = (n > 0 && o[0]>= 0 ? o[0] + 1 : 0); 
+        int o2 = (n > 1 && o[1]>= 0 ? o[1] + 1 : 0); 
+        int o3 = (n > 2 && o[2]>= 0 ? o[2] + 1 : 0); 
+        int o4 = (n > 3 && o[3]>= 0 ? o[3] + 1 : 0); 
+        int o5 = (n > 4 && o[4]>= 0 ? o[4] + 1 : 0);
+        int o6 = (n > 5 && o[5]>= 0 ? o[5] + 1 : 0);
+        int o7 = (n > 6 && o[6]>= 0 ? o[6] + 1 : 0);
+        int o8 = (n > 7 && o[7]>= 0 ? o[7] + 1 : 0);
+        int o9 = (n > 8 && o[8]>= 0 ? o[8] + 1 : 0);
+
+        if (API_WITH_ALSA && midi_api == API_ALSA) {
+
+            err = string_sprintf (t, PD_STRING, "::ui_midi::show %%s \
+                %d %d %d %d 0 0 0 0 0 \
+                %d %d %d %d 0 0 0 0 0 \
+                1\n",
+                i1, i2, i3, i4, 
+                o1, o2, o3, o4);
+
+        } else {
+        
+            err = string_sprintf (t, PD_STRING, "::ui_midi::show %%s \
+                %d %d %d %d %d %d %d %d %d \
+                %d %d %d %d %d %d %d %d %d \
+                0\n",
+                i1, i2, i3, i4, 
+                i5, i6, i7, i8, i9, 
+                o1, o2, o3, o4, 
+                o5, o6, o7, o8, o9);
+                                        
+        }
+        
+        if (!err) {
+            gfxstub_deleteforkey (NULL);
+            gfxstub_new (&global_object, (void *)midi_requireDialog, t);
+        }
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {

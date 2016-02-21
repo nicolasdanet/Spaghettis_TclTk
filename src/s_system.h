@@ -378,11 +378,6 @@ void        midi_getDevices                         (int *numberOfDevicesIn,
                                                         int *numberOfDevicesOut,
                                                         int *devicesOut);
 
-void        midi_setDevices                         (int numberOfDevicesIn,
-                                                        int *devicesIn,
-                                                        int numberOfDevicesOut,
-                                                        int *devicesOut);
-                                                        
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
