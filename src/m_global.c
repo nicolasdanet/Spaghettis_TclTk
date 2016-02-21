@@ -51,7 +51,7 @@ void global_initialize (void)
     class_addMethod (c, (t_method)global_audioDialog,       gensym ("_audioDialog"),     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_midiDialog,        gensym ("_midiDialog"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_audioAPI,          gensym ("_audioAPI"),        A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)global_midiAPI,           gensym ("_midiAPI"),         A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)midi_setAPI,              gensym ("_midiAPI"),         A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)path_setSearchPath,       gensym ("_path"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_shouldQuit,        gensym ("_quit"),            A_NULL);
     class_addMethod (c, (t_method)preferences_save,         gensym ("_savePreferences"), A_NULL);

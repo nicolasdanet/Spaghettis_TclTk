@@ -21,23 +21,23 @@ extern t_class *global_object;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int midi_api = API_DEFAULT_MIDI;                                                        /* Shared. */
+int midi_api = API_DEFAULT_MIDI;                                                /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int  midi_numberOfDevicesIn;                                                     /* Shared. */
-static int  midi_numberOfDevicesOut;                                                    /* Shared. */
-static int  midi_devicesIn[MAXIMUM_MIDI_IN];                                            /* Shared. */
-static int  midi_devicesOut[MAXIMUM_MIDI_OUT];                                          /* Shared. */
-static char midi_devicesInNames[MAXIMUM_MIDI_IN * MAXIMUM_DEVICE_DESCRIPTION];          /* Shared. */
-static char midi_devicesOutNames[MAXIMUM_MIDI_IN * MAXIMUM_DEVICE_DESCRIPTION];         /* Shared. */
+static int  midi_numberOfDevicesIn;                                             /* Shared. */
+static int  midi_numberOfDevicesOut;                                            /* Shared. */
+static int  midi_devicesIn[MAXIMUM_MIDI_IN];                                    /* Shared. */
+static int  midi_devicesOut[MAXIMUM_MIDI_OUT];                                  /* Shared. */
+static char midi_devicesInNames[MAXIMUM_MIDI_IN * DEVICES_DESCRIPTION];         /* Shared. */
+static char midi_devicesOutNames[MAXIMUM_MIDI_OUT * DEVICES_DESCRIPTION];       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error midi_getAPIs (char *dest, size_t size)
+t_error midi_getAvailables (char *dest, size_t size)
 {
     t_error err = PD_ERROR_NONE;
 
@@ -58,119 +58,96 @@ t_error midi_getAPIs (char *dest, size_t size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_get_midi_params (int *pnmidiindev, int *pmidiindev, int *pnmidioutdev, int *pmidioutdev)
+void midi_getParameters (int *numberOfDevicesIn, int *devicesIn, int *numberOfDevicesOut, int *devicesOut)
 {
-    int i, devn;
-    *pnmidiindev = midi_numberOfDevicesIn;
-    for (i = 0; i < midi_numberOfDevicesIn; i++)
-    {
-        if ((devn = sys_mididevnametonumber(0,
-            &midi_devicesInNames[i * MAXIMUM_DEVICE_DESCRIPTION])) >= 0)
-                pmidiindev[i] = devn;
-        else pmidiindev[i] = midi_devicesIn[i]; 
+    int i, n;
+    
+    *numberOfDevicesIn  = midi_numberOfDevicesIn;
+    *numberOfDevicesOut = midi_numberOfDevicesOut;
+    
+    for (i = 0; i < midi_numberOfDevicesIn; i++) {
+        if ((n = sys_mididevnametonumber (0, &midi_devicesInNames[i * DEVICES_DESCRIPTION])) >= 0) {
+            devicesIn[i] = n;
+        } else {
+            devicesIn[i] = midi_devicesIn[i]; 
+        }
     }
-    *pnmidioutdev = midi_numberOfDevicesOut;
-    for (i = 0; i < midi_numberOfDevicesOut; i++)
-    {
-        if ((devn = sys_mididevnametonumber(1,
-            &midi_devicesOutNames[i * MAXIMUM_DEVICE_DESCRIPTION])) >= 0)
-                pmidioutdev[i] = devn;
-        else pmidioutdev[i] = midi_devicesOut[i]; 
+        
+    for (i = 0; i < midi_numberOfDevicesOut; i++) {
+        if ((n = sys_mididevnametonumber (1, &midi_devicesOutNames[i * DEVICES_DESCRIPTION])) >= 0) {
+            devicesOut[i] = n;
+        } else {
+            devicesOut[i] = midi_devicesOut[i];
+        }
     }
 }
 
-static void sys_save_midi_params(
-    int nmidiindev, int *midiindev,
-    int nmidioutdev, int *midioutdev)
+void midi_setParameters (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut)
 {
     int i;
-    midi_numberOfDevicesIn = nmidiindev;
-    for (i = 0; i < nmidiindev; i++)
-    {
-        midi_devicesIn[i] = midiindev[i];
-        sys_mididevnumbertoname(0, midiindev[i],
-            &midi_devicesInNames[i * MAXIMUM_DEVICE_DESCRIPTION], MAXIMUM_DEVICE_DESCRIPTION);
+    
+    midi_numberOfDevicesIn  = numberOfDevicesIn;
+    midi_numberOfDevicesOut = numberOfDevicesOut;
+    
+    for (i = 0; i < numberOfDevicesIn; i++) {
+        char *s = &midi_devicesInNames[i * DEVICES_DESCRIPTION];
+        midi_devicesIn[i] = devicesIn[i];
+        sys_mididevnumbertoname (0, devicesIn[i], s, DEVICES_DESCRIPTION);
     }
-    midi_numberOfDevicesOut = nmidioutdev;
-    for (i = 0; i < nmidioutdev; i++)
-    {
-        midi_devicesOut[i] = midioutdev[i]; 
-        sys_mididevnumbertoname(1, midioutdev[i],
-            &midi_devicesOutNames[i * MAXIMUM_DEVICE_DESCRIPTION], MAXIMUM_DEVICE_DESCRIPTION);
+    
+    for (i = 0; i < numberOfDevicesOut; i++) {
+        char *s = &midi_devicesOutNames[i * DEVICES_DESCRIPTION];
+        midi_devicesOut[i] = devicesOut[i]; 
+        sys_mididevnumbertoname (1, devicesOut[i], s, DEVICES_DESCRIPTION);
     }
 }
 
-void sys_open_midi(int nmidiindev, int *midiindev,
-    int nmidioutdev, int *midioutdev, int enable)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void midi_open (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut, int enable)
 {
-    if (enable)
-    {
-#ifdef USEAPI_ALSA
+    if (enable) {
+    //
+    #ifdef USEAPI_ALSA
         midi_initializeALSA();
-#endif
-#ifdef USEAPI_OSS
+    #endif
+    
+    #ifdef USEAPI_OSS
         midi_initializeOSS();
-#endif
-#ifdef USEAPI_ALSA
-        if (midi_api == API_ALSA)
-            sys_alsa_do_open_midi(nmidiindev, midiindev, nmidioutdev, midioutdev);
-        else
-#endif /* ALSA */
-            sys_do_open_midi(nmidiindev, midiindev, nmidioutdev, midioutdev);
+    #endif
+    
+    if (API_WITH_ALSA && midi_api == API_ALSA) {
+        sys_alsa_do_open_midi (numberOfDevicesIn, devicesIn, numberOfDevicesOut, devicesOut);
+    } else {
+        sys_do_open_midi (numberOfDevicesIn, devicesIn, numberOfDevicesOut, devicesOut);
     }
-    sys_save_midi_params(nmidiindev, midiindev,
-        nmidioutdev, midioutdev);
-
-    sys_vGui("set ::var(apiMidi) %d\n", midi_api);
-
-}
-
-    /* open midi using whatever parameters were last used */
-void sys_reopen_midi( void)
-{
-    int nmidiindev, midiindev[MAXIMUM_MIDI_IN];
-    int nmidioutdev, midioutdev[MAXIMUM_MIDI_OUT];
-    sys_get_midi_params(&nmidiindev, midiindev, &nmidioutdev, midioutdev);
-    sys_open_midi(nmidiindev, midiindev, nmidioutdev, midioutdev, 1);
-}
-
-/*
-void sys_listmididevs(void )
-{
-    char indevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION], outdevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION];
-    int nindevs = 0, noutdevs = 0, i;
-
-    sys_get_midi_devs(indevlist, &nindevs, outdevlist, &noutdevs,
-        MAXIMUM_DEVICE_NUMBER, MAXIMUM_DEVICE_DESCRIPTION);
-
-    if (!nindevs)
-        post("no midi input devices found");
-    else
-    {
-        post("MIDI input devices:");
-        for (i = 0; i < nindevs; i++)
-            post("%d. %s", i+1, indevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
+    //
     }
-    if (!noutdevs)
-        post("no midi output devices found");
-    else
-    {
-        post("MIDI output devices:");
-        for (i = 0; i < noutdevs; i++)
-            post("%d. %s", i+DEVONSET, outdevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
-    }
-}
-*/
-void sys_set_midi_api(int which)
-{
-     midi_api = which;
-     if (0)
-        post("midi_api %d", midi_api);
+    
+    midi_setParameters (numberOfDevicesIn, devicesIn, numberOfDevicesOut, devicesOut);
+
+    sys_vGui ("set ::var(apiMidi) %d\n", midi_api);
 }
 
-void global_midiAPI(void *dummy, t_float f)
+void midi_reopen (void)
+{
+    int m, n;
+    int i[MAXIMUM_MIDI_IN]  = { 0 };
+    int o[MAXIMUM_MIDI_OUT] = { 0 };
+    
+    midi_getParameters (&m, i, &n, o); midi_open (m, i, n, o, 1);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void midi_setAPI (void *dummy, t_float f)
 {
     int newapi = f;
+    
     if (newapi != midi_api)
     {
 #ifdef USEAPI_ALSA
@@ -180,7 +157,7 @@ void global_midiAPI(void *dummy, t_float f)
 #endif
               sys_close_midi();
         midi_api = newapi;
-        sys_reopen_midi();
+        midi_reopen();
     }
 #ifdef USEAPI_ALSA
     midi_alsa_setndevs(midi_numberOfDevicesIn, midi_numberOfDevicesOut);
@@ -193,7 +170,7 @@ void global_midiAPI(void *dummy, t_float f)
     /* start an midi settings dialog window */
 void global_midiProperties(void *dummy, t_float flongform)
 {
-    char buf[1024 + 2 * MAXIMUM_DEVICE_NUMBER*(MAXIMUM_DEVICE_DESCRIPTION+4)];
+    char buf[1024 + 2 * DEVICES_NUMBER*(DEVICES_DESCRIPTION+4)];
         /* these are the devices you're using: */
     int nindev, midiindev[MAXIMUM_MIDI_IN];
     int noutdev, midioutdev[MAXIMUM_MIDI_OUT];
@@ -203,23 +180,23 @@ void global_midiProperties(void *dummy, t_float flongform)
         midioutdev6, midioutdev7, midioutdev8, midioutdev9;
 
         /* these are all the devices on your system: */
-    char indevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION], outdevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION];
+    char indevlist[DEVICES_NUMBER*DEVICES_DESCRIPTION], outdevlist[DEVICES_NUMBER*DEVICES_DESCRIPTION];
     int nindevs = 0, noutdevs = 0, i;
 
     sys_get_midi_devs(indevlist, &nindevs, outdevlist, &noutdevs,
-        MAXIMUM_DEVICE_NUMBER, MAXIMUM_DEVICE_DESCRIPTION);
+        DEVICES_NUMBER, DEVICES_DESCRIPTION);
 
     sys_gui("set ::ui_midi::midiIn {none}\n");
     for (i = 0; i < nindevs; i++)
         sys_vGui("lappend ::ui_midi::midiIn {%s}\n",
-            indevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
+            indevlist + i * DEVICES_DESCRIPTION);
 
     sys_gui("set ::ui_midi::midiOut {none}\n");
     for (i = 0; i < noutdevs; i++)
         sys_vGui("lappend ::ui_midi::midiOut {%s}\n",
-            outdevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
+            outdevlist + i * DEVICES_DESCRIPTION);
 
-    sys_get_midi_params(&nindev, midiindev, &noutdev, midioutdev);
+    midi_getParameters(&nindev, midiindev, &noutdev, midioutdev);
 
     if (nindev > 1 || noutdev > 1)
         flongform = 1;
@@ -316,19 +293,19 @@ void global_midiDialog(void *dummy, t_symbol *s, int argc, t_atom *argv)
             newmidioutdev[i] = i;
     }
 #endif
-    sys_save_midi_params(nindev, newmidiindev,
+    midi_setParameters(nindev, newmidiindev,
         noutdev, newmidioutdev);
 #ifdef USEAPI_ALSA
     if (midi_api == API_ALSA)
     {
         sys_alsa_close_midi();
-        sys_open_midi(alsadevin, newmidiindev, alsadevout, newmidioutdev, 1);
+        midi_open(alsadevin, newmidiindev, alsadevout, newmidioutdev, 1);
     }
     else
 #endif
     {
         sys_close_midi();
-        sys_open_midi(nindev, newmidiindev, noutdev, newmidioutdev, 1);
+        midi_open(nindev, newmidiindev, noutdev, newmidioutdev, 1);
     }
 
 }
@@ -350,41 +327,45 @@ void sys_get_midi_devs(char *indevlist, int *nindevs,
 /* convert a device name to a (1-based) device number.  (Output device if
 'output' parameter is true, otherwise input device).  Negative on failure. */
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int sys_mididevnametonumber(int output, const char *name)
 {
-    char indevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION], outdevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION];
+    char indevlist[DEVICES_NUMBER*DEVICES_DESCRIPTION], outdevlist[DEVICES_NUMBER*DEVICES_DESCRIPTION];
     int nindevs = 0, noutdevs = 0, i;
 
     sys_get_midi_devs(indevlist, &nindevs, outdevlist, &noutdevs,
-        MAXIMUM_DEVICE_NUMBER, MAXIMUM_DEVICE_DESCRIPTION);
+        DEVICES_NUMBER, DEVICES_DESCRIPTION);
 
     if (output)
     {
             /* try first for exact match */
         for (i = 0; i < noutdevs; i++)
-            if (!strcmp(name, outdevlist + i * MAXIMUM_DEVICE_DESCRIPTION))
+            if (!strcmp(name, outdevlist + i * DEVICES_DESCRIPTION))
                 return (i);
             /* failing that, a match up to end of shorter string */
         for (i = 0; i < noutdevs; i++)
         {
             unsigned int comp = strlen(name);
-            if (comp > strlen(outdevlist + i * MAXIMUM_DEVICE_DESCRIPTION))
-                comp = strlen(outdevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
-            if (!strncmp(name, outdevlist + i * MAXIMUM_DEVICE_DESCRIPTION, comp))
+            if (comp > strlen(outdevlist + i * DEVICES_DESCRIPTION))
+                comp = strlen(outdevlist + i * DEVICES_DESCRIPTION);
+            if (!strncmp(name, outdevlist + i * DEVICES_DESCRIPTION, comp))
                 return (i);
         }
     }
     else
     {
         for (i = 0; i < nindevs; i++)
-            if (!strcmp(name, indevlist + i * MAXIMUM_DEVICE_DESCRIPTION))
+            if (!strcmp(name, indevlist + i * DEVICES_DESCRIPTION))
                 return (i);
         for (i = 0; i < nindevs; i++)
         {
             unsigned int comp = strlen(name);
-            if (comp > strlen(indevlist + i * MAXIMUM_DEVICE_DESCRIPTION))
-                comp = strlen(indevlist + i * MAXIMUM_DEVICE_DESCRIPTION);
-            if (!strncmp(name, indevlist + i * MAXIMUM_DEVICE_DESCRIPTION, comp))
+            if (comp > strlen(indevlist + i * DEVICES_DESCRIPTION))
+                comp = strlen(indevlist + i * DEVICES_DESCRIPTION);
+            if (!strncmp(name, indevlist + i * DEVICES_DESCRIPTION, comp))
                 return (i);
         }
     }
@@ -397,7 +378,7 @@ int sys_mididevnametonumber(int output, const char *name)
 
 void sys_mididevnumbertoname(int output, int devno, char *name, int namesize)
 {
-    char indevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION], outdevlist[MAXIMUM_DEVICE_NUMBER*MAXIMUM_DEVICE_DESCRIPTION];
+    char indevlist[DEVICES_NUMBER*DEVICES_DESCRIPTION], outdevlist[DEVICES_NUMBER*DEVICES_DESCRIPTION];
     int nindevs = 0, noutdevs = 0, i;
     if (devno < 0)
     {
@@ -405,11 +386,11 @@ void sys_mididevnumbertoname(int output, int devno, char *name, int namesize)
         return;
     }
     sys_get_midi_devs(indevlist, &nindevs, outdevlist, &noutdevs,
-        MAXIMUM_DEVICE_NUMBER, MAXIMUM_DEVICE_DESCRIPTION);
+        DEVICES_NUMBER, DEVICES_DESCRIPTION);
     if (output && (devno < noutdevs))
-        strncpy(name, outdevlist + devno * MAXIMUM_DEVICE_DESCRIPTION, namesize);
+        strncpy(name, outdevlist + devno * DEVICES_DESCRIPTION, namesize);
     else if (!output && (devno < nindevs))
-        strncpy(name, indevlist + devno * MAXIMUM_DEVICE_DESCRIPTION, namesize);
+        strncpy(name, indevlist + devno * DEVICES_DESCRIPTION, namesize);
     else *name = 0;
     name[namesize-1] = 0;
 }

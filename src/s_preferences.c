@@ -488,7 +488,7 @@ void preferences_load (void)
                             callback,
                             blockSize);
                             
-    sys_open_midi (numberOfMidiIn, midiIn, numberOfMidiOut, midiOut, 0);
+    midi_open (numberOfMidiIn, midiIn, numberOfMidiOut, midiOut, 0);
     
     preferences_loadClose();
 }
@@ -531,7 +531,7 @@ void preferences_save (void *dummy)
                             &callback,
                             &blockSize);
     
-    sys_get_midi_params (&numberOfMidiIn, midiIn, &numberOfMidiOut, midiOut);
+    midi_getParameters (&numberOfMidiIn, midiIn, &numberOfMidiOut, midiOut);
     
     /* Properties. */
     

@@ -41,8 +41,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MAXIMUM_DEVICE_NUMBER                   20
-#define MAXIMUM_DEVICE_DESCRIPTION              80
+#define DEVICES_NUMBER                          20
+#define DEVICES_DESCRIPTION                     80
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -359,12 +359,30 @@ void        midi_poll                               (void);
 void        midi_receive                            (int port, int byte);
 void        midi_broadcast                          (int port, int hasOneByte, int a, int b, int c);
 
-t_error     midi_getAPIs                            (char *dest, size_t size);
-void        sys_get_midi_params                     (int *pnmidiindev,
-                                                        int *pmidiindev,
-                                                        int *pnmidioutdev,
-                                                        int *pmidioutdev);
-                                                
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void        midi_setAPI                             (void *dummy, t_float f);
+t_error     midi_getAvailables                      (char *dest, size_t size);
+
+void        midi_getParameters                      (int *numberOfDevicesIn,
+                                                        int *devicesIn,
+                                                        int *numberOfDevicesOut,
+                                                        int *devicesOut);
+
+void        midi_setParameters                      (int numberOfDevicesIn,
+                                                        int *devicesIn,
+                                                        int numberOfDevicesOut,
+                                                        int *devicesOut);
+                                                        
+void        midi_open                               (int numberOfDevicesIn,
+                                                        int *devicesIn,
+                                                        int numberOfDevicesOut,
+                                                        int *devicesOut,
+                                                        int enable);
+
+void        midi_reopen                             (void);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -461,12 +479,6 @@ void        sys_get_audio_apis              (char *buf);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        sys_open_midi                   (int nmidiin,
-                                                int *midiinvec,
-                                                int nmidiout,
-                                                int *midioutvec,
-                                                int enable);
-
 void        sys_get_midi_devs               (char *indevlist,
                                                 int *nindevs,
                                                 char *outdevlist,
@@ -477,7 +489,6 @@ void        sys_get_midi_devs               (char *indevlist,
 int         sys_mididevnametonumber         (int output, const char *name);
 void        sys_mididevnumbertoname         (int output, int devno, char *name, int namesize);
 
-void        sys_reopen_midi                 (void);
 void        sys_close_midi                  (void);
 void        sys_putmidimess                 (int port, int a, int b, int c);
 void        sys_putmidibyte                 (int port, int a);
@@ -677,7 +688,6 @@ void dummy_listdevs         (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_set_midi_api       (int whichapi);
 void sys_set_audio_api      (int whichapi);
 void sys_set_audio_state    (int onoff);
 
