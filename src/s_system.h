@@ -359,6 +359,7 @@ void        midi_broadcast                          (int port, int hasOneByte, i
 void        midi_setAPI                             (void *dummy, t_float f);
 t_error     midi_getAPIAvailables                   (char *dest, size_t size);
 void        midi_requireDialog                      (void *dummy);
+void        midi_fromDialog                         (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void        midi_reopen                             (void);
 
 void        midi_open                               (int numberOfDevicesIn,
