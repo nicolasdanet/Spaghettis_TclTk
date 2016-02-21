@@ -715,7 +715,7 @@ static t_error interface_startGui (void)
         char audio[PD_STRING] = { 0 };
         
         sys_get_audio_apis (audio);
-        err |= midi_getAvailables (midi, PD_STRING);
+        err |= midi_getAPIAvailables (midi, PD_STRING);
         
         if (!err) {
         //

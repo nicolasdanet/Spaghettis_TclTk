@@ -319,8 +319,11 @@ void sys_poll_midi(void)
 }
 
 void midi_getdevs(char *indevlist, int *nindevs,
-    char *outdevlist, int *noutdevs, int maxndev, int devdescsize)
+    char *outdevlist, int *noutdevs)
 {
+    int maxndev = MAXIMUM_DEVICES;
+    int devdescsize = MAXIMUM_DESCRIPTION;
+    
     int i, nindev = 0, noutdev = 0;
     for (i = 0; i < Pm_CountDevices(); i++)
     {

@@ -290,8 +290,11 @@ void midi_initializeOSS(void)
 }
 
 void midi_getdevs(char *indevlist, int *nindevs,
-    char *outdevlist, int *noutdevs, int maxndev, int devdescsize)
+    char *outdevlist, int *noutdevs)
 {
+    int maxndev = MAXIMUM_DEVICES;
+    int devdescsize = MAXIMUM_DESCRIPTION;
+    
     int i, ndev;
     midi_initializeOSS();
         

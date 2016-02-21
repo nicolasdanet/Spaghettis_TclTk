@@ -47,7 +47,7 @@ void global_initialize (void)
     
     class_addMethod (c, (t_method)font_withHostMeasured,    gensym ("_font"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_audioProperties,   gensym ("_audioProperties"), A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)global_midiProperties,    gensym ("_midiProperties"),  A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)midi_requireDialog,       gensym ("_midiProperties"),  A_NULL);
     class_addMethod (c, (t_method)global_audioDialog,       gensym ("_audioDialog"),     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_midiDialog,        gensym ("_midiDialog"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_audioAPI,          gensym ("_audioAPI"),        A_FLOAT, A_NULL);

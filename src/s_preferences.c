@@ -531,7 +531,7 @@ void preferences_save (void *dummy)
                             &callback,
                             &blockSize);
     
-    midi_getParameters (&numberOfMidiIn, midiIn, &numberOfMidiOut, midiOut);
+    midi_getDevices (&numberOfMidiIn, midiIn, &numberOfMidiOut, midiOut);
     
     /* Properties. */
     

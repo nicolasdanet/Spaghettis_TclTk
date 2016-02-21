@@ -41,8 +41,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define DEVICES_NUMBER                          20
-#define DEVICES_DESCRIPTION                     80
+#define MAXIMUM_DEVICES                         16      /* MUST be >= max (MAXIMUM_MIDI, MAXIMUM_AUDIO). */
+#define MAXIMUM_DESCRIPTION                     80
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -134,12 +134,6 @@
     
 #define SYSTIME_CLOCKS_PER_MILLISECOND          (double)(32.0 * 441.0)
 #define SYSTIME_CLOCKS_PER_SECOND               (SYSTIME_CLOCKS_PER_MILLISECOND * 1000.0)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define SOCKET_BUFFER_SIZE                      4096        /* Must be a power of two. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -363,26 +357,26 @@ void        midi_broadcast                          (int port, int hasOneByte, i
 // -----------------------------------------------------------------------------------------------------------
 
 void        midi_setAPI                             (void *dummy, t_float f);
-t_error     midi_getAvailables                      (char *dest, size_t size);
+t_error     midi_getAPIAvailables                   (char *dest, size_t size);
+void        midi_requireDialog                      (void *dummy);
+void        midi_reopen                             (void);
 
-void        midi_getParameters                      (int *numberOfDevicesIn,
-                                                        int *devicesIn,
-                                                        int *numberOfDevicesOut,
-                                                        int *devicesOut);
-
-void        midi_setParameters                      (int numberOfDevicesIn,
-                                                        int *devicesIn,
-                                                        int numberOfDevicesOut,
-                                                        int *devicesOut);
-                                                        
 void        midi_open                               (int numberOfDevicesIn,
                                                         int *devicesIn,
                                                         int numberOfDevicesOut,
                                                         int *devicesOut,
                                                         int enable);
+                                                        
+void        midi_getDevices                         (int *numberOfDevicesIn,
+                                                        int *devicesIn,
+                                                        int *numberOfDevicesOut,
+                                                        int *devicesOut);
 
-void        midi_reopen                             (void);
-
+void        midi_setDevices                         (int numberOfDevicesIn,
+                                                        int *devicesIn,
+                                                        int numberOfDevicesOut,
+                                                        int *devicesOut);
+                                                        
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -479,13 +473,6 @@ void        sys_get_audio_apis              (char *buf);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        sys_get_midi_devs               (char *indevlist,
-                                                int *nindevs,
-                                                char *outdevlist,
-                                                int *noutdevs, 
-                                                int maxndev,
-                                                int devdescsize);
-                                                
 int         sys_mididevnametonumber         (int output, const char *name);
 void        sys_mididevnumbertoname         (int output, int devno, char *name, int namesize);
 
@@ -498,9 +485,7 @@ void        sys_poll_midi                   (void);
 void        midi_getdevs                    (char *indevlist,
                                                 int *nindevs,
                                                 char *outdevlist,
-                                                int *noutdevs,
-                                                int maxndev,
-                                                int devdescsize);
+                                                int *noutdevs);
                                                 
 void        sys_do_open_midi                (int nmidiindev,
                                                 int *midiindev,
@@ -523,9 +508,7 @@ void midi_alsa_setndevs         (int i, int o);
 void midi_alsa_getdevs          (char *indevlist,
                                     int *nindevs,
                                     char *outdevlist,
-                                    int *noutdevs,
-                                    int maxndev,
-                                    int devdescsize);
+                                    int *noutdevs);
                                     
 void sys_alsa_do_open_midi      (int nmidiindev,
                                     int *midiindev,

@@ -29,6 +29,6 @@ void sys_poll_midi(void)
 }
 
 void midi_getdevs(char *indevlist, int *nindevs,
-    char *outdevlist, int *noutdevs, int maxndev, int devdescsize)
+    char *outdevlist, int *noutdevs)
 {
 }

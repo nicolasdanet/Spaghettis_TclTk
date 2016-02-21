@@ -15,6 +15,12 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define RECEIVER_BUFFER_SIZE    4096        /* Must be a power of two. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 extern t_receiver   *interface_inGuiReceiver;
 
@@ -41,7 +47,7 @@ t_receiver *receiver_new (void *owner, int fd, t_notifyfn notify, t_receivefn re
     
     x->r_owner      = owner;
     x->r_message    = buffer_new();
-    x->r_inRaw      = (char *)PD_MEMORY_GET (SOCKET_BUFFER_SIZE);
+    x->r_inRaw      = (char *)PD_MEMORY_GET (RECEIVER_BUFFER_SIZE);
     x->r_inHead     = 0;
     x->r_inTail     = 0;
     x->r_fd         = fd;
@@ -72,7 +78,7 @@ void receiver_free (t_receiver *x)
 static int receiver_readHandleIsSemicolonEscaped (t_receiver *x, int i)
 {
     if (i == 0) {
-        return (x->r_inRaw[SOCKET_BUFFER_SIZE - 1] == '\\');
+        return (x->r_inRaw[RECEIVER_BUFFER_SIZE - 1] == '\\');
     } else { 
         return (x->r_inRaw[i - 1] == '\\');
     }
@@ -80,20 +86,20 @@ static int receiver_readHandleIsSemicolonEscaped (t_receiver *x, int i)
 
 static int receiver_readHandleTCP (t_receiver *x)
 {
-    char t[SOCKET_BUFFER_SIZE] = { 0 };
+    char t[RECEIVER_BUFFER_SIZE] = { 0 };
     char *p = t;
-    int i, first = 1;
+    int i, top = 1;
     
     PD_ASSERT ((x->r_inHead != x->r_inTail) || (x->r_inHead == 0 && x->r_inTail == 0));
         
-    for (i = x->r_inTail; first || (i != x->r_inHead); first = 0, (i = (i + 1) & (SOCKET_BUFFER_SIZE - 1))) {
+    for (i = x->r_inTail; top || (i != x->r_inHead); top = 0, (i = (i + 1) & (RECEIVER_BUFFER_SIZE - 1))) {
     //
     char c = *p = x->r_inRaw[i];
     
     p++;
 
-    if (c == ';' && (first || !receiver_readHandleIsSemicolonEscaped (x, i))) {
-        x->r_inTail = (i + 1) & (SOCKET_BUFFER_SIZE - 1);
+    if (c == ';' && (top || !receiver_readHandleIsSemicolonEscaped (x, i))) {
+        x->r_inTail = (i + 1) & (RECEIVER_BUFFER_SIZE - 1);
         buffer_withStringUnzeroed (x->r_message, t, p - t);
         return 1;
     }
@@ -126,8 +132,8 @@ static void receiver_readHandleDisconnect (t_receiver *x, int fd, int withError)
 
 static t_error receiver_readUDP (t_receiver *x, int fd)
 {
-    char t[SOCKET_BUFFER_SIZE + 1] = { 0 };
-    ssize_t length = recv (fd, t, SOCKET_BUFFER_SIZE, 0);
+    char t[RECEIVER_BUFFER_SIZE + 1] = { 0 };
+    ssize_t length = recv (fd, t, RECEIVER_BUFFER_SIZE, 0);
     t_error err = PD_ERROR;
     
     if (length < 0)       { receiver_readHandleDisconnect (x, fd, 1); PD_BUG; }
@@ -152,7 +158,7 @@ static t_error receiver_readUDP (t_receiver *x, int fd)
 
 static t_error receiver_readTCP (t_receiver *x, int fd)
 {
-    int endOfAvailableSpace  = (x->r_inHead >= x->r_inTail ? SOCKET_BUFFER_SIZE : x->r_inTail - 1);
+    int endOfAvailableSpace  = (x->r_inHead >= x->r_inTail ? RECEIVER_BUFFER_SIZE : x->r_inTail - 1);
     int sizeOfAvailableSpace = endOfAvailableSpace - x->r_inHead;
     t_error err = PD_ERROR;
     
@@ -165,7 +171,7 @@ static t_error receiver_readTCP (t_receiver *x, int fd)
     else if (length == 0) { receiver_readHandleDisconnect (x, fd, 0); err = PD_ERROR_NONE; }
     else
     {
-        x->r_inHead += length; if (x->r_inHead >= SOCKET_BUFFER_SIZE) { x->r_inHead = 0; }
+        x->r_inHead += length; if (x->r_inHead >= RECEIVER_BUFFER_SIZE) { x->r_inHead = 0; }
         
         while (receiver_readHandleTCP (x)) {
             if (x->r_fnReceive) { (*x->r_fnReceive) (x->r_owner, x->r_message); }

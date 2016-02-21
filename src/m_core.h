@@ -249,7 +249,6 @@ void        global_new                                  (void *dummy, t_symbol *
 void        global_dsp                                  (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void        global_key                                  (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void        global_audioProperties                      (void *dummy, t_float f);
-void        global_midiProperties                       (void *dummy, t_float f);
 void        global_audioDialog                          (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void        global_midiDialog                           (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void        global_audioAPI                             (void *dummy, t_float f);

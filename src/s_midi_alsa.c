@@ -233,8 +233,11 @@ void midi_alsa_setndevs(int in, int out)
 }
 
 void midi_alsa_getdevs(char *indevlist, int *nindevs,
-    char *outdevlist, int *noutdevs, int maxndev, int devdescsize)
+    char *outdevlist, int *noutdevs)
 {
+    int maxndev = MAXIMUM_DEVICES;
+    int devdescsize = MAXIMUM_DESCRIPTION;
+    
     int i, ndev;
     if ((ndev = alsa_nmidiindevs) > maxndev)
         ndev = maxndev;
