@@ -360,7 +360,12 @@ void        midi_setAPI                             (void *dummy, t_float f);
 t_error     midi_getAPIAvailables                   (char *dest, size_t size);
 void        midi_requireDialog                      (void *dummy);
 void        midi_fromDialog                         (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void        midi_reopen                             (void);
+int         midi_inNumberWithName                   (const char *name);
+int         midi_outNumberWithName                  (const char *name);
+void        midi_inNumberToName                     (int n, char *dest, size_t size);
+void        midi_outNumberToName                    (int n, char *dest, size_t size);
+
+void        midi_openAgain                          (void);
 
 void        midi_open                               (int numberOfDevicesIn,
                                                         int *devicesIn,
@@ -473,9 +478,6 @@ void        sys_get_audio_apis              (char *buf);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-int         sys_mididevnametonumber         (int output, const char *name);
-void        sys_mididevnumbertoname         (int output, int devno, char *name, int namesize);
 
 void        sys_close_midi                  (void);
 void        sys_putmidimess                 (int port, int a, int b, int c);

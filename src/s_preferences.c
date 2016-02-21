@@ -441,7 +441,7 @@ void preferences_load (void)
     
     string_sprintf (key, PD_STRING, "MidiInDeviceName%d", i + 1);
     
-    if (preferences_getKey (key, value, PD_STRING) && (device = sys_mididevnametonumber (0, value)) >= 0) {
+    if (preferences_getKey (key, value, PD_STRING) && (device = midi_inNumberWithName (value)) >= 0) {
         midiIn[i] = device;
         
     } else {
@@ -459,7 +459,7 @@ void preferences_load (void)
     
     string_sprintf (key, PD_STRING, "MidiOutDeviceName%d", i + 1);
     
-    if (preferences_getKey (key, value, PD_STRING) && (device = sys_mididevnametonumber (1, value)) >= 0) {
+    if (preferences_getKey (key, value, PD_STRING) && (device = midi_outNumberWithName (value)) >= 0) {
         midiOut[i] = device;
         
     } else {
@@ -603,7 +603,7 @@ void preferences_save (void *dummy)
     string_sprintf (value, PD_STRING, "%d", midiIn[i]);
     preferences_setKey (key, value);
     string_sprintf (key, PD_STRING, "MidiInDeviceName%d", i + 1);
-    sys_mididevnumbertoname (0, midiIn[i], value, PD_STRING);
+    midi_inNumberToName (midiIn[i], value, PD_STRING);
     preferences_setKey (key, value);
     //
     }
@@ -619,7 +619,7 @@ void preferences_save (void *dummy)
     string_sprintf (value, PD_STRING, "%d", midiOut[i]);
     preferences_setKey (key, value);
     string_sprintf (key, PD_STRING, "MidiOutDeviceName%d", i + 1);
-    sys_mididevnumbertoname (1, midiOut[i], value, PD_STRING);
+    midi_outNumberToName (midiOut[i], value, PD_STRING);
     preferences_setKey (key, value);
     //
     }
