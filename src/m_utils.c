@@ -78,6 +78,24 @@ t_error string_sprintf (char *dest, size_t size, const char *format, ...)
     }
 }
 
+t_error string_addSprintf (char *dest, size_t size, const char *format, ...)
+{
+    int t;
+    va_list args;
+    size_t d = strlen (dest);
+    
+    PD_ASSERT (size > d);
+    
+    va_start (args, format);
+    t = vsnprintf (dest + d, size - d, format, args);
+    va_end (args);
+    
+    if (t >= 0 && (size_t)t < (size - d)) { return PD_ERROR_NONE; }
+    else {
+        return PD_ERROR;
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

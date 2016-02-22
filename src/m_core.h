@@ -156,6 +156,7 @@ t_error     string_copy                                 (char *dest, size_t size
 t_error     string_add                                  (char *dest, size_t size, const char *src);
 t_error     string_append                               (char *dest, size_t size, const char *src, int n);
 t_error     string_sprintf                              (char *dest, size_t size, const char *format, ...);
+t_error     string_addSprintf                           (char *dest, size_t size, const char *format, ...);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
