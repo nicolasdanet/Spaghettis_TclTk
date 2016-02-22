@@ -362,13 +362,12 @@ void        midi_requireDialog                      (void *dummy);
 void        midi_fromDialog                         (void *dummy, t_symbol *s, int argc, t_atom *argv);
 int         midi_numberWithName                     (int isOutput, const char *name);
 void        midi_numberToName                       (int isOutput, int k, char *dest, size_t size);
-void        midi_openAgain                          (void);
+void        midi_open                               (void);
 
-void        midi_open                               (int numberOfDevicesIn,
+void        midi_openWithDevices                    (int numberOfDevicesIn,
                                                         int *devicesIn,
                                                         int numberOfDevicesOut,
-                                                        int *devicesOut,
-                                                        int enable);
+                                                        int *devicesOut);
                                                         
 void        midi_getDevices                         (int *numberOfDevicesIn,
                                                         int *devicesIn,

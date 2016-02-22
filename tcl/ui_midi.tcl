@@ -61,8 +61,8 @@ proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 o1 o2 o3 o4 o5 o6 o7 o8} {
     array set midiInDevice  [ list 1 $i1 2 $i2 3 $i3 4 $i4 5 $i5 6 $i6 7 $i7 8 $i8 ]
     array set midiOutDevice [ list 1 $o1 2 $o2 3 $o3 4 $o4 5 $o5 6 $o6 7 $o7 8 $o8 ]
     
-    set midiAlsaIn  [llength $midiIn]
-    set midiAlsaOut [llength $midiOut]
+    set midiAlsaIn  0
+    set midiAlsaOut 0
 
     toplevel $top -class PdDialog
     wm title $top [_ "MIDI"]

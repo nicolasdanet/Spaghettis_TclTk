@@ -242,7 +242,7 @@ int main_entry (int argc, char **argv)
     PD_ASSERT (main_rootDirectory != NULL);
 
     if (!(err |= interface_start())) {
-        midi_openAgain();
+        midi_open();
         if (audio_shouldkeepopen()) { sys_reopen_audio(); }
         if (!(err |= main_entryVersion (1))) { err |= scheduler_main(); }
     }

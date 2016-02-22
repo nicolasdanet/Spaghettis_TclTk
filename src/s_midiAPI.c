@@ -51,7 +51,7 @@ void midi_setAPI (void *dummy, t_float f)
             sys_close_midi();
         }
         
-        midi_api = (int)f; midi_openAgain();
+        midi_api = (int)f; midi_open();
     }
     
     #ifdef USEAPI_ALSA
@@ -80,10 +80,8 @@ t_error midi_getAPIAvailables (char *dest, size_t size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void midi_open (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut, int enable)
+void midi_openWithDevices (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut)
 {
-    if (enable) {
-    //
     #ifdef USEAPI_ALSA
         midi_initializeALSA();
     #endif
@@ -97,21 +95,19 @@ void midi_open (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, i
     } else {
         sys_do_open_midi (numberOfDevicesIn, devicesIn, numberOfDevicesOut, devicesOut);
     }
-    //
-    }
     
     midi_setDevices (numberOfDevicesIn, devicesIn, numberOfDevicesOut, devicesOut);
 
     sys_vGui ("set ::var(apiMidi) %d\n", midi_api);
 }
 
-void midi_openAgain (void)
+void midi_open (void)
 {
     int m, n;
     int i[MAXIMUM_MIDI_IN]  = { 0 };
     int o[MAXIMUM_MIDI_OUT] = { 0 };
     
-    midi_getDevices (&m, i, &n, o); midi_open (m, i, n, o, 1);
+    midi_getDevices (&m, i, &n, o); midi_openWithDevices (m, i, n, o);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -341,8 +337,8 @@ void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     if (API_WITH_ALSA && midi_api == API_ALSA) {
     //
-    m = alsaIn;
-    n = alsaOut;
+    m = PD_CLAMP (alsaIn,  0, MAXIMUM_MIDI_IN);
+    n = PD_CLAMP (alsaOut, 0, MAXIMUM_MIDI_OUT);
         
     for (k = 0; k < m; k++) { i[k] = k; }
     for (k = 0; k < n; k++) { o[k] = k; }
@@ -358,15 +354,13 @@ void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
     for (k = 0; k < parameters; k++) { if (o[k] > 0) { o[n] = o[k] - MIDI_SOMETHING; n++; } }
     //
     }
-
-    // midi_setDevices (m, i, n, o);
     
     if (API_WITH_ALSA && midi_api == API_ALSA) { sys_alsa_close_midi(); } 
     else {
         sys_close_midi();
     }
 
-    midi_open (m, i, n, o, 1);
+    midi_openWithDevices (m, i, n, o);
 }
 
 // -----------------------------------------------------------------------------------------------------------
