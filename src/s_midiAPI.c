@@ -252,6 +252,9 @@ static t_error midi_requireDialogInitialize (void)
     err |= string_add (t1, PD_STRING, "]\n");
     err |= string_add (t2, PD_STRING, "]\n");
     
+    post ("%s", t1);    /* ??? */
+    post ("%s", t2);    /* ??? */
+    
     sys_gui (t1);
     sys_gui (t2);
     //
@@ -311,7 +314,7 @@ void midi_requireDialog (void *dummy)
                                     
     }
     
-    post ("? %s", t);
+    post ("%s", t);   /* ??? */
     
     if (!err) {
         gfxstub_deleteforkey (NULL);
@@ -337,7 +340,7 @@ void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
     int parameters = (argc - 2) / 2;
     int k;
     
-    post_atoms (argc, argv);
+    post_atoms (argc, argv);    /* ??? */
     
     PD_ASSERT (parameters == MAXIMUM_MIDI_IN);
     PD_ASSERT (parameters == MAXIMUM_MIDI_OUT);
