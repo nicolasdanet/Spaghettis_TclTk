@@ -360,11 +360,8 @@ void        midi_setAPI                             (void *dummy, t_float f);
 t_error     midi_getAPIAvailables                   (char *dest, size_t size);
 void        midi_requireDialog                      (void *dummy);
 void        midi_fromDialog                         (void *dummy, t_symbol *s, int argc, t_atom *argv);
-int         midi_inNumberWithName                   (const char *name);
-int         midi_outNumberWithName                  (const char *name);
-void        midi_inNumberToName                     (int n, char *dest, size_t size);
-void        midi_outNumberToName                    (int n, char *dest, size_t size);
-
+int         midi_numberWithName                     (int isOutput, const char *name);
+void        midi_numberToName                       (int isOutput, int k, char *dest, size_t size);
 void        midi_openAgain                          (void);
 
 void        midi_open                               (int numberOfDevicesIn,

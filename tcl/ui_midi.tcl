@@ -233,8 +233,10 @@ proc _forceValues {} {
     
     set midiAlsaIn   [::ifInteger $midiAlsaIn 0]
     set midiAlsaIn   [::tcl::mathfunc::max $midiAlsaIn 0]
+    set midiAlsaIn   [::tcl::mathfunc::min $midiAlsaIn 8]
     set midiAlsaOut  [::ifInteger $midiAlsaOut 0]
     set midiAlsaOut  [::tcl::mathfunc::max $midiAlsaOut 0]
+    set midiAlsaOut  [::tcl::mathfunc::min $midiAlsaOut 8]
 }
 
 # ------------------------------------------------------------------------------------------------------------

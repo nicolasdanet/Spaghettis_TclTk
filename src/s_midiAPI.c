@@ -16,6 +16,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#define MIDI_SOMETHING  1
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 extern t_class *global_object;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -121,7 +126,7 @@ void midi_getDevices (int *numberOfDevicesIn, int *devicesIn, int *numberOfDevic
     
     for (i = 0; i < midi_numberOfDevicesIn; i++) {
         char *s = &midi_devicesInNames[i * MAXIMUM_DESCRIPTION];
-        if ((n = midi_inNumberWithName (s)) >= 0) {
+        if ((n = midi_numberWithName (0, s)) >= 0) {
             devicesIn[i] = n;
         } else {
             devicesIn[i] = midi_devicesIn[i]; 
@@ -130,7 +135,7 @@ void midi_getDevices (int *numberOfDevicesIn, int *devicesIn, int *numberOfDevic
         
     for (i = 0; i < midi_numberOfDevicesOut; i++) {
         char *s = &midi_devicesOutNames[i * MAXIMUM_DESCRIPTION];
-        if ((n = midi_outNumberWithName (s)) >= 0) {
+        if ((n = midi_numberWithName (1, s)) >= 0) {
             devicesOut[i] = n;
         } else {
             devicesOut[i] = midi_devicesOut[i];
@@ -151,13 +156,13 @@ void midi_setDevices (int numberOfDevicesIn, int *devicesIn, int numberOfDevices
     for (i = 0; i < numberOfDevicesIn; i++) {
         char *s = &midi_devicesInNames[i * MAXIMUM_DESCRIPTION];
         midi_devicesIn[i] = devicesIn[i];
-        midi_inNumberToName (devicesIn[i], s, MAXIMUM_DESCRIPTION);
+        midi_numberToName (0, devicesIn[i], s, MAXIMUM_DESCRIPTION);
     }
     
     for (i = 0; i < numberOfDevicesOut; i++) {
         char *s = &midi_devicesOutNames[i * MAXIMUM_DESCRIPTION];
         midi_devicesOut[i] = devicesOut[i]; 
-        midi_outNumberToName (devicesOut[i], s, MAXIMUM_DESCRIPTION);
+        midi_numberToName (1, devicesOut[i], s, MAXIMUM_DESCRIPTION);
     }
 }
 
@@ -173,11 +178,7 @@ static void midi_getLists (char *i, int *m, char *o, int *n)
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static int midi_numberWithName (int isOutput, const char *name)
+int midi_numberWithName (int isOutput, const char *name)
 {
     int  m = 0;
     int  n = 0;
@@ -201,7 +202,7 @@ static int midi_numberWithName (int isOutput, const char *name)
     return -1;
 }
 
-static void midi_numberToName (int isOutput, int k, char *dest, size_t size)
+void midi_numberToName (int isOutput, int k, char *dest, size_t size)
 {
     int  m = 0;
     int  n = 0;
@@ -220,30 +221,6 @@ static void midi_numberToName (int isOutput, int k, char *dest, size_t size)
     }
     
     if (err) { *dest = 0; }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int midi_inNumberWithName (const char *name)
-{
-    return midi_numberWithName (0, name);
-}
-
-int midi_outNumberWithName (const char *name)
-{
-    return midi_numberWithName (1, name);
-}
-
-void midi_inNumberToName (int n, char *dest, size_t size)
-{
-    midi_numberToName (0, n, dest, size);
-}
-
-void midi_outNumberToName (int n, char *dest, size_t size)
-{
-    midi_numberToName (1, n, dest, size);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -284,25 +261,25 @@ void midi_requireDialog (void *dummy)
         
         char t[PD_STRING] = { 0 };
             
-        int i1 = (m > 0 && i[0]>= 0 ? i[0] + 1 : 0);
-        int i2 = (m > 1 && i[1]>= 0 ? i[1] + 1 : 0);
-        int i3 = (m > 2 && i[2]>= 0 ? i[2] + 1 : 0);
-        int i4 = (m > 3 && i[3]>= 0 ? i[3] + 1 : 0);
-        int i5 = (m > 4 && i[4]>= 0 ? i[4] + 1 : 0);
-        int i6 = (m > 5 && i[5]>= 0 ? i[5] + 1 : 0);
-        int i7 = (m > 6 && i[6]>= 0 ? i[6] + 1 : 0);
-        int i8 = (m > 7 && i[7]>= 0 ? i[7] + 1 : 0);
-        int i9 = (m > 8 && i[8]>= 0 ? i[8] + 1 : 0);
+        int i1 = (m > 0 && i[0]>= 0 ? i[0] + MIDI_SOMETHING : 0);
+        int i2 = (m > 1 && i[1]>= 0 ? i[1] + MIDI_SOMETHING : 0);
+        int i3 = (m > 2 && i[2]>= 0 ? i[2] + MIDI_SOMETHING : 0);
+        int i4 = (m > 3 && i[3]>= 0 ? i[3] + MIDI_SOMETHING : 0);
+        int i5 = (m > 4 && i[4]>= 0 ? i[4] + MIDI_SOMETHING : 0);
+        int i6 = (m > 5 && i[5]>= 0 ? i[5] + MIDI_SOMETHING : 0);
+        int i7 = (m > 6 && i[6]>= 0 ? i[6] + MIDI_SOMETHING : 0);
+        int i8 = (m > 7 && i[7]>= 0 ? i[7] + MIDI_SOMETHING : 0);
+        int i9 = (m > 8 && i[8]>= 0 ? i[8] + MIDI_SOMETHING : 0);
         
-        int o1 = (n > 0 && o[0]>= 0 ? o[0] + 1 : 0); 
-        int o2 = (n > 1 && o[1]>= 0 ? o[1] + 1 : 0); 
-        int o3 = (n > 2 && o[2]>= 0 ? o[2] + 1 : 0); 
-        int o4 = (n > 3 && o[3]>= 0 ? o[3] + 1 : 0); 
-        int o5 = (n > 4 && o[4]>= 0 ? o[4] + 1 : 0);
-        int o6 = (n > 5 && o[5]>= 0 ? o[5] + 1 : 0);
-        int o7 = (n > 6 && o[6]>= 0 ? o[6] + 1 : 0);
-        int o8 = (n > 7 && o[7]>= 0 ? o[7] + 1 : 0);
-        int o9 = (n > 8 && o[8]>= 0 ? o[8] + 1 : 0);
+        int o1 = (n > 0 && o[0]>= 0 ? o[0] + MIDI_SOMETHING : 0); 
+        int o2 = (n > 1 && o[1]>= 0 ? o[1] + MIDI_SOMETHING : 0); 
+        int o3 = (n > 2 && o[2]>= 0 ? o[2] + MIDI_SOMETHING : 0); 
+        int o4 = (n > 3 && o[3]>= 0 ? o[3] + MIDI_SOMETHING : 0); 
+        int o5 = (n > 4 && o[4]>= 0 ? o[4] + MIDI_SOMETHING : 0);
+        int o6 = (n > 5 && o[5]>= 0 ? o[5] + MIDI_SOMETHING : 0);
+        int o7 = (n > 6 && o[6]>= 0 ? o[6] + MIDI_SOMETHING : 0);
+        int o8 = (n > 7 && o[7]>= 0 ? o[7] + MIDI_SOMETHING : 0);
+        int o9 = (n > 8 && o[8]>= 0 ? o[8] + MIDI_SOMETHING : 0);
 
         if (API_WITH_ALSA && midi_api == API_ALSA) {
 
@@ -339,66 +316,50 @@ void midi_requireDialog (void *dummy)
 
 void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    int nmidiindev, midiindev[MAXIMUM_MIDI_IN];
-    int nmidioutdev, midioutdev[MAXIMUM_MIDI_OUT];
-    int i, nindev, noutdev;
-    int newmidiindev[9], newmidioutdev[9];
-    int alsadevin, alsadevout;
+    int m = 0;
+    int n = 0;
+    int i[MAXIMUM_MIDI_IN]  = { 0 };
+    int o[MAXIMUM_MIDI_OUT] = { 0 };
+    int alsaIn  = 0;
+    int alsaOut = 0;
 
-    for (i = 0; i < 9; i++)
-    {
-        newmidiindev[i] = (t_int)atom_getFloatAtIndex(i, argc, argv);
-        newmidioutdev[i] = (t_int)atom_getFloatAtIndex(i+9, argc, argv);
+    int parameters = (argc - 2) / 2;
+    int k;
+    
+    //PD_ASSERT (parameters == MAXIMUM_MIDI_IN);
+    //PD_ASSERT (parameters == MAXIMUM_MIDI_OUT);
+    
+    alsaIn  = (t_int)atom_getFloatAtIndex ((parameters * 2) + 0, argc, argv);
+    alsaOut = (t_int)atom_getFloatAtIndex ((parameters * 2) + 1, argc, argv);
+    
+    if (API_WITH_ALSA && midi_api == API_ALSA) {
+    //
+    m = alsaIn;
+    n = alsaOut;
+        
+    for (k = 0; k < m; k++) { i[k] = k; }
+    for (k = 0; k < n; k++) { o[k] = k; }
+    //
+    } else {
+    //
+    for (k = 0; k < parameters; k++) {
+        i[k] = (t_int)atom_getFloatAtIndex (k, argc, argv);
+        o[k] = (t_int)atom_getFloatAtIndex (k + parameters, argc, argv);
     }
 
-    for (i = 0, nindev = 0; i < 9; i++)
-    {
-        if (newmidiindev[i] > 0)
-        {
-            newmidiindev[nindev] = newmidiindev[i]-1;
-            nindev++;
-        }
+    for (k = 0; k < parameters; k++) { if (i[k] > 0) { i[m] = i[k] - MIDI_SOMETHING; m++; } }
+    for (k = 0; k < parameters; k++) { if (o[k] > 0) { o[n] = o[k] - MIDI_SOMETHING; n++; } }
+    //
     }
-    for (i = 0, noutdev = 0; i < 9; i++)
-    {
-        if (newmidioutdev[i] > 0)
-        {
-            newmidioutdev[noutdev] = newmidioutdev[i]-1;
-            noutdev++;
-        }
-    }
-    alsadevin = (t_int)atom_getFloatAtIndex(18, argc, argv);
-    alsadevout = (t_int)atom_getFloatAtIndex(19, argc, argv);
-#ifdef USEAPI_ALSA
-            /* invent a story so that saving/recalling "settings" will
-            be able to restore the number of devices.  ALSA MIDI handling
-            uses its own set of variables.  LATER figure out how to get
-            this to work coherently */
-    if (midi_api == API_ALSA)
-    {
-        nindev = alsadevin;
-        noutdev = alsadevout;
-        for (i = 0; i < nindev; i++)
-            newmidiindev[i] = i;
-        for (i = 0; i < noutdev; i++)
-            newmidioutdev[i] = i;
-    }
-#endif
-    midi_setDevices(nindev, newmidiindev,
-        noutdev, newmidioutdev);
-#ifdef USEAPI_ALSA
-    if (midi_api == API_ALSA)
-    {
-        sys_alsa_close_midi();
-        midi_open(alsadevin, newmidiindev, alsadevout, newmidioutdev, 1);
-    }
-    else
-#endif
-    {
+
+    // midi_setDevices (m, i, n, o);
+    
+    if (API_WITH_ALSA && midi_api == API_ALSA) { sys_alsa_close_midi(); } 
+    else {
         sys_close_midi();
-        midi_open(nindev, newmidiindev, noutdev, newmidioutdev, 1);
     }
 
+    midi_open (m, i, n, o, 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------
