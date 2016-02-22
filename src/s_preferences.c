@@ -29,6 +29,9 @@ extern int sys_audioapi;
 static char *preferences_loadBuffer;                        /* Shared. */
 static FILE *preferences_saveFile;                          /* Shared. */
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_error preferences_loadBeginNative (void)
 {
     char *home = getenv ("HOME");
@@ -428,7 +431,6 @@ void preferences_load (void)
         }
     }
     //
-    //
     }
         
     if (numberOfAudioOut == 0) { numberOfAudioOut = -1; }
@@ -441,11 +443,12 @@ void preferences_load (void)
     
     string_sprintf (key, PD_STRING, "MidiInDeviceName%d", i + 1);
     
-    if (preferences_getKey (key, value, PD_STRING) && (device = midi_numberWithName (0, value)) >= 0) {
-        midiIn[i] = device;
-        numberOfMidiIn++;
-    } else {
-        break;
+    if (!preferences_getKey (key, value, PD_STRING)) { break; }
+    else {
+        if ((device = midi_numberWithName (0, value)) >= 0) { 
+            midiIn[i] = device;
+            numberOfMidiIn++;
+        }
     }
     //
     }
@@ -456,11 +459,12 @@ void preferences_load (void)
     
     string_sprintf (key, PD_STRING, "MidiOutDeviceName%d", i + 1);
     
-    if (preferences_getKey (key, value, PD_STRING) && (device = midi_numberWithName (1, value)) >= 0) {
-        midiOut[i] = device;
-        numberOfMidiOut++;
-    } else {
-        break;
+    if (!preferences_getKey (key, value, PD_STRING)) { break; }
+    else { 
+        if ((device = midi_numberWithName (1, value)) >= 0) {
+            midiOut[i] = device;
+            numberOfMidiOut++;
+        }
     }
     //
     }

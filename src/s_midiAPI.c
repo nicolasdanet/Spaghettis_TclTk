@@ -34,8 +34,6 @@ int midi_api = API_DEFAULT_MIDI;                                                
 
 static int  midi_numberOfDevicesIn;                                             /* Shared. */
 static int  midi_numberOfDevicesOut;                                            /* Shared. */
-static int  midi_devicesIn[MAXIMUM_MIDI_IN];                                    /* Shared. */
-static int  midi_devicesOut[MAXIMUM_MIDI_OUT];                                  /* Shared. */
 static char midi_devicesInNames[MAXIMUM_MIDI_IN * MAXIMUM_DESCRIPTION];         /* Shared. */
 static char midi_devicesOutNames[MAXIMUM_MIDI_OUT * MAXIMUM_DESCRIPTION];       /* Shared. */
 
@@ -123,20 +121,12 @@ void midi_getDevices (int *numberOfDevicesIn, int *devicesIn, int *numberOfDevic
     
     for (i = 0; i < midi_numberOfDevicesIn; i++) {
         char *s = &midi_devicesInNames[i * MAXIMUM_DESCRIPTION];
-        if ((n = midi_numberWithName (0, s)) >= 0) {
-            devicesIn[i] = n;
-        } else {
-            devicesIn[i] = midi_devicesIn[i]; 
-        }
+        devicesIn[i] = midi_numberWithName (0, s);
     }
         
     for (i = 0; i < midi_numberOfDevicesOut; i++) {
         char *s = &midi_devicesOutNames[i * MAXIMUM_DESCRIPTION];
-        if ((n = midi_numberWithName (1, s)) >= 0) {
-            devicesOut[i] = n;
-        } else {
-            devicesOut[i] = midi_devicesOut[i];
-        }
+        devicesOut[i] = midi_numberWithName (1, s);
     }
 }
 
@@ -152,13 +142,11 @@ void midi_setDevices (int numberOfDevicesIn, int *devicesIn, int numberOfDevices
     
     for (i = 0; i < numberOfDevicesIn; i++) {
         char *s = &midi_devicesInNames[i * MAXIMUM_DESCRIPTION];
-        midi_devicesIn[i] = devicesIn[i];
         midi_numberToName (0, devicesIn[i], s, MAXIMUM_DESCRIPTION);
     }
     
     for (i = 0; i < numberOfDevicesOut; i++) {
         char *s = &midi_devicesOutNames[i * MAXIMUM_DESCRIPTION];
-        midi_devicesOut[i] = devicesOut[i]; 
         midi_numberToName (1, devicesOut[i], s, MAXIMUM_DESCRIPTION);
     }
 }
@@ -252,9 +240,6 @@ static t_error midi_requireDialogInitialize (void)
     err |= string_add (t1, PD_STRING, "]\n");
     err |= string_add (t2, PD_STRING, "]\n");
     
-    post ("%s", t1);    /* ??? */
-    post ("%s", t2);    /* ??? */
-    
     sys_gui (t1);
     sys_gui (t2);
     //
@@ -314,8 +299,6 @@ void midi_requireDialog (void *dummy)
                                     
     }
     
-    post ("%s", t);   /* ??? */
-    
     if (!err) {
         gfxstub_deleteforkey (NULL);
         gfxstub_new (&global_object, (void *)midi_requireDialog, t);
@@ -339,9 +322,7 @@ void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
 
     int parameters = (argc - 2) / 2;
     int k;
-    
-    post_atoms (argc, argv);    /* ??? */
-    
+
     PD_ASSERT (parameters == MAXIMUM_MIDI_IN);
     PD_ASSERT (parameters == MAXIMUM_MIDI_OUT);
     
