@@ -32,8 +32,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MAXIMUM_MIDI_IN                         16
-#define MAXIMUM_MIDI_OUT                        16
+#define MAXIMUM_MIDI_IN                         8
+#define MAXIMUM_MIDI_OUT                        8
 #define MAXIMUM_AUDIO_IN                        4
 #define MAXIMUM_AUDIO_OUT                       4
 
@@ -41,8 +41,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MAXIMUM_DEVICES                         16      /* MUST be >= max (MAXIMUM_MIDI, MAXIMUM_AUDIO). */
-#define MAXIMUM_DESCRIPTION                     80
+#define MAXIMUM_DEVICES                         16
+#define MAXIMUM_DESCRIPTION                     128
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

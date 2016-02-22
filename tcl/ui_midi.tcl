@@ -35,21 +35,21 @@ array set midiOutDevice {}
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc show {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9 alsa} {
+proc show {top i1 i2 i3 i4 i5 i6 i7 i8 o1 o2 o3 o4 o5 o6 o7 o8 alsa} {
     
     ::ui_menu::disableMidi
     
     if {$alsa} { 
-        ::ui_midi::_createAlsa $top $i1 $i2 $i3 $i4 $i5 $i6 $i7 $i8 $i9 $o1 $o2 $o3 $o4 $o5 $o6 $o7 $o8 $o9
+        ::ui_midi::_createAlsa $top $i1 $i2 $i3 $i4 $i5 $i6 $i7 $i8 $o1 $o2 $o3 $o4 $o5 $o6 $o7 $o8
     } else {
-        ::ui_midi::_create $top $i1 $i2 $i3 $i4 $i5 $i6 $i7 $i8 $i9 $o1 $o2 $o3 $o4 $o5 $o6 $o7 $o8 $o9
+        ::ui_midi::_create $top $i1 $i2 $i3 $i4 $i5 $i6 $i7 $i8 $o1 $o2 $o3 $o4 $o5 $o6 $o7 $o8
     }
 }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
+proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 o1 o2 o3 o4 o5 o6 o7 o8} {
 
     variable midiIn
     variable midiOut
@@ -58,8 +58,8 @@ proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     variable midiInDevice
     variable midiOutDevice
 
-    array set midiInDevice  [ list 1 $i1 2 $i2 3 $i3 4 $i4 5 $i5 6 $i6 7 $i7 8 $i8 9 $i9 ]
-    array set midiOutDevice [ list 1 $o1 2 $o2 3 $o3 4 $o4 5 $o5 6 $o6 7 $o7 8 $o8 9 $o9 ]
+    array set midiInDevice  [ list 1 $i1 2 $i2 3 $i3 4 $i4 5 $i5 6 $i6 7 $i7 8 $i8 ]
+    array set midiOutDevice [ list 1 $o1 2 $o2 3 $o3 4 $o4 5 $o5 6 $o6 7 $o7 8 $o8 ]
     
     set midiAlsaIn  [llength $midiIn]
     set midiAlsaOut [llength $midiOut]
@@ -91,7 +91,7 @@ proc _create {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     wm protocol $top WM_DELETE_WINDOW   "::ui_midi::closed $top"
 }
 
-proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
+proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 o1 o2 o3 o4 o5 o6 o7 o8} {
 
     variable midiIn
     variable midiOut
@@ -100,8 +100,8 @@ proc _createAlsa {top i1 i2 i3 i4 i5 i6 i7 i8 i9 o1 o2 o3 o4 o5 o6 o7 o8 o9} {
     variable midiInDevice
     variable midiOutDevice
     
-    array set midiInDevice  [ list 1 $i1 2 $i2 3 $i3 4 $i4 5 $i5 6 $i6 7 $i7 8 $i8 9 $i9 ]
-    array set midiOutDevice [ list 1 $o1 2 $o2 3 $o3 4 $o4 5 $o5 6 $o6 7 $o7 8 $o8 9 $o9 ]
+    array set midiInDevice  [ list 1 $i1 2 $i2 3 $i3 4 $i4 5 $i5 6 $i6 7 $i7 8 $i8 ]
+    array set midiOutDevice [ list 1 $o1 2 $o2 3 $o3 4 $o4 5 $o5 6 $o6 7 $o7 8 $o8 ]
     
     set midiAlsaIn  [expr {[llength $midiIn] - 1}]
     set midiAlsaOut [expr {[llength $midiOut] - 1}]
@@ -207,7 +207,6 @@ proc _apply {top} {
             $midiInDevice(6) \
             $midiInDevice(7) \
             $midiInDevice(8) \
-            $midiInDevice(9) \
             $midiOutDevice(1) \
             $midiOutDevice(2) \
             $midiOutDevice(3) \
@@ -216,7 +215,6 @@ proc _apply {top} {
             $midiOutDevice(6) \
             $midiOutDevice(7) \
             $midiOutDevice(8) \
-            $midiOutDevice(9) \
             $midiAlsaIn \
             $midiAlsaOut"
     

@@ -15,8 +15,9 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-#define MIDI_SOMETHING  1
+#define MIDI_SOMETHING  1       /* First item in the list is set to none. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -231,8 +232,8 @@ static void midi_requireDialogInitialize (void)
 {
     int  m = 0;
     int  n = 0;
-    char i[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION] = { 0 };
-    char o[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION] = { 0 };
+    char i[MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION] = { 0 };
+    char o[MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION] = { 0 };
     
     int k;
 
@@ -260,7 +261,9 @@ void midi_requireDialog (void *dummy)
         t_error err = PD_ERROR_NONE;
         
         char t[PD_STRING] = { 0 };
-            
+        
+        PD_ASSERT (MAXIMUM_MIDI_IN >= 8);
+        
         int i1 = (m > 0 && i[0]>= 0 ? i[0] + MIDI_SOMETHING : 0);
         int i2 = (m > 1 && i[1]>= 0 ? i[1] + MIDI_SOMETHING : 0);
         int i3 = (m > 2 && i[2]>= 0 ? i[2] + MIDI_SOMETHING : 0);
@@ -269,7 +272,8 @@ void midi_requireDialog (void *dummy)
         int i6 = (m > 5 && i[5]>= 0 ? i[5] + MIDI_SOMETHING : 0);
         int i7 = (m > 6 && i[6]>= 0 ? i[6] + MIDI_SOMETHING : 0);
         int i8 = (m > 7 && i[7]>= 0 ? i[7] + MIDI_SOMETHING : 0);
-        int i9 = (m > 8 && i[8]>= 0 ? i[8] + MIDI_SOMETHING : 0);
+        
+        PD_ASSERT (MAXIMUM_MIDI_OUT >= 8);
         
         int o1 = (n > 0 && o[0]>= 0 ? o[0] + MIDI_SOMETHING : 0); 
         int o2 = (n > 1 && o[1]>= 0 ? o[1] + MIDI_SOMETHING : 0); 
@@ -279,13 +283,12 @@ void midi_requireDialog (void *dummy)
         int o6 = (n > 5 && o[5]>= 0 ? o[5] + MIDI_SOMETHING : 0);
         int o7 = (n > 6 && o[6]>= 0 ? o[6] + MIDI_SOMETHING : 0);
         int o8 = (n > 7 && o[7]>= 0 ? o[7] + MIDI_SOMETHING : 0);
-        int o9 = (n > 8 && o[8]>= 0 ? o[8] + MIDI_SOMETHING : 0);
 
         if (API_WITH_ALSA && midi_api == API_ALSA) {
 
             err = string_sprintf (t, PD_STRING, "::ui_midi::show %%s \
-                %d %d %d %d 0 0 0 0 0 \
-                %d %d %d %d 0 0 0 0 0 \
+                %d %d %d %d 0 0 0 0 \
+                %d %d %d %d 0 0 0 0 \
                 1\n",
                 i1, i2, i3, i4, 
                 o1, o2, o3, o4);
@@ -293,15 +296,17 @@ void midi_requireDialog (void *dummy)
         } else {
         
             err = string_sprintf (t, PD_STRING, "::ui_midi::show %%s \
-                %d %d %d %d %d %d %d %d %d \
-                %d %d %d %d %d %d %d %d %d \
+                %d %d %d %d %d %d %d %d \
+                %d %d %d %d %d %d %d %d \
                 0\n",
                 i1, i2, i3, i4, 
-                i5, i6, i7, i8, i9, 
+                i5, i6, i7, i8, 
                 o1, o2, o3, o4, 
-                o5, o6, o7, o8, o9);
+                o5, o6, o7, o8);
                                         
         }
+        
+        post ("? %s", t);
         
         if (!err) {
             gfxstub_deleteforkey (NULL);
@@ -326,8 +331,10 @@ void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
     int parameters = (argc - 2) / 2;
     int k;
     
-    //PD_ASSERT (parameters == MAXIMUM_MIDI_IN);
-    //PD_ASSERT (parameters == MAXIMUM_MIDI_OUT);
+    post_atoms (argc, argv);
+    
+    PD_ASSERT (parameters == MAXIMUM_MIDI_IN);
+    PD_ASSERT (parameters == MAXIMUM_MIDI_OUT);
     
     alsaIn  = (t_int)atom_getFloatAtIndex ((parameters * 2) + 0, argc, argv);
     alsaOut = (t_int)atom_getFloatAtIndex ((parameters * 2) + 1, argc, argv);
