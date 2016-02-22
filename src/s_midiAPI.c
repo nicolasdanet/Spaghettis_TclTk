@@ -63,11 +63,11 @@ t_error midi_getAPIAvailables (char *dest, size_t size)
 
     #if defined ( USEAPI_OSS ) && defined ( USEAPI_ALSA )
     
-    err |= string_sprintf (dest, size, "{ {OSS-MIDI %d} {ALSA-MIDI %d} }", API_DEFAULT_MIDI, API_ALSA);
+    err |= string_sprintf (dest, size, "{ {OSS-MIDI %d} {ALSA-MIDI %d} }", API_DEFAULT_MIDI, API_ALSA); // --
     
     #else
     
-    err |= string_copy (dest, size, "{}");
+    err |= string_copy (dest, size, "{}");  // --
     
     #endif
     
@@ -227,14 +227,14 @@ static t_error midi_requireDialogInitialize (void)
     char t2[PD_STRING] = { 0 };
     int k;
     
-    err |= string_copy (t1, PD_STRING, "set ::ui_midi::midiIn [list {none}");   // --
-    err |= string_copy (t2, PD_STRING, "set ::ui_midi::midiOut [list {none}");  // --
+    err |= string_copy (t1, PD_STRING, "set ::ui_midi::midiIn [list {none}");                   // --
+    err |= string_copy (t2, PD_STRING, "set ::ui_midi::midiOut [list {none}");                  // --
     
     for (k = 0; k < m; k++) {
-        err |= string_addSprintf (t1, PD_STRING, " {%s}", i + (k * MAXIMUM_DESCRIPTION));
+        err |= string_addSprintf (t1, PD_STRING, " {%s}", i + (k * MAXIMUM_DESCRIPTION));       // --
     }
     for (k = 0; k < n; k++) {
-        err |= string_addSprintf (t2, PD_STRING, " {%s}", o + (k * MAXIMUM_DESCRIPTION));
+        err |= string_addSprintf (t2, PD_STRING, " {%s}", o + (k * MAXIMUM_DESCRIPTION));       // --
     }
     
     err |= string_add (t1, PD_STRING, "]\n");
@@ -265,25 +265,25 @@ void midi_requireDialog (void *dummy)
     
     PD_ASSERT (MAXIMUM_MIDI_IN >= 8);
     
-    int i1 = (m > 0 && i[0]>= 0 ? i[0] + MIDI_SOMETHING : 0);
-    int i2 = (m > 1 && i[1]>= 0 ? i[1] + MIDI_SOMETHING : 0);
-    int i3 = (m > 2 && i[2]>= 0 ? i[2] + MIDI_SOMETHING : 0);
-    int i4 = (m > 3 && i[3]>= 0 ? i[3] + MIDI_SOMETHING : 0);
-    int i5 = (m > 4 && i[4]>= 0 ? i[4] + MIDI_SOMETHING : 0);
-    int i6 = (m > 5 && i[5]>= 0 ? i[5] + MIDI_SOMETHING : 0);
-    int i7 = (m > 6 && i[6]>= 0 ? i[6] + MIDI_SOMETHING : 0);
-    int i8 = (m > 7 && i[7]>= 0 ? i[7] + MIDI_SOMETHING : 0);
+    int i1 = (m > 0 && i[0] >= 0 ? i[0] + MIDI_SOMETHING : 0);
+    int i2 = (m > 1 && i[1] >= 0 ? i[1] + MIDI_SOMETHING : 0);
+    int i3 = (m > 2 && i[2] >= 0 ? i[2] + MIDI_SOMETHING : 0);
+    int i4 = (m > 3 && i[3] >= 0 ? i[3] + MIDI_SOMETHING : 0);
+    int i5 = (m > 4 && i[4] >= 0 ? i[4] + MIDI_SOMETHING : 0);
+    int i6 = (m > 5 && i[5] >= 0 ? i[5] + MIDI_SOMETHING : 0);
+    int i7 = (m > 6 && i[6] >= 0 ? i[6] + MIDI_SOMETHING : 0);
+    int i8 = (m > 7 && i[7] >= 0 ? i[7] + MIDI_SOMETHING : 0);
     
     PD_ASSERT (MAXIMUM_MIDI_OUT >= 8);
     
-    int o1 = (n > 0 && o[0]>= 0 ? o[0] + MIDI_SOMETHING : 0); 
-    int o2 = (n > 1 && o[1]>= 0 ? o[1] + MIDI_SOMETHING : 0); 
-    int o3 = (n > 2 && o[2]>= 0 ? o[2] + MIDI_SOMETHING : 0); 
-    int o4 = (n > 3 && o[3]>= 0 ? o[3] + MIDI_SOMETHING : 0); 
-    int o5 = (n > 4 && o[4]>= 0 ? o[4] + MIDI_SOMETHING : 0);
-    int o6 = (n > 5 && o[5]>= 0 ? o[5] + MIDI_SOMETHING : 0);
-    int o7 = (n > 6 && o[6]>= 0 ? o[6] + MIDI_SOMETHING : 0);
-    int o8 = (n > 7 && o[7]>= 0 ? o[7] + MIDI_SOMETHING : 0);
+    int o1 = (n > 0 && o[0] >= 0 ? o[0] + MIDI_SOMETHING : 0);
+    int o2 = (n > 1 && o[1] >= 0 ? o[1] + MIDI_SOMETHING : 0);
+    int o3 = (n > 2 && o[2] >= 0 ? o[2] + MIDI_SOMETHING : 0);
+    int o4 = (n > 3 && o[3] >= 0 ? o[3] + MIDI_SOMETHING : 0);
+    int o5 = (n > 4 && o[4] >= 0 ? o[4] + MIDI_SOMETHING : 0);
+    int o6 = (n > 5 && o[5] >= 0 ? o[5] + MIDI_SOMETHING : 0);
+    int o7 = (n > 6 && o[6] >= 0 ? o[6] + MIDI_SOMETHING : 0);
+    int o8 = (n > 7 && o[7] >= 0 ? o[7] + MIDI_SOMETHING : 0);
 
     if (API_WITH_ALSA && midi_api == API_ALSA) {
     
