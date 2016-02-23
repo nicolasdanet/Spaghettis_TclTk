@@ -25,8 +25,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int      sys_schedadvance;
-extern t_float  sys_dacsr;
+extern int      audio_advanceInMicroseconds;
+extern t_float  audio_sampleRate;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ double scheduler_getUnitsSince (double systime, double unit, int isSamples)
     
     PD_ASSERT (elapsed >= 0.0);
     
-    if (isSamples) { d = SYSTIME_CLOCKS_PER_SECOND / sys_dacsr; } 
+    if (isSamples) { d = SYSTIME_CLOCKS_PER_SECOND / audio_sampleRate; } 
     else { 
         d = SYSTIME_CLOCKS_PER_MILLISECOND;
     }
@@ -131,7 +131,7 @@ void scheduler_needToExitWithError (void)
 
 static double scheduler_getSystimePerDSPTick (void)
 {
-    return (SYSTIME_CLOCKS_PER_SECOND * ((double)scheduler_blockSize / sys_dacsr));
+    return (SYSTIME_CLOCKS_PER_SECOND * ((double)scheduler_blockSize / audio_sampleRate));
 }
 
 static void scheduler_pollWatchdog (void)
@@ -141,7 +141,7 @@ static void scheduler_pollWatchdog (void)
         
     if ((scheduler_didDSP - scheduler_nextPing) > 0) {
         interface_watchdog (NULL);
-        scheduler_nextPing = scheduler_didDSP + (2 * (int)(sys_dacsr / (double)scheduler_blockSize));
+        scheduler_nextPing = scheduler_didDSP + (2 * (int)(audio_sampleRate / (double)scheduler_blockSize));
     }
     
     #endif
@@ -203,7 +203,7 @@ static void scheduler_withLoop (void)
     double realTimeAtStart    = sys_getRealTimeInSeconds();
     double logicalTimeAtStart = scheduler_getLogicalTime();
     
-    scheduler_sleepGrain = PD_CLAMP (sys_schedadvance / 4, 100, 5000);
+    scheduler_sleepGrain = PD_CLAMP (audio_advanceInMicroseconds / 4, 100, 5000);
     scheduler_systimePerDSPTick = scheduler_getSystimePerDSPTick();
 
     midi_initialize();

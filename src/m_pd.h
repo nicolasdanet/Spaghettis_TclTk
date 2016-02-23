@@ -273,6 +273,7 @@
 #include <process.h>
 #include <sys/timeb.h> 
 #include <tchar.h>
+#include <time.h>
 #include <windows.h>
 #include <winbase.h>
 #include <winsock.h>

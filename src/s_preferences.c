@@ -20,7 +20,7 @@ extern t_symbol     *main_directoryExtras;
 extern t_pathlist   *path_search;
 
 extern int main_directoryWriteRequirePrivileges;
-extern int sys_audioapi;
+extern int audio_api;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -412,7 +412,7 @@ void preferences_save (void *dummy)
     
     /* Properties. */
     
-    string_sprintf (value, PD_STRING, "%d", sys_audioapi);      preferences_setKey ("AudioApi",   value);
+    string_sprintf (value, PD_STRING, "%d", audio_api);      preferences_setKey ("AudioApi",   value);
     string_sprintf (value, PD_STRING, "%d", callback);          preferences_setKey ("Callback",   value);
     string_sprintf (value, PD_STRING, "%d", sampleRate);        preferences_setKey ("SampleRate", value);
     string_sprintf (value, PD_STRING, "%d", advance);           preferences_setKey ("Advance",    value);

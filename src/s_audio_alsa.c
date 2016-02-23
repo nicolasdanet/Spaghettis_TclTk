@@ -30,10 +30,10 @@
 #include "s_alsa.h"
 #include <endian.h>
 
-extern int sys_inchannels;
-extern int sys_outchannels;
-extern int sys_schedadvance;
-extern int sys_audioapi;
+extern int audio_channelsIn;
+extern int audio_channelsOut;
+extern int audio_advanceInMicroseconds;
+extern int audio_api;
 
 /* Defines */
 #define DEBUG(x) x
@@ -44,8 +44,8 @@ extern int sys_audioapi;
 #define ALSAAPI9
 #endif
 
-extern t_sample *sys_soundout;
-extern t_sample *sys_soundin;
+extern t_sample *audio_soundOut;
+extern t_sample *audio_soundIn;
 
 static void alsa_checkiosync( void);
 static void alsa_numbertoname(int iodev, char *devname, int nchar);
@@ -286,14 +286,14 @@ int alsa_open_audio(int naudioindev, int *audioindev, int nchindev,
     int nfrags, i, iodev, dev2;
     int wantinchans, wantoutchans, device;
 
-    nfrags = sys_schedadvance * (float)rate / (1e6 * frag_size);
+    nfrags = audio_advanceInMicroseconds * (float)rate / (1e6 * frag_size);
         /* save our belief as to ALSA's buffer size for later */
     alsa_buf_samps = nfrags * frag_size;
     alsa_nindev = alsa_noutdev = 0;
     alsa_jittermax = ALSA_DEFJITTERMAX;
 
     if (0)
-        post("audio buffer set to %d", (int)(0.001 * sys_schedadvance));
+        post("audio buffer set to %d", (int)(0.001 * audio_advanceInMicroseconds));
 
     for (iodev = 0; iodev < naudioindev; iodev++)
     {
@@ -408,8 +408,8 @@ int alsa_open_audio(int naudioindev, int *audioindev, int nchindev,
     }
     return (0);
 blewit:
-    sys_inchannels = 0;
-    sys_outchannels = 0;
+    audio_channelsIn = 0;
+    audio_channelsOut = 0;
     alsa_close_audio();
     return (1);
 }
@@ -450,8 +450,8 @@ int alsa_send_dacs(void)
     if (!alsa_nindev && !alsa_noutdev)
         return (DACS_NO);
 
-    chansintogo = sys_inchannels;
-    chansouttogo = sys_outchannels;
+    chansintogo = audio_channelsIn;
+    chansouttogo = audio_channelsOut;
     transfersize = AUDIO_DEFAULT_BLOCK;
 
     timelast = timenow;
@@ -498,7 +498,7 @@ int alsa_send_dacs(void)
     post("xfer %d", transfersize);
 #endif
     /* do output */
-    for (iodev = 0, fp1 = sys_soundout, ch = 0; iodev < alsa_noutdev; iodev++)
+    for (iodev = 0, fp1 = audio_soundOut, ch = 0; iodev < alsa_noutdev; iodev++)
     {
         int thisdevchans = alsa_outdev[iodev].a_channels;
         int chans = (chansouttogo < thisdevchans ? chansouttogo : thisdevchans);
@@ -583,8 +583,8 @@ int alsa_send_dacs(void)
         }
 
         /* zero out the output buffer */
-        memset(sys_soundout, 0, AUDIO_DEFAULT_BLOCK * sizeof(*sys_soundout) *
-               sys_outchannels);
+        memset(audio_soundOut, 0, AUDIO_DEFAULT_BLOCK * sizeof(*audio_soundOut) *
+               audio_channelsOut);
         if (sys_getRealTimeInSeconds() - timenow > 0.002)
         {
     #ifdef DEBUG_ALSA_XFER
@@ -597,7 +597,7 @@ int alsa_send_dacs(void)
     }
 
             /* do input */
-    for (iodev = 0, fp1 = sys_soundin, ch = 0; iodev < alsa_nindev; iodev++)
+    for (iodev = 0, fp1 = audio_soundIn, ch = 0; iodev < alsa_nindev; iodev++)
     {
         int thisdevchans = alsa_indev[iodev].a_channels;
         int chans = (chansintogo < thisdevchans ? chansintogo : thisdevchans);
@@ -688,19 +688,19 @@ void alsa_printstate( void)
 {
     int i, result, iodev = 0;
     snd_pcm_sframes_t indelay, outdelay;
-    if (sys_audioapi != API_ALSA)
+    if (audio_api != API_ALSA)
     {
         post_error ("restart-audio: implemented for ALSA only.");
         return;
     }
-    if (sys_inchannels)
+    if (audio_channelsIn)
     {
         result = snd_pcm_delay(alsa_indev[iodev].a_handle, &indelay);
         if (result < 0)
             post("snd_pcm_delay 1 failed");
         else post("in delay %d", indelay);
     }
-    if (sys_outchannels)
+    if (audio_channelsOut)
     {
         result = snd_pcm_delay(alsa_outdev[iodev].a_handle, &outdelay);
         if (result < 0)

@@ -57,11 +57,11 @@
 
     /* implementation */
 
-extern t_sample *sys_soundout;
-extern t_sample *sys_soundin;
-extern int sys_inchannels;
-extern int sys_outchannels;
-extern t_float sys_dacsr;
+extern t_sample *audio_soundOut;
+extern t_sample *audio_soundIn;
+extern int audio_channelsIn;
+extern int audio_channelsOut;
+extern t_float audio_sampleRate;
 
 static PaStream *pa_stream;
 static int pa_inchans, pa_outchans;
@@ -321,7 +321,7 @@ PaError pa_open_callback(double sampleRate, int inchannels, int outchannels,
         pa_close_audio();
         goto error;
     }
-    sys_dacsr=sampleRate;
+    audio_sampleRate=sampleRate;
     return paNoError;
 error:
     pa_stream = NULL;
@@ -395,8 +395,8 @@ int pa_open_audio(int inchans, int outchans, int rate, t_sample *soundin,
         post("framesperbuf %d, nbufs %d", framesperbuf, nbuffers);
         post("rate %d", rate);
     }
-    pa_inchans = sys_inchannels = inchans;
-    pa_outchans = sys_outchannels = outchans;
+    pa_inchans = audio_channelsIn = inchans;
+    pa_outchans = audio_channelsOut = outchans;
     pa_soundin = soundin;
     pa_soundout = soundout;
 
@@ -478,19 +478,19 @@ int pa_send_dacs(void)
 #ifndef FAKEBLOCKING
     double timebefore;
 #endif /* FAKEBLOCKING */
-    if (!sys_inchannels && !sys_outchannels || !pa_stream)
+    if (!audio_channelsIn && !audio_channelsOut || !pa_stream)
         return (DACS_NO); 
-    conversionbuf = (float *)alloca((sys_inchannels > sys_outchannels?
-        sys_inchannels:sys_outchannels) * AUDIO_DEFAULT_BLOCK * sizeof(float));
+    conversionbuf = (float *)alloca((audio_channelsIn > audio_channelsOut?
+        audio_channelsIn:audio_channelsOut) * AUDIO_DEFAULT_BLOCK * sizeof(float));
 
 #ifdef FAKEBLOCKING
-    if (!sys_inchannels)    /* if no input channels sync on output */
+    if (!audio_channelsIn)    /* if no input channels sync on output */
     {
 #ifdef THREADSIGNAL
         pthread_mutex_lock(&pa_mutex);
 #endif
         while (sys_ringbuf_getwriteavailable(&pa_outring) <
-            (long)(sys_outchannels * AUDIO_DEFAULT_BLOCK * sizeof(float)))
+            (long)(audio_channelsOut * AUDIO_DEFAULT_BLOCK * sizeof(float)))
         {
             rtnval = DACS_SLEPT;
 #ifdef THREADSIGNAL
@@ -508,23 +508,23 @@ int pa_send_dacs(void)
 #endif
     }
         /* write output */
-    if (sys_outchannels)
+    if (audio_channelsOut)
     {
-        for (j = 0, fp = sys_soundout, fp2 = conversionbuf;
-            j < sys_outchannels; j++, fp2++)
+        for (j = 0, fp = audio_soundOut, fp2 = conversionbuf;
+            j < audio_channelsOut; j++, fp2++)
                 for (k = 0, fp3 = fp2; k < AUDIO_DEFAULT_BLOCK;
-                    k++, fp++, fp3 += sys_outchannels)
+                    k++, fp++, fp3 += audio_channelsOut)
                         *fp3 = *fp;
         sys_ringbuf_write(&pa_outring, conversionbuf,
-            sys_outchannels*(AUDIO_DEFAULT_BLOCK*sizeof(float)), pa_outbuf);
+            audio_channelsOut*(AUDIO_DEFAULT_BLOCK*sizeof(float)), pa_outbuf);
     }
-    if (sys_inchannels)    /* if there is input sync on it */
+    if (audio_channelsIn)    /* if there is input sync on it */
     {
 #ifdef THREADSIGNAL
         pthread_mutex_lock(&pa_mutex);
 #endif
         while (sys_ringbuf_getreadavailable(&pa_inring) <
-            (long)(sys_inchannels * AUDIO_DEFAULT_BLOCK * sizeof(float)))
+            (long)(audio_channelsIn * AUDIO_DEFAULT_BLOCK * sizeof(float)))
         {
             rtnval = DACS_SLEPT;
 #ifdef THREADSIGNAL
@@ -541,44 +541,44 @@ int pa_send_dacs(void)
         pthread_mutex_unlock(&pa_mutex);
 #endif
     }
-    if (sys_inchannels)
+    if (audio_channelsIn)
     {
         sys_ringbuf_read(&pa_inring, conversionbuf,
-            sys_inchannels*(AUDIO_DEFAULT_BLOCK*sizeof(float)), pa_inbuf);
-        for (j = 0, fp = sys_soundin, fp2 = conversionbuf;
-            j < sys_inchannels; j++, fp2++)
+            audio_channelsIn*(AUDIO_DEFAULT_BLOCK*sizeof(float)), pa_inbuf);
+        for (j = 0, fp = audio_soundIn, fp2 = conversionbuf;
+            j < audio_channelsIn; j++, fp2++)
                 for (k = 0, fp3 = fp2; k < AUDIO_DEFAULT_BLOCK;
-                    k++, fp++, fp3 += sys_inchannels)
+                    k++, fp++, fp3 += audio_channelsIn)
                         *fp = *fp3;
     }
 
 #else /* FAKEBLOCKING */
     timebefore = sys_getRealTimeInSeconds();
         /* write output */
-    if (sys_outchannels)
+    if (audio_channelsOut)
     {
         if (!pa_started)
         {
             memset(conversionbuf, 0,
-                sys_outchannels * AUDIO_DEFAULT_BLOCK * sizeof(float));
+                audio_channelsOut * AUDIO_DEFAULT_BLOCK * sizeof(float));
             for (j = 0; j < pa_nbuffers-1; j++)
                 Pa_WriteStream(pa_stream, conversionbuf, AUDIO_DEFAULT_BLOCK);
         }
-        for (j = 0, fp = sys_soundout, fp2 = conversionbuf;
-            j < sys_outchannels; j++, fp2++)
+        for (j = 0, fp = audio_soundOut, fp2 = conversionbuf;
+            j < audio_channelsOut; j++, fp2++)
                 for (k = 0, fp3 = fp2; k < AUDIO_DEFAULT_BLOCK;
-                    k++, fp++, fp3 += sys_outchannels)
+                    k++, fp++, fp3 += audio_channelsOut)
                         *fp3 = *fp;
         Pa_WriteStream(pa_stream, conversionbuf, AUDIO_DEFAULT_BLOCK);
     }
 
-    if (sys_inchannels)
+    if (audio_channelsIn)
     {
         Pa_ReadStream(pa_stream, conversionbuf, AUDIO_DEFAULT_BLOCK);
-        for (j = 0, fp = sys_soundin, fp2 = conversionbuf;
-            j < sys_inchannels; j++, fp2++)
+        for (j = 0, fp = audio_soundIn, fp2 = conversionbuf;
+            j < audio_channelsIn; j++, fp2++)
                 for (k = 0, fp3 = fp2; k < AUDIO_DEFAULT_BLOCK;
-                    k++, fp++, fp3 += sys_inchannels)
+                    k++, fp++, fp3 += audio_channelsIn)
                         *fp = *fp3;
     }
     if (sys_getRealTimeInSeconds() - timebefore > 0.002)
@@ -588,7 +588,7 @@ int pa_send_dacs(void)
 #endif /* FAKEBLOCKING */
     pa_started = 1;
 
-    memset(sys_soundout, 0, AUDIO_DEFAULT_BLOCK*sizeof(t_sample)*sys_outchannels);
+    memset(audio_soundOut, 0, AUDIO_DEFAULT_BLOCK*sizeof(t_sample)*audio_channelsOut);
     return (rtnval);
 }
 

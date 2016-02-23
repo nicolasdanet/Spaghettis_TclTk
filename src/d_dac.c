@@ -10,8 +10,8 @@
 #include "m_macros.h"
 #include "s_system.h"
 
-extern t_sample *sys_soundout;
-extern t_sample *sys_soundin;
+extern t_sample *audio_soundOut;
+extern t_sample *audio_soundIn;
 
 /* ----------------------------- dac~ --------------------------- */
 static t_class *dac_class;
@@ -56,8 +56,8 @@ static void dac_dsp(t_dac *x, t_signal **sp)
         if ((*sp2)->s_blockSize != AUDIO_DEFAULT_BLOCK)
             post_error ("dac~: bad vector size");
         else if (ch >= 0 && ch < sys_get_outchannels())
-            dsp_add(plus_perform, 4, sys_soundout + AUDIO_DEFAULT_BLOCK*ch,
-                (*sp2)->s_vector, sys_soundout + AUDIO_DEFAULT_BLOCK*ch, AUDIO_DEFAULT_BLOCK);
+            dsp_add(plus_perform, 4, audio_soundOut + AUDIO_DEFAULT_BLOCK*ch,
+                (*sp2)->s_vector, audio_soundOut + AUDIO_DEFAULT_BLOCK*ch, AUDIO_DEFAULT_BLOCK);
     }    
 }
 
@@ -171,7 +171,7 @@ static void adc_dsp(t_adc *x, t_signal **sp)
         if ((*sp2)->s_blockSize != AUDIO_DEFAULT_BLOCK)
             post_error ("adc~: bad vector size");
         else if (ch >= 0 && ch < sys_get_inchannels())
-            dsp_add_copy(sys_soundin + AUDIO_DEFAULT_BLOCK*ch,
+            dsp_add_copy(audio_soundIn + AUDIO_DEFAULT_BLOCK*ch,
                 (*sp2)->s_vector, AUDIO_DEFAULT_BLOCK);
         else dsp_add_zero((*sp2)->s_vector, AUDIO_DEFAULT_BLOCK);
     }    

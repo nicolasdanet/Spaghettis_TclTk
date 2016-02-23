@@ -79,11 +79,11 @@
    so  i will change it maybe in future...
 */
 
-extern t_sample *sys_soundout;
-extern t_sample *sys_soundin;
-extern int sys_inchannels;
-extern int sys_outchannels;
-extern int sys_advance_samples;
+extern t_sample *audio_soundOut;
+extern t_sample *audio_soundIn;
+extern int audio_channelsIn;
+extern int audio_channelsOut;
+extern int audio_advanceInSamples;
 
 extern t_alsa_dev alsa_indev[ALSA_MAXIMUM_DEVICES];
 extern t_alsa_dev alsa_outdev[ALSA_MAXIMUM_DEVICES];
@@ -129,7 +129,7 @@ Note on why:
    implemented in alsa low level drivers for dspmadi now and maybe fixed for hdsp in future
 */
 
-extern int sys_schedadvance;
+extern int audio_advanceInMicroseconds;
 
 static int alsamm_inchannels = 0;
 static int alsamm_outchannels = 0;
@@ -250,14 +250,14 @@ int alsamm_open_audio(int rate, int blocksize)
   /* set the asked buffer time (alsa buffertime in us)*/  
   alsamm_buffertime = alsamm_buffersize = 0;
   if(blocksize == 0)
-    alsamm_buffertime = sys_schedadvance;
+    alsamm_buffertime = audio_advanceInMicroseconds;
   else
     alsamm_buffersize = blocksize;
    
   if(0)
     post("syschedadvance=%d us(%d Samples)so buffertime max should be this=%d" 
          "or sys_blocksize=%d (samples) to use buffersize=%d",
-         sys_schedadvance,sys_advance_samples,alsamm_buffertime,
+         audio_advanceInMicroseconds,audio_advanceInSamples,alsamm_buffertime,
          blocksize,alsamm_buffersize);
   
   alsamm_periods = 0; /* no one wants periods setting from command line ;-) */
@@ -1039,9 +1039,9 @@ static int alsamm_stop()
 
 /* I see: (a guess as a documentation)
 
-   all DAC data is in sys_soundout array with 
+   all DAC data is in audio_soundOut array with 
    AUDIO_DEFAULT_BLOCK (mostly 64) for each channels which
-   if we have more channels opened then dac-channels = sys_outchannels
+   if we have more channels opened then dac-channels = audio_channelsOut
    we have to zero (silence them), which should be done once.
 
 Problems to solve:
@@ -1075,8 +1075,8 @@ int alsamm_send_dacs(void)
   /* 
      unused channels should be zeroed out on startup (open) and stay this
   */
-  int inchannels = sys_inchannels;
-  int outchannels = sys_outchannels;
+  int inchannels = audio_channelsIn;
+  int outchannels = audio_channelsOut;
 
   timelast = sys_getRealTimeInSeconds();
 
@@ -1109,7 +1109,7 @@ int alsamm_send_dacs(void)
 
 
   /* OUTPUT Transfer */
-  fpo = sys_soundout;
+  fpo = audio_soundOut;
   for(devno = 0;devno < alsa_noutdev;devno++){
 
     t_alsa_dev *dev = &alsa_outdev[devno];
@@ -1245,7 +1245,7 @@ int alsamm_send_dacs(void)
   }/* for devno */
 
 
-  fpi = sys_soundin; /* star first card first channel */
+  fpi = audio_soundIn; /* star first card first channel */
   
   for(devno = 0;devno < alsa_nindev;devno++){
 

@@ -446,7 +446,6 @@ void        sys_audiodevnumbertoname        (int output, int devno, char *name, 
 
 int         sys_send_dacs                   (void);
 void        sys_audiobuf                    (int nbufs);
-void        sys_getmeters                   (t_sample *inmax, t_sample *outmax);
 void        sys_setblocksize                (int n);
 
 void        sys_get_audio_devs              (char *indevlist,
@@ -550,6 +549,8 @@ void pa_getdevs             (char *indevlist,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void oss_init               (void);
+
 int oss_open_audio          (int naudioindev,
                                 int *audioindev,
                                 int nchindev,
@@ -573,6 +574,10 @@ void oss_getdevs            (char *indevlist,
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+void alsa_putzeros          (int n);
+void alsa_getzeros          (int n);
+void alsa_printstate        (void);
 
 int  alsa_open_audio        (int naudioindev,
                                 int *audioindev,

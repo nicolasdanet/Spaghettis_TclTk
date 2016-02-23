@@ -72,7 +72,7 @@ extern t_pathlist   *path_search;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int  sys_audioapi;
+extern int  audio_api;
 extern int  main_portNumber;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -728,7 +728,7 @@ static t_error interface_startGui (void)
         //
         }
         
-        sys_vGui ("set ::var(apiAudio) %d\n", sys_audioapi);    // --
+        sys_vGui ("set ::var(apiAudio) %d\n", audio_api);    // --
         //
         }
     }

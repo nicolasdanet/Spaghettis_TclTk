@@ -16,7 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_float  sys_dacsr;
+extern t_float  audio_sampleRate;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ void clock_delay (t_clock *x, double delay)     /* Could be in milliseconds or i
     
     if (x->c_unit > 0) { d = x->c_unit; }
     else {
-        d = -(x->c_unit * (SYSTIME_CLOCKS_PER_SECOND / sys_dacsr));
+        d = -(x->c_unit * (SYSTIME_CLOCKS_PER_SECOND / audio_sampleRate));
     }
 
     time = pd_this->pd_systime + (d * delay);
@@ -181,7 +181,7 @@ static void clock_setUnit (t_clock *x, double unit, int isSamples)
     
     if (x->c_systime >= 0.0) {
     //
-    double d = (x->c_unit > 0) ? x->c_unit : (x->c_unit * (SYSTIME_CLOCKS_PER_SECOND / sys_dacsr));
+    double d = (x->c_unit > 0) ? x->c_unit : (x->c_unit * (SYSTIME_CLOCKS_PER_SECOND / audio_sampleRate));
     timeLeft = (x->c_systime - pd_this->pd_systime) / d;
     //
     }

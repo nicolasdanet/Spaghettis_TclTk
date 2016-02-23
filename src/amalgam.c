@@ -39,7 +39,7 @@
 #include "s_preferences.c"
 #include "s_midi.c"
 #include "s_midiAPI.c"
-//#include "s_audio.c"
+#include "s_audio.c"
 #include "s_memory.c"
 #include "s_pathlist.c"
 #include "s_font.c"
