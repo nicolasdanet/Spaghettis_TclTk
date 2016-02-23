@@ -16,6 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+extern t_symbol     *main_rootDirectory;
 extern t_pathlist   *path_search;
 
 extern int sys_audioapi;
@@ -24,7 +25,7 @@ extern int sys_audioapi;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark-
 
-#if ( PD_LINUX || PD_CYGWIN || PD_BSD || PD_HURD || PD_ANDROID )
+#if ! ( PD_WINDOWS )
 
 static char *preferences_loadBuffer;                        /* Shared. */
 static FILE *preferences_saveFile;                          /* Shared. */
@@ -32,18 +33,17 @@ static FILE *preferences_saveFile;                          /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_error preferences_loadBeginNative (void)
+static t_error preferences_loadBegin (void)
 {
-    char *home = getenv ("HOME");
-    char filepath[PD_STRING] = { 0 };
-    t_error err = string_sprintf (filepath, PD_STRING, "%s/.puredatarc", (home ? home : "."));
-    
-    if (!err) { err |= !path_isFileExist (filepath); }
+    char pref[PD_STRING] = { 0 };
+    t_error err = string_sprintf (pref, PD_STRING, "%s/extras/preferences.txt", main_rootDirectory->s_name);
+
+    if (!err) { err |= !path_isFileExist (pref); }
     if (!err) {
     //
     int f;
     
-    err |= ((f = file_openRaw (filepath, O_RDONLY | O_CLOEXEC)) < 0);
+    err |= ((f = file_openRaw (pref, O_RDONLY)) < 0);
     
     if (!err) {
     //
@@ -71,39 +71,33 @@ static t_error preferences_loadBeginNative (void)
     return err;
 }
 
-static void preferences_loadCloseNative (void)
+static void preferences_loadClose (void)
 {
     if (preferences_loadBuffer) { 
         PD_MEMORY_FREE (preferences_loadBuffer); preferences_loadBuffer = NULL; 
     }
 }
 
-static t_error preferences_saveBeginNative (void)
+static t_error preferences_saveBegin (void)
 {
-    char *home = getenv ("HOME");
-    char filepath[PD_STRING] = { 0 };
-    t_error err = PD_ERROR_NONE;
+    char pref[PD_STRING] = { 0 };
+    t_error err = string_sprintf (pref, PD_STRING, "%s/extras/preferences.txt", main_rootDirectory->s_name);
     
-    err = (!home);
-
-    if (!err) {
-        err = string_sprintf (filepath, PD_STRING, "%s/.puredatarc", home);
-        if (!err) { 
-            err = ((preferences_saveFile = file_openWrite (filepath)) == NULL); 
-        }
+    if (!err) { 
+        err = ((preferences_saveFile = file_openWrite (pref)) == NULL); 
     }
     
     return err;
 }
 
-static void preferences_saveCloseNative (void)
+static void preferences_saveClose (void)
 {
     if (preferences_saveFile) { 
         fclose (preferences_saveFile); preferences_saveFile = NULL; 
     }
 }
 
-static int preferences_getKeyNative (const char *key, char *value, int size)
+static int preferences_getKey (const char *key, char *value, int size)
 {
     char t[PD_STRING] = { 0 };
     char *p = NULL;
@@ -137,42 +131,36 @@ static int preferences_getKeyNative (const char *key, char *value, int size)
     return 0;
 }
 
-static void preferences_setKeyNative (const char *key, const char *value)
+static void preferences_setKey (const char *key, const char *value)
 {
     if (preferences_saveFile) { fprintf (preferences_saveFile, "%s: %s\n", key, value); }   // --
 }
-
-static void preferences_resetKeyNative (const char *key)
-{
-}
-
-#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark-
 
-#if PD_WINDOWS
+#else
 
-static t_error preferences_loadBeginNative (void)
+static t_error preferences_loadBegin (void)
 {
     return PD_ERROR_NONE;
 }
 
-static void preferences_loadCloseNative (void)
+static void preferences_loadClose (void)
 {
 }
 
-static t_error preferences_saveBeginNative (void)
+static t_error preferences_saveBegin (void)
 {
     return PD_ERROR_NONE;
 }
 
-static void preferences_saveCloseNative (void)
+static void preferences_saveClose (void)
 {
 }
 
-static int preferences_getKeyNative (const char *key, char *value, int size)
+static int preferences_getKey (const char *key, char *value, int size)
 {
     HKEY hkey;
     DWORD n = size;
@@ -189,7 +177,7 @@ static int preferences_getKeyNative (const char *key, char *value, int size)
     return 1;
 }
 
-static void preferences_setKeyNative (const char *key, const char *value)
+static void preferences_setKey (const char *key, const char *value)
 {
     HKEY hkey;
     LONG err = RegCreateKeyEx (HKEY_LOCAL_MACHINE,
@@ -211,131 +199,7 @@ static void preferences_setKeyNative (const char *key, const char *value)
     RegCloseKey (hkey);
 }
 
-static void preferences_resetKeyNative (const char *key)
-{
-}
-
 #endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark-
-
-#if PD_APPLE
-
-static t_error preferences_loadBeginNative (void)
-{
-    return PD_ERROR_NONE;
-}
-
-static void preferences_loadCloseNative (void)
-{
-}
-
-static t_error preferences_saveBeginNative (void)
-{
-    return PD_ERROR_NONE;
-}
-
-static void preferences_saveCloseNative (void)
-{
-}
-
-static int preferences_getKeyNative (const char *key, char *value, int size)
-{
-    char t[PD_STRING] = { 0 };
-    t_error err = string_sprintf (t, PD_STRING, "defaults read org.puredata.puredata %s 2> /dev/null\n", key);
-    
-    PD_ASSERT (size > 2);
-    
-    if (err) { PD_BUG; }
-    else {
-    //
-    FILE *f = popen (t, "r");
-    int i = 0;
-        
-    while (i < size) {
-        int n = fread (value + i, 1, size - 1 - i, f);
-        if (n <= 0) { break; }
-        else { 
-            i += n; 
-        }
-    }
-    
-    pclose (f);
-    
-    PD_ASSERT (i < size);
-    
-    if (i > 1) {                                                        /* Values are ended by a newline. */
-        value[i] = 0; if (value[i - 1] == '\n') { value[i - 1] = 0; }   /* Remove it. */
-        return 1;
-    }
-    //
-    }
-    
-    return 0;
-}
-
-static void preferences_setKeyNative (const char *key, const char *value)
-{
-    t_error err = PD_ERROR_NONE;
-    
-    char t[PD_STRING] = { 0 };
-    
-    err = string_sprintf (t, PD_STRING, "defaults write org.puredata.puredata %s \"%s\"", key, value);
-    err |= string_add (t, PD_STRING, " 2> /dev/null\n");
-    
-    if (!err) { system (t); }
-    else {
-        PD_BUG;
-    }
-}
-
-static void preferences_resetKeyNative (const char *key)
-{
-    preferences_setKeyNative (key, "");
-}
-
-#endif // PD_APPLE
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark-
-
-static t_error preferences_loadBegin (void)
-{
-    return preferences_loadBeginNative();
-}
-
-static void preferences_loadClose (void)
-{
-    preferences_loadCloseNative();
-}
-
-static t_error preferences_saveBegin (void)
-{
-    return preferences_saveBeginNative();
-}
-
-static void preferences_saveClose (void)
-{
-    preferences_saveCloseNative();
-}
-
-static int preferences_getKey (const char *key, char *value, int size)
-{
-    return preferences_getKeyNative (key, value, size);
-}
-
-static void preferences_setKey (const char *key, const char *value)
-{
-    preferences_setKeyNative (key, value);
-}
-
-static void preferences_resetKey (const char *key)
-{
-    preferences_resetKeyNative (key);
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -555,10 +419,6 @@ void preferences_save (void *dummy)
     //
     }
     
-    #if PD_APPLE
-    string_sprintf (key, PD_STRING, "Path%d", i + 1);                   preferences_resetKey (key);
-    #endif
-    
     /* Audio devices. */
     
     for (i = 0; i < numberOfAudioIn; i++) {
@@ -572,11 +432,6 @@ void preferences_save (void *dummy)
     //
     }
 
-    #if PD_APPLE
-    string_sprintf (key, PD_STRING, "AudioInDevice%d", i + 1);          preferences_resetKey (key);
-    string_sprintf (key, PD_STRING, "AudioInDeviceName%d", i + 1);      preferences_resetKey (key);
-    #endif
-    
     for (i = 0; i < numberOfAudioOut; i++) {
     //
     string_sprintf (key, PD_STRING, "AudioOutDevice%d", i + 1);
@@ -588,11 +443,6 @@ void preferences_save (void *dummy)
     //
     }
 
-    #if PD_APPLE
-    string_sprintf (key, PD_STRING, "AudioOutDevice%d", i + 1);         preferences_resetKey (key);
-    string_sprintf (key, PD_STRING, "AudioOutDeviceName%d", i + 1);     preferences_resetKey (key);
-    #endif
-    
     /* MIDI devices. */
     
     for (i = 0; i < numberOfMidiIn; i++) {
@@ -602,11 +452,7 @@ void preferences_save (void *dummy)
     preferences_setKey (key, value);
     //
     }
-    
-    #if PD_APPLE
-    string_sprintf (key, PD_STRING, "MidiInDeviceName%d", i + 1);       preferences_resetKey (key);
-    #endif
-    
+
     for (i = 0; i < numberOfMidiOut; i++) {
     //
     string_sprintf (key, PD_STRING, "MidiOutDeviceName%d", i + 1);
@@ -614,10 +460,6 @@ void preferences_save (void *dummy)
     preferences_setKey (key, value);
     //
     }
-    
-    #if PD_APPLE
-    string_sprintf (key, PD_STRING, "MidiOutDeviceName%d", i + 1);      preferences_resetKey (key);
-    #endif
     //
     }
     
