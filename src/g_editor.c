@@ -24,7 +24,7 @@ extern t_class *voutlet_class;
 extern int font_defaultSize;
 extern t_widgetbehavior text_widgetBehavior;
 extern t_pdinstance *pd_this;
-extern t_symbol *main_rootDirectory;
+extern t_symbol *main_directoryHelp;
 
 void glist_readfrombinbuf(t_glist *x, t_buffer *b, char *filename,
     int selectem);
@@ -57,12 +57,8 @@ static void file_openHelp (const char *directory, const char *name)
     }
     
     if (f < 0) {
-    //
-    char help[PD_STRING] = { 0 };
-    if (!string_sprintf (help, PD_STRING, "%s/help", main_rootDirectory->s_name)) {
+        char *help = main_directoryHelp->s_name;
         f = file_openConsideringSearchPath (help, name, PD_HELP, directoryResult, &nameResult, PD_STRING);
-    }
-    //
     }
     
     if (f < 0) { post_error (PD_TRANSLATE ("help: couldn't find patch for '%s'"), name); }

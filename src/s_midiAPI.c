@@ -63,7 +63,7 @@ t_error midi_getAPIAvailables (char *dest, size_t size)
 
     #if defined ( USEAPI_OSS ) && defined ( USEAPI_ALSA )
     
-    err |= string_sprintf (dest, size, "{ {OSS-MIDI %d} {ALSA-MIDI %d} }", API_DEFAULT_MIDI, API_ALSA); // --
+    err |= string_sprintf (dest, size, "{ {OSS %d} {ALSA %d} }", API_DEFAULT_MIDI, API_ALSA); // --
     
     #else
     

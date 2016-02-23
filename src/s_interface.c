@@ -65,7 +65,8 @@ typedef struct _guiqueue {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_symbol     *main_rootDirectory;
+extern t_symbol     *main_directoryTcl;
+extern t_symbol     *main_directoryBin;
 extern t_pathlist   *path_search;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -520,14 +521,14 @@ static t_error interface_launchGuiSpawnProcess (void)
     int spawned;
 
     err |= string_copy (path, PD_STRING, "\"");
-    err |= string_add (path, PD_STRING, main_rootDirectory->s_name);
-    err |= string_add (path, PD_STRING, "/tcl/ui_main.tcl\"");
+    err |= string_add (path, PD_STRING, main_directoryTcl->s_name);
+    err |= string_add (path, PD_STRING, "/ui_main.tcl\"");
     
     err |= string_sprintf (port, PD_STRING, "%d", port);
     
     err |= string_copy (wish, PD_STRING, "\"");
-    err |= string_add (wish, PD_STRING, main_rootDirectory->s_name);
-    err |= string_add (wish, PD_STRING, "/bin/wish85.exe\"");
+    err |= string_add (wish, PD_STRING, main_directoryBin->s_name);
+    err |= string_add (wish, PD_STRING, "/wish85.exe\"");
     
     if (!err) {
         path_slashToBackslashIfNecessary (path, path);
@@ -569,7 +570,7 @@ static t_error interface_launchGuiSpawnProcess (void)
 
 #endif
 
-    err |= string_sprintf (path, PD_STRING, "%s/tcl/ui_main.tcl", main_rootDirectory->s_name);
+    err |= string_sprintf (path, PD_STRING, "%s/ui_main.tcl", main_directoryTcl->s_name);
     
 #if PD_APPLE
 

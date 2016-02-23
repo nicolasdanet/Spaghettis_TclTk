@@ -16,7 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_symbol     *main_rootDirectory;
+extern t_symbol     *main_directoryExtras;
 extern t_pathlist   *path_search;
 
 extern int sys_audioapi;
@@ -35,15 +35,16 @@ static FILE *preferences_saveFile;                          /* Shared. */
 
 static t_error preferences_loadBegin (void)
 {
-    char pref[PD_STRING] = { 0 };
-    t_error err = string_sprintf (pref, PD_STRING, "%s/extras/preferences.txt", main_rootDirectory->s_name);
+    char filepath[PD_STRING] = { 0 };
+    
+    t_error err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directoryExtras->s_name);
 
-    if (!err) { err |= !path_isFileExist (pref); }
+    if (!err) { err |= !path_isFileExist (filepath); }
     if (!err) {
     //
     int f;
     
-    err |= ((f = file_openRaw (pref, O_RDONLY)) < 0);
+    err |= ((f = file_openRaw (filepath, O_RDONLY)) < 0);
     
     if (!err) {
     //
@@ -80,12 +81,11 @@ static void preferences_loadClose (void)
 
 static t_error preferences_saveBegin (void)
 {
-    char pref[PD_STRING] = { 0 };
-    t_error err = string_sprintf (pref, PD_STRING, "%s/extras/preferences.txt", main_rootDirectory->s_name);
+    char filepath[PD_STRING] = { 0 };
     
-    if (!err) { 
-        err = ((preferences_saveFile = file_openWrite (pref)) == NULL); 
-    }
+    t_error err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directoryExtras->s_name);
+    
+    if (!err) { err = ((preferences_saveFile = file_openWrite (filepath)) == NULL); }
     
     return err;
 }

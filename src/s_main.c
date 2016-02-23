@@ -17,7 +17,11 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol    *main_rootDirectory;        /* Shared. */
+t_symbol    *main_directoryRoot;        /* Shared. */
+t_symbol    *main_directoryBin;         /* Shared. */
+t_symbol    *main_directoryTcl;         /* Shared. */
+t_symbol    *main_directoryHelp;        /* Shared. */
+t_symbol    *main_directoryExtras;      /* Shared. */
 
 int         main_portNumber;            /* Shared. */
 
@@ -196,20 +200,41 @@ static t_error main_getRootDirectory (void)
     if (!err) {
     //
     #if PD_WINDOWS
-        main_rootDirectory = gensym (buf1);
+        main_directoryRoot = gensym (buf1);
     #else
         err = string_copy (buf2, PD_STRING, buf1);
         err |= string_add (buf2, PD_STRING, "/lib/pd");
         
-        if (!err && path_isFileExist (buf2)) { main_rootDirectory = gensym (buf2); }    /* Complexe. */
+        if (!err && path_isFileExist (buf2)) { main_directoryRoot = gensym (buf2); }    /* Complexe. */
         else {
-            main_rootDirectory = gensym (buf1);                                         /* Simple. */
+            main_directoryRoot = gensym (buf1);                                         /* Simple. */
         }
     #endif
     //
     }
     
     return err;
+}
+
+t_error main_setPaths (t_symbol *root)
+{
+    if (root == NULL) { PD_BUG; return PD_ERROR; }
+    else {
+    //
+    t_error err = PD_ERROR_NONE;
+    
+    char t[PD_STRING] =  { 0 };
+    
+    const char *s = root->s_name;
+    
+    if (!(err |= string_sprintf (t, PD_STRING, "%s/bin",    s))) { main_directoryBin    = gensym (t); }
+    if (!(err |= string_sprintf (t, PD_STRING, "%s/tcl",    s))) { main_directoryTcl    = gensym (t); }
+    if (!(err |= string_sprintf (t, PD_STRING, "%s/help",   s))) { main_directoryHelp   = gensym (t); }
+    if (!(err |= string_sprintf (t, PD_STRING, "%s/extras", s))) { main_directoryExtras = gensym (t); }
+    
+    return err;
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -224,23 +249,28 @@ int main_entry (int argc, char **argv)
     //
     main_entryNative();
     
-    err |= main_getRootDirectory(); 
+    err |= main_getRootDirectory();
     err |= main_parseArguments (argc - 1, argv + 1);
+    err |= main_setPaths (main_directoryRoot);
     
     if (!err) {
     //
     if (main_version) { 
         return main_entryVersion (0); 
     }
-        
+    
+    PD_ASSERT (main_directoryRoot   != NULL);
+    PD_ASSERT (main_directoryBin    != NULL);
+    PD_ASSERT (main_directoryTcl    != NULL);
+    PD_ASSERT (main_directoryHelp   != NULL);
+    PD_ASSERT (main_directoryExtras != NULL);
+
     instance_initialize();
     sys_setSignalHandlers();
     
     setup_initialize();
     preferences_load();
     
-    PD_ASSERT (main_rootDirectory != NULL);
-
     if (!(err |= interface_start())) {
         midi_open();
         if (audio_shouldkeepopen()) { sys_reopen_audio(); }
