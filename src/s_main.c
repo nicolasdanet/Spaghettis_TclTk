@@ -17,18 +17,19 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol    *main_directoryRoot;        /* Shared. */
-t_symbol    *main_directoryBin;         /* Shared. */
-t_symbol    *main_directoryTcl;         /* Shared. */
-t_symbol    *main_directoryHelp;        /* Shared. */
-t_symbol    *main_directoryExtras;      /* Shared. */
+t_symbol    *main_directoryRoot;                        /* Shared. */
+t_symbol    *main_directoryBin;                         /* Shared. */
+t_symbol    *main_directoryTcl;                         /* Shared. */
+t_symbol    *main_directoryHelp;                        /* Shared. */
+t_symbol    *main_directoryExtras;                      /* Shared. */
 
-int         main_portNumber;            /* Shared. */
+int         main_portNumber;                            /* Shared. */
+int         main_directoryWriteRequirePrivileges;       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int  main_version;               /* Shared. */
+static int  main_version;                               /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -205,9 +206,11 @@ static t_error main_getRootDirectory (void)
         err = string_copy (buf2, PD_STRING, buf1);
         err |= string_add (buf2, PD_STRING, "/lib/pd");
         
-        if (!err && path_isFileExist (buf2)) { main_directoryRoot = gensym (buf2); }    /* Complexe. */
-        else {
-            main_directoryRoot = gensym (buf1);                                         /* Simple. */
+        if (!err && path_isFileExist (buf2)) {                                              /* Complexe. */
+            main_directoryRoot = gensym (buf2); main_directoryWriteRequirePrivileges = 1;
+            
+        } else {
+            main_directoryRoot = gensym (buf1);                                             /* Simple. */
         }
     #endif
     //

@@ -19,6 +19,7 @@
 extern t_symbol     *main_directoryExtras;
 extern t_pathlist   *path_search;
 
+extern int main_directoryWriteRequirePrivileges;
 extern int sys_audioapi;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -37,7 +38,14 @@ static t_error preferences_loadBegin (void)
 {
     char filepath[PD_STRING] = { 0 };
     
-    t_error err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directoryExtras->s_name);
+    t_error err = PD_ERROR_NONE;
+    
+    if (!main_directoryWriteRequirePrivileges) {
+        err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directoryExtras->s_name);
+    } else {
+        char *home = getenv ("HOME");
+        err = string_sprintf (filepath, PD_STRING, "%s/.puredatarc", (home ? home : "."));
+    }
 
     if (!err) { err |= !path_isFileExist (filepath); }
     if (!err) {
@@ -83,7 +91,14 @@ static t_error preferences_saveBegin (void)
 {
     char filepath[PD_STRING] = { 0 };
     
-    t_error err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directoryExtras->s_name);
+    t_error err = PD_ERROR_NONE;
+    
+    if (!main_directoryWriteRequirePrivileges) {
+        err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directoryExtras->s_name);
+    } else {
+        char *home = getenv ("HOME");
+        err = string_sprintf (filepath, PD_STRING, "%s/.puredatarc", (home ? home : "."));
+    }
     
     if (!err) { err = ((preferences_saveFile = file_openWrite (filepath)) == NULL); }
     

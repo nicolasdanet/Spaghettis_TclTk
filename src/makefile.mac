@@ -28,7 +28,6 @@ EXTRAS_DIR = ../resources/extras
 # /usr/local/lib/pd/bin/pdwatchdog
 # /usr/local/lib/pd/tcl/*.tcl
 # /usr/local/lib/pd/help/*.pdhelp
-# /usr/local/lib/pd/extras/*.txt
 
 prefix = /usr/local
 exec_prefix = $(prefix)
@@ -184,7 +183,6 @@ install: all
 	install $(HELP_DIR)/*.aiff $(DESTDIR)$(libpdhelpdir)
 	@echo "Install extras ..."
 	install -d $(DESTDIR)$(libpdextrasdir)
-	install $(EXTRAS_DIR)/*.txt $(DESTDIR)$(libpdextrasdir)
 	@echo "Install headers ..."
 	install -d $(DESTDIR)$(includedir)
 	install -m644 m_pd.h $(DESTDIR)$(includedir)/m_pd.h
