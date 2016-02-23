@@ -891,8 +891,8 @@ void sys_set_audio_api(int which)
 #endif
     if (!ok)
     {
-        post("API %d not supported, reverting to %d (%s)",
-            which, API_DEFAULT, API_DEFAULT_STRING);
+        /*post("API %d not supported, reverting to %d (%s)",
+            which, API_DEFAULT, API_DEFAULT_STRING);*/
         which = API_DEFAULT;
     }
     sys_audioapi = which;
@@ -951,7 +951,7 @@ void sys_get_audio_apis(char *buf)
     sprintf(buf + strlen(buf), "{OSS %d} ", API_OSS); n++;
 #endif
 #ifdef USEAPI_MMIO
-    sprintf(buf + strlen(buf), "{\"MMIO\" %d} ", API_MMIO); n++;
+    sprintf(buf + strlen(buf), "{MMIO %d} ", API_MMIO); n++;
 #endif
 #ifdef USEAPI_ALSA
     sprintf(buf + strlen(buf), "{ALSA %d} ", API_ALSA); n++;
@@ -959,22 +959,22 @@ void sys_get_audio_apis(char *buf)
 #ifdef USEAPI_PORTAUDIO
 #ifdef _WIN32
     sprintf(buf + strlen(buf),
-        "{\"ASIO (via portaudio)\" %d} ", API_PORTAUDIO);
+        "{ASIO %d} ", API_PORTAUDIO);
 #else
 #ifdef __APPLE__
     sprintf(buf + strlen(buf),
-        "{\"portaudio\" %d} ", API_PORTAUDIO);
+        "{PortAudio %d} ", API_PORTAUDIO);
 #else
-    sprintf(buf + strlen(buf), "{portaudio %d} ", API_PORTAUDIO);
+    sprintf(buf + strlen(buf), "{PortAudio %d} ", API_PORTAUDIO);
 #endif
 #endif
      n++;
 #endif
 #ifdef USEAPI_JACK
-    sprintf(buf + strlen(buf), "{jack %d} ", API_JACK); n++;
+    sprintf(buf + strlen(buf), "{JACK %d} ", API_JACK); n++;
 #endif
 #ifdef USEAPI_DUMMY
-    sprintf(buf + strlen(buf), "{dummy %d} ", API_DUMMY); n++;
+    sprintf(buf + strlen(buf), "{Dummy %d} ", API_DUMMY); n++;
 #endif
     strcat(buf, "}");
         /* then again, if only one API (or none) we don't offer any choice. */

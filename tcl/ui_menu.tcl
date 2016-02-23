@@ -336,7 +336,7 @@ proc _media {m} {
     foreach e $::var(apiMidiAvailables) {
         foreach {name value} $e {
             $m add radiobutton \
-                -label [format "Midi %s" [string totitle $name]] \
+                -label [format "MIDI With %s" $name] \
                 -variable ::var(apiMidi) \
                 -value $value \
                 -command { ::ui_interface::pdsend "pd _midiAPI $::var(apiMidi)" }
@@ -348,7 +348,7 @@ proc _media {m} {
     foreach e $::var(apiAudioAvailables) {
         foreach {name value} $e {
             $m add radiobutton \
-                -label [format "Audio %s" [string totitle $name]] \
+                -label [format "Audio With %s" $name] \
                 -variable ::var(apiAudio) \
                 -value $value \
                 -command { ::ui_interface::pdsend "pd _audioAPI $::var(apiAudio)" }

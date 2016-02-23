@@ -91,27 +91,21 @@
 
 #if defined ( USEAPI_MMIO )
     #define API_DEFAULT                         API_MMIO
-    #define API_DEFAULT_STRING                  "MMIO"
     
 #elif defined ( USEAPI_ALSA )
     #define API_DEFAULT                         API_ALSA
-    #define API_DEFAULT_STRING                  "ALSA"
     
 #elif defined ( USEAPI_OSS )
     #define API_DEFAULT                         API_OSS
-    #define API_DEFAULT_STRING                  "OSS"
     
 #elif defined ( USEAPI_PORTAUDIO )
     #define API_DEFAULT                         API_PORTAUDIO
-    #define API_DEFAULT_STRING                  "PortAudio"
     
 #elif defined ( USEAPI_JACK )
     #define API_DEFAULT                         API_JACK
-    #define API_DEFAULT_STRING                  "JACK"
     
 #elif defined ( USEAPI_DUMMY )
     #define API_DEFAULT                         API_DUMMY
-    #define API_DEFAULT_STRING                  "Dummy"
 #else
     #error "Unknown Audio API"
 #endif 
