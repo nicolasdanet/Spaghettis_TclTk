@@ -58,15 +58,17 @@ t_error midi_getAPIAvailables (char *dest, size_t size)
 {
     t_error err = PD_ERROR_NONE;
 
-    #if defined ( USEAPI_OSS ) && defined ( USEAPI_ALSA )
+    err |= string_copy (dest, size, "{ ");
     
-    err |= string_sprintf (dest, size, "{ {OSS %d} {ALSA %d} }", API_DEFAULT_MIDI, API_ALSA); // --
-    
-    #else
-    
-    err |= string_copy (dest, size, "{}");  // --
-    
+    #if defined ( USEAPI_OSS ) 
+        err |= string_addSprintf (dest, size, "{OSS %d} ", API_DEFAULT_MIDI);
     #endif
+    
+    #if defined ( USEAPI_ALSA )
+        err |= string_addSprintf (dest, size, "{ALSA %d} ", API_ALSA);
+    #endif
+    
+    err |= string_add (dest, size, "}");
     
     return err;
 }
@@ -77,14 +79,6 @@ t_error midi_getAPIAvailables (char *dest, size_t size)
 
 void midi_openWithDevices (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut)
 {
-    #ifdef USEAPI_ALSA
-        midi_initializeALSA();
-    #endif
-    
-    #ifdef USEAPI_OSS
-        midi_initializeOSS();
-    #endif
-    
     if (API_WITH_ALSA && midi_api == API_ALSA) {
         sys_alsa_do_open_midi (numberOfDevicesIn, devicesIn, numberOfDevicesOut, devicesOut);
     } else {

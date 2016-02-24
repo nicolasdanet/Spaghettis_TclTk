@@ -90,22 +90,22 @@
 #pragma mark -
 
 #if defined ( USEAPI_MMIO )
-    #define API_DEFAULT                         API_MMIO
+    #define API_DEFAULT_AUDIO                   API_MMIO
     
 #elif defined ( USEAPI_ALSA )
-    #define API_DEFAULT                         API_ALSA
+    #define API_DEFAULT_AUDIO                   API_ALSA
     
 #elif defined ( USEAPI_OSS )
-    #define API_DEFAULT                         API_OSS
+    #define API_DEFAULT_AUDIO                   API_OSS
     
 #elif defined ( USEAPI_PORTAUDIO )
-    #define API_DEFAULT                         API_PORTAUDIO
+    #define API_DEFAULT_AUDIO                   API_PORTAUDIO
     
 #elif defined ( USEAPI_JACK )
-    #define API_DEFAULT                         API_JACK
+    #define API_DEFAULT_AUDIO                   API_JACK
     
 #elif defined ( USEAPI_DUMMY )
-    #define API_DEFAULT                         API_DUMMY
+    #define API_DEFAULT_AUDIO                   API_DUMMY
 #else
     #error "Unknown Audio API"
 #endif 
@@ -370,8 +370,6 @@ void        preferences_save                        (void *dummy);
 #pragma mark -
 
 void        midi_initialize                         (void);
-void        midi_initializeOSS                      (void);
-void        midi_initializeALSA                     (void);
 void        midi_synchronise                        (void);
 void        midi_poll                               (void);
 void        midi_receive                            (int port, int byte);
@@ -429,10 +427,24 @@ void        outmidi_clock                           (int port);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        audio_setAPI                            (void *dummy, t_float f);
+t_error     audio_getAPIAvailables                  (char *dest, size_t size);
+
 void        audio_open                              (void);
 void        audio_close                             (void);
 int         audio_isOpened                          (void);
 
+void        audio_getDevices                        (int *numberOfDevicesIn,
+                                                        int *devicesIn,
+                                                        int *channelsIn,
+                                                        int *numberOfDevicesOut,
+                                                        int *devicesOut,
+                                                        int *channelsOut,
+                                                        int *sampleRate,
+                                                        int *advance,
+                                                        int *hasCallback,
+                                                        int *blockSize);
+                                                        
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -492,8 +504,6 @@ void        sys_get_audio_devs              (char *indevlist,
                                                 int maxndev,
                                                 int devdescsize);
                                                 
-void        sys_get_audio_apis              (char *buf);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -584,7 +594,7 @@ void pa_getdevs             (char *indevlist,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void oss_init               (void);
+void oss_initialize         (void);
 
 int oss_open_audio          (int naudioindev,
                                 int *audioindev,
@@ -701,32 +711,6 @@ void dummy_listdevs         (void);
 
 void sys_set_audio_api      (int whichapi);
 void sys_set_audio_state    (int onoff);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void sys_get_audio_params   (int *pnaudioindev,
-                                int *paudioindev,
-                                int *chindev,
-                                int *pnaudiooutdev,
-                                int *paudiooutdev,
-                                int *choutdev,
-                                int *prate,
-                                int *padvance,
-                                int *callback,
-                                int *blocksize);
-                                
-void sys_save_audio_params  (int naudioindev,
-                                int *audioindev,
-                                int *chindev,
-                                int naudiooutdev,
-                                int *audiooutdev,
-                                int *choutdev,
-                                int rate,
-                                int advance,
-                                int callback,
-                                int blocksize);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

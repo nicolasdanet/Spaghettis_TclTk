@@ -102,7 +102,7 @@ static int oss_ndev = 0;
     to be called before audio is actually started up.  So we
     cache the results, which in effect are the number of available
     devices.  */
-void oss_init(void)
+void oss_initialize(void)
 {
     int fd, i;
     static int countedthem = 0;

@@ -174,7 +174,7 @@ jack_shutdown (void *arg)
   //jack_client_close(jack_client); /* likely to hang if the server shut down */
   jack_client = NULL;
 
-  global_audioAPI(NULL, API_NONE); // set pd_whichapi 0
+    audio_setAPI (NULL, API_NONE); // set pd_whichapi 0
 }
 
 static int jack_xrun(void* arg) {

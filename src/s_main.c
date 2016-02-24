@@ -268,6 +268,10 @@ int main_entry (int argc, char **argv)
     PD_ASSERT (main_directoryHelp   != NULL);
     PD_ASSERT (main_directoryExtras != NULL);
 
+    #ifdef USEAPI_OSS
+        oss_initialize();
+    #endif
+
     instance_initialize();
     sys_setSignalHandlers();
     

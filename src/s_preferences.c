@@ -222,7 +222,7 @@ static void preferences_setKey (const char *key, const char *value)
 
 void preferences_load (void)
 {
-    int audioApi                        = API_DEFAULT;
+    int audioApi                        = API_DEFAULT_AUDIO;
     int callback                        = 0;
     int sampleRate                      = AUDIO_DEFAULT_SAMPLING;
     int advance                         = AUDIO_DEFAULT_ADVANCE;
@@ -397,7 +397,7 @@ void preferences_save (void *dummy)
     char key[PD_STRING]                 = { 0 };
     char value[PD_STRING]               = { 0 };
     
-    sys_get_audio_params (&numberOfAudioIn,
+    audio_getDevices (&numberOfAudioIn,
                             audioIn, 
                             channelIn,
                             &numberOfAudioOut, 
