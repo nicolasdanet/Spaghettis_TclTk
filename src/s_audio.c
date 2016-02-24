@@ -36,7 +36,7 @@ int         audio_advanceInSamples;                                             
 int         audio_advanceInMicroseconds;                                        /* Shared. */
 int         audio_blockSize;                                                    /* Shared. */
 t_float     audio_sampleRate;                                                   /* Shared. */
-int         audio_api                   = API_DEFAULT_AUDIO;                          /* Shared. */
+int         audio_api                   = API_DEFAULT_AUDIO;                    /* Shared. */
 int         audio_openedApi             = -1;                                   /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -67,10 +67,12 @@ static int  audio_tempHasCallback;                                              
 
 void audio_setAPI (void *dummy, t_float f)
 {
-    if ((int)f == API_NONE) { if (audio_isOpened()) { audio_close(); } }
+    int api = (audio_isAvailable ((int)f) ? (int)f : API_DEFAULT_AUDIO);
+    
+    if (api == API_NONE) { if (audio_isOpened()) { audio_close(); } }
     else {
     //
-    if ((int)f != audio_api) {
+    if (api != audio_api) {
         audio_close();
         audio_api = (int)f;
         audio_numberOfDevicesIn     = 0;
@@ -227,6 +229,32 @@ void audio_close (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int audio_isAvailable (int api)
+{
+    int available = 0;
+    
+    #ifdef USEAPI_PORTAUDIO
+        available += (api == API_PORTAUDIO);
+    #endif
+    #ifdef USEAPI_JACK
+        available += (api == API_JACK);
+    #endif
+    #ifdef USEAPI_OSS
+        available += (api == API_OSS);
+    #endif
+    #ifdef USEAPI_ALSA
+        available += (api == API_ALSA);
+    #endif
+    #ifdef USEAPI_MMIO
+        available += (api == API_MMIO);
+    #endif
+    #ifdef USEAPI_DUMMY
+        available += (api == API_DUMMY);
+    #endif
+
+    return available;
+}
+
 int audio_isOpened (void)
 {
     if (audio_state) { 
@@ -319,6 +347,134 @@ static void audio_setDevices (int numberOfDevicesIn,
     audio_tempAdvance     = advance;
     audio_tempHasCallback = hasCallback;
     audio_blockSize       = blockSize;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void audio_getLists (char *indevlist, int *nindevs,
+    char *outdevlist, int *noutdevs, int *canmulti, int *cancallback,
+        int maxndev, int devdescsize)
+{
+    *cancallback = 0;   /* may be overridden by specific API implementation */
+#ifdef USEAPI_PORTAUDIO
+    if (audio_api == API_PORTAUDIO)
+    {
+        pa_getdevs(indevlist, nindevs, outdevlist, noutdevs, canmulti,
+            maxndev, devdescsize);
+        *cancallback = 1;
+    }
+    else
+#endif
+#ifdef USEAPI_JACK
+    if (audio_api == API_JACK)
+    {
+        jack_getdevs(indevlist, nindevs, outdevlist, noutdevs, canmulti,
+            maxndev, devdescsize);
+        *cancallback = 1;
+    }
+    else
+#endif
+#ifdef USEAPI_OSS
+    if (audio_api == API_OSS)
+    {
+        oss_getdevs(indevlist, nindevs, outdevlist, noutdevs, canmulti,
+            maxndev, devdescsize);
+    }
+    else
+#endif
+#ifdef USEAPI_ALSA
+    if (audio_api == API_ALSA)
+    {
+        alsa_getdevs(indevlist, nindevs, outdevlist, noutdevs, canmulti,
+            maxndev, devdescsize);
+    }
+    else
+#endif
+#ifdef USEAPI_MMIO
+    if (audio_api == API_MMIO)
+    {
+        mmio_getdevs(indevlist, nindevs, outdevlist, noutdevs, canmulti,
+            maxndev, devdescsize);
+    }
+    else
+#endif
+#ifdef USEAPI_DUMMY
+    if (audio_api == API_DUMMY)
+    {
+        dummy_getdevs(indevlist, nindevs, outdevlist, noutdevs, canmulti,
+            maxndev, devdescsize);
+    }
+    else
+#endif
+    {
+            /* this shouldn't happen once all the above get filled in. */
+        int i;
+        *nindevs = *noutdevs = 3;
+        for (i = 0; i < 3; i++)
+        {
+            sprintf(indevlist + i * devdescsize, "input device #%d", i+1);
+            sprintf(outdevlist + i * devdescsize, "output device #%d", i+1);
+        }
+        *canmulti = 0;
+    }
+}
+
+int sys_audiodevnametonumber(int output, const char *name)
+{
+    char indevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION], outdevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION];
+    int nindevs = 0, noutdevs = 0, i, canmulti, cancallback;
+
+    audio_getLists(indevlist, &nindevs, outdevlist, &noutdevs,
+        &canmulti, &cancallback, MAXIMUM_DEVICES, MAXIMUM_DESCRIPTION);
+
+    if (output)
+    {
+        for (i = 0; i < noutdevs; i++)
+        {
+            unsigned int comp = strlen(name);
+            if (comp > strlen(outdevlist + i * MAXIMUM_DESCRIPTION))
+                comp = strlen(outdevlist + i * MAXIMUM_DESCRIPTION);
+            if (!strncmp(name, outdevlist + i * MAXIMUM_DESCRIPTION, comp))
+                return (i);
+        }
+    }
+    else
+    {
+        for (i = 0; i < nindevs; i++)
+        {
+            unsigned int comp = strlen(name);
+            if (comp > strlen(indevlist + i * MAXIMUM_DESCRIPTION))
+                comp = strlen(indevlist + i * MAXIMUM_DESCRIPTION);
+            if (!strncmp(name, indevlist + i * MAXIMUM_DESCRIPTION, comp))
+                return (i);
+        }
+    }
+    return (-1);
+}
+
+/* convert a (1-based) device number to a device name.  (Output device if
+'output' parameter is true, otherwise input device).  Empty string on failure.
+*/
+
+void sys_audiodevnumbertoname(int output, int devno, char *name, int namesize)
+{
+    char indevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION], outdevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION];
+    int nindevs = 0, noutdevs = 0, i, canmulti, cancallback;
+    if (devno < 0)
+    {
+        *name = 0;
+        return;
+    }
+    audio_getLists(indevlist, &nindevs, outdevlist, &noutdevs,
+        &canmulti, &cancallback, MAXIMUM_DEVICES, MAXIMUM_DESCRIPTION);
+    if (output && (devno < noutdevs))
+        strncpy(name, outdevlist + devno * MAXIMUM_DESCRIPTION, namesize);
+    else if (!output && (devno < nindevs))
+        strncpy(name, indevlist + devno * MAXIMUM_DESCRIPTION, namesize);
+    else *name = 0;
+    name[namesize-1] = 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -474,106 +630,9 @@ void sys_set_audio_state(int onoff)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void audio_getdevs(char *indevlist, int *nindevs,
-    char *outdevlist, int *noutdevs, int *canmulti, int *cancallback,
-        int maxndev, int devdescsize)
-{
-    *cancallback = 0;   /* may be overridden by specific API implementation */
-#ifdef USEAPI_PORTAUDIO
-    if (audio_api == API_PORTAUDIO)
-    {
-        pa_getdevs(indevlist, nindevs, outdevlist, noutdevs, canmulti,
-            maxndev, devdescsize);
-        *cancallback = 1;
-    }
-    else
-#endif
-#ifdef USEAPI_JACK
-    if (audio_api == API_JACK)
-    {
-        jack_getdevs(indevlist, nindevs, outdevlist, noutdevs, canmulti,
-            maxndev, devdescsize);
-        *cancallback = 1;
-    }
-    else
-#endif
-#ifdef USEAPI_OSS
-    if (audio_api == API_OSS)
-    {
-        oss_getdevs(indevlist, nindevs, outdevlist, noutdevs, canmulti,
-            maxndev, devdescsize);
-    }
-    else
-#endif
-#ifdef USEAPI_ALSA
-    if (audio_api == API_ALSA)
-    {
-        alsa_getdevs(indevlist, nindevs, outdevlist, noutdevs, canmulti,
-            maxndev, devdescsize);
-    }
-    else
-#endif
-#ifdef USEAPI_MMIO
-    if (audio_api == API_MMIO)
-    {
-        mmio_getdevs(indevlist, nindevs, outdevlist, noutdevs, canmulti,
-            maxndev, devdescsize);
-    }
-    else
-#endif
-#ifdef USEAPI_DUMMY
-    if (audio_api == API_DUMMY)
-    {
-        dummy_getdevs(indevlist, nindevs, outdevlist, noutdevs, canmulti,
-            maxndev, devdescsize);
-    }
-    else
-#endif
-    {
-            /* this shouldn't happen once all the above get filled in. */
-        int i;
-        *nindevs = *noutdevs = 3;
-        for (i = 0; i < 3; i++)
-        {
-            sprintf(indevlist + i * devdescsize, "input device #%d", i+1);
-            sprintf(outdevlist + i * devdescsize, "output device #%d", i+1);
-        }
-        *canmulti = 0;
-    }
-}
 
-static void sys_listaudiodevs(void )
-{
-    char indevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION], outdevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION];
-    int nindevs = 0, noutdevs = 0, i, canmulti = 0, cancallback = 0;
 
-    audio_getdevs(indevlist, &nindevs, outdevlist, &noutdevs, &canmulti,
-        &cancallback, MAXIMUM_DEVICES, MAXIMUM_DESCRIPTION);
 
-    if (!nindevs)
-        post("no audio input devices found");
-    else
-    {
-            /* To agree with command line flags, normally start at 1 */
-            /* But microsoft "MMIO" device list starts at 0 (the "mapper"). */
-            /* (see also sys_mmio variable in s_main.c)  */
-
-        post("audio input devices:");
-        for (i = 0; i < nindevs; i++)
-            post("%d. %s", i + (audio_api != API_MMIO),
-                indevlist + i * MAXIMUM_DESCRIPTION);
-    }
-    if (!noutdevs)
-        post("no audio output devices found");
-    else
-    {
-        post("audio output devices:");
-        for (i = 0; i < noutdevs; i++)
-            post("%d. %s", i + (audio_api != API_MMIO),
-                outdevlist + i * MAXIMUM_DESCRIPTION);
-    }
-    post("API number %d\n", audio_api);
-}
 
 /* ----------------------- public routines ----------------------- */
 
@@ -594,7 +653,7 @@ void sys_set_audio_settings(int naudioindev, int *audioindev, int nchindev,
 
     char indevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION], outdevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION];
     int indevs = 0, outdevs = 0, canmulti = 0, cancallback = 0;
-    audio_getdevs(indevlist, &indevs, outdevlist, &outdevs, &canmulti,
+    audio_getLists(indevlist, &indevs, outdevlist, &outdevs, &canmulti,
         &cancallback, MAXIMUM_DEVICES, MAXIMUM_DESCRIPTION);
 
     if (rate < 1)
@@ -750,7 +809,7 @@ void global_audioProperties(void *dummy, t_float flongform)
     char indevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION], outdevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION];
     int nindevs = 0, noutdevs = 0, canmulti = 0, cancallback = 0, i;
 
-    audio_getdevs(indevlist, &nindevs, outdevlist, &noutdevs, &canmulti,
+    audio_getLists(indevlist, &nindevs, outdevlist, &noutdevs, &canmulti,
          &cancallback, MAXIMUM_DEVICES, MAXIMUM_DESCRIPTION);
 
     sys_gui("set ::ui_audio::audioIn {}\n");
@@ -872,149 +931,6 @@ void sys_set_audio_settings_reopen(int naudioindev, int *audioindev, int nchinde
     if (!audio_callbackIsOpen && !callback)
         audio_open();
     else scheduler_needToRestart();
-}
-
-/*
-void sys_listdevs(void )
-{
-#ifdef USEAPI_PORTAUDIO
-    if (audio_api == API_PORTAUDIO)
-        sys_listaudiodevs();
-    else 
-#endif
-#ifdef USEAPI_JACK
-    if (audio_api == API_JACK)
-        jack_listdevs();
-    else
-#endif
-#ifdef USEAPI_OSS
-    if (audio_api == API_OSS)
-        sys_listaudiodevs();
-    else
-#endif
-#ifdef USEAPI_ALSA
-    if (audio_api == API_ALSA)
-        sys_listaudiodevs();
-    else
-#endif
-#ifdef USEAPI_MMIO
-    if (audio_api == API_MMIO)
-        sys_listaudiodevs();
-    else
-#endif
-#ifdef USEAPI_DUMMY
-    if (audio_api == API_DUMMY)
-        sys_listaudiodevs();
-    else
-#endif
-    post("unknown API");    
-
-    sys_listmididevs();
-}
-*/
-void sys_get_audio_devs(char *indevlist, int *nindevs,
-    char *outdevlist, int *noutdevs, int *canmulti, int *cancallback, 
-                        int maxndev, int devdescsize)
-{
-  audio_getdevs(indevlist, nindevs,
-                outdevlist, noutdevs, 
-                canmulti, cancallback, 
-                maxndev, devdescsize);
-}
-
-void sys_set_audio_api(int which)
-{
-    int ok = 0;    /* check if the API is actually compiled in */
-#ifdef USEAPI_PORTAUDIO
-    ok += (which == API_PORTAUDIO);
-#endif
-#ifdef USEAPI_JACK
-    ok += (which == API_JACK);
-#endif
-#ifdef USEAPI_OSS
-    ok += (which == API_OSS);
-#endif
-#ifdef USEAPI_ALSA
-    ok += (which == API_ALSA);
-#endif
-#ifdef USEAPI_MMIO
-    ok += (which == API_MMIO);
-#endif
-#ifdef USEAPI_DUMMY
-    ok += (which == API_DUMMY);
-#endif
-    if (!ok)
-    {
-        /*post("API %d not supported, reverting to %d (%s)",
-            which, API_DEFAULT_AUDIO, API_DEFAULT_STRING);*/
-        which = API_DEFAULT_AUDIO;
-    }
-    audio_api = which;
-    if (0 && ok)
-        post("audio_api set to %d", audio_api);
-}
-
-/* convert a device name to a (1-based) device number.  (Output device if
-'output' parameter is true, otherwise input device).  Negative on failure. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int sys_audiodevnametonumber(int output, const char *name)
-{
-    char indevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION], outdevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION];
-    int nindevs = 0, noutdevs = 0, i, canmulti, cancallback;
-
-    sys_get_audio_devs(indevlist, &nindevs, outdevlist, &noutdevs,
-        &canmulti, &cancallback, MAXIMUM_DEVICES, MAXIMUM_DESCRIPTION);
-
-    if (output)
-    {
-        for (i = 0; i < noutdevs; i++)
-        {
-            unsigned int comp = strlen(name);
-            if (comp > strlen(outdevlist + i * MAXIMUM_DESCRIPTION))
-                comp = strlen(outdevlist + i * MAXIMUM_DESCRIPTION);
-            if (!strncmp(name, outdevlist + i * MAXIMUM_DESCRIPTION, comp))
-                return (i);
-        }
-    }
-    else
-    {
-        for (i = 0; i < nindevs; i++)
-        {
-            unsigned int comp = strlen(name);
-            if (comp > strlen(indevlist + i * MAXIMUM_DESCRIPTION))
-                comp = strlen(indevlist + i * MAXIMUM_DESCRIPTION);
-            if (!strncmp(name, indevlist + i * MAXIMUM_DESCRIPTION, comp))
-                return (i);
-        }
-    }
-    return (-1);
-}
-
-/* convert a (1-based) device number to a device name.  (Output device if
-'output' parameter is true, otherwise input device).  Empty string on failure.
-*/
-
-void sys_audiodevnumbertoname(int output, int devno, char *name, int namesize)
-{
-    char indevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION], outdevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION];
-    int nindevs = 0, noutdevs = 0, i, canmulti, cancallback;
-    if (devno < 0)
-    {
-        *name = 0;
-        return;
-    }
-    sys_get_audio_devs(indevlist, &nindevs, outdevlist, &noutdevs,
-        &canmulti, &cancallback, MAXIMUM_DEVICES, MAXIMUM_DESCRIPTION);
-    if (output && (devno < noutdevs))
-        strncpy(name, outdevlist + devno * MAXIMUM_DESCRIPTION, namesize);
-    else if (!output && (devno < nindevs))
-        strncpy(name, indevlist + devno * MAXIMUM_DESCRIPTION, namesize);
-    else *name = 0;
-    name[namesize-1] = 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------

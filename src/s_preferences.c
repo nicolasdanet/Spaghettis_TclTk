@@ -350,7 +350,7 @@ void preferences_load (void)
     //
     }
     
-    sys_set_audio_api (audioApi);
+    audio_setAPI (NULL, audioApi);
     
     sys_set_audio_settings (numberOfAudioIn,
                             audioIn, 

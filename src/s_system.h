@@ -429,6 +429,7 @@ void        outmidi_clock                           (int port);
 
 void        audio_setAPI                            (void *dummy, t_float f);
 t_error     audio_getAPIAvailables                  (char *dest, size_t size);
+int         audio_isAvailable                       (int api);
 
 void        audio_open                              (void);
 void        audio_close                             (void);
@@ -495,15 +496,6 @@ int         sys_send_dacs                   (void);
 void        sys_audiobuf                    (int nbufs);
 void        sys_setblocksize                (int n);
 
-void        sys_get_audio_devs              (char *indevlist,
-                                                int *nindevs,
-                                                char *outdevlist,
-                                                int *noutdevs,
-                                                int *canmulti,
-                                                int *cancallback, 
-                                                int maxndev,
-                                                int devdescsize);
-                                                
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -709,7 +701,6 @@ void dummy_listdevs         (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void sys_set_audio_api      (int whichapi);
 void sys_set_audio_state    (int onoff);
 
 // -----------------------------------------------------------------------------------------------------------
