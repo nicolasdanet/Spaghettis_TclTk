@@ -412,7 +412,7 @@ void preferences_save (void *dummy)
     
     /* Properties. */
     
-    string_sprintf (value, PD_STRING, "%d", audio_api);      preferences_setKey ("AudioApi",   value);
+    string_sprintf (value, PD_STRING, "%d", audio_api);         preferences_setKey ("AudioApi",   value);
     string_sprintf (value, PD_STRING, "%d", callback);          preferences_setKey ("Callback",   value);
     string_sprintf (value, PD_STRING, "%d", sampleRate);        preferences_setKey ("SampleRate", value);
     string_sprintf (value, PD_STRING, "%d", advance);           preferences_setKey ("Advance",    value);

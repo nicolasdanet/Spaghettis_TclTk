@@ -9,7 +9,7 @@
 
 #include <stdio.h>
 
-int dummy_open_audio(int nin, int nout, int sr) {
+int dummy_open_audio() {
   return 0;
 }
 

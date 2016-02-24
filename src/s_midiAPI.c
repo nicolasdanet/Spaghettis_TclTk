@@ -44,12 +44,9 @@ static char midi_devicesOutNames[MAXIMUM_MIDI_OUT * MAXIMUM_DESCRIPTION];       
 void midi_setAPI (void *dummy, t_float f)
 {
     if ((int)f != midi_api) {
-        if (API_WITH_ALSA && midi_api == API_ALSA) { sys_alsa_close_midi(); }
-        else {
-            sys_close_midi();
-        }
-        
-        midi_api = (int)f; midi_open();
+        midi_close();
+        midi_api = (int)f; 
+        midi_open();
     }
     
     #ifdef USEAPI_ALSA
@@ -106,6 +103,14 @@ void midi_open (void)
     int o[MAXIMUM_MIDI_OUT] = { 0 };
     
     midi_getDevices (&m, i, &n, o); midi_openWithDevices (m, i, n, o);
+}
+
+void midi_close (void)
+{
+    if (API_WITH_ALSA && midi_api == API_ALSA) { sys_alsa_close_midi(); } 
+    else {
+        sys_close_midi();
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -349,10 +354,7 @@ void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
     //
     }
     
-    if (API_WITH_ALSA && midi_api == API_ALSA) { sys_alsa_close_midi(); } 
-    else {
-        sys_close_midi();
-    }
+    midi_close();
 
     midi_openWithDevices (m, i, n, o);
 }

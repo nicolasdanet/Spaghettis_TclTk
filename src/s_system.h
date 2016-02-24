@@ -114,10 +114,40 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#if defined ( USEAPI_MMIO )
+    #define API_WITH_MMIO                       1
+#else
+    #define API_WITH_MMIO                       0
+#endif
+
 #if defined ( USEAPI_ALSA )
     #define API_WITH_ALSA                       1
 #else
     #define API_WITH_ALSA                       0
+#endif
+
+#if defined ( USEAPI_OSS )
+    #define API_WITH_OSS                        1
+#else
+    #define API_WITH_OSS                        0
+#endif
+
+#if defined ( USEAPI_PORTAUDIO )
+    #define API_WITH_PORTAUDIO                  1
+#else
+    #define API_WITH_PORTAUDIO                  0
+#endif
+
+#if defined ( USEAPI_JACK )
+    #define API_WITH_JACK                       1
+#else
+    #define API_WITH_JACK                       0
+#endif
+
+#if defined ( USEAPI_DUMMY )
+    #define API_WITH_DUMMY                      1
+#else
+    #define API_WITH_DUMMY                      0
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -357,6 +387,7 @@ void        midi_fromDialog                         (void *dummy, t_symbol *s, i
 int         midi_numberWithName                     (int isOutput, const char *name);
 void        midi_numberToName                       (int isOutput, int k, char *dest, size_t size);
 void        midi_open                               (void);
+void        midi_close                              (void);
 
 void        midi_openWithDevices                    (int numberOfDevicesIn,
                                                         int *devicesIn,
@@ -393,6 +424,14 @@ void        outmidi_pitchBend                       (int port, int channel, int 
 void        outmidi_afterTouch                      (int port, int channel, int value);
 void        outmidi_polyPressure                    (int port, int channel, int pitch, int value);
 void        outmidi_clock                           (int port);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        audio_open                              (void);
+void        audio_close                             (void);
+int         audio_isOpened                          (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -436,11 +475,7 @@ void        sys_set_audio_settings_reopen   (int naudioindev,
                                                 int callback,
                                                 int blocksize);
                                                 
-void        sys_reopen_audio                (void);
-void        sys_close_audio                 (void);
-
 int         audio_shouldkeepopen            (void);
-int         audio_isopen                    (void);
 int         sys_audiodevnametonumber        (int output, const char *name);
 void        sys_audiodevnumbertoname        (int output, int devno, char *name, int namesize);
 
@@ -648,7 +683,7 @@ void mmio_getdevs           (char *indevlist,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int  dummy_open_audio       (int nin, int nout, int sr);
+int  dummy_open_audio       (void);
 void dummy_close_audio      (void);
 int  dummy_send_dacs        (void);
 void dummy_getdevs          (char *indevlist, 
