@@ -758,12 +758,14 @@ void mmio_listdevs(void)
 #endif
 
 void mmio_getdevs(char *indevlist, int *nindevs,
-    char *outdevlist, int *noutdevs, int *canmulti, 
-        int maxndev, int devdescsize)
+    char *outdevlist, int *noutdevs, int *canmulti, int *canCallback)
 {
+    int maxndev = MAXIMUM_DEVICES;
+    int devdescsize = MAXIMUM_DESCRIPTION;
     int  wRtn, ndev, i;
 
     *canmulti = 2;  /* supports multiple devices */
+    *canCallback = 0;
     ndev = waveInGetNumDevs();
     if (ndev > maxndev)
         ndev = maxndev;

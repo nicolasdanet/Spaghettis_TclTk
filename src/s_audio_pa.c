@@ -594,12 +594,15 @@ int pa_send_dacs(void)
 
     /* scanning for devices */
 void pa_getdevs(char *indevlist, int *nindevs,
-    char *outdevlist, int *noutdevs, int *canmulti, 
-        int maxndev, int devdescsize)
+    char *outdevlist, int *noutdevs, int *canmulti, int *canCallback)
 {
+    int maxndev = MAXIMUM_DEVICES;
+    int devdescsize = MAXIMUM_DESCRIPTION;
     int i, nin = 0, nout = 0, ndev;
+    
     *canmulti = 1;  /* one dev each for input and output */
-
+    *canCallback = 1;
+    
     pa_init();
     ndev = Pa_GetDeviceCount();
     for (i = 0; i < ndev; i++)

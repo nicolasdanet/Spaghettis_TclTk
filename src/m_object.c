@@ -819,7 +819,6 @@ void object_saveWidth (t_object *x, t_buffer *b)
 
 t_float *object_getSignalValueAtIndex (t_object *x, int m)
 {
-    int n = 0;
     t_inlet *i = NULL;
     
     if (pd_class (x)->c_hasFirstInlet && pd_class (x)->c_signalOffset) {
@@ -830,15 +829,12 @@ t_float *object_getSignalValueAtIndex (t_object *x, int m)
                 PD_BUG; return NULL;
             }
         }
-        m--; n++;
+        m--;
     }
     
     for (i = x->te_inlet; i; i = i->i_next, m--) {
         if (i->i_from == &s_signal) {
             if (m == 0) { return &i->i_un.i_signal; }
-            else {
-                n++;
-            }
         }
     }
     

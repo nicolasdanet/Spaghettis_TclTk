@@ -923,11 +923,13 @@ static void alsa_numbertoname(int devno, char *devname, int nchar)
     /* For each hardware card found, we list two devices, the "hard" and
     "plug" one.  The card scan is derived from portaudio code. */
 void alsa_getdevs(char *indevlist, int *nindevs,
-    char *outdevlist, int *noutdevs, int *canmulti,
-        int maxndev, int devdescsize)
+    char *outdevlist, int *noutdevs, int *canmulti, int *canCallback)
 {
+    int maxndev = MAXIMUM_DEVICES;
+    int devdescsize = MAXIMUM_DESCRIPTION;
     int ndev = 0, cardno = -1, i, j;
     *canmulti = 2;  /* supports multiple devices */
+    *canCallback = 0;
     while (!snd_card_next(&cardno) && cardno >= 0)
     {
         snd_ctl_t *ctl;

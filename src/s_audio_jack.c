@@ -547,11 +547,14 @@ int jack_send_dacs(void)
 }
 
 void jack_getdevs(char *indevlist, int *nindevs,
-    char *outdevlist, int *noutdevs, int *canmulti, 
-        int maxndev, int devdescsize)
+    char *outdevlist, int *noutdevs, int *canmulti, int *canCallback)
 {
+    int maxndev = MAXIMUM_DEVICES;
+    int devdescsize = MAXIMUM_DESCRIPTION;
+    
     int i, ndev;
     *canmulti = 0;  /* supports multiple devices */
+    *canCallback = 1;
     ndev = 1;
     for (i = 0; i < ndev; i++)
     {

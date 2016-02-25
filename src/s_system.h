@@ -429,7 +429,7 @@ void        outmidi_clock                           (int port);
 
 void        audio_setAPI                            (void *dummy, t_float f);
 t_error     audio_getAPIAvailables                  (char *dest, size_t size);
-int         audio_isAvailable                       (int api);
+int         audio_isAPIAvailable                    (int api);
 
 void        audio_open                              (void);
 void        audio_close                             (void);
@@ -580,8 +580,7 @@ void pa_getdevs             (char *indevlist,
                                 char *outdevlist,
                                 int *noutdevs,
                                 int *canmulti, 
-                                int maxndev,
-                                int devdescsize);
+                                int *canCallback);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -606,8 +605,7 @@ void oss_getdevs            (char *indevlist,
                                 char *outdevlist,
                                 int *noutdevs,
                                 int *canmulti, 
-                                int maxndev,
-                                int devdescsize);
+                                int *canCallback);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -634,8 +632,7 @@ void alsa_getdevs           (char *indevlist,
                                 char *outdevlist,
                                 int *noutdevs,
                                 int *canmulti, 
-                                int maxndev,
-                                int devdescsize);
+                                int *canCallback);
 void alsa_adddev            (char *name);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -652,9 +649,8 @@ void jack_getdevs           (char *indevlist,
                                 int *nindevs,
                                 char *outdevlist,
                                 int *noutdevs,
-                                int *canmulti,
-                                int maxndev,
-                                int devdescsize);
+                                int *canmulti, 
+                                int *canCallback);
                                 
 void jack_listdevs          (void);
 
@@ -678,9 +674,8 @@ void mmio_getdevs           (char *indevlist,
                                 int *nindevs,
                                 char *outdevlist,
                                 int *noutdevs,
-                                int *canmulti,
-                                int maxndev,
-                                int devdescsize);
+                                int *canmulti, 
+                                int *canCallback);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -692,9 +687,8 @@ void dummy_getdevs          (char *indevlist,
                                 int *nindevs,
                                 char *outdevlist,
                                 int *noutdevs,
-                                int *canmulti,
-                                int maxndev,
-                                int devdescsize);
+                                int *canmulti, 
+                                int *canCallback);
 void dummy_listdevs         (void);
 
 // -----------------------------------------------------------------------------------------------------------

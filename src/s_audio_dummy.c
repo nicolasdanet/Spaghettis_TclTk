@@ -22,11 +22,14 @@ int dummy_send_dacs() {
 }
 
 void dummy_getdevs(char *indevlist, int *nindevs, char *outdevlist,
-    int *noutdevs, int *canmulti, int maxndev, int devdescsize) {
+    int *noutdevs, int *canmulti, int *canCallback) {
+    int maxndev = MAXIMUM_DEVICES;
+    int devdescsize = MAXIMUM_DESCRIPTION;
   sprintf(indevlist, "NONE");
   sprintf(outdevlist, "NONE");
+    *canmulti = 0;
+    *canCallback = 0;
   *nindevs = *noutdevs = 1;
-  *canmulti = 0;
 }
 
 void dummy_listdevs() {
