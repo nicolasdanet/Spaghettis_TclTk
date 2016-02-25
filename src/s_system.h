@@ -431,6 +431,9 @@ void        audio_setAPI                            (void *dummy, t_float f);
 t_error     audio_getAPIAvailables                  (char *dest, size_t size);
 int         audio_isAPIAvailable                    (int api);
 
+int         audio_numberWithName                    (int isOutput, const char *name);
+void        audio_numberToName                      (int isOutput, int k, char *dest, size_t size);
+
 void        audio_open                              (void);
 void        audio_close                             (void);
 int         audio_isOpened                          (void);
@@ -489,8 +492,6 @@ void        sys_set_audio_settings_reopen   (int naudioindev,
                                                 int blocksize);
                                                 
 int         audio_shouldkeepopen            (void);
-int         sys_audiodevnametonumber        (int output, const char *name);
-void        sys_audiodevnumbertoname        (int output, int devno, char *name, int namesize);
 
 int         sys_send_dacs                   (void);
 void        sys_audiobuf                    (int nbufs);

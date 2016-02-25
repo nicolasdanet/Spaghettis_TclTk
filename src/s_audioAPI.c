@@ -287,7 +287,7 @@ void audio_getDevices (int *numberOfDevicesIn,
     *numberOfDevicesOut = audio_numberOfDevicesOut;
     
     for (i = 0; i < audio_numberOfDevicesIn; i++) {
-        if ((n = sys_audiodevnametonumber (0, &audio_devicesInNames[i * MAXIMUM_DESCRIPTION])) >= 0) {
+        if ((n = audio_numberWithName (0, &audio_devicesInNames[i * MAXIMUM_DESCRIPTION])) >= 0) {
             devicesIn[i] = n;
         } else {
             devicesIn[i] = audio_devicesIn[i];
@@ -297,7 +297,7 @@ void audio_getDevices (int *numberOfDevicesIn,
     }
     
     for (i = 0; i < audio_numberOfDevicesOut; i++) {
-        if ((n = sys_audiodevnametonumber(1, &audio_devicesOutNames[i * MAXIMUM_DESCRIPTION])) >= 0) {
+        if ((n = audio_numberWithName(1, &audio_devicesOutNames[i * MAXIMUM_DESCRIPTION])) >= 0) {
             devicesOut[i] = n;
         } else { 
             devicesOut[i] = audio_devicesOut[i];
@@ -332,14 +332,14 @@ static void audio_setDevices (int numberOfDevicesIn,
         char *s = &audio_devicesInNames[i * MAXIMUM_DESCRIPTION];
         audio_devicesIn[i] = devicesIn[i],
         audio_devicesInChannels[i] = channelsIn[i];
-        sys_audiodevnumbertoname (0, devicesIn[i], s, MAXIMUM_DESCRIPTION);
+        audio_numberToName (0, devicesIn[i], s, MAXIMUM_DESCRIPTION);
     }
 
     for (i = 0; i < numberOfDevicesOut; i++) {
         char *s = &audio_devicesOutNames[i * MAXIMUM_DESCRIPTION];
         audio_devicesOut[i] = devicesOut[i],
         audio_devicesOutChannels[i] = channelsOut[i];
-        sys_audiodevnumbertoname(1, devicesOut[i], s, MAXIMUM_DESCRIPTION);
+        audio_numberToName(1, devicesOut[i], s, MAXIMUM_DESCRIPTION);
     }
     
     audio_tempSampleRate  = sampleRate;
@@ -352,73 +352,68 @@ static void audio_setDevices (int numberOfDevicesIn,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void audio_getLists (char *i, int *m, char *o, int *n, int *canMultiple, int *canCallback)
+static t_error audio_getLists (char *i, int *m, char *o, int *n, int *canMultiple, int *canCallback)
 {
-    int t = audio_api;
+    int k = audio_api;
     
-    if (API_WITH_PORTAUDIO && t == API_PORTAUDIO) { pa_getdevs (i, m, o, n, canMultiple, canCallback);    }
-    else if (API_WITH_JACK && t == API_JACK)      { jack_getdevs (i, m, o, n, canMultiple, canCallback);  }
-    else if (API_WITH_OSS && t == API_OSS)        { oss_getdevs (i, m, o, n, canMultiple, canCallback);   }
-    else if (API_WITH_ALSA && t == API_ALSA)      { alsa_getdevs (i, m, o, n, canMultiple, canCallback);  }
-    else if (API_WITH_MMIO && t == API_MMIO)      { mmio_getdevs (i, m, o, n, canMultiple, canCallback);  }
-    else if (API_WITH_DUMMY && t == API_DUMMY)    { dummy_getdevs (i, m, o, n, canMultiple, canCallback); }
+    if (API_WITH_PORTAUDIO && k == API_PORTAUDIO) { pa_getdevs (i, m, o, n, canMultiple, canCallback);    }
+    else if (API_WITH_JACK && k == API_JACK)      { jack_getdevs (i, m, o, n, canMultiple, canCallback);  }
+    else if (API_WITH_OSS && k == API_OSS)        { oss_getdevs (i, m, o, n, canMultiple, canCallback);   }
+    else if (API_WITH_ALSA && k == API_ALSA)      { alsa_getdevs (i, m, o, n, canMultiple, canCallback);  }
+    else if (API_WITH_MMIO && k == API_MMIO)      { mmio_getdevs (i, m, o, n, canMultiple, canCallback);  }
+    else if (API_WITH_DUMMY && k == API_DUMMY)    { dummy_getdevs (i, m, o, n, canMultiple, canCallback); }
     else {
-        PD_BUG; *m = *n = *i = *o = 0;
+        PD_BUG; *m = *n = *i = *o = 0; return PD_ERROR;
     }
+    
+    return PD_ERROR_NONE;
 }
 
-int sys_audiodevnametonumber(int output, const char *name)
+int audio_numberWithName (int isOutput, const char *name)
 {
-    char indevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION], outdevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION];
-    int nindevs = 0, noutdevs = 0, i, canmulti, cancallback;
-
-    audio_getLists(indevlist, &nindevs, outdevlist, &noutdevs,
-        &canmulti, &cancallback);
-
-    if (output)
-    {
-        for (i = 0; i < noutdevs; i++)
-        {
-            unsigned int comp = strlen(name);
-            if (comp > strlen(outdevlist + i * MAXIMUM_DESCRIPTION))
-                comp = strlen(outdevlist + i * MAXIMUM_DESCRIPTION);
-            if (!strncmp(name, outdevlist + i * MAXIMUM_DESCRIPTION, comp))
-                return (i);
+    int  m = 0;
+    int  n = 0;
+    char i[MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION] = { 0 };
+    char o[MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION] = { 0 };
+    int  canMultiple;
+    int  canCallback;
+    int  k;
+    
+    if (!audio_getLists (i, &m, o, &n, &canMultiple, &canCallback)) {
+    //
+    if (isOutput) {
+        for (k = 0; k < n; k++) {
+            if (!strcmp (name, o + (k * MAXIMUM_DESCRIPTION))) { return k; }
+        }
+    } else {
+        for (k = 0; k < m; k++) {
+            if (!strcmp (name, i + (k * MAXIMUM_DESCRIPTION))) { return k; }
         }
     }
-    else
-    {
-        for (i = 0; i < nindevs; i++)
-        {
-            unsigned int comp = strlen(name);
-            if (comp > strlen(indevlist + i * MAXIMUM_DESCRIPTION))
-                comp = strlen(indevlist + i * MAXIMUM_DESCRIPTION);
-            if (!strncmp(name, indevlist + i * MAXIMUM_DESCRIPTION, comp))
-                return (i);
-        }
+    //
     }
-    return (-1);
+    
+    return -1;
 }
 
-void sys_audiodevnumbertoname(int output, int devno, char *name, int namesize)
+void audio_numberToName (int isOutput, int k, char *dest, size_t size)
 {
-    char indevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION], outdevlist[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION];
-    int nindevs = 0, noutdevs = 0, i, canmulti, cancallback;
-    if (devno < 0)
-    {
-        *name = 0;
-        return;
+    int  m = 0;
+    int  n = 0;
+    char i[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION];
+    char o[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION];
+    int  canMultiple;
+    int  canCallback;
+    
+    t_error err = PD_ERROR;
+    
+    if (k >= 0 && !audio_getLists (i, &m, o, &n, &canMultiple, &canCallback)) { 
+        if (isOutput && (k < n))        { err = string_copy (dest, size, o + (k * MAXIMUM_DESCRIPTION)); }
+        else if (!isOutput && (k < m))  { err = string_copy (dest, size, i + (k * MAXIMUM_DESCRIPTION)); }
     }
-    audio_getLists(indevlist, &nindevs, outdevlist, &noutdevs,
-        &canmulti, &cancallback);
-    if (output && (devno < noutdevs))
-        strncpy(name, outdevlist + devno * MAXIMUM_DESCRIPTION, namesize);
-    else if (!output && (devno < nindevs))
-        strncpy(name, indevlist + devno * MAXIMUM_DESCRIPTION, namesize);
-    else *name = 0;
-    name[namesize-1] = 0;
+    
+    if (err) { *dest = 0; }
 }
-
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

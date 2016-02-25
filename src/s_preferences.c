@@ -281,7 +281,7 @@ void preferences_load (void)
         string_sprintf (key, PD_STRING, "AudioInDeviceName%d", i + 1);
         if (preferences_getKey (key, value, PD_STRING)) {
             int device; 
-            if ((device = sys_audiodevnametonumber (0, value)) >= 0) { audioIn[i] = device; }
+            if ((device = audio_numberWithName (0, value)) >= 0) { audioIn[i] = device; }
         }
         numberOfAudioIn++;
         }
@@ -304,7 +304,7 @@ void preferences_load (void)
         string_sprintf (key, PD_STRING, "AudioOutDeviceName%d", i + 1);
         if (preferences_getKey (key, value, PD_STRING)) {
             int device;
-            if ((device = sys_audiodevnametonumber (1, value)) >= 0) { audioOut[i] = device; }
+            if ((device = audio_numberWithName (1, value)) >= 0) { audioOut[i] = device; }
         }
         numberOfAudioOut++;
         }
@@ -442,7 +442,7 @@ void preferences_save (void *dummy)
     string_sprintf (value, PD_STRING, "%d %d", audioIn[i], channelIn[i]);
     preferences_setKey (key, value);
     string_sprintf (key, PD_STRING, "AudioInDeviceName%d", i + 1);
-    sys_audiodevnumbertoname (0, audioIn[i], value, PD_STRING);
+    audio_numberToName (0, audioIn[i], value, PD_STRING);
     preferences_setKey (key, value);
     //
     }
@@ -453,7 +453,7 @@ void preferences_save (void *dummy)
     string_sprintf (value, PD_STRING, "%d %d", audioOut[i], channelOut[i]);
     preferences_setKey (key, value);
     string_sprintf (key, PD_STRING, "AudioOutDeviceName%d", i + 1);
-    sys_audiodevnumbertoname (1, audioOut[i], value, PD_STRING);
+    audio_numberToName (1, audioOut[i], value, PD_STRING);
     preferences_setKey (key, value);
     //
     }
