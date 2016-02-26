@@ -178,7 +178,12 @@ t_error audio_open (void)
     
     if (m || n) {
     //
+    int t;
+    
     sys_setchsr (audio_channelsIn, audio_channelsOut, sampleRate);
+    
+    for (t = 0; t < m; t++) { j[t] = PD_MAX (0, j[t]); }    /* Avoid negative (disabled) channels. */
+    for (t = 0; t < n; t++) { p[t] = PD_MAX (0, p[t]); }
     
     if (API_WITH_PORTAUDIO && audio_api == API_PORTAUDIO)   {
     
@@ -423,14 +428,12 @@ void audio_setDefaultDevicesAndParameters (int numberOfDevicesIn,
     /* For convenience, initialize with first devices if none are provided. */
     
     if (numberOfDevicesIn == 0) { 
-        *devicesIn   = AUDIO_DEFAULT_DEVICE;
-        *channelsIn  = AUDIO_DEFAULT_CHANNELS; 
+        *devicesIn = AUDIO_DEFAULT_DEVICE;  *channelsIn  = AUDIO_DEFAULT_CHANNELS; 
         numberOfDevicesIn  = 1;
     }
     
     if (numberOfDevicesOut == 0) { 
-        *devicesOut  = AUDIO_DEFAULT_DEVICE;
-        *channelsOut = AUDIO_DEFAULT_CHANNELS;
+        *devicesOut = AUDIO_DEFAULT_DEVICE; *channelsOut = AUDIO_DEFAULT_CHANNELS;
         numberOfDevicesOut = 1;
     }
     
