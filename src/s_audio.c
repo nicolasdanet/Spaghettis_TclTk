@@ -39,9 +39,9 @@ void sys_setchsr(int chin, int chout, int sr)
 {
     int nblk;
     int inbytes = (chin ? chin : 2) *
-                (AUDIO_DEFAULT_BLOCK*sizeof(t_sample));
+                (AUDIO_DEFAULT_BLOCKSIZE*sizeof(t_sample));
     int outbytes = (chout ? chout : 2) *
-                (AUDIO_DEFAULT_BLOCK*sizeof(t_sample));
+                (AUDIO_DEFAULT_BLOCKSIZE*sizeof(t_sample));
 
     if (audio_soundIn)
         PD_MEMORY_FREE(audio_soundIn);
@@ -51,8 +51,8 @@ void sys_setchsr(int chin, int chout, int sr)
     audio_channelsOut = chout;
     audio_sampleRate = sr;
     audio_advanceInSamples = (audio_advanceInMicroseconds * audio_sampleRate) / (1000000.);
-    if (audio_advanceInSamples < AUDIO_DEFAULT_BLOCK)
-        audio_advanceInSamples = AUDIO_DEFAULT_BLOCK;
+    if (audio_advanceInSamples < AUDIO_DEFAULT_BLOCKSIZE)
+        audio_advanceInSamples = AUDIO_DEFAULT_BLOCKSIZE;
 
     audio_soundIn = (t_sample *)PD_MEMORY_GET(inbytes);
     memset(audio_soundIn, 0, inbytes);
@@ -78,7 +78,7 @@ int sys_send_dacs(void)
     {
         int i, n;
         t_sample maxsamp;
-        for (i = 0, n = audio_channelsIn * AUDIO_DEFAULT_BLOCK, maxsamp = sys_inmax;
+        for (i = 0, n = audio_channelsIn * AUDIO_DEFAULT_BLOCKSIZE, maxsamp = sys_inmax;
             i < n; i++)
         {
             t_sample f = audio_soundIn[i];
@@ -86,7 +86,7 @@ int sys_send_dacs(void)
             else if (-f > maxsamp) maxsamp = -f;
         }
         sys_inmax = maxsamp;
-        for (i = 0, n = audio_channelsOut * AUDIO_DEFAULT_BLOCK, maxsamp = sys_outmax;
+        for (i = 0, n = audio_channelsOut * AUDIO_DEFAULT_BLOCKSIZE, maxsamp = sys_outmax;
             i < n; i++)
         {
             t_sample f = audio_soundOut[i];
@@ -164,20 +164,6 @@ keep jack audio open but close unused audio devices for any other API */
 int audio_shouldkeepopen( void)
 {
     return (audio_api == API_JACK);
-}
-
-void sys_set_audio_state(int onoff)
-{
-    if (onoff)  /* start */
-    {
-        if (!audio_isOpened())
-            audio_open();    
-    }
-    else
-    {
-        if (audio_isOpened())
-            audio_close();
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -1135,22 +1135,24 @@ us that we should elide the step of closing audio when DSP is turned off.*/
 void global_dsp(void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     int newstate;
+    
     if (argc)
     {
-        newstate = (t_int)atom_getFloatAtIndex(0, argc, argv);
+        newstate = (t_int)atom_getFloatAtIndex (0, argc, argv);
+        
         if (newstate && !pd_this->pd_state)
         {
-            sys_set_audio_state(1);
-            canvas_start_dsp();
+            if (audio_setDSP (1) == PD_ERROR_NONE) { canvas_start_dsp(); }
+            else {
+                post_log ("Toto");      /* ??? */
+            }
         }
         else if (!newstate && pd_this->pd_state)
         {
             canvas_stop_dsp();
-            if (!audio_shouldkeepopen())
-                sys_set_audio_state(0);
+            if (!audio_shouldkeepopen()) { audio_setDSP(0); }
         }
     }
-    else post("dsp state %d", pd_this->pd_state);
 }
 
 void *canvas_getblock(t_class *blockclass, t_canvas **canvasp)

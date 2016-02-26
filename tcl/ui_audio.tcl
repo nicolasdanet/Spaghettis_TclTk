@@ -317,11 +317,11 @@ proc _forceValues {} {
     
     set audioInChannels($i)  [::ifInteger $audioInChannels($i) 2]
     set audioInChannels($i)  [::tcl::mathfunc::max $audioInChannels($i) 0]
-    set audioInChannels($i)  [::tcl::mathfunc::min $audioInChannels($i) 128]
+    set audioInChannels($i)  [::tcl::mathfunc::min $audioInChannels($i) 32]
     
     set audioOutChannels($i) [::ifInteger $audioOutChannels($i) 2]
     set audioOutChannels($i) [::tcl::mathfunc::max $audioOutChannels($i) 0]
-    set audioOutChannels($i) [::tcl::mathfunc::min $audioOutChannels($i) 128]
+    set audioOutChannels($i) [::tcl::mathfunc::min $audioOutChannels($i) 32]
     
     }
     

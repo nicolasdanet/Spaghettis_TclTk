@@ -231,7 +231,7 @@ static void line_tilde_setup(void)
 
 /* -------------------------- vline~ ------------------------------ */
 static t_class *vline_tilde_class;
-#include "s_system.h"    /* for AUDIO_DEFAULT_BLOCK; this should be in m_pd.h */
+#include "s_system.h"    /* for AUDIO_DEFAULT_BLOCKSIZE; this should be in m_pd.h */
 typedef struct _vseg
 {
     double s_targettime;
@@ -270,7 +270,7 @@ static t_int *vline_tilde_perform(t_int *w)
     t_vseg *s = x->x_list;
     if (logicaltimenow != x->x_lastlogicaltime)
     {
-        int sampstotime = (n > AUDIO_DEFAULT_BLOCK ? n : AUDIO_DEFAULT_BLOCK);
+        int sampstotime = (n > AUDIO_DEFAULT_BLOCKSIZE ? n : AUDIO_DEFAULT_BLOCKSIZE);
         x->x_lastlogicaltime = logicaltimenow;
         x->x_nextblocktime = logicaltimenow - sampstotime * msecpersamp;
     }

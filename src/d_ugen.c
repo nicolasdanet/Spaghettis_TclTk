@@ -890,7 +890,7 @@ void ugen_done_graph(t_dspcontext *dc)
     else
     {
         parent_srate = sys_getsr();
-        parent_vecsize = AUDIO_DEFAULT_BLOCK;
+        parent_vecsize = AUDIO_DEFAULT_BLOCKSIZE;
     }
     if (blk)
     {

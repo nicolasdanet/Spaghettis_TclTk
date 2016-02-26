@@ -190,7 +190,7 @@ int midi_numberWithName (int isOutput, const char *name)
     return -1;
 }
 
-void midi_numberToName (int isOutput, int k, char *dest, size_t size)
+t_error midi_numberToName (int isOutput, int k, char *dest, size_t size)
 {
     int  m = 0;
     int  n = 0;
@@ -205,6 +205,8 @@ void midi_numberToName (int isOutput, int k, char *dest, size_t size)
     }
     
     if (err) { *dest = 0; }
+    
+    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -308,7 +310,6 @@ void midi_requireDialog (void *dummy)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {

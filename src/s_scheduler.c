@@ -42,7 +42,7 @@ static volatile sig_atomic_t scheduler_quit;                                /* S
 // -----------------------------------------------------------------------------------------------------------
 
 static int      scheduler_sleepGrain;                                       /* Shared. */
-static int      scheduler_blockSize     = AUDIO_DEFAULT_BLOCK;              /* Shared. */
+static int      scheduler_blockSize     = AUDIO_DEFAULT_BLOCKSIZE;          /* Shared. */
 static int      scheduler_audioMode     = SCHEDULER_AUDIO_NONE;             /* Shared. */
 
 static double   scheduler_realTime;                                         /* Shared. */
@@ -296,7 +296,7 @@ t_error scheduler_main (void)
     }
     
     if (scheduler_quit == SCHEDULER_RESTART) {
-        if (audio_isOpened()) { audio_close(); audio_open(); } scheduler_quit = SCHEDULER_RUN;
+        audio_close(); audio_open(); scheduler_quit = SCHEDULER_RUN;
     } 
     
     if (scheduler_quit == SCHEDULER_ERROR) { audio_close(); midi_close(); }

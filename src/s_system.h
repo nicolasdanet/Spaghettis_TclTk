@@ -36,6 +36,8 @@
 #define MAXIMUM_MIDI_OUT                        8
 #define MAXIMUM_AUDIO_IN                        4
 #define MAXIMUM_AUDIO_OUT                       4
+#define MAXIMUM_CHANNELS_IN                     32
+#define MAXIMUM_CHANNELS_OUT                    32
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -48,12 +50,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define AUDIO_DEFAULT_DEVICE                    0
-#define AUDIO_DEFAULT_BLOCK                     64
-#define AUDIO_DEFAULT_SAMPLING                  44100
+#define AUDIO_DEFAULT_SAMPLERATE                44100
+#define AUDIO_DEFAULT_BLOCKSIZE                 64
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #if PD_WINDOWS
     #define AUDIO_DEFAULT_ADVANCE               80
@@ -383,7 +385,7 @@ t_error     midi_getAPIAvailables                   (char *dest, size_t size);
 void        midi_requireDialog                      (void *dummy);
 void        midi_fromDialog                         (void *dummy, t_symbol *s, int argc, t_atom *argv);
 int         midi_numberWithName                     (int isOutput, const char *name);
-void        midi_numberToName                       (int isOutput, int k, char *dest, size_t size);
+t_error     midi_numberToName                       (int isOutput, int k, char *dest, size_t size);
 void        midi_open                               (void);
 void        midi_close                              (void);
 
@@ -430,12 +432,13 @@ void        outmidi_clock                           (int port);
 void        audio_setAPI                            (void *dummy, t_float f);
 t_error     audio_getAPIAvailables                  (char *dest, size_t size);
 int         audio_isAPIAvailable                    (int api);
-
+void        audio_requireDialog                     (void *dummy);
+void        audio_fromDialog                        (void *dummy, t_symbol *s, int argc, t_atom *argv);
 int         audio_numberWithName                    (int isOutput, const char *name);
-void        audio_numberToName                      (int isOutput, int k, char *dest, size_t size);
-
-void        audio_open                              (void);
+t_error     audio_numberToName                      (int isOutput, int k, char *dest, size_t size);
+t_error     audio_open                              (void);
 void        audio_close                             (void);
+t_error     audio_setDSP                            (int isOn);
 int         audio_isOpened                          (void);
 
 void        audio_getDevices                        (int *numberOfDevicesIn,
@@ -446,9 +449,20 @@ void        audio_getDevices                        (int *numberOfDevicesIn,
                                                         int *channelsOut,
                                                         int *sampleRate,
                                                         int *advance,
-                                                        int *hasCallback,
+                                                        int *withCallback,
                                                         int *blockSize);
-                                                        
+
+void        audio_setDefaultDevicesAndParameters    (int numberOfDevicesIn,
+                                                        int *devicesIn,
+                                                        int *channelsIn,
+                                                        int numberOfDevicesOut,
+                                                        int *devicesOut,
+                                                        int *channelsOut,
+                                                        int sampleRate,
+                                                        int advance,
+                                                        int withCallback,
+                                                        int blockSize);
+                                                
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -465,32 +479,6 @@ t_symbol    *sys_decodedialog               (t_symbol *s);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        sys_set_audio_settings          (int naudioindev,
-                                                int *audioindev,
-                                                int nchindev,
-                                                int *chindev,
-                                                int naudiooutdev,
-                                                int *audiooutdev,
-                                                int nchoutdev,
-                                                int *choutdev,
-                                                int srate,
-                                                int advance,
-                                                int callback,
-                                                int blocksize);
-                                            
-void        sys_set_audio_settings_reopen   (int naudioindev,
-                                                int *audioindev,
-                                                int nchindev,
-                                                int *chindev,
-                                                int naudiooutdev,
-                                                int *audiooutdev,
-                                                int nchoutdev,
-                                                int *choutdev,
-                                                int srate,
-                                                int advance,
-                                                int callback,
-                                                int blocksize);
-                                                
 int         audio_shouldkeepopen            (void);
 
 int         sys_send_dacs                   (void);
@@ -691,12 +679,6 @@ void dummy_getdevs          (char *indevlist,
                                 int *canmulti, 
                                 int *canCallback);
 void dummy_listdevs         (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void sys_set_audio_state    (int onoff);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

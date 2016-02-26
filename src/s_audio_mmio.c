@@ -35,12 +35,12 @@ static void postflags(void);
 #define SAMPSIZE 2
 
 int nt_realdacblksize;
-#define DEFREALDACBLKSIZE (4 * AUDIO_DEFAULT_BLOCK) /* larger underlying bufsize */
+#define DEFREALDACBLKSIZE (4 * AUDIO_DEFAULT_BLOCKSIZE) /* larger underlying bufsize */
 
 #define MAXBUFFER 100   /* number of buffers in use at maximum advance */
 #define DEFBUFFER 30    /* default is about 30x6 = 180 msec! */
 static int nt_naudiobuffer = DEFBUFFER;
-float audio_sampleRate = AUDIO_DEFAULT_SAMPLING;
+float audio_sampleRate = AUDIO_DEFAULT_SAMPLERATE;
 
 static int nt_whichapi = API_MMIO;
 static int nt_meters;        /* true if we're metering */
@@ -507,7 +507,7 @@ int mmio_send_dacs(void)
     {
         int i, n;
         float maxsamp;
-        for (i = 0, n = 2 * nt_nwavein * AUDIO_DEFAULT_BLOCK, maxsamp = nt_inmax;
+        for (i = 0, n = 2 * nt_nwavein * AUDIO_DEFAULT_BLOCKSIZE, maxsamp = nt_inmax;
             i < n; i++)
         {
             float f = audio_soundIn[i];
@@ -515,7 +515,7 @@ int mmio_send_dacs(void)
             else if (-f > maxsamp) maxsamp = -f;
         }
         nt_inmax = maxsamp;
-        for (i = 0, n = 2 * nt_nwaveout * AUDIO_DEFAULT_BLOCK, maxsamp = nt_outmax;
+        for (i = 0, n = 2 * nt_nwaveout * AUDIO_DEFAULT_BLOCKSIZE, maxsamp = nt_outmax;
             i < n; i++)
         {
             float f = audio_soundOut[i];
@@ -571,9 +571,9 @@ int mmio_send_dacs(void)
 
         for (i = 0, sp1 = (short *)(ntsnd_outvec[nda][phase].lpData) +
             CHANNELS_PER_DEVICE * nt_fill;
-                i < 2; i++, fp1 += AUDIO_DEFAULT_BLOCK, sp1++)
+                i < 2; i++, fp1 += AUDIO_DEFAULT_BLOCKSIZE, sp1++)
         {
-            for (j = 0, fp2 = fp1, sp2 = sp1; j < AUDIO_DEFAULT_BLOCK;
+            for (j = 0, fp2 = fp1, sp2 = sp1; j < AUDIO_DEFAULT_BLOCKSIZE;
                 j++, fp2++, sp2 += CHANNELS_PER_DEVICE)
             {
                 int x1 = 32767.f * *fp2;
@@ -584,7 +584,7 @@ int mmio_send_dacs(void)
         }
     }
     memset(audio_soundOut, 0, 
-        (AUDIO_DEFAULT_BLOCK *sizeof(t_sample)*CHANNELS_PER_DEVICE)*nt_nwaveout);
+        (AUDIO_DEFAULT_BLOCKSIZE *sizeof(t_sample)*CHANNELS_PER_DEVICE)*nt_nwaveout);
 
         /* vice versa for the input buffer */ 
 
@@ -594,9 +594,9 @@ int mmio_send_dacs(void)
 
         for (i = 0, sp1 = (short *)(ntsnd_invec[nad][phase].lpData) +
             CHANNELS_PER_DEVICE * nt_fill;
-                i < 2; i++, fp1 += AUDIO_DEFAULT_BLOCK, sp1++)
+                i < 2; i++, fp1 += AUDIO_DEFAULT_BLOCKSIZE, sp1++)
         {
-            for (j = 0, fp2 = fp1, sp2 = sp1; j < AUDIO_DEFAULT_BLOCK;
+            for (j = 0, fp2 = fp1, sp2 = sp1; j < AUDIO_DEFAULT_BLOCKSIZE;
                 j++, fp2++, sp2 += CHANNELS_PER_DEVICE)
             {
                 *fp2 = ((float)(1./32767.)) * (float)(*sp2);    
@@ -604,7 +604,7 @@ int mmio_send_dacs(void)
         }
     }
 
-    nt_fill = nt_fill + AUDIO_DEFAULT_BLOCK;
+    nt_fill = nt_fill + AUDIO_DEFAULT_BLOCKSIZE;
     if (nt_fill == nt_realdacblksize)
     {
         nt_fill = 0;
