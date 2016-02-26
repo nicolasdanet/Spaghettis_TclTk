@@ -599,8 +599,8 @@ void oss_getdevs            (char *indevlist,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void alsa_putzeros          (int n);
-void alsa_getzeros          (int n);
+void alsa_putzeros          (int iodev, int n);
+void alsa_getzeros          (int iodev, int n);
 void alsa_printstate        (void);
 
 int  alsa_open_audio        (int naudioindev,
