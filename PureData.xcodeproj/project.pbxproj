@@ -202,6 +202,7 @@
 		371655941BA3466000ABDE22 /* pmutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pmutil.c; path = portmidi/pm_common/pmutil.c; sourceTree = "<group>"; };
 		371655961BA3466600ABDE22 /* portmidi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = portmidi.c; path = portmidi/pm_common/portmidi.c; sourceTree = "<group>"; };
 		371655981BA3467500ABDE22 /* ptmacosx_cf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ptmacosx_cf.c; path = portmidi/porttime/ptmacosx_cf.c; sourceTree = "<group>"; };
+		37368C811C81D9C700A332BD /* s_apis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_apis.h; path = src/s_apis.h; sourceTree = "<group>"; };
 		373D6CC91C610AAF00106641 /* m_bindlist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_bindlist.c; path = src/m_bindlist.c; sourceTree = "<group>"; };
 		373F78241C7E097A0083D316 /* s_audioAPI.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audioAPI.c; path = src/s_audioAPI.c; sourceTree = "<group>"; };
 		3789717F1C4F712A00263434 /* AppMain.tcl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.tcl; path = AppMain.tcl; sourceTree = "<group>"; };
@@ -615,6 +616,8 @@
 		3722C53E1C4F955500D2BF6F /* API */ = {
 			isa = PBXGroup;
 			children = (
+				37368C811C81D9C700A332BD /* s_apis.h */,
+				378971E91C4F716700263434 /* s_alsa.h */,
 				37A59CDB1C538B3200FBD0AD /* MIDI */,
 				37A59CDC1C538B4800FBD0AD /* Audio */,
 			);
@@ -679,7 +682,6 @@
 		37A59CDC1C538B4800FBD0AD /* Audio */ = {
 			isa = PBXGroup;
 			children = (
-				378971E91C4F716700263434 /* s_alsa.h */,
 				378971F01C4F716700263434 /* s_audio_pa.c */,
 				378971EA1C4F716700263434 /* s_audio_alsa.c */,
 				378971EB1C4F716700263434 /* s_audio_alsamm.c */,

@@ -80,13 +80,19 @@ void audio_initializeMemory (int usedChannelsIn, int usedChannelsOut, int sample
     audio_soundIn  = (t_sample *)PD_MEMORY_GET (m);
     audio_soundOut = (t_sample *)PD_MEMORY_GET (n);
     
-    audio_channelsIn       = usedChannelsIn;
-    audio_channelsOut      = usedChannelsOut;
-    audio_sampleRate       = sampleRate;
-    audio_advanceInSamples = MICROSECONDS_TO_SECONDS (audio_advanceInMicroseconds * audio_sampleRate);
-    audio_advanceInSamples = PD_MAX (audio_advanceInSamples, AUDIO_DEFAULT_BLOCKSIZE);
+    audio_channelsIn        = usedChannelsIn;
+    audio_channelsOut       = usedChannelsOut;
+    audio_sampleRate        = sampleRate;
+    audio_advanceInSamples  = MICROSECONDS_TO_SECONDS (audio_advanceInMicroseconds * audio_sampleRate);
+    audio_advanceInSamples  = PD_MAX (audio_advanceInSamples, AUDIO_DEFAULT_BLOCKSIZE);
 
     canvas_resume_dsp (canvas_suspend_dsp());
+}
+
+void audio_releaseMemory (void)
+{
+    if (audio_soundIn)  { PD_MEMORY_FREE (audio_soundIn);  audio_soundIn  = NULL; }
+    if (audio_soundOut) { PD_MEMORY_FREE (audio_soundOut); audio_soundOut = NULL; }
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -174,12 +174,6 @@ typedef void (*t_clockfn)       (void *owner);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef int  (*t_loader)        (t_canvas *canvas, char *classname);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 struct _clock {
     double          c_systime;          /* Negative for unset clocks. */
     double          c_unit;             /* A positive value is in ticks, negative for number of samples. */
@@ -214,6 +208,7 @@ typedef struct _pathlist {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 typedef int t_fontsize;
 
@@ -266,6 +261,12 @@ t_error     scheduler_main                          (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        ugen_tick                               (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_error     priority_privilegeStart                 (void);
 t_error     priority_privilegeDrop                  (void);
 t_error     priority_privilegeRestore               (void);
@@ -286,6 +287,12 @@ void        clock_setUnitAsMilliseconds             (t_clock *x, double ms);
 
 void        sys_setSignalHandlers                   (void);
 double      sys_getRealTimeInSeconds                (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        post_atoms                              (int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -432,6 +439,7 @@ void        outmidi_clock                           (int port);
 t_error     audio_setDSP                            (int isOn);
 int         audio_pollDSP                           (void);
 void        audio_initializeMemory                  (int usedChannelsIn, int usedChannelsOut, int sampleRate);
+void        audio_releaseMemory                     (void);
 t_float     audio_getSampleRate                     (void);
 int         audio_getChannelsIn                     (void);
 int         audio_getChannelsOut                    (void);
@@ -471,204 +479,8 @@ void        audio_setDefaultDevicesAndParameters    (int numberOfDevicesIn,
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
-void        post_atoms                              (int argc, t_atom *argv);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_symbol    *sys_decodedialog               (t_symbol *s);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void        sys_close_midi                  (void);
-void        sys_putmidimess                 (int port, int a, int b, int c);
-void        sys_putmidibyte                 (int port, int a);
-void        sys_poll_midi                   (void);
-
-
-void        midi_getdevs                    (char *indevlist,
-                                                int *nindevs,
-                                                char *outdevlist,
-                                                int *noutdevs);
-                                                
-void        sys_do_open_midi                (int nmidiindev,
-                                                int *midiindev,
-                                                int nmidioutdev,
-                                                int *midioutdev);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void sys_alsa_putmidimess       (int port, int a, int b, int c);
-void sys_alsa_putmidibyte       (int port, int a);
-void sys_alsa_poll_midi         (void);
-void sys_alsa_setmiditimediff   (double inbuftime, double outbuftime);
-void sys_alsa_midibytein        (int port, int byte);
-void sys_alsa_close_midi        (void);
-
-void midi_alsa_setndevs         (int i, int o);
-
-void midi_alsa_getdevs          (char *indevlist,
-                                    int *nindevs,
-                                    char *outdevlist,
-                                    int *noutdevs);
-                                    
-void sys_alsa_do_open_midi      (int nmidiindev,
-                                    int *midiindev,
-                                    int nmidioutdev,
-                                    int *midioutdev);
-    
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void dsp_tick                   (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-typedef void (*t_audiocallback)(void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int  pa_open_audio           (int inchans,
-                                int outchans,
-                                int rate,
-                                t_sample *soundin,
-                                t_sample *soundout,
-                                int framesperbuf,
-                                int nbuffers,
-                                int indeviceno,
-                                int outdeviceno,
-                                t_audiocallback callback);
-                                
-void pa_close_audio         (void);
-int  pa_send_dacs           (void);
-void pa_listdevs            (void);
-void pa_getdevs             (char *indevlist,
-                                int *nindevs,
-                                char *outdevlist,
-                                int *noutdevs,
-                                int *canmulti, 
-                                int *canCallback);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-void oss_initialize         (void);
-
-int oss_open_audio          (int naudioindev,
-                                int *audioindev,
-                                int nchindev,
-                                int *chindev,
-                                int naudiooutdev,
-                                int *audiooutdev,
-                                int nchoutdev,
-                                int *choutdev,
-                                int rate,
-                                int blocksize);
-                                
-void oss_close_audio        (void);
-int  oss_send_dacs          (void);
-void oss_getdevs            (char *indevlist,
-                                int *nindevs,
-                                char *outdevlist,
-                                int *noutdevs,
-                                int *canmulti, 
-                                int *canCallback);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-void alsa_putzeros          (int iodev, int n);
-void alsa_getzeros          (int iodev, int n);
-void alsa_printstate        (void);
-
-int  alsa_open_audio        (int naudioindev,
-                                int *audioindev,
-                                int nchindev,
-                                int *chindev,
-                                int naudiooutdev,
-                                int *audiooutdev,
-                                int nchoutdev,
-                                int *choutdev,
-                                int rate,
-                                int blocksize);
-                                
-void alsa_close_audio       (void);
-int  alsa_send_dacs         (void);
-void alsa_getdevs           (char *indevlist,
-                                int *nindevs,
-                                char *outdevlist,
-                                int *noutdevs,
-                                int *canmulti, 
-                                int *canCallback);
-void alsa_adddev            (char *name);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-int  jack_open_audio        (int wantinchans,
-                                int wantoutchans,
-                                int srate,
-                                t_audiocallback callback);
-                                
-void jack_close_audio       (void);
-int  jack_send_dacs         (void);
-void jack_getdevs           (char *indevlist,
-                                int *nindevs,
-                                char *outdevlist,
-                                int *noutdevs,
-                                int *canmulti, 
-                                int *canCallback);
-                                
-void jack_listdevs          (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-int  mmio_open_audio        (int naudioindev,
-                                int *audioindev,
-                                int nchindev,
-                                int *chindev,
-                                int naudiooutdev,
-                                int *audiooutdev,
-                                int nchoutdev,
-                                int *choutdev,
-                                int rate,
-                                int blocksize);
-                                
-void mmio_close_audio       (void);
-int  mmio_send_dacs         (void);
-void mmio_getdevs           (char *indevlist,
-                                int *nindevs,
-                                char *outdevlist,
-                                int *noutdevs,
-                                int *canmulti, 
-                                int *canCallback);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-int  dummy_open_audio       (void);
-void dummy_close_audio      (void);
-int  dummy_send_dacs        (void);
-void dummy_getdevs          (char *indevlist, 
-                                int *nindevs,
-                                char *outdevlist,
-                                int *noutdevs,
-                                int *canmulti, 
-                                int *canCallback);
-void dummy_listdevs         (void);
+#include "s_apis.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

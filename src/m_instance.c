@@ -63,7 +63,7 @@ void instance_initialize (void)
 
 void instance_release (void)
 {
-    pdinstance_free (pd_this);
+    audio_releaseMemory(); pdinstance_free (pd_this);
 }
 
 // -----------------------------------------------------------------------------------------------------------

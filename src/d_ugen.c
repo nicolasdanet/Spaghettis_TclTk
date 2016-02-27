@@ -332,7 +332,7 @@ void dsp_addv(t_perform f, int n, t_int *vec)
     pd_this->pd_chainSize = newsize;
 }
 
-void dsp_tick(void)
+void ugen_tick(void)
 {
     if (pd_this->pd_chain)
     {
