@@ -214,7 +214,7 @@ static void scheduler_withLoop (void)
 
     if (scheduler_audioMode != SCHEDULER_AUDIO_NONE) {
 
-        timeForward = sys_send_dacs();
+        timeForward = audio_pollDSP();
 
         if (timeForward) { idleCount = 0; }
         else if (!(++idleCount % 31)) { scheduler_pollStuck (idleCount == 32); }

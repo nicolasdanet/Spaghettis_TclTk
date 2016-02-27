@@ -280,7 +280,6 @@ int main_entry (int argc, char **argv)
     
     if (!(err |= interface_start())) {
         midi_open();
-        if (audio_shouldkeepopen()) { audio_open(); }
         if (!(err |= main_entryVersion (1))) { err |= scheduler_main(); }
     }
     

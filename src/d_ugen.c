@@ -889,7 +889,7 @@ void ugen_done_graph(t_dspcontext *dc)
     }
     else
     {
-        parent_srate = sys_getsr();
+        parent_srate = audio_getSampleRate();
         parent_vecsize = AUDIO_DEFAULT_BLOCKSIZE;
     }
     if (blk)
@@ -1134,7 +1134,7 @@ void *canvas_getblock(t_class *blockclass, t_canvas **canvasp);
 
 static void samplerate_tilde_bang(t_samplerate *x)
 {
-    t_float srate = sys_getsr();
+    t_float srate = audio_getSampleRate();
     t_canvas *canvas = x->x_canvas;
     while (canvas)
     {

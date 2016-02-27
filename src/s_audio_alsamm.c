@@ -368,7 +368,7 @@ int alsamm_open_audio(int rate, int blocksize)
   fflush(stdout);
 #endif
 
-  sys_setchsr(alsamm_inchannels,  alsamm_outchannels, alsamm_sr);
+  audio_initializeMemory(alsamm_inchannels,  alsamm_outchannels, alsamm_sr);
 
   alsamm_start();
 

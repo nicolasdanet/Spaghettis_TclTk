@@ -429,6 +429,13 @@ void        outmidi_clock                           (int port);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_error     audio_setDSP                            (int isOn);
+int         audio_pollDSP                           (void);
+void        audio_initializeMemory                  (int usedChannelsIn, int usedChannelsOut, int sampleRate);
+t_float     audio_getSampleRate                     (void);
+int         audio_getChannelsIn                     (void);
+int         audio_getChannelsOut                    (void);
+
 void        audio_setAPI                            (void *dummy, t_float f);
 t_error     audio_getAPIAvailables                  (char *dest, size_t size);
 int         audio_isAPIAvailable                    (int api);
@@ -438,7 +445,6 @@ int         audio_numberWithName                    (int isOutput, const char *n
 t_error     audio_numberToName                      (int isOutput, int k, char *dest, size_t size);
 t_error     audio_open                              (void);
 void        audio_close                             (void);
-t_error     audio_setDSP                            (int isOn);
 int         audio_isOpened                          (void);
 
 void        audio_getDevices                        (int *numberOfDevicesIn,
@@ -462,7 +468,7 @@ void        audio_setDefaultDevicesAndParameters    (int numberOfDevicesIn,
                                                         int advance,
                                                         int withCallback,
                                                         int blockSize);
-                                                
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -474,16 +480,6 @@ void        post_atoms                              (int argc, t_atom *argv);
 #pragma mark -
 
 t_symbol    *sys_decodedialog               (t_symbol *s);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int         audio_shouldkeepopen            (void);
-
-int         sys_send_dacs                   (void);
-void        sys_audiobuf                    (int nbufs);
-void        sys_setblocksize                (int n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -533,12 +529,6 @@ void sys_alsa_do_open_midi      (int nmidiindev,
 #pragma mark -
 
 void dsp_tick                   (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void sys_setchsr                (int chin, int chout, int sr);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

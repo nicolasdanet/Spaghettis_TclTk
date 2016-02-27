@@ -463,7 +463,7 @@ int oss_open_audio(int nindev,  int *indev,  int nchin,  int *chin,
     }
 
     /* We have to do a read to start the engine. This is 
-       necessary because sys_send_dacs waits until the input
+       necessary because audio_pollDSP waits until the input
        buffer is filled and only reads on a filled buffer.
        This is good, because it's a way to make sure that we
        will not block.  But I wonder why we only have to read

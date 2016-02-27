@@ -1390,7 +1390,7 @@ long soundfiler_dowrite(void *obj, t_canvas *canvas,
     if (nchannels < 1 || nchannels > MAXSFCHANS)
         goto usage;
     if (samplerate < 0)
-        samplerate = sys_getsr();
+        samplerate = audio_getSampleRate();
     for (i = 0; i < nchannels; i++)
     {
         int vecsize;
@@ -2563,7 +2563,7 @@ static void writesf_open(t_writesf *x, t_symbol *s, int argc, t_atom *argv)
         x->x_samplerate = samplerate;
     else if (x->x_insamplerate > 0)
         x->x_samplerate = x->x_insamplerate;
-    else x->x_samplerate = sys_getsr();
+    else x->x_samplerate = audio_getSampleRate();
         /* set fifosize from bufsize.  fifosize must be a
         multiple of the number of bytes eaten for each DSP
         tick.  */

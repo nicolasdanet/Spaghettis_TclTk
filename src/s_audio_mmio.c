@@ -289,7 +289,7 @@ static void nt_midisync(void)
     if (initsystime == -1) nt_resetmidisync();
     jittersec = (nt_dacjitterbufsallowed > nt_adcjitterbufsallowed ?
         nt_dacjitterbufsallowed : nt_adcjitterbufsallowed)
-            * nt_realdacblksize / sys_getsr();
+            * nt_realdacblksize / audio_getSampleRate();
     diff = sys_getRealTimeInSeconds() - 0.001 * scheduler_getMillisecondsSince(initsystime);
     if (diff > nt_hibuftime) nt_hibuftime = diff;
     if (diff < nt_hibuftime - jittersec)

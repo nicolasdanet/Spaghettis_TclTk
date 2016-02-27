@@ -180,7 +180,7 @@ t_error audio_open (void)
     //
     int t;
     
-    sys_setchsr (audio_channelsIn, audio_channelsOut, sampleRate);
+    audio_initializeMemory (audio_channelsIn, audio_channelsOut, sampleRate);
     
     for (t = 0; t < m; t++) { j[t] = PD_MAX (0, j[t]); }    /* Avoid negative (disabled) channels. */
     for (t = 0; t < n; t++) { p[t] = PD_MAX (0, p[t]); }
@@ -268,18 +268,7 @@ void audio_close (void)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-t_error audio_setDSP (int isOn)
-{
-    t_error err = PD_ERROR_NONE;
-    
-    if (isOn) { if (!audio_isOpened()) { err = audio_open(); } } 
-    else {
-        if (audio_isOpened()) { audio_close(); }
-    }
-    
-    return err;
-}
+#pragma mark -
 
 int audio_isOpened (void)
 {
@@ -411,7 +400,7 @@ static void audio_setDevicesAndParameters (int numberOfDevicesIn,
         if (audio_devicesOutChannels[i] > 0) { totalOfChannelsOut += audio_devicesOutChannels[i]; }
     }
     
-    sys_setchsr (totalOfChannelsIn, totalOfChannelsOut, sampleRate);
+    audio_initializeMemory (totalOfChannelsIn, totalOfChannelsOut, sampleRate);
 }
 
 void audio_setDefaultDevicesAndParameters (int numberOfDevicesIn,

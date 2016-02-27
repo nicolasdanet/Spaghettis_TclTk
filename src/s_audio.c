@@ -35,135 +35,77 @@ int         audio_blockSize;                        /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void sys_setchsr(int chin, int chout, int sr)
+t_error audio_setDSP (int isOn)
 {
-    int nblk;
-    int inbytes = (chin ? chin : 2) *
-                (AUDIO_DEFAULT_BLOCKSIZE*sizeof(t_sample));
-    int outbytes = (chout ? chout : 2) *
-                (AUDIO_DEFAULT_BLOCKSIZE*sizeof(t_sample));
-
-    if (audio_soundIn)
-        PD_MEMORY_FREE(audio_soundIn);
-    if (audio_soundOut)
-        PD_MEMORY_FREE(audio_soundOut);
-    audio_channelsIn = chin;
-    audio_channelsOut = chout;
-    audio_sampleRate = sr;
-    audio_advanceInSamples = (audio_advanceInMicroseconds * audio_sampleRate) / (1000000.);
-    if (audio_advanceInSamples < AUDIO_DEFAULT_BLOCKSIZE)
-        audio_advanceInSamples = AUDIO_DEFAULT_BLOCKSIZE;
-
-    audio_soundIn = (t_sample *)PD_MEMORY_GET(inbytes);
-    memset(audio_soundIn, 0, inbytes);
-
-    audio_soundOut = (t_sample *)PD_MEMORY_GET(outbytes);
-    memset(audio_soundOut, 0, outbytes);
-
-    if (0)
-        post("input channels = %d, output channels = %d",
-            audio_channelsIn, audio_channelsOut);
-    canvas_resume_dsp(canvas_suspend_dsp());
-}
-
-
-
-    /* open audio using whatever parameters were last used */
-
-
-int sys_send_dacs(void)
-{
-    #if 0
-    if (0 /*sys_meters*/)
-    {
-        int i, n;
-        t_sample maxsamp;
-        for (i = 0, n = audio_channelsIn * AUDIO_DEFAULT_BLOCKSIZE, maxsamp = sys_inmax;
-            i < n; i++)
-        {
-            t_sample f = audio_soundIn[i];
-            if (f > maxsamp) maxsamp = f;
-            else if (-f > maxsamp) maxsamp = -f;
-        }
-        sys_inmax = maxsamp;
-        for (i = 0, n = audio_channelsOut * AUDIO_DEFAULT_BLOCKSIZE, maxsamp = sys_outmax;
-            i < n; i++)
-        {
-            t_sample f = audio_soundOut[i];
-            if (f > maxsamp) maxsamp = f;
-            else if (-f > maxsamp) maxsamp = -f;
-        }
-        sys_outmax = maxsamp;
-    }
-    #endif
+    t_error err = PD_ERROR_NONE;
     
-#ifdef USEAPI_PORTAUDIO
-    if (audio_api == API_PORTAUDIO)
-        return (pa_send_dacs());
-    else 
-#endif
-#ifdef USEAPI_JACK
-      if (audio_api == API_JACK) 
-        return (jack_send_dacs());
-    else
-#endif
-#ifdef USEAPI_OSS
-    if (audio_api == API_OSS)
-        return (oss_send_dacs());
-    else
-#endif
-#ifdef USEAPI_ALSA
-    if (audio_api == API_ALSA)
-        return (alsa_send_dacs());
-    else
-#endif
-#ifdef USEAPI_MMIO
-    if (audio_api == API_MMIO)
-        return (mmio_send_dacs());
-    else
-#endif
-#ifdef USEAPI_DUMMY
-    if (audio_api == API_DUMMY)
-        return (dummy_send_dacs());
-    else
-#endif
-    post("unknown API");    
-    return (0);
-}
-
-t_float sys_getsr(void)
-{
-     return (audio_sampleRate);
-}
-
-int sys_get_outchannels(void)
-{
-     return (audio_channelsOut); 
-}
-
-int sys_get_inchannels(void) 
-{
-     return (audio_channelsIn);
-}
-/*
-void sys_getmeters(t_sample *inmax, t_sample *outmax)
-{
-    if (inmax)
-    {
-        sys_meters = 1;
-        *inmax = sys_inmax;
-        *outmax = sys_outmax;
+    if (isOn) { if (!audio_isOpened()) { err = audio_open(); } } 
+    else {
+        if (audio_isOpened()) { audio_close(); }
     }
-    else
-        sys_meters = 0;
-    sys_inmax = sys_outmax = 0;
+    
+    return err;
 }
-*/
-/* this could later be set by a preference but for now it seems OK to just
-keep jack audio open but close unused audio devices for any other API */
-int audio_shouldkeepopen( void)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int audio_pollDSP (void)
 {
-    return (audio_api == API_JACK);
+    if (API_WITH_PORTAUDIO && audio_api == API_PORTAUDIO)   { return pa_send_dacs();    }
+    else if (API_WITH_JACK && audio_api == API_JACK)        { return jack_send_dacs();  }
+    else if (API_WITH_OSS && audio_api == API_OSS)          { return oss_send_dacs();   }
+    else if (API_WITH_ALSA && audio_api == API_ALSA)        { return alsa_send_dacs();  }
+    else if (API_WITH_MMIO && audio_api == API_MMIO)        { return mmio_send_dacs();  }
+    else if (API_WITH_DUMMY && audio_api == API_DUMMY)      { return dummy_send_dacs(); }
+    else {
+        PD_BUG;
+    }
+    
+    return DACS_NO;
+}
+
+void audio_initializeMemory (int usedChannelsIn, int usedChannelsOut, int sampleRate)
+{
+    int m = (usedChannelsIn ? usedChannelsIn : 2) * (AUDIO_DEFAULT_BLOCKSIZE * sizeof (t_sample));
+    int n = (usedChannelsOut ? usedChannelsOut : 2) * (AUDIO_DEFAULT_BLOCKSIZE * sizeof (t_sample));
+
+    PD_ASSERT (usedChannelsIn >= 0);
+    PD_ASSERT (usedChannelsOut >= 0);
+    
+    if (audio_soundIn)  { PD_MEMORY_FREE (audio_soundIn);  audio_soundIn  = NULL; }
+    if (audio_soundOut) { PD_MEMORY_FREE (audio_soundOut); audio_soundOut = NULL; }
+    
+    audio_soundIn  = (t_sample *)PD_MEMORY_GET (m);
+    audio_soundOut = (t_sample *)PD_MEMORY_GET (n);
+    
+    audio_channelsIn       = usedChannelsIn;
+    audio_channelsOut      = usedChannelsOut;
+    audio_sampleRate       = sampleRate;
+    audio_advanceInSamples = MICROSECONDS_TO_SECONDS (audio_advanceInMicroseconds * audio_sampleRate);
+    audio_advanceInSamples = PD_MAX (audio_advanceInSamples, AUDIO_DEFAULT_BLOCKSIZE);
+
+    canvas_resume_dsp (canvas_suspend_dsp());
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_float audio_getSampleRate (void)
+{
+    return audio_sampleRate;
+}
+
+int audio_getChannelsIn (void) 
+{
+     return audio_channelsIn;
+}
+
+int audio_getChannelsOut (void)
+{
+    return audio_channelsOut; 
 }
 
 // -----------------------------------------------------------------------------------------------------------
