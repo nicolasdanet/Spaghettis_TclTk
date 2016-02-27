@@ -6,7 +6,6 @@
 /* this file inputs and outputs audio using the ALSA API available on linux. */
 
 /* support for ALSA pcmv2 api by Karl MacMillan<karlmac@peabody.jhu.edu> */
-/* support for ALSA MMAP noninterleaved by Winfried Ritsch, IEM */
 
 #include <alsa/asoundlib.h>
 
@@ -27,8 +26,45 @@
 #include <fcntl.h>
 #include <sched.h>
 #include <sys/mman.h>
-#include "s_alsa.h"
 #include <endian.h>
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+typedef int16_t t_alsa_sample16;
+typedef int32_t t_alsa_sample32;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#ifndef INT32_MAX
+    #define INT32_MAX               0x7fffffff
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define ALSA_DEFAULT_BLOCK          64
+#define ALSA_MAXIMUM_DEVICES        4
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+typedef struct _alsa_dev {
+    snd_pcm_t   *a_handle;
+    int         a_devno;
+    int         a_sampwidth;
+    int         a_channels;
+    char        **a_addr;
+    int         a_synced; 
+    } t_alsa_dev;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 extern int audio_channelsIn;
 extern int audio_channelsOut;
@@ -61,7 +97,7 @@ static char *alsa_snd_buf;
 static int alsa_snd_bufsize;
 static int alsa_buf_samps;
 static snd_pcm_status_t *alsa_status;
-static int alsa_usemmap;
+//static int alsa_usemmap;
 
 t_alsa_dev alsa_indev[ALSA_MAXIMUM_DEVICES];
 t_alsa_dev alsa_outdev[ALSA_MAXIMUM_DEVICES];
@@ -85,9 +121,7 @@ static void check_error(int err, int fn, const char *why)
                 why, snd_strerror(err));
 }
 
-/* figure out, when opening ALSA device, whether we should use the code in
-this file or defer to Winfried Ritch's code to do mmaped transfers (handled
-in s_audio_alsamm.c). */
+/*
 static int alsaio_canmmap(t_alsa_dev *dev)
 {
     snd_pcm_hw_params_t *hw_params;
@@ -113,7 +147,7 @@ static int alsaio_canmmap(t_alsa_dev *dev)
          err2, snd_strerror(err2));
 #endif
     return ((err1 < 0) && (err2 >= 0));
-}
+}*/
 
 /* set up an input or output device.  Return 0 on success, -1 on failure. */
 static int alsaio_setup(t_alsa_dev *dev, int out, int *channels, int *rate,
@@ -324,8 +358,7 @@ int alsa_open_audio(int naudioindev, int *audioindev, int nchindev,
     if (!alsa_nindev && !alsa_noutdev)
         goto blewit;
 
-        /* If all the open devices support mmap_noninterleaved, let's call
-        Wini's code in s_audio_alsamm.c */
+    /*
     alsa_usemmap = 1;
     for (iodev = 0; iodev < alsa_nindev; iodev++)
         if (!alsaio_canmmap(&alsa_indev[iodev]))
@@ -339,7 +372,7 @@ int alsa_open_audio(int naudioindev, int *audioindev, int nchindev,
         if (alsamm_open_audio(rate, blocksize))
             goto blewit;
         else return (0);
-    }
+    }*/
     for (iodev = 0; iodev < alsa_nindev; iodev++)
     {
         int channels = chindev[iodev];
@@ -417,11 +450,12 @@ blewit:
 void alsa_close_audio(void)
 {
     int err, iodev;
+    /*
     if (alsa_usemmap)
     {
         alsamm_close_audio();
         return;
-    }
+    }*/
     for (iodev = 0; iodev < alsa_nindev; iodev++)
     {
         err = snd_pcm_close(alsa_indev[iodev].a_handle);
@@ -444,9 +478,11 @@ int alsa_send_dacs(void)
     int chansintogo, chansouttogo;
     unsigned int transfersize;
 
+    /*
     if (alsa_usemmap)
         return (alsamm_send_dacs());
-
+    */
+    
     if (!alsa_nindev && !alsa_noutdev)
         return (DACS_NO);
 

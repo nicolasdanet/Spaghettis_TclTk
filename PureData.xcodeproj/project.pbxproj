@@ -284,9 +284,7 @@
 		378971E41C4F716700263434 /* s_scheduler.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_scheduler.c; path = src/s_scheduler.c; sourceTree = "<group>"; };
 		378971E51C4F716700263434 /* m_setup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_setup.c; path = src/m_setup.c; sourceTree = "<group>"; };
 		378971E61C4F716700263434 /* m_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_utils.c; path = src/m_utils.c; sourceTree = "<group>"; };
-		378971E91C4F716700263434 /* s_alsa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_alsa.h; path = src/s_alsa.h; sourceTree = "<group>"; };
 		378971EA1C4F716700263434 /* s_audio_alsa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_alsa.c; path = src/s_audio_alsa.c; sourceTree = "<group>"; };
-		378971EB1C4F716700263434 /* s_audio_alsamm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_alsamm.c; path = src/s_audio_alsamm.c; sourceTree = "<group>"; };
 		378971EC1C4F716700263434 /* s_audio_dummy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_dummy.c; path = src/s_audio_dummy.c; sourceTree = "<group>"; };
 		378971ED1C4F716700263434 /* s_audio_jack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_jack.c; path = src/s_audio_jack.c; sourceTree = "<group>"; };
 		378971EE1C4F716700263434 /* s_audio_mmio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_mmio.c; path = src/s_audio_mmio.c; sourceTree = "<group>"; };
@@ -617,7 +615,6 @@
 			isa = PBXGroup;
 			children = (
 				37368C811C81D9C700A332BD /* s_apis.h */,
-				378971E91C4F716700263434 /* s_alsa.h */,
 				37A59CDB1C538B3200FBD0AD /* MIDI */,
 				37A59CDC1C538B4800FBD0AD /* Audio */,
 			);
@@ -684,7 +681,6 @@
 			children = (
 				378971F01C4F716700263434 /* s_audio_pa.c */,
 				378971EA1C4F716700263434 /* s_audio_alsa.c */,
-				378971EB1C4F716700263434 /* s_audio_alsamm.c */,
 				378971EF1C4F716700263434 /* s_audio_oss.c */,
 				378971ED1C4F716700263434 /* s_audio_jack.c */,
 				378971EE1C4F716700263434 /* s_audio_mmio.c */,

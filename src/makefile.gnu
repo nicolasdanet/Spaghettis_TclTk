@@ -42,7 +42,10 @@ CPPFLAGS = -DUSEAPI_ALSA -DUSEAPI_OSS -DNDEBUG -DPD_BUILDING_APPLICATION
 # Linker flags.
 
 LDFLAGS = -rdynamic $(ARCH)
-LIB = -ldl -lm -lpthread -lasound
+
+LIB = -ldl -lpthread -lm -lasound
+
+SRC_LIBS=
 
 # JACK 
 
@@ -58,7 +61,7 @@ CFLAGS = -O3 -ffast-math -fvisibility=hidden -w $(ARCH)
 
 # The sources (filepath must NOT contain space).
 
-SRC_LIBS += s_audio_alsa.c s_audio_alsamm.c s_midi_alsa.c s_midi_oss.c s_audio_oss.c
+SRC_LIBS += s_audio_alsa.c s_midi_alsa.c s_audio_oss.c s_midi_oss.c
 
 SRC = g_canvas.c g_graph.c g_text.c g_rtext.c g_array.c g_template.c g_io.c \
     g_scalar.c g_traversal.c g_guiconnect.c g_readwrite.c g_editor.c \
