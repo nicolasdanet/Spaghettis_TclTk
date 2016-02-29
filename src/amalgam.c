@@ -51,7 +51,7 @@
 #include "s_font.c"
 #include "s_post.c"
 #include "s_utf8.c"
-//#include "s_ringbuffer.c"
+#include "s_ringbuffer.c"
 
 /* Graphics. */
 

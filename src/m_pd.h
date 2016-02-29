@@ -256,6 +256,7 @@
 #include <fcntl.h>
 #include <float.h>
 #include <limits.h>
+#include <math.h>
 #include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>

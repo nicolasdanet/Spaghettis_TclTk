@@ -31,39 +31,21 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PA_VOLATILE 
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 typedef struct {
-    long                bufferSize;
-    PA_VOLATILE long    writeIndex;
-    PA_VOLATILE long    readIndex;
+    long bufferSize;
+    long writeIndex;
+    long readIndex;
     } sys_ringbuf;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-long sys_ringbuf_init                   (PA_VOLATILE sys_ringbuf *rbuf,
-                                            long numBytes,
-                                            PA_VOLATILE char *dataPtr,
-                                            long nfill);
-                                        
-long sys_ringbuf_getwriteavailable      (PA_VOLATILE sys_ringbuf *rbuf);
-long sys_ringbuf_getreadavailable       (PA_VOLATILE sys_ringbuf *rbuf);
-
-long sys_ringbuf_write                  (PA_VOLATILE sys_ringbuf *rbuf,
-                                            const void *data,
-                                            long numBytes,
-                                            PA_VOLATILE char *buffer);
-
-long sys_ringbuf_read                   (PA_VOLATILE sys_ringbuf *rbuf,
-                                            void *data, 
-                                            long numBytes,
-                                            PA_VOLATILE char *buffer);
+long ringbuffer_initialize          (sys_ringbuf *rbuf, long numBytes, char *dataPtr, long nfill);
+long ringbuffer_getWriteAvailable   (sys_ringbuf *rbuf);
+long ringbuffer_getReadAvailable    (sys_ringbuf *rbuf);
+long ringbuffer_write               (sys_ringbuf *rbuf, const void *data, long numBytes, char *buffer);
+long ringbuffer_read                (sys_ringbuf *rbuf, void *data, long numBytes, char *buffer);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

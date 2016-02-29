@@ -74,10 +74,10 @@ static int pa_dio_error;
 
 #ifdef FAKEBLOCKING
 #include "s_ringbuffer.h"
-static PA_VOLATILE char *pa_outbuf;
-static PA_VOLATILE sys_ringbuf pa_outring;
-static PA_VOLATILE char *pa_inbuf;
-static PA_VOLATILE sys_ringbuf pa_inring;
+static char *pa_outbuf;
+static sys_ringbuf pa_outring;
+static char *pa_inbuf;
+static sys_ringbuf pa_inring;
 #ifdef THREADSIGNAL
 #include <pthread.h>
 pthread_mutex_t pa_mutex;
@@ -184,22 +184,22 @@ static int pa_fifo_callback(const void *inputBuffer,
     float *fbuf;
 
 #if CHECKFIFOS
-    if (pa_inchans * sys_ringbuf_getreadavailable(&pa_outring) !=   
-        pa_outchans * sys_ringbuf_getwriteavailable(&pa_inring))
+    if (pa_inchans * ringbuffer_getReadAvailable(&pa_outring) !=   
+        pa_outchans * ringbuffer_getWriteAvailable(&pa_inring))
             post("warning: in and out rings unequal (%d, %d)",
-                sys_ringbuf_getreadavailable(&pa_outring),
-                 sys_ringbuf_getwriteavailable(&pa_inring));
+                ringbuffer_getReadAvailable(&pa_outring),
+                 ringbuffer_getWriteAvailable(&pa_inring));
 #endif
-    fiforoom = sys_ringbuf_getreadavailable(&pa_outring);
+    fiforoom = ringbuffer_getReadAvailable(&pa_outring);
     if ((unsigned)fiforoom >= nframes*pa_outchans*sizeof(float))
     {
         if (outputBuffer)
-            sys_ringbuf_read(&pa_outring, outputBuffer,
+            ringbuffer_read(&pa_outring, outputBuffer,
                 nframes*pa_outchans*sizeof(float), pa_outbuf);
         else if (pa_outchans)
             post("audio error: no outputBuffer but output channels");
         if (inputBuffer)
-            sys_ringbuf_write(&pa_inring, inputBuffer,
+            ringbuffer_write(&pa_inring, inputBuffer,
                 nframes*pa_inchans*sizeof(float), pa_inbuf);
         else if (pa_inchans)
             post("audio error: no inputBuffer but input channels");
@@ -422,14 +422,14 @@ int pa_open_audio(int inchans, int outchans, int rate, t_sample *soundin,
         if (pa_inchans)
         {
             pa_inbuf = malloc(nbuffers*framesperbuf*pa_inchans*sizeof(float));
-            sys_ringbuf_init(&pa_inring,
+            ringbuffer_initialize(&pa_inring,
                 nbuffers*framesperbuf*pa_inchans*sizeof(float), pa_inbuf,
                     nbuffers*framesperbuf*pa_inchans*sizeof(float));
         }
         if (pa_outchans)
         {
             pa_outbuf = malloc(nbuffers*framesperbuf*pa_outchans*sizeof(float));
-            sys_ringbuf_init(&pa_outring,
+            ringbuffer_initialize(&pa_outring,
                 nbuffers*framesperbuf*pa_outchans*sizeof(float), pa_outbuf, 0);
         }
         err = pa_open_callback(rate, inchans, outchans,
@@ -489,7 +489,7 @@ int pa_send_dacs(void)
 #ifdef THREADSIGNAL
         pthread_mutex_lock(&pa_mutex);
 #endif
-        while (sys_ringbuf_getwriteavailable(&pa_outring) <
+        while (ringbuffer_getWriteAvailable(&pa_outring) <
             (long)(audio_channelsOut * AUDIO_DEFAULT_BLOCKSIZE * sizeof(float)))
         {
             rtnval = DACS_SLEPT;
@@ -515,7 +515,7 @@ int pa_send_dacs(void)
                 for (k = 0, fp3 = fp2; k < AUDIO_DEFAULT_BLOCKSIZE;
                     k++, fp++, fp3 += audio_channelsOut)
                         *fp3 = *fp;
-        sys_ringbuf_write(&pa_outring, conversionbuf,
+        ringbuffer_write(&pa_outring, conversionbuf,
             audio_channelsOut*(AUDIO_DEFAULT_BLOCKSIZE*sizeof(float)), pa_outbuf);
     }
     if (audio_channelsIn)    /* if there is input sync on it */
@@ -523,7 +523,7 @@ int pa_send_dacs(void)
 #ifdef THREADSIGNAL
         pthread_mutex_lock(&pa_mutex);
 #endif
-        while (sys_ringbuf_getreadavailable(&pa_inring) <
+        while (ringbuffer_getReadAvailable(&pa_inring) <
             (long)(audio_channelsIn * AUDIO_DEFAULT_BLOCKSIZE * sizeof(float)))
         {
             rtnval = DACS_SLEPT;
@@ -543,7 +543,7 @@ int pa_send_dacs(void)
     }
     if (audio_channelsIn)
     {
-        sys_ringbuf_read(&pa_inring, conversionbuf,
+        ringbuffer_read(&pa_inring, conversionbuf,
             audio_channelsIn*(AUDIO_DEFAULT_BLOCKSIZE*sizeof(float)), pa_inbuf);
         for (j = 0, fp = audio_soundIn, fp2 = conversionbuf;
             j < audio_channelsIn; j++, fp2++)
