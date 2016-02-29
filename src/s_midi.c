@@ -123,7 +123,7 @@ static void midi_pushNextByte (int port, int a)
 {
     if (API_WITH_ALSA && midi_api == API_ALSA) { sys_alsa_putmidibyte (port, a); }
     else {
-        sys_putmidibyte (port, a);
+        midi_pushNextByteNative (port, a);
     }
 }
 
@@ -131,7 +131,7 @@ static void midi_pushNextMessage (int port, int a, int b, int c)
 {
     if (API_WITH_ALSA && midi_api == API_ALSA) { sys_alsa_putmidimess (port, a, b, c); }
     else {
-        sys_putmidimess (port, a, b, c);
+        midi_pushNextMessageNative (port, a, b, c);
     }
 }
 
@@ -187,61 +187,61 @@ static void midi_dispatchNext (void)
         
         switch (command) {
         //
-        case MIDI_NOTEOFF       :   if (p->mp_gotByte1) { 
-                                        inmidi_noteOn (port, channel, byte1, 0);
-                                        p->mp_gotByte1 = 0; 
-                                    } else {
-                                        p->mp_byte1 = byte;
-                                        p->mp_gotByte1 = 1;
-                                    }
-                                    break;
+        case MIDI_NOTEOFF           :   if (p->mp_gotByte1) { 
+                                            inmidi_noteOn (port, channel, byte1, 0);
+                                            p->mp_gotByte1 = 0; 
+                                        } else {
+                                            p->mp_byte1 = byte;
+                                            p->mp_gotByte1 = 1;
+                                        }
+                                        break;
             
-        case MIDI_NOTEON        :   if (p->mp_gotByte1) { 
-                                        inmidi_noteOn (port, channel, byte1, byte);
-                                        p->mp_gotByte1 = 0; 
-                                    } else {
-                                        p->mp_byte1 = byte;
-                                        p->mp_gotByte1 = 1;
-                                    }
-                                    break;
+        case MIDI_NOTEON            :   if (p->mp_gotByte1) { 
+                                            inmidi_noteOn (port, channel, byte1, byte);
+                                            p->mp_gotByte1 = 0; 
+                                        } else {
+                                            p->mp_byte1 = byte;
+                                            p->mp_gotByte1 = 1;
+                                        }
+                                        break;
             
-        case MIDI_POLYPRESSURE  :   if (p->mp_gotByte1) {
-                                        inmidi_polyPressure (port, channel, byte1, byte);
-                                        p->mp_gotByte1 = 0;
-                                    } else {
-                                        p->mp_byte1 = byte;
-                                        p->mp_gotByte1 = 1;
-                                    }
-                                    break;
+        case MIDI_POLYPRESSURE      :   if (p->mp_gotByte1) {
+                                            inmidi_polyPressure (port, channel, byte1, byte);
+                                            p->mp_gotByte1 = 0;
+                                        } else {
+                                            p->mp_byte1 = byte;
+                                            p->mp_gotByte1 = 1;
+                                        }
+                                        break;
                                     
-        case MIDI_CONTROLCHANGE :   if (p->mp_gotByte1) {
-                                        inmidi_controlChange (port, channel, byte1, byte);
-                                        p->mp_gotByte1 = 0;
-                                    } else {
-                                        p->mp_byte1 = byte;
-                                        p->mp_gotByte1 = 1;
-                                    }
-                                    break;
+        case MIDI_CONTROLCHANGE     :    if (p->mp_gotByte1) {
+                                            inmidi_controlChange (port, channel, byte1, byte);
+                                            p->mp_gotByte1 = 0;
+                                        } else {
+                                            p->mp_byte1 = byte;
+                                            p->mp_gotByte1 = 1;
+                                        }
+                                        break;
                                     
-        case MIDI_PROGRAMCHANGE :   inmidi_programChange (port, channel, byte);
-                                    break;
+        case MIDI_PROGRAMCHANGE     :    inmidi_programChange (port, channel, byte);
+                                        break;
                                     
-        case MIDI_AFTERTOUCH    :   inmidi_afterTouch (port, channel, byte);
-                                    break;
+        case MIDI_AFTERTOUCH        :   inmidi_afterTouch (port, channel, byte);
+                                        break;
                                     
-        case MIDI_PITCHBEND     :   if (p->mp_gotByte1) {
-                                        inmidi_pitchBend (port, channel, ((byte << 7) + byte1)); 
-                                        p->mp_gotByte1 = 0;
-                                    } else {
-                                        p->mp_byte1 = byte;
-                                        p->mp_gotByte1 = 1;
-                                    }
-                                    break;
+        case MIDI_PITCHBEND         :   if (p->mp_gotByte1) {
+                                            inmidi_pitchBend (port, channel, ((byte << 7) + byte1)); 
+                                            p->mp_gotByte1 = 0;
+                                        } else {
+                                            p->mp_byte1 = byte;
+                                            p->mp_gotByte1 = 1;
+                                        }
+                                        break;
                                     
-        case MIDI_STARTSYSEX    :   inmidi_sysex (port, byte);
-                                    break;
+        case MIDI_STARTSYSEX        :   inmidi_sysex (port, byte);
+                                        break;
             
-        default                 :   break;
+        default                     :   break;
         //
         }
     }

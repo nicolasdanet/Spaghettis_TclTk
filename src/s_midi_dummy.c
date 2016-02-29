@@ -16,11 +16,11 @@ void midi_closeNative( void)
 {
 }
 
-void sys_putmidimess(int portno, int a, int b, int c)
+void midi_pushNextMessageNative(int portno, int a, int b, int c)
 {
 }
 
-void sys_putmidibyte(int portno, int byte)
+void midi_pushNextByteNative(int portno, int byte)
 {
 }
 

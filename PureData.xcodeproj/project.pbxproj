@@ -203,7 +203,7 @@
 		371655961BA3466600ABDE22 /* portmidi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = portmidi.c; path = portmidi/pm_common/portmidi.c; sourceTree = "<group>"; };
 		371655981BA3467500ABDE22 /* ptmacosx_cf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ptmacosx_cf.c; path = portmidi/porttime/ptmacosx_cf.c; sourceTree = "<group>"; };
 		37368C811C81D9C700A332BD /* s_apis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_apis.h; path = src/s_apis.h; sourceTree = "<group>"; };
-		373690A31C84854B00A332BD /* porttime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = porttime.h; path = portmidi/porttime/porttime.h; sourceTree = "<group>"; };
+		373690A31C84854B00A332BD /* portmidi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = portmidi.h; path = portmidi/pm_common/portmidi.h; sourceTree = "<group>"; };
 		373690A41C84858000A332BD /* porttime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = porttime.h; path = portmidi/porttime/porttime.h; sourceTree = "<group>"; };
 		373690AA1C8485C000A332BD /* pminternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pminternal.h; path = portmidi/pm_common/pminternal.h; sourceTree = "<group>"; };
 		373690AB1C8485D700A332BD /* pmutil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pmutil.h; path = portmidi/pm_common/pmutil.h; sourceTree = "<group>"; };
@@ -462,7 +462,7 @@
 			isa = PBXGroup;
 			children = (
 				373690A41C84858000A332BD /* porttime.h */,
-				373690A31C84854B00A332BD /* porttime.h */,
+				373690A31C84854B00A332BD /* portmidi.h */,
 				373690AA1C8485C000A332BD /* pminternal.h */,
 				373690AB1C8485D700A332BD /* pmutil.h */,
 				373690AC1C8485E600A332BD /* pmmac.h */,

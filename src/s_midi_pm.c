@@ -34,6 +34,20 @@ static PmStream *midipm_devicesOut[MAXIMUM_MIDI_OUT];
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static void midi_writeFourBytes (PortMidiStream* stream, int a, int b, int c, int d)
+{
+    PmEvent buffer;
+    
+    buffer.message   = ((a & 0xff) | ((b & 0xff) << 8) | ((c & 0xff) << 16) | ((d & 0xff) << 24));
+    buffer.timestamp = 0;
+    
+    Pm_Write (stream, &buffer, 1);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void midi_openNative (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut)
 {
     int i, j, n;
@@ -99,105 +113,90 @@ void midi_closeNative (void)
     midipm_numberOfDevicesOut = 0; 
 }
 
-void sys_putmidimess(int portno, int a, int b, int c)
-{
-    PmEvent buffer;
-    /* fprintf(stderr, "put 1 msg %d %d\n", portno, midipm_numberOfDevicesOut); */
-    if (portno >= 0 && portno < midipm_numberOfDevicesOut)
-    {
-        buffer.message = Pm_Message(a, b, c);
-        buffer.timestamp = 0;
-        /* fprintf(stderr, "put msg\n"); */
-        Pm_Write(midipm_devicesOut[portno], &buffer, 1);
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void writemidi4(PortMidiStream* stream, int a, int b, int c, int d)
+void midi_pushNextMessageNative (int port, int a, int b, int c)
 {
+    if (port >= 0 && port < midipm_numberOfDevicesOut) {
+    //
     PmEvent buffer;
+    
+    buffer.message   = Pm_Message (a, b, c);
     buffer.timestamp = 0;
-    buffer.message = ((a & 0xff) | ((b & 0xff) << 8)
-        | ((c & 0xff) << 16) | ((d & 0xff) << 24));
-    Pm_Write(stream, &buffer, 1);
+    
+    Pm_Write (midipm_devicesOut[port], &buffer, 1);
+    //
+    }
 }
 
-
-void sys_putmidibyte(int portno, int byte)
+void midi_pushNextByteNative (int port, int byte)
 {
-        /* try to parse the bytes into MIDI messages so they can
-        fit into PortMidi buffers. */
-    static int mess[4];
-    static int nbytes = 0, sysex = 0, i;
-    if (byte >= 0xf8)   /* MIDI real time */
-        writemidi4(midipm_devicesOut[portno], byte, 0, 0, 0);
-    else if (byte == 0xf0)
-    {
-        mess[0] = 0xf0;
-        nbytes = 1;
+    static int t[4];
+    static int n = 0;
+    static int sysex = 0;
+        
+    if (port >= 0 && port < midipm_numberOfDevicesOut) {
+    //
+    int i;
+    
+    if (byte >= MIDI_CLOCK)             { 
+    
+        midi_writeFourBytes (midipm_devicesOut[port], byte, 0, 0, 0); 
+    
+    } else if (byte == MIDI_STARTSYSEX) {
+    
+        t[0] = MIDI_STARTSYSEX; 
+        n = 1;
         sysex = 1;
-    }
-    else if (byte == 0xf7)
-    {
-        mess[nbytes] = byte;
-        for (i = nbytes+1; i < 4; i++)
-            mess[i] = 0;
-        writemidi4(midipm_devicesOut[portno],
-            mess[0], mess[1], mess[2], mess[3]);
+        
+    } else if (byte == MIDI_ENDSYSEX)   {
+    
+        t[n] = byte;
+        for (i = n + 1; i < 4; i++) { t[i] = 0; }
+        midi_writeFourBytes (midipm_devicesOut[port], t[0], t[1], t[2], t[3]);
+        n = 0;
         sysex = 0;
-        nbytes = 0;
-    }
-    else if (byte >= 0x80)
-    {
-        sysex = 0;
-        if (byte == 0xf4 || byte == 0xf5 || byte == 0xf6)
-        {
-            writemidi4(midipm_devicesOut[portno], byte, 0, 0, 0);
-            nbytes = 0;
+        
+    } else if (byte >= MIDI_NOTEOFF)    {
+    
+        if (byte == MIDI_RESERVED1 || byte == MIDI_RESERVED2 || byte == MIDI_TUNEREQUEST) {
+            midi_writeFourBytes (midipm_devicesOut[port], byte, 0, 0, 0);
+            n = 0;
+            sysex = 0;
+        } else {
+            t[0] = byte;
+            n = 1;
+            sysex = 0;
         }
-        else
-        {
-            mess[0] = byte;
-            nbytes = 1;
+        
+    } else if (sysex)   {
+    
+        t[n] = byte;
+        n++;
+        if (n == 4) {
+            midi_writeFourBytes (midipm_devicesOut[port], t[0], t[1], t[2], t[3]);
+            n = 0;
         }
-    }
-    else if (sysex)
-    {
-        mess[nbytes] = byte;
-        nbytes++;
-        if (nbytes == 4)
-        {
-            writemidi4(midipm_devicesOut[portno],
-                mess[0], mess[1], mess[2], mess[3]);
-            nbytes = 0;
-        }
-    }
-    else if (nbytes)
-    {
-        int status = mess[0];
-        if (status < 0xf0)
-            status &= 0xf0;
-                /* 2 byte messages: */
-        if (status == 0xc0 || status == 0xd0 ||
-            status == 0xf1 || status == 0xf3)
-        {
-            writemidi4(midipm_devicesOut[portno],
-                mess[0], byte, 0, 0);
-            nbytes = (status < 0xf0 ? 1 : 0);
-        }
-        else
-        {
-            if (nbytes == 1)
-            {
-                mess[1] = byte;
-                nbytes = 2;
-            }
-            else
-            {
-                writemidi4(midipm_devicesOut[portno],
-                    mess[0], mess[1], byte, 0);
-                nbytes = (status < 0xf0 ? 1 : 0);
+        
+    } else if (n)       {
+    
+        int k = t[0];
+        if (k < MIDI_STARTSYSEX) { k &= 0xf0; }
+        
+        if (k == MIDI_PROGRAMCHANGE || k == MIDI_AFTERTOUCH || k == MIDI_TIMECODE || k == MIDI_SONGSELECT) {
+            midi_writeFourBytes (midipm_devicesOut[port], t[0], byte, 0, 0);
+            n = (k < MIDI_STARTSYSEX ? 1 : 0);
+        } else {
+            if (n == 1) { t[1] = byte; n = 2; }
+            else {
+                midi_writeFourBytes (midipm_devicesOut[port], t[0], t[1], byte, 0);
+                n = (k < MIDI_STARTSYSEX ? 1 : 0);
             }
         }
+    }
+    //
     }
 }
 

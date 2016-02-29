@@ -111,7 +111,7 @@ void midi_openNative(int nmidiin, int *midiinvec,
 #define md_msglen(x) (((x)<0xC0)?2:((x)<0xE0)?1:((x)<0xF0)?2:\
     ((x)==0xF2)?2:((x)<0xF4)?1:0)
 
-void sys_putmidimess(int portno, int a, int b, int c)
+void midi_pushNextMessageNative(int portno, int a, int b, int c)
 {
     if (portno >= 0 && portno < oss_nmidiout)
     {
@@ -133,7 +133,7 @@ void sys_putmidimess(int portno, int a, int b, int c)
     }
 }
 
-void sys_putmidibyte(int portno, int byte)
+void midi_pushNextByteNative(int portno, int byte)
 {
     if (portno >= 0 && portno < oss_nmidiout)
         oss_midiout(oss_midioutfd[portno], byte);       

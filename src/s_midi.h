@@ -32,6 +32,7 @@
 #define MIDI_RESERVED2                  0xf5
 #define MIDI_TUNEREQUEST                0xf6
 #define MIDI_ENDSYSEX                   0xf7
+
 #define MIDI_CLOCK                      0xf8
 #define MIDI_TICK                       0xf9
 #define MIDI_START                      0xfa
