@@ -75,6 +75,12 @@ static int      audio_tempWithCallback;                                         
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void audio_initializeMemory (int usedChannelsIn, int usedChannelsOut, int sampleRate);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void audio_setAPI (void *dummy, t_float f)
 {
     int api = (audio_isAPIAvailable ((int)f) ? (int)f : API_DEFAULT_AUDIO);

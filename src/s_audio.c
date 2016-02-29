@@ -104,7 +104,7 @@ void audio_initializeMemory (int usedChannelsIn, int usedChannelsOut, int sample
     canvas_resume_dsp (canvas_suspend_dsp());
 }
 
-void audio_releaseMemory (void)
+void audio_release (void)
 {
     if (audio_soundIn)  { PD_MEMORY_FREE (audio_soundIn);  audio_soundIn  = NULL; }
     if (audio_soundOut) { PD_MEMORY_FREE (audio_soundOut); audio_soundOut = NULL; }

@@ -436,11 +436,10 @@ void        outmidi_clock                           (int port);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        audio_release                           (void);
 int         audio_pollDSP                           (void);
 t_error     audio_stopDSP                           (void);
 t_error     audio_startDSP                          (void);
-void        audio_initializeMemory                  (int usedChannelsIn, int usedChannelsOut, int sampleRate);
-void        audio_releaseMemory                     (void);
 t_float     audio_getSampleRate                     (void);
 int         audio_getChannelsIn                     (void);
 int         audio_getChannelsOut                    (void);
