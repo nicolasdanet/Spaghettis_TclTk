@@ -1723,7 +1723,7 @@ void canvas_key(t_canvas *x, t_symbol *s, int ac, t_atom *av)
     t_symbol *gotkeysym;
         
     int down, shift;
-    
+
     if (ac < 3)
         return;
 
@@ -1734,6 +1734,7 @@ void canvas_key(t_canvas *x, t_symbol *s, int ac, t_atom *av)
         gotkeysym = av[1].a_w.w_symbol;
     else if (av[1].a_type == A_FLOAT)
     {
+        int sz;
         char buf[UTF8_MAXIMUM_BYTES + 1];
         switch((int)(av[1].a_w.w_float))
         {
@@ -1745,7 +1746,8 @@ void canvas_key(t_canvas *x, t_symbol *s, int ac, t_atom *av)
         case 127:gotkeysym = gensym("Delete"); break;
         default:
         /*-- moo: assume keynum is a Unicode codepoint; encode as UTF-8 --*/
-            u8_wc_toutf8_nul(buf, (UCS4_CODE_POINT)(av[1].a_w.w_float));
+            sz = u8_wc_toutf8 (buf, (UCS4_CODE_POINT)(av[1].a_w.w_float));
+            buf[sz] = 0;
             gotkeysym = gensym(buf);
         }
     }

@@ -1133,12 +1133,12 @@ void global_dsp(void *dummy, t_symbol *s, int argc, t_atom *argv)
         
         if (newstate && !pd_this->pd_state)
         {
-            if (audio_setDSP (1) == PD_ERROR_NONE) { canvas_start_dsp(); }
+            if (audio_startDSP() == PD_ERROR_NONE) { canvas_start_dsp(); }
         }
         else if (!newstate && pd_this->pd_state)
         {
             canvas_stop_dsp();
-            audio_setDSP(0);
+            audio_stopDSP();
         }
     }
 }
@@ -1299,7 +1299,7 @@ static int check_exists(const char *filepath)
     
     if (string_copy (t, PD_STRING, filepath)) { PD_BUG; }
     path_slashToBackslashIfNecessary (t, t);
-    u8_utf8toucs2(ucs2path, PD_STRING, t, PD_STRING-1);
+    u8_utf8toucs2(ucs2path, PD_STRING, t, -1);
     return (0 ==  _waccess(ucs2path, 0));
 }
 #else

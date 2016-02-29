@@ -83,8 +83,6 @@ Additional terms:
         by Jeff Bezanson,
         placed in the public domain Fall 2005.
 
-        Modified by Bryan Jurish (moo) March 2009.
-
     tcl/pd_text.tcl
     
         Copyright (c) 2002-2012 krzYszcz and others.
