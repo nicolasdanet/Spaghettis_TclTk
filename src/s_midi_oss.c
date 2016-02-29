@@ -35,7 +35,7 @@ static void oss_midiout(int fd, int n)
 
 #define O_MIDIFLAG O_NDELAY
 
-void sys_do_open_midi(int nmidiin, int *midiinvec,
+void midi_openNative(int nmidiin, int *midiinvec,
     int nmidiout, int *midioutvec)
 {
     int i;
@@ -210,7 +210,7 @@ void sys_poll_midi(void)
 }
 #endif
 
-void sys_close_midi()
+void midi_closeNative()
 {
     int i;
     for (i = 0; i < oss_nmidiin; i++)

@@ -1,143 +1,114 @@
-/* Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette, Larry Troxler,
-* Winfried Ritsch, Karl MacMillan, and others.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.
 
-   this file calls portmidi to do MIDI I/O for MSW and Mac OSX. 
-
+/* 
+    Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
+    Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
 */
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
+#include "s_midi.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #include "portmidi.h"
 #include "porttime.h"
 
-#define MIDINOTEOFF       0x80  /* 2 following 'data bytes' */
-#define MIDINOTEON        0x90  /* 2 */
-#define MIDIPOLYTOUCH     0xa0  /* 2 */
-#define MIDICONTROLCHANGE 0xb0  /* 2 */
-#define MIDIPROGRAMCHANGE 0xc0  /* 1 */
-#define MIDICHANNELTOUCH  0xd0  /* 1 */
-#define MIDIPITCHBEND     0xe0  /* 2 */
-#define MIDISTARTSYSEX    0xf0  /* (until F7) */
-#define MIDITIMECODE      0xf1  /* 1 */
-#define MIDISONGPOS       0xf2  /* 2 */
-#define MIDISONGSELECT    0xf3  /* 1 */
-#define MIDIRESERVED1     0xf4  /* ? */
-#define MIDIRESERVED2     0xf5  /* ? */
-#define MIDITUNEREQUEST   0xf6  /* 0 */
-#define MIDIENDSYSEX      0xf7  /* 0 */
-#define MIDICLOCK         0xf8  /* 0 */
-#define MIDITICK          0xf9  /* 0 */
-#define MIDISTART         0xfa  /* 0 */
-#define MIDICONT          0xfb  /* 0 */
-#define MIDISTOP          0xfc  /* 0 */
-#define MIDIACTIVESENSE   0xfe  /* 0 */
-#define MIDIRESET         0xff  /* 0 */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static PmStream *mac_midiindevlist[MAXIMUM_MIDI_IN];
-static PmStream *mac_midioutdevlist[MAXIMUM_MIDI_OUT];
-static int mac_nmidiindev;
-static int mac_nmidioutdev;
+static int midipm_numberOfDevicesIn;
+static int midipm_numberOfDevicesOut;
 
-void sys_do_open_midi(int nmidiin, int *midiinvec,
-    int nmidiout, int *midioutvec)
+static PmStream *midipm_devicesIn[MAXIMUM_MIDI_IN];
+static PmStream *midipm_devicesOut[MAXIMUM_MIDI_OUT];
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void midi_openNative (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut)
 {
-    int i = 0, j, devno;
-    int n = 0;
-    PmError err;
+    int i, j, n;
     
-    Pt_Start(1, 0, 0); /* start a timer with millisecond accuracy */
+    Pt_Start (1, NULL, NULL);       /* Start a timer with millisecond accuracy. */
 
-    mac_nmidiindev = 0;
-    for (i = 0; i < nmidiin; i++)
-    {
-        for (j = 0, devno = 0; j < Pm_CountDevices(); j++)
-        {
-            const PmDeviceInfo *info = Pm_GetDeviceInfo(j);
-            if (info->input)
-            {
-                if (devno == midiinvec[i])
-                {
-                    err = Pm_OpenInput(&mac_midiindevlist[mac_nmidiindev],
-                        j, NULL, 100, NULL, NULL);
-                    if (err)
-                        post("could not open midi input %d (%s): %s",
-                            j, info->name, Pm_GetErrorText(err));
-        
-                    else        
-                    {
-                        if (0)
-                            post("Midi Input (%s) opened.",
-                                info->name);
-                        mac_nmidiindev++;
-                    }
-                }
-                devno++;
+    midipm_numberOfDevicesIn  = 0;
+    midipm_numberOfDevicesOut = 0;
+    
+    for (i = 0; i < numberOfDevicesIn; i++) {
+    //
+    for (j = 0, n = 0; j < Pm_CountDevices(); j++) {
+    //
+    const PmDeviceInfo *info = Pm_GetDeviceInfo (j);
+    
+    if (info->input) {
+        if (devicesIn[i] == n) {
+            PmStream **t = &midipm_devicesIn[midipm_numberOfDevicesIn];
+            PmError err = Pm_OpenInput (t, j, NULL, 100, NULL, NULL);
+            if (err) { PD_BUG; }
+            else {
+                midipm_numberOfDevicesIn++;
             }
         }
+        n++;
+    }
+    //
+    }
+    //
     }   
-
-    mac_nmidioutdev = 0;
-    for (i = 0; i < nmidiout; i++)
-    {
-        for (j = 0, devno = 0; j < Pm_CountDevices(); j++)
-        {
-            const PmDeviceInfo *info = Pm_GetDeviceInfo(j);
-            if (info->output)
-            {
-                if (devno == midioutvec[i])
-                {
-                    err = Pm_OpenOutput(
-                        &mac_midioutdevlist[mac_nmidioutdev],
-                            j, NULL, 0, NULL, NULL, 0);
-                    if (err)
-                        post("could not open midi output %d (%s): %s",
-                            j, info->name, Pm_GetErrorText(err));
-                    else        
-                    {
-                        if (0)
-                            post("Midi Output (%s) opened.",
-                                info->name);
-                        mac_nmidioutdev++;
-                    }
-                }
-                devno++;
+    
+    for (i = 0; i < numberOfDevicesOut; i++) {
+    //
+    for (j = 0, n = 0; j < Pm_CountDevices(); j++) {
+    //
+    const PmDeviceInfo *info = Pm_GetDeviceInfo (j);
+    
+    if (info->output) {
+        if (devicesOut[i] == n) {
+            PmStream **t = &midipm_devicesOut[midipm_numberOfDevicesOut];
+            PmError err = Pm_OpenOutput (t, j, NULL, 0, NULL, NULL, 0);
+            if (err) { PD_BUG; }
+            else {
+                midipm_numberOfDevicesOut++;
             }
         }
+        n++;
+    }
+    //
+    }
+    //
     }   
 }
 
-void sys_close_midi( void)
+void midi_closeNative (void)
 {
     int i;
-    for (i = 0; i < mac_nmidiindev; i++)
-        Pm_Close(mac_midiindevlist[i]);
-    mac_nmidiindev = 0;
-    for (i = 0; i < mac_nmidioutdev; i++)
-        Pm_Close(mac_midioutdevlist[i]);
-    mac_nmidioutdev = 0; 
+    
+    for (i = 0; i < midipm_numberOfDevicesIn; i++)  { Pm_Close (midipm_devicesIn[i]);  }
+    for (i = 0; i < midipm_numberOfDevicesOut; i++) { Pm_Close (midipm_devicesOut[i]); }
+    
+    midipm_numberOfDevicesIn  = 0;
+    midipm_numberOfDevicesOut = 0; 
 }
 
 void sys_putmidimess(int portno, int a, int b, int c)
 {
     PmEvent buffer;
-    /* fprintf(stderr, "put 1 msg %d %d\n", portno, mac_nmidioutdev); */
-    if (portno >= 0 && portno < mac_nmidioutdev)
+    /* fprintf(stderr, "put 1 msg %d %d\n", portno, midipm_numberOfDevicesOut); */
+    if (portno >= 0 && portno < midipm_numberOfDevicesOut)
     {
         buffer.message = Pm_Message(a, b, c);
         buffer.timestamp = 0;
         /* fprintf(stderr, "put msg\n"); */
-        Pm_Write(mac_midioutdevlist[portno], &buffer, 1);
+        Pm_Write(midipm_devicesOut[portno], &buffer, 1);
     }
 }
 
@@ -158,7 +129,7 @@ void sys_putmidibyte(int portno, int byte)
     static int mess[4];
     static int nbytes = 0, sysex = 0, i;
     if (byte >= 0xf8)   /* MIDI real time */
-        writemidi4(mac_midioutdevlist[portno], byte, 0, 0, 0);
+        writemidi4(midipm_devicesOut[portno], byte, 0, 0, 0);
     else if (byte == 0xf0)
     {
         mess[0] = 0xf0;
@@ -170,7 +141,7 @@ void sys_putmidibyte(int portno, int byte)
         mess[nbytes] = byte;
         for (i = nbytes+1; i < 4; i++)
             mess[i] = 0;
-        writemidi4(mac_midioutdevlist[portno],
+        writemidi4(midipm_devicesOut[portno],
             mess[0], mess[1], mess[2], mess[3]);
         sysex = 0;
         nbytes = 0;
@@ -180,7 +151,7 @@ void sys_putmidibyte(int portno, int byte)
         sysex = 0;
         if (byte == 0xf4 || byte == 0xf5 || byte == 0xf6)
         {
-            writemidi4(mac_midioutdevlist[portno], byte, 0, 0, 0);
+            writemidi4(midipm_devicesOut[portno], byte, 0, 0, 0);
             nbytes = 0;
         }
         else
@@ -195,7 +166,7 @@ void sys_putmidibyte(int portno, int byte)
         nbytes++;
         if (nbytes == 4)
         {
-            writemidi4(mac_midioutdevlist[portno],
+            writemidi4(midipm_devicesOut[portno],
                 mess[0], mess[1], mess[2], mess[3]);
             nbytes = 0;
         }
@@ -209,7 +180,7 @@ void sys_putmidibyte(int portno, int byte)
         if (status == 0xc0 || status == 0xd0 ||
             status == 0xf1 || status == 0xf3)
         {
-            writemidi4(mac_midioutdevlist[portno],
+            writemidi4(midipm_devicesOut[portno],
                 mess[0], byte, 0, 0);
             nbytes = (status < 0xf0 ? 1 : 0);
         }
@@ -222,7 +193,7 @@ void sys_putmidibyte(int portno, int byte)
             }
             else
             {
-                writemidi4(mac_midioutdevlist[portno],
+                writemidi4(midipm_devicesOut[portno],
                     mess[0], mess[1], byte, 0);
                 nbytes = (status < 0xf0 ? 1 : 0);
             }
@@ -267,13 +238,13 @@ void sys_poll_midi(void)
 {
     int i, nmess, throttle = 100;
     PmEvent buffer;
-    for (i = 0; i < mac_nmidiindev; i++)
+    for (i = 0; i < midipm_numberOfDevicesIn; i++)
     {
         while (1)
         {
             if (!throttle--)
                 goto overload;
-            nmess = Pm_Read(mac_midiindevlist[i], &buffer, 1);
+            nmess = Pm_Read(midipm_devicesIn[i], &buffer, 1);
             if (nmess > 0)
             {
                 int status = Pm_MessageStatus(buffer.message);
@@ -286,24 +257,24 @@ void sys_poll_midi(void)
                     nd_sysex_inword(i, status, data1, data2, data3);
                 else switch (msgtype)
                 {
-                case MIDINOTEOFF: 
-                case MIDINOTEON: 
-                case MIDIPOLYTOUCH:
-                case MIDICONTROLCHANGE:
-                case MIDIPITCHBEND:
-                case MIDISONGPOS:
+                case MIDI_NOTEOFF: 
+                case MIDI_NOTEON: 
+                case MIDI_POLYPRESSURE:
+                case MIDI_CONTROLCHANGE:
+                case MIDI_PITCHBEND:
+                case MIDI_SONGPOS:
                     midi_receive(i, status);
                     midi_receive(i, data1);
                     midi_receive(i, data2);
                     break; 
-                case MIDIPROGRAMCHANGE:
-                case MIDICHANNELTOUCH:
-                case MIDITIMECODE:
-                case MIDISONGSELECT:
+                case MIDI_PROGRAMCHANGE:
+                case MIDI_AFTERTOUCH:
+                case MIDI_TIMECODE:
+                case MIDI_SONGSELECT:
                     midi_receive(i, status);
                     midi_receive(i, data1);
                     break;
-                case MIDISTARTSYSEX:
+                case MIDI_STARTSYSEX:
                     nd_sysex_mode=1;
                     nd_sysex_inword(i, status, data1, data2, data3);
                     break; 
@@ -344,3 +315,6 @@ void midi_getdevs(char *indevlist, int *nindevs,
     *nindevs = nindev;
     *noutdevs = noutdev;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

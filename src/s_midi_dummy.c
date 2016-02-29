@@ -7,12 +7,12 @@
 
 */
 
-void sys_do_open_midi(int nmidiin, int *midiinvec,
+void midi_openNative(int nmidiin, int *midiinvec,
     int nmidiout, int *midioutvec)
 {
 }
 
-void sys_close_midi( void)
+void midi_closeNative( void)
 {
 }
 

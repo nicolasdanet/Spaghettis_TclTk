@@ -82,7 +82,7 @@ void midi_openWithDevices (int numberOfDevicesIn, int *devicesIn, int numberOfDe
     if (API_WITH_ALSA && midi_api == API_ALSA) {
         sys_alsa_do_open_midi (numberOfDevicesIn, devicesIn, numberOfDevicesOut, devicesOut);
     } else {
-        sys_do_open_midi (numberOfDevicesIn, devicesIn, numberOfDevicesOut, devicesOut);
+        midi_openNative (numberOfDevicesIn, devicesIn, numberOfDevicesOut, devicesOut);
     }
     
     midi_setDevices (numberOfDevicesIn, devicesIn, numberOfDevicesOut, devicesOut);
@@ -103,7 +103,7 @@ void midi_close (void)
 {
     if (API_WITH_ALSA && midi_api == API_ALSA) { sys_alsa_close_midi(); } 
     else {
-        sys_close_midi();
+        midi_closeNative();
     }
 }
 
