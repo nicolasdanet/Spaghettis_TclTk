@@ -32,8 +32,6 @@ Additional terms:
         requested to send the modifications to the original developer so
         that they can be incorporated into the canonical version.
         
-        Modified by olaf.matthes@gmx.de (2002/07/13).
- 
     src/s_path.c
 
         Copyright (c) 1999 Guenter Geiger and others.
@@ -53,11 +51,6 @@ Additional terms:
         Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
         Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
     
-    src/s_midi_dummy.c
-    
-        Copyright (c) 1997-1999 Guenter Geiger, Miller Puckette,
-        Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
-
     src/s_audio_alsa.c
 
         Copyright (c) 1997-1999 Guenter Geiger, Miller Puckette,
@@ -72,6 +65,10 @@ Additional terms:
     
         Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
         Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
+    
+    src/s_midi_dummy.c
+    
+        Copyright (c) 2010 Peter Brinkmann.
         
     src/s_audio_dummy.c
     
@@ -83,7 +80,7 @@ Additional terms:
         by Jeff Bezanson,
         placed in the public domain Fall 2005.
 
-    tcl/pd_text.tcl
+    tcl/ui_text.tcl
     
         Copyright (c) 2002-2012 krzYszcz and others.
     

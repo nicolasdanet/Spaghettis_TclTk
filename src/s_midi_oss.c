@@ -289,7 +289,7 @@ void midi_initializeOSS(void)
     }
 }
 
-t_error midi_getListOfDevicesNative(char *indevlist, int *nindevs,
+t_error midi_getListsNative(char *indevlist, int *nindevs,
     char *outdevlist, int *noutdevs)
 {
     int maxndev = MAXIMUM_DEVICES;

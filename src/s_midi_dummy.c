@@ -1,35 +1,68 @@
-/* Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette, Larry Troxler,
-* Winfried Ritsch, Karl MacMillan, and others.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.
 
-   this file is a dummy for systems without any MIDI support
-
+/* 
+    Copyright (c) 2010 Peter Brinkmann.
 */
 
-void midi_openNative(int nmidiin, int *midiinvec,
-    int nmidiout, int *midioutvec)
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#include "m_pd.h"
+#include "m_core.h"
+#include "m_macros.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void midi_openNative (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut)
 {
 }
 
-void midi_closeNative( void)
+void midi_closeNative (void)
 {
 }
 
-void midi_pushNextMessageNative(int portno, int a, int b, int c)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void midi_pushNextMessageNative (int port, int a, int b, int c)
 {
 }
 
-void midi_pushNextByteNative(int portno, int byte)
+void midi_pushNextByteNative (int port, int byte)
 {
 }
 
-void midi_pollNative(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void midi_pollNative (void)
 {
 }
 
-t_error midi_getListOfDevicesNative(char *indevlist, int *nindevs,
-    char *outdevlist, int *noutdevs)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error midi_getListsNative (char *devicesIn, 
+    int *numberOfDevicesIn, 
+    char *devicesOut, 
+    int *numberOfDevicesOut)
 {
-    return PD_ERROR_NONE;
+    t_error err = PD_ERROR_NONE;
+    
+    err |= string_copy (devicesIn,  MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION, "NONE");
+    err |= string_copy (devicesOut, MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION, "NONE");
+    
+    *numberOfDevicesIn  = 1;
+    *numberOfDevicesOut = 1;
+  
+    return err;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

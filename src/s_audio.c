@@ -73,7 +73,7 @@ int audio_pollDSP (void)
     else if (API_WITH_OSS && audio_api == API_OSS)          { return oss_send_dacs();   }
     else if (API_WITH_ALSA && audio_api == API_ALSA)        { return alsa_send_dacs();  }
     else if (API_WITH_MMIO && audio_api == API_MMIO)        { return mmio_send_dacs();  }
-    else if (API_WITH_DUMMY && audio_api == API_DUMMY)      { return dummy_send_dacs(); }
+    else if (API_WITH_DUMMY && audio_api == API_DUMMY)      { return dummy_pollDSP();   }
     else {
         PD_BUG;
     }

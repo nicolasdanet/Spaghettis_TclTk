@@ -283,7 +283,7 @@ void midi_pollNative (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error midi_getListOfDevicesNative (char *devicesIn,
+t_error midi_getListsNative (char *devicesIn,
     int *numberOfDevicesIn, 
     char *devicesOut, 
     int *numberOfDevicesOut)

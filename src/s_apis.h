@@ -32,11 +32,11 @@ void    midi_pushNextMessageNative      (int port, int a, int b, int c);
 void    midi_pushNextByteNative         (int port, int a);
 void    midi_pollNative                 (void);
 
-t_error midi_getListOfDevicesNative     (char *devicesIn, 
+t_error midi_getListsNative             (char *devicesIn, 
                                             int  *numberOfDevicesIn, 
                                             char *devicesOut, 
                                             int  *numberOfDevicesOut);
-                                        
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -177,17 +177,17 @@ void mmio_getdevs               (char *indevlist,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void dummy_listdevs             (void);
-int  dummy_send_dacs            (void);
-void dummy_close_audio          (void);
-int  dummy_open_audio           (void);
-void dummy_getdevs              (char *indevlist, 
-                                    int *nindevs,
-                                    char *outdevlist,
-                                    int *noutdevs,
-                                    int *canmulti, 
-                                    int *canCallback);
+t_error dummy_open                      (void);
+void    dummy_close                     (void);
+int     dummy_pollDSP                   (void);
 
+t_error dummy_getLists                  (char *devicesIn, 
+                                            int  *numberOfDevicesIn,
+                                            char *devicesOut,
+                                            int  *numberOfDecivesOut,
+                                            int  *canMultiple, 
+                                            int  *canCallback);
+                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #endif // __s_apis_h_

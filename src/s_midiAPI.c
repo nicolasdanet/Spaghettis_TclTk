@@ -158,7 +158,7 @@ static t_error midi_getLists (char *i, int *m, char *o, int *n)
 {
     if (API_WITH_ALSA && midi_api == API_ALSA) { midi_alsa_getdevs (i, m, o, n); } 
     else {
-        return midi_getListOfDevicesNative (i, m, o, n);
+        return midi_getListsNative (i, m, o, n);
     }
     
     return PD_ERROR_NONE;
