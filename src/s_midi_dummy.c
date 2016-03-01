@@ -24,11 +24,12 @@ void midi_pushNextByteNative(int portno, int byte)
 {
 }
 
-void sys_poll_midi(void)
+void midi_pollNative(void)
 {
 }
 
-void midi_getdevs(char *indevlist, int *nindevs,
+t_error midi_getListOfDevicesNative(char *indevlist, int *nindevs,
     char *outdevlist, int *noutdevs)
 {
+    return PD_ERROR_NONE;
 }

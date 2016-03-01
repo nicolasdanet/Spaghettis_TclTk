@@ -22,17 +22,21 @@ typedef void (*t_audiocallback)(void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void midi_openNative                (int numberOfDevicesIn, 
-                                        int *devicesIn, 
-                                        int numberOfDevicesOut, 
-                                        int *devicesOut);
+void    midi_openNative                 (int numberOfDevicesIn, 
+                                            int *devicesIn, 
+                                            int numberOfDevicesOut, 
+                                            int *devicesOut);
                                         
-void midi_closeNative               (void);
-void midi_pushNextMessageNative     (int port, int a, int b, int c);
-void midi_pushNextByteNative        (int port, int a);
-void sys_poll_midi                  (void);
-void midi_getdevs                   (char *indevlist, int *nindevs, char *outdevlist, int *noutdevs);
+void    midi_closeNative                (void);
+void    midi_pushNextMessageNative      (int port, int a, int b, int c);
+void    midi_pushNextByteNative         (int port, int a);
+void    midi_pollNative                 (void);
 
+t_error midi_getListOfDevicesNative     (char *devicesIn, 
+                                            int  *numberOfDevicesIn, 
+                                            char *devicesOut, 
+                                            int  *numberOfDevicesOut);
+                                        
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

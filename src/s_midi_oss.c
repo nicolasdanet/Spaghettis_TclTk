@@ -141,7 +141,7 @@ void midi_pushNextByteNative(int portno, int byte)
 
 #if 0   /* this is the "select" version which doesn't work with OSS
         driver for emu10k1 (it doesn't implement select.) */
-void sys_poll_midi(void)
+void midi_pollNative(void)
 {
     int i, throttle = 100;
     struct timeval timout;
@@ -180,7 +180,7 @@ void sys_poll_midi(void)
 #else 
 
     /* this version uses the asynchronous "read()" ... */
-void sys_poll_midi(void)
+void midi_pollNative(void)
 {
     int i, throttle = 100;
     struct timeval timout;
@@ -289,7 +289,7 @@ void midi_initializeOSS(void)
     }
 }
 
-void midi_getdevs(char *indevlist, int *nindevs,
+t_error midi_getListOfDevicesNative(char *indevlist, int *nindevs,
     char *outdevlist, int *noutdevs)
 {
     int maxndev = MAXIMUM_DEVICES;
@@ -311,4 +311,6 @@ void midi_getdevs(char *indevlist, int *nindevs,
         sprintf(outdevlist + i * devdescsize,
             "/dev/midi%s", oss_outdevnames[i]);
     *noutdevs = ndev;
+    
+    return PD_ERROR_NONE;
 }

@@ -285,7 +285,7 @@ void midi_poll (void)
 {
     if (API_WITH_ALSA && midi_api == API_ALSA) { sys_alsa_poll_midi(); }
     else {
-        sys_poll_midi();
+        midi_pollNative();
     }
     
     midi_pollOut();
