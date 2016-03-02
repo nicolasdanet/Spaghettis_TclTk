@@ -50,8 +50,6 @@ void sys_alsa_poll_midi         (void);
 
 void midi_alsa_getdevs          (char *indevlist, int *nindevs, char *outdevlist, int *noutdevs);
 
-void midi_alsa_setndevs         (int i, int o);
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

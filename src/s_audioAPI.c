@@ -96,41 +96,50 @@ void audio_setAPI (void *dummy, t_float f)
 
 t_error audio_getAPIAvailables (char *dest, size_t size)
 {
-    t_error err = PD_ERROR_NONE;
+    int n = 0;
     
-    err |= string_copy (dest, size, "{ ");
+    t_error err = string_copy (dest, size, "{ ");
     
     #ifdef USEAPI_OSS
-        err |= string_addSprintf (dest, size, "{OSS %d} ", API_OSS);                    // --
+        err |= string_addSprintf (dest, size, "{OSS %d} ",          API_OSS);           // --
+        n++;
     #endif
 
     #ifdef USEAPI_MMIO
-        err |= string_addSprintf (dest, size, "{MMIO %d} ", API_MMIO);                  // --
+        err |= string_addSprintf (dest, size, "{MMIO %d} ",         API_MMIO);          // --
+        n++;
     #endif
     
     #ifdef USEAPI_ALSA
-        err |= string_addSprintf (dest, size, "{ALSA %d} ", API_ALSA);                  // --
+        err |= string_addSprintf (dest, size, "{ALSA %d} ",         API_ALSA);          // --
+        n++;
     #endif
 
     #ifdef USEAPI_PORTAUDIO
-        err |= string_addSprintf (dest, size, "{PortAudio %d} ", API_PORTAUDIO);        // --
+        err |= string_addSprintf (dest, size, "{PortAudio %d} ",    API_PORTAUDIO);     // --
+        n++;
     #endif
     
     #ifdef USEAPI_JACK
-        err |= string_addSprintf (dest, size, "{JACK %d} ", API_JACK);                  // --
+        err |= string_addSprintf (dest, size, "{JACK %d} ",         API_JACK);          // --
+        n++;
     #endif
     
     #ifdef USEAPI_DUMMY
-        err |= string_addSprintf (dest, size, "{Dummy %d} ", API_DUMMY);                // --
+        err |= string_addSprintf (dest, size, "{Dummy %d} ",        API_DUMMY);         // --
+        n++;
     #endif
     
     err |= string_add (dest, size, "}");
+    
+    if (n < 2) { err = string_copy (dest, size, "{ }"); }           /* There's no choice. */
         
     return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int audio_isAPIAvailable (int api)
 {

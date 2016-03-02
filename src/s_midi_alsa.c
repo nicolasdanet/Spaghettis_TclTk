@@ -222,12 +222,6 @@ void sys_alsa_close_midi()
 
 static int alsa_nmidiindevs = 1, alsa_nmidioutdevs = 1;
 
-void midi_alsa_setndevs(int in, int out)
-{
-    alsa_nmidiindevs = in;
-    alsa_nmidioutdevs = out;
-}
-
 void midi_alsa_getdevs(char *indevlist, int *nindevs,
     char *outdevlist, int *noutdevs)
 {

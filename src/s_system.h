@@ -389,6 +389,7 @@ void        midi_broadcast                          (int port, int hasOneByte, i
 
 void        midi_setAPI                             (void *dummy, t_float f);
 t_error     midi_getAPIAvailables                   (char *dest, size_t size);
+int         midi_isAPIAvailable                     (int api);
 void        midi_requireDialog                      (void *dummy);
 void        midi_fromDialog                         (void *dummy, t_symbol *s, int argc, t_atom *argv);
 int         midi_numberWithName                     (int isOutput, const char *name);

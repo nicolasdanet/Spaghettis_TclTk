@@ -36,10 +36,10 @@ static int midipm_sysexFlag;                                /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void midipm_sysexWordIn (int port, int status, int a, int b, int c)
+static void midipm_sysexWordIn (int port, int s, int a, int b, int c)
 {
     if (midipm_sysexFlag) { 
-        midi_receive (port, status); if (status == MIDI_ENDSYSEX) { midipm_sysexFlag = 0; } 
+        midi_receive (port, s); if (s == MIDI_ENDSYSEX) { midipm_sysexFlag = 0; } 
     }
     if (midipm_sysexFlag) {
         midi_receive (port, a); if (a == MIDI_ENDSYSEX) { midipm_sysexFlag = 0; } 

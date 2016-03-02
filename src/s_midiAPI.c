@@ -43,34 +43,70 @@ static char midi_devicesOutNames[MAXIMUM_MIDI_OUT * MAXIMUM_DESCRIPTION];       
 
 void midi_setAPI (void *dummy, t_float f)
 {
-    if ((int)f != midi_api) {
+    int api = (midi_isAPIAvailable ((int)f) ? (int)f : API_DEFAULT_MIDI);
+    
+    if (api != midi_api) {
         midi_close();
-        midi_api = (int)f; 
+        midi_api = api; 
         midi_open();
     }
-    
-    #ifdef USEAPI_ALSA
-        midi_alsa_setndevs (midi_numberOfDevicesIn, midi_numberOfDevicesOut);
-    #endif
 }
 
 t_error midi_getAPIAvailables (char *dest, size_t size)
 {
-    t_error err = PD_ERROR_NONE;
-
-    err |= string_copy (dest, size, "{ ");
+    int n = 0;
+    
+    t_error err = string_copy (dest, size, "{ ");
+    
+    #if defined ( USEAPI_PORTAUDIO ) 
+        err |= string_addSprintf (dest, size, "{PortAudio %d} ",    API_DEFAULT_MIDI);      // --
+        n++;
+    #endif
     
     #if defined ( USEAPI_OSS ) 
-        err |= string_addSprintf (dest, size, "{OSS %d} ", API_DEFAULT_MIDI);
+        err |= string_addSprintf (dest, size, "{OSS %d} ",          API_DEFAULT_MIDI);      // --
+        n++;
     #endif
     
     #if defined ( USEAPI_ALSA )
-        err |= string_addSprintf (dest, size, "{ALSA %d} ", API_ALSA);
+        err |= string_addSprintf (dest, size, "{ALSA %d} ",         API_ALSA);              // --
+        n++;
+    #endif
+    
+    #if defined ( USEAPI_DUMMY )
+        err |= string_addSprintf (dest, size, "{Dummy %d} ",        API_DEFAULT_MIDI);      // --
+        n++;
     #endif
     
     err |= string_add (dest, size, "}");
     
+    if (n < 2) { err = string_copy (dest, size, "{ }"); }           /* There's no choice. */
+    
     return err;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int midi_isAPIAvailable (int api)
+{
+    int available = 0;
+    
+    #ifdef USEAPI_PORTAUDIO
+        available += (api == API_PORTAUDIO);
+    #endif
+    #ifdef USEAPI_OSS
+        available += (api == API_OSS);
+    #endif
+    #ifdef USEAPI_ALSA
+        available += (api == API_ALSA);
+    #endif
+    #ifdef USEAPI_DUMMY
+        available += (api == API_DUMMY);
+    #endif
+
+    return available;
 }
 
 // -----------------------------------------------------------------------------------------------------------
