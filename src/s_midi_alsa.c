@@ -135,68 +135,50 @@ void midi_closeNative()
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void midi_pushNextMessageNative(int portno, int a, int b, int c)
+void midi_pushNextMessageNative (int port, int a, int b, int c)
 {
-    int channel;
-    snd_seq_event_t ev;
-    snd_seq_ev_clear(&ev);
-    if (portno >= 0 && portno < midialsa_numberOfDevicesOut)
-    {
-        if (a >= 224)   // pitchbend
-        {
-            channel = a-224;
-            snd_seq_ev_set_pitchbend(&ev, channel, (((c<<7)|b)-8192)); /* b and c are already correct but alsa needs to recalculate them */
+    snd_seq_event_t e;
+    snd_seq_ev_clear (&e);
+    
+    if (port >= 0 && port < midialsa_numberOfDevicesOut) {
+    //
+    PD_ASSERT (a < MIDI_STARTSYSEX);
+    PD_ASSERT (a >= MIDI_NOTEON);
+    
+    if (a >= MIDI_PITCHBEND) { snd_seq_ev_set_pitchbend (&e, a - MIDI_PITCHBEND, (((c << 7) | b) - 8192)); } 
+    else if (a >= MIDI_AFTERTOUCH)      { snd_seq_ev_set_chanpress (&e, a - MIDI_AFTERTOUCH, b);        }
+    else if (a >= MIDI_PROGRAMCHANGE)   { snd_seq_ev_set_pgmchange (&e, a - MIDI_PROGRAMCHANGE, b);     }
+    else if (a >= MIDI_CONTROLCHANGE)   { snd_seq_ev_set_controller (&e, a - MIDI_CONTROLCHANGE, b, c); }
+    else if (a >= MIDI_POLYPRESSURE)    { snd_seq_ev_set_keypress (&e, a - MIDI_POLYPRESSURE, b, c);    }
+    else if (a >= MIDI_NOTEON)          {
+        if (c) { snd_seq_ev_set_noteon (&e, a - MIDI_NOTEON, b, c); }
+        else {
+            snd_seq_ev_set_noteoff (&e, a - MIDI_NOTEON, b, c);
         }
-        else if (a >= 208)      // touch
-        {
-            channel = a-208;
-            snd_seq_ev_set_chanpress(&ev,channel,b);
-        }
-        else if (a >= 192)      // program
-        {
-            channel = a-192;
-            snd_seq_ev_set_pgmchange(&ev,channel,b);
-        }
-        else if (a >= 176)      // controller
-        {
-            channel = a-176;
-            snd_seq_ev_set_controller(&ev,channel,b,c);
-        }
-        else if (a >= 160)      // polytouch
-        {
-            channel = a-160;
-            snd_seq_ev_set_keypress(&ev,channel,b,c);
-        }
-        else if (a >= 144)      // note
-        {
-            channel = a-144;
-            if (c)
-                snd_seq_ev_set_noteon(&ev,channel,b,c);
-            else
-                snd_seq_ev_set_noteoff(&ev,channel,b,c);
-        }
-        snd_seq_ev_set_direct(&ev);
-        snd_seq_ev_set_subs(&ev);
-        snd_seq_ev_set_source(&ev,midialsa_devicesOut[portno]);
-        snd_seq_event_output_direct(midialsa_handle,&ev);
     }
-    //post("%d %d %d\n",a,b,c);
+    
+    snd_seq_ev_set_direct (&e);
+    snd_seq_ev_set_subs (&e);
+    snd_seq_ev_set_source (&e, midialsa_devicesOut[port]);
+    snd_seq_event_output_direct (midialsa_handle, &e);
+    //
+    }
 }
 
-void midi_pushNextByteNative(int portno, int byte)
+void midi_pushNextByteNative (int port, int a)
 {
-    snd_seq_event_t ev;
-    snd_seq_ev_clear(&ev);
-    if (portno >= 0 && portno < midialsa_numberOfDevicesOut)
-    {
-        // repack into 1 byte char and put somewhere to point at
-        unsigned char data = (unsigned char)byte;
-
-        snd_seq_ev_set_sysex(&ev,1,&data); //...set_variable *should* have worked but didn't
-        snd_seq_ev_set_direct(&ev);
-        snd_seq_ev_set_subs(&ev);
-        snd_seq_ev_set_source(&ev,midialsa_devicesOut[portno]);
-        snd_seq_event_output_direct(midialsa_handle,&ev);
+    snd_seq_event_t e;
+    snd_seq_ev_clear (&e);
+    
+    if (port >= 0 && port < midialsa_numberOfDevicesOut) {
+    //
+    unsigned char data = (unsigned char)a;
+    snd_seq_ev_set_sysex (&e, 1, &data);
+    snd_seq_ev_set_direct (&e);
+    snd_seq_ev_set_subs (&e);
+    snd_seq_ev_set_source (&e, midialsa_devicesOut[port]);
+    snd_seq_event_output_direct (midialsa_handle, &e);
+    //
     }
 }
 
@@ -204,29 +186,31 @@ void midi_pushNextByteNative(int portno, int byte)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void midi_pollNative(void)
+void midi_pollNative (void)
 {
-   unsigned char buf[MIDIALSA_MAXIMUM_EVENTS];
-   int count, alsa_source;
-   int i;
-   snd_seq_event_t *midievent = NULL;
+    if (midialsa_numberOfDevicesOut || midialsa_numberOfDevicesIn) {
+    //
+    unsigned char t[MIDIALSA_MAXIMUM_EVENTS] = { 0 };
+    int pending;
 
-   if (midialsa_numberOfDevicesOut == 0 && midialsa_numberOfDevicesIn == 0) return;
+    snd_seq_event_t *midievent = NULL;
    
-   snd_midi_event_init(midialsa_event);
-
-   if (!midialsa_numberOfDevicesOut && !midialsa_numberOfDevicesIn) return;
-   count = snd_seq_event_input_pending(midialsa_handle,1);
-   if (count != 0)
-        count = snd_seq_event_input(midialsa_handle,&midievent);
-   if (midievent != NULL)
-   {
-       count = snd_midi_event_decode(midialsa_event,buf,sizeof(buf),midievent);
-       alsa_source = midievent->dest.port;
-       for(i=0;i<count;i++)
-           midi_receive(alsa_source, (buf[i] & 0xff));
-       //post("received %d midi bytes\n",count);
-   }
+    snd_midi_event_init (midialsa_event);
+    pending = snd_seq_event_input_pending (midialsa_handle, 1);
+    
+    if (pending != 0) { snd_seq_event_input (midialsa_handle, &midievent); }
+    
+    if (midievent != NULL) {
+    //
+    long i;
+    long n = snd_midi_event_decode (midialsa_event, t, MIDIALSA_MAXIMUM_EVENTS, midievent);
+    for (i = 0; i < n; i++) {
+        midi_receive (midievent->dest.port, (t[i] & 0xff));
+    }
+    //
+    }
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
