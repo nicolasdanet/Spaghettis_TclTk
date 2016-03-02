@@ -24,7 +24,6 @@ t_error dummy_open()
 
 void dummy_close() 
 {
-
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -33,7 +32,7 @@ void dummy_close()
 
 int dummy_pollDSP() 
 {
-    return DACS_YES;
+    static int t = 0; t = !t; return (t ? DACS_YES : DACS_NO);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -49,8 +48,8 @@ t_error dummy_getLists (char *devicesIn,
 {
     t_error err = PD_ERROR_NONE;
     
-    err |= string_copy (devicesIn,  MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION, "NONE");
-    err |= string_copy (devicesOut, MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION, "NONE");
+    err |= string_copy (devicesIn,  MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION, "Dummy");
+    err |= string_copy (devicesOut, MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION, "Dummy");
     
     *numberOfDevicesIn  = 1;
     *numberOfDevicesOut = 1;

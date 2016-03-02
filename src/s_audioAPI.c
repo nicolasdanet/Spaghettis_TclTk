@@ -90,7 +90,7 @@ void audio_setAPI (void *dummy, t_float f)
         audio_api = api;
         audio_numberOfDevicesIn  = 0;
         audio_numberOfDevicesOut = 0;
-        sys_vGui ("set ::var(apiAudio) %d\n", audio_api);   // --
+        sys_vGui ("set ::var(apiAudio) %d\n", audio_api);                               // --
     }
 }
 
