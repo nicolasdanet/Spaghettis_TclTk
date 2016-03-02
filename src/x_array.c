@@ -594,6 +594,7 @@ static void array_get_bang(t_array_rangeop *x)
     for (i = 0, itemp = firstitem; i < nitem; i++, itemp += stride)
         SET_FLOAT(&outv[i],  *(t_float *)itemp);
     outlet_list(x->x_outlet, 0, nitem, outv);
+    ATOMS_FREEA(outv, nitem);
 }
 
 static void array_get_float(t_array_rangeop *x, t_float f)
