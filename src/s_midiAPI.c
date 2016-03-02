@@ -17,17 +17,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MIDI_SOMETHING  1       /* First item is "none". */
+#define MIDI_SOMETHING  1                   /* First item is "none". */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_class *global_object;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-int midi_api = API_DEFAULT_MIDI;                                                /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -41,89 +36,10 @@ static char midi_devicesOutNames[MAXIMUM_MIDI_OUT * MAXIMUM_DESCRIPTION];       
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void midi_setAPI (void *dummy, t_float f)
-{
-    int api = (midi_isAPIAvailable ((int)f) ? (int)f : API_DEFAULT_MIDI);
-    
-    if (api != midi_api) {
-        midi_close();
-        midi_api = api; 
-        midi_open();
-    }
-}
-
-t_error midi_getAPIAvailables (char *dest, size_t size)
-{
-    int n = 0;
-    
-    t_error err = string_copy (dest, size, "{ ");
-    
-    #if defined ( USEAPI_PORTAUDIO ) 
-        err |= string_addSprintf (dest, size, "{PortAudio %d} ",    API_DEFAULT_MIDI);      // --
-        n++;
-    #endif
-    
-    #if defined ( USEAPI_OSS ) 
-        err |= string_addSprintf (dest, size, "{OSS %d} ",          API_DEFAULT_MIDI);      // --
-        n++;
-    #endif
-    
-    #if defined ( USEAPI_ALSA )
-        err |= string_addSprintf (dest, size, "{ALSA %d} ",         API_ALSA);              // --
-        n++;
-    #endif
-    
-    #if defined ( USEAPI_DUMMY )
-        err |= string_addSprintf (dest, size, "{Dummy %d} ",        API_DEFAULT_MIDI);      // --
-        n++;
-    #endif
-    
-    err |= string_add (dest, size, "}");
-    
-    if (n < 2) { err = string_copy (dest, size, "{ }"); }           /* There's no choice. */
-    
-    return err;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int midi_isAPIAvailable (int api)
-{
-    int available = 0;
-    
-    #ifdef USEAPI_PORTAUDIO
-        available += (api == API_PORTAUDIO);
-    #endif
-    #ifdef USEAPI_OSS
-        available += (api == API_OSS);
-    #endif
-    #ifdef USEAPI_ALSA
-        available += (api == API_ALSA);
-    #endif
-    #ifdef USEAPI_DUMMY
-        available += (api == API_DUMMY);
-    #endif
-
-    return available;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void midi_openWithDevices (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut)
 {
-    if (API_WITH_ALSA && midi_api == API_ALSA) {
-        sys_alsa_do_open_midi (numberOfDevicesIn, devicesIn, numberOfDevicesOut, devicesOut);
-    } else {
-        midi_openNative (numberOfDevicesIn, devicesIn, numberOfDevicesOut, devicesOut);
-    }
-    
+    midi_openNative (numberOfDevicesIn, devicesIn, numberOfDevicesOut, devicesOut);
     midi_setDevices (numberOfDevicesIn, devicesIn, numberOfDevicesOut, devicesOut);
-
-    sys_vGui ("set ::var(apiMidi) %d\n", midi_api);     // --
 }
 
 void midi_open (void)
@@ -137,10 +53,7 @@ void midi_open (void)
 
 void midi_close (void)
 {
-    if (API_WITH_ALSA && midi_api == API_ALSA) { sys_alsa_close_midi(); } 
-    else {
-        midi_closeNative();
-    }
+    midi_closeNative();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -192,12 +105,7 @@ void midi_setDevices (int numberOfDevicesIn, int *devicesIn, int numberOfDevices
 
 static t_error midi_getLists (char *i, int *m, char *o, int *n)
 {
-    if (API_WITH_ALSA && midi_api == API_ALSA) { midi_alsa_getdevs (i, m, o, n); } 
-    else {
-        return midi_getListsNative (i, m, o, n);
-    }
-    
-    return PD_ERROR_NONE;
+    return midi_getListsNative (i, m, o, n);
 }
 
 int midi_numberWithName (int isOutput, const char *name)
@@ -322,20 +230,10 @@ void midi_requireDialog (void *dummy)
     int o7 = (n > 6 && o[6] >= 0 ? o[6] + MIDI_SOMETHING : 0);
     int o8 = (n > 7 && o[7] >= 0 ? o[7] + MIDI_SOMETHING : 0);
 
-    if (API_WITH_ALSA && midi_api == API_ALSA) {
-    
-        err = string_sprintf (t, PD_STRING,
-            "::ui_midi::show %%s %d %d %d %d 0 0 0 0 %d %d %d %d 0 0 0 0 1\n",  // --
-                i1, i2, i3, i4, o1, o2, o3, o4);
-
-    } else {
-    
-        err = string_sprintf (t, PD_STRING,
-            "::ui_midi::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d 0\n",  // --
-                i1, i2, i3, i4, i5, i6, i7, i8, o1, o2, o3, o4, o5, o6, o7, o8);
-                                    
-    }
-    
+    err = string_sprintf (t, PD_STRING,
+        "::ui_midi::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d 0\n",  // --
+            i1, i2, i3, i4, i5, i6, i7, i8, o1, o2, o3, o4, o5, o6, o7, o8);
+                
     if (!err) {
         gfxstub_deleteforkey (NULL);
         gfxstub_new (&global_object, (void *)midi_requireDialog, t);
@@ -353,8 +251,8 @@ void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
     int n = 0;
     int i[MAXIMUM_MIDI_IN]  = { 0 };
     int o[MAXIMUM_MIDI_OUT] = { 0 };
-    int alsaIn  = 0;
-    int alsaOut = 0;
+    //int alsaIn  = 0;
+    //int alsaOut = 0;
 
     int parameters = (argc - 2) / 2;
     int k;
@@ -362,19 +260,9 @@ void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
     PD_ASSERT (parameters == MAXIMUM_MIDI_IN);
     PD_ASSERT (parameters == MAXIMUM_MIDI_OUT);
     
-    alsaIn  = (t_int)atom_getFloatAtIndex ((parameters * 2) + 0, argc, argv);
-    alsaOut = (t_int)atom_getFloatAtIndex ((parameters * 2) + 1, argc, argv);
+    //alsaIn  = (t_int)atom_getFloatAtIndex ((parameters * 2) + 0, argc, argv);
+    //alsaOut = (t_int)atom_getFloatAtIndex ((parameters * 2) + 1, argc, argv);
     
-    if (API_WITH_ALSA && midi_api == API_ALSA) {
-    //
-    m = PD_CLAMP (alsaIn,  0, MAXIMUM_MIDI_IN);
-    n = PD_CLAMP (alsaOut, 0, MAXIMUM_MIDI_OUT);
-        
-    for (k = 0; k < m; k++) { i[k] = k; }
-    for (k = 0; k < n; k++) { o[k] = k; }
-    //
-    } else {
-    //
     for (k = 0; k < parameters; k++) {
         i[k] = (t_int)atom_getFloatAtIndex (k, argc, argv);
         o[k] = (t_int)atom_getFloatAtIndex (k + parameters, argc, argv);
@@ -382,9 +270,7 @@ void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
 
     for (k = 0; k < parameters; k++) { if (i[k] > 0) { i[m] = i[k] - MIDI_SOMETHING; m++; } }
     for (k = 0; k < parameters; k++) { if (o[k] > 0) { o[n] = o[k] - MIDI_SOMETHING; n++; } }
-    //
-    }
-    
+
     midi_close();
 
     midi_openWithDevices (m, i, n, o);

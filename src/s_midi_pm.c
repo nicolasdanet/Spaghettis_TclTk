@@ -202,8 +202,10 @@ void midi_pushNextByteNative (int port, int byte)
         int k = t[0];
         if (k < MIDI_STARTSYSEX) { k &= 0xf0; }
         if (k == MIDI_PROGRAMCHANGE || k == MIDI_AFTERTOUCH || k == MIDI_TIMECODE || k == MIDI_SONGSELECT) {
+        
             midipm_writeFourBytes (device, t[0], byte, 0, 0);           /* Two bytes messages. */
             n = (k < MIDI_STARTSYSEX ? 1 : 0);
+            
         } else {
             if (n == 1) { t[1] = byte; n = 2; }
             else {

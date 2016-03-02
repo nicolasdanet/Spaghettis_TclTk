@@ -43,7 +43,6 @@ typedef struct _midiparser {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int midi_api;
 extern int audio_advanceInMicroseconds;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -121,18 +120,12 @@ static double midi_getTimeOut (void)
 
 static void midi_pushNextByte (int port, int a)
 {
-    if (API_WITH_ALSA && midi_api == API_ALSA) { sys_alsa_putmidibyte (port, a); }
-    else {
-        midi_pushNextByteNative (port, a);
-    }
+    midi_pushNextByteNative (port, a);
 }
 
 static void midi_pushNextMessage (int port, int a, int b, int c)
 {
-    if (API_WITH_ALSA && midi_api == API_ALSA) { sys_alsa_putmidimess (port, a, b, c); }
-    else {
-        midi_pushNextMessageNative (port, a, b, c);
-    }
+    midi_pushNextMessageNative (port, a, b, c);
 }
 
 static void midi_pushNext (void)
@@ -283,11 +276,7 @@ static void midi_pollOut (void)
 
 void midi_poll (void)
 {
-    if (API_WITH_ALSA && midi_api == API_ALSA) { sys_alsa_poll_midi(); }
-    else {
-        midi_pollNative();
-    }
-    
+    midi_pollNative();
     midi_pollOut();
     midi_pollIn();
 }

@@ -712,15 +712,13 @@ static t_error interface_startGui (void)
     
         t_pathlist *l = NULL;
         
-        char midi[PD_STRING]  = { 0 };
-        char audio[PD_STRING] = { 0 };
+        char t[PD_STRING] = { 0 };
         
-        err |= audio_getAPIAvailables (audio, PD_STRING);
-        err |= midi_getAPIAvailables (midi, PD_STRING);
+        err |= audio_getAPIAvailables (t, PD_STRING);
         
         if (!err) {
         //
-        sys_vGui ("::initialize %s %s\n", audio, midi);     // --
+        sys_vGui ("::initialize %s\n", t);                                      // --
         
         for (l = path_search; l; l = pathlist_getNext (l)) {
         //
@@ -728,7 +726,7 @@ static t_error interface_startGui (void)
         //
         }
         
-        sys_vGui ("set ::var(apiAudio) %d\n", audio_api);    // --
+        sys_vGui ("set ::var(apiAudio) %d\n", audio_api);                       // --
         //
         }
     }
