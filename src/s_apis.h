@@ -41,16 +41,17 @@ t_error midi_getListsNative             (char *devicesIn,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void sys_alsa_do_open_midi      (int nmidiindev, int *midiindev, int nmidioutdev, int *midioutdev);
 void sys_alsa_close_midi        (void);
+
 void sys_alsa_putmidimess       (int port, int a, int b, int c);
 void sys_alsa_putmidibyte       (int port, int a);
 void sys_alsa_poll_midi         (void);
-void sys_alsa_setmiditimediff   (double inbuftime, double outbuftime);
-void sys_alsa_midibytein        (int port, int byte);
-void midi_alsa_setndevs         (int i, int o);
+
 void midi_alsa_getdevs          (char *indevlist, int *nindevs, char *outdevlist, int *noutdevs);
-void sys_alsa_do_open_midi      (int nmidiindev, int *midiindev, int nmidioutdev, int *midioutdev);
-    
+
+void midi_alsa_setndevs         (int i, int o);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
