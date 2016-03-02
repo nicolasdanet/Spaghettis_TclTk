@@ -231,7 +231,7 @@ void midi_requireDialog (void *dummy)
     int o8 = (n > 7 && o[7] >= 0 ? o[7] + MIDI_SOMETHING : 0);
 
     err = string_sprintf (t, PD_STRING,
-        "::ui_midi::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d 0\n",  // --
+        "::ui_midi::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",  // --
             i1, i2, i3, i4, i5, i6, i7, i8, o1, o2, o3, o4, o5, o6, o7, o8);
                 
     if (!err) {
@@ -251,25 +251,20 @@ void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
     int n = 0;
     int i[MAXIMUM_MIDI_IN]  = { 0 };
     int o[MAXIMUM_MIDI_OUT] = { 0 };
-    //int alsaIn  = 0;
-    //int alsaOut = 0;
 
-    int parameters = (argc - 2) / 2;
+    int t = argc / 2;
     int k;
 
-    PD_ASSERT (parameters == MAXIMUM_MIDI_IN);
-    PD_ASSERT (parameters == MAXIMUM_MIDI_OUT);
+    PD_ASSERT (t == MAXIMUM_MIDI_IN);
+    PD_ASSERT (t == MAXIMUM_MIDI_OUT);
     
-    //alsaIn  = (t_int)atom_getFloatAtIndex ((parameters * 2) + 0, argc, argv);
-    //alsaOut = (t_int)atom_getFloatAtIndex ((parameters * 2) + 1, argc, argv);
-    
-    for (k = 0; k < parameters; k++) {
+    for (k = 0; k < t; k++) {
         i[k] = (t_int)atom_getFloatAtIndex (k, argc, argv);
-        o[k] = (t_int)atom_getFloatAtIndex (k + parameters, argc, argv);
+        o[k] = (t_int)atom_getFloatAtIndex (k + t, argc, argv);
     }
 
-    for (k = 0; k < parameters; k++) { if (i[k] > 0) { i[m] = i[k] - MIDI_SOMETHING; m++; } }
-    for (k = 0; k < parameters; k++) { if (o[k] > 0) { o[n] = o[k] - MIDI_SOMETHING; n++; } }
+    for (k = 0; k < t; k++) { if (i[k] > 0) { i[m] = i[k] - MIDI_SOMETHING; m++; } }
+    for (k = 0; k < t; k++) { if (o[k] > 0) { o[n] = o[k] - MIDI_SOMETHING; n++; } }
 
     midi_close();
 

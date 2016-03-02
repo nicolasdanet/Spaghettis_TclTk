@@ -241,8 +241,8 @@ t_error midi_getListsNative (char *devicesIn,
 {
     t_error err = PD_ERROR_NONE;
     
-    err |= string_copy (devicesIn,  MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION, "ALSA MIDI device #1");
-    err |= string_copy (devicesOut, MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION, "ALSA MIDI device #1");
+    err |= string_copy (devicesIn,  MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION, "ALSA virtual device");
+    err |= string_copy (devicesOut, MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION, "ALSA virtual device");
     
     *numberOfDevicesIn  = 1;
     *numberOfDevicesOut = 1;
