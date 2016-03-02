@@ -48,8 +48,8 @@ t_error dummy_getLists (char *devicesIn,
 {
     t_error err = PD_ERROR_NONE;
     
-    err |= string_copy (devicesIn,  MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION, "Dummy");
-    err |= string_copy (devicesOut, MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION, "Dummy");
+    err |= string_copy (devicesIn,  MAXIMUM_DESCRIPTION, "Dummy");
+    err |= string_copy (devicesOut, MAXIMUM_DESCRIPTION, "Dummy");
     
     *numberOfDevicesIn  = 1;
     *numberOfDevicesOut = 1;
