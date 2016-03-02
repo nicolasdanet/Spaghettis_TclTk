@@ -28,6 +28,7 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static int midialsa_numberOfDevicesIn;                                      /* Shared. */
 static int midialsa_numberOfDevicesOut;                                     /* Shared. */
@@ -49,81 +50,90 @@ void midi_openNative (int numberOfDevicesIn,
     int numberOfDevicesOut,
     int *dummyOut)
 {
-    char portname[50];
-    int err = 0;
-    int client;
-    int i;
-    snd_seq_client_info_t *alsainfo;
-
-    midialsa_numberOfDevicesIn = 0;
+    midialsa_numberOfDevicesIn  = 0;
     midialsa_numberOfDevicesOut = 0;
 
-    if (numberOfDevicesOut == 0 && numberOfDevicesIn == 0) return;
-
-    if(numberOfDevicesIn>MAXIMUM_MIDI_IN )
-      {
-        post("midi input ports reduced to maximum %d", MAXIMUM_MIDI_IN);
-        numberOfDevicesIn=MAXIMUM_MIDI_IN;
-      }
-    if(numberOfDevicesOut>MAXIMUM_MIDI_OUT)
-      {
-        post("midi output ports reduced to maximum %d", MAXIMUM_MIDI_OUT);
-        numberOfDevicesOut=MAXIMUM_MIDI_OUT;
-      }
-
-    if (numberOfDevicesIn>0 && numberOfDevicesOut>0)
-        err = snd_seq_open(&midialsa_handle,"default",SND_SEQ_OPEN_DUPLEX,0);
-    else if (numberOfDevicesIn > 0)
-        err = snd_seq_open(&midialsa_handle,"default",SND_SEQ_OPEN_INPUT,0);
-    else if (numberOfDevicesOut > 0)
-        err = snd_seq_open(&midialsa_handle,"default",SND_SEQ_OPEN_OUTPUT,0);
+    if (numberOfDevicesOut || numberOfDevicesIn) {
+    //
+    t_error err = PD_ERROR;
     
-    if (err!=0)
-    {
-            //sys_setalarm(1000000);
-            post("couldn't open alsa sequencer");
-            return;
+    if (numberOfDevicesIn > 0 && numberOfDevicesOut > 0) { 
+        err = snd_seq_open (&midialsa_handle, "default", SND_SEQ_OPEN_DUPLEX, 0);
+        
+    } else if (numberOfDevicesIn > 0) {
+        err = snd_seq_open (&midialsa_handle, "default", SND_SEQ_OPEN_INPUT,  0);
+        
+    } else if (numberOfDevicesOut > 0) {
+        err = snd_seq_open (&midialsa_handle, "default", ND_SEQ_OPEN_OUTPUT,  0);
     }
-    for (i=0;i<numberOfDevicesIn;i++)
-    {
-        int port;
-        sprintf(portname,"PureData Midi-In %d",i+1);
-        port = snd_seq_create_simple_port(midialsa_handle,portname,
-                                          SND_SEQ_PORT_CAP_WRITE |SND_SEQ_PORT_CAP_SUBS_WRITE, 
-                                          SND_SEQ_PORT_TYPE_APPLICATION);
-        midialsa_devicesIn[i] = port;        
-        if (port < 0) goto error;        
+    
+    if (err) { PD_BUG; }
+    else {
+    //
+    int i;
+    
+    for (i = 0; i < numberOfDevicesIn; i++) {
+        err |= string_sprintf (portname, PD_STRING, "PureData Midi-In %d", i + 1);
+        if (!err) {
+            char portname[PD_STRING] = { 0 };
+            int  port = snd_seq_create_simple_port (midialsa_handle,
+                            portname,
+                            SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE, 
+                            SND_SEQ_PORT_TYPE_APPLICATION);
+            if (!(err |= (port < 0))) { 
+                midialsa_devicesIn[midialsa_numberOfDevicesIn] = port; midialsa_numberOfDevicesIn++;
+            }
+        }
     }
 
-    for (i=0;i<numberOfDevicesOut;i++)
-    {
-        int port;
-        sprintf(portname,"PureData Midi-Out %d",i+1);
-        port = snd_seq_create_simple_port(midialsa_handle,portname,
-                                          SND_SEQ_PORT_CAP_READ | SND_SEQ_PORT_CAP_SUBS_READ, 
-                                          SND_SEQ_PORT_TYPE_APPLICATION);
-        midialsa_devicesOut[i] = port;       
-        if (port < 0) goto error;        
+    for (i = 0; i < numberOfDevicesOut; i++) {
+        err |= string_sprintf (portname, PD_STRING, "PureData Midi-Out %d", i + 1);
+        if (!err) {
+            char portname[PD_STRING] = { 0 };
+            int  port = snd_seq_create_simple_port (midialsa_handle,
+                            portname,
+                            SND_SEQ_PORT_CAP_READ | SND_SEQ_PORT_CAP_SUBS_READ, 
+                            SND_SEQ_PORT_TYPE_APPLICATION);
+            if (!(err |= (port < 0))) { 
+                midialsa_devicesOut[midialsa_numberOfDevicesOut] = port; midialsa_numberOfDevicesOut++;
+            }
+        }
     }
    
-    snd_seq_client_info_malloc(&alsainfo);
-    snd_seq_get_client_info(midialsa_handle,alsainfo);
-    snd_seq_client_info_set_name(alsainfo,"PureData");
-    client = snd_seq_client_info_get_client(alsainfo);
-    snd_seq_set_client_info(midialsa_handle,alsainfo);
-    snd_seq_client_info_free(alsainfo);
-    post("Opened Alsa Client %d in:%d out:%d",client,numberOfDevicesIn,numberOfDevicesOut);
-    //sys_setalarm(0);
-    snd_midi_event_new(MIDIALSA_MAXIMUM_EVENTS,&midialsa_event);
-    midialsa_numberOfDevicesOut = numberOfDevicesOut;
-    midialsa_numberOfDevicesIn = numberOfDevicesIn;
-
-    return;
- error:
-    //sys_setalarm(1000000);
-    post("couldn't open alsa MIDI output device");
-    return;
+    if (err) { PD_BUG; }
+    else {
+        snd_seq_client_info_t *info = NULL;
+        snd_seq_client_info_malloc (&info);
+        snd_seq_get_client_info (midialsa_handle, info);
+        snd_seq_client_info_set_name (info, "PureData");
+        snd_seq_client_info_get_client (info);
+        snd_seq_set_client_info (midialsa_handle, info);
+        snd_seq_client_info_free (info);
+        snd_midi_event_new (MIDIALSA_MAXIMUM_EVENTS, &midialsa_event);
+    }
+    //
+    }
+    //
+    }
 }
+
+void midi_closeNative()
+{
+    midialsa_numberOfDevicesIn  = 0;
+    midialsa_numberOfDevicesOut = 0;
+    
+    if (midialsa_handle) {
+        snd_seq_close (midialsa_handle);
+    }
+    
+    if (midialsa_event) {
+        snd_midi_event_free (midialsa_event);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void midi_pushNextMessageNative(int portno, int a, int b, int c)
 {
@@ -190,8 +200,10 @@ void midi_pushNextByteNative(int portno, int byte)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-    /* this version uses the asynchronous "read()" ... */
 void midi_pollNative(void)
 {
    unsigned char buf[MIDIALSA_MAXIMUM_EVENTS];
@@ -215,19 +227,6 @@ void midi_pollNative(void)
            midi_receive(alsa_source, (buf[i] & 0xff));
        //post("received %d midi bytes\n",count);
    }
-}
-
-void midi_closeNative()
-{
-    midialsa_numberOfDevicesIn = midialsa_numberOfDevicesOut = 0;
-    if(midialsa_handle)
-      {
-        snd_seq_close(midialsa_handle);
-        if(midialsa_event)
-          {
-            snd_midi_event_free(midialsa_event);
-          }
-      }
 }
 
 // -----------------------------------------------------------------------------------------------------------
