@@ -58,22 +58,22 @@ void midi_close (void)
 
 void midi_getDevices (int *numberOfDevicesIn, int *devicesIn, int *numberOfDevicesOut, int *devicesOut)
 {
-    int i, n;
-    
-    *numberOfDevicesIn  = midi_numberOfDevicesIn;
-    *numberOfDevicesOut = midi_numberOfDevicesOut;
+    int i;
+    int m = 0;
+    int n = 0;
     
     for (i = 0; i < midi_numberOfDevicesIn; i++) {
         char *s = &midi_devicesInNames[i * MAXIMUM_DESCRIPTION];
-        devicesIn[i] = midi_numberWithName (0, s);
-        PD_ASSERT (devicesIn[i] != -1);
+        int t = midi_numberWithName (0, s); if (t != -1) { devicesIn[m] = t; m++; }
     }
         
     for (i = 0; i < midi_numberOfDevicesOut; i++) {
         char *s = &midi_devicesOutNames[i * MAXIMUM_DESCRIPTION];
-        devicesOut[i] = midi_numberWithName (1, s);
-        PD_ASSERT (devicesOut[i] != -1);
+        int t = midi_numberWithName (1, s); if (t != -1) { devicesIn[n] = t; n++; }
     }
+    
+    *numberOfDevicesIn  = m;
+    *numberOfDevicesOut = n;
 }
 
 static void midi_setDevices (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut)

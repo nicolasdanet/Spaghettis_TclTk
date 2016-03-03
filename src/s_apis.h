@@ -22,6 +22,7 @@ typedef void (*t_audiocallback)(void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void    midi_initializeNative           (void);
 void    midi_openNative                 (int numberOfDevicesIn, 
                                             int *devicesIn, 
                                             int numberOfDevicesOut, 

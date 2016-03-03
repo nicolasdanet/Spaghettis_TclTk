@@ -64,6 +64,14 @@ static void midipm_writeFourBytes (PmStream *stream, int a, int b, int c, int d)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void midi_initializeNative (void)
+{
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void midi_openNative (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut)
 {
     int i, j, n;

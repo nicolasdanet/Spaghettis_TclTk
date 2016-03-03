@@ -293,21 +293,29 @@ void audio_getDevices (int *numberOfDevicesIn,
     int *blockSize)
 {
     int i;
-    
-    *numberOfDevicesIn = audio_numberOfDevicesIn;
-    *numberOfDevicesOut = audio_numberOfDevicesOut;
+    int m = 0;
+    int n = 0;
     
     for (i = 0; i < audio_numberOfDevicesIn; i++) {
-        devicesIn[i]  = audio_numberWithName (0, &audio_devicesInNames[i * MAXIMUM_DESCRIPTION]);
-        channelsIn[i] = audio_devicesInChannels[i];
-        PD_ASSERT (devicesIn[i] != -1);
+        int t = audio_numberWithName (0, &audio_devicesInNames[i * MAXIMUM_DESCRIPTION]);
+        if (t != -1) {
+            devicesIn[m]  = t;
+            channelsIn[m] = audio_devicesInChannels[i];
+            m++;
+        }
     }
     
     for (i = 0; i < audio_numberOfDevicesOut; i++) {
-        devicesOut[i]  = audio_numberWithName (1, &audio_devicesOutNames[i * MAXIMUM_DESCRIPTION]);
-        channelsOut[i] = audio_devicesOutChannels[i]; 
-        PD_ASSERT (devicesOut[i] != -1);
+        int t = audio_numberWithName (1, &audio_devicesOutNames[i * MAXIMUM_DESCRIPTION]);
+        if (t != -1) {
+            devicesOut[n]  = t;
+            channelsOut[n] = audio_devicesOutChannels[i];
+            n++;
+        }
     }
+    
+    *numberOfDevicesIn  = m;
+    *numberOfDevicesOut = n;
     
     *sampleRate   = audio_tempSampleRate;
     *advance      = audio_tempAdvance;
