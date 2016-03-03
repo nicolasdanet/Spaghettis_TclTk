@@ -379,14 +379,14 @@ t_error     midi_numberToName                       (int isOutput, int k, char *
 void        midi_open                               (void);
 void        midi_close                              (void);
 
-void        midi_openWithDevices                    (int numberOfDevicesIn,
-                                                        int *devicesIn,
-                                                        int numberOfDevicesOut,
-                                                        int *devicesOut);
-                                                        
 void        midi_getDevices                         (int *numberOfDevicesIn,
                                                         int *devicesIn,
                                                         int *numberOfDevicesOut,
+                                                        int *devicesOut);
+
+void        midi_setDefaultDevices                  (int numberOfDevicesIn, 
+                                                        int *devicesIn, 
+                                                        int numberOfDevicesOut, 
                                                         int *devicesOut);
 
 // -----------------------------------------------------------------------------------------------------------

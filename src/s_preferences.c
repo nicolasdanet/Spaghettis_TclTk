@@ -358,7 +358,7 @@ void preferences_load (void)
         callback,
         blockSize);
                             
-    midi_setDevices (numberOfMidiIn, midiIn, numberOfMidiOut, midiOut);
+    midi_setDefaultDevices (numberOfMidiIn, midiIn, numberOfMidiOut, midiOut);
         
     preferences_loadClose();
 }

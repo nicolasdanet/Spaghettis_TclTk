@@ -416,11 +416,11 @@ void audio_setDefaultDevicesAndParameters (int numberOfDevicesIn,
     int withCallback, 
     int blockSize)
 {
-    /* For convenience, initialize with thz first devices if none are provided. */
+    /* For convenience, initialize with the first devices if none are provided. */
     
     if (numberOfDevicesIn == 0) { 
         *devicesIn = AUDIO_DEFAULT_DEVICE; *channelsIn = AUDIO_DEFAULT_CHANNELS; 
-        numberOfDevicesIn  = 1;
+        numberOfDevicesIn = 1;
     }
     
     if (numberOfDevicesOut == 0) { 

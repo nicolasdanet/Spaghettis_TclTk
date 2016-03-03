@@ -17,7 +17,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MIDI_SOMETHING  1                   /* First item is "none". */
+#define MIDI_SOMETHING              1       /* First item is "none". */
+#define MIDI_DEFAULT_DEVICE         0
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -36,19 +37,14 @@ static char midi_devicesOutNames[MAXIMUM_MIDI_OUT * MAXIMUM_DESCRIPTION];       
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void midi_openWithDevices (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut)
-{
-    midi_openNative (numberOfDevicesIn, devicesIn, numberOfDevicesOut, devicesOut);
-    midi_setDevices (numberOfDevicesIn, devicesIn, numberOfDevicesOut, devicesOut);
-}
-
 void midi_open (void)
 {
     int m, n;
     int i[MAXIMUM_MIDI_IN]  = { 0 };
     int o[MAXIMUM_MIDI_OUT] = { 0 };
     
-    midi_getDevices (&m, i, &n, o); midi_openWithDevices (m, i, n, o);
+    midi_getDevices (&m, i, &n, o); 
+    midi_openNative (m, i, n, o);
 }
 
 void midi_close (void)
@@ -70,33 +66,57 @@ void midi_getDevices (int *numberOfDevicesIn, int *devicesIn, int *numberOfDevic
     for (i = 0; i < midi_numberOfDevicesIn; i++) {
         char *s = &midi_devicesInNames[i * MAXIMUM_DESCRIPTION];
         devicesIn[i] = midi_numberWithName (0, s);
+        PD_ASSERT (devicesIn[i] != -1);
     }
         
     for (i = 0; i < midi_numberOfDevicesOut; i++) {
         char *s = &midi_devicesOutNames[i * MAXIMUM_DESCRIPTION];
         devicesOut[i] = midi_numberWithName (1, s);
+        PD_ASSERT (devicesOut[i] != -1);
     }
 }
 
-void midi_setDevices (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut)
+static void midi_setDevices (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut)
 {
     int i;
     
     PD_ASSERT (numberOfDevicesIn <= MAXIMUM_MIDI_IN);
     PD_ASSERT (numberOfDevicesOut <= MAXIMUM_MIDI_OUT);
     
-    midi_numberOfDevicesIn  = numberOfDevicesIn;
-    midi_numberOfDevicesOut = numberOfDevicesOut;
+    int m = 0;
+    int n = 0;
     
     for (i = 0; i < numberOfDevicesIn; i++) {
-        char *s = &midi_devicesInNames[i * MAXIMUM_DESCRIPTION];
-        midi_numberToName (0, devicesIn[i], s, MAXIMUM_DESCRIPTION);
+        char *s = &midi_devicesInNames[m * MAXIMUM_DESCRIPTION];
+        if (!midi_numberToName (0, devicesIn[i], s, MAXIMUM_DESCRIPTION)) {
+            m++;
+        }
     }
     
     for (i = 0; i < numberOfDevicesOut; i++) {
-        char *s = &midi_devicesOutNames[i * MAXIMUM_DESCRIPTION];
-        midi_numberToName (1, devicesOut[i], s, MAXIMUM_DESCRIPTION);
+        char *s = &midi_devicesOutNames[n * MAXIMUM_DESCRIPTION];
+        if (!midi_numberToName (1, devicesOut[i], s, MAXIMUM_DESCRIPTION)) {
+            n++;
+        }
     }
+    
+    midi_numberOfDevicesIn  = m;
+    midi_numberOfDevicesOut = n;
+}
+
+void midi_setDefaultDevices (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut)
+{
+    /* For convenience, initialize with the first devices if none are provided. */
+    
+    if (numberOfDevicesIn == 0) { 
+        *devicesIn = MIDI_DEFAULT_DEVICE; numberOfDevicesIn = 1;
+    }
+    
+    if (numberOfDevicesOut == 0) { 
+        *devicesOut = MIDI_DEFAULT_DEVICE; numberOfDevicesOut = 1;
+    }
+    
+    midi_setDevices (numberOfDevicesIn, devicesIn, numberOfDevicesOut, devicesOut);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -267,8 +287,8 @@ void midi_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
     for (k = 0; k < t; k++) { if (o[k] > 0) { o[n] = o[k] - MIDI_SOMETHING; n++; } }
 
     midi_close();
-
-    midi_openWithDevices (m, i, n, o);
+    midi_setDevices (m, i, n, o);
+    midi_open();
 }
 
 // -----------------------------------------------------------------------------------------------------------
