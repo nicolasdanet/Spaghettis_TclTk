@@ -294,17 +294,19 @@ t_error midi_getListsNative (char *devicesIn,
     int m = 0;
     int n = 0;
     
+    t_error err = PD_ERROR_NONE;
+    
     for (i = 0; i < Pm_CountDevices(); i++) {
     //
     const PmDeviceInfo *info = Pm_GetDeviceInfo (i);
 
     if (info->input && m < MAXIMUM_DEVICES) {
-        strcpy (devicesIn + (m * MAXIMUM_DESCRIPTION), info->name);
+        err |= string_copy (devicesIn + (m * MAXIMUM_DESCRIPTION), MAXIMUM_DESCRIPTION, info->name);
         m++;
     }
     
     if (info->output && n < MAXIMUM_DEVICES) {
-        strcpy (devicesOut + (n * MAXIMUM_DESCRIPTION), info->name);
+        err |= string_copy (devicesOut + (n * MAXIMUM_DESCRIPTION), MAXIMUM_DESCRIPTION, info->name);
         n++;
     }
     //
@@ -313,7 +315,7 @@ t_error midi_getListsNative (char *devicesIn,
     *numberOfDevicesIn  = m;
     *numberOfDevicesOut = n;
     
-    return PD_ERROR_NONE;
+    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------

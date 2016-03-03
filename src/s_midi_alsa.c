@@ -64,7 +64,7 @@ void midi_openNative (int numberOfDevicesIn,
         err = snd_seq_open (&midialsa_handle, "default", SND_SEQ_OPEN_INPUT,  0);
         
     } else if (numberOfDevicesOut > 0) {
-        err = snd_seq_open (&midialsa_handle, "default", ND_SEQ_OPEN_OUTPUT,  0);
+        err = snd_seq_open (&midialsa_handle, "default", SND_SEQ_OPEN_OUTPUT,  0);
     }
     
     if (err) { PD_BUG; }
@@ -73,9 +73,9 @@ void midi_openNative (int numberOfDevicesIn,
     int i;
     
     for (i = 0; i < numberOfDevicesIn; i++) {
+        char portname[PD_STRING] = { 0 };
         err |= string_sprintf (portname, PD_STRING, "PureData Midi-In %d", i + 1);
         if (!err) {
-            char portname[PD_STRING] = { 0 };
             int  port = snd_seq_create_simple_port (midialsa_handle,
                             portname,
                             SND_SEQ_PORT_CAP_WRITE | SND_SEQ_PORT_CAP_SUBS_WRITE, 
@@ -87,9 +87,9 @@ void midi_openNative (int numberOfDevicesIn,
     }
 
     for (i = 0; i < numberOfDevicesOut; i++) {
+        char portname[PD_STRING] = { 0 };
         err |= string_sprintf (portname, PD_STRING, "PureData Midi-Out %d", i + 1);
         if (!err) {
-            char portname[PD_STRING] = { 0 };
             int  port = snd_seq_create_simple_port (midialsa_handle,
                             portname,
                             SND_SEQ_PORT_CAP_READ | SND_SEQ_PORT_CAP_SUBS_READ, 
@@ -222,13 +222,26 @@ t_error midi_getListsNative (char *devicesIn,
     char *devicesOut, 
     int *numberOfDevicesOut)
 {
+    int i;
+    int m = PD_MIN (4, MAXIMUM_DEVICES);
+    int n = PD_MIN (4, MAXIMUM_DEVICES);
+    
     t_error err = PD_ERROR_NONE;
     
-    err |= string_copy (devicesIn,  MAXIMUM_DESCRIPTION, "ALSA virtual device");
-    err |= string_copy (devicesOut, MAXIMUM_DESCRIPTION, "ALSA virtual device");
+    for (i = 0; i < m; i++) {
+    //
+    err |= string_copy (devicesIn + (i * MAXIMUM_DESCRIPTION), MAXIMUM_DESCRIPTION, "ALSA virtual device");
+    //
+    }
     
-    *numberOfDevicesIn  = 1;
-    *numberOfDevicesOut = 1;
+    for (i = 0; i < n; i++) {
+    //
+    err |= string_copy (devicesOut + (i * MAXIMUM_DESCRIPTION), MAXIMUM_DESCRIPTION, "ALSA virtual device");
+    //
+    }
+    
+    *numberOfDevicesIn  = m;
+    *numberOfDevicesOut = n;
   
     return err;
 }
