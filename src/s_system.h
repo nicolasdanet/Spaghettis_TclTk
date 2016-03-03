@@ -72,11 +72,11 @@
 #define API_NONE                                0
 #define API_ALSA                                1
 #define API_OSS                                 2
-#define API_MMIO                                3
 #define API_PORTAUDIO                           4
 #define API_JACK                                5
 #define API_DUMMY                               9
 
+//#define API_MMIO                              3
 //#define API_SGI                               6
 //#define API_AUDIOUNIT                         7
 //#define API_ESD                               8
@@ -85,10 +85,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#if defined ( USEAPI_MMIO )
-    #define API_DEFAULT_AUDIO                   API_MMIO
-    
-#elif defined ( USEAPI_ALSA )
+#if defined ( USEAPI_ALSA )
     #define API_DEFAULT_AUDIO                   API_ALSA
     
 #elif defined ( USEAPI_OSS )
@@ -109,12 +106,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-#if defined ( USEAPI_MMIO )
-    #define API_WITH_MMIO                       1
-#else
-    #define API_WITH_MMIO                       0
-#endif
 
 #if defined ( USEAPI_ALSA )
     #define API_WITH_ALSA                       1

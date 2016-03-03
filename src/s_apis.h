@@ -139,30 +139,6 @@ void jack_getdevs                       (char *indevlist,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int  mmio_send_dacs                     (void);
-void mmio_close_audio                   (void);
-int  mmio_open_audio                    (int naudioindev,
-                                            int *audioindev,
-                                            int nchindev,
-                                            int *chindev,
-                                            int naudiooutdev,
-                                            int *audiooutdev,
-                                            int nchoutdev,
-                                            int *choutdev,
-                                            int rate,
-                                            int blocksize);
-                                
-void mmio_getdevs                       (char *indevlist,
-                                            int *nindevs,
-                                            char *outdevlist,
-                                            int *noutdevs,
-                                            int *canmulti, 
-                                            int *canCallback);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_error dummy_open                      (void);
 void    dummy_close                     (void);
 int     dummy_pollDSP                   (void);

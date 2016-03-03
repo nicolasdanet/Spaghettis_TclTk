@@ -294,7 +294,6 @@
 		378971EA1C4F716700263434 /* s_audio_alsa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_alsa.c; path = src/s_audio_alsa.c; sourceTree = "<group>"; };
 		378971EC1C4F716700263434 /* s_audio_dummy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_dummy.c; path = src/s_audio_dummy.c; sourceTree = "<group>"; };
 		378971ED1C4F716700263434 /* s_audio_jack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_jack.c; path = src/s_audio_jack.c; sourceTree = "<group>"; };
-		378971EE1C4F716700263434 /* s_audio_mmio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_mmio.c; path = src/s_audio_mmio.c; sourceTree = "<group>"; };
 		378971EF1C4F716700263434 /* s_audio_oss.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_oss.c; path = src/s_audio_oss.c; sourceTree = "<group>"; };
 		378971F01C4F716700263434 /* s_audio_pa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio_pa.c; path = src/s_audio_pa.c; sourceTree = "<group>"; };
 		378971F11C4F716700263434 /* s_audio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audio.c; path = src/s_audio.c; sourceTree = "<group>"; };
@@ -697,7 +696,6 @@
 				378971EA1C4F716700263434 /* s_audio_alsa.c */,
 				378971EF1C4F716700263434 /* s_audio_oss.c */,
 				378971ED1C4F716700263434 /* s_audio_jack.c */,
-				378971EE1C4F716700263434 /* s_audio_mmio.c */,
 				378971EC1C4F716700263434 /* s_audio_dummy.c */,
 			);
 			name = Audio;
