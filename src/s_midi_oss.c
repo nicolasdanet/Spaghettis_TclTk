@@ -204,7 +204,7 @@ void midi_pollNative (void)
     
     for (i = 0; i < midioss_numberOfDevicesIn; i++) {
         char c;
-        int ssize_t n = read (midioss_devicesIn[i], (void *)&c, 1);
+        ssize_t n = read (midioss_devicesIn[i], (void *)&c, 1);
         if (n > 0) { midi_receive (i, (c & 0xff)); again = 1; }
     }
     //
