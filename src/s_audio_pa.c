@@ -167,103 +167,61 @@ static int pa_fifo_callback(const void *inputBuffer,
 }
 #endif /* PA_WITH_FAKEBLOCKING */
 
-PaError pa_open_callback(double sampleRate, int inchannels, int outchannels,
-    int framesperbuf, int nbuffers, int indeviceno, int outdeviceno, PaStreamCallback *callbackfn)
+static PaError pa_openWithCallback (double sampleRate, 
+    int numberOfChannelsIn,
+    int numberOfChannelsOut,
+    int blockSize,
+    int advanceInNumberOfBlocks,
+    int deviceIn,
+    int deviceOut,
+    PaStreamCallback *callback)
 {
-    long   bytesPerSample;
     PaError err;
-    PaStreamParameters instreamparams, outstreamparams;
-    PaStreamParameters*p_instreamparams=0, *p_outstreamparams=0;
+    PaStreamParameters parametersIn;
+    PaStreamParameters parametersOut;
+    PaStreamParameters *parametersInPointer  = NULL;
+    PaStreamParameters *parametersOutPointer = NULL;
 
-    /* fprintf(stderr, "nchan %d, flags %d, bufs %d, framesperbuf %d\n",
-            nchannels, flags, nbuffers, framesperbuf); */
+    parametersIn.device                     = deviceIn;
+    parametersIn.channelCount               = numberOfChannelsIn;
+    parametersIn.sampleFormat               = paFloat32;
+    parametersIn.suggestedLatency           = 0;
+    parametersIn.hostApiSpecificStreamInfo  = 0;
 
-    instreamparams.device = indeviceno;
-    instreamparams.channelCount = inchannels;
-    instreamparams.sampleFormat = paFloat32;
-    instreamparams.hostApiSpecificStreamInfo = 0;
+    parametersOut.device                    = deviceOut;
+    parametersOut.channelCount              = numberOfChannelsOut;
+    parametersOut.sampleFormat              = paFloat32;
+    parametersOut.suggestedLatency          = 0;
+    parametersOut.hostApiSpecificStreamInfo = 0;
+
+    if (numberOfChannelsIn > 0)  { parametersInPointer  = &parametersIn;  }
+    if (numberOfChannelsOut > 0) { parametersOutPointer = &parametersOut; }
+
+    err = Pa_IsFormatSupported (parametersInPointer, parametersOutPointer, sampleRate);
+
+    if (err == paFormatIsSupported) {
+    //
+    err = Pa_OpenStream (&pa_stream, 
+            parametersInPointer, 
+            parametersOutPointer, 
+            sampleRate, 
+            blockSize,
+            paNoFlag,
+            callback,
+            NULL);
+              
+    if (err == paNoError) {
+        err = Pa_StartStream (pa_stream);
+        if (err == paNoError) { PD_ASSERT (sampleRate == audio_sampleRate); return paNoError; }
+        else {
+            pa_close();
+        }
+    }
+    //
+    }
     
-    outstreamparams.device = outdeviceno;
-    outstreamparams.channelCount = outchannels;
-    outstreamparams.sampleFormat = paFloat32;
-    outstreamparams.hostApiSpecificStreamInfo = 0;
-
-#ifdef PA_WITH_FAKEBLOCKING
-    instreamparams.suggestedLatency = outstreamparams.suggestedLatency = 0;
-#else
-    instreamparams.suggestedLatency = outstreamparams.suggestedLatency =
-        nbuffers*framesperbuf/sampleRate;
-#endif /* PA_WITH_FAKEBLOCKING */
-
-    if( inchannels>0 && indeviceno >= 0)
-        p_instreamparams=&instreamparams;
-    if( outchannels>0 && outdeviceno >= 0)
-        p_outstreamparams=&outstreamparams;
-
-    err=Pa_IsFormatSupported(p_instreamparams, p_outstreamparams, sampleRate);
-
-    if (paFormatIsSupported != err)
-    {
-        /* check whether we have to change the numbers of channel and/or samplerate */
-        const PaDeviceInfo* info = 0;
-        double inRate=0, outRate=0;
-
-        if (inchannels>0)
-        {
-            if (NULL != (info = Pa_GetDeviceInfo( instreamparams.device )))
-            {
-              inRate=info->defaultSampleRate;
-
-              if(info->maxInputChannels<inchannels)
-                instreamparams.channelCount=info->maxInputChannels;
-            }
-        }
-
-        if (outchannels>0)
-        {
-            if (NULL != (info = Pa_GetDeviceInfo( outstreamparams.device )))
-            {
-              outRate=info->defaultSampleRate;
-
-              if(info->maxOutputChannels<outchannels)
-                outstreamparams.channelCount=info->maxOutputChannels;
-            }
-        }
-
-        if (err == paInvalidSampleRate)
-        {
-            sampleRate=outRate;
-        }
-
-        err=Pa_IsFormatSupported(p_instreamparams, p_outstreamparams,
-            sampleRate);
-        if (paFormatIsSupported != err)
-        goto error;
-    }
-    err = Pa_OpenStream(
-              &pa_stream,
-              p_instreamparams,
-              p_outstreamparams,
-              sampleRate,
-              framesperbuf,
-              paNoFlag,      /* portaudio will clip for us */
-              callbackfn,
-              0);
-    if (err != paNoError)
-        goto error;
-
-    err = Pa_StartStream(pa_stream);
-    if (err != paNoError)
-    {
-        post("error opening failed; closing audio stream: %s",
-            Pa_GetErrorText(err));
-        pa_close();
-        goto error;
-    }
-    audio_sampleRate=sampleRate;
-    return paNoError;
-error:
-    pa_stream = NULL;
+    pa_stream = NULL; 
+    
     return err;
 }
 
@@ -278,11 +236,11 @@ void pa_initialize (void)
 {
     #if PD_APPLE
     
-    int err, f = dup (1);
+    int f = dup (1);
     int dummy = open ("/dev/null", 0);
     dup2 (dummy, 1);
     
-    err = Pa_Initialize();
+    PaError err = Pa_Initialize();
     
     close (1);
     close (dummy);
@@ -290,18 +248,18 @@ void pa_initialize (void)
     
     #else
     
-    int err = Pa_Initialize();
+    PaError err = Pa_Initialize();
     
     #endif
 
-    PD_ASSERT (err == paNoError);
+    if (err != paNoError) { post_error ("PortAudio: `%s'", Pa_GetErrorText (err)); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int pa_open (int numberOfChannelsIn, 
+t_error pa_open (int numberOfChannelsIn, 
     int numberOfChannelsOut,
     int sampleRate,
     t_sample *soundIn,
@@ -316,8 +274,6 @@ int pa_open (int numberOfChannelsIn,
     int n;
     int i = -1;
     int o = -1;
-    
-    pa_callback = callback;
     
     if (pa_stream) { pa_close(); PD_BUG; }
 
@@ -373,7 +329,9 @@ int pa_open (int numberOfChannelsIn,
     
     if (callback) {
     
-        err = pa_open_callback (sampleRate, 
+        pa_callback = callback;
+        
+        err = pa_openWithCallback (sampleRate, 
                 numberOfChannelsIn, 
                 numberOfChannelsOut,
                 blockSize, 
@@ -387,7 +345,7 @@ int pa_open (int numberOfChannelsIn,
         if (pa_channelsIn) {
             size_t k = advanceInNumberOfBlocks * blockSize * pa_channelsIn * sizeof (float);
             pa_bufferIn = PD_MEMORY_GET (k);
-            ringbuffer_initialize (&pa_ringIn, k, pa_bufferIn, k);
+            ringbuffer_initialize (&pa_ringIn, k, pa_bufferIn, 0);
         }
         if (pa_channelsOut) {
             size_t k = advanceInNumberOfBlocks * blockSize * pa_channelsOut * sizeof (float);
@@ -395,7 +353,7 @@ int pa_open (int numberOfChannelsIn,
             ringbuffer_initialize (&pa_ringOut, k, pa_bufferOut, 0);
         }
         
-        err = pa_open_callback (sampleRate,
+        err = pa_openWithCallback (sampleRate,
                 numberOfChannelsIn, 
                 numberOfChannelsOut,
                 blockSize, 
@@ -407,12 +365,14 @@ int pa_open (int numberOfChannelsIn,
     
     pa_started = 0;
     pa_advanceInNumberOfBlocks = advanceInNumberOfBlocks;
-    
-    if (err != paNoError) { PD_BUG; return 1; }
+
+    if (err != paNoError) { 
+        post_error ("PortAudio: `%s'", Pa_GetErrorText (err)); return PD_ERROR; 
+    }
     //
     }
     
-    return 0;
+    return PD_ERROR_NONE;
 }
 
 void pa_close (void)

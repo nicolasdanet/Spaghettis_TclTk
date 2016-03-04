@@ -41,8 +41,8 @@ t_error midi_getListsNative             (char *devicesIn,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void pa_initialize                      (void);
-int  pa_open                            (int numberOfChannelsIn,
+void    pa_initialize                   (void);
+t_error pa_open                            (int numberOfChannelsIn,
                                             int numberOfChannelsOut,
                                             int sampleRate,
                                             t_sample *soundIn,
@@ -53,9 +53,9 @@ int  pa_open                            (int numberOfChannelsIn,
                                             int deviceOut,
                                             t_audiocallback callback);
                                             
-void pa_close                           (void);
-int  pa_pollDSP                         (void);
-void pa_getLists                        (char *devicesIn,
+void    pa_close                        (void);
+int     pa_pollDSP                      (void);
+void    pa_getLists                     (char *devicesIn,
                                             int  *numberOfDevicesIn,
                                             char *devicesOut,
                                             int  *numberOfDevicesOut,

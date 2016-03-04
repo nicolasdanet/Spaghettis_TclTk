@@ -91,7 +91,7 @@ void midi_openNative (int numberOfDevicesIn, int *devicesIn, int numberOfDevices
         if (devicesIn[i] == n) {
             PmStream **t = &midipm_devicesIn[midipm_numberOfDevicesIn];
             PmError err = Pm_OpenInput (t, j, NULL, 100, NULL, NULL);
-            if (err) { PD_BUG; }
+            if (err) { post_error ("%s", Pm_GetErrorText (err)); }
             else {
                 midipm_numberOfDevicesIn++;
             }
@@ -113,7 +113,7 @@ void midi_openNative (int numberOfDevicesIn, int *devicesIn, int numberOfDevices
         if (devicesOut[i] == n) {
             PmStream **t = &midipm_devicesOut[midipm_numberOfDevicesOut];
             PmError err = Pm_OpenOutput (t, j, NULL, 0, NULL, NULL, 0);
-            if (err) { PD_BUG; }
+            if (err) { post_error ("%s", Pm_GetErrorText (err)); }
             else {
                 midipm_numberOfDevicesOut++;
             }

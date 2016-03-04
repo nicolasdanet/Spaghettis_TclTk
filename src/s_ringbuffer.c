@@ -50,7 +50,7 @@ static void ringbuffer_flush (sys_ringbuf *rbuf, void *dataPtr, long nfill)
     long n;
     char *s = NULL;
         
-    rbuf->readIndex = 0;
+    rbuf->readIndex  = 0;
     rbuf->writeIndex = nfill;
     
     for (n = nfill, s = dataPtr; n--; s++) { *s = 0; }

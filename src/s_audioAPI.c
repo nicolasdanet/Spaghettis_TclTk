@@ -75,7 +75,7 @@ static int      audio_tempWithCallback;                                         
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void audio_initializeMemory (int usedChannelsIn, int usedChannelsOut, int sampleRate);
+void audio_initializeMemoryAndParameters (int usedChannelsIn, int usedChannelsOut, int sampleRate);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -187,7 +187,7 @@ t_error audio_open (void)
     //
     int t;
     
-    audio_initializeMemory (audio_channelsIn, audio_channelsOut, sampleRate);
+    audio_initializeMemoryAndParameters (audio_channelsIn, audio_channelsOut, sampleRate);
     
     for (t = 0; t < m; t++) { j[t] = PD_MAX (0, j[t]); }    /* Avoid negative (disabled) channels. */
     for (t = 0; t < n; t++) { p[t] = PD_MAX (0, p[t]); }
@@ -410,7 +410,7 @@ static void audio_setDevicesAndParameters (int numberOfDevicesIn,
         if (audio_devicesOutChannels[i] > 0) { totalOfChannelsOut += audio_devicesOutChannels[i]; }
     }
     
-    audio_initializeMemory (totalOfChannelsIn, totalOfChannelsOut, sampleRate);
+    audio_initializeMemoryAndParameters (totalOfChannelsIn, totalOfChannelsOut, sampleRate);
 }
 
 void audio_setDefaultDevicesAndParameters (int numberOfDevicesIn,

@@ -80,7 +80,7 @@ int audio_pollDSP (void)
     return DACS_NO;
 }
 
-void audio_initializeMemory (int usedChannelsIn, int usedChannelsOut, int sampleRate)
+void audio_initializeMemoryAndParameters (int usedChannelsIn, int usedChannelsOut, int sampleRate)
 {
     int m = (usedChannelsIn ? usedChannelsIn : 2) * (AUDIO_DEFAULT_BLOCKSIZE * sizeof (t_sample));
     int n = (usedChannelsOut ? usedChannelsOut : 2) * (AUDIO_DEFAULT_BLOCKSIZE * sizeof (t_sample));
