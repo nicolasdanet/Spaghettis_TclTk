@@ -32,7 +32,6 @@ void    midi_closeNative                (void);
 void    midi_pushNextMessageNative      (int port, int a, int b, int c);
 void    midi_pushNextByteNative         (int port, int a);
 void    midi_pollNative                 (void);
-
 t_error midi_getListsNative             (char *devicesIn, 
                                             int  *numberOfDevicesIn, 
                                             char *devicesOut, 
@@ -42,26 +41,26 @@ t_error midi_getListsNative             (char *devicesIn,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int  pa_send_dacs                       (void);
-void pa_listdevs                        (void);
-void pa_close_audio                     (void);
-int  pa_open_audio                      (int inchans,
-                                            int outchans,
-                                            int rate,
-                                            t_sample *soundin,
-                                            t_sample *soundout,
-                                            int framesperbuf,
-                                            int nbuffers,
-                                            int indeviceno,
-                                            int outdeviceno,
+void pa_initialize                      (void);
+int  pa_open                            (int numberOfChannelsIn,
+                                            int numberOfChannelsOut,
+                                            int sampleRate,
+                                            t_sample *soundIn,
+                                            t_sample *soundOut,
+                                            int framesPerBuffer,
+                                            int numberOfBuffers,
+                                            int deviceIn,
+                                            int deviceOut,
                                             t_audiocallback callback);
-                                
-void pa_getdevs                         (char *indevlist,
-                                            int *nindevs,
-                                            char *outdevlist,
-                                            int *noutdevs,
-                                            int *canmulti, 
-                                            int *canCallback);
+                                            
+void pa_close                           (void);
+int  pa_pollDSP                         (void);
+void pa_getLists                        (char *devicesIn,
+                                            int  *numberOfDevicesIn,
+                                            char *devicesOut,
+                                            int  *numberOfDevicesOut,
+                                            int  *canMultiple, 
+                                            int  *canCallback);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

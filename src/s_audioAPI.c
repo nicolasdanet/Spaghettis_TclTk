@@ -194,7 +194,7 @@ t_error audio_open (void)
     
     if (API_WITH_PORTAUDIO && audio_api == API_PORTAUDIO)   {
     
-        err = pa_open_audio ((m > 0 ? j[0] : 0),
+        err = pa_open ((m > 0 ? j[0] : 0),
                 (n > 0 ? p[0] : 0), 
                 sampleRate,
                 audio_soundIn,
@@ -248,7 +248,7 @@ void audio_close (void)
 {
     if (audio_isOpened()) {
     //
-    if (API_WITH_PORTAUDIO  && audio_openedApi == API_PORTAUDIO)    { pa_close_audio();     }
+    if (API_WITH_PORTAUDIO  && audio_openedApi == API_PORTAUDIO)    { pa_close();           }
     else if (API_WITH_JACK  && audio_openedApi == API_JACK)         { jack_close_audio();   }
     else if (API_WITH_OSS   && audio_openedApi == API_OSS)          { oss_close_audio();    }
     else if (API_WITH_ALSA  && audio_openedApi == API_ALSA)         { alsa_close_audio();   }
@@ -456,7 +456,7 @@ static t_error audio_getLists (char *i, int *m, char *o, int *n, int *multiple, 
 {
     int k = audio_api;
     
-    if (API_WITH_PORTAUDIO && k == API_PORTAUDIO)   { pa_getdevs (i, m, o, n, multiple, callback);      }
+    if (API_WITH_PORTAUDIO && k == API_PORTAUDIO)   { pa_getLists (i, m, o, n, multiple, callback);     }
     else if (API_WITH_JACK && k == API_JACK)        { jack_getdevs (i, m, o, n, multiple, callback);    }
     else if (API_WITH_OSS && k == API_OSS)          { oss_getdevs (i, m, o, n, multiple, callback);     }
     else if (API_WITH_ALSA && k == API_ALSA)        { alsa_getdevs (i, m, o, n, multiple, callback);    }

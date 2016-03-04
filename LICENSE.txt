@@ -56,11 +56,6 @@ Additional terms:
         Copyright (c) 1997-1999 Guenter Geiger, Miller Puckette,
         Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
     
-    src/s_audio_alsamm.c
-    
-        Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
-        Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
-
     src/s_audio_oss.c
     
         Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
