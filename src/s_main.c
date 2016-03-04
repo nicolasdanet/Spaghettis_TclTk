@@ -272,6 +272,10 @@ int main_entry (int argc, char **argv)
         oss_initialize();
     #endif
 
+    #ifdef USEAPI_PORTAUDIO
+        pa_initialize();
+    #endif
+    
     midi_initializeNative();
     instance_initialize();
     sys_setSignalHandlers();

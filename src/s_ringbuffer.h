@@ -10,6 +10,10 @@
     requested to send the modifications to the original developer so that
     they can be incorporated into the canonical version.
     
+    Modified 2002/07/13 by olaf.matthes@gmx.de to allow any number of channels.
+    
+    Extensively hacked by msp@ucsd.edu for various reasons.
+    
 */
 
 /* < http://opensource.org/licenses/MIT > */

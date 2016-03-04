@@ -72,7 +72,7 @@ double scheduler_getLogicalTime (void)
 
 double scheduler_getLogicalTimeAfter (double ms)
 {
-    return (pd_this->pd_systime + (SYSTIME_CLOCKS_PER_MILLISECOND * ms));
+    return (pd_this->pd_systime + (SYSTIME_PER_MILLISECOND * ms));
 }
 
 double scheduler_getUnitsSince (double systime, double unit, int isSamples)
@@ -81,9 +81,9 @@ double scheduler_getUnitsSince (double systime, double unit, int isSamples)
     
     PD_ASSERT (elapsed >= 0.0);
     
-    if (isSamples) { d = SYSTIME_CLOCKS_PER_SECOND / audio_sampleRate; } 
+    if (isSamples) { d = SYSTIME_PER_SECOND / audio_sampleRate; } 
     else { 
-        d = SYSTIME_CLOCKS_PER_MILLISECOND;
+        d = SYSTIME_PER_MILLISECOND;
     }
     
     return (elapsed / (d * unit));
@@ -95,7 +95,7 @@ double scheduler_getMillisecondsSince (double systime)
     
     PD_ASSERT (elapsed >= 0.0);
     
-    return (elapsed / SYSTIME_CLOCKS_PER_MILLISECOND);
+    return (elapsed / SYSTIME_PER_MILLISECOND);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -131,7 +131,7 @@ void scheduler_needToExitWithError (void)
 
 static double scheduler_getSystimePerDSPTick (void)
 {
-    return (SYSTIME_CLOCKS_PER_SECOND * ((double)scheduler_blockSize / audio_sampleRate));
+    return (SYSTIME_PER_SECOND * ((double)scheduler_blockSize / audio_sampleRate));
 }
 
 static void scheduler_pollWatchdog (void)

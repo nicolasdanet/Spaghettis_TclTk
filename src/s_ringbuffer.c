@@ -23,7 +23,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 #include "m_pd.h"
 #include "m_core.h"
@@ -43,6 +42,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+/* Clear buffer. Should only be called when buffer is NOT being read. */
 
 static void ringbuffer_flush (sys_ringbuf *rbuf, void *dataPtr, long nfill)
 {
@@ -187,6 +188,10 @@ long ringbuffer_initialize (sys_ringbuf *rbuf, long numBytes, char *dataPtr, lon
     return 0;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 long ringbuffer_getReadAvailable (sys_ringbuf *rbuf)
 {
     long ret = rbuf->writeIndex - rbuf->readIndex;
@@ -201,6 +206,10 @@ long ringbuffer_getWriteAvailable (sys_ringbuf *rbuf)
 {
     return (rbuf->bufferSize - ringbuffer_getReadAvailable (rbuf));
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 long ringbuffer_write (sys_ringbuf *rbuf, const void *data, long numBytes, char *buffer)
 {

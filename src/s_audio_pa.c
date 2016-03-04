@@ -40,59 +40,24 @@ extern t_float          audio_sampleRate;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static PaStream         *pa_stream;
-static float            *pa_soundIn;
-static float            *pa_soundOut;
-static char             *pa_bufferIn;
-static char             *pa_bufferOut;
+static PaStream         *pa_stream;                     /* Shared. */
+static float            *pa_soundIn;                    /* Shared. */
+static float            *pa_soundOut;                   /* Shared. */
+static char             *pa_bufferIn;                   /* Shared. */
+static char             *pa_bufferOut;                  /* Shared. */
 
-static sys_ringbuf      pa_ringOut;
-static sys_ringbuf      pa_ringIn;
+static sys_ringbuf      pa_ringOut;                     /* Shared. */
+static sys_ringbuf      pa_ringIn;                      /* Shared. */
 
-static int              pa_channelsIn;
-static int              pa_channelsOut;
-static int              pa_started;
-static int              pa_numberOfBuffers;
+static int              pa_channelsIn;                  /* Shared. */
+static int              pa_channelsOut;                 /* Shared. */
+static int              pa_started;                     /* Shared. */
+static int              pa_advanceInNumberOfBlocks;     /* Shared. */
 
-static t_audiocallback  pa_callback;
+static t_audiocallback  pa_callback;                    /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-void pa_initialize (void)     /* Initialize PortAudio  */
-{
-    static int initialized;
-    if (!initialized)
-    {
-#ifdef __APPLE__
-        /* for some reason, on the Mac Pa_Initialize() closes file descriptor
-        1 (standard output) As a workaround, dup it to another number and dup2
-        it back afterward. */
-        int newfd = dup(1);
-        int another = open("/dev/null", 0);
-        dup2(another, 1);
-        int err = Pa_Initialize();
-        close(1);
-        close(another);
-        if (newfd >= 0)
-        {
-            fflush(stdout);
-            dup2(newfd, 1);
-            close(newfd);
-        }
-#else
-        int err = Pa_Initialize();
-#endif
-
-
-        if ( err != paNoError ) 
-        {
-            post("Error opening audio: %s", err, Pa_GetErrorText(err));
-            return;
-        }
-        initialized = 1;
-    }
-}
 
 static int pa_lowlevel_callback(const void *inputBuffer,
     void *outputBuffer, unsigned long nframes,
@@ -306,144 +271,155 @@ error:
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int pa_open(int inchans, int outchans, int rate, t_sample *soundin,
-    t_sample *soundout, int framesperbuf, int nbuffers,
-    int indeviceno, int outdeviceno, t_audiocallback callbackfn)
+/* On Mac OS Pa_Initialize() closes file descriptor 1 (standard output). */
+/* As a workaround, dup it to another number and dup2 it back afterward. */
+    
+void pa_initialize (void)
 {
-    PaError err;
-    int j, devno, pa_indev = -1, pa_outdev = -1;
+    #if PD_APPLE
     
-    pa_callback = callbackfn;
-    /* fprintf(stderr, "open callback %d\n", (callbackfn != 0)); */
-    pa_initialize();
-    /* post("in %d out %d rate %d device %d", inchans, outchans, rate, deviceno); */
+    int err, f = dup (1);
+    int dummy = open ("/dev/null", 0);
+    dup2 (dummy, 1);
     
-    if (pa_stream)
-        pa_close();
-
-    if (inchans > 0)
-    {
-        for (j = 0, devno = 0; j < Pa_GetDeviceCount(); j++)
-        {
-            const PaDeviceInfo *info = Pa_GetDeviceInfo(j);
-            if (info->maxInputChannels > 0)
-            {
-                if (devno == indeviceno)
-                {
-                    if (inchans > info->maxInputChannels)
-                      inchans = info->maxInputChannels;
-
-                    pa_indev = j;
-                    break;
-                }
-                devno++;
-            }
-        }
-    }   
+    err = Pa_Initialize();
     
-    if (outchans > 0)
-    {
-        for (j = 0, devno = 0; j < Pa_GetDeviceCount(); j++)
-        {
-            const PaDeviceInfo *info = Pa_GetDeviceInfo(j);
-            if (info->maxOutputChannels > 0)
-            {
-                if (devno == outdeviceno)
-                {
-                    if (outchans > info->maxOutputChannels)
-                      outchans = info->maxOutputChannels;
-
-                    pa_outdev = j;
-                    break;
-                }
-                devno++;
-            }
-        }
-    }   
-
-    if (inchans > 0 && pa_indev == -1)
-        inchans = 0;
-    if (outchans > 0 && pa_outdev == -1)
-        outchans = 0;
+    close (1);
+    close (dummy);
+    if (f >= 0) { fflush (stdout); dup2 (f, 1); close (f); }
     
-    if (0)
-    {
-        post("input device %d, channels %d", pa_indev, inchans);
-        post("output device %d, channels %d", pa_outdev, outchans);
-        post("framesperbuf %d, nbufs %d", framesperbuf, nbuffers);
-        post("rate %d", rate);
-    }
-    pa_channelsIn = audio_channelsIn = inchans;
-    pa_channelsOut = audio_channelsOut = outchans;
-    pa_soundIn = soundin;
-    pa_soundOut = soundout;
-
-#ifdef PA_WITH_FAKEBLOCKING
-    if (pa_bufferIn)
-        free((char *)pa_bufferIn), pa_bufferIn = 0;
-    if (pa_bufferOut)
-        free((char *)pa_bufferOut), pa_bufferOut = 0;
-#endif
-
-    if (! inchans && !outchans)
-        return (0);
+    #else
     
-    if (callbackfn)
-    {
-        pa_callback = callbackfn;
-        err = pa_open_callback(rate, inchans, outchans,
-            framesperbuf, nbuffers, pa_indev, pa_outdev, pa_lowlevel_callback);
-    }
-    else
-    {
-#ifdef PA_WITH_FAKEBLOCKING
-        if (pa_channelsIn)
-        {
-            pa_bufferIn = malloc(nbuffers*framesperbuf*pa_channelsIn*sizeof(float));
-            ringbuffer_initialize(&pa_ringIn,
-                nbuffers*framesperbuf*pa_channelsIn*sizeof(float), pa_bufferIn,
-                    nbuffers*framesperbuf*pa_channelsIn*sizeof(float));
-        }
-        if (pa_channelsOut)
-        {
-            pa_bufferOut = malloc(nbuffers*framesperbuf*pa_channelsOut*sizeof(float));
-            ringbuffer_initialize(&pa_ringOut,
-                nbuffers*framesperbuf*pa_channelsOut*sizeof(float), pa_bufferOut, 0);
-        }
-        err = pa_open_callback(rate, inchans, outchans,
-            framesperbuf, nbuffers, pa_indev, pa_outdev, pa_fifo_callback);
-#else
-        err = pa_open_callback(rate, inchans, outchans,
-            framesperbuf, nbuffers, pa_indev, pa_outdev, 0);
-#endif
-    }
-    pa_started = 0;
-    pa_numberOfBuffers = nbuffers;
-    if ( err != paNoError ) 
-    {
-        post("Error opening audio: %s", Pa_GetErrorText(err));
-        /* Pa_Terminate(); */
-        return (1);
-    }
-    else if (0)
-        post("... opened OK.");
-    return (0);
+    int err = Pa_Initialize();
+    
+    #endif
+
+    PD_ASSERT (err == paNoError);
 }
 
-void pa_close( void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int pa_open (int numberOfChannelsIn, 
+    int numberOfChannelsOut,
+    int sampleRate,
+    t_sample *soundIn,
+    t_sample *soundOut,
+    int blockSize,
+    int advanceInNumberOfBlocks,
+    int deviceIn,
+    int deviceOut,
+    t_audiocallback callback)
 {
-    if (pa_stream)
-    {
-        Pa_AbortStream(pa_stream);
-        Pa_CloseStream(pa_stream);
+    int t;
+    int n;
+    int i = -1;
+    int o = -1;
+    
+    pa_callback = callback;
+    
+    if (pa_stream) { pa_close(); PD_BUG; }
+
+    if (numberOfChannelsIn > 0) {
+    //
+    for (t = 0, n = 0; t < Pa_GetDeviceCount(); t++) {
+        const PaDeviceInfo *info = Pa_GetDeviceInfo (t);
+        if (info->maxInputChannels > 0) {
+            if (n == deviceIn) {
+                numberOfChannelsIn = PD_MIN (numberOfChannelsIn, info->maxInputChannels);
+                i = t;
+                break;
+            }
+            n++;
+        }
     }
-    pa_stream = 0;
-#ifdef PA_WITH_FAKEBLOCKING
-    if (pa_bufferIn)
-        free((char *)pa_bufferIn), pa_bufferIn = 0;
-    if (pa_bufferOut)
-        free((char *)pa_bufferOut), pa_bufferOut = 0;
-#endif
+    //
+    }   
+    
+    if (numberOfChannelsOut > 0) {
+    //
+    for (t = 0, n = 0; t < Pa_GetDeviceCount(); t++) {
+        const PaDeviceInfo *info = Pa_GetDeviceInfo(t);
+        if (info->maxOutputChannels > 0) {
+            if (n == deviceOut) {
+                numberOfChannelsOut = PD_MIN (numberOfChannelsOut, info->maxOutputChannels);
+                o = t;
+                break;
+            }
+            n++;
+        }
+    }
+    //
+    }   
+
+    if (i == -1) { numberOfChannelsIn  = 0; }
+    if (o == -1) { numberOfChannelsOut = 0; }
+    
+    PD_ASSERT (numberOfChannelsIn <= audio_channelsIn);
+    PD_ASSERT (numberOfChannelsOut <= audio_channelsOut);
+    
+    pa_channelsIn   = audio_channelsIn  = numberOfChannelsIn;
+    pa_channelsOut  = audio_channelsOut = numberOfChannelsOut;
+    pa_soundIn      = soundIn;
+    pa_soundOut     = soundOut;
+
+    if (pa_bufferIn)  { PD_MEMORY_FREE (pa_bufferIn);  pa_bufferIn  = NULL; }
+    if (pa_bufferOut) { PD_MEMORY_FREE (pa_bufferOut); pa_bufferOut = NULL; }
+
+    if (numberOfChannelsIn || numberOfChannelsOut) {
+    //
+    PaError err;
+    
+    if (callback) {
+    
+        err = pa_open_callback (sampleRate, 
+                numberOfChannelsIn, 
+                numberOfChannelsOut,
+                blockSize, 
+                advanceInNumberOfBlocks, 
+                i, 
+                o, 
+                pa_lowlevel_callback);
+            
+    } else {
+    
+        if (pa_channelsIn) {
+            size_t k = advanceInNumberOfBlocks * blockSize * pa_channelsIn * sizeof (float);
+            pa_bufferIn = PD_MEMORY_GET (k);
+            ringbuffer_initialize (&pa_ringIn, k, pa_bufferIn, k);
+        }
+        if (pa_channelsOut) {
+            size_t k = advanceInNumberOfBlocks * blockSize * pa_channelsOut * sizeof (float);
+            pa_bufferOut = PD_MEMORY_GET (k);
+            ringbuffer_initialize (&pa_ringOut, k, pa_bufferOut, 0);
+        }
+        
+        err = pa_open_callback (sampleRate,
+                numberOfChannelsIn, 
+                numberOfChannelsOut,
+                blockSize, 
+                advanceInNumberOfBlocks,
+                i,
+                o,
+                pa_fifo_callback);
+    }
+    
+    pa_started = 0;
+    pa_advanceInNumberOfBlocks = advanceInNumberOfBlocks;
+    
+    if (err != paNoError) { PD_BUG; return 1; }
+    //
+    }
+    
+    return 0;
+}
+
+void pa_close (void)
+{
+    if (pa_stream)    { Pa_AbortStream (pa_stream); Pa_CloseStream (pa_stream); pa_stream = NULL; }
+    if (pa_bufferIn)  { PD_MEMORY_FREE (pa_bufferIn);  pa_bufferIn  = NULL; }
+    if (pa_bufferOut) { PD_MEMORY_FREE (pa_bufferOut); pa_bufferOut = NULL; } 
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -543,7 +519,7 @@ int pa_pollDSP(void)
         {
             memset(conversionbuf, 0,
                 audio_channelsOut * AUDIO_DEFAULT_BLOCKSIZE * sizeof(float));
-            for (j = 0; j < pa_numberOfBuffers-1; j++)
+            for (j = 0; j < pa_advanceInNumberOfBlocks-1; j++)
                 Pa_WriteStream(pa_stream, conversionbuf, AUDIO_DEFAULT_BLOCKSIZE);
         }
         for (j = 0, fp = audio_soundOut, fp2 = conversionbuf;
@@ -589,7 +565,7 @@ void pa_getLists(char *indevlist, int *nindevs,
     *canmulti = 1;  /* one dev each for input and output */
     *canCallback = 1;
     
-    pa_initialize();
+    //pa_initialize();
     ndev = Pa_GetDeviceCount();
     for (i = 0; i < ndev; i++)
     {

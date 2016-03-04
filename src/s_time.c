@@ -95,7 +95,7 @@ t_clock *clock_new (void *owner, t_method fn)
     t_clock *x = (t_clock *)PD_MEMORY_GET (sizeof (t_clock));
     
     x->c_systime    = -1.0;
-    x->c_unit       = SYSTIME_CLOCKS_PER_MILLISECOND;
+    x->c_unit       = SYSTIME_PER_MILLISECOND;
     x->c_fn         = (t_clockfn)fn;
     x->c_owner      = owner;
     x->c_next       = NULL;
@@ -156,7 +156,7 @@ void clock_delay (t_clock *x, double delay)     /* Could be in milliseconds or i
     
     if (x->c_unit > 0) { d = x->c_unit; }
     else {
-        d = -(x->c_unit * (SYSTIME_CLOCKS_PER_SECOND / audio_sampleRate));
+        d = -(x->c_unit * (SYSTIME_PER_SECOND / audio_sampleRate));
     }
 
     time = pd_this->pd_systime + (d * delay);
@@ -176,19 +176,19 @@ static void clock_setUnit (t_clock *x, double unit, int isSamples)
     
     if (isSamples) { if (unit == -x->c_unit) { return; } }
     else { 
-        if (unit == x->c_unit * SYSTIME_CLOCKS_PER_MILLISECOND) { return; }
+        if (unit == x->c_unit * SYSTIME_PER_MILLISECOND) { return; }
     }
     
     if (x->c_systime >= 0.0) {
     //
-    double d = (x->c_unit > 0) ? x->c_unit : (x->c_unit * (SYSTIME_CLOCKS_PER_SECOND / audio_sampleRate));
+    double d = (x->c_unit > 0) ? x->c_unit : (x->c_unit * (SYSTIME_PER_SECOND / audio_sampleRate));
     timeLeft = (x->c_systime - pd_this->pd_systime) / d;
     //
     }
     
     if (isSamples) { x->c_unit = -unit; }
     else {
-        x->c_unit = unit * SYSTIME_CLOCKS_PER_MILLISECOND; 
+        x->c_unit = unit * SYSTIME_PER_MILLISECOND; 
     }
     
     if (timeLeft >= 0.0) { clock_delay (x, timeLeft); }
