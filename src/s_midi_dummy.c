@@ -41,7 +41,7 @@ void midi_pushNextMessageNative (int port, int a, int b, int c)
 {
 }
 
-void midi_pushNextByteNative (int port, int byte)
+void midi_pushNextByteNative (int port, int a)
 {
 }
 

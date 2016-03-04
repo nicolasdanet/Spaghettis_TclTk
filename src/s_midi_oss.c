@@ -198,8 +198,10 @@ void midi_pollNative (void)
     int i, again = 1;
     int throttle = 100;
         
-    while (again && (throttle-- > 0)) {
+    while (again && (throttle > 0)) {
     //
+    throttle--;
+    
     again = 0;
     
     for (i = 0; i < midioss_numberOfDevicesIn; i++) {
