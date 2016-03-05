@@ -59,7 +59,7 @@ static t_audiocallback  pa_callback;                    /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int pa_lowlevel_callback(const void *inputBuffer,
+static int pa_lowLevelCallback (const void *inputBuffer,
     void *outputBuffer, unsigned long nframes,
     const PaStreamCallbackTimeInfo *outTime, PaStreamCallbackFlags myflags, 
     void *userData)
@@ -102,16 +102,7 @@ static int pa_lowlevel_callback(const void *inputBuffer,
     return 0;
 }
 
-#ifdef PA_WITH_FAKEBLOCKING
-    /* callback for "non-callback" case in which we actualy open portaudio
-    in callback mode but fake "blocking mode". We communicate with the
-    main thread via FIFO.  First read the audio output FIFO (which
-    we sync on, not waiting for it but supplying zeros to the audio output if
-    there aren't enough samples in the FIFO when we are called), then write
-    to the audio input FIFO.  The main thread will wait for the input fifo.
-    We can either throw it a pthreads condition or just allow the main thread
-    to poll for us; so far polling seems to work better. */
-static int pa_fifo_callback(const void *inputBuffer,
+static int pa_fakeBlockingCallback(const void *inputBuffer,
     void *outputBuffer, unsigned long nframes,
     const PaStreamCallbackTimeInfo *outTime, PaStreamCallbackFlags myflags, 
     void *userData)
@@ -165,7 +156,9 @@ static int pa_fifo_callback(const void *inputBuffer,
 #endif
     return 0;
 }
-#endif /* PA_WITH_FAKEBLOCKING */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 static PaError pa_openWithCallback (double sampleRate, 
     int numberOfChannelsIn,
@@ -212,7 +205,7 @@ static PaError pa_openWithCallback (double sampleRate,
               
     if (err == paNoError) {
         err = Pa_StartStream (pa_stream);
-        if (err == paNoError) { PD_ASSERT (sampleRate == audio_sampleRate); return paNoError; }
+        if (err == paNoError) { return paNoError; }
         else {
             pa_close();
         }
@@ -338,7 +331,7 @@ t_error pa_open (int numberOfChannelsIn,
                 advanceInNumberOfBlocks, 
                 i, 
                 o, 
-                pa_lowlevel_callback);
+                pa_lowLevelCallback);
             
     } else {
     
@@ -360,7 +353,7 @@ t_error pa_open (int numberOfChannelsIn,
                 advanceInNumberOfBlocks,
                 i,
                 o,
-                pa_fifo_callback);
+                pa_fakeBlockingCallback);
     }
     
     pa_started = 0;
@@ -514,56 +507,42 @@ int pa_pollDSP(void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* scanning for devices */
-void pa_getLists(char *indevlist, int *nindevs,
-    char *outdevlist, int *noutdevs, int *canmulti, int *canCallback)
+t_error pa_getLists (char *devicesIn,
+    int *numberOfDevicesIn,
+    char *devicesOut,
+    int *numberOfDevicesOut,
+    int *canMultiple,
+    int *canCallback)
 {
-    int maxndev = MAXIMUM_DEVICES;
-    int devdescsize = MAXIMUM_DESCRIPTION;
-    int i, nin = 0, nout = 0, ndev;
+    int i;
+    int m = 0;
+    int n = 0;
     
-    *canmulti = 1;  /* one dev each for input and output */
+    t_error err = PD_ERROR_NONE;
+        
+    *canMultiple = 1;           /* One device each for input and for output. */
     *canCallback = 1;
     
-    //pa_initialize();
-    ndev = Pa_GetDeviceCount();
-    for (i = 0; i < ndev; i++)
-    {
-        const PaDeviceInfo *pdi = Pa_GetDeviceInfo(i);
-        if (pdi->maxInputChannels > 0 && nin < maxndev)
-        {
-                /* LATER figure out how to get API name correctly */
-            snprintf(indevlist + nin * devdescsize, devdescsize,
-#ifdef _WIN32
-     "%s:%s", (pdi->hostApi == 0 ? "MMIO" : (pdi->hostApi == 1 ? "ASIO" : "?")),
-#else
-#ifdef __APPLE__
-             "%s",
-#else
-            "(%d) %s", pdi->hostApi,
-#endif
-#endif
-                pdi->name);
-            nin++;
-        }
-        if (pdi->maxOutputChannels > 0 && nout < maxndev)
-        {
-            snprintf(outdevlist + nout * devdescsize, devdescsize,
-#ifdef _WIN32
-     "%s:%s", (pdi->hostApi == 0 ? "MMIO" : (pdi->hostApi == 1 ? "ASIO" : "?")),
-#else
-#ifdef __APPLE__
-             "%s",
-#else
-            "(%d) %s", pdi->hostApi,
-#endif
-#endif
-                pdi->name);
-            nout++;
-        }
+    for (i = 0; i < Pa_GetDeviceCount(); i++) {
+    //
+    const PaDeviceInfo *info = Pa_GetDeviceInfo (i);
+        
+    if (info->maxInputChannels > 0 && m < MAXIMUM_DEVICES) {
+        err |= string_copy (devicesIn + (m * MAXIMUM_DESCRIPTION), MAXIMUM_DESCRIPTION, info->name);
+        m++;
     }
-    *nindevs = nin;
-    *noutdevs = nout;
+    
+    if (info->maxOutputChannels > 0 && n < MAXIMUM_DEVICES) {
+        err |= string_copy (devicesOut + (n * MAXIMUM_DESCRIPTION), MAXIMUM_DESCRIPTION, info->name);
+        n++;
+    }
+    //
+    }
+    
+    *numberOfDevicesIn  = m;
+    *numberOfDevicesOut = n;
+    
+    return err;
 }
 
 // -----------------------------------------------------------------------------------------------------------

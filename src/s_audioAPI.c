@@ -456,11 +456,11 @@ static t_error audio_getLists (char *i, int *m, char *o, int *n, int *multiple, 
 {
     int k = audio_api;
     
-    if (API_WITH_PORTAUDIO && k == API_PORTAUDIO)   { pa_getLists (i, m, o, n, multiple, callback);     }
-    else if (API_WITH_JACK && k == API_JACK)        { jack_getdevs (i, m, o, n, multiple, callback);    }
-    else if (API_WITH_OSS && k == API_OSS)          { oss_getdevs (i, m, o, n, multiple, callback);     }
-    else if (API_WITH_ALSA && k == API_ALSA)        { alsa_getdevs (i, m, o, n, multiple, callback);    }
-    else if (API_WITH_DUMMY && k == API_DUMMY)      { dummy_getLists (i, m, o, n, multiple, callback);  }
+    if (API_WITH_PORTAUDIO && k == API_PORTAUDIO) { return pa_getLists (i, m, o, n, multiple, callback);    }
+    else if (API_WITH_JACK && k == API_JACK)      { jack_getdevs (i, m, o, n, multiple, callback);    }
+    else if (API_WITH_OSS && k == API_OSS)        { oss_getdevs (i, m, o, n, multiple, callback);     }
+    else if (API_WITH_ALSA && k == API_ALSA)      { alsa_getdevs (i, m, o, n, multiple, callback);    }
+    else if (API_WITH_DUMMY && k == API_DUMMY)    { return dummy_getLists (i, m, o, n, multiple, callback); }
     else {
         PD_BUG; *m = *n = *i = *o = 0; return PD_ERROR;
     }
