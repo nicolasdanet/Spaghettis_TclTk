@@ -122,10 +122,10 @@ typedef void (*t_gotfn5)(void *x, void *arg1, void *arg2, void *arg3, void *arg4
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define SECONDS_TO_MILLISECONDS(n)          ((n) * 1000.0);
-#define MILLISECONDS_TO_MICROSECONDS(n)     ((n) * 1000.0);
-#define MILLISECONDS_TO_SECONDS(n)          ((n) * 1e-3);
-#define MICROSECONDS_TO_SECONDS(n)          ((n) * 1e-6);
+#define SECONDS_TO_MILLISECONDS(n)          ((n) * (double)1000.0);
+#define MILLISECONDS_TO_MICROSECONDS(n)     ((n) * (double)1000.0);
+#define MILLISECONDS_TO_SECONDS(n)          ((n) * (double)1e-3);
+#define MICROSECONDS_TO_SECONDS(n)          ((n) * (double)1e-6);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

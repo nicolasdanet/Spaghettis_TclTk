@@ -34,13 +34,12 @@ extern int      audio_channelsOut;
 extern int      audio_advanceInSamples;
 extern int      audio_advanceInMicroseconds;
 extern t_float  audio_sampleRate;
-extern int      audio_blockSize;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int             audio_api           = API_DEFAULT_AUDIO;                            /* Shared. */
-int             audio_openedApi     = -1;                                           /* Shared. */
+int             audio_api               = API_DEFAULT_AUDIO;                        /* Shared. */
+int             audio_openedApi         = -1;                                       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -59,9 +58,10 @@ static int      audio_numberOfDevicesOut;                                       
 static int      audio_devicesOutChannels[MAXIMUM_AUDIO_OUT];                        /* Shared. */
 static char     audio_devicesOutNames[MAXIMUM_AUDIO_OUT * MAXIMUM_DESCRIPTION];     /* Shared. */
 
-static int      audio_tempSampleRate;                                               /* Shared. */
-static int      audio_tempAdvance;                                                  /* Shared. */
-static int      audio_tempWithCallback;                                             /* Shared. */
+static int      audio_tempSampleRate    = AUDIO_DEFAULT_SAMPLERATE;                 /* Shared. */
+static int      audio_tempAdvance       = AUDIO_DEFAULT_ADVANCE;                    /* Shared. */
+static int      audio_tempWithCallback  = 0;                                        /* Shared. */
+static int      audio_tempBlockSize     = AUDIO_DEFAULT_BLOCKSIZE;                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -199,8 +199,8 @@ t_error audio_open (void)
                 sampleRate,
                 audio_soundIn,
                 audio_soundOut,
-                (audio_blockSize ? audio_blockSize : AUDIO_DEFAULT_BLOCKSIZE), 
-                audio_advanceInSamples / (audio_blockSize ? audio_blockSize : AUDIO_DEFAULT_BLOCKSIZE), 
+                blockSize, 
+                audio_advanceInSamples / blockSize, 
                 (m > 0 ? i[0] : 0),
                 (n > 0 ? o[0] : 0),
                 (withCallback ? scheduler_audioCallback : NULL));
@@ -214,11 +214,11 @@ t_error audio_open (void)
 
     } else if (API_WITH_OSS && audio_api == API_OSS)        {
     
-        err = oss_open_audio (m, i, m, j, n, o, n, p, sampleRate, audio_blockSize);
+        err = oss_open_audio (m, i, m, j, n, o, n, p, sampleRate, blockSize);
         
     } else if (API_WITH_ALSA && audio_api == API_ALSA)      {
     
-        err = alsa_open_audio (m, i, m, j, n, o, n, p, sampleRate, audio_blockSize);
+        err = alsa_open_audio (m, i, m, j, n, o, n, p, sampleRate, blockSize);
         
     } else if (API_WITH_DUMMY && audio_api == API_DUMMY)    {
     
@@ -320,7 +320,7 @@ void audio_getDevices (int *numberOfDevicesIn,
     *sampleRate   = audio_tempSampleRate;
     *advance      = audio_tempAdvance;
     *withCallback = audio_tempWithCallback;
-    *blockSize    = audio_blockSize;
+    *blockSize    = audio_tempBlockSize;
 }
 
 static void audio_setDevices (int numberOfDevicesIn, 
@@ -365,7 +365,7 @@ static void audio_setDevices (int numberOfDevicesIn,
     audio_tempSampleRate        = sampleRate;
     audio_tempAdvance           = advance;
     audio_tempWithCallback      = withCallback;
-    audio_blockSize             = blockSize;
+    audio_tempBlockSize         = blockSize;
 }
 
 static void audio_setDevicesAndParameters (int numberOfDevicesIn,

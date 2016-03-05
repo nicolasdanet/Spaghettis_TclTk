@@ -30,7 +30,6 @@ int         audio_channelsOut;                      /* Shared. */
 int         audio_advanceInSamples;                 /* Shared. */
 int         audio_advanceInMicroseconds;            /* Shared. */
 t_float     audio_sampleRate;                       /* Shared. */
-int         audio_blockSize;                        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -96,7 +95,7 @@ void audio_initializeMemoryAndParameters (int usedChannelsIn, int usedChannelsOu
     
     audio_channelsIn        = usedChannelsIn;
     audio_channelsOut       = usedChannelsOut;
-    audio_sampleRate        = sampleRate;
+    audio_sampleRate        = (t_float)sampleRate;
     audio_advanceInSamples  = MICROSECONDS_TO_SECONDS (audio_advanceInMicroseconds * audio_sampleRate);
     audio_advanceInSamples  = PD_MAX (audio_advanceInSamples, AUDIO_DEFAULT_BLOCKSIZE);
 

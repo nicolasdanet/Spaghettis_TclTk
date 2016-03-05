@@ -80,7 +80,9 @@ static int pa_callbackCustom (const void *input,
         float *p = ((float *)input) + (n * pa_channelsIn);
         float *sound = pa_soundIn;
         for (i = 0, p1 = p; i < pa_channelsIn; i++, p1++) {
-            for (j = 0, p2 = p1; j < AUDIO_DEFAULT_BLOCKSIZE; j++, p2 += pa_channelsIn)  { *sound++ = *p2; }
+            for (j = 0, p2 = p1; j < AUDIO_DEFAULT_BLOCKSIZE; j++, p2 += pa_channelsIn) { 
+                *sound++ = *p2;
+            }
         }
     } else { 
         memset ((void *)pa_soundIn, 0, AUDIO_DEFAULT_BLOCKSIZE * pa_channelsIn * sizeof (float));
@@ -94,7 +96,9 @@ static int pa_callbackCustom (const void *input,
         float *p = ((float *)output) + (n * pa_channelsOut);
         float *sound = pa_soundOut;
         for (i = 0, p1 = p; i < pa_channelsOut; i++, p1++) {
-            for (j = 0, p2 = p1; j < AUDIO_DEFAULT_BLOCKSIZE; j++, p2 += pa_channelsOut) { *p2 = *sound++; }
+            for (j = 0, p2 = p1; j < AUDIO_DEFAULT_BLOCKSIZE; j++, p2 += pa_channelsOut) { 
+                *p2 = *sound++; 
+            }
         }
     }
     //
