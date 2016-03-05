@@ -102,58 +102,32 @@ static int pa_lowLevelCallback (const void *inputBuffer,
     return 0;
 }
 
-static int pa_fakeBlockingCallback(const void *inputBuffer,
-    void *outputBuffer, unsigned long nframes,
-    const PaStreamCallbackTimeInfo *outTime, PaStreamCallbackFlags myflags, 
+static int pa_fakeBlockingCallback (const void *input,
+    void *output,
+    unsigned long frameCount,
+    const PaStreamCallbackTimeInfo *timeInfo,
+    PaStreamCallbackFlags statusFlags, 
     void *userData)
 {
-    /* callback routine for non-callback client... throw samples into
-            and read them out of a FIFO */
-    int ch;
-    long fiforoom;
-    float *fbuf;
-
-#if CHECKFIFOS
-    if (pa_channelsIn * ringbuffer_getReadAvailable(&pa_ringOut) !=   
-        pa_channelsOut * ringbuffer_getWriteAvailable(&pa_ringIn))
-            post("warning: in and out rings unequal (%d, %d)",
-                ringbuffer_getReadAvailable(&pa_ringOut),
-                 ringbuffer_getWriteAvailable(&pa_ringIn));
-#endif
-    fiforoom = ringbuffer_getReadAvailable(&pa_ringOut);
-    if ((unsigned)fiforoom >= nframes*pa_channelsOut*sizeof(float))
-    {
-        if (outputBuffer)
-            ringbuffer_read(&pa_ringOut, outputBuffer,
-                nframes*pa_channelsOut*sizeof(float), pa_bufferOut);
-        else if (pa_channelsOut)
-            post("audio error: no outputBuffer but output channels");
-        if (inputBuffer)
-            ringbuffer_write(&pa_ringIn, inputBuffer,
-                nframes*pa_channelsIn*sizeof(float), pa_bufferIn);
-        else if (pa_channelsIn)
-            post("audio error: no inputBuffer but input channels");
-    }
-    else
-    {        /* PD could not keep up; generate zeros */
-        /* if (pa_started)
-            pa_dio_error = 1; */
-        if (outputBuffer)
-        {
-            for (ch = 0; ch < pa_channelsOut; ch++)
-            {
-                unsigned long frame;
-                fbuf = ((float *)outputBuffer) + ch;
-                for (frame = 0; frame < nframes; frame++, fbuf += pa_channelsOut)
-                    *fbuf = 0;
+    unsigned long availableOut = ringbuffer_getReadAvailable (&pa_ringOut);
+    unsigned long requiredIn   = frameCount * sizeof (float) * pa_channelsIn;
+    unsigned long requiredOut  = frameCount * sizeof (float) * pa_channelsOut;
+    
+    if (availableOut >= requiredOut) {
+        if (output) { ringbuffer_read (&pa_ringOut, output, requiredOut, pa_bufferOut); }
+        if (input)  { ringbuffer_write (&pa_ringIn, input, requiredOut, pa_bufferIn);   }
+            
+    } else { 
+        if (output) {   /* Fill with zeros. */
+            int i;
+            for (i = 0; i < pa_channelsOut; i++) {
+                unsigned long j;
+                float *p = ((float *)output) + i;
+                for (j = 0; j < frameCount; j++, p += pa_channelsOut) { *p = 0; }
             }
         }
     }
-#ifdef PA_WITH_THREADSIGNAL
-    pthread_mutex_lock(&pa_mutex);
-    pthread_cond_signal(&pa_cond);
-    pthread_mutex_unlock(&pa_mutex);
-#endif
+
     return 0;
 }
 
@@ -528,7 +502,7 @@ t_error pa_getLists (char *devicesIn,
     const PaDeviceInfo *info = Pa_GetDeviceInfo (i);
         
     if (info->maxInputChannels > 0 && m < MAXIMUM_DEVICES) {
-        err |= string_copy (devicesIn + (m * MAXIMUM_DESCRIPTION), MAXIMUM_DESCRIPTION, info->name);
+        err |= string_copy (devicesIn + (m * MAXIMUM_DESCRIPTION),  MAXIMUM_DESCRIPTION, info->name);
         m++;
     }
     
