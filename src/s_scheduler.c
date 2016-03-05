@@ -36,18 +36,17 @@ extern t_pdinstance *pd_this;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static volatile sig_atomic_t scheduler_quit;                                /* Shared. */
+static volatile sig_atomic_t scheduler_quit;            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int      scheduler_sleepGrain;                                       /* Shared. */
-static int      scheduler_blockSize     = AUDIO_DEFAULT_BLOCKSIZE;          /* Shared. */
-static int      scheduler_audioMode     = SCHEDULER_AUDIO_NONE;             /* Shared. */
+static int      scheduler_sleepGrain;                   /* Shared. */
+static int      scheduler_audioMode;                    /* Shared. */
 
-static double   scheduler_realTime;                                         /* Shared. */
-static double   scheduler_logicalTime;                                      /* Shared. */
-static double   scheduler_systimePerDSPTick;                                /* Shared. */
+static double   scheduler_realTime;                     /* Shared. */
+static double   scheduler_logicalTime;                  /* Shared. */
+static double   scheduler_systimePerDSPTick;            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -55,8 +54,8 @@ static double   scheduler_systimePerDSPTick;                                /* S
 #if PD_WATCHDOG 
 #if PD_WITH_NOGUI
 
-static int      scheduler_didDSP;                                           /* Shared. */
-static int      scheduler_nextPing;                                         /* Shared. */
+static int      scheduler_didDSP;                       /* Shared. */
+static int      scheduler_nextPing;                     /* Shared. */
 
 #endif
 #endif
@@ -131,7 +130,7 @@ void scheduler_needToExitWithError (void)
 
 static double scheduler_getSystimePerDSPTick (void)
 {
-    return (SYSTIME_PER_SECOND * ((double)scheduler_blockSize / audio_sampleRate));
+    return (SYSTIME_PER_SECOND * ((double)AUDIO_DEFAULT_BLOCKSIZE / audio_sampleRate));
 }
 
 static void scheduler_pollWatchdog (void)
@@ -140,8 +139,10 @@ static void scheduler_pollWatchdog (void)
     #if PD_WITH_NOGUI
         
     if ((scheduler_didDSP - scheduler_nextPing) > 0) {
-        interface_watchdog (NULL);
-        scheduler_nextPing = scheduler_didDSP + (2 * (int)(audio_sampleRate / (double)scheduler_blockSize));
+    //
+    interface_watchdog (NULL);
+    scheduler_nextPing = scheduler_didDSP + (2 * (int)(audio_sampleRate / (double)AUDIO_DEFAULT_BLOCKSIZE));
+    //
     }
     
     #endif
