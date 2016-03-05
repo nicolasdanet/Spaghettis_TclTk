@@ -154,8 +154,10 @@ static void interface_increaseGuiBuffer()
 {
     int oldSize = interface_outGuiBufferSize;
     int newSize = oldSize * 2;
+    
     PD_ASSERT (newSize <= INTERFACE_GUI_BUFFER_ABORT_SIZE); 
-    PD_ABORT (newSize > INTERFACE_GUI_BUFFER_ABORT_SIZE);
+    PD_ABORT (newSize > INTERFACE_GUI_BUFFER_ABORT_SIZE);           /* GUI buffer no more consumed? */
+    
     interface_outGuiBuffer = PD_MEMORY_RESIZE (interface_outGuiBuffer, oldSize, newSize);
     interface_outGuiBufferSize = newSize;
 }

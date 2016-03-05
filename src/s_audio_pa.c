@@ -46,8 +46,8 @@ static float            *pa_soundOut;                   /* Shared. */
 static char             *pa_bufferIn;                   /* Shared. */
 static char             *pa_bufferOut;                  /* Shared. */
 
-static sys_ringbuf      pa_ringOut;                     /* Shared. */
 static sys_ringbuf      pa_ringIn;                      /* Shared. */
+static sys_ringbuf      pa_ringOut;                     /* Shared. */
 
 static int              pa_channelsIn;                  /* Shared. */
 static int              pa_channelsOut;                 /* Shared. */
@@ -59,50 +59,51 @@ static t_audiocallback  pa_callback;                    /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int pa_lowLevelCallback (const void *inputBuffer,
-    void *outputBuffer, unsigned long nframes,
-    const PaStreamCallbackTimeInfo *outTime, PaStreamCallbackFlags myflags, 
+static int pa_callbackCustom (const void *input,
+    void *output,
+    unsigned long frameCount,
+    const PaStreamCallbackTimeInfo *timeInfo,
+    PaStreamCallbackFlags statusFlags, 
     void *userData)
 {
-    int i; 
-    unsigned int n, j;
-    float *fbuf, *fp2, *fp3, *soundiop;
-    if (nframes % AUDIO_DEFAULT_BLOCKSIZE)
-    {
-        post("warning: audio nframes %ld not a multiple of blocksize %d",
-            nframes, (int)AUDIO_DEFAULT_BLOCKSIZE);
-        nframes -= (nframes % AUDIO_DEFAULT_BLOCKSIZE);
-    }
-    for (n = 0; n < nframes; n += AUDIO_DEFAULT_BLOCKSIZE)
-    {
-        if (inputBuffer != NULL)
-        {
-            fbuf = ((float *)inputBuffer) + n*pa_channelsIn;
-            soundiop = pa_soundIn;
-            for (i = 0, fp2 = fbuf; i < pa_channelsIn; i++, fp2++)
-                    for (j = 0, fp3 = fp2; j < AUDIO_DEFAULT_BLOCKSIZE;
-                        j++, fp3 += pa_channelsIn)
-                            *soundiop++ = *fp3;
+    int i, j;
+    unsigned long n;
+    float *p1 = NULL;
+    float *p2 = NULL;
+    
+    PD_ASSERT ((frameCount % AUDIO_DEFAULT_BLOCKSIZE) == 0);
+    PD_ABORT  ((frameCount % AUDIO_DEFAULT_BLOCKSIZE) != 0);
+    
+    for (n = 0; n < frameCount; n += AUDIO_DEFAULT_BLOCKSIZE) {
+    //
+    if (input) {
+        float *p = ((float *)input) + (n * pa_channelsIn);
+        float *sound = pa_soundIn;
+        for (i = 0, p1 = p; i < pa_channelsIn; i++, p1++) {
+            for (j = 0, p2 = p1; j < AUDIO_DEFAULT_BLOCKSIZE; j++, p2 += pa_channelsIn)  { *sound++ = *p2; }
         }
-        else memset((void *)pa_soundIn, 0,
-            AUDIO_DEFAULT_BLOCKSIZE * pa_channelsIn * sizeof(float));
-        memset((void *)pa_soundOut, 0,
-            AUDIO_DEFAULT_BLOCKSIZE * pa_channelsOut * sizeof(float));
-        (*pa_callback)();
-        if (outputBuffer != NULL)
-        {
-            fbuf = ((float *)outputBuffer) + n*pa_channelsOut;
-            soundiop = pa_soundOut;
-            for (i = 0, fp2 = fbuf; i < pa_channelsOut; i++, fp2++)
-                for (j = 0, fp3 = fp2; j < AUDIO_DEFAULT_BLOCKSIZE;
-                    j++, fp3 += pa_channelsOut)
-                        *fp3 = *soundiop++;
+    } else { 
+        memset ((void *)pa_soundIn, 0, AUDIO_DEFAULT_BLOCKSIZE * pa_channelsIn * sizeof (float));
+    }
+    
+    memset ((void *)pa_soundOut, 0, AUDIO_DEFAULT_BLOCKSIZE * pa_channelsOut * sizeof (float));
+    
+    (*pa_callback)();
+        
+    if (output) {
+        float *p = ((float *)output) + (n * pa_channelsOut);
+        float *sound = pa_soundOut;
+        for (i = 0, p1 = p; i < pa_channelsOut; i++, p1++) {
+            for (j = 0, p2 = p1; j < AUDIO_DEFAULT_BLOCKSIZE; j++, p2 += pa_channelsOut) { *p2 = *sound++; }
         }
     }
-    return 0;
+    //
+    }
+    
+    return paContinue;
 }
 
-static int pa_fakeBlockingCallback (const void *input,
+static int pa_callbackRing (const void *input,
     void *output,
     unsigned long frameCount,
     const PaStreamCallbackTimeInfo *timeInfo,
@@ -123,16 +124,17 @@ static int pa_fakeBlockingCallback (const void *input,
             for (i = 0; i < pa_channelsOut; i++) {
                 unsigned long j;
                 float *p = ((float *)output) + i;
-                for (j = 0; j < frameCount; j++, p += pa_channelsOut) { *p = 0; }
+                for (j = 0; j < frameCount; j++, p += pa_channelsOut) { *p = 0.0; }
             }
         }
     }
 
-    return 0;
+    return paContinue;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static PaError pa_openWithCallback (double sampleRate, 
     int numberOfChannelsIn,
@@ -305,7 +307,7 @@ t_error pa_open (int numberOfChannelsIn,
                 advanceInNumberOfBlocks, 
                 i, 
                 o, 
-                pa_lowLevelCallback);
+                pa_callbackCustom);
             
     } else {
     
@@ -327,7 +329,7 @@ t_error pa_open (int numberOfChannelsIn,
                 advanceInNumberOfBlocks,
                 i,
                 o,
-                pa_fakeBlockingCallback);
+                pa_callbackRing);
     }
     
     pa_started = 0;

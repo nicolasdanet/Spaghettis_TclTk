@@ -199,8 +199,8 @@ t_error audio_open (void)
                 sampleRate,
                 audio_soundIn,
                 audio_soundOut,
-                (audio_blockSize ? audio_blockSize : 64), 
-                audio_advanceInSamples / (audio_blockSize ? audio_blockSize : 64), 
+                (audio_blockSize ? audio_blockSize : AUDIO_DEFAULT_BLOCKSIZE), 
+                audio_advanceInSamples / (audio_blockSize ? audio_blockSize : AUDIO_DEFAULT_BLOCKSIZE), 
                 (m > 0 ? i[0] : 0),
                 (n > 0 ? o[0] : 0),
                 (withCallback ? scheduler_audioCallback : NULL));
