@@ -73,7 +73,7 @@ static int pa_ringCallback (const void *input,
     
     if (availableOut >= requiredOut) {
         if (output) { ringbuffer_read (&pa_ringOut, output, requiredOut, pa_bufferOut); }
-        if (input)  { ringbuffer_write (&pa_ringIn, input, requiredOut, pa_bufferIn);   }
+        if (input)  { ringbuffer_write (&pa_ringIn, input, requiredIn, pa_bufferIn);    }
             
     } else { 
         if (output) {   /* Fill with zeros. */
