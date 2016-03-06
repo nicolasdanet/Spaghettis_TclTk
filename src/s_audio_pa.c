@@ -24,25 +24,25 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define PA_WITH_FAKEBLOCKING
-
+#if PD_WINDOWS
+    #define PA_MICROSLEEP   Sleep (1)
+#else
+    #define PA_MICROSLEEP   usleep (1000);
+#endif
+        
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-extern t_sample         *audio_soundIn;
-extern t_sample         *audio_soundOut;
-
 extern int              audio_channelsIn;
 extern int              audio_channelsOut;
-extern t_float          audio_sampleRate;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 static PaStream         *pa_stream;                     /* Shared. */
-static float            *pa_soundIn;                    /* Shared. */
-static float            *pa_soundOut;                   /* Shared. */
+static t_sample         *pa_soundIn;                    /* Shared. */
+static t_sample         *pa_soundOut;                   /* Shared. */
 static char             *pa_bufferIn;                   /* Shared. */
 static char             *pa_bufferOut;                  /* Shared. */
 
@@ -51,8 +51,6 @@ static sys_ringbuf      pa_ringOut;                     /* Shared. */
 
 static int              pa_channelsIn;                  /* Shared. */
 static int              pa_channelsOut;                 /* Shared. */
-static int              pa_started;                     /* Shared. */
-static int              pa_advanceInNumberOfBlocks;     /* Shared. */
 
 static t_audiocallback  pa_callback;                    /* Shared. */
 
@@ -80,23 +78,23 @@ static int pa_callbackCustom (const void *input,
     //
     if (input) {
         float *p = ((float *)input) + (n * pa_channelsIn);
-        float *sound = pa_soundIn;
+        t_sample *sound = pa_soundIn;
         for (i = 0, p1 = p; i < pa_channelsIn; i++, p1++) {
             for (j = 0, p2 = p1; j < blockSize; j++, p2 += pa_channelsIn) { 
                 *sound++ = *p2;
             }
         }
     } else { 
-        memset ((void *)pa_soundIn, 0, blockSize * pa_channelsIn * sizeof (float));
+        memset ((void *)pa_soundIn, 0, blockSize * pa_channelsIn * sizeof (t_sample));
     }
     
-    memset ((void *)pa_soundOut, 0, blockSize * pa_channelsOut * sizeof (float));
+    memset ((void *)pa_soundOut, 0, blockSize * pa_channelsOut * sizeof (t_sample));
     
     (*pa_callback)();
         
     if (output) {
         float *p = ((float *)output) + (n * pa_channelsOut);
-        float *sound = pa_soundOut;
+        t_sample *sound = pa_soundOut;
         for (i = 0, p1 = p; i < pa_channelsOut; i++, p1++) {
             for (j = 0, p2 = p1; j < blockSize; j++, p2 += pa_channelsOut) { 
                 *p2 = *sound++; 
@@ -337,9 +335,6 @@ t_error pa_open (int numberOfChannelsIn,
                 o,
                 pa_callbackRing);
     }
-    
-    pa_started = 0;
-    pa_advanceInNumberOfBlocks = advanceInNumberOfBlocks;
 
     if (err != paNoError) { 
         post_error ("PortAudio: `%s'", Pa_GetErrorText (err)); return PD_ERROR; 
@@ -361,128 +356,62 @@ void pa_close (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int pa_pollDSP(void)
+int pa_pollDSP (void)
 {
-    t_sample *fp;
-    float *fp2, *fp3;
-    float *conversionbuf;
+    t_sample *sound;
+    float *p1 = NULL;
+    float *p2 = NULL;
     int j, k;
-    int rtnval =  DACS_YES;
-#ifndef PA_WITH_FAKEBLOCKING
-    double timebefore;
-#endif /* PA_WITH_FAKEBLOCKING */
-    if (!audio_channelsIn && !audio_channelsOut || !pa_stream)
-        return (DACS_NO); 
-    conversionbuf = (float *)alloca((audio_channelsIn > audio_channelsOut?
-        audio_channelsIn:audio_channelsOut) * AUDIO_DEFAULT_BLOCKSIZE * sizeof(float));
+    
+    const int blockSize = AUDIO_DEFAULT_BLOCKSIZE;
+    
+    if (!pa_stream || (!pa_channelsIn && !pa_channelsOut)) { return DACS_NO; }
+    else {
+    //
+    int status = DACS_YES;
+    size_t requiredIn  = blockSize * sizeof (float) * pa_channelsIn;
+    size_t requiredOut = blockSize * sizeof (float) * pa_channelsOut;
+    float *t = (float *)alloca (PD_MAX (requiredIn, requiredOut));
 
-#ifdef PA_WITH_FAKEBLOCKING
-    if (!audio_channelsIn)    /* if no input channels sync on output */
-    {
-#ifdef PA_WITH_THREADSIGNAL
-        pthread_mutex_lock(&pa_mutex);
-#endif
-        while (ringbuffer_getWriteAvailable(&pa_ringOut) <
-            (long)(audio_channelsOut * AUDIO_DEFAULT_BLOCKSIZE * sizeof(float)))
-        {
-            rtnval = DACS_SLEPT;
-#ifdef PA_WITH_THREADSIGNAL
-            pthread_cond_wait(&pa_cond, &pa_mutex);
-#else
-#ifdef _WIN32
-            Sleep(1);
-#else
-            usleep(1000);
-#endif /* _WIN32 */
-#endif /* PA_WITH_THREADSIGNAL */
+    /* If there's no input channels synchnronize on output. */
+    
+    if (!pa_channelsIn) {
+        while (ringbuffer_getWriteAvailable (&pa_ringOut) < requiredOut) {
+            status = DACS_SLEPT; PA_MICROSLEEP; 
         }
-#ifdef PA_WITH_THREADSIGNAL
-        pthread_mutex_unlock(&pa_mutex);
-#endif
     }
-        /* write output */
-    if (audio_channelsOut)
-    {
-        for (j = 0, fp = audio_soundOut, fp2 = conversionbuf;
-            j < audio_channelsOut; j++, fp2++)
-                for (k = 0, fp3 = fp2; k < AUDIO_DEFAULT_BLOCKSIZE;
-                    k++, fp++, fp3 += audio_channelsOut)
-                        *fp3 = *fp;
-        ringbuffer_write(&pa_ringOut, conversionbuf,
-            audio_channelsOut*(AUDIO_DEFAULT_BLOCKSIZE*sizeof(float)), pa_bufferOut);
-    }
-    if (audio_channelsIn)    /* if there is input sync on it */
-    {
-#ifdef PA_WITH_THREADSIGNAL
-        pthread_mutex_lock(&pa_mutex);
-#endif
-        while (ringbuffer_getReadAvailable(&pa_ringIn) <
-            (long)(audio_channelsIn * AUDIO_DEFAULT_BLOCKSIZE * sizeof(float)))
-        {
-            rtnval = DACS_SLEPT;
-#ifdef PA_WITH_THREADSIGNAL
-            pthread_cond_wait(&pa_cond, &pa_mutex);
-#else
-#ifdef _WIN32
-            Sleep(1);
-#else
-            usleep(1000);
-#endif /* _WIN32 */
-#endif /* PA_WITH_THREADSIGNAL */
+    
+    if (pa_channelsOut) {
+        for (j = 0, sound = pa_soundOut, p1 = t; j < pa_channelsOut; j++, p1++) {
+            for (k = 0, p2 = p1; k < blockSize; k++, sound++, p2 += pa_channelsOut) {
+                *p2 = *sound;
+            }
         }
-#ifdef PA_WITH_THREADSIGNAL
-        pthread_mutex_unlock(&pa_mutex);
-#endif
+        ringbuffer_write (&pa_ringOut, t, requiredOut, pa_bufferOut);
     }
-    if (audio_channelsIn)
-    {
-        ringbuffer_read(&pa_ringIn, conversionbuf,
-            audio_channelsIn*(AUDIO_DEFAULT_BLOCKSIZE*sizeof(float)), pa_bufferIn);
-        for (j = 0, fp = audio_soundIn, fp2 = conversionbuf;
-            j < audio_channelsIn; j++, fp2++)
-                for (k = 0, fp3 = fp2; k < AUDIO_DEFAULT_BLOCKSIZE;
-                    k++, fp++, fp3 += audio_channelsIn)
-                        *fp = *fp3;
-    }
-
-#else /* PA_WITH_FAKEBLOCKING */
-    timebefore = sys_getRealTimeInSeconds();
-        /* write output */
-    if (audio_channelsOut)
-    {
-        if (!pa_started)
-        {
-            memset(conversionbuf, 0,
-                audio_channelsOut * AUDIO_DEFAULT_BLOCKSIZE * sizeof(float));
-            for (j = 0; j < pa_advanceInNumberOfBlocks-1; j++)
-                Pa_WriteStream(pa_stream, conversionbuf, AUDIO_DEFAULT_BLOCKSIZE);
+    
+    /* If there's input channels synchnronize on it. */
+    
+    if (pa_channelsIn) {
+        while (ringbuffer_getReadAvailable (&pa_ringIn) < requiredIn) {
+            status = DACS_SLEPT; PA_MICROSLEEP;
         }
-        for (j = 0, fp = audio_soundOut, fp2 = conversionbuf;
-            j < audio_channelsOut; j++, fp2++)
-                for (k = 0, fp3 = fp2; k < AUDIO_DEFAULT_BLOCKSIZE;
-                    k++, fp++, fp3 += audio_channelsOut)
-                        *fp3 = *fp;
-        Pa_WriteStream(pa_stream, conversionbuf, AUDIO_DEFAULT_BLOCKSIZE);
+    }
+    
+    if (pa_channelsIn) {
+        ringbuffer_read (&pa_ringIn, t, requiredIn, pa_bufferIn);
+        for (j = 0, sound = pa_soundIn, p1 = t; j < pa_channelsIn; j++, p1++) {
+            for (k = 0, p2 = p1; k < blockSize; k++, sound++, p2 += pa_channelsIn) {
+                *sound = *p2;
+            }
+        }
     }
 
-    if (audio_channelsIn)
-    {
-        Pa_ReadStream(pa_stream, conversionbuf, AUDIO_DEFAULT_BLOCKSIZE);
-        for (j = 0, fp = audio_soundIn, fp2 = conversionbuf;
-            j < audio_channelsIn; j++, fp2++)
-                for (k = 0, fp3 = fp2; k < AUDIO_DEFAULT_BLOCKSIZE;
-                    k++, fp++, fp3 += audio_channelsIn)
-                        *fp = *fp3;
+    memset (pa_soundOut, 0, requiredOut);
+    
+    return status;
+    //
     }
-    if (sys_getRealTimeInSeconds() - timebefore > 0.002)
-    {
-        rtnval = DACS_SLEPT;
-    }
-#endif /* PA_WITH_FAKEBLOCKING */
-    pa_started = 1;
-
-    memset(audio_soundOut, 0, AUDIO_DEFAULT_BLOCKSIZE*sizeof(t_sample)*audio_channelsOut);
-    return (rtnval);
 }
 
 // -----------------------------------------------------------------------------------------------------------
