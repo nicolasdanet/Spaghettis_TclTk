@@ -194,9 +194,9 @@ t_error audio_open (void)
     
     if (API_WITH_PORTAUDIO && audio_api == API_PORTAUDIO)   {
     
-        err = pa_open ((m > 0 ? j[0] : 0),
+        err = pa_open (sampleRate,
+                (m > 0 ? j[0] : 0),
                 (n > 0 ? p[0] : 0), 
-                sampleRate,
                 audio_soundIn,
                 audio_soundOut,
                 blockSize, 

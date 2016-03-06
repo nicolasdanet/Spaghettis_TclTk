@@ -273,9 +273,11 @@ int main_entry (int argc, char **argv)
     #endif
 
     #ifdef USEAPI_PORTAUDIO
-        pa_initialize();
+        err |= pa_initialize();
     #endif
     
+    if (!err) {
+    //
     midi_initializeNative();
     instance_initialize();
     sys_setSignalHandlers();
@@ -290,6 +292,10 @@ int main_entry (int argc, char **argv)
     
     setup_release();
     instance_release();
+    
+    pa_release();
+    //
+    }
     //
     }
     //

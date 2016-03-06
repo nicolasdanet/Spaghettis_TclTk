@@ -41,10 +41,11 @@ t_error midi_getListsNative             (char *devicesIn,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void    pa_initialize                   (void);
-t_error pa_open                            (int numberOfChannelsIn,
+t_error pa_initialize                   (void);
+void    pa_release                      (void);
+t_error pa_open                         (int sampleRate,
+                                            int numberOfChannelsIn,
                                             int numberOfChannelsOut,
-                                            int sampleRate,
                                             t_sample *soundIn,
                                             t_sample *soundOut,
                                             int blockSize,

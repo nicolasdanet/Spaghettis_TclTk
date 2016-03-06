@@ -29,7 +29,12 @@
 #else
     #define PA_MICROSLEEP   usleep (1000);
 #endif
-        
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Note that PortAudio interleaves channels. */
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -143,7 +148,6 @@ static PaError pa_openWithCallback (double sampleRate,
     int numberOfChannelsIn,
     int numberOfChannelsOut,
     int blockSize,
-    int advanceInNumberOfBlocks,
     int deviceIn,
     int deviceOut,
     PaStreamCallback *callback)
@@ -158,13 +162,13 @@ static PaError pa_openWithCallback (double sampleRate,
     parametersIn.channelCount               = numberOfChannelsIn;
     parametersIn.sampleFormat               = paFloat32;
     parametersIn.suggestedLatency           = 0;
-    parametersIn.hostApiSpecificStreamInfo  = 0;
+    parametersIn.hostApiSpecificStreamInfo  = NULL;
 
     parametersOut.device                    = deviceOut;
     parametersOut.channelCount              = numberOfChannelsOut;
     parametersOut.sampleFormat              = paFloat32;
     parametersOut.suggestedLatency          = 0;
-    parametersOut.hostApiSpecificStreamInfo = 0;
+    parametersOut.hostApiSpecificStreamInfo = NULL;
 
     if (numberOfChannelsIn > 0)  { parametersInPointer  = &parametersIn;  }
     if (numberOfChannelsOut > 0) { parametersOutPointer = &parametersOut; }
@@ -204,7 +208,7 @@ static PaError pa_openWithCallback (double sampleRate,
 /* On Mac OS Pa_Initialize() closes file descriptor 1 (standard output). */
 /* As a workaround, dup it to another number and dup2 it back afterward. */
     
-void pa_initialize (void)
+t_error pa_initialize (void)
 {
     #if PD_APPLE
     
@@ -224,16 +228,24 @@ void pa_initialize (void)
     
     #endif
 
-    if (err != paNoError) { post_error ("PortAudio: `%s'", Pa_GetErrorText (err)); }
+    if (err != paNoError) { post_error ("PortAudio: `%s'", Pa_GetErrorText (err)); return PD_ERROR; }
+    else {
+        return PD_ERROR_NONE;
+    }
+}
+
+void pa_release (void)
+{
+    Pa_Terminate();
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error pa_open (int numberOfChannelsIn, 
+t_error pa_open (int sampleRate,
+    int numberOfChannelsIn, 
     int numberOfChannelsOut,
-    int sampleRate,
     t_sample *soundIn,
     t_sample *soundOut,
     int blockSize,
@@ -307,7 +319,6 @@ t_error pa_open (int numberOfChannelsIn,
                 numberOfChannelsIn, 
                 numberOfChannelsOut,
                 blockSize, 
-                advanceInNumberOfBlocks, 
                 i, 
                 o, 
                 pa_callbackLowLevel);
@@ -329,7 +340,6 @@ t_error pa_open (int numberOfChannelsIn,
                 numberOfChannelsIn, 
                 numberOfChannelsOut,
                 blockSize, 
-                advanceInNumberOfBlocks,
                 i,
                 o,
                 pa_callbackFIFO);
@@ -362,14 +372,13 @@ int pa_pollDSP (void)
     t_sample *p2 = NULL;
     int j, k;
     
-    const int blockSize = INTERNAL_BLOCKSIZE;
-    
+    int status = DACS_YES;
+        
     if (!pa_stream || (!pa_channelsIn && !pa_channelsOut)) { return DACS_NO; }
     else {
     //
-    int status = DACS_YES;
-    size_t requiredIn  = blockSize * sizeof (t_sample) * pa_channelsIn;
-    size_t requiredOut = blockSize * sizeof (t_sample) * pa_channelsOut;
+    size_t requiredIn  = INTERNAL_BLOCKSIZE * sizeof (t_sample) * pa_channelsIn;
+    size_t requiredOut = INTERNAL_BLOCKSIZE * sizeof (t_sample) * pa_channelsOut;
     t_sample *t = (t_sample *)alloca (PD_MAX (requiredIn, requiredOut));
 
     /* If there's no input channels synchnronize on output. */
@@ -382,7 +391,7 @@ int pa_pollDSP (void)
     
     if (pa_channelsOut) {
         for (j = 0, sound = pa_soundOut, p1 = t; j < pa_channelsOut; j++, p1++) {
-            for (k = 0, p2 = p1; k < blockSize; k++, sound++, p2 += pa_channelsOut) {
+            for (k = 0, p2 = p1; k < INTERNAL_BLOCKSIZE; k++, sound++, p2 += pa_channelsOut) {
                 *p2 = *sound;
             }
         }
@@ -400,17 +409,17 @@ int pa_pollDSP (void)
     if (pa_channelsIn) {
         ringbuffer_read (&pa_ringIn, t, requiredIn, pa_bufferIn);
         for (j = 0, sound = pa_soundIn, p1 = t; j < pa_channelsIn; j++, p1++) {
-            for (k = 0, p2 = p1; k < blockSize; k++, sound++, p2 += pa_channelsIn) {
+            for (k = 0, p2 = p1; k < INTERNAL_BLOCKSIZE; k++, sound++, p2 += pa_channelsIn) {
                 *sound = *p2;
             }
         }
     }
 
     memset (pa_soundOut, 0, requiredOut);
-    
-    return status;
     //
     }
+    
+    return status;
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -81,6 +81,8 @@ int audio_pollDSP (void)
 
 void audio_initializeMemoryAndParameters (int usedChannelsIn, int usedChannelsOut, int sampleRate)
 {
+    /* Channels disposed as consecutive chunk of samples with INTERNAL_BLOCKSIZE length. */
+    
     int m = (usedChannelsIn ? usedChannelsIn : 2) * (INTERNAL_BLOCKSIZE * sizeof (t_sample));
     int n = (usedChannelsOut ? usedChannelsOut : 2) * (INTERNAL_BLOCKSIZE * sizeof (t_sample));
 
