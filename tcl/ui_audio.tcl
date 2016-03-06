@@ -34,7 +34,6 @@ variable  audioSampleRate
 variable  audioSampleRateOld 
 variable  audioDelay
 variable  audioDelayOld
-variable  audioCallback
 variable  audioBlockSize
 
 array set audioInDevice    {}
@@ -53,7 +52,6 @@ proc show {top \
            sampleRate \
            delay \
            multiple \
-           callback \
            blockSize} {
     
     variable audioIn
@@ -68,7 +66,6 @@ proc show {top \
     variable audioSampleRateOld
     variable audioDelay 
     variable audioDelayOld
-    variable audioCallback
     variable audioBlockSize
 
     ::ui_menu::disableAudio
@@ -98,7 +95,6 @@ proc show {top \
     set audioSampleRateOld  $sampleRate
     set audioDelay          $delay
     set audioDelayOld       $delay
-    set audioCallback       $callback
     set audioBlockSize      $blockSize
 
     set values {64 128 256 512 1024 2048}
@@ -144,26 +140,8 @@ proc show {top \
     grid $top.f.properties.sampleRate                   -row 0 -column 2 -sticky ew
     grid $top.f.properties.delayLabel                   -row 1 -column 0 -sticky ew
     grid $top.f.properties.delay                        -row 1 -column 2 -sticky ew
-
-    if {$audioCallback >= 0} {
-    
-    ttk::label $top.f.properties.callbackLabel          {*}[::styleLabel] \
-                                                            -text [_ "Use Callbacks"]
-    ttk::checkbutton $top.f.properties.callback         {*}[::styleCheckButton] \
-                                                            -variable ::ui_audio::audioCallback \
-                                                            -takefocus 0
-    
-    grid $top.f.properties.callbackLabel                -row 2 -column 0 -sticky ew
-    grid $top.f.properties.callback                     -row 2 -column 2 -sticky ew
-    grid $top.f.properties.blockSizeLabel               -row 3 -column 0 -sticky ew
-    grid $top.f.properties.blockSize                    -row 3 -column 2 -sticky ew
-    
-    } else {
-    
     grid $top.f.properties.blockSizeLabel               -row 2 -column 0 -sticky ew
     grid $top.f.properties.blockSize                    -row 2 -column 2 -sticky ew
-    
-    }
     
     if {$multiple > 1} {
         foreach e $audioIn  { ::ui_audio::_makeIn  $top.f.inputs  [incr i] }
@@ -271,7 +249,6 @@ proc _apply {top} {
     variable audioOutEnabled
     variable audioSampleRate 
     variable audioDelay 
-    variable audioCallback
     variable audioBlockSize
     
     _forceValues
@@ -295,7 +272,6 @@ proc _apply {top} {
             [expr {$audioOutChannels(4) * ($audioOutEnabled(4) ? 1 : -1)}] \
             $audioSampleRate \
             $audioDelay \
-            $audioCallback \
             $audioBlockSize"
     
     ::ui_interface::pdsend "pd _savePreferences"

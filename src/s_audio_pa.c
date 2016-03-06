@@ -33,7 +33,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Note that PortAudio interleaves channels. */
+/* Note that PortAudio use interleaved channels. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -57,62 +57,10 @@ static sys_ringbuf      pa_ringOut;                     /* Shared. */
 static int              pa_channelsIn;                  /* Shared. */
 static int              pa_channelsOut;                 /* Shared. */
 
-static t_audiocallback  pa_callback;                    /* Shared. */
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int pa_callbackLowLevel (const void *input,
-    void *output,
-    unsigned long frameCount,
-    const PaStreamCallbackTimeInfo *timeInfo,
-    PaStreamCallbackFlags statusFlags, 
-    void *userData)
-{
-    int i, j;
-    unsigned long n;
-    t_sample *p1 = NULL;
-    t_sample *p2 = NULL;
-    
-    const int blockSize = INTERNAL_BLOCKSIZE;
-    
-    PD_ASSERT ((frameCount % blockSize) == 0);
-    PD_ABORT  ((frameCount % blockSize) != 0);
-    
-    for (n = 0; n < frameCount; n += blockSize) {
-    //
-    if (input) {
-        t_sample *p = ((t_sample *)input) + (n * pa_channelsIn);
-        t_sample *sound = pa_soundIn;
-        for (i = 0, p1 = p; i < pa_channelsIn; i++, p1++) {
-            for (j = 0, p2 = p1; j < blockSize; j++, p2 += pa_channelsIn) { 
-                *sound++ = *p2;
-            }
-        }
-    } else { 
-        memset ((void *)pa_soundIn, 0, blockSize * pa_channelsIn * sizeof (t_sample));
-    }
-    
-    memset ((void *)pa_soundOut, 0, blockSize * pa_channelsOut * sizeof (t_sample));
-    
-    (*pa_callback)();
-        
-    if (output) {
-        t_sample *p = ((t_sample *)output) + (n * pa_channelsOut);
-        t_sample *sound = pa_soundOut;
-        for (i = 0, p1 = p; i < pa_channelsOut; i++, p1++) {
-            for (j = 0, p2 = p1; j < blockSize; j++, p2 += pa_channelsOut) { 
-                *p2 = *sound++; 
-            }
-        }
-    }
-    //
-    }
-    
-    return paContinue;
-}
-
-static int pa_callbackFIFO (const void *input,
+static int pa_ringCallback (const void *input,
     void *output,
     unsigned long frameCount,
     const PaStreamCallbackTimeInfo *timeInfo,
@@ -144,7 +92,7 @@ static int pa_callbackFIFO (const void *input,
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static PaError pa_openWithCallback (double sampleRate, 
+static PaError pa_openCallback (double sampleRate, 
     int numberOfChannelsIn,
     int numberOfChannelsOut,
     int blockSize,
@@ -155,8 +103,8 @@ static PaError pa_openWithCallback (double sampleRate,
     PaError err;
     PaStreamParameters parametersIn;
     PaStreamParameters parametersOut;
-    PaStreamParameters *parametersInPointer  = NULL;
-    PaStreamParameters *parametersOutPointer = NULL;
+    PaStreamParameters *p1 = NULL;
+    PaStreamParameters *p2 = NULL;
 
     parametersIn.device                     = deviceIn;
     parametersIn.channelCount               = numberOfChannelsIn;
@@ -170,16 +118,16 @@ static PaError pa_openWithCallback (double sampleRate,
     parametersOut.suggestedLatency          = 0;
     parametersOut.hostApiSpecificStreamInfo = NULL;
 
-    if (numberOfChannelsIn > 0)  { parametersInPointer  = &parametersIn;  }
-    if (numberOfChannelsOut > 0) { parametersOutPointer = &parametersOut; }
+    if (numberOfChannelsIn > 0)  { p1 = &parametersIn;  }
+    if (numberOfChannelsOut > 0) { p2 = &parametersOut; }
 
-    err = Pa_IsFormatSupported (parametersInPointer, parametersOutPointer, sampleRate);
+    err = Pa_IsFormatSupported (p1, p2, sampleRate);
 
     if (err == paFormatIsSupported) {
     //
     err = Pa_OpenStream (&pa_stream, 
-            parametersInPointer, 
-            parametersOutPointer, 
+            p1, 
+            p2, 
             sampleRate, 
             blockSize,
             paNoFlag,
@@ -251,8 +199,7 @@ t_error pa_open (int sampleRate,
     int blockSize,
     int advanceInNumberOfBlocks,
     int deviceIn,
-    int deviceOut,
-    t_audiocallback callback)
+    int deviceOut)
 {
     int t;
     int n;
@@ -310,41 +257,26 @@ t_error pa_open (int sampleRate,
     if (numberOfChannelsIn || numberOfChannelsOut) {
     //
     PaError err;
-    
-    if (callback) {
-    
-        pa_callback = callback;
-        
-        err = pa_openWithCallback (sampleRate, 
-                numberOfChannelsIn, 
-                numberOfChannelsOut,
-                blockSize, 
-                i, 
-                o, 
-                pa_callbackLowLevel);
-            
-    } else {
-    
-        if (pa_channelsIn) {
-            size_t k = advanceInNumberOfBlocks * blockSize * pa_channelsIn * sizeof (t_sample);
-            pa_bufferIn = PD_MEMORY_GET (k);
-            ringbuffer_initialize (&pa_ringIn, k, pa_bufferIn, 0);
-        }
-        if (pa_channelsOut) {
-            size_t k = advanceInNumberOfBlocks * blockSize * pa_channelsOut * sizeof (t_sample);
-            pa_bufferOut = PD_MEMORY_GET (k);
-            ringbuffer_initialize (&pa_ringOut, k, pa_bufferOut, 0);
-        }
-        
-        err = pa_openWithCallback (sampleRate,
-                numberOfChannelsIn, 
-                numberOfChannelsOut,
-                blockSize, 
-                i,
-                o,
-                pa_callbackFIFO);
-    }
 
+    if (pa_channelsIn) {
+        size_t k = advanceInNumberOfBlocks * blockSize * pa_channelsIn * sizeof (t_sample);
+        pa_bufferIn = PD_MEMORY_GET (k);
+        ringbuffer_initialize (&pa_ringIn, k, pa_bufferIn, 0);
+    }
+    if (pa_channelsOut) {
+        size_t k = advanceInNumberOfBlocks * blockSize * pa_channelsOut * sizeof (t_sample);
+        pa_bufferOut = PD_MEMORY_GET (k);
+        ringbuffer_initialize (&pa_ringOut, k, pa_bufferOut, 0);
+    }
+    
+    err = pa_openCallback (sampleRate,
+            numberOfChannelsIn, 
+            numberOfChannelsOut,
+            blockSize, 
+            i,
+            o,
+            pa_ringCallback);
+    
     if (err != paNoError) { 
         post_error ("PortAudio: `%s'", Pa_GetErrorText (err)); return PD_ERROR; 
     }
@@ -381,7 +313,7 @@ int pa_pollDSP (void)
     size_t requiredOut = INTERNAL_BLOCKSIZE * sizeof (t_sample) * pa_channelsOut;
     t_sample *t = (t_sample *)alloca (PD_MAX (requiredIn, requiredOut));
 
-    /* If there's no input channels synchnronize on output. */
+    /* If there's no input channels synchronize on output. */
     
     if (!pa_channelsIn) {
         while (ringbuffer_getWriteAvailable (&pa_ringOut) < requiredOut) {
@@ -398,7 +330,7 @@ int pa_pollDSP (void)
         ringbuffer_write (&pa_ringOut, t, requiredOut, pa_bufferOut);
     }
     
-    /* If there's input channels synchnronize on it. */
+    /* If there's input channels synchronize on it. */
     
     if (pa_channelsIn) {
         while (ringbuffer_getReadAvailable (&pa_ringIn) < requiredIn) {
@@ -430,8 +362,7 @@ t_error pa_getLists (char *devicesIn,
     int *numberOfDevicesIn,
     char *devicesOut,
     int *numberOfDevicesOut,
-    int *canMultiple,
-    int *canCallback)
+    int *canMultiple)
 {
     int i;
     int m = 0;
@@ -440,7 +371,6 @@ t_error pa_getLists (char *devicesIn,
     t_error err = PD_ERROR_NONE;
         
     *canMultiple = 1;           /* One device each for input and for output. */
-    *canCallback = 1;
     
     for (i = 0; i < Pa_GetDeviceCount(); i++) {
     //

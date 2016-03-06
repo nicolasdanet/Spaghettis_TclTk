@@ -795,13 +795,13 @@ int oss_send_dacs(void)
 }
 
 void oss_getdevs(char *indevlist, int *nindevs,
-    char *outdevlist, int *noutdevs, int *canmulti, int *canCallback)
+    char *outdevlist, int *noutdevs, int *canmulti)
 {
     int maxndev = MAXIMUM_DEVICES;
     int devdescsize = MAXIMUM_DESCRIPTION;
     int i, ndev;
     *canmulti = 2;  /* supports multiple devices */
-    *canCallback = 0;
+
     if ((ndev = oss_ndev) > maxndev)
         ndev = maxndev;
     for (i = 0; i < ndev; i++)

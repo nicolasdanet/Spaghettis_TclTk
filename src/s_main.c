@@ -293,7 +293,9 @@ int main_entry (int argc, char **argv)
     setup_release();
     instance_release();
     
-    pa_release();
+    #ifdef USEAPI_PORTAUDIO
+        pa_release();
+    #endif
     //
     }
     //

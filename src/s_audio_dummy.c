@@ -43,8 +43,7 @@ t_error dummy_getLists (char *devicesIn,
     int *numberOfDevicesIn,
     char *devicesOut,
     int *numberOfDevicesOut,
-    int *canMultiple,
-    int *canCallback) 
+    int *canMultiple) 
 {
     t_error err = PD_ERROR_NONE;
     
@@ -53,9 +52,7 @@ t_error dummy_getLists (char *devicesIn,
     
     *numberOfDevicesIn  = 1;
     *numberOfDevicesOut = 1;
-    
-    *canMultiple = 0;
-    *canCallback = 0;
+    *canMultiple        = 0;
   
     return err;
 }

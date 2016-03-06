@@ -45,7 +45,6 @@ int             audio_openedApi         = -1;                                   
 // -----------------------------------------------------------------------------------------------------------
 
 static int      audio_state;                                                        /* Shared. */
-static int      audio_callbackIsOpen;                                               /* Shared. */
   
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -60,7 +59,6 @@ static char     audio_devicesOutNames[MAXIMUM_AUDIO_OUT * MAXIMUM_DESCRIPTION]; 
 
 static int      audio_tempSampleRate    = AUDIO_DEFAULT_SAMPLERATE;                 /* Shared. */
 static int      audio_tempAdvance       = AUDIO_DEFAULT_ADVANCE;                    /* Shared. */
-static int      audio_tempWithCallback  = 0;                                        /* Shared. */
 static int      audio_tempBlockSize     = AUDIO_DEFAULT_BLOCKSIZE;                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -174,14 +172,11 @@ t_error audio_open (void)
     
     int sampleRate;
     int advance;
-    int withCallback;
     int blockSize;
     
     t_error err = PD_ERROR;
     
-    audio_getDevices (&m, i, j, &n, o, p, &sampleRate, &advance, &withCallback, &blockSize);
-    
-    if (!(audio_api == API_PORTAUDIO || audio_api == API_JACK)) { withCallback = 0; }
+    audio_getDevices (&m, i, j, &n, o, p, &sampleRate, &advance, &blockSize);
     
     if (m || n) {
     //
@@ -202,15 +197,14 @@ t_error audio_open (void)
                 blockSize, 
                 audio_advanceInSamples / blockSize, 
                 (m > 0 ? i[0] : 0),
-                (n > 0 ? o[0] : 0),
-                (withCallback ? scheduler_audioCallback : NULL));
+                (n > 0 ? o[0] : 0));
                
     } else if (API_WITH_JACK && audio_api == API_JACK)      {
     
         err = jack_open_audio ((m > 0 ? j[0] : 0),
                 (n > 0 ? p[0] : 0),
                 sampleRate,
-                (withCallback ? scheduler_audioCallback : NULL));
+                NULL);
 
     } else if (API_WITH_OSS && audio_api == API_OSS)        {
     
@@ -231,14 +225,12 @@ t_error audio_open (void)
     if (err) {
         audio_state = 0;
         audio_openedApi = -1;
-        audio_callbackIsOpen = 0;
         scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
         
     } else {
         audio_state = 1;
         audio_openedApi = audio_api;
-        audio_callbackIsOpen = withCallback;
-        scheduler_setAudioMode ((withCallback ? SCHEDULER_AUDIO_CALLBACK : SCHEDULER_AUDIO_POLL));
+        scheduler_setAudioMode (SCHEDULER_AUDIO_POLL);
     }
     
     return err;
@@ -259,7 +251,6 @@ void audio_close (void)
     
     audio_state = 0;
     audio_openedApi = -1;
-    audio_callbackIsOpen = 0;
     
     scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
     
@@ -289,7 +280,6 @@ void audio_getDevices (int *numberOfDevicesIn,
     int *channelsOut,
     int *sampleRate,
     int *advance,
-    int *withCallback,
     int *blockSize)
 {
     int i;
@@ -319,7 +309,6 @@ void audio_getDevices (int *numberOfDevicesIn,
     
     *sampleRate   = audio_tempSampleRate;
     *advance      = audio_tempAdvance;
-    *withCallback = audio_tempWithCallback;
     *blockSize    = audio_tempBlockSize;
 }
 
@@ -331,7 +320,6 @@ static void audio_setDevices (int numberOfDevicesIn,
     int *channelsOut,
     int sampleRate,
     int advance,
-    int withCallback,
     int blockSize)
 {
     int i;
@@ -364,7 +352,6 @@ static void audio_setDevices (int numberOfDevicesIn,
     audio_numberOfDevicesOut    = n;
     audio_tempSampleRate        = sampleRate;
     audio_tempAdvance           = advance;
-    audio_tempWithCallback      = withCallback;
     audio_tempBlockSize         = blockSize;
 }
 
@@ -376,7 +363,6 @@ static void audio_setDevicesAndParameters (int numberOfDevicesIn,
     int *channelsOut, 
     int sampleRate, 
     int advance, 
-    int withCallback, 
     int blockSize)
 {
     int i;
@@ -399,7 +385,6 @@ static void audio_setDevicesAndParameters (int numberOfDevicesIn,
         channelsOut,
         sampleRate, 
         advance, 
-        withCallback,
         blockSize);
     
     for (i = 0; i < audio_numberOfDevicesIn; i++) {
@@ -421,7 +406,6 @@ void audio_setDefaultDevicesAndParameters (int numberOfDevicesIn,
     int *channelsOut, 
     int sampleRate, 
     int advance, 
-    int withCallback, 
     int blockSize)
 {
     /* For convenience, initialize with the first devices if none are provided. */
@@ -444,7 +428,6 @@ void audio_setDefaultDevicesAndParameters (int numberOfDevicesIn,
         channelsOut,
         sampleRate,
         advance,
-        withCallback,
         blockSize);
 }
 
@@ -452,15 +435,15 @@ void audio_setDefaultDevicesAndParameters (int numberOfDevicesIn,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error audio_getLists (char *i, int *m, char *o, int *n, int *multiple, int *callback)
+static t_error audio_getLists (char *i, int *m, char *o, int *n, int *multiple)
 {
     int k = audio_api;
     
-    if (API_WITH_PORTAUDIO && k == API_PORTAUDIO) { return pa_getLists (i, m, o, n, multiple, callback);    }
-    else if (API_WITH_JACK && k == API_JACK)      { jack_getdevs (i, m, o, n, multiple, callback);    }
-    else if (API_WITH_OSS && k == API_OSS)        { oss_getdevs (i, m, o, n, multiple, callback);     }
-    else if (API_WITH_ALSA && k == API_ALSA)      { alsa_getdevs (i, m, o, n, multiple, callback);    }
-    else if (API_WITH_DUMMY && k == API_DUMMY)    { return dummy_getLists (i, m, o, n, multiple, callback); }
+    if (API_WITH_PORTAUDIO && k == API_PORTAUDIO) { return pa_getLists (i, m, o, n, multiple);    }
+    else if (API_WITH_JACK && k == API_JACK)      { jack_getdevs (i, m, o, n, multiple);          }
+    else if (API_WITH_OSS && k == API_OSS)        { oss_getdevs (i, m, o, n, multiple);           }
+    else if (API_WITH_ALSA && k == API_ALSA)      { alsa_getdevs (i, m, o, n, multiple);          }
+    else if (API_WITH_DUMMY && k == API_DUMMY)    { return dummy_getLists (i, m, o, n, multiple); }
     else {
         PD_BUG; *m = *n = *i = *o = 0; return PD_ERROR;
     }
@@ -475,10 +458,9 @@ int audio_numberWithName (int isOutput, const char *name)
     char i[MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION] = { 0 };
     char o[MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION] = { 0 };
     int  canMultiple;
-    int  canCallback;
     int  k;
     
-    if (!audio_getLists (i, &m, o, &n, &canMultiple, &canCallback)) {
+    if (!audio_getLists (i, &m, o, &n, &canMultiple)) {
     //
     if (isOutput) {
         for (k = 0; k < n; k++) {
@@ -502,11 +484,10 @@ t_error audio_numberToName (int isOutput, int k, char *dest, size_t size)
     char i[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION];
     char o[MAXIMUM_DEVICES*MAXIMUM_DESCRIPTION];
     int  canMultiple;
-    int  canCallback;
     
     t_error err = PD_ERROR;
     
-    if (k >= 0 && !audio_getLists (i, &m, o, &n, &canMultiple, &canCallback)) { 
+    if (k >= 0 && !audio_getLists (i, &m, o, &n, &canMultiple)) { 
         if (isOutput && (k < n))        { err = string_copy (dest, size, o + (k * MAXIMUM_DESCRIPTION)); }
         else if (!isOutput && (k < m))  { err = string_copy (dest, size, i + (k * MAXIMUM_DESCRIPTION)); }
     }
@@ -520,14 +501,14 @@ t_error audio_numberToName (int isOutput, int k, char *dest, size_t size)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error audio_requireDialogInitialize (int *multiple, int *callback)
+static t_error audio_requireDialogInitialize (int *multiple)
 {
     int  m = 0;
     int  n = 0;
     char i[MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION] = { 0 };
     char o[MAXIMUM_DEVICES * MAXIMUM_DESCRIPTION] = { 0 };
     
-    t_error err = audio_getLists (i, &m, o, &n, multiple, callback);
+    t_error err = audio_getLists (i, &m, o, &n, multiple);
     
     if (!err) {
     //
@@ -566,15 +547,13 @@ void audio_requireDialog (void *dummy)
     int p[MAXIMUM_AUDIO_OUT] = { 0 };
     int sampleRate;
     int advance;
-    int withCallback;
     int blockSize;
     
     int canMultiple;
-    int canCallback;
 
-    t_error err = audio_requireDialogInitialize (&canMultiple, &canCallback);
+    t_error err = audio_requireDialogInitialize (&canMultiple);
     
-    audio_getDevices (&m, i, j, &n, o, p, &sampleRate, &advance, &withCallback, &blockSize);
+    audio_getDevices (&m, i, j, &n, o, p, &sampleRate, &advance, &blockSize);
 
     if (!err) {
     //
@@ -598,13 +577,12 @@ void audio_requireDialog (void *dummy)
     int oChannels4  = (n > 3 ? p[3] : 0);
     
     err |= string_sprintf (t, PD_STRING,
-        "::ui_audio::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+        "::ui_audio::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
         i1, i2, i3, i4, iChannels1, iChannels2, iChannels3, iChannels4, 
         o1, o2, o3, o4, oChannels1, oChannels2, oChannels3, oChannels4, 
         sampleRate,
         advance,
         canMultiple,
-        (canCallback ? withCallback : -1),
         blockSize);
         
     if (!err) {
@@ -629,12 +607,11 @@ void audio_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
         
     int sampleRate;
     int advance;
-    int withCallback;
     int blockSize;
 
     int t;
     
-    PD_ASSERT (argc == 20);
+    PD_ASSERT (argc == 19);
     PD_ASSERT (MAXIMUM_AUDIO_IN  >= 4);
     PD_ASSERT (MAXIMUM_AUDIO_OUT >= 4);
     
@@ -647,10 +624,7 @@ void audio_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     sampleRate   = (t_int)atom_getFloatAtIndex (16, argc, argv);
     advance      = (t_int)atom_getFloatAtIndex (17, argc, argv);
-    withCallback = (t_int)atom_getFloatAtIndex (18, argc, argv);
-    blockSize    = (t_int)atom_getFloatAtIndex (19, argc, argv);
-    
-    withCallback = (withCallback > 0);
+    blockSize    = (t_int)atom_getFloatAtIndex (18, argc, argv);
     
     /* Remove devices with number of channels set to zero. */
     
@@ -659,9 +633,7 @@ void audio_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     audio_close();
         
-    audio_setDevicesAndParameters (m, i, j, n, o, p, sampleRate, advance, withCallback, blockSize);
-        
-    if (withCallback) { scheduler_needToRestart(); }
+    audio_setDevicesAndParameters (m, i, j, n, o, p, sampleRate, advance, blockSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

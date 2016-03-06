@@ -103,11 +103,12 @@ double scheduler_getMillisecondsSince (double systime)
 
 void scheduler_setAudioMode (int flag)
 {
-    PD_ASSERT (flag != SCHEDULER_AUDIO_CALLBACK);           /* Not fully tested yet. */
-    PD_ABORT  (flag == SCHEDULER_AUDIO_CALLBACK);
-
     scheduler_audioMode = flag;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void scheduler_needToRestart (void)
 {
@@ -197,7 +198,7 @@ static void scheduler_tick (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void scheduler_withLoop (void)
+static void scheduler_mainLoop (void)
 {
     int idleCount = 0;
     
@@ -255,52 +256,16 @@ static void scheduler_withLoop (void)
     }
 }
 
-static void scheduler_withCallback (void)
-{
-    midi_initialize();
-    
-    while (!scheduler_quit) {
-    //
-    #if PD_WINDOWS
-        Sleep (1000);
-    #else
-        sleep (1);
-    #endif
-    //
-    }
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void scheduler_audioCallback (void)
-{
-    midi_synchronise();
-    scheduler_tick();
-    midi_poll();
-    interface_pollOrFlushGui();
-    scheduler_pollWatchdog();
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 t_error scheduler_main (void)
 {
     while (!scheduler_quit) {
     //
-    if (scheduler_audioMode == SCHEDULER_AUDIO_CALLBACK) { scheduler_withCallback(); }
-    else {
-        scheduler_withLoop();
-    }
-    
-    if (scheduler_quit == SCHEDULER_RESTART) {
-        audio_close(); audio_open(); scheduler_quit = SCHEDULER_RUN;
-    } 
-    
-    if (scheduler_quit == SCHEDULER_ERROR) { audio_close(); midi_close(); }
+    scheduler_mainLoop();
+    if (scheduler_quit == SCHEDULER_RESTART) { audio_close(); audio_open(); scheduler_quit = SCHEDULER_RUN; } 
+    if (scheduler_quit == SCHEDULER_ERROR)   { audio_close(); midi_close(); }
     //
     }
     

@@ -207,7 +207,7 @@ static void midi_dispatchNext (void)
                                         }
                                         break;
                                     
-        case MIDI_CONTROLCHANGE     :    if (p->mp_gotByte1) {
+        case MIDI_CONTROLCHANGE     :   if (p->mp_gotByte1) {
                                             inmidi_controlChange (port, channel, byte1, byte);
                                             p->mp_gotByte1 = 0;
                                         } else {
@@ -216,7 +216,7 @@ static void midi_dispatchNext (void)
                                         }
                                         break;
                                     
-        case MIDI_PROGRAMCHANGE     :    inmidi_programChange (port, channel, byte);
+        case MIDI_PROGRAMCHANGE     :   inmidi_programChange (port, channel, byte);
                                         break;
                                     
         case MIDI_AFTERTOUCH        :   inmidi_afterTouch (port, channel, byte);

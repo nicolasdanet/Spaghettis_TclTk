@@ -51,8 +51,7 @@ t_error pa_open                         (int sampleRate,
                                             int blockSize,
                                             int advanceInNumberOfBlocks,
                                             int deviceIn,
-                                            int deviceOut,
-                                            t_audiocallback callback);
+                                            int deviceOut);
                                             
 void    pa_close                        (void);
 int     pa_pollDSP                      (void);
@@ -60,8 +59,7 @@ t_error pa_getLists                     (char *devicesIn,
                                             int  *numberOfDevicesIn,
                                             char *devicesOut,
                                             int  *numberOfDevicesOut,
-                                            int  *canMultiple, 
-                                            int  *canCallback);
+                                            int  *canMultiple);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -85,8 +83,7 @@ void oss_getdevs                        (char *indevlist,
                                             int *nindevs,
                                             char *outdevlist,
                                             int *noutdevs,
-                                            int *canmulti, 
-                                            int *canCallback);
+                                            int *canmulti);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -114,8 +111,7 @@ void alsa_getdevs                       (char *indevlist,
                                             int *nindevs,
                                             char *outdevlist,
                                             int *noutdevs,
-                                            int *canmulti, 
-                                            int *canCallback);
+                                            int *canmulti);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -133,8 +129,7 @@ void jack_getdevs                       (char *indevlist,
                                             int *nindevs,
                                             char *outdevlist,
                                             int *noutdevs,
-                                            int *canmulti, 
-                                            int *canCallback);
+                                            int *canmulti);
                                 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -148,8 +143,7 @@ t_error dummy_getLists                  (char *devicesIn,
                                             int  *numberOfDevicesIn,
                                             char *devicesOut,
                                             int  *numberOfDecivesOut,
-                                            int  *canMultiple, 
-                                            int  *canCallback);
+                                            int  *canMultiple);
                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

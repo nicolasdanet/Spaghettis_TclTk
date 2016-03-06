@@ -32,7 +32,6 @@
 
 #define SCHEDULER_AUDIO_NONE                    0
 #define SCHEDULER_AUDIO_POLL                    1 
-#define SCHEDULER_AUDIO_CALLBACK                2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -245,7 +244,6 @@ void        scheduler_needToExit                    (void);
 void        scheduler_needToExitWithError           (void);
 void        scheduler_lock                          (void);
 void        scheduler_unlock                        (void);
-void        scheduler_audioCallback                 (void);
 t_error     scheduler_main                          (void);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -452,7 +450,6 @@ void        audio_getDevices                        (int *numberOfDevicesIn,
                                                         int *channelsOut,
                                                         int *sampleRate,
                                                         int *advance,
-                                                        int *withCallback,
                                                         int *blockSize);
 
 void        audio_setDefaultDevicesAndParameters    (int numberOfDevicesIn,
@@ -463,7 +460,6 @@ void        audio_setDefaultDevicesAndParameters    (int numberOfDevicesIn,
                                                         int *channelsOut,
                                                         int sampleRate,
                                                         int advance,
-                                                        int withCallback,
                                                         int blockSize);
 
 // -----------------------------------------------------------------------------------------------------------
