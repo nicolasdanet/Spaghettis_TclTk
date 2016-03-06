@@ -239,7 +239,6 @@ double      scheduler_getLogicalTimeAfter           (double ms);
 double      scheduler_getMillisecondsSince          (double systime);
 double      scheduler_getUnitsSince                 (double systime, double unit, int isSamples);
 void        scheduler_setAudioMode                  (int flag);
-void        scheduler_needToRestart                 (void);
 void        scheduler_needToExit                    (void);
 void        scheduler_needToExitWithError           (void);
 void        scheduler_lock                          (void);

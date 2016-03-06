@@ -110,11 +110,6 @@ void scheduler_setAudioMode (int flag)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void scheduler_needToRestart (void)
-{
-    scheduler_quit = SCHEDULER_RESTART;
-}
-
 void scheduler_needToExit (void)
 {
     scheduler_quit = SCHEDULER_QUIT;
@@ -156,14 +151,12 @@ static void scheduler_pollStuck (int init)
     
     if (init) { idleTime = sys_getRealTimeInSeconds(); }
     else {
-    //
-    if (sys_getRealTimeInSeconds() - idleTime > 1.0) {
-        audio_close();
-        scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
-        scheduler_quit = SCHEDULER_RESTART;
-        post_error (PD_TRANSLATE ("audio: I/O stuck"));     // --
-    }
-    //
+        if (sys_getRealTimeInSeconds() - idleTime > 1.0) {
+            audio_close();
+            scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
+            scheduler_quit = SCHEDULER_RESTART;
+            post_error (PD_TRANSLATE ("audio: I/O stuck"));     // --
+        }
     }
 }
 
@@ -215,14 +208,12 @@ static void scheduler_mainLoop (void)
     int timeForward, didSomething = 0;
 
     if (scheduler_audioMode != SCHEDULER_AUDIO_NONE) {
-
-        timeForward = audio_pollDSP();
-
-        if (timeForward) { idleCount = 0; }
-        else if (!(++idleCount % 31)) { scheduler_pollStuck (idleCount == 32); }
+        if ((timeForward = audio_pollDSP())) { idleCount = 0; }
+        else if (!(++idleCount % 31)) { 
+            scheduler_pollStuck (idleCount == 32); 
+        }
         
     } else {
-    
         double realLapse = SECONDS_TO_MILLISECONDS (sys_getRealTimeInSeconds() - realTimeAtStart);
         double logicalLapse = scheduler_getMillisecondsSince (logicalTimeAtStart);
 
@@ -242,16 +233,14 @@ static void scheduler_mainLoop (void)
     midi_poll();
     
     if (!scheduler_quit && interface_pollOrFlushGui()) { didSomething = 1; }
-
     if (!scheduler_quit && !didSomething) {
-    //
-    scheduler_pollWatchdog();
-
-    if (timeForward != DACS_SLEPT) { interface_monitorBlocking (scheduler_sleepGrain); }
-    //
+        scheduler_pollWatchdog();
+        if (timeForward != DACS_SLEPT) { interface_monitorBlocking (scheduler_sleepGrain); }
     }
     //
     }
+    
+    if (scheduler_quit == SCHEDULER_RESTART) { scheduler_quit = SCHEDULER_RUN; }
     //
     }
 }
@@ -261,13 +250,9 @@ static void scheduler_mainLoop (void)
 
 t_error scheduler_main (void)
 {
-    while (!scheduler_quit) {
-    //
     scheduler_mainLoop();
-    if (scheduler_quit == SCHEDULER_RESTART) { audio_close(); audio_open(); scheduler_quit = SCHEDULER_RUN; } 
-    if (scheduler_quit == SCHEDULER_ERROR)   { audio_close(); midi_close(); }
-    //
-    }
+    audio_close(); 
+    midi_close();
     
     return (scheduler_quit == SCHEDULER_ERROR);
 }

@@ -32,7 +32,7 @@ void dummy_close()
 
 int dummy_pollDSP() 
 {
-    static int t = 0; t = !t; return (t ? DACS_YES : DACS_NO);
+    return DACS_NO;
 }
 
 // -----------------------------------------------------------------------------------------------------------

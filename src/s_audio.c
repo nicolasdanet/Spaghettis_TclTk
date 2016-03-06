@@ -101,7 +101,7 @@ void audio_initializeMemoryAndParameters (int usedChannelsIn, int usedChannelsOu
     audio_advanceInSamples  = MICROSECONDS_TO_SECONDS (audio_advanceInMicroseconds * audio_sampleRate);
     audio_advanceInSamples  = PD_MAX (audio_advanceInSamples, INTERNAL_BLOCKSIZE);
 
-    canvas_resume_dsp (canvas_suspend_dsp());
+    // canvas_resume_dsp (canvas_suspend_dsp());
 }
 
 void audio_release (void)
@@ -121,7 +121,7 @@ t_float audio_getSampleRate (void)
 
 int audio_getChannelsIn (void) 
 {
-     return audio_channelsIn;
+    return audio_channelsIn;
 }
 
 int audio_getChannelsOut (void)
