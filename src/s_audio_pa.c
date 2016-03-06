@@ -57,7 +57,7 @@ static t_audiocallback  pa_callback;                    /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int pa_callbackCustom (const void *input,
+static int pa_callbackLowLevel (const void *input,
     void *output,
     unsigned long frameCount,
     const PaStreamCallbackTimeInfo *timeInfo,
@@ -66,10 +66,10 @@ static int pa_callbackCustom (const void *input,
 {
     int i, j;
     unsigned long n;
-    float *p1 = NULL;
-    float *p2 = NULL;
+    t_sample *p1 = NULL;
+    t_sample *p2 = NULL;
     
-    const int blockSize = AUDIO_DEFAULT_BLOCKSIZE;
+    const int blockSize = INTERNAL_BLOCKSIZE;
     
     PD_ASSERT ((frameCount % blockSize) == 0);
     PD_ABORT  ((frameCount % blockSize) != 0);
@@ -77,7 +77,7 @@ static int pa_callbackCustom (const void *input,
     for (n = 0; n < frameCount; n += blockSize) {
     //
     if (input) {
-        float *p = ((float *)input) + (n * pa_channelsIn);
+        t_sample *p = ((t_sample *)input) + (n * pa_channelsIn);
         t_sample *sound = pa_soundIn;
         for (i = 0, p1 = p; i < pa_channelsIn; i++, p1++) {
             for (j = 0, p2 = p1; j < blockSize; j++, p2 += pa_channelsIn) { 
@@ -93,7 +93,7 @@ static int pa_callbackCustom (const void *input,
     (*pa_callback)();
         
     if (output) {
-        float *p = ((float *)output) + (n * pa_channelsOut);
+        t_sample *p = ((t_sample *)output) + (n * pa_channelsOut);
         t_sample *sound = pa_soundOut;
         for (i = 0, p1 = p; i < pa_channelsOut; i++, p1++) {
             for (j = 0, p2 = p1; j < blockSize; j++, p2 += pa_channelsOut) { 
@@ -107,7 +107,7 @@ static int pa_callbackCustom (const void *input,
     return paContinue;
 }
 
-static int pa_callbackRing (const void *input,
+static int pa_callbackFIFO (const void *input,
     void *output,
     unsigned long frameCount,
     const PaStreamCallbackTimeInfo *timeInfo,
@@ -115,8 +115,8 @@ static int pa_callbackRing (const void *input,
     void *userData)
 {
     unsigned long availableOut = ringbuffer_getReadAvailable (&pa_ringOut);
-    unsigned long requiredIn   = frameCount * sizeof (float) * pa_channelsIn;
-    unsigned long requiredOut  = frameCount * sizeof (float) * pa_channelsOut;
+    unsigned long requiredIn   = frameCount * sizeof (t_sample) * pa_channelsIn;
+    unsigned long requiredOut  = frameCount * sizeof (t_sample) * pa_channelsOut;
     
     if (availableOut >= requiredOut) {
         if (output) { ringbuffer_read (&pa_ringOut, output, requiredOut, pa_bufferOut); }
@@ -127,7 +127,7 @@ static int pa_callbackRing (const void *input,
             int i;
             for (i = 0; i < pa_channelsOut; i++) {
                 unsigned long j;
-                float *p = ((float *)output) + i;
+                t_sample *p = ((t_sample *)output) + i;
                 for (j = 0; j < frameCount; j++, p += pa_channelsOut) { *p = 0.0; }
             }
         }
@@ -138,7 +138,6 @@ static int pa_callbackRing (const void *input,
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static PaError pa_openWithCallback (double sampleRate, 
     int numberOfChannelsIn,
@@ -311,17 +310,17 @@ t_error pa_open (int numberOfChannelsIn,
                 advanceInNumberOfBlocks, 
                 i, 
                 o, 
-                pa_callbackCustom);
+                pa_callbackLowLevel);
             
     } else {
     
         if (pa_channelsIn) {
-            size_t k = advanceInNumberOfBlocks * blockSize * pa_channelsIn * sizeof (float);
+            size_t k = advanceInNumberOfBlocks * blockSize * pa_channelsIn * sizeof (t_sample);
             pa_bufferIn = PD_MEMORY_GET (k);
             ringbuffer_initialize (&pa_ringIn, k, pa_bufferIn, 0);
         }
         if (pa_channelsOut) {
-            size_t k = advanceInNumberOfBlocks * blockSize * pa_channelsOut * sizeof (float);
+            size_t k = advanceInNumberOfBlocks * blockSize * pa_channelsOut * sizeof (t_sample);
             pa_bufferOut = PD_MEMORY_GET (k);
             ringbuffer_initialize (&pa_ringOut, k, pa_bufferOut, 0);
         }
@@ -333,7 +332,7 @@ t_error pa_open (int numberOfChannelsIn,
                 advanceInNumberOfBlocks,
                 i,
                 o,
-                pa_callbackRing);
+                pa_callbackFIFO);
     }
 
     if (err != paNoError) { 
@@ -359,19 +358,19 @@ void pa_close (void)
 int pa_pollDSP (void)
 {
     t_sample *sound;
-    float *p1 = NULL;
-    float *p2 = NULL;
+    t_sample *p1 = NULL;
+    t_sample *p2 = NULL;
     int j, k;
     
-    const int blockSize = AUDIO_DEFAULT_BLOCKSIZE;
+    const int blockSize = INTERNAL_BLOCKSIZE;
     
     if (!pa_stream || (!pa_channelsIn && !pa_channelsOut)) { return DACS_NO; }
     else {
     //
     int status = DACS_YES;
-    size_t requiredIn  = blockSize * sizeof (float) * pa_channelsIn;
-    size_t requiredOut = blockSize * sizeof (float) * pa_channelsOut;
-    float *t = (float *)alloca (PD_MAX (requiredIn, requiredOut));
+    size_t requiredIn  = blockSize * sizeof (t_sample) * pa_channelsIn;
+    size_t requiredOut = blockSize * sizeof (t_sample) * pa_channelsOut;
+    t_sample *t = (t_sample *)alloca (PD_MAX (requiredIn, requiredOut));
 
     /* If there's no input channels synchnronize on output. */
     

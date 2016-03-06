@@ -387,7 +387,7 @@ static void audio_setDevicesAndParameters (int numberOfDevicesIn,
     if (sampleRate < 1)             { sampleRate = AUDIO_DEFAULT_SAMPLERATE; }
     if (advance < 0)                { advance    = AUDIO_DEFAULT_ADVANCE;    }
 
-    blockSize = PD_CLAMP (blockSize, AUDIO_DEFAULT_BLOCKSIZE, AUDIO_MAXIMUM_BLOCKSIZE); 
+    blockSize = PD_CLAMP (blockSize, INTERNAL_BLOCKSIZE, AUDIO_MAXIMUM_BLOCKSIZE); 
     
     audio_advanceInMicroseconds = MILLISECONDS_TO_MICROSECONDS (advance);
 

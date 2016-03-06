@@ -81,8 +81,8 @@ int audio_pollDSP (void)
 
 void audio_initializeMemoryAndParameters (int usedChannelsIn, int usedChannelsOut, int sampleRate)
 {
-    int m = (usedChannelsIn ? usedChannelsIn : 2) * (AUDIO_DEFAULT_BLOCKSIZE * sizeof (t_sample));
-    int n = (usedChannelsOut ? usedChannelsOut : 2) * (AUDIO_DEFAULT_BLOCKSIZE * sizeof (t_sample));
+    int m = (usedChannelsIn ? usedChannelsIn : 2) * (INTERNAL_BLOCKSIZE * sizeof (t_sample));
+    int n = (usedChannelsOut ? usedChannelsOut : 2) * (INTERNAL_BLOCKSIZE * sizeof (t_sample));
 
     PD_ASSERT (usedChannelsIn >= 0);
     PD_ASSERT (usedChannelsOut >= 0);
@@ -97,7 +97,7 @@ void audio_initializeMemoryAndParameters (int usedChannelsIn, int usedChannelsOu
     audio_channelsOut       = usedChannelsOut;
     audio_sampleRate        = (t_float)sampleRate;
     audio_advanceInSamples  = MICROSECONDS_TO_SECONDS (audio_advanceInMicroseconds * audio_sampleRate);
-    audio_advanceInSamples  = PD_MAX (audio_advanceInSamples, AUDIO_DEFAULT_BLOCKSIZE);
+    audio_advanceInSamples  = PD_MAX (audio_advanceInSamples, INTERNAL_BLOCKSIZE);
 
     canvas_resume_dsp (canvas_suspend_dsp());
 }

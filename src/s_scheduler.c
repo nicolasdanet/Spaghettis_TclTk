@@ -130,7 +130,7 @@ void scheduler_needToExitWithError (void)
 
 static double scheduler_getSystimePerDSPTick (void)
 {
-    return (SYSTIME_PER_SECOND * ((double)AUDIO_DEFAULT_BLOCKSIZE / audio_sampleRate));
+    return (SYSTIME_PER_SECOND * ((double)INTERNAL_BLOCKSIZE / audio_sampleRate));
 }
 
 static void scheduler_pollWatchdog (void)
@@ -141,7 +141,7 @@ static void scheduler_pollWatchdog (void)
     if ((scheduler_didDSP - scheduler_nextPing) > 0) {
     //
     interface_watchdog (NULL);
-    scheduler_nextPing = scheduler_didDSP + (2 * (int)(audio_sampleRate / (double)AUDIO_DEFAULT_BLOCKSIZE));
+    scheduler_nextPing = scheduler_didDSP + (2 * (int)(audio_sampleRate / (double)INTERNAL_BLOCKSIZE));
     //
     }
     
