@@ -32,7 +32,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#ifdef USEAPI_PORTAUDIO     /* Used only with PortAudio API. */
+#ifdef USEAPI_PORTAUDIO         /* Used only with PortAudio API. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -50,32 +50,32 @@ static void ringbuffer_flush (sys_ringbuf *rbuf, void *dataPtr, long nfill)
     long n;
     char *s = NULL;
         
-    rbuf->readIndex  = 0;
-    rbuf->writeIndex = nfill;
+    rbuf->rb_read  = 0;
+    rbuf->rb_write = nfill;
     
     for (n = nfill, s = dataPtr; n--; s++) { *s = 0; }
 }
 
 static long ringbuffer_advanceWriteIndex (sys_ringbuf *rbuf, long numBytes)
 {
-    long ret = (rbuf->writeIndex + numBytes);
+    long ret = (rbuf->rb_write + numBytes);
     
-    if (ret >= 2 * rbuf->bufferSize) {
-        ret -= 2 * rbuf->bufferSize;
+    if (ret >= 2 * rbuf->rb_size) {
+        ret -= 2 * rbuf->rb_size;
     }
     
-    return (rbuf->writeIndex = ret);
+    return (rbuf->rb_write = ret);
 }
 
 static long ringbuffer_advanceReadIndex (sys_ringbuf *rbuf, long numBytes)
 {
-    long ret = (rbuf->readIndex + numBytes);
+    long ret = (rbuf->rb_read + numBytes);
     
-    if (ret >= 2 * rbuf->bufferSize) {
-        ret -= 2 * rbuf->bufferSize; 
+    if (ret >= 2 * rbuf->rb_size) {
+        ret -= 2 * rbuf->rb_size; 
     }
     
-    return (rbuf->readIndex = ret);
+    return (rbuf->rb_read = ret);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -99,17 +99,17 @@ static long ringbuffer_getWriteRegions (sys_ringbuf *rbuf,
     
     if (numBytes > available) { numBytes = available; }
     
-     /* Check to see if write is not contiguous. */
+    /* Check to see if write is not contiguous. */
      
-    index = rbuf->writeIndex;
+    index = rbuf->rb_write;
        
-    while (index >= rbuf->bufferSize) { index -= rbuf->bufferSize; }
+    while (index >= rbuf->rb_size) { index -= rbuf->rb_size; }
     
-    if ((index + numBytes) > rbuf->bufferSize) {
+    if ((index + numBytes) > rbuf->rb_size) {
     
         /* Write data in two blocks that wrap the buffer. */
         
-        long firstHalf = rbuf->bufferSize - index;
+        long firstHalf = rbuf->rb_size - index;
         
         *dataPtr1 = &buffer[index];
         *sizePtr1 = firstHalf;
@@ -150,15 +150,15 @@ static long ringbuffer_getReadRegions (sys_ringbuf *rbuf,
     
     /* Check to see if read is not contiguous. */
     
-    index = rbuf->readIndex;
+    index = rbuf->rb_read;
     
-    while (index >= rbuf->bufferSize) { index -= rbuf->bufferSize; }
+    while (index >= rbuf->rb_size) { index -= rbuf->rb_size; }
     
-    if ((index + numBytes) > rbuf->bufferSize) {
+    if ((index + numBytes) > rbuf->rb_size) {
     
         /* Write data in two blocks that wrap the buffer. */
         
-        long firstHalf = rbuf->bufferSize - index;
+        long firstHalf = rbuf->rb_size - index;
         
         *dataPtr1 = &buffer[index];
         *sizePtr1 = firstHalf;
@@ -182,7 +182,7 @@ static long ringbuffer_getReadRegions (sys_ringbuf *rbuf,
 
 long ringbuffer_initialize (sys_ringbuf *rbuf, long numBytes, char *dataPtr, long nfill)
 {
-    rbuf->bufferSize = numBytes;
+    rbuf->rb_size = numBytes;
     ringbuffer_flush (rbuf, dataPtr, nfill);
     
     return 0;
@@ -194,17 +194,17 @@ long ringbuffer_initialize (sys_ringbuf *rbuf, long numBytes, char *dataPtr, lon
 
 long ringbuffer_getReadAvailable (sys_ringbuf *rbuf)
 {
-    long ret = rbuf->writeIndex - rbuf->readIndex;
+    long ret = rbuf->rb_write - rbuf->rb_read;
     
-    if (ret < 0) { ret += 2 * rbuf->bufferSize; }
-    if (ret < 0 || ret > rbuf->bufferSize) { PD_BUG; }
+    if (ret < 0) { ret += 2 * rbuf->rb_size; }
+    if (ret < 0 || ret > rbuf->rb_size) { PD_BUG; }
     
     return ret;
 }
 
 long ringbuffer_getWriteAvailable (sys_ringbuf *rbuf)
 {
-    return (rbuf->bufferSize - ringbuffer_getReadAvailable (rbuf));
+    return (rbuf->rb_size - ringbuffer_getReadAvailable (rbuf));
 }
 
 // -----------------------------------------------------------------------------------------------------------

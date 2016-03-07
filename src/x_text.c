@@ -688,8 +688,10 @@ static void text_set_list(t_text_set *x,
                 vec = buffer_atoms(b);
                 memmove(&vec[start + argc], &vec[end],
                     sizeof(*vec) * (oldn - end));
-                if (n < oldn)
+                if (n < oldn) {
                     buffer_resize(b, n);
+                    vec = buffer_atoms(b);
+                }
             }
         }
         else

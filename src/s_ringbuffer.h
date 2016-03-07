@@ -36,9 +36,9 @@
 #pragma mark -
 
 typedef struct {
-    long bufferSize;
-    long writeIndex;
-    long readIndex;
+    long rb_size;
+    long rb_write;
+    long rb_read;
     } sys_ringbuf;
 
 // -----------------------------------------------------------------------------------------------------------
