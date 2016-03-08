@@ -223,9 +223,8 @@ t_error audio_open (void)
     }
     
     if (err) {
-        audio_state = 0;
-        audio_openedApi = -1;
-        scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
+        post_error (PD_TRANSLATE ("audio: fails to open device"));     // --
+        audio_close();
         
     } else {
         audio_state = 1;
@@ -253,8 +252,6 @@ void audio_close (void)
     audio_openedApi = -1;
     
     scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
-    
-    sys_gui ("set ::var(isDsp) 0\n");   // --
     //
     }
 }
@@ -265,7 +262,7 @@ void audio_close (void)
 
 int audio_isOpened (void)
 {
-    return audio_state;
+    return (audio_state != 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

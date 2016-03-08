@@ -240,8 +240,8 @@ t_error pa_open (int sampleRate,
     //
     }   
 
-    if (i == -1) { numberOfChannelsIn  = 0; }
-    if (o == -1) { numberOfChannelsOut = 0; }
+    if (i == -1 || (int)(Pa_GetDeviceInfo (i)->defaultSampleRate) != sampleRate) { numberOfChannelsIn  = 0; }
+    if (o == -1 || (int)(Pa_GetDeviceInfo (o)->defaultSampleRate) != sampleRate) { numberOfChannelsOut = 0; }
     
     PD_ASSERT (numberOfChannelsIn <= audio_channelsIn);
     PD_ASSERT (numberOfChannelsOut <= audio_channelsOut);
@@ -279,13 +279,14 @@ t_error pa_open (int sampleRate,
             o,
             pa_ringCallback);
     
-    if (err != paNoError) { 
-        post_error ("PortAudio: `%s'", Pa_GetErrorText (err)); return PD_ERROR; 
+    if (err != paNoError) { post_error ("PortAudio: `%s'", Pa_GetErrorText (err)); return PD_ERROR; }
+    else {
+        return PD_ERROR_NONE;
     }
     //
     }
     
-    return PD_ERROR_NONE;
+    return PD_ERROR;
 }
 
 void pa_close (void)
