@@ -369,9 +369,9 @@ static void audio_setDevicesAndParameters (int numberOfDevicesIn,
     int totalOfChannelsIn  = 0;
     int totalOfChannelsOut = 0;
     
-    if (!PD_IS_POWER2 (blockSize))  { blockSize  = AUDIO_DEFAULT_BLOCKSIZE;  }
-    if (sampleRate < 1)             { sampleRate = AUDIO_DEFAULT_SAMPLERATE; }
-    if (advance < 0)                { advance    = AUDIO_DEFAULT_ADVANCE;    }
+    if (!PD_IS_POWER_OF_TWO (blockSize)) { blockSize  = AUDIO_DEFAULT_BLOCKSIZE;  }
+    if (sampleRate < 1)                  { sampleRate = AUDIO_DEFAULT_SAMPLERATE; }
+    if (advance < 0)                     { advance    = AUDIO_DEFAULT_ADVANCE;    }
 
     blockSize = PD_CLAMP (blockSize, INTERNAL_BLOCKSIZE, AUDIO_MAXIMUM_BLOCKSIZE); 
     

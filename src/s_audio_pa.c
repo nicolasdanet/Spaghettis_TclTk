@@ -260,11 +260,13 @@ t_error pa_open (int sampleRate,
 
     if (pa_channelsIn) {
         size_t k = advanceInNumberOfBlocks * blockSize * pa_channelsIn * sizeof (t_sample);
+        k = PD_NEXT_POWER_OF_TWO (k);
         pa_bufferIn = PD_MEMORY_GET (k);
         ringbuffer_initialize (&pa_ringIn, k, pa_bufferIn, 0);
     }
     if (pa_channelsOut) {
         size_t k = advanceInNumberOfBlocks * blockSize * pa_channelsOut * sizeof (t_sample);
+        k = PD_NEXT_POWER_OF_TWO (k);
         pa_bufferOut = PD_MEMORY_GET (k);
         ringbuffer_initialize (&pa_ringOut, k, pa_bufferOut, 0);
     }
