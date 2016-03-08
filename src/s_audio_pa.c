@@ -67,9 +67,9 @@ static int pa_ringCallback (const void *input,
     PaStreamCallbackFlags statusFlags, 
     void *userData)
 {
-    unsigned long availableOut = ringbuffer_getReadAvailable (&pa_ringOut);
     unsigned long requiredIn   = frameCount * sizeof (t_sample) * pa_channelsIn;
     unsigned long requiredOut  = frameCount * sizeof (t_sample) * pa_channelsOut;
+    unsigned long availableOut = ringbuffer_getReadAvailable (&pa_ringOut);
     
     if (availableOut >= requiredOut) {
         if (output) { ringbuffer_read (&pa_ringOut, output, requiredOut, pa_bufferOut); }
@@ -311,34 +311,28 @@ int pa_pollDSP (void)
     //
     size_t requiredIn  = INTERNAL_BLOCKSIZE * sizeof (t_sample) * pa_channelsIn;
     size_t requiredOut = INTERNAL_BLOCKSIZE * sizeof (t_sample) * pa_channelsOut;
+    
     t_sample *t = (t_sample *)alloca (PD_MAX (requiredIn, requiredOut));
 
-    /* If there's no input channels synchronize on output. */
-    
-    if (!pa_channelsIn) {
-        while (ringbuffer_getWriteAvailable (&pa_ringOut) < requiredOut) {
-            status = DACS_SLEPT; PA_MICROSLEEP; 
-        }
-    }
-    
     if (pa_channelsOut) {
+        int wait = 0;
+        while (ringbuffer_getWriteAvailable (&pa_ringOut) < requiredOut) {
+            status = DACS_SLEPT; if (wait++ < 10) { PA_MICROSLEEP; } else { return DACS_NO; }
+        }
         for (j = 0, sound = pa_soundOut, p1 = t; j < pa_channelsOut; j++, p1++) {
             for (k = 0, p2 = p1; k < INTERNAL_BLOCKSIZE; k++, sound++, p2 += pa_channelsOut) {
                 *p2 = *sound;
+                *sound = 0.0;
             }
         }
         ringbuffer_write (&pa_ringOut, t, requiredOut, pa_bufferOut);
     }
     
-    /* If there's input channels synchronize on it. */
-    
     if (pa_channelsIn) {
+        int wait = 0;
         while (ringbuffer_getReadAvailable (&pa_ringIn) < requiredIn) {
-            status = DACS_SLEPT; PA_MICROSLEEP;
+            status = DACS_SLEPT; if (wait++ < 10) { PA_MICROSLEEP; } else { return DACS_NO; }
         }
-    }
-    
-    if (pa_channelsIn) {
         ringbuffer_read (&pa_ringIn, t, requiredIn, pa_bufferIn);
         for (j = 0, sound = pa_soundIn, p1 = t; j < pa_channelsIn; j++, p1++) {
             for (k = 0, p2 = p1; k < INTERNAL_BLOCKSIZE; k++, sound++, p2 += pa_channelsIn) {
@@ -346,8 +340,6 @@ int pa_pollDSP (void)
             }
         }
     }
-
-    memset (pa_soundOut, 0, requiredOut);
     //
     }
     
