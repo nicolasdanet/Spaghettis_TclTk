@@ -75,15 +75,8 @@ static int pa_ringCallback (const void *input,
         if (output) { ringbuffer_read (&pa_ringOut, output, requiredOut, pa_bufferOut); }
         if (input)  { ringbuffer_write (&pa_ringIn, input, requiredIn, pa_bufferIn);    }
             
-    } else { 
-        if (output) {   /* Fill with zeros. */
-            int i;
-            for (i = 0; i < pa_channelsOut; i++) {
-                unsigned long j;
-                t_sample *p = ((t_sample *)output) + i;
-                for (j = 0; j < frameCount; j++, p += pa_channelsOut) { *p = 0.0; }
-            }
-        }
+    } else {
+        if (output) { memset (output, 0, requiredOut); }    /* Fill with zeros. */
     }
 
     return paContinue;
