@@ -573,10 +573,10 @@ void audio_requireDialog (void *dummy)
     int iChannels2  = (m > 1 ? j[1] : 0);
     int iChannels3  = (m > 2 ? j[2] : 0);
     int iChannels4  = (m > 3 ? j[3] : 0);
-    int o1          = (n > 0 && o[0] >=0 ? o[0] : 0);  
-    int o2          = (n > 1 && o[1] >=0 ? o[1] : 0);  
-    int o3          = (n > 2 && o[2] >=0 ? o[2] : 0);  
-    int o4          = (n > 3 && o[3] >=0 ? o[3] : 0); 
+    int o1          = (n > 0 && o[0] >= 0 ? o[0] : 0);  
+    int o2          = (n > 1 && o[1] >= 0 ? o[1] : 0);  
+    int o3          = (n > 2 && o[2] >= 0 ? o[2] : 0);  
+    int o4          = (n > 3 && o[3] >= 0 ? o[3] : 0); 
     int oChannels1  = (n > 0 ? p[0] : 0);
     int oChannels2  = (n > 1 ? p[1] : 0);
     int oChannels3  = (n > 2 ? p[2] : 0);

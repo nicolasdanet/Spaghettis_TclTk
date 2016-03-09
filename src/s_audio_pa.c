@@ -169,7 +169,7 @@ t_error pa_initialize (void)
     
     #endif
 
-    if (err != paNoError) { post_error ("PortAudio: `%s'", Pa_GetErrorText (err)); return PD_ERROR; }
+    if (err != paNoError) { post_error ("PortAudio: `%s'", Pa_GetErrorText (err)); return PD_ERROR; }   // --
     else {
         return PD_ERROR_NONE;
     }
@@ -220,7 +220,7 @@ t_error pa_open (int sampleRate,
     if (numberOfChannelsOut > 0) {
     //
     for (t = 0, n = 0; t < Pa_GetDeviceCount(); t++) {
-        const PaDeviceInfo *info = Pa_GetDeviceInfo(t);
+        const PaDeviceInfo *info = Pa_GetDeviceInfo (t);
         if (info->maxOutputChannels > 0) {
             if (n == deviceOut) {
                 numberOfChannelsOut = PD_MIN (numberOfChannelsOut, info->maxOutputChannels);
@@ -278,7 +278,7 @@ t_error pa_open (int sampleRate,
             o,
             pa_ringCallback);
     
-    if (err != paNoError) { post_error ("PortAudio: `%s'", Pa_GetErrorText (err)); return PD_ERROR; }
+    if (err != paNoError) { post_error ("PortAudio: `%s'", Pa_GetErrorText (err)); return PD_ERROR; }   // --
     else {
         return PD_ERROR_NONE;
     }
@@ -319,7 +319,8 @@ int pa_pollDSP (void)
     if (pa_channelsOut) {
         int wait = 0;
         while (PaUtil_GetRingBufferWriteAvailable (&pa_ringOut) < requiredOut) {
-            status = DACS_SLEPT; if (wait++ < 10) { PA_MICROSLEEP; } else { return DACS_NO; }
+            status = DACS_SLEPT; if (wait < 10) { PA_MICROSLEEP; } else { return DACS_NO; }
+            wait++;
         }
         for (j = 0, sound = pa_soundOut, p1 = t; j < pa_channelsOut; j++, p1++) {
             for (k = 0, p2 = p1; k < INTERNAL_BLOCKSIZE; k++, sound++, p2 += pa_channelsOut) {
@@ -333,7 +334,8 @@ int pa_pollDSP (void)
     if (pa_channelsIn) {
         int wait = 0;
         while (PaUtil_GetRingBufferReadAvailable (&pa_ringIn) < requiredIn) {
-            status = DACS_SLEPT; if (wait++ < 10) { PA_MICROSLEEP; } else { return DACS_NO; }
+            status = DACS_SLEPT; if (wait < 10) { PA_MICROSLEEP; } else { return DACS_NO; }
+            wait++;
         }
         PaUtil_ReadRingBuffer (&pa_ringIn, t, requiredIn);
         for (j = 0, sound = pa_soundIn, p1 = t; j < pa_channelsIn; j++, p1++) {
