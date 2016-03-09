@@ -366,7 +366,7 @@ void        preferences_save                        (void *dummy);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        midi_initialize                         (void);
+void        midi_start                              (void);
 void        midi_synchronise                        (void);
 void        midi_poll                               (void);
 void        midi_receive                            (int port, int byte);

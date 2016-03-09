@@ -66,6 +66,14 @@ static void midipm_writeFourBytes (PmStream *stream, int a, int b, int c, int d)
 
 void midi_initializeNative (void)
 {
+    Pm_Initialize();
+    
+    if (!Pt_Started()) { Pt_Start (1, NULL, NULL); }    /* Start a timer with millisecond accuracy. */
+}
+
+void midi_releaseNative (void)
+{
+    Pm_Terminate();
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -75,8 +83,6 @@ void midi_initializeNative (void)
 void midi_openNative (int numberOfDevicesIn, int *devicesIn, int numberOfDevicesOut, int *devicesOut)
 {
     int i, j, n;
-    
-    Pt_Start (1, NULL, NULL);       /* Start a timer with millisecond accuracy. */
 
     midipm_numberOfDevicesIn  = 0;
     midipm_numberOfDevicesOut = 0;

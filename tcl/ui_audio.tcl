@@ -124,23 +124,23 @@ proc show {top \
     ::createMenuByValue $top.f.properties.sampleRate    $sampleRateValues ::ui_audio::audioSampleRate \
                                                             -width [::measure $sampleRateValues]   
 
-    ttk::label $top.f.properties.delayLabel             {*}[::styleLabel] \
-                                                            -text [_ "Delay in Milliseconds"]
-    ttk::entry $top.f.properties.delay                  {*}[::styleEntryNumber] \
-                                                            -textvariable ::ui_audio::audioDelay \
-                                                            -width $::width(small)
-
     ttk::label $top.f.properties.blockSizeLabel         {*}[::styleLabel] \
                                                             -text [_ "Block Size"]
     ::createMenuByValue $top.f.properties.blockSize     $blockSizeValues ::ui_audio::audioBlockSize \
                                                             -width [::measure $blockSizeValues]
     
+    ttk::label $top.f.properties.delayLabel             {*}[::styleLabel] \
+                                                            -text [_ "Delay in Milliseconds"]
+    ttk::entry $top.f.properties.delay                  {*}[::styleEntryNumber] \
+                                                            -textvariable ::ui_audio::audioDelay \
+                                                            -width $::width(small)
+                                                            
     grid $top.f.properties.sampleRateLabel              -row 0 -column 0 -sticky ew
     grid $top.f.properties.sampleRate                   -row 0 -column 2 -sticky ew
-    grid $top.f.properties.delayLabel                   -row 1 -column 0 -sticky ew
-    grid $top.f.properties.delay                        -row 1 -column 2 -sticky ew
-    grid $top.f.properties.blockSizeLabel               -row 2 -column 0 -sticky ew
-    grid $top.f.properties.blockSize                    -row 2 -column 2 -sticky ew
+    grid $top.f.properties.blockSizeLabel               -row 1 -column 0 -sticky ew
+    grid $top.f.properties.blockSize                    -row 1 -column 2 -sticky ew
+    grid $top.f.properties.delayLabel                   -row 2 -column 0 -sticky ew
+    grid $top.f.properties.delay                        -row 2 -column 2 -sticky ew
     
     if {$multiple > 1} {
         foreach e $audioIn  { ::ui_audio::_makeIn  $top.f.inputs  [incr i] }

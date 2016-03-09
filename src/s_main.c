@@ -286,12 +286,12 @@ int main_entry (int argc, char **argv)
     preferences_load();
     
     if (!(err |= interface_start())) {
-        midi_open();
         if (!(err |= main_entryVersion (1))) { err |= scheduler_main(); }
     }
     
     setup_release();
     instance_release();
+    midi_releaseNative();
     
     #ifdef USEAPI_PORTAUDIO
         pa_release();

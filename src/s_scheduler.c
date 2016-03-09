@@ -201,7 +201,7 @@ static void scheduler_mainLoop (void)
     scheduler_sleepGrain = PD_CLAMP (audio_advanceInMicroseconds / 4, 100, 5000);
     scheduler_systimePerDSPTick = scheduler_getSystimePerDSPTick();
 
-    midi_initialize();
+    midi_start();
     
     while (!scheduler_quit) {
     //
@@ -250,8 +250,11 @@ static void scheduler_mainLoop (void)
 
 t_error scheduler_main (void)
 {
+    midi_open();
+    //
     scheduler_mainLoop();
-    audio_close(); 
+    //
+    audio_close();
     midi_close();
     
     return (scheduler_quit == SCHEDULER_ERROR);

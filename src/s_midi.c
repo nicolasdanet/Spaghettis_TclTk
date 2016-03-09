@@ -70,7 +70,7 @@ static double       midi_needToUpdateTime;                                  /* S
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void midi_initialize (void)
+void midi_start (void)
 {
     midi_realTimeAtStart    = sys_getRealTimeInSeconds();
     midi_logicalTimeAtStart = scheduler_getLogicalTime();
