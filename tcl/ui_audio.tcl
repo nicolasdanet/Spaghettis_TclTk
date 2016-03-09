@@ -97,7 +97,8 @@ proc show {top \
     set audioDelayOld       $delay
     set audioBlockSize      $blockSize
 
-    set values {64 128 256 512 1024 2048}
+    set blockSizeValues  {64 128 256 512 1024 2048}
+    set sampleRateValues {32000 44100 48000 88200 96000}
         
     toplevel $top -class PdDialog
     wm title $top [_ "Audio"]
@@ -120,10 +121,9 @@ proc show {top \
     
     ttk::label $top.f.properties.sampleRateLabel        {*}[::styleLabel] \
                                                             -text [_ "Sample Rate"]
-    ttk::entry $top.f.properties.sampleRate             {*}[::styleEntryNumber] \
-                                                            -textvariable ::ui_audio::audioSampleRate \
-                                                            -width $::width(small)
-    
+    ::createMenuByValue $top.f.properties.sampleRate    $sampleRateValues ::ui_audio::audioSampleRate \
+                                                            -width [::measure $sampleRateValues]   
+
     ttk::label $top.f.properties.delayLabel             {*}[::styleLabel] \
                                                             -text [_ "Delay in Milliseconds"]
     ttk::entry $top.f.properties.delay                  {*}[::styleEntryNumber] \
@@ -132,9 +132,8 @@ proc show {top \
 
     ttk::label $top.f.properties.blockSizeLabel         {*}[::styleLabel] \
                                                             -text [_ "Block Size"]
-    
-    ::createMenuByValue $top.f.properties.blockSize     $values ::ui_audio::audioBlockSize \
-                                                            -width [::measure $values]
+    ::createMenuByValue $top.f.properties.blockSize     $blockSizeValues ::ui_audio::audioBlockSize \
+                                                            -width [::measure $blockSizeValues]
     
     grid $top.f.properties.sampleRateLabel              -row 0 -column 0 -sticky ew
     grid $top.f.properties.sampleRate                   -row 0 -column 2 -sticky ew
@@ -155,12 +154,10 @@ proc show {top \
     grid columnconfigure $top.f.inputs      1 -weight 1
     grid columnconfigure $top.f.outputs     1 -weight 1
     
-    bind  $top.f.properties.sampleRate  <Return> { ::nextEntry %W }
-    bind  $top.f.properties.delay       <Return> { ::nextEntry %W }
+    bind  $top.f.properties.delay <Return> { ::nextEntry %W }
+    focus $top.f.properties.delay
     
-    focus $top.f.properties.sampleRate
-    
-    after idle "$top.f.properties.sampleRate selection range 0 end"
+    after idle "$top.f.properties.delay selection range 0 end"
     
     bind $top <Destroy> { ::ui_menu::enableAudio }
         
