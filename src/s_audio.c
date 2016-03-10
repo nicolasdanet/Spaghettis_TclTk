@@ -115,11 +115,25 @@ void audio_initializeMemoryAndParameters (int usedChannelsIn, int usedChannelsOu
 
 t_error audio_initialize (void)
 {
-    return PD_ERROR_NONE;
+    t_error err = PD_ERROR_NONE;
+    
+    #ifdef USEAPI_OSS
+        oss_initialize();
+    #endif
+
+    #ifdef USEAPI_PORTAUDIO
+        err |= pa_initialize();
+    #endif
+    
+    return err;
 }
 
 void audio_release (void)
 {
+    #ifdef USEAPI_PORTAUDIO
+        pa_release();
+    #endif
+    
     if (audio_soundIn)  { PD_MEMORY_FREE (audio_soundIn);  audio_soundIn  = NULL; }
     if (audio_soundOut) { PD_MEMORY_FREE (audio_soundOut); audio_soundOut = NULL; }
 }

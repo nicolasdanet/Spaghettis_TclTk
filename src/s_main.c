@@ -268,17 +268,11 @@ int main_entry (int argc, char **argv)
     PD_ASSERT (main_directoryHelp   != NULL);
     PD_ASSERT (main_directoryExtras != NULL);
 
-    #ifdef USEAPI_OSS
-        oss_initialize();
-    #endif
-
-    #ifdef USEAPI_PORTAUDIO
-        err |= pa_initialize();
-    #endif
+    err |= audio_initialize();
     
     if (!err) {
     //
-    midi_initializeNative();
+    midi_initialize();
     instance_initialize();
     sys_setSignalHandlers();
     
@@ -291,12 +285,8 @@ int main_entry (int argc, char **argv)
     
     setup_release();
     instance_release();
-    midi_releaseNative();
+    midi_release();
     audio_release(); 
-    
-    #ifdef USEAPI_PORTAUDIO
-        pa_release();
-    #endif
     //
     }
     //
