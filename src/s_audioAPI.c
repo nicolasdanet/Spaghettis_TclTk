@@ -79,7 +79,8 @@ static int      audio_tempBlockSize     = AUDIO_DEFAULT_BLOCKSIZE;              
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void audio_initializeMemoryAndParameters (int usedChannelsIn, int usedChannelsOut, int sampleRate);
+void audio_initializeMemoryAndParameters    (int usedChannelsIn, int usedChannelsOut, int sampleRate);
+static void audio_resetDevices              (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -94,6 +95,7 @@ void audio_setAPI (void *dummy, t_float f)
         audio_api = api;
         audio_numberOfDevicesIn  = 0;
         audio_numberOfDevicesOut = 0;
+        audio_resetDevices();
         sys_vGui ("set ::var(apiAudio) %d\n", audio_api);                               // --
     }
 }
@@ -260,6 +262,8 @@ void audio_close (void)
     audio_openedApi = -1;
     
     scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
+    
+    // sys_gui ("set ::var(isDsp) 0\n");
     //
     }
 }
@@ -404,7 +408,26 @@ static void audio_setDevicesAndParameters (int numberOfDevicesIn,
     audio_initializeMemoryAndParameters (totalOfChannelsIn, totalOfChannelsOut, sampleRate);
 }
 
-void audio_setDefaultDevicesAndParameters (int numberOfDevicesIn,
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void audio_resetDevices (void)
+{
+    int m = 0;
+    int n = 0;
+    int i[MAXIMUM_AUDIO_IN]  = { 0 };
+    int j[MAXIMUM_AUDIO_IN]  = { 0 };
+    int o[MAXIMUM_AUDIO_OUT] = { 0 };
+    int p[MAXIMUM_AUDIO_OUT] = { 0 };
+    int sampleRate  = AUDIO_DEFAULT_SAMPLERATE;
+    int advance     = AUDIO_DEFAULT_ADVANCE;
+    int blockSize   = AUDIO_DEFAULT_BLOCKSIZE;
+    
+    audio_setDevicesWithDefault (m, i, j, n, o, p, sampleRate, advance, blockSize);
+}
+
+void audio_setDevicesWithDefault (int numberOfDevicesIn,
     int *devicesIn,
     int *channelsIn, 
     int numberOfDevicesOut, 

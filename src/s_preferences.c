@@ -345,7 +345,7 @@ void preferences_load (void)
     
     audio_setAPI (NULL, audioApi);
     
-    audio_setDefaultDevicesAndParameters (numberOfAudioIn,
+    audio_setDevicesWithDefault (numberOfAudioIn,
         audioIn, 
         channelIn,
         numberOfAudioOut,

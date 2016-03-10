@@ -451,7 +451,7 @@ void        audio_getDevices                        (int *numberOfDevicesIn,
                                                         int *advance,
                                                         int *blockSize);
 
-void        audio_setDefaultDevicesAndParameters    (int numberOfDevicesIn,
+void        audio_setDevicesWithDefault             (int numberOfDevicesIn,
                                                         int *devicesIn,
                                                         int *channelsIn,
                                                         int numberOfDevicesOut,
