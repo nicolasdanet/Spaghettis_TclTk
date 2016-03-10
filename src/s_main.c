@@ -292,6 +292,7 @@ int main_entry (int argc, char **argv)
     setup_release();
     instance_release();
     midi_releaseNative();
+    audio_release(); 
     
     #ifdef USEAPI_PORTAUDIO
         pa_release();

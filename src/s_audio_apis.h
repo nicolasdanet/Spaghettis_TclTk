@@ -9,34 +9,14 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#ifndef __s_apis_h_
-#define __s_apis_h_
+#ifndef __s_audio_apis_h_
+#define __s_audio_apis_h_
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 typedef void (*t_audiocallback)(void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void    midi_initializeNative           (void);
-void    midi_releaseNative              (void);
-void    midi_openNative                 (int numberOfDevicesIn, 
-                                            int *devicesIn, 
-                                            int numberOfDevicesOut, 
-                                            int *devicesOut);
-                                        
-void    midi_closeNative                (void);
-void    midi_pushNextMessageNative      (int port, int a, int b, int c);
-void    midi_pushNextByteNative         (int port, int a);
-void    midi_pollNative                 (void);
-t_error midi_getListsNative             (char *devicesIn, 
-                                            int  *numberOfDevicesIn, 
-                                            char *devicesOut, 
-                                            int  *numberOfDevicesOut);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -62,6 +42,23 @@ t_error pa_getLists                     (char *devicesIn,
                                             int  *numberOfDevicesOut,
                                             int  *canMultiple);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int  jack_open_audio                    (int numberOfChannelsIn,
+                                            int numberOfChannelsOut,
+                                            int sampleRate,
+                                            t_audiocallback callback);
+                                            
+void jack_close_audio                   (void);
+int  jack_send_dacs                     (void);
+void jack_getdevs                       (char *indevlist,
+                                            int *nindevs,
+                                            char *outdevlist,
+                                            int *noutdevs,
+                                            int *canmulti);
+                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -118,24 +115,6 @@ void alsa_getdevs                       (char *indevlist,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void jack_listdevs                      (void);
-int  jack_send_dacs                     (void);
-void jack_close_audio                   (void);
-int  jack_open_audio                    (int wantinchans,
-                                            int wantoutchans,
-                                            int srate,
-                                            t_audiocallback callback);
-                                    
-void jack_getdevs                       (char *indevlist,
-                                            int *nindevs,
-                                            char *outdevlist,
-                                            int *noutdevs,
-                                            int *canmulti);
-                                
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_error dummy_open                      (void);
 void    dummy_close                     (void);
 int     dummy_pollDSP                   (void);
@@ -148,4 +127,4 @@ t_error dummy_getLists                  (char *devicesIn,
                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#endif // __s_apis_h_
+#endif // __s_audio_apis_h_

@@ -1,48 +1,74 @@
-/* Copyright (c) 2003, Miller Puckette and others.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/*  Audio back-end for connecting with the JACK audio interconnect system. 
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
 */
 
-#ifdef USEAPI_JACK
+/* < https://opensource.org/licenses/BSD-3-Clause > */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #include <jack/weakjack.h>
 #include <jack/jack.h>
 #include <regex.h>
 
-#define MAX_CLIENTS 100
-#define MAX_JACK_PORTS 128  /* higher values seem to give bad xrun problems */
-#define BUF_JACK 4096
-#define JACK_OUT_MAX  64
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-extern t_sample *audio_soundOut;
-extern t_sample *audio_soundIn;
-extern int audio_channelsIn;
-extern int audio_channelsOut;
-extern t_float audio_sampleRate;
+#define JACK_MAXIMUM_CLIENTS    100
+#define JACK_MAXIMUM_PORTS      128
+#define JACK_MAXIMUM_FRAMES     64
 
-static jack_nframes_t jack_out_max;
-static jack_nframes_t jack_filled = 0;
-static t_sample *jack_outbuf;
-static t_sample *jack_inbuf;
-static int jack_started = 0;
-static jack_port_t *input_port[MAX_JACK_PORTS];
-static jack_port_t *output_port[MAX_JACK_PORTS];
-static int outport_count = 0;
-static jack_client_t *jack_client = NULL;
-char *jack_client_names[MAX_CLIENTS];
-static int jack_dio_error;
-static t_audiocallback jack_callback;
-pthread_mutex_t jack_mutex;
-pthread_cond_t jack_sem;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+extern t_sample         *audio_soundIn;
+extern t_sample         *audio_soundOut;
+
+extern int              audio_channelsIn;
+extern int              audio_channelsOut;
+extern t_float          audio_sampleRate;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_sample         *jack_bufferIn;                                     /* Shared. */
+static t_sample         *jack_bufferOut;                                    /* Shared. */
+
+static char             *jack_client_names[JACK_MAXIMUM_CLIENTS];           /* Shared. */
+static jack_client_t    *jack_client;                                       /* Shared. */
+
+static jack_port_t      *jack_portsIn[JACK_MAXIMUM_PORTS];                  /* Shared. */
+static jack_port_t      *jack_portsOut[JACK_MAXIMUM_PORTS];                 /* Shared. */
+
+static int              jack_numberOfPortsOut;                              /* Shared. */
+static jack_nframes_t   jack_maximumNumberOfFrames;                         /* Shared. */
+static jack_nframes_t   jack_filledFrames;                                  /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static pthread_cond_t   jack_cond;                                          /* Shared. */
+static pthread_mutex_t  jack_mutex;                                         /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define JACK_BUFFER_SIZE    4096
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static int pollprocess(jack_nframes_t nframes, void *arg)
 {
@@ -50,11 +76,11 @@ static int pollprocess(jack_nframes_t nframes, void *arg)
     jack_default_audio_sample_t *out, *in;
 
     pthread_mutex_lock(&jack_mutex);
-    if (nframes > JACK_OUT_MAX) jack_out_max = nframes;
-    else jack_out_max = JACK_OUT_MAX;
-    if (jack_filled >= nframes)
+    if (nframes > JACK_MAXIMUM_FRAMES) jack_maximumNumberOfFrames = nframes;
+    else jack_maximumNumberOfFrames = JACK_MAXIMUM_FRAMES;
+    if (jack_filledFrames >= nframes)
     {
-        if (jack_filled != nframes)
+        if (jack_filledFrames != nframes)
             fprintf(stderr,"Partial read\n");
         /* hmm, how to find out whether 't_sample' and
             'jack_default_audio_sample_t' are actually the same type??? */
@@ -62,14 +88,14 @@ static int pollprocess(jack_nframes_t nframes, void *arg)
         {
             for (j = 0; j < audio_channelsOut;  j++)
             {
-                if (out = jack_port_get_buffer(output_port[j], nframes))
-                    memcpy(out, jack_outbuf + (j * BUF_JACK),
+                if (out = jack_port_get_buffer(jack_portsOut[j], nframes))
+                    memcpy(out, jack_bufferOut + (j * JACK_BUFFER_SIZE),
                         sizeof (jack_default_audio_sample_t) * nframes);
             }
             for (j = 0; j < audio_channelsIn; j++)
             {
-                if (in = jack_port_get_buffer(input_port[j], nframes))
-                    memcpy(jack_inbuf + (j * BUF_JACK), in,
+                if (in = jack_port_get_buffer(jack_portsIn[j], nframes))
+                    memcpy(jack_bufferIn + (j * JACK_BUFFER_SIZE), in,
                         sizeof (jack_default_audio_sample_t) * nframes);
             }
         } 
@@ -79,46 +105,47 @@ static int pollprocess(jack_nframes_t nframes, void *arg)
             t_sample*data;
             for (j = 0; j < audio_channelsOut;  j++)
             {
-                if (out = jack_port_get_buffer (output_port[j], nframes))
+                if (out = jack_port_get_buffer (jack_portsOut[j], nframes))
                 {
-                    data = jack_outbuf + (j * BUF_JACK);
+                    data = jack_bufferOut + (j * JACK_BUFFER_SIZE);
                     for (frame=0; frame<nframes; frame++)
                         *out++ = *data++;
                 }
             }
             for (j = 0; j < audio_channelsIn; j++)
             {
-                if (in = jack_port_get_buffer( input_port[j], nframes))
+                if (in = jack_port_get_buffer( jack_portsIn[j], nframes))
                 {
-                    data = jack_inbuf + (j * BUF_JACK);
+                    data = jack_bufferIn + (j * JACK_BUFFER_SIZE);
                     for (frame=0; frame<nframes; frame++)
                         *data++ = *in++;
                 }
             }
         }
-        jack_filled -= nframes;
+        jack_filledFrames -= nframes;
     }
     else
     {           /* PD could not keep up ! */
-        if (jack_started) jack_dio_error = 1;
-        for (j = 0; j < outport_count;  j++)
+        //if (jack_started) jack_dio_error = 1;
+        for (j = 0; j < jack_numberOfPortsOut;  j++)
         {
-            if (out = jack_port_get_buffer (output_port[j], nframes))
+            if (out = jack_port_get_buffer (jack_portsOut[j], nframes))
                 memset(out, 0, sizeof (float) * nframes); 
-            memset(jack_outbuf + j * BUF_JACK, 0, BUF_JACK * sizeof(t_sample));
+            memset(jack_bufferOut + j * JACK_BUFFER_SIZE, 0, JACK_BUFFER_SIZE * sizeof(t_sample));
         }
-        jack_filled = 0;
+        jack_filledFrames = 0;
     }
-    pthread_cond_broadcast(&jack_sem);
+    pthread_cond_broadcast(&jack_cond);
     pthread_mutex_unlock(&jack_mutex);
     return 0;
 }
 
+/*
 static int callbackprocess(jack_nframes_t nframes, void *arg)
 {
     int chan, j, k;
     unsigned int n;
-    jack_default_audio_sample_t *out[MAX_JACK_PORTS], *in[MAX_JACK_PORTS], *jp;
+    jack_default_audio_sample_t *out[JACK_MAXIMUM_PORTS], *in[JACK_MAXIMUM_PORTS], *jp;
 
     if (nframes % AUDIO_DEFAULT_BLOCKSIZE)
     {
@@ -127,9 +154,9 @@ static int callbackprocess(jack_nframes_t nframes, void *arg)
         nframes -= (nframes % AUDIO_DEFAULT_BLOCKSIZE);
     }
     for (chan = 0; chan < audio_channelsIn; chan++)
-        in[chan] = jack_port_get_buffer(input_port[chan], nframes);
+        in[chan] = jack_port_get_buffer(jack_portsIn[chan], nframes);
     for (chan = 0; chan < audio_channelsOut; chan++)
-        out[chan] = jack_port_get_buffer(output_port[chan], nframes);
+        out[chan] = jack_port_get_buffer(jack_portsOut[chan], nframes);
     for (n = 0; n < nframes; n += AUDIO_DEFAULT_BLOCKSIZE)
     {
         t_sample *fp;
@@ -157,7 +184,7 @@ static int callbackprocess(jack_nframes_t nframes, void *arg)
     }       
     return 0;
 }
-
+*/
 static int
 jack_srate (jack_nframes_t srate, void *arg)
 {
@@ -179,12 +206,6 @@ jack_shutdown (void *arg)
     audio_close();
 }
 
-static int jack_xrun(void* arg) {
-  jack_dio_error = 1;
-  return 0;
-}
-
-
 static char** jack_get_clients(void)
 {
     const char **jack_ports;
@@ -203,7 +224,7 @@ static char** jack_get_clients(void)
         regmatch_t match_info;
         char tmp_client_name[100];
 
-        if(num_clients>=MAX_CLIENTS)break;
+        if(num_clients>=JACK_MAXIMUM_CLIENTS)break;
 
 
         /* extract the client name from the port name, using a regex
@@ -274,9 +295,9 @@ static int jack_connect_ports(char* client)
     {
         for (i=0;jack_ports[i] != NULL && i < audio_channelsIn;i++)      
             if (jack_connect (jack_client, jack_ports[i],
-               jack_port_name (input_port[i]))) 
+               jack_port_name (jack_portsIn[i]))) 
                   post_error ("JACK: cannot connect input ports %s -> %s",
-                      jack_ports[i],jack_port_name (input_port[i]));
+                      jack_ports[i],jack_port_name (jack_portsIn[i]));
         free(jack_ports);
     }
     jack_ports = jack_get_ports( jack_client, regex_pattern,
@@ -284,10 +305,10 @@ static int jack_connect_ports(char* client)
     if (jack_ports)
     {
         for (i=0;jack_ports[i] != NULL && i < audio_channelsOut;i++)      
-          if (jack_connect (jack_client, jack_port_name (output_port[i]),
+          if (jack_connect (jack_client, jack_port_name (jack_portsOut[i]),
             jack_ports[i])) 
               post_error ( "JACK: cannot connect output ports %s -> %s",
-                jack_port_name (output_port[i]),jack_ports[i]);
+                jack_port_name (jack_portsOut[i]),jack_ports[i]);
 
         free(jack_ports);
     }
@@ -300,8 +321,11 @@ static void pd_jack_error_callback(const char *desc) {
   return;
 }
 
-int
-jack_open_audio(int inchans, int outchans, int rate, t_audiocallback callback)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int jack_open_audio(int inchans, int outchans, int rate, t_audiocallback callback)
 {
     int j;
     char port_name[80] = "";
@@ -320,20 +344,20 @@ jack_open_audio(int inchans, int outchans, int rate, t_audiocallback callback)
     }
 #endif
 
-    jack_dio_error = 0;
+    //jack_dio_error = 0;
 
     if ((inchans == 0) && (outchans == 0)) return 0;
 
-    if (outchans > MAX_JACK_PORTS) {
+    if (outchans > JACK_MAXIMUM_PORTS) {
         post_error ("JACK: %d output ports not supported, setting to %d",
-            outchans, MAX_JACK_PORTS);
-        outchans = MAX_JACK_PORTS;
+            outchans, JACK_MAXIMUM_PORTS);
+        outchans = JACK_MAXIMUM_PORTS;
     }
 
-    if (inchans > MAX_JACK_PORTS) {
+    if (inchans > JACK_MAXIMUM_PORTS) {
         post_error ("JACK: %d input ports not supported, setting to %d",
-            inchans, MAX_JACK_PORTS);
-        inchans = MAX_JACK_PORTS;
+            inchans, JACK_MAXIMUM_PORTS);
+        inchans = JACK_MAXIMUM_PORTS;
     }
 
     /* try to become a client of the JACK server.  (If no JACK server exists,
@@ -370,28 +394,25 @@ jack_open_audio(int inchans, int outchans, int rate, t_audiocallback callback)
         
         audio_channelsIn = inchans;
         audio_channelsOut = outchans;
-        if (jack_inbuf)
-            free(jack_inbuf);
+        if (jack_bufferIn)
+            free(jack_bufferIn);
         if (audio_channelsIn)
-            jack_inbuf = calloc(sizeof(t_sample), audio_channelsIn * BUF_JACK); 
-        if (jack_outbuf)
-            free(jack_outbuf);
+            jack_bufferIn = calloc(sizeof(t_sample), audio_channelsIn * JACK_BUFFER_SIZE); 
+        if (jack_bufferOut)
+            free(jack_bufferOut);
         if (audio_channelsOut)
-            jack_outbuf = calloc(sizeof(t_sample), audio_channelsOut * BUF_JACK); 
+            jack_bufferOut = calloc(sizeof(t_sample), audio_channelsOut * JACK_BUFFER_SIZE); 
 
         jack_get_clients();
 
         /* set JACK callback functions */
 
-        jack_callback = callback;
-        jack_set_process_callback(jack_client, 
-            (callback? callbackprocess : pollprocess), 0);
+        //jack_callback = callback;
+        
+        jack_set_process_callback (jack_client, pollprocess, 0);
 
         jack_set_error_function (pd_jack_error_callback);
 
-#ifdef JACK_XRUN
-        jack_set_xrun_callback (jack_client, jack_xrun, NULL);
-#endif
 
         /* tell the JACK server to call `srate()' whenever
            the sample rate of the system changes.
@@ -408,9 +429,9 @@ jack_open_audio(int inchans, int outchans, int rate, t_audiocallback callback)
         jack_on_shutdown (jack_client, jack_shutdown, 0);
 
         for (j=0; j<audio_channelsIn; j++)
-             input_port[j]=NULL;
+             jack_portsIn[j]=NULL;
         for (j=0; j<audio_channelsOut; j++)
-             output_port[j] = NULL;
+             jack_portsOut[j] = NULL;
 
         new_jack = 1;
     }
@@ -428,9 +449,9 @@ jack_open_audio(int inchans, int outchans, int rate, t_audiocallback callback)
     for (j = 0; j < inchans; j++)
     {
         sprintf(port_name, "input%d", j);
-        if (!input_port[j]) input_port[j] = jack_port_register (jack_client,
+        if (!jack_portsIn[j]) jack_portsIn[j] = jack_port_register (jack_client,
             port_name, JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
-        if (!input_port[j])
+        if (!jack_portsIn[j])
         {
           post_error ("JACK: can only register %d input ports (of %d requested)",
             j, inchans);
@@ -442,9 +463,9 @@ jack_open_audio(int inchans, int outchans, int rate, t_audiocallback callback)
     for (j = 0; j < outchans; j++)
     {
         sprintf(port_name, "output%d", j);
-        if (!output_port[j]) output_port[j] = jack_port_register (jack_client,
+        if (!jack_portsOut[j]) jack_portsOut[j] = jack_port_register (jack_client,
             port_name, JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-        if (!output_port[j])
+        if (!jack_portsOut[j])
         {
           post_error ("JACK: can only register %d output ports (of %d requested)",
             j, outchans);
@@ -452,7 +473,7 @@ jack_open_audio(int inchans, int outchans, int rate, t_audiocallback callback)
           break;
         }
     } 
-    outport_count = outchans;
+    jack_numberOfPortsOut = outchans;
 
     /* tell the JACK server that we are ready to roll */
 
@@ -465,14 +486,14 @@ jack_open_audio(int inchans, int outchans, int rate, t_audiocallback callback)
         }
 
         for (j = 0; j < outchans; j++) 
-            memset(jack_outbuf + j * BUF_JACK, 0,
-                BUF_JACK * sizeof(t_sample));
+            memset(jack_bufferOut + j * JACK_BUFFER_SIZE, 0,
+                JACK_BUFFER_SIZE * sizeof(t_sample));
 
         if (jack_client_names[0])
             jack_connect_ports(jack_client_names[0]);
 
         pthread_mutex_init(&jack_mutex, NULL);
-        pthread_cond_init(&jack_sem, NULL);
+        pthread_cond_init(&jack_cond, NULL);
     }
     return 0;
 }
@@ -485,18 +506,21 @@ void jack_close_audio(void)
     }
 
     jack_client=NULL;
-    jack_started = 0;
 
-    pthread_cond_broadcast(&jack_sem);
+    pthread_cond_broadcast(&jack_cond);
 
-    pthread_cond_destroy(&jack_sem);
+    pthread_cond_destroy(&jack_cond);
     pthread_mutex_destroy(&jack_mutex);
-    if (jack_inbuf)
-        free(jack_inbuf), jack_inbuf = 0;
-    if (jack_outbuf)
-        free(jack_outbuf), jack_outbuf = 0;
+    if (jack_bufferIn)
+        free(jack_bufferIn), jack_bufferIn = 0;
+    if (jack_bufferOut)
+        free(jack_bufferOut), jack_bufferOut = 0;
  
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int jack_send_dacs(void)
 {
@@ -507,37 +531,36 @@ int jack_send_dacs(void)
     int timeref = sys_getRealTimeInSeconds();
     if (!jack_client) return DACS_NO;
     if (!audio_channelsIn && !audio_channelsOut) return (DACS_NO); 
-    if (jack_dio_error)
+    if (0 /*jack_dio_error*/)
     {
         //sys_log_error(ERROR_RESYNC);
-        jack_dio_error = 0;
+        //jack_dio_error = 0;
     }
     pthread_mutex_lock(&jack_mutex);
-    if (jack_filled >= jack_out_max)
-        pthread_cond_wait(&jack_sem,&jack_mutex);
+    if (jack_filledFrames >= jack_maximumNumberOfFrames)
+        pthread_cond_wait(&jack_cond,&jack_mutex);
 
     if (!jack_client)
     {
         pthread_mutex_unlock(&jack_mutex);
         return DACS_NO;
     }
-    jack_started = 1;
 
     fp = audio_soundOut;
     for (j = 0; j < audio_channelsOut; j++)
     {
-        memcpy(jack_outbuf + (j * BUF_JACK) + jack_filled, fp,
+        memcpy(jack_bufferOut + (j * JACK_BUFFER_SIZE) + jack_filledFrames, fp,
             AUDIO_DEFAULT_BLOCKSIZE*sizeof(t_sample));
         fp += AUDIO_DEFAULT_BLOCKSIZE;  
     }
     fp = audio_soundIn;
     for (j = 0; j < audio_channelsIn; j++)
     {
-        memcpy(fp, jack_inbuf + (j * BUF_JACK) + jack_filled,
+        memcpy(fp, jack_bufferIn + (j * JACK_BUFFER_SIZE) + jack_filledFrames,
             AUDIO_DEFAULT_BLOCKSIZE*sizeof(t_sample));
         fp += AUDIO_DEFAULT_BLOCKSIZE;
     }
-    jack_filled += AUDIO_DEFAULT_BLOCKSIZE;
+    jack_filledFrames += AUDIO_DEFAULT_BLOCKSIZE;
     pthread_mutex_unlock(&jack_mutex);
 
     if ((timenow = sys_getRealTimeInSeconds()) - timeref > 0.002)
@@ -547,6 +570,10 @@ int jack_send_dacs(void)
     memset(audio_soundOut, 0, AUDIO_DEFAULT_BLOCKSIZE*sizeof(t_sample)*audio_channelsOut);
     return rtnval;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void jack_getdevs(char *indevlist, int *nindevs,
     char *outdevlist, int *noutdevs, int *canmulti)
@@ -566,9 +593,5 @@ void jack_getdevs(char *indevlist, int *nindevs,
     *nindevs = *noutdevs = ndev;
 }
 
-void jack_listdevs( void)
-{
-    post("device listing not implemented for jack yet\n");
-}
-
-#endif /* JACK */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

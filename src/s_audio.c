@@ -109,6 +109,15 @@ void audio_initializeMemoryAndParameters (int usedChannelsIn, int usedChannelsOu
     // canvas_resume_dsp (canvas_suspend_dsp());
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error audio_initialize (void)
+{
+    return PD_ERROR_NONE;
+}
+
 void audio_release (void)
 {
     if (audio_soundIn)  { PD_MEMORY_FREE (audio_soundIn);  audio_soundIn  = NULL; }
