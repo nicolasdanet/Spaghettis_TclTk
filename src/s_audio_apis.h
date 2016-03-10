@@ -16,14 +16,9 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_audiocallback)(void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_error pa_initialize                   (void);
 void    pa_release                      (void);
+
 t_error pa_open                         (int sampleRate,
                                             int numberOfChannelsIn,
                                             int numberOfChannelsOut,
@@ -46,24 +41,21 @@ t_error pa_getLists                     (char *devicesIn,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int  jack_open_audio                    (int numberOfChannelsIn,
-                                            int numberOfChannelsOut,
-                                            int sampleRate,
-                                            t_audiocallback callback);
-                                            
-void jack_close_audio                   (void);
-int  jack_send_dacs                     (void);
-void jack_getdevs                       (char *indevlist,
-                                            int *nindevs,
-                                            char *outdevlist,
-                                            int *noutdevs,
-                                            int *canmulti);
+t_error jack_open                       (int sampleRate, int numberOfChannelsIn, int numberOfChannelsOut);
+void    jack_close                      (void);
+int     jack_pollDSP                    (void);
+t_error jack_getLists                   (char *devicesIn,
+                                            int  *numberOfDevicesIn,
+                                            char *devicesOut,
+                                            int  *numberOfDevicesOut,
+                                            int  *canMulitple);
                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void oss_initialize                     (void);
+
 int  oss_send_dacs                      (void);
 void oss_close_audio                    (void);
 int  oss_open_audio                     (int naudioindev,

@@ -80,7 +80,6 @@ static int linux_noutdevs = 0;
 static int linux_nindevs = 0;
 
     /* exported variables */
-t_float audio_sampleRate;              /* Shared. */
 t_sample *audio_soundOut;         /* Shared. */
 t_sample *audio_soundIn;          /* Shared. */
 
