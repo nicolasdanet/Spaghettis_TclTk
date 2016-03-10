@@ -427,6 +427,8 @@ void        audio_release                           (void);
 int         audio_pollDSP                           (void);
 t_error     audio_stopDSP                           (void);
 t_error     audio_startDSP                          (void);
+
+void        audio_setSampleRate                     (t_float sampleRate);
 t_float     audio_getSampleRate                     (void);
 int         audio_getChannelsIn                     (void);
 int         audio_getChannelsOut                    (void);

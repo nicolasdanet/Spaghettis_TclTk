@@ -79,18 +79,14 @@ int audio_pollDSP (void)
     return DACS_NO;
 }
 
-void audio_initializeMemoryAndParameters (int usedChannelsIn, int usedChannelsOut, int sampleRate)
+void audio_initializeMemory (int usedChannelsIn, int usedChannelsOut)
 {
-    /* Channels disposed as consecutive chunk of samples with INTERNAL_BLOCKSIZE length. */
-    
-    PD_ASSERT (usedChannelsIn >= 0);
-    PD_ASSERT (usedChannelsOut >= 0);
-    
-    if (usedChannelsIn != audio_channelsIn || usedChannelsOut != audio_channelsOut) {
-    //
     int m = (INTERNAL_BLOCKSIZE * sizeof (t_sample)) * (usedChannelsIn ? usedChannelsIn : 2);
     int n = (INTERNAL_BLOCKSIZE * sizeof (t_sample)) * (usedChannelsOut ? usedChannelsOut : 2);
 
+    PD_ASSERT (usedChannelsIn >= 0);
+    PD_ASSERT (usedChannelsOut >= 0);
+    
     if (audio_soundIn)  { PD_MEMORY_FREE (audio_soundIn);  audio_soundIn  = NULL; }
     if (audio_soundOut) { PD_MEMORY_FREE (audio_soundOut); audio_soundOut = NULL; }
     
@@ -99,14 +95,6 @@ void audio_initializeMemoryAndParameters (int usedChannelsIn, int usedChannelsOu
     
     audio_channelsIn  = usedChannelsIn;
     audio_channelsOut = usedChannelsOut;
-    //
-    }
-    
-    audio_sampleRate        = (t_float)sampleRate;
-    audio_advanceInSamples  = MICROSECONDS_TO_SECONDS (audio_advanceInMicroseconds * audio_sampleRate);
-    audio_advanceInSamples  = PD_MAX (audio_advanceInSamples, INTERNAL_BLOCKSIZE);
-
-    // canvas_resume_dsp (canvas_suspend_dsp());
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -141,6 +129,13 @@ void audio_release (void)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+void audio_setSampleRate (t_float sampleRate)
+{
+    audio_sampleRate        = (t_float)sampleRate;
+    audio_advanceInSamples  = MICROSECONDS_TO_SECONDS (audio_advanceInMicroseconds * audio_sampleRate);
+    audio_advanceInSamples  = PD_MAX (audio_advanceInSamples, INTERNAL_BLOCKSIZE);
+}
 
 t_float audio_getSampleRate (void)
 {
