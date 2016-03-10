@@ -54,7 +54,6 @@ extern t_sample *audio_soundOut;
 extern int audio_channelsIn;
 extern int audio_channelsOut;
 extern int audio_advanceInSamples;
-extern int audio_advanceInMicroseconds;
 
 /* GLOBALS */
 static int linux_meters;        /* true if we're metering */
@@ -141,7 +140,7 @@ void oss_configure(t_oss_dev *dev, int srate, int dac, int skipblocksize,
 {
     int orig, param, nblk, fd = dev->d_fd, wantformat;
     int nchannels = dev->d_nchannels;
-    int advwas = audio_advanceInMicroseconds;
+    int advwas = audio_getAdvanceInMicroseconds();
 
     audio_buf_info ainfo;
 
@@ -178,7 +177,7 @@ void oss_configure(t_oss_dev *dev, int srate, int dac, int skipblocksize,
                     linux_fragsize = linux_fragsize/2;
         }
             /* post("adv_samples %d", audio_advanceInSamples); */
-        nfragment = (audio_advanceInMicroseconds * (44100. * 1.e-6)) / linux_fragsize;
+        nfragment = (audio_getAdvanceInMicroseconds() * (44100. * 1.e-6)) / linux_fragsize;
 
         fragbytes = linux_fragsize * (dev->d_bytespersamp * nchannels);
         logfragsize = ilog2(fragbytes);
@@ -200,7 +199,7 @@ void oss_configure(t_oss_dev *dev, int srate, int dac, int skipblocksize,
                 nfragment, (1 << logfragsize));
         }
         if (0)
-            post("audiobuffer set to %d msec", (int)(0.001 * audio_advanceInMicroseconds));
+            post("audiobuffer set to %d msec", (int)(0.001 * audio_getAdvanceInMicroseconds()));
     }
 
     if (dac)

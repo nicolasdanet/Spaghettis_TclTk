@@ -428,10 +428,14 @@ int         audio_pollDSP                           (void);
 t_error     audio_stopDSP                           (void);
 t_error     audio_startDSP                          (void);
 
+void        audio_initializeMemory                  (int usedChannelsIn, int usedChannelsOut);
 void        audio_setSampleRate                     (t_float sampleRate);
+void        audio_setAdvanceInMicroseconds          (int advance);
 t_float     audio_getSampleRate                     (void);
 int         audio_getChannelsIn                     (void);
 int         audio_getChannelsOut                    (void);
+int         audio_getAdvanceInMicroseconds          (void);
+int         audio_getAdvanceInSamples               (void);
 
 void        audio_setAPI                            (void *dummy, t_float f);
 t_error     audio_getAPIAvailables                  (char *dest, size_t size);

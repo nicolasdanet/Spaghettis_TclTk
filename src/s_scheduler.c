@@ -25,12 +25,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int      audio_advanceInMicroseconds;
-extern t_float  audio_sampleRate;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 extern t_pdinstance *pd_this;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -41,12 +35,9 @@ static volatile sig_atomic_t scheduler_quit;            /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int      scheduler_sleepGrain;                   /* Shared. */
 static int      scheduler_audioMode;                    /* Shared. */
-
 static double   scheduler_realTime;                     /* Shared. */
 static double   scheduler_logicalTime;                  /* Shared. */
-static double   scheduler_systimePerDSPTick;            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -80,7 +71,7 @@ double scheduler_getUnitsSince (double systime, double unit, int isSamples)
     
     PD_ASSERT (elapsed >= 0.0);
     
-    if (isSamples) { d = SYSTIME_PER_SECOND / audio_sampleRate; } 
+    if (isSamples) { d = SYSTIME_PER_SECOND / audio_getSampleRate(); } 
     else { 
         d = SYSTIME_PER_MILLISECOND;
     }
@@ -126,7 +117,7 @@ void scheduler_needToExitWithError (void)
 
 static double scheduler_getSystimePerDSPTick (void)
 {
-    return (SYSTIME_PER_SECOND * ((double)INTERNAL_BLOCKSIZE / audio_sampleRate));
+    return (SYSTIME_PER_SECOND * ((double)INTERNAL_BLOCKSIZE / audio_getSampleRate()));
 }
 
 static void scheduler_pollWatchdog (void)
@@ -137,7 +128,7 @@ static void scheduler_pollWatchdog (void)
     if ((scheduler_didDSP - scheduler_nextPing) > 0) {
     //
     interface_watchdog (NULL);
-    scheduler_nextPing = scheduler_didDSP + (2 * (int)(audio_sampleRate / (double)INTERNAL_BLOCKSIZE));
+    scheduler_nextPing = scheduler_didDSP + (2 * (int)(audio_getSampleRate() / (double)INTERNAL_BLOCKSIZE));
     //
     }
     
@@ -162,7 +153,7 @@ static void scheduler_pollStuck (int init)
 
 static void scheduler_tick (void)
 {
-    double nextSystime = pd_this->pd_systime + scheduler_systimePerDSPTick;
+    double nextSystime = pd_this->pd_systime + scheduler_getSystimePerDSPTick();
     
     while (pd_this->pd_clocks && pd_this->pd_clocks->c_systime < nextSystime) {
     //
@@ -198,9 +189,6 @@ static void scheduler_mainLoop (void)
     double realTimeAtStart    = sys_getRealTimeInSeconds();
     double logicalTimeAtStart = scheduler_getLogicalTime();
     
-    scheduler_sleepGrain = PD_CLAMP (audio_advanceInMicroseconds / 4, 100, 5000);
-    scheduler_systimePerDSPTick = scheduler_getSystimePerDSPTick();
-
     midi_start();
     
     while (!scheduler_quit) {
@@ -235,7 +223,10 @@ static void scheduler_mainLoop (void)
     if (!scheduler_quit && interface_pollOrFlushGui()) { didSomething = 1; }
     if (!scheduler_quit && !didSomething) {
         scheduler_pollWatchdog();
-        if (timeForward != DACS_SLEPT) { interface_monitorBlocking (scheduler_sleepGrain); }
+        if (timeForward != DACS_SLEPT) {
+            int lapse = PD_CLAMP (audio_getAdvanceInMicroseconds() / 4, 100, 5000);
+            interface_monitorBlocking (lapse);
+        }
     }
     //
     }

@@ -31,8 +31,6 @@ extern t_sample     *audio_soundOut;
 
 extern int      audio_channelsIn;
 extern int      audio_channelsOut;
-extern int      audio_advanceInSamples;
-extern int      audio_advanceInMicroseconds;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -78,7 +76,6 @@ static int      audio_tempBlockSize     = AUDIO_DEFAULT_BLOCKSIZE;              
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void audio_initializeMemory     (int usedChannelsIn, int usedChannelsOut);
 static void audio_resetDevices  (void);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -203,7 +200,7 @@ t_error audio_open (void)
                 audio_soundIn,
                 audio_soundOut,
                 blockSize, 
-                audio_advanceInSamples / blockSize, 
+                audio_getAdvanceInSamples() / blockSize, 
                 (m > 0 ? i[0] : 0),
                 (n > 0 ? o[0] : 0));
                
@@ -382,7 +379,7 @@ static void audio_setDevicesAndParameters (int numberOfDevicesIn,
     advance   = PD_MIN (advance, AUDIO_MAXIMUM_ADVANCE);
     blockSize = PD_CLAMP (blockSize, INTERNAL_BLOCKSIZE, AUDIO_MAXIMUM_BLOCKSIZE); 
         
-    audio_advanceInMicroseconds = MILLISECONDS_TO_MICROSECONDS (advance);
+    audio_setAdvanceInMicroseconds (MILLISECONDS_TO_MICROSECONDS (advance));
 
     audio_setDevices (numberOfDevicesIn, 
         devicesIn, 

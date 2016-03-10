@@ -16,11 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_float  audio_sampleRate;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 extern t_pdinstance *pd_this;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -156,7 +151,7 @@ void clock_delay (t_clock *x, double delay)     /* Could be in milliseconds or i
     
     if (x->c_unit > 0) { d = x->c_unit; }
     else {
-        d = -(x->c_unit * (SYSTIME_PER_SECOND / audio_sampleRate));
+        d = -(x->c_unit * (SYSTIME_PER_SECOND / audio_getSampleRate()));
     }
 
     time = pd_this->pd_systime + (d * delay);
@@ -181,7 +176,7 @@ static void clock_setUnit (t_clock *x, double unit, int isSamples)
     
     if (x->c_systime >= 0.0) {
     //
-    double d = (x->c_unit > 0) ? x->c_unit : (x->c_unit * (SYSTIME_PER_SECOND / audio_sampleRate));
+    double d = (x->c_unit > 0) ? x->c_unit : (x->c_unit * (SYSTIME_PER_SECOND / audio_getSampleRate()));
     timeLeft = (x->c_systime - pd_this->pd_systime) / d;
     //
     }

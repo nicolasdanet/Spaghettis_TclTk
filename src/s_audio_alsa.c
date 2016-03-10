@@ -68,7 +68,6 @@ typedef struct _alsa_dev {
 
 extern int audio_channelsIn;
 extern int audio_channelsOut;
-extern int audio_advanceInMicroseconds;
 extern int audio_api;
 
 /* Defines */
@@ -320,14 +319,14 @@ int alsa_open_audio(int naudioindev, int *audioindev, int nchindev,
     int nfrags, i, iodev, dev2;
     int wantinchans, wantoutchans, device;
 
-    nfrags = audio_advanceInMicroseconds * (float)rate / (1e6 * frag_size);
+    nfrags = audio_getAdvanceInMicroseconds() * (float)rate / (1e6 * frag_size);
         /* save our belief as to ALSA's buffer size for later */
     alsa_buf_samps = nfrags * frag_size;
     alsa_nindev = alsa_noutdev = 0;
     alsa_jittermax = ALSA_DEFJITTERMAX;
 
     if (0)
-        post("audio buffer set to %d", (int)(0.001 * audio_advanceInMicroseconds));
+        post("audio buffer set to %d", (int)(0.001 * audio_getAdvanceInMicroseconds()));
 
     for (iodev = 0; iodev < naudioindev; iodev++)
     {

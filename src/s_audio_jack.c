@@ -37,7 +37,6 @@ extern t_sample         *audio_soundOut;
 
 extern int              audio_channelsIn;
 extern int              audio_channelsOut;
-extern t_float          audio_sampleRate;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -142,7 +141,7 @@ static int pollprocess (jack_nframes_t nframes, void *arg)
 
 static int jack_srate (jack_nframes_t srate, void *arg)
 {
-    audio_sampleRate = srate;
+    audio_setSampleRate (srate);
     return 0;
 }
 
@@ -276,7 +275,7 @@ static int jack_connect_ports(char* client)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error jack_open (int rate, int inchans, int outchans)
+t_error jack_open (int dummy, int inchans, int outchans)
 {
     int j;
     char port_name[80] = "";
@@ -394,7 +393,7 @@ t_error jack_open (int rate, int inchans, int outchans)
     */
 
     srate = jack_get_sample_rate (jack_client);
-    audio_sampleRate = srate;
+    audio_setSampleRate (srate);
 
     /* create the ports */
 

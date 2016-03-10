@@ -43,11 +43,6 @@ typedef struct _midiparser {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int audio_advanceInMicroseconds;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static t_midiqelem  midi_outQueue[MIDI_QUEUE_SIZE];                         /* Shared. */
 static int          midi_outHead;                                           /* Shared. */
 static int          midi_outTail;                                           /* Shared. */
@@ -83,8 +78,8 @@ void midi_synchronise (void)
     double realLapse    = sys_getRealTimeInSeconds() - midi_realTimeAtStart;
     double logicalLapse = MILLISECONDS_TO_SECONDS (scheduler_getMillisecondsSince (midi_logicalTimeAtStart));
     
-    double dacOffset    = logicalLapse - realLapse - MICROSECONDS_TO_SECONDS (audio_advanceInMicroseconds);
-    double adcOffset    = logicalLapse - realLapse;
+    double dacOffset = logicalLapse - realLapse - MICROSECONDS_TO_SECONDS (audio_getAdvanceInMicroseconds());
+    double adcOffset = logicalLapse - realLapse;
     
     if (dacOffset > midi_dacNewOffset) { midi_dacNewOffset = dacOffset; }
     if (adcOffset > midi_adcNewOffset) { midi_adcNewOffset = adcOffset; }

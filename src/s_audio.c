@@ -17,19 +17,23 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-extern int  audio_api;
+extern int audio_api;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_sample    *audio_soundIn;                         /* Shared. */
-t_sample    *audio_soundOut;                        /* Shared. */
+t_sample *audio_soundIn;                            /* Shared. */
+t_sample *audio_soundOut;                           /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_float  audio_sampleRate;                   /* Shared. */
 
 int         audio_channelsIn;                       /* Shared. */
 int         audio_channelsOut;                      /* Shared. */
 int         audio_advanceInSamples;                 /* Shared. */
-int         audio_advanceInMicroseconds;            /* Shared. */
-t_float     audio_sampleRate;                       /* Shared. */
+static int      audio_advanceInMicroseconds;        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -137,6 +141,15 @@ void audio_setSampleRate (t_float sampleRate)
     audio_advanceInSamples  = PD_MAX (audio_advanceInSamples, INTERNAL_BLOCKSIZE);
 }
 
+void audio_setAdvanceInMicroseconds (int advance)
+{
+    audio_advanceInMicroseconds = advance;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_float audio_getSampleRate (void)
 {
     return audio_sampleRate;
@@ -150,6 +163,16 @@ int audio_getChannelsIn (void)
 int audio_getChannelsOut (void)
 {
     return audio_channelsOut; 
+}
+
+int audio_getAdvanceInMicroseconds (void)
+{
+    return audio_advanceInMicroseconds; 
+}
+
+int audio_getAdvanceInSamples (void)
+{
+    return audio_advanceInSamples;
 }
 
 // -----------------------------------------------------------------------------------------------------------
