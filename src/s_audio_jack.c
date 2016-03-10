@@ -35,9 +35,6 @@
 extern t_sample         *audio_soundIn;
 extern t_sample         *audio_soundOut;
 
-extern int              audio_channelsIn;
-extern int              audio_channelsOut;
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -85,13 +82,13 @@ static int pollprocess (jack_nframes_t nframes, void *arg)
             'jack_default_audio_sample_t' are actually the same type??? */
         if (sizeof(t_sample)==sizeof(jack_default_audio_sample_t)) 
         {
-            for (j = 0; j < audio_channelsOut;  j++)
+            for (j = 0; j < audio_getChannelsOut();  j++)
             {
                 if (out = jack_port_get_buffer(jack_portsOut[j], nframes))
                     memcpy(out, jack_bufferOut + (j * JACK_BUFFER_SIZE),
                         sizeof (jack_default_audio_sample_t) * nframes);
             }
-            for (j = 0; j < audio_channelsIn; j++)
+            for (j = 0; j < audio_getChannelsIn(); j++)
             {
                 if (in = jack_port_get_buffer(jack_portsIn[j], nframes))
                     memcpy(jack_bufferIn + (j * JACK_BUFFER_SIZE), in,
@@ -102,7 +99,7 @@ static int pollprocess (jack_nframes_t nframes, void *arg)
         {
             unsigned int frame=0;
             t_sample*data;
-            for (j = 0; j < audio_channelsOut;  j++)
+            for (j = 0; j < audio_getChannelsOut();  j++)
             {
                 if (out = jack_port_get_buffer (jack_portsOut[j], nframes))
                 {
@@ -111,7 +108,7 @@ static int pollprocess (jack_nframes_t nframes, void *arg)
                         *out++ = *data++;
                 }
             }
-            for (j = 0; j < audio_channelsIn; j++)
+            for (j = 0; j < audio_getChannelsIn(); j++)
             {
                 if (in = jack_port_get_buffer( jack_portsIn[j], nframes))
                 {
@@ -249,7 +246,7 @@ static int jack_connect_ports(char* client)
                                  NULL, JackPortIsOutput);
     if (jack_ports)
     {
-        for (i=0;jack_ports[i] != NULL && i < audio_channelsIn;i++)      
+        for (i=0;jack_ports[i] != NULL && i < audio_getChannelsIn();i++)      
             if (jack_connect (jack_client, jack_ports[i],
                jack_port_name (jack_portsIn[i]))) 
                   post_error ("JACK: cannot connect input ports %s -> %s",
@@ -260,7 +257,7 @@ static int jack_connect_ports(char* client)
                                  NULL, JackPortIsInput);
     if (jack_ports)
     {
-        for (i=0;jack_ports[i] != NULL && i < audio_channelsOut;i++)      
+        for (i=0;jack_ports[i] != NULL && i < audio_getChannelsOut();i++)      
           if (jack_connect (jack_client, jack_port_name (jack_portsOut[i]),
             jack_ports[i])) 
               post_error ( "JACK: cannot connect output ports %s -> %s",
@@ -339,20 +336,20 @@ t_error jack_open (int dummy, int inchans, int outchans)
 
         if (!jack_client) {
             /* jack spits out enough messages already, do not warn */
-            audio_channelsIn = audio_channelsOut = 0;
+            //audio_channelsIn = audio_channelsOut = 0;
             return 1;
         }
         
-        audio_channelsIn = inchans;
-        audio_channelsOut = outchans;
+        audio_shrinkChannelsIn (inchans);
+        audio_shrinkChannelsOut (outchans);
         if (jack_bufferIn)
             free(jack_bufferIn);
-        if (audio_channelsIn)
-            jack_bufferIn = calloc(sizeof(t_sample), audio_channelsIn * JACK_BUFFER_SIZE); 
+        if (audio_getChannelsIn())
+            jack_bufferIn = calloc(sizeof(t_sample), audio_getChannelsIn() * JACK_BUFFER_SIZE); 
         if (jack_bufferOut)
             free(jack_bufferOut);
-        if (audio_channelsOut)
-            jack_bufferOut = calloc(sizeof(t_sample), audio_channelsOut * JACK_BUFFER_SIZE); 
+        if (audio_getChannelsOut())
+            jack_bufferOut = calloc(sizeof(t_sample), audio_getChannelsOut() * JACK_BUFFER_SIZE); 
 
         jack_get_clients();
 
@@ -379,9 +376,9 @@ t_error jack_open (int dummy, int inchans, int outchans)
 
         jack_on_shutdown (jack_client, jack_shutdown, 0);
 
-        for (j=0; j<audio_channelsIn; j++)
+        for (j=0; j<audio_getChannelsIn(); j++)
              jack_portsIn[j]=NULL;
-        for (j=0; j<audio_channelsOut; j++)
+        for (j=0; j<audio_getChannelsOut(); j++)
              jack_portsOut[j] = NULL;
 
         new_jack = 1;
@@ -406,7 +403,7 @@ t_error jack_open (int dummy, int inchans, int outchans)
         {
           post_error ("JACK: can only register %d input ports (of %d requested)",
             j, inchans);
-          audio_channelsIn = inchans = j;
+          audio_shrinkChannelsIn (inchans = j);
           break;
         }
     }
@@ -420,7 +417,7 @@ t_error jack_open (int dummy, int inchans, int outchans)
         {
           post_error ("JACK: can only register %d output ports (of %d requested)",
             j, outchans);
-          audio_channelsOut = outchans = j;
+          audio_shrinkChannelsOut (outchans = j);
           break;
         }
     } 
@@ -432,7 +429,7 @@ t_error jack_open (int dummy, int inchans, int outchans)
     {
         if (jack_activate (jack_client)) {
             post_error ("cannot activate client");
-            audio_channelsIn = audio_channelsOut = 0;
+            //audio_channelsIn = audio_channelsOut = 0;
             return 1;
         }
 
@@ -481,7 +478,7 @@ int jack_pollDSP (void)
     int timenow;
     int timeref = sys_getRealTimeInSeconds();
     if (!jack_client) return DACS_NO;
-    if (!audio_channelsIn && !audio_channelsOut) return (DACS_NO); 
+    if (!audio_getChannelsIn() && !audio_getChannelsOut()) return (DACS_NO); 
     if (0 /*jack_dio_error*/)
     {
         //sys_log_error(ERROR_RESYNC);
@@ -498,14 +495,14 @@ int jack_pollDSP (void)
     }
 
     fp = audio_soundOut;
-    for (j = 0; j < audio_channelsOut; j++)
+    for (j = 0; j < audio_getChannelsOut(); j++)
     {
         memcpy(jack_bufferOut + (j * JACK_BUFFER_SIZE) + jack_filledFrames, fp,
             AUDIO_DEFAULT_BLOCKSIZE*sizeof(t_sample));
         fp += AUDIO_DEFAULT_BLOCKSIZE;  
     }
     fp = audio_soundIn;
-    for (j = 0; j < audio_channelsIn; j++)
+    for (j = 0; j < audio_getChannelsIn(); j++)
     {
         memcpy(fp, jack_bufferIn + (j * JACK_BUFFER_SIZE) + jack_filledFrames,
             AUDIO_DEFAULT_BLOCKSIZE*sizeof(t_sample));
@@ -518,7 +515,7 @@ int jack_pollDSP (void)
     {
         rtnval = DACS_SLEPT;
     }
-    memset(audio_soundOut, 0, AUDIO_DEFAULT_BLOCKSIZE*sizeof(t_sample)*audio_channelsOut);
+    memset(audio_soundOut, 0, AUDIO_DEFAULT_BLOCKSIZE*sizeof(t_sample)*audio_getChannelsOut());
     return rtnval;
 }
 

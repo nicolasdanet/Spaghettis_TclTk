@@ -28,11 +28,9 @@ t_sample *audio_soundOut;                           /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static int      audio_channelsIn;                   /* Shared. */
+static int      audio_channelsOut;                  /* Shared. */
 static t_float  audio_sampleRate;                   /* Shared. */
-
-int         audio_channelsIn;                       /* Shared. */
-int         audio_channelsOut;                      /* Shared. */
-int         audio_advanceInSamples;                 /* Shared. */
 static int      audio_advanceInMicroseconds;        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -134,26 +132,36 @@ void audio_release (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void audio_setSampleRate (t_float sampleRate)
+void audio_shrinkChannelsIn (int numberOfChannelsIn)
 {
-    audio_sampleRate        = (t_float)sampleRate;
-    audio_advanceInSamples  = MICROSECONDS_TO_SECONDS (audio_advanceInMicroseconds * audio_sampleRate);
-    audio_advanceInSamples  = PD_MAX (audio_advanceInSamples, INTERNAL_BLOCKSIZE);
+    PD_ASSERT (numberOfChannelsIn <= audio_channelsIn); 
+    audio_channelsIn = numberOfChannelsIn;
 }
 
-void audio_setAdvanceInMicroseconds (int advance)
+void audio_shrinkChannelsOut (int numberOfChannelsOut)
 {
-    audio_advanceInMicroseconds = advance;
+    PD_ASSERT (numberOfChannelsOut <= audio_channelsOut);
+    audio_channelsOut = numberOfChannelsOut;
+}
+
+void audio_setSampleRate (t_float sampleRate)
+{
+    audio_sampleRate = sampleRate;
+}
+
+void audio_setAdvanceInMicroseconds (int advanceInMicroseconds)
+{
+    audio_advanceInMicroseconds = advanceInMicroseconds;
+}
+
+void audio_setAdvanceInSamples (int advanceInSamples)
+{
+    audio_advanceInMicroseconds = SECONDS_TO_MICROSECONDS (advanceInSamples / audio_sampleRate);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-t_float audio_getSampleRate (void)
-{
-    return audio_sampleRate;
-}
 
 int audio_getChannelsIn (void) 
 {
@@ -165,6 +173,11 @@ int audio_getChannelsOut (void)
     return audio_channelsOut; 
 }
 
+t_float audio_getSampleRate (void)
+{
+    return audio_sampleRate;
+}
+
 int audio_getAdvanceInMicroseconds (void)
 {
     return audio_advanceInMicroseconds; 
@@ -172,7 +185,7 @@ int audio_getAdvanceInMicroseconds (void)
 
 int audio_getAdvanceInSamples (void)
 {
-    return audio_advanceInSamples;
+    return MICROSECONDS_TO_SECONDS (audio_advanceInMicroseconds * audio_sampleRate);
 }
 
 // -----------------------------------------------------------------------------------------------------------

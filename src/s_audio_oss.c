@@ -53,7 +53,6 @@ typedef int32_t t_oss_int32;
 extern t_sample *audio_soundOut;
 extern int audio_channelsIn;
 extern int audio_channelsOut;
-extern int audio_advanceInSamples;
 
 /* GLOBALS */
 static int linux_meters;        /* true if we're metering */

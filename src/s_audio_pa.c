@@ -37,17 +37,15 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+extern t_sample         *audio_soundIn;
+extern t_sample         *audio_soundOut;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-extern int              audio_channelsIn;
-extern int              audio_channelsOut;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static PaStream         *pa_stream;                     /* Shared. */
-static t_sample         *pa_soundIn;                    /* Shared. */
-static t_sample         *pa_soundOut;                   /* Shared. */
 static char             *pa_bufferIn;                   /* Shared. */
 static char             *pa_bufferOut;                  /* Shared. */
 
@@ -187,8 +185,6 @@ void pa_release (void)
 t_error pa_open (int sampleRate,
     int numberOfChannelsIn, 
     int numberOfChannelsOut,
-    t_sample *soundIn,
-    t_sample *soundOut,
     int blockSize,
     int advanceInNumberOfBlocks,
     int deviceIn,
@@ -236,13 +232,11 @@ t_error pa_open (int sampleRate,
     if (i == -1 || (int)(Pa_GetDeviceInfo (i)->defaultSampleRate) != sampleRate) { numberOfChannelsIn  = 0; }
     if (o == -1 || (int)(Pa_GetDeviceInfo (o)->defaultSampleRate) != sampleRate) { numberOfChannelsOut = 0; }
     
-    PD_ASSERT (numberOfChannelsIn <= audio_channelsIn);
-    PD_ASSERT (numberOfChannelsOut <= audio_channelsOut);
+    audio_shrinkChannelsIn (numberOfChannelsIn);
+    audio_shrinkChannelsOut (numberOfChannelsOut);
     
-    pa_channelsIn   = audio_channelsIn  = numberOfChannelsIn;
-    pa_channelsOut  = audio_channelsOut = numberOfChannelsOut;
-    pa_soundIn      = soundIn;
-    pa_soundOut     = soundOut;
+    pa_channelsIn   = audio_getChannelsIn();    /* Cached for convenience. */
+    pa_channelsOut  = audio_getChannelsOut();   /* Ditto. */
 
     if (pa_bufferIn)  { PD_MEMORY_FREE (pa_bufferIn);  pa_bufferIn  = NULL; }
     if (pa_bufferOut) { PD_MEMORY_FREE (pa_bufferOut); pa_bufferOut = NULL; }
@@ -322,7 +316,7 @@ int pa_pollDSP (void)
             status = DACS_SLEPT; if (wait < 10) { PA_MICROSLEEP; } else { return DACS_NO; }
             wait++;
         }
-        for (j = 0, sound = pa_soundOut, p1 = t; j < pa_channelsOut; j++, p1++) {
+        for (j = 0, sound = audio_soundOut, p1 = t; j < pa_channelsOut; j++, p1++) {
             for (k = 0, p2 = p1; k < INTERNAL_BLOCKSIZE; k++, sound++, p2 += pa_channelsOut) {
                 *p2 = *sound;
                 *sound = 0.0;
@@ -338,7 +332,7 @@ int pa_pollDSP (void)
             wait++;
         }
         PaUtil_ReadRingBuffer (&pa_ringIn, t, requiredIn);
-        for (j = 0, sound = pa_soundIn, p1 = t; j < pa_channelsIn; j++, p1++) {
+        for (j = 0, sound = audio_soundIn, p1 = t; j < pa_channelsIn; j++, p1++) {
             for (k = 0, p2 = p1; k < INTERNAL_BLOCKSIZE; k++, sound++, p2 += pa_channelsIn) {
                 *sound = *p2;
             }

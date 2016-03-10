@@ -22,8 +22,6 @@ void    pa_release                      (void);
 t_error pa_open                         (int sampleRate,
                                             int numberOfChannelsIn,
                                             int numberOfChannelsOut,
-                                            t_sample *soundIn,
-                                            t_sample *soundOut,
                                             int blockSize,
                                             int advanceInNumberOfBlocks,
                                             int deviceIn,

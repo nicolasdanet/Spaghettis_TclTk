@@ -21,16 +21,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_class      *global_object;
-
-extern t_sample     *audio_soundIn;
-extern t_sample     *audio_soundOut;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-extern int      audio_channelsIn;
-extern int      audio_channelsOut;
+extern t_class  *global_object;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -187,20 +178,20 @@ t_error audio_open (void)
     int t;
     
     audio_setSampleRate (sampleRate);
-    audio_initializeMemory (audio_channelsIn, audio_channelsOut);
+    audio_initializeMemory (audio_getChannelsIn(), audio_getChannelsOut());
     
     for (t = 0; t < m; t++) { j[t] = PD_MAX (0, j[t]); }    /* Avoid negative (disabled) channels. */
     for (t = 0; t < n; t++) { p[t] = PD_MAX (0, p[t]); }
     
     if (API_WITH_PORTAUDIO && audio_api == API_PORTAUDIO)   {
-    
+        
+        int advanceInSamples = audio_getAdvanceInSamples();
+
         err = pa_open (sampleRate,
                 (m > 0 ? j[0] : 0),
-                (n > 0 ? p[0] : 0), 
-                audio_soundIn,
-                audio_soundOut,
+                (n > 0 ? p[0] : 0),
                 blockSize, 
-                audio_getAdvanceInSamples() / blockSize, 
+                PD_MAX (advanceInSamples, INTERNAL_BLOCKSIZE) / blockSize, 
                 (m > 0 ? i[0] : 0),
                 (n > 0 ? o[0] : 0));
                

@@ -429,11 +429,15 @@ t_error     audio_stopDSP                           (void);
 t_error     audio_startDSP                          (void);
 
 void        audio_initializeMemory                  (int usedChannelsIn, int usedChannelsOut);
+
+void        audio_shrinkChannelsIn                  (int numberOfChannelsIn);
+void        audio_shrinkChannelsOut                 (int numberOfChannelsOut);
 void        audio_setSampleRate                     (t_float sampleRate);
-void        audio_setAdvanceInMicroseconds          (int advance);
-t_float     audio_getSampleRate                     (void);
+void        audio_setAdvanceInMicroseconds          (int advanceInMicroseconds);
+void        audio_setAdvanceInSamples               (int advanceInSamples);
 int         audio_getChannelsIn                     (void);
 int         audio_getChannelsOut                    (void);
+t_float     audio_getSampleRate                     (void);
 int         audio_getAdvanceInMicroseconds          (void);
 int         audio_getAdvanceInSamples               (void);
 
