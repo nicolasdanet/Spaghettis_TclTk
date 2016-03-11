@@ -24,7 +24,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define JACK_MAXIMUM_CLIENTS    100
+#define JACK_MAXIMUM_CLIENTS    128
 #define JACK_MAXIMUM_PORTS      128
 #define JACK_MAXIMUM_FRAMES     64
 
@@ -165,75 +165,74 @@ static void pd_jack_error_callback(const char *desc) {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static char** jack_get_clients(void)
+static void jack_releaseClientNames (void)
 {
-    const char **jack_ports;
-    int i,j;
-    int num_clients = 0;
-    regex_t port_regex;
-    jack_ports = jack_get_ports( jack_client, "", "", 0 );
-    regcomp( &port_regex, "^[^:]*", REG_EXTENDED );
-
-    jack_clientNames[0] = NULL;
-
-    /* Build a list of clients from the list of ports */
-    for( i = 0; jack_ports[i] != NULL; i++ )
-    {
-        int client_seen;
-        regmatch_t match_info;
-        char tmp_client_name[100];
-
-        if(num_clients>=JACK_MAXIMUM_CLIENTS)break;
-
-
-        /* extract the client name from the port name, using a regex
-         * that parses the clientname:portname syntax */
-        regexec( &port_regex, jack_ports[i], 1, &match_info, 0 );
-        memcpy( tmp_client_name, &jack_ports[i][match_info.rm_so],
-                match_info.rm_eo - match_info.rm_so );
-        tmp_client_name[ match_info.rm_eo - match_info.rm_so ] = '\0';
-
-        /* do we know about this port's client yet? */
-        client_seen = 0;
-
-        for( j = 0; j < num_clients; j++ )
-            if( strcmp( tmp_client_name, jack_clientNames[j] ) == 0 )
-                client_seen = 1;
-
-        if( client_seen == 0 )
-        {
-            jack_clientNames[num_clients] = (char*)PD_MEMORY_GET(strlen(tmp_client_name) + 1);
-
-            /* The alsa_pcm client should go in spot 0.  If this
-             * is the alsa_pcm client AND we are NOT about to put
-             * it in spot 0 put it in spot 0 and move whatever
-             * was already in spot 0 to the end. */
-
-            if( strcmp( "alsa_pcm", tmp_client_name ) == 0 && num_clients > 0 )
-            {
-              char* tmp;
-                /* alsa_pcm goes in spot 0 */
-              tmp = jack_clientNames[ num_clients ];
-              jack_clientNames[ num_clients ] = jack_clientNames[0];
-              jack_clientNames[0] = tmp;
-              strcpy( jack_clientNames[0], tmp_client_name);
-            }
-            else
-            {
-                /* put the new client at the end of the client list */
-                strcpy( jack_clientNames[ num_clients ], tmp_client_name );
-            }
-            num_clients++;
-        }
+    int i;
+    for (i = 0; i < JACK_MAXIMUM_CLIENTS; i++) {
+        if (jack_clientNames[i]) { PD_MEMORY_FREE (jack_clientNames[i]); } jack_clientNames[i] = NULL;
     }
-
-    /*    for (i=0;i<num_clients;i++) post("client: %s",jack_clientNames[i]); */
-
-    free( jack_ports );
-    return jack_clientNames;
 }
 
-static int jack_connect_ports(char* client)
+static void jack_initializeClientNames (void)
+{
+    const char **ports;
+    
+    jack_releaseClientNames();
+    
+    ports = jack_get_ports (jack_client, "", "", 0);
+    
+    if (ports) {
+    //
+    int i, n = 0;
+    
+    regex_t e; regcomp (&e, "^[^:]*", REG_EXTENDED);
+
+    for (i = 0; ports[i] != NULL && n < JACK_MAXIMUM_CLIENTS; i++) {
+    //
+    int j, seen = 0;
+    regmatch_t info;
+    size_t size = 0;
+    char t[PD_STRING] = { 0 };
+    
+    /* Parse "clientname:portname" syntax (i.e. "system:playback_1" to "system"). */ 
+    
+    regexec (&e, ports[i], 1, &info, 0);
+    size = PD_MIN (info.rm_eo - info.rm_so, PD_STRING - 1);
+    memcpy (t, &ports[i][info.rm_so], size);
+    t[size] = 0;
+        
+    /* Do we know about this port's client yet? */
+
+    for (j = 0; j < n; j++) { if (strcmp (t, jack_clientNames[j]) == 0 ) { seen = 1; } }
+
+    /* Append the new ones. */
+    
+    if (!seen) {
+    //
+    jack_clientNames[n] = PD_MEMORY_GET (strlen (t) + 1);
+
+    if ((strcmp ( "alsa_pcm", t) == 0) && (n > 0)) {        /* The "alsa_pcm" client MUST be the first. */
+        char *tmp = jack_clientNames[n];
+        jack_clientNames[n] = jack_clientNames[0];
+        jack_clientNames[0] = tmp;
+        strcpy (jack_clientNames[0], t);
+        
+    } else {
+        strcpy (jack_clientNames[n], t);
+    }
+    
+    n++;
+    //
+    }
+    //
+    }
+
+    jack_free (ports);
+    //
+    }
+}
+
+static int jack_connectPorts (char *client)
 {
     char  regex_pattern[100]; /* its always the same, ... */
     int i;
@@ -349,9 +348,9 @@ t_error jack_open (int numberOfChannelsIn, int numberOfChannelsOut)
     
     if (!jack_activate (jack_client)) {
     //
-    jack_get_clients();
+    jack_initializeClientNames();
     
-    if (jack_clientNames[0]) { jack_connect_ports (jack_clientNames[0]); }
+    if (jack_clientNames[0]) { jack_connectPorts (jack_clientNames[0]); }
     
     pthread_mutex_init (&jack_mutex, NULL);
     pthread_cond_init (&jack_cond, NULL);
@@ -390,6 +389,8 @@ void jack_close (void)
     pthread_mutex_destroy (&jack_mutex);
     //
     }
+    
+    jack_releaseClientNames();
     
     if (jack_bufferIn)  { PD_MEMORY_FREE (jack_bufferIn);  jack_bufferIn = NULL;  }
     if (jack_bufferOut) { PD_MEMORY_FREE (jack_bufferOut); jack_bufferOut = NULL; }
