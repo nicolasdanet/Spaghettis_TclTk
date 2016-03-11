@@ -39,7 +39,7 @@ t_error pa_getLists                     (char *devicesIn,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error jack_open                       (int sampleRate, int numberOfChannelsIn, int numberOfChannelsOut);
+t_error jack_open                       (int numberOfChannelsIn, int numberOfChannelsOut);
 void    jack_close                      (void);
 int     jack_pollDSP                    (void);
 t_error jack_getLists                   (char *devicesIn,

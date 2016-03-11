@@ -17,8 +17,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include <jack/weakjack.h>
-#include <jack/jack.h>
+#include "jack/weakjack.h"
+#include "jack/jack.h"
 #include <regex.h>
 
 // -----------------------------------------------------------------------------------------------------------
@@ -32,30 +32,31 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-extern t_sample         *audio_soundIn;
-extern t_sample         *audio_soundOut;
+extern t_sample *audio_soundIn;
+extern t_sample *audio_soundOut;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_sample         *jack_bufferIn;                                     /* Shared. */
-static t_sample         *jack_bufferOut;                                    /* Shared. */
+static char                 *jack_clientNames[JACK_MAXIMUM_CLIENTS];            /* Shared. */
+static jack_client_t        *jack_client;                                       /* Shared. */
 
-static char             *jack_client_names[JACK_MAXIMUM_CLIENTS];           /* Shared. */
-static jack_client_t    *jack_client;                                       /* Shared. */
+static t_sample             *jack_bufferIn;                                     /* Shared. */
+static t_sample             *jack_bufferOut;                                    /* Shared. */
+static jack_port_t          *jack_portsIn[JACK_MAXIMUM_PORTS];                  /* Shared. */
+static jack_port_t          *jack_portsOut[JACK_MAXIMUM_PORTS];                 /* Shared. */
 
-static jack_port_t      *jack_portsIn[JACK_MAXIMUM_PORTS];                  /* Shared. */
-static jack_port_t      *jack_portsOut[JACK_MAXIMUM_PORTS];                 /* Shared. */
+static int                  jack_numberOfPortsIn;                               /* Shared. */
+static int                  jack_numberOfPortsOut;                              /* Shared. */
 
-static int              jack_numberOfPortsOut;                              /* Shared. */
-static jack_nframes_t   jack_maximumNumberOfFrames;                         /* Shared. */
-static jack_nframes_t   jack_filledFrames;                                  /* Shared. */
+static jack_nframes_t       jack_maximumNumberOfFrames;                         /* Shared. */
+static jack_nframes_t       jack_filledFrames;                                  /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static pthread_cond_t   jack_cond;                                          /* Shared. */
-static pthread_mutex_t  jack_mutex;                                         /* Shared. */
+static pthread_cond_t       jack_cond;                                          /* Shared. */
+static pthread_mutex_t      jack_mutex;                                         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -173,7 +174,7 @@ static char** jack_get_clients(void)
     jack_ports = jack_get_ports( jack_client, "", "", 0 );
     regcomp( &port_regex, "^[^:]*", REG_EXTENDED );
 
-    jack_client_names[0] = NULL;
+    jack_clientNames[0] = NULL;
 
     /* Build a list of clients from the list of ports */
     for( i = 0; jack_ports[i] != NULL; i++ )
@@ -196,12 +197,12 @@ static char** jack_get_clients(void)
         client_seen = 0;
 
         for( j = 0; j < num_clients; j++ )
-            if( strcmp( tmp_client_name, jack_client_names[j] ) == 0 )
+            if( strcmp( tmp_client_name, jack_clientNames[j] ) == 0 )
                 client_seen = 1;
 
         if( client_seen == 0 )
         {
-            jack_client_names[num_clients] = (char*)PD_MEMORY_GET(strlen(tmp_client_name) + 1);
+            jack_clientNames[num_clients] = (char*)PD_MEMORY_GET(strlen(tmp_client_name) + 1);
 
             /* The alsa_pcm client should go in spot 0.  If this
              * is the alsa_pcm client AND we are NOT about to put
@@ -212,24 +213,24 @@ static char** jack_get_clients(void)
             {
               char* tmp;
                 /* alsa_pcm goes in spot 0 */
-              tmp = jack_client_names[ num_clients ];
-              jack_client_names[ num_clients ] = jack_client_names[0];
-              jack_client_names[0] = tmp;
-              strcpy( jack_client_names[0], tmp_client_name);
+              tmp = jack_clientNames[ num_clients ];
+              jack_clientNames[ num_clients ] = jack_clientNames[0];
+              jack_clientNames[0] = tmp;
+              strcpy( jack_clientNames[0], tmp_client_name);
             }
             else
             {
                 /* put the new client at the end of the client list */
-                strcpy( jack_client_names[ num_clients ], tmp_client_name );
+                strcpy( jack_clientNames[ num_clients ], tmp_client_name );
             }
             num_clients++;
         }
     }
 
-    /*    for (i=0;i<num_clients;i++) post("client: %s",jack_client_names[i]); */
+    /*    for (i=0;i<num_clients;i++) post("client: %s",jack_clientNames[i]); */
 
     free( jack_ports );
-    return jack_client_names;
+    return jack_clientNames;
 }
 
 static int jack_connect_ports(char* client)
@@ -272,198 +273,126 @@ static int jack_connect_ports(char* client)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error jack_open (int dummy, int inchans, int outchans)
+t_error jack_open (int numberOfChannelsIn, int numberOfChannelsOut)
 {
-    int j;
-    char port_name[80] = "";
-    char client_name[80] = "";
-
-    int client_iterator = 0;
-    int new_jack = 0;
-    int srate;
-    jack_status_t status;
-
+    #if PD_APPLE    /* Jackmp linked as a weak framework. */
+        
+    if (!jack_client_open) {
+        post_error (PD_TRANSLATE ("audio: can't find JACK framework")); return PD_ERROR;    // --
+    }
     
-#ifdef __APPLE__
-    if (!jack_client_open)
-    {
-        post_error ("Can't open Jack (it seems not to be installed on this Mac)");
-        return 1;
-    }
-#endif
+    #endif
 
-    //jack_dio_error = 0;
+    if (numberOfChannelsIn || numberOfChannelsOut) {
+    //
+    jack_status_t status;
+    
+    numberOfChannelsIn  = PD_MIN (numberOfChannelsIn, JACK_MAXIMUM_PORTS);
+    numberOfChannelsOut = PD_MIN (numberOfChannelsOut, JACK_MAXIMUM_PORTS);
+ 
+    PD_ASSERT (!jack_client);
 
-    if ((inchans == 0) && (outchans == 0)) return 0;
+    jack_client = jack_client_open ("puredata", JackNoStartServer, &status, NULL);
 
-    if (outchans > JACK_MAXIMUM_PORTS) {
-        post_error ("JACK: %d output ports not supported, setting to %d",
-            outchans, JACK_MAXIMUM_PORTS);
-        outchans = JACK_MAXIMUM_PORTS;
-    }
-
-    if (inchans > JACK_MAXIMUM_PORTS) {
-        post_error ("JACK: %d input ports not supported, setting to %d",
-            inchans, JACK_MAXIMUM_PORTS);
-        inchans = JACK_MAXIMUM_PORTS;
-    }
-
-    /* try to become a client of the JACK server.  (If no JACK server exists,
-        jack_client_open() will start uone up by default.  It's not clear
-        whether or not this is desirable; see long Pd list thread started by 
-        yvan volochine, June 2013) */
-    if (!jack_client) {
-        do {
-          sprintf(client_name,"pure_data_%d",client_iterator);
-          client_iterator++;
-          jack_client = jack_client_open (client_name, JackNoStartServer,
-            &status, NULL);
-          if (status & JackServerFailed) {
-            post_error ("JACK: unable to connect to JACK server.  Is JACK running?");
-            jack_client=NULL;
-            break;
-          }
-        } while (status & JackNameNotUnique);
-
-        if(status) {
-          if (status & JackServerStarted) {
-             // verbose(1, "JACK: started server");
-          } else {
-            post_error ("JACK: server returned status %d", status);
-          }
-        }
-        // verbose(1, "JACK: started server as '%s'", client_name);
-
-        if (!jack_client) {
-            /* jack spits out enough messages already, do not warn */
-            //audio_channelsIn = audio_channelsOut = 0;
-            return 1;
-        }
-        
-        audio_shrinkChannelsIn (inchans);
-        audio_shrinkChannelsOut (outchans);
-        if (jack_bufferIn)
-            free(jack_bufferIn);
-        if (audio_getChannelsIn())
-            jack_bufferIn = calloc(sizeof(t_sample), audio_getChannelsIn() * JACK_BUFFER_SIZE); 
-        if (jack_bufferOut)
-            free(jack_bufferOut);
-        if (audio_getChannelsOut())
-            jack_bufferOut = calloc(sizeof(t_sample), audio_getChannelsOut() * JACK_BUFFER_SIZE); 
-
-        jack_get_clients();
-
-        /* set JACK callback functions */
-
-        //jack_callback = callback;
-        
-        jack_set_process_callback (jack_client, pollprocess, 0);
-
-        jack_set_error_function (pd_jack_error_callback);
-
-
-        /* tell the JACK server to call `srate()' whenever
-           the sample rate of the system changes.
-        */
-
-        jack_set_sample_rate_callback (jack_client, jack_srate, 0);
-
-
-        /* tell the JACK server to call `jack_shutdown()' if
-           it ever shuts down, either entirely, or if it
-           just decides to stop calling us.
-        */
-
-        jack_on_shutdown (jack_client, jack_shutdown, 0);
-
-        for (j=0; j<audio_getChannelsIn(); j++)
-             jack_portsIn[j]=NULL;
-        for (j=0; j<audio_getChannelsOut(); j++)
-             jack_portsOut[j] = NULL;
-
-        new_jack = 1;
+    if (jack_client) {
+    //
+    int i;
+    
+    PD_ASSERT (!jack_bufferIn);
+    PD_ASSERT (!jack_bufferOut);
+    
+    if (jack_bufferIn)  { PD_MEMORY_FREE (jack_bufferIn);  }
+    if (jack_bufferOut) { PD_MEMORY_FREE (jack_bufferOut); }
+    
+    if (numberOfChannelsIn) { 
+        jack_bufferIn = PD_MEMORY_GET (numberOfChannelsIn * JACK_BUFFER_SIZE * sizeof (t_sample));
     }
 
-    /* display the current sample rate. once the client is activated
-       (see below), you should rely on your own sample rate
-       callback (see above) for this value.
-    */
-
-    srate = jack_get_sample_rate (jack_client);
-    audio_setSampleRate (srate);
-
-    /* create the ports */
-
-    for (j = 0; j < inchans; j++)
-    {
-        sprintf(port_name, "input%d", j);
-        if (!jack_portsIn[j]) jack_portsIn[j] = jack_port_register (jack_client,
-            port_name, JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
-        if (!jack_portsIn[j])
-        {
-          post_error ("JACK: can only register %d input ports (of %d requested)",
-            j, inchans);
-          audio_shrinkChannelsIn (inchans = j);
-          break;
-        }
+    if (numberOfChannelsOut) {
+        jack_bufferOut = PD_MEMORY_GET (numberOfChannelsOut * JACK_BUFFER_SIZE * sizeof (t_sample));
     }
 
-    for (j = 0; j < outchans; j++)
-    {
-        sprintf(port_name, "output%d", j);
-        if (!jack_portsOut[j]) jack_portsOut[j] = jack_port_register (jack_client,
-            port_name, JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-        if (!jack_portsOut[j])
-        {
-          post_error ("JACK: can only register %d output ports (of %d requested)",
-            j, outchans);
-          audio_shrinkChannelsOut (outchans = j);
-          break;
-        }
-    } 
-    jack_numberOfPortsOut = outchans;
+    jack_set_process_callback (jack_client, pollprocess, NULL);
+    jack_set_error_function (pd_jack_error_callback);
+    jack_set_sample_rate_callback (jack_client, jack_srate, NULL);
+    jack_on_shutdown (jack_client, jack_shutdown, NULL);
 
-    /* tell the JACK server that we are ready to roll */
+    audio_setSampleRate (jack_get_sample_rate (jack_client));
 
-    if (new_jack)
-    {
-        if (jack_activate (jack_client)) {
-            post_error ("cannot activate client");
-            //audio_channelsIn = audio_channelsOut = 0;
-            return 1;
-        }
-
-        for (j = 0; j < outchans; j++) 
-            memset(jack_bufferOut + j * JACK_BUFFER_SIZE, 0,
-                JACK_BUFFER_SIZE * sizeof(t_sample));
-
-        if (jack_client_names[0])
-            jack_connect_ports(jack_client_names[0]);
-
-        pthread_mutex_init(&jack_mutex, NULL);
-        pthread_cond_init(&jack_cond, NULL);
+    for (i = 0; i < numberOfChannelsIn; i++) {
+    //
+    char t[PD_STRING] = { 0 };
+    string_sprintf (t, PD_STRING, "input%d", i);
+    jack_portsIn[i] = jack_port_register (jack_client, t, JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
+    if (!jack_portsIn[i]) {
+        post_error (PD_TRANSLATE ("audio: JACK can only register %d input ports"), i);
+        break;
     }
-    return 0;
+    //
+    }
+
+    audio_shrinkChannelsIn (jack_numberOfPortsIn = numberOfChannelsIn = i);
+    
+    for (i = 0; i < numberOfChannelsOut; i++) {
+    //
+    char t[PD_STRING] = { 0 };
+    string_sprintf (t, PD_STRING, "output%d", i);
+    jack_portsOut[i] = jack_port_register (jack_client, t, JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+    if (!jack_portsOut[i]) {
+        post_error (PD_TRANSLATE ("audio: JACK can only register %d output ports"), i);
+        break;  
+    }
+    //
+    }
+    
+    audio_shrinkChannelsOut (jack_numberOfPortsOut = numberOfChannelsOut = i);
+    
+    if (!jack_activate (jack_client)) {
+    //
+    jack_get_clients();
+    
+    if (jack_clientNames[0]) { jack_connect_ports (jack_clientNames[0]); }
+    
+    pthread_mutex_init (&jack_mutex, NULL);
+    pthread_cond_init (&jack_cond, NULL);
+    
+    return PD_ERROR_NONE;
+    }
+    //
+    }
+    //
+    }
+    
+    audio_shrinkChannelsIn (0); audio_shrinkChannelsOut (0); 
+    
+    return PD_ERROR;
 }
 
 void jack_close (void) 
 {
-    if (jack_client){
-        jack_deactivate (jack_client);
-        jack_client_close(jack_client);
+    if (jack_client) {
+    //
+    int i;
+    jack_deactivate (jack_client);
+    for (i = 0; i < jack_numberOfPortsIn; i++)  { 
+        jack_port_unregister (jack_client, jack_portsIn[i]); 
+        jack_portsIn[i] = NULL;
     }
-
-    jack_client=NULL;
-
-    pthread_cond_broadcast(&jack_cond);
-
-    pthread_cond_destroy(&jack_cond);
-    pthread_mutex_destroy(&jack_mutex);
-    if (jack_bufferIn)
-        free(jack_bufferIn), jack_bufferIn = 0;
-    if (jack_bufferOut)
-        free(jack_bufferOut), jack_bufferOut = 0;
- 
+    for (i = 0; i < jack_numberOfPortsOut; i++) { 
+        jack_port_unregister (jack_client, jack_portsOut[i]);
+        jack_portsOut[i] = NULL;
+    }
+    jack_client_close (jack_client);
+    jack_client = NULL;
+    
+    pthread_cond_broadcast (&jack_cond);
+    pthread_cond_destroy (&jack_cond);
+    pthread_mutex_destroy (&jack_mutex);
+    //
+    }
+    
+    if (jack_bufferIn)  { PD_MEMORY_FREE (jack_bufferIn);  jack_bufferIn = NULL;  }
+    if (jack_bufferOut) { PD_MEMORY_FREE (jack_bufferOut); jack_bufferOut = NULL; }
 }
 
 // -----------------------------------------------------------------------------------------------------------
