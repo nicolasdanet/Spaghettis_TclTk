@@ -117,7 +117,7 @@ void midi_openNative (int numberOfDevicesIn,
         snd_seq_client_info_t *info = NULL;
         snd_seq_client_info_malloc (&info);
         snd_seq_get_client_info (midialsa_handle, info);
-        snd_seq_client_info_set_name (info, "PureData");
+        snd_seq_client_info_set_name (info, PD_NAME);
         snd_seq_client_info_get_client (info);
         snd_seq_set_client_info (midialsa_handle, info);
         snd_seq_client_info_free (info);
