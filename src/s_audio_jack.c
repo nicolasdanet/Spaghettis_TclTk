@@ -64,7 +64,7 @@ static pthread_mutex_t      jack_mutex;                                         
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define JACK_BUFFER_SIZE    4096    /* Buffer size per channel. */ 
+#define JACK_BUFFER_SIZE    4096        /* Buffer size per channel. */ 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -124,16 +124,10 @@ static int jack_sampleRateCallback (jack_nframes_t sampleRate, void *dummy)
 
 static void jack_shutdownCallback (void *dummy)
 {
-    jack_deactivate (jack_client);
     jack_client = NULL;
-    audio_close();
-    
-    post_error (PD_TRANSLATE ("audio: JACK server shut down"));     // --
-}
-
-static void jack_errorCallback (const char *s) 
-{
-    post_error ("audio: %s", s);
+    post_log ("JACK / Shutdown");
+    scheduler_needToExitWithError();
+    pthread_cond_broadcast (&jack_cond);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -288,7 +282,6 @@ t_error jack_open (int numberOfChannelsIn, int numberOfChannelsOut)
     }
 
     jack_set_process_callback (jack_client, jack_pollCallback, NULL);
-    jack_set_error_function (jack_errorCallback);
     jack_set_sample_rate_callback (jack_client, jack_sampleRateCallback, NULL);
     jack_on_shutdown (jack_client, jack_shutdownCallback, NULL);
 
@@ -336,9 +329,7 @@ t_error jack_open (int numberOfChannelsIn, int numberOfChannelsOut)
     }
     //
     }
-    
-    audio_shrinkChannelsIn (0); audio_shrinkChannelsOut (0); 
-    
+        
     return PD_ERROR;
 }
 

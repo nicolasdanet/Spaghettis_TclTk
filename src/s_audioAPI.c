@@ -220,6 +220,7 @@ t_error audio_open (void)
         audio_state = 0;
         audio_openedApi = -1;
         scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
+        audio_resetDevices();
         
     } else {
         audio_state = 1;

@@ -145,7 +145,7 @@ static void scheduler_pollStuck (int init)
         if (sys_getRealTimeInSeconds() - idleTime > 1.0) {
             audio_close();
             scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
-            scheduler_quit = SCHEDULER_RESTART;
+            if (!scheduler_quit) { scheduler_quit = SCHEDULER_RESTART; }
             post_error (PD_TRANSLATE ("audio: I/O stuck"));     // --
         }
     }
@@ -247,6 +247,10 @@ t_error scheduler_main (void)
     //
     audio_close();
     midi_close();
+    
+    #if PD_WITH_DEBUG
+        post_log ("Shutdown");
+    #endif
     
     return (scheduler_quit == SCHEDULER_ERROR);
 }

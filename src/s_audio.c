@@ -146,7 +146,11 @@ void audio_shrinkChannelsOut (int numberOfChannelsOut)
 
 void audio_setSampleRate (t_float sampleRate)
 {
-    audio_sampleRate = sampleRate;
+    #if PD_32BIT
+        PD_ASSERT (sizeof (t_float) == 4);      /* Expect following store to be atomic. */
+    #endif 
+    
+    audio_sampleRate = sampleRate;      
 }
 
 void audio_setAdvanceInMicroseconds (int advanceInMicroseconds)
