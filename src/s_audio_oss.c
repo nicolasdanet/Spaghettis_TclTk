@@ -51,8 +51,6 @@ typedef int32_t t_oss_int32;
 #define OSS_XFERSIZE(chans, width) (AUDIO_DEFAULT_BLOCKSIZE * (chans) * (width))
 
 extern t_sample *audio_soundOut;
-extern int audio_channelsIn;
-extern int audio_channelsOut;
 
 /* GLOBALS */
 static int linux_meters;        /* true if we're metering */
@@ -172,7 +170,7 @@ void oss_configure(t_oss_dev *dev, int srate, int dac, int skipblocksize,
         {
             linux_fragsize = OSS_DEFFRAGSIZE;
             while (linux_fragsize > AUDIO_DEFAULT_BLOCKSIZE
-                && linux_fragsize * 6 > audio_advanceInSamples)
+                && linux_fragsize * 6 > audio_getAdvanceInSamples())
                     linux_fragsize = linux_fragsize/2;
         }
             /* post("adv_samples %d", audio_advanceInSamples); */
@@ -215,18 +213,17 @@ void oss_configure(t_oss_dev *dev, int srate, int dac, int skipblocksize,
            fprintf(stderr,"OSS: ioctl on output device failed");
         dev->d_bufsize = ainfo.bytes;
 
-        defect = audio_advanceInSamples * (dev->d_bytespersamp * nchannels)
+        defect = audio_getAdvanceInSamples() * (dev->d_bytespersamp * nchannels)
             - dev->d_bufsize - OSS_XFERSIZE(nchannels, dev->d_bytespersamp);
         if (defect > 0)
         {
             if (0 || defect > (dev->d_bufsize >> 2))
                 fprintf(stderr,
                     "OSS: requested audio buffer size %d limited to %d\n",
-                        audio_advanceInSamples * (dev->d_bytespersamp * nchannels),
+                        audio_getAdvanceInSamples() * (dev->d_bytespersamp * nchannels),
                         dev->d_bufsize);
-            audio_advanceInSamples =
-                (dev->d_bufsize - OSS_XFERSAMPS(nchannels)) /
-                    (dev->d_bytespersamp *nchannels);
+            audio_setAdvanceInSamples ((dev->d_bufsize - OSS_XFERSAMPS(nchannels)) /
+                    (dev->d_bytespersamp *nchannels));
         }
     }
 }
@@ -482,14 +479,14 @@ int oss_open_audio(int nindev,  int *indev,  int nchin,  int *chin,
         int j;
         memset(buf, 0, linux_dacs[i].d_bytespersamp *
                 linux_dacs[i].d_nchannels * AUDIO_DEFAULT_BLOCKSIZE);
-        for (j = 0; j < audio_advanceInSamples/AUDIO_DEFAULT_BLOCKSIZE; j++)
+        for (j = 0; j < audio_getAdvanceInSamples()/AUDIO_DEFAULT_BLOCKSIZE; j++)
             write(linux_dacs[i].d_fd, buf,
                 linux_dacs[i].d_bytespersamp *
                     linux_dacs[i].d_nchannels * AUDIO_DEFAULT_BLOCKSIZE);
     }
     //sys_setalarm(0);
-    audio_channelsIn = inchannels;
-    audio_channelsOut = outchannels;
+    audio_shrinkChannelsIn (inchannels);
+    audio_shrinkChannelsOut (outchannels);
     return (0);
 }
 
@@ -592,7 +589,7 @@ static void oss_doresync( void)
     for (dev = 0; dev < linux_noutdevs; dev++)
     {
         while (linux_dacs[dev].d_space > linux_dacs[dev].d_bufsize - 
-            audio_advanceInSamples * (linux_dacs[dev].d_nchannels *
+            audio_getAdvanceInSamples() * (linux_dacs[dev].d_nchannels *
                 linux_dacs[dev].d_bytespersamp))
         {
             if (!zeroed)
@@ -620,10 +617,10 @@ static void oss_doresync( void)
     for (dev = 0; dev < linux_noutdevs; dev++)
     {
         if (linux_dacs[dev].d_space > linux_dacs[dev].d_bufsize - 
-            (audio_advanceInSamples - 1) * linux_dacs[dev].d_nchannels *
+            (audio_getAdvanceInSamples() - 1) * linux_dacs[dev].d_nchannels *
                 linux_dacs[dev].d_bytespersamp)
         {
-            linux_dacs[dev].d_dropcount = audio_advanceInSamples - 1 - 
+            linux_dacs[dev].d_dropcount = audio_getAdvanceInSamples() - 1 - 
                 (linux_dacs[dev].d_space - linux_dacs[dev].d_bufsize) /
                      (linux_dacs[dev].d_nchannels *
                         linux_dacs[dev].d_bytespersamp) ;
@@ -659,7 +656,7 @@ int oss_send_dacs(void)
         for (dev=0; dev < linux_noutdevs; dev++)
             if (linux_dacs[dev].d_dropcount ||
                 (linux_dacs[dev].d_bufsize - linux_dacs[dev].d_space >
-                    audio_advanceInSamples * linux_dacs[dev].d_bytespersamp * 
+                    audio_getAdvanceInSamples() * linux_dacs[dev].d_bytespersamp * 
                         linux_dacs[dev].d_nchannels))
                             idle = 1;
         for (dev=0; dev < linux_nindevs; dev++)
@@ -700,7 +697,7 @@ int oss_send_dacs(void)
         for (dev=0; dev < linux_noutdevs; dev++)
             if (!linux_dacs[dev].d_dropcount &&
                 (linux_dacs[dev].d_bufsize - linux_dacs[dev].d_space <
-                    (audio_advanceInSamples - 2) *
+                    (audio_getAdvanceInSamples() - 2) *
                         (linux_dacs[dev].d_bytespersamp *
                             linux_dacs[dev].d_nchannels)))
                         goto badsync;
@@ -757,7 +754,7 @@ int oss_send_dacs(void)
         thischan += nchannels;
     }
     memset(audio_soundOut, 0,
-        audio_channelsOut * (sizeof(t_sample) * AUDIO_DEFAULT_BLOCKSIZE));
+        audio_getChannelsOut() * (sizeof(t_sample) * AUDIO_DEFAULT_BLOCKSIZE));
 
         /* do input */
 

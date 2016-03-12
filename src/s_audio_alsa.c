@@ -66,8 +66,6 @@ typedef struct _alsa_dev {
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int audio_channelsIn;
-extern int audio_channelsOut;
 extern int audio_api;
 
 /* Defines */
@@ -440,8 +438,8 @@ int alsa_open_audio(int naudioindev, int *audioindev, int nchindev,
     }
     return (0);
 blewit:
-    audio_channelsIn = 0;
-    audio_channelsOut = 0;
+    audio_shrinkChannelsIn (0);
+    audio_shrinkChannelsOut (0);
     alsa_close_audio();
     return (1);
 }
@@ -485,8 +483,8 @@ int alsa_send_dacs(void)
     if (!alsa_nindev && !alsa_noutdev)
         return (DACS_NO);
 
-    chansintogo = audio_channelsIn;
-    chansouttogo = audio_channelsOut;
+    chansintogo = audio_getChannelsIn();
+    chansouttogo = audio_getChannelsOut();
     transfersize = AUDIO_DEFAULT_BLOCKSIZE;
 
     timelast = timenow;
@@ -619,7 +617,7 @@ int alsa_send_dacs(void)
 
         /* zero out the output buffer */
         memset(audio_soundOut, 0, AUDIO_DEFAULT_BLOCKSIZE * sizeof(*audio_soundOut) *
-               audio_channelsOut);
+               audio_getChannelsOut());
         if (sys_getRealTimeInSeconds() - timenow > 0.002)
         {
     #ifdef DEBUG_ALSA_XFER
@@ -728,14 +726,14 @@ void alsa_printstate( void)
         post_error ("restart-audio: implemented for ALSA only.");
         return;
     }
-    if (audio_channelsIn)
+    if (audio_getChannelsIn())
     {
         result = snd_pcm_delay(alsa_indev[iodev].a_handle, &indelay);
         if (result < 0)
             post("snd_pcm_delay 1 failed");
         else post("in delay %d", indelay);
     }
-    if (audio_channelsOut)
+    if (audio_getChannelsOut())
     {
         result = snd_pcm_delay(alsa_outdev[iodev].a_handle, &outdelay);
         if (result < 0)
