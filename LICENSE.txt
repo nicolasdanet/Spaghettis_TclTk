@@ -9,6 +9,10 @@ Copyright:
 
     Copyright (c) 1997-2015 Miller Puckette and others.
 
+Disclaimer:
+
+    All files largely modified by Nicolas Danet < nicolasdanet@free.fr >.
+    
 Additional terms:
 
     src/d_fft_fftsg.c

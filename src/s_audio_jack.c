@@ -67,7 +67,7 @@ static pthread_mutex_t      jack_mutex;                                         
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int pollprocess (jack_nframes_t nframes, void *arg)
+static int jack_pollCallback (jack_nframes_t nframes, void *arg)
 {
     int j;
     jack_default_audio_sample_t *out, *in;
@@ -132,33 +132,32 @@ static int pollprocess (jack_nframes_t nframes, void *arg)
         }
         jack_filledFrames = 0;
     }
-    pthread_cond_broadcast(&jack_cond);
-    pthread_mutex_unlock(&jack_mutex);
+    
+    pthread_cond_broadcast (&jack_cond);
+    pthread_mutex_unlock (&jack_mutex);
+    
     return 0;
 }
 
-static int jack_srate (jack_nframes_t srate, void *arg)
+static int jack_sampleRateCallback (jack_nframes_t srate, void *arg)
 {
     audio_setSampleRate (srate);
+    
     return 0;
 }
 
-static void jack_shutdown (void *arg)
+static void jack_shutdownCallback (void *arg)
 {
-  post_error ("JACK: server shut down");
-  
-  jack_deactivate (jack_client);
-  //jack_client_close(jack_client); /* likely to hang if the server shut down */
-  jack_client = NULL;
-
-    // audio_setAPI (NULL, API_NONE); // set pd_whichapi 0
-    
+    jack_deactivate (jack_client);
+    jack_client = NULL;
     audio_close();
+    
+    post_error (PD_TRANSLATE ("audio: JACK server shut down"));     // --
 }
 
-static void pd_jack_error_callback(const char *desc) {
-  post_error ("JACKerror: %s", desc);
-  return;
+static void jack_errorCallback (const char *s) 
+{
+    post_error ("audio: %s", s);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -309,10 +308,10 @@ t_error jack_open (int numberOfChannelsIn, int numberOfChannelsOut)
         jack_bufferOut = PD_MEMORY_GET (numberOfChannelsOut * JACK_BUFFER_SIZE * sizeof (t_sample));
     }
 
-    jack_set_process_callback (jack_client, pollprocess, NULL);
-    jack_set_error_function (pd_jack_error_callback);
-    jack_set_sample_rate_callback (jack_client, jack_srate, NULL);
-    jack_on_shutdown (jack_client, jack_shutdown, NULL);
+    jack_set_process_callback (jack_client, jack_pollCallback, NULL);
+    jack_set_error_function (jack_errorCallback);
+    jack_set_sample_rate_callback (jack_client, jack_sampleRateCallback, NULL);
+    jack_on_shutdown (jack_client, jack_shutdownCallback, NULL);
 
     audio_setSampleRate (jack_get_sample_rate (jack_client));
 
@@ -380,12 +379,12 @@ void jack_close (void)
     }
     jack_client_close (jack_client);
     jack_client = NULL;
+    //
+    }
     
     pthread_cond_broadcast (&jack_cond);
     pthread_cond_destroy (&jack_cond);
     pthread_mutex_destroy (&jack_mutex);
-    //
-    }
     
     jack_freeClientNames();
     
