@@ -44,7 +44,7 @@ static t_error preferences_loadBegin (void)
         err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directoryExtras->s_name);
     } else {
         char *home = getenv ("HOME");
-        err = string_sprintf (filepath, PD_STRING, "%s/.puredatarc", (home ? home : "."));
+        err = string_sprintf (filepath, PD_STRING, "%s/."PD_NAME_LOWERCASE"rc", (home ? home : "."));
     }
 
     if (!err) { err |= !path_isFileExist (filepath); }
@@ -97,7 +97,7 @@ static t_error preferences_saveBegin (void)
         err = string_sprintf (filepath, PD_STRING, "%s/preferences.txt", main_directoryExtras->s_name);
     } else {
         char *home = getenv ("HOME");
-        err = string_sprintf (filepath, PD_STRING, "%s/.puredatarc", (home ? home : "."));
+        err = string_sprintf (filepath, PD_STRING, "%s/."PD_NAME_LOWERCASE"rc", (home ? home : "."));
     }
     
     if (!err) { err = ((preferences_saveFile = file_openWrite (filepath)) == NULL); }

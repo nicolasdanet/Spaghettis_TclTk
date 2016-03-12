@@ -164,7 +164,7 @@ proc _apple {m} {
     menu $m.apple
     
     $m.apple add command \
-        -label [_ "About PureData"] \
+        -label [_ [format "About %s" $::var(appName)]] \
         -command {}
 
     $m add cascade -menu $m.apple

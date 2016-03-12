@@ -86,7 +86,7 @@ void midi_openNative (int numberOfDevicesIn,
     
     for (i = 0; i < numberOfDevicesIn; i++) {
         char portname[PD_STRING] = { 0 };
-        err |= string_sprintf (portname, PD_STRING, "PureData Midi-In %d", i + 1);
+        err |= string_sprintf (portname, PD_STRING, PD_NAME" Midi-In %d", i + 1);
         if (!err) {
             int  port = snd_seq_create_simple_port (midialsa_handle,
                             portname,
@@ -100,7 +100,7 @@ void midi_openNative (int numberOfDevicesIn,
 
     for (i = 0; i < numberOfDevicesOut; i++) {
         char portname[PD_STRING] = { 0 };
-        err |= string_sprintf (portname, PD_STRING, "PureData Midi-Out %d", i + 1);
+        err |= string_sprintf (portname, PD_STRING, PD_NAME" Midi-Out %d", i + 1);
         if (!err) {
             int  port = snd_seq_create_simple_port (midialsa_handle,
                             portname,

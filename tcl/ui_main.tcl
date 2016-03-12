@@ -141,6 +141,7 @@ proc getDefaultWeight {} {
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
+set var(appName)                "PureData"
 set var(apiAudioAvailables)     {}
 set var(apiAudio)               0
 
@@ -155,7 +156,7 @@ set var(cursorEditResize)       "sb_h_double_arrow"
 
 set var(filesExtensions)        ".pd .pdhelp"
 set var(filesOpenPended)        {}
-set var(filesTypes)             { {{PureData patch} {.pd}} {{PureData help} {.pdhelp}} }
+set var(filesTypes)             { {{$::var(appName) patch} {.pd}} {{$::var(appName) help} {.pdhelp}} }
 
 set var(fontFamily)             [::getDefaultFamily]
 set var(fontWeight)             [::getDefaultWeight]

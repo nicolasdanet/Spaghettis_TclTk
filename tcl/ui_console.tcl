@@ -41,7 +41,7 @@ proc post {message} {
 proc _create {} {
 
     toplevel .console -class PdConsole
-    wm title .console [_ "PureData"]
+    wm title .console [_ $::var(appName)]
     wm group .console .
     
     wm minsize  .console {*}[::styleMinimumSize]
