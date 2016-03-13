@@ -232,20 +232,17 @@ t_error pa_open (int sampleRate,
     if (i == -1 || (int)(Pa_GetDeviceInfo (i)->defaultSampleRate) != sampleRate) { numberOfChannelsIn  = 0; }
     if (o == -1 || (int)(Pa_GetDeviceInfo (o)->defaultSampleRate) != sampleRate) { numberOfChannelsOut = 0; }
     
-    audio_shrinkChannelsIn (numberOfChannelsIn);
-    audio_shrinkChannelsOut (numberOfChannelsOut);
-    
-    pa_channelsIn   = audio_getChannelsIn();    /* Cached for convenience. */
-    pa_channelsOut  = audio_getChannelsOut();   /* Ditto. */
+    audio_shrinkChannelsIn (pa_channelsIn = numberOfChannelsIn);        /* Cached for convenience. */
+    audio_shrinkChannelsOut (pa_channelsOut = numberOfChannelsOut);     /* Ditto. */
 
     if (pa_bufferIn)  { PD_MEMORY_FREE (pa_bufferIn);  pa_bufferIn  = NULL; }
     if (pa_bufferOut) { PD_MEMORY_FREE (pa_bufferOut); pa_bufferOut = NULL; }
 
-    if (numberOfChannelsIn || numberOfChannelsOut) {
+    if (pa_channelsIn || pa_channelsOut) {
     //
     PaError err = paNoError;
     
-    if (pa_channelsIn) {
+    {
         size_t k = advanceInNumberOfBlocks * blockSize * pa_channelsIn;
         k = PD_NEXT_POWER_OF_TWO (k);
         pa_bufferIn = PD_MEMORY_GET (k * sizeof (t_sample));
@@ -254,7 +251,7 @@ t_error pa_open (int sampleRate,
             PD_BUG;
         }
     }
-    if (pa_channelsOut) {
+    {
         size_t k = advanceInNumberOfBlocks * blockSize * pa_channelsOut;
         k = PD_NEXT_POWER_OF_TWO (k);
         pa_bufferOut = PD_MEMORY_GET (k * sizeof (t_sample));
@@ -298,7 +295,7 @@ int pa_pollDSP (void)
     t_sample *sound;
     t_sample *p1 = NULL;
     t_sample *p2 = NULL;
-    int j, k;
+    int i, k;
     
     int status = DACS_YES;
         
@@ -316,7 +313,7 @@ int pa_pollDSP (void)
             status = DACS_SLEPT; if (wait < 10) { PA_MICROSLEEP; } else { return DACS_NO; }
             wait++;
         }
-        for (j = 0, sound = audio_soundOut, p1 = t; j < pa_channelsOut; j++, p1++) {
+        for (i = 0, sound = audio_soundOut, p1 = t; i < pa_channelsOut; i++, p1++) {
             for (k = 0, p2 = p1; k < INTERNAL_BLOCKSIZE; k++, sound++, p2 += pa_channelsOut) {
                 *p2 = *sound;
                 *sound = 0.0;
@@ -332,7 +329,7 @@ int pa_pollDSP (void)
             wait++;
         }
         PaUtil_ReadRingBuffer (&pa_ringIn, t, requiredIn);
-        for (j = 0, sound = audio_soundIn, p1 = t; j < pa_channelsIn; j++, p1++) {
+        for (i = 0, sound = audio_soundIn, p1 = t; i < pa_channelsIn; i++, p1++) {
             for (k = 0, p2 = p1; k < INTERNAL_BLOCKSIZE; k++, sound++, p2 += pa_channelsIn) {
                 *sound = *p2;
             }

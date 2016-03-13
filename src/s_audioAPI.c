@@ -60,7 +60,7 @@ static int      audio_tempBlockSize     = AUDIO_DEFAULT_BLOCKSIZE;              
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define AUDIO_MAXIMUM_ADVANCE       1000
+#define AUDIO_MAXIMUM_ADVANCE       100
 #define AUDIO_MAXIMUM_BLOCKSIZE     2048
 
 // -----------------------------------------------------------------------------------------------------------

@@ -72,7 +72,7 @@ static pthread_mutex_t      jack_mutex;                                         
 
 static int jack_pollCallback (jack_nframes_t numberOfFrames, void *dummy)
 {
-    int j;
+    int i;
     jack_default_audio_sample_t *in  = NULL;
     jack_default_audio_sample_t *out = NULL;
 
@@ -86,22 +86,22 @@ static int jack_pollCallback (jack_nframes_t numberOfFrames, void *dummy)
 
         PD_ASSERT (jack_framesFilled == numberOfFrames);
         
-        for (j = 0; j < jack_numberOfPortsOut; j++) {
-            if (out = jack_port_get_buffer (jack_portsOut[j], numberOfFrames)) {
-                memcpy (out, jack_bufferOut + (j * JACK_BUFFER_SIZE), size);
+        for (i = 0; i < jack_numberOfPortsOut; i++) {
+            if (out = jack_port_get_buffer (jack_portsOut[i], numberOfFrames)) {
+                memcpy (out, jack_bufferOut + (i * JACK_BUFFER_SIZE), size);
             }
         }
         
-        for (j = 0; j < jack_numberOfPortsIn; j++) {
-            if (in = jack_port_get_buffer (jack_portsIn[j], numberOfFrames)) {
-                memcpy (jack_bufferIn + (j * JACK_BUFFER_SIZE), in, size);
+        for (i = 0; i < jack_numberOfPortsIn; i++) {
+            if (in = jack_port_get_buffer (jack_portsIn[i], numberOfFrames)) {
+                memcpy (jack_bufferIn + (i * JACK_BUFFER_SIZE), in, size);
             }
         }
 
     } else {    /* Fill with zeros. */
 
-        for (j = 0; j < jack_numberOfPortsOut; j++) {
-            if (out = jack_port_get_buffer (jack_portsOut[j], numberOfFrames)) {
+        for (i = 0; i < jack_numberOfPortsOut; i++) {
+            if (out = jack_port_get_buffer (jack_portsOut[i], numberOfFrames)) {
                 memset (out, 0, size);
             }
         }
@@ -267,9 +267,6 @@ t_error jack_open (int numberOfChannelsIn, int numberOfChannelsOut)
     //
     int i;
     
-    PD_ASSERT (!jack_bufferIn);
-    PD_ASSERT (!jack_bufferOut);
-    
     if (jack_bufferIn)  { PD_MEMORY_FREE (jack_bufferIn);  }
     if (jack_bufferOut) { PD_MEMORY_FREE (jack_bufferOut); }
     
@@ -373,8 +370,8 @@ int jack_pollDSP (void)
     if (!jack_client || (!jack_numberOfPortsIn && !jack_numberOfPortsOut)) { return DACS_NO; }
     else {
     //
-    int j;
-    t_sample *p;
+    int i;
+    t_sample *p = NULL;
     int now = sys_getRealTimeInSeconds();
     size_t size = INTERNAL_BLOCKSIZE * sizeof (t_sample);
     
@@ -384,16 +381,16 @@ int jack_pollDSP (void)
 
     p = audio_soundOut;
     
-    for (j = 0; j < jack_numberOfPortsOut; j++) {
-        memcpy (jack_bufferOut + (j * JACK_BUFFER_SIZE) + jack_framesFilled, p, size);
+    for (i = 0; i < jack_numberOfPortsOut; i++) {
+        memcpy (jack_bufferOut + (i * JACK_BUFFER_SIZE) + jack_framesFilled, p, size);
         memset (p, 0, size);
         p += INTERNAL_BLOCKSIZE;  
     }
     
     p = audio_soundIn;
     
-    for (j = 0; j < jack_numberOfPortsIn; j++) {
-        memcpy (p, jack_bufferIn + (j * JACK_BUFFER_SIZE) + jack_framesFilled, size);
+    for (i = 0; i < jack_numberOfPortsIn; i++) {
+        memcpy (p, jack_bufferIn + (i * JACK_BUFFER_SIZE) + jack_framesFilled, size);
         p += INTERNAL_BLOCKSIZE;
     }
     
