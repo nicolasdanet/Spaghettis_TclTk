@@ -234,11 +234,11 @@ t_error pa_open (int sampleRate,
     if (pa_channelsIn || pa_channelsOut) {
     //
     PaError err = paNoError;
-    int advance = audio_getAdvanceInSamples();
+    int advance = PD_MAX (audio_getAdvanceInSamples(), blockSize);
     
     {
         size_t k = PD_MAX (advance, INTERNAL_BLOCKSIZE) * pa_channelsIn;
-        k = PD_NEXT_POWER_OF_TWO (k);
+        k = PD_NEXT_POWER_OF_TWO (k + 1);
         pa_bufferIn = PD_MEMORY_GET (k * sizeof (t_sample));
         PD_ASSERT ((ring_buffer_size_t)k > 0);
         if (PaUtil_InitializeRingBuffer (&pa_ringIn, sizeof (t_sample), k, pa_bufferIn)) { 
@@ -247,7 +247,7 @@ t_error pa_open (int sampleRate,
     }
     {
         size_t k = PD_MAX (advance, INTERNAL_BLOCKSIZE) * pa_channelsOut;
-        k = PD_NEXT_POWER_OF_TWO (k);
+        k = PD_NEXT_POWER_OF_TWO (k + 1);
         pa_bufferOut = PD_MEMORY_GET (k * sizeof (t_sample));
         PD_ASSERT ((ring_buffer_size_t)k > 0);
         if (PaUtil_InitializeRingBuffer (&pa_ringOut, sizeof (t_sample), k, pa_bufferOut)) { 
