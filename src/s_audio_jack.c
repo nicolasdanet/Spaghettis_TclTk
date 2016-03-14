@@ -203,7 +203,7 @@ static void jack_fetchClientNames (void)
     }
 }
 
-static void jack_connectAllPorts (void)
+static void jack_connectAllPortsToFirstClient (void)
 {
     if (jack_clientNames[0] != NULL) {
     //
@@ -315,7 +315,7 @@ t_error jack_open (int numberOfChannelsIn, int numberOfChannelsOut)
     if (!jack_activate (jack_client)) {
     //
     jack_fetchClientNames();
-    jack_connectAllPorts();
+    jack_connectAllPortsToFirstClient();
     
     pthread_mutex_init (&jack_mutex, NULL);
     pthread_cond_init (&jack_cond, NULL);
