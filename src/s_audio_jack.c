@@ -125,7 +125,6 @@ static int jack_sampleRateCallback (jack_nframes_t sampleRate, void *dummy)
 static void jack_shutdownCallback (void *dummy)
 {
     jack_client = NULL;
-    post_log ("JACK / Shutdown");
     scheduler_needToExitWithError();
     pthread_cond_broadcast (&jack_cond);
 }

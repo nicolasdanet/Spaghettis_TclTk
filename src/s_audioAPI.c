@@ -185,13 +185,10 @@ t_error audio_open (void)
     
     if (API_WITH_PORTAUDIO && audio_api == API_PORTAUDIO)   {
         
-        int advanceInSamples = audio_getAdvanceInSamples();
-
         err = pa_open (sampleRate,
                 (m > 0 ? j[0] : 0),
                 (n > 0 ? p[0] : 0),
                 blockSize, 
-                PD_MAX (advanceInSamples, INTERNAL_BLOCKSIZE) / blockSize, 
                 (m > 0 ? i[0] : 0),
                 (n > 0 ? o[0] : 0));
                

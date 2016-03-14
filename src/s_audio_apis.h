@@ -23,7 +23,6 @@ t_error pa_open                         (int sampleRate,
                                             int numberOfChannelsIn,
                                             int numberOfChannelsOut,
                                             int blockSize,
-                                            int advanceInNumberOfBlocks,
                                             int deviceIn,
                                             int deviceOut);
                                             
