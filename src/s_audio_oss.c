@@ -50,8 +50,6 @@ typedef int32_t t_oss_int32;
 #define OSS_XFERSAMPS(chans) (AUDIO_DEFAULT_BLOCKSIZE* (chans))
 #define OSS_XFERSIZE(chans, width) (AUDIO_DEFAULT_BLOCKSIZE * (chans) * (width))
 
-extern t_sample *audio_soundOut;
-
 /* GLOBALS */
 static int linux_meters;        /* true if we're metering */
 static t_sample linux_inmax;       /* max input amplitude */
@@ -74,10 +72,6 @@ static t_oss_dev linux_dacs[OSS_MAXDEV];
 static t_oss_dev linux_adcs[OSS_MAXDEV];
 static int linux_noutdevs = 0;
 static int linux_nindevs = 0;
-
-    /* exported variables */
-t_sample *audio_soundOut;         /* Shared. */
-t_sample *audio_soundIn;          /* Shared. */
 
     /* OSS-specific private variables */
 static int oss_blockmode = 1;   /* flag to use "blockmode"  */

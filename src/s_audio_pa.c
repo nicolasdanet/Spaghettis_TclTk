@@ -37,12 +37,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-extern t_sample         *audio_soundIn;
-extern t_sample         *audio_soundOut;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 static PaStream         *pa_stream;                     /* Shared. */
@@ -308,7 +302,7 @@ int pa_pollDSP (void)
     int synchronizeOnInput  = (pa_channelsIn != 0);
     int synchronizeOnOutput = !synchronizeOnInput;
     
-    /* Stack buffer in order to interleave and deinterleave. */
+    /* Buffer on the stack in order to interleave and deinterleave. */
     
     t_sample *t = (t_sample *)alloca ((PD_MAX (requiredIn, requiredOut)) * sizeof (t_sample));
 

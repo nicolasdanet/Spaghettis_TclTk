@@ -77,9 +77,6 @@ extern int audio_api;
 #define ALSAAPI9
 #endif
 
-extern t_sample *audio_soundOut;
-extern t_sample *audio_soundIn;
-
 static void alsa_checkiosync( void);
 static void alsa_numbertoname(int iodev, char *devname, int nchar);
 static int alsa_jittermax;

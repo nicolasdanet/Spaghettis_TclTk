@@ -10,9 +10,6 @@
 #include "m_macros.h"
 #include "s_system.h"
 
-extern t_sample *audio_soundOut;
-extern t_sample *audio_soundIn;
-
 /* ----------------------------- dac~ --------------------------- */
 static t_class *dac_class;
 
