@@ -95,7 +95,8 @@ if [ -e "${jack}" ]; then
     echo "Build with JACK ..."
     make -f makefile.mac "JACK=TRUE"                            || exit 1
 else
-    make -f makefile.mac                                        || exit 1
+    echo "Build with PORTAUDIO ..."
+    make -f makefile.mac "PORTAUDIO=TRUE"                       || exit 1
 fi
 
 cd "${rep}"                                                     || exit 1
