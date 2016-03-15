@@ -62,20 +62,15 @@ static int pa_ringCallback (const void *input,
     ring_buffer_size_t requiredIn  = (ring_buffer_size_t)(frameCount * pa_channelsIn);
     ring_buffer_size_t requiredOut = (ring_buffer_size_t)(frameCount * pa_channelsOut);
     
-    if (output) {
-    //
-    if (PaUtil_GetRingBufferReadAvailable (&pa_ringOut) >= requiredOut) {
-        PaUtil_ReadRingBuffer (&pa_ringOut, output, requiredOut);
+    if (PaUtil_GetRingBufferReadAvailable (&pa_ringOut) >= requiredOut) {       /* Could be zero. */
+
+        if (output) { PaUtil_ReadRingBuffer (&pa_ringOut, output, requiredOut); }
+        if (input)  { PaUtil_WriteRingBuffer (&pa_ringIn, input, requiredIn);   }
+
     } else {
-        memset (output, 0, requiredOut * sizeof (t_sample));                    /* Fill with zeros. */
+        if (output) { memset (output, 0, requiredOut * sizeof (t_sample)); }    /* Fill with zeros. */
     }
-    //
-    }
-    
-    if (input) { 
-        PaUtil_WriteRingBuffer (&pa_ringIn, input, requiredIn); 
-    }
-    
+
     return paContinue;
 }
 
