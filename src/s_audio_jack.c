@@ -58,7 +58,7 @@ static pthread_mutex_t      jack_mutex;                                         
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define JACK_BUFFER_SIZE    4096        /* Buffer size per channel. */ 
+#define JACK_BUFFER_SIZE    4096        /* Buffer size (per channel). */ 
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -105,6 +105,13 @@ static int jack_pollCallback (jack_nframes_t numberOfFrames, void *dummy)
     
     pthread_cond_broadcast (&jack_cond);
     pthread_mutex_unlock (&jack_mutex);
+    
+    return 0;
+}
+
+static int jack_blockSizeCallback (jack_nframes_t blockSize, void *dummy)
+{
+    audio_setBlockSize (blockSize);
     
     return 0;
 }
@@ -232,7 +239,7 @@ static void jack_connectAllPortsToFirstClient (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error jack_open (int numberOfChannelsIn, int numberOfChannelsOut)
+t_error jack_open (int numberOfChannelsIn, int numberOfChannelsOut, int dummy)
 {
     #if PD_APPLE    /* Jackmp linked as a weak framework. */
         
@@ -272,6 +279,7 @@ t_error jack_open (int numberOfChannelsIn, int numberOfChannelsOut)
     }
 
     jack_set_process_callback (jack_client, jack_pollCallback, NULL);
+    jack_set_buffer_size_callback (jack_client, jack_blockSizeCallback, NULL);	
     jack_set_sample_rate_callback (jack_client, jack_sampleRateCallback, NULL);
     jack_on_shutdown (jack_client, jack_shutdownCallback, NULL);
 

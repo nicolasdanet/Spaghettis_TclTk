@@ -435,6 +435,7 @@ void        audio_shrinkChannelsOut                 (int numberOfChannelsOut);
 void        audio_setSampleRate                     (t_float sampleRate);
 void        audio_setAdvanceInMicroseconds          (int advanceInMicroseconds);
 void        audio_setAdvanceInSamples               (int advanceInSamples);
+void        audio_setBlockSize                      (int blockSize);
 int         audio_getChannelsIn                     (void);
 int         audio_getChannelsOut                    (void);
 t_float     audio_getSampleRate                     (void);

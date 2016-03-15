@@ -194,7 +194,7 @@ t_error audio_open (void)
                
     } else if (API_WITH_JACK && audio_api == API_JACK)      {
     
-        err = jack_open ((m > 0 ? j[0] : 0), (n > 0 ? p[0] : 0));
+        err = jack_open ((m > 0 ? j[0] : 0), (n > 0 ? p[0] : 0), blockSize);
 
     } else if (API_WITH_OSS && audio_api == API_OSS)        {
     
@@ -390,6 +390,11 @@ static void audio_setDevicesAndParameters (int numberOfDevicesIn,
     
     audio_setSampleRate (sampleRate);
     audio_initializeMemory (totalOfChannelsIn, totalOfChannelsOut);
+}
+
+void audio_setBlockSize (int blockSize)
+{
+    audio_tempBlockSize = blockSize;        /* Expect store to be thread-safe. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
