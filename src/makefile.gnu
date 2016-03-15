@@ -9,7 +9,8 @@ VPATH = ../obj
 
 BIN_DIR = ../bin
 TCL_DIR = ../tcl
-HELP_DIR = ../resources/help
+
+HELP_DIR   = ../resources/help
 EXTRAS_DIR = ../resources/extras
 
 # Install paths.
@@ -22,32 +23,41 @@ EXTRAS_DIR = ../resources/extras
 # /usr/local/lib/pd/tcl/*.tcl
 # /usr/local/lib/pd/help/*.pdhelp
 
-prefix = /usr/local
-exec_prefix = $(prefix)
-
-bindir = $(exec_prefix)/bin
-includedir = $(prefix)/include
-libdir = $(exec_prefix)/lib
-
-libpddir = $(libdir)/pd
-libpdbindir = $(libpddir)/bin
-libpdtcldir = $(libpddir)/tcl
-libpdhelpdir = $(libpddir)/help
-libpdextrasdir = $(libpddir)/extras
-
-# Preprocessor flags.
-
-CPPFLAGS = -DUSEAPI_ALSA -DUSEAPI_OSS -DNDEBUG -DPD_BUILDING_APPLICATION
+prefix          = /usr/local
+exec_prefix     = $(prefix)
+bindir          = $(exec_prefix)/bin
+includedir      = $(prefix)/include
+libdir          = $(exec_prefix)/lib
+libpddir        = $(libdir)/pd
+libpdbindir     = $(libpddir)/bin
+libpdtcldir     = $(libpddir)/tcl
+libpdhelpdir    = $(libpddir)/help
+libpdextrasdir  = $(libpddir)/extras
 
 # Linker flags.
 
-LDFLAGS = -rdynamic $(ARCH)
-
 LIB = -ldl -lpthread -lm -lasound
 
-SRC_LIBS=
+LDFLAGS = -rdynamic $(ARCH)
 
-# JACK 
+# Preprocessor flags.
+
+CPPFLAGS = -DNDEBUG -DPD_BUILDING_APPLICATION
+
+# Build flags.
+
+CFLAGS = -O3 -ffast-math -fvisibility=hidden -w $(ARCH)
+
+# Midi with ALSA.
+
+SRC_LIBS = s_midi_alsa.c
+
+# Audio with ALSA and OSS.
+
+CPPFLAGS += -DUSEAPI_ALSA -DUSEAPI_OSS 
+SRC_LIBS += s_audio_alsa.c s_audio_oss.c
+
+# Audio with JACK.
 
 ifdef JACK
     CPPFLAGS += -DUSEAPI_JACK
@@ -55,14 +65,7 @@ ifdef JACK
     LIB += -ljack
 endif
 
-# Build flags.
-
-CFLAGS = -O3 -ffast-math -fvisibility=hidden -w $(ARCH)
-
 # The sources (filepath must NOT contain space).
-
-SRC_LIBS += s_audio_alsa.c s_audio_oss.c
-SRC_LIBS += s_midi_alsa.c
 
 SRC = g_canvas.c g_graph.c g_text.c g_rtext.c g_array.c g_template.c g_io.c \
     g_scalar.c g_traversal.c g_guiconnect.c g_readwrite.c g_editor.c \
