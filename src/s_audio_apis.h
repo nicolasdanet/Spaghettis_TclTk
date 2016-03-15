@@ -44,7 +44,16 @@ t_error pa_getLists                     (char *devicesIn,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error jack_open                       (int numberOfChannelsIn, int numberOfChannelsOut, int blockSize);
+t_error jack_initialize                 (void);
+void    jack_release                    (void);
+
+t_error jack_open                       (int sampleRate,
+                                            int numberOfChannelsIn, 
+                                            int numberOfChannelsOut, 
+                                            int blockSize,
+                                            int deviceIn,
+                                            int deviceOut);
+                                            
 void    jack_close                      (void);
 int     jack_pollDSP                    (void);
 t_error jack_getLists                   (char *devicesIn,

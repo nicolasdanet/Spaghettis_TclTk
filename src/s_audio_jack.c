@@ -156,7 +156,7 @@ static void jack_fetchClientNames (void)
     //
     int i, n = 0;
     
-    regex_t e; regcomp (&e, "^[^:]*", REG_EXTENDED);
+    regex_t e; regcomp (&e, "^[^:]*", REG_EXTENDED);    // --
 
     for (i = 0; ports[i] != NULL && n < JACK_MAXIMUM_CLIENTS; i++) {
     //
@@ -165,7 +165,7 @@ static void jack_fetchClientNames (void)
     regmatch_t info;
     char t[PD_STRING] = { 0 };
     
-    /* Parse "clientname:portname" syntax (i.e. "system:playback_1" to "system"). */ 
+    // -- Parse "clientname:portname" syntax (i.e. "system:playback_1" to "system").
     
     regexec (&e, ports[i], 1, &info, 0);
     size = PD_MIN (info.rm_eo - info.rm_so, PD_STRING - 1);
@@ -174,7 +174,7 @@ static void jack_fetchClientNames (void)
         
     /* Do we know about this port's client yet? */
 
-    for (j = 0; j < n; j++) { if (strcmp (t, jack_clientNames[j]) == 0 ) { seen = 1; } }
+    for (j = 0; j < n; j++) { if (strcmp (t, jack_clientNames[j]) == 0) { seen = 1; } }
 
     /* Append the unknown ones. */
     
@@ -182,7 +182,7 @@ static void jack_fetchClientNames (void)
     //
     jack_clientNames[n] = PD_MEMORY_GET (strlen (t) + 1);
 
-    if ((strcmp ( "alsa_pcm", t) == 0) && (n > 0)) {    /* The "alsa_pcm" client MUST be the first. */
+    if ((strcmp ("alsa_pcm", t) == 0) && (n > 0)) {    /* The "alsa_pcm" client MUST be the first. */
         char *tmp = jack_clientNames[n];
         jack_clientNames[n] = jack_clientNames[0];
         jack_clientNames[0] = tmp;
@@ -210,7 +210,7 @@ static void jack_connectAllPortsToFirstClient (void)
     const char **ports;
     char t[PD_STRING] = { 0 };
 
-    string_sprintf (t, PD_STRING, "%s:.*", jack_clientNames[0]);
+    string_sprintf (t, PD_STRING, "%s:.*", jack_clientNames[0]);    // --
 
     ports = jack_get_ports (jack_client, t, NULL, JackPortIsOutput);
     
@@ -239,8 +239,31 @@ static void jack_connectAllPortsToFirstClient (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error jack_open (int numberOfChannelsIn, int numberOfChannelsOut, int dummy)
+t_error jack_initialize (void)
 {
+    return PD_ERROR_NONE;
+}
+
+void jack_release (void)
+{
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_error jack_open (int sampleRate, 
+    int numberOfChannelsIn, 
+    int numberOfChannelsOut, 
+    int blockSize, 
+    int deviceIn, 
+    int deviceOut)
+{
+    (void)sampleRate;
+    (void)blockSize;
+    (void)deviceIn;
+    (void)deviceOut;
+    
     #if PD_APPLE    /* Jackmp linked as a weak framework. */
         
     if (!jack_client_open) {
@@ -279,7 +302,7 @@ t_error jack_open (int numberOfChannelsIn, int numberOfChannelsOut, int dummy)
     }
 
     jack_set_process_callback (jack_client, jack_pollCallback, NULL);
-    jack_set_buffer_size_callback (jack_client, jack_blockSizeCallback, NULL);	
+    jack_set_buffer_size_callback (jack_client, jack_blockSizeCallback, NULL);
     jack_set_sample_rate_callback (jack_client, jack_sampleRateCallback, NULL);
     jack_on_shutdown (jack_client, jack_shutdownCallback, NULL);
 
