@@ -36,7 +36,7 @@ libpdextrasdir  = $(libpddir)/extras
 
 # Linker flags.
 
-LIB = -ldl -lpthread -lm -lasound
+LIB = -ldl -lpthread -lm
 
 LDFLAGS = -rdynamic $(ARCH)
 
@@ -50,20 +50,13 @@ CFLAGS = -O3 -ffast-math -fvisibility=hidden -w $(ARCH)
 
 # Midi with ALSA.
 
-SRC_LIBS = s_midi_alsa.c
-
-# Audio with ALSA and OSS.
-
-CPPFLAGS += -DUSEAPI_ALSA -DUSEAPI_OSS 
-SRC_LIBS += s_audio_alsa.c s_audio_oss.c
+MIDI_SRC = s_midi_alsa.c
+LIB += -lasound
 
 # Audio with JACK.
 
-ifdef JACK
-    CPPFLAGS += -DUSEAPI_JACK
-    SRC_LIBS += s_audio_jack.c
-    LIB += -ljack
-endif
+AUDIO_SRC = s_audio_jack.c
+LIB += -ljack
 
 # The sources (filepath must NOT contain space).
 
@@ -77,10 +70,9 @@ SRC = g_canvas.c g_graph.c g_text.c g_rtext.c g_array.c g_template.c g_io.c \
     d_delay.c d_resample.c d_soundfile.c \
     x_arithmetic.c x_connective.c x_interface.c x_midi.c x_misc.c \
     x_time.c x_acoustics.c x_net.c x_text.c x_gui.c x_list.c x_array.c \
-    x_scalar.c \
-    $(SRC_LIBS)
+    x_scalar.c
 
-OBJ = $(SRC:.c=.o)
+OBJ = $(SRC:.c=.o) $(MIDI_SRC:.c=.o) $(AUDIO_SRC:.c=.o)
 
 # Targets.
 

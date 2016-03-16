@@ -19,8 +19,7 @@
 
 char *midi_nameNative (void)
 {
-    static char *name = "Dummy";
-    return name;
+    static char *name = "Dummy"; return name;
 }
 
 void midi_initializeNative (void)

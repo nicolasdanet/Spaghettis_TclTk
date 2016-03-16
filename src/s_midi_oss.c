@@ -103,8 +103,7 @@ static void midioss_initialize (void)
 
 char *midi_nameNative (void)
 {
-    static char *name = "OSS";
-    return name;
+    static char *name = "OSS"; return name;
 }
 
 void midi_initializeNative (void)

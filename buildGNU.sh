@@ -39,6 +39,7 @@ isJack=$(dpkg-query -W -f='${Status}' libjack-dev 2>/dev/null | grep -c "ok inst
 [ ${isTk_5} -eq 1 ]  || [ ${isTk_6} -eq 1 ]  || { echo >&2 "${0##*/}: tk8.* package required";  exit 1; }
 [ ${isTcl_5} -eq 1 ] || [ ${isTcl_6} -eq 1 ] || { echo >&2 "${0##*/}: tcl8.* package required"; exit 1; }
 [ ${isAlsa} -eq 1 ]  || { echo >&2 "${0##*/}: libasound2 package required"; exit 1; }
+[ ${isJack} -eq 1 ]  || { echo >&2 "${0##*/}: libjack-dev package required"; exit 1; }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -78,17 +79,11 @@ extension=".pdobject32"
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Build the binaries (JACK library is used by default).
+# Build the binaries (for now with JACK API only).
 
 cd "${rep}/src"                                                 || exit 1
-
-if [ ${isJack} -eq 1 ] ; then
-    echo "Build with JACK ... "
-    make -f makefile.gnu "JACK=TRUE"                            || exit 1
-else
-    make -f makefile.gnu                                        || exit 1
-fi
-
+echo "Build with JACK ... "
+make -f makefile.gnu                                            || exit 1
 cd "${rep}"                                                     || exit 1
 
 # ------------------------------------------------------------------------------------------------------------

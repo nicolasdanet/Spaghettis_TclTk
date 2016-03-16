@@ -19,8 +19,7 @@
 
 char *audio_nameNative (void)
 {
-    static char *name = "Dummy";
-    return name;
+    static char *name = "Dummy"; return name;
 }
 
 int audio_getPriorityNative (int min, int max, int isWatchdog)

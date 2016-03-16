@@ -66,8 +66,7 @@ static void midipm_writeFourBytes (PmStream *stream, int a, int b, int c, int d)
 
 char *midi_nameNative (void)
 {
-    static char *name = "PortMidi";
-    return name;
+    static char *name = "PortMidi"; return name;
 }
 
 void midi_initializeNative (void)

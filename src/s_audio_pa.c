@@ -140,8 +140,7 @@ static PaError pa_openWithCallback (double sampleRate,
 
 char *audio_nameNative (void)
 {
-    static char *name = "PortAudio";
-    return name;
+    static char *name = "PortAudio"; return name;
 }
 
 /*

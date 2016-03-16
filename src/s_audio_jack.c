@@ -241,8 +241,7 @@ static void jack_connectAllPortsToFirstClient (void)
 
 char *audio_nameNative (void)
 {
-    static char *name = "JACK";
-    return name;
+    static char *name = "JACK"; return name;
 }
 
 int audio_getPriorityNative (int min, int max, int isWatchdog)
