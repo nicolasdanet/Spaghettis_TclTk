@@ -138,6 +138,12 @@ static PaError pa_openWithCallback (double sampleRate,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+char *audio_nameNative (void)
+{
+    static char *name = "PortAudio";
+    return name;
+}
+
 /* On Mac OS Pa_Initialize() closes file descriptor 1 (standard output). */
 /* As a workaround, dup it to another number and dup2 it back afterward. */
     

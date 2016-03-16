@@ -16,8 +16,11 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+char    *midi_nameNative                (void);
+
 void    midi_initializeNative           (void);
 void    midi_releaseNative              (void);
+
 void    midi_openNative                 (int numberOfDevicesIn, 
                                             int *devicesIn, 
                                             int numberOfDevicesOut, 

@@ -239,6 +239,12 @@ static void jack_connectAllPortsToFirstClient (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+char *audio_nameNative (void)
+{
+    static char *name = "JACK";
+    return name;
+}
+
 t_error audio_initializeNative (void)
 {
     return PD_ERROR_NONE;

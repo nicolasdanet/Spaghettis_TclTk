@@ -17,6 +17,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+char *audio_nameNative (void)
+{
+    static char *name = "Dummy";
+    return name;
+}
+
 t_error audio_initializeNative (void)
 {
     return PD_ERROR_NONE;

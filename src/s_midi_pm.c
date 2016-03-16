@@ -64,6 +64,12 @@ static void midipm_writeFourBytes (PmStream *stream, int a, int b, int c, int d)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+char *midi_nameNative (void)
+{
+    static char *name = "PortMidi";
+    return name;
+}
+
 void midi_initializeNative (void)
 {
     Pm_Initialize();
