@@ -56,13 +56,8 @@ static t_error priority_setRealTimeScheduling (int isWatchdog)
     struct sched_param param;
     int p1 = sched_get_priority_min (SCHED_FIFO);
     int p2 = sched_get_priority_max (SCHED_FIFO);
-    int p3;
     
-    #ifdef USEAPI_JACK    
-        param.sched_priority = (isWatchdog ? p1 + 7 : p1 + 5);
-    #else
-        param.sched_priority = (isWatchdog ? p2 - 5 : p2 - 7);
-    #endif
+    param.sched_priority = audio_getPriorityNative (p1, p2, isWatchdog);
 
     return (sched_setscheduler (0, SCHED_FIFO, &param) == -1);
 }

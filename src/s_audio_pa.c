@@ -144,6 +144,14 @@ char *audio_nameNative (void)
     return name;
 }
 
+/*
+
+int audio_getPriorityNative (int min, int max, int isWatchdog)
+{
+}
+
+*/
+
 /* On Mac OS Pa_Initialize() closes file descriptor 1 (standard output). */
 /* As a workaround, dup it to another number and dup2 it back afterward. */
     

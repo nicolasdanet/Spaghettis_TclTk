@@ -23,6 +23,15 @@ char *audio_nameNative (void)
     return name;
 }
 
+int audio_getPriorityNative (int min, int max, int isWatchdog)
+{
+    return (isWatchdog ? max - 5 : max - 7);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_error audio_initializeNative (void)
 {
     return PD_ERROR_NONE;

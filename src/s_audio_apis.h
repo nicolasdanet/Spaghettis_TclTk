@@ -23,9 +23,11 @@ extern t_sample *audio_soundOut;
 // -----------------------------------------------------------------------------------------------------------
 
 char    *audio_nameNative               (void);
+int     audio_getPriorityNative         (int min, int max, int isWatchdog);
 
 t_error audio_initializeNative          (void);
 void    audio_releaseNative             (void);
+
 
 t_error audio_openNative                (int sampleRate,
                                             int numberOfChannelsIn,
