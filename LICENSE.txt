@@ -9,7 +9,7 @@ Copyright:
 
     Copyright (c) 1997-2015 Miller Puckette and others.
 
-Disclaimer:
+Remark:
 
     All files largely modified by Nicolas Danet < nicolasdanet@free.fr >.
     

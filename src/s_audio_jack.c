@@ -239,12 +239,12 @@ static void jack_connectAllPortsToFirstClient (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error jack_initialize (void)
+t_error audio_initializeNative (void)
 {
     return PD_ERROR_NONE;
 }
 
-void jack_release (void)
+void audio_releaseNative (void)
 {
 }
 
@@ -252,7 +252,7 @@ void jack_release (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error jack_open (int sampleRate, 
+t_error audio_openNative (int sampleRate, 
     int numberOfChannelsIn, 
     int numberOfChannelsOut, 
     int blockSize, 
@@ -354,7 +354,7 @@ t_error jack_open (int sampleRate,
     return PD_ERROR;
 }
 
-void jack_close (void) 
+void audio_closeNative (void) 
 {
     if (jack_client) {
     //
@@ -387,7 +387,7 @@ void jack_close (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int jack_pollDSP (void)
+int audio_pollDSPNative (void)
 {
     int status = DACS_YES;
         
@@ -433,7 +433,7 @@ int jack_pollDSP (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error jack_getLists (char *devicesIn, 
+t_error audio_getListsNative (char *devicesIn, 
     int *numberOfDevicesIn,
     char *devicesOut,
     int *numberOfDevicesOut,

@@ -74,78 +74,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define API_NONE                                0
-#define API_ALSA                                1
-#define API_OSS                                 2
-#define API_PORTAUDIO                           4
-#define API_JACK                                5
-#define API_DUMMY                               9
-
-//#define API_MMIO                              3
-//#define API_SGI                               6
-//#define API_AUDIOUNIT                         7
-//#define API_ESD                               8
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#if defined ( USEAPI_ALSA )
-    #define API_DEFAULT_AUDIO                   API_ALSA
-    
-#elif defined ( USEAPI_OSS )
-    #define API_DEFAULT_AUDIO                   API_OSS
-    
-#elif defined ( USEAPI_PORTAUDIO )
-    #define API_DEFAULT_AUDIO                   API_PORTAUDIO
-    
-#elif defined ( USEAPI_JACK )
-    #define API_DEFAULT_AUDIO                   API_JACK
-    
-#elif defined ( USEAPI_DUMMY )
-    #define API_DEFAULT_AUDIO                   API_DUMMY
-#else
-    #error "Unknown Audio API"
-#endif 
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#if defined ( USEAPI_ALSA )
-    #define API_WITH_ALSA                       1
-#else
-    #define API_WITH_ALSA                       0
-#endif
-
-#if defined ( USEAPI_OSS )
-    #define API_WITH_OSS                        1
-#else
-    #define API_WITH_OSS                        0
-#endif
-
-#if defined ( USEAPI_PORTAUDIO )
-    #define API_WITH_PORTAUDIO                  1
-#else
-    #define API_WITH_PORTAUDIO                  0
-#endif
-
-#if defined ( USEAPI_JACK )
-    #define API_WITH_JACK                       1
-#else
-    #define API_WITH_JACK                       0
-#endif
-
-#if defined ( USEAPI_DUMMY )
-    #define API_WITH_DUMMY                      1
-#else
-    #define API_WITH_DUMMY                      0
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 /* LCM (32000, 44100, 48000, 88200, 96000). */
     
 #define SYSTIME_PER_MILLISECOND                 (double)(32.0 * 441.0)
@@ -442,9 +370,6 @@ t_float     audio_getSampleRate                     (void);
 int         audio_getAdvanceInMicroseconds          (void);
 int         audio_getAdvanceInSamples               (void);
 
-void        audio_setAPI                            (void *dummy, t_float f);
-t_error     audio_getAPIAvailables                  (char *dest, size_t size);
-int         audio_isAPIAvailable                    (int api);
 void        audio_requireDialog                     (void *dummy);
 void        audio_fromDialog                        (void *dummy, t_symbol *s, int argc, t_atom *argv);
 int         audio_numberWithName                    (int isOutput, const char *name);

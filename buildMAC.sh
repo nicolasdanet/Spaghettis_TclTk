@@ -87,17 +87,15 @@ extension=".pdbundle32"
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# Build the binaries (JACK framework is used by default).
+# Build the binaries.
 
 cd "${rep}/src"                                                 || exit 1
 
-if [ -e "${jack}" ]; then
-    echo "Build with JACK ..."
-    make -f makefile.mac "JACK=TRUE"                            || exit 1
-else
-    echo "Build with PORTAUDIO ..."
-    make -f makefile.mac "PORTAUDIO=TRUE"                       || exit 1
-fi
+#echo "Build with JACK ..."
+#make -f makefile.mac "WITH_JACK=TRUE"                          || exit 1
+
+echo "Build with PORTAUDIO ..."
+make -f makefile.mac "WITH_PORTAUDIO=TRUE"                      || exit 1
 
 cd "${rep}"                                                     || exit 1
 

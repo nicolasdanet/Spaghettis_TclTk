@@ -142,8 +142,6 @@ proc getDefaultWeight {} {
 # ------------------------------------------------------------------------------------------------------------
 
 set var(appName)                "PureData"
-set var(apiAudioAvailables)     {}
-set var(apiAudio)               0
 
 set var(cursorRunNothing)       "left_ptr"
 set var(cursorRunClickMe)       "hand2"
@@ -230,10 +228,8 @@ proc main {argc argv} {
 
 # Notice that main is always called first.
 
-proc initialize {audioAPIs} {
+proc initialize {} {
 
-    set ::var(apiAudioAvailables) $audioAPIs
-    
     # Create fonts (determine average horizontal and vertical spacing in pixels). 
     
     set measured ""

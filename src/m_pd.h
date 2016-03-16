@@ -118,18 +118,42 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if ! ( PD_64BIT || PD_32BIT ) 
-    #error 
-#endif
-
-#if PD_32BIT
-    #define PD_64BIT            0
+#ifdef PD_64BIT
 #else
-    #define PD_32BIT            0
+#ifdef PD_32BIT
+#else
+    #error "Unknown architecture!"
+#endif
 #endif
 
-#if ( PD_64BIT && PD_32BIT ) 
-    #error 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#if defined ( _BIG_ENDIAN ) || defined ( __BIG_ENDIAN__ )
+    #define PD_BIG_ENDIAN       1
+#else
+#if defined ( PD_WINDOWS ) || defined ( __LITTLE_ENDIAN__ )
+    #define PD_LITTLE_ENDIAN    1
+#else
+    #include <endian.h>
+    #if ( BYTE_ORDER == LITTLE_ENDIAN )
+    #define PD_LITTLE_ENDIAN    1
+    #else
+    #define PD_BIG_ENDIAN       1
+    #endif
+#endif
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#ifdef PD_LITTLE_ENDIAN
+#else
+#ifdef PD_BIG_ENDIAN
+#else
+    #error "Unknown endianness!"
+#endif
 #endif
 
 // -----------------------------------------------------------------------------------------------------------

@@ -15,12 +15,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-extern int audio_api;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 t_sample *audio_soundIn;                            /* Shared. */
 t_sample *audio_soundOut;                           /* Shared. */
@@ -69,16 +63,7 @@ t_error audio_startDSP (void)
 
 int audio_pollDSP (void)
 {
-    if (API_WITH_PORTAUDIO && audio_api == API_PORTAUDIO)   { return pa_pollDSP();      }
-    else if (API_WITH_JACK && audio_api == API_JACK)        { return jack_pollDSP();    }
-    else if (API_WITH_OSS && audio_api == API_OSS)          { return oss_send_dacs();   }
-    else if (API_WITH_ALSA && audio_api == API_ALSA)        { return alsa_send_dacs();  }
-    else if (API_WITH_DUMMY && audio_api == API_DUMMY)      { return dummy_pollDSP();   }
-    else {
-        PD_BUG;
-    }
-    
-    return DACS_NO;
+    return audio_pollDSPNative();
 }
 
 void audio_initializeMemory (int usedChannelsIn, int usedChannelsOut)
@@ -105,24 +90,12 @@ void audio_initializeMemory (int usedChannelsIn, int usedChannelsOut)
 
 t_error audio_initialize (void)
 {
-    t_error err = PD_ERROR_NONE;
-    
-    #ifdef USEAPI_OSS
-        oss_initialize();
-    #endif
-
-    #ifdef USEAPI_PORTAUDIO
-        err |= pa_initialize();
-    #endif
-    
-    return err;
+    return audio_initializeNative();
 }
 
 void audio_release (void)
 {
-    #ifdef USEAPI_PORTAUDIO
-        pa_release();
-    #endif
+    audio_releaseNative();
     
     if (audio_soundIn)  { PD_MEMORY_FREE (audio_soundIn);  audio_soundIn  = NULL; }
     if (audio_soundOut) { PD_MEMORY_FREE (audio_soundOut); audio_soundOut = NULL; }

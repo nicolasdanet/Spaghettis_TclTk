@@ -70,17 +70,7 @@ SRC_LIBS = s_midi_pm.c \
     $(PM_DIR)/pm_mac/readbinaryplist.c \
     $(PM_DIR)/pm_common/pmutil.c \
     $(PM_DIR)/pm_common/portmidi.c \
-    $(PM_DIR)/porttime/ptmacosx_cf.c
-
-# Audio with PORTAUDIO.
-
-CPPFLAGS += -I$(PA_DIR)/include \
-    -I$(PA_DIR)/src/common \
-    -I$(PA_DIR)/src/os/mac_osx \
-    -DPA_USE_COREAUDIO \
-    -DUSEAPI_PORTAUDIO
-    
-SRC_LIBS += s_audio_pa.c \
+    $(PM_DIR)/porttime/ptmacosx_cf.c \
     $(PA_DIR)/src/common/pa_allocation.c \
     $(PA_DIR)/src/common/pa_converters.c \
     $(PA_DIR)/src/common/pa_cpuload.c \
@@ -97,10 +87,19 @@ SRC_LIBS += s_audio_pa.c \
     $(PA_DIR)/src/hostapi/coreaudio/pa_mac_core_blocking.c \
     $(PA_DIR)/src/hostapi/coreaudio/pa_mac_core_utilities.c
 
+# Audio with PORTAUDIO.
+
+ifdef WITH_PORTAUDIO
+    CPPFLAGS += -I$(PA_DIR)/include \
+        -I$(PA_DIR)/src/common \
+        -I$(PA_DIR)/src/os/mac_osx \
+        -DPA_USE_COREAUDIO
+    SRC_LIBS += s_audio_pa.c
+endif
+
 # Audio with JACK.
 
-ifdef JACK
-    CPPFLAGS += -DUSEAPI_JACK
+ifdef WITH_JACK
     SRC_LIBS += s_audio_jack.c
     LIB += -weak_framework Jackmp
 endif
@@ -162,6 +161,7 @@ clean:
 	@-rm -f makefile.dependencies
 	@echo "Remove objects ..."
 	@-rm -f $(OBJ)
+	@-rm -f "s_audio_pa.o"
 	@-rm -f "s_audio_jack.o"
 	@echo "Remove binaries ..."
 	@-rm -f $(BIN_DIR)/pd $(BIN_DIR)/pdsend $(BIN_DIR)/pdreceive $(BIN_DIR)/pdwatchdog

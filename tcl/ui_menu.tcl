@@ -333,18 +333,6 @@ proc _media {m} {
         -command { ::ui_interface::pdsend "pd _audioProperties" }
     $m add separator
     
-    foreach e $::var(apiAudioAvailables) {
-        foreach {name value} $e {
-            $m add radiobutton \
-                -label [format "Audio - %s" $name] \
-                -variable ::var(apiAudio) \
-                -value $value \
-                -command { ::ui_interface::pdsend "pd _audioAPI $::var(apiAudio)" }
-        }
-    }
-    
-    if {[llength $::var(apiAudioAvailables)] > 0} { $m add separator }
-    
     $m add check \
         -label [_ "Run DSP"] \
         -accelerator "${accelerator}+R" \

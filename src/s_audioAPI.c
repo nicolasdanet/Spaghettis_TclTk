@@ -26,12 +26,6 @@ extern t_class  *global_object;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int             audio_api               = API_DEFAULT_AUDIO;                        /* Shared. */
-int             audio_openedApi         = -1;                                       /* Shared. */
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static int      audio_state;                                                        /* Shared. */
   
 // -----------------------------------------------------------------------------------------------------------
@@ -67,95 +61,6 @@ static int      audio_tempBlockSize     = AUDIO_DEFAULT_BLOCKSIZE;              
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void audio_resetDevices  (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void audio_setAPI (void *dummy, t_float f)
-{
-    int api = (audio_isAPIAvailable ((int)f) ? (int)f : API_DEFAULT_AUDIO);
-    
-    if (api != audio_api) {
-        audio_close();
-        audio_api = api;
-        audio_numberOfDevicesIn  = 0;
-        audio_numberOfDevicesOut = 0;
-        audio_resetDevices();
-        sys_vGui ("set ::var(apiAudio) %d\n", audio_api);                               // --
-    }
-}
-
-t_error audio_getAPIAvailables (char *dest, size_t size)
-{
-    int n = 0;
-    
-    t_error err = string_copy (dest, size, "{ ");
-    
-    #ifdef USEAPI_OSS
-        err |= string_addSprintf (dest, size, "{OSS %d} ",          API_OSS);           // --
-        n++;
-    #endif
-
-    #ifdef USEAPI_ALSA
-        err |= string_addSprintf (dest, size, "{ALSA %d} ",         API_ALSA);          // --
-        n++;
-    #endif
-
-    #ifdef USEAPI_PORTAUDIO
-        err |= string_addSprintf (dest, size, "{PortAudio %d} ",    API_PORTAUDIO);     // --
-        n++;
-    #endif
-    
-    #ifdef USEAPI_JACK
-        err |= string_addSprintf (dest, size, "{JACK %d} ",         API_JACK);          // --
-        n++;
-    #endif
-    
-    #ifdef USEAPI_DUMMY
-        err |= string_addSprintf (dest, size, "{Dummy %d} ",        API_DUMMY);         // --
-        n++;
-    #endif
-    
-    err |= string_add (dest, size, "}");
-    
-    if (n < 2) { err = string_copy (dest, size, "{ }"); }           /* There's no choice. */
-        
-    return err;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int audio_isAPIAvailable (int api)
-{
-    int available = 0;
-    
-    #ifdef USEAPI_PORTAUDIO
-        available += (api == API_PORTAUDIO);
-    #endif
-    #ifdef USEAPI_JACK
-        available += (api == API_JACK);
-    #endif
-    #ifdef USEAPI_OSS
-        available += (api == API_OSS);
-    #endif
-    #ifdef USEAPI_ALSA
-        available += (api == API_ALSA);
-    #endif
-    #ifdef USEAPI_DUMMY
-        available += (api == API_DUMMY);
-    #endif
-
-    return available;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 t_error audio_open (void)
 {
     int m = 0;
@@ -183,50 +88,22 @@ t_error audio_open (void)
     for (t = 0; t < m; t++) { j[t] = PD_MAX (0, j[t]); }    /* Avoid negative (disabled) channels. */
     for (t = 0; t < n; t++) { p[t] = PD_MAX (0, p[t]); }
     
-    if (API_WITH_PORTAUDIO && audio_api == API_PORTAUDIO)   {
-        
-        err = pa_open (sampleRate,
-                (m > 0 ? j[0] : 0),
-                (n > 0 ? p[0] : 0),
-                blockSize, 
-                (m > 0 ? i[0] : 0),
-                (n > 0 ? o[0] : 0));
-               
-    } else if (API_WITH_JACK && audio_api == API_JACK)      {
-    
-        err = jack_open (sampleRate,
-                (m > 0 ? j[0] : 0), 
-                (n > 0 ? p[0] : 0), 
-                blockSize, 
-                (m > 0 ? i[0] : 0),
-                (n > 0 ? o[0] : 0));
-
-    } else if (API_WITH_OSS && audio_api == API_OSS)        {
-    
-        err = oss_open_audio (m, i, m, j, n, o, n, p, sampleRate, blockSize);
-        
-    } else if (API_WITH_ALSA && audio_api == API_ALSA)      {
-    
-        err = alsa_open_audio (m, i, m, j, n, o, n, p, sampleRate, blockSize);
-        
-    } else if (API_WITH_DUMMY && audio_api == API_DUMMY)    {
-    
-        err = dummy_open();
-        
-    } else if (audio_api != API_NONE) { PD_BUG; }
+    err = audio_openNative (sampleRate,
+            (m > 0 ? j[0] : 0),
+            (n > 0 ? p[0] : 0),
+            blockSize, 
+            (m > 0 ? i[0] : 0),
+            (n > 0 ? o[0] : 0));
     //
     }
     
     if (err) {
         post_error (PD_TRANSLATE ("audio: fails to open device"));     // --
         audio_state = 0;
-        audio_openedApi = -1;
         scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
-        audio_resetDevices();
         
     } else {
         audio_state = 1;
-        audio_openedApi = audio_api;
         scheduler_setAudioMode (SCHEDULER_AUDIO_POLL);
     }
     
@@ -235,25 +112,10 @@ t_error audio_open (void)
 
 void audio_close (void)
 {
-    if (audio_isOpened()) {
-    //
-    if (API_WITH_PORTAUDIO  && audio_openedApi == API_PORTAUDIO)    { pa_close();           }
-    else if (API_WITH_JACK  && audio_openedApi == API_JACK)         { jack_close();         }
-    else if (API_WITH_OSS   && audio_openedApi == API_OSS)          { oss_close_audio();    }
-    else if (API_WITH_ALSA  && audio_openedApi == API_ALSA)         { alsa_close_audio();   }
-    else if (API_WITH_DUMMY && audio_openedApi == API_DUMMY)        { dummy_close();        }
-    else {
-        PD_BUG;
-    }
-    
+    if (audio_isOpened()) { audio_closeNative(); }
     audio_state = 0;
-    audio_openedApi = -1;
-    
     scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
-    
     // sys_gui ("set ::var(isDsp) 0\n");
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -397,6 +259,8 @@ static void audio_setDevicesAndParameters (int numberOfDevicesIn,
     audio_initializeMemory (totalOfChannelsIn, totalOfChannelsOut);
 }
 
+/* Called by JACK to notify the number of frames used. */
+
 void audio_setBlockSize (int blockSize)
 {
     audio_tempBlockSize = blockSize;        /* Expect store to be thread-safe. */
@@ -405,21 +269,6 @@ void audio_setBlockSize (int blockSize)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-static void audio_resetDevices (void)
-{
-    int m = 0;
-    int n = 0;
-    int i[MAXIMUM_AUDIO_IN]  = { 0 };
-    int j[MAXIMUM_AUDIO_IN]  = { 0 };
-    int o[MAXIMUM_AUDIO_OUT] = { 0 };
-    int p[MAXIMUM_AUDIO_OUT] = { 0 };
-    int sampleRate  = AUDIO_DEFAULT_SAMPLERATE;
-    int advance     = AUDIO_DEFAULT_ADVANCE;
-    int blockSize   = AUDIO_DEFAULT_BLOCKSIZE;
-    
-    audio_setDevicesWithDefault (m, i, j, n, o, p, sampleRate, advance, blockSize);
-}
 
 void audio_setDevicesWithDefault (int numberOfDevicesIn,
     int *devicesIn,
@@ -460,18 +309,7 @@ void audio_setDevicesWithDefault (int numberOfDevicesIn,
 
 static t_error audio_getLists (char *i, int *m, char *o, int *n, int *multiple)
 {
-    int k = audio_api;
-    
-    if (API_WITH_PORTAUDIO && k == API_PORTAUDIO) { return pa_getLists (i, m, o, n, multiple);    }
-    else if (API_WITH_JACK && k == API_JACK)      { return jack_getLists (i, m, o, n, multiple);  }
-    else if (API_WITH_OSS && k == API_OSS)        { oss_getdevs (i, m, o, n, multiple);           }
-    else if (API_WITH_ALSA && k == API_ALSA)      { alsa_getdevs (i, m, o, n, multiple);          }
-    else if (API_WITH_DUMMY && k == API_DUMMY)    { return dummy_getLists (i, m, o, n, multiple); }
-    else {
-        PD_BUG; *m = *n = *i = *o = 0; return PD_ERROR;
-    }
-    
-    return PD_ERROR_NONE;
+    return audio_getListsNative (i, m, o, n, multiple);
 }
 
 int audio_numberWithName (int isOutput, const char *name)

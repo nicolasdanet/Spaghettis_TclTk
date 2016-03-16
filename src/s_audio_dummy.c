@@ -17,12 +17,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error dummy_open() 
+t_error audio_initializeNative (void)
 {
     return PD_ERROR_NONE;
 }
 
-void dummy_close() 
+void audio_releaseNative (void)
 {
 }
 
@@ -30,7 +30,20 @@ void dummy_close()
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int dummy_pollDSP() 
+t_error audio_openNative() 
+{
+    return PD_ERROR_NONE;
+}
+
+void audio_closeNative() 
+{
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int audio_pollDSPNative() 
 {
     return DACS_NO;
 }
@@ -39,7 +52,7 @@ int dummy_pollDSP()
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error dummy_getLists (char *devicesIn, 
+t_error audio_getListsNative (char *devicesIn, 
     int *numberOfDevicesIn,
     char *devicesOut,
     int *numberOfDevicesOut,

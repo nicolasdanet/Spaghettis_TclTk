@@ -123,7 +123,7 @@ static PaError pa_openWithCallback (double sampleRate,
         err = Pa_StartStream (pa_stream);
         if (err == paNoError) { return paNoError; }
         else {
-            pa_close();
+            audio_closeNative();
         }
     }
     //
@@ -141,7 +141,7 @@ static PaError pa_openWithCallback (double sampleRate,
 /* On Mac OS Pa_Initialize() closes file descriptor 1 (standard output). */
 /* As a workaround, dup it to another number and dup2 it back afterward. */
     
-t_error pa_initialize (void)
+t_error audio_initializeNative (void)
 {
     #if PD_APPLE
     
@@ -167,7 +167,7 @@ t_error pa_initialize (void)
     }
 }
 
-void pa_release (void)
+void audio_releaseNative (void)
 {
     Pa_Terminate();
 }
@@ -176,7 +176,7 @@ void pa_release (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error pa_open (int sampleRate,
+t_error audio_openNative (int sampleRate,
     int numberOfChannelsIn, 
     int numberOfChannelsOut,
     int blockSize,
@@ -188,7 +188,7 @@ t_error pa_open (int sampleRate,
     int i = -1;
     int o = -1;
     
-    if (pa_stream) { pa_close(); PD_BUG; }
+    if (pa_stream) { audio_closeNative(); PD_BUG; }
 
     if (numberOfChannelsIn > 0) {
     //
@@ -273,7 +273,7 @@ t_error pa_open (int sampleRate,
     return PD_ERROR;
 }
 
-void pa_close (void)
+void audio_closeNative (void)
 {
     if (pa_stream)    { Pa_AbortStream (pa_stream); Pa_CloseStream (pa_stream); pa_stream = NULL; }
     if (pa_bufferIn)  { PD_MEMORY_FREE (pa_bufferIn);  pa_bufferIn  = NULL; }
@@ -284,7 +284,7 @@ void pa_close (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int pa_pollDSP (void)
+int audio_pollDSPNative (void)
 {
     t_sample *sound;
     t_sample *p1 = NULL;
@@ -348,7 +348,7 @@ int pa_pollDSP (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_error pa_getLists (char *devicesIn,
+t_error audio_getListsNative (char *devicesIn,
     int *numberOfDevicesIn,
     char *devicesOut,
     int *numberOfDevicesOut,

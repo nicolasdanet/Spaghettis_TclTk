@@ -20,7 +20,6 @@ extern t_symbol     *main_directoryExtras;
 extern t_pathlist   *path_search;
 
 extern int main_directoryWriteRequirePrivileges;
-extern int audio_api;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -222,7 +221,6 @@ static void preferences_setKey (const char *key, const char *value)
 
 void preferences_load (void)
 {
-    int audioApi                        = API_DEFAULT_AUDIO;
     int sampleRate                      = AUDIO_DEFAULT_SAMPLERATE;
     int advance                         = AUDIO_DEFAULT_ADVANCE;
     int blockSize                       = AUDIO_DEFAULT_BLOCKSIZE;
@@ -248,7 +246,6 @@ void preferences_load (void)
 
     /* Properties. */
     
-    if (preferences_getKey ("AudioApi",     value, PD_STRING)) { sscanf (value, "%d", &audioApi);     }
     if (preferences_getKey ("SampleRate",   value, PD_STRING)) { sscanf (value, "%d", &sampleRate);   }
     if (preferences_getKey ("Advance",      value, PD_STRING)) { sscanf (value, "%d", &advance);      }
     if (preferences_getKey ("BlockSize",    value, PD_STRING)) { sscanf (value, "%d", &blockSize);    }
@@ -343,8 +340,6 @@ void preferences_load (void)
     //
     }
     
-    audio_setAPI (NULL, audioApi);
-    
     audio_setDevicesWithDefault (numberOfAudioIn,
         audioIn, 
         channelIn,
@@ -400,7 +395,6 @@ void preferences_save (void *dummy)
     
     /* Properties. */
     
-    string_sprintf (value, PD_STRING, "%d", audio_api);         preferences_setKey ("AudioApi",   value);
     string_sprintf (value, PD_STRING, "%d", sampleRate);        preferences_setKey ("SampleRate", value);
     string_sprintf (value, PD_STRING, "%d", advance);           preferences_setKey ("Advance",    value);
     string_sprintf (value, PD_STRING, "%d", blockSize);         preferences_setKey ("BlockSize",  value);

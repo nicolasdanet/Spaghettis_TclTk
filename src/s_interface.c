@@ -72,7 +72,6 @@ extern t_pathlist   *path_search;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern int  audio_api;
 extern int  main_portNumber;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -708,28 +707,13 @@ static t_error interface_startGui (void)
         interface_inGuiReceiver = receiver_new (NULL, interface_guiSocket, NULL, NULL, 0);
     }
     
-    /* Initialize. */
+    /* Initialize GUI. */
     
     if (!err) {
-    
         t_pathlist *l = NULL;
-        
-        char t[PD_STRING] = { 0 };
-        
-        err |= audio_getAPIAvailables (t, PD_STRING);
-        
-        if (!err) {
-        //
-        sys_vGui ("::initialize %s\n", t);                                      // --
-        
+        sys_vGui ("::initialize\n");                                                // --
         for (l = path_search; l; l = pathlist_getNext (l)) {
-        //
-        sys_vGui ("lappend ::var(searchPath) {%s}\n", pathlist_getFile (l));    // --
-        //
-        }
-        
-        sys_vGui ("set ::var(apiAudio) %d\n", audio_api);                       // --
-        //
+            sys_vGui ("lappend ::var(searchPath) {%s}\n", pathlist_getFile (l));    // --
         }
     }
     
