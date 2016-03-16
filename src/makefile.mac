@@ -61,17 +61,19 @@ CPPFLAGS = -DNDEBUG \
 
 CFLAGS = -O3 -ffast-math -fvisibility=hidden -w $(ARCH)
 
-# Midi with the PortMidi API.
+# PortMidi.
 
-SRC_LIBS = s_midi_pm.c \
-    $(PM_DIR)/pm_mac/pmmac.c \
+PORTMIDI_SRC = $(PM_DIR)/pm_mac/pmmac.c \
     $(PM_DIR)/pm_mac/pmmacosxcm.c \
     $(PM_DIR)/pm_mac/finddefault.c \
     $(PM_DIR)/pm_mac/readbinaryplist.c \
     $(PM_DIR)/pm_common/pmutil.c \
     $(PM_DIR)/pm_common/portmidi.c \
-    $(PM_DIR)/porttime/ptmacosx_cf.c \
-    $(PA_DIR)/src/common/pa_allocation.c \
+    $(PM_DIR)/porttime/ptmacosx_cf.c
+
+# PortAudio.
+
+PORTAUDIO_SRC = $(PA_DIR)/src/common/pa_allocation.c \
     $(PA_DIR)/src/common/pa_converters.c \
     $(PA_DIR)/src/common/pa_cpuload.c \
     $(PA_DIR)/src/common/pa_dither.c \
@@ -86,6 +88,14 @@ SRC_LIBS = s_midi_pm.c \
     $(PA_DIR)/src/hostapi/coreaudio/pa_mac_core.c \
     $(PA_DIR)/src/hostapi/coreaudio/pa_mac_core_blocking.c \
     $(PA_DIR)/src/hostapi/coreaudio/pa_mac_core_utilities.c
+        
+# Midi with the PortMidi API.
+
+MIDI_SRC = s_midi_pm.c $(PORTMIDI_SRC)
+
+# Audio. 
+
+AUDIO_SRC = 
 
 # Audio with PORTAUDIO.
 
@@ -94,14 +104,14 @@ ifdef WITH_PORTAUDIO
         -I$(PA_DIR)/src/common \
         -I$(PA_DIR)/src/os/mac_osx \
         -DPA_USE_COREAUDIO
-    SRC_LIBS += s_audio_pa.c
+    AUDIO_SRC += s_audio_pa.c $(PORTAUDIO_SRC)
 endif
 
 # Audio with JACK.
 
 ifdef WITH_JACK
-    SRC_LIBS += s_audio_jack.c
     LIB += -weak_framework Jackmp
+    AUDIO_SRC += s_audio_jack.c
 endif
 
 # The sources (filepath must NOT contain space).
@@ -116,10 +126,9 @@ SRC = g_canvas.c g_graph.c g_text.c g_rtext.c g_array.c g_template.c g_io.c \
     d_delay.c d_resample.c d_soundfile.c \
     x_arithmetic.c x_connective.c x_interface.c x_midi.c x_misc.c \
     x_time.c x_acoustics.c x_net.c x_text.c x_gui.c x_list.c x_array.c \
-    x_scalar.c \
-    $(SRC_LIBS)
+    x_scalar.c
 
-OBJ = $(SRC:.c=.o)
+OBJ = $(SRC:.c=.o) $(MIDI_SRC:.c=.o) $(AUDIO_SRC:.c=.o)
 
 # Targets.
 
@@ -160,6 +169,7 @@ clean:
 	@echo "Remove makefile.dependencies ..."
 	@-rm -f makefile.dependencies
 	@echo "Remove objects ..."
+	@-rm -f $(PORTAUDIO_SRC:.c=.o)
 	@-rm -f $(OBJ)
 	@-rm -f "s_audio_pa.o"
 	@-rm -f "s_audio_jack.o"
