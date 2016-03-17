@@ -154,7 +154,7 @@ set var(cursorEditResize)       "sb_h_double_arrow"
 
 set var(filesExtensions)        ".pd .pdhelp"
 set var(filesOpenPended)        {}
-set var(filesTypes)             { {{$::var(appName) patch} {.pd}} {{$::var(appName) help} {.pdhelp}} }
+set var(filesTypes)             { {{Patch} {.pd}} {{Help} {.pdhelp}} }
 
 set var(fontFamily)             [::getDefaultFamily]
 set var(fontWeight)             [::getDefaultWeight]
