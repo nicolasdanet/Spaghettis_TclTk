@@ -367,8 +367,6 @@ void        audio_setBlockSize                      (int blockSize);
 int         audio_getChannelsIn                     (void);
 int         audio_getChannelsOut                    (void);
 t_float     audio_getSampleRate                     (void);
-int         audio_getAdvanceInMicroseconds          (void);
-int         audio_getAdvanceInSamples               (void);
 
 void        audio_requireDialog                     (void *dummy);
 void        audio_fromDialog                        (void *dummy, t_symbol *s, int argc, t_atom *argv);

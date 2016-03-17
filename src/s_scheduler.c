@@ -17,10 +17,16 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define SCHEDULER_RUN       0
-#define SCHEDULER_QUIT      1
-#define SCHEDULER_RESTART   2
-#define SCHEDULER_ERROR     3
+#define SCHEDULER_RUN               0
+#define SCHEDULER_QUIT              1
+#define SCHEDULER_RESTART           2
+#define SCHEDULER_ERROR             3
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define SCHEDULER_BLOCKING_LAPSE    1000
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -197,8 +203,10 @@ static void scheduler_mainLoop (void)
 
     if (scheduler_audioMode != SCHEDULER_AUDIO_NONE) {
         if ((timeForward = audio_pollDSP())) { idleCount = 0; }
-        else if (!(++idleCount % 31)) { 
-            scheduler_pollStuck (idleCount == 32); 
+        else {
+            if (!(++idleCount % 31)) { 
+                scheduler_pollStuck (idleCount == 32);
+            }
         }
         
     } else {
@@ -224,8 +232,7 @@ static void scheduler_mainLoop (void)
     if (!scheduler_quit && !didSomething) {
         scheduler_pollWatchdog();
         if (timeForward != DACS_SLEPT) {
-            int lapse = PD_CLAMP (audio_getAdvanceInMicroseconds() / 4, 100, 5000);
-            interface_monitorBlocking (lapse);
+            interface_monitorBlocking (SCHEDULER_BLOCKING_LAPSE);
         }
     }
     //

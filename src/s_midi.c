@@ -77,12 +77,10 @@ void midi_synchronise (void)
 {
     double realLapse    = sys_getRealTimeInSeconds() - midi_realTimeAtStart;
     double logicalLapse = MILLISECONDS_TO_SECONDS (scheduler_getMillisecondsSince (midi_logicalTimeAtStart));
+    double offset       = logicalLapse - realLapse;
     
-    double dacOffset = logicalLapse - realLapse - MICROSECONDS_TO_SECONDS (audio_getAdvanceInMicroseconds());
-    double adcOffset = logicalLapse - realLapse;
-    
-    if (dacOffset > midi_dacNewOffset) { midi_dacNewOffset = dacOffset; }
-    if (adcOffset > midi_adcNewOffset) { midi_adcNewOffset = adcOffset; }
+    if (offset > midi_dacNewOffset) { midi_dacNewOffset = offset; }
+    if (offset > midi_adcNewOffset) { midi_adcNewOffset = offset; }
         
     if (realLapse > midi_needToUpdateTime) {
     //

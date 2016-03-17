@@ -62,15 +62,18 @@ static int pa_ringCallback (const void *input,
     ring_buffer_size_t requiredIn  = (ring_buffer_size_t)(frameCount * pa_channelsIn);
     ring_buffer_size_t requiredOut = (ring_buffer_size_t)(frameCount * pa_channelsOut);
     
-    if (PaUtil_GetRingBufferReadAvailable (&pa_ringOut) >= requiredOut) {       /* Could be zero. */
-
-        if (output) { PaUtil_ReadRingBuffer (&pa_ringOut, output, requiredOut); }
-        if (input)  { PaUtil_WriteRingBuffer (&pa_ringIn, input, requiredIn);   }
-
+    if (output) {
+    //
+    if (PaUtil_GetRingBufferReadAvailable (&pa_ringOut) >= requiredOut) {
+        PaUtil_ReadRingBuffer (&pa_ringOut, output, requiredOut);
     } else {
-        if (output) { memset (output, 0, requiredOut * sizeof (t_sample)); }    /* Fill with zeros. */
+        memset (output, 0, requiredOut * sizeof (t_sample));    /* Fill with zeros. */
     }
-
+    //
+    }
+    
+    if (input) { PaUtil_WriteRingBuffer (&pa_ringIn, input, requiredIn); }
+    
     return paContinue;
 }
 
@@ -247,7 +250,7 @@ t_error audio_openNative (int sampleRate,
     if (pa_channelsIn || pa_channelsOut) {
     //
     PaError err = paNoError;
-    int advance = PD_MAX (audio_getAdvanceInSamples(), blockSize);
+    int advance = PD_MAX (4096, blockSize);
     
     {
         size_t k = PD_MAX (advance, INTERNAL_BLOCKSIZE) * pa_channelsIn;
@@ -312,20 +315,15 @@ int audio_pollDSPNative (void)
     ring_buffer_size_t requiredIn  = INTERNAL_BLOCKSIZE * pa_channelsIn;
     ring_buffer_size_t requiredOut = INTERNAL_BLOCKSIZE * pa_channelsOut;
     
-    int synchronizeOnInput  = (pa_channelsIn != 0);
-    int synchronizeOnOutput = !synchronizeOnInput;
-    
     /* Buffer on the stack in order to interleave and deinterleave. */
     
     t_sample *t = (t_sample *)alloca ((PD_MAX (requiredIn, requiredOut)) * sizeof (t_sample));
 
     if (pa_channelsOut) {
-        if (synchronizeOnOutput) {
-            int wait = 0;
-            while (PaUtil_GetRingBufferWriteAvailable (&pa_ringOut) < requiredOut) {
-                status = DACS_SLEPT; if (wait < 10) { PA_MICROSLEEP; } else { return DACS_NO; }
-                wait++;
-            }
+        int wait = 0;
+        while (PaUtil_GetRingBufferWriteAvailable (&pa_ringOut) < requiredOut) {
+            status = DACS_SLEPT; if (wait < 10) { PA_MICROSLEEP; } else { return DACS_NO; }
+            wait++;
         }
         for (i = 0, sound = audio_soundOut, p1 = t; i < pa_channelsOut; i++, p1++) {
             for (k = 0, p2 = p1; k < INTERNAL_BLOCKSIZE; k++, sound++, p2 += pa_channelsOut) {
@@ -337,12 +335,10 @@ int audio_pollDSPNative (void)
     }
     
     if (pa_channelsIn) {
-        if (synchronizeOnInput) {
-            int wait = 0;
-            while (PaUtil_GetRingBufferReadAvailable (&pa_ringIn) < requiredIn) {
-                status = DACS_SLEPT; if (wait < 10) { PA_MICROSLEEP; } else { return DACS_NO; }
-                wait++;
-            }
+        int wait = 0;
+        while (PaUtil_GetRingBufferReadAvailable (&pa_ringIn) < requiredIn) {
+            status = DACS_SLEPT; if (wait < 10) { PA_MICROSLEEP; } else { return DACS_NO; }
+            wait++;
         }
         PaUtil_ReadRingBuffer (&pa_ringIn, t, requiredIn);
         for (i = 0, sound = audio_soundIn, p1 = t; i < pa_channelsIn; i++, p1++) {

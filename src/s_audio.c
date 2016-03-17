@@ -155,15 +155,5 @@ t_float audio_getSampleRate (void)
     return audio_sampleRate;
 }
 
-int audio_getAdvanceInMicroseconds (void)
-{
-    return audio_advanceInMicroseconds; 
-}
-
-int audio_getAdvanceInSamples (void)
-{
-    return MICROSECONDS_TO_SECONDS (audio_advanceInMicroseconds * audio_sampleRate);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
