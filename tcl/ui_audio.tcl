@@ -32,8 +32,6 @@ variable  audioInEnabled
 variable  audioOutEnabled
 variable  audioSampleRate
 variable  audioSampleRateOld 
-variable  audioDelay
-variable  audioDelayOld
 variable  audioBlockSize
 
 array set audioInDevice    {}
@@ -50,9 +48,8 @@ proc show {top \
            i1 i2 i3 i4 iChannels1 iChannels2 iChannels3 iChannels4 \
            o1 o2 o3 o4 oChannels1 oChannels2 oChannels3 oChannels4 \
            sampleRate \
-           delay \
-           multiple \
-           blockSize} {
+           blockSize \
+           multiple} {
     
     variable audioIn
     variable audioOut
@@ -64,8 +61,6 @@ proc show {top \
     variable audioOutEnabled
     variable audioSampleRate 
     variable audioSampleRateOld
-    variable audioDelay 
-    variable audioDelayOld
     variable audioBlockSize
 
     ::ui_menu::disableAudio
@@ -93,8 +88,6 @@ proc show {top \
 
     set audioSampleRate     $sampleRate
     set audioSampleRateOld  $sampleRate
-    set audioDelay          $delay
-    set audioDelayOld       $delay
     set audioBlockSize      $blockSize
 
     set blockSizeValues  {64 128 256 512 1024 2048}
@@ -128,19 +121,11 @@ proc show {top \
                                                             -text [_ "Block Size"]
     ::createMenuByValue $top.f.properties.blockSize     $blockSizeValues ::ui_audio::audioBlockSize \
                                                             -width [::measure $blockSizeValues]
-    
-    ttk::label $top.f.properties.delayLabel             {*}[::styleLabel] \
-                                                            -text [_ "Delay in Milliseconds"]
-    ttk::entry $top.f.properties.delay                  {*}[::styleEntryNumber] \
-                                                            -textvariable ::ui_audio::audioDelay \
-                                                            -width $::width(small)
                                                             
     grid $top.f.properties.sampleRateLabel              -row 0 -column 0 -sticky ew
     grid $top.f.properties.sampleRate                   -row 0 -column 2 -sticky ew
     grid $top.f.properties.blockSizeLabel               -row 1 -column 0 -sticky ew
     grid $top.f.properties.blockSize                    -row 1 -column 2 -sticky ew
-    grid $top.f.properties.delayLabel                   -row 2 -column 0 -sticky ew
-    grid $top.f.properties.delay                        -row 2 -column 2 -sticky ew
     
     if {$multiple > 1} {
         foreach e $audioIn  { ::ui_audio::_makeIn  $top.f.inputs  [incr i] }
@@ -153,11 +138,6 @@ proc show {top \
     grid columnconfigure $top.f.properties  1 -weight 1
     grid columnconfigure $top.f.inputs      1 -weight 1
     grid columnconfigure $top.f.outputs     1 -weight 1
-    
-    bind  $top.f.properties.delay <Return> { ::nextEntry %W }
-    focus $top.f.properties.delay
-    
-    after idle "$top.f.properties.delay selection range 0 end"
     
     bind $top <Destroy> { ::ui_menu::enableAudio }
         
@@ -245,7 +225,6 @@ proc _apply {top} {
     variable audioInEnabled
     variable audioOutEnabled
     variable audioSampleRate 
-    variable audioDelay 
     variable audioBlockSize
     
     _forceValues
@@ -268,7 +247,6 @@ proc _apply {top} {
             [expr {$audioOutChannels(3) * ($audioOutEnabled(3) ? 1 : -1)}] \
             [expr {$audioOutChannels(4) * ($audioOutEnabled(4) ? 1 : -1)}] \
             $audioSampleRate \
-            $audioDelay \
             $audioBlockSize"
     
     ::ui_interface::pdsend "pd _savePreferences"
@@ -283,8 +261,6 @@ proc _forceValues {} {
     variable audioOutChannels
     variable audioSampleRate
     variable audioSampleRateOld
-    variable audioDelay
-    variable audioDelayOld
 
     foreach i {1 2 3 4} {
     
@@ -300,8 +276,6 @@ proc _forceValues {} {
     
     set audioSampleRate      [::ifInteger $audioSampleRate $audioSampleRateOld]
     set audioSampleRate      [::tcl::mathfunc::max $audioSampleRate 1]
-    set audioDelay           [::ifInteger $audioDelay $audioDelayOld]
-    set audioDelay           [::tcl::mathfunc::max $audioDelay 0]
 }
 
 # ------------------------------------------------------------------------------------------------------------

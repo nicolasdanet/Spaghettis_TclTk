@@ -25,9 +25,9 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #if PD_WINDOWS
-    #define PA_MICROSLEEP   Sleep (1)
+    #define PORTAUDIO_MICROSLEEP    Sleep (1)
 #else
-    #define PA_MICROSLEEP   usleep (1000);
+    #define PORTAUDIO_MICROSLEEP    usleep (1000);
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -51,6 +51,12 @@ static int              pa_channelsOut;                 /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+#define PORTAUDIO_BUFFER_SIZE       4096
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static int pa_ringCallback (const void *input,
     void *output,
@@ -250,10 +256,10 @@ t_error audio_openNative (int sampleRate,
     if (pa_channelsIn || pa_channelsOut) {
     //
     PaError err = paNoError;
-    int advance = PD_MAX (4096, blockSize);
+    int size = PD_MAX (PORTAUDIO_BUFFER_SIZE, blockSize);
     
     {
-        size_t k = PD_MAX (advance, INTERNAL_BLOCKSIZE) * pa_channelsIn;
+        size_t k = PD_MAX (size, INTERNAL_BLOCKSIZE) * pa_channelsIn;
         k = PD_NEXT_POWER_OF_TWO (k + 1);
         pa_bufferIn = PD_MEMORY_GET (k * sizeof (t_sample));
         PD_ASSERT ((ring_buffer_size_t)k > 0);
@@ -262,7 +268,7 @@ t_error audio_openNative (int sampleRate,
         }
     }
     {
-        size_t k = PD_MAX (advance, INTERNAL_BLOCKSIZE) * pa_channelsOut;
+        size_t k = PD_MAX (size, INTERNAL_BLOCKSIZE) * pa_channelsOut;
         k = PD_NEXT_POWER_OF_TWO (k + 1);
         pa_bufferOut = PD_MEMORY_GET (k * sizeof (t_sample));
         PD_ASSERT ((ring_buffer_size_t)k > 0);
@@ -322,7 +328,7 @@ int audio_pollDSPNative (void)
     if (pa_channelsOut) {
         int wait = 0;
         while (PaUtil_GetRingBufferWriteAvailable (&pa_ringOut) < requiredOut) {
-            status = DACS_SLEPT; if (wait < 10) { PA_MICROSLEEP; } else { return DACS_NO; }
+            status = DACS_SLEPT; if (wait < 10) { PORTAUDIO_MICROSLEEP; } else { return DACS_NO; }
             wait++;
         }
         for (i = 0, sound = audio_soundOut, p1 = t; i < pa_channelsOut; i++, p1++) {
@@ -337,7 +343,7 @@ int audio_pollDSPNative (void)
     if (pa_channelsIn) {
         int wait = 0;
         while (PaUtil_GetRingBufferReadAvailable (&pa_ringIn) < requiredIn) {
-            status = DACS_SLEPT; if (wait < 10) { PA_MICROSLEEP; } else { return DACS_NO; }
+            status = DACS_SLEPT; if (wait < 10) { PORTAUDIO_MICROSLEEP; } else { return DACS_NO; }
             wait++;
         }
         PaUtil_ReadRingBuffer (&pa_ringIn, t, requiredIn);

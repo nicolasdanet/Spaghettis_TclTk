@@ -16,7 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Note that a negative channels number corresponds to a disabled device. */
+/* Note that a negative number of channels corresponds to a disabled device. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -39,9 +39,8 @@ static int      audio_numberOfDevicesOut;                                       
 static int      audio_devicesOutChannels[MAXIMUM_AUDIO_OUT];                        /* Shared. */
 static char     audio_devicesOutNames[MAXIMUM_AUDIO_OUT * MAXIMUM_DESCRIPTION];     /* Shared. */
 
-static int      audio_tempSampleRate    = AUDIO_DEFAULT_SAMPLERATE;                 /* Shared. */
-static int      audio_tempAdvance       = AUDIO_DEFAULT_ADVANCE;                    /* Shared. */
-static int      audio_tempBlockSize     = AUDIO_DEFAULT_BLOCKSIZE;                  /* Shared. */
+static int      audio_tempSampleRate = AUDIO_DEFAULT_SAMPLERATE;                    /* Shared. */
+static int      audio_tempBlockSize  = AUDIO_DEFAULT_BLOCKSIZE;                     /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -54,7 +53,6 @@ static int      audio_tempBlockSize     = AUDIO_DEFAULT_BLOCKSIZE;              
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define AUDIO_MAXIMUM_ADVANCE       100
 #define AUDIO_MAXIMUM_BLOCKSIZE     2048
 
 // -----------------------------------------------------------------------------------------------------------
@@ -71,12 +69,11 @@ t_error audio_open (void)
     int p[MAXIMUM_AUDIO_OUT] = { 0 };
     
     int sampleRate;
-    int advance;
     int blockSize;
     
     t_error err = PD_ERROR;
     
-    audio_getDevices (&m, i, j, &n, o, p, &sampleRate, &advance, &blockSize);
+    audio_getDevices (&m, i, j, &n, o, p, &sampleRate, &blockSize);
     
     if (m || n) {
     //
@@ -138,7 +135,6 @@ void audio_getDevices (int *numberOfDevicesIn,
     int *devicesOut,
     int *channelsOut,
     int *sampleRate,
-    int *advance,
     int *blockSize)
 {
     int i;
@@ -167,7 +163,6 @@ void audio_getDevices (int *numberOfDevicesIn,
     *numberOfDevicesOut = n;
     
     *sampleRate   = audio_tempSampleRate;
-    *advance      = audio_tempAdvance;
     *blockSize    = audio_tempBlockSize;
 }
 
@@ -178,7 +173,6 @@ static void audio_setDevices (int numberOfDevicesIn,
     int *devicesOut,
     int *channelsOut,
     int sampleRate,
-    int advance,
     int blockSize)
 {
     int i;
@@ -210,7 +204,6 @@ static void audio_setDevices (int numberOfDevicesIn,
     audio_numberOfDevicesIn     = m;
     audio_numberOfDevicesOut    = n;
     audio_tempSampleRate        = sampleRate;
-    audio_tempAdvance           = advance;
     audio_tempBlockSize         = blockSize;
 }
 
@@ -221,7 +214,6 @@ static void audio_setDevicesAndParameters (int numberOfDevicesIn,
     int *devicesOut,
     int *channelsOut, 
     int sampleRate, 
-    int advance, 
     int blockSize)
 {
     int i;
@@ -229,22 +221,17 @@ static void audio_setDevicesAndParameters (int numberOfDevicesIn,
     int totalOfChannelsOut = 0;
     
     if (sampleRate < 1)                  { sampleRate = AUDIO_DEFAULT_SAMPLERATE; }
-    if (advance < 0)                     { advance    = AUDIO_DEFAULT_ADVANCE;    }
     if (!PD_IS_POWER_OF_TWO (blockSize)) { blockSize  = AUDIO_DEFAULT_BLOCKSIZE;  }
     
-    advance   = PD_MIN (advance, AUDIO_MAXIMUM_ADVANCE);
     blockSize = PD_CLAMP (blockSize, INTERNAL_BLOCKSIZE, AUDIO_MAXIMUM_BLOCKSIZE); 
         
-    audio_setAdvanceInMicroseconds (MILLISECONDS_TO_MICROSECONDS (advance));
-
     audio_setDevices (numberOfDevicesIn, 
         devicesIn, 
         channelsIn,
         numberOfDevicesOut, 
         devicesOut,
         channelsOut,
-        sampleRate, 
-        advance, 
+        sampleRate,
         blockSize);
     
     for (i = 0; i < audio_numberOfDevicesIn; i++) {
@@ -277,7 +264,6 @@ void audio_setDevicesWithDefault (int numberOfDevicesIn,
     int *devicesOut,
     int *channelsOut, 
     int sampleRate, 
-    int advance, 
     int blockSize)
 {
     /* For convenience, initialize with the first devices if none are provided. */
@@ -299,7 +285,6 @@ void audio_setDevicesWithDefault (int numberOfDevicesIn,
         devicesOut,
         channelsOut,
         sampleRate,
-        advance,
         blockSize);
 }
 
@@ -407,14 +392,13 @@ void audio_requireDialog (void *dummy)
     int o[MAXIMUM_AUDIO_OUT] = { 0 };
     int p[MAXIMUM_AUDIO_OUT] = { 0 };
     int sampleRate;
-    int advance;
     int blockSize;
     
     int canMultiple;
 
     t_error err = audio_requireDialogInitialize (&canMultiple);
     
-    audio_getDevices (&m, i, j, &n, o, p, &sampleRate, &advance, &blockSize);
+    audio_getDevices (&m, i, j, &n, o, p, &sampleRate, &blockSize);
 
     if (!err) {
     //
@@ -438,13 +422,12 @@ void audio_requireDialog (void *dummy)
     int oChannels4  = (n > 3 ? p[3] : 0);
     
     err |= string_sprintf (t, PD_STRING,
-        "::ui_audio::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+        "::ui_audio::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
         i1, i2, i3, i4, iChannels1, iChannels2, iChannels3, iChannels4, 
         o1, o2, o3, o4, oChannels1, oChannels2, oChannels3, oChannels4, 
         sampleRate,
-        advance,
-        canMultiple,
-        blockSize);
+        blockSize,
+        canMultiple);
         
     if (!err) {
         gfxstub_deleteforkey (NULL);
@@ -467,12 +450,11 @@ void audio_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
     int p[MAXIMUM_AUDIO_OUT] = { 0 };
         
     int sampleRate;
-    int advance;
     int blockSize;
 
     int t;
     
-    PD_ASSERT (argc == 19);
+    PD_ASSERT (argc == 18);
     PD_ASSERT (MAXIMUM_AUDIO_IN  >= 4);
     PD_ASSERT (MAXIMUM_AUDIO_OUT >= 4);
     
@@ -484,8 +466,7 @@ void audio_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
     }
     
     sampleRate   = (t_int)atom_getFloatAtIndex (16, argc, argv);
-    advance      = (t_int)atom_getFloatAtIndex (17, argc, argv);
-    blockSize    = (t_int)atom_getFloatAtIndex (18, argc, argv);
+    blockSize    = (t_int)atom_getFloatAtIndex (17, argc, argv);
     
     /* Remove devices with number of channels set to zero. */
     
@@ -494,7 +475,7 @@ void audio_fromDialog (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     audio_close();
         
-    audio_setDevicesAndParameters (m, i, j, n, o, p, sampleRate, advance, blockSize);
+    audio_setDevicesAndParameters (m, i, j, n, o, p, sampleRate, blockSize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

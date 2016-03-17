@@ -222,7 +222,6 @@ static void preferences_setKey (const char *key, const char *value)
 void preferences_load (void)
 {
     int sampleRate                      = AUDIO_DEFAULT_SAMPLERATE;
-    int advance                         = AUDIO_DEFAULT_ADVANCE;
     int blockSize                       = AUDIO_DEFAULT_BLOCKSIZE;
 
     int numberOfAudioIn                 = 0;
@@ -247,7 +246,6 @@ void preferences_load (void)
     /* Properties. */
     
     if (preferences_getKey ("SampleRate",   value, PD_STRING)) { sscanf (value, "%d", &sampleRate);   }
-    if (preferences_getKey ("Advance",      value, PD_STRING)) { sscanf (value, "%d", &advance);      }
     if (preferences_getKey ("BlockSize",    value, PD_STRING)) { sscanf (value, "%d", &blockSize);    }
     
     /* Search paths. */
@@ -347,7 +345,6 @@ void preferences_load (void)
         audioOut,
         channelOut, 
         sampleRate,
-        advance,
         blockSize);
                             
     midi_setDefaultDevices (numberOfMidiIn, midiIn, numberOfMidiOut, midiOut);
@@ -363,7 +360,6 @@ void preferences_save (void *dummy)
     t_pathlist *list;
     
     int sampleRate                      = AUDIO_DEFAULT_SAMPLERATE;
-    int advance                         = AUDIO_DEFAULT_ADVANCE;
     int blockSize                       = AUDIO_DEFAULT_BLOCKSIZE;
     
     int numberOfAudioIn                 = 0;
@@ -387,8 +383,7 @@ void preferences_save (void *dummy)
                             &numberOfAudioOut, 
                             audioOut, 
                             channelOut, 
-                            &sampleRate, 
-                            &advance,
+                            &sampleRate,
                             &blockSize);
     
     midi_getDevices (&numberOfMidiIn, midiIn, &numberOfMidiOut, midiOut);
@@ -396,7 +391,6 @@ void preferences_save (void *dummy)
     /* Properties. */
     
     string_sprintf (value, PD_STRING, "%d", sampleRate);        preferences_setKey ("SampleRate", value);
-    string_sprintf (value, PD_STRING, "%d", advance);           preferences_setKey ("Advance",    value);
     string_sprintf (value, PD_STRING, "%d", blockSize);         preferences_setKey ("BlockSize",  value);
     
     /* Search paths. */

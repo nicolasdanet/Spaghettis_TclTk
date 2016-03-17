@@ -55,18 +55,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#if PD_WINDOWS
-    #define AUDIO_DEFAULT_ADVANCE               80
-#elif PD_APPLE
-    #define AUDIO_DEFAULT_ADVANCE               5
-#else
-    #define AUDIO_DEFAULT_ADVANCE               25
-#endif
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 #define AUDIO_DEFAULT_BLOCKSIZE                 64
 #define AUDIO_DEFAULT_SAMPLERATE                44100
 
@@ -361,8 +349,6 @@ void        audio_initializeMemory                  (int usedChannelsIn, int use
 void        audio_shrinkChannelsIn                  (int numberOfChannelsIn);
 void        audio_shrinkChannelsOut                 (int numberOfChannelsOut);
 void        audio_setSampleRate                     (t_float sampleRate);
-void        audio_setAdvanceInMicroseconds          (int advanceInMicroseconds);
-void        audio_setAdvanceInSamples               (int advanceInSamples);
 void        audio_setBlockSize                      (int blockSize);
 int         audio_getChannelsIn                     (void);
 int         audio_getChannelsOut                    (void);
@@ -383,7 +369,6 @@ void        audio_getDevices                        (int *numberOfDevicesIn,
                                                         int *devicesOut,
                                                         int *channelsOut,
                                                         int *sampleRate,
-                                                        int *advance,
                                                         int *blockSize);
 
 void        audio_setDevicesWithDefault             (int numberOfDevicesIn,
@@ -393,7 +378,6 @@ void        audio_setDevicesWithDefault             (int numberOfDevicesIn,
                                                         int *devicesOut,
                                                         int *channelsOut,
                                                         int sampleRate,
-                                                        int advance,
                                                         int blockSize);
 
 // -----------------------------------------------------------------------------------------------------------

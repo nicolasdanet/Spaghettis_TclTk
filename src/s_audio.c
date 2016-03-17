@@ -25,7 +25,6 @@ t_sample *audio_soundOut;                           /* Shared. */
 static int      audio_channelsIn;                   /* Shared. */
 static int      audio_channelsOut;                  /* Shared. */
 static t_float  audio_sampleRate;                   /* Shared. */
-static int      audio_advanceInMicroseconds;        /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -124,16 +123,6 @@ void audio_setSampleRate (t_float sampleRate)
     #endif 
     
     audio_sampleRate = sampleRate;      
-}
-
-void audio_setAdvanceInMicroseconds (int advanceInMicroseconds)
-{
-    audio_advanceInMicroseconds = advanceInMicroseconds;
-}
-
-void audio_setAdvanceInSamples (int advanceInSamples)
-{
-    audio_advanceInMicroseconds = SECONDS_TO_MICROSECONDS (advanceInSamples / audio_sampleRate);
 }
 
 // -----------------------------------------------------------------------------------------------------------
