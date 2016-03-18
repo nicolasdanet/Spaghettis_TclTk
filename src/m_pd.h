@@ -164,6 +164,10 @@
 #define PD_WITH_DEBUG           1           /* False assertions logged. */
 #endif
 
+#ifndef PD_WITH_LOGGER
+#define PD_WITH_LOGGER          1           /* Low latency logging for debugging. */
+#endif
+
 #ifndef PD_WITH_ALLOCA
 #define PD_WITH_ALLOCA          1           /* Message passing uses alloca function. */
 #endif

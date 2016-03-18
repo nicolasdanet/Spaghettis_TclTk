@@ -252,6 +252,7 @@ int main_entry (int argc, char **argv)
     //
     main_entryNative();
     
+    err |= logger_initialize();
     err |= main_getRootDirectory();
     err |= main_parseArguments (argc - 1, argv + 1);
     err |= main_setPaths (main_directoryRoot);
@@ -289,6 +290,8 @@ int main_entry (int argc, char **argv)
     audio_release(); 
     //
     }
+    
+    logger_release();
     //
     }
     //

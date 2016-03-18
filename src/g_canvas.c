@@ -1449,7 +1449,6 @@ int canvas_open(t_canvas *x, const char *name, const char *ext,
             char realname[PD_STRING];
             if (0 /* path_isAbsoluteConsideringEnvironment(nl->pl_string)*/)
             {
-                post_log ("Toto");
                 realname[0] = '\0';
             }
             else
