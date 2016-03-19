@@ -109,7 +109,7 @@ void logger_releaseNative (void)
         logger_ring = NULL; 
     }
     
-    if (logger_file != -1) { fclose (logger_file); }
+    if (logger_file != -1) { close (logger_file); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
