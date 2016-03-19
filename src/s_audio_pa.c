@@ -160,28 +160,9 @@ int audio_getPriorityNative (int min, int max, int isWatchdog)
 
 */
 
-/* On Mac OS Pa_Initialize() closes file descriptor 1 (standard output). */
-/* As a workaround, dup it to another number and dup2 it back afterward. */
-    
 t_error audio_initializeNative (void)
 {
-    #if PD_APPLE
-    
-    int f = dup (1);
-    int dummy = open ("/dev/null", 0);
-    dup2 (dummy, 1);
-    
     PaError err = Pa_Initialize();
-    
-    close (1);
-    close (dummy);
-    if (f >= 0) { fflush (stdout); dup2 (f, 1); close (f); }
-    
-    #else
-    
-    PaError err = Pa_Initialize();
-    
-    #endif
 
     if (err != paNoError) { post_error ("PortAudio: `%s'", Pa_GetErrorText (err)); return PD_ERROR; }   // --
     else {
