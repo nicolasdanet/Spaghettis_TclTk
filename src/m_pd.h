@@ -165,7 +165,7 @@
 #endif
 
 #ifndef PD_WITH_LOGGER
-#define PD_WITH_LOGGER          1           /* Low latency logging for debugging. */
+#define PD_WITH_LOGGER          1           /* Lock-free logging (debugging purpose only). */
 #endif
 
 #ifndef PD_WITH_ALLOCA

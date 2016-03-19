@@ -27,9 +27,15 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+extern t_symbol *main_directoryExtras;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static char                     *logger_buffer;                 /* Shared. */
 
 static PaUtilRingBuffer         logger_ring;                    /* Shared. */
+static int                      logger_file;                    /* Shared. */
 static pthread_t                logger_thread;                  /* Shared. */
 static pthread_attr_t           logger_attribute;               /* Shared. */
 static int                      logger_quit;                    /* Shared. */
@@ -40,7 +46,7 @@ static int                      logger_quit;                    /* Shared. */
 
 #define PA_LOGGER_CHUNK         (64)
 #define PA_LOGGER_SLEEP         (57)
-#define PA_LOGGER_BUFFER_SIZE   (1024 * PA_LOGGER_SLEEP)    /* Allowing 1024 characters per millisecond. */
+#define PA_LOGGER_BUFFER_SIZE   (1024 * PA_LOGGER_SLEEP)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -59,8 +65,8 @@ void *logger_task (void *dummy)
         while ((size = PaUtil_GetRingBufferReadAvailable (&logger_ring)) > 0) {
             ring_buffer_size_t k = PD_MIN (PA_LOGGER_CHUNK, size);
             PaUtil_ReadRingBuffer (&logger_ring, t, k);
-            t[k] = 0;
-            // post_log ("%s", t);
+            t[k] = '\n';
+            write (logger_file, t, k + 1);
         }
     }
     //
@@ -76,13 +82,19 @@ void *logger_task (void *dummy)
 t_error logger_initializeNative (void)
 {
     size_t k = PD_NEXT_POWER_OF_TWO (PA_LOGGER_BUFFER_SIZE);
+    char t[PD_STRING] = { 0 };
+    t_error err = string_sprintf (t, PD_STRING, "%s/log-XXXXXX", main_directoryExtras->s_name);
     
+    if ((logger_file = mkstemp (t)) != -1) {
+    //
     logger_buffer = PD_MEMORY_GET (k);
     
     if (!PaUtil_InitializeRingBuffer (&logger_ring, sizeof (char), k, logger_buffer)) {
         pthread_attr_init (&logger_attribute);
         pthread_attr_setdetachstate (&logger_attribute, PTHREAD_CREATE_JOINABLE);
         return (pthread_create (&logger_thread, &logger_attribute, logger_task, NULL) != 0);
+    }
+    //
     }
     
     return PD_ERROR;
@@ -98,6 +110,8 @@ void logger_releaseNative (void)
         PD_MEMORY_FREE (logger_buffer);
         logger_buffer = NULL; 
     }
+    
+    if (logger_file != -1) { fclose (logger_file); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

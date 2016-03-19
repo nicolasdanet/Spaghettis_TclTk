@@ -28,8 +28,14 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+extern t_symbol *main_directoryExtras;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static jack_ringbuffer_t    *logger_ring;                   /* Shared. */
 
+static int                  logger_file;                    /* Shared. */
 static pthread_t            logger_thread;                  /* Shared. */
 static pthread_attr_t       logger_attribute;               /* Shared. */
 static int                  logger_quit;                    /* Shared. */
@@ -59,8 +65,8 @@ void *logger_task (void *dummy)
         while ((size = jack_ringbuffer_read_space (logger_ring)) > 0) {
             size_t k = PD_MIN (JACK_LOGGER_CHUNK, size);
             jack_ringbuffer_read (logger_ring, t, k);
-            t[k] = 0;
-            // post_log ("%s", t);
+            t[k] = '\n';
+            write (logger_file, t, k + 1);
         }
     }
     //
@@ -76,11 +82,17 @@ void *logger_task (void *dummy)
 t_error logger_initializeNative (void)
 {
     size_t k = PD_NEXT_POWER_OF_TWO (JACK_LOGGER_BUFFER_SIZE);
+    char t[PD_STRING] = { 0 };
+    t_error err = string_sprintf (t, PD_STRING, "%s/log-XXXXXX", main_directoryExtras->s_name);
     
+    if ((logger_file = mkstemp (t)) != -1) {
+    //
     if ((logger_ring = jack_ringbuffer_create (k))) {
         pthread_attr_init (&logger_attribute);
         pthread_attr_setdetachstate (&logger_attribute, PTHREAD_CREATE_JOINABLE);
         return (pthread_create (&logger_thread, &logger_attribute, logger_task, NULL) != 0);
+    }
+    //
     }
     
     return PD_ERROR;
@@ -96,6 +108,8 @@ void logger_releaseNative (void)
         jack_ringbuffer_free (logger_ring);
         logger_ring = NULL; 
     }
+    
+    if (logger_file != -1) { fclose (logger_file); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

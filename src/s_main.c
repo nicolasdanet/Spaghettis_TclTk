@@ -252,23 +252,24 @@ int main_entry (int argc, char **argv)
     //
     main_entryNative();
     
-    err |= logger_initialize();
     err |= main_getRootDirectory();
     err |= main_parseArguments (argc - 1, argv + 1);
     err |= main_setPaths (main_directoryRoot);
-    
-    if (!err) {
-    //
-    if (main_version) { 
-        return main_entryVersion (0); 
-    }
     
     PD_ASSERT (main_directoryRoot   != NULL);
     PD_ASSERT (main_directoryBin    != NULL);
     PD_ASSERT (main_directoryTcl    != NULL);
     PD_ASSERT (main_directoryHelp   != NULL);
     PD_ASSERT (main_directoryExtras != NULL);
-
+    
+    err |= logger_initialize();
+        
+    if (!err) {
+    //
+    if (main_version) { 
+        return main_entryVersion (0); 
+    }
+    
     err |= audio_initialize();
     
     if (!err) {
