@@ -400,7 +400,7 @@ void audio_closeNative (void)
 int audio_pollDSPNative (void)
 {
     int status = DACS_YES;
-        
+    
     if (!jack_client || (!jack_numberOfPortsIn && !jack_numberOfPortsOut)) { return DACS_NO; }
     else {
     //

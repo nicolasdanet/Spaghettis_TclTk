@@ -97,21 +97,6 @@ void buffer_append (t_buffer *x, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void buffer_log (t_buffer *x)       /* Handy to debug. */
-{
-    if (x->b_size) {
-    //
-    char *s = NULL;
-    int size = 0;
-    
-    buffer_toString (x, &s, &size);
-    post_log ("%s", s);
-    
-    PD_MEMORY_FREE (s);
-    //
-    }
-}
-
 void buffer_post (t_buffer *x)
 {
     post_atoms (x->b_size, x->b_vector);

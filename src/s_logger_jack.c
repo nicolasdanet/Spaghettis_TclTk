@@ -21,26 +21,26 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#include "portaudio.h"
-#include "pa_ringbuffer.h"
+#include "jack/jack.h"
+#include "jack/ringbuffer.h"
+#include "jack/weakjack.h"
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static char                     *logger_buffer;                 /* Shared. */
+static jack_ringbuffer_t    *logger_ring;                   /* Shared. */
 
-static PaUtilRingBuffer         logger_ring;                    /* Shared. */
-static pthread_t                logger_thread;                  /* Shared. */
-static pthread_attr_t           logger_attribute;               /* Shared. */
-static int                      logger_quit;                    /* Shared. */
+static pthread_t            logger_thread;                  /* Shared. */
+static pthread_attr_t       logger_attribute;               /* Shared. */
+static int                  logger_quit;                    /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PA_LOGGER_CHUNK         (64)
-#define PA_LOGGER_SLEEP         (57)
-#define PA_LOGGER_BUFFER_SIZE   (1024 * PA_LOGGER_SLEEP)    /* Allowing 1024 characters per millisecond. */
+#define JACK_LOGGER_CHUNK           (64)
+#define JACK_LOGGER_SLEEP           (57)
+#define JACK_LOGGER_BUFFER_SIZE     (1024 * JACK_LOGGER_SLEEP)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -50,15 +50,15 @@ void *logger_task (void *dummy)
 {
     while (!logger_quit) {
     //
-    usleep (MILLISECONDS_TO_MICROSECONDS (PA_LOGGER_SLEEP));
+    usleep (MILLISECONDS_TO_MICROSECONDS (JACK_LOGGER_SLEEP));
     
     {
-        char t[PA_LOGGER_CHUNK + 1] = { 0 };
-        ring_buffer_size_t size;
-                
-        while ((size = PaUtil_GetRingBufferReadAvailable (&logger_ring)) > 0) {
-            ring_buffer_size_t k = PD_MIN (PA_LOGGER_CHUNK, size);
-            PaUtil_ReadRingBuffer (&logger_ring, t, k);
+        char t[JACK_LOGGER_CHUNK + 1] = { 0 };
+        size_t size;
+        
+        while ((size = jack_ringbuffer_read_space (logger_ring)) > 0) {
+            size_t k = PD_MIN (JACK_LOGGER_CHUNK, size);
+            jack_ringbuffer_read (logger_ring, t, k);
             t[k] = 0;
             // post_log ("%s", t);
         }
@@ -75,11 +75,9 @@ void *logger_task (void *dummy)
 
 t_error logger_initializeNative (void)
 {
-    size_t k = PD_NEXT_POWER_OF_TWO (PA_LOGGER_BUFFER_SIZE);
+    size_t k = PD_NEXT_POWER_OF_TWO (JACK_LOGGER_BUFFER_SIZE);
     
-    logger_buffer = PD_MEMORY_GET (k);
-    
-    if (!PaUtil_InitializeRingBuffer (&logger_ring, sizeof (char), k, logger_buffer)) {
+    if ((logger_ring = jack_ringbuffer_create (k))) {
         pthread_attr_init (&logger_attribute);
         pthread_attr_setdetachstate (&logger_attribute, PTHREAD_CREATE_JOINABLE);
         return (pthread_create (&logger_thread, &logger_attribute, logger_task, NULL) != 0);
@@ -94,9 +92,9 @@ void logger_releaseNative (void)
     pthread_join (logger_thread, NULL);
     pthread_attr_destroy (&logger_attribute);
     
-    if (logger_buffer) { 
-        PD_MEMORY_FREE (logger_buffer);
-        logger_buffer = NULL; 
+    if (logger_ring) { 
+        jack_ringbuffer_free (logger_ring);
+        logger_ring = NULL; 
     }
 }
 
@@ -105,8 +103,8 @@ void logger_releaseNative (void)
 #pragma mark -
 
 void logger_appendStringNative (const char *s)
-{
-    PaUtil_WriteRingBuffer (&logger_ring, s, (ring_buffer_size_t)strlen (s));
+{    
+    jack_ringbuffer_write (logger_ring, s, strlen (s));
 }
 
 // -----------------------------------------------------------------------------------------------------------

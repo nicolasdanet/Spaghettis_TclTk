@@ -55,7 +55,7 @@ LIB += -lasound
 
 # Audio with JACK.
 
-AUDIO_SRC = s_audio_jack.c
+AUDIO_SRC = s_logger_jack.c s_audio_jack.c
 LIB += -ljack
 
 # The sources (filepath must NOT contain space).
@@ -115,6 +115,7 @@ clean:
 	@echo "Remove objects ..."
 	@-rm -f $(OBJ)
 	@-rm -f "s_audio_jack.o"
+	@-rm -f "s_logger_jack.o"
 	@echo "Remove binaries ..."
 	@-rm -f $(BIN_DIR)/pd $(BIN_DIR)/pdsend $(BIN_DIR)/pdreceive $(BIN_DIR)/pdwatchdog
 	@echo "Remove bin directory ..."

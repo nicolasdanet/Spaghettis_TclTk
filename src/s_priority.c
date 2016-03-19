@@ -162,9 +162,9 @@ static t_error priority_setRTNative (void)
     
         /* We're the parent. */
         
-        if (!priority_setRealTime (0)) { post_log ("RT Enabled"); }
+        if (!priority_setRealTime (0)) { fprintf (stdout, "RT Enabled\n"); }
         else {
-            post_log ("RT Disabled"); 
+            fprintf (stdout, "RT Disabled\n"); 
         }
         
         close (p[0]);

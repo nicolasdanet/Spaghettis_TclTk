@@ -486,7 +486,7 @@ int interface_pollOrFlushGui (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_error interface_fetchGui (struct sockaddr_in *server)
+static t_error interface_fetchGuiServer (struct sockaddr_in *server)
 {
     struct hostent *host = gethostbyname (INTERFACE_LOCALHOST);
     t_error err = ((interface_guiSocket = socket (AF_INET, SOCK_STREAM, 0)) < 0);
@@ -690,7 +690,7 @@ static t_error interface_startGui (void)
     int f = -1;
     int launch = (main_portNumber == 0);
     
-    if (!launch) { err = interface_fetchGui (&server); }        /* Wish first. */
+    if (!launch) { err = interface_fetchGuiServer (&server); }        /* Wish first. */
     else {
     //
     if (!(err = interface_launchGui (&server, &f))) {           /* Executable first. */

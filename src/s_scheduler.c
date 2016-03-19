@@ -255,8 +255,6 @@ t_error scheduler_main (void)
     audio_close();
     midi_close();
     
-    post_log ("Shutdown");
-    
     return (scheduler_quit == SCHEDULER_ERROR);
 }
 

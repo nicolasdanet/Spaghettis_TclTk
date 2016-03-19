@@ -371,6 +371,7 @@
 		37F5138B1C9B0EA80076A0C4 /* s_logger.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_logger.c; path = src/s_logger.c; sourceTree = "<group>"; };
 		37F513B01C9B12E30076A0C4 /* s_logger_dummy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_logger_dummy.c; path = src/s_logger_dummy.c; sourceTree = "<group>"; };
 		37F514151C9B19A70076A0C4 /* s_logger_pa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_logger_pa.c; path = src/s_logger_pa.c; sourceTree = "<group>"; };
+		37F518551C9D27BE0076A0C4 /* s_logger_jack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_logger_jack.c; path = src/s_logger_jack.c; sourceTree = "<group>"; };
 		8DD76FB20486AB0100D96B5E /* pd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = pd; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -749,6 +750,7 @@
 			children = (
 				37F5138A1C9B0E960076A0C4 /* s_logger_apis.h */,
 				37F514151C9B19A70076A0C4 /* s_logger_pa.c */,
+				37F518551C9D27BE0076A0C4 /* s_logger_jack.c */,
 				37F513B01C9B12E30076A0C4 /* s_logger_dummy.c */,
 			);
 			name = Log;

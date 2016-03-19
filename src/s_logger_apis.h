@@ -16,13 +16,15 @@
 // -----------------------------------------------------------------------------------------------------------
 
 /* Lock-free logger for low latency debugging. */
+/* Handy to post small strings developing DSP part of the code. */
+/* By the way probably not a good idea to use it in the release product. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #if PD_WITH_LOGGER
-    #define PD_LOG(s)   logger_appendStringNative (s, strlen (s))
+    #define PD_LOG(s)   logger_appendStringNative (s)
 #else
     #define PD_LOG(s)
 #endif
@@ -33,7 +35,7 @@
 
 t_error logger_initializeNative     (void);
 void    logger_releaseNative        (void);
-void    logger_appendStringNative   (const char* s, size_t size);
+void    logger_appendStringNative   (const char *s);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
