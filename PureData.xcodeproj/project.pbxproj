@@ -327,7 +327,6 @@
 		378971FB1C4F716700263434 /* s_midi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_midi.c; path = src/s_midi.c; sourceTree = "<group>"; };
 		378971FC1C4F716700263434 /* s_path.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_path.c; path = src/s_path.c; sourceTree = "<group>"; };
 		378971FD1C4F716700263434 /* s_post.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_post.c; path = src/s_post.c; sourceTree = "<group>"; };
-		378971FF1C4F716700263434 /* s_ringbuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_ringbuffer.h; path = src/s_ringbuffer.h; sourceTree = "<group>"; };
 		378972001C4F716700263434 /* s_system.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_system.h; path = src/s_system.h; sourceTree = "<group>"; };
 		378972011C4F716700263434 /* s_utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_utf8.c; path = src/s_utf8.c; sourceTree = "<group>"; };
 		378972021C4F716700263434 /* s_utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_utf8.h; path = src/s_utf8.h; sourceTree = "<group>"; };
@@ -568,7 +567,6 @@
 				378972001C4F716700263434 /* s_system.h */,
 				37A404B71C789F6200001FD3 /* s_midi.h */,
 				378972021C4F716700263434 /* s_utf8.h */,
-				378971FF1C4F716700263434 /* s_ringbuffer.h */,
 				378971F21C4F716700263434 /* s_entry.c */,
 				378971F61C4F716700263434 /* s_main.c */,
 				378971E41C4F716700263434 /* s_scheduler.c */,

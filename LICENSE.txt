@@ -23,19 +23,6 @@ Additional terms:
         You may use, copy, modify this code for any purpose and without fee.
         You may distribute this ORIGINAL package.
 
-    src/s_ringbuffer.c:
-
-        Author: Phil Burk < http://www.softsynth.com >.
- 
-        This program uses the PortAudio Portable Audio Library.
-        For more information see: < http://www.audiomulch.com/portaudio/ >.
-        
-        Copyright (c) 1999-2000 Ross Bencina and Phil Burk.
- 
-        Any person wishing to distribute modifications to the Software is
-        requested to send the modifications to the original developer so
-        that they can be incorporated into the canonical version.
-        
     src/s_path.c
 
         Copyright (c) 1999 Guenter Geiger and others.
@@ -51,16 +38,6 @@ Additional terms:
         Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
   
     src/s_midi_alsa.c
-    
-        Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
-        Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
-    
-    src/s_audio_alsa.c
-
-        Copyright (c) 1997-1999 Guenter Geiger, Miller Puckette,
-        Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
-    
-    src/s_audio_oss.c
     
         Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
         Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
