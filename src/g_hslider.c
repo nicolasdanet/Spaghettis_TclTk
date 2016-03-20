@@ -521,15 +521,15 @@ static void *hslider_new(t_symbol *s, int argc, t_atom *argv)
     iem_inttosymargs(&x->x_gui.x_isa, 0);
     iem_inttofstyle(&x->x_gui.x_fsf, 0);
 
-    if(((argc == 17)||(argc == 18))&&IS_FLOAT(argv,0)&&IS_FLOAT(argv,1)
-       &&IS_FLOAT(argv,2)&&IS_FLOAT(argv,3)
-       &&IS_FLOAT(argv,4)&&IS_FLOAT(argv,5)
-       &&(IS_SYMBOL(argv,6)||IS_FLOAT(argv,6))
-       &&(IS_SYMBOL(argv,7)||IS_FLOAT(argv,7))
-       &&(IS_SYMBOL(argv,8)||IS_FLOAT(argv,8))
-       &&IS_FLOAT(argv,9)&&IS_FLOAT(argv,10)
-       &&IS_FLOAT(argv,11)&&IS_FLOAT(argv,12)&&IS_FLOAT(argv,13)
-       &&IS_FLOAT(argv,14)&&IS_FLOAT(argv,15)&&IS_FLOAT(argv,16))
+    if(((argc == 17)||(argc == 18))&&IS_FLOAT_INDEX(argv,0)&&IS_FLOAT_INDEX(argv,1)
+       &&IS_FLOAT_INDEX(argv,2)&&IS_FLOAT_INDEX(argv,3)
+       &&IS_FLOAT_INDEX(argv,4)&&IS_FLOAT_INDEX(argv,5)
+       &&(IS_SYMBOL_INDEX(argv,6)||IS_FLOAT_INDEX(argv,6))
+       &&(IS_SYMBOL_INDEX(argv,7)||IS_FLOAT_INDEX(argv,7))
+       &&(IS_SYMBOL_INDEX(argv,8)||IS_FLOAT_INDEX(argv,8))
+       &&IS_FLOAT_INDEX(argv,9)&&IS_FLOAT_INDEX(argv,10)
+       &&IS_FLOAT_INDEX(argv,11)&&IS_FLOAT_INDEX(argv,12)&&IS_FLOAT_INDEX(argv,13)
+       &&IS_FLOAT_INDEX(argv,14)&&IS_FLOAT_INDEX(argv,15)&&IS_FLOAT_INDEX(argv,16))
     {
         w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
@@ -548,7 +548,7 @@ static void *hslider_new(t_symbol *s, int argc, t_atom *argv)
         v = atom_getFloatAtIndex(16, argc, argv);
     }
     else iem_new_getnames(&x->x_gui, 6, 0);
-    if((argc == 18)&&IS_FLOAT(argv,17))
+    if((argc == 18)&&IS_FLOAT_INDEX(argv,17))
         steady = (int)(t_int)atom_getFloatAtIndex(17, argc, argv);
 
     x->x_gui.x_draw = (t_iemfunptr)hslider_draw;

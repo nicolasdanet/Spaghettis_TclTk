@@ -23,36 +23,26 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_COLOR_NORMAL            0
-#define IEM_COLOR_SELECTED          255
+#define IEM_COLOR_NORMAL                0
+#define IEM_COLOR_SELECTED              255
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_DRAW_UPDATE             0
-#define IEM_DRAW_MOVE               1
-#define IEM_DRAW_NEW                2
-#define IEM_DRAW_SELECT             3
-#define IEM_DRAW_ERASE              4
-#define IEM_DRAW_CONFIG             5
-#define IEM_DRAW_IO                 6
+#define IEM_DRAW_UPDATE                 0
+#define IEM_DRAW_MOVE                   1
+#define IEM_DRAW_NEW                    2
+#define IEM_DRAW_SELECT                 3
+#define IEM_DRAW_ERASE                  4
+#define IEM_DRAW_CONFIG                 5
+#define IEM_DRAW_IO                     6
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IS_FLOAT(atom, index)       ((atom + index)->a_type == A_FLOAT)
-#define IS_SYMBOL(atom, index)      ((atom + index)->a_type == A_SYMBOL)
-#define IS_DOLLAR(atom, index)      ((atom + index)->a_type == A_DOLLAR)
-#define IS_DOLLSYM(atom, index)     ((atom + index)->a_type == A_DOLLARSYMBOL)
-#define IS_POINTER(atom, index)     ((atom + index)->a_type == A_POINTER)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define IEM_NUMBER_BUFFER_LENGTH    32
+#define IEM_NUMBER_BUFFER_LENGTH        32
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

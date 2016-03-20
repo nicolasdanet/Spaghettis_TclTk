@@ -110,9 +110,9 @@ void iem_verify_snd_ne_rcv(t_iem *iem)
 
 t_symbol *iem_new_dogetname(t_iem *iem, int indx, t_atom *argv)
 {
-    if (IS_SYMBOL(argv, indx))
+    if (IS_SYMBOL_INDEX(argv, indx))
         return (atom_getSymbolAtIndex(indx, 100000, argv));
-    else if (IS_FLOAT(argv, indx))
+    else if (IS_FLOAT_INDEX(argv, indx))
     {
         char str[80];
         sprintf(str, "%d", (int)(t_int)atom_getFloatAtIndex(indx, 100000, argv));
@@ -458,23 +458,23 @@ void iem_dialog(t_iem *iem, t_symbol **srl, int argc, t_atom *argv)
     int lcol = (int)(t_int)atom_getFloatAtIndex(15, argc, argv);
     int sndable=1, rcvable=1;
 
-    if(IS_SYMBOL(argv,7))
+    if(IS_SYMBOL_INDEX(argv,7))
         srl[0] = atom_getSymbolAtIndex(7, argc, argv);
-    else if(IS_FLOAT(argv,7))
+    else if(IS_FLOAT_INDEX(argv,7))
     {
         sprintf(str, "%d", (int)(t_int)atom_getFloatAtIndex(7, argc, argv));
         srl[0] = gensym(str);
     }
-    if(IS_SYMBOL(argv,8))
+    if(IS_SYMBOL_INDEX(argv,8))
         srl[1] = atom_getSymbolAtIndex(8, argc, argv);
-    else if(IS_FLOAT(argv,8))
+    else if(IS_FLOAT_INDEX(argv,8))
     {
         sprintf(str, "%d", (int)(t_int)atom_getFloatAtIndex(8, argc, argv));
         srl[1] = gensym(str);
     }
-    if(IS_SYMBOL(argv,9))
+    if(IS_SYMBOL_INDEX(argv,9))
         srl[2] = atom_getSymbolAtIndex(9, argc, argv);
-    else if(IS_FLOAT(argv,9))
+    else if(IS_FLOAT_INDEX(argv,9))
     {
         sprintf(str, "%d", (int)(t_int)atom_getFloatAtIndex(9, argc, argv));
         srl[2] = gensym(str);

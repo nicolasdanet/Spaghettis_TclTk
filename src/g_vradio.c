@@ -468,14 +468,14 @@ static void *vradio_donew(t_symbol *s, int argc, t_atom *argv)
     char str[144];
     float fval = 0;
 
-    if((argc == 15)&&IS_FLOAT(argv,0)&&IS_FLOAT(argv,1)&&IS_FLOAT(argv,2)
-       &&IS_FLOAT(argv,3)
-       &&(IS_SYMBOL(argv,4)||IS_FLOAT(argv,4))
-       &&(IS_SYMBOL(argv,5)||IS_FLOAT(argv,5))
-       &&(IS_SYMBOL(argv,6)||IS_FLOAT(argv,6))
-       &&IS_FLOAT(argv,7)&&IS_FLOAT(argv,8)
-       &&IS_FLOAT(argv,9)&&IS_FLOAT(argv,10)&&IS_FLOAT(argv,11)
-       &&IS_FLOAT(argv,12)&&IS_FLOAT(argv,13)&&IS_FLOAT(argv,14))
+    if((argc == 15)&&IS_FLOAT_INDEX(argv,0)&&IS_FLOAT_INDEX(argv,1)&&IS_FLOAT_INDEX(argv,2)
+       &&IS_FLOAT_INDEX(argv,3)
+       &&(IS_SYMBOL_INDEX(argv,4)||IS_FLOAT_INDEX(argv,4))
+       &&(IS_SYMBOL_INDEX(argv,5)||IS_FLOAT_INDEX(argv,5))
+       &&(IS_SYMBOL_INDEX(argv,6)||IS_FLOAT_INDEX(argv,6))
+       &&IS_FLOAT_INDEX(argv,7)&&IS_FLOAT_INDEX(argv,8)
+       &&IS_FLOAT_INDEX(argv,9)&&IS_FLOAT_INDEX(argv,10)&&IS_FLOAT_INDEX(argv,11)
+       &&IS_FLOAT_INDEX(argv,12)&&IS_FLOAT_INDEX(argv,13)&&IS_FLOAT_INDEX(argv,14))
     {
         a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         chg = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);

@@ -63,37 +63,47 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define SET_NULL(atom)              ((atom)->a_type = A_NULL)
-#define SET_SEMICOLON(atom)         ((atom)->a_type = A_SEMICOLON, (atom)->a_w.w_index = 0)
-#define SET_COMMA(atom)             ((atom)->a_type = A_COMMA, (atom)->a_w.w_index = 0)
-#define SET_POINTER(atom, gp)       ((atom)->a_type = A_POINTER, (atom)->a_w.w_gpointer = (gp))
-#define SET_FLOAT(atom, f)          ((atom)->a_type = A_FLOAT, (atom)->a_w.w_float = (f))
-#define SET_SYMBOL(atom, s)         ((atom)->a_type = A_SYMBOL, (atom)->a_w.w_symbol = (s))
-#define SET_DOLLAR(atom, n)         ((atom)->a_type = A_DOLLAR, (atom)->a_w.w_index = (n))
-#define SET_DOLLARSYMBOL(atom, s)   ((atom)->a_type = A_DOLLARSYMBOL, (atom)->a_w.w_symbol= (s))
+#define SET_NULL(atom)                      ((atom)->a_type = A_NULL)
+#define SET_SEMICOLON(atom)                 ((atom)->a_type = A_SEMICOLON, (atom)->a_w.w_index = 0)
+#define SET_COMMA(atom)                     ((atom)->a_type = A_COMMA, (atom)->a_w.w_index = 0)
+#define SET_POINTER(atom, gp)               ((atom)->a_type = A_POINTER, (atom)->a_w.w_gpointer = (gp))
+#define SET_FLOAT(atom, f)                  ((atom)->a_type = A_FLOAT, (atom)->a_w.w_float = (f))
+#define SET_SYMBOL(atom, s)                 ((atom)->a_type = A_SYMBOL, (atom)->a_w.w_symbol = (s))
+#define SET_DOLLAR(atom, n)                 ((atom)->a_type = A_DOLLAR, (atom)->a_w.w_index = (n))
+#define SET_DOLLARSYMBOL(atom, s)           ((atom)->a_type = A_DOLLARSYMBOL, (atom)->a_w.w_symbol= (s))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define GET_POINTER(atom)           ((atom)->a_w.w_gpointer)
-#define GET_FLOAT(atom)             ((atom)->a_w.w_float)
-#define GET_SYMBOL(atom)            ((atom)->a_w.w_symbol)
-#define GET_DOLLAR(atom)            ((atom)->a_w.w_index)
-#define GET_DOLLARSYMBOL(atom)      ((atom)->a_w.w_symbol)
+#define GET_POINTER(atom)                   ((atom)->a_w.w_gpointer)
+#define GET_FLOAT(atom)                     ((atom)->a_w.w_float)
+#define GET_SYMBOL(atom)                    ((atom)->a_w.w_symbol)
+#define GET_DOLLAR(atom)                    ((atom)->a_w.w_index)
+#define GET_DOLLARSYMBOL(atom)              ((atom)->a_w.w_symbol)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IS_NULL(atom)               ((atom)->a_type == A_NULL)
-#define IS_SEMICOLON(atom)          ((atom)->a_type == A_SEMICOLON)
-#define IS_COMMA(atom)              ((atom)->a_type == A_COMMA)
-#define IS_POINTER(atom)            ((atom)->a_type == A_POINTER)
-#define IS_FLOAT(atom)              ((atom)->a_type == A_FLOAT)
-#define IS_SYMBOL(atom)             ((atom)->a_type == A_SYMBOL)
-#define IS_DOLLAR(atom)             ((atom)->a_type == A_DOLLAR)
-#define IS_DOLLARSYMBOL(atom)       ((atom)->a_type == A_DOLLARSYMBOL)
+#define IS_NULL(atom)                       ((atom)->a_type == A_NULL)
+#define IS_SEMICOLON(atom)                  ((atom)->a_type == A_SEMICOLON)
+#define IS_COMMA(atom)                      ((atom)->a_type == A_COMMA)
+#define IS_POINTER(atom)                    ((atom)->a_type == A_POINTER)
+#define IS_FLOAT(atom)                      ((atom)->a_type == A_FLOAT)
+#define IS_SYMBOL(atom)                     ((atom)->a_type == A_SYMBOL)
+#define IS_DOLLAR(atom)                     ((atom)->a_type == A_DOLLAR)
+#define IS_DOLLARSYMBOL(atom)               ((atom)->a_type == A_DOLLARSYMBOL)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define IS_FLOAT_INDEX(atom, index)         ((atom + index)->a_type == A_FLOAT)
+#define IS_SYMBOL_INDEX(atom, index)        ((atom + index)->a_type == A_SYMBOL)
+#define IS_DOLLAR_INDEX(atom, index)        ((atom + index)->a_type == A_DOLLAR)
+#define IS_DOLLARSYMBOL_INDEX(atom, index)  ((atom + index)->a_type == A_DOLLARSYMBOL)
+#define IS_POINTER_INDEX(atom, index)       ((atom + index)->a_type == A_POINTER)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

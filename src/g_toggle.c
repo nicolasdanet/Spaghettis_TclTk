@@ -371,14 +371,14 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
     iem_inttosymargs(&x->x_gui.x_isa, 0);
     iem_inttofstyle(&x->x_gui.x_fsf, 0);
 
-    if(((argc == 13)||(argc == 14))&&IS_FLOAT(argv,0)
-       &&IS_FLOAT(argv,1)
-       &&(IS_SYMBOL(argv,2)||IS_FLOAT(argv,2))
-       &&(IS_SYMBOL(argv,3)||IS_FLOAT(argv,3))
-       &&(IS_SYMBOL(argv,4)||IS_FLOAT(argv,4))
-       &&IS_FLOAT(argv,5)&&IS_FLOAT(argv,6)
-       &&IS_FLOAT(argv,7)&&IS_FLOAT(argv,8)&&IS_FLOAT(argv,9)
-       &&IS_FLOAT(argv,10)&&IS_FLOAT(argv,11)&&IS_FLOAT(argv,12))
+    if(((argc == 13)||(argc == 14))&&IS_FLOAT_INDEX(argv,0)
+       &&IS_FLOAT_INDEX(argv,1)
+       &&(IS_SYMBOL_INDEX(argv,2)||IS_FLOAT_INDEX(argv,2))
+       &&(IS_SYMBOL_INDEX(argv,3)||IS_FLOAT_INDEX(argv,3))
+       &&(IS_SYMBOL_INDEX(argv,4)||IS_FLOAT_INDEX(argv,4))
+       &&IS_FLOAT_INDEX(argv,5)&&IS_FLOAT_INDEX(argv,6)
+       &&IS_FLOAT_INDEX(argv,7)&&IS_FLOAT_INDEX(argv,8)&&IS_FLOAT_INDEX(argv,9)
+       &&IS_FLOAT_INDEX(argv,10)&&IS_FLOAT_INDEX(argv,11)&&IS_FLOAT_INDEX(argv,12))
     {
         a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(1, argc, argv));
@@ -393,7 +393,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
         on = (t_float)atom_getFloatAtIndex(12, argc, argv);
     }
     else iem_new_getnames(&x->x_gui, 2, 0);
-    if((argc == 14)&&IS_FLOAT(argv,13))
+    if((argc == 14)&&IS_FLOAT_INDEX(argv,13))
         nonzero = (t_float)atom_getFloatAtIndex(13, argc, argv);
     x->x_gui.x_draw = (t_iemfunptr)toggle_draw;
 

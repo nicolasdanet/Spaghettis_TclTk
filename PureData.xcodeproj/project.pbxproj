@@ -596,30 +596,9 @@
 		3722C5351C4F924900D2BF6F /* Graphics */ = {
 			isa = PBXGroup;
 			children = (
-				378971C21C4F716700263434 /* g_canvas.h */,
-				378971C91C4F716700263434 /* g_iem.h */,
-				378971BF1C4F716700263434 /* g_array.c */,
-				378971C01C4F716700263434 /* g_bang.c */,
-				378971C11C4F716700263434 /* g_canvas.c */,
-				378971C31C4F716700263434 /* g_editor.c */,
-				378971C41C4F716700263434 /* g_graph.c */,
-				378971C51C4F716700263434 /* g_guiconnect.c */,
-				378971C61C4F716700263434 /* g_hradio.c */,
-				378971C71C4F716700263434 /* g_hslider.c */,
-				378971C81C4F716700263434 /* g_iem.c */,
-				378971CA1C4F716700263434 /* g_io.c */,
-				378971CB1C4F716700263434 /* g_mycanvas.c */,
-				378971CC1C4F716700263434 /* g_numbox.c */,
-				378971CD1C4F716700263434 /* g_readwrite.c */,
-				378971CE1C4F716700263434 /* g_rtext.c */,
-				378971CF1C4F716700263434 /* g_scalar.c */,
-				378971D01C4F716700263434 /* g_template.c */,
-				378971D11C4F716700263434 /* g_text.c */,
-				378971D21C4F716700263434 /* g_toggle.c */,
-				378971D31C4F716700263434 /* g_traversal.c */,
-				378971D41C4F716700263434 /* g_vradio.c */,
-				378971D51C4F716700263434 /* g_vslider.c */,
-				378971D61C4F716700263434 /* g_vumeter.c */,
+				379AE2E01C9E7B4600250ADD /* Canvas */,
+				379AE2DA1C9E7A9700250ADD /* IEM */,
+				379AE2E41C9E7B8200250ADD /* Scalar */,
 			);
 			name = Graphics;
 			sourceTree = "<group>";
@@ -718,6 +697,51 @@
 				379A420D1BA3F52D00C1CED0 /* CoreMIDI.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		379AE2DA1C9E7A9700250ADD /* IEM */ = {
+			isa = PBXGroup;
+			children = (
+				378971C91C4F716700263434 /* g_iem.h */,
+				378971C81C4F716700263434 /* g_iem.c */,
+				378971D21C4F716700263434 /* g_toggle.c */,
+				378971D41C4F716700263434 /* g_vradio.c */,
+				378971D51C4F716700263434 /* g_vslider.c */,
+				378971C01C4F716700263434 /* g_bang.c */,
+				378971D61C4F716700263434 /* g_vumeter.c */,
+				378971C61C4F716700263434 /* g_hradio.c */,
+				378971C71C4F716700263434 /* g_hslider.c */,
+				378971CC1C4F716700263434 /* g_numbox.c */,
+			);
+			name = IEM;
+			sourceTree = "<group>";
+		};
+		379AE2E01C9E7B4600250ADD /* Canvas */ = {
+			isa = PBXGroup;
+			children = (
+				378971C21C4F716700263434 /* g_canvas.h */,
+				378971BF1C4F716700263434 /* g_array.c */,
+				378971C11C4F716700263434 /* g_canvas.c */,
+				378971C31C4F716700263434 /* g_editor.c */,
+				378971C41C4F716700263434 /* g_graph.c */,
+				378971C51C4F716700263434 /* g_guiconnect.c */,
+				378971CA1C4F716700263434 /* g_io.c */,
+				378971CB1C4F716700263434 /* g_mycanvas.c */,
+				378971CD1C4F716700263434 /* g_readwrite.c */,
+				378971CE1C4F716700263434 /* g_rtext.c */,
+				378971D11C4F716700263434 /* g_text.c */,
+			);
+			name = Canvas;
+			sourceTree = "<group>";
+		};
+		379AE2E41C9E7B8200250ADD /* Scalar */ = {
+			isa = PBXGroup;
+			children = (
+				378971CF1C4F716700263434 /* g_scalar.c */,
+				378971D01C4F716700263434 /* g_template.c */,
+				378971D31C4F716700263434 /* g_traversal.c */,
+			);
+			name = Scalar;
 			sourceTree = "<group>";
 		};
 		37A59CDB1C538B3200FBD0AD /* MIDI */ = {
