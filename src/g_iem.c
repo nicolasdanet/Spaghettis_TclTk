@@ -1,36 +1,38 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
- * For information on usage and redistribution, and for a DISCLAIMER OF ALL
- * WARRANTIES, see the file, "LICENSE.txt," in this distribution. */
 
-/* g_7_guis.c written by Thomas Musil (c) IEM KUG Graz Austria 2000-2001 */
-/* thanks to Miller Puckette, Guenther Geiger and Krzystof Czaja */
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
 
+/* < https://opensource.org/licenses/BSD-3-Clause > */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Original "g_7_guis.h" written by Thomas Musil (c) IEM KUG Graz Austria 2000-2001. */
+
+/* Thanks to Miller Puckette, Guenther Geiger and Krzystof Czaja. */
+
+/* < http://iem.kug.ac.at/ > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "g_canvas.h"
-
 #include "g_iem.h"
-#include <math.h>
 
-#ifdef _WIN32
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-/*  #define GGEE_HSLIDER_COMPATIBLE  */
+#define IEM_MAXIMUM_COLOR           30
+#define IEM_MINIMUM_SIZE            8
+#define IEM_MINIMUM_FONTSIZE        4
 
-/*------------------ global varaibles -------------------------*/
-
-#define IEM_COLOR_MAXIMUM       30
-#define IEM_MINIMUM_SIZE    8
-#define IEM_FONT_MINIMUM_SIZE   4
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 int iem_color_hex[]=
 {
@@ -54,17 +56,17 @@ int iem_clip_size(int size)
 
 int iem_clip_font(int size)
 {
-    if(size < IEM_FONT_MINIMUM_SIZE)
-        size = IEM_FONT_MINIMUM_SIZE;
+    if(size < IEM_MINIMUM_FONTSIZE)
+        size = IEM_MINIMUM_FONTSIZE;
     return(size);
 }
 
 int iem_modulo_color(int col)
 {
-    while(col >= IEM_COLOR_MAXIMUM)
-        col -= IEM_COLOR_MAXIMUM;
+    while(col >= IEM_MAXIMUM_COLOR)
+        col -= IEM_MAXIMUM_COLOR;
     while(col < 0)
-        col += IEM_COLOR_MAXIMUM;
+        col += IEM_MAXIMUM_COLOR;
     return(col);
 }
 
@@ -100,11 +102,11 @@ t_symbol *iem_raute2dollar(t_symbol *s)
 
 void iem_verify_snd_ne_rcv(t_iem *iem)
 {
-    iem->x_fsf.iem_goThrough = 1;
-    if(iem->x_fsf.iem_canSend && iem->x_fsf.iem_canReceive)
+    iem->iem_flags.iem_goThrough = 1;
+    if(iem->iem_flags.iem_canSend && iem->iem_flags.iem_canReceive)
     {
-        if(!strcmp(iem->x_snd->s_name, iem->x_rcv->s_name))
-            iem->x_fsf.iem_goThrough = 0;
+        if(!strcmp(iem->iem_send->s_name, iem->iem_receive->s_name))
+            iem->iem_flags.iem_goThrough = 0;
     }
 }
 
@@ -125,27 +127,27 @@ void iem_new_getnames(t_iem *iem, int indx, t_atom *argv)
 {
     if (argv)
     {
-        iem->x_snd = iem_new_dogetname(iem, indx, argv);
-        iem->x_rcv = iem_new_dogetname(iem, indx+1, argv);
-        iem->x_lab = iem_new_dogetname(iem, indx+2, argv);
+        iem->iem_send = iem_new_dogetname(iem, indx, argv);
+        iem->iem_receive = iem_new_dogetname(iem, indx+1, argv);
+        iem->iem_label = iem_new_dogetname(iem, indx+2, argv);
     }
-    else iem->x_snd = iem->x_rcv = iem->x_lab = gensym("empty");
-    iem->x_snd_unexpanded = iem->x_rcv_unexpanded =
-        iem->x_lab_unexpanded = 0;
-    iem->x_binbufindex = indx;
-    iem->x_labelbindex = indx + 3;
+    else iem->iem_send = iem->iem_receive = iem->iem_label = gensym("empty");
+    iem->iem_unexpandedSend = iem->iem_unexpandedReceive =
+        iem->iem_unexpandedLabel = 0;
+    iem->iem_indexBuffer = indx;
+    iem->iem_indexLabel = indx + 3;
 }
 
     /* convert symbols in "$" form to the expanded symbols */
 void iem_all_dollararg2sym(t_iem *iem, t_symbol **srlsym)
 {
         /* save unexpanded ones for later */
-    iem->x_snd_unexpanded = srlsym[0];
-    iem->x_rcv_unexpanded = srlsym[1];
-    iem->x_lab_unexpanded = srlsym[2];
-    srlsym[0] = canvas_realizedollar(iem->x_glist, srlsym[0]);
-    srlsym[1] = canvas_realizedollar(iem->x_glist, srlsym[1]);
-    srlsym[2] = canvas_realizedollar(iem->x_glist, srlsym[2]);
+    iem->iem_unexpandedSend = srlsym[0];
+    iem->iem_unexpandedReceive = srlsym[1];
+    iem->iem_unexpandedLabel = srlsym[2];
+    srlsym[0] = canvas_realizedollar(iem->iem_glist, srlsym[0]);
+    srlsym[1] = canvas_realizedollar(iem->iem_glist, srlsym[1]);
+    srlsym[2] = canvas_realizedollar(iem->iem_glist, srlsym[2]);
 }
 
     /* initialize a single symbol in unexpanded form.  We reach into the
@@ -156,7 +158,7 @@ static void iem_init_sym2dollararg(t_iem *iem, t_symbol **symp,
 {
     if (!*symp)
     {
-        t_buffer *b = iem->x_obj.te_buffer;
+        t_buffer *b = iem->iem_obj.te_buffer;
         if (buffer_size(b) > indx)
         {
             char buf[80];
@@ -173,25 +175,25 @@ static void iem_init_sym2dollararg(t_iem *iem, t_symbol **symp,
     necessary. */
 void iem_all_sym2dollararg(t_iem *iem, t_symbol **srlsym)
 {
-    iem_init_sym2dollararg(iem, &iem->x_snd_unexpanded,
-        iem->x_binbufindex+1, iem->x_snd);
-    iem_init_sym2dollararg(iem, &iem->x_rcv_unexpanded,
-        iem->x_binbufindex+2, iem->x_rcv);
-    iem_init_sym2dollararg(iem, &iem->x_lab_unexpanded,
-        iem->x_labelbindex, iem->x_lab);
-    srlsym[0] = iem->x_snd_unexpanded;
-    srlsym[1] = iem->x_rcv_unexpanded;
-    srlsym[2] = iem->x_lab_unexpanded;
+    iem_init_sym2dollararg(iem, &iem->iem_unexpandedSend,
+        iem->iem_indexBuffer+1, iem->iem_send);
+    iem_init_sym2dollararg(iem, &iem->iem_unexpandedReceive,
+        iem->iem_indexBuffer+2, iem->iem_receive);
+    iem_init_sym2dollararg(iem, &iem->iem_unexpandedLabel,
+        iem->iem_indexLabel, iem->iem_label);
+    srlsym[0] = iem->iem_unexpandedSend;
+    srlsym[1] = iem->iem_unexpandedReceive;
+    srlsym[2] = iem->iem_unexpandedLabel;
 }
 
 void iem_all_col2save(t_iem *iem, int *bflcol)
 {
-    bflcol[0] = -1 - (((0xfc0000 & iem->x_bcol) >> 6)|
-                      ((0xfc00 & iem->x_bcol) >> 4)|((0xfc & iem->x_bcol) >> 2));
-    bflcol[1] = -1 - (((0xfc0000 & iem->x_fcol) >> 6)|
-                      ((0xfc00 & iem->x_fcol) >> 4)|((0xfc & iem->x_fcol) >> 2));
-    bflcol[2] = -1 - (((0xfc0000 & iem->x_lcol) >> 6)|
-                      ((0xfc00 & iem->x_lcol) >> 4)|((0xfc & iem->x_lcol) >> 2));
+    bflcol[0] = -1 - (((0xfc0000 & iem->iem_colorBackground) >> 6)|
+                      ((0xfc00 & iem->iem_colorBackground) >> 4)|((0xfc & iem->iem_colorBackground) >> 2));
+    bflcol[1] = -1 - (((0xfc0000 & iem->iem_colorForeground) >> 6)|
+                      ((0xfc00 & iem->iem_colorForeground) >> 4)|((0xfc & iem->iem_colorForeground) >> 2));
+    bflcol[2] = -1 - (((0xfc0000 & iem->iem_colorLabel) >> 6)|
+                      ((0xfc00 & iem->iem_colorLabel) >> 4)|((0xfc & iem->iem_colorLabel) >> 2));
 }
 
 void iem_all_colfromload(t_iem *iem, int *bflcol)
@@ -199,35 +201,35 @@ void iem_all_colfromload(t_iem *iem, int *bflcol)
     if(bflcol[0] < 0)
     {
         bflcol[0] = -1 - bflcol[0];
-        iem->x_bcol = ((bflcol[0] & 0x3f000) << 6)|((bflcol[0] & 0xfc0) << 4)|
+        iem->iem_colorBackground = ((bflcol[0] & 0x3f000) << 6)|((bflcol[0] & 0xfc0) << 4)|
             ((bflcol[0] & 0x3f) << 2);
     }
     else
     {
         bflcol[0] = iem_modulo_color(bflcol[0]);
-        iem->x_bcol = iem_color_hex[bflcol[0]];
+        iem->iem_colorBackground = iem_color_hex[bflcol[0]];
     }
     if(bflcol[1] < 0)
     {
         bflcol[1] = -1 - bflcol[1];
-        iem->x_fcol = ((bflcol[1] & 0x3f000) << 6)|((bflcol[1] & 0xfc0) << 4)|
+        iem->iem_colorForeground = ((bflcol[1] & 0x3f000) << 6)|((bflcol[1] & 0xfc0) << 4)|
             ((bflcol[1] & 0x3f) << 2);
     }
     else
     {
         bflcol[1] = iem_modulo_color(bflcol[1]);
-        iem->x_fcol = iem_color_hex[bflcol[1]];
+        iem->iem_colorForeground = iem_color_hex[bflcol[1]];
     }
     if(bflcol[2] < 0)
     {
         bflcol[2] = -1 - bflcol[2];
-        iem->x_lcol = ((bflcol[2] & 0x3f000) << 6)|((bflcol[2] & 0xfc0) << 4)|
+        iem->iem_colorLabel = ((bflcol[2] & 0x3f000) << 6)|((bflcol[2] & 0xfc0) << 4)|
             ((bflcol[2] & 0x3f) << 2);
     }
     else
     {
         bflcol[2] = iem_modulo_color(bflcol[2]);
-        iem->x_lcol = iem_color_hex[bflcol[2]];
+        iem->iem_colorLabel = iem_color_hex[bflcol[2]];
     }
 }
 
@@ -266,11 +268,11 @@ void iem_send(void *x, t_iem *iem, t_symbol *s)
 
     if(!strcmp(s->s_name, "empty")) sndable = 0;
     snd = iem_raute2dollar(s);
-    iem->x_snd_unexpanded = snd;
-    iem->x_snd = snd = canvas_realizedollar(iem->x_glist, snd);
-    iem->x_fsf.iem_canSend = sndable;
+    iem->iem_unexpandedSend = snd;
+    iem->iem_send = snd = canvas_realizedollar(iem->iem_glist, snd);
+    iem->iem_flags.iem_canSend = sndable;
     iem_verify_snd_ne_rcv(iem);
-    (*iem->x_draw)(x, iem->x_glist, IEM_DRAW_IO);
+    (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_IO);
 }
 
 void iem_receive(void *x, t_iem *iem, t_symbol *s)
@@ -281,26 +283,26 @@ void iem_receive(void *x, t_iem *iem, t_symbol *s)
 
     if(!strcmp(s->s_name, "empty")) rcvable = 0;
     rcv = iem_raute2dollar(s);
-    iem->x_rcv_unexpanded = rcv;
-    rcv = canvas_realizedollar(iem->x_glist, rcv);
+    iem->iem_unexpandedReceive = rcv;
+    rcv = canvas_realizedollar(iem->iem_glist, rcv);
     if(rcvable)
     {
-        if(strcmp(rcv->s_name, iem->x_rcv->s_name))
+        if(strcmp(rcv->s_name, iem->iem_receive->s_name))
         {
-            if(iem->x_fsf.iem_canReceive)
-                pd_unbind(&iem->x_obj.te_g.g_pd, iem->x_rcv);
-            iem->x_rcv = rcv;
-            pd_bind(&iem->x_obj.te_g.g_pd, iem->x_rcv);
+            if(iem->iem_flags.iem_canReceive)
+                pd_unbind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
+            iem->iem_receive = rcv;
+            pd_bind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
         }
     }
-    else if(!rcvable && iem->x_fsf.iem_canReceive)
+    else if(!rcvable && iem->iem_flags.iem_canReceive)
     {
-        pd_unbind(&iem->x_obj.te_g.g_pd, iem->x_rcv);
-        iem->x_rcv = rcv;
+        pd_unbind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
+        iem->iem_receive = rcv;
     }
-    iem->x_fsf.iem_canReceive = rcvable;
+    iem->iem_flags.iem_canReceive = rcvable;
     iem_verify_snd_ne_rcv(iem);
-    (*iem->x_draw)(x, iem->x_glist, IEM_DRAW_IO);
+    (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_IO);
 }
 
 void iem_label(void *x, t_iem *iem, t_symbol *s)
@@ -314,25 +316,25 @@ void iem_label(void *x, t_iem *iem, t_symbol *s)
                 s = gensym("empty");
         /* tb } */
 
-    old = iem->x_lab;
-    iem->x_lab_unexpanded = iem_raute2dollar(s);
-    iem->x_lab = canvas_realizedollar(iem->x_glist, iem->x_lab_unexpanded);
+    old = iem->iem_label;
+    iem->iem_unexpandedLabel = iem_raute2dollar(s);
+    iem->iem_label = canvas_realizedollar(iem->iem_glist, iem->iem_unexpandedLabel);
 
-    if(glist_isvisible(iem->x_glist) && iem->x_lab != old)
+    if(glist_isvisible(iem->iem_glist) && iem->iem_label != old)
         sys_vGui(".x%lx.c itemconfigure %lxLABEL -text {%s} \n",
-                 glist_getcanvas(iem->x_glist), x,
-                 strcmp(s->s_name, "empty")?iem->x_lab->s_name:"");
+                 glist_getcanvas(iem->iem_glist), x,
+                 strcmp(s->s_name, "empty")?iem->iem_label->s_name:"");
 }
 
 void iem_label_pos(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 {
-    iem->x_ldx = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
-    iem->x_ldy = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
-    if(glist_isvisible(iem->x_glist))
+    iem->iem_labelX = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
+    iem->iem_labelY = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
+    if(glist_isvisible(iem->iem_glist))
         sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
-                 glist_getcanvas(iem->x_glist), x,
-                 text_xpix((t_object *)x,iem->x_glist)+iem->x_ldx,
-                 text_ypix((t_object *)x,iem->x_glist)+iem->x_ldy);
+                 glist_getcanvas(iem->iem_glist), x,
+                 text_xpix((t_object *)x,iem->iem_glist)+iem->iem_labelX,
+                 text_ypix((t_object *)x,iem->iem_glist)+iem->iem_labelY);
 }
 
 void iem_label_font(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
@@ -340,65 +342,65 @@ void iem_label_font(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
     int f = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
     if(f < 4)
         f = 4;
-    iem->x_fontsize = f;
-    if(glist_isvisible(iem->x_glist))
+    iem->iem_fontSize = f;
+    if(glist_isvisible(iem->iem_glist))
         sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d]\n",
-                 glist_getcanvas(iem->x_glist), x,
-                 iem->x_fontsize);
+                 glist_getcanvas(iem->iem_glist), x,
+                 iem->iem_fontSize);
 }
 
 void iem_size(void *x, t_iem *iem)
 {
-    if(glist_isvisible(iem->x_glist))
+    if(glist_isvisible(iem->iem_glist))
     {
-        (*iem->x_draw)(x, iem->x_glist, IEM_DRAW_MOVE);
-        canvas_fixlines(iem->x_glist, (t_text*)x);
+        (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_MOVE);
+        canvas_fixlines(iem->iem_glist, (t_text*)x);
     }
 }
 
 void iem_delta(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 {
-    iem->x_obj.te_xCoordinate += (int)(t_int)atom_getFloatAtIndex(0, ac, av);
-    iem->x_obj.te_yCoordinate += (int)(t_int)atom_getFloatAtIndex(1, ac, av);
-    if(glist_isvisible(iem->x_glist))
+    iem->iem_obj.te_xCoordinate += (int)(t_int)atom_getFloatAtIndex(0, ac, av);
+    iem->iem_obj.te_yCoordinate += (int)(t_int)atom_getFloatAtIndex(1, ac, av);
+    if(glist_isvisible(iem->iem_glist))
     {
-        (*iem->x_draw)(x, iem->x_glist, IEM_DRAW_MOVE);
-        canvas_fixlines(iem->x_glist, (t_text*)x);
+        (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_MOVE);
+        canvas_fixlines(iem->iem_glist, (t_text*)x);
     }
 }
 
 void iem_pos(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 {
-    iem->x_obj.te_xCoordinate = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
-    iem->x_obj.te_yCoordinate = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
-    if(glist_isvisible(iem->x_glist))
+    iem->iem_obj.te_xCoordinate = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
+    iem->iem_obj.te_yCoordinate = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
+    if(glist_isvisible(iem->iem_glist))
     {
-        (*iem->x_draw)(x, iem->x_glist, IEM_DRAW_MOVE);
-        canvas_fixlines(iem->x_glist, (t_text*)x);
+        (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_MOVE);
+        canvas_fixlines(iem->iem_glist, (t_text*)x);
     }
 }
 
 void iem_color(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 {
-    iem->x_bcol = iem_compatible_col((t_int)atom_getFloatAtIndex(0, ac, av));
+    iem->iem_colorBackground = iem_compatible_col((t_int)atom_getFloatAtIndex(0, ac, av));
     if(ac > 2)
     {
-        iem->x_fcol = iem_compatible_col((t_int)atom_getFloatAtIndex(1, ac, av));
-        iem->x_lcol = iem_compatible_col((t_int)atom_getFloatAtIndex(2, ac, av));
+        iem->iem_colorForeground = iem_compatible_col((t_int)atom_getFloatAtIndex(1, ac, av));
+        iem->iem_colorLabel = iem_compatible_col((t_int)atom_getFloatAtIndex(2, ac, av));
     }
     else
-        iem->x_lcol = iem_compatible_col((t_int)atom_getFloatAtIndex(1, ac, av));
-    if(glist_isvisible(iem->x_glist))
-        (*iem->x_draw)(x, iem->x_glist, IEM_DRAW_CONFIG);
+        iem->iem_colorLabel = iem_compatible_col((t_int)atom_getFloatAtIndex(1, ac, av));
+    if(glist_isvisible(iem->iem_glist))
+        (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_CONFIG);
 }
 
 void iem_displace(t_gobj *z, t_glist *glist, int dx, int dy)
 {
     t_iem *x = (t_iem *)z;
 
-    x->x_obj.te_xCoordinate += dx;
-    x->x_obj.te_yCoordinate += dy;
-    (*x->x_draw)((void *)z, glist, IEM_DRAW_MOVE);
+    x->iem_obj.te_xCoordinate += dx;
+    x->iem_obj.te_yCoordinate += dy;
+    (*x->iem_draw)((void *)z, glist, IEM_DRAW_MOVE);
     canvas_fixlines(glist, (t_text *)z);
 }
 
@@ -406,8 +408,8 @@ void iem_select(t_gobj *z, t_glist *glist, int selected)
 {
     t_iem *x = (t_iem *)z;
 
-    x->x_fsf.iem_isSelected = selected;
-    (*x->x_draw)((void *)z, glist, IEM_DRAW_SELECT);
+    x->iem_flags.iem_isSelected = selected;
+    (*x->iem_draw)((void *)z, glist, IEM_DRAW_SELECT);
 }
 
 void iem_delete(t_gobj *z, t_glist *glist)
@@ -420,28 +422,28 @@ void iem_vis(t_gobj *z, t_glist *glist, int vis)
     t_iem *x = (t_iem *)z;
 
     if (vis)
-        (*x->x_draw)((void *)z, glist, IEM_DRAW_NEW);
+        (*x->iem_draw)((void *)z, glist, IEM_DRAW_NEW);
     else
     {
-        (*x->x_draw)((void *)z, glist, IEM_DRAW_ERASE);
+        (*x->iem_draw)((void *)z, glist, IEM_DRAW_ERASE);
         interface_guiQueueRemove(z);
     }
 }
 
 void iem_save(t_iem *iem, t_symbol **srl, int *bflcol)
 {
-    srl[0] = iem->x_snd;
-    srl[1] = iem->x_rcv;
-    srl[2] = iem->x_lab;
+    srl[0] = iem->iem_send;
+    srl[1] = iem->iem_receive;
+    srl[2] = iem->iem_label;
     iem_all_sym2dollararg(iem, srl);
     iem_all_col2save(iem, bflcol);
 }
 
 void iem_properties(t_iem *iem, t_symbol **srl)
 {
-    srl[0] = iem->x_snd;
-    srl[1] = iem->x_rcv;
-    srl[2] = iem->x_lab;
+    srl[0] = iem->iem_send;
+    srl[1] = iem->iem_receive;
+    srl[2] = iem->iem_label;
     iem_all_sym2dollararg(iem, srl);
     iem_all_dollar2raute(srl);
 }
@@ -487,33 +489,33 @@ void iem_dialog(t_iem *iem, t_symbol **srl, int argc, t_atom *argv)
     iem_all_dollararg2sym(iem, srl);
     if(rcvable)
     {
-        if(strcmp(srl[1]->s_name, iem->x_rcv->s_name))
+        if(strcmp(srl[1]->s_name, iem->iem_receive->s_name))
         {
-            if(iem->x_fsf.iem_canReceive)
-                pd_unbind(&iem->x_obj.te_g.g_pd, iem->x_rcv);
-            iem->x_rcv = srl[1];
-            pd_bind(&iem->x_obj.te_g.g_pd, iem->x_rcv);
+            if(iem->iem_flags.iem_canReceive)
+                pd_unbind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
+            iem->iem_receive = srl[1];
+            pd_bind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
         }
     }
-    else if(!rcvable && iem->x_fsf.iem_canReceive)
+    else if(!rcvable && iem->iem_flags.iem_canReceive)
     {
-        pd_unbind(&iem->x_obj.te_g.g_pd, iem->x_rcv);
-        iem->x_rcv = srl[1];
+        pd_unbind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
+        iem->iem_receive = srl[1];
     }
-    iem->x_snd = srl[0];
-    iem->x_fsf.iem_canSend = sndable;
-    iem->x_fsf.iem_canReceive = rcvable;
-    iem->x_lcol = lcol & 0xffffff;
-    iem->x_fcol = fcol & 0xffffff;
-    iem->x_bcol = bcol & 0xffffff;
-    iem->x_lab = srl[2];
-    iem->x_ldx = ldx;
-    iem->x_ldy = ldy;
+    iem->iem_send = srl[0];
+    iem->iem_flags.iem_canSend = sndable;
+    iem->iem_flags.iem_canReceive = rcvable;
+    iem->iem_colorLabel = lcol & 0xffffff;
+    iem->iem_colorForeground = fcol & 0xffffff;
+    iem->iem_colorBackground = bcol & 0xffffff;
+    iem->iem_label = srl[2];
+    iem->iem_labelX = ldx;
+    iem->iem_labelY = ldy;
     if(fs < 4)
         fs = 4;
-    iem->x_fontsize = fs;
+    iem->iem_fontSize = fs;
     iem_verify_snd_ne_rcv(iem);
-    canvas_dirty(iem->x_glist, 1);
+    canvas_dirty(iem->iem_glist, 1);
 }
 
 /* pre-0.46 the flags were 1 for 'loadinit' and 1<<20 for 'scale'.
@@ -548,3 +550,6 @@ int iem_fstyletoint(t_iemflags *fstylep)
 {
     return (int)fstylep->iem_font;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

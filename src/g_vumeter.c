@@ -80,8 +80,8 @@ static void vu_update_rms(t_vu *x, t_glist *glist)
 {
     if(glist_isvisible(glist))
     {
-        int w4=x->x_gui.x_w/4, off=text_ypix(&x->x_gui.x_obj, glist)-1;
-        int xpos=text_xpix(&x->x_gui.x_obj, glist), quad1=xpos+w4+1, quad3=xpos+x->x_gui.x_w-w4-1;
+        int w4=x->x_gui.iem_width/4, off=text_ypix(&x->x_gui.iem_obj, glist)-1;
+        int xpos=text_xpix(&x->x_gui.iem_obj, glist), quad1=xpos+w4+1, quad3=xpos+x->x_gui.iem_width-w4-1;
 
         sys_vGui(".x%lx.c coords %lxRCOVER %d %d %d %d\n",
                  glist_getcanvas(glist), x, quad1, off, quad3,
@@ -95,8 +95,8 @@ static void vu_update_peak(t_vu *x, t_glist *glist)
 
     if(glist_isvisible(glist))
     {
-        int xpos=text_xpix(&x->x_gui.x_obj, glist);
-        int ypos=text_ypix(&x->x_gui.x_obj, glist);
+        int xpos=text_xpix(&x->x_gui.iem_obj, glist);
+        int ypos=text_ypix(&x->x_gui.iem_obj, glist);
 
         if(x->x_peak)
         {
@@ -106,16 +106,16 @@ static void vu_update_peak(t_vu *x, t_glist *glist)
 
             sys_vGui(".x%lx.c coords %lxPLED %d %d %d %d\n", canvas, x,
                      xpos, j,
-                     xpos+x->x_gui.x_w+1, j);
+                     xpos+x->x_gui.iem_width+1, j);
             sys_vGui(".x%lx.c itemconfigure %lxPLED -fill #%6.6x\n", canvas, x,
                      iem_color_hex[i]);
         }
         else
         {
-            int mid=xpos+x->x_gui.x_w/2;
+            int mid=xpos+x->x_gui.iem_width/2;
 
             sys_vGui(".x%lx.c itemconfigure %lxPLED -fill #%6.6x\n",
-                     canvas, x, x->x_gui.x_bcol);
+                     canvas, x, x->x_gui.iem_colorBackground);
             sys_vGui(".x%lx.c coords %lxPLED %d %d %d %d\n",
                      canvas, x, mid, ypos+20,
                      mid, ypos+20);
@@ -142,19 +142,19 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
 {
     t_canvas *canvas=glist_getcanvas(glist);
 
-    int xpos=text_xpix(&x->x_gui.x_obj, glist);
-    int ypos=text_ypix(&x->x_gui.x_obj, glist);
-    int w4=x->x_gui.x_w/4, mid=xpos+x->x_gui.x_w/2,
+    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
+    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
+    int w4=x->x_gui.iem_width/4, mid=xpos+x->x_gui.iem_width/2,
         quad1=xpos+w4+1;
-    int quad3=xpos+x->x_gui.x_w-w4,
-        end=xpos+x->x_gui.x_w+4;
+    int quad3=xpos+x->x_gui.iem_width-w4,
+        end=xpos+x->x_gui.iem_width+4;
     int k1=x->x_led_size+1, k2=IEM_VUMETER_STEPS+1, k3=k1/2;
     int led_col, yyy, i, k4=ypos-k3;
 
     sys_vGui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
              canvas, xpos-1, ypos-2,
-             xpos+x->x_gui.x_w+1,
-             ypos+x->x_gui.x_h+2, x->x_gui.x_bcol, x);
+             xpos+x->x_gui.iem_width+1,
+             ypos+x->x_gui.iem_height+2, x->x_gui.iem_colorBackground, x);
     for(i=1; i<=IEM_VUMETER_STEPS; i++)
     {
         led_col = iem_vu_col[i];
@@ -169,26 +169,26 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
     }
     sys_vGui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxRCOVER\n",
              canvas, quad1, ypos-1, quad3-1,
-             ypos-1 + k1*IEM_VUMETER_STEPS, x->x_gui.x_bcol, x->x_gui.x_bcol, x);
+             ypos-1 + k1*IEM_VUMETER_STEPS, x->x_gui.iem_colorBackground, x->x_gui.iem_colorBackground, x);
     sys_vGui(".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxPLED\n",
              canvas, mid, ypos+10,
-             mid, ypos+10, x->x_led_size, x->x_gui.x_bcol, x);
+             mid, ypos+10, x->x_led_size, x->x_gui.iem_colorBackground, x);
     sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor w \
              -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",
-             canvas, xpos+x->x_gui.x_ldx, ypos+x->x_gui.x_ldy,
-             strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"",
-             x->x_gui.x_fontsize,
-             x->x_gui.x_lcol, x);
+             canvas, xpos+x->x_gui.iem_labelX, ypos+x->x_gui.iem_labelY,
+             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"",
+             x->x_gui.iem_fontSize,
+             x->x_gui.iem_colorLabel, x);
 
         /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
              canvas,
-             xpos-1, ypos + x->x_gui.x_h+1,
-             xpos + INLETS_WIDTH-1, ypos + x->x_gui.x_h+2,
+             xpos-1, ypos + x->x_gui.iem_height+1,
+             xpos + INLETS_WIDTH-1, ypos + x->x_gui.iem_height+2,
              x, 0);
         sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]x\n",
              canvas,
-             xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos + x->x_gui.x_h+1,
-             xpos+x->x_gui.x_w+1, ypos + x->x_gui.x_h+2,
+             xpos+x->x_gui.iem_width+1-INLETS_WIDTH, ypos + x->x_gui.iem_height+1,
+             xpos+x->x_gui.iem_width+1, ypos + x->x_gui.iem_height+2,
              x, 1);
 
         sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
@@ -198,12 +198,12 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
              x, 0);
         sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
              canvas,
-             xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos-2,
-             xpos+x->x_gui.x_w+1, ypos-1,
+             xpos+x->x_gui.iem_width+1-INLETS_WIDTH, ypos-2,
+             xpos+x->x_gui.iem_width+1, ypos-1,
              x, 1);*/
 
     x->x_updaterms = x->x_updatepeak = 1;
-    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, vu_draw_update);
+    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, vu_draw_update);
 }
 
 
@@ -211,17 +211,17 @@ static void vu_draw_move(t_vu *x, t_glist *glist)
 {
     t_canvas *canvas=glist_getcanvas(glist);
 
-    int xpos=text_xpix(&x->x_gui.x_obj, glist);
-    int ypos=text_ypix(&x->x_gui.x_obj, glist);
-    int w4=x->x_gui.x_w/4, quad1=xpos+w4+1;
-    int quad3=xpos+x->x_gui.x_w-w4,
-        end=xpos+x->x_gui.x_w+4;
+    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
+    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
+    int w4=x->x_gui.iem_width/4, quad1=xpos+w4+1;
+    int quad3=xpos+x->x_gui.iem_width-w4,
+        end=xpos+x->x_gui.iem_width+4;
     int k1=x->x_led_size+1, k2=IEM_VUMETER_STEPS+1, k3=k1/2;
     int yyy, i, k4=ypos-k3;
 
     sys_vGui(".x%lx.c coords %lxBASE %d %d %d %d\n",
              canvas, x, xpos-1, ypos-2,
-             xpos+x->x_gui.x_w+1,ypos+x->x_gui.x_h+2);
+             xpos+x->x_gui.iem_width+1,ypos+x->x_gui.iem_height+2);
     for(i=1; i<=IEM_VUMETER_STEPS; i++)
     {
         yyy = k4 + k1*(k2-i);
@@ -241,24 +241,24 @@ static void vu_draw_move(t_vu *x, t_glist *glist)
     x->x_updaterms = x->x_updatepeak = 1;
     interface_guiQueueAddIfNotAlreadyThere(x, glist, vu_draw_update);
     sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
-             canvas, x, xpos+x->x_gui.x_ldx,
-             ypos+x->x_gui.x_ldy);
+             canvas, x, xpos+x->x_gui.iem_labelX,
+             ypos+x->x_gui.iem_labelY);
     /*sys_vGui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
              canvas, x, 0,
-             xpos-1, ypos + x->x_gui.x_h+1,
-             xpos + INLETS_WIDTH-1, ypos + x->x_gui.x_h+2);
+             xpos-1, ypos + x->x_gui.iem_height+1,
+             xpos + INLETS_WIDTH-1, ypos + x->x_gui.iem_height+2);
     sys_vGui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
              canvas, x, 1,
-             xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos + x->x_gui.x_h+1,
-                 xpos+x->x_gui.x_w+1, ypos + x->x_gui.x_h+2);
+             xpos+x->x_gui.iem_width+1-INLETS_WIDTH, ypos + x->x_gui.iem_height+1,
+                 xpos+x->x_gui.iem_width+1, ypos + x->x_gui.iem_height+2);
     sys_vGui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
              canvas, x, 0,
              xpos-1, ypos-2,
              xpos + INLETS_WIDTH-1, ypos-1);
     sys_vGui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
              canvas, x, 1,
-             xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos-2,
-             xpos+x->x_gui.x_w+1, ypos-1);*/
+             xpos+x->x_gui.iem_width+1-INLETS_WIDTH, ypos-2,
+             xpos+x->x_gui.iem_width+1, ypos-1);*/
 }
 
 static void vu_draw_erase(t_vu* x,t_glist* glist)
@@ -293,7 +293,7 @@ static void vu_draw_config(t_vu* x, t_glist* glist)
     int i;
     t_canvas *canvas=glist_getcanvas(glist);
 
-    sys_vGui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas, x, x->x_gui.x_bcol);
+    sys_vGui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas, x, x->x_gui.iem_colorBackground);
     for(i=1; i<=IEM_VUMETER_STEPS; i++)
     {
         sys_vGui(".x%lx.c itemconfigure %lxRLED%d -width %d\n", canvas, x, i,
@@ -304,31 +304,31 @@ static void vu_draw_config(t_vu* x, t_glist* glist)
         i=IEM_VUMETER_STEPS+1;
     }
     sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
-             canvas, x, x->x_gui.x_fontsize,
-             x->x_gui.x_fsf.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.x_lcol,
-             strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"");
+             canvas, x, x->x_gui.iem_fontSize,
+             x->x_gui.iem_flags.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
+             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
 
     sys_vGui(".x%lx.c itemconfigure %lxRCOVER -fill #%6.6x -outline #%6.6x\n", canvas,
-             x, x->x_gui.x_bcol, x->x_gui.x_bcol);
+             x, x->x_gui.iem_colorBackground, x->x_gui.iem_colorBackground);
     sys_vGui(".x%lx.c itemconfigure %lxPLED -width %d\n", canvas, x,
              x->x_led_size);
 }
 
 static void vu_draw_io(t_vu* x, t_glist* glist)
 {
-    int xpos=text_xpix(&x->x_gui.x_obj, glist);
-    int ypos=text_ypix(&x->x_gui.x_obj, glist);
+    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
+    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
     /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
          canvas,
-         xpos-1, ypos + x->x_gui.x_h+1,
-         xpos + INLETS_WIDTH-1, ypos + x->x_gui.x_h+2,
+         xpos-1, ypos + x->x_gui.iem_height+1,
+         xpos + INLETS_WIDTH-1, ypos + x->x_gui.iem_height+2,
          x, 0);
     sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
          canvas,
-         xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos + x->x_gui.x_h+1,
-         xpos+x->x_gui.x_w+1, ypos + x->x_gui.x_h+2,
+         xpos+x->x_gui.iem_width+1-INLETS_WIDTH, ypos + x->x_gui.iem_height+1,
+         xpos+x->x_gui.iem_width+1, ypos + x->x_gui.iem_height+2,
          x, 1);
 
     sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
@@ -338,8 +338,8 @@ static void vu_draw_io(t_vu* x, t_glist* glist)
          x, 0);
     sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
          canvas,
-         xpos+x->x_gui.x_w+1-INLETS_WIDTH, ypos-2,
-         xpos+x->x_gui.x_w+1, ypos-1,
+         xpos+x->x_gui.iem_width+1-INLETS_WIDTH, ypos-2,
+         xpos+x->x_gui.iem_width+1, ypos-1,
          x, 1);*/
 }
 
@@ -348,7 +348,7 @@ static void vu_draw_select(t_vu* x,t_glist* glist)
     int i;
     t_canvas *canvas=glist_getcanvas(glist);
 
-    if(x->x_gui.x_fsf.iem_isSelected)
+    if(x->x_gui.iem_flags.iem_isSelected)
     {
         sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
         for(i=1; i<=IEM_VUMETER_STEPS; i++)
@@ -372,15 +372,15 @@ static void vu_draw_select(t_vu* x,t_glist* glist)
         {
             /*if(((i+2)&3) && (x->iem_scale))
                 sys_vGui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
-                         canvas, x, i, x->x_gui.x_lcol);*/
+                         canvas, x, i, x->x_gui.iem_colorLabel);*/
         }
         if(x->x_scale)
         {
             i=IEM_VUMETER_STEPS+1;
             /*sys_vGui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
-                     canvas, x, i, x->x_gui.x_lcol);*/
+                     canvas, x, i, x->x_gui.iem_colorLabel);*/
         }
-        sys_vGui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, x->x_gui.x_lcol);
+        sys_vGui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, x->x_gui.iem_colorLabel);
     }
 }
 
@@ -408,10 +408,10 @@ static void vu_getrect(t_gobj *z, t_glist *glist,
 {
     t_vu* x = (t_vu*)z;
 
-    *xp1 = text_xpix(&x->x_gui.x_obj, glist) - 1;
-    *yp1 = text_ypix(&x->x_gui.x_obj, glist) - 2;
-    *xp2 = *xp1 + x->x_gui.x_w + 2;
-    *yp2 = *yp1 + x->x_gui.x_h + 4;
+    *xp1 = text_xpix(&x->x_gui.iem_obj, glist) - 1;
+    *yp1 = text_ypix(&x->x_gui.iem_obj, glist) - 2;
+    *xp2 = *xp1 + x->x_gui.iem_width + 2;
+    *yp2 = *yp1 + x->x_gui.iem_height + 4;
 }
 
 static void vu_save(t_gobj *z, t_buffer *b)
@@ -422,11 +422,11 @@ static void vu_save(t_gobj *z, t_buffer *b)
 
     iem_save(&x->x_gui, srl, bflcol);
     buffer_vAppend(b, "ssiisiissiiiiiiii", gensym("#X"),gensym("obj"),
-                (int)x->x_gui.x_obj.te_xCoordinate, (int)x->x_gui.x_obj.te_yCoordinate,
-                gensym("vu"), x->x_gui.x_w, x->x_gui.x_h,
+                (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
+                gensym("vu"), x->x_gui.iem_width, x->x_gui.iem_height,
                 srl[1], srl[2],
-                x->x_gui.x_ldx, x->x_gui.x_ldy,
-                iem_fstyletoint(&x->x_gui.x_fsf), x->x_gui.x_fontsize,
+                x->x_gui.iem_labelX, x->x_gui.iem_labelY,
+                iem_fstyletoint(&x->x_gui.iem_flags), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[2], x->x_scale,
                 iem_symargstoint(&x->x_gui.x_isa));
     buffer_vAppend(b, ";");
@@ -440,7 +440,7 @@ void vu_check_height(t_vu *x, int h)
     if(n < IEM_VUMETER_MINIMUM_HEIGHT)
         n = IEM_VUMETER_MINIMUM_HEIGHT;
     x->x_led_size = n-1;
-    x->x_gui.x_h = IEM_VUMETER_STEPS * n;
+    x->x_gui.iem_height = IEM_VUMETER_STEPS * n;
 }
 
 static void vu_scale(t_vu *x, t_float fscale)
@@ -450,10 +450,10 @@ static void vu_scale(t_vu *x, t_float fscale)
     if(scale != 0) scale = 1;
     if(x->x_scale && !scale)
     {
-        t_canvas *canvas=glist_getcanvas(x->x_gui.x_glist);
+        t_canvas *canvas=glist_getcanvas(x->x_gui.iem_glist);
 
         x->x_scale = (int)scale;
-        if(glist_isvisible(x->x_gui.x_glist))
+        if(glist_isvisible(x->x_gui.iem_glist))
         {
             for(i=1; i<=IEM_VUMETER_STEPS; i++)
             {
@@ -466,13 +466,13 @@ static void vu_scale(t_vu *x, t_float fscale)
     }
     if(!x->x_scale && scale)
     {
-        int w4=x->x_gui.x_w/4, end=text_xpix(&x->x_gui.x_obj, x->x_gui.x_glist)+x->x_gui.x_w+4;
+        int w4=x->x_gui.iem_width/4, end=text_xpix(&x->x_gui.iem_obj, x->x_gui.iem_glist)+x->x_gui.iem_width+4;
         int k1=x->x_led_size+1, k2=IEM_VUMETER_STEPS+1, k3=k1/2;
-        int yyy, k4=text_ypix(&x->x_gui.x_obj, x->x_gui.x_glist)-k3;
-        t_canvas *canvas=glist_getcanvas(x->x_gui.x_glist);
+        int yyy, k4=text_ypix(&x->x_gui.iem_obj, x->x_gui.iem_glist)-k3;
+        t_canvas *canvas=glist_getcanvas(x->x_gui.iem_glist);
 
         x->x_scale = (int)scale;
-        if(glist_isvisible(x->x_gui.x_glist))
+        if(glist_isvisible(x->x_gui.iem_glist))
         {
             for(i=1; i<=IEM_VUMETER_STEPS; i++)
             {
@@ -502,13 +502,13 @@ static void vu_properties(t_gobj *z, t_glist *owner)
             %d \
             %d %d %d \
             -1\n",
-            x->x_gui.x_w, IEM_VUMETER_MINIMUM_WIDTH, x->x_gui.x_h, IEM_VUMETER_STEPS*IEM_VUMETER_MINIMUM_HEIGHT,
+            x->x_gui.iem_width, IEM_VUMETER_MINIMUM_WIDTH, x->x_gui.iem_height, IEM_VUMETER_STEPS*IEM_VUMETER_MINIMUM_HEIGHT,
             x->x_scale, 
             "nosndno", srl[1]->s_name,/*no send*/
-            srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
-            x->x_gui.x_fontsize,
-            0xffffff & x->x_gui.x_bcol, -1/*no front-color*/, 0xffffff & x->x_gui.x_lcol);
-    gfxstub_new(&x->x_gui.x_obj.te_g.g_pd, x, buf);
+            srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
+            x->x_gui.iem_fontSize,
+            0xffffff & x->x_gui.iem_colorBackground, -1/*no front-color*/, 0xffffff & x->x_gui.iem_colorLabel);
+    gfxstub_new(&x->x_gui.iem_obj.te_g.g_pd, x, buf);
 }
 
 static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
@@ -520,29 +520,29 @@ static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
 
     srl[0] = gensym("empty");
     iem_dialog(&x->x_gui, srl, argc, argv);
-    x->x_gui.x_fsf.iem_canSend = 0;
+    x->x_gui.iem_flags.iem_canSend = 0;
     x->x_gui.x_isa.iem_initializeAtLoad = 0;
-    x->x_gui.x_w = iem_clip_size(w);
+    x->x_gui.iem_width = iem_clip_size(w);
     vu_check_height(x, h);
     if(scale != 0)
         scale = 1;
     vu_scale(x, (t_float)scale);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_IO);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_MOVE);
-    canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
+    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
+    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_IO);
+    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+    canvas_fixlines(x->x_gui.iem_glist, (t_text*)x);
 }
 
 static void vu_size(t_vu *x, t_symbol *s, int ac, t_atom *av)
 {
-    x->x_gui.x_w = iem_clip_size((int)(t_int)atom_getFloatAtIndex(0, ac, av));
+    x->x_gui.iem_width = iem_clip_size((int)(t_int)atom_getFloatAtIndex(0, ac, av));
     if(ac > 1)
         vu_check_height(x, (int)(t_int)atom_getFloatAtIndex(1, ac, av));
-    if(glist_isvisible(x->x_gui.x_glist))
+    if(glist_isvisible(x->x_gui.iem_glist))
     {
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_MOVE);
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_CONFIG);
-        canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
+        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
+        canvas_fixlines(x->x_gui.iem_glist, (t_text*)x);
     }
 }
 
@@ -586,7 +586,7 @@ static void vu_float(t_vu *x, t_float rms)
     outlet_float(x->x_out_rms, rms);
     x->x_updaterms = 1;
     if(x->x_rms != old)
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, vu_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, vu_draw_update);
 }
 
 static void vu_ft1(t_vu *x, t_float peak)
@@ -607,7 +607,7 @@ static void vu_ft1(t_vu *x, t_float peak)
     x->x_fp = peak;
     x->x_updatepeak = 1;
     if(x->x_peak != old)
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, vu_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, vu_draw_update);
     outlet_float(x->x_out_peak, peak);
 }
 
@@ -616,7 +616,7 @@ static void vu_bang(t_vu *x)
     outlet_float(x->x_out_peak, x->x_fp);
     outlet_float(x->x_out_rms, x->x_fr);
     x->x_updaterms = x->x_updatepeak = 1;
-    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, vu_draw_update);
+    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, vu_draw_update);
 }
 
 static void *vu_new(t_symbol *s, int argc, t_atom *argv)
@@ -629,7 +629,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     char str[144];
 
     iem_inttosymargs(&x->x_gui.x_isa, 0);
-    iem_inttofstyle(&x->x_gui.x_fsf, 0);
+    iem_inttofstyle(&x->x_gui.iem_flags, 0);
 
     if((argc >= 11)&&IS_FLOAT_INDEX(argv,0)&&IS_FLOAT_INDEX(argv,1)
        &&(IS_SYMBOL_INDEX(argv,2)||IS_FLOAT_INDEX(argv,2))
@@ -643,7 +643,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
         iem_new_getnames(&x->x_gui, 1, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(5, argc, argv);
-        iem_inttofstyle(&x->x_gui.x_fsf, (t_int)atom_getFloatAtIndex(6, argc, argv));
+        iem_inttofstyle(&x->x_gui.iem_flags, (t_int)atom_getFloatAtIndex(6, argc, argv));
         fs = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
         bflcol[0] = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
@@ -652,23 +652,23 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     else iem_new_getnames(&x->x_gui, 1, 0);
     if((argc == 12)&&IS_FLOAT_INDEX(argv,11))
         iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(11, argc, argv));
-    x->x_gui.x_draw = (t_iemfn)vu_draw;
+    x->x_gui.iem_draw = (t_iemfn)vu_draw;
 
-    x->x_gui.x_fsf.iem_canSend = 0;
-    x->x_gui.x_fsf.iem_canReceive = 1;
-    x->x_gui.x_glist = (t_glist *)canvas_getcurrent();
-    if (!strcmp(x->x_gui.x_rcv->s_name, "empty"))
-        x->x_gui.x_fsf.iem_canReceive = 0;
+    x->x_gui.iem_flags.iem_canSend = 0;
+    x->x_gui.iem_flags.iem_canReceive = 1;
+    x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
+    if (!strcmp(x->x_gui.iem_receive->s_name, "empty"))
+        x->x_gui.iem_flags.iem_canReceive = 0;
 
-    if(x->x_gui.x_fsf.iem_canReceive)
-        pd_bind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
-    x->x_gui.x_ldx = ldx;
-    x->x_gui.x_ldy = ldy;
+    if(x->x_gui.iem_flags.iem_canReceive)
+        pd_bind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
+    x->x_gui.iem_labelX = ldx;
+    x->x_gui.iem_labelY = ldy;
 
     if(fs < 4)
         fs = 4;
-    x->x_gui.x_fontsize = fs;
-    x->x_gui.x_w = iem_clip_size(w);
+    x->x_gui.iem_fontSize = fs;
+    x->x_gui.iem_width = iem_clip_size(w);
     vu_check_height(x, h);
     iem_all_colfromload(&x->x_gui, bflcol);
     if(scale != 0)
@@ -679,16 +679,16 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     x->x_fp = -101.0;
     x->x_fr = -101.0;
     iem_verify_snd_ne_rcv(&x->x_gui);
-    inlet_new(&x->x_gui.x_obj, &x->x_gui.x_obj.te_g.g_pd, &s_float, gensym("ft1"));
-    x->x_out_rms = outlet_new(&x->x_gui.x_obj, &s_float);
-    x->x_out_peak = outlet_new(&x->x_gui.x_obj, &s_float);
+    inlet_new(&x->x_gui.iem_obj, &x->x_gui.iem_obj.te_g.g_pd, &s_float, gensym("ft1"));
+    x->x_out_rms = outlet_new(&x->x_gui.iem_obj, &s_float);
+    x->x_out_peak = outlet_new(&x->x_gui.iem_obj, &s_float);
     return (x);
 }
 
 static void vu_free(t_vu *x)
 {
-    if(x->x_gui.x_fsf.iem_canReceive)
-        pd_unbind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
+    if(x->x_gui.iem_flags.iem_canReceive)
+        pd_unbind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
     gfxstub_deleteforkey(x);
 }
 

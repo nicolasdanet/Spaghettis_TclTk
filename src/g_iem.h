@@ -50,11 +50,17 @@
 
 typedef struct _iemflags {
     char iem_font;                      /* Unused but kept for compatibility. */
+    char iem_scale;                     /* Unused but kept for compatibility. */
     char iem_canReceive;
     char iem_canSend;
     char iem_isSelected;
     char iem_accurateMoving;
     char iem_goThrough;
+    char iem_hasChanged;
+    char iem_isLogarithmic;
+    char iem_isSteadyOnClick;
+    char iem_initializeAtLoad;
+    char iem_isLocked;
     } t_iemflags;
 
 typedef struct _iemarguments {
@@ -73,27 +79,27 @@ typedef void (*t_iemfn)(void *x, t_glist *glist, int mode);
 // -----------------------------------------------------------------------------------------------------------
 
 typedef struct _iem {
-    t_object            x_obj;
-    t_glist             *x_glist;
-    t_iemfn             x_draw;
-    int                 x_h;
-    int                 x_w;
-    int                 x_ldx;
-    int                 x_ldy;
-    t_iemflags          x_fsf;
-    int                 x_fontsize;
+    t_object            iem_obj;        /* MUST be the first. */
+    t_glist             *iem_glist;
+    t_iemfn             iem_draw;
+    t_iemflags          iem_flags;
     t_iemarguments      x_isa;
-    int                 x_fcol;
-    int                 x_bcol;
-    int                 x_lcol;
-    t_symbol            *x_snd;
-    t_symbol            *x_rcv;
-    t_symbol            *x_lab;
-    t_symbol            *x_snd_unexpanded;
-    t_symbol            *x_rcv_unexpanded;
-    t_symbol            *x_lab_unexpanded;
-    int                 x_binbufindex;
-    int                 x_labelbindex;
+    int                 iem_height;
+    int                 iem_width;
+    int                 iem_labelX;
+    int                 iem_labelY;
+    int                 iem_fontSize;
+    int                 iem_colorForeground;
+    int                 iem_colorBackground;
+    int                 iem_colorLabel;
+    t_symbol            *iem_send;
+    t_symbol            *iem_receive;
+    t_symbol            *iem_label;
+    t_symbol            *iem_unexpandedSend;
+    t_symbol            *iem_unexpandedReceive;
+    t_symbol            *iem_unexpandedLabel;
+    int                 iem_indexBuffer;
+    int                 iem_indexLabel;
     } t_iem;
 
 // -----------------------------------------------------------------------------------------------------------

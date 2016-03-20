@@ -35,30 +35,30 @@ static t_class *my_canvas_class;
 
 void my_canvas_draw_new(t_my_canvas *x, t_glist *glist)
 {
-    int xpos=text_xpix(&x->x_gui.x_obj, glist);
-    int ypos=text_ypix(&x->x_gui.x_obj, glist);
+    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
+    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxRECT\n",
              canvas, xpos, ypos,
              xpos + x->x_vis_w, ypos + x->x_vis_h,
-             x->x_gui.x_bcol, x->x_gui.x_bcol, x);
+             x->x_gui.iem_colorBackground, x->x_gui.iem_colorBackground, x);
     sys_vGui(".x%lx.c create rectangle %d %d %d %d -outline #%6.6x -tags %lxBASE\n",
              canvas, xpos, ypos,
-             xpos + x->x_gui.x_w, ypos + x->x_gui.x_h,
-             x->x_gui.x_bcol, x);
+             xpos + x->x_gui.iem_width, ypos + x->x_gui.iem_height,
+             x->x_gui.iem_colorBackground, x);
     sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor w \
              -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",
-             canvas, xpos+x->x_gui.x_ldx, ypos+x->x_gui.x_ldy,
-             strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"",
-             x->x_gui.x_fontsize,
-             x->x_gui.x_lcol, x);
+             canvas, xpos+x->x_gui.iem_labelX, ypos+x->x_gui.iem_labelY,
+             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"",
+             x->x_gui.iem_fontSize,
+             x->x_gui.iem_colorLabel, x);
 }
 
 void my_canvas_draw_move(t_my_canvas *x, t_glist *glist)
 {
-    int xpos=text_xpix(&x->x_gui.x_obj, glist);
-    int ypos=text_ypix(&x->x_gui.x_obj, glist);
+    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
+    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c coords %lxRECT %d %d %d %d\n",
@@ -66,10 +66,10 @@ void my_canvas_draw_move(t_my_canvas *x, t_glist *glist)
              ypos + x->x_vis_h);
     sys_vGui(".x%lx.c coords %lxBASE %d %d %d %d\n",
              canvas, x, xpos, ypos,
-             xpos + x->x_gui.x_w, ypos + x->x_gui.x_h);
+             xpos + x->x_gui.iem_width, ypos + x->x_gui.iem_height);
     sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
-             canvas, x, xpos+x->x_gui.x_ldx,
-             ypos+x->x_gui.x_ldy);
+             canvas, x, xpos+x->x_gui.iem_labelX,
+             ypos+x->x_gui.iem_labelY);
 }
 
 void my_canvas_draw_erase(t_my_canvas* x, t_glist* glist)
@@ -86,26 +86,26 @@ void my_canvas_draw_config(t_my_canvas* x, t_glist* glist)
     t_canvas *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c itemconfigure %lxRECT -fill #%6.6x -outline #%6.6x\n", canvas, x,
-             x->x_gui.x_bcol, x->x_gui.x_bcol);
+             x->x_gui.iem_colorBackground, x->x_gui.iem_colorBackground);
     sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x,
-             x->x_gui.x_fsf.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.x_bcol);
+             x->x_gui.iem_flags.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorBackground);
     sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
-             canvas, x, x->x_gui.x_fontsize,
-             x->x_gui.x_lcol,
-             strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"");
+             canvas, x, x->x_gui.iem_fontSize,
+             x->x_gui.iem_colorLabel,
+             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
 }
 
 void my_canvas_draw_select(t_my_canvas* x, t_glist* glist)
 {
     t_canvas *canvas=glist_getcanvas(glist);
 
-    if(x->x_gui.x_fsf.iem_isSelected)
+    if(x->x_gui.iem_flags.iem_isSelected)
     {
         sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
     }
     else
     {
-        sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, x->x_gui.x_bcol);
+        sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, x->x_gui.iem_colorBackground);
     }
 }
 
@@ -129,10 +129,10 @@ static void my_canvas_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int
 {
     t_my_canvas *x = (t_my_canvas *)z;
     
-    *xp1 = text_xpix(&x->x_gui.x_obj, glist);
-    *yp1 = text_ypix(&x->x_gui.x_obj, glist);
-    *xp2 = *xp1 + x->x_gui.x_w;
-    *yp2 = *yp1 + x->x_gui.x_h;
+    *xp1 = text_xpix(&x->x_gui.iem_obj, glist);
+    *yp1 = text_ypix(&x->x_gui.iem_obj, glist);
+    *xp2 = *xp1 + x->x_gui.iem_width;
+    *yp2 = *yp1 + x->x_gui.iem_height;
 }
 
 static void my_canvas_save(t_gobj *z, t_buffer *b)
@@ -143,10 +143,10 @@ static void my_canvas_save(t_gobj *z, t_buffer *b)
 
     iem_save(&x->x_gui, srl, bflcol);
     buffer_vAppend(b, "ssiisiiisssiiiiiii", gensym("#X"),gensym("obj"),
-                (int)x->x_gui.x_obj.te_xCoordinate, (int)x->x_gui.x_obj.te_yCoordinate,
-                gensym("cnv"), x->x_gui.x_w, x->x_vis_w, x->x_vis_h,
-                srl[0], srl[1], srl[2], x->x_gui.x_ldx, x->x_gui.x_ldy,
-                iem_fstyletoint(&x->x_gui.x_fsf), x->x_gui.x_fontsize,
+                (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
+                gensym("cnv"), x->x_gui.iem_width, x->x_vis_w, x->x_vis_h,
+                srl[0], srl[1], srl[2], x->x_gui.iem_labelX, x->x_gui.iem_labelY,
+                iem_fstyletoint(&x->x_gui.iem_flags), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[2], iem_symargstoint(&x->x_gui.x_isa));
     buffer_vAppend(b, ";");
 }
@@ -169,22 +169,22 @@ static void my_canvas_properties(t_gobj *z, t_glist *owner)
             %d \
             %d %d %d \
             -1\n",
-            x->x_gui.x_w, 1,
+            x->x_gui.iem_width, 1,
             x->x_vis_w, x->x_vis_h,
             srl[0]->s_name, srl[1]->s_name,
-            srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
-            x->x_gui.x_fontsize,
-            0xffffff & x->x_gui.x_bcol, -1/*no frontcolor*/, 0xffffff & x->x_gui.x_lcol);
-    gfxstub_new(&x->x_gui.x_obj.te_g.g_pd, x, buf);
+            srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
+            x->x_gui.iem_fontSize,
+            0xffffff & x->x_gui.iem_colorBackground, -1/*no frontcolor*/, 0xffffff & x->x_gui.iem_colorLabel);
+    gfxstub_new(&x->x_gui.iem_obj.te_g.g_pd, x, buf);
 }
 
 static void my_canvas_get_pos(t_my_canvas *x)
 {
-    if(x->x_gui.x_fsf.iem_canSend && x->x_gui.x_snd->s_thing)
+    if(x->x_gui.iem_flags.iem_canSend && x->x_gui.iem_send->s_thing)
     {
-        x->x_at[0].a_w.w_float = text_xpix(&x->x_gui.x_obj, x->x_gui.x_glist);
-        x->x_at[1].a_w.w_float = text_ypix(&x->x_gui.x_obj, x->x_gui.x_glist);
-        pd_list(x->x_gui.x_snd->s_thing, 2, x->x_at);
+        x->x_at[0].a_w.w_float = text_xpix(&x->x_gui.iem_obj, x->x_gui.iem_glist);
+        x->x_at[1].a_w.w_float = text_ypix(&x->x_gui.iem_obj, x->x_gui.iem_glist);
+        pd_list(x->x_gui.iem_send->s_thing, 2, x->x_at);
     }
 }
 
@@ -199,16 +199,16 @@ static void my_canvas_dialog(t_my_canvas *x, t_symbol *s, int argc, t_atom *argv
     x->x_gui.x_isa.iem_initializeAtLoad = 0;
     if(a < 1)
         a = 1;
-    x->x_gui.x_w = a;
-    x->x_gui.x_h = x->x_gui.x_w;
+    x->x_gui.iem_width = a;
+    x->x_gui.iem_height = x->x_gui.iem_width;
     if(w < 1)
         w = 1;
     x->x_vis_w = w;
     if(h < 1)
         h = 1;
     x->x_vis_h = h;
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_MOVE);
+    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
+    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
 }
 
 static void my_canvas_size(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
@@ -217,8 +217,8 @@ static void my_canvas_size(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
 
     if(i < 1)
         i = 1;
-    x->x_gui.x_w = i;
-    x->x_gui.x_h = i;
+    x->x_gui.iem_width = i;
+    x->x_gui.iem_height = i;
     iem_size((void *)x, &x->x_gui);
 }
 
@@ -243,8 +243,8 @@ static void my_canvas_vis_size(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
             i = 1;
     }
     x->x_vis_h = i;
-    if(glist_isvisible(x->x_gui.x_glist))
-        (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_MOVE);
+    if(glist_isvisible(x->x_gui.iem_glist))
+        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
 }
 
 static void my_canvas_color(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
@@ -275,7 +275,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     char str[144];
 
     iem_inttosymargs(&x->x_gui.x_isa, 0);
-    iem_inttofstyle(&x->x_gui.x_fsf, 0);
+    iem_inttofstyle(&x->x_gui.iem_flags, 0);
 
     if(((argc >= 10)&&(argc <= 13))
        &&IS_FLOAT_INDEX(argv,0)&&IS_FLOAT_INDEX(argv,1)&&IS_FLOAT_INDEX(argv,2))
@@ -304,12 +304,12 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     {
             /* disastrously, the "label" sits in a different part of the
             message.  So we have to track its location separately (in
-            the slot x_labelbindex) and initialize it specially here. */
+            the slot iem_indexLabel) and initialize it specially here. */
         iem_new_dogetname(&x->x_gui, i+3, argv);
-        x->x_gui.x_labelbindex = i+4;
+        x->x_gui.iem_indexLabel = i+4;
         ldx = (int)(t_int)atom_getFloatAtIndex(i+4, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(i+5, argc, argv);
-        iem_inttofstyle(&x->x_gui.x_fsf, (t_int)atom_getFloatAtIndex(i+6, argc, argv));
+        iem_inttofstyle(&x->x_gui.iem_flags, (t_int)atom_getFloatAtIndex(i+6, argc, argv));
         fs = (int)(t_int)atom_getFloatAtIndex(i+7, argc, argv);
         bflcol[0] = (int)(t_int)atom_getFloatAtIndex(i+8, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(i+9, argc, argv);
@@ -318,18 +318,18 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     {
         iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(i+10, argc, argv));
     }
-    x->x_gui.x_draw = (t_iemfn)my_canvas_draw;
-    x->x_gui.x_fsf.iem_canSend = 1;
-    x->x_gui.x_fsf.iem_canReceive = 1;
-    x->x_gui.x_glist = (t_glist *)canvas_getcurrent();
-    if (!strcmp(x->x_gui.x_snd->s_name, "empty"))
-        x->x_gui.x_fsf.iem_canSend = 0;
-    if (!strcmp(x->x_gui.x_rcv->s_name, "empty"))
-        x->x_gui.x_fsf.iem_canReceive = 0;
+    x->x_gui.iem_draw = (t_iemfn)my_canvas_draw;
+    x->x_gui.iem_flags.iem_canSend = 1;
+    x->x_gui.iem_flags.iem_canReceive = 1;
+    x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
+    if (!strcmp(x->x_gui.iem_send->s_name, "empty"))
+        x->x_gui.iem_flags.iem_canSend = 0;
+    if (!strcmp(x->x_gui.iem_receive->s_name, "empty"))
+        x->x_gui.iem_flags.iem_canReceive = 0;
     if(a < 1)
         a = 1;
-    x->x_gui.x_w = a;
-    x->x_gui.x_h = x->x_gui.x_w;
+    x->x_gui.iem_width = a;
+    x->x_gui.iem_height = x->x_gui.iem_width;
     if(w < 1)
         w = 1;
     x->x_vis_w = w;
@@ -337,13 +337,13 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
         h = 1;
     x->x_vis_h = h;
 
-    if (x->x_gui.x_fsf.iem_canReceive)
-        pd_bind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
-    x->x_gui.x_ldx = ldx;
-    x->x_gui.x_ldy = ldy;
+    if (x->x_gui.iem_flags.iem_canReceive)
+        pd_bind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
+    x->x_gui.iem_labelX = ldx;
+    x->x_gui.iem_labelY = ldy;
     if(fs < 4)
         fs = 4;
-    x->x_gui.x_fontsize = fs;
+    x->x_gui.iem_fontSize = fs;
     iem_all_colfromload(&x->x_gui, bflcol);
     x->x_at[0].a_type = A_FLOAT;
     x->x_at[1].a_type = A_FLOAT;
@@ -353,8 +353,8 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
 
 static void my_canvas_ff(t_my_canvas *x)
 {
-    if(x->x_gui.x_fsf.iem_canReceive)
-        pd_unbind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
+    if(x->x_gui.iem_flags.iem_canReceive)
+        pd_unbind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
     gfxstub_deleteforkey(x);
 }
 

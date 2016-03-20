@@ -42,16 +42,16 @@ static t_class *my_numbox_class;
 
 static void my_numbox_tick_reset(t_my_numbox *x)
 {
-    if(x->x_hasChanged && x->x_gui.x_glist)
+    if(x->x_hasChanged && x->x_gui.iem_glist)
     {
         x->x_hasChanged = 0;
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
     }
 }
 
 static void my_numbox_tick_wait(t_my_numbox *x)
 {
-    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
+    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
 }
 
 void my_numbox_clip(t_my_numbox *x)
@@ -66,14 +66,14 @@ void my_numbox_calc_fontwidth(t_my_numbox *x)
 {
     int w, f=31;
 
-    if(x->x_gui.x_fsf.iem_font == 1)
+    if(x->x_gui.iem_flags.iem_font == 1)
         f = 27;
-    else if(x->x_gui.x_fsf.iem_font == 2)
+    else if(x->x_gui.iem_flags.iem_font == 2)
         f = 25;
 
-    w = x->x_gui.x_fontsize * f * x->x_gui.x_w;
+    w = x->x_gui.iem_fontSize * f * x->x_gui.iem_width;
     w /= 36;
-    x->x_numwidth = w + (x->x_gui.x_h / 2) + 4;
+    x->x_numwidth = w + (x->x_gui.iem_height / 2) + 4;
 }
 
 void my_numbox_ftoa(t_my_numbox *x)
@@ -89,11 +89,11 @@ void my_numbox_ftoa(t_my_numbox *x)
         if((x->x_buf[i] == 'e') || (x->x_buf[i] == 'E'))
             is_exp = 1;
     }
-    if(bufsize > x->x_gui.x_w)/* if to reduce */
+    if(bufsize > x->x_gui.iem_width)/* if to reduce */
     {
         if(is_exp)
         {
-            if(x->x_gui.x_w <= 5)
+            if(x->x_gui.iem_width <= 5)
             {
                 x->x_buf[0] = (f < 0.0 ? '-' : '+');
                 x->x_buf[1] = 0;
@@ -102,18 +102,18 @@ void my_numbox_ftoa(t_my_numbox *x)
             for(idecimal=0; idecimal < i; idecimal++)
                 if(x->x_buf[idecimal] == '.')
                     break;
-            if(idecimal > (x->x_gui.x_w - 4))
+            if(idecimal > (x->x_gui.iem_width - 4))
             {
                 x->x_buf[0] = (f < 0.0 ? '-' : '+');
                 x->x_buf[1] = 0;
             }
             else
             {
-                int new_exp_index=x->x_gui.x_w-4, old_exp_index=bufsize-4;
+                int new_exp_index=x->x_gui.iem_width-4, old_exp_index=bufsize-4;
 
                 for(i=0; i < 4; i++, new_exp_index++, old_exp_index++)
                     x->x_buf[new_exp_index] = x->x_buf[old_exp_index];
-                x->x_buf[x->x_gui.x_w] = 0;
+                x->x_buf[x->x_gui.iem_width] = 0;
             }
 
         }
@@ -122,13 +122,13 @@ void my_numbox_ftoa(t_my_numbox *x)
             for(idecimal=0; idecimal < bufsize; idecimal++)
                 if(x->x_buf[idecimal] == '.')
                     break;
-            if(idecimal > x->x_gui.x_w)
+            if(idecimal > x->x_gui.iem_width)
             {
                 x->x_buf[0] = (f < 0.0 ? '-' : '+');
                 x->x_buf[1] = 0;
             }
             else
-                x->x_buf[x->x_gui.x_w] = 0;
+                x->x_buf[x->x_gui.iem_width] = 0;
         }
     }
 }
@@ -147,8 +147,8 @@ static void my_numbox_draw_update(t_gobj *client, t_glist *glist)
 
                 x->x_buf[sl] = '>';
                 x->x_buf[sl+1] = 0;
-                if(sl >= x->x_gui.x_w)
-                    cp += sl - x->x_gui.x_w + 1;
+                if(sl >= x->x_gui.iem_width)
+                    cp += sl - x->x_gui.iem_width + 1;
                 sys_vGui(
                     ".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s} \n",
                          glist_getcanvas(glist), x, IEM_NUMBER_COLOR_EDITED, cp);
@@ -169,8 +169,8 @@ static void my_numbox_draw_update(t_gobj *client, t_glist *glist)
             sys_vGui(
                 ".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s} \n",
                 glist_getcanvas(glist), x,
-                x->x_gui.x_fsf.iem_isSelected?
-                    IEM_COLOR_SELECTED:x->x_gui.x_fcol,
+                x->x_gui.iem_flags.iem_isSelected?
+                    IEM_COLOR_SELECTED:x->x_gui.iem_colorForeground,
                 x->x_buf);
             x->x_buf[0] = 0;
         }
@@ -179,9 +179,9 @@ static void my_numbox_draw_update(t_gobj *client, t_glist *glist)
 
 static void my_numbox_draw_new(t_my_numbox *x, t_glist *glist)
 {
-    int half=x->x_gui.x_h/2, d=1+x->x_gui.x_h/34;
-    int xpos=text_xpix(&x->x_gui.x_obj, glist);
-    int ypos=text_ypix(&x->x_gui.x_obj, glist);
+    int half=x->x_gui.iem_height/2, d=1+x->x_gui.iem_height/34;
+    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
+    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
     sys_vGui(
@@ -190,32 +190,32 @@ static void my_numbox_draw_new(t_my_numbox *x, t_glist *glist)
              canvas, xpos, ypos,
              xpos + x->x_numwidth-4, ypos,
              xpos + x->x_numwidth, ypos+4,
-             xpos + x->x_numwidth, ypos + x->x_gui.x_h,
-             xpos, ypos + x->x_gui.x_h,
-             IEM_COLOR_NORMAL, x->x_gui.x_bcol, x);
+             xpos + x->x_numwidth, ypos + x->x_gui.iem_height,
+             xpos, ypos + x->x_gui.iem_height,
+             IEM_COLOR_NORMAL, x->x_gui.iem_colorBackground, x);
     sys_vGui(
         ".x%lx.c create line %d %d %d %d %d %d -fill #%6.6x -tags %lxBASE2\n",
         canvas, xpos, ypos,
         xpos + half, ypos + half,
-        xpos, ypos + x->x_gui.x_h,
-        x->x_gui.x_fcol, x);
+        xpos, ypos + x->x_gui.iem_height,
+        x->x_gui.iem_colorForeground, x);
     sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor w \
         -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",
-        canvas, xpos+x->x_gui.x_ldx, ypos+x->x_gui.x_ldy,
-        strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"",
-        x->x_gui.x_fontsize,
-             x->x_gui.x_lcol, x);
+        canvas, xpos+x->x_gui.iem_labelX, ypos+x->x_gui.iem_labelY,
+        strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"",
+        x->x_gui.iem_fontSize,
+             x->x_gui.iem_colorLabel, x);
     my_numbox_ftoa(x);
     sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor w \
         -font [::getFont %d] -fill #%6.6x -tags %lxNUMBER\n",
         canvas, xpos+half+2, ypos+half+d,
-        x->x_buf, x->x_gui.x_fontsize,
-        x->x_gui.x_fcol, x);
+        x->x_buf, x->x_gui.iem_fontSize,
+        x->x_gui.iem_colorForeground, x);
 
         /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
              canvas,
-             xpos, ypos + x->x_gui.x_h-1,
-             xpos+INLETS_WIDTH, ypos + x->x_gui.x_h,
+             xpos, ypos + x->x_gui.iem_height-1,
+             xpos+INLETS_WIDTH, ypos + x->x_gui.iem_height,
              x, 0);
 
         sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
@@ -227,29 +227,29 @@ static void my_numbox_draw_new(t_my_numbox *x, t_glist *glist)
 
 static void my_numbox_draw_move(t_my_numbox *x, t_glist *glist)
 {
-    int half = x->x_gui.x_h/2, d=1+x->x_gui.x_h/34;
-    int xpos=text_xpix(&x->x_gui.x_obj, glist);
-    int ypos=text_ypix(&x->x_gui.x_obj, glist);
+    int half = x->x_gui.iem_height/2, d=1+x->x_gui.iem_height/34;
+    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
+    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c coords %lxBASE1 %d %d %d %d %d %d %d %d %d %d\n",
              canvas, x, xpos, ypos,
              xpos + x->x_numwidth-4, ypos,
              xpos + x->x_numwidth, ypos+4,
-             xpos + x->x_numwidth, ypos + x->x_gui.x_h,
-             xpos, ypos + x->x_gui.x_h);
+             xpos + x->x_numwidth, ypos + x->x_gui.iem_height,
+             xpos, ypos + x->x_gui.iem_height);
     sys_vGui(".x%lx.c coords %lxBASE2 %d %d %d %d %d %d\n",
              canvas, x, xpos, ypos,
              xpos + half, ypos + half,
-             xpos, ypos + x->x_gui.x_h);
+             xpos, ypos + x->x_gui.iem_height);
     sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
-             canvas, x, xpos+x->x_gui.x_ldx, ypos+x->x_gui.x_ldy);
+             canvas, x, xpos+x->x_gui.iem_labelX, ypos+x->x_gui.iem_labelY);
     sys_vGui(".x%lx.c coords %lxNUMBER %d %d\n",
              canvas, x, xpos+half+2, ypos+half+d);
     /*sys_vGui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
              canvas, x, 0,
-             xpos, ypos + x->x_gui.x_h-1,
-             xpos+INLETS_WIDTH, ypos + x->x_gui.x_h);
+             xpos, ypos + x->x_gui.iem_height-1,
+             xpos+INLETS_WIDTH, ypos + x->x_gui.iem_height);
     sys_vGui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
              canvas, x, 0,
              xpos, ypos,
@@ -273,28 +273,28 @@ static void my_numbox_draw_config(t_my_numbox* x,t_glist* glist)
     t_canvas *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
-             canvas, x, x->x_gui.x_fontsize,
-             x->x_gui.x_fsf.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.x_lcol,
-             strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"");
+             canvas, x, x->x_gui.iem_fontSize,
+             x->x_gui.iem_flags.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
+             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
     sys_vGui(".x%lx.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%6.6x \n",
-             canvas, x, x->x_gui.x_fontsize,
-             x->x_gui.x_fsf.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.x_fcol);
+             canvas, x, x->x_gui.iem_fontSize,
+             x->x_gui.iem_flags.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorForeground);
     sys_vGui(".x%lx.c itemconfigure %lxBASE1 -fill #%6.6x\n", canvas,
-             x, x->x_gui.x_bcol);
+             x, x->x_gui.iem_colorBackground);
     sys_vGui(".x%lx.c itemconfigure %lxBASE2 -fill #%6.6x\n", canvas,
-             x, x->x_gui.x_fsf.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.x_fcol);
+             x, x->x_gui.iem_flags.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorForeground);
 }
 
 static void my_numbox_draw_io(t_my_numbox* x, t_glist* glist)
 {
-    int xpos=text_xpix(&x->x_gui.x_obj, glist);
-    int ypos=text_ypix(&x->x_gui.x_obj, glist);
+    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
+    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
     t_canvas *canvas=glist_getcanvas(glist);
 
     /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
         canvas,
-        xpos, ypos + x->x_gui.x_h-1,
-        xpos+INLETS_WIDTH, ypos + x->x_gui.x_h,
+        xpos, ypos + x->x_gui.iem_height-1,
+        xpos+INLETS_WIDTH, ypos + x->x_gui.iem_height,
         x, 0);
     sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
         canvas,
@@ -307,14 +307,14 @@ static void my_numbox_draw_select(t_my_numbox *x, t_glist *glist)
 {
     t_canvas *canvas=glist_getcanvas(glist);
 
-    if(x->x_gui.x_fsf.iem_isSelected)
+    if(x->x_gui.iem_flags.iem_isSelected)
     {
         if(x->x_hasChanged)
         {
             x->x_hasChanged = 0;
             clock_unset(x->x_clock_reset);
             x->x_buf[0] = 0;
-            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
+            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
         }
         sys_vGui(".x%lx.c itemconfigure %lxBASE1 -outline #%6.6x\n",
             canvas, x, IEM_COLOR_SELECTED);
@@ -330,11 +330,11 @@ static void my_numbox_draw_select(t_my_numbox *x, t_glist *glist)
         sys_vGui(".x%lx.c itemconfigure %lxBASE1 -outline #%6.6x\n",
             canvas, x, IEM_COLOR_NORMAL);
         sys_vGui(".x%lx.c itemconfigure %lxBASE2 -fill #%6.6x\n",
-            canvas, x, x->x_gui.x_fcol);
+            canvas, x, x->x_gui.iem_colorForeground);
         sys_vGui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n",
-            canvas, x, x->x_gui.x_lcol);
+            canvas, x, x->x_gui.iem_colorLabel);
         sys_vGui(".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x\n",
-            canvas, x, x->x_gui.x_fcol);
+            canvas, x, x->x_gui.iem_colorForeground);
     }
 }
 
@@ -364,10 +364,10 @@ static void my_numbox_getrect(t_gobj *z, t_glist *glist,
 {
     t_my_numbox* x = (t_my_numbox*)z;
 
-    *xp1 = text_xpix(&x->x_gui.x_obj, glist);
-    *yp1 = text_ypix(&x->x_gui.x_obj, glist);
+    *xp1 = text_xpix(&x->x_gui.iem_obj, glist);
+    *yp1 = text_ypix(&x->x_gui.iem_obj, glist);
     *xp2 = *xp1 + x->x_numwidth;
-    *yp2 = *yp1 + x->x_gui.x_h;
+    *yp2 = *yp1 + x->x_gui.iem_height;
 }
 
 static void my_numbox_save(t_gobj *z, t_buffer *b)
@@ -381,16 +381,16 @@ static void my_numbox_save(t_gobj *z, t_buffer *b)
     {
         x->x_hasChanged = 0;
         clock_unset(x->x_clock_reset);
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
     }
     buffer_vAppend(b, "ssiisiiffiisssiiiiiiifi", gensym("#X"),gensym("obj"),
-                (int)x->x_gui.x_obj.te_xCoordinate, (int)x->x_gui.x_obj.te_yCoordinate,
-                gensym("nbx"), x->x_gui.x_w, x->x_gui.x_h,
+                (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
+                gensym("nbx"), x->x_gui.iem_width, x->x_gui.iem_height,
                 (t_float)x->x_min, (t_float)x->x_max,
                 x->x_isLogarithmic, iem_symargstoint(&x->x_gui.x_isa),
                 srl[0], srl[1], srl[2],
-                x->x_gui.x_ldx, x->x_gui.x_ldy,
-                iem_fstyletoint(&x->x_gui.x_fsf), x->x_gui.x_fontsize,
+                x->x_gui.iem_labelX, x->x_gui.iem_labelY,
+                iem_fstyletoint(&x->x_gui.iem_flags), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[1], bflcol[2],
                 x->x_val, x->x_log_height);
     buffer_vAppend(b, ";");
@@ -445,7 +445,7 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
     {
         x->x_hasChanged = 0;
         clock_unset(x->x_clock_reset);
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
 
     }
     sprintf(buf, "::ui_iem::create %%s Number \
@@ -459,24 +459,24 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
             %d \
             %d %d %d \
             -1\n",
-            x->x_gui.x_w, 1, x->x_gui.x_h, 8,
+            x->x_gui.iem_width, 1, x->x_gui.iem_height, 8,
             x->x_min, x->x_max,
             x->x_isLogarithmic, 
             x->x_gui.x_isa.iem_initializeAtLoad,
             x->x_log_height, /*no multi, but iem-characteristic*/
             srl[0]->s_name, srl[1]->s_name,
-            srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
-            x->x_gui.x_fontsize,
-            0xffffff & x->x_gui.x_bcol, 0xffffff & x->x_gui.x_fcol,
-                0xffffff & x->x_gui.x_lcol);
-    gfxstub_new(&x->x_gui.x_obj.te_g.g_pd, x, buf);
+            srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
+            x->x_gui.iem_fontSize,
+            0xffffff & x->x_gui.iem_colorBackground, 0xffffff & x->x_gui.iem_colorForeground,
+                0xffffff & x->x_gui.iem_colorLabel);
+    gfxstub_new(&x->x_gui.iem_obj.te_g.g_pd, x, buf);
 }
 
 static void my_numbox_bang(t_my_numbox *x)
 {
-    outlet_float(x->x_gui.x_obj.te_outlet, x->x_val);
-    if(x->x_gui.x_fsf.iem_canSend && x->x_gui.x_snd->s_thing)
-        pd_float(x->x_gui.x_snd->s_thing, x->x_val);
+    outlet_float(x->x_gui.iem_obj.te_outlet, x->x_val);
+    if(x->x_gui.iem_flags.iem_canSend && x->x_gui.iem_send->s_thing)
+        pd_float(x->x_gui.iem_send->s_thing, x->x_val);
 }
 
 static void my_numbox_dialog(t_my_numbox *x, t_symbol *s, int argc,
@@ -495,10 +495,10 @@ static void my_numbox_dialog(t_my_numbox *x, t_symbol *s, int argc,
     iem_dialog(&x->x_gui, srl, argc, argv);
     if(w < 1)
         w = 1;
-    x->x_gui.x_w = w;
+    x->x_gui.iem_width = w;
     if(h < 8)
         h = 8;
-    x->x_gui.x_h = h;
+    x->x_gui.iem_height = h;
     if(log_height < 10)
         log_height = 10;
     x->x_log_height = log_height;
@@ -506,25 +506,25 @@ static void my_numbox_dialog(t_my_numbox *x, t_symbol *s, int argc,
     /*if(my_numbox_check_minmax(x, min, max))
      my_numbox_bang(x);*/
     my_numbox_check_minmax(x, min, max);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_UPDATE);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_IO);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_MOVE);
-    canvas_fixlines(x->x_gui.x_glist, (t_text*)x);
+    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_IO);
+    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
+    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+    canvas_fixlines(x->x_gui.iem_glist, (t_text*)x);
 }
 
 static void my_numbox_motion(t_my_numbox *x, t_float dx, t_float dy)
 {
     double k2=1.0;
 
-    if(x->x_gui.x_fsf.iem_accurateMoving)
+    if(x->x_gui.iem_flags.iem_accurateMoving)
         k2 = 0.01;
     if(x->x_isLogarithmic)
         x->x_val *= pow(x->x_k, -k2*dy);
     else
         x->x_val -= k2*dy;
     my_numbox_clip(x);
-    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
+    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
     my_numbox_bang(x);
     clock_unset(x->x_clock_reset);
 }
@@ -532,7 +532,7 @@ static void my_numbox_motion(t_my_numbox *x, t_float dx, t_float dy)
 static void my_numbox_click(t_my_numbox *x, t_float xpos, t_float ypos,
                             t_float shift, t_float ctrl, t_float alt)
 {
-    glist_grab(x->x_gui.x_glist, &x->x_gui.x_obj.te_g,
+    glist_grab(x->x_gui.iem_glist, &x->x_gui.iem_obj.te_g,
         (t_glistmotionfn)my_numbox_motion, my_numbox_key, xpos, ypos);
 }
 
@@ -546,9 +546,9 @@ static int my_numbox_newclick(t_gobj *z, struct _glist *glist,
         my_numbox_click( x, (t_float)xpix, (t_float)ypix,
             (t_float)shift, 0, (t_float)alt);
         if(shift)
-            x->x_gui.x_fsf.iem_accurateMoving = 1;
+            x->x_gui.iem_flags.iem_accurateMoving = 1;
         else
-            x->x_gui.x_fsf.iem_accurateMoving = 0;
+            x->x_gui.iem_flags.iem_accurateMoving = 0;
         if(!x->x_hasChanged)
         {
             clock_delay(x->x_clock_wait, 50);
@@ -562,7 +562,7 @@ static int my_numbox_newclick(t_gobj *z, struct _glist *glist,
             x->x_hasChanged = 0;
             clock_unset(x->x_clock_reset);
             x->x_buf[0] = 0;
-            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
+            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
         }
     }
     return (1);
@@ -574,7 +574,7 @@ static void my_numbox_set(t_my_numbox *x, t_float f)
     {
         x->x_val = f;
         my_numbox_clip(x);
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
     }
 }
 
@@ -593,7 +593,7 @@ static void my_numbox_log_height(t_my_numbox *x, t_float lh)
 static void my_numbox_float(t_my_numbox *x, t_float f)
 {
     my_numbox_set(x, f);
-    if(x->x_gui.x_fsf.iem_goThrough)
+    if(x->x_gui.iem_flags.iem_goThrough)
         my_numbox_bang(x);
 }
 
@@ -604,13 +604,13 @@ static void my_numbox_size(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
     w = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
     if(w < 1)
         w = 1;
-    x->x_gui.x_w = w;
+    x->x_gui.iem_width = w;
     if(ac > 1)
     {
         h = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
         if(h < 8)
             h = 8;
-        x->x_gui.x_h = h;
+        x->x_gui.iem_height = h;
     }
     my_numbox_calc_fontwidth(x);
     iem_size((void *)x, &x->x_gui);
@@ -627,7 +627,7 @@ static void my_numbox_range(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
     if(my_numbox_check_minmax(x, (double)atom_getFloatAtIndex(0, ac, av),
                               (double)atom_getFloatAtIndex(1, ac, av)))
     {
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
         /*my_numbox_bang(x);*/
     }
 }
@@ -654,11 +654,11 @@ static void my_numbox_label_font(t_my_numbox *x,
 
     if(f < 4)
         f = 4;
-    x->x_gui.x_fontsize = f;
+    x->x_gui.iem_fontSize = f;
     f = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
     if((f < 0) || (f > 2))
         f = 0;
-    x->x_gui.x_fsf.iem_font = f;
+    x->x_gui.iem_flags.iem_font = f;
     my_numbox_calc_fontwidth(x);
     iem_label_font((void *)x, &x->x_gui, s, ac, av);
 }
@@ -668,7 +668,7 @@ static void my_numbox_log(t_my_numbox *x)
     x->x_isLogarithmic = 1;
     if(my_numbox_check_minmax(x, x->x_min, x->x_max))
     {
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
         /*my_numbox_bang(x);*/
     }
 }
@@ -687,7 +687,7 @@ static void my_numbox_loadbang(t_my_numbox *x)
 {
     if(x->x_gui.x_isa.iem_initializeAtLoad)
     {
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
         my_numbox_bang(x);
     }
 }
@@ -703,7 +703,7 @@ static void my_numbox_key(void *z, t_float fkey)
     {
         x->x_hasChanged = 0;
         clock_unset(x->x_clock_reset);
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
         return;
     }
     if(((c>='0')&&(c<='9'))||(c=='.')||(c=='-')||
@@ -713,7 +713,7 @@ static void my_numbox_key(void *z, t_float fkey)
         {
             buf[0] = c;
             strcat(x->x_buf, buf);
-            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
+            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
         }
     }
     else if((c=='\b')||(c==127))
@@ -723,7 +723,7 @@ static void my_numbox_key(void *z, t_float fkey)
         if(sl < 0)
             sl = 0;
         x->x_buf[sl] = 0;
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
     }
     else if((c=='\n')||(c==13))
     {
@@ -733,7 +733,7 @@ static void my_numbox_key(void *z, t_float fkey)
         clock_unset(x->x_clock_reset);
         my_numbox_clip(x);
         my_numbox_bang(x);
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.x_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
     }
     clock_delay(x->x_clock_reset, 3000);
 }
@@ -777,7 +777,7 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
         iem_new_getnames(&x->x_gui, 6, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
-        iem_inttofstyle(&x->x_gui.x_fsf, (t_int)atom_getFloatAtIndex(11, argc, argv));
+        iem_inttofstyle(&x->x_gui.iem_flags, (t_int)atom_getFloatAtIndex(11, argc, argv));
         fs = (int)(t_int)atom_getFloatAtIndex(12, argc, argv);
         bflcol[0] = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
         bflcol[1] = (int)(t_int)atom_getFloatAtIndex(14, argc, argv);
@@ -789,10 +789,10 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
     {
         log_height = (int)(t_int)atom_getFloatAtIndex(17, argc, argv);
     }
-    x->x_gui.x_draw = (t_iemfn)my_numbox_draw;
-    x->x_gui.x_fsf.iem_canSend = 1;
-    x->x_gui.x_fsf.iem_canReceive = 1;
-    x->x_gui.x_glist = (t_glist *)canvas_getcurrent();
+    x->x_gui.iem_draw = (t_iemfn)my_numbox_draw;
+    x->x_gui.iem_flags.iem_canSend = 1;
+    x->x_gui.iem_flags.iem_canReceive = 1;
+    x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
     if(x->x_gui.x_isa.iem_initializeAtLoad)
         x->x_val = v;
     else
@@ -802,24 +802,24 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
     if(log_height < 10)
         log_height = 10;
     x->x_log_height = log_height;
-    if (!strcmp(x->x_gui.x_snd->s_name, "empty"))
-        x->x_gui.x_fsf.iem_canSend = 0;
-    if (!strcmp(x->x_gui.x_rcv->s_name, "empty"))
-        x->x_gui.x_fsf.iem_canReceive = 0;
+    if (!strcmp(x->x_gui.iem_send->s_name, "empty"))
+        x->x_gui.iem_flags.iem_canSend = 0;
+    if (!strcmp(x->x_gui.iem_receive->s_name, "empty"))
+        x->x_gui.iem_flags.iem_canReceive = 0;
 
-    if (x->x_gui.x_fsf.iem_canReceive)
-        pd_bind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
-    x->x_gui.x_ldx = ldx;
-    x->x_gui.x_ldy = ldy;
+    if (x->x_gui.iem_flags.iem_canReceive)
+        pd_bind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
+    x->x_gui.iem_labelX = ldx;
+    x->x_gui.iem_labelY = ldy;
     if(fs < 4)
         fs = 4;
-    x->x_gui.x_fontsize = fs;
+    x->x_gui.iem_fontSize = fs;
     if(w < 1)
         w = 1;
-    x->x_gui.x_w = w;
+    x->x_gui.iem_width = w;
     if(h < 8)
         h = 8;
-    x->x_gui.x_h = h;
+    x->x_gui.iem_height = h;
     x->x_buf[0] = 0;
     my_numbox_calc_fontwidth(x);
     my_numbox_check_minmax(x, min, max);
@@ -828,14 +828,14 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
     x->x_clock_reset = clock_new(x, (t_method)my_numbox_tick_reset);
     x->x_clock_wait = clock_new(x, (t_method)my_numbox_tick_wait);
     x->x_hasChanged = 0;
-    outlet_new(&x->x_gui.x_obj, &s_float);
+    outlet_new(&x->x_gui.iem_obj, &s_float);
     return (x);
 }
 
 static void my_numbox_free(t_my_numbox *x)
 {
-    if(x->x_gui.x_fsf.iem_canReceive)
-        pd_unbind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
+    if(x->x_gui.iem_flags.iem_canReceive)
+        pd_unbind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
     clock_free(x->x_clock_reset);
     clock_free(x->x_clock_wait);
     gfxstub_deleteforkey(x);
