@@ -70,6 +70,12 @@ typedef struct _iemarguments {
     char iem_isLocked;
     } t_iemarguments;
 
+typedef struct _iemcolors {
+    int iem_background;
+    int iem_foreground;
+    int iem_label;
+    } t_iemcolors;
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -206,7 +212,8 @@ typedef struct _vradio {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        canvas_getargs              (int *argcp, t_atom **argvp);
+void        iem_saveColors              (t_iem *iem, int *bflcol);
+void        iem_loadColors              (t_iem *iem, int *bflcol);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -214,7 +221,6 @@ void        canvas_getargs              (int *argcp, t_atom **argvp);
 
 int         iem_clip_size               (int size);
 int         iem_clip_font               (int size);
-int         iem_modulo_color            (int col);
 t_symbol    *iem_unique2dollarzero      (t_symbol *s, int unique_num, int and_unique_flag);
 t_symbol    *iem_sym2dollararg          (t_symbol *s, int nth_arg, int tail_len);
 t_symbol    *iem_dollarzero2unique      (t_symbol *s, int unique_num);
@@ -230,9 +236,6 @@ void        iem_all_dollarzero2unique   (t_iem *iem, t_symbol **srlsym);
 t_symbol    *iem_new_dogetname          (t_iem *iem, int indx, t_atom *argv);
 void        iem_new_getnames            (t_iem *iem, int indx, t_atom *argv);
 void        iem_all_dollararg2sym       (t_iem *iem, t_symbol **srlsym);
-void        iem_all_col2save            (t_iem *iem, int *bflcol);
-void        iem_all_colfromload         (t_iem *iem, int *bflcol);
-int         iem_compatible_col          (int i);
 void        iem_all_dollar2raute        (t_symbol **srlsym);
 void        iem_all_raute2dollar        (t_symbol **srlsym);
 void        iem_send                    (void *x, t_iem *iem, t_symbol *s);

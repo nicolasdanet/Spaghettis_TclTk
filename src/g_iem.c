@@ -27,22 +27,73 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define IEM_MAXIMUM_COLOR           30
 #define IEM_MINIMUM_SIZE            8
 #define IEM_MINIMUM_FONTSIZE        4
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-int iem_color_hex[]=
+#define IEM_COLOR(n)                ((-1 -(n)) & 0xffffff)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+/* Ensure compatibility with the legacy format. */ 
+/* Only the 6 MSB are kept for each component. */
+
+// RRRRRRRRGGGGGGGGBBBBBBBB 
+// RRRRRR..GGGGGG..BBBBBB..
+// RRRRRRGGGGGGBBBBBB
+
+static int iem_colorEncode (int color)
 {
-    16579836, 10526880, 4210752, 16572640, 16572608,
-    16579784, 14220504, 14220540, 14476540, 16308476,
-    14737632, 8158332, 2105376, 16525352, 16559172,
-    15263784, 1370132, 2684148, 3952892, 16003312,
-    12369084, 6316128, 0, 9177096, 5779456,
-    7874580, 2641940, 17488, 5256, 5767248
-};
+    int n = 0;
+    
+    n |= ((0xfc0000 & color) >> 6);
+    n |= ((0xfc00 & color) >> 4);
+    n |= ((0xfc & color) >> 2);
+                      
+    return (-1 -n);
+}
+
+static int iem_colorDecode (int color)
+{
+    PD_ASSERT (color < 0);      /* Predefined colors not supported. */
+    
+    int n = 0;
+    
+    color = (-1 -color);
+    
+    n |= ((color & 0x3f000) << 6);
+    n |= ((color & 0xfc0) << 4);
+    n |= ((color & 0x3f) << 2);
+
+    return n;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void iem_saveColors (t_iem *iem, int *bflcol)
+{
+    bflcol[0] = iem_colorEncode (iem->iem_colorBackground);
+    bflcol[1] = iem_colorEncode (iem->iem_colorForeground);
+    bflcol[2] = iem_colorEncode (iem->iem_colorLabel);
+}
+
+void iem_loadColors (t_iem *iem, int *bflcol)
+{
+    iem->iem_colorBackground = iem_colorDecode (bflcol[0]);
+    iem->iem_colorForeground = iem_colorDecode (bflcol[1]);
+    iem->iem_colorLabel      = iem_colorDecode (bflcol[2]);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /*------------------ global functions -------------------------*/
 
@@ -59,15 +110,6 @@ int iem_clip_font(int size)
     if(size < IEM_MINIMUM_FONTSIZE)
         size = IEM_MINIMUM_FONTSIZE;
     return(size);
-}
-
-int iem_modulo_color(int col)
-{
-    while(col >= IEM_MAXIMUM_COLOR)
-        col -= IEM_MAXIMUM_COLOR;
-    while(col < 0)
-        col += IEM_MAXIMUM_COLOR;
-    return(col);
 }
 
 t_symbol *iem_dollar2raute(t_symbol *s)
@@ -184,66 +226,6 @@ void iem_all_sym2dollararg(t_iem *iem, t_symbol **srlsym)
     srlsym[0] = iem->iem_unexpandedSend;
     srlsym[1] = iem->iem_unexpandedReceive;
     srlsym[2] = iem->iem_unexpandedLabel;
-}
-
-void iem_all_col2save(t_iem *iem, int *bflcol)
-{
-    bflcol[0] = -1 - (((0xfc0000 & iem->iem_colorBackground) >> 6)|
-                      ((0xfc00 & iem->iem_colorBackground) >> 4)|((0xfc & iem->iem_colorBackground) >> 2));
-    bflcol[1] = -1 - (((0xfc0000 & iem->iem_colorForeground) >> 6)|
-                      ((0xfc00 & iem->iem_colorForeground) >> 4)|((0xfc & iem->iem_colorForeground) >> 2));
-    bflcol[2] = -1 - (((0xfc0000 & iem->iem_colorLabel) >> 6)|
-                      ((0xfc00 & iem->iem_colorLabel) >> 4)|((0xfc & iem->iem_colorLabel) >> 2));
-}
-
-void iem_all_colfromload(t_iem *iem, int *bflcol)
-{
-    if(bflcol[0] < 0)
-    {
-        bflcol[0] = -1 - bflcol[0];
-        iem->iem_colorBackground = ((bflcol[0] & 0x3f000) << 6)|((bflcol[0] & 0xfc0) << 4)|
-            ((bflcol[0] & 0x3f) << 2);
-    }
-    else
-    {
-        bflcol[0] = iem_modulo_color(bflcol[0]);
-        iem->iem_colorBackground = iem_color_hex[bflcol[0]];
-    }
-    if(bflcol[1] < 0)
-    {
-        bflcol[1] = -1 - bflcol[1];
-        iem->iem_colorForeground = ((bflcol[1] & 0x3f000) << 6)|((bflcol[1] & 0xfc0) << 4)|
-            ((bflcol[1] & 0x3f) << 2);
-    }
-    else
-    {
-        bflcol[1] = iem_modulo_color(bflcol[1]);
-        iem->iem_colorForeground = iem_color_hex[bflcol[1]];
-    }
-    if(bflcol[2] < 0)
-    {
-        bflcol[2] = -1 - bflcol[2];
-        iem->iem_colorLabel = ((bflcol[2] & 0x3f000) << 6)|((bflcol[2] & 0xfc0) << 4)|
-            ((bflcol[2] & 0x3f) << 2);
-    }
-    else
-    {
-        bflcol[2] = iem_modulo_color(bflcol[2]);
-        iem->iem_colorLabel = iem_color_hex[bflcol[2]];
-    }
-}
-
-int iem_compatible_col(int i)
-{
-    int j;
-
-    if(i >= 0)
-    {
-        j = iem_modulo_color(i);
-        return(iem_color_hex[(j)]);
-    }
-    else
-        return((-1 -i)&0xffffff);
 }
 
 void iem_all_dollar2raute(t_symbol **srlsym)
@@ -382,14 +364,14 @@ void iem_pos(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 
 void iem_color(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 {
-    iem->iem_colorBackground = iem_compatible_col((t_int)atom_getFloatAtIndex(0, ac, av));
+    iem->iem_colorBackground = IEM_COLOR((t_int)atom_getFloatAtIndex(0, ac, av));
     if(ac > 2)
     {
-        iem->iem_colorForeground = iem_compatible_col((t_int)atom_getFloatAtIndex(1, ac, av));
-        iem->iem_colorLabel = iem_compatible_col((t_int)atom_getFloatAtIndex(2, ac, av));
+        iem->iem_colorForeground = IEM_COLOR((t_int)atom_getFloatAtIndex(1, ac, av));
+        iem->iem_colorLabel = IEM_COLOR((t_int)atom_getFloatAtIndex(2, ac, av));
     }
     else
-        iem->iem_colorLabel = iem_compatible_col((t_int)atom_getFloatAtIndex(1, ac, av));
+        iem->iem_colorLabel = IEM_COLOR((t_int)atom_getFloatAtIndex(1, ac, av));
     if(glist_isvisible(iem->iem_glist))
         (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_CONFIG);
 }
@@ -436,7 +418,7 @@ void iem_save(t_iem *iem, t_symbol **srl, int *bflcol)
     srl[1] = iem->iem_receive;
     srl[2] = iem->iem_label;
     iem_all_sym2dollararg(iem, srl);
-    iem_all_col2save(iem, bflcol);
+    iem_saveColors(iem, bflcol);
 }
 
 void iem_properties(t_iem *iem, t_symbol **srl)

@@ -580,7 +580,7 @@ static void *hslider_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_height = iem_clip_size(h);
     hslider_check_width(x, w);
     hslider_check_minmax(x, min, max);
-    iem_all_colfromload(&x->x_gui, bflcol);
+    iem_loadColors(&x->x_gui, bflcol);
     iem_verify_snd_ne_rcv(&x->x_gui);
     outlet_new(&x->x_gui.iem_obj, &s_float);
     x->x_fval = hslider_getfval(x);

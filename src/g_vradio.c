@@ -527,7 +527,7 @@ static void *vradio_donew(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_width = iem_clip_size(a);
     x->x_gui.iem_height = x->x_gui.iem_width;
     iem_verify_snd_ne_rcv(&x->x_gui);
-    iem_all_colfromload(&x->x_gui, bflcol);
+    iem_loadColors(&x->x_gui, bflcol);
     outlet_new(&x->x_gui.iem_obj, &s_list);
     return (x);
 }

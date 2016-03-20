@@ -344,7 +344,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     if(fs < 4)
         fs = 4;
     x->x_gui.iem_fontSize = fs;
-    iem_all_colfromload(&x->x_gui, bflcol);
+    iem_loadColors(&x->x_gui, bflcol);
     x->x_at[0].a_type = A_FLOAT;
     x->x_at[1].a_type = A_FLOAT;
     iem_verify_snd_ne_rcv(&x->x_gui);

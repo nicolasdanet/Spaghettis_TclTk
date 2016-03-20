@@ -491,7 +491,7 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_width = iem_clip_size(a);
     x->x_gui.iem_height = x->x_gui.iem_width;
     bng_check_minmax(x, ftbreak, fthold);
-    iem_all_colfromload(&x->x_gui, bflcol);
+    iem_loadColors(&x->x_gui, bflcol);
     x->x_gui.x_isa.iem_isLocked = 0;
     iem_verify_snd_ne_rcv(&x->x_gui);
     x->x_clock_hld = clock_new(x, (t_method)bng_tick_hld);

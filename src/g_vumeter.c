@@ -34,12 +34,20 @@
 #define IEM_VUMETER_STEPS                40
 #define IEM_VUMETER_OFFSET               100.0
 
+static int vu_colors[30] =
+    {
+        0xfcfcfc, 0xa0a0a0, 0x404040, 0xfce0e0, 0xfce0c0, 
+        0xfcfcc8, 0xd8fcd8, 0xd8fcfc, 0xdce4fc, 0xf8d8fc,
+        0xe0e0e0, 0x7c7c7c, 0x202020, 0xfc2828, 0xfcac44,
+        0xe8e828, 0x14e814, 0x28f4f4, 0x3c50fc, 0xf430f0,
+        0xbcbcbc, 0x606060, 0x000000, 0x8c0808, 0x583000,
+        0x782814, 0x285014, 0x004450, 0x001488, 0x580050
+    };
+    
 /* ----- vu  gui-peak- & rms- vu-meter-display ---------- */
 
 t_widgetbehavior vu_widgetbehavior;
 static t_class *vu_class;
-
-extern int iem_color_hex[];
 
 int iem_vu_db2i[]=
 {
@@ -108,7 +116,7 @@ static void vu_update_peak(t_vu *x, t_glist *glist)
                      xpos, j,
                      xpos+x->x_gui.iem_width+1, j);
             sys_vGui(".x%lx.c itemconfigure %lxPLED -fill #%6.6x\n", canvas, x,
-                     iem_color_hex[i]);
+                     vu_colors[i]);
         }
         else
         {
@@ -160,7 +168,7 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
         led_col = iem_vu_col[i];
         yyy = k4 + k1*(k2-i);
         sys_vGui(".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxRLED%d\n",
-                 canvas, quad1, yyy, quad3, yyy, x->x_led_size, iem_color_hex[led_col], x, i);
+                 canvas, quad1, yyy, quad3, yyy, x->x_led_size, vu_colors[led_col], x, i);
     }
     if(x->x_scale)
     {
@@ -670,7 +678,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_fontSize = fs;
     x->x_gui.iem_width = iem_clip_size(w);
     vu_check_height(x, h);
-    iem_all_colfromload(&x->x_gui, bflcol);
+    iem_loadColors(&x->x_gui, bflcol);
     if(scale != 0)
         scale = 1;
     x->x_scale = scale;
