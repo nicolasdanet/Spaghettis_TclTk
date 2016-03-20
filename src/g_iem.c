@@ -100,11 +100,11 @@ t_symbol *iem_raute2dollar(t_symbol *s)
 
 void iem_verify_snd_ne_rcv(t_iem *iem)
 {
-    iem->x_fsf.x_put_in2out = 1;
-    if(iem->x_fsf.x_snd_able && iem->x_fsf.x_rcv_able)
+    iem->x_fsf.iem_goThrough = 1;
+    if(iem->x_fsf.iem_canSend && iem->x_fsf.iem_canReceive)
     {
         if(!strcmp(iem->x_snd->s_name, iem->x_rcv->s_name))
-            iem->x_fsf.x_put_in2out = 0;
+            iem->x_fsf.iem_goThrough = 0;
     }
 }
 
@@ -268,7 +268,7 @@ void iem_send(void *x, t_iem *iem, t_symbol *s)
     snd = iem_raute2dollar(s);
     iem->x_snd_unexpanded = snd;
     iem->x_snd = snd = canvas_realizedollar(iem->x_glist, snd);
-    iem->x_fsf.x_snd_able = sndable;
+    iem->x_fsf.iem_canSend = sndable;
     iem_verify_snd_ne_rcv(iem);
     (*iem->x_draw)(x, iem->x_glist, IEM_DRAW_IO);
 }
@@ -287,18 +287,18 @@ void iem_receive(void *x, t_iem *iem, t_symbol *s)
     {
         if(strcmp(rcv->s_name, iem->x_rcv->s_name))
         {
-            if(iem->x_fsf.x_rcv_able)
+            if(iem->x_fsf.iem_canReceive)
                 pd_unbind(&iem->x_obj.te_g.g_pd, iem->x_rcv);
             iem->x_rcv = rcv;
             pd_bind(&iem->x_obj.te_g.g_pd, iem->x_rcv);
         }
     }
-    else if(!rcvable && iem->x_fsf.x_rcv_able)
+    else if(!rcvable && iem->x_fsf.iem_canReceive)
     {
         pd_unbind(&iem->x_obj.te_g.g_pd, iem->x_rcv);
         iem->x_rcv = rcv;
     }
-    iem->x_fsf.x_rcv_able = rcvable;
+    iem->x_fsf.iem_canReceive = rcvable;
     iem_verify_snd_ne_rcv(iem);
     (*iem->x_draw)(x, iem->x_glist, IEM_DRAW_IO);
 }
@@ -406,7 +406,7 @@ void iem_select(t_gobj *z, t_glist *glist, int selected)
 {
     t_iem *x = (t_iem *)z;
 
-    x->x_fsf.x_selected = selected;
+    x->x_fsf.iem_isSelected = selected;
     (*x->x_draw)((void *)z, glist, IEM_DRAW_SELECT);
 }
 
@@ -480,7 +480,7 @@ void iem_dialog(t_iem *iem, t_symbol **srl, int argc, t_atom *argv)
         srl[2] = gensym(str);
     }
     if(init != 0) init = 1;
-    iem->x_isa.x_loadinit = init;
+    iem->x_isa.iem_initializeAtLoad = init;
     if(!strcmp(srl[0]->s_name, "empty")) sndable = 0;
     if(!strcmp(srl[1]->s_name, "empty")) rcvable = 0;
     iem_all_raute2dollar(srl);
@@ -489,20 +489,20 @@ void iem_dialog(t_iem *iem, t_symbol **srl, int argc, t_atom *argv)
     {
         if(strcmp(srl[1]->s_name, iem->x_rcv->s_name))
         {
-            if(iem->x_fsf.x_rcv_able)
+            if(iem->x_fsf.iem_canReceive)
                 pd_unbind(&iem->x_obj.te_g.g_pd, iem->x_rcv);
             iem->x_rcv = srl[1];
             pd_bind(&iem->x_obj.te_g.g_pd, iem->x_rcv);
         }
     }
-    else if(!rcvable && iem->x_fsf.x_rcv_able)
+    else if(!rcvable && iem->x_fsf.iem_canReceive)
     {
         pd_unbind(&iem->x_obj.te_g.g_pd, iem->x_rcv);
         iem->x_rcv = srl[1];
     }
     iem->x_snd = srl[0];
-    iem->x_fsf.x_snd_able = sndable;
-    iem->x_fsf.x_rcv_able = rcvable;
+    iem->x_fsf.iem_canSend = sndable;
+    iem->x_fsf.iem_canReceive = rcvable;
     iem->x_lcol = lcol & 0xffffff;
     iem->x_fcol = fcol & 0xffffff;
     iem->x_bcol = bcol & 0xffffff;
@@ -524,28 +524,27 @@ we can stop writing the annoying  1<<20 bit. */
 #define SCALE 2
 #define SCALEBIS (1<<20)
 
-void iem_inttosymargs(t_iem_init_symargs *symargp, int n)
+void iem_inttosymargs(t_iemarguments *symargp, int n)
 {
     memset(symargp, 0, sizeof(*symargp));
-    symargp->x_loadinit = ((n & LOADINIT) != 0);
-    symargp->x_scale = ((n & SCALE) || (n & SCALEBIS)) ;
-    symargp->x_flashed = 0;
-    symargp->x_locked = 0;
+    symargp->iem_initializeAtLoad = ((n & LOADINIT) != 0);
+    symargp->iem_scale = ((n & SCALE) || (n & SCALEBIS)) ;
+    symargp->iem_flash = 0;
+    symargp->iem_isLocked = 0;
 }
 
-int iem_symargstoint(t_iem_init_symargs *symargp)
+int iem_symargstoint(t_iemarguments *symargp)
 {
-    return ((symargp->x_loadinit ? LOADINIT : 0) |
-        (symargp->x_scale ? (SCALE | SCALEBIS) : 0));
+    return ((symargp->iem_initializeAtLoad ? LOADINIT : 0) | (symargp->iem_scale ? (SCALE | SCALEBIS) : 0));
 }
 
-void iem_inttofstyle(t_iem_fstyle_flags *fstylep, int n)
+void iem_inttofstyle(t_iemflags *fstylep, int n)
 {
     memset (fstylep, 0, sizeof (*fstylep));
-    fstylep->x_font_style = (char)n;
+    fstylep->iem_font = (char)n;
 }
 
-int iem_fstyletoint(t_iem_fstyle_flags *fstylep)
+int iem_fstyletoint(t_iemflags *fstylep)
 {
-    return (int)fstylep->x_font_style;
+    return (int)fstylep->iem_font;
 }

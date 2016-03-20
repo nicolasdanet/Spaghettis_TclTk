@@ -48,30 +48,26 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef struct _iem_fstyle_flags {
-    char x_font_style;                  /* Unused but kept for compatibility. */
-    char x_rcv_able;
-    char x_snd_able;
-    char x_selected;
-    char x_finemoved;
-    char x_put_in2out;
-    char x_change;
-    char x_lin0_log1;
-    char x_steady;
-    } t_iem_fstyle_flags;
+typedef struct _iemflags {
+    char iem_font;                      /* Unused but kept for compatibility. */
+    char iem_canReceive;
+    char iem_canSend;
+    char iem_isSelected;
+    char iem_accurateMoving;
+    char iem_goThrough;
+    } t_iemflags;
 
-typedef struct _iem_init_symargs {
-    char x_loadinit;
-    char x_scale;
-    char x_flashed;
-    char x_locked;
-    } t_iem_init_symargs;
+typedef struct _iemarguments {
+    char iem_initializeAtLoad;
+    char iem_scale;                     /* Unused but kept for compatibility. */
+    char iem_flash;                     /* Unused. */
+    char iem_isLocked;
+    } t_iemarguments;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
-typedef void (*t_iemfunptr)(void *x, t_glist *glist, int mode);
+typedef void (*t_iemfn)(void *x, t_glist *glist, int mode);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -79,14 +75,14 @@ typedef void (*t_iemfunptr)(void *x, t_glist *glist, int mode);
 typedef struct _iem {
     t_object            x_obj;
     t_glist             *x_glist;
-    t_iemfunptr         x_draw;
+    t_iemfn             x_draw;
     int                 x_h;
     int                 x_w;
     int                 x_ldx;
     int                 x_ldy;
-    t_iem_fstyle_flags  x_fsf;
+    t_iemflags          x_fsf;
     int                 x_fontsize;
-    t_iem_init_symargs  x_isa;
+    t_iemarguments      x_isa;
     int                 x_fcol;
     int                 x_bcol;
     int                 x_lcol;
@@ -118,8 +114,8 @@ typedef struct _hslider {
     t_iem       x_gui;
     int         x_pos;
     int         x_val;
-    int         x_lin0_log1;
-    int         x_steady;
+    int         x_isLogarithmic;
+    int         x_isSteadyOnClick;
     double      x_min;
     double      x_max;
     double      x_k;
@@ -129,7 +125,7 @@ typedef struct _hslider {
 typedef struct _hradio {
     t_iem       x_gui;
     int         x_on;
-    int         x_change;
+    int         x_changed;
     int         x_number;
     int         x_drawn;
     t_float     x_fval;
@@ -153,8 +149,8 @@ typedef struct _vslider {
     t_iem       x_gui;
     int         x_pos;
     int         x_val;
-    int         x_lin0_log1;
-    int         x_steady;
+    int         x_isLogarithmic;
+    int         x_isSteadyOnClick;
     double      x_min;
     double      x_max;
     double      x_k;
@@ -183,7 +179,8 @@ typedef struct _my_numbox {
     double      x_min;
     double      x_max;
     double      x_k;
-    int         x_lin0_log1;
+    int         x_hasChanged;
+    int         x_isLogarithmic;
     char        x_buf[IEM_NUMBER_BUFFER_LENGTH];
     int         x_numwidth;
     int         x_log_height;
@@ -192,7 +189,7 @@ typedef struct _my_numbox {
 typedef struct _vradio {
     t_iem       x_gui;
     int         x_on;
-    int         x_change;
+    int         x_changed;
     int         x_number;
     int         x_drawn;
     t_float     x_fval;
@@ -249,10 +246,10 @@ void        iem_vis                     (t_gobj *z, t_glist *glist, int vis);
 void        iem_save                    (t_iem *iem, t_symbol **srl, int *bflcol);
 void        iem_properties              (t_iem *iem, t_symbol **srl);
 void        iem_dialog                  (t_iem *iem, t_symbol **srl, int argc, t_atom *argv);
-void        iem_inttosymargs            (t_iem_init_symargs *symargp, int n);
-int         iem_symargstoint            (t_iem_init_symargs *symargp);
-void        iem_inttofstyle             (t_iem_fstyle_flags *fstylep, int n);
-int         iem_fstyletoint             (t_iem_fstyle_flags *fstylep);
+void        iem_inttosymargs            (t_iemarguments *symargp, int n);
+int         iem_symargstoint            (t_iemarguments *symargp);
+void        iem_inttofstyle             (t_iemflags *fstylep, int n);
+int         iem_fstyletoint             (t_iemflags *fstylep);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

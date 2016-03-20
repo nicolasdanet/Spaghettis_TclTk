@@ -227,7 +227,7 @@ static void vu_draw_move(t_vu *x, t_glist *glist)
         yyy = k4 + k1*(k2-i);
         sys_vGui(".x%lx.c coords %lxRLED%d %d %d %d %d\n",
                  canvas, x, i, quad1, yyy, quad3, yyy);
-        /*if(((i+2)&3) && (x->x_scale))*/
+        /*if(((i+2)&3) && (x->iem_scale))*/
             /*sys_vGui(".x%lx.c coords %lxSCALE%d %d %d\n",
                      canvas, x, i, end, yyy+k3);*/
     }
@@ -270,7 +270,7 @@ static void vu_draw_erase(t_vu* x,t_glist* glist)
     for(i=1; i<=IEM_VUMETER_STEPS; i++)
     {
         sys_vGui(".x%lx.c delete %lxRLED%d\n", canvas, x, i);
-        /*if(((i+2)&3) && (x->x_scale))
+        /*if(((i+2)&3) && (x->iem_scale))
             sys_vGui(".x%lx.c delete %lxSCALE%d\n", canvas, x, i);*/
     }
     if(x->x_scale)
@@ -305,7 +305,7 @@ static void vu_draw_config(t_vu* x, t_glist* glist)
     }
     sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
              canvas, x, x->x_gui.x_fontsize,
-             x->x_gui.x_fsf.x_selected?IEM_COLOR_SELECTED:x->x_gui.x_lcol,
+             x->x_gui.x_fsf.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.x_lcol,
              strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"");
 
     sys_vGui(".x%lx.c itemconfigure %lxRCOVER -fill #%6.6x -outline #%6.6x\n", canvas,
@@ -348,12 +348,12 @@ static void vu_draw_select(t_vu* x,t_glist* glist)
     int i;
     t_canvas *canvas=glist_getcanvas(glist);
 
-    if(x->x_gui.x_fsf.x_selected)
+    if(x->x_gui.x_fsf.iem_isSelected)
     {
         sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
         for(i=1; i<=IEM_VUMETER_STEPS; i++)
         {
-            /*if(((i+2)&3) && (x->x_scale))
+            /*if(((i+2)&3) && (x->iem_scale))
                 sys_vGui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
                          canvas, x, i, IEM_COLOR_SELECTED);*/
         }
@@ -370,7 +370,7 @@ static void vu_draw_select(t_vu* x,t_glist* glist)
         sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_NORMAL);
         for(i=1; i<=IEM_VUMETER_STEPS; i++)
         {
-            /*if(((i+2)&3) && (x->x_scale))
+            /*if(((i+2)&3) && (x->iem_scale))
                 sys_vGui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
                          canvas, x, i, x->x_gui.x_lcol);*/
         }
@@ -520,8 +520,8 @@ static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
 
     srl[0] = gensym("empty");
     iem_dialog(&x->x_gui, srl, argc, argv);
-    x->x_gui.x_fsf.x_snd_able = 0;
-    x->x_gui.x_isa.x_loadinit = 0;
+    x->x_gui.x_fsf.iem_canSend = 0;
+    x->x_gui.x_isa.iem_initializeAtLoad = 0;
     x->x_gui.x_w = iem_clip_size(w);
     vu_check_height(x, h);
     if(scale != 0)
@@ -652,15 +652,15 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     else iem_new_getnames(&x->x_gui, 1, 0);
     if((argc == 12)&&IS_FLOAT_INDEX(argv,11))
         iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(11, argc, argv));
-    x->x_gui.x_draw = (t_iemfunptr)vu_draw;
+    x->x_gui.x_draw = (t_iemfn)vu_draw;
 
-    x->x_gui.x_fsf.x_snd_able = 0;
-    x->x_gui.x_fsf.x_rcv_able = 1;
+    x->x_gui.x_fsf.iem_canSend = 0;
+    x->x_gui.x_fsf.iem_canReceive = 1;
     x->x_gui.x_glist = (t_glist *)canvas_getcurrent();
     if (!strcmp(x->x_gui.x_rcv->s_name, "empty"))
-        x->x_gui.x_fsf.x_rcv_able = 0;
+        x->x_gui.x_fsf.iem_canReceive = 0;
 
-    if(x->x_gui.x_fsf.x_rcv_able)
+    if(x->x_gui.x_fsf.iem_canReceive)
         pd_bind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     x->x_gui.x_ldx = ldx;
     x->x_gui.x_ldy = ldy;
@@ -687,7 +687,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
 
 static void vu_free(t_vu *x)
 {
-    if(x->x_gui.x_fsf.x_rcv_able)
+    if(x->x_gui.x_fsf.iem_canReceive)
         pd_unbind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     gfxstub_deleteforkey(x);
 }

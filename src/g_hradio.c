@@ -147,7 +147,7 @@ void hradio_draw_config(t_hradio* x, t_glist* glist)
 
     sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
              canvas, x, x->x_gui.x_fontsize,
-             x->x_gui.x_fsf.x_selected?IEM_COLOR_SELECTED:x->x_gui.x_lcol,
+             x->x_gui.x_fsf.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.x_lcol,
              strcmp(x->x_gui.x_lab->s_name, "empty")?x->x_gui.x_lab->s_name:"");
     for(i=0; i<n; i++)
     {
@@ -181,7 +181,7 @@ void hradio_draw_select(t_hradio* x, t_glist* glist)
     t_canvas *canvas=glist_getcanvas(glist);
     int n=x->x_number, i;
 
-    if(x->x_gui.x_fsf.x_selected)
+    if(x->x_gui.x_fsf.iem_isSelected)
     {
         for(i=0; i<n; i++)
         {
@@ -243,7 +243,7 @@ static void hradio_save(t_gobj *z, t_buffer *b)
                 (int)x->x_gui.x_obj.te_xCoordinate, (int)x->x_gui.x_obj.te_yCoordinate,
                 gensym("hradio"),
                 x->x_gui.x_w,
-                x->x_change, iem_symargstoint(&x->x_gui.x_isa), x->x_number,
+                x->x_changed, iem_symargstoint(&x->x_gui.x_isa), x->x_number,
                 srl[0], srl[1], srl[2],
                 x->x_gui.x_ldx, x->x_gui.x_ldy,
                 iem_fstyletoint(&x->x_gui.x_fsf), x->x_gui.x_fontsize,
@@ -271,7 +271,7 @@ static void hradio_properties(t_gobj *z, t_glist *owner)
             %d %d %d \
             -1\n",
             x->x_gui.x_w, IEM_HRADIO_MINIMUM_SIZE,
-            x->x_gui.x_isa.x_loadinit,
+            x->x_gui.x_isa.iem_initializeAtLoad,
             x->x_number,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.x_ldx, x->x_gui.x_ldy,
@@ -288,7 +288,7 @@ static void hradio_dialog(t_hradio *x, t_symbol *s, int argc, t_atom *argv)
     int num = (int)(t_int)atom_getFloatAtIndex(6, argc, argv);
 
     if(chg != 0) chg = 1;
-    x->x_change = chg;
+    x->x_changed = chg;
     iem_dialog(&x->x_gui, srl, argc, argv);
     x->x_gui.x_w = iem_clip_size(a);
     x->x_gui.x_h = x->x_gui.x_w;
@@ -331,7 +331,7 @@ static void hradio_bang(t_hradio *x)
 {
         float outval = (0 ? x->x_on : x->x_fval);
         outlet_float(x->x_gui.x_obj.te_outlet, outval);
-        if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
+        if(x->x_gui.x_fsf.iem_canSend && x->x_gui.x_snd->s_thing)
             pd_float(x->x_gui.x_snd->s_thing, outval);
 }
 
@@ -349,7 +349,7 @@ static void hradio_fout(t_hradio *x, t_float f)
         x->x_on = i;
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_UPDATE);
         outlet_float(x->x_gui.x_obj.te_outlet, outval);
-        if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
+        if(x->x_gui.x_fsf.iem_canSend && x->x_gui.x_snd->s_thing)
             pd_float(x->x_gui.x_snd->s_thing, outval);
 }
 
@@ -365,10 +365,10 @@ static void hradio_float(t_hradio *x, t_float f)
         float outval = (0 ? i : x->x_fval);
         x->x_on = i;
         (*x->x_gui.x_draw)(x, x->x_gui.x_glist, IEM_DRAW_UPDATE);
-        if (x->x_gui.x_fsf.x_put_in2out)
+        if (x->x_gui.x_fsf.iem_goThrough)
         {
             outlet_float(x->x_gui.x_obj.te_outlet, outval);
-            if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
+            if(x->x_gui.x_fsf.iem_canSend && x->x_gui.x_snd->s_thing)
                 pd_float(x->x_gui.x_snd->s_thing, outval);
         }
 }
@@ -389,7 +389,7 @@ static int hradio_newclick(t_gobj *z, struct _glist *glist, int xpix, int ypix, 
 
 static void hradio_loadbang(t_hradio *x)
 {
-    if(x->x_gui.x_isa.x_loadinit)
+    if(x->x_gui.x_isa.iem_initializeAtLoad)
         hradio_bang(x);
 }
 
@@ -444,14 +444,14 @@ static void hradio_label_font(t_hradio *x, t_symbol *s, int ac, t_atom *av)
 
 static void hradio_init(t_hradio *x, t_float f)
 {
-    x->x_gui.x_isa.x_loadinit = (f==0.0)?0:1;
+    x->x_gui.x_isa.iem_initializeAtLoad = (f==0.0)?0:1;
 }
 
 static void hradio_double_change(t_hradio *x)
-{x->x_change = 1;}
+{x->x_changed = 1;}
 
 static void hradio_single_change(t_hradio *x)
-{x->x_change = 0;}
+{x->x_changed = 0;}
 
 static void *hradio_donew(t_symbol *s, int argc, t_atom *argv)
 {
@@ -491,14 +491,14 @@ static void *hradio_donew(t_symbol *s, int argc, t_atom *argv)
         fval = atom_getFloatAtIndex(14, argc, argv);
     }
     else iem_new_getnames(&x->x_gui, 4, 0);
-    x->x_gui.x_draw = (t_iemfunptr)hradio_draw;
-    x->x_gui.x_fsf.x_snd_able = 1;
-    x->x_gui.x_fsf.x_rcv_able = 1;
+    x->x_gui.x_draw = (t_iemfn)hradio_draw;
+    x->x_gui.x_fsf.iem_canSend = 1;
+    x->x_gui.x_fsf.iem_canReceive = 1;
     x->x_gui.x_glist = (t_glist *)canvas_getcurrent();
     if (!strcmp(x->x_gui.x_snd->s_name, "empty"))
-        x->x_gui.x_fsf.x_snd_able = 0;
+        x->x_gui.x_fsf.iem_canSend = 0;
     if (!strcmp(x->x_gui.x_rcv->s_name, "empty"))
-        x->x_gui.x_fsf.x_rcv_able = 0;
+        x->x_gui.x_fsf.iem_canReceive = 0;
 
     if(num < 1)
         num = 1;
@@ -511,12 +511,12 @@ static void *hradio_donew(t_symbol *s, int argc, t_atom *argv)
         on = 0;
     if(on >= x->x_number)
         on = x->x_number - 1;
-    if(x->x_gui.x_isa.x_loadinit)
+    if(x->x_gui.x_isa.iem_initializeAtLoad)
         x->x_on = on;
     else
         x->x_on = 0;
-    x->x_change = (chg==0)?0:1;
-    if (x->x_gui.x_fsf.x_rcv_able)
+    x->x_changed = (chg==0)?0:1;
+    if (x->x_gui.x_fsf.iem_canReceive)
         pd_bind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     x->x_gui.x_ldx = ldx;
     x->x_gui.x_ldy = ldy;
@@ -538,7 +538,7 @@ static void *hradio_new(t_symbol *s, int argc, t_atom *argv)
 
 static void hradio_ff(t_hradio *x)
 {
-    if(x->x_gui.x_fsf.x_rcv_able)
+    if(x->x_gui.x_fsf.iem_canReceive)
         pd_unbind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     gfxstub_deleteforkey(x);
 }

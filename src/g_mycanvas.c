@@ -88,7 +88,7 @@ void my_canvas_draw_config(t_my_canvas* x, t_glist* glist)
     sys_vGui(".x%lx.c itemconfigure %lxRECT -fill #%6.6x -outline #%6.6x\n", canvas, x,
              x->x_gui.x_bcol, x->x_gui.x_bcol);
     sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x,
-             x->x_gui.x_fsf.x_selected?IEM_COLOR_SELECTED:x->x_gui.x_bcol);
+             x->x_gui.x_fsf.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.x_bcol);
     sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
              canvas, x, x->x_gui.x_fontsize,
              x->x_gui.x_lcol,
@@ -99,7 +99,7 @@ void my_canvas_draw_select(t_my_canvas* x, t_glist* glist)
 {
     t_canvas *canvas=glist_getcanvas(glist);
 
-    if(x->x_gui.x_fsf.x_selected)
+    if(x->x_gui.x_fsf.iem_isSelected)
     {
         sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
     }
@@ -180,7 +180,7 @@ static void my_canvas_properties(t_gobj *z, t_glist *owner)
 
 static void my_canvas_get_pos(t_my_canvas *x)
 {
-    if(x->x_gui.x_fsf.x_snd_able && x->x_gui.x_snd->s_thing)
+    if(x->x_gui.x_fsf.iem_canSend && x->x_gui.x_snd->s_thing)
     {
         x->x_at[0].a_w.w_float = text_xpix(&x->x_gui.x_obj, x->x_gui.x_glist);
         x->x_at[1].a_w.w_float = text_ypix(&x->x_gui.x_obj, x->x_gui.x_glist);
@@ -196,7 +196,7 @@ static void my_canvas_dialog(t_my_canvas *x, t_symbol *s, int argc, t_atom *argv
     int h = (int)(t_int)atom_getFloatAtIndex(3, argc, argv);
     iem_dialog(&x->x_gui, srl, argc, argv);
 
-    x->x_gui.x_isa.x_loadinit = 0;
+    x->x_gui.x_isa.iem_initializeAtLoad = 0;
     if(a < 1)
         a = 1;
     x->x_gui.x_w = a;
@@ -318,14 +318,14 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     {
         iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(i+10, argc, argv));
     }
-    x->x_gui.x_draw = (t_iemfunptr)my_canvas_draw;
-    x->x_gui.x_fsf.x_snd_able = 1;
-    x->x_gui.x_fsf.x_rcv_able = 1;
+    x->x_gui.x_draw = (t_iemfn)my_canvas_draw;
+    x->x_gui.x_fsf.iem_canSend = 1;
+    x->x_gui.x_fsf.iem_canReceive = 1;
     x->x_gui.x_glist = (t_glist *)canvas_getcurrent();
     if (!strcmp(x->x_gui.x_snd->s_name, "empty"))
-        x->x_gui.x_fsf.x_snd_able = 0;
+        x->x_gui.x_fsf.iem_canSend = 0;
     if (!strcmp(x->x_gui.x_rcv->s_name, "empty"))
-        x->x_gui.x_fsf.x_rcv_able = 0;
+        x->x_gui.x_fsf.iem_canReceive = 0;
     if(a < 1)
         a = 1;
     x->x_gui.x_w = a;
@@ -337,7 +337,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
         h = 1;
     x->x_vis_h = h;
 
-    if (x->x_gui.x_fsf.x_rcv_able)
+    if (x->x_gui.x_fsf.iem_canReceive)
         pd_bind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     x->x_gui.x_ldx = ldx;
     x->x_gui.x_ldy = ldy;
@@ -353,7 +353,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
 
 static void my_canvas_ff(t_my_canvas *x)
 {
-    if(x->x_gui.x_fsf.x_rcv_able)
+    if(x->x_gui.x_fsf.iem_canReceive)
         pd_unbind(&x->x_gui.x_obj.te_g.g_pd, x->x_gui.x_rcv);
     gfxstub_deleteforkey(x);
 }
