@@ -422,7 +422,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     iem_loadColors(&x->x_gui, bflcol);
-    iem_verify_snd_ne_rcv(&x->x_gui);
+    iem_checkSendReceiveLoop(&x->x_gui);
     outlet_new(&x->x_gui.iem_obj, &s_float);
     return (x);
 }

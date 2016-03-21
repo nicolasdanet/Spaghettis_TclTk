@@ -347,7 +347,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     iem_loadColors(&x->x_gui, bflcol);
     x->x_at[0].a_type = A_FLOAT;
     x->x_at[1].a_type = A_FLOAT;
-    iem_verify_snd_ne_rcv(&x->x_gui);
+    iem_checkSendReceiveLoop(&x->x_gui);
     return (x);
 }
 

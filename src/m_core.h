@@ -174,8 +174,9 @@ t_error     utils_version                               (char *dest, size_t size
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_symbol    *dollar_toRaute                             (t_symbol *s);
+t_symbol    *dollar_fromRaute                           (t_symbol *s);
 t_symbol    *dollar_substituteDollarSymbol              (t_symbol *s, int argc, t_atom *argv);
-
 void        dollar_substituteDollarNumber               (t_atom *dollar, t_atom *a, int argc, t_atom *argv);
 int         dollar_isDollarNumber                       (char *s);
 int         dollar_isPointingToDollarAndNumber          (char *s);

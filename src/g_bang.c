@@ -494,7 +494,7 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
     bng_check_minmax(x, ftbreak, fthold);
     iem_loadColors(&x->x_gui, bflcol);
     x->x_gui.x_isa.iem_isLocked = 0;
-    iem_verify_snd_ne_rcv(&x->x_gui);
+    iem_checkSendReceiveLoop(&x->x_gui);
     x->x_clock_hld = clock_new(x, (t_method)bng_tick_hld);
     x->x_clock_brk = clock_new(x, (t_method)bng_tick_brk);
     x->x_clock_lck = clock_new(x, (t_method)bng_tick_lck);

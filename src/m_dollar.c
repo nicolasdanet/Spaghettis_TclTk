@@ -17,6 +17,30 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* True if the string start with a dollar following by zero or more numbers. */
+
+int dollar_isDollarNumber (char *s)
+{
+    if (*s != '$') { return 0; } while (*(++s)) { if (*s < '0' || *s > '9') { return 0; } }
+    
+    return 1;
+}
+
+/* True if the string start with a dollar following by one number. */
+
+int dollar_isPointingToDollarAndNumber (char *s)
+{
+    PD_ASSERT (s[0] != 0);
+    
+    if (s[0] != '$' || s[1] < '0' || s[1] > '9') { return 0; }
+    
+    return 1;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static int dollar_substitute (char *s, char *buf, int size, int argc, t_atom *argv)
 {
     int n = (int)atol (s);      /* Note that atol return zero for an invalid number. */
@@ -59,25 +83,7 @@ static int dollar_substitute (char *s, char *buf, int size, int argc, t_atom *ar
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int dollar_isDollarNumber (char *s)
-{
-    if (*s != '$') { return 0; } while (*(++s)) { if (*s < '0' || *s > '9') { return 0; } }
-    
-    return 1;
-}
-
-int dollar_isPointingToDollarAndNumber (char *s)
-{
-    PD_ASSERT (s[0] != 0);
-    
-    if (s[0] != '$' || s[1] < '0' || s[1] > '9') { return 0; }
-    
-    return 1;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+/* Dollar symbol subsitution (e.g. '$1-foo' to 'bar-foo'). */
 
 t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv)
 {
@@ -119,6 +125,8 @@ t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv)
     }
 }
 
+/* Dollar substitution (e.g. '$1' to 'foo'). */
+
 void dollar_substituteDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *argv)
 {
     int n = GET_DOLLAR (dollar);
@@ -130,6 +138,52 @@ void dollar_substituteDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom 
     else {
         post_error (PD_TRANSLATE ("$: invalid substitution"));  // --
         SET_FLOAT (a, 0.0);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_symbol *dollar_toRaute (t_symbol *s)
+{
+    char t[PD_STRING + 1] = { 0 };
+    char *s1 = NULL;
+    char *s2 = NULL;
+    
+    if (strlen (s->s_name) >= PD_STRING) { PD_BUG; return s; }
+    else {
+    //
+    for (s1 = s->s_name, s2 = t; ; s1++, s2++) {
+        if (*s1 == '$') { *s2 = '#'; }
+        else if (!(*s2 = *s1)) {
+            break;
+        }
+    }
+    
+    return (gensym (t));
+    //
+    }
+}
+
+t_symbol *dollar_fromRaute (t_symbol *s)
+{
+    char t[PD_STRING + 1] = { 0 };
+    char *s1 = NULL;
+    char *s2 = NULL;
+    
+    if (strlen (s->s_name) >= PD_STRING) { return s; }
+    else {
+    //
+    for (s1 = s->s_name, s2 = t; ; s1++, s2++) {
+        if (*s1 == '#') { *s2 = '$'; }
+        else if (!(*s2 = *s1)) {
+            break;
+        }
+    }
+    
+    return (gensym (t));
+    //
     }
 }
 

@@ -83,49 +83,20 @@ void iem_loadColors (t_iem *iem, t_iemcolors *c)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol *iem_dollar2raute(t_symbol *s)
+void iem_checkSendReceiveLoop (t_iem *iem)
 {
-    char buf[PD_STRING+1], *s1, *s2;
-    if (strlen(s->s_name) >= PD_STRING)
-        return (s);
-    for (s1 = s->s_name, s2 = buf; ; s1++, s2++)
-    {
-        if (*s1 == '$')
-            *s2 = '#';
-        else if (!(*s2 = *s1))
-            break;
+    iem->iem_flags.iem_goThrough = 1;
+    
+    if (iem->iem_flags.iem_canSend && iem->iem_flags.iem_canReceive) {
+        if (!strcmp (iem->iem_send->s_name, iem->iem_receive->s_name)) {
+            iem->iem_flags.iem_goThrough = 0;
+        }
     }
-    return(gensym(buf));
-}
-
-t_symbol *iem_raute2dollar(t_symbol *s)
-{
-    char buf[PD_STRING+1], *s1, *s2;
-    if (strlen(s->s_name) >= PD_STRING)
-        return (s);
-    for (s1 = s->s_name, s2 = buf; ; s1++, s2++)
-    {
-        if (*s1 == '#')
-            *s2 = '$';
-        else if (!(*s2 = *s1))
-            break;
-    }
-    return(gensym(buf));
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void iem_verify_snd_ne_rcv(t_iem *iem)
-{
-    iem->iem_flags.iem_goThrough = 1;
-    if(iem->iem_flags.iem_canSend && iem->iem_flags.iem_canReceive)
-    {
-        if(!strcmp(iem->iem_send->s_name, iem->iem_receive->s_name))
-            iem->iem_flags.iem_goThrough = 0;
-    }
-}
 
 t_symbol *iem_new_dogetname(t_iem *iem, int indx, t_atom *argv)
 {
@@ -154,6 +125,10 @@ void iem_new_getnames(t_iem *iem, int indx, t_atom *argv)
     iem->iem_indexBuffer = indx;
     iem->iem_indexLabel = indx + 3;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* convert symbols in "$" form to the expanded symbols */
 void iem_all_dollararg2sym(t_iem *iem, t_symbol **srlsym)
@@ -205,16 +180,16 @@ void iem_all_sym2dollararg(t_iem *iem, t_symbol **srlsym)
 
 void iem_all_dollar2raute(t_symbol **srlsym)
 {
-    srlsym[0] = iem_dollar2raute(srlsym[0]);
-    srlsym[1] = iem_dollar2raute(srlsym[1]);
-    srlsym[2] = iem_dollar2raute(srlsym[2]);
+    srlsym[0] = dollar_toRaute(srlsym[0]);
+    srlsym[1] = dollar_toRaute(srlsym[1]);
+    srlsym[2] = dollar_toRaute(srlsym[2]);
 }
 
 void iem_all_raute2dollar(t_symbol **srlsym)
 {
-    srlsym[0] = iem_raute2dollar(srlsym[0]);
-    srlsym[1] = iem_raute2dollar(srlsym[1]);
-    srlsym[2] = iem_raute2dollar(srlsym[2]);
+    srlsym[0] = dollar_fromRaute(srlsym[0]);
+    srlsym[1] = dollar_fromRaute(srlsym[1]);
+    srlsym[2] = dollar_fromRaute(srlsym[2]);
 }
 
 void iem_send(void *x, t_iem *iem, t_symbol *s)
@@ -224,11 +199,11 @@ void iem_send(void *x, t_iem *iem, t_symbol *s)
     t_atom *pargv;
 
     if(!strcmp(s->s_name, "empty")) sndable = 0;
-    snd = iem_raute2dollar(s);
+    snd = dollar_fromRaute(s);
     iem->iem_unexpandedSend = snd;
     iem->iem_send = snd = canvas_realizedollar(iem->iem_glist, snd);
     iem->iem_flags.iem_canSend = sndable;
-    iem_verify_snd_ne_rcv(iem);
+    iem_checkSendReceiveLoop(iem);
     (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_IO);
 }
 
@@ -239,7 +214,7 @@ void iem_receive(void *x, t_iem *iem, t_symbol *s)
     t_atom *pargv;
 
     if(!strcmp(s->s_name, "empty")) rcvable = 0;
-    rcv = iem_raute2dollar(s);
+    rcv = dollar_fromRaute(s);
     iem->iem_unexpandedReceive = rcv;
     rcv = canvas_realizedollar(iem->iem_glist, rcv);
     if(rcvable)
@@ -258,7 +233,7 @@ void iem_receive(void *x, t_iem *iem, t_symbol *s)
         iem->iem_receive = rcv;
     }
     iem->iem_flags.iem_canReceive = rcvable;
-    iem_verify_snd_ne_rcv(iem);
+    iem_checkSendReceiveLoop(iem);
     (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_IO);
 }
 
@@ -274,7 +249,7 @@ void iem_label(void *x, t_iem *iem, t_symbol *s)
         /* tb } */
 
     old = iem->iem_label;
-    iem->iem_unexpandedLabel = iem_raute2dollar(s);
+    iem->iem_unexpandedLabel = dollar_fromRaute(s);
     iem->iem_label = canvas_realizedollar(iem->iem_glist, iem->iem_unexpandedLabel);
 
     if(glist_isvisible(iem->iem_glist) && iem->iem_label != old)
@@ -462,7 +437,7 @@ void iem_dialog(t_iem *iem, t_symbol **srl, int argc, t_atom *argv)
     if(fs < 4)
         fs = 4;
     iem->iem_fontSize = fs;
-    iem_verify_snd_ne_rcv(iem);
+    iem_checkSendReceiveLoop(iem);
     canvas_dirty(iem->iem_glist, 1);
 }
 

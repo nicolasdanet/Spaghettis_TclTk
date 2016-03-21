@@ -687,7 +687,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     x->x_rms = 0;
     x->x_fp = -101.0;
     x->x_fr = -101.0;
-    iem_verify_snd_ne_rcv(&x->x_gui);
+    iem_checkSendReceiveLoop(&x->x_gui);
     inlet_new(&x->x_gui.iem_obj, &x->x_gui.iem_obj.te_g.g_pd, &s_float, gensym("ft1"));
     x->x_out_rms = outlet_new(&x->x_gui.iem_obj, &s_float);
     x->x_out_peak = outlet_new(&x->x_gui.iem_obj, &s_float);

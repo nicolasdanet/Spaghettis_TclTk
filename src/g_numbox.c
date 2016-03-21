@@ -824,7 +824,7 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
     my_numbox_calc_fontwidth(x);
     my_numbox_check_minmax(x, min, max);
     iem_loadColors(&x->x_gui, bflcol);
-    iem_verify_snd_ne_rcv(&x->x_gui);
+    iem_checkSendReceiveLoop(&x->x_gui);
     x->x_clock_reset = clock_new(x, (t_method)my_numbox_tick_reset);
     x->x_clock_wait = clock_new(x, (t_method)my_numbox_tick_wait);
     x->x_hasChanged = 0;

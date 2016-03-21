@@ -225,6 +225,11 @@ typedef struct _vradio {
 void        iem_saveColors              (t_iem *iem, t_iemcolors *c);
 void        iem_loadColors              (t_iem *iem, t_iemcolors *c);
 
+void        iem_checkSendReceiveLoop    (t_iem *iem);
+
+t_symbol    *iem_new_dogetname          (t_iem *iem, int indx, t_atom *argv);
+void        iem_new_getnames            (t_iem *iem, int indx, t_atom *argv);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -237,12 +242,9 @@ int         iem_is_dollarzero           (t_symbol *s);
 int         iem_is_dollararg            (t_symbol *s, int *tail_len);
 void        iem_fetch_unique            (t_iem *iem);
 void        iem_fetch_parent_args       (t_iem *iem, int *pargc, t_atom **pargv);
-void        iem_verify_snd_ne_rcv       (t_iem *iem);
 void        iem_all_unique2dollarzero   (t_iem *iem, t_symbol **srlsym);
 void        iem_all_sym2dollararg       (t_iem *iem, t_symbol **srlsym);
 void        iem_all_dollarzero2unique   (t_iem *iem, t_symbol **srlsym);
-t_symbol    *iem_new_dogetname          (t_iem *iem, int indx, t_atom *argv);
-void        iem_new_getnames            (t_iem *iem, int indx, t_atom *argv);
 void        iem_all_dollararg2sym       (t_iem *iem, t_symbol **srlsym);
 void        iem_all_dollar2raute        (t_symbol **srlsym);
 void        iem_all_raute2dollar        (t_symbol **srlsym);

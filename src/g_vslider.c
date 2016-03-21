@@ -583,7 +583,7 @@ static void *vslider_new(t_symbol *s, int argc, t_atom *argv)
     vslider_check_height(x, h);
     vslider_check_minmax(x, min, max);
     iem_loadColors(&x->x_gui, bflcol);
-    iem_verify_snd_ne_rcv(&x->x_gui);
+    iem_checkSendReceiveLoop(&x->x_gui);
     outlet_new(&x->x_gui.iem_obj, &s_float);
     x->x_fval = vslider_getfval(x);
     return (x);
