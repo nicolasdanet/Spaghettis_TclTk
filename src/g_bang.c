@@ -248,7 +248,7 @@ static void bng_properties(t_gobj *z, t_glist *owner)
             -1\n",
             x->x_gui.iem_width, IEM_BANG_MINIMUM_SIZE,
             x->x_flashtime_break, x->x_flashtime_hold,
-            x->x_gui.x_isa.iem_initializeAtLoad,
+            x->x_gui.x_isa.iem_loadOnStart,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
@@ -323,7 +323,7 @@ static void bng_dialog(t_bng *x, t_symbol *s, int argc, t_atom *argv)
     int ftbreak = (int)(t_int)atom_getFloatAtIndex(3, argc, argv);
     iem_dialog(&x->x_gui, srl, argc, argv);
 
-    x->x_gui.iem_width = iem_clip_size(a);
+    x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     bng_check_minmax(x, ftbreak, fthold);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
@@ -364,7 +364,7 @@ static void bng_anything(t_bng *x, t_symbol *s, int argc, t_atom *argv)
 
 static void bng_loadbang(t_bng *x)
 {
-    if(x->x_gui.x_isa.iem_initializeAtLoad)
+    if(x->x_gui.x_isa.iem_loadOnStart)
     {
         bng_set(x);
         bng_bout2(x);
@@ -373,7 +373,8 @@ static void bng_loadbang(t_bng *x)
 
 static void bng_size(t_bng *x, t_symbol *s, int ac, t_atom *av)
 {
-    x->x_gui.iem_width = iem_clip_size((int)(t_int)atom_getFloatAtIndex(0, ac, av));
+    int w = atom_getFloatAtIndex(0, ac, av);
+    x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     iem_size((void *)x, &x->x_gui);
 }
@@ -410,7 +411,7 @@ static void bng_label_font(t_bng *x, t_symbol *s, int ac, t_atom *av)
 
 static void bng_init(t_bng *x, t_float f)
 {
-    x->x_gui.x_isa.iem_initializeAtLoad = (f==0.0)?0:1;
+    x->x_gui.x_isa.iem_loadOnStart = (f==0.0)?0:1;
 }
 
 static void bng_tick_hld(t_bng *x)
@@ -488,7 +489,7 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
     if(fs < 4)
         fs = 4;
     x->x_gui.iem_fontSize = fs;
-    x->x_gui.iem_width = iem_clip_size(a);
+    x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     bng_check_minmax(x, ftbreak, fthold);
     iem_loadColors(&x->x_gui, bflcol);

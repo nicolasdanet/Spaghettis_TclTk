@@ -286,7 +286,7 @@ static void vslider_properties(t_gobj *z, t_glist *owner)
             x->x_gui.iem_width, IEM_VSLIDER_MINIMUM_WIDTH, x->x_gui.iem_height, IEM_VSLIDER_MINIMUM_HEIGHT,
             x->x_min, x->x_max,
             x->x_isLogarithmic, 
-            x->x_gui.x_isa.iem_initializeAtLoad,
+            x->x_gui.x_isa.iem_loadOnStart,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
@@ -336,7 +336,7 @@ static void vslider_dialog(t_vslider *x, t_symbol *s, int argc, t_atom *argv)
     else
         x->x_isSteadyOnClick = 0;
     iem_dialog(&x->x_gui, srl, argc, argv);
-    x->x_gui.iem_width = iem_clip_size(w);
+    x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     vslider_check_height(x, h);
     vslider_check_minmax(x, min, max);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
@@ -447,7 +447,8 @@ static void vslider_float(t_vslider *x, t_float f)
 
 static void vslider_size(t_vslider *x, t_symbol *s, int ac, t_atom *av)
 {
-    x->x_gui.iem_width = iem_clip_size((int)(t_int)atom_getFloatAtIndex(0, ac, av));
+    int w = atom_getFloatAtIndex(0, ac, av);
+    x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     if(ac > 1)
         vslider_check_height(x, (int)(t_int)atom_getFloatAtIndex(1, ac, av));
     iem_size((void *)x, &x->x_gui);
@@ -497,7 +498,7 @@ static void vslider_lin(t_vslider *x)
 
 static void vslider_init(t_vslider *x, t_float f)
 {
-    x->x_gui.x_isa.iem_initializeAtLoad = (f==0.0)?0:1;
+    x->x_gui.x_isa.iem_loadOnStart = (f==0.0)?0:1;
 }
 
 static void vslider_steady(t_vslider *x, t_float f)
@@ -507,7 +508,7 @@ static void vslider_steady(t_vslider *x, t_float f)
 
 static void vslider_loadbang(t_vslider *x)
 {
-    if(x->x_gui.x_isa.iem_initializeAtLoad)
+    if(x->x_gui.x_isa.iem_loadOnStart)
     {
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
         vslider_bang(x);
@@ -561,7 +562,7 @@ static void *vslider_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_flags.iem_canSend = 1;
     x->x_gui.iem_flags.iem_canReceive = 1;
     x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
-    if (x->x_gui.x_isa.iem_initializeAtLoad)
+    if (x->x_gui.x_isa.iem_loadOnStart)
         x->x_val = v;
     else x->x_val = 0;
     x->x_pos = x->x_val;
@@ -578,7 +579,7 @@ static void *vslider_new(t_symbol *s, int argc, t_atom *argv)
     if(fs < 4)
         fs = 4;
     x->x_gui.iem_fontSize = fs;
-    x->x_gui.iem_width = iem_clip_size(w);
+    x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     vslider_check_height(x, h);
     vslider_check_minmax(x, min, max);
     iem_loadColors(&x->x_gui, bflcol);

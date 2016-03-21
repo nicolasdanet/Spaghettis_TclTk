@@ -27,13 +27,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define IEM_MINIMUM_SIZE            8
-#define IEM_MINIMUM_FONTSIZE        4
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 /* Ensure compatibility with the original format. */
 /* By the way legacy predefined colors are not supported. */
 /* Only the 6 MSB are kept for each component. */
@@ -90,23 +83,6 @@ void iem_loadColors (t_iem *iem, t_iemcolors *c)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/*------------------ global functions -------------------------*/
-
-
-int iem_clip_size(int size)
-{
-    if(size < IEM_MINIMUM_SIZE)
-        size = IEM_MINIMUM_SIZE;
-    return(size);
-}
-
-int iem_clip_font(int size)
-{
-    if(size < IEM_MINIMUM_FONTSIZE)
-        size = IEM_MINIMUM_FONTSIZE;
-    return(size);
-}
-
 t_symbol *iem_dollar2raute(t_symbol *s)
 {
     char buf[PD_STRING+1], *s1, *s2;
@@ -136,6 +112,10 @@ t_symbol *iem_raute2dollar(t_symbol *s)
     }
     return(gensym(buf));
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void iem_verify_snd_ne_rcv(t_iem *iem)
 {
@@ -450,7 +430,7 @@ void iem_dialog(t_iem *iem, t_symbol **srl, int argc, t_atom *argv)
         srl[2] = gensym(str);
     }
     if(init != 0) init = 1;
-    iem->x_isa.iem_initializeAtLoad = init;
+    iem->x_isa.iem_loadOnStart = init;
     if(!strcmp(srl[0]->s_name, "empty")) sndable = 0;
     if(!strcmp(srl[1]->s_name, "empty")) rcvable = 0;
     iem_all_raute2dollar(srl);
@@ -497,7 +477,7 @@ we can stop writing the annoying  1<<20 bit. */
 void iem_inttosymargs(t_iemarguments *symargp, int n)
 {
     memset(symargp, 0, sizeof(*symargp));
-    symargp->iem_initializeAtLoad = ((n & LOADINIT) != 0);
+    symargp->iem_loadOnStart = ((n & LOADINIT) != 0);
     symargp->iem_scale = ((n & SCALE) || (n & SCALEBIS)) ;
     symargp->iem_flash = 0;
     symargp->iem_isLocked = 0;
@@ -505,7 +485,7 @@ void iem_inttosymargs(t_iemarguments *symargp, int n)
 
 int iem_symargstoint(t_iemarguments *symargp)
 {
-    return ((symargp->iem_initializeAtLoad ? LOADINIT : 0) | (symargp->iem_scale ? (SCALE | SCALEBIS) : 0));
+    return ((symargp->iem_loadOnStart ? LOADINIT : 0) | (symargp->iem_scale ? (SCALE | SCALEBIS) : 0));
 }
 
 void iem_inttofstyle(t_iemflags *fstylep, int n)

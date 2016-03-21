@@ -271,7 +271,7 @@ static void hradio_properties(t_gobj *z, t_glist *owner)
             %d %d %d \
             -1\n",
             x->x_gui.iem_width, IEM_HRADIO_MINIMUM_SIZE,
-            x->x_gui.x_isa.iem_initializeAtLoad,
+            x->x_gui.x_isa.iem_loadOnStart,
             x->x_number,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
@@ -290,7 +290,7 @@ static void hradio_dialog(t_hradio *x, t_symbol *s, int argc, t_atom *argv)
     if(chg != 0) chg = 1;
     x->x_changed = chg;
     iem_dialog(&x->x_gui, srl, argc, argv);
-    x->x_gui.iem_width = iem_clip_size(a);
+    x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     if(x->x_number != num)
     {
@@ -389,7 +389,7 @@ static int hradio_newclick(t_gobj *z, struct _glist *glist, int xpix, int ypix, 
 
 static void hradio_loadbang(t_hradio *x)
 {
-    if(x->x_gui.x_isa.iem_initializeAtLoad)
+    if(x->x_gui.x_isa.iem_loadOnStart)
         hradio_bang(x);
 }
 
@@ -413,7 +413,8 @@ static void hradio_number(t_hradio *x, t_float num)
 
 static void hradio_size(t_hradio *x, t_symbol *s, int ac, t_atom *av)
 {
-    x->x_gui.iem_width = iem_clip_size((int)(t_int)atom_getFloatAtIndex(0, ac, av));
+    int w = atom_getFloatAtIndex(0, ac, av);
+    x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     iem_size((void *)x, &x->x_gui);
 }
@@ -444,7 +445,7 @@ static void hradio_label_font(t_hradio *x, t_symbol *s, int ac, t_atom *av)
 
 static void hradio_init(t_hradio *x, t_float f)
 {
-    x->x_gui.x_isa.iem_initializeAtLoad = (f==0.0)?0:1;
+    x->x_gui.x_isa.iem_loadOnStart = (f==0.0)?0:1;
 }
 
 static void hradio_double_change(t_hradio *x)
@@ -511,7 +512,7 @@ static void *hradio_donew(t_symbol *s, int argc, t_atom *argv)
         on = 0;
     if(on >= x->x_number)
         on = x->x_number - 1;
-    if(x->x_gui.x_isa.iem_initializeAtLoad)
+    if(x->x_gui.x_isa.iem_loadOnStart)
         x->x_on = on;
     else
         x->x_on = 0;
@@ -523,7 +524,7 @@ static void *hradio_donew(t_symbol *s, int argc, t_atom *argv)
     if(fs < 4)
         fs = 4;
     x->x_gui.iem_fontSize = fs;
-    x->x_gui.iem_width = iem_clip_size(a);
+    x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     iem_verify_snd_ne_rcv(&x->x_gui);
     iem_loadColors(&x->x_gui, bflcol);

@@ -462,7 +462,7 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
             x->x_gui.iem_width, 1, x->x_gui.iem_height, 8,
             x->x_min, x->x_max,
             x->x_isLogarithmic, 
-            x->x_gui.x_isa.iem_initializeAtLoad,
+            x->x_gui.x_isa.iem_loadOnStart,
             x->x_log_height, /*no multi, but iem-characteristic*/
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
@@ -680,12 +680,12 @@ static void my_numbox_lin(t_my_numbox *x)
 
 static void my_numbox_init(t_my_numbox *x, t_float f)
 {
-    x->x_gui.x_isa.iem_initializeAtLoad = (f==0.0)?0:1;
+    x->x_gui.x_isa.iem_loadOnStart = (f==0.0)?0:1;
 }
 
 static void my_numbox_loadbang(t_my_numbox *x)
 {
-    if(x->x_gui.x_isa.iem_initializeAtLoad)
+    if(x->x_gui.x_isa.iem_loadOnStart)
     {
         interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
         my_numbox_bang(x);
@@ -793,7 +793,7 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_flags.iem_canSend = 1;
     x->x_gui.iem_flags.iem_canReceive = 1;
     x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
-    if(x->x_gui.x_isa.iem_initializeAtLoad)
+    if(x->x_gui.x_isa.iem_loadOnStart)
         x->x_val = v;
     else
         x->x_val = 0.0;

@@ -234,7 +234,7 @@ static void toggle_properties(t_gobj *z, t_glist *owner)
             -1\n",
             x->x_gui.iem_width, IEM_TOGGLE_MINIMUM_SIZE,
             x->x_nonzero,
-            x->x_gui.x_isa.iem_initializeAtLoad,
+            x->x_gui.x_isa.iem_loadOnStart,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
@@ -263,7 +263,7 @@ static void toggle_dialog(t_toggle *x, t_symbol *s, int argc, t_atom *argv)
     if(x->x_on != 0.0)
         x->x_on = x->x_nonzero;
     iem_dialog(&x->x_gui, srl, argc, argv);
-    x->x_gui.iem_width = iem_clip_size(a);
+    x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_IO);
@@ -312,13 +312,14 @@ static void toggle_fout(t_toggle *x, t_float f)
 
 static void toggle_loadbang(t_toggle *x)
 {
-    if(x->x_gui.x_isa.iem_initializeAtLoad)
+    if(x->x_gui.x_isa.iem_loadOnStart)
         toggle_fout(x, (t_float)x->x_on);
 }
 
 static void toggle_size(t_toggle *x, t_symbol *s, int ac, t_atom *av)
 {
-    x->x_gui.iem_width = iem_clip_size((int)(t_int)atom_getFloatAtIndex(0, ac, av));
+    int w = atom_getFloatAtIndex(0, ac, av);
+    x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     iem_size((void *)x, &x->x_gui);
 }
@@ -349,7 +350,7 @@ static void toggle_label_pos(t_toggle *x, t_symbol *s, int ac, t_atom *av)
 
 static void toggle_init(t_toggle *x, t_float f)
 {
-    x->x_gui.x_isa.iem_initializeAtLoad = (f==0.0)?0:1;
+    x->x_gui.x_isa.iem_loadOnStart = (f==0.0)?0:1;
 }
 
 static void toggle_nonzero(t_toggle *x, t_float f)
@@ -406,7 +407,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
         x->x_gui.iem_flags.iem_canReceive = 0;
 
     x->x_nonzero = (nonzero!=0.0)?nonzero:1.0;
-    if(x->x_gui.x_isa.iem_initializeAtLoad)
+    if(x->x_gui.x_isa.iem_loadOnStart)
         x->x_on = (on!=0.0)?nonzero:0.0;
     else
         x->x_on = 0.0;
@@ -418,7 +419,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
     if(fs < 4)
         fs = 4;
     x->x_gui.iem_fontSize = fs;
-    x->x_gui.iem_width = iem_clip_size(a);
+    x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     iem_loadColors(&x->x_gui, bflcol);
     iem_verify_snd_ne_rcv(&x->x_gui);

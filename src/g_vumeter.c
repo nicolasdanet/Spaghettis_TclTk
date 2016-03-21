@@ -529,8 +529,8 @@ static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
     srl[0] = gensym("empty");
     iem_dialog(&x->x_gui, srl, argc, argv);
     x->x_gui.iem_flags.iem_canSend = 0;
-    x->x_gui.x_isa.iem_initializeAtLoad = 0;
-    x->x_gui.iem_width = iem_clip_size(w);
+    x->x_gui.x_isa.iem_loadOnStart = 0;
+    x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     vu_check_height(x, h);
     if(scale != 0)
         scale = 1;
@@ -543,7 +543,8 @@ static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
 
 static void vu_size(t_vu *x, t_symbol *s, int ac, t_atom *av)
 {
-    x->x_gui.iem_width = iem_clip_size((int)(t_int)atom_getFloatAtIndex(0, ac, av));
+    int w = atom_getFloatAtIndex(0, ac, av);
+    x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     if(ac > 1)
         vu_check_height(x, (int)(t_int)atom_getFloatAtIndex(1, ac, av));
     if(glist_isvisible(x->x_gui.iem_glist))
@@ -676,7 +677,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     if(fs < 4)
         fs = 4;
     x->x_gui.iem_fontSize = fs;
-    x->x_gui.iem_width = iem_clip_size(w);
+    x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     vu_check_height(x, h);
     iem_loadColors(&x->x_gui, bflcol);
     if(scale != 0)

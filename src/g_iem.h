@@ -23,8 +23,11 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_COLOR_NORMAL                0
-#define IEM_COLOR_SELECTED              255
+#define IEM_COLOR_NORMAL                0       /* Black. */
+#define IEM_COLOR_SELECTED              255     /* Blue.  */
+
+#define IEM_MINIMUM_WIDTH               8
+#define IEM_MINIMUM_HEIGHT              8
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -53,18 +56,18 @@ typedef struct _iemflags {
     char iem_scale;                     /* Unused but kept for compatibility. */
     char iem_canReceive;
     char iem_canSend;
+    char iem_loadOnStart;
     char iem_isSelected;
     char iem_accurateMoving;
     char iem_goThrough;
     char iem_hasChanged;
     char iem_isLogarithmic;
     char iem_isSteadyOnClick;
-    char iem_initializeAtLoad;
     char iem_isLocked;
     } t_iemflags;
 
 typedef struct _iemarguments {
-    char iem_initializeAtLoad;
+    char iem_loadOnStart;
     char iem_scale;                     /* Unused but kept for compatibility. */
     char iem_flash;                     /* Unused. */
     char iem_isLocked;
@@ -226,8 +229,6 @@ void        iem_loadColors              (t_iem *iem, t_iemcolors *c);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int         iem_clip_size               (int size);
-int         iem_clip_font               (int size);
 t_symbol    *iem_unique2dollarzero      (t_symbol *s, int unique_num, int and_unique_flag);
 t_symbol    *iem_sym2dollararg          (t_symbol *s, int nth_arg, int tail_len);
 t_symbol    *iem_dollarzero2unique      (t_symbol *s, int unique_num);

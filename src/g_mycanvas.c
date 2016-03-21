@@ -196,7 +196,7 @@ static void my_canvas_dialog(t_my_canvas *x, t_symbol *s, int argc, t_atom *argv
     int h = (int)(t_int)atom_getFloatAtIndex(3, argc, argv);
     iem_dialog(&x->x_gui, srl, argc, argv);
 
-    x->x_gui.x_isa.iem_initializeAtLoad = 0;
+    x->x_gui.x_isa.iem_loadOnStart = 0;
     if(a < 1)
         a = 1;
     x->x_gui.iem_width = a;
