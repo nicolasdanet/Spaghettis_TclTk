@@ -361,7 +361,7 @@ static void toggle_nonzero(t_toggle *x, t_float f)
 static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_toggle *x = (t_toggle *)pd_new(toggle_class);
-    int bflcol[]={-262144, -1, -1};
+    int bflcol[] = IEM_COLORS_DEFAULT;
     int a=IEM_TOGGLE_DEFAULT_SIZE, f=0;
     int ldx=17, ldy=7;
     int fs=10;

@@ -83,6 +83,13 @@ typedef void (*t_iemfn)(void *x, t_glist *glist, int mode);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define IEM_COLORS_DEFAULT      { -262144, -1, -1 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 typedef struct _iem {
     t_object            iem_obj;        /* MUST be the first. */
@@ -212,8 +219,8 @@ typedef struct _vradio {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        iem_saveColors              (t_iem *iem, int *bflcol);
-void        iem_loadColors              (t_iem *iem, int *bflcol);
+void        iem_saveColors              (t_iem *iem, t_iemcolors *c);
+void        iem_loadColors              (t_iem *iem, t_iemcolors *c);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -252,7 +259,7 @@ void        iem_displace                (t_gobj *z, t_glist *glist, int dx, int 
 void        iem_select                  (t_gobj *z, t_glist *glist, int selected);
 void        iem_delete                  (t_gobj *z, t_glist *glist);
 void        iem_vis                     (t_gobj *z, t_glist *glist, int vis);
-void        iem_save                    (t_iem *iem, t_symbol **srl, int *bflcol);
+void        iem_save                    (t_iem *iem, t_symbol **srl, t_iemcolors *c);
 void        iem_properties              (t_iem *iem, t_symbol **srl);
 void        iem_dialog                  (t_iem *iem, t_symbol **srl, int argc, t_atom *argv);
 void        iem_inttosymargs            (t_iemarguments *symargp, int n);

@@ -34,13 +34,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_COLOR(n)                ((-1 -(n)) & 0xffffff)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-/* Ensure compatibility with the legacy format. */ 
+/* Ensure compatibility with the original format. */
+/* By the way legacy predefined colors are not supported. */
 /* Only the 6 MSB are kept for each component. */
 
 // RRRRRRRRGGGGGGGGBBBBBBBB 
@@ -60,7 +55,7 @@ static int iem_colorEncode (int color)
 
 static int iem_colorDecode (int color)
 {
-    PD_ASSERT (color < 0);      /* Predefined colors not supported. */
+    PD_ASSERT (color < 0);
     
     int n = 0;
     
@@ -77,18 +72,18 @@ static int iem_colorDecode (int color)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void iem_saveColors (t_iem *iem, int *bflcol)
+void iem_saveColors (t_iem *iem, t_iemcolors *c)
 {
-    bflcol[0] = iem_colorEncode (iem->iem_colorBackground);
-    bflcol[1] = iem_colorEncode (iem->iem_colorForeground);
-    bflcol[2] = iem_colorEncode (iem->iem_colorLabel);
+    c->iem_background = iem_colorEncode (iem->iem_colorBackground);
+    c->iem_foreground = iem_colorEncode (iem->iem_colorForeground);
+    c->iem_label      = iem_colorEncode (iem->iem_colorLabel);
 }
 
-void iem_loadColors (t_iem *iem, int *bflcol)
+void iem_loadColors (t_iem *iem, t_iemcolors *c)
 {
-    iem->iem_colorBackground = iem_colorDecode (bflcol[0]);
-    iem->iem_colorForeground = iem_colorDecode (bflcol[1]);
-    iem->iem_colorLabel      = iem_colorDecode (bflcol[2]);
+    iem->iem_colorBackground = iem_colorDecode (c->iem_background);
+    iem->iem_colorForeground = iem_colorDecode (c->iem_foreground);
+    iem->iem_colorLabel      = iem_colorDecode (c->iem_label);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -362,18 +357,9 @@ void iem_pos(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
     }
 }
 
-void iem_color(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
+void iem_color (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
 {
-    iem->iem_colorBackground = IEM_COLOR((t_int)atom_getFloatAtIndex(0, ac, av));
-    if(ac > 2)
-    {
-        iem->iem_colorForeground = IEM_COLOR((t_int)atom_getFloatAtIndex(1, ac, av));
-        iem->iem_colorLabel = IEM_COLOR((t_int)atom_getFloatAtIndex(2, ac, av));
-    }
-    else
-        iem->iem_colorLabel = IEM_COLOR((t_int)atom_getFloatAtIndex(1, ac, av));
-    if(glist_isvisible(iem->iem_glist))
-        (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_CONFIG);
+    if (glist_isvisible (iem->iem_glist)) { (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_CONFIG); }
 }
 
 void iem_displace(t_gobj *z, t_glist *glist, int dx, int dy)
@@ -412,13 +398,13 @@ void iem_vis(t_gobj *z, t_glist *glist, int vis)
     }
 }
 
-void iem_save(t_iem *iem, t_symbol **srl, int *bflcol)
+void iem_save (t_iem *iem, t_symbol **srl, t_iemcolors *c)
 {
     srl[0] = iem->iem_send;
     srl[1] = iem->iem_receive;
     srl[2] = iem->iem_label;
     iem_all_sym2dollararg(iem, srl);
-    iem_saveColors(iem, bflcol);
+    iem_saveColors(iem, c);
 }
 
 void iem_properties(t_iem *iem, t_symbol **srl)
