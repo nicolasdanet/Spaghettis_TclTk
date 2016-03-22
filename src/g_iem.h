@@ -52,15 +52,15 @@
 #pragma mark -
 
 typedef struct _iemcolors {
-    int colorBackground;
-    int colorForeground;
-    int colorLabel;
+    int c_colorBackground;
+    int c_colorForeground;
+    int c_colorLabel;
     } t_iemcolors;
 
 typedef struct _iemnames {
-    t_symbol *unexpendedSend;
-    t_symbol *unexpendedReceive;
-    t_symbol *unexpendedLabel;
+    t_symbol *n_unexpendedSend;
+    t_symbol *n_unexpendedReceive;
+    t_symbol *n_unexpendedLabel;
     } t_iemnames;
     
 // -----------------------------------------------------------------------------------------------------------
@@ -215,25 +215,25 @@ typedef struct _vradio {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_symbol *iem_empty (void);    
+t_symbol *iemgui_empty (void);    
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        iem_loadColors              (t_iem *iem, t_iemcolors *c);
-void        iem_saveColors              (t_iem *iem, t_iemcolors *c);
-void        iem_loadFontStyle           (t_iem *iem, int n);
-int         iem_saveFontStyle           (t_iem *iem);
-void        iem_loadLoadAtStart         (t_iem *iem, int n);
-int         iem_saveLoadAtStart         (t_iem *iem);
-void        iem_loadNamesByIndex        (t_iem *iem, int i, t_atom *argv);
+void        iemgui_loadColors               (t_iem *iem, t_iemcolors *c);
+void        iemgui_saveColors               (t_iem *iem, t_iemcolors *c);
+void        iemgui_loadFontStyle            (t_iem *iem, int n);
+int         iemgui_saveFontStyle            (t_iem *iem);
+void        iemgui_loadLoadAtStart          (t_iem *iem, int n);
+int         iemgui_saveLoadAtStart          (t_iem *iem);
+void        iemgui_loadNamesByIndex         (t_iem *iem, int i, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        iem_checkSendReceiveLoop    (t_iem *iem);
+void        iemgui_checkSendReceiveLoop     (t_iem *iem);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

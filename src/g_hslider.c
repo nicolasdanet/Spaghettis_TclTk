@@ -206,10 +206,10 @@ static void hslider_save(t_gobj *z, t_buffer *b)
                 (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("hsl"), x->x_gui.iem_width, x->x_gui.iem_height,
                 (t_float)x->x_min, (t_float)x->x_max,
-                x->x_isLogarithmic, iem_saveLoadAtStart(&x->x_gui),
+                x->x_isLogarithmic, iemgui_saveLoadAtStart(&x->x_gui),
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iem_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
+                iemgui_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[1], bflcol[2],
                 x->x_val, x->x_isSteadyOnClick);
     buffer_vAppend(b, ";");
@@ -520,8 +520,8 @@ static void *hslider_new(t_symbol *s, int argc, t_atom *argv)
     char str[144];
     float v = 0;
 
-    iem_loadLoadAtStart(&x->x_gui, 0);
-    iem_loadFontStyle(&x->x_gui, 0);
+    iemgui_loadLoadAtStart(&x->x_gui, 0);
+    iemgui_loadFontStyle(&x->x_gui, 0);
 
     if(((argc == 17)||(argc == 18))&&IS_FLOAT_AT(argv,0)&&IS_FLOAT_AT(argv,1)
        &&IS_FLOAT_AT(argv,2)&&IS_FLOAT_AT(argv,3)
@@ -538,18 +538,18 @@ static void *hslider_new(t_symbol *s, int argc, t_atom *argv)
         min = (double)atom_getFloatAtIndex(2, argc, argv);
         max = (double)atom_getFloatAtIndex(3, argc, argv);
         lilo = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
-        iem_loadLoadAtStart(&x->x_gui, (t_int)atom_getFloatAtIndex(5, argc, argv));
-        iem_loadNamesByIndex(&x->x_gui, 6, argv);
+        iemgui_loadLoadAtStart(&x->x_gui, (t_int)atom_getFloatAtIndex(5, argc, argv));
+        iemgui_loadNamesByIndex(&x->x_gui, 6, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
-        iem_loadFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(11, argc, argv));
+        iemgui_loadFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(11, argc, argv));
         fs = (int)(t_int)atom_getFloatAtIndex(12, argc, argv);
         bflcol[0] = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
         bflcol[1] = (int)(t_int)atom_getFloatAtIndex(14, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(15, argc, argv);
         v = atom_getFloatAtIndex(16, argc, argv);
     }
-    else iem_loadNamesByIndex(&x->x_gui, 6, 0);
+    else iemgui_loadNamesByIndex(&x->x_gui, 6, 0);
     if((argc == 18)&&IS_FLOAT_AT(argv,17))
         steady = (int)(t_int)atom_getFloatAtIndex(17, argc, argv);
 
@@ -582,8 +582,8 @@ static void *hslider_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_height = PD_MAX (h, IEM_MINIMUM_HEIGHT);
     hslider_check_width(x, w);
     hslider_check_minmax(x, min, max);
-    iem_saveColors(&x->x_gui, bflcol);
-    iem_checkSendReceiveLoop(&x->x_gui);
+    iemgui_saveColors(&x->x_gui, bflcol);
+    iemgui_checkSendReceiveLoop(&x->x_gui);
     outlet_new(&x->x_gui.iem_obj, &s_float);
     x->x_fval = hslider_getfval(x);
     return (x);

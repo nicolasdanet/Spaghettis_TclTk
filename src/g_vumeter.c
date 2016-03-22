@@ -434,9 +434,9 @@ static void vu_save(t_gobj *z, t_buffer *b)
                 gensym("vu"), x->x_gui.iem_width, x->x_gui.iem_height,
                 srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iem_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
+                iemgui_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[2], x->x_scale,
-                iem_saveLoadAtStart(&x->x_gui));
+                iemgui_saveLoadAtStart(&x->x_gui));
     buffer_vAppend(b, ";");
 }
 
@@ -637,8 +637,8 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     //int ftbreak=IEM_BANG_DEFAULT_BREAK, fthold=IEM_BANG_DEFAULT_HOLD;
     char str[144];
 
-    iem_loadLoadAtStart(&x->x_gui, 0);
-    iem_loadFontStyle(&x->x_gui, 0);
+    iemgui_loadLoadAtStart(&x->x_gui, 0);
+    iemgui_loadFontStyle(&x->x_gui, 0);
 
     if((argc >= 11)&&IS_FLOAT_AT(argv,0)&&IS_FLOAT_AT(argv,1)
        &&(IS_SYMBOL_AT(argv,2)||IS_FLOAT_AT(argv,2))
@@ -649,18 +649,18 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     {
         w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
-        iem_loadNamesByIndex(&x->x_gui, 1, argv);
+        iemgui_loadNamesByIndex(&x->x_gui, 1, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(5, argc, argv);
-        iem_loadFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(6, argc, argv));
+        iemgui_loadFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(6, argc, argv));
         fs = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
         bflcol[0] = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
         scale = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
     }
-    else iem_loadNamesByIndex(&x->x_gui, 1, 0);
+    else iemgui_loadNamesByIndex(&x->x_gui, 1, 0);
     if((argc == 12)&&IS_FLOAT_AT(argv,11))
-        iem_loadLoadAtStart(&x->x_gui, (t_int)atom_getFloatAtIndex(11, argc, argv));
+        iemgui_loadLoadAtStart(&x->x_gui, (t_int)atom_getFloatAtIndex(11, argc, argv));
     x->x_gui.iem_draw = (t_iemfn)vu_draw;
 
     x->x_gui.iem_canSend = 0;
@@ -679,7 +679,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_fontSize = fs;
     x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     vu_check_height(x, h);
-    iem_saveColors(&x->x_gui, bflcol);
+    iemgui_saveColors(&x->x_gui, bflcol);
     if(scale != 0)
         scale = 1;
     x->x_scale = scale;
@@ -687,7 +687,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     x->x_rms = 0;
     x->x_fp = -101.0;
     x->x_fr = -101.0;
-    iem_checkSendReceiveLoop(&x->x_gui);
+    iemgui_checkSendReceiveLoop(&x->x_gui);
     inlet_new(&x->x_gui.iem_obj, &x->x_gui.iem_obj.te_g.g_pd, &s_float, gensym("ft1"));
     x->x_out_rms = outlet_new(&x->x_gui.iem_obj, &s_float);
     x->x_out_peak = outlet_new(&x->x_gui.iem_obj, &s_float);

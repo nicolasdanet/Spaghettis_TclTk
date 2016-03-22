@@ -27,7 +27,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_symbol *iem_empty (void)
+t_symbol *iemgui_empty (void)
 {
     return gensym ("empty");
 }
@@ -44,7 +44,7 @@ t_symbol *iem_empty (void)
 // RRRRRR..GGGGGG..BBBBBB..
 // RRRRRRGGGGGGBBBBBB
 
-static int iem_colorEncode (int color)
+static int iemgui_colorEncode (int color)
 {
     int n = 0;
     
@@ -55,7 +55,7 @@ static int iem_colorEncode (int color)
     return (-1 -n);
 }
 
-static int iem_colorDecode (int color)
+static int iemgui_colorDecode (int color)
 {
     PD_ASSERT (color < 0);
     
@@ -74,9 +74,9 @@ static int iem_colorDecode (int color)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* In labels the floats are loaded as integers (mainly in order to enumerate things). */
+/* Floats are loaded as integers (mainly in order to enumerate things). */
 
-static t_symbol *iem_fetchName (int i, t_atom *argv)
+static t_symbol *iemgui_fetchName (int i, t_atom *argv)
 {
     if (IS_SYMBOL_AT (argv, i))     { return (atom_getSymbol (argv + i)); }
     else if (IS_FLOAT_AT (argv, i)) {
@@ -84,14 +84,17 @@ static t_symbol *iem_fetchName (int i, t_atom *argv)
         string_sprintf (t, PD_STRING, "%d", (int)atom_getFloat (argv + i));
         return gensym (t);
     } else {
-        return iem_empty();
+        return iemgui_empty();
     }
 }
 
-/* Unexpended names cannot be simply retreive in already substituted arguments at instantiation. */
-/* Consequently it must be done by lookinf up again the object's text buffer. */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-static void iem_fetchUnexpandedName (t_iem *iem, t_symbol **s, int i, t_symbol *fallback)
+/* Unexpended names cannot be fetch at instantiation due to already substituted arguments. */
+/* Consequently it must be done by looking up again the object's text buffer. */
+
+static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, t_symbol *fallback)
 {
     if (!*s) {
         t_error err = PD_ERROR;
@@ -101,55 +104,66 @@ static void iem_fetchUnexpandedName (t_iem *iem, t_symbol **s, int i, t_symbol *
             if (!(err = atom_toString (buffer_atoms (b) + i, t, PD_STRING))) { *s = gensym (t); }
         }
         if (err) {
-            *s = (fallback ? fallback : iem_empty());
+            *s = (fallback ? fallback : iemgui_empty());
         }
     }
 }
 
-static void iem_fetchUnexpandedNames (t_iem *iem, t_iemnames *s)
+static void iemgui_fetchUnexpandedNames (t_iem *iem, t_iemnames *s)
 {
-    iem_fetchUnexpandedName (iem, &iem->iem_unexpandedSend, iem->iem_cacheIndex + 1, iem->iem_send);
-    iem_fetchUnexpandedName (iem, &iem->iem_unexpandedReceive, iem->iem_cacheIndex + 2, iem->iem_receive);
-    iem_fetchUnexpandedName (iem, &iem->iem_unexpandedLabel, iem->iem_cacheIndex + 3, iem->iem_label);
+    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedSend, iem->iem_cacheIndex + 1, iem->iem_send);
+    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedReceive, iem->iem_cacheIndex + 2, iem->iem_receive);
+    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedLabel, iem->iem_cacheIndex + 3, iem->iem_label);
         
-    s->unexpendedSend    = iem->iem_unexpandedSend;
-    s->unexpendedReceive = iem->iem_unexpandedReceive;
-    s->unexpendedLabel   = iem->iem_unexpandedLabel;
+    s->n_unexpendedSend    = iem->iem_unexpandedSend;
+    s->n_unexpendedReceive = iem->iem_unexpandedReceive;
+    s->n_unexpendedLabel   = iem->iem_unexpandedLabel;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void iem_loadColors (t_iem *iem, t_iemcolors *c)
+void iemgui_loadColors (t_iem *iem, t_iemcolors *c)
 {
-    c->colorBackground = iem_colorEncode (iem->iem_colorBackground);
-    c->colorForeground = iem_colorEncode (iem->iem_colorForeground);
-    c->colorLabel      = iem_colorEncode (iem->iem_colorLabel);
+    c->c_colorBackground = iemgui_colorEncode (iem->iem_colorBackground);
+    c->c_colorForeground = iemgui_colorEncode (iem->iem_colorForeground);
+    c->c_colorLabel      = iemgui_colorEncode (iem->iem_colorLabel);
 }
 
-void iem_saveColors (t_iem *iem, t_iemcolors *c)
+void iemgui_saveColors (t_iem *iem, t_iemcolors *c)
 {
-    iem->iem_colorBackground = iem_colorDecode (c->colorBackground);
-    iem->iem_colorForeground = iem_colorDecode (c->colorForeground);
-    iem->iem_colorLabel      = iem_colorDecode (c->colorLabel);
+    iem->iem_colorBackground = iemgui_colorDecode (c->c_colorBackground);
+    iem->iem_colorForeground = iemgui_colorDecode (c->c_colorForeground);
+    iem->iem_colorLabel      = iemgui_colorDecode (c->c_colorLabel);
 }
 
-void iem_loadFontStyle (t_iem *iem, int n)
+void iemgui_loadFontStyle (t_iem *iem, int n)
 {
     iem->iem_fontStyle = (char)n;
 }
 
-int iem_saveFontStyle (t_iem *iem)
+int iemgui_saveFontStyle (t_iem *iem)
 {
     return (int)iem->iem_fontStyle;
 }
 
-void iem_loadNamesByIndex (t_iem *iem, int i, t_atom *argv)
+void iemgui_loadLoadAtStart (t_iem *iem, int n)
 {
-    iem->iem_send    = (argv ? iem_fetchName (i + 0, argv) : iem_empty());
-    iem->iem_receive = (argv ? iem_fetchName (i + 1, argv) : iem_empty());
-    iem->iem_label   = (argv ? iem_fetchName (i + 2, argv) : iem_empty());
+    iem->iem_loadOnStart = ((n & 1) != 0);
+    iem->iem_scale = (n & 2);
+}
+
+int iemgui_saveLoadAtStart (t_iem *iem)
+{
+    return ((iem->iem_loadOnStart ? 1 : 0) | (iem->iem_scale ? 2 : 0));
+}
+
+void iemgui_loadNamesByIndex (t_iem *iem, int i, t_atom *argv)
+{
+    iem->iem_send    = (argv ? iemgui_fetchName (i + 0, argv) : iemgui_empty());
+    iem->iem_receive = (argv ? iemgui_fetchName (i + 1, argv) : iemgui_empty());
+    iem->iem_label   = (argv ? iemgui_fetchName (i + 2, argv) : iemgui_empty());
     
     iem->iem_unexpandedSend    = NULL;
     iem->iem_unexpandedReceive = NULL;
@@ -162,7 +176,7 @@ void iem_loadNamesByIndex (t_iem *iem, int i, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void iem_checkSendReceiveLoop (t_iem *iem)
+void iemgui_checkSendReceiveLoop (t_iem *iem)
 {
     iem->iem_goThrough = 1;
     
@@ -171,21 +185,6 @@ void iem_checkSendReceiveLoop (t_iem *iem)
             iem->iem_goThrough = 0;
         }
     }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void iem_loadLoadAtStart (t_iem *iem, int n)
-{
-    iem->iem_loadOnStart = ((n & 1) != 0);
-    iem->iem_scale = (n & 2);
-}
-
-int iem_saveLoadAtStart (t_iem *iem)
-{
-    return ((iem->iem_loadOnStart ? 1 : 0) | (iem->iem_scale ? 2 : 0));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -203,7 +202,7 @@ void iem_send(void *x, t_iem *iem, t_symbol *s)
     iem->iem_unexpandedSend = snd;
     iem->iem_send = snd = canvas_realizedollar(iem->iem_glist, snd);
     iem->iem_canSend = sndable;
-    iem_checkSendReceiveLoop(iem);
+    iemgui_checkSendReceiveLoop(iem);
     (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_IO);
 }
 
@@ -233,7 +232,7 @@ void iem_receive(void *x, t_iem *iem, t_symbol *s)
         iem->iem_receive = rcv;
     }
     iem->iem_canReceive = rcvable;
-    iem_checkSendReceiveLoop(iem);
+    iemgui_checkSendReceiveLoop(iem);
     (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_IO);
 }
 
@@ -358,8 +357,8 @@ void iem_save (t_iem *iem, t_symbol **srl, t_iemcolors *c)
     //srl[0] = iem->iem_send;
     //srl[1] = iem->iem_receive;
     //srl[2] = iem->iem_label;
-    iem_fetchUnexpandedNames (iem, srl);
-    iem_loadColors (iem, c);
+    iemgui_fetchUnexpandedNames (iem, srl);
+    iemgui_loadColors (iem, c);
 }
 
 void iem_properties (t_iem *iem, t_symbol **srl)
@@ -367,7 +366,7 @@ void iem_properties (t_iem *iem, t_symbol **srl)
     //srl[0] = iem->iem_send;
     //srl[1] = iem->iem_receive;
     //srl[2] = iem->iem_label;
-    iem_fetchUnexpandedNames (iem, srl);
+    iemgui_fetchUnexpandedNames (iem, srl);
     srl[0] = dollar_toRaute (srl[0]);
     srl[1] = dollar_toRaute (srl[1]);
     srl[2] = dollar_toRaute (srl[2]);
@@ -449,7 +448,7 @@ void iem_dialog(t_iem *iem, t_symbol **srl, int argc, t_atom *argv)
     if(fs < 4)
         fs = 4;
     iem->iem_fontSize = fs;
-    iem_checkSendReceiveLoop(iem);
+    iemgui_checkSendReceiveLoop(iem);
     canvas_dirty(iem->iem_glist, 1);
 }
 
