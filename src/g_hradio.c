@@ -468,20 +468,20 @@ static void *hradio_donew(t_symbol *s, int argc, t_atom *argv)
     iem_inttosymargs(&x->x_gui.x_isa, 0);
     iem_inttofstyle(&x->x_gui.iem_flags, 0);
 
-    if((argc == 15)&&IS_FLOAT_INDEX(argv,0)&&IS_FLOAT_INDEX(argv,1)&&IS_FLOAT_INDEX(argv,2)
-       &&IS_FLOAT_INDEX(argv,3)
-       &&(IS_SYMBOL_INDEX(argv,4)||IS_FLOAT_INDEX(argv,4))
-       &&(IS_SYMBOL_INDEX(argv,5)||IS_FLOAT_INDEX(argv,5))
-       &&(IS_SYMBOL_INDEX(argv,6)||IS_FLOAT_INDEX(argv,6))
-       &&IS_FLOAT_INDEX(argv,7)&&IS_FLOAT_INDEX(argv,8)
-       &&IS_FLOAT_INDEX(argv,9)&&IS_FLOAT_INDEX(argv,10)&&IS_FLOAT_INDEX(argv,11)
-       &&IS_FLOAT_INDEX(argv,12)&&IS_FLOAT_INDEX(argv,13)&&IS_FLOAT_INDEX(argv,14))
+    if((argc == 15)&&IS_FLOAT_AT(argv,0)&&IS_FLOAT_AT(argv,1)&&IS_FLOAT_AT(argv,2)
+       &&IS_FLOAT_AT(argv,3)
+       &&(IS_SYMBOL_AT(argv,4)||IS_FLOAT_AT(argv,4))
+       &&(IS_SYMBOL_AT(argv,5)||IS_FLOAT_AT(argv,5))
+       &&(IS_SYMBOL_AT(argv,6)||IS_FLOAT_AT(argv,6))
+       &&IS_FLOAT_AT(argv,7)&&IS_FLOAT_AT(argv,8)
+       &&IS_FLOAT_AT(argv,9)&&IS_FLOAT_AT(argv,10)&&IS_FLOAT_AT(argv,11)
+       &&IS_FLOAT_AT(argv,12)&&IS_FLOAT_AT(argv,13)&&IS_FLOAT_AT(argv,14))
     {
         a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         chg = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
         iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(2, argc, argv));
         num = (int)(t_int)atom_getFloatAtIndex(3, argc, argv);
-        iem_new_getnames(&x->x_gui, 4, argv);
+        iem_loadNamesAtIndex(&x->x_gui, 4, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
         iem_inttofstyle(&x->x_gui.iem_flags, (t_int)atom_getFloatAtIndex(9, argc, argv));
@@ -491,7 +491,7 @@ static void *hradio_donew(t_symbol *s, int argc, t_atom *argv)
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
         fval = atom_getFloatAtIndex(14, argc, argv);
     }
-    else iem_new_getnames(&x->x_gui, 4, 0);
+    else iem_loadNamesAtIndex(&x->x_gui, 4, 0);
     x->x_gui.iem_draw = (t_iemfn)hradio_draw;
     x->x_gui.iem_flags.iem_canSend = 1;
     x->x_gui.iem_flags.iem_canReceive = 1;
@@ -527,7 +527,7 @@ static void *hradio_donew(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     iem_checkSendReceiveLoop(&x->x_gui);
-    iem_loadColors(&x->x_gui, bflcol);
+    iem_setColors(&x->x_gui, bflcol);
     outlet_new(&x->x_gui.iem_obj, &s_list);
     return (x);
 }

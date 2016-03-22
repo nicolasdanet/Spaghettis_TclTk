@@ -529,15 +529,15 @@ static void *vslider_new(t_symbol *s, int argc, t_atom *argv)
     iem_inttosymargs(&x->x_gui.x_isa, 0);
     iem_inttofstyle(&x->x_gui.iem_flags, 0);
 
-    if(((argc == 17)||(argc == 18))&&IS_FLOAT_INDEX(argv,0)&&IS_FLOAT_INDEX(argv,1)
-       &&IS_FLOAT_INDEX(argv,2)&&IS_FLOAT_INDEX(argv,3)
-       &&IS_FLOAT_INDEX(argv,4)&&IS_FLOAT_INDEX(argv,5)
-       &&(IS_SYMBOL_INDEX(argv,6)||IS_FLOAT_INDEX(argv,6))
-       &&(IS_SYMBOL_INDEX(argv,7)||IS_FLOAT_INDEX(argv,7))
-       &&(IS_SYMBOL_INDEX(argv,8)||IS_FLOAT_INDEX(argv,8))
-       &&IS_FLOAT_INDEX(argv,9)&&IS_FLOAT_INDEX(argv,10)
-       &&IS_FLOAT_INDEX(argv,11)&&IS_FLOAT_INDEX(argv,12)&&IS_FLOAT_INDEX(argv,13)
-       &&IS_FLOAT_INDEX(argv,14)&&IS_FLOAT_INDEX(argv,15)&&IS_FLOAT_INDEX(argv,16))
+    if(((argc == 17)||(argc == 18))&&IS_FLOAT_AT(argv,0)&&IS_FLOAT_AT(argv,1)
+       &&IS_FLOAT_AT(argv,2)&&IS_FLOAT_AT(argv,3)
+       &&IS_FLOAT_AT(argv,4)&&IS_FLOAT_AT(argv,5)
+       &&(IS_SYMBOL_AT(argv,6)||IS_FLOAT_AT(argv,6))
+       &&(IS_SYMBOL_AT(argv,7)||IS_FLOAT_AT(argv,7))
+       &&(IS_SYMBOL_AT(argv,8)||IS_FLOAT_AT(argv,8))
+       &&IS_FLOAT_AT(argv,9)&&IS_FLOAT_AT(argv,10)
+       &&IS_FLOAT_AT(argv,11)&&IS_FLOAT_AT(argv,12)&&IS_FLOAT_AT(argv,13)
+       &&IS_FLOAT_AT(argv,14)&&IS_FLOAT_AT(argv,15)&&IS_FLOAT_AT(argv,16))
     {
         w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
@@ -545,7 +545,7 @@ static void *vslider_new(t_symbol *s, int argc, t_atom *argv)
         max = (double)atom_getFloatAtIndex(3, argc, argv);
         lilo = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
         iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(5, argc, argv));
-        iem_new_getnames(&x->x_gui, 6, argv);
+        iem_loadNamesAtIndex(&x->x_gui, 6, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
         iem_inttofstyle(&x->x_gui.iem_flags, (t_int)atom_getFloatAtIndex(11, argc, argv));
@@ -555,8 +555,8 @@ static void *vslider_new(t_symbol *s, int argc, t_atom *argv)
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(15, argc, argv);
         v = atom_getFloatAtIndex(16, argc, argv);
     }
-    else iem_new_getnames(&x->x_gui, 6, 0);
-    if((argc == 18)&&IS_FLOAT_INDEX(argv,17))
+    else iem_loadNamesAtIndex(&x->x_gui, 6, 0);
+    if((argc == 18)&&IS_FLOAT_AT(argv,17))
         steady = (int)(t_int)atom_getFloatAtIndex(17, argc, argv);
     x->x_gui.iem_draw = (t_iemfn)vslider_draw;
     x->x_gui.iem_flags.iem_canSend = 1;
@@ -582,7 +582,7 @@ static void *vslider_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     vslider_check_height(x, h);
     vslider_check_minmax(x, min, max);
-    iem_loadColors(&x->x_gui, bflcol);
+    iem_setColors(&x->x_gui, bflcol);
     iem_checkSendReceiveLoop(&x->x_gui);
     outlet_new(&x->x_gui.iem_obj, &s_float);
     x->x_fval = vslider_getfval(x);

@@ -444,22 +444,22 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
     iem_inttosymargs(&x->x_gui.x_isa, 0);
     iem_inttofstyle(&x->x_gui.iem_flags, 0);
 
-    if((argc == 14)&&IS_FLOAT_INDEX(argv,0)
-       &&IS_FLOAT_INDEX(argv,1)&&IS_FLOAT_INDEX(argv,2)
-       &&IS_FLOAT_INDEX(argv,3)
-       &&(IS_SYMBOL_INDEX(argv,4)||IS_FLOAT_INDEX(argv,4))
-       &&(IS_SYMBOL_INDEX(argv,5)||IS_FLOAT_INDEX(argv,5))
-       &&(IS_SYMBOL_INDEX(argv,6)||IS_FLOAT_INDEX(argv,6))
-       &&IS_FLOAT_INDEX(argv,7)&&IS_FLOAT_INDEX(argv,8)
-       &&IS_FLOAT_INDEX(argv,9)&&IS_FLOAT_INDEX(argv,10)&&IS_FLOAT_INDEX(argv,11)
-       &&IS_FLOAT_INDEX(argv,12)&&IS_FLOAT_INDEX(argv,13))
+    if((argc == 14)&&IS_FLOAT_AT(argv,0)
+       &&IS_FLOAT_AT(argv,1)&&IS_FLOAT_AT(argv,2)
+       &&IS_FLOAT_AT(argv,3)
+       &&(IS_SYMBOL_AT(argv,4)||IS_FLOAT_AT(argv,4))
+       &&(IS_SYMBOL_AT(argv,5)||IS_FLOAT_AT(argv,5))
+       &&(IS_SYMBOL_AT(argv,6)||IS_FLOAT_AT(argv,6))
+       &&IS_FLOAT_AT(argv,7)&&IS_FLOAT_AT(argv,8)
+       &&IS_FLOAT_AT(argv,9)&&IS_FLOAT_AT(argv,10)&&IS_FLOAT_AT(argv,11)
+       &&IS_FLOAT_AT(argv,12)&&IS_FLOAT_AT(argv,13))
     {
 
         a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         fthold = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
         ftbreak = (int)(t_int)atom_getFloatAtIndex(2, argc, argv);
         iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(3, argc, argv));
-        iem_new_getnames(&x->x_gui, 4, argv);
+        iem_loadNamesAtIndex(&x->x_gui, 4, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
         iem_inttofstyle(&x->x_gui.iem_flags, (t_int)atom_getFloatAtIndex(9, argc, argv));
@@ -468,7 +468,7 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
         bflcol[1] = (int)(t_int)atom_getFloatAtIndex(12, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
     }
-    else iem_new_getnames(&x->x_gui, 4, 0);
+    else iem_loadNamesAtIndex(&x->x_gui, 4, 0);
 
     x->x_gui.iem_draw = (t_iemfn)bng_draw;
 
@@ -492,7 +492,7 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     bng_check_minmax(x, ftbreak, fthold);
-    iem_loadColors(&x->x_gui, bflcol);
+    iem_setColors(&x->x_gui, bflcol);
     x->x_gui.x_isa.iem_isLocked = 0;
     iem_checkSendReceiveLoop(&x->x_gui);
     x->x_clock_hld = clock_new(x, (t_method)bng_tick_hld);

@@ -23,8 +23,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_COLOR_NORMAL                0       /* Black. */
-#define IEM_COLOR_SELECTED              255     /* Blue.  */
+#define IEM_COLOR_NORMAL                0               /* Black. */
+#define IEM_COLOR_SELECTED              255             /* Blue.  */
 
 #define IEM_MINIMUM_WIDTH               8
 #define IEM_MINIMUM_HEIGHT              8
@@ -78,6 +78,12 @@ typedef struct _iemcolors {
     int iem_foreground;
     int iem_label;
     } t_iemcolors;
+
+typedef struct _iemnames {
+    t_symbol *iem_symSend;
+    t_symbol *iem_symReceive;
+    t_symbol *iem_symLabel;
+    } t_iemnames;
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -108,14 +114,13 @@ typedef struct _iem {
     int                 iem_colorForeground;
     int                 iem_colorBackground;
     int                 iem_colorLabel;
+    int                 iem_cacheIndex;
     t_symbol            *iem_send;
     t_symbol            *iem_receive;
     t_symbol            *iem_label;
     t_symbol            *iem_unexpandedSend;
     t_symbol            *iem_unexpandedReceive;
     t_symbol            *iem_unexpandedLabel;
-    int                 iem_indexBuffer;
-    int                 iem_indexLabel;
     } t_iem;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -222,13 +227,18 @@ typedef struct _vradio {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        iem_saveColors              (t_iem *iem, t_iemcolors *c);
-void        iem_loadColors              (t_iem *iem, t_iemcolors *c);
+t_symbol *iem_empty (void);    
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void        iem_getColors               (t_iem *iem, t_iemcolors *c);
+void        iem_setColors               (t_iem *iem, t_iemcolors *c);
+
+void        iem_loadNamesAtIndex        (t_iem *iem, int i, t_atom *argv);
 
 void        iem_checkSendReceiveLoop    (t_iem *iem);
-
-t_symbol    *iem_new_dogetname          (t_iem *iem, int indx, t_atom *argv);
-void        iem_new_getnames            (t_iem *iem, int indx, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -243,11 +253,8 @@ int         iem_is_dollararg            (t_symbol *s, int *tail_len);
 void        iem_fetch_unique            (t_iem *iem);
 void        iem_fetch_parent_args       (t_iem *iem, int *pargc, t_atom **pargv);
 void        iem_all_unique2dollarzero   (t_iem *iem, t_symbol **srlsym);
-void        iem_all_sym2dollararg       (t_iem *iem, t_symbol **srlsym);
 void        iem_all_dollarzero2unique   (t_iem *iem, t_symbol **srlsym);
-void        iem_all_dollararg2sym       (t_iem *iem, t_symbol **srlsym);
-void        iem_all_dollar2raute        (t_symbol **srlsym);
-void        iem_all_raute2dollar        (t_symbol **srlsym);
+
 void        iem_send                    (void *x, t_iem *iem, t_symbol *s);
 void        iem_receive                 (void *x, t_iem *iem, t_symbol *s);
 void        iem_label                   (void *x, t_iem *iem, t_symbol *s);

@@ -278,35 +278,35 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     iem_inttofstyle(&x->x_gui.iem_flags, 0);
 
     if(((argc >= 10)&&(argc <= 13))
-       &&IS_FLOAT_INDEX(argv,0)&&IS_FLOAT_INDEX(argv,1)&&IS_FLOAT_INDEX(argv,2))
+       &&IS_FLOAT_AT(argv,0)&&IS_FLOAT_AT(argv,1)&&IS_FLOAT_AT(argv,2))
     {
         a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         w = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
         h = (int)(t_int)atom_getFloatAtIndex(2, argc, argv);
     }
-    if((argc >= 12)&&(IS_SYMBOL_INDEX(argv,3)||IS_FLOAT_INDEX(argv,3))&&(IS_SYMBOL_INDEX(argv,4)||IS_FLOAT_INDEX(argv,4)))
+    if((argc >= 12)&&(IS_SYMBOL_AT(argv,3)||IS_FLOAT_AT(argv,3))&&(IS_SYMBOL_AT(argv,4)||IS_FLOAT_AT(argv,4)))
     {
         i = 2;
-        iem_new_getnames(&x->x_gui, 3, argv);
+        iem_loadNamesAtIndex(&x->x_gui, 3, argv);
     }
-    else if((argc == 11)&&(IS_SYMBOL_INDEX(argv,3)||IS_FLOAT_INDEX(argv,3)))
+    else if((argc == 11)&&(IS_SYMBOL_AT(argv,3)||IS_FLOAT_AT(argv,3)))
     {
         i = 1;
-        iem_new_getnames(&x->x_gui, 3, argv);
+        iem_loadNamesAtIndex(&x->x_gui, 3, argv);
     }
-    else iem_new_getnames(&x->x_gui, 3, 0);
+    else iem_loadNamesAtIndex(&x->x_gui, 3, 0);
 
     if(((argc >= 10)&&(argc <= 13))
-       &&(IS_SYMBOL_INDEX(argv,i+3)||IS_FLOAT_INDEX(argv,i+3))&&IS_FLOAT_INDEX(argv,i+4)
-       &&IS_FLOAT_INDEX(argv,i+5)&&IS_FLOAT_INDEX(argv,i+6)
-       &&IS_FLOAT_INDEX(argv,i+7)&&IS_FLOAT_INDEX(argv,i+8)
-       &&IS_FLOAT_INDEX(argv,i+9))
+       &&(IS_SYMBOL_AT(argv,i+3)||IS_FLOAT_AT(argv,i+3))&&IS_FLOAT_AT(argv,i+4)
+       &&IS_FLOAT_AT(argv,i+5)&&IS_FLOAT_AT(argv,i+6)
+       &&IS_FLOAT_AT(argv,i+7)&&IS_FLOAT_AT(argv,i+8)
+       &&IS_FLOAT_AT(argv,i+9))
     {
             /* disastrously, the "label" sits in a different part of the
             message.  So we have to track its location separately (in
             the slot iem_indexLabel) and initialize it specially here. */
-        iem_new_dogetname(&x->x_gui, i+3, argv);
-        x->x_gui.iem_indexLabel = i+4;
+        //iem_getNameAt(i+3, argv);
+        //x->x_gui.iem_indexLabel = i+4;
         ldx = (int)(t_int)atom_getFloatAtIndex(i+4, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(i+5, argc, argv);
         iem_inttofstyle(&x->x_gui.iem_flags, (t_int)atom_getFloatAtIndex(i+6, argc, argv));
@@ -314,7 +314,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
         bflcol[0] = (int)(t_int)atom_getFloatAtIndex(i+8, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(i+9, argc, argv);
     }
-    if((argc == 13)&&IS_FLOAT_INDEX(argv,i+10))
+    if((argc == 13)&&IS_FLOAT_AT(argv,i+10))
     {
         iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(i+10, argc, argv));
     }
@@ -344,7 +344,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     if(fs < 4)
         fs = 4;
     x->x_gui.iem_fontSize = fs;
-    iem_loadColors(&x->x_gui, bflcol);
+    iem_setColors(&x->x_gui, bflcol);
     x->x_at[0].a_type = A_FLOAT;
     x->x_at[1].a_type = A_FLOAT;
     iem_checkSendReceiveLoop(&x->x_gui);

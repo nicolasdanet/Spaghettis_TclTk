@@ -712,6 +712,7 @@
 				378971C71C4F716700263434 /* g_hslider.c */,
 				378971D61C4F716700263434 /* g_vumeter.c */,
 				378971CC1C4F716700263434 /* g_numbox.c */,
+				378971CB1C4F716700263434 /* g_mycanvas.c */,
 			);
 			name = IEM;
 			sourceTree = "<group>";
@@ -726,7 +727,6 @@
 				378971C41C4F716700263434 /* g_graph.c */,
 				378971C51C4F716700263434 /* g_guiconnect.c */,
 				378971CA1C4F716700263434 /* g_io.c */,
-				378971CB1C4F716700263434 /* g_mycanvas.c */,
 				378971CD1C4F716700263434 /* g_readwrite.c */,
 				378971CE1C4F716700263434 /* g_rtext.c */,
 				378971D11C4F716700263434 /* g_text.c */,

@@ -27,6 +27,15 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+t_symbol *iem_empty (void)
+{
+    return gensym ("empty");
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* Ensure compatibility with the original format. */
 /* By the way legacy predefined colors are not supported. */
 /* Only the 6 MSB are kept for each component. */
@@ -63,20 +72,76 @@ static int iem_colorDecode (int color)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/* In labels the floats are loaded as integers (mainly in order to enumerate things). */
+
+static t_symbol *iem_getName (int i, t_atom *argv)
+{
+    if (IS_SYMBOL_AT (argv, i))     { return (atom_getSymbol (argv + i)); }
+    else if (IS_FLOAT_AT (argv, i)) {
+        char t[PD_STRING];
+        string_sprintf (t, PD_STRING, "%d", (int)atom_getFloat (argv + i));
+        return gensym (t);
+    } else {
+        return iem_empty();
+    }
+}
+
+static void iem_fetchUnexpandedNames (t_iem *iem, t_symbol **s, int i, t_symbol *fallback)
+{
+    if (!*s) {
+        t_error err = PD_ERROR;
+        t_buffer *b = iem->iem_obj.te_buffer;
+        if (i < buffer_size (b)) {
+            char t[PD_STRING];
+            if (!(err = atom_toString (buffer_atoms (b) + i, t, PD_STRING))) { *s = gensym (t); }
+        }
+        if (err) {
+            *s = (fallback ? fallback : iem_empty());
+        }
+    }
+}
+
+static void iem_getUnexpandedNames (t_iem *iem, t_iemnames *s)
+{
+    iem_fetchUnexpandedNames (iem, &iem->iem_unexpandedSend, iem->iem_cacheIndex + 1, iem->iem_send);
+    iem_fetchUnexpandedNames (iem, &iem->iem_unexpandedReceive, iem->iem_cacheIndex + 2, iem->iem_receive);
+    iem_fetchUnexpandedNames (iem, &iem->iem_unexpandedLabel, iem->iem_cacheIndex + 3, iem->iem_label);
+        
+    s->iem_symSend    = iem->iem_unexpandedSend;
+    s->iem_symReceive = iem->iem_unexpandedReceive;
+    s->iem_symLabel   = iem->iem_unexpandedLabel;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void iem_saveColors (t_iem *iem, t_iemcolors *c)
+void iem_getColors (t_iem *iem, t_iemcolors *c)
 {
     c->iem_background = iem_colorEncode (iem->iem_colorBackground);
     c->iem_foreground = iem_colorEncode (iem->iem_colorForeground);
     c->iem_label      = iem_colorEncode (iem->iem_colorLabel);
 }
 
-void iem_loadColors (t_iem *iem, t_iemcolors *c)
+void iem_setColors (t_iem *iem, t_iemcolors *c)
 {
     iem->iem_colorBackground = iem_colorDecode (c->iem_background);
     iem->iem_colorForeground = iem_colorDecode (c->iem_foreground);
     iem->iem_colorLabel      = iem_colorDecode (c->iem_label);
+}
+
+void iem_loadNamesAtIndex (t_iem *iem, int i, t_atom *argv)
+{
+    iem->iem_send    = (argv ? iem_getName (i + 0, argv) : iem_empty());
+    iem->iem_receive = (argv ? iem_getName (i + 1, argv) : iem_empty());
+    iem->iem_label   = (argv ? iem_getName (i + 2, argv) : iem_empty());
+    
+    iem->iem_unexpandedSend    = NULL;
+    iem->iem_unexpandedReceive = NULL;
+    iem->iem_unexpandedLabel   = NULL;
+    
+    iem->iem_cacheIndex = i;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -97,100 +162,6 @@ void iem_checkSendReceiveLoop (t_iem *iem)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-t_symbol *iem_new_dogetname(t_iem *iem, int indx, t_atom *argv)
-{
-    if (IS_SYMBOL_INDEX(argv, indx))
-        return (atom_getSymbolAtIndex(indx, 100000, argv));
-    else if (IS_FLOAT_INDEX(argv, indx))
-    {
-        char str[80];
-        sprintf(str, "%d", (int)(t_int)atom_getFloatAtIndex(indx, 100000, argv));
-        return (gensym(str));
-    }
-    else return (gensym("empty"));
-}
-
-void iem_new_getnames(t_iem *iem, int indx, t_atom *argv)
-{
-    if (argv)
-    {
-        iem->iem_send = iem_new_dogetname(iem, indx, argv);
-        iem->iem_receive = iem_new_dogetname(iem, indx+1, argv);
-        iem->iem_label = iem_new_dogetname(iem, indx+2, argv);
-    }
-    else iem->iem_send = iem->iem_receive = iem->iem_label = gensym("empty");
-    iem->iem_unexpandedSend = iem->iem_unexpandedReceive =
-        iem->iem_unexpandedLabel = 0;
-    iem->iem_indexBuffer = indx;
-    iem->iem_indexLabel = indx + 3;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-    /* convert symbols in "$" form to the expanded symbols */
-void iem_all_dollararg2sym(t_iem *iem, t_symbol **srlsym)
-{
-        /* save unexpanded ones for later */
-    iem->iem_unexpandedSend = srlsym[0];
-    iem->iem_unexpandedReceive = srlsym[1];
-    iem->iem_unexpandedLabel = srlsym[2];
-    srlsym[0] = canvas_realizedollar(iem->iem_glist, srlsym[0]);
-    srlsym[1] = canvas_realizedollar(iem->iem_glist, srlsym[1]);
-    srlsym[2] = canvas_realizedollar(iem->iem_glist, srlsym[2]);
-}
-
-    /* initialize a single symbol in unexpanded form.  We reach into the
-    binbuf to grab them; if there's nothing there, set it to the
-    fallback; if still nothing, set to "empty". */
-static void iem_init_sym2dollararg(t_iem *iem, t_symbol **symp,
-    int indx, t_symbol *fallback)
-{
-    if (!*symp)
-    {
-        t_buffer *b = iem->iem_obj.te_buffer;
-        if (buffer_size(b) > indx)
-        {
-            char buf[80];
-            atom_toString(buffer_atoms(b) + indx, buf, 80);
-            *symp = gensym(buf);
-        }
-        else if (fallback)
-            *symp = fallback;
-        else *symp = gensym("empty");
-    }
-}
-
-    /* get the unexpanded versions of the symbols; initialize them if
-    necessary. */
-void iem_all_sym2dollararg(t_iem *iem, t_symbol **srlsym)
-{
-    iem_init_sym2dollararg(iem, &iem->iem_unexpandedSend,
-        iem->iem_indexBuffer+1, iem->iem_send);
-    iem_init_sym2dollararg(iem, &iem->iem_unexpandedReceive,
-        iem->iem_indexBuffer+2, iem->iem_receive);
-    iem_init_sym2dollararg(iem, &iem->iem_unexpandedLabel,
-        iem->iem_indexLabel, iem->iem_label);
-    srlsym[0] = iem->iem_unexpandedSend;
-    srlsym[1] = iem->iem_unexpandedReceive;
-    srlsym[2] = iem->iem_unexpandedLabel;
-}
-
-void iem_all_dollar2raute(t_symbol **srlsym)
-{
-    srlsym[0] = dollar_toRaute(srlsym[0]);
-    srlsym[1] = dollar_toRaute(srlsym[1]);
-    srlsym[2] = dollar_toRaute(srlsym[2]);
-}
-
-void iem_all_raute2dollar(t_symbol **srlsym)
-{
-    srlsym[0] = dollar_fromRaute(srlsym[0]);
-    srlsym[1] = dollar_fromRaute(srlsym[1]);
-    srlsym[2] = dollar_fromRaute(srlsym[2]);
-}
 
 void iem_send(void *x, t_iem *iem, t_symbol *s)
 {
@@ -355,20 +326,22 @@ void iem_vis(t_gobj *z, t_glist *glist, int vis)
 
 void iem_save (t_iem *iem, t_symbol **srl, t_iemcolors *c)
 {
-    srl[0] = iem->iem_send;
-    srl[1] = iem->iem_receive;
-    srl[2] = iem->iem_label;
-    iem_all_sym2dollararg(iem, srl);
-    iem_saveColors(iem, c);
+    //srl[0] = iem->iem_send;
+    //srl[1] = iem->iem_receive;
+    //srl[2] = iem->iem_label;
+    iem_getUnexpandedNames (iem, srl);
+    iem_getColors (iem, c);
 }
 
-void iem_properties(t_iem *iem, t_symbol **srl)
+void iem_properties (t_iem *iem, t_symbol **srl)
 {
-    srl[0] = iem->iem_send;
-    srl[1] = iem->iem_receive;
-    srl[2] = iem->iem_label;
-    iem_all_sym2dollararg(iem, srl);
-    iem_all_dollar2raute(srl);
+    //srl[0] = iem->iem_send;
+    //srl[1] = iem->iem_receive;
+    //srl[2] = iem->iem_label;
+    iem_getUnexpandedNames (iem, srl);
+    srl[0] = dollar_toRaute (srl[0]);
+    srl[1] = dollar_toRaute (srl[1]);
+    srl[2] = dollar_toRaute (srl[2]);
 }
 
 void iem_dialog(t_iem *iem, t_symbol **srl, int argc, t_atom *argv)
@@ -383,23 +356,23 @@ void iem_dialog(t_iem *iem, t_symbol **srl, int argc, t_atom *argv)
     int lcol = (int)(t_int)atom_getFloatAtIndex(15, argc, argv);
     int sndable=1, rcvable=1;
 
-    if(IS_SYMBOL_INDEX(argv,7))
+    if(IS_SYMBOL_AT(argv,7))
         srl[0] = atom_getSymbolAtIndex(7, argc, argv);
-    else if(IS_FLOAT_INDEX(argv,7))
+    else if(IS_FLOAT_AT(argv,7))
     {
         sprintf(str, "%d", (int)(t_int)atom_getFloatAtIndex(7, argc, argv));
         srl[0] = gensym(str);
     }
-    if(IS_SYMBOL_INDEX(argv,8))
+    if(IS_SYMBOL_AT(argv,8))
         srl[1] = atom_getSymbolAtIndex(8, argc, argv);
-    else if(IS_FLOAT_INDEX(argv,8))
+    else if(IS_FLOAT_AT(argv,8))
     {
         sprintf(str, "%d", (int)(t_int)atom_getFloatAtIndex(8, argc, argv));
         srl[1] = gensym(str);
     }
-    if(IS_SYMBOL_INDEX(argv,9))
+    if(IS_SYMBOL_AT(argv,9))
         srl[2] = atom_getSymbolAtIndex(9, argc, argv);
-    else if(IS_FLOAT_INDEX(argv,9))
+    else if(IS_FLOAT_AT(argv,9))
     {
         sprintf(str, "%d", (int)(t_int)atom_getFloatAtIndex(9, argc, argv));
         srl[2] = gensym(str);
@@ -408,8 +381,18 @@ void iem_dialog(t_iem *iem, t_symbol **srl, int argc, t_atom *argv)
     iem->x_isa.iem_loadOnStart = init;
     if(!strcmp(srl[0]->s_name, "empty")) sndable = 0;
     if(!strcmp(srl[1]->s_name, "empty")) rcvable = 0;
-    iem_all_raute2dollar(srl);
-    iem_all_dollararg2sym(iem, srl);
+    srl[0] = dollar_fromRaute (srl[0]);
+    srl[1] = dollar_fromRaute (srl[1]);
+    srl[2] = dollar_fromRaute (srl[2]);
+    
+    iem->iem_unexpandedSend    = srl[0];
+    iem->iem_unexpandedReceive = srl[1];
+    iem->iem_unexpandedLabel   = srl[2];
+    
+    srl[0] = canvas_realizedollar (iem->iem_glist, srl[0]);
+    srl[1] = canvas_realizedollar (iem->iem_glist, srl[1]);
+    srl[2] = canvas_realizedollar (iem->iem_glist, srl[2]);
+    
     if(rcvable)
     {
         if(strcmp(srl[1]->s_name, iem->iem_receive->s_name))

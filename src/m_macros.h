@@ -99,11 +99,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IS_FLOAT_INDEX(atom, index)         ((atom + index)->a_type == A_FLOAT)
-#define IS_SYMBOL_INDEX(atom, index)        ((atom + index)->a_type == A_SYMBOL)
-#define IS_DOLLAR_INDEX(atom, index)        ((atom + index)->a_type == A_DOLLAR)
-#define IS_DOLLARSYMBOL_INDEX(atom, index)  ((atom + index)->a_type == A_DOLLARSYMBOL)
-#define IS_POINTER_INDEX(atom, index)       ((atom + index)->a_type == A_POINTER)
+#define IS_FLOAT_AT(atom, index)            ((atom + index)->a_type == A_FLOAT)
+#define IS_SYMBOL_AT(atom, index)           ((atom + index)->a_type == A_SYMBOL)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

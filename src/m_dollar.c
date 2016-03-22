@@ -41,7 +41,7 @@ int dollar_isPointingToDollarAndNumber (char *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int dollar_substitute (char *s, char *buf, int size, int argc, t_atom *argv)
+static int dollar_expand (char *s, char *buf, int size, int argc, t_atom *argv)
 {
     int n = (int)atol (s);      /* Note that atol return zero for an invalid number. */
     char *ptr = s;
@@ -83,9 +83,9 @@ static int dollar_substitute (char *s, char *buf, int size, int argc, t_atom *ar
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Dollar symbol subsitution (e.g. '$1-foo' to 'bar-foo'). */
+/* Dollar symbol expansion (e.g. '$1-foo' to 'bar-foo'). */
 
-t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv)
+t_symbol *dollar_expandDollarSymbol (t_symbol *s, int argc, t_atom *argv)
 {
     char t[PD_STRING] = { 0 };
     char result[PD_STRING] = { 0 };
@@ -102,7 +102,7 @@ t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv)
         str = substr + 1;
     }
 
-    while (!err && ((next = dollar_substitute (str, t, PD_STRING, argc, argv)) >= 0)) {
+    while (!err && ((next = dollar_expand (str, t, PD_STRING, argc, argv)) >= 0)) {
     //
     if ((next == 0) && (*t == 0)) { return NULL; }          /* Dollar number argument is out of bound. */
 
@@ -125,9 +125,9 @@ t_symbol *dollar_substituteDollarSymbol (t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-/* Dollar substitution (e.g. '$1' to 'foo'). */
+/* Dollar expansion (e.g. '$1' to 'foo'). */
 
-void dollar_substituteDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *argv)
+void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *argv)
 {
     int n = GET_DOLLAR (dollar);
         
