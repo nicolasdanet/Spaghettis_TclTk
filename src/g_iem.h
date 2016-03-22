@@ -51,28 +51,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef struct _iemflags {
-    char iem_font;                      /* Unused but kept for compatibility. */
-    char iem_scale;                     /* Unused but kept for compatibility. */
-    char iem_canReceive;
-    char iem_canSend;
-    char iem_loadOnStart;
-    char iem_isSelected;
-    char iem_accurateMoving;
-    char iem_goThrough;
-    char iem_hasChanged;
-    char iem_isLogarithmic;
-    char iem_isSteadyOnClick;
-    char iem_isLocked;
-    } t_iemflags;
-
-typedef struct _iemarguments {
-    char iem_loadOnStart;
-    char iem_scale;                     /* Unused but kept for compatibility. */
-    char iem_flash;                     /* Unused. */
-    char iem_isLocked;
-    } t_iemarguments;
-
 typedef struct _iemcolors {
     int colorBackground;
     int colorForeground;
@@ -101,26 +79,36 @@ typedef void (*t_iemfn)(void *x, t_glist *glist, int mode);
 #pragma mark -
 
 typedef struct _iem {
-    t_object            iem_obj;        /* MUST be the first. */
-    t_glist             *iem_glist;
-    t_iemfn             iem_draw;
-    t_iemflags          iem_flags;
-    t_iemarguments      x_isa;
-    int                 iem_height;
-    int                 iem_width;
-    int                 iem_labelX;
-    int                 iem_labelY;
-    int                 iem_fontSize;
-    int                 iem_colorForeground;
-    int                 iem_colorBackground;
-    int                 iem_colorLabel;
-    int                 iem_cacheIndex;
-    t_symbol            *iem_send;
-    t_symbol            *iem_receive;
-    t_symbol            *iem_label;
-    t_symbol            *iem_unexpandedSend;
-    t_symbol            *iem_unexpandedReceive;
-    t_symbol            *iem_unexpandedLabel;
+    t_object    iem_obj;                        /* MUST be the first. */
+    t_glist     *iem_glist;
+    t_iemfn     iem_draw;
+    char        iem_fontStyle;                  /* Unused but kept for compatibility. */
+    char        iem_scale;                      /* Unused but kept for compatibility. */
+    char        iem_canReceive;
+    char        iem_canSend;
+    char        iem_loadOnStart;
+    char        iem_isSelected;
+    char        iem_accurateMoving;
+    char        iem_goThrough;
+    char        iem_hasChanged;
+    char        iem_isLogarithmic;
+    char        iem_isSteadyOnClick;
+    char        iem_isLocked;
+    int         iem_height;
+    int         iem_width;
+    int         iem_labelX;
+    int         iem_labelY;
+    int         iem_fontSize;
+    int         iem_colorForeground;
+    int         iem_colorBackground;
+    int         iem_colorLabel;
+    int         iem_cacheIndex;
+    t_symbol    *iem_send;
+    t_symbol    *iem_receive;
+    t_symbol    *iem_label;
+    t_symbol    *iem_unexpandedSend;
+    t_symbol    *iem_unexpandedReceive;
+    t_symbol    *iem_unexpandedLabel;
     } t_iem;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -233,27 +221,23 @@ t_symbol *iem_empty (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        iem_getColors               (t_iem *iem, t_iemcolors *c);
-void        iem_setColors               (t_iem *iem, t_iemcolors *c);
+void        iem_loadColors              (t_iem *iem, t_iemcolors *c);
+void        iem_saveColors              (t_iem *iem, t_iemcolors *c);
+void        iem_loadFontStyle           (t_iem *iem, int n);
+int         iem_saveFontStyle           (t_iem *iem);
+void        iem_loadLoadAtStart         (t_iem *iem, int n);
+int         iem_saveLoadAtStart         (t_iem *iem);
+void        iem_loadNamesByIndex        (t_iem *iem, int i, t_atom *argv);
 
-void        iem_setNamesByIndex        (t_iem *iem, int i, t_atom *argv);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void        iem_checkSendReceiveLoop    (t_iem *iem);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-t_symbol    *iem_unique2dollarzero      (t_symbol *s, int unique_num, int and_unique_flag);
-t_symbol    *iem_sym2dollararg          (t_symbol *s, int nth_arg, int tail_len);
-t_symbol    *iem_dollarzero2unique      (t_symbol *s, int unique_num);
-t_symbol    *iem_dollararg2sym          (t_symbol *s, int nth_arg, int tail_len, int pargc, t_atom *pargv);
-int         iem_is_dollarzero           (t_symbol *s);
-int         iem_is_dollararg            (t_symbol *s, int *tail_len);
-void        iem_fetch_unique            (t_iem *iem);
-void        iem_fetch_parent_args       (t_iem *iem, int *pargc, t_atom **pargv);
-void        iem_all_unique2dollarzero   (t_iem *iem, t_symbol **srlsym);
-void        iem_all_dollarzero2unique   (t_iem *iem, t_symbol **srlsym);
 
 void        iem_send                    (void *x, t_iem *iem, t_symbol *s);
 void        iem_receive                 (void *x, t_iem *iem, t_symbol *s);
@@ -272,10 +256,6 @@ void        iem_vis                     (t_gobj *z, t_glist *glist, int vis);
 void        iem_save                    (t_iem *iem, t_symbol **srl, t_iemcolors *c);
 void        iem_properties              (t_iem *iem, t_symbol **srl);
 void        iem_dialog                  (t_iem *iem, t_symbol **srl, int argc, t_atom *argv);
-void        iem_inttosymargs            (t_iemarguments *symargp, int n);
-int         iem_symargstoint            (t_iemarguments *symargp);
-void        iem_inttofstyle             (t_iemflags *fstylep, int n);
-int         iem_fstyletoint             (t_iemflags *fstylep);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

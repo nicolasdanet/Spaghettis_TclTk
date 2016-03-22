@@ -146,7 +146,7 @@ void vradio_draw_config(t_vradio* x, t_glist* glist)
 
     sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
              canvas, x, x->x_gui.iem_fontSize,
-             x->x_gui.iem_flags.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
+             x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
              strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
     for(i=0; i<n; i++)
     {
@@ -181,7 +181,7 @@ void vradio_draw_select(t_vradio* x, t_glist* glist)
     t_canvas *canvas=glist_getcanvas(glist);
     int n=x->x_number, i;
 
-    if(x->x_gui.iem_flags.iem_isSelected)
+    if(x->x_gui.iem_isSelected)
     {
         for(i=0; i<n; i++)
         {
@@ -244,10 +244,10 @@ static void vradio_save(t_gobj *z, t_buffer *b)
                 (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("vradio"),
                 x->x_gui.iem_width,
-                x->x_changed, iem_symargstoint(&x->x_gui.x_isa), x->x_number,
+                x->x_changed, iem_saveLoadAtStart(&x->x_gui), x->x_number,
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iem_fstyletoint(&x->x_gui.iem_flags), x->x_gui.iem_fontSize,
+                iem_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[1], bflcol[2], x->x_fval);
     buffer_vAppend(b, ";");
 }
@@ -272,7 +272,7 @@ static void vradio_properties(t_gobj *z, t_glist *owner)
             %d %d %d \
             -1\n",
             x->x_gui.iem_width, IEM_VRADIO_MINIMUM_SIZE,
-            x->x_gui.x_isa.iem_loadOnStart, 
+            x->x_gui.iem_loadOnStart, 
             x->x_number,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
@@ -331,7 +331,7 @@ static void vradio_bang(t_vradio *x)
 {
         float outval = (0 ? x->x_on : x->x_fval);
         outlet_float(x->x_gui.iem_obj.te_outlet, outval);
-        if(x->x_gui.iem_flags.iem_canSend && x->x_gui.iem_send->s_thing)
+        if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
             pd_float(x->x_gui.iem_send->s_thing, outval);
 }
 
@@ -349,7 +349,7 @@ static void vradio_fout(t_vradio *x, t_float f)
         x->x_on = i;
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
         outlet_float(x->x_gui.iem_obj.te_outlet, outval);
-        if (x->x_gui.iem_flags.iem_canSend && x->x_gui.iem_send->s_thing)
+        if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
             pd_float(x->x_gui.iem_send->s_thing, outval);
 }
 
@@ -366,10 +366,10 @@ static void vradio_float(t_vradio *x, t_float f)
         float outval = (0 ? i : x->x_fval);
         x->x_on = i;
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-        if (x->x_gui.iem_flags.iem_goThrough)
+        if (x->x_gui.iem_goThrough)
         {
             outlet_float(x->x_gui.iem_obj.te_outlet, outval);
-            if(x->x_gui.iem_flags.iem_canSend && x->x_gui.iem_send->s_thing)
+            if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
                 pd_float(x->x_gui.iem_send->s_thing, outval);
         }
 }
@@ -393,7 +393,7 @@ static int vradio_newclick(t_gobj *z, struct _glist *glist,
 
 static void vradio_loadbang(t_vradio *x)
 {
-    if(x->x_gui.x_isa.iem_loadOnStart)
+    if(x->x_gui.iem_loadOnStart)
         vradio_bang(x);
 }
 
@@ -449,7 +449,7 @@ static void vradio_label_font(t_vradio *x, t_symbol *s, int ac, t_atom *av)
 
 static void vradio_init(t_vradio *x, t_float f)
 {
-    x->x_gui.x_isa.iem_loadOnStart = (f==0.0)?0:1;
+    x->x_gui.iem_loadOnStart = (f==0.0)?0:1;
 }
 
 static void vradio_double_change(t_vradio *x)
@@ -480,27 +480,27 @@ static void *vradio_donew(t_symbol *s, int argc, t_atom *argv)
     {
         a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         chg = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
-        iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(2, argc, argv));
+        iem_loadLoadAtStart(&x->x_gui, (t_int)atom_getFloatAtIndex(2, argc, argv));
         num = (int)(t_int)atom_getFloatAtIndex(3, argc, argv);
-        iem_setNamesByIndex(&x->x_gui, 4, argv);
+        iem_loadNamesByIndex(&x->x_gui, 4, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
-        iem_inttofstyle(&x->x_gui.iem_flags, (t_int)atom_getFloatAtIndex(9, argc, argv));
+        iem_loadFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(9, argc, argv));
         fs = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
         bflcol[0] = (int)(t_int)atom_getFloatAtIndex(11, argc, argv);
         bflcol[1] = (int)(t_int)atom_getFloatAtIndex(12, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
         fval = (t_int)atom_getFloatAtIndex(14, argc, argv);
     }
-    else iem_setNamesByIndex(&x->x_gui, 4, 0);
+    else iem_loadNamesByIndex(&x->x_gui, 4, 0);
     x->x_gui.iem_draw = (t_iemfn)vradio_draw;
-    x->x_gui.iem_flags.iem_canSend = 1;
-    x->x_gui.iem_flags.iem_canReceive = 1;
+    x->x_gui.iem_canSend = 1;
+    x->x_gui.iem_canReceive = 1;
     x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
     if (!strcmp(x->x_gui.iem_send->s_name, "empty"))
-        x->x_gui.iem_flags.iem_canSend = 0;
+        x->x_gui.iem_canSend = 0;
     if (!strcmp(x->x_gui.iem_receive->s_name, "empty"))
-        x->x_gui.iem_flags.iem_canReceive = 0;
+        x->x_gui.iem_canReceive = 0;
 
     if(num < 1)
         num = 1;
@@ -513,12 +513,12 @@ static void *vradio_donew(t_symbol *s, int argc, t_atom *argv)
         on = 0;
     if(on >= x->x_number)
         on = x->x_number - 1;
-    if(x->x_gui.x_isa.iem_loadOnStart)
+    if(x->x_gui.iem_loadOnStart)
         x->x_on = on;
     else
         x->x_on = 0;
     x->x_changed = (chg==0)?0:1;
-    if (x->x_gui.iem_flags.iem_canReceive)
+    if (x->x_gui.iem_canReceive)
         pd_bind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
     x->x_gui.iem_labelX = ldx;
     x->x_gui.iem_labelY = ldy;
@@ -528,7 +528,7 @@ static void *vradio_donew(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     iem_checkSendReceiveLoop(&x->x_gui);
-    iem_setColors(&x->x_gui, bflcol);
+    iem_saveColors(&x->x_gui, bflcol);
     outlet_new(&x->x_gui.iem_obj, &s_list);
     return (x);
 }
@@ -540,7 +540,7 @@ static void *vradio_new(t_symbol *s, int argc, t_atom *argv)
 
 static void vradio_ff(t_vradio *x)
 {
-    if(x->x_gui.iem_flags.iem_canReceive)
+    if(x->x_gui.iem_canReceive)
         pd_unbind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
     gfxstub_deleteforkey(x);
 }

@@ -88,7 +88,7 @@ void my_canvas_draw_config(t_my_canvas* x, t_glist* glist)
     sys_vGui(".x%lx.c itemconfigure %lxRECT -fill #%6.6x -outline #%6.6x\n", canvas, x,
              x->x_gui.iem_colorBackground, x->x_gui.iem_colorBackground);
     sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x,
-             x->x_gui.iem_flags.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorBackground);
+             x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorBackground);
     sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
              canvas, x, x->x_gui.iem_fontSize,
              x->x_gui.iem_colorLabel,
@@ -99,7 +99,7 @@ void my_canvas_draw_select(t_my_canvas* x, t_glist* glist)
 {
     t_canvas *canvas=glist_getcanvas(glist);
 
-    if(x->x_gui.iem_flags.iem_isSelected)
+    if(x->x_gui.iem_isSelected)
     {
         sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
     }
@@ -146,8 +146,8 @@ static void my_canvas_save(t_gobj *z, t_buffer *b)
                 (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("cnv"), x->x_gui.iem_width, x->x_vis_w, x->x_vis_h,
                 srl[0], srl[1], srl[2], x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iem_fstyletoint(&x->x_gui.iem_flags), x->x_gui.iem_fontSize,
-                bflcol[0], bflcol[2], iem_symargstoint(&x->x_gui.x_isa));
+                iem_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
+                bflcol[0], bflcol[2], iem_saveLoadAtStart(&x->x_gui));
     buffer_vAppend(b, ";");
 }
 
@@ -180,7 +180,7 @@ static void my_canvas_properties(t_gobj *z, t_glist *owner)
 
 static void my_canvas_get_pos(t_my_canvas *x)
 {
-    if(x->x_gui.iem_flags.iem_canSend && x->x_gui.iem_send->s_thing)
+    if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
     {
         x->x_at[0].a_w.w_float = text_xpix(&x->x_gui.iem_obj, x->x_gui.iem_glist);
         x->x_at[1].a_w.w_float = text_ypix(&x->x_gui.iem_obj, x->x_gui.iem_glist);
@@ -196,7 +196,7 @@ static void my_canvas_dialog(t_my_canvas *x, t_symbol *s, int argc, t_atom *argv
     int h = (int)(t_int)atom_getFloatAtIndex(3, argc, argv);
     iem_dialog(&x->x_gui, srl, argc, argv);
 
-    x->x_gui.x_isa.iem_loadOnStart = 0;
+    x->x_gui.iem_loadOnStart = 0;
     if(a < 1)
         a = 1;
     x->x_gui.iem_width = a;
@@ -274,8 +274,8 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     int fs=14;
     char str[144];
 
-    iem_inttosymargs(&x->x_gui.x_isa, 0);
-    iem_inttofstyle(&x->x_gui.iem_flags, 0);
+    iem_loadLoadAtStart(&x->x_gui, 0);
+    iem_loadFontStyle(&x->x_gui, 0);
 
     if(((argc >= 10)&&(argc <= 13))
        &&IS_FLOAT_AT(argv,0)&&IS_FLOAT_AT(argv,1)&&IS_FLOAT_AT(argv,2))
@@ -287,14 +287,14 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     if((argc >= 12)&&(IS_SYMBOL_AT(argv,3)||IS_FLOAT_AT(argv,3))&&(IS_SYMBOL_AT(argv,4)||IS_FLOAT_AT(argv,4)))
     {
         i = 2;
-        iem_setNamesByIndex(&x->x_gui, 3, argv);
+        iem_loadNamesByIndex(&x->x_gui, 3, argv);
     }
     else if((argc == 11)&&(IS_SYMBOL_AT(argv,3)||IS_FLOAT_AT(argv,3)))
     {
         i = 1;
-        iem_setNamesByIndex(&x->x_gui, 3, argv);
+        iem_loadNamesByIndex(&x->x_gui, 3, argv);
     }
-    else iem_setNamesByIndex(&x->x_gui, 3, 0);
+    else iem_loadNamesByIndex(&x->x_gui, 3, 0);
 
     if(((argc >= 10)&&(argc <= 13))
        &&(IS_SYMBOL_AT(argv,i+3)||IS_FLOAT_AT(argv,i+3))&&IS_FLOAT_AT(argv,i+4)
@@ -309,23 +309,23 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
         //x->x_gui.iem_indexLabel = i+4;
         ldx = (int)(t_int)atom_getFloatAtIndex(i+4, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(i+5, argc, argv);
-        iem_inttofstyle(&x->x_gui.iem_flags, (t_int)atom_getFloatAtIndex(i+6, argc, argv));
+        iem_loadFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(i+6, argc, argv));
         fs = (int)(t_int)atom_getFloatAtIndex(i+7, argc, argv);
         bflcol[0] = (int)(t_int)atom_getFloatAtIndex(i+8, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(i+9, argc, argv);
     }
     if((argc == 13)&&IS_FLOAT_AT(argv,i+10))
     {
-        iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(i+10, argc, argv));
+        iem_loadLoadAtStart(&x->x_gui, (t_int)atom_getFloatAtIndex(i+10, argc, argv));
     }
     x->x_gui.iem_draw = (t_iemfn)my_canvas_draw;
-    x->x_gui.iem_flags.iem_canSend = 1;
-    x->x_gui.iem_flags.iem_canReceive = 1;
+    x->x_gui.iem_canSend = 1;
+    x->x_gui.iem_canReceive = 1;
     x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
     if (!strcmp(x->x_gui.iem_send->s_name, "empty"))
-        x->x_gui.iem_flags.iem_canSend = 0;
+        x->x_gui.iem_canSend = 0;
     if (!strcmp(x->x_gui.iem_receive->s_name, "empty"))
-        x->x_gui.iem_flags.iem_canReceive = 0;
+        x->x_gui.iem_canReceive = 0;
     if(a < 1)
         a = 1;
     x->x_gui.iem_width = a;
@@ -337,14 +337,14 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
         h = 1;
     x->x_vis_h = h;
 
-    if (x->x_gui.iem_flags.iem_canReceive)
+    if (x->x_gui.iem_canReceive)
         pd_bind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
     x->x_gui.iem_labelX = ldx;
     x->x_gui.iem_labelY = ldy;
     if(fs < 4)
         fs = 4;
     x->x_gui.iem_fontSize = fs;
-    iem_setColors(&x->x_gui, bflcol);
+    iem_saveColors(&x->x_gui, bflcol);
     x->x_at[0].a_type = A_FLOAT;
     x->x_at[1].a_type = A_FLOAT;
     iem_checkSendReceiveLoop(&x->x_gui);
@@ -353,7 +353,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
 
 static void my_canvas_ff(t_my_canvas *x)
 {
-    if(x->x_gui.iem_flags.iem_canReceive)
+    if(x->x_gui.iem_canReceive)
         pd_unbind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
     gfxstub_deleteforkey(x);
 }

@@ -66,9 +66,9 @@ void my_numbox_calc_fontwidth(t_my_numbox *x)
 {
     int w, f=31;
 
-    if(x->x_gui.iem_flags.iem_font == 1)
+    if(x->x_gui.iem_fontStyle == 1)
         f = 27;
-    else if(x->x_gui.iem_flags.iem_font == 2)
+    else if(x->x_gui.iem_fontStyle == 2)
         f = 25;
 
     w = x->x_gui.iem_fontSize * f * x->x_gui.iem_width;
@@ -169,7 +169,7 @@ static void my_numbox_draw_update(t_gobj *client, t_glist *glist)
             sys_vGui(
                 ".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s} \n",
                 glist_getcanvas(glist), x,
-                x->x_gui.iem_flags.iem_isSelected?
+                x->x_gui.iem_isSelected?
                     IEM_COLOR_SELECTED:x->x_gui.iem_colorForeground,
                 x->x_buf);
             x->x_buf[0] = 0;
@@ -274,15 +274,15 @@ static void my_numbox_draw_config(t_my_numbox* x,t_glist* glist)
 
     sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
              canvas, x, x->x_gui.iem_fontSize,
-             x->x_gui.iem_flags.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
+             x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
              strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
     sys_vGui(".x%lx.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%6.6x \n",
              canvas, x, x->x_gui.iem_fontSize,
-             x->x_gui.iem_flags.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorForeground);
+             x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorForeground);
     sys_vGui(".x%lx.c itemconfigure %lxBASE1 -fill #%6.6x\n", canvas,
              x, x->x_gui.iem_colorBackground);
     sys_vGui(".x%lx.c itemconfigure %lxBASE2 -fill #%6.6x\n", canvas,
-             x, x->x_gui.iem_flags.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorForeground);
+             x, x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorForeground);
 }
 
 static void my_numbox_draw_io(t_my_numbox* x, t_glist* glist)
@@ -307,7 +307,7 @@ static void my_numbox_draw_select(t_my_numbox *x, t_glist *glist)
 {
     t_canvas *canvas=glist_getcanvas(glist);
 
-    if(x->x_gui.iem_flags.iem_isSelected)
+    if(x->x_gui.iem_isSelected)
     {
         if(x->x_hasChanged)
         {
@@ -387,10 +387,10 @@ static void my_numbox_save(t_gobj *z, t_buffer *b)
                 (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("nbx"), x->x_gui.iem_width, x->x_gui.iem_height,
                 (t_float)x->x_min, (t_float)x->x_max,
-                x->x_isLogarithmic, iem_symargstoint(&x->x_gui.x_isa),
+                x->x_isLogarithmic, iem_saveLoadAtStart(&x->x_gui),
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iem_fstyletoint(&x->x_gui.iem_flags), x->x_gui.iem_fontSize,
+                iem_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[1], bflcol[2],
                 x->x_val, x->x_log_height);
     buffer_vAppend(b, ";");
@@ -462,7 +462,7 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
             x->x_gui.iem_width, 1, x->x_gui.iem_height, 8,
             x->x_min, x->x_max,
             x->x_isLogarithmic, 
-            x->x_gui.x_isa.iem_loadOnStart,
+            x->x_gui.iem_loadOnStart,
             x->x_log_height, /*no multi, but iem-characteristic*/
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
@@ -475,7 +475,7 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
 static void my_numbox_bang(t_my_numbox *x)
 {
     outlet_float(x->x_gui.iem_obj.te_outlet, x->x_val);
-    if(x->x_gui.iem_flags.iem_canSend && x->x_gui.iem_send->s_thing)
+    if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
         pd_float(x->x_gui.iem_send->s_thing, x->x_val);
 }
 
@@ -517,7 +517,7 @@ static void my_numbox_motion(t_my_numbox *x, t_float dx, t_float dy)
 {
     double k2=1.0;
 
-    if(x->x_gui.iem_flags.iem_accurateMoving)
+    if(x->x_gui.iem_accurateMoving)
         k2 = 0.01;
     if(x->x_isLogarithmic)
         x->x_val *= pow(x->x_k, -k2*dy);
@@ -546,9 +546,9 @@ static int my_numbox_newclick(t_gobj *z, struct _glist *glist,
         my_numbox_click( x, (t_float)xpix, (t_float)ypix,
             (t_float)shift, 0, (t_float)alt);
         if(shift)
-            x->x_gui.iem_flags.iem_accurateMoving = 1;
+            x->x_gui.iem_accurateMoving = 1;
         else
-            x->x_gui.iem_flags.iem_accurateMoving = 0;
+            x->x_gui.iem_accurateMoving = 0;
         if(!x->x_hasChanged)
         {
             clock_delay(x->x_clock_wait, 50);
@@ -593,7 +593,7 @@ static void my_numbox_log_height(t_my_numbox *x, t_float lh)
 static void my_numbox_float(t_my_numbox *x, t_float f)
 {
     my_numbox_set(x, f);
-    if(x->x_gui.iem_flags.iem_goThrough)
+    if(x->x_gui.iem_goThrough)
         my_numbox_bang(x);
 }
 
@@ -658,7 +658,7 @@ static void my_numbox_label_font(t_my_numbox *x,
     f = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
     if((f < 0) || (f > 2))
         f = 0;
-    x->x_gui.iem_flags.iem_font = f;
+    x->x_gui.iem_fontStyle = f;
     my_numbox_calc_fontwidth(x);
     iem_label_font((void *)x, &x->x_gui, s, ac, av);
 }
@@ -680,12 +680,12 @@ static void my_numbox_lin(t_my_numbox *x)
 
 static void my_numbox_init(t_my_numbox *x, t_float f)
 {
-    x->x_gui.x_isa.iem_loadOnStart = (f==0.0)?0:1;
+    x->x_gui.iem_loadOnStart = (f==0.0)?0:1;
 }
 
 static void my_numbox_loadbang(t_my_numbox *x)
 {
-    if(x->x_gui.x_isa.iem_loadOnStart)
+    if(x->x_gui.iem_loadOnStart)
     {
         interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
         my_numbox_bang(x);
@@ -773,27 +773,27 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
         min = (double)atom_getFloatAtIndex(2, argc, argv);
         max = (double)atom_getFloatAtIndex(3, argc, argv);
         lilo = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
-        iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(5, argc, argv));
-        iem_setNamesByIndex(&x->x_gui, 6, argv);
+        iem_loadLoadAtStart(&x->x_gui, (t_int)atom_getFloatAtIndex(5, argc, argv));
+        iem_loadNamesByIndex(&x->x_gui, 6, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
-        iem_inttofstyle(&x->x_gui.iem_flags, (t_int)atom_getFloatAtIndex(11, argc, argv));
+        iem_loadFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(11, argc, argv));
         fs = (int)(t_int)atom_getFloatAtIndex(12, argc, argv);
         bflcol[0] = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
         bflcol[1] = (int)(t_int)atom_getFloatAtIndex(14, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(15, argc, argv);
         v = atom_getFloatAtIndex(16, argc, argv);
     }
-    else iem_setNamesByIndex(&x->x_gui, 6, 0);
+    else iem_loadNamesByIndex(&x->x_gui, 6, 0);
     if((argc == 18)&&IS_FLOAT_AT(argv,17))
     {
         log_height = (int)(t_int)atom_getFloatAtIndex(17, argc, argv);
     }
     x->x_gui.iem_draw = (t_iemfn)my_numbox_draw;
-    x->x_gui.iem_flags.iem_canSend = 1;
-    x->x_gui.iem_flags.iem_canReceive = 1;
+    x->x_gui.iem_canSend = 1;
+    x->x_gui.iem_canReceive = 1;
     x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
-    if(x->x_gui.x_isa.iem_loadOnStart)
+    if(x->x_gui.iem_loadOnStart)
         x->x_val = v;
     else
         x->x_val = 0.0;
@@ -803,11 +803,11 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
         log_height = 10;
     x->x_log_height = log_height;
     if (!strcmp(x->x_gui.iem_send->s_name, "empty"))
-        x->x_gui.iem_flags.iem_canSend = 0;
+        x->x_gui.iem_canSend = 0;
     if (!strcmp(x->x_gui.iem_receive->s_name, "empty"))
-        x->x_gui.iem_flags.iem_canReceive = 0;
+        x->x_gui.iem_canReceive = 0;
 
-    if (x->x_gui.iem_flags.iem_canReceive)
+    if (x->x_gui.iem_canReceive)
         pd_bind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
     x->x_gui.iem_labelX = ldx;
     x->x_gui.iem_labelY = ldy;
@@ -823,7 +823,7 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
     x->x_buf[0] = 0;
     my_numbox_calc_fontwidth(x);
     my_numbox_check_minmax(x, min, max);
-    iem_setColors(&x->x_gui, bflcol);
+    iem_saveColors(&x->x_gui, bflcol);
     iem_checkSendReceiveLoop(&x->x_gui);
     x->x_clock_reset = clock_new(x, (t_method)my_numbox_tick_reset);
     x->x_clock_wait = clock_new(x, (t_method)my_numbox_tick_wait);
@@ -834,7 +834,7 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
 
 static void my_numbox_free(t_my_numbox *x)
 {
-    if(x->x_gui.iem_flags.iem_canReceive)
+    if(x->x_gui.iem_canReceive)
         pd_unbind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
     clock_free(x->x_clock_reset);
     clock_free(x->x_clock_wait);

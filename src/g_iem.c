@@ -106,25 +106,7 @@ static void iem_fetchUnexpandedName (t_iem *iem, t_symbol **s, int i, t_symbol *
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void iem_getColors (t_iem *iem, t_iemcolors *c)
-{
-    c->colorBackground = iem_colorEncode (iem->iem_colorBackground);
-    c->colorForeground = iem_colorEncode (iem->iem_colorForeground);
-    c->colorLabel      = iem_colorEncode (iem->iem_colorLabel);
-}
-
-void iem_setColors (t_iem *iem, t_iemcolors *c)
-{
-    iem->iem_colorBackground = iem_colorDecode (c->colorBackground);
-    iem->iem_colorForeground = iem_colorDecode (c->colorForeground);
-    iem->iem_colorLabel      = iem_colorDecode (c->colorLabel);
-}
-
-static void iem_getUnexpandedNames (t_iem *iem, t_iemnames *s)
+static void iem_fetchUnexpandedNames (t_iem *iem, t_iemnames *s)
 {
     iem_fetchUnexpandedName (iem, &iem->iem_unexpandedSend, iem->iem_cacheIndex + 1, iem->iem_send);
     iem_fetchUnexpandedName (iem, &iem->iem_unexpandedReceive, iem->iem_cacheIndex + 2, iem->iem_receive);
@@ -135,7 +117,35 @@ static void iem_getUnexpandedNames (t_iem *iem, t_iemnames *s)
     s->unexpendedLabel   = iem->iem_unexpandedLabel;
 }
 
-void iem_setNamesByIndex (t_iem *iem, int i, t_atom *argv)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void iem_loadColors (t_iem *iem, t_iemcolors *c)
+{
+    c->colorBackground = iem_colorEncode (iem->iem_colorBackground);
+    c->colorForeground = iem_colorEncode (iem->iem_colorForeground);
+    c->colorLabel      = iem_colorEncode (iem->iem_colorLabel);
+}
+
+void iem_saveColors (t_iem *iem, t_iemcolors *c)
+{
+    iem->iem_colorBackground = iem_colorDecode (c->colorBackground);
+    iem->iem_colorForeground = iem_colorDecode (c->colorForeground);
+    iem->iem_colorLabel      = iem_colorDecode (c->colorLabel);
+}
+
+void iem_loadFontStyle (t_iem *iem, int n)
+{
+    iem->iem_fontStyle = (char)n;
+}
+
+int iem_saveFontStyle (t_iem *iem)
+{
+    return (int)iem->iem_fontStyle;
+}
+
+void iem_loadNamesByIndex (t_iem *iem, int i, t_atom *argv)
 {
     iem->iem_send    = (argv ? iem_fetchName (i + 0, argv) : iem_empty());
     iem->iem_receive = (argv ? iem_fetchName (i + 1, argv) : iem_empty());
@@ -154,13 +164,28 @@ void iem_setNamesByIndex (t_iem *iem, int i, t_atom *argv)
 
 void iem_checkSendReceiveLoop (t_iem *iem)
 {
-    iem->iem_flags.iem_goThrough = 1;
+    iem->iem_goThrough = 1;
     
-    if (iem->iem_flags.iem_canSend && iem->iem_flags.iem_canReceive) {
+    if (iem->iem_canSend && iem->iem_canReceive) {
         if (!strcmp (iem->iem_send->s_name, iem->iem_receive->s_name)) {
-            iem->iem_flags.iem_goThrough = 0;
+            iem->iem_goThrough = 0;
         }
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void iem_loadLoadAtStart (t_iem *iem, int n)
+{
+    iem->iem_loadOnStart = ((n & 1) != 0);
+    iem->iem_scale = (n & 2);
+}
+
+int iem_saveLoadAtStart (t_iem *iem)
+{
+    return ((iem->iem_loadOnStart ? 1 : 0) | (iem->iem_scale ? 2 : 0));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -177,7 +202,7 @@ void iem_send(void *x, t_iem *iem, t_symbol *s)
     snd = dollar_fromRaute(s);
     iem->iem_unexpandedSend = snd;
     iem->iem_send = snd = canvas_realizedollar(iem->iem_glist, snd);
-    iem->iem_flags.iem_canSend = sndable;
+    iem->iem_canSend = sndable;
     iem_checkSendReceiveLoop(iem);
     (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_IO);
 }
@@ -196,18 +221,18 @@ void iem_receive(void *x, t_iem *iem, t_symbol *s)
     {
         if(strcmp(rcv->s_name, iem->iem_receive->s_name))
         {
-            if(iem->iem_flags.iem_canReceive)
+            if(iem->iem_canReceive)
                 pd_unbind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
             iem->iem_receive = rcv;
             pd_bind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
         }
     }
-    else if(!rcvable && iem->iem_flags.iem_canReceive)
+    else if(!rcvable && iem->iem_canReceive)
     {
         pd_unbind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
         iem->iem_receive = rcv;
     }
-    iem->iem_flags.iem_canReceive = rcvable;
+    iem->iem_canReceive = rcvable;
     iem_checkSendReceiveLoop(iem);
     (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_IO);
 }
@@ -306,7 +331,7 @@ void iem_select(t_gobj *z, t_glist *glist, int selected)
 {
     t_iem *x = (t_iem *)z;
 
-    x->iem_flags.iem_isSelected = selected;
+    x->iem_isSelected = selected;
     (*x->iem_draw)((void *)z, glist, IEM_DRAW_SELECT);
 }
 
@@ -333,8 +358,8 @@ void iem_save (t_iem *iem, t_symbol **srl, t_iemcolors *c)
     //srl[0] = iem->iem_send;
     //srl[1] = iem->iem_receive;
     //srl[2] = iem->iem_label;
-    iem_getUnexpandedNames (iem, srl);
-    iem_getColors (iem, c);
+    iem_fetchUnexpandedNames (iem, srl);
+    iem_loadColors (iem, c);
 }
 
 void iem_properties (t_iem *iem, t_symbol **srl)
@@ -342,7 +367,7 @@ void iem_properties (t_iem *iem, t_symbol **srl)
     //srl[0] = iem->iem_send;
     //srl[1] = iem->iem_receive;
     //srl[2] = iem->iem_label;
-    iem_getUnexpandedNames (iem, srl);
+    iem_fetchUnexpandedNames (iem, srl);
     srl[0] = dollar_toRaute (srl[0]);
     srl[1] = dollar_toRaute (srl[1]);
     srl[2] = dollar_toRaute (srl[2]);
@@ -382,7 +407,7 @@ void iem_dialog(t_iem *iem, t_symbol **srl, int argc, t_atom *argv)
         srl[2] = gensym(str);
     }
     if(init != 0) init = 1;
-    iem->x_isa.iem_loadOnStart = init;
+    iem->iem_loadOnStart = init;
     if(!strcmp(srl[0]->s_name, "empty")) sndable = 0;
     if(!strcmp(srl[1]->s_name, "empty")) rcvable = 0;
     srl[0] = dollar_fromRaute (srl[0]);
@@ -401,20 +426,20 @@ void iem_dialog(t_iem *iem, t_symbol **srl, int argc, t_atom *argv)
     {
         if(strcmp(srl[1]->s_name, iem->iem_receive->s_name))
         {
-            if(iem->iem_flags.iem_canReceive)
+            if(iem->iem_canReceive)
                 pd_unbind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
             iem->iem_receive = srl[1];
             pd_bind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
         }
     }
-    else if(!rcvable && iem->iem_flags.iem_canReceive)
+    else if(!rcvable && iem->iem_canReceive)
     {
         pd_unbind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
         iem->iem_receive = srl[1];
     }
     iem->iem_send = srl[0];
-    iem->iem_flags.iem_canSend = sndable;
-    iem->iem_flags.iem_canReceive = rcvable;
+    iem->iem_canSend = sndable;
+    iem->iem_canReceive = rcvable;
     iem->iem_colorLabel = lcol & 0xffffff;
     iem->iem_colorForeground = fcol & 0xffffff;
     iem->iem_colorBackground = bcol & 0xffffff;
@@ -426,39 +451,6 @@ void iem_dialog(t_iem *iem, t_symbol **srl, int argc, t_atom *argv)
     iem->iem_fontSize = fs;
     iem_checkSendReceiveLoop(iem);
     canvas_dirty(iem->iem_glist, 1);
-}
-
-/* pre-0.46 the flags were 1 for 'loadinit' and 1<<20 for 'scale'.
-Starting in 0.46, take either 1<<20 or 1<<1 for 'scale' and save to both
-bits (so that old versions can read files we write).  In the future (2015?)
-we can stop writing the annoying  1<<20 bit. */
-#define LOADINIT 1
-#define SCALE 2
-#define SCALEBIS (1<<20)
-
-void iem_inttosymargs(t_iemarguments *symargp, int n)
-{
-    memset(symargp, 0, sizeof(*symargp));
-    symargp->iem_loadOnStart = ((n & LOADINIT) != 0);
-    symargp->iem_scale = ((n & SCALE) || (n & SCALEBIS)) ;
-    symargp->iem_flash = 0;
-    symargp->iem_isLocked = 0;
-}
-
-int iem_symargstoint(t_iemarguments *symargp)
-{
-    return ((symargp->iem_loadOnStart ? LOADINIT : 0) | (symargp->iem_scale ? (SCALE | SCALEBIS) : 0));
-}
-
-void iem_inttofstyle(t_iemflags *fstylep, int n)
-{
-    memset (fstylep, 0, sizeof (*fstylep));
-    fstylep->iem_font = (char)n;
-}
-
-int iem_fstyletoint(t_iemflags *fstylep)
-{
-    return (int)fstylep->iem_font;
 }
 
 // -----------------------------------------------------------------------------------------------------------

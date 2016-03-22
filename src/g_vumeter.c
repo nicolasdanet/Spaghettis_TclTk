@@ -313,7 +313,7 @@ static void vu_draw_config(t_vu* x, t_glist* glist)
     }
     sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
              canvas, x, x->x_gui.iem_fontSize,
-             x->x_gui.iem_flags.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
+             x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
              strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
 
     sys_vGui(".x%lx.c itemconfigure %lxRCOVER -fill #%6.6x -outline #%6.6x\n", canvas,
@@ -356,7 +356,7 @@ static void vu_draw_select(t_vu* x,t_glist* glist)
     int i;
     t_canvas *canvas=glist_getcanvas(glist);
 
-    if(x->x_gui.iem_flags.iem_isSelected)
+    if(x->x_gui.iem_isSelected)
     {
         sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
         for(i=1; i<=IEM_VUMETER_STEPS; i++)
@@ -434,9 +434,9 @@ static void vu_save(t_gobj *z, t_buffer *b)
                 gensym("vu"), x->x_gui.iem_width, x->x_gui.iem_height,
                 srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iem_fstyletoint(&x->x_gui.iem_flags), x->x_gui.iem_fontSize,
+                iem_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[2], x->x_scale,
-                iem_symargstoint(&x->x_gui.x_isa));
+                iem_saveLoadAtStart(&x->x_gui));
     buffer_vAppend(b, ";");
 }
 
@@ -528,8 +528,8 @@ static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
 
     srl[0] = gensym("empty");
     iem_dialog(&x->x_gui, srl, argc, argv);
-    x->x_gui.iem_flags.iem_canSend = 0;
-    x->x_gui.x_isa.iem_loadOnStart = 0;
+    x->x_gui.iem_canSend = 0;
+    x->x_gui.iem_loadOnStart = 0;
     x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     vu_check_height(x, h);
     if(scale != 0)
@@ -637,8 +637,8 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     //int ftbreak=IEM_BANG_DEFAULT_BREAK, fthold=IEM_BANG_DEFAULT_HOLD;
     char str[144];
 
-    iem_inttosymargs(&x->x_gui.x_isa, 0);
-    iem_inttofstyle(&x->x_gui.iem_flags, 0);
+    iem_loadLoadAtStart(&x->x_gui, 0);
+    iem_loadFontStyle(&x->x_gui, 0);
 
     if((argc >= 11)&&IS_FLOAT_AT(argv,0)&&IS_FLOAT_AT(argv,1)
        &&(IS_SYMBOL_AT(argv,2)||IS_FLOAT_AT(argv,2))
@@ -649,27 +649,27 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     {
         w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
-        iem_setNamesByIndex(&x->x_gui, 1, argv);
+        iem_loadNamesByIndex(&x->x_gui, 1, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(5, argc, argv);
-        iem_inttofstyle(&x->x_gui.iem_flags, (t_int)atom_getFloatAtIndex(6, argc, argv));
+        iem_loadFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(6, argc, argv));
         fs = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
         bflcol[0] = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
         scale = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
     }
-    else iem_setNamesByIndex(&x->x_gui, 1, 0);
+    else iem_loadNamesByIndex(&x->x_gui, 1, 0);
     if((argc == 12)&&IS_FLOAT_AT(argv,11))
-        iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(11, argc, argv));
+        iem_loadLoadAtStart(&x->x_gui, (t_int)atom_getFloatAtIndex(11, argc, argv));
     x->x_gui.iem_draw = (t_iemfn)vu_draw;
 
-    x->x_gui.iem_flags.iem_canSend = 0;
-    x->x_gui.iem_flags.iem_canReceive = 1;
+    x->x_gui.iem_canSend = 0;
+    x->x_gui.iem_canReceive = 1;
     x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
     if (!strcmp(x->x_gui.iem_receive->s_name, "empty"))
-        x->x_gui.iem_flags.iem_canReceive = 0;
+        x->x_gui.iem_canReceive = 0;
 
-    if(x->x_gui.iem_flags.iem_canReceive)
+    if(x->x_gui.iem_canReceive)
         pd_bind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
     x->x_gui.iem_labelX = ldx;
     x->x_gui.iem_labelY = ldy;
@@ -679,7 +679,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_fontSize = fs;
     x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     vu_check_height(x, h);
-    iem_setColors(&x->x_gui, bflcol);
+    iem_saveColors(&x->x_gui, bflcol);
     if(scale != 0)
         scale = 1;
     x->x_scale = scale;
@@ -696,7 +696,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
 
 static void vu_free(t_vu *x)
 {
-    if(x->x_gui.iem_flags.iem_canReceive)
+    if(x->x_gui.iem_canReceive)
         pd_unbind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
     gfxstub_deleteforkey(x);
 }
