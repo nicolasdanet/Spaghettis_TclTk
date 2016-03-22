@@ -72,10 +72,11 @@ static int iem_colorDecode (int color)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* In labels the floats are loaded as integers (mainly in order to enumerate things). */
 
-static t_symbol *iem_getName (int i, t_atom *argv)
+static t_symbol *iem_fetchName (int i, t_atom *argv)
 {
     if (IS_SYMBOL_AT (argv, i))     { return (atom_getSymbol (argv + i)); }
     else if (IS_FLOAT_AT (argv, i)) {
@@ -87,7 +88,10 @@ static t_symbol *iem_getName (int i, t_atom *argv)
     }
 }
 
-static void iem_fetchUnexpandedNames (t_iem *iem, t_symbol **s, int i, t_symbol *fallback)
+/* Unexpended names cannot be simply retreive in already substituted arguments at instantiation. */
+/* Consequently it must be done by lookinf up again the object's text buffer. */
+
+static void iem_fetchUnexpandedName (t_iem *iem, t_symbol **s, int i, t_symbol *fallback)
 {
     if (!*s) {
         t_error err = PD_ERROR;
@@ -102,40 +106,40 @@ static void iem_fetchUnexpandedNames (t_iem *iem, t_symbol **s, int i, t_symbol 
     }
 }
 
-static void iem_getUnexpandedNames (t_iem *iem, t_iemnames *s)
-{
-    iem_fetchUnexpandedNames (iem, &iem->iem_unexpandedSend, iem->iem_cacheIndex + 1, iem->iem_send);
-    iem_fetchUnexpandedNames (iem, &iem->iem_unexpandedReceive, iem->iem_cacheIndex + 2, iem->iem_receive);
-    iem_fetchUnexpandedNames (iem, &iem->iem_unexpandedLabel, iem->iem_cacheIndex + 3, iem->iem_label);
-        
-    s->iem_symSend    = iem->iem_unexpandedSend;
-    s->iem_symReceive = iem->iem_unexpandedReceive;
-    s->iem_symLabel   = iem->iem_unexpandedLabel;
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void iem_getColors (t_iem *iem, t_iemcolors *c)
 {
-    c->iem_background = iem_colorEncode (iem->iem_colorBackground);
-    c->iem_foreground = iem_colorEncode (iem->iem_colorForeground);
-    c->iem_label      = iem_colorEncode (iem->iem_colorLabel);
+    c->colorBackground = iem_colorEncode (iem->iem_colorBackground);
+    c->colorForeground = iem_colorEncode (iem->iem_colorForeground);
+    c->colorLabel      = iem_colorEncode (iem->iem_colorLabel);
 }
 
 void iem_setColors (t_iem *iem, t_iemcolors *c)
 {
-    iem->iem_colorBackground = iem_colorDecode (c->iem_background);
-    iem->iem_colorForeground = iem_colorDecode (c->iem_foreground);
-    iem->iem_colorLabel      = iem_colorDecode (c->iem_label);
+    iem->iem_colorBackground = iem_colorDecode (c->colorBackground);
+    iem->iem_colorForeground = iem_colorDecode (c->colorForeground);
+    iem->iem_colorLabel      = iem_colorDecode (c->colorLabel);
 }
 
-void iem_loadNamesAtIndex (t_iem *iem, int i, t_atom *argv)
+static void iem_getUnexpandedNames (t_iem *iem, t_iemnames *s)
 {
-    iem->iem_send    = (argv ? iem_getName (i + 0, argv) : iem_empty());
-    iem->iem_receive = (argv ? iem_getName (i + 1, argv) : iem_empty());
-    iem->iem_label   = (argv ? iem_getName (i + 2, argv) : iem_empty());
+    iem_fetchUnexpandedName (iem, &iem->iem_unexpandedSend, iem->iem_cacheIndex + 1, iem->iem_send);
+    iem_fetchUnexpandedName (iem, &iem->iem_unexpandedReceive, iem->iem_cacheIndex + 2, iem->iem_receive);
+    iem_fetchUnexpandedName (iem, &iem->iem_unexpandedLabel, iem->iem_cacheIndex + 3, iem->iem_label);
+        
+    s->unexpendedSend    = iem->iem_unexpandedSend;
+    s->unexpendedReceive = iem->iem_unexpandedReceive;
+    s->unexpendedLabel   = iem->iem_unexpandedLabel;
+}
+
+void iem_setNamesByIndex (t_iem *iem, int i, t_atom *argv)
+{
+    iem->iem_send    = (argv ? iem_fetchName (i + 0, argv) : iem_empty());
+    iem->iem_receive = (argv ? iem_fetchName (i + 1, argv) : iem_empty());
+    iem->iem_label   = (argv ? iem_fetchName (i + 2, argv) : iem_empty());
     
     iem->iem_unexpandedSend    = NULL;
     iem->iem_unexpandedReceive = NULL;

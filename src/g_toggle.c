@@ -383,7 +383,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
     {
         a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(1, argc, argv));
-        iem_loadNamesAtIndex(&x->x_gui, 2, argv);
+        iem_setNamesByIndex(&x->x_gui, 2, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(5, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(6, argc, argv);
         iem_inttofstyle(&x->x_gui.iem_flags, (t_int)atom_getFloatAtIndex(7, argc, argv));
@@ -393,7 +393,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(11, argc, argv);
         on = (t_float)atom_getFloatAtIndex(12, argc, argv);
     }
-    else iem_loadNamesAtIndex(&x->x_gui, 2, 0);
+    else iem_setNamesByIndex(&x->x_gui, 2, 0);
     if((argc == 14)&&IS_FLOAT_AT(argv,13))
         nonzero = (t_float)atom_getFloatAtIndex(13, argc, argv);
     x->x_gui.iem_draw = (t_iemfn)toggle_draw;

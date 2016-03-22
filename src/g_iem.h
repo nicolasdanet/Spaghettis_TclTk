@@ -74,15 +74,15 @@ typedef struct _iemarguments {
     } t_iemarguments;
 
 typedef struct _iemcolors {
-    int iem_background;
-    int iem_foreground;
-    int iem_label;
+    int colorBackground;
+    int colorForeground;
+    int colorLabel;
     } t_iemcolors;
 
 typedef struct _iemnames {
-    t_symbol *iem_symSend;
-    t_symbol *iem_symReceive;
-    t_symbol *iem_symLabel;
+    t_symbol *unexpendedSend;
+    t_symbol *unexpendedReceive;
+    t_symbol *unexpendedLabel;
     } t_iemnames;
     
 // -----------------------------------------------------------------------------------------------------------
@@ -236,7 +236,7 @@ t_symbol *iem_empty (void);
 void        iem_getColors               (t_iem *iem, t_iemcolors *c);
 void        iem_setColors               (t_iem *iem, t_iemcolors *c);
 
-void        iem_loadNamesAtIndex        (t_iem *iem, int i, t_atom *argv);
+void        iem_setNamesByIndex        (t_iem *iem, int i, t_atom *argv);
 
 void        iem_checkSendReceiveLoop    (t_iem *iem);
 

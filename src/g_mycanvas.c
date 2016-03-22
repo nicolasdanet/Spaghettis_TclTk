@@ -287,14 +287,14 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     if((argc >= 12)&&(IS_SYMBOL_AT(argv,3)||IS_FLOAT_AT(argv,3))&&(IS_SYMBOL_AT(argv,4)||IS_FLOAT_AT(argv,4)))
     {
         i = 2;
-        iem_loadNamesAtIndex(&x->x_gui, 3, argv);
+        iem_setNamesByIndex(&x->x_gui, 3, argv);
     }
     else if((argc == 11)&&(IS_SYMBOL_AT(argv,3)||IS_FLOAT_AT(argv,3)))
     {
         i = 1;
-        iem_loadNamesAtIndex(&x->x_gui, 3, argv);
+        iem_setNamesByIndex(&x->x_gui, 3, argv);
     }
-    else iem_loadNamesAtIndex(&x->x_gui, 3, 0);
+    else iem_setNamesByIndex(&x->x_gui, 3, 0);
 
     if(((argc >= 10)&&(argc <= 13))
        &&(IS_SYMBOL_AT(argv,i+3)||IS_FLOAT_AT(argv,i+3))&&IS_FLOAT_AT(argv,i+4)

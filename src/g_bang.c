@@ -459,7 +459,7 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
         fthold = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
         ftbreak = (int)(t_int)atom_getFloatAtIndex(2, argc, argv);
         iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(3, argc, argv));
-        iem_loadNamesAtIndex(&x->x_gui, 4, argv);
+        iem_setNamesByIndex(&x->x_gui, 4, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
         iem_inttofstyle(&x->x_gui.iem_flags, (t_int)atom_getFloatAtIndex(9, argc, argv));
@@ -468,7 +468,7 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
         bflcol[1] = (int)(t_int)atom_getFloatAtIndex(12, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
     }
-    else iem_loadNamesAtIndex(&x->x_gui, 4, 0);
+    else iem_setNamesByIndex(&x->x_gui, 4, 0);
 
     x->x_gui.iem_draw = (t_iemfn)bng_draw;
 

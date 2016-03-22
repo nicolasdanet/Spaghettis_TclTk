@@ -649,7 +649,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     {
         w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
-        iem_loadNamesAtIndex(&x->x_gui, 1, argv);
+        iem_setNamesByIndex(&x->x_gui, 1, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(5, argc, argv);
         iem_inttofstyle(&x->x_gui.iem_flags, (t_int)atom_getFloatAtIndex(6, argc, argv));
@@ -658,7 +658,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
         scale = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
     }
-    else iem_loadNamesAtIndex(&x->x_gui, 1, 0);
+    else iem_setNamesByIndex(&x->x_gui, 1, 0);
     if((argc == 12)&&IS_FLOAT_AT(argv,11))
         iem_inttosymargs(&x->x_gui.x_isa, (t_int)atom_getFloatAtIndex(11, argc, argv));
     x->x_gui.iem_draw = (t_iemfn)vu_draw;
