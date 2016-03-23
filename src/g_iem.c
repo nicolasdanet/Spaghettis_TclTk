@@ -203,11 +203,11 @@ void iemgui_setSend (void *x, t_iem *iem, t_symbol *s)
 void iemgui_setReceive (void *x, t_iem *iem, t_symbol *s)
 {
     t_symbol *t = dollar_fromRaute (s);
-    if (iem->iem_canReceive) { pd_unbind (&iem->iem_obj.te_g.g_pd, iem->iem_receive); }
+    if (iem->iem_canReceive) { pd_unbind (pd_cast (iem), iem->iem_receive); }
     iem->iem_unexpandedReceive = t;
     iem->iem_receive = canvas_realizedollar (iem->iem_glist, t);
     iem->iem_canReceive = (s == iemgui_empty()) ? 0 : 1;
-    if (iem->iem_canReceive) { pd_bind (&iem->iem_obj.te_g.g_pd, iem->iem_receive); }
+    if (iem->iem_canReceive) { pd_bind (pd_cast (iem), iem->iem_receive); }
     iemgui_checkSendReceiveLoop (iem);
 }
 
