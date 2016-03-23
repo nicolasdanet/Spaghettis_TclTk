@@ -470,10 +470,10 @@ static void vslider_color(t_vslider *x, t_symbol *s, int ac, t_atom *av)
 {iem_color((void *)x, &x->x_gui, s, ac, av);}
 
 static void vslider_send(t_vslider *x, t_symbol *s)
-{iem_send(x, &x->x_gui, s);}
+{iemgui_setSend(x, &x->x_gui, s);}
 
 static void vslider_receive(t_vslider *x, t_symbol *s)
-{iem_receive(x, &x->x_gui, s);}
+{iemgui_setReceive(x, &x->x_gui, s);}
 
 static void vslider_label(t_vslider *x, t_symbol *s)
 {iem_label((void *)x, &x->x_gui, s);}

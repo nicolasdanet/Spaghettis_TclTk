@@ -433,10 +433,10 @@ static void vradio_color(t_vradio *x, t_symbol *s, int ac, t_atom *av)
 {iem_color((void *)x, &x->x_gui, s, ac, av);}
 
 static void vradio_send(t_vradio *x, t_symbol *s)
-{iem_send(x, &x->x_gui, s);}
+{iemgui_setSend(x, &x->x_gui, s);}
 
 static void vradio_receive(t_vradio *x, t_symbol *s)
-{iem_receive(x, &x->x_gui, s);}
+{iemgui_setReceive(x, &x->x_gui, s);}
 
 static void vradio_label(t_vradio *x, t_symbol *s)
 {iem_label((void *)x, &x->x_gui, s);}

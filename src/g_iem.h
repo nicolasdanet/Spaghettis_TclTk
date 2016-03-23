@@ -239,8 +239,9 @@ void        iemgui_checkSendReceiveLoop     (t_iem *iem);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        iem_send                    (void *x, t_iem *iem, t_symbol *s);
-void        iem_receive                 (void *x, t_iem *iem, t_symbol *s);
+void        iemgui_setSend                  (void *x, t_iem *iem, t_symbol *s);
+void        iemgui_setReceive               (void *x, t_iem *iem, t_symbol *s);
+
 void        iem_label                   (void *x, t_iem *iem, t_symbol *s);
 void        iem_label_pos               (void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av);
 void        iem_label_font              (void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av);

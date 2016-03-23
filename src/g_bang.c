@@ -395,10 +395,10 @@ static void bng_color(t_bng *x, t_symbol *s, int ac, t_atom *av)
 {iem_color((void *)x, &x->x_gui, s, ac, av);}
 
 static void bng_send(t_bng *x, t_symbol *s)
-{iem_send(x, &x->x_gui, s);}
+{iemgui_setSend(x, &x->x_gui, s);}
 
 static void bng_receive(t_bng *x, t_symbol *s)
-{iem_receive(x, &x->x_gui, s);}
+{iemgui_setReceive(x, &x->x_gui, s);}
 
 static void bng_label(t_bng *x, t_symbol *s)
 {iem_label((void *)x, &x->x_gui, s);}

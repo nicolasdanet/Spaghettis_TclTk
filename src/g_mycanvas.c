@@ -251,10 +251,10 @@ static void my_canvas_color(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
 {iem_color((void *)x, &x->x_gui, s, ac, av);}
 
 static void my_canvas_send(t_my_canvas *x, t_symbol *s)
-{iem_send(x, &x->x_gui, s);}
+{iemgui_setSend(x, &x->x_gui, s);}
 
 static void my_canvas_receive(t_my_canvas *x, t_symbol *s)
-{iem_receive(x, &x->x_gui, s);}
+{iemgui_setReceive(x, &x->x_gui, s);}
 
 static void my_canvas_label(t_my_canvas *x, t_symbol *s)
 {iem_label((void *)x, &x->x_gui, s);}

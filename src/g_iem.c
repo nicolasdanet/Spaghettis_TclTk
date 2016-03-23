@@ -191,50 +191,29 @@ void iemgui_checkSendReceiveLoop (t_iem *iem)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void iem_send(void *x, t_iem *iem, t_symbol *s)
+void iemgui_setSend (void *x, t_iem *iem, t_symbol *s)
 {
-    t_symbol *snd;
-    int pargc, tail_len, nth_arg, sndable=1;
-    t_atom *pargv;
-
-    if(!strcmp(s->s_name, "empty")) sndable = 0;
-    snd = dollar_fromRaute(s);
-    iem->iem_unexpandedSend = snd;
-    iem->iem_send = snd = canvas_realizedollar(iem->iem_glist, snd);
-    iem->iem_canSend = sndable;
-    iemgui_checkSendReceiveLoop(iem);
-    (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_IO);
+    t_symbol *t = dollar_fromRaute (s);
+    iem->iem_unexpandedSend = t;
+    iem->iem_send = canvas_realizedollar (iem->iem_glist, t);
+    iem->iem_canSend = (s == iemgui_empty()) ? 0 : 1;
+    iemgui_checkSendReceiveLoop (iem);
 }
 
-void iem_receive(void *x, t_iem *iem, t_symbol *s)
+void iemgui_setReceive (void *x, t_iem *iem, t_symbol *s)
 {
-    t_symbol *rcv;
-    int pargc, tail_len, nth_arg, rcvable=1;
-    t_atom *pargv;
-
-    if(!strcmp(s->s_name, "empty")) rcvable = 0;
-    rcv = dollar_fromRaute(s);
-    iem->iem_unexpandedReceive = rcv;
-    rcv = canvas_realizedollar(iem->iem_glist, rcv);
-    if(rcvable)
-    {
-        if(strcmp(rcv->s_name, iem->iem_receive->s_name))
-        {
-            if(iem->iem_canReceive)
-                pd_unbind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
-            iem->iem_receive = rcv;
-            pd_bind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
-        }
-    }
-    else if(!rcvable && iem->iem_canReceive)
-    {
-        pd_unbind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
-        iem->iem_receive = rcv;
-    }
-    iem->iem_canReceive = rcvable;
-    iemgui_checkSendReceiveLoop(iem);
-    (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_IO);
+    t_symbol *t = dollar_fromRaute (s);
+    if (iem->iem_canReceive) { pd_unbind (&iem->iem_obj.te_g.g_pd, iem->iem_receive); }
+    iem->iem_unexpandedReceive = t;
+    iem->iem_receive = canvas_realizedollar (iem->iem_glist, t);
+    iem->iem_canReceive = (s == iemgui_empty()) ? 0 : 1;
+    if (iem->iem_canReceive) { pd_bind (&iem->iem_obj.te_g.g_pd, iem->iem_receive); }
+    iemgui_checkSendReceiveLoop (iem);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void iem_label(void *x, t_iem *iem, t_symbol *s)
 {

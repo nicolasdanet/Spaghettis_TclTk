@@ -455,10 +455,10 @@ static void hslider_color(t_hslider *x, t_symbol *s, int ac, t_atom *av)
 {iem_color((void *)x, &x->x_gui, s, ac, av);}
 
 static void hslider_send(t_hslider *x, t_symbol *s)
-{iem_send(x, &x->x_gui, s);}
+{iemgui_setSend(x, &x->x_gui, s);}
 
 static void hslider_receive(t_hslider *x, t_symbol *s)
-{iem_receive(x, &x->x_gui, s);}
+{iemgui_setReceive(x, &x->x_gui, s);}
 
 static void hslider_label(t_hslider *x, t_symbol *s)
 {iem_label((void *)x, &x->x_gui, s);}
