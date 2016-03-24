@@ -206,7 +206,7 @@ static void toggle_save(t_gobj *z, t_buffer *b)
                 (int)x->x_gui.iem_obj.te_xCoordinate,
                 (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("tgl"), x->x_gui.iem_width,
-                iemgui_saveLoadAtStart(&x->x_gui),
+                iemgui_saveLoadOnStart(&x->x_gui),
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
                 iemgui_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
@@ -340,7 +340,7 @@ static void toggle_receive(t_toggle *x, t_symbol *s)
 {iemgui_setReceive(x, &x->x_gui, s);}
 
 static void toggle_label(t_toggle *x, t_symbol *s)
-{iem_label((void *)x, &x->x_gui, s);}
+{iemgui_setLabel((void *)x, &x->x_gui, s);}
 
 static void toggle_label_font(t_toggle *x, t_symbol *s, int ac, t_atom *av)
 {iem_label_font((void *)x, &x->x_gui, s, ac, av);}
@@ -369,7 +369,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
     t_float on=0.0, nonzero=1.0;
     char str[144];
 
-    iemgui_loadLoadAtStart(&x->x_gui, 0);
+    iemgui_loadLoadOnStart(&x->x_gui, 0);
     iemgui_loadFontStyle(&x->x_gui, 0);
 
     if(((argc == 13)||(argc == 14))&&IS_FLOAT_AT(argv,0)
@@ -382,7 +382,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
        &&IS_FLOAT_AT(argv,10)&&IS_FLOAT_AT(argv,11)&&IS_FLOAT_AT(argv,12))
     {
         a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
-        iemgui_loadLoadAtStart(&x->x_gui, (t_int)atom_getFloatAtIndex(1, argc, argv));
+        iemgui_loadLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(1, argc, argv));
         iemgui_loadNamesByIndex(&x->x_gui, 2, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(5, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(6, argc, argv);

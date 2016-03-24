@@ -387,7 +387,7 @@ static void my_numbox_save(t_gobj *z, t_buffer *b)
                 (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("nbx"), x->x_gui.iem_width, x->x_gui.iem_height,
                 (t_float)x->x_min, (t_float)x->x_max,
-                x->x_isLogarithmic, iemgui_saveLoadAtStart(&x->x_gui),
+                x->x_isLogarithmic, iemgui_saveLoadOnStart(&x->x_gui),
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
                 iemgui_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
@@ -642,7 +642,7 @@ static void my_numbox_receive(t_my_numbox *x, t_symbol *s)
 {iemgui_setReceive(x, &x->x_gui, s);}
 
 static void my_numbox_label(t_my_numbox *x, t_symbol *s)
-{iem_label((void *)x, &x->x_gui, s);}
+{iemgui_setLabel((void *)x, &x->x_gui, s);}
 
 static void my_numbox_label_pos(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
 {iem_label_pos((void *)x, &x->x_gui, s, ac, av);}
@@ -773,7 +773,7 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
         min = (double)atom_getFloatAtIndex(2, argc, argv);
         max = (double)atom_getFloatAtIndex(3, argc, argv);
         lilo = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
-        iemgui_loadLoadAtStart(&x->x_gui, (t_int)atom_getFloatAtIndex(5, argc, argv));
+        iemgui_loadLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(5, argc, argv));
         iemgui_loadNamesByIndex(&x->x_gui, 6, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);

@@ -225,8 +225,8 @@ void        iemgui_loadColors               (t_iem *iem, t_iemcolors *c);
 void        iemgui_saveColors               (t_iem *iem, t_iemcolors *c);
 void        iemgui_loadFontStyle            (t_iem *iem, int n);
 int         iemgui_saveFontStyle            (t_iem *iem);
-void        iemgui_loadLoadAtStart          (t_iem *iem, int n);
-int         iemgui_saveLoadAtStart          (t_iem *iem);
+void        iemgui_loadLoadOnStart          (t_iem *iem, int n);
+int         iemgui_saveLoadOnStart          (t_iem *iem);
 void        iemgui_loadNamesByIndex         (t_iem *iem, int i, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -241,8 +241,8 @@ void        iemgui_checkSendReceiveLoop     (t_iem *iem);
 
 void        iemgui_setSend                  (void *x, t_iem *iem, t_symbol *s);
 void        iemgui_setReceive               (void *x, t_iem *iem, t_symbol *s);
+void        iemgui_setLabel                 (void *x, t_iem *iem, t_symbol *s);
 
-void        iem_label                   (void *x, t_iem *iem, t_symbol *s);
 void        iem_label_pos               (void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av);
 void        iem_label_font              (void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av);
 void        iem_size                    (void *x, t_iem *iem);

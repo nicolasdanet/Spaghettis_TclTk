@@ -32,6 +32,14 @@ t_symbol *iemgui_empty (void)
     return gensym ("empty");
 }
 
+static t_symbol *iemgui_parseEmpty (t_symbol *s)
+{
+    if (s == &s_) { return iemgui_empty(); }
+    else { 
+        return s;
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -148,13 +156,13 @@ int iemgui_saveFontStyle (t_iem *iem)
     return (int)iem->iem_fontStyle;
 }
 
-void iemgui_loadLoadAtStart (t_iem *iem, int n)
+void iemgui_loadLoadOnStart (t_iem *iem, int n)
 {
     iem->iem_loadOnStart = ((n & 1) != 0);
     iem->iem_scale = (n & 2);
 }
 
-int iemgui_saveLoadAtStart (t_iem *iem)
+int iemgui_saveLoadOnStart (t_iem *iem)
 {
     return ((iem->iem_loadOnStart ? 1 : 0) | (iem->iem_scale ? 2 : 0));
 }
@@ -193,7 +201,7 @@ void iemgui_checkSendReceiveLoop (t_iem *iem)
 
 void iemgui_setSend (void *x, t_iem *iem, t_symbol *s)
 {
-    t_symbol *t = dollar_fromRaute (s);
+    t_symbol *t = dollar_fromRaute (iemgui_parseEmpty (s));
     iem->iem_unexpandedSend = t;
     iem->iem_send = canvas_realizedollar (iem->iem_glist, t);
     iem->iem_canSend = (s == iemgui_empty()) ? 0 : 1;
@@ -202,7 +210,7 @@ void iemgui_setSend (void *x, t_iem *iem, t_symbol *s)
 
 void iemgui_setReceive (void *x, t_iem *iem, t_symbol *s)
 {
-    t_symbol *t = dollar_fromRaute (s);
+    t_symbol *t = dollar_fromRaute (iemgui_parseEmpty (s));
     if (iem->iem_canReceive) { pd_unbind (pd_cast (iem), iem->iem_receive); }
     iem->iem_unexpandedReceive = t;
     iem->iem_receive = canvas_realizedollar (iem->iem_glist, t);
@@ -211,30 +219,23 @@ void iemgui_setReceive (void *x, t_iem *iem, t_symbol *s)
     iemgui_checkSendReceiveLoop (iem);
 }
 
+void iemgui_setLabel (void *x, t_iem *iem, t_symbol *s)
+{
+    t_symbol *t = dollar_fromRaute (iemgui_parseEmpty (s));
+    iem->iem_unexpandedLabel = t;
+    iem->iem_label = canvas_realizedollar (iem->iem_glist, t);
+
+    if (glist_isvisible (iem->iem_glist)) {
+        sys_vGui (".x%lx.c itemconfigure %lxLABEL -text {%s}\n",
+            glist_getcanvas (iem->iem_glist),
+            x,
+            iem->iem_label != iemgui_empty() ? iem->iem_label->s_name : s_.s_name);
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-void iem_label(void *x, t_iem *iem, t_symbol *s)
-{
-    t_symbol *old;
-    int pargc, tail_len, nth_arg;
-    t_atom *pargv;
-
-        /* tb: fix for empty label { */
-        if (s == gensym(""))
-                s = gensym("empty");
-        /* tb } */
-
-    old = iem->iem_label;
-    iem->iem_unexpandedLabel = dollar_fromRaute(s);
-    iem->iem_label = canvas_realizedollar(iem->iem_glist, iem->iem_unexpandedLabel);
-
-    if(glist_isvisible(iem->iem_glist) && iem->iem_label != old)
-        sys_vGui(".x%lx.c itemconfigure %lxLABEL -text {%s} \n",
-                 glist_getcanvas(iem->iem_glist), x,
-                 strcmp(s->s_name, "empty")?iem->iem_label->s_name:"");
-}
 
 void iem_label_pos(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
 {

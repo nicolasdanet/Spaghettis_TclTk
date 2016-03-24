@@ -244,7 +244,7 @@ static void vradio_save(t_gobj *z, t_buffer *b)
                 (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("vradio"),
                 x->x_gui.iem_width,
-                x->x_changed, iemgui_saveLoadAtStart(&x->x_gui), x->x_number,
+                x->x_changed, iemgui_saveLoadOnStart(&x->x_gui), x->x_number,
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
                 iemgui_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
@@ -439,7 +439,7 @@ static void vradio_receive(t_vradio *x, t_symbol *s)
 {iemgui_setReceive(x, &x->x_gui, s);}
 
 static void vradio_label(t_vradio *x, t_symbol *s)
-{iem_label((void *)x, &x->x_gui, s);}
+{iemgui_setLabel((void *)x, &x->x_gui, s);}
 
 static void vradio_label_pos(t_vradio *x, t_symbol *s, int ac, t_atom *av)
 {iem_label_pos((void *)x, &x->x_gui, s, ac, av);}
@@ -480,7 +480,7 @@ static void *vradio_donew(t_symbol *s, int argc, t_atom *argv)
     {
         a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         chg = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
-        iemgui_loadLoadAtStart(&x->x_gui, (t_int)atom_getFloatAtIndex(2, argc, argv));
+        iemgui_loadLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(2, argc, argv));
         num = (int)(t_int)atom_getFloatAtIndex(3, argc, argv);
         iemgui_loadNamesByIndex(&x->x_gui, 4, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);

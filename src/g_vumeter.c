@@ -436,7 +436,7 @@ static void vu_save(t_gobj *z, t_buffer *b)
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
                 iemgui_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[2], x->x_scale,
-                iemgui_saveLoadAtStart(&x->x_gui));
+                iemgui_saveLoadOnStart(&x->x_gui));
     buffer_vAppend(b, ";");
 }
 
@@ -568,7 +568,7 @@ static void vu_receive(t_vu *x, t_symbol *s)
 {iemgui_setReceive(x, &x->x_gui, s);}
 
 static void vu_label(t_vu *x, t_symbol *s)
-{iem_label((void *)x, &x->x_gui, s);}
+{iemgui_setLabel((void *)x, &x->x_gui, s);}
 
 static void vu_label_pos(t_vu *x, t_symbol *s, int ac, t_atom *av)
 {iem_label_pos((void *)x, &x->x_gui, s, ac, av);}
@@ -637,7 +637,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     //int ftbreak=IEM_BANG_DEFAULT_BREAK, fthold=IEM_BANG_DEFAULT_HOLD;
     char str[144];
 
-    iemgui_loadLoadAtStart(&x->x_gui, 0);
+    iemgui_loadLoadOnStart(&x->x_gui, 0);
     iemgui_loadFontStyle(&x->x_gui, 0);
 
     if((argc >= 11)&&IS_FLOAT_AT(argv,0)&&IS_FLOAT_AT(argv,1)
@@ -660,7 +660,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     }
     else iemgui_loadNamesByIndex(&x->x_gui, 1, 0);
     if((argc == 12)&&IS_FLOAT_AT(argv,11))
-        iemgui_loadLoadAtStart(&x->x_gui, (t_int)atom_getFloatAtIndex(11, argc, argv));
+        iemgui_loadLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(11, argc, argv));
     x->x_gui.iem_draw = (t_iemfn)vu_draw;
 
     x->x_gui.iem_canSend = 0;

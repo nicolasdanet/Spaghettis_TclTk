@@ -202,7 +202,7 @@ static void bng_save(t_gobj *z, t_buffer *b)
                 (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("bng"), x->x_gui.iem_width,
                 x->x_flashtime_hold, x->x_flashtime_break,
-                iemgui_saveLoadAtStart(&x->x_gui),
+                iemgui_saveLoadOnStart(&x->x_gui),
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
                 iemgui_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
@@ -401,7 +401,7 @@ static void bng_receive(t_bng *x, t_symbol *s)
 {iemgui_setReceive(x, &x->x_gui, s);}
 
 static void bng_label(t_bng *x, t_symbol *s)
-{iem_label((void *)x, &x->x_gui, s);}
+{iemgui_setLabel((void *)x, &x->x_gui, s);}
 
 static void bng_label_pos(t_bng *x, t_symbol *s, int ac, t_atom *av)
 {iem_label_pos((void *)x, &x->x_gui, s, ac, av);}
@@ -441,7 +441,7 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
         fthold=IEM_BANG_DEFAULT_HOLD;
     char str[144];
 
-    iemgui_loadLoadAtStart(&x->x_gui, 0);
+    iemgui_loadLoadOnStart(&x->x_gui, 0);
     iemgui_loadFontStyle(&x->x_gui, 0);
 
     if((argc == 14)&&IS_FLOAT_AT(argv,0)
@@ -458,7 +458,7 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
         a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         fthold = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
         ftbreak = (int)(t_int)atom_getFloatAtIndex(2, argc, argv);
-        iemgui_loadLoadAtStart(&x->x_gui, (t_int)atom_getFloatAtIndex(3, argc, argv));
+        iemgui_loadLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(3, argc, argv));
         iemgui_loadNamesByIndex(&x->x_gui, 4, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
