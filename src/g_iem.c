@@ -40,6 +40,11 @@ static t_symbol *iemgui_parseEmpty (t_symbol *s)
     }
 }
 
+static t_symbol *iemgui_expandDollar (t_iem *iem, t_symbol *s)
+{
+    t_symbol *t = canvas_realizedollar (iem, s); return  (t == NULL ? iemgui_empty() : t);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -177,7 +182,7 @@ void iemgui_loadNamesByIndex (t_iem *iem, int i, t_atom *argv)
     iem->iem_unexpandedReceive = NULL;
     iem->iem_unexpandedLabel   = NULL;
     
-    iem->iem_cacheIndex = i;
+    iem->iem_cacheIndex = i;    /* Cache this index for later lookup. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -203,7 +208,7 @@ void iemgui_setSend (void *x, t_iem *iem, t_symbol *s)
 {
     t_symbol *t = dollar_fromRaute (iemgui_parseEmpty (s));
     iem->iem_unexpandedSend = t;
-    iem->iem_send = canvas_realizedollar (iem->iem_glist, t);
+    iem->iem_send = iemgui_expandDollar (iem->iem_glist, t);
     iem->iem_canSend = (s == iemgui_empty()) ? 0 : 1;
     iemgui_checkSendReceiveLoop (iem);
 }
@@ -213,7 +218,7 @@ void iemgui_setReceive (void *x, t_iem *iem, t_symbol *s)
     t_symbol *t = dollar_fromRaute (iemgui_parseEmpty (s));
     if (iem->iem_canReceive) { pd_unbind (pd_cast (iem), iem->iem_receive); }
     iem->iem_unexpandedReceive = t;
-    iem->iem_receive = canvas_realizedollar (iem->iem_glist, t);
+    iem->iem_receive = iemgui_expandDollar (iem->iem_glist, t);
     iem->iem_canReceive = (s == iemgui_empty()) ? 0 : 1;
     if (iem->iem_canReceive) { pd_bind (pd_cast (iem), iem->iem_receive); }
     iemgui_checkSendReceiveLoop (iem);
@@ -223,7 +228,7 @@ void iemgui_setLabel (void *x, t_iem *iem, t_symbol *s)
 {
     t_symbol *t = dollar_fromRaute (iemgui_parseEmpty (s));
     iem->iem_unexpandedLabel = t;
-    iem->iem_label = canvas_realizedollar (iem->iem_glist, t);
+    iem->iem_label = iemgui_expandDollar (iem->iem_glist, t);
 
     if (glist_isvisible (iem->iem_glist)) {
         sys_vGui (".x%lx.c itemconfigure %lxLABEL -text {%s}\n",
@@ -397,9 +402,9 @@ void iem_dialog(t_iem *iem, t_symbol **srl, int argc, t_atom *argv)
     iem->iem_unexpandedReceive = srl[1];
     iem->iem_unexpandedLabel   = srl[2];
     
-    srl[0] = canvas_realizedollar (iem->iem_glist, srl[0]);
-    srl[1] = canvas_realizedollar (iem->iem_glist, srl[1]);
-    srl[2] = canvas_realizedollar (iem->iem_glist, srl[2]);
+    srl[0] = iemgui_expandDollar (iem->iem_glist, srl[0]);
+    srl[1] = iemgui_expandDollar (iem->iem_glist, srl[1]);
+    srl[2] = iemgui_expandDollar (iem->iem_glist, srl[2]);
     
     if(rcvable)
     {
