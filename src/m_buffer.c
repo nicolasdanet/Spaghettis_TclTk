@@ -566,7 +566,7 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
         }
         
         if (s == NULL || !(object = s->s_thing)) {
-            if (!s) { post_error (PD_TRANSLATE ("$: invalid substitution")); }  // --
+            if (!s) { post_error (PD_TRANSLATE ("$: invalid expansion")); }  // --
             else {
                 post_error (PD_TRANSLATE ("%s: no such object"), s->s_name);    // --
             }

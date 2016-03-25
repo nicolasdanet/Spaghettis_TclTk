@@ -613,14 +613,14 @@ static void my_numbox_size(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
         x->x_gui.iem_height = h;
     }
     my_numbox_calc_fontwidth(x);
-    iem_size((void *)x, &x->x_gui);
+    iemgui_boxChanged((void *)x, &x->x_gui);
 }
 
 static void my_numbox_delta(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
-{iem_delta((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void my_numbox_pos(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
-{iem_pos((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void my_numbox_range(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
 {
@@ -633,7 +633,7 @@ static void my_numbox_range(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
 }
 
 static void my_numbox_color(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
-{iem_color((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setColor((void *)x, &x->x_gui, s, ac, av);}
 
 static void my_numbox_send(t_my_numbox *x, t_symbol *s)
 {iemgui_setSend(x, &x->x_gui, s);}
@@ -645,7 +645,7 @@ static void my_numbox_label(t_my_numbox *x, t_symbol *s)
 {iemgui_setLabel((void *)x, &x->x_gui, s);}
 
 static void my_numbox_label_pos(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
-{iem_label_pos((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void my_numbox_label_font(t_my_numbox *x,
     t_symbol *s, int ac, t_atom *av)
@@ -660,7 +660,7 @@ static void my_numbox_label_font(t_my_numbox *x,
         f = 0;
     x->x_gui.iem_fontStyle = f;
     my_numbox_calc_fontwidth(x);
-    iem_label_font((void *)x, &x->x_gui, s, ac, av);
+    iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);
 }
 
 static void my_numbox_log(t_my_numbox *x)
@@ -889,11 +889,11 @@ void g_numbox_setup(void)
     class_addMethod(my_numbox_class, (t_method)my_numbox_log_height,
         gensym("log_height"), A_FLOAT, 0);
     my_numbox_widgetbehavior.w_getrectfn =    my_numbox_getrect;
-    my_numbox_widgetbehavior.w_displacefn =   iem_displace;
-    my_numbox_widgetbehavior.w_selectfn =     iem_select;
+    my_numbox_widgetbehavior.w_displacefn =   iemgui_behaviorDisplace;
+    my_numbox_widgetbehavior.w_selectfn =     iemgui_behaviorSelected;
     my_numbox_widgetbehavior.w_activatefn =   NULL;
-    my_numbox_widgetbehavior.w_deletefn =     iem_delete;
-    my_numbox_widgetbehavior.w_visfn =        iem_vis;
+    my_numbox_widgetbehavior.w_deletefn =     iemgui_behaviorDeleted;
+    my_numbox_widgetbehavior.w_visfn =        iemgui_behaviorVisible;
     my_numbox_widgetbehavior.w_clickfn =      my_numbox_newclick;
     class_setWidget(my_numbox_class, &my_numbox_widgetbehavior);
     class_setHelpName(my_numbox_class, gensym("nbx"));

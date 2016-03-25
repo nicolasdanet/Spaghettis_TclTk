@@ -238,104 +238,108 @@ void iemgui_setLabel (void *x, t_iem *iem, t_symbol *s)
     }
 }
 
+void iemgui_setLabelPosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
+{
+    iem->iem_labelX = (int)atom_getFloatAtIndex (0, argc, argv);
+    iem->iem_labelY = (int)atom_getFloatAtIndex (1, argc, argv);
+    
+    if (glist_isvisible(iem->iem_glist)) {
+        sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
+            glist_getcanvas (iem->iem_glist),
+            x,
+            text_xpix ((t_text *)x, iem->iem_glist) + iem->iem_labelX,
+            text_ypix ((t_text *)x, iem->iem_glist) + iem->iem_labelY);
+    }
+}
+
+void iemgui_setLabelFont (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
+{
+    int f = (int)atom_getFloatAtIndex (1, argc, argv);
+    f = PD_MAX (f, IEM_MINIMUM_FONTSIZE);
+    iem->iem_fontSize = f;
+    if (glist_isvisible (iem->iem_glist)) {
+        sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d]\n",
+            glist_getcanvas (iem->iem_glist), 
+            x,
+            iem->iem_fontSize);
+    }
+}
+
+void iemgui_setColor (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
+{
+    if (glist_isvisible (iem->iem_glist)) { (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_CONFIG); }
+}
+
+void iemgui_setPosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
+{
+    iem->iem_obj.te_xCoordinate = (int)atom_getFloatAtIndex (0, argc, argv);
+    iem->iem_obj.te_yCoordinate = (int)atom_getFloatAtIndex (1, argc, argv);
+    
+    iemgui_boxChanged (x, iem);
+}
+
+void iemgui_movePosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
+{
+    iem->iem_obj.te_xCoordinate += (int)atom_getFloatAtIndex (0, argc, argv);
+    iem->iem_obj.te_yCoordinate += (int)atom_getFloatAtIndex (1, argc, argv);
+    
+    iemgui_boxChanged (x, iem);
+}
+
+void iemgui_boxChanged (void *x, t_iem *iem)
+{
+    if (glist_isvisible (iem->iem_glist)) {
+    //
+    (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_MOVE);
+    canvas_fixlines (iem->iem_glist, (t_text *)x);
+    //
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void iem_label_pos(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
+void iemgui_behaviorDisplace (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
-    iem->iem_labelX = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
-    iem->iem_labelY = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
-    if(glist_isvisible(iem->iem_glist))
-        sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
-                 glist_getcanvas(iem->iem_glist), x,
-                 text_xpix((t_object *)x,iem->iem_glist)+iem->iem_labelX,
-                 text_ypix((t_object *)x,iem->iem_glist)+iem->iem_labelY);
+    t_iem *x = iem_cast (z);
+
+    x->iem_obj.te_xCoordinate += deltaX;
+    x->iem_obj.te_yCoordinate += deltaY;
+    
+    (*x->iem_draw) ((void *)z, glist, IEM_DRAW_MOVE);
+    
+    canvas_fixlines (glist, text_cast (z));
 }
 
-void iem_label_font(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
+void iemgui_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 {
-    int f = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
-    if(f < 4)
-        f = 4;
-    iem->iem_fontSize = f;
-    if(glist_isvisible(iem->iem_glist))
-        sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d]\n",
-                 glist_getcanvas(iem->iem_glist), x,
-                 iem->iem_fontSize);
+    t_iem *x = iem_cast (z);
+
+    x->iem_isSelected = isSelected;
+    
+    (*x->iem_draw) ((void *)z, glist, IEM_DRAW_SELECT);
 }
 
-void iem_size(void *x, t_iem *iem)
+void iemgui_behaviorVisible (t_gobj *z, t_glist *glist, int isVisible)
 {
-    if(glist_isvisible(iem->iem_glist))
-    {
-        (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_MOVE);
-        canvas_fixlines(iem->iem_glist, (t_text*)x);
+    t_iem *x = iem_cast (z);
+
+    if (isVisible) { (*x->iem_draw) ((void *)z, glist, IEM_DRAW_NEW); }
+    else {
+        (*x->iem_draw) ((void *)z, glist, IEM_DRAW_ERASE);
+        interface_guiQueueRemove (z);
     }
 }
 
-void iem_delta(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
+void iemgui_behaviorDeleted (t_gobj *z, t_glist *glist)
 {
-    iem->iem_obj.te_xCoordinate += (int)(t_int)atom_getFloatAtIndex(0, ac, av);
-    iem->iem_obj.te_yCoordinate += (int)(t_int)atom_getFloatAtIndex(1, ac, av);
-    if(glist_isvisible(iem->iem_glist))
-    {
-        (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_MOVE);
-        canvas_fixlines(iem->iem_glist, (t_text*)x);
-    }
+    canvas_deletelines (glist, text_cast (z));
 }
 
-void iem_pos(void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av)
-{
-    iem->iem_obj.te_xCoordinate = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
-    iem->iem_obj.te_yCoordinate = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
-    if(glist_isvisible(iem->iem_glist))
-    {
-        (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_MOVE);
-        canvas_fixlines(iem->iem_glist, (t_text*)x);
-    }
-}
-
-void iem_color (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
-{
-    if (glist_isvisible (iem->iem_glist)) { (*iem->iem_draw)(x, iem->iem_glist, IEM_DRAW_CONFIG); }
-}
-
-void iem_displace(t_gobj *z, t_glist *glist, int dx, int dy)
-{
-    t_iem *x = (t_iem *)z;
-
-    x->iem_obj.te_xCoordinate += dx;
-    x->iem_obj.te_yCoordinate += dy;
-    (*x->iem_draw)((void *)z, glist, IEM_DRAW_MOVE);
-    canvas_fixlines(glist, (t_text *)z);
-}
-
-void iem_select(t_gobj *z, t_glist *glist, int selected)
-{
-    t_iem *x = (t_iem *)z;
-
-    x->iem_isSelected = selected;
-    (*x->iem_draw)((void *)z, glist, IEM_DRAW_SELECT);
-}
-
-void iem_delete(t_gobj *z, t_glist *glist)
-{
-    canvas_deletelines(glist, (t_text *)z);
-}
-
-void iem_vis(t_gobj *z, t_glist *glist, int vis)
-{
-    t_iem *x = (t_iem *)z;
-
-    if (vis)
-        (*x->iem_draw)((void *)z, glist, IEM_DRAW_NEW);
-    else
-    {
-        (*x->iem_draw)((void *)z, glist, IEM_DRAW_ERASE);
-        interface_guiQueueRemove(z);
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void iem_save (t_iem *iem, t_symbol **srl, t_iemcolors *c)
 {

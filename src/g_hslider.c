@@ -436,14 +436,14 @@ static void hslider_size(t_hslider *x, t_symbol *s, int ac, t_atom *av)
         int h = atom_getFloatAtIndex(1, ac, av);
         x->x_gui.iem_height = PD_MAX (h, IEM_MINIMUM_HEIGHT);
     }
-    iem_size((void *)x, &x->x_gui);
+    iemgui_boxChanged((void *)x, &x->x_gui);
 }
 
 static void hslider_delta(t_hslider *x, t_symbol *s, int ac, t_atom *av)
-{iem_delta((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void hslider_pos(t_hslider *x, t_symbol *s, int ac, t_atom *av)
-{iem_pos((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void hslider_range(t_hslider *x, t_symbol *s, int ac, t_atom *av)
 {
@@ -452,7 +452,7 @@ static void hslider_range(t_hslider *x, t_symbol *s, int ac, t_atom *av)
 }
 
 static void hslider_color(t_hslider *x, t_symbol *s, int ac, t_atom *av)
-{iem_color((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setColor((void *)x, &x->x_gui, s, ac, av);}
 
 static void hslider_send(t_hslider *x, t_symbol *s)
 {iemgui_setSend(x, &x->x_gui, s);}
@@ -464,10 +464,10 @@ static void hslider_label(t_hslider *x, t_symbol *s)
 {iemgui_setLabel((void *)x, &x->x_gui, s);}
 
 static void hslider_label_pos(t_hslider *x, t_symbol *s, int ac, t_atom *av)
-{iem_label_pos((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void hslider_label_font(t_hslider *x, t_symbol *s, int ac, t_atom *av)
-{iem_label_font((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
 
 static void hslider_log(t_hslider *x)
 {
@@ -627,11 +627,11 @@ void g_hslider_setup(void)
     class_addMethod(hslider_class, (t_method)hslider_init, gensym("init"), A_FLOAT, 0);
     class_addMethod(hslider_class, (t_method)hslider_steady, gensym("steady"), A_FLOAT, 0);
     hslider_widgetbehavior.w_getrectfn =    hslider_getrect;
-    hslider_widgetbehavior.w_displacefn =   iem_displace;
-    hslider_widgetbehavior.w_selectfn =     iem_select;
+    hslider_widgetbehavior.w_displacefn =   iemgui_behaviorDisplace;
+    hslider_widgetbehavior.w_selectfn =     iemgui_behaviorSelected;
     hslider_widgetbehavior.w_activatefn =   NULL;
-    hslider_widgetbehavior.w_deletefn =     iem_delete;
-    hslider_widgetbehavior.w_visfn =        iem_vis;
+    hslider_widgetbehavior.w_deletefn =     iemgui_behaviorDeleted;
+    hslider_widgetbehavior.w_visfn =        iemgui_behaviorVisible;
     hslider_widgetbehavior.w_clickfn =      hslider_newclick;
     class_setWidget(hslider_class, &hslider_widgetbehavior);
     class_setHelpName(hslider_class, gensym("hsl"));

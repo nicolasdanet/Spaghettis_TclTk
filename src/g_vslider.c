@@ -451,14 +451,14 @@ static void vslider_size(t_vslider *x, t_symbol *s, int ac, t_atom *av)
     x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     if(ac > 1)
         vslider_check_height(x, (int)(t_int)atom_getFloatAtIndex(1, ac, av));
-    iem_size((void *)x, &x->x_gui);
+    iemgui_boxChanged((void *)x, &x->x_gui);
 }
 
 static void vslider_delta(t_vslider *x, t_symbol *s, int ac, t_atom *av)
-{iem_delta((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void vslider_pos(t_vslider *x, t_symbol *s, int ac, t_atom *av)
-{iem_pos((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void vslider_range(t_vslider *x, t_symbol *s, int ac, t_atom *av)
 {
@@ -467,7 +467,7 @@ static void vslider_range(t_vslider *x, t_symbol *s, int ac, t_atom *av)
 }
 
 static void vslider_color(t_vslider *x, t_symbol *s, int ac, t_atom *av)
-{iem_color((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setColor((void *)x, &x->x_gui, s, ac, av);}
 
 static void vslider_send(t_vslider *x, t_symbol *s)
 {iemgui_setSend(x, &x->x_gui, s);}
@@ -479,10 +479,10 @@ static void vslider_label(t_vslider *x, t_symbol *s)
 {iemgui_setLabel((void *)x, &x->x_gui, s);}
 
 static void vslider_label_pos(t_vslider *x, t_symbol *s, int ac, t_atom *av)
-{iem_label_pos((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void vslider_label_font(t_vslider *x, t_symbol *s, int ac, t_atom *av)
-{iem_label_font((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
 
 static void vslider_log(t_vslider *x)
 {
@@ -626,11 +626,11 @@ void g_vslider_setup(void)
     class_addMethod(vslider_class, (t_method)vslider_init, gensym("init"), A_FLOAT, 0);
     class_addMethod(vslider_class, (t_method)vslider_steady, gensym("steady"), A_FLOAT, 0);
     vslider_widgetbehavior.w_getrectfn =    vslider_getrect;
-    vslider_widgetbehavior.w_displacefn =   iem_displace;
-    vslider_widgetbehavior.w_selectfn =     iem_select;
+    vslider_widgetbehavior.w_displacefn =   iemgui_behaviorDisplace;
+    vslider_widgetbehavior.w_selectfn =     iemgui_behaviorSelected;
     vslider_widgetbehavior.w_activatefn =   NULL;
-    vslider_widgetbehavior.w_deletefn =     iem_delete;
-    vslider_widgetbehavior.w_visfn =        iem_vis;
+    vslider_widgetbehavior.w_deletefn =     iemgui_behaviorDeleted;
+    vslider_widgetbehavior.w_visfn =        iemgui_behaviorVisible;
     vslider_widgetbehavior.w_clickfn =      vslider_newclick;
     class_setWidget(vslider_class, &vslider_widgetbehavior);
     class_setHelpName(vslider_class, gensym("vsl"));

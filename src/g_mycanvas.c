@@ -219,14 +219,14 @@ static void my_canvas_size(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
         i = 1;
     x->x_gui.iem_width = i;
     x->x_gui.iem_height = i;
-    iem_size((void *)x, &x->x_gui);
+    iemgui_boxChanged((void *)x, &x->x_gui);
 }
 
 static void my_canvas_delta(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
-{iem_delta((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void my_canvas_pos(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
-{iem_pos((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void my_canvas_vis_size(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
 {
@@ -248,7 +248,7 @@ static void my_canvas_vis_size(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
 }
 
 static void my_canvas_color(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
-{iem_color((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setColor((void *)x, &x->x_gui, s, ac, av);}
 
 static void my_canvas_send(t_my_canvas *x, t_symbol *s)
 {iemgui_setSend(x, &x->x_gui, s);}
@@ -260,10 +260,10 @@ static void my_canvas_label(t_my_canvas *x, t_symbol *s)
 {iemgui_setLabel((void *)x, &x->x_gui, s);}
 
 static void my_canvas_label_pos(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
-{iem_label_pos((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void my_canvas_label_font(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
-{iem_label_font((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
 
 static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
 {
@@ -377,11 +377,11 @@ void g_mycanvas_setup(void)
     class_addMethod(my_canvas_class, (t_method)my_canvas_get_pos, gensym("get_pos"), 0);
 
     my_canvas_widgetbehavior.w_getrectfn = my_canvas_getrect;
-    my_canvas_widgetbehavior.w_displacefn = iem_displace;
-    my_canvas_widgetbehavior.w_selectfn = iem_select;
+    my_canvas_widgetbehavior.w_displacefn = iemgui_behaviorDisplace;
+    my_canvas_widgetbehavior.w_selectfn = iemgui_behaviorSelected;
     my_canvas_widgetbehavior.w_activatefn = NULL;
-    my_canvas_widgetbehavior.w_deletefn = iem_delete;
-    my_canvas_widgetbehavior.w_visfn = iem_vis;
+    my_canvas_widgetbehavior.w_deletefn = iemgui_behaviorDeleted;
+    my_canvas_widgetbehavior.w_visfn = iemgui_behaviorVisible;
     my_canvas_widgetbehavior.w_clickfn = NULL;
     class_setWidget(my_canvas_class, &my_canvas_widgetbehavior);
     class_setHelpName(my_canvas_class, gensym("cnv"));

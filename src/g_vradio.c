@@ -420,17 +420,17 @@ static void vradio_size(t_vradio *x, t_symbol *s, int ac, t_atom *av)
     int w = atom_getFloatAtIndex(0, ac, av);
     x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
-    iem_size((void *)x, &x->x_gui);
+    iemgui_boxChanged((void *)x, &x->x_gui);
 }
 
 static void vradio_delta(t_vradio *x, t_symbol *s, int ac, t_atom *av)
-{iem_delta((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void vradio_pos(t_vradio *x, t_symbol *s, int ac, t_atom *av)
-{iem_pos((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void vradio_color(t_vradio *x, t_symbol *s, int ac, t_atom *av)
-{iem_color((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setColor((void *)x, &x->x_gui, s, ac, av);}
 
 static void vradio_send(t_vradio *x, t_symbol *s)
 {iemgui_setSend(x, &x->x_gui, s);}
@@ -442,10 +442,10 @@ static void vradio_label(t_vradio *x, t_symbol *s)
 {iemgui_setLabel((void *)x, &x->x_gui, s);}
 
 static void vradio_label_pos(t_vradio *x, t_symbol *s, int ac, t_atom *av)
-{iem_label_pos((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void vradio_label_font(t_vradio *x, t_symbol *s, int ac, t_atom *av)
-{iem_label_font((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
 
 static void vradio_init(t_vradio *x, t_float f)
 {
@@ -586,11 +586,11 @@ void g_vradio_setup(void)
     class_addMethod(vradio_class, (t_method)vradio_double_change,
         gensym("double_change"), 0);
     vradio_widgetbehavior.w_getrectfn = vradio_getrect;
-    vradio_widgetbehavior.w_displacefn = iem_displace;
-    vradio_widgetbehavior.w_selectfn = iem_select;
+    vradio_widgetbehavior.w_displacefn = iemgui_behaviorDisplace;
+    vradio_widgetbehavior.w_selectfn = iemgui_behaviorSelected;
     vradio_widgetbehavior.w_activatefn = NULL;
-    vradio_widgetbehavior.w_deletefn = iem_delete;
-    vradio_widgetbehavior.w_visfn = iem_vis;
+    vradio_widgetbehavior.w_deletefn = iemgui_behaviorDeleted;
+    vradio_widgetbehavior.w_visfn = iemgui_behaviorVisible;
     vradio_widgetbehavior.w_clickfn = vradio_newclick;
     class_setWidget(vradio_class, &vradio_widgetbehavior);
     class_setHelpName(vradio_class, gensym("vradio"));

@@ -28,6 +28,7 @@
 
 #define IEM_MINIMUM_WIDTH               8
 #define IEM_MINIMUM_HEIGHT              8
+#define IEM_MINIMUM_FONTSIZE            4
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -242,21 +243,21 @@ void        iemgui_checkSendReceiveLoop     (t_iem *iem);
 void        iemgui_setSend                  (void *x, t_iem *iem, t_symbol *s);
 void        iemgui_setReceive               (void *x, t_iem *iem, t_symbol *s);
 void        iemgui_setLabel                 (void *x, t_iem *iem, t_symbol *s);
+void        iemgui_setLabelPosition         (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
+void        iemgui_setLabelFont             (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
+void        iemgui_setColor                 (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
+void        iemgui_setPosition              (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
+void        iemgui_movePosition             (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
+void        iemgui_boxChanged               (void *x, t_iem *iem);
 
-void        iem_label_pos               (void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av);
-void        iem_label_font              (void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av);
-void        iem_size                    (void *x, t_iem *iem);
-void        iem_delta                   (void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av);
-void        iem_pos                     (void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av);
-void        iem_color                   (void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av);
-int         iem_list                    (void *x, t_iem *iem, t_symbol *s, int ac, t_atom *av);
-void        iem_displace                (t_gobj *z, t_glist *glist, int dx, int dy);
-void        iem_select                  (t_gobj *z, t_glist *glist, int selected);
-void        iem_delete                  (t_gobj *z, t_glist *glist);
-void        iem_vis                     (t_gobj *z, t_glist *glist, int vis);
-void        iem_save                    (t_iem *iem, t_symbol **srl, t_iemcolors *c);
-void        iem_properties              (t_iem *iem, t_symbol **srl);
-void        iem_dialog                  (t_iem *iem, t_symbol **srl, int argc, t_atom *argv);
+void        iemgui_behaviorDisplace         (t_gobj *z, t_glist *glist, int deltaX, int deltaY);
+void        iemgui_behaviorSelected         (t_gobj *z, t_glist *glist, int isSelected);
+void        iemgui_behaviorVisible          (t_gobj *z, t_glist *glist, int isVisible);
+void        iemgui_behaviorDeleted          (t_gobj *z, t_glist *glist);
+
+void        iem_save                        (t_iem *iem, t_symbol **srl, t_iemcolors *c);
+void        iem_properties                  (t_iem *iem, t_symbol **srl);
+void        iem_dialog                      (t_iem *iem, t_symbol **srl, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

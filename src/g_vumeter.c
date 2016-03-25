@@ -556,13 +556,13 @@ static void vu_size(t_vu *x, t_symbol *s, int ac, t_atom *av)
 }
 
 static void vu_delta(t_vu *x, t_symbol *s, int ac, t_atom *av)
-{iem_delta((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void vu_pos(t_vu *x, t_symbol *s, int ac, t_atom *av)
-{iem_pos((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void vu_color(t_vu *x, t_symbol *s, int ac, t_atom *av)
-{iem_color((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setColor((void *)x, &x->x_gui, s, ac, av);}
 
 static void vu_receive(t_vu *x, t_symbol *s)
 {iemgui_setReceive(x, &x->x_gui, s);}
@@ -571,10 +571,10 @@ static void vu_label(t_vu *x, t_symbol *s)
 {iemgui_setLabel((void *)x, &x->x_gui, s);}
 
 static void vu_label_pos(t_vu *x, t_symbol *s, int ac, t_atom *av)
-{iem_label_pos((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void vu_label_font(t_vu *x, t_symbol *s, int ac, t_atom *av)
-{iem_label_font((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
 
 static void vu_float(t_vu *x, t_float rms)
 {
@@ -720,11 +720,11 @@ void g_vumeter_setup(void)
     class_addMethod(vu_class, (t_method)vu_label_pos, gensym("label_pos"), A_GIMME, 0);
     class_addMethod(vu_class, (t_method)vu_label_font, gensym("label_font"), A_GIMME, 0);
     vu_widgetbehavior.w_getrectfn =    vu_getrect;
-    vu_widgetbehavior.w_displacefn =   iem_displace;
-    vu_widgetbehavior.w_selectfn =     iem_select;
+    vu_widgetbehavior.w_displacefn =   iemgui_behaviorDisplace;
+    vu_widgetbehavior.w_selectfn =     iemgui_behaviorSelected;
     vu_widgetbehavior.w_activatefn =   NULL;
-    vu_widgetbehavior.w_deletefn =     iem_delete;
-    vu_widgetbehavior.w_visfn =        iem_vis;
+    vu_widgetbehavior.w_deletefn =     iemgui_behaviorDeleted;
+    vu_widgetbehavior.w_visfn =        iemgui_behaviorVisible;
     vu_widgetbehavior.w_clickfn =      NULL;
     class_setWidget(vu_class,&vu_widgetbehavior);
     class_setHelpName(vu_class, gensym("vu"));

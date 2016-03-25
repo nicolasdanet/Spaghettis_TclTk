@@ -416,17 +416,17 @@ static void hradio_size(t_hradio *x, t_symbol *s, int ac, t_atom *av)
     int w = atom_getFloatAtIndex(0, ac, av);
     x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
-    iem_size((void *)x, &x->x_gui);
+    iemgui_boxChanged((void *)x, &x->x_gui);
 }
 
 static void hradio_delta(t_hradio *x, t_symbol *s, int ac, t_atom *av)
-{iem_delta((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void hradio_pos(t_hradio *x, t_symbol *s, int ac, t_atom *av)
-{iem_pos((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void hradio_color(t_hradio *x, t_symbol *s, int ac, t_atom *av)
-{iem_color((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setColor((void *)x, &x->x_gui, s, ac, av);}
 
 static void hradio_send(t_hradio *x, t_symbol *s)
 {iemgui_setSend(x, &x->x_gui, s);}
@@ -438,10 +438,10 @@ static void hradio_label(t_hradio *x, t_symbol *s)
 {iemgui_setLabel((void *)x, &x->x_gui, s);}
 
 static void hradio_label_pos(t_hradio *x, t_symbol *s, int ac, t_atom *av)
-{iem_label_pos((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void hradio_label_font(t_hradio *x, t_symbol *s, int ac, t_atom *av)
-{iem_label_font((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
 
 static void hradio_init(t_hradio *x, t_float f)
 {
@@ -585,11 +585,11 @@ void g_hradio_setup(void)
     class_addMethod(hradio_class, (t_method)hradio_double_change,
         gensym("double_change"), 0);
     hradio_widgetbehavior.w_getrectfn = hradio_getrect;
-    hradio_widgetbehavior.w_displacefn = iem_displace;
-    hradio_widgetbehavior.w_selectfn = iem_select;
+    hradio_widgetbehavior.w_displacefn = iemgui_behaviorDisplace;
+    hradio_widgetbehavior.w_selectfn = iemgui_behaviorSelected;
     hradio_widgetbehavior.w_activatefn = NULL;
-    hradio_widgetbehavior.w_deletefn = iem_delete;
-    hradio_widgetbehavior.w_visfn = iem_vis;
+    hradio_widgetbehavior.w_deletefn = iemgui_behaviorDeleted;
+    hradio_widgetbehavior.w_visfn = iemgui_behaviorVisible;
     hradio_widgetbehavior.w_clickfn = hradio_newclick;
     class_setWidget(hradio_class, &hradio_widgetbehavior);
     class_setHelpName(hradio_class, gensym("hradio"));

@@ -376,14 +376,14 @@ static void bng_size(t_bng *x, t_symbol *s, int ac, t_atom *av)
     int w = atom_getFloatAtIndex(0, ac, av);
     x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
-    iem_size((void *)x, &x->x_gui);
+    iemgui_boxChanged((void *)x, &x->x_gui);
 }
 
 static void bng_delta(t_bng *x, t_symbol *s, int ac, t_atom *av)
-{iem_delta((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void bng_pos(t_bng *x, t_symbol *s, int ac, t_atom *av)
-{iem_pos((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void bng_flashtime(t_bng *x, t_symbol *s, int ac, t_atom *av)
 {
@@ -392,7 +392,7 @@ static void bng_flashtime(t_bng *x, t_symbol *s, int ac, t_atom *av)
 }
 
 static void bng_color(t_bng *x, t_symbol *s, int ac, t_atom *av)
-{iem_color((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setColor((void *)x, &x->x_gui, s, ac, av);}
 
 static void bng_send(t_bng *x, t_symbol *s)
 {iemgui_setSend(x, &x->x_gui, s);}
@@ -404,10 +404,10 @@ static void bng_label(t_bng *x, t_symbol *s)
 {iemgui_setLabel((void *)x, &x->x_gui, s);}
 
 static void bng_label_pos(t_bng *x, t_symbol *s, int ac, t_atom *av)
-{iem_label_pos((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void bng_label_font(t_bng *x, t_symbol *s, int ac, t_atom *av)
-{iem_label_font((void *)x, &x->x_gui, s, ac, av);}
+{iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
 
 static void bng_init(t_bng *x, t_float f)
 {
@@ -539,11 +539,11 @@ void g_bang_setup(void)
     class_addMethod(bng_class, (t_method)bng_label_font, gensym("label_font"), A_GIMME, 0);
     class_addMethod(bng_class, (t_method)bng_init, gensym("init"), A_FLOAT, 0);
     bng_widgetbehavior.w_getrectfn = bng_getrect;
-    bng_widgetbehavior.w_displacefn = iem_displace;
-    bng_widgetbehavior.w_selectfn = iem_select;
+    bng_widgetbehavior.w_displacefn = iemgui_behaviorDisplace;
+    bng_widgetbehavior.w_selectfn = iemgui_behaviorSelected;
     bng_widgetbehavior.w_activatefn = NULL;
-    bng_widgetbehavior.w_deletefn = iem_delete;
-    bng_widgetbehavior.w_visfn = iem_vis;
+    bng_widgetbehavior.w_deletefn = iemgui_behaviorDeleted;
+    bng_widgetbehavior.w_visfn = iemgui_behaviorVisible;
     bng_widgetbehavior.w_clickfn = bng_newclick;
     class_setWidget(bng_class, &bng_widgetbehavior);
     class_setHelpName(bng_class, gensym("bng"));
