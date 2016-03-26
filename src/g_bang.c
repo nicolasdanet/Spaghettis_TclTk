@@ -1,43 +1,53 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
- * For information on usage and redistribution, and for a DISCLAIMER OF ALL
- * WARRANTIES, see the file, "LICENSE.txt," in this distribution. */
 
-/* g_7_guis.c written by Thomas Musil (c) IEM KUG Graz Austria 2000-2001 */
-/* thanks to Miller Puckette, Guenther Geiger and Krzystof Czaja */
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
 
+/* < https://opensource.org/licenses/BSD-3-Clause > */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Original "g_7_guis.h" written by Thomas Musil (c) IEM KUG Graz Austria 2000-2001. */
+
+/* Thanks to Miller Puckette, Guenther Geiger and Krzystof Czaja. */
+
+/* < http://iem.kug.ac.at/ > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "g_canvas.h"
-
 #include "g_iem.h"
-#include <math.h>
 
-#ifdef _WIN32
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #define IEM_BANG_DEFAULT_SIZE       15
-#define IEM_BANG_MINIMUM_SIZE       8
 #define IEM_BANG_DEFAULT_HOLD       250
 #define IEM_BANG_DEFAULT_BREAK      50
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define IEM_BANG_MINIMUM_SIZE       8
 #define IEM_BANG_MINIMUM_HOLD       10
 #define IEM_BANG_MINIMUM_BREAK      10
 
-/* --------------- bng     gui-bang ------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-t_widgetbehavior bng_widgetbehavior;
+static t_widgetbehavior bng_widgetbehavior;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static t_class *bng_class;
-
-/*  widget helper functions  */
-
 
 void bng_draw_update(t_bng *x, t_glist *glist)
 {
@@ -549,3 +559,6 @@ void g_bang_setup(void)
     class_setSaveFunction(bng_class, bng_save);
     class_setPropertiesFunction(bng_class, bng_properties);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
