@@ -126,6 +126,32 @@ typedef struct _bng {
     t_clock     *x_clock_lck;
     } t_bng;
 
+typedef struct _toggle {
+    t_iem       x_gui;
+    t_float     x_on;
+    t_float     x_nonzero;
+    } t_toggle;
+
+typedef struct _hradio {
+    t_iem       x_gui;
+    int         x_on;
+    int         x_changed;
+    int         x_number;
+    int         x_drawn;
+    t_float     x_fval;
+    t_atom      x_at[2];
+    } t_hradio;
+
+typedef struct _vradio {
+    t_iem       x_gui;
+    int         x_on;
+    int         x_changed;
+    int         x_number;
+    int         x_drawn;
+    t_float     x_fval;
+    t_atom      x_at[2];
+    } t_vradio;
+    
 typedef struct _hslider {
     t_iem       x_gui;
     int         x_pos;
@@ -138,29 +164,6 @@ typedef struct _hslider {
     t_float     x_fval;
     } t_hslider;
 
-typedef struct _hradio {
-    t_iem       x_gui;
-    int         x_on;
-    int         x_changed;
-    int         x_number;
-    int         x_drawn;
-    t_float     x_fval;
-    t_atom      x_at[2];
-    } t_hradio;
-
-typedef struct _toggle {
-    t_iem       x_gui;
-    t_float     x_on;
-    t_float     x_nonzero;
-    } t_toggle;
-
-typedef struct _my_canvas {
-    t_iem       x_gui;
-    t_atom      x_at[3];
-    int         x_vis_w;
-    int         x_vis_h;
-    } t_my_canvas;
-
 typedef struct _vslider {
     t_iem       x_gui;
     int         x_pos;
@@ -172,7 +175,7 @@ typedef struct _vslider {
     double      x_k;
     t_float     x_fval;
     } t_vslider;
-
+    
 typedef struct _vu {
     t_iem       x_gui;
     int         x_led_size;
@@ -202,16 +205,13 @@ typedef struct _my_numbox {
     int         x_log_height;
     } t_my_numbox;
 
-typedef struct _vradio {
+typedef struct _my_canvas {
     t_iem       x_gui;
-    int         x_on;
-    int         x_changed;
-    int         x_number;
-    int         x_drawn;
-    t_float     x_fval;
-    t_atom      x_at[2];
-    } t_vradio;
-
+    t_atom      x_at[3];
+    int         x_vis_w;
+    int         x_vis_h;
+    } t_my_canvas;
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
