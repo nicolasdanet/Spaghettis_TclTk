@@ -27,7 +27,7 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_atom a[9];
     t_glist *gl;
-    t_canvas *x, *z = canvas_getcurrent();
+    t_glist *x, *z = canvas_getcurrent();
     t_symbol *templatesym = &s_float, *asym = gensym("#A");
     t_template *template;
     t_scalar *sc;
@@ -181,7 +181,7 @@ void canvas_add_for_class(t_class *c);
 void x_scalar_setup(void )
 {
     scalar_define_class = class_new(gensym("scalar define"), 0,
-        (t_method)canvas_free, sizeof(t_canvas), 0, 0);
+        (t_method)canvas_free, sizeof(t_glist), 0, 0);
     canvas_add_for_class(scalar_define_class);
     class_addMethod(scalar_define_class, (t_method)scalar_define_send,
         gensym("send"), A_SYMBOL, 0);

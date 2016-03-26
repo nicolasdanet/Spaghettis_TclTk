@@ -45,7 +45,7 @@ static void hslider_draw_update(t_gobj *client, t_glist *glist)
     {
         int r = text_xpix(&x->x_gui.iem_obj, glist) + (x->x_val + 50)/100;
         int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-        t_canvas *canvas=glist_getcanvas(glist);
+        t_glist *canvas=glist_getcanvas(glist);
         sys_vGui(".x%lx.c coords %lxKNOB %d %d %d %d\n",
                  canvas, x, r, ypos+1,
                  r, ypos + x->x_gui.iem_height);
@@ -57,7 +57,7 @@ static void hslider_draw_new(t_hslider *x, t_glist *glist)
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
     int r = xpos + (x->x_val + 50)/100;
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
              canvas, xpos-3, ypos,
@@ -88,7 +88,7 @@ static void hslider_draw_move(t_hslider *x, t_glist *glist)
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
     int r = xpos + (x->x_val + 50)/100;
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c coords %lxBASE %d %d %d %d\n",
              canvas, x,
@@ -111,7 +111,7 @@ static void hslider_draw_move(t_hslider *x, t_glist *glist)
 
 static void hslider_draw_erase(t_hslider* x,t_glist* glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c delete %lxBASE\n", canvas, x);
     sys_vGui(".x%lx.c delete %lxKNOB\n", canvas, x);
@@ -122,7 +122,7 @@ static void hslider_draw_erase(t_hslider* x,t_glist* glist)
 
 static void hslider_draw_config(t_hslider* x,t_glist* glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
              canvas, x, x->x_gui.iem_fontSize,
@@ -136,7 +136,7 @@ static void hslider_draw_io(t_hslider* x, t_glist* glist)
 {
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
         canvas, xpos-3, ypos + x->x_gui.iem_height-1,
@@ -149,7 +149,7 @@ static void hslider_draw_io(t_hslider* x, t_glist* glist)
 
 static void hslider_draw_select(t_hslider* x,t_glist* glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     if(x->x_gui.iem_isSelected)
     {
@@ -362,7 +362,7 @@ static void hslider_dialog(t_hslider *x, t_symbol *s, int argc, t_atom *argv)
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_IO);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-    canvas_fixlines(x->x_gui.iem_glist, (t_text*)x);
+    canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
 }
 
 static void hslider_motion(t_hslider *x, t_float dx, t_float dy)

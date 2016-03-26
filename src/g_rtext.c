@@ -45,13 +45,13 @@ struct _rtext
     int x_height;
     int x_drawnwidth;
     int x_drawnheight;
-    t_text *x_text;
+    t_object *x_text;
     t_glist *x_glist;
     char x_tag[50];
     struct _rtext *x_next;
 };
 
-t_rtext *rtext_new(t_glist *glist, t_text *who)
+t_rtext *rtext_new(t_glist *glist, t_object *who)
 {
     t_rtext *x = (t_rtext *)PD_MEMORY_GET(sizeof *x);
     int w = 0, h = 0, indx;
@@ -108,7 +108,7 @@ void rtext_getseltext(t_rtext *x, char **buf, int *bufsize)
     *bufsize = x->x_selend - x->x_selstart;
 }
 
-/* convert t_text te_type symbol for use as a Tk tag */
+/* convert t_object te_type symbol for use as a Tk tag */
 static t_symbol *rtext_gettype(t_rtext *x)
 {
     switch (x->x_text->te_type) 
@@ -192,7 +192,7 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
     int outchars_b = 0, nlines = 0, ncolumns = 0,
         pixwide, pixhigh, font, fontwidth, fontheight, findx, findy;
     int reportedindex = 0;
-    t_canvas *canvas = glist_getcanvas(x->x_glist);
+    t_glist *canvas = glist_getcanvas(x->x_glist);
     int widthspec_c = x->x_text->te_width;
     int widthlimit_c = (widthspec_c ? widthspec_c : BOXWIDTH);
     int inindex_b = 0;
@@ -351,7 +351,7 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
 void rtext_retext(t_rtext *x)
 {
     int w = 0, h = 0, indx;
-    t_text *text = x->x_text;
+    t_object *text = x->x_text;
     PD_MEMORY_FREE(x->x_buf);
     buffer_toStringUnzeroed(text->te_buffer, &x->x_buf, &x->x_bufsize);
         /* special case: for number boxes, try to pare the number down
@@ -404,7 +404,7 @@ void rtext_retext(t_rtext *x)
 }
 
 /* find the rtext that goes with a text item */
-t_rtext *glist_findrtext(t_glist *gl, t_text *who)
+t_rtext *glist_findrtext(t_glist *gl, t_object *who)
 {
     t_rtext *x;
     if (!gl->gl_editor)
@@ -449,7 +449,7 @@ void rtext_displace(t_rtext *x, int dx, int dy)
 void rtext_select(t_rtext *x, int state)
 {
     t_glist *glist = x->x_glist;
-    t_canvas *canvas = glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas(glist);
     sys_vGui(".x%lx.c itemconfigure %s -fill %s\n", canvas, 
         x->x_tag, (state? "blue" : "black"));
 }
@@ -458,7 +458,7 @@ void rtext_activate(t_rtext *x, int state)
 {
     int w = 0, h = 0, indx;
     t_glist *glist = x->x_glist;
-    t_canvas *canvas = glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas(glist);
     if (state)
     {
         sys_vGui("::ui_object::setEditing .x%lx %s 1\n", canvas, x->x_tag);

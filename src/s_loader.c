@@ -181,7 +181,7 @@ static t_error loader_openExternalGetStubName (char *dest, size_t size, char *na
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static int loader_openExternal (t_canvas *canvas, char *name)
+static int loader_openExternal (t_glist *glist, char *name)
 {
     t_handle handle = NULL;
     
@@ -193,7 +193,7 @@ static int loader_openExternal (t_canvas *canvas, char *name)
     char *nameResult = NULL;
     char directoryResult[PD_STRING] = { 0 };
 
-    int f = canvas_open (canvas, name, PD_PLUGIN, directoryResult, &nameResult, PD_STRING, 1);
+    int f = canvas_open (glist, name, PD_PLUGIN, directoryResult, &nameResult, PD_STRING, 1);
     
     if (f >= 0) {
         char filepath[PD_STRING] = { 0 };
@@ -227,10 +227,10 @@ static void loader_closeExternal (t_handle handle)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int loader_loadExternal (t_canvas *canvas, char *name)
+int loader_loadExternal (t_glist *glist, char *name)
 {
     int k = canvas_suspend_dsp();
-    int done = loader_openExternal (canvas, name);
+    int done = loader_openExternal (glist, name);
     canvas_resume_dsp (k);
     
     return done;

@@ -57,7 +57,7 @@ static void vslider_draw_new(t_vslider *x, t_glist *glist)
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
     int r = ypos + x->x_gui.iem_height - (x->x_val + 50)/100;
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
              canvas, xpos, ypos-2,
@@ -91,7 +91,7 @@ static void vslider_draw_move(t_vslider *x, t_glist *glist)
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
     int r = ypos + x->x_gui.iem_height - (x->x_val + 50)/100;
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c coords %lxBASE %d %d %d %d\n",
              canvas, x,
@@ -114,7 +114,7 @@ static void vslider_draw_move(t_vslider *x, t_glist *glist)
 
 static void vslider_draw_erase(t_vslider* x,t_glist* glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c delete %lxBASE\n", canvas, x);
     sys_vGui(".x%lx.c delete %lxKNOB\n", canvas, x);
@@ -125,7 +125,7 @@ static void vslider_draw_erase(t_vslider* x,t_glist* glist)
 
 static void vslider_draw_config(t_vslider* x,t_glist* glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
              canvas, x, x->x_gui.iem_fontSize, 
@@ -141,7 +141,7 @@ static void vslider_draw_io(t_vslider* x,t_glist* glist)
 {
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
         canvas,
@@ -157,7 +157,7 @@ static void vslider_draw_io(t_vslider* x,t_glist* glist)
 
 static void vslider_draw_select(t_vslider *x, t_glist *glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     if(x->x_gui.iem_isSelected)
     {
@@ -341,7 +341,7 @@ static void vslider_dialog(t_vslider *x, t_symbol *s, int argc, t_atom *argv)
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_IO);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-    canvas_fixlines(x->x_gui.iem_glist, (t_text*)x);
+    canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
 }
 
 static void vslider_motion(t_vslider *x, t_float dx, t_float dy)

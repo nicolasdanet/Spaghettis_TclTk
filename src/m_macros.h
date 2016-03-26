@@ -58,7 +58,7 @@
 
 #define pd_cast(x)          ((t_pd *)(x))
 #define iem_cast(x)         ((t_iem *)(x))
-#define text_cast(x)        ((t_text *)(x))
+#define object_cast(x)      ((t_object *)(x))
 
 #define pd_class(x)         (*((t_pd *)(x)))
 #define pd_ifBox(x)         (pd_class (x)->c_isBox ? (t_object *)(x) : NULL)

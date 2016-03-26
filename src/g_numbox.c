@@ -182,7 +182,7 @@ static void my_numbox_draw_new(t_my_numbox *x, t_glist *glist)
     int half=x->x_gui.iem_height/2, d=1+x->x_gui.iem_height/34;
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(
 ".x%lx.c create polygon %d %d %d %d %d %d %d %d %d %d -outline #%6.6x \
@@ -230,7 +230,7 @@ static void my_numbox_draw_move(t_my_numbox *x, t_glist *glist)
     int half = x->x_gui.iem_height/2, d=1+x->x_gui.iem_height/34;
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c coords %lxBASE1 %d %d %d %d %d %d %d %d %d %d\n",
              canvas, x, xpos, ypos,
@@ -258,7 +258,7 @@ static void my_numbox_draw_move(t_my_numbox *x, t_glist *glist)
 
 static void my_numbox_draw_erase(t_my_numbox* x,t_glist* glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c delete %lxBASE1\n", canvas, x);
     sys_vGui(".x%lx.c delete %lxBASE2\n", canvas, x);
@@ -270,7 +270,7 @@ static void my_numbox_draw_erase(t_my_numbox* x,t_glist* glist)
 
 static void my_numbox_draw_config(t_my_numbox* x,t_glist* glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
              canvas, x, x->x_gui.iem_fontSize,
@@ -289,7 +289,7 @@ static void my_numbox_draw_io(t_my_numbox* x, t_glist* glist)
 {
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
         canvas,
@@ -305,7 +305,7 @@ static void my_numbox_draw_io(t_my_numbox* x, t_glist* glist)
 
 static void my_numbox_draw_select(t_my_numbox *x, t_glist *glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     if(x->x_gui.iem_isSelected)
     {
@@ -509,7 +509,7 @@ static void my_numbox_dialog(t_my_numbox *x, t_symbol *s, int argc,
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_IO);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-    canvas_fixlines(x->x_gui.iem_glist, (t_text*)x);
+    canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
 }
 
 static void my_numbox_motion(t_my_numbox *x, t_float dx, t_float dy)

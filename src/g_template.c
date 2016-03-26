@@ -31,7 +31,7 @@ struct _gtemplate
 {
     t_object x_obj;
     t_template *x_template;
-    t_canvas *x_owner;
+    t_glist *x_owner;
     t_symbol *x_sym;
     struct _gtemplate *x_next;
     int x_argc;
@@ -439,7 +439,7 @@ void template_conform(t_template *tfrom, t_template *tto)
     if (doit)
     {
         t_glist *gl;
-        for (gl = pd_this->pd_canvases; gl; gl = gl->gl_next)
+        for (gl = pd_this->pd_glist; gl; gl = gl->gl_next)
             template_conformglist(tfrom, tto, gl, conformaction);
     }
     PD_MEMORY_FREE(conformaction);
@@ -451,14 +451,14 @@ t_template *template_findbyname(t_symbol *s)
     return ((t_template *)pd_findByClass(s, template_class));
 }
 
-t_canvas *template_findcanvas(t_template *template)
+t_glist *template_findcanvas(t_template *template)
 {
     t_gtemplate *gt;
     if (!template) { PD_BUG; }
     if (!(gt = template->t_list))
         return (0);
     return (gt->x_owner);
-    /* return ((t_canvas *)pd_findByClass(template->t_sym, canvas_class)); */
+    /* return ((t_glist *)pd_findByClass(template->t_sym, canvas_class)); */
 }
 
 void template_notify(t_template *template, t_symbol *s, int argc, t_atom *argv)
@@ -961,7 +961,7 @@ typedef struct _curve
     t_fielddesc x_vis;
     int x_npoints;
     t_fielddesc *x_vec;
-    t_canvas *x_canvas;
+    t_glist *x_canvas;
 } t_curve;
 
 static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
@@ -1327,7 +1327,7 @@ t_class *plot_class;
 typedef struct _plot
 {
     t_object x_obj;
-    t_canvas *x_canvas;
+    t_glist *x_canvas;
     t_fielddesc x_outlinecolor;
     t_fielddesc x_width;
     t_fielddesc x_xloc;
@@ -1476,7 +1476,7 @@ static int plot_readownertemplate(t_plot *x,
     /* get everything else you could possibly need about a plot,
     either for plot's own purposes or for plotting a "garray" */
 int array_getfields(t_symbol *elemtemplatesym,
-    t_canvas **elemtemplatecanvasp,
+    t_glist **elemtemplatecanvasp,
     t_template **elemtemplatep, int *elemsizep,
     t_fielddesc *xfielddesc, t_fielddesc *yfielddesc, t_fielddesc *wfielddesc, 
     int *xonsetp, int *yonsetp, int *wonsetp)
@@ -1484,7 +1484,7 @@ int array_getfields(t_symbol *elemtemplatesym,
     int arrayonset, elemsize, yonset, wonset, xonset, type;
     t_template *elemtemplate;
     t_symbol *dummy, *varname;
-    t_canvas *elemtemplatecanvas = 0;
+    t_glist *elemtemplatecanvas = 0;
 
         /* the "float" template is special in not having to have a canvas;
         template_findbyname is hardwired to return a predefined 
@@ -1537,7 +1537,7 @@ static void plot_getrect(t_gobj *z, t_glist *glist,
 {
     t_plot *x = (t_plot *)z;
     int elemsize, yonset, wonset, xonset;
-    t_canvas *elemtemplatecanvas;
+    t_glist *elemtemplatecanvas;
     t_template *elemtemplate;
     t_symbol *elemtemplatesym;
     t_float linewidth, xloc, xinc, yloc, style, xsum, yval, vis, scalarvis;
@@ -1651,7 +1651,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
 {
     t_plot *x = (t_plot *)z;
     int elemsize, yonset, wonset, xonset, i;
-    t_canvas *elemtemplatecanvas;
+    t_glist *elemtemplatecanvas;
     t_template *elemtemplate;
     t_symbol *elemtemplatesym;
     t_float linewidth, xloc, xinc, yloc, style, usexloc, xsum, yval, vis,
@@ -2035,7 +2035,7 @@ static int array_doclick_element(t_array *array, t_glist *glist,
     t_fielddesc *xfield, t_fielddesc *yfield, t_fielddesc *wfield,
     int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
-    t_canvas *elemtemplatecanvas;
+    t_glist *elemtemplatecanvas;
     t_template *elemtemplate;
     int elemsize, yonset, wonset, xonset, i, incr, hit;
     t_float xsum;
@@ -2076,7 +2076,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
     t_fielddesc *xfield, t_fielddesc *yfield, t_fielddesc *wfield,
     int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
-    t_canvas *elemtemplatecanvas;
+    t_glist *elemtemplatecanvas;
     t_template *elemtemplate;
     int elemsize, yonset, wonset, xonset, i, callmotion = 0;
 
@@ -2342,7 +2342,7 @@ typedef struct _drawnumber
     t_fielddesc x_color;
     t_fielddesc x_vis;
     t_symbol *x_label;
-    t_canvas *x_canvas;
+    t_glist *x_canvas;
 } t_drawnumber;
 
 static void *drawnumber_new(t_symbol *classsym, int argc, t_atom *argv)

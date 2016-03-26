@@ -44,7 +44,7 @@ void vradio_draw_update(t_gobj *client, t_glist *glist)
     t_hradio *x = (t_hradio *)client;
     if(glist_isvisible(glist))
     {
-        t_canvas *canvas=glist_getcanvas(glist);
+        t_glist *canvas=glist_getcanvas(glist);
 
         sys_vGui(".x%lx.c itemconfigure %lxBUT%d -fill #%6.6x -outline #%6.6x\n",
                  canvas, x, x->x_drawn,
@@ -58,7 +58,7 @@ void vradio_draw_update(t_gobj *client, t_glist *glist)
 
 void vradio_draw_new(t_vradio *x, t_glist *glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
     int n=x->x_number, i, dy=x->x_gui.iem_height, s4=dy/4;
     int yy11b=text_ypix(&x->x_gui.iem_obj, glist); 
     int yy11=yy11b, yy12=yy11+dy;
@@ -97,7 +97,7 @@ void vradio_draw_new(t_vradio *x, t_glist *glist)
 
 void vradio_draw_move(t_vradio *x, t_glist *glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
     int n=x->x_number, i, dy=x->x_gui.iem_height, s4=dy/4;
     int yy11b=text_ypix(&x->x_gui.iem_obj, glist);
     int yy11=yy11b, yy12=yy11+dy;
@@ -126,7 +126,7 @@ void vradio_draw_move(t_vradio *x, t_glist *glist)
 
 void vradio_draw_erase(t_vradio* x, t_glist* glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
     int n=x->x_number, i;
 
     for(i=0; i<n; i++)
@@ -141,7 +141,7 @@ void vradio_draw_erase(t_vradio* x, t_glist* glist)
 
 void vradio_draw_config(t_vradio* x, t_glist* glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
     int n=x->x_number, i;
 
     sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
@@ -160,7 +160,7 @@ void vradio_draw_config(t_vradio* x, t_glist* glist)
 
 void vradio_draw_io(t_vradio* x, t_glist* glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
 
@@ -178,7 +178,7 @@ void vradio_draw_io(t_vradio* x, t_glist* glist)
 
 void vradio_draw_select(t_vradio* x, t_glist* glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
     int n=x->x_number, i;
 
     if(x->x_gui.iem_isSelected)
@@ -307,7 +307,7 @@ static void vradio_dialog(t_vradio *x, t_symbol *s, int argc, t_atom *argv)
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_IO);
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-        canvas_fixlines(x->x_gui.iem_glist, (t_text*)x);
+        canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
     }
 }
 

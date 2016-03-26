@@ -1127,15 +1127,15 @@ typedef struct _samplerate
 {
     t_object x_obj;
     t_float x_sr;
-    t_canvas *x_canvas;
+    t_glist *x_canvas;
 } t_samplerate;
 
-void *canvas_getblock(t_class *blockclass, t_canvas **canvasp);
+void *canvas_getblock(t_class *blockclass, t_glist **canvasp);
 
 static void samplerate_tilde_bang(t_samplerate *x)
 {
     t_float srate = audio_getSampleRate();
-    t_canvas *canvas = x->x_canvas;
+    t_glist *canvas = x->x_canvas;
     while (canvas)
     {
         t_block *b = (t_block *)canvas_getblock(block_class, &canvas);

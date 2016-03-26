@@ -58,14 +58,14 @@ t_class *canvas_class;  /* Shared. */
 /* ------------------ forward function declarations --------------- */
 static void canvas_start_dsp(void);
 static void canvas_stop_dsp(void);
-static void canvas_drawlines(t_canvas *x);
-static void canvas_dosetbounds(t_canvas *x, int x1, int y1, int x2, int y2);
-void canvas_reflecttitle(t_canvas *x);
-static void canvas_addtolist(t_canvas *x);
-static void canvas_takeofflist(t_canvas *x);
-static void canvas_pop(t_canvas *x, t_float fvis);
-static void canvas_bind(t_canvas *x);
-static void canvas_unbind(t_canvas *x);
+static void canvas_drawlines(t_glist *x);
+static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2);
+void canvas_reflecttitle(t_glist *x);
+static void canvas_addtolist(t_glist *x);
+static void canvas_takeofflist(t_glist *x);
+static void canvas_pop(t_glist *x, t_float fvis);
+static void canvas_bind(t_glist *x);
+static void canvas_unbind(t_glist *x);
 
 /* --------- functions to handle the canvas environment ----------- */
 
@@ -82,20 +82,20 @@ void canvas_updatewindowlist( void)
 }
 
     /* add a glist the list of "root" canvases (toplevels without parents.) */
-static void canvas_addtolist(t_canvas *x)
+static void canvas_addtolist(t_glist *x)
 {
-    x->gl_next = pd_this->pd_canvases;
-    pd_this->pd_canvases = x;
+    x->gl_next = pd_this->pd_glist;
+    pd_this->pd_glist = x;
 }
 
-static void canvas_takeofflist(t_canvas *x)
+static void canvas_takeofflist(t_glist *x)
 {
         /* take it off the window list */
-    if (x == pd_this->pd_canvases) pd_this->pd_canvases = x->gl_next;
+    if (x == pd_this->pd_glist) pd_this->pd_glist = x->gl_next;
     else
     {
-        t_canvas *z;
-        for (z = pd_this->pd_canvases; z->gl_next != x; z = z->gl_next)
+        t_glist *z;
+        for (z = pd_this->pd_glist; z->gl_next != x; z = z->gl_next)
             ;
         z->gl_next = x->gl_next;
     }
@@ -123,25 +123,25 @@ void global_new(void *dummy, t_symbol *filesym, t_symbol *dirsym)
 {
     glob_setfilename(dummy, filesym, dirsym);
     canvas_new(0, 0, 0, 0);
-    canvas_pop((t_canvas *)s__X.s_thing, 1);
+    canvas_pop((t_glist *)s__X.s_thing, 1);
 }
 
-t_canvas *canvas_getcurrent(void)
+t_glist *canvas_getcurrent(void)
 {
-    return ((t_canvas *)pd_findByClass(&s__X, canvas_class));
+    return ((t_glist *)pd_findByClass(&s__X, canvas_class));
 }
 
-void canvas_setcurrent(t_canvas *x)
+void canvas_setcurrent(t_glist *x)
 {
     pd_push(&x->gl_obj.te_g.g_pd);
 }
 
-void canvas_unsetcurrent(t_canvas *x)
+void canvas_unsetcurrent(t_glist *x)
 {
     pd_pop(&x->gl_obj.te_g.g_pd);
 }
 
-t_canvasenvironment *canvas_getenv(t_canvas *x)
+t_canvasenvironment *canvas_getenv(t_glist *x)
 {
     if (!x) { PD_BUG; }
     while (!x->gl_env)
@@ -151,7 +151,7 @@ t_canvasenvironment *canvas_getenv(t_canvas *x)
 
 int canvas_getdollarzero( void)
 {
-    t_canvas *x = canvas_getcurrent();
+    t_glist *x = canvas_getcurrent();
     t_canvasenvironment *env = (x ? canvas_getenv(x) : 0);
     if (env)
         return (env->ce_dollarzero);
@@ -165,7 +165,7 @@ void canvas_getargs(int *argcp, t_atom **argvp)
     *argvp = e->ce_argv;
 }
 
-t_symbol *canvas_realizedollar(t_canvas *x, t_symbol *s)
+t_symbol *canvas_realizedollar(t_glist *x, t_symbol *s)
 {
     t_symbol *ret;
     char *name = s->s_name;
@@ -186,13 +186,13 @@ t_symbol *canvas_getcurrentdir(void)
     return (e->ce_dir);
 }
 
-t_symbol *canvas_getdir(t_canvas *x)
+t_symbol *canvas_getdir(t_glist *x)
 {
     t_canvasenvironment *e = canvas_getenv(x);
     return (e->ce_dir);
 }
 
-void canvas_makefilename(t_canvas *x, char *file, char *result, int resultsize)
+void canvas_makefilename(t_glist *x, char *file, char *result, int resultsize)
 {
     char *dir = canvas_getenv(x)->ce_dir->s_name;
     if (file[0] == '/' || (file[0] && file[1] == ':') || !*dir)
@@ -213,7 +213,7 @@ void canvas_makefilename(t_canvas *x, char *file, char *result, int resultsize)
     }           
 }
 
-void canvas_rename(t_canvas *x, t_symbol *s, t_symbol *dir)
+void canvas_rename(t_glist *x, t_symbol *s, t_symbol *dir)
 {
     canvas_unbind(x);
     x->gl_name = s;
@@ -229,7 +229,7 @@ void canvas_rename(t_canvas *x, t_symbol *s, t_symbol *dir)
 
 /* --------------- traversing the set of lines in a canvas ----------- */
 
-int canvas_getindex(t_canvas *x, t_gobj *y)
+int canvas_getindex(t_glist *x, t_gobj *y)
 {
     t_gobj *y2;
     int indexno;
@@ -238,7 +238,7 @@ int canvas_getindex(t_canvas *x, t_gobj *y)
     return (indexno);
 }
 
-void linetraverser_start(t_linetraverser *t, t_canvas *x)
+void linetraverser_start(t_linetraverser *t, t_glist *x)
 {
     t->tr_ob = 0;
     t->tr_x = x;
@@ -324,10 +324,10 @@ void glist_init(t_glist *x)
     /* make a new glist.  It will either be a "root" canvas or else
     it appears as a "text" object in another window (canvas_getcurrnet() 
     tells us which.) */
-t_canvas *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
+t_glist *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
 {
-    t_canvas *x = (t_canvas *)pd_new(canvas_class);
-    t_canvas *owner = canvas_getcurrent();
+    t_glist *x = (t_glist *)pd_new(canvas_class);
+    t_glist *owner = canvas_getcurrent();
     t_symbol *s = &s_;
     int vis = 0, width = GLIST_DEFCANVASWIDTH, height = GLIST_DEFCANVASHEIGHT;
     int xloc = 0, yloc = GLIST_DEFCANVASYLOC;
@@ -396,7 +396,7 @@ t_canvas *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
     if (vis && gensym("#X")->s_thing && 
         ((*gensym("#X")->s_thing) == canvas_class))
     {
-        t_canvas *zzz = (t_canvas *)(gensym("#X")->s_thing);
+        t_glist *zzz = (t_glist *)(gensym("#X")->s_thing);
         while (zzz && !zzz->gl_env)
             zzz = zzz->gl_owner;
         if (zzz && canvas_isabstraction(zzz) && zzz->gl_owner)
@@ -522,14 +522,14 @@ int glist_isgraph(t_glist *x)
 
     /* This is sent from the GUI to inform a toplevel that its window has been
     moved or resized. */
-static void canvas_setbounds(t_canvas *x, t_float left, t_float top, 
+static void canvas_setbounds(t_glist *x, t_float left, t_float top, 
                              t_float right, t_float bottom)
 {
     canvas_dosetbounds(x, (int)left, (int)top, (int)right, (int)bottom);
 }
 
 /* this is the internal version using ints */
-static void canvas_dosetbounds(t_canvas *x, int x1, int y1, int x2, int y2)
+static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)
 {
     int heightwas = y2 - y1;
     int heightchange = y2 - y1 - (x->gl_screeny2 - x->gl_screeny1);
@@ -570,19 +570,19 @@ t_symbol *canvas_makebindsym(t_symbol *s)
     /* functions to bind and unbind canvases to symbol "pd-blah".  As
     discussed on Pd dev list there should be a way to defeat this for
     abstractions.  (Claude Heiland et al. Aug 9 2013) */
-static void canvas_bind(t_canvas *x)
+static void canvas_bind(t_glist *x)
 {
     if (strcmp(x->gl_name->s_name, "Pd"))
         pd_bind(&x->gl_obj.te_g.g_pd, canvas_makebindsym(x->gl_name));
 }
 
-static void canvas_unbind(t_canvas *x)
+static void canvas_unbind(t_glist *x)
 {
     if (strcmp(x->gl_name->s_name, "Pd"))
         pd_unbind(&x->gl_obj.te_g.g_pd, canvas_makebindsym(x->gl_name));
 }
 
-void canvas_reflecttitle(t_canvas *x)
+void canvas_reflecttitle(t_glist *x)
 {
     char namebuf[PD_STRING];
     t_canvasenvironment *env = canvas_getenv(x);
@@ -607,9 +607,9 @@ void canvas_reflecttitle(t_canvas *x)
 }
 
     /* mark a glist dirty or clean */
-void canvas_dirty(t_canvas *x, t_float n)
+void canvas_dirty(t_glist *x, t_float n)
 {
-    t_canvas *x2 = canvas_getroot(x);
+    t_glist *x2 = canvas_getroot(x);
     if (glist_reloading)
         return;
     if ((unsigned)n != x2->gl_dirty)
@@ -620,7 +620,7 @@ void canvas_dirty(t_canvas *x, t_float n)
     }
 }
 
-void canvas_drawredrect(t_canvas *x, int doit)
+void canvas_drawredrect(t_glist *x, int doit)
 {
     if (doit)
         sys_vGui(".x%lx.c create line\
@@ -637,7 +637,7 @@ void canvas_drawredrect(t_canvas *x, int doit)
     /* the window becomes "mapped" (visible and not miniaturized) or
     "unmapped" (either miniaturized or just plain gone.)  This should be
     called from the GUI after the fact to "notify" us that we're mapped. */
-void canvas_map(t_canvas *x, t_float f)
+void canvas_map(t_glist *x, t_float f)
 {
     int flag = (f != 0);
     t_gobj *y;
@@ -673,7 +673,7 @@ void canvas_map(t_canvas *x, t_float f)
     }
 }
 
-void canvas_redraw(t_canvas *x)
+void canvas_redraw(t_glist *x)
 {
     if (glist_isvisible(x))
     {
@@ -725,7 +725,7 @@ int glist_getfont(t_glist *x)
     return (x->gl_font);
 }
 
-void canvas_free(t_canvas *x)
+void canvas_free(t_glist *x)
 {
     t_gobj *y;
     int dspstate = canvas_suspend_dsp();
@@ -755,7 +755,7 @@ void canvas_free(t_canvas *x)
 
 /* ----------------- lines ---------- */
 
-static void canvas_drawlines(t_canvas *x)
+static void canvas_drawlines(t_glist *x)
 {
     t_linetraverser t;
     t_outconnect *oc;
@@ -770,7 +770,7 @@ static void canvas_drawlines(t_canvas *x)
     }
 }
 
-void canvas_fixlines(t_canvas *x, t_text *text)
+void canvas_fixlines(t_glist *x, t_object *text)
 {
     t_linetraverser t;
     t_outconnect *oc;
@@ -788,7 +788,7 @@ void canvas_fixlines(t_canvas *x, t_text *text)
 }
 
     /* kill all lines for the object */
-void canvas_deletelines(t_canvas *x, t_text *text)
+void canvas_deletelines(t_glist *x, t_object *text)
 {
     t_linetraverser t;
     t_outconnect *oc;
@@ -808,7 +808,7 @@ void canvas_deletelines(t_canvas *x, t_text *text)
 }
 
     /* kill all lines for one inlet or outlet */
-void canvas_deletelinesforio(t_canvas *x, t_text *text,
+void canvas_deletelinesforio(t_glist *x, t_object *text,
     t_inlet *inp, t_outlet *outp)
 {
     t_linetraverser t;
@@ -829,7 +829,7 @@ void canvas_deletelinesforio(t_canvas *x, t_text *text,
     }
 }
 
-static void canvas_pop(t_canvas *x, t_float fvis)
+static void canvas_pop(t_glist *x, t_float fvis)
 {
     if (fvis != 0)
         canvas_vis(x, 1);
@@ -839,10 +839,10 @@ static void canvas_pop(t_canvas *x, t_float fvis)
     x->gl_loading = 0;
 }
 
-void canvas_objfor(t_glist *gl, t_text *x, int argc, t_atom *argv);
+void canvas_objfor(t_glist *gl, t_object *x, int argc, t_atom *argv);
 
 
-void canvas_restore(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
+void canvas_restore(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 {
     t_pd *z;
     if (argc > 3)
@@ -861,35 +861,35 @@ void canvas_restore(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
     else if (*z != canvas_class) post_error ("canvas_restore: wasn't a canvas");
     else
     {
-        t_canvas *x2 = (t_canvas *)z;
+        t_glist *x2 = (t_glist *)z;
         x->gl_owner = x2;
         canvas_objfor(x2, &x->gl_obj, argc, argv);
     }
 }
 
-static void canvas_loadbangabstractions(t_canvas *x)
+static void canvas_loadbangabstractions(t_glist *x)
 {
     t_gobj *y;
     t_symbol *s = gensym("loadbang");
     for (y = x->gl_list; y; y = y->g_next)
         if (pd_class(&y->g_pd) == canvas_class)
     {
-        if (canvas_isabstraction((t_canvas *)y))
-            canvas_loadbang((t_canvas *)y);
+        if (canvas_isabstraction((t_glist *)y))
+            canvas_loadbang((t_glist *)y);
         else
-            canvas_loadbangabstractions((t_canvas *)y);
+            canvas_loadbangabstractions((t_glist *)y);
     }
 }
 
-void canvas_loadbangsubpatches(t_canvas *x)
+void canvas_loadbangsubpatches(t_glist *x)
 {
     t_gobj *y;
     t_symbol *s = gensym("loadbang");
     for (y = x->gl_list; y; y = y->g_next)
         if (pd_class(&y->g_pd) == canvas_class)
     {
-        if (!canvas_isabstraction((t_canvas *)y))
-            canvas_loadbangsubpatches((t_canvas *)y);
+        if (!canvas_isabstraction((t_glist *)y))
+            canvas_loadbangsubpatches((t_glist *)y);
     }
     for (y = x->gl_list; y; y = y->g_next)
         if ((pd_class(&y->g_pd) != canvas_class) &&
@@ -897,7 +897,7 @@ void canvas_loadbangsubpatches(t_canvas *x)
                 pd_vMessage(&y->g_pd, s, "");
 }
 
-void canvas_loadbang(t_canvas *x)
+void canvas_loadbang(t_glist *x)
 {
     t_gobj *y;
     canvas_loadbangabstractions(x);
@@ -906,7 +906,7 @@ void canvas_loadbang(t_canvas *x)
 
 /* no longer used by 'pd-gui', but kept here for backwards compatibility.  The
  * new method calls canvas_setbounds() directly. */
-static void canvas_relocate(t_canvas *x, t_symbol *canvasgeom,
+static void canvas_relocate(t_glist *x, t_symbol *canvasgeom,
     t_symbol *topgeom)
 {
     int cxpix, cypix, cw, ch, txpix, typix, tw, th;
@@ -920,7 +920,7 @@ static void canvas_relocate(t_canvas *x, t_symbol *canvasgeom,
             txpix + cw, typix + ch);
 }
 
-void canvas_popabstraction(t_canvas *x)
+void canvas_popabstraction(t_glist *x)
 {
     pd_newest = &x->gl_obj.te_g.g_pd;
     pd_pop(&x->gl_obj.te_g.g_pd);
@@ -943,7 +943,7 @@ void canvas_logerror(t_object *y)
 static void *subcanvas_new(t_symbol *s)
 {
     t_atom a[6];
-    t_canvas *x, *z = canvas_getcurrent();
+    t_glist *x, *z = canvas_getcurrent();
     if (!*s->s_name) s = gensym("/SUBPATCH/");
     SET_FLOAT(a, 0);
     SET_FLOAT(a+1, GLIST_DEFCANVASYLOC);
@@ -957,7 +957,7 @@ static void *subcanvas_new(t_symbol *s)
     return (x);
 }
 
-static void canvas_click(t_canvas *x,
+static void canvas_click(t_glist *x,
     t_float xpos, t_float ypos,
         t_float shift, t_float ctrl, t_float alt)
 {
@@ -966,7 +966,7 @@ static void canvas_click(t_canvas *x,
 
 
     /* find out from subcanvas contents how much to fatten the box */
-void canvas_fattensub(t_canvas *x,
+void canvas_fattensub(t_glist *x,
     int *xp1, int *yp1, int *xp2, int *yp2)
 {
     t_gobj *y;
@@ -974,7 +974,7 @@ void canvas_fattensub(t_canvas *x,
     *yp2 += 50;
 }
 
-static void canvas_rename_method(t_canvas *x, t_symbol *s, int ac, t_atom *av)
+static void canvas_rename_method(t_glist *x, t_symbol *s, int ac, t_atom *av)
 {
     if (ac && av->a_type == A_SYMBOL)
         canvas_rename(x, av->a_w.w_symbol, 0);
@@ -992,7 +992,7 @@ static void canvas_rename_method(t_canvas *x, t_symbol *s, int ac, t_atom *av)
 
     /* return true if the "canvas" object is an abstraction (so we don't
     save its contents, for example.)  */
-int canvas_isabstraction(t_canvas *x)
+int canvas_isabstraction(t_glist *x)
 {
     return (x->gl_env != 0);
 }
@@ -1000,7 +1000,7 @@ int canvas_isabstraction(t_canvas *x)
     /* return true if the "canvas" object should be treated as a text
     object.  This is true for abstractions but also for "table"s... */
 /* JMZ: add a flag to gop-abstractions to hide the title */
-int canvas_showtext(t_canvas *x)
+int canvas_showtext(t_glist *x)
 {
     t_atom *argv = (x->gl_obj.te_buffer? buffer_atoms(x->gl_obj.te_buffer):0);
     int argc = (x->gl_obj.te_buffer? buffer_size(x->gl_obj.te_buffer) : 0);
@@ -1013,7 +1013,7 @@ int canvas_showtext(t_canvas *x)
 }
 
     /* get the document containing this canvas */
-t_canvas *canvas_getroot(t_canvas *x)
+t_glist *canvas_getroot(t_glist *x)
 {
     if ((!x->gl_owner) || canvas_isabstraction(x))
         return (x);
@@ -1039,7 +1039,7 @@ void ugen_done_graph(t_dspcontext *dc);
     canvases, but is also called from the "dsp" method for sub-
     canvases, which are treated almost like any other tilde object.  */
 
-static void canvas_dodsp(t_canvas *x, int toplevel, t_signal **sp)
+static void canvas_dodsp(t_glist *x, int toplevel, t_signal **sp)
 {
     t_linetraverser t;
     t_outconnect *oc;
@@ -1071,7 +1071,7 @@ static void canvas_dodsp(t_canvas *x, int toplevel, t_signal **sp)
     ugen_done_graph(dc);
 }
 
-static void canvas_dsp(t_canvas *x, t_signal **sp)
+static void canvas_dsp(t_glist *x, t_signal **sp)
 {
     canvas_dodsp(x, 0, sp);
 }
@@ -1079,12 +1079,12 @@ static void canvas_dsp(t_canvas *x, t_signal **sp)
     /* this routine starts DSP for all root canvases. */
 static void canvas_start_dsp(void)
 {
-    t_canvas *x;
+    t_glist *x;
     if (pd_this->pd_state) ugen_stop();
     else sys_gui("set ::var(isDsp) 1\n");
     ugen_start();
     
-    for (x = pd_this->pd_canvases; x; x = x->gl_next)
+    for (x = pd_this->pd_glist; x; x = x->gl_next)
         canvas_dodsp(x, 1, 0);
     
     pd_this->pd_state = 1;
@@ -1143,9 +1143,9 @@ void global_dsp(void *dummy, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-void *canvas_getblock(t_class *blockclass, t_canvas **canvasp)
+void *canvas_getblock(t_class *blockclass, t_glist **canvasp)
 {
-    t_canvas *canvas = *canvasp;
+    t_glist *canvas = *canvasp;
     t_gobj *g;
     void *ret = 0;
     for (g = canvas->gl_list; g; g = g->g_next)
@@ -1191,15 +1191,15 @@ static void glist_redrawall(t_glist *gl, int action)
     /* public interface for above. */
 void canvas_redrawallfortemplate(t_template *template, int action)
 {
-    t_canvas *x;
+    t_glist *x;
         /* find all root canvases */
-    for (x = pd_this->pd_canvases; x; x = x->gl_next)
+    for (x = pd_this->pd_glist; x; x = x->gl_next)
         glist_redrawall(x, action);
 }
 
     /* find the template defined by a canvas, and redraw all elements
     for that */
-void canvas_redrawallfortemplatecanvas(t_canvas *x, int action)
+void canvas_redrawallfortemplatecanvas(t_glist *x, int action)
 {
     t_gobj *g;
     t_template *tmpl;
@@ -1236,7 +1236,7 @@ static t_class *declare_class;
 typedef struct _declare
 {
     t_object x_obj;
-    t_canvas *x_canvas;
+    t_glist *x_canvas;
     int x_useme;
 } t_declare;
 
@@ -1255,7 +1255,7 @@ static void declare_free(t_declare *x)
         /* LATER update environment */
 }
 
-void canvas_savedeclarationsto(t_canvas *x, t_buffer *b)
+void canvas_savedeclarationsto(t_glist *x, t_buffer *b)
 {
     t_gobj *y;
 
@@ -1268,7 +1268,7 @@ void canvas_savedeclarationsto(t_canvas *x, t_buffer *b)
             buffer_vAppend(b, ";");
         }
         else if (pd_class(&y->g_pd) == canvas_class)
-            canvas_savedeclarationsto((t_canvas *)y, b);
+            canvas_savedeclarationsto((t_glist *)y, b);
     }
 }
 
@@ -1373,7 +1373,7 @@ static void canvas_stdlib(t_canvasenvironment *e, char *stdlib)
 
 */
 /*
-static void canvas_declare(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
+static void canvas_declare(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 {
     int i;
     t_canvasenvironment *e = canvas_getenv(x);
@@ -1421,13 +1421,13 @@ static void canvas_declare(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
     If "x" is zero, the file is sought in the directory "." or in the
     global path.*/
 
-int canvas_open(t_canvas *x, const char *name, const char *ext,
+int canvas_open(t_glist *x, const char *name, const char *ext,
     char *dirresult, char **nameresult, unsigned int size, int bin)
 {
     t_pathlist *nl, thislist;
     int fd = -1;
     char listbuf[PD_STRING];
-    t_canvas *y;
+    t_glist *y;
 
         /* first check if "name" is absolute (and if so, try to open) */
     /* if ((fd = file_openWithAbsolutePath(name, ext, dirresult, nameresult, size)) >= 0)
@@ -1439,7 +1439,7 @@ int canvas_open(t_canvas *x, const char *name, const char *ext,
         if (y->gl_env)
     {
         t_pathlist *nl;
-        t_canvas *x2 = x;
+        t_glist *x2 = x;
         char *dir;
         while (x2 && x2->gl_owner)
             x2 = x2->gl_owner;
@@ -1468,7 +1468,7 @@ int canvas_open(t_canvas *x, const char *name, const char *ext,
         dirresult, nameresult, size));
 }
 
-static void canvas_f(t_canvas *x, t_symbol *s, int argc, t_atom *argv)
+static void canvas_f(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 {
     static int warned;
     t_gobj *g, *g2;
@@ -1500,7 +1500,7 @@ extern t_class *array_define_class;     /* LATER datum class too */
 t_glist *pd_checkglist(t_pd *x)
 {
     if (*x == canvas_class || *x == array_define_class)
-        return ((t_canvas *)x);
+        return ((t_glist *)x);
     else return (0);
 }
 
@@ -1533,7 +1533,7 @@ void g_canvas_setup(void)
         /* we prevent the user from typing "canvas" in an object box
         by sending 0 for a creator function. */
     canvas_class = class_new(gensym("canvas"), 0,
-        (t_method)canvas_free, sizeof(t_canvas), CLASS_NOINLET, 0);
+        (t_method)canvas_free, sizeof(t_glist), CLASS_NOINLET, 0);
             /* here is the real creator function, invoked in patch files
             by sending the "canvas" message to #N, which is bound
             to pd_camvasmaker. */

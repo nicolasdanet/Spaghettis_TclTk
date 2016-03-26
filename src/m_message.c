@@ -173,7 +173,7 @@ static void new_anything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         t_pd *t = s__X.s_thing;
         canvas_setargs (argc, argv);
         buffer_evalFile (gensym (name), gensym (directory));
-        if (s__X.s_thing && t != s__X.s_thing) { canvas_popabstraction ((t_canvas *)(s__X.s_thing)); }
+        if (s__X.s_thing && t != s__X.s_thing) { canvas_popabstraction ((t_glist *)(s__X.s_thing)); }
         else { 
             s__X.s_thing = t; 
         }

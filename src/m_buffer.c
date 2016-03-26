@@ -611,14 +611,14 @@ void buffer_eval (t_buffer *x, t_pd *object, int argc, t_atom *argv)
     ATOMS_FREEA (message, x->b_size);
 }
 
-t_error buffer_read (t_buffer *x, char *name, t_canvas *canvas)
+t_error buffer_read (t_buffer *x, char *name, t_glist *glist)
 {
     t_error err = PD_ERROR;
     
     char *filepath = NULL;
     char directory[PD_STRING] = { 0 };
     
-    int f = canvas_open (canvas, name, "", directory, &filepath, PD_STRING, 0);
+    int f = canvas_open (glist, name, "", directory, &filepath, PD_STRING, 0);
     
     err = (f < 0);
     

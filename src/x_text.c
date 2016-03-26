@@ -31,7 +31,7 @@ typedef struct _textbuf
 {
     t_object b_ob;
     t_buffer *b_binbuf;
-    t_canvas *b_canvas;
+    t_glist *b_canvas;
     t_guiconnect *b_guiconnect;
 } t_textbuf;
 
@@ -219,7 +219,7 @@ typedef struct _text_define
     t_symbol *x_bindsym;
     t_scalar *x_scalar;     /* faux scalar (struct text-scalar) to point to */
     t_gpointer x_gp;        /* pointer to it */
-    t_canvas *x_canvas;     /* owning canvas whose stub we use for x_gp */
+    t_glist *x_canvas;     /* owning canvas whose stub we use for x_gp */
     unsigned char x_keep;   /* whether to embed contents in patch on save */
 } t_text_define;
 

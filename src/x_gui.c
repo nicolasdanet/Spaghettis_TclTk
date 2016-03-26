@@ -144,7 +144,7 @@ static void gfxstub_data(t_gfxstub *x, t_symbol *s, int argc, t_atom *argv)
     /* the "end" message terminates rebuilding the scalar */
 static void gfxstub_end(t_gfxstub *x)
 {
-    canvas_dataproperties((t_canvas *)x->x_owner,
+    canvas_dataproperties((t_glist *)x->x_owner,
         (t_scalar *)x->x_key, gfxstub_binbuf);
     buffer_free(gfxstub_binbuf);
     gfxstub_binbuf = 0;
@@ -239,7 +239,7 @@ static t_class *savepanel_class;
 typedef struct _savepanel
 {
     t_object x_obj;
-    t_canvas *x_canvas;
+    t_glist *x_canvas;
     t_symbol *x_s;
 } t_savepanel;
 

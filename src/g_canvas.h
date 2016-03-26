@@ -235,7 +235,7 @@ struct _array {
     };
 
 typedef struct _linetraverser {
-    t_canvas        *tr_x;
+    t_glist        *tr_x;
     t_object        *tr_ob;
     int             tr_nout;
     int             tr_outno;
@@ -357,14 +357,14 @@ t_glist  *glist_new             (void);
 void     glist_init             (t_glist *x);
 void     glist_add              (t_glist *x, t_gobj *g);
 void     glist_clear            (t_glist *x);
-t_canvas *glist_getcanvas       (t_glist *x);
+t_glist *glist_getcanvas       (t_glist *x);
 int      glist_isselected       (t_glist *x, t_gobj *y);
 void     glist_select           (t_glist *x, t_gobj *y);
 void     glist_deselect         (t_glist *x, t_gobj *y);
 void     glist_noselect         (t_glist *x);
 void     glist_selectall        (t_glist *x);
 void     glist_delete           (t_glist *x, t_gobj *y);
-void     glist_retext           (t_glist *x, t_text *y);
+void     glist_retext           (t_glist *x, t_object *y);
 int      glist_isvisible        (t_glist *x);
 int      glist_istoplevel       (t_glist *x);
 t_glist *glist_findgraph        (t_glist *x);
@@ -421,30 +421,30 @@ void     glist_eraseio          (t_glist *glist, t_object *ob, char *tag);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_popabstraction      (t_canvas *x);
+void canvas_popabstraction      (t_glist *x);
 int  canvas_getdollarzero       (void);
 void canvas_create_editor       (t_glist *x);
 void canvas_destroy_editor      (t_glist *x);
-void canvas_deletelinesforio    (t_canvas *x, t_text *text, t_inlet *inp, t_outlet *outp);
+void canvas_deletelinesforio    (t_glist *x, t_object *text, t_inlet *inp, t_outlet *outp);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void text_save          (t_gobj *z, t_buffer *b);
-void text_setto         (t_text *x, t_glist *glist, char *buf, int bufsize);
-void text_drawborder    (t_text *x, t_glist *glist, char *tag, int width, int height, int firsttime);
-void text_eraseborder   (t_text *x, t_glist *glist, char *tag);
-int  text_xcoord        (t_text *x, t_glist *glist);
-int  text_ycoord        (t_text *x, t_glist *glist);
-int  text_xpix          (t_text *x, t_glist *glist);
-int  text_ypix          (t_text *x, t_glist *glist);
+void text_setto         (t_object *x, t_glist *glist, char *buf, int bufsize);
+void text_drawborder    (t_object *x, t_glist *glist, char *tag, int width, int height, int firsttime);
+void text_eraseborder   (t_object *x, t_glist *glist, char *tag);
+int  text_xcoord        (t_object *x, t_glist *glist);
+int  text_ycoord        (t_object *x, t_glist *glist);
+int  text_xpix          (t_object *x, t_glist *glist);
+int  text_ypix          (t_object *x, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_rtext  *rtext_new         (t_glist *glist, t_text *who);
+t_rtext  *rtext_new         (t_glist *glist, t_object *who);
 void     rtext_draw         (t_rtext *x);
 void     rtext_erase        (t_rtext *x);
 t_rtext  *rtext_remove      (t_rtext *first, t_rtext *x);
@@ -461,63 +461,63 @@ int      rtext_height       (t_rtext *x);
 char     *rtext_gettag      (t_rtext *x);
 void     rtext_gettext      (t_rtext *x, char **buf, int *bufsize);
 void     rtext_getseltext   (t_rtext *x, char **buf, int *bufsize);
-t_rtext  *glist_findrtext   (t_glist *gl, t_text *who);
+t_rtext  *glist_findrtext   (t_glist *gl, t_object *who);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_undofn)(t_canvas *canvas, void *buf, int action);
-typedef int (*t_canvasapply)(t_canvas *x, t_int x1, t_int x2, t_int x3);
+typedef void (*t_undofn)(t_glist *canvas, void *buf, int action);
+typedef int (*t_canvasapply)(t_glist *x, t_int x1, t_int x2, t_int x3);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_canvas *canvas_new                        (void *dummy, t_symbol *sel, int argc, t_atom *argv);
+t_glist *canvas_new                        (void *dummy, t_symbol *sel, int argc, t_atom *argv);
 t_symbol *canvas_makebindsym                (t_symbol *s);
-void     canvas_vistext                     (t_canvas *x, t_text *y);
-void     canvas_fixlines                    (t_canvas *x, t_text *text);
-void     canvas_deletelines                 (t_canvas *x, t_text *text);
-void     canvas_stowconnections             (t_canvas *x);
-void     canvas_restoreconnections          (t_canvas *x);
-void     canvas_redraw                      (t_canvas *x);
-t_inlet  *canvas_addinlet                   (t_canvas *x, t_pd *who, t_symbol *sym);
-void     canvas_rminlet                     (t_canvas *x, t_inlet *ip);
-t_outlet *canvas_addoutlet                  (t_canvas *x, t_pd *who, t_symbol *sym);
-void     canvas_rmoutlet                    (t_canvas *x, t_outlet *op);
+void     canvas_vistext                     (t_glist *x, t_object *y);
+void     canvas_fixlines                    (t_glist *x, t_object *text);
+void     canvas_deletelines                 (t_glist *x, t_object *text);
+void     canvas_stowconnections             (t_glist *x);
+void     canvas_restoreconnections          (t_glist *x);
+void     canvas_redraw                      (t_glist *x);
+t_inlet  *canvas_addinlet                   (t_glist *x, t_pd *who, t_symbol *sym);
+void     canvas_rminlet                     (t_glist *x, t_inlet *ip);
+t_outlet *canvas_addoutlet                  (t_glist *x, t_pd *who, t_symbol *sym);
+void     canvas_rmoutlet                    (t_glist *x, t_outlet *op);
 void     canvas_redrawallfortemplate        (t_template *tmpl, int action);
-void     canvas_redrawallfortemplatecanvas  (t_canvas *x, int action);
-void     canvas_zapallfortemplate           (t_canvas *tmpl);
-void     canvas_setusedastemplate           (t_canvas *x);
-t_canvas *canvas_getcurrent                 (void);
-void     canvas_setcurrent                  (t_canvas *x);
-void     canvas_unsetcurrent                (t_canvas *x);
-t_symbol *canvas_realizedollar              (t_canvas *x, t_symbol *s);
-t_canvas *canvas_getroot                    (t_canvas *x);
-void     canvas_dirty                       (t_canvas *x, t_float n);
-int      canvas_getfont                     (t_canvas *x);
-t_int    *canvas_recurapply                 (t_canvas *x,
+void     canvas_redrawallfortemplatecanvas  (t_glist *x, int action);
+void     canvas_zapallfortemplate           (t_glist *tmpl);
+void     canvas_setusedastemplate           (t_glist *x);
+t_glist *canvas_getcurrent                 (void);
+void     canvas_setcurrent                  (t_glist *x);
+void     canvas_unsetcurrent                (t_glist *x);
+t_symbol *canvas_realizedollar              (t_glist *x, t_symbol *s);
+t_glist *canvas_getroot                    (t_glist *x);
+void     canvas_dirty                       (t_glist *x, t_float n);
+int      canvas_getfont                     (t_glist *x);
+t_int    *canvas_recurapply                 (t_glist *x,
                                                 t_canvasapply *fn,
                                                 t_int x1,
                                                 t_int x2,
                                                 t_int x3);
 
-void     canvas_resortinlets            (t_canvas *x);
-void     canvas_resortoutlets           (t_canvas *x);
-void     canvas_free                    (t_canvas *x);
+void     canvas_resortinlets            (t_glist *x);
+void     canvas_resortoutlets           (t_glist *x);
+void     canvas_free                    (t_glist *x);
 void     canvas_updatewindowlist        (void);
-void     canvas_editmode                (t_canvas *x, t_float state);
-int      canvas_isabstraction           (t_canvas *x);
-int      canvas_istable                 (t_canvas *x);
-int      canvas_showtext                (t_canvas *x);
-void     canvas_vis                     (t_canvas *x, t_float f);
+void     canvas_editmode                (t_glist *x, t_float state);
+int      canvas_isabstraction           (t_glist *x);
+int      canvas_istable                 (t_glist *x);
+int      canvas_showtext                (t_glist *x);
+void     canvas_vis                     (t_glist *x, t_float f);
 
-t_canvasenvironment *canvas_getenv      (t_canvas *x);
+t_canvasenvironment *canvas_getenv      (t_glist *x);
 
-void     canvas_rename                  (t_canvas *x, t_symbol *s, t_symbol *dir);
-void     canvas_loadbang                (t_canvas *x);
-int      canvas_hitbox                  (t_canvas *x,
+void     canvas_rename                  (t_glist *x, t_symbol *s, t_symbol *dir);
+void     canvas_loadbang                (t_glist *x);
+int      canvas_hitbox                  (t_glist *x,
                                             t_gobj *y,
                                             int xpos,
                                             int ypos,
@@ -526,36 +526,36 @@ int      canvas_hitbox                  (t_canvas *x,
                                             int *x2p,
                                             int *y2p);
 
-int      canvas_setdeleting             (t_canvas *x, int flag);
-void     canvas_setundo                 (t_canvas *x,
+int      canvas_setdeleting             (t_glist *x, int flag);
+void     canvas_setundo                 (t_glist *x,
                                             t_undofn undofn,
                                             void *buf,
                                             const char *name);
 
-void     canvas_noundo                  (t_canvas *x);
-int      canvas_getindex                (t_canvas *x, t_gobj *y);
-void     canvas_connect                 (t_canvas *x,
+void     canvas_noundo                  (t_glist *x);
+int      canvas_getindex                (t_glist *x, t_gobj *y);
+void     canvas_connect                 (t_glist *x,
                                             t_float fwhoout,
                                             t_float foutno,
                                             t_float fwhoin,
                                             t_float finno);
 
-void     canvas_disconnect              (t_canvas *x,
+void     canvas_disconnect              (t_glist *x,
                                             t_float index1,
                                             t_float outno,
                                             t_float index2,
                                             t_float inno);
 
-int      canvas_isconnected             (t_canvas *x,
-                                            t_text *ob1,
+int      canvas_isconnected             (t_glist *x,
+                                            t_object *ob1,
                                             int n1,
-                                            t_text *ob2,
+                                            t_object *ob2,
                                             int n2);
 
-void     canvas_selectinrect            (t_canvas *x, int lox, int loy, int hix, int hiy);
-void     canvas_fattenforscalars        (t_canvas *x, int *x1, int *y1, int *x2, int *y2);
-void     canvas_visforscalars           (t_canvas *x, t_glist *glist, int vis);
-int      canvas_clicksub                (t_canvas *x,
+void     canvas_selectinrect            (t_glist *x, int lox, int loy, int hix, int hiy);
+void     canvas_fattenforscalars        (t_glist *x, int *x1, int *y1, int *x2, int *y2);
+void     canvas_visforscalars           (t_glist *x, t_glist *glist, int vis);
+int      canvas_clicksub                (t_glist *x,
                                             int xpix,
                                             int ypix,
                                             int shift,
@@ -570,7 +570,7 @@ t_glist  *pd_checkglist                 (t_pd *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void         linetraverser_start        (t_linetraverser *t, t_canvas *x);
+void         linetraverser_start        (t_linetraverser *t, t_glist *x);
 t_outconnect *linetraverser_next        (t_linetraverser *t);
 void         linetraverser_skipobject   (t_linetraverser *t);
 
@@ -644,7 +644,7 @@ void array_getcoordinate        (t_glist *glist,
                                     t_float *wp);
 
 int array_getfields             (t_symbol *elemtemplatesym,
-                                    t_canvas **elemtemplatecanvasp,
+                                    t_glist **elemtemplatecanvasp,
                                     t_template **elemtemplatep,
                                     int *elemsizep,
                                     t_fielddesc *xfielddesc,
@@ -673,7 +673,7 @@ t_symbol     *template_getsymbol    (t_template *x, t_symbol *fieldname, t_word 
 void         template_setsymbol     (t_template *x, t_symbol *fieldname, t_word *wp, t_symbol *s, int loud);
 t_template   *gtemplate_get         (t_gtemplate *x);
 t_template   *template_findbyname   (t_symbol *s);
-t_canvas     *template_findcanvas   (t_template *tmpl);
+t_glist     *template_findcanvas   (t_template *tmpl);
 void         template_notify        (t_template *tmpl, t_symbol *s, int argc, t_atom *argv);
 t_float      template_getfloat      (t_template *x, t_symbol *fieldname, t_word *wp, int loud);
 void         template_setfloat      (t_template *x, t_symbol *fieldname, t_word *wp, t_float f, int loud);

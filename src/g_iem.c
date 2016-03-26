@@ -253,8 +253,8 @@ void iemgui_setLabelPosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom
         sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
             glist_getcanvas (iem->iem_glist),
             x,
-            text_xpix ((t_text *)x, iem->iem_glist) + iem->iem_labelX,
-            text_ypix ((t_text *)x, iem->iem_glist) + iem->iem_labelY);
+            text_xpix (object_cast (x), iem->iem_glist) + iem->iem_labelX,
+            text_ypix (object_cast (x), iem->iem_glist) + iem->iem_labelY);
     }
 }
 
@@ -297,7 +297,7 @@ void iemgui_boxChanged (void *x, t_iem *iem)
     if (glist_isvisible (iem->iem_glist)) {
     //
     (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_MOVE);
-    canvas_fixlines (iem->iem_glist, (t_text *)x);
+    canvas_fixlines (iem->iem_glist, object_cast (x));
     //
     }
 }
@@ -315,7 +315,7 @@ void iemgui_behaviorDisplace (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
     
     (*x->iem_draw) ((void *)z, glist, IEM_DRAW_MOVE);
     
-    canvas_fixlines (glist, text_cast (z));
+    canvas_fixlines (glist, object_cast (z));
 }
 
 void iemgui_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
@@ -340,7 +340,7 @@ void iemgui_behaviorVisible (t_gobj *z, t_glist *glist, int isVisible)
 
 void iemgui_behaviorDeleted (t_gobj *z, t_glist *glist)
 {
-    canvas_deletelines (glist, text_cast (z));
+    canvas_deletelines (glist, object_cast (z));
 }
 
 // -----------------------------------------------------------------------------------------------------------

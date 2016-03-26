@@ -169,7 +169,7 @@ static void scalar_getrect(t_gobj *z, t_glist *owner,
 {
     t_scalar *x = (t_scalar *)z;
     t_template *template = template_findbyname(x->sc_template);
-    t_canvas *templatecanvas = template_findcanvas(template);
+    t_glist *templatecanvas = template_findcanvas(template);
     int x1 = 0x7fffffff, x2 = -0x7fffffff, y1 = 0x7fffffff, y2 = -0x7fffffff;
     t_gobj *y;
     t_float basex, basey;
@@ -293,7 +293,7 @@ static void scalar_vis(t_gobj *z, t_glist *owner, int vis)
 {
     t_scalar *x = (t_scalar *)z;
     t_template *template = template_findbyname(x->sc_template);
-    t_canvas *templatecanvas = template_findcanvas(template);
+    t_glist *templatecanvas = template_findcanvas(template);
     t_gobj *y;
     t_float basex, basey;
     scalar_getbasexy(x, &basex, &basey);
@@ -346,7 +346,7 @@ int scalar_doclick(t_word *data, t_template *template, t_scalar *sc,
     int shift, int alt, int dbl, int doit)
 {
     int hit = 0;
-    t_canvas *templatecanvas = template_findcanvas(template);
+    t_glist *templatecanvas = template_findcanvas(template);
     t_gobj *y;
     t_atom at[2];
     t_float basex = template_getfloat(template, gensym("x"), data, 0);

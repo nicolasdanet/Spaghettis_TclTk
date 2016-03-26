@@ -418,7 +418,6 @@ struct _pdinstance;
 #define t_clock                 struct _clock
 #define t_outconnect            struct _outconnect
 #define t_glist                 struct _glist
-#define t_canvas                struct _glist
 #define t_widgetbehavior        struct _widgetbehavior
 #define t_parentwidgetbehavior  struct _parentwidgetbehavior
 #define t_garray                struct _garray
@@ -736,7 +735,7 @@ PD_DLL t_glist  *canvas_getcurrent          (void);
 PD_DLL t_symbol *canvas_getdir              (t_glist *x);
 
 PD_DLL void     canvas_dataproperties       (t_glist *x, t_scalar *sc, t_buffer *b);
-PD_DLL int      canvas_open                 (t_canvas *x,
+PD_DLL int      canvas_open                 (t_glist *x,
                                                 const char *name,
                                                 const char *ext,
                                                 char *dirresult,

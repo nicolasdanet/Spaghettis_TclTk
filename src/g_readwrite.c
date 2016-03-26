@@ -24,7 +24,7 @@ extern t_class *scalar_class;
 extern t_class *canvas_class;
 
 static t_class *declare_class;
-void canvas_savedeclarationsto(t_canvas *x, t_buffer *b);
+void canvas_savedeclarationsto(t_glist *x, t_buffer *b);
 
     /* the following routines read "scalars" from a file into a canvas. */
 
@@ -174,7 +174,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
 
 void glist_readfrombinbuf(t_glist *x, t_buffer *b, char *filename, int selectem)
 {
-    t_canvas *canvas = glist_getcanvas(x);
+    t_glist *canvas = glist_getcanvas(x);
     int cr = 0, natoms, nline, message, nextmsg = 0, i, j, nitems;
     t_atom *vec;
     t_gobj *gobj;
@@ -257,7 +257,7 @@ static void glist_doread(t_glist *x, t_symbol *filename, t_symbol *format,
     int clearme)
 {
     t_buffer *b = buffer_new();
-    t_canvas *canvas = glist_getcanvas(x);
+    t_glist *canvas = glist_getcanvas(x);
     int wasvis = glist_isvisible(canvas);
     int cr = 0, natoms, nline, message, nextmsg = 0, i, j;
     t_atom *vec;
@@ -298,7 +298,7 @@ void glist_mergefile(t_glist *x, t_symbol *filename, t_symbol *format)
     we either copy the data from the new scalar to the old one in place
     (if their templates match) or else delete the old scalar and put the new
     thing in its place on the list. */
-void canvas_dataproperties(t_canvas *x, t_scalar *sc, t_buffer *b)
+void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
 {
     int ntotal, nnew, scindex;
     t_gobj *y, *y2 = 0, *newone, *oldone = 0;
@@ -587,7 +587,7 @@ static void glist_write(t_glist *x, t_symbol *filename, t_symbol *format)
     t_symbol **templatevec = PD_MEMORY_GET(0);
     int ntemplates = 0;
     t_gobj *y;
-    t_canvas *canvas = glist_getcanvas(x);
+    t_glist *canvas = glist_getcanvas(x);
     canvas_makefilename(canvas, filename->s_name, buf, PD_STRING);
     if (!strcmp(format->s_name, "cr"))
         cr = 1;
@@ -607,7 +607,7 @@ static void glist_write(t_glist *x, t_symbol *filename, t_symbol *format)
 
     /* save to a binbuf, called recursively; cf. canvas_savetofile() which
     saves the document, and is only called on root canvases. */
-static void canvas_saveto(t_canvas *x, t_buffer *b)
+static void canvas_saveto(t_glist *x, t_buffer *b)
 {
     t_gobj *y;
     t_linetraverser t;
@@ -677,7 +677,7 @@ static void canvas_saveto(t_canvas *x, t_buffer *b)
 
     /* call this recursively to collect all the template names for
     a canvas or for the selection. */
-static void canvas_collecttemplatesfor(t_canvas *x, int *ntemplatesp,
+static void canvas_collecttemplatesfor(t_glist *x, int *ntemplatesp,
     t_symbol ***templatevecp, int wholething)
 {
     t_gobj *y;
@@ -690,13 +690,13 @@ static void canvas_collecttemplatesfor(t_canvas *x, int *ntemplatesp,
                     ((t_scalar *)y)->sc_vector,  ntemplatesp, templatevecp);
         else if ((pd_class(&y->g_pd) == canvas_class) &&
             (wholething || glist_isselected(x, y)))
-                canvas_collecttemplatesfor((t_canvas *)y,
+                canvas_collecttemplatesfor((t_glist *)y,
                     ntemplatesp, templatevecp, 1);
     }
 }
 
     /* save the templates needed by a canvas to a binbuf. */
-static void canvas_savetemplatesto(t_canvas *x, t_buffer *b, int wholething)
+static void canvas_savetemplatesto(t_glist *x, t_buffer *b, int wholething)
 {
     t_symbol **templatevec = PD_MEMORY_GET(0);
     int i, ntemplates = 0;
@@ -738,7 +738,7 @@ void canvas_reload(t_symbol *name, t_symbol *dir, t_gobj *except);
 
     /* save a "root" canvas to a file; cf. canvas_saveto() which saves the
     body (and which is called recursively.) */
-static void canvas_savetofile(t_canvas *x, t_symbol *filename, t_symbol *dir,
+static void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir,
     float fdestroy)
 {
     t_buffer *b = buffer_new();
@@ -762,16 +762,16 @@ static void canvas_savetofile(t_canvas *x, t_symbol *filename, t_symbol *dir,
     buffer_free(b);
 }
 
-static void canvas_menusaveas(t_canvas *x, float fdestroy)
+static void canvas_menusaveas(t_glist *x, float fdestroy)
 {
-    t_canvas *x2 = canvas_getroot(x);
+    t_glist *x2 = canvas_getroot(x);
     sys_vGui("::ui_file::saveAs .x%lx {%s} {%s} %d\n", x2,
         x2->gl_name->s_name, canvas_getdir(x2)->s_name, (fdestroy != 0));
 }
 
-static void canvas_menusave(t_canvas *x, float fdestroy)
+static void canvas_menusave(t_glist *x, float fdestroy)
 {
-    t_canvas *x2 = canvas_getroot(x);
+    t_glist *x2 = canvas_getroot(x);
     char *name = x2->gl_name->s_name;
     if (*name && strncmp(name, "Untitled", 8)
             && (strlen(name) < 4 || strcmp(name + strlen(name)-4, ".pat")

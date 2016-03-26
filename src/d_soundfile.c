@@ -444,7 +444,7 @@ int open_soundfile(const char *dirname, const char *filename, int headersize,
     /* open a soundfile, using open_via_canvas().  This is used by readsf~ in
     a not-perfectly-threadsafe way.  LATER replace with a thread-hardened
     version of open_soundfile_via_canvas() */
-int open_soundfile_via_canvas(t_canvas *canvas, const char *filename, int headersize,
+int open_soundfile_via_canvas(t_glist *canvas, const char *filename, int headersize,
     int *p_bytespersamp, int *p_bigendian, int *p_nchannels, long *p_bytelimit,
     long skipframes)
 {
@@ -766,7 +766,7 @@ usage:
     return (-1);
 }
 
-static int create_soundfile(t_canvas *canvas, const char *filename,
+static int create_soundfile(t_glist *canvas, const char *filename,
     int filetype, int nframes, int bytespersamp,
     int bigendian, int nchannels, int swap, t_float samplerate)
 {
@@ -1150,7 +1150,7 @@ static t_class *soundfiler_class;
 typedef struct _soundfiler
 {
     t_object x_obj;
-    t_canvas *x_canvas;
+    t_glist *x_canvas;
 } t_soundfiler;
 
 static t_soundfiler *soundfiler_new(void)
@@ -1366,7 +1366,7 @@ done:
     /* this is broken out from soundfiler_write below so garray_write can
     call it too... not done yet though. */
 
-long soundfiler_dowrite(void *obj, t_canvas *canvas,
+long soundfiler_dowrite(void *obj, t_glist *canvas,
     int argc, t_atom *argv)
 {
     int headersize, bytespersamp, bigendian,
@@ -1538,7 +1538,7 @@ static t_class *readsf_class;
 typedef struct _readsf
 {
     t_object x_obj;
-    t_canvas *x_canvas;
+    t_glist *x_canvas;
     t_clock *x_clock;
     char *x_buf;                            /* soundfile buffer */
     int x_bufsize;                          /* buffer size in bytes */
@@ -2203,7 +2203,7 @@ static void *writesf_child_main(void *zz)
             int bigendian = x->x_bigendian;
             int filetype = x->x_filetype;
             char *filename = x->x_filename;
-            t_canvas *canvas = x->x_canvas;
+            t_glist *canvas = x->x_canvas;
             t_float samplerate = x->x_samplerate;
 
                 /* alter the request code so that an ensuing "open" will get

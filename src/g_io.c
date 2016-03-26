@@ -27,7 +27,7 @@ t_class *vinlet_class;  /* Shared. */
 typedef struct _vinlet
 {
     t_object x_obj;
-    t_canvas *x_canvas;
+    t_glist *x_canvas;
     t_inlet *x_inlet;
     int x_bufsize;
     t_float *x_buf;         /* signal buffer; zero if not a signal */
@@ -301,7 +301,7 @@ t_class *voutlet_class;     /* Shared. */
 typedef struct _voutlet
 {
     t_object x_obj;
-    t_canvas *x_canvas;
+    t_glist *x_canvas;
     t_outlet *x_parentoutlet;
     int x_bufsize;
     t_sample *x_buf;         /* signal buffer; zero if not a signal */

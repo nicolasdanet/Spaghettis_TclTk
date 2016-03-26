@@ -38,7 +38,7 @@ void toggle_draw_update(t_toggle *x, t_glist *glist)
 {
     if(glist_isvisible(glist))
     {
-        t_canvas *canvas=glist_getcanvas(glist);
+        t_glist *canvas=glist_getcanvas(glist);
 
         sys_vGui(".x%lx.c itemconfigure %lxX1 -fill #%6.6x\n", canvas, x,
                  (x->x_on!=0.0)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
@@ -49,7 +49,7 @@ void toggle_draw_update(t_toggle *x, t_glist *glist)
 
 void toggle_draw_new(t_toggle *x, t_glist *glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
     int w=1, xx=text_xpix(&x->x_gui.iem_obj, glist), yy=text_ypix(&x->x_gui.iem_obj, glist);
 
     if(x->x_gui.iem_width >= 30)
@@ -82,7 +82,7 @@ void toggle_draw_new(t_toggle *x, t_glist *glist)
 
 void toggle_draw_move(t_toggle *x, t_glist *glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
     int w=1, xx=text_xpix(&x->x_gui.iem_obj, glist), yy=text_ypix(&x->x_gui.iem_obj, glist);
 
     if(x->x_gui.iem_width >= 30)
@@ -108,7 +108,7 @@ void toggle_draw_move(t_toggle *x, t_glist *glist)
 
 void toggle_draw_erase(t_toggle* x, t_glist* glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c delete %lxBASE\n", canvas, x);
     sys_vGui(".x%lx.c delete %lxX1\n", canvas, x);
@@ -120,7 +120,7 @@ void toggle_draw_erase(t_toggle* x, t_glist* glist)
 
 void toggle_draw_config(t_toggle* x, t_glist* glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
              canvas, x, x->x_gui.iem_fontSize,
@@ -138,7 +138,7 @@ void toggle_draw_io(t_toggle* x, t_glist* glist)
 {
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
         canvas, xpos,
@@ -151,7 +151,7 @@ void toggle_draw_io(t_toggle* x, t_glist* glist)
 
 void toggle_draw_select(t_toggle* x, t_glist* glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     if(x->x_gui.iem_isSelected)
     {
@@ -267,7 +267,7 @@ static void toggle_dialog(t_toggle *x, t_symbol *s, int argc, t_atom *argv)
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_IO);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-    canvas_fixlines(x->x_gui.iem_glist, (t_text*)x);
+    canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
 }
 
 static void toggle_click(t_toggle *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt)

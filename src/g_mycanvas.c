@@ -37,7 +37,7 @@ void my_canvas_draw_new(t_my_canvas *x, t_glist *glist)
 {
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxRECT\n",
              canvas, xpos, ypos,
@@ -59,7 +59,7 @@ void my_canvas_draw_move(t_my_canvas *x, t_glist *glist)
 {
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c coords %lxRECT %d %d %d %d\n",
              canvas, x, xpos, ypos, xpos + x->x_vis_w,
@@ -74,7 +74,7 @@ void my_canvas_draw_move(t_my_canvas *x, t_glist *glist)
 
 void my_canvas_draw_erase(t_my_canvas* x, t_glist* glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c delete %lxBASE\n", canvas, x);
     sys_vGui(".x%lx.c delete %lxRECT\n", canvas, x);
@@ -83,7 +83,7 @@ void my_canvas_draw_erase(t_my_canvas* x, t_glist* glist)
 
 void my_canvas_draw_config(t_my_canvas* x, t_glist* glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c itemconfigure %lxRECT -fill #%6.6x -outline #%6.6x\n", canvas, x,
              x->x_gui.iem_colorBackground, x->x_gui.iem_colorBackground);
@@ -97,7 +97,7 @@ void my_canvas_draw_config(t_my_canvas* x, t_glist* glist)
 
 void my_canvas_draw_select(t_my_canvas* x, t_glist* glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     if(x->x_gui.iem_isSelected)
     {

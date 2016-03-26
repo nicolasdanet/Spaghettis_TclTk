@@ -31,7 +31,7 @@ static void *table_donew(t_symbol *s, int size, int flags,
 {
     t_atom a[9];
     t_glist *gl;
-    t_canvas *x, *z = canvas_getcurrent();
+    t_glist *x, *z = canvas_getcurrent();
     if (s == &s_)
     {
          char  tabname[255];
@@ -70,7 +70,7 @@ static void *table_new(t_symbol *s, t_float f)
 }
 
     /* return true if the "canvas" object is a "table". */
-int canvas_istable(t_canvas *x)
+int canvas_istable(t_glist *x)
 {
     t_atom *argv = (x->gl_obj.te_buffer? buffer_atoms(x->gl_obj.te_buffer):0);
     int argc = (x->gl_obj.te_buffer? buffer_size(x->gl_obj.te_buffer) : 0);
@@ -224,7 +224,7 @@ typedef struct _array_client
     t_gpointer tc_gp;
     t_symbol *tc_struct;
     t_symbol *tc_field;
-    t_canvas *tc_canvas;
+    t_glist *tc_canvas;
 } t_array_client;
 
 #define x_sym x_tc.tc_sym
@@ -828,7 +828,7 @@ void canvas_add_for_class(t_class *c);
 void x_array_setup(void )
 {
     array_define_class = class_new(gensym("array define"), 0,
-        (t_method)canvas_free, sizeof(t_canvas), 0, 0);
+        (t_method)canvas_free, sizeof(t_glist), 0, 0);
     canvas_add_for_class(array_define_class);
     class_addMethod(array_define_class, (t_method)array_define_send,
         gensym("send"), A_SYMBOL, 0);

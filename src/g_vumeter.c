@@ -99,7 +99,7 @@ static void vu_update_rms(t_vu *x, t_glist *glist)
 
 static void vu_update_peak(t_vu *x, t_glist *glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     if(glist_isvisible(glist))
     {
@@ -148,7 +148,7 @@ static void vu_draw_update(t_gobj *client, t_glist *glist)
     
 static void vu_draw_new(t_vu *x, t_glist *glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
@@ -217,7 +217,7 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
 
 static void vu_draw_move(t_vu *x, t_glist *glist)
 {
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
@@ -272,7 +272,7 @@ static void vu_draw_move(t_vu *x, t_glist *glist)
 static void vu_draw_erase(t_vu* x,t_glist* glist)
 {
     int i;
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c delete %lxBASE\n", canvas, x);
     for(i=1; i<=IEM_VUMETER_STEPS; i++)
@@ -299,7 +299,7 @@ static void vu_draw_erase(t_vu* x,t_glist* glist)
 static void vu_draw_config(t_vu* x, t_glist* glist)
 {
     int i;
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas, x, x->x_gui.iem_colorBackground);
     for(i=1; i<=IEM_VUMETER_STEPS; i++)
@@ -326,7 +326,7 @@ static void vu_draw_io(t_vu* x, t_glist* glist)
 {
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
          canvas,
@@ -354,7 +354,7 @@ static void vu_draw_io(t_vu* x, t_glist* glist)
 static void vu_draw_select(t_vu* x,t_glist* glist)
 {
     int i;
-    t_canvas *canvas=glist_getcanvas(glist);
+    t_glist *canvas=glist_getcanvas(glist);
 
     if(x->x_gui.iem_isSelected)
     {
@@ -458,7 +458,7 @@ static void vu_scale(t_vu *x, t_float fscale)
     if(scale != 0) scale = 1;
     if(x->x_scale && !scale)
     {
-        t_canvas *canvas=glist_getcanvas(x->x_gui.iem_glist);
+        t_glist *canvas=glist_getcanvas(x->x_gui.iem_glist);
 
         x->x_scale = (int)scale;
         if(glist_isvisible(x->x_gui.iem_glist))
@@ -477,7 +477,7 @@ static void vu_scale(t_vu *x, t_float fscale)
         int w4=x->x_gui.iem_width/4, end=text_xpix(&x->x_gui.iem_obj, x->x_gui.iem_glist)+x->x_gui.iem_width+4;
         int k1=x->x_led_size+1, k2=IEM_VUMETER_STEPS+1, k3=k1/2;
         int yyy, k4=text_ypix(&x->x_gui.iem_obj, x->x_gui.iem_glist)-k3;
-        t_canvas *canvas=glist_getcanvas(x->x_gui.iem_glist);
+        t_glist *canvas=glist_getcanvas(x->x_gui.iem_glist);
 
         x->x_scale = (int)scale;
         if(glist_isvisible(x->x_gui.iem_glist))
@@ -537,7 +537,7 @@ static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_IO);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-    canvas_fixlines(x->x_gui.iem_glist, (t_text*)x);
+    canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
 }
 
 static void vu_size(t_vu *x, t_symbol *s, int ac, t_atom *av)
@@ -550,7 +550,7 @@ static void vu_size(t_vu *x, t_symbol *s, int ac, t_atom *av)
     {
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-        canvas_fixlines(x->x_gui.iem_glist, (t_text*)x);
+        canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
     }
 }
 

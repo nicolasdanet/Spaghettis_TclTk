@@ -34,7 +34,7 @@ static void graph_getrect(t_gobj *z, t_glist *glist,
 
 /* -------------------- maintaining the list -------------------- */
 
-void canvas_drawredrect(t_canvas *x, int doit);
+void canvas_drawredrect(t_glist *x, int doit);
 
 void glist_add(t_glist *x, t_gobj *y)
 {
@@ -65,7 +65,7 @@ void glist_add(t_glist *x, t_gobj *y)
     /* this is to protect against a hairy problem in which deleting
     a sub-canvas might delete an inlet on a box, after the box had
     been invisible-ized, so that we have to protect against redrawing it! */
-int canvas_setdeleting(t_canvas *x, int flag)
+int canvas_setdeleting(t_glist *x, int flag)
 {
     int ret = x->gl_isdeleting;
     x->gl_isdeleting = flag;
@@ -78,7 +78,7 @@ void glist_delete(t_glist *x, t_gobj *y)
     t_gobj *g;
     t_object *ob;
     int chkdsp = class_hasMethod (pd_class (&y->g_pd), gensym("dsp"));
-    t_canvas *canvas = glist_getcanvas(x);
+    t_glist *canvas = glist_getcanvas(x);
     t_rtext *rtext = 0;
     int drawcommand = class_hasDrawCommand(y->g_pd);
     int wasdeleting;
@@ -164,9 +164,9 @@ void glist_clear(t_glist *x)
         canvas_resume_dsp(dspstate);
 }
 
-void glist_retext(t_glist *glist, t_text *y)
+void glist_retext(t_glist *glist, t_object *y)
 {
-    t_canvas *c = glist_getcanvas(glist);
+    t_glist *c = glist_getcanvas(glist);
         /* check that we have built rtexts yet.  LATER need a better test. */
     if (glist->gl_editor && glist->gl_editor->e_rtext)
     {
@@ -190,11 +190,11 @@ void glist_grab(t_glist *x, t_gobj *y, t_glistmotionfn motionfn,
     x2->gl_editor->e_ywas = ypos;
 }
 
-t_canvas *glist_getcanvas(t_glist *x)
+t_glist *glist_getcanvas(t_glist *x)
 {
     while (x->gl_owner && !x->gl_havewindow && x->gl_isgraph)
             x = x->gl_owner;
-    return((t_canvas *)x);
+    return((t_glist *)x);
 }
 
 static t_float gobj_getxforsort(t_gobj *g)
@@ -290,7 +290,7 @@ void glist_sort(t_glist *x)
 /* --------------- inlets and outlets  ----------- */
 
 
-t_inlet *canvas_addinlet(t_canvas *x, t_pd *who, t_symbol *s)
+t_inlet *canvas_addinlet(t_glist *x, t_pd *who, t_symbol *s)
 {
     t_inlet *ip = inlet_new(&x->gl_obj, who, s, 0);
     if (!x->gl_loading && x->gl_owner && glist_isvisible(x->gl_owner))
@@ -303,9 +303,9 @@ t_inlet *canvas_addinlet(t_canvas *x, t_pd *who, t_symbol *s)
     return (ip);
 }
 
-void canvas_rminlet(t_canvas *x, t_inlet *ip)
+void canvas_rminlet(t_glist *x, t_inlet *ip)
 {
-    t_canvas *owner = x->gl_owner;
+    t_glist *owner = x->gl_owner;
     int redraw = (owner && glist_isvisible(owner) && (!owner->gl_isdeleting)
         && glist_istoplevel(owner));
     
@@ -323,7 +323,7 @@ void canvas_rminlet(t_canvas *x, t_inlet *ip)
 extern t_inlet *vinlet_getit(t_pd *x);
 
 
-void canvas_resortinlets(t_canvas *x)
+void canvas_resortinlets(t_glist *x)
 {
     int ninlets = 0, i, j, xmax;
     t_gobj *y, **vec, **vp, **maxp;
@@ -362,7 +362,7 @@ void canvas_resortinlets(t_canvas *x)
         canvas_fixlines(x->gl_owner, &x->gl_obj);
 }
 
-t_outlet *canvas_addoutlet(t_canvas *x, t_pd *who, t_symbol *s)
+t_outlet *canvas_addoutlet(t_glist *x, t_pd *who, t_symbol *s)
 {
     t_outlet *op = outlet_new(&x->gl_obj, s);
     if (!x->gl_loading && x->gl_owner && glist_isvisible(x->gl_owner))
@@ -375,9 +375,9 @@ t_outlet *canvas_addoutlet(t_canvas *x, t_pd *who, t_symbol *s)
     return (op);
 }
 
-void canvas_rmoutlet(t_canvas *x, t_outlet *op)
+void canvas_rmoutlet(t_glist *x, t_outlet *op)
 {
-    t_canvas *owner = x->gl_owner;
+    t_glist *owner = x->gl_owner;
     int redraw = (owner && glist_isvisible(owner) && (!owner->gl_isdeleting)
         && glist_istoplevel(owner));
     
@@ -395,7 +395,7 @@ void canvas_rmoutlet(t_canvas *x, t_outlet *op)
 
 extern t_outlet *voutlet_getit(t_pd *x);
 
-void canvas_resortoutlets(t_canvas *x)
+void canvas_resortoutlets(t_glist *x)
 {
     int noutlets = 0, i, j, xmax;
     t_gobj *y, **vec, **vp, **maxp;
@@ -605,7 +605,7 @@ t_float glist_dpixtody(t_glist *x, t_float dypix)
     (so gl_goprect is set) we use the offset into the framing subrectangle
     as an offset into the parent rectangle.  Finally, it might be an old,
     proportional-style GOP.  In this case we do a coordinate transformation. */
-int text_xpix(t_text *x, t_glist *glist)
+int text_xpix(t_object *x, t_glist *glist)
 {
     if (glist->gl_havewindow || !glist->gl_isgraph)
         return (x->te_xCoordinate);
@@ -617,7 +617,7 @@ int text_xpix(t_text *x, t_glist *glist)
                 x->te_xCoordinate / (glist->gl_screenx2 - glist->gl_screenx1)));
 }
 
-int text_ypix(t_text *x, t_glist *glist)
+int text_ypix(t_object *x, t_glist *glist)
 {
     if (glist->gl_havewindow || !glist->gl_isgraph)
         return (x->te_yCoordinate);
@@ -886,7 +886,7 @@ static void graph_getrect(t_gobj *z, t_glist *glist,
     {
         int hadwindow;
         t_gobj *g;
-        t_text *ob;
+        t_object *ob;
         int x21, y21, x22, y22;
 
         graph_graphrect(z, glist, &x1, &y1, &x2, &y2);

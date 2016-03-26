@@ -33,7 +33,7 @@ static void text_displace(t_gobj *z, t_glist *glist,
 static void text_getrect(t_gobj *z, t_glist *glist,
     int *xp1, int *yp1, int *xp2, int *yp2);
 
-void canvas_startmotion(t_canvas *x);
+void canvas_startmotion(t_glist *x);
 
 /* ----------------- the "text" object.  ------------------ */
 
@@ -44,7 +44,7 @@ void canvas_startmotion(t_canvas *x);
 
 void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    t_text *x = (t_text *)pd_new(text_class);
+    t_object *x = (t_object *)pd_new(text_class);
     t_atom at;
     x->te_width = 0;                            /* don't know it yet. */
     x->te_type = TYPE_TEXT;
@@ -92,11 +92,11 @@ void canvas_getargs(int *argcp, t_atom **argvp);
 static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
     int selected, t_buffer *b)
 {
-    t_text *x;
+    t_object *x;
     int argc;
     t_atom *argv;
     pd_newest = 0;
-    canvas_setcurrent((t_canvas *)gl);
+    canvas_setcurrent((t_glist *)gl);
     canvas_getargs(&argc, &argv);
     buffer_eval(b, &pd_objectMaker, argc, argv);
     if (buffer_size(b))
@@ -113,7 +113,7 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
     if (!x)
     {
             /* LATER make the color reflect this */
-        x = (t_text *)pd_new(text_class);
+        x = (t_object *)pd_new(text_class);
         if (buffer_size(b))
         {
             buffer_post(b);
@@ -136,12 +136,12 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
         canvas_resortinlets(glist_getcanvas(gl));
     if (pd_class((t_pd *)x) == voutlet_class)
         canvas_resortoutlets(glist_getcanvas(gl));
-    canvas_unsetcurrent((t_canvas *)gl);
+    canvas_unsetcurrent((t_glist *)gl);
 }
 
     /* utility routine to figure out where to put a new text box from menu
     and whether to connect to it automatically */
-static void canvas_howputnew(t_canvas *x, int *connectp, int *xpixp, int *ypixp,
+static void canvas_howputnew(t_glist *x, int *connectp, int *xpixp, int *ypixp,
     int *indexp, int *totalp)
 {
     int xpix, ypix, indx = 0, nobj = 0, n2, x1, x2, y1, y2;
@@ -190,7 +190,7 @@ static void canvas_howputnew(t_canvas *x, int *connectp, int *xpixp, int *ypixp,
 
 void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    t_text *x;
+    t_object *x;
     if (argc >= 2)
     {
         t_buffer *b = buffer_new();
@@ -280,7 +280,7 @@ void canvas_numbox(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 
 /* iemlib */
 
-void canvas_objfor(t_glist *gl, t_text *x, int argc, t_atom *argv)
+void canvas_objfor(t_glist *gl, t_object *x, int argc, t_atom *argv)
 {
     x->te_width = 0;                            /* don't know it yet. */
     x->te_type = TYPE_OBJECT;
@@ -301,7 +301,7 @@ typedef struct _messresponder
 
 typedef struct _message
 {
-    t_text m_text;
+    t_object m_text;
     t_messresponder m_messresponder;
     t_glist *m_glist;
     t_clock *m_clock;
@@ -492,7 +492,7 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 
 typedef struct _gatom
 {
-    t_text a_text;
+    t_object a_text;
     t_atom a_atom;          /* this holds the value and the type */
     t_glist *a_glist;       /* owning glist */
     t_float a_toggle;       /* value to toggle to */
@@ -986,7 +986,7 @@ static void gatom_properties(t_gobj *z, t_glist *owner)
 static void text_getrect(t_gobj *z, t_glist *glist,
     int *xp1, int *yp1, int *xp2, int *yp2)
 {
-    t_text *x = (t_text *)z;
+    t_object *x = (t_object *)z;
     int width, height, iscomment = (x->te_type == TYPE_TEXT);
     t_float x1, y1, x2, y2;
 
@@ -1029,7 +1029,7 @@ static void text_getrect(t_gobj *z, t_glist *glist,
 static void text_displace(t_gobj *z, t_glist *glist,
     int dx, int dy)
 {
-    t_text *x = (t_text *)z;
+    t_object *x = (t_object *)z;
     x->te_xCoordinate += dx;
     x->te_yCoordinate += dy;
     if (glist_isvisible(glist))
@@ -1044,7 +1044,7 @@ static void text_displace(t_gobj *z, t_glist *glist,
 
 static void text_select(t_gobj *z, t_glist *glist, int state)
 {
-    t_text *x = (t_text *)z;
+    t_object *x = (t_object *)z;
     t_rtext *y = glist_findrtext(glist, x);
     rtext_select(y, state);
     if (glist_isvisible(glist) && gobj_shouldvis(&x->te_g, glist))
@@ -1054,20 +1054,20 @@ static void text_select(t_gobj *z, t_glist *glist, int state)
 
 static void text_activate(t_gobj *z, t_glist *glist, int state)
 {
-    t_text *x = (t_text *)z;
+    t_object *x = (t_object *)z;
     t_rtext *y = glist_findrtext(glist, x);
     if (z->g_pd != gatom_class) rtext_activate(y, state);
 }
 
 static void text_delete(t_gobj *z, t_glist *glist)
 {
-    t_text *x = (t_text *)z;
+    t_object *x = (t_object *)z;
         canvas_deletelines(glist, x);
 }
 
 static void text_vis(t_gobj *z, t_glist *glist, int vis)
 {
-    t_text *x = (t_text *)z;
+    t_object *x = (t_object *)z;
     if (vis)
     {
         if (gobj_shouldvis(&x->te_g, glist))
@@ -1094,7 +1094,7 @@ static void text_vis(t_gobj *z, t_glist *glist, int vis)
 static int text_click(t_gobj *z, struct _glist *glist,
     int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
-    t_text *x = (t_text *)z;
+    t_object *x = (t_object *)z;
     if (x->te_type == TYPE_OBJECT)
     {
         t_symbol *clicksym = gensym("click");
@@ -1127,15 +1127,15 @@ static int text_click(t_gobj *z, struct _glist *glist,
 
 void text_save(t_gobj *z, t_buffer *b)
 {
-    t_text *x = (t_text *)z;
+    t_object *x = (t_object *)z;
     if (x->te_type == TYPE_OBJECT)
     {
             /* if we have a "saveto" method, and if we don't happen to be
             a canvas that's an abstraction, the saveto method does the work */
         if (class_hasMethod (pd_class ((t_pd *)x), gensym("saveto")) &&
             !((pd_class((t_pd *)x) == canvas_class) && 
-                (canvas_isabstraction((t_canvas *)x)
-                    || canvas_istable((t_canvas *)x))))
+                (canvas_isabstraction((t_glist *)x)
+                    || canvas_istable((t_glist *)x))))
         {  
             mess1((t_pd *)x, gensym("saveto"), b);
             buffer_vAppend(b, "ssii", gensym("#X"), gensym("restore"),
@@ -1253,7 +1253,7 @@ void glist_drawio(t_glist *glist, t_object *ob, int firsttime,
     }
 }
 
-void text_drawborder(t_text *x, t_glist *glist,
+void text_drawborder(t_object *x, t_glist *glist,
     char *tag, int width2, int height2, int firsttime)
 {
     t_object *ob;
@@ -1342,7 +1342,7 @@ void glist_eraseio(t_glist *glist, t_object *ob, char *tag)
             glist_getcanvas(glist), tag, i);
 }
 
-void text_eraseborder(t_text *x, t_glist *glist, char *tag)
+void text_eraseborder(t_object *x, t_glist *glist, char *tag)
 {
     if (x->te_type == TYPE_TEXT && !glist->gl_edit) return;
     sys_vGui(".x%lx.c delete %sR\n",
@@ -1351,7 +1351,7 @@ void text_eraseborder(t_text *x, t_glist *glist, char *tag)
 }
 
     /* change text; if TYPE_OBJECT, remake it.  */
-void text_setto(t_text *x, t_glist *glist, char *buf, int bufsize)
+void text_setto(t_object *x, t_glist *glist, char *buf, int bufsize)
 {
     if (x->te_type == TYPE_OBJECT)
     {
@@ -1381,7 +1381,7 @@ void text_setto(t_text *x, t_glist *glist, char *buf, int bufsize)
             canvas_restoreconnections(glist_getcanvas(glist));
                 /* if it's an abstraction loadbang it here */
             if (pd_newest && pd_class(pd_newest) == canvas_class)
-                canvas_loadbang((t_canvas *)pd_newest);
+                canvas_loadbang((t_glist *)pd_newest);
         }
             /* if we made a new "pd" or changed a window name,
                 update window list */
@@ -1395,13 +1395,13 @@ void text_setto(t_text *x, t_glist *glist, char *buf, int bufsize)
     /* this gets called when a message gets sent to an object whose creation
     failed, presumably because of loading a patch with a missing extern or
     abstraction */
-static void text_anything(t_text *x, t_symbol *s, int argc, t_atom *argv)
+static void text_anything(t_object *x, t_symbol *s, int argc, t_atom *argv)
 {
 }
 
 void g_text_setup(void)
 {
-    text_class = class_new(gensym("text"), 0, 0, sizeof(t_text),
+    text_class = class_new(gensym("text"), 0, 0, sizeof(t_object),
         CLASS_NOINLET | CLASS_BOX, 0);
     class_addAnything(text_class, text_anything);
 
@@ -1431,7 +1431,7 @@ void g_text_setup(void)
         gensym("adddollsym"), A_SYMBOL, 0);
 
     messresponder_class = class_new(gensym("messresponder"), 0, 0,
-        sizeof(t_text), CLASS_PURE, 0);
+        sizeof(t_object), CLASS_PURE, 0);
     class_addBang(messresponder_class, messresponder_bang);
     class_addFloat(messresponder_class, (t_method) messresponder_float);
     class_addSymbol(messresponder_class, messresponder_symbol);
