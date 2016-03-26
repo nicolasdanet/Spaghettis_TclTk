@@ -237,7 +237,7 @@ void iemgui_setLabel (void *x, t_iem *iem, t_symbol *s)
     iem->iem_label = iemgui_expandDollar (iem->iem_glist, t);
 
     if (glist_isvisible (iem->iem_glist)) {
-        sys_vGui (".x%lx.c itemconfigure %lxLABEL -text {%s}\n",
+        sys_vGui (".x%lx.c itemconfigure %lxLABEL -text {%s}\n",    // --
             glist_getcanvas (iem->iem_glist),
             x,
             iem->iem_label != iemgui_empty() ? iem->iem_label->s_name : s_.s_name);
@@ -249,7 +249,7 @@ void iemgui_setLabelPosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom
     iem->iem_labelX = (int)atom_getFloatAtIndex (0, argc, argv);
     iem->iem_labelY = (int)atom_getFloatAtIndex (1, argc, argv);
     
-    if (glist_isvisible(iem->iem_glist)) {
+    if (glist_isvisible (iem->iem_glist)) {
         sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
             glist_getcanvas (iem->iem_glist),
             x,
@@ -264,7 +264,7 @@ void iemgui_setLabelFont (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *ar
     f = PD_MAX (f, IEM_MINIMUM_FONTSIZE);
     iem->iem_fontSize = f;
     if (glist_isvisible (iem->iem_glist)) {
-        sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d]\n",
+        sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d]\n",      // --
             glist_getcanvas (iem->iem_glist), 
             x,
             iem->iem_fontSize);
