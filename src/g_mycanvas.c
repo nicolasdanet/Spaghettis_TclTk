@@ -141,13 +141,13 @@ static void my_canvas_save(t_gobj *z, t_buffer *b)
     int bflcol[3];
     t_symbol *srl[3];
 
-    iem_save(&x->x_gui, srl, bflcol);
+    iemgui_serialize(&x->x_gui, srl, bflcol);
     buffer_vAppend(b, "ssiisiiisssiiiiiii", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("cnv"), x->x_gui.iem_width, x->x_vis_w, x->x_vis_h,
                 srl[0], srl[1], srl[2], x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iemgui_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
-                bflcol[0], bflcol[2], iemgui_saveLoadOnStart(&x->x_gui));
+                iemgui_deserializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
+                bflcol[0], bflcol[2], iemgui_deserializeLoadOnStart(&x->x_gui));
     buffer_vAppend(b, ";");
 }
 
@@ -157,7 +157,7 @@ static void my_canvas_properties(t_gobj *z, t_glist *owner)
     char buf[800];
     t_symbol *srl[3];
 
-    iem_properties(&x->x_gui, srl);
+    iemgui_serializeNames(&x->x_gui, srl);
     sprintf(buf, "::ui_iem::create %%s Panel \
             %d %d {Grip Size} 0 0 empty \
             %d {Panel Width} %d {Panel Height} \
@@ -190,11 +190,10 @@ static void my_canvas_get_pos(t_my_canvas *x)
 
 static void my_canvas_dialog(t_my_canvas *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *srl[3];
     int a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
     int w = (int)(t_int)atom_getFloatAtIndex(2, argc, argv);
     int h = (int)(t_int)atom_getFloatAtIndex(3, argc, argv);
-    iem_dialog(&x->x_gui, srl, argc, argv);
+    iemgui_fromDialog(&x->x_gui, argc, argv);
 
     x->x_gui.iem_loadOnStart = 0;
     if(a < 1)
@@ -274,8 +273,8 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     int fs=14;
     char str[144];
 
-    iemgui_loadLoadOnStart(&x->x_gui, 0);
-    iemgui_loadFontStyle(&x->x_gui, 0);
+    iemgui_serializeLoadOnStart(&x->x_gui, 0);
+    iemgui_serializeFontStyle(&x->x_gui, 0);
 
     if(((argc >= 10)&&(argc <= 13))
        &&IS_FLOAT_AT(argv,0)&&IS_FLOAT_AT(argv,1)&&IS_FLOAT_AT(argv,2))
@@ -287,14 +286,14 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     if((argc >= 12)&&(IS_SYMBOL_AT(argv,3)||IS_FLOAT_AT(argv,3))&&(IS_SYMBOL_AT(argv,4)||IS_FLOAT_AT(argv,4)))
     {
         i = 2;
-        iemgui_loadNamesByIndex(&x->x_gui, 3, argv);
+        iemgui_deserializeNamesByIndex(&x->x_gui, 3, argv);
     }
     else if((argc == 11)&&(IS_SYMBOL_AT(argv,3)||IS_FLOAT_AT(argv,3)))
     {
         i = 1;
-        iemgui_loadNamesByIndex(&x->x_gui, 3, argv);
+        iemgui_deserializeNamesByIndex(&x->x_gui, 3, argv);
     }
-    else iemgui_loadNamesByIndex(&x->x_gui, 3, 0);
+    else iemgui_deserializeNamesByIndex(&x->x_gui, 3, 0);
 
     if(((argc >= 10)&&(argc <= 13))
        &&(IS_SYMBOL_AT(argv,i+3)||IS_FLOAT_AT(argv,i+3))&&IS_FLOAT_AT(argv,i+4)
@@ -309,14 +308,14 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
         //x->x_gui.iem_indexLabel = i+4;
         ldx = (int)(t_int)atom_getFloatAtIndex(i+4, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(i+5, argc, argv);
-        iemgui_loadFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(i+6, argc, argv));
+        iemgui_serializeFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(i+6, argc, argv));
         fs = (int)(t_int)atom_getFloatAtIndex(i+7, argc, argv);
         bflcol[0] = (int)(t_int)atom_getFloatAtIndex(i+8, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(i+9, argc, argv);
     }
     if((argc == 13)&&IS_FLOAT_AT(argv,i+10))
     {
-        iemgui_loadLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(i+10, argc, argv));
+        iemgui_serializeLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(i+10, argc, argv));
     }
     x->x_gui.iem_draw = (t_iemfn)my_canvas_draw;
     x->x_gui.iem_canSend = 1;
@@ -344,7 +343,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     if(fs < 4)
         fs = 4;
     x->x_gui.iem_fontSize = fs;
-    iemgui_saveColors(&x->x_gui, bflcol);
+    iemgui_deserializeColors(&x->x_gui, bflcol);
     x->x_at[0].a_type = A_FLOAT;
     x->x_at[1].a_type = A_FLOAT;
     iemgui_checkSendReceiveLoop(&x->x_gui);

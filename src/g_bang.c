@@ -197,15 +197,15 @@ static void bng_save(t_gobj *z, t_buffer *b)
     int bflcol[3];
     t_symbol *srl[3];
 
-    iem_save(&x->x_gui, srl, bflcol);
+    iemgui_serialize(&x->x_gui, srl, bflcol);
     buffer_vAppend(b, "ssiisiiiisssiiiiiii", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("bng"), x->x_gui.iem_width,
                 x->x_flashtime_hold, x->x_flashtime_break,
-                iemgui_saveLoadOnStart(&x->x_gui),
+                iemgui_deserializeLoadOnStart(&x->x_gui),
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iemgui_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
+                iemgui_deserializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[1], bflcol[2]);
     buffer_vAppend(b, ";");
 }
@@ -234,7 +234,7 @@ static void bng_properties(t_gobj *z, t_glist *owner)
     char buf[800];
     t_symbol *srl[3];
 
-    iem_properties(&x->x_gui, srl);
+    iemgui_serializeNames(&x->x_gui, srl);
     sprintf(buf, "::ui_iem::create %%s Bang \
             %d %d Size 0 0 empty \
             %d {Flash Break} %d {Flash Hold} \
@@ -317,11 +317,10 @@ static void bng_bang2(t_bng *x)/*wird immer gesendet, wenn moeglich*/
 
 static void bng_dialog(t_bng *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *srl[3];
     int a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
     int fthold = (int)(t_int)atom_getFloatAtIndex(2, argc, argv);
     int ftbreak = (int)(t_int)atom_getFloatAtIndex(3, argc, argv);
-    iem_dialog(&x->x_gui, srl, argc, argv);
+    iemgui_fromDialog(&x->x_gui, argc, argv);
 
     x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
@@ -441,8 +440,8 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
         fthold=IEM_BANG_DEFAULT_HOLD;
     char str[144];
 
-    iemgui_loadLoadOnStart(&x->x_gui, 0);
-    iemgui_loadFontStyle(&x->x_gui, 0);
+    iemgui_serializeLoadOnStart(&x->x_gui, 0);
+    iemgui_serializeFontStyle(&x->x_gui, 0);
 
     if((argc == 14)&&IS_FLOAT_AT(argv,0)
        &&IS_FLOAT_AT(argv,1)&&IS_FLOAT_AT(argv,2)
@@ -458,17 +457,17 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
         a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         fthold = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
         ftbreak = (int)(t_int)atom_getFloatAtIndex(2, argc, argv);
-        iemgui_loadLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(3, argc, argv));
-        iemgui_loadNamesByIndex(&x->x_gui, 4, argv);
+        iemgui_serializeLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(3, argc, argv));
+        iemgui_deserializeNamesByIndex(&x->x_gui, 4, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
-        iemgui_loadFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(9, argc, argv));
+        iemgui_serializeFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(9, argc, argv));
         fs = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
         bflcol[0] = (int)(t_int)atom_getFloatAtIndex(11, argc, argv);
         bflcol[1] = (int)(t_int)atom_getFloatAtIndex(12, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
     }
-    else iemgui_loadNamesByIndex(&x->x_gui, 4, 0);
+    else iemgui_deserializeNamesByIndex(&x->x_gui, 4, 0);
 
     x->x_gui.iem_draw = (t_iemfn)bng_draw;
 
@@ -492,7 +491,7 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     bng_check_minmax(x, ftbreak, fthold);
-    iemgui_saveColors(&x->x_gui, bflcol);
+    iemgui_deserializeColors(&x->x_gui, bflcol);
     x->x_gui.iem_isLocked = 0;
     iemgui_checkSendReceiveLoop(&x->x_gui);
     x->x_clock_hld = clock_new(x, (t_method)bng_tick_hld);

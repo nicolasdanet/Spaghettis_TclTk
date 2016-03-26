@@ -201,15 +201,15 @@ static void toggle_save(t_gobj *z, t_buffer *b)
     int bflcol[3];
     t_symbol *srl[3];
 
-    iem_save(&x->x_gui, srl, bflcol);
+    iemgui_serialize(&x->x_gui, srl, bflcol);
     buffer_vAppend(b, "ssiisiisssiiiiiiiff", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.iem_obj.te_xCoordinate,
                 (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("tgl"), x->x_gui.iem_width,
-                iemgui_saveLoadOnStart(&x->x_gui),
+                iemgui_deserializeLoadOnStart(&x->x_gui),
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iemgui_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
+                iemgui_deserializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[1], bflcol[2], x->x_on, x->x_nonzero);
     buffer_vAppend(b, ";");
 }
@@ -220,7 +220,7 @@ static void toggle_properties(t_gobj *z, t_glist *owner)
     char buf[800];
     t_symbol *srl[3];
 
-    iem_properties(&x->x_gui, srl);
+    iemgui_serializeNames(&x->x_gui, srl);
     sprintf(buf, "::ui_iem::create %%s Toggle \
             %d %d Size 0 0 empty \
             %g {Non-Zero Value} 0 empty \
@@ -253,7 +253,6 @@ static void toggle_bang(t_toggle *x)
 
 static void toggle_dialog(t_toggle *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *srl[3];
     int a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
     t_float nonzero = (t_float)atom_getFloatAtIndex(2, argc, argv);
 
@@ -262,7 +261,7 @@ static void toggle_dialog(t_toggle *x, t_symbol *s, int argc, t_atom *argv)
     x->x_nonzero = nonzero;
     if(x->x_on != 0.0)
         x->x_on = x->x_nonzero;
-    iem_dialog(&x->x_gui, srl, argc, argv);
+    iemgui_fromDialog(&x->x_gui, argc, argv);
     x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
@@ -369,8 +368,8 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
     t_float on=0.0, nonzero=1.0;
     char str[144];
 
-    iemgui_loadLoadOnStart(&x->x_gui, 0);
-    iemgui_loadFontStyle(&x->x_gui, 0);
+    iemgui_serializeLoadOnStart(&x->x_gui, 0);
+    iemgui_serializeFontStyle(&x->x_gui, 0);
 
     if(((argc == 13)||(argc == 14))&&IS_FLOAT_AT(argv,0)
        &&IS_FLOAT_AT(argv,1)
@@ -382,18 +381,18 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
        &&IS_FLOAT_AT(argv,10)&&IS_FLOAT_AT(argv,11)&&IS_FLOAT_AT(argv,12))
     {
         a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
-        iemgui_loadLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(1, argc, argv));
-        iemgui_loadNamesByIndex(&x->x_gui, 2, argv);
+        iemgui_serializeLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(1, argc, argv));
+        iemgui_deserializeNamesByIndex(&x->x_gui, 2, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(5, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(6, argc, argv);
-        iemgui_loadFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(7, argc, argv));
+        iemgui_serializeFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(7, argc, argv));
         fs = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
         bflcol[0] = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
         bflcol[1] = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(11, argc, argv);
         on = (t_float)atom_getFloatAtIndex(12, argc, argv);
     }
-    else iemgui_loadNamesByIndex(&x->x_gui, 2, 0);
+    else iemgui_deserializeNamesByIndex(&x->x_gui, 2, 0);
     if((argc == 14)&&IS_FLOAT_AT(argv,13))
         nonzero = (t_float)atom_getFloatAtIndex(13, argc, argv);
     x->x_gui.iem_draw = (t_iemfn)toggle_draw;
@@ -421,7 +420,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_fontSize = fs;
     x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
-    iemgui_saveColors(&x->x_gui, bflcol);
+    iemgui_deserializeColors(&x->x_gui, bflcol);
     iemgui_checkSendReceiveLoop(&x->x_gui);
     outlet_new(&x->x_gui.iem_obj, &s_float);
     return (x);

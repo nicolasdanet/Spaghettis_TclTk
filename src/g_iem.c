@@ -87,13 +87,13 @@ static int iemgui_colorDecode (int color)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Floats are loaded as integers (mainly in order to enumerate things). */
+/* For convenience floats are loaded as integers (mainly in order to enumerate things). */
 
 static t_symbol *iemgui_fetchName (int i, t_atom *argv)
 {
     if (IS_SYMBOL_AT (argv, i))     { return (atom_getSymbol (argv + i)); }
     else if (IS_FLOAT_AT (argv, i)) {
-        char t[PD_STRING];
+        char t[PD_STRING] = { 0 };
         string_sprintf (t, PD_STRING, "%d", (int)atom_getFloat (argv + i));
         return gensym (t);
     } else {
@@ -104,7 +104,7 @@ static t_symbol *iemgui_fetchName (int i, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-/* Unexpended names cannot be fetch at instantiation due to already substituted arguments. */
+/* Unexpanded names cannot be fetch at instantiation due to already substituted arguments. */
 /* Consequently it must be done by looking up again the object's text buffer. */
 
 static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, t_symbol *fallback)
@@ -128,51 +128,59 @@ static void iemgui_fetchUnexpandedNames (t_iem *iem, t_iemnames *s)
     iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedReceive, iem->iem_cacheIndex + 2, iem->iem_receive);
     iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedLabel, iem->iem_cacheIndex + 3, iem->iem_label);
         
-    s->n_unexpendedSend    = iem->iem_unexpandedSend;
-    s->n_unexpendedReceive = iem->iem_unexpandedReceive;
-    s->n_unexpendedLabel   = iem->iem_unexpandedLabel;
+    s->n_unexpandedSend    = iem->iem_unexpandedSend;
+    s->n_unexpandedReceive = iem->iem_unexpandedReceive;
+    s->n_unexpandedLabel   = iem->iem_unexpandedLabel;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void iemgui_loadColors (t_iem *iem, t_iemcolors *c)
+void iemgui_serializeColors (t_iem *iem, t_iemcolors *c)
 {
     c->c_colorBackground = iemgui_colorEncode (iem->iem_colorBackground);
     c->c_colorForeground = iemgui_colorEncode (iem->iem_colorForeground);
     c->c_colorLabel      = iemgui_colorEncode (iem->iem_colorLabel);
 }
 
-void iemgui_saveColors (t_iem *iem, t_iemcolors *c)
+void iemgui_deserializeColors (t_iem *iem, t_iemcolors *c)
 {
     iem->iem_colorBackground = iemgui_colorDecode (c->c_colorBackground);
     iem->iem_colorForeground = iemgui_colorDecode (c->c_colorForeground);
     iem->iem_colorLabel      = iemgui_colorDecode (c->c_colorLabel);
 }
 
-void iemgui_loadFontStyle (t_iem *iem, int n)
+void iemgui_serializeFontStyle (t_iem *iem, int n)
 {
     iem->iem_fontStyle = (char)n;
 }
 
-int iemgui_saveFontStyle (t_iem *iem)
+int iemgui_deserializeFontStyle (t_iem *iem)
 {
     return (int)iem->iem_fontStyle;
 }
 
-void iemgui_loadLoadOnStart (t_iem *iem, int n)
+void iemgui_serializeLoadOnStart (t_iem *iem, int n)
 {
     iem->iem_loadOnStart = ((n & 1) != 0);
     iem->iem_scale = (n & 2);
 }
 
-int iemgui_saveLoadOnStart (t_iem *iem)
+int iemgui_deserializeLoadOnStart (t_iem *iem)
 {
     return ((iem->iem_loadOnStart ? 1 : 0) | (iem->iem_scale ? 2 : 0));
 }
 
-void iemgui_loadNamesByIndex (t_iem *iem, int i, t_atom *argv)
+void iemgui_serializeNames (t_iem *iem, t_iemnames *n)
+{
+    iemgui_fetchUnexpandedNames (iem, n);
+    n->n_unexpandedSend    = dollar_toRaute (n->n_unexpandedSend);
+    n->n_unexpandedReceive = dollar_toRaute (n->n_unexpandedReceive);
+    n->n_unexpandedLabel   = dollar_toRaute (n->n_unexpandedLabel);
+}
+
+void iemgui_deserializeNamesByIndex (t_iem *iem, int i, t_atom *argv)
 {
     iem->iem_send    = (argv ? iemgui_fetchName (i + 0, argv) : iemgui_empty());
     iem->iem_receive = (argv ? iemgui_fetchName (i + 1, argv) : iemgui_empty());
@@ -194,9 +202,7 @@ void iemgui_checkSendReceiveLoop (t_iem *iem)
     iem->iem_goThrough = 1;
     
     if (iem->iem_canSend && iem->iem_canReceive) {
-        if (!strcmp (iem->iem_send->s_name, iem->iem_receive->s_name)) {
-            iem->iem_goThrough = 0;
-        }
+        if (iem->iem_send == iem->iem_receive) { iem->iem_goThrough = 0; }
     }
 }
 
@@ -341,104 +347,60 @@ void iemgui_behaviorDeleted (t_gobj *z, t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void iem_save (t_iem *iem, t_symbol **srl, t_iemcolors *c)
+void iemgui_serialize (t_iem *iem, t_iemnames *n, t_iemcolors *c)
 {
-    //srl[0] = iem->iem_send;
-    //srl[1] = iem->iem_receive;
-    //srl[2] = iem->iem_label;
-    iemgui_fetchUnexpandedNames (iem, srl);
-    iemgui_loadColors (iem, c);
+    iemgui_fetchUnexpandedNames (iem, n);
+    iemgui_serializeColors (iem, c);
 }
 
-void iem_properties (t_iem *iem, t_symbol **srl)
+void iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
 {
-    //srl[0] = iem->iem_send;
-    //srl[1] = iem->iem_receive;
-    //srl[2] = iem->iem_label;
-    iemgui_fetchUnexpandedNames (iem, srl);
-    srl[0] = dollar_toRaute (srl[0]);
-    srl[1] = dollar_toRaute (srl[1]);
-    srl[2] = dollar_toRaute (srl[2]);
-}
+    int loadOnStart             = (int)atom_getFloatAtIndex (5,  argc, argv);
+    int labelX                  = (int)atom_getFloatAtIndex (10, argc, argv);
+    int labelY                  = (int)atom_getFloatAtIndex (11, argc, argv);
+    int fontSize                = (int)atom_getFloatAtIndex (12, argc, argv);
+    int backgroundColor         = (int)atom_getFloatAtIndex (13, argc, argv);
+    int foregroundColor         = (int)atom_getFloatAtIndex (14, argc, argv);
+    int labelColor              = (int)atom_getFloatAtIndex (15, argc, argv);
+    int canSend                 = 1;
+    int canReceive              = 1;
 
-void iem_dialog(t_iem *iem, t_symbol **srl, int argc, t_atom *argv)
-{
-    char str[144];
-    int init = (int)(t_int)atom_getFloatAtIndex(5, argc, argv);
-    int ldx = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
-    int ldy = (int)(t_int)atom_getFloatAtIndex(11, argc, argv);
-    int fs = (int)(t_int)atom_getFloatAtIndex(12, argc, argv);
-    int bcol = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
-    int fcol = (int)(t_int)atom_getFloatAtIndex(14, argc, argv);
-    int lcol = (int)(t_int)atom_getFloatAtIndex(15, argc, argv);
-    int sndable=1, rcvable=1;
+    t_symbol *s1 = dollar_fromRaute (iemgui_fetchName (7, argv));
+    t_symbol *s2 = dollar_fromRaute (iemgui_fetchName (8, argv));
+    t_symbol *s3 = dollar_fromRaute (iemgui_fetchName (9, argv));
 
-    if(IS_SYMBOL_AT(argv,7))
-        srl[0] = atom_getSymbolAtIndex(7, argc, argv);
-    else if(IS_FLOAT_AT(argv,7))
-    {
-        sprintf(str, "%d", (int)(t_int)atom_getFloatAtIndex(7, argc, argv));
-        srl[0] = gensym(str);
-    }
-    if(IS_SYMBOL_AT(argv,8))
-        srl[1] = atom_getSymbolAtIndex(8, argc, argv);
-    else if(IS_FLOAT_AT(argv,8))
-    {
-        sprintf(str, "%d", (int)(t_int)atom_getFloatAtIndex(8, argc, argv));
-        srl[1] = gensym(str);
-    }
-    if(IS_SYMBOL_AT(argv,9))
-        srl[2] = atom_getSymbolAtIndex(9, argc, argv);
-    else if(IS_FLOAT_AT(argv,9))
-    {
-        sprintf(str, "%d", (int)(t_int)atom_getFloatAtIndex(9, argc, argv));
-        srl[2] = gensym(str);
-    }
-    if(init != 0) init = 1;
-    iem->iem_loadOnStart = init;
-    if(!strcmp(srl[0]->s_name, "empty")) sndable = 0;
-    if(!strcmp(srl[1]->s_name, "empty")) rcvable = 0;
-    srl[0] = dollar_fromRaute (srl[0]);
-    srl[1] = dollar_fromRaute (srl[1]);
-    srl[2] = dollar_fromRaute (srl[2]);
+    iem->iem_unexpandedSend     = s1;
+    iem->iem_unexpandedReceive  = s2;
+    iem->iem_unexpandedLabel    = s3;
     
-    iem->iem_unexpandedSend    = srl[0];
-    iem->iem_unexpandedReceive = srl[1];
-    iem->iem_unexpandedLabel   = srl[2];
+    s1 = iemgui_expandDollar (iem->iem_glist, s1);
+    s2 = iemgui_expandDollar (iem->iem_glist, s2);
+    s3 = iemgui_expandDollar (iem->iem_glist, s3);
     
-    srl[0] = iemgui_expandDollar (iem->iem_glist, srl[0]);
-    srl[1] = iemgui_expandDollar (iem->iem_glist, srl[1]);
-    srl[2] = iemgui_expandDollar (iem->iem_glist, srl[2]);
+    if (s1 == iemgui_empty()) { canSend = 0;    }
+    if (s2 == iemgui_empty()) { canReceive = 0; }
     
-    if(rcvable)
-    {
-        if(strcmp(srl[1]->s_name, iem->iem_receive->s_name))
-        {
-            if(iem->iem_canReceive)
-                pd_unbind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
-            iem->iem_receive = srl[1];
-            pd_bind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
-        }
+    if (canReceive) {
+        if (iem->iem_canReceive) { pd_unbind (pd_cast (iem), iem->iem_receive); }
+        iem->iem_receive = s2;
+        pd_bind (pd_cast (iem), iem->iem_receive);
     }
-    else if(!rcvable && iem->iem_canReceive)
-    {
-        pd_unbind(&iem->iem_obj.te_g.g_pd, iem->iem_receive);
-        iem->iem_receive = srl[1];
-    }
-    iem->iem_send = srl[0];
-    iem->iem_canSend = sndable;
-    iem->iem_canReceive = rcvable;
-    iem->iem_colorLabel = lcol & 0xffffff;
-    iem->iem_colorForeground = fcol & 0xffffff;
-    iem->iem_colorBackground = bcol & 0xffffff;
-    iem->iem_label = srl[2];
-    iem->iem_labelX = ldx;
-    iem->iem_labelY = ldy;
-    if(fs < 4)
-        fs = 4;
-    iem->iem_fontSize = fs;
-    iemgui_checkSendReceiveLoop(iem);
-    canvas_dirty(iem->iem_glist, 1);
+
+    iem->iem_canSend            = canSend;
+    iem->iem_canReceive         = canReceive;
+    iem->iem_loadOnStart        = (loadOnStart != 0);
+    iem->iem_labelX             = labelX;
+    iem->iem_labelY             = labelY;
+    iem->iem_fontSize           = PD_MAX (fontSize, IEM_MINIMUM_FONTSIZE);
+    iem->iem_colorForeground    = foregroundColor & 0xffffff;
+    iem->iem_colorBackground    = backgroundColor & 0xffffff;
+    iem->iem_colorLabel         = labelColor & 0xffffff;
+    iem->iem_send               = s1;
+    iem->iem_label              = s3;
+    
+    iemgui_checkSendReceiveLoop (iem);
+    
+    canvas_dirty (iem->iem_glist, 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------

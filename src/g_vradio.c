@@ -238,16 +238,16 @@ static void vradio_save(t_gobj *z, t_buffer *b)
     int bflcol[3];
     t_symbol *srl[3];
 
-    iem_save(&x->x_gui, srl, bflcol);
+    iemgui_serialize(&x->x_gui, srl, bflcol);
     buffer_vAppend(b, "ssiisiiiisssiiiiiiif", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.iem_obj.te_xCoordinate,
                 (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("vradio"),
                 x->x_gui.iem_width,
-                x->x_changed, iemgui_saveLoadOnStart(&x->x_gui), x->x_number,
+                x->x_changed, iemgui_deserializeLoadOnStart(&x->x_gui), x->x_number,
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iemgui_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
+                iemgui_deserializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[1], bflcol[2], x->x_fval);
     buffer_vAppend(b, ";");
 }
@@ -258,7 +258,7 @@ static void vradio_properties(t_gobj *z, t_glist *owner)
     char buf[800];
     t_symbol *srl[3];
 
-    iem_properties(&x->x_gui, srl);
+    iemgui_serializeNames(&x->x_gui, srl);
 
     sprintf(buf, "::ui_iem::create %%s {Radio Button} \
             %d %d Size 0 0 empty \
@@ -283,14 +283,13 @@ static void vradio_properties(t_gobj *z, t_glist *owner)
 
 static void vradio_dialog(t_vradio *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *srl[3];
     int a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
     int chg = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
     int num = (int)(t_int)atom_getFloatAtIndex(6, argc, argv);
 
     if(chg != 0) chg = 1;
     x->x_changed = chg;
-    iem_dialog(&x->x_gui, srl, argc, argv);
+    iemgui_fromDialog(&x->x_gui, argc, argv);
     x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     if(x->x_number != num)
@@ -480,19 +479,19 @@ static void *vradio_donew(t_symbol *s, int argc, t_atom *argv)
     {
         a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         chg = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
-        iemgui_loadLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(2, argc, argv));
+        iemgui_serializeLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(2, argc, argv));
         num = (int)(t_int)atom_getFloatAtIndex(3, argc, argv);
-        iemgui_loadNamesByIndex(&x->x_gui, 4, argv);
+        iemgui_deserializeNamesByIndex(&x->x_gui, 4, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
-        iemgui_loadFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(9, argc, argv));
+        iemgui_serializeFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(9, argc, argv));
         fs = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
         bflcol[0] = (int)(t_int)atom_getFloatAtIndex(11, argc, argv);
         bflcol[1] = (int)(t_int)atom_getFloatAtIndex(12, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
         fval = (t_int)atom_getFloatAtIndex(14, argc, argv);
     }
-    else iemgui_loadNamesByIndex(&x->x_gui, 4, 0);
+    else iemgui_deserializeNamesByIndex(&x->x_gui, 4, 0);
     x->x_gui.iem_draw = (t_iemfn)vradio_draw;
     x->x_gui.iem_canSend = 1;
     x->x_gui.iem_canReceive = 1;
@@ -528,7 +527,7 @@ static void *vradio_donew(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     iemgui_checkSendReceiveLoop(&x->x_gui);
-    iemgui_saveColors(&x->x_gui, bflcol);
+    iemgui_deserializeColors(&x->x_gui, bflcol);
     outlet_new(&x->x_gui.iem_obj, &s_list);
     return (x);
 }

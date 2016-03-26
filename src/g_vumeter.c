@@ -428,15 +428,15 @@ static void vu_save(t_gobj *z, t_buffer *b)
     int bflcol[3];
     t_symbol *srl[3];
 
-    iem_save(&x->x_gui, srl, bflcol);
+    iemgui_serialize(&x->x_gui, srl, bflcol);
     buffer_vAppend(b, "ssiisiissiiiiiiii", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("vu"), x->x_gui.iem_width, x->x_gui.iem_height,
                 srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iemgui_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
+                iemgui_deserializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[2], x->x_scale,
-                iemgui_saveLoadOnStart(&x->x_gui));
+                iemgui_deserializeLoadOnStart(&x->x_gui));
     buffer_vAppend(b, ";");
 }
 
@@ -498,7 +498,7 @@ static void vu_properties(t_gobj *z, t_glist *owner)
     char buf[800];
     t_symbol *srl[3];
 
-    iem_properties(&x->x_gui, srl);
+    iemgui_serializeNames(&x->x_gui, srl);
     sprintf(buf, "::ui_iem::create %%s VU \
             %d %d {Meter Width} %d %d {Meter Height} \
             0 empty 0 empty \
@@ -521,13 +521,12 @@ static void vu_properties(t_gobj *z, t_glist *owner)
 
 static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *srl[3];
     int w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
     int h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
     int scale = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
 
-    srl[0] = gensym("empty");
-    iem_dialog(&x->x_gui, srl, argc, argv);
+    //srl[0] = gensym("empty");
+    iemgui_fromDialog(&x->x_gui, argc, argv);
     x->x_gui.iem_canSend = 0;
     x->x_gui.iem_loadOnStart = 0;
     x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
@@ -637,8 +636,8 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     //int ftbreak=IEM_BANG_DEFAULT_BREAK, fthold=IEM_BANG_DEFAULT_HOLD;
     char str[144];
 
-    iemgui_loadLoadOnStart(&x->x_gui, 0);
-    iemgui_loadFontStyle(&x->x_gui, 0);
+    iemgui_serializeLoadOnStart(&x->x_gui, 0);
+    iemgui_serializeFontStyle(&x->x_gui, 0);
 
     if((argc >= 11)&&IS_FLOAT_AT(argv,0)&&IS_FLOAT_AT(argv,1)
        &&(IS_SYMBOL_AT(argv,2)||IS_FLOAT_AT(argv,2))
@@ -649,18 +648,18 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     {
         w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
-        iemgui_loadNamesByIndex(&x->x_gui, 1, argv);
+        iemgui_deserializeNamesByIndex(&x->x_gui, 1, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(5, argc, argv);
-        iemgui_loadFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(6, argc, argv));
+        iemgui_serializeFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(6, argc, argv));
         fs = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
         bflcol[0] = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
         scale = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
     }
-    else iemgui_loadNamesByIndex(&x->x_gui, 1, 0);
+    else iemgui_deserializeNamesByIndex(&x->x_gui, 1, 0);
     if((argc == 12)&&IS_FLOAT_AT(argv,11))
-        iemgui_loadLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(11, argc, argv));
+        iemgui_serializeLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(11, argc, argv));
     x->x_gui.iem_draw = (t_iemfn)vu_draw;
 
     x->x_gui.iem_canSend = 0;
@@ -679,7 +678,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_fontSize = fs;
     x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     vu_check_height(x, h);
-    iemgui_saveColors(&x->x_gui, bflcol);
+    iemgui_deserializeColors(&x->x_gui, bflcol);
     if(scale != 0)
         scale = 1;
     x->x_scale = scale;

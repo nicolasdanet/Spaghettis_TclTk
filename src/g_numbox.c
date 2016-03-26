@@ -376,7 +376,7 @@ static void my_numbox_save(t_gobj *z, t_buffer *b)
     int bflcol[3];
     t_symbol *srl[3];
 
-    iem_save(&x->x_gui, srl, bflcol);
+    iemgui_serialize(&x->x_gui, srl, bflcol);
     if(x->x_hasChanged)
     {
         x->x_hasChanged = 0;
@@ -387,10 +387,10 @@ static void my_numbox_save(t_gobj *z, t_buffer *b)
                 (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("nbx"), x->x_gui.iem_width, x->x_gui.iem_height,
                 (t_float)x->x_min, (t_float)x->x_max,
-                x->x_isLogarithmic, iemgui_saveLoadOnStart(&x->x_gui),
+                x->x_isLogarithmic, iemgui_deserializeLoadOnStart(&x->x_gui),
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iemgui_saveFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
+                iemgui_deserializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[1], bflcol[2],
                 x->x_val, x->x_log_height);
     buffer_vAppend(b, ";");
@@ -440,7 +440,7 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
     char buf[800];
     t_symbol *srl[3];
 
-    iem_properties(&x->x_gui, srl);
+    iemgui_serializeNames(&x->x_gui, srl);
     if(x->x_hasChanged)
     {
         x->x_hasChanged = 0;
@@ -482,7 +482,6 @@ static void my_numbox_bang(t_my_numbox *x)
 static void my_numbox_dialog(t_my_numbox *x, t_symbol *s, int argc,
     t_atom *argv)
 {
-    t_symbol *srl[3];
     int w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
     int h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
     double min = (double)atom_getFloatAtIndex(2, argc, argv);
@@ -492,7 +491,7 @@ static void my_numbox_dialog(t_my_numbox *x, t_symbol *s, int argc,
 
     if(lilo != 0) lilo = 1;
     x->x_isLogarithmic = lilo;
-    iem_dialog(&x->x_gui, srl, argc, argv);
+    iemgui_fromDialog(&x->x_gui, argc, argv);
     if(w < 1)
         w = 1;
     x->x_gui.iem_width = w;
@@ -773,18 +772,18 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
         min = (double)atom_getFloatAtIndex(2, argc, argv);
         max = (double)atom_getFloatAtIndex(3, argc, argv);
         lilo = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
-        iemgui_loadLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(5, argc, argv));
-        iemgui_loadNamesByIndex(&x->x_gui, 6, argv);
+        iemgui_serializeLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(5, argc, argv));
+        iemgui_deserializeNamesByIndex(&x->x_gui, 6, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
-        iemgui_loadFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(11, argc, argv));
+        iemgui_serializeFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(11, argc, argv));
         fs = (int)(t_int)atom_getFloatAtIndex(12, argc, argv);
         bflcol[0] = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
         bflcol[1] = (int)(t_int)atom_getFloatAtIndex(14, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(15, argc, argv);
         v = atom_getFloatAtIndex(16, argc, argv);
     }
-    else iemgui_loadNamesByIndex(&x->x_gui, 6, 0);
+    else iemgui_deserializeNamesByIndex(&x->x_gui, 6, 0);
     if((argc == 18)&&IS_FLOAT_AT(argv,17))
     {
         log_height = (int)(t_int)atom_getFloatAtIndex(17, argc, argv);
@@ -823,7 +822,7 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
     x->x_buf[0] = 0;
     my_numbox_calc_fontwidth(x);
     my_numbox_check_minmax(x, min, max);
-    iemgui_saveColors(&x->x_gui, bflcol);
+    iemgui_deserializeColors(&x->x_gui, bflcol);
     iemgui_checkSendReceiveLoop(&x->x_gui);
     x->x_clock_reset = clock_new(x, (t_method)my_numbox_tick_reset);
     x->x_clock_wait = clock_new(x, (t_method)my_numbox_tick_wait);
