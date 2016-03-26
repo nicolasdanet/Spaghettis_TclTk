@@ -55,6 +55,8 @@
 
 /* Graphics. */
 
+#include "g_iem.c"
+
 /* Control. */
 
 /* DSP. */

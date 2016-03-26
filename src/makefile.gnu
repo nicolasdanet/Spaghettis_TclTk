@@ -62,9 +62,9 @@ LIB += -ljack
 
 SRC = g_canvas.c g_graph.c g_text.c g_rtext.c g_array.c g_template.c g_io.c \
     g_scalar.c g_traversal.c g_guiconnect.c g_readwrite.c g_editor.c \
-    g_iem.c g_bang.c g_hradio.c g_hslider.c g_mycanvas.c g_numbox.c \
-    g_toggle.c g_vradio.c g_vslider.c g_vumeter.c \
     amalgam.c \
+    g_bng.c g_toggle.c g_hradio.c g_vradio.c g_hslider.c g_vslider.c \
+    g_vumeter.c g_numbox.c g_mycanvas.c \
     d_ugen.c d_ctl.c d_arithmetic.c d_osc.c d_filter.c d_dac.c d_misc.c \
     d_math.c d_fft.c d_fft_fftsg.c d_array.c d_global.c \
     d_delay.c d_resample.c d_soundfile.c \
