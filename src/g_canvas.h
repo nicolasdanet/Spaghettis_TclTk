@@ -330,6 +330,12 @@ struct _parentwidgetbehavior {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma 
+
+#define canvas_asObjectIfBox(x)     (pd_class (x)->c_isBox ? (t_object *)(x) : NULL)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void canvas_setcursor   (t_glist *x, unsigned int cursornum);
@@ -357,7 +363,7 @@ t_glist  *glist_new             (void);
 void     glist_init             (t_glist *x);
 void     glist_add              (t_glist *x, t_gobj *g);
 void     glist_clear            (t_glist *x);
-t_glist *glist_getcanvas       (t_glist *x);
+t_glist *glist_getcanvas        (t_glist *x);
 int      glist_isselected       (t_glist *x, t_gobj *y);
 void     glist_select           (t_glist *x, t_gobj *y);
 void     glist_deselect         (t_glist *x, t_gobj *y);
@@ -673,7 +679,7 @@ t_symbol     *template_getsymbol    (t_template *x, t_symbol *fieldname, t_word 
 void         template_setsymbol     (t_template *x, t_symbol *fieldname, t_word *wp, t_symbol *s, int loud);
 t_template   *gtemplate_get         (t_gtemplate *x);
 t_template   *template_findbyname   (t_symbol *s);
-t_glist     *template_findcanvas   (t_template *tmpl);
+t_glist      *template_findcanvas   (t_template *tmpl);
 void         template_notify        (t_template *tmpl, t_symbol *s, int argc, t_atom *argv);
 t_float      template_getfloat      (t_template *x, t_symbol *fieldname, t_word *wp, int loud);
 void         template_setfloat      (t_template *x, t_symbol *fieldname, t_word *wp, t_float f, int loud);

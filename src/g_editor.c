@@ -141,7 +141,7 @@ int gobj_shouldvis(t_gobj *x, struct _glist *glist)
             gy1 < y1 || gy1 > y2 || gy2 < y1 || gy2 > y2)
                 return (0);
     }
-    if (ob = pd_ifBox(&x->g_pd))
+    if (ob = canvas_asObjectIfBox(&x->g_pd))
     {
         /* return true if the text box should be drawn.  We don't show text
         boxes inside graphs---except comments, if we're doing the new
@@ -946,7 +946,7 @@ void canvas_create_editor(t_glist *x)
     {
         x->gl_editor = editor_new(x);
         for (y = x->gl_list; y; y = y->g_next)
-            if (ob = pd_ifBox(&y->g_pd))
+            if (ob = canvas_asObjectIfBox(&y->g_pd))
                 rtext_new(x, ob);
     }
 }
@@ -1333,9 +1333,9 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
         /* if not a runmode left click, fall here. */
     if (y = canvas_findhitbox(x, xpos, ypos, &x1, &y1, &x2, &y2))
     {
-        t_object *ob = pd_ifBox(&y->g_pd);
+        t_object *ob = canvas_asObjectIfBox(&y->g_pd);
             /* check you're in the rectangle */
-        ob = pd_ifBox(&y->g_pd);
+        ob = canvas_asObjectIfBox(&y->g_pd);
         if (rightclick)
             canvas_rightclick(x, xpos, ypos, y);
         else if (shiftmod)
@@ -1528,8 +1528,8 @@ void canvas_doconnect(t_glist *x, int xpos, int ypos, int which, int doit)
     if ((y1 = canvas_findhitbox(x, xwas, ywas, &x11, &y11, &x12, &y12))
         && (y2 = canvas_findhitbox(x, xpos, ypos, &x21, &y21, &x22, &y22)))
     {
-        t_object *ob1 = pd_ifBox(&y1->g_pd);
-        t_object *ob2 = pd_ifBox(&y2->g_pd);
+        t_object *ob1 = canvas_asObjectIfBox(&y1->g_pd);
+        t_object *ob2 = canvas_asObjectIfBox(&y2->g_pd);
         int noutlet1, ninlet2;
         if (ob1 && ob2 && ob1 != ob2 &&
             (noutlet1 = object_numberOfOutlets(ob1))
@@ -1922,7 +1922,7 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos,
                 &x11, &y11, &x12, &y12))
         {
             int wantwidth = xpos - x11;
-            t_object *ob = pd_ifBox(&y1->g_pd);
+            t_object *ob = canvas_asObjectIfBox(&y1->g_pd);
             if (ob && ob->te_g.g_pd->c_behavior == &text_widgetBehavior ||
                     (pd_checkglist(&ob->te_g.g_pd) &&
                         !((t_glist *)ob)->gl_isgraph))
@@ -2116,7 +2116,7 @@ static int canvas_dofind(t_glist *x, int *myindexp)
     for (y = x->gl_list; y; y = y->g_next)
     {
         t_object *ob = 0;
-        if (ob = pd_ifBox(&y->g_pd))
+        if (ob = canvas_asObjectIfBox(&y->g_pd))
         {
             if (atoms_match(buffer_size(ob->te_buffer), 
                 buffer_atoms(ob->te_buffer), findargc, findargv,
@@ -2540,8 +2540,8 @@ void canvas_connect(t_glist *x, t_float fwhoout, t_float foutno,
         if (!sink->g_next) goto bad;
     
         /* check they're both patchable objects */
-    if (!(objsrc = pd_ifBox(&src->g_pd)) ||
-        !(objsink = pd_ifBox(&sink->g_pd)))
+    if (!(objsrc = canvas_asObjectIfBox(&src->g_pd)) ||
+        !(objsink = canvas_asObjectIfBox(&sink->g_pd)))
             goto bad;
     
         /* if object creation failed, make dummy inlets or outlets
@@ -2707,7 +2707,7 @@ void canvas_editmode(t_glist *x, t_float state)
         t_object *ob;
         canvas_setcursor(x, CURSOR_EDIT_NOTHING);
         for (g = x->gl_list; g; g = g->g_next)
-            if ((ob = pd_ifBox(&g->g_pd)) && ob->te_type == TYPE_TEXT)
+            if ((ob = canvas_asObjectIfBox(&g->g_pd)) && ob->te_type == TYPE_TEXT)
         {
             t_rtext *y = glist_findrtext(x, ob);
             text_drawborder(ob, x,

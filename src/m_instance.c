@@ -31,7 +31,7 @@ static t_pdinstance *pdinstance_new()
     x->pd_chain             = NULL;
     x->pd_clocks            = NULL;
     x->pd_signals           = NULL;
-    x->pd_glist          = NULL;
+    x->pd_glist             = NULL;
     x->sym_midiin           = gensym ("#midiin");
     x->sym_sysexin          = gensym ("#sysexin");
     x->sym_notein           = gensym ("#notein");

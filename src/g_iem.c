@@ -222,11 +222,11 @@ void iemgui_setSend (void *x, t_iem *iem, t_symbol *s)
 void iemgui_setReceive (void *x, t_iem *iem, t_symbol *s)
 {
     t_symbol *t = dollar_fromRaute (iemgui_parseEmpty (s));
-    if (iem->iem_canReceive) { pd_unbind (pd_cast (iem), iem->iem_receive); }
+    if (iem->iem_canReceive) { pd_unbind (cast_pd (iem), iem->iem_receive); }
     iem->iem_unexpandedReceive = t;
     iem->iem_receive = iemgui_expandDollar (iem->iem_glist, t);
     iem->iem_canReceive = (s == iemgui_empty()) ? 0 : 1;
-    if (iem->iem_canReceive) { pd_bind (pd_cast (iem), iem->iem_receive); }
+    if (iem->iem_canReceive) { pd_bind (cast_pd (iem), iem->iem_receive); }
     iemgui_checkSendReceiveLoop (iem);
 }
 
@@ -253,8 +253,8 @@ void iemgui_setLabelPosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom
         sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
             glist_getcanvas (iem->iem_glist),
             x,
-            text_xpix (object_cast (x), iem->iem_glist) + iem->iem_labelX,
-            text_ypix (object_cast (x), iem->iem_glist) + iem->iem_labelY);
+            text_xpix (cast_object (x), iem->iem_glist) + iem->iem_labelX,
+            text_ypix (cast_object (x), iem->iem_glist) + iem->iem_labelY);
     }
 }
 
@@ -297,7 +297,7 @@ void iemgui_boxChanged (void *x, t_iem *iem)
     if (glist_isvisible (iem->iem_glist)) {
     //
     (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_MOVE);
-    canvas_fixlines (iem->iem_glist, object_cast (x));
+    canvas_fixlines (iem->iem_glist, cast_object (x));
     //
     }
 }
@@ -308,19 +308,19 @@ void iemgui_boxChanged (void *x, t_iem *iem)
 
 void iemgui_behaviorDisplace (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
-    t_iem *x = iem_cast (z);
+    t_iem *x = cast_iem (z);
 
     x->iem_obj.te_xCoordinate += deltaX;
     x->iem_obj.te_yCoordinate += deltaY;
     
     (*x->iem_draw) ((void *)z, glist, IEM_DRAW_MOVE);
     
-    canvas_fixlines (glist, object_cast (z));
+    canvas_fixlines (glist, cast_object (z));
 }
 
 void iemgui_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 {
-    t_iem *x = iem_cast (z);
+    t_iem *x = cast_iem (z);
 
     x->iem_isSelected = isSelected;
     
@@ -329,7 +329,7 @@ void iemgui_behaviorSelected (t_gobj *z, t_glist *glist, int isSelected)
 
 void iemgui_behaviorVisible (t_gobj *z, t_glist *glist, int isVisible)
 {
-    t_iem *x = iem_cast (z);
+    t_iem *x = cast_iem (z);
 
     if (isVisible) { (*x->iem_draw) ((void *)z, glist, IEM_DRAW_NEW); }
     else {
@@ -340,7 +340,7 @@ void iemgui_behaviorVisible (t_gobj *z, t_glist *glist, int isVisible)
 
 void iemgui_behaviorDeleted (t_gobj *z, t_glist *glist)
 {
-    canvas_deletelines (glist, object_cast (z));
+    canvas_deletelines (glist, cast_object (z));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -381,9 +381,9 @@ void iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     if (s2 == iemgui_empty()) { canReceive = 0; }
     
     if (canReceive) {
-        if (iem->iem_canReceive) { pd_unbind (pd_cast (iem), iem->iem_receive); }
+        if (iem->iem_canReceive) { pd_unbind (cast_pd (iem), iem->iem_receive); }
         iem->iem_receive = s2;
-        pd_bind (pd_cast (iem), iem->iem_receive);
+        pd_bind (cast_pd (iem), iem->iem_receive);
     }
 
     iem->iem_canSend            = canSend;
