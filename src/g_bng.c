@@ -28,16 +28,19 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #define IEM_BANG_DEFAULT_SIZE       15
-#define IEM_BANG_DEFAULT_BREAK      50
 #define IEM_BANG_DEFAULT_HOLD       250
-
+#define IEM_BANG_DEFAULT_BREAK      50
+#define IEM_BANG_DEFAULT_LABELX     17
+#define IEM_BANG_DEFAULT_LABELY     7
+#define IEM_BANG_DEFAULT_FONTSIZE   10
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #define IEM_BANG_MINIMUM_SIZE       8
-#define IEM_BANG_MINIMUM_BREAK      10
 #define IEM_BANG_MINIMUM_HOLD       10
+#define IEM_BANG_MINIMUM_BREAK      10
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -212,16 +215,16 @@ static void bng_save(t_gobj *z, t_buffer *b)
     buffer_vAppend(b, "ssiisiiiisssiiiiiii", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("bng"), x->x_gui.iem_width,
-                x->x_flashtime_hold, x->x_flashtime_break,
-                iemgui_deserializeLoadbang(&x->x_gui),
+                x->x_flashHold, x->x_flashBreak,
+                iemgui_serializeLoadbang(&x->x_gui),
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iemgui_deserializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
+                iemgui_serializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[1], bflcol[2]);
     buffer_vAppend(b, ";");
 }
 
-void bng_check_minmax(t_bng *x, int ftbreak, int fthold)
+void bng_setFlashtime(t_bng *x, int ftbreak, int fthold)
 {
     if(ftbreak > fthold)
     {
@@ -235,8 +238,8 @@ void bng_check_minmax(t_bng *x, int ftbreak, int fthold)
         ftbreak = IEM_BANG_MINIMUM_BREAK;
     if(fthold < IEM_BANG_MINIMUM_HOLD)
         fthold = IEM_BANG_MINIMUM_HOLD;
-    x->x_flashtime_break = ftbreak;
-    x->x_flashtime_hold = fthold;
+    x->x_flashBreak = ftbreak;
+    x->x_flashHold = fthold;
 }
 
 static void bng_properties(t_gobj *z, t_glist *owner)
@@ -258,7 +261,7 @@ static void bng_properties(t_gobj *z, t_glist *owner)
             %d %d %d \
             -1\n",
             x->x_gui.iem_width, IEM_BANG_MINIMUM_SIZE,
-            x->x_flashtime_break, x->x_flashtime_hold,
+            x->x_flashBreak, x->x_flashHold,
             x->x_gui.iem_loadbang,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
@@ -273,7 +276,7 @@ static void bng_set(t_bng *x)
     {
         x->x_flashed = 0;
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-        clock_delay(x->x_clock_brk, x->x_flashtime_break);
+        clock_delay(x->x_clockBreak, x->x_flashBreak);
         x->x_flashed = 1;
     }
     else
@@ -281,7 +284,7 @@ static void bng_set(t_bng *x)
         x->x_flashed = 1;
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     }
-    clock_delay(x->x_clock_hld, x->x_flashtime_hold);
+    clock_delay(x->x_clockHold, x->x_flashHold);
 }
 
 static void bng_bout1(t_bng *x)/*wird nur mehr gesendet, wenn snd != rcv*/
@@ -289,7 +292,7 @@ static void bng_bout1(t_bng *x)/*wird nur mehr gesendet, wenn snd != rcv*/
     if(!x->x_gui.iem_goThrough)
     {
         x->x_gui.iem_isLocked = 1;
-        clock_delay(x->x_clock_lck, 2);
+        clock_delay(x->x_clockLock, 2);
     }
     outlet_bang(x->x_gui.iem_obj.te_outlet);
     if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing && x->x_gui.iem_goThrough)
@@ -301,7 +304,7 @@ static void bng_bout2(t_bng *x)/*wird immer gesendet, wenn moeglich*/
     if(!x->x_gui.iem_goThrough)
     {
         x->x_gui.iem_isLocked = 1;
-        clock_delay(x->x_clock_lck, 2);
+        clock_delay(x->x_clockLock, 2);
     }
     outlet_bang(x->x_gui.iem_obj.te_outlet);
     if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
@@ -335,7 +338,7 @@ static void bng_dialog(t_bng *x, t_symbol *s, int argc, t_atom *argv)
 
     x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
-    bng_check_minmax(x, ftbreak, fthold);
+    bng_setFlashtime(x, ftbreak, fthold);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_IO);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
@@ -397,7 +400,7 @@ static void bng_pos(t_bng *x, t_symbol *s, int ac, t_atom *av)
 
 static void bng_flashtime(t_bng *x, t_symbol *s, int ac, t_atom *av)
 {
-    bng_check_minmax(x, (int)(t_int)atom_getFloatAtIndex(0, ac, av),
+    bng_setFlashtime(x, (int)(t_int)atom_getFloatAtIndex(0, ac, av),
                      (int)(t_int)atom_getFloatAtIndex(1, ac, av));
 }
 
@@ -440,85 +443,89 @@ static void bng_tick_lck(t_bng *x)
     x->x_gui.iem_isLocked = 0;
 }
 
-static void *bng_new(t_symbol *s, int argc, t_atom *argv)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *bng_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_bng *x = (t_bng *)pd_new(bng_class);
-    int bflcol[]={-262144, -1, -1};
-    int a=IEM_BANG_DEFAULT_SIZE;
-    int ldx=17, ldy=7;
-    int fs=10;
-    int ftbreak=IEM_BANG_DEFAULT_BREAK,
-        fthold=IEM_BANG_DEFAULT_HOLD;
-    char str[144];
-
-    iemgui_serializeLoadbang(&x->x_gui, 0);
-    iemgui_serializeFontStyle(&x->x_gui, 0);
-
-    if((argc == 14)&&IS_FLOAT_AT(argv,0)
-       &&IS_FLOAT_AT(argv,1)&&IS_FLOAT_AT(argv,2)
-       &&IS_FLOAT_AT(argv,3)
-       &&(IS_SYMBOL_AT(argv,4)||IS_FLOAT_AT(argv,4))
-       &&(IS_SYMBOL_AT(argv,5)||IS_FLOAT_AT(argv,5))
-       &&(IS_SYMBOL_AT(argv,6)||IS_FLOAT_AT(argv,6))
-       &&IS_FLOAT_AT(argv,7)&&IS_FLOAT_AT(argv,8)
-       &&IS_FLOAT_AT(argv,9)&&IS_FLOAT_AT(argv,10)&&IS_FLOAT_AT(argv,11)
-       &&IS_FLOAT_AT(argv,12)&&IS_FLOAT_AT(argv,13))
+    t_bng *x = (t_bng *)pd_new (bng_class);
+    
+    int size            = IEM_BANG_DEFAULT_SIZE;
+    int flashHold       = IEM_BANG_DEFAULT_HOLD;
+    int flashBreak      = IEM_BANG_DEFAULT_BREAK;
+    int labelX          = IEM_BANG_DEFAULT_LABELX;
+    int labelY          = IEM_BANG_DEFAULT_LABELY;
+    int labelFontSize   = IEM_BANG_DEFAULT_FONTSIZE;
+    t_iemcolors colors  = IEM_COLORS_DEFAULT;
+    
+    if (argc == 14                                              // --
+            && IS_FLOAT (argv)                                  // Size.
+            && IS_FLOAT (argv + 1)                              // Flash hold.
+            && IS_FLOAT (argv + 2)                              // Flash break.
+            && IS_FLOAT (argv + 3)                              // Loadbang.
+            && (IS_SYMBOL (argv + 4) || IS_FLOAT (argv + 4))    // Send.
+            && (IS_SYMBOL (argv + 5) || IS_FLOAT (argv + 5))    // Receive.
+            && (IS_SYMBOL (argv + 6) || IS_FLOAT (argv + 6))    // Label.
+            && IS_FLOAT (argv + 7)                              // Label X.
+            && IS_FLOAT (argv + 8)                              // Label Y.
+            && IS_FLOAT (argv + 9)                              // Label font.
+            && IS_FLOAT (argv + 10)                             // Label font size.
+            && IS_FLOAT (argv + 11)                             // Background color.
+            && IS_FLOAT (argv + 12)                             // Foreground color.
+            && IS_FLOAT (argv + 13))                            // Label color.
     {
-
-        a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
-        fthold = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
-        ftbreak = (int)(t_int)atom_getFloatAtIndex(2, argc, argv);
-        iemgui_serializeLoadbang(&x->x_gui, (t_int)atom_getFloatAtIndex(3, argc, argv));
-        iemgui_deserializeNamesByIndex(&x->x_gui, 4, argv);
-        ldx = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
-        ldy = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
-        iemgui_serializeFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(9, argc, argv));
-        fs = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
-        bflcol[0] = (int)(t_int)atom_getFloatAtIndex(11, argc, argv);
-        bflcol[1] = (int)(t_int)atom_getFloatAtIndex(12, argc, argv);
-        bflcol[2] = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
+        size                        = (int)atom_getFloatAtIndex (0,  argc, argv);
+        flashHold                   = (int)atom_getFloatAtIndex (1,  argc, argv);
+        flashBreak                  = (int)atom_getFloatAtIndex (2,  argc, argv);
+        labelX                      = (int)atom_getFloatAtIndex (7,  argc, argv);
+        labelY                      = (int)atom_getFloatAtIndex (8,  argc, argv);
+        labelFontSize               = (int)atom_getFloatAtIndex (10, argc, argv);
+        colors.c_colorBackground    = (int)atom_getFloatAtIndex (11, argc, argv);
+        colors.c_colorForeground    = (int)atom_getFloatAtIndex (12, argc, argv);
+        colors.c_colorLabel         = (int)atom_getFloatAtIndex (13, argc, argv);
+        
+        iemgui_deserializeLoadbang (&x->x_gui, (int)atom_getFloatAtIndex (3, argc, argv));
+        iemgui_deserializeNamesByIndex (&x->x_gui, 4, argv);
+        iemgui_deserializeFontStyle (&x->x_gui, (int)atom_getFloatAtIndex (9, argc, argv));
+        
+    } else {
+        iemgui_deserializeNamesByIndex (&x->x_gui, 4, NULL);
     }
-    else iemgui_deserializeNamesByIndex(&x->x_gui, 4, 0);
 
-    x->x_gui.iem_draw = (t_iemfn)bng_draw;
-
-    x->x_gui.iem_canSend = 1;
-    x->x_gui.iem_canReceive = 1;
-    x->x_flashed = 0;
-    x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
-    if (!strcmp(x->x_gui.iem_send->s_name, "empty"))
-        x->x_gui.iem_canSend = 0;
-    if (!strcmp(x->x_gui.iem_receive->s_name, "empty"))
-        x->x_gui.iem_canReceive = 0;
-
-    if (x->x_gui.iem_canReceive)
-        pd_bind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
-    x->x_gui.iem_labelX = ldx;
-    x->x_gui.iem_labelY = ldy;
-
-    if(fs < 4)
-        fs = 4;
-    x->x_gui.iem_fontSize = fs;
-    x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
-    x->x_gui.iem_height = x->x_gui.iem_width;
-    bng_check_minmax(x, ftbreak, fthold);
-    iemgui_deserializeColors(&x->x_gui, bflcol);
-    x->x_gui.iem_isLocked = 0;
-    iemgui_checkSendReceiveLoop(&x->x_gui);
-    x->x_clock_hld = clock_new(x, (t_method)bng_tick_hld);
-    x->x_clock_brk = clock_new(x, (t_method)bng_tick_brk);
-    x->x_clock_lck = clock_new(x, (t_method)bng_tick_lck);
-    outlet_new(&x->x_gui.iem_obj, &s_bang);
-    return (x);
+    x->x_gui.iem_glist      = (t_glist *)canvas_getcurrent();
+    x->x_gui.iem_draw       = (t_iemfn)bng_draw;
+    x->x_gui.iem_canSend    = (x->x_gui.iem_send == iemgui_empty()) ? 0 : 1;
+    x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;
+    x->x_gui.iem_height     = PD_MAX (size, IEM_MINIMUM_WIDTH);
+    x->x_gui.iem_width      = PD_MAX (size, IEM_MINIMUM_WIDTH);
+    x->x_gui.iem_labelX     = labelX;
+    x->x_gui.iem_labelY     = labelY;
+    x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
+    
+    iemgui_deserializeColors (&x->x_gui, &colors);
+    iemgui_checkSendReceiveLoop (&x->x_gui);
+    
+    if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
+        
+    bng_setFlashtime (x, flashBreak, flashHold);
+    
+    x->x_clockHold = clock_new (x, (t_method)bng_tick_hld);
+    x->x_clockBreak = clock_new (x, (t_method)bng_tick_brk);
+    x->x_clockLock = clock_new (x, (t_method)bng_tick_lck);
+    
+    outlet_new (cast_object (x), &s_bang);
+    
+    return x;
 }
 
 static void bng_ff(t_bng *x)
 {
     if(x->x_gui.iem_canReceive)
         pd_unbind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
-    clock_free(x->x_clock_lck);
-    clock_free(x->x_clock_brk);
-    clock_free(x->x_clock_hld);
+    clock_free(x->x_clockLock);
+    clock_free(x->x_clockBreak);
+    clock_free(x->x_clockHold);
     gfxstub_deleteforkey(x);
 }
 
@@ -546,31 +553,38 @@ void bng_setup (void)
     class_addAnything (c, bng_anything);
     class_addClick (c, bng_click);
     
-    class_addMethod (c, (t_method)bng_dialog,       gensym ("dialog"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_loadbang,     gensym ("loadbang"),    A_NULL);
-    class_addMethod (c, (t_method)bng_size,         gensym ("size"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_delta,        gensym ("delta"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_pos,          gensym ("pos"),         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_flashtime,    gensym ("flashtime"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_color,        gensym ("color"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_send,         gensym ("send"),        A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)bng_receive,      gensym ("receive"),     A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)bng_label,        gensym ("label"),       A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)bng_label_pos,    gensym ("label_pos"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_label_font,   gensym ("label_font"),  A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_init,         gensym ("init"),        A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)bng_dialog,       gensym ("dialog"),          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_loadbang,     gensym ("loadbang"),        A_NULL);
+    class_addMethod (c, (t_method)bng_size,         gensym ("size"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_delta,        gensym ("delta"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_pos,          gensym ("position"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_flashtime,    gensym ("flashtime"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_color,        gensym ("color"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_send,         gensym ("send"),            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)bng_receive,      gensym ("receive"),         A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)bng_label,        gensym ("label"),           A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)bng_label_font,   gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_label_pos,    gensym ("label_position"),  A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_init,         gensym ("initialize"),      A_FLOAT, A_NULL);
     
-    bng_widgetBehavior.w_getrectfn = bng_getrect;
+    /* Legacy names for compatibility. */
+    
+    class_addMethod (c, (t_method)bng_pos,          gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_label_pos,    gensym ("label_pos"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_init,         gensym ("init"),            A_FLOAT, A_NULL);
+
+    bng_widgetBehavior.w_getrectfn  = bng_getrect;
     bng_widgetBehavior.w_displacefn = iemgui_behaviorDisplace;
-    bng_widgetBehavior.w_selectfn = iemgui_behaviorSelected;
+    bng_widgetBehavior.w_selectfn   = iemgui_behaviorSelected;
     bng_widgetBehavior.w_activatefn = NULL;
-    bng_widgetBehavior.w_deletefn = iemgui_behaviorDeleted;
-    bng_widgetBehavior.w_visfn = iemgui_behaviorVisible;
-    bng_widgetBehavior.w_clickfn = bng_newclick;
-    class_setWidgetBehavior(c, &bng_widgetBehavior);
-    class_setHelpName(c, gensym("bng"));
-    class_setSaveFunction(c, bng_save);
-    class_setPropertiesFunction(c, bng_properties);
+    bng_widgetBehavior.w_deletefn   = iemgui_behaviorDeleted;
+    bng_widgetBehavior.w_visfn      = iemgui_behaviorVisible;
+    bng_widgetBehavior.w_clickfn    = bng_newclick;
+    
+    class_setWidgetBehavior (c, &bng_widgetBehavior);
+    class_setHelpName (c, gensym ("bng"));
+    class_setSaveFunction (c, bng_save);
+    class_setPropertiesFunction (c, bng_properties);
     
     bng_class = c;
 }

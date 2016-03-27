@@ -680,6 +680,7 @@ PD_DLL void     buffer_append               (t_buffer *x, int argc, t_atom *argv
 #pragma mark -
 
 PD_DLL t_clock  *clock_new                  (void *owner, t_method fn);
+
 PD_DLL void     clock_free                  (t_clock *x);
 PD_DLL void     clock_unset                 (t_clock *x);
 PD_DLL void     clock_delay                 (t_clock *x, double delay);

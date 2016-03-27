@@ -126,11 +126,11 @@ typedef struct _iem {
 typedef struct _bng {
     t_iem       x_gui;
     int         x_flashed;
-    int         x_flashtime_break;
-    int         x_flashtime_hold;
-    t_clock     *x_clock_hld;
-    t_clock     *x_clock_brk;
-    t_clock     *x_clock_lck;
+    int         x_flashBreak;
+    int         x_flashHold;
+    t_clock     *x_clockHold;
+    t_clock     *x_clockBreak;
+    t_clock     *x_clockLock;
     } t_bng;
 
 typedef struct _toggle {
@@ -231,12 +231,12 @@ t_symbol *iemgui_empty (void);
 
 void        iemgui_deserializeColors            (t_iem *iem, t_iemcolors *c);
 void        iemgui_serializeColors              (t_iem *iem, t_iemcolors *c);
-void        iemgui_serializeFontStyle           (t_iem *iem, int n);
-int         iemgui_deserializeFontStyle         (t_iem *iem);
-void        iemgui_serializeLoadbang            (t_iem *iem, int n);
-int         iemgui_deserializeLoadbang          (t_iem *iem);
-void        iemgui_serializeNames               (t_iem *iem, t_iemnames *n);
+void        iemgui_deserializeFontStyle         (t_iem *iem, int n);
+int         iemgui_serializeFontStyle           (t_iem *iem);
+void        iemgui_deserializeLoadbang          (t_iem *iem, int n);
+int         iemgui_serializeLoadbang            (t_iem *iem);
 void        iemgui_deserializeNamesByIndex      (t_iem *iem, int i, t_atom *argv);
+void        iemgui_serializeNames               (t_iem *iem, t_iemnames *n);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

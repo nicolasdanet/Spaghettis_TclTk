@@ -151,33 +151,25 @@ void iemgui_deserializeColors (t_iem *iem, t_iemcolors *c)
     iem->iem_colorLabel      = iemgui_colorDecode (c->c_colorLabel);
 }
 
-void iemgui_serializeFontStyle (t_iem *iem, int n)
+void iemgui_deserializeFontStyle (t_iem *iem, int n)
 {
     iem->iem_fontStyle = (char)n;
 }
 
-int iemgui_deserializeFontStyle (t_iem *iem)
+int iemgui_serializeFontStyle (t_iem *iem)
 {
     return (int)iem->iem_fontStyle;
 }
 
-void iemgui_serializeLoadbang (t_iem *iem, int n)
+void iemgui_deserializeLoadbang (t_iem *iem, int n)
 {
     iem->iem_loadbang = ((n & 1) != 0);
     iem->iem_scale = (n & 2);
 }
 
-int iemgui_deserializeLoadbang (t_iem *iem)
+int iemgui_serializeLoadbang (t_iem *iem)
 {
     return ((iem->iem_loadbang ? 1 : 0) | (iem->iem_scale ? 2 : 0));
-}
-
-void iemgui_serializeNames (t_iem *iem, t_iemnames *n)
-{
-    iemgui_fetchUnexpandedNames (iem, n);
-    n->n_unexpandedSend    = dollar_toRaute (n->n_unexpandedSend);
-    n->n_unexpandedReceive = dollar_toRaute (n->n_unexpandedReceive);
-    n->n_unexpandedLabel   = dollar_toRaute (n->n_unexpandedLabel);
 }
 
 void iemgui_deserializeNamesByIndex (t_iem *iem, int i, t_atom *argv)
@@ -191,6 +183,14 @@ void iemgui_deserializeNamesByIndex (t_iem *iem, int i, t_atom *argv)
     iem->iem_unexpandedLabel   = NULL;
     
     iem->iem_cacheIndex = i;    /* Cache this index for later lookup. */
+}
+
+void iemgui_serializeNames (t_iem *iem, t_iemnames *n)
+{
+    iemgui_fetchUnexpandedNames (iem, n);
+    n->n_unexpandedSend    = dollar_toRaute (n->n_unexpandedSend);
+    n->n_unexpandedReceive = dollar_toRaute (n->n_unexpandedReceive);
+    n->n_unexpandedLabel   = dollar_toRaute (n->n_unexpandedLabel);
 }
 
 // -----------------------------------------------------------------------------------------------------------
