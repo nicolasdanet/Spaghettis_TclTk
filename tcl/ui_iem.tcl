@@ -243,7 +243,7 @@ proc create {top type
     if {$loadbang != -1}            {
     
         ttk::label $top.f.properties.loadbangLabel      {*}[::styleLabel] \
-                                                            -text [_ "Load On Start"]
+                                                            -text [_ "Loadbang"]
         ttk::checkbutton $top.f.properties.loadbang     {*}[::styleCheckButton] \
                                                             -variable ::ui_iem::iemLoadbang($top) \
                                                             -takefocus 0

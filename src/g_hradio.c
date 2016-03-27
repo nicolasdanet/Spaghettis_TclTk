@@ -243,7 +243,7 @@ static void hradio_save(t_gobj *z, t_buffer *b)
                 (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("hradio"),
                 x->x_gui.iem_width,
-                x->x_changed, iemgui_deserializeLoadOnStart(&x->x_gui), x->x_number,
+                x->x_changed, iemgui_deserializeLoadbang(&x->x_gui), x->x_number,
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
                 iemgui_deserializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
@@ -271,7 +271,7 @@ static void hradio_properties(t_gobj *z, t_glist *owner)
             %d %d %d \
             -1\n",
             x->x_gui.iem_width, IEM_HRADIO_MINIMUM_SIZE,
-            x->x_gui.iem_loadOnStart,
+            x->x_gui.iem_loadbang,
             x->x_number,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
@@ -388,7 +388,7 @@ static int hradio_newclick(t_gobj *z, struct _glist *glist, int xpix, int ypix, 
 
 static void hradio_loadbang(t_hradio *x)
 {
-    if(x->x_gui.iem_loadOnStart)
+    if(x->x_gui.iem_loadbang)
         hradio_bang(x);
 }
 
@@ -444,7 +444,7 @@ static void hradio_label_font(t_hradio *x, t_symbol *s, int ac, t_atom *av)
 
 static void hradio_init(t_hradio *x, t_float f)
 {
-    x->x_gui.iem_loadOnStart = (f==0.0)?0:1;
+    x->x_gui.iem_loadbang = (f==0.0)?0:1;
 }
 
 static void hradio_double_change(t_hradio *x)
@@ -464,7 +464,7 @@ static void *hradio_donew(t_symbol *s, int argc, t_atom *argv)
     char str[144];
     float fval = 0;
 
-    iemgui_serializeLoadOnStart(&x->x_gui, 0);
+    iemgui_serializeLoadbang(&x->x_gui, 0);
     iemgui_serializeFontStyle(&x->x_gui, 0);
 
     if((argc == 15)&&IS_FLOAT_AT(argv,0)&&IS_FLOAT_AT(argv,1)&&IS_FLOAT_AT(argv,2)
@@ -478,7 +478,7 @@ static void *hradio_donew(t_symbol *s, int argc, t_atom *argv)
     {
         a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         chg = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
-        iemgui_serializeLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(2, argc, argv));
+        iemgui_serializeLoadbang(&x->x_gui, (t_int)atom_getFloatAtIndex(2, argc, argv));
         num = (int)(t_int)atom_getFloatAtIndex(3, argc, argv);
         iemgui_deserializeNamesByIndex(&x->x_gui, 4, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
@@ -511,7 +511,7 @@ static void *hradio_donew(t_symbol *s, int argc, t_atom *argv)
         on = 0;
     if(on >= x->x_number)
         on = x->x_number - 1;
-    if(x->x_gui.iem_loadOnStart)
+    if(x->x_gui.iem_loadbang)
         x->x_on = on;
     else
         x->x_on = 0;

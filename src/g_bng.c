@@ -213,7 +213,7 @@ static void bng_save(t_gobj *z, t_buffer *b)
                 (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("bng"), x->x_gui.iem_width,
                 x->x_flashtime_hold, x->x_flashtime_break,
-                iemgui_deserializeLoadOnStart(&x->x_gui),
+                iemgui_deserializeLoadbang(&x->x_gui),
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
                 iemgui_deserializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
@@ -259,7 +259,7 @@ static void bng_properties(t_gobj *z, t_glist *owner)
             -1\n",
             x->x_gui.iem_width, IEM_BANG_MINIMUM_SIZE,
             x->x_flashtime_break, x->x_flashtime_hold,
-            x->x_gui.iem_loadOnStart,
+            x->x_gui.iem_loadbang,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
@@ -374,7 +374,7 @@ static void bng_anything(t_bng *x, t_symbol *s, int argc, t_atom *argv)
 
 static void bng_loadbang(t_bng *x)
 {
-    if(x->x_gui.iem_loadOnStart)
+    if(x->x_gui.iem_loadbang)
     {
         bng_set(x);
         bng_bout2(x);
@@ -421,7 +421,7 @@ static void bng_label_font(t_bng *x, t_symbol *s, int ac, t_atom *av)
 
 static void bng_init(t_bng *x, t_float f)
 {
-    x->x_gui.iem_loadOnStart = (f==0.0)?0:1;
+    x->x_gui.iem_loadbang = (f==0.0)?0:1;
 }
 
 static void bng_tick_hld(t_bng *x)
@@ -451,7 +451,7 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
         fthold=IEM_BANG_DEFAULT_HOLD;
     char str[144];
 
-    iemgui_serializeLoadOnStart(&x->x_gui, 0);
+    iemgui_serializeLoadbang(&x->x_gui, 0);
     iemgui_serializeFontStyle(&x->x_gui, 0);
 
     if((argc == 14)&&IS_FLOAT_AT(argv,0)
@@ -468,7 +468,7 @@ static void *bng_new(t_symbol *s, int argc, t_atom *argv)
         a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         fthold = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
         ftbreak = (int)(t_int)atom_getFloatAtIndex(2, argc, argv);
-        iemgui_serializeLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(3, argc, argv));
+        iemgui_serializeLoadbang(&x->x_gui, (t_int)atom_getFloatAtIndex(3, argc, argv));
         iemgui_deserializeNamesByIndex(&x->x_gui, 4, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);

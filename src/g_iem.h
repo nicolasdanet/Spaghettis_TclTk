@@ -87,7 +87,7 @@ typedef struct _iem {
     char        iem_scale;                      /* Unused but kept for compatibility. */
     char        iem_canSend;
     char        iem_canReceive;
-    char        iem_loadOnStart;
+    char        iem_loadbang;
     char        iem_isSelected;
     char        iem_accurateMoving;
     char        iem_goThrough;
@@ -233,8 +233,8 @@ void        iemgui_deserializeColors            (t_iem *iem, t_iemcolors *c);
 void        iemgui_serializeColors              (t_iem *iem, t_iemcolors *c);
 void        iemgui_serializeFontStyle           (t_iem *iem, int n);
 int         iemgui_deserializeFontStyle         (t_iem *iem);
-void        iemgui_serializeLoadOnStart         (t_iem *iem, int n);
-int         iemgui_deserializeLoadOnStart       (t_iem *iem);
+void        iemgui_serializeLoadbang            (t_iem *iem, int n);
+int         iemgui_deserializeLoadbang          (t_iem *iem);
 void        iemgui_serializeNames               (t_iem *iem, t_iemnames *n);
 void        iemgui_deserializeNamesByIndex      (t_iem *iem, int i, t_atom *argv);
 

@@ -161,15 +161,15 @@ int iemgui_deserializeFontStyle (t_iem *iem)
     return (int)iem->iem_fontStyle;
 }
 
-void iemgui_serializeLoadOnStart (t_iem *iem, int n)
+void iemgui_serializeLoadbang (t_iem *iem, int n)
 {
-    iem->iem_loadOnStart = ((n & 1) != 0);
+    iem->iem_loadbang = ((n & 1) != 0);
     iem->iem_scale = (n & 2);
 }
 
-int iemgui_deserializeLoadOnStart (t_iem *iem)
+int iemgui_deserializeLoadbang (t_iem *iem)
 {
-    return ((iem->iem_loadOnStart ? 1 : 0) | (iem->iem_scale ? 2 : 0));
+    return ((iem->iem_loadbang ? 1 : 0) | (iem->iem_scale ? 2 : 0));
 }
 
 void iemgui_serializeNames (t_iem *iem, t_iemnames *n)
@@ -355,7 +355,7 @@ void iemgui_serialize (t_iem *iem, t_iemnames *n, t_iemcolors *c)
 
 void iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
 {
-    int loadOnStart             = (int)atom_getFloatAtIndex (5,  argc, argv);
+    int loadbang                = (int)atom_getFloatAtIndex (5,  argc, argv);
     int labelX                  = (int)atom_getFloatAtIndex (10, argc, argv);
     int labelY                  = (int)atom_getFloatAtIndex (11, argc, argv);
     int fontSize                = (int)atom_getFloatAtIndex (12, argc, argv);
@@ -388,7 +388,7 @@ void iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
 
     iem->iem_canSend            = canSend;
     iem->iem_canReceive         = canReceive;
-    iem->iem_loadOnStart        = (loadOnStart != 0);
+    iem->iem_loadbang           = (loadbang != 0);
     iem->iem_labelX             = labelX;
     iem->iem_labelY             = labelY;
     iem->iem_fontSize           = PD_MAX (fontSize, IEM_MINIMUM_FONTSIZE);

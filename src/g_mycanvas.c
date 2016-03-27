@@ -147,7 +147,7 @@ static void my_canvas_save(t_gobj *z, t_buffer *b)
                 gensym("cnv"), x->x_gui.iem_width, x->x_vis_w, x->x_vis_h,
                 srl[0], srl[1], srl[2], x->x_gui.iem_labelX, x->x_gui.iem_labelY,
                 iemgui_deserializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
-                bflcol[0], bflcol[2], iemgui_deserializeLoadOnStart(&x->x_gui));
+                bflcol[0], bflcol[2], iemgui_deserializeLoadbang(&x->x_gui));
     buffer_vAppend(b, ";");
 }
 
@@ -195,7 +195,7 @@ static void my_canvas_dialog(t_my_canvas *x, t_symbol *s, int argc, t_atom *argv
     int h = (int)(t_int)atom_getFloatAtIndex(3, argc, argv);
     iemgui_fromDialog(&x->x_gui, argc, argv);
 
-    x->x_gui.iem_loadOnStart = 0;
+    x->x_gui.iem_loadbang = 0;
     if(a < 1)
         a = 1;
     x->x_gui.iem_width = a;
@@ -273,7 +273,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     int fs=14;
     char str[144];
 
-    iemgui_serializeLoadOnStart(&x->x_gui, 0);
+    iemgui_serializeLoadbang(&x->x_gui, 0);
     iemgui_serializeFontStyle(&x->x_gui, 0);
 
     if(((argc >= 10)&&(argc <= 13))
@@ -315,7 +315,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     }
     if((argc == 13)&&IS_FLOAT_AT(argv,i+10))
     {
-        iemgui_serializeLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(i+10, argc, argv));
+        iemgui_serializeLoadbang(&x->x_gui, (t_int)atom_getFloatAtIndex(i+10, argc, argv));
     }
     x->x_gui.iem_draw = (t_iemfn)my_canvas_draw;
     x->x_gui.iem_canSend = 1;

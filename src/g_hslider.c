@@ -206,7 +206,7 @@ static void hslider_save(t_gobj *z, t_buffer *b)
                 (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("hsl"), x->x_gui.iem_width, x->x_gui.iem_height,
                 (t_float)x->x_min, (t_float)x->x_max,
-                x->x_isLogarithmic, iemgui_deserializeLoadOnStart(&x->x_gui),
+                x->x_isLogarithmic, iemgui_deserializeLoadbang(&x->x_gui),
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
                 iemgui_deserializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
@@ -277,7 +277,7 @@ static void hslider_properties(t_gobj *z, t_glist *owner)
             x->x_gui.iem_width, IEM_HSLIDER_MINIMUM_WIDTH, x->x_gui.iem_height, IEM_HSLIDER_MINIMUM_HEIGHT,
             x->x_min, x->x_max,
             x->x_isLogarithmic, 
-            x->x_gui.iem_loadOnStart,
+            x->x_gui.iem_loadbang,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
@@ -482,7 +482,7 @@ static void hslider_lin(t_hslider *x)
 
 static void hslider_init(t_hslider *x, t_float f)
 {
-    x->x_gui.iem_loadOnStart = (f==0.0)?0:1;
+    x->x_gui.iem_loadbang = (f==0.0)?0:1;
 }
 
 static void hslider_steady(t_hslider *x, t_float f)
@@ -501,7 +501,7 @@ static void hslider_float(t_hslider *x, t_float f)
 
 static void hslider_loadbang(t_hslider *x)
 {
-    if(x->x_gui.iem_loadOnStart)
+    if(x->x_gui.iem_loadbang)
     {
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
         hslider_bang(x);
@@ -519,7 +519,7 @@ static void *hslider_new(t_symbol *s, int argc, t_atom *argv)
     char str[144];
     float v = 0;
 
-    iemgui_serializeLoadOnStart(&x->x_gui, 0);
+    iemgui_serializeLoadbang(&x->x_gui, 0);
     iemgui_serializeFontStyle(&x->x_gui, 0);
 
     if(((argc == 17)||(argc == 18))&&IS_FLOAT_AT(argv,0)&&IS_FLOAT_AT(argv,1)
@@ -537,7 +537,7 @@ static void *hslider_new(t_symbol *s, int argc, t_atom *argv)
         min = (double)atom_getFloatAtIndex(2, argc, argv);
         max = (double)atom_getFloatAtIndex(3, argc, argv);
         lilo = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
-        iemgui_serializeLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(5, argc, argv));
+        iemgui_serializeLoadbang(&x->x_gui, (t_int)atom_getFloatAtIndex(5, argc, argv));
         iemgui_deserializeNamesByIndex(&x->x_gui, 6, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
@@ -558,7 +558,7 @@ static void *hslider_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_canReceive = 1;
 
     x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
-    if (x->x_gui.iem_loadOnStart)
+    if (x->x_gui.iem_loadbang)
         x->x_val = v;
     else x->x_val = 0;
     x->x_pos = x->x_val;

@@ -387,7 +387,7 @@ static void my_numbox_save(t_gobj *z, t_buffer *b)
                 (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("nbx"), x->x_gui.iem_width, x->x_gui.iem_height,
                 (t_float)x->x_min, (t_float)x->x_max,
-                x->x_isLogarithmic, iemgui_deserializeLoadOnStart(&x->x_gui),
+                x->x_isLogarithmic, iemgui_deserializeLoadbang(&x->x_gui),
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
                 iemgui_deserializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
@@ -462,7 +462,7 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
             x->x_gui.iem_width, 1, x->x_gui.iem_height, 8,
             x->x_min, x->x_max,
             x->x_isLogarithmic, 
-            x->x_gui.iem_loadOnStart,
+            x->x_gui.iem_loadbang,
             x->x_log_height, /*no multi, but iem-characteristic*/
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
@@ -679,12 +679,12 @@ static void my_numbox_lin(t_my_numbox *x)
 
 static void my_numbox_init(t_my_numbox *x, t_float f)
 {
-    x->x_gui.iem_loadOnStart = (f==0.0)?0:1;
+    x->x_gui.iem_loadbang = (f==0.0)?0:1;
 }
 
 static void my_numbox_loadbang(t_my_numbox *x)
 {
-    if(x->x_gui.iem_loadOnStart)
+    if(x->x_gui.iem_loadbang)
     {
         interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
         my_numbox_bang(x);
@@ -772,7 +772,7 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
         min = (double)atom_getFloatAtIndex(2, argc, argv);
         max = (double)atom_getFloatAtIndex(3, argc, argv);
         lilo = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
-        iemgui_serializeLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(5, argc, argv));
+        iemgui_serializeLoadbang(&x->x_gui, (t_int)atom_getFloatAtIndex(5, argc, argv));
         iemgui_deserializeNamesByIndex(&x->x_gui, 6, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
@@ -792,7 +792,7 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_canSend = 1;
     x->x_gui.iem_canReceive = 1;
     x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
-    if(x->x_gui.iem_loadOnStart)
+    if(x->x_gui.iem_loadbang)
         x->x_val = v;
     else
         x->x_val = 0.0;

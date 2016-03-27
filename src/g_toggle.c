@@ -206,7 +206,7 @@ static void toggle_save(t_gobj *z, t_buffer *b)
                 (int)x->x_gui.iem_obj.te_xCoordinate,
                 (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("tgl"), x->x_gui.iem_width,
-                iemgui_deserializeLoadOnStart(&x->x_gui),
+                iemgui_deserializeLoadbang(&x->x_gui),
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
                 iemgui_deserializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
@@ -234,7 +234,7 @@ static void toggle_properties(t_gobj *z, t_glist *owner)
             -1\n",
             x->x_gui.iem_width, IEM_TOGGLE_MINIMUM_SIZE,
             x->x_nonzero,
-            x->x_gui.iem_loadOnStart,
+            x->x_gui.iem_loadbang,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
@@ -311,7 +311,7 @@ static void toggle_fout(t_toggle *x, t_float f)
 
 static void toggle_loadbang(t_toggle *x)
 {
-    if(x->x_gui.iem_loadOnStart)
+    if(x->x_gui.iem_loadbang)
         toggle_fout(x, (t_float)x->x_on);
 }
 
@@ -349,7 +349,7 @@ static void toggle_label_pos(t_toggle *x, t_symbol *s, int ac, t_atom *av)
 
 static void toggle_init(t_toggle *x, t_float f)
 {
-    x->x_gui.iem_loadOnStart = (f==0.0)?0:1;
+    x->x_gui.iem_loadbang = (f==0.0)?0:1;
 }
 
 static void toggle_nonzero(t_toggle *x, t_float f)
@@ -368,7 +368,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
     t_float on=0.0, nonzero=1.0;
     char str[144];
 
-    iemgui_serializeLoadOnStart(&x->x_gui, 0);
+    iemgui_serializeLoadbang(&x->x_gui, 0);
     iemgui_serializeFontStyle(&x->x_gui, 0);
 
     if(((argc == 13)||(argc == 14))&&IS_FLOAT_AT(argv,0)
@@ -381,7 +381,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
        &&IS_FLOAT_AT(argv,10)&&IS_FLOAT_AT(argv,11)&&IS_FLOAT_AT(argv,12))
     {
         a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
-        iemgui_serializeLoadOnStart(&x->x_gui, (t_int)atom_getFloatAtIndex(1, argc, argv));
+        iemgui_serializeLoadbang(&x->x_gui, (t_int)atom_getFloatAtIndex(1, argc, argv));
         iemgui_deserializeNamesByIndex(&x->x_gui, 2, argv);
         ldx = (int)(t_int)atom_getFloatAtIndex(5, argc, argv);
         ldy = (int)(t_int)atom_getFloatAtIndex(6, argc, argv);
@@ -406,7 +406,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
         x->x_gui.iem_canReceive = 0;
 
     x->x_nonzero = (nonzero!=0.0)?nonzero:1.0;
-    if(x->x_gui.iem_loadOnStart)
+    if(x->x_gui.iem_loadbang)
         x->x_on = (on!=0.0)?nonzero:0.0;
     else
         x->x_on = 0.0;
