@@ -590,7 +590,7 @@ void g_hradio_setup(void)
     hradio_widgetbehavior.w_deletefn = iemgui_behaviorDeleted;
     hradio_widgetbehavior.w_visfn = iemgui_behaviorVisible;
     hradio_widgetbehavior.w_clickfn = hradio_newclick;
-    class_setWidget(hradio_class, &hradio_widgetbehavior);
+    class_setWidgetBehavior(hradio_class, &hradio_widgetbehavior);
     class_setHelpName(hradio_class, gensym("hradio"));
     class_setSaveFunction(hradio_class, hradio_save);
     class_setPropertiesFunction(hradio_class, hradio_properties);

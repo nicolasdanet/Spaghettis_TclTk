@@ -1316,7 +1316,7 @@ static void curve_setup(void)
         A_GIMME, 0);
     class_addCreator((t_newmethod)curve_new, gensym("filledcurve"),
         A_GIMME, 0);
-    class_setParentWidget(curve_class, &curve_widgetbehavior);
+    class_setParentWidgetBehavior(curve_class, &curve_widgetbehavior);
     class_addFloat(curve_class, curve_float);
 }
 
@@ -2320,7 +2320,7 @@ static void plot_setup(void)
         sizeof(t_plot), 0, A_GIMME, 0);
     class_setDrawCommand(plot_class);
     class_addFloat(plot_class, plot_float);
-    class_setParentWidget(plot_class, &plot_widgetbehavior);
+    class_setParentWidgetBehavior(plot_class, &plot_widgetbehavior);
 }
 
 /* ---------------- drawnumber: draw a number (or symbol) ---------------- */
@@ -2707,7 +2707,7 @@ static void drawnumber_setup(void)
         A_GIMME, 0);
     class_addCreator((t_newmethod)drawnumber_new, gensym("drawnumber"),
         A_GIMME, 0);
-    class_setParentWidget(drawnumber_class, &drawnumber_widgetbehavior);
+    class_setParentWidgetBehavior(drawnumber_class, &drawnumber_widgetbehavior);
 }
 
 /* ---------------------- setup function ---------------------------- */

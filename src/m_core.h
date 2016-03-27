@@ -191,8 +191,8 @@ int         class_hasMethod                             (t_class *c, t_symbol *s
 int         class_hasBang                               (t_class *c);
 int         class_hasDrawCommand                        (t_class *c);
 int         class_hasPropertiesFunction                 (t_class *c); 
-void        class_setWidget                             (t_class *c, t_widgetbehavior *w);
-void        class_setParentWidget                       (t_class *c, t_parentwidgetbehavior *w);
+void        class_setWidgetBehavior                     (t_class *c, t_widgetbehavior *w);
+void        class_setParentWidgetBehavior               (t_class *c, t_parentwidgetbehavior *w);
 void        class_setDrawCommand                        (t_class *c);
 void        class_setHelpName                           (t_class *c, t_symbol *s);
 void        class_setPropertiesFunction                 (t_class *c, t_propertiesfn f);

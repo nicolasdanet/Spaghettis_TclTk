@@ -382,7 +382,7 @@ void g_mycanvas_setup(void)
     my_canvas_widgetbehavior.w_deletefn = iemgui_behaviorDeleted;
     my_canvas_widgetbehavior.w_visfn = iemgui_behaviorVisible;
     my_canvas_widgetbehavior.w_clickfn = NULL;
-    class_setWidget(my_canvas_class, &my_canvas_widgetbehavior);
+    class_setWidgetBehavior(my_canvas_class, &my_canvas_widgetbehavior);
     class_setHelpName(my_canvas_class, gensym("cnv"));
     class_setSaveFunction(my_canvas_class, my_canvas_save);
     class_setPropertiesFunction(my_canvas_class, my_canvas_properties);

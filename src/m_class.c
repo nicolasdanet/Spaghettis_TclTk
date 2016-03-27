@@ -419,12 +419,12 @@ void class_setHelpName (t_class *c, t_symbol *s)
     c->c_helpName = s;
 }
 
-void class_setWidget (t_class *c, t_widgetbehavior *w)
+void class_setWidgetBehavior (t_class *c, t_widgetbehavior *w)
 {
     c->c_behavior = w;
 }
 
-void class_setParentWidget (t_class *c, t_parentwidgetbehavior *pw)
+void class_setParentWidgetBehavior (t_class *c, t_parentwidgetbehavior *pw)
 {
     c->c_behaviorParent = pw;
 }

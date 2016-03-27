@@ -41,7 +41,7 @@ void loader_release         (void);
 void g_array_setup          (void);
 void g_canvas_setup         (void);
 void g_guiconnect_setup     (void);
-void g_bang_setup           (void);
+void bng_setup              (void);
 void g_hradio_setup         (void);
 void g_hslider_setup        (void);
 void g_mycanvas_setup       (void);
@@ -97,7 +97,7 @@ void setup_initialize (void)
     g_array_setup();
     g_canvas_setup();
     g_guiconnect_setup();
-    g_bang_setup();
+    bng_setup();
     g_hradio_setup();
     g_hslider_setup();
     g_mycanvas_setup();

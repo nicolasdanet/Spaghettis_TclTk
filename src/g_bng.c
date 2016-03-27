@@ -43,12 +43,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_widgetbehavior bng_widgetbehavior;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
+static t_widgetbehavior bng_widgetBehavior;
 
 static t_class *bng_class;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 void bng_draw_update(t_bng *x, t_glist *glist)
 {
@@ -522,43 +522,57 @@ static void bng_ff(t_bng *x)
     gfxstub_deleteforkey(x);
 }
 
-void g_bang_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void bng_setup (void) 
 {
-    bng_class = class_new(gensym("bng"), (t_newmethod)bng_new,
-                          (t_method)bng_ff, sizeof(t_bng), 0, A_GIMME, 0);
-    class_addBang(bng_class, bng_bang);
-    class_addFloat(bng_class, bng_float);
-    class_addSymbol(bng_class, bng_symbol);
-    class_addPointer(bng_class, bng_pointer);
-    class_addList(bng_class, bng_list);
-    class_addAnything(bng_class, bng_anything);
-    class_addMethod(bng_class, (t_method)bng_click, gensym("click"),
-                    A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addMethod(bng_class, (t_method)bng_dialog, gensym("dialog"),
-                    A_GIMME, 0);
-    class_addMethod(bng_class, (t_method)bng_loadbang, gensym("loadbang"), 0);
-    class_addMethod(bng_class, (t_method)bng_size, gensym("size"), A_GIMME, 0);
-    class_addMethod(bng_class, (t_method)bng_delta, gensym("delta"), A_GIMME, 0);
-    class_addMethod(bng_class, (t_method)bng_pos, gensym("pos"), A_GIMME, 0);
-    class_addMethod(bng_class, (t_method)bng_flashtime, gensym("flashtime"), A_GIMME, 0);
-    class_addMethod(bng_class, (t_method)bng_color, gensym("color"), A_GIMME, 0);
-    class_addMethod(bng_class, (t_method)bng_send, gensym("send"), A_DEFSYMBOL, 0);
-    class_addMethod(bng_class, (t_method)bng_receive, gensym("receive"), A_DEFSYMBOL, 0);
-    class_addMethod(bng_class, (t_method)bng_label, gensym("label"), A_DEFSYMBOL, 0);
-    class_addMethod(bng_class, (t_method)bng_label_pos, gensym("label_pos"), A_GIMME, 0);
-    class_addMethod(bng_class, (t_method)bng_label_font, gensym("label_font"), A_GIMME, 0);
-    class_addMethod(bng_class, (t_method)bng_init, gensym("init"), A_FLOAT, 0);
-    bng_widgetbehavior.w_getrectfn = bng_getrect;
-    bng_widgetbehavior.w_displacefn = iemgui_behaviorDisplace;
-    bng_widgetbehavior.w_selectfn = iemgui_behaviorSelected;
-    bng_widgetbehavior.w_activatefn = NULL;
-    bng_widgetbehavior.w_deletefn = iemgui_behaviorDeleted;
-    bng_widgetbehavior.w_visfn = iemgui_behaviorVisible;
-    bng_widgetbehavior.w_clickfn = bng_newclick;
-    class_setWidget(bng_class, &bng_widgetbehavior);
-    class_setHelpName(bng_class, gensym("bng"));
-    class_setSaveFunction(bng_class, bng_save);
-    class_setPropertiesFunction(bng_class, bng_properties);
+    t_class *c = NULL;
+    
+    c = class_new (gensym ("bng"), 
+            (t_newmethod)bng_new, 
+            (t_method)bng_ff, 
+            sizeof (t_bng), 
+            CLASS_DEFAULT,
+            A_GIMME, 
+            A_NULL);
+    
+    class_addBang (c, bng_bang);
+    class_addFloat (c, bng_float);
+    class_addSymbol (c, bng_symbol);
+    class_addPointer (c, bng_pointer);
+    class_addList (c, bng_list);
+    class_addAnything (c, bng_anything);
+    class_addClick (c, bng_click);
+    
+    class_addMethod (c, (t_method)bng_dialog,       gensym ("dialog"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_loadbang,     gensym ("loadbang"),    A_NULL);
+    class_addMethod (c, (t_method)bng_size,         gensym ("size"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_delta,        gensym ("delta"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_pos,          gensym ("pos"),         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_flashtime,    gensym ("flashtime"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_color,        gensym ("color"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_send,         gensym ("send"),        A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)bng_receive,      gensym ("receive"),     A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)bng_label,        gensym ("label"),       A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)bng_label_pos,    gensym ("label_pos"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_label_font,   gensym ("label_font"),  A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_init,         gensym ("init"),        A_FLOAT, A_NULL);
+    
+    bng_widgetBehavior.w_getrectfn = bng_getrect;
+    bng_widgetBehavior.w_displacefn = iemgui_behaviorDisplace;
+    bng_widgetBehavior.w_selectfn = iemgui_behaviorSelected;
+    bng_widgetBehavior.w_activatefn = NULL;
+    bng_widgetBehavior.w_deletefn = iemgui_behaviorDeleted;
+    bng_widgetBehavior.w_visfn = iemgui_behaviorVisible;
+    bng_widgetBehavior.w_clickfn = bng_newclick;
+    class_setWidgetBehavior(c, &bng_widgetBehavior);
+    class_setHelpName(c, gensym("bng"));
+    class_setSaveFunction(c, bng_save);
+    class_setPropertiesFunction(c, bng_properties);
+    
+    bng_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

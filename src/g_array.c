@@ -1205,7 +1205,7 @@ void g_array_setup(void)
 {
     garray_class = class_new(gensym("array"), 0, (t_method)garray_free,
         sizeof(t_garray), CLASS_GRAPHIC, 0);
-    class_setWidget(garray_class, &garray_widgetbehavior);
+    class_setWidgetBehavior(garray_class, &garray_widgetbehavior);
     class_addMethod(garray_class, (t_method)garray_const, gensym("const"),
         A_DEFFLOAT, A_NULL);
     class_addList(garray_class, garray_list);

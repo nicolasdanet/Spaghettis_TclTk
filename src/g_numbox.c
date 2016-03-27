@@ -894,7 +894,7 @@ void g_numbox_setup(void)
     my_numbox_widgetbehavior.w_deletefn =     iemgui_behaviorDeleted;
     my_numbox_widgetbehavior.w_visfn =        iemgui_behaviorVisible;
     my_numbox_widgetbehavior.w_clickfn =      my_numbox_newclick;
-    class_setWidget(my_numbox_class, &my_numbox_widgetbehavior);
+    class_setWidgetBehavior(my_numbox_class, &my_numbox_widgetbehavior);
     class_setHelpName(my_numbox_class, gensym("nbx"));
     class_setSaveFunction(my_numbox_class, my_numbox_save);
     class_setPropertiesFunction(my_numbox_class, my_numbox_properties);

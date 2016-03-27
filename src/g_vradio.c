@@ -591,7 +591,7 @@ void g_vradio_setup(void)
     vradio_widgetbehavior.w_deletefn = iemgui_behaviorDeleted;
     vradio_widgetbehavior.w_visfn = iemgui_behaviorVisible;
     vradio_widgetbehavior.w_clickfn = vradio_newclick;
-    class_setWidget(vradio_class, &vradio_widgetbehavior);
+    class_setWidgetBehavior(vradio_class, &vradio_widgetbehavior);
     class_setHelpName(vradio_class, gensym("vradio"));
     class_setSaveFunction(vradio_class, vradio_save);
     class_setPropertiesFunction(vradio_class, vradio_properties);

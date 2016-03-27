@@ -106,33 +106,34 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IS_FLOAT_AT(atom, index)            ((atom + index)->a_type == A_FLOAT)
-#define IS_SYMBOL_AT(atom, index)           ((atom + index)->a_type == A_SYMBOL)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 typedef void (*t_gotfn1)(void *x, void *arg1);
-typedef void (*t_gotfn2)(void *x, void *arg1, void *arg2);
-typedef void (*t_gotfn3)(void *x, void *arg1, void *arg2, void *arg3);
-typedef void (*t_gotfn4)(void *x, void *arg1, void *arg2, void *arg3, void *arg4);
-typedef void (*t_gotfn5)(void *x, void *arg1, void *arg2, void *arg3, void *arg4, void *arg5);
-    
-#define mess0(x, s)                 ((*class_getMethod (*(x), (s)))((x)))
-#define mess1(x, s, a)              ((*(t_gotfn1)class_getMethod (*(x), (s)))((x), (a)))
-#define mess2(x, s, a, b)           ((*(t_gotfn2)class_getMethod (*(x), (s)))((x), (a), (b)))
-#define mess3(x, s, a, b, c)        ((*(t_gotfn3)class_getMethod (*(x), (s)))((x), (a), (b), (c)))
-#define mess4(x, s, a, b, c, d)     ((*(t_gotfn4)class_getMethod (*(x), (s)))((x), (a), (b), (c), (d)))
-#define mess5(x, s, a, b, c, d, e)  ((*(t_gotfn5)class_getMethod (*(x), (s)))((x), (a), (b), (c), (d), (e)))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PD_IS_POWER_OF_TWO(v)       (!((v) & ((v) - 1)))
-#define PD_NEXT_POWER_OF_TWO(v)     sys_nextPowerOf2 (v)
+#define mess1(x, s, a)                      ((*(t_gotfn1)class_getMethod (*(x), (s)))((x), (a)))
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define class_addClick(c, m)                (c, (t_method)(m), \
+                                                gensym ("click"), \
+                                                A_FLOAT, \
+                                                A_FLOAT, \
+                                                A_FLOAT, \
+                                                A_FLOAT, \
+                                                A_FLOAT, \
+                                                A_NULL);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define PD_ISPOWER2(v)                      (!((v) & ((v) - 1)))
+#define PD_NEXTPOWER2(v)                    sys_nextPowerOf2 (v)
+                                        
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
