@@ -223,6 +223,13 @@ static void bng_setFlash (t_bng *x)
     clock_delay (x->x_clockHold, x->x_flashTimeHold);
 }
 
+static void bng_out (t_bng *x)
+{
+    outlet_bang (cast_object (x)->te_outlet);
+    
+    if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) { pd_bang (x->x_gui.iem_send->s_thing); }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -231,9 +238,8 @@ static void bng_bang (t_bng *x)
 {
     bng_setFlash (x);
     
-    if (x->x_gui.iem_goThrough) {
-        outlet_bang (cast_object (x)->te_outlet);
-        if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) { pd_bang (x->x_gui.iem_send->s_thing); }
+    if (x->x_gui.iem_goThrough) { 
+        bng_out (x);
     }
 }
 
@@ -264,7 +270,7 @@ static void bng_anything (t_bng *x, t_symbol *s, int argc, t_atom *argv)
 
 static void bng_click (t_bng *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
 {
-    bng_bang (x);
+    bng_out (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
