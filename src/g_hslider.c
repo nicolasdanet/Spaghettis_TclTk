@@ -177,8 +177,6 @@ void hslider_draw(t_hslider *x, t_glist *glist, int mode)
         hslider_draw_erase(x, glist);
     else if(mode == IEM_DRAW_CONFIG)
         hslider_draw_config(x, glist);
-    else if(mode >= IEM_DRAW_IO)
-        hslider_draw_io(x, glist);
 }
 
 /* ------------------------ hsl widgetbehaviour----------------------------- */
@@ -360,7 +358,6 @@ static void hslider_dialog(t_hslider *x, t_symbol *s, int argc, t_atom *argv)
     hslider_check_width(x, w);
     hslider_check_minmax(x, min, max);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_IO);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
     canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
 }

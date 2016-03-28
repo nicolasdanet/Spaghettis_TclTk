@@ -179,8 +179,6 @@ void toggle_draw(t_toggle *x, t_glist *glist, int mode)
         toggle_draw_erase(x, glist);
     else if(mode == IEM_DRAW_CONFIG)
         toggle_draw_config(x, glist);
-    else if(mode >= IEM_DRAW_IO)
-        toggle_draw_io(x, glist);
 }
 
 /* ------------------------ tgl widgetbehaviour----------------------------- */
@@ -265,7 +263,6 @@ static void toggle_dialog(t_toggle *x, t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_IO);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
     canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
 }

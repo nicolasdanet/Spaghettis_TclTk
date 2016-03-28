@@ -404,8 +404,6 @@ void vu_draw(t_vu *x, t_glist *glist, int mode)
         vu_draw_erase(x, glist);
     else if(mode == IEM_DRAW_CONFIG)
         vu_draw_config(x, glist);
-    else if(mode >= IEM_DRAW_IO)
-        vu_draw_io(x, glist);
 }
 
 /* ------------------------ vu widgetbehaviour----------------------------- */
@@ -535,7 +533,6 @@ static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
         scale = 1;
     vu_scale(x, (t_float)scale);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_IO);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
     canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
 }

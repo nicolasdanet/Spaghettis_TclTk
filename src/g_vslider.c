@@ -185,8 +185,6 @@ void vslider_draw(t_vslider *x, t_glist *glist, int mode)
         vslider_draw_erase(x, glist);
     else if(mode == IEM_DRAW_CONFIG)
         vslider_draw_config(x, glist);
-    else if(mode >= IEM_DRAW_IO)
-        vslider_draw_io(x, glist);
 }
 
 /* ------------------------ vsl widgetbehaviour----------------------------- */
@@ -339,7 +337,6 @@ static void vslider_dialog(t_vslider *x, t_symbol *s, int argc, t_atom *argv)
     vslider_check_height(x, h);
     vslider_check_minmax(x, min, max);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_IO);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
     canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
 }

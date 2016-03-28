@@ -202,7 +202,10 @@ void iemgui_checkSendReceiveLoop (t_iem *iem)
     iem->iem_goThrough = 1;
     
     if (iem->iem_canSend && iem->iem_canReceive) {
-        if (iem->iem_send == iem->iem_receive) { iem->iem_goThrough = 0; }
+        if (iem->iem_send == iem->iem_receive) {
+            post_error (PD_TRANSLATE ("iem: send receive loop")); 
+            iem->iem_goThrough = 0; 
+        }
     }
 }
 

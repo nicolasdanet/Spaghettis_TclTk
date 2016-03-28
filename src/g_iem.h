@@ -23,6 +23,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define IEM_DIALOG_SIZE                 17
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define IEM_COLOR_NORMAL                0               // Black.
 #define IEM_COLOR_SELECTED              255             // Blue.
 
@@ -40,7 +46,6 @@
 #define IEM_DRAW_SELECT                 3
 #define IEM_DRAW_ERASE                  4
 #define IEM_DRAW_CONFIG                 5
-#define IEM_DRAW_IO                     6
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -94,7 +99,6 @@ typedef struct _iem {
     char        iem_hasChanged;
     char        iem_isLogarithmic;
     char        iem_isSteadyOnClick;
-    char        iem_isLocked;
     int         iem_height;
     int         iem_width;
     int         iem_labelX;
@@ -126,11 +130,10 @@ typedef struct _iem {
 typedef struct _bng {
     t_iem       x_gui;
     int         x_flashed;
-    int         x_flashBreak;
-    int         x_flashHold;
+    int         x_flashTimeBreak;
+    int         x_flashTimeHold;
     t_clock     *x_clockHold;
     t_clock     *x_clockBreak;
-    t_clock     *x_clockLock;
     } t_bng;
 
 typedef struct _toggle {

@@ -216,8 +216,6 @@ void vradio_draw(t_vradio *x, t_glist *glist, int mode)
         vradio_draw_erase(x, glist);
     else if(mode == IEM_DRAW_CONFIG)
         vradio_draw_config(x, glist);
-    else if(mode >= IEM_DRAW_IO)
-        vradio_draw_io(x, glist);
 }
 
 /* ------------------------ vdl widgetbehaviour----------------------------- */
@@ -305,7 +303,6 @@ static void vradio_dialog(t_vradio *x, t_symbol *s, int argc, t_atom *argv)
     else
     {
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_IO);
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
         canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
     }

@@ -352,8 +352,6 @@ void my_numbox_draw(t_my_numbox *x, t_glist *glist, int mode)
         my_numbox_draw_erase(x, glist);
     else if(mode == IEM_DRAW_CONFIG)
         my_numbox_draw_config(x, glist);
-    else if(mode >= IEM_DRAW_IO)
-        my_numbox_draw_io(x, glist);
 }
 
 /* ------------------------ nbx widgetbehaviour----------------------------- */
@@ -506,7 +504,6 @@ static void my_numbox_dialog(t_my_numbox *x, t_symbol *s, int argc,
      my_numbox_bang(x);*/
     my_numbox_check_minmax(x, min, max);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_IO);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
     canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);

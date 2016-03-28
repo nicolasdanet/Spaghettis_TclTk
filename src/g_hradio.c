@@ -216,8 +216,6 @@ void hradio_draw(t_hradio *x, t_glist *glist, int mode)
         hradio_draw_erase(x, glist);
     else if(mode == IEM_DRAW_CONFIG)
         hradio_draw_config(x, glist);
-    else if(mode >= IEM_DRAW_IO)
-        hradio_draw_io(x, glist);
 }
 
 /* ------------------------ hdl widgetbehaviour----------------------------- */
@@ -304,7 +302,6 @@ static void hradio_dialog(t_hradio *x, t_symbol *s, int argc, t_atom *argv)
     else
     {
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_IO);
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
         canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
     }

@@ -56,6 +56,7 @@
 /* Graphics. */
 
 #include "g_iem.c"
+#include "g_bng.c"
 
 /* Control. */
 
