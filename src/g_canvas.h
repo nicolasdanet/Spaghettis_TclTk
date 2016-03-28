@@ -255,13 +255,13 @@ typedef struct _linetraverser {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_getrectfn)(t_gobj *x, t_glist *glist, int *x1, int *y1, int *x2, int *y2);
-typedef void (*t_displacefn)(t_gobj *x, t_glist *glist, int dx, int dy);
-typedef void (*t_selectfn)(t_gobj *x, t_glist *glist, int state);
-typedef void (*t_activatefn)(t_gobj *x, t_glist *glist, int state);
-typedef void (*t_deletefn)(t_gobj *x, t_glist *glist);
-typedef void (*t_visfn)(t_gobj *x, t_glist *glist, int flag);
-typedef int  (*t_clickfn)(t_gobj *x, t_glist *glist, int xpix, int ypix, int shift, int alt, int dbl, int b);
+typedef void (*t_getrectfn)  (t_gobj *x, t_glist *glist, int *a, int *b, int *c, int *d);
+typedef void (*t_displacefn) (t_gobj *x, t_glist *glist, int deltaX, int deltaY);
+typedef void (*t_selectfn)   (t_gobj *x, t_glist *glist, int state);
+typedef void (*t_activatefn) (t_gobj *x, t_glist *glist, int state);
+typedef void (*t_deletefn)   (t_gobj *x, t_glist *glist);
+typedef void (*t_visfn)      (t_gobj *x, t_glist *glist, int flag);
+typedef int  (*t_clickfn)    (t_gobj *x, t_glist *glist, int a, int b, int shift, int alt, int dbl, int k);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
