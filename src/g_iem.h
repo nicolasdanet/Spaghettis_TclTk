@@ -139,7 +139,7 @@ typedef struct _bng {
 typedef struct _toggle {
     t_iem       x_gui;
     t_float     x_on;
-    t_float     x_nonzero;
+    t_float     x_nonZero;
     } t_toggle;
 
 typedef struct _hradio {

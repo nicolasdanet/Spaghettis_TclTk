@@ -46,7 +46,7 @@ void g_hradio_setup         (void);
 void g_hslider_setup        (void);
 void g_mycanvas_setup       (void);
 void g_numbox_setup         (void);
-void g_toggle_setup         (void);
+void toggle_setup           (void);
 void g_vradio_setup         (void);
 void g_vslider_setup        (void);
 void g_vumeter_setup        (void);
@@ -102,7 +102,7 @@ void setup_initialize (void)
     g_hslider_setup();
     g_mycanvas_setup();
     g_numbox_setup();
-    g_toggle_setup();
+    toggle_setup();
     g_vradio_setup();
     g_vslider_setup();
     g_vumeter_setup();

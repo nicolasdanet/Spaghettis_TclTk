@@ -1,38 +1,45 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
- * For information on usage and redistribution, and for a DISCLAIMER OF ALL
- * WARRANTIES, see the file, "LICENSE.txt," in this distribution. */
 
-/* g_7_guis.c written by Thomas Musil (c) IEM KUG Graz Austria 2000-2001 */
-/* thanks to Miller Puckette, Guenther Geiger and Krzystof Czaja */
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
 
+/* < https://opensource.org/licenses/BSD-3-Clause > */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Original "g_7_guis.h" written by Thomas Musil (c) IEM KUG Graz Austria 2000-2001. */
+
+/* Thanks to Miller Puckette, Guenther Geiger and Krzystof Czaja. */
+
+/* < http://iem.kug.ac.at/ > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "g_canvas.h"
-
 #include "g_iem.h"
-#include <math.h>
 
-#ifdef _WIN32
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #define IEM_TOGGLE_DEFAULT_SIZE     15
 #define IEM_TOGGLE_MINIMUM_SIZE     8
 
-/* --------------- tgl     gui-toggle ------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-t_widgetbehavior toggle_widgetbehavior;
+static t_widgetbehavior toggle_widgetBehavior;
+
 static t_class *toggle_class;
 
-/* widget helper functions */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void toggle_draw_update(t_toggle *x, t_glist *glist)
 {
@@ -200,15 +207,15 @@ static void toggle_save(t_gobj *z, t_buffer *b)
     t_symbol *srl[3];
 
     iemgui_serialize(&x->x_gui, srl, bflcol);
-    buffer_vAppend(b, "ssiisiisssiiiiiiiff", gensym("#X"),gensym("obj"),
+    buffer_vAppend(b, "ssiisiisssiiiiiiiff", gensym ("#X"),gensym ("obj"),
                 (int)x->x_gui.iem_obj.te_xCoordinate,
                 (int)x->x_gui.iem_obj.te_yCoordinate,
-                gensym("tgl"), x->x_gui.iem_width,
+                gensym ("tgl"), x->x_gui.iem_width,
                 iemgui_serializeLoadbang(&x->x_gui),
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
                 iemgui_serializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
-                bflcol[0], bflcol[1], bflcol[2], x->x_on, x->x_nonzero);
+                bflcol[0], bflcol[1], bflcol[2], x->x_on, x->x_nonZero);
     buffer_vAppend(b, ";");
 }
 
@@ -231,7 +238,7 @@ static void toggle_properties(t_gobj *z, t_glist *owner)
             %d %d %d \
             -1\n",
             x->x_gui.iem_width, IEM_TOGGLE_MINIMUM_SIZE,
-            x->x_nonzero,
+            x->x_nonZero,
             x->x_gui.iem_loadbang,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
@@ -242,7 +249,7 @@ static void toggle_properties(t_gobj *z, t_glist *owner)
 
 static void toggle_bang(t_toggle *x)
 {
-    x->x_on = (x->x_on==0.0)?x->x_nonzero:0.0;
+    x->x_on = (x->x_on==0.0)?x->x_nonZero:0.0;
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     outlet_float(x->x_gui.iem_obj.te_outlet, x->x_on);
     if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
@@ -256,9 +263,9 @@ static void toggle_dialog(t_toggle *x, t_symbol *s, int argc, t_atom *argv)
 
     if(nonzero == 0.0)
         nonzero = 1.0;
-    x->x_nonzero = nonzero;
+    x->x_nonZero = nonzero;
     if(x->x_on != 0.0)
-        x->x_on = x->x_nonzero;
+        x->x_on = x->x_nonZero;
     iemgui_fromDialog(&x->x_gui, argc, argv);
     x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
@@ -282,7 +289,7 @@ static void toggle_set(t_toggle *x, t_float f)
     int old = (x->x_on != 0);
     x->x_on = f;
     if (f != 0.0 && 0)
-        x->x_nonzero = f;
+        x->x_nonZero = f;
     if ((x->x_on != 0) != old)
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
 }
@@ -352,8 +359,12 @@ static void toggle_init(t_toggle *x, t_float f)
 static void toggle_nonzero(t_toggle *x, t_float f)
 {
     if(f != 0.0)
-        x->x_nonzero = f;
+        x->x_nonZero = f;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
 {
@@ -402,7 +413,7 @@ static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
     if (!strcmp(x->x_gui.iem_receive->s_name, "empty"))
         x->x_gui.iem_canReceive = 0;
 
-    x->x_nonzero = (nonzero!=0.0)?nonzero:1.0;
+    x->x_nonZero = (nonzero!=0.0)?nonzero:1.0;
     if(x->x_gui.iem_loadbang)
         x->x_on = (on!=0.0)?nonzero:0.0;
     else
@@ -430,39 +441,68 @@ static void toggle_ff(t_toggle *x)
     gfxstub_deleteforkey(x);
 }
 
-void g_toggle_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void toggle_setup (void)
 {
-    toggle_class = class_new(gensym("tgl"), (t_newmethod)toggle_new,
-                             (t_method)toggle_ff, sizeof(t_toggle), 0, A_GIMME, 0);
-    class_addCreator((t_newmethod)toggle_new, gensym("toggle"), A_GIMME, 0);
-    class_addBang(toggle_class, toggle_bang);
-    class_addFloat(toggle_class, toggle_float);
-    class_addMethod(toggle_class, (t_method)toggle_click, gensym("click"),
-                    A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addMethod(toggle_class, (t_method)toggle_dialog, gensym("dialog"),
-                    A_GIMME, 0);
-    class_addMethod(toggle_class, (t_method)toggle_loadbang, gensym("loadbang"), 0);
-    class_addMethod(toggle_class, (t_method)toggle_set, gensym("set"), A_FLOAT, 0);
-    class_addMethod(toggle_class, (t_method)toggle_size, gensym("size"), A_GIMME, 0);
-    class_addMethod(toggle_class, (t_method)toggle_delta, gensym("delta"), A_GIMME, 0);
-    class_addMethod(toggle_class, (t_method)toggle_pos, gensym("pos"), A_GIMME, 0);
-    class_addMethod(toggle_class, (t_method)toggle_color, gensym("color"), A_GIMME, 0);
-    class_addMethod(toggle_class, (t_method)toggle_send, gensym("send"), A_DEFSYMBOL, 0);
-    class_addMethod(toggle_class, (t_method)toggle_receive, gensym("receive"), A_DEFSYMBOL, 0);
-    class_addMethod(toggle_class, (t_method)toggle_label, gensym("label"), A_DEFSYMBOL, 0);
-    class_addMethod(toggle_class, (t_method)toggle_label_pos, gensym("label_pos"), A_GIMME, 0);
-    class_addMethod(toggle_class, (t_method)toggle_label_font, gensym("label_font"), A_GIMME, 0);
-    class_addMethod(toggle_class, (t_method)toggle_init, gensym("init"), A_FLOAT, 0);
-    class_addMethod(toggle_class, (t_method)toggle_nonzero, gensym("nonzero"), A_FLOAT, 0);
-    toggle_widgetbehavior.w_getrectfn = toggle_getrect;
-    toggle_widgetbehavior.w_displacefn = iemgui_behaviorDisplace;
-    toggle_widgetbehavior.w_selectfn = iemgui_behaviorSelected;
-    toggle_widgetbehavior.w_activatefn = NULL;
-    toggle_widgetbehavior.w_deletefn = iemgui_behaviorDeleted;
-    toggle_widgetbehavior.w_visfn = iemgui_behaviorVisible;
-    toggle_widgetbehavior.w_clickfn = toggle_newclick;
-    class_setWidgetBehavior(toggle_class, &toggle_widgetbehavior);
-    class_setHelpName(toggle_class, gensym("tgl"));
-    class_setSaveFunction(toggle_class, toggle_save);
-    class_setPropertiesFunction(toggle_class, toggle_properties);
+    t_class *c = NULL;
+    
+    c = class_new (gensym ("tgl"),
+            (t_newmethod)toggle_new,
+            (t_method)toggle_ff,
+            sizeof (t_toggle),
+            CLASS_DEFAULT,
+            A_GIMME,
+            A_NULL);
+            
+    class_addCreator ((t_newmethod)toggle_new, gensym ("toggle"), A_GIMME, A_NULL);
+    
+    class_addBang (c, toggle_bang);
+    class_addFloat (c, toggle_float);
+    class_addClick (c, toggle_click);
+    
+    class_addMethod (c, (t_method)toggle_loadbang,      gensym ("loadbang"),        A_NULL);
+    class_addMethod (c, (t_method)toggle_init,          gensym ("initialize"),      A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)toggle_dialog,        gensym ("dialog"),          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_size,          gensym ("size"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_delta,         gensym ("move"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_pos,           gensym ("position"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_label_pos,     gensym ("labelposition"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_label_font,    gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_set,           gensym ("set"),             A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)toggle_nonzero,       gensym ("nonzero"),         A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)toggle_send,          gensym ("send"),            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)toggle_receive,       gensym ("receive"),         A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)toggle_label,         gensym ("label"),           A_DEFSYMBOL, A_NULL);
+
+    #if PD_WITH_LEGACY
+    
+    class_addMethod (c, (t_method)toggle_init,          gensym ("init"),            A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)toggle_delta,         gensym ("delta"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_pos,           gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_color,         gensym ("color"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_label_pos,     gensym ("label_pos"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_label_font,    gensym ("label_font"),      A_GIMME, A_NULL);
+    
+    #endif
+    
+    toggle_widgetBehavior.w_getrectfn   = toggle_getrect;
+    toggle_widgetBehavior.w_displacefn  = iemgui_behaviorDisplace;
+    toggle_widgetBehavior.w_selectfn    = iemgui_behaviorSelected;
+    toggle_widgetBehavior.w_activatefn  = NULL;
+    toggle_widgetBehavior.w_deletefn    = iemgui_behaviorDeleted;
+    toggle_widgetBehavior.w_visfn       = iemgui_behaviorVisible;
+    toggle_widgetBehavior.w_clickfn     = toggle_newclick;
+    
+    class_setWidgetBehavior (c, &toggle_widgetBehavior);
+    class_setHelpName (c, gensym ("tgl"));
+    class_setSaveFunction (c, toggle_save);
+    class_setPropertiesFunction (c, toggle_properties);
+    
+    toggle_class = c;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
