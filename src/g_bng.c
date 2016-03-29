@@ -124,10 +124,10 @@ void bng_drawNew (t_bng *x, t_glist *glist)
                 b + x->x_gui.iem_height - 1,
                 x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                 x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"                    // --
                 " -anchor w"
-                " -font [::getFont %d]"
-                " -fill #%6.6x -tags [list %lxLABEL label text]\n",
+                " -font [::getFont %d]"                                 // --
+                " -fill #%6.6x -tags [list %lxLABEL label text]\n",     // --
                 canvas, 
                 a + x->x_gui.iem_labelX,
                 b + x->x_gui.iem_labelY,
@@ -182,7 +182,7 @@ void bng_drawConfig (t_bng *x, t_glist *glist)
                 canvas,
                 x,
                 x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",     // --
                 canvas,
                 x,
                 x->x_gui.iem_fontSize,
@@ -457,12 +457,12 @@ static void bng_behaviorProperties (t_gobj *z, t_glist *owner)
     char t[PD_STRING] = { 0 };
     t_iemnames names;
 
-    iemgui_serializeNames(&x->x_gui, &names);
+    iemgui_serializeNames (&x->x_gui, &names);
     
     err = string_sprintf (t, PD_STRING,
             "::ui_iem::create %%s Bang"
             " %d %d Size 0 0 empty"
-            " %d {Flash Break} %d {Flash Hold}"
+            " %d {Flash Break} %d {Flash Hold}"     // --
             " -1 empty empty"
             " %d"
             " -1 -1 empty"
