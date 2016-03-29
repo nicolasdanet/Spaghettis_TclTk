@@ -42,7 +42,7 @@ static t_symbol *iemgui_parseEmpty (t_symbol *s)
 
 static t_symbol *iemgui_expandDollar (t_iem *iem, t_symbol *s)
 {
-    t_symbol *t = canvas_realizedollar (iem, s); return  (t == NULL ? iemgui_empty() : t);
+    t_symbol *t = canvas_realizedollar (iem, s); return (t == NULL ? iemgui_empty() : t);
 }
 
 // -----------------------------------------------------------------------------------------------------------

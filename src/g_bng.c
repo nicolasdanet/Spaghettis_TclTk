@@ -59,149 +59,158 @@ static t_class *bng_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void bng_draw_update(t_bng *x, t_glist *glist)
+void bng_drawUpdate (t_bng *x, t_glist *glist)
 {
-    if(glist_isvisible(glist))
-    {
-        sys_vGui(".x%lx.c itemconfigure %lxBUT -fill #%6.6x\n", glist_getcanvas(glist), x,
-                 x->x_flashed?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
+    if (glist_isvisible (glist)) {
+        sys_vGui (".x%lx.c itemconfigure %lxBUTTON -fill #%6.6x\n", 
+            glist_getcanvas (glist),
+            x,
+            x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
     }
 }
 
-void bng_draw_new(t_bng *x, t_glist *glist)
+void bng_drawMove (t_bng *x, t_glist *glist)
 {
-    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
-    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    t_glist *canvas=glist_getcanvas(glist);
+    int a = text_xpix (cast_object (x), glist);
+    int b = text_ypix (cast_object (x), glist);
+    
+    t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
-             canvas, xpos, ypos,
-             xpos + x->x_gui.iem_width, ypos + x->x_gui.iem_height,
-             x->x_gui.iem_colorBackground, x);
-    sys_vGui(".x%lx.c create oval %d %d %d %d -fill #%6.6x -tags %lxBUT\n",
-             canvas, xpos+1, ypos+1,
-             xpos + x->x_gui.iem_width-1, ypos + x->x_gui.iem_height-1,
-             x->x_flashed?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground, x);
-    sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor w \
-             -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",
-             canvas, xpos+x->x_gui.iem_labelX,
-             ypos+x->x_gui.iem_labelY,
-             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"",
-             x->x_gui.iem_fontSize,
-             x->x_gui.iem_colorLabel, x);
-    /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
-             canvas, xpos,
-             ypos + x->x_gui.iem_height-1, xpos + INLETS_WIDTH,
-             ypos + x->x_gui.iem_height, x, 0);
-    sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
-             canvas, xpos, ypos,
-             xpos + INLETS_WIDTH, ypos+1, x, 0);*/
+    sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
+                canvas,
+                x,
+                a,
+                b,
+                a + x->x_gui.iem_width,
+                b + x->x_gui.iem_height);
+    sys_vGui (".x%lx.c coords %lxBUTTON %d %d %d %d\n",
+                canvas,
+                x,
+                a + 1,
+                b + 1,
+                a + x->x_gui.iem_width - 1,
+                b + x->x_gui.iem_height - 1);
+    sys_vGui (".x%lx.c itemconfigure %lxBUTTON -fill #%6.6x\n", 
+                canvas,
+                x,
+                x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
+    sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
+                canvas,
+                x,
+                a + x->x_gui.iem_labelX,
+                b + x->x_gui.iem_labelY);
 }
 
-void bng_draw_move(t_bng *x, t_glist *glist)
+void bng_drawNew (t_bng *x, t_glist *glist)
 {
-    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
-    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    t_glist *canvas=glist_getcanvas(glist);
+    int a = text_xpix (cast_object (x), glist);
+    int b = text_ypix (cast_object (x), glist);
+    
+    t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui(".x%lx.c coords %lxBASE %d %d %d %d\n",
-             canvas, x, xpos, ypos,
-             xpos + x->x_gui.iem_width, ypos + x->x_gui.iem_height);
-    sys_vGui(".x%lx.c coords %lxBUT %d %d %d %d\n",
-             canvas, x, xpos+1,ypos+1,
-             xpos + x->x_gui.iem_width-1, ypos + x->x_gui.iem_height-1);
-    sys_vGui(".x%lx.c itemconfigure %lxBUT -fill #%6.6x\n", canvas, x,
-             x->x_flashed?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
-    sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
-             canvas, x, xpos+x->x_gui.iem_labelX, ypos+x->x_gui.iem_labelY);
-    /*
-    sys_vGui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
-             canvas, x, 0, xpos,
-             ypos + x->x_gui.iem_height-1, xpos + INLETS_WIDTH,
-             ypos + x->x_gui.iem_height);
-    sys_vGui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
-             canvas, x, 0, xpos, ypos,
-             xpos + INLETS_WIDTH, ypos+1);*/
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
+                canvas,
+                a,
+                b,
+                a + x->x_gui.iem_width,
+                b + x->x_gui.iem_height,
+                x->x_gui.iem_colorBackground,
+                x);
+    sys_vGui (".x%lx.c create oval %d %d %d %d -fill #%6.6x -tags %lxBUTTON\n",
+                canvas,
+                a + 1,
+                b + 1,
+                a + x->x_gui.iem_width - 1,
+                b + x->x_gui.iem_height - 1,
+                x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
+                x);
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"
+                " -anchor w"
+                " -font [::getFont %d]"
+                " -fill #%6.6x -tags [list %lxLABEL label text]\n",
+                canvas, 
+                a + x->x_gui.iem_labelX,
+                b + x->x_gui.iem_labelY,
+                (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "",
+                x->x_gui.iem_fontSize,
+                x->x_gui.iem_colorLabel,
+                x);
 }
 
-void bng_draw_erase(t_bng* x, t_glist* glist)
+void bng_drawSelect (t_bng *x, t_glist *glist)
 {
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui(".x%lx.c delete %lxBASE\n", canvas, x);
-    sys_vGui(".x%lx.c delete %lxBUT\n", canvas, x);
-    sys_vGui(".x%lx.c delete %lxLABEL\n", canvas, x);
-    //sys_vGui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    //sys_vGui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n",
+                canvas,
+                x,
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
+    sys_vGui (".x%lx.c itemconfigure %lxBUTTON -outline #%6.6x\n",
+                canvas,
+                x,
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n",
+                canvas,
+                x, 
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
-void bng_draw_config(t_bng* x, t_glist* glist)
+void bng_drawErase (t_bng *x, t_glist *glist)
 {
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
-             canvas, x, x->x_gui.iem_fontSize,
-             x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
-             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
-    sys_vGui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas, x, x->x_gui.iem_colorBackground);
-    sys_vGui(".x%lx.c itemconfigure %lxBUT -fill #%6.6x\n", canvas, x,
-             x->x_flashed?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
+    sys_vGui (".x%lx.c delete %lxBASE\n",
+                canvas,
+                x);
+    sys_vGui (".x%lx.c delete %lxBUTTON\n",
+                canvas,
+                x);
+    sys_vGui (".x%lx.c delete %lxLABEL\n",
+                canvas,
+                x);
 }
 
-void bng_draw_io(t_bng* x, t_glist* glist)
+void bng_drawConfig (t_bng *x, t_glist *glist)
 {
-    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
-    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    t_glist *canvas=glist_getcanvas(glist);
-    /*
-    sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
-        canvas, xpos,
-        ypos + x->x_gui.iem_height-1, xpos + INLETS_WIDTH,
-        ypos + x->x_gui.iem_height, x, 0);
-    sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
-        canvas, xpos, ypos,
-        xpos + INLETS_WIDTH, ypos+1, x, 0); */
-}
+    t_glist *canvas = glist_getcanvas (glist);
 
-void bng_draw_select(t_bng* x, t_glist* glist)
-{
-    t_glist *canvas=glist_getcanvas(glist);
-
-    if(x->x_gui.iem_isSelected)
-    {
-        sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
-        sys_vGui(".x%lx.c itemconfigure %lxBUT -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
-        sys_vGui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
-    }
-    else
-    {
-        sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_NORMAL);
-        sys_vGui(".x%lx.c itemconfigure %lxBUT -outline #%6.6x\n", canvas, x, IEM_COLOR_NORMAL);
-        sys_vGui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, x->x_gui.iem_colorLabel);
-    }
-}
-
-void bng_draw(t_bng *x, t_glist *glist, int mode)
-{
-    if(mode == IEM_DRAW_UPDATE)
-        bng_draw_update(x, glist);
-    else if(mode == IEM_DRAW_MOVE)
-        bng_draw_move(x, glist);
-    else if(mode == IEM_DRAW_NEW)
-        bng_draw_new(x, glist);
-    else if(mode == IEM_DRAW_SELECT)
-        bng_draw_select(x, glist);
-    else if(mode == IEM_DRAW_ERASE)
-        bng_draw_erase(x, glist);
-    else if(mode == IEM_DRAW_CONFIG)
-        bng_draw_config(x, glist);
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n",
+                canvas,
+                x,
+                x->x_gui.iem_colorBackground);
+    sys_vGui (".x%lx.c itemconfigure %lxBUTTON -fill #%6.6x\n",
+                canvas,
+                x,
+                x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
+                canvas,
+                x,
+                x->x_gui.iem_fontSize,
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel,
+                (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void bng_setTimes (t_bng *x, int flashBreak, int flashHold)
+void bng_draw (t_bng *x, t_glist *glist, int mode)
+{
+    switch (mode) {
+        case IEM_DRAW_UPDATE    : bng_drawUpdate (x, glist);    break;
+        case IEM_DRAW_MOVE      : bng_drawMove (x, glist);      break;
+        case IEM_DRAW_NEW       : bng_drawNew (x, glist);       break;
+        case IEM_DRAW_SELECT    : bng_drawSelect (x, glist);    break;
+        case IEM_DRAW_ERASE     : bng_drawErase (x, glist);     break;
+        case IEM_DRAW_CONFIG    : bng_drawConfig (x, glist);    break;
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void bng_setFlashTimes (t_bng *x, int flashBreak, int flashHold)
 {
     if (flashBreak > flashHold) { int h = flashBreak; flashBreak = flashHold; flashHold = h; }
     
@@ -209,7 +218,7 @@ void bng_setTimes (t_bng *x, int flashBreak, int flashHold)
     x->x_flashTimeHold  = PD_MAX (flashHold, IEM_BANG_MINIMUM_HOLD);
 }
 
-static void bng_setFlash (t_bng *x)
+static void bng_updateFlash (t_bng *x)
 {
     if (x->x_flashed) {
         x->x_flashed = 0; (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
@@ -236,7 +245,7 @@ static void bng_out (t_bng *x)
 
 static void bng_bang (t_bng *x)
 {
-    bng_setFlash (x);
+    bng_updateFlash (x);
     
     if (x->x_gui.iem_goThrough) { 
         bng_out (x);
@@ -270,6 +279,7 @@ static void bng_anything (t_bng *x, t_symbol *s, int argc, t_atom *argv)
 
 static void bng_click (t_bng *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
 {
+    bng_updateFlash (x);
     bng_out (x);
 }
 
@@ -300,7 +310,7 @@ static void bng_dialog (t_bng *x, t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_width  = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = PD_MAX (size, IEM_MINIMUM_WIDTH);
     
-    bng_setTimes (x, flashBreak, flashHold);
+    bng_setFlashTimes (x, flashBreak, flashHold);
     
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
@@ -338,7 +348,7 @@ static void bng_flashtime (t_bng *x, t_symbol *s, int argc, t_atom *argv)
     //
     int flashBreak = (int)atom_getFloatAtIndex (0, argc, argv);
     int flashHold  = (int)atom_getFloatAtIndex (1, argc, argv);
-    bng_setTimes (x, flashBreak, flashHold);
+    bng_setFlashTimes (x, flashBreak, flashHold);
     //
     }
 }
@@ -450,16 +460,16 @@ static void bng_behaviorProperties (t_gobj *z, t_glist *owner)
     iemgui_serializeNames(&x->x_gui, &names);
     
     err = string_sprintf (t, PD_STRING,
-            "::ui_iem::create %%s Bang" \
-            " %d %d Size 0 0 empty" \
-            " %d {Flash Break} %d {Flash Hold}" \
-            " -1 empty empty" \
-            " %d" \
-            " -1 -1 empty" \
-            " %s %s" \
-            " %s %d %d" \
-            " %d" \
-            " %d %d %d" \
+            "::ui_iem::create %%s Bang"
+            " %d %d Size 0 0 empty"
+            " %d {Flash Break} %d {Flash Hold}"
+            " -1 empty empty"
+            " %d"
+            " -1 -1 empty"
+            " %s %s"
+            " %s %d %d"
+            " %d"
+            " %d %d %d"
             " -1\n",
             x->x_gui.iem_width, IEM_BANG_MINIMUM_SIZE,
             x->x_flashTimeBreak, x->x_flashTimeHold,
@@ -539,7 +549,7 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
         
-    bng_setTimes (x, flashBreak, flashHold);
+    bng_setFlashTimes (x, flashBreak, flashHold);
     
     x->x_clockHold  = clock_new (x, (t_method)bng_taskHold);
     x->x_clockBreak = clock_new (x, (t_method)bng_taskBreak);
