@@ -27,18 +27,13 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define IEM_BANG_DEFAULT_SIZE       15
 #define IEM_BANG_DEFAULT_HOLD       250
 #define IEM_BANG_DEFAULT_BREAK      50
-#define IEM_BANG_DEFAULT_LABELX     17
-#define IEM_BANG_DEFAULT_LABELY     7
-#define IEM_BANG_DEFAULT_FONTSIZE   10
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_BANG_MINIMUM_SIZE       8
 #define IEM_BANG_MINIMUM_HOLD       10
 #define IEM_BANG_MINIMUM_BREAK      10
 
@@ -471,7 +466,7 @@ static void bng_behaviorProperties (t_gobj *z, t_glist *owner)
             " %d"
             " %d %d %d"
             " -1\n",
-            x->x_gui.iem_width, IEM_BANG_MINIMUM_SIZE,
+            x->x_gui.iem_width, IEM_MINIMUM_WIDTH,
             x->x_flashTimeBreak, x->x_flashTimeHold,
             x->x_gui.iem_loadbang,
             names.n_unexpandedSend->s_name, names.n_unexpandedReceive->s_name,
@@ -492,12 +487,12 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_bng *x = (t_bng *)pd_new (bng_class);
     
-    int size            = IEM_BANG_DEFAULT_SIZE;
+    int size            = IEM_DEFAULT_SIZE;
     int flashHold       = IEM_BANG_DEFAULT_HOLD;
     int flashBreak      = IEM_BANG_DEFAULT_BREAK;
-    int labelX          = IEM_BANG_DEFAULT_LABELX;
-    int labelY          = IEM_BANG_DEFAULT_LABELY;
-    int labelFontSize   = IEM_BANG_DEFAULT_FONTSIZE;
+    int labelX          = IEM_DEFAULT_LABELX;
+    int labelY          = IEM_DEFAULT_LABELY;
+    int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     t_iemcolors colors  = IEM_COLORS_DEFAULT;
     
     if (argc == 14                                              // --

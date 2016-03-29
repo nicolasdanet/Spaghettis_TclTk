@@ -27,19 +27,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define IEM_TOGGLE_DEFAULT_SIZE     15
-#define IEM_TOGGLE_MINIMUM_SIZE     8
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 static t_widgetbehavior toggle_widgetBehavior;
 
 static t_class *toggle_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 void toggle_draw_update(t_toggle *x, t_glist *glist)
 {
@@ -48,9 +41,9 @@ void toggle_draw_update(t_toggle *x, t_glist *glist)
         t_glist *canvas=glist_getcanvas(glist);
 
         sys_vGui(".x%lx.c itemconfigure %lxX1 -fill #%6.6x\n", canvas, x,
-                 (x->x_on!=0.0)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
+                 (x->x_state!=0.0)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
         sys_vGui(".x%lx.c itemconfigure %lxX2 -fill #%6.6x\n", canvas, x,
-                 (x->x_on!=0.0)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
+                 (x->x_state!=0.0)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
     }
 }
 
@@ -68,10 +61,10 @@ void toggle_draw_new(t_toggle *x, t_glist *glist)
              x->x_gui.iem_colorBackground, x);
     sys_vGui(".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxX1\n",
              canvas, xx+w+1, yy+w+1, xx + x->x_gui.iem_width-w, yy + x->x_gui.iem_height-w, w,
-             (x->x_on!=0.0)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground, x);
+             (x->x_state!=0.0)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground, x);
     sys_vGui(".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxX2\n",
              canvas, xx+w+1, yy + x->x_gui.iem_height-w-1, xx + x->x_gui.iem_width-w, yy+w, w,
-             (x->x_on!=0.0)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground, x);
+             (x->x_state!=0.0)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground, x);
     sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor w \
              -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",
              canvas, xx+x->x_gui.iem_labelX,
@@ -136,9 +129,9 @@ void toggle_draw_config(t_toggle* x, t_glist* glist)
     sys_vGui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas, x,
              x->x_gui.iem_colorBackground);
     sys_vGui(".x%lx.c itemconfigure %lxX1 -fill #%6.6x\n", canvas, x,
-             x->x_on?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
+             x->x_state?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
     sys_vGui(".x%lx.c itemconfigure %lxX2 -fill #%6.6x\n", canvas, x,
-             x->x_on?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
+             x->x_state?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
 }
 
 void toggle_draw_io(t_toggle* x, t_glist* glist)
@@ -215,7 +208,7 @@ static void toggle_save(t_gobj *z, t_buffer *b)
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
                 iemgui_serializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
-                bflcol[0], bflcol[1], bflcol[2], x->x_on, x->x_nonZero);
+                bflcol[0], bflcol[1], bflcol[2], x->x_state, x->x_nonZero);
     buffer_vAppend(b, ";");
 }
 
@@ -237,7 +230,7 @@ static void toggle_properties(t_gobj *z, t_glist *owner)
             %d \
             %d %d %d \
             -1\n",
-            x->x_gui.iem_width, IEM_TOGGLE_MINIMUM_SIZE,
+            x->x_gui.iem_width, IEM_MINIMUM_WIDTH,
             x->x_nonZero,
             x->x_gui.iem_loadbang,
             srl[0]->s_name, srl[1]->s_name,
@@ -249,11 +242,11 @@ static void toggle_properties(t_gobj *z, t_glist *owner)
 
 static void toggle_bang(t_toggle *x)
 {
-    x->x_on = (x->x_on==0.0)?x->x_nonZero:0.0;
+    x->x_state = (x->x_state==0.0)?x->x_nonZero:0.0;
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-    outlet_float(x->x_gui.iem_obj.te_outlet, x->x_on);
+    outlet_float(x->x_gui.iem_obj.te_outlet, x->x_state);
     if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
-        pd_float(x->x_gui.iem_send->s_thing, x->x_on);
+        pd_float(x->x_gui.iem_send->s_thing, x->x_state);
 }
 
 static void toggle_dialog(t_toggle *x, t_symbol *s, int argc, t_atom *argv)
@@ -264,8 +257,8 @@ static void toggle_dialog(t_toggle *x, t_symbol *s, int argc, t_atom *argv)
     if(nonzero == 0.0)
         nonzero = 1.0;
     x->x_nonZero = nonzero;
-    if(x->x_on != 0.0)
-        x->x_on = x->x_nonZero;
+    if(x->x_state != 0.0)
+        x->x_state = x->x_nonZero;
     iemgui_fromDialog(&x->x_gui, argc, argv);
     x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_height = x->x_gui.iem_width;
@@ -286,11 +279,11 @@ static int toggle_newclick(t_gobj *z, struct _glist *glist, int xpix, int ypix, 
 
 static void toggle_set(t_toggle *x, t_float f)
 {
-    int old = (x->x_on != 0);
-    x->x_on = f;
+    int old = (x->x_state != 0);
+    x->x_state = f;
     if (f != 0.0 && 0)
         x->x_nonZero = f;
-    if ((x->x_on != 0) != old)
+    if ((x->x_state != 0) != old)
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
 }
 
@@ -299,24 +292,24 @@ static void toggle_float(t_toggle *x, t_float f)
     toggle_set(x, f);
     if(x->x_gui.iem_goThrough)
     {
-        outlet_float(x->x_gui.iem_obj.te_outlet, x->x_on);
+        outlet_float(x->x_gui.iem_obj.te_outlet, x->x_state);
         if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
-            pd_float(x->x_gui.iem_send->s_thing, x->x_on);
+            pd_float(x->x_gui.iem_send->s_thing, x->x_state);
     }
 }
 
 static void toggle_fout(t_toggle *x, t_float f)
 {
     toggle_set(x, f);
-    outlet_float(x->x_gui.iem_obj.te_outlet, x->x_on);
+    outlet_float(x->x_gui.iem_obj.te_outlet, x->x_state);
     if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
-        pd_float(x->x_gui.iem_send->s_thing, x->x_on);
+        pd_float(x->x_gui.iem_send->s_thing, x->x_state);
 }
 
 static void toggle_loadbang(t_toggle *x)
 {
     if(x->x_gui.iem_loadbang)
-        toggle_fout(x, (t_float)x->x_on);
+        toggle_fout(x, (t_float)x->x_state);
 }
 
 static void toggle_size(t_toggle *x, t_symbol *s, int ac, t_atom *av)
@@ -366,79 +359,83 @@ static void toggle_nonzero(t_toggle *x, t_float f)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *toggle_new(t_symbol *s, int argc, t_atom *argv)
+static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_toggle *x = (t_toggle *)pd_new(toggle_class);
-    int bflcol[] = IEM_COLORS_DEFAULT;
-    int a=IEM_TOGGLE_DEFAULT_SIZE, f=0;
-    int ldx=17, ldy=7;
-    int fs=10;
-    t_float on=0.0, nonzero=1.0;
-    char str[144];
+    t_toggle *x = (t_toggle *)pd_new (toggle_class);
+    
+    int size            = IEM_DEFAULT_SIZE;
+    int labelX          = IEM_DEFAULT_LABELX;
+    int labelY          = IEM_DEFAULT_LABELY;
+    int labelFontSize   = IEM_DEFAULT_FONTSIZE;
+    t_float state       = 0.0;
+    t_float nonZero     = 1.0;
+    t_iemcolors colors  = IEM_COLORS_DEFAULT;
 
-    iemgui_deserializeLoadbang(&x->x_gui, 0);
-    iemgui_deserializeFontStyle(&x->x_gui, 0);
-
-    if(((argc == 13)||(argc == 14))&&IS_FLOAT_AT(argv,0)
-       &&IS_FLOAT_AT(argv,1)
-       &&(IS_SYMBOL_AT(argv,2)||IS_FLOAT_AT(argv,2))
-       &&(IS_SYMBOL_AT(argv,3)||IS_FLOAT_AT(argv,3))
-       &&(IS_SYMBOL_AT(argv,4)||IS_FLOAT_AT(argv,4))
-       &&IS_FLOAT_AT(argv,5)&&IS_FLOAT_AT(argv,6)
-       &&IS_FLOAT_AT(argv,7)&&IS_FLOAT_AT(argv,8)&&IS_FLOAT_AT(argv,9)
-       &&IS_FLOAT_AT(argv,10)&&IS_FLOAT_AT(argv,11)&&IS_FLOAT_AT(argv,12))
+    if (argc >= 13                                              // --
+            && IS_FLOAT (argv)                                  // Size.
+            && IS_FLOAT (argv + 1)                              // Loadbang.
+            && (IS_SYMBOL (argv + 2) || IS_FLOAT (argv + 2))    // Send.
+            && (IS_SYMBOL (argv + 3) || IS_FLOAT (argv + 3))    // Receive.
+            && (IS_SYMBOL (argv + 4) || IS_FLOAT (argv + 4))    // Label.
+            && IS_FLOAT (argv + 5)                              // Label X.
+            && IS_FLOAT (argv + 6)                              // Label Y.
+            && IS_FLOAT (argv + 7)                              // Label font.
+            && IS_FLOAT (argv + 8)                              // Label font size.
+            && IS_FLOAT (argv + 9)                              // Background color.
+            && IS_FLOAT (argv + 10)                             // Foreground color.
+            && IS_FLOAT (argv + 11)                             // Label color.
+            && IS_FLOAT (argv + 12))                            // Toggle state.
     {
-        a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
-        iemgui_deserializeLoadbang(&x->x_gui, (t_int)atom_getFloatAtIndex(1, argc, argv));
-        iemgui_deserializeNamesByIndex(&x->x_gui, 2, argv);
-        ldx = (int)(t_int)atom_getFloatAtIndex(5, argc, argv);
-        ldy = (int)(t_int)atom_getFloatAtIndex(6, argc, argv);
-        iemgui_deserializeFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(7, argc, argv));
-        fs = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
-        bflcol[0] = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
-        bflcol[1] = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
-        bflcol[2] = (int)(t_int)atom_getFloatAtIndex(11, argc, argv);
-        on = (t_float)atom_getFloatAtIndex(12, argc, argv);
+        size                        = (int)atom_getFloatAtIndex (0, argc,  argv);
+        labelX                      = (int)atom_getFloatAtIndex (5, argc,  argv);
+        labelY                      = (int)atom_getFloatAtIndex (6, argc,  argv);
+        labelFontSize               = (int)atom_getFloatAtIndex (8, argc,  argv);
+        colors.c_colorBackground    = (int)atom_getFloatAtIndex (9, argc,  argv);
+        colors.c_colorForeground    = (int)atom_getFloatAtIndex (10, argc, argv);
+        colors.c_colorLabel         = (int)atom_getFloatAtIndex (11, argc, argv);
+        state                       = (t_float)atom_getFloatAtIndex (12, argc, argv);
+        nonZero                     = (argc == 14) ? atom_getFloatAtIndex (13, argc, argv) : 1.0;
+        
+        iemgui_deserializeLoadbang (&x->x_gui, (int)atom_getFloatAtIndex (1, argc, argv));
+        iemgui_deserializeNamesByIndex (&x->x_gui, 2, argv);
+        iemgui_deserializeFontStyle (&x->x_gui, (int)atom_getFloatAtIndex (7, argc, argv));
+        
+    } else {
+        iemgui_deserializeNamesByIndex (&x->x_gui, 2, NULL);
     }
-    else iemgui_deserializeNamesByIndex(&x->x_gui, 2, 0);
-    if((argc == 14)&&IS_FLOAT_AT(argv,13))
-        nonzero = (t_float)atom_getFloatAtIndex(13, argc, argv);
-    x->x_gui.iem_draw = (t_iemfn)toggle_draw;
+    
+    x->x_gui.iem_glist      = (t_glist *)canvas_getcurrent();
+    x->x_gui.iem_draw       = (t_iemfn)toggle_draw;
+    x->x_gui.iem_canSend    = (x->x_gui.iem_send == iemgui_empty()) ? 0 : 1;
+    x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;
+    x->x_gui.iem_height     = PD_MAX (size, IEM_MINIMUM_WIDTH);
+    x->x_gui.iem_width      = PD_MAX (size, IEM_MINIMUM_WIDTH);
+    x->x_gui.iem_labelX     = labelX;
+    x->x_gui.iem_labelY     = labelY;
+    x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
+    
+    iemgui_deserializeColors (&x->x_gui, &colors);
+    iemgui_checkSendReceiveLoop (&x->x_gui);
+    
+    if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
+        
+    x->x_nonZero = (nonZero != 0.0) ? nonZero : 1.0;
+    
+    if (x->x_gui.iem_loadbang) { x->x_state = (state != 0.0) ? nonZero : 0.0; }
+    else {
+        x->x_state = 0.0;
+    }
 
-    x->x_gui.iem_canSend = 1;
-    x->x_gui.iem_canReceive = 1;
-    x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
-    if (!strcmp(x->x_gui.iem_send->s_name, "empty"))
-        x->x_gui.iem_canSend = 0;
-    if (!strcmp(x->x_gui.iem_receive->s_name, "empty"))
-        x->x_gui.iem_canReceive = 0;
-
-    x->x_nonZero = (nonzero!=0.0)?nonzero:1.0;
-    if(x->x_gui.iem_loadbang)
-        x->x_on = (on!=0.0)?nonzero:0.0;
-    else
-        x->x_on = 0.0;
-    if (x->x_gui.iem_canReceive)
-        pd_bind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
-    x->x_gui.iem_labelX = ldx;
-    x->x_gui.iem_labelY = ldy;
-
-    if(fs < 4)
-        fs = 4;
-    x->x_gui.iem_fontSize = fs;
-    x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
-    x->x_gui.iem_height = x->x_gui.iem_width;
-    iemgui_deserializeColors(&x->x_gui, bflcol);
-    iemgui_checkSendReceiveLoop(&x->x_gui);
-    outlet_new(&x->x_gui.iem_obj, &s_float);
-    return (x);
+    outlet_new (cast_object (x), &s_float);
+    
+    return x;
 }
 
-static void toggle_ff(t_toggle *x)
+static void toggle_free (t_toggle *x)
 {
-    if(x->x_gui.iem_canReceive)
-        pd_unbind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
-    gfxstub_deleteforkey(x);
+    if (x->x_gui.iem_canReceive) { pd_unbind (cast_pd (x), x->x_gui.iem_receive); }
+    
+    gfxstub_deleteforkey (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -451,7 +448,7 @@ void toggle_setup (void)
     
     c = class_new (gensym ("tgl"),
             (t_newmethod)toggle_new,
-            (t_method)toggle_ff,
+            (t_method)toggle_free,
             sizeof (t_toggle),
             CLASS_DEFAULT,
             A_GIMME,

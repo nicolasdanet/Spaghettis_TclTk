@@ -32,6 +32,19 @@
 #define IEM_COLOR_NORMAL                0               // Black.
 #define IEM_COLOR_SELECTED              255             // Blue.
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define IEM_DEFAULT_SIZE                15
+#define IEM_DEFAULT_LABELX              17
+#define IEM_DEFAULT_LABELY              7
+#define IEM_DEFAULT_FONTSIZE            10
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define IEM_MINIMUM_WIDTH               8
 #define IEM_MINIMUM_HEIGHT              8
 #define IEM_MINIMUM_FONTSIZE            4
@@ -138,7 +151,7 @@ typedef struct _bng {
 
 typedef struct _toggle {
     t_iem       x_gui;
-    t_float     x_on;
+    t_float     x_state;
     t_float     x_nonZero;
     } t_toggle;
 
