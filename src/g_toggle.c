@@ -321,55 +321,78 @@ static void toggle_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
 
 static int toggle_behaviorClick (t_gobj *z, t_glist *glist, int a, int b, int shift, int alt, int dbl, int k)
 {
-    if (k) { toggle_click ((t_toggle *)z, (t_float)a, (t_float)b, (t_float)shift, (t_float)0, (t_float)alt); }
+    if (k) { 
+        toggle_click ((t_toggle *)z, (t_float)a, (t_float)b, (t_float)shift, (t_float)0, (t_float)alt); 
+    }
+    
     return 1;
 }
 
-static void toggle_save(t_gobj *z, t_buffer *b)
+static void toggle_behaviorSave (t_gobj *z, t_buffer *b)
 {
     t_toggle *x = (t_toggle *)z;
-    int bflcol[3];
-    t_symbol *srl[3];
+    
+    t_iemnames names;
+    t_iemcolors colors;
 
-    iemgui_serialize(&x->x_gui, srl, bflcol);
-    buffer_vAppend(b, "ssiisiisssiiiiiiiff", gensym ("#X"),gensym ("obj"),
-                (int)x->x_gui.iem_obj.te_xCoordinate,
-                (int)x->x_gui.iem_obj.te_yCoordinate,
-                gensym ("tgl"), x->x_gui.iem_width,
-                iemgui_serializeLoadbang(&x->x_gui),
-                srl[0], srl[1], srl[2],
-                x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iemgui_serializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
-                bflcol[0], bflcol[1], bflcol[2], x->x_state, x->x_nonZero);
-    buffer_vAppend(b, ";");
+    iemgui_serialize (&x->x_gui, &names, &colors);
+    
+    buffer_vAppend (b, "ssiisiisssiiiiiiiff", 
+        gensym ("#X"),
+        gensym ("obj"),
+        (int)cast_object (z)->te_xCoordinate,
+        (int)cast_object (z)->te_yCoordinate,
+        gensym ("tgl"), 
+        x->x_gui.iem_width,                                 // Size.
+        iemgui_serializeLoadbang (&x->x_gui),               // Loadbang.
+        names.n_unexpandedSend,                             // Send.
+        names.n_unexpandedReceive,                          // Receive.
+        names.n_unexpandedLabel,                            // Label.
+        x->x_gui.iem_labelX,                                // Label X.
+        x->x_gui.iem_labelY,                                // Label Y.
+        iemgui_serializeFontStyle (&x->x_gui),              // Label font.
+        x->x_gui.iem_fontSize,                              // Label font size.
+        colors.c_colorBackground,                           // Backround color.
+        colors.c_colorForeground,                           // Foreground color.
+        colors.c_colorLabel,                                // Label color.
+        x->x_state,                                         // Toggle state.
+        x->x_nonZero);                                      // Non-zero value.
+        
+    buffer_vAppend (b, ";");
 }
 
-static void toggle_properties(t_gobj *z, t_glist *owner)
+static void toggle_behaviorProperties (t_gobj *z, t_glist *owner)
 {
     t_toggle *x = (t_toggle *)z;
-    char buf[800];
-    t_symbol *srl[3];
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    t_iemnames names;
 
-    iemgui_serializeNames(&x->x_gui, srl);
-    sprintf(buf, "::ui_iem::create %%s Toggle \
-            %d %d Size 0 0 empty \
-            %g {Non-Zero Value} 0 empty \
-            -1 empty empty \
-            %d \
-            -1 -1 empty \
-            %s %s \
-            %s %d %d \
-            %d \
-            %d %d %d \
-            -1\n",
+    iemgui_serializeNames (&x->x_gui, &names);
+    
+    err = string_sprintf (t, PD_STRING,
+            "::ui_iem::create %%s Toggle"
+            " %d %d Size 0 0 empty"
+            " %g {Non-Zero Value} 0 empty"
+            " -1 empty empty"
+            " %d"
+            " -1 -1 empty"
+            " %s %s"
+            " %s %d %d"
+            " %d"
+            " %d %d %d"
+            " -1\n",
             x->x_gui.iem_width, IEM_MINIMUM_WIDTH,
             x->x_nonZero,
             x->x_gui.iem_loadbang,
-            srl[0]->s_name, srl[1]->s_name,
-            srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
+            names.n_unexpandedSend->s_name, names.n_unexpandedReceive->s_name,
+            names.n_unexpandedLabel->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
-            0xffffff & x->x_gui.iem_colorBackground, 0xffffff & x->x_gui.iem_colorForeground, 0xffffff & x->x_gui.iem_colorLabel);
-    gfxstub_new(&x->x_gui.iem_obj.te_g.g_pd, x, buf);
+            x->x_gui.iem_colorBackground, x->x_gui.iem_colorForeground, x->x_gui.iem_colorLabel);
+    
+    PD_ASSERT (!err);
+    
+    gfxstub_new (cast_pd (x), (void *)x, t);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -512,8 +535,8 @@ void toggle_setup (void)
     
     class_setWidgetBehavior (c, &toggle_widgetBehavior);
     class_setHelpName (c, gensym ("tgl"));
-    class_setSaveFunction (c, toggle_save);
-    class_setPropertiesFunction (c, toggle_properties);
+    class_setSaveFunction (c, toggle_behaviorSave);
+    class_setPropertiesFunction (c, toggle_behaviorProperties);
     
     toggle_class = c;
 }

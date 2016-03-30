@@ -402,7 +402,10 @@ static void bng_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b,
 
 static int bng_behaviorClick (t_gobj *z, t_glist *glist, int a, int b, int shift, int alt, int dbl, int k)
 {
-    if (k) { bng_click ((t_bng *)z, (t_float)a, (t_float)b, (t_float)shift, (t_float)0, (t_float)alt); }
+    if (k) {
+        bng_click ((t_bng *)z, (t_float)a, (t_float)b, (t_float)shift, (t_float)0, (t_float)alt);
+    }
+    
     return 1;
 }
 
@@ -470,7 +473,7 @@ static void bng_behaviorProperties (t_gobj *z, t_glist *owner)
 
     PD_ASSERT (!err);
     
-    gfxstub_new (cast_pd (z), (void *)x, t);
+    gfxstub_new (cast_pd (x), (void *)x, t);
 }
 
 // -----------------------------------------------------------------------------------------------------------
