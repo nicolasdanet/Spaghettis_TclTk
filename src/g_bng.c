@@ -51,10 +51,12 @@ static t_class *bng_class;
 void bng_drawUpdate (t_bng *x, t_glist *glist)
 {
     if (glist_isvisible (glist)) {
-        sys_vGui (".x%lx.c itemconfigure %lxBUTTON -fill #%6.6x\n", 
-            glist_getcanvas (glist),
-            x,
-            x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
+    //
+    sys_vGui (".x%lx.c itemconfigure %lxBUTTON -fill #%6.6x\n", 
+        glist_getcanvas (glist),
+        x,
+        x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
+    //
     }
 }
 

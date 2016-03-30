@@ -41,20 +41,50 @@ static t_class *toggle_class;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void toggle_draw_update(t_toggle *x, t_glist *glist)
+void toggle_drawUpdate (t_toggle *x, t_glist *glist)
 {
-    if(glist_isvisible(glist))
-    {
-        t_glist *canvas=glist_getcanvas(glist);
-
-        sys_vGui(".x%lx.c itemconfigure %lxX1 -fill #%6.6x\n", canvas, x,
-                 (x->x_state!=0.0)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
-        sys_vGui(".x%lx.c itemconfigure %lxX2 -fill #%6.6x\n", canvas, x,
-                 (x->x_state!=0.0)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
+    if (glist_isvisible (glist)) {
+    //
+    t_glist *canvas = glist_getcanvas (glist);
+    
+    sys_vGui (".x%lx.c itemconfigure %lxX1 -fill #%6.6x\n",
+        canvas,
+        x,
+        (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
+    sys_vGui (".x%lx.c itemconfigure %lxX2 -fill #%6.6x\n",
+        canvas,
+        x,
+        (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
+    //
     }
 }
 
-void toggle_draw_new(t_toggle *x, t_glist *glist)
+void toggle_drawMove(t_toggle *x, t_glist *glist)
+{
+    t_glist *canvas=glist_getcanvas(glist);
+    int w=1, xx=text_xpix(&x->x_gui.iem_obj, glist), yy=text_ypix(&x->x_gui.iem_obj, glist);
+
+    if(x->x_gui.iem_width >= 30)
+        w = 2;
+
+    if(x->x_gui.iem_width >= 60)
+        w = 3;
+    sys_vGui(".x%lx.c coords %lxBASE %d %d %d %d\n",
+             canvas, x, xx, yy, xx + x->x_gui.iem_width, yy + x->x_gui.iem_height);
+    sys_vGui(".x%lx.c itemconfigure %lxX1 -width %d\n", canvas, x, w);
+    sys_vGui(".x%lx.c coords %lxX1 %d %d %d %d\n",
+             canvas, x, xx+w+1, yy+w+1, xx + x->x_gui.iem_width-w, yy + x->x_gui.iem_height-w);
+    sys_vGui(".x%lx.c itemconfigure %lxX2 -width %d\n", canvas, x, w);
+    sys_vGui(".x%lx.c coords %lxX2 %d %d %d %d\n",
+             canvas, x, xx+w+1, yy + x->x_gui.iem_height-w-1, xx + x->x_gui.iem_width-w, yy+w);
+    sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
+             canvas, x, xx+x->x_gui.iem_labelX, yy+x->x_gui.iem_labelY);
+    /*sys_vGui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
+             canvas, x, 0, xx, yy + x->x_gui.iem_height-1, xx + INLETS_WIDTH, yy + x->x_gui.iem_height);
+    sys_vGui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
+             canvas, x, 0, xx, yy, xx + INLETS_WIDTH, yy+1);*/
+}
+void toggle_drawNew (t_toggle *x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
     int w=1, xx=text_xpix(&x->x_gui.iem_obj, glist), yy=text_ypix(&x->x_gui.iem_obj, glist);
@@ -87,76 +117,7 @@ void toggle_draw_new(t_toggle *x, t_glist *glist)
              canvas, xx, yy, xx + INLETS_WIDTH, yy+1, x, 0);*/
 }
 
-void toggle_draw_move(t_toggle *x, t_glist *glist)
-{
-    t_glist *canvas=glist_getcanvas(glist);
-    int w=1, xx=text_xpix(&x->x_gui.iem_obj, glist), yy=text_ypix(&x->x_gui.iem_obj, glist);
-
-    if(x->x_gui.iem_width >= 30)
-        w = 2;
-
-    if(x->x_gui.iem_width >= 60)
-        w = 3;
-    sys_vGui(".x%lx.c coords %lxBASE %d %d %d %d\n",
-             canvas, x, xx, yy, xx + x->x_gui.iem_width, yy + x->x_gui.iem_height);
-    sys_vGui(".x%lx.c itemconfigure %lxX1 -width %d\n", canvas, x, w);
-    sys_vGui(".x%lx.c coords %lxX1 %d %d %d %d\n",
-             canvas, x, xx+w+1, yy+w+1, xx + x->x_gui.iem_width-w, yy + x->x_gui.iem_height-w);
-    sys_vGui(".x%lx.c itemconfigure %lxX2 -width %d\n", canvas, x, w);
-    sys_vGui(".x%lx.c coords %lxX2 %d %d %d %d\n",
-             canvas, x, xx+w+1, yy + x->x_gui.iem_height-w-1, xx + x->x_gui.iem_width-w, yy+w);
-    sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
-             canvas, x, xx+x->x_gui.iem_labelX, yy+x->x_gui.iem_labelY);
-    /*sys_vGui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
-             canvas, x, 0, xx, yy + x->x_gui.iem_height-1, xx + INLETS_WIDTH, yy + x->x_gui.iem_height);
-    sys_vGui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
-             canvas, x, 0, xx, yy, xx + INLETS_WIDTH, yy+1);*/
-}
-
-void toggle_draw_erase(t_toggle* x, t_glist* glist)
-{
-    t_glist *canvas=glist_getcanvas(glist);
-
-    sys_vGui(".x%lx.c delete %lxBASE\n", canvas, x);
-    sys_vGui(".x%lx.c delete %lxX1\n", canvas, x);
-    sys_vGui(".x%lx.c delete %lxX2\n", canvas, x);
-    sys_vGui(".x%lx.c delete %lxLABEL\n", canvas, x);
-    //sys_vGui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    //sys_vGui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
-}
-
-void toggle_draw_config(t_toggle* x, t_glist* glist)
-{
-    t_glist *canvas=glist_getcanvas(glist);
-
-    sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
-             canvas, x, x->x_gui.iem_fontSize,
-             x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
-             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
-    sys_vGui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas, x,
-             x->x_gui.iem_colorBackground);
-    sys_vGui(".x%lx.c itemconfigure %lxX1 -fill #%6.6x\n", canvas, x,
-             x->x_state?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
-    sys_vGui(".x%lx.c itemconfigure %lxX2 -fill #%6.6x\n", canvas, x,
-             x->x_state?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
-}
-
-void toggle_draw_io(t_toggle* x, t_glist* glist)
-{
-    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
-    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    t_glist *canvas=glist_getcanvas(glist);
-
-    /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
-        canvas, xpos,
-        ypos + x->x_gui.iem_height-1, xpos + INLETS_WIDTH,
-        ypos + x->x_gui.iem_height, x, 0);
-    sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
-        canvas, xpos, ypos,
-        xpos + INLETS_WIDTH, ypos+1, x, 0);*/
-}
-
-void toggle_draw_select(t_toggle* x, t_glist* glist)
+void toggle_drawSelect (t_toggle* x, t_glist* glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
 
@@ -172,20 +133,48 @@ void toggle_draw_select(t_toggle* x, t_glist* glist)
     }
 }
 
-void toggle_draw(t_toggle *x, t_glist *glist, int mode)
+void toggle_drawErase (t_toggle* x, t_glist* glist)
 {
-    if(mode == IEM_DRAW_UPDATE)
-        toggle_draw_update(x, glist);
-    else if(mode == IEM_DRAW_MOVE)
-        toggle_draw_move(x, glist);
-    else if(mode == IEM_DRAW_NEW)
-        toggle_draw_new(x, glist);
-    else if(mode == IEM_DRAW_SELECT)
-        toggle_draw_select(x, glist);
-    else if(mode == IEM_DRAW_ERASE)
-        toggle_draw_erase(x, glist);
-    else if(mode == IEM_DRAW_CONFIG)
-        toggle_draw_config(x, glist);
+    t_glist *canvas=glist_getcanvas(glist);
+
+    sys_vGui(".x%lx.c delete %lxBASE\n", canvas, x);
+    sys_vGui(".x%lx.c delete %lxX1\n", canvas, x);
+    sys_vGui(".x%lx.c delete %lxX2\n", canvas, x);
+    sys_vGui(".x%lx.c delete %lxLABEL\n", canvas, x);
+    //sys_vGui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
+    //sys_vGui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+}
+
+void toggle_drawConfig (t_toggle* x, t_glist* glist)
+{
+    t_glist *canvas=glist_getcanvas(glist);
+
+    sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
+             canvas, x, x->x_gui.iem_fontSize,
+             x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
+             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
+    sys_vGui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas, x,
+             x->x_gui.iem_colorBackground);
+    sys_vGui(".x%lx.c itemconfigure %lxX1 -fill #%6.6x\n", canvas, x,
+             x->x_state?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
+    sys_vGui(".x%lx.c itemconfigure %lxX2 -fill #%6.6x\n", canvas, x,
+             x->x_state?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void toggle_draw (t_toggle *x, t_glist *glist, int mode)
+{
+    switch (mode) {
+        case IEM_DRAW_UPDATE    : toggle_drawUpdate (x, glist); break;
+        case IEM_DRAW_MOVE      : toggle_drawMove (x, glist);   break;
+        case IEM_DRAW_NEW       : toggle_drawNew (x, glist);    break;
+        case IEM_DRAW_SELECT    : toggle_drawSelect (x, glist); break;
+        case IEM_DRAW_ERASE     : toggle_drawErase (x, glist);  break;
+        case IEM_DRAW_CONFIG    : toggle_drawConfig (x, glist); break;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -264,28 +253,42 @@ static void toggle_dialog (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static void toggle_size(t_toggle *x, t_symbol *s, int ac, t_atom *av)
+static void toggle_size (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int w = atom_getFloatAtIndex(0, ac, av);
-    x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
-    x->x_gui.iem_height = x->x_gui.iem_width;
-    iemgui_boxChanged((void *)x, &x->x_gui);
+    if (argc) {
+    //
+    int width = atom_getFloatAtIndex (0, argc, argv);
+    x->x_gui.iem_width  = PD_MAX (width, IEM_MINIMUM_WIDTH);
+    x->x_gui.iem_height = PD_MAX (width, IEM_MINIMUM_WIDTH);
+    iemgui_boxChanged ((void *)x, &x->x_gui);
+    //
+    }
 }
 
-static void toggle_delta(t_toggle *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
+static void toggle_move (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == 2) { iemgui_movePosition ((void *)x, &x->x_gui, s, argc, argv); }
+}
 
-static void toggle_pos(t_toggle *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
+static void toggle_position (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == 2) { iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv); }
+}
 
-static void toggle_color(t_toggle *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setColor((void *)x, &x->x_gui, s, ac, av);}
+static void toggle_color (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
+{
+    /* Dummy. */
+}
 
-static void toggle_label_pos(t_toggle *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
+static void toggle_labelFont (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == 2) { iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv); }
+}
 
-static void toggle_label_font(t_toggle *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
+static void toggle_labelPosition (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_setLabelPosition ((void *)x, &x->x_gui, s, argc, argv);
+}
 
 static void toggle_set (t_toggle *x, t_float f)
 {
@@ -301,14 +304,20 @@ static void toggle_nonZero (t_toggle *x, t_float f)
     if (f != 0.0) { x->x_nonZero = f; }
 }
 
-static void toggle_send(t_toggle *x, t_symbol *s)
-{iemgui_setSend(x, &x->x_gui, s);}
+static void toggle_send (t_toggle *x, t_symbol *s)
+{
+    iemgui_setSend ((void *)x, &x->x_gui, s);
+}
 
-static void toggle_receive(t_toggle *x, t_symbol *s)
-{iemgui_setReceive(x, &x->x_gui, s);}
+static void toggle_receive (t_toggle *x, t_symbol *s)
+{
+    iemgui_setReceive ((void *)x, &x->x_gui, s);
+}
 
-static void toggle_label(t_toggle *x, t_symbol *s)
-{iemgui_setLabel((void *)x, &x->x_gui, s);}
+static void toggle_label (t_toggle *x, t_symbol *s)
+{
+    iemgui_setLabel ((void *)x, &x->x_gui, s);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -507,10 +516,10 @@ void toggle_setup (void)
     class_addMethod (c, (t_method)toggle_initialize,    gensym ("initialize"),      A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)toggle_dialog,        gensym ("dialog"),          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_size,          gensym ("size"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_delta,         gensym ("move"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_pos,           gensym ("position"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_label_pos,     gensym ("labelposition"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_label_font,    gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_move,          gensym ("move"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_position,      gensym ("position"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_labelFont,     gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_labelPosition, gensym ("labelposition"),   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_set,           gensym ("set"),             A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)toggle_nonZero,       gensym ("nonzero"),         A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)toggle_send,          gensym ("send"),            A_DEFSYMBOL, A_NULL);
@@ -520,11 +529,11 @@ void toggle_setup (void)
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)toggle_initialize,    gensym ("init"),            A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)toggle_delta,         gensym ("delta"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_pos,           gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_move,          gensym ("delta"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_position,      gensym ("pos"),             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_color,         gensym ("color"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_label_pos,     gensym ("label_pos"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_label_font,    gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_labelFont,     gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_labelPosition, gensym ("label_pos"),       A_GIMME, A_NULL);
     
     #endif
     
