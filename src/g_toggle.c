@@ -191,40 +191,34 @@ void toggle_draw(t_toggle *x, t_glist *glist, int mode)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void toggle_fout(t_toggle *x, t_float f)
+static void toggle_out (t_toggle *x)
 {
-    toggle_set(x, f);
-    outlet_float(x->x_gui.iem_obj.te_outlet, x->x_state);
-    if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
-        pd_float(x->x_gui.iem_send->s_thing, x->x_state);
+    outlet_float (cast_object (x)->te_outlet, x->x_state);
+    
+    if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) { 
+        pd_float (x->x_gui.iem_send->s_thing, x->x_state); 
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void toggle_bang(t_toggle *x)
+static void toggle_bang (t_toggle *x)
 {
-    x->x_state = (x->x_state==0.0)?x->x_nonZero:0.0;
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-    outlet_float(x->x_gui.iem_obj.te_outlet, x->x_state);
-    if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
-        pd_float(x->x_gui.iem_send->s_thing, x->x_state);
+    toggle_set (x, (x->x_state == 0.0) ? x->x_nonZero : 0.0);
+    toggle_out (x);
 }
 
-static void toggle_float(t_toggle *x, t_float f)
+static void toggle_float (t_toggle *x, t_float f)
 {
-    toggle_set(x, f);
-    if(x->x_gui.iem_goThrough)
-    {
-        outlet_float(x->x_gui.iem_obj.te_outlet, x->x_state);
-        if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
-            pd_float(x->x_gui.iem_send->s_thing, x->x_state);
-    }
+    toggle_set (x, f); if (x->x_gui.iem_goThrough) { toggle_out (x); }
 }
 
-static void toggle_click(t_toggle *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt)
-{toggle_bang(x);}
+static void toggle_click (t_toggle *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
+{
+    toggle_bang (x);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -232,16 +226,18 @@ static void toggle_click(t_toggle *x, t_float xpos, t_float ypos, t_float shift,
 
 static void toggle_loadbang(t_toggle *x)
 {
-    if(x->x_gui.iem_loadbang)
-        toggle_fout(x, (t_float)x->x_state);
+    if (x->x_gui.iem_loadbang) {
+        toggle_set (x, x->x_state);
+        toggle_out (x);
+    }
 }
 
-static void toggle_init(t_toggle *x, t_float f)
+static void toggle_initialize (t_toggle *x, t_float f)
 {
-    x->x_gui.iem_loadbang = (f==0.0)?0:1;
+    x->x_gui.iem_loadbang = (f != 0.0);
 }
 
-static void toggle_dialog(t_toggle *x, t_symbol *s, int argc, t_atom *argv)
+static void toggle_dialog (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
 {
     int a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
     t_float nonzero = (t_float)atom_getFloatAtIndex(2, argc, argv);
@@ -282,20 +278,18 @@ static void toggle_label_pos(t_toggle *x, t_symbol *s, int ac, t_atom *av)
 static void toggle_label_font(t_toggle *x, t_symbol *s, int ac, t_atom *av)
 {iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
 
-static void toggle_set(t_toggle *x, t_float f)
+static void toggle_set (t_toggle *x, t_float f)
 {
-    int old = (x->x_state != 0);
+    int draw = ((x->x_state != 0.0) != (f != 0.0));
+    
     x->x_state = f;
-    if (f != 0.0 && 0)
-        x->x_nonZero = f;
-    if ((x->x_state != 0) != old)
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+
+    if (draw) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE); }
 }
 
-static void toggle_nonzero(t_toggle *x, t_float f)
+static void toggle_nonZero (t_toggle *x, t_float f)
 {
-    if(f != 0.0)
-        x->x_nonZero = f;
+    if (f != 0.0) { x->x_nonZero = f; }
 }
 
 static void toggle_send(t_toggle *x, t_symbol *s)
@@ -501,7 +495,7 @@ void toggle_setup (void)
     class_addClick (c, toggle_click);
     
     class_addMethod (c, (t_method)toggle_loadbang,      gensym ("loadbang"),        A_NULL);
-    class_addMethod (c, (t_method)toggle_init,          gensym ("initialize"),      A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)toggle_initialize,    gensym ("initialize"),      A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)toggle_dialog,        gensym ("dialog"),          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_size,          gensym ("size"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_delta,         gensym ("move"),            A_GIMME, A_NULL);
@@ -509,14 +503,14 @@ void toggle_setup (void)
     class_addMethod (c, (t_method)toggle_label_pos,     gensym ("labelposition"),   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_label_font,    gensym ("labelfont"),       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_set,           gensym ("set"),             A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)toggle_nonzero,       gensym ("nonzero"),         A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)toggle_nonZero,       gensym ("nonzero"),         A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)toggle_send,          gensym ("send"),            A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)toggle_receive,       gensym ("receive"),         A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)toggle_label,         gensym ("label"),           A_DEFSYMBOL, A_NULL);
 
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)toggle_init,          gensym ("init"),            A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)toggle_initialize,    gensym ("init"),            A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)toggle_delta,         gensym ("delta"),           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_pos,           gensym ("pos"),             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_color,         gensym ("color"),           A_GIMME, A_NULL);
