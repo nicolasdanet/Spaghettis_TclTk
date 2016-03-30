@@ -301,10 +301,10 @@ static void bng_dialog (t_bng *x, t_symbol *s, int argc, t_atom *argv)
     
     bng_setFlashTimes (x, flashBreak, flashHold);
     
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
     
-    canvas_fixlines (x->x_gui.iem_glist, (t_object*)x);
+    canvas_fixlines (x->x_gui.iem_glist, cast_object (x));
     //
     }
 }
@@ -530,8 +530,8 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_draw       = (t_iemfn)bng_draw;
     x->x_gui.iem_canSend    = (x->x_gui.iem_send == iemgui_empty()) ? 0 : 1;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;
-    x->x_gui.iem_height     = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_width      = PD_MAX (size, IEM_MINIMUM_WIDTH);
+    x->x_gui.iem_height     = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_labelX     = labelX;
     x->x_gui.iem_labelY     = labelY;
     x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);

@@ -112,8 +112,8 @@ typedef struct _iem {
     char        iem_hasChanged;
     char        iem_isLogarithmic;
     char        iem_isSteadyOnClick;
-    int         iem_height;
     int         iem_width;
+    int         iem_height;
     int         iem_labelX;
     int         iem_labelY;
     int         iem_fontSize;

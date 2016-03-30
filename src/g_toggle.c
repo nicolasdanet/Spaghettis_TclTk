@@ -27,7 +27,8 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void toggle_set (t_toggle *x, t_float f);
+static void toggle_set      (t_toggle *x, t_float f);
+static void toggle_nonZero  (t_toggle *x, t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -239,20 +240,28 @@ static void toggle_initialize (t_toggle *x, t_float f)
 
 static void toggle_dialog (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
-    t_float nonzero = (t_float)atom_getFloatAtIndex(2, argc, argv);
-
-    if(nonzero == 0.0)
-        nonzero = 1.0;
-    x->x_nonZero = nonzero;
-    if(x->x_state != 0.0)
-        x->x_state = x->x_nonZero;
-    iemgui_fromDialog(&x->x_gui, argc, argv);
-    x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
-    x->x_gui.iem_height = x->x_gui.iem_width;
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-    canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
+    if (argc == IEM_DIALOG_SIZE) {
+    //
+    int size = (int)atom_getFloatAtIndex (0, argc, argv);
+    t_float nonZero = atom_getFloatAtIndex (2, argc, argv);
+    
+    x->x_gui.iem_width  = PD_MAX (size, IEM_MINIMUM_WIDTH);
+    x->x_gui.iem_height = PD_MAX (size, IEM_MINIMUM_WIDTH);
+    
+    iemgui_fromDialog (&x->x_gui, argc, argv);
+        
+    toggle_nonZero (x, nonZero);
+    
+    if (x->x_state != 0.0) { 
+        toggle_set (x, x->x_nonZero); 
+    }
+    
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+    
+    canvas_fixlines (x->x_gui.iem_glist, cast_object (x));
+    //
+    }
 }
 
 static void toggle_size(t_toggle *x, t_symbol *s, int ac, t_atom *av)
@@ -442,8 +451,8 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_draw       = (t_iemfn)toggle_draw;
     x->x_gui.iem_canSend    = (x->x_gui.iem_send == iemgui_empty()) ? 0 : 1;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;
-    x->x_gui.iem_height     = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_width      = PD_MAX (size, IEM_MINIMUM_WIDTH);
+    x->x_gui.iem_height     = PD_MAX (size, IEM_MINIMUM_WIDTH);
     x->x_gui.iem_labelX     = labelX;
     x->x_gui.iem_labelY     = labelY;
     x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
