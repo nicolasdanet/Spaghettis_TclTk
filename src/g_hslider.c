@@ -109,7 +109,7 @@ static void hslider_draw_move(t_hslider *x, t_glist *glist)
              xpos+4, ypos+1);*/
 }
 
-static void hslider_draw_erase(t_hslider* x,t_glist* glist)
+static void hslider_draw_erase(t_hslider* x,t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
 
@@ -120,7 +120,7 @@ static void hslider_draw_erase(t_hslider* x,t_glist* glist)
     //sys_vGui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
 }
 
-static void hslider_draw_config(t_hslider* x,t_glist* glist)
+static void hslider_draw_config(t_hslider* x,t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
 
@@ -132,7 +132,7 @@ static void hslider_draw_config(t_hslider* x,t_glist* glist)
     sys_vGui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas, x, x->x_gui.iem_colorBackground);
 }
 
-static void hslider_draw_io(t_hslider* x, t_glist* glist)
+static void hslider_draw_io(t_hslider* x, t_glist *glist)
 {
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
@@ -147,7 +147,7 @@ static void hslider_draw_io(t_hslider* x, t_glist* glist)
         xpos+4, ypos+1, x, 0);*/
 }
 
-static void hslider_draw_select(t_hslider* x,t_glist* glist)
+static void hslider_draw_select(t_hslider* x,t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
 

@@ -125,7 +125,7 @@ void hradio_draw_move(t_hradio *x, t_glist *glist)
              canvas, x, 0, xx11b, yy11, xx11b + INLETS_WIDTH, yy11+1);*/
 }
 
-void hradio_draw_erase(t_hradio* x, t_glist* glist)
+void hradio_draw_erase(t_hradio* x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
     int n=x->x_number, i;
@@ -140,7 +140,7 @@ void hradio_draw_erase(t_hradio* x, t_glist* glist)
     //sys_vGui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
 }
 
-void hradio_draw_config(t_hradio* x, t_glist* glist)
+void hradio_draw_config(t_hradio* x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
     int n=x->x_number, i;
@@ -159,7 +159,7 @@ void hradio_draw_config(t_hradio* x, t_glist* glist)
     }
 }
 
-void hradio_draw_io(t_hradio* x, t_glist* glist)
+void hradio_draw_io(t_hradio* x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
@@ -176,7 +176,7 @@ void hradio_draw_io(t_hradio* x, t_glist* glist)
         xpos + INLETS_WIDTH, ypos+1, x, 0);*/
 }
 
-void hradio_draw_select(t_hradio* x, t_glist* glist)
+void hradio_draw_select(t_hradio* x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
     int n=x->x_number, i;

@@ -269,7 +269,7 @@ static void vu_draw_move(t_vu *x, t_glist *glist)
              xpos+x->x_gui.iem_width+1, ypos-1);*/
 }
 
-static void vu_draw_erase(t_vu* x,t_glist* glist)
+static void vu_draw_erase(t_vu* x,t_glist *glist)
 {
     int i;
     t_glist *canvas=glist_getcanvas(glist);
@@ -296,7 +296,7 @@ static void vu_draw_erase(t_vu* x,t_glist* glist)
 
 }
 
-static void vu_draw_config(t_vu* x, t_glist* glist)
+static void vu_draw_config(t_vu* x, t_glist *glist)
 {
     int i;
     t_glist *canvas=glist_getcanvas(glist);
@@ -322,7 +322,7 @@ static void vu_draw_config(t_vu* x, t_glist* glist)
              x->x_led_size);
 }
 
-static void vu_draw_io(t_vu* x, t_glist* glist)
+static void vu_draw_io(t_vu* x, t_glist *glist)
 {
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
@@ -351,7 +351,7 @@ static void vu_draw_io(t_vu* x, t_glist* glist)
          x, 1);*/
 }
 
-static void vu_draw_select(t_vu* x,t_glist* glist)
+static void vu_draw_select(t_vu* x,t_glist *glist)
 {
     int i;
     t_glist *canvas=glist_getcanvas(glist);

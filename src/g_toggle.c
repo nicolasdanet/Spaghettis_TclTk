@@ -59,7 +59,7 @@ void toggle_drawUpdate (t_toggle *x, t_glist *glist)
     }
 }
 
-void toggle_drawMove(t_toggle *x, t_glist *glist)
+void toggle_drawMove (t_toggle *x, t_glist *glist)
 {
     t_glist *canvas = glist_getcanvas (glist);
     
@@ -88,15 +88,15 @@ void toggle_drawMove(t_toggle *x, t_glist *glist)
                 x,
                 a + thickness + 1,
                 b + thickness + 1,
-                a + x->x_gui.iem_width  - thickness,
-                b + x->x_gui.iem_height - thickness);
+                a + x->x_gui.iem_width  - thickness - 1,
+                b + x->x_gui.iem_height - thickness - 1);
     sys_vGui (".x%lx.c coords %lxCROSS2 %d %d %d %d\n",
                 canvas,
                 x,
                 a + thickness + 1,
                 b + x->x_gui.iem_height - thickness - 1,
-                a + x->x_gui.iem_width - thickness,
-                b + thickness);
+                a + x->x_gui.iem_width  - thickness - 1,
+                b + thickness + 1);
     sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
                 canvas,
                 x,
@@ -125,8 +125,8 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
                 canvas,
                 a + thickness + 1,
                 b + thickness + 1, 
-                a + x->x_gui.iem_width  - thickness,
-                b + x->x_gui.iem_height - thickness,
+                a + x->x_gui.iem_width  - thickness - 1,
+                b + x->x_gui.iem_height - thickness - 1,
                 thickness,
                 (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                 x);
@@ -134,13 +134,13 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
                 canvas,
                 a + thickness + 1,
                 b + x->x_gui.iem_height - thickness - 1,
-                a + x->x_gui.iem_width  - thickness,
-                b + thickness,
+                a + x->x_gui.iem_width  - thickness - 1,
+                b + thickness + 1,
                 thickness,
                 (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                 x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w"
-                " -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",
+    sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w"                              // --
+                " -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",    // --
                 canvas,
                 a + x->x_gui.iem_labelX,
                 b + x->x_gui.iem_labelY,
@@ -150,48 +150,60 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
                 x);
 }
 
-void toggle_drawSelect (t_toggle* x, t_glist* glist)
+void toggle_drawSelect (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
 
-    if(x->x_gui.iem_isSelected)
-    {
-        sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
-        sys_vGui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
-    }
-    else
-    {
-        sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_NORMAL);
-        sys_vGui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, x->x_gui.iem_colorLabel);
-    }
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n",
+                canvas, 
+                x, 
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n",
+                canvas,
+                x, 
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
-void toggle_drawErase (t_toggle* x, t_glist* glist)
+void toggle_drawErase (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui(".x%lx.c delete %lxBASE\n", canvas, x);
-    sys_vGui(".x%lx.c delete %lxCROSS1\n", canvas, x);
-    sys_vGui(".x%lx.c delete %lxCROSS2\n", canvas, x);
-    sys_vGui(".x%lx.c delete %lxLABEL\n", canvas, x);
-    //sys_vGui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    //sys_vGui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+    sys_vGui (".x%lx.c delete %lxBASE\n",
+                canvas,
+                x);
+    sys_vGui (".x%lx.c delete %lxCROSS1\n",
+                canvas,
+                x);
+    sys_vGui (".x%lx.c delete %lxCROSS2\n",
+                canvas,
+                x);
+    sys_vGui (".x%lx.c delete %lxLABEL\n",
+                canvas,
+                x);
 }
 
-void toggle_drawConfig (t_toggle* x, t_glist* glist)
+void toggle_drawConfig (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
-             canvas, x, x->x_gui.iem_fontSize,
-             x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
-             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
-    sys_vGui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas, x,
-             x->x_gui.iem_colorBackground);
-    sys_vGui(".x%lx.c itemconfigure %lxCROSS1 -fill #%6.6x\n", canvas, x,
-             x->x_state?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
-    sys_vGui(".x%lx.c itemconfigure %lxCROSS2 -fill #%6.6x\n", canvas, x,
-             x->x_state?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",  // --
+                canvas,
+                x,
+                x->x_gui.iem_fontSize,
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel,
+                (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n",
+                canvas,
+                x,
+                x->x_gui.iem_colorBackground);
+    sys_vGui (".x%lx.c itemconfigure %lxCROSS1 -fill #%6.6x\n",
+                canvas,
+                x,
+                (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
+    sys_vGui (".x%lx.c itemconfigure %lxCROSS2 -fill #%6.6x\n",
+                canvas,
+                x,
+                (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -247,7 +259,7 @@ static void toggle_click (t_toggle *x, t_float a, t_float b, t_float shift, t_fl
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void toggle_loadbang(t_toggle *x)
+static void toggle_loadbang (t_toggle *x)
 {
     if (x->x_gui.iem_loadbang) {
         toggle_set (x, x->x_state);
@@ -418,7 +430,7 @@ static void toggle_behaviorProperties (t_gobj *z, t_glist *owner)
     err = string_sprintf (t, PD_STRING,
             "::ui_iem::create %%s Toggle"
             " %d %d Size 0 0 empty"
-            " %g {Non-Zero Value} 0 empty"
+            " %g {Non-Zero Value} 0 empty"  // --
             " -1 empty empty"
             " %d"
             " -1 -1 empty"

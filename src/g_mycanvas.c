@@ -72,7 +72,7 @@ void my_canvas_draw_move(t_my_canvas *x, t_glist *glist)
              ypos+x->x_gui.iem_labelY);
 }
 
-void my_canvas_draw_erase(t_my_canvas* x, t_glist* glist)
+void my_canvas_draw_erase(t_my_canvas* x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
 
@@ -81,7 +81,7 @@ void my_canvas_draw_erase(t_my_canvas* x, t_glist* glist)
     sys_vGui(".x%lx.c delete %lxLABEL\n", canvas, x);
 }
 
-void my_canvas_draw_config(t_my_canvas* x, t_glist* glist)
+void my_canvas_draw_config(t_my_canvas* x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
 
@@ -95,7 +95,7 @@ void my_canvas_draw_config(t_my_canvas* x, t_glist* glist)
              strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
 }
 
-void my_canvas_draw_select(t_my_canvas* x, t_glist* glist)
+void my_canvas_draw_select(t_my_canvas* x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
 

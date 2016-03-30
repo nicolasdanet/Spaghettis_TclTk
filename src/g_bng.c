@@ -175,7 +175,7 @@ void bng_drawConfig (t_bng *x, t_glist *glist)
                 canvas,
                 x,
                 x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",     // --
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",  // --
                 canvas,
                 x,
                 x->x_gui.iem_fontSize,

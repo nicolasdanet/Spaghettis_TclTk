@@ -256,7 +256,7 @@ static void my_numbox_draw_move(t_my_numbox *x, t_glist *glist)
              xpos+INLETS_WIDTH, ypos+1);*/
 }
 
-static void my_numbox_draw_erase(t_my_numbox* x,t_glist* glist)
+static void my_numbox_draw_erase(t_my_numbox* x,t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
 
@@ -268,7 +268,7 @@ static void my_numbox_draw_erase(t_my_numbox* x,t_glist* glist)
     //sys_vGui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
 }
 
-static void my_numbox_draw_config(t_my_numbox* x,t_glist* glist)
+static void my_numbox_draw_config(t_my_numbox* x,t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
 
@@ -285,7 +285,7 @@ static void my_numbox_draw_config(t_my_numbox* x,t_glist* glist)
              x, x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorForeground);
 }
 
-static void my_numbox_draw_io(t_my_numbox* x, t_glist* glist)
+static void my_numbox_draw_io(t_my_numbox* x, t_glist *glist)
 {
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
