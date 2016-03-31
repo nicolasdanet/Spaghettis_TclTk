@@ -566,7 +566,7 @@ static void bng_free (t_bng *x)
     clock_free (x->x_clockBreak);
     clock_free (x->x_clockHold);
     
-    gfxstub_deleteforkey (x);
+    gfxstub_deleteforkey ((void *)x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

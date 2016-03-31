@@ -536,7 +536,7 @@ static void toggle_free (t_toggle *x)
 {
     if (x->x_gui.iem_canReceive) { pd_unbind (cast_pd (x), x->x_gui.iem_receive); }
     
-    gfxstub_deleteforkey (x);
+    gfxstub_deleteforkey ((void *)x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
