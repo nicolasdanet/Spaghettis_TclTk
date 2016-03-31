@@ -346,11 +346,6 @@ static void bng_flashtime (t_bng *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static void bng_color (t_bng *x, t_symbol *s, int argc, t_atom *argv)
-{
-    /* Dummy. */
-}
-
 static void bng_labelFont (t_bng *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == 2) { iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv); }
@@ -484,6 +479,15 @@ static void bng_behaviorProperties (t_gobj *z, t_glist *owner)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void bng_dummy (t_bng *x, t_symbol *s, int argc, t_atom *argv)
+{
+    /* Dummy. */
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void *bng_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_bng *x = (t_bng *)pd_new (bng_class);
@@ -605,7 +609,7 @@ void bng_setup (void)
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)bng_initialize,       gensym ("init"),            A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)bng_color,            gensym ("color"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_dummy,            gensym ("color"),           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)bng_move,             gensym ("delta"),           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)bng_position,         gensym ("pos"),             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)bng_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);

@@ -320,11 +320,6 @@ static void toggle_position (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
     if (argc == 2) { iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv); }
 }
 
-static void toggle_color (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
-{
-    /* Dummy. */
-}
-
 static void toggle_labelFont (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == 2) { iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv); }
@@ -456,6 +451,15 @@ static void toggle_behaviorProperties (t_gobj *z, t_glist *owner)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void toggle_dummy (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
+{
+    /* Dummy. */
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_toggle *x = (t_toggle *)pd_new (toggle_class);
@@ -576,7 +580,7 @@ void toggle_setup (void)
     class_addMethod (c, (t_method)toggle_initialize,    gensym ("init"),            A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)toggle_move,          gensym ("delta"),           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_position,      gensym ("pos"),             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_color,         gensym ("color"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_dummy,         gensym ("color"),           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_labelFont,     gensym ("label_font"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_labelPosition, gensym ("label_pos"),       A_GIMME, A_NULL);
     
