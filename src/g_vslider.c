@@ -311,7 +311,7 @@ static void vslider_bang(t_vslider *x)
 
     if (0)
         out = vslider_getfval(x);
-    else out = x->x_fval;
+    else out = x->x_floatValue;
     outlet_float(x->x_gui.iem_obj.te_outlet, out);
     if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
         pd_float(x->x_gui.iem_send->s_thing, out);
@@ -345,7 +345,7 @@ static void vslider_motion(t_vslider *x, t_float dx, t_float dy)
 {
     int old = x->x_val;
 
-    if(x->x_gui.iem_accurateMoving)
+    if(x->x_accurateMoving)
         x->x_pos -= (int)dy;
     else
         x->x_pos -= 100*(int)dy;
@@ -362,7 +362,7 @@ static void vslider_motion(t_vslider *x, t_float dx, t_float dy)
         x->x_pos -= 50;
         x->x_pos -= x->x_pos%100;
     }
-    x->x_fval = vslider_getfval(x);
+    x->x_floatValue = vslider_getfval(x);
     if (old != x->x_val)
     {
         (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
@@ -379,7 +379,7 @@ static void vslider_click(t_vslider *x, t_float xpos, t_float ypos,
         x->x_val = 100*x->x_gui.iem_height - 100;
     if(x->x_val < 0)
         x->x_val = 0;
-    x->x_fval = vslider_getfval(x);
+    x->x_floatValue = vslider_getfval(x);
     x->x_pos = x->x_val;
     (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     vslider_bang(x);
@@ -397,9 +397,9 @@ static int vslider_newclick(t_gobj *z, struct _glist *glist,
         vslider_click( x, (t_float)xpix, (t_float)ypix, (t_float)shift,
                        0, (t_float)alt);
         if(shift)
-            x->x_gui.iem_accurateMoving = 1;
+            x->x_accurateMoving = 1;
         else
-            x->x_gui.iem_accurateMoving = 0;
+            x->x_accurateMoving = 0;
     }
     return (1);
 }
@@ -409,7 +409,7 @@ static void vslider_set(t_vslider *x, t_float f)
     int old = x->x_val;
     double g;
 
-    x->x_fval = f;
+    x->x_floatValue = f;
     if (x->x_min > x->x_max)
     {
         if(f > x->x_min)
@@ -525,15 +525,15 @@ static void *vslider_new(t_symbol *s, int argc, t_atom *argv)
     iemgui_deserializeLoadbang(&x->x_gui, 0);
     iemgui_deserializeFontStyle(&x->x_gui, 0);
 
-    if(((argc == 17)||(argc == 18))&&IS_FLOAT_AT(argv,0)&&IS_FLOAT_AT(argv,1)
-       &&IS_FLOAT_AT(argv,2)&&IS_FLOAT_AT(argv,3)
-       &&IS_FLOAT_AT(argv,4)&&IS_FLOAT_AT(argv,5)
-       &&(IS_SYMBOL_AT(argv,6)||IS_FLOAT_AT(argv,6))
-       &&(IS_SYMBOL_AT(argv,7)||IS_FLOAT_AT(argv,7))
-       &&(IS_SYMBOL_AT(argv,8)||IS_FLOAT_AT(argv,8))
-       &&IS_FLOAT_AT(argv,9)&&IS_FLOAT_AT(argv,10)
-       &&IS_FLOAT_AT(argv,11)&&IS_FLOAT_AT(argv,12)&&IS_FLOAT_AT(argv,13)
-       &&IS_FLOAT_AT(argv,14)&&IS_FLOAT_AT(argv,15)&&IS_FLOAT_AT(argv,16))
+    if(((argc == 17)||(argc == 18))&&IS_FLOAT(argv + 0)&&IS_FLOAT(argv + 1)
+       &&IS_FLOAT(argv + 2)&&IS_FLOAT(argv + 3)
+       &&IS_FLOAT(argv + 4)&&IS_FLOAT(argv + 5)
+       &&(IS_SYMBOL(argv + 6)||IS_FLOAT(argv + 6))
+       &&(IS_SYMBOL(argv + 7)||IS_FLOAT(argv + 7))
+       &&(IS_SYMBOL(argv + 8)||IS_FLOAT(argv + 8))
+       &&IS_FLOAT(argv + 9)&&IS_FLOAT(argv + 10)
+       &&IS_FLOAT(argv + 11)&&IS_FLOAT(argv + 12)&&IS_FLOAT(argv + 13)
+       &&IS_FLOAT(argv + 14)&&IS_FLOAT(argv + 15)&&IS_FLOAT(argv + 16))
     {
         w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
@@ -552,7 +552,7 @@ static void *vslider_new(t_symbol *s, int argc, t_atom *argv)
         v = atom_getFloatAtIndex(16, argc, argv);
     }
     else iemgui_deserializeNamesByIndex(&x->x_gui, 6, 0);
-    if((argc == 18)&&IS_FLOAT_AT(argv,17))
+    if((argc == 18)&&IS_FLOAT(argv + 17))
         steady = (int)(t_int)atom_getFloatAtIndex(17, argc, argv);
     x->x_gui.iem_draw = (t_iemfn)vslider_draw;
     x->x_gui.iem_canSend = 1;
@@ -581,7 +581,7 @@ static void *vslider_new(t_symbol *s, int argc, t_atom *argv)
     iemgui_deserializeColors(&x->x_gui, bflcol);
     iemgui_checkSendReceiveLoop(&x->x_gui);
     outlet_new(&x->x_gui.iem_obj, &s_float);
-    x->x_fval = vslider_getfval(x);
+    x->x_floatValue = vslider_getfval(x);
     return (x);
 }
 

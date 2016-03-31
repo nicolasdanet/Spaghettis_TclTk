@@ -636,12 +636,12 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     iemgui_deserializeLoadbang(&x->x_gui, 0);
     iemgui_deserializeFontStyle(&x->x_gui, 0);
 
-    if((argc >= 11)&&IS_FLOAT_AT(argv,0)&&IS_FLOAT_AT(argv,1)
-       &&(IS_SYMBOL_AT(argv,2)||IS_FLOAT_AT(argv,2))
-       &&(IS_SYMBOL_AT(argv,3)||IS_FLOAT_AT(argv,3))
-       &&IS_FLOAT_AT(argv,4)&&IS_FLOAT_AT(argv,5)
-       &&IS_FLOAT_AT(argv,6)&&IS_FLOAT_AT(argv,7)
-       &&IS_FLOAT_AT(argv,8)&&IS_FLOAT_AT(argv,9)&&IS_FLOAT_AT(argv,10))
+    if((argc >= 11)&&IS_FLOAT(argv + 0)&&IS_FLOAT(argv + 1)
+       &&(IS_SYMBOL(argv + 2)||IS_FLOAT(argv + 2))
+       &&(IS_SYMBOL(argv + 3)||IS_FLOAT(argv + 3))
+       &&IS_FLOAT(argv + 4)&&IS_FLOAT(argv + 5)
+       &&IS_FLOAT(argv + 6)&&IS_FLOAT(argv + 7)
+       &&IS_FLOAT(argv + 8)&&IS_FLOAT(argv + 9)&&IS_FLOAT(argv + 10))
     {
         w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
@@ -655,7 +655,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
         scale = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
     }
     else iemgui_deserializeNamesByIndex(&x->x_gui, 1, 0);
-    if((argc == 12)&&IS_FLOAT_AT(argv,11))
+    if((argc == 12)&&IS_FLOAT(argv + 11))
         iemgui_deserializeLoadbang(&x->x_gui, (t_int)atom_getFloatAtIndex(11, argc, argv));
     x->x_gui.iem_draw = (t_iemfn)vu_draw;
 

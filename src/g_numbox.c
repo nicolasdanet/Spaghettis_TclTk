@@ -513,7 +513,7 @@ static void my_numbox_motion(t_my_numbox *x, t_float dx, t_float dy)
 {
     double k2=1.0;
 
-    if(x->x_gui.iem_accurateMoving)
+    if(x->x_accurateMoving)
         k2 = 0.01;
     if(x->x_isLogarithmic)
         x->x_val *= pow(x->x_k, -k2*dy);
@@ -542,9 +542,9 @@ static int my_numbox_newclick(t_gobj *z, struct _glist *glist,
         my_numbox_click( x, (t_float)xpix, (t_float)ypix,
             (t_float)shift, 0, (t_float)alt);
         if(shift)
-            x->x_gui.iem_accurateMoving = 1;
+            x->x_accurateMoving = 1;
         else
-            x->x_gui.iem_accurateMoving = 0;
+            x->x_accurateMoving = 0;
         if(!x->x_hasChanged)
         {
             clock_delay(x->x_clock_wait, 50);
@@ -736,7 +736,7 @@ static void my_numbox_key(void *z, t_float fkey)
 
 static void my_numbox_list(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
 {
-    if (IS_FLOAT_AT(av,0))
+    if (IS_FLOAT(av + 0))
     {
         my_numbox_set(x, atom_getFloatAtIndex(0, ac, av));
         my_numbox_bang(x);
@@ -754,15 +754,15 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
     double min=-1.0e+37, max=1.0e+37,v=0.0;
     char str[144];
 
-    if((argc >= 17)&&IS_FLOAT_AT(argv,0)&&IS_FLOAT_AT(argv,1)
-       &&IS_FLOAT_AT(argv,2)&&IS_FLOAT_AT(argv,3)
-       &&IS_FLOAT_AT(argv,4)&&IS_FLOAT_AT(argv,5)
-       &&(IS_SYMBOL_AT(argv,6)||IS_FLOAT_AT(argv,6))
-       &&(IS_SYMBOL_AT(argv,7)||IS_FLOAT_AT(argv,7))
-       &&(IS_SYMBOL_AT(argv,8)||IS_FLOAT_AT(argv,8))
-       &&IS_FLOAT_AT(argv,9)&&IS_FLOAT_AT(argv,10)
-       &&IS_FLOAT_AT(argv,11)&&IS_FLOAT_AT(argv,12)&&IS_FLOAT_AT(argv,13)
-       &&IS_FLOAT_AT(argv,14)&&IS_FLOAT_AT(argv,15)&&IS_FLOAT_AT(argv,16))
+    if((argc >= 17)&&IS_FLOAT(argv + 0)&&IS_FLOAT(argv + 1)
+       &&IS_FLOAT(argv + 2)&&IS_FLOAT(argv + 3)
+       &&IS_FLOAT(argv + 4)&&IS_FLOAT(argv + 5)
+       &&(IS_SYMBOL(argv + 6)||IS_FLOAT(argv + 6))
+       &&(IS_SYMBOL(argv + 7)||IS_FLOAT(argv + 7))
+       &&(IS_SYMBOL(argv + 8)||IS_FLOAT(argv + 8))
+       &&IS_FLOAT(argv + 9)&&IS_FLOAT(argv + 10)
+       &&IS_FLOAT(argv + 11)&&IS_FLOAT(argv + 12)&&IS_FLOAT(argv + 13)
+       &&IS_FLOAT(argv + 14)&&IS_FLOAT(argv + 15)&&IS_FLOAT(argv + 16))
     {
         w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
@@ -781,7 +781,7 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
         v = atom_getFloatAtIndex(16, argc, argv);
     }
     else iemgui_deserializeNamesByIndex(&x->x_gui, 6, 0);
-    if((argc == 18)&&IS_FLOAT_AT(argv,17))
+    if((argc == 18)&&IS_FLOAT(argv + 17))
     {
         log_height = (int)(t_int)atom_getFloatAtIndex(17, argc, argv);
     }

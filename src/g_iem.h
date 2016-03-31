@@ -107,11 +107,7 @@ typedef struct _iem {
     char        iem_canReceive;
     char        iem_loadbang;
     char        iem_isSelected;
-    char        iem_accurateMoving;
     char        iem_goThrough;
-    char        iem_hasChanged;
-    char        iem_isLogarithmic;
-    char        iem_isSteadyOnClick;
     int         iem_width;
     int         iem_height;
     int         iem_labelX;
@@ -128,13 +124,6 @@ typedef struct _iem {
     t_symbol    *iem_unexpandedReceive;
     t_symbol    *iem_unexpandedLabel;
     } t_iem;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define IS_FLOAT_AT(atom, index)            ((atom + index)->a_type == A_FLOAT)
-#define IS_SYMBOL_AT(atom, index)           ((atom + index)->a_type == A_SYMBOL)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -157,22 +146,20 @@ typedef struct _toggle {
 
 typedef struct _hradio {
     t_iem       x_gui;
-    int         x_on;
-    int         x_changed;
-    int         x_number;
-    int         x_drawn;
-    t_float     x_fval;
-    t_atom      x_at[2];
+    int         x_changed;                      /* Unused but kept for compatibility. */
+    int         x_numberOfButtons;
+    int         x_state;
+    int         x_stateDrawn;
+    t_float     x_floatValue;
     } t_hradio;
 
 typedef struct _vradio {
     t_iem       x_gui;
-    int         x_on;
-    int         x_changed;
-    int         x_number;
-    int         x_drawn;
-    t_float     x_fval;
-    t_atom      x_at[2];
+    int         x_changed;                      /* Unused but kept for compatibility. */
+    int         x_numberOfButtons;
+    int         x_state;
+    int         x_stateDrawn;
+    t_float     x_floatValue;
     } t_vradio;
     
 typedef struct _hslider {
@@ -181,10 +168,11 @@ typedef struct _hslider {
     int         x_val;
     int         x_isLogarithmic;
     int         x_isSteadyOnClick;
+    int         x_accurateMoving;
     double      x_min;
     double      x_max;
     double      x_k;
-    t_float     x_fval;
+    t_float     x_floatValue;
     } t_hslider;
 
 typedef struct _vslider {
@@ -193,10 +181,11 @@ typedef struct _vslider {
     int         x_val;
     int         x_isLogarithmic;
     int         x_isSteadyOnClick;
+    int         x_accurateMoving;
     double      x_min;
     double      x_max;
     double      x_k;
-    t_float     x_fval;
+    t_float     x_floatValue;
     } t_vslider;
     
 typedef struct _vu {
@@ -223,6 +212,7 @@ typedef struct _my_numbox {
     double      x_k;
     int         x_hasChanged;
     int         x_isLogarithmic;
+    int         x_accurateMoving;
     char        x_buf[IEM_NUMBER_BUFFER_LENGTH];
     int         x_numwidth;
     int         x_log_height;

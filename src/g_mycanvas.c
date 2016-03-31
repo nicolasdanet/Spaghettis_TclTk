@@ -277,18 +277,18 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     iemgui_deserializeFontStyle(&x->x_gui, 0);
 
     if(((argc >= 10)&&(argc <= 13))
-       &&IS_FLOAT_AT(argv,0)&&IS_FLOAT_AT(argv,1)&&IS_FLOAT_AT(argv,2))
+       &&IS_FLOAT(argv + 0)&&IS_FLOAT(argv + 1)&&IS_FLOAT(argv + 2))
     {
         a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
         w = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
         h = (int)(t_int)atom_getFloatAtIndex(2, argc, argv);
     }
-    if((argc >= 12)&&(IS_SYMBOL_AT(argv,3)||IS_FLOAT_AT(argv,3))&&(IS_SYMBOL_AT(argv,4)||IS_FLOAT_AT(argv,4)))
+    if((argc >= 12)&&(IS_SYMBOL(argv + 3)||IS_FLOAT(argv + 3))&&(IS_SYMBOL(argv + 4)||IS_FLOAT(argv + 4)))
     {
         i = 2;
         iemgui_deserializeNamesByIndex(&x->x_gui, 3, argv);
     }
-    else if((argc == 11)&&(IS_SYMBOL_AT(argv,3)||IS_FLOAT_AT(argv,3)))
+    else if((argc == 11)&&(IS_SYMBOL(argv + 3)||IS_FLOAT(argv + 3)))
     {
         i = 1;
         iemgui_deserializeNamesByIndex(&x->x_gui, 3, argv);
@@ -296,10 +296,10 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
     else iemgui_deserializeNamesByIndex(&x->x_gui, 3, 0);
 
     if(((argc >= 10)&&(argc <= 13))
-       &&(IS_SYMBOL_AT(argv,i+3)||IS_FLOAT_AT(argv,i+3))&&IS_FLOAT_AT(argv,i+4)
-       &&IS_FLOAT_AT(argv,i+5)&&IS_FLOAT_AT(argv,i+6)
-       &&IS_FLOAT_AT(argv,i+7)&&IS_FLOAT_AT(argv,i+8)
-       &&IS_FLOAT_AT(argv,i+9))
+       &&(IS_SYMBOL(argv + i+3)||IS_FLOAT(argv + i+3))&&IS_FLOAT(argv + i+4)
+       &&IS_FLOAT(argv + i+5)&&IS_FLOAT(argv + i+6)
+       &&IS_FLOAT(argv + i+7)&&IS_FLOAT(argv + i+8)
+       &&IS_FLOAT(argv + i+9))
     {
             /* disastrously, the "label" sits in a different part of the
             message.  So we have to track its location separately (in
@@ -313,7 +313,7 @@ static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
         bflcol[0] = (int)(t_int)atom_getFloatAtIndex(i+8, argc, argv);
         bflcol[2] = (int)(t_int)atom_getFloatAtIndex(i+9, argc, argv);
     }
-    if((argc == 13)&&IS_FLOAT_AT(argv,i+10))
+    if((argc == 13)&&IS_FLOAT(argv + i+10))
     {
         iemgui_deserializeLoadbang(&x->x_gui, (t_int)atom_getFloatAtIndex(i+10, argc, argv));
     }
