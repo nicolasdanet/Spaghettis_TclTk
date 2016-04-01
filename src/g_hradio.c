@@ -121,7 +121,7 @@ void hradio_drawMove (t_hradio *x, t_glist *glist)
 
 void hradio_drawNew (t_hradio *x, t_glist *glist)
 {
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
 
     int n = x->x_numberOfButtons;
     int a = text_xpix (cast_object (x), glist);
@@ -154,8 +154,8 @@ void hradio_drawNew (t_hradio *x, t_glist *glist)
     //
     }
     
-    sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w"
-                " -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",
+    sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w"                              // --
+                " -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",    // --
                 canvas,
                 a + x->x_gui.iem_labelX,
                 b + x->x_gui.iem_labelY,
@@ -219,7 +219,7 @@ void hradio_drawConfig (t_hradio* x, t_glist *glist)
     
     int i;
 
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",  // --
                 canvas, 
                 x, 
                 x->x_gui.iem_fontSize,
@@ -308,7 +308,7 @@ static void hradio_click (t_hradio *x, t_float a, t_float b, t_float shift, t_fl
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void hradio_loadbang(t_hradio *x)
+static void hradio_loadbang (t_hradio *x)
 {
     if (x->x_gui.iem_loadbang) { hradio_bang (x); }
 }
@@ -481,12 +481,12 @@ static void hradio_behaviorProperties (t_gobj *z, t_glist *owner)
     iemgui_serializeNames (&x->x_gui, &names);
 
     err = string_sprintf (t, PD_STRING,
-            "::ui_iem::create %%s {Radio Button}"
+            "::ui_iem::create %%s {Radio Button}"   // --
             " %d %d Size 0 0 empty"
             " 0 empty 0 empty"
             " -1 empty empty"
             " %d"
-            " %d 256 {Number Of Buttons}"
+            " %d 256 {Number Of Buttons}"           // --
             " %s %s"
             " %s %d %d"
             " %d"
