@@ -39,6 +39,12 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void hradio_buttonsNumber (t_hradio *x, t_float numberOfButtons);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 static t_widgetbehavior hradio_widgetBehavior;
 
@@ -257,7 +263,6 @@ static void hradio_float (t_hradio *x, t_float f)
 {
     x->x_state = PD_CLAMP ((int)f, 0, x->x_numberOfButtons - 1);
     x->x_floatValue = f;
-        
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     
     if (x->x_gui.iem_goThrough) { hradio_out (x); }
@@ -292,6 +297,8 @@ static void hradio_initialize (t_hradio *x, t_float f)
 
 static void hradio_dialog (t_hradio *x, t_symbol *s, int argc, t_atom *argv)
 {
+    if (argc == IEM_DIALOG_SIZE) {
+    //
     int size            = (int)atom_getFloatAtIndex (0, argc, argv);
     int changed         = (int)atom_getFloatAtIndex (4, argc, argv);
     int numberOfButtons = (int)atom_getFloatAtIndex (6, argc, argv);
@@ -305,81 +312,83 @@ static void hradio_dialog (t_hradio *x, t_symbol *s, int argc, t_atom *argv)
     
     x->x_changed = (changed != 0);
 
-    if (x->x_numberOfButtons != numberOfButtons) {
+    if (x->x_numberOfButtons != numberOfButtons) { hradio_buttonsNumber (x, (t_float)numberOfButtons); } 
+    else {
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+        canvas_fixlines (x->x_gui.iem_glist, (t_object*)x);
+    }
+    //
+    }
+}
+
+static void hradio_size (t_hradio *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc) {
+    //
+    int width = atom_getFloatAtIndex (0, argc, argv);
+    x->x_gui.iem_width  = PD_MAX (width, IEM_MINIMUM_WIDTH);
+    x->x_gui.iem_height = PD_MAX (width, IEM_MINIMUM_WIDTH);
+    iemgui_boxChanged ((void *)x, &x->x_gui);
+    //
+    }
+}
+
+static void hradio_move (t_hradio *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == 2) { iemgui_movePosition ((void *)x, &x->x_gui, s, argc, argv); }
+}
+
+static void hradio_position (t_hradio *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == 2) { iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv); }
+}
+
+static void hradio_labelFont (t_hradio *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == 2) { iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv); }
+}
+
+static void hradio_labelPosition (t_hradio *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_setLabelPosition ((void *)x, &x->x_gui, s, argc, argv);
+}
+
+static void hradio_set (t_hradio *x, t_float f)
+{
+    x->x_state = PD_CLAMP ((int)f, 0, x->x_numberOfButtons - 1);
+    x->x_floatValue = f;
+    
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+}
+
+static void hradio_buttonsNumber (t_hradio *x, t_float numberOfButtons)
+{
+    int n = PD_CLAMP ((int)numberOfButtons, 1, IEM_HRADIO_MAXIMUM_BUTTONS);
+
+    if (n != x->x_numberOfButtons) {
         (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_ERASE);
         x->x_numberOfButtons = numberOfButtons;
         x->x_state = PD_MIN (x->x_state, x->x_numberOfButtons - 1);
         x->x_floatValue = x->x_state;
         (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_NEW);
-
-    } else {
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-        canvas_fixlines (x->x_gui.iem_glist, (t_object*)x);
     }
 }
 
-static void hradio_size(t_hradio *x, t_symbol *s, int ac, t_atom *av)
+static void hradio_send (t_hradio *x, t_symbol *s)
 {
-    int w = atom_getFloatAtIndex(0, ac, av);
-    x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
-    x->x_gui.iem_height = x->x_gui.iem_width;
-    iemgui_boxChanged((void *)x, &x->x_gui);
+    iemgui_setSend ((void *)x, &x->x_gui, s);
 }
 
-static void hradio_delta(t_hradio *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void hradio_pos(t_hradio *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void hradio_label_font(t_hradio *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
-
-static void hradio_label_pos(t_hradio *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void hradio_set(t_hradio *x, t_float f)
+static void hradio_receive (t_hradio *x, t_symbol *s)
 {
-    int i=(int)f;
-
-    x->x_floatValue = f;
-    if(i < 0)
-        i = 0;
-    if(i >= x->x_numberOfButtons)
-        i = x->x_numberOfButtons-1;
-
-    x->x_state = i;
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-
+    iemgui_setReceive ((void *)x, &x->x_gui, s);
 }
 
-static void hradio_number(t_hradio *x, t_float num)
+static void hradio_label (t_hradio *x, t_symbol *s)
 {
-    int n=(int)num;
-
-    if(n < 1)
-        n = 1;
-    if(n > IEM_HRADIO_MAXIMUM_BUTTONS)
-        n = IEM_HRADIO_MAXIMUM_BUTTONS;
-    if(n != x->x_numberOfButtons)
-    {
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_ERASE);
-        x->x_numberOfButtons = n;
-        if(x->x_state >= x->x_numberOfButtons)
-            x->x_state = x->x_numberOfButtons - 1;
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_NEW);
-    }
+    iemgui_setLabel ((void *)x, &x->x_gui, s);
 }
-
-static void hradio_send(t_hradio *x, t_symbol *s)
-{iemgui_setSend(x, &x->x_gui, s);}
-
-static void hradio_receive(t_hradio *x, t_symbol *s)
-{iemgui_setReceive(x, &x->x_gui, s);}
-
-static void hradio_label(t_hradio *x, t_symbol *s)
-{iemgui_setLabel((void *)x, &x->x_gui, s);}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -597,23 +606,23 @@ void hradio_setup (void)
     class_addMethod (c, (t_method)hradio_initialize,    gensym ("initialize"),      A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)hradio_dialog,        gensym ("dialog"),          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)hradio_size,          gensym ("size"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)hradio_delta,         gensym ("move"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)hradio_pos,           gensym ("position"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)hradio_label_font,    gensym ("labelfont"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)hradio_label_pos,     gensym ("labelpostion"),    A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)hradio_move,          gensym ("move"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)hradio_position,      gensym ("position"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)hradio_labelFont,     gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)hradio_labelPosition, gensym ("labelpostion"),    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)hradio_set,           gensym ("set"),             A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)hradio_number,        gensym ("buttonsnumber"),   A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)hradio_buttonsNumber, gensym ("buttonsnumber"),   A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)hradio_send,          gensym ("send"),            A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)hradio_receive,       gensym ("receive"),         A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)hradio_label,         gensym ("label"),           A_DEFSYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)hradio_delta,         gensym ("delta"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)hradio_pos,           gensym ("pos"),             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)hradio_label_font,    gensym ("label_font"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)hradio_label_pos,     gensym ("label_pos"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)hradio_number,        gensym ("number"),          A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)hradio_move,          gensym ("delta"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)hradio_position,      gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)hradio_labelFont,     gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)hradio_labelPosition, gensym ("label_pos"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)hradio_buttonsNumber, gensym ("number"),          A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)hradio_initialize,    gensym ("init"),            A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)hradio_dummy,         gensym ("color"),           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)hradio_dummy,         gensym ("single_change"),   A_GIMME, A_NULL);
