@@ -235,61 +235,45 @@ void hradio_draw(t_hradio *x, t_glist *glist, int mode)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void hradio_fout(t_hradio *x, t_float f)
+static void hradio_out (t_hradio *x)
 {
-    int i=(int)f;
-
-    x->x_floatValue = f;
-    if(i < 0)
-        i = 0;
-    if(i >= x->x_numberOfButtons)
-        i = x->x_numberOfButtons-1;
-
-        float outval = (0 ? i : x->x_floatValue);
-        x->x_state = i;
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-        outlet_float(x->x_gui.iem_obj.te_outlet, outval);
-        if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
-            pd_float(x->x_gui.iem_send->s_thing, outval);
+    outlet_float (x->x_gui.iem_obj.te_outlet, x->x_floatValue);
+    
+    if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) {
+        pd_float (x->x_gui.iem_send->s_thing, x->x_floatValue);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void hradio_bang(t_hradio *x)
+static void hradio_bang (t_hradio *x)
 {
-        float outval = (0 ? x->x_state : x->x_floatValue);
-        outlet_float(x->x_gui.iem_obj.te_outlet, outval);
-        if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
-            pd_float(x->x_gui.iem_send->s_thing, outval);
+    hradio_out (x);
 }
 
-static void hradio_float(t_hradio *x, t_float f)
+static void hradio_float (t_hradio *x, t_float f)
 {
-    int i=(int)f;
+    x->x_state = PD_CLAMP ((int)f, 0, x->x_numberOfButtons - 1);
     x->x_floatValue = f;
-    if(i < 0)
-        i = 0;
-    if(i >= x->x_numberOfButtons)
-        i = x->x_numberOfButtons-1;
-
-        float outval = (0 ? i : x->x_floatValue);
-        x->x_state = i;
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-        if (x->x_gui.iem_goThrough)
-        {
-            outlet_float(x->x_gui.iem_obj.te_outlet, outval);
-            if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
-                pd_float(x->x_gui.iem_send->s_thing, outval);
-        }
+        
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    
+    if (x->x_gui.iem_goThrough) { hradio_out (x); }
 }
 
-static void hradio_click(t_hradio *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt)
+static void hradio_click (t_hradio *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
 {
-    int xx = (int)xpos - (int)text_xpix(&x->x_gui.iem_obj, x->x_gui.iem_glist);
+    t_float f = ((a - text_xpix (cast_object (x), x->x_gui.iem_glist)) / x->x_gui.iem_width);
+    int i = PD_CLAMP ((int)f, 0, x->x_numberOfButtons - 1);
 
-    hradio_fout(x, (t_float)(xx / x->x_gui.iem_width));
+    x->x_state = i;
+    x->x_floatValue = i;
+    
+    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+        
+    hradio_out (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -298,43 +282,41 @@ static void hradio_click(t_hradio *x, t_float xpos, t_float ypos, t_float shift,
 
 static void hradio_loadbang(t_hradio *x)
 {
-    if (x->x_gui.iem_loadbang)
-        hradio_bang(x);
+    if (x->x_gui.iem_loadbang) { hradio_bang (x); }
 }
 
-static void hradio_init(t_hradio *x, t_float f)
+static void hradio_initialize (t_hradio *x, t_float f)
 {
-    x->x_gui.iem_loadbang = (f==0.0)?0:1;
+    x->x_gui.iem_loadbang = (f != 0.0);
 }
 
-static void hradio_dialog(t_hradio *x, t_symbol *s, int argc, t_atom *argv)
+static void hradio_dialog (t_hradio *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
-    int chg = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
-    int num = (int)(t_int)atom_getFloatAtIndex(6, argc, argv);
+    int size            = (int)atom_getFloatAtIndex (0, argc, argv);
+    int changed         = (int)atom_getFloatAtIndex (4, argc, argv);
+    int numberOfButtons = (int)atom_getFloatAtIndex (6, argc, argv);
 
-    if(chg != 0) chg = 1;
-    x->x_changed = chg;
-    iemgui_fromDialog(&x->x_gui, argc, argv);
-    x->x_gui.iem_width = PD_MAX (a, IEM_MINIMUM_WIDTH);
-    x->x_gui.iem_height = x->x_gui.iem_width;
-    if(x->x_numberOfButtons != num)
-    {
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_ERASE);
-        x->x_numberOfButtons = num;
-        if(x->x_state >= x->x_numberOfButtons)
-        {
-            x->x_state = x->x_numberOfButtons - 1;
-        }
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_NEW);
-    }
-    else
-    {
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-        canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
-    }
+    x->x_gui.iem_width  = PD_MAX (size, IEM_MINIMUM_WIDTH);
+    x->x_gui.iem_height = PD_MAX (size, IEM_MINIMUM_WIDTH);
+    
+    iemgui_fromDialog (&x->x_gui, argc, argv);
+    
+    numberOfButtons = PD_CLAMP (numberOfButtons, 1, IEM_HRADIO_MAXIMUM_BUTTONS);
+    
+    x->x_changed = (changed != 0);
 
+    if (x->x_numberOfButtons != numberOfButtons) {
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_ERASE);
+        x->x_numberOfButtons = numberOfButtons;
+        x->x_state = PD_MIN (x->x_state, x->x_numberOfButtons - 1);
+        x->x_floatValue = x->x_state;
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_NEW);
+
+    } else {
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+        canvas_fixlines (x->x_gui.iem_glist, (t_object*)x);
+    }
 }
 
 static void hradio_size(t_hradio *x, t_symbol *s, int ac, t_atom *av)
@@ -467,17 +449,17 @@ static void hradio_behaviorProperties (t_gobj *z, t_glist *owner)
     iemgui_serializeNames (&x->x_gui, &names);
 
     err = string_sprintf (t, PD_STRING,
-            "::ui_iem::create %%s {Radio Button} \
-            %d %d Size 0 0 empty \
-            0 empty 0 empty \
-            -1 empty empty \
-            %d \
-            %d 256 {Number Of Buttons} \
-            %s %s \
-            %s %d %d \
-            %d \
-            %d %d %d \
-            -1\n",
+            "::ui_iem::create %%s {Radio Button}"
+            " %d %d Size 0 0 empty"
+            " 0 empty 0 empty"
+            " -1 empty empty"
+            " %d"
+            " %d 256 {Number Of Buttons}"
+            " %s %s"
+            " %s %d %d"
+            " %d"
+            " %d %d %d"
+            " -1\n",
             x->x_gui.iem_width, IEM_MINIMUM_WIDTH,
             x->x_gui.iem_loadbang,
             x->x_numberOfButtons,
@@ -612,7 +594,7 @@ void hradio_setup (void)
     class_addClick (c, hradio_click);
     
     class_addMethod (c, (t_method)hradio_loadbang,      gensym ("loadbang"),        A_NULL);
-    class_addMethod (c, (t_method)hradio_init,          gensym ("initialize"),      A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)hradio_initialize,    gensym ("initialize"),      A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)hradio_dialog,        gensym ("dialog"),          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)hradio_size,          gensym ("size"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)hradio_delta,         gensym ("move"),            A_GIMME, A_NULL);
@@ -632,7 +614,7 @@ void hradio_setup (void)
     class_addMethod (c, (t_method)hradio_label_font,    gensym ("label_font"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)hradio_label_pos,     gensym ("label_pos"),       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)hradio_number,        gensym ("number"),          A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)hradio_init,          gensym ("init"),            A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)hradio_initialize,    gensym ("init"),            A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)hradio_dummy,         gensym ("color"),           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)hradio_dummy,         gensym ("single_change"),   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)hradio_dummy,         gensym ("double_change"),   A_GIMME, A_NULL);
