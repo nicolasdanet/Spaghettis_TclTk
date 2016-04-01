@@ -54,10 +54,8 @@ static t_class *hradio_class;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void hradio_drawUpdate (t_gobj *o, t_glist *glist)
+void hradio_drawUpdate (t_hradio *x, t_glist *glist)
 {
-    t_hradio *x = (t_hradio *)o;
-    
     if (glist_isvisible (glist)) {
     //
     t_glist *canvas = glist_getcanvas (glist);
@@ -250,8 +248,7 @@ void hradio_drawConfig (t_hradio* x, t_glist *glist)
 void hradio_draw (t_toggle *x, t_glist *glist, int mode)
 {
     switch (mode) {
-        case IEM_DRAW_UPDATE    : interface_guiQueueAddIfNotAlreadyThere (x, glist, hradio_drawUpdate); 
-                                  break;
+        case IEM_DRAW_UPDATE    : hradio_drawUpdate (x, glist); break;
         case IEM_DRAW_MOVE      : hradio_drawMove (x, glist);   break;
         case IEM_DRAW_NEW       : hradio_drawNew (x, glist);    break;
         case IEM_DRAW_SELECT    : hradio_drawSelect (x, glist); break;
