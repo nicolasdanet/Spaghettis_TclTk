@@ -64,11 +64,11 @@ void bng_drawUpdate (t_bng *x, t_glist *glist)
 
 void bng_drawMove (t_bng *x, t_glist *glist)
 {
+    t_glist *canvas = glist_getcanvas (glist);
+        
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
     
-    t_glist *canvas = glist_getcanvas (glist);
-
     sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
                 canvas,
                 x,

@@ -54,24 +54,72 @@ static t_class *hradio_class;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void hradio_draw_update(t_gobj *client, t_glist *glist)
+void hradio_drawUpdate (t_gobj *o, t_glist *glist)
 {
-    t_hradio *x = (t_hradio *)client;
-    if(glist_isvisible(glist))
-    {
-        t_glist *canvas=glist_getcanvas(glist);
+    t_hradio *x = (t_hradio *)o;
+    
+    if (glist_isvisible (glist)) {
+    //
+    t_glist *canvas = glist_getcanvas (glist);
 
-        sys_vGui(".x%lx.c itemconfigure %lxBUTTON%d -fill #%6.6x -outline #%6.6x\n",
-                 canvas, x, x->x_stateDrawn,
-                 x->x_gui.iem_colorBackground, x->x_gui.iem_colorBackground);
-        sys_vGui(".x%lx.c itemconfigure %lxBUTTON%d -fill #%6.6x -outline #%6.6x\n",
-                 canvas, x, x->x_state,
-                 x->x_gui.iem_colorForeground, x->x_gui.iem_colorForeground);
-        x->x_stateDrawn = x->x_state;
+    sys_vGui (".x%lx.c itemconfigure %lxBUTTON%d -fill #%6.6x -outline #%6.6x\n",
+                canvas, 
+                x, 
+                x->x_stateDrawn,
+                x->x_gui.iem_colorBackground,
+                x->x_gui.iem_colorBackground);
+    sys_vGui (".x%lx.c itemconfigure %lxBUTTON%d -fill #%6.6x -outline #%6.6x\n",
+                canvas, 
+                x, 
+                x->x_state,
+                x->x_gui.iem_colorForeground,
+                x->x_gui.iem_colorForeground);
+                
+    x->x_stateDrawn = x->x_state;
+    //
     }
 }
 
-void hradio_draw_new(t_hradio *x, t_glist *glist)
+void hradio_drawMove (t_hradio *x, t_glist *glist)
+{
+    t_glist *canvas = glist_getcanvas (glist);
+    
+    int n = x->x_numberOfButtons;
+    int a = text_xpix (cast_object (x), glist);
+    int b = text_ypix (cast_object (x), glist);
+    int k = x->x_gui.iem_width / 4;
+    
+    int i, t = a;
+    
+    for (i = 0; i < n; i++, t += x->x_gui.iem_width) {
+    //
+    sys_vGui (".x%lx.c coords %lxBASE%d %d %d %d %d\n",
+                canvas, 
+                x, 
+                i,
+                t,
+                b,
+                t + x->x_gui.iem_width,
+                b + x->x_gui.iem_width);
+    sys_vGui (".x%lx.c coords %lxBUTTON%d %d %d %d %d\n",
+                canvas, 
+                x, 
+                i, 
+                t + k, 
+                b + k, 
+                t + x->x_gui.iem_width - k, 
+                b + x->x_gui.iem_width - k);
+    //
+    }
+    
+    sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
+                canvas, 
+                x, 
+                a + x->x_gui.iem_labelX,
+                b + x->x_gui.iem_labelY);
+}
+
+void hradio_drawNew(t_hradio *x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
     int n=x->x_numberOfButtons, i, dx=x->x_gui.iem_width, s4=dx/4;
@@ -101,97 +149,9 @@ void hradio_draw_new(t_hradio *x, t_glist *glist)
              strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"",
              x->x_gui.iem_fontSize,
              x->x_gui.iem_colorLabel, x);
-
-    /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
-             canvas, xx11b, yy12-1, xx11b + INLETS_WIDTH, yy12, x, 0);
-
-    sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
-             canvas, xx11b, yy11, xx11b + INLETS_WIDTH, yy11+1, x, 0);*/
-
 }
 
-void hradio_draw_move(t_hradio *x, t_glist *glist)
-{
-    t_glist *canvas=glist_getcanvas(glist);
-    int n=x->x_numberOfButtons, i, dx=x->x_gui.iem_width, s4=dx/4;
-    int yy11=text_ypix(&x->x_gui.iem_obj, glist), yy12=yy11+dx;
-    int yy21=yy11+s4, yy22=yy12-s4;
-    int xx11b=text_xpix(&x->x_gui.iem_obj, glist), xx11=xx11b, xx21=xx11b+s4;
-    int xx22=xx11b+dx-s4;
-
-    xx11 = xx11b;
-    xx21=xx11b+s4;
-    xx22=xx11b+dx-s4;
-    for(i=0; i<n; i++)
-    {
-        sys_vGui(".x%lx.c coords %lxBASE%d %d %d %d %d\n",
-                 canvas, x, i, xx11, yy11, xx11+dx, yy12);
-        sys_vGui(".x%lx.c coords %lxBUTTON%d %d %d %d %d\n",
-                 canvas, x, i, xx21, yy21, xx22, yy22);
-        xx11 += dx;
-        xx21 += dx;
-        xx22 += dx;
-    }
-    sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
-             canvas, x, xx11b+x->x_gui.iem_labelX, yy11+x->x_gui.iem_labelY);
-    /*sys_vGui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
-             canvas, x, 0, xx11b, yy12-1, xx11b + INLETS_WIDTH, yy12);
-    sys_vGui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
-             canvas, x, 0, xx11b, yy11, xx11b + INLETS_WIDTH, yy11+1);*/
-}
-
-void hradio_draw_erase(t_hradio* x, t_glist *glist)
-{
-    t_glist *canvas=glist_getcanvas(glist);
-    int n=x->x_numberOfButtons, i;
-
-    for(i=0; i<n; i++)
-    {
-        sys_vGui(".x%lx.c delete %lxBASE%d\n", canvas, x, i);
-        sys_vGui(".x%lx.c delete %lxBUTTON%d\n", canvas, x, i);
-    }
-    sys_vGui(".x%lx.c delete %lxLABEL\n", canvas, x);
-    //sys_vGui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    //sys_vGui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
-}
-
-void hradio_draw_config(t_hradio* x, t_glist *glist)
-{
-    t_glist *canvas=glist_getcanvas(glist);
-    int n=x->x_numberOfButtons, i;
-
-    sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
-             canvas, x, x->x_gui.iem_fontSize,
-             x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
-             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
-    for(i=0; i<n; i++)
-    {
-        sys_vGui(".x%lx.c itemconfigure %lxBASE%d -fill #%6.6x\n", canvas, x, i,
-                 x->x_gui.iem_colorBackground);
-        sys_vGui(".x%lx.c itemconfigure %lxBUTTON%d -fill #%6.6x -outline #%6.6x\n", canvas, x, i,
-                 (x->x_state==i)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground,
-                 (x->x_state==i)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
-    }
-}
-
-void hradio_draw_io(t_hradio* x, t_glist *glist)
-{
-    t_glist *canvas=glist_getcanvas(glist);
-    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
-    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-
-    /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
-        canvas,
-        xpos, ypos + x->x_gui.iem_width-1,
-        xpos + INLETS_WIDTH, ypos + x->x_gui.iem_width,
-        x, 0);
-    sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
-        canvas,
-        xpos, ypos,
-        xpos + INLETS_WIDTH, ypos+1, x, 0);*/
-}
-
-void hradio_draw_select(t_hradio* x, t_glist *glist)
+void hradio_drawSelect(t_hradio* x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
     int n=x->x_numberOfButtons, i;
@@ -217,24 +177,54 @@ void hradio_draw_select(t_hradio* x, t_glist *glist)
     }
 }
 
+void hradio_drawErase(t_hradio* x, t_glist *glist)
+{
+    t_glist *canvas=glist_getcanvas(glist);
+    int n=x->x_numberOfButtons, i;
+
+    for(i=0; i<n; i++)
+    {
+        sys_vGui(".x%lx.c delete %lxBASE%d\n", canvas, x, i);
+        sys_vGui(".x%lx.c delete %lxBUTTON%d\n", canvas, x, i);
+    }
+    sys_vGui(".x%lx.c delete %lxLABEL\n", canvas, x);
+    //sys_vGui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
+    //sys_vGui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+}
+
+void hradio_drawConfig(t_hradio* x, t_glist *glist)
+{
+    t_glist *canvas=glist_getcanvas(glist);
+    int n=x->x_numberOfButtons, i;
+
+    sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
+             canvas, x, x->x_gui.iem_fontSize,
+             x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
+             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
+    for(i=0; i<n; i++)
+    {
+        sys_vGui(".x%lx.c itemconfigure %lxBASE%d -fill #%6.6x\n", canvas, x, i,
+                 x->x_gui.iem_colorBackground);
+        sys_vGui(".x%lx.c itemconfigure %lxBUTTON%d -fill #%6.6x -outline #%6.6x\n", canvas, x, i,
+                 (x->x_state==i)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground,
+                 (x->x_state==i)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void hradio_draw(t_hradio *x, t_glist *glist, int mode)
+void hradio_draw (t_toggle *x, t_glist *glist, int mode)
 {
-    if(mode == IEM_DRAW_UPDATE)
-        interface_guiQueueAddIfNotAlreadyThere(x, glist, hradio_draw_update);
-    else if(mode == IEM_DRAW_MOVE)
-        hradio_draw_move(x, glist);
-    else if(mode == IEM_DRAW_NEW)
-        hradio_draw_new(x, glist);
-    else if(mode == IEM_DRAW_SELECT)
-        hradio_draw_select(x, glist);
-    else if(mode == IEM_DRAW_ERASE)
-        hradio_draw_erase(x, glist);
-    else if(mode == IEM_DRAW_CONFIG)
-        hradio_draw_config(x, glist);
+    switch (mode) {
+        case IEM_DRAW_UPDATE    : interface_guiQueueAddIfNotAlreadyThere (x, glist, hradio_drawUpdate); break;
+        case IEM_DRAW_MOVE      : hradio_drawMove (x, glist);   break;
+        case IEM_DRAW_NEW       : hradio_drawNew (x, glist);    break;
+        case IEM_DRAW_SELECT    : hradio_drawSelect (x, glist); break;
+        case IEM_DRAW_ERASE     : hradio_drawErase (x, glist);  break;
+        case IEM_DRAW_CONFIG    : hradio_drawConfig (x, glist); break;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
