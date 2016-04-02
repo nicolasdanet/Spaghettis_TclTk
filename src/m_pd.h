@@ -161,11 +161,7 @@
 #pragma mark -
 
 #ifndef PD_WITH_DEBUG
-#define PD_WITH_DEBUG           1           /* False assertions logged. */
-#endif
-
-#ifndef PD_WITH_LOGGER
-#define PD_WITH_LOGGER          1           /* Lock-free logging (debugging purpose only). */
+#define PD_WITH_DEBUG           1           /* Debug mode. */
 #endif
 
 #ifndef PD_WITH_ALLOCA

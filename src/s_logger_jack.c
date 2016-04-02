@@ -16,7 +16,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#if PD_WITH_LOGGER
+#if PD_WITH_DEBUG
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -39,6 +39,7 @@ static int                  logger_file;                    /* Shared. */
 static pthread_t            logger_thread;                  /* Shared. */
 static pthread_attr_t       logger_attribute;               /* Shared. */
 static int                  logger_quit;                    /* Shared. */
+static int                  logger_running;                 /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -85,12 +86,15 @@ t_error logger_initializeNative (void)
     char t[PD_STRING] = { 0 };
     t_error err = string_sprintf (t, PD_STRING, "%s/log-XXXXXX", main_directoryExtras->s_name);
     
-    if ((logger_file = mkstemp (t)) != -1) {
+    if (!err && (logger_file = mkstemp (t)) != -1) {
     //
     if ((logger_ring = jack_ringbuffer_create (k))) {
         pthread_attr_init (&logger_attribute);
         pthread_attr_setdetachstate (&logger_attribute, PTHREAD_CREATE_JOINABLE);
-        return (pthread_create (&logger_thread, &logger_attribute, logger_task, NULL) != 0);
+        if (!(err = (pthread_create (&logger_thread, &logger_attribute, logger_task, NULL) != 0))) {
+            logger_running = 1;
+        }
+        return err;
     }
     //
     }
@@ -101,6 +105,8 @@ t_error logger_initializeNative (void)
 void logger_releaseNative (void)
 {
     logger_quit = 1;
+    logger_running = 0;
+    
     pthread_join (logger_thread, NULL);
     pthread_attr_destroy (&logger_attribute);
     
@@ -110,6 +116,11 @@ void logger_releaseNative (void)
     }
     
     if (logger_file != -1) { close (logger_file); }
+}
+
+int logger_isRunningNative (void)
+{
+    return logger_running;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -124,7 +135,7 @@ void logger_appendStringNative (const char *s)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#endif // PD_WITH_LOGGER
+#endif // PD_WITH_DEBUG
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

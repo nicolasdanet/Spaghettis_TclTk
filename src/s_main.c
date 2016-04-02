@@ -263,7 +263,7 @@ int main_entry (int argc, char **argv)
     PD_ASSERT (main_directoryExtras != NULL);
     
     err |= logger_initialize();
-        
+
     if (!err) {
     //
     if (main_version) { 
