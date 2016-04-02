@@ -581,9 +581,9 @@ void toggle_setup (void)
     class_addMethod (c, (t_method)toggle_move,          gensym ("delta"),           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_position,      gensym ("pos"),             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_dummy,         gensym ("color"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_labelFont,     gensym ("label_font"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_labelPosition, gensym ("label_pos"),       A_GIMME, A_NULL);
-    
+    class_addMethod (c, (t_method)toggle_labelFont,     gensym ("label_font"),      A_GIMME, A_NULL);
+        
     #endif
     
     toggle_widgetBehavior.w_getrectfn   = toggle_behaviorGetRectangle;

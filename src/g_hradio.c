@@ -632,13 +632,13 @@ void hradio_setup (void)
     
     #if PD_WITH_LEGACY
     
+    class_addMethod (c, (t_method)hradio_initialize,    gensym ("init"),            A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)hradio_move,          gensym ("delta"),           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)hradio_position,      gensym ("pos"),             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)hradio_labelFont,     gensym ("label_font"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)hradio_labelPosition, gensym ("label_pos"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)hradio_buttonsNumber, gensym ("number"),          A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)hradio_initialize,    gensym ("init"),            A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)hradio_dummy,         gensym ("color"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)hradio_labelPosition, gensym ("label_pos"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)hradio_labelFont,     gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)hradio_buttonsNumber, gensym ("number"),          A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)hradio_dummy,         gensym ("single_change"),   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)hradio_dummy,         gensym ("double_change"),   A_GIMME, A_NULL);
     

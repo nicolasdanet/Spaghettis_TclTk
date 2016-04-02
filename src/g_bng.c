@@ -609,9 +609,9 @@ void bng_setup (void)
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)bng_initialize,       gensym ("init"),            A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)bng_dummy,            gensym ("color"),           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)bng_move,             gensym ("delta"),           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)bng_position,         gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_dummy,            gensym ("color"),           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)bng_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)bng_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
 
