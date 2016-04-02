@@ -35,12 +35,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_HRADIO_MAXIMUM_BUTTONS   128
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void hradio_buttonsNumber (t_hradio *x, t_float numberOfButtons);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -328,7 +322,7 @@ static void hradio_dialog (t_hradio *x, t_symbol *s, int argc, t_atom *argv)
     
     iemgui_fromDialog (&x->x_gui, argc, argv);
     
-    numberOfButtons = PD_CLAMP (numberOfButtons, 1, IEM_HRADIO_MAXIMUM_BUTTONS);
+    numberOfButtons = PD_CLAMP (numberOfButtons, 1, IEM_MAXIMUM_BUTTONS);
     
     x->x_changed = (changed != 0);
 
@@ -384,7 +378,7 @@ static void hradio_set (t_hradio *x, t_float f)
 
 static void hradio_buttonsNumber (t_hradio *x, t_float numberOfButtons)
 {
-    int n = PD_CLAMP ((int)numberOfButtons, 1, IEM_HRADIO_MAXIMUM_BUTTONS);
+    int n = PD_CLAMP ((int)numberOfButtons, 1, IEM_MAXIMUM_BUTTONS);
 
     if (n != x->x_numberOfButtons) {
         (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_ERASE);
@@ -581,7 +575,7 @@ static void *hradio_new (t_symbol *s, int argc, t_atom *argv)
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
     
     x->x_changed = (changed != 0);
-    x->x_numberOfButtons = PD_CLAMP (numberOfButtons, 1, IEM_HRADIO_MAXIMUM_BUTTONS);
+    x->x_numberOfButtons = PD_CLAMP (numberOfButtons, 1, IEM_MAXIMUM_BUTTONS);
     x->x_floatValue = floatValue;
     
     if (x->x_gui.iem_loadbang) {
