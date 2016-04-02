@@ -398,72 +398,91 @@ static void vradio_label(t_vradio *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void vradio_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int *xp2, int *yp2)
+static void vradio_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
+{
+    t_hradio *x = (t_hradio *)z;
+    
+    *a = text_xpix (cast_object (z), glist);
+    *b = text_ypix (cast_object (z), glist);
+    *c = *a + cast_iem (z)->iem_width;
+    *d = *b + cast_iem (z)->iem_height * x->x_numberOfButtons;
+}
+
+static int vradio_behaviorClick (t_gobj *z, t_glist *glist, int a, int b, int shift, int alt, int dbl, int k)
+{
+    if (k) {
+        vradio_click ((t_hradio *)z, (t_float)a, (t_float)b, (t_float)shift, (t_float)0, (t_float)alt);
+    }
+    
+    return 1;
+}
+
+static void vradio_behaviorSave (t_gobj *z, t_buffer *b)
 {
     t_vradio *x = (t_vradio *)z;
 
-    *xp1 = text_xpix(&x->x_gui.iem_obj, glist);
-    *yp1 = text_ypix(&x->x_gui.iem_obj, glist);
-    *xp2 = *xp1 + x->x_gui.iem_width;
-    *yp2 = *yp1 + x->x_gui.iem_height*x->x_numberOfButtons;
+    t_iemnames names;
+    t_iemcolors colors;
+
+    iemgui_serialize(&x->x_gui, &names, &colors);
+    
+    buffer_vAppend (b, "ssiisiiiisssiiiiiiif",
+        gensym ("#X"),
+        gensym ("obj"),
+        (int)cast_object (z)->te_xCoordinate,
+        (int)cast_object (z)->te_yCoordinate,
+        gensym ("vradio"),
+        x->x_gui.iem_width,                                         // Size.
+        x->x_changed,                                               // Dummy.
+        iemgui_serializeLoadbang (&x->x_gui),                       // Loadbang.
+        x->x_numberOfButtons,                                       // Number of buttons.
+        names.n_unexpandedSend,                                     // Send.
+        names.n_unexpandedReceive,                                  // Receive.
+        names.n_unexpandedLabel,                                    // Label.
+        x->x_gui.iem_labelX,                                        // label X.
+        x->x_gui.iem_labelY,                                        // Label Y.
+        iemgui_serializeFontStyle (&x->x_gui),                      // Label font.
+        x->x_gui.iem_fontSize,                                      // Label font size.
+        colors.c_colorBackground,                                   // Background color.
+        colors.c_colorForeground,                                   // Foreground color.
+        colors.c_colorLabel,                                        // Label color.
+        x->x_floatValue);                                           // Float value.
+        
+    buffer_vAppend (b, ";");
 }
 
-static int vradio_newclick(t_gobj *z, struct _glist *glist,
-    int xpix, int ypix, int shift, int alt, int dbl, int doit)
-{
-    if(doit)
-        vradio_click((t_vradio *)z, (t_float)xpix, (t_float)ypix,
-            (t_float)shift, 0, (t_float)alt);
-    return (1);
-}
-
-static void vradio_save(t_gobj *z, t_buffer *b)
-{
-    t_vradio *x = (t_vradio *)z;
-    int bflcol[3];
-    t_symbol *srl[3];
-
-    iemgui_serialize(&x->x_gui, srl, bflcol);
-    buffer_vAppend(b, "ssiisiiiisssiiiiiiif", gensym ("#X"),gensym ("obj"),
-                (int)x->x_gui.iem_obj.te_xCoordinate,
-                (int)x->x_gui.iem_obj.te_yCoordinate,
-                gensym ("vradio"),
-                x->x_gui.iem_width,
-                x->x_changed, iemgui_serializeLoadbang(&x->x_gui), x->x_numberOfButtons,
-                srl[0], srl[1], srl[2],
-                x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iemgui_serializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
-                bflcol[0], bflcol[1], bflcol[2], x->x_floatValue);
-    buffer_vAppend(b, ";");
-}
-
-static void vradio_properties(t_gobj *z, t_glist *owner)
+static void vradio_behaviorProperties (t_gobj *z, t_glist *owner)
 {
     t_vradio *x = (t_vradio *)z;
-    char buf[800];
-    t_symbol *srl[3];
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    t_iemnames names;
+    
+    iemgui_serializeNames (&x->x_gui, &names);
 
-    iemgui_serializeNames(&x->x_gui, srl);
-
-    sprintf(buf, "::ui_iem::create %%s {Radio Button} \
-            %d %d Size 0 0 empty \
-            0 empty 0 empty \
-            -1 empty empty \
-            %d \
-            %d 256 {Number Of Buttons} \
-            %s %s \
-            %s %d %d \
-            %d \
-            %d %d %d \
-            -1\n",
+    err = string_sprintf (t, PD_STRING,
+            "::ui_iem::create %%s {Radio Button}"   // --
+            " %d %d Size 0 0 empty"
+            " 0 empty 0 empty"
+            " -1 empty empty"
+            " %d"
+            " %d 256 {Number Of Buttons}"           // --
+            " %s %s"
+            " %s %d %d"
+            " %d"
+            " %d %d %d"
+            " -1\n",
             x->x_gui.iem_width, IEM_MINIMUM_WIDTH,
-            x->x_gui.iem_loadbang, 
+            x->x_gui.iem_loadbang,
             x->x_numberOfButtons,
-            srl[0]->s_name, srl[1]->s_name,
-            srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
+            names.n_unexpandedSend->s_name, names.n_unexpandedReceive->s_name,
+            names.n_unexpandedLabel->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
-            0xffffff & x->x_gui.iem_colorBackground, 0xffffff & x->x_gui.iem_colorForeground, 0xffffff & x->x_gui.iem_colorLabel);
-    gfxstub_new(&x->x_gui.iem_obj.te_g.g_pd, x, buf);
+            x->x_gui.iem_colorBackground, x->x_gui.iem_colorForeground, x->x_gui.iem_colorLabel);
+            
+    PD_ASSERT (!err);
+    
+    gfxstub_new (cast_pd (x), (void *)x, t);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -614,18 +633,18 @@ void vradio_setup (void)
     
     #endif
     
-    vradio_widgetBehavior.w_getrectfn   = vradio_getrect;
+    vradio_widgetBehavior.w_getrectfn   = vradio_behaviorGetRectangle;
     vradio_widgetBehavior.w_displacefn  = iemgui_behaviorDisplace;
     vradio_widgetBehavior.w_selectfn    = iemgui_behaviorSelected;
     vradio_widgetBehavior.w_activatefn  = NULL;
     vradio_widgetBehavior.w_deletefn    = iemgui_behaviorDeleted;
     vradio_widgetBehavior.w_visfn       = iemgui_behaviorVisible;
-    vradio_widgetBehavior.w_clickfn     = vradio_newclick;
+    vradio_widgetBehavior.w_clickfn     = vradio_behaviorClick;
     
     class_setWidgetBehavior (c, &vradio_widgetBehavior);
     class_setHelpName (c, gensym ("vradio"));
-    class_setSaveFunction (c, vradio_save);
-    class_setPropertiesFunction (c, vradio_properties);
+    class_setSaveFunction (c, vradio_behaviorSave);
+    class_setPropertiesFunction (c, vradio_behaviorProperties);
     
     vradio_class = c;
 }

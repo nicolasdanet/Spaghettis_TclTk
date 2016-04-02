@@ -427,7 +427,6 @@ static int hradio_behaviorClick (t_gobj *z, t_glist *glist, int a, int b, int sh
     return 1;
 }
 
-
 static void hradio_behaviorSave (t_gobj *z, t_buffer *b)
 {
     t_hradio *x = (t_hradio *)z;
