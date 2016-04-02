@@ -257,7 +257,7 @@ void hradio_draw (t_toggle *x, t_glist *glist, int mode)
 
 static void hradio_out (t_hradio *x)
 {
-    outlet_float (x->x_gui.iem_obj.te_outlet, x->x_floatValue);
+    outlet_float (cast_object (x)->te_outlet, x->x_floatValue);
     
     if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) {
         pd_float (x->x_gui.iem_send->s_thing, x->x_floatValue);
@@ -277,9 +277,12 @@ static void hradio_float (t_hradio *x, t_float f)
 {
     x->x_state = PD_CLAMP ((int)f, 0, x->x_numberOfButtons - 1);
     x->x_floatValue = f;
+    
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     
-    if (x->x_gui.iem_goThrough) { hradio_out (x); }
+    if (x->x_gui.iem_goThrough) {
+        hradio_out (x); 
+    }
 }
 
 static void hradio_click (t_hradio *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
@@ -290,7 +293,7 @@ static void hradio_click (t_hradio *x, t_float a, t_float b, t_float shift, t_fl
     x->x_state = i;
     x->x_floatValue = i;
     
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
         
     hradio_out (x);
 }
@@ -330,7 +333,7 @@ static void hradio_dialog (t_hradio *x, t_symbol *s, int argc, t_atom *argv)
     else {
         (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
         (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-        canvas_fixlines (x->x_gui.iem_glist, (t_object*)x);
+        canvas_fixlines (x->x_gui.iem_glist, cast_object (x));
     }
     //
     }

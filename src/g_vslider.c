@@ -336,9 +336,9 @@ static void vslider_dialog(t_vslider *x, t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
     vslider_check_height(x, h);
     vslider_check_minmax(x, min, max);
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-    canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+    canvas_fixlines(x->x_gui.iem_glist, cast_object (x));
 }
 
 static void vslider_motion(t_vslider *x, t_float dx, t_float dy)
@@ -365,7 +365,7 @@ static void vslider_motion(t_vslider *x, t_float dx, t_float dy)
     x->x_floatValue = vslider_getfval(x);
     if (old != x->x_val)
     {
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
         vslider_bang(x);
     }
 }
@@ -381,7 +381,7 @@ static void vslider_click(t_vslider *x, t_float xpos, t_float ypos,
         x->x_val = 0;
     x->x_floatValue = vslider_getfval(x);
     x->x_pos = x->x_val;
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     vslider_bang(x);
     glist_grab(x->x_gui.iem_glist, &x->x_gui.iem_obj.te_g,
         (t_glistmotionfn)vslider_motion, 0, xpos, ypos);
@@ -431,7 +431,7 @@ static void vslider_set(t_vslider *x, t_float f)
     x->x_val = (int)(100.0*g + 0.49999);
     x->x_pos = x->x_val;
     if(x->x_val != old)
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
 }
 
 static void vslider_float(t_vslider *x, t_float f)
@@ -506,7 +506,7 @@ static void vslider_loadbang(t_vslider *x)
 {
     if(x->x_gui.iem_loadbang)
     {
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
         vslider_bang(x);
     }
 }

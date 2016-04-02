@@ -532,9 +532,9 @@ static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
     if(scale != 0)
         scale = 1;
     vu_scale(x, (t_float)scale);
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-    canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+    canvas_fixlines(x->x_gui.iem_glist, (t_object *)x);
 }
 
 static void vu_size(t_vu *x, t_symbol *s, int ac, t_atom *av)
@@ -545,9 +545,9 @@ static void vu_size(t_vu *x, t_symbol *s, int ac, t_atom *av)
         vu_check_height(x, (int)(t_int)atom_getFloatAtIndex(1, ac, av));
     if(glist_isvisible(x->x_gui.iem_glist))
     {
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-        canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
+        canvas_fixlines(x->x_gui.iem_glist, (t_object *)x);
     }
 }
 

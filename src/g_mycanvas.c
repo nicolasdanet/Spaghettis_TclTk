@@ -206,8 +206,8 @@ static void my_canvas_dialog(t_my_canvas *x, t_symbol *s, int argc, t_atom *argv
     if(h < 1)
         h = 1;
     x->x_vis_h = h;
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
 }
 
 static void my_canvas_size(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
@@ -243,7 +243,7 @@ static void my_canvas_vis_size(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
     }
     x->x_vis_h = i;
     if(glist_isvisible(x->x_gui.iem_glist))
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
 }
 
 static void my_canvas_color(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)

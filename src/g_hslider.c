@@ -311,7 +311,7 @@ static void hslider_set(t_hslider *x, t_float f)    /* bugfix */
     x->x_val = (int)(100.0*g + 0.49999);
     x->x_pos = x->x_val;
     if(x->x_val != old)
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
 }
 
     /* compute numeric value (fval) from pixel location (val) and range */
@@ -357,9 +357,9 @@ static void hslider_dialog(t_hslider *x, t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_height = PD_MAX (h, IEM_MINIMUM_HEIGHT);
     hslider_check_width(x, w);
     hslider_check_minmax(x, min, max);
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-    canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+    canvas_fixlines(x->x_gui.iem_glist, cast_object (x));
 }
 
 static void hslider_motion(t_hslider *x, t_float dx, t_float dy)
@@ -386,7 +386,7 @@ static void hslider_motion(t_hslider *x, t_float dx, t_float dy)
     x->x_floatValue = hslider_getfval(x);
     if (old != x->x_val)
     {
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
         hslider_bang(x);
     }
 }
@@ -402,7 +402,7 @@ static void hslider_click(t_hslider *x, t_float xpos, t_float ypos,
         x->x_val = 0;
     x->x_floatValue = hslider_getfval(x);
     x->x_pos = x->x_val;
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     hslider_bang(x);
     glist_grab(x->x_gui.iem_glist, &x->x_gui.iem_obj.te_g, (t_glistmotionfn)hslider_motion,
                0, xpos, ypos);
@@ -500,7 +500,7 @@ static void hslider_loadbang(t_hslider *x)
 {
     if(x->x_gui.iem_loadbang)
     {
-        (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
         hslider_bang(x);
     }
 }

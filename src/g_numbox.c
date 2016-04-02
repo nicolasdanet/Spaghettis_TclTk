@@ -503,10 +503,10 @@ static void my_numbox_dialog(t_my_numbox *x, t_symbol *s, int argc,
     /*if(my_numbox_check_minmax(x, min, max))
      my_numbox_bang(x);*/
     my_numbox_check_minmax(x, min, max);
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw)(x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-    canvas_fixlines(x->x_gui.iem_glist, (t_object*)x);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+    canvas_fixlines(x->x_gui.iem_glist, (t_object *)x);
 }
 
 static void my_numbox_motion(t_my_numbox *x, t_float dx, t_float dy)
