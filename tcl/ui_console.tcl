@@ -29,7 +29,15 @@ proc initialize {} { ::ui_console::_create }
 
 proc post {message} { 
 
-    .console.text.internal insert end $message
+    .console.text.internal insert end $message basicLog
+    .console.text.internal insert end "\n"
+    
+    after idle ::ui_console::_update
+}
+
+proc error {message} { 
+
+    .console.text.internal insert end $message errorLog
     .console.text.internal insert end "\n"
     
     after idle ::ui_console::_update
@@ -62,6 +70,11 @@ proc _create {} {
     bind .console <<SelectAll>> ".console.text tag add sel 1.0 end"
     
     wm protocol .console WM_DELETE_WINDOW   { ::ui_console::closed }
+    
+    # Set the color layout. 
+    
+    .console.text tag configure errorLog -foreground red
+    .console.text tag configure basicLog -foreground black
     
     # Read-only text widget ( http://wiki.tcl.tk/1152 ).
   
