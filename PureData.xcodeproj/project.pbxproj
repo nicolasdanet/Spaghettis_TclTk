@@ -34,6 +34,7 @@
 		3722C5321C4F91FC00D2BF6F /* u_watchdog.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972051C4F716700263434 /* u_watchdog.c */; };
 		373D6CCA1C610AAF00106641 /* m_bindlist.c in Sources */ = {isa = PBXBuildFile; fileRef = 373D6CC91C610AAF00106641 /* m_bindlist.c */; };
 		373F78251C7E097A0083D316 /* s_audioAPI.c in Sources */ = {isa = PBXBuildFile; fileRef = 373F78241C7E097A0083D316 /* s_audioAPI.c */; };
+		3770FAA61CB1036A007C7E66 /* g_radio.c in Sources */ = {isa = PBXBuildFile; fileRef = 3770FAA51CB1036A007C7E66 /* g_radio.c */; };
 		378972141C4F716800263434 /* d_arithmetic.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B01C4F716700263434 /* d_arithmetic.c */; };
 		378972151C4F716800263434 /* d_array.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B11C4F716700263434 /* d_array.c */; };
 		378972161C4F716800263434 /* d_ctl.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971B21C4F716700263434 /* d_ctl.c */; };
@@ -55,7 +56,6 @@
 		378972261C4F716800263434 /* g_editor.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C31C4F716700263434 /* g_editor.c */; };
 		378972271C4F716800263434 /* g_graph.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C41C4F716700263434 /* g_graph.c */; };
 		378972281C4F716800263434 /* g_guiconnect.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C51C4F716700263434 /* g_guiconnect.c */; };
-		378972291C4F716800263434 /* g_hradio.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C61C4F716700263434 /* g_hradio.c */; };
 		3789722A1C4F716800263434 /* g_hslider.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C71C4F716700263434 /* g_hslider.c */; };
 		3789722B1C4F716800263434 /* g_iem.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C81C4F716700263434 /* g_iem.c */; };
 		3789722C1C4F716800263434 /* g_io.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CA1C4F716700263434 /* g_io.c */; };
@@ -68,7 +68,6 @@
 		378972331C4F716800263434 /* g_text.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D11C4F716700263434 /* g_text.c */; };
 		378972341C4F716800263434 /* g_toggle.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D21C4F716700263434 /* g_toggle.c */; };
 		378972351C4F716800263434 /* g_traversal.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D31C4F716700263434 /* g_traversal.c */; };
-		378972361C4F716800263434 /* g_vradio.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D41C4F716700263434 /* g_vradio.c */; };
 		378972371C4F716800263434 /* g_vslider.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D51C4F716700263434 /* g_vslider.c */; };
 		378972381C4F716800263434 /* g_vumeter.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D61C4F716700263434 /* g_vumeter.c */; };
 		378972391C4F716800263434 /* m_atom.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D81C4F716700263434 /* m_atom.c */; };
@@ -212,6 +211,7 @@
 		373690AE1C8485FF00A332BD /* readbinaryplist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = readbinaryplist.h; path = portmidi/pm_mac/readbinaryplist.h; sourceTree = "<group>"; };
 		373D6CC91C610AAF00106641 /* m_bindlist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_bindlist.c; path = src/m_bindlist.c; sourceTree = "<group>"; };
 		373F78241C7E097A0083D316 /* s_audioAPI.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_audioAPI.c; path = src/s_audioAPI.c; sourceTree = "<group>"; };
+		3770FAA51CB1036A007C7E66 /* g_radio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_radio.c; path = src/g_radio.c; sourceTree = "<group>"; };
 		37877DA91C89E60500E1777D /* pa_allocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pa_allocation.h; path = portaudio/src/common/pa_allocation.h; sourceTree = "<group>"; };
 		37877DAA1C89E62000E1777D /* pa_converters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pa_converters.h; path = portaudio/src/common/pa_converters.h; sourceTree = "<group>"; };
 		37877DAB1C89E62000E1777D /* pa_cpuload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pa_cpuload.h; path = portaudio/src/common/pa_cpuload.h; sourceTree = "<group>"; };
@@ -278,7 +278,6 @@
 		378971C31C4F716700263434 /* g_editor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_editor.c; path = src/g_editor.c; sourceTree = "<group>"; };
 		378971C41C4F716700263434 /* g_graph.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_graph.c; path = src/g_graph.c; sourceTree = "<group>"; };
 		378971C51C4F716700263434 /* g_guiconnect.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_guiconnect.c; path = src/g_guiconnect.c; sourceTree = "<group>"; };
-		378971C61C4F716700263434 /* g_hradio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_hradio.c; path = src/g_hradio.c; sourceTree = "<group>"; };
 		378971C71C4F716700263434 /* g_hslider.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_hslider.c; path = src/g_hslider.c; sourceTree = "<group>"; };
 		378971C81C4F716700263434 /* g_iem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_iem.c; path = src/g_iem.c; sourceTree = "<group>"; };
 		378971C91C4F716700263434 /* g_iem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_iem.h; path = src/g_iem.h; sourceTree = "<group>"; };
@@ -292,7 +291,6 @@
 		378971D11C4F716700263434 /* g_text.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_text.c; path = src/g_text.c; sourceTree = "<group>"; };
 		378971D21C4F716700263434 /* g_toggle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_toggle.c; path = src/g_toggle.c; sourceTree = "<group>"; };
 		378971D31C4F716700263434 /* g_traversal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_traversal.c; path = src/g_traversal.c; sourceTree = "<group>"; };
-		378971D41C4F716700263434 /* g_vradio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_vradio.c; path = src/g_vradio.c; sourceTree = "<group>"; };
 		378971D51C4F716700263434 /* g_vslider.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_vslider.c; path = src/g_vslider.c; sourceTree = "<group>"; };
 		378971D61C4F716700263434 /* g_vumeter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_vumeter.c; path = src/g_vumeter.c; sourceTree = "<group>"; };
 		378971D71C4F716700263434 /* m_alloca.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_alloca.h; path = src/m_alloca.h; sourceTree = "<group>"; };
@@ -714,8 +712,7 @@
 				378971C81C4F716700263434 /* g_iem.c */,
 				378971C01C4F716700263434 /* g_bng.c */,
 				378971D21C4F716700263434 /* g_toggle.c */,
-				378971C61C4F716700263434 /* g_hradio.c */,
-				378971D41C4F716700263434 /* g_vradio.c */,
+				3770FAA51CB1036A007C7E66 /* g_radio.c */,
 				378971C71C4F716700263434 /* g_hslider.c */,
 				378971D51C4F716700263434 /* g_vslider.c */,
 				378971D61C4F716700263434 /* g_vumeter.c */,
@@ -960,7 +957,6 @@
 				378972261C4F716800263434 /* g_editor.c in Sources */,
 				378972271C4F716800263434 /* g_graph.c in Sources */,
 				378972281C4F716800263434 /* g_guiconnect.c in Sources */,
-				378972291C4F716800263434 /* g_hradio.c in Sources */,
 				3789722A1C4F716800263434 /* g_hslider.c in Sources */,
 				3789722B1C4F716800263434 /* g_iem.c in Sources */,
 				3789722C1C4F716800263434 /* g_io.c in Sources */,
@@ -973,7 +969,6 @@
 				378972331C4F716800263434 /* g_text.c in Sources */,
 				378972341C4F716800263434 /* g_toggle.c in Sources */,
 				378972351C4F716800263434 /* g_traversal.c in Sources */,
-				378972361C4F716800263434 /* g_vradio.c in Sources */,
 				378972371C4F716800263434 /* g_vslider.c in Sources */,
 				378972381C4F716800263434 /* g_vumeter.c in Sources */,
 				378972391C4F716800263434 /* m_atom.c in Sources */,
@@ -1026,6 +1021,7 @@
 				373F78251C7E097A0083D316 /* s_audioAPI.c in Sources */,
 				37F5138C1C9B0EA80076A0C4 /* s_logger.c in Sources */,
 				37F514161C9B19A70076A0C4 /* s_logger_pa.c in Sources */,
+				3770FAA61CB1036A007C7E66 /* g_radio.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

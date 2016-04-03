@@ -58,8 +58,7 @@
 #include "g_iem.c"
 #include "g_bng.c"
 #include "g_toggle.c"
-#include "g_hradio.c"
-#include "g_vradio.c"
+#include "g_radio.c"
 
 /* Control. */
 

@@ -150,24 +150,16 @@ typedef struct _toggle {
     t_float     x_nonZero;
     } t_toggle;
 
-typedef struct _hradio {
+typedef struct _radio {
     t_iem       x_gui;
+    int         x_isVertical;
     int         x_changed;                      /* Unused but kept for compatibility. */
     int         x_numberOfButtons;
     int         x_state;
     int         x_stateDrawn;
     t_float     x_floatValue;
-    } t_hradio;
+    } t_radio;
 
-typedef struct _vradio {
-    t_iem       x_gui;
-    int         x_changed;                      /* Unused but kept for compatibility. */
-    int         x_numberOfButtons;
-    int         x_state;
-    int         x_stateDrawn;
-    t_float     x_floatValue;
-    } t_vradio;
-    
 typedef struct _hslider {
     t_iem       x_gui;
     int         x_pos;
