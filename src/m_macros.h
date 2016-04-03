@@ -116,11 +116,17 @@ typedef void (*t_gotfn1)(void *x, void *arg1);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define class_addClick(c, m)                (c, (t_method)(m), \
+#define class_addClick(c, m)                class_addMethod ((c), (t_method)(m), \
                                                 gensym ("click"), \
                                                 A_FLOAT, \
                                                 A_FLOAT, \
                                                 A_FLOAT, \
+                                                A_FLOAT, \
+                                                A_FLOAT, \
+                                                A_NULL);
+
+#define class_addMotion(c, m)               class_addMethod ((c), (t_method)(m), \
+                                                gensym ("motion"), \
                                                 A_FLOAT, \
                                                 A_FLOAT, \
                                                 A_NULL);

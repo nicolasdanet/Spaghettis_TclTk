@@ -34,14 +34,14 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_HSLIDER_MINIMUM_WIDTH       8
-#define IEM_HSLIDER_MINIMUM_HEIGHT      8
+static void slider_set      (t_slider *x, t_float f);
+static void slider_motion   (t_slider *x, t_float deltaX, t_float deltaY);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_widgetbehavior slider_widgetbehavior;
+static t_widgetbehavior slider_widgetBehavior;
 
 static t_class *slider_class;
 
@@ -142,21 +142,6 @@ static void slider_draw_config(t_slider* x,t_glist *glist)
     sys_vGui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas, x, x->x_gui.iem_colorBackground);
 }
 
-static void slider_draw_io(t_slider* x, t_glist *glist)
-{
-    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
-    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    t_glist *canvas=glist_getcanvas(glist);
-
-    /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
-        canvas, xpos-3, ypos + x->x_gui.iem_height-1,
-        xpos+4, ypos + x->x_gui.iem_height, x, 0);
-
-    sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
-        canvas, xpos-3, ypos,
-        xpos+4, ypos+1, x, 0);*/
-}
-
 static void slider_draw_select(t_slider* x,t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
@@ -172,6 +157,10 @@ static void slider_draw_select(t_slider* x,t_glist *glist)
         sys_vGui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, x->x_gui.iem_colorLabel);
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void slider_draw(t_slider *x, t_glist *glist, int mode)
 {
@@ -189,44 +178,14 @@ void slider_draw(t_slider *x, t_glist *glist, int mode)
         slider_draw_config(x, glist);
 }
 
-/* ------------------------ hsl widgetbehaviour----------------------------- */
-
-
-static void slider_getrect(t_gobj *z, t_glist *glist,
-                            int *xp1, int *yp1, int *xp2, int *yp2)
-{
-    t_slider* x = (t_slider*)z;
-
-    *xp1 = text_xpix(&x->x_gui.iem_obj, glist) - 3;
-    *yp1 = text_ypix(&x->x_gui.iem_obj, glist);
-    *xp2 = *xp1 + x->x_gui.iem_width + 5;
-    *yp2 = *yp1 + x->x_gui.iem_height;
-}
-
-static void slider_save(t_gobj *z, t_buffer *b)
-{
-    t_slider *x = (t_slider *)z;
-    int bflcol[3];
-    t_symbol *srl[3];
-
-    iemgui_serialize(&x->x_gui, srl, bflcol);
-    buffer_vAppend(b, "ssiisiiffiisssiiiiiiiii", gensym("#X"),gensym("obj"),
-                (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
-                gensym("hsl"), x->x_gui.iem_width, x->x_gui.iem_height,
-                (t_float)x->x_minimum, (t_float)x->x_maximum,
-                x->x_isLogarithmic, iemgui_serializeLoadbang(&x->x_gui),
-                srl[0], srl[1], srl[2],
-                x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iemgui_serializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
-                bflcol[0], bflcol[1], bflcol[2],
-                x->x_value, x->x_isSteadyOnClick);
-    buffer_vAppend(b, ";");
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void slider_check_width(t_slider *x, int w)
 {
-    if(w < IEM_HSLIDER_MINIMUM_WIDTH)
-        w = IEM_HSLIDER_MINIMUM_WIDTH;
+    if(w < IEM_MINIMUM_WIDTH)
+        w = IEM_MINIMUM_WIDTH;
     x->x_gui.iem_width = w;
     if(x->x_value > (x->x_gui.iem_width*100 - 100))
     {
@@ -264,34 +223,157 @@ void slider_check_minmax(t_slider *x, double min, double max)
         x->x_k = (x->x_maximum - x->x_minimum)/(double)(x->x_gui.iem_width - 1);
 }
 
-static void slider_properties(t_gobj *z, t_glist *owner)
+    /* compute numeric value (fval) from pixel location (val) and range */
+static t_float slider_getfval(t_slider *x)
 {
-    t_slider *x = (t_slider *)z;
-    char buf[800];
-    t_symbol *srl[3];
+    t_float fval;
+    if (x->x_isLogarithmic)
+        fval = x->x_minimum*exp(x->x_k*(double)(x->x_value)*0.01);
+    else fval = (double)(x->x_value)*0.01*x->x_k + x->x_minimum;
+    if ((fval < 1.0e-10) && (fval > -1.0e-10))
+        fval = 0.0;
+    return (fval);
+}
 
-    iemgui_serializeNames(&x->x_gui, srl);
-    sprintf(buf, "::ui_iem::create %%s Slider \
-            %d %d {Slider Width} %d %d {Slider Height} \
-            %g {Value Left} %g {Value Right} \
-            %d Linear Logarithmic \
-            %d \
-            -1 -1 empty \
-            %s %s \
-            %s %d %d \
-            %d \
-            %d %d %d \
-            %d\n",
-            x->x_gui.iem_width, IEM_HSLIDER_MINIMUM_WIDTH, x->x_gui.iem_height, IEM_HSLIDER_MINIMUM_HEIGHT,
-            x->x_minimum, x->x_maximum,
-            x->x_isLogarithmic, 
-            x->x_gui.iem_loadbang,
-            srl[0]->s_name, srl[1]->s_name,
-            srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-            x->x_gui.iem_fontSize,
-            0xffffff & x->x_gui.iem_colorBackground, 0xffffff & x->x_gui.iem_colorForeground, 0xffffff & x->x_gui.iem_colorLabel,
-            x->x_isSteadyOnClick);
-    gfxstub_new(&x->x_gui.iem_obj.te_g.g_pd, x, buf);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void slider_bang(t_slider *x)
+{
+    double out;
+
+    if (0)
+        out = slider_getfval(x);
+    else out = x->x_floatValue;
+    outlet_float(x->x_gui.iem_obj.te_outlet, out);
+    if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
+        pd_float(x->x_gui.iem_send->s_thing, out);
+}
+
+static void slider_float(t_slider *x, t_float f)
+{
+    double out;
+
+    slider_set(x, f);
+    if(x->x_gui.iem_goThrough)
+        slider_bang(x);
+}
+
+static void slider_click(t_slider *x, t_float xpos, t_float ypos,
+                          t_float shift, t_float ctrl, t_float alt)
+{
+    if(!x->x_isSteadyOnClick)
+        x->x_value = (int)(100.0 * (xpos - text_xpix(&x->x_gui.iem_obj, x->x_gui.iem_glist)));
+    if(x->x_value > (100*x->x_gui.iem_width - 100))
+        x->x_value = 100*x->x_gui.iem_width - 100;
+    if(x->x_value < 0)
+        x->x_value = 0;
+    x->x_floatValue = slider_getfval(x);
+    x->x_position = x->x_value;
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    slider_bang(x);
+    glist_grab(x->x_gui.iem_glist, &x->x_gui.iem_obj.te_g, (t_glistmotionfn)slider_motion,
+               0, xpos, ypos);
+}
+
+static void slider_motion(t_slider *x, t_float dx, t_float dy)
+{
+    int old = x->x_value;
+
+    if(x->x_isAccurateMoving)
+        x->x_position += (int)dx;
+    else
+        x->x_position += 100*(int)dx;
+    x->x_value = x->x_position;
+    if(x->x_value > (100*x->x_gui.iem_width - 100))
+    {
+        x->x_value = 100*x->x_gui.iem_width - 100;
+        x->x_position += 50;
+        x->x_position -= x->x_position%100;
+    }
+    if(x->x_value < 0)
+    {
+        x->x_value = 0;
+        x->x_position -= 50;
+        x->x_position -= x->x_position%100;
+    }
+    x->x_floatValue = slider_getfval(x);
+    if (old != x->x_value)
+    {
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+        slider_bang(x);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void slider_loadbang(t_slider *x)
+{
+    if(x->x_gui.iem_loadbang)
+    {
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+        slider_bang(x);
+    }
+}
+
+static void slider_init(t_slider *x, t_float f)
+{
+    x->x_gui.iem_loadbang = (f==0.0)?0:1;
+}
+
+static void slider_dialog(t_slider *x, t_symbol *s, int argc, t_atom *argv)
+{
+    int w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
+    int h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
+    double min = (double)atom_getFloatAtIndex(2, argc, argv);
+    double max = (double)atom_getFloatAtIndex(3, argc, argv);
+    int lilo = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
+    int steady = (int)(t_int)atom_getFloatAtIndex(16, argc, argv);
+
+    if(lilo != 0) lilo = 1;
+    x->x_isLogarithmic = lilo;
+    if(steady)
+        x->x_isSteadyOnClick = 1;
+    else
+        x->x_isSteadyOnClick = 0;
+    iemgui_fromDialog(&x->x_gui, argc, argv);
+    x->x_gui.iem_height = PD_MAX (h, IEM_MINIMUM_HEIGHT);
+    slider_check_width(x, w);
+    slider_check_minmax(x, min, max);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+    canvas_fixlines(x->x_gui.iem_glist, cast_object (x));
+}
+
+static void slider_size(t_slider *x, t_symbol *s, int ac, t_atom *av)
+{
+    slider_check_width(x, (int)(t_int)atom_getFloatAtIndex(0, ac, av));
+    if(ac > 1) {
+        int h = atom_getFloatAtIndex(1, ac, av);
+        x->x_gui.iem_height = PD_MAX (h, IEM_MINIMUM_HEIGHT);
+    }
+    iemgui_boxChanged((void *)x, &x->x_gui);
+}
+
+static void slider_delta(t_slider *x, t_symbol *s, int ac, t_atom *av)
+{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
+
+static void slider_pos(t_slider *x, t_symbol *s, int ac, t_atom *av)
+{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
+
+static void slider_label_font(t_slider *x, t_symbol *s, int ac, t_atom *av)
+{iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
+
+static void slider_label_pos(t_slider *x, t_symbol *s, int ac, t_atom *av)
+{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
+
+static void slider_range(t_slider *x, t_symbol *s, int ac, t_atom *av)
+{
+    slider_check_minmax(x, (double)atom_getFloatAtIndex(0, ac, av),
+                         (double)atom_getFloatAtIndex(1, ac, av));
 }
 
 static void slider_set(t_slider *x, t_float f)    /* bugfix */
@@ -324,98 +406,45 @@ static void slider_set(t_slider *x, t_float f)    /* bugfix */
         (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
 }
 
-    /* compute numeric value (fval) from pixel location (val) and range */
-static t_float slider_getfval(t_slider *x)
+static void slider_steady(t_slider *x, t_float f)
 {
-    t_float fval;
-    if (x->x_isLogarithmic)
-        fval = x->x_minimum*exp(x->x_k*(double)(x->x_value)*0.01);
-    else fval = (double)(x->x_value)*0.01*x->x_k + x->x_minimum;
-    if ((fval < 1.0e-10) && (fval > -1.0e-10))
-        fval = 0.0;
-    return (fval);
+    x->x_isSteadyOnClick = (f==0.0)?0:1;
 }
 
-static void slider_bang(t_slider *x)
+static void slider_log(t_slider *x)
 {
-    double out;
-
-    if (0)
-        out = slider_getfval(x);
-    else out = x->x_floatValue;
-    outlet_float(x->x_gui.iem_obj.te_outlet, out);
-    if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
-        pd_float(x->x_gui.iem_send->s_thing, out);
+    x->x_isLogarithmic = 1;
+    slider_check_minmax(x, x->x_minimum, x->x_maximum);
 }
 
-static void slider_dialog(t_slider *x, t_symbol *s, int argc, t_atom *argv)
+static void slider_lin(t_slider *x)
 {
-    int w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
-    int h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
-    double min = (double)atom_getFloatAtIndex(2, argc, argv);
-    double max = (double)atom_getFloatAtIndex(3, argc, argv);
-    int lilo = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
-    int steady = (int)(t_int)atom_getFloatAtIndex(16, argc, argv);
-
-    if(lilo != 0) lilo = 1;
-    x->x_isLogarithmic = lilo;
-    if(steady)
-        x->x_isSteadyOnClick = 1;
-    else
-        x->x_isSteadyOnClick = 0;
-    iemgui_fromDialog(&x->x_gui, argc, argv);
-    x->x_gui.iem_height = PD_MAX (h, IEM_MINIMUM_HEIGHT);
-    slider_check_width(x, w);
-    slider_check_minmax(x, min, max);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-    canvas_fixlines(x->x_gui.iem_glist, cast_object (x));
+    x->x_isLogarithmic = 0;
+    x->x_k = (x->x_maximum - x->x_minimum)/(double)(x->x_gui.iem_width - 1);
 }
 
-static void slider_motion(t_slider *x, t_float dx, t_float dy)
-{
-    int old = x->x_value;
+static void slider_send(t_slider *x, t_symbol *s)
+{iemgui_setSend(x, &x->x_gui, s);}
 
-    if(x->x_isAccurateMoving)
-        x->x_position += (int)dx;
-    else
-        x->x_position += 100*(int)dx;
-    x->x_value = x->x_position;
-    if(x->x_value > (100*x->x_gui.iem_width - 100))
-    {
-        x->x_value = 100*x->x_gui.iem_width - 100;
-        x->x_position += 50;
-        x->x_position -= x->x_position%100;
-    }
-    if(x->x_value < 0)
-    {
-        x->x_value = 0;
-        x->x_position -= 50;
-        x->x_position -= x->x_position%100;
-    }
-    x->x_floatValue = slider_getfval(x);
-    if (old != x->x_value)
-    {
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-        slider_bang(x);
-    }
-}
+static void slider_receive(t_slider *x, t_symbol *s)
+{iemgui_setReceive(x, &x->x_gui, s);}
 
-static void slider_click(t_slider *x, t_float xpos, t_float ypos,
-                          t_float shift, t_float ctrl, t_float alt)
+static void slider_label(t_slider *x, t_symbol *s)
+{iemgui_setLabel((void *)x, &x->x_gui, s);}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void slider_getrect(t_gobj *z, t_glist *glist,
+                            int *xp1, int *yp1, int *xp2, int *yp2)
 {
-    if(!x->x_isSteadyOnClick)
-        x->x_value = (int)(100.0 * (xpos - text_xpix(&x->x_gui.iem_obj, x->x_gui.iem_glist)));
-    if(x->x_value > (100*x->x_gui.iem_width - 100))
-        x->x_value = 100*x->x_gui.iem_width - 100;
-    if(x->x_value < 0)
-        x->x_value = 0;
-    x->x_floatValue = slider_getfval(x);
-    x->x_position = x->x_value;
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-    slider_bang(x);
-    glist_grab(x->x_gui.iem_glist, &x->x_gui.iem_obj.te_g, (t_glistmotionfn)slider_motion,
-               0, xpos, ypos);
+    t_slider* x = (t_slider*)z;
+
+    *xp1 = text_xpix(&x->x_gui.iem_obj, glist) - 3;
+    *yp1 = text_ypix(&x->x_gui.iem_obj, glist);
+    *xp2 = *xp1 + x->x_gui.iem_width + 5;
+    *yp2 = *yp1 + x->x_gui.iem_height;
 }
 
 static int slider_newclick(t_gobj *z, struct _glist *glist,
@@ -435,85 +464,66 @@ static int slider_newclick(t_gobj *z, struct _glist *glist,
     return (1);
 }
 
-static void slider_size(t_slider *x, t_symbol *s, int ac, t_atom *av)
+static void slider_save(t_gobj *z, t_buffer *b)
 {
-    slider_check_width(x, (int)(t_int)atom_getFloatAtIndex(0, ac, av));
-    if(ac > 1) {
-        int h = atom_getFloatAtIndex(1, ac, av);
-        x->x_gui.iem_height = PD_MAX (h, IEM_MINIMUM_HEIGHT);
-    }
-    iemgui_boxChanged((void *)x, &x->x_gui);
+    t_slider *x = (t_slider *)z;
+    int bflcol[3];
+    t_symbol *srl[3];
+
+    iemgui_serialize(&x->x_gui, srl, bflcol);
+    buffer_vAppend(b, "ssiisiiffiisssiiiiiiiii", gensym ("#X"),gensym ("obj"),
+                (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
+                gensym ("hsl"), x->x_gui.iem_width, x->x_gui.iem_height,
+                (t_float)x->x_minimum, (t_float)x->x_maximum,
+                x->x_isLogarithmic, iemgui_serializeLoadbang(&x->x_gui),
+                srl[0], srl[1], srl[2],
+                x->x_gui.iem_labelX, x->x_gui.iem_labelY,
+                iemgui_serializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
+                bflcol[0], bflcol[1], bflcol[2],
+                x->x_value, x->x_isSteadyOnClick);
+    buffer_vAppend(b, ";");
 }
 
-static void slider_delta(t_slider *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void slider_pos(t_slider *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void slider_range(t_slider *x, t_symbol *s, int ac, t_atom *av)
+static void slider_properties(t_gobj *z, t_glist *owner)
 {
-    slider_check_minmax(x, (double)atom_getFloatAtIndex(0, ac, av),
-                         (double)atom_getFloatAtIndex(1, ac, av));
+    t_slider *x = (t_slider *)z;
+    char buf[800];
+    t_symbol *srl[3];
+
+    iemgui_serializeNames(&x->x_gui, srl);
+    sprintf(buf, "::ui_iem::create %%s Slider \
+            %d %d {Slider Width} %d %d {Slider Height} \
+            %g {Value Left} %g {Value Right} \
+            %d Linear Logarithmic \
+            %d \
+            -1 -1 empty \
+            %s %s \
+            %s %d %d \
+            %d \
+            %d %d %d \
+            %d\n",
+            x->x_gui.iem_width, IEM_MINIMUM_WIDTH, x->x_gui.iem_height, IEM_MINIMUM_HEIGHT,
+            x->x_minimum, x->x_maximum,
+            x->x_isLogarithmic, 
+            x->x_gui.iem_loadbang,
+            srl[0]->s_name, srl[1]->s_name,
+            srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
+            x->x_gui.iem_fontSize,
+            0xffffff & x->x_gui.iem_colorBackground, 0xffffff & x->x_gui.iem_colorForeground, 0xffffff & x->x_gui.iem_colorLabel,
+            x->x_isSteadyOnClick);
+    gfxstub_new(&x->x_gui.iem_obj.te_g.g_pd, x, buf);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void slider_color(t_slider *x, t_symbol *s, int ac, t_atom *av)
 {iemgui_setColor((void *)x, &x->x_gui, s, ac, av);}
 
-static void slider_send(t_slider *x, t_symbol *s)
-{iemgui_setSend(x, &x->x_gui, s);}
-
-static void slider_receive(t_slider *x, t_symbol *s)
-{iemgui_setReceive(x, &x->x_gui, s);}
-
-static void slider_label(t_slider *x, t_symbol *s)
-{iemgui_setLabel((void *)x, &x->x_gui, s);}
-
-static void slider_label_pos(t_slider *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void slider_label_font(t_slider *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
-
-static void slider_log(t_slider *x)
-{
-    x->x_isLogarithmic = 1;
-    slider_check_minmax(x, x->x_minimum, x->x_maximum);
-}
-
-static void slider_lin(t_slider *x)
-{
-    x->x_isLogarithmic = 0;
-    x->x_k = (x->x_maximum - x->x_minimum)/(double)(x->x_gui.iem_width - 1);
-}
-
-static void slider_init(t_slider *x, t_float f)
-{
-    x->x_gui.iem_loadbang = (f==0.0)?0:1;
-}
-
-static void slider_steady(t_slider *x, t_float f)
-{
-    x->x_isSteadyOnClick = (f==0.0)?0:1;
-}
-
-static void slider_float(t_slider *x, t_float f)
-{
-    double out;
-
-    slider_set(x, f);
-    if(x->x_gui.iem_goThrough)
-        slider_bang(x);
-}
-
-static void slider_loadbang(t_slider *x)
-{
-    if(x->x_gui.iem_loadbang)
-    {
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-        slider_bang(x);
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void *slider_new(t_symbol *s, int argc, t_atom *argv)
 {
@@ -606,47 +616,69 @@ static void slider_free(t_slider *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void slider_setup(void)
+void slider_setup (void)
 {
-    slider_class = class_new(gensym("hsl"), (t_newmethod)slider_new,
-                              (t_method)slider_free, sizeof(t_slider), 0, A_GIMME, 0);
-#ifndef GGEE_HSLIDER_COMPATIBLE
-    class_addCreator((t_newmethod)slider_new, gensym("hslider"), A_GIMME, 0);
-#endif
-    class_addBang(slider_class,slider_bang);
-    class_addFloat(slider_class,slider_float);
-    class_addMethod(slider_class, (t_method)slider_click, gensym("click"),
-                    A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addMethod(slider_class, (t_method)slider_motion, gensym("motion"),
-                    A_FLOAT, A_FLOAT, 0);
-    class_addMethod(slider_class, (t_method)slider_dialog, gensym("dialog"), A_GIMME, 0);
-    class_addMethod(slider_class, (t_method)slider_loadbang, gensym("loadbang"), 0);
-    class_addMethod(slider_class, (t_method)slider_set, gensym("set"), A_FLOAT, 0);
-    class_addMethod(slider_class, (t_method)slider_size, gensym("size"), A_GIMME, 0);
-    class_addMethod(slider_class, (t_method)slider_delta, gensym("delta"), A_GIMME, 0);
-    class_addMethod(slider_class, (t_method)slider_pos, gensym("pos"), A_GIMME, 0);
-    class_addMethod(slider_class, (t_method)slider_range, gensym("range"), A_GIMME, 0);
-    class_addMethod(slider_class, (t_method)slider_color, gensym("color"), A_GIMME, 0);
-    class_addMethod(slider_class, (t_method)slider_send, gensym("send"), A_DEFSYMBOL, 0);
-    class_addMethod(slider_class, (t_method)slider_receive, gensym("receive"), A_DEFSYMBOL, 0);
-    class_addMethod(slider_class, (t_method)slider_label, gensym("label"), A_DEFSYMBOL, 0);
-    class_addMethod(slider_class, (t_method)slider_label_pos, gensym("label_pos"), A_GIMME, 0);
-    class_addMethod(slider_class, (t_method)slider_label_font, gensym("label_font"), A_GIMME, 0);
-    class_addMethod(slider_class, (t_method)slider_log, gensym("log"), 0);
-    class_addMethod(slider_class, (t_method)slider_lin, gensym("lin"), 0);
-    class_addMethod(slider_class, (t_method)slider_init, gensym("init"), A_FLOAT, 0);
-    class_addMethod(slider_class, (t_method)slider_steady, gensym("steady"), A_FLOAT, 0);
-    slider_widgetbehavior.w_getrectfn =    slider_getrect;
-    slider_widgetbehavior.w_displacefn =   iemgui_behaviorDisplace;
-    slider_widgetbehavior.w_selectfn =     iemgui_behaviorSelected;
-    slider_widgetbehavior.w_activatefn =   NULL;
-    slider_widgetbehavior.w_deletefn =     iemgui_behaviorDeleted;
-    slider_widgetbehavior.w_visfn =        iemgui_behaviorVisible;
-    slider_widgetbehavior.w_clickfn =      slider_newclick;
-    class_setWidgetBehavior(slider_class, &slider_widgetbehavior);
-    class_setHelpName (slider_class, gensym ("hsl"));
-    class_setSaveFunction(slider_class, slider_save);
-    class_setPropertiesFunction(slider_class, slider_properties);
+    t_class *c = NULL;
+    
+    c = class_new (gensym ("hsl"),
+        (t_newmethod)slider_new,
+        (t_method)slider_free,
+        sizeof (t_slider),
+        CLASS_DEFAULT,
+        A_GIMME,
+        A_NULL);
+        
+    class_addCreator ((t_newmethod)slider_new, gensym ("hslider"), A_GIMME, A_NULL);
+
+    class_addBang (c, slider_bang);
+    class_addFloat (c, slider_float);
+    class_addClick (c, slider_click);
+    class_addMotion (c, slider_motion);
+    
+    class_addMethod (c, (t_method)slider_loadbang,      gensym ("loadbang"),        0);
+    class_addMethod (c, (t_method)slider_init,          gensym ("initialize"),      A_FLOAT, 0);
+    class_addMethod (c, (t_method)slider_dialog,        gensym ("dialog"),          A_GIMME, 0);
+    class_addMethod (c, (t_method)slider_size,          gensym ("size"),            A_GIMME, 0);
+    class_addMethod (c, (t_method)slider_delta,         gensym ("move"),            A_GIMME, 0);
+    class_addMethod (c, (t_method)slider_pos,           gensym ("position"),        A_GIMME, 0);
+    class_addMethod (c, (t_method)slider_label_font,    gensym ("labelfont"),       A_GIMME, 0);
+    class_addMethod (c, (t_method)slider_label_pos,     gensym ("labelposition"),   A_GIMME, 0);
+    class_addMethod (c, (t_method)slider_range,         gensym ("range"),           A_GIMME, 0);
+    class_addMethod (c, (t_method)slider_set,           gensym ("set"),             A_FLOAT, 0);
+    class_addMethod (c, (t_method)slider_steady,        gensym ("steady"),          A_FLOAT, 0);
+    class_addMethod (c, (t_method)slider_log,           gensym ("logarithmic"),     0);
+    class_addMethod (c, (t_method)slider_lin,           gensym ("linear"),          0);
+    class_addMethod (c, (t_method)slider_send,          gensym ("send"),            A_DEFSYMBOL, 0);
+    class_addMethod (c, (t_method)slider_receive,       gensym ("receive"),         A_DEFSYMBOL, 0);
+    class_addMethod (c, (t_method)slider_label,         gensym ("label"),           A_DEFSYMBOL, 0);
+    
+    #if PD_WITH_LEGACY
+    
+    class_addMethod (c, (t_method)slider_init,          gensym ("init"),            A_FLOAT, 0);
+    class_addMethod (c, (t_method)slider_delta,         gensym ("delta"),           A_GIMME, 0);
+    class_addMethod (c, (t_method)slider_pos,           gensym ("pos"),             A_GIMME, 0);
+    class_addMethod (c, (t_method)slider_color,         gensym ("color"),           A_GIMME, 0);
+    class_addMethod (c, (t_method)slider_label_pos,     gensym ("label_pos"),       A_GIMME, 0);
+    class_addMethod (c, (t_method)slider_label_font,    gensym ("label_font"),      A_GIMME, 0);
+    class_addMethod (c, (t_method)slider_log,           gensym ("log"),             0);
+    class_addMethod (c, (t_method)slider_lin,           gensym ("lin"),             0);
+    
+    #endif
+    
+    slider_widgetBehavior.w_getrectfn   = slider_getrect;
+    slider_widgetBehavior.w_displacefn  = iemgui_behaviorDisplace;
+    slider_widgetBehavior.w_selectfn    = iemgui_behaviorSelected;
+    slider_widgetBehavior.w_activatefn  = NULL;
+    slider_widgetBehavior.w_deletefn    = iemgui_behaviorDeleted;
+    slider_widgetBehavior.w_visfn       = iemgui_behaviorVisible;
+    slider_widgetBehavior.w_clickfn     = slider_newclick;
+    
+    class_setWidgetBehavior (c, &slider_widgetBehavior);
+    class_setHelpName (c, gensym ("slider"));
+    class_setSaveFunction (c, slider_save);
+    class_setPropertiesFunction (c, slider_properties);
+    
+    slider_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------
