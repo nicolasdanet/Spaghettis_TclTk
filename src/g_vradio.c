@@ -48,7 +48,7 @@ static t_class *vradio_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void vradio_draw_update(t_gobj *client, t_glist *glist)
+void vradio_drawUpdate (t_gobj *client, t_glist *glist)
 {
     t_hradio *x = (t_hradio *)client;
     if(glist_isvisible(glist))
@@ -65,7 +65,36 @@ void vradio_draw_update(t_gobj *client, t_glist *glist)
     }
 }
 
-void vradio_draw_new(t_vradio *x, t_glist *glist)
+void vradio_drawMove (t_vradio *x, t_glist *glist)
+{
+    t_glist *canvas=glist_getcanvas(glist);
+    int n=x->x_numberOfButtons, i, dy=x->x_gui.iem_height, s4=dy/4;
+    int yy11b=text_ypix(&x->x_gui.iem_obj, glist);
+    int yy11=yy11b, yy12=yy11+dy;
+    int yy21=yy11+s4, yy22=yy12-s4;
+    int xx11=text_xpix(&x->x_gui.iem_obj, glist), xx12=xx11+dy;
+    int xx21=xx11+s4, xx22=xx12-s4;
+
+    for(i=0; i<n; i++)
+    {
+        sys_vGui(".x%lx.c coords %lxBASE%d %d %d %d %d\n",
+                 canvas, x, i, xx11, yy11, xx12, yy12);
+        sys_vGui(".x%lx.c coords %lxBUTTON%d %d %d %d %d\n",
+                 canvas, x, i, xx21, yy21, xx22, yy22);
+        yy11 += dy;
+        yy12 += dy;
+        yy21 += dy;
+        yy22 += dy;
+    }
+    sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
+             canvas, x, xx11+x->x_gui.iem_labelX, yy11b+x->x_gui.iem_labelY);
+    /*sys_vGui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
+             canvas, x, 0, xx11, yy11-1, xx11 + INLETS_WIDTH, yy11);
+    sys_vGui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
+             canvas, x, 0, xx11, yy11b, xx11 + INLETS_WIDTH, yy11b+1);*/
+}
+
+void vradio_drawNew (t_vradio *x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
     int n=x->x_numberOfButtons, i, dy=x->x_gui.iem_height, s4=dy/4;
@@ -104,88 +133,7 @@ void vradio_draw_new(t_vradio *x, t_glist *glist)
              canvas, xx11, yy11b, xx11 + INLETS_WIDTH, yy11b+1, x, 0);*/
 }
 
-void vradio_draw_move(t_vradio *x, t_glist *glist)
-{
-    t_glist *canvas=glist_getcanvas(glist);
-    int n=x->x_numberOfButtons, i, dy=x->x_gui.iem_height, s4=dy/4;
-    int yy11b=text_ypix(&x->x_gui.iem_obj, glist);
-    int yy11=yy11b, yy12=yy11+dy;
-    int yy21=yy11+s4, yy22=yy12-s4;
-    int xx11=text_xpix(&x->x_gui.iem_obj, glist), xx12=xx11+dy;
-    int xx21=xx11+s4, xx22=xx12-s4;
-
-    for(i=0; i<n; i++)
-    {
-        sys_vGui(".x%lx.c coords %lxBASE%d %d %d %d %d\n",
-                 canvas, x, i, xx11, yy11, xx12, yy12);
-        sys_vGui(".x%lx.c coords %lxBUTTON%d %d %d %d %d\n",
-                 canvas, x, i, xx21, yy21, xx22, yy22);
-        yy11 += dy;
-        yy12 += dy;
-        yy21 += dy;
-        yy22 += dy;
-    }
-    sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
-             canvas, x, xx11+x->x_gui.iem_labelX, yy11b+x->x_gui.iem_labelY);
-    /*sys_vGui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
-             canvas, x, 0, xx11, yy11-1, xx11 + INLETS_WIDTH, yy11);
-    sys_vGui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
-             canvas, x, 0, xx11, yy11b, xx11 + INLETS_WIDTH, yy11b+1);*/
-}
-
-void vradio_draw_erase(t_vradio* x, t_glist *glist)
-{
-    t_glist *canvas=glist_getcanvas(glist);
-    int n=x->x_numberOfButtons, i;
-
-    for(i=0; i<n; i++)
-    {
-        sys_vGui(".x%lx.c delete %lxBASE%d\n", canvas, x, i);
-        sys_vGui(".x%lx.c delete %lxBUTTON%d\n", canvas, x, i);
-    }
-    sys_vGui(".x%lx.c delete %lxLABEL\n", canvas, x);
-    //sys_vGui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    //sys_vGui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
-}
-
-void vradio_draw_config(t_vradio* x, t_glist *glist)
-{
-    t_glist *canvas=glist_getcanvas(glist);
-    int n=x->x_numberOfButtons, i;
-
-    sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
-             canvas, x, x->x_gui.iem_fontSize,
-             x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
-             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
-    for(i=0; i<n; i++)
-    {
-        sys_vGui(".x%lx.c itemconfigure %lxBASE%d -fill #%6.6x\n", canvas, x, i,
-                 x->x_gui.iem_colorBackground);
-        sys_vGui(".x%lx.c itemconfigure %lxBUTTON%d -fill #%6.6x -outline #%6.6x\n", canvas, x, i,
-                 (x->x_state==i)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground,
-                 (x->x_state==i)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
-    }
-}
-
-void vradio_draw_io(t_vradio* x, t_glist *glist)
-{
-    t_glist *canvas=glist_getcanvas(glist);
-    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
-    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-
-    /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxOUT%d\n",
-        canvas, xpos,
-        ypos+(x->x_numberOfButtons*x->x_gui.iem_height)-1,
-        xpos+ INLETS_WIDTH,
-        ypos+(x->x_numberOfButtons*x->x_gui.iem_height), x, 0);
-
-    sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags %lxIN%d\n",
-        canvas, xpos, ypos,
-        xpos+ INLETS_WIDTH, ypos+1,
-        x, 0);*/
-}
-
-void vradio_draw_select(t_vradio* x, t_glist *glist)
+void vradio_drawSelect (t_vradio* x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
     int n=x->x_numberOfButtons, i;
@@ -211,24 +159,54 @@ void vradio_draw_select(t_vradio* x, t_glist *glist)
     }
 }
 
+void vradio_drawErase(t_vradio* x, t_glist *glist)
+{
+    t_glist *canvas=glist_getcanvas(glist);
+    int n=x->x_numberOfButtons, i;
+
+    for(i=0; i<n; i++)
+    {
+        sys_vGui(".x%lx.c delete %lxBASE%d\n", canvas, x, i);
+        sys_vGui(".x%lx.c delete %lxBUTTON%d\n", canvas, x, i);
+    }
+    sys_vGui(".x%lx.c delete %lxLABEL\n", canvas, x);
+    //sys_vGui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
+    //sys_vGui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+}
+
+void vradio_drawConfig(t_vradio* x, t_glist *glist)
+{
+    t_glist *canvas=glist_getcanvas(glist);
+    int n=x->x_numberOfButtons, i;
+
+    sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
+             canvas, x, x->x_gui.iem_fontSize,
+             x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
+             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
+    for(i=0; i<n; i++)
+    {
+        sys_vGui(".x%lx.c itemconfigure %lxBASE%d -fill #%6.6x\n", canvas, x, i,
+                 x->x_gui.iem_colorBackground);
+        sys_vGui(".x%lx.c itemconfigure %lxBUTTON%d -fill #%6.6x -outline #%6.6x\n", canvas, x, i,
+                 (x->x_state==i)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground,
+                 (x->x_state==i)?x->x_gui.iem_colorForeground:x->x_gui.iem_colorBackground);
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void vradio_draw(t_vradio *x, t_glist *glist, int mode)
+void vradio_draw (t_toggle *x, t_glist *glist, int mode)
 {
-    if(mode == IEM_DRAW_UPDATE)
-        interface_guiQueueAddIfNotAlreadyThere(x, glist, vradio_draw_update);
-    else if(mode == IEM_DRAW_MOVE)
-        vradio_draw_move(x, glist);
-    else if(mode == IEM_DRAW_NEW)
-        vradio_draw_new(x, glist);
-    else if(mode == IEM_DRAW_SELECT)
-        vradio_draw_select(x, glist);
-    else if(mode == IEM_DRAW_ERASE)
-        vradio_draw_erase(x, glist);
-    else if(mode == IEM_DRAW_CONFIG)
-        vradio_draw_config(x, glist);
+    switch (mode) {
+        case IEM_DRAW_UPDATE    : vradio_drawUpdate (x, glist); break;
+        case IEM_DRAW_MOVE      : vradio_drawMove (x, glist);   break;
+        case IEM_DRAW_NEW       : vradio_drawNew (x, glist);    break;
+        case IEM_DRAW_SELECT    : vradio_drawSelect (x, glist); break;
+        case IEM_DRAW_ERASE     : vradio_drawErase (x, glist);  break;
+        case IEM_DRAW_CONFIG    : vradio_drawConfig (x, glist); break;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -319,38 +297,43 @@ static void vradio_dialog (t_vradio *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static void vradio_size(t_vradio *x, t_symbol *s, int ac, t_atom *av)
+static void vradio_size (t_vradio *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int w = atom_getFloatAtIndex(0, ac, av);
-    x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
-    x->x_gui.iem_height = x->x_gui.iem_width;
-    iemgui_boxChanged((void *)x, &x->x_gui);
+    if (argc) {
+    //
+    int width = atom_getFloatAtIndex (0, argc, argv);
+    x->x_gui.iem_width  = PD_MAX (width, IEM_MINIMUM_WIDTH);
+    x->x_gui.iem_height = PD_MAX (width, IEM_MINIMUM_WIDTH);
+    iemgui_boxChanged ((void *)x, &x->x_gui);
+    //
+    }
 }
 
-static void vradio_delta(t_vradio *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void vradio_pos(t_vradio *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void vradio_label_font(t_vradio *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
-
-static void vradio_label_pos(t_vradio *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void vradio_set(t_vradio *x, t_float f)
+static void vradio_move (t_hradio *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int i=(int)f;
-    int old;
+    if (argc == 2) { iemgui_movePosition ((void *)x, &x->x_gui, s, argc, argv); }
+}
 
+static void vradio_position (t_hradio *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == 2) { iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv); }
+}
+
+static void vradio_labelFont (t_hradio *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == 2) { iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv); }
+}
+
+static void vradio_labelPosition (t_hradio *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_setLabelPosition ((void *)x, &x->x_gui, s, argc, argv);
+}
+
+static void vradio_set (t_hradio *x, t_float f)
+{
+    x->x_state = PD_CLAMP ((int)f, 0, x->x_numberOfButtons - 1);
     x->x_floatValue = f;
-    if(i < 0)
-        i = 0;
-    if(i >= x->x_numberOfButtons)
-        i = x->x_numberOfButtons-1;
-
-    x->x_state = i;
+    
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
 }
 
@@ -368,14 +351,20 @@ static void vradio_buttonsNumber (t_hradio *x, t_float numberOfButtons)
     }
 }
 
-static void vradio_send(t_vradio *x, t_symbol *s)
-{iemgui_setSend(x, &x->x_gui, s);}
+static void vradio_send (t_hradio *x, t_symbol *s)
+{
+    iemgui_setSend ((void *)x, &x->x_gui, s);
+}
 
-static void vradio_receive(t_vradio *x, t_symbol *s)
-{iemgui_setReceive(x, &x->x_gui, s);}
+static void vradio_receive (t_hradio *x, t_symbol *s)
+{
+    iemgui_setReceive ((void *)x, &x->x_gui, s);
+}
 
-static void vradio_label(t_vradio *x, t_symbol *s)
-{iemgui_setLabel((void *)x, &x->x_gui, s);}
+static void vradio_label (t_hradio *x, t_symbol *s)
+{
+    iemgui_setLabel ((void *)x, &x->x_gui, s);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -592,10 +581,10 @@ void vradio_setup (void)
     class_addMethod (c, (t_method)vradio_initialize,    gensym ("initialize"),      A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)vradio_dialog,        gensym ("dialog"),          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)vradio_size,          gensym ("size"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vradio_delta,         gensym ("move"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vradio_pos,           gensym ("position"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vradio_label_font,    gensym ("labelfont"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vradio_label_pos,     gensym ("labelposition"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vradio_move,          gensym ("move"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vradio_position,      gensym ("position"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vradio_labelFont,     gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vradio_labelPosition, gensym ("labelposition"),   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)vradio_set,           gensym ("set"),             A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)vradio_buttonsNumber, gensym ("buttonsnumber"),   A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)vradio_send,          gensym ("send"),            A_DEFSYMBOL, A_NULL);
@@ -605,11 +594,11 @@ void vradio_setup (void)
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)vradio_initialize,    gensym ("init"),            A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)vradio_delta,         gensym ("delta"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vradio_pos,           gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vradio_move,          gensym ("delta"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vradio_position,      gensym ("pos"),             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)vradio_dummy,         gensym ("color"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vradio_label_pos,     gensym ("label_pos"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vradio_label_font,    gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vradio_labelPosition, gensym ("label_pos"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vradio_labelFont,     gensym ("label_font"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)vradio_buttonsNumber, gensym ("number"),          A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)vradio_dummy,         gensym ("single_change"),   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)vradio_dummy,         gensym ("double_change"),   A_GIMME, A_NULL);
