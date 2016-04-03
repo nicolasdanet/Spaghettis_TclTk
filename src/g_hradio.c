@@ -27,8 +27,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define IEM_HRADIO_DEFAULT_LABELX    0
-#define IEM_HRADIO_DEFAULT_LABELY   -8
 #define IEM_HRADIO_DEFAULT_BUTTONS   8
 
 // -----------------------------------------------------------------------------------------------------------
@@ -92,7 +90,7 @@ void hradio_drawMove (t_hradio *x, t_glist *glist)
                 t,
                 b,
                 t + x->x_gui.iem_width,
-                b + x->x_gui.iem_width);
+                b + x->x_gui.iem_height);
     sys_vGui (".x%lx.c coords %lxBUTTON%d %d %d %d %d\n",
                 canvas, 
                 x, 
@@ -100,7 +98,7 @@ void hradio_drawMove (t_hradio *x, t_glist *glist)
                 t + k, 
                 b + k, 
                 t + x->x_gui.iem_width - k, 
-                b + x->x_gui.iem_width - k);
+                b + x->x_gui.iem_height - k);
     //
     }
     
@@ -129,7 +127,7 @@ void hradio_drawNew (t_hradio *x, t_glist *glist)
                 t, 
                 b, 
                 t + x->x_gui.iem_width, 
-                b + x->x_gui.iem_width,
+                b + x->x_gui.iem_height,
                 x->x_gui.iem_colorBackground,
                 x,
                 i);
@@ -138,7 +136,7 @@ void hradio_drawNew (t_hradio *x, t_glist *glist)
                 t + k,
                 b + k,
                 t + x->x_gui.iem_width - k, 
-                b + x->x_gui.iem_width - k,
+                b + x->x_gui.iem_height - k,
                 (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                 (x->x_state == i) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                 x,
@@ -517,8 +515,8 @@ static void *hradio_new (t_symbol *s, int argc, t_atom *argv)
     
     int size            = IEM_DEFAULT_SIZE;
     int state           = 0;
-    int labelX          = IEM_HRADIO_DEFAULT_LABELX;
-    int labelY          = IEM_HRADIO_DEFAULT_LABELY;
+    int labelX          = IEM_DEFAULT_LABELX;
+    int labelY          = IEM_DEFAULT_LABELY;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     int changed         = 1;
     int numberOfButtons = IEM_HRADIO_DEFAULT_BUTTONS;
