@@ -7,7 +7,7 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-# PureData styles for Mac OS X.
+# Application styles for Mac OS X.
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -19,18 +19,18 @@
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-ttk::style configure PureData.TFrame
-ttk::style configure PureData.TLabelframe
-ttk::style configure PureData.TEntry
-ttk::style configure PureData.TMenubutton
-ttk::style configure PureData.TLabel
-ttk::style configure PureData.TCheckbutton  -padding 3
-ttk::style configure PureData.TRadiobutton
+ttk::style configure Application.TFrame
+ttk::style configure Application.TLabelframe
+ttk::style configure Application.TEntry
+ttk::style configure Application.TMenubutton
+ttk::style configure Application.TLabel
+ttk::style configure Application.TCheckbutton   -padding 3
+ttk::style configure Application.TRadiobutton
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-ttk::style map PureData.TEntry -foreground [list disabled DarkGrey]
+ttk::style map Application.TEntry -foreground [list disabled DarkGrey]
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
@@ -51,14 +51,14 @@ proc styleFontConsole {}        { return TkTextFont }
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
 
-proc styleFrame {}              { return "-style PureData.TFrame        -padding 15"    }
-proc styleLabelFrame {}         { return "-style PureData.TLabelframe   -padding 10"    }
-proc styleEntry {}              { return "-style PureData.TEntry"                       }
-proc styleEntryNumber {}        { return "-style PureData.TEntry        -justify right" }
-proc styleMenuButton {}         { return "-style PureData.TMenubutton"  }
-proc styleLabel {}              { return "-style PureData.TLabel"       }
-proc styleCheckButton {}        { return "-style PureData.TCheckbutton" }
-proc styleRadioButton {}        { return "-style PureData.TRadiobutton" }
+proc styleFrame {}              { return "-style Application.TFrame         -padding 15"    }
+proc styleLabelFrame {}         { return "-style Application.TLabelframe    -padding 10"    }
+proc styleEntry {}              { return "-style Application.TEntry"                        }
+proc styleEntryNumber {}        { return "-style Application.TEntry         -justify right" }
+proc styleMenuButton {}         { return "-style Application.TMenubutton"  }
+proc styleLabel {}              { return "-style Application.TLabel"       }
+proc styleCheckButton {}        { return "-style Application.TCheckbutton" }
+proc styleRadioButton {}        { return "-style Application.TRadiobutton" }
 
 # ------------------------------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------------------------------------
