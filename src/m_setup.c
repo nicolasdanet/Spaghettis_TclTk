@@ -43,7 +43,7 @@ void g_canvas_setup         (void);
 void g_guiconnect_setup     (void);
 void bng_setup              (void);
 void radio_setup            (void);
-void g_hslider_setup        (void);
+void slider_setup           (void);
 void g_mycanvas_setup       (void);
 void g_numbox_setup         (void);
 void toggle_setup           (void);
@@ -98,7 +98,7 @@ void setup_initialize (void)
     g_guiconnect_setup();
     bng_setup();
     radio_setup();
-    g_hslider_setup();
+    slider_setup();
     g_mycanvas_setup();
     g_numbox_setup();
     toggle_setup();

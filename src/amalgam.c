@@ -59,6 +59,7 @@
 #include "g_bng.c"
 #include "g_toggle.c"
 #include "g_radio.c"
+#include "g_slider.c"
 
 /* Control. */
 

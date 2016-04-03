@@ -160,18 +160,19 @@ typedef struct _radio {
     t_float     x_floatValue;
     } t_radio;
 
-typedef struct _hslider {
+typedef struct _slider {
     t_iem       x_gui;
-    int         x_pos;
-    int         x_val;
+    int         x_isVertical;
+    int         x_position;
+    int         x_value;
     int         x_isLogarithmic;
     int         x_isSteadyOnClick;
-    int         x_accurateMoving;
-    double      x_min;
-    double      x_max;
+    int         x_isAccurateMoving;
+    double      x_minimum;
+    double      x_maximum;
     double      x_k;
     t_float     x_floatValue;
-    } t_hslider;
+    } t_slider;
 
 typedef struct _vslider {
     t_iem       x_gui;
