@@ -60,7 +60,7 @@ t_pd *pd_new (t_class *c)
     
     *x = c;
     
-    if (c->c_isBox) { ((t_object *)x)->te_inlet = ((t_object *)x)->te_outlet = NULL; }
+    if (c->c_isBox) { cast_object (x)->te_inlet = cast_object (x)->te_outlet = NULL; }
     
     return x;
 }
@@ -72,11 +72,11 @@ void pd_free (t_pd *x)
     if (c->c_methodFree) { (*(c->c_methodFree))(x); }
 
     if (c->c_isBox) {
-        while (((t_object *)x)->te_outlet) { outlet_free (((t_object *)x)->te_outlet); }
-        while (((t_object *)x)->te_inlet)  { inlet_free (((t_object *)x)->te_inlet);   }
+        while (cast_object (x)->te_outlet) { outlet_free (cast_object (x)->te_outlet); }
+        while (cast_object (x)->te_inlet)  { inlet_free (cast_object (x)->te_inlet);   }
         
-        if (((t_object *)x)->te_buffer) { 
-            buffer_free (((t_object *)x)->te_buffer); 
+        if (cast_object (x)->te_buffer) { 
+            buffer_free (cast_object (x)->te_buffer); 
         }
     }
 

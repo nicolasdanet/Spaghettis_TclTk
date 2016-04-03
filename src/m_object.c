@@ -236,7 +236,7 @@ void inlet_free (t_inlet *x)
 
 t_inlet *inlet_newSignal (t_object *owner, t_float f)
 {
-    t_inlet *x = inlet_new (owner, (t_pd *)owner, &s_signal, &s_signal);
+    t_inlet *x = inlet_new (owner, cast_pd (owner), &s_signal, &s_signal);
     
     x->i_un.i_signal = f;
     
@@ -466,7 +466,7 @@ void object_release (void)
 
 void object_list (t_object *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (!argc) { pd_empty ((t_pd *)x); }
+    if (!argc) { pd_empty (cast_pd (x)); }
     else {
     //
     int count;
@@ -475,18 +475,18 @@ void object_list (t_object *x, t_symbol *s, int argc, t_atom *argv)
     
     for (count = argc - 1, a = argv + 1; i && count--; a++, i = i->i_next) {
     //
-    if (IS_POINTER (a))        { pd_pointer ((t_pd *)i, GET_POINTER (a)); }
-    else if (IS_FLOAT (a))     { pd_float ((t_pd *)i, GET_FLOAT (a)); }
+    if (IS_POINTER (a))        { pd_pointer (cast_pd (i), GET_POINTER (a)); }
+    else if (IS_FLOAT (a))     { pd_float (cast_pd (i), GET_FLOAT (a)); }
     else {
-        pd_symbol ((t_pd *)i, GET_SYMBOL (a));
+        pd_symbol (cast_pd (i), GET_SYMBOL (a));
     }
     //
     }
     
-    if (IS_POINTER (argv))      { pd_pointer ((t_pd *)x, GET_POINTER (argv)); }
-    else if (IS_FLOAT (argv))   { pd_float ((t_pd *)x, GET_FLOAT (argv)); }
+    if (IS_POINTER (argv))      { pd_pointer (cast_pd (x), GET_POINTER (argv)); }
+    else if (IS_FLOAT (argv))   { pd_float (cast_pd (x), GET_FLOAT (argv)); }
     else {
-        pd_symbol ((t_pd *)x, GET_SYMBOL (argv));
+        pd_symbol (cast_pd (x), GET_SYMBOL (argv));
     }
     //
     }
@@ -512,13 +512,13 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
     t_outconnect *oc1 = NULL;
     t_outconnect *oc2 = NULL;
     
-    if (pd_class (dest)->c_hasFirstInlet) { if (!n) { to = (t_pd *)dest; } else { n--; } }
+    if (pd_class (dest)->c_hasFirstInlet) { if (!n) { to = cast_pd (dest); } else { n--; } }
     
     if (to == NULL) {
         for (i = dest->te_inlet; i && n; i = i->i_next, n--) { }
         if (i == NULL) { return NULL; }
         else {
-            to = (t_pd *)i;
+            to = cast_pd (i);
         }
     }
 
@@ -554,12 +554,12 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
     t_outconnect *oc1 = NULL;
     t_outconnect *oc2 = NULL;
     
-    if (pd_class (dest)->c_hasFirstInlet) { if (!n) { to = (t_pd *)dest; } else { n--; } }
+    if (pd_class (dest)->c_hasFirstInlet) { if (!n) { to = cast_pd (dest); } else { n--; } }
     
     if (to == NULL) {
         for (i = dest->te_inlet; i && n; i = i->i_next, n--) { }
         if (i == NULL) { return; }
-        to = (t_pd *)i;
+        to = cast_pd (i);
     }
 
     oc1 = o->o_connections;
@@ -766,7 +766,7 @@ t_outconnect *object_traverseOutletNext (t_outconnect *last, t_object **dest, t_
     } else {
         *n    = 0;
         *ptr  = NULL;
-        *dest = ((t_object *)y);
+        *dest = (cast_object (y));
     }
     
     return last->oc_next;
