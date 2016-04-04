@@ -163,14 +163,13 @@ typedef struct _radio {
 typedef struct _slider {
     t_iem       x_gui;
     int         x_isVertical;
+    int         x_t;
     int         x_position;
-    int         x_integerValue;
     int         x_isLogarithmic;
     int         x_isSteadyOnClick;
     int         x_isAccurateMoving;
     double      x_minimum;
     double      x_maximum;
-    double      x_k;
     t_float     x_floatValue;
     } t_slider;
 

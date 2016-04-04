@@ -34,6 +34,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define IEM_SLIDER_STEPS_PER_PIXEL      100
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void slider_set      (t_slider *x, t_float f);
 static void slider_motion   (t_slider *x, t_float deltaX, t_float deltaY);
 
@@ -53,7 +59,7 @@ static void slider_draw_update(t_gobj *client, t_glist *glist)
     t_slider *x = (t_slider *)client;
     if (glist_isvisible(glist))
     {
-        int r = text_xpix(&x->x_gui.iem_obj, glist) + (x->x_integerValue + 50)/100;
+        int r = text_xpix(&x->x_gui.iem_obj, glist) + (x->x_position + 50)/100;
         int ypos=text_ypix(&x->x_gui.iem_obj, glist);
         t_glist *canvas=glist_getcanvas(glist);
         sys_vGui(".x%lx.c coords %lxKNOB %d %d %d %d\n",
@@ -66,7 +72,7 @@ static void slider_draw_new(t_slider *x, t_glist *glist)
 {
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    int r = xpos + (x->x_integerValue + 50)/100;
+    int r = xpos + (x->x_position + 50)/100;
     t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
@@ -97,7 +103,7 @@ static void slider_draw_move(t_slider *x, t_glist *glist)
 {
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    int r = xpos + (x->x_integerValue + 50)/100;
+    int r = xpos + (x->x_position + 50)/100;
     t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c coords %lxBASE %d %d %d %d\n",
@@ -182,57 +188,65 @@ void slider_draw(t_slider *x, t_glist *glist, int mode)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void slider_check_width(t_slider *x, int w)
+static int slider_getNumberOfSteps (t_slider *x)
 {
-    if(w < IEM_MINIMUM_WIDTH)
-        w = IEM_MINIMUM_WIDTH;
-    x->x_gui.iem_width = w;
-    if(x->x_integerValue > (x->x_gui.iem_width*100 - 100))
-    {
-        x->x_position = x->x_gui.iem_width*100 - 100;
-        x->x_integerValue = x->x_position;
-    }
-    if(x->x_isLogarithmic)
-        x->x_k = log(x->x_maximum/x->x_minimum)/(double)(x->x_gui.iem_width - 1);
-    else
-        x->x_k = (x->x_maximum - x->x_minimum)/(double)(x->x_gui.iem_width - 1);
+    return ((x->x_gui.iem_width - 1) * IEM_SLIDER_STEPS_PER_PIXEL);
 }
 
-void slider_check_minmax(t_slider *x, double min, double max)
+static double slider_getStepValue (t_slider *x)
 {
-    if(x->x_isLogarithmic)
-    {
-        if((min == 0.0)&&(max == 0.0))
-            max = 1.0;
-        if(max > 0.0)
-        {
-            if(min <= 0.0)
-                min = 0.01*max;
-        }
-        else
-        {
-            if(min > 0.0)
-                max = 0.01*min;
-        }
+    if (x->x_isLogarithmic) {
+        return (log (x->x_maximum / x->x_minimum) / (double)slider_getNumberOfSteps (x));
+    } else {
+        return ((x->x_maximum - x->x_minimum) / (double)slider_getNumberOfSteps (x));
     }
-    x->x_minimum = min;
-    x->x_maximum = max;
-    if(x->x_isLogarithmic)
-        x->x_k = log(x->x_maximum/x->x_minimum)/(double)(x->x_gui.iem_width - 1);
-    else
-        x->x_k = (x->x_maximum - x->x_minimum)/(double)(x->x_gui.iem_width - 1);
 }
 
-    /* compute numeric value (fval) from pixel location (val) and range */
-static t_float slider_getfval(t_slider *x)
+static t_float slider_getValue (t_slider *x)
 {
-    t_float fval;
-    if (x->x_isLogarithmic)
-        fval = x->x_minimum*exp(x->x_k*(double)(x->x_integerValue)*0.01);
-    else fval = (double)(x->x_integerValue)*0.01*x->x_k + x->x_minimum;
-    if ((fval < 1.0e-10) && (fval > -1.0e-10))
-        fval = 0.0;
-    return (fval);
+    double f, t = slider_getStepValue (x) * (double)x->x_position;
+    
+    if (x->x_isLogarithmic) { 
+        f = x->x_minimum * exp (t); 
+    } else {
+        f = x->x_minimum + t;
+    }
+    
+    if ((f < 1.0e-10) && (f > -1.0e-10)) { f = 0.0; }
+    
+    return (t_float)f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void slider_setLimits (t_slider *x, double minimum, double maximum)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    if (x->x_isLogarithmic) {
+        err |= (minimum == 0.0);
+        err |= (maximum * minimum < 0.0);
+    }
+    
+    if (err) { 
+        x->x_isLogarithmic = 0;
+        post_error (PD_TRANSLATE ("slider: invalid logarithmic limits"));   // --
+    } else {
+        x->x_minimum = minimum;
+        x->x_maximum = maximum;
+    }
+}
+
+static void slider_setWidth (t_slider *x, int width)
+{
+    x->x_gui.iem_width = PD_MAX (width, IEM_MINIMUM_WIDTH);
+    
+    if (x->x_position > slider_getNumberOfSteps (x)) {
+        x->x_t        = slider_getNumberOfSteps (x);
+        x->x_position = x->x_t;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -244,7 +258,7 @@ static void slider_bang(t_slider *x)
     double out;
 
     if (0)
-        out = slider_getfval(x);
+        out = slider_getValue(x);
     else out = x->x_floatValue;
     outlet_float(x->x_gui.iem_obj.te_outlet, out);
     if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
@@ -264,13 +278,13 @@ static void slider_click(t_slider *x, t_float xpos, t_float ypos,
                           t_float shift, t_float ctrl, t_float alt)
 {
     if(!x->x_isSteadyOnClick)
-        x->x_integerValue = (int)(100.0 * (xpos - text_xpix(&x->x_gui.iem_obj, x->x_gui.iem_glist)));
-    if(x->x_integerValue > (100*x->x_gui.iem_width - 100))
-        x->x_integerValue = 100*x->x_gui.iem_width - 100;
-    if(x->x_integerValue < 0)
-        x->x_integerValue = 0;
-    x->x_floatValue = slider_getfval(x);
-    x->x_position = x->x_integerValue;
+        x->x_position = (int)(100.0 * (xpos - text_xpix(&x->x_gui.iem_obj, x->x_gui.iem_glist)));
+    if(x->x_position > (100*x->x_gui.iem_width - 100))
+        x->x_position = 100*x->x_gui.iem_width - 100;
+    if(x->x_position < 0)
+        x->x_position = 0;
+    x->x_floatValue = slider_getValue (x);
+    x->x_t = x->x_position;
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     slider_bang(x);
     glist_grab(x->x_gui.iem_glist, &x->x_gui.iem_obj.te_g, (t_glistmotionfn)slider_motion,
@@ -279,27 +293,27 @@ static void slider_click(t_slider *x, t_float xpos, t_float ypos,
 
 static void slider_motion(t_slider *x, t_float dx, t_float dy)
 {
-    int old = x->x_integerValue;
+    int old = x->x_position;
 
     if(x->x_isAccurateMoving)
-        x->x_position += (int)dx;
+        x->x_t += (int)dx;
     else
-        x->x_position += 100*(int)dx;
-    x->x_integerValue = x->x_position;
-    if(x->x_integerValue > (100*x->x_gui.iem_width - 100))
+        x->x_t += 100*(int)dx;
+    x->x_position = x->x_t;
+    if(x->x_position > (100*x->x_gui.iem_width - 100))
     {
-        x->x_integerValue = 100*x->x_gui.iem_width - 100;
-        x->x_position += 50;
-        x->x_position -= x->x_position%100;
+        x->x_position = 100*x->x_gui.iem_width - 100;
+        x->x_t += 50;
+        x->x_t -= x->x_t%100;
     }
-    if(x->x_integerValue < 0)
+    if(x->x_position < 0)
     {
-        x->x_integerValue = 0;
-        x->x_position -= 50;
-        x->x_position -= x->x_position%100;
+        x->x_position = 0;
+        x->x_t -= 50;
+        x->x_t -= x->x_t%100;
     }
-    x->x_floatValue = slider_getfval(x);
-    if (old != x->x_integerValue)
+    x->x_floatValue = slider_getValue (x);
+    if (old != x->x_position)
     {
         (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
         slider_bang(x);
@@ -341,8 +355,8 @@ static void slider_dialog(t_slider *x, t_symbol *s, int argc, t_atom *argv)
         x->x_isSteadyOnClick = 0;
     iemgui_fromDialog(&x->x_gui, argc, argv);
     x->x_gui.iem_height = PD_MAX (h, IEM_MINIMUM_HEIGHT);
-    slider_check_width(x, w);
-    slider_check_minmax(x, minimum, maximum);
+    slider_setWidth(x, w);
+    slider_setLimits(x, minimum, maximum);
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
     canvas_fixlines(x->x_gui.iem_glist, cast_object (x));
@@ -350,7 +364,7 @@ static void slider_dialog(t_slider *x, t_symbol *s, int argc, t_atom *argv)
 
 static void slider_size(t_slider *x, t_symbol *s, int ac, t_atom *av)
 {
-    slider_check_width(x, (int)(t_int)atom_getFloatAtIndex(0, ac, av));
+    slider_setWidth(x, (int)(t_int)atom_getFloatAtIndex(0, ac, av));
     if(ac > 1) {
         int h = atom_getFloatAtIndex(1, ac, av);
         x->x_gui.iem_height = PD_MAX (h, IEM_MINIMUM_HEIGHT);
@@ -372,13 +386,13 @@ static void slider_label_pos(t_slider *x, t_symbol *s, int ac, t_atom *av)
 
 static void slider_range(t_slider *x, t_symbol *s, int ac, t_atom *av)
 {
-    slider_check_minmax(x, (double)atom_getFloatAtIndex(0, ac, av),
+    slider_setLimits(x, (double)atom_getFloatAtIndex(0, ac, av),
                          (double)atom_getFloatAtIndex(1, ac, av));
 }
 
 static void slider_set(t_slider *x, t_float f)    /* bugfix */
 {
-    int old = x->x_integerValue;
+    int old = x->x_position;
     double g;
 
     x->x_floatValue = f;
@@ -396,13 +410,15 @@ static void slider_set(t_slider *x, t_float f)    /* bugfix */
         if(f < x->x_minimum)
             f = x->x_minimum;
     }
+    
     if(x->x_isLogarithmic)
-        g = log(f/x->x_minimum)/x->x_k;
+        g = log (f/x->x_minimum) / slider_getStepValue (x);
     else
-        g = (f - x->x_minimum) / x->x_k;
-    x->x_integerValue = (int)(100.0*g + 0.49999);
-    x->x_position = x->x_integerValue;
-    if(x->x_integerValue != old)
+        g = (f - x->x_minimum) / slider_getStepValue (x);
+        
+    x->x_position = (int)g;
+    x->x_t = x->x_position;
+    if(x->x_position != old)
         (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
 }
 
@@ -414,13 +430,12 @@ static void slider_steady(t_slider *x, t_float f)
 static void slider_log(t_slider *x)
 {
     x->x_isLogarithmic = 1;
-    slider_check_minmax(x, x->x_minimum, x->x_maximum);
+    slider_setLimits(x, x->x_minimum, x->x_maximum);
 }
 
 static void slider_lin(t_slider *x)
 {
     x->x_isLogarithmic = 0;
-    x->x_k = (x->x_maximum - x->x_minimum)/(double)(x->x_gui.iem_width - 1);
 }
 
 static void slider_send(t_slider *x, t_symbol *s)
@@ -480,7 +495,7 @@ static void slider_save(t_gobj *z, t_buffer *b)
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
                 iemgui_serializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[1], bflcol[2],
-                x->x_integerValue, x->x_isSteadyOnClick);
+                x->x_position, x->x_isSteadyOnClick);
     buffer_vAppend(b, ";");
 }
 
@@ -540,7 +555,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     double minimum      = 0.0;
     double maximum      = (double)(IEM_HSLIDER_DEFAULT_WIDTH - 1);
-    t_float floatValue  = 0.0;
+    t_float position  = 0.0;
     t_iemcolors colors  = IEM_COLORS_DEFAULT;
 
     if (argc >= 17
@@ -573,7 +588,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
         colors.c_colorBackground    = (int)atom_getFloatAtIndex (13, argc, argv);
         colors.c_colorForeground    = (int)atom_getFloatAtIndex (14, argc, argv);
         colors.c_colorLabel         = (int)atom_getFloatAtIndex (15, argc, argv);
-        floatValue                  = atom_getFloatAtIndex (16, argc, argv);
+        position                    = atom_getFloatAtIndex (16, argc, argv);
         
         if (argc == 18 && IS_FLOAT (argv + 17)) {
             isSteady = (int)atom_getFloatAtIndex (17, argc, argv);
@@ -596,7 +611,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_labelY     = labelY;
     x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
 
-    slider_check_width (x, width);
+    slider_setWidth (x, width);
     
     iemgui_checkSendReceiveLoop (&x->x_gui);
     iemgui_deserializeColors (&x->x_gui, &colors);
@@ -605,17 +620,18 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     if (s == gensym ("vsl"))     { x->x_isVertical = 1; }
     if (s == gensym ("vslider")) { x->x_isVertical = 1; }
     
-    slider_check_minmax (x, minimum, maximum);
-    
-    if (x->x_gui.iem_loadbang) { x->x_integerValue = (int)floatValue; }
+    if (x->x_gui.iem_loadbang) { x->x_position = (int)position; }
     else {
-        x->x_integerValue = 0;
+        x->x_position = 0;
     }
     
-    x->x_position           = x->x_integerValue;
+    x->x_t                  = x->x_position;
     x->x_isLogarithmic      = (isLogarithmic != 0);
     x->x_isSteadyOnClick    = (isSteady != 0);
-    x->x_floatValue         = slider_getfval (x);
+    
+    slider_setLimits (x, minimum, maximum);
+        
+    x->x_floatValue = slider_getValue (x);
     
     outlet_new (cast_object (x), &s_float);
     
