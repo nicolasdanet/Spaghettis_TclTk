@@ -164,7 +164,7 @@ typedef struct _slider {
     t_iem       x_gui;
     int         x_isVertical;
     int         x_position;
-    int         x_value;
+    int         x_integerValue;
     int         x_isLogarithmic;
     int         x_isSteadyOnClick;
     int         x_isAccurateMoving;
