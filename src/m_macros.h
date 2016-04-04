@@ -62,6 +62,7 @@
 
 #define cast_pd(x)          ((t_pd *)(x))
 #define cast_iem(x)         ((t_iem *)(x))
+#define cast_gobj(x)        ((t_gobj *)(x))
 #define cast_object(x)      ((t_object *)(x))
 
 // -----------------------------------------------------------------------------------------------------------

@@ -268,7 +268,7 @@ proc create {top type
     
     if {$steady != -1}              {
     
-        set values [list [_ "Jump"] [_ "Steady"]]
+        set values [list [_ "Skip"] [_ "Steady"]]
         
         ::createMenuByIndex $top.f.properties.steady    $values ::ui_iem::iemSteady($top) \
                                                             -width [::measure $values]

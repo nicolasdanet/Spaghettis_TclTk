@@ -253,42 +253,44 @@ static void slider_setWidth (t_slider *x, int width)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void slider_bang(t_slider *x)
+static void slider_out (t_slider *x)
 {
-    double out;
+    outlet_float (cast_object (x)->te_outlet, x->x_floatValue);
 
-    if (0)
-        out = slider_getValue(x);
-    else out = x->x_floatValue;
-    outlet_float(x->x_gui.iem_obj.te_outlet, out);
-    if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
-        pd_float(x->x_gui.iem_send->s_thing, out);
+    if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) {
+        pd_float (x->x_gui.iem_send->s_thing, x->x_floatValue);
+    }
 }
 
-static void slider_float(t_slider *x, t_float f)
-{
-    double out;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-    slider_set(x, f);
-    if(x->x_gui.iem_goThrough)
-        slider_bang(x);
+static void slider_bang (t_slider *x)
+{
+    slider_out (x);
 }
 
-static void slider_click(t_slider *x, t_float xpos, t_float ypos,
-                          t_float shift, t_float ctrl, t_float alt)
+static void slider_float (t_slider *x, t_float f)
 {
-    if(!x->x_isSteadyOnClick)
-        x->x_position = (int)(100.0 * (xpos - text_xpix(&x->x_gui.iem_obj, x->x_gui.iem_glist)));
-    if(x->x_position > (100*x->x_gui.iem_width - 100))
-        x->x_position = 100*x->x_gui.iem_width - 100;
-    if(x->x_position < 0)
-        x->x_position = 0;
-    x->x_floatValue = slider_getValue (x);
-    x->x_t = x->x_position;
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-    slider_bang(x);
-    glist_grab(x->x_gui.iem_glist, &x->x_gui.iem_obj.te_g, (t_glistmotionfn)slider_motion,
-               0, xpos, ypos);
+    slider_set (x, f);
+    
+    if (x->x_gui.iem_goThrough) { slider_out (x); }
+}
+
+static void slider_click (t_slider *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
+{
+    t_float t = (a - text_xpix (cast_object (x), x->x_gui.iem_glist)) * IEM_SLIDER_STEPS_PER_PIXEL;
+    
+    if (!x->x_isSteadyOnClick) { 
+        x->x_position = PD_CLAMP ((int)t, 0, slider_getNumberOfSteps (x));
+        x->x_floatValue = slider_getValue (x);
+        x->x_t = x->x_position;
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    }
+    
+    slider_out (x);
+    glist_grab (x->x_gui.iem_glist, cast_gobj (x), (t_glistmotionfn)slider_motion, NULL, a, b);
 }
 
 static void slider_motion(t_slider *x, t_float dx, t_float dy)
