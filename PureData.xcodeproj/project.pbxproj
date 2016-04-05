@@ -59,8 +59,8 @@
 		3789722A1C4F716800263434 /* g_slider.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C71C4F716700263434 /* g_slider.c */; };
 		3789722B1C4F716800263434 /* g_iem.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C81C4F716700263434 /* g_iem.c */; };
 		3789722C1C4F716800263434 /* g_io.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CA1C4F716700263434 /* g_io.c */; };
-		3789722D1C4F716800263434 /* g_mycanvas.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CB1C4F716700263434 /* g_mycanvas.c */; };
-		3789722E1C4F716800263434 /* g_numbox.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CC1C4F716700263434 /* g_numbox.c */; };
+		3789722D1C4F716800263434 /* g_panel.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CB1C4F716700263434 /* g_panel.c */; };
+		3789722E1C4F716800263434 /* g_number.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CC1C4F716700263434 /* g_number.c */; };
 		3789722F1C4F716800263434 /* g_readwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CD1C4F716700263434 /* g_readwrite.c */; };
 		378972301C4F716800263434 /* g_rtext.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CE1C4F716700263434 /* g_rtext.c */; };
 		378972311C4F716800263434 /* g_scalar.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CF1C4F716700263434 /* g_scalar.c */; };
@@ -68,7 +68,7 @@
 		378972331C4F716800263434 /* g_text.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D11C4F716700263434 /* g_text.c */; };
 		378972341C4F716800263434 /* g_toggle.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D21C4F716700263434 /* g_toggle.c */; };
 		378972351C4F716800263434 /* g_traversal.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D31C4F716700263434 /* g_traversal.c */; };
-		378972381C4F716800263434 /* g_vumeter.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D61C4F716700263434 /* g_vumeter.c */; };
+		378972381C4F716800263434 /* g_vu.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D61C4F716700263434 /* g_vu.c */; };
 		378972391C4F716800263434 /* m_atom.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D81C4F716700263434 /* m_atom.c */; };
 		3789723A1C4F716800263434 /* m_buffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971D91C4F716700263434 /* m_buffer.c */; };
 		3789723B1C4F716800263434 /* m_class.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971DA1C4F716700263434 /* m_class.c */; };
@@ -281,8 +281,8 @@
 		378971C81C4F716700263434 /* g_iem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_iem.c; path = src/g_iem.c; sourceTree = "<group>"; };
 		378971C91C4F716700263434 /* g_iem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_iem.h; path = src/g_iem.h; sourceTree = "<group>"; };
 		378971CA1C4F716700263434 /* g_io.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_io.c; path = src/g_io.c; sourceTree = "<group>"; };
-		378971CB1C4F716700263434 /* g_mycanvas.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_mycanvas.c; path = src/g_mycanvas.c; sourceTree = "<group>"; };
-		378971CC1C4F716700263434 /* g_numbox.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_numbox.c; path = src/g_numbox.c; sourceTree = "<group>"; };
+		378971CB1C4F716700263434 /* g_panel.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_panel.c; path = src/g_panel.c; sourceTree = "<group>"; };
+		378971CC1C4F716700263434 /* g_number.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_number.c; path = src/g_number.c; sourceTree = "<group>"; };
 		378971CD1C4F716700263434 /* g_readwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_readwrite.c; path = src/g_readwrite.c; sourceTree = "<group>"; };
 		378971CE1C4F716700263434 /* g_rtext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_rtext.c; path = src/g_rtext.c; sourceTree = "<group>"; };
 		378971CF1C4F716700263434 /* g_scalar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_scalar.c; path = src/g_scalar.c; sourceTree = "<group>"; };
@@ -290,7 +290,7 @@
 		378971D11C4F716700263434 /* g_text.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_text.c; path = src/g_text.c; sourceTree = "<group>"; };
 		378971D21C4F716700263434 /* g_toggle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_toggle.c; path = src/g_toggle.c; sourceTree = "<group>"; };
 		378971D31C4F716700263434 /* g_traversal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_traversal.c; path = src/g_traversal.c; sourceTree = "<group>"; };
-		378971D61C4F716700263434 /* g_vumeter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_vumeter.c; path = src/g_vumeter.c; sourceTree = "<group>"; };
+		378971D61C4F716700263434 /* g_vu.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_vu.c; path = src/g_vu.c; sourceTree = "<group>"; };
 		378971D71C4F716700263434 /* m_alloca.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = m_alloca.h; path = src/m_alloca.h; sourceTree = "<group>"; };
 		378971D81C4F716700263434 /* m_atom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_atom.c; path = src/m_atom.c; sourceTree = "<group>"; };
 		378971D91C4F716700263434 /* m_buffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_buffer.c; path = src/m_buffer.c; sourceTree = "<group>"; };
@@ -712,9 +712,9 @@
 				378971D21C4F716700263434 /* g_toggle.c */,
 				3770FAA51CB1036A007C7E66 /* g_radio.c */,
 				378971C71C4F716700263434 /* g_slider.c */,
-				378971D61C4F716700263434 /* g_vumeter.c */,
-				378971CC1C4F716700263434 /* g_numbox.c */,
-				378971CB1C4F716700263434 /* g_mycanvas.c */,
+				378971D61C4F716700263434 /* g_vu.c */,
+				378971CC1C4F716700263434 /* g_number.c */,
+				378971CB1C4F716700263434 /* g_panel.c */,
 			);
 			name = IEM;
 			sourceTree = "<group>";
@@ -957,8 +957,8 @@
 				3789722A1C4F716800263434 /* g_slider.c in Sources */,
 				3789722B1C4F716800263434 /* g_iem.c in Sources */,
 				3789722C1C4F716800263434 /* g_io.c in Sources */,
-				3789722D1C4F716800263434 /* g_mycanvas.c in Sources */,
-				3789722E1C4F716800263434 /* g_numbox.c in Sources */,
+				3789722D1C4F716800263434 /* g_panel.c in Sources */,
+				3789722E1C4F716800263434 /* g_number.c in Sources */,
 				3789722F1C4F716800263434 /* g_readwrite.c in Sources */,
 				378972301C4F716800263434 /* g_rtext.c in Sources */,
 				378972311C4F716800263434 /* g_scalar.c in Sources */,
@@ -966,7 +966,7 @@
 				378972331C4F716800263434 /* g_text.c in Sources */,
 				378972341C4F716800263434 /* g_toggle.c in Sources */,
 				378972351C4F716800263434 /* g_traversal.c in Sources */,
-				378972381C4F716800263434 /* g_vumeter.c in Sources */,
+				378972381C4F716800263434 /* g_vu.c in Sources */,
 				378972391C4F716800263434 /* m_atom.c in Sources */,
 				3789723A1C4F716800263434 /* m_buffer.c in Sources */,
 				3789723B1C4F716800263434 /* m_class.c in Sources */,
