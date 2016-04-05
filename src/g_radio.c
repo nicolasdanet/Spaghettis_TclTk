@@ -632,10 +632,14 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_radio *x = (t_radio *)pd_new (radio_class);
     
+    if (s == gensym ("vradio"))  { x->x_isVertical = 1; }
+    
+    {
+    //
     int size            = IEM_DEFAULT_SIZE;
     int state           = 0;
-    int labelX          = IEM_DEFAULT_LABELX;
-    int labelY          = IEM_DEFAULT_LABELY;
+    int labelX          = x->x_isVertical ? IEM_DEFAULT_LABELX_NEXT : IEM_DEFAULT_LABELX_TOP;
+    int labelY          = x->x_isVertical ? IEM_DEFAULT_LABELY_NEXT : IEM_DEFAULT_LABELY_TOP;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     int changed         = 1;
     int numberOfButtons = IEM_RADIO_DEFAULT_BUTTONS;
@@ -692,7 +696,6 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     iemgui_deserializeColors (&x->x_gui, &colors);
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
-    if (s == gensym ("vradio"))  { x->x_isVertical = 1; }
         
     x->x_changed = (changed != 0);
     x->x_numberOfButtons = PD_CLAMP (numberOfButtons, 1, IEM_MAXIMUM_BUTTONS);
@@ -705,6 +708,8 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     }
 
     outlet_new (cast_object (x), &s_list);
+    //
+    }
     
     return x;
 }

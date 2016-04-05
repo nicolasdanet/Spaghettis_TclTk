@@ -495,8 +495,8 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
     int size            = IEM_DEFAULT_SIZE;
     int flashHold       = IEM_BANG_DEFAULT_HOLD;
     int flashBreak      = IEM_BANG_DEFAULT_BREAK;
-    int labelX          = IEM_DEFAULT_LABELX;
-    int labelY          = IEM_DEFAULT_LABELY;
+    int labelX          = IEM_DEFAULT_LABELX_NEXT;
+    int labelY          = IEM_DEFAULT_LABELY_NEXT;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     t_iemcolors colors  = IEM_COLORS_DEFAULT;
     

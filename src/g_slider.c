@@ -668,11 +668,11 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     
     {
     //
-    int width           = x->x_isVertical ? IEM_VSLIDER_DEFAULT_WIDTH : IEM_HSLIDER_DEFAULT_WIDTH;
+    int width           = x->x_isVertical ? IEM_VSLIDER_DEFAULT_WIDTH  : IEM_HSLIDER_DEFAULT_WIDTH;
     int height          = x->x_isVertical ? IEM_VSLIDER_DEFAULT_HEIGHT : IEM_HSLIDER_DEFAULT_HEIGHT;
     int isLogarithmic   = 0;
-    int labelX          = IEM_DEFAULT_LABELX;
-    int labelY          = IEM_DEFAULT_LABELY;
+    int labelX          = x->x_isVertical ? IEM_DEFAULT_LABELX_NEXT : IEM_DEFAULT_LABELX_TOP;
+    int labelY          = x->x_isVertical ? IEM_DEFAULT_LABELY_NEXT : IEM_DEFAULT_LABELY_TOP;
     int isSteady        = 0;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     double minimum      = 0.0;
