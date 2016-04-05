@@ -40,6 +40,15 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static inline int slider_stepsToPixels (int n)
+{
+    return (int)((n / (double)IEM_SLIDER_STEPS_PER_PIXEL) + 0.5);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void slider_set      (t_slider *x, t_float f);
 static void slider_motion   (t_slider *x, t_float deltaX, t_float deltaY);
 
@@ -54,134 +63,154 @@ static t_class *slider_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void slider_draw_update(t_gobj *client, t_glist *glist)
+static void slider_drawUpdate (t_slider *x, t_glist *glist)
 {
-    t_slider *x = (t_slider *)client;
-    if (glist_isvisible(glist))
-    {
-        int r = text_xpix(&x->x_gui.iem_obj, glist) + (x->x_position + 50)/100;
-        int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-        t_glist *canvas=glist_getcanvas(glist);
-        sys_vGui(".x%lx.c coords %lxKNOB %d %d %d %d\n",
-                 canvas, x, r, ypos+1,
-                 r, ypos + x->x_gui.iem_height);
+    if (glist_isvisible (glist)) {
+    //
+    t_glist *canvas = glist_getcanvas (glist);
+    
+    int k = text_xpix (cast_object (x), glist) + slider_stepsToPixels (x->x_position);
+    int b = text_ypix (cast_object (x), glist);
+        
+    sys_vGui (".x%lx.c coords %lxKNOB %d %d %d %d\n",
+                canvas, 
+                x, 
+                k,
+                b + 1,
+                k, 
+                b + x->x_gui.iem_height - 1);
+    //
     }
 }
 
-static void slider_draw_new(t_slider *x, t_glist *glist)
+static void slider_drawMove (t_slider *x, t_glist *glist)
 {
-    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
-    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    int r = xpos + (x->x_position + 50)/100;
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
+    
+    int a = text_xpix (cast_object (x), glist);
+    int b = text_ypix (cast_object (x), glist);
+    int k = a + slider_stepsToPixels (x->x_position);
 
-    sys_vGui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
-             canvas, xpos-3, ypos,
-             xpos + x->x_gui.iem_width+2, ypos + x->x_gui.iem_height,
-             x->x_gui.iem_colorBackground, x);
-    sys_vGui(".x%lx.c create line %d %d %d %d -width 3 -fill #%6.6x -tags %lxKNOB\n",
-             canvas, r, ypos+1, r,
-             ypos + x->x_gui.iem_height, x->x_gui.iem_colorForeground, x);
-    sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor w \
-             -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",
-             canvas, xpos+x->x_gui.iem_labelX,
-             ypos+x->x_gui.iem_labelY,
-             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"",
-             x->x_gui.iem_fontSize,
-             x->x_gui.iem_colorLabel, x);
-
-        /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
-             canvas, xpos-3, ypos + x->x_gui.iem_height-1,
-             xpos+4, ypos + x->x_gui.iem_height, x, 0);
-
-        sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
-             canvas, xpos-3, ypos,
-             xpos+4, ypos+1, x, 0);*/
+    sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
+                canvas,
+                x,
+                a, 
+                b,
+                a + x->x_gui.iem_width, 
+                b + x->x_gui.iem_height);
+    sys_vGui (".x%lx.c coords %lxKNOB %d %d %d %d\n",
+                canvas, 
+                x, 
+                k, 
+                b + 1,
+                k, 
+                b + x->x_gui.iem_height - 1);
+    sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
+                canvas,
+                x, 
+                a + x->x_gui.iem_labelX,
+                b + x->x_gui.iem_labelY);
 }
 
-static void slider_draw_move(t_slider *x, t_glist *glist)
+static void slider_drawNew (t_slider *x, t_glist *glist)
 {
-    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
-    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    int r = xpos + (x->x_position + 50)/100;
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
+    
+    int a = text_xpix (cast_object (x), glist);
+    int b = text_ypix (cast_object (x), glist);
+    int k = a + slider_stepsToPixels (x->x_position);
 
-    sys_vGui(".x%lx.c coords %lxBASE %d %d %d %d\n",
-             canvas, x,
-             xpos-3, ypos,
-             xpos + x->x_gui.iem_width+2, ypos + x->x_gui.iem_height);
-    sys_vGui(".x%lx.c coords %lxKNOB %d %d %d %d\n",
-             canvas, x, r, ypos+1,
-             r, ypos + x->x_gui.iem_height);
-    sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
-             canvas, x, xpos+x->x_gui.iem_labelX, ypos+x->x_gui.iem_labelY);
-    /*sys_vGui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
-             canvas, x, 0,
-             xpos-3, ypos + x->x_gui.iem_height-1,
-             xpos+4, ypos + x->x_gui.iem_height);
-    sys_vGui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
-             canvas, x, 0,
-             xpos-3, ypos,
-             xpos+4, ypos+1);*/
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
+                canvas,
+                a, 
+                b,
+                a + x->x_gui.iem_width, 
+                b + x->x_gui.iem_height,
+                x->x_gui.iem_colorBackground,
+                x);
+    sys_vGui (".x%lx.c create line %d %d %d %d -width 3 -fill #%6.6x -tags %lxKNOB\n",
+                canvas,
+                k,
+                b + 1, 
+                k,
+                b + x->x_gui.iem_height - 1,
+                x->x_gui.iem_colorForeground,
+                x);
+    sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w"                              // --
+                " -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",    // --
+                canvas,
+                a + x->x_gui.iem_labelX,
+                b + x->x_gui.iem_labelY,
+                (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "",
+                x->x_gui.iem_fontSize,
+                x->x_gui.iem_colorLabel,
+                x);
 }
 
-static void slider_draw_erase(t_slider* x,t_glist *glist)
+static void slider_drawSelect (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui(".x%lx.c delete %lxBASE\n", canvas, x);
-    sys_vGui(".x%lx.c delete %lxKNOB\n", canvas, x);
-    sys_vGui(".x%lx.c delete %lxLABEL\n", canvas, x);
-    //sys_vGui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    //sys_vGui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", 
+                canvas, 
+                x, 
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
+                
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", 
+                canvas, 
+                x, 
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
-static void slider_draw_config(t_slider* x,t_glist *glist)
+static void slider_drawErase (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
-             canvas, x, x->x_gui.iem_fontSize,
-             x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
-             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
-    sys_vGui(".x%lx.c itemconfigure %lxKNOB -fill #%6.6x\n", canvas, x, x->x_gui.iem_colorForeground);
-    sys_vGui(".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n", canvas, x, x->x_gui.iem_colorBackground);
+    sys_vGui (".x%lx.c delete %lxBASE\n",
+                canvas, 
+                x);
+    sys_vGui (".x%lx.c delete %lxKNOB\n",
+                canvas,
+                x);
+    sys_vGui (".x%lx.c delete %lxLABEL\n",
+                canvas,
+                x);
 }
 
-static void slider_draw_select(t_slider* x,t_glist *glist)
+static void slider_drawConfig (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
 
-    if(x->x_gui.iem_isSelected)
-    {
-        sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
-        sys_vGui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
-    }
-    else
-    {
-        sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_NORMAL);
-        sys_vGui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, x->x_gui.iem_colorLabel);
-    }
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",  // --
+                canvas,
+                x,
+                x->x_gui.iem_fontSize,
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel,
+                (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
+    sys_vGui (".x%lx.c itemconfigure %lxKNOB -fill #%6.6x\n",
+                canvas,
+                x,
+                x->x_gui.iem_colorForeground);
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n",
+                canvas,
+                x, 
+                x->x_gui.iem_colorBackground);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void slider_draw(t_slider *x, t_glist *glist, int mode)
+void slider_draw (t_toggle *x, t_glist *glist, int mode)
 {
-    if(mode == IEM_DRAW_UPDATE)
-        interface_guiQueueAddIfNotAlreadyThere(x, glist, slider_draw_update);
-    else if(mode == IEM_DRAW_MOVE)
-        slider_draw_move(x, glist);
-    else if(mode == IEM_DRAW_NEW)
-        slider_draw_new(x, glist);
-    else if(mode == IEM_DRAW_SELECT)
-        slider_draw_select(x, glist);
-    else if(mode == IEM_DRAW_ERASE)
-        slider_draw_erase(x, glist);
-    else if(mode == IEM_DRAW_CONFIG)
-        slider_draw_config(x, glist);
+    switch (mode) {
+        case IEM_DRAW_UPDATE    : slider_drawUpdate (x, glist); break;
+        case IEM_DRAW_MOVE      : slider_drawMove (x, glist);   break;
+        case IEM_DRAW_NEW       : slider_drawNew (x, glist);    break;
+        case IEM_DRAW_SELECT    : slider_drawSelect (x, glist); break;
+        case IEM_DRAW_ERASE     : slider_drawErase (x, glist);  break;
+        case IEM_DRAW_CONFIG    : slider_drawConfig (x, glist); break;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -459,7 +488,7 @@ static void slider_label (t_slider *x, t_symbol *s)
 
 static void slider_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
-    t_slider* x = (t_slider*)z;
+    t_slider *x = (t_slider*)z;
     
     *a = text_xpix (cast_object (z), glist);
     *b = text_ypix (cast_object (z), glist);
@@ -525,8 +554,8 @@ static void slider_behaviorProperties (t_gobj *z, t_glist *owner)
     iemgui_serializeNames (&x->x_gui, &names);
     
     err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s Slider"
-            " %d %d {Slider Width} %d %d {Slider Height}"
-            " %g {Value Left} %g {Value Right}"
+            " %d %d {Slider Width} %d %d {Slider Height}"               // --
+            " %g {Value Left} %g {Value Right}"                         // --
             " %d Linear Logarithmic"
             " %d"
             " -1 -1 empty"
