@@ -467,71 +467,87 @@ static void slider_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int 
     *d = *b + cast_iem (z)->iem_height;
 }
 
-static int slider_newclick(t_gobj *z, struct _glist *glist,
-                            int xpix, int ypix, int shift, int alt, int dbl, int doit)
+static int slider_behaviorClick (t_gobj *z, t_glist *glist, int a, int b, int shift, int alt, int dbl, int k)
 {
-    t_slider* x = (t_slider *)z;
-
-    if(doit)
-    {
-        slider_click( x, (t_float)xpix, (t_float)ypix, (t_float)shift,
-                       0, (t_float)alt);
-        if(shift)
-            x->x_isAccurateMoving = 1;
-        else
-            x->x_isAccurateMoving = 0;
+    if (k) {
+        t_slider *x = (t_slider *)z;
+        x->x_isAccurateMoving = (shift != 0);
+        slider_click (x, (t_float)a, (t_float)b, (t_float)shift, (t_float)0, (t_float)alt);
     }
-    return (1);
+    
+    return 1;
 }
 
-static void slider_save(t_gobj *z, t_buffer *b)
+static void slider_behaviorSave (t_gobj *z, t_buffer *b)
 {
     t_slider *x = (t_slider *)z;
-    int bflcol[3];
-    t_symbol *srl[3];
+    
+    t_iemnames names;
+    t_iemcolors colors;
 
-    iemgui_serialize(&x->x_gui, srl, bflcol);
-    buffer_vAppend(b, "ssiisiiffiisssiiiiiiiii", gensym ("#X"),gensym ("obj"),
-                (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
-                gensym ("hsl"), x->x_gui.iem_width, x->x_gui.iem_height,
-                (t_float)x->x_minimum, (t_float)x->x_maximum,
-                x->x_isLogarithmic, iemgui_serializeLoadbang(&x->x_gui),
-                srl[0], srl[1], srl[2],
-                x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iemgui_serializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
-                bflcol[0], bflcol[1], bflcol[2],
-                x->x_position, x->x_isSteadyOnClick);
-    buffer_vAppend(b, ";");
+    iemgui_serialize (&x->x_gui, &names, &colors);
+    
+    buffer_vAppend (b, "ssiisiiffiisssiiiiiiiii", 
+        gensym ("#X"),
+        gensym ("obj"),
+        (int)cast_object (z)->te_xCoordinate, 
+        (int)cast_object (z)->te_yCoordinate,
+        gensym ("hsl"), 
+        x->x_gui.iem_width,                                         // Width.
+        x->x_gui.iem_height,                                        // Height.
+        (t_float)x->x_minimum,                                      // Range minimum.
+        (t_float)x->x_maximum,                                      // Range maximum.
+        x->x_isLogarithmic,                                         // Is logarithmic.
+        iemgui_serializeLoadbang (&x->x_gui),                       // Loadbang.
+        names.n_unexpandedSend,                                     // Send.
+        names.n_unexpandedReceive,                                  // Receive.
+        names.n_unexpandedLabel,                                    // Label.
+        x->x_gui.iem_labelX,                                        // Label X.
+        x->x_gui.iem_labelY,                                        // Label Y.
+        iemgui_serializeFontStyle (&x->x_gui),                      // Label font.
+        x->x_gui.iem_fontSize,                                      // label font size.
+        colors.c_colorBackground,                                   // Background color.
+        colors.c_colorForeground,                                   // Foreground color.
+        colors.c_colorLabel,                                        // Label color.
+        x->x_position,                                              // Position.
+        x->x_isSteadyOnClick);                                      // Is steady.
+        
+    buffer_vAppend (b, ";");
 }
 
-static void slider_properties(t_gobj *z, t_glist *owner)
+static void slider_behaviorProperties (t_gobj *z, t_glist *owner)
 {
     t_slider *x = (t_slider *)z;
-    char buf[800];
-    t_symbol *srl[3];
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING];
+    t_iemnames names;
 
-    iemgui_serializeNames(&x->x_gui, srl);
-    sprintf(buf, "::ui_iem::create %%s Slider \
-            %d %d {Slider Width} %d %d {Slider Height} \
-            %g {Value Left} %g {Value Right} \
-            %d Linear Logarithmic \
-            %d \
-            -1 -1 empty \
-            %s %s \
-            %s %d %d \
-            %d \
-            %d %d %d \
-            %d\n",
+    iemgui_serializeNames (&x->x_gui, &names);
+    
+    err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s Slider"
+            " %d %d {Slider Width} %d %d {Slider Height}"
+            " %g {Value Left} %g {Value Right}"
+            " %d Linear Logarithmic"
+            " %d"
+            " -1 -1 empty"
+            " %s %s"
+            " %s %d %d"
+            " %d"
+            " %d %d %d"
+            " %d\n",
             x->x_gui.iem_width, IEM_MINIMUM_WIDTH, x->x_gui.iem_height, IEM_MINIMUM_HEIGHT,
             x->x_minimum, x->x_maximum,
             x->x_isLogarithmic, 
             x->x_gui.iem_loadbang,
-            srl[0]->s_name, srl[1]->s_name,
-            srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
+            names.n_unexpandedSend->s_name, names.n_unexpandedReceive->s_name,
+            names.n_unexpandedLabel->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
-            0xffffff & x->x_gui.iem_colorBackground, 0xffffff & x->x_gui.iem_colorForeground, 0xffffff & x->x_gui.iem_colorLabel,
+            x->x_gui.iem_colorBackground, x->x_gui.iem_colorForeground, x->x_gui.iem_colorLabel,
             x->x_isSteadyOnClick);
-    gfxstub_new(&x->x_gui.iem_obj.te_g.g_pd, x, buf);
+    
+    PD_ASSERT (!err);
+    
+    gfxstub_new (cast_pd (x), (void *)x, t);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -563,24 +579,24 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     t_float position  = 0.0;
     t_iemcolors colors  = IEM_COLORS_DEFAULT;
 
-    if (argc >= 17
-            && IS_FLOAT (argv + 0)
-            && IS_FLOAT (argv + 1)
-            && IS_FLOAT (argv + 2)
-            && IS_FLOAT (argv + 3)
-            && IS_FLOAT (argv + 4)
-            && IS_FLOAT (argv + 5)
-            && (IS_SYMBOL (argv + 6) || IS_FLOAT (argv + 6))
-            && (IS_SYMBOL (argv + 7) || IS_FLOAT (argv + 7))
-            && (IS_SYMBOL (argv + 8) || IS_FLOAT (argv + 8))
-            && IS_FLOAT (argv + 9)
-            && IS_FLOAT (argv + 10)
-            && IS_FLOAT (argv + 11)
-            && IS_FLOAT (argv + 12)
-            && IS_FLOAT (argv + 13)
-            && IS_FLOAT (argv + 14) 
-            && IS_FLOAT (argv + 15)
-            && IS_FLOAT (argv + 16))
+    if (argc >= 17                                                  // --
+            && IS_FLOAT (argv + 0)                                  // Width.
+            && IS_FLOAT (argv + 1)                                  // Height.
+            && IS_FLOAT (argv + 2)                                  // Range minimum.
+            && IS_FLOAT (argv + 3)                                  // Range maximum.
+            && IS_FLOAT (argv + 4)                                  // Is logarithmic.
+            && IS_FLOAT (argv + 5)                                  // Loadbang.
+            && (IS_SYMBOL (argv + 6) || IS_FLOAT (argv + 6))        // Send.
+            && (IS_SYMBOL (argv + 7) || IS_FLOAT (argv + 7))        // Receive.
+            && (IS_SYMBOL (argv + 8) || IS_FLOAT (argv + 8))        // Label.
+            && IS_FLOAT (argv + 9)                                  // Label X.
+            && IS_FLOAT (argv + 10)                                 // Label Y.
+            && IS_FLOAT (argv + 11)                                 // Label font.
+            && IS_FLOAT (argv + 12)                                 // Label font size.
+            && IS_FLOAT (argv + 13)                                 // Background color.
+            && IS_FLOAT (argv + 14)                                 // Foreground color.
+            && IS_FLOAT (argv + 15)                                 // Label color.
+            && IS_FLOAT (argv + 16))                                // Position.
     {
         width                       = (int)atom_getFloatAtIndex (0,  argc, argv);
         height                      = (int)atom_getFloatAtIndex (1,  argc, argv);
@@ -708,12 +724,12 @@ void slider_setup (void)
     slider_widgetBehavior.w_activatefn  = NULL;
     slider_widgetBehavior.w_deletefn    = iemgui_behaviorDeleted;
     slider_widgetBehavior.w_visfn       = iemgui_behaviorVisible;
-    slider_widgetBehavior.w_clickfn     = slider_newclick;
+    slider_widgetBehavior.w_clickfn     = slider_behaviorClick;
     
     class_setWidgetBehavior (c, &slider_widgetBehavior);
     class_setHelpName (c, gensym ("slider"));
-    class_setSaveFunction (c, slider_save);
-    class_setPropertiesFunction (c, slider_properties);
+    class_setSaveFunction (c, slider_behaviorSave);
+    class_setPropertiesFunction (c, slider_behaviorProperties);
     
     slider_class = c;
 }
