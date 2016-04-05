@@ -327,12 +327,12 @@ static void bng_size (t_bng *x, t_symbol *s, int argc, t_atom *argv)
 
 static void bng_move (t_bng *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 2) { iemgui_movePosition ((void *)x, &x->x_gui, s, argc, argv); }
+    iemgui_movePosition ((void *)x, &x->x_gui, s, argc, argv);
 }
 
 static void bng_position (t_bng *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 2) { iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv); }
+    iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv);
 }
 
 static void bng_flashtime (t_bng *x, t_symbol *s, int argc, t_atom *argv)
@@ -348,7 +348,7 @@ static void bng_flashtime (t_bng *x, t_symbol *s, int argc, t_atom *argv)
 
 static void bng_labelFont (t_bng *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 2) { iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv); }
+    iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv);
 }
 
 static void bng_labelPosition (t_bng *x, t_symbol *s, int argc, t_atom *argv)

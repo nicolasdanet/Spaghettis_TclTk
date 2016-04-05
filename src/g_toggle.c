@@ -312,17 +312,17 @@ static void toggle_size (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
 
 static void toggle_move (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 2) { iemgui_movePosition ((void *)x, &x->x_gui, s, argc, argv); }
+    iemgui_movePosition ((void *)x, &x->x_gui, s, argc, argv);
 }
 
 static void toggle_position (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 2) { iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv); }
+    iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv);
 }
 
 static void toggle_labelFont (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 2) { iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv); }
+    iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv);
 }
 
 static void toggle_labelPosition (t_toggle *x, t_symbol *s, int argc, t_atom *argv)

@@ -246,6 +246,8 @@ void iemgui_setLabel (void *x, t_iem *iem, t_symbol *s)
 
 void iemgui_setLabelPosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
 {
+    if (argc > 1) {
+    //
     iem->iem_labelX = (int)atom_getFloatAtIndex (0, argc, argv);
     iem->iem_labelY = (int)atom_getFloatAtIndex (1, argc, argv);
     
@@ -256,10 +258,14 @@ void iemgui_setLabelPosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom
             text_xpix (cast_object (x), iem->iem_glist) + iem->iem_labelX,
             text_ypix (cast_object (x), iem->iem_glist) + iem->iem_labelY);
     }
+    //
+    }
 }
 
 void iemgui_setLabelFont (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
 {
+    if (argc > 1) {
+    //
     int f = (int)atom_getFloatAtIndex (1, argc, argv);
     f = PD_MAX (f, IEM_MINIMUM_FONTSIZE);
     iem->iem_fontSize = f;
@@ -268,6 +274,8 @@ void iemgui_setLabelFont (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *ar
             glist_getcanvas (iem->iem_glist), 
             x,
             iem->iem_fontSize);
+    }
+    //
     }
 }
 
@@ -278,18 +286,26 @@ void iemgui_setColor (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
 
 void iemgui_setPosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
 {
+    if (argc > 1) {
+    //
     iem->iem_obj.te_xCoordinate = (int)atom_getFloatAtIndex (0, argc, argv);
     iem->iem_obj.te_yCoordinate = (int)atom_getFloatAtIndex (1, argc, argv);
     
     iemgui_boxChanged (x, iem);
+    //
+    }
 }
 
 void iemgui_movePosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
 {
+    if (argc > 1) {
+    //
     iem->iem_obj.te_xCoordinate += (int)atom_getFloatAtIndex (0, argc, argv);
     iem->iem_obj.te_yCoordinate += (int)atom_getFloatAtIndex (1, argc, argv);
     
     iemgui_boxChanged (x, iem);
+    //
+    }
 }
 
 void iemgui_boxChanged (void *x, t_iem *iem)

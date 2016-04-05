@@ -463,17 +463,17 @@ static void radio_size (t_radio *x, t_symbol *s, int argc, t_atom *argv)
 
 static void radio_move (t_radio *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 2) { iemgui_movePosition ((void *)x, &x->x_gui, s, argc, argv); }
+    iemgui_movePosition ((void *)x, &x->x_gui, s, argc, argv);
 }
 
 static void radio_position (t_radio *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 2) { iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv); }
+    iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv);
 }
 
 static void radio_labelFont (t_radio *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (argc == 2) { iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv); }
+    iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv);
 }
 
 static void radio_labelPosition (t_radio *x, t_symbol *s, int argc, t_atom *argv)
