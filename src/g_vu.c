@@ -583,60 +583,76 @@ static void vu_label(t_vu *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void vu_getrect(t_gobj *z, t_glist *glist,
-                       int *xp1, int *yp1, int *xp2, int *yp2)
+static void vu_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
-    t_vu* x = (t_vu*)z;
-
-    *xp1 = text_xpix(&x->x_gui.iem_obj, glist) - 1;
-    *yp1 = text_ypix(&x->x_gui.iem_obj, glist) - 2;
-    *xp2 = *xp1 + x->x_gui.iem_width + 2;
-    *yp2 = *yp1 + x->x_gui.iem_height + 4;
+    *a = text_xpix (cast_object (z), glist);
+    *b = text_ypix (cast_object (z), glist);
+    *c = *a + cast_iem (z)->iem_width;
+    *d = *b + cast_iem (z)->iem_height;
 }
 
-static void vu_save(t_gobj *z, t_buffer *b)
+static void vu_behaviorSave (t_gobj *z, t_buffer *b)
 {
     t_vu *x = (t_vu *)z;
-    int bflcol[3];
-    t_symbol *srl[3];
+    
+    t_iemnames names;
+    t_iemcolors colors;
 
-    iemgui_serialize(&x->x_gui, srl, bflcol);
-    buffer_vAppend(b, "ssiisiissiiiiiiii", gensym ("#X"),gensym ("obj"),
-                (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
-                gensym ("vu"), x->x_gui.iem_width, x->x_gui.iem_height,
-                srl[1], srl[2],
-                x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iemgui_serializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
-                bflcol[0], bflcol[2], x->x_hasScale,
-                iemgui_serializeLoadbang(&x->x_gui));
-    buffer_vAppend(b, ";");
+    iemgui_serialize (&x->x_gui, &names, &colors);
+    
+    buffer_vAppend (b, "ssiisiissiiiiiiii",
+        gensym ("#X"),
+        gensym ("obj"),
+        (int)cast_object (x)->te_xCoordinate,
+        (int)cast_object (x)->te_yCoordinate,
+        gensym ("vu"),
+        x->x_gui.iem_width,                                         // Width.
+        x->x_gui.iem_height,                                        // Height.
+        names.n_unexpandedReceive,                                  // Receive.
+        names.n_unexpandedLabel,                                    // Label.
+        x->x_gui.iem_labelX,                                        // Label X.
+        x->x_gui.iem_labelY,                                        // Label Y.
+        iemgui_serializeFontStyle (&x->x_gui),                      // Label font.
+        x->x_gui.iem_fontSize,                                      // Label font size.
+        colors.c_colorBackground,                                   // Background color.
+        colors.c_colorLabel,                                        // Label color.
+        x->x_hasScale,                                              // Dummy.
+        0);                                                         // Dummy.
+        
+    buffer_vAppend (b, ";");
 }
 
-static void vu_properties(t_gobj *z, t_glist *owner)
+static void vu_behaviorProperties (t_gobj *z, t_glist *owner)
 {
     t_vu *x = (t_vu *)z;
-    char buf[800];
-    t_symbol *srl[3];
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING];
+    t_iemnames names;
 
-    iemgui_serializeNames(&x->x_gui, srl);
-    sprintf(buf, "::ui_iem::create %%s VU \
-            %d %d {Meter Width} %d %d {Meter Height} \
-            0 empty 0 empty \
-            %d empty empty \
-            -1 \
-            -1 -1 empty \
-            %s %s \
-            %s %d %d \
-            %d \
-            %d %d %d \
-            -1\n",
-            x->x_gui.iem_width, IEM_MINIMUM_WIDTH, x->x_gui.iem_height, IEM_VUMETER_STEPS*IEM_VUMETER_THICKNESS_MINIMUM,
-            x->x_hasScale, 
-            "nosndno", srl[1]->s_name,/*no send*/
-            srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
+    iemgui_serializeNames (&x->x_gui, &names);
+    
+    err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s VU"
+            " %d %d {Meter Width}"
+            " %d %d {Meter Height}"
+            " 0 empty 0 empty"
+            " 0 empty empty"
+            " -1"
+            " -1 -1 empty"
+            " %s %s"
+            " %s %d %d"
+            " %d"
+            " %d %d %d"
+            " -1\n",
+            x->x_gui.iem_width, IEM_MINIMUM_WIDTH,
+            x->x_gui.iem_height, IEM_VUMETER_STEPS * IEM_VUMETER_THICKNESS_MINIMUM,
+            "nosndno", names.n_unexpandedReceive->s_name,                               /* No send. */
+            names.n_unexpandedLabel->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
-            0xffffff & x->x_gui.iem_colorBackground, -1/*no front-color*/, 0xffffff & x->x_gui.iem_colorLabel);
-    gfxstub_new(&x->x_gui.iem_obj.te_g.g_pd, x, buf);
+            x->x_gui.iem_colorBackground, -1, x->x_gui.iem_colorLabel);                 /* No foreground. */
+            
+    PD_ASSERT (!err);
+    
+    gfxstub_new (cast_pd (x), (void *)x, t);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -770,7 +786,7 @@ void vu_setup (void)
 
     #endif
     
-    vu_widgetBehavior.w_getrectfn   = vu_getrect;
+    vu_widgetBehavior.w_getrectfn   = vu_behaviorGetRectangle;
     vu_widgetBehavior.w_displacefn  = iemgui_behaviorDisplace;
     vu_widgetBehavior.w_selectfn    = iemgui_behaviorSelected;
     vu_widgetBehavior.w_activatefn  = NULL;
@@ -780,8 +796,8 @@ void vu_setup (void)
     
     class_setWidgetBehavior (c,&vu_widgetBehavior);
     class_setHelpName (c, gensym ("vu"));
-    class_setSaveFunction (c, vu_save);
-    class_setPropertiesFunction (c, vu_properties);
+    class_setSaveFunction (c, vu_behaviorSave);
+    class_setPropertiesFunction (c, vu_behaviorProperties);
     
     vu_class = c;
 }
