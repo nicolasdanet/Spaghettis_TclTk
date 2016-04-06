@@ -43,8 +43,8 @@
 int vu_colors[43]=
     {
         0x000000,
-        0x28f4f4,       //
-        0x14e814,       //
+        0x14e814,   // Green.
+        0x14e814,       
         0x14e814,
         0x14e814,
         0x14e814,
@@ -59,19 +59,19 @@ int vu_colors[43]=
         0x14e814,
         0x14e814,
         0x14e814,
-        0xe8e828,       //
+        0xe8e828,   // Yellow.
         0xe8e828,
         0xe8e828,
         0xe8e828,
         0xe8e828,
         0xe8e828,
         0xe8e828,
-        0xe8e828,
-        0xe8e828,
-        0xe8e828,
-        0xfcac44,       //
+        0xfcac44,   // Orange.
         0xfcac44,
-        0xfc2828,       //
+        0xfcac44,
+        0xfcac44,
+        0xfcac44,
+        0xfc2828,   // Red.
         0xfc2828,
         0xfc2828,
         0xfc2828,
@@ -82,21 +82,10 @@ int vu_colors[43]=
         0xfc2828,
         0xfc2828,
         0xfc2828,
-        0xf430f0,       //
+        0xf430f0,   // Violet.
         0xf430f0,
         0xf430f0
     };
-
-/*
-    {
-        0xfcfcfc, 0xa0a0a0, 0x404040, 0xfce0e0, 0xfce0c0,
-        0xfcfcc8, 0xd8fcd8, 0xd8fcfc, 0xdce4fc, 0xf8d8fc,
-        0xe0e0e0, 0x7c7c7c, 0x202020, 0xfc2828, 0xfcac44,
-        0xe8e828, 0x14e814, 0x28f4f4, 0x3c50fc, 0xf430f0,
-        0xbcbcbc, 0x606060, 0x000000, 0x8c0808, 0x583000,
-        0x782814, 0x285014, 0x004450, 0x001488, 0x580050
-    };
-*/
 
 static int vu_decibelToStep[226]=
     {
@@ -146,7 +135,7 @@ static void vu_update_rms(t_vu *x, t_glist *glist)
 
         sys_vGui(".x%lx.c coords %lxRCOVER %d %d %d %d\n",
                  glist_getcanvas(glist), x, quad1, off, quad3,
-                 off + (x->x_led_size+1)*(IEM_VUMETER_STEPS-x->x_rms));
+                 off + (x->x_thickness+1)*(IEM_VUMETER_STEPS-x->x_rms));
     }
 }
 
@@ -162,8 +151,8 @@ static void vu_update_peak(t_vu *x, t_glist *glist)
         if(x->x_peak)
         {
             int i=vu_colors[x->x_peak];
-            int j=ypos + (x->x_led_size+1)*(IEM_VUMETER_STEPS+1-x->x_peak)
-                - (x->x_led_size+1)/2;
+            int j=ypos + (x->x_thickness+1)*(IEM_VUMETER_STEPS+1-x->x_peak)
+                - (x->x_thickness+1)/2;
 
             sys_vGui(".x%lx.c coords %lxPLED %d %d %d %d\n", canvas, x,
                      xpos, j,
@@ -187,15 +176,15 @@ static void vu_update_peak(t_vu *x, t_glist *glist)
 static void vu_draw_update(t_gobj *client, t_glist *glist)
 {
     t_vu *x = (t_vu *)client;
-    if (x->x_updaterms)
+    if (x->x_needToUpdateRms)
     {
         vu_update_rms(x, glist);
-        x->x_updaterms = 0;
+        x->x_needToUpdateRms = 0;
     }
-    if (x->x_updatepeak)
+    if (x->x_needToUpdatePeak)
     {
         vu_update_peak(x, glist);
-        x->x_updatepeak = 0;
+        x->x_needToUpdatePeak = 0;
     }
 }
     
@@ -209,7 +198,7 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
         quad1=xpos+w4+1;
     int quad3=xpos+x->x_gui.iem_width-w4,
         end=xpos+x->x_gui.iem_width+4;
-    int k1=x->x_led_size+1, k2=IEM_VUMETER_STEPS+1, k3=k1/2;
+    int k1=x->x_thickness+1, k2=IEM_VUMETER_STEPS+1, k3=k1/2;
     int led_col, yyy, i, k4=ypos-k3;
 
     sys_vGui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
@@ -221,9 +210,9 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
         led_col = vu_colors[i];
         yyy = k4 + k1*(k2-i);
         sys_vGui(".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxRLED%d\n",
-                 canvas, quad1, yyy, quad3, yyy, x->x_led_size, led_col, x, i);
+                 canvas, quad1, yyy, quad3, yyy, x->x_thickness, led_col, x, i);
     }
-    if(x->x_scale)
+    if(x->x_hasScale)
     {
         i=IEM_VUMETER_STEPS+1;
         yyy = k4 + k1*(k2-i);
@@ -233,7 +222,7 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
              ypos-1 + k1*IEM_VUMETER_STEPS, x->x_gui.iem_colorBackground, x->x_gui.iem_colorBackground, x);
     sys_vGui(".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxPLED\n",
              canvas, mid, ypos+10,
-             mid, ypos+10, x->x_led_size, x->x_gui.iem_colorBackground, x);
+             mid, ypos+10, x->x_thickness, x->x_gui.iem_colorBackground, x);
     sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor w \
              -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",
              canvas, xpos+x->x_gui.iem_labelX, ypos+x->x_gui.iem_labelY,
@@ -263,7 +252,7 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
              xpos+x->x_gui.iem_width+1, ypos-1,
              x, 1);*/
 
-    x->x_updaterms = x->x_updatepeak = 1;
+    x->x_needToUpdateRms = x->x_needToUpdatePeak = 1;
     interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, vu_draw_update);
 }
 
@@ -277,7 +266,7 @@ static void vu_draw_move(t_vu *x, t_glist *glist)
     int w4=x->x_gui.iem_width/4, quad1=xpos+w4+1;
     int quad3=xpos+x->x_gui.iem_width-w4,
         end=xpos+x->x_gui.iem_width+4;
-    int k1=x->x_led_size+1, k2=IEM_VUMETER_STEPS+1, k3=k1/2;
+    int k1=x->x_thickness+1, k2=IEM_VUMETER_STEPS+1, k3=k1/2;
     int yyy, i, k4=ypos-k3;
 
     sys_vGui(".x%lx.c coords %lxBASE %d %d %d %d\n",
@@ -292,14 +281,14 @@ static void vu_draw_move(t_vu *x, t_glist *glist)
             /*sys_vGui(".x%lx.c coords %lxSCALE%d %d %d\n",
                      canvas, x, i, end, yyy+k3);*/
     }
-    if(x->x_scale)
+    if(x->x_hasScale)
     {
         i=IEM_VUMETER_STEPS+1;
         yyy = k4 + k1*(k2-i);
         /*sys_vGui(".x%lx.c coords %lxSCALE%d %d %d\n",
                  canvas, x, i, end, yyy+k3);*/
     }
-    x->x_updaterms = x->x_updatepeak = 1;
+    x->x_needToUpdateRms = x->x_needToUpdatePeak = 1;
     interface_guiQueueAddIfNotAlreadyThere(x, glist, vu_draw_update);
     sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
              canvas, x, xpos+x->x_gui.iem_labelX,
@@ -334,7 +323,7 @@ static void vu_draw_erase(t_vu* x,t_glist *glist)
         /*if(((i+2)&3) && (x->iem_scale))
             sys_vGui(".x%lx.c delete %lxSCALE%d\n", canvas, x, i);*/
     }
-    if(x->x_scale)
+    if(x->x_hasScale)
     {
         i=IEM_VUMETER_STEPS+1;
         /*sys_vGui(".x%lx.c delete %lxSCALE%d\n", canvas, x, i);*/
@@ -358,9 +347,9 @@ static void vu_draw_config(t_vu* x, t_glist *glist)
     for(i=1; i<=IEM_VUMETER_STEPS; i++)
     {
         sys_vGui(".x%lx.c itemconfigure %lxRLED%d -width %d\n", canvas, x, i,
-                 x->x_led_size);
+                 x->x_thickness);
     }
-    if(x->x_scale)
+    if(x->x_hasScale)
     {
         i=IEM_VUMETER_STEPS+1;
     }
@@ -372,7 +361,7 @@ static void vu_draw_config(t_vu* x, t_glist *glist)
     sys_vGui(".x%lx.c itemconfigure %lxRCOVER -fill #%6.6x -outline #%6.6x\n", canvas,
              x, x->x_gui.iem_colorBackground, x->x_gui.iem_colorBackground);
     sys_vGui(".x%lx.c itemconfigure %lxPLED -width %d\n", canvas, x,
-             x->x_led_size);
+             x->x_thickness);
 }
 
 static void vu_draw_io(t_vu* x, t_glist *glist)
@@ -418,7 +407,7 @@ static void vu_draw_select(t_vu* x,t_glist *glist)
                 sys_vGui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
                          canvas, x, i, IEM_COLOR_SELECTED);*/
         }
-        if(x->x_scale)
+        if(x->x_hasScale)
         {
             i=IEM_VUMETER_STEPS+1;
            /* sys_vGui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
@@ -435,7 +424,7 @@ static void vu_draw_select(t_vu* x,t_glist *glist)
                 sys_vGui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
                          canvas, x, i, x->x_gui.iem_colorLabel);*/
         }
-        if(x->x_scale)
+        if(x->x_hasScale)
         {
             i=IEM_VUMETER_STEPS+1;
             /*sys_vGui(".x%lx.c itemconfigure %lxSCALE%d -fill #%6.6x\n",
@@ -444,6 +433,10 @@ static void vu_draw_select(t_vu* x,t_glist *glist)
         sys_vGui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", canvas, x, x->x_gui.iem_colorLabel);
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void vu_draw(t_vu *x, t_glist *glist, int mode)
 {
@@ -459,37 +452,9 @@ void vu_draw(t_vu *x, t_glist *glist, int mode)
         vu_draw_config(x, glist);
 }
 
-/* ------------------------ vu widgetbehaviour----------------------------- */
-
-
-static void vu_getrect(t_gobj *z, t_glist *glist,
-                       int *xp1, int *yp1, int *xp2, int *yp2)
-{
-    t_vu* x = (t_vu*)z;
-
-    *xp1 = text_xpix(&x->x_gui.iem_obj, glist) - 1;
-    *yp1 = text_ypix(&x->x_gui.iem_obj, glist) - 2;
-    *xp2 = *xp1 + x->x_gui.iem_width + 2;
-    *yp2 = *yp1 + x->x_gui.iem_height + 4;
-}
-
-static void vu_save(t_gobj *z, t_buffer *b)
-{
-    t_vu *x = (t_vu *)z;
-    int bflcol[3];
-    t_symbol *srl[3];
-
-    iemgui_serialize(&x->x_gui, srl, bflcol);
-    buffer_vAppend(b, "ssiisiissiiiiiiii", gensym("#X"),gensym("obj"),
-                (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
-                gensym("vu"), x->x_gui.iem_width, x->x_gui.iem_height,
-                srl[1], srl[2],
-                x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iemgui_serializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
-                bflcol[0], bflcol[2], x->x_scale,
-                iemgui_serializeLoadbang(&x->x_gui));
-    buffer_vAppend(b, ";");
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void vu_check_height(t_vu *x, int h)
 {
@@ -498,20 +463,24 @@ void vu_check_height(t_vu *x, int h)
     n = h / IEM_VUMETER_STEPS;
     if(n < IEM_VUMETER_THICKNESS_MINIMUM)
         n = IEM_VUMETER_THICKNESS_MINIMUM;
-    x->x_led_size = n-1;
+    x->x_thickness = n-1;
     x->x_gui.iem_height = IEM_VUMETER_STEPS * n;
 }
 
-static void vu_scale(t_vu *x, t_float fscale)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void vu_scale (t_vu *x, t_float fscale)
 {
     int i, scale = (int)fscale;
 
     if(scale != 0) scale = 1;
-    if(x->x_scale && !scale)
+    if(x->x_hasScale && !scale)
     {
         t_glist *canvas=glist_getcanvas(x->x_gui.iem_glist);
 
-        x->x_scale = (int)scale;
+        x->x_hasScale = (int)scale;
         if(glist_isvisible(x->x_gui.iem_glist))
         {
             for(i=1; i<=IEM_VUMETER_STEPS; i++)
@@ -523,14 +492,14 @@ static void vu_scale(t_vu *x, t_float fscale)
             /*sys_vGui(".x%lx.c delete %lxSCALE%d\n", canvas, x, i);*/
         }
     }
-    if(!x->x_scale && scale)
+    if(!x->x_hasScale && scale)
     {
         int w4=x->x_gui.iem_width/4, end=text_xpix(&x->x_gui.iem_obj, x->x_gui.iem_glist)+x->x_gui.iem_width+4;
-        int k1=x->x_led_size+1, k2=IEM_VUMETER_STEPS+1, k3=k1/2;
+        int k1=x->x_thickness+1, k2=IEM_VUMETER_STEPS+1, k3=k1/2;
         int yyy, k4=text_ypix(&x->x_gui.iem_obj, x->x_gui.iem_glist)-k3;
         t_glist *canvas=glist_getcanvas(x->x_gui.iem_glist);
 
-        x->x_scale = (int)scale;
+        x->x_hasScale = (int)scale;
         if(glist_isvisible(x->x_gui.iem_glist))
         {
             for(i=1; i<=IEM_VUMETER_STEPS; i++)
@@ -543,32 +512,65 @@ static void vu_scale(t_vu *x, t_float fscale)
     }
 }
 
-static void vu_properties(t_gobj *z, t_glist *owner)
-{
-    t_vu *x = (t_vu *)z;
-    char buf[800];
-    t_symbol *srl[3];
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-    iemgui_serializeNames(&x->x_gui, srl);
-    sprintf(buf, "::ui_iem::create %%s VU \
-            %d %d {Meter Width} %d %d {Meter Height} \
-            0 empty 0 empty \
-            %d empty empty \
-            -1 \
-            -1 -1 empty \
-            %s %s \
-            %s %d %d \
-            %d \
-            %d %d %d \
-            -1\n",
-            x->x_gui.iem_width, IEM_MINIMUM_WIDTH, x->x_gui.iem_height, IEM_VUMETER_STEPS*IEM_VUMETER_THICKNESS_MINIMUM,
-            x->x_scale, 
-            "nosndno", srl[1]->s_name,/*no send*/
-            srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-            x->x_gui.iem_fontSize,
-            0xffffff & x->x_gui.iem_colorBackground, -1/*no front-color*/, 0xffffff & x->x_gui.iem_colorLabel);
-    gfxstub_new(&x->x_gui.iem_obj.te_g.g_pd, x, buf);
+static void vu_bang(t_vu *x)
+{
+    outlet_float(x->x_outRight, x->x_peakValue);
+    outlet_float(x->x_outLeft, x->x_rmsValue);
+    x->x_needToUpdateRms = x->x_needToUpdatePeak = 1;
+    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, vu_draw_update);
 }
+
+static void vu_float(t_vu *x, t_float rms)
+{
+    int i;
+    int old = x->x_rms;
+    if(rms <= IEM_VUMETER_DECIBELS_BOTTOM)
+        x->x_rms = 0;
+    else if(rms >= IEM_VUMETER_DECIBELS_TOP)
+        x->x_rms = IEM_VUMETER_STEPS;
+    else
+    {
+        int i = (int)(2.0*(rms + IEM_VUMETER_OFFSET));
+        x->x_rms = vu_decibelToStep[i];
+    }
+    i = (int)(100.0*rms + 10000.5);
+    rms = 0.01*(t_float)(i - 10000);
+    x->x_rmsValue = rms;
+    outlet_float(x->x_outLeft, rms);
+    x->x_needToUpdateRms = 1;
+    if(x->x_rms != old)
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, vu_draw_update);
+}
+
+static void vu_ft1(t_vu *x, t_float peak)
+{
+    int i;
+    int old = x->x_peak;
+    if(peak <= IEM_VUMETER_DECIBELS_BOTTOM)
+        x->x_peak = 0;
+    else if(peak >= IEM_VUMETER_DECIBELS_TOP)
+        x->x_peak = IEM_VUMETER_STEPS;
+    else
+    {
+        int i = (int)(2.0*(peak + IEM_VUMETER_OFFSET));
+        x->x_peak = vu_decibelToStep[i];
+    }
+    i = (int)(100.0*peak + 10000.5);
+    peak = 0.01*(t_float)(i - 10000);
+    x->x_peakValue = peak;
+    x->x_needToUpdatePeak = 1;
+    if(x->x_peak != old)
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, vu_draw_update);
+    outlet_float(x->x_outRight, peak);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
 {
@@ -576,7 +578,7 @@ static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
     int h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
     int scale = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
 
-    //srl[0] = gensym("empty");
+    //srl[0] = gensym ("empty");
     iemgui_fromDialog(&x->x_gui, argc, argv);
     x->x_gui.iem_canSend = 0;
     x->x_gui.iem_loadbang = 0;
@@ -610,8 +612,11 @@ static void vu_delta(t_vu *x, t_symbol *s, int ac, t_atom *av)
 static void vu_pos(t_vu *x, t_symbol *s, int ac, t_atom *av)
 {iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
 
-static void vu_color(t_vu *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setColor((void *)x, &x->x_gui, s, ac, av);}
+static void vu_label_font(t_vu *x, t_symbol *s, int ac, t_atom *av)
+{iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
+
+static void vu_label_pos(t_vu *x, t_symbol *s, int ac, t_atom *av)
+{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
 
 static void vu_receive(t_vu *x, t_symbol *s)
 {iemgui_setReceive(x, &x->x_gui, s);}
@@ -619,63 +624,78 @@ static void vu_receive(t_vu *x, t_symbol *s)
 static void vu_label(t_vu *x, t_symbol *s)
 {iemgui_setLabel((void *)x, &x->x_gui, s);}
 
-static void vu_label_pos(t_vu *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void vu_label_font(t_vu *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
-
-static void vu_float(t_vu *x, t_float rms)
+static void vu_getrect(t_gobj *z, t_glist *glist,
+                       int *xp1, int *yp1, int *xp2, int *yp2)
 {
-    int i;
-    int old = x->x_rms;
-    if(rms <= IEM_VUMETER_DECIBELS_BOTTOM)
-        x->x_rms = 0;
-    else if(rms >= IEM_VUMETER_DECIBELS_TOP)
-        x->x_rms = IEM_VUMETER_STEPS;
-    else
-    {
-        int i = (int)(2.0*(rms + IEM_VUMETER_OFFSET));
-        x->x_rms = vu_decibelToStep[i];
-    }
-    i = (int)(100.0*rms + 10000.5);
-    rms = 0.01*(t_float)(i - 10000);
-    x->x_fr = rms;
-    outlet_float(x->x_out_rms, rms);
-    x->x_updaterms = 1;
-    if(x->x_rms != old)
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, vu_draw_update);
+    t_vu* x = (t_vu*)z;
+
+    *xp1 = text_xpix(&x->x_gui.iem_obj, glist) - 1;
+    *yp1 = text_ypix(&x->x_gui.iem_obj, glist) - 2;
+    *xp2 = *xp1 + x->x_gui.iem_width + 2;
+    *yp2 = *yp1 + x->x_gui.iem_height + 4;
 }
 
-static void vu_ft1(t_vu *x, t_float peak)
+static void vu_save(t_gobj *z, t_buffer *b)
 {
-    int i;
-    int old = x->x_peak;
-    if(peak <= IEM_VUMETER_DECIBELS_BOTTOM)
-        x->x_peak = 0;
-    else if(peak >= IEM_VUMETER_DECIBELS_TOP)
-        x->x_peak = IEM_VUMETER_STEPS;
-    else
-    {
-        int i = (int)(2.0*(peak + IEM_VUMETER_OFFSET));
-        x->x_peak = vu_decibelToStep[i];
-    }
-    i = (int)(100.0*peak + 10000.5);
-    peak = 0.01*(t_float)(i - 10000);
-    x->x_fp = peak;
-    x->x_updatepeak = 1;
-    if(x->x_peak != old)
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, vu_draw_update);
-    outlet_float(x->x_out_peak, peak);
+    t_vu *x = (t_vu *)z;
+    int bflcol[3];
+    t_symbol *srl[3];
+
+    iemgui_serialize(&x->x_gui, srl, bflcol);
+    buffer_vAppend(b, "ssiisiissiiiiiiii", gensym ("#X"),gensym ("obj"),
+                (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
+                gensym ("vu"), x->x_gui.iem_width, x->x_gui.iem_height,
+                srl[1], srl[2],
+                x->x_gui.iem_labelX, x->x_gui.iem_labelY,
+                iemgui_serializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
+                bflcol[0], bflcol[2], x->x_hasScale,
+                iemgui_serializeLoadbang(&x->x_gui));
+    buffer_vAppend(b, ";");
 }
 
-static void vu_bang(t_vu *x)
+static void vu_properties(t_gobj *z, t_glist *owner)
 {
-    outlet_float(x->x_out_peak, x->x_fp);
-    outlet_float(x->x_out_rms, x->x_fr);
-    x->x_updaterms = x->x_updatepeak = 1;
-    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, vu_draw_update);
+    t_vu *x = (t_vu *)z;
+    char buf[800];
+    t_symbol *srl[3];
+
+    iemgui_serializeNames(&x->x_gui, srl);
+    sprintf(buf, "::ui_iem::create %%s VU \
+            %d %d {Meter Width} %d %d {Meter Height} \
+            0 empty 0 empty \
+            %d empty empty \
+            -1 \
+            -1 -1 empty \
+            %s %s \
+            %s %d %d \
+            %d \
+            %d %d %d \
+            -1\n",
+            x->x_gui.iem_width, IEM_MINIMUM_WIDTH, x->x_gui.iem_height, IEM_VUMETER_STEPS*IEM_VUMETER_THICKNESS_MINIMUM,
+            x->x_hasScale, 
+            "nosndno", srl[1]->s_name,/*no send*/
+            srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
+            x->x_gui.iem_fontSize,
+            0xffffff & x->x_gui.iem_colorBackground, -1/*no front-color*/, 0xffffff & x->x_gui.iem_colorLabel);
+    gfxstub_new(&x->x_gui.iem_obj.te_g.g_pd, x, buf);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void vu_dummy (t_vu *x, t_symbol *s, int argc, t_atom *argv)
+{
+    /* Dummy. */
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void *vu_new(t_symbol *s, int argc, t_atom *argv)
 {
@@ -731,15 +751,15 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
     iemgui_deserializeColors(&x->x_gui, bflcol);
     if(scale != 0)
         scale = 1;
-    x->x_scale = scale;
+    x->x_hasScale = scale;
     x->x_peak = 0;
     x->x_rms = 0;
-    x->x_fp = -101.0;
-    x->x_fr = -101.0;
+    x->x_peakValue = -101.0;
+    x->x_rmsValue = -101.0;
     iemgui_checkSendReceiveLoop(&x->x_gui);
-    inlet_new(&x->x_gui.iem_obj, &x->x_gui.iem_obj.te_g.g_pd, &s_float, gensym("ft1"));
-    x->x_out_rms = outlet_new(&x->x_gui.iem_obj, &s_float);
-    x->x_out_peak = outlet_new(&x->x_gui.iem_obj, &s_float);
+    inlet_new(&x->x_gui.iem_obj, &x->x_gui.iem_obj.te_g.g_pd, &s_float, gensym ("ft1"));
+    x->x_outLeft = outlet_new(&x->x_gui.iem_obj, &s_float);
+    x->x_outRight = outlet_new(&x->x_gui.iem_obj, &s_float);
     return (x);
 }
 
@@ -750,35 +770,56 @@ static void vu_free(t_vu *x)
     gfxstub_deleteforkey(x);
 }
 
-void g_vumeter_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void vu_setup (void)
 {
-    vu_class = class_new(gensym("vu"), (t_newmethod)vu_new, (t_method)vu_free,
-                         sizeof(t_vu), 0, A_GIMME, 0);
-    class_addBang(vu_class,vu_bang);
-    class_addFloat(vu_class,vu_float);
-    class_addMethod(vu_class, (t_method)vu_ft1, gensym("ft1"), A_FLOAT, 0);
-    class_addMethod(vu_class, (t_method)vu_dialog, gensym("dialog"),
-                    A_GIMME, 0);
-    class_addMethod(vu_class, (t_method)vu_size, gensym("size"), A_GIMME, 0);
-    class_addMethod(vu_class, (t_method)vu_scale, gensym("scale"), A_DEFFLOAT, 0);
-    class_addMethod(vu_class, (t_method)vu_delta, gensym("delta"), A_GIMME, 0);
-    class_addMethod(vu_class, (t_method)vu_pos, gensym("pos"), A_GIMME, 0);
-    class_addMethod(vu_class, (t_method)vu_color, gensym("color"), A_GIMME, 0);
-    class_addMethod(vu_class, (t_method)vu_receive, gensym("receive"), A_DEFSYMBOL, 0);
-    class_addMethod(vu_class, (t_method)vu_label, gensym("label"), A_DEFSYMBOL, 0);
-    class_addMethod(vu_class, (t_method)vu_label_pos, gensym("label_pos"), A_GIMME, 0);
-    class_addMethod(vu_class, (t_method)vu_label_font, gensym("label_font"), A_GIMME, 0);
-    vu_widgetBehavior.w_getrectfn =    vu_getrect;
-    vu_widgetBehavior.w_displacefn =   iemgui_behaviorDisplace;
-    vu_widgetBehavior.w_selectfn =     iemgui_behaviorSelected;
-    vu_widgetBehavior.w_activatefn =   NULL;
-    vu_widgetBehavior.w_deletefn =     iemgui_behaviorDeleted;
-    vu_widgetBehavior.w_visfn =        iemgui_behaviorVisible;
-    vu_widgetBehavior.w_clickfn =      NULL;
-    class_setWidgetBehavior(vu_class,&vu_widgetBehavior);
-    class_setHelpName(vu_class, gensym("vu"));
-    class_setSaveFunction(vu_class, vu_save);
-    class_setPropertiesFunction(vu_class, vu_properties);
+    t_class *c = NULL;
+    
+    c = class_new (gensym ("vu"),
+        (t_newmethod)vu_new,
+        (t_method)vu_free,
+        sizeof (t_vu),
+        CLASS_DEFAULT,
+        A_GIMME,
+        A_NULL);
+        
+    class_addBang (c, vu_bang);
+    class_addFloat (c, vu_float);
+    
+    class_addMethod (c, (t_method)vu_ft1,           gensym ("ft1"),         A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)vu_dialog,        gensym ("dialog"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_size,          gensym ("size"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_delta,         gensym ("delta"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_pos,           gensym ("pos"),         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_label_font,    gensym ("label_font"),  A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_label_pos,     gensym ("label_pos"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_receive,       gensym ("receive"),     A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)vu_label,         gensym ("label"),       A_DEFSYMBOL, A_NULL);
+    
+    #if PD_WITH_LEGACY
+    
+    class_addMethod (c, (t_method)vu_scale,         gensym ("scale"),       A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)vu_dummy,         gensym ("color"),       A_GIMME, A_NULL);
+
+    #endif
+    
+    vu_widgetBehavior.w_getrectfn   = vu_getrect;
+    vu_widgetBehavior.w_displacefn  = iemgui_behaviorDisplace;
+    vu_widgetBehavior.w_selectfn    = iemgui_behaviorSelected;
+    vu_widgetBehavior.w_activatefn  = NULL;
+    vu_widgetBehavior.w_deletefn    = iemgui_behaviorDeleted;
+    vu_widgetBehavior.w_visfn       = iemgui_behaviorVisible;
+    vu_widgetBehavior.w_clickfn     = NULL;
+    
+    class_setWidgetBehavior (c,&vu_widgetBehavior);
+    class_setHelpName (c, gensym ("vu"));
+    class_setSaveFunction (c, vu_save);
+    class_setPropertiesFunction (c, vu_properties);
+    
+    vu_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

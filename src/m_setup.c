@@ -47,7 +47,7 @@ void slider_setup           (void);
 void g_mycanvas_setup       (void);
 void g_numbox_setup         (void);
 void toggle_setup           (void);
-void g_vumeter_setup        (void);
+void vu_setup               (void);
 void g_io_setup             (void);
 void g_scalar_setup         (void);
 void g_template_setup       (void);
@@ -101,7 +101,7 @@ void setup_initialize (void)
     g_mycanvas_setup();
     g_numbox_setup();
     toggle_setup();
-    g_vumeter_setup();
+    vu_setup();
     g_io_setup();
     g_scalar_setup();
     g_template_setup();

@@ -238,7 +238,7 @@ void class_addSignal (t_class *c, int offset)
     if (offset <= 0) { PD_BUG; }
     else {
         c->c_signalOffset = offset;
-        c->c_methodFloat = class_floatForSignal;
+        c->c_methodFloat  = class_floatForSignal;
     }
 }
 

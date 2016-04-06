@@ -179,31 +179,18 @@ typedef struct _slider {
     t_float     x_floatValue;
     } t_slider;
 
-typedef struct _vslider {
-    t_iem       x_gui;
-    int         x_pos;
-    int         x_val;
-    int         x_isLogarithmic;
-    int         x_isSteadyOnClick;
-    int         x_accurateMoving;
-    double      x_min;
-    double      x_max;
-    double      x_k;
-    t_float     x_floatValue;
-    } t_vslider;
-    
 typedef struct _vu {
     t_iem       x_gui;
-    int         x_led_size;
+    int         x_hasScale;                     /* Unused but kept for compatibility. */
+    int         x_thickness;
     int         x_peak;
     int         x_rms;
-    t_float     x_fp;
-    t_float     x_fr;
-    int         x_scale;
-    void        *x_out_rms;
-    void        *x_out_peak;
-    char        x_updaterms;
-    char        x_updatepeak;
+    t_float     x_peakValue;
+    t_float     x_rmsValue;
+    char        x_needToUpdateRms;
+    char        x_needToUpdatePeak;
+    void        *x_outLeft;
+    void        *x_outRight;
     } t_vu;
 
 typedef struct _my_numbox {
