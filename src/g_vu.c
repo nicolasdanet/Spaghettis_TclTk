@@ -1,86 +1,139 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
- * For information on usage and redistribution, and for a DISCLAIMER OF ALL
- * WARRANTIES, see the file, "LICENSE.txt," in this distribution. */
 
-/* g_7_guis.c written by Thomas Musil (c) IEM KUG Graz Austria 2000-2001 */
-/* thanks to Miller Puckette, Guenther Geiger and Krzystof Czaja */
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
 
+/* < https://opensource.org/licenses/BSD-3-Clause > */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Original "g_7_guis.h" written by Thomas Musil (c) IEM KUG Graz Austria 2000-2001. */
+
+/* Thanks to Miller Puckette, Guenther Geiger and Krzystof Czaja. */
+
+/* < http://iem.kug.ac.at/ > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "s_system.h"
 #include "g_canvas.h"
-
 #include "g_iem.h"
-#include <math.h>
 
-#ifdef _WIN32
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-#define IEM_VUMETER_DEFAULT_HEIGHT       3
-#define IEM_VUMETER_MINIMUM_HEIGHT       2
-#define IEM_VUMETER_DEFAULT_WIDTH        15
-#define IEM_VUMETER_MINIMUM_WIDTH        8
-#define IEM_VUMETER_MINIMUM_DECIBELS     -99.9
-#define IEM_VUMETER_MAXIMUM_DECIBELS     12.0
-#define IEM_VUMETER_STEPS                40
-#define IEM_VUMETER_OFFSET               100.0
+#define IEM_VUMETER_THICKNESS               3
+#define IEM_VUMETER_THICKNESS_MINIMUM       2
 
-static int vu_colors[30] =
+#define IEM_VUMETER_DECIBELS_TOP            12.0
+#define IEM_VUMETER_DECIBELS_BOTTOM        -99.9
+
+#define IEM_VUMETER_STEPS                   40
+#define IEM_VUMETER_OFFSET                  100.0
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int vu_colors[43]=
     {
-        0xfcfcfc, 0xa0a0a0, 0x404040, 0xfce0e0, 0xfce0c0, 
+        0x000000,
+        0x28f4f4,       //
+        0x14e814,       //
+        0x14e814,
+        0x14e814,
+        0x14e814,
+        0x14e814,
+        0x14e814,
+        0x14e814,
+        0x14e814,
+        0x14e814,
+        0x14e814,
+        0x14e814,
+        0x14e814,
+        0x14e814,
+        0x14e814,
+        0x14e814,
+        0xe8e828,       //
+        0xe8e828,
+        0xe8e828,
+        0xe8e828,
+        0xe8e828,
+        0xe8e828,
+        0xe8e828,
+        0xe8e828,
+        0xe8e828,
+        0xe8e828,
+        0xfcac44,       //
+        0xfcac44,
+        0xfc2828,       //
+        0xfc2828,
+        0xfc2828,
+        0xfc2828,
+        0xfc2828,
+        0xfc2828,
+        0xfc2828,
+        0xfc2828,
+        0xfc2828,
+        0xfc2828,
+        0xfc2828,
+        0xf430f0,       //
+        0xf430f0,
+        0xf430f0
+    };
+
+/*
+    {
+        0xfcfcfc, 0xa0a0a0, 0x404040, 0xfce0e0, 0xfce0c0,
         0xfcfcc8, 0xd8fcd8, 0xd8fcfc, 0xdce4fc, 0xf8d8fc,
         0xe0e0e0, 0x7c7c7c, 0x202020, 0xfc2828, 0xfcac44,
         0xe8e828, 0x14e814, 0x28f4f4, 0x3c50fc, 0xf430f0,
         0xbcbcbc, 0x606060, 0x000000, 0x8c0808, 0x583000,
         0x782814, 0x285014, 0x004450, 0x001488, 0x580050
     };
-    
-/* ----- vu  gui-peak- & rms- vu-meter-display ---------- */
+*/
 
-t_widgetbehavior vu_widgetbehavior;
+static int vu_decibelToStep[226]=
+    {
+        1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+        1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+        1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+        1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
+        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
+        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
+        2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
+        3,  3,  3,  3,  3,  3,  3,  3,  3,  3,
+        4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
+        5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+        6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
+        7,  7,  7,  7,  7,  7,  7,  7,  7,  7,
+        8,  8,  8,  8,  8,  8,  8,  8,  8,  8,
+        9,  9,  9,  9,  9,  10, 10, 10, 10, 10,
+        11, 11, 11, 11, 11, 12, 12, 12, 12, 12,
+        13, 13, 13, 13, 14, 14, 14, 14, 15, 15,
+        15, 15, 16, 16, 16, 16, 17, 17, 17, 18,
+        18, 18, 19, 19, 19, 20, 20, 20, 21, 21,
+        22, 22, 23, 23, 24, 24, 25, 26, 27, 28,
+        29, 30, 31, 32, 33, 33, 34, 34, 35, 35,
+        36, 36, 37, 37, 37, 38, 38, 38, 39, 39,
+        39, 39, 39, 39, 40, 40
+    };
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_widgetbehavior vu_widgetBehavior;
+
 static t_class *vu_class;
 
-int iem_vu_db2i[]=
-{
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-    4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-    5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-    7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-    8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-    9, 9, 9, 9, 9,10,10,10,10,10,
-    11,11,11,11,11,12,12,12,12,12,
-    13,13,13,13,14,14,14,14,15,15,
-    15,15,16,16,16,16,17,17,17,18,
-    18,18,19,19,19,20,20,20,21,21,
-    22,22,23,23,24,24,25,26,27,28,
-    29,30,31,32,33,33,34,34,35,35,
-    36,36,37,37,37,38,38,38,39,39,
-    39,39,39,39,40,40
-};
-
-int iem_vu_col[]=
-{
-    0,17,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,
-    15,15,15,15,15,15,15,15,15,15,14,14,13,13,13,13,13,13,13,13,13,13,13,19,19,19
-};
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 /* widget helper functions */
 
@@ -108,7 +161,7 @@ static void vu_update_peak(t_vu *x, t_glist *glist)
 
         if(x->x_peak)
         {
-            int i=iem_vu_col[x->x_peak];
+            int i=vu_colors[x->x_peak];
             int j=ypos + (x->x_led_size+1)*(IEM_VUMETER_STEPS+1-x->x_peak)
                 - (x->x_led_size+1)/2;
 
@@ -116,7 +169,7 @@ static void vu_update_peak(t_vu *x, t_glist *glist)
                      xpos, j,
                      xpos+x->x_gui.iem_width+1, j);
             sys_vGui(".x%lx.c itemconfigure %lxPLED -fill #%6.6x\n", canvas, x,
-                     vu_colors[i]);
+                    i);
         }
         else
         {
@@ -165,10 +218,10 @@ static void vu_draw_new(t_vu *x, t_glist *glist)
              ypos+x->x_gui.iem_height+2, x->x_gui.iem_colorBackground, x);
     for(i=1; i<=IEM_VUMETER_STEPS; i++)
     {
-        led_col = iem_vu_col[i];
+        led_col = vu_colors[i];
         yyy = k4 + k1*(k2-i);
         sys_vGui(".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxRLED%d\n",
-                 canvas, quad1, yyy, quad3, yyy, x->x_led_size, vu_colors[led_col], x, i);
+                 canvas, quad1, yyy, quad3, yyy, x->x_led_size, led_col, x, i);
     }
     if(x->x_scale)
     {
@@ -443,8 +496,8 @@ void vu_check_height(t_vu *x, int h)
     int n;
 
     n = h / IEM_VUMETER_STEPS;
-    if(n < IEM_VUMETER_MINIMUM_HEIGHT)
-        n = IEM_VUMETER_MINIMUM_HEIGHT;
+    if(n < IEM_VUMETER_THICKNESS_MINIMUM)
+        n = IEM_VUMETER_THICKNESS_MINIMUM;
     x->x_led_size = n-1;
     x->x_gui.iem_height = IEM_VUMETER_STEPS * n;
 }
@@ -508,7 +561,7 @@ static void vu_properties(t_gobj *z, t_glist *owner)
             %d \
             %d %d %d \
             -1\n",
-            x->x_gui.iem_width, IEM_VUMETER_MINIMUM_WIDTH, x->x_gui.iem_height, IEM_VUMETER_STEPS*IEM_VUMETER_MINIMUM_HEIGHT,
+            x->x_gui.iem_width, IEM_MINIMUM_WIDTH, x->x_gui.iem_height, IEM_VUMETER_STEPS*IEM_VUMETER_THICKNESS_MINIMUM,
             x->x_scale, 
             "nosndno", srl[1]->s_name,/*no send*/
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
@@ -576,14 +629,14 @@ static void vu_float(t_vu *x, t_float rms)
 {
     int i;
     int old = x->x_rms;
-    if(rms <= IEM_VUMETER_MINIMUM_DECIBELS)
+    if(rms <= IEM_VUMETER_DECIBELS_BOTTOM)
         x->x_rms = 0;
-    else if(rms >= IEM_VUMETER_MAXIMUM_DECIBELS)
+    else if(rms >= IEM_VUMETER_DECIBELS_TOP)
         x->x_rms = IEM_VUMETER_STEPS;
     else
     {
         int i = (int)(2.0*(rms + IEM_VUMETER_OFFSET));
-        x->x_rms = iem_vu_db2i[i];
+        x->x_rms = vu_decibelToStep[i];
     }
     i = (int)(100.0*rms + 10000.5);
     rms = 0.01*(t_float)(i - 10000);
@@ -598,14 +651,14 @@ static void vu_ft1(t_vu *x, t_float peak)
 {
     int i;
     int old = x->x_peak;
-    if(peak <= IEM_VUMETER_MINIMUM_DECIBELS)
+    if(peak <= IEM_VUMETER_DECIBELS_BOTTOM)
         x->x_peak = 0;
-    else if(peak >= IEM_VUMETER_MAXIMUM_DECIBELS)
+    else if(peak >= IEM_VUMETER_DECIBELS_TOP)
         x->x_peak = IEM_VUMETER_STEPS;
     else
     {
         int i = (int)(2.0*(peak + IEM_VUMETER_OFFSET));
-        x->x_peak = iem_vu_db2i[i];
+        x->x_peak = vu_decibelToStep[i];
     }
     i = (int)(100.0*peak + 10000.5);
     peak = 0.01*(t_float)(i - 10000);
@@ -628,7 +681,7 @@ static void *vu_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_vu *x = (t_vu *)pd_new(vu_class);
     int bflcol[]={-66577, -1, -1};
-    int w=IEM_VUMETER_DEFAULT_WIDTH, h=IEM_VUMETER_STEPS*IEM_VUMETER_DEFAULT_HEIGHT;
+    int w=IEM_DEFAULT_SIZE, h=IEM_VUMETER_STEPS*IEM_VUMETER_THICKNESS;
     int ldx=-1, ldy=-8, f=0, fs=10, scale=1;
     //int ftbreak=IEM_BANG_DEFAULT_BREAK, fthold=IEM_BANG_DEFAULT_HOLD;
     char str[144];
@@ -715,15 +768,18 @@ void g_vumeter_setup(void)
     class_addMethod(vu_class, (t_method)vu_label, gensym("label"), A_DEFSYMBOL, 0);
     class_addMethod(vu_class, (t_method)vu_label_pos, gensym("label_pos"), A_GIMME, 0);
     class_addMethod(vu_class, (t_method)vu_label_font, gensym("label_font"), A_GIMME, 0);
-    vu_widgetbehavior.w_getrectfn =    vu_getrect;
-    vu_widgetbehavior.w_displacefn =   iemgui_behaviorDisplace;
-    vu_widgetbehavior.w_selectfn =     iemgui_behaviorSelected;
-    vu_widgetbehavior.w_activatefn =   NULL;
-    vu_widgetbehavior.w_deletefn =     iemgui_behaviorDeleted;
-    vu_widgetbehavior.w_visfn =        iemgui_behaviorVisible;
-    vu_widgetbehavior.w_clickfn =      NULL;
-    class_setWidgetBehavior(vu_class,&vu_widgetbehavior);
+    vu_widgetBehavior.w_getrectfn =    vu_getrect;
+    vu_widgetBehavior.w_displacefn =   iemgui_behaviorDisplace;
+    vu_widgetBehavior.w_selectfn =     iemgui_behaviorSelected;
+    vu_widgetBehavior.w_activatefn =   NULL;
+    vu_widgetBehavior.w_deletefn =     iemgui_behaviorDeleted;
+    vu_widgetBehavior.w_visfn =        iemgui_behaviorVisible;
+    vu_widgetBehavior.w_clickfn =      NULL;
+    class_setWidgetBehavior(vu_class,&vu_widgetBehavior);
     class_setHelpName(vu_class, gensym("vu"));
     class_setSaveFunction(vu_class, vu_save);
     class_setPropertiesFunction(vu_class, vu_properties);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
