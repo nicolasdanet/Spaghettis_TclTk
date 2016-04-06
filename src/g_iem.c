@@ -113,7 +113,7 @@ static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, t_symbol *f
         t_error err = PD_ERROR;
         t_buffer *b = iem->iem_obj.te_buffer;
         if (i < buffer_size (b)) {
-            char t[PD_STRING];
+            char t[PD_STRING] = { 0 };
             if (!(err = atom_toString (buffer_atoms (b) + i, t, PD_STRING))) { *s = gensym (t); }
         }
         if (err) {

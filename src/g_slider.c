@@ -613,7 +613,7 @@ static void slider_behaviorProperties (t_gobj *z, t_glist *owner)
 {
     t_slider *x = (t_slider *)z;
     t_error err = PD_ERROR_NONE;
-    char t[PD_STRING];
+    char t[PD_STRING] = { 0 };
     t_iemnames names;
 
     iemgui_serializeNames (&x->x_gui, &names);

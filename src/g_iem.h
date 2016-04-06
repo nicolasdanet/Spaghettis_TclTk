@@ -186,8 +186,6 @@ typedef struct _vu {
     int         x_rms;
     t_float     x_peakValue;
     t_float     x_rmsValue;
-    char        x_needToUpdatePeak;
-    char        x_needToUpdateRms;
     void        *x_outLeft;
     void        *x_outRight;
     } t_vu;

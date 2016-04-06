@@ -1294,7 +1294,7 @@ static void canvas_completepath(char *from, char *to, int bufsize)
 #ifdef _WIN32
 static int check_exists(const char *filepath)
 {
-    char t[PD_STRING];
+    char t[PD_STRING] = { 0 };
     wchar_t ucs2path[PD_STRING];
     
     if (string_copy (t, PD_STRING, filepath)) { PD_BUG; }

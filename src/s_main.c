@@ -51,7 +51,7 @@ static void main_entryNative (void)
 
 static t_error main_entryVersion (int console)
 {
-    char t[PD_STRING];
+    char t[PD_STRING] = { 0 };
     t_error err = utils_version (t, PD_STRING);
     
     if (!err) {

@@ -402,7 +402,7 @@ void audio_requireDialog (void *dummy)
 
     if (!err) {
     //
-    char t[PD_STRING];
+    char t[PD_STRING] = { 0 };
     
     int i1          = (m > 0 && i[0] >= 0 ? i[0] : 0);
     int i2          = (m > 1 && i[1] >= 0 ? i[1] : 0);
