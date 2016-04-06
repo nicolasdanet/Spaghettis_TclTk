@@ -489,67 +489,56 @@ static void vu_float (t_vu *x, t_float rms)
     x->x_rmsValue = rms;
     x->x_rms = vu_stepWithDecibels (rms);
     
-    outlet_float (x->x_outLeft, rms);
-    
     if (x->x_rms != old) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE); }
+    
+    outlet_float (x->x_outLeft, rms);
 }
 
 static void vu_ft1 (t_vu *x, t_float peak)
 {
-    int i;
     int old = x->x_peak;
-    if(peak <= IEM_VUMETER_DECIBELS_BOTTOM)
-        x->x_peak = 0;
-    else if(peak >= IEM_VUMETER_DECIBELS_TOP)
-        x->x_peak = IEM_VUMETER_STEPS;
-    else
-    {
-        int i = (int)(2.0*(peak + IEM_VUMETER_OFFSET));
-        x->x_peak = vu_decibelToStep[i];
-    }
-    i = (int)(100.0*peak + 10000.5);
-    peak = 0.01*(t_float)(i - 10000);
+    
     x->x_peakValue = peak;
-    if(x->x_peak != old) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE); }
+    x->x_peak = vu_stepWithDecibels (peak);
+    
+    if (x->x_peak != old) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE); }
         
-    outlet_float(x->x_outRight, peak);
+    outlet_float (x->x_outRight, peak);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
+static void vu_dialog (t_vu *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
-    int h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
-    int scale = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
-
-    //srl[0] = gensym ("empty");
-    iemgui_fromDialog(&x->x_gui, argc, argv);
-    x->x_gui.iem_canSend = 0;
-    x->x_gui.iem_loadbang = 0;
-    x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
-    vu_setHeight(x, h);
-    if(scale != 0)
-        scale = 1;
-    //vu_scale(x, (t_float)scale);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-    canvas_fixlines(x->x_gui.iem_glist, (t_object *)x);
+    if (argc == IEM_DIALOG_SIZE) {
+    //
+    int width  = (int)atom_getFloatAtIndex (0, argc, argv);
+    int height = (int)atom_getFloatAtIndex (1, argc, argv);
+    
+    iemgui_fromDialog (&x->x_gui, argc, argv);
+    
+    x->x_gui.iem_canSend = 0;    /* Force values that could be misguidedly set. */
+    
+    x->x_gui.iem_width = PD_MAX (width, IEM_MINIMUM_WIDTH);
+    
+    vu_setHeight (x, height);
+    
+    iemgui_boxChanged ((void *)x, &x->x_gui);
+    //
+    }
 }
 
-static void vu_size(t_vu *x, t_symbol *s, int ac, t_atom *av)
+static void vu_size (t_vu *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int w = atom_getFloatAtIndex(0, ac, av);
-    x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
-    if(ac > 1)
-        vu_setHeight(x, (int)(t_int)atom_getFloatAtIndex(1, ac, av));
-    if(glist_isvisible(x->x_gui.iem_glist))
-    {
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-        canvas_fixlines(x->x_gui.iem_glist, (t_object *)x);
+    if (argc) {
+    //
+    int width = atom_getFloatAtIndex (0, argc, argv);
+    x->x_gui.iem_width = PD_MAX (width, IEM_MINIMUM_WIDTH);
+    if (argc > 1) { vu_setHeight (x, (int)atom_getFloatAtIndex (1, argc, argv)); }
+    iemgui_boxChanged ((void *)x, &x->x_gui);
+    //
     }
 }
 

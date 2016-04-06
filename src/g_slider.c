@@ -446,10 +446,7 @@ static void slider_dialog (t_slider *x, t_symbol *s, int argc, t_atom *argv)
     slider_setWidth (x, width);                 /* Ditto. */
     slider_setRange (x, minimum, maximum);      /* Ditto. */
     
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-    
-    canvas_fixlines (x->x_gui.iem_glist, cast_object (x));
+    iemgui_boxChanged ((void *)x, &x->x_gui);
     //
     }
 }
@@ -459,11 +456,7 @@ static void slider_size (t_slider *x, t_symbol *s, int argc, t_atom *argv)
     if (argc) {
     //
     slider_setWidth (x, (int)atom_getFloatAtIndex (0, argc, argv));
-    
-    if (argc > 1) {
-        slider_setHeight (x, (int)atom_getFloatAtIndex (1, argc, argv));
-    }
-    
+    if (argc > 1) { slider_setHeight (x, (int)atom_getFloatAtIndex (1, argc, argv)); }
     iemgui_boxChanged ((void *)x, &x->x_gui);
     //
     }

@@ -290,10 +290,7 @@ static void toggle_dialog (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
         toggle_set (x, x->x_nonZero); 
     }
     
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-    
-    canvas_fixlines (x->x_gui.iem_glist, cast_object (x));
+    iemgui_boxChanged ((void *)x, &x->x_gui);
     //
     }
 }

@@ -314,6 +314,7 @@ void iemgui_boxChanged (void *x, t_iem *iem)
 {
     if (glist_isvisible (iem->iem_glist)) {
     //
+    (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_CONFIG);
     (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_MOVE);
     canvas_fixlines (iem->iem_glist, cast_object (x));
     //
