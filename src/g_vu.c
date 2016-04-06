@@ -471,51 +471,6 @@ void vu_check_height(t_vu *x, int h)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void vu_scale (t_vu *x, t_float fscale)
-{
-    int i, scale = (int)fscale;
-
-    if(scale != 0) scale = 1;
-    if(x->x_hasScale && !scale)
-    {
-        t_glist *canvas=glist_getcanvas(x->x_gui.iem_glist);
-
-        x->x_hasScale = (int)scale;
-        if(glist_isvisible(x->x_gui.iem_glist))
-        {
-            for(i=1; i<=IEM_VUMETER_STEPS; i++)
-            {
-                /*if((i+2)&3)
-                    sys_vGui(".x%lx.c delete %lxSCALE%d\n", canvas, x, i);*/
-            }
-            i=IEM_VUMETER_STEPS+1;
-            /*sys_vGui(".x%lx.c delete %lxSCALE%d\n", canvas, x, i);*/
-        }
-    }
-    if(!x->x_hasScale && scale)
-    {
-        int w4=x->x_gui.iem_width/4, end=text_xpix(&x->x_gui.iem_obj, x->x_gui.iem_glist)+x->x_gui.iem_width+4;
-        int k1=x->x_thickness+1, k2=IEM_VUMETER_STEPS+1, k3=k1/2;
-        int yyy, k4=text_ypix(&x->x_gui.iem_obj, x->x_gui.iem_glist)-k3;
-        t_glist *canvas=glist_getcanvas(x->x_gui.iem_glist);
-
-        x->x_hasScale = (int)scale;
-        if(glist_isvisible(x->x_gui.iem_glist))
-        {
-            for(i=1; i<=IEM_VUMETER_STEPS; i++)
-            {
-                yyy = k4 + k1*(k2-i);
-            }
-            i=IEM_VUMETER_STEPS+1;
-            yyy = k4 + k1*(k2-i);
-        }
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void vu_bang(t_vu *x)
 {
     outlet_float(x->x_outRight, x->x_peakValue);
@@ -586,7 +541,7 @@ static void vu_dialog(t_vu *x, t_symbol *s, int argc, t_atom *argv)
     vu_check_height(x, h);
     if(scale != 0)
         scale = 1;
-    vu_scale(x, (t_float)scale);
+    //vu_scale(x, (t_float)scale);
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
     canvas_fixlines(x->x_gui.iem_glist, (t_object *)x);
@@ -697,77 +652,82 @@ static void vu_dummy (t_vu *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *vu_new(t_symbol *s, int argc, t_atom *argv)
+static void *vu_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_vu *x = (t_vu *)pd_new(vu_class);
-    int bflcol[]={-66577, -1, -1};
-    int w=IEM_DEFAULT_SIZE, h=IEM_VUMETER_STEPS*IEM_VUMETER_THICKNESS;
-    int ldx=-1, ldy=-8, f=0, fs=10, scale=1;
-    //int ftbreak=IEM_BANG_DEFAULT_BREAK, fthold=IEM_BANG_DEFAULT_HOLD;
-    char str[144];
+    t_vu *x = (t_vu *)pd_new (vu_class);
 
-    iemgui_deserializeLoadbang(&x->x_gui, 0);
-    iemgui_deserializeFontStyle(&x->x_gui, 0);
+    int width           = IEM_DEFAULT_SIZE;
+    int height          = IEM_VUMETER_STEPS * IEM_VUMETER_THICKNESS;
+    int labelX          = IEM_DEFAULT_LABELX_TOP;
+    int labelY          = IEM_DEFAULT_LABELY_TOP;
+    int labelFontSize   = IEM_DEFAULT_FONTSIZE;
+    int hasScale        = 0;
+    t_iemcolors colors  = IEM_COLORS_DEFAULT;
 
-    if((argc >= 11)&&IS_FLOAT(argv + 0)&&IS_FLOAT(argv + 1)
-       &&(IS_SYMBOL(argv + 2)||IS_FLOAT(argv + 2))
-       &&(IS_SYMBOL(argv + 3)||IS_FLOAT(argv + 3))
-       &&IS_FLOAT(argv + 4)&&IS_FLOAT(argv + 5)
-       &&IS_FLOAT(argv + 6)&&IS_FLOAT(argv + 7)
-       &&IS_FLOAT(argv + 8)&&IS_FLOAT(argv + 9)&&IS_FLOAT(argv + 10))
+    if (argc >= 11                                                  // --
+            && IS_FLOAT (argv + 0)                                  // Width.
+            && IS_FLOAT (argv + 1)                                  // Height.
+            && (IS_SYMBOL (argv + 2) || IS_FLOAT (argv + 2))        // Receive.
+            && (IS_SYMBOL (argv + 3) || IS_FLOAT (argv + 3))        // Label.
+            && IS_FLOAT (argv + 4)                                  // Label X.
+            && IS_FLOAT (argv + 5)                                  // Label Y.
+            && IS_FLOAT (argv + 6)                                  // Label font.
+            && IS_FLOAT (argv + 7)                                  // Label font size.
+            && IS_FLOAT (argv + 8)                                  // Background color.
+            && IS_FLOAT (argv + 9)                                  // Label color.
+            && IS_FLOAT (argv + 10))                                // Dummy.
     {
-        w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
-        h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
-        iemgui_deserializeNamesByIndex(&x->x_gui, 1, argv);
-        ldx = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
-        ldy = (int)(t_int)atom_getFloatAtIndex(5, argc, argv);
-        iemgui_deserializeFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(6, argc, argv));
-        fs = (int)(t_int)atom_getFloatAtIndex(7, argc, argv);
-        bflcol[0] = (int)(t_int)atom_getFloatAtIndex(8, argc, argv);
-        bflcol[2] = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
-        scale = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
+        width                       = (int)atom_getFloatAtIndex (0,  argc, argv);
+        height                      = (int)atom_getFloatAtIndex (1,  argc, argv);
+        labelX                      = (int)atom_getFloatAtIndex (4,  argc, argv);
+        labelY                      = (int)atom_getFloatAtIndex (5,  argc, argv);
+        labelFontSize               = (int)atom_getFloatAtIndex (7,  argc, argv);
+        colors.c_colorBackground    = (int)atom_getFloatAtIndex (8,  argc, argv);
+        colors.c_colorLabel         = (int)atom_getFloatAtIndex (9,  argc, argv);
+        hasScale                    = (int)atom_getFloatAtIndex (10, argc, argv);
+        
+        /* Note that due to the overlap a fake float value is pitiably attribute to the send symbol. */
+        
+        iemgui_deserializeNamesByIndex (&x->x_gui, 1, argv);
+        iemgui_deserializeFontStyle (&x->x_gui, (int)atom_getFloatAtIndex (6, argc, argv));
+        
+    } else {
+        iemgui_deserializeNamesByIndex (&x->x_gui, 1, NULL);
     }
-    else iemgui_deserializeNamesByIndex(&x->x_gui, 1, 0);
-    if((argc == 12)&&IS_FLOAT(argv + 11))
-        iemgui_deserializeLoadbang(&x->x_gui, (t_int)atom_getFloatAtIndex(11, argc, argv));
-    x->x_gui.iem_draw = (t_iemfn)vu_draw;
 
-    x->x_gui.iem_canSend = 0;
-    x->x_gui.iem_canReceive = 1;
-    x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
-    if (!strcmp(x->x_gui.iem_receive->s_name, "empty"))
-        x->x_gui.iem_canReceive = 0;
-
-    if(x->x_gui.iem_canReceive)
-        pd_bind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
-    x->x_gui.iem_labelX = ldx;
-    x->x_gui.iem_labelY = ldy;
-
-    if(fs < 4)
-        fs = 4;
-    x->x_gui.iem_fontSize = fs;
-    x->x_gui.iem_width = PD_MAX (w, IEM_MINIMUM_WIDTH);
-    vu_check_height(x, h);
-    iemgui_deserializeColors(&x->x_gui, bflcol);
-    if(scale != 0)
-        scale = 1;
-    x->x_hasScale = scale;
-    x->x_peak = 0;
-    x->x_rms = 0;
-    x->x_peakValue = -101.0;
-    x->x_rmsValue = -101.0;
+    x->x_gui.iem_glist      = (t_glist *)canvas_getcurrent();
+    x->x_gui.iem_draw       = (t_iemfn)vu_draw;
+    x->x_gui.iem_canSend    = 0;
+    x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;
+    x->x_gui.iem_width      = PD_MAX (width, IEM_MINIMUM_WIDTH);
+    x->x_gui.iem_labelX     = labelX;
+    x->x_gui.iem_labelY     = labelY;
+    x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
+        
+    vu_check_height (x, height);
+    
     iemgui_checkSendReceiveLoop(&x->x_gui);
-    inlet_new(&x->x_gui.iem_obj, &x->x_gui.iem_obj.te_g.g_pd, &s_float, gensym ("ft1"));
-    x->x_outLeft = outlet_new(&x->x_gui.iem_obj, &s_float);
-    x->x_outRight = outlet_new(&x->x_gui.iem_obj, &s_float);
-    return (x);
+    iemgui_deserializeColors(&x->x_gui, &colors);
+    
+    if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
+        
+    x->x_hasScale   = (hasScale != 0);
+    x->x_peakValue  = -101.0;
+    x->x_rmsValue   = -101.0;
+    
+    inlet_new (cast_object (x), cast_pd (x), &s_float, gensym ("ft1"));
+    
+    x->x_outLeft  = outlet_new (cast_object (x), &s_float);
+    x->x_outRight = outlet_new (cast_object (x), &s_float);
+    
+    return x;
 }
 
-static void vu_free(t_vu *x)
+static void vu_free (t_vu *x)
 {
-    if(x->x_gui.iem_canReceive)
-        pd_unbind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
-    gfxstub_deleteforkey(x);
+    if (x->x_gui.iem_canReceive) { pd_unbind (cast_object (x), x->x_gui.iem_receive); }
+        
+    gfxstub_deleteforkey ((void *)x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -789,20 +749,24 @@ void vu_setup (void)
     class_addBang (c, vu_bang);
     class_addFloat (c, vu_float);
     
-    class_addMethod (c, (t_method)vu_ft1,           gensym ("ft1"),         A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)vu_dialog,        gensym ("dialog"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_size,          gensym ("size"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_delta,         gensym ("delta"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_pos,           gensym ("pos"),         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_label_font,    gensym ("label_font"),  A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_label_pos,     gensym ("label_pos"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_receive,       gensym ("receive"),     A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)vu_label,         gensym ("label"),       A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)vu_ft1,           gensym ("ft1"),             A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)vu_dialog,        gensym ("dialog"),          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_size,          gensym ("size"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_delta,         gensym ("move"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_pos,           gensym ("position"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_label_font,    gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_label_pos,     gensym ("labelposition"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_receive,       gensym ("receive"),         A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)vu_label,         gensym ("label"),           A_DEFSYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)vu_scale,         gensym ("scale"),       A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)vu_dummy,         gensym ("color"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_delta,         gensym ("delta"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_pos,           gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_label_pos,     gensym ("label_pos"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_label_font,    gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_dummy,         gensym ("scale"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_dummy,         gensym ("color"),           A_GIMME, A_NULL);
 
     #endif
     

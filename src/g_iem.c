@@ -124,9 +124,11 @@ static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, t_symbol *f
 
 static void iemgui_fetchUnexpandedNames (t_iem *iem, t_iemnames *s)
 {
-    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedSend, iem->iem_cacheIndex + 1, iem->iem_send);
-    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedReceive, iem->iem_cacheIndex + 2, iem->iem_receive);
-    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedLabel, iem->iem_cacheIndex + 3, iem->iem_label);
+    int i = iem->iem_cacheIndex + 1;    /* Start there with the name of the object. */
+    
+    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedSend,    i + 0, iem->iem_send);
+    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedReceive, i + 1, iem->iem_receive);
+    iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedLabel,   i + 2, iem->iem_label);
         
     s->n_unexpandedSend    = iem->iem_unexpandedSend;
     s->n_unexpandedReceive = iem->iem_unexpandedReceive;
@@ -164,12 +166,11 @@ int iemgui_serializeFontStyle (t_iem *iem)
 void iemgui_deserializeLoadbang (t_iem *iem, int n)
 {
     iem->iem_loadbang = ((n & 1) != 0);
-    iem->iem_scale = (n & 2);
 }
 
 int iemgui_serializeLoadbang (t_iem *iem)
 {
-    return ((iem->iem_loadbang ? 1 : 0) | (iem->iem_scale ? 2 : 0));
+    return (iem->iem_loadbang ? 1 : 0);
 }
 
 void iemgui_deserializeNamesByIndex (t_iem *iem, int i, t_atom *argv)
@@ -188,6 +189,7 @@ void iemgui_deserializeNamesByIndex (t_iem *iem, int i, t_atom *argv)
 void iemgui_serializeNames (t_iem *iem, t_iemnames *n)
 {
     iemgui_fetchUnexpandedNames (iem, n);
+    
     n->n_unexpandedSend    = dollar_toRaute (n->n_unexpandedSend);
     n->n_unexpandedReceive = dollar_toRaute (n->n_unexpandedReceive);
     n->n_unexpandedLabel   = dollar_toRaute (n->n_unexpandedLabel);

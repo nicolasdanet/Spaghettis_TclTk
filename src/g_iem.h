@@ -43,7 +43,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_DEFAULT_LABELX_TOP          0
+#define IEM_DEFAULT_LABELX_TOP         -1
 #define IEM_DEFAULT_LABELY_TOP         -8
 #define IEM_DEFAULT_LABELX_NEXT         17
 #define IEM_DEFAULT_LABELY_NEXT         7
@@ -104,7 +104,7 @@ typedef void (*t_iemfn)(void *x, t_glist *glist, int mode);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_COLORS_DEFAULT      { -262144, -1, -1 }
+#define IEM_COLORS_DEFAULT      { -1, -1, -1 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -115,7 +115,6 @@ typedef struct _iem {
     t_glist     *iem_glist;
     t_iemfn     iem_draw;
     char        iem_fontStyle;                  /* Unused but kept for compatibility. */
-    char        iem_scale;                      /* Unused but kept for compatibility. */
     char        iem_canSend;
     char        iem_canReceive;
     char        iem_loadbang;
@@ -187,8 +186,8 @@ typedef struct _vu {
     int         x_rms;
     t_float     x_peakValue;
     t_float     x_rmsValue;
-    char        x_needToUpdateRms;
     char        x_needToUpdatePeak;
+    char        x_needToUpdateRms;
     void        *x_outLeft;
     void        *x_outRight;
     } t_vu;
