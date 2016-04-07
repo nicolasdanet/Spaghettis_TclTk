@@ -168,13 +168,15 @@ static void vu_drawUpdate (t_vu *x, t_glist *glist)
     //
     } else {
     //
+    h = vu_offsetWithStep (x, IEM_VUMETER_STEPS - 1);
+    
     sys_vGui (".x%lx.c coords %lxPEAK %d %d %d %d\n",
                 canvas,
                 x, 
                 a + 1,
-                b + 1,
+                b + h,
                 a + x->x_gui.iem_width,
-                b + 1);
+                b + h);
     sys_vGui (".x%lx.c itemconfigure %lxPEAK -fill #%6.6x\n",
                 canvas, 
                 x, 
