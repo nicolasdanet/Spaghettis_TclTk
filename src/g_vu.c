@@ -144,44 +144,6 @@ static t_class *vu_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void vu_update_peak(t_vu *x, t_glist *glist)
-{
-    t_glist *canvas=glist_getcanvas(glist);
-
-    if(glist_isvisible(glist))
-    {
-        int xpos=text_xpix(&x->x_gui.iem_obj, glist);
-        int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-
-        if(x->x_peak)
-        {
-            int i=vu_colors[x->x_peak];
-            int j=ypos + (x->x_thickness)*(IEM_VUMETER_STEPS+1-x->x_peak)
-                - (x->x_thickness)/2;
-
-            sys_vGui(".x%lx.c coords %lxPEAK %d %d %d %d\n", canvas, x,
-                     xpos, j,
-                     xpos+x->x_gui.iem_width+1, j);
-            sys_vGui(".x%lx.c itemconfigure %lxPEAK -fill #%6.6x\n", canvas, x,
-                    i);
-        }
-        else
-        {
-            int mid=xpos+x->x_gui.iem_width/2;
-
-            sys_vGui(".x%lx.c itemconfigure %lxPEAK -fill #%6.6x\n",
-                     canvas, x, x->x_gui.iem_colorBackground);
-            sys_vGui(".x%lx.c coords %lxPEAK %d %d %d %d\n",
-                     canvas, x, mid, ypos+20,
-                     mid, ypos+20);
-        }
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void vu_drawUpdate (t_vu *x, t_glist *glist)
 {
     if (glist_isvisible (glist)) {
@@ -191,18 +153,49 @@ static void vu_drawUpdate (t_vu *x, t_glist *glist)
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
     int k = x->x_gui.iem_width / 4;
-        
+    int h = b + (x->x_thickness * (IEM_VUMETER_STEPS - x->x_rms)) - (x->x_thickness / 2);
+    
     sys_vGui (".x%lx.c coords %lxCOVER %d %d %d %d\n",
                 canvas,
                 x,
                 a + k,
                 b,
                 a + x->x_gui.iem_width - k,
-                b + (x->x_thickness * (IEM_VUMETER_STEPS - x->x_rms)));
+                h);
+                
+    if (x->x_peak) {
+    //
+    h = b + (x->x_thickness * (IEM_VUMETER_STEPS - x->x_peak)) - (x->x_thickness / 2);
+
+    sys_vGui (".x%lx.c coords %lxPEAK %d %d %d %d\n",
+                canvas,
+                x,
+                a,
+                h,
+                a + x->x_gui.iem_width,
+                h);
+    sys_vGui (".x%lx.c itemconfigure %lxPEAK -fill #%6.6x\n",
+                canvas, 
+                x,
+                vu_colors[x->x_peak]);
+    //
+    } else {
+    //
+    sys_vGui (".x%lx.c coords %lxPEAK %d %d %d %d\n",
+                canvas,
+                x, 
+                a,
+                b + 1,
+                a + x->x_gui.iem_width,
+                b + 1);
+    sys_vGui (".x%lx.c itemconfigure %lxPEAK -fill #%6.6x\n",
+                canvas, 
+                x, 
+                x->x_gui.iem_colorBackground);
     //
     }
-    
-    vu_update_peak (x, glist);
+    //
+    }
 }
 
 static void vu_drawMove (t_vu *x, t_glist *glist)
