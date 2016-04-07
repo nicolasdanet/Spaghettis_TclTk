@@ -29,20 +29,13 @@
 
 #define IEM_VUMETER_THICKNESS               3
 #define IEM_VUMETER_THICKNESS_MINIMUM       2
-
 #define IEM_VUMETER_STEPS                   40
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_VUMETER_DEFAULT_COLORS          { -1, -1, -1 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int vu_colors[42]=
+int vu_colors[41] =
     {
         0x000000,
         0x14e814,   // Green.
@@ -83,14 +76,13 @@ int vu_colors[42]=
         0xfc2828,
         0xfc2828,
         0xfc2828,
-        0xfc2828,
         0xf430f0,   // Violet.
         0x000000
     };
 
-static int vu_decibelToStep[226]=
+static int vu_decibelToStep[226] =
     {
-        1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+        0,  1,  1,  1,  1,  1,  1,  1,  1,  1,
         1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
         1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
         1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
@@ -112,29 +104,15 @@ static int vu_decibelToStep[226]=
         22, 22, 23, 23, 24, 24, 25, 26, 27, 28,
         29, 30, 31, 32, 33, 33, 34, 34, 35, 35,
         36, 36, 37, 37, 37, 38, 38, 38, 39, 39,
-        39, 39, 39, 39, 40, 40
+        39, 39, 39, 39, 39, 39
     };
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-#define IEM_VUMETER_DECIBELS_TOP            12.0
-#define IEM_VUMETER_DECIBELS_BOTTOM        -99.9
-#define IEM_VUMETER_OFFSET                  100.0
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
 static inline int vu_stepWithDecibels (t_float f)
 {
-    if (f <= IEM_VUMETER_DECIBELS_BOTTOM)   { return 0; }
-    else if (f >= IEM_VUMETER_DECIBELS_TOP) { return IEM_VUMETER_STEPS; }
-    else {
-        int i = (int)(2.0 * (f + IEM_VUMETER_OFFSET));
-        PD_ASSERT (i >= 0);
-        PD_ASSERT (i <= IEM_VUMETER_STEPS);
-        return vu_decibelToStep[i];
-    }
+    int i = (int)(2.0 * (f + 100.0)); return vu_decibelToStep[PD_CLAMP (i, 0, 225)];
 }
 
 static inline int vu_offsetWithStep (t_vu *x, int step)
@@ -161,15 +139,15 @@ static void vu_drawUpdate (t_vu *x, t_glist *glist)
 
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
-    int h = vu_offsetWithStep (x, x->x_rms);
+    int h = vu_offsetWithStep (x, x->x_rms) + (x->x_thickness / 2);
     
     sys_vGui (".x%lx.c coords %lxCOVER %d %d %d %d\n",
                 canvas,
                 x,
                 a + 1,
-                b,
+                b + 1,
                 a + x->x_gui.iem_width - 1,
-                b + h);
+                b + PD_CLAMP (h, 1, (x->x_gui.iem_height - 1)));
                 
     if (x->x_peak) {
     //
@@ -178,7 +156,7 @@ static void vu_drawUpdate (t_vu *x, t_glist *glist)
     sys_vGui (".x%lx.c coords %lxPEAK %d %d %d %d\n",
                 canvas,
                 x,
-                a,
+                a + 1,
                 b + h,
                 a + x->x_gui.iem_width,
                 b + h);
@@ -192,7 +170,7 @@ static void vu_drawUpdate (t_vu *x, t_glist *glist)
     sys_vGui (".x%lx.c coords %lxPEAK %d %d %d %d\n",
                 canvas,
                 x, 
-                a,
+                a + 1,
                 b + 1,
                 a + x->x_gui.iem_width,
                 b + 1);
@@ -283,15 +261,15 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
     sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxCOVER\n",
                 canvas,
                 a + 1, 
-                b, 
+                b + 1, 
                 a + x->x_gui.iem_width - 1,
-                b + x->x_gui.iem_height,
+                b + x->x_gui.iem_height - 1,
                 x->x_gui.iem_colorBackground,
                 x->x_gui.iem_colorBackground,
                 x);
     sys_vGui (".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxPEAK\n",
                 canvas,
-                a,
+                a + 1,
                 b + 1,
                 a + x->x_gui.iem_width,
                 b + 1,
@@ -619,7 +597,7 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
     int labelY          = IEM_DEFAULT_LABELY_TOP;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     int hasScale        = 0;
-    t_iemcolors colors  = IEM_VUMETER_DEFAULT_COLORS;
+    t_iemcolors colors  = IEM_DEFAULT_COLORS;
 
     if (argc >= 11                                                  // --
             && IS_FLOAT (argv + 0)                                  // Width.
