@@ -29,6 +29,7 @@
 
 #define IEM_VUMETER_THICKNESS               3
 #define IEM_VUMETER_THICKNESS_MINIMUM       2
+#define IEM_VUMETER_THICKNESS_MAXIMUM       5
 #define IEM_VUMETER_STEPS                   40
 
 // -----------------------------------------------------------------------------------------------------------
@@ -391,9 +392,10 @@ void vu_draw (t_toggle *x, t_glist *glist, int mode)
 
 void vu_setHeight (t_vu *x, int height)
 {
-    int n = PD_MAX ((int)(height / IEM_VUMETER_STEPS), IEM_VUMETER_THICKNESS_MINIMUM);
-    x->x_thickness      = n;
-    x->x_gui.iem_height = IEM_VUMETER_STEPS * n;
+    int n = (int)(height / IEM_VUMETER_STEPS);
+
+    x->x_thickness      = PD_CLAMP (n, IEM_VUMETER_THICKNESS_MINIMUM, IEM_VUMETER_THICKNESS_MAXIMUM);
+    x->x_gui.iem_height = IEM_VUMETER_STEPS * x->x_thickness;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -440,8 +442,8 @@ static void vu_dialog (t_vu *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == IEM_DIALOG_SIZE) {
     //
-    int width  = (int)atom_getFloatAtIndex (0, argc, argv);
-    int height = (int)atom_getFloatAtIndex (1, argc, argv);
+    int width     = (int)atom_getFloatAtIndex (0, argc, argv);
+    int thickness = (int)atom_getFloatAtIndex (1, argc, argv);
     
     iemgui_fromDialog (&x->x_gui, argc, argv);
     
@@ -449,7 +451,7 @@ static void vu_dialog (t_vu *x, t_symbol *s, int argc, t_atom *argv)
     
     x->x_gui.iem_width = PD_MAX (width, IEM_MINIMUM_WIDTH);
     
-    vu_setHeight (x, height);
+    vu_setHeight (x, (thickness + 1) * IEM_VUMETER_STEPS);
     
     iemgui_boxChanged ((void *)x, &x->x_gui);
     //
@@ -552,7 +554,7 @@ static void vu_behaviorProperties (t_gobj *z, t_glist *owner)
     
     err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s VU"
             " %d %d {Meter Width}"
-            " %d %d {Meter Height}"
+            " %d %d {Led Thickness}"
             " 0 empty 0 empty"
             " 0 empty empty"
             " -1"
@@ -563,7 +565,7 @@ static void vu_behaviorProperties (t_gobj *z, t_glist *owner)
             " %d %d %d"
             " -1\n",
             x->x_gui.iem_width, IEM_MINIMUM_WIDTH,
-            x->x_gui.iem_height, IEM_VUMETER_STEPS * IEM_VUMETER_THICKNESS_MINIMUM,
+            (x->x_gui.iem_height / IEM_VUMETER_STEPS) - 1, IEM_VUMETER_THICKNESS_MINIMUM - 1,
             "nosndno", names.n_unexpandedReceive->s_name,                               /* No send. */
             names.n_unexpandedLabel->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
