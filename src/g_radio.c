@@ -642,7 +642,7 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     int changed         = 1;
     int numberOfButtons = IEM_RADIO_DEFAULT_BUTTONS;
     t_float floatValue  = 0.0;
-    t_iemcolors colors  = IEM_COLORS_DEFAULT;
+    t_iemcolors colors  = IEM_DEFAULT_COLORS;
     
     if (argc == 15                                                  // --
             && IS_FLOAT (argv + 0)                                  // Size.

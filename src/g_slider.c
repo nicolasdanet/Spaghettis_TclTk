@@ -415,10 +415,7 @@ static void slider_motion (t_slider *x, t_float deltaX, t_float deltaY)
 
 static void slider_loadbang (t_slider *x)
 {
-    if (x->x_gui.iem_loadbang) {
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-        slider_out (x);
-    }
+    if (x->x_gui.iem_loadbang) { slider_out (x); }
 }
 
 static void slider_initialize (t_slider *x, t_float f)
@@ -671,7 +668,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     double minimum      = 0.0;
     double maximum      = (double)(x->x_isVertical ? (height - 1) : (width - 1));
     t_float position    = 0.0;
-    t_iemcolors colors  = IEM_COLORS_DEFAULT;
+    t_iemcolors colors  = IEM_DEFAULT_COLORS;
 
     if (argc >= 17                                                  // --
             && IS_FLOAT (argv + 0)                                  // Width.

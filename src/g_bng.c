@@ -494,7 +494,7 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
     int labelX          = IEM_DEFAULT_LABELX_NEXT;
     int labelY          = IEM_DEFAULT_LABELY_NEXT;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
-    t_iemcolors colors  = IEM_COLORS_DEFAULT;
+    t_iemcolors colors  = IEM_DEFAULT_COLORS;
     
     if (argc == 14                                              // --
             && IS_FLOAT (argv)                                  // Size.

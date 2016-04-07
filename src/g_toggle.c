@@ -467,7 +467,7 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     t_float state       = 0.0;
     t_float nonZero     = 1.0;
-    t_iemcolors colors  = IEM_COLORS_DEFAULT;
+    t_iemcolors colors  = IEM_DEFAULT_COLORS;
 
     if (argc >= 13                                              // --
             && IS_FLOAT (argv)                                  // Size.
