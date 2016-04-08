@@ -551,8 +551,6 @@ void toggle_setup (void)
             CLASS_DEFAULT,
             A_GIMME,
             A_NULL);
-            
-    class_addCreator ((t_newmethod)toggle_new, gensym ("toggle"), A_GIMME, A_NULL);
     
     class_addBang (c, toggle_bang);
     class_addFloat (c, toggle_float);
@@ -580,6 +578,8 @@ void toggle_setup (void)
     class_addMethod (c, (t_method)toggle_dummy,         gensym ("color"),           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_labelPosition, gensym ("label_pos"),       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_labelFont,     gensym ("label_font"),      A_GIMME, A_NULL);
+    
+    class_addCreator ((t_newmethod)toggle_new, gensym ("toggle"), A_GIMME, A_NULL);
         
     #endif
     

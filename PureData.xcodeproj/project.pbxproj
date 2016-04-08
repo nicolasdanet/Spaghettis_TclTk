@@ -51,7 +51,7 @@
 		378972211C4F716800263434 /* d_soundfile.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971BD1C4F716700263434 /* d_soundfile.c */; };
 		378972221C4F716800263434 /* d_ugen.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971BE1C4F716700263434 /* d_ugen.c */; };
 		378972231C4F716800263434 /* g_array.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971BF1C4F716700263434 /* g_array.c */; };
-		378972241C4F716800263434 /* g_bng.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C01C4F716700263434 /* g_bng.c */; };
+		378972241C4F716800263434 /* g_bang.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C01C4F716700263434 /* g_bang.c */; };
 		378972251C4F716800263434 /* g_canvas.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C11C4F716700263434 /* g_canvas.c */; };
 		378972261C4F716800263434 /* g_editor.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C31C4F716700263434 /* g_editor.c */; };
 		378972271C4F716800263434 /* g_graph.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C41C4F716700263434 /* g_graph.c */; };
@@ -271,7 +271,7 @@
 		378971BD1C4F716700263434 /* d_soundfile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_soundfile.c; path = src/d_soundfile.c; sourceTree = "<group>"; };
 		378971BE1C4F716700263434 /* d_ugen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = d_ugen.c; path = src/d_ugen.c; sourceTree = "<group>"; };
 		378971BF1C4F716700263434 /* g_array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_array.c; path = src/g_array.c; sourceTree = "<group>"; };
-		378971C01C4F716700263434 /* g_bng.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_bng.c; path = src/g_bng.c; sourceTree = "<group>"; };
+		378971C01C4F716700263434 /* g_bang.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_bang.c; path = src/g_bang.c; sourceTree = "<group>"; };
 		378971C11C4F716700263434 /* g_canvas.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_canvas.c; path = src/g_canvas.c; sourceTree = "<group>"; };
 		378971C21C4F716700263434 /* g_canvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_canvas.h; path = src/g_canvas.h; sourceTree = "<group>"; };
 		378971C31C4F716700263434 /* g_editor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_editor.c; path = src/g_editor.c; sourceTree = "<group>"; };
@@ -708,7 +708,7 @@
 			children = (
 				378971C91C4F716700263434 /* g_iem.h */,
 				378971C81C4F716700263434 /* g_iem.c */,
-				378971C01C4F716700263434 /* g_bng.c */,
+				378971C01C4F716700263434 /* g_bang.c */,
 				378971D21C4F716700263434 /* g_toggle.c */,
 				3770FAA51CB1036A007C7E66 /* g_radio.c */,
 				378971C71C4F716700263434 /* g_slider.c */,
@@ -949,7 +949,7 @@
 				378972211C4F716800263434 /* d_soundfile.c in Sources */,
 				378972221C4F716800263434 /* d_ugen.c in Sources */,
 				378972231C4F716800263434 /* g_array.c in Sources */,
-				378972241C4F716800263434 /* g_bng.c in Sources */,
+				378972241C4F716800263434 /* g_bang.c in Sources */,
 				378972251C4F716800263434 /* g_canvas.c in Sources */,
 				378972261C4F716800263434 /* g_editor.c in Sources */,
 				378972271C4F716800263434 /* g_graph.c in Sources */,

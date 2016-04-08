@@ -576,7 +576,7 @@ static void slider_behaviorSave (t_gobj *z, t_buffer *b)
         gensym ("obj"),
         (int)cast_object (z)->te_xCoordinate, 
         (int)cast_object (z)->te_yCoordinate,
-        x->x_isVertical ? gensym ("vsl") : gensym ("hsl"), 
+        x->x_isVertical ? gensym ("vslider") : gensym ("hslider"), 
         x->x_gui.iem_width,                                         // Width.
         x->x_gui.iem_height,                                        // Height.
         (t_float)x->x_minimum,                                      // Range minimum.
@@ -653,9 +653,9 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_slider *x = (t_slider *)pd_new (slider_class);
     
-    if (s == gensym ("vsl"))     { x->x_isVertical = 1; }
     if (s == gensym ("vslider")) { x->x_isVertical = 1; }
-    
+    if (s == gensym ("vsl"))     { x->x_isVertical = 1; }
+
     {
     //
     int width           = x->x_isVertical ? IEM_VSLIDER_DEFAULT_WIDTH  : IEM_HSLIDER_DEFAULT_WIDTH;
@@ -764,18 +764,16 @@ void slider_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (gensym ("hsl"),
+    c = class_new (gensym ("hslider"),
         (t_newmethod)slider_new,
         (t_method)slider_free,
         sizeof (t_slider),
         CLASS_DEFAULT,
         A_GIMME,
         A_NULL);
-        
-    class_addCreator ((t_newmethod)slider_new, gensym ("hslider"),  A_GIMME, A_NULL);
-    class_addCreator ((t_newmethod)slider_new, gensym ("vsl"),      A_GIMME, A_NULL);
-    class_addCreator ((t_newmethod)slider_new, gensym ("vslider"),  A_GIMME, A_NULL);
-    
+
+    class_addCreator ((t_newmethod)slider_new, gensym ("vslider"), A_GIMME, A_NULL);
+
     class_addBang (c, slider_bang);
     class_addFloat (c, slider_float);
     class_addClick (c, slider_click);
@@ -808,6 +806,9 @@ void slider_setup (void)
     class_addMethod (c, (t_method)slider_labelFont,     gensym ("label_font"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_logarithmic,   gensym ("log"),             A_NULL);
     class_addMethod (c, (t_method)slider_linear,        gensym ("lin"),             A_NULL);
+    
+    class_addCreator ((t_newmethod)slider_new, gensym ("hsl"), A_GIMME, A_NULL);
+    class_addCreator ((t_newmethod)slider_new, gensym ("vsl"), A_GIMME, A_NULL);
     
     #endif
     

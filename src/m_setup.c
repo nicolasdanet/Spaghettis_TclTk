@@ -45,7 +45,7 @@ void bng_setup              (void);
 void radio_setup            (void);
 void slider_setup           (void);
 void g_mycanvas_setup       (void);
-void g_numbox_setup         (void);
+void dial_setup             (void);
 void toggle_setup           (void);
 void vu_setup               (void);
 void g_io_setup             (void);
@@ -99,7 +99,7 @@ void setup_initialize (void)
     radio_setup();
     slider_setup();
     g_mycanvas_setup();
-    g_numbox_setup();
+    dial_setup();
     toggle_setup();
     vu_setup();
     g_io_setup();

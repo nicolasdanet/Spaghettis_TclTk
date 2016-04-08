@@ -56,7 +56,7 @@
 /* Graphics. */
 
 #include "g_iem.c"
-#include "g_bng.c"
+#include "g_bang.c"
 #include "g_toggle.c"
 #include "g_radio.c"
 #include "g_slider.c"

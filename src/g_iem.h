@@ -201,7 +201,7 @@ typedef struct _dial {
     int         x_isAccurateMoving;
     int         x_digitsWidth;
     int         x_logarithmSteps;
-    char        x_valueAsString[IEM_DIAL_BUFFER_LENGTH];
+    char        x_t[IEM_DIAL_BUFFER_LENGTH];
     } t_dial;
 
 typedef struct _my_canvas {
