@@ -47,20 +47,6 @@ static t_class *dial_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void dial_tick_reset(t_dial *x)
-{
-    if(x->x_hasChanged && x->x_gui.iem_glist)
-    {
-        x->x_hasChanged = 0;
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
-    }
-}
-
-static void dial_tick_wait(t_dial *x)
-{
-    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
-}
-
 void dial_clip(t_dial *x)
 {
     if(x->x_value < x->x_minimum)
@@ -323,7 +309,6 @@ static void dial_draw_select(t_dial *x, t_glist *glist)
         if(x->x_hasChanged)
         {
             x->x_hasChanged = 0;
-            clock_unset(x->x_clockReset);
             x->x_valueAsString[0] = 0;
             interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
         }
@@ -390,7 +375,6 @@ static void dial_save(t_gobj *z, t_buffer *b)
     if(x->x_hasChanged)
     {
         x->x_hasChanged = 0;
-        clock_unset(x->x_clockReset);
         interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
     }
     buffer_vAppend(b, "ssiisiiffiisssiiiiiiifi", gensym("#X"),gensym("obj"),
@@ -454,7 +438,6 @@ static void dial_properties(t_gobj *z, t_glist *owner)
     if(x->x_hasChanged)
     {
         x->x_hasChanged = 0;
-        clock_unset(x->x_clockReset);
         interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
 
     }
@@ -534,7 +517,6 @@ static void dial_motion(t_dial *x, t_float dx, t_float dy)
     dial_clip(x);
     interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
     dial_bang(x);
-    clock_unset(x->x_clockReset);
 }
 
 static void dial_click(t_dial *x, t_float xpos, t_float ypos,
@@ -559,16 +541,12 @@ static int dial_newclick(t_gobj *z, struct _glist *glist,
             x->x_isAccurateMoving = 0;
         if(!x->x_hasChanged)
         {
-            clock_delay(x->x_clockWait, 50);
             x->x_hasChanged = 1;
-            clock_delay(x->x_clockReset, 3000);
-
             x->x_valueAsString[0] = 0;
         }
         else
         {
             x->x_hasChanged = 0;
-            clock_unset(x->x_clockReset);
             x->x_valueAsString[0] = 0;
             interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
         }
@@ -710,7 +688,6 @@ static void dial_key(void *z, t_float fkey)
     if (c == 0)
     {
         x->x_hasChanged = 0;
-        clock_unset(x->x_clockReset);
         interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
         return;
     }
@@ -738,12 +715,10 @@ static void dial_key(void *z, t_float fkey)
         x->x_value = atof(x->x_valueAsString);
         x->x_valueAsString[0] = 0;
         x->x_hasChanged = 0;
-        clock_unset(x->x_clockReset);
         dial_clip(x);
         dial_bang(x);
         interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
     }
-    clock_delay(x->x_clockReset, 3000);
 }
 
 static void dial_list(t_dial *x, t_symbol *s, int ac, t_atom *av)
@@ -837,8 +812,6 @@ static void *dial_new(t_symbol *s, int argc, t_atom *argv)
     dial_check_minmax(x, min, max);
     iemgui_deserializeColors(&x->x_gui, bflcol);
     iemgui_checkSendReceiveLoop(&x->x_gui);
-    x->x_clockReset = clock_new(x, (t_method)dial_tick_reset);
-    x->x_clockWait = clock_new(x, (t_method)dial_tick_wait);
     x->x_hasChanged = 0;
     outlet_new(&x->x_gui.iem_obj, &s_float);
     return (x);
@@ -848,8 +821,6 @@ static void dial_free(t_dial *x)
 {
     if(x->x_gui.iem_canReceive)
         pd_unbind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
-    clock_free(x->x_clockReset);
-    clock_free(x->x_clockWait);
     gfxstub_deleteforkey(x);
 }
 

@@ -202,8 +202,6 @@ typedef struct _dial {
     int         x_digitsWidth;
     int         x_logarithmSteps;
     char        x_valueAsString[IEM_DIAL_BUFFER_LENGTH];
-    t_clock     *x_clockReset;
-    t_clock     *x_clockWait;
     } t_dial;
 
 typedef struct _my_canvas {
