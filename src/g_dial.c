@@ -33,8 +33,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void dial_key (void *z, t_float fkey);
-static void dial_draw_update (t_gobj *client, t_glist *glist);
+static void dial_set    (t_dial *x, t_float f);
+static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -124,6 +124,44 @@ void dial_ftoa(t_dial *x)
                 x->x_t[x->x_gui.iem_width] = 0;
         }
     }
+}
+
+int dial_check_minmax(t_dial *x, double min, double max)
+{
+    int ret=0;
+
+    if(x->x_isLogarithmic)
+    {
+        if((min == 0.0)&&(max == 0.0))
+            max = 1.0;
+        if(max > 0.0)
+        {
+            if(min <= 0.0)
+                min = 0.01*max;
+        }
+        else
+        {
+            if(min > 0.0)
+                max = 0.01*min;
+        }
+    }
+    x->x_minimum = min;
+    x->x_maximum = max;
+    if(x->x_value < x->x_minimum)
+    {
+        x->x_value = x->x_minimum;
+        ret = 1;
+    }
+    if(x->x_value > x->x_maximum)
+    {
+        x->x_value = x->x_maximum;
+        ret = 1;
+    }
+    if(x->x_isLogarithmic)
+        x->x_k = exp(log(x->x_maximum/x->x_minimum)/(double)(x->x_logarithmSteps));
+    else
+        x->x_k = 1.0;
+    return(ret);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -300,6 +338,10 @@ static void dial_draw_io(t_dial* x, t_glist *glist)
         x, 0);*/
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void dial_draw_select(t_dial *x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
@@ -354,6 +396,205 @@ void dial_draw(t_dial *x, t_glist *glist, int mode)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static void dial_bang(t_dial *x)
+{
+    outlet_float(x->x_gui.iem_obj.te_outlet, x->x_value);
+    if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
+        pd_float(x->x_gui.iem_send->s_thing, x->x_value);
+}
+
+static void dial_float(t_dial *x, t_float f)
+{
+    dial_set(x, f);
+    if(x->x_gui.iem_goThrough)
+        dial_bang(x);
+}
+
+static void dial_list(t_dial *x, t_symbol *s, int ac, t_atom *av)
+{
+    if (IS_FLOAT(av + 0))
+    {
+        dial_set(x, atom_getFloatAtIndex(0, ac, av));
+        dial_bang(x);
+    }
+}
+
+static void dial_click(t_dial *x, t_float xpos, t_float ypos,
+                            t_float shift, t_float ctrl, t_float alt)
+{
+    glist_grab (x->x_gui.iem_glist, &x->x_gui.iem_obj.te_g,
+        (t_glistmotionfn)dial_motion, NULL, xpos, ypos);
+}
+    
+static void dial_motion(t_dial *x, t_float dx, t_float dy)
+{
+    double k2=1.0;
+
+    if(x->x_isAccurateMoving)
+        k2 = 0.01;
+    if(x->x_isLogarithmic)
+        x->x_value *= pow(x->x_k, -k2*dy);
+    else
+        x->x_value -= k2*dy;
+    dial_clip(x);
+    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+    dial_bang(x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void dial_loadbang(t_dial *x)
+{
+    if(x->x_gui.iem_loadbang)
+    {
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+        dial_bang(x);
+    }
+}
+
+static void dial_init(t_dial *x, t_float f)
+{
+    x->x_gui.iem_loadbang = (f==0.0)?0:1;
+}
+
+static void dial_dialog(t_dial *x, t_symbol *s, int argc,
+    t_atom *argv)
+{
+    int w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
+    int h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
+    double min = (double)atom_getFloatAtIndex(2, argc, argv);
+    double max = (double)atom_getFloatAtIndex(3, argc, argv);
+    int lilo = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
+    int log_height = (int)(t_int)atom_getFloatAtIndex(6, argc, argv);
+
+    if(lilo != 0) lilo = 1;
+    x->x_isLogarithmic = lilo;
+    iemgui_fromDialog(&x->x_gui, argc, argv);
+    if(w < 1)
+        w = 1;
+    x->x_gui.iem_width = w;
+    if(h < 8)
+        h = 8;
+    x->x_gui.iem_height = h;
+    if(log_height < 10)
+        log_height = 10;
+    x->x_logarithmSteps = log_height;
+    dial_calc_fontwidth(x);
+    /*if(dial_check_minmax(x, min, max))
+     dial_bang(x);*/
+    dial_check_minmax(x, min, max);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+    canvas_fixlines(x->x_gui.iem_glist, cast_object (x));
+}
+
+static void dial_size(t_dial *x, t_symbol *s, int ac, t_atom *av)
+{
+    int h, w;
+
+    w = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
+    if(w < 1)
+        w = 1;
+    x->x_gui.iem_width = w;
+    if(ac > 1)
+    {
+        h = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
+        if(h < 8)
+            h = 8;
+        x->x_gui.iem_height = h;
+    }
+    dial_calc_fontwidth(x);
+    iemgui_boxChanged((void *)x, &x->x_gui);
+}
+
+static void dial_delta(t_dial *x, t_symbol *s, int ac, t_atom *av)
+{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
+
+static void dial_pos(t_dial *x, t_symbol *s, int ac, t_atom *av)
+{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
+
+static void dial_label_font(t_dial *x,
+    t_symbol *s, int ac, t_atom *av)
+{
+    int f = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
+
+    if(f < 4)
+        f = 4;
+    x->x_gui.iem_fontSize = f;
+    f = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
+    if((f < 0) || (f > 2))
+        f = 0;
+    x->x_gui.iem_fontStyle = f;
+    dial_calc_fontwidth(x);
+    iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);
+}
+
+static void dial_label_pos(t_dial *x, t_symbol *s, int ac, t_atom *av)
+{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
+
+static void dial_range(t_dial *x, t_symbol *s, int ac, t_atom *av)
+{
+    if(dial_check_minmax(x, (double)atom_getFloatAtIndex(0, ac, av),
+                              (double)atom_getFloatAtIndex(1, ac, av)))
+    {
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+        /*dial_bang(x);*/
+    }
+}
+
+static void dial_set(t_dial *x, t_float f)
+{
+    if(x->x_value != f)
+    {
+        x->x_value = f;
+        dial_clip(x);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+    }
+}
+
+static void dial_log_height(t_dial *x, t_float lh)
+{
+    if(lh < 10.0)
+        lh = 10.0;
+    x->x_logarithmSteps = (int)lh;
+    if(x->x_isLogarithmic)
+        x->x_k = exp(log(x->x_maximum/x->x_minimum)/(double)(x->x_logarithmSteps));
+    else
+        x->x_k = 1.0;
+    
+}
+
+static void dial_log(t_dial *x)
+{
+    x->x_isLogarithmic = 1;
+    if(dial_check_minmax(x, x->x_minimum, x->x_maximum))
+    {
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+        /*dial_bang(x);*/
+    }
+}
+
+static void dial_lin(t_dial *x)
+{
+    x->x_isLogarithmic = 0;
+}
+
+static void dial_send(t_dial *x, t_symbol *s)
+{iemgui_setSend(x, &x->x_gui, s);}
+
+static void dial_receive(t_dial *x, t_symbol *s)
+{iemgui_setReceive(x, &x->x_gui, s);}
+
+static void dial_label(t_dial *x, t_symbol *s)
+{iemgui_setLabel((void *)x, &x->x_gui, s);}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void dial_getrect(t_gobj *z, t_glist *glist,
                               int *xp1, int *yp1, int *xp2, int *yp2)
 {
@@ -363,6 +604,34 @@ static void dial_getrect(t_gobj *z, t_glist *glist,
     *yp1 = text_ypix(&x->x_gui.iem_obj, glist);
     *xp2 = *xp1 + x->x_digitsWidth;
     *yp2 = *yp1 + x->x_gui.iem_height;
+}
+
+static int dial_newclick(t_gobj *z, struct _glist *glist,
+    int xpix, int ypix, int shift, int alt, int dbl, int doit)
+{
+    t_dial* x = (t_dial *)z;
+
+    if(doit)
+    {
+        dial_click( x, (t_float)xpix, (t_float)ypix,
+            (t_float)shift, 0, (t_float)alt);
+        if(shift)
+            x->x_isAccurateMoving = 1;
+        else
+            x->x_isAccurateMoving = 0;
+        if(!x->x_hasChanged)
+        {
+            x->x_hasChanged = 1;
+            x->x_t[0] = 0;
+        }
+        else
+        {
+            x->x_hasChanged = 0;
+            x->x_t[0] = 0;
+            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+        }
+    }
+    return (1);
 }
 
 static void dial_save(t_gobj *z, t_buffer *b)
@@ -388,44 +657,6 @@ static void dial_save(t_gobj *z, t_buffer *b)
                 bflcol[0], bflcol[1], bflcol[2],
                 x->x_value, x->x_logarithmSteps);
     buffer_vAppend(b, ";");
-}
-
-int dial_check_minmax(t_dial *x, double min, double max)
-{
-    int ret=0;
-
-    if(x->x_isLogarithmic)
-    {
-        if((min == 0.0)&&(max == 0.0))
-            max = 1.0;
-        if(max > 0.0)
-        {
-            if(min <= 0.0)
-                min = 0.01*max;
-        }
-        else
-        {
-            if(min > 0.0)
-                max = 0.01*min;
-        }
-    }
-    x->x_minimum = min;
-    x->x_maximum = max;
-    if(x->x_value < x->x_minimum)
-    {
-        x->x_value = x->x_minimum;
-        ret = 1;
-    }
-    if(x->x_value > x->x_maximum)
-    {
-        x->x_value = x->x_maximum;
-        ret = 1;
-    }
-    if(x->x_isLogarithmic)
-        x->x_k = exp(log(x->x_maximum/x->x_minimum)/(double)(x->x_logarithmSteps));
-    else
-        x->x_k = 1.0;
-    return(ret);
 }
 
 static void dial_properties(t_gobj *z, t_glist *owner)
@@ -465,269 +696,13 @@ static void dial_properties(t_gobj *z, t_glist *owner)
     gfxstub_new(&x->x_gui.iem_obj.te_g.g_pd, x, buf);
 }
 
-static void dial_bang(t_dial *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void dial_dummy (t_dial *x, t_symbol *s, int argc, t_atom *argv)
 {
-    outlet_float(x->x_gui.iem_obj.te_outlet, x->x_value);
-    if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
-        pd_float(x->x_gui.iem_send->s_thing, x->x_value);
-}
-
-static void dial_dialog(t_dial *x, t_symbol *s, int argc,
-    t_atom *argv)
-{
-    int w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
-    int h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
-    double min = (double)atom_getFloatAtIndex(2, argc, argv);
-    double max = (double)atom_getFloatAtIndex(3, argc, argv);
-    int lilo = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
-    int log_height = (int)(t_int)atom_getFloatAtIndex(6, argc, argv);
-
-    if(lilo != 0) lilo = 1;
-    x->x_isLogarithmic = lilo;
-    iemgui_fromDialog(&x->x_gui, argc, argv);
-    if(w < 1)
-        w = 1;
-    x->x_gui.iem_width = w;
-    if(h < 8)
-        h = 8;
-    x->x_gui.iem_height = h;
-    if(log_height < 10)
-        log_height = 10;
-    x->x_logarithmSteps = log_height;
-    dial_calc_fontwidth(x);
-    /*if(dial_check_minmax(x, min, max))
-     dial_bang(x);*/
-    dial_check_minmax(x, min, max);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-    canvas_fixlines(x->x_gui.iem_glist, cast_object (x));
-}
-
-static void dial_motion(t_dial *x, t_float dx, t_float dy)
-{
-    double k2=1.0;
-
-    if(x->x_isAccurateMoving)
-        k2 = 0.01;
-    if(x->x_isLogarithmic)
-        x->x_value *= pow(x->x_k, -k2*dy);
-    else
-        x->x_value -= k2*dy;
-    dial_clip(x);
-    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
-    dial_bang(x);
-}
-
-static void dial_click(t_dial *x, t_float xpos, t_float ypos,
-                            t_float shift, t_float ctrl, t_float alt)
-{
-    glist_grab(x->x_gui.iem_glist, &x->x_gui.iem_obj.te_g,
-        (t_glistmotionfn)dial_motion, dial_key, xpos, ypos);
-}
-
-static int dial_newclick(t_gobj *z, struct _glist *glist,
-    int xpix, int ypix, int shift, int alt, int dbl, int doit)
-{
-    t_dial* x = (t_dial *)z;
-
-    if(doit)
-    {
-        dial_click( x, (t_float)xpix, (t_float)ypix,
-            (t_float)shift, 0, (t_float)alt);
-        if(shift)
-            x->x_isAccurateMoving = 1;
-        else
-            x->x_isAccurateMoving = 0;
-        if(!x->x_hasChanged)
-        {
-            x->x_hasChanged = 1;
-            x->x_t[0] = 0;
-        }
-        else
-        {
-            x->x_hasChanged = 0;
-            x->x_t[0] = 0;
-            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
-        }
-    }
-    return (1);
-}
-
-static void dial_set(t_dial *x, t_float f)
-{
-    if(x->x_value != f)
-    {
-        x->x_value = f;
-        dial_clip(x);
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
-    }
-}
-
-static void dial_log_height(t_dial *x, t_float lh)
-{
-    if(lh < 10.0)
-        lh = 10.0;
-    x->x_logarithmSteps = (int)lh;
-    if(x->x_isLogarithmic)
-        x->x_k = exp(log(x->x_maximum/x->x_minimum)/(double)(x->x_logarithmSteps));
-    else
-        x->x_k = 1.0;
-    
-}
-
-static void dial_float(t_dial *x, t_float f)
-{
-    dial_set(x, f);
-    if(x->x_gui.iem_goThrough)
-        dial_bang(x);
-}
-
-static void dial_size(t_dial *x, t_symbol *s, int ac, t_atom *av)
-{
-    int h, w;
-
-    w = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
-    if(w < 1)
-        w = 1;
-    x->x_gui.iem_width = w;
-    if(ac > 1)
-    {
-        h = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
-        if(h < 8)
-            h = 8;
-        x->x_gui.iem_height = h;
-    }
-    dial_calc_fontwidth(x);
-    iemgui_boxChanged((void *)x, &x->x_gui);
-}
-
-static void dial_delta(t_dial *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void dial_pos(t_dial *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void dial_range(t_dial *x, t_symbol *s, int ac, t_atom *av)
-{
-    if(dial_check_minmax(x, (double)atom_getFloatAtIndex(0, ac, av),
-                              (double)atom_getFloatAtIndex(1, ac, av)))
-    {
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
-        /*dial_bang(x);*/
-    }
-}
-
-static void dial_color(t_dial *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setColor((void *)x, &x->x_gui, s, ac, av);}
-
-static void dial_send(t_dial *x, t_symbol *s)
-{iemgui_setSend(x, &x->x_gui, s);}
-
-static void dial_receive(t_dial *x, t_symbol *s)
-{iemgui_setReceive(x, &x->x_gui, s);}
-
-static void dial_label(t_dial *x, t_symbol *s)
-{iemgui_setLabel((void *)x, &x->x_gui, s);}
-
-static void dial_label_pos(t_dial *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void dial_label_font(t_dial *x,
-    t_symbol *s, int ac, t_atom *av)
-{
-    int f = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
-
-    if(f < 4)
-        f = 4;
-    x->x_gui.iem_fontSize = f;
-    f = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
-    if((f < 0) || (f > 2))
-        f = 0;
-    x->x_gui.iem_fontStyle = f;
-    dial_calc_fontwidth(x);
-    iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);
-}
-
-static void dial_log(t_dial *x)
-{
-    x->x_isLogarithmic = 1;
-    if(dial_check_minmax(x, x->x_minimum, x->x_maximum))
-    {
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
-        /*dial_bang(x);*/
-    }
-}
-
-static void dial_lin(t_dial *x)
-{
-    x->x_isLogarithmic = 0;
-}
-
-static void dial_init(t_dial *x, t_float f)
-{
-    x->x_gui.iem_loadbang = (f==0.0)?0:1;
-}
-
-static void dial_loadbang(t_dial *x)
-{
-    if(x->x_gui.iem_loadbang)
-    {
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
-        dial_bang(x);
-    }
-}
-
-static void dial_key(void *z, t_float fkey)
-{
-    t_dial *x = z;
-    char c=fkey;
-    char buf[3];
-    buf[1] = 0;
-
-    if (c == 0)
-    {
-        x->x_hasChanged = 0;
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
-        return;
-    }
-    if(((c>='0')&&(c<='9'))||(c=='.')||(c=='-')||
-        (c=='e')||(c=='+')||(c=='E'))
-    {
-        if(strlen(x->x_t) < (IEM_DIAL_BUFFER_LENGTH-2))
-        {
-            buf[0] = c;
-            strcat(x->x_t, buf);
-            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
-        }
-    }
-    else if((c=='\b')||(c==127))
-    {
-        int sl=strlen(x->x_t)-1;
-
-        if(sl < 0)
-            sl = 0;
-        x->x_t[sl] = 0;
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
-    }
-    else if((c=='\n')||(c==13))
-    {
-        x->x_value = atof(x->x_t);
-        x->x_t[0] = 0;
-        x->x_hasChanged = 0;
-        dial_clip(x);
-        dial_bang(x);
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
-    }
-}
-
-static void dial_list(t_dial *x, t_symbol *s, int ac, t_atom *av)
-{
-    if (IS_FLOAT(av + 0))
-    {
-        dial_set(x, atom_getFloatAtIndex(0, ac, av));
-        dial_bang(x);
-    }
+    /* Dummy. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -840,65 +815,49 @@ void dial_setup (void)
         A_GIMME,
         A_NULL);
         
-    class_addBang (c,dial_bang);
-    class_addFloat (c,dial_float);
+    class_addBang (c, dial_bang);
+    class_addFloat (c, dial_float);
     class_addList (c, dial_list);
-    class_addMethod(c, (t_method)dial_click,
-        gensym ("click"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addMethod(c, (t_method)dial_motion,
-        gensym ("motion"), A_FLOAT, A_FLOAT, 0);
-    class_addMethod(c, (t_method)dial_dialog,
-        gensym ("dialog"), A_GIMME, 0);
-    class_addMethod(c, (t_method)dial_loadbang,
-        gensym ("loadbang"), 0);
-    class_addMethod(c, (t_method)dial_set,
-        gensym ("set"), A_FLOAT, 0);
-    class_addMethod(c, (t_method)dial_size,
-        gensym ("size"), A_GIMME, 0);
-    class_addMethod(c, (t_method)dial_delta,
-        gensym ("delta"), A_GIMME, 0);
-    class_addMethod(c, (t_method)dial_pos,
-        gensym ("pos"), A_GIMME, 0);
-    class_addMethod(c, (t_method)dial_range,
-        gensym ("range"), A_GIMME, 0);
-    class_addMethod(c, (t_method)dial_color,
-        gensym ("color"), A_GIMME, 0);
-    class_addMethod(c, (t_method)dial_send,
-        gensym ("send"), A_DEFSYMBOL, 0);
-    class_addMethod(c, (t_method)dial_receive,
-        gensym ("receive"), A_DEFSYMBOL, 0);
-    class_addMethod(c, (t_method)dial_label,
-        gensym ("label"), A_DEFSYMBOL, 0);
-    class_addMethod(c, (t_method)dial_label_pos,
-        gensym ("label_pos"), A_GIMME, 0);
-    class_addMethod(c, (t_method)dial_label_font,
-        gensym ("label_font"), A_GIMME, 0);
-    class_addMethod(c, (t_method)dial_log,
-        gensym ("log"), 0);
-    class_addMethod(c, (t_method)dial_lin,
-        gensym ("lin"), 0);
-    class_addMethod(c, (t_method)dial_init,
-        gensym ("init"), A_FLOAT, 0);
-    class_addMethod(c, (t_method)dial_log_height,
-        gensym ("log_height"), A_FLOAT, 0);
-    
+    class_addClick (c, dial_click);
+    class_addMotion (c, dial_motion);
+
+    class_addMethod (c, (t_method)dial_loadbang,    gensym ("loadbang"),    A_NULL);
+    class_addMethod (c, (t_method)dial_init,        gensym ("init"),        A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)dial_dialog,      gensym ("dialog"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_size,        gensym ("size"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_delta,       gensym ("delta"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_pos,         gensym ("pos"),         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_label_font,  gensym ("label_font"),  A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_label_pos,   gensym ("label_pos"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_range,       gensym ("range"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_set,         gensym ("set"),         A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)dial_log_height,  gensym ("log_height"),  A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)dial_log,         gensym ("log"),         A_NULL);
+    class_addMethod (c, (t_method)dial_lin,         gensym ("lin"),         A_NULL);
+    class_addMethod (c, (t_method)dial_send,        gensym ("send"),        A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)dial_receive,     gensym ("receive"),     A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)dial_label,       gensym ("label"),       A_DEFSYMBOL, A_NULL);
+
     #if PD_WITH_LEGACY
     
+    class_addMethod (c, (t_method)dial_dummy,       gensym ("color"),       A_GIMME, A_NULL);
+        
     class_addCreator ((t_newmethod)dial_new, gensym ("my_numbox"), A_GIMME, A_NULL);
     
     #endif
     
-    dial_widgetbehavior.w_getrectfn =    dial_getrect;
-    dial_widgetbehavior.w_displacefn =   iemgui_behaviorDisplace;
-    dial_widgetbehavior.w_selectfn =     iemgui_behaviorSelected;
-    dial_widgetbehavior.w_activatefn =   NULL;
-    dial_widgetbehavior.w_deletefn =     iemgui_behaviorDeleted;
-    dial_widgetbehavior.w_visfn =        iemgui_behaviorVisible;
-    dial_widgetbehavior.w_clickfn =      dial_newclick;
-    class_setWidgetBehavior(c, &dial_widgetbehavior);
+    dial_widgetbehavior.w_getrectfn     = dial_getrect;
+    dial_widgetbehavior.w_displacefn    = iemgui_behaviorDisplace;
+    dial_widgetbehavior.w_selectfn      = iemgui_behaviorSelected;
+    dial_widgetbehavior.w_activatefn    = NULL;
+    dial_widgetbehavior.w_deletefn      = iemgui_behaviorDeleted;
+    dial_widgetbehavior.w_visfn         = iemgui_behaviorVisible;
+    dial_widgetbehavior.w_clickfn       = dial_newclick;
+    
+    class_setWidgetBehavior (c, &dial_widgetbehavior);
     class_setHelpName (c, gensym ("nbx"));
-    class_setSaveFunction(c, dial_save);
-    class_setPropertiesFunction(c, dial_properties);
+    class_setSaveFunction (c, dial_save);
+    class_setPropertiesFunction (c, dial_properties);
     
     dial_class = c;
 }
