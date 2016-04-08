@@ -83,7 +83,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_NUMBER_BUFFER_LENGTH        32
+#define IEM_DIAL_BUFFER_LENGTH          32
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -190,21 +190,21 @@ typedef struct _vu {
     void        *x_outRight;
     } t_vu;
 
-typedef struct _my_numbox {
+typedef struct _dial {
     t_iem       x_gui;
-    t_clock     *x_clock_reset;
-    t_clock     *x_clock_wait;
-    double      x_val;
-    double      x_min;
-    double      x_max;
+    double      x_value;
+    double      x_minimum;
+    double      x_maximum;
     double      x_k;
     int         x_hasChanged;
     int         x_isLogarithmic;
-    int         x_accurateMoving;
-    char        x_buf[IEM_NUMBER_BUFFER_LENGTH];
-    int         x_numwidth;
-    int         x_log_height;
-    } t_my_numbox;
+    int         x_isAccurateMoving;
+    int         x_digitsWidth;
+    int         x_logarithmSteps;
+    char        x_valueAsString[IEM_DIAL_BUFFER_LENGTH];
+    t_clock     *x_clockReset;
+    t_clock     *x_clockWait;
+    } t_dial;
 
 typedef struct _my_canvas {
     t_iem       x_gui;

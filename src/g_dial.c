@@ -14,12 +14,6 @@
 
 /* < http://iem.kug.ac.at/ > */
 
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-/* Should be convert to a dial in the future. */
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -33,49 +27,49 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define IEM_NUMBER_COLOR_EDITED     0xff0000
+#define IEM_DIAL_COLOR_EDITED   0xff0000
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void my_numbox_key (void *z, t_float fkey);
-static void my_numbox_draw_update (t_gobj *client, t_glist *glist);
+static void dial_key (void *z, t_float fkey);
+static void dial_draw_update (t_gobj *client, t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_widgetbehavior my_numbox_widgetbehavior;
+t_widgetbehavior dial_widgetbehavior;
 
-static t_class *my_numbox_class;
+static t_class *dial_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void my_numbox_tick_reset(t_my_numbox *x)
+static void dial_tick_reset(t_dial *x)
 {
     if(x->x_hasChanged && x->x_gui.iem_glist)
     {
         x->x_hasChanged = 0;
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
     }
 }
 
-static void my_numbox_tick_wait(t_my_numbox *x)
+static void dial_tick_wait(t_dial *x)
 {
-    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
+    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
 }
 
-void my_numbox_clip(t_my_numbox *x)
+void dial_clip(t_dial *x)
 {
-    if(x->x_val < x->x_min)
-        x->x_val = x->x_min;
-    if(x->x_val > x->x_max)
-        x->x_val = x->x_max;
+    if(x->x_value < x->x_minimum)
+        x->x_value = x->x_minimum;
+    if(x->x_value > x->x_maximum)
+        x->x_value = x->x_maximum;
 }
 
-void my_numbox_calc_fontwidth(t_my_numbox *x)
+void dial_calc_fontwidth(t_dial *x)
 {
     int w, f=31;
 
@@ -86,20 +80,20 @@ void my_numbox_calc_fontwidth(t_my_numbox *x)
 
     w = x->x_gui.iem_fontSize * f * x->x_gui.iem_width;
     w /= 36;
-    x->x_numwidth = w + (x->x_gui.iem_height / 2) + 4;
+    x->x_digitsWidth = w + (x->x_gui.iem_height / 2) + 4;
 }
 
-void my_numbox_ftoa(t_my_numbox *x)
+void dial_ftoa(t_dial *x)
 {
-    double f=x->x_val;
+    double f=x->x_value;
     int bufsize, is_exp=0, i, idecimal;
 
-    sprintf(x->x_buf, "%g", f);
-    bufsize = strlen(x->x_buf);
+    sprintf(x->x_valueAsString, "%g", f);
+    bufsize = strlen(x->x_valueAsString);
     if(bufsize >= 5)/* if it is in exponential mode */
     {
         i = bufsize - 4;
-        if((x->x_buf[i] == 'e') || (x->x_buf[i] == 'E'))
+        if((x->x_valueAsString[i] == 'e') || (x->x_valueAsString[i] == 'E'))
             is_exp = 1;
     }
     if(bufsize > x->x_gui.iem_width)/* if to reduce */
@@ -108,40 +102,40 @@ void my_numbox_ftoa(t_my_numbox *x)
         {
             if(x->x_gui.iem_width <= 5)
             {
-                x->x_buf[0] = (f < 0.0 ? '-' : '+');
-                x->x_buf[1] = 0;
+                x->x_valueAsString[0] = (f < 0.0 ? '-' : '+');
+                x->x_valueAsString[1] = 0;
             }
             i = bufsize - 4;
             for(idecimal=0; idecimal < i; idecimal++)
-                if(x->x_buf[idecimal] == '.')
+                if(x->x_valueAsString[idecimal] == '.')
                     break;
             if(idecimal > (x->x_gui.iem_width - 4))
             {
-                x->x_buf[0] = (f < 0.0 ? '-' : '+');
-                x->x_buf[1] = 0;
+                x->x_valueAsString[0] = (f < 0.0 ? '-' : '+');
+                x->x_valueAsString[1] = 0;
             }
             else
             {
                 int new_exp_index=x->x_gui.iem_width-4, old_exp_index=bufsize-4;
 
                 for(i=0; i < 4; i++, new_exp_index++, old_exp_index++)
-                    x->x_buf[new_exp_index] = x->x_buf[old_exp_index];
-                x->x_buf[x->x_gui.iem_width] = 0;
+                    x->x_valueAsString[new_exp_index] = x->x_valueAsString[old_exp_index];
+                x->x_valueAsString[x->x_gui.iem_width] = 0;
             }
 
         }
         else
         {
             for(idecimal=0; idecimal < bufsize; idecimal++)
-                if(x->x_buf[idecimal] == '.')
+                if(x->x_valueAsString[idecimal] == '.')
                     break;
             if(idecimal > x->x_gui.iem_width)
             {
-                x->x_buf[0] = (f < 0.0 ? '-' : '+');
-                x->x_buf[1] = 0;
+                x->x_valueAsString[0] = (f < 0.0 ? '-' : '+');
+                x->x_valueAsString[1] = 0;
             }
             else
-                x->x_buf[x->x_gui.iem_width] = 0;
+                x->x_valueAsString[x->x_gui.iem_width] = 0;
         }
     }
 }
@@ -150,51 +144,51 @@ void my_numbox_ftoa(t_my_numbox *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void my_numbox_draw_update(t_gobj *client, t_glist *glist)
+static void dial_draw_update(t_gobj *client, t_glist *glist)
 {
-    t_my_numbox *x = (t_my_numbox *)client;
+    t_dial *x = (t_dial *)client;
     if (glist_isvisible(glist))
     {
         if(x->x_hasChanged)
         {
-            if(x->x_buf[0])
+            if(x->x_valueAsString[0])
             {
-                char *cp=x->x_buf;
-                int sl = strlen(x->x_buf);
+                char *cp=x->x_valueAsString;
+                int sl = strlen(x->x_valueAsString);
 
-                x->x_buf[sl] = '>';
-                x->x_buf[sl+1] = 0;
+                x->x_valueAsString[sl] = '>';
+                x->x_valueAsString[sl+1] = 0;
                 if(sl >= x->x_gui.iem_width)
                     cp += sl - x->x_gui.iem_width + 1;
                 sys_vGui(
                     ".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s} \n",
-                         glist_getcanvas(glist), x, IEM_NUMBER_COLOR_EDITED, cp);
-                x->x_buf[sl] = 0;
+                         glist_getcanvas(glist), x, IEM_DIAL_COLOR_EDITED, cp);
+                x->x_valueAsString[sl] = 0;
             }
             else
             {
-                my_numbox_ftoa(x);
+                dial_ftoa(x);
                 sys_vGui(
                     ".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s} \n",
-                    glist_getcanvas(glist), x, IEM_NUMBER_COLOR_EDITED, x->x_buf);
-                x->x_buf[0] = 0;
+                    glist_getcanvas(glist), x, IEM_DIAL_COLOR_EDITED, x->x_valueAsString);
+                x->x_valueAsString[0] = 0;
             }
         }
         else
         {
-            my_numbox_ftoa(x);
+            dial_ftoa(x);
             sys_vGui(
                 ".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s} \n",
                 glist_getcanvas(glist), x,
                 x->x_gui.iem_isSelected?
                     IEM_COLOR_SELECTED:x->x_gui.iem_colorForeground,
-                x->x_buf);
-            x->x_buf[0] = 0;
+                x->x_valueAsString);
+            x->x_valueAsString[0] = 0;
         }
     }
 }
 
-static void my_numbox_draw_new(t_my_numbox *x, t_glist *glist)
+static void dial_draw_new(t_dial *x, t_glist *glist)
 {
     int half=x->x_gui.iem_height/2, d=1+x->x_gui.iem_height/34;
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
@@ -205,9 +199,9 @@ static void my_numbox_draw_new(t_my_numbox *x, t_glist *glist)
 ".x%lx.c create polygon %d %d %d %d %d %d %d %d %d %d -outline #%6.6x \
 -fill #%6.6x -tags %lxBASE1\n",
              canvas, xpos, ypos,
-             xpos + x->x_numwidth-4, ypos,
-             xpos + x->x_numwidth, ypos+4,
-             xpos + x->x_numwidth, ypos + x->x_gui.iem_height,
+             xpos + x->x_digitsWidth-4, ypos,
+             xpos + x->x_digitsWidth, ypos+4,
+             xpos + x->x_digitsWidth, ypos + x->x_gui.iem_height,
              xpos, ypos + x->x_gui.iem_height,
              IEM_COLOR_NORMAL, x->x_gui.iem_colorBackground, x);
     sys_vGui(
@@ -222,11 +216,11 @@ static void my_numbox_draw_new(t_my_numbox *x, t_glist *glist)
         strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"",
         x->x_gui.iem_fontSize,
              x->x_gui.iem_colorLabel, x);
-    my_numbox_ftoa(x);
+    dial_ftoa(x);
     sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor w \
         -font [::getFont %d] -fill #%6.6x -tags %lxNUMBER\n",
         canvas, xpos+half+2, ypos+half+d,
-        x->x_buf, x->x_gui.iem_fontSize,
+        x->x_valueAsString, x->x_gui.iem_fontSize,
         x->x_gui.iem_colorForeground, x);
 
         /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
@@ -242,7 +236,7 @@ static void my_numbox_draw_new(t_my_numbox *x, t_glist *glist)
              x, 0);*/
 }
 
-static void my_numbox_draw_move(t_my_numbox *x, t_glist *glist)
+static void dial_draw_move(t_dial *x, t_glist *glist)
 {
     int half = x->x_gui.iem_height/2, d=1+x->x_gui.iem_height/34;
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
@@ -251,9 +245,9 @@ static void my_numbox_draw_move(t_my_numbox *x, t_glist *glist)
 
     sys_vGui(".x%lx.c coords %lxBASE1 %d %d %d %d %d %d %d %d %d %d\n",
              canvas, x, xpos, ypos,
-             xpos + x->x_numwidth-4, ypos,
-             xpos + x->x_numwidth, ypos+4,
-             xpos + x->x_numwidth, ypos + x->x_gui.iem_height,
+             xpos + x->x_digitsWidth-4, ypos,
+             xpos + x->x_digitsWidth, ypos+4,
+             xpos + x->x_digitsWidth, ypos + x->x_gui.iem_height,
              xpos, ypos + x->x_gui.iem_height);
     sys_vGui(".x%lx.c coords %lxBASE2 %d %d %d %d %d %d\n",
              canvas, x, xpos, ypos,
@@ -273,7 +267,7 @@ static void my_numbox_draw_move(t_my_numbox *x, t_glist *glist)
              xpos+INLETS_WIDTH, ypos+1);*/
 }
 
-static void my_numbox_draw_erase(t_my_numbox* x,t_glist *glist)
+static void dial_draw_erase(t_dial* x,t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
 
@@ -285,7 +279,7 @@ static void my_numbox_draw_erase(t_my_numbox* x,t_glist *glist)
     //sys_vGui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
 }
 
-static void my_numbox_draw_config(t_my_numbox* x,t_glist *glist)
+static void dial_draw_config(t_dial* x,t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
 
@@ -302,7 +296,7 @@ static void my_numbox_draw_config(t_my_numbox* x,t_glist *glist)
              x, x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorForeground);
 }
 
-static void my_numbox_draw_io(t_my_numbox* x, t_glist *glist)
+static void dial_draw_io(t_dial* x, t_glist *glist)
 {
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
@@ -320,7 +314,7 @@ static void my_numbox_draw_io(t_my_numbox* x, t_glist *glist)
         x, 0);*/
 }
 
-static void my_numbox_draw_select(t_my_numbox *x, t_glist *glist)
+static void dial_draw_select(t_dial *x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
 
@@ -329,9 +323,9 @@ static void my_numbox_draw_select(t_my_numbox *x, t_glist *glist)
         if(x->x_hasChanged)
         {
             x->x_hasChanged = 0;
-            clock_unset(x->x_clock_reset);
-            x->x_buf[0] = 0;
-            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
+            clock_unset(x->x_clockReset);
+            x->x_valueAsString[0] = 0;
+            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
         }
         sys_vGui(".x%lx.c itemconfigure %lxBASE1 -outline #%6.6x\n",
             canvas, x, IEM_COLOR_SELECTED);
@@ -355,40 +349,40 @@ static void my_numbox_draw_select(t_my_numbox *x, t_glist *glist)
     }
 }
 
-void my_numbox_draw(t_my_numbox *x, t_glist *glist, int mode)
+void dial_draw(t_dial *x, t_glist *glist, int mode)
 {
     if(mode == IEM_DRAW_UPDATE)
-        interface_guiQueueAddIfNotAlreadyThere(x, glist, my_numbox_draw_update);
+        interface_guiQueueAddIfNotAlreadyThere(x, glist, dial_draw_update);
     else if(mode == IEM_DRAW_MOVE)
-        my_numbox_draw_move(x, glist);
+        dial_draw_move(x, glist);
     else if(mode == IEM_DRAW_NEW)
-        my_numbox_draw_new(x, glist);
+        dial_draw_new(x, glist);
     else if(mode == IEM_DRAW_SELECT)
-        my_numbox_draw_select(x, glist);
+        dial_draw_select(x, glist);
     else if(mode == IEM_DRAW_ERASE)
-        my_numbox_draw_erase(x, glist);
+        dial_draw_erase(x, glist);
     else if(mode == IEM_DRAW_CONFIG)
-        my_numbox_draw_config(x, glist);
+        dial_draw_config(x, glist);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void my_numbox_getrect(t_gobj *z, t_glist *glist,
+static void dial_getrect(t_gobj *z, t_glist *glist,
                               int *xp1, int *yp1, int *xp2, int *yp2)
 {
-    t_my_numbox* x = (t_my_numbox*)z;
+    t_dial* x = (t_dial*)z;
 
     *xp1 = text_xpix(&x->x_gui.iem_obj, glist);
     *yp1 = text_ypix(&x->x_gui.iem_obj, glist);
-    *xp2 = *xp1 + x->x_numwidth;
+    *xp2 = *xp1 + x->x_digitsWidth;
     *yp2 = *yp1 + x->x_gui.iem_height;
 }
 
-static void my_numbox_save(t_gobj *z, t_buffer *b)
+static void dial_save(t_gobj *z, t_buffer *b)
 {
-    t_my_numbox *x = (t_my_numbox *)z;
+    t_dial *x = (t_dial *)z;
     int bflcol[3];
     t_symbol *srl[3];
 
@@ -396,23 +390,23 @@ static void my_numbox_save(t_gobj *z, t_buffer *b)
     if(x->x_hasChanged)
     {
         x->x_hasChanged = 0;
-        clock_unset(x->x_clock_reset);
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
+        clock_unset(x->x_clockReset);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
     }
     buffer_vAppend(b, "ssiisiiffiisssiiiiiiifi", gensym("#X"),gensym("obj"),
                 (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym("nbx"), x->x_gui.iem_width, x->x_gui.iem_height,
-                (t_float)x->x_min, (t_float)x->x_max,
+                (t_float)x->x_minimum, (t_float)x->x_maximum,
                 x->x_isLogarithmic, iemgui_serializeLoadbang(&x->x_gui),
                 srl[0], srl[1], srl[2],
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
                 iemgui_serializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[1], bflcol[2],
-                x->x_val, x->x_log_height);
+                x->x_value, x->x_logarithmSteps);
     buffer_vAppend(b, ";");
 }
 
-int my_numbox_check_minmax(t_my_numbox *x, double min, double max)
+int dial_check_minmax(t_dial *x, double min, double max)
 {
     int ret=0;
 
@@ -431,28 +425,28 @@ int my_numbox_check_minmax(t_my_numbox *x, double min, double max)
                 max = 0.01*min;
         }
     }
-    x->x_min = min;
-    x->x_max = max;
-    if(x->x_val < x->x_min)
+    x->x_minimum = min;
+    x->x_maximum = max;
+    if(x->x_value < x->x_minimum)
     {
-        x->x_val = x->x_min;
+        x->x_value = x->x_minimum;
         ret = 1;
     }
-    if(x->x_val > x->x_max)
+    if(x->x_value > x->x_maximum)
     {
-        x->x_val = x->x_max;
+        x->x_value = x->x_maximum;
         ret = 1;
     }
     if(x->x_isLogarithmic)
-        x->x_k = exp(log(x->x_max/x->x_min)/(double)(x->x_log_height));
+        x->x_k = exp(log(x->x_maximum/x->x_minimum)/(double)(x->x_logarithmSteps));
     else
         x->x_k = 1.0;
     return(ret);
 }
 
-static void my_numbox_properties(t_gobj *z, t_glist *owner)
+static void dial_properties(t_gobj *z, t_glist *owner)
 {
-    t_my_numbox *x = (t_my_numbox *)z;
+    t_dial *x = (t_dial *)z;
     char buf[800];
     t_symbol *srl[3];
 
@@ -460,12 +454,12 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
     if(x->x_hasChanged)
     {
         x->x_hasChanged = 0;
-        clock_unset(x->x_clock_reset);
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
+        clock_unset(x->x_clockReset);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
 
     }
     sprintf(buf, "::ui_iem::create %%s Dial \
-            %d %d Digits %d %d {Box Height} \
+            %d %d Digits %d %d Size \
             %g {Value Low} %g {Value High} \
             %d Linear Logarithmic \
             %d \
@@ -476,10 +470,10 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
             %d %d %d \
             -1\n",
             x->x_gui.iem_width, 1, x->x_gui.iem_height, 8,
-            x->x_min, x->x_max,
+            x->x_minimum, x->x_maximum,
             x->x_isLogarithmic, 
             x->x_gui.iem_loadbang,
-            x->x_log_height, /*no multi, but iem-characteristic*/
+            x->x_logarithmSteps, /*no multi, but iem-characteristic*/
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
@@ -488,14 +482,14 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
     gfxstub_new(&x->x_gui.iem_obj.te_g.g_pd, x, buf);
 }
 
-static void my_numbox_bang(t_my_numbox *x)
+static void dial_bang(t_dial *x)
 {
-    outlet_float(x->x_gui.iem_obj.te_outlet, x->x_val);
+    outlet_float(x->x_gui.iem_obj.te_outlet, x->x_value);
     if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
-        pd_float(x->x_gui.iem_send->s_thing, x->x_val);
+        pd_float(x->x_gui.iem_send->s_thing, x->x_value);
 }
 
-static void my_numbox_dialog(t_my_numbox *x, t_symbol *s, int argc,
+static void dial_dialog(t_dial *x, t_symbol *s, int argc,
     t_atom *argv)
 {
     int w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
@@ -516,102 +510,102 @@ static void my_numbox_dialog(t_my_numbox *x, t_symbol *s, int argc,
     x->x_gui.iem_height = h;
     if(log_height < 10)
         log_height = 10;
-    x->x_log_height = log_height;
-    my_numbox_calc_fontwidth(x);
-    /*if(my_numbox_check_minmax(x, min, max))
-     my_numbox_bang(x);*/
-    my_numbox_check_minmax(x, min, max);
+    x->x_logarithmSteps = log_height;
+    dial_calc_fontwidth(x);
+    /*if(dial_check_minmax(x, min, max))
+     dial_bang(x);*/
+    dial_check_minmax(x, min, max);
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
     canvas_fixlines(x->x_gui.iem_glist, cast_object (x));
 }
 
-static void my_numbox_motion(t_my_numbox *x, t_float dx, t_float dy)
+static void dial_motion(t_dial *x, t_float dx, t_float dy)
 {
     double k2=1.0;
 
-    if(x->x_accurateMoving)
+    if(x->x_isAccurateMoving)
         k2 = 0.01;
     if(x->x_isLogarithmic)
-        x->x_val *= pow(x->x_k, -k2*dy);
+        x->x_value *= pow(x->x_k, -k2*dy);
     else
-        x->x_val -= k2*dy;
-    my_numbox_clip(x);
-    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
-    my_numbox_bang(x);
-    clock_unset(x->x_clock_reset);
+        x->x_value -= k2*dy;
+    dial_clip(x);
+    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+    dial_bang(x);
+    clock_unset(x->x_clockReset);
 }
 
-static void my_numbox_click(t_my_numbox *x, t_float xpos, t_float ypos,
+static void dial_click(t_dial *x, t_float xpos, t_float ypos,
                             t_float shift, t_float ctrl, t_float alt)
 {
     glist_grab(x->x_gui.iem_glist, &x->x_gui.iem_obj.te_g,
-        (t_glistmotionfn)my_numbox_motion, my_numbox_key, xpos, ypos);
+        (t_glistmotionfn)dial_motion, dial_key, xpos, ypos);
 }
 
-static int my_numbox_newclick(t_gobj *z, struct _glist *glist,
+static int dial_newclick(t_gobj *z, struct _glist *glist,
     int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
-    t_my_numbox* x = (t_my_numbox *)z;
+    t_dial* x = (t_dial *)z;
 
     if(doit)
     {
-        my_numbox_click( x, (t_float)xpix, (t_float)ypix,
+        dial_click( x, (t_float)xpix, (t_float)ypix,
             (t_float)shift, 0, (t_float)alt);
         if(shift)
-            x->x_accurateMoving = 1;
+            x->x_isAccurateMoving = 1;
         else
-            x->x_accurateMoving = 0;
+            x->x_isAccurateMoving = 0;
         if(!x->x_hasChanged)
         {
-            clock_delay(x->x_clock_wait, 50);
+            clock_delay(x->x_clockWait, 50);
             x->x_hasChanged = 1;
-            clock_delay(x->x_clock_reset, 3000);
+            clock_delay(x->x_clockReset, 3000);
 
-            x->x_buf[0] = 0;
+            x->x_valueAsString[0] = 0;
         }
         else
         {
             x->x_hasChanged = 0;
-            clock_unset(x->x_clock_reset);
-            x->x_buf[0] = 0;
-            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
+            clock_unset(x->x_clockReset);
+            x->x_valueAsString[0] = 0;
+            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
         }
     }
     return (1);
 }
 
-static void my_numbox_set(t_my_numbox *x, t_float f)
+static void dial_set(t_dial *x, t_float f)
 {
-    if(x->x_val != f)
+    if(x->x_value != f)
     {
-        x->x_val = f;
-        my_numbox_clip(x);
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
+        x->x_value = f;
+        dial_clip(x);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
     }
 }
 
-static void my_numbox_log_height(t_my_numbox *x, t_float lh)
+static void dial_log_height(t_dial *x, t_float lh)
 {
     if(lh < 10.0)
         lh = 10.0;
-    x->x_log_height = (int)lh;
+    x->x_logarithmSteps = (int)lh;
     if(x->x_isLogarithmic)
-        x->x_k = exp(log(x->x_max/x->x_min)/(double)(x->x_log_height));
+        x->x_k = exp(log(x->x_maximum/x->x_minimum)/(double)(x->x_logarithmSteps));
     else
         x->x_k = 1.0;
     
 }
 
-static void my_numbox_float(t_my_numbox *x, t_float f)
+static void dial_float(t_dial *x, t_float f)
 {
-    my_numbox_set(x, f);
+    dial_set(x, f);
     if(x->x_gui.iem_goThrough)
-        my_numbox_bang(x);
+        dial_bang(x);
 }
 
-static void my_numbox_size(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
+static void dial_size(t_dial *x, t_symbol *s, int ac, t_atom *av)
 {
     int h, w;
 
@@ -626,42 +620,42 @@ static void my_numbox_size(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
             h = 8;
         x->x_gui.iem_height = h;
     }
-    my_numbox_calc_fontwidth(x);
+    dial_calc_fontwidth(x);
     iemgui_boxChanged((void *)x, &x->x_gui);
 }
 
-static void my_numbox_delta(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
+static void dial_delta(t_dial *x, t_symbol *s, int ac, t_atom *av)
 {iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
 
-static void my_numbox_pos(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
+static void dial_pos(t_dial *x, t_symbol *s, int ac, t_atom *av)
 {iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
 
-static void my_numbox_range(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
+static void dial_range(t_dial *x, t_symbol *s, int ac, t_atom *av)
 {
-    if(my_numbox_check_minmax(x, (double)atom_getFloatAtIndex(0, ac, av),
+    if(dial_check_minmax(x, (double)atom_getFloatAtIndex(0, ac, av),
                               (double)atom_getFloatAtIndex(1, ac, av)))
     {
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
-        /*my_numbox_bang(x);*/
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+        /*dial_bang(x);*/
     }
 }
 
-static void my_numbox_color(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
+static void dial_color(t_dial *x, t_symbol *s, int ac, t_atom *av)
 {iemgui_setColor((void *)x, &x->x_gui, s, ac, av);}
 
-static void my_numbox_send(t_my_numbox *x, t_symbol *s)
+static void dial_send(t_dial *x, t_symbol *s)
 {iemgui_setSend(x, &x->x_gui, s);}
 
-static void my_numbox_receive(t_my_numbox *x, t_symbol *s)
+static void dial_receive(t_dial *x, t_symbol *s)
 {iemgui_setReceive(x, &x->x_gui, s);}
 
-static void my_numbox_label(t_my_numbox *x, t_symbol *s)
+static void dial_label(t_dial *x, t_symbol *s)
 {iemgui_setLabel((void *)x, &x->x_gui, s);}
 
-static void my_numbox_label_pos(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
+static void dial_label_pos(t_dial *x, t_symbol *s, int ac, t_atom *av)
 {iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
 
-static void my_numbox_label_font(t_my_numbox *x,
+static void dial_label_font(t_dial *x,
     t_symbol *s, int ac, t_atom *av)
 {
     int f = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
@@ -673,42 +667,42 @@ static void my_numbox_label_font(t_my_numbox *x,
     if((f < 0) || (f > 2))
         f = 0;
     x->x_gui.iem_fontStyle = f;
-    my_numbox_calc_fontwidth(x);
+    dial_calc_fontwidth(x);
     iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);
 }
 
-static void my_numbox_log(t_my_numbox *x)
+static void dial_log(t_dial *x)
 {
     x->x_isLogarithmic = 1;
-    if(my_numbox_check_minmax(x, x->x_min, x->x_max))
+    if(dial_check_minmax(x, x->x_minimum, x->x_maximum))
     {
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
-        /*my_numbox_bang(x);*/
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+        /*dial_bang(x);*/
     }
 }
 
-static void my_numbox_lin(t_my_numbox *x)
+static void dial_lin(t_dial *x)
 {
     x->x_isLogarithmic = 0;
 }
 
-static void my_numbox_init(t_my_numbox *x, t_float f)
+static void dial_init(t_dial *x, t_float f)
 {
     x->x_gui.iem_loadbang = (f==0.0)?0:1;
 }
 
-static void my_numbox_loadbang(t_my_numbox *x)
+static void dial_loadbang(t_dial *x)
 {
     if(x->x_gui.iem_loadbang)
     {
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
-        my_numbox_bang(x);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+        dial_bang(x);
     }
 }
 
-static void my_numbox_key(void *z, t_float fkey)
+static void dial_key(void *z, t_float fkey)
 {
-    t_my_numbox *x = z;
+    t_dial *x = z;
     char c=fkey;
     char buf[3];
     buf[1] = 0;
@@ -716,48 +710,48 @@ static void my_numbox_key(void *z, t_float fkey)
     if (c == 0)
     {
         x->x_hasChanged = 0;
-        clock_unset(x->x_clock_reset);
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
+        clock_unset(x->x_clockReset);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
         return;
     }
     if(((c>='0')&&(c<='9'))||(c=='.')||(c=='-')||
         (c=='e')||(c=='+')||(c=='E'))
     {
-        if(strlen(x->x_buf) < (IEM_NUMBER_BUFFER_LENGTH-2))
+        if(strlen(x->x_valueAsString) < (IEM_DIAL_BUFFER_LENGTH-2))
         {
             buf[0] = c;
-            strcat(x->x_buf, buf);
-            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
+            strcat(x->x_valueAsString, buf);
+            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
         }
     }
     else if((c=='\b')||(c==127))
     {
-        int sl=strlen(x->x_buf)-1;
+        int sl=strlen(x->x_valueAsString)-1;
 
         if(sl < 0)
             sl = 0;
-        x->x_buf[sl] = 0;
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
+        x->x_valueAsString[sl] = 0;
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
     }
     else if((c=='\n')||(c==13))
     {
-        x->x_val = atof(x->x_buf);
-        x->x_buf[0] = 0;
+        x->x_value = atof(x->x_valueAsString);
+        x->x_valueAsString[0] = 0;
         x->x_hasChanged = 0;
-        clock_unset(x->x_clock_reset);
-        my_numbox_clip(x);
-        my_numbox_bang(x);
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
+        clock_unset(x->x_clockReset);
+        dial_clip(x);
+        dial_bang(x);
+        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
     }
-    clock_delay(x->x_clock_reset, 3000);
+    clock_delay(x->x_clockReset, 3000);
 }
 
-static void my_numbox_list(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
+static void dial_list(t_dial *x, t_symbol *s, int ac, t_atom *av)
 {
     if (IS_FLOAT(av + 0))
     {
-        my_numbox_set(x, atom_getFloatAtIndex(0, ac, av));
-        my_numbox_bang(x);
+        dial_set(x, atom_getFloatAtIndex(0, ac, av));
+        dial_bang(x);
     }
 }
 
@@ -765,9 +759,9 @@ static void my_numbox_list(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
+static void *dial_new(t_symbol *s, int argc, t_atom *argv)
 {
-    t_my_numbox *x = (t_my_numbox *)pd_new(my_numbox_class);
+    t_dial *x = (t_dial *)pd_new(dial_class);
     int bflcol[]={-262144, -1, -1};
     int w=5, h=14;
     int lilo=0, f=0, ldx=0, ldy=-8;
@@ -807,19 +801,19 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
     {
         log_height = (int)(t_int)atom_getFloatAtIndex(17, argc, argv);
     }
-    x->x_gui.iem_draw = (t_iemfn)my_numbox_draw;
+    x->x_gui.iem_draw = (t_iemfn)dial_draw;
     x->x_gui.iem_canSend = 1;
     x->x_gui.iem_canReceive = 1;
     x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
     if(x->x_gui.iem_loadbang)
-        x->x_val = v;
+        x->x_value = v;
     else
-        x->x_val = 0.0;
+        x->x_value = 0.0;
     if(lilo != 0) lilo = 1;
     x->x_isLogarithmic = lilo;
     if(log_height < 10)
         log_height = 10;
-    x->x_log_height = log_height;
+    x->x_logarithmSteps = log_height;
     if (!strcmp(x->x_gui.iem_send->s_name, "empty"))
         x->x_gui.iem_canSend = 0;
     if (!strcmp(x->x_gui.iem_receive->s_name, "empty"))
@@ -838,24 +832,24 @@ static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
     if(h < 8)
         h = 8;
     x->x_gui.iem_height = h;
-    x->x_buf[0] = 0;
-    my_numbox_calc_fontwidth(x);
-    my_numbox_check_minmax(x, min, max);
+    x->x_valueAsString[0] = 0;
+    dial_calc_fontwidth(x);
+    dial_check_minmax(x, min, max);
     iemgui_deserializeColors(&x->x_gui, bflcol);
     iemgui_checkSendReceiveLoop(&x->x_gui);
-    x->x_clock_reset = clock_new(x, (t_method)my_numbox_tick_reset);
-    x->x_clock_wait = clock_new(x, (t_method)my_numbox_tick_wait);
+    x->x_clockReset = clock_new(x, (t_method)dial_tick_reset);
+    x->x_clockWait = clock_new(x, (t_method)dial_tick_wait);
     x->x_hasChanged = 0;
     outlet_new(&x->x_gui.iem_obj, &s_float);
     return (x);
 }
 
-static void my_numbox_free(t_my_numbox *x)
+static void dial_free(t_dial *x)
 {
     if(x->x_gui.iem_canReceive)
         pd_unbind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
-    clock_free(x->x_clock_reset);
-    clock_free(x->x_clock_wait);
+    clock_free(x->x_clockReset);
+    clock_free(x->x_clockWait);
     gfxstub_deleteforkey(x);
 }
 
@@ -865,62 +859,62 @@ static void my_numbox_free(t_my_numbox *x)
 
 void g_numbox_setup(void)
 {
-    my_numbox_class = class_new(gensym("nbx"), (t_newmethod)my_numbox_new,
-        (t_method)my_numbox_free, sizeof(t_my_numbox), 0, A_GIMME, 0);
-    class_addCreator((t_newmethod)my_numbox_new, gensym("my_numbox"),
+    dial_class = class_new(gensym("nbx"), (t_newmethod)dial_new,
+        (t_method)dial_free, sizeof(t_dial), 0, A_GIMME, 0);
+    class_addCreator((t_newmethod)dial_new, gensym("my_numbox"),
         A_GIMME, 0);
-    class_addBang(my_numbox_class,my_numbox_bang);
-    class_addFloat(my_numbox_class,my_numbox_float);
-    class_addList(my_numbox_class, my_numbox_list);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_click,
+    class_addBang(dial_class,dial_bang);
+    class_addFloat(dial_class,dial_float);
+    class_addList(dial_class, dial_list);
+    class_addMethod(dial_class, (t_method)dial_click,
         gensym("click"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_motion,
+    class_addMethod(dial_class, (t_method)dial_motion,
         gensym("motion"), A_FLOAT, A_FLOAT, 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_dialog,
+    class_addMethod(dial_class, (t_method)dial_dialog,
         gensym("dialog"), A_GIMME, 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_loadbang,
+    class_addMethod(dial_class, (t_method)dial_loadbang,
         gensym("loadbang"), 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_set,
+    class_addMethod(dial_class, (t_method)dial_set,
         gensym("set"), A_FLOAT, 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_size,
+    class_addMethod(dial_class, (t_method)dial_size,
         gensym("size"), A_GIMME, 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_delta,
+    class_addMethod(dial_class, (t_method)dial_delta,
         gensym("delta"), A_GIMME, 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_pos,
+    class_addMethod(dial_class, (t_method)dial_pos,
         gensym("pos"), A_GIMME, 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_range,
+    class_addMethod(dial_class, (t_method)dial_range,
         gensym("range"), A_GIMME, 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_color,
+    class_addMethod(dial_class, (t_method)dial_color,
         gensym("color"), A_GIMME, 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_send,
+    class_addMethod(dial_class, (t_method)dial_send,
         gensym("send"), A_DEFSYMBOL, 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_receive,
+    class_addMethod(dial_class, (t_method)dial_receive,
         gensym("receive"), A_DEFSYMBOL, 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_label,
+    class_addMethod(dial_class, (t_method)dial_label,
         gensym("label"), A_DEFSYMBOL, 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_label_pos,
+    class_addMethod(dial_class, (t_method)dial_label_pos,
         gensym("label_pos"), A_GIMME, 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_label_font,
+    class_addMethod(dial_class, (t_method)dial_label_font,
         gensym("label_font"), A_GIMME, 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_log,
+    class_addMethod(dial_class, (t_method)dial_log,
         gensym("log"), 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_lin,
+    class_addMethod(dial_class, (t_method)dial_lin,
         gensym("lin"), 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_init,
+    class_addMethod(dial_class, (t_method)dial_init,
         gensym("init"), A_FLOAT, 0);
-    class_addMethod(my_numbox_class, (t_method)my_numbox_log_height,
+    class_addMethod(dial_class, (t_method)dial_log_height,
         gensym("log_height"), A_FLOAT, 0);
-    my_numbox_widgetbehavior.w_getrectfn =    my_numbox_getrect;
-    my_numbox_widgetbehavior.w_displacefn =   iemgui_behaviorDisplace;
-    my_numbox_widgetbehavior.w_selectfn =     iemgui_behaviorSelected;
-    my_numbox_widgetbehavior.w_activatefn =   NULL;
-    my_numbox_widgetbehavior.w_deletefn =     iemgui_behaviorDeleted;
-    my_numbox_widgetbehavior.w_visfn =        iemgui_behaviorVisible;
-    my_numbox_widgetbehavior.w_clickfn =      my_numbox_newclick;
-    class_setWidgetBehavior(my_numbox_class, &my_numbox_widgetbehavior);
-    class_setHelpName(my_numbox_class, gensym("nbx"));
-    class_setSaveFunction(my_numbox_class, my_numbox_save);
-    class_setPropertiesFunction(my_numbox_class, my_numbox_properties);
+    dial_widgetbehavior.w_getrectfn =    dial_getrect;
+    dial_widgetbehavior.w_displacefn =   iemgui_behaviorDisplace;
+    dial_widgetbehavior.w_selectfn =     iemgui_behaviorSelected;
+    dial_widgetbehavior.w_activatefn =   NULL;
+    dial_widgetbehavior.w_deletefn =     iemgui_behaviorDeleted;
+    dial_widgetbehavior.w_visfn =        iemgui_behaviorVisible;
+    dial_widgetbehavior.w_clickfn =      dial_newclick;
+    class_setWidgetBehavior(dial_class, &dial_widgetbehavior);
+    class_setHelpName(dial_class, gensym("nbx"));
+    class_setSaveFunction(dial_class, dial_save);
+    class_setPropertiesFunction(dial_class, dial_properties);
 }
 
 // -----------------------------------------------------------------------------------------------------------
