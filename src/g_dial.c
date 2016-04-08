@@ -1,44 +1,57 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
- * For information on usage and redistribution, and for a DISCLAIMER OF ALL
- * WARRANTIES, see the file, "LICENSE.txt," in this distribution. */
 
-/* my_numbox.c written by Thomas Musil (c) IEM KUG Graz Austria 2000-2001 */
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Original "g_7_guis.h" written by Thomas Musil (c) IEM KUG Graz Austria 2000-2001. */
+
+/* Thanks to Miller Puckette, Guenther Geiger and Krzystof Czaja. */
+
+/* < http://iem.kug.ac.at/ > */
+
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Should be convert to a dial in the future. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
-#include "s_system.h"
 #include "g_canvas.h"
-
 #include "g_iem.h"
-#include <math.h>
 
-#ifdef _WIN32
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-#define IEM_NUMBER_COLOR_EDITED            16711680
+#define IEM_NUMBER_COLOR_EDITED     0xff0000
 
-/*------------------ global varaibles -------------------------*/
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
+static void my_numbox_key (void *z, t_float fkey);
+static void my_numbox_draw_update (t_gobj *client, t_glist *glist);
 
-/*------------------ global functions -------------------------*/
-
-static void my_numbox_key(void *z, t_float fkey);
-static void my_numbox_draw_update(t_gobj *client, t_glist *glist);
-
-/* ------------ nmx gui-my number box ----------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_widgetbehavior my_numbox_widgetbehavior;
+
 static t_class *my_numbox_class;
 
-/* widget helper functions */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 static void my_numbox_tick_reset(t_my_numbox *x)
 {
@@ -132,6 +145,10 @@ void my_numbox_ftoa(t_my_numbox *x)
         }
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void my_numbox_draw_update(t_gobj *client, t_glist *glist)
 {
@@ -354,8 +371,9 @@ void my_numbox_draw(t_my_numbox *x, t_glist *glist, int mode)
         my_numbox_draw_config(x, glist);
 }
 
-/* ------------------------ nbx widgetbehaviour----------------------------- */
-
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 static void my_numbox_getrect(t_gobj *z, t_glist *glist,
                               int *xp1, int *yp1, int *xp2, int *yp2)
@@ -446,7 +464,7 @@ static void my_numbox_properties(t_gobj *z, t_glist *owner)
         interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, my_numbox_draw_update);
 
     }
-    sprintf(buf, "::ui_iem::create %%s Number \
+    sprintf(buf, "::ui_iem::create %%s Dial \
             %d %d Digits %d %d {Box Height} \
             %g {Value Low} %g {Value High} \
             %d Linear Logarithmic \
@@ -743,6 +761,10 @@ static void my_numbox_list(t_my_numbox *x, t_symbol *s, int ac, t_atom *av)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void *my_numbox_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_my_numbox *x = (t_my_numbox *)pd_new(my_numbox_class);
@@ -837,6 +859,10 @@ static void my_numbox_free(t_my_numbox *x)
     gfxstub_deleteforkey(x);
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void g_numbox_setup(void)
 {
     my_numbox_class = class_new(gensym("nbx"), (t_newmethod)my_numbox_new,
@@ -896,3 +922,6 @@ void g_numbox_setup(void)
     class_setSaveFunction(my_numbox_class, my_numbox_save);
     class_setPropertiesFunction(my_numbox_class, my_numbox_properties);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

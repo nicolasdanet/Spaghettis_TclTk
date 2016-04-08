@@ -580,7 +580,7 @@ proc _forceOptions {top} {
             set iemOption2($top) [::ifInteger $iemOption2($top) $iemOption2(${top}.old)]
             set iemOption2($top) [::tcl::mathfunc::max $iemOption2($top) 1]
         }
-        "Slider|Number" {
+        "Slider|Dial" {
             set iemOption1($top) [::ifNumber $iemOption1($top) $iemOption1(${top}.old)]
             set iemOption2($top) [::ifNumber $iemOption2($top) $iemOption2(${top}.old)]
         } 

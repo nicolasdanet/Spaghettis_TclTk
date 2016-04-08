@@ -278,7 +278,7 @@ proc _object {m} {
         -accelerator "${accelerator}+7" \
         -command { ::ui_menu::_handle toggle }
     $m add command \
-        -label [_ "Number"] \
+        -label [_ "Dial"] \
         -accelerator "${accelerator}+8" \
         -command { ::ui_menu::_handle numbox }
     $m add command \
@@ -385,7 +385,7 @@ proc _editing {mode} {
     .menubar.object entryconfigure [_ "Array"]          -state $mode
     .menubar.object entryconfigure [_ "Bang"]           -state $mode
     .menubar.object entryconfigure [_ "Toggle"]         -state $mode
-    .menubar.object entryconfigure [_ "Number"]         -state $mode
+    .menubar.object entryconfigure [_ "Dial"]           -state $mode
     .menubar.object entryconfigure [_ "Panel"]          -state $mode
     .menubar.object entryconfigure [_ "VU"]             -state $mode
     .menubar.object entryconfigure [_ "Vertical"]       -state $mode
@@ -422,7 +422,7 @@ proc _close {} {
                 "Canvas"        { ::ui_canvas::closed $top }
                 "Data"          { ::ui_data::closed   $top }
                 "MIDI"          { ::ui_midi::closed   $top }
-                "Number"        { ::ui_iem::closed    $top }
+                "Dial"          { ::ui_iem::closed    $top }
                 "Panel"         { ::ui_iem::closed    $top }
                 "Path"          { ::ui_path::closed   $top }
                 "Slider"        { ::ui_iem::closed    $top }

@@ -60,7 +60,7 @@
 		3789722B1C4F716800263434 /* g_iem.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C81C4F716700263434 /* g_iem.c */; };
 		3789722C1C4F716800263434 /* g_io.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CA1C4F716700263434 /* g_io.c */; };
 		3789722D1C4F716800263434 /* g_panel.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CB1C4F716700263434 /* g_panel.c */; };
-		3789722E1C4F716800263434 /* g_number.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CC1C4F716700263434 /* g_number.c */; };
+		3789722E1C4F716800263434 /* g_dial.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CC1C4F716700263434 /* g_dial.c */; };
 		3789722F1C4F716800263434 /* g_readwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CD1C4F716700263434 /* g_readwrite.c */; };
 		378972301C4F716800263434 /* g_rtext.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CE1C4F716700263434 /* g_rtext.c */; };
 		378972311C4F716800263434 /* g_scalar.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CF1C4F716700263434 /* g_scalar.c */; };
@@ -282,7 +282,7 @@
 		378971C91C4F716700263434 /* g_iem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_iem.h; path = src/g_iem.h; sourceTree = "<group>"; };
 		378971CA1C4F716700263434 /* g_io.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_io.c; path = src/g_io.c; sourceTree = "<group>"; };
 		378971CB1C4F716700263434 /* g_panel.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_panel.c; path = src/g_panel.c; sourceTree = "<group>"; };
-		378971CC1C4F716700263434 /* g_number.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_number.c; path = src/g_number.c; sourceTree = "<group>"; };
+		378971CC1C4F716700263434 /* g_dial.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_dial.c; path = src/g_dial.c; sourceTree = "<group>"; };
 		378971CD1C4F716700263434 /* g_readwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_readwrite.c; path = src/g_readwrite.c; sourceTree = "<group>"; };
 		378971CE1C4F716700263434 /* g_rtext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_rtext.c; path = src/g_rtext.c; sourceTree = "<group>"; };
 		378971CF1C4F716700263434 /* g_scalar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_scalar.c; path = src/g_scalar.c; sourceTree = "<group>"; };
@@ -713,7 +713,7 @@
 				3770FAA51CB1036A007C7E66 /* g_radio.c */,
 				378971C71C4F716700263434 /* g_slider.c */,
 				378971D61C4F716700263434 /* g_vu.c */,
-				378971CC1C4F716700263434 /* g_number.c */,
+				378971CC1C4F716700263434 /* g_dial.c */,
 				378971CB1C4F716700263434 /* g_panel.c */,
 			);
 			name = IEM;
@@ -958,7 +958,7 @@
 				3789722B1C4F716800263434 /* g_iem.c in Sources */,
 				3789722C1C4F716800263434 /* g_io.c in Sources */,
 				3789722D1C4F716800263434 /* g_panel.c in Sources */,
-				3789722E1C4F716800263434 /* g_number.c in Sources */,
+				3789722E1C4F716800263434 /* g_dial.c in Sources */,
 				3789722F1C4F716800263434 /* g_readwrite.c in Sources */,
 				378972301C4F716800263434 /* g_rtext.c in Sources */,
 				378972311C4F716800263434 /* g_scalar.c in Sources */,
