@@ -192,15 +192,16 @@ typedef struct _vu {
 
 typedef struct _dial {
     t_iem       x_gui;
+    int         x_hasChanged;
+    int         x_isLogarithmic;
+    int         x_isAccurateMoving;
+    int         x_digitsNumber;
+    int         x_digitsFontSize;
+    int         x_logarithmSteps;
     double      x_value;
     double      x_minimum;
     double      x_maximum;
     double      x_k;
-    int         x_hasChanged;
-    int         x_isLogarithmic;
-    int         x_isAccurateMoving;
-    int         x_digitsWidth;
-    int         x_logarithmSteps;
     char        x_t[IEM_DIAL_BUFFER_LENGTH];
     } t_dial;
 
