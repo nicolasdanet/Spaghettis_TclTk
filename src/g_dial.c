@@ -168,9 +168,8 @@ int dial_check_minmax(t_dial *x, double min, double max)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void dial_draw_update(t_gobj *client, t_glist *glist)
+static void dial_draw_update(t_dial *x, t_glist *glist)
 {
-    t_dial *x = (t_dial *)client;
     if (glist_isvisible(glist))
     {
         if(x->x_hasChanged)
@@ -338,10 +337,6 @@ static void dial_draw_io(t_dial* x, t_glist *glist)
         x, 0);*/
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static void dial_draw_select(t_dial *x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
@@ -352,7 +347,7 @@ static void dial_draw_select(t_dial *x, t_glist *glist)
         {
             x->x_hasChanged = 0;
             x->x_t[0] = 0;
-            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+            (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
         }
         sys_vGui(".x%lx.c itemconfigure %lxBASE1 -outline #%6.6x\n",
             canvas, x, IEM_COLOR_SELECTED);
@@ -376,10 +371,14 @@ static void dial_draw_select(t_dial *x, t_glist *glist)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void dial_draw(t_dial *x, t_glist *glist, int mode)
 {
     if(mode == IEM_DRAW_UPDATE)
-        interface_guiQueueAddIfNotAlreadyThere(x, glist, dial_draw_update);
+        dial_draw_update (x, glist);
     else if(mode == IEM_DRAW_MOVE)
         dial_draw_move(x, glist);
     else if(mode == IEM_DRAW_NEW)
@@ -437,7 +436,7 @@ static void dial_motion(t_dial *x, t_float dx, t_float dy)
     else
         x->x_value -= k2*dy;
     dial_clip(x);
-    interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     dial_bang(x);
 }
 
@@ -449,7 +448,7 @@ static void dial_loadbang(t_dial *x)
 {
     if(x->x_gui.iem_loadbang)
     {
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+        // (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
         dial_bang(x);
     }
 }
@@ -540,7 +539,7 @@ static void dial_range(t_dial *x, t_symbol *s, int ac, t_atom *av)
     if(dial_check_minmax(x, (double)atom_getFloatAtIndex(0, ac, av),
                               (double)atom_getFloatAtIndex(1, ac, av)))
     {
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
         /*dial_bang(x);*/
     }
 }
@@ -551,7 +550,7 @@ static void dial_set(t_dial *x, t_float f)
     {
         x->x_value = f;
         dial_clip(x);
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     }
 }
 
@@ -572,7 +571,7 @@ static void dial_log(t_dial *x)
     x->x_isLogarithmic = 1;
     if(dial_check_minmax(x, x->x_minimum, x->x_maximum))
     {
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
         /*dial_bang(x);*/
     }
 }
@@ -628,7 +627,7 @@ static int dial_newclick(t_gobj *z, struct _glist *glist,
         {
             x->x_hasChanged = 0;
             x->x_t[0] = 0;
-            interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+            (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
         }
     }
     return (1);
@@ -644,7 +643,7 @@ static void dial_save(t_gobj *z, t_buffer *b)
     if(x->x_hasChanged)
     {
         x->x_hasChanged = 0;
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     }
     buffer_vAppend(b, "ssiisiiffiisssiiiiiiifi", gensym ("#X"),gensym ("obj"),
                 (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
@@ -669,7 +668,7 @@ static void dial_properties(t_gobj *z, t_glist *owner)
     if(x->x_hasChanged)
     {
         x->x_hasChanged = 0;
-        interface_guiQueueAddIfNotAlreadyThere(x, x->x_gui.iem_glist, dial_draw_update);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
 
     }
     sprintf(buf, "::ui_iem::create %%s Dial \
