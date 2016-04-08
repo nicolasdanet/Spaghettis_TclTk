@@ -597,8 +597,8 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
 
     int width           = IEM_DEFAULT_SIZE;
     int height          = IEM_VUMETER_STEPS * IEM_VUMETER_THICKNESS;
-    int labelX          = IEM_DEFAULT_LABELX_TOP;
-    int labelY          = IEM_DEFAULT_LABELY_TOP;
+    int labelX          = IEM_DEFAULT_LABELX_NEXT;
+    int labelY          = IEM_DEFAULT_LABELY_NEXT;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     int hasScale        = 0;
     t_iemcolors colors  = IEM_DEFAULT_COLORS;
