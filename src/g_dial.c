@@ -52,59 +52,9 @@ static double dial_getStepValue (t_dial *x)
 
 static void dial_setString (t_dial *x)
 {
-    double f=x->x_value;
-    int bufsize, is_exp=0, i, idecimal;
-
-    sprintf(x->x_t, "%g", f);
-    bufsize = strlen(x->x_t);
-    if(bufsize >= 5)/* if it is in exponential mode */
-    {
-        i = bufsize - 4;
-        if((x->x_t[i] == 'e') || (x->x_t[i] == 'E'))
-            is_exp = 1;
-    }
-    if(bufsize > x->x_digitsNumber)/* if to reduce */
-    {
-        if(is_exp)
-        {
-            if(x->x_digitsNumber <= 5)
-            {
-                x->x_t[0] = (f < 0.0 ? '-' : '+');
-                x->x_t[1] = 0;
-            }
-            i = bufsize - 4;
-            for(idecimal=0; idecimal < i; idecimal++)
-                if(x->x_t[idecimal] == '.')
-                    break;
-            if(idecimal > (x->x_digitsNumber - 4))
-            {
-                x->x_t[0] = (f < 0.0 ? '-' : '+');
-                x->x_t[1] = 0;
-            }
-            else
-            {
-                int new_exp_index=x->x_digitsNumber-4, old_exp_index=bufsize-4;
-
-                for(i=0; i < 4; i++, new_exp_index++, old_exp_index++)
-                    x->x_t[new_exp_index] = x->x_t[old_exp_index];
-                x->x_t[x->x_digitsNumber] = 0;
-            }
-
-        }
-        else
-        {
-            for(idecimal=0; idecimal < bufsize; idecimal++)
-                if(x->x_t[idecimal] == '.')
-                    break;
-            if(idecimal > x->x_digitsNumber)
-            {
-                x->x_t[0] = (f < 0.0 ? '-' : '+');
-                x->x_t[1] = 0;
-            }
-            else
-                x->x_t[x->x_digitsNumber] = 0;
-        }
-    }
+    int size = PD_MIN (x->x_digitsNumber + 1, IEM_DIAL_BUFFER_LENGTH);
+    t_error err = string_sprintf (x->x_t, size, "%f", x->x_value);
+    PD_ASSERT (!err); 
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -145,7 +95,7 @@ static void dial_draw_update(t_dial *x, t_glist *glist)
 {
     if (glist_isvisible(glist))
     {
-        if(x->x_hasChanged)
+        if (x->x_hasChanged)
         {
             if(x->x_t[0])
             {
@@ -165,7 +115,7 @@ static void dial_draw_update(t_dial *x, t_glist *glist)
             }
             else
             {
-                dial_setString(x);
+                dial_setString (x);
                 sys_vGui(
                     ".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s} \n",
                     glist_getcanvas(glist), x,
