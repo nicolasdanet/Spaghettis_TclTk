@@ -41,14 +41,16 @@ static t_class *dial_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int dial_getWidth (t_dial *x)
+static double dial_getStepValue (t_dial *x)
 {
-    const float f = 31.0 / 36.0;
-    
-    return (int)((x->x_digitsFontSize * x->x_digitsNumber * f) + (x->x_gui.iem_height / 2.0) + 4);
+    if (x->x_isLogarithmic) {
+        return exp (log (x->x_maximum / x->x_minimum) / (double)(x->x_steps));
+    } else {
+        return 1.0;
+    }
 }
 
-void dial_ftoa(t_dial *x)
+static void dial_setString (t_dial *x)
 {
     double f=x->x_value;
     int bufsize, is_exp=0, i, idecimal;
@@ -105,42 +107,34 @@ void dial_ftoa(t_dial *x)
     }
 }
 
-int dial_check_minmax(t_dial *x, double min, double max)
-{
-    int ret=0;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-    if(x->x_isLogarithmic)
-    {
-        if((min == 0.0)&&(max == 0.0))
-            max = 1.0;
-        if(max > 0.0)
-        {
-            if(min <= 0.0)
-                min = 0.01*max;
-        }
-        else
-        {
-            if(min > 0.0)
-                max = 0.01*min;
-        }
+static int dial_getWidth (t_dial *x)
+{
+    return (int)(x->x_digitsFontSize * x->x_digitsNumber);
+}
+
+static void dial_setRange (t_dial *x, double minimum, double maximum)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    err |= minimum > maximum;
+    
+    if (x->x_isLogarithmic) {
+        err |= (minimum == 0.0);
+        err |= (maximum * minimum < 0.0);
     }
-    x->x_minimum = min;
-    x->x_maximum = max;
-    if(x->x_value < x->x_minimum)
-    {
-        x->x_value = x->x_minimum;
-        ret = 1;
+    
+    if (err) { 
+        x->x_isLogarithmic = 0;
+        post_error (PD_TRANSLATE ("dial: invalid range"));   // --
+        
+    } else {
+        x->x_minimum = minimum;
+        x->x_maximum = maximum;
     }
-    if(x->x_value > x->x_maximum)
-    {
-        x->x_value = x->x_maximum;
-        ret = 1;
-    }
-    if(x->x_isLogarithmic)
-        x->x_k = exp(log(x->x_maximum/x->x_minimum)/(double)(x->x_logarithmSteps));
-    else
-        x->x_k = 1.0;
-    return(ret);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -171,7 +165,7 @@ static void dial_draw_update(t_dial *x, t_glist *glist)
             }
             else
             {
-                dial_ftoa(x);
+                dial_setString(x);
                 sys_vGui(
                     ".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s} \n",
                     glist_getcanvas(glist), x,
@@ -182,7 +176,7 @@ static void dial_draw_update(t_dial *x, t_glist *glist)
         }
         else
         {
-            dial_ftoa(x);
+            dial_setString(x);
             sys_vGui(
                 ".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s} \n",
                 glist_getcanvas(glist), x,
@@ -221,7 +215,7 @@ static void dial_draw_new(t_dial *x, t_glist *glist)
         strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"",
         x->x_gui.iem_fontSize,
              x->x_gui.iem_colorLabel, x);
-    dial_ftoa(x);
+    dial_setString(x);
     sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor w \
         -font [::getFont %d] -fill #%6.6x -tags %lxNUMBER\n",
         canvas, xpos+half+2, ypos+half+d,
@@ -414,7 +408,7 @@ static void dial_motion(t_dial *x, t_float dx, t_float dy)
     if(x->x_isAccurateMoving)
         k2 = 0.01;
     if(x->x_isLogarithmic)
-        x->x_value *= pow(x->x_k, -k2*dy);
+        x->x_value *= pow (dial_getStepValue (x), -k2*dy);
     else
         x->x_value -= k2*dy;
     x->x_value = PD_CLAMP (x->x_value, x->x_minimum, x->x_maximum);
@@ -461,10 +455,8 @@ static void dial_dialog(t_dial *x, t_symbol *s, int argc,
     x->x_gui.iem_height = h;
     if(log_height < 10)
         log_height = 10;
-    x->x_logarithmSteps = log_height;
-    /*if(dial_check_minmax(x, min, max))
-     dial_bang(x);*/
-    dial_check_minmax(x, min, max);
+    x->x_steps = log_height;
+    dial_setRange(x, min, max);
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
@@ -515,12 +507,8 @@ static void dial_label_pos(t_dial *x, t_symbol *s, int ac, t_atom *av)
 
 static void dial_range(t_dial *x, t_symbol *s, int ac, t_atom *av)
 {
-    if(dial_check_minmax(x, (double)atom_getFloatAtIndex(0, ac, av),
-                              (double)atom_getFloatAtIndex(1, ac, av)))
-    {
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-        /*dial_bang(x);*/
-    }
+    dial_setRange(x, (double)atom_getFloatAtIndex(0, ac, av),
+                              (double)atom_getFloatAtIndex(1, ac, av));
 }
 
 static void dial_set(t_dial *x, t_float f)
@@ -536,22 +524,13 @@ static void dial_log_height(t_dial *x, t_float lh)
 {
     if(lh < 10.0)
         lh = 10.0;
-    x->x_logarithmSteps = (int)lh;
-    if(x->x_isLogarithmic)
-        x->x_k = exp(log(x->x_maximum/x->x_minimum)/(double)(x->x_logarithmSteps));
-    else
-        x->x_k = 1.0;
-    
+    x->x_steps = (int)lh;
 }
 
 static void dial_log(t_dial *x)
 {
     x->x_isLogarithmic = 1;
-    if(dial_check_minmax(x, x->x_minimum, x->x_maximum))
-    {
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-        /*dial_bang(x);*/
-    }
+    dial_setRange(x, x->x_minimum, x->x_maximum);
 }
 
 static void dial_lin(t_dial *x)
@@ -632,7 +611,7 @@ static void dial_save(t_gobj *z, t_buffer *b)
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
                 iemgui_serializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[1], bflcol[2],
-                x->x_value, x->x_logarithmSteps);
+                x->x_value, x->x_steps);
     buffer_vAppend(b, ";");
 }
 
@@ -654,7 +633,7 @@ static void dial_properties(t_gobj *z, t_glist *owner)
             %g {Value Low} %g {Value High} \
             %d Linear Logarithmic \
             %d \
-            %d 1024 {Logarithmic Steps} \
+            %d 1024 {Steps} \
             %s %s \
             %s %d %d \
             %d \
@@ -664,7 +643,7 @@ static void dial_properties(t_gobj *z, t_glist *owner)
             x->x_minimum, x->x_maximum,
             x->x_isLogarithmic, 
             x->x_gui.iem_loadbang,
-            x->x_logarithmSteps, /*no multi, but iem-characteristic*/
+            x->x_steps, /*no multi, but iem-characteristic*/
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
@@ -740,7 +719,7 @@ static void *dial_new(t_symbol *s, int argc, t_atom *argv)
     x->x_isLogarithmic = lilo;
     if(log_height < 10)
         log_height = 10;
-    x->x_logarithmSteps = log_height;
+    x->x_steps = log_height;
     if (!strcmp(x->x_gui.iem_send->s_name, "empty"))
         x->x_gui.iem_canSend = 0;
     if (!strcmp(x->x_gui.iem_receive->s_name, "empty"))
@@ -761,7 +740,7 @@ static void *dial_new(t_symbol *s, int argc, t_atom *argv)
         h = 8;
     x->x_gui.iem_height = h;
     x->x_t[0] = 0;
-    dial_check_minmax(x, min, max);
+    dial_setRange(x, min, max);
     iemgui_deserializeColors(&x->x_gui, bflcol);
     iemgui_checkSendReceiveLoop(&x->x_gui);
     x->x_hasChanged = 0;

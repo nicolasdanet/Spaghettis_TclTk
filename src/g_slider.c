@@ -310,7 +310,7 @@ static void slider_setRange (t_slider *x, double minimum, double maximum)
     
     if (err) { 
         x->x_isLogarithmic = 0;
-        post_error (PD_TRANSLATE ("slider: invalid logarithmic range"));   // --
+        post_error (PD_TRANSLATE ("slider: invalid range"));   // --
     } else {
         x->x_minimum = minimum;
         x->x_maximum = maximum;

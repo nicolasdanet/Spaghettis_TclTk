@@ -197,11 +197,10 @@ typedef struct _dial {
     int         x_isAccurateMoving;
     int         x_digitsNumber;
     int         x_digitsFontSize;
-    int         x_logarithmSteps;
+    int         x_steps;
     double      x_value;
     double      x_minimum;
     double      x_maximum;
-    double      x_k;
     char        x_t[IEM_DIAL_BUFFER_LENGTH];
     } t_dial;
 
