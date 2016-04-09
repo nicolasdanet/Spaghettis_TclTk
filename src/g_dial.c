@@ -91,49 +91,17 @@ static void dial_setRange (t_dial *x, double minimum, double maximum)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void dial_draw_update(t_dial *x, t_glist *glist)
+static void dial_draw_update (t_dial *x, t_glist *glist)
 {
-    if (glist_isvisible(glist))
-    {
-        if (x->x_hasChanged)
-        {
-            if(x->x_t[0])
-            {
-                char *cp=x->x_t;
-                int sl = strlen(x->x_t);
-
-                x->x_t[sl] = '>';
-                x->x_t[sl+1] = 0;
-                if(sl >= x->x_digitsNumber)
-                    cp += sl - x->x_digitsNumber + 1;
-                sys_vGui(
-                    ".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s} \n",
-                         glist_getcanvas(glist), x,
-                         x->x_gui.iem_isSelected? IEM_COLOR_SELECTED:x->x_gui.iem_colorForeground,
-                         cp);
-                x->x_t[sl] = 0;
-            }
-            else
-            {
-                dial_setString (x);
-                sys_vGui(
-                    ".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s} \n",
-                    glist_getcanvas(glist), x,
-                    x->x_gui.iem_isSelected? IEM_COLOR_SELECTED:x->x_gui.iem_colorForeground,
-                    x->x_t);
-                x->x_t[0] = 0;
-            }
-        }
-        else
-        {
-            dial_setString(x);
-            sys_vGui(
-                ".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s} \n",
-                glist_getcanvas(glist), x,
-                x->x_gui.iem_isSelected? IEM_COLOR_SELECTED:x->x_gui.iem_colorForeground,
+    if (glist_isvisible (glist)) {
+    //
+    dial_setString (x);
+    sys_vGui ( ".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s}\n",
+                glist_getcanvas (glist),
+                x,
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorForeground,
                 x->x_t);
-            x->x_t[0] = 0;
-        }
+    //
     }
 }
 
@@ -267,14 +235,8 @@ static void dial_draw_select(t_dial *x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
 
-    if(x->x_gui.iem_isSelected)
+    if (x->x_gui.iem_isSelected)
     {
-        if(x->x_hasChanged)
-        {
-            x->x_hasChanged = 0;
-            x->x_t[0] = 0;
-            (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-        }
         sys_vGui(".x%lx.c itemconfigure %lxBASE1 -outline #%6.6x\n",
             canvas, x, IEM_COLOR_SELECTED);
         sys_vGui(".x%lx.c itemconfigure %lxBASE2 -fill #%6.6x\n",
@@ -525,17 +487,6 @@ static int dial_newclick(t_gobj *z, struct _glist *glist,
             x->x_isAccurateMoving = 1;
         else
             x->x_isAccurateMoving = 0;
-        if(!x->x_hasChanged)
-        {
-            x->x_hasChanged = 1;
-            x->x_t[0] = 0;
-        }
-        else
-        {
-            x->x_hasChanged = 0;
-            x->x_t[0] = 0;
-            (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-        }
     }
     return (1);
 }
@@ -547,11 +498,7 @@ static void dial_save(t_gobj *z, t_buffer *b)
     t_symbol *srl[3];
 
     iemgui_serialize(&x->x_gui, srl, bflcol);
-    if(x->x_hasChanged)
-    {
-        x->x_hasChanged = 0;
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-    }
+
     buffer_vAppend(b, "ssiisiiffiisssiiiiiiifi", gensym ("#X"),gensym ("obj"),
                 (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
                 gensym ("nbx"), x->x_digitsNumber, x->x_gui.iem_height,
@@ -572,12 +519,7 @@ static void dial_properties(t_gobj *z, t_glist *owner)
     t_symbol *srl[3];
 
     iemgui_serializeNames(&x->x_gui, srl);
-    if(x->x_hasChanged)
-    {
-        x->x_hasChanged = 0;
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
 
-    }
     sprintf(buf, "::ui_iem::create %%s Dial \
             %d %d Digits %d %d Size \
             %g {Value Low} %g {Value High} \
@@ -689,11 +631,9 @@ static void *dial_new(t_symbol *s, int argc, t_atom *argv)
     if(h < 8)
         h = 8;
     x->x_gui.iem_height = h;
-    x->x_t[0] = 0;
     dial_setRange(x, min, max);
     iemgui_deserializeColors(&x->x_gui, bflcol);
     iemgui_checkSendReceiveLoop(&x->x_gui);
-    x->x_hasChanged = 0;
     outlet_new(&x->x_gui.iem_obj, &s_float);
     return (x);
 }

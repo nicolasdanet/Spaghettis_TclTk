@@ -192,16 +192,15 @@ typedef struct _vu {
 
 typedef struct _dial {
     t_iem       x_gui;
-    int         x_hasChanged;
+    char        x_t[IEM_DIAL_BUFFER_LENGTH];
     int         x_isLogarithmic;
     int         x_isAccurateMoving;
     int         x_digitsNumber;
     int         x_digitsFontSize;
     int         x_steps;
-    double      x_value;
     double      x_minimum;
     double      x_maximum;
-    char        x_t[IEM_DIAL_BUFFER_LENGTH];
+    double      x_value;
     } t_dial;
 
 typedef struct _my_canvas {
