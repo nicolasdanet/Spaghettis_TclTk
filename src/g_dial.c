@@ -292,181 +292,187 @@ void dial_draw(t_dial *x, t_glist *glist, int mode)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void dial_bang(t_dial *x)
+static void dial_out (t_dial *x)
 {
-    outlet_float (x->x_gui.iem_obj.te_outlet, x->x_floatValue);
-    if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
-        pd_float(x->x_gui.iem_send->s_thing, x->x_floatValue);
-}
-
-static void dial_float(t_dial *x, t_float f)
-{
-    dial_set(x, f);
-    if(x->x_gui.iem_goThrough)
-        dial_bang(x);
-}
-
-static void dial_list(t_dial *x, t_symbol *s, int ac, t_atom *av)
-{
-    if (IS_FLOAT(av + 0))
-    {
-        dial_set(x, atom_getFloatAtIndex(0, ac, av));
-        dial_bang(x);
-    }
-}
-
-static void dial_click(t_dial *x, t_float xpos, t_float ypos,
-                            t_float shift, t_float ctrl, t_float alt)
-{
-    glist_grab (x->x_gui.iem_glist, &x->x_gui.iem_obj.te_g,
-        (t_glistmotionfn)dial_motion, NULL, xpos, ypos);
-}
+    outlet_float (cast_object (x)->te_outlet, x->x_floatValue);
     
-static void dial_motion(t_dial *x, t_float dx, t_float dy)
-{
-    double k2=1.0;
-
-    if(x->x_isAccurateMoving)
-        k2 = 0.01;
-    if(x->x_isLogarithmic)
-        x->x_floatValue *= pow (dial_getStepValue (x), -k2*dy);
-    else
-        x->x_floatValue -= k2*dy;
-    x->x_floatValue = PD_CLAMP (x->x_floatValue, x->x_minimum, x->x_maximum);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-    dial_bang(x);
+    if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) {
+        pd_float(x->x_gui.iem_send->s_thing, x->x_floatValue);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void dial_loadbang(t_dial *x)
+static void dial_bang (t_dial *x)
 {
-    if(x->x_gui.iem_loadbang)
-    {
-        // (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-        dial_bang(x);
+    dial_out (x);
+}
+
+static void dial_float (t_dial *x, t_float f)
+{
+    dial_set (x, f);
+    
+    if (x->x_gui.iem_goThrough) { dial_out (x); }
+}
+
+static void dial_list (t_dial *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc && IS_FLOAT (argv)) { dial_float (x, atom_getFloatAtIndex (0, argc, argv)); }
+}
+
+static void dial_click (t_dial *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
+{
+    glist_grab (x->x_gui.iem_glist, cast_gobj (x), (t_glistmotionfn)dial_motion, NULL, a, b);
+}
+    
+static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY)
+{
+    double k = -1.0;
+
+    if (x->x_isAccurateMoving) { k = -0.01; }
+    
+    if (x->x_isLogarithmic) { x->x_floatValue *= pow (dial_getStepValue (x), k * deltaY); } 
+    else {
+        x->x_floatValue += k * deltaY;
     }
+    
+    x->x_floatValue = PD_CLAMP (x->x_floatValue, x->x_minimum, x->x_maximum);
+    
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    
+    dial_out (x);
 }
 
-static void dial_init(t_dial *x, t_float f)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void dial_loadbang (t_dial *x)
 {
-    x->x_gui.iem_loadbang = (f==0.0)?0:1;
+    if (x->x_gui.iem_loadbang) { dial_out (x); }
 }
 
-static void dial_dialog(t_dial *x, t_symbol *s, int argc,
-    t_atom *argv)
+static void dial_initialize (t_dial *x, t_float f)
 {
-    int w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
-    int h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
-    double min = (double)atom_getFloatAtIndex(2, argc, argv);
-    double max = (double)atom_getFloatAtIndex(3, argc, argv);
-    int lilo = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
-    int log_height = (int)(t_int)atom_getFloatAtIndex(6, argc, argv);
+    x->x_gui.iem_loadbang = (f != 0.0);
+}
 
-    if(lilo != 0) lilo = 1;
-    x->x_isLogarithmic = lilo;
-    iemgui_fromDialog(&x->x_gui, argc, argv);
-    if(w < 1)
-        w = 1;
-    x->x_digitsNumber = w;
-    if(h < 8)
-        h = 8;
-    x->x_gui.iem_height = h;
-    if(log_height < 10)
-        log_height = 10;
-    x->x_steps = log_height;
-    dial_setRange(x, min, max);
+static void dial_dialog (t_dial *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc == IEM_DIALOG_SIZE) {
+    //
+    int digits          = (int)atom_getFloatAtIndex (0, argc, argv);
+    int height          = (int)atom_getFloatAtIndex (1, argc, argv);
+    double minimum      = (double)atom_getFloatAtIndex (2, argc, argv);
+    double maximum      = (double)atom_getFloatAtIndex (3, argc, argv);
+    int isLogarithmic   = (int)atom_getFloatAtIndex (4, argc, argv);
+    int steps           = (int)atom_getFloatAtIndex (6, argc, argv);
+    
+    iemgui_fromDialog (&x->x_gui, argc, argv);
+    
+    x->x_gui.iem_height = PD_MAX (height, IEM_MINIMUM_HEIGHT);
+    x->x_isLogarithmic  = (isLogarithmic != 0);
+    x->x_digitsNumber   = PD_MAX (digits, 1);
+    x->x_steps          = PD_MAX (steps, 1);
+    
+    dial_setRange (x, minimum, maximum);
+    
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-    canvas_fixlines(x->x_gui.iem_glist, cast_object (x));
-}
-
-static void dial_size(t_dial *x, t_symbol *s, int ac, t_atom *av)
-{
-    int h, w;
-
-    w = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
-    if(w < 1)
-        w = 1;
-    x->x_digitsNumber = w;
-    if(ac > 1)
-    {
-        h = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
-        if(h < 8)
-            h = 8;
-        x->x_gui.iem_height = h;
+    
+    canvas_fixlines (x->x_gui.iem_glist, cast_object (x));
+    //
     }
-    iemgui_boxChanged((void *)x, &x->x_gui);
 }
 
-static void dial_delta(t_dial *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void dial_pos(t_dial *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void dial_label_font(t_dial *x,
-    t_symbol *s, int ac, t_atom *av)
+static void dial_size (t_dial *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int f = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
+    if (argc) {
+    //
+    int digits = (int)atom_getFloatAtIndex (0, argc, argv);
 
-    if(f < 4)
-        f = 4;
-    x->x_gui.iem_fontSize = f;
-    f = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
-    if((f < 0) || (f > 2))
-        f = 0;
-    x->x_gui.iem_fontStyle = f;
-    iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);
+    x->x_digitsNumber = PD_MAX (digits, 1);
+    
+    if (argc > 1) {
+        int height = (int)atom_getFloatAtIndex (1, argc, argv);
+        x->x_gui.iem_height = PD_MAX (height, IEM_MINIMUM_HEIGHT);
+    }
+    
+    iemgui_boxChanged ((void *)x, &x->x_gui);
+    //
+    }
 }
 
-static void dial_label_pos(t_dial *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void dial_range(t_dial *x, t_symbol *s, int ac, t_atom *av)
+static void dial_move (t_dial *x, t_symbol *s, int argc, t_atom *argv)
 {
-    dial_setRange(x, (double)atom_getFloatAtIndex(0, ac, av),
-                              (double)atom_getFloatAtIndex(1, ac, av));
+    iemgui_movePosition ((void *)x, &x->x_gui, s, argc, argv);
 }
 
-static void dial_set(t_dial *x, t_float f)
+static void dial_position (t_dial *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if(x->x_floatValue != f)
-    {
+    iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv);
+}
+
+static void dial_labelFont (t_dial *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv);
+}
+
+static void dial_labelPosition (t_dial *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_setLabelPosition ((void *)x, &x->x_gui, s, argc, argv);
+}
+
+static void dial_range (t_dial *x, t_symbol *s, int argc, t_atom *argv)
+{
+    double minimum = (double)atom_getFloatAtIndex (0, argc, argv);
+    double maximum = (double)atom_getFloatAtIndex (1, argc, argv);
+    
+    dial_setRange (x, minimum, maximum);
+}
+
+static void dial_set (t_dial *x, t_float f)
+{
+    if (x->x_floatValue != f) {
         x->x_floatValue = PD_CLAMP (f, x->x_minimum, x->x_maximum);
         (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     }
 }
 
-static void dial_log_height(t_dial *x, t_float lh)
+static void dial_steps (t_dial *x, t_float f)
 {
-    if(lh < 10.0)
-        lh = 10.0;
-    x->x_steps = (int)lh;
+    x->x_steps = PD_MAX ((int)f, 1);
 }
 
-static void dial_log(t_dial *x)
+static void dial_logarithmic (t_dial *x)
 {
     x->x_isLogarithmic = 1;
-    dial_setRange(x, x->x_minimum, x->x_maximum);
+    
+    dial_setRange (x, x->x_minimum, x->x_maximum);
 }
 
-static void dial_lin(t_dial *x)
+static void dial_linear (t_dial *x)
 {
     x->x_isLogarithmic = 0;
 }
 
-static void dial_send(t_dial *x, t_symbol *s)
-{iemgui_setSend(x, &x->x_gui, s);}
+static void dial_send (t_dial *x, t_symbol *s)
+{
+    iemgui_setSend ((void *)x, &x->x_gui, s);
+}
 
-static void dial_receive(t_dial *x, t_symbol *s)
-{iemgui_setReceive(x, &x->x_gui, s);}
+static void dial_receive (t_dial *x, t_symbol *s)
+{
+    iemgui_setReceive ((void *)x, &x->x_gui, s);
+}
 
-static void dial_label(t_dial *x, t_symbol *s)
-{iemgui_setLabel((void *)x, &x->x_gui, s);}
+static void dial_label (t_dial *x, t_symbol *s)
+{
+    iemgui_setLabel ((void *)x, &x->x_gui, s);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -530,7 +536,7 @@ static void dial_behaviorSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, ";");
 }
 
-static void dial_properties (t_gobj *z, t_glist *owner)
+static void dial_behaviorProperties (t_gobj *z, t_glist *owner)
 {
     t_dial *x = (t_dial *)z;
     t_error err = PD_ERROR_NONE;
@@ -699,34 +705,34 @@ void dial_setup (void)
     class_addClick (c, dial_click);
     class_addMotion (c, dial_motion);
 
-    class_addMethod (c, (t_method)dial_loadbang,    gensym ("loadbang"),        A_NULL);
-    class_addMethod (c, (t_method)dial_init,        gensym ("initialize"),      A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)dial_dialog,      gensym ("dialog"),          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_size,        gensym ("size"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_delta,       gensym ("move"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_pos,         gensym ("position"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_label_font,  gensym ("labelfont"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_label_pos,   gensym ("labelposition"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_range,       gensym ("range"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_set,         gensym ("set"),             A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)dial_log_height,  gensym ("steps"),           A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)dial_log,         gensym ("logarithmic"),     A_NULL);
-    class_addMethod (c, (t_method)dial_lin,         gensym ("linear"),          A_NULL);
-    class_addMethod (c, (t_method)dial_send,        gensym ("send"),            A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)dial_receive,     gensym ("receive"),         A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)dial_label,       gensym ("label"),           A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)dial_loadbang,        gensym ("loadbang"),        A_NULL);
+    class_addMethod (c, (t_method)dial_initialize,      gensym ("initialize"),      A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)dial_dialog,          gensym ("dialog"),          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_size,            gensym ("size"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_move,            gensym ("move"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_position,        gensym ("position"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_labelFont,       gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_labelPosition,   gensym ("labelposition"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_range,           gensym ("range"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_set,             gensym ("set"),             A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)dial_steps,           gensym ("steps"),           A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)dial_logarithmic,     gensym ("logarithmic"),     A_NULL);
+    class_addMethod (c, (t_method)dial_linear,          gensym ("linear"),          A_NULL);
+    class_addMethod (c, (t_method)dial_send,            gensym ("send"),            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)dial_receive,         gensym ("receive"),         A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)dial_label,           gensym ("label"),           A_DEFSYMBOL, A_NULL);
 
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)dial_init,        gensym ("init"),            A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)dial_delta,       gensym ("delta"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_pos,         gensym ("pos"),             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_dummy,       gensym ("color"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_label_pos,   gensym ("label_pos"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_label_font,  gensym ("label_font"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_log_height,  gensym ("log_height"),      A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)dial_log,         gensym ("log"),             A_NULL);
-    class_addMethod (c, (t_method)dial_lin,         gensym ("lin"),             A_NULL);
+    class_addMethod (c, (t_method)dial_initialize,      gensym ("init"),            A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)dial_move,            gensym ("delta"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_position,        gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_dummy,           gensym ("color"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_labelPosition,   gensym ("label_pos"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_labelFont,       gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_steps,           gensym ("log_height"),      A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)dial_logarithmic,     gensym ("log"),             A_NULL);
+    class_addMethod (c, (t_method)dial_linear,          gensym ("lin"),             A_NULL);
     
     class_addCreator ((t_newmethod)dial_new, gensym ("my_numbox"), A_GIMME, A_NULL);
     
@@ -743,7 +749,7 @@ void dial_setup (void)
     class_setWidgetBehavior (c, &dial_widgetBehavior);
     class_setHelpName (c, gensym ("nbx"));
     class_setSaveFunction (c, dial_behaviorSave);
-    class_setPropertiesFunction (c, dial_properties);
+    class_setPropertiesFunction (c, dial_behaviorProperties);
     
     dial_class = c;
 }
