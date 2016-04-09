@@ -443,6 +443,8 @@ static void slider_dialog (t_slider *x, t_symbol *s, int argc, t_atom *argv)
     slider_setWidth (x, width);                 /* Ditto. */
     slider_setRange (x, minimum, maximum);      /* Ditto. */
     
+    x->x_floatValue = slider_getValue (x);
+    
     iemgui_boxChanged ((void *)x, &x->x_gui);
     //
     }
@@ -485,6 +487,8 @@ static void slider_range (t_slider *x, t_symbol *s, int argc, t_atom *argv)
     double maximum = (double)atom_getFloatAtIndex (1, argc, argv);
     
     slider_setRange (x, minimum, maximum);
+    
+    x->x_floatValue = slider_getValue (x);
 }
 
 static void slider_set (t_slider *x, t_float f)
@@ -514,7 +518,11 @@ static void slider_steady (t_slider *x, t_float f)
 
 static void slider_logarithmic (t_slider *x)
 {
-    x->x_isLogarithmic = 1; slider_setRange (x, x->x_minimum, x->x_maximum);
+    x->x_isLogarithmic = 1; 
+    
+    slider_setRange (x, x->x_minimum, x->x_maximum);
+    
+    x->x_floatValue = slider_getValue (x);
 }
 
 static void slider_linear (t_slider *x)
