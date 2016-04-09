@@ -60,8 +60,8 @@
 #include "g_toggle.c"
 #include "g_radio.c"
 #include "g_slider.c"
-#include "g_vu.c"
 #include "g_dial.c"
+#include "g_vu.c"
 #include "g_panel.c"
 
 /* Control. */

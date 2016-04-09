@@ -53,7 +53,7 @@ static double dial_getStepValue (t_dial *x)
 static void dial_setString (t_dial *x)
 {
     int size = PD_MIN (x->x_digitsNumber + 1, IEM_DIAL_BUFFER_LENGTH);
-    t_error err = string_sprintf (x->x_t, size, "%f", x->x_value);
+    t_error err = string_sprintf (x->x_t, size, "%f", x->x_floatValue);
     PD_ASSERT (!err); 
 }
 
@@ -96,7 +96,7 @@ static void dial_draw_update (t_dial *x, t_glist *glist)
     if (glist_isvisible (glist)) {
     //
     dial_setString (x);
-    sys_vGui ( ".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s}\n",
+    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s}\n",
                 glist_getcanvas (glist),
                 x,
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorForeground,
@@ -285,9 +285,9 @@ void dial_draw(t_dial *x, t_glist *glist, int mode)
 
 static void dial_bang(t_dial *x)
 {
-    outlet_float(x->x_gui.iem_obj.te_outlet, x->x_value);
+    outlet_float (x->x_gui.iem_obj.te_outlet, x->x_floatValue);
     if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
-        pd_float(x->x_gui.iem_send->s_thing, x->x_value);
+        pd_float(x->x_gui.iem_send->s_thing, x->x_floatValue);
 }
 
 static void dial_float(t_dial *x, t_float f)
@@ -320,10 +320,10 @@ static void dial_motion(t_dial *x, t_float dx, t_float dy)
     if(x->x_isAccurateMoving)
         k2 = 0.01;
     if(x->x_isLogarithmic)
-        x->x_value *= pow (dial_getStepValue (x), -k2*dy);
+        x->x_floatValue *= pow (dial_getStepValue (x), -k2*dy);
     else
-        x->x_value -= k2*dy;
-    x->x_value = PD_CLAMP (x->x_value, x->x_minimum, x->x_maximum);
+        x->x_floatValue -= k2*dy;
+    x->x_floatValue = PD_CLAMP (x->x_floatValue, x->x_minimum, x->x_maximum);
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     dial_bang(x);
 }
@@ -425,9 +425,9 @@ static void dial_range(t_dial *x, t_symbol *s, int ac, t_atom *av)
 
 static void dial_set(t_dial *x, t_float f)
 {
-    if(x->x_value != f)
+    if(x->x_floatValue != f)
     {
-        x->x_value = PD_CLAMP (f, x->x_minimum, x->x_maximum);
+        x->x_floatValue = PD_CLAMP (f, x->x_minimum, x->x_maximum);
         (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     }
 }
@@ -508,7 +508,7 @@ static void dial_save(t_gobj *z, t_buffer *b)
                 x->x_gui.iem_labelX, x->x_gui.iem_labelY,
                 iemgui_serializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
                 bflcol[0], bflcol[1], bflcol[2],
-                x->x_value, x->x_steps);
+                x->x_floatValue, x->x_steps);
     buffer_vAppend(b, ";");
 }
 
@@ -604,9 +604,9 @@ static void *dial_new(t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_canReceive = 1;
     x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
     if(x->x_gui.iem_loadbang)
-        x->x_value = v;
+        x->x_floatValue = v;
     else
-        x->x_value = 0.0;
+        x->x_floatValue = 0.0;
     if(lilo != 0) lilo = 1;
     x->x_isLogarithmic = lilo;
     if(log_height < 10)

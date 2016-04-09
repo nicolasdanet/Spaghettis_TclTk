@@ -178,6 +178,19 @@ typedef struct _slider {
     t_float     x_floatValue;
     } t_slider;
 
+typedef struct _dial {
+    t_iem       x_gui;
+    char        x_t[IEM_DIAL_BUFFER_LENGTH];
+    int         x_isLogarithmic;
+    int         x_isAccurateMoving;
+    int         x_digitsNumber;
+    int         x_digitsFontSize;
+    int         x_steps;
+    double      x_minimum;
+    double      x_maximum;
+    t_float     x_floatValue;
+    } t_dial;
+    
 typedef struct _vu {
     t_iem       x_gui;
     int         x_hasScale;                     /* Unused but kept for compatibility. */
@@ -189,19 +202,6 @@ typedef struct _vu {
     void        *x_outLeft;
     void        *x_outRight;
     } t_vu;
-
-typedef struct _dial {
-    t_iem       x_gui;
-    char        x_t[IEM_DIAL_BUFFER_LENGTH];
-    int         x_isLogarithmic;
-    int         x_isAccurateMoving;
-    int         x_digitsNumber;
-    int         x_digitsFontSize;
-    int         x_steps;
-    double      x_minimum;
-    double      x_maximum;
-    double      x_value;
-    } t_dial;
 
 typedef struct _my_canvas {
     t_iem       x_gui;
