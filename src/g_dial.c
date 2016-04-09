@@ -27,6 +27,15 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+#define IEM_DIAL_DEFAULT_DIGITS     5
+#define IEM_DIAL_DEFAULT_STEPS      256
+#define IEM_DIAL_DEFAULT_MINIMUM    0
+#define IEM_DIAL_DEFAULT_MAXIMUM    127
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void dial_set    (t_dial *x, t_float f);
 static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY);
 
@@ -557,92 +566,103 @@ static void dial_dummy (t_dial *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *dial_new(t_symbol *s, int argc, t_atom *argv)
+static void *dial_new (t_symbol *s, int argc, t_atom *argv)
 {
-    t_dial *x = (t_dial *)pd_new(dial_class);
-    int bflcol[]={-262144, -1, -1};
-    int w=5, h=14;
-    int lilo=0, f=0, ldx=0, ldy=-8;
-    int fs=10;
-    int log_height=256;
-    double min=-1.0e+37, max=1.0e+37,v=0.0;
-    char str[144];
-
-    if((argc >= 17)&&IS_FLOAT(argv + 0)&&IS_FLOAT(argv + 1)
-       &&IS_FLOAT(argv + 2)&&IS_FLOAT(argv + 3)
-       &&IS_FLOAT(argv + 4)&&IS_FLOAT(argv + 5)
-       &&(IS_SYMBOL(argv + 6)||IS_FLOAT(argv + 6))
-       &&(IS_SYMBOL(argv + 7)||IS_FLOAT(argv + 7))
-       &&(IS_SYMBOL(argv + 8)||IS_FLOAT(argv + 8))
-       &&IS_FLOAT(argv + 9)&&IS_FLOAT(argv + 10)
-       &&IS_FLOAT(argv + 11)&&IS_FLOAT(argv + 12)&&IS_FLOAT(argv + 13)
-       &&IS_FLOAT(argv + 14)&&IS_FLOAT(argv + 15)&&IS_FLOAT(argv + 16))
+    t_dial *x = (t_dial *)pd_new (dial_class);
+    
+    int digits          = IEM_DIAL_DEFAULT_DIGITS;
+    int height          = IEM_DEFAULT_SIZE;
+    int isLogarithmic   = 0;
+    int labelX          = IEM_DEFAULT_LABELX_TOP;
+    int labelY          = IEM_DEFAULT_LABELY_TOP;
+    int labelFontSize   = IEM_DEFAULT_FONTSIZE;
+    int steps           = IEM_DIAL_DEFAULT_STEPS;
+    double minimum      = IEM_DIAL_DEFAULT_MINIMUM;
+    double maximum      = IEM_DIAL_DEFAULT_MAXIMUM;
+    double value        = IEM_DIAL_DEFAULT_MINIMUM;
+    t_iemcolors colors  = IEM_DEFAULT_COLORS;
+    
+    if (argc >= 17                                                                  // --
+            && IS_FLOAT (argv + 0)                                                  // Number of digits.
+            && IS_FLOAT (argv + 1)                                                  // Height.
+            && IS_FLOAT (argv + 2)                                                  // Range minimum.
+            && IS_FLOAT (argv + 3)                                                  // Range maximum.
+            && IS_FLOAT (argv + 4)                                                  // Is logarithmic.
+            && IS_FLOAT (argv + 5)                                                  // Loadbang.
+            && (IS_SYMBOL (argv + 6) || IS_FLOAT (argv + 6))                        // Send.
+            && (IS_SYMBOL (argv + 7) || IS_FLOAT (argv + 7))                        // Receive.
+            && (IS_SYMBOL (argv + 8) || IS_FLOAT (argv + 8))                        // Label.
+            && IS_FLOAT (argv + 9)                                                  // Label X.
+            && IS_FLOAT (argv + 10)                                                 // Label Y.
+            && IS_FLOAT (argv + 11)                                                 // Label font.
+            && IS_FLOAT (argv + 12)                                                 // Label font size.
+            && IS_FLOAT (argv + 13)                                                 // Background color.
+            && IS_FLOAT (argv + 14)                                                 // Foreground color.
+            && IS_FLOAT (argv + 15)                                                 // Label color.
+            && IS_FLOAT (argv + 16))                                                // Value.
     {
-        w = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
-        h = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
-        min = (double)atom_getFloatAtIndex(2, argc, argv);
-        max = (double)atom_getFloatAtIndex(3, argc, argv);
-        lilo = (int)(t_int)atom_getFloatAtIndex(4, argc, argv);
-        iemgui_deserializeLoadbang(&x->x_gui, (t_int)atom_getFloatAtIndex(5, argc, argv));
-        iemgui_deserializeNamesByIndex(&x->x_gui, 6, argv);
-        ldx = (int)(t_int)atom_getFloatAtIndex(9, argc, argv);
-        ldy = (int)(t_int)atom_getFloatAtIndex(10, argc, argv);
-        iemgui_deserializeFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(11, argc, argv));
-        fs = (int)(t_int)atom_getFloatAtIndex(12, argc, argv);
-        bflcol[0] = (int)(t_int)atom_getFloatAtIndex(13, argc, argv);
-        bflcol[1] = (int)(t_int)atom_getFloatAtIndex(14, argc, argv);
-        bflcol[2] = (int)(t_int)atom_getFloatAtIndex(15, argc, argv);
-        v = atom_getFloatAtIndex(16, argc, argv);
+        digits                      = (int)atom_getFloatAtIndex (0,  argc, argv);
+        height                      = (int)atom_getFloatAtIndex (1,  argc, argv);
+        minimum                     = (double)atom_getFloatAtIndex (2, argc, argv);
+        maximum                     = (double)atom_getFloatAtIndex (3, argc, argv);
+        isLogarithmic               = (int)atom_getFloatAtIndex (4,  argc, argv);
+        labelX                      = (int)atom_getFloatAtIndex (9,  argc, argv);
+        labelY                      = (int)atom_getFloatAtIndex (10, argc, argv);
+        labelFontSize               = (int)atom_getFloatAtIndex (12, argc, argv);
+        colors.c_colorBackground    = (int)atom_getFloatAtIndex (13, argc, argv);
+        colors.c_colorForeground    = (int)atom_getFloatAtIndex (14, argc, argv);
+        colors.c_colorLabel         = (int)atom_getFloatAtIndex (15, argc, argv);
+        value                       = atom_getFloatAtIndex (16, argc, argv);
+        
+        if (argc == 18 && IS_FLOAT (argv + 17)) {
+            steps = (int)atom_getFloatAtIndex (17, argc, argv);
+        }
+    
+        iemgui_deserializeLoadbang (&x->x_gui, (int)atom_getFloatAtIndex (5, argc, argv));
+        iemgui_deserializeNamesByIndex (&x->x_gui, 6, argv);
+        iemgui_deserializeFontStyle (&x->x_gui, (int)atom_getFloatAtIndex (11, argc, argv));
+        
+    } else {
+        iemgui_deserializeNamesByIndex (&x->x_gui, 6, NULL);
     }
-    else iemgui_deserializeNamesByIndex(&x->x_gui, 6, 0);
-    if((argc == 18)&&IS_FLOAT(argv + 17))
-    {
-        log_height = (int)(t_int)atom_getFloatAtIndex(17, argc, argv);
+    
+    x->x_gui.iem_glist      = (t_glist *)canvas_getcurrent();
+    x->x_gui.iem_draw       = (t_iemfn)dial_draw;
+    x->x_gui.iem_canSend    = (x->x_gui.iem_send == iemgui_empty()) ? 0 : 1;
+    x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;
+    x->x_gui.iem_width      = 0;
+    x->x_gui.iem_height     = PD_MAX (height, IEM_MINIMUM_WIDTH);
+    x->x_gui.iem_labelX     = labelX;
+    x->x_gui.iem_labelY     = labelY;
+    x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
+    x->x_digitsFontSize     = IEM_DEFAULT_FONTSIZE;
+    
+    iemgui_checkSendReceiveLoop (&x->x_gui);
+    iemgui_deserializeColors (&x->x_gui, &colors);
+    
+    if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
+        
+    x->x_isLogarithmic  = (isLogarithmic != 0);
+    x->x_steps          = PD_MAX (steps, 1);
+    x->x_digitsNumber   = PD_MAX (digits, 1);
+    
+    if (x->x_gui.iem_loadbang) { x->x_floatValue = value; }
+    else {
+        x->x_floatValue = IEM_DIAL_DEFAULT_MINIMUM;
     }
-    x->x_gui.iem_draw = (t_iemfn)dial_draw;
-    x->x_gui.iem_canSend = 1;
-    x->x_gui.iem_canReceive = 1;
-    x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
-    if(x->x_gui.iem_loadbang)
-        x->x_floatValue = v;
-    else
-        x->x_floatValue = 0.0;
-    if(lilo != 0) lilo = 1;
-    x->x_isLogarithmic = lilo;
-    if(log_height < 10)
-        log_height = 10;
-    x->x_steps = log_height;
-    if (!strcmp(x->x_gui.iem_send->s_name, "empty"))
-        x->x_gui.iem_canSend = 0;
-    if (!strcmp(x->x_gui.iem_receive->s_name, "empty"))
-        x->x_gui.iem_canReceive = 0;
-
-    if (x->x_gui.iem_canReceive)
-        pd_bind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
-    x->x_gui.iem_labelX = ldx;
-    x->x_gui.iem_labelY = ldy;
-    if(fs < 4)
-        fs = 4;
-    x->x_gui.iem_fontSize = fs;
-    x->x_digitsFontSize = IEM_DEFAULT_FONTSIZE;
-    if(w < 1)
-        w = 1;
-    x->x_digitsNumber = w;
-    if(h < 8)
-        h = 8;
-    x->x_gui.iem_height = h;
-    dial_setRange(x, min, max);
-    iemgui_deserializeColors(&x->x_gui, bflcol);
-    iemgui_checkSendReceiveLoop(&x->x_gui);
-    outlet_new(&x->x_gui.iem_obj, &s_float);
-    return (x);
+    
+    dial_setRange (x, minimum, maximum);
+    
+    outlet_new (cast_object (x), &s_float);
+    
+    return x;
 }
 
-static void dial_free(t_dial *x)
+static void dial_free (t_dial *x)
 {
-    if(x->x_gui.iem_canReceive)
-        pd_unbind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
-    gfxstub_deleteforkey(x);
+    if (x->x_gui.iem_canReceive) { pd_unbind (cast_object (x), x->x_gui.iem_receive); }
+    
+    gfxstub_deleteforkey ((void *)x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -585,24 +585,24 @@ static void slider_behaviorSave (t_gobj *z, t_buffer *b)
         (int)cast_object (z)->te_xCoordinate, 
         (int)cast_object (z)->te_yCoordinate,
         x->x_isVertical ? gensym ("vslider") : gensym ("hslider"), 
-        x->x_gui.iem_width,                                         // Width.
-        x->x_gui.iem_height,                                        // Height.
-        (t_float)x->x_minimum,                                      // Range minimum.
-        (t_float)x->x_maximum,                                      // Range maximum.
-        x->x_isLogarithmic,                                         // Is logarithmic.
-        iemgui_serializeLoadbang (&x->x_gui),                       // Loadbang.
-        names.n_unexpandedSend,                                     // Send.
-        names.n_unexpandedReceive,                                  // Receive.
-        names.n_unexpandedLabel,                                    // Label.
-        x->x_gui.iem_labelX,                                        // Label X.
-        x->x_gui.iem_labelY,                                        // Label Y.
-        iemgui_serializeFontStyle (&x->x_gui),                      // Label font.
-        x->x_gui.iem_fontSize,                                      // label font size.
-        colors.c_colorBackground,                                   // Background color.
-        colors.c_colorForeground,                                   // Foreground color.
-        colors.c_colorLabel,                                        // Label color.
-        x->x_position,                                              // Position.
-        x->x_isSteadyOnClick);                                      // Is steady.
+        x->x_gui.iem_width,                                             // Width.
+        x->x_gui.iem_height,                                            // Height.
+        (t_float)x->x_minimum,                                          // Range minimum.
+        (t_float)x->x_maximum,                                          // Range maximum.
+        x->x_isLogarithmic,                                             // Is logarithmic.
+        iemgui_serializeLoadbang (&x->x_gui),                           // Loadbang.
+        names.n_unexpandedSend,                                         // Send.
+        names.n_unexpandedReceive,                                      // Receive.
+        names.n_unexpandedLabel,                                        // Label.
+        x->x_gui.iem_labelX,                                            // Label X.
+        x->x_gui.iem_labelY,                                            // Label Y.
+        iemgui_serializeFontStyle (&x->x_gui),                          // Label font.
+        x->x_gui.iem_fontSize,                                          // label font size.
+        colors.c_colorBackground,                                       // Background color.
+        colors.c_colorForeground,                                       // Foreground color.
+        colors.c_colorLabel,                                            // Label color.
+        x->x_position,                                                  // Position.
+        x->x_isSteadyOnClick);                                          // Is steady.
         
     buffer_vAppend (b, ";");
 }
@@ -678,24 +678,24 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     t_float position    = 0.0;
     t_iemcolors colors  = IEM_DEFAULT_COLORS;
 
-    if (argc >= 17                                                  // --
-            && IS_FLOAT (argv + 0)                                  // Width.
-            && IS_FLOAT (argv + 1)                                  // Height.
-            && IS_FLOAT (argv + 2)                                  // Range minimum.
-            && IS_FLOAT (argv + 3)                                  // Range maximum.
-            && IS_FLOAT (argv + 4)                                  // Is logarithmic.
-            && IS_FLOAT (argv + 5)                                  // Loadbang.
-            && (IS_SYMBOL (argv + 6) || IS_FLOAT (argv + 6))        // Send.
-            && (IS_SYMBOL (argv + 7) || IS_FLOAT (argv + 7))        // Receive.
-            && (IS_SYMBOL (argv + 8) || IS_FLOAT (argv + 8))        // Label.
-            && IS_FLOAT (argv + 9)                                  // Label X.
-            && IS_FLOAT (argv + 10)                                 // Label Y.
-            && IS_FLOAT (argv + 11)                                 // Label font.
-            && IS_FLOAT (argv + 12)                                 // Label font size.
-            && IS_FLOAT (argv + 13)                                 // Background color.
-            && IS_FLOAT (argv + 14)                                 // Foreground color.
-            && IS_FLOAT (argv + 15)                                 // Label color.
-            && IS_FLOAT (argv + 16))                                // Position.
+    if (argc >= 17                                                      // --
+            && IS_FLOAT (argv + 0)                                      // Width.
+            && IS_FLOAT (argv + 1)                                      // Height.
+            && IS_FLOAT (argv + 2)                                      // Range minimum.
+            && IS_FLOAT (argv + 3)                                      // Range maximum.
+            && IS_FLOAT (argv + 4)                                      // Is logarithmic.
+            && IS_FLOAT (argv + 5)                                      // Loadbang.
+            && (IS_SYMBOL (argv + 6) || IS_FLOAT (argv + 6))            // Send.
+            && (IS_SYMBOL (argv + 7) || IS_FLOAT (argv + 7))            // Receive.
+            && (IS_SYMBOL (argv + 8) || IS_FLOAT (argv + 8))            // Label.
+            && IS_FLOAT (argv + 9)                                      // Label X.
+            && IS_FLOAT (argv + 10)                                     // Label Y.
+            && IS_FLOAT (argv + 11)                                     // Label font.
+            && IS_FLOAT (argv + 12)                                     // Label font size.
+            && IS_FLOAT (argv + 13)                                     // Background color.
+            && IS_FLOAT (argv + 14)                                     // Foreground color.
+            && IS_FLOAT (argv + 15)                                     // Label color.
+            && IS_FLOAT (argv + 16))                                    // Position.
     {
         width                       = (int)atom_getFloatAtIndex (0,  argc, argv);
         height                      = (int)atom_getFloatAtIndex (1,  argc, argv);
