@@ -551,7 +551,7 @@ static void slider_label (t_slider *x, t_symbol *s)
 
 static void slider_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
-    t_slider *x = (t_slider*)z;
+    t_slider *x = (t_slider *)z;
     
     *a = text_xpix (cast_object (z), glist);
     *b = text_ypix (cast_object (z), glist);

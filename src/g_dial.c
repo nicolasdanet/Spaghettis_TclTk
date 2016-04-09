@@ -472,85 +472,97 @@ static void dial_label(t_dial *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void dial_getrect(t_gobj *z, t_glist *glist,
-                              int *xp1, int *yp1, int *xp2, int *yp2)
+static void dial_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
-    t_dial* x = (t_dial*)z;
-
-    *xp1 = text_xpix(&x->x_gui.iem_obj, glist);
-    *yp1 = text_ypix(&x->x_gui.iem_obj, glist);
-    *xp2 = *xp1 + dial_getWidth (x);
-    *yp2 = *yp1 + x->x_gui.iem_height;
+    t_dial *x = (t_dial *)z;
+    
+    *a = text_xpix (cast_object (z), glist);
+    *b = text_ypix (cast_object (z), glist);
+    *c = *a + dial_getWidth (x);
+    *d = *b + cast_iem (z)->iem_height;
 }
 
-static int dial_newclick(t_gobj *z, struct _glist *glist,
-    int xpix, int ypix, int shift, int alt, int dbl, int doit)
+static int dial_behaviorClick (t_gobj *z, t_glist *glist, int a, int b, int shift, int alt, int dbl, int k)
 {
-    t_dial* x = (t_dial *)z;
-
-    if(doit)
-    {
-        dial_click( x, (t_float)xpix, (t_float)ypix,
-            (t_float)shift, 0, (t_float)alt);
-        if(shift)
-            x->x_isAccurateMoving = 1;
-        else
-            x->x_isAccurateMoving = 0;
+    if (k) {
+        t_dial *x = (t_dial *)z;
+        x->x_isAccurateMoving = (shift != 0);
+        dial_click (x, (t_float)a, (t_float)b, (t_float)shift, (t_float)0, (t_float)alt);
     }
-    return (1);
+    
+    return 1;
 }
 
-static void dial_save(t_gobj *z, t_buffer *b)
+static void dial_behaviorSave (t_gobj *z, t_buffer *b)
 {
     t_dial *x = (t_dial *)z;
-    int bflcol[3];
-    t_symbol *srl[3];
+    
+    t_iemnames names;
+    t_iemcolors colors;
 
-    iemgui_serialize(&x->x_gui, srl, bflcol);
+    iemgui_serialize (&x->x_gui, &names, &colors);
 
-    buffer_vAppend(b, "ssiisiiffiisssiiiiiiifi", gensym ("#X"),gensym ("obj"),
-                (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
-                gensym ("nbx"), x->x_digitsNumber, x->x_gui.iem_height,
-                (t_float)x->x_minimum, (t_float)x->x_maximum,
-                x->x_isLogarithmic, iemgui_serializeLoadbang(&x->x_gui),
-                srl[0], srl[1], srl[2],
-                x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iemgui_serializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
-                bflcol[0], bflcol[1], bflcol[2],
-                x->x_floatValue, x->x_steps);
-    buffer_vAppend(b, ";");
+    buffer_vAppend (b, "ssiisiiffiisssiiiiiiifi",
+        gensym ("#X"),
+        gensym ("obj"),
+        (int)cast_object (z)->te_xCoordinate,
+        (int)cast_object (z)->te_yCoordinate,
+        gensym ("nbx"),
+        x->x_digitsNumber,                                                      // Number of digits.
+        x->x_gui.iem_height,                                                    // Height.
+        (t_float)x->x_minimum,                                                  // Range minimum.
+        (t_float)x->x_maximum,                                                  // Range maximum.
+        x->x_isLogarithmic,                                                     // Is logarithmic.
+        iemgui_serializeLoadbang (&x->x_gui),                                   // Loadbang.
+        names.n_unexpandedSend,                                                 // Send.
+        names.n_unexpandedReceive,                                              // Receive.
+        names.n_unexpandedLabel,                                                // Label.
+        x->x_gui.iem_labelX,                                                    // Label X.
+        x->x_gui.iem_labelY,                                                    // Label Y.
+        iemgui_serializeFontStyle (&x->x_gui),                                  // Label font.
+        x->x_gui.iem_fontSize,                                                  // Label font size.
+        colors.c_colorBackground,                                               // Background color.
+        colors.c_colorForeground,                                               // Foreground color.
+        colors.c_colorLabel,                                                    // Label color.
+        x->x_floatValue,                                                        // Value.
+        x->x_steps);                                                            // Steps.
+        
+    buffer_vAppend (b, ";");
 }
 
-static void dial_properties(t_gobj *z, t_glist *owner)
+static void dial_properties (t_gobj *z, t_glist *owner)
 {
     t_dial *x = (t_dial *)z;
-    char buf[800];
-    t_symbol *srl[3];
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    t_iemnames names;
 
-    iemgui_serializeNames(&x->x_gui, srl);
+    iemgui_serializeNames (&x->x_gui, &names);
 
-    sprintf(buf, "::ui_iem::create %%s Dial \
-            %d %d Digits %d %d Size \
-            %g {Value Low} %g {Value High} \
-            %d Linear Logarithmic \
-            %d \
-            %d 1024 {Steps} \
-            %s %s \
-            %s %d %d \
-            %d \
-            %d %d %d \
-            -1\n",
-            x->x_digitsNumber, 1, x->x_gui.iem_height, 8,
+    err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s Dial"
+            " %d %d Digits %d %d Size"
+            " %g {Value Low} %g {Value High}"
+            " %d Linear Logarithmic"
+            " %d"
+            " %d 1024 {Steps}"
+            " %s %s"
+            " %s %d %d"
+            " %d"
+            " %d %d %d"
+            " -1\n",
+            x->x_digitsNumber, 1, x->x_gui.iem_height, IEM_MINIMUM_HEIGHT,
             x->x_minimum, x->x_maximum,
             x->x_isLogarithmic, 
             x->x_gui.iem_loadbang,
-            x->x_steps, /*no multi, but iem-characteristic*/
-            srl[0]->s_name, srl[1]->s_name,
-            srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
+            x->x_steps,
+            names.n_unexpandedSend->s_name, names.n_unexpandedReceive->s_name,
+            names.n_unexpandedLabel, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
-            0xffffff & x->x_gui.iem_colorBackground, 0xffffff & x->x_gui.iem_colorForeground,
-                0xffffff & x->x_gui.iem_colorLabel);
-    gfxstub_new(&x->x_gui.iem_obj.te_g.g_pd, x, buf);
+            x->x_gui.iem_colorBackground, x->x_gui.iem_colorForeground, x->x_gui.iem_colorLabel);
+    
+    PD_ASSERT (!err);
+    
+    gfxstub_new (cast_pd (x), (void *)x, t);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -582,24 +594,24 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
     double value        = IEM_DIAL_DEFAULT_MINIMUM;
     t_iemcolors colors  = IEM_DEFAULT_COLORS;
     
-    if (argc >= 17                                                                  // --
-            && IS_FLOAT (argv + 0)                                                  // Number of digits.
-            && IS_FLOAT (argv + 1)                                                  // Height.
-            && IS_FLOAT (argv + 2)                                                  // Range minimum.
-            && IS_FLOAT (argv + 3)                                                  // Range maximum.
-            && IS_FLOAT (argv + 4)                                                  // Is logarithmic.
-            && IS_FLOAT (argv + 5)                                                  // Loadbang.
-            && (IS_SYMBOL (argv + 6) || IS_FLOAT (argv + 6))                        // Send.
-            && (IS_SYMBOL (argv + 7) || IS_FLOAT (argv + 7))                        // Receive.
-            && (IS_SYMBOL (argv + 8) || IS_FLOAT (argv + 8))                        // Label.
-            && IS_FLOAT (argv + 9)                                                  // Label X.
-            && IS_FLOAT (argv + 10)                                                 // Label Y.
-            && IS_FLOAT (argv + 11)                                                 // Label font.
-            && IS_FLOAT (argv + 12)                                                 // Label font size.
-            && IS_FLOAT (argv + 13)                                                 // Background color.
-            && IS_FLOAT (argv + 14)                                                 // Foreground color.
-            && IS_FLOAT (argv + 15)                                                 // Label color.
-            && IS_FLOAT (argv + 16))                                                // Value.
+    if (argc >= 17                                                              // --
+            && IS_FLOAT (argv + 0)                                              // Number of digits.
+            && IS_FLOAT (argv + 1)                                              // Height.
+            && IS_FLOAT (argv + 2)                                              // Range minimum.
+            && IS_FLOAT (argv + 3)                                              // Range maximum.
+            && IS_FLOAT (argv + 4)                                              // Is logarithmic.
+            && IS_FLOAT (argv + 5)                                              // Loadbang.
+            && (IS_SYMBOL (argv + 6) || IS_FLOAT (argv + 6))                    // Send.
+            && (IS_SYMBOL (argv + 7) || IS_FLOAT (argv + 7))                    // Receive.
+            && (IS_SYMBOL (argv + 8) || IS_FLOAT (argv + 8))                    // Label.
+            && IS_FLOAT (argv + 9)                                              // Label X.
+            && IS_FLOAT (argv + 10)                                             // Label Y.
+            && IS_FLOAT (argv + 11)                                             // Label font.
+            && IS_FLOAT (argv + 12)                                             // Label font size.
+            && IS_FLOAT (argv + 13)                                             // Background color.
+            && IS_FLOAT (argv + 14)                                             // Foreground color.
+            && IS_FLOAT (argv + 15)                                             // Label color.
+            && IS_FLOAT (argv + 16))                                            // Value.
     {
         digits                      = (int)atom_getFloatAtIndex (0,  argc, argv);
         height                      = (int)atom_getFloatAtIndex (1,  argc, argv);
@@ -720,17 +732,17 @@ void dial_setup (void)
     
     #endif
     
-    dial_widgetBehavior.w_getrectfn  = dial_getrect;
+    dial_widgetBehavior.w_getrectfn  = dial_behaviorGetRectangle;
     dial_widgetBehavior.w_displacefn = iemgui_behaviorDisplace;
     dial_widgetBehavior.w_selectfn   = iemgui_behaviorSelected;
     dial_widgetBehavior.w_activatefn = NULL;
     dial_widgetBehavior.w_deletefn   = iemgui_behaviorDeleted;
     dial_widgetBehavior.w_visfn      = iemgui_behaviorVisible;
-    dial_widgetBehavior.w_clickfn    = dial_newclick;
+    dial_widgetBehavior.w_clickfn    = dial_behaviorClick;
     
     class_setWidgetBehavior (c, &dial_widgetBehavior);
     class_setHelpName (c, gensym ("nbx"));
-    class_setSaveFunction (c, dial_save);
+    class_setSaveFunction (c, dial_behaviorSave);
     class_setPropertiesFunction (c, dial_properties);
     
     dial_class = c;
