@@ -28,7 +28,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #define IEM_DIAL_DEFAULT_DIGITS     5
-#define IEM_DIAL_DEFAULT_STEPS      128
+#define IEM_DIAL_DEFAULT_STEPS      127
 #define IEM_DIAL_DEFAULT_SIZE       45
 #define IEM_DIAL_DEFAULT_MINIMUM    0
 #define IEM_DIAL_DEFAULT_MAXIMUM    127
@@ -54,10 +54,25 @@ static t_class *dial_class;
 static double dial_getStepValue (t_dial *x)
 {
     if (x->x_isLogarithmic) {
-        return exp (log (x->x_maximum / x->x_minimum) / (double)(x->x_steps));
+        return (log (x->x_maximum / x->x_minimum) / (double)x->x_steps);
     } else {
-        return 1.0;
+        return ((x->x_maximum - x->x_minimum) / (double)x->x_steps);
     }
+}
+
+static t_float dial_getValue (t_dial *x)
+{
+    double f, t = dial_getStepValue (x) * (double)x->x_position;
+    
+    if (x->x_isLogarithmic) { 
+        f = x->x_minimum * exp (t); 
+    } else {
+        f = x->x_minimum + t;
+    }
+    
+    if ((f < 1.0e-10) && (f > -1.0e-10)) { f = 0.0; }
+    
+    return (t_float)f;
 }
 
 static void dial_setString (t_dial *x)
@@ -100,15 +115,6 @@ static void dial_setRange (t_dial *x, double minimum, double maximum)
         x->x_minimum = minimum;
         x->x_maximum = maximum;
     }
-}
-
-static void dial_setValue (t_dial *x, t_float f)
-{
-    t_float old = x->x_floatValue;
-    
-    x->x_floatValue = PD_CLAMP (f, x->x_minimum, x->x_maximum);
-    
-    if (old != x->x_floatValue) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -305,21 +311,25 @@ static void dial_click (t_dial *x, t_float a, t_float b, t_float shift, t_float 
 {
     glist_grab (x->x_gui.iem_glist, cast_gobj (x), (t_glistmotionfn)dial_motion, NULL, a, b);
 }
-    
+
 static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY)
 {
-    t_float k = -1.0;
-    t_float f = x->x_floatValue;
-
-    if (x->x_isAccurateMoving) { k = -0.01; }
+    int old = x->x_position;
+    int t = old;
     
-    if (x->x_isLogarithmic) { f *= pow (dial_getStepValue (x), k * deltaY); } 
+    if (x->x_isAccurateMoving) { t += (int)(-deltaY); }
     else {
-        f += k * deltaY;
+        t += (int)(-deltaY);
     }
     
-    dial_setValue (x, f);
-    dial_out (x);
+    t = PD_CLAMP (t, 0, x->x_steps);
+    
+    if (t != old) {
+        x->x_position   = t;
+        x->x_floatValue = dial_getValue (x);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+        dial_out (x);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -353,9 +363,12 @@ static void dial_dialog (t_dial *x, t_symbol *s, int argc, t_atom *argv)
     x->x_isLogarithmic  = (isLogarithmic != 0);
     x->x_digitsNumber   = PD_MAX (digits, 1);
     x->x_steps          = PD_MAX (steps, 1);
+    x->x_position       = PD_MIN (x->x_position, x->x_steps);
     
     dial_setRange (x, minimum, maximum);
     
+    x->x_floatValue = dial_getValue (x);
+        
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
@@ -409,16 +422,33 @@ static void dial_range (t_dial *x, t_symbol *s, int argc, t_atom *argv)
     double maximum = (double)atom_getFloatAtIndex (1, argc, argv);
     
     dial_setRange (x, minimum, maximum);
+    
+    x->x_floatValue = dial_getValue (x);
 }
 
 static void dial_set (t_dial *x, t_float f)
 {
-    dial_setValue (x, f);
+    t_float old = x->x_floatValue;
+    
+    f = PD_CLAMP (f, x->x_minimum, x->x_maximum);
+    
+    if (x->x_isLogarithmic) { 
+        x->x_position = (int)(log (f / x->x_minimum) / dial_getStepValue (x));
+    } else {
+        x->x_position = (int)((f - x->x_minimum) / dial_getStepValue (x));
+    }
+    
+    x->x_floatValue = dial_getValue (x);
+    
+    if (x->x_floatValue != old) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE); }
 }
 
 static void dial_steps (t_dial *x, t_float f)
 {
-    x->x_steps = PD_MAX ((int)f, 1);
+    x->x_steps    = PD_MAX ((int)f, 1);
+    x->x_position = PD_MIN (x->x_position, x->x_steps);
+    
+    x->x_floatValue = dial_getValue (x);
 }
 
 static void dial_logarithmic (t_dial *x)
@@ -426,6 +456,8 @@ static void dial_logarithmic (t_dial *x)
     x->x_isLogarithmic = 1;
     
     dial_setRange (x, x->x_minimum, x->x_maximum);
+    
+    x->x_floatValue = dial_getValue (x);
 }
 
 static void dial_linear (t_dial *x)
@@ -640,9 +672,9 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
     
     dial_setRange (x, minimum, maximum);
     
-    if (x->x_gui.iem_loadbang) { dial_setValue (x, value); }
+    if (x->x_gui.iem_loadbang) { dial_set (x, value); }
     else {
-        dial_setValue (x, 0.0);
+        dial_set (x, 0.0);
     }
 
     outlet_new (cast_object (x), &s_float);
