@@ -29,6 +29,7 @@
 
 #define IEM_DIAL_DEFAULT_DIGITS     5
 #define IEM_DIAL_DEFAULT_STEPS      128
+#define IEM_DIAL_DEFAULT_SIZE       45
 #define IEM_DIAL_DEFAULT_MINIMUM    0
 #define IEM_DIAL_DEFAULT_MAXIMUM    127
 
@@ -70,9 +71,14 @@ static void dial_setString (t_dial *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static int dial_getWidthDigits (t_dial *x)
+{
+    return (int)(x->x_digitsFontSize * x->x_digitsNumber * (3.0 / 5.0));        /* Empirical ratio. */
+}
+
 static int dial_getWidth (t_dial *x)
 {
-    return (int)(x->x_digitsFontSize * x->x_digitsNumber);
+    return PD_MAX (dial_getWidthDigits (x), x->x_gui.iem_height);
 }
 
 static void dial_setRange (t_dial *x, double minimum, double maximum)
@@ -128,21 +134,23 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
 {
     t_glist *canvas = glist_getcanvas (glist);
     
-    int a = text_xpix (cast_object (x), glist);
-    int b = text_ypix (cast_object (x), glist);
-
+    int a     = text_xpix (cast_object (x), glist);
+    int b     = text_ypix (cast_object (x), glist);
+    int k     = x->x_gui.iem_height - (x->x_digitsFontSize / 2);
+    int width = dial_getWidth (x);
+    
     sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
                 canvas,
                 x,
                 a, 
                 b,
-                a + dial_getWidth (x), 
+                a + width, 
                 b + x->x_gui.iem_height);
     sys_vGui (".x%lx.c coords %lxNUMBER %d %d\n",
                 canvas,
                 x,
-                a + 1,
-                b + 1 + (x->x_gui.iem_height / 2));
+                a + 1 + (width / 2),
+                b + k);
     sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
                 canvas,
                 x,
@@ -154,8 +162,10 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
 {
     t_glist *canvas = glist_getcanvas (glist);
     
-    int a = text_xpix (cast_object (x), glist);
-    int b = text_ypix (cast_object (x), glist);
+    int a     = text_xpix (cast_object (x), glist);
+    int b     = text_ypix (cast_object (x), glist);
+    int k     = x->x_gui.iem_height - (x->x_digitsFontSize / 2);
+    int width = dial_getWidth (x);
     
     dial_setString(x);
         
@@ -163,16 +173,16 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                 canvas,
                 a,
                 b,
-                a + dial_getWidth (x),
+                a + width,
                 b + x->x_gui.iem_height,
                 IEM_COLOR_NORMAL,
                 x->x_gui.iem_colorBackground,
                 x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w"
+    sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor center"
                 " -font [::getFont %d] -fill #%6.6x -tags %lxNUMBER\n",
                 canvas,
-                a + 1,
-                b + 1 + (x->x_gui.iem_height / 2),
+                a + 1 + (width / 2),
+                b + k,
                 x->x_t, 
                 x->x_digitsFontSize,
                 x->x_gui.iem_colorForeground,
@@ -553,7 +563,7 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
     t_dial *x = (t_dial *)pd_new (dial_class);
     
     int digits          = IEM_DIAL_DEFAULT_DIGITS;
-    int height          = IEM_DEFAULT_SIZE;
+    int height          = IEM_DIAL_DEFAULT_SIZE;
     int isLogarithmic   = 0;
     int labelX          = IEM_DEFAULT_LABELX_TOP;
     int labelY          = IEM_DEFAULT_LABELY_TOP;
