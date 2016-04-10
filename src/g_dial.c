@@ -324,7 +324,7 @@ static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY)
     int t = old;
     int k = (int)(-deltaY);
     
-    if (!x->x_isAccurateMoving) { k *= PD_MAX (1, (int)(x->x_steps * 0.01)); }
+    if (!x->x_isAccurateMoving) { k *= PD_MAX (1, (int)(x->x_steps * 0.05)); }
     
     t += k;
     
