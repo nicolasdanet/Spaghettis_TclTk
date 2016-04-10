@@ -186,12 +186,6 @@ void toggle_drawConfig (t_toggle *x, t_glist *glist)
 {
     t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",  // --
-                canvas,
-                x,
-                x->x_gui.iem_fontSize,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel,
-                (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
     sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n",
                 canvas,
                 x,
@@ -204,6 +198,12 @@ void toggle_drawConfig (t_toggle *x, t_glist *glist)
                 canvas,
                 x,
                 (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",  // --
+                canvas,
+                x,
+                x->x_gui.iem_fontSize,
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel,
+                (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
 }
 
 // -----------------------------------------------------------------------------------------------------------

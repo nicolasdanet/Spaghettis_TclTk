@@ -57,41 +57,6 @@ static t_class *dial_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static double dial_getStepValue (t_dial *x)
-{
-    if (x->x_isLogarithmic) {
-        return (log (x->x_maximum / x->x_minimum) / (double)x->x_steps);
-    } else {
-        return ((x->x_maximum - x->x_minimum) / (double)x->x_steps);
-    }
-}
-
-static t_float dial_getValue (t_dial *x)
-{
-    double f, t = dial_getStepValue (x) * (double)x->x_position;
-    
-    if (x->x_isLogarithmic) { 
-        f = x->x_minimum * exp (t); 
-    } else {
-        f = x->x_minimum + t;
-    }
-    
-    if ((f < 1.0e-10) && (f > -1.0e-10)) { f = 0.0; }
-    
-    return (t_float)f;
-}
-
-static void dial_setString (t_dial *x)
-{
-    int size = PD_MIN (x->x_digitsNumber + 1, IEM_DIAL_BUFFER_LENGTH);
-    t_error err = string_sprintf (x->x_t, size, "%f", x->x_floatValue);
-    PD_ASSERT (!err); 
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static int dial_getWidthDigits (t_dial *x)
 {
     return (int)(x->x_digitsFontSize * x->x_digitsNumber * (3.0 / 5.0));        /* Empirical ratio. */
@@ -102,24 +67,18 @@ static int dial_getWidth (t_dial *x)
     return PD_MAX (dial_getWidthDigits (x), x->x_gui.iem_height);
 }
 
-static void dial_setRange (t_dial *x, double minimum, double maximum)
+static void dial_setString (t_dial *x)
 {
-    t_error err = PD_ERROR_NONE;
-    
-    err |= minimum > maximum;
-    
-    if (x->x_isLogarithmic) {
-        err |= (minimum == 0.0);
-        err |= (maximum * minimum < 0.0);
-    }
-    
-    if (err) { 
-        x->x_isLogarithmic = 0;
-        post_error (PD_TRANSLATE ("dial: invalid range"));   // --
-        
-    } else {
-        x->x_minimum = minimum;
-        x->x_maximum = maximum;
+    int size = PD_MIN (x->x_digitsNumber + 1, IEM_DIAL_BUFFER_LENGTH);
+    t_error err = string_sprintf (x->x_t, size, "%f", x->x_floatValue);
+    PD_ASSERT (!err); 
+}
+
+static int dial_getKnobColor (t_dial *x)
+{
+    if (x->x_gui.iem_height < IEM_DIAL_DEFAULT_SIZE / 2) { return x->x_gui.iem_colorBackground; }
+    else {
+        return (x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
     }
 }
 
@@ -136,7 +95,7 @@ static void dial_drawUpdate (t_dial *x, t_glist *glist)
     sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s}\n",
                 glist_getcanvas (glist),
                 x,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorForeground,
+                x->x_gui.iem_colorForeground,
                 x->x_t);
     //
     }
@@ -149,6 +108,7 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
     int a     = text_xpix (cast_object (x), glist);
     int b     = text_ypix (cast_object (x), glist);
     int k     = x->x_gui.iem_height - (x->x_digitsFontSize / 2);
+    int h     = 1;
     int width = dial_getWidth (x);
     
     sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
@@ -158,6 +118,13 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
                 b,
                 a + width, 
                 b + x->x_gui.iem_height);
+    sys_vGui (".x%lx.c coords %lxKNOB %d %d %d %d\n",
+                canvas,
+                x,
+                a + h,
+                b + h,
+                a + width - h,
+                b + x->x_gui.iem_height - h);
     sys_vGui (".x%lx.c coords %lxNUMBER %d %d\n",
                 canvas,
                 x,
@@ -177,6 +144,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
     int a     = text_xpix (cast_object (x), glist);
     int b     = text_ypix (cast_object (x), glist);
     int k     = x->x_gui.iem_height - (x->x_digitsFontSize / 2);
+    int h     = 1;
     int width = dial_getWidth (x);
     
     dial_setString(x);
@@ -189,6 +157,14 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                 b + x->x_gui.iem_height,
                 IEM_COLOR_NORMAL,
                 x->x_gui.iem_colorBackground,
+                x);
+    sys_vGui (".x%lx.c create oval %d %d %d %d -outline #%6.6x -tags %lxKNOB\n",
+                canvas,
+                a + h,
+                b + h,
+                a + width - h,
+                b + x->x_gui.iem_height - h,
+                dial_getKnobColor (x),
                 x);
     sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor center"
                 " -font [::getFont %d] -fill #%6.6x -tags %lxNUMBER\n",
@@ -218,10 +194,10 @@ static void dial_drawSelect (t_dial *x, t_glist *glist)
                 canvas,
                 x,
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
-    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxKNOB -outline #%6.6x\n",
                 canvas,
-                x, 
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorForeground);
+                x,
+                dial_getKnobColor (x));
     sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n",
                 canvas,
                 x,
@@ -233,6 +209,9 @@ static void dial_drawErase (t_dial* x, t_glist *glist)
     t_glist *canvas = glist_getcanvas(glist);
 
     sys_vGui (".x%lx.c delete %lxBASE\n",
+                canvas,
+                x);
+    sys_vGui (".x%lx.c delete %lxKNOB\n",
                 canvas,
                 x);
     sys_vGui (".x%lx.c delete %lxLABEL\n",
@@ -251,11 +230,15 @@ static void dial_drawConfig (t_dial* x, t_glist *glist)
                 canvas,
                 x,
                 x->x_gui.iem_colorBackground);
+    sys_vGui (".x%lx.c itemconfigure %lxKNOB -outline #%6.6x\n",
+                canvas,
+                x,
+                dial_getKnobColor (x));
     sys_vGui (".x%lx.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%6.6x \n",
                 canvas,
                 x, 
                 x->x_digitsFontSize,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorForeground);
+                x->x_gui.iem_colorForeground);
     sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",
                 canvas,
                 x,
@@ -279,6 +262,60 @@ void dial_draw (t_toggle *x, t_glist *glist, int mode)
         case IEM_DRAW_CONFIG    : dial_drawConfig (x, glist);   break;
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static double dial_getStepValue (t_dial *x)
+{
+    if (x->x_isLogarithmic) {
+        return (log (x->x_maximum / x->x_minimum) / (double)x->x_steps);
+    } else {
+        return ((x->x_maximum - x->x_minimum) / (double)x->x_steps);
+    }
+}
+
+static t_float dial_getValue (t_dial *x)
+{
+    double f, t = dial_getStepValue (x) * (double)x->x_position;
+    
+    if (x->x_isLogarithmic) { 
+        f = x->x_minimum * exp (t); 
+    } else {
+        f = x->x_minimum + t;
+    }
+    
+    if ((f < 1.0e-10) && (f > -1.0e-10)) { f = 0.0; }
+    
+    return (t_float)f;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void dial_setRange (t_dial *x, double minimum, double maximum)
+{
+    t_error err = PD_ERROR_NONE;
+    
+    err |= minimum > maximum;
+    
+    if (x->x_isLogarithmic) {
+        err |= (minimum == 0.0);
+        err |= (maximum * minimum < 0.0);
+    }
+    
+    if (err) { 
+        x->x_isLogarithmic = 0;
+        post_error (PD_TRANSLATE ("dial: invalid range"));   // --
+        
+    } else {
+        x->x_minimum = minimum;
+        x->x_maximum = maximum;
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

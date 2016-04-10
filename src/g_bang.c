@@ -82,10 +82,6 @@ void bng_drawMove (t_bng *x, t_glist *glist)
                 b + 1,
                 a + x->x_gui.iem_width - 1,
                 b + x->x_gui.iem_height - 1);
-    sys_vGui (".x%lx.c itemconfigure %lxBUTTON -fill #%6.6x\n", 
-                canvas,
-                x,
-                x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
     sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
                 canvas,
                 x,
@@ -108,18 +104,17 @@ void bng_drawNew (t_bng *x, t_glist *glist)
                 b + x->x_gui.iem_height,
                 x->x_gui.iem_colorBackground,
                 x);
-    sys_vGui (".x%lx.c create oval %d %d %d %d -fill #%6.6x -tags %lxBUTTON\n",
+    sys_vGui (".x%lx.c create oval %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxBUTTON\n",
                 canvas,
                 a + 1,
                 b + 1,
                 a + x->x_gui.iem_width - 1,
                 b + x->x_gui.iem_height - 1,
                 x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
+                IEM_COLOR_NORMAL,
                 x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"                    // --
-                " -anchor w"
-                " -font [::getFont %d]"                                 // --
-                " -fill #%6.6x -tags [list %lxLABEL label text]\n",     // --
+    sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w -font [::getFont %d]"     // --
+                " -fill #%6.6x -tags [list %lxLABEL label text]\n",                     // --
                 canvas, 
                 a + x->x_gui.iem_labelX,
                 b + x->x_gui.iem_labelY,
