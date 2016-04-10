@@ -37,6 +37,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define IEM_DIAL_MAXIMUM_STEPS      (1024 * 1024)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void dial_set    (t_dial *x, t_float f);
 static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY);
 
@@ -316,11 +322,11 @@ static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY)
 {
     int old = x->x_position;
     int t = old;
+    int k = (int)(-deltaY);
     
-    if (x->x_isAccurateMoving) { t += (int)(-deltaY); }
-    else {
-        t += (int)(-deltaY);
-    }
+    if (!x->x_isAccurateMoving) { k *= PD_MAX (1, (int)(x->x_steps * 0.01)); }
+    
+    t += k;
     
     t = PD_CLAMP (t, 0, x->x_steps);
     
@@ -556,7 +562,7 @@ static void dial_behaviorProperties (t_gobj *z, t_glist *owner)
             " %g {Value Low} %g {Value High}"
             " %d Linear Logarithmic"
             " %d"
-            " %d 1024 {Steps}"
+            " %d %d {Steps}"
             " %s %s"
             " %s %d %d"
             " %d"
@@ -566,7 +572,7 @@ static void dial_behaviorProperties (t_gobj *z, t_glist *owner)
             x->x_minimum, x->x_maximum,
             x->x_isLogarithmic, 
             x->x_gui.iem_loadbang,
-            x->x_steps,
+            x->x_steps, IEM_DIAL_MAXIMUM_STEPS,
             names.n_unexpandedSend->s_name, names.n_unexpandedReceive->s_name,
             names.n_unexpandedLabel->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
