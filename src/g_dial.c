@@ -28,7 +28,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 #define IEM_DIAL_DEFAULT_DIGITS     5
-#define IEM_DIAL_DEFAULT_STEPS      256
+#define IEM_DIAL_DEFAULT_STEPS      128
 #define IEM_DIAL_DEFAULT_MINIMUM    0
 #define IEM_DIAL_DEFAULT_MAXIMUM    127
 
@@ -94,6 +94,15 @@ static void dial_setRange (t_dial *x, double minimum, double maximum)
         x->x_minimum = minimum;
         x->x_maximum = maximum;
     }
+}
+
+static void dial_setValue (t_dial *x, t_float f)
+{
+    t_float old = x->x_floatValue;
+    
+    x->x_floatValue = PD_CLAMP (f, x->x_minimum, x->x_maximum);
+    
+    if (old != x->x_floatValue) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -289,19 +298,17 @@ static void dial_click (t_dial *x, t_float a, t_float b, t_float shift, t_float 
     
 static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY)
 {
-    double k = -1.0;
+    t_float k = -1.0;
+    t_float f = x->x_floatValue;
 
     if (x->x_isAccurateMoving) { k = -0.01; }
     
-    if (x->x_isLogarithmic) { x->x_floatValue *= pow (dial_getStepValue (x), k * deltaY); } 
+    if (x->x_isLogarithmic) { f *= pow (dial_getStepValue (x), k * deltaY); } 
     else {
-        x->x_floatValue += k * deltaY;
+        f += k * deltaY;
     }
     
-    x->x_floatValue = PD_CLAMP (x->x_floatValue, x->x_minimum, x->x_maximum);
-    
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-    
+    dial_setValue (x, f);
     dial_out (x);
 }
 
@@ -396,10 +403,7 @@ static void dial_range (t_dial *x, t_symbol *s, int argc, t_atom *argv)
 
 static void dial_set (t_dial *x, t_float f)
 {
-    if (x->x_floatValue != f) {
-        x->x_floatValue = PD_CLAMP (f, x->x_minimum, x->x_maximum);
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-    }
+    dial_setValue (x, f);
 }
 
 static void dial_steps (t_dial *x, t_float f)
@@ -624,13 +628,13 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
     x->x_steps          = PD_MAX (steps, 1);
     x->x_digitsNumber   = PD_MAX (digits, 1);
     
-    if (x->x_gui.iem_loadbang) { x->x_floatValue = value; }
-    else {
-        x->x_floatValue = IEM_DIAL_DEFAULT_MINIMUM;
-    }
-    
     dial_setRange (x, minimum, maximum);
     
+    if (x->x_gui.iem_loadbang) { dial_setValue (x, value); }
+    else {
+        dial_setValue (x, 0.0);
+    }
+
     outlet_new (cast_object (x), &s_float);
     
     return x;
