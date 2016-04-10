@@ -117,140 +117,120 @@ static void dial_drawUpdate (t_dial *x, t_glist *glist)
 
 static void dial_drawMove (t_dial *x, t_glist *glist)
 {
-    int half = x->x_gui.iem_height/2, d=1+x->x_gui.iem_height/34;
-    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
-    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
+    
+    int a = text_xpix (cast_object (x), glist);
+    int b = text_ypix (cast_object (x), glist);
 
-    sys_vGui(".x%lx.c coords %lxBASE1 %d %d %d %d %d %d %d %d %d %d\n",
-             canvas, x, xpos, ypos,
-             xpos + dial_getWidth (x)-4, ypos,
-             xpos + dial_getWidth (x), ypos+4,
-             xpos + dial_getWidth (x), ypos + x->x_gui.iem_height,
-             xpos, ypos + x->x_gui.iem_height);
-    sys_vGui(".x%lx.c coords %lxBASE2 %d %d %d %d %d %d\n",
-             canvas, x, xpos, ypos,
-             xpos + half, ypos + half,
-             xpos, ypos + x->x_gui.iem_height);
-    sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
-             canvas, x, xpos+x->x_gui.iem_labelX, ypos+x->x_gui.iem_labelY);
-    sys_vGui(".x%lx.c coords %lxNUMBER %d %d\n",
-             canvas, x, xpos+half+2, ypos+half+d);
-    /*sys_vGui(".x%lx.c coords %lxOUT%d %d %d %d %d\n",
-             canvas, x, 0,
-             xpos, ypos + x->x_gui.iem_height-1,
-             xpos+INLETS_WIDTH, ypos + x->x_gui.iem_height);
-    sys_vGui(".x%lx.c coords %lxIN%d %d %d %d %d\n",
-             canvas, x, 0,
-             xpos, ypos,
-             xpos+INLETS_WIDTH, ypos+1);*/
+    sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
+                canvas,
+                x,
+                a, 
+                b,
+                a + dial_getWidth (x), 
+                b + x->x_gui.iem_height);
+    sys_vGui (".x%lx.c coords %lxNUMBER %d %d\n",
+                canvas,
+                x,
+                a + 1,
+                b + 1 + (x->x_gui.iem_height / 2));
+    sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
+                canvas,
+                x,
+                a + x->x_gui.iem_labelX,
+                b + x->x_gui.iem_labelY);
 }
 
 static void dial_drawNew (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas=glist_getcanvas(glist);
-        
-    int half=x->x_gui.iem_height/2;
-    int d=1+x->x_gui.iem_height/34;
-    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
-    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-
-    sys_vGui(
-".x%lx.c create polygon %d %d %d %d %d %d %d %d %d %d -outline #%6.6x \
--fill #%6.6x -tags %lxBASE1\n",
-             canvas, xpos, ypos,
-             xpos + dial_getWidth (x)-4, ypos,
-             xpos + dial_getWidth (x), ypos+4,
-             xpos + dial_getWidth (x), ypos + x->x_gui.iem_height,
-             xpos, ypos + x->x_gui.iem_height,
-             IEM_COLOR_NORMAL, x->x_gui.iem_colorBackground, x);
-    sys_vGui(
-        ".x%lx.c create line %d %d %d %d %d %d -fill #%6.6x -tags %lxBASE2\n",
-        canvas, xpos, ypos,
-        xpos + half, ypos + half,
-        xpos, ypos + x->x_gui.iem_height,
-        x->x_gui.iem_colorForeground, x);
-    sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor w \
-        -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",
-        canvas, xpos+x->x_gui.iem_labelX, ypos+x->x_gui.iem_labelY,
-        strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"",
-        x->x_gui.iem_fontSize,
-             x->x_gui.iem_colorLabel, x);
+    t_glist *canvas = glist_getcanvas (glist);
+    
+    int a = text_xpix (cast_object (x), glist);
+    int b = text_ypix (cast_object (x), glist);
+    
     dial_setString(x);
-    sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor w \
-        -font [::getFont %d] -fill #%6.6x -tags %lxNUMBER\n",
-        canvas, xpos+half+2, ypos+half+d,
-        x->x_t, x->x_digitsFontSize,
-        x->x_gui.iem_colorForeground, x);
-
-        /*sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxOUT%d outlet]\n",
-             canvas,
-             xpos, ypos + x->x_gui.iem_height-1,
-             xpos+INLETS_WIDTH, ypos + x->x_gui.iem_height,
-             x, 0);
-
-        sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags [list %lxIN%d inlet]\n",
-             canvas,
-             xpos, ypos,
-             xpos+INLETS_WIDTH, ypos+1,
-             x, 0);*/
+        
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -outline #%6.6x -fill #%6.6x -tags %lxBASE\n",
+                canvas,
+                a,
+                b,
+                a + dial_getWidth (x),
+                b + x->x_gui.iem_height,
+                IEM_COLOR_NORMAL,
+                x->x_gui.iem_colorBackground,
+                x);
+    sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w"
+                " -font [::getFont %d] -fill #%6.6x -tags %lxNUMBER\n",
+                canvas,
+                a + 1,
+                b + 1 + (x->x_gui.iem_height / 2),
+                x->x_t, 
+                x->x_digitsFontSize,
+                x->x_gui.iem_colorForeground,
+                x);
+    sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w"
+                " -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",
+                canvas,
+                a + x->x_gui.iem_labelX,
+                b + x->x_gui.iem_labelY,
+                (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "",
+                x->x_gui.iem_fontSize,
+                x->x_gui.iem_colorLabel,
+                x);
 }
 
 static void dial_drawSelect (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
 
-    if (x->x_gui.iem_isSelected)
-    {
-        sys_vGui(".x%lx.c itemconfigure %lxBASE1 -outline #%6.6x\n",
-            canvas, x, IEM_COLOR_SELECTED);
-        sys_vGui(".x%lx.c itemconfigure %lxBASE2 -fill #%6.6x\n",
-            canvas, x, IEM_COLOR_SELECTED);
-        sys_vGui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n",
-            canvas, x, IEM_COLOR_SELECTED);
-        sys_vGui(".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x\n",
-            canvas, x, IEM_COLOR_SELECTED);
-    }
-    else
-    {
-        sys_vGui(".x%lx.c itemconfigure %lxBASE1 -outline #%6.6x\n",
-            canvas, x, IEM_COLOR_NORMAL);
-        sys_vGui(".x%lx.c itemconfigure %lxBASE2 -fill #%6.6x\n",
-            canvas, x, x->x_gui.iem_colorForeground);
-        sys_vGui(".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n",
-            canvas, x, x->x_gui.iem_colorLabel);
-        sys_vGui(".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x\n",
-            canvas, x, x->x_gui.iem_colorForeground);
-    }
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n",
+                canvas,
+                x,
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
+    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x\n",
+                canvas,
+                x, 
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorForeground);
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n",
+                canvas,
+                x,
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel);
 }
 
 static void dial_drawErase (t_dial* x, t_glist *glist)
 {
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas(glist);
 
-    sys_vGui(".x%lx.c delete %lxBASE1\n", canvas, x);
-    sys_vGui(".x%lx.c delete %lxBASE2\n", canvas, x);
-    sys_vGui(".x%lx.c delete %lxLABEL\n", canvas, x);
-    sys_vGui(".x%lx.c delete %lxNUMBER\n", canvas, x);
-    //sys_vGui(".x%lx.c delete %lxOUT%d\n", canvas, x, 0);
-    //sys_vGui(".x%lx.c delete %lxIN%d\n", canvas, x, 0);
+    sys_vGui (".x%lx.c delete %lxBASE\n",
+                canvas,
+                x);
+    sys_vGui (".x%lx.c delete %lxLABEL\n",
+                canvas,
+                x);
+    sys_vGui (".x%lx.c delete %lxNUMBER\n",
+                canvas,
+                x);
 }
 
 static void dial_drawConfig (t_dial* x, t_glist *glist)
 {
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
-             canvas, x, x->x_gui.iem_fontSize,
-             x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorLabel,
-             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
-    sys_vGui(".x%lx.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%6.6x \n",
-             canvas, x, x->x_digitsFontSize,
-             x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorForeground);
-    sys_vGui(".x%lx.c itemconfigure %lxBASE1 -fill #%6.6x\n", canvas,
-             x, x->x_gui.iem_colorBackground);
-    sys_vGui(".x%lx.c itemconfigure %lxBASE2 -fill #%6.6x\n", canvas,
-             x, x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorForeground);
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n",
+                canvas,
+                x,
+                x->x_gui.iem_colorBackground);
+    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%6.6x \n",
+                canvas,
+                x, 
+                x->x_digitsFontSize,
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorForeground);
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",
+                canvas,
+                x,
+                x->x_gui.iem_fontSize,
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel,
+                (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
 }
 
 // -----------------------------------------------------------------------------------------------------------
