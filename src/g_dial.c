@@ -29,7 +29,7 @@
 
 #define IEM_DIAL_DEFAULT_DIGITS     5
 #define IEM_DIAL_DEFAULT_STEPS      127
-#define IEM_DIAL_DEFAULT_SIZE       35
+#define IEM_DIAL_DEFAULT_SIZE       40
 #define IEM_DIAL_DEFAULT_MINIMUM    0
 #define IEM_DIAL_DEFAULT_MAXIMUM    127
 
@@ -74,12 +74,19 @@ static void dial_setString (t_dial *x)
     PD_ASSERT (!err); 
 }
 
-static int dial_getKnobColor (t_dial *x)
+static int dial_getNeedleColor (t_dial *x)
 {
     if (x->x_gui.iem_height < dial_getWidth (x)) { return x->x_gui.iem_colorBackground; }
     else {
-        return (x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
+        return x->x_gui.iem_colorForeground;
     }
+}
+
+static int dial_getNeedleAngle (t_dial *x)
+{
+    int k = (int)(((double)x->x_position / x->x_steps) * 360.0);
+    k = PD_CLAMP (k, 0, 359);
+    return -k;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -92,6 +99,11 @@ static void dial_drawUpdate (t_dial *x, t_glist *glist)
     //
     dial_setString (x);
     
+    sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -extent %d\n",
+                glist_getcanvas (glist),
+                x,
+                dial_getNeedleAngle (x));
+                
     sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s}\n",
                 glist_getcanvas (glist),
                 x,
@@ -118,7 +130,7 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
                 b,
                 a + width, 
                 b + x->x_gui.iem_height);
-    sys_vGui (".x%lx.c coords %lxKNOB %d %d %d %d\n",
+    sys_vGui (".x%lx.c coords %lxNEEDLE %d %d %d %d\n",
                 canvas,
                 x,
                 a + 1 + (h / 2),
@@ -158,16 +170,26 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                 x->x_gui.iem_colorBackground,
                 x->x_gui.iem_colorBackground,
                 x);
-    sys_vGui (".x%lx.c create oval %d %d %d %d -outline #%6.6x -tags %lxKNOB\n",
+    sys_vGui (".x%lx.c create arc %d %d %d %d"
+                " -start -90"
+                " -extent %d"
+                " -fill #%6.6x"
+                " -outline #%6.6x"
+                " -tags %lxNEEDLE\n",
                 canvas,
                 a + 1 + (h / 2),
                 b + 1,
                 a - 1 + width - (h / 2),
                 b - 1 + x->x_gui.iem_height - h,
-                dial_getKnobColor (x),
+                dial_getNeedleAngle (x),
+                x->x_gui.iem_colorBackground,
+                dial_getNeedleColor (x),
                 x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor center"
-                " -font [::getFont %d] -fill #%6.6x -tags %lxNUMBER\n",
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"
+                " -anchor center"
+                " -font [::getFont %d]"
+                " -fill #%6.6x"
+                " -tags %lxNUMBER\n",
                 canvas,
                 a + 1 + (width / 2),
                 b + k,
@@ -175,8 +197,11 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                 x->x_digitsFontSize,
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorForeground,
                 x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w"
-                " -font [::getFont %d] -fill #%6.6x -tags %lxLABEL\n",
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"
+                " -anchor w"
+                " -font [::getFont %d]"
+                " -fill #%6.6x"
+                " -tags %lxLABEL\n",
                 canvas,
                 a + x->x_gui.iem_labelX,
                 b + x->x_gui.iem_labelY,
@@ -190,10 +215,6 @@ static void dial_drawSelect (t_dial *x, t_glist *glist)
 {
     t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxKNOB -outline #%6.6x\n",
-                canvas,
-                x,
-                dial_getKnobColor (x));
     sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x\n",
                 canvas,
                 x,
@@ -211,7 +232,7 @@ static void dial_drawErase (t_dial* x, t_glist *glist)
     sys_vGui (".x%lx.c delete %lxBASE\n",
                 canvas,
                 x);
-    sys_vGui (".x%lx.c delete %lxKNOB\n",
+    sys_vGui (".x%lx.c delete %lxNEEDLE\n",
                 canvas,
                 x);
     sys_vGui (".x%lx.c delete %lxLABEL\n",
@@ -230,10 +251,11 @@ static void dial_drawConfig (t_dial* x, t_glist *glist)
                 canvas,
                 x,
                 x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxKNOB -outline #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -fill #%6.6x -outline #%6.6x\n",
                 canvas,
                 x,
-                dial_getKnobColor (x));
+                x->x_gui.iem_colorBackground, 
+                dial_getNeedleColor (x));
     sys_vGui (".x%lx.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%6.6x \n",
                 canvas,
                 x, 
