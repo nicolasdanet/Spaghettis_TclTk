@@ -42,6 +42,20 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#if PD_APPLE
+
+#define IEM_SLIDER_PIXEL                1
+
+#else
+
+#define IEM_SLIDER_PIXEL                0
+
+#endif // PD_APPLE
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static inline int slider_stepsToPixels (int n)
 {
     return (int)((n / (double)IEM_SLIDER_STEPS_PER_PIXEL) + 0.5);
@@ -79,7 +93,7 @@ static void slider_drawUpdateVertical (t_slider *x, t_glist *glist)
                 x, 
                 a + 1,
                 k,
-                a + x->x_gui.iem_width - 1, 
+                a + x->x_gui.iem_width - IEM_SLIDER_PIXEL, 
                 k);
     //
     }
@@ -100,7 +114,7 @@ static void slider_drawUpdateHorizontal (t_slider *x, t_glist *glist)
                 k,
                 b + 1,
                 k, 
-                b + x->x_gui.iem_height - 1);
+                b + x->x_gui.iem_height - IEM_SLIDER_PIXEL);
     //
     }
 }
@@ -164,7 +178,7 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
                 canvas,
                 a + 1,
                 k, 
-                a + x->x_gui.iem_width - 1,
+                a + x->x_gui.iem_width - IEM_SLIDER_PIXEL,
                 k,
                 x->x_gui.iem_colorForeground,
                 x);
@@ -177,7 +191,7 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
                 k,
                 b + 1, 
                 k,
-                b + x->x_gui.iem_height - 1,
+                b + x->x_gui.iem_height - IEM_SLIDER_PIXEL,
                 x->x_gui.iem_colorForeground,
                 x);
     //
