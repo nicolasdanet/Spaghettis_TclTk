@@ -176,7 +176,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                 x->x_gui.iem_colorForeground,
                 x);
     sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w"
-                " -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",
+                " -font [::getFont %d] -fill #%6.6x -tags %lxLABEL\n",
                 canvas,
                 a + x->x_gui.iem_labelX,
                 b + x->x_gui.iem_labelY,

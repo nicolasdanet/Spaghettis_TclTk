@@ -48,7 +48,7 @@ void my_canvas_draw_new(t_my_canvas *x, t_glist *glist)
              xpos + x->x_gui.iem_width, ypos + x->x_gui.iem_height,
              x->x_gui.iem_colorBackground, x);
     sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor w \
-             -font [::getFont %d] -fill #%6.6x -tags [list %lxLABEL label text]\n",
+             -font [::getFont %d] -fill #%6.6x -tags %lxLABEL\n",
              canvas, xpos+x->x_gui.iem_labelX, ypos+x->x_gui.iem_labelY,
              strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"",
              x->x_gui.iem_fontSize,
