@@ -261,6 +261,8 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
     //
     }
 
+    h = vu_offsetWithStep (x, IEM_VUMETER_STEPS - 1);
+    
     sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxCOVER\n",
                 canvas,
                 a + 1, 
@@ -273,9 +275,9 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
     sys_vGui (".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxPEAK\n",
                 canvas,
                 a + 1,
-                b + 1,
+                b + h,
                 a + x->x_gui.iem_width,
-                b + 1,
+                b + h,
                 x->x_thickness - 1,
                 x->x_gui.iem_colorBackground,
                 x);

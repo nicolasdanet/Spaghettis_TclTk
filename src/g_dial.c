@@ -29,7 +29,7 @@
 
 #define IEM_DIAL_DEFAULT_DIGITS     5
 #define IEM_DIAL_DEFAULT_STEPS      127
-#define IEM_DIAL_DEFAULT_SIZE       45
+#define IEM_DIAL_DEFAULT_SIZE       35
 #define IEM_DIAL_DEFAULT_MINIMUM    0
 #define IEM_DIAL_DEFAULT_MAXIMUM    127
 
@@ -76,7 +76,7 @@ static void dial_setString (t_dial *x)
 
 static int dial_getKnobColor (t_dial *x)
 {
-    if (x->x_gui.iem_height < IEM_DIAL_DEFAULT_SIZE / 2) { return x->x_gui.iem_colorBackground; }
+    if (x->x_gui.iem_height < dial_getWidth (x)) { return x->x_gui.iem_colorBackground; }
     else {
         return (x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
     }
@@ -95,7 +95,7 @@ static void dial_drawUpdate (t_dial *x, t_glist *glist)
     sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s}\n",
                 glist_getcanvas (glist),
                 x,
-                x->x_gui.iem_colorForeground,
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorForeground,
                 x->x_t);
     //
     }
@@ -108,7 +108,7 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
     int a     = text_xpix (cast_object (x), glist);
     int b     = text_ypix (cast_object (x), glist);
     int k     = x->x_gui.iem_height - (x->x_digitsFontSize / 2);
-    int h     = 1;
+    int h     = x->x_digitsFontSize;
     int width = dial_getWidth (x);
     
     sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
@@ -121,10 +121,10 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
     sys_vGui (".x%lx.c coords %lxKNOB %d %d %d %d\n",
                 canvas,
                 x,
-                a + h,
-                b + h,
-                a + width - h,
-                b + x->x_gui.iem_height - h);
+                a + 1 + (h / 2),
+                b + 1,
+                a - 1 + width - (h / 2),
+                b - 1 + x->x_gui.iem_height - h);
     sys_vGui (".x%lx.c coords %lxNUMBER %d %d\n",
                 canvas,
                 x,
@@ -144,26 +144,26 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
     int a     = text_xpix (cast_object (x), glist);
     int b     = text_ypix (cast_object (x), glist);
     int k     = x->x_gui.iem_height - (x->x_digitsFontSize / 2);
-    int h     = 1;
+    int h     = x->x_digitsFontSize;
     int width = dial_getWidth (x);
     
-    dial_setString(x);
-        
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -outline #%6.6x -fill #%6.6x -tags %lxBASE\n",
+    dial_setString (x);
+    
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxBASE\n",
                 canvas,
                 a,
                 b,
                 a + width,
                 b + x->x_gui.iem_height,
-                IEM_COLOR_NORMAL,
+                x->x_gui.iem_colorBackground,
                 x->x_gui.iem_colorBackground,
                 x);
     sys_vGui (".x%lx.c create oval %d %d %d %d -outline #%6.6x -tags %lxKNOB\n",
                 canvas,
-                a + h,
-                b + h,
-                a + width - h,
-                b + x->x_gui.iem_height - h,
+                a + 1 + (h / 2),
+                b + 1,
+                a - 1 + width - (h / 2),
+                b - 1 + x->x_gui.iem_height - h,
                 dial_getKnobColor (x),
                 x);
     sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor center"
@@ -173,7 +173,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                 b + k,
                 x->x_t, 
                 x->x_digitsFontSize,
-                x->x_gui.iem_colorForeground,
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorForeground,
                 x);
     sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w"
                 " -font [::getFont %d] -fill #%6.6x -tags %lxLABEL\n",
@@ -190,14 +190,14 @@ static void dial_drawSelect (t_dial *x, t_glist *glist)
 {
     t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n",
-                canvas,
-                x,
-                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
     sys_vGui (".x%lx.c itemconfigure %lxKNOB -outline #%6.6x\n",
                 canvas,
                 x,
                 dial_getKnobColor (x));
+    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x\n",
+                canvas,
+                x,
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorForeground);
     sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n",
                 canvas,
                 x,
@@ -238,7 +238,7 @@ static void dial_drawConfig (t_dial* x, t_glist *glist)
                 canvas,
                 x, 
                 x->x_digitsFontSize,
-                x->x_gui.iem_colorForeground);
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorForeground);
     sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",
                 canvas,
                 x,

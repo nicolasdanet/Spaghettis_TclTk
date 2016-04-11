@@ -43,10 +43,10 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_DEFAULT_LABELX_TOP         -1
-#define IEM_DEFAULT_LABELY_TOP         -8
-#define IEM_DEFAULT_LABELX_NEXT         17
-#define IEM_DEFAULT_LABELY_NEXT         7
+#define IEM_DEFAULT_LABELX_TOP          0
+#define IEM_DEFAULT_LABELY_TOP         -((IEM_DEFAULT_FONTSIZE / 2) + 2)
+#define IEM_DEFAULT_LABELX_NEXT         (IEM_DEFAULT_SIZE + 2)
+#define IEM_DEFAULT_LABELY_NEXT         ((IEM_DEFAULT_FONTSIZE / 2) + 2)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
