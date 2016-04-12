@@ -233,14 +233,12 @@ static void panel_label(t_panel *x, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void panel_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int *xp2, int *yp2)
+static void panel_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
-    t_panel *x = (t_panel *)z;
-    
-    *xp1 = text_xpix(&x->x_gui.iem_obj, glist);
-    *yp1 = text_ypix(&x->x_gui.iem_obj, glist);
-    *xp2 = *xp1 + x->x_gui.iem_width;
-    *yp2 = *yp1 + x->x_gui.iem_height;
+    *a = text_xpix (cast_object (z), glist);
+    *b = text_ypix (cast_object (z), glist);
+    *c = *a + cast_iem (z)->iem_width;
+    *d = *b + cast_iem (z)->iem_height;
 }
 
 static void panel_behaviorSave (t_gobj *z, t_buffer *b)
@@ -252,7 +250,7 @@ static void panel_behaviorSave (t_gobj *z, t_buffer *b)
 
     iemgui_serialize (&x->x_gui, &names, &colors);
     
-    buffer_vAppend (b, "ssiisiiisssiiiiiii",
+    buffer_vAppend (b, "ssiisiiisssiiiiii",
         gensym ("#X"),
         gensym ("obj"),
         (int)cast_object (z)->te_xCoordinate,
@@ -274,31 +272,36 @@ static void panel_behaviorSave (t_gobj *z, t_buffer *b)
     buffer_vAppend (b, ";");
 }
 
-static void panel_properties(t_gobj *z, t_glist *owner)
+static void panel_behaviorProperties (t_gobj *z, t_glist *owner)
 {
     t_panel *x = (t_panel *)z;
-    char buf[800];
-    t_symbol *srl[3];
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    t_iemnames names;
 
-    iemgui_serializeNames(&x->x_gui, srl);
-    sprintf(buf, "::ui_iem::create %%s Panel \
-            %d %d {Grip Size} 0 0 empty \
-            %d {Panel Width} %d {Panel Height} \
-            -1 empty empty \
-            -1 \
-            -1 -1 empty \
-            %s %s \
-            %s %d %d \
-            %d \
-            %d %d %d \
-            -1\n",
+    iemgui_serializeNames (&x->x_gui, &names);
+    
+    err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s Panel"
+            " %d %d {Grip Size} 0 0 empty"
+            " %d {Panel Width} %d {Panel Height}"
+            " -1 empty empty"
+            " -1"
+            " -1 -1 empty"
+            " %s %s"
+            " %s %d %d"
+            " %d"
+            " %d %d %d"
+            " -1\n",
             x->x_gui.iem_width, IEM_PANEL_MINIMUM_SIZE,
             x->x_panelWidth, x->x_panelHeight,
-            srl[0]->s_name, srl[1]->s_name,
-            srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
+            names.n_unexpandedSend->s_name, names.n_unexpandedReceive->s_name,
+            names.n_unexpandedLabel->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
-            0xffffff & x->x_gui.iem_colorBackground, -1/*no frontcolor*/, 0xffffff & x->x_gui.iem_colorLabel);
-    gfxstub_new(&x->x_gui.iem_obj.te_g.g_pd, x, buf);
+            x->x_gui.iem_colorBackground, -1, x->x_gui.iem_colorLabel);     /* No foreground color. */
+            
+    PD_ASSERT (!err);
+    
+    gfxstub_new (cast_pd (x), (void *)x, t);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -430,18 +433,18 @@ void panel_setup (void)
         
     #endif
     
-    panel_widgetBehavior.w_getrectfn    = panel_getrect;
-    panel_widgetBehavior.w_displacefn   = iemgui_behaviorDisplace;
-    panel_widgetBehavior.w_selectfn     = iemgui_behaviorSelected;
-    panel_widgetBehavior.w_activatefn   = NULL;
-    panel_widgetBehavior.w_deletefn     = iemgui_behaviorDeleted;
-    panel_widgetBehavior.w_visfn        = iemgui_behaviorVisible;
-    panel_widgetBehavior.w_clickfn      = NULL;
+    panel_widgetBehavior.w_getrectfn  = panel_behaviorGetRectangle;
+    panel_widgetBehavior.w_displacefn = iemgui_behaviorDisplace;
+    panel_widgetBehavior.w_selectfn   = iemgui_behaviorSelected;
+    panel_widgetBehavior.w_activatefn = NULL;
+    panel_widgetBehavior.w_deletefn   = iemgui_behaviorDeleted;
+    panel_widgetBehavior.w_visfn      = iemgui_behaviorVisible;
+    panel_widgetBehavior.w_clickfn    = NULL;
     
     class_setWidgetBehavior (c, &panel_widgetBehavior);
     class_setHelpName (c, gensym ("cnv"));
     class_setSaveFunction (c, panel_behaviorSave);
-    class_setPropertiesFunction (c, panel_properties);
+    class_setPropertiesFunction (c, panel_behaviorProperties);
     
     panel_class = c;
 }
