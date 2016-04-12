@@ -204,12 +204,12 @@ typedef struct _vu {
     void        *x_outRight;
     } t_vu;
 
-typedef struct _my_canvas {
+typedef struct _panel {
     t_iem       x_gui;
-    t_atom      x_at[3];
-    int         x_vis_w;
-    int         x_vis_h;
-    } t_my_canvas;
+    t_atom      x_t[2];
+    int         x_panelWidth;
+    int         x_panelHeight;
+    } t_panel;
     
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

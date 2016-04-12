@@ -1,39 +1,54 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
- * For information on usage and redistribution, and for a DISCLAIMER OF ALL
- * WARRANTIES, see the file, "LICENSE.txt," in this distribution. */
 
-/* g_7_guis.c written by Thomas Musil (c) IEM KUG Graz Austria 2000-2001 */
-/* thanks to Miller Puckette, Guenther Geiger and Krzystof Czaja */
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
 
+/* < https://opensource.org/licenses/BSD-3-Clause > */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/* Original "g_7_guis.h" written by Thomas Musil (c) IEM KUG Graz Austria 2000-2001. */
+
+/* Thanks to Miller Puckette, Guenther Geiger and Krzystof Czaja. */
+
+/* < http://iem.kug.ac.at/ > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "g_canvas.h"
-
 #include "g_iem.h"
-#include <math.h>
 
-#ifdef _WIN32
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-#define IEM_PANEL_DEFAULT_GRIP_SIZE     15
+#define IEM_PANEL_DEFAULT_WIDTH     100
+#define IEM_PANEL_DEFAULT_HEIGHT    60
+#define IEM_PANEL_DEFAULT_COLORS    { -233017, -1, -1 }
 
-/* ---------- cnv  my gui-canvas for a window ---------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-t_widgetbehavior my_canvas_widgetbehavior;
-static t_class *my_canvas_class;
+#define IEM_PANEL_MINIMUM_SIZE      1
 
-/* widget helper functions */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void my_canvas_draw_new(t_my_canvas *x, t_glist *glist)
+static t_widgetbehavior panel_widgetBehavior;
+
+static t_class *panel_class;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void panel_draw_new(t_panel *x, t_glist *glist)
 {
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
@@ -41,7 +56,7 @@ void my_canvas_draw_new(t_my_canvas *x, t_glist *glist)
 
     sys_vGui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxRECT\n",
              canvas, xpos, ypos,
-             xpos + x->x_vis_w, ypos + x->x_vis_h,
+             xpos + x->x_panelWidth, ypos + x->x_panelHeight,
              x->x_gui.iem_colorBackground, x->x_gui.iem_colorBackground, x);
     sys_vGui(".x%lx.c create rectangle %d %d %d %d -outline #%6.6x -tags %lxBASE\n",
              canvas, xpos, ypos,
@@ -55,15 +70,15 @@ void my_canvas_draw_new(t_my_canvas *x, t_glist *glist)
              x->x_gui.iem_colorLabel, x);
 }
 
-void my_canvas_draw_move(t_my_canvas *x, t_glist *glist)
+void panel_draw_move(t_panel *x, t_glist *glist)
 {
     int xpos=text_xpix(&x->x_gui.iem_obj, glist);
     int ypos=text_ypix(&x->x_gui.iem_obj, glist);
     t_glist *canvas=glist_getcanvas(glist);
 
     sys_vGui(".x%lx.c coords %lxRECT %d %d %d %d\n",
-             canvas, x, xpos, ypos, xpos + x->x_vis_w,
-             ypos + x->x_vis_h);
+             canvas, x, xpos, ypos, xpos + x->x_panelWidth,
+             ypos + x->x_panelHeight);
     sys_vGui(".x%lx.c coords %lxBASE %d %d %d %d\n",
              canvas, x, xpos, ypos,
              xpos + x->x_gui.iem_width, ypos + x->x_gui.iem_height);
@@ -72,7 +87,7 @@ void my_canvas_draw_move(t_my_canvas *x, t_glist *glist)
              ypos+x->x_gui.iem_labelY);
 }
 
-void my_canvas_draw_erase(t_my_canvas* x, t_glist *glist)
+void panel_draw_erase(t_panel* x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
 
@@ -81,7 +96,7 @@ void my_canvas_draw_erase(t_my_canvas* x, t_glist *glist)
     sys_vGui(".x%lx.c delete %lxLABEL\n", canvas, x);
 }
 
-void my_canvas_draw_config(t_my_canvas* x, t_glist *glist)
+void panel_draw_config(t_panel* x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
 
@@ -95,7 +110,7 @@ void my_canvas_draw_config(t_my_canvas* x, t_glist *glist)
              strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
 }
 
-void my_canvas_draw_select(t_my_canvas* x, t_glist *glist)
+void panel_draw_select(t_panel* x, t_glist *glist)
 {
     t_glist *canvas=glist_getcanvas(glist);
 
@@ -109,25 +124,118 @@ void my_canvas_draw_select(t_my_canvas* x, t_glist *glist)
     }
 }
 
-void my_canvas_draw(t_my_canvas *x, t_glist *glist, int mode)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void panel_draw(t_panel *x, t_glist *glist, int mode)
 {
     if(mode == IEM_DRAW_MOVE)
-        my_canvas_draw_move(x, glist);
+        panel_draw_move(x, glist);
     else if(mode == IEM_DRAW_NEW)
-        my_canvas_draw_new(x, glist);
+        panel_draw_new(x, glist);
     else if(mode == IEM_DRAW_SELECT)
-        my_canvas_draw_select(x, glist);
+        panel_draw_select(x, glist);
     else if(mode == IEM_DRAW_ERASE)
-        my_canvas_draw_erase(x, glist);
+        panel_draw_erase(x, glist);
     else if(mode == IEM_DRAW_CONFIG)
-        my_canvas_draw_config(x, glist);
+        panel_draw_config(x, glist);
 }
 
-/* ------------------------ cnv widgetbehaviour----------------------------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void my_canvas_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int *xp2, int *yp2)
+static void panel_dialog(t_panel *x, t_symbol *s, int argc, t_atom *argv)
 {
-    t_my_canvas *x = (t_my_canvas *)z;
+    int a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
+    int w = (int)(t_int)atom_getFloatAtIndex(2, argc, argv);
+    int h = (int)(t_int)atom_getFloatAtIndex(3, argc, argv);
+    iemgui_fromDialog(&x->x_gui, argc, argv);
+
+    x->x_gui.iem_loadbang = 0;
+    if(a < 1)
+        a = 1;
+    x->x_gui.iem_width = a;
+    x->x_gui.iem_height = x->x_gui.iem_width;
+    if(w < 1)
+        w = 1;
+    x->x_panelWidth = w;
+    if(h < 1)
+        h = 1;
+    x->x_panelHeight = h;
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+}
+
+static void panel_size(t_panel *x, t_symbol *s, int ac, t_atom *av)
+{
+    int i = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
+
+    if(i < 1)
+        i = 1;
+    x->x_gui.iem_width = i;
+    x->x_gui.iem_height = i;
+    iemgui_boxChanged((void *)x, &x->x_gui);
+}
+
+static void panel_delta(t_panel *x, t_symbol *s, int ac, t_atom *av)
+{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
+
+static void panel_pos(t_panel *x, t_symbol *s, int ac, t_atom *av)
+{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
+
+static void panel_label_font(t_panel *x, t_symbol *s, int ac, t_atom *av)
+{iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
+
+static void panel_label_pos(t_panel *x, t_symbol *s, int ac, t_atom *av)
+{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
+
+static void panel_vis_size(t_panel *x, t_symbol *s, int ac, t_atom *av)
+{
+    int i;
+
+    i = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
+    if(i < 1)
+        i = 1;
+    x->x_panelWidth = i;
+    if(ac > 1)
+    {
+        i = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
+        if(i < 1)
+            i = 1;
+    }
+    x->x_panelHeight = i;
+    if(glist_isvisible(x->x_gui.iem_glist))
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+}
+
+static void panel_get_pos(t_panel *x)
+{
+    if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
+    {
+        x->x_t[0].a_w.w_float = text_xpix(&x->x_gui.iem_obj, x->x_gui.iem_glist);
+        x->x_t[1].a_w.w_float = text_ypix(&x->x_gui.iem_obj, x->x_gui.iem_glist);
+        pd_list(x->x_gui.iem_send->s_thing, 2, x->x_t);
+    }
+}
+
+static void panel_send(t_panel *x, t_symbol *s)
+{iemgui_setSend(x, &x->x_gui, s);}
+
+static void panel_receive(t_panel *x, t_symbol *s)
+{iemgui_setReceive(x, &x->x_gui, s);}
+
+static void panel_label(t_panel *x, t_symbol *s)
+{iemgui_setLabel((void *)x, &x->x_gui, s);}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void panel_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int *xp2, int *yp2)
+{
+    t_panel *x = (t_panel *)z;
     
     *xp1 = text_xpix(&x->x_gui.iem_obj, glist);
     *yp1 = text_ypix(&x->x_gui.iem_obj, glist);
@@ -135,25 +243,40 @@ static void my_canvas_getrect(t_gobj *z, t_glist *glist, int *xp1, int *yp1, int
     *yp2 = *yp1 + x->x_gui.iem_height;
 }
 
-static void my_canvas_save(t_gobj *z, t_buffer *b)
+static void panel_behaviorSave (t_gobj *z, t_buffer *b)
 {
-    t_my_canvas *x = (t_my_canvas *)z;
-    int bflcol[3];
-    t_symbol *srl[3];
+    t_panel *x = (t_panel *)z;
+    t_error err = PD_ERROR_NONE;
+    t_iemnames names;
+    t_iemcolors colors;
 
-    iemgui_serialize(&x->x_gui, srl, bflcol);
-    buffer_vAppend(b, "ssiisiiisssiiiiiii", gensym("#X"),gensym("obj"),
-                (int)x->x_gui.iem_obj.te_xCoordinate, (int)x->x_gui.iem_obj.te_yCoordinate,
-                gensym("cnv"), x->x_gui.iem_width, x->x_vis_w, x->x_vis_h,
-                srl[0], srl[1], srl[2], x->x_gui.iem_labelX, x->x_gui.iem_labelY,
-                iemgui_serializeFontStyle(&x->x_gui), x->x_gui.iem_fontSize,
-                bflcol[0], bflcol[2], iemgui_serializeLoadbang(&x->x_gui));
-    buffer_vAppend(b, ";");
+    iemgui_serialize (&x->x_gui, &names, &colors);
+    
+    buffer_vAppend (b, "ssiisiiisssiiiiiii",
+        gensym ("#X"),
+        gensym ("obj"),
+        (int)cast_object (z)->te_xCoordinate,
+        (int)cast_object (z)->te_yCoordinate,
+        gensym ("cnv"),
+        x->x_gui.iem_width,                                                     // Grip width.
+        x->x_panelWidth,                                                        // Panel width.
+        x->x_panelHeight,                                                       // Panel height.
+        names.n_unexpandedSend,                                                 // Send.
+        names.n_unexpandedReceive,                                              // Receive.
+        names.n_unexpandedLabel,                                                // Label.
+        x->x_gui.iem_labelX,                                                    // Label X.
+        x->x_gui.iem_labelY,                                                    // Label Y.
+        iemgui_serializeFontStyle (&x->x_gui),                                  // Label font.
+        x->x_gui.iem_fontSize,                                                  // Label font size.
+        colors.c_colorBackground,                                               // Background color.
+        colors.c_colorLabel);                                                   // Label color.
+        
+    buffer_vAppend (b, ";");
 }
 
-static void my_canvas_properties(t_gobj *z, t_glist *owner)
+static void panel_properties(t_gobj *z, t_glist *owner)
 {
-    t_my_canvas *x = (t_my_canvas *)z;
+    t_panel *x = (t_panel *)z;
     char buf[800];
     t_symbol *srl[3];
 
@@ -169,8 +292,8 @@ static void my_canvas_properties(t_gobj *z, t_glist *owner)
             %d \
             %d %d %d \
             -1\n",
-            x->x_gui.iem_width, 1,
-            x->x_vis_w, x->x_vis_h,
+            x->x_gui.iem_width, IEM_PANEL_MINIMUM_SIZE,
+            x->x_panelWidth, x->x_panelHeight,
             srl[0]->s_name, srl[1]->s_name,
             srl[2]->s_name, x->x_gui.iem_labelX, x->x_gui.iem_labelY,
             x->x_gui.iem_fontSize,
@@ -178,212 +301,150 @@ static void my_canvas_properties(t_gobj *z, t_glist *owner)
     gfxstub_new(&x->x_gui.iem_obj.te_g.g_pd, x, buf);
 }
 
-static void my_canvas_get_pos(t_my_canvas *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void panel_dummy (t_panel *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
-    {
-        x->x_at[0].a_w.w_float = text_xpix(&x->x_gui.iem_obj, x->x_gui.iem_glist);
-        x->x_at[1].a_w.w_float = text_ypix(&x->x_gui.iem_obj, x->x_gui.iem_glist);
-        pd_list(x->x_gui.iem_send->s_thing, 2, x->x_at);
-    }
+    /* Dummy. */
 }
 
-static void my_canvas_dialog(t_my_canvas *x, t_symbol *s, int argc, t_atom *argv)
-{
-    int a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
-    int w = (int)(t_int)atom_getFloatAtIndex(2, argc, argv);
-    int h = (int)(t_int)atom_getFloatAtIndex(3, argc, argv);
-    iemgui_fromDialog(&x->x_gui, argc, argv);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-    x->x_gui.iem_loadbang = 0;
-    if(a < 1)
-        a = 1;
-    x->x_gui.iem_width = a;
-    x->x_gui.iem_height = x->x_gui.iem_width;
-    if(w < 1)
-        w = 1;
-    x->x_vis_w = w;
-    if(h < 1)
-        h = 1;
-    x->x_vis_h = h;
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+static void *panel_new (t_symbol *s, int argc, t_atom *argv)
+{
+    t_panel *x = (t_panel *)pd_new (panel_class);
+    
+    int gripSize        = IEM_DEFAULT_SIZE;
+    int panelWidth      = IEM_PANEL_DEFAULT_WIDTH;
+    int panelHeight     = IEM_PANEL_DEFAULT_HEIGHT;
+    int labelX          = IEM_DEFAULT_LABELX_TOP;
+    int labelY          = IEM_DEFAULT_LABELY_TOP;
+    int labelFontSize   = IEM_DEFAULT_FONTSIZE;
+    t_iemcolors colors  = IEM_PANEL_DEFAULT_COLORS;
+        
+    if (argc >= 12                                                              // --
+            && IS_FLOAT (argv + 0)                                              // Grip width.
+            && IS_FLOAT (argv + 1)                                              // Panel width.
+            && IS_FLOAT (argv + 2)                                              // Panel Height.
+            && (IS_SYMBOL (argv + 3) || IS_FLOAT (argv + 3))                    // Send.
+            && (IS_SYMBOL (argv + 4) || IS_FLOAT (argv + 4))                    // Receive.
+            && (IS_SYMBOL (argv + 5) || IS_FLOAT (argv + 5))                    // Label.
+            && IS_FLOAT (argv + 6)                                              // Label X.
+            && IS_FLOAT (argv + 7)                                              // Label Y.
+            && IS_FLOAT (argv + 8)                                              // Label font.
+            && IS_FLOAT (argv + 9)                                              // Label font size.
+            && IS_FLOAT (argv + 10)                                             // Background color.
+            && IS_FLOAT (argv + 11))                                            // Label color.
+    {
+        gripSize                    = (int)atom_getFloatAtIndex (0,  argc, argv);
+        panelWidth                  = (int)atom_getFloatAtIndex (1,  argc, argv);
+        panelHeight                 = (int)atom_getFloatAtIndex (2,  argc, argv);
+        labelX                      = (int)atom_getFloatAtIndex (6,  argc, argv);
+        labelY                      = (int)atom_getFloatAtIndex (7,  argc, argv);
+        labelFontSize               = (int)atom_getFloatAtIndex (9,  argc, argv);
+        colors.c_colorBackground    = (int)atom_getFloatAtIndex (10, argc, argv);
+        colors.c_colorLabel         = (int)atom_getFloatAtIndex (11, argc, argv);
+        
+        iemgui_deserializeNamesByIndex (&x->x_gui, 3, argv);
+        iemgui_deserializeFontStyle (&x->x_gui, (int)atom_getFloatAtIndex (8, argc, argv));
+                
+    } else {
+        iemgui_deserializeNamesByIndex (&x->x_gui, 3, NULL);
+    }
+
+    x->x_gui.iem_glist      = (t_glist *)canvas_getcurrent();
+    x->x_gui.iem_draw       = (t_iemfn)panel_draw;
+    x->x_gui.iem_canSend    = (x->x_gui.iem_send == iemgui_empty()) ? 0 : 1;
+    x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;
+
+    x->x_gui.iem_width      = PD_MAX (gripSize, IEM_PANEL_MINIMUM_SIZE);
+    x->x_gui.iem_height     = PD_MAX (gripSize, IEM_PANEL_MINIMUM_SIZE);
+    x->x_gui.iem_labelX     = labelX;
+    x->x_gui.iem_labelY     = labelY;
+    x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
+    
+    iemgui_checkSendReceiveLoop (&x->x_gui);
+    iemgui_deserializeColors (&x->x_gui, &colors);
+    
+    if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
+    
+    x->x_panelWidth  = PD_MAX (panelWidth,  IEM_PANEL_MINIMUM_SIZE);
+    x->x_panelHeight = PD_MAX (panelHeight, IEM_PANEL_MINIMUM_SIZE);
+
+    SET_FLOAT (&x->x_t[0], 0.0);
+    SET_FLOAT (&x->x_t[1], 0.0);
+    
+    return x;
 }
 
-static void my_canvas_size(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
+static void panel_free (t_panel *x)
 {
-    int i = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
-
-    if(i < 1)
-        i = 1;
-    x->x_gui.iem_width = i;
-    x->x_gui.iem_height = i;
-    iemgui_boxChanged((void *)x, &x->x_gui);
+    if (x->x_gui.iem_canReceive) { pd_unbind (cast_object (x), x->x_gui.iem_receive); }
+    
+    gfxstub_deleteforkey ((void *)x);
 }
 
-static void my_canvas_delta(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void my_canvas_pos(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void my_canvas_vis_size(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
+void panel_setup (void)
 {
-    int i;
+    t_class *c = NULL;
+    
+    c = class_new (gensym ("cnv"), 
+        (t_newmethod)panel_new,
+        (t_method)panel_free,
+        sizeof (t_panel), 
+        CLASS_DEFAULT | CLASS_NOINLET,
+        A_GIMME,
+        A_NULL);
+        
+    class_addMethod (c, (t_method)panel_dialog,             gensym ("dialog"),          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_size,               gensym ("size"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_delta,              gensym ("move"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_pos,                gensym ("position"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_label_pos,          gensym ("labelposition"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_label_font,         gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_vis_size,           gensym ("gripsize"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_get_pos,            gensym ("getposition"),     A_NULL);
+    class_addMethod (c, (t_method)panel_send,               gensym ("send"),            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)panel_receive,            gensym ("receive"),         A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)panel_label,              gensym ("label"),           A_DEFSYMBOL, A_NULL);
 
-    i = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
-    if(i < 1)
-        i = 1;
-    x->x_vis_w = i;
-    if(ac > 1)
-    {
-        i = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
-        if(i < 1)
-            i = 1;
-    }
-    x->x_vis_h = i;
-    if(glist_isvisible(x->x_gui.iem_glist))
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+    #if PD_WITH_LEGACY
+    
+    class_addMethod (c, (t_method)panel_delta,              gensym ("delta"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_pos,                gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_dummy,              gensym ("color"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_label_pos,          gensym ("label_pos"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_label_font,         gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_vis_size,           gensym ("vis_size"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_get_pos,            gensym ("get_pos"),         A_NULL);
+        
+    class_addCreator ((t_newmethod)panel_new, gensym ("my_canvas"), A_GIMME, A_NULL);
+        
+    #endif
+    
+    panel_widgetBehavior.w_getrectfn    = panel_getrect;
+    panel_widgetBehavior.w_displacefn   = iemgui_behaviorDisplace;
+    panel_widgetBehavior.w_selectfn     = iemgui_behaviorSelected;
+    panel_widgetBehavior.w_activatefn   = NULL;
+    panel_widgetBehavior.w_deletefn     = iemgui_behaviorDeleted;
+    panel_widgetBehavior.w_visfn        = iemgui_behaviorVisible;
+    panel_widgetBehavior.w_clickfn      = NULL;
+    
+    class_setWidgetBehavior (c, &panel_widgetBehavior);
+    class_setHelpName (c, gensym ("cnv"));
+    class_setSaveFunction (c, panel_behaviorSave);
+    class_setPropertiesFunction (c, panel_properties);
+    
+    panel_class = c;
 }
 
-static void my_canvas_color(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setColor((void *)x, &x->x_gui, s, ac, av);}
-
-static void my_canvas_send(t_my_canvas *x, t_symbol *s)
-{iemgui_setSend(x, &x->x_gui, s);}
-
-static void my_canvas_receive(t_my_canvas *x, t_symbol *s)
-{iemgui_setReceive(x, &x->x_gui, s);}
-
-static void my_canvas_label(t_my_canvas *x, t_symbol *s)
-{iemgui_setLabel((void *)x, &x->x_gui, s);}
-
-static void my_canvas_label_pos(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void my_canvas_label_font(t_my_canvas *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
-
-static void *my_canvas_new(t_symbol *s, int argc, t_atom *argv)
-{
-    t_my_canvas *x = (t_my_canvas *)pd_new(my_canvas_class);
-    int bflcol[]={-233017, -1, -66577};
-    int a=IEM_PANEL_DEFAULT_GRIP_SIZE, w=100, h=60;
-    int ldx=20, ldy=12, f=2, i=0;
-    int fs=14;
-    char str[144];
-
-    iemgui_deserializeLoadbang(&x->x_gui, 0);
-    iemgui_deserializeFontStyle(&x->x_gui, 0);
-
-    if(((argc >= 10)&&(argc <= 13))
-       &&IS_FLOAT(argv + 0)&&IS_FLOAT(argv + 1)&&IS_FLOAT(argv + 2))
-    {
-        a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
-        w = (int)(t_int)atom_getFloatAtIndex(1, argc, argv);
-        h = (int)(t_int)atom_getFloatAtIndex(2, argc, argv);
-    }
-    if((argc >= 12)&&(IS_SYMBOL(argv + 3)||IS_FLOAT(argv + 3))&&(IS_SYMBOL(argv + 4)||IS_FLOAT(argv + 4)))
-    {
-        i = 2;
-        iemgui_deserializeNamesByIndex(&x->x_gui, 3, argv);
-    }
-    else if((argc == 11)&&(IS_SYMBOL(argv + 3)||IS_FLOAT(argv + 3)))
-    {
-        i = 1;
-        iemgui_deserializeNamesByIndex(&x->x_gui, 3, argv);
-    }
-    else iemgui_deserializeNamesByIndex(&x->x_gui, 3, 0);
-
-    if(((argc >= 10)&&(argc <= 13))
-       &&(IS_SYMBOL(argv + i+3)||IS_FLOAT(argv + i+3))&&IS_FLOAT(argv + i+4)
-       &&IS_FLOAT(argv + i+5)&&IS_FLOAT(argv + i+6)
-       &&IS_FLOAT(argv + i+7)&&IS_FLOAT(argv + i+8)
-       &&IS_FLOAT(argv + i+9))
-    {
-            /* disastrously, the "label" sits in a different part of the
-            message.  So we have to track its location separately (in
-            the slot iem_indexLabel) and initialize it specially here. */
-        //iem_getNameAt(i+3, argv);
-        //x->x_gui.iem_indexLabel = i+4;
-        ldx = (int)(t_int)atom_getFloatAtIndex(i+4, argc, argv);
-        ldy = (int)(t_int)atom_getFloatAtIndex(i+5, argc, argv);
-        iemgui_deserializeFontStyle(&x->x_gui, (t_int)atom_getFloatAtIndex(i+6, argc, argv));
-        fs = (int)(t_int)atom_getFloatAtIndex(i+7, argc, argv);
-        bflcol[0] = (int)(t_int)atom_getFloatAtIndex(i+8, argc, argv);
-        bflcol[2] = (int)(t_int)atom_getFloatAtIndex(i+9, argc, argv);
-    }
-    if((argc == 13)&&IS_FLOAT(argv + i+10))
-    {
-        iemgui_deserializeLoadbang(&x->x_gui, (t_int)atom_getFloatAtIndex(i+10, argc, argv));
-    }
-    x->x_gui.iem_draw = (t_iemfn)my_canvas_draw;
-    x->x_gui.iem_canSend = 1;
-    x->x_gui.iem_canReceive = 1;
-    x->x_gui.iem_glist = (t_glist *)canvas_getcurrent();
-    if (!strcmp(x->x_gui.iem_send->s_name, "empty"))
-        x->x_gui.iem_canSend = 0;
-    if (!strcmp(x->x_gui.iem_receive->s_name, "empty"))
-        x->x_gui.iem_canReceive = 0;
-    if(a < 1)
-        a = 1;
-    x->x_gui.iem_width = a;
-    x->x_gui.iem_height = x->x_gui.iem_width;
-    if(w < 1)
-        w = 1;
-    x->x_vis_w = w;
-    if(h < 1)
-        h = 1;
-    x->x_vis_h = h;
-
-    if (x->x_gui.iem_canReceive)
-        pd_bind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
-    x->x_gui.iem_labelX = ldx;
-    x->x_gui.iem_labelY = ldy;
-    if(fs < 4)
-        fs = 4;
-    x->x_gui.iem_fontSize = fs;
-    iemgui_deserializeColors(&x->x_gui, bflcol);
-    x->x_at[0].a_type = A_FLOAT;
-    x->x_at[1].a_type = A_FLOAT;
-    iemgui_checkSendReceiveLoop(&x->x_gui);
-    return (x);
-}
-
-static void my_canvas_ff(t_my_canvas *x)
-{
-    if(x->x_gui.iem_canReceive)
-        pd_unbind(&x->x_gui.iem_obj.te_g.g_pd, x->x_gui.iem_receive);
-    gfxstub_deleteforkey(x);
-}
-
-void g_mycanvas_setup(void)
-{
-    my_canvas_class = class_new(gensym("cnv"), (t_newmethod)my_canvas_new,
-                                (t_method)my_canvas_ff, sizeof(t_my_canvas), CLASS_NOINLET, A_GIMME, 0);
-    class_addCreator((t_newmethod)my_canvas_new, gensym("my_canvas"), A_GIMME, 0);
-    class_addMethod(my_canvas_class, (t_method)my_canvas_dialog, gensym("dialog"), A_GIMME, 0);
-    class_addMethod(my_canvas_class, (t_method)my_canvas_size, gensym("size"), A_GIMME, 0);
-    class_addMethod(my_canvas_class, (t_method)my_canvas_delta, gensym("delta"), A_GIMME, 0);
-    class_addMethod(my_canvas_class, (t_method)my_canvas_pos, gensym("pos"), A_GIMME, 0);
-    class_addMethod(my_canvas_class, (t_method)my_canvas_vis_size, gensym("vis_size"), A_GIMME, 0);
-    class_addMethod(my_canvas_class, (t_method)my_canvas_color, gensym("color"), A_GIMME, 0);
-    class_addMethod(my_canvas_class, (t_method)my_canvas_send, gensym("send"), A_DEFSYMBOL, 0);
-    class_addMethod(my_canvas_class, (t_method)my_canvas_receive, gensym("receive"), A_DEFSYMBOL, 0);
-    class_addMethod(my_canvas_class, (t_method)my_canvas_label, gensym("label"), A_DEFSYMBOL, 0);
-    class_addMethod(my_canvas_class, (t_method)my_canvas_label_pos, gensym("label_pos"), A_GIMME, 0);
-    class_addMethod(my_canvas_class, (t_method)my_canvas_label_font, gensym("label_font"), A_GIMME, 0);
-    class_addMethod(my_canvas_class, (t_method)my_canvas_get_pos, gensym("get_pos"), 0);
-
-    my_canvas_widgetbehavior.w_getrectfn = my_canvas_getrect;
-    my_canvas_widgetbehavior.w_displacefn = iemgui_behaviorDisplace;
-    my_canvas_widgetbehavior.w_selectfn = iemgui_behaviorSelected;
-    my_canvas_widgetbehavior.w_activatefn = NULL;
-    my_canvas_widgetbehavior.w_deletefn = iemgui_behaviorDeleted;
-    my_canvas_widgetbehavior.w_visfn = iemgui_behaviorVisible;
-    my_canvas_widgetbehavior.w_clickfn = NULL;
-    class_setWidgetBehavior(my_canvas_class, &my_canvas_widgetbehavior);
-    class_setHelpName(my_canvas_class, gensym("cnv"));
-    class_setSaveFunction(my_canvas_class, my_canvas_save);
-    class_setPropertiesFunction(my_canvas_class, my_canvas_properties);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
