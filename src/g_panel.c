@@ -146,88 +146,103 @@ void panel_draw(t_panel *x, t_glist *glist, int mode)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void panel_dialog(t_panel *x, t_symbol *s, int argc, t_atom *argv)
+static void panel_dialog (t_panel *x, t_symbol *s, int argc, t_atom *argv)
 {
-    int a = (int)(t_int)atom_getFloatAtIndex(0, argc, argv);
-    int w = (int)(t_int)atom_getFloatAtIndex(2, argc, argv);
-    int h = (int)(t_int)atom_getFloatAtIndex(3, argc, argv);
-    iemgui_fromDialog(&x->x_gui, argc, argv);
+    if (argc == IEM_DIALOG_SIZE) {
+    //
+    int gripSize    = (int)atom_getFloatAtIndex (0, argc, argv);
+    int panelWidth  = (int)atom_getFloatAtIndex (2, argc, argv);
+    int panelHeight = (int)atom_getFloatAtIndex (3, argc, argv);
+    
+    iemgui_fromDialog (&x->x_gui, argc, argv);
 
-    x->x_gui.iem_loadbang = 0;
-    if(a < 1)
-        a = 1;
-    x->x_gui.iem_width = a;
-    x->x_gui.iem_height = x->x_gui.iem_width;
-    if(w < 1)
-        w = 1;
-    x->x_panelWidth = w;
-    if(h < 1)
-        h = 1;
-    x->x_panelHeight = h;
+    x->x_gui.iem_width  = PD_MAX (gripSize,    IEM_PANEL_MINIMUM_SIZE);
+    x->x_gui.iem_height = PD_MAX (gripSize,    IEM_PANEL_MINIMUM_SIZE);
+    x->x_panelWidth     = PD_MAX (panelWidth,  IEM_PANEL_MINIMUM_SIZE);
+    x->x_panelHeight    = PD_MAX (panelHeight, IEM_PANEL_MINIMUM_SIZE);
+    
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-}
-
-static void panel_size(t_panel *x, t_symbol *s, int ac, t_atom *av)
-{
-    int i = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
-
-    if(i < 1)
-        i = 1;
-    x->x_gui.iem_width = i;
-    x->x_gui.iem_height = i;
-    iemgui_boxChanged((void *)x, &x->x_gui);
-}
-
-static void panel_delta(t_panel *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_movePosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void panel_pos(t_panel *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setPosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void panel_label_font(t_panel *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setLabelFont((void *)x, &x->x_gui, s, ac, av);}
-
-static void panel_label_pos(t_panel *x, t_symbol *s, int ac, t_atom *av)
-{iemgui_setLabelPosition((void *)x, &x->x_gui, s, ac, av);}
-
-static void panel_vis_size(t_panel *x, t_symbol *s, int ac, t_atom *av)
-{
-    int i;
-
-    i = (int)(t_int)atom_getFloatAtIndex(0, ac, av);
-    if(i < 1)
-        i = 1;
-    x->x_panelWidth = i;
-    if(ac > 1)
-    {
-        i = (int)(t_int)atom_getFloatAtIndex(1, ac, av);
-        if(i < 1)
-            i = 1;
-    }
-    x->x_panelHeight = i;
-    if(glist_isvisible(x->x_gui.iem_glist))
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
-}
-
-static void panel_get_pos(t_panel *x)
-{
-    if(x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing)
-    {
-        x->x_t[0].a_w.w_float = text_xpix(&x->x_gui.iem_obj, x->x_gui.iem_glist);
-        x->x_t[1].a_w.w_float = text_ypix(&x->x_gui.iem_obj, x->x_gui.iem_glist);
-        pd_list(x->x_gui.iem_send->s_thing, 2, x->x_t);
+    //
     }
 }
 
-static void panel_send(t_panel *x, t_symbol *s)
-{iemgui_setSend(x, &x->x_gui, s);}
+static void panel_gripSize (t_panel *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc) {
+    //
+    int i = (int)atom_getFloatAtIndex (0, argc, argv);
+    x->x_gui.iem_width  = PD_MAX (i, IEM_PANEL_MINIMUM_SIZE);
+    x->x_gui.iem_height = PD_MAX (i, IEM_PANEL_MINIMUM_SIZE);
+    iemgui_boxChanged ((void *)x, &x->x_gui);
+    //
+    }
+}
 
-static void panel_receive(t_panel *x, t_symbol *s)
-{iemgui_setReceive(x, &x->x_gui, s);}
+static void panel_move (t_panel *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_movePosition ((void *)x, &x->x_gui, s, argc, argv);
+}
 
-static void panel_label(t_panel *x, t_symbol *s)
-{iemgui_setLabel((void *)x, &x->x_gui, s);}
+static void panel_position (t_panel *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv);
+}
+
+static void panel_labelFont (t_panel *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv);
+}
+
+static void panel_labelPosition (t_panel *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_setLabelPosition ((void *)x, &x->x_gui, s, argc, argv);
+}
+
+static void panel_panelSize (t_panel *x, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc) {
+    //
+    int i = (int)atom_getFloatAtIndex (0, argc, argv);
+
+    x->x_panelWidth = PD_MAX (i, IEM_PANEL_MINIMUM_SIZE);
+    
+    if (argc > 1) { 
+        i = (int)atom_getFloatAtIndex (1, argc, argv); 
+    }
+    
+    x->x_panelHeight = PD_MAX (i, IEM_PANEL_MINIMUM_SIZE);
+    
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+    //
+    }
+}
+
+static void panel_getPosition (t_panel *x)
+{
+    if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) {
+        t_float a = text_xpix (cast_object (x), x->x_gui.iem_glist);
+        t_float b = text_ypix (cast_object (x), x->x_gui.iem_glist);
+        SET_FLOAT (&x->x_t[0], a);
+        SET_FLOAT (&x->x_t[1], b);
+        pd_list (x->x_gui.iem_send->s_thing, 2, x->x_t);
+    }
+}
+
+static void panel_send (t_panel *x, t_symbol *s)
+{
+    iemgui_setSend ((void *)x, &x->x_gui, s);
+}
+
+static void panel_receive (t_panel *x, t_symbol *s)
+{
+    iemgui_setReceive ((void *)x, &x->x_gui, s);
+}
+
+static void panel_label (t_panel *x, t_symbol *s)
+{
+    iemgui_setLabel ((void *)x, &x->x_gui, s);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -408,26 +423,27 @@ void panel_setup (void)
         A_NULL);
         
     class_addMethod (c, (t_method)panel_dialog,             gensym ("dialog"),          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_size,               gensym ("size"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_delta,              gensym ("move"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_pos,                gensym ("position"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_label_pos,          gensym ("labelposition"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_label_font,         gensym ("labelfont"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_vis_size,           gensym ("gripsize"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_get_pos,            gensym ("getposition"),     A_NULL);
+    class_addMethod (c, (t_method)panel_gripSize,           gensym ("gripsize"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_move,               gensym ("move"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_position,           gensym ("position"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_labelPosition,      gensym ("labelposition"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_labelFont,          gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_panelSize,          gensym ("panelsize"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_getPosition,        gensym ("getposition"),     A_NULL);
     class_addMethod (c, (t_method)panel_send,               gensym ("send"),            A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)panel_receive,            gensym ("receive"),         A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)panel_label,              gensym ("label"),           A_DEFSYMBOL, A_NULL);
 
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)panel_delta,              gensym ("delta"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_pos,                gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_gripSize,           gensym ("size"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_move,               gensym ("delta"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_position,           gensym ("pos"),             A_GIMME, A_NULL);
     class_addMethod (c, (t_method)panel_dummy,              gensym ("color"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_label_pos,          gensym ("label_pos"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_label_font,         gensym ("label_font"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_vis_size,           gensym ("vis_size"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_get_pos,            gensym ("get_pos"),         A_NULL);
+    class_addMethod (c, (t_method)panel_labelPosition,      gensym ("label_pos"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_labelFont,          gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_panelSize,          gensym ("vis_size"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_getPosition,        gensym ("get_pos"),         A_NULL);
         
     class_addCreator ((t_newmethod)panel_new, gensym ("my_canvas"), A_GIMME, A_NULL);
         
