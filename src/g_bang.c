@@ -319,16 +319,6 @@ static void bng_size (t_bng *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static void bng_move (t_bng *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_movePosition ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void bng_position (t_bng *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv);
-}
-
 static void bng_flashtime (t_bng *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc == 2) {
@@ -338,46 +328,6 @@ static void bng_flashtime (t_bng *x, t_symbol *s, int argc, t_atom *argv)
     bng_setFlashTimes (x, flashBreak, flashHold);
     //
     }
-}
-
-static void bng_labelFont (t_bng *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void bng_labelPosition (t_bng *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setLabelPosition ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void bng_backgroundColor (t_bng *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setBackgroundColor ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void bng_foregroundColor (t_bng *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setForegroundColor ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void bng_labelColor (t_bng *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setLabelColor ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void bng_send (t_bng *x, t_symbol *s)
-{
-    iemgui_setSend ((void *)x, &x->x_gui, s);
-}
-
-static void bng_receive (t_bng *x, t_symbol *s)
-{
-    iemgui_setReceive ((void *)x, &x->x_gui, s);
-}
-
-static void bng_label (t_bng *x, t_symbol *s)
-{
-    iemgui_setLabel ((void *)x, &x->x_gui, s);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -482,15 +432,6 @@ static void bng_behaviorProperties (t_gobj *z, t_glist *owner)
     PD_ASSERT (!err);
     
     gfxstub_new (cast_pd (x), (void *)x, t);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void bng_dummy (t_bng *x, t_symbol *s, int argc, t_atom *argv)
-{
-    /* Dummy. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -602,30 +543,30 @@ void bng_setup (void)
     class_addAnything (c, bng_anything);
     class_addClick (c, bng_click);
     
-    class_addMethod (c, (t_method)bng_loadbang,         gensym ("loadbang"),        A_NULL);
-    class_addMethod (c, (t_method)bng_initialize,       gensym ("initialize"),      A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)bng_dialog,           gensym ("dialog"),          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_size,             gensym ("size"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_move,             gensym ("move"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_position,         gensym ("position"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_flashtime,        gensym ("flashtime"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_labelFont,        gensym ("labelfont"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_labelPosition,    gensym ("labelposition"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_backgroundColor,  gensym ("backgroundcolor"), A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_foregroundColor,  gensym ("foregroundcolor"), A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_send,             gensym ("send"),            A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)bng_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)bng_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
-    
+    class_addMethod (c, (t_method)bng_loadbang,             gensym ("loadbang"),        A_NULL);
+    class_addMethod (c, (t_method)bng_initialize,           gensym ("initialize"),      A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)bng_dialog,               gensym ("dialog"),          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_size,                 gensym ("size"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_flashtime,            gensym ("flashtime"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_move,             gensym ("move"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_position,         gensym ("position"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelFont,        gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelPosition,    gensym ("labelposition"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_backgroundColor,  gensym ("backgroundcolor"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_foregroundColor,  gensym ("foregroundcolor"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_send,             gensym ("send"),            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemstub_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemstub_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
+       
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)bng_initialize,       gensym ("init"),            A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)bng_move,             gensym ("delta"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_position,         gensym ("pos"),             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_dummy,            gensym ("color"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)bng_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_initialize,           gensym ("init"),            A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)iemstub_move,             gensym ("delta"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_position,         gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_dummy,            gensym ("color"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
 
     #endif
     

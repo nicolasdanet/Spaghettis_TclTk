@@ -32,10 +32,6 @@
 #define IEM_COLOR_NORMAL                0x000000        // Black.
 #define IEM_COLOR_SELECTED              0x0000ff        // Blue.
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 #define IEM_COLOR_MASK                  0xffffff
 
 // -----------------------------------------------------------------------------------------------------------
@@ -246,6 +242,18 @@ void        iemgui_checkSendReceiveLoop         (t_iem *iem);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        iemgui_behaviorDisplace             (t_gobj *z, t_glist *glist, int deltaX, int deltaY);
+void        iemgui_behaviorSelected             (t_gobj *z, t_glist *glist, int isSelected);
+void        iemgui_behaviorVisible              (t_gobj *z, t_glist *glist, int isVisible);
+void        iemgui_behaviorDeleted              (t_gobj *z, t_glist *glist);
+
+void        iemgui_serialize                    (t_iem *iem, t_iemnames *n, t_iemcolors *c);
+void        iemgui_fromDialog                   (t_iem *iem, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void        iemgui_setSend                      (void *x, t_iem *iem, t_symbol *s);
 void        iemgui_setReceive                   (void *x, t_iem *iem, t_symbol *s);
 void        iemgui_setLabel                     (void *x, t_iem *iem, t_symbol *s);
@@ -258,13 +266,21 @@ void        iemgui_setPosition                  (void *x, t_iem *iem, t_symbol *
 void        iemgui_movePosition                 (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
 void        iemgui_boxChanged                   (void *x, t_iem *iem);
 
-void        iemgui_behaviorDisplace             (t_gobj *z, t_glist *glist, int deltaX, int deltaY);
-void        iemgui_behaviorSelected             (t_gobj *z, t_glist *glist, int isSelected);
-void        iemgui_behaviorVisible              (t_gobj *z, t_glist *glist, int isVisible);
-void        iemgui_behaviorDeleted              (t_gobj *z, t_glist *glist);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void        iemgui_serialize                    (t_iem *iem, t_iemnames *n, t_iemcolors *c);
-void        iemgui_fromDialog                   (t_iem *iem, int argc, t_atom *argv);
+void        iemstub_send                        (void *x, t_symbol *s);
+void        iemstub_receive                     (void *x, t_symbol *s);
+void        iemstub_label                       (void *x, t_symbol *s);
+void        iemstub_labelPosition               (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemstub_labelFont                   (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemstub_backgroundColor             (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemstub_foregroundColor             (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemstub_labelColor                  (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemstub_position                    (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemstub_move                        (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemstub_dummy                       (void *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

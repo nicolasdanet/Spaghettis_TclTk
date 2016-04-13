@@ -462,26 +462,6 @@ static void dial_size (t_dial *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static void dial_move (t_dial *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_movePosition ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void dial_position (t_dial *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void dial_labelFont (t_dial *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void dial_labelPosition (t_dial *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setLabelPosition ((void *)x, &x->x_gui, s, argc, argv);
-}
-
 static void dial_range (t_dial *x, t_symbol *s, int argc, t_atom *argv)
 {
     double minimum = (double)atom_getFloatAtIndex (0, argc, argv);
@@ -529,21 +509,6 @@ static void dial_logarithmic (t_dial *x)
 static void dial_linear (t_dial *x)
 {
     x->x_isLogarithmic = 0;
-}
-
-static void dial_send (t_dial *x, t_symbol *s)
-{
-    iemgui_setSend ((void *)x, &x->x_gui, s);
-}
-
-static void dial_receive (t_dial *x, t_symbol *s)
-{
-    iemgui_setReceive ((void *)x, &x->x_gui, s);
-}
-
-static void dial_label (t_dial *x, t_symbol *s)
-{
-    iemgui_setLabel ((void *)x, &x->x_gui, s);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -641,15 +606,6 @@ static void dial_behaviorProperties (t_gobj *z, t_glist *owner)
     PD_ASSERT (!err);
     
     gfxstub_new (cast_pd (x), (void *)x, t);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void dial_dummy (t_dial *x, t_symbol *s, int argc, t_atom *argv)
-{
-    /* Dummy. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -777,34 +733,37 @@ void dial_setup (void)
     class_addClick (c, dial_click);
     class_addMotion (c, dial_motion);
 
-    class_addMethod (c, (t_method)dial_loadbang,        gensym ("loadbang"),        A_NULL);
-    class_addMethod (c, (t_method)dial_initialize,      gensym ("initialize"),      A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)dial_dialog,          gensym ("dialog"),          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_size,            gensym ("size"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_move,            gensym ("move"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_position,        gensym ("position"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_labelFont,       gensym ("labelfont"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_labelPosition,   gensym ("labelposition"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_range,           gensym ("range"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_set,             gensym ("set"),             A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)dial_steps,           gensym ("steps"),           A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)dial_logarithmic,     gensym ("logarithmic"),     A_NULL);
-    class_addMethod (c, (t_method)dial_linear,          gensym ("linear"),          A_NULL);
-    class_addMethod (c, (t_method)dial_send,            gensym ("send"),            A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)dial_receive,         gensym ("receive"),         A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)dial_label,           gensym ("label"),           A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)dial_loadbang,            gensym ("loadbang"),        A_NULL);
+    class_addMethod (c, (t_method)dial_initialize,          gensym ("initialize"),      A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)dial_dialog,              gensym ("dialog"),          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_size,                gensym ("size"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_move,             gensym ("move"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_position,         gensym ("position"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelFont,        gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelPosition,    gensym ("labelposition"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_backgroundColor,  gensym ("backgroundcolor"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_foregroundColor,  gensym ("foregroundcolor"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_range,               gensym ("range"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_set,                 gensym ("set"),             A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)dial_steps,               gensym ("steps"),           A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)dial_logarithmic,         gensym ("logarithmic"),     A_NULL);
+    class_addMethod (c, (t_method)dial_linear,              gensym ("linear"),          A_NULL);
+    class_addMethod (c, (t_method)iemstub_send,             gensym ("send"),            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemstub_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemstub_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
 
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)dial_initialize,      gensym ("init"),            A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)dial_move,            gensym ("delta"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_position,        gensym ("pos"),             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_dummy,           gensym ("color"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_labelPosition,   gensym ("label_pos"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_labelFont,       gensym ("label_font"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)dial_steps,           gensym ("log_height"),      A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)dial_logarithmic,     gensym ("log"),             A_NULL);
-    class_addMethod (c, (t_method)dial_linear,          gensym ("lin"),             A_NULL);
+    class_addMethod (c, (t_method)dial_initialize,          gensym ("init"),            A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)iemstub_move,             gensym ("delta"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_position,         gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_dummy,            gensym ("color"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_steps,               gensym ("log_height"),      A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)dial_logarithmic,         gensym ("log"),             A_NULL);
+    class_addMethod (c, (t_method)dial_linear,              gensym ("lin"),             A_NULL);
     
     class_addCreator ((t_newmethod)dial_new, gensym ("my_numbox"), A_GIMME, A_NULL);
     

@@ -310,26 +310,6 @@ static void toggle_size (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static void toggle_move (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_movePosition ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void toggle_position (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void toggle_labelFont (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void toggle_labelPosition (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setLabelPosition ((void *)x, &x->x_gui, s, argc, argv);
-}
-
 static void toggle_set (t_toggle *x, t_float f)
 {
     int draw = ((x->x_state != 0.0) != (f != 0.0));
@@ -342,21 +322,6 @@ static void toggle_set (t_toggle *x, t_float f)
 static void toggle_nonZero (t_toggle *x, t_float f)
 {
     if (f != 0.0) { x->x_nonZero = f; }
-}
-
-static void toggle_send (t_toggle *x, t_symbol *s)
-{
-    iemgui_setSend ((void *)x, &x->x_gui, s);
-}
-
-static void toggle_receive (t_toggle *x, t_symbol *s)
-{
-    iemgui_setReceive ((void *)x, &x->x_gui, s);
-}
-
-static void toggle_label (t_toggle *x, t_symbol *s)
-{
-    iemgui_setLabel ((void *)x, &x->x_gui, s);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -445,15 +410,6 @@ static void toggle_behaviorProperties (t_gobj *z, t_glist *owner)
     PD_ASSERT (!err);
     
     gfxstub_new (cast_pd (x), (void *)x, t);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void toggle_dummy (t_toggle *x, t_symbol *s, int argc, t_atom *argv)
-{
-    /* Dummy. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -559,28 +515,31 @@ void toggle_setup (void)
     class_addFloat (c, toggle_float);
     class_addClick (c, toggle_click);
     
-    class_addMethod (c, (t_method)toggle_loadbang,      gensym ("loadbang"),        A_NULL);
-    class_addMethod (c, (t_method)toggle_initialize,    gensym ("initialize"),      A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)toggle_dialog,        gensym ("dialog"),          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_size,          gensym ("size"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_move,          gensym ("move"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_position,      gensym ("position"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_labelFont,     gensym ("labelfont"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_labelPosition, gensym ("labelposition"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_set,           gensym ("set"),             A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)toggle_nonZero,       gensym ("nonzero"),         A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)toggle_send,          gensym ("send"),            A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)toggle_receive,       gensym ("receive"),         A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)toggle_label,         gensym ("label"),           A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)toggle_loadbang,          gensym ("loadbang"),        A_NULL);
+    class_addMethod (c, (t_method)toggle_initialize,        gensym ("initialize"),      A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)toggle_dialog,            gensym ("dialog"),          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_size,              gensym ("size"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_move,             gensym ("move"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_position,         gensym ("position"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelFont,        gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelPosition,    gensym ("labelposition"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_backgroundColor,  gensym ("backgroundcolor"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_foregroundColor,  gensym ("foregroundcolor"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_set,               gensym ("set"),             A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)toggle_nonZero,           gensym ("nonzero"),         A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)iemstub_send,             gensym ("send"),            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemstub_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemstub_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
 
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)toggle_initialize,    gensym ("init"),            A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)toggle_move,          gensym ("delta"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_position,      gensym ("pos"),             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_dummy,         gensym ("color"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_labelPosition, gensym ("label_pos"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_labelFont,     gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_initialize,        gensym ("init"),            A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)iemstub_move,             gensym ("delta"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_position,         gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_dummy,            gensym ("color"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
     
     class_addCreator ((t_newmethod)toggle_new, gensym ("toggle"), A_GIMME, A_NULL);
         

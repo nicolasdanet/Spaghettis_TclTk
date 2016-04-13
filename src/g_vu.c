@@ -474,36 +474,6 @@ static void vu_size (t_vu *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static void vu_move (t_vu *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_movePosition ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void vu_position (t_vu *x, t_symbol *s, int argc, t_atom *argv)
-{   
-    iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void vu_labelfont (t_vu *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void vu_labelposition (t_vu *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setLabelPosition ((void *)x, &x->x_gui, s, argc, argv); 
-}
-
-static void vu_receive (t_vu *x, t_symbol *s)
-{
-    iemgui_setReceive ((void *)x, &x->x_gui, s);
-}
-
-static void vu_label (t_vu *x, t_symbol *s)
-{
-    iemgui_setLabel ((void *)x, &x->x_gui, s);
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -578,15 +548,6 @@ static void vu_behaviorProperties (t_gobj *z, t_glist *owner)
     PD_ASSERT (!err);
     
     gfxstub_new (cast_pd (x), (void *)x, t);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void vu_dummy (t_vu *x, t_symbol *s, int argc, t_atom *argv)
-{
-    /* Dummy. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -690,24 +651,26 @@ void vu_setup (void)
     class_addBang (c, vu_bang);
     class_addFloat (c, vu_float);
     
-    class_addMethod (c, (t_method)vu_ft1,           gensym ("ft1"),             A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)vu_dialog,        gensym ("dialog"),          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_size,          gensym ("size"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_move,          gensym ("move"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_position,      gensym ("position"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_labelfont,     gensym ("labelfont"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_labelposition, gensym ("labelposition"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_receive,       gensym ("receive"),         A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)vu_label,         gensym ("label"),           A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)vu_ft1,                   gensym ("ft1"),             A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)vu_dialog,                gensym ("dialog"),          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)vu_size,                  gensym ("size"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_move,             gensym ("move"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_position,         gensym ("position"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelFont,        gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelPosition,    gensym ("labelposition"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_backgroundColor,  gensym ("backgroundcolor"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemstub_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)vu_move,          gensym ("delta"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_position,      gensym ("pos"),             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_labelposition, gensym ("label_pos"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_labelfont,     gensym ("label_font"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_dummy,         gensym ("scale"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)vu_dummy,         gensym ("color"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_move,             gensym ("delta"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_position,         gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_dummy,            gensym ("scale"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_dummy,            gensym ("color"),           A_GIMME, A_NULL);
 
     #endif
     

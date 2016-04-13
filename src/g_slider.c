@@ -480,26 +480,6 @@ static void slider_size (t_slider *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static void slider_move (t_slider *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_movePosition ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void slider_position (t_slider *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void slider_labelFont (t_slider *x, t_symbol *s, int argc, t_atom *argv)
-{ 
-    iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void slider_labelPosition (t_slider *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setLabelPosition ((void *)x, &x->x_gui, s, argc, argv);
-}
-
 static void slider_range (t_slider *x, t_symbol *s, int argc, t_atom *argv)
 {
     double minimum = (double)atom_getFloatAtIndex (0, argc, argv);
@@ -547,21 +527,6 @@ static void slider_logarithmic (t_slider *x)
 static void slider_linear (t_slider *x)
 {
     x->x_isLogarithmic = 0;
-}
-
-static void slider_send (t_slider *x, t_symbol *s)
-{
-    iemgui_setSend ((void *)x, &x->x_gui, s);
-}
-
-static void slider_receive (t_slider *x, t_symbol *s)
-{ 
-    iemgui_setReceive ((void *)x, &x->x_gui, s);
-}
-
-static void slider_label (t_slider *x, t_symbol *s)
-{
-    iemgui_setLabel ((void *)x, &x->x_gui, s);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -661,15 +626,6 @@ static void slider_behaviorProperties (t_gobj *z, t_glist *owner)
     PD_ASSERT (!err);
     
     gfxstub_new (cast_pd (x), (void *)x, t);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void slider_dummy (t_slider *x, t_symbol *s, int argc, t_atom *argv)
-{
-    /* Dummy. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -806,33 +762,36 @@ void slider_setup (void)
     class_addClick (c, slider_click);
     class_addMotion (c, slider_motion);
     
-    class_addMethod (c, (t_method)slider_loadbang,      gensym ("loadbang"),        A_NULL);
-    class_addMethod (c, (t_method)slider_initialize,    gensym ("initialize"),      A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)slider_dialog,        gensym ("dialog"),          A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)slider_size,          gensym ("size"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)slider_move,          gensym ("move"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)slider_position,      gensym ("position"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)slider_labelFont,     gensym ("labelfont"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)slider_labelPosition, gensym ("labelposition"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)slider_range,         gensym ("range"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)slider_set,           gensym ("set"),             A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)slider_steady,        gensym ("steady"),          A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)slider_logarithmic,   gensym ("logarithmic"),     A_NULL);
-    class_addMethod (c, (t_method)slider_linear,        gensym ("linear"),          A_NULL);
-    class_addMethod (c, (t_method)slider_send,          gensym ("send"),            A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)slider_receive,       gensym ("receive"),         A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)slider_label,         gensym ("label"),           A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)slider_loadbang,          gensym ("loadbang"),        A_NULL);
+    class_addMethod (c, (t_method)slider_initialize,        gensym ("initialize"),      A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)slider_dialog,            gensym ("dialog"),          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)slider_size,              gensym ("size"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_move,             gensym ("move"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_position,         gensym ("position"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelFont,        gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelPosition,    gensym ("labelposition"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_backgroundColor,  gensym ("backgroundcolor"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_foregroundColor,  gensym ("foregroundcolor"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)slider_range,             gensym ("range"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)slider_set,               gensym ("set"),             A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)slider_steady,            gensym ("steady"),          A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)slider_logarithmic,       gensym ("logarithmic"),     A_NULL);
+    class_addMethod (c, (t_method)slider_linear,            gensym ("linear"),          A_NULL);
+    class_addMethod (c, (t_method)iemstub_send,             gensym ("send"),            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemstub_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemstub_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)slider_initialize,    gensym ("init"),            A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)slider_move,          gensym ("delta"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)slider_position,      gensym ("pos"),             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)slider_dummy,         gensym ("color"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)slider_labelPosition, gensym ("label_pos"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)slider_labelFont,     gensym ("label_font"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)slider_logarithmic,   gensym ("log"),             A_NULL);
-    class_addMethod (c, (t_method)slider_linear,        gensym ("lin"),             A_NULL);
+    class_addMethod (c, (t_method)slider_initialize,        gensym ("init"),            A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)iemstub_move,             gensym ("delta"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_position,         gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_dummy,            gensym ("color"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)slider_logarithmic,       gensym ("log"),             A_NULL);
+    class_addMethod (c, (t_method)slider_linear,            gensym ("lin"),             A_NULL);
     
     class_addCreator ((t_newmethod)slider_new, gensym ("hsl"), A_GIMME, A_NULL);
     class_addCreator ((t_newmethod)slider_new, gensym ("vsl"), A_GIMME, A_NULL);

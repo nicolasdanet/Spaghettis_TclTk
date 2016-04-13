@@ -212,26 +212,6 @@ static void panel_gripSize (t_panel *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-static void panel_move (t_panel *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_movePosition ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void panel_position (t_panel *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setPosition ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void panel_labelFont (t_panel *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setLabelFont ((void *)x, &x->x_gui, s, argc, argv);
-}
-
-static void panel_labelPosition (t_panel *x, t_symbol *s, int argc, t_atom *argv)
-{
-    iemgui_setLabelPosition ((void *)x, &x->x_gui, s, argc, argv);
-}
-
 static void panel_panelSize (t_panel *x, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc) {
@@ -260,21 +240,6 @@ static void panel_getPosition (t_panel *x)
         SET_FLOAT (&x->x_t[1], b);
         pd_list (x->x_gui.iem_send->s_thing, 2, x->x_t);
     }
-}
-
-static void panel_send (t_panel *x, t_symbol *s)
-{
-    iemgui_setSend ((void *)x, &x->x_gui, s);
-}
-
-static void panel_receive (t_panel *x, t_symbol *s)
-{
-    iemgui_setReceive ((void *)x, &x->x_gui, s);
-}
-
-static void panel_label (t_panel *x, t_symbol *s)
-{
-    iemgui_setLabel ((void *)x, &x->x_gui, s);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -350,15 +315,6 @@ static void panel_behaviorProperties (t_gobj *z, t_glist *owner)
     PD_ASSERT (!err);
     
     gfxstub_new (cast_pd (x), (void *)x, t);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void panel_dummy (t_panel *x, t_symbol *s, int argc, t_atom *argv)
-{
-    /* Dummy. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -457,24 +413,26 @@ void panel_setup (void)
         
     class_addMethod (c, (t_method)panel_dialog,             gensym ("dialog"),          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)panel_gripSize,           gensym ("gripsize"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_move,               gensym ("move"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_position,           gensym ("position"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_labelPosition,      gensym ("labelposition"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_labelFont,          gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_move,             gensym ("move"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_position,         gensym ("position"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelFont,        gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelPosition,    gensym ("labelposition"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_backgroundColor,  gensym ("backgroundcolor"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)panel_panelSize,          gensym ("panelsize"),       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)panel_getPosition,        gensym ("getposition"),     A_NULL);
-    class_addMethod (c, (t_method)panel_send,               gensym ("send"),            A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)panel_receive,            gensym ("receive"),         A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)panel_label,              gensym ("label"),           A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemstub_send,             gensym ("send"),            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemstub_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemstub_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
 
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)panel_gripSize,           gensym ("size"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_move,               gensym ("delta"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_position,           gensym ("pos"),             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_dummy,              gensym ("color"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_labelPosition,      gensym ("label_pos"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)panel_labelFont,          gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_move,             gensym ("delta"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_position,         gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_dummy,            gensym ("color"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemstub_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)panel_panelSize,          gensym ("vis_size"),        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)panel_getPosition,        gensym ("get_pos"),         A_NULL);
         
