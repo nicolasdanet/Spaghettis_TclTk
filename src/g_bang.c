@@ -350,6 +350,21 @@ static void bng_labelPosition (t_bng *x, t_symbol *s, int argc, t_atom *argv)
     iemgui_setLabelPosition ((void *)x, &x->x_gui, s, argc, argv);
 }
 
+static void bng_backgroundColor (t_bng *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_setBackgroundColor ((void *)x, &x->x_gui, s, argc, argv);
+}
+
+static void bng_foregroundColor (t_bng *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_setForegroundColor ((void *)x, &x->x_gui, s, argc, argv);
+}
+
+static void bng_labelColor (t_bng *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_setLabelColor ((void *)x, &x->x_gui, s, argc, argv);
+}
+
 static void bng_send (t_bng *x, t_symbol *s)
 {
     iemgui_setSend ((void *)x, &x->x_gui, s);
@@ -596,6 +611,9 @@ void bng_setup (void)
     class_addMethod (c, (t_method)bng_flashtime,        gensym ("flashtime"),       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)bng_labelFont,        gensym ("labelfont"),       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)bng_labelPosition,    gensym ("labelposition"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_backgroundColor,  gensym ("backgroundcolor"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_foregroundColor,  gensym ("foregroundcolor"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)bng_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)bng_send,             gensym ("send"),            A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)bng_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)bng_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);

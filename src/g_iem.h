@@ -29,8 +29,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_COLOR_NORMAL                0               // Black.
-#define IEM_COLOR_SELECTED              255             // Blue.
+#define IEM_COLOR_NORMAL                0x000000        // Black.
+#define IEM_COLOR_SELECTED              0x0000ff        // Blue.
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -131,8 +131,8 @@ typedef struct _iem {
     int         iem_labelX;
     int         iem_labelY;
     int         iem_fontSize;
-    int         iem_colorForeground;
     int         iem_colorBackground;
+    int         iem_colorForeground;
     int         iem_colorLabel;
     int         iem_cacheIndex;
     t_symbol    *iem_send;
@@ -251,7 +251,9 @@ void        iemgui_setReceive                   (void *x, t_iem *iem, t_symbol *
 void        iemgui_setLabel                     (void *x, t_iem *iem, t_symbol *s);
 void        iemgui_setLabelPosition             (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
 void        iemgui_setLabelFont                 (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
-void        iemgui_setColor                     (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
+void        iemgui_setBackgroundColor           (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
+void        iemgui_setForegroundColor           (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
+void        iemgui_setLabelColor                (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
 void        iemgui_setPosition                  (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
 void        iemgui_movePosition                 (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv);
 void        iemgui_boxChanged                   (void *x, t_iem *iem);

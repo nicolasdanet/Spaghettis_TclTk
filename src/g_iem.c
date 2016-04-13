@@ -49,7 +49,20 @@ static t_symbol *iemgui_expandDollar (t_iem *iem, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* Ensure compatibility with the original format. */
+static int iemgui_colorRGB (int argc, t_atom *argv)
+{
+    unsigned int r = (unsigned int)atom_getFloatAtIndex (0, argc, argv);
+    unsigned int g = (unsigned int)atom_getFloatAtIndex (1, argc, argv);
+    unsigned int b = (unsigned int)atom_getFloatAtIndex (2, argc, argv);
+    
+    r = PD_CLAMP (r, 0, 255);
+    g = PD_CLAMP (g, 0, 255);
+    b = PD_CLAMP (b, 0, 255);
+        
+    return (int)(IEM_COLOR_MASK & ((r << 16) | (g << 8) | b));
+}
+
+/* Ensure compatibility with the original serialization format. */
 /* By the way legacy predefined colors are not supported. */
 /* Only the 6 MSB are kept for each component. */
 
@@ -125,7 +138,7 @@ static void iemgui_fetchUnexpanded (t_iem *iem, t_symbol **s, int i, t_symbol *f
 
 static void iemgui_fetchUnexpandedNames (t_iem *iem, t_iemnames *s)
 {
-    int i = iem->iem_cacheIndex + 1;    /* Start there with the name of the object. */
+    int i = iem->iem_cacheIndex + 1;        /* It start now with the name of the object prepended. */
     
     iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedSend,    i + 0, iem->iem_send);
     iemgui_fetchUnexpanded (iem, &iem->iem_unexpandedReceive, i + 1, iem->iem_receive);
@@ -243,7 +256,7 @@ void iemgui_setLabel (void *x, t_iem *iem, t_symbol *s)
         sys_vGui (".x%lx.c itemconfigure %lxLABEL -text {%s}\n",    // --
             glist_getcanvas (iem->iem_glist),
             x,
-            iem->iem_label != iemgui_empty() ? iem->iem_label->s_name : s_.s_name);
+            iem->iem_label != iemgui_empty() ? iem->iem_label->s_name : "");
     }
 }
 
@@ -282,8 +295,24 @@ void iemgui_setLabelFont (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *ar
     }
 }
 
-void iemgui_setColor (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
+void iemgui_setBackgroundColor (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
 {
+    iem->iem_colorBackground = iemgui_colorRGB (argc, argv);
+    
+    if (glist_isvisible (iem->iem_glist)) { (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_CONFIG); }
+}
+
+void iemgui_setForegroundColor (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
+{
+    iem->iem_colorForeground = iemgui_colorRGB (argc, argv);
+    
+    if (glist_isvisible (iem->iem_glist)) { (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_CONFIG); }
+}
+
+void iemgui_setLabelColor (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
+{
+    iem->iem_colorLabel = iemgui_colorRGB (argc, argv);
+    
     if (glist_isvisible (iem->iem_glist)) { (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_CONFIG); }
 }
 
