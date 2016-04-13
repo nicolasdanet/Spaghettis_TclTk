@@ -104,7 +104,7 @@ static void dial_drawUpdate (t_dial *x, t_glist *glist)
                 x,
                 dial_getNeedleAngle (x));
                 
-    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s}\n",
+    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s}\n",  // --
                 glist_getcanvas (glist),
                 x,
                 x->x_gui.iem_colorForeground,
@@ -185,9 +185,9 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                 x->x_gui.iem_colorBackground,
                 dial_getNeedleColor (x),
                 x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor center"
-                " -font [::getFont %d]"
+                " -font [::getFont %d]" // --
                 " -fill #%6.6x"
                 " -tags %lxNUMBER\n",
                 canvas,
@@ -197,9 +197,9 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
                 x->x_digitsFontSize,
                 x->x_gui.iem_colorForeground,
                 x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor w"
-                " -font [::getFont %d]"
+                " -font [::getFont %d]" // --
                 " -fill #%6.6x"
                 " -tags %lxLABEL\n",
                 canvas,
@@ -228,7 +228,7 @@ static void dial_drawSelect (t_dial *x, t_glist *glist)
 
 static void dial_drawErase (t_dial* x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
 
     sys_vGui (".x%lx.c delete %lxBASE\n",
                 canvas,
@@ -257,12 +257,12 @@ static void dial_drawConfig (t_dial* x, t_glist *glist)
                 x,
                 x->x_gui.iem_colorBackground, 
                 dial_getNeedleColor (x));
-    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%6.6x \n",
+    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%6.6x\n",    // --
                 canvas,
                 x, 
                 x->x_digitsFontSize,
                 x->x_gui.iem_colorForeground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",  // --
                 canvas,
                 x,
                 x->x_gui.iem_fontSize,
@@ -348,7 +348,7 @@ static void dial_out (t_dial *x)
     outlet_float (cast_object (x)->te_outlet, x->x_floatValue);
     
     if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) {
-        pd_float(x->x_gui.iem_send->s_thing, x->x_floatValue);
+        pd_float (x->x_gui.iem_send->s_thing, x->x_floatValue);
     }
 }
 
@@ -619,10 +619,10 @@ static void dial_behaviorProperties (t_gobj *z, t_glist *owner)
 
     err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s Dial"
             " %d %d Digits %d %d Size"
-            " %g {Value Low} %g {Value High}"
+            " %g {Value Low} %g {Value High}"   // --
             " %d Linear Logarithmic"
             " %d"
-            " %d %d {Steps}"
+            " %d %d {Steps}"    // --
             " %s %s"
             " %s %d %d"
             " %d"

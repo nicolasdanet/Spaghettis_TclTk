@@ -120,9 +120,9 @@ void radio_drawNewVertical (t_radio *x, t_glist *glist)
     //
     }
     
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor w"
-                " -font [::getFont %d]"
+                " -font [::getFont %d]"     // --
                 " -fill #%6.6x"
                 " -tags %lxLABEL\n",
                 canvas,
@@ -210,9 +210,9 @@ void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
     //
     }
     
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor w"
-                " -font [::getFont %d]"
+                " -font [::getFont %d]"     // --
                 " -fill #%6.6x"
                 " -tags %lxLABEL\n",
                 canvas,

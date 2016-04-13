@@ -139,9 +139,9 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
                 thickness,
                 (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                 x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor w"
-                " -font [::getFont %d]"
+                " -font [::getFont %d]"     // --
                 " -fill #%6.6x"
                 " -tags %lxLABEL\n",
                 canvas,

@@ -229,7 +229,7 @@ static void vu_drawMove (t_vu *x, t_glist *glist)
 
 static void vu_drawNew (t_vu *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
 
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -281,8 +281,8 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
                 x->x_thickness - 1,
                 x->x_gui.iem_colorBackground,
                 x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w"
-                " -font [::getFont %d] -fill #%6.6x -tags %lxLABEL\n",
+    sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w"          // --
+                " -font [::getFont %d] -fill #%6.6x -tags %lxLABEL\n",  // --
                 canvas,
                 a + x->x_gui.iem_labelX,
                 b + x->x_gui.iem_labelY,
@@ -339,7 +339,7 @@ static void vu_drawErase (t_vu* x, t_glist *glist)
 
 static void vu_drawConfig (t_vu* x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
     int i;
         
     sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n",
@@ -357,7 +357,7 @@ static void vu_drawConfig (t_vu* x, t_glist *glist)
     //
     }
 
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",  // --
                 canvas,
                 x, x->x_gui.iem_fontSize,
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel,
@@ -557,8 +557,8 @@ static void vu_behaviorProperties (t_gobj *z, t_glist *owner)
     iemgui_serializeNames (&x->x_gui, &names);
     
     err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s VU"
-            " %d %d {Meter Width}"
-            " %d %d {Led Thickness}"
+            " %d %d {Meter Width}"      // --
+            " %d %d {Led Thickness}"    // --
             " 0 empty 0 empty"
             " 0 empty empty"
             " -1"
@@ -647,8 +647,8 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
         
     vu_setHeight (x, height);
     
-    iemgui_checkSendReceiveLoop(&x->x_gui);
-    iemgui_deserializeColors(&x->x_gui, &colors);
+    iemgui_checkSendReceiveLoop (&x->x_gui);
+    iemgui_deserializeColors (&x->x_gui, &colors);
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
         
@@ -719,7 +719,7 @@ void vu_setup (void)
     vu_widgetBehavior.w_visfn       = iemgui_behaviorVisible;
     vu_widgetBehavior.w_clickfn     = NULL;
     
-    class_setWidgetBehavior (c,&vu_widgetBehavior);
+    class_setWidgetBehavior (c, &vu_widgetBehavior);
     class_setHelpName (c, gensym ("vu"));
     class_setSaveFunction (c, vu_behaviorSave);
     class_setPropertiesFunction (c, vu_behaviorProperties);

@@ -100,9 +100,9 @@ void panel_drawNew (t_panel *x, t_glist *glist)
                 b + x->x_gui.iem_height,
                 x->x_gui.iem_colorBackground,
                 x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor w"
-                " -font [::getFont %d]"
+                " -font [::getFont %d]"     // --
                 " -fill #%6.6x"
                 " -tags %lxLABEL\n",
                 canvas,
@@ -152,7 +152,7 @@ void panel_drawConfig (t_panel* x, t_glist *glist)
                 canvas,
                 x,
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",  // --
                 canvas,
                 x,
                 x->x_gui.iem_fontSize,
@@ -330,8 +330,8 @@ static void panel_behaviorProperties (t_gobj *z, t_glist *owner)
     iemgui_serializeNames (&x->x_gui, &names);
     
     err = string_sprintf (t, PD_STRING, "::ui_iem::create %%s Panel"
-            " %d %d {Grip Size} 0 0 empty"
-            " %d {Panel Width} %d {Panel Height}"
+            " %d %d {Grip Size} 0 0 empty"          // --
+            " %d {Panel Width} %d {Panel Height}"   // --
             " -1 empty empty"
             " -1"
             " -1 -1 empty"

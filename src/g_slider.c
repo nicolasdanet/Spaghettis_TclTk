@@ -197,9 +197,9 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
     //
     }
     
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor w"
-                " -font [::getFont %d]"
+                " -font [::getFont %d]"     // --
                 " -fill #%6.6x"
                 " -tags %lxLABEL\n",
                 canvas,

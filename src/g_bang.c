@@ -113,9 +113,9 @@ void bng_drawNew (t_bng *x, t_glist *glist)
                 x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                 IEM_COLOR_NORMAL,
                 x);
-    sys_vGui (".x%lx.c create text %d %d -text {%s}"
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor w"                                                 
-                " -font [::getFont %d]"
+                " -font [::getFont %d]"                 // --
                 " -fill #%6.6x"
                 " -tags %lxLABEL\n",
                 canvas, 
