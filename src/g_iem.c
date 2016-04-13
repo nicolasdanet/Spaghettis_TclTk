@@ -412,9 +412,9 @@ void iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     iem->iem_labelX             = labelX;
     iem->iem_labelY             = labelY;
     iem->iem_fontSize           = PD_MAX (fontSize, IEM_MINIMUM_FONTSIZE);
-    iem->iem_colorForeground    = foregroundColor & 0xffffff;
-    iem->iem_colorBackground    = backgroundColor & 0xffffff;
-    iem->iem_colorLabel         = labelColor & 0xffffff;
+    iem->iem_colorForeground    = IEM_COLOR_MASK & foregroundColor;
+    iem->iem_colorBackground    = IEM_COLOR_MASK & backgroundColor;
+    iem->iem_colorLabel         = IEM_COLOR_MASK & labelColor;
     iem->iem_send               = s1;
     iem->iem_label              = s3;
     

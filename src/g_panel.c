@@ -48,98 +48,131 @@ static t_class *panel_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void panel_draw_new(t_panel *x, t_glist *glist)
+void panel_drawMove (t_panel *x, t_glist *glist)
 {
-    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
-    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
+    
+    int a = text_xpix (cast_object (x), glist);
+    int b = text_ypix (cast_object (x), glist);
 
-    sys_vGui(".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxRECT\n",
-             canvas, xpos, ypos,
-             xpos + x->x_panelWidth, ypos + x->x_panelHeight,
-             x->x_gui.iem_colorBackground, x->x_gui.iem_colorBackground, x);
-    sys_vGui(".x%lx.c create rectangle %d %d %d %d -outline #%6.6x -tags %lxBASE\n",
-             canvas, xpos, ypos,
-             xpos + x->x_gui.iem_width, ypos + x->x_gui.iem_height,
-             x->x_gui.iem_colorBackground, x);
-    sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor w \
-             -font [::getFont %d] -fill #%6.6x -tags %lxLABEL\n",
-             canvas, xpos+x->x_gui.iem_labelX, ypos+x->x_gui.iem_labelY,
-             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"",
-             x->x_gui.iem_fontSize,
-             x->x_gui.iem_colorLabel, x);
+    sys_vGui (".x%lx.c coords %lxPANEL %d %d %d %d\n",
+                canvas,
+                x,
+                a,
+                b,
+                a + x->x_panelWidth,
+                b + x->x_panelHeight);
+    sys_vGui (".x%lx.c coords %lxBASE %d %d %d %d\n",
+                canvas,
+                x,
+                a, 
+                b,
+                a + x->x_gui.iem_width,
+                b + x->x_gui.iem_height);
+    sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
+                canvas,
+                x,
+                a + x->x_gui.iem_labelX,
+                b + x->x_gui.iem_labelY);
 }
 
-void panel_draw_move(t_panel *x, t_glist *glist)
+void panel_drawNew (t_panel *x, t_glist *glist)
 {
-    int xpos=text_xpix(&x->x_gui.iem_obj, glist);
-    int ypos=text_ypix(&x->x_gui.iem_obj, glist);
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
+    
+    int a = text_xpix (cast_object (x), glist);
+    int b = text_ypix (cast_object (x), glist);
 
-    sys_vGui(".x%lx.c coords %lxRECT %d %d %d %d\n",
-             canvas, x, xpos, ypos, xpos + x->x_panelWidth,
-             ypos + x->x_panelHeight);
-    sys_vGui(".x%lx.c coords %lxBASE %d %d %d %d\n",
-             canvas, x, xpos, ypos,
-             xpos + x->x_gui.iem_width, ypos + x->x_gui.iem_height);
-    sys_vGui(".x%lx.c coords %lxLABEL %d %d\n",
-             canvas, x, xpos+x->x_gui.iem_labelX,
-             ypos+x->x_gui.iem_labelY);
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxPANEL\n",
+                canvas,
+                a,
+                b,
+                a + x->x_panelWidth,
+                b + x->x_panelHeight,
+                x->x_gui.iem_colorBackground,
+                x->x_gui.iem_colorBackground,
+                x);
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -outline #%6.6x -tags %lxBASE\n",
+                canvas,
+                a,
+                b,
+                a + x->x_gui.iem_width,
+                b + x->x_gui.iem_height,
+                x->x_gui.iem_colorBackground,
+                x);
+    sys_vGui (".x%lx.c create text %d %d -text {%s}"
+                " -anchor w"
+                " -font [::getFont %d]"
+                " -fill #%6.6x"
+                " -tags %lxLABEL\n",
+                canvas,
+                a + x->x_gui.iem_labelX,
+                b + x->x_gui.iem_labelY,
+                (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "",
+                x->x_gui.iem_fontSize,
+                x->x_gui.iem_colorLabel,
+                x);
 }
 
-void panel_draw_erase(t_panel* x, t_glist *glist)
+void panel_drawSelect (t_panel* x, t_glist *glist)
 {
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui(".x%lx.c delete %lxBASE\n", canvas, x);
-    sys_vGui(".x%lx.c delete %lxRECT\n", canvas, x);
-    sys_vGui(".x%lx.c delete %lxLABEL\n", canvas, x);
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n",
+                canvas,
+                x,
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorBackground);
 }
 
-void panel_draw_config(t_panel* x, t_glist *glist)
+void panel_drawErase (t_panel* x, t_glist *glist)
 {
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui(".x%lx.c itemconfigure %lxRECT -fill #%6.6x -outline #%6.6x\n", canvas, x,
-             x->x_gui.iem_colorBackground, x->x_gui.iem_colorBackground);
-    sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x,
-             x->x_gui.iem_isSelected?IEM_COLOR_SELECTED:x->x_gui.iem_colorBackground);
-    sys_vGui(".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s} \n",
-             canvas, x, x->x_gui.iem_fontSize,
-             x->x_gui.iem_colorLabel,
-             strcmp(x->x_gui.iem_label->s_name, "empty")?x->x_gui.iem_label->s_name:"");
+    sys_vGui (".x%lx.c delete %lxBASE\n",
+                canvas,
+                x);
+    sys_vGui (".x%lx.c delete %lxPANEL\n",
+                canvas,
+                x);
+    sys_vGui (".x%lx.c delete %lxLABEL\n",
+                canvas,
+                x);
 }
 
-void panel_draw_select(t_panel* x, t_glist *glist)
+void panel_drawConfig (t_panel* x, t_glist *glist)
 {
-    t_glist *canvas=glist_getcanvas(glist);
+    t_glist *canvas = glist_getcanvas (glist);
 
-    if(x->x_gui.iem_isSelected)
-    {
-        sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, IEM_COLOR_SELECTED);
-    }
-    else
-    {
-        sys_vGui(".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", canvas, x, x->x_gui.iem_colorBackground);
-    }
+    sys_vGui (".x%lx.c itemconfigure %lxPANEL -fill #%6.6x -outline #%6.6x\n",
+                canvas,
+                x,
+                x->x_gui.iem_colorBackground,
+                x->x_gui.iem_colorBackground);
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n",
+                canvas,
+                x,
+                x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorBackground);
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",
+                canvas,
+                x,
+                x->x_gui.iem_fontSize,
+                x->x_gui.iem_colorLabel,
+                (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void panel_draw(t_panel *x, t_glist *glist, int mode)
+void panel_draw (t_panel *x, t_glist *glist, int mode)
 {
-    if(mode == IEM_DRAW_MOVE)
-        panel_draw_move(x, glist);
-    else if(mode == IEM_DRAW_NEW)
-        panel_draw_new(x, glist);
-    else if(mode == IEM_DRAW_SELECT)
-        panel_draw_select(x, glist);
-    else if(mode == IEM_DRAW_ERASE)
-        panel_draw_erase(x, glist);
-    else if(mode == IEM_DRAW_CONFIG)
-        panel_draw_config(x, glist);
+    switch (mode) {
+        case IEM_DRAW_MOVE      : panel_drawMove (x, glist);    break;
+        case IEM_DRAW_NEW       : panel_drawNew (x, glist);     break;
+        case IEM_DRAW_SELECT    : panel_drawSelect (x, glist);  break;
+        case IEM_DRAW_ERASE     : panel_drawErase (x, glist);   break;
+        case IEM_DRAW_CONFIG    : panel_drawConfig (x, glist);  break;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
