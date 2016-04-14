@@ -189,7 +189,7 @@ static void scalar_getrect(t_gobj *z, t_glist *owner,
             t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
             int nx1, ny1, nx2, ny2;
             if (!wb) continue;
-            (*wb->w_parentgetrectfn)(y, owner,
+            (*wb->w_fnParentGetRectangle)(y, owner,
                 x->sc_vector, template, basex, basey,
                 &nx1, &ny1, &nx2, &ny2);
             if (nx1 < x1) x1 = nx1;
@@ -315,7 +315,7 @@ static void scalar_vis(t_gobj *z, t_glist *owner, int vis)
     {
         t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
         if (!wb) continue;
-        (*wb->w_parentvisfn)(y, owner, x->sc_vector, template, basex, basey, vis);
+        (*wb->w_fnParentVisible)(y, owner, x->sc_vector, template, basex, basey, vis);
     }
     if (glist_isselected(owner, &x->sc_g))
     {
@@ -360,7 +360,7 @@ int scalar_doclick(t_word *data, t_template *template, t_scalar *sc,
     {
         t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
         if (!wb) continue;
-        if (hit = (*wb->w_parentclickfn)(y, owner,
+        if (hit = (*wb->w_fnParentClick)(y, owner,
             data, template, sc, ap, basex + xloc, basey + yloc,
             xpix, ypix, shift, alt, dbl, doit))
                 return (hit);

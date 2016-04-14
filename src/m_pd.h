@@ -405,6 +405,7 @@ struct _buffer;
 struct _clock;
 struct _outconnect;
 struct _glist;
+struct _template;
 struct _widgetbehavior;
 struct _parentwidgetbehavior;
 struct _garray;
@@ -418,6 +419,7 @@ struct _pdinstance;
 #define t_clock                 struct _clock
 #define t_outconnect            struct _outconnect
 #define t_glist                 struct _glist
+#define t_template              struct _template
 #define t_widgetbehavior        struct _widgetbehavior
 #define t_parentwidgetbehavior  struct _parentwidgetbehavior
 #define t_garray                struct _garray

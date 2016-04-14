@@ -207,31 +207,31 @@ struct _glist {
     };
 
 typedef struct _dataslot {
-    int         ds_type;
-    t_symbol    *ds_name;
-    t_symbol    *ds_arraytemplate;
+    int             ds_type;
+    t_symbol        *ds_name;
+    t_symbol        *ds_arraytemplate;
     } t_dataslot;
 
 typedef struct _template {
-    t_pd        t_pdobj;   
-    t_gtemplate *t_list;  
-    t_symbol    *t_sym;    
-    int         t_n;    
-    t_dataslot  *t_vec;  
-    } t_template;
+    t_pd            t_pdobj;   
+    t_gtemplate     *t_list;  
+    t_symbol        *t_sym;    
+    int             t_n;    
+    t_dataslot      *t_vec;  
+    };
 
 struct _array {
-    int         a_n;
-    int         a_elemsize;
-    char        *a_vec;
-    t_symbol    *a_templatesym;
-    int         a_valid;
-    t_gpointer  a_gp;
-    t_gstub     *a_stub;
+    int             a_n;
+    int             a_elemsize;
+    char            *a_vec;
+    t_symbol        *a_templatesym;
+    int             a_valid;
+    t_gpointer      a_gp;
+    t_gstub         *a_stub;
     };
 
 typedef struct _linetraverser {
-    t_glist        *tr_x;
+    t_glist         *tr_x;
     t_object        *tr_ob;
     int             tr_nout;
     int             tr_outno;
@@ -251,84 +251,7 @@ typedef struct _linetraverser {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_getrectfn)  (t_gobj *x, t_glist *glist, int *a, int *b, int *c, int *d);
-typedef void (*t_displacefn) (t_gobj *x, t_glist *glist, int deltaX, int deltaY);
-typedef void (*t_selectfn)   (t_gobj *x, t_glist *glist, int state);
-typedef void (*t_activatefn) (t_gobj *x, t_glist *glist, int state);
-typedef void (*t_deletefn)   (t_gobj *x, t_glist *glist);
-typedef void (*t_visfn)      (t_gobj *x, t_glist *glist, int flag);
-typedef int  (*t_clickfn)    (t_gobj *x, t_glist *glist, int a, int b, int shift, int alt, int dbl, int k);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-struct _widgetbehavior {
-    t_getrectfn     w_getrectfn;
-    t_displacefn    w_displacefn;
-    t_selectfn      w_selectfn;
-    t_activatefn    w_activatefn;
-    t_deletefn      w_deletefn;
-    t_visfn         w_visfn;
-    t_clickfn       w_clickfn;
-    };
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-typedef void (*t_parentgetrectfn)   (t_gobj *x, t_glist *glist, t_word *data, t_template *tmpl,
-                                        t_float basex,
-                                        t_float basey,
-                                        int *x1,
-                                        int *y1,
-                                        int *x2,
-                                        int *y2);
-typedef void (*t_parentdisplacefn)  (t_gobj *x, t_glist *glist, t_word *data, t_template *tmpl,
-                                        t_float basex,
-                                        t_float basey,
-                                        int dx, 
-                                        int dy);
-typedef void (*t_parentselectfn)    (t_gobj *x, t_glist *glist, t_word *data, t_template *tmpl,
-                                        t_float basex,
-                                        t_float basey,
-                                        int state);
-typedef void (*t_parentactivatefn)  (t_gobj *x, t_glist *glist, t_word *data, t_template *tmpl,
-                                        t_float basex,
-                                        t_float basey,
-                                        int state);
-typedef void (*t_parentvisfn)       (t_gobj *x, t_glist *glist, t_word *data, t_template *tmpl,
-                                        t_float basex,
-                                        t_float basey,
-                                        int flag);
-typedef int  (*t_parentclickfn)     (t_gobj *x, t_glist *glist, t_word *data, t_template *tmpl,
-                                        t_scalar *sc,
-                                        t_array *ap,
-                                        t_float basex,
-                                        t_float basey,
-                                        int xpix,
-                                        int ypix,
-                                        int shift,
-                                        int alt,
-                                        int dbl,
-                                        int b);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-struct _parentwidgetbehavior {
-    t_parentgetrectfn   w_parentgetrectfn;
-    t_parentdisplacefn  w_parentdisplacefn;
-    t_parentselectfn    w_parentselectfn;
-    t_parentactivatefn  w_parentactivatefn;
-    t_parentvisfn       w_parentvisfn;
-    t_parentclickfn     w_parentclickfn;
-    };
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define canvas_castToObjectIfBox(x)     (pd_class (x)->c_isBox ? (t_object *)(x) : NULL)
+#define canvas_castToObjectIfBox(x) (pd_class (x)->c_isBox ? (t_object *)(x) : NULL)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -446,31 +369,24 @@ int  text_ypix          (t_object *x, t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_boxtext  *rtext_new         (t_glist *glist, t_object *who);
-void     rtext_draw         (t_boxtext *x);
-void     rtext_erase        (t_boxtext *x);
-t_boxtext  *rtext_remove      (t_boxtext *first, t_boxtext *x);
-int      rtext_height       (t_boxtext *x);
-void     rtext_displace     (t_boxtext *x, int dx, int dy);
-void     rtext_select       (t_boxtext *x, int state);
-void     rtext_activate     (t_boxtext *x, int state);
-void     rtext_free         (t_boxtext *x);
-void     rtext_key          (t_boxtext *x, int n, t_symbol *s);
-void     rtext_mouse        (t_boxtext *x, int xval, int yval, int flag);
-void     rtext_retext       (t_boxtext *x);
-int      rtext_width        (t_boxtext *x);
-int      rtext_height       (t_boxtext *x);
-char     *rtext_gettag      (t_boxtext *x);
-void     rtext_gettext      (t_boxtext *x, char **buf, int *bufsize);
-void     rtext_getseltext   (t_boxtext *x, char **buf, int *bufsize);
-t_boxtext  *glist_findrtext   (t_glist *gl, t_object *who);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-typedef void (*t_undofn)(t_glist *canvas, void *buf, int action);
-typedef int (*t_canvasapply)(t_glist *x, t_int x1, t_int x2, t_int x3);
+t_boxtext   *rtext_new          (t_glist *glist, t_object *who);
+void        rtext_draw          (t_boxtext *x);
+void        rtext_erase         (t_boxtext *x);
+t_boxtext   *rtext_remove       (t_boxtext *first, t_boxtext *x);
+int         rtext_height        (t_boxtext *x);
+void        rtext_displace      (t_boxtext *x, int dx, int dy);
+void        rtext_select        (t_boxtext *x, int state);
+void        rtext_activate      (t_boxtext *x, int state);
+void        rtext_free          (t_boxtext *x);
+void        rtext_key           (t_boxtext *x, int n, t_symbol *s);
+void        rtext_mouse         (t_boxtext *x, int xval, int yval, int flag);
+void        rtext_retext        (t_boxtext *x);
+int         rtext_width         (t_boxtext *x);
+int         rtext_height        (t_boxtext *x);
+char        *rtext_gettag       (t_boxtext *x);
+void        rtext_gettext       (t_boxtext *x, char **buf, int *bufsize);
+void        rtext_getseltext    (t_boxtext *x, char **buf, int *bufsize);
+t_boxtext   *glist_findrtext    (t_glist *gl, t_object *who);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -499,11 +415,6 @@ t_symbol *canvas_realizedollar              (t_glist *x, t_symbol *s);
 t_glist *canvas_getroot                    (t_glist *x);
 void     canvas_dirty                       (t_glist *x, t_float n);
 int      canvas_getfont                     (t_glist *x);
-t_int    *canvas_recurapply                 (t_glist *x,
-                                                t_canvasapply *fn,
-                                                t_int x1,
-                                                t_int x2,
-                                                t_int x3);
 
 void     canvas_resortinlets            (t_glist *x);
 void     canvas_resortoutlets           (t_glist *x);

@@ -570,13 +570,13 @@ void bng_setup (void)
 
     #endif
     
-    bng_widgetBehavior.w_getrectfn  = bng_behaviorGetRectangle;
-    bng_widgetBehavior.w_displacefn = iemgui_behaviorDisplace;
-    bng_widgetBehavior.w_selectfn   = iemgui_behaviorSelected;
-    bng_widgetBehavior.w_activatefn = NULL;
-    bng_widgetBehavior.w_deletefn   = iemgui_behaviorDeleted;
-    bng_widgetBehavior.w_visfn      = iemgui_behaviorVisible;
-    bng_widgetBehavior.w_clickfn    = bng_behaviorClick;
+    bng_widgetBehavior.w_fnGetRectangle = bng_behaviorGetRectangle;
+    bng_widgetBehavior.w_fnDisplace     = iemgui_behaviorDisplace;
+    bng_widgetBehavior.w_fnSelect       = iemgui_behaviorSelected;
+    bng_widgetBehavior.w_fnActivate     = NULL;
+    bng_widgetBehavior.w_fnDelete       = iemgui_behaviorDeleted;
+    bng_widgetBehavior.w_fnVisible      = iemgui_behaviorVisible;
+    bng_widgetBehavior.w_fnClick        = bng_behaviorClick;
     
     class_setWidgetBehavior (c, &bng_widgetBehavior);
     class_setHelpName (c, gensym ("bng"));

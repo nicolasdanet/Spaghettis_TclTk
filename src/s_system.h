@@ -227,7 +227,7 @@ int         interface_monitorBlocking               (int microseconds);
 int         interface_monitorNonBlocking            (void);
 void        interface_monitorAddPoller              (int fd, t_pollfn fn, void *ptr);
 void        interface_monitorRemovePoller           (int fd);
-void        interface_guiQueueAddIfNotAlreadyThere  (void *owner, t_glist *glist, t_guifn f);
+void        interface_guiQueueAddIfNotAlreadyThere  (void *owner, t_glist *glist, t_drawfn f);
 void        interface_guiQueueRemove                (void *owner);
 int         interface_pollOrFlushGui                (void);
 void        interface_closeSocket                   (int fd);

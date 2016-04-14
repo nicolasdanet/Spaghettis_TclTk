@@ -734,13 +734,13 @@ void radio_setup (void)
     
     #endif
     
-    radio_widgetBehavior.w_getrectfn    = radio_behaviorGetRectangle;
-    radio_widgetBehavior.w_displacefn   = iemgui_behaviorDisplace;
-    radio_widgetBehavior.w_selectfn     = iemgui_behaviorSelected;
-    radio_widgetBehavior.w_activatefn   = NULL;
-    radio_widgetBehavior.w_deletefn     = iemgui_behaviorDeleted;
-    radio_widgetBehavior.w_visfn        = iemgui_behaviorVisible;
-    radio_widgetBehavior.w_clickfn      = radio_behaviorClick;
+    radio_widgetBehavior.w_fnGetRectangle   = radio_behaviorGetRectangle;
+    radio_widgetBehavior.w_fnDisplace       = iemgui_behaviorDisplace;
+    radio_widgetBehavior.w_fnSelect         = iemgui_behaviorSelected;
+    radio_widgetBehavior.w_fnActivate       = NULL;
+    radio_widgetBehavior.w_fnDelete         = iemgui_behaviorDeleted;
+    radio_widgetBehavior.w_fnVisible        = iemgui_behaviorVisible;
+    radio_widgetBehavior.w_fnClick          = radio_behaviorClick;
     
     class_setWidgetBehavior (c, &radio_widgetBehavior);
     class_setHelpName (c, gensym ("radio"));

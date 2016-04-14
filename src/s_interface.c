@@ -58,7 +58,7 @@ typedef struct _fdpoll {
 typedef struct _guiqueue {
     void                *gq_p;
     t_glist             *gq_glist;
-    t_guifn             gq_fn;
+    t_drawfn            gq_fn;
     struct _guiqueue    *gq_next;
     } t_guiqueue;
 
@@ -224,7 +224,7 @@ void interface_monitorRemovePoller (int fd)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void interface_guiQueueAddIfNotAlreadyThere (void *owner, t_glist *glist, t_guifn f)
+void interface_guiQueueAddIfNotAlreadyThere (void *owner, t_glist *glist, t_drawfn f)
 {
     t_guiqueue **qNext = NULL;
     t_guiqueue *q = NULL;

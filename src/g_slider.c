@@ -798,13 +798,13 @@ void slider_setup (void)
     
     #endif
     
-    slider_widgetBehavior.w_getrectfn   = slider_behaviorGetRectangle;
-    slider_widgetBehavior.w_displacefn  = iemgui_behaviorDisplace;
-    slider_widgetBehavior.w_selectfn    = iemgui_behaviorSelected;
-    slider_widgetBehavior.w_activatefn  = NULL;
-    slider_widgetBehavior.w_deletefn    = iemgui_behaviorDeleted;
-    slider_widgetBehavior.w_visfn       = iemgui_behaviorVisible;
-    slider_widgetBehavior.w_clickfn     = slider_behaviorClick;
+    slider_widgetBehavior.w_fnGetRectangle  = slider_behaviorGetRectangle;
+    slider_widgetBehavior.w_fnDisplace      = iemgui_behaviorDisplace;
+    slider_widgetBehavior.w_fnSelect        = iemgui_behaviorSelected;
+    slider_widgetBehavior.w_fnActivate      = NULL;
+    slider_widgetBehavior.w_fnDelete        = iemgui_behaviorDeleted;
+    slider_widgetBehavior.w_fnVisible       = iemgui_behaviorVisible;
+    slider_widgetBehavior.w_fnClick         = slider_behaviorClick;
     
     class_setWidgetBehavior (c, &slider_widgetBehavior);
     class_setHelpName (c, gensym ("slider"));

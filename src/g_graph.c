@@ -684,7 +684,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         /* ordinary subpatches: just act like a text object */
     if (!x->gl_isgraph)
     {
-        text_widgetBehavior.w_visfn(gr, parent_glist, vis);
+        text_widgetBehavior.w_fnVisible(gr, parent_glist, vis);
         return;
     }
 
@@ -892,7 +892,7 @@ static void graph_getrect(t_gobj *z, t_glist *glist,
         graph_graphrect(z, glist, &x1, &y1, &x2, &y2);
         if (canvas_showtext(x))
         {
-            text_widgetBehavior.w_getrectfn(z, glist, &x21, &y21, &x22, &y22);
+            text_widgetBehavior.w_fnGetRectangle(z, glist, &x21, &y21, &x22, &y22);
             if (x22 > x2) 
                 x2 = x22;
             if (y22 > y2) 
@@ -923,7 +923,7 @@ static void graph_getrect(t_gobj *z, t_glist *glist,
             x->gl_havewindow = hadwindow;
         }
     }
-    else text_widgetBehavior.w_getrectfn(z, glist, &x1, &y1, &x2, &y2);
+    else text_widgetBehavior.w_fnGetRectangle(z, glist, &x1, &y1, &x2, &y2);
     *xp1 = x1;
     *yp1 = y1;
     *xp2 = x2;
@@ -934,7 +934,7 @@ static void graph_displace(t_gobj *z, t_glist *glist, int dx, int dy)
 {
     t_glist *x = (t_glist *)z;
     if (!x->gl_isgraph)
-        text_widgetBehavior.w_displacefn(z, glist, dx, dy);
+        text_widgetBehavior.w_fnDisplace(z, glist, dx, dy);
     else
     {
         x->gl_obj.te_xCoordinate += dx;
@@ -948,7 +948,7 @@ static void graph_select(t_gobj *z, t_glist *glist, int state)
 {
     t_glist *x = (t_glist *)z;
     if (!x->gl_isgraph)
-        text_widgetBehavior.w_selectfn(z, glist, state);
+        text_widgetBehavior.w_fnSelect(z, glist, state);
     else
     {
         t_boxtext *y = glist_findrtext(glist, &x->gl_obj);
@@ -965,7 +965,7 @@ static void graph_activate(t_gobj *z, t_glist *glist, int state)
 {
     t_glist *x = (t_glist *)z;
     if (canvas_showtext(x))
-        text_widgetBehavior.w_activatefn(z, glist, state);
+        text_widgetBehavior.w_fnActivate(z, glist, state);
 }
 
 static void graph_delete(t_gobj *z, t_glist *glist)
@@ -975,7 +975,7 @@ static void graph_delete(t_gobj *z, t_glist *glist)
     while (y = x->gl_list)
         glist_delete(x, y);
     if (glist_isvisible(x))
-        text_widgetBehavior.w_deletefn(z, glist);
+        text_widgetBehavior.w_fnDelete(z, glist);
             /* if we have connections to the actual 'canvas' object, zap
             them as well (e.g., array or scalar objects that are implemented
             as canvases with "real" inlets).  Connections to ordinary canvas
@@ -1032,7 +1032,7 @@ static int graph_click(t_gobj *z, struct _glist *glist,
     t_gobj *y;
     int clickreturned = 0;
     if (!x->gl_isgraph)
-        return (text_widgetBehavior.w_clickfn(z, glist,
+        return (text_widgetBehavior.w_fnClick(z, glist,
             xpix, ypix, shift, alt, dbl, doit));
     else if (x->gl_havewindow)
         return (0);

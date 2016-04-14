@@ -769,13 +769,13 @@ void dial_setup (void)
     
     #endif
     
-    dial_widgetBehavior.w_getrectfn  = dial_behaviorGetRectangle;
-    dial_widgetBehavior.w_displacefn = iemgui_behaviorDisplace;
-    dial_widgetBehavior.w_selectfn   = iemgui_behaviorSelected;
-    dial_widgetBehavior.w_activatefn = NULL;
-    dial_widgetBehavior.w_deletefn   = iemgui_behaviorDeleted;
-    dial_widgetBehavior.w_visfn      = iemgui_behaviorVisible;
-    dial_widgetBehavior.w_clickfn    = dial_behaviorClick;
+    dial_widgetBehavior.w_fnGetRectangle    = dial_behaviorGetRectangle;
+    dial_widgetBehavior.w_fnDisplace        = iemgui_behaviorDisplace;
+    dial_widgetBehavior.w_fnSelect          = iemgui_behaviorSelected;
+    dial_widgetBehavior.w_fnActivate        = NULL;
+    dial_widgetBehavior.w_fnDelete          = iemgui_behaviorDeleted;
+    dial_widgetBehavior.w_fnVisible         = iemgui_behaviorVisible;
+    dial_widgetBehavior.w_fnClick           = dial_behaviorClick;
     
     class_setWidgetBehavior (c, &dial_widgetBehavior);
     class_setHelpName (c, gensym ("nbx"));

@@ -545,13 +545,13 @@ void toggle_setup (void)
         
     #endif
     
-    toggle_widgetBehavior.w_getrectfn   = toggle_behaviorGetRectangle;
-    toggle_widgetBehavior.w_displacefn  = iemgui_behaviorDisplace;
-    toggle_widgetBehavior.w_selectfn    = iemgui_behaviorSelected;
-    toggle_widgetBehavior.w_activatefn  = NULL;
-    toggle_widgetBehavior.w_deletefn    = iemgui_behaviorDeleted;
-    toggle_widgetBehavior.w_visfn       = iemgui_behaviorVisible;
-    toggle_widgetBehavior.w_clickfn     = toggle_behaviorClick;
+    toggle_widgetBehavior.w_fnGetRectangle  = toggle_behaviorGetRectangle;
+    toggle_widgetBehavior.w_fnDisplace      = iemgui_behaviorDisplace;
+    toggle_widgetBehavior.w_fnSelect        = iemgui_behaviorSelected;
+    toggle_widgetBehavior.w_fnActivate      = NULL;
+    toggle_widgetBehavior.w_fnDelete        = iemgui_behaviorDeleted;
+    toggle_widgetBehavior.w_fnVisible       = iemgui_behaviorVisible;
+    toggle_widgetBehavior.w_fnClick         = toggle_behaviorClick;
     
     class_setWidgetBehavior (c, &toggle_widgetBehavior);
     class_setHelpName (c, gensym ("tgl"));

@@ -440,13 +440,13 @@ void panel_setup (void)
         
     #endif
     
-    panel_widgetBehavior.w_getrectfn  = panel_behaviorGetRectangle;
-    panel_widgetBehavior.w_displacefn = iemgui_behaviorDisplace;
-    panel_widgetBehavior.w_selectfn   = iemgui_behaviorSelected;
-    panel_widgetBehavior.w_activatefn = NULL;
-    panel_widgetBehavior.w_deletefn   = iemgui_behaviorDeleted;
-    panel_widgetBehavior.w_visfn      = iemgui_behaviorVisible;
-    panel_widgetBehavior.w_clickfn    = NULL;
+    panel_widgetBehavior.w_fnGetRectangle   = panel_behaviorGetRectangle;
+    panel_widgetBehavior.w_fnDisplace       = iemgui_behaviorDisplace;
+    panel_widgetBehavior.w_fnSelect         = iemgui_behaviorSelected;
+    panel_widgetBehavior.w_fnActivate       = NULL;
+    panel_widgetBehavior.w_fnDelete         = iemgui_behaviorDeleted;
+    panel_widgetBehavior.w_fnVisible        = iemgui_behaviorVisible;
+    panel_widgetBehavior.w_fnClick          = NULL;
     
     class_setWidgetBehavior (c, &panel_widgetBehavior);
     class_setHelpName (c, gensym ("cnv"));

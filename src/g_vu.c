@@ -674,13 +674,13 @@ void vu_setup (void)
 
     #endif
     
-    vu_widgetBehavior.w_getrectfn   = vu_behaviorGetRectangle;
-    vu_widgetBehavior.w_displacefn  = iemgui_behaviorDisplace;
-    vu_widgetBehavior.w_selectfn    = iemgui_behaviorSelected;
-    vu_widgetBehavior.w_activatefn  = NULL;
-    vu_widgetBehavior.w_deletefn    = iemgui_behaviorDeleted;
-    vu_widgetBehavior.w_visfn       = iemgui_behaviorVisible;
-    vu_widgetBehavior.w_clickfn     = NULL;
+    vu_widgetBehavior.w_fnGetRectangle  = vu_behaviorGetRectangle;
+    vu_widgetBehavior.w_fnDisplace      = iemgui_behaviorDisplace;
+    vu_widgetBehavior.w_fnSelect        = iemgui_behaviorSelected;
+    vu_widgetBehavior.w_fnActivate      = NULL;
+    vu_widgetBehavior.w_fnDelete        = iemgui_behaviorDeleted;
+    vu_widgetBehavior.w_fnVisible       = iemgui_behaviorVisible;
+    vu_widgetBehavior.w_fnClick         = NULL;
     
     class_setWidgetBehavior (c, &vu_widgetBehavior);
     class_setHelpName (c, gensym ("vu"));

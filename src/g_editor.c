@@ -73,32 +73,32 @@ static void file_openHelp (const char *directory, const char *name)
 void gobj_getrect(t_gobj *x, t_glist *glist, int *x1, int *y1,
     int *x2, int *y2)
 {
-    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_getrectfn)
-        (*x->g_pd->c_behavior->w_getrectfn)(x, glist, x1, y1, x2, y2);
+    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_fnGetRectangle)
+        (*x->g_pd->c_behavior->w_fnGetRectangle)(x, glist, x1, y1, x2, y2);
 }
 
 void gobj_displace(t_gobj *x, t_glist *glist, int dx, int dy)
 {
-    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_displacefn)
-        (*x->g_pd->c_behavior->w_displacefn)(x, glist, dx, dy);
+    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_fnDisplace)
+        (*x->g_pd->c_behavior->w_fnDisplace)(x, glist, dx, dy);
 }
 
 void gobj_select(t_gobj *x, t_glist *glist, int state)
 {
-    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_selectfn)
-        (*x->g_pd->c_behavior->w_selectfn)(x, glist, state);
+    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_fnSelect)
+        (*x->g_pd->c_behavior->w_fnSelect)(x, glist, state);
 }
 
 void gobj_activate(t_gobj *x, t_glist *glist, int state)
 {
-    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_activatefn)
-        (*x->g_pd->c_behavior->w_activatefn)(x, glist, state);
+    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_fnActivate)
+        (*x->g_pd->c_behavior->w_fnActivate)(x, glist, state);
 }
 
 void gobj_delete(t_gobj *x, t_glist *glist)
 {
-    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_deletefn)
-        (*x->g_pd->c_behavior->w_deletefn)(x, glist);
+    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_fnDelete)
+        (*x->g_pd->c_behavior->w_fnDelete)(x, glist);
 }
 
 void gobj_save (t_gobj *x, t_buffer *b)
@@ -157,15 +157,15 @@ int gobj_shouldvis(t_gobj *x, struct _glist *glist)
 
 void gobj_vis(t_gobj *x, struct _glist *glist, int flag)
 {
-    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_visfn && gobj_shouldvis(x, glist))
-        (*x->g_pd->c_behavior->w_visfn)(x, glist, flag);
+    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_fnVisible && gobj_shouldvis(x, glist))
+        (*x->g_pd->c_behavior->w_fnVisible)(x, glist, flag);
 }
 
 int gobj_click(t_gobj *x, struct _glist *glist,
     int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
-    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_clickfn)
-        return ((*x->g_pd->c_behavior->w_clickfn)(x,
+    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_fnClick)
+        return ((*x->g_pd->c_behavior->w_fnClick)(x,
             glist, xpix, ypix, shift, alt, dbl, doit));
     else return (0);
 }

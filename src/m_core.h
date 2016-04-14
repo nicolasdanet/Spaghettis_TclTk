@@ -14,18 +14,95 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-struct _widgetbehavior;
+typedef void (*t_savefn)                (t_gobj *x, t_buffer *b);
+typedef void (*t_propertiesfn)          (t_gobj *x, t_glist *glist);
+typedef void (*t_drawfn)                (t_gobj *x, t_glist *glist);
+typedef void (*t_keyfn)                 (void *z, t_float key);
+typedef void (*t_motionfn)              (void *z, t_float deltaX, t_float deltaY);
+typedef void (*t_undofn)                (t_glist *glist, void *b, int action);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-typedef void (*t_savefn)            (t_gobj *x, t_buffer *b);
-typedef void (*t_propertiesfn)      (t_gobj *x, t_glist *glist);
-typedef void (*t_guifn)             (t_gobj *x, t_glist *glist);
-typedef void (*t_keyfn)             (void *z, t_float key);
-typedef void (*t_motionfn)          (void *z, t_float deltaX, t_float deltaY);
+typedef void (*t_getrectanglefn)        (t_gobj *x, t_glist *glist, int *a, int *b, int *c, int *d);
+typedef void (*t_displacefn)            (t_gobj *x, t_glist *glist, int deltaX, int deltaY);
+typedef void (*t_selectfn)              (t_gobj *x, t_glist *glist, int state);
+typedef void (*t_activatefn)            (t_gobj *x, t_glist *glist, int state);
+typedef void (*t_deletefn)              (t_gobj *x, t_glist *glist);
+typedef void (*t_visiblefn)             (t_gobj *x, t_glist *glist, int flag);
+typedef int  (*t_clickfn)               (t_gobj *x,
+                                            t_glist *glist,
+                                            int a,
+                                            int b,
+                                            int shift,
+                                            int alt,
+                                            int dbl,
+                                            int k);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+typedef void (*t_parentgetrectanglefn)  (t_gobj *x, t_glist *glist, t_word *data, t_template *t,
+                                            t_float baseX,
+                                            t_float baseY,
+                                            int *a,
+                                            int *b,
+                                            int *c,
+                                            int *d);
+typedef void (*t_parentdisplacefn)      (t_gobj *x, t_glist *glist, t_word *data, t_template *t,
+                                            t_float baseX,
+                                            t_float baseY,
+                                            int deltaX, 
+                                            int deltaY);
+typedef void (*t_parentselectfn)        (t_gobj *x, t_glist *glist, t_word *data, t_template *t,
+                                            t_float baseX,
+                                            t_float baseY,
+                                            int state);
+typedef void (*t_parentactivatefn)      (t_gobj *x, t_glist *glist, t_word *data, t_template *t,
+                                            t_float baseX,
+                                            t_float baseY,
+                                            int state);
+typedef void (*t_parentvisiblefn)       (t_gobj *x, t_glist *glist, t_word *data, t_template *t,
+                                            t_float baseX,
+                                            t_float baseY,
+                                            int flag);
+typedef int  (*t_parentclickfn)         (t_gobj *x, t_glist *glist, t_word *data, t_template *t,
+                                            t_scalar *scalar,
+                                            t_array  *array,
+                                            t_float baseX,
+                                            t_float baseY,
+                                            int a,
+                                            int b,
+                                            int shift,
+                                            int alt,
+                                            int dbl,
+                                            int k);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+struct _widgetbehavior {
+    t_getrectanglefn                w_fnGetRectangle;
+    t_displacefn                    w_fnDisplace;
+    t_selectfn                      w_fnSelect;
+    t_activatefn                    w_fnActivate;
+    t_deletefn                      w_fnDelete;
+    t_visiblefn                     w_fnVisible;
+    t_clickfn                       w_fnClick;
+    };
+    
+struct _parentwidgetbehavior {
+    t_parentgetrectanglefn          w_fnParentGetRectangle;
+    t_parentdisplacefn              w_fnParentDisplace;
+    t_parentselectfn                w_fnParentSelect;
+    t_parentactivatefn              w_fnParentActivate;
+    t_parentvisiblefn               w_fnParentVisible;
+    t_parentclickfn                 w_fnParentClick;
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

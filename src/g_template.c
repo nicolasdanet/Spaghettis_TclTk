@@ -1599,7 +1599,7 @@ static void plot_getrect(t_gobj *z, t_glist *glist,
                     int xx1, xx2, yy1, yy2;
                     t_parentwidgetbehavior *wb = class_getParentWidget(pd_class (&y->g_pd));
                     if (!wb) continue;
-                    (*wb->w_parentgetrectfn)(y, glist,
+                    (*wb->w_fnParentGetRectangle)(y, glist,
                         (t_word *)((char *)(array->a_vec) + elemsize * i),
                             elemtemplate, usexloc, useyloc, 
                                 &xx1, &yy1, &xx2, &yy2);
@@ -1892,7 +1892,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                 {
                     t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
                     if (!wb) continue;
-                    (*wb->w_parentvisfn)(y, glist,
+                    (*wb->w_fnParentVisible)(y, glist,
                         (t_word *)(elem + elemsize * i),
                             elemtemplate, usexloc, useyloc, tovis);
                 }
@@ -1912,7 +1912,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                 {
                     t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
                     if (!wb) continue;
-                    (*wb->w_parentvisfn)(y, glist,
+                    (*wb->w_fnParentVisible)(y, glist,
                         (t_word *)(elem + elemsize * i), elemtemplate,
                             0, 0, 0);
                 }
