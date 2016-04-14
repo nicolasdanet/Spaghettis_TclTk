@@ -207,44 +207,44 @@ struct _glist {
     };
 
 typedef struct _dataslot {
-    int             ds_type;
-    t_symbol        *ds_name;
-    t_symbol        *ds_arraytemplate;
+    int                 ds_type;
+    t_symbol            *ds_name;
+    t_symbol            *ds_arraytemplate;
     } t_dataslot;
 
 typedef struct _template {
-    t_pd            t_pdobj;   
-    t_gtemplate     *t_list;  
-    t_symbol        *t_sym;    
-    int             t_n;    
-    t_dataslot      *t_vec;  
+    t_pd                t_pdobj;   
+    t_gtemplate         *t_list;  
+    t_symbol            *t_sym;    
+    int                 t_n;    
+    t_dataslot          *t_vec;  
     };
 
 struct _array {
-    int             a_n;
-    int             a_elemsize;
-    char            *a_vec;
-    t_symbol        *a_templatesym;
-    int             a_valid;
-    t_gpointer      a_gp;
-    t_gstub         *a_stub;
+    int                 a_n;
+    int                 a_elemsize;
+    char                *a_vec;
+    t_symbol            *a_templatesym;
+    int                 a_valid;
+    t_gpointer          a_gp;
+    t_gstub             *a_stub;
     };
 
 typedef struct _linetraverser {
-    t_glist         *tr_x;
-    t_object        *tr_ob;
-    int             tr_nout;
-    int             tr_outno;
-    t_object        *tr_ob2;
-    t_outlet        *tr_outlet;
-    t_inlet         *tr_inlet;
-    int             tr_nin;
-    int             tr_inno;
-    int             tr_x11, tr_y11, tr_x12, tr_y12;
-    int             tr_x21, tr_y21, tr_x22, tr_y22;
-    int             tr_lx1, tr_ly1, tr_lx2, tr_ly2;
-    t_outconnect    *tr_nextoc;
-    int             tr_nextoutno;
+    t_glist             *tr_x;
+    t_object            *tr_ob;
+    int                 tr_nout;
+    int                 tr_outno;
+    t_object            *tr_ob2;
+    t_outlet            *tr_outlet;
+    t_inlet             *tr_inlet;
+    int                 tr_nin;
+    int                 tr_inno;
+    int                 tr_x11, tr_y11, tr_x12, tr_y12;
+    int                 tr_x21, tr_y21, tr_x22, tr_y22;
+    int                 tr_lx1, tr_ly1, tr_lx2, tr_ly2;
+    t_outconnect        *tr_nextoc;
+    int                 tr_nextoutno;
     } t_linetraverser;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -252,6 +252,14 @@ typedef struct _linetraverser {
 #pragma mark -
 
 #define canvas_castToObjectIfBox(x) (pd_class (x)->c_isBox ? (t_object *)(x) : NULL)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_guiconnect    *guiconnect_new            (t_pd *owner, t_symbol *bound);
+
+void            guiconnect_notarget        (t_guiconnect *x, double timedelay);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -392,7 +400,7 @@ t_boxtext   *glist_findrtext    (t_glist *gl, t_object *who);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist *canvas_new                        (void *dummy, t_symbol *sel, int argc, t_atom *argv);
+t_glist  *canvas_new                        (void *dummy, t_symbol *sel, int argc, t_atom *argv);
 t_symbol *canvas_makebindsym                (t_symbol *s);
 void     canvas_vistext                     (t_glist *x, t_object *y);
 void     canvas_fixlines                    (t_glist *x, t_object *text);
@@ -486,13 +494,6 @@ t_glist  *pd_checkglist                 (t_pd *x);
 void         linetraverser_start        (t_linetraverser *t, t_glist *x);
 t_outconnect *linetraverser_next        (t_linetraverser *t);
 void         linetraverser_skipobject   (t_linetraverser *t);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_guiconnect *guiconnect_new            (t_pd *who, t_symbol *sym);
-void         guiconnect_notarget        (t_guiconnect *x, double timedelay);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

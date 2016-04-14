@@ -1,46 +1,53 @@
-/* Copyright (c) 1997-2000 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/*  a thing to forward messages from the GUI, dealing with race conditions
-in which the "target" gets deleted while the GUI is sending it something.
-
-See also the gfxstub object that doesn't oblige the owner to keep a pointer
-around (so is better suited to one-off dialogs)
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
 */
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "g_canvas.h"
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 struct _guiconnect
 {
-    t_object x_obj;
-    t_pd *x_who;
-    t_symbol *x_sym;
-    t_clock *x_clock;
+    t_object        x_obj;
+    t_pd            *x_owner;
+    t_symbol        *x_bound;
+    t_clock         *x_clock;
 };
 
-static t_class *guiconnect_class;
-
-t_guiconnect *guiconnect_new(t_pd *who, t_symbol *sym)
+typedef struct _gfxstub
 {
-    t_guiconnect *x = (t_guiconnect *)pd_new(guiconnect_class);
-    x->x_who = who;
-    x->x_sym = sym;
-    pd_bind(&x->x_obj.te_g.g_pd, sym);
-    return (x);
-}
+    t_pd            x_pd;
+    t_pd            *x_owner;
+    void            *x_key;
+    t_symbol        *x_bound;
+    struct _gfxstub *x_next;
+} t_gfxstub;
 
-    /* cleanup routine; delete any resources we have */
-static void guiconnect_free(t_guiconnect *x)
-{
-    if (x->x_sym)
-        pd_unbind(&x->x_obj.te_g.g_pd, x->x_sym);
-    if (x->x_clock)
-        clock_free(x->x_clock); 
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_class      *gfxstub_class;
+static t_class      *guiconnect_class;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_gfxstub    *gfxstub_list;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* this is called when the clock times out to indicate the GUI should
     be gone by now. */
@@ -54,11 +61,11 @@ static void guiconnect_tick(t_guiconnect *x)
     or for a timeout. */
 void guiconnect_notarget(t_guiconnect *x, double timedelay)
 {
-    if (!x->x_sym)
+    if (!x->x_bound)
         pd_free(&x->x_obj.te_g.g_pd);
     else
     {
-        x->x_who = 0;
+        x->x_owner = 0;
         if (timedelay > 0)
         {
             x->x_clock = clock_new(x, (t_method)guiconnect_tick);
@@ -71,8 +78,8 @@ void guiconnect_notarget(t_guiconnect *x, double timedelay)
 static void guiconnect_anything(t_guiconnect *x,
     t_symbol *s, int ac, t_atom *av)
 {
-    if (x->x_who)
-        pd_message(x->x_who, s, ac, av);
+    if (x->x_owner)
+        pd_message(x->x_owner, s, ac, av);
 }
 
     /* the GUI calls this when it disappears.  (If there's any chance the
@@ -80,23 +87,61 @@ static void guiconnect_anything(t_guiconnect *x,
     a timeout after which the guiconnect will disappear.) */
 static void guiconnect_signoff(t_guiconnect *x)
 {
-    if (!x->x_who)
+    if (!x->x_owner)
         pd_free(&x->x_obj.te_g.g_pd);
     else
     {
-        pd_unbind(&x->x_obj.te_g.g_pd, x->x_sym);
-        x->x_sym = 0;
+        pd_unbind(&x->x_obj.te_g.g_pd, x->x_bound);
+        x->x_bound = 0;
     }
 }
 
-void g_guiconnect_setup(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_guiconnect *guiconnect_new (t_pd *owner, t_symbol *bound)
 {
-    guiconnect_class = class_new(gensym("guiconnect"), 0,
-        (t_method)guiconnect_free, sizeof(t_guiconnect), CLASS_PURE, 0);
-    class_addAnything(guiconnect_class, guiconnect_anything);
-    class_addMethod(guiconnect_class, (t_method)guiconnect_signoff,
-        gensym("signoff"), 0);
+    t_guiconnect *x = (t_guiconnect *)pd_new (guiconnect_class);
+    
+    x->x_owner = owner;
+    x->x_bound = bound;
+    
+    pd_bind (cast_pd (x), bound);
+    
+    return x;
 }
+
+static void guiconnect_free (t_guiconnect *x)
+{
+    if (x->x_bound) { pd_unbind (cast_pd (x), x->x_bound); }
+    if (x->x_clock) { clock_free (x->x_clock); }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void guiconnect_setup (void)
+{
+    t_class *c = NULL;
+    
+    c = class_new (gensym ("guiconnect"),
+        NULL,
+        (t_method)guiconnect_free,
+        sizeof (t_guiconnect), 
+        CLASS_PURE,
+        A_NULL);
+        
+    class_addAnything (c, guiconnect_anything);
+    class_addMethod (c, (t_method)guiconnect_signoff, gensym ("signoff"), A_NULL);
+        
+    guiconnect_class = c;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* --------------------- graphics responder  ---------------- */
 
@@ -108,18 +153,7 @@ might have dialogs, when it is deleted, simply checks down the dialog window
 list and breaks off any dialogs that might later have sent messages to it. 
 Only when the dialog window itself closes do we delete the gfxstub object. */
 
-static t_class *gfxstub_class;
 
-typedef struct _gfxstub
-{
-    t_pd x_pd;
-    t_pd *x_owner;
-    void *x_key;
-    t_symbol *x_sym;
-    struct _gfxstub *x_next;
-} t_gfxstub;
-
-static t_gfxstub *gfxstub_list;
 
     /* create a new one.  the "key" is an address by which the owner
     will identify it later; if the owner only wants one dialog, this
@@ -152,7 +186,7 @@ void gfxstub_new(t_pd *owner, void *key, const char *cmd)
     s = gensym(namebuf);
     pd_bind(&x->x_pd, s);
     x->x_owner = owner;
-    x->x_sym = s;
+    x->x_bound = s;
     x->x_key = key;
     x->x_next = gfxstub_list;
     gfxstub_list = x;
@@ -247,7 +281,7 @@ static void gfxstub_anything(t_gfxstub *x, t_symbol *s, int argc, t_atom *argv)
 
 static void gfxstub_free(t_gfxstub *x)
 {
-    pd_unbind(&x->x_pd, x->x_sym);
+    pd_unbind(&x->x_pd, x->x_bound);
 }
 
 void gfxstub_setup(void)
@@ -264,3 +298,6 @@ void gfxstub_setup(void)
     class_addMethod(gfxstub_class, (t_method)gfxstub_cancel,
         gensym("cancel"), 0);
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

@@ -55,6 +55,8 @@
 
 /* Graphics. */
 
+#include "g_gui.c"
+
 #include "g_iem.c"
 #include "g_bang.c"
 #include "g_toggle.c"

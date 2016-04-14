@@ -158,9 +158,9 @@ struct _class {
 
 struct _pdinstance {
     double      pd_systime;
-    int         pd_state;
-    int         pd_chainSize;
-    t_int       *pd_chain;
+    int         pd_dspState;
+    int         pd_dspChainSize;
+    t_int       *pd_dspChain;
     t_clock     *pd_clocks;
     t_signal    *pd_signals;
     t_glist     *pd_glist;

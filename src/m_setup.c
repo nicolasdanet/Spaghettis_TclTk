@@ -40,7 +40,7 @@ void loader_release         (void);
 
 void g_array_setup          (void);
 void g_canvas_setup         (void);
-void g_guiconnect_setup     (void);
+void guiconnect_setup       (void);
 void bng_setup              (void);
 void toggle_setup           (void);
 void radio_setup            (void);
@@ -95,7 +95,7 @@ void setup_initialize (void)
     
     g_array_setup();
     g_canvas_setup();
-    g_guiconnect_setup();
+    guiconnect_setup();
     bng_setup();
     toggle_setup();
     radio_setup();

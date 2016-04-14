@@ -55,7 +55,7 @@
 		378972251C4F716800263434 /* g_canvas.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C11C4F716700263434 /* g_canvas.c */; };
 		378972261C4F716800263434 /* g_editor.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C31C4F716700263434 /* g_editor.c */; };
 		378972271C4F716800263434 /* g_graph.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C41C4F716700263434 /* g_graph.c */; };
-		378972281C4F716800263434 /* g_guiconnect.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C51C4F716700263434 /* g_guiconnect.c */; };
+		378972281C4F716800263434 /* g_gui.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C51C4F716700263434 /* g_gui.c */; };
 		3789722A1C4F716800263434 /* g_slider.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C71C4F716700263434 /* g_slider.c */; };
 		3789722B1C4F716800263434 /* g_iem.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971C81C4F716700263434 /* g_iem.c */; };
 		3789722C1C4F716800263434 /* g_io.c in Sources */ = {isa = PBXBuildFile; fileRef = 378971CA1C4F716700263434 /* g_io.c */; };
@@ -276,7 +276,7 @@
 		378971C21C4F716700263434 /* g_canvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_canvas.h; path = src/g_canvas.h; sourceTree = "<group>"; };
 		378971C31C4F716700263434 /* g_editor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_editor.c; path = src/g_editor.c; sourceTree = "<group>"; };
 		378971C41C4F716700263434 /* g_graph.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_graph.c; path = src/g_graph.c; sourceTree = "<group>"; };
-		378971C51C4F716700263434 /* g_guiconnect.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_guiconnect.c; path = src/g_guiconnect.c; sourceTree = "<group>"; };
+		378971C51C4F716700263434 /* g_gui.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_gui.c; path = src/g_gui.c; sourceTree = "<group>"; };
 		378971C71C4F716700263434 /* g_slider.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_slider.c; path = src/g_slider.c; sourceTree = "<group>"; };
 		378971C81C4F716700263434 /* g_iem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_iem.c; path = src/g_iem.c; sourceTree = "<group>"; };
 		378971C91C4F716700263434 /* g_iem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = g_iem.h; path = src/g_iem.h; sourceTree = "<group>"; };
@@ -723,8 +723,8 @@
 			isa = PBXGroup;
 			children = (
 				378971C21C4F716700263434 /* g_canvas.h */,
+				378971C51C4F716700263434 /* g_gui.c */,
 				378971C11C4F716700263434 /* g_canvas.c */,
-				378971C51C4F716700263434 /* g_guiconnect.c */,
 				378971BF1C4F716700263434 /* g_array.c */,
 				378971C31C4F716700263434 /* g_editor.c */,
 				378971C41C4F716700263434 /* g_graph.c */,
@@ -953,7 +953,7 @@
 				378972251C4F716800263434 /* g_canvas.c in Sources */,
 				378972261C4F716800263434 /* g_editor.c in Sources */,
 				378972271C4F716800263434 /* g_graph.c in Sources */,
-				378972281C4F716800263434 /* g_guiconnect.c in Sources */,
+				378972281C4F716800263434 /* g_gui.c in Sources */,
 				3789722A1C4F716800263434 /* g_slider.c in Sources */,
 				3789722B1C4F716800263434 /* g_iem.c in Sources */,
 				3789722C1C4F716800263434 /* g_io.c in Sources */,
