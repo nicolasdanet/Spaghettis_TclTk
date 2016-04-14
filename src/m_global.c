@@ -39,7 +39,7 @@ void global_initialize (void)
 {
     t_class *c = class_new (gensym ("pd"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
 
-    class_addMethod (c, (t_method)global_new,               gensym ("new"),  A_SYMBOL, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)global_newPatch,          gensym ("new"),  A_SYMBOL, A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)buffer_openFile,          gensym ("open"), A_SYMBOL, A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)global_dsp,               gensym ("dsp"),  A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_key,               gensym ("key"),  A_GIMME, A_NULL);

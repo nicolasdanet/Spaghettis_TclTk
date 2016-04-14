@@ -34,7 +34,7 @@ extern t_class *canvas_class;
 #define SEND_UPDATE 2
 #define SEND_CHECK 0
 
-struct _rtext
+struct _boxtext
 {
     char *x_buf;    /*-- raw byte string, assumed UTF-8 encoded (moo) --*/
     int x_bufsize;  /*-- byte length --*/
@@ -48,12 +48,12 @@ struct _rtext
     t_object *x_text;
     t_glist *x_glist;
     char x_tag[50];
-    struct _rtext *x_next;
+    struct _boxtext *x_next;
 };
 
-t_rtext *rtext_new(t_glist *glist, t_object *who)
+t_boxtext *rtext_new(t_glist *glist, t_object *who)
 {
-    t_rtext *x = (t_rtext *)PD_MEMORY_GET(sizeof *x);
+    t_boxtext *x = (t_boxtext *)PD_MEMORY_GET(sizeof *x);
     int w = 0, h = 0, indx;
     x->x_height = -1;
     x->x_text = who;
@@ -68,9 +68,9 @@ t_rtext *rtext_new(t_glist *glist, t_object *who)
     return (x);
 }
 
-static t_rtext *rtext_entered;
+static t_boxtext *rtext_entered;
 
-void rtext_free(t_rtext *x)
+void rtext_free(t_boxtext *x)
 {
     if (x->x_glist->gl_editor->e_textedfor == x)
         x->x_glist->gl_editor->e_textedfor = 0;
@@ -78,7 +78,7 @@ void rtext_free(t_rtext *x)
         x->x_glist->gl_editor->e_rtext = x->x_next;
     else
     {
-        t_rtext *e2;
+        t_boxtext *e2;
         for (e2 = x->x_glist->gl_editor->e_rtext; e2; e2 = e2->x_next)
             if (e2->x_next == x)
         {
@@ -91,25 +91,25 @@ void rtext_free(t_rtext *x)
     PD_MEMORY_FREE(x);
 }
 
-char *rtext_gettag(t_rtext *x)
+char *rtext_gettag(t_boxtext *x)
 {
     return (x->x_tag);
 }
 
-void rtext_gettext(t_rtext *x, char **buf, int *bufsize)
+void rtext_gettext(t_boxtext *x, char **buf, int *bufsize)
 {
     *buf = x->x_buf;
     *bufsize = x->x_bufsize;
 }
 
-void rtext_getseltext(t_rtext *x, char **buf, int *bufsize)
+void rtext_getseltext(t_boxtext *x, char **buf, int *bufsize)
 {
     *buf = x->x_buf + x->x_selstart;
     *bufsize = x->x_selend - x->x_selstart;
 }
 
 /* convert t_object te_type symbol for use as a Tk tag */
-static t_symbol *rtext_gettype(t_rtext *x)
+static t_symbol *rtext_gettype(t_boxtext *x)
 {
     switch (x->x_text->te_type) 
     {
@@ -184,7 +184,7 @@ static int lastone(char *s, int c, int n)
 #define UPBUFSIZE 4000
 #define BOXWIDTH 60
 
-static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
+static void rtext_senditup(t_boxtext *x, int action, int *widthp, int *heightp,
     int *indexp)
 {
     t_float dispx, dispy;
@@ -348,7 +348,7 @@ static void rtext_senditup(t_rtext *x, int action, int *widthp, int *heightp,
         PD_MEMORY_FREE(tempbuf);
 }
 
-void rtext_retext(t_rtext *x)
+void rtext_retext(t_boxtext *x)
 {
     int w = 0, h = 0, indx;
     t_object *text = x->x_text;
@@ -404,9 +404,9 @@ void rtext_retext(t_rtext *x)
 }
 
 /* find the rtext that goes with a text item */
-t_rtext *glist_findrtext(t_glist *gl, t_object *who)
+t_boxtext *glist_findrtext(t_glist *gl, t_object *who)
 {
-    t_rtext *x;
+    t_boxtext *x;
     if (!gl->gl_editor)
         canvas_create_editor(gl);
     for (x = gl->gl_editor->e_rtext; x && x->x_text != who; x = x->x_next)
@@ -415,38 +415,38 @@ t_rtext *glist_findrtext(t_glist *gl, t_object *who)
     return (x);
 }
 
-int rtext_width(t_rtext *x)
+int rtext_width(t_boxtext *x)
 {
     int w = 0, h = 0, indx;
     rtext_senditup(x, SEND_CHECK, &w, &h, &indx);
     return (w);
 }
 
-int rtext_height(t_rtext *x)
+int rtext_height(t_boxtext *x)
 {
     int w = 0, h = 0, indx;
     rtext_senditup(x, SEND_CHECK, &w, &h, &indx);
     return (h);
 }
 
-void rtext_draw(t_rtext *x)
+void rtext_draw(t_boxtext *x)
 {
     int w = 0, h = 0, indx;
     rtext_senditup(x, SEND_FIRST, &w, &h, &indx);
 }
 
-void rtext_erase(t_rtext *x)
+void rtext_erase(t_boxtext *x)
 {
     sys_vGui(".x%lx.c delete %s\n", glist_getcanvas(x->x_glist), x->x_tag);
 }
 
-void rtext_displace(t_rtext *x, int dx, int dy)
+void rtext_displace(t_boxtext *x, int dx, int dy)
 {
     sys_vGui(".x%lx.c move %s %d %d\n", glist_getcanvas(x->x_glist), 
         x->x_tag, dx, dy);
 }
 
-void rtext_select(t_rtext *x, int state)
+void rtext_select(t_boxtext *x, int state)
 {
     t_glist *glist = x->x_glist;
     t_glist *canvas = glist_getcanvas(glist);
@@ -454,7 +454,7 @@ void rtext_select(t_rtext *x, int state)
         x->x_tag, (state? "blue" : "black"));
 }
 
-void rtext_activate(t_rtext *x, int state)
+void rtext_activate(t_boxtext *x, int state)
 {
     int w = 0, h = 0, indx;
     t_glist *glist = x->x_glist;
@@ -478,7 +478,7 @@ void rtext_activate(t_rtext *x, int state)
     rtext_senditup(x, SEND_UPDATE, &w, &h, &indx);
 }
 
-void rtext_key(t_rtext *x, int keynum, t_symbol *keysym)
+void rtext_key(t_boxtext *x, int keynum, t_symbol *keysym)
 {
     int w = 0, h = 0, indx, i, newsize, ndel;
     char *s1, *s2;
@@ -586,15 +586,15 @@ be printable in whatever 8-bit character set we find ourselves. */
     rtext_senditup(x, SEND_UPDATE, &w, &h, &indx);
 }
 
-void rtext_mouse(t_rtext *x, int xval, int yval, int flag)
+void rtext_mouse(t_boxtext *x, int xval, int yval, int flag)
 {
     int w = xval, h = yval, indx;
     rtext_senditup(x, SEND_CHECK, &w, &h, &indx);
-    if (flag == RTEXT_DOWN)
+    if (flag == BOX_TEXT_DOWN)
     {
         x->x_dragfrom = x->x_selstart = x->x_selend = indx;
     }
-    else if (flag == RTEXT_DBL)
+    else if (flag == BOX_TEXT_DOUBLE)
     {
         int whereseparator, newseparator;
         x->x_dragfrom = -1;
@@ -628,14 +628,14 @@ void rtext_mouse(t_rtext *x, int xval, int yval, int flag)
                     whereseparator = newseparator;
         x->x_selend = indx + whereseparator;
     }
-    else if (flag == RTEXT_SHIFT)
+    else if (flag == BOX_TEXT_SHIFT)
     {
         if (indx * 2 > x->x_selstart + x->x_selend)
             x->x_dragfrom = x->x_selstart, x->x_selend = indx;
         else
             x->x_dragfrom = x->x_selend, x->x_selstart = indx;
     }
-    else if (flag == RTEXT_DRAG)
+    else if (flag == BOX_TEXT_DRAG)
     {
         if (x->x_dragfrom < 0)
             return;

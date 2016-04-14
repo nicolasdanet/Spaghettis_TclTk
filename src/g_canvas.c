@@ -119,7 +119,7 @@ void glob_setfilename(void *dummy, t_symbol *filesym, t_symbol *dirsym)
     canvas_newdirectory = dirsym;
 }
 
-void global_new(void *dummy, t_symbol *filesym, t_symbol *dirsym)
+void global_newPatch (void *dummy, t_symbol *filesym, t_symbol *dirsym)
 {
     glob_setfilename(dummy, filesym, dirsym);
     canvas_new(0, 0, 0, 0);
@@ -260,7 +260,7 @@ t_outconnect *linetraverser_next(t_linetraverser *t)
             if (!t->tr_ob) y = t->tr_x->gl_list;
             else y = t->tr_ob->te_g.g_next;
             for (; y; y = y->g_next)
-                if (ob = canvas_asObjectIfBox(&y->g_pd)) break;
+                if (ob = canvas_castToObjectIfBox(&y->g_pd)) break;
             if (!ob) return (0);
             t->tr_ob = ob;
             t->tr_nout = object_numberOfOutlets(ob);
@@ -469,8 +469,8 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     if (x1 == x2 || y1 == y2)
         x1 = 0, x2 = 100, y1 = 1, y2 = -1;
     if (px1 >= px2 || py1 >= py2)
-        px1 = 100, py1 = 20, px2 = 100 + GLIST_DEFAULT_WIDTH,
-            py2 = 20 + GLIST_DEFAULT_HEIGHT;
+        px1 = 100, py1 = 20, px2 = 100 + CANVAS_DEFAULT_WIDTH,
+            py2 = 20 + CANVAS_DEFAULT_HEIGHT;
     x->gl_name = sym;
     x->gl_x1 = x1;
     x->gl_x2 = x2;
@@ -553,7 +553,7 @@ static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)
             /* and move text objects accordingly; they should stick
             to the bottom, not the top. */
         for (y = x->gl_list; y; y = y->g_next)
-            if (canvas_asObjectIfBox(&y->g_pd))
+            if (canvas_castToObjectIfBox(&y->g_pd))
                 gobj_displace(y, x, 0, heightchange);
         canvas_redraw(x);
     }
@@ -1058,7 +1058,7 @@ static void canvas_dodsp(t_glist *x, int toplevel, t_signal **sp)
         /* find all the "dsp" boxes and add them to the graph */
     
     for (y = x->gl_list; y; y = y->g_next)
-        if ((ob = canvas_asObjectIfBox(&y->g_pd)) && class_hasMethod (pd_class (&y->g_pd), dspsym))
+        if ((ob = canvas_castToObjectIfBox(&y->g_pd)) && class_hasMethod (pd_class (&y->g_pd), dspsym))
             ugen_add(dc, ob);
 
         /* ... and all dsp interconnections */
@@ -1206,7 +1206,7 @@ void canvas_redrawallfortemplatecanvas(t_glist *x, int action)
     t_symbol *s1 = gensym("struct");
     for (g = x->gl_list; g; g = g->g_next)
     {
-        t_object *ob = canvas_asObjectIfBox(&g->g_pd);
+        t_object *ob = canvas_castToObjectIfBox(&g->g_pd);
         t_atom *argv;
         if (!ob || ob->te_type != TYPE_OBJECT ||
             buffer_size(ob->te_buffer) < 2)
@@ -1482,7 +1482,7 @@ static void canvas_f(t_glist *x, t_symbol *s, int argc, t_atom *argv)
         return;
     for (g = x->gl_list; g2 = g->g_next; g = g2)
         ;
-    if (ob = canvas_asObjectIfBox(&g->g_pd))
+    if (ob = canvas_castToObjectIfBox(&g->g_pd))
     {
         ob->te_width = atom_getFloatAtIndex(0, argc, argv);
         if (glist_isvisible(x))

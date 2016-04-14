@@ -603,7 +603,7 @@ void array_redraw(t_array *a, t_glist *glist)
 void array_getcoordinate(t_glist *glist,
     char *elem, int xonset, int yonset, int wonset, int indx,
     t_float basex, t_float basey, t_float xinc,
-    t_fielddesc *xfielddesc, t_fielddesc *yfielddesc, t_fielddesc *wfielddesc,
+    t_fielddescriptor *xfielddesc, t_fielddescriptor *yfielddesc, t_fielddescriptor *wfielddesc,
     t_float *xp, t_float *yp, t_float *wp)
 {
     t_float xval, yval, ypix, wpix;

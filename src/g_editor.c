@@ -141,7 +141,7 @@ int gobj_shouldvis(t_gobj *x, struct _glist *glist)
             gy1 < y1 || gy1 > y2 || gy2 < y1 || gy2 > y2)
                 return (0);
     }
-    if (ob = canvas_asObjectIfBox(&x->g_pd))
+    if (ob = canvas_castToObjectIfBox(&x->g_pd))
     {
         /* return true if the text box should be drawn.  We don't show text
         boxes inside graphs---except comments, if we're doing the new
@@ -248,11 +248,11 @@ void glist_deselect(t_glist *x, t_gobj *y)
     if (x->gl_editor)
     {
         t_selection *sel, *sel2;
-        t_rtext *z = 0;
+        t_boxtext *z = 0;
         if (!glist_isselected(x, y)) { PD_BUG; }
         if (x->gl_editor->e_textedfor)
         {
-            t_rtext *fuddy = glist_findrtext(x, (t_object *)y);
+            t_boxtext *fuddy = glist_findrtext(x, (t_object *)y);
             if (x->gl_editor->e_textedfor == fuddy)
             {
                 if (x->gl_editor->e_textdirty)
@@ -946,7 +946,7 @@ void canvas_create_editor(t_glist *x)
     {
         x->gl_editor = editor_new(x);
         for (y = x->gl_list; y; y = y->g_next)
-            if (ob = canvas_asObjectIfBox(&y->g_pd))
+            if (ob = canvas_castToObjectIfBox(&y->g_pd))
                 rtext_new(x, ob);
     }
 }
@@ -958,7 +958,7 @@ void canvas_destroy_editor(t_glist *x)
     glist_noselect(x);
     if (x->gl_editor)
     {
-        t_rtext *rtext;
+        t_boxtext *rtext;
         while (rtext = x->gl_editor->e_rtext)
             rtext_free(rtext);
         editor_free(x->gl_editor, x);
@@ -1069,10 +1069,10 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
     else if (flag)
     {
         if (x->gl_pixwidth <= 0)
-            x->gl_pixwidth = GLIST_DEFAULT_WIDTH;
+            x->gl_pixwidth = CANVAS_DEFAULT_WIDTH;
 
         if (x->gl_pixheight <= 0)
-            x->gl_pixheight = GLIST_DEFAULT_HEIGHT;
+            x->gl_pixheight = CANVAS_DEFAULT_HEIGHT;
 
         if (x->gl_owner && !x->gl_loading && glist_isvisible(x->gl_owner))
             gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
@@ -1333,20 +1333,20 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
         /* if not a runmode left click, fall here. */
     if (y = canvas_findhitbox(x, xpos, ypos, &x1, &y1, &x2, &y2))
     {
-        t_object *ob = canvas_asObjectIfBox(&y->g_pd);
+        t_object *ob = canvas_castToObjectIfBox(&y->g_pd);
             /* check you're in the rectangle */
-        ob = canvas_asObjectIfBox(&y->g_pd);
+        ob = canvas_castToObjectIfBox(&y->g_pd);
         if (rightclick)
             canvas_rightclick(x, xpos, ypos, y);
         else if (shiftmod)
         {
             if (doit)
             {
-                t_rtext *rt;
+                t_boxtext *rt;
                 if (ob && (rt = x->gl_editor->e_textedfor) &&
                     rt == glist_findrtext(x, ob))
                 {
-                    rtext_mouse(rt, xpos - x1, ypos - y1, RTEXT_SHIFT);
+                    rtext_mouse(rt, xpos - x1, ypos - y1, BOX_TEXT_SHIFT);
                     x->gl_editor->e_onmotion = ACTION_DRAG;
                     x->gl_editor->e_xwas = x1;
                     x->gl_editor->e_ywas = y1;
@@ -1414,14 +1414,14 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                 /* not in an outlet; select and move */
             else if (doit)
             {
-                t_rtext *rt;
+                t_boxtext *rt;
                     /* check if the box is being text edited */
             nooutletafterall:
                 if (ob && (rt = x->gl_editor->e_textedfor) &&
                     rt == glist_findrtext(x, ob))
                 {
                     rtext_mouse(rt, xpos - x1, ypos - y1,
-                        (doublemod ? RTEXT_DBL : RTEXT_DOWN));
+                        (doublemod ? BOX_TEXT_DOUBLE : BOX_TEXT_DOWN));
                     x->gl_editor->e_onmotion = ACTION_DRAG;
                     x->gl_editor->e_xwas = x1;
                     x->gl_editor->e_ywas = y1;
@@ -1528,8 +1528,8 @@ void canvas_doconnect(t_glist *x, int xpos, int ypos, int which, int doit)
     if ((y1 = canvas_findhitbox(x, xwas, ywas, &x11, &y11, &x12, &y12))
         && (y2 = canvas_findhitbox(x, xpos, ypos, &x21, &y21, &x22, &y22)))
     {
-        t_object *ob1 = canvas_asObjectIfBox(&y1->g_pd);
-        t_object *ob2 = canvas_asObjectIfBox(&y2->g_pd);
+        t_object *ob1 = canvas_castToObjectIfBox(&y1->g_pd);
+        t_object *ob2 = canvas_castToObjectIfBox(&y2->g_pd);
         int noutlet1, ninlet2;
         if (ob1 && ob2 && ob1 != ob2 &&
             (noutlet1 = object_numberOfOutlets(ob1))
@@ -1908,10 +1908,10 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos,
     }
     else if (x->gl_editor->e_onmotion == ACTION_DRAG)
     {
-        t_rtext *rt = x->gl_editor->e_textedfor;
+        t_boxtext *rt = x->gl_editor->e_textedfor;
         if (rt)
             rtext_mouse(rt, xpos - x->gl_editor->e_xwas,
-                ypos - x->gl_editor->e_ywas, RTEXT_DRAG);
+                ypos - x->gl_editor->e_ywas, BOX_TEXT_DRAG);
     }
     else if (x->gl_editor->e_onmotion == ACTION_RESIZE)
     {
@@ -1922,7 +1922,7 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos,
                 &x11, &y11, &x12, &y12))
         {
             int wantwidth = xpos - x11;
-            t_object *ob = canvas_asObjectIfBox(&y1->g_pd);
+            t_object *ob = canvas_castToObjectIfBox(&y1->g_pd);
             if (ob && ob->te_g.g_pd->c_behavior == &text_widgetBehavior ||
                     (pd_checkglist(&ob->te_g.g_pd) &&
                         !((t_glist *)ob)->gl_isgraph))
@@ -2116,7 +2116,7 @@ static int canvas_dofind(t_glist *x, int *myindexp)
     for (y = x->gl_list; y; y = y->g_next)
     {
         t_object *ob = 0;
-        if (ob = canvas_asObjectIfBox(&y->g_pd))
+        if (ob = canvas_castToObjectIfBox(&y->g_pd))
         {
             if (atoms_match(buffer_size(ob->te_buffer), 
                 buffer_atoms(ob->te_buffer), findargc, findargv,
@@ -2540,8 +2540,8 @@ void canvas_connect(t_glist *x, t_float fwhoout, t_float foutno,
         if (!sink->g_next) goto bad;
     
         /* check they're both patchable objects */
-    if (!(objsrc = canvas_asObjectIfBox(&src->g_pd)) ||
-        !(objsink = canvas_asObjectIfBox(&sink->g_pd)))
+    if (!(objsrc = canvas_castToObjectIfBox(&src->g_pd)) ||
+        !(objsink = canvas_castToObjectIfBox(&sink->g_pd)))
             goto bad;
     
         /* if object creation failed, make dummy inlets or outlets
@@ -2680,7 +2680,7 @@ static void canvas_tidy(t_glist *x)
 
 static void canvas_texteditor(t_glist *x)
 {
-    t_rtext *foo;
+    t_boxtext *foo;
     char *buf;
     int bufsize;
     if (foo = x->gl_editor->e_textedfor)
@@ -2707,9 +2707,9 @@ void canvas_editmode(t_glist *x, t_float state)
         t_object *ob;
         canvas_setcursor(x, CURSOR_EDIT_NOTHING);
         for (g = x->gl_list; g; g = g->g_next)
-            if ((ob = canvas_asObjectIfBox(&g->g_pd)) && ob->te_type == TYPE_TEXT)
+            if ((ob = canvas_castToObjectIfBox(&g->g_pd)) && ob->te_type == TYPE_TEXT)
         {
-            t_rtext *y = glist_findrtext(x, ob);
+            t_boxtext *y = glist_findrtext(x, ob);
             text_drawborder(ob, x,
                 rtext_gettag(y), rtext_width(y), rtext_height(y), 1);
         }

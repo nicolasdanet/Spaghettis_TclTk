@@ -24,6 +24,8 @@ struct _widgetbehavior;
 typedef void (*t_savefn)            (t_gobj *x, t_buffer *b);
 typedef void (*t_propertiesfn)      (t_gobj *x, t_glist *glist);
 typedef void (*t_guifn)             (t_gobj *x, t_glist *glist);
+typedef void (*t_keyfn)             (void *z, t_float key);
+typedef void (*t_motionfn)          (void *z, t_float deltaX, t_float deltaY);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -247,7 +249,7 @@ int         outlet_isSignal                             (t_outlet *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        global_new                                  (void *dummy, t_symbol *name, t_symbol *directory);
+void        global_newPatch                             (void *dummy, t_symbol *name, t_symbol *directory);
 void        global_dsp                                  (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void        global_key                                  (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void        global_shouldQuit                           (void *dummy);

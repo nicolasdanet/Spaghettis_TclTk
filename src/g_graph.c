@@ -47,10 +47,10 @@ void glist_add(t_glist *x, t_gobj *y)
         for (y2 = x->gl_list; y2->g_next; y2 = y2->g_next);
         y2->g_next = y;
     }
-    if (x->gl_editor && (ob = canvas_asObjectIfBox(&y->g_pd)))
+    if (x->gl_editor && (ob = canvas_castToObjectIfBox(&y->g_pd)))
         rtext_new(x, ob);
     if (x->gl_editor && x->gl_isgraph && !x->gl_goprect
-        && canvas_asObjectIfBox(&y->g_pd))
+        && canvas_castToObjectIfBox(&y->g_pd))
     {
         x->gl_goprect = 1;
         canvas_drawredrect(x, 1);
@@ -79,7 +79,7 @@ void glist_delete(t_glist *x, t_gobj *y)
     t_object *ob;
     int chkdsp = class_hasMethod (pd_class (&y->g_pd), gensym("dsp"));
     t_glist *canvas = glist_getcanvas(x);
-    t_rtext *rtext = 0;
+    t_boxtext *rtext = 0;
     int drawcommand = class_hasDrawCommand(y->g_pd);
     int wasdeleting;
     
@@ -122,7 +122,7 @@ void glist_delete(t_glist *x, t_gobj *y)
     {
         gobj_vis(y, x, 0);
     }
-    if (x->gl_editor && (ob = canvas_asObjectIfBox(&y->g_pd)))
+    if (x->gl_editor && (ob = canvas_castToObjectIfBox(&y->g_pd)))
         rtext = rtext_new(x, ob);
     if (x->gl_list == y) x->gl_list = y->g_next;
     else for (g = x->gl_list; g; g = g->g_next)
@@ -152,7 +152,7 @@ void glist_clear(t_glist *x)
     {
             /* to avoid unnecessary DSP resorting, we suspend DSP
             only if we hit a patchable object. */
-        if (!suspended && canvas_asObjectIfBox(&y->g_pd) && class_hasMethod (pd_class (&y->g_pd), dspsym))
+        if (!suspended && canvas_castToObjectIfBox(&y->g_pd) && class_hasMethod (pd_class (&y->g_pd), dspsym))
         {
             dspstate = canvas_suspend_dsp();
             suspended = 1;
@@ -170,14 +170,14 @@ void glist_retext(t_glist *glist, t_object *y)
         /* check that we have built rtexts yet.  LATER need a better test. */
     if (glist->gl_editor && glist->gl_editor->e_rtext)
     {
-        t_rtext *rt = glist_findrtext(glist, y);
+        t_boxtext *rt = glist_findrtext(glist, y);
         if (rt)
             rtext_retext(rt);
     }
 }
 
-void glist_grab(t_glist *x, t_gobj *y, t_glistmotionfn motionfn,
-    t_glistkeyfn keyfn, int xpos, int ypos)
+void glist_grab(t_glist *x, t_gobj *y, t_motionfn motionfn,
+    t_keyfn keyfn, int xpos, int ypos)
 {
     t_glist *x2 = glist_getcanvas(x);
     if (motionfn)
@@ -912,7 +912,7 @@ static void graph_getrect(t_gobj *z, t_glist *glist,
                     box.  And ignore "text" objects which aren't shown on 
                     parent */
                 if (pd_class(&g->g_pd) == garray_class ||
-                    canvas_asObjectIfBox(&g->g_pd))
+                    canvas_castToObjectIfBox(&g->g_pd))
                         continue;
                 gobj_getrect(g, x, &x21, &y21, &x22, &y22);
                 if (x22 > x2) 
@@ -951,7 +951,7 @@ static void graph_select(t_gobj *z, t_glist *glist, int state)
         text_widgetBehavior.w_selectfn(z, glist, state);
     else
     {
-        t_rtext *y = glist_findrtext(glist, &x->gl_obj);
+        t_boxtext *y = glist_findrtext(glist, &x->gl_obj);
         if (canvas_showtext(x))
             rtext_select(y, state);
         sys_vGui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 

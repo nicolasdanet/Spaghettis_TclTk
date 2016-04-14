@@ -23,8 +23,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define GLIST_DEFAULT_WIDTH         200
-#define GLIST_DEFAULT_HEIGHT        140
+#define CANVAS_DEFAULT_WIDTH        200
+#define CANVAS_DEFAULT_HEIGHT       140
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -77,9 +77,10 @@
 #pragma mark -
 
 #define CURSOR_NOTHING              0
-#define CURSOR_CLICKME              1
+#define CURSOR_CLICK                1
 #define CURSOR_THICKEN              2
-#define CURSOR_ADDPOINT             3
+#define CURSOR_ADD                  3
+
 #define CURSOR_EDIT_NOTHING         4
 #define CURSOR_EDIT_CONNECT         5
 #define CURSOR_EDIT_DISCONNECT      6
@@ -89,10 +90,10 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define RTEXT_DOWN                  1
-#define RTEXT_DRAG                  2
-#define RTEXT_DBL                   3
-#define RTEXT_SHIFT                 4
+#define BOX_TEXT_DOWN               1
+#define BOX_TEXT_DRAG               2
+#define BOX_TEXT_DOUBLE             3
+#define BOX_TEXT_SHIFT              4
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -106,26 +107,21 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-struct _rtext;
 struct _gtemplate;
 struct _guiconnect;
 struct _canvasenvironment;
-struct _fielddesc;
+struct _fielddescriptor;
+struct _boxtext;
 
-#define t_rtext                     struct _rtext
 #define t_gtemplate                 struct _gtemplate
 #define t_guiconnect                struct _guiconnect
 #define t_canvasenvironment         struct _canvasenvironment
-#define t_fielddesc                 struct _fielddesc
+#define t_fielddescriptor           struct _fielddescriptor
+#define t_boxtext                   struct _boxtext
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-typedef void (*t_glistkeyfn)(void *z, t_float key);
-typedef void (*t_glistmotionfn)(void *z, t_float dx, t_float dy);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 typedef struct _tick {
     t_float     k_point;
@@ -140,12 +136,12 @@ typedef struct _selection {
 
 typedef struct _editor {
     t_selection         *e_updlist;
-    t_rtext             *e_rtext;
+    t_boxtext           *e_rtext;
     t_selection         *e_selection;
-    t_rtext             *e_textedfor;
+    t_boxtext           *e_textedfor;
     t_gobj              *e_grab;
-    t_glistmotionfn     e_motionfn;
-    t_glistkeyfn        e_keyfn;
+    t_motionfn          e_motionfn;
+    t_keyfn             e_keyfn;
     t_buffer            *e_connectbuf;
     t_buffer            *e_deleted;
     t_guiconnect        *e_guiconnect;
@@ -330,9 +326,9 @@ struct _parentwidgetbehavior {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma 
+#pragma mark -
 
-#define canvas_asObjectIfBox(x)     (pd_class (x)->c_isBox ? (t_object *)(x) : NULL)
+#define canvas_castToObjectIfBox(x)     (pd_class (x)->c_isBox ? (t_object *)(x) : NULL)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -380,8 +376,8 @@ void     glist_read             (t_glist *x, t_symbol *filename, t_symbol *forma
 void     glist_mergefile        (t_glist *x, t_symbol *filename, t_symbol *format);
 void     glist_grab             (t_glist *x,
                                     t_gobj *y,
-                                    t_glistmotionfn motionfn,
-                                    t_glistkeyfn keyfn,
+                                    t_motionfn motionfn,
+                                    t_keyfn keyfn,
                                     int xpos,
                                     int ypos);
 
@@ -450,24 +446,24 @@ int  text_ypix          (t_object *x, t_glist *glist);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_rtext  *rtext_new         (t_glist *glist, t_object *who);
-void     rtext_draw         (t_rtext *x);
-void     rtext_erase        (t_rtext *x);
-t_rtext  *rtext_remove      (t_rtext *first, t_rtext *x);
-int      rtext_height       (t_rtext *x);
-void     rtext_displace     (t_rtext *x, int dx, int dy);
-void     rtext_select       (t_rtext *x, int state);
-void     rtext_activate     (t_rtext *x, int state);
-void     rtext_free         (t_rtext *x);
-void     rtext_key          (t_rtext *x, int n, t_symbol *s);
-void     rtext_mouse        (t_rtext *x, int xval, int yval, int flag);
-void     rtext_retext       (t_rtext *x);
-int      rtext_width        (t_rtext *x);
-int      rtext_height       (t_rtext *x);
-char     *rtext_gettag      (t_rtext *x);
-void     rtext_gettext      (t_rtext *x, char **buf, int *bufsize);
-void     rtext_getseltext   (t_rtext *x, char **buf, int *bufsize);
-t_rtext  *glist_findrtext   (t_glist *gl, t_object *who);
+t_boxtext  *rtext_new         (t_glist *glist, t_object *who);
+void     rtext_draw         (t_boxtext *x);
+void     rtext_erase        (t_boxtext *x);
+t_boxtext  *rtext_remove      (t_boxtext *first, t_boxtext *x);
+int      rtext_height       (t_boxtext *x);
+void     rtext_displace     (t_boxtext *x, int dx, int dy);
+void     rtext_select       (t_boxtext *x, int state);
+void     rtext_activate     (t_boxtext *x, int state);
+void     rtext_free         (t_boxtext *x);
+void     rtext_key          (t_boxtext *x, int n, t_symbol *s);
+void     rtext_mouse        (t_boxtext *x, int xval, int yval, int flag);
+void     rtext_retext       (t_boxtext *x);
+int      rtext_width        (t_boxtext *x);
+int      rtext_height       (t_boxtext *x);
+char     *rtext_gettag      (t_boxtext *x);
+void     rtext_gettext      (t_boxtext *x, char **buf, int *bufsize);
+void     rtext_getseltext   (t_boxtext *x, char **buf, int *bufsize);
+t_boxtext  *glist_findrtext   (t_glist *gl, t_object *who);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -642,9 +638,9 @@ void array_getcoordinate        (t_glist *glist,
                                     t_float basex,
                                     t_float basey,
                                     t_float xinc,
-                                    t_fielddesc *xfielddesc,
-                                    t_fielddesc *yfielddesc,
-                                    t_fielddesc *wfielddesc,
+                                    t_fielddescriptor *xfielddesc,
+                                    t_fielddescriptor *yfielddesc,
+                                    t_fielddescriptor *wfielddesc,
                                     t_float *xp,
                                     t_float *yp,
                                     t_float *wp);
@@ -653,9 +649,9 @@ int array_getfields             (t_symbol *elemtemplatesym,
                                     t_glist **elemtemplatecanvasp,
                                     t_template **elemtemplatep,
                                     int *elemsizep,
-                                    t_fielddesc *xfielddesc,
-                                    t_fielddesc *yfielddesc,
-                                    t_fielddesc *wfielddesc, 
+                                    t_fielddescriptor *xfielddesc,
+                                    t_fielddescriptor *yfielddesc,
+                                    t_fielddescriptor *wfielddesc, 
                                     int *xonsetp,
                                     int *yonsetp, 
                                     int *wonsetp);
@@ -686,10 +682,10 @@ void         template_setfloat      (t_template *x, t_symbol *fieldname, t_word 
 t_symbol     *template_getsymbol    (t_template *x, t_symbol *fieldname, t_word *wp, int loud);
 void         template_setsymbol     (t_template *x, t_symbol *fieldname, t_word *wp, t_symbol *s, int loud);
 
-t_float      fielddesc_getcoord     (t_fielddesc *f, t_template *tmpl, t_word *wp, int loud);
-void         fielddesc_setcoord     (t_fielddesc *f, t_template *tmpl, t_word *wp, t_float pix, int loud);
-t_float      fielddesc_cvttocoord   (t_fielddesc *f, t_float val);
-t_float      fielddesc_cvtfromcoord (t_fielddesc *f, t_float coord);
+t_float      fielddesc_getcoord     (t_fielddescriptor *f, t_template *tmpl, t_word *wp, int loud);
+void         fielddesc_setcoord     (t_fielddescriptor *f, t_template *tmpl, t_word *wp, t_float pix, int loud);
+t_float      fielddesc_cvttocoord   (t_fielddescriptor *f, t_float val);
+t_float      fielddesc_cvtfromcoord (t_fielddescriptor *f, t_float coord);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

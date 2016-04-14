@@ -355,6 +355,67 @@ void iemgui_boxChanged (void *x, t_iem *iem)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* Trampoline fun. */
+
+void iemstub_send (void *x, t_symbol *s)
+{
+    iemgui_setSend (x, cast_iem (x), s);
+}
+
+void iemstub_receive (void *x, t_symbol *s)
+{
+    iemgui_setReceive (x, cast_iem (x), s);
+}
+
+void iemstub_label (void *x, t_symbol *s)
+{
+    iemgui_setLabel (x, cast_iem (x), s);
+}
+
+void iemstub_labelPosition (void *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_setLabelPosition (x, cast_iem (x), s, argc, argv);
+}
+
+void iemstub_labelFont (void *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_setLabelFont (x, cast_iem (x), s, argc, argv);
+}
+
+void iemstub_backgroundColor (void *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_setBackgroundColor (x, cast_iem (x), s, argc, argv);
+}
+
+void iemstub_foregroundColor (void *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_setForegroundColor (x, cast_iem (x), s, argc, argv);
+}
+
+void iemstub_labelColor (void *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_setLabelColor (x, cast_iem (x), s, argc, argv);
+}
+
+void iemstub_position (void *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_setPosition (x, cast_iem (x), s, argc, argv);
+}
+
+void iemstub_move (void *x, t_symbol *s, int argc, t_atom *argv)
+{
+    iemgui_movePosition (x, cast_iem (x), s, argc, argv);
+}
+
+void iemstub_dummy (void *x, t_symbol *s, int argc, t_atom *argv)
+{
+    /* Dummy. */
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void iemgui_behaviorDisplace (t_gobj *z, t_glist *glist, int deltaX, int deltaY)
 {
     t_iem *x = cast_iem (z);

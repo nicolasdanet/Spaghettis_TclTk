@@ -56,7 +56,6 @@
 /* Graphics. */
 
 #include "g_iem.c"
-#include "g_stub.c"
 #include "g_bang.c"
 #include "g_toggle.c"
 #include "g_radio.c"

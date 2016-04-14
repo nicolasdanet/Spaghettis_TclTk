@@ -699,7 +699,7 @@ want to cache the offset of the field so we don't have to search for it
 every single time we draw the object.
 */
 
-struct _fielddesc
+struct _fielddescriptor
 {
     char fd_type;       /* LATER consider removing this? */
     char fd_var;
@@ -716,7 +716,7 @@ struct _fielddesc
     float fd_quantum;   /* quantization in value */ 
 };
 
-static void fielddesc_setfloat_const(t_fielddesc *fd, t_float f)
+static void fielddesc_setfloat_const(t_fielddescriptor *fd, t_float f)
 {
     fd->fd_type = A_FLOAT;
     fd->fd_var = 0;
@@ -725,7 +725,7 @@ static void fielddesc_setfloat_const(t_fielddesc *fd, t_float f)
         fd->fd_quantum = 0;
 }
 
-static void fielddesc_setsymbol_const(t_fielddesc *fd, t_symbol *s)
+static void fielddesc_setsymbol_const(t_fielddescriptor *fd, t_symbol *s)
 {
     fd->fd_type = A_SYMBOL;
     fd->fd_var = 0;
@@ -734,7 +734,7 @@ static void fielddesc_setsymbol_const(t_fielddesc *fd, t_symbol *s)
         fd->fd_quantum = 0;
 }
 
-static void fielddesc_setfloat_var(t_fielddesc *fd, t_symbol *s)
+static void fielddesc_setfloat_var(t_fielddescriptor *fd, t_symbol *s)
 {
     char *s1, *s2, *s3, strbuf[PD_STRING];
     int i;
@@ -791,7 +791,7 @@ static void fielddesc_setfloat_var(t_fielddesc *fd, t_symbol *s)
 #define NOMOUSE 4
 #define A_ARRAY 55      /* LATER decide whether to enshrine this in m_pd.h */
 
-static void fielddesc_setfloatarg(t_fielddesc *fd, int argc, t_atom *argv)
+static void fielddesc_setfloatarg(t_fielddescriptor *fd, int argc, t_atom *argv)
 {
         if (argc <= 0) fielddesc_setfloat_const(fd, 0);
         else if (argv->a_type == A_SYMBOL)
@@ -799,7 +799,7 @@ static void fielddesc_setfloatarg(t_fielddesc *fd, int argc, t_atom *argv)
         else fielddesc_setfloat_const(fd, argv->a_w.w_float);
 }
 
-static void fielddesc_setsymbolarg(t_fielddesc *fd, int argc, t_atom *argv)
+static void fielddesc_setsymbolarg(t_fielddescriptor *fd, int argc, t_atom *argv)
 {
         if (argc <= 0) fielddesc_setsymbol_const(fd, &s_);
         else if (argv->a_type == A_SYMBOL)
@@ -813,7 +813,7 @@ static void fielddesc_setsymbolarg(t_fielddesc *fd, int argc, t_atom *argv)
         else fielddesc_setsymbol_const(fd, &s_);
 }
 
-static void fielddesc_setarrayarg(t_fielddesc *fd, int argc, t_atom *argv)
+static void fielddesc_setarrayarg(t_fielddescriptor *fd, int argc, t_atom *argv)
 {
         if (argc <= 0) fielddesc_setfloat_const(fd, 0);
         else if (argv->a_type == A_SYMBOL)
@@ -827,7 +827,7 @@ static void fielddesc_setarrayarg(t_fielddesc *fd, int argc, t_atom *argv)
 
     /* getting and setting values via fielddescs -- note confusing names;
     the above are setting up the fielddesc itself. */
-static t_float fielddesc_getfloat(t_fielddesc *f, t_template *template,
+static t_float fielddesc_getfloat(t_fielddescriptor *f, t_template *template,
     t_word *wp, int loud)
 {
     if (f->fd_type == A_FLOAT)
@@ -845,7 +845,7 @@ static t_float fielddesc_getfloat(t_fielddesc *f, t_template *template,
 }
 
     /* convert a variable's value to a screen coordinate via its fielddesc */
-t_float fielddesc_cvttocoord(t_fielddesc *f, t_float val)
+t_float fielddesc_cvttocoord(t_fielddescriptor *f, t_float val)
 {
     t_float coord, pix, extreme, div;
     if (f->fd_v2 == f->fd_v1)
@@ -864,7 +864,7 @@ t_float fielddesc_cvttocoord(t_fielddesc *f, t_float val)
 }
 
     /* read a variable via fielddesc and convert to screen coordinate */
-t_float fielddesc_getcoord(t_fielddesc *f, t_template *template,
+t_float fielddesc_getcoord(t_fielddescriptor *f, t_template *template,
     t_word *wp, int loud)
 {
     if (f->fd_type == A_FLOAT)
@@ -885,7 +885,7 @@ t_float fielddesc_getcoord(t_fielddesc *f, t_template *template,
     }
 }
 
-static t_symbol *fielddesc_getsymbol(t_fielddesc *f, t_template *template,
+static t_symbol *fielddesc_getsymbol(t_fielddescriptor *f, t_template *template,
     t_word *wp, int loud)
 {
     if (f->fd_type == A_SYMBOL)
@@ -903,7 +903,7 @@ static t_symbol *fielddesc_getsymbol(t_fielddesc *f, t_template *template,
 }
 
     /* convert from a screen coordinate to a variable value */
-t_float fielddesc_cvtfromcoord(t_fielddesc *f, t_float coord)
+t_float fielddesc_cvtfromcoord(t_fielddescriptor *f, t_float coord)
 {
     t_float val;
     if (f->fd_screen2 == f->fd_screen1)
@@ -925,7 +925,7 @@ t_float fielddesc_cvtfromcoord(t_fielddesc *f, t_float coord)
     return (val);
  }
 
-void fielddesc_setcoord(t_fielddesc *f, t_template *template,
+void fielddesc_setcoord(t_fielddescriptor *f, t_template *template,
     t_word *wp, t_float coord, int loud)
 {
     if (f->fd_type == A_FLOAT && f->fd_var)
@@ -955,12 +955,12 @@ typedef struct _curve
 {
     t_object x_obj;
     int x_flags;            /* CLOSED and/or BEZ and/or NOMOUSE */
-    t_fielddesc x_fillcolor;
-    t_fielddesc x_outlinecolor;
-    t_fielddesc x_width;
-    t_fielddesc x_vis;
+    t_fielddescriptor x_fillcolor;
+    t_fielddescriptor x_outlinecolor;
+    t_fielddescriptor x_width;
+    t_fielddescriptor x_vis;
     int x_npoints;
-    t_fielddesc *x_vec;
+    t_fielddescriptor *x_vec;
     t_glist *x_canvas;
 } t_curve;
 
@@ -970,7 +970,7 @@ static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
     char *classname = classsym->s_name;
     int flags = 0;
     int nxy, i;
-    t_fielddesc *fd;
+    t_fielddescriptor *fd;
     x->x_canvas = canvas_getcurrent();
     if (classname[0] == 'f')
     {
@@ -1006,7 +1006,7 @@ static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
     if (argc < 0) argc = 0;
     nxy =  (argc + (argc & 1));
     x->x_npoints = (nxy>>1);
-    x->x_vec = (t_fielddesc *)PD_MEMORY_GET(nxy * sizeof(t_fielddesc));
+    x->x_vec = (t_fielddescriptor *)PD_MEMORY_GET(nxy * sizeof(t_fielddescriptor));
     for (i = 0, fd = x->x_vec; i < argc; i++, fd++, argv++)
         fielddesc_setfloatarg(fd, 1, argv);
     if (argc & 1) fielddesc_setfloat_const(fd, 0);
@@ -1039,7 +1039,7 @@ static void curve_getrect(t_gobj *z, t_glist *glist,
 {
     t_curve *x = (t_curve *)z;
     int i, n = x->x_npoints;
-    t_fielddesc *f = x->x_vec;
+    t_fielddescriptor *f = x->x_vec;
     int x1 = 0x7fffffff, x2 = -0x7fffffff, y1 = 0x7fffffff, y2 = -0x7fffffff;
     if (!fielddesc_getfloat(&x->x_vis, template, data, 0) ||
         (x->x_flags & NOMOUSE))
@@ -1121,7 +1121,7 @@ static void curve_vis(t_gobj *z, t_glist *glist,
 {
     t_curve *x = (t_curve *)z;
     int i, n = x->x_npoints;
-    t_fielddesc *f = x->x_vec;
+    t_fielddescriptor *f = x->x_vec;
     
         /* see comment in plot_vis() */
     if (vis && !fielddesc_getfloat(&x->x_vis, template, data, 0))
@@ -1198,7 +1198,7 @@ static t_gpointer curve_motion_gpointer;
 static void curve_motion(void *z, t_float dx, t_float dy)
 {
     t_curve *x = (t_curve *)z;
-    t_fielddesc *f = x->x_vec + curve_motion_field;
+    t_fielddescriptor *f = x->x_vec + curve_motion_field;
     t_atom at;
     if (!gpointer_check(&curve_motion_gpointer, 0))
     {
@@ -1238,7 +1238,7 @@ static int curve_click(t_gobj *z, t_glist *glist,
     int i, n = x->x_npoints;
     int bestn = -1;
     int besterror = 0x7fffffff;
-    t_fielddesc *f;
+    t_fielddescriptor *f;
     if (!fielddesc_getfloat(&x->x_vis, template, data, 0))
         return (0);
     for (i = 0, f = x->x_vec; i < n; i++, f += 2)
@@ -1328,18 +1328,18 @@ typedef struct _plot
 {
     t_object x_obj;
     t_glist *x_canvas;
-    t_fielddesc x_outlinecolor;
-    t_fielddesc x_width;
-    t_fielddesc x_xloc;
-    t_fielddesc x_yloc;
-    t_fielddesc x_xinc;
-    t_fielddesc x_style;
-    t_fielddesc x_data;
-    t_fielddesc x_xpoints;
-    t_fielddesc x_ypoints;
-    t_fielddesc x_wpoints;
-    t_fielddesc x_vis;          /* visible */
-    t_fielddesc x_scalarvis;    /* true if drawing the scalar at each point */
+    t_fielddescriptor x_outlinecolor;
+    t_fielddescriptor x_width;
+    t_fielddescriptor x_xloc;
+    t_fielddescriptor x_yloc;
+    t_fielddescriptor x_xinc;
+    t_fielddescriptor x_style;
+    t_fielddescriptor x_data;
+    t_fielddescriptor x_xpoints;
+    t_fielddescriptor x_ypoints;
+    t_fielddescriptor x_wpoints;
+    t_fielddescriptor x_vis;          /* visible */
+    t_fielddescriptor x_scalarvis;    /* true if drawing the scalar at each point */
 } t_plot;
 
 static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
@@ -1434,7 +1434,7 @@ static int plot_readownertemplate(t_plot *x,
     t_symbol **elemtemplatesymp, t_array **arrayp,
     t_float *linewidthp, t_float *xlocp, t_float *xincp, t_float *ylocp, t_float *stylep,
     t_float *visp, t_float *scalarvisp,
-    t_fielddesc **xfield, t_fielddesc **yfield, t_fielddesc **wfield)
+    t_fielddescriptor **xfield, t_fielddescriptor **yfield, t_fielddescriptor **wfield)
 {
     int arrayonset, type;
     t_symbol *elemtemplatesym;
@@ -1478,7 +1478,7 @@ static int plot_readownertemplate(t_plot *x,
 int array_getfields(t_symbol *elemtemplatesym,
     t_glist **elemtemplatecanvasp,
     t_template **elemtemplatep, int *elemsizep,
-    t_fielddesc *xfielddesc, t_fielddesc *yfielddesc, t_fielddesc *wfielddesc, 
+    t_fielddescriptor *xfielddesc, t_fielddescriptor *yfielddesc, t_fielddescriptor *wfielddesc, 
     int *xonsetp, int *yonsetp, int *wonsetp)
 {
     int arrayonset, elemsize, yonset, wonset, xonset, type;
@@ -1545,7 +1545,7 @@ static void plot_getrect(t_gobj *z, t_glist *glist,
     int x1 = 0x7fffffff, y1 = 0x7fffffff, x2 = -0x7fffffff, y2 = -0x7fffffff;
     int i;
     t_float xpix, ypix, wpix;
-    t_fielddesc *xfielddesc, *yfielddesc, *wfielddesc;
+    t_fielddescriptor *xfielddesc, *yfielddesc, *wfielddesc;
         /* if we're the only plot in the glist claim the whole thing */
     if (glist->gl_list && !glist->gl_list->g_next)
     {
@@ -1659,7 +1659,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
     t_array *array;
     int nelem;
     char *elem;
-    t_fielddesc *xfielddesc, *yfielddesc, *wfielddesc;
+    t_fielddescriptor *xfielddesc, *yfielddesc, *wfielddesc;
         /* even if the array is "invisible", if its visibility is
         set by an instance variable you have to explicitly erase it,
         because the flag could earlier have been on when we were getting
@@ -1926,8 +1926,8 @@ static void plot_vis(t_gobj *z, t_glist *glist,
 
 static t_float array_motion_xcumulative;
 static t_float array_motion_ycumulative;
-static t_fielddesc *array_motion_xfield;
-static t_fielddesc *array_motion_yfield;
+static t_fielddescriptor *array_motion_xfield;
+static t_fielddescriptor *array_motion_yfield;
 static t_glist *array_motion_glist;
 static t_scalar *array_motion_scalar;
 static t_array *array_motion_array;
@@ -2032,7 +2032,7 @@ static int array_doclick_element(t_array *array, t_glist *glist,
     t_scalar *sc, t_array *ap,
     t_symbol *elemtemplatesym,
     t_float linewidth, t_float xloc, t_float xinc, t_float yloc,
-    t_fielddesc *xfield, t_fielddesc *yfield, t_fielddesc *wfield,
+    t_fielddescriptor *xfield, t_fielddescriptor *yfield, t_fielddescriptor *wfield,
     int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
     t_glist *elemtemplatecanvas;
@@ -2073,7 +2073,7 @@ static int array_doclick_element(t_array *array, t_glist *glist,
 static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
     t_array *ap, t_symbol *elemtemplatesym,
     t_float linewidth, t_float xloc, t_float xinc, t_float yloc, t_float scalarvis,
-    t_fielddesc *xfield, t_fielddesc *yfield, t_fielddesc *wfield,
+    t_fielddescriptor *xfield, t_fielddescriptor *yfield, t_fielddescriptor *wfield,
     int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
     t_glist *elemtemplatecanvas;
@@ -2268,10 +2268,10 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                     {
                         if (xpix < pxpix)
                             return (CURSOR_EDIT_DISCONNECT);
-                        else return (CURSOR_ADDPOINT);
+                        else return (CURSOR_ADD);
                     }
                     else return (array_motion_fatten ?
-                        CURSOR_THICKEN : CURSOR_CLICKME);
+                        CURSOR_THICKEN : CURSOR_CLICK);
                 }
             }   
         }
@@ -2288,7 +2288,7 @@ static int plot_click(t_gobj *z, t_glist *glist,
     t_symbol *elemtemplatesym;
     t_float linewidth, xloc, xinc, yloc, style, vis, scalarvis;
     t_array *array;
-    t_fielddesc *xfielddesc, *yfielddesc, *wfielddesc;
+    t_fielddescriptor *xfielddesc, *yfielddesc, *wfielddesc;
 
     if (!plot_readownertemplate(x, data, template, 
         &elemtemplatesym, &array, &linewidth, &xloc, &xinc, &yloc, &style,
@@ -2337,10 +2337,10 @@ typedef struct _drawnumber
 {
     t_object x_obj;
     t_symbol *x_fieldname;
-    t_fielddesc x_xloc;
-    t_fielddesc x_yloc;
-    t_fielddesc x_color;
-    t_fielddesc x_vis;
+    t_fielddescriptor x_xloc;
+    t_fielddescriptor x_yloc;
+    t_fielddescriptor x_color;
+    t_fielddescriptor x_vis;
     t_symbol *x_label;
     t_glist *x_canvas;
 } t_drawnumber;

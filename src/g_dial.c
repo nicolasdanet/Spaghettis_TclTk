@@ -375,7 +375,7 @@ static void dial_list (t_dial *x, t_symbol *s, int argc, t_atom *argv)
 
 static void dial_click (t_dial *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
 {
-    glist_grab (x->x_gui.iem_glist, cast_gobj (x), (t_glistmotionfn)dial_motion, NULL, a, b);
+    glist_grab (x->x_gui.iem_glist, cast_gobj (x), (t_motionfn)dial_motion, NULL, a, b);
 }
 
 static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY)

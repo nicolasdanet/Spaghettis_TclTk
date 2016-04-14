@@ -404,7 +404,7 @@ static void slider_click (t_slider *x, t_float a, t_float b, t_float shift, t_fl
     
     slider_out (x);
     
-    glist_grab (x->x_gui.iem_glist, cast_gobj (x), (t_glistmotionfn)slider_motion, NULL, a, b);
+    glist_grab (x->x_gui.iem_glist, cast_gobj (x), (t_motionfn)slider_motion, NULL, a, b);
 }
 
 static void slider_motion (t_slider *x, t_float deltaX, t_float deltaY)
