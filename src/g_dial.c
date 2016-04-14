@@ -84,9 +84,10 @@ static int dial_getNeedleAngle (t_dial *x)
 
 static void dial_setString (t_dial *x)
 {
-    int size = PD_MIN (x->x_digitsNumber + 1, IEM_DIAL_BUFFER_LENGTH);
-    t_error err = string_sprintf (x->x_t, size, "%f", x->x_floatValue);
-    PD_ASSERT (!err); 
+    t_error err = string_sprintf (x->x_t, IEM_DIAL_BUFFER_LENGTH, "%f", x->x_floatValue);
+    PD_ASSERT (!err);
+    PD_ASSERT (x->x_digitsNumber < IEM_DIAL_BUFFER_LENGTH);
+    x->x_t[x->x_digitsNumber] = 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -427,7 +428,7 @@ static void dial_dialog (t_dial *x, t_symbol *s, int argc, t_atom *argv)
     
     x->x_gui.iem_height = PD_MAX (height, IEM_MINIMUM_HEIGHT);
     x->x_isLogarithmic  = (isLogarithmic != 0);
-    x->x_digitsNumber   = PD_MAX (digits, 1);
+    x->x_digitsNumber   = PD_CLAMP (digits, 1, IEM_DIAL_BUFFER_LENGTH - 1);
     x->x_steps          = PD_MAX (steps, 1);
     x->x_position       = PD_MIN (x->x_position, x->x_steps);
     
@@ -450,7 +451,7 @@ static void dial_size (t_dial *x, t_symbol *s, int argc, t_atom *argv)
     //
     int digits = (int)atom_getFloatAtIndex (0, argc, argv);
 
-    x->x_digitsNumber = PD_MAX (digits, 1);
+    x->x_digitsNumber = PD_CLAMP (digits, 1, IEM_DIAL_BUFFER_LENGTH - 1);
     
     if (argc > 1) {
         int height = (int)atom_getFloatAtIndex (1, argc, argv);
@@ -690,7 +691,7 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
         
     x->x_isLogarithmic  = (isLogarithmic != 0);
     x->x_steps          = PD_MAX (steps, 1);
-    x->x_digitsNumber   = PD_MAX (digits, 1);
+    x->x_digitsNumber   = PD_CLAMP (digits, 1, IEM_DIAL_BUFFER_LENGTH - 1);
     
     dial_setRange (x, minimum, maximum);
     
