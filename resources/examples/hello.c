@@ -27,26 +27,14 @@ typedef struct _hello {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void *hello_new (void);
-void hello_bang (t_hello *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 static t_class *hello_class;
 
-PD_STUB void hello_setup (t_symbol *s)       /* MUST be the name of the file with _setup appended. */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void hello_bang (t_hello *x)
 {
-    t_class *c = NULL;
-    
-    /* MUST contains (at least) a class with the file name. */
-    
-    c = class_new (gensym ("hello"), hello_new, NULL, sizeof (t_hello), CLASS_BOX, A_NULL); 
-    
-    class_addBang (c, (t_method)hello_bang); 
-    
-    hello_class = c;
+    post ("Hello world!");
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -60,9 +48,21 @@ void *hello_new (void)
     return x;
 }
 
-void hello_bang (t_hello *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+PD_STUB void hello_setup (t_symbol *s)       /* MUST be the name of the file with _setup appended. */
 {
-    post ("Hello world!");
+    t_class *c = NULL;
+    
+    /* MUST contains (at least) a class with the file name. */
+    
+    c = class_new (gensym ("hello"), hello_new, NULL, sizeof (t_hello), CLASS_BOX, A_NULL); 
+    
+    class_addBang (c, (t_method)hello_bang); 
+    
+    hello_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

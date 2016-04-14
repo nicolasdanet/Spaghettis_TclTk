@@ -34,21 +34,26 @@ typedef struct _hello {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void *hello_new         (void);
 void hello_initialize   (void) __attribute__ ((constructor));
 void hello_release      (void) __attribute__ ((destructor));
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static t_class *hello_class;
 
-PD_STUB void helloRelease_setup (t_symbol *s)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void hello_initialize (void) 
 {
-    int flags = CLASS_BOX | CLASS_NOINLET;
-    
-    hello_class = class_new (gensym ("helloRelease"), hello_new, NULL, sizeof (t_hello), flags, A_NULL);
+    post_log ("'- Clean up your room!'");       /* Before the first instantiation. */
+}
+
+void hello_release (void) 
+{
+    post_log ("'- Tomorrow?'");                 /* While application quitting. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -64,14 +69,11 @@ void *hello_new (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void hello_initialize (void) 
+PD_STUB void helloRelease_setup (t_symbol *s)
 {
-    post_log ("'- Clean up your room!'");       /* Before the first instantiation. */
-}
-
-void hello_release (void) 
-{
-    post_log ("'- Tomorrow?'");                 /* While application quitting. */
+    int flags = CLASS_BOX | CLASS_NOINLET;
+    
+    hello_class = class_new (gensym ("helloRelease"), hello_new, NULL, sizeof (t_hello), flags, A_NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------

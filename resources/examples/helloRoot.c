@@ -25,24 +25,8 @@ typedef struct _hello {
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void *hello_new (void);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 static t_class *hello_class;
-
-PD_STUB void helloRoot_setup (t_symbol *s)
-{
-    int flags = CLASS_BOX | CLASS_NOINLET;      /* Avoid the default inlet. */
-    
-    hello_class = class_new (gensym ("helloRoot"), hello_new, NULL, sizeof (t_hello), flags, A_NULL);
-    
-    post ("My name is '%s'", s->s_name);        /* Absolute path of the external. */
-}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -51,6 +35,19 @@ PD_STUB void helloRoot_setup (t_symbol *s)
 void *hello_new (void)
 {
     return pd_new (hello_class);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+PD_STUB void helloRoot_setup (t_symbol *s)
+{
+    int flags = CLASS_BOX | CLASS_NOINLET;      /* Avoid the default inlet. */
+    
+    hello_class = class_new (gensym ("helloRoot"), hello_new, NULL, sizeof (t_hello), flags, A_NULL);
+    
+    post ("My name is '%s'", s->s_name);        /* Absolute path of the external. */
 }
 
 // -----------------------------------------------------------------------------------------------------------
