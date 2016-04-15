@@ -49,50 +49,38 @@ static t_gfxstub    *gfxstub_list;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-    /* this is called when the clock times out to indicate the GUI should
-    be gone by now. */
-static void guiconnect_tick(t_guiconnect *x)
+static void guiconnect_task (t_guiconnect *x)
 {
-    pd_free(&x->x_obj.te_g.g_pd);
+    pd_free (cast_pd (x));
 }
 
-    /* the target calls this to disconnect.  If the gui has "signed off"
-    we're ready to delete the object; otherwise we wait either for signoff
-    or for a timeout. */
-void guiconnect_notarget(t_guiconnect *x, double timedelay)
+void guiconnect_release (t_guiconnect *x, double timeOut)
 {
-    if (!x->x_bound)
-        pd_free(&x->x_obj.te_g.g_pd);
-    else
-    {
-        x->x_owner = 0;
-        if (timedelay > 0)
-        {
-            x->x_clock = clock_new(x, (t_method)guiconnect_tick);
-            clock_delay(x->x_clock, timedelay);
+    if (!x->x_bound) { pd_free (cast_pd (x)); }
+    else {
+        x->x_owner = NULL;
+        
+        if (timeOut > 0) {
+            x->x_clock = clock_new (x, (t_method)guiconnect_task);
+            clock_delay (x->x_clock, timeOut);
         }
     }    
 }
 
-    /* the GUI calls this to send messages to the target. */
-static void guiconnect_anything(t_guiconnect *x,
-    t_symbol *s, int ac, t_atom *av)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void guiconnect_anything (t_guiconnect *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->x_owner)
-        pd_message(x->x_owner, s, ac, av);
+    if (x->x_owner) { pd_message (x->x_owner, s, argc, argv); }
 }
 
-    /* the GUI calls this when it disappears.  (If there's any chance the
-    GUI will fail to do this, the "target", when it signs off, should specify
-    a timeout after which the guiconnect will disappear.) */
-static void guiconnect_signoff(t_guiconnect *x)
+static void guiconnect_signoff (t_guiconnect *x)
 {
-    if (!x->x_owner)
-        pd_free(&x->x_obj.te_g.g_pd);
-    else
-    {
-        pd_unbind(&x->x_obj.te_g.g_pd, x->x_bound);
-        x->x_bound = 0;
+    if (!x->x_owner) { pd_free (cast_pd (x)); }
+    else {
+        pd_unbind (cast_pd (x), x->x_bound); x->x_bound = NULL;
     }
 }
 
@@ -100,14 +88,17 @@ static void guiconnect_signoff(t_guiconnect *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_guiconnect *guiconnect_new (t_pd *owner, t_symbol *bound)
+t_guiconnect *guiconnect_new (t_pd *owner, t_symbol *bindTo)
 {
     t_guiconnect *x = (t_guiconnect *)pd_new (guiconnect_class);
     
-    x->x_owner = owner;
-    x->x_bound = bound;
+    PD_ASSERT (owner);
+    PD_ASSERT (bindTo);
     
-    pd_bind (cast_pd (x), bound);
+    x->x_owner = owner;
+    x->x_bound = bindTo;
+    
+    pd_bind (cast_pd (x), x->x_bound);
     
     return x;
 }

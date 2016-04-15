@@ -257,9 +257,9 @@ typedef struct _linetraverser {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_guiconnect    *guiconnect_new            (t_pd *owner, t_symbol *bound);
+t_guiconnect    *guiconnect_new             (t_pd *owner, t_symbol *bindTo);
 
-void            guiconnect_notarget        (t_guiconnect *x, double timedelay);
+void            guiconnect_release          (t_guiconnect *x, double timeOut);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

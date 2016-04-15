@@ -928,7 +928,7 @@ static t_editor *editor_new(t_glist *owner)
 static void editor_free(t_editor *x, t_glist *y)
 {
     glist_noselect(y);
-    guiconnect_notarget(x->e_guiconnect, 1000);
+    guiconnect_release(x->e_guiconnect, 1000);
     buffer_free(x->e_connectbuf);
     buffer_free(x->e_deleted);
     if (x->e_clock)

@@ -86,7 +86,7 @@ static void textbuf_close(t_textbuf *x)
     sys_vGui("::ui_text::release .x%lx\n", x);
     if (x->b_guiconnect)
     {
-        guiconnect_notarget(x->b_guiconnect, 1000);
+        guiconnect_release(x->b_guiconnect, 1000);
         x->b_guiconnect = 0;
     }    
 }
@@ -181,7 +181,7 @@ static void textbuf_free(t_textbuf *x)
     if (x->b_guiconnect)
     {
         sys_vGui("destroy .x%lx\n", x);
-        guiconnect_notarget(x->b_guiconnect, 1000);
+        guiconnect_release(x->b_guiconnect, 1000);
     }
         /* just in case we're still bound to #A from loading... */
     while (x2 = pd_findByClass(gensym("#A"), text_define_class))

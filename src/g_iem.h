@@ -144,7 +144,7 @@ typedef struct _iem {
 #pragma mark -
 
 typedef struct _bng {
-    t_iem       x_gui;
+    t_iem       x_gui;                          /* MUST be the first. */
     int         x_flashed;
     int         x_flashTimeBreak;
     int         x_flashTimeHold;
