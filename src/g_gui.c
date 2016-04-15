@@ -17,6 +17,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define GUISTUB_STRING     4096
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 struct _guiconnect
 {
     t_object        x_obj;
@@ -37,13 +43,14 @@ typedef struct _guistub
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_class      *guistub_class;
-static t_class      *guiconnect_class;
+static t_class      *guistub_class;             /* Shared. */
+static t_class      *guiconnect_class;          /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_guistub    *guistub_list;
+static t_buffer     *guistub_buffer;            /* Shared. */
+static t_guistub    *guistub_list;              /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -187,23 +194,23 @@ static void guistub_signoff(t_guistub *x)
     pd_free(&x->x_pd);
 }
 
-static t_buffer *guistub_binbuf;
+
 
     /* a series of "data" messages rebuilds a scalar */
 static void guistub_data(t_guistub *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (!guistub_binbuf)
-        guistub_binbuf = buffer_new();
-    buffer_append(guistub_binbuf, argc, argv);
-    buffer_appendSemicolon(guistub_binbuf);
+    if (!guistub_buffer)
+        guistub_buffer = buffer_new();
+    buffer_append(guistub_buffer, argc, argv);
+    buffer_appendSemicolon(guistub_buffer);
 }
     /* the "end" message terminates rebuilding the scalar */
 static void guistub_end(t_guistub *x)
 {
     canvas_dataproperties((t_glist *)x->x_owner,
-        (t_scalar *)x->x_key, guistub_binbuf);
-    buffer_free(guistub_binbuf);
-    guistub_binbuf = 0;
+        (t_scalar *)x->x_key, guistub_buffer);
+    buffer_free(guistub_buffer);
+    guistub_buffer = 0;
 }
 
     /* anything else is a message from the dialog window to the owner;
@@ -218,47 +225,54 @@ static void guistub_anything(t_guistub *x, t_symbol *s, int argc, t_atom *argv)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* < http://stackoverflow.com/questions/1860159/how-to-escape-the-sign-in-cs-printf > */
+
 void guistub_new (t_pd *owner, void *key, const char *cmd)
 {
-    char buf[4*PD_STRING];
-    char namebuf[80];
-    char sprintfbuf[PD_STRING];
-    char *afterpercent;
-    t_int afterpercentlen;
-    t_guistub *x;
-    t_symbol *s;
-        /* if any exists with matching key, burn it. */
-    for (x = guistub_list; x; x = x->x_next)
-        if (x->x_key == key)
-            guistub_deleteforkey(key);
-    if (strlen(cmd) + 50 > 4*PD_STRING)
-    {
-        PD_BUG;
-        return;
-    }
-    x = (t_guistub *)pd_new(guistub_class);
-    sprintf(namebuf, ".guistub%lx", (t_int)x);
+    t_symbol *s  = NULL;
+    t_guistub *x = NULL;
+    char name[PD_STRING] = { 0 };
+        
+    for (x = guistub_list; x; x = x->x_next) { if (x->x_key == key) { guistub_deleteforkey (key); } }
+    
+    x = (t_guistub *)pd_new (guistub_class);
+    string_sprintf (name, PD_STRING, ".guistub%lx", (t_int)x);
+    s = gensym (name);
+    
+    x->x_owner  = owner;
+    x->x_bound  = s;
+    x->x_key    = key;
+    x->x_next   = guistub_list;
 
-    s = gensym(namebuf);
-    pd_bind(&x->x_pd, s);
-    x->x_owner = owner;
-    x->x_bound = s;
-    x->x_key = key;
-    x->x_next = guistub_list;
     guistub_list = x;
-    /* only replace first %s so sprintf() doesn't crash */
-    afterpercent = strchr(cmd, '%') + 2;
-    afterpercentlen = afterpercent - cmd;
-    strncpy(sprintfbuf, cmd, afterpercentlen);
-    sprintfbuf[afterpercentlen] = '\0';
-    sprintf(buf, sprintfbuf, s->s_name);
-    strncat(buf, afterpercent, (4*PD_STRING) - afterpercentlen);
-    sys_gui(buf);
+    
+    pd_bind (cast_pd (x), s);
+        
+    {
+    //
+    char *afterFirstSubstitution = strchr (cmd, '%') + 2;
+
+    if (afterFirstSubstitution == NULL) { PD_BUG; }
+    else {
+        t_error err = PD_ERROR_NONE;
+        char t[PD_STRING] = { 0 };
+        char m[GUISTUB_STRING] = { 0 };
+            
+        err |= string_append (t, PD_STRING, cmd, (int)(afterFirstSubstitution - cmd));
+        err |= string_sprintf (m, GUISTUB_STRING, t, s->s_name);
+        err |= string_add (m, GUISTUB_STRING, afterFirstSubstitution);
+
+        PD_ASSERT (!err);
+        
+        sys_gui (m); 
+    }
+    //
+    }
 }
 
-static void guistub_free(t_guistub *x)
+static void guistub_free (t_guistub *x)
 {
-    pd_unbind(&x->x_pd, x->x_bound);
+    pd_unbind (cast_pd (x), x->x_bound);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -72,9 +72,9 @@ static void slider_motion   (t_slider *x, t_float deltaX, t_float deltaY);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_widgetbehavior slider_widgetBehavior;
+static t_widgetbehavior slider_widgetBehavior;      /* Shared. */
 
-static t_class *slider_class;
+static t_class *slider_class;                       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -50,9 +50,9 @@ static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_widgetbehavior dial_widgetBehavior;
+static t_widgetbehavior dial_widgetBehavior;        /* Shared. */
 
-static t_class *dial_class;
+static t_class *dial_class;                         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

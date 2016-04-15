@@ -125,9 +125,9 @@ static inline int vu_offsetWithStep (t_vu *x, int step)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_widgetbehavior vu_widgetBehavior;
+static t_widgetbehavior vu_widgetBehavior;      /* Shared. */
 
-static t_class *vu_class;
+static t_class *vu_class;                       /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
