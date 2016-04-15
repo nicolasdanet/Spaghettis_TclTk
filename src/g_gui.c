@@ -93,7 +93,6 @@ static void guiconnect_signoff (t_guiconnect *x)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 t_guiconnect *guiconnect_new (t_pd *owner, t_symbol *bindTo)
 {
@@ -157,10 +156,6 @@ static void guistub_removeFromList (t_guistub *x)
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void guistub_destroyWithKey (void *key)
 {
     t_guistub *y = NULL;
@@ -199,13 +194,6 @@ static void guistub_end (t_guistub *x)
     guistub_buffer = NULL;
 }
 
-static void guistub_cancel (t_guistub *x)
-{
-    PD_BUG;     /* Deprecated. */
-    
-    guistub_destroyWithKey (x->x_key);
-}
-
 static void guistub_signoff (t_guistub *x)
 {
     guistub_removeFromList (x);
@@ -214,7 +202,6 @@ static void guistub_signoff (t_guistub *x)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 /* < http://stackoverflow.com/questions/1860159/how-to-escape-the-sign-in-cs-printf > */
 
@@ -287,7 +274,6 @@ void guistub_setup (void)
 
     class_addMethod (c, (t_method)guistub_data,     gensym ("data"),    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)guistub_end,      gensym ("end"),     A_NULL);
-    class_addMethod (c, (t_method)guistub_cancel,   gensym ("cancel"),  A_NULL);
     class_addMethod (c, (t_method)guistub_signoff,  gensym ("signoff"), A_NULL);
     
     guistub_class = c;
