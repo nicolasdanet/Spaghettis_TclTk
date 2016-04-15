@@ -63,7 +63,7 @@ void x_midi_setup           (void);
 void x_misc_setup           (void);
 void x_net_setup            (void);
 void x_qlist_setup          (void);
-void gfxstub_setup          (void);
+void guistub_setup          (void);
 void x_gui_setup            (void);
 void x_list_setup           (void);
 void x_scalar_setup         (void);
@@ -119,7 +119,7 @@ void setup_initialize (void)
     x_misc_setup();
     x_net_setup();
     x_qlist_setup();
-    gfxstub_setup();
+    guistub_setup();
     x_gui_setup();
     x_list_setup();
     x_scalar_setup();

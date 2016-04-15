@@ -270,17 +270,17 @@ void        iemgui_boxChanged                   (void *x, t_iem *iem);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        iemstub_send                        (void *x, t_symbol *s);
-void        iemstub_receive                     (void *x, t_symbol *s);
-void        iemstub_label                       (void *x, t_symbol *s);
-void        iemstub_labelPosition               (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemstub_labelFont                   (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemstub_backgroundColor             (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemstub_foregroundColor             (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemstub_labelColor                  (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemstub_position                    (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemstub_move                        (void *x, t_symbol *s, int argc, t_atom *argv);
-void        iemstub_dummy                       (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemjump_send                        (void *x, t_symbol *s);
+void        iemjump_receive                     (void *x, t_symbol *s);
+void        iemjump_label                       (void *x, t_symbol *s);
+void        iemjump_labelPosition               (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemjump_labelFont                   (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemjump_backgroundColor             (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemjump_foregroundColor             (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemjump_labelColor                  (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemjump_position                    (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemjump_move                        (void *x, t_symbol *s, int argc, t_atom *argv);
+void        iemjump_dummy                       (void *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

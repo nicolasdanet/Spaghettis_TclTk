@@ -272,7 +272,7 @@ static void garray_fittograph(t_garray *x, int n, int style)
             glist_redraw(gl);
         }*/
             /* close any dialogs that might have the wrong info now... */
-        gfxstub_deleteforkey(gl);
+        guistub_deleteforkey(gl);
     }
 }
 
@@ -364,7 +364,7 @@ void canvas_menuarray(t_glist *canvas)
             break;
     }
     sprintf(cmdbuf, "::ui_array::show %%s array%d 100 3\n", gcount);
-    gfxstub_new(&x->gl_obj.te_g.g_pd, x, cmdbuf);
+    guistub_new(&x->gl_obj.te_g.g_pd, x, cmdbuf);
 }
 
     /* called from graph_dialog to set properties */
@@ -380,14 +380,14 @@ void garray_properties(t_garray *x)
 
     if (!a)
         return;
-    gfxstub_deleteforkey(x);
+    guistub_deleteforkey(x);
         /* create dialog window.  LATER fix this to escape '$'
         properly; right now we just detect a leading '$' and escape
         it.  There should be a systematic way of doing this. */
     sprintf(cmdbuf, "::ui_array::show %%s %s %d %d\n",
             dollar_toRaute(x->x_name)->s_name, a->a_n, x->x_saveit + 
             2 * filestyle);
-    gfxstub_new(&x->x_gobj.g_pd, x, cmdbuf);
+    guistub_new(&x->x_gobj.g_pd, x, cmdbuf);
 }
 
     /* this is called back from the dialog window to create a garray. 
@@ -502,7 +502,7 @@ void garray_arrayviewlist_new(t_garray *x)
             "::ui_array::pdtk_array_listview_new %%s %s %d\n",
             x->x_realname->s_name,
             0);
-    gfxstub_new(&x->x_gobj.g_pd, x, cmdbuf);
+    guistub_new(&x->x_gobj.g_pd, x, cmdbuf);
     for (i = 0; i < ARRAYPAGESIZE && i < a->a_n; i++)
     {
         yval = *(t_float *)(a->a_vec +
@@ -582,7 +582,7 @@ static void garray_free(t_garray *x)
         // garray_arrayviewlist_close(x);
     }
     /* } jsarlo */
-    gfxstub_deleteforkey(x);
+    guistub_deleteforkey(x);
     pd_unbind(&x->x_gobj.g_pd, x->x_realname);
         /* just in case we're still bound to #A from loading... */
     while (x2 = pd_findByClass(gensym("#A"), garray_class))

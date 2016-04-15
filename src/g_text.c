@@ -964,7 +964,7 @@ static void gatom_free(t_gatom *x)
     if (*x->a_symfrom->s_name)
         pd_unbind(&x->a_text.te_g.g_pd,
             canvas_realizedollar(x->a_glist, x->a_symfrom));
-    gfxstub_deleteforkey(x);
+    guistub_deleteforkey(x);
 }
 
 static void gatom_properties(t_gobj *z, t_glist *owner)
@@ -977,7 +977,7 @@ static void gatom_properties(t_gobj *z, t_glist *owner)
                 gatom_escapit(x->a_symfrom)->s_name,
                 gatom_escapit(x->a_label)->s_name, 
                 x->a_wherelabel);
-    gfxstub_new(&x->a_text.te_g.g_pd, x, buf);
+    guistub_new(&x->a_text.te_g.g_pd, x, buf);
 }
 
 

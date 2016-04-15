@@ -293,7 +293,7 @@ void glist_mergefile(t_glist *x, t_symbol *filename, t_symbol *format)
     glist_doread(x, filename, format, 0);
 }
 
-    /* read text from a "properties" window, called from a gfxstub set
+    /* read text from a "properties" window, called from a guistub set
     up in scalar_properties().  We try to restore the object; if successful
     we either copy the data from the new scalar to the old one in place
     (if their templates match) or else delete the old scalar and put the new

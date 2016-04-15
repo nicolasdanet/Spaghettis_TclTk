@@ -1114,7 +1114,7 @@ void canvas_properties(t_gobj*z, t_glist*unused)
                 0., 1., 1., -1., 
                 (int)x->gl_pixwidth, (int)x->gl_pixheight,
                 (int)x->gl_xmargin, (int)x->gl_ymargin);
-    gfxstub_new(&x->gl_obj.te_g.g_pd, x, graphbuf);
+    guistub_new(&x->gl_obj.te_g.g_pd, x, graphbuf);
         /* if any arrays are in the graph, put out their dialogs too */
     for (y = x->gl_list; y; y = y->g_next)
         if (pd_class(&y->g_pd) == garray_class) 
@@ -2062,9 +2062,9 @@ static void canvas_menufont(t_glist *x)
 {
 /*  char buf[80];
     t_glist *x2 = canvas_getroot(x);
-    gfxstub_deleteforkey(x2);
+    guistub_deleteforkey(x2);
     sprintf(buf, "pdtk_canvas_dofont %%s %d\n", x2->gl_font);
-    gfxstub_new(&x2->gl_obj.te_g.g_pd, &x2->gl_obj.te_g.g_pd, buf); */
+    guistub_new(&x2->gl_obj.te_g.g_pd, &x2->gl_obj.te_g.g_pd, buf); */
 }
 
 static int canvas_find_index, canvas_find_wholeword;

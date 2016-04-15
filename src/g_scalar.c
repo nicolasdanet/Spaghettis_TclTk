@@ -404,7 +404,7 @@ static void scalar_properties(t_gobj *z, struct _glist *owner)
     buf = PD_MEMORY_RESIZE(buf, bufsize, bufsize+1);
     buf[bufsize] = 0;
     sprintf(buf2, "::ui_data::show %%s {");
-    gfxstub_new((t_pd *)owner, x, buf2);
+    guistub_new((t_pd *)owner, x, buf2);
     sys_gui(buf);
     sys_gui("}\n");
     PD_MEMORY_FREE(buf);
@@ -433,7 +433,7 @@ static void scalar_free(t_scalar *x)
         return;
     }
     word_free(x->sc_vector, template);
-    gfxstub_deleteforkey(x);
+    guistub_deleteforkey(x);
         /* the "size" field in the class is zero, so Pd doesn't try to free
         us automatically (see pd_free()) */
     PD_MEMORY_FREE(x);

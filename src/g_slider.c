@@ -625,7 +625,7 @@ static void slider_behaviorProperties (t_gobj *z, t_glist *owner)
     
     PD_ASSERT (!err);
     
-    gfxstub_new (cast_pd (x), (void *)x, t);
+    guistub_new (cast_pd (x), (void *)x, t);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -736,7 +736,7 @@ static void slider_free (t_slider *x)
 {
     if (x->x_gui.iem_canReceive) { pd_unbind (cast_object (x), x->x_gui.iem_receive); }
         
-    gfxstub_deleteforkey ((void *)x);
+    guistub_deleteforkey ((void *)x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -766,30 +766,30 @@ void slider_setup (void)
     class_addMethod (c, (t_method)slider_initialize,        gensym ("initialize"),      A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)slider_dialog,            gensym ("dialog"),          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_size,              gensym ("size"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_move,             gensym ("move"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_position,         gensym ("position"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_labelFont,        gensym ("labelfont"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_labelPosition,    gensym ("labelposition"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_backgroundColor,  gensym ("backgroundcolor"), A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_foregroundColor,  gensym ("foregroundcolor"), A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_move,             gensym ("move"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_position,         gensym ("position"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelFont,        gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelPosition,    gensym ("labelposition"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_backgroundColor,  gensym ("backgroundcolor"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_foregroundColor,  gensym ("foregroundcolor"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_range,             gensym ("range"),           A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_set,               gensym ("set"),             A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)slider_steady,            gensym ("steady"),          A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)slider_logarithmic,       gensym ("logarithmic"),     A_NULL);
     class_addMethod (c, (t_method)slider_linear,            gensym ("linear"),          A_NULL);
-    class_addMethod (c, (t_method)iemstub_send,             gensym ("send"),            A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)iemstub_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)iemstub_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemjump_send,             gensym ("send"),            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemjump_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemjump_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
     
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)slider_initialize,        gensym ("init"),            A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)iemstub_move,             gensym ("delta"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_position,         gensym ("pos"),             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_dummy,            gensym ("color"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_move,             gensym ("delta"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_position,         gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_dummy,            gensym ("color"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_logarithmic,       gensym ("log"),             A_NULL);
     class_addMethod (c, (t_method)slider_linear,            gensym ("lin"),             A_NULL);
     

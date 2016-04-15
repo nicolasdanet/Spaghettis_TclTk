@@ -748,7 +748,7 @@ void canvas_free(t_glist *x)
     PD_MEMORY_FREE(x->gl_xlabel);
     PD_MEMORY_FREE(x->gl_ylabel);
     gstub_cutoff(x->gl_stub);
-    gfxstub_deleteforkey(x);        /* probably unnecessary */
+    guistub_deleteforkey(x);        /* probably unnecessary */
     if (!x->gl_owner)
         canvas_takeofflist(x);
 }

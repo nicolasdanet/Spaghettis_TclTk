@@ -431,7 +431,7 @@ static void bng_behaviorProperties (t_gobj *z, t_glist *owner)
 
     PD_ASSERT (!err);
     
-    gfxstub_new (cast_pd (x), (void *)x, t);
+    guistub_new (cast_pd (x), (void *)x, t);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -516,7 +516,7 @@ static void bng_free (t_bng *x)
     clock_free (x->x_clockBreak);
     clock_free (x->x_clockHold);
     
-    gfxstub_deleteforkey ((void *)x);
+    guistub_deleteforkey ((void *)x);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -548,25 +548,25 @@ void bng_setup (void)
     class_addMethod (c, (t_method)bng_dialog,               gensym ("dialog"),          A_GIMME, A_NULL);
     class_addMethod (c, (t_method)bng_size,                 gensym ("size"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)bng_flashtime,            gensym ("flashtime"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_move,             gensym ("move"),            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_position,         gensym ("position"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_labelFont,        gensym ("labelfont"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_labelPosition,    gensym ("labelposition"),   A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_backgroundColor,  gensym ("backgroundcolor"), A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_foregroundColor,  gensym ("foregroundcolor"), A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_send,             gensym ("send"),            A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)iemstub_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
-    class_addMethod (c, (t_method)iemstub_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemjump_move,             gensym ("move"),            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_position,         gensym ("position"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelFont,        gensym ("labelfont"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelPosition,    gensym ("labelposition"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_backgroundColor,  gensym ("backgroundcolor"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_foregroundColor,  gensym ("foregroundcolor"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_send,             gensym ("send"),            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemjump_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemjump_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
        
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)bng_initialize,           gensym ("init"),            A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)iemstub_move,             gensym ("delta"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_position,         gensym ("pos"),             A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_dummy,            gensym ("color"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)iemstub_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_move,             gensym ("delta"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_position,         gensym ("pos"),             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_dummy,            gensym ("color"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)iemjump_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
 
     #endif
     

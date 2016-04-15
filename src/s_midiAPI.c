@@ -252,11 +252,26 @@ void midi_requireDialog (void *dummy)
 
     err = string_sprintf (t, PD_STRING,
         "::ui_midi::show %%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",  // --
-            i1, i2, i3, i4, i5, i6, i7, i8, o1, o2, o3, o4, o5, o6, o7, o8);
+            i1,
+            i2,
+            i3,
+            i4,
+            i5,
+            i6,
+            i7,
+            i8,
+            o1,
+            o2,
+            o3,
+            o4,
+            o5,
+            o6,
+            o7,
+            o8);
                 
     if (!err) {
-        gfxstub_deleteforkey (NULL);
-        gfxstub_new (&global_object, (void *)midi_requireDialog, t);
+        guistub_deleteforkey (NULL);
+        guistub_new (&global_object, (void *)midi_requireDialog, t);
     }
     //
     }

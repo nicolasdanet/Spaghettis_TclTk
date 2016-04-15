@@ -430,8 +430,8 @@ void audio_requireDialog (void *dummy)
         canMultiple);
         
     if (!err) {
-        gfxstub_deleteforkey (NULL);
-        gfxstub_new (&global_object, (void *)audio_requireDialog, t);
+        guistub_deleteforkey (NULL);
+        guistub_new (&global_object, (void *)audio_requireDialog, t);
     }
     //
     }
