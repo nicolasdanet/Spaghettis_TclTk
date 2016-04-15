@@ -142,83 +142,74 @@ void guiconnect_setup (void)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void guistub_offlist(t_guistub *x)
+static void guistub_removeFromList (t_guistub *x)
 {
-    t_guistub *y1, *y2;
-    if (guistub_list == x)
-        guistub_list = x->x_next;
-    else for (y1 = guistub_list; y2 = y1->x_next; y1 = y2)
-        if (y2 == x) 
-    {
-        y1->x_next = y2->x_next;
-        break;
-    }
-}
-
-    /* if the owner disappears, we still may have to stay around until our
-    dialog window signs off.  Anyway we can now tell the GUI to destroy the
-    window.  */
-void guistub_deleteforkey(void *key)
-{
-    t_guistub *y;
-    int didit = 1;
-    while (didit)
-    {
-        didit = 0;
-        for (y = guistub_list; y; y = y->x_next)
-        {
-            if (y->x_key == key)
-            {
-                sys_vGui("destroy .guistub%lx\n", y);
-                y->x_owner = 0;
-                guistub_offlist(y);
-                didit = 1;
-                break;
+    t_guistub *y1 = NULL;
+    t_guistub *y2 = NULL;
+    
+    if (guistub_list == x) { guistub_list = x->x_next; }
+    else {
+        for (y1 = guistub_list; y2 = y1->x_next; y1 = y2) {
+            if (y2 == x) { 
+                y1->x_next = y2->x_next; break; 
             }
         }
     }
 }
 
-/* --------- pd messages for guistub (these come from the GUI) ---------- */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-    /* "cancel" to request that we close the dialog window. */
-static void guistub_cancel(t_guistub *x)
+void guistub_destroyWithKey (void *key)
 {
-    guistub_deleteforkey(x->x_key);
+    t_guistub *y = NULL;
+    
+    for (y = guistub_list; y; y = y->x_next) {
+        if (y->x_key == key) {
+            sys_vGui ("destroy .guistub%lx\n", (t_int)y);
+            y->x_owner = NULL;
+            guistub_removeFromList (y);
+            pd_free (cast_pd (y));
+            break;
+        }
+    }
 }
 
-    /* "signoff" comes from the GUI to say the dialog window closed. */
-static void guistub_signoff(t_guistub *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void guistub_anything (t_guistub *x, t_symbol *s, int argc, t_atom *argv)
 {
-    guistub_offlist(x);
-    pd_free(&x->x_pd);
+    if (x->x_owner) { pd_message (x->x_owner, s, argc, argv); }
 }
 
-
-
-    /* a series of "data" messages rebuilds a scalar */
-static void guistub_data(t_guistub *x, t_symbol *s, int argc, t_atom *argv)
+static void guistub_data (t_guistub *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (!guistub_buffer)
-        guistub_buffer = buffer_new();
-    buffer_append(guistub_buffer, argc, argv);
-    buffer_appendSemicolon(guistub_buffer);
-}
-    /* the "end" message terminates rebuilding the scalar */
-static void guistub_end(t_guistub *x)
-{
-    canvas_dataproperties((t_glist *)x->x_owner,
-        (t_scalar *)x->x_key, guistub_buffer);
-    buffer_free(guistub_buffer);
-    guistub_buffer = 0;
+    if (!guistub_buffer) { guistub_buffer = buffer_new(); }
+    buffer_append (guistub_buffer, argc, argv);
+    buffer_appendSemicolon (guistub_buffer);
 }
 
-    /* anything else is a message from the dialog window to the owner;
-    just forward it. */
-static void guistub_anything(t_guistub *x, t_symbol *s, int argc, t_atom *argv)
+static void guistub_end (t_guistub *x)
 {
-    if (x->x_owner)
-        pd_message(x->x_owner, s, argc, argv);
+    canvas_dataproperties (cast_glist (x->x_owner), cast_scalar (x->x_key), guistub_buffer);
+    buffer_free (guistub_buffer);
+    guistub_buffer = NULL;
+}
+
+static void guistub_cancel (t_guistub *x)
+{
+    PD_BUG;     /* Deprecated. */
+    
+    guistub_destroyWithKey (x->x_key);
+}
+
+static void guistub_signoff (t_guistub *x)
+{
+    guistub_removeFromList (x);
+    pd_free (cast_pd (x));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -232,8 +223,10 @@ void guistub_new (t_pd *owner, void *key, const char *cmd)
     t_symbol *s  = NULL;
     t_guistub *x = NULL;
     char name[PD_STRING] = { 0 };
-        
-    for (x = guistub_list; x; x = x->x_next) { if (x->x_key == key) { guistub_deleteforkey (key); } }
+    
+    PD_ASSERT (key != NULL);
+    
+    guistub_destroyWithKey (key);                   /* Destroy already allocated stub with an equal key. */
     
     x = (t_guistub *)pd_new (guistub_class);
     string_sprintf (name, PD_STRING, ".guistub%lx", (t_int)x);
@@ -291,12 +284,12 @@ void guistub_setup (void)
         A_NULL);
         
     class_addAnything (c, guistub_anything);
-    
-    class_addMethod (c, (t_method)guistub_signoff,  gensym ("signoff"), A_NULL);
+
     class_addMethod (c, (t_method)guistub_data,     gensym ("data"),    A_GIMME, A_NULL);
     class_addMethod (c, (t_method)guistub_end,      gensym ("end"),     A_NULL);
     class_addMethod (c, (t_method)guistub_cancel,   gensym ("cancel"),  A_NULL);
-        
+    class_addMethod (c, (t_method)guistub_signoff,  gensym ("signoff"), A_NULL);
+    
     guistub_class = c;
 }
 

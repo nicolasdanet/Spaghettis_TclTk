@@ -2062,7 +2062,7 @@ static void canvas_menufont(t_glist *x)
 {
 /*  char buf[80];
     t_glist *x2 = canvas_getroot(x);
-    guistub_deleteforkey(x2);
+    guistub_destroyWithKey(x2);
     sprintf(buf, "pdtk_canvas_dofont %%s %d\n", x2->gl_font);
     guistub_new(&x2->gl_obj.te_g.g_pd, &x2->gl_obj.te_g.g_pd, buf); */
 }

@@ -34,7 +34,7 @@ proc show {top} {
 
 proc release {top} {
 
-    destroy $top; ::ui_interface::pdsend "$top signoff"
+    ::cancel $top
 }
 
 # ------------------------------------------------------------------------------------------------------------

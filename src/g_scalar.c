@@ -433,7 +433,7 @@ static void scalar_free(t_scalar *x)
         return;
     }
     word_free(x->sc_vector, template);
-    guistub_deleteforkey(x);
+    guistub_destroyWithKey(x);
         /* the "size" field in the class is zero, so Pd doesn't try to free
         us automatically (see pd_free()) */
     PD_MEMORY_FREE(x);

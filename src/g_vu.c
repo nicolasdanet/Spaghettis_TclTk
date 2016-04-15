@@ -629,7 +629,7 @@ static void vu_free (t_vu *x)
 {
     if (x->x_gui.iem_canReceive) { pd_unbind (cast_object (x), x->x_gui.iem_receive); }
         
-    guistub_deleteforkey ((void *)x);
+    guistub_destroyWithKey ((void *)x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

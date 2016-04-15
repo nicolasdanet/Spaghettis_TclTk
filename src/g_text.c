@@ -964,7 +964,7 @@ static void gatom_free(t_gatom *x)
     if (*x->a_symfrom->s_name)
         pd_unbind(&x->a_text.te_g.g_pd,
             canvas_realizedollar(x->a_glist, x->a_symfrom));
-    guistub_deleteforkey(x);
+    guistub_destroyWithKey(x);
 }
 
 static void gatom_properties(t_gobj *z, t_glist *owner)

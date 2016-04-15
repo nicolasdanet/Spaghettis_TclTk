@@ -225,7 +225,7 @@ void        sys_vGui                                    (char *format, ...);
 #pragma mark -
 
 void        guistub_new                                 (t_pd *owner, void *key, const char *cmd);
-void        guistub_deleteforkey                        (void *key);
+void        guistub_destroyWithKey                      (void *key);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -516,7 +516,7 @@ static void bng_free (t_bng *x)
     clock_free (x->x_clockBreak);
     clock_free (x->x_clockHold);
     
-    guistub_deleteforkey ((void *)x);
+    guistub_destroyWithKey ((void *)x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

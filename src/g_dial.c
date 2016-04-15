@@ -709,7 +709,7 @@ static void dial_free (t_dial *x)
 {
     if (x->x_gui.iem_canReceive) { pd_unbind (cast_object (x), x->x_gui.iem_receive); }
     
-    guistub_deleteforkey ((void *)x);
+    guistub_destroyWithKey ((void *)x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

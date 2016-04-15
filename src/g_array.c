@@ -272,7 +272,7 @@ static void garray_fittograph(t_garray *x, int n, int style)
             glist_redraw(gl);
         }*/
             /* close any dialogs that might have the wrong info now... */
-        guistub_deleteforkey(gl);
+        guistub_destroyWithKey(gl);
     }
 }
 
@@ -380,7 +380,7 @@ void garray_properties(t_garray *x)
 
     if (!a)
         return;
-    guistub_deleteforkey(x);
+    guistub_destroyWithKey(x);
         /* create dialog window.  LATER fix this to escape '$'
         properly; right now we just detect a leading '$' and escape
         it.  There should be a systematic way of doing this. */
@@ -582,7 +582,7 @@ static void garray_free(t_garray *x)
         // garray_arrayviewlist_close(x);
     }
     /* } jsarlo */
-    guistub_deleteforkey(x);
+    guistub_destroyWithKey(x);
     pd_unbind(&x->x_gobj.g_pd, x->x_realname);
         /* just in case we're still bound to #A from loading... */
     while (x2 = pd_findByClass(gensym("#A"), garray_class))

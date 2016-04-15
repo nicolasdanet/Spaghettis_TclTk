@@ -270,7 +270,6 @@ void midi_requireDialog (void *dummy)
             o8);
                 
     if (!err) {
-        guistub_deleteforkey (NULL);
         guistub_new (&global_object, (void *)midi_requireDialog, t);
     }
     //
