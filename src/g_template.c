@@ -558,7 +558,7 @@ static void *gtemplate_donew(t_symbol *sym, int argc, t_atom *argv)
     t_template *t = template_findbyname(sym);
     int i;
     t_symbol *sx = gensym("x");
-    x->x_owner = canvas_getcurrent();
+    x->x_owner = canvas_getCurrent();
     x->x_next = 0;
     x->x_sym = sym;
     x->x_argc = argc;
@@ -625,7 +625,7 @@ static void *gtemplate_new(t_symbol *s, int argc, t_atom *argv)
     /* old version (0.34) -- delete 2003 or so */
 static void *gtemplate_new_old(t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *sym = canvas_makebindsym(canvas_getcurrent()->gl_name);
+    t_symbol *sym = canvas_makebindsym(canvas_getCurrent()->gl_name);
     static int warned;
     if (!warned)
     {
@@ -971,7 +971,7 @@ static void *curve_new(t_symbol *classsym, int argc, t_atom *argv)
     int flags = 0;
     int nxy, i;
     t_fielddescriptor *fd;
-    x->x_canvas = canvas_getcurrent();
+    x->x_canvas = canvas_getCurrent();
     if (classname[0] == 'f')
     {
         classname += 6;
@@ -1346,7 +1346,7 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
 {
     t_plot *x = (t_plot *)pd_new(plot_class);
     int defstyle = PLOT_POLYGONS;
-    x->x_canvas = canvas_getcurrent();
+    x->x_canvas = canvas_getCurrent();
 
     fielddesc_setfloat_var(&x->x_xpoints, gensym("x"));
     fielddesc_setfloat_var(&x->x_ypoints, gensym("y"));
@@ -2351,7 +2351,7 @@ static void *drawnumber_new(t_symbol *classsym, int argc, t_atom *argv)
     char *classname = classsym->s_name;
 
     fielddesc_setfloat_const(&x->x_vis, 1);
-    x->x_canvas = canvas_getcurrent();
+    x->x_canvas = canvas_getCurrent();
     while (1)
     {
         t_symbol *firstarg = atom_getSymbolAtIndex(0, argc, argv);

@@ -87,7 +87,7 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 /* ----------------- the "object" object.  ------------------ */
 
 extern t_pd *pd_newest;
-void canvas_getargs(int *argcp, t_atom **argvp);
+void canvas_getArguments(int *argcp, t_atom **argvp);
 
 static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
     int selected, t_buffer *b)
@@ -96,8 +96,9 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
     int argc;
     t_atom *argv;
     pd_newest = 0;
-    canvas_setcurrent((t_glist *)gl);
-    canvas_getargs(&argc, &argv);
+    //canvas_setCurrent((t_glist *)gl);
+    stack_push (cast_pd (gl));
+    canvas_getArguments(&argc, &argv);
     buffer_eval(b, &pd_objectMaker, argc, argv);
     if (buffer_size(b))
     {
@@ -136,7 +137,8 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
         canvas_resortinlets(glist_getcanvas(gl));
     if (pd_class((t_pd *)x) == voutlet_class)
         canvas_resortoutlets(glist_getcanvas(gl));
-    canvas_unsetcurrent((t_glist *)gl);
+    //canvas_unsetCurrent((t_glist *)gl);
+    stack_pop (cast_pd (gl));
 }
 
     /* utility routine to figure out where to put a new text box from menu

@@ -484,7 +484,7 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
         iemgui_deserializeNamesByIndex (&x->x_gui, 4, NULL);
     }
 
-    x->x_gui.iem_glist      = (t_glist *)canvas_getcurrent();
+    x->x_gui.iem_glist      = (t_glist *)canvas_getCurrent();
     x->x_gui.iem_draw       = (t_iemfn)bng_draw;
     x->x_gui.iem_canSend    = (x->x_gui.iem_send == iemgui_empty()) ? 0 : 1;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;

@@ -152,14 +152,14 @@ static void new_anything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 
     pd_newest = NULL;
     
-    if (loader_loadExternal (canvas_getcurrent(), s->s_name)) {
+    if (loader_loadExternal (canvas_getCurrent(), s->s_name)) {
         message_recursiveDepth++;
         pd_message (x, s, argc, argv);
         message_recursiveDepth--;
         return;
     }
     
-    err = (f = canvas_open (canvas_getcurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING, 0)) < 0;
+    err = (f = canvas_open (canvas_getCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING, 0)) < 0;
     
     if (err) { pd_newest = NULL; }
     else {
@@ -171,13 +171,13 @@ static void new_anything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         
     } else {
         t_pd *t = s__X.s_thing;
-        canvas_setargs (argc, argv);
+        canvas_setArguments (argc, argv);
         buffer_evalFile (gensym (name), gensym (directory));
         if (s__X.s_thing && t != s__X.s_thing) { canvas_popabstraction ((t_glist *)(s__X.s_thing)); }
         else { 
             s__X.s_thing = t; 
         }
-        canvas_setargs (0, NULL);
+        canvas_setArguments (0, NULL);
     }
     //
     }

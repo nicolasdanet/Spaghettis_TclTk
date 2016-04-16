@@ -27,7 +27,7 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_atom a[9];
     t_glist *gl;
-    t_glist *x, *z = canvas_getcurrent();
+    t_glist *x, *z = canvas_getCurrent();
     t_symbol *templatesym = &s_float, *asym = gensym("#A");
     t_template *template;
     t_scalar *sc;

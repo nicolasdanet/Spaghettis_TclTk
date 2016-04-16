@@ -134,7 +134,7 @@ typedef struct _namecanvas
 static void *namecanvas_new(t_symbol *s)
 {
     t_namecanvas *x = (t_namecanvas *)pd_new(namecanvas_class);
-    x->x_owner = (t_pd *)canvas_getcurrent();
+    x->x_owner = (t_pd *)canvas_getCurrent();
     x->x_sym = s;
     if (*s->s_name) pd_bind(x->x_owner, s);
     return (x);

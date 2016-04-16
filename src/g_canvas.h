@@ -257,21 +257,27 @@ typedef struct _linetraverser {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_guiconnect    *guiconnect_new             (t_pd *owner, t_symbol *bindTo);
+t_guiconnect    *guiconnect_new                 (t_pd *owner, t_symbol *bindTo);
 
-void            guiconnect_release          (t_guiconnect *x, double timeOut);
+void            guiconnect_release              (t_guiconnect *x, double timeOut);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void            canvas_newPatch                 (void *dummy, t_symbol *name, t_symbol *directory);
+void            canvas_setFileNameAndDirectory  (t_symbol *name, t_symbol *directory);
+void            canvas_setArguments             (int argc, t_atom *argv);
+void            canvas_getArguments             (int *argc, t_atom **argv);
+
+t_glist         *canvas_getCurrent              (void);
+
 void            canvas_reflecttitle         (t_glist *x);
 void            canvas_setcursor            (t_glist *x, unsigned int cursornum);
 
-void            canvas_setargs              (int argc, t_atom *argv);
-void            canvas_getargs              (int *argcp, t_atom **argvp);
+
 void            canvas_makefilename         (t_glist *c, char *file, char *result, int resultsize);
-t_glist         *canvas_getcurrent          (void);
+
 t_symbol        *canvas_getdir              (t_glist *x);
 
 void            canvas_dataproperties       (t_glist *x, t_scalar *sc, t_buffer *b);
@@ -436,14 +442,10 @@ void     canvas_redrawallfortemplate        (t_template *tmpl, int action);
 void     canvas_redrawallfortemplatecanvas  (t_glist *x, int action);
 void     canvas_zapallfortemplate           (t_glist *tmpl);
 void     canvas_setusedastemplate           (t_glist *x);
-t_glist *canvas_getcurrent                 (void);
-void     canvas_setcurrent                  (t_glist *x);
-void     canvas_unsetcurrent                (t_glist *x);
 t_symbol *canvas_realizedollar              (t_glist *x, t_symbol *s);
 t_glist *canvas_getroot                    (t_glist *x);
 void     canvas_dirty                       (t_glist *x, t_float n);
 int      canvas_getfont                     (t_glist *x);
-
 void     canvas_resortinlets            (t_glist *x);
 void     canvas_resortoutlets           (t_glist *x);
 void     canvas_free                    (t_glist *x);

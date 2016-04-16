@@ -45,7 +45,7 @@ typedef struct _vinlet
 static void *vinlet_new(t_symbol *s)
 {
     t_vinlet *x = (t_vinlet *)pd_new(vinlet_class);
-    x->x_canvas = canvas_getcurrent();
+    x->x_canvas = canvas_getCurrent();
     x->x_inlet = canvas_addinlet(x->x_canvas, &x->x_obj.te_g.g_pd, 0);
     x->x_bufsize = 0;
     x->x_buf = 0;
@@ -252,7 +252,7 @@ void vinlet_dspprolog(struct _vinlet *x, t_signal **parentsigs,
 static void *vinlet_newsig(t_symbol *s)
 {
     t_vinlet *x = (t_vinlet *)pd_new(vinlet_class);
-    x->x_canvas = canvas_getcurrent();
+    x->x_canvas = canvas_getCurrent();
     x->x_inlet = canvas_addinlet(x->x_canvas, &x->x_obj.te_g.g_pd, &s_signal);
     x->x_endbuf = x->x_buf = (t_float *)PD_MEMORY_GET(0);
     x->x_bufsize = 0;
@@ -322,7 +322,7 @@ typedef struct _voutlet
 static void *voutlet_new(t_symbol *s)
 {
     t_voutlet *x = (t_voutlet *)pd_new(voutlet_class);
-    x->x_canvas = canvas_getcurrent();
+    x->x_canvas = canvas_getCurrent();
     x->x_parentoutlet = canvas_addoutlet(x->x_canvas, &x->x_obj.te_g.g_pd, 0);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, 0, 0);
     x->x_bufsize = 0;
@@ -571,7 +571,7 @@ void voutlet_dspepilog(struct _voutlet *x, t_signal **parentsigs,
 static void *voutlet_newsig(t_symbol *s)
 {
     t_voutlet *x = (t_voutlet *)pd_new(voutlet_class);
-    x->x_canvas = canvas_getcurrent();
+    x->x_canvas = canvas_getCurrent();
     x->x_parentoutlet = canvas_addoutlet(x->x_canvas,
         &x->x_obj.te_g.g_pd, &s_signal);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);

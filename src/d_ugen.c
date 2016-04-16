@@ -1150,7 +1150,7 @@ static void *samplerate_tilde_new(t_symbol *s)
 {
     t_samplerate *x = (t_samplerate *)pd_new(samplerate_tilde_class);
     outlet_new(&x->x_obj, &s_float);
-    x->x_canvas = canvas_getcurrent();
+    x->x_canvas = canvas_getCurrent();
     return (x);
 }
 

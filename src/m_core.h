@@ -330,7 +330,6 @@ int         outlet_isSignal                             (t_outlet *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        global_newPatch                             (void *dummy, t_symbol *name, t_symbol *directory);
 void        global_dsp                                  (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void        global_key                                  (void *dummy, t_symbol *s, int argc, t_atom *argv);
 void        global_shouldQuit                           (void *dummy);

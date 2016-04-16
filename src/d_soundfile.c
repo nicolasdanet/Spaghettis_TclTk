@@ -1157,7 +1157,7 @@ typedef struct _soundfiler
 static t_soundfiler *soundfiler_new(void)
 {
     t_soundfiler *x = (t_soundfiler *)pd_new(soundfiler_class);
-    x->x_canvas = canvas_getcurrent();
+    x->x_canvas = canvas_getCurrent();
     outlet_new(&x->x_obj, &s_float);
     return (x);
 }
@@ -1927,7 +1927,7 @@ static void *readsf_new(t_float fnchannels, t_float fbufsize)
     x->x_vecsize = MAXVECSIZE;
     x->x_state = STATE_IDLE;
     x->x_clock = clock_new(x, (t_method)readsf_tick);
-    x->x_canvas = canvas_getcurrent();
+    x->x_canvas = canvas_getCurrent();
     x->x_bytespersample = 2;
     x->x_sfchannels = 1;
     x->x_fd = -1;
@@ -2433,7 +2433,7 @@ static void *writesf_new(t_float fnchannels, t_float fbufsize)
     x->x_insamplerate = x->x_samplerate = 0;
     x->x_state = STATE_IDLE;
     x->x_clock = 0;     /* no callback needed here */
-    x->x_canvas = canvas_getcurrent();
+    x->x_canvas = canvas_getCurrent();
     x->x_bytespersample = 2;
     x->x_fd = -1;
     x->x_buf = buf;

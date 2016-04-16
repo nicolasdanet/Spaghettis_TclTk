@@ -71,50 +71,55 @@ t_class *canvas_class;                                  /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_symbol *canvas_newFileName  = &s_;             /* Shared. */
-static t_symbol *canvas_newDirectory = &s_;             /* Shared. */
-static t_atom   *canvas_newArgv;                        /* Shared. */
-
-static int      canvas_newArgc;                         /* Shared. */
+static int      canvas_argc;                            /* Shared. */
+static t_atom   *canvas_argv;                           /* Shared. */
+static t_symbol *canvas_fileName  = &s_;                /* Shared. */
+static t_symbol *canvas_directory = &s_;                /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_setargs (int argc, t_atom *argv)
+void canvas_setFileNameAndDirectory (t_symbol *name, t_symbol *directory)
 {
-    if (canvas_newArgv)
-        PD_MEMORY_FREE(canvas_newArgv);
-    canvas_newArgc = argc;
-    canvas_newArgv = PD_MEMORY_GET_COPY(argv, argc * sizeof(t_atom));
+    canvas_fileName  = name;
+    canvas_directory = directory;
 }
 
-void glob_setfilename (void *dummy, t_symbol *filesym, t_symbol *dirsym)
+void canvas_setArguments (int argc, t_atom *argv)
 {
-    canvas_newFileName = filesym;
-    canvas_newDirectory = dirsym;
+    if (canvas_argv) { PD_MEMORY_FREE (canvas_argv); }
+    
+    canvas_argc = argc;
+    canvas_argv = PD_MEMORY_GET_COPY (argv, argc * sizeof (t_atom));
 }
 
-void global_newPatch (void *dummy, t_symbol *filesym, t_symbol *dirsym)
+void canvas_getArguments (int *argc, t_atom **argv)
 {
-    glob_setfilename(dummy, filesym, dirsym);
-    canvas_new(0, 0, 0, 0);
-    canvas_pop((t_glist *)s__X.s_thing, 1);
+    t_canvasenvironment *e = canvas_getenv (canvas_getCurrent());
+    
+    *argc = e->ce_argc;
+    *argv = e->ce_argv;
 }
 
-t_glist *canvas_getcurrent(void)
+void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 {
-    return ((t_glist *)pd_findByClass(&s__X, canvas_class));
+    canvas_setFileNameAndDirectory (name, directory);
+    canvas_new (NULL, NULL, 0, NULL);
+    canvas_pop (cast_glist (s__X.s_thing), 1);
 }
 
-void canvas_setcurrent(t_glist *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_glist *canvas_getCurrent (void)
 {
-    stack_push(&x->gl_obj.te_g.g_pd);
+    return (cast_glist (pd_findByClass (&s__X, canvas_class)));
 }
 
-void canvas_unsetcurrent(t_glist *x)
-{
-    stack_pop(&x->gl_obj.te_g.g_pd);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 t_canvasenvironment *canvas_getenv(t_glist *x)
 {
@@ -126,18 +131,11 @@ t_canvasenvironment *canvas_getenv(t_glist *x)
 
 int canvas_getdollarzero( void)
 {
-    t_glist *x = canvas_getcurrent();
+    t_glist *x = canvas_getCurrent();
     t_canvasenvironment *env = (x ? canvas_getenv(x) : 0);
     if (env)
         return (env->ce_dollarZeroValue);
     else return (0);
-}
-
-void canvas_getargs(int *argcp, t_atom **argvp)
-{
-    t_canvasenvironment *e = canvas_getenv(canvas_getcurrent());
-    *argcp = e->ce_argc;
-    *argvp = e->ce_argv;
 }
 
 t_symbol *canvas_realizedollar(t_glist *x, t_symbol *s)
@@ -147,9 +145,11 @@ t_symbol *canvas_realizedollar(t_glist *x, t_symbol *s)
     if (strchr(name, '$'))
     {
         t_canvasenvironment *env = canvas_getenv(x);
-        canvas_setcurrent(x);
+        //canvas_setCurrent(x);
+        stack_push (cast_pd (x));
         ret = dollar_expandDollarSymbol(s, env->ce_argc, env->ce_argv /*, 1*/);
-        canvas_unsetcurrent(x);
+        //canvas_unsetCurrent(x);
+        stack_pop (cast_pd (x));
     }
     else ret = s;
     return (ret);
@@ -158,7 +158,7 @@ t_symbol *canvas_realizedollar(t_glist *x, t_symbol *s)
 /*
 t_symbol *canvas_getcurrentdir(void)
 {
-    t_canvasenvironment *e = canvas_getenv(canvas_getcurrent());
+    t_canvasenvironment *e = canvas_getenv(canvas_getCurrent());
     return (e->ce_directory);
 }
 */
@@ -303,7 +303,7 @@ void glist_init(t_glist *x)
 t_glist *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
 {
     t_glist *x = (t_glist *)pd_new(canvas_class);
-    t_glist *owner = canvas_getcurrent();
+    t_glist *owner = canvas_getCurrent();
     t_symbol *s = &s_;
     int vis = 0, width = CANVAS_DEFAULT_WIDTH, height = CANVAS_DEFAULT_HEIGHT;
     int xloc = 0, yloc = CANVAS_DEFAULT_Y;
@@ -333,21 +333,21 @@ t_glist *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
     }
         /* (otherwise assume we're being created from the menu.) */
 
-    if (canvas_newDirectory->s_name[0])
+    if (canvas_directory->s_name[0])
     {
         static int dollarzero = 1000;
         t_canvasenvironment *env = x->gl_env =
             (t_canvasenvironment *)PD_MEMORY_GET(sizeof(*x->gl_env));
-        if (!canvas_newArgv)
-            canvas_newArgv = PD_MEMORY_GET(0);
-        env->ce_directory = canvas_newDirectory;
-        env->ce_argc = canvas_newArgc;
-        env->ce_argv = canvas_newArgv;
+        if (!canvas_argv)
+            canvas_argv = PD_MEMORY_GET(0);
+        env->ce_directory = canvas_directory;
+        env->ce_argc = canvas_argc;
+        env->ce_argv = canvas_argv;
         env->ce_dollarZeroValue = dollarzero++;
         //env->ce_path = 0;
-        canvas_newDirectory = &s_;
-        canvas_newArgc = 0;
-        canvas_newArgv = 0;
+        canvas_directory = &s_;
+        canvas_argc = 0;
+        canvas_argv = 0;
     }
     else x->gl_env = 0;
 
@@ -362,7 +362,7 @@ t_glist *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
     canvas_dosetbounds(x, xloc, yloc, xloc + width, yloc + height);
     x->gl_owner = owner;
     x->gl_name = (*s->s_name ? s : 
-        (canvas_newFileName ? canvas_newFileName : gensym("Pd")));
+        (canvas_fileName ? canvas_fileName : gensym("Pd")));
     canvas_bind(x);
     x->gl_loading = 1;
     x->gl_goprect = 0;      /* no GOP rectangle unless it's turned on later */
@@ -456,8 +456,8 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     x->gl_obj.te_yCoordinate = py1;
     x->gl_pixwidth = px2 - px1;
     x->gl_pixheight = py2 - py1;
-    x->gl_font =  (canvas_getcurrent() ?
-        canvas_getcurrent()->gl_font : font_getDefaultFontSize());
+    x->gl_font =  (canvas_getCurrent() ?
+        canvas_getCurrent()->gl_font : font_getDefaultFontSize());
     x->gl_screenx1 = 0;
     x->gl_screeny1 = CANVAS_DEFAULT_Y;
     x->gl_screenx2 = 450;
@@ -826,7 +826,7 @@ void canvas_restore(t_glist *x, t_symbol *s, int argc, t_atom *argv)
         t_atom *ap=argv+3;
         if (ap->a_type == A_SYMBOL)
         {
-            t_canvasenvironment *e = canvas_getenv(canvas_getcurrent());
+            t_canvasenvironment *e = canvas_getenv(canvas_getCurrent());
             canvas_rename(x, dollar_expandDollarSymbol(ap->a_w.w_symbol,
                 e->ce_argc, e->ce_argv/*, 1*/), 0);
         }
@@ -919,7 +919,7 @@ void canvas_logerror(t_object *y)
 static void *subcanvas_new(t_symbol *s)
 {
     t_atom a[6];
-    t_glist *x, *z = canvas_getcurrent();
+    t_glist *x, *z = canvas_getCurrent();
     if (!*s->s_name) s = gensym("/SUBPATCH/");
     SET_FLOAT(a, 0);
     SET_FLOAT(a+1, CANVAS_DEFAULT_Y);
@@ -957,10 +957,12 @@ static void canvas_rename_method(t_glist *x, t_symbol *s, int ac, t_atom *av)
     else if (ac && av->a_type == A_DOLLARSYMBOL)
     {
         t_canvasenvironment *e = canvas_getenv(x);
-        canvas_setcurrent(x);
+        //canvas_setCurrent(x);
+        stack_push (cast_pd (x));
         canvas_rename(x, dollar_expandDollarSymbol(av->a_w.w_symbol,
             e->ce_argc, e->ce_argv/*, 1*/), 0); 
-        canvas_unsetcurrent(x);
+        //canvas_unsetCurrent(x);
+        stack_pop (cast_pd (x));
     }
     else canvas_rename(x, gensym("Pd"), 0);
 }
@@ -1220,7 +1222,7 @@ static void *declare_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_declare *x = (t_declare *)pd_new(declare_class);
     x->x_useme = 1;
-    x->x_canvas = canvas_getcurrent();
+    x->x_canvas = canvas_getCurrent();
         /* LATER update environment and/or load libraries */
     return (x);
 }

@@ -83,7 +83,7 @@ static void *savepanel_new( void)
     t_savepanel *x = (t_savepanel *)pd_new(savepanel_class);
     sprintf(buf, "d%lx", (t_int)x);
     x->x_s = gensym(buf);
-    x->x_canvas = canvas_getcurrent();
+    x->x_canvas = canvas_getCurrent();
     pd_bind(&x->x_obj.te_g.g_pd, x->x_s);
     outlet_new(&x->x_obj, &s_symbol);
     return (x);

@@ -31,7 +31,7 @@ static void *table_donew(t_symbol *s, int size, int flags,
 {
     t_atom a[9];
     t_glist *gl;
-    t_glist *x, *z = canvas_getcurrent();
+    t_glist *x, *z = canvas_getCurrent();
     if (s == &s_)
     {
          char  tabname[255];
@@ -156,7 +156,7 @@ static void *array_define_new(t_symbol *s, int argc, t_atom *argv)
     x = (t_glist *)table_donew(arrayname, arraysize, keep, xpix, ypix);
     
         /* bash the class to "array define".  We don't do this earlier in
-        part so that canvas_getcurrent() will work while the glist and
+        part so that canvas_getCurrent() will work while the glist and
         garray are being created.  There may be other, unknown side effects. */
     x->gl_obj.te_g.g_pd = array_define_class;
     array_define_yrange(x, ylo, yhi);

@@ -38,7 +38,7 @@ typedef struct _textbuf
 static void textbuf_init(t_textbuf *x)
 {
     x->b_binbuf = buffer_new();
-    x->b_canvas = canvas_getcurrent();
+    x->b_canvas = canvas_getCurrent();
 }
 
 static void textbuf_senditup(t_textbuf *x)
@@ -258,12 +258,12 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
     }
     textbuf_init(&x->x_textbuf);
         /* set up a scalar and a pointer to it that we can output */
-    x->x_scalar = scalar_new(canvas_getcurrent(), gensym("pd-text"));
+    x->x_scalar = scalar_new(canvas_getCurrent(), gensym("pd-text"));
     buffer_free(x->x_scalar->sc_vector[2].w_buffer);
     x->x_scalar->sc_vector[2].w_buffer = x->x_binbuf;
     x->x_out = outlet_new(&x->x_ob, &s_pointer);
     gpointer_init(&x->x_gp);
-    x->x_canvas = canvas_getcurrent();
+    x->x_canvas = canvas_getCurrent();
            /* bashily unbind #A -- this would create garbage if #A were
            multiply bound but we believe in this context it's at most
            bound to whichever text_define or array was created most recently */
@@ -1792,12 +1792,12 @@ static void text_template_init( void)
         return;
     b = buffer_new();
     
-    glob_setfilename(0, gensym("_text_template"), gensym("."));
+    canvas_setFileNameAndDirectory (gensym("_text_template"), gensym("."));
     buffer_withStringUnzeroed(b, text_templatefile, strlen(text_templatefile));
     buffer_eval(b, &pd_canvasMaker, 0, 0);
     pd_vMessage(s__X.s_thing, gensym("pop"), "i", 0);
     
-    glob_setfilename(0, &s_, &s_);
+    canvas_setFileNameAndDirectory (&s_, &s_);
     buffer_free(b);  
 }
 

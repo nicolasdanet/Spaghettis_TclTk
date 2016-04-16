@@ -677,7 +677,7 @@ t_error buffer_evalFile (t_symbol *name, t_symbol *directory)
     int state = canvas_suspend_dsp();
     t_buffer *t = buffer_new();
         
-    glob_setfilename (NULL, name, directory);
+    canvas_setFileNameAndDirectory (name, directory);
     
     err = buffer_fromFile (t, name->s_name, directory->s_name);
     
@@ -696,7 +696,7 @@ t_error buffer_evalFile (t_symbol *name, t_symbol *directory)
     //
     }
     
-    glob_setfilename (NULL, &s_, &s_);
+    canvas_setFileNameAndDirectory (&s_, &s_);
     
     buffer_free (t);
     canvas_resume_dsp (state);
