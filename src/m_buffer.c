@@ -718,7 +718,7 @@ void buffer_openFile (void *dummy, t_symbol *name, t_symbol *directory)
         pd_vMessage (x, gensym ("pop"), "i", 1);
     }
     
-    pd_performLoadbang();
+    stack_performLoadbang();
     
     canvas_resume_dsp (state);
     s__X.s_thing = boundX;

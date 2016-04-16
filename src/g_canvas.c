@@ -108,12 +108,12 @@ t_glist *canvas_getcurrent(void)
 
 void canvas_setcurrent(t_glist *x)
 {
-    pd_push(&x->gl_obj.te_g.g_pd);
+    stack_push(&x->gl_obj.te_g.g_pd);
 }
 
 void canvas_unsetcurrent(t_glist *x)
 {
-    pd_pop(&x->gl_obj.te_g.g_pd);
+    stack_pop(&x->gl_obj.te_g.g_pd);
 }
 
 t_canvasenvironment *canvas_getenv(t_glist *x)
@@ -380,7 +380,7 @@ t_glist *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
     x->gl_willvis = vis;
     x->gl_edit = !strncmp(x->gl_name->s_name, "Untitled", 8);
     x->gl_font = font_getNearestValidFontSize(font);
-    pd_push(&x->gl_obj.te_g.g_pd);
+    stack_push(&x->gl_obj.te_g.g_pd);
     return(x);
 }
 
@@ -468,7 +468,7 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     x->gl_obj.te_buffer = buffer_new();
     buffer_vAppend(x->gl_obj.te_buffer, "s", gensym("graph"));
     if (!menu)
-        pd_push(&x->gl_obj.te_g.g_pd);
+        stack_push(&x->gl_obj.te_g.g_pd);
     glist_add(g, &x->gl_obj.te_g);
     return (x);
 }
@@ -808,7 +808,7 @@ static void canvas_pop(t_glist *x, t_float fvis)
 {
     if (fvis != 0)
         canvas_vis(x, 1);
-    pd_pop(&x->gl_obj.te_g.g_pd);
+    stack_pop(&x->gl_obj.te_g.g_pd);
     canvas_resortinlets(x);
     canvas_resortoutlets(x);
     x->gl_loading = 0;
@@ -898,7 +898,7 @@ static void canvas_relocate(t_glist *x, t_symbol *canvasgeom,
 void canvas_popabstraction(t_glist *x)
 {
     pd_newest = &x->gl_obj.te_g.g_pd;
-    pd_pop(&x->gl_obj.te_g.g_pd);
+    stack_pop(&x->gl_obj.te_g.g_pd);
     x->gl_loading = 0;
     canvas_resortinlets(x);
     canvas_resortoutlets(x);

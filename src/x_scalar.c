@@ -92,7 +92,7 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
     pd_bind(&x->gl_obj.te_g.g_pd, asym); 
 noscalar:
     pd_newest = &x->gl_obj.te_g.g_pd;     /* mimic action of canvas_pop() */
-    pd_pop(&x->gl_obj.te_g.g_pd);
+    stack_pop(&x->gl_obj.te_g.g_pd);
     x->gl_loading = 0;
     
         /* bash the class to "scalar define" -- see comment in x_array,c */

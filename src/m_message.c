@@ -165,7 +165,7 @@ static void new_anything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
     //
     close (f);
     
-    if (pd_setLoadingAbstraction (s)) { 
+    if (stack_setLoadingAbstraction (s)) { 
         post_error (PD_TRANSLATE ("%s: can't load abstraction within itself"), s->s_name);  // --
         
     } else {
