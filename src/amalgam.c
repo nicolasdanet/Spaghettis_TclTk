@@ -16,6 +16,7 @@
 /* Core. */
 
 #include "m_instance.c"
+#include "m_stack.c"
 #include "m_pd.c"
 #include "m_message.c"
 #include "m_class.c"

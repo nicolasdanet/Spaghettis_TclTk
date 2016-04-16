@@ -134,6 +134,7 @@
 		37E0BC371C53E0B700114412 /* s_pathlist.c in Sources */ = {isa = PBXBuildFile; fileRef = 37E0BC361C53E0B700114412 /* s_pathlist.c */; };
 		37E3E9661C5E1EDE00D9717B /* s_priority.c in Sources */ = {isa = PBXBuildFile; fileRef = 37E3E9651C5E1EDE00D9717B /* s_priority.c */; };
 		37E3EB9C1C5F6ACA00D9717B /* s_receiver.c in Sources */ = {isa = PBXBuildFile; fileRef = 37E3EB9B1C5F6ACA00D9717B /* s_receiver.c */; };
+		37F085691CC26E5C0070DEAC /* m_stack.c in Sources */ = {isa = PBXBuildFile; fileRef = 37F085681CC26E5C0070DEAC /* m_stack.c */; };
 		37F1820A1C70DBF8003D1A3A /* m_instance.c in Sources */ = {isa = PBXBuildFile; fileRef = 37F182091C70DBF8003D1A3A /* m_instance.c */; };
 		37F5138C1C9B0EA80076A0C4 /* s_logger.c in Sources */ = {isa = PBXBuildFile; fileRef = 37F5138B1C9B0EA80076A0C4 /* s_logger.c */; };
 		37F514161C9B19A70076A0C4 /* s_logger_pa.c in Sources */ = {isa = PBXBuildFile; fileRef = 37F514151C9B19A70076A0C4 /* s_logger_pa.c */; };
@@ -361,6 +362,7 @@
 		37E0BC361C53E0B700114412 /* s_pathlist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_pathlist.c; path = src/s_pathlist.c; sourceTree = "<group>"; };
 		37E3E9651C5E1EDE00D9717B /* s_priority.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_priority.c; path = src/s_priority.c; sourceTree = "<group>"; };
 		37E3EB9B1C5F6ACA00D9717B /* s_receiver.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_receiver.c; path = src/s_receiver.c; sourceTree = "<group>"; };
+		37F085681CC26E5C0070DEAC /* m_stack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_stack.c; path = src/m_stack.c; sourceTree = "<group>"; };
 		37F182091C70DBF8003D1A3A /* m_instance.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = m_instance.c; path = src/m_instance.c; sourceTree = "<group>"; };
 		37F5138A1C9B0E960076A0C4 /* s_logger_apis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = s_logger_apis.h; path = src/s_logger_apis.h; sourceTree = "<group>"; };
 		37F5138B1C9B0EA80076A0C4 /* s_logger.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_logger.c; path = src/s_logger.c; sourceTree = "<group>"; };
@@ -541,6 +543,7 @@
 				378971DD1C4F716700263434 /* m_macros.h */,
 				378971D71C4F716700263434 /* m_alloca.h */,
 				37F182091C70DBF8003D1A3A /* m_instance.c */,
+				37F085681CC26E5C0070DEAC /* m_stack.c */,
 				378971E11C4F716700263434 /* m_pd.c */,
 				378971DF1C4F716700263434 /* m_message.c */,
 				378971DA1C4F716700263434 /* m_class.c */,
@@ -1018,6 +1021,7 @@
 				37F5138C1C9B0EA80076A0C4 /* s_logger.c in Sources */,
 				37F514161C9B19A70076A0C4 /* s_logger_pa.c in Sources */,
 				3770FAA61CB1036A007C7E66 /* g_radio.c in Sources */,
+				37F085691CC26E5C0070DEAC /* m_stack.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
