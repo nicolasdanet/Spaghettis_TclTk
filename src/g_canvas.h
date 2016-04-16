@@ -268,6 +268,25 @@ void            guiconnect_release          (t_guiconnect *x, double timeOut);
 void            canvas_reflecttitle         (t_glist *x);
 void            canvas_setcursor            (t_glist *x, unsigned int cursornum);
 
+void            canvas_setargs              (int argc, t_atom *argv);
+void            canvas_getargs              (int *argcp, t_atom **argvp);
+void            canvas_makefilename         (t_glist *c, char *file, char *result, int resultsize);
+t_glist         *canvas_getcurrent          (void);
+t_symbol        *canvas_getdir              (t_glist *x);
+
+void            canvas_dataproperties       (t_glist *x, t_scalar *sc, t_buffer *b);
+int             canvas_open                 (t_glist *x,
+                                                const char *name,
+                                                const char *ext,
+                                                char *dirresult,
+                                                char **nameresult,
+                                                unsigned int size,
+                                                int bin);
+
+int             canvas_suspend_dsp          (void);
+void            canvas_resume_dsp           (int oldstate);
+void            canvas_update_dsp           (void);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

@@ -8,6 +8,7 @@
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
+#include "g_canvas.h"
 #include <math.h>
 #include <stdio.h>
 #include <string.h>

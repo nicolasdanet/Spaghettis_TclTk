@@ -729,25 +729,6 @@ PD_DLL int      value_setfloat              (t_symbol *s, t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-PD_DLL void     canvas_setargs              (int argc, t_atom *argv);
-PD_DLL void     canvas_getargs              (int *argcp, t_atom **argvp);
-PD_DLL void     canvas_makefilename         (t_glist *c, char *file, char *result, int resultsize);
-PD_DLL t_symbol *canvas_getcurrentdir       (void);
-PD_DLL t_glist  *canvas_getcurrent          (void);
-PD_DLL t_symbol *canvas_getdir              (t_glist *x);
-
-PD_DLL void     canvas_dataproperties       (t_glist *x, t_scalar *sc, t_buffer *b);
-PD_DLL int      canvas_open                 (t_glist *x,
-                                                const char *name,
-                                                const char *ext,
-                                                char *dirresult,
-                                                char **nameresult,
-                                                unsigned int size,
-                                                int bin);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 PD_DLL void     glob_setfilename            (void *dummy, t_symbol *name, t_symbol *dir);
@@ -804,10 +785,6 @@ PD_DLL void     mayer_fft           (int n, t_sample *real, t_sample *imag);
 PD_DLL void     mayer_ifft          (int n, t_sample *real, t_sample *imag);
 PD_DLL void     mayer_realfft       (int n, t_sample *real);
 PD_DLL void     mayer_realifft      (int n, t_sample *real);
-
-PD_DLL int      canvas_suspend_dsp  (void);
-PD_DLL void     canvas_resume_dsp   (int oldstate);
-PD_DLL void     canvas_update_dsp   (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

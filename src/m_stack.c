@@ -38,7 +38,7 @@ void stack_push (t_pd *x)
     t_gstack *p = (t_gstack *)PD_MEMORY_GET (sizeof (t_gstack));
     p->g_what = s__X.s_thing;
     p->g_next = stack_stackHead;
-    p->g_loadingAbstraction = stack_loadingAbstraction;
+    p->g_loadingAbstraction  = stack_loadingAbstraction;
     stack_loadingAbstraction = NULL;
     stack_stackHead = p;
     s__X.s_thing = x;

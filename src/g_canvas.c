@@ -21,6 +21,9 @@
 #define CANVAS_DEFAULT_WIDTH        450
 #define CANVAS_DEFAULT_HEIGHT       300
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 #ifdef __APPLE__
     #define CANVAS_DEFAULT_Y        22
 #else
@@ -77,11 +80,8 @@ static int      canvas_newArgc;                         /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_setargs(int argc, t_atom *argv)
+void canvas_setargs (int argc, t_atom *argv)
 {
-        /* if there's an old one lying around free it here.  This
-        happens if an abstraction is loaded but never gets as far
-        as calling canvas_new(). */
     if (canvas_newArgv)
         PD_MEMORY_FREE(canvas_newArgv);
     canvas_newArgc = argc;
@@ -155,12 +155,13 @@ t_symbol *canvas_realizedollar(t_glist *x, t_symbol *s)
     return (ret);
 }
 
+/*
 t_symbol *canvas_getcurrentdir(void)
 {
     t_canvasenvironment *e = canvas_getenv(canvas_getcurrent());
     return (e->ce_directory);
 }
-
+*/
 t_symbol *canvas_getdir(t_glist *x)
 {
     t_canvasenvironment *e = canvas_getenv(x);
