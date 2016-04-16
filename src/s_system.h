@@ -135,6 +135,8 @@ void        pathlist_free                           (t_pathlist *x);
 #pragma mark -
 
 void        font_withHostMeasured                   (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void        font_setDefaultFontSize                 (int size);
+t_fontsize  font_getDefaultFontSize                 (void);
 t_fontsize  font_getNearestValidFontSize            (int size);
 int         font_getHostFontSize                    (t_fontsize fontSize);
 int         font_getHostFontWidth                   (t_fontsize fontSize);

@@ -21,7 +21,6 @@ extern t_pd pd_canvasMaker;
 extern t_class *canvas_class;
 extern t_class *vinlet_class;
 extern t_class *voutlet_class;
-extern int font_defaultSize;
 extern t_widgetbehavior text_widgetBehavior;
 extern t_pdinstance *pd_this;
 extern t_symbol *main_directoryHelp;
@@ -808,18 +807,18 @@ static void glist_doreload(t_glist *gl, t_symbol *name, t_symbol *dir,
 
     /* this flag stops canvases from being marked "dirty" if we have to touch
     them to reload an abstraction; also suppress window list update */
-int glist_reloading = 0;    /* Shared. */
+int editor_reloading = 0;    /* Shared. */
 
     /* call canvas_doreload on everyone */
 void canvas_reload(t_symbol *name, t_symbol *dir, t_gobj *except)
 {
     t_glist *x;
     int dspwas = canvas_suspend_dsp();
-    glist_reloading = 1;
+    editor_reloading = 1;
         /* find all root canvases */
     for (x = pd_this->pd_glist; x; x = x->gl_next)
         glist_doreload(x, name, dir, except);
-    glist_reloading = 0;
+    editor_reloading = 0;
     canvas_resume_dsp(dspwas);
 }
 
@@ -1069,10 +1068,10 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
     else if (flag)
     {
         if (x->gl_pixwidth <= 0)
-            x->gl_pixwidth = CANVAS_DEFAULT_WIDTH;
+            x->gl_pixwidth = GLIST_DEFAULT_WIDTH;
 
         if (x->gl_pixheight <= 0)
-            x->gl_pixheight = CANVAS_DEFAULT_HEIGHT;
+            x->gl_pixheight = GLIST_DEFAULT_HEIGHT;
 
         if (x->gl_owner && !x->gl_loading && glist_isvisible(x->gl_owner))
             gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
@@ -2770,7 +2769,7 @@ static void canvas_font(t_glist *x, t_float font, t_float resize,
     if (whichresize != 3) realresx = realresize;
     if (whichresize != 2) realresy = realresize;
     canvas_dofont(x2, font, realresx, realresy);
-    font_defaultSize = font;
+    font_setDefaultFontSize (font);
 }
 
 static t_glist *canvas_last_glist;

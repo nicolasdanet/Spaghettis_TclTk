@@ -23,8 +23,8 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define CANVAS_DEFAULT_WIDTH        200
-#define CANVAS_DEFAULT_HEIGHT       140
+#define GLIST_DEFAULT_WIDTH         200
+#define GLIST_DEFAULT_HEIGHT        140
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -212,7 +212,7 @@ typedef struct _dataslot {
     t_symbol            *ds_arraytemplate;
     } t_dataslot;
 
-typedef struct _template {
+struct _template {
     t_pd                t_pdobj;   
     t_gtemplate         *t_list;  
     t_symbol            *t_sym;    

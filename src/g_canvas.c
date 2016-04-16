@@ -1,32 +1,38 @@
-/* Copyright (c) 1997-2001 Miller Puckette and others.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
 
-/* this file defines the "glist" class, also known as "canvas" (the two used
-to be different but are now unified except for some fossilized names.) */
+/* 
+    Copyright (c) 1997-2015 Miller Puckette and others.
+*/
 
-#include <stdlib.h>
-#include <stdio.h>
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #include "m_pd.h"
 #include "m_core.h"
 #include "m_macros.h"
 #include "s_system.h"
 #include "g_canvas.h"
-#include <string.h>
-#include "g_iem.h"
 
-#ifdef _MSC_VER
-#define snprintf sprintf_s
-#endif
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-extern t_class *scalar_class;
-extern t_pdinstance *pd_this;
-extern t_pd pd_canvasMaker;
-extern int glist_reloading;
-extern int font_defaultSize;
-extern t_symbol *main_directoryRoot;
+#define CANVAS_DEFAULT_PATCH_WIDTH      450
+#define CANVAS_DEFAULT_PATCH_HEIGHT     300
 
-    /* LATER consider adding font size to this struct (see glist_getfont()) */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+extern t_class          *scalar_class;
+extern t_pdinstance     *pd_this;
+
+extern t_pd             pd_canvasMaker;
+extern int              editor_reloading;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 struct _canvasenvironment
 {
     t_symbol *ce_dir;      /* directory patch lives in */
@@ -36,8 +42,8 @@ struct _canvasenvironment
     t_pathlist *ce_path;   /* search path */
 };
 
-#define GLIST_DEFCANVASWIDTH 450
-#define GLIST_DEFCANVASHEIGHT 300
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 /* since the window decorations aren't included, open new windows a few
 pixels down so you can posibly move the window later.  Apple needs less
@@ -77,7 +83,7 @@ static t_atom *canvas_newargv;
     /* maintain the list of visible toplevels for the GUI's "windows" menu */
 void canvas_updatewindowlist( void)
 {
-    /* if (! glist_reloading)        
+    /* if (! editor_reloading)        
         sys_gui("::ui_menu::update_window_menu\n"); */
 }
 
@@ -329,9 +335,9 @@ t_glist *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
     t_glist *x = (t_glist *)pd_new(canvas_class);
     t_glist *owner = canvas_getcurrent();
     t_symbol *s = &s_;
-    int vis = 0, width = GLIST_DEFCANVASWIDTH, height = GLIST_DEFCANVASHEIGHT;
+    int vis = 0, width = CANVAS_DEFAULT_PATCH_WIDTH, height = CANVAS_DEFAULT_PATCH_HEIGHT;
     int xloc = 0, yloc = GLIST_DEFCANVASYLOC;
-    int font = (owner ? owner->gl_font : font_defaultSize);
+    int font = (owner ? owner->gl_font : font_getDefaultFontSize());
     glist_init(x);
     x->gl_obj.te_type = TYPE_OBJECT;
     if (!owner)
@@ -469,8 +475,8 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     if (x1 == x2 || y1 == y2)
         x1 = 0, x2 = 100, y1 = 1, y2 = -1;
     if (px1 >= px2 || py1 >= py2)
-        px1 = 100, py1 = 20, px2 = 100 + CANVAS_DEFAULT_WIDTH,
-            py2 = 20 + CANVAS_DEFAULT_HEIGHT;
+        px1 = 100, py1 = 20, px2 = 100 + GLIST_DEFAULT_WIDTH,
+            py2 = 20 + GLIST_DEFAULT_HEIGHT;
     x->gl_name = sym;
     x->gl_x1 = x1;
     x->gl_x2 = x2;
@@ -481,7 +487,7 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     x->gl_pixwidth = px2 - px1;
     x->gl_pixheight = py2 - py1;
     x->gl_font =  (canvas_getcurrent() ?
-        canvas_getcurrent()->gl_font : font_defaultSize);
+        canvas_getcurrent()->gl_font : font_getDefaultFontSize());
     x->gl_screenx1 = 0;
     x->gl_screeny1 = GLIST_DEFCANVASYLOC;
     x->gl_screenx2 = 450;
@@ -610,7 +616,7 @@ void canvas_reflecttitle(t_glist *x)
 void canvas_dirty(t_glist *x, t_float n)
 {
     t_glist *x2 = canvas_getroot(x);
-    if (glist_reloading)
+    if (editor_reloading)
         return;
     if ((unsigned)n != x2->gl_dirty)
     {
@@ -947,8 +953,8 @@ static void *subcanvas_new(t_symbol *s)
     if (!*s->s_name) s = gensym("/SUBPATCH/");
     SET_FLOAT(a, 0);
     SET_FLOAT(a+1, GLIST_DEFCANVASYLOC);
-    SET_FLOAT(a+2, GLIST_DEFCANVASWIDTH);
-    SET_FLOAT(a+3, GLIST_DEFCANVASHEIGHT);
+    SET_FLOAT(a+2, CANVAS_DEFAULT_PATCH_WIDTH);
+    SET_FLOAT(a+3, CANVAS_DEFAULT_PATCH_HEIGHT);
     SET_SYMBOL(a+4, s);
     SET_FLOAT(a+5, 1);
     x = canvas_new(0, 0, 6, a);
@@ -1651,3 +1657,6 @@ void canvas_add_for_class(t_class *c)
     canvas_readwrite_for_class(c);
     /* g_graph_setup_class(c); */
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
