@@ -816,7 +816,7 @@ void canvas_reload(t_symbol *name, t_symbol *dir, t_gobj *except)
     int dspwas = canvas_suspend_dsp();
     editor_reloading = 1;
         /* find all root canvases */
-    for (x = pd_this->pd_glist; x; x = x->gl_next)
+    for (x = pd_this->pd_roots; x; x = x->gl_next)
         glist_doreload(x, name, dir, except);
     editor_reloading = 0;
     canvas_resume_dsp(dspwas);
@@ -965,7 +965,6 @@ void canvas_destroy_editor(t_glist *x)
     }
 }
 
-void canvas_reflecttitle(t_glist *x);
 void canvas_map(t_glist *x, t_float f);
 
     /* we call this when we want the window to become visible, mapped, and
@@ -1009,7 +1008,6 @@ void canvas_vis(t_glist *x, t_float f)
             // sys_gui(cbuf);
             canvas_reflecttitle(x);
             x->gl_havewindow = 1;
-            canvas_updatewindowlist();
         }
     }
     else    /* make invisible */
@@ -1046,7 +1044,6 @@ void canvas_vis(t_glist *x, t_float f)
                 gobj_vis(&x->gl_obj.te_g, gl2, 1);
         }
         else x->gl_havewindow = 0;
-        canvas_updatewindowlist();
     }
 }
 
@@ -1989,7 +1986,7 @@ void global_shouldQuit(void *dummy)
 {
     t_glist *g, *g2;
         /* find all root canvases */
-    for (g = pd_this->pd_glist; g; g = g->gl_next)
+    for (g = pd_this->pd_roots; g; g = g->gl_next)
         if (g2 = glist_finddirty(g))
     {
         canvas_vis(g2, 1);

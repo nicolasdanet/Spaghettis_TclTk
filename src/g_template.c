@@ -439,7 +439,7 @@ void template_conform(t_template *tfrom, t_template *tto)
     if (doit)
     {
         t_glist *gl;
-        for (gl = pd_this->pd_glist; gl; gl = gl->gl_next)
+        for (gl = pd_this->pd_roots; gl; gl = gl->gl_next)
             template_conformglist(tfrom, tto, gl, conformaction);
     }
     PD_MEMORY_FREE(conformaction);

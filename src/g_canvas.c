@@ -18,13 +18,13 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define CANVAS_DEFAULT_PATCH_WIDTH      450
-#define CANVAS_DEFAULT_PATCH_HEIGHT     300
+#define CANVAS_DEFAULT_WIDTH        450
+#define CANVAS_DEFAULT_HEIGHT       300
 
 #ifdef __APPLE__
-    #define CANVAS_DEFAULT_PATCH_Y      22
+    #define CANVAS_DEFAULT_Y        22
 #else
-    #define CANVAS_DEFAULT_PATCH_Y      50
+    #define CANVAS_DEFAULT_Y        50
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
@@ -32,6 +32,7 @@
 
 extern t_class          *scalar_class;
 extern t_pdinstance     *pd_this;
+extern t_pd             *pd_newest;
 
 extern t_pd             pd_canvasMaker;
 extern int              editor_reloading;
@@ -44,81 +45,53 @@ struct _canvasenvironment {
     int         ce_argc;
     t_atom      *ce_argv;
     t_symbol    *ce_directory;
-    t_pathlist  *ce_path;
 };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* ---------------------- variables --------------------------- */
+static void canvas_start_dsp    (void);
+static void canvas_stop_dsp     (void);
+static void canvas_drawlines    (t_glist *x);
+static void canvas_dosetbounds  (t_glist *x, int a, int b, int c, int d);
+static void canvas_pop          (t_glist *x, t_float fvis);
+static void canvas_bind         (t_glist *x);
+static void canvas_unbind       (t_glist *x);
 
-extern t_pd *pd_newest;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-t_class *canvas_class;  /* Shared. */
+t_class *canvas_class;                                  /* Shared. */
 
-/* ------------------ forward function declarations --------------- */
-static void canvas_start_dsp(void);
-static void canvas_stop_dsp(void);
-static void canvas_drawlines(t_glist *x);
-static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2);
-void canvas_reflecttitle(t_glist *x);
-static void canvas_addtolist(t_glist *x);
-static void canvas_takeofflist(t_glist *x);
-static void canvas_pop(t_glist *x, t_float fvis);
-static void canvas_bind(t_glist *x);
-static void canvas_unbind(t_glist *x);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-/* --------- functions to handle the canvas environment ----------- */
+static t_symbol *canvas_newFileName  = &s_;             /* Shared. */
+static t_symbol *canvas_newDirectory = &s_;             /* Shared. */
+static t_atom   *canvas_newArgv;                        /* Shared. */
 
-static t_symbol *canvas_newfilename = &s_;
-static t_symbol *canvas_newdirectory = &s_;
-static int canvas_newargc;
-static t_atom *canvas_newargv;
+static int      canvas_newArgc;                         /* Shared. */
 
-    /* maintain the list of visible toplevels for the GUI's "windows" menu */
-void canvas_updatewindowlist( void)
-{
-    /* if (! editor_reloading)        
-        sys_gui("::ui_menu::update_window_menu\n"); */
-}
-
-    /* add a glist the list of "root" canvases (toplevels without parents.) */
-static void canvas_addtolist(t_glist *x)
-{
-    x->gl_next = pd_this->pd_glist;
-    pd_this->pd_glist = x;
-}
-
-static void canvas_takeofflist(t_glist *x)
-{
-        /* take it off the window list */
-    if (x == pd_this->pd_glist) pd_this->pd_glist = x->gl_next;
-    else
-    {
-        t_glist *z;
-        for (z = pd_this->pd_glist; z->gl_next != x; z = z->gl_next)
-            ;
-        z->gl_next = x->gl_next;
-    }
-}
-
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 void canvas_setargs(int argc, t_atom *argv)
 {
         /* if there's an old one lying around free it here.  This
         happens if an abstraction is loaded but never gets as far
         as calling canvas_new(). */
-    if (canvas_newargv)
-        PD_MEMORY_FREE(canvas_newargv);
-    canvas_newargc = argc;
-    canvas_newargv = PD_MEMORY_GET_COPY(argv, argc * sizeof(t_atom));
+    if (canvas_newArgv)
+        PD_MEMORY_FREE(canvas_newArgv);
+    canvas_newArgc = argc;
+    canvas_newArgv = PD_MEMORY_GET_COPY(argv, argc * sizeof(t_atom));
 }
 
-void glob_setfilename(void *dummy, t_symbol *filesym, t_symbol *dirsym)
+void glob_setfilename (void *dummy, t_symbol *filesym, t_symbol *dirsym)
 {
-    canvas_newfilename = filesym;
-    canvas_newdirectory = dirsym;
+    canvas_newFileName = filesym;
+    canvas_newDirectory = dirsym;
 }
 
 void global_newPatch (void *dummy, t_symbol *filesym, t_symbol *dirsym)
@@ -331,13 +304,13 @@ t_glist *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
     t_glist *x = (t_glist *)pd_new(canvas_class);
     t_glist *owner = canvas_getcurrent();
     t_symbol *s = &s_;
-    int vis = 0, width = CANVAS_DEFAULT_PATCH_WIDTH, height = CANVAS_DEFAULT_PATCH_HEIGHT;
-    int xloc = 0, yloc = CANVAS_DEFAULT_PATCH_Y;
+    int vis = 0, width = CANVAS_DEFAULT_WIDTH, height = CANVAS_DEFAULT_HEIGHT;
+    int xloc = 0, yloc = CANVAS_DEFAULT_Y;
     int font = (owner ? owner->gl_font : font_getDefaultFontSize());
     glist_init(x);
     x->gl_obj.te_type = TYPE_OBJECT;
     if (!owner)
-        canvas_addtolist(x);
+        instance_addToRoots (x);
     /* post("canvas %lx, owner %lx", x, owner); */
 
     if (argc == 5)  /* toplevel: x, y, w, h, font */
@@ -359,26 +332,26 @@ t_glist *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
     }
         /* (otherwise assume we're being created from the menu.) */
 
-    if (canvas_newdirectory->s_name[0])
+    if (canvas_newDirectory->s_name[0])
     {
         static int dollarzero = 1000;
         t_canvasenvironment *env = x->gl_env =
             (t_canvasenvironment *)PD_MEMORY_GET(sizeof(*x->gl_env));
-        if (!canvas_newargv)
-            canvas_newargv = PD_MEMORY_GET(0);
-        env->ce_directory = canvas_newdirectory;
-        env->ce_argc = canvas_newargc;
-        env->ce_argv = canvas_newargv;
+        if (!canvas_newArgv)
+            canvas_newArgv = PD_MEMORY_GET(0);
+        env->ce_directory = canvas_newDirectory;
+        env->ce_argc = canvas_newArgc;
+        env->ce_argv = canvas_newArgv;
         env->ce_dollarZeroValue = dollarzero++;
         //env->ce_path = 0;
-        canvas_newdirectory = &s_;
-        canvas_newargc = 0;
-        canvas_newargv = 0;
+        canvas_newDirectory = &s_;
+        canvas_newArgc = 0;
+        canvas_newArgv = 0;
     }
     else x->gl_env = 0;
 
-    if (yloc < CANVAS_DEFAULT_PATCH_Y)
-        yloc = CANVAS_DEFAULT_PATCH_Y;
+    if (yloc < CANVAS_DEFAULT_Y)
+        yloc = CANVAS_DEFAULT_Y;
     if (xloc < 0)
         xloc = 0;
     x->gl_x1 = 0;
@@ -388,7 +361,7 @@ t_glist *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
     canvas_dosetbounds(x, xloc, yloc, xloc + width, yloc + height);
     x->gl_owner = owner;
     x->gl_name = (*s->s_name ? s : 
-        (canvas_newfilename ? canvas_newfilename : gensym("Pd")));
+        (canvas_newFileName ? canvas_newFileName : gensym("Pd")));
     canvas_bind(x);
     x->gl_loading = 1;
     x->gl_goprect = 0;      /* no GOP rectangle unless it's turned on later */
@@ -485,7 +458,7 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     x->gl_font =  (canvas_getcurrent() ?
         canvas_getcurrent()->gl_font : font_getDefaultFontSize());
     x->gl_screenx1 = 0;
-    x->gl_screeny1 = CANVAS_DEFAULT_PATCH_Y;
+    x->gl_screeny1 = CANVAS_DEFAULT_Y;
     x->gl_screenx2 = 450;
     x->gl_screeny2 = 300;
     x->gl_owner = g;
@@ -752,7 +725,7 @@ void canvas_free(t_glist *x)
     gstub_cutoff(x->gl_stub);
     guistub_destroyWithKey(x);        /* probably unnecessary */
     if (!x->gl_owner)
-        canvas_takeofflist(x);
+        instance_removeFromRoots (x);
 }
 
 /* ----------------- lines ---------- */
@@ -948,9 +921,9 @@ static void *subcanvas_new(t_symbol *s)
     t_glist *x, *z = canvas_getcurrent();
     if (!*s->s_name) s = gensym("/SUBPATCH/");
     SET_FLOAT(a, 0);
-    SET_FLOAT(a+1, CANVAS_DEFAULT_PATCH_Y);
-    SET_FLOAT(a+2, CANVAS_DEFAULT_PATCH_WIDTH);
-    SET_FLOAT(a+3, CANVAS_DEFAULT_PATCH_HEIGHT);
+    SET_FLOAT(a+1, CANVAS_DEFAULT_Y);
+    SET_FLOAT(a+2, CANVAS_DEFAULT_WIDTH);
+    SET_FLOAT(a+3, CANVAS_DEFAULT_HEIGHT);
     SET_SYMBOL(a+4, s);
     SET_FLOAT(a+5, 1);
     x = canvas_new(0, 0, 6, a);
@@ -1086,7 +1059,7 @@ static void canvas_start_dsp(void)
     else sys_gui("set ::var(isDsp) 1\n");
     ugen_start();
     
-    for (x = pd_this->pd_glist; x; x = x->gl_next)
+    for (x = pd_this->pd_roots; x; x = x->gl_next)
         canvas_dodsp(x, 1, 0);
     
     pd_this->pd_dspState = 1;
@@ -1195,7 +1168,7 @@ void canvas_redrawallfortemplate(t_template *template, int action)
 {
     t_glist *x;
         /* find all root canvases */
-    for (x = pd_this->pd_glist; x; x = x->gl_next)
+    for (x = pd_this->pd_roots; x; x = x->gl_next)
         glist_redrawall(x, action);
 }
 

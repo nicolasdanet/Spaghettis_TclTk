@@ -751,7 +751,6 @@ static void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir,
         {
             canvas_rename(x, filename, dir);
             /* update window list in case Save As changed the window name */
-            canvas_updatewindowlist(); 
         }
         post("saved to: %s/%s", dir->s_name, filename->s_name);
         canvas_dirty(x, 0);

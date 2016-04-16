@@ -163,7 +163,7 @@ struct _pdinstance {
     t_int       *pd_dspChain;
     t_clock     *pd_clocks;
     t_signal    *pd_signals;
-    t_glist     *pd_glist;
+    t_glist     *pd_roots;
     //
     t_symbol    *sym_midiin;
     t_symbol    *sym_sysexin;
@@ -364,6 +364,13 @@ void        buffer_openFile                             (void *dummy, t_symbol *
 
 void        instance_initialize                         (void);
 void        instance_release                            (void);
+void        instance_addToRoots                         (t_glist *glist);
+void        instance_removeFromRoots                    (t_glist *glist);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void        setup_initialize                            (void);
 void        setup_release                               (void);
 

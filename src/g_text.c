@@ -1385,9 +1385,9 @@ void text_setto(t_object *x, t_glist *glist, char *buf, int bufsize)
         }
             /* if we made a new "pd" or changed a window name,
                 update window list */
-        if (natom2 >= 1  && vec2[0].a_type == A_SYMBOL
+        /*if (natom2 >= 1  && vec2[0].a_type == A_SYMBOL
             && !strcmp(vec2[0].a_w.w_symbol->s_name, "pd"))
-                canvas_updatewindowlist();
+                canvas_updatewindowlist();*/
     }
     else buffer_withStringUnzeroed(x->te_buffer, buf, bufsize);
 }

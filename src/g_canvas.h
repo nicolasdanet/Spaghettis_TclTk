@@ -265,7 +265,8 @@ void            guiconnect_release          (t_guiconnect *x, double timeOut);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_setcursor   (t_glist *x, unsigned int cursornum);
+void            canvas_reflecttitle         (t_glist *x);
+void            canvas_setcursor            (t_glist *x, unsigned int cursornum);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -427,7 +428,6 @@ int      canvas_getfont                     (t_glist *x);
 void     canvas_resortinlets            (t_glist *x);
 void     canvas_resortoutlets           (t_glist *x);
 void     canvas_free                    (t_glist *x);
-void     canvas_updatewindowlist        (void);
 void     canvas_editmode                (t_glist *x, t_float state);
 int      canvas_isabstraction           (t_glist *x);
 int      canvas_istable                 (t_glist *x);

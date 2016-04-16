@@ -93,11 +93,11 @@ FILE *file_openWrite (const char *filepath)
 #pragma mark -
 
 int file_openWithDirectoryAndName (const char *directory, 
-                                    const char *name, 
-                                    const char *extension,
-                                    char *directoryResult, 
-                                    char **nameResult, 
-                                    size_t size)
+    const char *name, 
+    const char *extension,
+    char *directoryResult, 
+    char **nameResult, 
+    size_t size)
 {
     int f = -1;
     t_error err = PD_ERROR_NONE;
@@ -130,11 +130,11 @@ int file_openWithDirectoryAndName (const char *directory,
 // -----------------------------------------------------------------------------------------------------------
 
 int file_openConsideringSearchPath (const char *directory, 
-                const char *name, 
-                const char *extension,
-                char *directoryResult, 
-                char **nameResult, 
-                size_t size)
+    const char *name, 
+    const char *extension,
+    char *directoryResult, 
+    char **nameResult, 
+    size_t size)
 {
     int f = file_openWithDirectoryAndName (directory, name, extension, directoryResult, nameResult, size);
     
