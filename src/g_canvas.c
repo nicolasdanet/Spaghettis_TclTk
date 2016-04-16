@@ -21,6 +21,12 @@
 #define CANVAS_DEFAULT_PATCH_WIDTH      450
 #define CANVAS_DEFAULT_PATCH_HEIGHT     300
 
+#ifdef __APPLE__
+    #define CANVAS_DEFAULT_PATCH_Y      22
+#else
+    #define CANVAS_DEFAULT_PATCH_Y      50
+#endif
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
@@ -33,27 +39,17 @@ extern int              editor_reloading;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-struct _canvasenvironment
-{
-    t_symbol *ce_dir;      /* directory patch lives in */
-    int ce_argc;           /* number of "$" arguments */
-    t_atom *ce_argv;       /* array of "$" arguments */
-    int ce_dollarzero;     /* value of "$0" */
-    t_pathlist *ce_path;   /* search path */
+struct _canvasenvironment {
+    int         ce_dollarZeroValue;
+    int         ce_argc;
+    t_atom      *ce_argv;
+    t_symbol    *ce_directory;
+    t_pathlist  *ce_path;
 };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-/* since the window decorations aren't included, open new windows a few
-pixels down so you can posibly move the window later.  Apple needs less
-because its menus are at top of screen; we're more generous for other
-desktops because the borders have both window title area and menus. */
-#ifdef __APPLE__
-#define GLIST_DEFCANVASYLOC 22
-#else
-#define GLIST_DEFCANVASYLOC 50
-#endif
+#pragma mark -
 
 /* ---------------------- variables --------------------------- */
 
@@ -160,7 +156,7 @@ int canvas_getdollarzero( void)
     t_glist *x = canvas_getcurrent();
     t_canvasenvironment *env = (x ? canvas_getenv(x) : 0);
     if (env)
-        return (env->ce_dollarzero);
+        return (env->ce_dollarZeroValue);
     else return (0);
 }
 
@@ -189,18 +185,18 @@ t_symbol *canvas_realizedollar(t_glist *x, t_symbol *s)
 t_symbol *canvas_getcurrentdir(void)
 {
     t_canvasenvironment *e = canvas_getenv(canvas_getcurrent());
-    return (e->ce_dir);
+    return (e->ce_directory);
 }
 
 t_symbol *canvas_getdir(t_glist *x)
 {
     t_canvasenvironment *e = canvas_getenv(x);
-    return (e->ce_dir);
+    return (e->ce_directory);
 }
 
 void canvas_makefilename(t_glist *x, char *file, char *result, int resultsize)
 {
-    char *dir = canvas_getenv(x)->ce_dir->s_name;
+    char *dir = canvas_getenv(x)->ce_directory->s_name;
     if (file[0] == '/' || (file[0] && file[1] == ':') || !*dir)
     {
         strncpy(result, file, resultsize);
@@ -229,7 +225,7 @@ void canvas_rename(t_glist *x, t_symbol *s, t_symbol *dir)
     if (dir && dir != &s_)
     {
         t_canvasenvironment *e = canvas_getenv(x);
-        e->ce_dir = dir;
+        e->ce_directory = dir;
     }
 }
 
@@ -336,7 +332,7 @@ t_glist *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
     t_glist *owner = canvas_getcurrent();
     t_symbol *s = &s_;
     int vis = 0, width = CANVAS_DEFAULT_PATCH_WIDTH, height = CANVAS_DEFAULT_PATCH_HEIGHT;
-    int xloc = 0, yloc = GLIST_DEFCANVASYLOC;
+    int xloc = 0, yloc = CANVAS_DEFAULT_PATCH_Y;
     int font = (owner ? owner->gl_font : font_getDefaultFontSize());
     glist_init(x);
     x->gl_obj.te_type = TYPE_OBJECT;
@@ -370,19 +366,19 @@ t_glist *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
             (t_canvasenvironment *)PD_MEMORY_GET(sizeof(*x->gl_env));
         if (!canvas_newargv)
             canvas_newargv = PD_MEMORY_GET(0);
-        env->ce_dir = canvas_newdirectory;
+        env->ce_directory = canvas_newdirectory;
         env->ce_argc = canvas_newargc;
         env->ce_argv = canvas_newargv;
-        env->ce_dollarzero = dollarzero++;
-        env->ce_path = 0;
+        env->ce_dollarZeroValue = dollarzero++;
+        //env->ce_path = 0;
         canvas_newdirectory = &s_;
         canvas_newargc = 0;
         canvas_newargv = 0;
     }
     else x->gl_env = 0;
 
-    if (yloc < GLIST_DEFCANVASYLOC)
-        yloc = GLIST_DEFCANVASYLOC;
+    if (yloc < CANVAS_DEFAULT_PATCH_Y)
+        yloc = CANVAS_DEFAULT_PATCH_Y;
     if (xloc < 0)
         xloc = 0;
     x->gl_x1 = 0;
@@ -489,7 +485,7 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     x->gl_font =  (canvas_getcurrent() ?
         canvas_getcurrent()->gl_font : font_getDefaultFontSize());
     x->gl_screenx1 = 0;
-    x->gl_screeny1 = GLIST_DEFCANVASYLOC;
+    x->gl_screeny1 = CANVAS_DEFAULT_PATCH_Y;
     x->gl_screenx2 = 450;
     x->gl_screeny2 = 300;
     x->gl_owner = g;
@@ -952,7 +948,7 @@ static void *subcanvas_new(t_symbol *s)
     t_glist *x, *z = canvas_getcurrent();
     if (!*s->s_name) s = gensym("/SUBPATCH/");
     SET_FLOAT(a, 0);
-    SET_FLOAT(a+1, GLIST_DEFCANVASYLOC);
+    SET_FLOAT(a+1, CANVAS_DEFAULT_PATCH_Y);
     SET_FLOAT(a+2, CANVAS_DEFAULT_PATCH_WIDTH);
     SET_FLOAT(a+3, CANVAS_DEFAULT_PATCH_HEIGHT);
     SET_SYMBOL(a+4, s);
@@ -1441,6 +1437,7 @@ int canvas_open(t_glist *x, const char *name, const char *ext,
     
         /* otherwise "name" is relative; start trying in directories named
         in this and parent environments */
+    /*
     for (y = x; y; y = y->gl_owner)
         if (y->gl_env)
     {
@@ -1450,15 +1447,16 @@ int canvas_open(t_glist *x, const char *name, const char *ext,
         while (x2 && x2->gl_owner)
             x2 = x2->gl_owner;
         dir = (x2 ? canvas_getdir(x2)->s_name : ".");
+        
         for (nl = y->gl_env->ce_path; nl; nl = nl->pl_next)
         {
             char realname[PD_STRING];
-            if (0 /* path_isAbsoluteConsideringEnvironment(nl->pl_string)*/)
+            if (0)
             {
                 realname[0] = '\0';
             }
             else
-            {   /* if not absolute path, append Pd lib dir */
+            { 
                 strncpy(realname, dir, PD_STRING);
                 realname[PD_STRING-3] = 0;
                 strcat(realname, "/");
@@ -1469,7 +1467,7 @@ int canvas_open(t_glist *x, const char *name, const char *ext,
                 dirresult, nameresult, size)) >= 0)
                     return (fd);
         }
-    }
+    }*/
     return (file_openConsideringSearchPath((x ? canvas_getdir(x)->s_name : "."), name, ext,
         dirresult, nameresult, size));
 }
