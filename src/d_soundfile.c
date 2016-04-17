@@ -1647,7 +1647,7 @@ static void *readsf_child_main(void *zz)
             int sfchannels = x->x_sfchannels;
             int bigendian = x->x_bigendian;
             char *filename = x->x_filename;
-            char *dirname = canvas_getdir(x->x_canvas)->s_name;
+            char *dirname = canvas_getEnvironment (x->x_canvas)->ce_directory->s_name;
                 /* alter the request code so that an ensuing "open" will get
                 noticed. */
 #ifdef DEBUG_SOUNDFILE

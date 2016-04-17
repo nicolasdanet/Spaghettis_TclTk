@@ -765,7 +765,7 @@ static void canvas_menusaveas(t_glist *x, float fdestroy)
 {
     t_glist *x2 = canvas_getroot(x);
     sys_vGui("::ui_file::saveAs .x%lx {%s} {%s} %d\n", x2,
-        x2->gl_name->s_name, canvas_getdir(x2)->s_name, (fdestroy != 0));
+        x2->gl_name->s_name, canvas_getEnvironment (x2)->ce_directory->s_name, (fdestroy != 0));
 }
 
 static void canvas_menusave(t_glist *x, float fdestroy)
@@ -776,7 +776,7 @@ static void canvas_menusave(t_glist *x, float fdestroy)
             && (strlen(name) < 4 || strcmp(name + strlen(name)-4, ".pat")
                 || strcmp(name + strlen(name)-4, ".mxt")))
     {
-        canvas_savetofile(x2, x2->gl_name, canvas_getdir(x2), fdestroy);
+        canvas_savetofile(x2, x2->gl_name, canvas_getEnvironment (x2)->ce_directory, fdestroy);
     }
     else canvas_menusaveas(x2, fdestroy);
 }

@@ -83,14 +83,6 @@ void canvas_setArguments (int argc, t_atom *argv)
     canvas_argv = PD_MEMORY_GET_COPY (argv, argc * sizeof (t_atom));
 }
 
-void canvas_getArguments (int *argc, t_atom **argv)
-{
-    t_canvasenvironment *e = canvas_getEnvironment (canvas_getCurrent());
-    
-    *argc = e->ce_argc;
-    *argv = e->ce_argv;
-}
-
 void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 {
     canvas_setFileNameAndDirectory (name, directory);
@@ -102,6 +94,11 @@ void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_glist *canvas_getCurrent (void)
+{
+    return (cast_glist (pd_findByClass (&s__X, canvas_class)));
+}
+
 t_canvasenvironment *canvas_getEnvironment (t_glist *glist)
 {
     PD_ASSERT (glist);
@@ -109,11 +106,6 @@ t_canvasenvironment *canvas_getEnvironment (t_glist *glist)
     while (!glist->gl_env) { if (!(glist = glist->gl_owner)) { PD_BUG; } }
     
     return glist->gl_env;
-}
-
-t_glist *canvas_getCurrent (void)
-{
-    return (cast_glist (pd_findByClass (&s__X, canvas_class)));
 }
 
 t_symbol *canvas_expandDollar (t_glist *glist, t_symbol *s)
@@ -135,12 +127,6 @@ t_symbol *canvas_expandDollar (t_glist *glist, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-t_symbol *canvas_getdir(t_glist *x)
-{
-    t_canvasenvironment *e = canvas_getEnvironment(x);
-    return (e->ce_directory);
-}
 
 void canvas_makefilename(t_glist *x, char *file, char *result, int resultsize)
 {
@@ -553,7 +539,7 @@ void canvas_reflecttitle(t_glist *x)
     }
     else namebuf[0] = 0;*/
     sys_vGui("::ui_patch::setTitle .x%lx {%s} {%s} %d\n",
-        x, canvas_getdir(x)->s_name, x->gl_name->s_name, x->gl_dirty);
+        x, canvas_getEnvironment (x)->ce_directory->s_name, x->gl_name->s_name, x->gl_dirty);
 }
 
     /* mark a glist dirty or clean */
@@ -1396,7 +1382,7 @@ int canvas_open(t_glist *x, const char *name, const char *ext,
         char *dir;
         while (x2 && x2->gl_owner)
             x2 = x2->gl_owner;
-        dir = (x2 ? canvas_getdir(x2)->s_name : ".");
+        dir = (x2 ? canvas_getDirectory(x2)->s_name : ".");
         
         for (nl = y->gl_env->ce_path; nl; nl = nl->pl_next)
         {
@@ -1418,7 +1404,7 @@ int canvas_open(t_glist *x, const char *name, const char *ext,
                     return (fd);
         }
     }*/
-    return (file_openConsideringSearchPath((x ? canvas_getdir(x)->s_name : "."), name, ext,
+    return (file_openConsideringSearchPath((x ? canvas_getEnvironment (x)->ce_directory->s_name : "."), name, ext,
         dirresult, nameresult, size));
 }
 

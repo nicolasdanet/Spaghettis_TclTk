@@ -87,18 +87,20 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 /* ----------------- the "object" object.  ------------------ */
 
 extern t_pd *pd_newest;
-void canvas_getArguments(int *argcp, t_atom **argvp);
 
-static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width,
-    int selected, t_buffer *b)
+static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width, int selected, t_buffer *b)
 {
     t_object *x;
     int argc;
     t_atom *argv;
     pd_newest = 0;
+    t_canvasenvironment *e = canvas_getEnvironment (canvas_getCurrent());
     //canvas_setCurrent((t_glist *)gl);
     stack_push (cast_pd (gl));
-    canvas_getArguments(&argc, &argv);
+    argc = e->ce_argc;
+    argv = e->ce_argv;
+    //canvas_getArguments(&argc, &argv);
+    
     buffer_eval(b, &pd_objectMaker, argc, argv);
     if (buffer_size(b))
     {

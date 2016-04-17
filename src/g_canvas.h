@@ -275,10 +275,10 @@ void                guiconnect_release              (t_guiconnect *x, double tim
 void                canvas_newPatch                 (void *dummy, t_symbol *name, t_symbol *directory);
 void                canvas_setFileNameAndDirectory  (t_symbol *name, t_symbol *directory);
 void                canvas_setArguments             (int argc, t_atom *argv);
-void                canvas_getArguments             (int *argc, t_atom **argv);
 
 t_glist             *canvas_getCurrent              (void);
 t_canvasenvironment *canvas_getEnvironment          (t_glist *glist);
+
 t_symbol            *canvas_expandDollar            (t_glist *x, t_symbol *s);
 
 void                canvas_reflecttitle             (t_glist *x);
@@ -287,7 +287,7 @@ void                canvas_setcursor                (t_glist *x, unsigned int cu
 
 void                canvas_makefilename             (t_glist *c, char *file, char *result, int resultsize);
 
-t_symbol            *canvas_getdir                  (t_glist *x);
+
 
 void                canvas_dataproperties           (t_glist *x, t_scalar *sc, t_buffer *b);
 int                 canvas_open                     (t_glist *x,

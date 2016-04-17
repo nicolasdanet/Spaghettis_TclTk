@@ -775,7 +775,7 @@ static void glist_doreload(t_glist *gl, t_symbol *name, t_symbol *dir,
         if (g != except && pd_class(&g->g_pd) == canvas_class &&
             canvas_isabstraction((t_glist *)g) &&
                 ((t_glist *)g)->gl_name == name &&
-                    canvas_getdir((t_glist *)g) == dir)
+                    canvas_getEnvironment ((t_glist *)g)->ce_directory == dir)
         {
                 /* we're going to remake the object, so "g" will go stale.
                 Get its index here, and afterward restore g.  Also, the
@@ -1233,7 +1233,7 @@ static void canvas_done_popup(t_glist *x, t_float which, t_float xpos, t_float y
                     if (ac < 1)
                         return;
                     atom_toString(av, namebuf, PD_STRING);
-                    dir = canvas_getdir((t_glist *)y)->s_name;
+                    dir = canvas_getEnvironment ((t_glist *)y)->ce_directory->s_name;
                 }
                 else
                 {
@@ -1249,7 +1249,7 @@ static void canvas_done_popup(t_glist *x, t_float which, t_float xpos, t_float y
     if (which == 0)
         canvas_properties(&x->gl_obj.te_g, 0);
     /*else if (which == 2)
-        file_openHelp("intro.pd", canvas_getdir((t_glist *)x)->s_name);*/
+        file_openHelp("intro.pd", canvas_getDirectory((t_glist *)x)->s_name);*/
 }
 
 #define NOMOD 0
