@@ -41,6 +41,17 @@ int dollar_isPointingToDollarAndNumber (char *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+static int dollar_getDollarZero (void)
+{
+    t_glist *glist = canvas_getCurrent();
+    t_canvasenvironment *environment = (glist ? canvas_getEnvironment (glist) : NULL);
+    
+    if (environment) { return (environment->ce_dollarZeroValue); }
+    else {
+        return 0;
+    }
+}
+
 static int dollar_expand (char *s, char *buf, int size, int argc, t_atom *argv)
 {
     int n = (int)atol (s);      /* Note that atol return zero for an invalid number. */
@@ -68,7 +79,7 @@ static int dollar_expand (char *s, char *buf, int size, int argc, t_atom *argv)
 
     } else if (n == 0) {                                    
         t_atom a;
-        SET_FLOAT (&a, canvas_getdollarzero());
+        SET_FLOAT (&a, dollar_getDollarZero());
         err = atom_toString (&a, buf, size);
         PD_ASSERT (length == 1);
         
@@ -134,7 +145,7 @@ void dollar_expandDollarNumber (t_atom *dollar, t_atom *a, int argc, t_atom *arg
     PD_ASSERT (IS_DOLLAR (dollar));
     
     if (n > 0 && n <= argc) { *a = *(argv + n - 1); }
-    else if (n == 0)        { SET_FLOAT (a, canvas_getdollarzero()); }
+    else if (n == 0)        { SET_FLOAT (a, dollar_getDollarZero()); }
     else {
         post_error (PD_TRANSLATE ("$: invalid expansion"));  // --
         SET_FLOAT (a, 0.0);

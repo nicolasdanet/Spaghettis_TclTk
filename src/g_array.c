@@ -176,7 +176,7 @@ static t_garray *graph_scalar(t_glist *gl, t_symbol *s, t_symbol *templatesym,
     x = (t_garray *)pd_new(garray_class);
     x->x_scalar = scalar_new(gl, templatesym);
     x->x_name = s;
-    x->x_realname = canvas_realizedollar(gl, s);
+    x->x_realname = canvas_expandDollar(gl, s);
     pd_bind(&x->x_gobj.g_pd, x->x_realname);
     x->x_usedindsp = 0;
     x->x_saveit = saveit;
@@ -455,7 +455,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize,
             /* } jsarlo */
             x->x_name = argname;
             pd_unbind(&x->x_gobj.g_pd, x->x_realname);
-            x->x_realname = canvas_realizedollar(x->x_glist, argname);
+            x->x_realname = canvas_expandDollar(x->x_glist, argname);
             pd_bind(&x->x_gobj.g_pd, x->x_realname);
                 /* redraw the whole glist, just so the name change shows up */
             if (x->x_glist->gl_havewindow)

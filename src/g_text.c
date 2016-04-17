@@ -797,13 +797,13 @@ static void gatom_param(t_gatom *x, t_symbol *sel, int argc, t_atom *argv)
     x->a_label = label;
     if (*x->a_symfrom->s_name)
         pd_unbind(&x->a_text.te_g.g_pd,
-            canvas_realizedollar(x->a_glist, x->a_symfrom));
+            canvas_expandDollar(x->a_glist, x->a_symfrom));
     x->a_symfrom = symfrom;
     if (*x->a_symfrom->s_name)
         pd_bind(&x->a_text.te_g.g_pd,
-            canvas_realizedollar(x->a_glist, x->a_symfrom));
+            canvas_expandDollar(x->a_glist, x->a_symfrom));
     x->a_symto = symto;
-    x->a_expanded_to = canvas_realizedollar(x->a_glist, x->a_symto);
+    x->a_expanded_to = canvas_expandDollar(x->a_glist, x->a_symto);
     gobj_vis(&x->a_text.te_g, x->a_glist, 1);
     canvas_dirty(x->a_glist, 1);
 
@@ -820,7 +820,7 @@ static void gatom_getwherelabel(t_gatom *x, t_glist *glist, int *xp, int *yp)
     if (x->a_wherelabel == ATOM_LABELLEFT)
     {
         *xp = x1 - 3 -
-            strlen(canvas_realizedollar(x->a_glist, x->a_label)->s_name) *
+            strlen(canvas_expandDollar(x->a_glist, x->a_label)->s_name) *
             font_getHostFontWidth(glist_getfont(glist));
         *yp = y1 + 2;
     }
@@ -863,7 +863,7 @@ static void gatom_vis(t_gobj *z, t_glist *glist, int vis)
             sys_vGui("::ui_object::newText .x%lx.c {%lx.l label text} %f %f {%s} %d %s\n",
                 glist_getcanvas(glist), x,
                 (double)x1, (double)y1,
-                canvas_realizedollar(x->a_glist, x->a_label)->s_name,
+                canvas_expandDollar(x->a_glist, x->a_label)->s_name,
                 font_getHostFontSize(glist_getfont(glist)),
                 "black");
         }
@@ -921,10 +921,10 @@ void canvas_atom(t_glist *gl, t_atomtype type,
         x->a_symfrom = gatom_unescapit(atom_getSymbolAtIndex(7, argc, argv));
         if (*x->a_symfrom->s_name)
             pd_bind(&x->a_text.te_g.g_pd,
-                canvas_realizedollar(x->a_glist, x->a_symfrom));
+                canvas_expandDollar(x->a_glist, x->a_symfrom));
 
         x->a_symto = gatom_unescapit(atom_getSymbolAtIndex(8, argc, argv));
-        x->a_expanded_to = canvas_realizedollar(x->a_glist, x->a_symto);
+        x->a_expanded_to = canvas_expandDollar(x->a_glist, x->a_symto);
         if (x->a_symto == &s_)
             outlet_new(&x->a_text,
                 x->a_atom.a_type == A_FLOAT ? &s_float: &s_symbol);
@@ -965,7 +965,7 @@ static void gatom_free(t_gatom *x)
 {
     if (*x->a_symfrom->s_name)
         pd_unbind(&x->a_text.te_g.g_pd,
-            canvas_realizedollar(x->a_glist, x->a_symfrom));
+            canvas_expandDollar(x->a_glist, x->a_symfrom));
     guistub_destroyWithKey(x);
 }
 

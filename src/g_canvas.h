@@ -123,6 +123,13 @@ struct _boxtext;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+struct _canvasenvironment {
+    int         ce_dollarZeroValue;
+    int         ce_argc;
+    t_atom      *ce_argv;
+    t_symbol    *ce_directory;
+};
+
 typedef struct _tick {
     t_float     k_point;
     t_float     k_inc;
@@ -257,41 +264,43 @@ typedef struct _linetraverser {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_guiconnect    *guiconnect_new                 (t_pd *owner, t_symbol *bindTo);
+t_guiconnect        *guiconnect_new                 (t_pd *owner, t_symbol *bindTo);
 
-void            guiconnect_release              (t_guiconnect *x, double timeOut);
+void                guiconnect_release              (t_guiconnect *x, double timeOut);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void            canvas_newPatch                 (void *dummy, t_symbol *name, t_symbol *directory);
-void            canvas_setFileNameAndDirectory  (t_symbol *name, t_symbol *directory);
-void            canvas_setArguments             (int argc, t_atom *argv);
-void            canvas_getArguments             (int *argc, t_atom **argv);
+void                canvas_newPatch                 (void *dummy, t_symbol *name, t_symbol *directory);
+void                canvas_setFileNameAndDirectory  (t_symbol *name, t_symbol *directory);
+void                canvas_setArguments             (int argc, t_atom *argv);
+void                canvas_getArguments             (int *argc, t_atom **argv);
 
-t_glist         *canvas_getCurrent              (void);
+t_glist             *canvas_getCurrent              (void);
+t_canvasenvironment *canvas_getEnvironment          (t_glist *glist);
+t_symbol            *canvas_expandDollar            (t_glist *x, t_symbol *s);
 
-void            canvas_reflecttitle         (t_glist *x);
-void            canvas_setcursor            (t_glist *x, unsigned int cursornum);
+void                canvas_reflecttitle             (t_glist *x);
+void                canvas_setcursor                (t_glist *x, unsigned int cursornum);
 
 
-void            canvas_makefilename         (t_glist *c, char *file, char *result, int resultsize);
+void                canvas_makefilename             (t_glist *c, char *file, char *result, int resultsize);
 
-t_symbol        *canvas_getdir              (t_glist *x);
+t_symbol            *canvas_getdir                  (t_glist *x);
 
-void            canvas_dataproperties       (t_glist *x, t_scalar *sc, t_buffer *b);
-int             canvas_open                 (t_glist *x,
-                                                const char *name,
-                                                const char *ext,
-                                                char *dirresult,
-                                                char **nameresult,
-                                                unsigned int size,
-                                                int bin);
+void                canvas_dataproperties           (t_glist *x, t_scalar *sc, t_buffer *b);
+int                 canvas_open                     (t_glist *x,
+                                                        const char *name,
+                                                        const char *ext,
+                                                        char *dirresult,
+                                                        char **nameresult,
+                                                        unsigned int size,
+                                                        int bin);
 
-int             canvas_suspend_dsp          (void);
-void            canvas_resume_dsp           (int oldstate);
-void            canvas_update_dsp           (void);
+int                 canvas_suspend_dsp              (void);
+void                canvas_resume_dsp               (int oldstate);
+void                canvas_update_dsp               (void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -381,7 +390,6 @@ void     glist_eraseio          (t_glist *glist, t_object *ob, char *tag);
 #pragma mark -
 
 void canvas_popabstraction      (t_glist *x);
-int  canvas_getdollarzero       (void);
 void canvas_create_editor       (t_glist *x);
 void canvas_destroy_editor      (t_glist *x);
 void canvas_deletelinesforio    (t_glist *x, t_object *text, t_inlet *inp, t_outlet *outp);
@@ -442,7 +450,7 @@ void     canvas_redrawallfortemplate        (t_template *tmpl, int action);
 void     canvas_redrawallfortemplatecanvas  (t_glist *x, int action);
 void     canvas_zapallfortemplate           (t_glist *tmpl);
 void     canvas_setusedastemplate           (t_glist *x);
-t_symbol *canvas_realizedollar              (t_glist *x, t_symbol *s);
+
 t_glist *canvas_getroot                    (t_glist *x);
 void     canvas_dirty                       (t_glist *x, t_float n);
 int      canvas_getfont                     (t_glist *x);
@@ -455,7 +463,7 @@ int      canvas_istable                 (t_glist *x);
 int      canvas_showtext                (t_glist *x);
 void     canvas_vis                     (t_glist *x, t_float f);
 
-t_canvasenvironment *canvas_getenv      (t_glist *x);
+
 
 void     canvas_rename                  (t_glist *x, t_symbol *s, t_symbol *dir);
 void     canvas_loadbang                (t_glist *x);
