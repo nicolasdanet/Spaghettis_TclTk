@@ -844,7 +844,7 @@ static int create_soundfile(t_glist *canvas, const char *filename,
         headersize = sizeof(t_wave);
     }
 
-    canvas_makefilename(canvas, filenamebuf, buf2, PD_STRING);
+    canvas_makeFilePath(canvas, filenamebuf, buf2, PD_STRING);
     if ((fd = file_openRaw(buf2, O_WRONLY | O_CREAT | O_TRUNC)) < 0)
         return (-1);
 

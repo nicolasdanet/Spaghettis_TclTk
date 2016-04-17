@@ -168,7 +168,7 @@ static void textbuf_write(t_textbuf *x, t_symbol *s, int argc, t_atom *argv)
         post("warning: text define ignoring extra argument: ");
         post_atoms(argc, argv);
     }
-    canvas_makefilename(x->b_canvas, filename->s_name,
+    canvas_makeFilePath(x->b_canvas, filename->s_name,
         buf, PD_STRING);
     if (buffer_write(x->b_binbuf, buf, ""))
             post_error ("%s: write failed", filename->s_name);
@@ -1681,7 +1681,7 @@ static void qlist_write(t_qlist *x, t_symbol *filename, t_symbol *format)
 {
     int cr = 0;
     char buf[PD_STRING];
-    canvas_makefilename(x->x_canvas, filename->s_name,
+    canvas_makeFilePath(x->x_canvas, filename->s_name,
         buf, PD_STRING);
     if (!strcmp(format->s_name, "cr"))
         cr = 1;

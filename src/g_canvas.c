@@ -128,25 +128,21 @@ t_symbol *canvas_expandDollar (t_glist *glist, t_symbol *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_makefilename(t_glist *x, char *file, char *result, int resultsize)
+t_error canvas_makeFilePath (t_glist *glist, char *name, char *dest, size_t size)
 {
-    char *dir = canvas_getEnvironment(x)->ce_directory->s_name;
-    if (file[0] == '/' || (file[0] && file[1] == ':') || !*dir)
-    {
-        strncpy(result, file, resultsize);
-        result[resultsize-1] = 0;
+    t_error err = PD_ERROR_NONE;
+    
+    char *directory = canvas_getEnvironment (glist)->ce_directory->s_name;
+    
+    if (name[0] == '/' || (name[0] && name[1] == ':') || !(*directory)) { 
+        err |= string_copy (dest, size, name);
+        
+    } else {
+        err |= string_copy (dest, size, directory);
+        err |= string_addSprintf (dest, size, "/%s", name);
     }
-    else
-    {
-        int nleft;
-        strncpy(result, dir, resultsize);
-        result[resultsize-1] = 0;
-        nleft = resultsize - strlen(result) - 1;
-        if (nleft <= 0) return;
-        strcat(result, "/");
-        strncat(result, file, nleft);
-        result[resultsize-1] = 0;
-    }           
+    
+    return err;
 }
 
 void canvas_rename(t_glist *x, t_symbol *s, t_symbol *dir)

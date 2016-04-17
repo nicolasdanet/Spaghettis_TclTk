@@ -1146,7 +1146,7 @@ static void garray_write(t_garray *x, t_symbol *filename)
         post_error ("%s: needs floating-point 'y' field", x->x_realname->s_name);
         return;
     }
-    canvas_makefilename(glist_getcanvas(x->x_glist), filename->s_name,
+    canvas_makeFilePath(glist_getcanvas(x->x_glist), filename->s_name,
         buf, PD_STRING);
     if (!(fd = file_openWrite(buf)))
     {

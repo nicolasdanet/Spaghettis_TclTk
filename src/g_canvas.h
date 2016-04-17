@@ -278,14 +278,15 @@ void                canvas_setArguments             (int argc, t_atom *argv);
 
 t_glist             *canvas_getCurrent              (void);
 t_canvasenvironment *canvas_getEnvironment          (t_glist *glist);
-
 t_symbol            *canvas_expandDollar            (t_glist *x, t_symbol *s);
+
+t_error             canvas_makeFilePath             (t_glist *c, char *name, char *dest, size_t size);
 
 void                canvas_reflecttitle             (t_glist *x);
 void                canvas_setcursor                (t_glist *x, unsigned int cursornum);
 
 
-void                canvas_makefilename             (t_glist *c, char *file, char *result, int resultsize);
+
 
 
 

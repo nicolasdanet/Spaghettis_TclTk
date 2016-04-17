@@ -588,7 +588,7 @@ static void glist_write(t_glist *x, t_symbol *filename, t_symbol *format)
     int ntemplates = 0;
     t_gobj *y;
     t_glist *canvas = glist_getcanvas(x);
-    canvas_makefilename(canvas, filename->s_name, buf, PD_STRING);
+    canvas_makeFilePath(canvas, filename->s_name, buf, PD_STRING);
     if (!strcmp(format->s_name, "cr"))
         cr = 1;
     else if (*format->s_name)

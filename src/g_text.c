@@ -94,9 +94,9 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width, int selec
     int argc;
     t_atom *argv;
     pd_newest = 0;
-    t_canvasenvironment *e = canvas_getEnvironment (canvas_getCurrent());
     //canvas_setCurrent((t_glist *)gl);
-    stack_push (cast_pd (gl));
+    stack_push (cast_pd (gl));  /* Must be before line below. !!!! */
+    t_canvasenvironment *e = canvas_getEnvironment (canvas_getCurrent());
     argc = e->ce_argc;
     argv = e->ce_argv;
     //canvas_getArguments(&argc, &argv);
