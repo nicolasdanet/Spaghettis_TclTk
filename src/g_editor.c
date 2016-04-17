@@ -1006,7 +1006,7 @@ void canvas_vis(t_glist *x, t_float f)
             }
             strcat(cbuf, "\n");
             // sys_gui(cbuf);
-            canvas_reflecttitle(x);
+            canvas_updateTitle(x);
             x->gl_havewindow = 1;
         }
     }

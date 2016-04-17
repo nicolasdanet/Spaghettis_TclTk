@@ -277,18 +277,15 @@ void                canvas_setFileNameAndDirectory  (t_symbol *name, t_symbol *d
 void                canvas_setArguments             (int argc, t_atom *argv);
 
 t_glist             *canvas_getCurrent              (void);
+
 t_canvasenvironment *canvas_getEnvironment          (t_glist *glist);
-t_symbol            *canvas_expandDollar            (t_glist *x, t_symbol *s);
+t_symbol            *canvas_expandDollar            (t_glist *glist, t_symbol *s);
 
-t_error             canvas_makeFilePath             (t_glist *c, char *name, char *dest, size_t size);
+t_error             canvas_makeFilePath             (t_glist *glist, char *name, char *dest, size_t size);
+void                canvas_rename                   (t_glist *glist, t_symbol *name, t_symbol *directory);
+void                canvas_updateTitle              (t_glist *glist);
 
-void                canvas_reflecttitle             (t_glist *x);
 void                canvas_setcursor                (t_glist *x, unsigned int cursornum);
-
-
-
-
-
 
 void                canvas_dataproperties           (t_glist *x, t_scalar *sc, t_buffer *b);
 int                 canvas_open                     (t_glist *x,
@@ -466,7 +463,7 @@ void     canvas_vis                     (t_glist *x, t_float f);
 
 
 
-void     canvas_rename                  (t_glist *x, t_symbol *s, t_symbol *dir);
+
 void     canvas_loadbang                (t_glist *x);
 int      canvas_hitbox                  (t_glist *x,
                                             t_gobj *y,

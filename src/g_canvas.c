@@ -108,6 +108,10 @@ t_canvasenvironment *canvas_getEnvironment (t_glist *glist)
     return glist->gl_env;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_symbol *canvas_expandDollar (t_glist *glist, t_symbol *s)
 {
     t_symbol *t = s;
@@ -123,10 +127,6 @@ t_symbol *canvas_expandDollar (t_glist *glist, t_symbol *s)
 
     return t;
 }
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 t_error canvas_makeFilePath (t_glist *glist, char *name, char *dest, size_t size)
 {
@@ -145,23 +145,34 @@ t_error canvas_makeFilePath (t_glist *glist, char *name, char *dest, size_t size
     return err;
 }
 
-void canvas_rename(t_glist *x, t_symbol *s, t_symbol *dir)
+void canvas_rename (t_glist *glist, t_symbol *name, t_symbol *directory)
 {
-    canvas_unbind(x);
-    x->gl_name = s;
-    canvas_bind(x);
-    if (x->gl_havewindow)
-        canvas_reflecttitle(x);
-    if (dir && dir != &s_)
-    {
-        t_canvasenvironment *e = canvas_getEnvironment(x);
-        e->ce_directory = dir;
+    canvas_unbind (glist);
+    glist->gl_name = name;
+    canvas_bind (glist);
+    
+    if (glist->gl_havewindow) { canvas_updateTitle (glist); }
+    if (directory && directory != &s_) {
+        canvas_getEnvironment (glist)->ce_directory = directory; 
     }
 }
 
+void canvas_updateTitle (t_glist *glist)
+{
+    sys_vGui ("::ui_patch::setTitle .x%lx {%s} {%s} %d\n",
+        glist,
+        canvas_getEnvironment (glist)->ce_directory->s_name,
+        glist->gl_name->s_name,
+        glist->gl_dirty);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 /* --------------- traversing the set of lines in a canvas ----------- */
 
-int canvas_getindex(t_glist *x, t_gobj *y)
+int canvas_getindex (t_glist *x, t_gobj *y)
 {
     t_gobj *y2;
     int indexno;
@@ -239,6 +250,10 @@ void linetraverser_skipobject(t_linetraverser *t)
     t->tr_nextoc = 0;
     t->tr_nextoutno = t->tr_nout;
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* -------------------- the canvas object -------------------------- */
 int glist_valid = 10000;    /* Shared. */
@@ -514,29 +529,7 @@ static void canvas_unbind(t_glist *x)
         pd_unbind(&x->gl_obj.te_g.g_pd, canvas_makebindsym(x->gl_name));
 }
 
-void canvas_reflecttitle(t_glist *x)
-{
-    char namebuf[PD_STRING];
-    t_canvasenvironment *env = canvas_getEnvironment(x);
-    /*if (env->ce_argc)
-    {
-        int i;
-        strcpy(namebuf, " (");
-        for (i = 0; i < env->ce_argc; i++)
-        {
-            if (strlen(namebuf) > PD_STRING/2 - 5)
-                break;
-            if (i != 0)
-                strcat(namebuf, " ");
-            atom_toString(&env->ce_argv[i], namebuf + strlen(namebuf), 
-                PD_STRING/2);
-        }
-        strcat(namebuf, ")");
-    }
-    else namebuf[0] = 0;*/
-    sys_vGui("::ui_patch::setTitle .x%lx {%s} {%s} %d\n",
-        x, canvas_getEnvironment (x)->ce_directory->s_name, x->gl_name->s_name, x->gl_dirty);
-}
+
 
     /* mark a glist dirty or clean */
 void canvas_dirty(t_glist *x, t_float n)
@@ -548,7 +541,7 @@ void canvas_dirty(t_glist *x, t_float n)
     {
         x2->gl_dirty = n;
         if (x2->gl_havewindow)
-            canvas_reflecttitle(x2);
+            canvas_updateTitle(x2);
     }
 }
 
