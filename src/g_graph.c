@@ -58,7 +58,7 @@ void glist_add(t_glist *x, t_gobj *y)
     if (glist_isvisible(x))
         gobj_vis(y, x, 1);
     if (class_hasDrawCommand(y->g_pd)) 
-        canvas_redrawallfortemplate(template_findbyname(canvas_makebindsym(
+        canvas_redrawallfortemplate(template_findbyname(canvas_makeBindSymbol(
             glist_getcanvas(x)->gl_name)), 0);
 }
 
@@ -115,7 +115,7 @@ void glist_delete(t_glist *x, t_gobj *y)
         /* if we're a drawing command, erase all scalars now, before deleting
         it; we'll redraw them once it's deleted below. */
     if (drawcommand)
-        canvas_redrawallfortemplate(template_findbyname(canvas_makebindsym(
+        canvas_redrawallfortemplate(template_findbyname(canvas_makeBindSymbol(
             glist_getcanvas(x)->gl_name)), 2);
     gobj_delete(y, x);
     if (glist_isvisible(canvas))
@@ -136,7 +136,7 @@ void glist_delete(t_glist *x, t_gobj *y)
         rtext_free(rtext);
     if (chkdsp) canvas_update_dsp();
     if (drawcommand)
-        canvas_redrawallfortemplate(template_findbyname(canvas_makebindsym(
+        canvas_redrawallfortemplate(template_findbyname(canvas_makeBindSymbol(
             glist_getcanvas(x)->gl_name)), 1);
     canvas_setdeleting(canvas, wasdeleting);
     x->gl_valid = ++glist_valid;
@@ -649,8 +649,8 @@ void glist_redraw(t_glist *x)
                 gobj_vis(g, x, 1);
             }
                 /* redraw all the lines */
-            linetraverser_start(&t, x);
-            while (oc = linetraverser_next(&t))
+            canvas_traverseLineStart(&t, x);
+            while (oc = canvas_traverseLineNext(&t))
                 sys_vGui(".x%lx.c coords l%lx %d %d %d %d\n",
                     glist_getcanvas(x), oc,
                         t.tr_lx1, t.tr_ly1, t.tr_lx2, t.tr_ly2);

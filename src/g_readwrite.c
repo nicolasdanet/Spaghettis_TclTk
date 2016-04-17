@@ -133,7 +133,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
         *p_nextmsg = natoms;
         return (0);
     }
-    templatesym = canvas_makebindsym(vec[nextmsg].a_w.w_symbol);
+    templatesym = canvas_makeBindSymbol(vec[nextmsg].a_w.w_symbol);
     *p_nextmsg = nextmsg + 1;
     
     if (!(template = template_findbyname(templatesym)))
@@ -213,7 +213,7 @@ void glist_readfrombinbuf(t_glist *x, t_buffer *b, char *filename, int selectem)
                 "bad template header");
             continue;
         }
-        templatesym = canvas_makebindsym(vec[message + 1].a_w.w_symbol);
+        templatesym = canvas_makeBindSymbol(vec[message + 1].a_w.w_symbol);
         while (1)
         {
             nline = canvas_scanbinbuf(natoms, vec, &message, &nextmsg);
@@ -643,11 +643,11 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
     for (y = x->gl_list; y; y = y->g_next)
         gobj_save(y, b);
 
-    linetraverser_start(&t, x);
-    while (oc = linetraverser_next(&t))
+    canvas_traverseLineStart(&t, x);
+    while (oc = canvas_traverseLineNext(&t))
     {
-        int srcno = canvas_getindex(x, &t.tr_ob->te_g);
-        int sinkno = canvas_getindex(x, &t.tr_ob2->te_g);
+        int srcno = canvas_getIndexOfObject(x, &t.tr_ob->te_g);
+        int sinkno = canvas_getIndexOfObject(x, &t.tr_ob2->te_g);
         buffer_vAppend(b, "ssiiii;", gensym("#X"), gensym("connect"),
             srcno, t.tr_outno, sinkno, t.tr_inno);
     }

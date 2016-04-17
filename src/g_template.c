@@ -93,7 +93,7 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
                 post_error ("array lacks element template or name");
                 goto bad;
             }
-            newarraytemplate = canvas_makebindsym(argv[2].a_w.w_symbol);
+            newarraytemplate = canvas_makeBindSymbol(argv[2].a_w.w_symbol);
             newtype = DATA_ARRAY;
             argc--;
             argv++;
@@ -492,7 +492,7 @@ static void *template_usetemplate(void *dummy, t_symbol *s,
 {
     t_template *x;
     t_symbol *templatesym =
-        canvas_makebindsym(atom_getSymbolAtIndex(0, argc, argv));
+        canvas_makeBindSymbol(atom_getSymbolAtIndex(0, argc, argv));
     if (!argc)
         return (0);
     argc--; argv++;
@@ -619,13 +619,13 @@ static void *gtemplate_new(t_symbol *s, int argc, t_atom *argv)
     if (sym->s_name[0] == '-')
         post("warning: struct '%s' initial '-' may confuse get/set, etc.",
             sym->s_name);  
-    return (gtemplate_donew(canvas_makebindsym(sym), argc, argv));
+    return (gtemplate_donew(canvas_makeBindSymbol(sym), argc, argv));
 }
 
     /* old version (0.34) -- delete 2003 or so */
 static void *gtemplate_new_old(t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *sym = canvas_makebindsym(canvas_getCurrent()->gl_name);
+    t_symbol *sym = canvas_makeBindSymbol(canvas_getCurrent()->gl_name);
     static int warned;
     if (!warned)
     {

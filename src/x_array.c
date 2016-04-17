@@ -332,7 +332,7 @@ static void *array_size_new(t_symbol *s, int argc, t_atom *argv)
             argc >= 3 && argv[1].a_type == A_SYMBOL &&
                 argv[2].a_type == A_SYMBOL)
         {
-            x->x_struct = canvas_makebindsym(argv[1].a_w.w_symbol);
+            x->x_struct = canvas_makeBindSymbol(argv[1].a_w.w_symbol);
             x->x_field = argv[2].a_w.w_symbol;
             argc -= 2; argv += 2;
         }
@@ -444,7 +444,7 @@ static void *array_rangeop_new(t_class *class,
             argc >= 3 && argv[1].a_type == A_SYMBOL &&
                 argv[2].a_type == A_SYMBOL)
         {
-            x->x_struct = canvas_makebindsym(argv[1].a_w.w_symbol);
+            x->x_struct = canvas_makeBindSymbol(argv[1].a_w.w_symbol);
             x->x_field = argv[2].a_w.w_symbol;
             argc -= 2; argv += 2;
         }

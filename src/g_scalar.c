@@ -137,7 +137,7 @@ void glist_scalar(t_glist *glist,
     t_symbol *classname, int argc, t_atom *argv)
 {
     t_symbol *templatesym =
-        canvas_makebindsym(atom_getSymbolAtIndex(0, argc, argv));
+        canvas_makeBindSymbol(atom_getSymbolAtIndex(0, argc, argv));
     t_buffer *b;
     int natoms, nextmsg = 0;
     t_atom *vec;

@@ -130,6 +130,23 @@ struct _canvasenvironment {
     t_symbol    *ce_directory;
 };
 
+typedef struct _linetraverser {
+    t_glist             *tr_x;
+    t_object            *tr_ob;
+    int                 tr_nout;
+    int                 tr_outno;
+    t_object            *tr_ob2;
+    t_outlet            *tr_outlet;
+    t_inlet             *tr_inlet;
+    int                 tr_nin;
+    int                 tr_inno;
+    int                 tr_x11, tr_y11, tr_x12, tr_y12;
+    int                 tr_x21, tr_y21, tr_x22, tr_y22;
+    int                 tr_lx1, tr_ly1, tr_lx2, tr_ly2;
+    t_outconnect        *tr_nextoc;
+    int                 tr_nextoutno;
+    } t_linetraverser;
+    
 typedef struct _tick {
     t_float     k_point;
     t_float     k_inc;
@@ -237,23 +254,6 @@ struct _array {
     t_gstub             *a_stub;
     };
 
-typedef struct _linetraverser {
-    t_glist             *tr_x;
-    t_object            *tr_ob;
-    int                 tr_nout;
-    int                 tr_outno;
-    t_object            *tr_ob2;
-    t_outlet            *tr_outlet;
-    t_inlet             *tr_inlet;
-    int                 tr_nin;
-    int                 tr_inno;
-    int                 tr_x11, tr_y11, tr_x12, tr_y12;
-    int                 tr_x21, tr_y21, tr_x22, tr_y22;
-    int                 tr_lx1, tr_ly1, tr_lx2, tr_ly2;
-    t_outconnect        *tr_nextoc;
-    int                 tr_nextoutno;
-    } t_linetraverser;
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -277,15 +277,17 @@ void                canvas_setFileNameAndDirectory  (t_symbol *name, t_symbol *d
 void                canvas_setArguments             (int argc, t_atom *argv);
 
 t_glist             *canvas_getCurrent              (void);
-
 t_canvasenvironment *canvas_getEnvironment          (t_glist *glist);
 t_symbol            *canvas_expandDollar            (t_glist *glist, t_symbol *s);
+t_symbol            *canvas_makeBindSymbol          (t_symbol *s);
 
 t_error             canvas_makeFilePath             (t_glist *glist, char *name, char *dest, size_t size);
 void                canvas_rename                   (t_glist *glist, t_symbol *name, t_symbol *directory);
 void                canvas_updateTitle              (t_glist *glist);
+int                 canvas_getIndexOfObject         (t_glist *glist, t_gobj *y);
 
-void                canvas_setcursor                (t_glist *x, unsigned int cursornum);
+void                canvas_traverseLineStart        (t_linetraverser *t, t_glist *glist);
+t_outconnect        *canvas_traverseLineNext        (t_linetraverser *t);
 
 void                canvas_dataproperties           (t_glist *x, t_scalar *sc, t_buffer *b);
 int                 canvas_open                     (t_glist *x,
@@ -433,7 +435,6 @@ t_boxtext   *glist_findrtext    (t_glist *gl, t_object *who);
 #pragma mark -
 
 t_glist  *canvas_new                        (void *dummy, t_symbol *sel, int argc, t_atom *argv);
-t_symbol *canvas_makebindsym                (t_symbol *s);
 void     canvas_vistext                     (t_glist *x, t_object *y);
 void     canvas_fixlines                    (t_glist *x, t_object *text);
 void     canvas_deletelines                 (t_glist *x, t_object *text);
@@ -481,7 +482,6 @@ void     canvas_setundo                 (t_glist *x,
                                             const char *name);
 
 void     canvas_noundo                  (t_glist *x);
-int      canvas_getindex                (t_glist *x, t_gobj *y);
 void     canvas_connect                 (t_glist *x,
                                             t_float fwhoout,
                                             t_float foutno,
@@ -510,17 +510,10 @@ int      canvas_clicksub                (t_glist *x,
                                             int alt,
                                             int dbl,
                                             int b);
+void    canvas_setcursor                (t_glist *x, unsigned int cursornum);
 
 t_glist  *canvas_getglistonsuper        (void);
 t_glist  *pd_checkglist                 (t_pd *x);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void         linetraverser_start        (t_linetraverser *t, t_glist *x);
-t_outconnect *linetraverser_next        (t_linetraverser *t);
-void         linetraverser_skipobject   (t_linetraverser *t);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

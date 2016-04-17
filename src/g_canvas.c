@@ -44,13 +44,9 @@ extern int              editor_reloading;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_start_dsp    (void);
-static void canvas_stop_dsp     (void);
 static void canvas_drawlines    (t_glist *x);
 static void canvas_dosetbounds  (t_glist *x, int a, int b, int c, int d);
 static void canvas_pop          (t_glist *x, t_float fvis);
-static void canvas_bind         (t_glist *x);
-static void canvas_unbind       (t_glist *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -68,6 +64,24 @@ static t_symbol *canvas_directory = &s_;                /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+static void canvas_bind (t_glist *glist)
+{
+    if (strcmp (glist->gl_name->s_name, "Pd")) {
+        pd_bind (cast_pd (glist), canvas_makeBindSymbol (glist->gl_name));
+    }
+}
+
+static void canvas_unbind (t_glist *glist)
+{
+    if (strcmp (glist->gl_name->s_name, "Pd")) {
+        pd_unbind (cast_pd (glist), canvas_makeBindSymbol (glist->gl_name));
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void canvas_setFileNameAndDirectory (t_symbol *name, t_symbol *directory)
 {
@@ -128,6 +142,16 @@ t_symbol *canvas_expandDollar (t_glist *glist, t_symbol *s)
     return t;
 }
 
+t_symbol *canvas_makeBindSymbol (t_symbol *s)
+{
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    PD_ASSERT (s);
+    err = string_sprintf (t, PD_STRING, "pd-%s", s->s_name);
+    PD_ASSERT (!err);
+    return (gensym (t));
+}
+
 t_error canvas_makeFilePath (t_glist *glist, char *name, char *dest, size_t size)
 {
     t_error err = PD_ERROR_NONE;
@@ -170,18 +194,15 @@ void canvas_updateTitle (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* --------------- traversing the set of lines in a canvas ----------- */
-
-int canvas_getindex (t_glist *x, t_gobj *y)
+int canvas_getIndexOfObject (t_glist *glist, t_gobj *y)
 {
-    t_gobj *y2;
-    int indexno;
-    for (indexno = 0, y2 = x->gl_list; y2 && y2 != y; y2 = y2->g_next)
-        indexno++;
-    return (indexno);
+    t_gobj *t = NULL;
+    int n = 0;
+    for (t = glist->gl_list; t && t != y; t = t->g_next) { n++; }
+    return n;
 }
 
-void linetraverser_start(t_linetraverser *t, t_glist *x)
+void canvas_traverseLineStart (t_linetraverser *t, t_glist *x)
 {
     t->tr_ob = 0;
     t->tr_x = x;
@@ -189,7 +210,7 @@ void linetraverser_start(t_linetraverser *t, t_glist *x)
     t->tr_nextoutno = t->tr_nout = 0;
 }
 
-t_outconnect *linetraverser_next(t_linetraverser *t)
+t_outconnect *canvas_traverseLineNext (t_linetraverser *t)
 {
     t_outconnect *rval = t->tr_nextoc;
     int outno;
@@ -243,12 +264,6 @@ t_outconnect *linetraverser_next(t_linetraverser *t)
     }
     
     return (rval);
-}
-
-void linetraverser_skipobject(t_linetraverser *t)
-{
-    t->tr_nextoc = 0;
-    t->tr_nextoutno = t->tr_nout;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -505,32 +520,6 @@ static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)
         canvas_redraw(x);
     }
 }
-
-t_symbol *canvas_makebindsym(t_symbol *s)
-{
-    char buf[PD_STRING];
-    strcpy(buf, "pd-");
-    strcat(buf, s->s_name);
-    return (gensym(buf));
-}
-
-    /* functions to bind and unbind canvases to symbol "pd-blah".  As
-    discussed on Pd dev list there should be a way to defeat this for
-    abstractions.  (Claude Heiland et al. Aug 9 2013) */
-static void canvas_bind(t_glist *x)
-{
-    if (strcmp(x->gl_name->s_name, "Pd"))
-        pd_bind(&x->gl_obj.te_g.g_pd, canvas_makebindsym(x->gl_name));
-}
-
-static void canvas_unbind(t_glist *x)
-{
-    if (strcmp(x->gl_name->s_name, "Pd"))
-        pd_unbind(&x->gl_obj.te_g.g_pd, canvas_makebindsym(x->gl_name));
-}
-
-
-
     /* mark a glist dirty or clean */
 void canvas_dirty(t_glist *x, t_float n)
 {
@@ -685,8 +674,8 @@ static void canvas_drawlines(t_glist *x)
     t_linetraverser t;
     t_outconnect *oc;
     {
-        linetraverser_start(&t, x);
-        while (oc = linetraverser_next(&t))
+        canvas_traverseLineStart(&t, x);
+        while (oc = canvas_traverseLineNext(&t))
             sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
                     glist_getcanvas(x),
                         t.tr_lx1, t.tr_ly1, t.tr_lx2, t.tr_ly2, 
@@ -700,8 +689,8 @@ void canvas_fixlines(t_glist *x, t_object *text)
     t_linetraverser t;
     t_outconnect *oc;
 
-    linetraverser_start(&t, x);
-    while (oc = linetraverser_next(&t))
+    canvas_traverseLineStart(&t, x);
+    while (oc = canvas_traverseLineNext(&t))
     {
         if (t.tr_ob == text || t.tr_ob2 == text)
         {
@@ -717,8 +706,8 @@ void canvas_deletelines(t_glist *x, t_object *text)
 {
     t_linetraverser t;
     t_outconnect *oc;
-    linetraverser_start(&t, x);
-    while (oc = linetraverser_next(&t))
+    canvas_traverseLineStart(&t, x);
+    while (oc = canvas_traverseLineNext(&t))
     {
         if (t.tr_ob == text || t.tr_ob2 == text)
         {
@@ -738,8 +727,8 @@ void canvas_deletelinesforio(t_glist *x, t_object *text,
 {
     t_linetraverser t;
     t_outconnect *oc;
-    linetraverser_start(&t, x);
-    while (oc = linetraverser_next(&t))
+    canvas_traverseLineStart(&t, x);
+    while (oc = canvas_traverseLineNext(&t))
     {
         if ((t.tr_ob == text && t.tr_outlet == outp) ||
             (t.tr_ob2 == text && t.tr_inlet == inp))
@@ -989,8 +978,8 @@ static void canvas_dodsp(t_glist *x, int toplevel, t_signal **sp)
             ugen_add(dc, ob);
 
         /* ... and all dsp interconnections */
-    linetraverser_start(&t, x);
-    while (oc = linetraverser_next(&t))
+    canvas_traverseLineStart(&t, x);
+    while (oc = canvas_traverseLineNext(&t))
         if (object_isSignalOutlet(t.tr_ob, t.tr_outno))
             ugen_connect(dc, t.tr_ob, t.tr_outno, t.tr_ob2, t.tr_inno);
 

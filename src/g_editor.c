@@ -471,11 +471,11 @@ void canvas_disconnect(t_glist *x,
 {
     t_linetraverser t;
     t_outconnect *oc;
-    linetraverser_start(&t, x);
-    while (oc = linetraverser_next(&t))
+    canvas_traverseLineStart(&t, x);
+    while (oc = canvas_traverseLineNext(&t))
     {
-        int srcno = canvas_getindex(x, &t.tr_ob->te_g);
-        int sinkno = canvas_getindex(x, &t.tr_ob2->te_g);
+        int srcno = canvas_getIndexOfObject(x, &t.tr_ob->te_g);
+        int sinkno = canvas_getIndexOfObject(x, &t.tr_ob2->te_g);
         if (srcno == index1 && t.tr_outno == outno &&
             sinkno == index2 && t.tr_inno == inno)
         {
@@ -548,8 +548,8 @@ static void *canvas_undo_set_cut(t_glist *x, int mode)
 
         /* store connections into/out of the selection */
     buf->u_reconnectbuf = buffer_new();
-    linetraverser_start(&t, x);
-    while (oc = linetraverser_next(&t))
+    canvas_traverseLineStart(&t, x);
+    while (oc = canvas_traverseLineNext(&t))
     {
         int issel1 = glist_isselected(x, &t.tr_ob->te_g);
         int issel2 = glist_isselected(x, &t.tr_ob2->te_g);
@@ -1456,8 +1456,8 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
         t_outconnect *oc;
         t_float fx = xpos, fy = ypos;
         t_glist *glist2 = glist_getcanvas(x);
-        linetraverser_start(&t, glist2);
-        while (oc = linetraverser_next(&t))
+        canvas_traverseLineStart(&t, glist2);
+        while (oc = canvas_traverseLineNext(&t))
         {
             t_float lx1 = t.tr_lx1, ly1 = t.tr_ly1,
                 lx2 = t.tr_lx2, ly2 = t.tr_ly2;
@@ -1470,8 +1470,8 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
             if (doit)
             {
                 glist_selectline(glist2, oc, 
-                    canvas_getindex(glist2, &t.tr_ob->te_g), t.tr_outno,
-                    canvas_getindex(glist2, &t.tr_ob2->te_g), t.tr_inno);
+                    canvas_getIndexOfObject(glist2, &t.tr_ob->te_g), t.tr_outno,
+                    canvas_getIndexOfObject(glist2, &t.tr_ob2->te_g), t.tr_inno);
             }
             canvas_setcursor(x, CURSOR_EDIT_DISCONNECT);
             return;
@@ -1500,8 +1500,8 @@ int canvas_isconnected (t_glist *x, t_object *ob1, int n1,
 {
     t_linetraverser t;
     t_outconnect *oc;
-    linetraverser_start(&t, x);
-    while (oc = linetraverser_next(&t))
+    canvas_traverseLineStart(&t, x);
+    while (oc = canvas_traverseLineNext(&t))
         if (t.tr_ob == ob1 && t.tr_outno == n1 &&
             t.tr_ob2 == ob2 && t.tr_inno == n2) 
                 return (1);
@@ -1588,8 +1588,8 @@ void canvas_doconnect(t_glist *x, int xpos, int ypos, int which, int doit)
                 canvas_dirty(x, 1);
                 canvas_setundo(x, canvas_undo_connect,
                     canvas_undo_set_connect(x, 
-                        canvas_getindex(x, &ob1->te_g), closest1,
-                        canvas_getindex(x, &ob2->te_g), closest2),
+                        canvas_getIndexOfObject(x, &ob1->te_g), closest1,
+                        canvas_getIndexOfObject(x, &ob2->te_g), closest2),
                         "connect");
             }
             else canvas_setcursor(x, CURSOR_EDIT_CONNECT);
@@ -2215,8 +2215,8 @@ void canvas_stowconnections(t_glist *x)
 
         /* add connections to binbuf */
     buffer_reset(x->gl_editor->e_connectbuf);
-    linetraverser_start(&t, x);
-    while (oc = linetraverser_next(&t))
+    canvas_traverseLineStart(&t, x);
+    while (oc = canvas_traverseLineNext(&t))
     {
         int s1 = glist_isselected(x, &t.tr_ob->te_g);
         int s2 = glist_isselected(x, &t.tr_ob2->te_g);
@@ -2247,8 +2247,8 @@ static t_buffer *canvas_docopy(t_glist *x)
         if (glist_isselected(x, y))
             gobj_save(y, b);
     }
-    linetraverser_start(&t, x);
-    while (oc = linetraverser_next(&t))
+    canvas_traverseLineStart(&t, x);
+    while (oc = canvas_traverseLineNext(&t))
     {
         if (glist_isselected(x, &t.tr_ob->te_g)
             && glist_isselected(x, &t.tr_ob2->te_g))
@@ -2498,7 +2498,7 @@ static void canvas_reselect(t_glist *x)
             !x->gl_editor->e_selection->sel_next)
         {
             int nobjwas = glist_getindex(x, 0),
-                indx = canvas_getindex(x, x->gl_editor->e_selection->sel_what);
+                indx = canvas_getIndexOfObject(x, x->gl_editor->e_selection->sel_what);
             glist_noselect(x);
             for (g = x->gl_list; g; g = g->g_next)
                 if (g == gwas)
