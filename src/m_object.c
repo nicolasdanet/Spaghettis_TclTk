@@ -17,12 +17,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define OBJECT_MAXIMUM_ITERATION    1000
+#define OBJECT_MAXIMUM_ITERATION            1000
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static int object_stackCount;                   /* Shared. */
+static int object_stackCount;               /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -30,7 +30,7 @@ static int object_stackCount;                   /* Shared. */
 
 struct _inlet
 {
-    t_pd                i_pd;                   /* MUST be the first. */
+    t_pd                i_pd;               /* MUST be the first. */
     struct _inlet       *i_next;
     t_object            *i_owner;
     t_pd                *i_destination;
@@ -568,16 +568,13 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
     if (oc1 == NULL) { PD_BUG; return; }
     
     if (oc1->oc_to == to) {
-        o->o_connections = oc1->oc_next;
-        PD_MEMORY_FREE (oc1);
+        o->o_connections = oc1->oc_next; PD_MEMORY_FREE (oc1);
         
     } else {
         while (oc2 = oc1->oc_next) {
             if (oc2->oc_to != to) { oc1 = oc2; }
             else {
-                oc1->oc_next = oc2->oc_next;
-                PD_MEMORY_FREE (oc2);
-                break;
+                oc1->oc_next = oc2->oc_next; PD_MEMORY_FREE (oc2); break;
             }
         }
     }
@@ -734,6 +731,9 @@ int object_getIndexOfSignalOutlet (t_outlet *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+/* Fetch the nth outlet of an object. */
+/* Return its first connection.  */
+
 t_outconnect *object_traverseOutletStart (t_object *x, t_outlet **ptr, int n)
 {
     t_outlet *o = x->te_outlet;
@@ -747,6 +747,9 @@ t_outconnect *object_traverseOutletStart (t_object *x, t_outlet **ptr, int n)
         return NULL;
     }
 }
+
+/* Given a connection, fetch the object connected, the related inlet and its index. */
+/* Return the next connection of the outlet (NULL if last). */
 
 t_outconnect *object_traverseOutletNext (t_outconnect *last, t_object **dest, t_inlet **ptr, int *n)
 {

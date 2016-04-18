@@ -194,66 +194,70 @@ void canvas_updateTitle (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int canvas_getIndexOfObject (t_glist *glist, t_gobj *y)
+int canvas_getIndexOfObject (t_glist *glist, t_gobj *object)
 {
     t_gobj *t = NULL;
     int n = 0;
-    for (t = glist->gl_list; t && t != y; t = t->g_next) { n++; }
+    for (t = glist->gl_list; t && t != object; t = t->g_next) { n++; }
     return n;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void canvas_traverseLineStart (t_linetraverser *t, t_glist *x)
 {
-    t->tr_ob = 0;
-    t->tr_x = x;
-    t->tr_nextoc = 0;
-    t->tr_nextoutno = t->tr_nout = 0;
+    t->tr_sourceObject = 0;
+    t->tr_owner = x;
+    t->tr_connectionNext = 0;
+    t->tr_sourceOutletIndexNext = t->tr_sourceNumberOfOutlets = 0;
 }
 
 t_outconnect *canvas_traverseLineNext (t_linetraverser *t)
 {
-    t_outconnect *rval = t->tr_nextoc;
+    t_outconnect *rval = t->tr_connectionNext;
     int outno;
     while (!rval)
     {
-        outno = t->tr_nextoutno;
-        while (outno == t->tr_nout)
+        outno = t->tr_sourceOutletIndexNext;
+        while (outno == t->tr_sourceNumberOfOutlets)
         {
             t_gobj *y;
             t_object *ob = 0;
-            if (!t->tr_ob) y = t->tr_x->gl_list;
-            else y = t->tr_ob->te_g.g_next;
+            if (!t->tr_sourceObject) y = t->tr_owner->gl_list;
+            else y = t->tr_sourceObject->te_g.g_next;
             for (; y; y = y->g_next)
                 if (ob = canvas_castToObjectIfBox(&y->g_pd)) break;
             if (!ob) return (0);
-            t->tr_ob = ob;
-            t->tr_nout = object_numberOfOutlets(ob);
+            t->tr_sourceObject = ob;
+            t->tr_sourceNumberOfOutlets = object_numberOfOutlets(ob);
             outno = 0;
-            if (glist_isvisible(t->tr_x))
-                gobj_getrect(y, t->tr_x,
+            if (glist_isvisible(t->tr_owner))
+                gobj_getrect(y, t->tr_owner,
                     &t->tr_x11, &t->tr_y11, &t->tr_x12, &t->tr_y12);
             else t->tr_x11 = t->tr_y11 = t->tr_x12 = t->tr_y12 = 0;
         }
-        t->tr_nextoutno = outno + 1;
-        rval = object_traverseOutletStart(t->tr_ob, &t->tr_outlet, outno);
-        t->tr_outno = outno;
+        t->tr_sourceOutletIndexNext = outno + 1;
+        rval = object_traverseOutletStart(t->tr_sourceObject, &t->tr_sourceOutlet, outno);
+        t->tr_sourceOutletIndex = outno;
     }
-    t->tr_nextoc = object_traverseOutletNext(rval, &t->tr_ob2,
-        &t->tr_inlet, &t->tr_inno);
-    t->tr_nin = object_numberOfInlets(t->tr_ob2);
-    if (!t->tr_nin) { PD_BUG; }
-    if (glist_isvisible(t->tr_x))
+    t->tr_connectionNext = object_traverseOutletNext(rval, &t->tr_destinationObject,
+        &t->tr_destinationInlet, &t->tr_destinationInletIndex);
+    t->tr_destinationNumberOfInlets = object_numberOfInlets(t->tr_destinationObject);
+    if (!t->tr_destinationNumberOfInlets) { PD_BUG; }
+    if (glist_isvisible(t->tr_owner))
     {
-        int inplus = (t->tr_nin == 1 ? 1 : t->tr_nin - 1);
-        int outplus = (t->tr_nout == 1 ? 1 : t->tr_nout - 1);
-        gobj_getrect(&t->tr_ob2->te_g, t->tr_x,
+        int inplus = (t->tr_destinationNumberOfInlets == 1 ? 1 : t->tr_destinationNumberOfInlets - 1);
+        int outplus = (t->tr_sourceNumberOfOutlets == 1 ? 1 : t->tr_sourceNumberOfOutlets - 1);
+        gobj_getrect(&t->tr_destinationObject->te_g, t->tr_owner,
             &t->tr_x21, &t->tr_y21, &t->tr_x22, &t->tr_y22);
         t->tr_lx1 = t->tr_x11 +
-            ((t->tr_x12 - t->tr_x11 - INLETS_WIDTH) * t->tr_outno) /
+            ((t->tr_x12 - t->tr_x11 - INLETS_WIDTH) * t->tr_sourceOutletIndex) /
                 outplus + INLETS_MIDDLE;
         t->tr_ly1 = t->tr_y12;
         t->tr_lx2 = t->tr_x21 +
-            ((t->tr_x22 - t->tr_x21 - INLETS_WIDTH) * t->tr_inno)/inplus +
+            ((t->tr_x22 - t->tr_x21 - INLETS_WIDTH) * t->tr_destinationInletIndex)/inplus +
                 INLETS_MIDDLE;
         t->tr_ly2 = t->tr_y21;
     }
@@ -679,7 +683,7 @@ static void canvas_drawlines(t_glist *x)
             sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
                     glist_getcanvas(x),
                         t.tr_lx1, t.tr_ly1, t.tr_lx2, t.tr_ly2, 
-                            (outlet_isSignal(t.tr_outlet) ? 2:1),
+                            (outlet_isSignal(t.tr_sourceOutlet) ? 2:1),
                                 oc);
     }
 }
@@ -692,7 +696,7 @@ void canvas_fixlines(t_glist *x, t_object *text)
     canvas_traverseLineStart(&t, x);
     while (oc = canvas_traverseLineNext(&t))
     {
-        if (t.tr_ob == text || t.tr_ob2 == text)
+        if (t.tr_sourceObject == text || t.tr_destinationObject == text)
         {
             sys_vGui(".x%lx.c coords l%lx %d %d %d %d\n",
                 glist_getcanvas(x), oc,
@@ -709,14 +713,14 @@ void canvas_deletelines(t_glist *x, t_object *text)
     canvas_traverseLineStart(&t, x);
     while (oc = canvas_traverseLineNext(&t))
     {
-        if (t.tr_ob == text || t.tr_ob2 == text)
+        if (t.tr_sourceObject == text || t.tr_destinationObject == text)
         {
             if (glist_isvisible(x))
             {
                 sys_vGui(".x%lx.c delete l%lx\n",
                     glist_getcanvas(x), oc);
             }
-            object_disconnect(t.tr_ob, t.tr_outno, t.tr_ob2, t.tr_inno);
+            object_disconnect(t.tr_sourceObject, t.tr_sourceOutletIndex, t.tr_destinationObject, t.tr_destinationInletIndex);
         }
     }
 }
@@ -730,15 +734,15 @@ void canvas_deletelinesforio(t_glist *x, t_object *text,
     canvas_traverseLineStart(&t, x);
     while (oc = canvas_traverseLineNext(&t))
     {
-        if ((t.tr_ob == text && t.tr_outlet == outp) ||
-            (t.tr_ob2 == text && t.tr_inlet == inp))
+        if ((t.tr_sourceObject == text && t.tr_sourceOutlet == outp) ||
+            (t.tr_destinationObject == text && t.tr_destinationInlet == inp))
         {
             if (glist_isvisible(x))
             {
                 sys_vGui(".x%lx.c delete l%lx\n",
                     glist_getcanvas(x), oc);
             }
-            object_disconnect(t.tr_ob, t.tr_outno, t.tr_ob2, t.tr_inno);
+            object_disconnect(t.tr_sourceObject, t.tr_sourceOutletIndex, t.tr_destinationObject, t.tr_destinationInletIndex);
         }
     }
 }
@@ -980,8 +984,8 @@ static void canvas_dodsp(t_glist *x, int toplevel, t_signal **sp)
         /* ... and all dsp interconnections */
     canvas_traverseLineStart(&t, x);
     while (oc = canvas_traverseLineNext(&t))
-        if (object_isSignalOutlet(t.tr_ob, t.tr_outno))
-            ugen_connect(dc, t.tr_ob, t.tr_outno, t.tr_ob2, t.tr_inno);
+        if (object_isSignalOutlet(t.tr_sourceObject, t.tr_sourceOutletIndex))
+            ugen_connect(dc, t.tr_sourceObject, t.tr_sourceOutletIndex, t.tr_destinationObject, t.tr_destinationInletIndex);
 
         /* finally, sort them and add them to the DSP chain */
     ugen_done_graph(dc);

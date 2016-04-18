@@ -474,13 +474,13 @@ void canvas_disconnect(t_glist *x,
     canvas_traverseLineStart(&t, x);
     while (oc = canvas_traverseLineNext(&t))
     {
-        int srcno = canvas_getIndexOfObject(x, &t.tr_ob->te_g);
-        int sinkno = canvas_getIndexOfObject(x, &t.tr_ob2->te_g);
-        if (srcno == index1 && t.tr_outno == outno &&
-            sinkno == index2 && t.tr_inno == inno)
+        int srcno = canvas_getIndexOfObject(x, &t.tr_sourceObject->te_g);
+        int sinkno = canvas_getIndexOfObject(x, &t.tr_destinationObject->te_g);
+        if (srcno == index1 && t.tr_sourceOutletIndex == outno &&
+            sinkno == index2 && t.tr_destinationInletIndex == inno)
         {
             sys_vGui(".x%lx.c delete l%lx\n", x, oc);
-            object_disconnect(t.tr_ob, t.tr_outno, t.tr_ob2, t.tr_inno);
+            object_disconnect(t.tr_sourceObject, t.tr_sourceOutletIndex, t.tr_destinationObject, t.tr_destinationInletIndex);
             break;
         }
     }
@@ -551,18 +551,18 @@ static void *canvas_undo_set_cut(t_glist *x, int mode)
     canvas_traverseLineStart(&t, x);
     while (oc = canvas_traverseLineNext(&t))
     {
-        int issel1 = glist_isselected(x, &t.tr_ob->te_g);
-        int issel2 = glist_isselected(x, &t.tr_ob2->te_g);
+        int issel1 = glist_isselected(x, &t.tr_sourceObject->te_g);
+        int issel2 = glist_isselected(x, &t.tr_destinationObject->te_g);
         if (issel1 != issel2)
         {
             buffer_vAppend(buf->u_reconnectbuf, "ssiiii;",
                 gensym("#X"), gensym("connect"),
                 (issel1 ? nnotsel : 0)
-                    + glist_selectionindex(x, &t.tr_ob->te_g, issel1),
-                t.tr_outno,
+                    + glist_selectionindex(x, &t.tr_sourceObject->te_g, issel1),
+                t.tr_sourceOutletIndex,
                 (issel2 ? nnotsel : 0) +
-                    glist_selectionindex(x, &t.tr_ob2->te_g, issel2),
-                t.tr_inno);
+                    glist_selectionindex(x, &t.tr_destinationObject->te_g, issel2),
+                t.tr_destinationInletIndex);
         }
     }
     if (mode == UCUT_TEXT)
@@ -1470,8 +1470,8 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
             if (doit)
             {
                 glist_selectline(glist2, oc, 
-                    canvas_getIndexOfObject(glist2, &t.tr_ob->te_g), t.tr_outno,
-                    canvas_getIndexOfObject(glist2, &t.tr_ob2->te_g), t.tr_inno);
+                    canvas_getIndexOfObject(glist2, &t.tr_sourceObject->te_g), t.tr_sourceOutletIndex,
+                    canvas_getIndexOfObject(glist2, &t.tr_destinationObject->te_g), t.tr_destinationInletIndex);
             }
             canvas_setcursor(x, CURSOR_EDIT_DISCONNECT);
             return;
@@ -1502,8 +1502,8 @@ int canvas_isconnected (t_glist *x, t_object *ob1, int n1,
     t_outconnect *oc;
     canvas_traverseLineStart(&t, x);
     while (oc = canvas_traverseLineNext(&t))
-        if (t.tr_ob == ob1 && t.tr_outno == n1 &&
-            t.tr_ob2 == ob2 && t.tr_inno == n2) 
+        if (t.tr_sourceObject == ob1 && t.tr_sourceOutletIndex == n1 &&
+            t.tr_destinationObject == ob2 && t.tr_destinationInletIndex == n2) 
                 return (1);
     return (0);
 }
@@ -2218,13 +2218,13 @@ void canvas_stowconnections(t_glist *x)
     canvas_traverseLineStart(&t, x);
     while (oc = canvas_traverseLineNext(&t))
     {
-        int s1 = glist_isselected(x, &t.tr_ob->te_g);
-        int s2 = glist_isselected(x, &t.tr_ob2->te_g);
+        int s1 = glist_isselected(x, &t.tr_sourceObject->te_g);
+        int s2 = glist_isselected(x, &t.tr_destinationObject->te_g);
         if (s1 != s2)
             buffer_vAppend(x->gl_editor->e_connectbuf, "ssiiii;",
                 gensym("#X"), gensym("connect"),
-                    glist_getindex(x, &t.tr_ob->te_g), t.tr_outno,
-                        glist_getindex(x, &t.tr_ob2->te_g), t.tr_inno);
+                    glist_getindex(x, &t.tr_sourceObject->te_g), t.tr_sourceOutletIndex,
+                        glist_getindex(x, &t.tr_destinationObject->te_g), t.tr_destinationInletIndex);
     }
 }
 
@@ -2250,12 +2250,12 @@ static t_buffer *canvas_docopy(t_glist *x)
     canvas_traverseLineStart(&t, x);
     while (oc = canvas_traverseLineNext(&t))
     {
-        if (glist_isselected(x, &t.tr_ob->te_g)
-            && glist_isselected(x, &t.tr_ob2->te_g))
+        if (glist_isselected(x, &t.tr_sourceObject->te_g)
+            && glist_isselected(x, &t.tr_destinationObject->te_g))
         {
             buffer_vAppend(b, "ssiiii;", gensym("#X"), gensym("connect"),
-                glist_selectionindex(x, &t.tr_ob->te_g, 1), t.tr_outno,
-                glist_selectionindex(x, &t.tr_ob2->te_g, 1), t.tr_inno);
+                glist_selectionindex(x, &t.tr_sourceObject->te_g, 1), t.tr_sourceOutletIndex,
+                glist_selectionindex(x, &t.tr_destinationObject->te_g, 1), t.tr_destinationInletIndex);
         }
     }
     return (b);

@@ -277,7 +277,7 @@ void class_addMethod (t_class *c, t_method fn, t_symbol *s, t_atomtype type1, ..
         
     va_start (ap, type1);
     
-    if (s == &s_signal) { PD_BUG; return; }
+    if (s == &s_signal) { PD_BUG; return; }     /* Deprecated. */
     
     /* Note that "pointer" is not catched. */
     

@@ -131,20 +131,29 @@ struct _canvasenvironment {
 };
 
 typedef struct _linetraverser {
-    t_glist             *tr_x;
-    t_object            *tr_ob;
-    int                 tr_nout;
-    int                 tr_outno;
-    t_object            *tr_ob2;
-    t_outlet            *tr_outlet;
-    t_inlet             *tr_inlet;
-    int                 tr_nin;
-    int                 tr_inno;
-    int                 tr_x11, tr_y11, tr_x12, tr_y12;
-    int                 tr_x21, tr_y21, tr_x22, tr_y22;
-    int                 tr_lx1, tr_ly1, tr_lx2, tr_ly2;
-    t_outconnect        *tr_nextoc;
-    int                 tr_nextoutno;
+    t_glist             *tr_owner;
+    t_object            *tr_sourceObject;
+    t_outlet            *tr_sourceOutlet;
+    int                 tr_sourceOutletIndex;
+    int                 tr_sourceOutletIndexNext;
+    int                 tr_sourceNumberOfOutlets;
+    t_object            *tr_destinationObject;
+    t_inlet             *tr_destinationInlet;
+    int                 tr_destinationInletIndex;
+    int                 tr_destinationNumberOfInlets;
+    t_outconnect        *tr_connectionNext;
+    int                 tr_x11;
+    int                 tr_y11;
+    int                 tr_x12;
+    int                 tr_y12;
+    int                 tr_x21;
+    int                 tr_y21;
+    int                 tr_x22;
+    int                 tr_y22;
+    int                 tr_lx1;
+    int                 tr_ly1;
+    int                 tr_lx2;
+    int                 tr_ly2;
     } t_linetraverser;
     
 typedef struct _tick {
@@ -284,7 +293,8 @@ t_symbol            *canvas_makeBindSymbol          (t_symbol *s);
 t_error             canvas_makeFilePath             (t_glist *glist, char *name, char *dest, size_t size);
 void                canvas_rename                   (t_glist *glist, t_symbol *name, t_symbol *directory);
 void                canvas_updateTitle              (t_glist *glist);
-int                 canvas_getIndexOfObject         (t_glist *glist, t_gobj *y);
+
+int                 canvas_getIndexOfObject         (t_glist *glist, t_gobj *object);
 
 void                canvas_traverseLineStart        (t_linetraverser *t, t_glist *glist);
 t_outconnect        *canvas_traverseLineNext        (t_linetraverser *t);

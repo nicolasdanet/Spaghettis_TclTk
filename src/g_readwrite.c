@@ -646,10 +646,10 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
     canvas_traverseLineStart(&t, x);
     while (oc = canvas_traverseLineNext(&t))
     {
-        int srcno = canvas_getIndexOfObject(x, &t.tr_ob->te_g);
-        int sinkno = canvas_getIndexOfObject(x, &t.tr_ob2->te_g);
+        int srcno = canvas_getIndexOfObject(x, &t.tr_sourceObject->te_g);
+        int sinkno = canvas_getIndexOfObject(x, &t.tr_destinationObject->te_g);
         buffer_vAppend(b, "ssiiii;", gensym("#X"), gensym("connect"),
-            srcno, t.tr_outno, sinkno, t.tr_inno);
+            srcno, t.tr_sourceOutletIndex, sinkno, t.tr_destinationInletIndex);
     }
         /* unless everything is the default (as in ordinary subpatches)
         print out a "coords" message to set up the coordinate systems */
