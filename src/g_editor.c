@@ -2164,7 +2164,7 @@ static void canvas_find_again(t_glist *x)
         myindex);
 }
 */
-static void canvas_find_parent(t_glist *x)
+void canvas_find_parent(t_glist *x)
 {
     if (x->gl_owner)
         canvas_vis(glist_getcanvas(x->gl_owner), 1);
@@ -2851,22 +2851,4 @@ void g_editor_setup(void)
         gensym("disconnect"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
 /* -------------- copy buffer ------------------ */
     copy_binbuf = buffer_new();
-}
-
-void canvas_editor_for_class(t_class *c)
-{
-    class_addMethod(c, (t_method)canvas_mouse, gensym("mouse"),
-        A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(c, (t_method)canvas_mouseup, gensym("mouseup"),
-        A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(c, (t_method)canvas_key, gensym("key"),
-        A_GIMME, A_NULL);
-    class_addMethod(c, (t_method)canvas_motion, gensym("motion"),
-        A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-
-/* ------------------------ menu actions ---------------------------- */
-    class_addMethod(c, (t_method)canvas_menuclose,
-        gensym("menuclose"), A_DEFFLOAT, 0);
-    class_addMethod(c, (t_method)canvas_find_parent,
-        gensym("findparent"), A_NULL);
 }

@@ -761,14 +761,14 @@ static void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir,
     buffer_free(b);
 }
 
-static void canvas_menusaveas(t_glist *x, float fdestroy)
+void canvas_menusaveas(t_glist *x, float fdestroy)
 {
     t_glist *x2 = canvas_getroot(x);
     sys_vGui("::ui_file::saveAs .x%lx {%s} {%s} %d\n", x2,
         x2->gl_name->s_name, canvas_getEnvironment (x2)->ce_directory->s_name, (fdestroy != 0));
 }
 
-static void canvas_menusave(t_glist *x, float fdestroy)
+void canvas_menusave(t_glist *x, float fdestroy)
 {
     t_glist *x2 = canvas_getroot(x);
     char *name = x2->gl_name->s_name;
@@ -800,10 +800,4 @@ void g_readwrite_setup(void)
         gensym("menusaveas"), A_DEFFLOAT, 0);
 }
 
-void canvas_readwrite_for_class(t_class *c)
-{
-    class_addMethod(c, (t_method)canvas_menusave,
-        gensym("menusave"), 0);
-    class_addMethod(c, (t_method)canvas_menusaveas,
-        gensym("menusaveas"), 0);
-}
+

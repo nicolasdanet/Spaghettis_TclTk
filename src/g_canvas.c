@@ -326,7 +326,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
+t_glist *canvas_new (void *dummy, t_symbol *sel, int argc, t_atom *argv)
 {
     t_glist *x = (t_glist *)pd_new(canvas_class);
     t_glist *owner = canvas_getCurrent();
@@ -526,7 +526,7 @@ int glist_isgraph(t_glist *x)
 
     /* This is sent from the GUI to inform a toplevel that its window has been
     moved or resized. */
-static void canvas_setbounds(t_glist *x, t_float left, t_float top, 
+void canvas_setbounds(t_glist *x, t_float left, t_float top, 
                              t_float right, t_float bottom)
 {
     canvas_dosetbounds(x, (int)left, (int)top, (int)right, (int)bottom);
@@ -913,7 +913,7 @@ static void *subcanvas_new(t_symbol *s)
     return (x);
 }
 
-static void canvas_click(t_glist *x,
+void canvas_click(t_glist *x,
     t_float xpos, t_float ypos,
         t_float shift, t_float ctrl, t_float alt)
 {
@@ -1029,7 +1029,7 @@ static void canvas_dodsp(t_glist *x, int toplevel, t_signal **sp)
     ugen_done_graph(dc);
 }
 
-static void canvas_dsp(t_glist *x, t_signal **sp)
+void canvas_dsp(t_glist *x, t_signal **sp)
 {
     canvas_dodsp(x, 0, sp);
 }
@@ -1587,29 +1587,6 @@ void g_canvas_setup(void)
     g_graph_setup();
     g_editor_setup();
     g_readwrite_setup();
-}
-
-    /* functions to add basic gui (e.g., clicking but not editing) to things
-    based on canvases that aren't editable, like "array define" object */
-void canvas_editor_for_class(t_class *c);
-void g_graph_setup_class(t_class *c);
-void canvas_readwrite_for_class(t_class *c);
-
-void canvas_add_for_class(t_class *c)
-{
-    class_addMethod(c, (t_method)canvas_restore,
-        gensym("restore"), A_GIMME, 0);
-    class_addMethod(c, (t_method)canvas_click,
-        gensym("click"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addMethod(c, (t_method)canvas_dsp,
-        gensym("dsp"), A_CANT, 0);
-    class_addMethod(c, (t_method)canvas_map,
-        gensym("map"), A_FLOAT, A_NULL);
-    class_addMethod(c, (t_method)canvas_setbounds,
-        gensym("setbounds"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    canvas_editor_for_class(c);
-    canvas_readwrite_for_class(c);
-    /* g_graph_setup_class(c); */
 }
 
 // -----------------------------------------------------------------------------------------------------------

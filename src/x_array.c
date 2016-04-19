@@ -821,7 +821,7 @@ static void *arrayobj_new(t_symbol *s, int argc, t_atom *argv)
     return (pd_newest);
 }
 
-void canvas_add_for_class(t_class *c);
+
 
 /* ---------------- global setup function -------------------- */
 
@@ -829,7 +829,34 @@ void x_array_setup(void )
 {
     array_define_class = class_new(gensym("array define"), 0,
         (t_method)canvas_free, sizeof(t_glist), 0, 0);
-    canvas_add_for_class(array_define_class);
+    
+    class_addMethod(array_define_class, (t_method)canvas_restore,
+        gensym("restore"), A_GIMME, 0);
+    class_addMethod(array_define_class, (t_method)canvas_click,
+        gensym("click"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
+    class_addMethod(array_define_class, (t_method)canvas_dsp,
+        gensym("dsp"), A_CANT, 0);
+    class_addMethod(array_define_class, (t_method)canvas_map,
+        gensym("map"), A_FLOAT, A_NULL);
+    class_addMethod(array_define_class, (t_method)canvas_setbounds,
+        gensym("setbounds"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+    class_addMethod(array_define_class, (t_method)canvas_mouse, gensym("mouse"),
+        A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+    class_addMethod(array_define_class, (t_method)canvas_mouseup, gensym("mouseup"),
+        A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+    class_addMethod(array_define_class, (t_method)canvas_key, gensym("key"),
+        A_GIMME, A_NULL);
+    class_addMethod(array_define_class, (t_method)canvas_motion, gensym("motion"),
+        A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+    class_addMethod(array_define_class, (t_method)canvas_menuclose,
+        gensym("menuclose"), A_DEFFLOAT, 0);
+    class_addMethod(array_define_class, (t_method)canvas_find_parent,
+        gensym("findparent"), A_NULL);
+    class_addMethod(array_define_class, (t_method)canvas_menusave,
+        gensym("menusave"), 0);
+    class_addMethod(array_define_class, (t_method)canvas_menusaveas,
+        gensym("menusaveas"), 0);
+    
     class_addMethod(array_define_class, (t_method)array_define_send,
         gensym("send"), A_SYMBOL, 0);
     class_addAnything(array_define_class, array_define_anything);

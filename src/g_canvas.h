@@ -330,6 +330,24 @@ void                canvas_update_dsp               (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void canvas_restore (t_glist *x, t_symbol *s, int argc, t_atom *argv);
+void canvas_mouse (t_glist *x, t_float xpos, t_float ypos, t_float which, t_float mod);
+void canvas_mouseup (t_glist *x, t_float fxpos, t_float fypos, t_float fwhich);
+void canvas_key (t_glist *x, t_symbol *s, int ac, t_atom *av);
+void canvas_motion (t_glist *x, t_float xpos, t_float ypos, t_float fmod);
+void canvas_menuclose (t_glist *x, t_float fforce);
+void canvas_menusave (t_glist *x, float fdestroy);
+void canvas_menusaveas (t_glist *x, float fdestroy);
+void canvas_find_parent (t_glist *x);
+void canvas_click (t_glist *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt);
+void canvas_dsp (t_glist *x, t_signal **sp);
+void canvas_map (t_glist *x, t_float f);
+void canvas_setbounds (t_glist *x, t_float left, t_float top, t_float right, t_float bottom);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void gobj_getrect       (t_gobj *x, t_glist *owner, int *x1, int *y1, int *x2, int *y2);
 void gobj_displace      (t_gobj *x, t_glist *owner, int dx, int dy);
 void gobj_select        (t_gobj *x, t_glist *owner, int state);
