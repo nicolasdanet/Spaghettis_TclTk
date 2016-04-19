@@ -508,8 +508,8 @@ typedef struct _scalar {
 typedef struct _text {
     t_gobj          te_g;                       /* MUST be the first. */
     t_buffer        *te_buffer;
-    t_outlet        *te_outlet;
     t_inlet         *te_inlet;
+    t_outlet        *te_outlet;
     int             te_xCoordinate;
     int             te_yCoordinate;
     int             te_width; 

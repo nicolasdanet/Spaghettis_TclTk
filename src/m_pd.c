@@ -31,7 +31,9 @@ t_pd *pd_new (t_class *c)
     
     *x = c;
     
-    if (c->c_isBox) { cast_object (x)->te_inlet = cast_object (x)->te_outlet = NULL; }
+    if (c->c_isBox) { 
+        cast_object (x)->te_buffer = cast_object (x)->te_inlet = cast_object (x)->te_outlet = NULL; 
+    }
     
     return x;
 }

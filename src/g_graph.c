@@ -18,7 +18,7 @@ to this file... */
 
 extern t_class *garray_class;
 extern t_class *scalar_class;
-extern int glist_valid;
+extern int canvas_magic;
 extern t_class *canvas_class;
 extern t_class *vinlet_class;
 extern t_class *voutlet_class;
@@ -139,7 +139,7 @@ void glist_delete(t_glist *x, t_gobj *y)
         canvas_redrawallfortemplate(template_findbyname(canvas_makeBindSymbol(
             glist_getcanvas(x)->gl_name)), 1);
     canvas_setdeleting(canvas, wasdeleting);
-    x->gl_valid = ++glist_valid;
+    x->gl_valid = ++canvas_magic;
 }
 
     /* remove every object from a glist.  Experimental. */
@@ -725,10 +725,10 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         t_gobj *g;
         t_symbol *arrayname;
         t_garray *ga;
-        char *ylabelanchor =
+        /* char *ylabelanchor =
             (x->gl_ylabelx > 0.5*(x->gl_x1 + x->gl_x2) ? "w" : "e");
         char *xlabelanchor =
-            (x->gl_xlabely > 0.5*(x->gl_y1 + x->gl_y2) ? "s" : "n");
+            (x->gl_xlabely > 0.5*(x->gl_y1 + x->gl_y2) ? "s" : "n"); */
             
             /* draw a rectangle around the graph */
         sys_vGui(".x%lx.c create line\
@@ -823,7 +823,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
                     x2 - tickpix, (int)glist_ytopixels(x, f), tag);
             }
         }
-            /* draw x labels */
+        /*
         for (i = 0; i < x->gl_nxlabels; i++)
             sys_vGui(".x%lx.c create text\
  %d %d -text {%s} -font [::getFont %d] -anchor %s -tags [list %s label graph]\n",
@@ -833,7 +833,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
                 x->gl_xlabel[i]->s_name,
                      glist_getfont(x), xlabelanchor, tag);
 
-            /* draw y labels */
+    
         for (i = 0; i < x->gl_nylabels; i++)
             sys_vGui(".x%lx.c create text\
  %d %d -text {%s} -font [::getFont %d] -anchor %s -tags [list %s label graph]\n",
@@ -842,7 +842,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
                 (int)glist_ytopixels(x, atof(x->gl_ylabel[i]->s_name)),
                 x->gl_ylabel[i]->s_name,
                 glist_getfont(x), ylabelanchor, tag);
-
+        */
             /* draw contents of graph as glist */
         for (g = x->gl_list; g; g = g->g_next)
             gobj_vis(g, x, 1);

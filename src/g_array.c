@@ -13,7 +13,7 @@
 #include <math.h>
 
 extern t_pd pd_canvasMaker;
-extern int glist_valid;
+extern int canvas_magic;
 
 /* jsarlo { */
 #define ARRAYPAGESIZE 1000  /* this should match the page size in u_main.tk */
@@ -71,7 +71,7 @@ void array_resize(t_array *x, int n)
             word_init(wp, template, &x->a_gp);
         }
     }
-    x->a_valid = ++glist_valid;
+    x->a_valid = ++canvas_magic;
 }
 
 void array_resize_and_redraw(t_array *array, t_glist *glist, int n)

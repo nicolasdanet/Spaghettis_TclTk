@@ -57,6 +57,11 @@ t_class *canvas_class;                                  /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+int canvas_magic = 10000;                               /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 static int      canvas_argc;                            /* Shared. */
 static t_atom   *canvas_argv;                           /* Shared. */
 static t_symbol *canvas_fileName  = &s_;                /* Shared. */
@@ -321,22 +326,6 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* -------------------- the canvas object -------------------------- */
-int glist_valid = 10000;    /* Shared. */
-
-void glist_init(t_glist *x)
-{
-        /* zero out everyone except "pd" field */
-    memset(((char *)x) + sizeof(x->gl_obj.te_g.g_pd), 0, sizeof(*x) - sizeof(x->gl_obj.te_g.g_pd));
-    x->gl_stub = gstub_new(x, 0);
-    x->gl_valid = ++glist_valid;
-    x->gl_xlabel = (t_symbol **)PD_MEMORY_GET(0);
-    x->gl_ylabel = (t_symbol **)PD_MEMORY_GET(0);
-}
-
-    /* make a new glist.  It will either be a "root" canvas or else
-    it appears as a "text" object in another window (canvas_getcurrnet() 
-    tells us which.) */
 t_glist *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
 {
     t_glist *x = (t_glist *)pd_new(canvas_class);
@@ -345,7 +334,8 @@ t_glist *canvas_new(void *dummy, t_symbol *sel, int argc, t_atom *argv)
     int vis = 0, width = CANVAS_DEFAULT_WIDTH, height = CANVAS_DEFAULT_HEIGHT;
     int xloc = 0, yloc = CANVAS_DEFAULT_Y;
     int font = (owner ? owner->gl_font : font_getDefaultFontSize());
-    glist_init(x);
+    x->gl_stub = gstub_new (x, NULL);
+    x->gl_valid = ++canvas_magic;
     x->gl_obj.te_type = TYPE_OBJECT;
     if (!owner)
         instance_addToRoots (x);
@@ -453,7 +443,8 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     int menu = 0;
     char *str;
     t_glist *x = (t_glist *)pd_new(canvas_class);
-    glist_init(x);
+    x->gl_stub = gstub_new (x, NULL);
+    x->gl_valid = ++canvas_magic;
     x->gl_obj.te_type = TYPE_OBJECT;
     if (!*sym->s_name)
     {
@@ -710,8 +701,8 @@ void canvas_free(t_glist *x)
         PD_MEMORY_FREE(x->gl_env);
     }
     canvas_resume_dsp(dspstate);
-    PD_MEMORY_FREE(x->gl_xlabel);
-    PD_MEMORY_FREE(x->gl_ylabel);
+    //PD_MEMORY_FREE(x->gl_xlabel);
+    //PD_MEMORY_FREE(x->gl_ylabel);
     gstub_cutoff(x->gl_stub);
     guistub_destroyWithKey(x);        /* probably unnecessary */
     if (!x->gl_owner)

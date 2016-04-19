@@ -222,13 +222,13 @@ struct _glist {
     int                 gl_xmargin;
     int                 gl_ymargin;
     t_tick              gl_xtick;
-    int                 gl_nxlabels;
-    t_symbol            **gl_xlabel;
-    t_float             gl_xlabely;
+    //int                 gl_nxlabels;
+    //t_symbol            **gl_xlabel;
+    // t_float             gl_xlabely;
     t_tick              gl_ytick;
-    int                 gl_nylabels;
-    t_symbol            **gl_ylabel;
-    t_float             gl_ylabelx;
+    //int                 gl_nylabels;
+    //t_symbol            **gl_ylabel;
+    // t_float             gl_ylabelx;
     t_editor            *gl_editor;
     t_symbol            *gl_name;
     int                 gl_font;
@@ -346,7 +346,6 @@ void gobj_save          (t_gobj *x, t_buffer *b);
 #pragma mark -
 
 t_glist  *glist_new             (void);
-void     glist_init             (t_glist *x);
 void     glist_add              (t_glist *x, t_gobj *g);
 void     glist_clear            (t_glist *x);
 t_glist *glist_getcanvas        (t_glist *x);
