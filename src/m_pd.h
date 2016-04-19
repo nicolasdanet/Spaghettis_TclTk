@@ -410,6 +410,7 @@ struct _widgetbehavior;
 struct _parentwidgetbehavior;
 struct _garray;
 struct _pdinstance;
+struct _dspcontext;
 
 #define t_array                 struct _array
 #define t_class                 struct _class
@@ -424,6 +425,7 @@ struct _pdinstance;
 #define t_parentwidgetbehavior  struct _parentwidgetbehavior
 #define t_garray                struct _garray
 #define t_pdinstance            struct _pdinstance
+#define t_dspcontext            struct _dspcontext
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

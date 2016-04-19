@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		370934821CC6887300827F75 /* g_dsp.c in Sources */ = {isa = PBXBuildFile; fileRef = 370934811CC6887300827F75 /* g_dsp.c */; };
 		3716554F1BA3452E00ABDE22 /* pa_allocation.c in Sources */ = {isa = PBXBuildFile; fileRef = 3716554E1BA3452E00ABDE22 /* pa_allocation.c */; };
 		371655511BA3453500ABDE22 /* pa_converters.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655501BA3453500ABDE22 /* pa_converters.c */; };
 		371655531BA3453E00ABDE22 /* pa_cpuload.c in Sources */ = {isa = PBXBuildFile; fileRef = 371655521BA3453E00ABDE22 /* pa_cpuload.c */; };
@@ -180,6 +181,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		370934811CC6887300827F75 /* g_dsp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_dsp.c; path = src/g_dsp.c; sourceTree = "<group>"; };
 		3716554E1BA3452E00ABDE22 /* pa_allocation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_allocation.c; path = portaudio/src/common/pa_allocation.c; sourceTree = "<group>"; };
 		371655501BA3453500ABDE22 /* pa_converters.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_converters.c; path = portaudio/src/common/pa_converters.c; sourceTree = "<group>"; };
 		371655521BA3453E00ABDE22 /* pa_cpuload.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pa_cpuload.c; path = portaudio/src/common/pa_cpuload.c; sourceTree = "<group>"; };
@@ -728,6 +730,7 @@
 				378971C21C4F716700263434 /* g_canvas.h */,
 				378971C51C4F716700263434 /* g_gui.c */,
 				378971C11C4F716700263434 /* g_canvas.c */,
+				370934811CC6887300827F75 /* g_dsp.c */,
 				378971C31C4F716700263434 /* g_editor.c */,
 				378971CE1C4F716700263434 /* g_rtext.c */,
 				378971CA1C4F716700263434 /* g_io.c */,
@@ -1022,6 +1025,7 @@
 				37F514161C9B19A70076A0C4 /* s_logger_pa.c in Sources */,
 				3770FAA61CB1036A007C7E66 /* g_radio.c in Sources */,
 				37F085691CC26E5C0070DEAC /* m_stack.c in Sources */,
+				370934821CC6887300827F75 /* g_dsp.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

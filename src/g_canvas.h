@@ -118,11 +118,11 @@ struct _canvasenvironment;
 struct _fielddescriptor;
 struct _boxtext;
 
-#define t_gtemplate                 struct _gtemplate
-#define t_guiconnect                struct _guiconnect
-#define t_canvasenvironment         struct _canvasenvironment
-#define t_fielddescriptor           struct _fielddescriptor
-#define t_boxtext                   struct _boxtext
+#define t_gtemplate                     struct _gtemplate
+#define t_guiconnect                    struct _guiconnect
+#define t_canvasenvironment             struct _canvasenvironment
+#define t_fielddescriptor               struct _fielddescriptor
+#define t_boxtext                       struct _boxtext
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -313,6 +313,10 @@ int                 canvas_getIndexOfObject         (t_glist *glist, t_gobj *obj
 void                canvas_traverseLinesStart       (t_linetraverser *t, t_glist *glist);
 t_outconnect        *canvas_traverseLinesNext       (t_linetraverser *t);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void                canvas_dataproperties           (t_glist *x, t_scalar *sc, t_buffer *b);
 int                 canvas_open                     (t_glist *x,
                                                         const char *name,
@@ -326,10 +330,7 @@ int                 canvas_suspend_dsp              (void);
 void                canvas_resume_dsp               (int oldstate);
 void                canvas_update_dsp               (void);
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
+void canvas_objfor (t_glist *gl, t_object *x, int argc, t_atom *argv);
 void canvas_restore (t_glist *x, t_symbol *s, int argc, t_atom *argv);
 void canvas_mouse (t_glist *x, t_float xpos, t_float ypos, t_float which, t_float mod);
 void canvas_mouseup (t_glist *x, t_float fxpos, t_float fypos, t_float fwhich);
@@ -343,6 +344,7 @@ void canvas_click (t_glist *x, t_float xpos, t_float ypos, t_float shift, t_floa
 void canvas_dsp (t_glist *x, t_signal **sp);
 void canvas_map (t_glist *x, t_float f);
 void canvas_setbounds (t_glist *x, t_float left, t_float top, t_float right, t_float bottom);
+void canvas_setgraph (t_glist *x, int flag, int nogoprect);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

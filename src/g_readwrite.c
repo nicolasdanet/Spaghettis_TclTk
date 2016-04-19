@@ -23,8 +23,8 @@ file format as in the dialog window for data.
 extern t_class *scalar_class;
 extern t_class *canvas_class;
 
-static t_class *declare_class;
-void canvas_savedeclarationsto(t_glist *x, t_buffer *b);
+//static t_class *declare_class;
+//void canvas_savedeclarationsto(t_glist *x, t_buffer *b);
 
     /* the following routines read "scalars" from a file into a canvas. */
 
@@ -638,7 +638,7 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
             (int)(x->gl_screenx2 - x->gl_screenx1),
             (int)(x->gl_screeny2 - x->gl_screeny1),
                 (int)x->gl_font);
-        canvas_savedeclarationsto(x, b);
+        // canvas_savedeclarationsto(x, b);
     }
     for (y = x->gl_list; y; y = y->g_next)
         gobj_save(y, b);

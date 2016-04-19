@@ -57,6 +57,8 @@
 /* Graphics. */
 
 #include "g_gui.c"
+#include "g_canvas.c"
+#include "g_dsp.c"
 
 #include "g_iem.c"
 #include "g_bang.c"

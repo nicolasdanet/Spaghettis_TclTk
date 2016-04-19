@@ -547,8 +547,6 @@ struct _dspcontext
     
 };
 
-#define t_dspcontext struct _dspcontext
-
 static int ugen_sortno = 0;
 static t_dspcontext *ugen_currentcontext;
 

@@ -60,7 +60,7 @@ LIB += -ljack
 
 # The sources (filepath must NOT contain space).
 
-SRC = g_canvas.c g_graph.c g_text.c g_rtext.c g_array.c g_template.c g_io.c \
+SRC = g_graph.c g_text.c g_rtext.c g_array.c g_template.c g_io.c \
     g_scalar.c g_traversal.c g_readwrite.c g_editor.c \
     amalgam.c \
     d_ugen.c d_ctl.c d_arithmetic.c d_osc.c d_filter.c d_dac.c d_misc.c \
