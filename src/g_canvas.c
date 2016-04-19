@@ -291,7 +291,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
             int i = t->tr_srcIndexOfOutlet;
             int j = t->tr_srcNumberOfOutlets;
         
-            t->tr_lineStartX = t->tr_srcTopLeftX + INLETS_OFFSET (w, i, j) + INLETS_MIDDLE;
+            t->tr_lineStartX = t->tr_srcTopLeftX + INLETS_MIDDLE (w, i, j);
             t->tr_lineStartY = t->tr_srcBottomRightY;
         }
         {
@@ -299,7 +299,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
             int i = t->tr_destIndexOfInlet;
             int j = t->tr_destNumberOfInlets;
         
-            t->tr_lineEndX = t->tr_destTopLeftX + INLETS_OFFSET (w, i, j) + INLETS_MIDDLE;
+            t->tr_lineEndX = t->tr_destTopLeftX + INLETS_MIDDLE (w, i, j);
             t->tr_lineEndY = t->tr_destTopLeftY;
         }
         

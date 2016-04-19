@@ -1575,11 +1575,11 @@ void canvas_doconnect(t_glist *x, int xpos, int ypos, int which, int doit)
                 oc = object_connect(ob1, closest1, ob2, closest2);
                 lx1 = x11 + (noutlet1 > 1 ?
                         ((x12-x11-INLETS_WIDTH) * closest1)/(noutlet1-1) : 0)
-                             + INLETS_MIDDLE;
+                             + ((INLETS_WIDTH - 1) / 2);
                 ly1 = y12;
                 lx2 = x21 + (ninlet2 > 1 ?
                         ((x22-x21-INLETS_WIDTH) * closest2)/(ninlet2-1) : 0)
-                            + INLETS_MIDDLE;
+                            + ((INLETS_WIDTH - 1) / 2);
                 ly2 = y21;
                 sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
                     glist_getcanvas(x),
