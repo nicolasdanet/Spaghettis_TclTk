@@ -16,13 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define INLETS_WIDTH                7
-#define INLETS_MIDDLE               ((INLETS_WIDTH - 1) / 2)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 #define GLIST_DEFAULT_WIDTH         200
 #define GLIST_DEFAULT_HEIGHT        140
 
@@ -107,6 +100,19 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define INLETS_WIDTH                7
+#define INLETS_MIDDLE               ((INLETS_WIDTH - 1) / 2)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define INLETS_OFFSET(width, i, n)  ((((width) - INLETS_WIDTH) * (i)) / (((n) == 1) ? 1 : ((n) - 1)))
+                
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 struct _gtemplate;
 struct _guiconnect;
 struct _canvasenvironment;
@@ -124,49 +130,49 @@ struct _boxtext;
 #pragma mark -
 
 struct _canvasenvironment {
-    int         ce_dollarZeroValue;
-    int         ce_argc;
-    t_atom      *ce_argv;
-    t_symbol    *ce_directory;
+    int                 ce_dollarZeroValue;
+    int                 ce_argc;
+    t_atom              *ce_argv;
+    t_symbol            *ce_directory;
 };
 
 typedef struct _linetraverser {
     t_glist             *tr_owner;
-    t_object            *tr_sourceObject;
-    t_outlet            *tr_sourceOutlet;
-    int                 tr_sourceOutletIndex;
-    int                 tr_sourceOutletIndexNext;
-    int                 tr_sourceNumberOfOutlets;
-    t_object            *tr_destinationObject;
-    t_inlet             *tr_destinationInlet;
-    int                 tr_destinationInletIndex;
-    int                 tr_destinationNumberOfInlets;
-    t_outconnect        *tr_connectionNext;
-    int                 tr_x11;
-    int                 tr_y11;
-    int                 tr_x12;
-    int                 tr_y12;
-    int                 tr_x21;
-    int                 tr_y21;
-    int                 tr_x22;
-    int                 tr_y22;
-    int                 tr_lx1;
-    int                 tr_ly1;
-    int                 tr_lx2;
-    int                 tr_ly2;
+    t_outconnect        *tr_connectionCached;
+    t_object            *tr_srcObject;
+    t_outlet            *tr_srcOutlet;
+    t_object            *tr_destObject;
+    t_inlet             *tr_destInlet;
+    int                 tr_srcIndexOfOutlet;
+    int                 tr_srcIndexOfNextOutlet;
+    int                 tr_srcNumberOfOutlets;
+    int                 tr_destIndexOfInlet;
+    int                 tr_destNumberOfInlets;
+    int                 tr_srcTopLeftX;
+    int                 tr_srcTopLeftY;
+    int                 tr_srcBottomRightX;
+    int                 tr_srcBottomRightY;
+    int                 tr_destTopLeftX;
+    int                 tr_destTopLeftY;
+    int                 tr_destBottomRightX;
+    int                 tr_destBottomRightY;
+    int                 tr_lineStartX;
+    int                 tr_lineStartY;
+    int                 tr_lineEndX;
+    int                 tr_lineEndY;
     } t_linetraverser;
     
 typedef struct _tick {
-    t_float     k_point;
-    t_float     k_inc;
-    int         k_lperb;
+    t_float             k_point;
+    t_float             k_inc;
+    int                 k_lperb;
     } t_tick;
 
 typedef struct _selection {
     t_gobj              *sel_what;
     struct _selection   *sel_next;
     } t_selection;
-
+    
 typedef struct _editor {
     t_selection         *e_updlist;
     t_boxtext           *e_rtext;
@@ -194,6 +200,9 @@ typedef struct _editor {
     int                 e_xnew;
     int                 e_ynew;
     } t_editor;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 struct _glist {  
     t_object            gl_obj;
@@ -239,19 +248,14 @@ struct _glist {
     char                gl_private;
     };
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 typedef struct _dataslot {
     int                 ds_type;
     t_symbol            *ds_name;
     t_symbol            *ds_arraytemplate;
     } t_dataslot;
-
-struct _template {
-    t_pd                t_pdobj;   
-    t_gtemplate         *t_list;  
-    t_symbol            *t_sym;    
-    int                 t_n;    
-    t_dataslot          *t_vec;  
-    };
 
 struct _array {
     int                 a_n;
@@ -263,6 +267,17 @@ struct _array {
     t_gstub             *a_stub;
     };
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+struct _template {
+    t_pd                t_pdobj;   
+    t_gtemplate         *t_list;  
+    t_symbol            *t_sym;    
+    int                 t_n;    
+    t_dataslot          *t_vec;  
+    };
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -296,8 +311,8 @@ void                canvas_updateTitle              (t_glist *glist);
 
 int                 canvas_getIndexOfObject         (t_glist *glist, t_gobj *object);
 
-void                canvas_traverseLineStart        (t_linetraverser *t, t_glist *glist);
-t_outconnect        *canvas_traverseLineNext        (t_linetraverser *t);
+void                canvas_traverseLinesStart       (t_linetraverser *t, t_glist *glist);
+t_outconnect        *canvas_traverseLinesNext       (t_linetraverser *t);
 
 void                canvas_dataproperties           (t_glist *x, t_scalar *sc, t_buffer *b);
 int                 canvas_open                     (t_glist *x,

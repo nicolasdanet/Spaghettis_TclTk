@@ -758,7 +758,7 @@ t_outconnect *object_traverseOutletNext (t_outconnect *last, t_object **dest, t_
     t_class *c = pd_class (y);
     
     if (c == inlet_class || c == pointerinlet_class || c == floatinlet_class || c == symbolinlet_class) {
-        t_inlet *i1 = (t_inlet *)y;
+        t_inlet *i1 = cast_inlet (y);
         t_inlet *i2 = NULL;
         t_object *o = i1->i_owner;
         int k = pd_class (o)->c_hasFirstInlet;

@@ -643,13 +643,13 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
     for (y = x->gl_list; y; y = y->g_next)
         gobj_save(y, b);
 
-    canvas_traverseLineStart(&t, x);
-    while (oc = canvas_traverseLineNext(&t))
+    canvas_traverseLinesStart(&t, x);
+    while (oc = canvas_traverseLinesNext(&t))
     {
-        int srcno = canvas_getIndexOfObject(x, &t.tr_sourceObject->te_g);
-        int sinkno = canvas_getIndexOfObject(x, &t.tr_destinationObject->te_g);
+        int srcno = canvas_getIndexOfObject(x, &t.tr_srcObject->te_g);
+        int sinkno = canvas_getIndexOfObject(x, &t.tr_destObject->te_g);
         buffer_vAppend(b, "ssiiii;", gensym("#X"), gensym("connect"),
-            srcno, t.tr_sourceOutletIndex, sinkno, t.tr_destinationInletIndex);
+            srcno, t.tr_srcIndexOfOutlet, sinkno, t.tr_destIndexOfInlet);
     }
         /* unless everything is the default (as in ordinary subpatches)
         print out a "coords" message to set up the coordinate systems */

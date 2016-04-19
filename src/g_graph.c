@@ -649,11 +649,11 @@ void glist_redraw(t_glist *x)
                 gobj_vis(g, x, 1);
             }
                 /* redraw all the lines */
-            canvas_traverseLineStart(&t, x);
-            while (oc = canvas_traverseLineNext(&t))
+            canvas_traverseLinesStart(&t, x);
+            while (oc = canvas_traverseLinesNext(&t))
                 sys_vGui(".x%lx.c coords l%lx %d %d %d %d\n",
                     glist_getcanvas(x), oc,
-                        t.tr_lx1, t.tr_ly1, t.tr_lx2, t.tr_ly2);
+                        t.tr_lineStartX, t.tr_lineStartY, t.tr_lineEndX, t.tr_lineEndY);
             canvas_drawredrect(x, 0);
             if (x->gl_goprect)
             {
