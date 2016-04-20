@@ -204,7 +204,7 @@ typedef struct _editor {
 // -----------------------------------------------------------------------------------------------------------
 
 struct _glist {  
-    t_object            gl_obj;
+    t_object            gl_obj;                 /* MUST be the first. */
     t_gobj              *gl_list;
     t_gstub             *gl_stub;
     int                 gl_valid;
@@ -270,7 +270,7 @@ struct _array {
 // -----------------------------------------------------------------------------------------------------------
 
 struct _template {
-    t_pd                t_pdobj;   
+    t_pd                t_pdobj;                /* MUST be the first. */
     t_gtemplate         *t_list;  
     t_symbol            *t_sym;    
     int                 t_n;    

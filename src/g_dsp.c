@@ -35,36 +35,38 @@ t_dspcontext    *ugen_start_graph   (int, t_signal **, int, int);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_dspPerform (t_glist *x, int isTopLevel, t_signal **sp)
+static void canvas_dspPerform (t_glist *glist, int isTopLevel, t_signal **sp)
 {
+    t_gobj          *y = NULL;
+    t_dspcontext    *context = NULL;
+    t_outconnect    *connection = NULL;   
     t_linetraverser t;
-    t_outconnect *oc;
-    t_gobj *y;
-    t_object *ob;
-    t_symbol *dspsym = gensym("dsp");
-    t_dspcontext *dc;    
-
-        /* create a new "DSP graph" object to use in sorting this canvas.
-        If we aren't toplevel, there are already other dspcontexts around. */
-
-    dc = ugen_start_graph(isTopLevel, sp,
-        object_numberOfSignalInlets(&x->gl_obj),
-        object_numberOfSignalOutlets(&x->gl_obj));
-
-        /* find all the "dsp" boxes and add them to the graph */
     
-    for (y = x->gl_list; y; y = y->g_next)
-        if ((ob = canvas_castToObjectIfBox(&y->g_pd)) && class_hasMethod (pd_class (&y->g_pd), dspsym))
-            ugen_add(dc, ob);
+    int m = object_numberOfSignalInlets (cast_object (glist));
+    int n = object_numberOfSignalOutlets (cast_object (glist));
+    
+    context = ugen_start_graph (isTopLevel, sp, m, n);
+    
+    for (y = glist->gl_list; y; y = y->g_next) {
+    //
+    t_object *o = canvas_castToObjectIfBox (y);
+    if (o && class_hasMethod (pd_class (y), gensym ("dsp"))) { ugen_add (context, o); }
+    //
+    }
 
-        /* ... and all dsp interconnections */
-    canvas_traverseLinesStart(&t, x);
-    while (oc = canvas_traverseLinesNext(&t))
-        if (object_isSignalOutlet(t.tr_srcObject, t.tr_srcIndexOfOutlet))
-            ugen_connect(dc, t.tr_srcObject, t.tr_srcIndexOfOutlet, t.tr_destObject, t.tr_destIndexOfInlet);
+    canvas_traverseLinesStart (&t, glist);
+    
+    while (connection = canvas_traverseLinesNext (&t)) {
+        if (object_isSignalOutlet (t.tr_srcObject, t.tr_srcIndexOfOutlet)) {
+            ugen_connect (context, 
+                t.tr_srcObject, 
+                t.tr_srcIndexOfOutlet, 
+                t.tr_destObject, 
+                t.tr_destIndexOfInlet);
+        }
+    }
 
-        /* finally, sort them and add them to the DSP chain */
-    ugen_done_graph(dc);
+    ugen_done_graph (context);
 }
 
 void canvas_dsp (t_glist *x, t_signal **sp)
@@ -101,7 +103,7 @@ static void dsp_stop (void)
 
 static void dsp_notify (int n)
 {
-    sys_vGui ("set ::var(isDsp) %d\n", n);
+    sys_vGui ("set ::var(isDsp) %d\n", n);  // --
 }
 
 // -----------------------------------------------------------------------------------------------------------
