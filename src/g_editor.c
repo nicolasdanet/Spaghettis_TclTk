@@ -263,7 +263,7 @@ void glist_deselect(t_glist *x, t_gobj *y)
                 gobj_activate(y, x, 0);
             }
             if (class_hasMethod (pd_class (&y->g_pd), gensym("dsp")))
-                fixdsp = canvas_dspSuspend();
+                fixdsp = dsp_suspend();
         }
         if ((sel = x->gl_editor->e_selection)->sel_what == y)
         {
@@ -296,7 +296,7 @@ void glist_deselect(t_glist *x, t_gobj *y)
             x->gl_editor->e_textedfor = 0;
         }
         if (fixdsp)
-            canvas_dspResume(1);
+            dsp_resume(1);
     }
 }
 
@@ -413,7 +413,7 @@ void canvas_noundo(t_glist *x)
 
 static void canvas_undo(t_glist *x)
 {
-    int dspwas = canvas_dspSuspend();
+    int dspwas = dsp_suspend();
     if (x != canvas_undo_canvas) { PD_BUG; }
     else if (canvas_undo_whatnext != UNDO_UNDO) { PD_BUG; }
     else
@@ -425,12 +425,12 @@ static void canvas_undo(t_glist *x)
             sys_vGui("pdtk_undomenu .x%lx no %s\n", x, canvas_undo_name); */
         canvas_undo_whatnext = UNDO_REDO;
     }
-    canvas_dspResume(dspwas);
+    dsp_resume(dspwas);
 }
 
 static void canvas_redo(t_glist *x)
 {
-    int dspwas = canvas_dspSuspend();
+    int dspwas = dsp_suspend();
     if (x != canvas_undo_canvas) { PD_BUG; }
     else if (canvas_undo_whatnext != UNDO_REDO) { PD_BUG; }
     else
@@ -442,7 +442,7 @@ static void canvas_redo(t_glist *x)
             sys_vGui("pdtk_undomenu .x%lx %s no\n", x, canvas_undo_name);*/
         canvas_undo_whatnext = UNDO_UNDO;
     }
-    canvas_dspResume(dspwas);
+    dsp_resume(dspwas);
 }
 
 /* ------- specific undo methods: 1. connect and disconnect -------- */
@@ -813,13 +813,13 @@ int editor_reloading = 0;    /* Shared. */
 void canvas_reload(t_symbol *name, t_symbol *dir, t_gobj *except)
 {
     t_glist *x;
-    int dspwas = canvas_dspSuspend();
+    int dspwas = dsp_suspend();
     editor_reloading = 1;
         /* find all root canvases */
     for (x = pd_this->pd_roots; x; x = x->gl_next)
         glist_doreload(x, name, dir, except);
     editor_reloading = 0;
-    canvas_dspResume(dspwas);
+    dsp_resume(dspwas);
 }
 
 /* ------------------------ event handling ------------------------ */
@@ -2302,7 +2302,7 @@ static void canvas_doclear(t_glist *x)
     t_gobj *y, *y2;
     int dspstate;
 
-    dspstate = canvas_dspSuspend();
+    dspstate = dsp_suspend();
     if (x->gl_editor->e_selectedline)
     {
         canvas_disconnect(x, x->gl_editor->e_selectline_index1,
@@ -2346,7 +2346,7 @@ static void canvas_doclear(t_glist *x)
     next: ;
     }
 restore:
-    canvas_dspResume(dspstate);
+    dsp_resume(dspstate);
     canvas_dirty(x, 1);
 }
 
@@ -2402,7 +2402,7 @@ static void glist_donewloadbangs(t_glist *x)
 static void canvas_dopaste(t_glist *x, t_buffer *b)
 {
     t_gobj *newgobj, *last, *g2;
-    int dspstate = canvas_dspSuspend(), nbox, count;
+    int dspstate = dsp_suspend(), nbox, count;
     t_symbol *asym = gensym("#A");
         /* save and clear bindings to symbols #a, $N, $X; restore when done */
     t_pd *boundx = s__X.s_thing, *bounda = asym->s_thing, 
@@ -2423,7 +2423,7 @@ static void canvas_dopaste(t_glist *x, t_buffer *b)
         if (count >= nbox)
             glist_select(x, g2);
     paste_canvas = 0;
-    canvas_dspResume(dspstate);
+    dsp_resume(dspstate);
     canvas_dirty(x, 1);
     sys_vGui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
     glist_donewloadbangs(x);

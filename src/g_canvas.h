@@ -318,11 +318,15 @@ t_outconnect        *canvas_traverseLinesNext       (t_linetraverser *t);
 #pragma mark -
 
 void                canvas_dsp                      (t_glist *x, t_signal **sp);
-void                canvas_dspState                 (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void                canvas_dspUpdate                (void);
-int                 canvas_dspSuspend               (void);
-void                canvas_dspResume                (int oldState);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void                dsp_state                       (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void                dsp_update                      (void);
+int                 dsp_suspend                     (void);
+void                dsp_resume                      (int oldState);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

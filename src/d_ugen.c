@@ -152,7 +152,7 @@ static void block_set(t_block *x, t_float fcalcsize, t_float foverlap,
     int upsample, downsample;
     int calcsize = fcalcsize;
     int overlap = foverlap;
-    int dspstate = canvas_dspSuspend();
+    int dspstate = dsp_suspend();
     int vecsize;
     if (overlap < 1)
         overlap = 1;
@@ -204,7 +204,7 @@ static void block_set(t_block *x, t_float fcalcsize, t_float foverlap,
     x->x_overlap = overlap;
     x->x_upsample = upsample;
     x->x_downsample = downsample;
-    canvas_dspResume(dspstate);
+    dsp_resume(dspstate);
 }
 
 static void *switch_new(t_float fvecsize, t_float foverlap,

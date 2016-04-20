@@ -532,7 +532,7 @@ t_outconnect *object_connect (t_object *src, int m, t_object *dest, int n)
         o->o_connections = oc1;
     }
     
-    if (outlet_isSignal (o)) { canvas_dspUpdate(); }
+    if (outlet_isSignal (o)) { dsp_update(); }
 
     return oc1;
     //
@@ -579,7 +579,7 @@ void object_disconnect (t_object *src, int m, t_object *dest, int n)
         }
     }
 
-    if (outlet_isSignal (o)) { canvas_dspUpdate(); }
+    if (outlet_isSignal (o)) { dsp_update(); }
     //
     }
 }

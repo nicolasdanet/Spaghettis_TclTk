@@ -35,16 +35,7 @@ t_dspcontext    *ugen_start_graph   (int, t_signal **, int, int);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_dspNotify (int n)
-{
-    sys_vGui ("set ::var(isDsp) %d\n", n);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void canvas_dodsp (t_glist *x, int toplevel, t_signal **sp)
+static void canvas_dspPerform (t_glist *x, int isTopLevel, t_signal **sp)
 {
     t_linetraverser t;
     t_outconnect *oc;
@@ -56,7 +47,7 @@ static void canvas_dodsp (t_glist *x, int toplevel, t_signal **sp)
         /* create a new "DSP graph" object to use in sorting this canvas.
         If we aren't toplevel, there are already other dspcontexts around. */
 
-    dc = ugen_start_graph(toplevel, sp,
+    dc = ugen_start_graph(isTopLevel, sp,
         object_numberOfSignalInlets(&x->gl_obj),
         object_numberOfSignalOutlets(&x->gl_obj));
 
@@ -78,14 +69,14 @@ static void canvas_dodsp (t_glist *x, int toplevel, t_signal **sp)
 
 void canvas_dsp (t_glist *x, t_signal **sp)
 {
-    canvas_dodsp (x, 0, sp);
+    canvas_dspPerform (x, 0, sp);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_dspStart (void)
+static void dsp_start (void)
 {
     t_glist *glist;
     
@@ -93,13 +84,13 @@ static void canvas_dspStart (void)
 
     ugen_start();
     
-    for (glist = pd_this->pd_roots; glist; glist = glist->gl_next) { canvas_dodsp (glist, 1, NULL); }
+    for (glist = pd_this->pd_roots; glist; glist = glist->gl_next) { canvas_dspPerform (glist, 1, NULL); }
     
     pd_this->pd_dspState = 1;
 }
 
 
-static void canvas_dspStop (void)
+static void dsp_stop (void)
 {
     PD_ASSERT (pd_this->pd_dspState);
     
@@ -108,11 +99,16 @@ static void canvas_dspStop (void)
     pd_this->pd_dspState = 0;
 }
 
+static void dsp_notify (int n)
+{
+    sys_vGui ("set ::var(isDsp) %d\n", n);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_dspState (void *dummy, t_symbol *s, int argc, t_atom *argv)
+void dsp_state (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc) {
     //
@@ -120,35 +116,39 @@ void canvas_dspState (void *dummy, t_symbol *s, int argc, t_atom *argv)
     
     if (n != pd_this->pd_dspState) {
     //
-    if (n) { if (audio_startDSP() == PD_ERROR_NONE) { canvas_dspStart(); } }
+    if (n) { if (audio_startDSP() == PD_ERROR_NONE) { dsp_start(); } }
     else {
-        canvas_dspStop(); audio_stopDSP();
+        dsp_stop(); audio_stopDSP();
     }
     
-    canvas_dspNotify (pd_this->pd_dspState);
+    dsp_notify (pd_this->pd_dspState);
     //
     }
     //
     }
 }
 
-int canvas_dspSuspend (void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void dsp_update (void)
+{
+    if (pd_this->pd_dspState) { dsp_start(); }
+}
+
+int dsp_suspend (void)
 {
     int oldState = pd_this->pd_dspState;
     
-    if (oldState) { canvas_dspStop(); }
+    if (oldState) { dsp_stop(); }
     
     return oldState;
 }
 
-void canvas_dspResume (int oldState)
+void dsp_resume (int oldState)
 {
-    if (oldState) { canvas_dspStart(); }
-}
-
-void canvas_dspUpdate (void)
-{
-    if (pd_this->pd_dspState) { canvas_dspStart(); }
+    if (oldState) { dsp_start(); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

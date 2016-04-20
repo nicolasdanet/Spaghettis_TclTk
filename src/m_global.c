@@ -42,7 +42,7 @@ void global_initialize (void)
 
     class_addMethod (c, (t_method)canvas_newPatch,          gensym ("new"),  A_SYMBOL, A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)buffer_openFile,          gensym ("open"), A_SYMBOL, A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)canvas_dspState,          gensym ("dsp"),  A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dsp_state,                gensym ("dsp"),  A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_key,               gensym ("key"),  A_GIMME, A_NULL);
     class_addMethod (c, (t_method)interface_quit,           gensym ("quit"), A_NULL);
     
