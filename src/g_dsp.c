@@ -15,28 +15,36 @@
 #include "s_system.h"
 #include "g_canvas.h"
 
-extern t_pdinstance     *pd_this;
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-/* ------------------------- DSP chain handling ------------------------- */
+extern t_pdinstance *pd_this;
 
-    /* schedule one canvas for DSP.  This is called below for all "root"
-    canvases, but is also called from the "dsp" method for sub-
-    canvases, which are treated almost like any other tilde object.  */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void            ugen_start          (void);
+void            ugen_stop           (void);
+void            ugen_add            (t_dspcontext *, t_object *);
+void            ugen_connect        (t_dspcontext *, t_object *, int, t_object *, int);
+void            ugen_done_graph     (t_dspcontext *);
+
+t_dspcontext    *ugen_start_graph   (int, t_signal **, int, int);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        ugen_start                                  (void);
-void        ugen_stop                                   (void);
+static void canvas_dspNotify (int n)
+{
+    sys_vGui ("set ::var(isDsp) %d\n", n);
+}
 
-t_dspcontext *ugen_start_graph (int toplevel, t_signal **sp, int ninlets, int noutlets);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void        ugen_add(t_dspcontext *dc, t_object *x);
-void        ugen_connect(t_dspcontext *dc, t_object *x1, int outno, t_object *x2, int inno);
-void        ugen_done_graph(t_dspcontext *dc);
-
-static void canvas_dodsp(t_glist *x, int toplevel, t_signal **sp)
+static void canvas_dodsp (t_glist *x, int toplevel, t_signal **sp)
 {
     t_linetraverser t;
     t_outconnect *oc;
@@ -68,91 +76,80 @@ static void canvas_dodsp(t_glist *x, int toplevel, t_signal **sp)
     ugen_done_graph(dc);
 }
 
-void canvas_dsp(t_glist *x, t_signal **sp)
+void canvas_dsp (t_glist *x, t_signal **sp)
 {
-    canvas_dodsp(x, 0, sp);
+    canvas_dodsp (x, 0, sp);
 }
 
-    /* this routine starts DSP for all root canvases. */
-static void canvas_start_dsp(void)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void canvas_dspStart (void)
 {
-    t_glist *x;
-    if (pd_this->pd_dspState) ugen_stop();
-    else sys_gui("set ::var(isDsp) 1\n");
+    t_glist *glist;
+    
+    if (pd_this->pd_dspState) { ugen_stop(); }
+
     ugen_start();
     
-    for (x = pd_this->pd_roots; x; x = x->gl_next)
-        canvas_dodsp(x, 1, 0);
+    for (glist = pd_this->pd_roots; glist; glist = glist->gl_next) { canvas_dodsp (glist, 1, NULL); }
     
     pd_this->pd_dspState = 1;
 }
 
-static void canvas_stop_dsp(void)
-{
-    if (pd_this->pd_dspState)
-    {
-        ugen_stop();
-        sys_gui("set ::var(isDsp) 0\n");
-        pd_this->pd_dspState = 0;
-    }
-}
 
-    /* DSP can be suspended before, and resumed after, operations which
-    might affect the DSP chain.  For example, we suspend before loading and
-    resume afterward, so that DSP doesn't get resorted for every DSP object
-    int the patch. */
-
-int canvas_suspend_dsp(void)
+static void canvas_dspStop (void)
 {
-    int rval = pd_this->pd_dspState;
-    if (rval) canvas_stop_dsp();
-    return (rval);
-}
-
-void canvas_resume_dsp(int oldstate)
-{
-    if (oldstate) canvas_start_dsp();
-}
-
-    /* this is equivalent to suspending and resuming in one step. */
-void canvas_update_dsp(void)
-{
-    if (pd_this->pd_dspState) canvas_start_dsp();
-}
-
-void global_dsp(void *dummy, t_symbol *s, int argc, t_atom *argv)
-{
-    int newstate;
+    PD_ASSERT (pd_this->pd_dspState);
     
-    if (argc)
-    {
-        newstate = (t_int)atom_getFloatAtIndex (0, argc, argv);
-        
-        if (newstate && !pd_this->pd_dspState)
-        {
-            if (audio_startDSP() == PD_ERROR_NONE) { canvas_start_dsp(); }
-        }
-        else if (!newstate && pd_this->pd_dspState)
-        {
-            canvas_stop_dsp();
-            audio_stopDSP();
-        }
+    ugen_stop();
+    
+    pd_this->pd_dspState = 0;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_dspState (void *dummy, t_symbol *s, int argc, t_atom *argv)
+{
+    if (argc) {
+    //
+    int n = (int)atom_getFloatAtIndex (0, argc, argv);
+    
+    if (n != pd_this->pd_dspState) {
+    //
+    if (n) { if (audio_startDSP() == PD_ERROR_NONE) { canvas_dspStart(); } }
+    else {
+        canvas_dspStop(); audio_stopDSP();
+    }
+    
+    canvas_dspNotify (pd_this->pd_dspState);
+    //
+    }
+    //
     }
 }
 
-void *canvas_getblock(t_class *blockclass, t_glist **canvasp)
+int canvas_dspSuspend (void)
 {
-    t_glist *canvas = *canvasp;
-    t_gobj *g;
-    void *ret = 0;
-    for (g = canvas->gl_list; g; g = g->g_next)
-    {
-        if (g->g_pd == blockclass)
-            ret = g;
-    }
-    *canvasp = canvas->gl_owner;
-    return(ret);
-}
+    int oldState = pd_this->pd_dspState;
     
+    if (oldState) { canvas_dspStop(); }
+    
+    return oldState;
+}
+
+void canvas_dspResume (int oldState)
+{
+    if (oldState) { canvas_dspStart(); }
+}
+
+void canvas_dspUpdate (void)
+{
+    if (pd_this->pd_dspState) { canvas_dspStart(); }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

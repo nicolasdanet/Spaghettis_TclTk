@@ -674,7 +674,7 @@ t_error buffer_evalFile (t_symbol *name, t_symbol *directory)
 {
     t_error err = PD_ERROR;
     
-    int state = canvas_suspend_dsp();
+    int state = canvas_dspSuspend();
     t_buffer *t = buffer_new();
         
     canvas_setFileNameAndDirectory (name, directory);
@@ -699,7 +699,7 @@ t_error buffer_evalFile (t_symbol *name, t_symbol *directory)
     canvas_setFileNameAndDirectory (&s_, &s_);
     
     buffer_free (t);
-    canvas_resume_dsp (state);
+    canvas_dspResume (state);
     
     return err;
 }
@@ -709,7 +709,7 @@ void buffer_openFile (void *dummy, t_symbol *name, t_symbol *directory)
     t_pd *x = NULL;
     
     t_pd *boundX = s__X.s_thing;
-    int state = canvas_suspend_dsp();
+    int state = canvas_dspSuspend();
     
     s__X.s_thing = NULL;
     buffer_evalFile (name, directory);
@@ -721,7 +721,7 @@ void buffer_openFile (void *dummy, t_symbol *name, t_symbol *directory)
     
     stack_performLoadbang();
     
-    canvas_resume_dsp (state);
+    canvas_dspResume (state);
     s__X.s_thing = boundX;
 }
 

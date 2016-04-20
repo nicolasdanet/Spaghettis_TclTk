@@ -317,6 +317,17 @@ t_outconnect        *canvas_traverseLinesNext       (t_linetraverser *t);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void                canvas_dsp                      (t_glist *x, t_signal **sp);
+void                canvas_dspState                 (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void                canvas_dspUpdate                (void);
+int                 canvas_dspSuspend               (void);
+void                canvas_dspResume                (int oldState);
+
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void                canvas_dataproperties           (t_glist *x, t_scalar *sc, t_buffer *b);
 int                 canvas_open                     (t_glist *x,
                                                         const char *name,
@@ -326,9 +337,7 @@ int                 canvas_open                     (t_glist *x,
                                                         unsigned int size,
                                                         int bin);
 
-int                 canvas_suspend_dsp              (void);
-void                canvas_resume_dsp               (int oldstate);
-void                canvas_update_dsp               (void);
+
 
 void canvas_objfor (t_glist *gl, t_object *x, int argc, t_atom *argv);
 void canvas_restore (t_glist *x, t_symbol *s, int argc, t_atom *argv);
@@ -341,7 +350,6 @@ void canvas_menusave (t_glist *x, float fdestroy);
 void canvas_menusaveas (t_glist *x, float fdestroy);
 void canvas_find_parent (t_glist *x);
 void canvas_click (t_glist *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt);
-void canvas_dsp (t_glist *x, t_signal **sp);
 void canvas_map (t_glist *x, t_float f);
 void canvas_setbounds (t_glist *x, t_float left, t_float top, t_float right, t_float bottom);
 void canvas_setgraph (t_glist *x, int flag, int nogoprect);

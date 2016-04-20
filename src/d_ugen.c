@@ -152,7 +152,7 @@ static void block_set(t_block *x, t_float fcalcsize, t_float foverlap,
     int upsample, downsample;
     int calcsize = fcalcsize;
     int overlap = foverlap;
-    int dspstate = canvas_suspend_dsp();
+    int dspstate = canvas_dspSuspend();
     int vecsize;
     if (overlap < 1)
         overlap = 1;
@@ -204,7 +204,7 @@ static void block_set(t_block *x, t_float fcalcsize, t_float foverlap,
     x->x_overlap = overlap;
     x->x_upsample = upsample;
     x->x_downsample = downsample;
-    canvas_resume_dsp(dspstate);
+    canvas_dspResume(dspstate);
 }
 
 static void *switch_new(t_float fvecsize, t_float foverlap,
@@ -1129,7 +1129,19 @@ typedef struct _samplerate
     t_glist *x_canvas;
 } t_samplerate;
 
-void *canvas_getblock(t_class *blockclass, t_glist **canvasp);
+static void *canvas_getblock (t_class *blockclass, t_glist **canvasp)
+{
+    t_glist *canvas = *canvasp;
+    t_gobj *g;
+    void *ret = 0;
+    for (g = canvas->gl_list; g; g = g->g_next)
+    {
+        if (g->g_pd == blockclass)
+            ret = g;
+    }
+    *canvasp = canvas->gl_owner;
+    return(ret);
+}
 
 static void samplerate_tilde_bang(t_samplerate *x)
 {

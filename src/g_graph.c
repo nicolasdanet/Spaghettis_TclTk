@@ -134,7 +134,7 @@ void glist_delete(t_glist *x, t_gobj *y)
     pd_free(&y->g_pd);
     if (rtext)
         rtext_free(rtext);
-    if (chkdsp) canvas_update_dsp();
+    if (chkdsp) canvas_dspUpdate();
     if (drawcommand)
         canvas_redrawallfortemplate(template_findbyname(canvas_makeBindSymbol(
             glist_getcanvas(x)->gl_name)), 1);
@@ -154,14 +154,14 @@ void glist_clear(t_glist *x)
             only if we hit a patchable object. */
         if (!suspended && canvas_castToObjectIfBox(&y->g_pd) && class_hasMethod (pd_class (&y->g_pd), dspsym))
         {
-            dspstate = canvas_suspend_dsp();
+            dspstate = canvas_dspSuspend();
             suspended = 1;
         }
             /* here's the real deletion. */
         glist_delete(x, y);
     }
     if (suspended)
-        canvas_resume_dsp(dspstate);
+        canvas_dspResume(dspstate);
 }
 
 void glist_retext(t_glist *glist, t_object *y)

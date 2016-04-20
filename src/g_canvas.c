@@ -682,7 +682,7 @@ int glist_getfont(t_glist *x)
 void canvas_free(t_glist *x)
 {
     t_gobj *y;
-    int dspstate = canvas_suspend_dsp();
+    int dspstate = canvas_dspSuspend();
     canvas_noundo(x);
     glist_noselect(x);
     while (y = x->gl_list)
@@ -698,7 +698,7 @@ void canvas_free(t_glist *x)
         PD_MEMORY_FREE(x->gl_env->ce_argv);
         PD_MEMORY_FREE(x->gl_env);
     }
-    canvas_resume_dsp(dspstate);
+    canvas_dspResume(dspstate);
     //PD_MEMORY_FREE(x->gl_xlabel);
     //PD_MEMORY_FREE(x->gl_ylabel);
     gstub_cutoff(x->gl_stub);

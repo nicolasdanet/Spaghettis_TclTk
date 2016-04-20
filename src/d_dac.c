@@ -63,7 +63,7 @@ static void dac_set(t_dac *x, t_symbol *s, int argc, t_atom *argv)
     int i;
     for (i = 0; i < argc && i < x->x_n; i++)
         x->x_vec[i] = (t_int)atom_getFloatAtIndex(i, argc, argv);
-    canvas_update_dsp();
+    canvas_dspUpdate();
 }
 
 static void dac_free(t_dac *x)
@@ -179,7 +179,7 @@ static void adc_set(t_adc *x, t_symbol *s, int argc, t_atom *argv)
     int i;
     for (i = 0; i < argc && i < x->x_n; i++)
         x->x_vec[i] = (t_int)atom_getFloatAtIndex(i, argc, argv);
-    canvas_update_dsp();
+    canvas_dspUpdate();
 }
 
 static void adc_free(t_adc *x)

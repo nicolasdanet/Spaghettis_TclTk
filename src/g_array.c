@@ -347,7 +347,7 @@ t_garray *graph_array(t_glist *gl, t_symbol *s, t_symbol *templateargsym,
     pd_bind(&x->x_gobj.g_pd, asym); 
 
     garray_redraw(x);
-    canvas_update_dsp();
+    canvas_dspUpdate();
     return (x);
 }
 
@@ -424,7 +424,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize,
         int wasused = x->x_usedindsp;
         glist_delete(x->x_glist, &x->x_gobj);
         if (wasused)
-            canvas_update_dsp();
+            canvas_dspUpdate();
     }
     else
     {
@@ -465,7 +465,7 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize,
                 gobj_vis(&x->x_glist->gl_obj.te_g, x->x_glist->gl_owner, 0);
                 gobj_vis(&x->x_glist->gl_obj.te_g, x->x_glist->gl_owner, 1);
             }
-            canvas_update_dsp();
+            canvas_dspUpdate();
         }
         size = fsize;
         if (size < 1)
@@ -1185,7 +1185,7 @@ void garray_resize_long(t_garray *x, long n)
             gensym("style"), x->x_scalar->sc_vector, 1));
     array_resize_and_redraw(array, x->x_glist, n);
     if (x->x_usedindsp)
-        canvas_update_dsp();
+        canvas_dspUpdate();
 }
 
     /* float version to use as Pd method */

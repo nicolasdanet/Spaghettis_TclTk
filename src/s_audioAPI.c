@@ -112,7 +112,6 @@ void audio_close (void)
     if (audio_isOpened()) { audio_closeNative(); }
     audio_state = 0;
     scheduler_setAudioMode (SCHEDULER_AUDIO_NONE);
-    // sys_gui ("set ::var(isDsp) 0\n");
 }
 
 // -----------------------------------------------------------------------------------------------------------
