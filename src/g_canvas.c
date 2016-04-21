@@ -34,6 +34,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_class          *scalar_class;
+extern t_class          *array_define_class;
 extern t_pdinstance     *pd_this;
 extern t_pd             *pd_newest;
 
@@ -107,6 +108,19 @@ void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
     canvas_setFileNameAndDirectory (name, directory);
     canvas_new (NULL, NULL, 0, NULL);
     canvas_pop (cast_glist (s__X.s_thing), 1);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_glist *canvas_castToGlist (t_pd *x)
+{
+    if (pd_class (x) == canvas_class || pd_class (x) == array_define_class) {
+        return cast_glist (x);
+    } else {
+        return NULL;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -326,92 +340,6 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist *canvas_new (void *dummy, t_symbol *sel, int argc, t_atom *argv)
-{
-    t_glist *x = (t_glist *)pd_new(canvas_class);
-    t_glist *owner = canvas_getCurrent();
-    t_symbol *s = &s_;
-    int vis = 0, width = CANVAS_DEFAULT_WIDTH, height = CANVAS_DEFAULT_HEIGHT;
-    int xloc = 0, yloc = CANVAS_DEFAULT_Y;
-    int font = (owner ? owner->gl_font : font_getDefaultFontSize());
-    x->gl_stub = gstub_new (x, NULL);
-    x->gl_valid = ++canvas_magic;
-    x->gl_obj.te_type = TYPE_OBJECT;
-    if (!owner)
-        instance_addToRoots (x);
-    /* post("canvas %lx, owner %lx", x, owner); */
-
-    if (argc == 5)  /* toplevel: x, y, w, h, font */
-    {
-        xloc = (t_int)atom_getFloatAtIndex(0, argc, argv);
-        yloc = (t_int)atom_getFloatAtIndex(1, argc, argv);
-        width = (t_int)atom_getFloatAtIndex(2, argc, argv);
-        height = (t_int)atom_getFloatAtIndex(3, argc, argv);
-        font = (t_int)atom_getFloatAtIndex(4, argc, argv);
-    }
-    else if (argc == 6)  /* subwindow: x, y, w, h, name, vis */
-    {
-        xloc = (t_int)atom_getFloatAtIndex(0, argc, argv);
-        yloc = (t_int)atom_getFloatAtIndex(1, argc, argv);
-        width = (t_int)atom_getFloatAtIndex(2, argc, argv);
-        height = (t_int)atom_getFloatAtIndex(3, argc, argv);
-        s = atom_getSymbolAtIndex(4, argc, argv);
-        vis = (t_int)atom_getFloatAtIndex(5, argc, argv);
-    }
-        /* (otherwise assume we're being created from the menu.) */
-
-    if (canvas_directory->s_name[0])
-    {
-        static int dollarzero = 1000;
-        t_canvasenvironment *env = x->gl_env =
-            (t_canvasenvironment *)PD_MEMORY_GET(sizeof(*x->gl_env));
-        if (!canvas_argv)
-            canvas_argv = PD_MEMORY_GET(0);
-        env->ce_directory = canvas_directory;
-        env->ce_argc = canvas_argc;
-        env->ce_argv = canvas_argv;
-        env->ce_dollarZeroValue = dollarzero++;
-        //env->ce_path = 0;
-        canvas_directory = &s_;
-        canvas_argc = 0;
-        canvas_argv = 0;
-    }
-    else x->gl_env = 0;
-
-    if (yloc < CANVAS_DEFAULT_Y)
-        yloc = CANVAS_DEFAULT_Y;
-    if (xloc < 0)
-        xloc = 0;
-    x->gl_x1 = 0;
-    x->gl_y1 = 0;
-    x->gl_x2 = 1;
-    x->gl_y2 = 1;
-    canvas_dosetbounds(x, xloc, yloc, xloc + width, yloc + height);
-    x->gl_owner = owner;
-    x->gl_name = (*s->s_name ? s : 
-        (canvas_fileName ? canvas_fileName : gensym("Pd")));
-    canvas_bind(x);
-    x->gl_loading = 1;
-    x->gl_goprect = 0;      /* no GOP rectangle unless it's turned on later */
-        /* cancel "vis" flag if we're a subpatch of an
-         abstraction inside another patch.  A separate mechanism prevents
-         the toplevel abstraction from showing up. */
-    if (vis && gensym("#X")->s_thing && 
-        ((*gensym("#X")->s_thing) == canvas_class))
-    {
-        t_glist *zzz = (t_glist *)(gensym("#X")->s_thing);
-        while (zzz && !zzz->gl_env)
-            zzz = zzz->gl_owner;
-        if (zzz && canvas_isabstraction(zzz) && zzz->gl_owner)
-            vis = 0;
-    }
-    x->gl_willvis = vis;
-    x->gl_edit = !strncmp(x->gl_name->s_name, "Untitled", 8);
-    x->gl_font = font_getNearestValidFontSize(font);
-    stack_push(&x->gl_obj.te_g.g_pd);
-    return(x);
-}
-
 static void canvas_coords(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 {
     x->gl_x1 = atom_getFloatAtIndex(0, argc, argv);
@@ -448,7 +376,7 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     {
         char buf[40];
         sprintf(buf, "graph%d", ++gcount);
-        sym = gensym(buf);
+        sym = gensym (buf);
         menu = 1;
     }
     else if (!strncmp((str = sym->s_name), "graph", 5)
@@ -493,7 +421,7 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     x->gl_isgraph = 1;
     x->gl_goprect = 0;
     x->gl_obj.te_buffer = buffer_new();
-    buffer_vAppend(x->gl_obj.te_buffer, "s", gensym("graph"));
+    buffer_vAppend(x->gl_obj.te_buffer, "s", gensym ("graph"));
     if (!menu)
         stack_push(&x->gl_obj.te_g.g_pd);
     glist_add(g, &x->gl_obj.te_g);
@@ -679,34 +607,6 @@ int glist_getfont(t_glist *x)
     return (x->gl_font);
 }
 
-void canvas_free(t_glist *x)
-{
-    t_gobj *y;
-    int dspstate = dsp_suspend();
-    canvas_noundo(x);
-    glist_noselect(x);
-    while (y = x->gl_list)
-        glist_delete(x, y);
-    if (x == glist_getcanvas(x))
-        canvas_vis(x, 0);
-    if (x->gl_editor)
-        canvas_destroy_editor(x);   /* bug workaround; should already be gone*/
-    canvas_unbind(x);
-
-    if (x->gl_env)
-    {
-        PD_MEMORY_FREE(x->gl_env->ce_argv);
-        PD_MEMORY_FREE(x->gl_env);
-    }
-    dsp_resume(dspstate);
-    //PD_MEMORY_FREE(x->gl_xlabel);
-    //PD_MEMORY_FREE(x->gl_ylabel);
-    gstub_cutoff(x->gl_stub);
-    guistub_destroyWithKey(x);        /* probably unnecessary */
-    if (!x->gl_owner)
-        instance_removeFromRoots (x);
-}
-
 /* ----------------- lines ---------- */
 
 static void canvas_drawlines(t_glist *x)
@@ -808,7 +708,7 @@ void canvas_restore(t_glist *x, t_symbol *s, int argc, t_atom *argv)
     }
     canvas_pop(x, x->gl_willvis);
 
-    if (!(z = gensym("#X")->s_thing)) post_error ("canvas_restore: out of context");
+    if (!(z = gensym ("#X")->s_thing)) post_error ("canvas_restore: out of context");
     else if (*z != canvas_class) post_error ("canvas_restore: wasn't a canvas");
     else
     {
@@ -821,7 +721,7 @@ void canvas_restore(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 static void canvas_loadbangabstractions(t_glist *x)
 {
     t_gobj *y;
-    t_symbol *s = gensym("loadbang");
+    t_symbol *s = gensym ("loadbang");
     for (y = x->gl_list; y; y = y->g_next)
         if (pd_class(&y->g_pd) == canvas_class)
     {
@@ -835,7 +735,7 @@ static void canvas_loadbangabstractions(t_glist *x)
 void canvas_loadbangsubpatches(t_glist *x)
 {
     t_gobj *y;
-    t_symbol *s = gensym("loadbang");
+    t_symbol *s = gensym ("loadbang");
     for (y = x->gl_list; y; y = y->g_next)
         if (pd_class(&y->g_pd) == canvas_class)
     {
@@ -895,7 +795,7 @@ static void *subcanvas_new(t_symbol *s)
 {
     t_atom a[6];
     t_glist *x, *z = canvas_getCurrent();
-    if (!*s->s_name) s = gensym("/SUBPATCH/");
+    if (!*s->s_name) s = gensym ("/SUBPATCH/");
     SET_FLOAT(a, 0);
     SET_FLOAT(a+1, CANVAS_DEFAULT_Y);
     SET_FLOAT(a+2, CANVAS_DEFAULT_WIDTH);
@@ -939,7 +839,7 @@ static void canvas_rename_method(t_glist *x, t_symbol *s, int ac, t_atom *av)
         //canvas_unsetCurrent(x);
         stack_pop (cast_pd (x));
     }
-    else canvas_rename(x, gensym("Pd"), 0);
+    else canvas_rename(x, gensym ("Pd"), 0);
 }
 
 
@@ -958,7 +858,7 @@ int canvas_showtext(t_glist *x)
     t_atom *argv = (x->gl_obj.te_buffer? buffer_atoms(x->gl_obj.te_buffer):0);
     int argc = (x->gl_obj.te_buffer? buffer_size(x->gl_obj.te_buffer) : 0);
     int isarray = (argc && argv[0].a_type == A_SYMBOL &&
-        argv[0].a_w.w_symbol == gensym("graph"));
+        argv[0].a_w.w_symbol == gensym ("graph"));
     if(x->gl_hidetext)
       return 0;
     else
@@ -1019,7 +919,7 @@ void canvas_redrawallfortemplatecanvas(t_glist *x, int action)
 {
     t_gobj *g;
     t_template *tmpl;
-    t_symbol *s1 = gensym("struct");
+    t_symbol *s1 = gensym ("struct");
     for (g = x->gl_list; g; g = g->g_next)
     {
         t_object *ob = canvas_castToObjectIfBox(&g->g_pd);
@@ -1078,7 +978,7 @@ void canvas_savedeclarationsto(t_glist *x, t_buffer *b)
     {
         if (pd_class(&y->g_pd) == declare_class)
         {
-            buffer_vAppend(b, "s", gensym("#X"));
+            buffer_vAppend(b, "s", gensym ("#X"));
             buffer_serialize(b, ((t_declare *)y)->x_obj.te_buffer);
             buffer_vAppend(b, ";");
         }
@@ -1105,7 +1005,7 @@ static void canvas_completepath(char *from, char *to, int bufsize)
 }
 */
 
-/* maybe we should rename check_exists() to sys_access() and move it to s_path */
+/* 
 #ifdef _WIN32
 static int check_exists(const char *filepath)
 {
@@ -1124,7 +1024,7 @@ static int check_exists(const char *filepath)
     return (0 == access (filepath, 0));
 }
 #endif
-
+*/
 //extern t_pathlist *path_extra;
 
 /*
@@ -1310,140 +1210,190 @@ static void canvas_f(t_glist *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-extern t_class *array_define_class;     /* LATER datum class too */
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-    /* check if a pd can be treated as a glist - true if we're of any of
-    the glist classes, which all have 'glist' as the first item in struct */
-t_glist *pd_checkglist(t_pd *x)
+t_glist *canvas_new (void *dummy, t_symbol *sel, int argc, t_atom *argv)
 {
-    if (*x == canvas_class || *x == array_define_class)
-        return ((t_glist *)x);
-    else return (0);
+    t_glist *x = (t_glist *)pd_new(canvas_class);
+    t_glist *owner = canvas_getCurrent();
+    t_symbol *s = &s_;
+    int vis = 0, width = CANVAS_DEFAULT_WIDTH, height = CANVAS_DEFAULT_HEIGHT;
+    int xloc = 0, yloc = CANVAS_DEFAULT_Y;
+    int font = (owner ? owner->gl_font : font_getDefaultFontSize());
+    x->gl_stub = gstub_new (x, NULL);
+    x->gl_valid = ++canvas_magic;
+    x->gl_obj.te_type = TYPE_OBJECT;
+    if (!owner)
+        instance_addToRoots (x);
+    /* post("canvas %lx, owner %lx", x, owner); */
+
+    if (argc == 5)  /* toplevel: x, y, w, h, font */
+    {
+        xloc = (t_int)atom_getFloatAtIndex(0, argc, argv);
+        yloc = (t_int)atom_getFloatAtIndex(1, argc, argv);
+        width = (t_int)atom_getFloatAtIndex(2, argc, argv);
+        height = (t_int)atom_getFloatAtIndex(3, argc, argv);
+        font = (t_int)atom_getFloatAtIndex(4, argc, argv);
+    }
+    else if (argc == 6)  /* subwindow: x, y, w, h, name, vis */
+    {
+        xloc = (t_int)atom_getFloatAtIndex(0, argc, argv);
+        yloc = (t_int)atom_getFloatAtIndex(1, argc, argv);
+        width = (t_int)atom_getFloatAtIndex(2, argc, argv);
+        height = (t_int)atom_getFloatAtIndex(3, argc, argv);
+        s = atom_getSymbolAtIndex(4, argc, argv);
+        vis = (t_int)atom_getFloatAtIndex(5, argc, argv);
+    }
+        /* (otherwise assume we're being created from the menu.) */
+
+    if (canvas_directory->s_name[0])
+    {
+        static int dollarzero = 1000;
+        t_canvasenvironment *env = x->gl_env =
+            (t_canvasenvironment *)PD_MEMORY_GET(sizeof(*x->gl_env));
+        if (!canvas_argv)
+            canvas_argv = PD_MEMORY_GET(0);
+        env->ce_directory = canvas_directory;
+        env->ce_argc = canvas_argc;
+        env->ce_argv = canvas_argv;
+        env->ce_dollarZeroValue = dollarzero++;
+        //env->ce_path = 0;
+        canvas_directory = &s_;
+        canvas_argc = 0;
+        canvas_argv = 0;
+    }
+    else x->gl_env = 0;
+
+    if (yloc < CANVAS_DEFAULT_Y)
+        yloc = CANVAS_DEFAULT_Y;
+    if (xloc < 0)
+        xloc = 0;
+    x->gl_x1 = 0;
+    x->gl_y1 = 0;
+    x->gl_x2 = 1;
+    x->gl_y2 = 1;
+    canvas_dosetbounds(x, xloc, yloc, xloc + width, yloc + height);
+    x->gl_owner = owner;
+    x->gl_name = (*s->s_name ? s : 
+        (canvas_fileName ? canvas_fileName : gensym ("Pd")));
+    canvas_bind(x);
+    x->gl_loading = 1;
+    x->gl_goprect = 0;      /* no GOP rectangle unless it's turned on later */
+        /* cancel "vis" flag if we're a subpatch of an
+         abstraction inside another patch.  A separate mechanism prevents
+         the toplevel abstraction from showing up. */
+    if (vis && gensym ("#X")->s_thing && 
+        ((*gensym ("#X")->s_thing) == canvas_class))
+    {
+        t_glist *zzz = (t_glist *)(gensym ("#X")->s_thing);
+        while (zzz && !zzz->gl_env)
+            zzz = zzz->gl_owner;
+        if (zzz && canvas_isabstraction(zzz) && zzz->gl_owner)
+            vis = 0;
+    }
+    x->gl_willvis = vis;
+    x->gl_edit = !strncmp(x->gl_name->s_name, "Untitled", 8);
+    x->gl_font = font_getNearestValidFontSize(font);
+    stack_push(&x->gl_obj.te_g.g_pd);
+    return(x);
 }
 
-/* ------------------------------- setup routine ------------------------ */
-
-    /* why are some of these "glist" and others "canvas"? */
-extern void glist_text(t_glist *x, t_symbol *s, int argc, t_atom *argv);
-extern void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-extern void canvas_bng(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-extern void canvas_toggle(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-extern void canvas_vslider(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-extern void canvas_hslider(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-extern void canvas_hradio(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-extern void canvas_vradio(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-extern void canvas_vumeter(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-extern void canvas_mycnv(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-extern void canvas_numbox(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-extern void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-extern void canvas_floatatom(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-extern void canvas_symbolatom(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
-extern void glist_scalar(t_glist *canvas, t_symbol *s, int argc, t_atom *argv);
-
-void g_graph_setup(void);
-void g_editor_setup(void);
-void g_readwrite_setup(void);
-extern void canvas_properties(t_gobj *z, t_glist *canvas);
-
-void g_canvas_setup(void)
+void canvas_free(t_glist *x)
 {
-        /* we prevent the user from typing "canvas" in an object box
-        by sending 0 for a creator function. */
-    canvas_class = class_new(gensym("canvas"), 0,
-        (t_method)canvas_free, sizeof(t_glist), CLASS_NOINLET, 0);
-            /* here is the real creator function, invoked in patch files
-            by sending the "canvas" message to #N, which is bound
-            to pd_camvasmaker. */
-    class_addMethod(pd_canvasMaker, (t_method)canvas_new, gensym("canvas"),
-        A_GIMME, 0);
-    class_addMethod(canvas_class, (t_method)canvas_restore,
-        gensym("restore"), A_GIMME, 0);
-    class_addMethod(canvas_class, (t_method)canvas_coords,
-        gensym("coords"), A_GIMME, 0);
+    t_gobj *y;
+    int dspstate = dsp_suspend();
+    canvas_noundo(x);
+    glist_noselect(x);
+    while (y = x->gl_list)
+        glist_delete(x, y);
+    if (x == glist_getcanvas(x))
+        canvas_vis(x, 0);
+    if (x->gl_editor)
+        canvas_destroy_editor(x);   /* bug workaround; should already be gone*/
+    canvas_unbind(x);
 
-/* -------------------------- objects ----------------------------- */
-    class_addMethod(canvas_class, (t_method)canvas_obj,
-        gensym("obj"), A_GIMME, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_msg,
-        gensym("msg"), A_GIMME, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_floatatom,
-        gensym("floatatom"), A_GIMME, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_symbolatom,
-        gensym("symbolatom"), A_GIMME, A_NULL);
-    class_addMethod(canvas_class, (t_method)glist_text,
-        gensym("text"), A_GIMME, A_NULL);
-    class_addMethod(canvas_class, (t_method)glist_glist, gensym("graph"),
-        A_GIMME, A_NULL);
-    class_addMethod(canvas_class, (t_method)glist_scalar,
-        gensym("scalar"), A_GIMME, A_NULL);
+    if (x->gl_env)
+    {
+        PD_MEMORY_FREE(x->gl_env->ce_argv);
+        PD_MEMORY_FREE(x->gl_env);
+    }
+    dsp_resume(dspstate);
+    //PD_MEMORY_FREE(x->gl_xlabel);
+    //PD_MEMORY_FREE(x->gl_ylabel);
+    gstub_cutoff(x->gl_stub);
+    guistub_destroyWithKey(x);        /* probably unnecessary */
+    if (!x->gl_owner)
+        instance_removeFromRoots (x);
+}
 
-/* -------------- IEMGUI: button, toggle, slider, etc.  ------------ */
-    class_addMethod(canvas_class, (t_method)canvas_bng, gensym("bng"),
-                    A_GIMME, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_toggle, gensym("toggle"),
-                    A_GIMME, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_vslider, gensym("vslider"),
-                    A_GIMME, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_hslider, gensym("hslider"),
-                    A_GIMME, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_hradio, gensym("hradio"),
-                    A_GIMME, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_vradio, gensym("vradio"),
-                    A_GIMME, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_vumeter, gensym("vumeter"),
-                    A_GIMME, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_mycnv, gensym("mycnv"),
-                    A_GIMME, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_numbox, gensym("numbox"),
-                    A_GIMME, A_NULL);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-/* ------------------------ gui stuff --------------------------- */
-    class_addMethod(canvas_class, (t_method)canvas_pop, gensym("pop"),
-        A_DEFFLOAT, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_loadbang,
-        gensym("loadbang"), A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_setbounds,
-        gensym("setbounds"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_relocate,
-        gensym("relocate"), A_SYMBOL, A_SYMBOL, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_vis,
-        gensym("vis"), A_FLOAT, A_NULL);
-    class_addMethod(canvas_class, (t_method)glist_menu_open,
-        gensym("menu-open"), A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_map,
-        gensym("map"), A_FLOAT, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_dirty,
-        gensym("dirty"), A_FLOAT, A_NULL);
-    class_setPropertiesFunction(canvas_class, canvas_properties);
-
-/* ---------------------- list handling ------------------------ */
-    class_addMethod(canvas_class, (t_method)glist_clear, gensym("clear"),
+void canvas_setup (void)
+{
+    t_class *c = NULL;
+        
+    /* Creator function by sending the "canvas" message to #N. */
+            
+    class_addMethod (pd_canvasMaker, (t_method)canvas_new, gensym ("canvas"), A_GIMME, A_NULL);
+    
+    c = class_new (gensym ("canvas"),
+        NULL, 
+        (t_method)canvas_free, 
+        sizeof (t_glist), 
+        CLASS_NOINLET,
         A_NULL);
 
-/* ----- subcanvases, which you get by typing "pd" in a box ---- */
-    class_addCreator((t_newmethod)subcanvas_new, gensym("pd"), A_DEFSYMBOL, 0);
-    class_addCreator((t_newmethod)subcanvas_new, gensym("page"),  A_DEFSYMBOL, 0);
+    class_addCreator ((t_newmethod)subcanvas_new,       gensym ("pd"),          A_DEFSYMBOL, A_NULL);
+    class_addCreator ((t_newmethod)subcanvas_new,       gensym ("page"),        A_DEFSYMBOL, A_NULL);
+    
+    class_addClick (c, canvas_click);
+    class_addBounds (c, canvas_setbounds);
+        
+    class_addMethod (c, (t_method)canvas_restore,       gensym ("restore"),     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_coords,        gensym ("coords"),      A_GIMME, A_NULL);
 
-    class_addMethod(canvas_class, (t_method)canvas_click,
-        gensym("click"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addMethod(canvas_class, (t_method)canvas_dsp,
-        gensym("dsp"), A_CANT, 0);
-    class_addMethod(canvas_class, (t_method)canvas_rename_method,
-        gensym("rename"), A_GIMME, 0);
+    class_addMethod (c, (t_method)canvas_obj,           gensym ("obj"),         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_msg,           gensym ("msg"),         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_floatatom,     gensym ("floatatom"),   A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_symbolatom,    gensym ("symbolatom"),  A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)glist_text,           gensym ("text"),        A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)glist_glist,          gensym ("graph"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)glist_scalar,         gensym ("scalar"),      A_GIMME, A_NULL);
 
-/*---------------------------- declare ------------------- */
-    /*declare_class = class_new(gensym("declare"), (t_newmethod)declare_new,
-        (t_method)declare_free, sizeof(t_declare), CLASS_NOINLET, A_GIMME, 0); */
-    /*class_addMethod(canvas_class, (t_method)canvas_declare,
-        gensym("declare"), A_GIMME, 0);*/
+    class_addMethod (c, (t_method)canvas_bng,           gensym ("bng"),         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_toggle,        gensym ("toggle"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_vslider,       gensym ("vslider"),     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_hslider,       gensym ("hslider"),     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_hradio,        gensym ("hradio"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_vradio,        gensym ("vradio"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_vumeter,       gensym ("vumeter"),     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_mycnv,         gensym ("mycnv"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_numbox,        gensym ("numbox"),      A_GIMME, A_NULL);
+    
+    class_addMethod (c, (t_method)glist_menu_open,      gensym ("menu-open"),   A_NULL);
+    class_addMethod (c, (t_method)canvas_loadbang,      gensym ("loadbang"),    A_NULL);
+    class_addMethod (c, (t_method)canvas_vis,           gensym ("vis"),         A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_map,           gensym ("map"),         A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_dirty,         gensym ("dirty"),       A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_pop,           gensym ("pop"),         A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_relocate,      gensym ("relocate"),    A_SYMBOL, A_SYMBOL, A_NULL);
 
-/*--------------- future message to set formatting  -------------- */
-    class_addMethod(canvas_class, (t_method)canvas_f,
-        gensym("f"), A_GIMME, 0);
-/* -------------- setups from other files for canvas_class ---------------- */
-    g_graph_setup();
-    g_editor_setup();
-    g_readwrite_setup();
+    class_addMethod (c, (t_method)glist_clear,          gensym ("clear"),       A_NULL);
+    class_addMethod (c, (t_method)canvas_dsp,           gensym ("dsp"),         A_CANT, A_NULL);
+    class_addMethod (c, (t_method)canvas_rename_method, gensym ("rename"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_f,             gensym ("f"),           A_GIMME, A_NULL);
+    
+    #if PD_WITH_LEGACY
+    
+    #endif
+        
+    class_setPropertiesFunction (c, canvas_properties);
+
+    canvas_class = c;
 }
 
 // -----------------------------------------------------------------------------------------------------------

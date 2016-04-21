@@ -135,6 +135,14 @@ typedef void (*t_gotfn1)(void *x, void *arg1);
                                                 A_FLOAT, \
                                                 A_NULL);
 
+#define class_addBounds(c, m)               class_addMethod ((c), (t_method)(m), \
+                                                gensym ("setbounds"), \
+                                                A_FLOAT, \
+                                                A_FLOAT, \
+                                                A_FLOAT, \
+                                                A_FLOAT, \
+                                                A_NULL);
+                                                
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

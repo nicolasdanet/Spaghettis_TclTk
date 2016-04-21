@@ -63,14 +63,18 @@ static void bindlist_anything (t_bindlist *x, t_symbol *s, int argc, t_atom *arg
 
 void bindlist_initialize (void)
 {
-    bindlist_class = class_new (gensym ("bindlist"), NULL, NULL, sizeof (t_bindlist), CLASS_PURE, 0);
+    t_class *c = NULL;
     
-    class_addBang (bindlist_class,      (t_method)bindlist_bang);
-    class_addFloat (bindlist_class,     (t_method)bindlist_float);
-    class_addSymbol (bindlist_class,    (t_method)bindlist_symbol);
-    class_addPointer (bindlist_class,   (t_method)bindlist_pointer);
-    class_addList (bindlist_class,      (t_method)bindlist_list);
-    class_addAnything (bindlist_class,  (t_method)bindlist_anything);
+    c = class_new (gensym ("bindlist"), NULL, NULL, sizeof (t_bindlist), CLASS_PURE, A_NULL);
+    
+    class_addBang (c, (t_method)bindlist_bang);
+    class_addFloat (c, (t_method)bindlist_float);
+    class_addSymbol (c, (t_method)bindlist_symbol);
+    class_addPointer (c, (t_method)bindlist_pointer);
+    class_addList (c, (t_method)bindlist_list);
+    class_addAnything (c, (t_method)bindlist_anything);
+    
+    bindlist_class = c;
 }
 
 void bindlist_release (void)

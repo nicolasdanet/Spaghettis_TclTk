@@ -83,7 +83,7 @@ t_class *array_define_class;
 
 static void array_define_yrange(t_glist *x, t_float ylo, t_float yhi)
 {
-    t_glist *gl = (x->gl_list ? pd_checkglist(&x->gl_list->g_pd) : 0);
+    t_glist *gl = (x->gl_list ? canvas_castToGlist(&x->gl_list->g_pd) : 0);
     if (gl && gl->gl_list && pd_class(&gl->gl_list->g_pd) == garray_class)
     {
         int n = garray_getarray((t_garray *)gl->gl_list)->a_n;
@@ -168,7 +168,7 @@ void garray_savecontentsto(t_garray *x, t_buffer *b);
 void array_define_save(t_gobj *z, t_buffer *bb)
 {
     t_glist *x = (t_glist *)z;
-    t_glist *gl = (x->gl_list ? pd_checkglist(&x->gl_list->g_pd) : 0);
+    t_glist *gl = (x->gl_list ? canvas_castToGlist(&x->gl_list->g_pd) : 0);
     buffer_vAppend(bb, "ssff", &s__X, gensym("obj"),
         (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
     buffer_serialize(bb, x->gl_obj.te_buffer);
@@ -184,7 +184,7 @@ t_scalar *garray_getscalar(t_garray *x);
     whomever is bound to the given symbol */
 static void array_define_send(t_glist *x, t_symbol *s)
 {
-    t_glist *gl = (x->gl_list ? pd_checkglist(&x->gl_list->g_pd) : 0);
+    t_glist *gl = (x->gl_list ? canvas_castToGlist(&x->gl_list->g_pd) : 0);
     if (!s->s_thing)
         post_error ("array_define_send: %s: no such object", s->s_name);
     else if (gl && gl->gl_list && pd_class(&gl->gl_list->g_pd) == garray_class)
@@ -203,7 +203,7 @@ static void array_define_send(t_glist *x, t_symbol *s)
 static void array_define_anything(t_glist *x,
     t_symbol *s, int argc, t_atom *argv)
 {
-    t_glist *gl = (x->gl_list ? pd_checkglist(&x->gl_list->g_pd) : 0);
+    t_glist *gl = (x->gl_list ? canvas_castToGlist(&x->gl_list->g_pd) : 0);
     if (gl && gl->gl_list && pd_class(&gl->gl_list->g_pd) == garray_class)
         pd_message(&gl->gl_list->g_pd, s, argc, argv);
     else { PD_BUG; }

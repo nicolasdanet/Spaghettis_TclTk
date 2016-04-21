@@ -38,7 +38,14 @@ static void global_dummy (void *dummy)
 
 void global_initialize (void)
 {
-    t_class *c = class_new (gensym ("pd"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
+    t_class *c = NULL;
+    
+    c = class_new (gensym ("pd"), 
+            NULL,
+            NULL,
+            sizeof (t_pd),
+            CLASS_DEFAULT,
+            A_NULL);
 
     class_addMethod (c, (t_method)canvas_newPatch,          gensym ("new"),  A_SYMBOL, A_SYMBOL, A_NULL);
     class_addMethod (c, (t_method)buffer_openFile,          gensym ("open"), A_SYMBOL, A_SYMBOL, A_NULL);

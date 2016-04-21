@@ -287,6 +287,12 @@ struct _template {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_glist             *canvas_castToGlist             (t_pd *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_guiconnect        *guiconnect_new                 (t_pd *owner, t_symbol *bindTo);
 
 void                guiconnect_release              (t_guiconnect *x, double timeOut);
@@ -343,6 +349,7 @@ int                 canvas_open                     (t_glist *x,
 
 
 
+void canvas_properties (t_gobj *z, t_glist *canvas);
 void canvas_objfor (t_glist *gl, t_object *x, int argc, t_atom *argv);
 void canvas_restore (t_glist *x, t_symbol *s, int argc, t_atom *argv);
 void canvas_mouse (t_glist *x, t_float xpos, t_float ypos, t_float which, t_float mod);
@@ -357,6 +364,22 @@ void canvas_click (t_glist *x, t_float xpos, t_float ypos, t_float shift, t_floa
 void canvas_map (t_glist *x, t_float f);
 void canvas_setbounds (t_glist *x, t_float left, t_float top, t_float right, t_float bottom);
 void canvas_setgraph (t_glist *x, int flag, int nogoprect);
+
+void glist_text(t_glist *x, t_symbol *s, int argc, t_atom *argv);
+void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void canvas_bng(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void canvas_toggle(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void canvas_vslider(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void canvas_hslider(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void canvas_hradio(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void canvas_vradio(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void canvas_vumeter(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void canvas_mycnv(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void canvas_numbox(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void canvas_floatatom(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void canvas_symbolatom(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
+void glist_scalar(t_glist *canvas, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -568,7 +591,6 @@ int      canvas_clicksub                (t_glist *x,
 void    canvas_setcursor                (t_glist *x, unsigned int cursornum);
 
 t_glist  *canvas_getglistonsuper        (void);
-t_glist  *pd_checkglist                 (t_pd *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

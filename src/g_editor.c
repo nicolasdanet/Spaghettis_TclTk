@@ -1361,7 +1361,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                 /* resize?  only for "true" text boxes or canvases*/
             if (ob && !x->gl_editor->e_selection &&
                 (ob->te_g.g_pd->c_behavior == &text_widgetBehavior ||
-                    pd_checkglist(&ob->te_g.g_pd)) &&
+                    canvas_castToGlist(&ob->te_g.g_pd)) &&
                         xpos >= x2-4 && ypos < y2-4)
             {
                 if (doit)
@@ -1920,7 +1920,7 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos,
             int wantwidth = xpos - x11;
             t_object *ob = canvas_castToObjectIfBox(&y1->g_pd);
             if (ob && ob->te_g.g_pd->c_behavior == &text_widgetBehavior ||
-                    (pd_checkglist(&ob->te_g.g_pd) &&
+                    (canvas_castToGlist(&ob->te_g.g_pd) &&
                         !((t_glist *)ob)->gl_isgraph))
             {
                 wantwidth = wantwidth / font_getHostFontWidth(glist_getfont(x));
@@ -2746,7 +2746,7 @@ static void canvas_dofont(t_glist *x, t_float font, t_float xresize,
     if (glist_isvisible(x))
         glist_redraw(x);
     for (y = x->gl_list; y; y = y->g_next)
-        if (pd_checkglist(&y->g_pd)  && !canvas_isabstraction((t_glist *)y))
+        if (canvas_castToGlist(&y->g_pd)  && !canvas_isabstraction((t_glist *)y))
             canvas_dofont((t_glist *)y, font, xresize, yresize);
 }
 

@@ -39,7 +39,10 @@ void loader_release         (void);
 #pragma mark -
 
 void g_array_setup          (void);
-void g_canvas_setup         (void);
+void canvas_setup           (void);
+void g_graph_setup          (void);
+void g_editor_setup         (void);
+void g_readwrite_setup      (void);
 void guiconnect_setup       (void);
 void bng_setup              (void);
 void toggle_setup           (void);
@@ -94,7 +97,10 @@ void setup_initialize (void)
     global_initialize();
     
     g_array_setup();
-    g_canvas_setup();
+    canvas_setup();
+    g_graph_setup();
+    g_editor_setup();
+    g_readwrite_setup();
     guiconnect_setup();
     bng_setup();
     toggle_setup();
