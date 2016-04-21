@@ -46,7 +46,6 @@ extern int              editor_reloading;
 #pragma mark -
 
 static void canvas_drawlines    (t_glist *x);
-static void canvas_dosetbounds  (t_glist *x, int a, int b, int c, int d);
 static void canvas_pop          (t_glist *x, t_float fvis);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -340,24 +339,6 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_coords(t_glist *x, t_symbol *s, int argc, t_atom *argv)
-{
-    x->gl_x1 = atom_getFloatAtIndex(0, argc, argv);
-    x->gl_y1 = atom_getFloatAtIndex(1, argc, argv);
-    x->gl_x2 = atom_getFloatAtIndex(2, argc, argv);
-    x->gl_y2 = atom_getFloatAtIndex(3, argc, argv);
-    x->gl_pixwidth = (t_int)atom_getFloatAtIndex(4, argc, argv);
-    x->gl_pixheight = (t_int)atom_getFloatAtIndex(5, argc, argv);
-    if (argc <= 7)
-        canvas_setgraph(x, (t_int)atom_getFloatAtIndex(6, argc, argv), 1);
-    else
-    {
-        x->gl_xmargin = (t_int)atom_getFloatAtIndex(7, argc, argv);
-        x->gl_ymargin = (t_int)atom_getFloatAtIndex(8, argc, argv);
-        canvas_setgraph(x, (t_int)atom_getFloatAtIndex(6, argc, argv), 0);
-    }
-}
-
     /* make a new glist and add it to this glist.  It will appear as
     a "graph", not a text object.  */
 t_glist *glist_addglist(t_glist *g, t_symbol *sym,
@@ -428,21 +409,6 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     return (x);
 }
 
-    /* call glist_addglist from a Pd message */
-void glist_glist(t_glist *g, t_symbol *s, int argc, t_atom *argv)
-{
-    t_symbol *sym = atom_getSymbolAtIndex(0, argc, argv);   
-    t_float x1 = atom_getFloatAtIndex(1, argc, argv);  
-    t_float y1 = atom_getFloatAtIndex(2, argc, argv);  
-    t_float x2 = atom_getFloatAtIndex(3, argc, argv);  
-    t_float y2 = atom_getFloatAtIndex(4, argc, argv);  
-    t_float px1 = atom_getFloatAtIndex(5, argc, argv);  
-    t_float py1 = atom_getFloatAtIndex(6, argc, argv);  
-    t_float px2 = atom_getFloatAtIndex(7, argc, argv);  
-    t_float py2 = atom_getFloatAtIndex(8, argc, argv);
-    glist_addglist(g, sym, x1, y1, x2, y2, px1, py1, px2, py2);
-}
-
     /* return true if the glist should appear as a graph on parent;
     otherwise it appears as a text box. */
 int glist_isgraph(t_glist *x)
@@ -450,15 +416,10 @@ int glist_isgraph(t_glist *x)
   return (x->gl_isgraph|(x->gl_hidetext<<1));
 }
 
-    /* This is sent from the GUI to inform a toplevel that its window has been
-    moved or resized. */
-void canvas_setbounds(t_glist *x, t_float left, t_float top, 
-                             t_float right, t_float bottom)
-{
-    canvas_dosetbounds(x, (int)left, (int)top, (int)right, (int)bottom);
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-/* this is the internal version using ints */
 static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)
 {
     int heightwas = y2 - y1;
@@ -488,19 +449,61 @@ static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)
         canvas_redraw(x);
     }
 }
-    /* mark a glist dirty or clean */
-void canvas_dirty(t_glist *x, t_float n)
+
+static void canvas_loadbangabstractions(t_glist *x)
 {
-    t_glist *x2 = canvas_getroot(x);
-    if (editor_reloading)
-        return;
-    if ((unsigned)n != x2->gl_dirty)
+    t_gobj *y;
+    t_symbol *s = gensym ("loadbang");
+    for (y = x->gl_list; y; y = y->g_next)
+        if (pd_class(&y->g_pd) == canvas_class)
     {
-        x2->gl_dirty = n;
-        if (x2->gl_havewindow)
-            canvas_updateTitle(x2);
+        if (canvas_isabstraction((t_glist *)y))
+            canvas_loadbang((t_glist *)y);
+        else
+            canvas_loadbangabstractions((t_glist *)y);
     }
 }
+
+static void canvas_loadbangsubpatches(t_glist *x)
+{
+    t_gobj *y;
+    t_symbol *s = gensym ("loadbang");
+    for (y = x->gl_list; y; y = y->g_next)
+        if (pd_class(&y->g_pd) == canvas_class)
+    {
+        if (!canvas_isabstraction((t_glist *)y))
+            canvas_loadbangsubpatches((t_glist *)y);
+    }
+    for (y = x->gl_list; y; y = y->g_next)
+        if ((pd_class(&y->g_pd) != canvas_class) &&
+            class_hasMethod(pd_class (&y->g_pd), s))
+                pd_vMessage(&y->g_pd, s, "");
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *subcanvas_new(t_symbol *s)
+{
+    t_atom a[6];
+    t_glist *x, *z = canvas_getCurrent();
+    if (!*s->s_name) s = gensym ("/SUBPATCH/");
+    SET_FLOAT(a, 0);
+    SET_FLOAT(a+1, CANVAS_DEFAULT_Y);
+    SET_FLOAT(a+2, CANVAS_DEFAULT_WIDTH);
+    SET_FLOAT(a+3, CANVAS_DEFAULT_HEIGHT);
+    SET_SYMBOL(a+4, s);
+    SET_FLOAT(a+5, 1);
+    x = canvas_new(0, 0, 6, a);
+    x->gl_owner = z;
+    canvas_pop(x, 1);
+    return (x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void canvas_drawredrect(t_glist *x, int doit)
 {
@@ -516,45 +519,6 @@ void canvas_drawredrect(t_glist *x, int doit)
     else sys_vGui(".x%lx.c delete GOP\n",  glist_getcanvas(x));
 }
 
-    /* the window becomes "mapped" (visible and not miniaturized) or
-    "unmapped" (either miniaturized or just plain gone.)  This should be
-    called from the GUI after the fact to "notify" us that we're mapped. */
-void canvas_map(t_glist *x, t_float f)
-{
-    int flag = (f != 0);
-    t_gobj *y;
-    if (flag)
-    {
-        if (!glist_isvisible(x))
-        {
-            t_selection *sel;
-            if (!x->gl_havewindow)
-            {
-                PD_BUG;
-                canvas_vis(x, 1);
-            }
-            for (y = x->gl_list; y; y = y->g_next)
-                gobj_vis(y, x, 1);
-            for (sel = x->gl_editor->e_selection; sel; sel = sel->sel_next)
-                gobj_select(sel->sel_what, x, 1);
-            x->gl_mapped = 1;
-            canvas_drawlines(x);
-            if (x->gl_isgraph && x->gl_goprect)
-                canvas_drawredrect(x, 1);
-            sys_vGui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
-        }
-    }
-    else
-    {
-        if (glist_isvisible(x))
-        {
-                /* just clear out the whole canvas */
-            sys_vGui(".x%lx.c delete all\n", x);
-            x->gl_mapped = 0;
-        }
-    }
-}
-
 void canvas_redraw(t_glist *x)
 {
     if (glist_isvisible(x))
@@ -562,29 +526,6 @@ void canvas_redraw(t_glist *x)
         canvas_map(x, 0);
         canvas_map(x, 1);
     }
-}
-
-
-    /* we call this on a non-toplevel glist to "open" it into its
-    own window. */
-void glist_menu_open(t_glist *x)
-{
-    if (glist_isvisible(x) && !glist_istoplevel(x))
-    {
-        t_glist *gl2 = x->gl_owner;
-        if (!gl2) { PD_BUG; }
-        else {
-                /* erase ourself in parent window */
-            gobj_vis(&x->gl_obj.te_g, gl2, 0);
-                    /* get rid of our editor (and subeditors) */
-            if (x->gl_editor)
-                canvas_destroy_editor(x);
-            x->gl_havewindow = 1;
-                    /* redraw ourself in parent window (blanked out this time) */
-            gobj_vis(&x->gl_obj.te_g, gl2, 1);
-        }
-    }
-    canvas_vis(x, 1);
 }
 
 int glist_isvisible(t_glist *x)
@@ -683,80 +624,9 @@ void canvas_deletelinesforio(t_glist *x, t_object *text,
     }
 }
 
-static void canvas_pop(t_glist *x, t_float fvis)
-{
-    if (fvis != 0)
-        canvas_vis(x, 1);
-    stack_pop(&x->gl_obj.te_g.g_pd);
-    canvas_resortinlets(x);
-    canvas_resortoutlets(x);
-    x->gl_loading = 0;
-}
-
-void canvas_restore(t_glist *x, t_symbol *s, int argc, t_atom *argv)
-{
-    t_pd *z;
-    if (argc > 3)
-    {
-        t_atom *ap=argv+3;
-        if (ap->a_type == A_SYMBOL)
-        {
-            t_canvasenvironment *e = canvas_getEnvironment(canvas_getCurrent());
-            canvas_rename(x, dollar_expandDollarSymbol(ap->a_w.w_symbol,
-                e->ce_argc, e->ce_argv/*, 1*/), 0);
-        }
-    }
-    canvas_pop(x, x->gl_willvis);
-
-    if (!(z = gensym ("#X")->s_thing)) post_error ("canvas_restore: out of context");
-    else if (*z != canvas_class) post_error ("canvas_restore: wasn't a canvas");
-    else
-    {
-        t_glist *x2 = (t_glist *)z;
-        x->gl_owner = x2;
-        canvas_objfor(x2, &x->gl_obj, argc, argv);
-    }
-}
-
-static void canvas_loadbangabstractions(t_glist *x)
-{
-    t_gobj *y;
-    t_symbol *s = gensym ("loadbang");
-    for (y = x->gl_list; y; y = y->g_next)
-        if (pd_class(&y->g_pd) == canvas_class)
-    {
-        if (canvas_isabstraction((t_glist *)y))
-            canvas_loadbang((t_glist *)y);
-        else
-            canvas_loadbangabstractions((t_glist *)y);
-    }
-}
-
-void canvas_loadbangsubpatches(t_glist *x)
-{
-    t_gobj *y;
-    t_symbol *s = gensym ("loadbang");
-    for (y = x->gl_list; y; y = y->g_next)
-        if (pd_class(&y->g_pd) == canvas_class)
-    {
-        if (!canvas_isabstraction((t_glist *)y))
-            canvas_loadbangsubpatches((t_glist *)y);
-    }
-    for (y = x->gl_list; y; y = y->g_next)
-        if ((pd_class(&y->g_pd) != canvas_class) &&
-            class_hasMethod(pd_class (&y->g_pd), s))
-                pd_vMessage(&y->g_pd, s, "");
-}
-
-void canvas_loadbang(t_glist *x)
-{
-    t_gobj *y;
-    canvas_loadbangabstractions(x);
-    canvas_loadbangsubpatches(x);
-}
-
 /* no longer used by 'pd-gui', but kept here for backwards compatibility.  The
  * new method calls canvas_setbounds() directly. */
+ /*
 static void canvas_relocate(t_glist *x, t_symbol *canvasgeom,
     t_symbol *topgeom)
 {
@@ -764,13 +634,11 @@ static void canvas_relocate(t_glist *x, t_symbol *canvasgeom,
     if (sscanf(canvasgeom->s_name, "%dx%d+%d+%d", &cw, &ch, &cxpix, &cypix)
         < 4 ||
         sscanf(topgeom->s_name, "%dx%d+%d+%d", &tw, &th, &txpix, &typix) < 4) { PD_BUG; }
-            /* for some reason this is initially called with cw=ch=1 so
-            we just suppress that here. */
     if (cw > 5 && ch > 5)
         canvas_dosetbounds(x, txpix, typix,
             txpix + cw, typix + ch);
 }
-
+*/
 void canvas_popabstraction(t_glist *x)
 {
     pd_newest = &x->gl_obj.te_g.g_pd;
@@ -791,29 +659,7 @@ void canvas_logerror(t_object *y)
 
 /* -------------------------- subcanvases ---------------------- */
 
-static void *subcanvas_new(t_symbol *s)
-{
-    t_atom a[6];
-    t_glist *x, *z = canvas_getCurrent();
-    if (!*s->s_name) s = gensym ("/SUBPATCH/");
-    SET_FLOAT(a, 0);
-    SET_FLOAT(a+1, CANVAS_DEFAULT_Y);
-    SET_FLOAT(a+2, CANVAS_DEFAULT_WIDTH);
-    SET_FLOAT(a+3, CANVAS_DEFAULT_HEIGHT);
-    SET_SYMBOL(a+4, s);
-    SET_FLOAT(a+5, 1);
-    x = canvas_new(0, 0, 6, a);
-    x->gl_owner = z;
-    canvas_pop(x, 1);
-    return (x);
-}
 
-void canvas_click(t_glist *x,
-    t_float xpos, t_float ypos,
-        t_float shift, t_float ctrl, t_float alt)
-{
-    canvas_vis(x, 1);
-}
 
 
     /* find out from subcanvas contents how much to fatten the box */
@@ -823,23 +669,6 @@ void canvas_fattensub(t_glist *x,
     t_gobj *y;
     *xp2 += 50;     /* fake for now */
     *yp2 += 50;
-}
-
-static void canvas_rename_method(t_glist *x, t_symbol *s, int ac, t_atom *av)
-{
-    if (ac && av->a_type == A_SYMBOL)
-        canvas_rename(x, av->a_w.w_symbol, 0);
-    else if (ac && av->a_type == A_DOLLARSYMBOL)
-    {
-        t_canvasenvironment *e = canvas_getEnvironment(x);
-        //canvas_setCurrent(x);
-        stack_push (cast_pd (x));
-        canvas_rename(x, dollar_expandDollarSymbol(av->a_w.w_symbol,
-            e->ce_argc, e->ce_argv/*, 1*/), 0); 
-        //canvas_unsetCurrent(x);
-        stack_pop (cast_pd (x));
-    }
-    else canvas_rename(x, gensym ("Pd"), 0);
 }
 
 
@@ -1185,6 +1014,7 @@ int canvas_open(t_glist *x, const char *name, const char *ext,
         dirresult, nameresult, size));
 }
 
+/*
 static void canvas_f(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 {
     static int warned;
@@ -1208,6 +1038,221 @@ static void canvas_f(t_glist *x, t_symbol *s, int argc, t_atom *argv)
             gobj_vis(g, x, 1);
         }
     }
+}
+*/
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_click(t_glist *x,
+    t_float xpos, t_float ypos,
+        t_float shift, t_float ctrl, t_float alt)
+{
+    canvas_vis(x, 1);
+}
+
+    /* This is sent from the GUI to inform a toplevel that its window has been
+    moved or resized. */
+void canvas_setbounds(t_glist *x, t_float left, t_float top, 
+                             t_float right, t_float bottom)
+{
+    canvas_dosetbounds(x, (int)left, (int)top, (int)right, (int)bottom);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static void canvas_coords(t_glist *x, t_symbol *s, int argc, t_atom *argv)
+{
+    x->gl_x1 = atom_getFloatAtIndex(0, argc, argv);
+    x->gl_y1 = atom_getFloatAtIndex(1, argc, argv);
+    x->gl_x2 = atom_getFloatAtIndex(2, argc, argv);
+    x->gl_y2 = atom_getFloatAtIndex(3, argc, argv);
+    x->gl_pixwidth = (t_int)atom_getFloatAtIndex(4, argc, argv);
+    x->gl_pixheight = (t_int)atom_getFloatAtIndex(5, argc, argv);
+    if (argc <= 7)
+        canvas_setgraph(x, (t_int)atom_getFloatAtIndex(6, argc, argv), 1);
+    else
+    {
+        x->gl_xmargin = (t_int)atom_getFloatAtIndex(7, argc, argv);
+        x->gl_ymargin = (t_int)atom_getFloatAtIndex(8, argc, argv);
+        canvas_setgraph(x, (t_int)atom_getFloatAtIndex(6, argc, argv), 0);
+    }
+}
+
+void canvas_restore(t_glist *x, t_symbol *s, int argc, t_atom *argv)
+{
+    t_pd *z;
+    if (argc > 3)
+    {
+        t_atom *ap=argv+3;
+        if (ap->a_type == A_SYMBOL)
+        {
+            t_canvasenvironment *e = canvas_getEnvironment(canvas_getCurrent());
+            canvas_rename(x, dollar_expandDollarSymbol(ap->a_w.w_symbol,
+                e->ce_argc, e->ce_argv/*, 1*/), 0);
+        }
+    }
+    canvas_pop(x, x->gl_willvis);
+
+    if (!(z = gensym ("#X")->s_thing)) post_error ("canvas_restore: out of context");
+    else if (*z != canvas_class) post_error ("canvas_restore: wasn't a canvas");
+    else
+    {
+        t_glist *x2 = (t_glist *)z;
+        x->gl_owner = x2;
+        canvas_objfor(x2, &x->gl_obj, argc, argv);
+    }
+}
+
+    /* call glist_addglist from a Pd message */
+static void glist_glist(t_glist *g, t_symbol *s, int argc, t_atom *argv)
+{
+    t_symbol *sym = atom_getSymbolAtIndex(0, argc, argv);   
+    t_float x1 = atom_getFloatAtIndex(1, argc, argv);  
+    t_float y1 = atom_getFloatAtIndex(2, argc, argv);  
+    t_float x2 = atom_getFloatAtIndex(3, argc, argv);  
+    t_float y2 = atom_getFloatAtIndex(4, argc, argv);  
+    t_float px1 = atom_getFloatAtIndex(5, argc, argv);  
+    t_float py1 = atom_getFloatAtIndex(6, argc, argv);  
+    t_float px2 = atom_getFloatAtIndex(7, argc, argv);  
+    t_float py2 = atom_getFloatAtIndex(8, argc, argv);
+    glist_addglist(g, sym, x1, y1, x2, y2, px1, py1, px2, py2);
+}
+
+static void canvas_f(t_glist *x, t_symbol *s, int argc, t_atom *argv)
+{
+    static int warned;
+    t_gobj *g, *g2;
+    t_object *ob;
+    if (argc > 1 && !warned)
+    {
+        post("** ignoring width or font settings from future Pd version **");
+        warned = 1;
+    }
+    if (!x->gl_list)
+        return;
+    for (g = x->gl_list; g2 = g->g_next; g = g2)
+        ;
+    if (ob = canvas_castToObjectIfBox(&g->g_pd))
+    {
+        ob->te_width = atom_getFloatAtIndex(0, argc, argv);
+        if (glist_isvisible(x))
+        {
+            gobj_vis(g, x, 0);
+            gobj_vis(g, x, 1);
+        }
+    }
+}
+
+    /* we call this on a non-toplevel glist to "open" it into its
+    own window. */
+void glist_menu_open(t_glist *x)
+{
+    if (glist_isvisible(x) && !glist_istoplevel(x))
+    {
+        t_glist *gl2 = x->gl_owner;
+        if (!gl2) { PD_BUG; }
+        else {
+                /* erase ourself in parent window */
+            gobj_vis(&x->gl_obj.te_g, gl2, 0);
+                    /* get rid of our editor (and subeditors) */
+            if (x->gl_editor)
+                canvas_destroy_editor(x);
+            x->gl_havewindow = 1;
+                    /* redraw ourself in parent window (blanked out this time) */
+            gobj_vis(&x->gl_obj.te_g, gl2, 1);
+        }
+    }
+    canvas_vis(x, 1);
+}
+
+void canvas_loadbang(t_glist *x)
+{
+    t_gobj *y;
+    canvas_loadbangabstractions(x);
+    canvas_loadbangsubpatches(x);
+}
+
+    /* the window becomes "mapped" (visible and not miniaturized) or
+    "unmapped" (either miniaturized or just plain gone.)  This should be
+    called from the GUI after the fact to "notify" us that we're mapped. */
+void canvas_map(t_glist *x, t_float f)
+{
+    int flag = (f != 0);
+    t_gobj *y;
+    if (flag)
+    {
+        if (!glist_isvisible(x))
+        {
+            t_selection *sel;
+            if (!x->gl_havewindow)
+            {
+                PD_BUG;
+                canvas_vis(x, 1);
+            }
+            for (y = x->gl_list; y; y = y->g_next)
+                gobj_vis(y, x, 1);
+            for (sel = x->gl_editor->e_selection; sel; sel = sel->sel_next)
+                gobj_select(sel->sel_what, x, 1);
+            x->gl_mapped = 1;
+            canvas_drawlines(x);
+            if (x->gl_isgraph && x->gl_goprect)
+                canvas_drawredrect(x, 1);
+            sys_vGui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
+        }
+    }
+    else
+    {
+        if (glist_isvisible(x))
+        {
+                /* just clear out the whole canvas */
+            sys_vGui(".x%lx.c delete all\n", x);
+            x->gl_mapped = 0;
+        }
+    }
+}
+
+    /* mark a glist dirty or clean */
+void canvas_dirty(t_glist *x, t_float n)
+{
+    t_glist *x2 = canvas_getroot(x);
+    if (editor_reloading)
+        return;
+    if ((unsigned)n != x2->gl_dirty)
+    {
+        x2->gl_dirty = n;
+        if (x2->gl_havewindow)
+            canvas_updateTitle(x2);
+    }
+}
+
+static void canvas_pop(t_glist *x, t_float fvis)
+{
+    if (fvis != 0)
+        canvas_vis(x, 1);
+    stack_pop(&x->gl_obj.te_g.g_pd);
+    canvas_resortinlets(x);
+    canvas_resortoutlets(x);
+    x->gl_loading = 0;
+}
+
+static void canvas_rename_method(t_glist *x, t_symbol *s, int ac, t_atom *av)
+{
+    if (ac && av->a_type == A_SYMBOL)
+        canvas_rename(x, av->a_w.w_symbol, 0);
+    else if (ac && av->a_type == A_DOLLARSYMBOL)
+    {
+        t_canvasenvironment *e = canvas_getEnvironment(x);
+        //canvas_setCurrent(x);
+        stack_push (cast_pd (x));
+        canvas_rename(x, dollar_expandDollarSymbol(av->a_w.w_symbol,
+            e->ce_argc, e->ce_argv/*, 1*/), 0); 
+        //canvas_unsetCurrent(x);
+        stack_pop (cast_pd (x));
+    }
+    else canvas_rename(x, gensym ("Pd"), 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -1347,15 +1392,13 @@ void canvas_setup (void)
         CLASS_NOINLET,
         A_NULL);
 
-    class_addCreator ((t_newmethod)subcanvas_new,       gensym ("pd"),          A_DEFSYMBOL, A_NULL);
-    class_addCreator ((t_newmethod)subcanvas_new,       gensym ("page"),        A_DEFSYMBOL, A_NULL);
+    class_addCreator ((t_newmethod)subcanvas_new, gensym ("pd"), A_DEFSYMBOL, A_NULL);
     
     class_addClick (c, canvas_click);
     class_addBounds (c, canvas_setbounds);
-        
-    class_addMethod (c, (t_method)canvas_restore,       gensym ("restore"),     A_GIMME, A_NULL);
+    
     class_addMethod (c, (t_method)canvas_coords,        gensym ("coords"),      A_GIMME, A_NULL);
-
+    class_addMethod (c, (t_method)canvas_restore,       gensym ("restore"),     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_obj,           gensym ("obj"),         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_msg,           gensym ("msg"),         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_floatatom,     gensym ("floatatom"),   A_GIMME, A_NULL);
@@ -1363,32 +1406,40 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)glist_text,           gensym ("text"),        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)glist_glist,          gensym ("graph"),       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)glist_scalar,         gensym ("scalar"),      A_GIMME, A_NULL);
-
+    class_addMethod (c, (t_method)canvas_f,             gensym ("f"),           A_GIMME, A_NULL);
+        
     class_addMethod (c, (t_method)canvas_bng,           gensym ("bng"),         A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_toggle,        gensym ("toggle"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_toggle,        gensym ("tgl"),         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_vslider,       gensym ("vslider"),     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_hslider,       gensym ("hslider"),     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_hradio,        gensym ("hradio"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_vradio,        gensym ("vradio"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_vumeter,       gensym ("vumeter"),     A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_mycnv,         gensym ("mycnv"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_numbox,        gensym ("numbox"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_vumeter,       gensym ("vu"),          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_mycnv,         gensym ("cnv"),         A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_numbox,        gensym ("nbx"),         A_GIMME, A_NULL);
     
-    class_addMethod (c, (t_method)glist_menu_open,      gensym ("menu-open"),   A_NULL);
+    class_addMethod (c, (t_method)glist_menu_open,      gensym ("open"),        A_NULL);
     class_addMethod (c, (t_method)canvas_loadbang,      gensym ("loadbang"),    A_NULL);
-    class_addMethod (c, (t_method)canvas_vis,           gensym ("vis"),         A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_vis,           gensym ("visible"),     A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_map,           gensym ("map"),         A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_dirty,         gensym ("dirty"),       A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_pop,           gensym ("pop"),         A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_relocate,      gensym ("relocate"),    A_SYMBOL, A_SYMBOL, A_NULL);
 
     class_addMethod (c, (t_method)glist_clear,          gensym ("clear"),       A_NULL);
     class_addMethod (c, (t_method)canvas_dsp,           gensym ("dsp"),         A_CANT, A_NULL);
     class_addMethod (c, (t_method)canvas_rename_method, gensym ("rename"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_f,             gensym ("f"),           A_GIMME, A_NULL);
     
     #if PD_WITH_LEGACY
     
+    class_addMethod (c, (t_method)glist_menu_open,      gensym ("menu-open"),   A_NULL);
+    class_addMethod (c, (t_method)canvas_toggle,        gensym ("toggle"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_vumeter,       gensym ("vumeter"),     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_mycnv,         gensym ("mycnv"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_numbox,        gensym ("numbox"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_vis,           gensym ("vis"),         A_FLOAT, A_NULL);
+    
+    class_addCreator ((t_newmethod)subcanvas_new,       gensym ("page"),        A_DEFSYMBOL, A_NULL);
+
     #endif
         
     class_setPropertiesFunction (c, canvas_properties);

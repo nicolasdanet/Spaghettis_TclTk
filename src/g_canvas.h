@@ -321,6 +321,15 @@ t_outconnect        *canvas_traverseLinesNext       (t_linetraverser *t);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+t_glist             *canvas_new                     (void *dummy, t_symbol *sel, int argc, t_atom *argv);
+
+void                canvas_free                     (t_glist *x);
+void                canvas_click                    (t_glist *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt);
+void                canvas_restore                  (t_glist *x, t_symbol *s, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 void                canvas_dsp                      (t_glist *x, t_signal **sp);
@@ -351,7 +360,6 @@ int                 canvas_open                     (t_glist *x,
 
 void canvas_properties (t_gobj *z, t_glist *canvas);
 void canvas_objfor (t_glist *gl, t_object *x, int argc, t_atom *argv);
-void canvas_restore (t_glist *x, t_symbol *s, int argc, t_atom *argv);
 void canvas_mouse (t_glist *x, t_float xpos, t_float ypos, t_float which, t_float mod);
 void canvas_mouseup (t_glist *x, t_float fxpos, t_float fypos, t_float fwhich);
 void canvas_key (t_glist *x, t_symbol *s, int ac, t_atom *av);
@@ -360,7 +368,6 @@ void canvas_menuclose (t_glist *x, t_float fforce);
 void canvas_menusave (t_glist *x, float fdestroy);
 void canvas_menusaveas (t_glist *x, float fdestroy);
 void canvas_find_parent (t_glist *x);
-void canvas_click (t_glist *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt);
 void canvas_map (t_glist *x, t_float f);
 void canvas_setbounds (t_glist *x, t_float left, t_float top, t_float right, t_float bottom);
 void canvas_setgraph (t_glist *x, int flag, int nogoprect);
@@ -432,7 +439,6 @@ t_float  glist_ytopixels        (t_glist *x, t_float yval);
 t_float  glist_dpixtodx         (t_glist *x, t_float dxpix);
 t_float  glist_dpixtody         (t_glist *x, t_float dypix);
 void     glist_getnextxy        (t_glist *x, int *xval, int *yval);
-void     glist_glist            (t_glist *x, t_symbol *s, int argc, t_atom *argv);
 t_glist *glist_addglist         (t_glist *x,
                                     t_symbol *sym,
                                     t_float x1,
@@ -512,7 +518,6 @@ t_boxtext   *glist_findrtext    (t_glist *gl, t_object *who);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist  *canvas_new                        (void *dummy, t_symbol *sel, int argc, t_atom *argv);
 void     canvas_vistext                     (t_glist *x, t_object *y);
 void     canvas_fixlines                    (t_glist *x, t_object *text);
 void     canvas_deletelines                 (t_glist *x, t_object *text);
@@ -533,7 +538,6 @@ void     canvas_dirty                       (t_glist *x, t_float n);
 int      canvas_getfont                     (t_glist *x);
 void     canvas_resortinlets            (t_glist *x);
 void     canvas_resortoutlets           (t_glist *x);
-void     canvas_free                    (t_glist *x);
 void     canvas_editmode                (t_glist *x, t_float state);
 int      canvas_isabstraction           (t_glist *x);
 int      canvas_istable                 (t_glist *x);
