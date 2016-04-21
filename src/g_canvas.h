@@ -16,94 +16,105 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define GLIST_DEFAULT_WIDTH         200
-#define GLIST_DEFAULT_HEIGHT        140
+#define TYPE_TEXT                       0
+#define TYPE_OBJECT                     1
+#define TYPE_MESSAGE                    2
+#define TYPE_ATOM                       3
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define TYPE_TEXT                   0
-#define TYPE_OBJECT                 1
-#define TYPE_MESSAGE                2
-#define TYPE_ATOM                   3
+#define DATA_FLOAT                      0
+#define DATA_SYMBOL                     1
+#define DATA_TEXT                       2
+#define DATA_ARRAY                      3
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define DATA_FLOAT                  0
-#define DATA_SYMBOL                 1
-#define DATA_TEXT                   2
-#define DATA_ARRAY                  3
+#define POINTER_NONE                    0
+#define POINTER_GLIST                   1
+#define POINTER_ARRAY                   2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define POINTER_NONE                0
-#define POINTER_GLIST               1
-#define POINTER_ARRAY               2
+#define ACTION_NONE                     0
+#define ACTION_MOVE                     1
+#define ACTION_CONNECT                  2
+#define ACTION_REGION                   3
+#define ACTION_PASS                     4
+#define ACTION_DRAG                     5
+#define ACTION_RESIZE                   6
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define ACTION_NONE                 0
-#define ACTION_MOVE                 1
-#define ACTION_CONNECT              2
-#define ACTION_REGION               3
-#define ACTION_PASS                 4
-#define ACTION_DRAG                 5
-#define ACTION_RESIZE               6
+#define PLOT_POINTS                     0
+#define PLOT_POLYGONS                   1
+#define PLOT_CURVES                     2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define PLOT_POINTS                 0
-#define PLOT_POLYGONS               1
-#define PLOT_CURVES                 2
+#define CURSOR_NOTHING                  0
+#define CURSOR_CLICK                    1
+#define CURSOR_THICKEN                  2
+#define CURSOR_ADD                      3
+
+#define CURSOR_EDIT_NOTHING             4
+#define CURSOR_EDIT_CONNECT             5
+#define CURSOR_EDIT_DISCONNECT          6
+#define CURSOR_EDIT_RESIZE              7
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define CURSOR_NOTHING              0
-#define CURSOR_CLICK                1
-#define CURSOR_THICKEN              2
-#define CURSOR_ADD                  3
-
-#define CURSOR_EDIT_NOTHING         4
-#define CURSOR_EDIT_CONNECT         5
-#define CURSOR_EDIT_DISCONNECT      6
-#define CURSOR_EDIT_RESIZE          7
+#define BOX_TEXT_DOWN                   1
+#define BOX_TEXT_DRAG                   2
+#define BOX_TEXT_DOUBLE                 3
+#define BOX_TEXT_SHIFT                  4
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define BOX_TEXT_DOWN               1
-#define BOX_TEXT_DRAG               2
-#define BOX_TEXT_DOUBLE             3
-#define BOX_TEXT_SHIFT              4
+#define UNDO_FREE                       0
+#define UNDO_UNDO                       1
+#define UNDO_REDO                       2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define UNDO_FREE                   0
-#define UNDO_UNDO                   1
-#define UNDO_REDO                   2
+#define INLETS_WIDTH                    7
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define INLETS_WIDTH                7
+#define GLIST_DEFAULT_WIDTH             200
+#define GLIST_DEFAULT_HEIGHT            140
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#ifdef __APPLE__
+    #define CANVAS_DEFAULT_Y            22
+#else
+    #define CANVAS_DEFAULT_Y            50
+#endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #define INLETS_OFFSET(width, i, n)      ((((width) - INLETS_WIDTH) * (i)) / (((n) == 1) ? 1 : ((n) - 1)))
 #define INLETS_MIDDLE(width, i, n)      INLETS_OFFSET (width, i, n) + ((INLETS_WIDTH - 1) / 2)
@@ -222,13 +233,7 @@ struct _glist {
     int                 gl_xmargin;
     int                 gl_ymargin;
     t_tick              gl_xtick;
-    //int                 gl_nxlabels;
-    //t_symbol            **gl_xlabel;
-    // t_float             gl_xlabely;
     t_tick              gl_ytick;
-    //int                 gl_nylabels;
-    //t_symbol            **gl_ylabel;
-    // t_float             gl_ylabelx;
     t_editor            *gl_editor;
     t_symbol            *gl_name;
     int                 gl_font;
@@ -300,6 +305,9 @@ void                guiconnect_release                  (t_guiconnect *x, double
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
+
+void                canvas_bind                         (t_glist *glist);
+void                canvas_unbind                       (t_glist *glist);
 
 void                canvas_newPatch                     (void *dummy, t_symbol *name, t_symbol *directory);
 void                canvas_setFileNameAndDirectory      (t_symbol *name, t_symbol *directory);
@@ -389,7 +397,7 @@ void                canvas_dataproperties           (t_glist *x, t_scalar *sc, t
 
 
 
-
+void canvas_pop (t_glist *x, t_float fvis);
 void canvas_properties (t_gobj *z, t_glist *canvas);
 void canvas_objfor (t_glist *gl, t_object *x, int argc, t_atom *argv);
 void canvas_mouse (t_glist *x, t_float xpos, t_float ypos, t_float which, t_float mod);
