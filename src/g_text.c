@@ -56,7 +56,7 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         if (argc > 2) buffer_deserialize(x->te_buffer, argc-2, argv+2);
         else
         {
-            SET_SYMBOL(&at, gensym("comment"));
+            SET_SYMBOL(&at, gensym ("comment"));
             buffer_deserialize(x->te_buffer, 1, &at);
         }
         glist_add(gl, &x->te_g);
@@ -64,8 +64,8 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     else
     {
         int xpix, ypix;
-        pd_vMessage((t_pd *)glist_getcanvas(gl), gensym("editmode"), "i", 1);
-        SET_SYMBOL(&at, gensym("comment"));
+        pd_vMessage((t_pd *)glist_getcanvas(gl), gensym ("editmode"), "i", 1);
+        SET_SYMBOL(&at, gensym ("comment"));
         glist_noselect(gl);
         glist_getnextxy(gl, &xpix, &ypix);
         x->te_xCoordinate = xpix-1;
@@ -211,7 +211,7 @@ void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         t_buffer *b = buffer_new();
         int connectme, xpix, ypix, indx, nobj;
         canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
-        pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
+        pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym ("editmode"), "i", 1);
         canvas_objtext(gl, xpix, ypix, 0, 1, b);
         if (connectme)
             canvas_connect(gl, indx, 0, nobj, 0);
@@ -228,7 +228,7 @@ void canvas_iems(t_glist *gl, t_symbol *guiobjname)
     t_buffer *b = buffer_new();
     int xpix, ypix;
 
-    pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
+    pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym ("editmode"), "i", 1);
     glist_noselect(gl);
     SET_SYMBOL(&at, guiobjname);
     buffer_deserialize(b, 1, &at);
@@ -239,47 +239,47 @@ void canvas_iems(t_glist *gl, t_symbol *guiobjname)
 
 void canvas_bng(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym("bng"));
+    canvas_iems(gl, gensym ("bng"));
 }
 
 void canvas_toggle(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym("tgl"));
+    canvas_iems(gl, gensym ("tgl"));
 }
 
 void canvas_vslider(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym("vsl"));
+    canvas_iems(gl, gensym ("vsl"));
 }
 
 void canvas_hslider(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym("hsl"));
+    canvas_iems(gl, gensym ("hsl"));
 }
 
 void canvas_hradio(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym("hradio"));
+    canvas_iems(gl, gensym ("hradio"));
 }
 
 void canvas_vradio(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym("vradio"));
+    canvas_iems(gl, gensym ("vradio"));
 }
 
 void canvas_vumeter(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym("vu"));
+    canvas_iems(gl, gensym ("vu"));
 }
 
 void canvas_mycnv(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym("cnv"));
+    canvas_iems(gl, gensym ("cnv"));
 }
 
 void canvas_numbox(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym("nbx"));
+    canvas_iems(gl, gensym ("nbx"));
 }
 
 /* iemlib */
@@ -415,7 +415,7 @@ static void message_adddollsym(t_message *x, t_symbol *s)
     buf[0] = '$';
     strncpy(buf+1, s->s_name, PD_STRING-2);
     buf[PD_STRING-1] = 0;
-    SET_DOLLARSYMBOL(&a, gensym(buf));
+    SET_DOLLARSYMBOL(&a, gensym (buf));
     buffer_append(x->m_text.te_buffer, 1, &a);
     glist_retext(x->m_glist, &x->m_text);
 }
@@ -473,7 +473,7 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         int connectme, xpix, ypix, indx, nobj;
         canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
         
-        pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
+        pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym ("editmode"), "i", 1);
         x->m_text.te_xCoordinate = xpix;
         x->m_text.te_yCoordinate = ypix;
         glist_add(gl, &x->m_text.te_g);
@@ -518,14 +518,14 @@ typedef struct _gatom
 static t_symbol *gatom_escapit(t_symbol *s)
 {
     if (!*s->s_name)
-        return (gensym("-"));
+        return (gensym ("-"));
     else if (*s->s_name == '-')
     {
         char shmo[100];
         shmo[0] = '-';
         strncpy(shmo+1, s->s_name, 99);
         shmo[99] = 0;
-        return (gensym(shmo));
+        return (gensym (shmo));
     }
     else return (dollar_toRaute(s));
 }
@@ -534,7 +534,7 @@ static t_symbol *gatom_escapit(t_symbol *s)
 static t_symbol *gatom_unescapit(t_symbol *s)
 {
     if (*s->s_name == '-')
-        return (gensym(s->s_name+1));
+        return (gensym (s->s_name+1));
     else return (dollar_fromRaute(s));
 }
 
@@ -687,7 +687,7 @@ static void gatom_key(void *z, t_float f)
         if (x->a_atom.a_type == A_FLOAT)
             x->a_atom.a_w.w_float = atof(x->a_buf);
         else if (x->a_atom.a_type == A_SYMBOL)
-            x->a_atom.a_w.w_symbol = gensym(x->a_buf);
+            x->a_atom.a_w.w_symbol = gensym (x->a_buf);
         else { PD_BUG; }
         gatom_bang(x);
         gatom_retext(x, 1);
@@ -723,7 +723,7 @@ static void gatom_key(void *z, t_float f)
 redraw:
         /* LATER figure out how to avoid creating all these symbols! */
     sprintf(sbuf, "%s...", x->a_buf);
-    SET_SYMBOL(&at, gensym(sbuf));
+    SET_SYMBOL(&at, gensym (sbuf));
     buffer_reset(x->a_text.te_buffer);
     buffer_append(x->a_text.te_buffer, 1, &at);
     glist_retext(x->a_glist, &x->a_text);
@@ -941,7 +941,7 @@ void canvas_atom(t_glist *gl, t_atomtype type,
         outlet_new(&x->a_text,
             x->a_atom.a_type == A_FLOAT ? &s_float: &s_symbol);
         inlet_new(&x->a_text, &x->a_text.te_g.g_pd, 0, 0);
-        pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym("editmode"), "i", 1);
+        pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym ("editmode"), "i", 1);
         x->a_text.te_xCoordinate = xpix;
         x->a_text.te_yCoordinate = ypix;
         glist_add(gl, &x->a_text.te_g);
@@ -1101,7 +1101,7 @@ static int text_click(t_gobj *z, struct _glist *glist,
     t_object *x = (t_object *)z;
     if (x->te_type == TYPE_OBJECT)
     {
-        t_symbol *clicksym = gensym("click");
+        t_symbol *clicksym = gensym ("click");
         if (class_hasMethod (pd_class ((t_pd *)x), clicksym))
         {
             if (doit)
@@ -1136,37 +1136,37 @@ void text_save(t_gobj *z, t_buffer *b)
     {
             /* if we have a "saveto" method, and if we don't happen to be
             a canvas that's an abstraction, the saveto method does the work */
-        if (class_hasMethod (pd_class ((t_pd *)x), gensym("saveto")) &&
+        if (class_hasMethod (pd_class ((t_pd *)x), gensym ("saveto")) &&
             !((pd_class((t_pd *)x) == canvas_class) && 
                 (canvas_isabstraction((t_glist *)x)
                     || canvas_istable((t_glist *)x))))
         {  
-            mess1((t_pd *)x, gensym("saveto"), b);
-            buffer_vAppend(b, "ssii", gensym("#X"), gensym("restore"),
+            mess1((t_pd *)x, gensym ("saveto"), b);
+            buffer_vAppend(b, "ssii", gensym ("#X"), gensym ("restore"),
                 (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }
         else    /* otherwise just save the text */
         {
-            buffer_vAppend(b, "ssii", gensym("#X"), gensym("obj"),
+            buffer_vAppend(b, "ssii", gensym ("#X"), gensym ("obj"),
                 (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }
         buffer_serialize(b, x->te_buffer);
     }
     else if (x->te_type == TYPE_MESSAGE)
     {
-        buffer_vAppend(b, "ssii", gensym("#X"), gensym("msg"),
+        buffer_vAppend(b, "ssii", gensym ("#X"), gensym ("msg"),
             (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         buffer_serialize(b, x->te_buffer);
     }
     else if (x->te_type == TYPE_ATOM)
     {
         t_atomtype t = ((t_gatom *)x)->a_atom.a_type;
-        t_symbol *sel = (t == A_SYMBOL ? gensym("symbolatom") :
-            (t == A_FLOAT ? gensym("floatatom") : gensym("intatom")));
+        t_symbol *sel = (t == A_SYMBOL ? gensym ("symbolatom") :
+            (t == A_FLOAT ? gensym ("floatatom") : gensym ("intatom")));
         t_symbol *label = gatom_escapit(((t_gatom *)x)->a_label);
         t_symbol *symfrom = gatom_escapit(((t_gatom *)x)->a_symfrom);
         t_symbol *symto = gatom_escapit(((t_gatom *)x)->a_symto);
-        buffer_vAppend(b, "ssiiifffsss", gensym("#X"), sel,
+        buffer_vAppend(b, "ssiiifffsss", gensym ("#X"), sel,
             (int)x->te_xCoordinate, (int)x->te_yCoordinate, (int)x->te_width,
             (double)((t_gatom *)x)->a_draglo,
             (double)((t_gatom *)x)->a_draghi,
@@ -1175,12 +1175,12 @@ void text_save(t_gobj *z, t_buffer *b)
     }           
     else        
     {
-        buffer_vAppend(b, "ssii", gensym("#X"), gensym("text"),
+        buffer_vAppend(b, "ssii", gensym ("#X"), gensym ("text"),
             (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         buffer_serialize(b, x->te_buffer);
     }
     if (x->te_width)
-        buffer_vAppend(b, ",si", gensym("f"), (int)x->te_width);
+        buffer_vAppend(b, ",si", gensym ("f"), (int)x->te_width);
     buffer_vAppend(b, ";");
 }
 
@@ -1373,7 +1373,7 @@ void text_setto(t_object *x, t_glist *glist, char *buf, int bufsize)
              vec2[0].a_type == A_SYMBOL
             && !strcmp(vec2[0].a_w.w_symbol->s_name, "pd"))
         {
-            pd_message((t_pd *)x, gensym("rename"), natom2-1, vec2+1);
+            pd_message((t_pd *)x, gensym ("rename"), natom2-1, vec2+1);
             buffer_free(x->te_buffer);
             x->te_buffer = b;
         }
@@ -1405,11 +1405,11 @@ static void text_anything(t_object *x, t_symbol *s, int argc, t_atom *argv)
 
 void g_text_setup(void)
 {
-    text_class = class_new(gensym("text"), 0, 0, sizeof(t_object),
+    text_class = class_new(gensym ("text"), 0, 0, sizeof(t_object),
         CLASS_NOINLET | CLASS_BOX, 0);
     class_addAnything(text_class, text_anything);
 
-    message_class = class_new(gensym("message"), 0, (t_method)message_free,
+    message_class = class_new(gensym ("message"), 0, (t_method)message_free,
         sizeof(t_message), CLASS_BOX, 0);
     class_addBang(message_class, message_bang);
     class_addFloat(message_class, message_float);
@@ -1417,24 +1417,24 @@ void g_text_setup(void)
     class_addList(message_class, message_list);
     class_addAnything(message_class, message_list);
 
-    class_addMethod(message_class, (t_method)message_click, gensym("click"),
+    class_addMethod(message_class, (t_method)message_click, gensym ("click"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addMethod(message_class, (t_method)message_set, gensym("set"),
+    class_addMethod(message_class, (t_method)message_set, gensym ("set"),
         A_GIMME, 0);
-    class_addMethod(message_class, (t_method)message_add, gensym("add"),
+    class_addMethod(message_class, (t_method)message_add, gensym ("add"),
         A_GIMME, 0);
-    class_addMethod(message_class, (t_method)message_add2, gensym("add2"),
+    class_addMethod(message_class, (t_method)message_add2, gensym ("add2"),
         A_GIMME, 0);
     class_addMethod(message_class, (t_method)message_addcomma,
-        gensym("addcomma"), 0);
+        gensym ("addcomma"), 0);
     class_addMethod(message_class, (t_method)message_addsemi,
-        gensym("addsemi"), 0);
+        gensym ("addsemi"), 0);
     class_addMethod(message_class, (t_method)message_adddollar,
-        gensym("adddollar"), A_FLOAT, 0);
+        gensym ("adddollar"), A_FLOAT, 0);
     class_addMethod(message_class, (t_method)message_adddollsym,
-        gensym("adddollsym"), A_SYMBOL, 0);
+        gensym ("adddollsym"), A_SYMBOL, 0);
 
-    messresponder_class = class_new(gensym("messresponder"), 0, 0,
+    messresponder_class = class_new(gensym ("messresponder"), 0, 0,
         sizeof(t_object), CLASS_PURE, 0);
     class_addBang(messresponder_class, messresponder_bang);
     class_addFloat(messresponder_class, (t_method) messresponder_float);
@@ -1442,17 +1442,17 @@ void g_text_setup(void)
     class_addList(messresponder_class, messresponder_list);
     class_addAnything(messresponder_class, messresponder_anything);
 
-    gatom_class = class_new(gensym("gatom"), 0, (t_method)gatom_free,
+    gatom_class = class_new(gensym ("gatom"), 0, (t_method)gatom_free,
         sizeof(t_gatom), CLASS_NOINLET | CLASS_BOX, 0);
     class_addBang(gatom_class, gatom_bang);
     class_addFloat(gatom_class, gatom_float);
     class_addSymbol(gatom_class, gatom_symbol);
     class_addList(gatom_class, gatom_list);
-    class_addMethod(gatom_class, (t_method)gatom_set, gensym("set"),
+    class_addMethod(gatom_class, (t_method)gatom_set, gensym ("set"),
         A_GIMME, 0);
-    class_addMethod(gatom_class, (t_method)gatom_click, gensym("click"),
+    class_addMethod(gatom_class, (t_method)gatom_click, gensym ("click"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addMethod(gatom_class, (t_method)gatom_param, gensym("param"),
+    class_addMethod(gatom_class, (t_method)gatom_param, gensym ("param"),
         A_GIMME, 0);
     class_setWidgetBehavior(gatom_class, &gatom_widgetbehavior);
     class_setPropertiesFunction(gatom_class, gatom_properties);

@@ -73,7 +73,7 @@ static void sigdelwrite_checkvecsize(t_sigdelwrite *x, int vecsize)
 static void *sigdelwrite_new(t_symbol *s, t_float msec)
 {
     t_sigdelwrite *x = (t_sigdelwrite *)pd_new(sigdelwrite_class);
-    if (!*s->s_name) s = gensym("delwrite~");
+    if (!*s->s_name) s = gensym ("delwrite~");
     pd_bind(&x->x_obj.te_g.g_pd, s);
     x->x_sym = s;
     x->x_deltime = msec;
@@ -130,12 +130,12 @@ static void sigdelwrite_free(t_sigdelwrite *x)
 
 static void sigdelwrite_setup(void)
 {
-    sigdelwrite_class = class_new(gensym("delwrite~"), 
+    sigdelwrite_class = class_new(gensym ("delwrite~"), 
         (t_newmethod)sigdelwrite_new, (t_method)sigdelwrite_free,
         sizeof(t_sigdelwrite), 0, A_DEFSYMBOL, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigdelwrite_class, t_sigdelwrite, x_f);
     class_addMethod(sigdelwrite_class, (t_method)sigdelwrite_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
 }
 
 /* ----------------------------- delread~ ----------------------------- */
@@ -224,11 +224,11 @@ static void sigdelread_dsp(t_sigdelread *x, t_signal **sp)
 
 static void sigdelread_setup(void)
 {
-    sigdelread_class = class_new(gensym("delread~"),
+    sigdelread_class = class_new(gensym ("delread~"),
         (t_newmethod)sigdelread_new, 0,
         sizeof(t_sigdelread), 0, A_DEFSYMBOL, A_DEFFLOAT, 0);
     class_addMethod(sigdelread_class, (t_method)sigdelread_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
     class_addFloat(sigdelread_class, (t_method)sigdelread_float);
 }
 
@@ -318,9 +318,9 @@ static void sigvd_dsp(t_sigvd *x, t_signal **sp)
 
 static void sigvd_setup(void)
 {
-    sigvd_class = class_new(gensym("vd~"), (t_newmethod)sigvd_new, 0,
+    sigvd_class = class_new(gensym ("vd~"), (t_newmethod)sigvd_new, 0,
         sizeof(t_sigvd), 0, A_DEFSYMBOL, 0);
-    class_addMethod(sigvd_class, (t_method)sigvd_dsp, gensym("dsp"), A_CANT, 0);
+    class_addMethod(sigvd_class, (t_method)sigvd_dsp, gensym ("dsp"), A_CANT, 0);
     CLASS_SIGNAL(sigvd_class, t_sigvd, x_f);
 }
 

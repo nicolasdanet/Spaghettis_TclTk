@@ -28,7 +28,7 @@ static void *clip_new(t_float lo, t_float hi)
     t_clip *x = (t_clip *)pd_new(clip_class);
     x->x_lo = lo;
     x->x_hi = hi;
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     inlet_newFloat(&x->x_obj, &x->x_lo);
     inlet_newFloat(&x->x_obj, &x->x_hi);
     x->x_f = 0;
@@ -58,10 +58,10 @@ static void clip_dsp(t_clip *x, t_signal **sp)
 
 static void clip_setup(void)
 {
-    clip_class = class_new(gensym("clip~"), (t_newmethod)clip_new, 0,
+    clip_class = class_new(gensym ("clip~"), (t_newmethod)clip_new, 0,
         sizeof(t_clip), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
     CLASS_SIGNAL(clip_class, t_clip, x_f);
-    class_addMethod(clip_class, (t_method)clip_dsp, gensym("dsp"), A_CANT, 0);
+    class_addMethod(clip_class, (t_method)clip_dsp, gensym ("dsp"), A_CANT, 0);
 }
 
 /* sigrsqrt - reciprocal square root good to 8 mantissa bits  */
@@ -128,7 +128,7 @@ static t_class *sigrsqrt_class;
 static void *sigrsqrt_new(void)
 {
     t_sigrsqrt *x = (t_sigrsqrt *)pd_new(sigrsqrt_class);
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     x->x_f = 0;
     return (x);
 }
@@ -164,13 +164,13 @@ static void sigrsqrt_dsp(t_sigrsqrt *x, t_signal **sp)
 void sigrsqrt_setup(void)
 {
     init_rsqrt();
-    sigrsqrt_class = class_new(gensym("rsqrt~"), (t_newmethod)sigrsqrt_new, 0,
+    sigrsqrt_class = class_new(gensym ("rsqrt~"), (t_newmethod)sigrsqrt_new, 0,
         sizeof(t_sigrsqrt), 0, 0);
             /* an old name for it: */
-    class_addCreator(sigrsqrt_new, gensym("q8_rsqrt~"), 0);
+    class_addCreator(sigrsqrt_new, gensym ("q8_rsqrt~"), 0);
     CLASS_SIGNAL(sigrsqrt_class, t_sigrsqrt, x_f);
     class_addMethod(sigrsqrt_class, (t_method)sigrsqrt_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
 }
 
 
@@ -187,7 +187,7 @@ static t_class *sigsqrt_class;
 static void *sigsqrt_new(void)
 {
     t_sigsqrt *x = (t_sigsqrt *)pd_new(sigsqrt_class);
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     x->x_f = 0;
     return (x);
 }
@@ -222,12 +222,12 @@ static void sigsqrt_dsp(t_sigsqrt *x, t_signal **sp)
 
 void sigsqrt_setup(void)
 {
-    sigsqrt_class = class_new(gensym("sqrt~"), (t_newmethod)sigsqrt_new, 0,
+    sigsqrt_class = class_new(gensym ("sqrt~"), (t_newmethod)sigsqrt_new, 0,
         sizeof(t_sigsqrt), 0, 0);
-    class_addCreator(sigsqrt_new, gensym("q8_sqrt~"), 0);   /* old name */
+    class_addCreator(sigsqrt_new, gensym ("q8_sqrt~"), 0);   /* old name */
     CLASS_SIGNAL(sigsqrt_class, t_sigsqrt, x_f);
     class_addMethod(sigsqrt_class, (t_method)sigsqrt_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
 }
 
 /* ------------------------------ wrap~ -------------------------- */
@@ -243,7 +243,7 @@ t_class *sigwrap_class;
 static void *sigwrap_new(void)
 {
     t_sigwrap *x = (t_sigwrap *)pd_new(sigwrap_class);
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     x->x_f = 0;
     return (x);
 }
@@ -269,11 +269,11 @@ static void sigwrap_dsp(t_sigwrap *x, t_signal **sp)
 
 void sigwrap_setup(void)
 {
-    sigwrap_class = class_new(gensym("wrap~"), (t_newmethod)sigwrap_new, 0,
+    sigwrap_class = class_new(gensym ("wrap~"), (t_newmethod)sigwrap_new, 0,
         sizeof(t_sigwrap), 0, 0);
     CLASS_SIGNAL(sigwrap_class, t_sigwrap, x_f);
     class_addMethod(sigwrap_class, (t_method)sigwrap_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
 }
 
 /* ------------------------------ mtof_tilde~ -------------------------- */
@@ -289,7 +289,7 @@ t_class *mtof_tilde_class;
 static void *mtof_tilde_new(void)
 {
     t_mtof_tilde *x = (t_mtof_tilde *)pd_new(mtof_tilde_class);
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     x->x_f = 0;
     return (x);
 }
@@ -318,11 +318,11 @@ static void mtof_tilde_dsp(t_mtof_tilde *x, t_signal **sp)
 
 void mtof_tilde_setup(void)
 {
-    mtof_tilde_class = class_new(gensym("mtof~"), (t_newmethod)mtof_tilde_new, 0,
+    mtof_tilde_class = class_new(gensym ("mtof~"), (t_newmethod)mtof_tilde_new, 0,
         sizeof(t_mtof_tilde), 0, 0);
     CLASS_SIGNAL(mtof_tilde_class, t_mtof_tilde, x_f);
     class_addMethod(mtof_tilde_class, (t_method)mtof_tilde_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
 }
 
 /* ------------------------------ ftom_tilde~ -------------------------- */
@@ -338,7 +338,7 @@ t_class *ftom_tilde_class;
 static void *ftom_tilde_new(void)
 {
     t_ftom_tilde *x = (t_ftom_tilde *)pd_new(ftom_tilde_class);
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     x->x_f = 0;
     return (x);
 }
@@ -362,11 +362,11 @@ static void ftom_tilde_dsp(t_ftom_tilde *x, t_signal **sp)
 
 void ftom_tilde_setup(void)
 {
-    ftom_tilde_class = class_new(gensym("ftom~"), (t_newmethod)ftom_tilde_new, 0,
+    ftom_tilde_class = class_new(gensym ("ftom~"), (t_newmethod)ftom_tilde_new, 0,
         sizeof(t_ftom_tilde), 0, 0);
     CLASS_SIGNAL(ftom_tilde_class, t_ftom_tilde, x_f);
     class_addMethod(ftom_tilde_class, (t_method)ftom_tilde_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
 }
 
 /* ------------------------------ dbtorms~ -------------------------- */
@@ -382,7 +382,7 @@ t_class *dbtorms_tilde_class;
 static void *dbtorms_tilde_new(void)
 {
     t_dbtorms_tilde *x = (t_dbtorms_tilde *)pd_new(dbtorms_tilde_class);
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     x->x_f = 0;
     return (x);
 }
@@ -412,11 +412,11 @@ static void dbtorms_tilde_dsp(t_dbtorms_tilde *x, t_signal **sp)
 
 void dbtorms_tilde_setup(void)
 {
-    dbtorms_tilde_class = class_new(gensym("dbtorms~"), (t_newmethod)dbtorms_tilde_new, 0,
+    dbtorms_tilde_class = class_new(gensym ("dbtorms~"), (t_newmethod)dbtorms_tilde_new, 0,
         sizeof(t_dbtorms_tilde), 0, 0);
     CLASS_SIGNAL(dbtorms_tilde_class, t_dbtorms_tilde, x_f);
     class_addMethod(dbtorms_tilde_class, (t_method)dbtorms_tilde_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
 }
 
 /* ------------------------------ rmstodb~ -------------------------- */
@@ -432,7 +432,7 @@ t_class *rmstodb_tilde_class;
 static void *rmstodb_tilde_new(void)
 {
     t_rmstodb_tilde *x = (t_rmstodb_tilde *)pd_new(rmstodb_tilde_class);
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     x->x_f = 0;
     return (x);
 }
@@ -461,11 +461,11 @@ static void rmstodb_tilde_dsp(t_rmstodb_tilde *x, t_signal **sp)
 
 void rmstodb_tilde_setup(void)
 {
-    rmstodb_tilde_class = class_new(gensym("rmstodb~"), 
+    rmstodb_tilde_class = class_new(gensym ("rmstodb~"), 
         (t_newmethod)rmstodb_tilde_new, 0, sizeof(t_rmstodb_tilde), 0, 0);
     CLASS_SIGNAL(rmstodb_tilde_class, t_rmstodb_tilde, x_f);
     class_addMethod(rmstodb_tilde_class, (t_method)rmstodb_tilde_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
 }
 
 /* ------------------------------ dbtopow~ -------------------------- */
@@ -481,7 +481,7 @@ t_class *dbtopow_tilde_class;
 static void *dbtopow_tilde_new(void)
 {
     t_dbtopow_tilde *x = (t_dbtopow_tilde *)pd_new(dbtopow_tilde_class);
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     x->x_f = 0;
     return (x);
 }
@@ -511,11 +511,11 @@ static void dbtopow_tilde_dsp(t_dbtopow_tilde *x, t_signal **sp)
 
 void dbtopow_tilde_setup(void)
 {
-    dbtopow_tilde_class = class_new(gensym("dbtopow~"), (t_newmethod)dbtopow_tilde_new, 0,
+    dbtopow_tilde_class = class_new(gensym ("dbtopow~"), (t_newmethod)dbtopow_tilde_new, 0,
         sizeof(t_dbtopow_tilde), 0, 0);
     CLASS_SIGNAL(dbtopow_tilde_class, t_dbtopow_tilde, x_f);
     class_addMethod(dbtopow_tilde_class, (t_method)dbtopow_tilde_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
 }
 
 /* ------------------------------ powtodb~ -------------------------- */
@@ -531,7 +531,7 @@ t_class *powtodb_tilde_class;
 static void *powtodb_tilde_new(void)
 {
     t_powtodb_tilde *x = (t_powtodb_tilde *)pd_new(powtodb_tilde_class);
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     x->x_f = 0;
     return (x);
 }
@@ -560,11 +560,11 @@ static void powtodb_tilde_dsp(t_powtodb_tilde *x, t_signal **sp)
 
 void powtodb_tilde_setup(void)
 {
-    powtodb_tilde_class = class_new(gensym("powtodb~"), (t_newmethod)powtodb_tilde_new, 0,
+    powtodb_tilde_class = class_new(gensym ("powtodb~"), (t_newmethod)powtodb_tilde_new, 0,
         sizeof(t_powtodb_tilde), 0, 0);
     CLASS_SIGNAL(powtodb_tilde_class, t_powtodb_tilde, x_f);
     class_addMethod(powtodb_tilde_class, (t_method)powtodb_tilde_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
 }
 
 /* ----------------------------- pow ----------------------------- */
@@ -612,11 +612,11 @@ static void pow_tilde_dsp(t_pow_tilde *x, t_signal **sp)
 
 static void pow_tilde_setup(void)
 {
-    pow_tilde_class = class_new(gensym("pow~"), (t_newmethod)pow_tilde_new, 0,
+    pow_tilde_class = class_new(gensym ("pow~"), (t_newmethod)pow_tilde_new, 0,
         sizeof(t_pow_tilde), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(pow_tilde_class, t_pow_tilde, x_f);
     class_addMethod(pow_tilde_class, (t_method)pow_tilde_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
 }
 
 /* ----------------------------- exp ----------------------------- */
@@ -653,11 +653,11 @@ static void exp_tilde_dsp(t_exp_tilde *x, t_signal **sp)
 
 static void exp_tilde_setup(void)
 {
-    exp_tilde_class = class_new(gensym("exp~"), (t_newmethod)exp_tilde_new, 0,
+    exp_tilde_class = class_new(gensym ("exp~"), (t_newmethod)exp_tilde_new, 0,
         sizeof(t_exp_tilde), 0, 0);
     CLASS_SIGNAL(exp_tilde_class, t_exp_tilde, x_f);
     class_addMethod(exp_tilde_class, (t_method)exp_tilde_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
 }
 
 /* ----------------------------- log ----------------------------- */
@@ -705,11 +705,11 @@ static void log_tilde_dsp(t_log_tilde *x, t_signal **sp)
 
 static void log_tilde_setup(void)
 {
-    log_tilde_class = class_new(gensym("log~"), (t_newmethod)log_tilde_new, 0,
+    log_tilde_class = class_new(gensym ("log~"), (t_newmethod)log_tilde_new, 0,
         sizeof(t_log_tilde), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(log_tilde_class, t_log_tilde, x_f);
     class_addMethod(log_tilde_class, (t_method)log_tilde_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
 }
 
 /* ----------------------------- abs ----------------------------- */
@@ -749,18 +749,18 @@ static void abs_tilde_dsp(t_abs_tilde *x, t_signal **sp)
 
 static void abs_tilde_setup(void)
 {
-    abs_tilde_class = class_new(gensym("abs~"), (t_newmethod)abs_tilde_new, 0,
+    abs_tilde_class = class_new(gensym ("abs~"), (t_newmethod)abs_tilde_new, 0,
         sizeof(t_abs_tilde), 0, 0);
     CLASS_SIGNAL(abs_tilde_class, t_abs_tilde, x_f);
     class_addMethod(abs_tilde_class, (t_method)abs_tilde_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
 }
 
 /* ------------------------ global setup routine ------------------------- */
 
 void d_math_setup(void)
 {
-    t_symbol *s = gensym("mtof~");
+    t_symbol *s = gensym ("mtof~");
     clip_setup();
     sigrsqrt_setup();
     sigsqrt_setup();

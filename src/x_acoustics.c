@@ -161,33 +161,33 @@ static void dbtorms_float(t_object *x, t_float f)
 
 void x_acoustics_setup(void)
 {
-    t_symbol *s = gensym("mtof");
-    mtof_class = class_new(gensym("mtof"), mtof_new, 0,
+    t_symbol *s = gensym ("mtof");
+    mtof_class = class_new(gensym ("mtof"), mtof_new, 0,
         sizeof(t_object), 0, 0);
     class_addFloat(mtof_class, (t_method)mtof_float);
     class_setHelpName(mtof_class, s);
     
-    ftom_class = class_new(gensym("ftom"), ftom_new, 0,
+    ftom_class = class_new(gensym ("ftom"), ftom_new, 0,
         sizeof(t_object), 0, 0);
     class_addFloat(ftom_class, (t_method)ftom_float);
     class_setHelpName(ftom_class, s);
 
-    powtodb_class = class_new(gensym("powtodb"), powtodb_new, 0,
+    powtodb_class = class_new(gensym ("powtodb"), powtodb_new, 0,
         sizeof(t_object), 0, 0);
     class_addFloat(powtodb_class, (t_method)powtodb_float);
     class_setHelpName(powtodb_class, s);
 
-    rmstodb_class = class_new(gensym("rmstodb"), rmstodb_new, 0,
+    rmstodb_class = class_new(gensym ("rmstodb"), rmstodb_new, 0,
         sizeof(t_object), 0, 0);
     class_addFloat(rmstodb_class, (t_method)rmstodb_float);
     class_setHelpName(rmstodb_class, s);
 
-    dbtopow_class = class_new(gensym("dbtopow"), dbtopow_new, 0,
+    dbtopow_class = class_new(gensym ("dbtopow"), dbtopow_new, 0,
         sizeof(t_object), 0, 0);
     class_addFloat(dbtopow_class, (t_method)dbtopow_float);
     class_setHelpName(dbtopow_class, s);
 
-    dbtorms_class = class_new(gensym("dbtorms"), dbtorms_new, 0,
+    dbtorms_class = class_new(gensym ("dbtorms"), dbtorms_new, 0,
         sizeof(t_object), 0, 0);
     class_addFloat(dbtorms_class, (t_method)dbtorms_float);
     class_setHelpName(dbtorms_class, s);

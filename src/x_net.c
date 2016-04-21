@@ -324,14 +324,14 @@ static void netsend_free(t_netsend *x)
 
 static void netsend_setup(void)
 {
-    netsend_class = class_new(gensym("netsend"), (t_newmethod)netsend_new,
+    netsend_class = class_new(gensym ("netsend"), (t_newmethod)netsend_new,
         (t_method)netsend_free,
         sizeof(t_netsend), 0, A_GIMME, 0);
     class_addMethod(netsend_class, (t_method)netsend_connect,
-        gensym("connect"), A_SYMBOL, A_FLOAT, 0);
+        gensym ("connect"), A_SYMBOL, A_FLOAT, 0);
     class_addMethod(netsend_class, (t_method)netsend_disconnect,
-        gensym("disconnect"), 0);
-    class_addMethod(netsend_class, (t_method)netsend_send, gensym("send"),
+        gensym ("disconnect"), 0);
+    class_addMethod(netsend_class, (t_method)netsend_send, gensym ("send"),
         A_GIMME, 0);
 }
 
@@ -549,13 +549,13 @@ static void *netreceive_new(t_symbol *s, int argc, t_atom *argv)
 
 static void netreceive_setup(void)
 {
-    netreceive_class = class_new(gensym("netreceive"),
+    netreceive_class = class_new(gensym ("netreceive"),
         (t_newmethod)netreceive_new, (t_method)netreceive_closeall,
         sizeof(t_netreceive), 0, A_GIMME, 0);
     class_addMethod(netreceive_class, (t_method)netreceive_listen,
-        gensym("listen"), A_FLOAT, 0);
+        gensym ("listen"), A_FLOAT, 0);
     class_addMethod(netreceive_class, (t_method)netreceive_send,
-        gensym("send"), A_GIMME, 0);
+        gensym ("send"), A_GIMME, 0);
 }
 
 void x_net_setup(void)

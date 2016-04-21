@@ -122,18 +122,18 @@ static void tabwrite_tilde_stop(t_tabwrite_tilde *x)
 
 static void tabwrite_tilde_setup(void)
 {
-    tabwrite_tilde_class = class_new(gensym("tabwrite~"),
+    tabwrite_tilde_class = class_new(gensym ("tabwrite~"),
         (t_newmethod)tabwrite_tilde_new, 0,
         sizeof(t_tabwrite_tilde), 0, A_DEFSYMBOL, 0);
     CLASS_SIGNAL(tabwrite_tilde_class, t_tabwrite_tilde, x_f);
     class_addMethod(tabwrite_tilde_class, (t_method)tabwrite_tilde_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
     class_addMethod(tabwrite_tilde_class, (t_method)tabwrite_tilde_set,
-        gensym("set"), A_SYMBOL, 0);
+        gensym ("set"), A_SYMBOL, 0);
     class_addMethod(tabwrite_tilde_class, (t_method)tabwrite_tilde_stop,
-        gensym("stop"), 0);
+        gensym ("stop"), 0);
     class_addMethod(tabwrite_tilde_class, (t_method)tabwrite_tilde_start,
-        gensym("start"), A_DEFFLOAT, 0);
+        gensym ("start"), A_DEFFLOAT, 0);
     class_addBang(tabwrite_tilde_class, tabwrite_tilde_bang);
 }
 
@@ -256,15 +256,15 @@ static void tabplay_tilde_free(t_tabplay_tilde *x)
 
 static void tabplay_tilde_setup(void)
 {
-    tabplay_tilde_class = class_new(gensym("tabplay~"),
+    tabplay_tilde_class = class_new(gensym ("tabplay~"),
         (t_newmethod)tabplay_tilde_new, (t_method)tabplay_tilde_free,
         sizeof(t_tabplay_tilde), 0, A_DEFSYMBOL, 0);
     class_addMethod(tabplay_tilde_class, (t_method)tabplay_tilde_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
     class_addMethod(tabplay_tilde_class, (t_method)tabplay_tilde_stop,
-        gensym("stop"), 0);
+        gensym ("stop"), 0);
     class_addMethod(tabplay_tilde_class, (t_method)tabplay_tilde_set,
-        gensym("set"), A_DEFSYMBOL, 0);
+        gensym ("set"), A_DEFSYMBOL, 0);
     class_addList(tabplay_tilde_class, tabplay_tilde_list);
 }
 
@@ -286,7 +286,7 @@ static void *tabread_tilde_new(t_symbol *s)
     t_tabread_tilde *x = (t_tabread_tilde *)pd_new(tabread_tilde_class);
     x->x_arrayname = s;
     x->x_vec = 0;
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     x->x_f = 0;
     return (x);
 }
@@ -355,14 +355,14 @@ static void tabread_tilde_free(t_tabread_tilde *x)
 
 static void tabread_tilde_setup(void)
 {
-    tabread_tilde_class = class_new(gensym("tabread~"),
+    tabread_tilde_class = class_new(gensym ("tabread~"),
         (t_newmethod)tabread_tilde_new, (t_method)tabread_tilde_free,
         sizeof(t_tabread_tilde), 0, A_DEFSYMBOL, 0);
     CLASS_SIGNAL(tabread_tilde_class, t_tabread_tilde, x_f);
     class_addMethod(tabread_tilde_class, (t_method)tabread_tilde_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
     class_addMethod(tabread_tilde_class, (t_method)tabread_tilde_set,
-        gensym("set"), A_SYMBOL, 0);
+        gensym ("set"), A_SYMBOL, 0);
 }
 
 /******************** tabread4~ ***********************/
@@ -384,7 +384,7 @@ static void *tabread4_tilde_new(t_symbol *s)
     t_tabread4_tilde *x = (t_tabread4_tilde *)pd_new(tabread4_tilde_class);
     x->x_arrayname = s;
     x->x_vec = 0;
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     inlet_newFloat(&x->x_obj, &x->x_onset);
     x->x_f = 0;
     x->x_onset = 0;
@@ -487,14 +487,14 @@ static void tabread4_tilde_free(t_tabread4_tilde *x)
 
 static void tabread4_tilde_setup(void)
 {
-    tabread4_tilde_class = class_new(gensym("tabread4~"),
+    tabread4_tilde_class = class_new(gensym ("tabread4~"),
         (t_newmethod)tabread4_tilde_new, (t_method)tabread4_tilde_free,
         sizeof(t_tabread4_tilde), 0, A_DEFSYMBOL, 0);
     CLASS_SIGNAL(tabread4_tilde_class, t_tabread4_tilde, x_f);
     class_addMethod(tabread4_tilde_class, (t_method)tabread4_tilde_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
     class_addMethod(tabread4_tilde_class, (t_method)tabread4_tilde_set,
-        gensym("set"), A_SYMBOL, 0);
+        gensym ("set"), A_SYMBOL, 0);
 }
 
 /******************** tabosc4~ ***********************/
@@ -561,8 +561,8 @@ static void *tabosc4_tilde_new(t_symbol *s)
     x->x_vec = 0;
     x->x_fnpoints = 512.;
     x->x_finvnpoints = (1./512.);
-    outlet_new(&x->x_obj, gensym("signal"));
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, gensym("ft1"));
+    outlet_new(&x->x_obj, gensym ("signal"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, gensym ("ft1"));
     x->x_f = 0;
     return (x);
 }
@@ -669,16 +669,16 @@ static void tabosc4_tilde_dsp(t_tabosc4_tilde *x, t_signal **sp)
 
 static void tabosc4_tilde_setup(void)
 {
-    tabosc4_tilde_class = class_new(gensym("tabosc4~"),
+    tabosc4_tilde_class = class_new(gensym ("tabosc4~"),
         (t_newmethod)tabosc4_tilde_new, 0,
         sizeof(t_tabosc4_tilde), 0, A_DEFSYMBOL, 0);
     CLASS_SIGNAL(tabosc4_tilde_class, t_tabosc4_tilde, x_f);
     class_addMethod(tabosc4_tilde_class, (t_method)tabosc4_tilde_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
     class_addMethod(tabosc4_tilde_class, (t_method)tabosc4_tilde_set,
-        gensym("set"), A_SYMBOL, 0);
+        gensym ("set"), A_SYMBOL, 0);
     class_addMethod(tabosc4_tilde_class, (t_method)tabosc4_tilde_ft1,
-        gensym("ft1"), A_FLOAT, 0);
+        gensym ("ft1"), A_FLOAT, 0);
 }
 
 /* ------------------------ tabsend~ ------------------------- */
@@ -769,13 +769,13 @@ static void tabsend_dsp(t_tabsend *x, t_signal **sp)
 
 static void tabsend_setup(void)
 {
-    tabsend_class = class_new(gensym("tabsend~"), (t_newmethod)tabsend_new,
+    tabsend_class = class_new(gensym ("tabsend~"), (t_newmethod)tabsend_new,
         0, sizeof(t_tabsend), 0, A_DEFSYMBOL, 0);
     CLASS_SIGNAL(tabsend_class, t_tabsend, x_f);
     class_addMethod(tabsend_class, (t_method)tabsend_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
     class_addMethod(tabsend_class, (t_method)tabsend_set,
-        gensym("set"), A_SYMBOL, 0);
+        gensym ("set"), A_SYMBOL, 0);
 }
 
 /* ------------------------ tabreceive~ ------------------------- */
@@ -849,13 +849,13 @@ static void *tabreceive_new(t_symbol *s)
 
 static void tabreceive_setup(void)
 {
-    tabreceive_class = class_new(gensym("tabreceive~"),
+    tabreceive_class = class_new(gensym ("tabreceive~"),
         (t_newmethod)tabreceive_new, 0,
         sizeof(t_tabreceive), 0, A_DEFSYMBOL, 0);
     class_addMethod(tabreceive_class, (t_method)tabreceive_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
     class_addMethod(tabreceive_class, (t_method)tabreceive_set,
-        gensym("set"), A_SYMBOL, 0);
+        gensym ("set"), A_SYMBOL, 0);
 }
 
 /* ---------- tabread: control, non-interpolating ------------------------ */
@@ -902,10 +902,10 @@ static void *tabread_new(t_symbol *s)
 
 static void tabread_setup(void)
 {
-    tabread_class = class_new(gensym("tabread"), (t_newmethod)tabread_new,
+    tabread_class = class_new(gensym ("tabread"), (t_newmethod)tabread_new,
         0, sizeof(t_tabread), 0, A_DEFSYMBOL, 0);
     class_addFloat(tabread_class, (t_method)tabread_float);
-    class_addMethod(tabread_class, (t_method)tabread_set, gensym("set"),
+    class_addMethod(tabread_class, (t_method)tabread_set, gensym ("set"),
         A_SYMBOL, 0);
 }
 
@@ -970,10 +970,10 @@ static void *tabread4_new(t_symbol *s)
 
 static void tabread4_setup(void)
 {
-    tabread4_class = class_new(gensym("tabread4"), (t_newmethod)tabread4_new,
+    tabread4_class = class_new(gensym ("tabread4"), (t_newmethod)tabread4_new,
         0, sizeof(t_tabread4), 0, A_DEFSYMBOL, 0);
     class_addFloat(tabread4_class, (t_method)tabread4_float);
-    class_addMethod(tabread4_class, (t_method)tabread4_set, gensym("set"),
+    class_addMethod(tabread4_class, (t_method)tabread4_set, gensym ("set"),
         A_SYMBOL, 0);
 }
 
@@ -1026,10 +1026,10 @@ static void *tabwrite_new(t_symbol *s)
 
 void tabwrite_setup(void)
 {
-    tabwrite_class = class_new(gensym("tabwrite"), (t_newmethod)tabwrite_new,
+    tabwrite_class = class_new(gensym ("tabwrite"), (t_newmethod)tabwrite_new,
         0, sizeof(t_tabwrite), 0, A_DEFSYMBOL, 0);
     class_addFloat(tabwrite_class, (t_method)tabwrite_float);
-    class_addMethod(tabwrite_class, (t_method)tabwrite_set, gensym("set"),
+    class_addMethod(tabwrite_class, (t_method)tabwrite_set, gensym ("set"),
         A_SYMBOL, 0);
 }
 

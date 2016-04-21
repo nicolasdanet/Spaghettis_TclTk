@@ -160,8 +160,8 @@ void glist_scalar(t_glist *glist,
 void scalar_getbasexy(t_scalar *x, t_float *basex, t_float *basey)
 {
     t_template *template = template_findbyname(x->sc_template);
-    *basex = template_getfloat(template, gensym("x"), x->sc_vector, 0);
-    *basey = template_getfloat(template, gensym("y"), x->sc_vector, 0);
+    *basex = template_getfloat(template, gensym ("x"), x->sc_vector, 0);
+    *basey = template_getfloat(template, gensym ("y"), x->sc_vector, 0);
 }
 
 static void scalar_getrect(t_gobj *z, t_glist *owner,
@@ -237,7 +237,7 @@ static void scalar_select(t_gobj *z, t_glist *owner, int state)
     gpointer_setglist(&gp, owner, x);
     SET_POINTER(&at, &gp);
     if (tmpl = template_findbyname(templatesym))
-        template_notify(tmpl, (state ? gensym("select") : gensym("deselect")),
+        template_notify(tmpl, (state ? gensym ("select") : gensym ("deselect")),
             1, &at);
     gpointer_unset(&gp);
     scalar_drawselectrect(x, owner, state);
@@ -257,10 +257,10 @@ static void scalar_displace(t_gobj *z, t_glist *glist, int dx, int dy)
         post_error ("scalar: couldn't find template %s", templatesym->s_name);
         return;
     }
-    gotx = template_find_field(template, gensym("x"), &xonset, &xtype, &zz);
+    gotx = template_find_field(template, gensym ("x"), &xonset, &xtype, &zz);
     if (gotx && (xtype != DATA_FLOAT))
         gotx = 0;
-    goty = template_find_field(template, gensym("y"), &yonset, &ytype, &zz);
+    goty = template_find_field(template, gensym ("y"), &yonset, &ytype, &zz);
     if (goty && (ytype != DATA_FLOAT))
         goty = 0;
     if (gotx)
@@ -274,7 +274,7 @@ static void scalar_displace(t_gobj *z, t_glist *glist, int dx, int dy)
     SET_POINTER(&at[0], &gp);
     SET_FLOAT(&at[1], (t_float)dx);
     SET_FLOAT(&at[2], (t_float)dy);
-    template_notify(template, gensym("displace"), 2, at);
+    template_notify(template, gensym ("displace"), 2, at);
     scalar_redraw(x, glist);
 }
 
@@ -349,13 +349,13 @@ int scalar_doclick(t_word *data, t_template *template, t_scalar *sc,
     t_glist *templatecanvas = template_findcanvas(template);
     t_gobj *y;
     t_atom at[2];
-    t_float basex = template_getfloat(template, gensym("x"), data, 0);
-    t_float basey = template_getfloat(template, gensym("y"), data, 0);
+    t_float basex = template_getfloat(template, gensym ("x"), data, 0);
+    t_float basey = template_getfloat(template, gensym ("y"), data, 0);
     SET_FLOAT(at, basex + xloc);
     SET_FLOAT(at+1, basey + yloc);
     if (doit)
         template_notifyforscalar(template, owner, 
-            sc, gensym("click"), 2, at);
+            sc, gensym ("click"), 2, at);
     for (y = templatecanvas->gl_list; y; y = y->g_next)
     {
         t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
@@ -384,7 +384,7 @@ static void scalar_save(t_gobj *z, t_buffer *b)
     t_atom a, *argv;
     int i, argc;
     canvas_writescalar(x->sc_template, x->sc_vector, b2, 0);
-    buffer_vAppend(b, "ss", &s__X, gensym("scalar"));
+    buffer_vAppend(b, "ss", &s__X, gensym ("scalar"));
     buffer_serialize(b, b2);
     buffer_appendSemicolon(b);
     buffer_free(b2);
@@ -443,7 +443,7 @@ static void scalar_free(t_scalar *x)
 
 void g_scalar_setup(void)
 {
-    scalar_class = class_new(gensym("scalar"), 0, (t_method)scalar_free, 0,
+    scalar_class = class_new(gensym ("scalar"), 0, (t_method)scalar_free, 0,
         CLASS_GRAPHIC, 0);
     class_setWidgetBehavior(scalar_class, &scalar_widgetbehavior);
     class_setSaveFunction(scalar_class, scalar_save);

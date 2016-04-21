@@ -70,10 +70,10 @@ static void *phasor_new(t_float f)
 {
     t_phasor *x = (t_phasor *)pd_new(phasor_class);
     x->x_f = f;
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, gensym("ft1"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, gensym ("ft1"));
     x->x_phase = 0;
     x->x_conv = 0;
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     return (x);
 }
 
@@ -117,13 +117,13 @@ static void phasor_ft1(t_phasor *x, t_float f)
 
 static void phasor_setup(void)
 {
-    phasor_class = class_new(gensym("phasor~"), (t_newmethod)phasor_new, 0,
+    phasor_class = class_new(gensym ("phasor~"), (t_newmethod)phasor_new, 0,
         sizeof(t_phasor), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(phasor_class, t_phasor, x_f);
     class_addMethod(phasor_class, (t_method)phasor_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
     class_addMethod(phasor_class, (t_method)phasor_ft1,
-        gensym("ft1"), A_FLOAT, 0);
+        gensym ("ft1"), A_FLOAT, 0);
 }
 
 #endif  /* Hoeldrich version */
@@ -143,7 +143,7 @@ typedef struct _cos
 static void *cos_new(void)
 {
     t_cos *x = (t_cos *)pd_new(cos_class);
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     x->x_f = 0;
     return (x);
 }
@@ -224,10 +224,10 @@ static void cos_maketable(void)
 
 static void cos_setup(void)
 {
-    cos_class = class_new(gensym("cos~"), (t_newmethod)cos_new, 0,
+    cos_class = class_new(gensym ("cos~"), (t_newmethod)cos_new, 0,
         sizeof(t_cos), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(cos_class, t_cos, x_f);
-    class_addMethod(cos_class, (t_method)cos_dsp, gensym("dsp"), A_CANT, 0);
+    class_addMethod(cos_class, (t_method)cos_dsp, gensym ("dsp"), A_CANT, 0);
     cos_maketable();
 }
 
@@ -247,8 +247,8 @@ static void *osc_new(t_float f)
 {
     t_osc *x = (t_osc *)pd_new(osc_class);
     x->x_f = f;
-    outlet_new(&x->x_obj, gensym("signal"));
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, gensym("ft1"));
+    outlet_new(&x->x_obj, gensym ("signal"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_float, gensym ("ft1"));
     x->x_phase = 0;
     x->x_conv = 0;
     return (x);
@@ -324,11 +324,11 @@ static void osc_ft1(t_osc *x, t_float f)
 
 static void osc_setup(void)
 {    
-    osc_class = class_new(gensym("osc~"), (t_newmethod)osc_new, 0,
+    osc_class = class_new(gensym ("osc~"), (t_newmethod)osc_new, 0,
         sizeof(t_osc), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(osc_class, t_osc, x_f);
-    class_addMethod(osc_class, (t_method)osc_dsp, gensym("dsp"), A_CANT, 0);
-    class_addMethod(osc_class, (t_method)osc_ft1, gensym("ft1"), A_FLOAT, 0);
+    class_addMethod(osc_class, (t_method)osc_dsp, gensym ("dsp"), A_CANT, 0);
+    class_addMethod(osc_class, (t_method)osc_ft1, gensym ("ft1"), A_FLOAT, 0);
 
     cos_maketable();
 }
@@ -357,9 +357,9 @@ static void *sigvcf_new(t_float q)
 {
     t_sigvcf *x = (t_sigvcf *)pd_new(sigvcf_class);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym("float"), gensym("ft1"));
-    outlet_new(&x->x_obj, gensym("signal"));
-    outlet_new(&x->x_obj, gensym("signal"));
+    inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, gensym ("float"), gensym ("ft1"));
+    outlet_new(&x->x_obj, gensym ("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     x->x_ctl = &x->x_cspace;
     x->x_cspace.c_re = 0;
     x->x_cspace.c_im = 0;
@@ -448,13 +448,13 @@ static void sigvcf_dsp(t_sigvcf *x, t_signal **sp)
 
 void sigvcf_setup(void)
 {
-    sigvcf_class = class_new(gensym("vcf~"), (t_newmethod)sigvcf_new, 0,
+    sigvcf_class = class_new(gensym ("vcf~"), (t_newmethod)sigvcf_new, 0,
         sizeof(t_sigvcf), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigvcf_class, t_sigvcf, x_f);
     class_addMethod(sigvcf_class, (t_method)sigvcf_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
     class_addMethod(sigvcf_class, (t_method)sigvcf_ft1,
-        gensym("ft1"), A_FLOAT, 0);
+        gensym ("ft1"), A_FLOAT, 0);
 }
 
 /* -------------------------- noise~ ------------------------------ */
@@ -471,7 +471,7 @@ static void *noise_new(void)
     t_noise *x = (t_noise *)pd_new(noise_class);
     static int init = 307;
     x->x_val = (init *= 1319); 
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     return (x);
 }
 
@@ -498,9 +498,9 @@ static void noise_dsp(t_noise *x, t_signal **sp)
 
 static void noise_setup(void)
 {
-    noise_class = class_new(gensym("noise~"), (t_newmethod)noise_new, 0,
+    noise_class = class_new(gensym ("noise~"), (t_newmethod)noise_new, 0,
         sizeof(t_noise), 0, 0);
-    class_addMethod(noise_class, (t_method)noise_dsp, gensym("dsp"), A_CANT, 0);
+    class_addMethod(noise_class, (t_method)noise_dsp, gensym ("dsp"), A_CANT, 0);
 }
 
 

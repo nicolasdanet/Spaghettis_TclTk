@@ -287,37 +287,75 @@ struct _template {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist             *canvas_castToGlist             (t_pd *x);
+t_glist             *canvas_castToGlist                 (t_pd *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_guiconnect        *guiconnect_new                 (t_pd *owner, t_symbol *bindTo);
+t_guiconnect        *guiconnect_new                     (t_pd *owner, t_symbol *bindTo);
 
-void                guiconnect_release              (t_guiconnect *x, double timeOut);
+void                guiconnect_release                  (t_guiconnect *x, double timeOut);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void                canvas_newPatch                 (void *dummy, t_symbol *name, t_symbol *directory);
-void                canvas_setFileNameAndDirectory  (t_symbol *name, t_symbol *directory);
-void                canvas_setArguments             (int argc, t_atom *argv);
+void                canvas_newPatch                     (void *dummy, t_symbol *name, t_symbol *directory);
+void                canvas_setFileNameAndDirectory      (t_symbol *name, t_symbol *directory);
+void                canvas_setArguments                 (int argc, t_atom *argv);
 
-t_glist             *canvas_getCurrent              (void);
-t_canvasenvironment *canvas_getEnvironment          (t_glist *glist);
-t_symbol            *canvas_expandDollar            (t_glist *glist, t_symbol *s);
-t_symbol            *canvas_makeBindSymbol          (t_symbol *s);
+t_glist             *canvas_getCurrent                  (void);
+t_canvasenvironment *canvas_getEnvironment              (t_glist *glist);
+t_symbol            *canvas_expandDollar                (t_glist *glist, t_symbol *s);
+t_symbol            *canvas_makeBindSymbol              (t_symbol *s);
+    
+t_error             canvas_makeFilePath                 (t_glist *glist, char *name, char *dest, size_t size);
+void                canvas_rename                       (t_glist *glist, t_symbol *name, t_symbol *directory);
+void                canvas_updateTitle                  (t_glist *glist);
 
-t_error             canvas_makeFilePath             (t_glist *glist, char *name, char *dest, size_t size);
-void                canvas_rename                   (t_glist *glist, t_symbol *name, t_symbol *directory);
-void                canvas_updateTitle              (t_glist *glist);
+int                 canvas_getIndexOfObject             (t_glist *glist, t_gobj *object);
 
-int                 canvas_getIndexOfObject         (t_glist *glist, t_gobj *object);
+void                canvas_traverseLinesStart           (t_linetraverser *t, t_glist *glist);
+t_outconnect        *canvas_traverseLinesNext           (t_linetraverser *t);
 
-void                canvas_traverseLinesStart       (t_linetraverser *t, t_glist *glist);
-t_outconnect        *canvas_traverseLinesNext       (t_linetraverser *t);
+int                 canvas_open                         (t_glist *glist,
+                                                            const char *name,
+                                                            const char *extension,
+                                                            char *directoryResult,
+                                                            char **nameResult,
+                                                            size_t size,
+                                                            int isBinary);
+
+t_glist             *canvas_getroot                     (t_glist *x);
+
+t_glist             *glist_addglist                     (t_glist *x,
+                                                            t_symbol *sym,
+                                                            t_float x1,
+                                                            t_float y1,
+                                                            t_float x2,
+                                                            t_float y2,
+                                                            t_float px1,
+                                                            t_float py1,
+                                                            t_float px2,
+                                                            t_float py2);
+
+int                 glist_isgraph                       (t_glist *x);
+int                 glist_isvisible                     (t_glist *x);
+int                 glist_istoplevel                    (t_glist *x);
+int                 glist_getfont                       (t_glist *x);
+int                 canvas_isabstraction                (t_glist *x);
+void                canvas_popabstraction               (t_glist *x);
+int                 canvas_showtext                     (t_glist *x);
+
+void                canvas_drawredrect                  (t_glist *x, int doit);
+void                canvas_redraw                       (t_glist *x);
+void                canvas_drawlines                    (t_glist *x);
+void                canvas_redrawallfortemplate         (t_template *tmpl, int action);
+void                canvas_redrawallfortemplatecanvas   (t_glist *x, int action);
+void                canvas_fixlines                     (t_glist *x, t_object *text);
+void                canvas_deletelines                  (t_glist *x, t_object *text);
+void                canvas_deletelinesforio             (t_glist *x, t_object *text, t_inlet *inp, t_outlet *outp);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -348,13 +386,7 @@ void                dsp_resume                      (int oldState);
 #pragma mark -
 
 void                canvas_dataproperties           (t_glist *x, t_scalar *sc, t_buffer *b);
-int                 canvas_open                     (t_glist *x,
-                                                        const char *name,
-                                                        const char *ext,
-                                                        char *dirresult,
-                                                        char **nameresult,
-                                                        unsigned int size,
-                                                        int bin);
+
 
 
 
@@ -418,10 +450,7 @@ void     glist_noselect         (t_glist *x);
 void     glist_selectall        (t_glist *x);
 void     glist_delete           (t_glist *x, t_gobj *y);
 void     glist_retext           (t_glist *x, t_object *y);
-int      glist_isvisible        (t_glist *x);
-int      glist_istoplevel       (t_glist *x);
 t_glist *glist_findgraph        (t_glist *x);
-int      glist_getfont          (t_glist *x);
 void     glist_sort             (t_glist *canvas);
 void     glist_read             (t_glist *x, t_symbol *filename, t_symbol *format);
 void     glist_mergefile        (t_glist *x, t_symbol *filename, t_symbol *format);
@@ -439,16 +468,7 @@ t_float  glist_ytopixels        (t_glist *x, t_float yval);
 t_float  glist_dpixtodx         (t_glist *x, t_float dxpix);
 t_float  glist_dpixtody         (t_glist *x, t_float dypix);
 void     glist_getnextxy        (t_glist *x, int *xval, int *yval);
-t_glist *glist_addglist         (t_glist *x,
-                                    t_symbol *sym,
-                                    t_float x1,
-                                    t_float y1,
-                                    t_float x2,
-                                    t_float y2,
-                                    t_float px1,
-                                    t_float py1,
-                                    t_float px2,
-                                    t_float py2);
+
 
 void     glist_arraydialog      (t_glist *parent,
                                     t_symbol *name,
@@ -456,7 +476,6 @@ void     glist_arraydialog      (t_glist *parent,
                                     t_float saveit);
 
 t_buffer *glist_writetobinbuf   (t_glist *x, int wholething);
-int      glist_isgraph          (t_glist *x);
 void     glist_redraw           (t_glist *x);
 void     glist_drawio           (t_glist *x,
                                     t_object *ob,
@@ -473,10 +492,8 @@ void     glist_eraseio          (t_glist *glist, t_object *ob, char *tag);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_popabstraction      (t_glist *x);
 void canvas_create_editor       (t_glist *x);
 void canvas_destroy_editor      (t_glist *x);
-void canvas_deletelinesforio    (t_glist *x, t_object *text, t_inlet *inp, t_outlet *outp);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -519,29 +536,22 @@ t_boxtext   *glist_findrtext    (t_glist *gl, t_object *who);
 #pragma mark -
 
 void     canvas_vistext                     (t_glist *x, t_object *y);
-void     canvas_fixlines                    (t_glist *x, t_object *text);
-void     canvas_deletelines                 (t_glist *x, t_object *text);
 void     canvas_stowconnections             (t_glist *x);
 void     canvas_restoreconnections          (t_glist *x);
-void     canvas_redraw                      (t_glist *x);
 t_inlet  *canvas_addinlet                   (t_glist *x, t_pd *who, t_symbol *sym);
 void     canvas_rminlet                     (t_glist *x, t_inlet *ip);
 t_outlet *canvas_addoutlet                  (t_glist *x, t_pd *who, t_symbol *sym);
 void     canvas_rmoutlet                    (t_glist *x, t_outlet *op);
-void     canvas_redrawallfortemplate        (t_template *tmpl, int action);
-void     canvas_redrawallfortemplatecanvas  (t_glist *x, int action);
 void     canvas_zapallfortemplate           (t_glist *tmpl);
 void     canvas_setusedastemplate           (t_glist *x);
 
-t_glist *canvas_getroot                    (t_glist *x);
 void     canvas_dirty                       (t_glist *x, t_float n);
 int      canvas_getfont                     (t_glist *x);
 void     canvas_resortinlets            (t_glist *x);
 void     canvas_resortoutlets           (t_glist *x);
 void     canvas_editmode                (t_glist *x, t_float state);
-int      canvas_isabstraction           (t_glist *x);
+
 int      canvas_istable                 (t_glist *x);
-int      canvas_showtext                (t_glist *x);
 void     canvas_vis                     (t_glist *x, t_float f);
 
 

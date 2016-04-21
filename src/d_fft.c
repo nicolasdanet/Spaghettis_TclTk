@@ -48,8 +48,8 @@ typedef struct fft
 static void *sigfft_new(void)
 {
     t_sigfft *x = (t_sigfft *)pd_new(sigfft_class);
-    outlet_new(&x->x_obj, gensym("signal"));
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
     x->x_f = 0;
     return (x);
@@ -58,8 +58,8 @@ static void *sigfft_new(void)
 static void *sigifft_new(void)
 {
     t_sigfft *x = (t_sigfft *)pd_new(sigifft_class);
-    outlet_new(&x->x_obj, gensym("signal"));
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
     x->x_f = 0;
     return (x);
@@ -117,18 +117,18 @@ static void sigifft_dsp(t_sigfft *x, t_signal **sp)
 
 static void sigfft_setup(void)
 {
-    sigfft_class = class_new(gensym("fft~"), sigfft_new, 0,
+    sigfft_class = class_new(gensym ("fft~"), sigfft_new, 0,
         sizeof(t_sigfft), 0, 0);
     CLASS_SIGNAL(sigfft_class, t_sigfft, x_f);
     class_addMethod(sigfft_class, (t_method)sigfft_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
 
-    sigifft_class = class_new(gensym("ifft~"), sigifft_new, 0,
+    sigifft_class = class_new(gensym ("ifft~"), sigifft_new, 0,
         sizeof(t_sigfft), 0, 0);
     CLASS_SIGNAL(sigifft_class, t_sigfft, x_f);
     class_addMethod(sigifft_class, (t_method)sigifft_dsp,
-        gensym("dsp"), A_CANT, 0);
-    class_setHelpName(sigifft_class, gensym("fft~"));
+        gensym ("dsp"), A_CANT, 0);
+    class_setHelpName(sigifft_class, gensym ("fft~"));
 }
 
 /* ----------------------- rfft~ -------------------------------- */
@@ -144,8 +144,8 @@ typedef struct rfft
 static void *sigrfft_new(void)
 {
     t_sigrfft *x = (t_sigrfft *)pd_new(sigrfft_class);
-    outlet_new(&x->x_obj, gensym("signal"));
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     x->x_f = 0;
     return (x);
 }
@@ -181,12 +181,12 @@ static void sigrfft_dsp(t_sigrfft *x, t_signal **sp)
 
 static void sigrfft_setup(void)
 {
-    sigrfft_class = class_new(gensym("rfft~"), sigrfft_new, 0,
+    sigrfft_class = class_new(gensym ("rfft~"), sigrfft_new, 0,
         sizeof(t_sigrfft), 0, 0);
     CLASS_SIGNAL(sigrfft_class, t_sigrfft, x_f);
     class_addMethod(sigrfft_class, (t_method)sigrfft_dsp,
-        gensym("dsp"), A_CANT, 0);
-    class_setHelpName(sigrfft_class, gensym("fft~"));
+        gensym ("dsp"), A_CANT, 0);
+    class_setHelpName(sigrfft_class, gensym ("fft~"));
 }
 
 /* ----------------------- rifft~ -------------------------------- */
@@ -203,7 +203,7 @@ static void *sigrifft_new(void)
 {
     t_sigrifft *x = (t_sigrifft *)pd_new(sigrifft_class);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     x->x_f = 0;
     return (x);
 }
@@ -242,12 +242,12 @@ static void sigrifft_dsp(t_sigrifft *x, t_signal **sp)
 
 static void sigrifft_setup(void)
 {
-    sigrifft_class = class_new(gensym("rifft~"), sigrifft_new, 0,
+    sigrifft_class = class_new(gensym ("rifft~"), sigrifft_new, 0,
         sizeof(t_sigrifft), 0, 0);
     CLASS_SIGNAL(sigrifft_class, t_sigrifft, x_f);
     class_addMethod(sigrifft_class, (t_method)sigrifft_dsp,
-        gensym("dsp"), A_CANT, 0);
-    class_setHelpName(sigrifft_class, gensym("fft~"));
+        gensym ("dsp"), A_CANT, 0);
+    class_setHelpName(sigrifft_class, gensym ("fft~"));
 }
 
 /* ----------------------- framp~ -------------------------------- */
@@ -264,8 +264,8 @@ static void *sigframp_new(void)
 {
     t_sigframp *x = (t_sigframp *)pd_new(sigframp_class);
     inlet_new(&x->x_obj, &x->x_obj.te_g.g_pd, &s_signal, &s_signal);
-    outlet_new(&x->x_obj, gensym("signal"));
-    outlet_new(&x->x_obj, gensym("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
+    outlet_new(&x->x_obj, gensym ("signal"));
     x->x_f = 0;
     return (x);
 }
@@ -331,11 +331,11 @@ static void sigframp_dsp(t_sigframp *x, t_signal **sp)
 
 static void sigframp_setup(void)
 {
-    sigframp_class = class_new(gensym("framp~"), sigframp_new, 0,
+    sigframp_class = class_new(gensym ("framp~"), sigframp_new, 0,
         sizeof(t_sigframp), 0, 0);
     CLASS_SIGNAL(sigframp_class, t_sigframp, x_f);
     class_addMethod(sigframp_class, (t_method)sigframp_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
 }
 
 /* ------------------------ global setup routine ------------------------- */

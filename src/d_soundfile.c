@@ -1491,12 +1491,12 @@ static void soundfiler_write(t_soundfiler *x, t_symbol *s,
 
 static void soundfiler_setup(void)
 {
-    soundfiler_class = class_new(gensym("soundfiler"), (t_newmethod)soundfiler_new, 
+    soundfiler_class = class_new(gensym ("soundfiler"), (t_newmethod)soundfiler_new, 
         0, sizeof(t_soundfiler), 0, 0);
-    class_addMethod(soundfiler_class, (t_method)soundfiler_read, gensym("read"), 
+    class_addMethod(soundfiler_class, (t_method)soundfiler_read, gensym ("read"), 
         A_GIMME, 0);
     class_addMethod(soundfiler_class, (t_method)soundfiler_write,
-        gensym("write"), A_GIMME, 0);
+        gensym ("write"), A_GIMME, 0);
 }
 
 
@@ -1918,7 +1918,7 @@ static void *readsf_new(t_float fnchannels, t_float fbufsize)
     x = (t_readsf *)pd_new(readsf_class);
     
     for (i = 0; i < nchannels; i++)
-        outlet_new(&x->x_obj, gensym("signal"));
+        outlet_new(&x->x_obj, gensym ("signal"));
     x->x_noutlets = nchannels;
     x->x_bangout = outlet_new(&x->x_obj, &s_bang);
     pthread_mutex_init(&x->x_mutex, 0);
@@ -2146,16 +2146,16 @@ static void readsf_free(t_readsf *x)
 
 static void readsf_setup(void)
 {
-    readsf_class = class_new(gensym("readsf~"), (t_newmethod)readsf_new, 
+    readsf_class = class_new(gensym ("readsf~"), (t_newmethod)readsf_new, 
         (t_method)readsf_free, sizeof(t_readsf), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addFloat(readsf_class, (t_method)readsf_float);
-    class_addMethod(readsf_class, (t_method)readsf_start, gensym("start"), 0);
-    class_addMethod(readsf_class, (t_method)readsf_stop, gensym("stop"), 0);
+    class_addMethod(readsf_class, (t_method)readsf_start, gensym ("start"), 0);
+    class_addMethod(readsf_class, (t_method)readsf_stop, gensym ("stop"), 0);
     class_addMethod(readsf_class, (t_method)readsf_dsp,
-        gensym("dsp"), A_CANT, 0);
-    class_addMethod(readsf_class, (t_method)readsf_open, gensym("open"), 
+        gensym ("dsp"), A_CANT, 0);
+    class_addMethod(readsf_class, (t_method)readsf_open, gensym ("open"), 
         A_GIMME, 0);
-    class_addMethod(readsf_class, (t_method)readsf_print, gensym("print"), 0);
+    class_addMethod(readsf_class, (t_method)readsf_print, gensym ("print"), 0);
 }
 
 /******************************* writesf *******************/
@@ -2629,15 +2629,15 @@ static void writesf_free(t_writesf *x)
 
 static void writesf_setup(void)
 {
-    writesf_class = class_new(gensym("writesf~"), (t_newmethod)writesf_new, 
+    writesf_class = class_new(gensym ("writesf~"), (t_newmethod)writesf_new, 
         (t_method)writesf_free, sizeof(t_writesf), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addMethod(writesf_class, (t_method)writesf_start, gensym("start"), 0);
-    class_addMethod(writesf_class, (t_method)writesf_stop, gensym("stop"), 0);
+    class_addMethod(writesf_class, (t_method)writesf_start, gensym ("start"), 0);
+    class_addMethod(writesf_class, (t_method)writesf_stop, gensym ("stop"), 0);
     class_addMethod(writesf_class, (t_method)writesf_dsp,
-        gensym("dsp"), A_CANT, 0);
-    class_addMethod(writesf_class, (t_method)writesf_open, gensym("open"), 
+        gensym ("dsp"), A_CANT, 0);
+    class_addMethod(writesf_class, (t_method)writesf_open, gensym ("open"), 
         A_GIMME, 0);
-    class_addMethod(writesf_class, (t_method)writesf_print, gensym("print"), 0);
+    class_addMethod(writesf_class, (t_method)writesf_print, gensym ("print"), 0);
     CLASS_SIGNAL(writesf_class, t_writesf, x_f);
 }
 

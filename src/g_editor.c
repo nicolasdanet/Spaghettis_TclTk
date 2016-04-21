@@ -262,7 +262,7 @@ void glist_deselect(t_glist *x, t_gobj *y)
                 }
                 gobj_activate(y, x, 0);
             }
-            if (class_hasMethod (pd_class (&y->g_pd), gensym("dsp")))
+            if (class_hasMethod (pd_class (&y->g_pd), gensym ("dsp")))
                 fixdsp = dsp_suspend();
         }
         if ((sel = x->gl_editor->e_selection)->sel_what == y)
@@ -556,7 +556,7 @@ static void *canvas_undo_set_cut(t_glist *x, int mode)
         if (issel1 != issel2)
         {
             buffer_vAppend(buf->u_reconnectbuf, "ssiiii;",
-                gensym("#X"), gensym("connect"),
+                gensym ("#X"), gensym ("connect"),
                 (issel1 ? nnotsel : 0)
                     + glist_selectionindex(x, &t.tr_srcObject->te_g, issel1),
                 t.tr_srcIndexOfOutlet,
@@ -904,7 +904,7 @@ static void canvas_rightclick(t_glist *x, int xpos, int ypos, t_gobj *y)
 {
     int canprop, canopen;
     canprop = (!y || (y && class_hasPropertiesFunction (pd_class(&y->g_pd))));
-    canopen = (y && class_hasMethod (pd_class (&y->g_pd), gensym("menu-open")));
+    canopen = (y && class_hasMethod (pd_class (&y->g_pd), gensym ("menu-open")));
     sys_vGui("::ui_menu::showPopup .x%lx %d %d %d %d\n",
         x, xpos, ypos, canprop, canopen);
 }
@@ -919,7 +919,7 @@ static t_editor *editor_new(t_glist *owner)
     x->e_deleted = buffer_new();
     x->e_glist = owner;
     sprintf(buf, ".x%lx", (t_int)owner);
-    x->e_guiconnect = guiconnect_new(&owner->gl_obj.te_g.g_pd, gensym(buf));
+    x->e_guiconnect = guiconnect_new(&owner->gl_obj.te_g.g_pd, gensym (buf));
     x->e_clock = 0;
     return (x);
 }
@@ -1216,9 +1216,9 @@ static void canvas_done_popup(t_glist *x, t_float which, t_float xpos, t_float y
             }
             else if (which == 1)    /* open */
             {
-                if (!class_hasMethod (pd_class (&y->g_pd), gensym("menu-open")))
+                if (!class_hasMethod (pd_class (&y->g_pd), gensym ("menu-open")))
                     continue;
-                pd_vMessage(&y->g_pd, gensym("menu-open"), "");
+                pd_vMessage(&y->g_pd, gensym ("menu-open"), "");
                 return;
             }
             else    /* help */
@@ -1667,7 +1667,7 @@ void canvas_mouseup(t_glist *x,
                 canvas_isabstraction((t_glist *)g) &&
                     (gl2 = glist_finddirty((t_glist *)g)))
             {
-                pd_vMessage(&gl2->gl_obj.te_g.g_pd, gensym("menu-open"), "");
+                pd_vMessage(&gl2->gl_obj.te_g.g_pd, gensym ("menu-open"), "");
                 x->gl_editor->e_onmotion = ACTION_NONE;
                 sys_vGui(
 "::ui_confirm::checkAction .x%lx { Discard changes to %s? } { ::ui_interface::pdsend .x%lx dirty 0 } { no }\n",
@@ -1734,20 +1734,20 @@ void canvas_key(t_glist *x, t_symbol *s, int ac, t_atom *av)
         char buf[UTF8_MAXIMUM_BYTES + 1];
         switch((int)(av[1].a_w.w_float))
         {
-        case 8:  gotkeysym = gensym("BackSpace"); break;
-        case 9:  gotkeysym = gensym("Tab"); break;
-        case 10: gotkeysym = gensym("Return"); break;
-        case 27: gotkeysym = gensym("Escape"); break;
-        case 32: gotkeysym = gensym("Space"); break;
-        case 127:gotkeysym = gensym("Delete"); break;
+        case 8:  gotkeysym = gensym ("BackSpace"); break;
+        case 9:  gotkeysym = gensym ("Tab"); break;
+        case 10: gotkeysym = gensym ("Return"); break;
+        case 27: gotkeysym = gensym ("Escape"); break;
+        case 32: gotkeysym = gensym ("Space"); break;
+        case 127:gotkeysym = gensym ("Delete"); break;
         default:
         /*-- moo: assume keynum is a Unicode codepoint; encode as UTF-8 --*/
             sz = u8_wc_toutf8 (buf, (UCS4_CODE_POINT)(av[1].a_w.w_float));
             buf[sz] = 0;
-            gotkeysym = gensym(buf);
+            gotkeysym = gensym (buf);
         }
     }
-    else gotkeysym = gensym("?");
+    else gotkeysym = gensym ("?");
     fflag = (av[0].a_type == A_FLOAT ? av[0].a_w.w_float : 0);
     keynum = (av[1].a_type == A_FLOAT ? av[1].a_w.w_float : 0);
     if (keynum == '\\' || keynum == '{' || keynum == '}')
@@ -1764,27 +1764,27 @@ void canvas_key(t_glist *x, t_symbol *s, int ac, t_atom *av)
             keynum = '\n';
     if (!keynumsym)
     {
-        keynumsym = gensym("#key");
-        keyupsym = gensym("#keyup");
-        keynamesym = gensym("#keyname");
+        keynumsym = gensym ("#key");
+        keyupsym = gensym ("#keyup");
+        keynamesym = gensym ("#keyname");
     }
 #ifdef __APPLE__
         if (keynum == 30 || keynum == 63232)
-            keynum = 0, gotkeysym = gensym("Up");
+            keynum = 0, gotkeysym = gensym ("Up");
         else if (keynum == 31 || keynum == 63233)
-            keynum = 0, gotkeysym = gensym("Down");
+            keynum = 0, gotkeysym = gensym ("Down");
         else if (keynum == 28 || keynum == 63234)
-            keynum = 0, gotkeysym = gensym("Left");
+            keynum = 0, gotkeysym = gensym ("Left");
         else if (keynum == 29 || keynum == 63235)
-            keynum = 0, gotkeysym = gensym("Right");
+            keynum = 0, gotkeysym = gensym ("Right");
         else if (keynum == 63273)
-            keynum = 0, gotkeysym = gensym("Home");
+            keynum = 0, gotkeysym = gensym ("Home");
         else if (keynum == 63275)
-            keynum = 0, gotkeysym = gensym("End");
+            keynum = 0, gotkeysym = gensym ("End");
         else if (keynum == 63276)
-            keynum = 0, gotkeysym = gensym("Prior");
+            keynum = 0, gotkeysym = gensym ("Prior");
         else if (keynum == 63277)
-            keynum = 0, gotkeysym = gensym("Next");
+            keynum = 0, gotkeysym = gensym ("Next");
 #endif
     if (keynumsym->s_thing && down)
         pd_float(keynumsym->s_thing, (t_float)keynum);
@@ -2017,7 +2017,7 @@ void canvas_menuclose(t_glist *x, t_float fforce)
         g = glist_finddirty(x);
         if (g)
         {
-            pd_vMessage(&g->gl_obj.te_g.g_pd, gensym("menu-open"), "");
+            pd_vMessage(&g->gl_obj.te_g.g_pd, gensym ("menu-open"), "");
             sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx menuclose 2 } {}\n",
                      canvas_getroot(g), g);
             return;
@@ -2039,7 +2039,7 @@ void canvas_menuclose(t_glist *x, t_float fforce)
         g = glist_finddirty(x);
         if (g)
         {
-            pd_vMessage(&g->gl_obj.te_g.g_pd, gensym("menu-open"), "");
+            pd_vMessage(&g->gl_obj.te_g.g_pd, gensym ("menu-open"), "");
             sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx menuclose 2 } {}\n",
                      canvas_getroot(x), g);
             return;
@@ -2121,7 +2121,7 @@ static int canvas_dofind(t_glist *x, int *myindexp)
                 if (*myindexp == canvas_find_index)
                 {
                     glist_noselect(x);
-                    pd_vMessage(&x->gl_obj.te_g.g_pd, gensym("menu-open"), "");
+                    pd_vMessage(&x->gl_obj.te_g.g_pd, gensym ("menu-open"), "");
                     canvas_editmode(x, 1.);
                     glist_select(x, y);
                     didit = 1;
@@ -2222,7 +2222,7 @@ void canvas_stowconnections(t_glist *x)
         int s2 = glist_isselected(x, &t.tr_destObject->te_g);
         if (s1 != s2)
             buffer_vAppend(x->gl_editor->e_connectbuf, "ssiiii;",
-                gensym("#X"), gensym("connect"),
+                gensym ("#X"), gensym ("connect"),
                     glist_getindex(x, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
                         glist_getindex(x, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
     }
@@ -2253,7 +2253,7 @@ static t_buffer *canvas_docopy(t_glist *x)
         if (glist_isselected(x, &t.tr_srcObject->te_g)
             && glist_isselected(x, &t.tr_destObject->te_g))
         {
-            buffer_vAppend(b, "ssiiii;", gensym("#X"), gensym("connect"),
+            buffer_vAppend(b, "ssiiii;", gensym ("#X"), gensym ("connect"),
                 glist_selectionindex(x, &t.tr_srcObject->te_g, 1), t.tr_srcIndexOfOutlet,
                 glist_selectionindex(x, &t.tr_destObject->te_g, 1), t.tr_destIndexOfInlet);
         }
@@ -2403,7 +2403,7 @@ static void canvas_dopaste(t_glist *x, t_buffer *b)
 {
     t_gobj *newgobj, *last, *g2;
     int dspstate = dsp_suspend(), nbox, count;
-    t_symbol *asym = gensym("#A");
+    t_symbol *asym = gensym ("#A");
         /* save and clear bindings to symbols #a, $N, $X; restore when done */
     t_pd *boundx = s__X.s_thing, *bounda = asym->s_thing, 
         *boundn = s__N.s_thing;
@@ -2790,65 +2790,65 @@ static void glist_setlastxy(t_glist *gl, int xval, int yval)
 void g_editor_setup(void)
 {
 /* ------------------------ events ---------------------------------- */
-    class_addMethod(canvas_class, (t_method)canvas_mouse, gensym("mouse"),
+    class_addMethod(canvas_class, (t_method)canvas_mouse, gensym ("mouse"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_mouseup, gensym("mouseup"),
+    class_addMethod(canvas_class, (t_method)canvas_mouseup, gensym ("mouseup"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_key, gensym("key"),
+    class_addMethod(canvas_class, (t_method)canvas_key, gensym ("key"),
         A_GIMME, A_NULL);
-    class_addMethod(canvas_class, (t_method)canvas_motion, gensym("motion"),
+    class_addMethod(canvas_class, (t_method)canvas_motion, gensym ("motion"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
 
 /* ------------------------ menu actions ---------------------------- */
     class_addMethod(canvas_class, (t_method)canvas_menuclose,
-        gensym("menuclose"), A_DEFFLOAT, 0);
+        gensym ("menuclose"), A_DEFFLOAT, 0);
     class_addMethod(canvas_class, (t_method)canvas_cut,
-        gensym("cut"), A_NULL);
+        gensym ("cut"), A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_copy,
-        gensym("copy"), A_NULL);
+        gensym ("copy"), A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_paste,
-        gensym("paste"), A_NULL);
+        gensym ("paste"), A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_duplicate,
-        gensym("duplicate"), A_NULL);
+        gensym ("duplicate"), A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_selectall,
-        gensym("selectall"), A_NULL);
+        gensym ("selectall"), A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_reselect,
-        gensym("reselect"), A_NULL);
+        gensym ("reselect"), A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_undo,
-        gensym("undo"), A_NULL);
+        gensym ("undo"), A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_redo,
-        gensym("redo"), A_NULL);
+        gensym ("redo"), A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_tidy,
-        gensym("tidy"), A_NULL);
+        gensym ("tidy"), A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_texteditor,
-        gensym("texteditor"), A_NULL);
+        gensym ("texteditor"), A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_editmode,
-        gensym("editmode"), A_DEFFLOAT, A_NULL);
+        gensym ("editmode"), A_DEFFLOAT, A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_print,
-        gensym("print"), A_SYMBOL, A_NULL);
+        gensym ("print"), A_SYMBOL, A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_menufont,
-        gensym("menufont"), A_NULL);
+        gensym ("menufont"), A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_font,
-        gensym("font"), A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+        gensym ("font"), A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     /*class_addMethod(canvas_class, (t_method)canvas_find,
-        gensym("find"), A_SYMBOL, A_FLOAT, A_NULL);
+        gensym ("find"), A_SYMBOL, A_FLOAT, A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_find_again,
-        gensym("findagain"), A_NULL);*/
+        gensym ("findagain"), A_NULL);*/
     class_addMethod(canvas_class, (t_method)canvas_find_parent,
-        gensym("findparent"), A_NULL);
+        gensym ("findparent"), A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_done_popup,
-        gensym("done-popup"), A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+        gensym ("done-popup"), A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_donecanvasdialog,
-        gensym("donecanvasdialog"), A_GIMME, A_NULL);
+        gensym ("donecanvasdialog"), A_GIMME, A_NULL);
     class_addMethod(canvas_class, (t_method)glist_arraydialog,
-        gensym("arraydialog"), A_SYMBOL, A_FLOAT, A_FLOAT, A_NULL);
+        gensym ("arraydialog"), A_SYMBOL, A_FLOAT, A_FLOAT, A_NULL);
 
 /* -------------- connect method used in reading files ------------------ */
     class_addMethod(canvas_class, (t_method)canvas_connect,
-        gensym("connect"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+        gensym ("connect"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
 
     class_addMethod(canvas_class, (t_method)canvas_disconnect,
-        gensym("disconnect"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+        gensym ("disconnect"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
 /* -------------- copy buffer ------------------ */
     copy_binbuf = buffer_new();
 }

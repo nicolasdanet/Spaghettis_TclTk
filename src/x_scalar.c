@@ -28,7 +28,7 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
     t_atom a[9];
     t_glist *gl;
     t_glist *x, *z = canvas_getCurrent();
-    t_symbol *templatesym = &s_float, *asym = gensym("#A");
+    t_symbol *templatesym = &s_float, *asym = gensym ("#A");
     t_template *template;
     t_scalar *sc;
     int keep = 0;
@@ -138,7 +138,7 @@ static void scalar_define_set(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 static void scalar_define_save(t_gobj *z, t_buffer *bb)
 {
     t_glist *x = (t_glist *)z;
-    buffer_vAppend(bb, "ssff", &s__X, gensym("obj"),
+    buffer_vAppend(bb, "ssff", &s__X, gensym ("obj"),
         (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
     buffer_serialize(bb, x->gl_obj.te_buffer);
     buffer_appendSemicolon(bb);
@@ -147,7 +147,7 @@ static void scalar_define_save(t_gobj *z, t_buffer *bb)
     {
         t_buffer *b2 = buffer_new();
         t_scalar *sc = (t_scalar *)(x->gl_list);
-        buffer_vAppend(bb, "ss", gensym("#A"), gensym("set"));
+        buffer_vAppend(bb, "ss", gensym ("#A"), gensym ("set"));
         canvas_writescalar(sc->sc_template, sc->sc_vector, b2, 0);
         buffer_serialize(bb, b2);
         buffer_appendSemicolon(bb);
@@ -179,43 +179,43 @@ static void *scalarobj_new(t_symbol *s, int argc, t_atom *argv)
 
 void x_scalar_setup(void )
 {
-    scalar_define_class = class_new(gensym("scalar define"), 0,
+    scalar_define_class = class_new(gensym ("scalar define"), 0,
         (t_method)canvas_free, sizeof(t_glist), 0, 0);
         
     class_addMethod(scalar_define_class, (t_method)canvas_restore,
-        gensym("restore"), A_GIMME, 0);
+        gensym ("restore"), A_GIMME, 0);
     class_addMethod(scalar_define_class, (t_method)canvas_click,
-        gensym("click"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
+        gensym ("click"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(scalar_define_class, (t_method)canvas_dsp,
-        gensym("dsp"), A_CANT, 0);
+        gensym ("dsp"), A_CANT, 0);
     class_addMethod(scalar_define_class, (t_method)canvas_map,
-        gensym("map"), A_FLOAT, A_NULL);
+        gensym ("map"), A_FLOAT, A_NULL);
     class_addMethod(scalar_define_class, (t_method)canvas_setbounds,
-        gensym("setbounds"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(scalar_define_class, (t_method)canvas_mouse, gensym("mouse"),
+        gensym ("setbounds"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+    class_addMethod(scalar_define_class, (t_method)canvas_mouse, gensym ("mouse"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(scalar_define_class, (t_method)canvas_mouseup, gensym("mouseup"),
+    class_addMethod(scalar_define_class, (t_method)canvas_mouseup, gensym ("mouseup"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(scalar_define_class, (t_method)canvas_key, gensym("key"),
+    class_addMethod(scalar_define_class, (t_method)canvas_key, gensym ("key"),
         A_GIMME, A_NULL);
-    class_addMethod(scalar_define_class, (t_method)canvas_motion, gensym("motion"),
+    class_addMethod(scalar_define_class, (t_method)canvas_motion, gensym ("motion"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     class_addMethod(scalar_define_class, (t_method)canvas_menuclose,
-        gensym("menuclose"), A_DEFFLOAT, 0);
+        gensym ("menuclose"), A_DEFFLOAT, 0);
     class_addMethod(scalar_define_class, (t_method)canvas_find_parent,
-        gensym("findparent"), A_NULL);
+        gensym ("findparent"), A_NULL);
     class_addMethod(scalar_define_class, (t_method)canvas_menusave,
-        gensym("menusave"), 0);
+        gensym ("menusave"), 0);
     class_addMethod(scalar_define_class, (t_method)canvas_menusaveas,
-        gensym("menusaveas"), 0);
+        gensym ("menusaveas"), 0);
     
     class_addMethod(scalar_define_class, (t_method)scalar_define_send,
-        gensym("send"), A_SYMBOL, 0);
+        gensym ("send"), A_SYMBOL, 0);
     class_addMethod(scalar_define_class, (t_method)scalar_define_set,
-        gensym("set"), A_GIMME, 0);
-    class_setHelpName(scalar_define_class, gensym("scalar"));
+        gensym ("set"), A_GIMME, 0);
+    class_setHelpName(scalar_define_class, gensym ("scalar"));
     class_setSaveFunction(scalar_define_class, scalar_define_save);
 
-    class_addCreator((t_newmethod)scalarobj_new, gensym("scalar"), A_GIMME, 0);
+    class_addCreator((t_newmethod)scalarobj_new, gensym ("scalar"), A_GIMME, 0);
 
 }

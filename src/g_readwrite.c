@@ -407,7 +407,7 @@ static void binbuf_savetext(t_buffer *bfrom, t_buffer *bto)
         {
             char buf[PD_STRING+1];
             atom_toString(&ap[k], buf, PD_STRING);
-            SET_SYMBOL(&at, gensym(buf));
+            SET_SYMBOL(&at, gensym (buf));
             buffer_append(bto, 1, &at);
         }
     }
@@ -424,7 +424,7 @@ void canvas_writescalar(t_symbol *templatesym, t_word *w, t_buffer *b,
     if (!amarrayelement)
     {
         t_atom templatename;
-        SET_SYMBOL(&templatename, gensym(templatesym->s_name + 3));
+        SET_SYMBOL(&templatename, gensym (templatesym->s_name + 3));
         buffer_append(b, 1, &templatename);
     }
     if (!template) { PD_BUG; }
@@ -539,14 +539,14 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
                 ((t_scalar *)y)->sc_vector,  &ntemplates, &templatevec);
         }
     }
-    buffer_vAppend(b, "s;", gensym("data"));
+    buffer_vAppend(b, "s;", gensym ("data"));
     for (i = 0; i < ntemplates; i++)
     {
         t_template *template = template_findbyname(templatevec[i]);
         int j, m = template->t_n;
             /* drop "pd-" prefix from template symbol to print it: */
-        buffer_vAppend(b, "ss;", gensym("template"),
-            gensym(templatevec[i]->s_name + 3));
+        buffer_vAppend(b, "ss;", gensym ("template"),
+            gensym (templatevec[i]->s_name + 3));
         for (j = 0; j < m; j++)
         {
             t_symbol *type;
@@ -554,13 +554,13 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
             {
                 case DATA_FLOAT: type = &s_float; break;
                 case DATA_SYMBOL: type = &s_symbol; break;
-                case DATA_ARRAY: type = gensym("array"); break;
+                case DATA_ARRAY: type = gensym ("array"); break;
                 case DATA_TEXT: type = &s_list; break;
                 default: type = &s_float; PD_BUG;
             }
             if (template->t_vec[j].ds_type == DATA_ARRAY)
                 buffer_vAppend(b, "sss;", type, template->t_vec[j].ds_name,
-                    gensym(template->t_vec[j].ds_arraytemplate->s_name + 3));
+                    gensym (template->t_vec[j].ds_arraytemplate->s_name + 3));
             else buffer_vAppend(b, "ss;", type, template->t_vec[j].ds_name);
         }
         buffer_appendSemicolon(b);
@@ -621,18 +621,18 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
         buffer_serialize(bz, x->gl_obj.te_buffer);
         patchsym = atom_getSymbolAtIndex(1, buffer_size(bz), buffer_atoms(bz));
         buffer_free(bz);
-        buffer_vAppend(b, "ssiiiisi;", gensym("#N"), gensym("canvas"),
+        buffer_vAppend(b, "ssiiiisi;", gensym ("#N"), gensym ("canvas"),
             (int)(x->gl_screenx1),
             (int)(x->gl_screeny1),
             (int)(x->gl_screenx2 - x->gl_screenx1),
             (int)(x->gl_screeny2 - x->gl_screeny1),
-            (patchsym != &s_ ? patchsym: gensym("(subpatch)")),
+            (patchsym != &s_ ? patchsym: gensym ("(subpatch)")),
             x->gl_mapped);
     }
         /* root or abstraction */
     else 
     {
-        buffer_vAppend(b, "ssiiiii;", gensym("#N"), gensym("canvas"),
+        buffer_vAppend(b, "ssiiiii;", gensym ("#N"), gensym ("canvas"),
             (int)(x->gl_screenx1),
             (int)(x->gl_screeny1),
             (int)(x->gl_screenx2 - x->gl_screenx1),
@@ -648,7 +648,7 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
     {
         int srcno = canvas_getIndexOfObject(x, &t.tr_srcObject->te_g);
         int sinkno = canvas_getIndexOfObject(x, &t.tr_destObject->te_g);
-        buffer_vAppend(b, "ssiiii;", gensym("#X"), gensym("connect"),
+        buffer_vAppend(b, "ssiiii;", gensym ("#X"), gensym ("connect"),
             srcno, t.tr_srcIndexOfOutlet, sinkno, t.tr_destIndexOfInlet);
     }
         /* unless everything is the default (as in ordinary subpatches)
@@ -660,14 +660,14 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
                 /* if we have a graph-on-parent rectangle, we're new style.
                 The format is arranged so
                 that old versions of Pd can at least do something with it. */
-            buffer_vAppend(b, "ssfffffffff;", gensym("#X"), gensym("coords"),
+            buffer_vAppend(b, "ssfffffffff;", gensym ("#X"), gensym ("coords"),
                 x->gl_x1, x->gl_y1,
                 x->gl_x2, x->gl_y2,
                 (t_float)x->gl_pixwidth, (t_float)x->gl_pixheight,
                 (t_float)((x->gl_hidetext)?2.:1.),
                 (t_float)x->gl_xmargin, (t_float)x->gl_ymargin); 
                     /* otherwise write in 0.38-compatible form */
-        else buffer_vAppend(b, "ssfffffff;", gensym("#X"), gensym("coords"),
+        else buffer_vAppend(b, "ssfffffff;", gensym ("#X"), gensym ("coords"),
                 x->gl_x1, x->gl_y1,
                 x->gl_x2, x->gl_y2,
                 (t_float)x->gl_pixwidth, (t_float)x->gl_pixheight,
@@ -712,8 +712,8 @@ static void canvas_savetemplatesto(t_glist *x, t_buffer *b, int wholething)
             continue;
         }
             /* drop "pd-" prefix from template symbol to print */
-        buffer_vAppend(b, "sss", &s__N, gensym("struct"),
-            gensym(templatevec[i]->s_name + 3));
+        buffer_vAppend(b, "sss", &s__N, gensym ("struct"),
+            gensym (templatevec[i]->s_name + 3));
         for (j = 0; j < m; j++)
         {
             t_symbol *type;
@@ -721,13 +721,13 @@ static void canvas_savetemplatesto(t_glist *x, t_buffer *b, int wholething)
             {
                 case DATA_FLOAT: type = &s_float; break;
                 case DATA_SYMBOL: type = &s_symbol; break;
-                case DATA_ARRAY: type = gensym("array"); break;
-                case DATA_TEXT: type = gensym("text"); break;
+                case DATA_ARRAY: type = gensym ("array"); break;
+                case DATA_TEXT: type = gensym ("text"); break;
                 default: type = &s_float; PD_BUG;
             }
             if (template->t_vec[j].ds_type == DATA_ARRAY)
                 buffer_vAppend(b, "sss", type, template->t_vec[j].ds_name,
-                    gensym(template->t_vec[j].ds_arraytemplate->s_name + 3));
+                    gensym (template->t_vec[j].ds_arraytemplate->s_name + 3));
             else buffer_vAppend(b, "ss", type, template->t_vec[j].ds_name);
         }
         buffer_appendSemicolon(b);
@@ -756,7 +756,7 @@ static void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir,
         canvas_dirty(x, 0);
         canvas_reload(filename, dir, &x->gl_obj.te_g);
         if (fdestroy != 0)
-            pd_vMessage(&x->gl_obj.te_g.g_pd, gensym("menuclose"), "f", 1.);
+            pd_vMessage(&x->gl_obj.te_g.g_pd, gensym ("menuclose"), "f", 1.);
     }
     buffer_free(b);
 }
@@ -784,20 +784,20 @@ void canvas_menusave(t_glist *x, float fdestroy)
 void g_readwrite_setup(void)
 {
     class_addMethod(canvas_class, (t_method)glist_write,
-        gensym("write"), A_SYMBOL, A_DEFSYMBOL, A_NULL);
+        gensym ("write"), A_SYMBOL, A_DEFSYMBOL, A_NULL);
     class_addMethod(canvas_class, (t_method)glist_read,
-        gensym("read"), A_SYMBOL, A_DEFSYMBOL, A_NULL);
+        gensym ("read"), A_SYMBOL, A_DEFSYMBOL, A_NULL);
     class_addMethod(canvas_class, (t_method)glist_mergefile,
-        gensym("mergefile"), A_SYMBOL, A_DEFSYMBOL, A_NULL);
+        gensym ("mergefile"), A_SYMBOL, A_DEFSYMBOL, A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_savetofile,
-        gensym("savetofile"), A_SYMBOL, A_SYMBOL, A_DEFFLOAT, 0);
+        gensym ("savetofile"), A_SYMBOL, A_SYMBOL, A_DEFFLOAT, 0);
     class_addMethod(canvas_class, (t_method)canvas_saveto,
-        gensym("saveto"), A_CANT, 0);
+        gensym ("saveto"), A_CANT, 0);
 /* ------------------ from the menu ------------------------- */
     class_addMethod(canvas_class, (t_method)canvas_menusave,
-        gensym("menusave"), A_DEFFLOAT, 0);
+        gensym ("menusave"), A_DEFFLOAT, 0);
     class_addMethod(canvas_class, (t_method)canvas_menusaveas,
-        gensym("menusaveas"), A_DEFFLOAT, 0);
+        gensym ("menusaveas"), A_DEFFLOAT, 0);
 }
 
 

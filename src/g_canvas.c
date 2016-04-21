@@ -45,8 +45,7 @@ extern int              editor_reloading;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_drawlines    (t_glist *x);
-static void canvas_pop          (t_glist *x, t_float fvis);
+static void canvas_pop (t_glist *x, t_float fvis);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -339,6 +338,15 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+
+    /* get the document containing this canvas */
+t_glist *canvas_getroot(t_glist *x)
+{
+    if ((!x->gl_owner) || canvas_isabstraction(x))
+        return (x);
+    else return (canvas_getroot(x->gl_owner));
+}
+
     /* make a new glist and add it to this glist.  It will appear as
     a "graph", not a text object.  */
 t_glist *glist_addglist(t_glist *g, t_symbol *sym,
@@ -416,89 +424,106 @@ int glist_isgraph(t_glist *x)
   return (x->gl_isgraph|(x->gl_hidetext<<1));
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)
+int glist_isvisible(t_glist *x)
 {
-    int heightwas = y2 - y1;
-    int heightchange = y2 - y1 - (x->gl_screeny2 - x->gl_screeny1);
-    if (x->gl_screenx1 == x1 && x->gl_screeny1 == y1 &&
-        x->gl_screenx2 == x2 && x->gl_screeny2 == y2)
-            return;
-    x->gl_screenx1 = x1;
-    x->gl_screeny1 = y1;
-    x->gl_screenx2 = x2;
-    x->gl_screeny2 = y2;
-    if (!glist_isgraph(x) && (x->gl_y2 < x->gl_y1)) 
-    {
-            /* if it's flipped so that y grows upward,
-            fix so that zero is bottom edge and redraw.  This is
-            only appropriate if we're a regular "text" object on the
-            parent. */
-        t_float diff = x->gl_y1 - x->gl_y2;
-        t_gobj *y;
-        x->gl_y1 = heightwas * diff;
-        x->gl_y2 = x->gl_y1 - diff;
-            /* and move text objects accordingly; they should stick
-            to the bottom, not the top. */
-        for (y = x->gl_list; y; y = y->g_next)
-            if (canvas_castToObjectIfBox(&y->g_pd))
-                gobj_displace(y, x, 0, heightchange);
-        canvas_redraw(x);
-    }
+    return ((!x->gl_loading) && glist_getcanvas(x)->gl_mapped);
 }
 
-static void canvas_loadbangabstractions(t_glist *x)
+int glist_istoplevel(t_glist *x)
 {
-    t_gobj *y;
-    t_symbol *s = gensym ("loadbang");
-    for (y = x->gl_list; y; y = y->g_next)
-        if (pd_class(&y->g_pd) == canvas_class)
-    {
-        if (canvas_isabstraction((t_glist *)y))
-            canvas_loadbang((t_glist *)y);
-        else
-            canvas_loadbangabstractions((t_glist *)y);
-    }
+        /* we consider a graph "toplevel" if it has its own window
+        or if it appears as a box in its parent window so that we
+        don't draw the actual contents there. */
+    return (x->gl_havewindow || !x->gl_isgraph);
 }
 
-static void canvas_loadbangsubpatches(t_glist *x)
+int glist_getfont(t_glist *x)
 {
-    t_gobj *y;
-    t_symbol *s = gensym ("loadbang");
-    for (y = x->gl_list; y; y = y->g_next)
-        if (pd_class(&y->g_pd) == canvas_class)
-    {
-        if (!canvas_isabstraction((t_glist *)y))
-            canvas_loadbangsubpatches((t_glist *)y);
-    }
-    for (y = x->gl_list; y; y = y->g_next)
-        if ((pd_class(&y->g_pd) != canvas_class) &&
-            class_hasMethod(pd_class (&y->g_pd), s))
-                pd_vMessage(&y->g_pd, s, "");
+    while (!x->gl_env)
+        if (!(x = x->gl_owner)) { PD_BUG; }
+    return (x->gl_font);
+}
+
+int canvas_isabstraction(t_glist *x)
+{
+    return (x->gl_env != 0);
+}
+
+void canvas_popabstraction(t_glist *x)
+{
+    pd_newest = &x->gl_obj.te_g.g_pd;
+    stack_pop(&x->gl_obj.te_g.g_pd);
+    x->gl_loading = 0;
+    canvas_resortinlets(x);
+    canvas_resortoutlets(x);
+}
+
+    /* return true if the "canvas" object should be treated as a text
+    object.  This is true for abstractions but also for "table"s... */
+/* JMZ: add a flag to gop-abstractions to hide the title */
+int canvas_showtext(t_glist *x)
+{
+    t_atom *argv = (x->gl_obj.te_buffer? buffer_atoms(x->gl_obj.te_buffer):0);
+    int argc = (x->gl_obj.te_buffer? buffer_size(x->gl_obj.te_buffer) : 0);
+    int isarray = (argc && argv[0].a_type == A_SYMBOL &&
+        argv[0].a_w.w_symbol == gensym ("graph"));
+    if(x->gl_hidetext)
+      return 0;
+    else
+      return (!isarray);
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *subcanvas_new(t_symbol *s)
+int canvas_open(t_glist *x, const char *name, const char *ext,
+    char *dirresult, char **nameresult, size_t size, int bin)
 {
-    t_atom a[6];
-    t_glist *x, *z = canvas_getCurrent();
-    if (!*s->s_name) s = gensym ("/SUBPATCH/");
-    SET_FLOAT(a, 0);
-    SET_FLOAT(a+1, CANVAS_DEFAULT_Y);
-    SET_FLOAT(a+2, CANVAS_DEFAULT_WIDTH);
-    SET_FLOAT(a+3, CANVAS_DEFAULT_HEIGHT);
-    SET_SYMBOL(a+4, s);
-    SET_FLOAT(a+5, 1);
-    x = canvas_new(0, 0, 6, a);
-    x->gl_owner = z;
-    canvas_pop(x, 1);
-    return (x);
+    t_pathlist *nl, thislist;
+    int fd = -1;
+    char listbuf[PD_STRING];
+    t_glist *y;
+
+        /* first check if "name" is absolute (and if so, try to open) */
+    /* if ((fd = file_openWithAbsolutePath(name, ext, dirresult, nameresult, size)) >= 0)
+        return (fd); */
+    
+        /* otherwise "name" is relative; start trying in directories named
+        in this and parent environments */
+    /*
+    for (y = x; y; y = y->gl_owner)
+        if (y->gl_env)
+    {
+        t_pathlist *nl;
+        t_glist *x2 = x;
+        char *dir;
+        while (x2 && x2->gl_owner)
+            x2 = x2->gl_owner;
+        dir = (x2 ? canvas_getDirectory(x2)->s_name : ".");
+        
+        for (nl = y->gl_env->ce_path; nl; nl = nl->pl_next)
+        {
+            char realname[PD_STRING];
+            if (0)
+            {
+                realname[0] = '\0';
+            }
+            else
+            { 
+                strncpy(realname, dir, PD_STRING);
+                realname[PD_STRING-3] = 0;
+                strcat(realname, "/");
+            }
+            strncat(realname, nl->pl_string, PD_STRING-strlen(realname));
+            realname[PD_STRING-1] = 0;
+            if ((fd = file_openWithDirectoryAndName(realname, name, ext,
+                dirresult, nameresult, size)) >= 0)
+                    return (fd);
+        }
+    }*/
+    return (file_openConsideringSearchPath((x ? canvas_getEnvironment (x)->ce_directory->s_name : "."), name, ext,
+        dirresult, nameresult, size));
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -528,29 +553,7 @@ void canvas_redraw(t_glist *x)
     }
 }
 
-int glist_isvisible(t_glist *x)
-{
-    return ((!x->gl_loading) && glist_getcanvas(x)->gl_mapped);
-}
-
-int glist_istoplevel(t_glist *x)
-{
-        /* we consider a graph "toplevel" if it has its own window
-        or if it appears as a box in its parent window so that we
-        don't draw the actual contents there. */
-    return (x->gl_havewindow || !x->gl_isgraph);
-}
-
-int glist_getfont(t_glist *x)
-{
-    while (!x->gl_env)
-        if (!(x = x->gl_owner)) { PD_BUG; }
-    return (x->gl_font);
-}
-
-/* ----------------- lines ---------- */
-
-static void canvas_drawlines(t_glist *x)
+void canvas_drawlines(t_glist *x)
 {
     t_linetraverser t;
     t_outconnect *oc;
@@ -565,7 +568,72 @@ static void canvas_drawlines(t_glist *x)
     }
 }
 
-void canvas_fixlines(t_glist *x, t_object *text)
+
+/******************* redrawing  data *********************/
+
+    /* redraw all "scalars" (do this if a drawing command is changed.) 
+    LATER we'll use the "template" information to select which ones we
+    redraw.   Action = 0 for redraw, 1 for draw only, 2 for erase. */
+static void glist_redrawall(t_glist *gl, int action)
+{
+    t_gobj *g;
+    int vis = glist_isvisible(gl);
+    for (g = gl->gl_list; g; g = g->g_next)
+    {
+        t_class *cl;
+        if (vis && g->g_pd == scalar_class)
+        {
+            if (action == 1)
+            {
+                if (glist_isvisible(gl))
+                    gobj_vis(g, gl, 1);
+            }
+            else if (action == 2)
+            {
+                if (glist_isvisible(gl))
+                    gobj_vis(g, gl, 0);
+            }
+            else scalar_redraw((t_scalar *)g, gl);
+        }
+        else if (g->g_pd == canvas_class)
+            glist_redrawall((t_glist *)g, action);
+    }
+}
+
+    /* public interface for above. */
+void canvas_redrawallfortemplate(t_template *template, int action)
+{
+    t_glist *x;
+        /* find all root canvases */
+    for (x = pd_this->pd_roots; x; x = x->gl_next)
+        glist_redrawall(x, action);
+}
+
+    /* find the template defined by a canvas, and redraw all elements
+    for that */
+void canvas_redrawallfortemplatecanvas(t_glist *x, int action)
+{
+    t_gobj *g;
+    t_template *tmpl;
+    t_symbol *s1 = gensym ("struct");
+    for (g = x->gl_list; g; g = g->g_next)
+    {
+        t_object *ob = canvas_castToObjectIfBox(&g->g_pd);
+        t_atom *argv;
+        if (!ob || ob->te_type != TYPE_OBJECT ||
+            buffer_size(ob->te_buffer) < 2)
+            continue;
+        argv = buffer_atoms(ob->te_buffer);
+        if (argv[0].a_type != A_SYMBOL || argv[1].a_type != A_SYMBOL
+            || argv[0].a_w.w_symbol != s1)
+                continue;
+        tmpl = template_findbyname(argv[1].a_w.w_symbol);
+        canvas_redrawallfortemplate(tmpl, action);
+    }
+    canvas_redrawallfortemplate(0, action);
+}
+
+void canvas_fixlines (t_glist *x, t_object *text)
 {
     t_linetraverser t;
     t_outconnect *oc;
@@ -639,132 +707,7 @@ static void canvas_relocate(t_glist *x, t_symbol *canvasgeom,
             txpix + cw, typix + ch);
 }
 */
-void canvas_popabstraction(t_glist *x)
-{
-    pd_newest = &x->gl_obj.te_g.g_pd;
-    stack_pop(&x->gl_obj.te_g.g_pd);
-    x->gl_loading = 0;
-    canvas_resortinlets(x);
-    canvas_resortoutlets(x);
-}
 
-void canvas_logerror(t_object *y)
-{
-#ifdef LATER
-    canvas_vis(x, 1);
-    if (!glist_isselected(x, &y->te_g))
-        glist_select(x, &y->te_g);
-#endif
-}
-
-/* -------------------------- subcanvases ---------------------- */
-
-
-
-
-    /* find out from subcanvas contents how much to fatten the box */
-void canvas_fattensub(t_glist *x,
-    int *xp1, int *yp1, int *xp2, int *yp2)
-{
-    t_gobj *y;
-    *xp2 += 50;     /* fake for now */
-    *yp2 += 50;
-}
-
-
-    /* return true if the "canvas" object is an abstraction (so we don't
-    save its contents, for example.)  */
-int canvas_isabstraction(t_glist *x)
-{
-    return (x->gl_env != 0);
-}
-
-    /* return true if the "canvas" object should be treated as a text
-    object.  This is true for abstractions but also for "table"s... */
-/* JMZ: add a flag to gop-abstractions to hide the title */
-int canvas_showtext(t_glist *x)
-{
-    t_atom *argv = (x->gl_obj.te_buffer? buffer_atoms(x->gl_obj.te_buffer):0);
-    int argc = (x->gl_obj.te_buffer? buffer_size(x->gl_obj.te_buffer) : 0);
-    int isarray = (argc && argv[0].a_type == A_SYMBOL &&
-        argv[0].a_w.w_symbol == gensym ("graph"));
-    if(x->gl_hidetext)
-      return 0;
-    else
-      return (!isarray);
-}
-
-    /* get the document containing this canvas */
-t_glist *canvas_getroot(t_glist *x)
-{
-    if ((!x->gl_owner) || canvas_isabstraction(x))
-        return (x);
-    else return (canvas_getroot(x->gl_owner));
-}
-  
-/******************* redrawing  data *********************/
-
-    /* redraw all "scalars" (do this if a drawing command is changed.) 
-    LATER we'll use the "template" information to select which ones we
-    redraw.   Action = 0 for redraw, 1 for draw only, 2 for erase. */
-static void glist_redrawall(t_glist *gl, int action)
-{
-    t_gobj *g;
-    int vis = glist_isvisible(gl);
-    for (g = gl->gl_list; g; g = g->g_next)
-    {
-        t_class *cl;
-        if (vis && g->g_pd == scalar_class)
-        {
-            if (action == 1)
-            {
-                if (glist_isvisible(gl))
-                    gobj_vis(g, gl, 1);
-            }
-            else if (action == 2)
-            {
-                if (glist_isvisible(gl))
-                    gobj_vis(g, gl, 0);
-            }
-            else scalar_redraw((t_scalar *)g, gl);
-        }
-        else if (g->g_pd == canvas_class)
-            glist_redrawall((t_glist *)g, action);
-    }
-}
-
-    /* public interface for above. */
-void canvas_redrawallfortemplate(t_template *template, int action)
-{
-    t_glist *x;
-        /* find all root canvases */
-    for (x = pd_this->pd_roots; x; x = x->gl_next)
-        glist_redrawall(x, action);
-}
-
-    /* find the template defined by a canvas, and redraw all elements
-    for that */
-void canvas_redrawallfortemplatecanvas(t_glist *x, int action)
-{
-    t_gobj *g;
-    t_template *tmpl;
-    t_symbol *s1 = gensym ("struct");
-    for (g = x->gl_list; g; g = g->g_next)
-    {
-        t_object *ob = canvas_castToObjectIfBox(&g->g_pd);
-        t_atom *argv;
-        if (!ob || ob->te_type != TYPE_OBJECT ||
-            buffer_size(ob->te_buffer) < 2)
-            continue;
-        argv = buffer_atoms(ob->te_buffer);
-        if (argv[0].a_type != A_SYMBOL || argv[1].a_type != A_SYMBOL
-            || argv[0].a_w.w_symbol != s1)
-                continue;
-        tmpl = template_findbyname(argv[1].a_w.w_symbol);
-        canvas_redrawallfortemplate(tmpl, action);
-    }
-    canvas_redrawallfortemplate(0, action);
-}
 
 /* ------------------------------- declare ------------------------ */
 
@@ -965,55 +908,6 @@ static void canvas_declare(t_glist *x, t_symbol *s, int argc, t_atom *argv)
     If "x" is zero, the file is sought in the directory "." or in the
     global path.*/
 
-int canvas_open(t_glist *x, const char *name, const char *ext,
-    char *dirresult, char **nameresult, unsigned int size, int bin)
-{
-    t_pathlist *nl, thislist;
-    int fd = -1;
-    char listbuf[PD_STRING];
-    t_glist *y;
-
-        /* first check if "name" is absolute (and if so, try to open) */
-    /* if ((fd = file_openWithAbsolutePath(name, ext, dirresult, nameresult, size)) >= 0)
-        return (fd); */
-    
-        /* otherwise "name" is relative; start trying in directories named
-        in this and parent environments */
-    /*
-    for (y = x; y; y = y->gl_owner)
-        if (y->gl_env)
-    {
-        t_pathlist *nl;
-        t_glist *x2 = x;
-        char *dir;
-        while (x2 && x2->gl_owner)
-            x2 = x2->gl_owner;
-        dir = (x2 ? canvas_getDirectory(x2)->s_name : ".");
-        
-        for (nl = y->gl_env->ce_path; nl; nl = nl->pl_next)
-        {
-            char realname[PD_STRING];
-            if (0)
-            {
-                realname[0] = '\0';
-            }
-            else
-            { 
-                strncpy(realname, dir, PD_STRING);
-                realname[PD_STRING-3] = 0;
-                strcat(realname, "/");
-            }
-            strncat(realname, nl->pl_string, PD_STRING-strlen(realname));
-            realname[PD_STRING-1] = 0;
-            if ((fd = file_openWithDirectoryAndName(realname, name, ext,
-                dirresult, nameresult, size)) >= 0)
-                    return (fd);
-        }
-    }*/
-    return (file_openConsideringSearchPath((x ? canvas_getEnvironment (x)->ce_directory->s_name : "."), name, ext,
-        dirresult, nameresult, size));
-}
-
 /*
 static void canvas_f(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 {
@@ -1040,6 +934,91 @@ static void canvas_f(t_glist *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)
+{
+    int heightwas = y2 - y1;
+    int heightchange = y2 - y1 - (x->gl_screeny2 - x->gl_screeny1);
+    if (x->gl_screenx1 == x1 && x->gl_screeny1 == y1 &&
+        x->gl_screenx2 == x2 && x->gl_screeny2 == y2)
+            return;
+    x->gl_screenx1 = x1;
+    x->gl_screeny1 = y1;
+    x->gl_screenx2 = x2;
+    x->gl_screeny2 = y2;
+    if (!glist_isgraph(x) && (x->gl_y2 < x->gl_y1)) 
+    {
+            /* if it's flipped so that y grows upward,
+            fix so that zero is bottom edge and redraw.  This is
+            only appropriate if we're a regular "text" object on the
+            parent. */
+        t_float diff = x->gl_y1 - x->gl_y2;
+        t_gobj *y;
+        x->gl_y1 = heightwas * diff;
+        x->gl_y2 = x->gl_y1 - diff;
+            /* and move text objects accordingly; they should stick
+            to the bottom, not the top. */
+        for (y = x->gl_list; y; y = y->g_next)
+            if (canvas_castToObjectIfBox(&y->g_pd))
+                gobj_displace(y, x, 0, heightchange);
+        canvas_redraw(x);
+    }
+}
+
+static void canvas_loadbangabstractions(t_glist *x)
+{
+    t_gobj *y;
+    t_symbol *s = gensym ("loadbang");
+    for (y = x->gl_list; y; y = y->g_next)
+        if (pd_class(&y->g_pd) == canvas_class)
+    {
+        if (canvas_isabstraction((t_glist *)y))
+            canvas_loadbang((t_glist *)y);
+        else
+            canvas_loadbangabstractions((t_glist *)y);
+    }
+}
+
+static void canvas_loadbangsubpatches(t_glist *x)
+{
+    t_gobj *y;
+    t_symbol *s = gensym ("loadbang");
+    for (y = x->gl_list; y; y = y->g_next)
+        if (pd_class(&y->g_pd) == canvas_class)
+    {
+        if (!canvas_isabstraction((t_glist *)y))
+            canvas_loadbangsubpatches((t_glist *)y);
+    }
+    for (y = x->gl_list; y; y = y->g_next)
+        if ((pd_class(&y->g_pd) != canvas_class) &&
+            class_hasMethod(pd_class (&y->g_pd), s))
+                pd_vMessage(&y->g_pd, s, "");
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void *subcanvas_new(t_symbol *s)
+{
+    t_atom a[6];
+    t_glist *x, *z = canvas_getCurrent();
+    if (!*s->s_name) s = gensym ("/SUBPATCH/");
+    SET_FLOAT(a, 0);
+    SET_FLOAT(a+1, CANVAS_DEFAULT_Y);
+    SET_FLOAT(a+2, CANVAS_DEFAULT_WIDTH);
+    SET_FLOAT(a+3, CANVAS_DEFAULT_HEIGHT);
+    SET_SYMBOL(a+4, s);
+    SET_FLOAT(a+5, 1);
+    x = canvas_new(0, 0, 6, a);
+    x->gl_owner = z;
+    canvas_pop(x, 1);
+    return (x);
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

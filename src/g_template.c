@@ -84,9 +84,9 @@ t_template *template_new(t_symbol *templatesym, int argc, t_atom *argv)
         else if (newtypesym == &s_symbol)
             newtype = DATA_SYMBOL;
                 /* "list" is old name.. accepted here but never saved as such */
-        else if (newtypesym == gensym("text") || newtypesym == &s_list)
+        else if (newtypesym == gensym ("text") || newtypesym == &s_list)
             newtype = DATA_TEXT;
-        else if (newtypesym == gensym("array"))
+        else if (newtypesym == gensym ("array"))
         {
             if (argc < 3 || argv[2].a_type != A_SYMBOL)
             {
@@ -537,10 +537,10 @@ void template_free(t_template *x)
 
 static void template_setup(void)
 {
-    template_class = class_new(gensym("template"), 0, (t_method)template_free,
+    template_class = class_new(gensym ("template"), 0, (t_method)template_free,
         sizeof(t_template), CLASS_PURE, 0);
     class_addMethod(pd_canvasMaker, (t_method)template_usetemplate,
-        gensym("struct"), A_GIMME, 0);
+        gensym ("struct"), A_GIMME, 0);
         
 }
 
@@ -557,7 +557,7 @@ static void *gtemplate_donew(t_symbol *sym, int argc, t_atom *argv)
     t_gtemplate *x = (t_gtemplate *)pd_new(gtemplate_class);
     t_template *t = template_findbyname(sym);
     int i;
-    t_symbol *sx = gensym("x");
+    t_symbol *sx = gensym ("x");
     x->x_owner = canvas_getCurrent();
     x->x_next = 0;
     x->x_sym = sym;
@@ -684,10 +684,10 @@ static void gtemplate_free(t_gtemplate *x)
 
 static void gtemplate_setup(void)
 {
-    gtemplate_class = class_new(gensym("struct"),
+    gtemplate_class = class_new(gensym ("struct"),
         (t_newmethod)gtemplate_new, (t_method)gtemplate_free,
         sizeof(t_gtemplate), CLASS_NOINLET, A_GIMME, 0);
-    class_addCreator((t_newmethod)gtemplate_new_old, gensym("template"),
+    class_addCreator((t_newmethod)gtemplate_new_old, gensym ("template"),
         A_GIMME, 0);
 }
 
@@ -755,7 +755,7 @@ static void fielddesc_setfloat_var(t_fielddescriptor *fd, t_symbol *s)
             cpy = PD_STRING-5;
         strncpy(strbuf, s->s_name, cpy);
         strbuf[cpy] = 0;
-        fd->fd_un.fd_varsym = gensym(strbuf);
+        fd->fd_un.fd_varsym = gensym (strbuf);
         got = sscanf(s1, "(%lf:%lf)(%lf:%lf)(%lf)",
             &v1, &v2, &screen1, &screen2,
                 &quantum);
@@ -1222,7 +1222,7 @@ static void curve_motion(void *z, t_float dx, t_float dy)
         /* LATER figure out what to do to notify for an array? */
     if (curve_motion_scalar)
         template_notifyforscalar(curve_motion_template, curve_motion_glist, 
-            curve_motion_scalar, gensym("change"), 1, &at);
+            curve_motion_scalar, gensym ("change"), 1, &at);
     if (curve_motion_scalar)
         scalar_redraw(curve_motion_scalar, curve_motion_glist);
     if (curve_motion_array)
@@ -1307,14 +1307,14 @@ static void curve_free(t_curve *x)
 
 static void curve_setup(void)
 {
-    curve_class = class_new(gensym("drawpolygon"), (t_newmethod)curve_new,
+    curve_class = class_new(gensym ("drawpolygon"), (t_newmethod)curve_new,
         (t_method)curve_free, sizeof(t_curve), 0, A_GIMME, 0);
     class_setDrawCommand(curve_class);
-    class_addCreator((t_newmethod)curve_new, gensym("drawcurve"),
+    class_addCreator((t_newmethod)curve_new, gensym ("drawcurve"),
         A_GIMME, 0);
-    class_addCreator((t_newmethod)curve_new, gensym("filledpolygon"),
+    class_addCreator((t_newmethod)curve_new, gensym ("filledpolygon"),
         A_GIMME, 0);
-    class_addCreator((t_newmethod)curve_new, gensym("filledcurve"),
+    class_addCreator((t_newmethod)curve_new, gensym ("filledcurve"),
         A_GIMME, 0);
     class_setParentWidgetBehavior(curve_class, &curve_widgetbehavior);
     class_addFloat(curve_class, curve_float);
@@ -1348,9 +1348,9 @@ static void *plot_new(t_symbol *classsym, int argc, t_atom *argv)
     int defstyle = PLOT_POLYGONS;
     x->x_canvas = canvas_getCurrent();
 
-    fielddesc_setfloat_var(&x->x_xpoints, gensym("x"));
-    fielddesc_setfloat_var(&x->x_ypoints, gensym("y"));
-    fielddesc_setfloat_var(&x->x_wpoints, gensym("w"));
+    fielddesc_setfloat_var(&x->x_xpoints, gensym ("x"));
+    fielddesc_setfloat_var(&x->x_ypoints, gensym ("y"));
+    fielddesc_setfloat_var(&x->x_wpoints, gensym ("w"));
     
     fielddesc_setfloat_const(&x->x_vis, 1);
     fielddesc_setfloat_const(&x->x_scalarvis, 1);
@@ -1504,19 +1504,19 @@ int array_getfields(t_symbol *elemtemplatesym,
     elemsize = elemtemplate->t_n * sizeof(t_word);
     if (yfielddesc && yfielddesc->fd_var)
         varname = yfielddesc->fd_un.fd_varsym;
-    else varname = gensym("y");
+    else varname = gensym ("y");
     if (!template_find_field(elemtemplate, varname, &yonset, &type, &dummy)
         || type != DATA_FLOAT)    
             yonset = -1;
     if (xfielddesc && xfielddesc->fd_var)
         varname = xfielddesc->fd_un.fd_varsym;
-    else varname = gensym("x");
+    else varname = gensym ("x");
     if (!template_find_field(elemtemplate, varname, &xonset, &type, &dummy)
         || type != DATA_FLOAT) 
             xonset = -1;
     if (wfielddesc && wfielddesc->fd_var)
         varname = wfielddesc->fd_un.fd_varsym;
-    else varname = gensym("w");
+    else varname = gensym ("w");
     if (!template_find_field(elemtemplate, varname, &wonset, &type, &dummy)
         || type != DATA_FLOAT) 
             wonset = -1;
@@ -2316,7 +2316,7 @@ t_parentwidgetbehavior plot_widgetbehavior =
 
 static void plot_setup(void)
 {
-    plot_class = class_new(gensym("plot"), (t_newmethod)plot_new, 0,
+    plot_class = class_new(gensym ("plot"), (t_newmethod)plot_new, 0,
         sizeof(t_plot), 0, A_GIMME, 0);
     class_setDrawCommand(plot_class);
     class_addFloat(plot_class, plot_float);
@@ -2568,7 +2568,7 @@ static void drawnumber_motion(void *z, t_float dx, t_float dy)
     if (drawnumber_motion_scalar)
         template_notifyforscalar(drawnumber_motion_template,
             drawnumber_motion_glist, drawnumber_motion_scalar,
-                gensym("change"), 1, &at);
+                gensym ("change"), 1, &at);
 
     if (drawnumber_motion_scalar)
         scalar_redraw(drawnumber_motion_scalar, drawnumber_motion_glist);
@@ -2635,7 +2635,7 @@ static void drawnumber_key(void *z, t_float fkey)
         if (drawnumber_motion_scalar)
             template_notifyforscalar(drawnumber_motion_template,
                 drawnumber_motion_glist, drawnumber_motion_scalar,
-                    gensym("change"), 1, &at);
+                    gensym ("change"), 1, &at);
         if (drawnumber_motion_scalar)
             scalar_redraw(drawnumber_motion_scalar, drawnumber_motion_glist);
         if (drawnumber_motion_array)
@@ -2698,14 +2698,14 @@ static void drawnumber_free(t_drawnumber *x)
 
 static void drawnumber_setup(void)
 {
-    drawnumber_class = class_new(gensym("drawtext"),
+    drawnumber_class = class_new(gensym ("drawtext"),
         (t_newmethod)drawnumber_new, (t_method)drawnumber_free,
         sizeof(t_drawnumber), 0, A_GIMME, 0);
     class_setDrawCommand(drawnumber_class);
     class_addFloat(drawnumber_class, drawnumber_float);
-    class_addCreator((t_newmethod)drawnumber_new, gensym("drawsymbol"),
+    class_addCreator((t_newmethod)drawnumber_new, gensym ("drawsymbol"),
         A_GIMME, 0);
-    class_addCreator((t_newmethod)drawnumber_new, gensym("drawnumber"),
+    class_addCreator((t_newmethod)drawnumber_new, gensym ("drawnumber"),
         A_GIMME, 0);
     class_setParentWidgetBehavior(drawnumber_class, &drawnumber_widgetbehavior);
 }

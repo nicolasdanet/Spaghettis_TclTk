@@ -76,7 +76,7 @@ static void textbuf_open(t_textbuf *x)
             x /*, 600, 340, "myname", "text",
                  font_getHostFontSize(glist_getfont(x->b_canvas))*/);
         sprintf(buf, ".x%lx", (unsigned long)x);
-        x->b_guiconnect = guiconnect_new(&x->b_ob.te_g.g_pd, gensym(buf));
+        x->b_guiconnect = guiconnect_new(&x->b_ob.te_g.g_pd, gensym (buf));
         textbuf_senditup(x);
     }
 }
@@ -184,8 +184,8 @@ static void textbuf_free(t_textbuf *x)
         guiconnect_release(x->b_guiconnect, 1000);
     }
         /* just in case we're still bound to #A from loading... */
-    while (x2 = pd_findByClass(gensym("#A"), text_define_class))
-        pd_unbind(x2, gensym("#A"));
+    while (x2 = pd_findByClass(gensym ("#A"), text_define_class))
+        pd_unbind(x2, gensym ("#A"));
 }
 
     /* random helper function */
@@ -230,7 +230,7 @@ typedef struct _text_define
 static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
 {
     t_text_define *x = (t_text_define *)pd_new(text_define_class);
-    t_symbol *asym = gensym("#A");
+    t_symbol *asym = gensym ("#A");
     x->x_keep = 0;
     x->x_bindsym = &s_;
     while (argc && argv->a_type == A_SYMBOL &&
@@ -258,7 +258,7 @@ static void *text_define_new(t_symbol *s, int argc, t_atom *argv)
     }
     textbuf_init(&x->x_textbuf);
         /* set up a scalar and a pointer to it that we can output */
-    x->x_scalar = scalar_new(canvas_getCurrent(), gensym("pd-text"));
+    x->x_scalar = scalar_new(canvas_getCurrent(), gensym ("pd-text"));
     buffer_free(x->x_scalar->sc_vector[2].w_buffer);
     x->x_scalar->sc_vector[2].w_buffer = x->x_binbuf;
     x->x_out = outlet_new(&x->x_ob, &s_pointer);
@@ -340,13 +340,13 @@ void text_define_set(t_text_define *x, t_symbol *s, int argc, t_atom *argv)
 static void text_define_save(t_gobj *z, t_buffer *bb)
 {
     t_text_define *x = (t_text_define *)z;
-    buffer_vAppend(bb, "ssff", &s__X, gensym("obj"),
+    buffer_vAppend(bb, "ssff", &s__X, gensym ("obj"),
         (float)x->x_ob.te_xCoordinate, (float)x->x_ob.te_yCoordinate);
     buffer_serialize(bb, x->x_ob.te_buffer);
     buffer_appendSemicolon(bb);
     if (x->x_keep)
     {
-        buffer_vAppend(bb, "ss", gensym("#A"), gensym("set"));
+        buffer_vAppend(bb, "ss", gensym ("#A"), gensym ("set"));
         buffer_serialize(bb, x->x_binbuf);
         buffer_appendSemicolon(bb);
     }
@@ -726,7 +726,7 @@ static void text_set_list(t_text_set *x,
     for (i = 0; i < argc; i++)
     {
         if (argv[i].a_type == A_POINTER)
-            SET_SYMBOL(&vec[start+i], gensym("(pointer)"));
+            SET_SYMBOL(&vec[start+i], gensym ("(pointer)"));
         else vec[start+i] = argv[i];
     }
     text_client_senditup(&x->x_tc);
@@ -1792,10 +1792,10 @@ static void text_template_init( void)
         return;
     b = buffer_new();
     
-    canvas_setFileNameAndDirectory (gensym("_text_template"), gensym("."));
+    canvas_setFileNameAndDirectory (gensym ("_text_template"), gensym ("."));
     buffer_withStringUnzeroed(b, text_templatefile, strlen(text_templatefile));
     buffer_eval(b, &pd_canvasMaker, 0, 0);
-    pd_vMessage(s__X.s_thing, gensym("pop"), "i", 0);
+    pd_vMessage(s__X.s_thing, gensym ("pop"), "i", 0);
     
     canvas_setFileNameAndDirectory (&s_, &s_);
     buffer_free(b);  
@@ -1804,139 +1804,139 @@ static void text_template_init( void)
 void x_qlist_setup(void )
 {
     text_template_init();
-    text_define_class = class_new(gensym("text define"),
+    text_define_class = class_new(gensym ("text define"),
         (t_newmethod)text_define_new,
         (t_method)text_define_free, sizeof(t_text_define), 0, A_GIMME, 0);
     class_addMethod(text_define_class, (t_method)textbuf_open,
-        gensym("click"), 0);
+        gensym ("click"), 0);
     class_addMethod(text_define_class, (t_method)textbuf_close,
-        gensym("close"), 0);
+        gensym ("close"), 0);
     class_addMethod(text_define_class, (t_method)textbuf_addline, 
-        gensym("addline"), A_GIMME, 0);
+        gensym ("addline"), A_GIMME, 0);
     class_addMethod(text_define_class, (t_method)text_define_set,
-        gensym("set"), A_GIMME, 0);
+        gensym ("set"), A_GIMME, 0);
     class_addMethod(text_define_class, (t_method)text_define_clear,
-        gensym("clear"), 0);
+        gensym ("clear"), 0);
     class_addMethod(text_define_class, (t_method)textbuf_write,
-        gensym("write"), A_GIMME, 0);
+        gensym ("write"), A_GIMME, 0);
     class_addMethod(text_define_class, (t_method)textbuf_read,
-        gensym("read"), A_GIMME, 0);
+        gensym ("read"), A_GIMME, 0);
     class_setSaveFunction(text_define_class, text_define_save);
     class_addBang(text_define_class, text_define_bang);
-    class_setHelpName(text_define_class, gensym("text-object"));
+    class_setHelpName(text_define_class, gensym ("text-object"));
 
-    class_addCreator((t_newmethod)text_new, gensym("text"), A_GIMME, 0);
+    class_addCreator((t_newmethod)text_new, gensym ("text"), A_GIMME, 0);
 
-    text_get_class = class_new(gensym("text get"),
+    text_get_class = class_new(gensym ("text get"),
         (t_newmethod)text_get_new, (t_method)text_client_free,
             sizeof(t_text_get), 0, A_GIMME, 0);
     class_addFloat(text_get_class, text_get_float);
-    class_setHelpName(text_get_class, gensym("text-object"));
+    class_setHelpName(text_get_class, gensym ("text-object"));
     
-    text_set_class = class_new(gensym("text set"),
+    text_set_class = class_new(gensym ("text set"),
         (t_newmethod)text_set_new, (t_method)text_client_free,
             sizeof(t_text_set), 0, A_GIMME, 0);
     class_addList(text_set_class, text_set_list);
-    class_setHelpName(text_set_class, gensym("text-object"));
+    class_setHelpName(text_set_class, gensym ("text-object"));
     
-    text_size_class = class_new(gensym("text size"),
+    text_size_class = class_new(gensym ("text size"),
         (t_newmethod)text_size_new, (t_method)text_client_free,
             sizeof(t_text_size), 0, A_GIMME, 0);
     class_addBang(text_size_class, text_size_bang);
     class_addFloat(text_size_class, text_size_float);
-    class_setHelpName(text_size_class, gensym("text-object"));
+    class_setHelpName(text_size_class, gensym ("text-object"));
 
-    text_tolist_class = class_new(gensym("text tolist"),
+    text_tolist_class = class_new(gensym ("text tolist"),
         (t_newmethod)text_tolist_new, (t_method)text_client_free,
             sizeof(t_text_tolist), 0, A_GIMME, 0);
     class_addBang(text_tolist_class, text_tolist_bang);
-    class_setHelpName(text_tolist_class, gensym("text-object"));
+    class_setHelpName(text_tolist_class, gensym ("text-object"));
 
-    text_fromlist_class = class_new(gensym("text fromlist"),
+    text_fromlist_class = class_new(gensym ("text fromlist"),
         (t_newmethod)text_fromlist_new, (t_method)text_client_free,
             sizeof(t_text_fromlist), 0, A_GIMME, 0);
     class_addList(text_fromlist_class, text_fromlist_list);
-    class_setHelpName(text_fromlist_class, gensym("text-object"));
+    class_setHelpName(text_fromlist_class, gensym ("text-object"));
  
-    text_search_class = class_new(gensym("text search"),
+    text_search_class = class_new(gensym ("text search"),
         (t_newmethod)text_search_new, (t_method)text_client_free,
             sizeof(t_text_search), 0, A_GIMME, 0);
     class_addList(text_search_class, text_search_list);
-    class_setHelpName(text_search_class, gensym("text-object"));
+    class_setHelpName(text_search_class, gensym ("text-object"));
 
-    text_sequence_class = class_new(gensym("text sequence"),
+    text_sequence_class = class_new(gensym ("text sequence"),
         (t_newmethod)text_sequence_new, (t_method)text_sequence_free,
             sizeof(t_text_sequence), 0, A_GIMME, 0);
     class_addMethod(text_sequence_class, (t_method)text_sequence_step, 
-        gensym("step"), 0);
+        gensym ("step"), 0);
     class_addMethod(text_sequence_class, (t_method)text_sequence_line, 
-        gensym("line"), A_FLOAT, 0);
+        gensym ("line"), A_FLOAT, 0);
     class_addMethod(text_sequence_class, (t_method)text_sequence_auto, 
-        gensym("auto"), 0);
+        gensym ("auto"), 0);
     class_addMethod(text_sequence_class, (t_method)text_sequence_stop, 
-        gensym("stop"), 0);
+        gensym ("stop"), 0);
     class_addMethod(text_sequence_class, (t_method)text_sequence_args, 
-        gensym("args"), A_GIMME, 0);
+        gensym ("args"), A_GIMME, 0);
     class_addMethod(text_sequence_class, (t_method)text_sequence_tempo, 
-        gensym("tempo"), A_FLOAT, A_SYMBOL, 0);
+        gensym ("tempo"), A_FLOAT, A_SYMBOL, 0);
     class_addMethod(text_sequence_class, (t_method)text_sequence_tempo, 
-        gensym("unit"), A_FLOAT, A_SYMBOL, 0);
+        gensym ("unit"), A_FLOAT, A_SYMBOL, 0);
     class_addList(text_sequence_class, text_sequence_list);
-    class_setHelpName(text_sequence_class, gensym("text-object"));
+    class_setHelpName(text_sequence_class, gensym ("text-object"));
 
-    qlist_class = class_new(gensym("qlist"), (t_newmethod)qlist_new,
+    qlist_class = class_new(gensym ("qlist"), (t_newmethod)qlist_new,
         (t_method)qlist_free, sizeof(t_qlist), 0, 0);
-    class_addMethod(qlist_class, (t_method)qlist_rewind, gensym("rewind"), 0);
+    class_addMethod(qlist_class, (t_method)qlist_rewind, gensym ("rewind"), 0);
     class_addMethod(qlist_class, (t_method)qlist_next,
-        gensym("next"), A_DEFFLOAT, 0);  
-    class_addMethod(qlist_class, (t_method)qlist_set, gensym("set"),
+        gensym ("next"), A_DEFFLOAT, 0);  
+    class_addMethod(qlist_class, (t_method)qlist_set, gensym ("set"),
         A_GIMME, 0);
-    class_addMethod(qlist_class, (t_method)qlist_clear, gensym("clear"), 0);
-    class_addMethod(qlist_class, (t_method)qlist_add, gensym("add"),
+    class_addMethod(qlist_class, (t_method)qlist_clear, gensym ("clear"), 0);
+    class_addMethod(qlist_class, (t_method)qlist_add, gensym ("add"),
         A_GIMME, 0);
-    class_addMethod(qlist_class, (t_method)qlist_add2, gensym("add2"),
+    class_addMethod(qlist_class, (t_method)qlist_add2, gensym ("add2"),
         A_GIMME, 0);
-    class_addMethod(qlist_class, (t_method)qlist_add, gensym("append"),
+    class_addMethod(qlist_class, (t_method)qlist_add, gensym ("append"),
         A_GIMME, 0);
-    class_addMethod(qlist_class, (t_method)qlist_read, gensym("read"),
+    class_addMethod(qlist_class, (t_method)qlist_read, gensym ("read"),
         A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addMethod(qlist_class, (t_method)qlist_write, gensym("write"),
+    class_addMethod(qlist_class, (t_method)qlist_write, gensym ("write"),
         A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addMethod(qlist_class, (t_method)textbuf_open, gensym("click"), 0);
-    class_addMethod(qlist_class, (t_method)textbuf_close, gensym("close"), 0);
+    class_addMethod(qlist_class, (t_method)textbuf_open, gensym ("click"), 0);
+    class_addMethod(qlist_class, (t_method)textbuf_close, gensym ("close"), 0);
     class_addMethod(qlist_class, (t_method)textbuf_addline, 
-        gensym("addline"), A_GIMME, 0);
-    /*class_addMethod(qlist_class, (t_method)qlist_print, gensym("print"),
+        gensym ("addline"), A_GIMME, 0);
+    /*class_addMethod(qlist_class, (t_method)qlist_print, gensym ("print"),
         A_DEFSYMBOL, 0);*/
     class_addMethod(qlist_class, (t_method)qlist_tempo,
-        gensym("tempo"), A_FLOAT, 0);
+        gensym ("tempo"), A_FLOAT, 0);
     class_addMethod(qlist_class, (t_method)qlist_tempo,
-        gensym("unit"), A_FLOAT, 0);
+        gensym ("unit"), A_FLOAT, 0);
     class_addBang(qlist_class, qlist_bang);
 
-    textfile_class = class_new(gensym("textfile"), (t_newmethod)textfile_new,
+    textfile_class = class_new(gensym ("textfile"), (t_newmethod)textfile_new,
         (t_method)textbuf_free, sizeof(t_qlist), 0, 0);
-    class_addMethod(textfile_class, (t_method)textfile_rewind, gensym("rewind"),
+    class_addMethod(textfile_class, (t_method)textfile_rewind, gensym ("rewind"),
         0);
-    class_addMethod(textfile_class, (t_method)qlist_set, gensym("set"),
+    class_addMethod(textfile_class, (t_method)qlist_set, gensym ("set"),
         A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_clear, gensym("clear"), 0);
-    class_addMethod(textfile_class, (t_method)qlist_add, gensym("add"),
+    class_addMethod(textfile_class, (t_method)qlist_clear, gensym ("clear"), 0);
+    class_addMethod(textfile_class, (t_method)qlist_add, gensym ("add"),
         A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_add2, gensym("add2"),
+    class_addMethod(textfile_class, (t_method)qlist_add2, gensym ("add2"),
         A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_add, gensym("append"),
+    class_addMethod(textfile_class, (t_method)qlist_add, gensym ("append"),
         A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_read, gensym("read"), 
+    class_addMethod(textfile_class, (t_method)qlist_read, gensym ("read"), 
         A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addMethod(textfile_class, (t_method)qlist_write, gensym("write"), 
+    class_addMethod(textfile_class, (t_method)qlist_write, gensym ("write"), 
         A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addMethod(textfile_class, (t_method)textbuf_open, gensym("click"), 0);
-    class_addMethod(textfile_class, (t_method)textbuf_close, gensym("close"), 
+    class_addMethod(textfile_class, (t_method)textbuf_open, gensym ("click"), 0);
+    class_addMethod(textfile_class, (t_method)textbuf_close, gensym ("close"), 
         0);
     class_addMethod(textfile_class, (t_method)textbuf_addline, 
-        gensym("addline"), A_GIMME, 0);
-    /*class_addMethod(textfile_class, (t_method)qlist_print, gensym("print"),
+        gensym ("addline"), A_GIMME, 0);
+    /*class_addMethod(textfile_class, (t_method)qlist_print, gensym ("print"),
         A_DEFSYMBOL, 0);*/
     class_addBang(textfile_class, textfile_bang);
 }

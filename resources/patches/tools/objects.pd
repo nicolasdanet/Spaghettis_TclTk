@@ -1,5 +1,4 @@
-#N canvas 220 22 579 700 12;
-#X declare;
+#N canvas 317 98 579 700 12;
 #X obj 29 53 bang;
 #X text 129 53 - output a bang message;
 #X obj 29 77 float;
@@ -138,8 +137,7 @@
 #X obj 31 1934 clip~;
 #X text 131 1934 - constrict signal to lie between two bounds;
 #X obj 31 1964 q8_rsqrt~;
-#X text 131 1964 - cheap reciprocal square root (beware -- 8 bits!)
-;
+#X text 131 1964 - cheap reciprocal square root (beware -- 8 bits!);
 #X obj 31 1986 q8_sqrt~;
 #X text 131 1986 - cheap square root (beware -- 8 bits!);
 #X obj 31 2037 wrap~;
@@ -212,8 +210,7 @@
 #X text 128 2943 - write one block continuously to a table;
 #X obj 28 2967 tabreceive~;
 #X text 128 2967 - read one block continuously from a table;
-#X text 23 3002 -------------------- AUDIO FILTERS ------------------------
-;
+#X text 23 3002 -------------------- AUDIO FILTERS ------------------------;
 #X obj 29 3032 vcf~;
 #X text 129 3032 - voltage controlled filter;
 #X obj 29 3056 noise~;
@@ -241,15 +238,13 @@
 #X obj 29 3320 cpole~;
 #X obj 88 3320 czero~;
 #X text 225 3320 - corresponding complex-valued filters;
-#X text 23 3358 -------------------- AUDIO DELAY ------------------------
-;
+#X text 23 3358 -------------------- AUDIO DELAY ------------------------;
 #X obj 29 3382 delwrite~;
 #X text 129 3382 - write to a delay line;
 #X obj 29 3406 delread~;
 #X text 129 3406 - read from a delay line;
 #X obj 29 3430 vd~;
-#X text 129 3430 - read from a delay line at a variable delay time
-;
+#X text 129 3430 - read from a delay line at a variable delay time;
 #N canvas 0 50 450 300 (subpatch) 0;
 #X restore 29 3490 pd;
 #X text 129 3490 - define a subwindow;
@@ -290,20 +285,14 @@
 #X obj 147 3320 czero_rev~;
 #X obj 31 2401 threshold~;
 #X text 131 2401 - detect signal thresholds;
-#X text 26 1846 ---------------------- AUDIO MATH -----------------------
-;
+#X text 26 1846 ---------------------- AUDIO MATH -----------------------;
 #X text 23 1423 --------------------- MISC ----------------------;
 #X text 25 734 ------------------------- MATH -----------------;
-#X text 25 533 ------------------------- TIME --------------------------
-;
-#X text 23 3461 ------------------------ SUBWINDOWS ------------------------
-;
-#X text 21 3643 ---------------------- DATA TEMPLATES ----------------------
-;
-#X text 21 3803 ---------------------- ACCESSING DATA ----------------------
-;
-#X text 22 2721 ------------ AUDIO OSCILLATORS AND TABLES -------------
-;
+#X text 25 533 ------------------------- TIME --------------------------;
+#X text 23 3461 ------------------------ SUBWINDOWS ------------------------;
+#X text 21 3643 ---------------------- DATA TEMPLATES ----------------------;
+#X text 21 3803 ---------------------- ACCESSING DATA ----------------------;
+#X text 22 2721 ------------ AUDIO OSCILLATORS AND TABLES -------------;
 #X obj 72 1906 min~;
 #X obj 31 1906 max~;
 #X obj 27 787 ==;
@@ -326,8 +315,6 @@
 #X obj 63 1876 -~;
 #X obj 94 1876 *~;
 #X obj 126 1876 /~;
-#X obj 30 1815 declare;
-#X text 130 1815 - set search path and/or load libraries;
 #X text 165 3605 - signal versions;
 #X obj 27 997 wrap;
 #X text 126 997 - wrap a number to range [0 \, 1);
@@ -340,16 +327,13 @@
 #X text 29 23 --------------- GENERAL ----------------;
 #X obj 29 510 list;
 #X text 129 510 - manipulate lists;
-#X text 117 1152 - schedule delayed "note off" message for a note-on
-;
+#X text 117 1152 - schedule delayed "note off" message for a note-on;
 #X obj 30 1390 array;
 #X text 132 1365 - create a named table;
-#X text 31 2250 ------------- GENERAL AUDIO MANIPULATION --------------
-;
+#X text 31 2250 ------------- GENERAL AUDIO MANIPULATION --------------;
 #X text 130 1609 - general text handling;
 #X text 133 1392 - general array creation and manipulation;
-#X text 22 1246 ----------------- ARRAYS/TABLES -------------------
-;
+#X text 22 1246 ----------------- ARRAYS/TABLES -------------------;
 #X text 128 4000 - create a single scalar;
 #X obj 30 1585 textfile;
 #X obj 30 1609 text;
@@ -357,8 +341,7 @@
 #X obj 216 810 >>;
 #X obj 31 2009 sqrt~;
 #X text 132 2011 - proper square root;
-#X text 22 1018 ------------------- MIDI and OSC------------------------
-;
+#X text 22 1018 ------------------- MIDI and OSC------------------------;
 #X obj 27 1205 oscparse;
 #X obj 26 1229 oscformat;
 #X text 118 1206 - OSC messages to Pd lists;
