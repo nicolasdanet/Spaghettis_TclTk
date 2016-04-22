@@ -1110,8 +1110,8 @@ static void garray_read(t_garray *x, t_symbol *filename)
         return;
     }
     nelem = array->a_n;
-    if ((filedesc = canvas_open(glist_getcanvas(x->x_glist),
-            filename->s_name, "", buf, &bufptr, PD_STRING, 0)) < 0 
+    if ((filedesc = canvas_openFile(glist_getcanvas(x->x_glist),
+            filename->s_name, "", buf, &bufptr, PD_STRING)) < 0 
                 || !(fd = fdopen(filedesc, "r")))
     {
         post_error ("%s: can't open", filename->s_name);

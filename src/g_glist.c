@@ -130,6 +130,25 @@ int canvas_isAbstraction (t_glist *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int canvas_openFile (t_glist *glist,
+    const char *name,
+    const char *extension,
+    char *directoryResult,
+    char **nameResult,
+    size_t size)
+{
+    const char *directory = glist ? canvas_getEnvironment (glist)->ce_directory->s_name : ".";
+    
+    int f = file_openConsideringSearchPath (directory, 
+                name,
+                extension,
+                directoryResult,
+                nameResult, 
+                size);
+        
+    return f;
+}
+
 t_symbol *canvas_expandDollar (t_glist *glist, t_symbol *s)
 {
     t_symbol *t = s;
@@ -199,7 +218,7 @@ int canvas_showGraphOnParentTitle (t_glist *glist)
     if (glist->gl_hideText) { return 0; }
     else {
     //
-    int argc     = (cast_object (glist)->te_buffer ? buffer_size (cast_object (glist)->te_buffer) : 0);
+    int argc     = (cast_object (glist)->te_buffer ? buffer_size (cast_object (glist)->te_buffer)  : 0);
     t_atom *argv = (cast_object (glist)->te_buffer ? buffer_atoms (cast_object (glist)->te_buffer) : NULL);
     return !(argc && IS_SYMBOL (argv) && GET_SYMBOL (argv) == gensym ("graph"));
     //
@@ -358,6 +377,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
 
     /* make a new glist and add it to this glist.  It will appear as
     a "graph", not a text object.  */
+    
 t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     t_float x1, t_float y1, t_float x2, t_float y2,
     t_float px1, t_float py1, t_float px2, t_float py2)
@@ -424,68 +444,6 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
         stack_push(&x->gl_obj.te_g.g_pd);
     glist_add(g, &x->gl_obj.te_g);
     return (x);
-}
-
-void canvas_popabstraction(t_glist *x)
-{
-    pd_newest = &x->gl_obj.te_g.g_pd;
-    stack_pop(&x->gl_obj.te_g.g_pd);
-    x->gl_isLoading = 0;
-    canvas_resortinlets(x);
-    canvas_resortoutlets(x);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int canvas_open(t_glist *x, const char *name, const char *ext,
-    char *dirresult, char **nameresult, size_t size, int bin)
-{
-    t_pathlist *nl, thislist;
-    int fd = -1;
-    char listbuf[PD_STRING];
-    t_glist *y;
-
-        /* first check if "name" is absolute (and if so, try to open) */
-    /* if ((fd = file_openWithAbsolutePath(name, ext, dirresult, nameresult, size)) >= 0)
-        return (fd); */
-    
-        /* otherwise "name" is relative; start trying in directories named
-        in this and parent environments */
-    /*
-    for (y = x; y; y = y->gl_owner)
-        if (y->gl_environment)
-    {
-        t_pathlist *nl;
-        t_glist *x2 = x;
-        char *dir;
-        while (x2 && x2->gl_owner)
-            x2 = x2->gl_owner;
-        dir = (x2 ? canvas_getDirectory(x2)->s_name : ".");
-        
-        for (nl = y->gl_environment->ce_path; nl; nl = nl->pl_next)
-        {
-            char realname[PD_STRING];
-            if (0)
-            {
-                realname[0] = '\0';
-            }
-            else
-            { 
-                strncpy(realname, dir, PD_STRING);
-                realname[PD_STRING-3] = 0;
-                strcat(realname, "/");
-            }
-            strncat(realname, nl->pl_string, PD_STRING-strlen(realname));
-            realname[PD_STRING-1] = 0;
-            if ((fd = file_openWithDirectoryAndName(realname, name, ext,
-                dirresult, nameresult, size)) >= 0)
-                    return (fd);
-        }
-    }*/
-    return (file_openConsideringSearchPath((x ? canvas_getEnvironment (x)->ce_directory->s_name : "."), name, ext,
-        dirresult, nameresult, size));
 }
 
 // -----------------------------------------------------------------------------------------------------------

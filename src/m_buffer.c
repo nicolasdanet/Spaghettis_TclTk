@@ -619,7 +619,7 @@ t_error buffer_read (t_buffer *x, char *name, t_glist *glist)
     char *filepath = NULL;
     char directory[PD_STRING] = { 0 };
     
-    int f = canvas_open (glist, name, "", directory, &filepath, PD_STRING, 0);
+    int f = canvas_openFile (glist, name, "", directory, &filepath, PD_STRING);
     
     err = (f < 0);
     

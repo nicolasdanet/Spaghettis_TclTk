@@ -451,7 +451,7 @@ int open_soundfile_via_canvas(t_glist *canvas, const char *filename, int headers
 {
     char buf[OBUFSIZE], *bufptr;
     int fd;
-    fd = canvas_open(canvas, filename, "", buf, &bufptr, PD_STRING, 1);
+    fd = canvas_openFile(canvas, filename, "", buf, &bufptr, PD_STRING);
     if (fd < 0)
         return (-1);
     else return (open_soundfile_via_fd(fd, headersize, p_bytespersamp,

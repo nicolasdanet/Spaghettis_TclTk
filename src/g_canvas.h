@@ -320,6 +320,14 @@ int                 canvas_isGraphOnParent              (t_glist *glist);
 int                 canvas_isVisible                    (t_glist *glist);
 int                 canvas_isTopLevel                   (t_glist *glist);
 int                 canvas_isAbstraction                (t_glist *glist);
+
+int                 canvas_openFile                     (t_glist *glist,
+                                                            const char *name,
+                                                            const char *extension,
+                                                            char *directoryResult,
+                                                            char **nameResult,
+                                                            size_t size);
+                                                            
 void                canvas_bind                         (t_glist *glist);
 void                canvas_unbind                       (t_glist *glist);
 t_error             canvas_makeFilePath                 (t_glist *glist, char *name, char *dest, size_t size);
@@ -332,14 +340,6 @@ int                 canvas_getIndexOfObject             (t_glist *glist, t_gobj 
 void                canvas_traverseLinesStart           (t_linetraverser *t, t_glist *glist);
 t_outconnect        *canvas_traverseLinesNext           (t_linetraverser *t);
 
-int                 canvas_open                         (t_glist *glist,
-                                                            const char *name,
-                                                            const char *extension,
-                                                            char *directoryResult,
-                                                            char **nameResult,
-                                                            size_t size,
-                                                            int isBinary);
-
 t_glist             *glist_addglist                     (t_glist *x,
                                                             t_symbol *sym,
                                                             t_float x1,
@@ -350,8 +350,6 @@ t_glist             *glist_addglist                     (t_glist *x,
                                                             t_float py1,
                                                             t_float px2,
                                                             t_float py2);
-
-void                canvas_popabstraction               (t_glist *x);
 
 void                canvas_drawredrect                  (t_glist *x, int doit);
 void                canvas_redraw                       (t_glist *x);

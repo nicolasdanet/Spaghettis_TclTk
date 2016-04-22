@@ -141,7 +141,18 @@ t_symbol *gensym (const char *s)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void new_anything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+static void message_popAbstraction (t_glist *glist)
+{
+    pd_newest = cast_pd (glist);
+    stack_pop (cast_pd (glist));
+    
+    glist->gl_isLoading = 0;
+    
+    canvas_resortinlets (glist);
+    canvas_resortoutlets (glist);
+}
+
+static void message_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     int f;
     char directory[PD_STRING] = { 0 };
@@ -159,7 +170,7 @@ static void new_anything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         return;
     }
     
-    err = (f = canvas_open (canvas_getCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING, 0)) < 0;
+    err = (f = canvas_openFile (canvas_getCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING)) < 0;
     
     if (err) { pd_newest = NULL; }
     else {
@@ -173,7 +184,7 @@ static void new_anything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         t_pd *t = s__X.s_thing;
         canvas_setArguments (argc, argv);
         buffer_evalFile (gensym (name), gensym (directory));
-        if (s__X.s_thing && t != s__X.s_thing) { canvas_popabstraction ((t_glist *)(s__X.s_thing)); }
+        if (s__X.s_thing && t != s__X.s_thing) { message_popAbstraction (cast_glist (s__X.s_thing)); }
         else { 
             s__X.s_thing = t; 
         }
@@ -214,7 +225,7 @@ void message_initialize (void)
     pd_objectMaker = class_new (gensym ("objectmaker"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
     pd_canvasMaker = class_new (gensym ("canvasmaker"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
     
-    class_addAnything (pd_objectMaker, (t_method)new_anything);
+    class_addAnything (pd_objectMaker, (t_method)message_newAnything);
 }
 
 // -----------------------------------------------------------------------------------------------------------
