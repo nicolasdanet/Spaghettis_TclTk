@@ -184,7 +184,7 @@ static void scalar_getrect(t_gobj *z, t_glist *owner,
     {
         x1 = y1 = 0x7fffffff;
         x2 = y2 = -0x7fffffff;
-        for (y = templatecanvas->gl_list; y; y = y->g_next)
+        for (y = templatecanvas->gl_graphics; y; y = y->g_next)
         {
             t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
             int nx1, ny1, nx2, ny2;
@@ -311,7 +311,7 @@ static void scalar_vis(t_gobj *z, t_glist *owner, int vis)
         return;
     }
 
-    for (y = templatecanvas->gl_list; y; y = y->g_next)
+    for (y = templatecanvas->gl_graphics; y; y = y->g_next)
     {
         t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
         if (!wb) continue;
@@ -356,7 +356,7 @@ int scalar_doclick(t_word *data, t_template *template, t_scalar *sc,
     if (doit)
         template_notifyforscalar(template, owner, 
             sc, gensym ("click"), 2, at);
-    for (y = templatecanvas->gl_list; y; y = y->g_next)
+    for (y = templatecanvas->gl_graphics; y; y = y->g_next)
     {
         t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
         if (!wb) continue;

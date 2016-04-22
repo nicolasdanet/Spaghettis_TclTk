@@ -154,7 +154,7 @@ static void canvas_howputnew(t_glist *x, int *connectp, int *xpixp, int *ypixp,
     if (connectme)
     {
         t_gobj *g, *selected = x->gl_editor->e_selection->sel_what;
-        for (g = x->gl_list, nobj = 0; g; g = g->g_next, nobj++)
+        for (g = x->gl_graphics, nobj = 0; g; g = g->g_next, nobj++)
             if (g == selected)
         {
             gobj_getrect(g, x, &x1, &y1, &x2, &y2);
@@ -165,7 +165,7 @@ static void canvas_howputnew(t_glist *x, int *connectp, int *xpixp, int *ypixp,
         glist_noselect(x);
             /* search back for 'selected' and if it isn't on the list, 
                 plan just to connect from the last item on the list. */
-        for (g = x->gl_list, n2 = 0; g; g = g->g_next, n2++)
+        for (g = x->gl_graphics, n2 = 0; g; g = g->g_next, n2++)
         {
             if (g == selected)
             {
@@ -1316,7 +1316,7 @@ void text_drawborder(t_object *x, t_glist *glist,
         /* for comments, just draw a bar on RHS if unlocked; when a visible
         canvas is unlocked we have to call this anew on all comments, and when
         locked we erase them all via the annoying "commentbar" tag. */
-    else if (x->te_type == TYPE_TEXT && glist->gl_edit)
+    else if (x->te_type == TYPE_TEXT && glist->gl_isEditMode)
     {
         if (firsttime)
             sys_vGui(".x%lx.c create line\
@@ -1348,7 +1348,7 @@ void glist_eraseio(t_glist *glist, t_object *ob, char *tag)
 
 void text_eraseborder(t_object *x, t_glist *glist, char *tag)
 {
-    if (x->te_type == TYPE_TEXT && !glist->gl_edit) return;
+    if (x->te_type == TYPE_TEXT && !glist->gl_isEditMode) return;
     sys_vGui(".x%lx.c delete %sR\n",
         glist_getcanvas(glist), tag);
     glist_eraseio(glist, x, tag);

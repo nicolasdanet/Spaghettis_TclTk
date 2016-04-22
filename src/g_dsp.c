@@ -47,7 +47,7 @@ static void canvas_dspPerform (t_glist *glist, int isTopLevel, t_signal **sp)
     
     context = ugen_start_graph (isTopLevel, sp, m, n);
     
-    for (y = glist->gl_list; y; y = y->g_next) {
+    for (y = glist->gl_graphics; y; y = y->g_next) {
     //
     t_object *o = canvas_castToObjectIfBox (y);
     if (o && class_hasMethod (pd_class (y), gensym ("dsp"))) { ugen_add (context, o); }

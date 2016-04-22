@@ -202,8 +202,8 @@ static void rtext_senditup(t_boxtext *x, int action, int *widthp, int *heightp,
         /* if we're a GOP (the new, "goprect" style) borrow the font size
         from the inside to preserve the spacing */
     if (pd_class(&x->x_text->te_g.g_pd) == canvas_class &&
-        ((t_glist *)(x->x_text))->gl_isgraph &&
-        ((t_glist *)(x->x_text))->gl_goprect)
+        ((t_glist *)(x->x_text))->gl_isGraphOnParent &&
+        ((t_glist *)(x->x_text))->gl_hasRectangle)
             font =  glist_getfont((t_glist *)(x->x_text));
     else font = glist_getfont(x->x_glist);
     fontwidth = font_getHostFontWidth(font);

@@ -416,7 +416,6 @@ struct _dspcontext;
 #define t_class                 struct _class
 #define t_outlet                struct _outlet
 #define t_inlet                 struct _inlet
-#define t_buffer                struct _buffer
 #define t_clock                 struct _clock
 #define t_outconnect            struct _outconnect
 #define t_glist                 struct _glist
@@ -466,7 +465,7 @@ typedef union word {
     t_symbol        *w_symbol;
     t_gpointer      *w_gpointer;
     t_array         *w_array;
-    t_buffer        *w_buffer;
+    struct _buffer  *w_buffer;
     } t_word;
 
 typedef enum {
@@ -489,6 +488,14 @@ typedef struct _atom {
     union word      a_w;
     } t_atom;
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+typedef struct _buffer {
+    int             b_size;
+    t_atom          *b_vector;
+    } t_buffer;
+    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

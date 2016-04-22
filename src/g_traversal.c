@@ -89,7 +89,7 @@ int gpointer_check(const t_gpointer *gp, int headok)
     else if (gs->gs_type == POINTER_GLIST)
     {
         if (!headok && !gp->gp_un.gp_scalar) return (0);
-        else if (gs->gs_un.gs_glist->gl_valid != gp->gp_valid) return (0);
+        else if (gs->gs_un.gs_glist->gl_magic != gp->gp_valid) return (0);
         else return (1);
     }
     else return (0);
@@ -143,7 +143,7 @@ void gpointer_setglist(t_gpointer *gp, t_glist *glist, t_scalar *x)
     t_gstub *gs;
     if (gs = gp->gp_stub) gstub_dis(gs);
     gp->gp_stub = gs = glist->gl_stub;
-    gp->gp_valid = glist->gl_valid;
+    gp->gp_valid = glist->gl_magic;
     gp->gp_un.gp_scalar = x;
     gs->gs_count++;
 }
@@ -283,7 +283,7 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
         return;
     }
     glist = gs->gs_un.gs_glist;
-    if (glist->gl_valid != gp->gp_valid)
+    if (glist->gl_magic != gp->gp_valid)
     {
         post_error ("ptrobj_next: stale pointer");
         return;
@@ -295,7 +295,7 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
     }
     gobj = &gp->gp_un.gp_scalar->sc_g;
     
-    if (!gobj) gobj = glist->gl_list;
+    if (!gobj) gobj = glist->gl_graphics;
     else gobj = gobj->g_next;
     while (gobj && ((pd_class(&gobj->g_pd) != scalar_class) ||
         (wantselected && !glist_isselected(glist, gobj))))
@@ -1211,7 +1211,7 @@ static void append_float(t_append *x, t_float f)
         return;
     }
     glist = gs->gs_un.gs_glist;
-    if (glist->gl_valid != gp->gp_valid)
+    if (glist->gl_magic != gp->gp_valid)
     {
         post_error ("append: stale pointer");
         return;
@@ -1234,8 +1234,8 @@ static void append_float(t_append *x, t_float f)
     }
     else
     {
-        sc->sc_g.g_next = glist->gl_list;
-        glist->gl_list = &sc->sc_g;
+        sc->sc_g.g_next = glist->gl_graphics;
+        glist->gl_graphics = &sc->sc_g;
     }
 
     gp->gp_un.gp_scalar = sc;

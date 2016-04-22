@@ -65,7 +65,7 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
     x = canvas_new(0, 0, 6, a);
 
     x->gl_owner = z;
-    x->gl_private = 0;
+    x->gl_saveScalar = 0;
         /* put a scalar in it */
     template = template_findbyname(canvas_makeBindSymbol(templatesym));
     if (!template)
@@ -81,8 +81,8 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
         goto noscalar;
     }
     sc->sc_g.g_next = 0;
-    x->gl_list = &sc->sc_g;
-    x->gl_private = keep;
+    x->gl_graphics = &sc->sc_g;
+    x->gl_saveScalar = keep;
            /* bashily unbind #A -- this would create garbage if #A were
            multiply bound but we believe in this context it's at most
            bound to whichever text_define or array was created most recently */
@@ -93,7 +93,7 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
 noscalar:
     pd_newest = &x->gl_obj.te_g.g_pd;     /* mimic action of canvas_pop() */
     stack_pop(&x->gl_obj.te_g.g_pd);
-    x->gl_loading = 0;
+    x->gl_isLoading = 0;
     
         /* bash the class to "scalar define" -- see comment in x_array,c */
     x->gl_obj.te_g.g_pd = scalar_define_class;
@@ -105,11 +105,11 @@ static void scalar_define_send(t_glist *x, t_symbol *s)
 {
     if (!s->s_thing)
         post_error ("scalar_define_send: %s: no such object", s->s_name);
-    else if (x->gl_list && pd_class(&x->gl_list->g_pd) == scalar_class)
+    else if (x->gl_graphics && pd_class(&x->gl_graphics->g_pd) == scalar_class)
     {
         t_gpointer gp;
         gpointer_init(&gp);
-        gpointer_setglist(&gp, x, (t_scalar *)&x->gl_list->g_pd);
+        gpointer_setglist(&gp, x, (t_scalar *)&x->gl_graphics->g_pd);
         pd_pointer(s->s_thing, &gp);
         gpointer_unset(&gp);
     }
@@ -119,7 +119,7 @@ static void scalar_define_send(t_glist *x, t_symbol *s)
     /* set to a list, used to restore from scalar_define_save()s below */
 static void scalar_define_set(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 {
-    if (x->gl_list && pd_class(&x->gl_list->g_pd) == scalar_class)
+    if (x->gl_graphics && pd_class(&x->gl_graphics->g_pd) == scalar_class)
     {
         t_buffer *b = buffer_new();
         int nextmsg = 0, natoms;
@@ -142,11 +142,11 @@ static void scalar_define_save(t_gobj *z, t_buffer *bb)
         (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
     buffer_serialize(bb, x->gl_obj.te_buffer);
     buffer_appendSemicolon(bb);
-    if (x->gl_private && x->gl_list &&
-        pd_class(&x->gl_list->g_pd) == scalar_class)
+    if (x->gl_saveScalar && x->gl_graphics &&
+        pd_class(&x->gl_graphics->g_pd) == scalar_class)
     {
         t_buffer *b2 = buffer_new();
-        t_scalar *sc = (t_scalar *)(x->gl_list);
+        t_scalar *sc = (t_scalar *)(x->gl_graphics);
         buffer_vAppend(bb, "ss", gensym ("#A"), gensym ("set"));
         canvas_writescalar(sc->sc_template, sc->sc_vector, b2, 0);
         buffer_serialize(bb, b2);

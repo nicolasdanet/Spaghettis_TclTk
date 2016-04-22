@@ -1134,7 +1134,7 @@ static void *canvas_getblock (t_class *blockclass, t_glist **canvasp)
     t_glist *canvas = *canvasp;
     t_gobj *g;
     void *ret = 0;
-    for (g = canvas->gl_list; g; g = g->g_next)
+    for (g = canvas->gl_graphics; g; g = g->g_next)
     {
         if (g->g_pd == blockclass)
             ret = g;

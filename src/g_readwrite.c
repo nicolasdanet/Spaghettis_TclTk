@@ -152,7 +152,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
     if (wasvis)
     {
             /* temporarily lie about vis flag while this is built */
-        glist_getcanvas(x)->gl_mapped = 0;
+        glist_getcanvas(x)->gl_isMapped = 0;
     }
     glist_add(x, &sc->sc_g);
     
@@ -162,7 +162,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
     if (wasvis)
     {
             /* reset vis flag as before */
-        glist_getcanvas(x)->gl_mapped = 1;
+        glist_getcanvas(x)->gl_isMapped = 1;
         gobj_vis(&sc->sc_g, x, 1);
     }
     if (selectit)
@@ -303,7 +303,7 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
     int ntotal, nnew, scindex;
     t_gobj *y, *y2 = 0, *newone, *oldone = 0;
     t_template *template;
-    for (y = x->gl_list, ntotal = 0, scindex = -1; y; y = y->g_next)
+    for (y = x->gl_graphics, ntotal = 0, scindex = -1; y; y = y->g_next)
     {
         if (y == &sc->sc_g)
             scindex = ntotal, oldone = y;
@@ -320,7 +320,7 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
         /* take the new object off the list */
     if (ntotal)
     {
-        for (y = x->gl_list, nnew = 1; y2 = y->g_next;
+        for (y = x->gl_graphics, nnew = 1; y2 = y->g_next;
             y = y2, nnew++)
                 if (nnew == ntotal)
         {
@@ -330,7 +330,7 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
             break;    
         }
     }
-    else gobj_vis((newone = x->gl_list), x, 0), x->gl_list = newone->g_next;
+    else gobj_vis((newone = x->gl_graphics), x, 0), x->gl_graphics = newone->g_next;
     if (!newone)
         post_error ("couldn't update properties (perhaps a format problem?)");
     else if (!oldone) { PD_BUG; }
@@ -355,7 +355,7 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
         glist_delete(x, oldone);
         if (scindex > 0)
         {
-            for (y = x->gl_list, nnew = 1; y;
+            for (y = x->gl_graphics, nnew = 1; y;
                 y = y->g_next, nnew++)
                     if (nnew == scindex || !y->g_next)
             {
@@ -365,7 +365,7 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
             }
             PD_BUG;
         }
-        else newone->g_next = x->gl_list, x->gl_list = newone;
+        else newone->g_next = x->gl_graphics, x->gl_graphics = newone;
     }
 didit:
     ;
@@ -530,7 +530,7 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
     t_gobj *y;
     t_buffer *b = buffer_new();
 
-    for (y = x->gl_list; y; y = y->g_next)
+    for (y = x->gl_graphics; y; y = y->g_next)
     {
         if ((pd_class(&y->g_pd) == scalar_class) &&
             (wholething || glist_isselected(x, y)))
@@ -567,7 +567,7 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
     }
     buffer_appendSemicolon(b);
         /* now write out the objects themselves */
-    for (y = x->gl_list; y; y = y->g_next)
+    for (y = x->gl_graphics; y; y = y->g_next)
     {
         if ((pd_class(&y->g_pd) == scalar_class) &&
             (wholething || glist_isselected(x, y)))
@@ -613,7 +613,7 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
     t_linetraverser t;
     t_outconnect *oc;
         /* subpatch */
-    if (x->gl_owner && !x->gl_env)
+    if (x->gl_owner && !x->gl_environment)
     {
         /* have to go to original binbuf to find out how we were named. */
         t_buffer *bz = buffer_new();
@@ -622,25 +622,25 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
         patchsym = atom_getSymbolAtIndex(1, buffer_size(bz), buffer_atoms(bz));
         buffer_free(bz);
         buffer_vAppend(b, "ssiiiisi;", gensym ("#N"), gensym ("canvas"),
-            (int)(x->gl_screenx1),
-            (int)(x->gl_screeny1),
-            (int)(x->gl_screenx2 - x->gl_screenx1),
-            (int)(x->gl_screeny2 - x->gl_screeny1),
+            (int)(x->gl_topLeftX),
+            (int)(x->gl_topLeftY),
+            (int)(x->gl_bottomRightX - x->gl_topLeftX),
+            (int)(x->gl_bottomRightY - x->gl_topLeftY),
             (patchsym != &s_ ? patchsym: gensym ("(subpatch)")),
-            x->gl_mapped);
+            x->gl_isMapped);
     }
         /* root or abstraction */
     else 
     {
         buffer_vAppend(b, "ssiiiii;", gensym ("#N"), gensym ("canvas"),
-            (int)(x->gl_screenx1),
-            (int)(x->gl_screeny1),
-            (int)(x->gl_screenx2 - x->gl_screenx1),
-            (int)(x->gl_screeny2 - x->gl_screeny1),
-                (int)x->gl_font);
+            (int)(x->gl_topLeftX),
+            (int)(x->gl_topLeftY),
+            (int)(x->gl_bottomRightX - x->gl_topLeftX),
+            (int)(x->gl_bottomRightY - x->gl_topLeftY),
+                (int)x->gl_fontSize);
         // canvas_savedeclarationsto(x, b);
     }
-    for (y = x->gl_list; y; y = y->g_next)
+    for (y = x->gl_graphics; y; y = y->g_next)
         gobj_save(y, b);
 
     canvas_traverseLinesStart(&t, x);
@@ -653,25 +653,25 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
     }
         /* unless everything is the default (as in ordinary subpatches)
         print out a "coords" message to set up the coordinate systems */
-    if (x->gl_isgraph || x->gl_x1 || x->gl_y1 ||
-        x->gl_x2 != 1 ||  x->gl_y2 != 1 || x->gl_pixwidth || x->gl_pixheight)
+    if (x->gl_isGraphOnParent || x->gl_indexStart || x->gl_valueUp ||
+        x->gl_indexEnd != 1 ||  x->gl_valueDown != 1 || x->gl_width || x->gl_height)
     {
-        if (x->gl_isgraph && x->gl_goprect)
+        if (x->gl_isGraphOnParent && x->gl_hasRectangle)
                 /* if we have a graph-on-parent rectangle, we're new style.
                 The format is arranged so
                 that old versions of Pd can at least do something with it. */
             buffer_vAppend(b, "ssfffffffff;", gensym ("#X"), gensym ("coords"),
-                x->gl_x1, x->gl_y1,
-                x->gl_x2, x->gl_y2,
-                (t_float)x->gl_pixwidth, (t_float)x->gl_pixheight,
-                (t_float)((x->gl_hidetext)?2.:1.),
-                (t_float)x->gl_xmargin, (t_float)x->gl_ymargin); 
+                x->gl_indexStart, x->gl_valueUp,
+                x->gl_indexEnd, x->gl_valueDown,
+                (t_float)x->gl_width, (t_float)x->gl_height,
+                (t_float)((x->gl_hideText)?2.:1.),
+                (t_float)x->gl_marginX, (t_float)x->gl_marginY); 
                     /* otherwise write in 0.38-compatible form */
         else buffer_vAppend(b, "ssfffffff;", gensym ("#X"), gensym ("coords"),
-                x->gl_x1, x->gl_y1,
-                x->gl_x2, x->gl_y2,
-                (t_float)x->gl_pixwidth, (t_float)x->gl_pixheight,
-                (t_float)x->gl_isgraph);
+                x->gl_indexStart, x->gl_valueUp,
+                x->gl_indexEnd, x->gl_valueDown,
+                (t_float)x->gl_width, (t_float)x->gl_height,
+                (t_float)x->gl_isGraphOnParent);
     }
 }
 
@@ -682,7 +682,7 @@ static void canvas_collecttemplatesfor(t_glist *x, int *ntemplatesp,
 {
     t_gobj *y;
 
-    for (y = x->gl_list; y; y = y->g_next)
+    for (y = x->gl_graphics; y; y = y->g_next)
     {
         if ((pd_class(&y->g_pd) == scalar_class) &&
             (wholething || glist_isselected(x, y)))

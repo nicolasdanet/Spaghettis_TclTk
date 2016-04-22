@@ -157,24 +157,24 @@ struct _class {
 // -----------------------------------------------------------------------------------------------------------
 
 struct _pdinstance {
-    double      pd_systime;
-    int         pd_dspState;
-    int         pd_dspChainSize;
-    t_int       *pd_dspChain;
-    t_clock     *pd_clocks;
-    t_signal    *pd_signals;
-    t_glist     *pd_roots;
+    double                  pd_systime;
+    int                     pd_dspState;
+    int                     pd_dspChainSize;
+    t_int                   *pd_dspChain;
+    t_clock                 *pd_clocks;
+    t_signal                *pd_signals;
+    t_glist                 *pd_roots;
     //
-    t_symbol    *sym_midiin;
-    t_symbol    *sym_sysexin;
-    t_symbol    *sym_notein;
-    t_symbol    *sym_ctlin;
-    t_symbol    *sym_pgmin;
-    t_symbol    *sym_bendin;
-    t_symbol    *sym_touchin;
-    t_symbol    *sym_polytouchin;
-    t_symbol    *sym_midiclkin;
-    t_symbol    *sym_midirealtimein;
+    t_symbol                *sym_midiin;
+    t_symbol                *sym_sysexin;
+    t_symbol                *sym_notein;
+    t_symbol                *sym_ctlin;
+    t_symbol                *sym_pgmin;
+    t_symbol                *sym_bendin;
+    t_symbol                *sym_touchin;
+    t_symbol                *sym_polytouchin;
+    t_symbol                *sym_midiclkin;
+    t_symbol                *sym_midirealtimein;
     };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -191,16 +191,6 @@ typedef struct _bindlist {
     t_bindelement       *b_list;
     } t_bindlist;
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
-/* A dynamic array of atoms. */
-
-struct _buffer {
-    int     b_size;
-    t_atom  *b_vector;
-    };
-    
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

@@ -112,12 +112,12 @@ int gobj_shouldvis(t_gobj *x, struct _glist *glist)
     t_object *ob;
             /* if our parent is a graph, and if that graph itself isn't
             visible, then we aren't either. */
-    if (!glist->gl_havewindow && glist->gl_isgraph && glist->gl_owner
+    if (!glist->gl_haveWindow && glist->gl_isGraphOnParent && glist->gl_owner
         && !gobj_shouldvis(&glist->gl_obj.te_g, glist->gl_owner))
             return (0);
             /* if we're graphing-on-parent and the object falls outside the
             graph rectangle, don't draw it. */
-    if (!glist->gl_havewindow && glist->gl_isgraph && glist->gl_goprect &&
+    if (!glist->gl_haveWindow && glist->gl_isGraphOnParent && glist->gl_hasRectangle &&
         glist->gl_owner)
     {
         int x1, y1, x2, y2, gx1, gy1, gx2, gy2, m;
@@ -145,11 +145,11 @@ int gobj_shouldvis(t_gobj *x, struct _glist *glist)
         /* return true if the text box should be drawn.  We don't show text
         boxes inside graphs---except comments, if we're doing the new
         (goprect) style. */
-        return (glist->gl_havewindow ||
+        return (glist->gl_haveWindow ||
             (ob->te_g.g_pd != canvas_class &&
                 ob->te_g.g_pd->c_behavior != &text_widgetBehavior) ||
-            (ob->te_g.g_pd == canvas_class && (((t_glist *)ob)->gl_isgraph)) ||
-            (glist->gl_goprect && (ob->te_type == TYPE_TEXT)));
+            (ob->te_g.g_pd == canvas_class && (((t_glist *)ob)->gl_isGraphOnParent)) ||
+            (glist->gl_hasRectangle && (ob->te_type == TYPE_TEXT)));
     }
     else return (1);
 }
@@ -235,7 +235,7 @@ static void glist_checkanddeselectall(t_glist *gl, t_gobj *g)
     if (pd_class(&g->g_pd) != canvas_class)
         return;
     gl2 = (t_glist *)g;
-    for (g2 = gl2->gl_list; g2; g2 = g2->g_next)
+    for (g2 = gl2->gl_graphics; g2; g2 = g2->g_next)
         glist_checkanddeselectall(gl2, g2);
     glist_noselect(gl2);
 }
@@ -316,10 +316,10 @@ void glist_selectall(t_glist *x)
     if (x->gl_editor)
     {
         glist_noselect(x);
-        if (x->gl_list)
+        if (x->gl_graphics)
         {
             t_selection *sel = (t_selection *)PD_MEMORY_GET(sizeof(*sel));
-            t_gobj *y = x->gl_list;
+            t_gobj *y = x->gl_graphics;
             x->gl_editor->e_selection = sel;
             sel->sel_what = y;
             gobj_select(y, x, 1);
@@ -343,7 +343,7 @@ int glist_getindex(t_glist *x, t_gobj *y)
     t_gobj *y2;
     int indx;
 
-    for (y2 = x->gl_list, indx = 0; y2 && y2 != y; y2 = y2->g_next)
+    for (y2 = x->gl_graphics, indx = 0; y2 && y2 != y; y2 = y2->g_next)
         indx++;
     return (indx);
 }
@@ -356,7 +356,7 @@ int glist_selectionindex(t_glist *x, t_gobj *y, int selected)
     t_gobj *y2;
     int indx;
 
-    for (y2 = x->gl_list, indx = 0; y2 && y2 != y; y2 = y2->g_next)
+    for (y2 = x->gl_graphics, indx = 0; y2 && y2 != y; y2 = y2->g_next)
         if (selected == glist_isselected(x, y2))
             indx++;
     return (indx);
@@ -366,7 +366,7 @@ static t_gobj *glist_nth(t_glist *x, int n)
 {
     t_gobj *y;
     int indx;
-    for (y = x->gl_list, indx = 0; y; y = y->g_next, indx++)
+    for (y = x->gl_graphics, indx = 0; y; y = y->g_next, indx++)
         if (indx == n)
             return (y);
     return (0);
@@ -595,7 +595,7 @@ static void canvas_undo_cut(t_glist *x, void *z, int action)
         {
             t_gobj *y1, *y2;
             glist_noselect(x);
-            for (y1 = x->gl_list; y2 = y1->g_next; y1 = y2)
+            for (y1 = x->gl_graphics; y2 = y1->g_next; y1 = y2)
                 ;
             if (y1)
             {
@@ -621,7 +621,7 @@ static void canvas_undo_cut(t_glist *x, void *z, int action)
         else if (mode == UCUT_TEXT)
         {
             t_gobj *y1, *y2;
-            for (y1 = x->gl_list; y2 = y1->g_next; y1 = y2)
+            for (y1 = x->gl_graphics; y2 = y1->g_next; y1 = y2)
                 ;
             if (y1)
                 glist_delete(x, y1);
@@ -670,7 +670,7 @@ static void *canvas_undo_set_move(t_glist *x, int selected)
         (selected ? glist_selectionindex(x, 0, 1) : glist_getindex(x, 0)));
     if (selected)
     {
-        for (y = x->gl_list, i = indx = 0; y; y = y->g_next, indx++)
+        for (y = x->gl_graphics, i = indx = 0; y; y = y->g_next, indx++)
             if (glist_isselected(x, y))
         {
             gobj_getrect(y, x, &x1, &y1, &x2, &y2);
@@ -682,7 +682,7 @@ static void *canvas_undo_set_move(t_glist *x, int selected)
     }
     else
     {
-        for (y = x->gl_list, indx = 0; y; y = y->g_next, indx++)
+        for (y = x->gl_graphics, indx = 0; y; y = y->g_next, indx++)
         {
             gobj_getrect(y, x, &x1, &y1, &x2, &y2);
             buf->u_vec[indx].e_index = indx;
@@ -770,7 +770,7 @@ static void glist_doreload(t_glist *gl, t_symbol *name, t_symbol *dir,
     t_gobj *g;
     int i, nobj = glist_getindex(gl, 0);  /* number of objects */
     int hadwindow = (gl->gl_editor != 0);
-    for (g = gl->gl_list, i = 0; g && i < nobj; i++)
+    for (g = gl->gl_graphics, i = 0; g && i < nobj; i++)
     {
         if (g != except && pd_class(&g->g_pd) == canvas_class &&
             canvas_isAbstraction((t_glist *)g) &&
@@ -879,7 +879,7 @@ static t_gobj *canvas_findhitbox(t_glist *x, int xpos, int ypos,
     t_gobj *y, *rval = 0;
     int x1, y1, x2, y2;
     *x1p = -0x7fffffff;
-    for (y = x->gl_list; y; y = y->g_next)
+    for (y = x->gl_graphics; y; y = y->g_next)
     {
         if (canvas_hitbox(x, y, xpos, ypos, &x1, &y1, &x2, &y2)
             && (x1 > *x1p))
@@ -944,7 +944,7 @@ void canvas_create_editor(t_glist *x)
     if (!x->gl_editor)
     {
         x->gl_editor = editor_new(x);
-        for (y = x->gl_list; y; y = y->g_next)
+        for (y = x->gl_graphics; y; y = y->g_next)
             if (ob = canvas_castToObjectIfBox(&y->g_pd))
                 rtext_new(x, ob);
     }
@@ -976,11 +976,11 @@ void canvas_vis(t_glist *x, t_float f)
     int flag = (f != 0);
     if (flag)
     {
-        /* If a subpatch/abstraction has GOP/gl_isgraph set, then it will have
+        /* If a subpatch/abstraction has GOP/gl_isGraphOnParent set, then it will have
          * a gl_editor already, if its not, it will not have a gl_editor.
          * canvas_create_editor(x) checks if a gl_editor is already created,
          * so its ok to run it on a canvas that already has a gl_editor. */
-        if (x->gl_editor && x->gl_havewindow)
+        if (x->gl_editor && x->gl_haveWindow)
         {           /* just put us in front */
             sys_vGui("::bringToFront .x%lx\n", x);  
         }
@@ -991,10 +991,10 @@ void canvas_vis(t_glist *x, t_float f)
             t_glist *c = x;
             canvas_create_editor(x);
             sys_vGui("::ui_patch::create .x%lx %d %d +%d+%d %d\n", x,
-                (int)(x->gl_screenx2 - x->gl_screenx1),
-                (int)(x->gl_screeny2 - x->gl_screeny1),
-                (int)(x->gl_screenx1), (int)(x->gl_screeny1),
-                x->gl_edit);
+                (int)(x->gl_bottomRightX - x->gl_topLeftX),
+                (int)(x->gl_bottomRightY - x->gl_topLeftY),
+                (int)(x->gl_topLeftX), (int)(x->gl_topLeftY),
+                x->gl_isEditMode);
            snprintf(cbuf, PD_STRING - 2, "::ui_patch::pdtk_canvas_setparents .x%lx",
                 (unsigned long)c);
             while (c->gl_owner) {
@@ -1007,14 +1007,14 @@ void canvas_vis(t_glist *x, t_float f)
             strcat(cbuf, "\n");
             // sys_gui(cbuf);
             canvas_updateTitle(x);
-            x->gl_havewindow = 1;
+            x->gl_haveWindow = 1;
         }
     }
     else    /* make invisible */
     {
         int i;
         t_glist *x2;
-        if (!x->gl_havewindow)
+        if (!x->gl_haveWindow)
         {
                 /* bug workaround -- a graph in a visible patch gets "invised"
                 when the patch is closed, and must lose the editor here.  It's
@@ -1039,11 +1039,11 @@ void canvas_vis(t_glist *x, t_float f)
             t_glist *gl2 = x->gl_owner;
             if (canvas_isVisible(gl2))
                 gobj_vis(&x->gl_obj.te_g, gl2, 0);
-            x->gl_havewindow = 0;
-            if (canvas_isVisible(gl2) && !gl2->gl_isdeleting)
+            x->gl_haveWindow = 0;
+            if (canvas_isVisible(gl2) && !gl2->gl_isDeleting)
                 gobj_vis(&x->gl_obj.te_g, gl2, 1);
         }
-        else x->gl_havewindow = 0;
+        else x->gl_haveWindow = 0;
     }
 }
 
@@ -1053,10 +1053,10 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
 {
     if (!flag && canvas_isGraphOnParent(x))
     {
-        if (x->gl_owner && !x->gl_loading && canvas_isVisible(x->gl_owner))
+        if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
             gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
-        x->gl_isgraph = 0;
-        if (x->gl_owner && !x->gl_loading && canvas_isVisible(x->gl_owner))
+        x->gl_isGraphOnParent = 0;
+        if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
         {
             gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
             canvas_fixlines(x->gl_owner, &x->gl_obj);
@@ -1064,20 +1064,20 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
     }
     else if (flag)
     {
-        if (x->gl_pixwidth <= 0)
-            x->gl_pixwidth = GLIST_DEFAULT_WIDTH;
+        if (x->gl_width <= 0)
+            x->gl_width = GLIST_DEFAULT_WIDTH;
 
-        if (x->gl_pixheight <= 0)
-            x->gl_pixheight = GLIST_DEFAULT_HEIGHT;
+        if (x->gl_height <= 0)
+            x->gl_height = GLIST_DEFAULT_HEIGHT;
 
-        if (x->gl_owner && !x->gl_loading && canvas_isVisible(x->gl_owner))
+        if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
             gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
-        x->gl_isgraph = 1;
-        x->gl_hidetext = !(!(flag&2));
-        x->gl_goprect = !nogoprect;
-        if (canvas_isVisible(x) && x->gl_goprect)
+        x->gl_isGraphOnParent = 1;
+        x->gl_hideText = !(!(flag&2));
+        x->gl_hasRectangle = !nogoprect;
+        if (canvas_isVisible(x) && x->gl_hasRectangle)
             glist_redraw(x);
-        if (x->gl_owner && !x->gl_loading && canvas_isVisible(x->gl_owner))
+        if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
         {
             gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
             canvas_fixlines(x->gl_owner, &x->gl_obj);
@@ -1099,20 +1099,20 @@ void canvas_properties(t_gobj*z, t_glist*unused)
         sprintf(graphbuf,
             "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
                 0., 0.,
-                canvas_isGraphOnParent(x) | (x->gl_hidetext << 1),//1,
-                x->gl_x1, x->gl_y1, x->gl_x2, x->gl_y2, 
-                (int)x->gl_pixwidth, (int)x->gl_pixheight,
-                (int)x->gl_xmargin, (int)x->gl_ymargin);
+                canvas_isGraphOnParent(x) | (x->gl_hideText << 1),//1,
+                x->gl_indexStart, x->gl_valueUp, x->gl_indexEnd, x->gl_valueDown, 
+                (int)x->gl_width, (int)x->gl_height,
+                (int)x->gl_marginX, (int)x->gl_marginY);
     else sprintf(graphbuf,
             "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
                 glist_dpixtodx(x, 1), glist_dpixtody(x, 1),
                 0,
                 0., 1., 1., -1., 
-                (int)x->gl_pixwidth, (int)x->gl_pixheight,
-                (int)x->gl_xmargin, (int)x->gl_ymargin);
+                (int)x->gl_width, (int)x->gl_height,
+                (int)x->gl_marginX, (int)x->gl_marginY);
     guistub_new(&x->gl_obj.te_g.g_pd, x, graphbuf);
         /* if any arrays are in the graph, put out their dialogs too */
-    for (y = x->gl_list; y; y = y->g_next)
+    for (y = x->gl_graphics; y; y = y->g_next)
         if (pd_class(&y->g_pd) == garray_class) 
             garray_properties((t_garray *)y);
 }
@@ -1139,10 +1139,10 @@ static void canvas_donecanvasdialog(t_glist *x,
     xmargin = atom_getFloatAtIndex(9, argc, argv);
     ymargin = atom_getFloatAtIndex(10, argc, argv);
     
-    x->gl_pixwidth = xpix;
-    x->gl_pixheight = ypix;
-    x->gl_xmargin = xmargin;
-    x->gl_ymargin = ymargin;
+    x->gl_width = xpix;
+    x->gl_height = ypix;
+    x->gl_marginX = xmargin;
+    x->gl_marginY = ymargin;
 
     // yperpix = -yperpix;
     if (xperpix == 0)
@@ -1153,11 +1153,11 @@ static void canvas_donecanvasdialog(t_glist *x,
     if (graphme)
     {
         if (x1 != x2)
-            x->gl_x1 = x1, x->gl_x2 = x2;
-        else x->gl_x1 = 0, x->gl_x2 = 1;
+            x->gl_indexStart = x1, x->gl_indexEnd = x2;
+        else x->gl_indexStart = 0, x->gl_indexEnd = 1;
         if (y1 != y2)
-            x->gl_y1 = y1, x->gl_y2 = y2;
-        else x->gl_y1 = 0, x->gl_y2 = 1;
+            x->gl_valueUp = y1, x->gl_valueDown = y2;
+        else x->gl_valueUp = 0, x->gl_valueDown = 1;
     }
     else
     {
@@ -1165,29 +1165,29 @@ static void canvas_donecanvasdialog(t_glist *x,
             redraw = 1;
         if (xperpix > 0)
         {
-            x->gl_x1 = 0;
-            x->gl_x2 = xperpix;
+            x->gl_indexStart = 0;
+            x->gl_indexEnd = xperpix;
         }
         else
         {
-            x->gl_x1 = -xperpix * (x->gl_screenx2 - x->gl_screenx1);
-            x->gl_x2 = x->gl_x1 + xperpix;
+            x->gl_indexStart = -xperpix * (x->gl_bottomRightX - x->gl_topLeftX);
+            x->gl_indexEnd = x->gl_indexStart + xperpix;
         }
         if (yperpix > 0)
         {
-            x->gl_y1 = 0;
-            x->gl_y2 = yperpix;
+            x->gl_valueUp = 0;
+            x->gl_valueDown = yperpix;
         }
         else
         {
-            x->gl_y1 = -yperpix * (x->gl_screeny2 - x->gl_screeny1);
-            x->gl_y2 = x->gl_y1 + yperpix;
+            x->gl_valueUp = -yperpix * (x->gl_bottomRightY - x->gl_topLeftY);
+            x->gl_valueDown = x->gl_valueUp + yperpix;
         }
     }
         /* LATER avoid doing 2 redraws here (possibly one inside setgraph) */
     canvas_setgraph(x, graphme, 0);
     canvas_dirty(x, 1);
-    if (x->gl_havewindow)
+    if (x->gl_haveWindow)
         canvas_redraw(x);
     else if (canvas_isVisible(x->gl_owner))
     {
@@ -1202,7 +1202,7 @@ static void canvas_done_popup(t_glist *x, t_float which, t_float xpos, t_float y
 {
     char pathbuf[PD_STRING], namebuf[PD_STRING];
     t_gobj *y;
-    for (y = x->gl_list; y; y = y->g_next)
+    for (y = x->gl_graphics; y; y = y->g_next)
     {
         int x1, y1, x2, y2;
         if (canvas_hitbox(x, y, xpos, ypos, &x1, &y1, &x2, &y2))
@@ -1277,7 +1277,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
     }
     
     shiftmod = (mod & SHIFTMOD);
-    runmode = ((mod & CTRLMOD) || (!x->gl_edit));
+    runmode = ((mod & CTRLMOD) || (!x->gl_isEditMode));
     altmod = (mod & ALTMOD);
     rightclick = (mod & RIGHTCLICK);
 
@@ -1309,12 +1309,12 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
 
     if (runmode && !rightclick)
     {
-        for (y = x->gl_list; y; y = y->g_next)
+        for (y = x->gl_graphics; y; y = y->g_next)
         {
                 /* check if the object wants to be clicked */
             if (canvas_hitbox(x, y, xpos, ypos, &x1, &y1, &x2, &y2)
                 && (clickreturned = gobj_click(y, x, xpos, ypos,
-                    shiftmod, ((mod & CTRLMOD) && (!x->gl_edit)) || altmod,
+                    shiftmod, ((mod & CTRLMOD) && (!x->gl_isEditMode)) || altmod,
                         0, doit)))
                             break;
         }
@@ -1602,7 +1602,7 @@ void canvas_doconnect(t_glist *x, int xpos, int ypos, int which, int doit)
 void canvas_selectinrect(t_glist *x, int lox, int loy, int hix, int hiy)
 {
     t_gobj *y;
-    for (y = x->gl_list; y; y = y->g_next)
+    for (y = x->gl_graphics; y; y = y->g_next)
     {
         int x1, y1, x2, y2;
         gobj_getrect(y, x, &x1, &y1, &x2, &y2);
@@ -1854,7 +1854,7 @@ void canvas_key(t_glist *x, t_symbol *s, int ac, t_atom *av)
     }
         /* if control key goes up or down, and if we're in edit mode, change
         cursor to indicate how the click action changes */
-    if (x && keynum == 0 && x->gl_edit &&
+    if (x && keynum == 0 && x->gl_isEditMode &&
         !strncmp(gotkeysym->s_name, "Control", 7))
             canvas_setcursor(x, down ?
                 CURSOR_NOTHING :CURSOR_EDIT_NOTHING);
@@ -1921,7 +1921,7 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos,
             t_object *ob = canvas_castToObjectIfBox(&y1->g_pd);
             if (ob && ob->te_g.g_pd->c_behavior == &text_widgetBehavior ||
                     (canvas_castToGlist(&ob->te_g.g_pd) &&
-                        !((t_glist *)ob)->gl_isgraph))
+                        !((t_glist *)ob)->gl_isGraphOnParent))
             {
                 wantwidth = wantwidth / font_getHostFontWidth(glist_getfont(x));
                 if (wantwidth < 1)
@@ -1934,8 +1934,8 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos,
             else if (ob && ob->te_g.g_pd == canvas_class)
             {
                 gobj_vis(y1, x, 0);
-                ((t_glist *)ob)->gl_pixwidth += xpos - x->gl_editor->e_xnew;
-                ((t_glist *)ob)->gl_pixheight += ypos - x->gl_editor->e_ynew;
+                ((t_glist *)ob)->gl_width += xpos - x->gl_editor->e_xnew;
+                ((t_glist *)ob)->gl_height += ypos - x->gl_editor->e_ynew;
                 x->gl_editor->e_xnew = xpos;
                 x->gl_editor->e_ynew = ypos;
                 canvas_fixlines(x, ob);
@@ -1971,9 +1971,9 @@ static t_glist *glist_finddirty(t_glist *x)
 {
     t_gobj *g;
     t_glist *g2;
-    if (x->gl_env && x->gl_dirty)
+    if (x->gl_environment && x->gl_isDirty)
         return (x);
-    for (g = x->gl_list; g; g = g->g_next)
+    for (g = x->gl_graphics; g; g = g->g_next)
         if (pd_class(&g->g_pd) == canvas_class &&
             (g2 = glist_finddirty((t_glist *)g)))
                 return (g2);
@@ -2059,7 +2059,7 @@ static void canvas_menufont(t_glist *x)
 /*  char buf[80];
     t_glist *x2 = canvas_getRoot(x);
     guistub_destroyWithKey(x2);
-    sprintf(buf, "pdtk_canvas_dofont %%s %d\n", x2->gl_font);
+    sprintf(buf, "pdtk_canvas_dofont %%s %d\n", x2->gl_fontSize);
     guistub_new(&x2->gl_obj.te_g.g_pd, &x2->gl_obj.te_g.g_pd, buf); */
 }
 
@@ -2109,7 +2109,7 @@ static int canvas_dofind(t_glist *x, int *myindexp)
     t_gobj *y;
     int findargc = buffer_size(canvas_findbuf), didit = 0;
     t_atom *findargv = buffer_atoms(canvas_findbuf);
-    for (y = x->gl_list; y; y = y->g_next)
+    for (y = x->gl_graphics; y; y = y->g_next)
     {
         t_object *ob = 0;
         if (ob = canvas_castToObjectIfBox(&y->g_pd))
@@ -2130,7 +2130,7 @@ static int canvas_dofind(t_glist *x, int *myindexp)
             }
         }
     }
-    for (y = x->gl_list; y; y = y->g_next)
+    for (y = x->gl_graphics; y; y = y->g_next)
         if (pd_class(&y->g_pd) == canvas_class)
             didit |= canvas_dofind((t_glist *)y, myindexp);
     return (didit);
@@ -2177,7 +2177,7 @@ void canvas_stowconnections(t_glist *x)
     t_outconnect *oc;
     if (!x->gl_editor) return;
         /* split list to "selected" and "unselected" parts */ 
-    for (y = x->gl_list; y; y = y2)
+    for (y = x->gl_graphics; y; y = y2)
     {
         y2 = y->g_next;
         if (glist_isselected(x, y))
@@ -2210,8 +2210,8 @@ void canvas_stowconnections(t_glist *x)
         }
     }
         /* move the selected part to the end */
-    if (!nonhead) x->gl_list = selhead;
-    else x->gl_list = nonhead, nontail->g_next = selhead;
+    if (!nonhead) x->gl_graphics = selhead;
+    else x->gl_graphics = nonhead, nontail->g_next = selhead;
 
         /* add connections to binbuf */
     buffer_reset(x->gl_editor->e_connectbuf);
@@ -2242,7 +2242,7 @@ static t_buffer *canvas_docopy(t_glist *x)
     t_linetraverser t;
     t_outconnect *oc;
     t_buffer *b = buffer_new();
-    for (y = x->gl_list; y; y = y->g_next)
+    for (y = x->gl_graphics; y; y = y->g_next)
     {
         if (glist_isselected(x, y))
             gobj_save(y, b);
@@ -2327,13 +2327,13 @@ static void canvas_doclear(t_glist *x)
         glist_noselect(x);
         if (pd_newest)
         {
-            for (y = x->gl_list; y; y = y->g_next)
+            for (y = x->gl_graphics; y; y = y->g_next)
                 if (&y->g_pd == pd_newest) glist_select(x, y);
         }
     }
     while (1)   /* this is pretty wierd...  should rewrite it */
     {
-        for (y = x->gl_list; y; y = y2)
+        for (y = x->gl_graphics; y; y = y2)
         {
             y2 = y->g_next;
             if (glist_isselected(x, y))
@@ -2413,13 +2413,13 @@ static void canvas_dopaste(t_glist *x, t_buffer *b)
 
     canvas_editmode(x, 1.);
     glist_noselect(x);
-    for (g2 = x->gl_list, nbox = 0; g2; g2 = g2->g_next) nbox++;
+    for (g2 = x->gl_graphics, nbox = 0; g2; g2 = g2->g_next) nbox++;
 
     paste_onset = nbox;
     paste_canvas = x;
 
     buffer_eval(b, 0, 0, 0);
-    for (g2 = x->gl_list, count = 0; g2; g2 = g2->g_next, count++)
+    for (g2 = x->gl_graphics, count = 0; g2; g2 = g2->g_next, count++)
         if (count >= nbox)
             glist_select(x, g2);
     paste_canvas = 0;
@@ -2472,12 +2472,12 @@ static void canvas_selectall(t_glist *x)
     t_gobj *y;
     if (!x->gl_editor)
         return;
-    if (!x->gl_edit)
+    if (!x->gl_isEditMode)
         canvas_editmode(x, 1);
             /* if everyone is already selected deselect everyone */
     if (!glist_selectionindex(x, 0, 0))
         glist_noselect(x);
-    else for (y = x->gl_list; y; y = y->g_next)
+    else for (y = x->gl_graphics; y; y = y->g_next)
     {
         if (!glist_isselected(x, y))
             glist_select(x, y);
@@ -2500,7 +2500,7 @@ static void canvas_reselect(t_glist *x)
             int nobjwas = glist_getindex(x, 0),
                 indx = canvas_getIndexOfObject(x, x->gl_editor->e_selection->sel_what);
             glist_noselect(x);
-            for (g = x->gl_list; g; g = g->g_next)
+            for (g = x->gl_graphics; g; g = g->g_next)
                 if (g == gwas)
             {
                 glist_select(x, g);
@@ -2508,7 +2508,7 @@ static void canvas_reselect(t_glist *x)
             }
                 /* "gwas" must have disappeared; just search to the last
                 object and select it */
-            for (g = x->gl_list; g; g = g->g_next)
+            for (g = x->gl_graphics; g; g = g->g_next)
                 if (!g->g_next)
                     glist_select(x, g);
         }
@@ -2530,9 +2530,9 @@ void canvas_connect(t_glist *x, t_float fwhoout, t_float foutno,
     t_outconnect *oc;
     int nin = whoin, nout = whoout;
     if (paste_canvas == x) whoout += paste_onset, whoin += paste_onset;
-    for (src = x->gl_list; whoout; src = src->g_next, whoout--)
+    for (src = x->gl_graphics; whoout; src = src->g_next, whoout--)
         if (!src->g_next) goto bad; /* bug fix thanks to Hannes */
-    for (sink = x->gl_list; whoin; sink = sink->g_next, whoin--)
+    for (sink = x->gl_graphics; whoin; sink = sink->g_next, whoin--)
         if (!sink->g_next) goto bad;
     
         /* check they're both patchable objects */
@@ -2584,12 +2584,12 @@ static void canvas_tidy(t_glist *x)
         "motion");
 
         /* tidy horizontally */
-    for (y = x->gl_list; y; y = y->g_next)
+    for (y = x->gl_graphics; y; y = y->g_next)
         if (all || glist_isselected(x, y))
     {
         gobj_getrect(y, x, &ax1, &ay1, &ax2, &ay2);
 
-        for (y2 = x->gl_list; y2; y2 = y2->g_next)
+        for (y2 = x->gl_graphics; y2; y2 = y2->g_next)
             if (all || glist_isselected(x, y2))
         {
             gobj_getrect(y2, x, &bx1, &by1, &bx2, &by2);
@@ -2598,7 +2598,7 @@ static void canvas_tidy(t_glist *x)
                     goto nothorizhead;
         }
 
-        for (y2 = x->gl_list; y2; y2 = y2->g_next)
+        for (y2 = x->gl_graphics; y2; y2 = y2->g_next)
             if (all || glist_isselected(x, y2))
         {
             gobj_getrect(y2, x, &bx1, &by1, &bx2, &by2);
@@ -2610,11 +2610,11 @@ static void canvas_tidy(t_glist *x)
     }
         /* tidy vertically.  First guess the user's favorite vertical spacing */
     for (i = NHIST, ip = histogram; i--; ip++) *ip = 0;
-    for (y = x->gl_list; y; y = y->g_next)
+    for (y = x->gl_graphics; y; y = y->g_next)
         if (all || glist_isselected(x, y))
     {
         gobj_getrect(y, x, &ax1, &ay1, &ax2, &ay2);
-        for (y2 = x->gl_list; y2; y2 = y2->g_next)
+        for (y2 = x->gl_graphics; y2; y2 = y2->g_next)
             if (all || glist_isselected(x, y2))
         {
             gobj_getrect(y2, x, &bx1, &by1, &bx2, &by2);
@@ -2637,12 +2637,12 @@ static void canvas_tidy(t_glist *x)
         }
     }
     post("best vertical distance %d", bestdist);
-    for (y = x->gl_list; y; y = y->g_next)
+    for (y = x->gl_graphics; y; y = y->g_next)
         if (all || glist_isselected(x, y))
     {
         int keep = 1;
         gobj_getrect(y, x, &ax1, &ay1, &ax2, &ay2);
-        for (y2 = x->gl_list; y2; y2 = y2->g_next)
+        for (y2 = x->gl_graphics; y2; y2 = y2->g_next)
             if (all || glist_isselected(x, y2))
         {
             gobj_getrect(y2, x, &bx1, &by1, &bx2, &by2);
@@ -2653,7 +2653,7 @@ static void canvas_tidy(t_glist *x)
         while (keep)
         {
             keep = 0;
-            for (y2 = x->gl_list; y2; y2 = y2->g_next)
+            for (y2 = x->gl_graphics; y2; y2 = y2->g_next)
                 if (all || glist_isselected(x, y2))
             {
                 gobj_getrect(y2, x, &bx1, &by1, &bx2, &by2);
@@ -2694,15 +2694,15 @@ void global_key (void *dummy, t_symbol *s, int ac, t_atom *av)
 
 void canvas_editmode(t_glist *x, t_float state)
 {
-    if (x->gl_edit == (unsigned int) state)
+    if (x->gl_isEditMode == (unsigned int) state)
         return;
-    x->gl_edit = (unsigned int) state;
-    if (x->gl_edit && canvas_isVisible(x) && canvas_isTopLevel(x))
+    x->gl_isEditMode = (unsigned int) state;
+    if (x->gl_isEditMode && canvas_isVisible(x) && canvas_isTopLevel(x))
     {
         t_gobj *g;
         t_object *ob;
         canvas_setcursor(x, CURSOR_EDIT_NOTHING);
-        for (g = x->gl_list; g; g = g->g_next)
+        for (g = x->gl_graphics; g; g = g->g_next)
             if ((ob = canvas_castToObjectIfBox(&g->g_pd)) && ob->te_type == TYPE_TEXT)
         {
             t_boxtext *y = glist_findrtext(x, ob);
@@ -2721,7 +2721,7 @@ void canvas_editmode(t_glist *x, t_float state)
     }
     if (canvas_isVisible(x))
       sys_vGui("::ui_patch::setEditMode .x%lx %d\n",
-          glist_getcanvas(x), x->gl_edit);
+          glist_getcanvas(x), x->gl_isEditMode);
 }
 
     /* called by canvas_font below */
@@ -2729,12 +2729,12 @@ static void canvas_dofont(t_glist *x, t_float font, t_float xresize,
     t_float yresize)
 {
     t_gobj *y;
-    x->gl_font = font;
+    x->gl_fontSize = font;
     if (xresize != 1 || yresize != 1)
     {
         canvas_setundo(x, canvas_undo_move, canvas_undo_set_move(x, 0),
             "motion");
-        for (y = x->gl_list; y; y = y->g_next)
+        for (y = x->gl_graphics; y; y = y->g_next)
         {
             int x1, x2, y1, y2, nx1, ny1;
             gobj_getrect(y, x, &x1, &y1, &x2, &y2);
@@ -2745,7 +2745,7 @@ static void canvas_dofont(t_glist *x, t_float font, t_float xresize,
     }
     if (canvas_isVisible(x))
         glist_redraw(x);
-    for (y = x->gl_list; y; y = y->g_next)
+    for (y = x->gl_graphics; y; y = y->g_next)
         if (canvas_castToGlist(&y->g_pd)  && !canvas_isAbstraction((t_glist *)y))
             canvas_dofont((t_glist *)y, font, xresize, yresize);
 }

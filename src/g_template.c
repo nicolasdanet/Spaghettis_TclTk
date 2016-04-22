@@ -287,15 +287,15 @@ static t_scalar *template_conformscalar(t_template *tfrom, t_template *tto,
             scfrom->sc_vector, x->sc_vector);
             
             /* replace the old one with the new one in the list */
-        if (glist->gl_list == &scfrom->sc_g)
+        if (glist->gl_graphics == &scfrom->sc_g)
         {
-            glist->gl_list = &x->sc_g;
+            glist->gl_graphics = &x->sc_g;
             x->sc_g.g_next = scfrom->sc_g.g_next;
         }
         else
         {
             t_gobj *y, *y2;
-            for (y = glist->gl_list; y2 = y->g_next; y = y2)
+            for (y = glist->gl_graphics; y2 = y->g_next; y = y2)
                 if (y2 == &scfrom->sc_g)
             {
                 x->sc_g.g_next = y2->g_next;
@@ -382,7 +382,7 @@ static void template_conformglist(t_template *tfrom, t_template *tto,
 {
     t_gobj *g;
     /* post("conform glist %s", glist->gl_name->s_name); */
-    for (g = glist->gl_list; g; g = g->g_next)
+    for (g = glist->gl_graphics; g; g = g->g_next)
     {
         if (pd_class(&g->g_pd) == scalar_class)
             g = &template_conformscalar(tfrom, tto, conformaction,
@@ -1547,7 +1547,7 @@ static void plot_getrect(t_gobj *z, t_glist *glist,
     t_float xpix, ypix, wpix;
     t_fielddescriptor *xfielddesc, *yfielddesc, *wfielddesc;
         /* if we're the only plot in the glist claim the whole thing */
-    if (glist->gl_list && !glist->gl_list->g_next)
+    if (glist->gl_graphics && !glist->gl_graphics->g_next)
     {
         *xp1 = *yp1 = -0x7fffffff;
         *xp2 = *yp2 = 0x7fffffff;
@@ -1594,7 +1594,7 @@ static void plot_getrect(t_gobj *z, t_glist *glist,
                         + yonset);
                 else yval = 0;
                 useyloc = basey + yloc + fielddesc_cvttocoord(yfielddesc, yval);
-                for (y = elemtemplatecanvas->gl_list; y; y = y->g_next)
+                for (y = elemtemplatecanvas->gl_graphics; y; y = y->g_next)
                 {
                     int xx1, xx2, yy1, yy2;
                     t_parentwidgetbehavior *wb = class_getParentWidget(pd_class (&y->g_pd));
@@ -1888,7 +1888,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                 else yval = 0;
                 useyloc = basey + yloc +
                     fielddesc_cvttocoord(yfielddesc, yval);
-                for (y = elemtemplatecanvas->gl_list; y; y = y->g_next)
+                for (y = elemtemplatecanvas->gl_graphics; y; y = y->g_next)
                 {
                     t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
                     if (!wb) continue;
@@ -1908,7 +1908,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
             for (i = 0; i < nelem; i++)
             {
                 t_gobj *y;
-                for (y = elemtemplatecanvas->gl_list; y; y = y->g_next)
+                for (y = elemtemplatecanvas->gl_graphics; y; y = y->g_next)
                 {
                     t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
                     if (!wb) continue;
@@ -2097,8 +2097,8 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
             /* if we're a garray, the only one here, and if we appear to have
             only a 'y' field, click always succeeds and furthermore we'll
             call "motion" later. */
-        if (glist->gl_list && pd_class(&glist->gl_list->g_pd) == garray_class
-            && !glist->gl_list->g_next &&
+        if (glist->gl_graphics && pd_class(&glist->gl_graphics->g_pd) == garray_class
+            && !glist->gl_graphics->g_next &&
                 elemsize == sizeof(t_word))
         {
             int xval = glist_pixelstox(glist, xpix);

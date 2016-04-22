@@ -59,7 +59,7 @@ static void *table_donew(t_symbol *s, int size, int flags,
 
     pd_newest = &x->gl_obj.te_g.g_pd;     /* mimic action of canvas_pop() */
     stack_pop(&x->gl_obj.te_g.g_pd);
-    x->gl_loading = 0;
+    x->gl_isLoading = 0;
 
     return (x);
 }
@@ -83,16 +83,16 @@ t_class *array_define_class;
 
 static void array_define_yrange(t_glist *x, t_float ylo, t_float yhi)
 {
-    t_glist *gl = (x->gl_list ? canvas_castToGlist(&x->gl_list->g_pd) : 0);
-    if (gl && gl->gl_list && pd_class(&gl->gl_list->g_pd) == garray_class)
+    t_glist *gl = (x->gl_graphics ? canvas_castToGlist(&x->gl_graphics->g_pd) : 0);
+    if (gl && gl->gl_graphics && pd_class(&gl->gl_graphics->g_pd) == garray_class)
     {
-        int n = garray_getarray((t_garray *)gl->gl_list)->a_n;
-        pd_vMessage(&x->gl_list->g_pd, gensym ("bounds"),
+        int n = garray_getarray((t_garray *)gl->gl_graphics)->a_n;
+        pd_vMessage(&x->gl_graphics->g_pd, gensym ("bounds"),
             "ffff", 0., yhi, (double)(n == 1 ? n : n-1), ylo);
-        /*pd_vMessage(&x->gl_list->g_pd, gensym ("xlabel"),
+        /*pd_vMessage(&x->gl_graphics->g_pd, gensym ("xlabel"),
             "fff", ylo + glist_pixelstoy(gl, 2) - glist_pixelstoy(gl, 0),
                 0., (float)(n-1));
-        pd_vMessage(&x->gl_list->g_pd, gensym ("ylabel"),
+        pd_vMessage(&x->gl_graphics->g_pd, gensym ("ylabel"),
             "fff", glist_pixelstox(gl, 0) - glist_pixelstox(gl, 5), ylo, yhi);*/
     }
     else { PD_BUG; }
@@ -168,13 +168,13 @@ void garray_savecontentsto(t_garray *x, t_buffer *b);
 void array_define_save(t_gobj *z, t_buffer *bb)
 {
     t_glist *x = (t_glist *)z;
-    t_glist *gl = (x->gl_list ? canvas_castToGlist(&x->gl_list->g_pd) : 0);
+    t_glist *gl = (x->gl_graphics ? canvas_castToGlist(&x->gl_graphics->g_pd) : 0);
     buffer_vAppend(bb, "ssff", &s__X, gensym ("obj"),
         (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
     buffer_serialize(bb, x->gl_obj.te_buffer);
     buffer_appendSemicolon(bb);
 
-    garray_savecontentsto((t_garray *)gl->gl_list, bb);
+    garray_savecontentsto((t_garray *)gl->gl_graphics, bb);
     object_saveWidth(&x->gl_obj, bb);
 }
 
@@ -184,15 +184,15 @@ t_scalar *garray_getscalar(t_garray *x);
     whomever is bound to the given symbol */
 static void array_define_send(t_glist *x, t_symbol *s)
 {
-    t_glist *gl = (x->gl_list ? canvas_castToGlist(&x->gl_list->g_pd) : 0);
+    t_glist *gl = (x->gl_graphics ? canvas_castToGlist(&x->gl_graphics->g_pd) : 0);
     if (!s->s_thing)
         post_error ("array_define_send: %s: no such object", s->s_name);
-    else if (gl && gl->gl_list && pd_class(&gl->gl_list->g_pd) == garray_class)
+    else if (gl && gl->gl_graphics && pd_class(&gl->gl_graphics->g_pd) == garray_class)
     {
         t_gpointer gp;
         gpointer_init(&gp);
         gpointer_setglist(&gp, gl,
-            garray_getscalar((t_garray *)gl->gl_list));
+            garray_getscalar((t_garray *)gl->gl_graphics));
         pd_pointer(s->s_thing, &gp);
         gpointer_unset(&gp);
     }
@@ -203,9 +203,9 @@ static void array_define_send(t_glist *x, t_symbol *s)
 static void array_define_anything(t_glist *x,
     t_symbol *s, int argc, t_atom *argv)
 {
-    t_glist *gl = (x->gl_list ? canvas_castToGlist(&x->gl_list->g_pd) : 0);
-    if (gl && gl->gl_list && pd_class(&gl->gl_list->g_pd) == garray_class)
-        pd_message(&gl->gl_list->g_pd, s, argc, argv);
+    t_glist *gl = (x->gl_graphics ? canvas_castToGlist(&x->gl_graphics->g_pd) : 0);
+    if (gl && gl->gl_graphics && pd_class(&gl->gl_graphics->g_pd) == garray_class)
+        pd_message(&gl->gl_graphics->g_pd, s, argc, argv);
     else { PD_BUG; }
 }
 

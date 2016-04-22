@@ -30,11 +30,11 @@ void canvas_drawredrect(t_glist *x, int doit)
         sys_vGui(".x%lx.c create line\
             %d %d %d %d %d %d %d %d %d %d -fill #ff8080 -tags GOP\n",
             glist_getcanvas(x),
-            x->gl_xmargin, x->gl_ymargin,
-            x->gl_xmargin + x->gl_pixwidth, x->gl_ymargin,
-            x->gl_xmargin + x->gl_pixwidth, x->gl_ymargin + x->gl_pixheight,
-            x->gl_xmargin, x->gl_ymargin + x->gl_pixheight,
-            x->gl_xmargin, x->gl_ymargin);
+            x->gl_marginX, x->gl_marginY,
+            x->gl_marginX + x->gl_width, x->gl_marginY,
+            x->gl_marginX + x->gl_width, x->gl_marginY + x->gl_height,
+            x->gl_marginX, x->gl_marginY + x->gl_height,
+            x->gl_marginX, x->gl_marginY);
     else sys_vGui(".x%lx.c delete GOP\n",  glist_getcanvas(x));
 }
 
@@ -72,7 +72,7 @@ static void glist_redrawall(t_glist *gl, int action)
 {
     t_gobj *g;
     int vis = canvas_isVisible(gl);
-    for (g = gl->gl_list; g; g = g->g_next)
+    for (g = gl->gl_graphics; g; g = g->g_next)
     {
         t_class *cl;
         if (vis && g->g_pd == scalar_class)
@@ -110,7 +110,7 @@ void canvas_redrawallfortemplatecanvas(t_glist *x, int action)
     t_gobj *g;
     t_template *tmpl;
     t_symbol *s1 = gensym ("struct");
-    for (g = x->gl_list; g; g = g->g_next)
+    for (g = x->gl_graphics; g; g = g->g_next)
     {
         t_object *ob = canvas_castToObjectIfBox(&g->g_pd);
         t_atom *argv;

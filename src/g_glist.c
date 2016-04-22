@@ -82,9 +82,9 @@ t_canvasenvironment *canvas_getEnvironment (t_glist *glist)
 {
     PD_ASSERT (glist);
     
-    while (!glist->gl_env) { if (!(glist = glist->gl_owner)) { PD_BUG; } }
+    while (!glist->gl_environment) { if (!(glist = glist->gl_owner)) { PD_BUG; } }
     
-    return glist->gl_env;
+    return glist->gl_environment;
 }
 
 t_glist *canvas_getRoot (t_glist *glist)
@@ -101,22 +101,22 @@ t_glist *canvas_getRoot (t_glist *glist)
 
 int canvas_isGraphOnParent (t_glist *glist)
 {
-    return glist->gl_isgraph;
+    return glist->gl_isGraphOnParent;
 }
 
 int canvas_isVisible (t_glist *glist)
 {
-    return (!glist->gl_loading && glist_getcanvas (glist)->gl_mapped);
+    return (!glist->gl_isLoading && glist_getcanvas (glist)->gl_isMapped);
 }
 
 int canvas_isTopLevel (t_glist *x)
 {
-    return (x->gl_havewindow || !x->gl_isgraph);
+    return (x->gl_haveWindow || !x->gl_isGraphOnParent);
 }
 
 int canvas_isAbstraction (t_glist *x)
 {
-    return (x->gl_env != NULL);
+    return (x->gl_environment != NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -162,7 +162,7 @@ void canvas_rename (t_glist *glist, t_symbol *name, t_symbol *directory)
     glist->gl_name = name;
     canvas_bind (glist);
     
-    if (glist->gl_havewindow) { canvas_updateTitle (glist); }
+    if (glist->gl_haveWindow) { canvas_updateTitle (glist); }
     if (directory && directory != &s_) {
         canvas_getEnvironment (glist)->ce_directory = directory; 
     }
@@ -174,7 +174,7 @@ void canvas_updateTitle (t_glist *glist)
         glist,
         canvas_getEnvironment (glist)->ce_directory->s_name,
         glist->gl_name->s_name,
-        glist->gl_dirty);
+        glist->gl_isDirty);
 }
 
 t_symbol *canvas_makeBindSymbol (t_symbol *s)
@@ -213,7 +213,7 @@ int canvas_getIndexOfObject (t_glist *glist, t_gobj *object)
 {
     t_gobj *t = NULL;
     int n = 0;
-    for (t = glist->gl_list; t && t != object; t = t->g_next) { n++; }
+    for (t = glist->gl_graphics; t && t != object; t = t->g_next) { n++; }
     return n;
 }
 
@@ -246,7 +246,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
     t_gobj   *y = NULL;
     t_object *o = NULL;
     
-    if (!t->tr_srcObject) { y = cast_gobj (t->tr_owner->gl_list); }
+    if (!t->tr_srcObject) { y = cast_gobj (t->tr_owner->gl_graphics); }
     else {
         y = cast_gobj (t->tr_srcObject)->g_next;
     }
@@ -349,7 +349,7 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     char *str;
     t_glist *x = (t_glist *)pd_new(canvas_class);
     x->gl_stub = gstub_new (x, NULL);
-    x->gl_valid = ++canvas_magic;
+    x->gl_magic = ++canvas_magic;
     x->gl_obj.te_type = TYPE_OBJECT;
     if (!*sym->s_name)
     {
@@ -381,24 +381,24 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
         px1 = 100, py1 = 20, px2 = 100 + GLIST_DEFAULT_WIDTH,
             py2 = 20 + GLIST_DEFAULT_HEIGHT;
     x->gl_name = sym;
-    x->gl_x1 = x1;
-    x->gl_x2 = x2;
-    x->gl_y1 = y1;
-    x->gl_y2 = y2;
+    x->gl_indexStart = x1;
+    x->gl_indexEnd = x2;
+    x->gl_valueUp = y1;
+    x->gl_valueDown = y2;
     x->gl_obj.te_xCoordinate = px1;
     x->gl_obj.te_yCoordinate = py1;
-    x->gl_pixwidth = px2 - px1;
-    x->gl_pixheight = py2 - py1;
-    x->gl_font =  (canvas_getCurrent() ?
-        canvas_getCurrent()->gl_font : font_getDefaultFontSize());
-    x->gl_screenx1 = 0;
-    x->gl_screeny1 = CANVAS_DEFAULT_Y;
-    x->gl_screenx2 = 450;
-    x->gl_screeny2 = 300;
+    x->gl_width = px2 - px1;
+    x->gl_height = py2 - py1;
+    x->gl_fontSize =  (canvas_getCurrent() ?
+        canvas_getCurrent()->gl_fontSize : font_getDefaultFontSize());
+    x->gl_topLeftX = 0;
+    x->gl_topLeftY = CANVAS_DEFAULT_Y;
+    x->gl_bottomRightX = 450;
+    x->gl_bottomRightY = 300;
     x->gl_owner = g;
     canvas_bind(x);
-    x->gl_isgraph = 1;
-    x->gl_goprect = 0;
+    x->gl_isGraphOnParent = 1;
+    x->gl_hasRectangle = 0;
     x->gl_obj.te_buffer = buffer_new();
     buffer_vAppend(x->gl_obj.te_buffer, "s", gensym ("graph"));
     if (!menu)
@@ -409,16 +409,16 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
 
 int glist_getfont(t_glist *x)
 {
-    while (!x->gl_env)
+    while (!x->gl_environment)
         if (!(x = x->gl_owner)) { PD_BUG; }
-    return (x->gl_font);
+    return (x->gl_fontSize);
 }
 
 void canvas_popabstraction(t_glist *x)
 {
     pd_newest = &x->gl_obj.te_g.g_pd;
     stack_pop(&x->gl_obj.te_g.g_pd);
-    x->gl_loading = 0;
+    x->gl_isLoading = 0;
     canvas_resortinlets(x);
     canvas_resortoutlets(x);
 }
@@ -426,13 +426,14 @@ void canvas_popabstraction(t_glist *x)
     /* return true if the "canvas" object should be treated as a text
     object.  This is true for abstractions but also for "table"s... */
 /* JMZ: add a flag to gop-abstractions to hide the title */
+
 int canvas_showtext(t_glist *x)
 {
     t_atom *argv = (x->gl_obj.te_buffer? buffer_atoms(x->gl_obj.te_buffer):0);
     int argc = (x->gl_obj.te_buffer? buffer_size(x->gl_obj.te_buffer) : 0);
     int isarray = (argc && argv[0].a_type == A_SYMBOL &&
         argv[0].a_w.w_symbol == gensym ("graph"));
-    if(x->gl_hidetext)
+    if(x->gl_hideText)
       return 0;
     else
       return (!isarray);
@@ -458,7 +459,7 @@ int canvas_open(t_glist *x, const char *name, const char *ext,
         in this and parent environments */
     /*
     for (y = x; y; y = y->gl_owner)
-        if (y->gl_env)
+        if (y->gl_environment)
     {
         t_pathlist *nl;
         t_glist *x2 = x;
@@ -467,7 +468,7 @@ int canvas_open(t_glist *x, const char *name, const char *ext,
             x2 = x2->gl_owner;
         dir = (x2 ? canvas_getDirectory(x2)->s_name : ".");
         
-        for (nl = y->gl_env->ce_path; nl; nl = nl->pl_next)
+        for (nl = y->gl_environment->ce_path; nl; nl = nl->pl_next)
         {
             char realname[PD_STRING];
             if (0)
