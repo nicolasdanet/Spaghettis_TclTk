@@ -95,6 +95,13 @@ t_glist *canvas_getRoot (t_glist *glist)
     }
 }
 
+int canvas_getFontSize (t_glist *glist)
+{
+    while (!glist->gl_environment) { if (!(glist = glist->gl_owner)) { PD_BUG; } }
+    
+    return glist->gl_fontSize;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -187,6 +194,18 @@ t_symbol *canvas_makeBindSymbol (t_symbol *s)
     return (gensym (t));
 }
 
+int canvas_showGraphOnParentTitle (t_glist *glist)
+{
+    if (glist->gl_hideText) { return 0; }
+    else {
+    //
+    int argc     = (cast_object (glist)->te_buffer ? buffer_size (cast_object (glist)->te_buffer) : 0);
+    t_atom *argv = (cast_object (glist)->te_buffer ? buffer_atoms (cast_object (glist)->te_buffer) : NULL);
+    return !(argc && IS_SYMBOL (argv) && GET_SYMBOL (argv) == gensym ("graph"));
+    //
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -246,7 +265,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
     t_gobj   *y = NULL;
     t_object *o = NULL;
     
-    if (!t->tr_srcObject) { y = cast_gobj (t->tr_owner->gl_graphics); }
+    if (!t->tr_srcObject) { y = t->tr_owner->gl_graphics; }
     else {
         y = cast_gobj (t->tr_srcObject)->g_next;
     }
@@ -407,13 +426,6 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     return (x);
 }
 
-int glist_getfont(t_glist *x)
-{
-    while (!x->gl_environment)
-        if (!(x = x->gl_owner)) { PD_BUG; }
-    return (x->gl_fontSize);
-}
-
 void canvas_popabstraction(t_glist *x)
 {
     pd_newest = &x->gl_obj.te_g.g_pd;
@@ -421,22 +433,6 @@ void canvas_popabstraction(t_glist *x)
     x->gl_isLoading = 0;
     canvas_resortinlets(x);
     canvas_resortoutlets(x);
-}
-
-    /* return true if the "canvas" object should be treated as a text
-    object.  This is true for abstractions but also for "table"s... */
-/* JMZ: add a flag to gop-abstractions to hide the title */
-
-int canvas_showtext(t_glist *x)
-{
-    t_atom *argv = (x->gl_obj.te_buffer? buffer_atoms(x->gl_obj.te_buffer):0);
-    int argc = (x->gl_obj.te_buffer? buffer_size(x->gl_obj.te_buffer) : 0);
-    int isarray = (argc && argv[0].a_type == A_SYMBOL &&
-        argv[0].a_w.w_symbol == gensym ("graph"));
-    if(x->gl_hideText)
-      return 0;
-    else
-      return (!isarray);
 }
 
 // -----------------------------------------------------------------------------------------------------------

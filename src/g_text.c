@@ -823,7 +823,7 @@ static void gatom_getwherelabel(t_gatom *x, t_glist *glist, int *xp, int *yp)
     {
         *xp = x1 - 3 -
             strlen(canvas_expandDollar(x->a_glist, x->a_label)->s_name) *
-            font_getHostFontWidth(glist_getfont(glist));
+            font_getHostFontWidth(canvas_getFontSize(glist));
         *yp = y1 + 2;
     }
     else if (x->a_wherelabel == ATOM_LABELRIGHT)
@@ -834,7 +834,7 @@ static void gatom_getwherelabel(t_gatom *x, t_glist *glist, int *xp, int *yp)
     else if (x->a_wherelabel == ATOM_LABELUP)
     {
         *xp = x1 - 1;
-        *yp = y1 - 1 - font_getHostFontHeight(glist_getfont(glist));;
+        *yp = y1 - 1 - font_getHostFontHeight(canvas_getFontSize(glist));;
     }
     else
     {
@@ -866,7 +866,7 @@ static void gatom_vis(t_gobj *z, t_glist *glist, int vis)
                 glist_getcanvas(glist), x,
                 (double)x1, (double)y1,
                 canvas_expandDollar(x->a_glist, x->a_label)->s_name,
-                font_getHostFontSize(glist_getfont(glist)),
+                font_getHostFontSize(canvas_getFontSize(glist)),
                 "black");
         }
         else sys_vGui(".x%lx.c delete %lx.l\n", glist_getcanvas(glist), x);
@@ -999,7 +999,7 @@ static void text_getrect(t_gobj *z, t_glist *glist,
     
     if (x->te_type == TYPE_ATOM && x->te_width > 0)
     {
-        int font = glist_getfont(glist);
+        int font = canvas_getFontSize(glist);
         int fontwidth = font_getHostFontWidth(font), fontheight = font_getHostFontHeight(font);
         width = (x->te_width > 0 ? x->te_width : 6) * fontwidth + 2;
         height = fontheight + 1; /* borrowed from TMARGIN, etc, in g_rtext.c */

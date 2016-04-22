@@ -1923,7 +1923,7 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos,
                     (canvas_castToGlist(&ob->te_g.g_pd) &&
                         !((t_glist *)ob)->gl_isGraphOnParent))
             {
-                wantwidth = wantwidth / font_getHostFontWidth(glist_getfont(x));
+                wantwidth = wantwidth / font_getHostFontWidth(canvas_getFontSize(x));
                 if (wantwidth < 1)
                     wantwidth = 1;
                 ob->te_width = wantwidth;

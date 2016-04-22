@@ -320,14 +320,13 @@ int                 canvas_isGraphOnParent              (t_glist *glist);
 int                 canvas_isVisible                    (t_glist *glist);
 int                 canvas_isTopLevel                   (t_glist *glist);
 int                 canvas_isAbstraction                (t_glist *glist);
-
 void                canvas_bind                         (t_glist *glist);
 void                canvas_unbind                       (t_glist *glist);
-
 t_error             canvas_makeFilePath                 (t_glist *glist, char *name, char *dest, size_t size);
 void                canvas_rename                       (t_glist *glist, t_symbol *name, t_symbol *directory);
 void                canvas_updateTitle                  (t_glist *glist);
-
+int                 canvas_showGraphOnParentTitle       (t_glist *glist);
+int                 canvas_getFontSize                  (t_glist *glist);
 int                 canvas_getIndexOfObject             (t_glist *glist, t_gobj *object);
 
 void                canvas_traverseLinesStart           (t_linetraverser *t, t_glist *glist);
@@ -352,10 +351,7 @@ t_glist             *glist_addglist                     (t_glist *x,
                                                             t_float px2,
                                                             t_float py2);
 
-
-int                 glist_getfont                       (t_glist *x);
 void                canvas_popabstraction               (t_glist *x);
-int                 canvas_showtext                     (t_glist *x);
 
 void                canvas_drawredrect                  (t_glist *x, int doit);
 void                canvas_redraw                       (t_glist *x);

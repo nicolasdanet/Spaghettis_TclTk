@@ -204,8 +204,8 @@ static void rtext_senditup(t_boxtext *x, int action, int *widthp, int *heightp,
     if (pd_class(&x->x_text->te_g.g_pd) == canvas_class &&
         ((t_glist *)(x->x_text))->gl_isGraphOnParent &&
         ((t_glist *)(x->x_text))->gl_hasRectangle)
-            font =  glist_getfont((t_glist *)(x->x_text));
-    else font = glist_getfont(x->x_glist);
+            font =  canvas_getFontSize((t_glist *)(x->x_text));
+    else font = canvas_getFontSize(x->x_glist);
     fontwidth = font_getHostFontWidth(font);
     fontheight = font_getHostFontHeight(font);
     findx = (*widthp + (fontwidth/2)) / fontwidth;

@@ -2466,7 +2466,7 @@ static void drawnumber_getrect(t_gobj *z, t_glist *glist,
         basex + fielddesc_getcoord(&x->x_xloc, template, data, 0));
     yloc = glist_ytopixels(glist,
         basey + fielddesc_getcoord(&x->x_yloc, template, data, 0));
-    font = glist_getfont(glist);
+    font = canvas_getFontSize(glist);
     fontwidth = font_getHostFontWidth(font);
         fontheight = font_getHostFontHeight(font);
     drawnumber_getbuf(x, data, template, buf);
@@ -2532,7 +2532,7 @@ static void drawnumber_vis(t_gobj *z, t_glist *glist,
         sys_vGui(".x%lx.c create text %d %d -anchor nw -fill %s -text {%s}",
                 glist_getcanvas(glist), xloc, yloc, colorstring, buf);
         sys_vGui(" -font [::getFont %d]",
-                 font_getHostFontSize(glist_getfont(glist)));
+                 font_getHostFontSize(canvas_getFontSize(glist)));
         sys_vGui(" -tags [list drawnumber%lx label]\n", data);
     }
     else sys_vGui(".x%lx.c delete drawnumber%lx\n", glist_getcanvas(glist), data);
