@@ -215,7 +215,7 @@ typedef struct _editor {
 // -----------------------------------------------------------------------------------------------------------
 
 struct _glist {  
-    t_object            gl_obj;                 /* MUST be the first. */
+    t_object            gl_obj;         /* MUST be the first. */
     t_gobj              *gl_list;
     t_gstub             *gl_stub;
     int                 gl_valid;
@@ -275,7 +275,7 @@ struct _array {
 // -----------------------------------------------------------------------------------------------------------
 
 struct _template {
-    t_pd                t_pdobj;                /* MUST be the first. */
+    t_pd                t_pdobj;        /* MUST be the first. */
     t_gtemplate         *t_list;  
     t_symbol            *t_sym;    
     int                 t_n;    
@@ -286,7 +286,7 @@ struct _template {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define canvas_castToObjectIfBox(x) (pd_class (x)->c_isBox ? (t_object *)(x) : NULL)
+#define canvas_castToObjectIfBox(x)     (pd_class (x)->c_isBox ? (t_object *)(x) : NULL)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -306,18 +306,24 @@ void                guiconnect_release                  (t_guiconnect *x, double
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void                canvas_bind                         (t_glist *glist);
-void                canvas_unbind                       (t_glist *glist);
-
 void                canvas_newPatch                     (void *dummy, t_symbol *name, t_symbol *directory);
 void                canvas_setFileNameAndDirectory      (t_symbol *name, t_symbol *directory);
 void                canvas_setArguments                 (int argc, t_atom *argv);
 
 t_glist             *canvas_getCurrent                  (void);
 t_canvasenvironment *canvas_getEnvironment              (t_glist *glist);
+t_glist             *canvas_getRoot                     (t_glist *glist);
 t_symbol            *canvas_expandDollar                (t_glist *glist, t_symbol *s);
 t_symbol            *canvas_makeBindSymbol              (t_symbol *s);
-    
+
+int                 canvas_isGraphOnParent              (t_glist *glist);
+int                 canvas_isVisible                    (t_glist *glist);
+int                 canvas_isTopLevel                   (t_glist *glist);
+int                 canvas_isAbstraction                (t_glist *glist);
+
+void                canvas_bind                         (t_glist *glist);
+void                canvas_unbind                       (t_glist *glist);
+
 t_error             canvas_makeFilePath                 (t_glist *glist, char *name, char *dest, size_t size);
 void                canvas_rename                       (t_glist *glist, t_symbol *name, t_symbol *directory);
 void                canvas_updateTitle                  (t_glist *glist);
@@ -335,8 +341,6 @@ int                 canvas_open                         (t_glist *glist,
                                                             size_t size,
                                                             int isBinary);
 
-t_glist             *canvas_getroot                     (t_glist *x);
-
 t_glist             *glist_addglist                     (t_glist *x,
                                                             t_symbol *sym,
                                                             t_float x1,
@@ -348,11 +352,8 @@ t_glist             *glist_addglist                     (t_glist *x,
                                                             t_float px2,
                                                             t_float py2);
 
-int                 glist_isgraph                       (t_glist *x);
-int                 glist_isvisible                     (t_glist *x);
-int                 glist_istoplevel                    (t_glist *x);
+
 int                 glist_getfont                       (t_glist *x);
-int                 canvas_isabstraction                (t_glist *x);
 void                canvas_popabstraction               (t_glist *x);
 int                 canvas_showtext                     (t_glist *x);
 

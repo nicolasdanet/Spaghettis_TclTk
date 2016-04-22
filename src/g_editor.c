@@ -396,7 +396,7 @@ void canvas_setundo(t_glist *x, t_undofn undofn, void *buf,
     canvas_undo_buf = buf;
     canvas_undo_whatnext = UNDO_UNDO;
     canvas_undo_name = name;
-    /* if (x && glist_isvisible(x) && glist_istoplevel(x))
+    /* if (x && canvas_isVisible(x) && canvas_isTopLevel(x))
             //
         sys_vGui("pdtk_undomenu .x%lx %s no\n", x, name);
     else if (hadone)
@@ -421,7 +421,7 @@ static void canvas_undo(t_glist *x)
         /* post("undo"); */
         (*canvas_undo_fn)(canvas_undo_canvas, canvas_undo_buf, UNDO_UNDO);
             /* enable redo in menu */
-        /*if (glist_isvisible(x) && glist_istoplevel(x))
+        /*if (canvas_isVisible(x) && canvas_isTopLevel(x))
             sys_vGui("pdtk_undomenu .x%lx no %s\n", x, canvas_undo_name); */
         canvas_undo_whatnext = UNDO_REDO;
     }
@@ -438,7 +438,7 @@ static void canvas_redo(t_glist *x)
         /* post("redo"); */
         (*canvas_undo_fn)(canvas_undo_canvas, canvas_undo_buf, UNDO_REDO);
             /* enable undo in menu */
-        /*if (glist_isvisible(x) && glist_istoplevel(x))
+        /*if (canvas_isVisible(x) && canvas_isTopLevel(x))
             sys_vGui("pdtk_undomenu .x%lx %s no\n", x, canvas_undo_name);*/
         canvas_undo_whatnext = UNDO_UNDO;
     }
@@ -773,7 +773,7 @@ static void glist_doreload(t_glist *gl, t_symbol *name, t_symbol *dir,
     for (g = gl->gl_list, i = 0; g && i < nobj; i++)
     {
         if (g != except && pd_class(&g->g_pd) == canvas_class &&
-            canvas_isabstraction((t_glist *)g) &&
+            canvas_isAbstraction((t_glist *)g) &&
                 ((t_glist *)g)->gl_name == name &&
                     canvas_getEnvironment ((t_glist *)g)->ce_directory == dir)
         {
@@ -1026,7 +1026,7 @@ void canvas_vis(t_glist *x, t_float f)
             return;
         }
         glist_noselect(x);
-        if (glist_isvisible(x))
+        if (canvas_isVisible(x))
             canvas_map(x, 0);
         canvas_destroy_editor(x);
         sys_vGui("destroy .x%lx\n", x);
@@ -1034,13 +1034,13 @@ void canvas_vis(t_glist *x, t_float f)
             ;
             /* if we're a graph on our parent, and if the parent exists
                and is visible, show ourselves on parent. */
-        if (glist_isgraph(x) && x->gl_owner)
+        if (canvas_isGraphOnParent(x) && x->gl_owner)
         {
             t_glist *gl2 = x->gl_owner;
-            if (glist_isvisible(gl2))
+            if (canvas_isVisible(gl2))
                 gobj_vis(&x->gl_obj.te_g, gl2, 0);
             x->gl_havewindow = 0;
-            if (glist_isvisible(gl2) && !gl2->gl_isdeleting)
+            if (canvas_isVisible(gl2) && !gl2->gl_isdeleting)
                 gobj_vis(&x->gl_obj.te_g, gl2, 1);
         }
         else x->gl_havewindow = 0;
@@ -1051,12 +1051,12 @@ void canvas_vis(t_glist *x, t_float f)
     any missing paramters and redraw things if necessary. */
 void canvas_setgraph(t_glist *x, int flag, int nogoprect)
 {
-    if (!flag && glist_isgraph(x))
+    if (!flag && canvas_isGraphOnParent(x))
     {
-        if (x->gl_owner && !x->gl_loading && glist_isvisible(x->gl_owner))
+        if (x->gl_owner && !x->gl_loading && canvas_isVisible(x->gl_owner))
             gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
         x->gl_isgraph = 0;
-        if (x->gl_owner && !x->gl_loading && glist_isvisible(x->gl_owner))
+        if (x->gl_owner && !x->gl_loading && canvas_isVisible(x->gl_owner))
         {
             gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
             canvas_fixlines(x->gl_owner, &x->gl_obj);
@@ -1070,14 +1070,14 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
         if (x->gl_pixheight <= 0)
             x->gl_pixheight = GLIST_DEFAULT_HEIGHT;
 
-        if (x->gl_owner && !x->gl_loading && glist_isvisible(x->gl_owner))
+        if (x->gl_owner && !x->gl_loading && canvas_isVisible(x->gl_owner))
             gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
         x->gl_isgraph = 1;
         x->gl_hidetext = !(!(flag&2));
         x->gl_goprect = !nogoprect;
-        if (glist_isvisible(x) && x->gl_goprect)
+        if (canvas_isVisible(x) && x->gl_goprect)
             glist_redraw(x);
-        if (x->gl_owner && !x->gl_loading && glist_isvisible(x->gl_owner))
+        if (x->gl_owner && !x->gl_loading && canvas_isVisible(x->gl_owner))
         {
             gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
             canvas_fixlines(x->gl_owner, &x->gl_obj);
@@ -1095,11 +1095,11 @@ void canvas_properties(t_gobj*z, t_glist*unused)
     t_glist *x = (t_glist*)z;
     t_gobj *y;
     char graphbuf[200];
-    if (glist_isgraph(x) != 0)
+    if (canvas_isGraphOnParent(x) != 0)
         sprintf(graphbuf,
             "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
                 0., 0.,
-                glist_isgraph(x) ,//1,
+                canvas_isGraphOnParent(x) | (x->gl_hidetext << 1),//1,
                 x->gl_x1, x->gl_y1, x->gl_x2, x->gl_y2, 
                 (int)x->gl_pixwidth, (int)x->gl_pixheight,
                 (int)x->gl_xmargin, (int)x->gl_ymargin);
@@ -1189,7 +1189,7 @@ static void canvas_donecanvasdialog(t_glist *x,
     canvas_dirty(x, 1);
     if (x->gl_havewindow)
         canvas_redraw(x);
-    else if (glist_isvisible(x->gl_owner))
+    else if (canvas_isVisible(x->gl_owner))
     {
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
@@ -1225,7 +1225,7 @@ static void canvas_done_popup(t_glist *x, t_float which, t_float xpos, t_float y
             {
                 char *dir;
                 if (pd_class(&y->g_pd) == canvas_class &&
-                    canvas_isabstraction((t_glist *)y))
+                    canvas_isAbstraction((t_glist *)y))
                 {
                     t_object *ob = (t_object *)y;
                     int ac = buffer_size(ob->te_buffer);
@@ -1664,15 +1664,15 @@ void canvas_mouseup(t_glist *x,
                 /* first though, check we aren't an abstraction with a
                 dirty sub-patch that would be discarded if we edit this. */
             if (pd_class(&g->g_pd) == canvas_class &&
-                canvas_isabstraction((t_glist *)g) &&
+                canvas_isAbstraction((t_glist *)g) &&
                     (gl2 = glist_finddirty((t_glist *)g)))
             {
                 pd_vMessage(&gl2->gl_obj.te_g.g_pd, gensym ("menu-open"), "");
                 x->gl_editor->e_onmotion = ACTION_NONE;
                 sys_vGui(
 "::ui_confirm::checkAction .x%lx { Discard changes to %s? } { ::ui_interface::pdsend .x%lx dirty 0 } { no }\n",
-                    canvas_getroot(gl2),
-                        canvas_getroot(gl2)->gl_name->s_name, gl2);
+                    canvas_getRoot(gl2),
+                        canvas_getRoot(gl2)->gl_name->s_name, gl2);
                 return;
             }
                 /* OK, activate it */
@@ -1991,7 +1991,7 @@ void global_shouldQuit(void *dummy)
     {
         canvas_vis(g2, 1);
             sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx menuclose 3 } {}\n",
-                     canvas_getroot(g2), g2);
+                     canvas_getRoot(g2), g2);
         return;
     }
     if (0)
@@ -2019,13 +2019,13 @@ void canvas_menuclose(t_glist *x, t_float fforce)
         {
             pd_vMessage(&g->gl_obj.te_g.g_pd, gensym ("menu-open"), "");
             sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx menuclose 2 } {}\n",
-                     canvas_getroot(g), g);
+                     canvas_getRoot(g), g);
             return;
         }
         else if (0)
         {
             sys_vGui("::ui_confirm::checkAction .x%lx { Close this window? } { ::ui_interface::pdsend .x%lx menuclose 1 } { yes }\n",
-                     canvas_getroot(x), x);
+                     canvas_getRoot(x), x);
         }
         else pd_free(&x->gl_obj.te_g.g_pd);
     }
@@ -2041,7 +2041,7 @@ void canvas_menuclose(t_glist *x, t_float fforce)
         {
             pd_vMessage(&g->gl_obj.te_g.g_pd, gensym ("menu-open"), "");
             sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx menuclose 2 } {}\n",
-                     canvas_getroot(x), g);
+                     canvas_getRoot(x), g);
             return;
         }
         else pd_free(&x->gl_obj.te_g.g_pd);
@@ -2057,7 +2057,7 @@ void canvas_menuclose(t_glist *x, t_float fforce)
 static void canvas_menufont(t_glist *x)
 {
 /*  char buf[80];
-    t_glist *x2 = canvas_getroot(x);
+    t_glist *x2 = canvas_getRoot(x);
     guistub_destroyWithKey(x2);
     sprintf(buf, "pdtk_canvas_dofont %%s %d\n", x2->gl_font);
     guistub_new(&x2->gl_obj.te_g.g_pd, &x2->gl_obj.te_g.g_pd, buf); */
@@ -2550,7 +2550,7 @@ void canvas_connect(t_glist *x, t_float fwhoout, t_float foutno,
             inlet_new(objsink, &objsink->te_g.g_pd, 0, 0);
 
     if (!(oc = object_connect(objsrc, outno, objsink, inno))) goto bad;
-    if (glist_isvisible(x))
+    if (canvas_isVisible(x))
     {
         sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
             glist_getcanvas(x), 0, 0, 0, 0,
@@ -2697,7 +2697,7 @@ void canvas_editmode(t_glist *x, t_float state)
     if (x->gl_edit == (unsigned int) state)
         return;
     x->gl_edit = (unsigned int) state;
-    if (x->gl_edit && glist_isvisible(x) && glist_istoplevel(x))
+    if (x->gl_edit && canvas_isVisible(x) && canvas_isTopLevel(x))
     {
         t_gobj *g;
         t_object *ob;
@@ -2713,13 +2713,13 @@ void canvas_editmode(t_glist *x, t_float state)
     else
     {
         glist_noselect(x);
-        if (glist_isvisible(x) && glist_istoplevel(x))
+        if (canvas_isVisible(x) && canvas_isTopLevel(x))
         {
             canvas_setcursor(x, CURSOR_NOTHING);
             sys_vGui(".x%lx.c delete commentbar\n", glist_getcanvas(x));
         }
     }
-    if (glist_isvisible(x))
+    if (canvas_isVisible(x))
       sys_vGui("::ui_patch::setEditMode .x%lx %d\n",
           glist_getcanvas(x), x->gl_edit);
 }
@@ -2743,10 +2743,10 @@ static void canvas_dofont(t_glist *x, t_float font, t_float xresize,
             gobj_displace(y, x, nx1-x1, ny1-y1);
         }
     }
-    if (glist_isvisible(x))
+    if (canvas_isVisible(x))
         glist_redraw(x);
     for (y = x->gl_list; y; y = y->g_next)
-        if (canvas_castToGlist(&y->g_pd)  && !canvas_isabstraction((t_glist *)y))
+        if (canvas_castToGlist(&y->g_pd)  && !canvas_isAbstraction((t_glist *)y))
             canvas_dofont((t_glist *)y, font, xresize, yresize);
 }
 
@@ -2755,7 +2755,7 @@ static void canvas_font(t_glist *x, t_float font, t_float resize,
     t_float whichresize)
 {
     t_float realresize, realresx = 1, realresy = 1;
-    t_glist *x2 = canvas_getroot(x);
+    t_glist *x2 = canvas_getRoot(x);
     if (!resize) realresize = 1;
     else
     {

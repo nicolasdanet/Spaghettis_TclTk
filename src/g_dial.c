@@ -96,7 +96,7 @@ static void dial_setString (t_dial *x)
 
 static void dial_drawUpdate (t_dial *x, t_glist *glist)
 {
-    if (glist_isvisible (glist)) {
+    if (canvas_isVisible (glist)) {
     //
     dial_setString (x);
     

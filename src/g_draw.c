@@ -40,7 +40,7 @@ void canvas_drawredrect(t_glist *x, int doit)
 
 void canvas_redraw(t_glist *x)
 {
-    if (glist_isvisible(x))
+    if (canvas_isVisible(x))
     {
         canvas_map(x, 0);
         canvas_map(x, 1);
@@ -71,7 +71,7 @@ void canvas_drawlines(t_glist *x)
 static void glist_redrawall(t_glist *gl, int action)
 {
     t_gobj *g;
-    int vis = glist_isvisible(gl);
+    int vis = canvas_isVisible(gl);
     for (g = gl->gl_list; g; g = g->g_next)
     {
         t_class *cl;
@@ -79,12 +79,12 @@ static void glist_redrawall(t_glist *gl, int action)
         {
             if (action == 1)
             {
-                if (glist_isvisible(gl))
+                if (canvas_isVisible(gl))
                     gobj_vis(g, gl, 1);
             }
             else if (action == 2)
             {
-                if (glist_isvisible(gl))
+                if (canvas_isVisible(gl))
                     gobj_vis(g, gl, 0);
             }
             else scalar_redraw((t_scalar *)g, gl);
@@ -154,7 +154,7 @@ void canvas_deletelines(t_glist *x, t_object *text)
     {
         if (t.tr_srcObject == text || t.tr_destObject == text)
         {
-            if (glist_isvisible(x))
+            if (canvas_isVisible(x))
             {
                 sys_vGui(".x%lx.c delete l%lx\n",
                     glist_getcanvas(x), oc);
@@ -176,7 +176,7 @@ void canvas_deletelinesforio(t_glist *x, t_object *text,
         if ((t.tr_srcObject == text && t.tr_srcOutlet == outp) ||
             (t.tr_destObject == text && t.tr_destInlet == inp))
         {
-            if (glist_isvisible(x))
+            if (canvas_isVisible(x))
             {
                 sys_vGui(".x%lx.c delete l%lx\n",
                     glist_getcanvas(x), oc);

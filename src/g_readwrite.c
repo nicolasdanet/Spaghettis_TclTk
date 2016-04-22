@@ -124,7 +124,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
     t_symbol *templatesym;
     t_scalar *sc;
     int nextmsg = *p_nextmsg;
-    int wasvis = glist_isvisible(x);
+    int wasvis = canvas_isVisible(x);
 
     if (nextmsg >= natoms || vec[nextmsg].a_type != A_SYMBOL)
     {
@@ -258,7 +258,7 @@ static void glist_doread(t_glist *x, t_symbol *filename, t_symbol *format,
 {
     t_buffer *b = buffer_new();
     t_glist *canvas = glist_getcanvas(x);
-    int wasvis = glist_isvisible(canvas);
+    int wasvis = canvas_isVisible(canvas);
     int cr = 0, natoms, nline, message, nextmsg = 0, i, j;
     t_atom *vec;
 
@@ -343,7 +343,7 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
         memcpy(&((t_scalar *)oldone)->sc_vector, &((t_scalar *)newone)->sc_vector,
             template->t_n * sizeof(t_word));
         pd_free(&newone->g_pd);
-        if (glist_isvisible(x))
+        if (canvas_isVisible(x))
         {
             gobj_vis(oldone, x, 0);
             gobj_vis(oldone, x, 1);
@@ -763,14 +763,14 @@ static void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir,
 
 void canvas_menusaveas(t_glist *x, float fdestroy)
 {
-    t_glist *x2 = canvas_getroot(x);
+    t_glist *x2 = canvas_getRoot(x);
     sys_vGui("::ui_file::saveAs .x%lx {%s} {%s} %d\n", x2,
         x2->gl_name->s_name, canvas_getEnvironment (x2)->ce_directory->s_name, (fdestroy != 0));
 }
 
 void canvas_menusave(t_glist *x, float fdestroy)
 {
-    t_glist *x2 = canvas_getroot(x);
+    t_glist *x2 = canvas_getRoot(x);
     char *name = x2->gl_name->s_name;
     if (*name && strncmp(name, "Untitled", 8)
             && (strlen(name) < 4 || strcmp(name + strlen(name)-4, ".pat")

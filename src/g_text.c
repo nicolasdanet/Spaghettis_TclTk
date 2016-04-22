@@ -203,7 +203,7 @@ void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
             (t_int)atom_getFloatAtIndex(1, argc, argv), 0, 0, b);
     }
         /* JMZ: don't go into interactive mode in a closed canvas */
-    else if (!glist_isvisible(gl))
+    else if (!canvas_isVisible(gl))
         post("unable to create stub object in closed canvas!");
     else
     {
@@ -425,7 +425,7 @@ static void message_click(t_message *x,
         t_float ctrl, t_float alt)
 {
     message_float(x, 0);
-    if (glist_isvisible(x->m_glist))
+    if (canvas_isVisible(x->m_glist))
     {
         t_boxtext *y = glist_findrtext(x->m_glist, &x->m_text);
         sys_vGui(".x%lx.c itemconfigure %sR -width 5\n", 
@@ -436,7 +436,7 @@ static void message_click(t_message *x,
 
 static void message_tick(t_message *x)
 {
-    if (glist_isvisible(x->m_glist))
+    if (canvas_isVisible(x->m_glist))
     {
         t_boxtext *y = glist_findrtext(x->m_glist, &x->m_text);
         sys_vGui(".x%lx.c itemconfigure %sR -width 1\n",
@@ -466,7 +466,7 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         if (argc > 2) buffer_deserialize(x->m_text.te_buffer, argc-2, argv+2);
         glist_add(gl, &x->m_text.te_g);
     }
-    else if (!glist_isvisible(gl))
+    else if (!canvas_isVisible(gl))
         post("unable to create stub message in closed canvas!");
     else
     {
@@ -548,7 +548,7 @@ static void gatom_retext(t_gatom *x, int senditup)
 {
     buffer_reset(x->a_text.te_buffer);
     buffer_append(x->a_text.te_buffer, 1, &x->a_atom);
-    if (senditup && glist_isvisible(x->a_glist))
+    if (senditup && canvas_isVisible(x->a_glist))
         interface_guiQueueAddIfNotAlreadyThere(x, x->a_glist, gatom_redraw);
 }
 
@@ -1036,7 +1036,7 @@ static void text_displace(t_gobj *z, t_glist *glist,
     t_object *x = (t_object *)z;
     x->te_xCoordinate += dx;
     x->te_yCoordinate += dy;
-    if (glist_isvisible(glist))
+    if (canvas_isVisible(glist))
     {
         t_boxtext *y = glist_findrtext(glist, x);
         rtext_displace(y, dx, dy);
@@ -1051,7 +1051,7 @@ static void text_select(t_gobj *z, t_glist *glist, int state)
     t_object *x = (t_object *)z;
     t_boxtext *y = glist_findrtext(glist, x);
     rtext_select(y, state);
-    if (glist_isvisible(glist) && gobj_shouldvis(&x->te_g, glist))
+    if (canvas_isVisible(glist) && gobj_shouldvis(&x->te_g, glist))
         sys_vGui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 
             rtext_gettag(y), (state? "blue" : "black"));
 }
@@ -1138,7 +1138,7 @@ void text_save(t_gobj *z, t_buffer *b)
             a canvas that's an abstraction, the saveto method does the work */
         if (class_hasMethod (pd_class ((t_pd *)x), gensym ("saveto")) &&
             !((pd_class((t_pd *)x) == canvas_class) && 
-                (canvas_isabstraction((t_glist *)x)
+                (canvas_isAbstraction((t_glist *)x)
                     || canvas_istable((t_glist *)x))))
         {  
             mess1((t_pd *)x, gensym ("saveto"), b);

@@ -252,7 +252,7 @@ void iemgui_setLabel (void *x, t_iem *iem, t_symbol *s)
     iem->iem_unexpandedLabel = t;
     iem->iem_label = iemgui_expandDollar (iem->iem_glist, t);
 
-    if (glist_isvisible (iem->iem_glist)) {
+    if (canvas_isVisible (iem->iem_glist)) {
         sys_vGui (".x%lx.c itemconfigure %lxLABEL -text {%s}\n",    // --
             glist_getcanvas (iem->iem_glist),
             x,
@@ -267,7 +267,7 @@ void iemgui_setLabelPosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom
     iem->iem_labelX = (int)atom_getFloatAtIndex (0, argc, argv);
     iem->iem_labelY = (int)atom_getFloatAtIndex (1, argc, argv);
     
-    if (glist_isvisible (iem->iem_glist)) {
+    if (canvas_isVisible (iem->iem_glist)) {
         sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
             glist_getcanvas (iem->iem_glist),
             x,
@@ -285,7 +285,7 @@ void iemgui_setLabelFont (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *ar
     int f = (int)atom_getFloatAtIndex (1, argc, argv);
     f = PD_MAX (f, IEM_MINIMUM_FONTSIZE);
     iem->iem_fontSize = f;
-    if (glist_isvisible (iem->iem_glist)) {
+    if (canvas_isVisible (iem->iem_glist)) {
         sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d]\n",      // --
             glist_getcanvas (iem->iem_glist), 
             x,
@@ -299,21 +299,21 @@ void iemgui_setBackgroundColor (void *x, t_iem *iem, t_symbol *s, int argc, t_at
 {
     iem->iem_colorBackground = iemgui_colorRGB (argc, argv);
     
-    if (glist_isvisible (iem->iem_glist)) { (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_CONFIG); }
+    if (canvas_isVisible (iem->iem_glist)) { (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_CONFIG); }
 }
 
 void iemgui_setForegroundColor (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
 {
     iem->iem_colorForeground = iemgui_colorRGB (argc, argv);
     
-    if (glist_isvisible (iem->iem_glist)) { (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_CONFIG); }
+    if (canvas_isVisible (iem->iem_glist)) { (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_CONFIG); }
 }
 
 void iemgui_setLabelColor (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
 {
     iem->iem_colorLabel = iemgui_colorRGB (argc, argv);
     
-    if (glist_isvisible (iem->iem_glist)) { (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_CONFIG); }
+    if (canvas_isVisible (iem->iem_glist)) { (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_CONFIG); }
 }
 
 void iemgui_setPosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
@@ -342,7 +342,7 @@ void iemgui_movePosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *ar
 
 void iemgui_boxChanged (void *x, t_iem *iem)
 {
-    if (glist_isvisible (iem->iem_glist)) {
+    if (canvas_isVisible (iem->iem_glist)) {
     //
     (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_CONFIG);
     (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_MOVE);

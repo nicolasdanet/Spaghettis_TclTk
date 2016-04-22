@@ -53,7 +53,7 @@ void glist_add(t_glist *x, t_gobj *y)
         x->gl_goprect = 1;
         canvas_drawredrect(x, 1);
     }
-    if (glist_isvisible(x))
+    if (canvas_isVisible(x))
         gobj_vis(y, x, 1);
     if (class_hasDrawCommand(y->g_pd)) 
         canvas_redrawallfortemplate(template_findbyname(canvas_makeBindSymbol(
@@ -96,7 +96,7 @@ void glist_delete(t_glist *x, t_gobj *y)
         if (pd_class(&y->g_pd) == canvas_class)
         {
             t_glist *gl = (t_glist *)y;
-            if (gl->gl_isgraph && glist_isvisible(x))
+            if (gl->gl_isgraph && canvas_isVisible(x))
             {
                 char tag[80];
                 sprintf(tag, "graph%lx", (t_int)gl);
@@ -104,7 +104,7 @@ void glist_delete(t_glist *x, t_gobj *y)
             }
             else
             {
-                if (glist_isvisible(x))
+                if (canvas_isVisible(x))
                     text_eraseborder(&gl->gl_obj, x,
                         rtext_gettag(glist_findrtext(x, &gl->gl_obj)));
             }
@@ -116,7 +116,7 @@ void glist_delete(t_glist *x, t_gobj *y)
         canvas_redrawallfortemplate(template_findbyname(canvas_makeBindSymbol(
             glist_getcanvas(x)->gl_name)), 2);
     gobj_delete(y, x);
-    if (glist_isvisible(canvas))
+    if (canvas_isVisible(canvas))
     {
         gobj_vis(y, x, 0);
     }
@@ -291,7 +291,7 @@ void glist_sort(t_glist *x)
 t_inlet *canvas_addinlet(t_glist *x, t_pd *who, t_symbol *s)
 {
     t_inlet *ip = inlet_new(&x->gl_obj, who, s, 0);
-    if (!x->gl_loading && x->gl_owner && glist_isvisible(x->gl_owner))
+    if (!x->gl_loading && x->gl_owner && canvas_isVisible(x->gl_owner))
     {
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
@@ -304,8 +304,8 @@ t_inlet *canvas_addinlet(t_glist *x, t_pd *who, t_symbol *s)
 void canvas_rminlet(t_glist *x, t_inlet *ip)
 {
     t_glist *owner = x->gl_owner;
-    int redraw = (owner && glist_isvisible(owner) && (!owner->gl_isdeleting)
-        && glist_istoplevel(owner));
+    int redraw = (owner && canvas_isVisible(owner) && (!owner->gl_isdeleting)
+        && canvas_isTopLevel(owner));
     
     if (owner) canvas_deletelinesforio(owner, &x->gl_obj, ip, 0);
     if (redraw)
@@ -356,14 +356,14 @@ void canvas_resortinlets(t_glist *x)
         object_moveInletFirst(&x->gl_obj, ip);
     }
     PD_MEMORY_FREE(vec);
-    if (x->gl_owner && glist_isvisible(x->gl_owner))
+    if (x->gl_owner && canvas_isVisible(x->gl_owner))
         canvas_fixlines(x->gl_owner, &x->gl_obj);
 }
 
 t_outlet *canvas_addoutlet(t_glist *x, t_pd *who, t_symbol *s)
 {
     t_outlet *op = outlet_new(&x->gl_obj, s);
-    if (!x->gl_loading && x->gl_owner && glist_isvisible(x->gl_owner))
+    if (!x->gl_loading && x->gl_owner && canvas_isVisible(x->gl_owner))
     {
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
@@ -376,8 +376,8 @@ t_outlet *canvas_addoutlet(t_glist *x, t_pd *who, t_symbol *s)
 void canvas_rmoutlet(t_glist *x, t_outlet *op)
 {
     t_glist *owner = x->gl_owner;
-    int redraw = (owner && glist_isvisible(owner) && (!owner->gl_isdeleting)
-        && glist_istoplevel(owner));
+    int redraw = (owner && canvas_isVisible(owner) && (!owner->gl_isdeleting)
+        && canvas_isTopLevel(owner));
     
     if (owner) canvas_deletelinesforio(owner, &x->gl_obj, 0, op);
     if (redraw)
@@ -428,7 +428,7 @@ void canvas_resortoutlets(t_glist *x)
         object_moveOutletFirst(&x->gl_obj, ip);
     }
     PD_MEMORY_FREE(vec);
-    if (x->gl_owner && glist_isvisible(x->gl_owner))
+    if (x->gl_owner && canvas_isVisible(x->gl_owner))
         canvas_fixlines(x->gl_owner, &x->gl_obj);
 }
 
@@ -633,10 +633,10 @@ int text_ypix(t_object *x, t_glist *glist)
     rectangle on the parent, you shouldn't have to redraw the window!  */
 void glist_redraw(t_glist *x)
 {  
-    if (glist_isvisible(x))
+    if (canvas_isVisible(x))
     {
             /* LATER fix the graph_vis() code to handle both cases */
-        if (glist_istoplevel(x))
+        if (canvas_isTopLevel(x))
         {
             t_gobj *g;
             t_linetraverser t;
@@ -658,7 +658,7 @@ void glist_redraw(t_glist *x)
                 canvas_drawredrect(x, 1);
             }
         }
-        if (x->gl_owner && glist_isvisible(x->gl_owner))
+        if (x->gl_owner && canvas_isVisible(x->gl_owner))
         {
             graph_vis(&x->gl_obj.te_g, x->gl_owner, 0); 
             graph_vis(&x->gl_obj.te_g, x->gl_owner, 1);
@@ -972,7 +972,7 @@ static void graph_delete(t_gobj *z, t_glist *glist)
     t_gobj *y;
     while (y = x->gl_list)
         glist_delete(x, y);
-    if (glist_isvisible(x))
+    if (canvas_isVisible(x))
         text_widgetBehavior.w_fnDelete(z, glist);
             /* if we have connections to the actual 'canvas' object, zap
             them as well (e.g., array or scalar objects that are implemented

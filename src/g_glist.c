@@ -21,6 +21,7 @@
 extern t_class      *canvas_class;
 extern t_class      *array_define_class;
 extern t_pd         *pd_newest;
+
 extern t_symbol     *canvas_fileName;
 extern t_symbol     *canvas_directory;
 extern t_atom       *canvas_argv;
@@ -33,24 +34,6 @@ extern int          canvas_magic;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-void canvas_bind (t_glist *glist)
-{
-    if (strcmp (glist->gl_name->s_name, "Pd")) {
-        pd_bind (cast_pd (glist), canvas_makeBindSymbol (glist->gl_name));
-    }
-}
-
-void canvas_unbind (t_glist *glist)
-{
-    if (strcmp (glist->gl_name->s_name, "Pd")) {
-        pd_unbind (cast_pd (glist), canvas_makeBindSymbol (glist->gl_name));
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 void canvas_setFileNameAndDirectory (t_symbol *name, t_symbol *directory)
 {
@@ -104,6 +87,38 @@ t_canvasenvironment *canvas_getEnvironment (t_glist *glist)
     return glist->gl_env;
 }
 
+t_glist *canvas_getRoot (t_glist *glist)
+{
+    if (!glist->gl_owner || canvas_isAbstraction (glist)) { return glist; }
+    else {
+        return (canvas_getRoot (glist->gl_owner));
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int canvas_isGraphOnParent (t_glist *glist)
+{
+    return glist->gl_isgraph;
+}
+
+int canvas_isVisible (t_glist *glist)
+{
+    return (!glist->gl_loading && glist_getcanvas (glist)->gl_mapped);
+}
+
+int canvas_isTopLevel (t_glist *x)
+{
+    return (x->gl_havewindow || !x->gl_isgraph);
+}
+
+int canvas_isAbstraction (t_glist *x)
+{
+    return (x->gl_env != NULL);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -122,16 +137,6 @@ t_symbol *canvas_expandDollar (t_glist *glist, t_symbol *s)
     }
 
     return t;
-}
-
-t_symbol *canvas_makeBindSymbol (t_symbol *s)
-{
-    t_error err = PD_ERROR_NONE;
-    char t[PD_STRING] = { 0 };
-    PD_ASSERT (s);
-    err = string_sprintf (t, PD_STRING, "pd-%s", s->s_name);
-    PD_ASSERT (!err);
-    return (gensym (t));
 }
 
 t_error canvas_makeFilePath (t_glist *glist, char *name, char *dest, size_t size)
@@ -170,6 +175,34 @@ void canvas_updateTitle (t_glist *glist)
         canvas_getEnvironment (glist)->ce_directory->s_name,
         glist->gl_name->s_name,
         glist->gl_dirty);
+}
+
+t_symbol *canvas_makeBindSymbol (t_symbol *s)
+{
+    t_error err = PD_ERROR_NONE;
+    char t[PD_STRING] = { 0 };
+    PD_ASSERT (s);
+    err = string_sprintf (t, PD_STRING, "pd-%s", s->s_name);
+    PD_ASSERT (!err);
+    return (gensym (t));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_bind (t_glist *glist)
+{
+    if (strcmp (glist->gl_name->s_name, "Pd")) {
+        pd_bind (cast_pd (glist), canvas_makeBindSymbol (glist->gl_name));
+    }
+}
+
+void canvas_unbind (t_glist *glist)
+{
+    if (strcmp (glist->gl_name->s_name, "Pd")) {
+        pd_unbind (cast_pd (glist), canvas_makeBindSymbol (glist->gl_name));
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -228,7 +261,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
     t->tr_srcNumberOfOutlets = object_numberOfOutlets (o);
     n = 0;
     
-    if (glist_isvisible (t->tr_owner)) {
+    if (canvas_isVisible (t->tr_owner)) {
     
         gobj_getrect (y, t->tr_owner,
             &t->tr_srcTopLeftX,
@@ -260,7 +293,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
     
     PD_ASSERT (t->tr_destNumberOfInlets);
     
-    if (glist_isvisible (t->tr_owner)) {
+    if (canvas_isVisible (t->tr_owner)) {
 
         gobj_getrect (cast_gobj (t->tr_destObject), t->tr_owner,
             &t->tr_destTopLeftX,
@@ -303,14 +336,6 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-
-    /* get the document containing this canvas */
-t_glist *canvas_getroot(t_glist *x)
-{
-    if ((!x->gl_owner) || canvas_isabstraction(x))
-        return (x);
-    else return (canvas_getroot(x->gl_owner));
-}
 
     /* make a new glist and add it to this glist.  It will appear as
     a "graph", not a text object.  */
@@ -382,36 +407,11 @@ t_glist *glist_addglist(t_glist *g, t_symbol *sym,
     return (x);
 }
 
-    /* return true if the glist should appear as a graph on parent;
-    otherwise it appears as a text box. */
-int glist_isgraph(t_glist *x)
-{
-  return (x->gl_isgraph|(x->gl_hidetext<<1));
-}
-
-int glist_isvisible(t_glist *x)
-{
-    return ((!x->gl_loading) && glist_getcanvas(x)->gl_mapped);
-}
-
-int glist_istoplevel(t_glist *x)
-{
-        /* we consider a graph "toplevel" if it has its own window
-        or if it appears as a box in its parent window so that we
-        don't draw the actual contents there. */
-    return (x->gl_havewindow || !x->gl_isgraph);
-}
-
 int glist_getfont(t_glist *x)
 {
     while (!x->gl_env)
         if (!(x = x->gl_owner)) { PD_BUG; }
     return (x->gl_font);
-}
-
-int canvas_isabstraction(t_glist *x)
-{
-    return (x->gl_env != 0);
 }
 
 void canvas_popabstraction(t_glist *x)

@@ -232,7 +232,7 @@ void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
 
 void radio_drawUpdate (t_radio *x, t_glist *glist)
 {
-    if (glist_isvisible (glist)) {
+    if (canvas_isVisible (glist)) {
     //
     t_glist *canvas = glist_getcanvas (glist);
 

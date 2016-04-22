@@ -49,7 +49,7 @@ static t_class *bng_class;                      /* Shared. */
 
 void bng_drawUpdate (t_bng *x, t_glist *glist)
 {
-    if (glist_isvisible (glist)) {
+    if (canvas_isVisible (glist)) {
     //
     t_glist *canvas = glist_getcanvas (glist);
     

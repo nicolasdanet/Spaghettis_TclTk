@@ -333,7 +333,7 @@ static void scalar_doredraw(t_gobj *client, t_glist *glist)
 
 void scalar_redraw(t_scalar *x, t_glist *glist)
 {
-    if (glist_isvisible(glist))
+    if (canvas_isVisible(glist))
         interface_guiQueueAddIfNotAlreadyThere(x, glist, scalar_doredraw);
 }
 

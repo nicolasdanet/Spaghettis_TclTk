@@ -55,7 +55,7 @@ static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)
     x->gl_screeny1 = y1;
     x->gl_screenx2 = x2;
     x->gl_screeny2 = y2;
-    if (!glist_isgraph(x) && (x->gl_y2 < x->gl_y1)) 
+    if (!canvas_isGraphOnParent(x) && (x->gl_y2 < x->gl_y1)) 
     {
             /* if it's flipped so that y grows upward,
             fix so that zero is bottom edge and redraw.  This is
@@ -81,7 +81,7 @@ static void canvas_loadbangabstractions(t_glist *x)
     for (y = x->gl_list; y; y = y->g_next)
         if (pd_class(&y->g_pd) == canvas_class)
     {
-        if (canvas_isabstraction((t_glist *)y))
+        if (canvas_isAbstraction((t_glist *)y))
             canvas_loadbang((t_glist *)y);
         else
             canvas_loadbangabstractions((t_glist *)y);
@@ -95,7 +95,7 @@ static void canvas_loadbangsubpatches(t_glist *x)
     for (y = x->gl_list; y; y = y->g_next)
         if (pd_class(&y->g_pd) == canvas_class)
     {
-        if (!canvas_isabstraction((t_glist *)y))
+        if (!canvas_isAbstraction((t_glist *)y))
             canvas_loadbangsubpatches((t_glist *)y);
     }
     for (y = x->gl_list; y; y = y->g_next)
@@ -222,7 +222,7 @@ static void canvas_f(t_glist *x, t_symbol *s, int argc, t_atom *argv)
     if (ob = canvas_castToObjectIfBox(&g->g_pd))
     {
         ob->te_width = atom_getFloatAtIndex(0, argc, argv);
-        if (glist_isvisible(x))
+        if (canvas_isVisible(x))
         {
             gobj_vis(g, x, 0);
             gobj_vis(g, x, 1);
@@ -234,7 +234,7 @@ static void canvas_f(t_glist *x, t_symbol *s, int argc, t_atom *argv)
     own window. */
 void glist_menu_open(t_glist *x)
 {
-    if (glist_isvisible(x) && !glist_istoplevel(x))
+    if (canvas_isVisible(x) && !canvas_isTopLevel(x))
     {
         t_glist *gl2 = x->gl_owner;
         if (!gl2) { PD_BUG; }
@@ -268,7 +268,7 @@ void canvas_map(t_glist *x, t_float f)
     t_gobj *y;
     if (flag)
     {
-        if (!glist_isvisible(x))
+        if (!canvas_isVisible(x))
         {
             t_selection *sel;
             if (!x->gl_havewindow)
@@ -289,7 +289,7 @@ void canvas_map(t_glist *x, t_float f)
     }
     else
     {
-        if (glist_isvisible(x))
+        if (canvas_isVisible(x))
         {
                 /* just clear out the whole canvas */
             sys_vGui(".x%lx.c delete all\n", x);
@@ -301,7 +301,7 @@ void canvas_map(t_glist *x, t_float f)
     /* mark a glist dirty or clean */
 void canvas_dirty(t_glist *x, t_float n)
 {
-    t_glist *x2 = canvas_getroot(x);
+    t_glist *x2 = canvas_getRoot(x);
     if (editor_reloading)
         return;
     if ((unsigned)n != x2->gl_dirty)
@@ -419,7 +419,7 @@ t_glist *canvas_new (void *dummy, t_symbol *sel, int argc, t_atom *argv)
         t_glist *zzz = (t_glist *)(gensym ("#X")->s_thing);
         while (zzz && !zzz->gl_env)
             zzz = zzz->gl_owner;
-        if (zzz && canvas_isabstraction(zzz) && zzz->gl_owner)
+        if (zzz && canvas_isAbstraction(zzz) && zzz->gl_owner)
             vis = 0;
     }
     x->gl_willvis = vis;

@@ -134,7 +134,7 @@ static t_class *vu_class;                       /* Shared. */
 
 static void vu_drawUpdate (t_vu *x, t_glist *glist)
 {
-    if (glist_isvisible (glist)) {
+    if (canvas_isVisible (glist)) {
     //
     t_glist *canvas = glist_getcanvas (glist);
 
