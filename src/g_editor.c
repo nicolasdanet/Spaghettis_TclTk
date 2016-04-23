@@ -183,7 +183,7 @@ void glist_selectline(t_glist *x, t_outconnect *oc, int index1,
         x->gl_editor->e_selectline_index2 = index2;
         x->gl_editor->e_selectline_inno = inno;
         x->gl_editor->e_selectline_tag = oc;
-        sys_vGui(".x%lx.c itemconfigure l%lx -fill blue\n",
+        sys_vGui(".x%lx.c itemconfigure %lxLINE -fill blue\n",
             x, x->gl_editor->e_selectline_tag);
     }    
 }
@@ -193,7 +193,7 @@ void glist_deselectline(t_glist *x)
     if (x->gl_editor)
     {
         x->gl_editor->e_selectedline = 0;
-        sys_vGui(".x%lx.c itemconfigure l%lx -fill black\n",
+        sys_vGui(".x%lx.c itemconfigure %lxLINE -fill black\n",
             x, x->gl_editor->e_selectline_tag);
     }    
 }
@@ -479,7 +479,7 @@ void canvas_disconnect(t_glist *x,
         if (srcno == index1 && t.tr_srcIndexOfOutlet == outno &&
             sinkno == index2 && t.tr_destIndexOfInlet == inno)
         {
-            sys_vGui(".x%lx.c delete l%lx\n", x, oc);
+            sys_vGui(".x%lx.c delete %lxLINE\n", x, oc);
             object_disconnect(t.tr_srcObject, t.tr_srcIndexOfOutlet, t.tr_destObject, t.tr_destIndexOfInlet);
             break;
         }
@@ -1581,7 +1581,7 @@ void canvas_doconnect(t_glist *x, int xpos, int ypos, int which, int doit)
                         ((x22-x21-INLETS_WIDTH) * closest2)/(ninlet2-1) : 0)
                             + ((INLETS_WIDTH - 1) / 2);
                 ly2 = y21;
-                sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
+                sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
                     glist_getcanvas(x),
                         lx1, ly1, lx2, ly2,
                             (object_isSignalOutlet(ob1, closest1) ? 2 : 1), oc);
@@ -2552,7 +2552,7 @@ void canvas_connect(t_glist *x, t_float fwhoout, t_float foutno,
     if (!(oc = object_connect(objsrc, outno, objsink, inno))) goto bad;
     if (canvas_isVisible(x))
     {
-        sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
+        sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
             glist_getcanvas(x), 0, 0, 0, 0,
             (object_isSignalOutlet(objsrc, outno) ? 2 : 1),oc);
         canvas_fixlines(x, objsrc);

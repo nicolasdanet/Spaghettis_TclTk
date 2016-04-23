@@ -16,7 +16,6 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 #define DRAW_GRAPH_ON_PARENT_COLOR  "#ff8080"       /* Red. */
 
@@ -29,6 +28,40 @@ extern t_pdinstance     *pd_this;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_redraw (t_glist *glist)
+{
+    if (canvas_isVisible (glist)) {
+        canvas_map (glist, 0);
+        canvas_map (glist, 1);
+    }
+}
+
+void canvas_drawLines (t_glist *glist)
+{
+    t_outconnect *connection = NULL;
+    t_linetraverser t;
+
+    canvas_traverseLinesStart (&t, glist);
+    
+    while (connection = canvas_traverseLinesNext (&t)) {
+    //
+    sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
+                glist_getcanvas (glist),
+                t.tr_lineStartX,
+                t.tr_lineStartY,
+                t.tr_lineEndX,
+                t.tr_lineEndY, 
+                (outlet_isSignal (t.tr_srcOutlet) ? 2 : 1),
+                connection);
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void canvas_drawGraphOnParentRectangle (t_glist *glist)
 {
@@ -58,30 +91,9 @@ void canvas_deleteGraphOnParentRectangle (t_glist *glist)
     sys_vGui (".x%lx.c delete GOP\n",  glist_getcanvas (glist));
 }
 
-void canvas_redraw(t_glist *x)
-{
-    if (canvas_isVisible(x))
-    {
-        canvas_map(x, 0);
-        canvas_map(x, 1);
-    }
-}
-
-void canvas_drawlines(t_glist *x)
-{
-    t_linetraverser t;
-    t_outconnect *oc;
-    {
-        canvas_traverseLinesStart(&t, x);
-        while (oc = canvas_traverseLinesNext(&t))
-            sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags [list l%lx cord]\n",
-                    glist_getcanvas(x),
-                        t.tr_lineStartX, t.tr_lineStartY, t.tr_lineEndX, t.tr_lineEndY, 
-                            (outlet_isSignal(t.tr_srcOutlet) ? 2:1),
-                                oc);
-    }
-}
-
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /******************* redrawing  data *********************/
 
@@ -157,7 +169,7 @@ void canvas_fixlines (t_glist *x, t_object *text)
     {
         if (t.tr_srcObject == text || t.tr_destObject == text)
         {
-            sys_vGui(".x%lx.c coords l%lx %d %d %d %d\n",
+            sys_vGui(".x%lx.c coords %lxLINE %d %d %d %d\n",
                 glist_getcanvas(x), oc,
                     t.tr_lineStartX, t.tr_lineStartY, t.tr_lineEndX, t.tr_lineEndY);
         }
@@ -176,7 +188,7 @@ void canvas_deletelines(t_glist *x, t_object *text)
         {
             if (canvas_isVisible(x))
             {
-                sys_vGui(".x%lx.c delete l%lx\n",
+                sys_vGui(".x%lx.c delete %lxLINE\n",
                     glist_getcanvas(x), oc);
             }
             object_disconnect(t.tr_srcObject, t.tr_srcIndexOfOutlet, t.tr_destObject, t.tr_destIndexOfInlet);
@@ -198,7 +210,7 @@ void canvas_deletelinesforio(t_glist *x, t_object *text,
         {
             if (canvas_isVisible(x))
             {
-                sys_vGui(".x%lx.c delete l%lx\n",
+                sys_vGui(".x%lx.c delete %lxLINE\n",
                     glist_getcanvas(x), oc);
             }
             object_disconnect(t.tr_srcObject, t.tr_srcIndexOfOutlet, t.tr_destObject, t.tr_destIndexOfInlet);

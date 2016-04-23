@@ -649,7 +649,7 @@ void glist_redraw(t_glist *x)
                 /* redraw all the lines */
             canvas_traverseLinesStart(&t, x);
             while (oc = canvas_traverseLinesNext(&t))
-                sys_vGui(".x%lx.c coords l%lx %d %d %d %d\n",
+                sys_vGui(".x%lx.c coords %lxLINE %d %d %d %d\n",
                     glist_getcanvas(x), oc,
                         t.tr_lineStartX, t.tr_lineStartY, t.tr_lineEndX, t.tr_lineEndY);
             canvas_deleteGraphOnParentRectangle(x);

@@ -274,7 +274,7 @@ void canvas_map(t_glist *x, t_float f)
             for (sel = x->gl_editor->e_selection; sel; sel = sel->sel_next)
                 gobj_select(sel->sel_what, x, 1);
             x->gl_isMapped = 1;
-            canvas_drawlines(x);
+            canvas_drawLines(x);
             if (x->gl_isGraphOnParent && x->gl_hasRectangle)
                 canvas_drawGraphOnParentRectangle(x);
             sys_vGui("::ui_patch::updateScrollRegion .x%lx.c\n", x);

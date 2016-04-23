@@ -366,11 +366,11 @@ t_outconnect        *canvas_traverseLinesNext           (t_linetraverser *t);
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+void                canvas_redraw                       (t_glist *glist);
+void                canvas_drawLines                    (t_glist *glist);
 void                canvas_drawGraphOnParentRectangle   (t_glist *glist);
 void                canvas_deleteGraphOnParentRectangle (t_glist *glist);
 
-void                canvas_redraw                       (t_glist *x);
-void                canvas_drawlines                    (t_glist *x);
 void                canvas_redrawallfortemplate         (t_template *tmpl, int action);
 void                canvas_redrawallfortemplatecanvas   (t_glist *x, int action);
 void                canvas_fixlines                     (t_glist *x, t_object *text);
