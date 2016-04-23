@@ -99,8 +99,14 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define GLIST_DEFAULT_X                     100
+#define GLIST_DEFAULT_Y                     20
 #define GLIST_DEFAULT_WIDTH                 200
 #define GLIST_DEFAULT_HEIGHT                140
+
+#define GLIST_DEFAULT_START                 0
+#define GLIST_DEFAULT_END                   100
+#define GLIST_DEFAULT_UP                    1.0
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -357,9 +363,12 @@ int                 canvas_getIndexOfObject             (t_glist *glist, t_gobj 
 void                canvas_traverseLinesStart           (t_linetraverser *t, t_glist *glist);
 t_outconnect        *canvas_traverseLinesNext           (t_linetraverser *t);
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
+void                canvas_drawGraphOnParentRectangle   (t_glist *glist);
+void                canvas_deleteGraphOnParentRectangle (t_glist *glist);
 
-void                canvas_drawredrect                  (t_glist *x, int doit);
 void                canvas_redraw                       (t_glist *x);
 void                canvas_drawlines                    (t_glist *x);
 void                canvas_redrawallfortemplate         (t_template *tmpl, int action);

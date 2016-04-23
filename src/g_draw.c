@@ -16,6 +16,12 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+#define DRAW_GRAPH_ON_PARENT_COLOR  "#ff8080"       /* Red. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 extern t_class          *canvas_class;
 extern t_class          *scalar_class;
@@ -24,18 +30,32 @@ extern t_pdinstance     *pd_this;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_drawredrect(t_glist *x, int doit)
+void canvas_drawGraphOnParentRectangle (t_glist *glist)
 {
-    if (doit)
-        sys_vGui(".x%lx.c create line\
-            %d %d %d %d %d %d %d %d %d %d -fill #ff8080 -tags GOP\n",
-            glist_getcanvas(x),
-            x->gl_marginX, x->gl_marginY,
-            x->gl_marginX + x->gl_width, x->gl_marginY,
-            x->gl_marginX + x->gl_width, x->gl_marginY + x->gl_height,
-            x->gl_marginX, x->gl_marginY + x->gl_height,
-            x->gl_marginX, x->gl_marginY);
-    else sys_vGui(".x%lx.c delete GOP\n",  glist_getcanvas(x));
+    int a = glist->gl_marginX;
+    int b = glist->gl_marginY;
+    int c = glist->gl_marginX + glist->gl_width;
+    int d = glist->gl_marginY + glist->gl_height;
+    
+    sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d" 
+                " -fill " DRAW_GRAPH_ON_PARENT_COLOR
+                " -tags GOP\n",
+                glist_getcanvas (glist),
+                a,
+                b,
+                c,
+                b,
+                c,
+                d,
+                a,
+                d,
+                a,
+                b);
+}
+
+void canvas_deleteGraphOnParentRectangle (t_glist *glist)
+{
+    sys_vGui (".x%lx.c delete GOP\n",  glist_getcanvas (glist));
 }
 
 void canvas_redraw(t_glist *x)

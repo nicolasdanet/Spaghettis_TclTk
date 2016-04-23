@@ -51,7 +51,7 @@ void glist_add(t_glist *x, t_gobj *y)
         && canvas_castToObjectIfBox(&y->g_pd))
     {
         x->gl_hasRectangle = 1;
-        canvas_drawredrect(x, 1);
+        canvas_drawGraphOnParentRectangle(x);
     }
     if (canvas_isVisible(x))
         gobj_vis(y, x, 1);
@@ -652,10 +652,10 @@ void glist_redraw(t_glist *x)
                 sys_vGui(".x%lx.c coords l%lx %d %d %d %d\n",
                     glist_getcanvas(x), oc,
                         t.tr_lineStartX, t.tr_lineStartY, t.tr_lineEndX, t.tr_lineEndY);
-            canvas_drawredrect(x, 0);
+            canvas_deleteGraphOnParentRectangle(x);
             if (x->gl_hasRectangle)
             {
-                canvas_drawredrect(x, 1);
+                canvas_drawGraphOnParentRectangle(x);
             }
         }
         if (x->gl_owner && canvas_isVisible(x->gl_owner))

@@ -138,17 +138,17 @@ t_glist *canvas_addGraph (t_glist *glist, t_symbol *name,
 
     if (indexStart >= indexEnd || valueUp == valueDown) {
     //
-    indexStart  = 0;
-    indexEnd    = 100;
-    valueUp     = 1.0;
-    valueDown   = -1.0;
+    indexStart  = GLIST_DEFAULT_START;
+    indexEnd    = GLIST_DEFAULT_END;
+    valueUp     = GLIST_DEFAULT_UP;
+    valueDown   = -valueUp;
     //
     }
     
     if (topLeftX >= bottomRightX || topLeftY >= bottomRightY) {
     //
-    topLeftX     = 100;
-    topLeftY     = 20;
+    topLeftX     = GLIST_DEFAULT_X;
+    topLeftY     = GLIST_DEFAULT_Y;
     bottomRightX = topLeftX + GLIST_DEFAULT_WIDTH;
     bottomRightY = topLeftY + GLIST_DEFAULT_HEIGHT;
     //
@@ -177,7 +177,7 @@ t_glist *canvas_addGraph (t_glist *glist, t_symbol *name,
     x->gl_hasRectangle          = 0;
     
     canvas_bind (x);
-    buffer_vAppend (x->gl_obj.te_buffer, "s", gensym ("graph"));
+    buffer_vAppend (cast_object (x)->te_buffer, "s", gensym ("graph"));
     if (!createdFromMenu) { stack_push (cast_pd (x)); }
     glist_add (glist, cast_gobj (x));
     

@@ -22,7 +22,6 @@ extern int      editor_reloading;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
 
 t_class         *canvas_class;                              /* Shared. */
 t_symbol        *canvas_fileName  = &s_;                    /* Shared. */
@@ -277,7 +276,7 @@ void canvas_map(t_glist *x, t_float f)
             x->gl_isMapped = 1;
             canvas_drawlines(x);
             if (x->gl_isGraphOnParent && x->gl_hasRectangle)
-                canvas_drawredrect(x, 1);
+                canvas_drawGraphOnParentRectangle(x);
             sys_vGui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
         }
     }
