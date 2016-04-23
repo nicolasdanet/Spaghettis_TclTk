@@ -93,6 +93,14 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define SCALAR_REDRAW                   0
+#define SCALAR_DRAW                     1
+#define SCALAR_ERASE                    2
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #define INLETS_WIDTH                    7
 
 // -----------------------------------------------------------------------------------------------------------
@@ -368,14 +376,18 @@ t_outconnect        *canvas_traverseLinesNext           (t_linetraverser *t);
 
 void                canvas_redraw                       (t_glist *glist);
 void                canvas_drawLines                    (t_glist *glist);
+void                canvas_updateLinesByObject          (t_glist *glist, t_object *o);
+void                canvas_deleteLinesByObject          (t_glist *glist, t_object *o);
+void                canvas_deleteLinesByInlets          (t_glist *glist,
+                                                            t_object *o,
+                                                            t_inlet  *inlet,
+                                                            t_outlet *outlet);
+
 void                canvas_drawGraphOnParentRectangle   (t_glist *glist);
 void                canvas_deleteGraphOnParentRectangle (t_glist *glist);
 
 void                canvas_redrawallfortemplate         (t_template *tmpl, int action);
 void                canvas_redrawallfortemplatecanvas   (t_glist *x, int action);
-void                canvas_fixlines                     (t_glist *x, t_object *text);
-void                canvas_deletelines                  (t_glist *x, t_object *text);
-void                canvas_deletelinesforio             (t_glist *x, t_object *text, t_inlet *inp, t_outlet *outp);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

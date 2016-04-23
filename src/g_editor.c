@@ -292,7 +292,7 @@ void glist_deselect(t_glist *x, t_gobj *y)
 
             rtext_gettext(z, &buf, &bufsize);
             text_setto((t_object *)y, x, buf, bufsize);
-            canvas_fixlines(x, (t_object *)y);
+            canvas_updateLinesByObject(x, (t_object *)y);
             x->gl_editor->e_textedfor = 0;
         }
         if (fixdsp)
@@ -1059,7 +1059,7 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
         if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
         {
             gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
-            canvas_fixlines(x->gl_owner, &x->gl_obj);
+            canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
         }
     }
     else if (flag)
@@ -1080,7 +1080,7 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
         if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
         {
             gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
-            canvas_fixlines(x->gl_owner, &x->gl_obj);
+            canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
         }
     }
 }
@@ -1928,7 +1928,7 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos,
                     wantwidth = 1;
                 ob->te_width = wantwidth;
                 gobj_vis(y1, x, 0);
-                canvas_fixlines(x, ob);
+                canvas_updateLinesByObject(x, ob);
                 gobj_vis(y1, x, 1);
             }
             else if (ob && ob->te_g.g_pd == canvas_class)
@@ -1938,7 +1938,7 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos,
                 ((t_glist *)ob)->gl_height += ypos - x->gl_editor->e_ynew;
                 x->gl_editor->e_xnew = xpos;
                 x->gl_editor->e_ynew = ypos;
-                canvas_fixlines(x, ob);
+                canvas_updateLinesByObject(x, ob);
                 gobj_vis(y1, x, 1);
             }
             else post("not resizable");
@@ -2555,7 +2555,7 @@ void canvas_connect(t_glist *x, t_float fwhoout, t_float foutno,
         sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
             glist_getcanvas(x), 0, 0, 0, 0,
             (object_isSignalOutlet(objsrc, outno) ? 2 : 1),oc);
-        canvas_fixlines(x, objsrc);
+        canvas_updateLinesByObject(x, objsrc);
     }
     return;
 

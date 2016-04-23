@@ -774,7 +774,7 @@ static void gatom_param(t_gatom *x, t_symbol *sel, int argc, t_atom *argv)
         inlet_new(&x->a_text, &x->a_text.te_g.g_pd, 0, 0);
     else if (*symfrom->s_name && !*x->a_symfrom->s_name && x->a_text.te_inlet)
     {
-        canvas_deletelinesforio(x->a_glist, &x->a_text,
+        canvas_deleteLinesByInlets(x->a_glist, &x->a_text,
             x->a_text.te_inlet, 0);
         inlet_free(x->a_text.te_inlet);
     }
@@ -782,7 +782,7 @@ static void gatom_param(t_gatom *x, t_symbol *sel, int argc, t_atom *argv)
         outlet_new(&x->a_text, 0);
     else if (*symto->s_name && !*x->a_symto->s_name && x->a_text.te_outlet)
     {
-        canvas_deletelinesforio(x->a_glist, &x->a_text,
+        canvas_deleteLinesByInlets(x->a_glist, &x->a_text,
             0, x->a_text.te_outlet);
         outlet_free(x->a_text.te_outlet);
     }
@@ -1042,7 +1042,7 @@ static void text_displace(t_gobj *z, t_glist *glist,
         rtext_displace(y, dx, dy);
         text_drawborder(x, glist, rtext_gettag(y),
             rtext_width(y), rtext_height(y), 0);
-        canvas_fixlines(glist, x);
+        canvas_updateLinesByObject(glist, x);
     }
 }
 
@@ -1066,7 +1066,7 @@ static void text_activate(t_gobj *z, t_glist *glist, int state)
 static void text_delete(t_gobj *z, t_glist *glist)
 {
     t_object *x = (t_object *)z;
-        canvas_deletelines(glist, x);
+        canvas_deleteLinesByObject(glist, x);
 }
 
 static void text_vis(t_gobj *z, t_glist *glist, int vis)

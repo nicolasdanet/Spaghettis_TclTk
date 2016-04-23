@@ -440,7 +440,7 @@ static void dial_dialog (t_dial *x, t_symbol *s, int argc, t_atom *argv)
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
     (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
     
-    canvas_fixlines (x->x_gui.iem_glist, cast_object (x));
+    canvas_updateLinesByObject (x->x_gui.iem_glist, cast_object (x));
     //
     }
 }

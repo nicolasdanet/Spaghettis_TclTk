@@ -295,7 +295,7 @@ t_inlet *canvas_addinlet(t_glist *x, t_pd *who, t_symbol *s)
     {
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
-        canvas_fixlines(x->gl_owner, &x->gl_obj);
+        canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
     }
     if (!x->gl_isLoading) canvas_resortinlets(x);
     return (ip);
@@ -307,14 +307,14 @@ void canvas_rminlet(t_glist *x, t_inlet *ip)
     int redraw = (owner && canvas_isVisible(owner) && (!owner->gl_isDeleting)
         && canvas_isTopLevel(owner));
     
-    if (owner) canvas_deletelinesforio(owner, &x->gl_obj, ip, 0);
+    if (owner) canvas_deleteLinesByInlets(owner, &x->gl_obj, ip, 0);
     if (redraw)
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
     inlet_free(ip);
     if (redraw)
     {
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
-        canvas_fixlines(x->gl_owner, &x->gl_obj);
+        canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
     }
 }
 
@@ -357,7 +357,7 @@ void canvas_resortinlets(t_glist *x)
     }
     PD_MEMORY_FREE(vec);
     if (x->gl_owner && canvas_isVisible(x->gl_owner))
-        canvas_fixlines(x->gl_owner, &x->gl_obj);
+        canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
 }
 
 t_outlet *canvas_addoutlet(t_glist *x, t_pd *who, t_symbol *s)
@@ -367,7 +367,7 @@ t_outlet *canvas_addoutlet(t_glist *x, t_pd *who, t_symbol *s)
     {
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
-        canvas_fixlines(x->gl_owner, &x->gl_obj);
+        canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
     }
     if (!x->gl_isLoading) canvas_resortoutlets(x);
     return (op);
@@ -379,7 +379,7 @@ void canvas_rmoutlet(t_glist *x, t_outlet *op)
     int redraw = (owner && canvas_isVisible(owner) && (!owner->gl_isDeleting)
         && canvas_isTopLevel(owner));
     
-    if (owner) canvas_deletelinesforio(owner, &x->gl_obj, 0, op);
+    if (owner) canvas_deleteLinesByInlets(owner, &x->gl_obj, 0, op);
     if (redraw)
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
 
@@ -387,7 +387,7 @@ void canvas_rmoutlet(t_glist *x, t_outlet *op)
     if (redraw)
     {
         gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
-        canvas_fixlines(x->gl_owner, &x->gl_obj);
+        canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
     }
 }
 
@@ -429,7 +429,7 @@ void canvas_resortoutlets(t_glist *x)
     }
     PD_MEMORY_FREE(vec);
     if (x->gl_owner && canvas_isVisible(x->gl_owner))
-        canvas_fixlines(x->gl_owner, &x->gl_obj);
+        canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
 }
 
 /* ----------calculating coordinates and controlling appearance --------- */
@@ -938,7 +938,7 @@ static void graph_displace(t_gobj *z, t_glist *glist, int dx, int dy)
         x->gl_obj.te_xCoordinate += dx;
         x->gl_obj.te_yCoordinate += dy;
         glist_redraw(x);
-        canvas_fixlines(glist, &x->gl_obj);
+        canvas_updateLinesByObject(glist, &x->gl_obj);
     }
 }
 
@@ -978,7 +978,7 @@ static void graph_delete(t_gobj *z, t_glist *glist)
             them as well (e.g., array or scalar objects that are implemented
             as canvases with "real" inlets).  Connections to ordinary canvas
             in/outlets already got zapped when we cleared the contents above */
-    canvas_deletelines(glist, &x->gl_obj);
+    canvas_deleteLinesByObject(glist, &x->gl_obj);
 }
 
 static t_float graph_lastxpix, graph_lastypix;

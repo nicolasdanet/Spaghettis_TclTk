@@ -59,9 +59,88 @@ void canvas_drawLines (t_glist *glist)
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+void canvas_updateLinesByObject (t_glist *glist, t_object *o)
+{
+    t_outconnect *connection = NULL;
+    t_linetraverser t;
+
+    canvas_traverseLinesStart (&t, glist);
+    
+    while (connection = canvas_traverseLinesNext (&t)) {
+    //
+    if (t.tr_srcObject == o || t.tr_destObject == o) {
+    //
+    if (canvas_isVisible (glist)) {
+    //
+    sys_vGui (".x%lx.c coords %lxLINE %d %d %d %d\n",
+                glist_getcanvas (glist),
+                connection,
+                t.tr_lineStartX,
+                t.tr_lineStartY,
+                t.tr_lineEndX,
+                t.tr_lineEndY);
+    //
+    }
+    //
+    }
+    //
+    }
+}
+
+void canvas_deleteLinesByObject (t_glist *glist, t_object *o)
+{
+    t_outconnect *connection = NULL;
+    t_linetraverser t;
+
+    canvas_traverseLinesStart (&t, glist);
+    
+    while (connection = canvas_traverseLinesNext (&t)) {
+    //
+    if (t.tr_srcObject == o || t.tr_destObject == o) {
+    //
+    if (canvas_isVisible (glist)) {
+    //
+    sys_vGui (".x%lx.c delete %lxLINE\n",
+                glist_getcanvas (glist),
+                connection);
+    //
+    }
+
+    object_disconnect (t.tr_srcObject, t.tr_srcIndexOfOutlet, t.tr_destObject, t.tr_destIndexOfInlet);
+    //
+    }
+    //
+    }
+}
+
+void canvas_deleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_outlet *outlet)
+{
+    t_outconnect *connection = NULL;
+    t_linetraverser t;
+
+    canvas_traverseLinesStart (&t, glist);
+    
+    while (connection = canvas_traverseLinesNext (&t)) {
+    //
+    int m = (t.tr_srcObject == o && t.tr_srcOutlet == outlet);
+    int n = (t.tr_destObject == o && t.tr_destInlet == inlet);
+    
+    if (m || n) {
+    //
+    if (canvas_isVisible (glist)) {
+    //
+    sys_vGui (".x%lx.c delete %lxLINE\n",
+                glist_getcanvas (glist),
+                connection);
+    //
+    }
+                
+    object_disconnect (t.tr_srcObject, t.tr_srcIndexOfOutlet, t.tr_destObject, t.tr_destIndexOfInlet);
+    //
+    }
+    //
+    }
+}
 
 void canvas_drawGraphOnParentRectangle (t_glist *glist)
 {
@@ -95,12 +174,7 @@ void canvas_deleteGraphOnParentRectangle (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/******************* redrawing  data *********************/
-
-    /* redraw all "scalars" (do this if a drawing command is changed.) 
-    LATER we'll use the "template" information to select which ones we
-    redraw.   Action = 0 for redraw, 1 for draw only, 2 for erase. */
-static void glist_redrawall(t_glist *gl, int action)
+static void canvas_redrawAll (t_glist *gl, int action)
 {
     t_gobj *g;
     int vis = canvas_isVisible(gl);
@@ -122,7 +196,7 @@ static void glist_redrawall(t_glist *gl, int action)
             else scalar_redraw((t_scalar *)g, gl);
         }
         else if (g->g_pd == canvas_class)
-            glist_redrawall((t_glist *)g, action);
+            canvas_redrawAll((t_glist *)g, action);
     }
 }
 
@@ -132,7 +206,7 @@ void canvas_redrawallfortemplate(t_template *template, int action)
     t_glist *x;
         /* find all root canvases */
     for (x = pd_this->pd_roots; x; x = x->gl_next)
-        glist_redrawall(x, action);
+        canvas_redrawAll(x, action);
 }
 
     /* find the template defined by a canvas, and redraw all elements
@@ -157,65 +231,6 @@ void canvas_redrawallfortemplatecanvas(t_glist *x, int action)
         canvas_redrawallfortemplate(tmpl, action);
     }
     canvas_redrawallfortemplate(0, action);
-}
-
-void canvas_fixlines (t_glist *x, t_object *text)
-{
-    t_linetraverser t;
-    t_outconnect *oc;
-
-    canvas_traverseLinesStart(&t, x);
-    while (oc = canvas_traverseLinesNext(&t))
-    {
-        if (t.tr_srcObject == text || t.tr_destObject == text)
-        {
-            sys_vGui(".x%lx.c coords %lxLINE %d %d %d %d\n",
-                glist_getcanvas(x), oc,
-                    t.tr_lineStartX, t.tr_lineStartY, t.tr_lineEndX, t.tr_lineEndY);
-        }
-    }
-}
-
-    /* kill all lines for the object */
-void canvas_deletelines(t_glist *x, t_object *text)
-{
-    t_linetraverser t;
-    t_outconnect *oc;
-    canvas_traverseLinesStart(&t, x);
-    while (oc = canvas_traverseLinesNext(&t))
-    {
-        if (t.tr_srcObject == text || t.tr_destObject == text)
-        {
-            if (canvas_isVisible(x))
-            {
-                sys_vGui(".x%lx.c delete %lxLINE\n",
-                    glist_getcanvas(x), oc);
-            }
-            object_disconnect(t.tr_srcObject, t.tr_srcIndexOfOutlet, t.tr_destObject, t.tr_destIndexOfInlet);
-        }
-    }
-}
-
-    /* kill all lines for one inlet or outlet */
-void canvas_deletelinesforio(t_glist *x, t_object *text,
-    t_inlet *inp, t_outlet *outp)
-{
-    t_linetraverser t;
-    t_outconnect *oc;
-    canvas_traverseLinesStart(&t, x);
-    while (oc = canvas_traverseLinesNext(&t))
-    {
-        if ((t.tr_srcObject == text && t.tr_srcOutlet == outp) ||
-            (t.tr_destObject == text && t.tr_destInlet == inp))
-        {
-            if (canvas_isVisible(x))
-            {
-                sys_vGui(".x%lx.c delete %lxLINE\n",
-                    glist_getcanvas(x), oc);
-            }
-            object_disconnect(t.tr_srcObject, t.tr_srcIndexOfOutlet, t.tr_destObject, t.tr_destIndexOfInlet);
-        }
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
