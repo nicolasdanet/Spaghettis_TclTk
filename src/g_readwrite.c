@@ -622,10 +622,10 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
         patchsym = atom_getSymbolAtIndex(1, buffer_size(bz), buffer_atoms(bz));
         buffer_free(bz);
         buffer_vAppend(b, "ssiiiisi;", gensym ("#N"), gensym ("canvas"),
-            (int)(x->gl_topLeftX),
-            (int)(x->gl_topLeftY),
-            (int)(x->gl_bottomRightX - x->gl_topLeftX),
-            (int)(x->gl_bottomRightY - x->gl_topLeftY),
+            (int)(x->gl_windowTopLeftX),
+            (int)(x->gl_windowTopLeftY),
+            (int)(x->gl_windowBottomRightX - x->gl_windowTopLeftX),
+            (int)(x->gl_windowBottomRightY - x->gl_windowTopLeftY),
             (patchsym != &s_ ? patchsym: gensym ("(subpatch)")),
             x->gl_isMapped);
     }
@@ -633,10 +633,10 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
     else 
     {
         buffer_vAppend(b, "ssiiiii;", gensym ("#N"), gensym ("canvas"),
-            (int)(x->gl_topLeftX),
-            (int)(x->gl_topLeftY),
-            (int)(x->gl_bottomRightX - x->gl_topLeftX),
-            (int)(x->gl_bottomRightY - x->gl_topLeftY),
+            (int)(x->gl_windowTopLeftX),
+            (int)(x->gl_windowTopLeftY),
+            (int)(x->gl_windowBottomRightX - x->gl_windowTopLeftX),
+            (int)(x->gl_windowBottomRightY - x->gl_windowTopLeftY),
                 (int)x->gl_fontSize);
         // canvas_savedeclarationsto(x, b);
     }

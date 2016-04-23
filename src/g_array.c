@@ -401,7 +401,7 @@ void glist_arraydialog(t_glist *parent, t_symbol *name, t_float size,
     if (size < 1)
         size = 1;
     if (0 /* otherflag */ == 0 || (!(gl = glist_findgraph(parent))))
-        gl = glist_addglist(parent, &s_, 0, 1,
+        gl = canvas_addGraph(parent, &s_, 0, 1,
             size, -1, 0, 0, 0, 0);
     a = graph_array(gl, dollar_fromRaute(name), &s_float, size, flags);
     canvas_dirty(parent, 1);

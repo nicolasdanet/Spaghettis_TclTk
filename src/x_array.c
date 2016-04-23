@@ -52,7 +52,7 @@ static void *table_donew(t_symbol *s, int size, int flags,
     x->gl_owner = z;
 
         /* create a graph for the table */
-    gl = glist_addglist((t_glist*)x, &s_, 0, -1, (size > 1 ? size-1 : 1), 1,
+    gl = canvas_addGraph((t_glist*)x, &s_, 0, -1, (size > 1 ? size-1 : 1), 1,
         50, ypix+50, xpix+50, 50);
 
     graph_array(gl, s, &s_float, size, flags);

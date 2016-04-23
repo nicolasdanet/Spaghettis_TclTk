@@ -520,7 +520,7 @@ t_float glist_pixelstox(t_glist *x, t_float xpix)
         over the visible window size, given by screenx1, etc. */  
     else if (x->gl_isGraphOnParent && x->gl_haveWindow)
         return (x->gl_indexStart + (x->gl_indexEnd - x->gl_indexStart) * 
-            (xpix) / (x->gl_bottomRightX - x->gl_topLeftX));
+            (xpix) / (x->gl_windowBottomRightX - x->gl_windowTopLeftX));
 
         /* otherwise, we appear in a graph within a parent glist,
          so get our screen rectangle on parent and transform. */
@@ -540,7 +540,7 @@ t_float glist_pixelstoy(t_glist *x, t_float ypix)
         return (x->gl_valueUp + (x->gl_valueDown - x->gl_valueUp) * ypix);
     else if (x->gl_isGraphOnParent && x->gl_haveWindow)
         return (x->gl_valueUp + (x->gl_valueDown - x->gl_valueUp) * 
-                (ypix) / (x->gl_bottomRightY - x->gl_topLeftY));
+                (ypix) / (x->gl_windowBottomRightY - x->gl_windowTopLeftY));
     else 
     {
         int x1, y1, x2, y2;
@@ -557,7 +557,7 @@ t_float glist_xtopixels(t_glist *x, t_float xval)
     if (!x->gl_isGraphOnParent)
         return ((xval - x->gl_indexStart) / (x->gl_indexEnd - x->gl_indexStart));
     else if (x->gl_isGraphOnParent && x->gl_haveWindow)
-        return (x->gl_bottomRightX - x->gl_topLeftX) * 
+        return (x->gl_windowBottomRightX - x->gl_windowTopLeftX) * 
             (xval - x->gl_indexStart) / (x->gl_indexEnd - x->gl_indexStart);
     else
     {
@@ -573,7 +573,7 @@ t_float glist_ytopixels(t_glist *x, t_float yval)
     if (!x->gl_isGraphOnParent)
         return ((yval - x->gl_valueUp) / (x->gl_valueDown - x->gl_valueUp));
     else if (x->gl_isGraphOnParent && x->gl_haveWindow)
-        return (x->gl_bottomRightY - x->gl_topLeftY) * 
+        return (x->gl_windowBottomRightY - x->gl_windowTopLeftY) * 
                 (yval - x->gl_valueUp) / (x->gl_valueDown - x->gl_valueUp);
     else 
     {
@@ -612,7 +612,7 @@ int text_xpix(t_object *x, t_glist *glist)
             x->te_xCoordinate - glist->gl_marginX);
     else return (glist_xtopixels(glist, 
             glist->gl_indexStart + (glist->gl_indexEnd - glist->gl_indexStart) * 
-                x->te_xCoordinate / (glist->gl_bottomRightX - glist->gl_topLeftX)));
+                x->te_xCoordinate / (glist->gl_windowBottomRightX - glist->gl_windowTopLeftX)));
 }
 
 int text_ypix(t_object *x, t_glist *glist)
@@ -624,7 +624,7 @@ int text_ypix(t_object *x, t_glist *glist)
             x->te_yCoordinate - glist->gl_marginY);
     else return (glist_ytopixels(glist, 
             glist->gl_valueUp + (glist->gl_valueDown - glist->gl_valueUp) * 
-                x->te_yCoordinate / (glist->gl_bottomRightY - glist->gl_topLeftY)));
+                x->te_yCoordinate / (glist->gl_windowBottomRightY - glist->gl_windowTopLeftY)));
 }
 
     /* redraw all the items in a glist.  We construe this to mean

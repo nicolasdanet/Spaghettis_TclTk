@@ -991,9 +991,9 @@ void canvas_vis(t_glist *x, t_float f)
             t_glist *c = x;
             canvas_create_editor(x);
             sys_vGui("::ui_patch::create .x%lx %d %d +%d+%d %d\n", x,
-                (int)(x->gl_bottomRightX - x->gl_topLeftX),
-                (int)(x->gl_bottomRightY - x->gl_topLeftY),
-                (int)(x->gl_topLeftX), (int)(x->gl_topLeftY),
+                (int)(x->gl_windowBottomRightX - x->gl_windowTopLeftX),
+                (int)(x->gl_windowBottomRightY - x->gl_windowTopLeftY),
+                (int)(x->gl_windowTopLeftX), (int)(x->gl_windowTopLeftY),
                 x->gl_isEditMode);
            snprintf(cbuf, PD_STRING - 2, "::ui_patch::pdtk_canvas_setparents .x%lx",
                 (unsigned long)c);
@@ -1170,7 +1170,7 @@ static void canvas_donecanvasdialog(t_glist *x,
         }
         else
         {
-            x->gl_indexStart = -xperpix * (x->gl_bottomRightX - x->gl_topLeftX);
+            x->gl_indexStart = -xperpix * (x->gl_windowBottomRightX - x->gl_windowTopLeftX);
             x->gl_indexEnd = x->gl_indexStart + xperpix;
         }
         if (yperpix > 0)
@@ -1180,7 +1180,7 @@ static void canvas_donecanvasdialog(t_glist *x,
         }
         else
         {
-            x->gl_valueUp = -yperpix * (x->gl_bottomRightY - x->gl_topLeftY);
+            x->gl_valueUp = -yperpix * (x->gl_windowBottomRightY - x->gl_windowTopLeftY);
             x->gl_valueDown = x->gl_valueUp + yperpix;
         }
     }

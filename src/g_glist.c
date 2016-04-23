@@ -106,6 +106,88 @@ int canvas_getFontSize (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+t_glist *canvas_addGraph (t_glist *glist, t_symbol *name,
+    t_float indexStart,
+    t_float valueUp,
+    t_float indexEnd,
+    t_float valueDown,
+    t_float topLeftX,
+    t_float topLeftY,
+    t_float bottomRightX,
+    t_float bottomRightY)
+{
+    static int graphCount = 0;
+
+    int createdFromMenu = 0;
+    t_glist *x = (t_glist *)pd_new (canvas_class);
+    int fontSize = (canvas_getCurrent() ? canvas_getCurrent()->gl_fontSize : font_getDefaultFontSize());
+    
+    PD_ASSERT (name);
+    
+    if (name == &s_) {
+        char n[PD_STRING] = { 0 };
+        string_sprintf (n, PD_STRING, "graph%d", ++graphCount);
+        name = gensym (n);
+        createdFromMenu = 1;
+        
+    } else {
+        char *s = name->s_name;
+        int n;
+        if (!strncmp (s, "graph", 5) && (n = atoi (s + 5)) > graphCount) { graphCount = n; }
+    }
+
+    if (indexStart >= indexEnd || valueUp == valueDown) {
+    //
+    indexStart  = 0;
+    indexEnd    = 100;
+    valueUp     = 1.0;
+    valueDown   = -1.0;
+    //
+    }
+    
+    if (topLeftX >= bottomRightX || topLeftY >= bottomRightY) {
+    //
+    topLeftX     = 100;
+    topLeftY     = 20;
+    bottomRightX = topLeftX + GLIST_DEFAULT_WIDTH;
+    bottomRightY = topLeftY + GLIST_DEFAULT_HEIGHT;
+    //
+    }
+    
+    x->gl_obj.te_buffer         = buffer_new();
+    x->gl_obj.te_xCoordinate    = topLeftX;
+    x->gl_obj.te_yCoordinate    = topLeftY;
+    x->gl_obj.te_type           = TYPE_OBJECT;
+    x->gl_stub                  = gstub_new (x, NULL);
+    x->gl_owner                 = glist;
+    x->gl_name                  = name;
+    x->gl_magic                 = ++canvas_magic;
+    x->gl_width                 = bottomRightX - topLeftX;
+    x->gl_height                = bottomRightY - topLeftY;
+    x->gl_indexStart            = indexStart;
+    x->gl_indexEnd              = indexEnd;
+    x->gl_valueUp               = valueUp;
+    x->gl_valueDown             = valueDown;
+    x->gl_windowTopLeftX        = 0;
+    x->gl_windowTopLeftY        = CANVAS_WINDOW_HEADER_HEIGHT;
+    x->gl_windowBottomRightX    = CANVAS_WINDOW_DEFAULT_WIDTH;
+    x->gl_windowBottomRightY    = CANVAS_WINDOW_DEFAULT_HEIGHT + CANVAS_WINDOW_HEADER_HEIGHT;
+    x->gl_fontSize              = fontSize;
+    x->gl_isGraphOnParent       = 1;
+    x->gl_hasRectangle          = 0;
+    
+    canvas_bind (x);
+    buffer_vAppend (x->gl_obj.te_buffer, "s", gensym ("graph"));
+    if (!createdFromMenu) { stack_push (cast_pd (x)); }
+    glist_add (glist, cast_gobj (x));
+    
+    return x;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int canvas_isGraphOnParent (t_glist *glist)
 {
     return glist->gl_isGraphOnParent;
@@ -196,7 +278,7 @@ void canvas_rename (t_glist *glist, t_symbol *name, t_symbol *directory)
 
 void canvas_updateTitle (t_glist *glist)
 {
-    sys_vGui ("::ui_patch::setTitle .x%lx {%s} {%s} %d\n",
+    sys_vGui ("::ui_patch::setTitle .x%lx {%s} {%s} %d\n",  // --
         glist,
         canvas_getEnvironment (glist)->ce_directory->s_name,
         glist->gl_name->s_name,
@@ -368,82 +450,6 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
     }
     
     return connection;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-
-    /* make a new glist and add it to this glist.  It will appear as
-    a "graph", not a text object.  */
-    
-t_glist *glist_addglist(t_glist *g, t_symbol *sym,
-    t_float x1, t_float y1, t_float x2, t_float y2,
-    t_float px1, t_float py1, t_float px2, t_float py2)
-{
-    static int gcount = 0;
-    int zz;
-    int menu = 0;
-    char *str;
-    t_glist *x = (t_glist *)pd_new(canvas_class);
-    x->gl_stub = gstub_new (x, NULL);
-    x->gl_magic = ++canvas_magic;
-    x->gl_obj.te_type = TYPE_OBJECT;
-    if (!*sym->s_name)
-    {
-        char buf[40];
-        sprintf(buf, "graph%d", ++gcount);
-        sym = gensym (buf);
-        menu = 1;
-    }
-    else if (!strncmp((str = sym->s_name), "graph", 5)
-        && (zz = atoi(str + 5)) > gcount)
-            gcount = zz;
-        /* in 0.34 and earlier, the pixel rectangle and the y bounds were
-        reversed; this would behave the same, except that the dialog window
-        would be confusing.  The "correct" way is to have "py1" be the value
-        that is higher on the screen. */
-    if (py2 < py1)
-    {
-        t_float zz;
-        zz = y2;
-        y2 = y1;
-        y1 = zz;
-        zz = py2;
-        py2 = py1;
-        py1 = zz;
-    }
-    if (x1 == x2 || y1 == y2)
-        x1 = 0, x2 = 100, y1 = 1, y2 = -1;
-    if (px1 >= px2 || py1 >= py2)
-        px1 = 100, py1 = 20, px2 = 100 + GLIST_DEFAULT_WIDTH,
-            py2 = 20 + GLIST_DEFAULT_HEIGHT;
-    x->gl_name = sym;
-    x->gl_indexStart = x1;
-    x->gl_indexEnd = x2;
-    x->gl_valueUp = y1;
-    x->gl_valueDown = y2;
-    x->gl_obj.te_xCoordinate = px1;
-    x->gl_obj.te_yCoordinate = py1;
-    x->gl_width = px2 - px1;
-    x->gl_height = py2 - py1;
-    x->gl_fontSize =  (canvas_getCurrent() ?
-        canvas_getCurrent()->gl_fontSize : font_getDefaultFontSize());
-    x->gl_topLeftX = 0;
-    x->gl_topLeftY = CANVAS_DEFAULT_Y;
-    x->gl_bottomRightX = 450;
-    x->gl_bottomRightY = 300;
-    x->gl_owner = g;
-    canvas_bind(x);
-    x->gl_isGraphOnParent = 1;
-    x->gl_hasRectangle = 0;
-    x->gl_obj.te_buffer = buffer_new();
-    buffer_vAppend(x->gl_obj.te_buffer, "s", gensym ("graph"));
-    if (!menu)
-        stack_push(&x->gl_obj.te_g.g_pd);
-    glist_add(g, &x->gl_obj.te_g);
-    return (x);
 }
 
 // -----------------------------------------------------------------------------------------------------------

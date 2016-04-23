@@ -99,18 +99,24 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define GLIST_DEFAULT_WIDTH             200
-#define GLIST_DEFAULT_HEIGHT            140
+#define GLIST_DEFAULT_WIDTH                 200
+#define GLIST_DEFAULT_HEIGHT                140
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #ifdef __APPLE__
-    #define CANVAS_DEFAULT_Y            22
+    #define CANVAS_WINDOW_HEADER_HEIGHT     22
 #else
-    #define CANVAS_DEFAULT_Y            50
+    #define CANVAS_WINDOW_HEADER_HEIGHT     50
 #endif
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define CANVAS_WINDOW_DEFAULT_WIDTH         450
+#define CANVAS_WINDOW_DEFAULT_HEIGHT        300
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -230,10 +236,10 @@ struct _glist {
     t_float             gl_indexEnd;
     t_float             gl_valueUp;
     t_float             gl_valueDown;
-    int                 gl_topLeftX;
-    int                 gl_topLeftY;
-    int                 gl_bottomRightX;
-    int                 gl_bottomRightY;
+    int                 gl_windowTopLeftX;
+    int                 gl_windowTopLeftY;
+    int                 gl_windowBottomRightX;
+    int                 gl_windowBottomRightY;
     int                 gl_marginX;
     int                 gl_marginY;
     int                 gl_fontSize;
@@ -316,6 +322,17 @@ t_glist             *canvas_getRoot                     (t_glist *glist);
 t_symbol            *canvas_expandDollar                (t_glist *glist, t_symbol *s);
 t_symbol            *canvas_makeBindSymbol              (t_symbol *s);
 
+t_glist             *canvas_addGraph                    (t_glist *glist,
+                                                            t_symbol *name,
+                                                            t_float indexStart,
+                                                            t_float valueUp,
+                                                            t_float indexEnd,
+                                                            t_float valueDown,
+                                                            t_float topLeftX,
+                                                            t_float topLeftY,
+                                                            t_float bottomRightX,
+                                                            t_float bottomRightY);
+
 int                 canvas_isGraphOnParent              (t_glist *glist);
 int                 canvas_isVisible                    (t_glist *glist);
 int                 canvas_isTopLevel                   (t_glist *glist);
@@ -340,16 +357,7 @@ int                 canvas_getIndexOfObject             (t_glist *glist, t_gobj 
 void                canvas_traverseLinesStart           (t_linetraverser *t, t_glist *glist);
 t_outconnect        *canvas_traverseLinesNext           (t_linetraverser *t);
 
-t_glist             *glist_addglist                     (t_glist *x,
-                                                            t_symbol *sym,
-                                                            t_float x1,
-                                                            t_float y1,
-                                                            t_float x2,
-                                                            t_float y2,
-                                                            t_float px1,
-                                                            t_float py1,
-                                                            t_float px2,
-                                                            t_float py2);
+
 
 void                canvas_drawredrect                  (t_glist *x, int doit);
 void                canvas_redraw                       (t_glist *x);

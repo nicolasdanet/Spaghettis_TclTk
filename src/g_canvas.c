@@ -17,12 +17,6 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define CANVAS_DEFAULT_WIDTH    450
-#define CANVAS_DEFAULT_HEIGHT   300
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-
 extern t_pd     pd_canvasMaker;
 extern int      editor_reloading;
 
@@ -47,14 +41,14 @@ int             canvas_magic = 10000;                       /* Shared. */
 static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)
 {
     int heightwas = y2 - y1;
-    int heightchange = y2 - y1 - (x->gl_bottomRightY - x->gl_topLeftY);
-    if (x->gl_topLeftX == x1 && x->gl_topLeftY == y1 &&
-        x->gl_bottomRightX == x2 && x->gl_bottomRightY == y2)
+    int heightchange = y2 - y1 - (x->gl_windowBottomRightY - x->gl_windowTopLeftY);
+    if (x->gl_windowTopLeftX == x1 && x->gl_windowTopLeftY == y1 &&
+        x->gl_windowBottomRightX == x2 && x->gl_windowBottomRightY == y2)
             return;
-    x->gl_topLeftX = x1;
-    x->gl_topLeftY = y1;
-    x->gl_bottomRightX = x2;
-    x->gl_bottomRightY = y2;
+    x->gl_windowTopLeftX = x1;
+    x->gl_windowTopLeftY = y1;
+    x->gl_windowBottomRightX = x2;
+    x->gl_windowBottomRightY = y2;
     if (!canvas_isGraphOnParent(x) && (x->gl_valueDown < x->gl_valueUp)) 
     {
             /* if it's flipped so that y grows upward,
@@ -114,9 +108,9 @@ static void *subcanvas_new(t_symbol *s)
     t_glist *x, *z = canvas_getCurrent();
     if (!*s->s_name) s = gensym ("/SUBPATCH/");
     SET_FLOAT(a, 0);
-    SET_FLOAT(a+1, CANVAS_DEFAULT_Y);
-    SET_FLOAT(a+2, CANVAS_DEFAULT_WIDTH);
-    SET_FLOAT(a+3, CANVAS_DEFAULT_HEIGHT);
+    SET_FLOAT(a+1, CANVAS_WINDOW_HEADER_HEIGHT);
+    SET_FLOAT(a+2, CANVAS_WINDOW_DEFAULT_WIDTH);
+    SET_FLOAT(a+3, CANVAS_WINDOW_DEFAULT_HEIGHT);
     SET_SYMBOL(a+4, s);
     SET_FLOAT(a+5, 1);
     x = canvas_new(0, 0, 6, a);
@@ -190,7 +184,7 @@ void canvas_restore(t_glist *x, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-    /* call glist_addglist from a Pd message */
+    /* call canvas_addGraph from a Pd message */
 static void glist_glist(t_glist *g, t_symbol *s, int argc, t_atom *argv)
 {
     t_symbol *sym = atom_getSymbolAtIndex(0, argc, argv);   
@@ -202,7 +196,7 @@ static void glist_glist(t_glist *g, t_symbol *s, int argc, t_atom *argv)
     t_float py1 = atom_getFloatAtIndex(6, argc, argv);  
     t_float px2 = atom_getFloatAtIndex(7, argc, argv);  
     t_float py2 = atom_getFloatAtIndex(8, argc, argv);
-    glist_addglist(g, sym, x1, y1, x2, y2, px1, py1, px2, py2);
+    canvas_addGraph(g, sym, x1, y1, x2, y2, px1, py1, px2, py2);
 }
 
 static void canvas_f(t_glist *x, t_symbol *s, int argc, t_atom *argv)
@@ -348,8 +342,8 @@ t_glist *canvas_new (void *dummy, t_symbol *sel, int argc, t_atom *argv)
     t_glist *x = (t_glist *)pd_new(canvas_class);
     t_glist *owner = canvas_getCurrent();
     t_symbol *s = &s_;
-    int vis = 0, width = CANVAS_DEFAULT_WIDTH, height = CANVAS_DEFAULT_HEIGHT;
-    int xloc = 0, yloc = CANVAS_DEFAULT_Y;
+    int vis = 0, width = CANVAS_WINDOW_DEFAULT_WIDTH, height = CANVAS_WINDOW_DEFAULT_HEIGHT;
+    int xloc = 0, yloc = CANVAS_WINDOW_HEADER_HEIGHT;
     int font = (owner ? owner->gl_fontSize : font_getDefaultFontSize());
     x->gl_stub = gstub_new (x, NULL);
     x->gl_magic = ++canvas_magic;
@@ -395,8 +389,8 @@ t_glist *canvas_new (void *dummy, t_symbol *sel, int argc, t_atom *argv)
     }
     else x->gl_environment = 0;
 
-    if (yloc < CANVAS_DEFAULT_Y)
-        yloc = CANVAS_DEFAULT_Y;
+    if (yloc < CANVAS_WINDOW_HEADER_HEIGHT)
+        yloc = CANVAS_WINDOW_HEADER_HEIGHT;
     if (xloc < 0)
         xloc = 0;
     x->gl_indexStart = 0;
