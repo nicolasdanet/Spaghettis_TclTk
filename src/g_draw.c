@@ -198,6 +198,7 @@ static void canvas_redrawAllScalars (t_glist *glist, int action)
 }
 
 /* Note that the functions below are experimentals. */
+/* The template argument are not used and everything is redrawn instead. */
 
 void canvas_redrawAllByTemplate (t_template *dummy, int action)
 {
@@ -209,6 +210,19 @@ void canvas_redrawAllByTemplate (t_template *dummy, int action)
     //
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void canvas_redrawAllByTemplateByCanvas (t_glist *glist, int action)
+{
+    canvas_redrawAllByTemplate (NULL, action);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+/*
 
 void canvas_redrawAllByTemplateByCanvas (t_glist *glist, int action)
 {
@@ -236,6 +250,8 @@ void canvas_redrawAllByTemplateByCanvas (t_glist *glist, int action)
     
     canvas_redrawAllByTemplate (NULL, action);
 }
+
+*/
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
