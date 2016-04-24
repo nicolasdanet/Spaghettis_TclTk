@@ -60,7 +60,7 @@ proc create {top width height coordinates editable} {
     canvas $top.c   -width $width \
                     -height $height \
                     -highlightthickness 0 \
-                    -background "#fcfcfc" \
+                    -background "#ffffff" \
                     -scrollregion "0 0 $width $height" \
                     -xscrollcommand "$top.xscroll set" \
                     -yscrollcommand "$top.yscroll set"

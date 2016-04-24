@@ -448,23 +448,22 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
     int labelX          = IEM_DEFAULT_LABELX_NEXT;
     int labelY          = IEM_DEFAULT_LABELY_NEXT;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
-    t_iemcolors colors  = IEM_DEFAULT_COLORS;
     
     if (argc == 14                                              // --
             && IS_FLOAT (argv)                                  // Size.
             && IS_FLOAT (argv + 1)                              // Flash hold.
             && IS_FLOAT (argv + 2)                              // Flash break.
             && IS_FLOAT (argv + 3)                              // Loadbang.
-            && (IS_SYMBOL (argv + 4) || IS_FLOAT (argv + 4))    // Send.
-            && (IS_SYMBOL (argv + 5) || IS_FLOAT (argv + 5))    // Receive.
-            && (IS_SYMBOL (argv + 6) || IS_FLOAT (argv + 6))    // Label.
+            && IS_SYMBOLORFLOAT (argv + 4)                      // Send.
+            && IS_SYMBOLORFLOAT (argv + 5)                      // Receive.
+            && IS_SYMBOLORFLOAT (argv + 6)                      // Label.
             && IS_FLOAT (argv + 7)                              // Label X.
             && IS_FLOAT (argv + 8)                              // Label Y.
             && IS_FLOAT (argv + 9)                              // Label font.
             && IS_FLOAT (argv + 10)                             // Label font size.
-            && IS_FLOAT (argv + 11)                             // Background color.
-            && IS_FLOAT (argv + 12)                             // Foreground color.
-            && IS_FLOAT (argv + 13))                            // Label color.
+            && IS_SYMBOLORFLOAT (argv + 11)                     // Background color.
+            && IS_SYMBOLORFLOAT (argv + 12)                     // Foreground color.
+            && IS_SYMBOLORFLOAT (argv + 13))                    // Label color.
     {
         size                        = (int)atom_getFloatAtIndex (0,  argc, argv);
         flashHold                   = (int)atom_getFloatAtIndex (1,  argc, argv);
@@ -472,16 +471,15 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
         labelX                      = (int)atom_getFloatAtIndex (7,  argc, argv);
         labelY                      = (int)atom_getFloatAtIndex (8,  argc, argv);
         labelFontSize               = (int)atom_getFloatAtIndex (10, argc, argv);
-        colors.c_colorBackground    = (int)atom_getFloatAtIndex (11, argc, argv);
-        colors.c_colorForeground    = (int)atom_getFloatAtIndex (12, argc, argv);
-        colors.c_colorLabel         = (int)atom_getFloatAtIndex (13, argc, argv);
         
         iemgui_deserializeLoadbang (&x->x_gui, (int)atom_getFloatAtIndex (3, argc, argv));
         iemgui_deserializeNamesByIndex (&x->x_gui, 4, argv);
         iemgui_deserializeFontStyle (&x->x_gui, (int)atom_getFloatAtIndex (9, argc, argv));
+        iemgui_deserializeColors (&x->x_gui, argv + 11, argv + 12, argv + 13);
         
     } else {
         iemgui_deserializeNamesByIndex (&x->x_gui, 4, NULL);
+        iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
     }
 
     x->x_gui.iem_glist      = (t_glist *)canvas_getCurrent();
@@ -494,7 +492,6 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_labelY     = labelY;
     x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
     
-    iemgui_deserializeColors (&x->x_gui, &colors);
     iemgui_checkSendReceiveLoop (&x->x_gui);
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }

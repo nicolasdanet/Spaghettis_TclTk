@@ -77,7 +77,7 @@ static t_symbol *iemgui_colorEncode (int color)
 // RRRRRR..GGGGGG..BBBBBB..
 // RRRRRRGGGGGGBBBBBB
 
-static int iemgui_colorDecode (int color)
+static int iemgui_colorDecodeFromInteger (int color)
 {
     PD_ASSERT (color < 0);
     
@@ -90,6 +90,19 @@ static int iemgui_colorDecode (int color)
     n |= ((color & 0x3f) << 2);
 
     return n;
+}
+
+static int iemgui_colorDecode (t_atom *a)
+{
+    if (IS_FLOAT (a)) { return iemgui_colorDecodeFromInteger ((int)GET_FLOAT (a)); }
+    else if (IS_SYMBOL (a)) {
+        t_symbol *s = atom_getSymbol (a);
+        if (s->s_name[0] == '#') { return strtol (s->s_name + 1, NULL, 16); }
+    }
+    
+    PD_BUG;
+    
+    return 0;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -156,11 +169,15 @@ void iemgui_serializeColors (t_iem *iem, t_iemcolors *c)
     c->c_symColorLabel      = iemgui_colorEncode (iem->iem_colorLabel);
 }
 
-void iemgui_deserializeColors (t_iem *iem, t_iemcolors *c)
+void iemgui_deserializeColors (t_iem *iem, t_atom *background, t_atom *foreground, t_atom *label)
 {
-    iem->iem_colorBackground = iemgui_colorDecode (c->c_colorBackground);
-    iem->iem_colorForeground = iemgui_colorDecode (c->c_colorForeground);
-    iem->iem_colorLabel      = iemgui_colorDecode (c->c_colorLabel);
+    iem->iem_colorBackground = IEM_COLOR_BACKGROUND;
+    iem->iem_colorForeground = IEM_COLOR_FOREGROUND;
+    iem->iem_colorLabel      = IEM_COLOR_LABEL;
+    
+    if (background) { iem->iem_colorBackground = iemgui_colorDecode (background); }
+    if (foreground) { iem->iem_colorForeground = iemgui_colorDecode (foreground); }
+    if (label)      { iem->iem_colorLabel      = iemgui_colorDecode (label);      }
 }
 
 void iemgui_deserializeFontStyle (t_iem *iem, int n)

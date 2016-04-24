@@ -564,19 +564,18 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
     int labelY          = IEM_DEFAULT_LABELY_NEXT;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     int hasScale        = 0;
-    t_iemcolors colors  = IEM_DEFAULT_COLORS;
 
     if (argc >= 11                                                  // --
             && IS_FLOAT (argv + 0)                                  // Width.
             && IS_FLOAT (argv + 1)                                  // Height.
-            && (IS_SYMBOL (argv + 2) || IS_FLOAT (argv + 2))        // Receive.
-            && (IS_SYMBOL (argv + 3) || IS_FLOAT (argv + 3))        // Label.
+            && IS_SYMBOLORFLOAT (argv + 2)                          // Receive.
+            && IS_SYMBOLORFLOAT (argv + 3)                          // Label.
             && IS_FLOAT (argv + 4)                                  // Label X.
             && IS_FLOAT (argv + 5)                                  // Label Y.
             && IS_FLOAT (argv + 6)                                  // Label font.
             && IS_FLOAT (argv + 7)                                  // Label font size.
-            && IS_FLOAT (argv + 8)                                  // Background color.
-            && IS_FLOAT (argv + 9)                                  // Label color.
+            && IS_SYMBOLORFLOAT (argv + 8)                          // Background color.
+            && IS_SYMBOLORFLOAT (argv + 9)                          // Label color.
             && IS_FLOAT (argv + 10))                                // Dummy.
     {
         width                       = (int)atom_getFloatAtIndex (0,  argc, argv);
@@ -584,17 +583,17 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
         labelX                      = (int)atom_getFloatAtIndex (4,  argc, argv);
         labelY                      = (int)atom_getFloatAtIndex (5,  argc, argv);
         labelFontSize               = (int)atom_getFloatAtIndex (7,  argc, argv);
-        colors.c_colorBackground    = (int)atom_getFloatAtIndex (8,  argc, argv);
-        colors.c_colorLabel         = (int)atom_getFloatAtIndex (9,  argc, argv);
         hasScale                    = (int)atom_getFloatAtIndex (10, argc, argv);
         
         /* Note that a fake float value is pitiably attribute to the send symbol. */
         
         iemgui_deserializeNamesByIndex (&x->x_gui, 1, argv);
         iemgui_deserializeFontStyle (&x->x_gui, (int)atom_getFloatAtIndex (6, argc, argv));
+        iemgui_deserializeColors (&x->x_gui, argv + 8, NULL, argv + 9);
         
     } else {
         iemgui_deserializeNamesByIndex (&x->x_gui, 1, NULL);
+        iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
     }
 
     x->x_gui.iem_glist      = (t_glist *)canvas_getCurrent();
@@ -609,7 +608,6 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
     vu_setHeight (x, height);
     
     iemgui_checkSendReceiveLoop (&x->x_gui);
-    iemgui_deserializeColors (&x->x_gui, &colors);
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
         

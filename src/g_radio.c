@@ -604,23 +604,22 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     int changed         = 1;
     int numberOfButtons = IEM_RADIO_DEFAULT_BUTTONS;
     t_float floatValue  = 0.0;
-    t_iemcolors colors  = IEM_DEFAULT_COLORS;
     
     if (argc == 15                                                  // --
             && IS_FLOAT (argv + 0)                                  // Size.
             && IS_FLOAT (argv + 1)                                  // Dummy.
             && IS_FLOAT (argv + 2)                                  // Loadbang.
             && IS_FLOAT (argv + 3)                                  // Number of buttons.
-            && (IS_SYMBOL (argv + 4) || IS_FLOAT (argv + 4))        // Send.
-            && (IS_SYMBOL (argv + 5) || IS_FLOAT (argv + 5))        // Receive.
-            && (IS_SYMBOL (argv + 6) || IS_FLOAT (argv + 6))        // Label.
+            && IS_SYMBOLORFLOAT (argv + 4)                          // Send.
+            && IS_SYMBOLORFLOAT (argv + 5)                          // Receive.
+            && IS_SYMBOLORFLOAT (argv + 6)                          // Label.
             && IS_FLOAT (argv + 7)                                  // Label X.
             && IS_FLOAT (argv + 8)                                  // Label Y.
             && IS_FLOAT (argv + 9)                                  // Label font.
             && IS_FLOAT (argv + 10)                                 // Label font size.
-            && IS_FLOAT (argv + 11)                                 // Background color.
-            && IS_FLOAT (argv + 12)                                 // Foreground color.
-            && IS_FLOAT (argv + 13)                                 // Label color.
+            && IS_SYMBOLORFLOAT (argv + 11)                         // Background color.
+            && IS_SYMBOLORFLOAT (argv + 12)                         // Foreground color.
+            && IS_SYMBOLORFLOAT (argv + 13)                         // Label color.
             && IS_FLOAT (argv + 14))                                // Float value.
     {
         size                        = (int)atom_getFloatAtIndex (0, argc,  argv);
@@ -629,17 +628,16 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
         labelX                      = (int)atom_getFloatAtIndex (7, argc,  argv);
         labelY                      = (int)atom_getFloatAtIndex (8, argc,  argv);
         labelFontSize               = (int)atom_getFloatAtIndex (10, argc, argv);
-        colors.c_colorBackground    = (int)atom_getFloatAtIndex (11, argc, argv);
-        colors.c_colorForeground    = (int)atom_getFloatAtIndex (12, argc, argv);
-        colors.c_colorLabel         = (int)atom_getFloatAtIndex (13, argc, argv);
         floatValue                  = atom_getFloatAtIndex (14, argc, argv);
         
         iemgui_deserializeLoadbang (&x->x_gui, (int)atom_getFloatAtIndex (2, argc, argv));
         iemgui_deserializeNamesByIndex (&x->x_gui, 4, argv);
         iemgui_deserializeFontStyle (&x->x_gui, (int)atom_getFloatAtIndex (9, argc, argv));
+        iemgui_deserializeColors (&x->x_gui, argv + 11, argv + 12, argv + 13);
         
     } else {
         iemgui_deserializeNamesByIndex (&x->x_gui, 4, NULL);
+        iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
     }
     
     x->x_gui.iem_glist      = (t_glist *)canvas_getCurrent();
@@ -653,7 +651,6 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
     
     iemgui_checkSendReceiveLoop (&x->x_gui);
-    iemgui_deserializeColors (&x->x_gui, &colors);
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
         

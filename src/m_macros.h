@@ -103,6 +103,7 @@
 #define IS_SYMBOL(atom)                     ((atom)->a_type == A_SYMBOL)
 #define IS_DOLLAR(atom)                     ((atom)->a_type == A_DOLLAR)
 #define IS_DOLLARSYMBOL(atom)               ((atom)->a_type == A_DOLLARSYMBOL)
+#define IS_SYMBOLORFLOAT(atom)              (IS_SYMBOL(atom) || IS_FLOAT(atom))
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

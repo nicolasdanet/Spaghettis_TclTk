@@ -651,7 +651,6 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     double minimum      = 0.0;
     double maximum      = (double)(x->x_isVertical ? (height - 1) : (width - 1));
     t_float position    = 0.0;
-    t_iemcolors colors  = IEM_DEFAULT_COLORS;
 
     if (argc >= 17                                                      // --
             && IS_FLOAT (argv + 0)                                      // Width.
@@ -660,16 +659,16 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
             && IS_FLOAT (argv + 3)                                      // Range maximum.
             && IS_FLOAT (argv + 4)                                      // Is logarithmic.
             && IS_FLOAT (argv + 5)                                      // Loadbang.
-            && (IS_SYMBOL (argv + 6) || IS_FLOAT (argv + 6))            // Send.
-            && (IS_SYMBOL (argv + 7) || IS_FLOAT (argv + 7))            // Receive.
-            && (IS_SYMBOL (argv + 8) || IS_FLOAT (argv + 8))            // Label.
+            && IS_SYMBOLORFLOAT (argv + 6)                              // Send.
+            && IS_SYMBOLORFLOAT (argv + 7)                              // Receive.
+            && IS_SYMBOLORFLOAT (argv + 8)                              // Label.
             && IS_FLOAT (argv + 9)                                      // Label X.
             && IS_FLOAT (argv + 10)                                     // Label Y.
             && IS_FLOAT (argv + 11)                                     // Label font.
             && IS_FLOAT (argv + 12)                                     // Label font size.
-            && IS_FLOAT (argv + 13)                                     // Background color.
-            && IS_FLOAT (argv + 14)                                     // Foreground color.
-            && IS_FLOAT (argv + 15)                                     // Label color.
+            && IS_SYMBOLORFLOAT (argv + 13)                             // Background color.
+            && IS_SYMBOLORFLOAT (argv + 14)                             // Foreground color.
+            && IS_SYMBOLORFLOAT (argv + 15)                             // Label color.
             && IS_FLOAT (argv + 16))                                    // Position.
     {
         width                       = (int)atom_getFloatAtIndex (0,  argc, argv);
@@ -680,9 +679,6 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
         labelX                      = (int)atom_getFloatAtIndex (9,  argc, argv);
         labelY                      = (int)atom_getFloatAtIndex (10, argc, argv);
         labelFontSize               = (int)atom_getFloatAtIndex (12, argc, argv);
-        colors.c_colorBackground    = (int)atom_getFloatAtIndex (13, argc, argv);
-        colors.c_colorForeground    = (int)atom_getFloatAtIndex (14, argc, argv);
-        colors.c_colorLabel         = (int)atom_getFloatAtIndex (15, argc, argv);
         position                    = atom_getFloatAtIndex (16, argc, argv);
         
         if (argc == 18 && IS_FLOAT (argv + 17)) {
@@ -692,9 +688,11 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
         iemgui_deserializeLoadbang (&x->x_gui, (int)atom_getFloatAtIndex (5, argc, argv));
         iemgui_deserializeNamesByIndex (&x->x_gui, 6, argv);
         iemgui_deserializeFontStyle (&x->x_gui, (int)atom_getFloatAtIndex (11, argc, argv));
+        iemgui_deserializeColors (&x->x_gui, argv + 13, argv + 14, argv + 15);
         
     } else {
         iemgui_deserializeNamesByIndex (&x->x_gui, 6, NULL);
+        iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
     }
     
     x->x_gui.iem_glist      = (t_glist *)canvas_getCurrent();
@@ -709,7 +707,6 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
     slider_setWidth (x, width);
     
     iemgui_checkSendReceiveLoop (&x->x_gui);
-    iemgui_deserializeColors (&x->x_gui, &colors);
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
     

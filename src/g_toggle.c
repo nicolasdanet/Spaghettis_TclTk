@@ -426,39 +426,37 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
     t_float state       = 0.0;
     t_float nonZero     = 1.0;
-    t_iemcolors colors  = IEM_DEFAULT_COLORS;
 
     if (argc >= 13                                              // --
             && IS_FLOAT (argv)                                  // Size.
             && IS_FLOAT (argv + 1)                              // Loadbang.
-            && (IS_SYMBOL (argv + 2) || IS_FLOAT (argv + 2))    // Send.
-            && (IS_SYMBOL (argv + 3) || IS_FLOAT (argv + 3))    // Receive.
-            && (IS_SYMBOL (argv + 4) || IS_FLOAT (argv + 4))    // Label.
+            && IS_SYMBOLORFLOAT (argv + 2)                      // Send.
+            && IS_SYMBOLORFLOAT (argv + 3)                      // Receive.
+            && IS_SYMBOLORFLOAT (argv + 4)                      // Label.
             && IS_FLOAT (argv + 5)                              // Label X.
             && IS_FLOAT (argv + 6)                              // Label Y.
             && IS_FLOAT (argv + 7)                              // Label font.
             && IS_FLOAT (argv + 8)                              // Label font size.
-            && IS_FLOAT (argv + 9)                              // Background color.
-            && IS_FLOAT (argv + 10)                             // Foreground color.
-            && IS_FLOAT (argv + 11)                             // Label color.
+            && IS_SYMBOLORFLOAT (argv + 9)                      // Background color.
+            && IS_SYMBOLORFLOAT (argv + 10)                     // Foreground color.
+            && IS_SYMBOLORFLOAT (argv + 11)                     // Label color.
             && IS_FLOAT (argv + 12))                            // Toggle state.
     {
         size                        = (int)atom_getFloatAtIndex (0, argc,  argv);
         labelX                      = (int)atom_getFloatAtIndex (5, argc,  argv);
         labelY                      = (int)atom_getFloatAtIndex (6, argc,  argv);
         labelFontSize               = (int)atom_getFloatAtIndex (8, argc,  argv);
-        colors.c_colorBackground    = (int)atom_getFloatAtIndex (9, argc,  argv);
-        colors.c_colorForeground    = (int)atom_getFloatAtIndex (10, argc, argv);
-        colors.c_colorLabel         = (int)atom_getFloatAtIndex (11, argc, argv);
         state                       = (t_float)atom_getFloatAtIndex (12, argc, argv);
         nonZero                     = (argc == 14) ? atom_getFloatAtIndex (13, argc, argv) : 1.0;
         
         iemgui_deserializeLoadbang (&x->x_gui, (int)atom_getFloatAtIndex (1, argc, argv));
         iemgui_deserializeNamesByIndex (&x->x_gui, 2, argv);
         iemgui_deserializeFontStyle (&x->x_gui, (int)atom_getFloatAtIndex (7, argc, argv));
+        iemgui_deserializeColors (&x->x_gui, argv + 9, argv + 10, argv + 11);
         
     } else {
         iemgui_deserializeNamesByIndex (&x->x_gui, 2, NULL);
+        iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
     }
     
     x->x_gui.iem_glist      = (t_glist *)canvas_getCurrent();
@@ -471,7 +469,6 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_labelY     = labelY;
     x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
     
-    iemgui_deserializeColors (&x->x_gui, &colors);
     iemgui_checkSendReceiveLoop (&x->x_gui);
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }

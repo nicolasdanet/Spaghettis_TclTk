@@ -330,21 +330,20 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
     int labelX          = IEM_DEFAULT_LABELX_TOP;
     int labelY          = IEM_DEFAULT_LABELY_TOP;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
-    t_iemcolors colors  = IEM_DEFAULT_COLORS;
         
     if (argc >= 12                                                              // --
             && IS_FLOAT (argv + 0)                                              // Grip width.
             && IS_FLOAT (argv + 1)                                              // Panel width.
             && IS_FLOAT (argv + 2)                                              // Panel Height.
-            && (IS_SYMBOL (argv + 3) || IS_FLOAT (argv + 3))                    // Send.
-            && (IS_SYMBOL (argv + 4) || IS_FLOAT (argv + 4))                    // Receive.
-            && (IS_SYMBOL (argv + 5) || IS_FLOAT (argv + 5))                    // Label.
+            && IS_SYMBOLORFLOAT (argv + 3)                                      // Send.
+            && IS_SYMBOLORFLOAT (argv + 4)                                      // Receive.
+            && IS_SYMBOLORFLOAT (argv + 5)                                      // Label.
             && IS_FLOAT (argv + 6)                                              // Label X.
             && IS_FLOAT (argv + 7)                                              // Label Y.
             && IS_FLOAT (argv + 8)                                              // Label font.
             && IS_FLOAT (argv + 9)                                              // Label font size.
-            && IS_FLOAT (argv + 10)                                             // Background color.
-            && IS_FLOAT (argv + 11))                                            // Label color.
+            && IS_SYMBOLORFLOAT (argv + 10)                                     // Background color.
+            && IS_SYMBOLORFLOAT (argv + 11))                                    // Label color.
     {
         gripSize                    = (int)atom_getFloatAtIndex (0,  argc, argv);
         panelWidth                  = (int)atom_getFloatAtIndex (1,  argc, argv);
@@ -352,14 +351,14 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
         labelX                      = (int)atom_getFloatAtIndex (6,  argc, argv);
         labelY                      = (int)atom_getFloatAtIndex (7,  argc, argv);
         labelFontSize               = (int)atom_getFloatAtIndex (9,  argc, argv);
-        colors.c_colorBackground    = (int)atom_getFloatAtIndex (10, argc, argv);
-        colors.c_colorLabel         = (int)atom_getFloatAtIndex (11, argc, argv);
         
         iemgui_deserializeNamesByIndex (&x->x_gui, 3, argv);
         iemgui_deserializeFontStyle (&x->x_gui, (int)atom_getFloatAtIndex (8, argc, argv));
+        iemgui_deserializeColors (&x->x_gui, argv + 10, NULL, argv + 11);
                 
     } else {
         iemgui_deserializeNamesByIndex (&x->x_gui, 3, NULL);
+        iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
     }
 
     x->x_gui.iem_glist      = (t_glist *)canvas_getCurrent();
@@ -374,7 +373,6 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
     x->x_gui.iem_fontSize   = PD_MAX (labelFontSize, IEM_MINIMUM_FONTSIZE);
     
     iemgui_checkSendReceiveLoop (&x->x_gui);
-    iemgui_deserializeColors (&x->x_gui, &colors);
     
     if (x->x_gui.iem_canReceive) { pd_bind (cast_pd (x), x->x_gui.iem_receive); }
     

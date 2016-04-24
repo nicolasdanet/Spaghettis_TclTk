@@ -31,8 +31,10 @@
 
 #define IEM_COLOR_NORMAL                0x000000        // Black.
 #define IEM_COLOR_SELECTED              0x0000ff        // Blue.
-
 #define IEM_COLOR_MASK                  0xffffff
+#define IEM_COLOR_BACKGROUND            0xffffff        // White.
+#define IEM_COLOR_FOREGROUND            0x000000
+#define IEM_COLOR_LABEL                 0x000000
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -49,12 +51,6 @@
 #define IEM_DEFAULT_LABELY_TOP         -((IEM_DEFAULT_FONTSIZE / 2) + 2)
 #define IEM_DEFAULT_LABELX_NEXT         (IEM_DEFAULT_SIZE + 2)
 #define IEM_DEFAULT_LABELY_NEXT         ((IEM_DEFAULT_FONTSIZE / 2) + 2)
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define IEM_DEFAULT_COLORS              { -262144, -1, -1, NULL, NULL, NULL }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -92,9 +88,6 @@
 #pragma mark -
 
 typedef struct _iemcolors {
-    int         c_colorBackground;
-    int         c_colorForeground;
-    int         c_colorLabel;
     t_symbol    *c_symColorBackground;
     t_symbol    *c_symColorForeground;
     t_symbol    *c_symColorLabel;
@@ -226,7 +219,11 @@ t_symbol *iemgui_empty (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void        iemgui_deserializeColors            (t_iem *iem, t_iemcolors *c);
+void        iemgui_deserializeColors            (t_iem *iem,
+                                                    t_atom *background,
+                                                    t_atom *foreground,
+                                                    t_atom *label);
+                                                    
 void        iemgui_serializeColors              (t_iem *iem, t_iemcolors *c);
 void        iemgui_deserializeFontStyle         (t_iem *iem, int n);
 int         iemgui_serializeFontStyle           (t_iem *iem);
