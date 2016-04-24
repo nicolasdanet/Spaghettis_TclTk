@@ -17,7 +17,7 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define DRAW_GRAPH_ON_PARENT_COLOR  "#ff8080"       /* Red. */
+#define DRAW_GRAPH_ON_PARENT_COLOR      "#ff8080"   /* Red. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -174,63 +174,67 @@ void canvas_deleteGraphOnParentRectangle (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_redrawAll (t_glist *gl, int action)
+static void canvas_redrawAllScalars (t_glist *glist, int action)
 {
-    t_gobj *g;
-    int vis = canvas_isVisible(gl);
-    for (g = gl->gl_graphics; g; g = g->g_next)
-    {
-        t_class *cl;
-        if (vis && g->g_pd == scalar_class)
-        {
-            if (action == 1)
-            {
-                if (canvas_isVisible(gl))
-                    gobj_vis(g, gl, 1);
-            }
-            else if (action == 2)
-            {
-                if (canvas_isVisible(gl))
-                    gobj_vis(g, gl, 0);
-            }
-            else scalar_redraw((t_scalar *)g, gl);
+    t_gobj *g = NULL;
+    
+    int visible = canvas_isVisible (glist);
+    
+    for (g = glist->gl_graphics; g; g = g->g_next) {
+    //
+    if (visible && cast_pd (g) == scalar_class) {
+    //
+    switch (action) {
+        case SCALAR_REDRAW  : scalar_redraw (cast_scalar (g), glist);   break;
+        case SCALAR_DRAW    : gobj_vis (g, glist, 1);                   break;
+        case SCALAR_ERASE   : gobj_vis (g, glist, 0);                   break;
+    }
+    //
+    } 
+
+    if (cast_pd (g) == canvas_class) { canvas_redrawAllScalars (cast_glist (g), action); }
+    //
+    }
+}
+
+/* Note that the functions below are experimentals. */
+
+void canvas_redrawAllByTemplate (t_template *dummy, int action)
+{
+    t_glist *glist = NULL;
+
+    for (glist = pd_this->pd_roots; glist; glist = glist->gl_next) {
+    //
+    canvas_redrawAllScalars (glist, action);
+    //
+    }
+}
+
+void canvas_redrawAllByTemplateByCanvas (t_glist *glist, int action)
+{
+    t_gobj   *g = NULL;
+    t_symbol *s = gensym ("struct");
+    
+    for (g = glist->gl_graphics; g; g = g->g_next) {
+    //
+    t_object *o = canvas_castToObjectIfBox (g);
+    
+    if (o && o->te_type == TYPE_OBJECT && buffer_size (o->te_buffer) < 2) {
+    //
+    t_atom *argv = buffer_atoms (o->te_buffer);
+    
+    if (IS_SYMBOL (argv) && IS_SYMBOL (argv + 1)) {
+        if (GET_SYMBOL (argv) == s) {
+            t_template *t = template_findbyname (GET_SYMBOL (argv + 1));
+            canvas_redrawAllByTemplate (t, action);
         }
-        else if (g->g_pd == canvas_class)
-            canvas_redrawAll((t_glist *)g, action);
     }
-}
-
-    /* public interface for above. */
-void canvas_redrawallfortemplate(t_template *template, int action)
-{
-    t_glist *x;
-        /* find all root canvases */
-    for (x = pd_this->pd_roots; x; x = x->gl_next)
-        canvas_redrawAll(x, action);
-}
-
-    /* find the template defined by a canvas, and redraw all elements
-    for that */
-void canvas_redrawallfortemplatecanvas(t_glist *x, int action)
-{
-    t_gobj *g;
-    t_template *tmpl;
-    t_symbol *s1 = gensym ("struct");
-    for (g = x->gl_graphics; g; g = g->g_next)
-    {
-        t_object *ob = canvas_castToObjectIfBox(&g->g_pd);
-        t_atom *argv;
-        if (!ob || ob->te_type != TYPE_OBJECT ||
-            buffer_size(ob->te_buffer) < 2)
-            continue;
-        argv = buffer_atoms(ob->te_buffer);
-        if (argv[0].a_type != A_SYMBOL || argv[1].a_type != A_SYMBOL
-            || argv[0].a_w.w_symbol != s1)
-                continue;
-        tmpl = template_findbyname(argv[1].a_w.w_symbol);
-        canvas_redrawallfortemplate(tmpl, action);
+    //
     }
-    canvas_redrawallfortemplate(0, action);
+    //
+    }
+    
+    canvas_redrawAllByTemplate (NULL, action);
 }
 
 // -----------------------------------------------------------------------------------------------------------

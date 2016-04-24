@@ -145,13 +145,13 @@
 
 struct _gtemplate;
 struct _guiconnect;
-struct _canvasenvironment;
+struct _environment;
 struct _fielddescriptor;
 struct _boxtext;
 
 #define t_gtemplate                     struct _gtemplate
 #define t_guiconnect                    struct _guiconnect
-#define t_canvasenvironment             struct _canvasenvironment
+#define t_environment                   struct _environment
 #define t_fielddescriptor               struct _fielddescriptor
 #define t_boxtext                       struct _boxtext
 
@@ -159,7 +159,7 @@ struct _boxtext;
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-struct _canvasenvironment {
+struct _environment {
     int                 ce_dollarZeroValue;
     int                 ce_argc;
     t_atom              *ce_argv;
@@ -240,7 +240,7 @@ struct _glist {
     t_gstub             *gl_stub;
     t_glist             *gl_owner;
     t_glist             *gl_next;
-    t_canvasenvironment *gl_environment;
+    t_environment       *gl_environment;
     t_symbol            *gl_name;
     t_editor            *gl_editor;
     int                 gl_magic;
@@ -318,25 +318,25 @@ t_glist             *canvas_castToGlist                 (t_pd *x);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_guiconnect        *guiconnect_new                     (t_pd *owner, t_symbol *bindTo);
+t_guiconnect    *guiconnect_new                         (t_pd *owner, t_symbol *bindTo);
 
-void                guiconnect_release                  (t_guiconnect *x, double timeOut);
+void            guiconnect_release                      (t_guiconnect *x, double timeOut);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void                canvas_newPatch                     (void *dummy, t_symbol *name, t_symbol *directory);
-void                canvas_setFileNameAndDirectory      (t_symbol *name, t_symbol *directory);
-void                canvas_setArguments                 (int argc, t_atom *argv);
+void            canvas_newPatch                         (void *dummy, t_symbol *name, t_symbol *directory);
+void            canvas_setFileNameAndDirectory          (t_symbol *name, t_symbol *directory);
+void            canvas_setArguments                     (int argc, t_atom *argv);
 
-t_glist             *canvas_getCurrent                  (void);
-t_canvasenvironment *canvas_getEnvironment              (t_glist *glist);
-t_glist             *canvas_getRoot                     (t_glist *glist);
-t_symbol            *canvas_expandDollar                (t_glist *glist, t_symbol *s);
-t_symbol            *canvas_makeBindSymbol              (t_symbol *s);
+t_glist         *canvas_getCurrent                      (void);
+t_environment   *canvas_getEnvironment                  (t_glist *glist);
+t_glist         *canvas_getRoot                         (t_glist *glist);
+t_symbol        *canvas_expandDollar                    (t_glist *glist, t_symbol *s);
+t_symbol        *canvas_makeBindSymbol                  (t_symbol *s);
 
-t_glist             *canvas_addGraph                    (t_glist *glist,
+t_glist         *canvas_addGraph                        (t_glist *glist,
                                                             t_symbol *name,
                                                             t_float indexStart,
                                                             t_float valueUp,
@@ -347,62 +347,62 @@ t_glist             *canvas_addGraph                    (t_glist *glist,
                                                             t_float bottomRightX,
                                                             t_float bottomRightY);
 
-int                 canvas_isGraphOnParent              (t_glist *glist);
-int                 canvas_isVisible                    (t_glist *glist);
-int                 canvas_isTopLevel                   (t_glist *glist);
-int                 canvas_isAbstraction                (t_glist *glist);
+int             canvas_isGraphOnParent                  (t_glist *glist);
+int             canvas_isVisible                        (t_glist *glist);
+int             canvas_isTopLevel                       (t_glist *glist);
+int             canvas_isAbstraction                    (t_glist *glist);
 
-int                 canvas_openFile                     (t_glist *glist,
+int             canvas_openFile                         (t_glist *glist,
                                                             const char *name,
                                                             const char *extension,
                                                             char *directoryResult,
                                                             char **nameResult,
                                                             size_t size);
                                                             
-void                canvas_bind                         (t_glist *glist);
-void                canvas_unbind                       (t_glist *glist);
-t_error             canvas_makeFilePath                 (t_glist *glist, char *name, char *dest, size_t size);
-void                canvas_rename                       (t_glist *glist, t_symbol *name, t_symbol *directory);
-void                canvas_updateTitle                  (t_glist *glist);
-int                 canvas_showGraphOnParentTitle       (t_glist *glist);
-int                 canvas_getFontSize                  (t_glist *glist);
-int                 canvas_getIndexOfObject             (t_glist *glist, t_gobj *object);
+void            canvas_bind                             (t_glist *glist);
+void            canvas_unbind                           (t_glist *glist);
+t_error         canvas_makeFilePath                     (t_glist *glist, char *name, char *dest, size_t size);
+void            canvas_rename                           (t_glist *glist, t_symbol *name, t_symbol *directory);
+void            canvas_updateTitle                      (t_glist *glist);
+int             canvas_isGraphOnParentTitle             (t_glist *glist);
+int             canvas_getFontSize                      (t_glist *glist);
+int             canvas_getIndexOfObject                 (t_glist *glist, t_gobj *object);
 
-void                canvas_traverseLinesStart           (t_linetraverser *t, t_glist *glist);
-t_outconnect        *canvas_traverseLinesNext           (t_linetraverser *t);
+void            canvas_traverseLinesStart               (t_linetraverser *t, t_glist *glist);
+t_outconnect    *canvas_traverseLinesNext               (t_linetraverser *t);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void                canvas_redraw                       (t_glist *glist);
-void                canvas_drawLines                    (t_glist *glist);
-void                canvas_updateLinesByObject          (t_glist *glist, t_object *o);
-void                canvas_deleteLinesByObject          (t_glist *glist, t_object *o);
-void                canvas_deleteLinesByInlets          (t_glist *glist,
+void            canvas_redraw                           (t_glist *glist);
+void            canvas_drawLines                        (t_glist *glist);
+void            canvas_updateLinesByObject              (t_glist *glist, t_object *o);
+void            canvas_deleteLinesByObject              (t_glist *glist, t_object *o);
+void            canvas_deleteLinesByInlets              (t_glist *glist,
                                                             t_object *o,
                                                             t_inlet  *inlet,
                                                             t_outlet *outlet);
 
-void                canvas_drawGraphOnParentRectangle   (t_glist *glist);
-void                canvas_deleteGraphOnParentRectangle (t_glist *glist);
+void            canvas_drawGraphOnParentRectangle       (t_glist *glist);
+void            canvas_deleteGraphOnParentRectangle     (t_glist *glist);
 
-void                canvas_redrawallfortemplate         (t_template *tmpl, int action);
-void                canvas_redrawallfortemplatecanvas   (t_glist *x, int action);
+void            canvas_redrawAllByTemplate              (t_template *dummy, int action);
+void            canvas_redrawAllByTemplateByCanvas      (t_glist *glist, int action);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_glist             *canvas_new                     (void *dummy, t_symbol *sel, int argc, t_atom *argv);
+t_glist         *canvas_new                             (void *dummy, t_symbol *sel, int argc, t_atom *argv);
 
-void                canvas_free                     (t_glist *x);
-void                canvas_click                    (t_glist *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt);
-void                canvas_restore                  (t_glist *x, t_symbol *s, int argc, t_atom *argv);
+void            canvas_free                             (t_glist *x);
+void            canvas_click                            (t_glist *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt);
+void            canvas_restore                          (t_glist *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void                canvas_dsp                      (t_glist *x, t_signal **sp);
+void            canvas_dsp                              (t_glist *x, t_signal **sp);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

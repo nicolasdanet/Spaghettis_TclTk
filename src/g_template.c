@@ -586,7 +586,7 @@ static void *gtemplate_donew(t_symbol *sym, int argc, t_atom *argv)
                 /* if there's none, we just replace the template with
                 our own and conform it. */
             t_template *y = template_new(&s_, argc, argv);
-            canvas_redrawallfortemplate(t, 2);
+            canvas_redrawAllByTemplate(t, SCALAR_ERASE);
                 /* Unless the new template is different from the old one,
                 there's nothing to do.  */
             if (!template_match(t, y))
@@ -598,7 +598,7 @@ static void *gtemplate_donew(t_symbol *sym, int argc, t_atom *argv)
             }
             pd_free(&y->t_pdobj);
             t->t_list = x;
-            canvas_redrawallfortemplate(t, 1);
+            canvas_redrawAllByTemplate(t, SCALAR_DRAW);
         }
     }
     else
@@ -648,7 +648,7 @@ static void gtemplate_free(t_gtemplate *x)
     t_gtemplate *y;
     if (x == t->t_list)
     {
-        canvas_redrawallfortemplate(t, 2);
+        canvas_redrawAllByTemplate(t, SCALAR_ERASE);
         if (x->x_next)
         {
                 /* if we were first on the list, and there are others on
@@ -665,7 +665,7 @@ static void gtemplate_free(t_gtemplate *x)
                 y->x_template = z;
         }
         else t->t_list = 0;
-        canvas_redrawallfortemplate(t, 1);
+        canvas_redrawAllByTemplate(t, SCALAR_DRAW);
     }
     else
     {
@@ -1026,9 +1026,9 @@ void curve_float(t_curve *x, t_float f)
     
     if ((f != 0 && viswas) || (f == 0 && !viswas))
         return;
-    canvas_redrawallfortemplatecanvas(x->x_canvas, 2);
+    canvas_redrawAllByTemplateByCanvas(x->x_canvas, SCALAR_ERASE);
     fielddesc_setfloat_const(&x->x_vis, (f != 0));
-    canvas_redrawallfortemplatecanvas(x->x_canvas, 1);
+    canvas_redrawAllByTemplateByCanvas(x->x_canvas, SCALAR_DRAW);
 }
 
 /* -------------------- widget behavior for curve ------------ */
@@ -1419,9 +1419,9 @@ void plot_float(t_plot *x, t_float f)
     
     if ((f != 0 && viswas) || (f == 0 && !viswas))
         return;
-    canvas_redrawallfortemplatecanvas(x->x_canvas, 2);
+    canvas_redrawAllByTemplateByCanvas(x->x_canvas, SCALAR_ERASE);
     fielddesc_setfloat_const(&x->x_vis, (f != 0));
-    canvas_redrawallfortemplatecanvas(x->x_canvas, 1);
+    canvas_redrawAllByTemplateByCanvas(x->x_canvas, SCALAR_DRAW);
 }
 
 /* -------------------- widget behavior for plot ------------ */
@@ -2392,9 +2392,9 @@ void drawnumber_float(t_drawnumber *x, t_float f)
     
     if ((f != 0 && viswas) || (f == 0 && !viswas))
         return;
-    canvas_redrawallfortemplatecanvas(x->x_canvas, 2);
+    canvas_redrawAllByTemplateByCanvas(x->x_canvas, SCALAR_ERASE);
     fielddesc_setfloat_const(&x->x_vis, (f != 0));
-    canvas_redrawallfortemplatecanvas(x->x_canvas, 1);
+    canvas_redrawAllByTemplateByCanvas(x->x_canvas, SCALAR_DRAW);
 }
 
 /* -------------------- widget behavior for drawnumber ------------ */

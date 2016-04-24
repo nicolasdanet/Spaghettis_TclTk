@@ -56,8 +56,8 @@ void glist_add(t_glist *x, t_gobj *y)
     if (canvas_isVisible(x))
         gobj_vis(y, x, 1);
     if (class_hasDrawCommand(y->g_pd)) 
-        canvas_redrawallfortemplate(template_findbyname(canvas_makeBindSymbol(
-            glist_getcanvas(x)->gl_name)), 0);
+        canvas_redrawAllByTemplate(template_findbyname(canvas_makeBindSymbol(
+            glist_getcanvas(x)->gl_name)), SCALAR_REDRAW);
 }
 
     /* this is to protect against a hairy problem in which deleting
@@ -113,8 +113,8 @@ void glist_delete(t_glist *x, t_gobj *y)
         /* if we're a drawing command, erase all scalars now, before deleting
         it; we'll redraw them once it's deleted below. */
     if (drawcommand)
-        canvas_redrawallfortemplate(template_findbyname(canvas_makeBindSymbol(
-            glist_getcanvas(x)->gl_name)), 2);
+        canvas_redrawAllByTemplate(template_findbyname(canvas_makeBindSymbol(
+            glist_getcanvas(x)->gl_name)), SCALAR_ERASE);
     gobj_delete(y, x);
     if (canvas_isVisible(canvas))
     {
@@ -134,8 +134,8 @@ void glist_delete(t_glist *x, t_gobj *y)
         rtext_free(rtext);
     if (chkdsp) dsp_update();
     if (drawcommand)
-        canvas_redrawallfortemplate(template_findbyname(canvas_makeBindSymbol(
-            glist_getcanvas(x)->gl_name)), 1);
+        canvas_redrawAllByTemplate(template_findbyname(canvas_makeBindSymbol(
+            glist_getcanvas(x)->gl_name)), SCALAR_DRAW);
     canvas_setdeleting(canvas, wasdeleting);
     x->gl_magic = ++canvas_magic;
 }
@@ -686,7 +686,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         return;
     }
 
-    if (vis && canvas_showGraphOnParentTitle (x))
+    if (vis && canvas_isGraphOnParentTitle (x))
         rtext_draw(glist_findrtext(parent_glist, &x->gl_obj));
     graph_getrect(gr, parent_glist, &x1, &y1, &x2, &y2);
     if (!vis)
@@ -888,7 +888,7 @@ static void graph_getrect(t_gobj *z, t_glist *glist,
         int x21, y21, x22, y22;
 
         graph_graphrect(z, glist, &x1, &y1, &x2, &y2);
-        if (canvas_showGraphOnParentTitle(x))
+        if (canvas_isGraphOnParentTitle(x))
         {
             text_widgetBehavior.w_fnGetRectangle(z, glist, &x21, &y21, &x22, &y22);
             if (x22 > x2) 
@@ -950,7 +950,7 @@ static void graph_select(t_gobj *z, t_glist *glist, int state)
     else
     {
         t_boxtext *y = glist_findrtext(glist, &x->gl_obj);
-        if (canvas_showGraphOnParentTitle (x))
+        if (canvas_isGraphOnParentTitle (x))
             rtext_select(y, state);
         sys_vGui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 
         rtext_gettag(y), (state? "blue" : "black"));
@@ -962,7 +962,7 @@ static void graph_select(t_gobj *z, t_glist *glist, int state)
 static void graph_activate(t_gobj *z, t_glist *glist, int state)
 {
     t_glist *x = (t_glist *)z;
-    if (canvas_showGraphOnParentTitle(x))
+    if (canvas_isGraphOnParentTitle(x))
         text_widgetBehavior.w_fnActivate(z, glist, state);
 }
 

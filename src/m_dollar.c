@@ -44,7 +44,7 @@ int dollar_isPointingToDollarAndNumber (char *s)
 static int dollar_getDollarZero (void)
 {
     t_glist *glist = canvas_getCurrent();
-    t_canvasenvironment *environment = (glist ? canvas_getEnvironment (glist) : NULL);
+    t_environment *environment = (glist ? canvas_getEnvironment (glist) : NULL);
     
     if (environment) { return (environment->ce_dollarZeroValue); }
     else {

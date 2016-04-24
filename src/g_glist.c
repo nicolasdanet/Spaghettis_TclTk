@@ -78,7 +78,7 @@ t_glist *canvas_getCurrent (void)
     return (cast_glist (pd_findByClass (&s__X, canvas_class)));
 }
 
-t_canvasenvironment *canvas_getEnvironment (t_glist *glist)
+t_environment *canvas_getEnvironment (t_glist *glist)
 {
     PD_ASSERT (glist);
     
@@ -237,7 +237,7 @@ t_symbol *canvas_expandDollar (t_glist *glist, t_symbol *s)
     
     if (strchr (s->s_name, '$')) {
     //
-    t_canvasenvironment *environment = canvas_getEnvironment (glist);
+    t_environment *environment = canvas_getEnvironment (glist);
     stack_push (cast_pd (glist));
     t = dollar_expandDollarSymbol (s, environment->ce_argc, environment->ce_argv);
     stack_pop (cast_pd (glist));
@@ -295,7 +295,7 @@ t_symbol *canvas_makeBindSymbol (t_symbol *s)
     return (gensym (t));
 }
 
-int canvas_showGraphOnParentTitle (t_glist *glist)
+int canvas_isGraphOnParentTitle (t_glist *glist)
 {
     if (glist->gl_hideText) { return 0; }
     else {

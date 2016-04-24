@@ -166,7 +166,7 @@ void canvas_restore(t_glist *x, t_symbol *s, int argc, t_atom *argv)
         t_atom *ap=argv+3;
         if (ap->a_type == A_SYMBOL)
         {
-            t_canvasenvironment *e = canvas_getEnvironment(canvas_getCurrent());
+            t_environment *e = canvas_getEnvironment(canvas_getCurrent());
             canvas_rename(x, dollar_expandDollarSymbol(ap->a_w.w_symbol,
                 e->ce_argc, e->ce_argv/*, 1*/), 0);
         }
@@ -321,7 +321,7 @@ static void canvas_rename_method(t_glist *x, t_symbol *s, int ac, t_atom *av)
         canvas_rename(x, av->a_w.w_symbol, 0);
     else if (ac && av->a_type == A_DOLLARSYMBOL)
     {
-        t_canvasenvironment *e = canvas_getEnvironment(x);
+        t_environment *e = canvas_getEnvironment(x);
         //canvas_setCurrent(x);
         stack_push (cast_pd (x));
         canvas_rename(x, dollar_expandDollarSymbol(av->a_w.w_symbol,
@@ -373,8 +373,8 @@ t_glist *canvas_new (void *dummy, t_symbol *sel, int argc, t_atom *argv)
     if (canvas_directory->s_name[0])
     {
         static int dollarzero = 1000;
-        t_canvasenvironment *env = x->gl_environment =
-            (t_canvasenvironment *)PD_MEMORY_GET(sizeof(*x->gl_environment));
+        t_environment *env = x->gl_environment =
+            (t_environment *)PD_MEMORY_GET(sizeof(*x->gl_environment));
         if (!canvas_argv)
             canvas_argv = PD_MEMORY_GET(0);
         env->ce_directory = canvas_directory;
