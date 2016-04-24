@@ -546,7 +546,7 @@ static void dial_behaviorSave (t_gobj *z, t_buffer *b)
 
     iemgui_serialize (&x->x_gui, &names, &colors);
 
-    buffer_vAppend (b, "ssiisiiffiisssiiiiiiifi",
+    buffer_vAppend (b, "ssiisiiffiisssiiiisssfi",
         gensym ("#X"),
         gensym ("obj"),
         (int)cast_object (z)->te_xCoordinate,
@@ -565,9 +565,9 @@ static void dial_behaviorSave (t_gobj *z, t_buffer *b)
         x->x_gui.iem_labelY,                                                    // Label Y.
         iemgui_serializeFontStyle (&x->x_gui),                                  // Label font.
         x->x_gui.iem_fontSize,                                                  // Label font size.
-        colors.c_colorBackground,                                               // Background color.
-        colors.c_colorForeground,                                               // Foreground color.
-        colors.c_colorLabel,                                                    // Label color.
+        colors.c_symColorBackground,                                            // Background color.
+        colors.c_symColorForeground,                                            // Foreground color.
+        colors.c_symColorLabel,                                                 // Label color.
         x->x_floatValue,                                                        // Value.
         x->x_steps);                                                            // Steps.
         

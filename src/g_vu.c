@@ -495,7 +495,7 @@ static void vu_behaviorSave (t_gobj *z, t_buffer *b)
 
     iemgui_serialize (&x->x_gui, &names, &colors);
     
-    buffer_vAppend (b, "ssiisiissiiiiiiii",
+    buffer_vAppend (b, "ssiisiissiiiissii",
         gensym ("#X"),
         gensym ("obj"),
         (int)cast_object (x)->te_xCoordinate,
@@ -509,8 +509,8 @@ static void vu_behaviorSave (t_gobj *z, t_buffer *b)
         x->x_gui.iem_labelY,                                        // Label Y.
         iemgui_serializeFontStyle (&x->x_gui),                      // Label font.
         x->x_gui.iem_fontSize,                                      // Label font size.
-        colors.c_colorBackground,                                   // Background color.
-        colors.c_colorLabel,                                        // Label color.
+        colors.c_symColorBackground,                                // Background color.
+        colors.c_symColorLabel,                                     // Label color.
         x->x_hasScale,                                              // Dummy.
         0);                                                         // Dummy.
         

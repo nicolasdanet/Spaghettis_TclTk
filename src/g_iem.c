@@ -62,6 +62,13 @@ static int iemgui_colorRGB (int argc, t_atom *argv)
     return (int)(IEM_COLOR_MASK & ((r << 16) | (g << 8) | b));
 }
 
+static t_symbol *iemgui_colorEncode (int color)
+{
+    char t[PD_STRING] = { 0 };
+    string_sprintf (t, PD_STRING, "#%06x", color);
+    return gensym (t);
+}
+
 /* Ensure compatibility with the original serialization format. */
 /* By the way legacy predefined colors are not supported. */
 /* Only the 6 MSB are kept for each component. */
@@ -69,17 +76,6 @@ static int iemgui_colorRGB (int argc, t_atom *argv)
 // RRRRRRRRGGGGGGGGBBBBBBBB 
 // RRRRRR..GGGGGG..BBBBBB..
 // RRRRRRGGGGGGBBBBBB
-
-static int iemgui_colorEncode (int color)
-{
-    int n = 0;
-    
-    n |= ((0xfc0000 & color) >> 6);
-    n |= ((0xfc00 & color) >> 4);
-    n |= ((0xfc & color) >> 2);
-                      
-    return (-1 -n);
-}
 
 static int iemgui_colorDecode (int color)
 {
@@ -155,9 +151,9 @@ static void iemgui_fetchUnexpandedNames (t_iem *iem, t_iemnames *s)
 
 void iemgui_serializeColors (t_iem *iem, t_iemcolors *c)
 {
-    c->c_colorBackground = iemgui_colorEncode (iem->iem_colorBackground);
-    c->c_colorForeground = iemgui_colorEncode (iem->iem_colorForeground);
-    c->c_colorLabel      = iemgui_colorEncode (iem->iem_colorLabel);
+    c->c_symColorBackground = iemgui_colorEncode (iem->iem_colorBackground);
+    c->c_symColorForeground = iemgui_colorEncode (iem->iem_colorForeground);
+    c->c_symColorLabel      = iemgui_colorEncode (iem->iem_colorLabel);
 }
 
 void iemgui_deserializeColors (t_iem *iem, t_iemcolors *c)

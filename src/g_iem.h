@@ -54,7 +54,7 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define IEM_DEFAULT_COLORS              { -262144, -1, -1 }
+#define IEM_DEFAULT_COLORS              { -262144, -1, -1, NULL, NULL, NULL }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -92,15 +92,18 @@
 #pragma mark -
 
 typedef struct _iemcolors {
-    int c_colorBackground;
-    int c_colorForeground;
-    int c_colorLabel;
+    int         c_colorBackground;
+    int         c_colorForeground;
+    int         c_colorLabel;
+    t_symbol    *c_symColorBackground;
+    t_symbol    *c_symColorForeground;
+    t_symbol    *c_symColorLabel;
     } t_iemcolors;
 
 typedef struct _iemnames {
-    t_symbol *n_unexpandedSend;
-    t_symbol *n_unexpandedReceive;
-    t_symbol *n_unexpandedLabel;
+    t_symbol    *n_unexpandedSend;
+    t_symbol    *n_unexpandedReceive;
+    t_symbol    *n_unexpandedLabel;
     } t_iemnames;
     
 // -----------------------------------------------------------------------------------------------------------

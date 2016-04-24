@@ -29,7 +29,6 @@
 
 #define IEM_PANEL_DEFAULT_WIDTH     100
 #define IEM_PANEL_DEFAULT_HEIGHT    60
-#define IEM_PANEL_DEFAULT_COLORS    { -233017, -1, -1 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -263,7 +262,7 @@ static void panel_behaviorSave (t_gobj *z, t_buffer *b)
 
     iemgui_serialize (&x->x_gui, &names, &colors);
     
-    buffer_vAppend (b, "ssiisiiisssiiiiii",
+    buffer_vAppend (b, "ssiisiiisssiiiiss",
         gensym ("#X"),
         gensym ("obj"),
         (int)cast_object (z)->te_xCoordinate,
@@ -279,8 +278,8 @@ static void panel_behaviorSave (t_gobj *z, t_buffer *b)
         x->x_gui.iem_labelY,                                                    // Label Y.
         iemgui_serializeFontStyle (&x->x_gui),                                  // Label font.
         x->x_gui.iem_fontSize,                                                  // Label font size.
-        colors.c_colorBackground,                                               // Background color.
-        colors.c_colorLabel);                                                   // Label color.
+        colors.c_symColorBackground,                                            // Background color.
+        colors.c_symColorLabel);                                                // Label color.
         
     buffer_vAppend (b, ";");
 }
@@ -331,7 +330,7 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
     int labelX          = IEM_DEFAULT_LABELX_TOP;
     int labelY          = IEM_DEFAULT_LABELY_TOP;
     int labelFontSize   = IEM_DEFAULT_FONTSIZE;
-    t_iemcolors colors  = IEM_PANEL_DEFAULT_COLORS;
+    t_iemcolors colors  = IEM_DEFAULT_COLORS;
         
     if (argc >= 12                                                              // --
             && IS_FLOAT (argv + 0)                                              // Grip width.
