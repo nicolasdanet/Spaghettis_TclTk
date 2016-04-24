@@ -105,7 +105,7 @@ static void dial_drawUpdate (t_dial *x, t_glist *glist)
                 x,
                 dial_getNeedleAngle (x));
                 
-    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%6.6x -text {%s}\n",  // --
+    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%06x -text {%s}\n",  // --
                 glist_getcanvas (glist),
                 x,
                 x->x_gui.iem_colorForeground,
@@ -162,7 +162,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
     
     dial_setString (x);
     
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxBASE\n",
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxBASE\n",
                 canvas,
                 a,
                 b,
@@ -174,8 +174,8 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
     sys_vGui (".x%lx.c create arc %d %d %d %d"
                 " -start -90"
                 " -extent %d"
-                " -fill #%6.6x"
-                " -outline #%6.6x"
+                " -fill #%06x"
+                " -outline #%06x"
                 " -tags %lxNEEDLE\n",
                 canvas,
                 a + 1 + (h / 2),
@@ -189,7 +189,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
     sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor center"
                 " -font [::getFont %d]" // --
-                " -fill #%6.6x"
+                " -fill #%06x"
                 " -tags %lxNUMBER\n",
                 canvas,
                 a + 1 + (width / 2),
@@ -201,7 +201,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
     sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor w"
                 " -font [::getFont %d]" // --
-                " -fill #%6.6x"
+                " -fill #%06x"
                 " -tags %lxLABEL\n",
                 canvas,
                 a + x->x_gui.iem_labelX,
@@ -216,12 +216,12 @@ static void dial_drawSelect (t_dial *x, t_glist *glist)
 {
     t_glist *canvas = glist_getcanvas (glist);
     
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas,
                 x,
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorBackground);
                 
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n",
                 canvas,
                 x,
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel);
@@ -249,21 +249,21 @@ static void dial_drawConfig (t_dial* x, t_glist *glist)
 {
     t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
                 canvas,
                 x,
                 x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -fill #%6.6x -outline #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -fill #%06x -outline #%06x\n",
                 canvas,
                 x,
                 x->x_gui.iem_colorBackground, 
                 dial_getNeedleColor (x));
-    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%6.6x\n",    // --
+    sys_vGui (".x%lx.c itemconfigure %lxNUMBER -font [::getFont %d] -fill #%06x\n",    // --
                 canvas,
                 x, 
                 x->x_digitsFontSize,
                 x->x_gui.iem_colorForeground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",  // --
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",  // --
                 canvas,
                 x,
                 x->x_gui.iem_fontSize,

@@ -239,7 +239,7 @@ proc colorToInteger {color} {
 
 proc integerToColor {integer} {
 
-    return [format "#%6.6x" $integer]
+    return [format "#%06x" $integer]
 }
 
 # ------------------------------------------------------------------------------------------------------------

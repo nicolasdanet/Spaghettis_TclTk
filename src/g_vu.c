@@ -161,7 +161,7 @@ static void vu_drawUpdate (t_vu *x, t_glist *glist)
                 b + h,
                 a + x->x_gui.iem_width,
                 b + h);
-    sys_vGui (".x%lx.c itemconfigure %lxPEAK -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxPEAK -fill #%06x\n",
                 canvas, 
                 x,
                 vu_colors[x->x_peak]);
@@ -177,7 +177,7 @@ static void vu_drawUpdate (t_vu *x, t_glist *glist)
                 b + h,
                 a + x->x_gui.iem_width,
                 b + h);
-    sys_vGui (".x%lx.c itemconfigure %lxPEAK -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxPEAK -fill #%06x\n",
                 canvas, 
                 x, 
                 x->x_gui.iem_colorBackground);
@@ -235,7 +235,7 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
     int b = text_ypix (cast_object (x), glist);
     int h, i;
 
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
                 canvas,
                 a,
                 b,
@@ -248,7 +248,7 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
     //
     h = vu_offsetWithStep (x, i);
 
-    sys_vGui (".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxLED%d\n",
+    sys_vGui (".x%lx.c create line %d %d %d %d -width %d -fill #%06x -tags %lxLED%d\n",
                 canvas,
                 a + 3,
                 b + h + x->x_thickness,
@@ -263,7 +263,7 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
 
     h = vu_offsetWithStep (x, IEM_VUMETER_STEPS - 1);
     
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxCOVER\n",
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxCOVER\n",
                 canvas,
                 a + 1, 
                 b + 1, 
@@ -272,7 +272,7 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
                 x->x_gui.iem_colorBackground,
                 x->x_gui.iem_colorBackground,
                 x);
-    sys_vGui (".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxPEAK\n",
+    sys_vGui (".x%lx.c create line %d %d %d %d -width %d -fill #%06x -tags %lxPEAK\n",
                 canvas,
                 a + 1,
                 b + h,
@@ -282,7 +282,7 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
                 x->x_gui.iem_colorBackground,
                 x);
     sys_vGui (".x%lx.c create text %d %d -text {%s} -anchor w"          // --
-                " -font [::getFont %d] -fill #%6.6x -tags %lxLABEL\n",  // --
+                " -font [::getFont %d] -fill #%06x -tags %lxLABEL\n",  // --
                 canvas,
                 a + x->x_gui.iem_labelX,
                 b + x->x_gui.iem_labelY,
@@ -298,11 +298,11 @@ static void vu_drawSelect (t_vu* x, t_glist *glist)
 {
     t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas,
                 x,
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n",
                 canvas,
                 x,
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel);
@@ -342,7 +342,7 @@ static void vu_drawConfig (t_vu* x, t_glist *glist)
     t_glist *canvas = glist_getcanvas (glist);
     int i;
         
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
                 canvas,
                 x,
                 x->x_gui.iem_colorBackground);
@@ -357,13 +357,13 @@ static void vu_drawConfig (t_vu* x, t_glist *glist)
     //
     }
 
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",  // --
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",  // --
                 canvas,
                 x, x->x_gui.iem_fontSize,
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel,
                 (x->x_gui.iem_label != iemgui_empty()) ? x->x_gui.iem_label->s_name : "");
 
-    sys_vGui (".x%lx.c itemconfigure %lxCOVER -fill #%6.6x -outline #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxCOVER -fill #%06x -outline #%06x\n",
                 canvas,
                 x,
                 x->x_gui.iem_colorBackground,

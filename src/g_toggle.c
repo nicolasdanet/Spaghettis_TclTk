@@ -47,11 +47,11 @@ void toggle_drawUpdate (t_toggle *x, t_glist *glist)
     //
     t_glist *canvas = glist_getcanvas (glist);
     
-    sys_vGui (".x%lx.c itemconfigure %lxCROSS1 -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxCROSS1 -fill #%06x\n",
                 canvas,
                 x,
                 (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxCROSS2 -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxCROSS2 -fill #%06x\n",
                 canvas,
                 x,
                 (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
@@ -113,7 +113,7 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
     
     int thickness = (int)((x->x_gui.iem_width / 30.0) + 0.5);
 
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
                 canvas,
                 a,
                 b,
@@ -121,7 +121,7 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
                 b + x->x_gui.iem_height,
                 x->x_gui.iem_colorBackground,
                 x);
-    sys_vGui (".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxCROSS1\n",
+    sys_vGui (".x%lx.c create line %d %d %d %d -width %d -fill #%06x -tags %lxCROSS1\n",
                 canvas,
                 a + thickness + 1,
                 b + thickness + 1, 
@@ -130,7 +130,7 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
                 thickness,
                 (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground,
                 x);
-    sys_vGui (".x%lx.c create line %d %d %d %d -width %d -fill #%6.6x -tags %lxCROSS2\n",
+    sys_vGui (".x%lx.c create line %d %d %d %d -width %d -fill #%06x -tags %lxCROSS2\n",
                 canvas,
                 a + thickness + 1,
                 b + x->x_gui.iem_height - thickness - 1,
@@ -142,7 +142,7 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
     sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor w"
                 " -font [::getFont %d]"     // --
-                " -fill #%6.6x"
+                " -fill #%06x"
                 " -tags %lxLABEL\n",
                 canvas,
                 a + x->x_gui.iem_labelX,
@@ -157,11 +157,11 @@ void toggle_drawSelect (t_toggle *x, t_glist *glist)
 {
     t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas, 
                 x, 
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n",
                 canvas,
                 x, 
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel);
@@ -189,19 +189,19 @@ void toggle_drawConfig (t_toggle *x, t_glist *glist)
 {
     t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
                 canvas,
                 x,
                 x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxCROSS1 -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxCROSS1 -fill #%06x\n",
                 canvas,
                 x,
                 (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxCROSS2 -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxCROSS2 -fill #%06x\n",
                 canvas,
                 x,
                 (x->x_state != 0.0) ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",  // --
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",  // --
                 canvas,
                 x,
                 x->x_gui.iem_fontSize,

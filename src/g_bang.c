@@ -53,7 +53,7 @@ void bng_drawUpdate (t_bng *x, t_glist *glist)
     //
     t_glist *canvas = glist_getcanvas (glist);
     
-    sys_vGui (".x%lx.c itemconfigure %lxBUTTON -fill #%6.6x\n", 
+    sys_vGui (".x%lx.c itemconfigure %lxBUTTON -fill #%06x\n", 
                 canvas,
                 x,
                 x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
@@ -96,7 +96,7 @@ void bng_drawNew (t_bng *x, t_glist *glist)
     
     t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
                 canvas,
                 a,
                 b,
@@ -104,7 +104,7 @@ void bng_drawNew (t_bng *x, t_glist *glist)
                 b + x->x_gui.iem_height,
                 x->x_gui.iem_colorBackground,
                 x);
-    sys_vGui (".x%lx.c create oval %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxBUTTON\n",
+    sys_vGui (".x%lx.c create oval %d %d %d %d -fill #%06x -outline #%06x -tags %lxBUTTON\n",
                 canvas,
                 a + 1,
                 b + 1,
@@ -116,7 +116,7 @@ void bng_drawNew (t_bng *x, t_glist *glist)
     sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor w"                                                 
                 " -font [::getFont %d]"                 // --
-                " -fill #%6.6x"
+                " -fill #%06x"
                 " -tags %lxLABEL\n",
                 canvas, 
                 a + x->x_gui.iem_labelX,
@@ -131,15 +131,15 @@ void bng_drawSelect (t_bng *x, t_glist *glist)
 {
     t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas,
                 x,
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
-    sys_vGui (".x%lx.c itemconfigure %lxBUTTON -outline #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxBUTTON -outline #%06x\n",
                 canvas,
                 x,
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n",
                 canvas,
                 x, 
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel);
@@ -164,15 +164,15 @@ void bng_drawConfig (t_bng *x, t_glist *glist)
 {
     t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
                 canvas,
                 x,
                 x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxBUTTON -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxBUTTON -fill #%06x\n",
                 canvas,
                 x,
                 x->x_flashed ? x->x_gui.iem_colorForeground : x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",  // --
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",  // --
                 canvas,
                 x,
                 x->x_gui.iem_fontSize,

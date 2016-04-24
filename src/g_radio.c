@@ -98,7 +98,7 @@ void radio_drawNewVertical (t_radio *x, t_glist *glist)
     
     for (i = 0; i < n; i++, t += x->x_gui.iem_height) {
     //
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE%d\n",
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE%d\n",
                 canvas,
                 a,
                 t,
@@ -107,7 +107,7 @@ void radio_drawNewVertical (t_radio *x, t_glist *glist)
                 x->x_gui.iem_colorBackground,
                 x,
                 i);
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxBUTTON%d\n",
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxBUTTON%d\n",
                 canvas,
                 a + k,
                 t + k,
@@ -123,7 +123,7 @@ void radio_drawNewVertical (t_radio *x, t_glist *glist)
     sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor w"
                 " -font [::getFont %d]"     // --
-                " -fill #%6.6x"
+                " -fill #%06x"
                 " -tags %lxLABEL\n",
                 canvas,
                 a + x->x_gui.iem_labelX,
@@ -188,7 +188,7 @@ void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
 
     for (i = 0; i < n; i++, t += x->x_gui.iem_width) {
     //
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE%d\n",
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE%d\n",
                 canvas, 
                 t, 
                 b, 
@@ -197,7 +197,7 @@ void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
                 x->x_gui.iem_colorBackground,
                 x,
                 i);
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxBUTTON%d\n",
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxBUTTON%d\n",
                 canvas,
                 t + k,
                 b + k,
@@ -213,7 +213,7 @@ void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
     sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor w"
                 " -font [::getFont %d]"     // --
-                " -fill #%6.6x"
+                " -fill #%06x"
                 " -tags %lxLABEL\n",
                 canvas,
                 a + x->x_gui.iem_labelX,
@@ -236,13 +236,13 @@ void radio_drawUpdate (t_radio *x, t_glist *glist)
     //
     t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBUTTON%d -fill #%6.6x -outline #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxBUTTON%d -fill #%06x -outline #%06x\n",
                 canvas, 
                 x, 
                 x->x_stateDrawn,
                 x->x_gui.iem_colorBackground,
                 x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxBUTTON%d -fill #%6.6x -outline #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxBUTTON%d -fill #%06x -outline #%06x\n",
                 canvas, 
                 x, 
                 x->x_state,
@@ -278,7 +278,7 @@ void radio_drawSelect (t_radio *x, t_glist *glist)
 
     for (i = 0; i < x->x_numberOfButtons; i++) {
     //
-    sys_vGui (".x%lx.c itemconfigure %lxBASE%d -outline #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxBASE%d -outline #%06x\n",
                 canvas,
                 x,
                 i,
@@ -286,7 +286,7 @@ void radio_drawSelect (t_radio *x, t_glist *glist)
     //
     }
 
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n",
                 canvas,
                 x, 
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel);
@@ -324,12 +324,12 @@ void radio_drawConfig (t_radio *x, t_glist *glist)
 
     for (i = 0; i < x->x_numberOfButtons; i++) {
     //
-    sys_vGui (".x%lx.c itemconfigure %lxBASE%d -fill #%6.6x\n", 
+    sys_vGui (".x%lx.c itemconfigure %lxBASE%d -fill #%06x\n", 
                 canvas,
                 x,
                 i,
                 x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxBUTTON%d -fill #%6.6x -outline #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxBUTTON%d -fill #%06x -outline #%06x\n",
                 canvas,
                 x,
                 i,
@@ -338,7 +338,7 @@ void radio_drawConfig (t_radio *x, t_glist *glist)
     //
     }
     
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",  // --
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",  // --
                 canvas, 
                 x, 
                 x->x_gui.iem_fontSize,

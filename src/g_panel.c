@@ -83,7 +83,7 @@ void panel_drawNew (t_panel *x, t_glist *glist)
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
 
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -outline #%6.6x -tags %lxPANEL\n",
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -outline #%06x -tags %lxPANEL\n",
                 canvas,
                 a,
                 b,
@@ -92,7 +92,7 @@ void panel_drawNew (t_panel *x, t_glist *glist)
                 x->x_gui.iem_colorBackground,
                 x->x_gui.iem_colorBackground,
                 x);
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -outline #%6.6x -tags %lxBASE\n",
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -outline #%06x -tags %lxBASE\n",
                 canvas,
                 a,
                 b,
@@ -103,7 +103,7 @@ void panel_drawNew (t_panel *x, t_glist *glist)
     sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor w"
                 " -font [::getFont %d]"     // --
-                " -fill #%6.6x"
+                " -fill #%06x"
                 " -tags %lxLABEL\n",
                 canvas,
                 a + x->x_gui.iem_labelX,
@@ -118,7 +118,7 @@ void panel_drawSelect (t_panel* x, t_glist *glist)
 {
     t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas,
                 x,
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorBackground);
@@ -143,16 +143,16 @@ void panel_drawConfig (t_panel* x, t_glist *glist)
 {
     t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxPANEL -fill #%6.6x -outline #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxPANEL -fill #%06x -outline #%06x\n",
                 canvas,
                 x,
                 x->x_gui.iem_colorBackground,
                 x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas,
                 x,
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",  // --
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",  // --
                 canvas,
                 x,
                 x->x_gui.iem_fontSize,

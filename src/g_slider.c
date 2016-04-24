@@ -162,7 +162,7 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
     
-    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%6.6x -tags %lxBASE\n",
+    sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
                 canvas,
                 a, 
                 b,
@@ -174,7 +174,7 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
     if (x->x_isVertical) {
     //
     int k = b + x->x_gui.iem_height - slider_stepsToPixels (x->x_position);
-    sys_vGui (".x%lx.c create line %d %d %d %d -width 3 -fill #%6.6x -tags %lxKNOB\n",
+    sys_vGui (".x%lx.c create line %d %d %d %d -width 3 -fill #%06x -tags %lxKNOB\n",
                 canvas,
                 a + 1,
                 k, 
@@ -186,7 +186,7 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
     } else {
     //
     int k = a + slider_stepsToPixels (x->x_position);
-    sys_vGui (".x%lx.c create line %d %d %d %d -width 3 -fill #%6.6x -tags %lxKNOB\n",
+    sys_vGui (".x%lx.c create line %d %d %d %d -width 3 -fill #%06x -tags %lxKNOB\n",
                 canvas,
                 k,
                 b + 1, 
@@ -200,7 +200,7 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
     sys_vGui (".x%lx.c create text %d %d -text {%s}"    // --
                 " -anchor w"
                 " -font [::getFont %d]"     // --
-                " -fill #%6.6x"
+                " -fill #%06x"
                 " -tags %lxLABEL\n",
                 canvas,
                 a + x->x_gui.iem_labelX,
@@ -215,12 +215,12 @@ static void slider_drawSelect (t_slider *x, t_glist *glist)
 {
     t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%6.6x\n", 
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n", 
                 canvas, 
                 x, 
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : IEM_COLOR_NORMAL);
                 
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%6.6x\n", 
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -fill #%06x\n", 
                 canvas, 
                 x, 
                 x->x_gui.iem_isSelected ? IEM_COLOR_SELECTED : x->x_gui.iem_colorLabel);
@@ -245,15 +245,15 @@ static void slider_drawConfig (t_slider *x, t_glist *glist)
 {
     t_glist *canvas = glist_getcanvas (glist);
 
-    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
                 canvas,
                 x, 
                 x->x_gui.iem_colorBackground);
-    sys_vGui (".x%lx.c itemconfigure %lxKNOB -fill #%6.6x\n",
+    sys_vGui (".x%lx.c itemconfigure %lxKNOB -fill #%06x\n",
                 canvas,
                 x,
                 x->x_gui.iem_colorForeground);
-    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%6.6x -text {%s}\n",  // --
+    sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d] -fill #%06x -text {%s}\n",  // --
                 canvas,
                 x,
                 x->x_gui.iem_fontSize,
