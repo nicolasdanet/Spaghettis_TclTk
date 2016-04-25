@@ -27,6 +27,11 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+extern t_class *panel_class;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 t_symbol *iemgui_empty (void)
 {
     return gensym ("empty");
@@ -94,8 +99,8 @@ static int iemgui_colorDecodeFromInteger (int color)
 
 static int iemgui_colorDecode (t_atom *a)
 {
-    if (IS_FLOAT (a)) { return iemgui_colorDecodeFromInteger ((int)GET_FLOAT (a)); }
-    else if (IS_SYMBOL (a)) {
+    if (IS_FLOAT (a))  { return iemgui_colorDecodeFromInteger ((int)GET_FLOAT (a)); }
+    if (IS_SYMBOL (a)) {
         t_symbol *s = atom_getSymbol (a);
         if (s->s_name[0] == '#') { return strtol (s->s_name + 1, NULL, 16); }
     }
@@ -171,9 +176,13 @@ void iemgui_serializeColors (t_iem *iem, t_iemcolors *c)
 
 void iemgui_deserializeColors (t_iem *iem, t_atom *background, t_atom *foreground, t_atom *label)
 {
-    iem->iem_colorBackground = IEM_COLOR_BACKGROUND;
     iem->iem_colorForeground = IEM_COLOR_FOREGROUND;
     iem->iem_colorLabel      = IEM_COLOR_LABEL;
+    
+    if (pd_class (iem) == panel_class) { iem->iem_colorBackground = IEM_COLOR_BACKGROUND_DARK; }
+    else {
+        iem->iem_colorBackground = IEM_COLOR_BACKGROUND_LIGHT;
+    }
     
     if (background) { iem->iem_colorBackground = iemgui_colorDecode (background); }
     if (foreground) { iem->iem_colorForeground = iemgui_colorDecode (foreground); }

@@ -182,7 +182,7 @@ static void canvas_redrawAllScalars (t_glist *glist, int action)
     
     for (g = glist->gl_graphics; g; g = g->g_next) {
     //
-    if (visible && cast_pd (g) == scalar_class) {
+    if (visible && pd_class (g) == scalar_class) {
     //
     switch (action) {
         case SCALAR_REDRAW  : scalar_redraw (cast_scalar (g), glist);   break;
@@ -192,7 +192,7 @@ static void canvas_redrawAllScalars (t_glist *glist, int action)
     //
     } 
 
-    if (cast_pd (g) == canvas_class) { canvas_redrawAllScalars (cast_glist (g), action); }
+    if (pd_class (g) == canvas_class) { canvas_redrawAllScalars (cast_glist (g), action); }
     //
     }
 }
