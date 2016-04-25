@@ -1051,6 +1051,10 @@ void canvas_vis(t_glist *x, t_float f)
     any missing paramters and redraw things if necessary. */
 void canvas_setgraph(t_glist *x, int flag, int nogoprect)
 {
+    x->gl_hideText = !(!(flag&2));
+    
+    flag = (flag&1);
+    
     if (!flag && canvas_isGraphOnParent(x))
     {
         if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
@@ -1073,7 +1077,6 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
         if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
             gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
         x->gl_isGraphOnParent = 1;
-        x->gl_hideText = !(!(flag&2));
         x->gl_hasRectangle = !nogoprect;
         if (canvas_isVisible(x) && x->gl_hasRectangle)
             glist_redraw(x);
@@ -1099,14 +1102,14 @@ void canvas_properties(t_gobj*z, t_glist*unused)
         sprintf(graphbuf,
             "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
                 0., 0.,
-                canvas_isGraphOnParent(x) | (x->gl_hideText << 1),//1,
+                canvas_isGraphOnParent (x) | (x->gl_hideText << 1),//1,
                 x->gl_indexStart, x->gl_valueUp, x->gl_indexEnd, x->gl_valueDown, 
                 (int)x->gl_width, (int)x->gl_height,
                 (int)x->gl_marginX, (int)x->gl_marginY);
     else sprintf(graphbuf,
             "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
                 glist_dpixtodx(x, 1), glist_dpixtody(x, 1),
-                0,
+                (x->gl_hideText << 1),
                 0., 1., 1., -1., 
                 (int)x->gl_width, (int)x->gl_height,
                 (int)x->gl_marginX, (int)x->gl_marginY);
