@@ -794,7 +794,7 @@ static int create_soundfile(t_glist *canvas, const char *filename,
            (bytespersamp == 4 ? NS_FORMAT_FLOAT : NS_FORMAT_LINEAR_16)), swap);
         nexthdr->ns_sr = swap4(samplerate, swap);
         nexthdr->ns_nchans = swap4(nchannels, swap);
-        strcpy(nexthdr->ns_info, "Pd ");
+        strcpy(nexthdr->ns_info, PD_NAME_SHORT " ");
         swapstring(nexthdr->ns_info, swap);
         headersize = sizeof(t_nextstep);
     }

@@ -329,7 +329,7 @@ static void canvas_rename_method(t_glist *x, t_symbol *s, int ac, t_atom *av)
         //canvas_unsetCurrent(x);
         stack_pop (cast_pd (x));
     }
-    else canvas_rename(x, gensym ("Pd"), 0);
+    else canvas_rename(x, gensym (PD_NAME_SHORT), 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -377,7 +377,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     x->gl_obj.te_type   = TYPE_OBJECT;
     x->gl_stub          = gstub_new (x, NULL);
     x->gl_owner         = owner;
-    x->gl_name          = (name != &s_ ? name : (canvas_fileName ? canvas_fileName : gensym ("Pd")));
+    x->gl_name          = (name != &s_ ? name : (canvas_fileName ? canvas_fileName : gensym (PD_NAME_SHORT)));
     x->gl_magic         = ++canvas_magic;
     
     if (!owner) { instance_addToRoots (x); }

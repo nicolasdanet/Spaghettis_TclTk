@@ -313,14 +313,14 @@ int canvas_isGraphOnParentTitle (t_glist *glist)
 
 void canvas_bind (t_glist *glist)
 {
-    if (strcmp (glist->gl_name->s_name, "Pd")) {
+    if (strcmp (glist->gl_name->s_name, PD_NAME_SHORT)) {
         pd_bind (cast_pd (glist), canvas_makeBindSymbol (glist->gl_name));
     }
 }
 
 void canvas_unbind (t_glist *glist)
 {
-    if (strcmp (glist->gl_name->s_name, "Pd")) {
+    if (strcmp (glist->gl_name->s_name, PD_NAME_SHORT)) {
         pd_unbind (cast_pd (glist), canvas_makeBindSymbol (glist->gl_name));
     }
 }

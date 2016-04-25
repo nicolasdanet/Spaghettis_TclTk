@@ -213,6 +213,8 @@
 
 #define PD_NAME                 "PureData"
 #define PD_NAME_LOWERCASE       "puredata"
+#define PD_NAME_SHORT           "Pd"
+
 #define PD_VERSION              "0.9"
 
 // -----------------------------------------------------------------------------------------------------------
