@@ -112,7 +112,7 @@ static void *subcanvas_new(t_symbol *s)
     SET_FLOAT(a+3, CANVAS_WINDOW_DEFAULT_HEIGHT);
     SET_SYMBOL(a+4, s);
     SET_FLOAT(a+5, 1);
-    x = canvas_new(0, 0, 6, a);
+    x = canvas_new (NULL, NULL, 6, a);
     x->gl_owner = z;
     canvas_pop(x, 1);
     return (x);
@@ -336,90 +336,101 @@ static void canvas_rename_method(t_glist *x, t_symbol *s, int ac, t_atom *av)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist *canvas_new (void *dummy, t_symbol *sel, int argc, t_atom *argv)
+t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 {
-    t_glist *x = (t_glist *)pd_new(canvas_class);
-    t_glist *owner = canvas_getCurrent();
-    t_symbol *s = &s_;
-    int vis = 0, width = CANVAS_WINDOW_DEFAULT_WIDTH, height = CANVAS_WINDOW_DEFAULT_HEIGHT;
-    int xloc = 0, yloc = CANVAS_WINDOW_HEADER_HEIGHT;
-    int font = (owner ? owner->gl_fontSize : font_getDefaultFontSize());
-    x->gl_stub = gstub_new (x, NULL);
-    x->gl_magic = ++canvas_magic;
-    x->gl_obj.te_type = TYPE_OBJECT;
-    if (!owner)
-        instance_addToRoots (x);
-    /* post("canvas %lx, owner %lx", x, owner); */
+    t_glist *x      = (t_glist *)pd_new (canvas_class);
+    t_glist *owner  = canvas_getCurrent();
+    t_symbol *name  = &s_;
+    
+    int visible     = 0;
+    int width       = CANVAS_WINDOW_DEFAULT_WIDTH;
+    int height      = CANVAS_WINDOW_DEFAULT_HEIGHT;
+    int topLeftX    = 0;
+    int topLeftY    = CANVAS_WINDOW_HEADER_HEIGHT;
+    int fontSize    = (owner ? owner->gl_fontSize : font_getDefaultFontSize());
+    
+    /* Top level. */
+    
+    if (argc == 5) {
+                                                  
+        topLeftX    = (int)atom_getFloatAtIndex (0, argc, argv);
+        topLeftY    = (int)atom_getFloatAtIndex (1, argc, argv);
+        width       = (int)atom_getFloatAtIndex (2, argc, argv);
+        height      = (int)atom_getFloatAtIndex (3, argc, argv);
+        fontSize    = (int)atom_getFloatAtIndex (4, argc, argv);
+    }
+    
+    /* Subwindow. */
+    
+    if (argc == 6)  {
+    
+        topLeftX    = (int)atom_getFloatAtIndex (0, argc, argv);
+        topLeftY    = (int)atom_getFloatAtIndex (1, argc, argv);
+        width       = (int)atom_getFloatAtIndex (2, argc, argv);
+        height      = (int)atom_getFloatAtIndex (3, argc, argv);
+        name        = atom_getSymbolAtIndex (4, argc, argv);
+        visible     = (int)atom_getFloatAtIndex (5, argc, argv);
+    }
 
-    if (argc == 5)  /* toplevel: x, y, w, h, font */
-    {
-        xloc = (t_int)atom_getFloatAtIndex(0, argc, argv);
-        yloc = (t_int)atom_getFloatAtIndex(1, argc, argv);
-        width = (t_int)atom_getFloatAtIndex(2, argc, argv);
-        height = (t_int)atom_getFloatAtIndex(3, argc, argv);
-        font = (t_int)atom_getFloatAtIndex(4, argc, argv);
-    }
-    else if (argc == 6)  /* subwindow: x, y, w, h, name, vis */
-    {
-        xloc = (t_int)atom_getFloatAtIndex(0, argc, argv);
-        yloc = (t_int)atom_getFloatAtIndex(1, argc, argv);
-        width = (t_int)atom_getFloatAtIndex(2, argc, argv);
-        height = (t_int)atom_getFloatAtIndex(3, argc, argv);
-        s = atom_getSymbolAtIndex(4, argc, argv);
-        vis = (t_int)atom_getFloatAtIndex(5, argc, argv);
-    }
-        /* (otherwise assume we're being created from the menu.) */
+    /* Otherwise assumed created from the menu. */
 
-    if (canvas_directory->s_name[0])
-    {
-        static int dollarzero = 1000;
-        t_environment *env = x->gl_environment =
-            (t_environment *)PD_MEMORY_GET(sizeof(*x->gl_environment));
-        if (!canvas_argv)
-            canvas_argv = PD_MEMORY_GET(0);
-        env->ce_directory = canvas_directory;
-        env->ce_argc = canvas_argc;
-        env->ce_argv = canvas_argv;
-        env->ce_dollarZeroValue = dollarzero++;
-        //env->ce_path = 0;
-        canvas_directory = &s_;
-        canvas_argc = 0;
-        canvas_argv = 0;
-    }
-    else x->gl_environment = 0;
+    x->gl_obj.te_type   = TYPE_OBJECT;
+    x->gl_stub          = gstub_new (x, NULL);
+    x->gl_owner         = owner;
+    x->gl_name          = (name != &s_ ? name : (canvas_fileName ? canvas_fileName : gensym ("Pd")));
+    x->gl_magic         = ++canvas_magic;
+    
+    if (!owner) { instance_addToRoots (x); }
+    
+    if (canvas_directory == &s_) { x->gl_environment = NULL; }
+    else {
+    //
+    static int dollarZero = 1000;
+    
+    x->gl_environment = (t_environment *)PD_MEMORY_GET (sizeof (t_environment));
 
-    if (yloc < CANVAS_WINDOW_HEADER_HEIGHT)
-        yloc = CANVAS_WINDOW_HEADER_HEIGHT;
-    if (xloc < 0)
-        xloc = 0;
-    x->gl_indexStart = 0;
-    x->gl_valueUp = 0;
-    x->gl_indexEnd = 1;
-    x->gl_valueDown = 1;
-    canvas_dosetbounds(x, xloc, yloc, xloc + width, yloc + height);
-    x->gl_owner = owner;
-    x->gl_name = (*s->s_name ? s : 
-        (canvas_fileName ? canvas_fileName : gensym ("Pd")));
-    canvas_bind(x);
-    x->gl_isLoading = 1;
-    x->gl_hasRectangle = 0;      /* no GOP rectangle unless it's turned on later */
-        /* cancel "vis" flag if we're a subpatch of an
-         abstraction inside another patch.  A separate mechanism prevents
-         the toplevel abstraction from showing up. */
-    if (vis && gensym ("#X")->s_thing && 
-        ((*gensym ("#X")->s_thing) == canvas_class))
-    {
-        t_glist *zzz = (t_glist *)(gensym ("#X")->s_thing);
-        while (zzz && !zzz->gl_environment)
-            zzz = zzz->gl_owner;
-        if (zzz && canvas_isAbstraction(zzz) && zzz->gl_owner)
-            vis = 0;
+    if (!canvas_argv) { 
+        canvas_argv = PD_MEMORY_GET (0); 
     }
-    x->gl_willBeVisible = vis;
-    x->gl_isEditMode = !strncmp(x->gl_name->s_name, "Untitled", 8);
-    x->gl_fontSize = font_getNearestValidFontSize(font);
-    stack_push(&x->gl_obj.te_g.g_pd);
-    return(x);
+    
+    x->gl_environment->ce_directory         = canvas_directory;
+    x->gl_environment->ce_argc              = canvas_argc;
+    x->gl_environment->ce_argv              = canvas_argv;
+    x->gl_environment->ce_dollarZeroValue   = dollarZero++;
+
+    canvas_directory = &s_;
+    canvas_argc      = 0;
+    canvas_argv      = NULL;
+    //
+    }
+
+    topLeftY = PD_MAX (topLeftY, CANVAS_WINDOW_HEADER_HEIGHT);
+    topLeftX = PD_MAX (topLeftX, 0);
+        
+    x->gl_indexStart    = 0;
+    x->gl_valueUp       = 0;
+    x->gl_indexEnd      = 1;
+    x->gl_valueDown     = 1;
+    
+    canvas_dosetbounds (x, topLeftX, topLeftY, topLeftX + width, topLeftY + height);
+    canvas_bind (x);
+    
+    x->gl_fontSize      = font_getNearestValidFontSize (fontSize);
+    x->gl_isLoading     = 1;
+    x->gl_hasRectangle  = 0;
+
+    if (visible && gensym ("#X")->s_thing && (pd_class (gensym ("#X")->s_thing) == canvas_class)) {
+        t_glist *g = cast_glist (gensym ("#X")->s_thing);
+        while (g && !g->gl_environment) { g = g->gl_owner; }
+        if (g && canvas_isAbstraction (g) && g->gl_owner) { visible = 0; }
+    }
+    
+    x->gl_isEditMode    = 0;
+    x->gl_willBeVisible = visible;
+        
+    stack_push (cast_pd (x));
+    
+    return x;
 }
 
 void canvas_free(t_glist *x)

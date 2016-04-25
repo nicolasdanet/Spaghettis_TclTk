@@ -47,7 +47,7 @@ static void *table_donew(t_symbol *s, int size, int flags,
     SET_FLOAT(a+3, ypix + 100);
     SET_SYMBOL(a+4, s);
     SET_FLOAT(a+5, 0);
-    x = canvas_new(0, 0, 6, a);
+    x = canvas_new (NULL, NULL, 6, a);
 
     x->gl_owner = z;
 

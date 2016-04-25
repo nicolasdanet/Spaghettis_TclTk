@@ -392,7 +392,7 @@ void            canvas_redrawAllByTemplateByCanvas      (t_glist *glist, int act
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-t_glist         *canvas_new                             (void *dummy, t_symbol *sel, int argc, t_atom *argv);
+t_glist         *canvas_new                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 
 void            canvas_free                             (t_glist *x);
 void            canvas_click                            (t_glist *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt);
