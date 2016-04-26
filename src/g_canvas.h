@@ -394,22 +394,23 @@ void            canvas_redrawAllByTemplateByCanvas      (t_glist *glist, int act
 
 t_glist         *canvas_new                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 
-void            canvas_free                             (t_glist *x);
+void            canvas_free                             (t_glist *glist);
 
-void            canvas_click                            (t_glist *x,
+void            canvas_click                            (t_glist *glist,
                                                             t_float a,
                                                             t_float b,
                                                             t_float shift,
                                                             t_float ctrl,
                                                             t_float alt);
 
-void            canvas_setBounds                        (t_glist *x,
+void            canvas_setBounds                        (t_glist *glist,
                                                             t_float a,
                                                             t_float b,
                                                             t_float c,
                                                             t_float d);
                                                             
-void            canvas_restore                          (t_glist *x, t_symbol *s, int argc, t_atom *argv);
+void            canvas_restore                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_loadbang                         (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -598,10 +599,6 @@ void     canvas_editmode                (t_glist *x, t_float state);
 int      canvas_istable                 (t_glist *x);
 void     canvas_vis                     (t_glist *x, t_float f);
 
-
-
-
-void     canvas_loadbang                (t_glist *x);
 int      canvas_hitbox                  (t_glist *x,
                                             t_gobj *y,
                                             int xpos,

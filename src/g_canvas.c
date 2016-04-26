@@ -37,74 +37,80 @@ int             canvas_magic = 10000;                       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void canvas_loadbangabstractions(t_glist *x)
+static void canvas_loadbangAbstractions (t_glist *glist)
 {
-    t_gobj *y;
-    t_symbol *s = gensym ("loadbang");
-    for (y = x->gl_graphics; y; y = y->g_next)
-        if (pd_class(&y->g_pd) == canvas_class)
-    {
-        if (canvas_isAbstraction((t_glist *)y))
-            canvas_loadbang((t_glist *)y);
-        else
-            canvas_loadbangabstractions((t_glist *)y);
+    t_gobj *y = NULL;
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (pd_class (y) == canvas_class) {
+            if (canvas_isAbstraction (cast_glist (y))) { canvas_loadbang (cast_glist (y)); }
+            else {
+                canvas_loadbangAbstractions (cast_glist (y));
+            }
+        }
     }
 }
 
-static void canvas_loadbangsubpatches(t_glist *x)
+static void canvas_loadbangSubpatches (t_glist *glist)
 {
-    t_gobj *y;
+    t_gobj   *y = NULL;
     t_symbol *s = gensym ("loadbang");
-    for (y = x->gl_graphics; y; y = y->g_next)
-        if (pd_class(&y->g_pd) == canvas_class)
-    {
-        if (!canvas_isAbstraction((t_glist *)y))
-            canvas_loadbangsubpatches((t_glist *)y);
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if (pd_class (y) == canvas_class) {
+            if (!canvas_isAbstraction (cast_glist (y))) { canvas_loadbangSubpatches (cast_glist (y)); }
+        }
     }
-    for (y = x->gl_graphics; y; y = y->g_next)
-        if ((pd_class(&y->g_pd) != canvas_class) &&
-            class_hasMethod(pd_class (&y->g_pd), s))
-                pd_vMessage(&y->g_pd, s, "");
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        if ((pd_class (y) != canvas_class) && class_hasMethod (pd_class (y), s)) {
+            pd_vMessage (cast_pd (y), s, "");
+        }
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void *subcanvas_new(t_symbol *s)
+static void *subpatch_new (t_symbol *s)
 {
     t_atom a[6];
-    t_glist *x, *z = canvas_getCurrent();
-    if (!*s->s_name) s = gensym ("/SUBPATCH/");
-    SET_FLOAT(a, 0);
-    SET_FLOAT(a+1, CANVAS_WINDOW_HEADER_HEIGHT);
-    SET_FLOAT(a+2, CANVAS_WINDOW_DEFAULT_WIDTH);
-    SET_FLOAT(a+3, CANVAS_WINDOW_DEFAULT_HEIGHT);
-    SET_SYMBOL(a+4, s);
-    SET_FLOAT(a+5, 1);
+    t_glist *x = NULL;
+    t_glist *z = canvas_getCurrent();
+    
+    if (s == &s_) { s = gensym ("/SUBPATCH/"); }
+    
+    SET_FLOAT  (a + 0, 0);
+    SET_FLOAT  (a + 1, CANVAS_WINDOW_HEADER_HEIGHT);
+    SET_FLOAT  (a + 2, CANVAS_WINDOW_DEFAULT_WIDTH);
+    SET_FLOAT  (a + 3, CANVAS_WINDOW_DEFAULT_HEIGHT);
+    SET_SYMBOL (a + 4, s);
+    SET_FLOAT  (a + 5, 1);
+    
     x = canvas_new (NULL, NULL, 6, a);
     x->gl_owner = z;
-    canvas_pop(x, 1);
-    return (x);
+    
+    canvas_pop (x, 1);
+    
+    return x;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_click(t_glist *x,
-    t_float xpos, t_float ypos,
-        t_float shift, t_float ctrl, t_float alt)
+void canvas_click (t_glist *glist, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
 {
-    canvas_vis(x, 1);
+    canvas_vis (glist, 1);
 }
 
 void canvas_setBounds (t_glist *x, t_float a, t_float b, t_float c, t_float d)
 {
-    x->gl_windowTopLeftX        = a;
-    x->gl_windowTopLeftY        = b;
-    x->gl_windowBottomRightX    = c;
-    x->gl_windowBottomRightY    = d;
+    x->gl_windowTopLeftX     = a;
+    x->gl_windowTopLeftY     = b;
+    x->gl_windowBottomRightX = c;
+    x->gl_windowBottomRightY = d;
 }
 
 /*
@@ -241,11 +247,10 @@ void glist_menu_open(t_glist *x)
     canvas_vis(x, 1);
 }
 
-void canvas_loadbang(t_glist *x)
+void canvas_loadbang (t_glist *glist)
 {
-    t_gobj *y;
-    canvas_loadbangabstractions(x);
-    canvas_loadbangsubpatches(x);
+    canvas_loadbangAbstractions (glist);
+    canvas_loadbangSubpatches (glist);
 }
 
     /* the window becomes "mapped" (visible and not miniaturized) or
@@ -345,7 +350,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     int topLeftY    = CANVAS_WINDOW_HEADER_HEIGHT;
     int fontSize    = (owner ? owner->gl_fontSize : font_getDefaultFontSize());
     
-    /* Top level. */
+    /* Top. */
     
     if (argc == 5) {
                                                   
@@ -356,7 +361,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
         fontSize    = (int)atom_getFloatAtIndex (4, argc, argv);
     }
     
-    /* Subwindow. */
+    /* Subpatch. */
     
     if (argc == 6)  {
     
@@ -367,8 +372,6 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
         name        = atom_getSymbolAtIndex (4, argc, argv);
         visible     = (int)atom_getFloatAtIndex (5, argc, argv);
     }
-
-    /* Otherwise assumed created from the menu. */
 
     x->gl_obj.te_type   = TYPE_OBJECT;
     x->gl_stub          = gstub_new (x, NULL);
@@ -475,7 +478,7 @@ void canvas_setup (void)
         CLASS_NOINLET,
         A_NULL);
 
-    class_addCreator ((t_newmethod)subcanvas_new, gensym ("pd"), A_DEFSYMBOL, A_NULL);
+    class_addCreator ((t_newmethod)subpatch_new, gensym ("pd"), A_DEFSYMBOL, A_NULL);
     
     class_addClick (c, canvas_click);
     class_addBounds (c, canvas_setBounds);
@@ -521,7 +524,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_numbox,        gensym ("numbox"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_vis,           gensym ("vis"),         A_FLOAT, A_NULL);
     
-    class_addCreator ((t_newmethod)subcanvas_new,       gensym ("page"),        A_DEFSYMBOL, A_NULL);
+    class_addCreator ((t_newmethod)subpatch_new,        gensym ("page"),        A_DEFSYMBOL, A_NULL);
 
     #endif
         
