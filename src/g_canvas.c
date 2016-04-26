@@ -37,36 +37,6 @@ int             canvas_magic = 10000;                       /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)
-{
-    int heightwas = y2 - y1;
-    int heightchange = y2 - y1 - (x->gl_windowBottomRightY - x->gl_windowTopLeftY);
-    if (x->gl_windowTopLeftX == x1 && x->gl_windowTopLeftY == y1 &&
-        x->gl_windowBottomRightX == x2 && x->gl_windowBottomRightY == y2)
-            return;
-    x->gl_windowTopLeftX = x1;
-    x->gl_windowTopLeftY = y1;
-    x->gl_windowBottomRightX = x2;
-    x->gl_windowBottomRightY = y2;
-    if (!canvas_isGraphOnParent(x) && (x->gl_valueDown < x->gl_valueUp)) 
-    {
-            /* if it's flipped so that y grows upward,
-            fix so that zero is bottom edge and redraw.  This is
-            only appropriate if we're a regular "text" object on the
-            parent. */
-        t_float diff = x->gl_valueUp - x->gl_valueDown;
-        t_gobj *y;
-        x->gl_valueUp = heightwas * diff;
-        x->gl_valueDown = x->gl_valueUp - diff;
-            /* and move text objects accordingly; they should stick
-            to the bottom, not the top. */
-        for (y = x->gl_graphics; y; y = y->g_next)
-            if (canvas_castToObjectIfBox(&y->g_pd))
-                gobj_displace(y, x, 0, heightchange);
-        canvas_redraw(x);
-    }
-}
-
 static void canvas_loadbangabstractions(t_glist *x)
 {
     t_gobj *y;
@@ -129,13 +99,39 @@ void canvas_click(t_glist *x,
     canvas_vis(x, 1);
 }
 
-    /* This is sent from the GUI to inform a toplevel that its window has been
-    moved or resized. */
-void canvas_setbounds(t_glist *x, t_float left, t_float top, 
-                             t_float right, t_float bottom)
+void canvas_setBounds (t_glist *x, t_float a, t_float b, t_float c, t_float d)
 {
-    canvas_dosetbounds(x, (int)left, (int)top, (int)right, (int)bottom);
+    x->gl_windowTopLeftX        = a;
+    x->gl_windowTopLeftY        = b;
+    x->gl_windowBottomRightX    = c;
+    x->gl_windowBottomRightY    = d;
 }
+
+/*
+-static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)
+-{
+-    int heightwas = y2 - y1;
+-    int heightchange = y2 - y1 - (x->gl_windowBottomRightY - x->gl_windowTopLef
+-    if (x->gl_windowTopLeftX == x1 && x->gl_windowTopLeftY == y1 &&
+-        x->gl_windowBottomRightX == x2 && x->gl_windowBottomRightY == y2)
+-            return;
+-    x->gl_windowTopLeftX = x1;
+-    x->gl_windowTopLeftY = y1;
+-    x->gl_windowBottomRightX = x2;
+-    x->gl_windowBottomRightY = y2;
+-    if (!canvas_isGraphOnParent(x) && (x->gl_valueDown < x->gl_valueUp)) 
+-    {
+-        t_float diff = x->gl_valueUp - x->gl_valueDown;
+-        t_gobj *y;
+-        x->gl_valueUp = heightwas * diff;
+-        x->gl_valueDown = x->gl_valueUp - diff;
+-        for (y = x->gl_graphics; y; y = y->g_next)
+-            if (canvas_castToObjectIfBox(&y->g_pd))
+-                gobj_displace(y, x, 0, heightchange);
+-        canvas_redraw(x);
+-    }
+-}
+*/
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -385,7 +381,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     if (canvas_directory == &s_) { x->gl_environment = NULL; }
     else {
     //
-    static int dollarZero = 1000;
+    static int dollarZero = 1000;   /* Shared. */
     
     x->gl_environment = (t_environment *)PD_MEMORY_GET (sizeof (t_environment));
 
@@ -404,15 +400,15 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     //
     }
 
-    topLeftY = PD_MAX (topLeftY, CANVAS_WINDOW_HEADER_HEIGHT);
     topLeftX = PD_MAX (topLeftX, 0);
+    topLeftY = PD_MAX (topLeftY, CANVAS_WINDOW_HEADER_HEIGHT);
         
     x->gl_indexStart    = 0;
-    x->gl_valueUp       = 0;
+    x->gl_valueUp       = 0.0;
     x->gl_indexEnd      = 1;
-    x->gl_valueDown     = 1;
+    x->gl_valueDown     = 1.0;
     
-    canvas_dosetbounds (x, topLeftX, topLeftY, topLeftX + width, topLeftY + height);
+    canvas_setBounds (x, topLeftX, topLeftY, topLeftX + width, topLeftY + height);
     canvas_bind (x);
     
     x->gl_fontSize      = font_getNearestValidFontSize (fontSize);
@@ -433,32 +429,31 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     return x;
 }
 
-void canvas_free(t_glist *x)
+void canvas_free (t_glist *glist)
 {
-    t_gobj *y;
     int dspstate = dsp_suspend();
-    canvas_noundo(x);
-    glist_noselect(x);
-    while (y = x->gl_graphics)
-        glist_delete(x, y);
-    if (x == glist_getcanvas(x))
-        canvas_vis(x, 0);
-    if (x->gl_editor)
-        canvas_destroy_editor(x);   /* bug workaround; should already be gone*/
-    canvas_unbind(x);
+    t_gobj *y = NULL;
+        
+    canvas_noundo (glist);
+    glist_noselect (glist);
+    
+    while (y = glist->gl_graphics) { glist_delete (glist, y); }
+    if (glist == glist_getcanvas (glist)) { canvas_vis (glist, 0); }
+    if (glist->gl_editor) { canvas_destroy_editor (glist); }
+    
+    canvas_unbind (glist);
 
-    if (x->gl_environment)
-    {
-        PD_MEMORY_FREE(x->gl_environment->ce_argv);
-        PD_MEMORY_FREE(x->gl_environment);
+    if (glist->gl_environment) {
+        PD_MEMORY_FREE (glist->gl_environment->ce_argv);
+        PD_MEMORY_FREE (glist->gl_environment);
     }
-    dsp_resume(dspstate);
-    //PD_MEMORY_FREE(x->gl_xlabel);
-    //PD_MEMORY_FREE(x->gl_ylabel);
-    gstub_cutoff(x->gl_stub);
-    guistub_destroyWithKey(x);        /* probably unnecessary */
-    if (!x->gl_owner)
-        instance_removeFromRoots (x);
+    
+    dsp_resume (dspstate);
+    
+    gstub_cutoff (glist->gl_stub);
+    guistub_destroyWithKey (glist);
+    
+    if (!glist->gl_owner) { instance_removeFromRoots (glist); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -483,7 +478,7 @@ void canvas_setup (void)
     class_addCreator ((t_newmethod)subcanvas_new, gensym ("pd"), A_DEFSYMBOL, A_NULL);
     
     class_addClick (c, canvas_click);
-    class_addBounds (c, canvas_setbounds);
+    class_addBounds (c, canvas_setBounds);
     
     class_addMethod (c, (t_method)canvas_coords,        gensym ("coords"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_restore,       gensym ("restore"),     A_GIMME, A_NULL);

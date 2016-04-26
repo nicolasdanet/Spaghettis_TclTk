@@ -395,7 +395,20 @@ void            canvas_redrawAllByTemplateByCanvas      (t_glist *glist, int act
 t_glist         *canvas_new                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 
 void            canvas_free                             (t_glist *x);
-void            canvas_click                            (t_glist *x, t_float xpos, t_float ypos, t_float shift, t_float ctrl, t_float alt);
+
+void            canvas_click                            (t_glist *x,
+                                                            t_float a,
+                                                            t_float b,
+                                                            t_float shift,
+                                                            t_float ctrl,
+                                                            t_float alt);
+
+void            canvas_setBounds                        (t_glist *x,
+                                                            t_float a,
+                                                            t_float b,
+                                                            t_float c,
+                                                            t_float d);
+                                                            
 void            canvas_restore                          (t_glist *x, t_symbol *s, int argc, t_atom *argv);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -433,7 +446,6 @@ void canvas_menusave (t_glist *x, float fdestroy);
 void canvas_menusaveas (t_glist *x, float fdestroy);
 void canvas_find_parent (t_glist *x);
 void canvas_map (t_glist *x, t_float f);
-void canvas_setbounds (t_glist *x, t_float left, t_float top, t_float right, t_float bottom);
 void canvas_setgraph (t_glist *x, int flag, int nogoprect);
 
 void glist_text(t_glist *x, t_symbol *s, int argc, t_atom *argv);

@@ -116,7 +116,7 @@ t_glist *canvas_addGraph (t_glist *glist, t_symbol *name,
     t_float bottomRightX,
     t_float bottomRightY)
 {
-    static int graphCount = 0;
+    static int graphCount = 0;      /* Shared. */
 
     int createdFromMenu = 0;
     t_glist *x = (t_glist *)pd_new (canvas_class);
