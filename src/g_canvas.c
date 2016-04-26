@@ -187,48 +187,48 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-    /* call canvas_addGraph from a Pd message */
-static void glist_glist(t_glist *g, t_symbol *s, int argc, t_atom *argv)
+static void canvas_graph (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    t_symbol *sym = atom_getSymbolAtIndex(0, argc, argv);   
-    t_float x1 = atom_getFloatAtIndex(1, argc, argv);  
-    t_float y1 = atom_getFloatAtIndex(2, argc, argv);  
-    t_float x2 = atom_getFloatAtIndex(3, argc, argv);  
-    t_float y2 = atom_getFloatAtIndex(4, argc, argv);  
-    t_float px1 = atom_getFloatAtIndex(5, argc, argv);  
-    t_float py1 = atom_getFloatAtIndex(6, argc, argv);  
-    t_float px2 = atom_getFloatAtIndex(7, argc, argv);  
-    t_float py2 = atom_getFloatAtIndex(8, argc, argv);
-    canvas_addGraph(g, sym, x1, y1, x2, y2, px1, py1, px2, py2);
+    canvas_addGraph (glist, 
+        atom_getSymbolAtIndex (0, argc, argv),
+        atom_getFloatAtIndex (1, argc, argv),
+        atom_getFloatAtIndex (2, argc, argv),
+        atom_getFloatAtIndex (3, argc, argv),
+        atom_getFloatAtIndex (4, argc, argv),
+        atom_getFloatAtIndex (5, argc, argv),
+        atom_getFloatAtIndex (6, argc, argv),
+        atom_getFloatAtIndex (7, argc, argv),
+        atom_getFloatAtIndex (8, argc, argv));
 }
 
-static void canvas_f(t_glist *x, t_symbol *s, int argc, t_atom *argv)
+static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    static int warned;
-    t_gobj *g, *g2;
-    t_object *ob;
-    if (argc > 1 && !warned)
-    {
-        post("** ignoring width or font settings from future Pd version **");
-        warned = 1;
+    if (glist->gl_graphics) {
+    //
+    t_gobj *g1 = NULL;
+    t_gobj *g2 = NULL;
+    
+    t_object *o = NULL;
+    
+    for (g1 = glist->gl_graphics; g2 = g1->g_next; g1 = g2) { }
+    
+    if (o = canvas_castToObjectIfBox (g1)) {
+    //
+    o->te_width = atom_getFloatAtIndex (0, argc, argv);
+    
+    if (canvas_isVisible (glist)) {
+        gobj_vis (g1, glist, 0);
+        gobj_vis (g1, glist, 1);
     }
-    if (!x->gl_graphics)
-        return;
-    for (g = x->gl_graphics; g2 = g->g_next; g = g2)
-        ;
-    if (ob = canvas_castToObjectIfBox(&g->g_pd))
-    {
-        ob->te_width = atom_getFloatAtIndex(0, argc, argv);
-        if (canvas_isVisible(x))
-        {
-            gobj_vis(g, x, 0);
-            gobj_vis(g, x, 1);
-        }
+    //
+    }
+    //
     }
 }
 
     /* we call this on a non-toplevel glist to "open" it into its
     own window. */
+    
 void glist_menu_open(t_glist *x)
 {
     if (canvas_isVisible(x) && !canvas_isTopLevel(x))
@@ -492,9 +492,9 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_floatatom,     gensym ("floatatom"),   A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_symbolatom,    gensym ("symbolatom"),  A_GIMME, A_NULL);
     class_addMethod (c, (t_method)glist_text,           gensym ("text"),        A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)glist_glist,          gensym ("graph"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_graph,         gensym ("graph"),       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)glist_scalar,         gensym ("scalar"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_f,             gensym ("f"),           A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_width,         gensym ("f"),           A_GIMME, A_NULL);
         
     class_addMethod (c, (t_method)canvas_bng,           gensym ("bng"),         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_toggle,        gensym ("tgl"),         A_GIMME, A_NULL);
