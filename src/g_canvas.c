@@ -114,74 +114,76 @@ void canvas_setBounds (t_glist *x, t_float a, t_float b, t_float c, t_float d)
 }
 
 /*
--static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)
--{
--    int heightwas = y2 - y1;
--    int heightchange = y2 - y1 - (x->gl_windowBottomRightY - x->gl_windowTopLef
--    if (x->gl_windowTopLeftX == x1 && x->gl_windowTopLeftY == y1 &&
--        x->gl_windowBottomRightX == x2 && x->gl_windowBottomRightY == y2)
--            return;
--    x->gl_windowTopLeftX = x1;
--    x->gl_windowTopLeftY = y1;
--    x->gl_windowBottomRightX = x2;
--    x->gl_windowBottomRightY = y2;
--    if (!canvas_isGraphOnParent(x) && (x->gl_valueDown < x->gl_valueUp)) 
--    {
--        t_float diff = x->gl_valueUp - x->gl_valueDown;
--        t_gobj *y;
--        x->gl_valueUp = heightwas * diff;
--        x->gl_valueDown = x->gl_valueUp - diff;
--        for (y = x->gl_graphics; y; y = y->g_next)
--            if (canvas_castToObjectIfBox(&y->g_pd))
--                gobj_displace(y, x, 0, heightchange);
--        canvas_redraw(x);
--    }
--}
+static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)
+{
+    int heightwas = y2 - y1;
+    int heightchange = y2 - y1 - (x->gl_windowBottomRightY - x->gl_windowTopLef
+    if (x->gl_windowTopLeftX == x1 && x->gl_windowTopLeftY == y1 &&
+        x->gl_windowBottomRightX == x2 && x->gl_windowBottomRightY == y2)
+            return;
+    x->gl_windowTopLeftX = x1;
+    x->gl_windowTopLeftY = y1;
+    x->gl_windowBottomRightX = x2;
+    x->gl_windowBottomRightY = y2;
+    if (!canvas_isGraphOnParent(x) && (x->gl_valueDown < x->gl_valueUp)) 
+    {
+        t_float diff = x->gl_valueUp - x->gl_valueDown;
+        t_gobj *y;
+        x->gl_valueUp = heightwas * diff;
+        x->gl_valueDown = x->gl_valueUp - diff;
+        for (y = x->gl_graphics; y; y = y->g_next)
+            if (canvas_castToObjectIfBox(&y->g_pd))
+                gobj_displace(y, x, 0, heightchange);
+        canvas_redraw(x);
+    }
+}
 */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-static void canvas_coords(t_glist *x, t_symbol *s, int argc, t_atom *argv)
+static void canvas_coords (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    x->gl_indexStart = atom_getFloatAtIndex(0, argc, argv);
-    x->gl_valueUp = atom_getFloatAtIndex(1, argc, argv);
-    x->gl_indexEnd = atom_getFloatAtIndex(2, argc, argv);
-    x->gl_valueDown = atom_getFloatAtIndex(3, argc, argv);
-    x->gl_width = (t_int)atom_getFloatAtIndex(4, argc, argv);
-    x->gl_height = (t_int)atom_getFloatAtIndex(5, argc, argv);
-    if (argc <= 7)
-        canvas_setgraph(x, (t_int)atom_getFloatAtIndex(6, argc, argv), 1);
-    else
-    {
-        x->gl_marginX = (t_int)atom_getFloatAtIndex(7, argc, argv);
-        x->gl_marginY = (t_int)atom_getFloatAtIndex(8, argc, argv);
-        canvas_setgraph(x, (t_int)atom_getFloatAtIndex(6, argc, argv), 0);
+    int graphOnParent;
+    
+    glist->gl_indexStart    = atom_getFloatAtIndex (0, argc, argv);
+    glist->gl_valueUp       = atom_getFloatAtIndex (1, argc, argv);
+    glist->gl_indexEnd      = atom_getFloatAtIndex (2, argc, argv);
+    glist->gl_valueDown     = atom_getFloatAtIndex (3, argc, argv);
+    glist->gl_width         = (int)atom_getFloatAtIndex (4, argc, argv);
+    glist->gl_height        = (int)atom_getFloatAtIndex (5, argc, argv);
+    graphOnParent           = (int)atom_getFloatAtIndex (6, argc, argv);
+    
+    if (argc >= 8) {
+    //
+    glist->gl_marginX       = (int)atom_getFloatAtIndex (7, argc, argv);
+    glist->gl_marginY       = (int)atom_getFloatAtIndex (8, argc, argv);
+    //
     }
+    
+    canvas_setgraph (glist, graphOnParent, (argc < 8) ? 1 : 0);
 }
 
-void canvas_restore(t_glist *x, t_symbol *s, int argc, t_atom *argv)
+void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    t_pd *z;
-    if (argc > 3)
-    {
-        t_atom *ap=argv+3;
-        if (ap->a_type == A_SYMBOL)
-        {
-            t_environment *e = canvas_getEnvironment(canvas_getCurrent());
-            canvas_rename(x, dollar_expandDollarSymbol(ap->a_w.w_symbol,
-                e->ce_argc, e->ce_argv/*, 1*/), 0);
-        }
+    t_pd *z = NULL;
+    
+    if ((argc > 3) && IS_SYMBOL (argv + 3)) {
+    //
+    t_environment *e = canvas_getEnvironment (canvas_getCurrent());
+    t_symbol *name = dollar_expandDollarSymbol (GET_SYMBOL (argv + 3), e->ce_argc, e->ce_argv);
+    canvas_rename (glist, name, NULL);
+    //
     }
-    canvas_pop(x, x->gl_willBeVisible);
+    
+    canvas_pop (glist, glist->gl_willBeVisible);
 
-    if (!(z = gensym ("#X")->s_thing)) post_error ("canvas_restore: out of context");
-    else if (*z != canvas_class) post_error ("canvas_restore: wasn't a canvas");
-    else
-    {
-        t_glist *x2 = (t_glist *)z;
-        x->gl_owner = x2;
-        canvas_objfor(x2, &x->gl_obj, argc, argv);
+    if (!(z = gensym ("#X")->s_thing) || (pd_class (z) != canvas_class)) { PD_BUG; }
+    else {
+        t_glist *g = cast_glist (z);
+        glist->gl_owner = g;
+        canvas_objfor (g, cast_object (glist), argc, argv);
     }
 }
 
