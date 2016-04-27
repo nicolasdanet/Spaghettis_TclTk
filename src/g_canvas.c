@@ -114,27 +114,27 @@ void canvas_setBounds (t_glist *x, t_float a, t_float b, t_float c, t_float d)
 }
 
 /*
-static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)
+static void canvas_dosetbounds(t_glist *x, int x1, int y1, int x2, int y2)          // --
 {
     int heightwas = y2 - y1;
     int heightchange = y2 - y1 - (x->gl_windowBottomRightY - x->gl_windowTopLef
-    if (x->gl_windowTopLeftX == x1 && x->gl_windowTopLeftY == y1 &&
+    if (x->gl_windowTopLeftX == x1 && x->gl_windowTopLeftY == y1 &&                 // --
         x->gl_windowBottomRightX == x2 && x->gl_windowBottomRightY == y2)
             return;
     x->gl_windowTopLeftX = x1;
     x->gl_windowTopLeftY = y1;
     x->gl_windowBottomRightX = x2;
     x->gl_windowBottomRightY = y2;
-    if (!canvas_isGraphOnParent(x) && (x->gl_valueDown < x->gl_valueUp)) 
+    if (!canvas_isGraphOnParent(x) && (x->gl_valueDown < x->gl_valueUp))            // --
     {
         t_float diff = x->gl_valueUp - x->gl_valueDown;
         t_gobj *y;
         x->gl_valueUp = heightwas * diff;
         x->gl_valueDown = x->gl_valueUp - diff;
-        for (y = x->gl_graphics; y; y = y->g_next)
-            if (canvas_castToObjectIfBox(&y->g_pd))
-                gobj_displace(y, x, 0, heightchange);
-        canvas_redraw(x);
+        for (y = x->gl_graphics; y; y = y->g_next)                                  // --
+            if (canvas_castToObjectIfBox(&y->g_pd))                                 // --
+                gobj_displace(y, x, 0, heightchange);                               // --
+        canvas_redraw(x);                                                           // --
     }
 }
 */
@@ -173,7 +173,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     //
     t_environment *e = canvas_getEnvironment (canvas_getCurrent());
     t_symbol *name = dollar_expandDollarSymbol (GET_SYMBOL (argv + 3), e->ce_argc, e->ce_argv);
-    canvas_rename (glist, name, NULL);
+    canvas_setName (glist, name, NULL);
     //
     }
     
@@ -257,7 +257,8 @@ void canvas_map (t_glist *glist, t_float f)
 
     if (isMapped != canvas_isVisible (glist)) {
     //
-    if (isMapped) {
+    if (!isMapped) { sys_vGui (".x%lx.c delete all\n", glist); glist->gl_isMapped = 0; }
+    else {
     
         t_gobj *y = NULL;
         t_selection *selection = NULL;
@@ -277,53 +278,54 @@ void canvas_map (t_glist *glist, t_float f)
         }
         
         sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", glist);
-        
-    } else {
-        sys_vGui (".x%lx.c delete all\n", glist); glist->gl_isMapped = 0;
     }
     //
     }
 }
 
-    /* mark a glist dirty or clean */
-void canvas_dirty(t_glist *x, t_float n)
+void canvas_dirty (t_glist *glist, t_float f)
 {
-    t_glist *x2 = canvas_getRoot(x);
-    if (editor_reloading)
-        return;
-    if ((unsigned)n != x2->gl_isDirty)
-    {
-        x2->gl_isDirty = n;
-        if (x2->gl_haveWindow)
-            canvas_updateTitle(x2);
+    int isDirty = (f != 0.0);
+        
+    if (!editor_reloading) {
+    //
+    t_glist *y = canvas_getRoot (glist);
+        
+    if (y->gl_isDirty != isDirty) { 
+        y->gl_isDirty = isDirty; if (y->gl_haveWindow) { canvas_updateTitle (y); }
+    }
+    //
     }
 }
 
-void canvas_pop(t_glist *x, t_float fvis)
+void canvas_pop (t_glist *glist, t_float f)
 {
-    if (fvis != 0)
-        canvas_vis(x, 1);
-    stack_pop(&x->gl_obj.te_g.g_pd);
-    canvas_resortinlets(x);
-    canvas_resortoutlets(x);
-    x->gl_isLoading = 0;
+    if (f != 0.0) { canvas_vis (glist, 1); }
+    
+    stack_pop (cast_pd (glist));
+    
+    canvas_resortinlets (glist);
+    canvas_resortoutlets (glist);
+    
+    glist->gl_isLoading = 0;
 }
 
-static void canvas_rename_method(t_glist *x, t_symbol *s, int ac, t_atom *av)
+static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
-    if (ac && av->a_type == A_SYMBOL)
-        canvas_rename(x, av->a_w.w_symbol, 0);
-    else if (ac && av->a_type == A_DOLLARSYMBOL)
-    {
-        t_environment *e = canvas_getEnvironment(x);
-        //canvas_setCurrent(x);
-        stack_push (cast_pd (x));
-        canvas_rename(x, dollar_expandDollarSymbol(av->a_w.w_symbol,
-            e->ce_argc, e->ce_argv/*, 1*/), 0); 
-        //canvas_unsetCurrent(x);
-        stack_pop (cast_pd (x));
+    if (argc && IS_SYMBOL (argv)) { canvas_setName (glist, GET_SYMBOL (argv), NULL); }
+    else if (argc && IS_DOLLARSYMBOL (argv)) {
+    
+        t_environment *e = canvas_getEnvironment (glist);
+        stack_push (cast_pd (glist));
+        {
+            t_symbol *name = dollar_expandDollarSymbol (GET_DOLLARSYMBOL (argv), e->ce_argc, e->ce_argv);
+            canvas_setName (glist, name, NULL); 
+        }
+        stack_pop (cast_pd (glist));
+        
+    } else { 
+        canvas_setName (glist, gensym (PD_NAME_SHORT), NULL);
     }
-    else canvas_rename(x, gensym (PD_NAME_SHORT), 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -506,7 +508,7 @@ void canvas_setup (void)
 
     class_addMethod (c, (t_method)glist_clear,          gensym ("clear"),       A_NULL);
     class_addMethod (c, (t_method)canvas_dsp,           gensym ("dsp"),         A_CANT, A_NULL);
-    class_addMethod (c, (t_method)canvas_rename_method, gensym ("rename"),      A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_rename,        gensym ("rename"),      A_GIMME, A_NULL);
     
     #if PD_WITH_LEGACY
     

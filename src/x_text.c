@@ -1792,12 +1792,12 @@ static void text_template_init( void)
         return;
     b = buffer_new();
     
-    canvas_setFileNameAndDirectory (gensym ("_text_template"), gensym ("."));
+    canvas_setActiveFileNameAndDirectory (gensym ("_text_template"), gensym ("."));
     buffer_withStringUnzeroed(b, text_templatefile, strlen(text_templatefile));
     buffer_eval(b, &pd_canvasMaker, 0, 0);
     pd_vMessage(s__X.s_thing, gensym ("pop"), "i", 0);
     
-    canvas_setFileNameAndDirectory (&s_, &s_);
+    canvas_setActiveFileNameAndDirectory (&s_, &s_);
     buffer_free(b);  
 }
 

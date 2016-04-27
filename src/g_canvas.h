@@ -105,39 +105,38 @@
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+#define INLETS_OFFSET(width, i, n)      ((((width) - INLETS_WIDTH) * (i)) / (((n) == 1) ? 1 : ((n) - 1)))
+#define INLETS_MIDDLE(width, i, n)      INLETS_OFFSET (width, i, n) + ((INLETS_WIDTH - 1) / 2)
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define GLIST_DEFAULT_X                     100
-#define GLIST_DEFAULT_Y                     20
-#define GLIST_DEFAULT_WIDTH                 200
-#define GLIST_DEFAULT_HEIGHT                140
+#define GLIST_DEFAULT_X                         100
+#define GLIST_DEFAULT_Y                         20
+#define GLIST_DEFAULT_WIDTH                     200
+#define GLIST_DEFAULT_HEIGHT                    140
 
-#define GLIST_DEFAULT_START                 0
-#define GLIST_DEFAULT_END                   100
-#define GLIST_DEFAULT_UP                    1.0
+#define GLIST_DEFAULT_START                     0
+#define GLIST_DEFAULT_END                       100
+#define GLIST_DEFAULT_UP                        1.0
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 #ifdef __APPLE__
-    #define CANVAS_WINDOW_HEADER_HEIGHT     22
+    #define CANVAS_WINDOW_HEADER_HEIGHT         22
 #else
-    #define CANVAS_WINDOW_HEADER_HEIGHT     50
+    #define CANVAS_WINDOW_HEADER_HEIGHT         50
 #endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-#define CANVAS_WINDOW_DEFAULT_WIDTH         450
-#define CANVAS_WINDOW_DEFAULT_HEIGHT        300
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-#define INLETS_OFFSET(width, i, n)      ((((width) - INLETS_WIDTH) * (i)) / (((n) == 1) ? 1 : ((n) - 1)))
-#define INLETS_MIDDLE(width, i, n)      INLETS_OFFSET (width, i, n) + ((INLETS_WIDTH - 1) / 2)
+#define CANVAS_WINDOW_DEFAULT_WIDTH             450
+#define CANVAS_WINDOW_DEFAULT_HEIGHT            300
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -327,8 +326,8 @@ void            guiconnect_release                      (t_guiconnect *x, double
 #pragma mark -
 
 void            canvas_newPatch                         (void *dummy, t_symbol *name, t_symbol *directory);
-void            canvas_setFileNameAndDirectory          (t_symbol *name, t_symbol *directory);
-void            canvas_setArguments                     (int argc, t_atom *argv);
+void            canvas_setActiveFileNameAndDirectory    (t_symbol *name, t_symbol *directory);
+void            canvas_setActiveArguments               (int argc, t_atom *argv);
 
 t_glist         *canvas_getCurrent                      (void);
 t_environment   *canvas_getEnvironment                  (t_glist *glist);
@@ -362,7 +361,7 @@ int             canvas_openFile                         (t_glist *glist,
 void            canvas_bind                             (t_glist *glist);
 void            canvas_unbind                           (t_glist *glist);
 t_error         canvas_makeFilePath                     (t_glist *glist, char *name, char *dest, size_t size);
-void            canvas_rename                           (t_glist *glist, t_symbol *name, t_symbol *directory);
+void            canvas_setName                          (t_glist *glist, t_symbol *name, t_symbol *directory);
 void            canvas_updateTitle                      (t_glist *glist);
 int             canvas_isGraphOnParentTitle             (t_glist *glist);
 int             canvas_getFontSize                      (t_glist *glist);
@@ -412,6 +411,8 @@ void            canvas_setBounds                        (t_glist *glist,
 void            canvas_restore                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_loadbang                         (t_glist *glist);
 void            canvas_map                              (t_glist *glist, t_float f);
+void            canvas_dirty                            (t_glist *glist, t_float f);
+void            canvas_pop                              (t_glist *glist, t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -434,9 +435,6 @@ void            dsp_resume                              (int oldState);
 
 void                canvas_dataproperties           (t_glist *x, t_scalar *sc, t_buffer *b);
 
-
-
-void canvas_pop (t_glist *x, t_float fvis);
 void canvas_properties (t_gobj *z, t_glist *canvas);
 void canvas_objfor (t_glist *gl, t_object *x, int argc, t_atom *argv);
 void canvas_mouse (t_glist *x, t_float xpos, t_float ypos, t_float which, t_float mod);
@@ -590,7 +588,6 @@ void     canvas_rmoutlet                    (t_glist *x, t_outlet *op);
 void     canvas_zapallfortemplate           (t_glist *tmpl);
 void     canvas_setusedastemplate           (t_glist *x);
 
-void     canvas_dirty                       (t_glist *x, t_float n);
 int      canvas_getfont                     (t_glist *x);
 void     canvas_resortinlets            (t_glist *x);
 void     canvas_resortoutlets           (t_glist *x);

@@ -182,13 +182,13 @@ static void message_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
         
     } else {
         t_pd *t = s__X.s_thing;
-        canvas_setArguments (argc, argv);
+        canvas_setActiveArguments (argc, argv);
         buffer_evalFile (gensym (name), gensym (directory));
         if (s__X.s_thing && t != s__X.s_thing) { message_popAbstraction (cast_glist (s__X.s_thing)); }
         else { 
             s__X.s_thing = t; 
         }
-        canvas_setArguments (0, NULL);
+        canvas_setActiveArguments (0, NULL);
     }
     //
     }

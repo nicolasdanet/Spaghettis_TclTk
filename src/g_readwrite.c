@@ -749,7 +749,7 @@ static void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir,
             /* if not an abstraction, reset title bar and directory */ 
         if (!x->gl_owner)
         {
-            canvas_rename(x, filename, dir);
+            canvas_setName(x, filename, dir);
             /* update window list in case Save As changed the window name */
         }
         post("saved to: %s/%s", dir->s_name, filename->s_name);

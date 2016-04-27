@@ -35,13 +35,13 @@ extern int          canvas_magic;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void canvas_setFileNameAndDirectory (t_symbol *name, t_symbol *directory)
+void canvas_setActiveFileNameAndDirectory (t_symbol *name, t_symbol *directory)
 {
     canvas_fileName  = name;
     canvas_directory = directory;
 }
 
-void canvas_setArguments (int argc, t_atom *argv)
+void canvas_setActiveArguments (int argc, t_atom *argv)
 {
     if (canvas_argv) { PD_MEMORY_FREE (canvas_argv); }
     
@@ -51,7 +51,7 @@ void canvas_setArguments (int argc, t_atom *argv)
 
 void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 {
-    canvas_setFileNameAndDirectory (name, directory);
+    canvas_setActiveFileNameAndDirectory (name, directory);
     canvas_new (NULL, NULL, 0, NULL);
     canvas_pop (cast_glist (s__X.s_thing), 1);
 }
@@ -264,7 +264,7 @@ t_error canvas_makeFilePath (t_glist *glist, char *name, char *dest, size_t size
     return err;
 }
 
-void canvas_rename (t_glist *glist, t_symbol *name, t_symbol *directory)
+void canvas_setName (t_glist *glist, t_symbol *name, t_symbol *directory)
 {
     canvas_unbind (glist);
     glist->gl_name = name;
