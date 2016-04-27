@@ -226,27 +226,23 @@ static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
-    /* we call this on a non-toplevel glist to "open" it into its
-    own window. */
-    
-void glist_menu_open(t_glist *x)
+static void canvas_open (t_glist *glist)
 {
-    if (canvas_isVisible(x) && !canvas_isTopLevel(x))
-    {
-        t_glist *gl2 = x->gl_owner;
-        if (!gl2) { PD_BUG; }
-        else {
-                /* erase ourself in parent window */
-            gobj_vis(&x->gl_obj.te_g, gl2, 0);
-                    /* get rid of our editor (and subeditors) */
-            if (x->gl_editor)
-                canvas_destroy_editor(x);
-            x->gl_haveWindow = 1;
-                    /* redraw ourself in parent window (blanked out this time) */
-            gobj_vis(&x->gl_obj.te_g, gl2, 1);
-        }
+    if (canvas_isVisible (glist) && !canvas_isTopLevel (glist)) {
+    //
+    PD_ASSERT (glist->gl_owner);
+    
+    gobj_vis (cast_gobj (glist), glist->gl_owner, 0);
+    
+    if (glist->gl_editor) { canvas_destroy_editor (glist); }
+
+    glist->gl_haveWindow = 1;
+    
+    gobj_vis (cast_gobj (glist), glist->gl_owner, 1);
+    //
     }
-    canvas_vis(x, 1);
+    
+    canvas_vis (glist, 1);
 }
 
 void canvas_loadbang (t_glist *glist)
@@ -255,42 +251,37 @@ void canvas_loadbang (t_glist *glist)
     canvas_loadbangSubpatches (glist);
 }
 
-    /* the window becomes "mapped" (visible and not miniaturized) or
-    "unmapped" (either miniaturized or just plain gone.)  This should be
-    called from the GUI after the fact to "notify" us that we're mapped. */
-void canvas_map(t_glist *x, t_float f)
+void canvas_map (t_glist *glist, t_float f)
 {
-    int flag = (f != 0);
-    t_gobj *y;
-    if (flag)
-    {
-        if (!canvas_isVisible(x))
-        {
-            t_selection *sel;
-            if (!x->gl_haveWindow)
-            {
-                PD_BUG;
-                canvas_vis(x, 1);
-            }
-            for (y = x->gl_graphics; y; y = y->g_next)
-                gobj_vis(y, x, 1);
-            for (sel = x->gl_editor->e_selection; sel; sel = sel->sel_next)
-                gobj_select(sel->sel_what, x, 1);
-            x->gl_isMapped = 1;
-            canvas_drawLines(x);
-            if (x->gl_isGraphOnParent && x->gl_hasRectangle)
-                canvas_drawGraphOnParentRectangle(x);
-            sys_vGui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
+    int isMapped = (f != 0.0);
+
+    if (isMapped != canvas_isVisible (glist)) {
+    //
+    if (isMapped) {
+    
+        t_gobj *y = NULL;
+        t_selection *selection = NULL;
+        
+        if (!glist->gl_haveWindow) { PD_BUG; canvas_vis (glist, 1); }
+        for (y = glist->gl_graphics; y; y = y->g_next) { gobj_vis (y, glist, 1); }
+        for (selection = glist->gl_editor->e_selection; selection; selection = selection->sel_next) {
+            gobj_select (selection->sel_what, glist, 1);
         }
+
+        glist->gl_isMapped = 1;
+        
+        canvas_drawLines (glist);
+        
+        if (glist->gl_isGraphOnParent && glist->gl_hasRectangle) {
+            canvas_drawGraphOnParentRectangle (glist);
+        }
+        
+        sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", glist);
+        
+    } else {
+        sys_vGui (".x%lx.c delete all\n", glist); glist->gl_isMapped = 0;
     }
-    else
-    {
-        if (canvas_isVisible(x))
-        {
-                /* just clear out the whole canvas */
-            sys_vGui(".x%lx.c delete all\n", x);
-            x->gl_isMapped = 0;
-        }
+    //
     }
 }
 
@@ -506,7 +497,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_mycnv,         gensym ("cnv"),         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_numbox,        gensym ("nbx"),         A_GIMME, A_NULL);
     
-    class_addMethod (c, (t_method)glist_menu_open,      gensym ("open"),        A_NULL);
+    class_addMethod (c, (t_method)canvas_open,          gensym ("open"),        A_NULL);
     class_addMethod (c, (t_method)canvas_loadbang,      gensym ("loadbang"),    A_NULL);
     class_addMethod (c, (t_method)canvas_vis,           gensym ("visible"),     A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_map,           gensym ("map"),         A_FLOAT, A_NULL);
@@ -519,7 +510,7 @@ void canvas_setup (void)
     
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)glist_menu_open,      gensym ("menu-open"),   A_NULL);
+    class_addMethod (c, (t_method)canvas_open,          gensym ("menu-open"),   A_NULL);
     class_addMethod (c, (t_method)canvas_toggle,        gensym ("toggle"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_vumeter,       gensym ("vumeter"),     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_mycnv,         gensym ("mycnv"),       A_GIMME, A_NULL);

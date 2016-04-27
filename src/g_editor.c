@@ -60,7 +60,7 @@ static void file_openHelp (const char *directory, const char *name)
         f = file_openConsideringSearchPath (help, name, PD_HELP, directoryResult, &nameResult, PD_STRING);
     }
     
-    if (f < 0) { post_error (PD_TRANSLATE ("help: couldn't find patch for '%s'"), name); }
+    if (f < 0) { post_error (PD_TRANSLATE ("help: couldn't find file for '%s'"), name); }
     else {
         close (f);
         buffer_openFile (NULL, gensym (nameResult), gensym (directoryResult));
@@ -904,7 +904,7 @@ static void canvas_rightclick(t_glist *x, int xpos, int ypos, t_gobj *y)
 {
     int canprop, canopen;
     canprop = (!y || (y && class_hasPropertiesFunction (pd_class(&y->g_pd))));
-    canopen = (y && class_hasMethod (pd_class (&y->g_pd), gensym ("menu-open")));
+    canopen = (y && class_hasMethod (pd_class (&y->g_pd), gensym ("open")));
     sys_vGui("::ui_menu::showPopup .x%lx %d %d %d %d\n",
         x, xpos, ypos, canprop, canopen);
 }
@@ -1219,9 +1219,9 @@ static void canvas_done_popup(t_glist *x, t_float which, t_float xpos, t_float y
             }
             else if (which == 1)    /* open */
             {
-                if (!class_hasMethod (pd_class (&y->g_pd), gensym ("menu-open")))
+                if (!class_hasMethod (pd_class (&y->g_pd), gensym ("open")))
                     continue;
-                pd_vMessage(&y->g_pd, gensym ("menu-open"), "");
+                pd_vMessage(&y->g_pd, gensym ("open"), "");
                 return;
             }
             else    /* help */
@@ -1670,7 +1670,7 @@ void canvas_mouseup(t_glist *x,
                 canvas_isAbstraction((t_glist *)g) &&
                     (gl2 = glist_finddirty((t_glist *)g)))
             {
-                pd_vMessage(&gl2->gl_obj.te_g.g_pd, gensym ("menu-open"), "");
+                pd_vMessage(&gl2->gl_obj.te_g.g_pd, gensym ("open"), "");
                 x->gl_editor->e_onmotion = ACTION_NONE;
                 sys_vGui(
 "::ui_confirm::checkAction .x%lx { Discard changes to %s? } { ::ui_interface::pdsend .x%lx dirty 0 } { no }\n",
@@ -2020,7 +2020,7 @@ void canvas_menuclose(t_glist *x, t_float fforce)
         g = glist_finddirty(x);
         if (g)
         {
-            pd_vMessage(&g->gl_obj.te_g.g_pd, gensym ("menu-open"), "");
+            pd_vMessage(&g->gl_obj.te_g.g_pd, gensym ("open"), "");
             sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx menuclose 2 } {}\n",
                      canvas_getRoot(g), g);
             return;
@@ -2042,7 +2042,7 @@ void canvas_menuclose(t_glist *x, t_float fforce)
         g = glist_finddirty(x);
         if (g)
         {
-            pd_vMessage(&g->gl_obj.te_g.g_pd, gensym ("menu-open"), "");
+            pd_vMessage(&g->gl_obj.te_g.g_pd, gensym ("open"), "");
             sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx menuclose 2 } {}\n",
                      canvas_getRoot(x), g);
             return;
@@ -2124,7 +2124,7 @@ static int canvas_dofind(t_glist *x, int *myindexp)
                 if (*myindexp == canvas_find_index)
                 {
                     glist_noselect(x);
-                    pd_vMessage(&x->gl_obj.te_g.g_pd, gensym ("menu-open"), "");
+                    pd_vMessage(&x->gl_obj.te_g.g_pd, gensym ("open"), "");
                     canvas_editmode(x, 1.);
                     glist_select(x, y);
                     didit = 1;

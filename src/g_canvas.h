@@ -411,6 +411,7 @@ void            canvas_setBounds                        (t_glist *glist,
                                                             
 void            canvas_restore                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_loadbang                         (t_glist *glist);
+void            canvas_map                              (t_glist *glist, t_float f);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -422,10 +423,10 @@ void            canvas_dsp                              (t_glist *x, t_signal **
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void                dsp_state                       (void *dummy, t_symbol *s, int argc, t_atom *argv);
-void                dsp_update                      (void);
-int                 dsp_suspend                     (void);
-void                dsp_resume                      (int oldState);
+void            dsp_state                               (void *dummy, t_symbol *s, int argc, t_atom *argv);
+void            dsp_update                              (void);
+int             dsp_suspend                             (void);
+void            dsp_resume                              (int oldState);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -446,7 +447,6 @@ void canvas_menuclose (t_glist *x, t_float fforce);
 void canvas_menusave (t_glist *x, float fdestroy);
 void canvas_menusaveas (t_glist *x, float fdestroy);
 void canvas_find_parent (t_glist *x);
-void canvas_map (t_glist *x, t_float f);
 void canvas_setgraph (t_glist *x, int flag, int nogoprect);
 
 void glist_text(t_glist *x, t_symbol *s, int argc, t_atom *argv);
