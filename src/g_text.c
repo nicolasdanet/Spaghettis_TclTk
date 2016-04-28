@@ -1051,7 +1051,7 @@ static void text_select(t_gobj *z, t_glist *glist, int state)
     t_object *x = (t_object *)z;
     t_boxtext *y = glist_findrtext(glist, x);
     rtext_select(y, state);
-    if (canvas_isVisible(glist) && gobj_shouldvis(&x->te_g, glist))
+    if (canvas_isVisible(glist) && gobj_isVisible(&x->te_g, glist))
         sys_vGui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 
             rtext_gettag(y), (state? "blue" : "black"));
 }
@@ -1074,7 +1074,7 @@ static void text_vis(t_gobj *z, t_glist *glist, int vis)
     t_object *x = (t_object *)z;
     if (vis)
     {
-        if (gobj_shouldvis(&x->te_g, glist))
+        if (gobj_isVisible(&x->te_g, glist))
         {
             t_boxtext *y = glist_findrtext(glist, x);
             if (x->te_type == TYPE_ATOM)
@@ -1087,7 +1087,7 @@ static void text_vis(t_gobj *z, t_glist *glist, int vis)
     else
     {
         t_boxtext *y = glist_findrtext(glist, x);
-        if (gobj_shouldvis(&x->te_g, glist))
+        if (gobj_isVisible(&x->te_g, glist))
         {
             text_eraseborder(x, glist, rtext_gettag(y));
             rtext_erase(y);

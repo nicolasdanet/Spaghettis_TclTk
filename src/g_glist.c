@@ -295,7 +295,7 @@ t_symbol *canvas_makeBindSymbol (t_symbol *s)
     return (gensym (t));
 }
 
-int canvas_isGraphOnParentTitle (t_glist *glist)
+int canvas_hasGraphOnParentTitle (t_glist *glist)
 {
     if (glist->gl_hideText) { return 0; }
     else {

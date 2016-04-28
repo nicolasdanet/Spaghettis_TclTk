@@ -767,7 +767,7 @@ int canvas_hitbox(t_glist *x, t_gobj *y, int xpos, int ypos,
 {
     int x1, y1, x2, y2;
     t_object *ob;
-    if (!gobj_shouldvis(y, x))
+    if (!gobj_isVisible(y, x))
         return (0);
     gobj_getRectangle(y, x, &x1, &y1, &x2, &y2);
     if (xpos >= x1 && xpos <= x2 && ypos >= y1 && ypos <= y2)

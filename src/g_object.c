@@ -18,8 +18,6 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_class  *canvas_class;
-extern t_class  *garray_class;
-extern t_class  *scalar_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -75,65 +73,61 @@ void gobj_save (t_gobj *x, t_buffer *buffer)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int gobj_shouldvis(t_gobj *x, struct _glist *glist)
+int gobj_isVisible (t_gobj *x, t_glist *owner)
 {
-    t_object *ob;
-            /* if our parent is a graph, and if that graph itself isn't
-            visible, then we aren't either. */
-    if (!glist->gl_haveWindow && glist->gl_isGraphOnParent && glist->gl_owner
-        && !gobj_shouldvis(&glist->gl_obj.te_g, glist->gl_owner))
-            return (0);
-            /* if we're graphing-on-parent and the object falls outside the
-            graph rectangle, don't draw it. */
-    if (!glist->gl_haveWindow && glist->gl_isGraphOnParent && glist->gl_hasRectangle &&
-        glist->gl_owner)
-    {
-        int x1, y1, x2, y2, gx1, gy1, gx2, gy2, m;
-            /* for some reason the bounds check on arrays and scalars
-            don't seem to apply here.  Perhaps this was in order to allow
-            arrays to reach outside their containers?  I no longer understand
-            this. */
-        if (pd_class(&x->g_pd) == scalar_class
-            || pd_class(&x->g_pd) == garray_class)
-                return (1);
-        gobj_getRectangle(&glist->gl_obj.te_g, glist->gl_owner, &x1, &y1, &x2, &y2);
-        if (x1 > x2)
-            m = x1, x1 = x2, x2 = m;
-        if (y1 > y2)
-            m = y1, y1 = y2, y2 = m;
-        gobj_getRectangle(x, glist, &gx1, &gy1, &gx2, &gy2);
-        /* post("graph %d %d %d %d, %s %d %d %d %d",
-            x1, x2, y1, y2, class_getHelpName(x->g_pd), gx1, gx2, gy1, gy2); */
-        if (gx1 < x1 || gx1 > x2 || gx2 < x1 || gx2 > x2 ||
-            gy1 < y1 || gy1 > y2 || gy2 < y1 || gy2 > y2)
-                return (0);
+    t_object *o = NULL;
+    
+    if (!owner->gl_haveWindow && owner->gl_isGraphOnParent && owner->gl_owner) {    /* Graph on parent. */
+
+        /* Is parent visible? */
+        
+        if (!gobj_isVisible (cast_gobj (owner), owner->gl_owner)) { return 0; }
+        
+        /* Falling outside the graph rectangle? */
+        
+        if (owner->gl_hasRectangle) {
+        
+            int a, b, c, d, e, f, g, h;
+            
+            gobj_getRectangle (cast_gobj (owner), owner->gl_owner, &a, &b, &c, &d);
+            
+            if (a > c) { int t = a; a = c; c = t; }
+            if (b > d) { int t = b; b = d; d = t; }
+            
+            gobj_getRectangle (x, owner, &e, &f, &g, &h);
+
+            if (e < a || e > c || g < a || g > c || f < b || f > d || h < b || h > d) { return 0; }
+        }
     }
-    if (ob = canvas_castToObjectIfBox(&x->g_pd))
-    {
-        /* return true if the text box should be drawn.  We don't show text
-        boxes inside graphs---except comments, if we're doing the new
-        (goprect) style. */
-        return (glist->gl_haveWindow ||
-            (ob->te_g.g_pd != canvas_class &&
-                ob->te_g.g_pd->c_behavior != &text_widgetBehavior) ||
-            (ob->te_g.g_pd == canvas_class && (((t_glist *)ob)->gl_isGraphOnParent)) ||
-            (glist->gl_hasRectangle && (ob->te_type == TYPE_TEXT)));
+    
+    if (o = canvas_castToObjectIfBox (x)) {     /* Boxes. */
+    //
+    int k = 0;
+    
+    k |= (owner->gl_haveWindow);
+    k |= (owner->gl_hasRectangle && o->te_type == TYPE_TEXT);
+    k |= (pd_class (o) != canvas_class && pd_class (o)->c_behavior != &text_widgetBehavior);
+    k |= (pd_class (o) == canvas_class && cast_glist (o)->gl_isGraphOnParent);
+    
+    return k;
+    //
     }
-    else return (1);
+    
+    return 1;
 }
 
-void gobj_vis(t_gobj *x, struct _glist *glist, int flag)
+void gobj_vis(t_gobj *x, t_glist *owner, int flag)
 {
-    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_fnVisible && gobj_shouldvis(x, glist))
-        (*x->g_pd->c_behavior->w_fnVisible)(x, glist, flag);
+    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_fnVisible && gobj_isVisible(x, owner))
+        (*x->g_pd->c_behavior->w_fnVisible)(x, owner, flag);
 }
 
-int gobj_click(t_gobj *x, struct _glist *glist,
+int gobj_click(t_gobj *x, t_glist *owner,
     int xpix, int ypix, int shift, int alt, int dbl, int doit)
 {
     if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_fnClick)
         return ((*x->g_pd->c_behavior->w_fnClick)(x,
-            glist, xpix, ypix, shift, alt, dbl, doit));
+            owner, xpix, ypix, shift, alt, dbl, doit));
     else return (0);
 }
 

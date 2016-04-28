@@ -686,7 +686,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         return;
     }
 
-    if (vis && canvas_isGraphOnParentTitle (x))
+    if (vis && canvas_hasGraphOnParentTitle (x))
         rtext_draw(glist_findrtext(parent_glist, &x->gl_obj));
     graph_getrect(gr, parent_glist, &x1, &y1, &x2, &y2);
     if (!vis)
@@ -888,7 +888,7 @@ static void graph_getrect(t_gobj *z, t_glist *glist,
         int x21, y21, x22, y22;
 
         graph_graphrect(z, glist, &x1, &y1, &x2, &y2);
-        if (canvas_isGraphOnParentTitle(x))
+        if (canvas_hasGraphOnParentTitle(x))
         {
             text_widgetBehavior.w_fnGetRectangle(z, glist, &x21, &y21, &x22, &y22);
             if (x22 > x2) 
@@ -950,7 +950,7 @@ static void graph_select(t_gobj *z, t_glist *glist, int state)
     else
     {
         t_boxtext *y = glist_findrtext(glist, &x->gl_obj);
-        if (canvas_isGraphOnParentTitle (x))
+        if (canvas_hasGraphOnParentTitle (x))
             rtext_select(y, state);
         sys_vGui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 
         rtext_gettag(y), (state? "blue" : "black"));
@@ -962,7 +962,7 @@ static void graph_select(t_gobj *z, t_glist *glist, int state)
 static void graph_activate(t_gobj *z, t_glist *glist, int state)
 {
     t_glist *x = (t_glist *)z;
-    if (canvas_isGraphOnParentTitle(x))
+    if (canvas_hasGraphOnParentTitle(x))
         text_widgetBehavior.w_fnActivate(z, glist, state);
 }
 

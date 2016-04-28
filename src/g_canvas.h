@@ -363,7 +363,7 @@ void            canvas_unbind                           (t_glist *glist);
 t_error         canvas_makeFilePath                     (t_glist *glist, char *name, char *dest, size_t size);
 void            canvas_setName                          (t_glist *glist, t_symbol *name, t_symbol *directory);
 void            canvas_updateTitle                      (t_glist *glist);
-int             canvas_isGraphOnParentTitle             (t_glist *glist);
+int             canvas_hasGraphOnParentTitle            (t_glist *glist);
 int             canvas_getFontSize                      (t_glist *glist);
 int             canvas_getIndexOfObject                 (t_glist *glist, t_gobj *object);
 
@@ -444,7 +444,7 @@ void            gobj_select                             (t_gobj *x, t_glist *own
 void            gobj_activate                           (t_gobj *x, t_glist *owner, int state);
 void            gobj_delete                             (t_gobj *x, t_glist *owner);
 void            gobj_properties                         (t_gobj *x, t_glist *owner);
-int             gobj_shouldvis                          (t_gobj *x, t_glist *owner);
+int             gobj_isVisible                          (t_gobj *x, t_glist *owner);
 void            gobj_vis                                (t_gobj *x, t_glist *owner, int isVisible);
 int             gobj_click                              (t_gobj *x,
                                                             t_glist *owner,
