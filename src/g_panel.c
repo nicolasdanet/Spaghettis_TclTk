@@ -247,10 +247,12 @@ static void panel_getPosition (t_panel *x)
 
 static void panel_behaviorGetRectangle (t_gobj *z, t_glist *glist, int *a, int *b, int *c, int *d)
 {
+    t_panel *x = (t_radio *)z;
+    
     *a = text_xpix (cast_object (z), glist);
     *b = text_ypix (cast_object (z), glist);
-    *c = *a + cast_iem (z)->iem_width;
-    *d = *b + cast_iem (z)->iem_height;
+    *c = *a + x->x_panelWidth;
+    *d = *b + x->x_panelHeight;
 }
 
 static void panel_behaviorSave (t_gobj *z, t_buffer *b)
