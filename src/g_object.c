@@ -17,7 +17,9 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_class  *canvas_class;
+extern t_class *canvas_class;
+extern t_class *scalar_class;
+extern t_class *garray_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -62,6 +64,26 @@ void gobj_delete (t_gobj *x, t_glist *owner)
     }
 }
 
+int gobj_click (t_gobj *x, t_glist *owner, int a, int b, int shift, int alt, int dbl, int k)
+{
+    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnClick) {
+        return ((*(pd_class (x)->c_behavior->w_fnClick)) (x, owner, a, b, shift, alt, dbl, k));
+    } else {
+        return 0;
+    }
+}
+
+void gobj_save (t_gobj *x, t_buffer *buffer)
+{
+    if (pd_class (x)->c_fnSave) {
+        (*(pd_class (x)->c_fnSave)) (x, buffer);
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int gobj_isVisible (t_gobj *x, t_glist *owner)
 {
     t_object *o = NULL;
@@ -76,8 +98,11 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
         
         if (owner->gl_hasRectangle) {
         
+            if (pd_class (x) == scalar_class || pd_class (x) == garray_class) { return 1; }
+            else {
+            //
             int a, b, c, d, e, f, g, h;
-            
+                
             gobj_getRectangle (cast_gobj (owner), owner->gl_owner, &a, &b, &c, &d);
             
             if (a > c) { int t = a; a = c; c = t; }
@@ -86,6 +111,8 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
             gobj_getRectangle (x, owner, &e, &f, &g, &h);
 
             if (e < a || e > c || g < a || g > c || f < b || f > d || h < b || h > d) { return 0; }
+            //
+            }
         }
     }
     
@@ -107,24 +134,10 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
 
 void gobj_visibleChanged (t_gobj *x, t_glist *owner, int isVisible)
 {
-    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnVisible && gobj_isVisible (x, owner)) {
-        (*(pd_class (x)->c_behavior->w_fnVisible)) (x, owner, isVisible);
-    }
-}
-
-int gobj_click (t_gobj *x, t_glist *owner, int a, int b, int shift, int alt, int dbl, int k)
-{
-    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnClick) {
-        return ((*(pd_class (x)->c_behavior->w_fnClick)) (x, owner, a, b, shift, alt, dbl, k));
-    } else {
-        return 0;
-    }
-}
-
-void gobj_save (t_gobj *x, t_buffer *buffer)
-{
-    if (pd_class (x)->c_fnSave) {
-        (*(pd_class (x)->c_fnSave)) (x, buffer);
+    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnVisible) {
+        if (gobj_isVisible (x, owner)) {
+            (*(pd_class (x)->c_behavior->w_fnVisible)) (x, owner, isVisible);
+        }
     }
 }
 
