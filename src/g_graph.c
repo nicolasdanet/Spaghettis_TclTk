@@ -345,7 +345,7 @@ void canvas_resortinlets(t_glist *x)
             int x1, y1, x2, y2;
             t_gobj *g = *vp;
             if (!g) continue;
-            gobj_getrect(g, x, &x1, &y1, &x2, &y2);
+            gobj_getRectangle(g, x, &x1, &y1, &x2, &y2);
             if (x1 > xmax) xmax = x1, maxp = vp;
         }
         if (!maxp) break;
@@ -417,7 +417,7 @@ void canvas_resortoutlets(t_glist *x)
             int x1, y1, x2, y2;
             t_gobj *g = *vp;
             if (!g) continue;
-            gobj_getrect(g, x, &x1, &y1, &x2, &y2);
+            gobj_getRectangle(g, x, &x1, &y1, &x2, &y2);
             if (x1 > xmax) xmax = x1, maxp = vp;
         }
         if (!maxp) break;
@@ -900,7 +900,7 @@ static void graph_getrect(t_gobj *z, t_glist *glist,
         {
             /* expand the rectangle to fit in text objects; this applies only
             to the old (0.37) graph-on-parent behavior. */
-            /* lie about whether we have our own window to affect gobj_getrect
+            /* lie about whether we have our own window to affect gobj_getRectangle
             calls below.  */
             hadwindow = x->gl_haveWindow;
             x->gl_haveWindow = 0;
@@ -912,7 +912,7 @@ static void graph_getrect(t_gobj *z, t_glist *glist,
                 if (pd_class(&g->g_pd) == garray_class ||
                     canvas_castToObjectIfBox(&g->g_pd))
                         continue;
-                gobj_getrect(g, x, &x21, &y21, &x22, &y22);
+                gobj_getRectangle(g, x, &x21, &y21, &x22, &y22);
                 if (x22 > x2) 
                     x2 = x22;
                 if (y22 > y2) 

@@ -433,6 +433,34 @@ void            dsp_resume                              (int oldState);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void            gobj_getRectangle                       (t_gobj *x, t_glist *owner,
+                                                            int *a,
+                                                            int *b,
+                                                            int *c,
+                                                            int *d);
+                                                            
+void            gobj_displace                           (t_gobj *x, t_glist *owner, int deltaX, int deltaY);
+void            gobj_select                             (t_gobj *x, t_glist *owner, int state);
+void            gobj_activate                           (t_gobj *x, t_glist *owner, int state);
+void            gobj_delete                             (t_gobj *x, t_glist *owner);
+void            gobj_properties                         (t_gobj *x, t_glist *owner);
+int             gobj_shouldvis                          (t_gobj *x, t_glist *owner);
+void            gobj_vis                                (t_gobj *x, t_glist *owner, int isVisible);
+int             gobj_click                              (t_gobj *x,
+                                                            t_glist *owner,
+                                                            int a,
+                                                            int b,
+                                                            int shift,
+                                                            int alt,
+                                                            int dbl,
+                                                            int k);
+                                                            
+void            gobj_save                               (t_gobj *x, t_buffer *buffer);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void glist_readfrombinbuf (t_glist *x, t_buffer *b, char *filename, int selectem);
 
 void                canvas_dataproperties           (t_glist *x, t_scalar *sc, t_buffer *b);
@@ -464,21 +492,6 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
 void canvas_floatatom(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
 void canvas_symbolatom(t_glist *gl, t_symbol *s, int argc, t_atom *argv);
 void glist_scalar(t_glist *canvas, t_symbol *s, int argc, t_atom *argv);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void gobj_getrect       (t_gobj *x, t_glist *owner, int *x1, int *y1, int *x2, int *y2);
-void gobj_displace      (t_gobj *x, t_glist *owner, int dx, int dy);
-void gobj_select        (t_gobj *x, t_glist *owner, int state);
-void gobj_activate      (t_gobj *x, t_glist *owner, int state);
-void gobj_delete        (t_gobj *x, t_glist *owner);
-void gobj_properties    (t_gobj *x, t_glist *gl);
-int  gobj_shouldvis     (t_gobj *x, t_glist *gl);
-void gobj_vis           (t_gobj *x, t_glist *gl, int flag);
-int  gobj_click         (t_gobj *x, t_glist *gl, int xpix, int ypix, int shift, int alt, int dbl, int b);
-void gobj_save          (t_gobj *x, t_buffer *b);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -680,7 +680,7 @@ static void garray_getrect(t_gobj *z, t_glist *glist,
     int *xp1, int *yp1, int *xp2, int *yp2)
 {
     t_garray *x = (t_garray *)z;
-    gobj_getrect(&x->x_scalar->sc_g, glist, xp1, yp1, xp2, yp2);
+    gobj_getRectangle(&x->x_scalar->sc_g, glist, xp1, yp1, xp2, yp2);
 }
 
 static void garray_displace(t_gobj *z, t_glist *glist, int dx, int dy)

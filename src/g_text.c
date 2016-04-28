@@ -157,7 +157,7 @@ static void canvas_howputnew(t_glist *x, int *connectp, int *xpixp, int *ypixp,
         for (g = x->gl_graphics, nobj = 0; g; g = g->g_next, nobj++)
             if (g == selected)
         {
-            gobj_getrect(g, x, &x1, &y1, &x2, &y2);
+            gobj_getRectangle(g, x, &x1, &y1, &x2, &y2);
             indx = nobj;
             *xpixp = x1;
             *ypixp = y2 + 5;

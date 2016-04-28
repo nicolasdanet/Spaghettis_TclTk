@@ -582,7 +582,7 @@ static void *canvas_undo_set_move(t_glist *x, int selected)
         for (y = x->gl_graphics, i = indx = 0; y; y = y->g_next, indx++)
             if (glist_isselected(x, y))
         {
-            gobj_getrect(y, x, &x1, &y1, &x2, &y2);
+            gobj_getRectangle(y, x, &x1, &y1, &x2, &y2);
             buf->u_vec[i].e_index = indx;
             buf->u_vec[i].e_xpix = x1;
             buf->u_vec[i].e_ypix = y1;
@@ -593,7 +593,7 @@ static void *canvas_undo_set_move(t_glist *x, int selected)
     {
         for (y = x->gl_graphics, indx = 0; y; y = y->g_next, indx++)
         {
-            gobj_getrect(y, x, &x1, &y1, &x2, &y2);
+            gobj_getRectangle(y, x, &x1, &y1, &x2, &y2);
             buf->u_vec[indx].e_index = indx;
             buf->u_vec[indx].e_xpix = x1;
             buf->u_vec[indx].e_ypix = y1;
@@ -618,7 +618,7 @@ static void canvas_undo_move(t_glist *x, void *z, int action)
             y = glist_nth(x, buf->u_vec[i].e_index);
             if (y)
             {
-                gobj_getrect(y, x, &x1, &y1, &x2, &y2);
+                gobj_getRectangle(y, x, &x1, &y1, &x2, &y2);
                 gobj_displace(y, x, newx-x1, newy - y1);
                 buf->u_vec[i].e_xpix = x1;
                 buf->u_vec[i].e_ypix = y1;
@@ -769,7 +769,7 @@ int canvas_hitbox(t_glist *x, t_gobj *y, int xpos, int ypos,
     t_object *ob;
     if (!gobj_shouldvis(y, x))
         return (0);
-    gobj_getrect(y, x, &x1, &y1, &x2, &y2);
+    gobj_getRectangle(y, x, &x1, &y1, &x2, &y2);
     if (xpos >= x1 && xpos <= x2 && ypos >= y1 && ypos <= y2)
     {
         *x1p = x1;
@@ -1517,7 +1517,7 @@ void canvas_selectinrect(t_glist *x, int lox, int loy, int hix, int hiy)
     for (y = x->gl_graphics; y; y = y->g_next)
     {
         int x1, y1, x2, y2;
-        gobj_getrect(y, x, &x1, &y1, &x2, &y2);
+        gobj_getRectangle(y, x, &x1, &y1, &x2, &y2);
         if (hix >= x1 && lox <= x2 && hiy >= y1 && loy <= y2
             && !glist_isselected(x, y))
                 glist_select(x, y);
@@ -2499,12 +2499,12 @@ static void canvas_tidy(t_glist *x)
     for (y = x->gl_graphics; y; y = y->g_next)
         if (all || glist_isselected(x, y))
     {
-        gobj_getrect(y, x, &ax1, &ay1, &ax2, &ay2);
+        gobj_getRectangle(y, x, &ax1, &ay1, &ax2, &ay2);
 
         for (y2 = x->gl_graphics; y2; y2 = y2->g_next)
             if (all || glist_isselected(x, y2))
         {
-            gobj_getrect(y2, x, &bx1, &by1, &bx2, &by2);
+            gobj_getRectangle(y2, x, &bx1, &by1, &bx2, &by2);
             if (by1 <= ay1 + YTOLERANCE && by1 >= ay1 - YTOLERANCE &&
                 bx1 < ax1)
                     goto nothorizhead;
@@ -2513,7 +2513,7 @@ static void canvas_tidy(t_glist *x)
         for (y2 = x->gl_graphics; y2; y2 = y2->g_next)
             if (all || glist_isselected(x, y2))
         {
-            gobj_getrect(y2, x, &bx1, &by1, &bx2, &by2);
+            gobj_getRectangle(y2, x, &bx1, &by1, &bx2, &by2);
             if (by1 <= ay1 + YTOLERANCE && by1 >= ay1 - YTOLERANCE
                 && by1 != ay1)
                     gobj_displace(y2, x, 0, ay1-by1);
@@ -2525,11 +2525,11 @@ static void canvas_tidy(t_glist *x)
     for (y = x->gl_graphics; y; y = y->g_next)
         if (all || glist_isselected(x, y))
     {
-        gobj_getrect(y, x, &ax1, &ay1, &ax2, &ay2);
+        gobj_getRectangle(y, x, &ax1, &ay1, &ax2, &ay2);
         for (y2 = x->gl_graphics; y2; y2 = y2->g_next)
             if (all || glist_isselected(x, y2))
         {
-            gobj_getrect(y2, x, &bx1, &by1, &bx2, &by2);
+            gobj_getRectangle(y2, x, &bx1, &by1, &bx2, &by2);
             if (bx1 <= ax1 + XTOLERANCE && bx1 >= ax1 - XTOLERANCE)
             {
                 int distance = by1-ay2;
@@ -2553,11 +2553,11 @@ static void canvas_tidy(t_glist *x)
         if (all || glist_isselected(x, y))
     {
         int keep = 1;
-        gobj_getrect(y, x, &ax1, &ay1, &ax2, &ay2);
+        gobj_getRectangle(y, x, &ax1, &ay1, &ax2, &ay2);
         for (y2 = x->gl_graphics; y2; y2 = y2->g_next)
             if (all || glist_isselected(x, y2))
         {
-            gobj_getrect(y2, x, &bx1, &by1, &bx2, &by2);
+            gobj_getRectangle(y2, x, &bx1, &by1, &bx2, &by2);
             if (bx1 <= ax1 + XTOLERANCE && bx1 >= ax1 - XTOLERANCE &&
                 ay1 >= by2 - 10 && ay1 < by2 + NHIST)
                     goto nothead;
@@ -2568,7 +2568,7 @@ static void canvas_tidy(t_glist *x)
             for (y2 = x->gl_graphics; y2; y2 = y2->g_next)
                 if (all || glist_isselected(x, y2))
             {
-                gobj_getrect(y2, x, &bx1, &by1, &bx2, &by2);
+                gobj_getRectangle(y2, x, &bx1, &by1, &bx2, &by2);
                 if (bx1 <= ax1 + XTOLERANCE && bx1 >= ax1 - XTOLERANCE &&
                     by1 > ay1 && by1 < ay2 + NHIST)
                 {
@@ -2649,7 +2649,7 @@ static void canvas_dofont(t_glist *x, t_float font, t_float xresize,
         for (y = x->gl_graphics; y; y = y->g_next)
         {
             int x1, x2, y1, y2, nx1, ny1;
-            gobj_getrect(y, x, &x1, &y1, &x2, &y2);
+            gobj_getRectangle(y, x, &x1, &y1, &x2, &y2);
             nx1 = x1 * xresize + 0.5;
             ny1 = y1 * yresize + 0.5;
             gobj_displace(y, x, nx1-x1, ny1-y1);

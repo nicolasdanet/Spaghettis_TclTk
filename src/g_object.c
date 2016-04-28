@@ -29,43 +29,51 @@ extern t_widgetbehavior     text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void gobj_getrect(t_gobj *x, t_glist *glist, int *x1, int *y1,
-    int *x2, int *y2)
+void gobj_getRectangle (t_gobj *x, t_glist *owner, int *a, int *b, int *c, int *d)
 {
-    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_fnGetRectangle)
-        (*x->g_pd->c_behavior->w_fnGetRectangle)(x, glist, x1, y1, x2, y2);
+    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnGetRectangle) {
+        (*(pd_class (x)->c_behavior->w_fnGetRectangle)) (x, owner, a, b, c, d);
+    }
 }
 
-void gobj_displace(t_gobj *x, t_glist *glist, int dx, int dy)
+void gobj_displace (t_gobj *x, t_glist *owner, int deltaX, int deltaY)
 {
-    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_fnDisplace)
-        (*x->g_pd->c_behavior->w_fnDisplace)(x, glist, dx, dy);
+    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnDisplace) {
+        (*(pd_class (x)->c_behavior->w_fnDisplace)) (x, owner, deltaX, deltaY);
+    }
 }
 
-void gobj_select(t_gobj *x, t_glist *glist, int state)
+void gobj_select (t_gobj *x, t_glist *owner, int state)
 {
-    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_fnSelect)
-        (*x->g_pd->c_behavior->w_fnSelect)(x, glist, state);
+    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnSelect) {
+        (*(pd_class (x)->c_behavior->w_fnSelect)) (x, owner, state);
+    }
 }
 
-void gobj_activate(t_gobj *x, t_glist *glist, int state)
+void gobj_activate (t_gobj *x, t_glist *owner, int state)
 {
-    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_fnActivate)
-        (*x->g_pd->c_behavior->w_fnActivate)(x, glist, state);
+    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnActivate) {
+        (*(pd_class (x)->c_behavior->w_fnActivate)) (x, owner, state);
+    }
 }
 
-void gobj_delete(t_gobj *x, t_glist *glist)
+void gobj_delete (t_gobj *x, t_glist *owner)
 {
-    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_fnDelete)
-        (*x->g_pd->c_behavior->w_fnDelete)(x, glist);
+    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnDelete) {
+        (*(pd_class (x)->c_behavior->w_fnDelete)) (x, owner);
+    }
 }
 
-void gobj_save (t_gobj *x, t_buffer *b)
+void gobj_save (t_gobj *x, t_buffer *buffer)
 {
-    t_class *c = x->g_pd;
-    if (c->c_fnSave)
-        (c->c_fnSave)(x, b);
+    if (pd_class (x)->c_fnSave) {
+        (*(pd_class (x)->c_fnSave)) (x, buffer);
+    }
 }
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 int gobj_shouldvis(t_gobj *x, struct _glist *glist)
 {
@@ -88,12 +96,12 @@ int gobj_shouldvis(t_gobj *x, struct _glist *glist)
         if (pd_class(&x->g_pd) == scalar_class
             || pd_class(&x->g_pd) == garray_class)
                 return (1);
-        gobj_getrect(&glist->gl_obj.te_g, glist->gl_owner, &x1, &y1, &x2, &y2);
+        gobj_getRectangle(&glist->gl_obj.te_g, glist->gl_owner, &x1, &y1, &x2, &y2);
         if (x1 > x2)
             m = x1, x1 = x2, x2 = m;
         if (y1 > y2)
             m = y1, y1 = y2, y2 = m;
-        gobj_getrect(x, glist, &gx1, &gy1, &gx2, &gy2);
+        gobj_getRectangle(x, glist, &gx1, &gy1, &gx2, &gy2);
         /* post("graph %d %d %d %d, %s %d %d %d %d",
             x1, x2, y1, y2, class_getHelpName(x->g_pd), gx1, gx2, gy1, gy2); */
         if (gx1 < x1 || gx1 > x2 || gx2 < x1 || gx2 > x2 ||

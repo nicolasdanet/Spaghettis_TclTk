@@ -383,7 +383,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
     
     if (canvas_isVisible (t->tr_owner)) {
     
-        gobj_getrect (y, t->tr_owner,
+        gobj_getRectangle (y, t->tr_owner,
             &t->tr_srcTopLeftX,
             &t->tr_srcTopLeftY,
             &t->tr_srcBottomRightX,
@@ -415,7 +415,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
     
     if (canvas_isVisible (t->tr_owner)) {
 
-        gobj_getrect (cast_gobj (t->tr_destObject), t->tr_owner,
+        gobj_getRectangle (cast_gobj (t->tr_destObject), t->tr_owner,
             &t->tr_destTopLeftX,
             &t->tr_destTopLeftY,
             &t->tr_destBottomRightX,
