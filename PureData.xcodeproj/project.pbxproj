@@ -110,6 +110,7 @@
 		378972691C4F716800263434 /* x_text.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972111C4F716800263434 /* x_text.c */; };
 		3789726A1C4F716800263434 /* x_time.c in Sources */ = {isa = PBXBuildFile; fileRef = 378972121C4F716800263434 /* x_time.c */; };
 		378B47391C6C660B004099AA /* s_file.c in Sources */ = {isa = PBXBuildFile; fileRef = 378B47381C6C660B004099AA /* s_file.c */; };
+		379920481CD2649B00750527 /* g_select.c in Sources */ = {isa = PBXBuildFile; fileRef = 379920471CD2649B00750527 /* g_select.c */; };
 		379A42061BA3F4FD00C1CED0 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 379A42051BA3F4FD00C1CED0 /* CoreAudio.framework */; };
 		379A42081BA3F50600C1CED0 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 379A42071BA3F50600C1CED0 /* AudioUnit.framework */; };
 		379A420A1BA3F51100C1CED0 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 379A42091BA3F51100C1CED0 /* AudioToolbox.framework */; };
@@ -351,6 +352,7 @@
 		378972111C4F716800263434 /* x_text.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_text.c; path = src/x_text.c; sourceTree = "<group>"; };
 		378972121C4F716800263434 /* x_time.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = x_time.c; path = src/x_time.c; sourceTree = "<group>"; };
 		378B47381C6C660B004099AA /* s_file.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = s_file.c; path = src/s_file.c; sourceTree = "<group>"; };
+		379920471CD2649B00750527 /* g_select.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = g_select.c; path = src/g_select.c; sourceTree = "<group>"; };
 		379A42051BA3F4FD00C1CED0 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = /System/Library/Frameworks/CoreAudio.framework; sourceTree = "<absolute>"; };
 		379A42071BA3F50600C1CED0 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = /System/Library/Frameworks/AudioUnit.framework; sourceTree = "<absolute>"; };
 		379A42091BA3F51100C1CED0 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = /System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<absolute>"; };
@@ -740,6 +742,7 @@
 				378971C11C4F716700263434 /* g_canvas.c */,
 				378971C31C4F716700263434 /* g_editor.c */,
 				370934811CC6887300827F75 /* g_dsp.c */,
+				379920471CD2649B00750527 /* g_select.c */,
 				37BA30811CD1DB0F0091113F /* g_object.c */,
 				378971CD1C4F716700263434 /* g_readwrite.c */,
 				378971CE1C4F716700263434 /* g_rtext.c */,
@@ -1038,6 +1041,7 @@
 				370939451CC92BF300827F75 /* g_draw.c in Sources */,
 				370939461CC92BF300827F75 /* g_glist.c in Sources */,
 				37BA30821CD1DB0F0091113F /* g_object.c in Sources */,
+				379920481CD2649B00750527 /* g_select.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

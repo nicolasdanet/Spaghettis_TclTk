@@ -499,6 +499,7 @@ t_glist  *glist_new             (void);
 void     glist_add              (t_glist *x, t_gobj *g);
 void     glist_clear            (t_glist *x);
 t_glist *glist_getcanvas        (t_glist *x);
+t_gobj  *glist_nth              (t_glist *x, int n);
 int      glist_isselected       (t_glist *x, t_gobj *y);
 void     glist_select           (t_glist *x, t_gobj *y);
 void     glist_deselect         (t_glist *x, t_gobj *y);
