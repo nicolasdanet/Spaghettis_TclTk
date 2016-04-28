@@ -217,8 +217,8 @@ static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     o->te_width = atom_getFloatAtIndex (0, argc, argv);
     
     if (canvas_isVisible (glist)) {
-        gobj_vis (g1, glist, 0);
-        gobj_vis (g1, glist, 1);
+        gobj_visibleChanged (g1, glist, 0);
+        gobj_visibleChanged (g1, glist, 1);
     }
     //
     }
@@ -232,13 +232,13 @@ static void canvas_open (t_glist *glist)
     //
     PD_ASSERT (glist->gl_owner);
     
-    gobj_vis (cast_gobj (glist), glist->gl_owner, 0);
+    gobj_visibleChanged (cast_gobj (glist), glist->gl_owner, 0);
     
     if (glist->gl_editor) { canvas_destroy_editor (glist); }
 
     glist->gl_haveWindow = 1;
     
-    gobj_vis (cast_gobj (glist), glist->gl_owner, 1);
+    gobj_visibleChanged (cast_gobj (glist), glist->gl_owner, 1);
     //
     }
     
@@ -264,7 +264,7 @@ void canvas_map (t_glist *glist, t_float f)
         t_selection *selection = NULL;
         
         if (!glist->gl_haveWindow) { PD_BUG; canvas_vis (glist, 1); }
-        for (y = glist->gl_graphics; y; y = y->g_next) { gobj_vis (y, glist, 1); }
+        for (y = glist->gl_graphics; y; y = y->g_next) { gobj_visibleChanged (y, glist, 1); }
         for (selection = glist->gl_editor->e_selection; selection; selection = selection->sel_next) {
             gobj_select (selection->sel_what, glist, 1);
         }

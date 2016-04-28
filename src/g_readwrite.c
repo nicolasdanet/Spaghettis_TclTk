@@ -163,7 +163,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
     {
             /* reset vis flag as before */
         glist_getcanvas(x)->gl_isMapped = 1;
-        gobj_vis(&sc->sc_g, x, 1);
+        gobj_visibleChanged(&sc->sc_g, x, 1);
     }
     if (selectit)
     {
@@ -325,12 +325,12 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
                 if (nnew == ntotal)
         {
             newone = y2;
-            gobj_vis(newone, x, 0);
+            gobj_visibleChanged(newone, x, 0);
             y->g_next = y2->g_next;
             break;    
         }
     }
-    else gobj_vis((newone = x->gl_graphics), x, 0), x->gl_graphics = newone->g_next;
+    else gobj_visibleChanged((newone = x->gl_graphics), x, 0), x->gl_graphics = newone->g_next;
     if (!newone)
         post_error ("couldn't update properties (perhaps a format problem?)");
     else if (!oldone) { PD_BUG; }
@@ -345,8 +345,8 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
         pd_free(&newone->g_pd);
         if (canvas_isVisible(x))
         {
-            gobj_vis(oldone, x, 0);
-            gobj_vis(oldone, x, 1);
+            gobj_visibleChanged(oldone, x, 0);
+            gobj_visibleChanged(oldone, x, 1);
         }
     }
     else

@@ -769,7 +769,7 @@ static void gatom_param(t_gatom *x, t_symbol *sel, int argc, t_atom *argv)
     t_symbol *label = gatom_unescapit(atom_getSymbolAtIndex(5, argc, argv));
     t_float wherelabel = atom_getFloatAtIndex(6, argc, argv);
 
-    gobj_vis(&x->a_text.te_g, x->a_glist, 0);
+    gobj_visibleChanged(&x->a_text.te_g, x->a_glist, 0);
     if (!*symfrom->s_name && *x->a_symfrom->s_name)
         inlet_new(&x->a_text, &x->a_text.te_g.g_pd, 0, 0);
     else if (*symfrom->s_name && !*x->a_symfrom->s_name && x->a_text.te_inlet)
@@ -806,7 +806,7 @@ static void gatom_param(t_gatom *x, t_symbol *sel, int argc, t_atom *argv)
             canvas_expandDollar(x->a_glist, x->a_symfrom));
     x->a_symto = symto;
     x->a_expanded_to = canvas_expandDollar(x->a_glist, x->a_symto);
-    gobj_vis(&x->a_text.te_g, x->a_glist, 1);
+    gobj_visibleChanged(&x->a_text.te_g, x->a_glist, 1);
     canvas_dirty(x->a_glist, 1);
 
     /* glist_retext(x->a_glist, &x->a_text); */

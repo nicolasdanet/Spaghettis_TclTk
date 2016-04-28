@@ -62,17 +62,6 @@ void gobj_delete (t_gobj *x, t_glist *owner)
     }
 }
 
-void gobj_save (t_gobj *x, t_buffer *buffer)
-{
-    if (pd_class (x)->c_fnSave) {
-        (*(pd_class (x)->c_fnSave)) (x, buffer);
-    }
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 int gobj_isVisible (t_gobj *x, t_glist *owner)
 {
     t_object *o = NULL;
@@ -116,19 +105,27 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     return 1;
 }
 
-void gobj_vis(t_gobj *x, t_glist *owner, int flag)
+void gobj_visibleChanged (t_gobj *x, t_glist *owner, int isVisible)
 {
-    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_fnVisible && gobj_isVisible(x, owner))
-        (*x->g_pd->c_behavior->w_fnVisible)(x, owner, flag);
+    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnVisible && gobj_isVisible (x, owner)) {
+        (*(pd_class (x)->c_behavior->w_fnVisible)) (x, owner, isVisible);
+    }
 }
 
-int gobj_click(t_gobj *x, t_glist *owner,
-    int xpix, int ypix, int shift, int alt, int dbl, int doit)
+int gobj_click (t_gobj *x, t_glist *owner, int a, int b, int shift, int alt, int dbl, int k)
 {
-    if (x->g_pd->c_behavior && x->g_pd->c_behavior->w_fnClick)
-        return ((*x->g_pd->c_behavior->w_fnClick)(x,
-            owner, xpix, ypix, shift, alt, dbl, doit));
-    else return (0);
+    if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnClick) {
+        return ((*(pd_class (x)->c_behavior->w_fnClick)) (x, owner, a, b, shift, alt, dbl, k));
+    } else {
+        return 0;
+    }
+}
+
+void gobj_save (t_gobj *x, t_buffer *buffer)
+{
+    if (pd_class (x)->c_fnSave) {
+        (*(pd_class (x)->c_fnSave)) (x, buffer);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

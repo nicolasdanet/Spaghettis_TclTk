@@ -947,10 +947,10 @@ void canvas_vis(t_glist *x, t_float f)
         {
             t_glist *gl2 = x->gl_owner;
             if (canvas_isVisible(gl2))
-                gobj_vis(&x->gl_obj.te_g, gl2, 0);
+                gobj_visibleChanged(&x->gl_obj.te_g, gl2, 0);
             x->gl_haveWindow = 0;
             if (canvas_isVisible(gl2) && !gl2->gl_isDeleting)
-                gobj_vis(&x->gl_obj.te_g, gl2, 1);
+                gobj_visibleChanged(&x->gl_obj.te_g, gl2, 1);
         }
         else x->gl_haveWindow = 0;
     }
@@ -967,11 +967,11 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
     if (!flag && canvas_isGraphOnParent(x))
     {
         if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
-            gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
+            gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 0);
         x->gl_isGraphOnParent = 0;
         if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
         {
-            gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
+            gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 1);
             canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
         }
     }
@@ -984,14 +984,14 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
             x->gl_height = GLIST_DEFAULT_HEIGHT;
 
         if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
-            gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
+            gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 0);
         x->gl_isGraphOnParent = 1;
         x->gl_hasRectangle = !nogoprect;
         if (canvas_isVisible(x) && x->gl_hasRectangle)
             glist_redraw(x);
         if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
         {
-            gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
+            gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 1);
             canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
         }
     }
@@ -1103,8 +1103,8 @@ static void canvas_donecanvasdialog(t_glist *x,
         canvas_redraw(x);
     else if (canvas_isVisible(x->gl_owner))
     {
-        gobj_vis(&x->gl_obj.te_g, x->gl_owner, 0);
-        gobj_vis(&x->gl_obj.te_g, x->gl_owner, 1);
+        gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 0);
+        gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 1);
     }
 }
 
@@ -1839,19 +1839,19 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos,
                 if (wantwidth < 1)
                     wantwidth = 1;
                 ob->te_width = wantwidth;
-                gobj_vis(y1, x, 0);
+                gobj_visibleChanged(y1, x, 0);
                 canvas_updateLinesByObject(x, ob);
-                gobj_vis(y1, x, 1);
+                gobj_visibleChanged(y1, x, 1);
             }
             else if (ob && ob->te_g.g_pd == canvas_class)
             {
-                gobj_vis(y1, x, 0);
+                gobj_visibleChanged(y1, x, 0);
                 ((t_glist *)ob)->gl_width += xpos - x->gl_editor->e_xnew;
                 ((t_glist *)ob)->gl_height += ypos - x->gl_editor->e_ynew;
                 x->gl_editor->e_xnew = xpos;
                 x->gl_editor->e_ynew = ypos;
                 canvas_updateLinesByObject(x, ob);
-                gobj_vis(y1, x, 1);
+                gobj_visibleChanged(y1, x, 1);
             }
             else post("not resizable");
         }

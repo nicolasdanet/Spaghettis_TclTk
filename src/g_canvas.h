@@ -443,9 +443,8 @@ void            gobj_displace                           (t_gobj *x, t_glist *own
 void            gobj_select                             (t_gobj *x, t_glist *owner, int state);
 void            gobj_activate                           (t_gobj *x, t_glist *owner, int state);
 void            gobj_delete                             (t_gobj *x, t_glist *owner);
-void            gobj_properties                         (t_gobj *x, t_glist *owner);
 int             gobj_isVisible                          (t_gobj *x, t_glist *owner);
-void            gobj_vis                                (t_gobj *x, t_glist *owner, int isVisible);
+void            gobj_visibleChanged                     (t_gobj *x, t_glist *owner, int isVisible);
 int             gobj_click                              (t_gobj *x,
                                                             t_glist *owner,
                                                             int a,
@@ -454,7 +453,7 @@ int             gobj_click                              (t_gobj *x,
                                                             int alt,
                                                             int dbl,
                                                             int k);
-                                                            
+                                                        
 void            gobj_save                               (t_gobj *x, t_buffer *buffer);
 
 // -----------------------------------------------------------------------------------------------------------

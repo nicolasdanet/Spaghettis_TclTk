@@ -186,8 +186,8 @@ static void canvas_redrawAllScalars (t_glist *glist, int action)
     //
     switch (action) {
         case SCALAR_REDRAW  : scalar_redraw (cast_scalar (g), glist);   break;
-        case SCALAR_DRAW    : gobj_vis (g, glist, 1);                   break;
-        case SCALAR_ERASE   : gobj_vis (g, glist, 0);                   break;
+        case SCALAR_DRAW    : gobj_visibleChanged (g, glist, 1);                   break;
+        case SCALAR_ERASE   : gobj_visibleChanged (g, glist, 0);                   break;
     }
     //
     } 
