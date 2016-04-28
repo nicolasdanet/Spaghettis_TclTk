@@ -20,7 +20,6 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_pdinstance     *pd_this;
-extern t_symbol         *main_directoryHelp;
 
 extern t_class          *canvas_class;
 extern t_class          *garray_class;
@@ -51,32 +50,9 @@ static void     canvas_dopaste          (t_glist *x, t_buffer *b);
 static void     canvas_paste            (t_glist *x);
 static void     canvas_clearline        (t_glist *x);
 
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
-
-static void file_openHelp (const char *directory, const char *name)
-{
-    int f = -1;
-    char *nameResult = NULL;
-    char directoryResult[PD_STRING] = { 0 };
-    
-    if (*directory != 0) { 
-        f = file_openWithDirectoryAndName (directory, name, PD_HELP, directoryResult, &nameResult, PD_STRING);
-    }
-    
-    if (f < 0) {
-        char *help = main_directoryHelp->s_name;
-        f = file_openConsideringSearchPath (help, name, PD_HELP, directoryResult, &nameResult, PD_STRING);
-    }
-    
-    if (f < 0) { post_error (PD_TRANSLATE ("help: couldn't find file for '%s'"), name); }
-    else {
-        close (f);
-        buffer_openFile (NULL, gensym (nameResult), gensym (directoryResult));
-    }
-}
 
 /* ------------------------ managing the selection ----------------- */
 
@@ -943,7 +919,7 @@ void canvas_vis(t_glist *x, t_float f)
             ;
             /* if we're a graph on our parent, and if the parent exists
                and is visible, show ourselves on parent. */
-        if (canvas_isGraphOnParent(x) && x->gl_owner)
+        if (x->gl_isGraphOnParent && x->gl_owner)
         {
             t_glist *gl2 = x->gl_owner;
             if (canvas_isVisible(gl2))
@@ -964,7 +940,7 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
     
     flag = (flag&1);
     
-    if (!flag && canvas_isGraphOnParent(x))
+    if (!flag && x->gl_isGraphOnParent)
     {
         if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
             gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 0);
@@ -1007,11 +983,11 @@ void canvas_properties(t_gobj*z, t_glist*unused)
     t_glist *x = (t_glist*)z;
     t_gobj *y;
     char graphbuf[200];
-    if (canvas_isGraphOnParent(x) != 0)
+    if (x->gl_isGraphOnParent != 0)
         sprintf(graphbuf,
             "::ui_canvas::show %%s %g %g %d %g %g %g %g %d %d %d %d\n",
                 0., 0.,
-                canvas_isGraphOnParent (x) | (x->gl_hideText << 1),//1,
+                x->gl_isGraphOnParent | (x->gl_hideText << 1),//1,
                 x->gl_indexStart, x->gl_valueUp, x->gl_indexEnd, x->gl_valueDown, 
                 (int)x->gl_width, (int)x->gl_height,
                 (int)x->gl_marginX, (int)x->gl_marginY);

@@ -188,11 +188,6 @@ t_glist *canvas_addGraph (t_glist *glist, t_symbol *name,
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int canvas_isGraphOnParent (t_glist *glist)
-{
-    return glist->gl_isGraphOnParent;
-}
-
 int canvas_isVisible (t_glist *glist)
 {
     return (!glist->gl_isLoading && glist_getcanvas (glist)->gl_isMapped);

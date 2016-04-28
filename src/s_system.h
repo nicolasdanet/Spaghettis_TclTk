@@ -258,6 +258,8 @@ int         file_openConsideringSearchPath          (const char *directory,
                                                         char **nameResult,
                                                         size_t size);
 
+void        file_openHelp                           (const char *directory, const char *name);
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

@@ -346,7 +346,6 @@ t_glist         *canvas_addGraph                        (t_glist *glist,
                                                             t_float bottomRightX,
                                                             t_float bottomRightY);
 
-int             canvas_isGraphOnParent                  (t_glist *glist);
 int             canvas_isVisible                        (t_glist *glist);
 int             canvas_isTopLevel                       (t_glist *glist);
 int             canvas_isAbstraction                    (t_glist *glist);
