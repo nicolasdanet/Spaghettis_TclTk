@@ -433,6 +433,8 @@ void            dsp_resume                              (int oldState);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void glist_readfrombinbuf (t_glist *x, t_buffer *b, char *filename, int selectem);
+
 void                canvas_dataproperties           (t_glist *x, t_scalar *sc, t_buffer *b);
 
 void canvas_properties (t_gobj *z, t_glist *canvas);
