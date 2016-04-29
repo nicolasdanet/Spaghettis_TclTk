@@ -54,7 +54,7 @@ void glist_add(t_glist *x, t_gobj *y)
         canvas_drawGraphOnParentRectangle(x);
     }
     if (canvas_isVisible(x))
-        gobj_visibleChanged(y, x, 1);
+        gobj_visibleHasChanged(y, x, 1);
     if (class_hasDrawCommand(y->g_pd)) 
         canvas_redrawAllByTemplate(template_findbyname(canvas_makeBindSymbol(
             glist_getcanvas(x)->gl_name)), SCALAR_REDRAW);
@@ -84,7 +84,7 @@ void glist_delete(t_glist *x, t_gobj *y)
     wasdeleting = canvas_setdeleting(canvas, 1);
     if (x->gl_editor)
     {
-        if (x->gl_editor->e_grab == y) x->gl_editor->e_grab = 0;
+        if (x->gl_editor->e_grabbed == y) x->gl_editor->e_grabbed = 0;
         if (glist_isselected(x, y)) glist_deselect(x, y);
 
             /* HACK -- we had phantom outlets not getting erased on the
@@ -118,7 +118,7 @@ void glist_delete(t_glist *x, t_gobj *y)
     gobj_delete(y, x);
     if (canvas_isVisible(canvas))
     {
-        gobj_visibleChanged(y, x, 0);
+        gobj_visibleHasChanged(y, x, 0);
     }
     if (x->gl_editor && (ob = canvas_castToObjectIfBox(&y->g_pd)))
         rtext = rtext_new(x, ob);
@@ -166,7 +166,7 @@ void glist_retext(t_glist *glist, t_object *y)
 {
     t_glist *c = glist_getcanvas(glist);
         /* check that we have built rtexts yet.  LATER need a better test. */
-    if (glist->gl_editor && glist->gl_editor->e_rtext)
+    if (glist->gl_editor && glist->gl_editor->e_text)
     {
         t_boxtext *rt = glist_findrtext(glist, y);
         if (rt)
@@ -179,13 +179,13 @@ void glist_grab(t_glist *x, t_gobj *y, t_motionfn motionfn,
 {
     t_glist *x2 = glist_getcanvas(x);
     if (motionfn)
-        x2->gl_editor->e_onmotion = ACTION_PASS;
-    else x2->gl_editor->e_onmotion = 0;
-    x2->gl_editor->e_grab = y;
-    x2->gl_editor->e_motionfn = motionfn;
-    x2->gl_editor->e_keyfn = keyfn;
-    x2->gl_editor->e_xwas = xpos;
-    x2->gl_editor->e_ywas = ypos;
+        x2->gl_editor->e_onMotion = ACTION_PASS;
+    else x2->gl_editor->e_onMotion = 0;
+    x2->gl_editor->e_grabbed = y;
+    x2->gl_editor->e_fnMotion = motionfn;
+    x2->gl_editor->e_fnKey = keyfn;
+    x2->gl_editor->e_previousX = xpos;
+    x2->gl_editor->e_previousY = ypos;
 }
 
 t_glist *glist_getcanvas(t_glist *x)
@@ -293,8 +293,8 @@ t_inlet *canvas_addinlet(t_glist *x, t_pd *who, t_symbol *s)
     t_inlet *ip = inlet_new(&x->gl_obj, who, s, 0);
     if (!x->gl_isLoading && x->gl_owner && canvas_isVisible(x->gl_owner))
     {
-        gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 0);
-        gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 1);
+        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 0);
+        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 1);
         canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
     }
     if (!x->gl_isLoading) canvas_resortinlets(x);
@@ -309,11 +309,11 @@ void canvas_rminlet(t_glist *x, t_inlet *ip)
     
     if (owner) canvas_deleteLinesByInlets(owner, &x->gl_obj, ip, 0);
     if (redraw)
-        gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 0);
+        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 0);
     inlet_free(ip);
     if (redraw)
     {
-        gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 1);
+        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 1);
         canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
     }
 }
@@ -365,8 +365,8 @@ t_outlet *canvas_addoutlet(t_glist *x, t_pd *who, t_symbol *s)
     t_outlet *op = outlet_new(&x->gl_obj, s);
     if (!x->gl_isLoading && x->gl_owner && canvas_isVisible(x->gl_owner))
     {
-        gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 0);
-        gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 1);
+        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 0);
+        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 1);
         canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
     }
     if (!x->gl_isLoading) canvas_resortoutlets(x);
@@ -381,12 +381,12 @@ void canvas_rmoutlet(t_glist *x, t_outlet *op)
     
     if (owner) canvas_deleteLinesByInlets(owner, &x->gl_obj, 0, op);
     if (redraw)
-        gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 0);
+        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 0);
 
     outlet_free(op);
     if (redraw)
     {
-        gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 1);
+        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 1);
         canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
     }
 }
@@ -643,8 +643,8 @@ void glist_redraw(t_glist *x)
             t_outconnect *oc;
             for (g = x->gl_graphics; g; g = g->g_next)
             {
-                gobj_visibleChanged(g, x, 0);
-                gobj_visibleChanged(g, x, 1);
+                gobj_visibleHasChanged(g, x, 0);
+                gobj_visibleHasChanged(g, x, 1);
             }
                 /* redraw all the lines */
             canvas_traverseLinesStart(&t, x);
@@ -843,14 +843,14 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         */
             /* draw contents of graph as glist */
         for (g = x->gl_graphics; g; g = g->g_next)
-            gobj_visibleChanged(g, x, 1);
+            gobj_visibleHasChanged(g, x, 1);
     }
     else
     {
         sys_vGui(".x%lx.c delete %s\n",
             glist_getcanvas(x->gl_owner), tag);
         for (g = x->gl_graphics; g; g = g->g_next)
-            gobj_visibleChanged(g, x, 0);
+            gobj_visibleHasChanged(g, x, 0);
     }
 }
 

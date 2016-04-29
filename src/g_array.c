@@ -81,10 +81,10 @@ void array_resize_and_redraw(t_array *array, t_glist *glist, int n)
     while (a2->a_gp.gp_stub->gs_type == POINTER_ARRAY)
         a2 = a2->a_gp.gp_stub->gs_un.gs_array;
     if (vis)
-        gobj_visibleChanged(&a2->a_gp.gp_un.gp_scalar->sc_g, glist, 0);
+        gobj_visibleHasChanged(&a2->a_gp.gp_un.gp_scalar->sc_g, glist, 0);
     array_resize(array, n);
     if (vis)
-        gobj_visibleChanged(&a2->a_gp.gp_un.gp_scalar->sc_g, glist, 1);
+        gobj_visibleHasChanged(&a2->a_gp.gp_un.gp_scalar->sc_g, glist, 1);
 }
 
 void word_free(t_word *wp, t_template *template);
@@ -462,8 +462,8 @@ void garray_arraydialog(t_garray *x, t_symbol *name, t_float fsize,
                 canvas_redraw(x->x_glist);
             else if (canvas_isVisible(x->x_glist->gl_owner))
             {
-                gobj_visibleChanged(&x->x_glist->gl_obj.te_g, x->x_glist->gl_owner, 0);
-                gobj_visibleChanged(&x->x_glist->gl_obj.te_g, x->x_glist->gl_owner, 1);
+                gobj_visibleHasChanged(&x->x_glist->gl_obj.te_g, x->x_glist->gl_owner, 0);
+                gobj_visibleHasChanged(&x->x_glist->gl_obj.te_g, x->x_glist->gl_owner, 1);
             }
             dsp_update();
         }
@@ -706,7 +706,7 @@ static void garray_delete(t_gobj *z, t_glist *glist)
 static void garray_vis(t_gobj *z, t_glist *glist, int vis)
 {
     t_garray *x = (t_garray *)z;
-    gobj_visibleChanged(&x->x_scalar->sc_g, glist, vis);
+    gobj_visibleHasChanged(&x->x_scalar->sc_g, glist, vis);
 }
 
 static int garray_click(t_gobj *z, t_glist *glist,
@@ -791,7 +791,7 @@ void garray_usedindsp(t_garray *x)
 static void garray_doredraw(t_gobj *client, t_glist *glist)
 {
     t_garray *x = (t_garray *)client;
-    if (canvas_isVisible(x->x_glist) && gobj_isVisible(client, glist))
+    if (canvas_isVisible(x->x_glist) && gobj_shouldBeVisible(client, glist))
     {
         garray_vis(&x->x_gobj, x->x_glist, 0); 
         garray_vis(&x->x_gobj, x->x_glist, 1);

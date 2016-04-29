@@ -58,11 +58,11 @@ t_boxtext *rtext_new(t_glist *glist, t_object *who)
     x->x_height = -1;
     x->x_text = who;
     x->x_glist = glist;
-    x->x_next = glist->gl_editor->e_rtext;
+    x->x_next = glist->gl_editor->e_text;
     x->x_selstart = x->x_selend = x->x_active =
         x->x_drawnwidth = x->x_drawnheight = 0;
     buffer_toStringUnzeroed(who->te_buffer, &x->x_buf, &x->x_bufsize);
-    glist->gl_editor->e_rtext = x;
+    glist->gl_editor->e_text = x;
     sprintf(x->x_tag, ".x%lx.t%lx", (t_int)glist_getcanvas(x->x_glist),
         (t_int)x);
     return (x);
@@ -72,14 +72,14 @@ static t_boxtext *rtext_entered;
 
 void rtext_free(t_boxtext *x)
 {
-    if (x->x_glist->gl_editor->e_textedfor == x)
-        x->x_glist->gl_editor->e_textedfor = 0;
-    if (x->x_glist->gl_editor->e_rtext == x)
-        x->x_glist->gl_editor->e_rtext = x->x_next;
+    if (x->x_glist->gl_editor->e_selectedText == x)
+        x->x_glist->gl_editor->e_selectedText = 0;
+    if (x->x_glist->gl_editor->e_text == x)
+        x->x_glist->gl_editor->e_text = x->x_next;
     else
     {
         t_boxtext *e2;
-        for (e2 = x->x_glist->gl_editor->e_rtext; e2; e2 = e2->x_next)
+        for (e2 = x->x_glist->gl_editor->e_text; e2; e2 = e2->x_next)
             if (e2->x_next == x)
         {
             e2->x_next = x->x_next;
@@ -409,7 +409,7 @@ t_boxtext *glist_findrtext(t_glist *gl, t_object *who)
     t_boxtext *x;
     if (!gl->gl_editor)
         canvas_create_editor(gl);
-    for (x = gl->gl_editor->e_rtext; x && x->x_text != who; x = x->x_next)
+    for (x = gl->gl_editor->e_text; x && x->x_text != who; x = x->x_next)
         ;
     if (!x) { PD_BUG; }
     return (x);
@@ -462,8 +462,8 @@ void rtext_activate(t_boxtext *x, int state)
     if (state)
     {
         sys_vGui("::ui_object::setEditing .x%lx %s 1\n", canvas, x->x_tag);
-        glist->gl_editor->e_textedfor = x;
-        glist->gl_editor->e_textdirty = 0;
+        glist->gl_editor->e_selectedText = x;
+        glist->gl_editor->e_isTextDirty = 0;
         x->x_dragfrom = x->x_selstart = 0;
         x->x_selend = x->x_bufsize;
         x->x_active = 1;
@@ -471,8 +471,8 @@ void rtext_activate(t_boxtext *x, int state)
     else
     {
         sys_vGui("::ui_object::setEditing .x%lx {} 0\n", canvas);
-        if (glist->gl_editor->e_textedfor == x)
-            glist->gl_editor->e_textedfor = 0;
+        if (glist->gl_editor->e_selectedText == x)
+            glist->gl_editor->e_selectedText = 0;
         x->x_active = 0;
     }
     rtext_senditup(x, SEND_UPDATE, &w, &h, &indx);
@@ -543,7 +543,7 @@ be printable in whatever 8-bit character set we find ourselves. */
             x->x_selstart = x->x_selstart + ch_nbytes;
         }
         x->x_selend = x->x_selstart;
-        x->x_glist->gl_editor->e_textdirty = 1;
+        x->x_glist->gl_editor->e_isTextDirty = 1;
     }
     else if (!strcmp(keysym->s_name, "Right"))
     {

@@ -203,31 +203,28 @@ typedef struct _selection {
     } t_selection;
     
 typedef struct _editor {
-    t_selection         *e_updlist;
-    t_boxtext           *e_rtext;
-    t_selection         *e_selection;
-    t_boxtext           *e_textedfor;
-    t_gobj              *e_grab;
-    t_motionfn          e_motionfn;
-    t_keyfn             e_keyfn;
-    t_buffer            *e_connectbuf;
-    t_buffer            *e_deleted;
+    t_glist             *e_owner;
     t_guiconnect        *e_guiconnect;
-    t_glist             *e_glist;
-    int                 e_xwas;
-    int                 e_ywas;
-    int                 e_selectline_index1;
-    int                 e_selectline_outno;
-    int                 e_selectline_index2;
-    int                 e_selectline_inno;
-    t_outconnect        *e_selectline_tag;
-    char                e_onmotion;
-    char                e_lastmoved;
-    char                e_textdirty;
-    char                e_selectedline;
+    t_boxtext           *e_text;
+    t_boxtext           *e_selectedText;
+    t_selection         *e_selectedObjects;
+    t_gobj              *e_grabbed;
+    t_buffer            *e_buffer;
     t_clock             *e_clock;
-    int                 e_xnew;
-    int                 e_ynew;
+    t_outconnect        *e_selectedLineConnection;
+    int                 e_selectedLineIndexOfObjectOut;
+    int                 e_selectedLineIndexOfOutlet;
+    int                 e_selectedLineIndexOfObjectIn;
+    int                 e_selectedLineIndexOfInlet;
+    t_motionfn          e_fnMotion;
+    t_keyfn             e_fnKey;
+    int                 e_previousX;
+    int                 e_previousY;
+    int                 e_newX;
+    int                 e_newY;
+    int                 e_onMotion;
+    int                 e_isTextDirty;
+    int                 e_isSelectedline;
     } t_editor;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -311,7 +308,7 @@ struct _template {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist             *canvas_castToGlist                 (t_pd *x);
+t_glist         *canvas_castToGlist                     (t_pd *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -432,6 +429,17 @@ void            dsp_resume                              (int oldState);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void            select_selectLine                       (t_glist *glist, 
+                                                            t_outconnect *connection,
+                                                            int indexOfObjectOut,
+                                                            int indexOfOutlet,
+                                                            int indexOfObjectIn,
+                                                            int indexOfInlet);
+    
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void            gobj_getRectangle                       (t_gobj *x, t_glist *owner,
                                                             int *a,
                                                             int *b,
@@ -442,8 +450,8 @@ void            gobj_displace                           (t_gobj *x, t_glist *own
 void            gobj_select                             (t_gobj *x, t_glist *owner, int state);
 void            gobj_activate                           (t_gobj *x, t_glist *owner, int state);
 void            gobj_delete                             (t_gobj *x, t_glist *owner);
-int             gobj_isVisible                          (t_gobj *x, t_glist *owner);
-void            gobj_visibleChanged                     (t_gobj *x, t_glist *owner, int isVisible);
+int             gobj_shouldBeVisible                    (t_gobj *x, t_glist *owner);
+void            gobj_visibleHasChanged                  (t_gobj *x, t_glist *owner, int isVisible);
 int             gobj_click                              (t_gobj *x,
                                                             t_glist *owner,
                                                             int a,

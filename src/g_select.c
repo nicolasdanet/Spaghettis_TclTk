@@ -22,20 +22,28 @@ extern t_class *canvas_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void glist_selectline (t_glist *x, t_outconnect *oc, int index1,
-    int outno, int index2, int inno)
+void select_selectLine (t_glist *glist,
+    t_outconnect *connection,
+    int indexOfObjectOut,
+    int indexOfOutlet,
+    int indexOfObjectIn,
+    int indexOfInlet)
 {
-    if (x->gl_editor)
-    {
-        glist_noselect(x);
-        x->gl_editor->e_selectedline = 1;
-        x->gl_editor->e_selectline_index1 = index1;
-        x->gl_editor->e_selectline_outno = outno;
-        x->gl_editor->e_selectline_index2 = index2;
-        x->gl_editor->e_selectline_inno = inno;
-        x->gl_editor->e_selectline_tag = oc;
-        sys_vGui(".x%lx.c itemconfigure %lxLINE -fill blue\n",
-            x, x->gl_editor->e_selectline_tag);
+    if (glist->gl_editor) {
+    //
+    glist_noselect (glist);
+        
+    glist->gl_editor->e_isSelectedline        = 1;
+    glist->gl_editor->e_selectedLineIndexOfObjectOut   = indexOfObjectOut;
+    glist->gl_editor->e_selectedLineIndexOfOutlet    = indexOfOutlet;
+    glist->gl_editor->e_selectedLineIndexOfObjectIn   = indexOfObjectIn;
+    glist->gl_editor->e_selectedLineIndexOfInlet     = indexOfInlet;
+    glist->gl_editor->e_selectedLineConnection      = connection;
+    
+    sys_vGui (".x%lx.c itemconfigure %lxLINE -fill blue\n",
+                glist,
+                glist->gl_editor->e_selectedLineConnection);
+    //
     }    
 }
 
@@ -43,9 +51,9 @@ void glist_deselectline(t_glist *x)
 {
     if (x->gl_editor)
     {
-        x->gl_editor->e_selectedline = 0;
+        x->gl_editor->e_isSelectedline = 0;
         sys_vGui(".x%lx.c itemconfigure %lxLINE -fill black\n",
-            x, x->gl_editor->e_selectline_tag);
+            x, x->gl_editor->e_selectedLineConnection);
     }    
 }
 
@@ -54,7 +62,7 @@ int glist_isselected(t_glist *x, t_gobj *y)
     if (x->gl_editor)
     {
         t_selection *sel;
-        for (sel = x->gl_editor->e_selection; sel; sel = sel->sel_next)
+        for (sel = x->gl_editor->e_selectedObjects; sel; sel = sel->sel_next)
             if (sel->sel_what == y) return (1);
     }
     return (0);
@@ -66,13 +74,13 @@ void glist_select(t_glist *x, t_gobj *y)
     if (x->gl_editor)
     {
         t_selection *sel = (t_selection *)PD_MEMORY_GET(sizeof(*sel));
-        if (x->gl_editor->e_selectedline)
+        if (x->gl_editor->e_isSelectedline)
             glist_deselectline(x);
             /* LATER #ifdef out the following check */
         if (glist_isselected(x, y)) { PD_BUG; }
-        sel->sel_next = x->gl_editor->e_selection;
+        sel->sel_next = x->gl_editor->e_selectedObjects;
         sel->sel_what = y;
-        x->gl_editor->e_selection = sel;
+        x->gl_editor->e_selectedObjects = sel;
         gobj_select(y, x, 1);
     }
 }
@@ -100,12 +108,12 @@ void glist_deselect(t_glist *x, t_gobj *y)
         t_selection *sel, *sel2;
         t_boxtext *z = 0;
         if (!glist_isselected(x, y)) { PD_BUG; }
-        if (x->gl_editor->e_textedfor)
+        if (x->gl_editor->e_selectedText)
         {
             t_boxtext *fuddy = glist_findrtext(x, (t_object *)y);
-            if (x->gl_editor->e_textedfor == fuddy)
+            if (x->gl_editor->e_selectedText == fuddy)
             {
-                if (x->gl_editor->e_textdirty)
+                if (x->gl_editor->e_isTextDirty)
                 {
                     z = fuddy;
                     canvas_stowconnections(glist_getcanvas(x));
@@ -116,15 +124,15 @@ void glist_deselect(t_glist *x, t_gobj *y)
             if (class_hasMethod (pd_class (&y->g_pd), gensym ("dsp")))
                 fixdsp = dsp_suspend();
         }
-        if ((sel = x->gl_editor->e_selection)->sel_what == y)
+        if ((sel = x->gl_editor->e_selectedObjects)->sel_what == y)
         {
-            x->gl_editor->e_selection = x->gl_editor->e_selection->sel_next;
+            x->gl_editor->e_selectedObjects = x->gl_editor->e_selectedObjects->sel_next;
             gobj_select(sel->sel_what, x, 0);
             PD_MEMORY_FREE(sel);
         }
         else
         {
-            for (sel = x->gl_editor->e_selection; sel2 = sel->sel_next;
+            for (sel = x->gl_editor->e_selectedObjects; sel2 = sel->sel_next;
                 sel = sel2)
             {
                 if (sel2->sel_what == y)
@@ -144,7 +152,7 @@ void glist_deselect(t_glist *x, t_gobj *y)
             rtext_gettext(z, &buf, &bufsize);
             text_setto((t_object *)y, x, buf, bufsize);
             canvas_updateLinesByObject(x, (t_object *)y);
-            x->gl_editor->e_textedfor = 0;
+            x->gl_editor->e_selectedText = 0;
         }
         if (fixdsp)
             dsp_resume(1);
@@ -155,9 +163,9 @@ void glist_noselect(t_glist *x)
 {
     if (x->gl_editor)
     {
-        while (x->gl_editor->e_selection)
-            glist_deselect(x, x->gl_editor->e_selection->sel_what);
-        if (x->gl_editor->e_selectedline)
+        while (x->gl_editor->e_selectedObjects)
+            glist_deselect(x, x->gl_editor->e_selectedObjects->sel_what);
+        if (x->gl_editor->e_isSelectedline)
             glist_deselectline(x);
     }
 }
@@ -171,7 +179,7 @@ void glist_selectall(t_glist *x)
         {
             t_selection *sel = (t_selection *)PD_MEMORY_GET(sizeof(*sel));
             t_gobj *y = x->gl_graphics;
-            x->gl_editor->e_selection = sel;
+            x->gl_editor->e_selectedObjects = sel;
             sel->sel_what = y;
             gobj_select(y, x, 1);
             while (y = y->g_next)

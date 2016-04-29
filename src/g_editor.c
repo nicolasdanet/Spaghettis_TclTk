@@ -436,7 +436,7 @@ static void canvas_undo_paste(t_glist *x, void *z, int action)
         canvas_dopaste(x, copy_binbuf);
             /* if it was "duplicate" have to re-enact the displacement. */
         if (canvas_undo_name && canvas_undo_name[0] == 'd')
-            for (sel = x->gl_editor->e_selection; sel; sel = sel->sel_next)
+            for (sel = x->gl_editor->e_selectedObjects; sel; sel = sel->sel_next)
                 gobj_displace(sel->sel_what, x, 10, 10);
     }
 else if (action == UNDO_FREE)
@@ -540,7 +540,7 @@ int canvas_hitbox(t_glist *x, t_gobj *y, int xpos, int ypos,
 {
     int x1, y1, x2, y2;
     t_object *ob;
-    if (!gobj_isVisible(y, x))
+    if (!gobj_shouldBeVisible(y, x))
         return (0);
     gobj_getRectangle(y, x, &x1, &y1, &x2, &y2);
     if (xpos >= x1 && xpos <= x2 && ypos >= y1 && ypos <= y2)
@@ -569,11 +569,11 @@ static t_gobj *canvas_findhitbox(t_glist *x, int xpos, int ypos,
     }
         /* if there are at least two selected objects, we'd prefer
         to find a selected one (never mind which) to the one we got. */
-    if (x->gl_editor && x->gl_editor->e_selection &&
-        x->gl_editor->e_selection->sel_next && !glist_isselected(x, y))
+    if (x->gl_editor && x->gl_editor->e_selectedObjects &&
+        x->gl_editor->e_selectedObjects->sel_next && !glist_isselected(x, y))
     {
         t_selection *sel;
-        for (sel = x->gl_editor->e_selection; sel; sel = sel->sel_next)
+        for (sel = x->gl_editor->e_selectedObjects; sel; sel = sel->sel_next)
             if (canvas_hitbox(x, sel->sel_what, xpos, ypos, &x1, &y1, &x2, &y2))
                 *x1p = x1, *y1p = y1, *x2p = x2, *y2p = y2,
                     rval = sel->sel_what; 
@@ -597,9 +597,9 @@ static t_editor *editor_new(t_glist *owner)
 {
     char buf[40];
     t_editor *x = (t_editor *)PD_MEMORY_GET(sizeof(*x));
-    x->e_connectbuf = buffer_new();
-    x->e_deleted = buffer_new();
-    x->e_glist = owner;
+    x->e_buffer = buffer_new();
+    //x->e_deleted = buffer_new();
+    x->e_owner = owner;
     sprintf(buf, ".x%lx", (t_int)owner);
     x->e_guiconnect = guiconnect_new(&owner->gl_obj.te_g.g_pd, gensym (buf));
     x->e_clock = 0;
@@ -610,8 +610,8 @@ static void editor_free(t_editor *x, t_glist *y)
 {
     glist_noselect(y);
     guiconnect_release(x->e_guiconnect, 1000);
-    buffer_free(x->e_connectbuf);
-    buffer_free(x->e_deleted);
+    buffer_free(x->e_buffer);
+    //buffer_free(x->e_deleted);
     if (x->e_clock)
         clock_free(x->e_clock);
     PD_MEMORY_FREE((void *)x);
@@ -640,7 +640,7 @@ void canvas_destroy_editor(t_glist *x)
     if (x->gl_editor)
     {
         t_boxtext *rtext;
-        while (rtext = x->gl_editor->e_rtext)
+        while (rtext = x->gl_editor->e_text)
             rtext_free(rtext);
         editor_free(x->gl_editor, x);
         x->gl_editor = 0;
@@ -720,10 +720,10 @@ void canvas_vis(t_glist *x, t_float f)
         {
             t_glist *gl2 = x->gl_owner;
             if (canvas_isVisible(gl2))
-                gobj_visibleChanged(&x->gl_obj.te_g, gl2, 0);
+                gobj_visibleHasChanged(&x->gl_obj.te_g, gl2, 0);
             x->gl_haveWindow = 0;
             if (canvas_isVisible(gl2) && !gl2->gl_isDeleting)
-                gobj_visibleChanged(&x->gl_obj.te_g, gl2, 1);
+                gobj_visibleHasChanged(&x->gl_obj.te_g, gl2, 1);
         }
         else x->gl_haveWindow = 0;
     }
@@ -740,11 +740,11 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
     if (!flag && x->gl_isGraphOnParent)
     {
         if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
-            gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 0);
+            gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 0);
         x->gl_isGraphOnParent = 0;
         if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
         {
-            gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 1);
+            gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 1);
             canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
         }
     }
@@ -757,14 +757,14 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
             x->gl_height = GLIST_DEFAULT_HEIGHT;
 
         if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
-            gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 0);
+            gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 0);
         x->gl_isGraphOnParent = 1;
         x->gl_hasRectangle = !nogoprect;
         if (canvas_isVisible(x) && x->gl_hasRectangle)
             glist_redraw(x);
         if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
         {
-            gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 1);
+            gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 1);
             canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
         }
     }
@@ -876,8 +876,8 @@ static void canvas_donecanvasdialog(t_glist *x,
         canvas_redraw(x);
     else if (canvas_isVisible(x->gl_owner))
     {
-        gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 0);
-        gobj_visibleChanged(&x->gl_obj.te_g, x->gl_owner, 1);
+        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 0);
+        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 1);
     }
 }
 
@@ -969,28 +969,28 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
     canvas_undo_already_set_move = 0;
 
             /* if keyboard was grabbed, notify grabber and cancel the grab */
-    if (doit && x->gl_editor->e_grab && x->gl_editor->e_keyfn)
+    if (doit && x->gl_editor->e_grabbed && x->gl_editor->e_fnKey)
     {
-        (* x->gl_editor->e_keyfn) (x->gl_editor->e_grab, 0);
+        (* x->gl_editor->e_fnKey) (x->gl_editor->e_grabbed, 0);
         glist_grab(x, 0, 0, 0, 0, 0);
     }
 
     if (doit && !runmode && xpos == canvas_upx && ypos == canvas_upy &&
         sys_getRealTimeInSeconds() - canvas_upclicktime < DCLICKINTERVAL)
             doublemod = 1;
-    x->gl_editor->e_lastmoved = 0;
+    //x->gl_editor->e_lastmoved = 0;
     if (doit)
     {
-        x->gl_editor->e_grab = 0;
-        x->gl_editor->e_onmotion = ACTION_NONE;
+        x->gl_editor->e_grabbed = 0;
+        x->gl_editor->e_onMotion = ACTION_NONE;
     }
     /* post("click %d %d %d %d", xpos, ypos, which, mod); */
     
-    if (x->gl_editor->e_onmotion != ACTION_NONE)
+    if (x->gl_editor->e_onMotion != ACTION_NONE)
         return;
 
-    x->gl_editor->e_xwas = xpos;
-    x->gl_editor->e_ywas = ypos;
+    x->gl_editor->e_previousX = xpos;
+    x->gl_editor->e_previousY = ypos;
 
     if (runmode && !rightclick)
     {
@@ -1024,13 +1024,13 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
             if (doit)
             {
                 t_boxtext *rt;
-                if (ob && (rt = x->gl_editor->e_textedfor) &&
+                if (ob && (rt = x->gl_editor->e_selectedText) &&
                     rt == glist_findrtext(x, ob))
                 {
                     rtext_mouse(rt, xpos - x1, ypos - y1, BOX_TEXT_SHIFT);
-                    x->gl_editor->e_onmotion = ACTION_DRAG;
-                    x->gl_editor->e_xwas = x1;
-                    x->gl_editor->e_ywas = y1;
+                    x->gl_editor->e_onMotion = ACTION_DRAG;
+                    x->gl_editor->e_previousX = x1;
+                    x->gl_editor->e_previousY = y1;
                 }
                 else
                 {
@@ -1044,7 +1044,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
         {
             int noutlet;
                 /* resize?  only for "true" text boxes or canvases*/
-            if (ob && !x->gl_editor->e_selection &&
+            if (ob && !x->gl_editor->e_selectedObjects &&
                 (ob->te_g.g_pd->c_behavior == &text_widgetBehavior ||
                     canvas_castToGlist(&ob->te_g.g_pd)) &&
                         xpos >= x2-4 && ypos < y2-4)
@@ -1056,11 +1056,11 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                         glist_noselect(x);
                         glist_select(x, y);
                     }
-                    x->gl_editor->e_onmotion = ACTION_RESIZE;
-                    x->gl_editor->e_xwas = x1;
-                    x->gl_editor->e_ywas = y1;
-                    x->gl_editor->e_xnew = xpos;
-                    x->gl_editor->e_ynew = ypos;
+                    x->gl_editor->e_onMotion = ACTION_RESIZE;
+                    x->gl_editor->e_previousX = x1;
+                    x->gl_editor->e_previousY = y1;
+                    x->gl_editor->e_newX = xpos;
+                    x->gl_editor->e_newY = ypos;
                 }                                   
                 else canvas_setcursor(x, CURSOR_EDIT_RESIZE);
             }
@@ -1078,9 +1078,9 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                     if (doit)
                     {
                         int issignal = object_isSignalOutlet(ob, closest);
-                        x->gl_editor->e_onmotion = ACTION_CONNECT;
-                        x->gl_editor->e_xwas = xpos;
-                        x->gl_editor->e_ywas = ypos;
+                        x->gl_editor->e_onMotion = ACTION_CONNECT;
+                        x->gl_editor->e_previousX = xpos;
+                        x->gl_editor->e_previousY = ypos;
                         sys_vGui(
                           ".x%lx.c create line %d %d %d %d -width %d -tags x\n",
                                 x, xpos, ypos, xpos, ypos,
@@ -1098,14 +1098,14 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                 t_boxtext *rt;
                     /* check if the box is being text edited */
             nooutletafterall:
-                if (ob && (rt = x->gl_editor->e_textedfor) &&
+                if (ob && (rt = x->gl_editor->e_selectedText) &&
                     rt == glist_findrtext(x, ob))
                 {
                     rtext_mouse(rt, xpos - x1, ypos - y1,
                         (doublemod ? BOX_TEXT_DOUBLE : BOX_TEXT_DOWN));
-                    x->gl_editor->e_onmotion = ACTION_DRAG;
-                    x->gl_editor->e_xwas = x1;
-                    x->gl_editor->e_ywas = y1;
+                    x->gl_editor->e_onMotion = ACTION_DRAG;
+                    x->gl_editor->e_previousX = x1;
+                    x->gl_editor->e_previousY = y1;
                 }
                 else
                 {
@@ -1115,7 +1115,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                         glist_noselect(x);
                         glist_select(x, y);
                     }
-                    x->gl_editor->e_onmotion = ACTION_MOVE;
+                    x->gl_editor->e_onMotion = ACTION_MOVE;
                 }
             }
             else canvas_setcursor(x, CURSOR_EDIT_NOTHING);
@@ -1154,7 +1154,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
             if ((lx2-lx1) * (lx2-fx) + (ly2-ly1) * (ly2-fy) < 0) continue;
             if (doit)
             {
-                glist_selectline(glist2, oc, 
+                select_selectLine(glist2, oc, 
                     canvas_getIndexOfObject(glist2, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
                     canvas_getIndexOfObject(glist2, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
             }
@@ -1168,9 +1168,9 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
         if (!shiftmod) glist_noselect(x);
         sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags x\n",
               x, xpos, ypos, xpos, ypos);
-        x->gl_editor->e_xwas = xpos;
-        x->gl_editor->e_ywas = ypos;
-        x->gl_editor->e_onmotion = ACTION_REGION;
+        x->gl_editor->e_previousX = xpos;
+        x->gl_editor->e_previousY = ypos;
+        x->gl_editor->e_onMotion = ACTION_REGION;
     }
 }
 
@@ -1199,12 +1199,12 @@ void canvas_doconnect(t_glist *x, int xpos, int ypos, int which, int doit)
     t_gobj *y1;
     int x21=0, y21=0, x22=0, y22=0;
     t_gobj *y2;
-    int xwas = x->gl_editor->e_xwas,
-        ywas = x->gl_editor->e_ywas;
+    int xwas = x->gl_editor->e_previousX,
+        ywas = x->gl_editor->e_previousY;
     if (doit) sys_vGui(".x%lx.c delete x\n", x);
     else sys_vGui(".x%lx.c coords x %d %d %d %d\n",
-            x, x->gl_editor->e_xwas,
-                x->gl_editor->e_ywas, xpos, ypos);
+            x, x->gl_editor->e_previousX,
+                x->gl_editor->e_previousY, xpos, ypos);
 
     if ((y1 = canvas_findhitbox(x, xwas, ywas, &x11, &y11, &x12, &y12))
         && (y2 = canvas_findhitbox(x, xpos, ypos, &x21, &y21, &x22, &y22)))
@@ -1302,19 +1302,19 @@ static void canvas_doregion(t_glist *x, int xpos, int ypos, int doit)
     if (doit)
     {
         int lox, loy, hix, hiy;
-        if (x->gl_editor->e_xwas < xpos)
-            lox = x->gl_editor->e_xwas, hix = xpos;
-        else hix = x->gl_editor->e_xwas, lox = xpos;
-        if (x->gl_editor->e_ywas < ypos)
-            loy = x->gl_editor->e_ywas, hiy = ypos;
-        else hiy = x->gl_editor->e_ywas, loy = ypos;
+        if (x->gl_editor->e_previousX < xpos)
+            lox = x->gl_editor->e_previousX, hix = xpos;
+        else hix = x->gl_editor->e_previousX, lox = xpos;
+        if (x->gl_editor->e_previousY < ypos)
+            loy = x->gl_editor->e_previousY, hiy = ypos;
+        else hiy = x->gl_editor->e_previousY, loy = ypos;
         canvas_selectinrect(x, lox, loy, hix, hiy);
         sys_vGui(".x%lx.c delete x\n", x);
-        x->gl_editor->e_onmotion = ACTION_NONE;
+        x->gl_editor->e_onMotion = ACTION_NONE;
     }
     else sys_vGui(".x%lx.c coords x %d %d %d %d\n",
-            x, x->gl_editor->e_xwas,
-                x->gl_editor->e_ywas, xpos, ypos);
+            x, x->gl_editor->e_previousX,
+                x->gl_editor->e_previousY, xpos, ypos);
 }
 
 void canvas_mouseup(t_glist *x,
@@ -1332,19 +1332,19 @@ void canvas_mouseup(t_glist *x,
     canvas_upx = xpos;
     canvas_upy = ypos;
 
-    if (x->gl_editor->e_onmotion == ACTION_CONNECT)
+    if (x->gl_editor->e_onMotion == ACTION_CONNECT)
         canvas_doconnect(x, xpos, ypos, which, 1);
-    else if (x->gl_editor->e_onmotion == ACTION_REGION)
+    else if (x->gl_editor->e_onMotion == ACTION_REGION)
         canvas_doregion(x, xpos, ypos, 1);
-    else if (x->gl_editor->e_onmotion == ACTION_MOVE ||
-        x->gl_editor->e_onmotion == ACTION_RESIZE)
+    else if (x->gl_editor->e_onMotion == ACTION_MOVE ||
+        x->gl_editor->e_onMotion == ACTION_RESIZE)
     {
             /* after motion or resizing, if there's only one text item
                 selected, activate the text */
-        if (x->gl_editor->e_selection &&
-            !(x->gl_editor->e_selection->sel_next))
+        if (x->gl_editor->e_selectedObjects &&
+            !(x->gl_editor->e_selectedObjects->sel_next))
         {
-            t_gobj *g = x->gl_editor->e_selection->sel_what;
+            t_gobj *g = x->gl_editor->e_selectedObjects->sel_what;
             t_glist *gl2;
                 /* first though, check we aren't an abstraction with a
                 dirty sub-patch that would be discarded if we edit this. */
@@ -1353,7 +1353,7 @@ void canvas_mouseup(t_glist *x,
                     (gl2 = glist_finddirty((t_glist *)g)))
             {
                 pd_vMessage(&gl2->gl_obj.te_g.g_pd, gensym ("open"), "");
-                x->gl_editor->e_onmotion = ACTION_NONE;
+                x->gl_editor->e_onMotion = ACTION_NONE;
                 sys_vGui(
 "::ui_confirm::checkAction .x%lx { Discard changes to %s? } { ::ui_interface::pdsend .x%lx dirty 0 } { no }\n",
                     canvas_getRoot(gl2),
@@ -1361,11 +1361,11 @@ void canvas_mouseup(t_glist *x,
                 return;
             }
                 /* OK, activate it */
-            gobj_activate(x->gl_editor->e_selection->sel_what, x, 1);
+            gobj_activate(x->gl_editor->e_selectedObjects->sel_what, x, 1);
         }
     }
 
-    x->gl_editor->e_onmotion = ACTION_NONE;
+    x->gl_editor->e_onMotion = ACTION_NONE;
 }
 
     /* displace the selection by (dx, dy) pixels */
@@ -1379,7 +1379,7 @@ static void canvas_displaceselection(t_glist *x, int dx, int dy)
             "motion");
         canvas_undo_already_set_move = 1;
     }
-    for (y = x->gl_editor->e_selection; y; y = y->sel_next)
+    for (y = x->gl_editor->e_selectedObjects; y; y = y->sel_next)
     {
         t_class *cl = pd_class(&y->sel_what->g_pd);
         gobj_displace(y->sel_what, x, dx, dy);
@@ -1389,7 +1389,7 @@ static void canvas_displaceselection(t_glist *x, int dx, int dy)
     if (resortin) canvas_resortinlets(x);
     if (resortout) canvas_resortoutlets(x);
     sys_vGui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
-    if (x->gl_editor->e_selection)
+    if (x->gl_editor->e_selectedObjects)
         canvas_dirty(x, 1);
 }
 
@@ -1489,38 +1489,38 @@ void canvas_key(t_glist *x, t_symbol *s, int ac, t_atom *av)
     {
         t_object *ob;
             /* cancel any dragging action */
-        if (x->gl_editor->e_onmotion == ACTION_MOVE)
-            x->gl_editor->e_onmotion = ACTION_NONE;
+        if (x->gl_editor->e_onMotion == ACTION_MOVE)
+            x->gl_editor->e_onMotion = ACTION_NONE;
             /* if an object has "grabbed" keys just send them on */
-        if (x->gl_editor->e_grab
-            && x->gl_editor->e_keyfn && keynum)
-                (* x->gl_editor->e_keyfn)
-                    (x->gl_editor->e_grab, (t_float)keynum);
+        if (x->gl_editor->e_grabbed
+            && x->gl_editor->e_fnKey && keynum)
+                (* x->gl_editor->e_fnKey)
+                    (x->gl_editor->e_grabbed, (t_float)keynum);
             /* if a text editor is open send the key on, as long as
             it is either "real" (has a key number) or else is an arrow key. */
-        else if (x->gl_editor->e_textedfor && (keynum
+        else if (x->gl_editor->e_selectedText && (keynum
             || !strcmp(gotkeysym->s_name, "Up")
             || !strcmp(gotkeysym->s_name, "Down")
             || !strcmp(gotkeysym->s_name, "Left")
             || !strcmp(gotkeysym->s_name, "Right")))
         {
                 /* send the key to the box's editor */
-            if (!x->gl_editor->e_textdirty)
+            if (!x->gl_editor->e_isTextDirty)
             {
                 canvas_setundo(x, canvas_undo_cut,
                     canvas_undo_set_cut(x, UCUT_TEXT), "typing");
             }
-            rtext_key(x->gl_editor->e_textedfor,
+            rtext_key(x->gl_editor->e_selectedText,
                 (int)keynum, gotkeysym);
-            if (x->gl_editor->e_textdirty)
+            if (x->gl_editor->e_isTextDirty)
                 canvas_dirty(x, 1);
         }
             /* check for backspace or clear */
         else if (keynum == 8 || keynum == 127)
         {
-            if (x->gl_editor->e_selectedline)
+            if (x->gl_editor->e_isSelectedline)
                 canvas_clearline(x);
-            else if (x->gl_editor->e_selection)
+            else if (x->gl_editor->e_selectedObjects)
             {
                 canvas_setundo(x, canvas_undo_cut,
                     canvas_undo_set_cut(x, UCUT_CLEAR), "clear");
@@ -1548,10 +1548,10 @@ void canvas_key(t_glist *x, t_symbol *s, int ac, t_atom *av)
 static void delay_move(t_glist *x)
 {
     canvas_displaceselection(x, 
-       x->gl_editor->e_xnew - x->gl_editor->e_xwas,
-       x->gl_editor->e_ynew - x->gl_editor->e_ywas);
-    x->gl_editor->e_xwas = x->gl_editor->e_xnew;
-    x->gl_editor->e_ywas = x->gl_editor->e_ynew;
+       x->gl_editor->e_newX - x->gl_editor->e_previousX,
+       x->gl_editor->e_newY - x->gl_editor->e_previousY);
+    x->gl_editor->e_previousX = x->gl_editor->e_newX;
+    x->gl_editor->e_previousY = x->gl_editor->e_newY;
 }
 
 void canvas_motion(t_glist *x, t_float xpos, t_float ypos,
@@ -1565,41 +1565,41 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos,
         return;
     }
     glist_setlastxy(x, xpos, ypos);
-    if (x->gl_editor->e_onmotion == ACTION_MOVE)
+    if (x->gl_editor->e_onMotion == ACTION_MOVE)
     {
         if (!x->gl_editor->e_clock)
             x->gl_editor->e_clock = clock_new(x, (t_method)delay_move);
         clock_unset(x->gl_editor->e_clock);
         clock_delay(x->gl_editor->e_clock, 5);
-        x->gl_editor->e_xnew = xpos;
-        x->gl_editor->e_ynew = ypos;
+        x->gl_editor->e_newX = xpos;
+        x->gl_editor->e_newY = ypos;
     }
-    else if (x->gl_editor->e_onmotion == ACTION_REGION)
+    else if (x->gl_editor->e_onMotion == ACTION_REGION)
         canvas_doregion(x, xpos, ypos, 0);
-    else if (x->gl_editor->e_onmotion == ACTION_CONNECT)
+    else if (x->gl_editor->e_onMotion == ACTION_CONNECT)
         canvas_doconnect(x, xpos, ypos, 0, 0);
-    else if (x->gl_editor->e_onmotion == ACTION_PASS)
+    else if (x->gl_editor->e_onMotion == ACTION_PASS)
     {
-        if (!x->gl_editor->e_motionfn) { PD_BUG; }
-        (*x->gl_editor->e_motionfn)(&x->gl_editor->e_grab->g_pd,
-            xpos - x->gl_editor->e_xwas,
-            ypos - x->gl_editor->e_ywas);
-        x->gl_editor->e_xwas = xpos;
-        x->gl_editor->e_ywas = ypos;
+        if (!x->gl_editor->e_fnMotion) { PD_BUG; }
+        (*x->gl_editor->e_fnMotion)(&x->gl_editor->e_grabbed->g_pd,
+            xpos - x->gl_editor->e_previousX,
+            ypos - x->gl_editor->e_previousY);
+        x->gl_editor->e_previousX = xpos;
+        x->gl_editor->e_previousY = ypos;
     }
-    else if (x->gl_editor->e_onmotion == ACTION_DRAG)
+    else if (x->gl_editor->e_onMotion == ACTION_DRAG)
     {
-        t_boxtext *rt = x->gl_editor->e_textedfor;
+        t_boxtext *rt = x->gl_editor->e_selectedText;
         if (rt)
-            rtext_mouse(rt, xpos - x->gl_editor->e_xwas,
-                ypos - x->gl_editor->e_ywas, BOX_TEXT_DRAG);
+            rtext_mouse(rt, xpos - x->gl_editor->e_previousX,
+                ypos - x->gl_editor->e_previousY, BOX_TEXT_DRAG);
     }
-    else if (x->gl_editor->e_onmotion == ACTION_RESIZE)
+    else if (x->gl_editor->e_onMotion == ACTION_RESIZE)
     {
         int x11=0, y11=0, x12=0, y12=0; 
         t_gobj *y1;
         if (y1 = canvas_findhitbox(x,
-            x->gl_editor->e_xwas, x->gl_editor->e_ywas,
+            x->gl_editor->e_previousX, x->gl_editor->e_previousY,
                 &x11, &y11, &x12, &y12))
         {
             int wantwidth = xpos - x11;
@@ -1612,26 +1612,26 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos,
                 if (wantwidth < 1)
                     wantwidth = 1;
                 ob->te_width = wantwidth;
-                gobj_visibleChanged(y1, x, 0);
+                gobj_visibleHasChanged(y1, x, 0);
                 canvas_updateLinesByObject(x, ob);
-                gobj_visibleChanged(y1, x, 1);
+                gobj_visibleHasChanged(y1, x, 1);
             }
             else if (ob && ob->te_g.g_pd == canvas_class)
             {
-                gobj_visibleChanged(y1, x, 0);
-                ((t_glist *)ob)->gl_width += xpos - x->gl_editor->e_xnew;
-                ((t_glist *)ob)->gl_height += ypos - x->gl_editor->e_ynew;
-                x->gl_editor->e_xnew = xpos;
-                x->gl_editor->e_ynew = ypos;
+                gobj_visibleHasChanged(y1, x, 0);
+                ((t_glist *)ob)->gl_width += xpos - x->gl_editor->e_newX;
+                ((t_glist *)ob)->gl_height += ypos - x->gl_editor->e_newY;
+                x->gl_editor->e_newX = xpos;
+                x->gl_editor->e_newY = ypos;
                 canvas_updateLinesByObject(x, ob);
-                gobj_visibleChanged(y1, x, 1);
+                gobj_visibleHasChanged(y1, x, 1);
             }
             else post("not resizable");
         }
     }
     else canvas_doclick(x, xpos, ypos, 0, mod, 0);
     
-    x->gl_editor->e_lastmoved = 1;
+    //x->gl_editor->e_lastmoved = 1;
 }
 
 void canvas_startmotion(t_glist *x)
@@ -1640,9 +1640,9 @@ void canvas_startmotion(t_glist *x)
     if (!x->gl_editor) return;
     glist_getnextxy(x, &xval, &yval);
     if (xval == 0 && yval == 0) return;
-    x->gl_editor->e_onmotion = ACTION_MOVE;
-    x->gl_editor->e_xwas = xval;
-    x->gl_editor->e_ywas = yval; 
+    x->gl_editor->e_onMotion = ACTION_MOVE;
+    x->gl_editor->e_previousX = xval;
+    x->gl_editor->e_previousY = yval; 
 }
 
 void canvas_print(t_glist *x, t_symbol *s)
@@ -1899,14 +1899,14 @@ void canvas_stowconnections(t_glist *x)
     else x->gl_graphics = nonhead, nontail->g_next = selhead;
 
         /* add connections to binbuf */
-    buffer_reset(x->gl_editor->e_connectbuf);
+    buffer_reset(x->gl_editor->e_buffer);
     canvas_traverseLinesStart(&t, x);
     while (oc = canvas_traverseLinesNext(&t))
     {
         int s1 = glist_isselected(x, &t.tr_srcObject->te_g);
         int s2 = glist_isselected(x, &t.tr_destObject->te_g);
         if (s1 != s2)
-            buffer_vAppend(x->gl_editor->e_connectbuf, "ssiiii;",
+            buffer_vAppend(x->gl_editor->e_buffer, "ssiiii;",
                 gensym ("#X"), gensym ("connect"),
                     glist_getindex(x, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
                         glist_getindex(x, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
@@ -1917,7 +1917,7 @@ void canvas_restoreconnections(t_glist *x)
 {
     t_pd *boundx = s__X.s_thing;
     s__X.s_thing = &x->gl_obj.te_g.g_pd;
-    buffer_eval(x->gl_editor->e_connectbuf, 0, 0, 0);
+    buffer_eval(x->gl_editor->e_buffer, 0, 0, 0);
     s__X.s_thing = boundx;
 }
 
@@ -1948,15 +1948,15 @@ static t_buffer *canvas_docopy(t_glist *x)
 
 static void canvas_copy(t_glist *x)
 {
-    if (!x->gl_editor || !x->gl_editor->e_selection)
+    if (!x->gl_editor || !x->gl_editor->e_selectedObjects)
         return;
     buffer_free(copy_binbuf);
     copy_binbuf = canvas_docopy(x);
-    if (x->gl_editor->e_textedfor)
+    if (x->gl_editor->e_selectedText)
     {
         char *buf;
         int bufsize;
-        rtext_getseltext(x->gl_editor->e_textedfor, &buf, &bufsize);
+        rtext_getseltext(x->gl_editor->e_selectedText, &buf, &bufsize);
         sys_gui("clipboard clear\n");
         sys_vGui("clipboard append {%.*s}\n", bufsize, buf);
     }
@@ -1964,19 +1964,19 @@ static void canvas_copy(t_glist *x)
 
 static void canvas_clearline(t_glist *x)
 {
-    if (x->gl_editor->e_selectedline)
+    if (x->gl_editor->e_isSelectedline)
     {
-        canvas_disconnect(x, x->gl_editor->e_selectline_index1,
-             x->gl_editor->e_selectline_outno,
-             x->gl_editor->e_selectline_index2,
-             x->gl_editor->e_selectline_inno);
+        canvas_disconnect(x, x->gl_editor->e_selectedLineIndexOfObjectOut,
+             x->gl_editor->e_selectedLineIndexOfOutlet,
+             x->gl_editor->e_selectedLineIndexOfObjectIn,
+             x->gl_editor->e_selectedLineIndexOfInlet);
         canvas_dirty(x, 1);
         canvas_setundo(x, canvas_undo_disconnect,
             canvas_undo_set_disconnect(x,
-                x->gl_editor->e_selectline_index1,
-                x->gl_editor->e_selectline_outno,
-                x->gl_editor->e_selectline_index2,
-                x->gl_editor->e_selectline_inno),
+                x->gl_editor->e_selectedLineIndexOfObjectOut,
+                x->gl_editor->e_selectedLineIndexOfOutlet,
+                x->gl_editor->e_selectedLineIndexOfObjectIn,
+                x->gl_editor->e_selectedLineIndexOfInlet),
             "disconnect");
     }
 }
@@ -1988,26 +1988,26 @@ static void canvas_doclear(t_glist *x)
     int dspstate;
 
     dspstate = dsp_suspend();
-    if (x->gl_editor->e_selectedline)
+    if (x->gl_editor->e_isSelectedline)
     {
-        canvas_disconnect(x, x->gl_editor->e_selectline_index1,
-             x->gl_editor->e_selectline_outno,
-             x->gl_editor->e_selectline_index2,
-             x->gl_editor->e_selectline_inno);
+        canvas_disconnect(x, x->gl_editor->e_selectedLineIndexOfObjectOut,
+             x->gl_editor->e_selectedLineIndexOfOutlet,
+             x->gl_editor->e_selectedLineIndexOfObjectIn,
+             x->gl_editor->e_selectedLineIndexOfInlet);
         canvas_setundo(x, canvas_undo_disconnect,
             canvas_undo_set_disconnect(x,
-                x->gl_editor->e_selectline_index1,
-                x->gl_editor->e_selectline_outno,
-                x->gl_editor->e_selectline_index2,
-                x->gl_editor->e_selectline_inno),
+                x->gl_editor->e_selectedLineIndexOfObjectOut,
+                x->gl_editor->e_selectedLineIndexOfOutlet,
+                x->gl_editor->e_selectedLineIndexOfObjectIn,
+                x->gl_editor->e_selectedLineIndexOfInlet),
             "disconnect");
     }
         /* if text is selected, deselecting it might remake the
         object. So we deselect it and hunt for a "new" object on
         the glist to reselect. */
-    if (x->gl_editor->e_textedfor)
+    if (x->gl_editor->e_selectedText)
     {
-        t_gobj *selwas = x->gl_editor->e_selection->sel_what;
+        t_gobj *selwas = x->gl_editor->e_selectedObjects->sel_what;
         pd_newest = 0;
         glist_noselect(x);
         if (pd_newest)
@@ -2039,27 +2039,27 @@ static void canvas_cut(t_glist *x)
 {
     if (!x->gl_editor)  /* ignore if invisible */ 
         return;
-    if (x->gl_editor && x->gl_editor->e_selectedline)   /* delete line */
+    if (x->gl_editor && x->gl_editor->e_isSelectedline)   /* delete line */
         canvas_clearline(x);
-    else if (x->gl_editor->e_textedfor) /* delete selected text in a box */
+    else if (x->gl_editor->e_selectedText) /* delete selected text in a box */
     {
         char *buf;
         int bufsize;
-        rtext_getseltext(x->gl_editor->e_textedfor, &buf, &bufsize);
-        if (!bufsize && x->gl_editor->e_selection &&
-            !x->gl_editor->e_selection->sel_next)
+        rtext_getseltext(x->gl_editor->e_selectedText, &buf, &bufsize);
+        if (!bufsize && x->gl_editor->e_selectedObjects &&
+            !x->gl_editor->e_selectedObjects->sel_next)
         {
                 /* if the text is already empty, delete the box.  We
                 first clear 'textedfor' so that canvas_doclear later will
                 think the whole box was selected, not the text */
-            x->gl_editor->e_textedfor = 0;
+            x->gl_editor->e_selectedText = 0;
             goto deleteobj;
         }
         canvas_copy(x);
-        rtext_key(x->gl_editor->e_textedfor, 127, &s_);
+        rtext_key(x->gl_editor->e_selectedText, 127, &s_);
         canvas_dirty(x, 1);
     }
-    else if (x->gl_editor && x->gl_editor->e_selection)
+    else if (x->gl_editor && x->gl_editor->e_selectedObjects)
     {
     deleteobj:      /* delete one or more objects */
         canvas_setundo(x, canvas_undo_cut,
@@ -2078,7 +2078,7 @@ static void glist_donewloadbangs(t_glist *x)
     if (x->gl_editor)
     {
         t_selection *sel;
-        for (sel = x->gl_editor->e_selection; sel; sel = sel->sel_next)
+        for (sel = x->gl_editor->e_selectedObjects; sel; sel = sel->sel_next)
             if (pd_class(&sel->sel_what->g_pd) == canvas_class)
                 canvas_loadbang((t_glist *)(&sel->sel_what->g_pd));
     }
@@ -2121,7 +2121,7 @@ static void canvas_paste(t_glist *x)
 {
     if (!x->gl_editor)
         return;
-    if (x->gl_editor->e_textedfor)
+    if (x->gl_editor->e_selectedText)
     {
         /* simulate keystrokes as if the copy buffer were typed in. */
         // sys_vGui("::ui_object::pasteText .x%lx\n", x);
@@ -2138,14 +2138,14 @@ static void canvas_duplicate(t_glist *x)
 {
     if (!x->gl_editor)
         return;
-    if (x->gl_editor->e_onmotion == ACTION_NONE && x->gl_editor->e_selection)
+    if (x->gl_editor->e_onMotion == ACTION_NONE && x->gl_editor->e_selectedObjects)
     {
         t_selection *y;
         canvas_copy(x);
         canvas_setundo(x, canvas_undo_paste, canvas_undo_set_paste(x),
             "duplicate");
         canvas_dopaste(x, copy_binbuf);
-        for (y = x->gl_editor->e_selection; y; y = y->sel_next)
+        for (y = x->gl_editor->e_selectedObjects; y; y = y->sel_next)
             gobj_displace(y->sel_what, x,
                 10, 10);
         canvas_dirty(x, 1);
@@ -2176,14 +2176,14 @@ static void canvas_reselect(t_glist *x)
     t_object *ob;
         /* if someone is text editing, and if only one object is 
         selected,  deselect everyone and reselect.  */
-    if (x->gl_editor->e_textedfor)
+    if (x->gl_editor->e_selectedText)
     {
             /* only do this if exactly one item is selected. */
-        if ((gwas = x->gl_editor->e_selection->sel_what) &&
-            !x->gl_editor->e_selection->sel_next)
+        if ((gwas = x->gl_editor->e_selectedObjects->sel_what) &&
+            !x->gl_editor->e_selectedObjects->sel_next)
         {
             int nobjwas = glist_getindex(x, 0),
-                indx = canvas_getIndexOfObject(x, x->gl_editor->e_selection->sel_what);
+                indx = canvas_getIndexOfObject(x, x->gl_editor->e_selectedObjects->sel_what);
             glist_noselect(x);
             for (g = x->gl_graphics; g; g = g->g_next)
                 if (g == gwas)
@@ -2198,10 +2198,10 @@ static void canvas_reselect(t_glist *x)
                     glist_select(x, g);
         }
     }
-    else if (x->gl_editor->e_selection &&
-        !x->gl_editor->e_selection->sel_next)
+    else if (x->gl_editor->e_selectedObjects &&
+        !x->gl_editor->e_selectedObjects->sel_next)
             /* otherwise activate first item in selection */
-            gobj_activate(x->gl_editor->e_selection->sel_what, x, 1);
+            gobj_activate(x->gl_editor->e_selectedObjects->sel_what, x, 1);
 }
 
 extern t_class *text_class;
@@ -2263,7 +2263,7 @@ static void canvas_tidy(t_glist *x)
     int histogram[NHIST], *ip, i, besthist, bestdist;
         /* if nobody is selected, this means do it to all boxes;
         othewise just the selection */
-    int all = (x->gl_editor ? (x->gl_editor->e_selection == 0) : 1);
+    int all = (x->gl_editor ? (x->gl_editor->e_selectedObjects == 0) : 1);
 
     canvas_setundo(x, canvas_undo_move, canvas_undo_set_move(x, !all),
         "motion");
@@ -2364,7 +2364,7 @@ static void canvas_texteditor(t_glist *x)
     t_boxtext *foo;
     char *buf;
     int bufsize;
-    if (foo = x->gl_editor->e_textedfor)
+    if (foo = x->gl_editor->e_selectedText)
         rtext_gettext(foo, &buf, &bufsize);
     else buf = "", bufsize = 0;
     sys_vGui("pdtk_pd_texteditor {%.*s}\n", bufsize, buf);

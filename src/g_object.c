@@ -84,36 +84,37 @@ void gobj_save (t_gobj *x, t_buffer *buffer)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int gobj_isVisible (t_gobj *x, t_glist *owner)
+int gobj_shouldBeVisible (t_gobj *x, t_glist *owner)
 {
     t_object *o = NULL;
     
     if (!owner->gl_haveWindow && owner->gl_isGraphOnParent && owner->gl_owner) {    /* Graph on parent. */
-
-        /* Is parent visible? */
-        
-        if (!gobj_isVisible (cast_gobj (owner), owner->gl_owner)) { return 0; }
-        
-        /* Falling outside the graph rectangle? */
-        
-        if (owner->gl_hasRectangle) {
-        
-            if (pd_class (x) == scalar_class || pd_class (x) == garray_class) { return 1; }
-            else {
-            //
-            int a, b, c, d, e, f, g, h;
-                
-            gobj_getRectangle (cast_gobj (owner), owner->gl_owner, &a, &b, &c, &d);
+    //
+    /* Is parent visible? */
+    
+    if (!gobj_shouldBeVisible (cast_gobj (owner), owner->gl_owner)) { return 0; }
+    
+    /* Falling outside the graph rectangle? */
+    
+    if (owner->gl_hasRectangle) {
+    
+        if (pd_class (x) == scalar_class || pd_class (x) == garray_class) { return 1; }
+        else {
+        //
+        int a, b, c, d, e, f, g, h;
             
-            if (a > c) { int t = a; a = c; c = t; }
-            if (b > d) { int t = b; b = d; d = t; }
-            
-            gobj_getRectangle (x, owner, &e, &f, &g, &h);
+        gobj_getRectangle (cast_gobj (owner), owner->gl_owner, &a, &b, &c, &d);
+        
+        if (a > c) { int t = a; a = c; c = t; }
+        if (b > d) { int t = b; b = d; d = t; }
+        
+        gobj_getRectangle (x, owner, &e, &f, &g, &h);
 
-            if (e < a || e > c || g < a || g > c || f < b || f > d || h < b || h > d) { return 0; }
-            //
-            }
+        if (e < a || e > c || g < a || g > c || f < b || f > d || h < b || h > d) { return 0; }
+        //
         }
+    }
+    //
     }
     
     if (o = canvas_castToObjectIfBox (x)) {     /* Boxes. */
@@ -132,10 +133,10 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
     return 1;
 }
 
-void gobj_visibleChanged (t_gobj *x, t_glist *owner, int isVisible)
+void gobj_visibleHasChanged (t_gobj *x, t_glist *owner, int isVisible)
 {
     if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnVisible) {
-        if (gobj_isVisible (x, owner)) {
+        if (gobj_shouldBeVisible (x, owner)) {
             (*(pd_class (x)->c_behavior->w_fnVisible)) (x, owner, isVisible);
         }
     }
