@@ -317,7 +317,7 @@ static void scalar_vis(t_gobj *z, t_glist *owner, int vis)
         if (!wb) continue;
         (*wb->w_fnParentVisible)(y, owner, x->sc_vector, template, basex, basey, vis);
     }
-    if (glist_isselected(owner, &x->sc_g))
+    if (select_isObjectSelected(owner, &x->sc_g))
     {
         scalar_drawselectrect(x, owner, 0);
         scalar_drawselectrect(x, owner, 1);
@@ -397,7 +397,7 @@ static void scalar_properties(t_gobj *z, struct _glist *owner)
     int bufsize;
     t_buffer *b;
     glist_noselect(owner);
-    glist_select(owner, z);
+    select_selectObject(owner, z);
     b = glist_writetobinbuf(owner, 0);
     buffer_toStringUnzeroed(b, &buf, &bufsize);
     buffer_free(b);

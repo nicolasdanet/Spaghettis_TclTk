@@ -22,6 +22,21 @@ extern t_class *canvas_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static void select_deselectLine (t_glist *glist)
+{
+    PD_ASSERT (glist->gl_editor);
+    
+    glist->gl_editor->e_isSelectedline = 0;
+    
+    sys_vGui (".x%lx.c itemconfigure %lxLINE -fill black\n",
+                glist,
+                glist->gl_editor->e_selectedLineConnection);   
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void select_selectLine (t_glist *glist,
     t_outconnect *connection,
     int indexOfObjectOut,
@@ -33,12 +48,12 @@ void select_selectLine (t_glist *glist,
     //
     glist_noselect (glist);
         
-    glist->gl_editor->e_isSelectedline        = 1;
-    glist->gl_editor->e_selectedLineIndexOfObjectOut   = indexOfObjectOut;
-    glist->gl_editor->e_selectedLineIndexOfOutlet    = indexOfOutlet;
-    glist->gl_editor->e_selectedLineIndexOfObjectIn   = indexOfObjectIn;
-    glist->gl_editor->e_selectedLineIndexOfInlet     = indexOfInlet;
-    glist->gl_editor->e_selectedLineConnection      = connection;
+    glist->gl_editor->e_isSelectedline                  = 1;
+    glist->gl_editor->e_selectedLineIndexOfObjectOut    = indexOfObjectOut;
+    glist->gl_editor->e_selectedLineIndexOfOutlet       = indexOfOutlet;
+    glist->gl_editor->e_selectedLineIndexOfObjectIn     = indexOfObjectIn;
+    glist->gl_editor->e_selectedLineIndexOfInlet        = indexOfInlet;
+    glist->gl_editor->e_selectedLineConnection          = connection;
     
     sys_vGui (".x%lx.c itemconfigure %lxLINE -fill blue\n",
                 glist,
@@ -47,43 +62,47 @@ void select_selectLine (t_glist *glist,
     }    
 }
 
-void glist_deselectline(t_glist *x)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int select_isObjectSelected (t_glist *glist, t_gobj *y)
 {
-    if (x->gl_editor)
-    {
-        x->gl_editor->e_isSelectedline = 0;
-        sys_vGui(".x%lx.c itemconfigure %lxLINE -fill black\n",
-            x, x->gl_editor->e_selectedLineConnection);
-    }    
+    if (glist->gl_editor) {
+    //
+    t_selection *selection = NULL;
+    for (selection = glist->gl_editor->e_selectedObjects; selection; selection = selection->sel_next) {
+        if (selection->sel_what == y) { return 1; }
+    }
+    //
+    }
+    
+    return 0;
 }
 
-int glist_isselected(t_glist *x, t_gobj *y)
+void select_selectObject (t_glist *glist, t_gobj *y)
 {
-    if (x->gl_editor)
-    {
-        t_selection *sel;
-        for (sel = x->gl_editor->e_selectedObjects; sel; sel = sel->sel_next)
-            if (sel->sel_what == y) return (1);
+    if (glist->gl_editor) {
+    //
+    t_selection *selection = (t_selection *)PD_MEMORY_GET (sizeof (t_selection));
+    
+    if (glist->gl_editor->e_isSelectedline) { select_deselectLine (glist); }
+
+    PD_ASSERT (!select_isObjectSelected (glist, y));
+    
+    selection->sel_next = glist->gl_editor->e_selectedObjects;
+    selection->sel_what = y;
+    
+    glist->gl_editor->e_selectedObjects = selection;
+    
+    gobj_select (y, glist, 1);
+    //
     }
-    return (0);
 }
 
-    /* call this for unselected objects only */
-void glist_select(t_glist *x, t_gobj *y)
-{
-    if (x->gl_editor)
-    {
-        t_selection *sel = (t_selection *)PD_MEMORY_GET(sizeof(*sel));
-        if (x->gl_editor->e_isSelectedline)
-            glist_deselectline(x);
-            /* LATER #ifdef out the following check */
-        if (glist_isselected(x, y)) { PD_BUG; }
-        sel->sel_next = x->gl_editor->e_selectedObjects;
-        sel->sel_what = y;
-        x->gl_editor->e_selectedObjects = sel;
-        gobj_select(y, x, 1);
-    }
-}
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
     /* recursively deselect everything in a gobj "g", if it happens to be
     a glist, in preparation for deselecting g itself in glist_dselect() */
@@ -107,7 +126,7 @@ void glist_deselect(t_glist *x, t_gobj *y)
     {
         t_selection *sel, *sel2;
         t_boxtext *z = 0;
-        if (!glist_isselected(x, y)) { PD_BUG; }
+        if (!select_isObjectSelected(x, y)) { PD_BUG; }
         if (x->gl_editor->e_selectedText)
         {
             t_boxtext *fuddy = glist_findrtext(x, (t_object *)y);
@@ -166,32 +185,7 @@ void glist_noselect(t_glist *x)
         while (x->gl_editor->e_selectedObjects)
             glist_deselect(x, x->gl_editor->e_selectedObjects->sel_what);
         if (x->gl_editor->e_isSelectedline)
-            glist_deselectline(x);
-    }
-}
-
-void glist_selectall(t_glist *x)
-{
-    if (x->gl_editor)
-    {
-        glist_noselect(x);
-        if (x->gl_graphics)
-        {
-            t_selection *sel = (t_selection *)PD_MEMORY_GET(sizeof(*sel));
-            t_gobj *y = x->gl_graphics;
-            x->gl_editor->e_selectedObjects = sel;
-            sel->sel_what = y;
-            gobj_select(y, x, 1);
-            while (y = y->g_next)
-            {
-                t_selection *sel2 = (t_selection *)PD_MEMORY_GET(sizeof(*sel2));
-                sel->sel_next = sel2;
-                sel = sel2;
-                sel->sel_what = y;
-                gobj_select(y, x, 1);
-            }
-            sel->sel_next = 0;
-        }
+            select_deselectLine(x);
     }
 }
 
@@ -216,7 +210,7 @@ int glist_selectionindex(t_glist *x, t_gobj *y, int selected)
     int indx;
 
     for (y2 = x->gl_graphics, indx = 0; y2 && y2 != y; y2 = y2->g_next)
-        if (selected == glist_isselected(x, y2))
+        if (selected == select_isObjectSelected(x, y2))
             indx++;
     return (indx);
 }

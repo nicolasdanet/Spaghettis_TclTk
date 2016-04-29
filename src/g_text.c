@@ -73,7 +73,7 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         buffer_deserialize(x->te_buffer, 1, &at);
         glist_add(gl, &x->te_g);
         glist_noselect(gl);
-        glist_select(gl, &x->te_g);
+        select_selectObject(gl, &x->te_g);
             /* it would be nice to "activate" here, but then the second,
             "put-me-down" click changes the text selection, which is quite
             irritating, so I took this back out.  It's OK in messages
@@ -132,7 +132,7 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width, int selec
     if (selected)
     {
             /* this is called if we've been created from the menu. */
-        glist_select(gl, &x->te_g);
+        select_selectObject(gl, &x->te_g);
         gobj_activate(&x->te_g, gl, 1);
     }
     if (pd_class((t_pd *)x) == vinlet_class)
@@ -478,7 +478,7 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         x->m_text.te_yCoordinate = ypix;
         glist_add(gl, &x->m_text.te_g);
         glist_noselect(gl);
-        glist_select(gl, &x->m_text.te_g);
+        select_selectObject(gl, &x->m_text.te_g);
         gobj_activate(&x->m_text.te_g, gl, 1);
         if (connectme)
             canvas_connect(gl, indx, 0, nobj, 0);
@@ -946,7 +946,7 @@ void canvas_atom(t_glist *gl, t_atomtype type,
         x->a_text.te_yCoordinate = ypix;
         glist_add(gl, &x->a_text.te_g);
         glist_noselect(gl);
-        glist_select(gl, &x->a_text.te_g);
+        select_selectObject(gl, &x->a_text.te_g);
         if (connectme)
             canvas_connect(gl, indx, 0, nobj, 0);
         else canvas_startmotion(glist_getcanvas(gl));

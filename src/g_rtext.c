@@ -310,7 +310,7 @@ static void rtext_senditup(t_boxtext *x, int action, int *widthp, int *heightp,
             canvas, x->x_tag, rtext_gettype(x)->s_name,
             dispx + LMARGIN, dispy + TMARGIN,
             outchars_b, tempbuf, font_getHostFontSize(font),
-            (glist_isselected(x->x_glist,
+            (select_isObjectSelected(x->x_glist,
                 &x->x_glist->gl_obj.te_g)? "blue" : "black"));
     }
     else if (action == SEND_UPDATE)

@@ -298,7 +298,7 @@ static void ptrobj_vnext(t_ptrobj *x, t_float f)
     if (!gobj) gobj = glist->gl_graphics;
     else gobj = gobj->g_next;
     while (gobj && ((pd_class(&gobj->g_pd) != scalar_class) ||
-        (wantselected && !glist_isselected(glist, gobj))))
+        (wantselected && !select_isObjectSelected(glist, gobj))))
             gobj = gobj->g_next;
     
     if (gobj)
