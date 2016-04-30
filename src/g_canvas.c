@@ -432,7 +432,6 @@ void canvas_free (t_glist *glist)
     int dspstate = dsp_suspend();
     t_gobj *y = NULL;
         
-    canvas_noundo (glist);
     canvas_deselectAll (glist);
     
     while (y = glist->gl_graphics) { glist_delete (glist, y); }
@@ -477,7 +476,7 @@ void canvas_setup (void)
     
     class_addClick (c, canvas_click);
     class_addBounds (c, canvas_setBounds);
-    
+
     class_addMethod (c, (t_method)canvas_coords,        gensym ("coords"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_restore,       gensym ("restore"),     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_obj,           gensym ("obj"),         A_GIMME, A_NULL);
@@ -510,6 +509,23 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_dsp,           gensym ("dsp"),         A_CANT, A_NULL);
     class_addMethod (c, (t_method)canvas_rename,        gensym ("rename"),      A_GIMME, A_NULL);
     
+    class_addMethod (c, (t_method)canvas_motion, gensym ("motion"), A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_key, gensym ("key"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_mouse, gensym ("mouse"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_mouseup, gensym ("mouseup"), A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_menuclose, gensym ("menuclose"), A_DEFFLOAT, 0);
+    class_addMethod (c, (t_method)canvas_cut, gensym ("cut"), A_NULL);
+    class_addMethod (c, (t_method)canvas_copy, gensym ("copy"), A_NULL);
+    class_addMethod (c, (t_method)canvas_paste, gensym ("paste"), A_NULL);
+    class_addMethod (c, (t_method)canvas_duplicate, gensym ("duplicate"), A_NULL);
+    class_addMethod (c, (t_method)canvas_selectall, gensym ("selectall"), A_NULL);
+    class_addMethod (c, (t_method)canvas_editmode, gensym ("editmode"), A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_done_popup, gensym ("done-popup"), A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_donecanvasdialog, gensym ("donecanvasdialog"), A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)glist_arraydialog, gensym ("arraydialog"), A_SYMBOL, A_FLOAT, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_connect, gensym ("connect"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_disconnect, gensym ("disconnect"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+        
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)canvas_open,          gensym ("menu-open"),   A_NULL);

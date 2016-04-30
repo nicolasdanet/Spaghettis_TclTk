@@ -420,13 +420,51 @@ void            canvas_setBounds                        (t_glist *glist,
                                                             t_float b,
                                                             t_float c,
                                                             t_float d);
+
+void            canvas_motion                           (t_glist *glist,
+                                                            t_float a,
+                                                            t_float b,
+                                                            t_float modifier);
+
+void            canvas_mouse                            (t_glist *glist,
+                                                            t_float a,
+                                                            t_float b,
+                                                            t_float button,
+                                                            t_float modifier);
+
+void            canvas_mouseup                          (t_glist *glist,
+                                                            t_float a,
+                                                            t_float b,
+                                                            t_float button);
                                                             
+void            canvas_done_popup                       (t_glist *glist, t_float item, t_float a, t_float b);
+void            canvas_donecanvasdialog                 (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
+void            canvas_key                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_restore                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_loadbang                         (t_glist *glist);
 void            canvas_map                              (t_glist *glist, t_float f);
 void            canvas_dirty                            (t_glist *glist, t_float f);
 void            canvas_pop                              (t_glist *glist, t_float f);
+void            canvas_menuclose                        (t_glist *glist, t_float f);
+void            canvas_editmode                         (t_glist *glist, t_float f);
+void            canvas_cut                              (t_glist *glist);
+void            canvas_copy                             (t_glist *glist);
+void            canvas_paste                            (t_glist *glist);
+void            canvas_duplicate                        (t_glist *glist);
+void            canvas_selectall                        (t_glist *glist);
 
+void            canvas_connect                          (t_glist *x,
+                                                            t_float indexOfObjectOut,
+                                                            t_float indexOfOutlet,
+                                                            t_float indexOfObjectIn,
+                                                            t_float indexOfInlet);
+
+void            canvas_disconnect                       (t_glist *x,
+                                                            t_float indexOfObjectOut,
+                                                            t_float indexOfOutlet,
+                                                            t_float indexOfObjectIn,
+                                                            t_float indexOfInlet);
+                                            
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -479,11 +517,6 @@ void canvas_dataproperties (t_glist *x, t_scalar *sc, t_buffer *b);
 
 void canvas_properties (t_gobj *z, t_glist *canvas);
 void canvas_objfor (t_glist *gl, t_object *x, int argc, t_atom *argv);
-void canvas_mouse (t_glist *x, t_float xpos, t_float ypos, t_float which, t_float mod);
-void canvas_mouseup (t_glist *x, t_float fxpos, t_float fypos, t_float fwhich);
-void canvas_key (t_glist *x, t_symbol *s, int ac, t_atom *av);
-void canvas_motion (t_glist *x, t_float xpos, t_float ypos, t_float fmod);
-void canvas_menuclose (t_glist *x, t_float fforce);
 void canvas_menusave (t_glist *x, float fdestroy);
 void canvas_menusaveas (t_glist *x, float fdestroy);
 void canvas_find_parent (t_glist *x);
@@ -613,7 +646,6 @@ void     canvas_setusedastemplate           (t_glist *x);
 int      canvas_getfont                     (t_glist *x);
 void     canvas_resortinlets            (t_glist *x);
 void     canvas_resortoutlets           (t_glist *x);
-void     canvas_editmode                (t_glist *x, t_float state);
 
 int      canvas_istable                 (t_glist *x);
 void     canvas_vis                     (t_glist *x, t_float f);
@@ -628,23 +660,6 @@ int      canvas_hitbox                  (t_glist *x,
                                             int *y2p);
 
 int      canvas_setdeleting             (t_glist *x, int flag);
-void     canvas_setundo                 (t_glist *x,
-                                            t_undofn undofn,
-                                            void *buf,
-                                            const char *name);
-
-void     canvas_noundo                  (t_glist *x);
-void     canvas_connect                 (t_glist *x,
-                                            t_float fwhoout,
-                                            t_float foutno,
-                                            t_float fwhoin,
-                                            t_float finno);
-
-void     canvas_disconnect              (t_glist *x,
-                                            t_float index1,
-                                            t_float outno,
-                                            t_float index2,
-                                            t_float inno);
 
 int      canvas_isconnected             (t_glist *x,
                                             t_object *ob1,

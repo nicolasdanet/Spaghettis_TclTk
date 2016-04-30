@@ -202,8 +202,8 @@ void x_scalar_setup(void )
         A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     class_addMethod(scalar_define_class, (t_method)canvas_menuclose,
         gensym ("menuclose"), A_DEFFLOAT, 0);
-    class_addMethod(scalar_define_class, (t_method)canvas_find_parent,
-        gensym ("findparent"), A_NULL);
+    /*class_addMethod(scalar_define_class, (t_method)canvas_find_parent,
+        gensym ("findparent"), A_NULL);*/
     class_addMethod(scalar_define_class, (t_method)canvas_menusave,
         gensym ("menusave"), 0);
     class_addMethod(scalar_define_class, (t_method)canvas_menusaveas,
