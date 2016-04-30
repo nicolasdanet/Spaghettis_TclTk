@@ -1035,7 +1035,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                 else
                 {
                     if (select_isObjectSelected(x, y))
-                        glist_deselect(x, y);
+                        select_deselectObject(x, y);
                     else select_selectObject(x, y);
                 }
             }

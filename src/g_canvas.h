@@ -438,6 +438,7 @@ void            select_selectLine                       (t_glist *glist,
 
 int             select_isObjectSelected                 (t_glist *glist, t_gobj *y);
 void            select_selectObject                     (t_glist *glist, t_gobj *y);
+void            select_deselectObject                   (t_glist *glist, t_gobj *y);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -511,7 +512,6 @@ void     glist_add              (t_glist *x, t_gobj *g);
 void     glist_clear            (t_glist *x);
 t_glist *glist_getcanvas        (t_glist *x);
 t_gobj  *glist_nth              (t_glist *x, int n);
-void     glist_deselect         (t_glist *x, t_gobj *y);
 void     glist_noselect         (t_glist *x);
 void     glist_delete           (t_glist *x, t_gobj *y);
 void     glist_retext           (t_glist *x, t_object *y);
