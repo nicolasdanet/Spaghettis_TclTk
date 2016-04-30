@@ -223,7 +223,7 @@ static void *canvas_undo_set_cut(t_glist *x, int mode)
     t_gobj *y;
     t_linetraverser t;
     t_outconnect *oc;
-    int nnotsel= select_getNumberOfUnselectedObjects (x);
+    int nnotsel= canvas_getNumberOfUnselectedObjects (x);
     buf = (t_undo_cut *)PD_MEMORY_GET(sizeof(*buf));
     buf->u_mode = mode;
     buf->u_redotextbuf = 0;
@@ -233,17 +233,17 @@ static void *canvas_undo_set_cut(t_glist *x, int mode)
     canvas_traverseLinesStart(&t, x);
     while (oc = canvas_traverseLinesNext(&t))
     {
-        int issel1 = select_isObjectSelected(x, &t.tr_srcObject->te_g);
-        int issel2 = select_isObjectSelected(x, &t.tr_destObject->te_g);
+        int issel1 = canvas_isObjectSelected(x, &t.tr_srcObject->te_g);
+        int issel2 = canvas_isObjectSelected(x, &t.tr_destObject->te_g);
         if (issel1 != issel2)
         {
             buffer_vAppend(buf->u_reconnectbuf, "ssiiii;",
                 gensym ("#X"), gensym ("connect"),
                 (issel1 ? nnotsel : 0)
-                    + (issel1 ? select_getIndexOfObjectAmongSelected (x, &t.tr_srcObject->te_g) : select_getIndexOfObjectAmongUnselected (x, &t.tr_srcObject->te_g)),
+                    + (issel1 ? canvas_getIndexOfObjectAmongSelected (x, &t.tr_srcObject->te_g) : canvas_getIndexOfObjectAmongUnselected (x, &t.tr_srcObject->te_g)),
                 t.tr_srcIndexOfOutlet,
                 (issel2 ? nnotsel : 0)
-                    + (issel2 ? select_getIndexOfObjectAmongSelected (x, &t.tr_destObject->te_g) : select_getIndexOfObjectAmongUnselected (x, &t.tr_destObject->te_g)),
+                    + (issel2 ? canvas_getIndexOfObjectAmongSelected (x, &t.tr_destObject->te_g) : canvas_getIndexOfObjectAmongUnselected (x, &t.tr_destObject->te_g)),
                 t.tr_destIndexOfInlet);
         }
     }
@@ -276,17 +276,17 @@ static void canvas_undo_cut(t_glist *x, void *z, int action)
         else if (mode == UCUT_TEXT)
         {
             t_gobj *y1, *y2;
-            select_deselectAll(x);
+            canvas_deselectAll(x);
             for (y1 = x->gl_graphics; y2 = y1->g_next; y1 = y2)
                 ;
             if (y1)
             {
                 if (!buf->u_redotextbuf)
                 {
-                    select_deselectAll(x);
-                    select_selectObject(x, y1);
+                    canvas_deselectAll(x);
+                    canvas_selectObject(x, y1);
                     buf->u_redotextbuf = canvas_docopy(x);
-                    select_deselectAll(x);
+                    canvas_deselectAll(x);
                 }
                 glist_delete(x, y1);
             }
@@ -347,13 +347,13 @@ static void *canvas_undo_set_move(t_glist *x, int selected)
     int x1, y1, x2, y2, i, indx;
     t_gobj *y;
     t_undo_move *buf =  (t_undo_move *)PD_MEMORY_GET(sizeof(*buf));
-    buf->u_n = selected ? select_getIndexOfObjectAmongSelected(x, 0) : canvas_getIndexOfObject(x, 0);
+    buf->u_n = selected ? canvas_getIndexOfObjectAmongSelected(x, 0) : canvas_getIndexOfObject(x, 0);
     buf->u_vec = (t_undo_move_elem *)PD_MEMORY_GET(sizeof(*buf->u_vec) *
-        (selected ? select_getIndexOfObjectAmongSelected(x, 0) : canvas_getIndexOfObject(x, 0)));
+        (selected ? canvas_getIndexOfObjectAmongSelected(x, 0) : canvas_getIndexOfObject(x, 0)));
     if (selected)
     {
         for (y = x->gl_graphics, i = indx = 0; y; y = y->g_next, indx++)
-            if (select_isObjectSelected(x, y))
+            if (canvas_isObjectSelected(x, y))
         {
             gobj_getRectangle(y, x, &x1, &y1, &x2, &y2);
             buf->u_vec[i].e_index = indx;
@@ -425,9 +425,9 @@ static void canvas_undo_paste(t_glist *x, void *z, int action)
     if (action == UNDO_UNDO)
     {
         t_gobj *y;
-        select_deselectAll(x);
+        canvas_deselectAll(x);
         for (y = canvas_getObjectAtIndex(x, buf->u_index); y; y = y->g_next)
-            select_selectObject(x, y);
+            canvas_selectObject(x, y);
         canvas_doclear(x);
     }
     else if (action == UNDO_REDO)
@@ -467,13 +467,13 @@ static void glist_doreload(t_glist *gl, t_symbol *name, t_symbol *dir,
             if (!gl->gl_editor)
                 canvas_vis(gl, 1);
             if (!gl->gl_editor) { PD_BUG; }
-            select_deselectAll(gl);
-            select_selectObject(gl, g);
+            canvas_deselectAll(gl);
+            canvas_selectObject(gl, g);
             canvas_setundo(gl, canvas_undo_cut,
                 canvas_undo_set_cut(gl, UCUT_CLEAR), "clear");
             canvas_doclear(gl);
             canvas_undo(gl);
-            select_deselectAll(gl);
+            canvas_deselectAll(gl);
             g = canvas_getObjectAtIndex(gl, j);
         }
         else
@@ -570,7 +570,7 @@ static t_gobj *canvas_findhitbox(t_glist *x, int xpos, int ypos,
         /* if there are at least two selected objects, we'd prefer
         to find a selected one (never mind which) to the one we got. */
     if (x->gl_editor && x->gl_editor->e_selectedObjects &&
-        x->gl_editor->e_selectedObjects->sel_next && !select_isObjectSelected(x, y))
+        x->gl_editor->e_selectedObjects->sel_next && !canvas_isObjectSelected(x, y))
     {
         t_selection *sel;
         for (sel = x->gl_editor->e_selectedObjects; sel; sel = sel->sel_next)
@@ -608,7 +608,7 @@ static t_editor *editor_new(t_glist *owner)
 
 static void editor_free(t_editor *x, t_glist *y)
 {
-    select_deselectAll(y);
+    canvas_deselectAll(y);
     guiconnect_release(x->e_guiconnect, 1000);
     buffer_free(x->e_buffer);
     //buffer_free(x->e_deleted);
@@ -636,7 +636,7 @@ void canvas_destroy_editor(t_glist *x)
 {
     t_gobj *y;
     t_object *ob;
-    select_deselectAll(x);
+    canvas_deselectAll(x);
     if (x->gl_editor)
     {
         t_boxtext *rtext;
@@ -707,7 +707,7 @@ void canvas_vis(t_glist *x, t_float f)
                 canvas_destroy_editor(x);
             return;
         }
-        select_deselectAll(x);
+        canvas_deselectAll(x);
         if (canvas_isVisible(x))
             canvas_map(x, 0);
         canvas_destroy_editor(x);
@@ -1034,9 +1034,9 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                 }
                 else
                 {
-                    if (select_isObjectSelected(x, y))
-                        select_deselectObject(x, y);
-                    else select_selectObject(x, y);
+                    if (canvas_isObjectSelected(x, y))
+                        canvas_deselectObject(x, y);
+                    else canvas_selectObject(x, y);
                 }
             }
         }
@@ -1051,10 +1051,10 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
             {
                 if (doit)
                 {
-                    if (!select_isObjectSelected(x, y))
+                    if (!canvas_isObjectSelected(x, y))
                     {
-                        select_deselectAll(x);
-                        select_selectObject(x, y);
+                        canvas_deselectAll(x);
+                        canvas_selectObject(x, y);
                     }
                     x->gl_editor->e_onMotion = ACTION_RESIZE;
                     x->gl_editor->e_previousX = x1;
@@ -1110,10 +1110,10 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                 else
                 {
                         /* otherwise select and drag to displace */
-                    if (!select_isObjectSelected(x, y))
+                    if (!canvas_isObjectSelected(x, y))
                     {
-                        select_deselectAll(x);
-                        select_selectObject(x, y);
+                        canvas_deselectAll(x);
+                        canvas_selectObject(x, y);
                     }
                     x->gl_editor->e_onMotion = ACTION_MOVE;
                 }
@@ -1154,7 +1154,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
             if ((lx2-lx1) * (lx2-fx) + (ly2-ly1) * (ly2-fy) < 0) continue;
             if (doit)
             {
-                select_selectLine(glist2, oc, 
+                canvas_selectLine(glist2, oc, 
                     canvas_getIndexOfObject(glist2, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
                     canvas_getIndexOfObject(glist2, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
             }
@@ -1165,7 +1165,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
     canvas_setcursor(x, CURSOR_EDIT_NOTHING);
     if (doit)
     {
-        if (!shiftmod) select_deselectAll(x);
+        if (!shiftmod) canvas_deselectAll(x);
         sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags x\n",
               x, xpos, ypos, xpos, ypos);
         x->gl_editor->e_previousX = xpos;
@@ -1292,8 +1292,8 @@ void canvas_selectinrect(t_glist *x, int lox, int loy, int hix, int hiy)
         int x1, y1, x2, y2;
         gobj_getRectangle(y, x, &x1, &y1, &x2, &y2);
         if (hix >= x1 && lox <= x2 && hiy >= y1 && loy <= y2
-            && !select_isObjectSelected(x, y))
-                select_selectObject(x, y);
+            && !canvas_isObjectSelected(x, y))
+                canvas_selectObject(x, y);
     }
 }
 
@@ -1805,10 +1805,10 @@ static int canvas_dofind(t_glist *x, int *myindexp)
             {
                 if (*myindexp == canvas_find_index)
                 {
-                    select_deselectAll(x);
+                    canvas_deselectAll(x);
                     pd_vMessage(&x->gl_obj.te_g.g_pd, gensym ("open"), "");
                     canvas_editmode(x, 1.);
-                    select_selectObject(x, y);
+                    canvas_selectObject(x, y);
                     didit = 1;
                 }
                 (*myindexp)++;
@@ -1865,7 +1865,7 @@ void canvas_stowconnections(t_glist *x)
     for (y = x->gl_graphics; y; y = y2)
     {
         y2 = y->g_next;
-        if (select_isObjectSelected(x, y))
+        if (canvas_isObjectSelected(x, y))
         {
             if (seltail)
             {
@@ -1903,8 +1903,8 @@ void canvas_stowconnections(t_glist *x)
     canvas_traverseLinesStart(&t, x);
     while (oc = canvas_traverseLinesNext(&t))
     {
-        int s1 = select_isObjectSelected(x, &t.tr_srcObject->te_g);
-        int s2 = select_isObjectSelected(x, &t.tr_destObject->te_g);
+        int s1 = canvas_isObjectSelected(x, &t.tr_srcObject->te_g);
+        int s2 = canvas_isObjectSelected(x, &t.tr_destObject->te_g);
         if (s1 != s2)
             buffer_vAppend(x->gl_editor->e_buffer, "ssiiii;",
                 gensym ("#X"), gensym ("connect"),
@@ -1929,18 +1929,18 @@ static t_buffer *canvas_docopy(t_glist *x)
     t_buffer *b = buffer_new();
     for (y = x->gl_graphics; y; y = y->g_next)
     {
-        if (select_isObjectSelected(x, y))
+        if (canvas_isObjectSelected(x, y))
             gobj_save(y, b);
     }
     canvas_traverseLinesStart(&t, x);
     while (oc = canvas_traverseLinesNext(&t))
     {
-        if (select_isObjectSelected(x, &t.tr_srcObject->te_g)
-            && select_isObjectSelected(x, &t.tr_destObject->te_g))
+        if (canvas_isObjectSelected(x, &t.tr_srcObject->te_g)
+            && canvas_isObjectSelected(x, &t.tr_destObject->te_g))
         {
             buffer_vAppend(b, "ssiiii;", gensym ("#X"), gensym ("connect"),
-                select_getIndexOfObjectAmongSelected(x, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
-                select_getIndexOfObjectAmongSelected(x, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
+                canvas_getIndexOfObjectAmongSelected(x, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
+                canvas_getIndexOfObjectAmongSelected(x, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
         }
     }
     return (b);
@@ -2009,11 +2009,11 @@ static void canvas_doclear(t_glist *x)
     {
         t_gobj *selwas = x->gl_editor->e_selectedObjects->sel_what;
         pd_newest = 0;
-        select_deselectAll(x);
+        canvas_deselectAll(x);
         if (pd_newest)
         {
             for (y = x->gl_graphics; y; y = y->g_next)
-                if (&y->g_pd == pd_newest) select_selectObject(x, y);
+                if (&y->g_pd == pd_newest) canvas_selectObject(x, y);
         }
     }
     while (1)   /* this is pretty wierd...  should rewrite it */
@@ -2021,7 +2021,7 @@ static void canvas_doclear(t_glist *x)
         for (y = x->gl_graphics; y; y = y2)
         {
             y2 = y->g_next;
-            if (select_isObjectSelected(x, y))
+            if (canvas_isObjectSelected(x, y))
             {
                 glist_delete(x, y);
                 goto next;
@@ -2097,7 +2097,7 @@ static void canvas_dopaste(t_glist *x, t_buffer *b)
     s__N.s_thing = &pd_canvasMaker;
 
     canvas_editmode(x, 1.);
-    select_deselectAll(x);
+    canvas_deselectAll(x);
     for (g2 = x->gl_graphics, nbox = 0; g2; g2 = g2->g_next) nbox++;
 
     paste_onset = nbox;
@@ -2106,7 +2106,7 @@ static void canvas_dopaste(t_glist *x, t_buffer *b)
     buffer_eval(b, 0, 0, 0);
     for (g2 = x->gl_graphics, count = 0; g2; g2 = g2->g_next, count++)
         if (count >= nbox)
-            select_selectObject(x, g2);
+            canvas_selectObject(x, g2);
     paste_canvas = 0;
     dsp_resume(dspstate);
     canvas_dirty(x, 1);
@@ -2160,12 +2160,12 @@ static void canvas_selectall(t_glist *x)
     if (!x->gl_isEditMode)
         canvas_editmode(x, 1);
             /* if everyone is already selected deselect everyone */
-    if (!select_getNumberOfUnselectedObjects (x))
-        select_deselectAll(x);
+    if (!canvas_getNumberOfUnselectedObjects (x))
+        canvas_deselectAll(x);
     else for (y = x->gl_graphics; y; y = y->g_next)
     {
-        if (!select_isObjectSelected(x, y))
-            select_selectObject(x, y);
+        if (!canvas_isObjectSelected(x, y))
+            canvas_selectObject(x, y);
     }
 }
 
@@ -2184,18 +2184,18 @@ static void canvas_reselect(t_glist *x)
         {
             int nobjwas = canvas_getIndexOfObject(x, 0),
                 indx = canvas_getIndexOfObject(x, x->gl_editor->e_selectedObjects->sel_what);
-            select_deselectAll(x);
+            canvas_deselectAll(x);
             for (g = x->gl_graphics; g; g = g->g_next)
                 if (g == gwas)
             {
-                select_selectObject(x, g);
+                canvas_selectObject(x, g);
                 return;
             }
                 /* "gwas" must have disappeared; just search to the last
                 object and select it */
             for (g = x->gl_graphics; g; g = g->g_next)
                 if (!g->g_next)
-                    select_selectObject(x, g);
+                    canvas_selectObject(x, g);
         }
     }
     else if (x->gl_editor->e_selectedObjects &&
@@ -2270,12 +2270,12 @@ static void canvas_tidy(t_glist *x)
 
         /* tidy horizontally */
     for (y = x->gl_graphics; y; y = y->g_next)
-        if (all || select_isObjectSelected(x, y))
+        if (all || canvas_isObjectSelected(x, y))
     {
         gobj_getRectangle(y, x, &ax1, &ay1, &ax2, &ay2);
 
         for (y2 = x->gl_graphics; y2; y2 = y2->g_next)
-            if (all || select_isObjectSelected(x, y2))
+            if (all || canvas_isObjectSelected(x, y2))
         {
             gobj_getRectangle(y2, x, &bx1, &by1, &bx2, &by2);
             if (by1 <= ay1 + YTOLERANCE && by1 >= ay1 - YTOLERANCE &&
@@ -2284,7 +2284,7 @@ static void canvas_tidy(t_glist *x)
         }
 
         for (y2 = x->gl_graphics; y2; y2 = y2->g_next)
-            if (all || select_isObjectSelected(x, y2))
+            if (all || canvas_isObjectSelected(x, y2))
         {
             gobj_getRectangle(y2, x, &bx1, &by1, &bx2, &by2);
             if (by1 <= ay1 + YTOLERANCE && by1 >= ay1 - YTOLERANCE
@@ -2296,11 +2296,11 @@ static void canvas_tidy(t_glist *x)
         /* tidy vertically.  First guess the user's favorite vertical spacing */
     for (i = NHIST, ip = histogram; i--; ip++) *ip = 0;
     for (y = x->gl_graphics; y; y = y->g_next)
-        if (all || select_isObjectSelected(x, y))
+        if (all || canvas_isObjectSelected(x, y))
     {
         gobj_getRectangle(y, x, &ax1, &ay1, &ax2, &ay2);
         for (y2 = x->gl_graphics; y2; y2 = y2->g_next)
-            if (all || select_isObjectSelected(x, y2))
+            if (all || canvas_isObjectSelected(x, y2))
         {
             gobj_getRectangle(y2, x, &bx1, &by1, &bx2, &by2);
             if (bx1 <= ax1 + XTOLERANCE && bx1 >= ax1 - XTOLERANCE)
@@ -2323,12 +2323,12 @@ static void canvas_tidy(t_glist *x)
     }
     post("best vertical distance %d", bestdist);
     for (y = x->gl_graphics; y; y = y->g_next)
-        if (all || select_isObjectSelected(x, y))
+        if (all || canvas_isObjectSelected(x, y))
     {
         int keep = 1;
         gobj_getRectangle(y, x, &ax1, &ay1, &ax2, &ay2);
         for (y2 = x->gl_graphics; y2; y2 = y2->g_next)
-            if (all || select_isObjectSelected(x, y2))
+            if (all || canvas_isObjectSelected(x, y2))
         {
             gobj_getRectangle(y2, x, &bx1, &by1, &bx2, &by2);
             if (bx1 <= ax1 + XTOLERANCE && bx1 >= ax1 - XTOLERANCE &&
@@ -2339,7 +2339,7 @@ static void canvas_tidy(t_glist *x)
         {
             keep = 0;
             for (y2 = x->gl_graphics; y2; y2 = y2->g_next)
-                if (all || select_isObjectSelected(x, y2))
+                if (all || canvas_isObjectSelected(x, y2))
             {
                 gobj_getRectangle(y2, x, &bx1, &by1, &bx2, &by2);
                 if (bx1 <= ax1 + XTOLERANCE && bx1 >= ax1 - XTOLERANCE &&
@@ -2397,7 +2397,7 @@ void canvas_editmode(t_glist *x, t_float state)
     }
     else
     {
-        select_deselectAll(x);
+        canvas_deselectAll(x);
         if (canvas_isVisible(x) && canvas_isTopLevel(x))
         {
             canvas_setcursor(x, CURSOR_NOTHING);
@@ -2471,8 +2471,10 @@ static void glist_setlastxy(t_glist *gl, int xval, int yval)
     canvas_last_glist_y = yval;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
-void g_editor_setup(void)
+void g_editor_setup (void)
 {
 /* ------------------------ events ---------------------------------- */
     class_addMethod(canvas_class, (t_method)canvas_mouse, gensym ("mouse"),
@@ -2499,12 +2501,16 @@ void g_editor_setup(void)
         gensym ("selectall"), A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_reselect,
         gensym ("reselect"), A_NULL);
+        
+    /*
     class_addMethod(canvas_class, (t_method)canvas_undo,
         gensym ("undo"), A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_redo,
         gensym ("redo"), A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_tidy,
         gensym ("tidy"), A_NULL);
+    */
+    
     class_addMethod(canvas_class, (t_method)canvas_texteditor,
         gensym ("texteditor"), A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_editmode,

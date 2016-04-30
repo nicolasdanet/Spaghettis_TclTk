@@ -385,6 +385,25 @@ void            canvas_redrawAllByTemplateByCanvas      (t_glist *glist, int act
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int             canvas_isObjectSelected                 (t_glist *glist, t_gobj *y);
+void            canvas_selectObject                     (t_glist *glist, t_gobj *y);
+void            canvas_selectLine                       (t_glist *glist, 
+                                                            t_outconnect *connection,
+                                                            int indexOfObjectOut,
+                                                            int indexOfOutlet,
+                                                            int indexOfObjectIn,
+                                                            int indexOfInlet);
+                                                            
+void            canvas_deselectObject                   (t_glist *glist, t_gobj *y);
+void            canvas_deselectAll                      (t_glist *glist);
+int             canvas_getNumberOfUnselectedObjects     (t_glist *glist);
+int             canvas_getIndexOfObjectAmongSelected    (t_glist *glist, t_gobj *y);
+int             canvas_getIndexOfObjectAmongUnselected  (t_glist *glist, t_gobj *y);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
 
 t_glist         *canvas_new                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 
@@ -422,25 +441,6 @@ void            dsp_state                               (void *dummy, t_symbol *
 void            dsp_update                              (void);
 int             dsp_suspend                             (void);
 void            dsp_resume                              (int oldState);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int             select_isObjectSelected                 (t_glist *glist, t_gobj *y);
-void            select_selectObject                     (t_glist *glist, t_gobj *y);
-void            select_selectLine                       (t_glist *glist, 
-                                                            t_outconnect *connection,
-                                                            int indexOfObjectOut,
-                                                            int indexOfOutlet,
-                                                            int indexOfObjectIn,
-                                                            int indexOfInlet);
-                                                            
-void            select_deselectObject                   (t_glist *glist, t_gobj *y);
-void            select_deselectAll                      (t_glist *glist);
-int             select_getNumberOfUnselectedObjects     (t_glist *glist);
-int             select_getIndexOfObjectAmongSelected    (t_glist *glist, t_gobj *y);
-int             select_getIndexOfObjectAmongUnselected  (t_glist *glist, t_gobj *y);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

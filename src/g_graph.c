@@ -85,7 +85,7 @@ void glist_delete(t_glist *x, t_gobj *y)
     if (x->gl_editor)
     {
         if (x->gl_editor->e_grabbed == y) x->gl_editor->e_grabbed = 0;
-        if (select_isObjectSelected(x, y)) select_deselectObject(x, y);
+        if (canvas_isObjectSelected(x, y)) canvas_deselectObject(x, y);
 
             /* HACK -- we had phantom outlets not getting erased on the
             screen because the canvas_setdeleting() mechanism is too

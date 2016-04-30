@@ -66,14 +66,14 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         int xpix, ypix;
         pd_vMessage((t_pd *)glist_getcanvas(gl), gensym ("editmode"), "i", 1);
         SET_SYMBOL(&at, gensym ("comment"));
-        select_deselectAll(gl);
+        canvas_deselectAll(gl);
         glist_getnextxy(gl, &xpix, &ypix);
         x->te_xCoordinate = xpix-1;
         x->te_yCoordinate = ypix-1;
         buffer_deserialize(x->te_buffer, 1, &at);
         glist_add(gl, &x->te_g);
-        select_deselectAll(gl);
-        select_selectObject(gl, &x->te_g);
+        canvas_deselectAll(gl);
+        canvas_selectObject(gl, &x->te_g);
             /* it would be nice to "activate" here, but then the second,
             "put-me-down" click changes the text selection, which is quite
             irritating, so I took this back out.  It's OK in messages
@@ -132,7 +132,7 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width, int selec
     if (selected)
     {
             /* this is called if we've been created from the menu. */
-        select_selectObject(gl, &x->te_g);
+        canvas_selectObject(gl, &x->te_g);
         gobj_activate(&x->te_g, gl, 1);
     }
     if (pd_class((t_pd *)x) == vinlet_class)
@@ -162,7 +162,7 @@ static void canvas_howputnew(t_glist *x, int *connectp, int *xpixp, int *ypixp,
             *xpixp = x1;
             *ypixp = y2 + 5;
         }
-        select_deselectAll(x);
+        canvas_deselectAll(x);
             /* search back for 'selected' and if it isn't on the list, 
                 plan just to connect from the last item on the list. */
         for (g = x->gl_graphics, n2 = 0; g; g = g->g_next, n2++)
@@ -181,7 +181,7 @@ static void canvas_howputnew(t_glist *x, int *connectp, int *xpixp, int *ypixp,
         glist_getnextxy(x, xpixp, ypixp);
         *xpixp -= 3;
         *ypixp -= 3;
-        select_deselectAll(x);
+        canvas_deselectAll(x);
     }
     *connectp = connectme;
     *indexp = indx;
@@ -229,7 +229,7 @@ void canvas_iems(t_glist *gl, t_symbol *guiobjname)
     int xpix, ypix;
 
     pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym ("editmode"), "i", 1);
-    select_deselectAll(gl);
+    canvas_deselectAll(gl);
     SET_SYMBOL(&at, guiobjname);
     buffer_deserialize(b, 1, &at);
     glist_getnextxy(gl, &xpix, &ypix);
@@ -477,8 +477,8 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         x->m_text.te_xCoordinate = xpix;
         x->m_text.te_yCoordinate = ypix;
         glist_add(gl, &x->m_text.te_g);
-        select_deselectAll(gl);
-        select_selectObject(gl, &x->m_text.te_g);
+        canvas_deselectAll(gl);
+        canvas_selectObject(gl, &x->m_text.te_g);
         gobj_activate(&x->m_text.te_g, gl, 1);
         if (connectme)
             canvas_connect(gl, indx, 0, nobj, 0);
@@ -945,8 +945,8 @@ void canvas_atom(t_glist *gl, t_atomtype type,
         x->a_text.te_xCoordinate = xpix;
         x->a_text.te_yCoordinate = ypix;
         glist_add(gl, &x->a_text.te_g);
-        select_deselectAll(gl);
-        select_selectObject(gl, &x->a_text.te_g);
+        canvas_deselectAll(gl);
+        canvas_selectObject(gl, &x->a_text.te_g);
         if (connectme)
             canvas_connect(gl, indx, 0, nobj, 0);
         else canvas_startmotion(glist_getcanvas(gl));

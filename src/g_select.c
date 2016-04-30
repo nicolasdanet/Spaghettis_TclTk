@@ -28,7 +28,7 @@ static int select_getIndexOfObject (t_glist *glist, t_gobj *y, int selected)
     int n = 0;
 
     for (t = glist->gl_graphics; t && t != y; t = t->g_next) {
-        if (selected == select_isObjectSelected (glist, t)) { 
+        if (selected == canvas_isObjectSelected (glist, t)) { 
             n++; 
         }
     }
@@ -42,7 +42,7 @@ static void select_deselectAllRecursive (t_gobj *g)
     //
     t_gobj *o = NULL;
     for (o = cast_glist (g)->gl_graphics; o; o = o->g_next) { select_deselectAllRecursive (o); }
-    select_deselectAll (cast_glist (g));
+    canvas_deselectAll (cast_glist (g));
     //
     }
 }
@@ -62,7 +62,7 @@ static void select_deselectLine (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int select_isObjectSelected (t_glist *glist, t_gobj *y)
+int canvas_isObjectSelected (t_glist *glist, t_gobj *y)
 {
     if (glist->gl_editor) {
     //
@@ -80,7 +80,7 @@ int select_isObjectSelected (t_glist *glist, t_gobj *y)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void select_selectObject (t_glist *glist, t_gobj *y)
+void canvas_selectObject (t_glist *glist, t_gobj *y)
 {
     if (glist->gl_editor) {
     //
@@ -88,7 +88,7 @@ void select_selectObject (t_glist *glist, t_gobj *y)
     
     if (glist->gl_editor->e_isSelectedline) { select_deselectLine (glist); }
 
-    PD_ASSERT (!select_isObjectSelected (glist, y));    /* Must NOT be already selected. */
+    PD_ASSERT (!canvas_isObjectSelected (glist, y));    /* Must NOT be already selected. */
     
     selection->sel_next = glist->gl_editor->e_selectedObjects;
     selection->sel_what = y;
@@ -100,7 +100,7 @@ void select_selectObject (t_glist *glist, t_gobj *y)
     }
 }
 
-void select_selectLine (t_glist *glist,
+void canvas_selectLine (t_glist *glist,
     t_outconnect *connection,
     int indexOfObjectOut,
     int indexOfOutlet,
@@ -109,7 +109,7 @@ void select_selectLine (t_glist *glist,
 {
     if (glist->gl_editor) {
     //
-    select_deselectAll (glist);
+    canvas_deselectAll (glist);
         
     glist->gl_editor->e_isSelectedline                  = 1;
     glist->gl_editor->e_selectedLineIndexOfObjectOut    = indexOfObjectOut;
@@ -125,7 +125,7 @@ void select_selectLine (t_glist *glist,
     }    
 }
 
-void select_deselectObject (t_glist *glist, t_gobj *y)
+void canvas_deselectObject (t_glist *glist, t_gobj *y)
 {
     if (glist->gl_editor) {
     //
@@ -136,7 +136,7 @@ void select_deselectObject (t_glist *glist, t_gobj *y)
     t_selection *selection1 = NULL;
     t_selection *selection2 = NULL;
 
-    PD_ASSERT (select_isObjectSelected (glist, y));     /* Must be already selected. */
+    PD_ASSERT (canvas_isObjectSelected (glist, y));     /* Must be already selected. */
     
     if (glist->gl_editor->e_selectedText) {
     
@@ -188,12 +188,12 @@ void select_deselectObject (t_glist *glist, t_gobj *y)
     }
 }
 
-void select_deselectAll (t_glist *glist)
+void canvas_deselectAll (t_glist *glist)
 {
     if (glist->gl_editor) {
     //
     while (glist->gl_editor->e_selectedObjects) {
-        select_deselectObject (glist, glist->gl_editor->e_selectedObjects->sel_what);
+        canvas_deselectObject (glist, glist->gl_editor->e_selectedObjects->sel_what);
     }
 
     if (glist->gl_editor->e_isSelectedline) { select_deselectLine (glist); }
@@ -205,17 +205,17 @@ void select_deselectAll (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int select_getNumberOfUnselectedObjects (t_glist *glist)
+int canvas_getNumberOfUnselectedObjects (t_glist *glist)
 {
-    return select_getIndexOfObjectAmongUnselected (glist, NULL);
+    return canvas_getIndexOfObjectAmongUnselected (glist, NULL);
 }
 
-int select_getIndexOfObjectAmongSelected (t_glist *glist, t_gobj *y)
+int canvas_getIndexOfObjectAmongSelected (t_glist *glist, t_gobj *y)
 {
     return select_getIndexOfObject (glist, y, 1);
 }
 
-int select_getIndexOfObjectAmongUnselected (t_glist *glist, t_gobj *y)
+int canvas_getIndexOfObjectAmongUnselected (t_glist *glist, t_gobj *y)
 {
     return select_getIndexOfObject (glist, y, 0);
 }

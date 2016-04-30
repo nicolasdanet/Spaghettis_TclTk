@@ -167,7 +167,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
     }
     if (selectit)
     {
-        select_selectObject(x, &sc->sc_g);
+        canvas_selectObject(x, &sc->sc_g);
     }
     return (1);
 }
@@ -533,7 +533,7 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
     for (y = x->gl_graphics; y; y = y->g_next)
     {
         if ((pd_class(&y->g_pd) == scalar_class) &&
-            (wholething || select_isObjectSelected(x, y)))
+            (wholething || canvas_isObjectSelected(x, y)))
         {
             canvas_addtemplatesforscalar(((t_scalar *)y)->sc_template,
                 ((t_scalar *)y)->sc_vector,  &ntemplates, &templatevec);
@@ -570,7 +570,7 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
     for (y = x->gl_graphics; y; y = y->g_next)
     {
         if ((pd_class(&y->g_pd) == scalar_class) &&
-            (wholething || select_isObjectSelected(x, y)))
+            (wholething || canvas_isObjectSelected(x, y)))
         {
             canvas_writescalar(((t_scalar *)y)->sc_template,
                 ((t_scalar *)y)->sc_vector,  b, 0);
@@ -685,11 +685,11 @@ static void canvas_collecttemplatesfor(t_glist *x, int *ntemplatesp,
     for (y = x->gl_graphics; y; y = y->g_next)
     {
         if ((pd_class(&y->g_pd) == scalar_class) &&
-            (wholething || select_isObjectSelected(x, y)))
+            (wholething || canvas_isObjectSelected(x, y)))
                 canvas_addtemplatesforscalar(((t_scalar *)y)->sc_template,
                     ((t_scalar *)y)->sc_vector,  ntemplatesp, templatevecp);
         else if ((pd_class(&y->g_pd) == canvas_class) &&
-            (wholething || select_isObjectSelected(x, y)))
+            (wholething || canvas_isObjectSelected(x, y)))
                 canvas_collecttemplatesfor((t_glist *)y,
                     ntemplatesp, templatevecp, 1);
     }
