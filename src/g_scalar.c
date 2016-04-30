@@ -396,7 +396,7 @@ static void scalar_properties(t_gobj *z, struct _glist *owner)
     char *buf, buf2[80];
     int bufsize;
     t_buffer *b;
-    glist_noselect(owner);
+    select_deselectAll(owner);
     select_selectObject(owner, z);
     b = glist_writetobinbuf(owner, 0);
     buffer_toStringUnzeroed(b, &buf, &bufsize);

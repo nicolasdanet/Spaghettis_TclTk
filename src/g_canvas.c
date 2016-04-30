@@ -433,7 +433,7 @@ void canvas_free (t_glist *glist)
     t_gobj *y = NULL;
         
     canvas_noundo (glist);
-    glist_noselect (glist);
+    select_deselectAll (glist);
     
     while (y = glist->gl_graphics) { glist_delete (glist, y); }
     if (glist == glist_getcanvas (glist)) { canvas_vis (glist, 0); }

@@ -223,7 +223,7 @@ static void *canvas_undo_set_cut(t_glist *x, int mode)
     t_gobj *y;
     t_linetraverser t;
     t_outconnect *oc;
-    int nnotsel= glist_selectionindex(x, 0, 0);
+    int nnotsel= select_getNumberOfUnselectedObjects (x);
     buf = (t_undo_cut *)PD_MEMORY_GET(sizeof(*buf));
     buf->u_mode = mode;
     buf->u_redotextbuf = 0;
@@ -240,10 +240,10 @@ static void *canvas_undo_set_cut(t_glist *x, int mode)
             buffer_vAppend(buf->u_reconnectbuf, "ssiiii;",
                 gensym ("#X"), gensym ("connect"),
                 (issel1 ? nnotsel : 0)
-                    + glist_selectionindex(x, &t.tr_srcObject->te_g, issel1),
+                    + (issel1 ? select_getIndexOfObjectAmongSelected (x, &t.tr_srcObject->te_g) : select_getIndexOfObjectAmongUnselected (x, &t.tr_srcObject->te_g)),
                 t.tr_srcIndexOfOutlet,
-                (issel2 ? nnotsel : 0) +
-                    glist_selectionindex(x, &t.tr_destObject->te_g, issel2),
+                (issel2 ? nnotsel : 0)
+                    + (issel2 ? select_getIndexOfObjectAmongSelected (x, &t.tr_destObject->te_g) : select_getIndexOfObjectAmongUnselected (x, &t.tr_destObject->te_g)),
                 t.tr_destIndexOfInlet);
         }
     }
@@ -276,17 +276,17 @@ static void canvas_undo_cut(t_glist *x, void *z, int action)
         else if (mode == UCUT_TEXT)
         {
             t_gobj *y1, *y2;
-            glist_noselect(x);
+            select_deselectAll(x);
             for (y1 = x->gl_graphics; y2 = y1->g_next; y1 = y2)
                 ;
             if (y1)
             {
                 if (!buf->u_redotextbuf)
                 {
-                    glist_noselect(x);
+                    select_deselectAll(x);
                     select_selectObject(x, y1);
                     buf->u_redotextbuf = canvas_docopy(x);
-                    glist_noselect(x);
+                    select_deselectAll(x);
                 }
                 glist_delete(x, y1);
             }
@@ -347,9 +347,9 @@ static void *canvas_undo_set_move(t_glist *x, int selected)
     int x1, y1, x2, y2, i, indx;
     t_gobj *y;
     t_undo_move *buf =  (t_undo_move *)PD_MEMORY_GET(sizeof(*buf));
-    buf->u_n = selected ? glist_selectionindex(x, 0, 1) : glist_getindex(x, 0);
+    buf->u_n = selected ? select_getIndexOfObjectAmongSelected(x, 0) : canvas_getIndexOfObject(x, 0);
     buf->u_vec = (t_undo_move_elem *)PD_MEMORY_GET(sizeof(*buf->u_vec) *
-        (selected ? glist_selectionindex(x, 0, 1) : glist_getindex(x, 0)));
+        (selected ? select_getIndexOfObjectAmongSelected(x, 0) : canvas_getIndexOfObject(x, 0)));
     if (selected)
     {
         for (y = x->gl_graphics, i = indx = 0; y; y = y->g_next, indx++)
@@ -388,7 +388,7 @@ static void canvas_undo_move(t_glist *x, void *z, int action)
             t_gobj *y;
             newx = buf->u_vec[i].e_xpix;
             newy = buf->u_vec[i].e_ypix;
-            y = glist_nth(x, buf->u_vec[i].e_index);
+            y = canvas_getObjectAtIndex(x, buf->u_vec[i].e_index);
             if (y)
             {
                 gobj_getRectangle(y, x, &x1, &y1, &x2, &y2);
@@ -415,7 +415,7 @@ typedef struct _undo_paste
 static void *canvas_undo_set_paste(t_glist *x)
 {
     t_undo_paste *buf =  (t_undo_paste *)PD_MEMORY_GET(sizeof(*buf));
-    buf->u_index = glist_getindex(x, 0);
+    buf->u_index = canvas_getIndexOfObject(x, 0);
     return (buf);
 }
 
@@ -425,8 +425,8 @@ static void canvas_undo_paste(t_glist *x, void *z, int action)
     if (action == UNDO_UNDO)
     {
         t_gobj *y;
-        glist_noselect(x);
-        for (y = glist_nth(x, buf->u_index); y; y = y->g_next)
+        select_deselectAll(x);
+        for (y = canvas_getObjectAtIndex(x, buf->u_index); y; y = y->g_next)
             select_selectObject(x, y);
         canvas_doclear(x);
     }
@@ -450,7 +450,7 @@ static void glist_doreload(t_glist *gl, t_symbol *name, t_symbol *dir,
     t_gobj *except)
 {
     t_gobj *g;
-    int i, nobj = glist_getindex(gl, 0);  /* number of objects */
+    int i, nobj = canvas_getIndexOfObject(gl, 0);  /* number of objects */
     int hadwindow = (gl->gl_editor != 0);
     for (g = gl->gl_graphics, i = 0; g && i < nobj; i++)
     {
@@ -463,18 +463,18 @@ static void glist_doreload(t_glist *gl, t_symbol *name, t_symbol *dir,
                 Get its index here, and afterward restore g.  Also, the
                 replacement will be at the end of the list, so we don't
                 do g = g->g_next in this case. */
-            int j = glist_getindex(gl, g);
+            int j = canvas_getIndexOfObject(gl, g);
             if (!gl->gl_editor)
                 canvas_vis(gl, 1);
             if (!gl->gl_editor) { PD_BUG; }
-            glist_noselect(gl);
+            select_deselectAll(gl);
             select_selectObject(gl, g);
             canvas_setundo(gl, canvas_undo_cut,
                 canvas_undo_set_cut(gl, UCUT_CLEAR), "clear");
             canvas_doclear(gl);
             canvas_undo(gl);
-            glist_noselect(gl);
-            g = glist_nth(gl, j);
+            select_deselectAll(gl);
+            g = canvas_getObjectAtIndex(gl, j);
         }
         else
         {
@@ -608,7 +608,7 @@ static t_editor *editor_new(t_glist *owner)
 
 static void editor_free(t_editor *x, t_glist *y)
 {
-    glist_noselect(y);
+    select_deselectAll(y);
     guiconnect_release(x->e_guiconnect, 1000);
     buffer_free(x->e_buffer);
     //buffer_free(x->e_deleted);
@@ -636,7 +636,7 @@ void canvas_destroy_editor(t_glist *x)
 {
     t_gobj *y;
     t_object *ob;
-    glist_noselect(x);
+    select_deselectAll(x);
     if (x->gl_editor)
     {
         t_boxtext *rtext;
@@ -707,7 +707,7 @@ void canvas_vis(t_glist *x, t_float f)
                 canvas_destroy_editor(x);
             return;
         }
-        glist_noselect(x);
+        select_deselectAll(x);
         if (canvas_isVisible(x))
             canvas_map(x, 0);
         canvas_destroy_editor(x);
@@ -1053,7 +1053,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                 {
                     if (!select_isObjectSelected(x, y))
                     {
-                        glist_noselect(x);
+                        select_deselectAll(x);
                         select_selectObject(x, y);
                     }
                     x->gl_editor->e_onMotion = ACTION_RESIZE;
@@ -1112,7 +1112,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                         /* otherwise select and drag to displace */
                     if (!select_isObjectSelected(x, y))
                     {
-                        glist_noselect(x);
+                        select_deselectAll(x);
                         select_selectObject(x, y);
                     }
                     x->gl_editor->e_onMotion = ACTION_MOVE;
@@ -1165,7 +1165,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
     canvas_setcursor(x, CURSOR_EDIT_NOTHING);
     if (doit)
     {
-        if (!shiftmod) glist_noselect(x);
+        if (!shiftmod) select_deselectAll(x);
         sys_vGui(".x%lx.c create rectangle %d %d %d %d -tags x\n",
               x, xpos, ypos, xpos, ypos);
         x->gl_editor->e_previousX = xpos;
@@ -1805,7 +1805,7 @@ static int canvas_dofind(t_glist *x, int *myindexp)
             {
                 if (*myindexp == canvas_find_index)
                 {
-                    glist_noselect(x);
+                    select_deselectAll(x);
                     pd_vMessage(&x->gl_obj.te_g.g_pd, gensym ("open"), "");
                     canvas_editmode(x, 1.);
                     select_selectObject(x, y);
@@ -1908,8 +1908,8 @@ void canvas_stowconnections(t_glist *x)
         if (s1 != s2)
             buffer_vAppend(x->gl_editor->e_buffer, "ssiiii;",
                 gensym ("#X"), gensym ("connect"),
-                    glist_getindex(x, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
-                        glist_getindex(x, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
+                    canvas_getIndexOfObject(x, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
+                        canvas_getIndexOfObject(x, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
     }
 }
 
@@ -1939,8 +1939,8 @@ static t_buffer *canvas_docopy(t_glist *x)
             && select_isObjectSelected(x, &t.tr_destObject->te_g))
         {
             buffer_vAppend(b, "ssiiii;", gensym ("#X"), gensym ("connect"),
-                glist_selectionindex(x, &t.tr_srcObject->te_g, 1), t.tr_srcIndexOfOutlet,
-                glist_selectionindex(x, &t.tr_destObject->te_g, 1), t.tr_destIndexOfInlet);
+                select_getIndexOfObjectAmongSelected(x, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
+                select_getIndexOfObjectAmongSelected(x, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
         }
     }
     return (b);
@@ -2009,7 +2009,7 @@ static void canvas_doclear(t_glist *x)
     {
         t_gobj *selwas = x->gl_editor->e_selectedObjects->sel_what;
         pd_newest = 0;
-        glist_noselect(x);
+        select_deselectAll(x);
         if (pd_newest)
         {
             for (y = x->gl_graphics; y; y = y->g_next)
@@ -2097,7 +2097,7 @@ static void canvas_dopaste(t_glist *x, t_buffer *b)
     s__N.s_thing = &pd_canvasMaker;
 
     canvas_editmode(x, 1.);
-    glist_noselect(x);
+    select_deselectAll(x);
     for (g2 = x->gl_graphics, nbox = 0; g2; g2 = g2->g_next) nbox++;
 
     paste_onset = nbox;
@@ -2160,8 +2160,8 @@ static void canvas_selectall(t_glist *x)
     if (!x->gl_isEditMode)
         canvas_editmode(x, 1);
             /* if everyone is already selected deselect everyone */
-    if (!glist_selectionindex(x, 0, 0))
-        glist_noselect(x);
+    if (!select_getNumberOfUnselectedObjects (x))
+        select_deselectAll(x);
     else for (y = x->gl_graphics; y; y = y->g_next)
     {
         if (!select_isObjectSelected(x, y))
@@ -2182,9 +2182,9 @@ static void canvas_reselect(t_glist *x)
         if ((gwas = x->gl_editor->e_selectedObjects->sel_what) &&
             !x->gl_editor->e_selectedObjects->sel_next)
         {
-            int nobjwas = glist_getindex(x, 0),
+            int nobjwas = canvas_getIndexOfObject(x, 0),
                 indx = canvas_getIndexOfObject(x, x->gl_editor->e_selectedObjects->sel_what);
-            glist_noselect(x);
+            select_deselectAll(x);
             for (g = x->gl_graphics; g; g = g->g_next)
                 if (g == gwas)
             {
@@ -2397,7 +2397,7 @@ void canvas_editmode(t_glist *x, t_float state)
     }
     else
     {
-        glist_noselect(x);
+        select_deselectAll(x);
         if (canvas_isVisible(x) && canvas_isTopLevel(x))
         {
             canvas_setcursor(x, CURSOR_NOTHING);

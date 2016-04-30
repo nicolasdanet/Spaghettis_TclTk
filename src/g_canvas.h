@@ -331,7 +331,6 @@ t_environment   *canvas_getEnvironment                  (t_glist *glist);
 t_glist         *canvas_getRoot                         (t_glist *glist);
 t_symbol        *canvas_expandDollar                    (t_glist *glist, t_symbol *s);
 t_symbol        *canvas_makeBindSymbol                  (t_symbol *s);
-
 t_glist         *canvas_addGraph                        (t_glist *glist,
                                                             t_symbol *name,
                                                             t_float indexStart,
@@ -346,7 +345,6 @@ t_glist         *canvas_addGraph                        (t_glist *glist,
 int             canvas_isVisible                        (t_glist *glist);
 int             canvas_isTopLevel                       (t_glist *glist);
 int             canvas_isAbstraction                    (t_glist *glist);
-
 int             canvas_openFile                         (t_glist *glist,
                                                             const char *name,
                                                             const char *extension,
@@ -361,7 +359,9 @@ void            canvas_setName                          (t_glist *glist, t_symbo
 void            canvas_updateTitle                      (t_glist *glist);
 int             canvas_hasGraphOnParentTitle            (t_glist *glist);
 int             canvas_getFontSize                      (t_glist *glist);
+
 int             canvas_getIndexOfObject                 (t_glist *glist, t_gobj *object);
+t_gobj          *canvas_getObjectAtIndex                (t_glist *glist, int n);
 
 void            canvas_traverseLinesStart               (t_linetraverser *t, t_glist *glist);
 t_outconnect    *canvas_traverseLinesNext               (t_linetraverser *t);
@@ -380,7 +380,6 @@ void            canvas_deleteLinesByInlets              (t_glist *glist,
 
 void            canvas_drawGraphOnParentRectangle       (t_glist *glist);
 void            canvas_deleteGraphOnParentRectangle     (t_glist *glist);
-
 void            canvas_redrawAllByTemplate              (t_template *dummy, int action);
 void            canvas_redrawAllByTemplateByCanvas      (t_glist *glist, int action);
 
@@ -390,7 +389,6 @@ void            canvas_redrawAllByTemplateByCanvas      (t_glist *glist, int act
 t_glist         *canvas_new                             (void *dummy, t_symbol *s, int argc, t_atom *argv);
 
 void            canvas_free                             (t_glist *glist);
-
 void            canvas_click                            (t_glist *glist,
                                                             t_float a,
                                                             t_float b,
@@ -429,16 +427,20 @@ void            dsp_resume                              (int oldState);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+int             select_isObjectSelected                 (t_glist *glist, t_gobj *y);
+void            select_selectObject                     (t_glist *glist, t_gobj *y);
 void            select_selectLine                       (t_glist *glist, 
                                                             t_outconnect *connection,
                                                             int indexOfObjectOut,
                                                             int indexOfOutlet,
                                                             int indexOfObjectIn,
                                                             int indexOfInlet);
-
-int             select_isObjectSelected                 (t_glist *glist, t_gobj *y);
-void            select_selectObject                     (t_glist *glist, t_gobj *y);
+                                                            
 void            select_deselectObject                   (t_glist *glist, t_gobj *y);
+void            select_deselectAll                      (t_glist *glist);
+int             select_getNumberOfUnselectedObjects     (t_glist *glist);
+int             select_getIndexOfObjectAmongSelected    (t_glist *glist, t_gobj *y);
+int             select_getIndexOfObjectAmongUnselected  (t_glist *glist, t_gobj *y);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -473,7 +475,7 @@ void            gobj_save                               (t_gobj *x, t_buffer *bu
 
 void glist_readfrombinbuf (t_glist *x, t_buffer *b, char *filename, int selectem);
 
-void                canvas_dataproperties           (t_glist *x, t_scalar *sc, t_buffer *b);
+void canvas_dataproperties (t_glist *x, t_scalar *sc, t_buffer *b);
 
 void canvas_properties (t_gobj *z, t_glist *canvas);
 void canvas_objfor (t_glist *gl, t_object *x, int argc, t_atom *argv);
@@ -511,8 +513,6 @@ t_glist  *glist_new             (void);
 void     glist_add              (t_glist *x, t_gobj *g);
 void     glist_clear            (t_glist *x);
 t_glist *glist_getcanvas        (t_glist *x);
-t_gobj  *glist_nth              (t_glist *x, int n);
-void     glist_noselect         (t_glist *x);
 void     glist_delete           (t_glist *x, t_gobj *y);
 void     glist_retext           (t_glist *x, t_object *y);
 t_glist *glist_findgraph        (t_glist *x);

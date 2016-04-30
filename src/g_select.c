@@ -22,13 +22,27 @@ extern t_class *canvas_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static int select_getIndexOfObject (t_glist *glist, t_gobj *y, int selected)
+{
+    t_gobj *t = NULL;
+    int n = 0;
+
+    for (t = glist->gl_graphics; t && t != y; t = t->g_next) {
+        if (selected == select_isObjectSelected (glist, t)) { 
+            n++; 
+        }
+    }
+    
+    return n;
+}
+
 static void select_deselectAllRecursive (t_gobj *g)
 {
     if (pd_class (g) == canvas_class) { 
     //
     t_gobj *o = NULL;
     for (o = cast_glist (g)->gl_graphics; o; o = o->g_next) { select_deselectAllRecursive (o); }
-    glist_noselect (cast_glist (g));
+    select_deselectAll (cast_glist (g));
     //
     }
 }
@@ -42,35 +56,6 @@ static void select_deselectLine (t_glist *glist)
     sys_vGui (".x%lx.c itemconfigure %lxLINE -fill black\n",
                 glist,
                 glist->gl_editor->e_selectedLineConnection);   
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void select_selectLine (t_glist *glist,
-    t_outconnect *connection,
-    int indexOfObjectOut,
-    int indexOfOutlet,
-    int indexOfObjectIn,
-    int indexOfInlet)
-{
-    if (glist->gl_editor) {
-    //
-    glist_noselect (glist);
-        
-    glist->gl_editor->e_isSelectedline                  = 1;
-    glist->gl_editor->e_selectedLineIndexOfObjectOut    = indexOfObjectOut;
-    glist->gl_editor->e_selectedLineIndexOfOutlet       = indexOfOutlet;
-    glist->gl_editor->e_selectedLineIndexOfObjectIn     = indexOfObjectIn;
-    glist->gl_editor->e_selectedLineIndexOfInlet        = indexOfInlet;
-    glist->gl_editor->e_selectedLineConnection          = connection;
-    
-    sys_vGui (".x%lx.c itemconfigure %lxLINE -fill blue\n",
-                glist,
-                glist->gl_editor->e_selectedLineConnection);
-    //
-    }    
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -113,6 +98,31 @@ void select_selectObject (t_glist *glist, t_gobj *y)
     gobj_select (y, glist, 1);
     //
     }
+}
+
+void select_selectLine (t_glist *glist,
+    t_outconnect *connection,
+    int indexOfObjectOut,
+    int indexOfOutlet,
+    int indexOfObjectIn,
+    int indexOfInlet)
+{
+    if (glist->gl_editor) {
+    //
+    select_deselectAll (glist);
+        
+    glist->gl_editor->e_isSelectedline                  = 1;
+    glist->gl_editor->e_selectedLineIndexOfObjectOut    = indexOfObjectOut;
+    glist->gl_editor->e_selectedLineIndexOfOutlet       = indexOfOutlet;
+    glist->gl_editor->e_selectedLineIndexOfObjectIn     = indexOfObjectIn;
+    glist->gl_editor->e_selectedLineIndexOfInlet        = indexOfInlet;
+    glist->gl_editor->e_selectedLineConnection          = connection;
+    
+    sys_vGui (".x%lx.c itemconfigure %lxLINE -fill blue\n",
+                glist,
+                glist->gl_editor->e_selectedLineConnection);
+    //
+    }    
 }
 
 void select_deselectObject (t_glist *glist, t_gobj *y)
@@ -178,55 +188,36 @@ void select_deselectObject (t_glist *glist, t_gobj *y)
     }
 }
 
+void select_deselectAll (t_glist *glist)
+{
+    if (glist->gl_editor) {
+    //
+    while (glist->gl_editor->e_selectedObjects) {
+        select_deselectObject (glist, glist->gl_editor->e_selectedObjects->sel_what);
+    }
+
+    if (glist->gl_editor->e_isSelectedline) { select_deselectLine (glist); }
+    //
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void glist_noselect (t_glist *x)
+int select_getNumberOfUnselectedObjects (t_glist *glist)
 {
-    if (x->gl_editor)
-    {
-        while (x->gl_editor->e_selectedObjects)
-            select_deselectObject(x, x->gl_editor->e_selectedObjects->sel_what);
-        if (x->gl_editor->e_isSelectedline)
-            select_deselectLine(x);
-    }
+    return select_getIndexOfObjectAmongUnselected (glist, NULL);
 }
 
-    /* get the index of a gobj in a glist.  If y is zero, return the
-    total number of objects. */
-int glist_getindex(t_glist *x, t_gobj *y)
+int select_getIndexOfObjectAmongSelected (t_glist *glist, t_gobj *y)
 {
-    t_gobj *y2;
-    int indx;
-
-    for (y2 = x->gl_graphics, indx = 0; y2 && y2 != y; y2 = y2->g_next)
-        indx++;
-    return (indx);
+    return select_getIndexOfObject (glist, y, 1);
 }
 
-    /* get the index of the object, among selected items, if "selected"
-    is set; otherwise, among unselected ones.  If y is zero, just
-    counts the selected or unselected objects. */
-int glist_selectionindex(t_glist *x, t_gobj *y, int selected)
+int select_getIndexOfObjectAmongUnselected (t_glist *glist, t_gobj *y)
 {
-    t_gobj *y2;
-    int indx;
-
-    for (y2 = x->gl_graphics, indx = 0; y2 && y2 != y; y2 = y2->g_next)
-        if (selected == select_isObjectSelected(x, y2))
-            indx++;
-    return (indx);
-}
-
-t_gobj *glist_nth (t_glist *x, int n)
-{
-    t_gobj *y;
-    int indx;
-    for (y = x->gl_graphics, indx = 0; y; y = y->g_next, indx++)
-        if (indx == n)
-            return (y);
-    return (0);
+    return select_getIndexOfObject (glist, y, 0);
 }
 
 // -----------------------------------------------------------------------------------------------------------

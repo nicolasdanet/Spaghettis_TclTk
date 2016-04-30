@@ -332,6 +332,19 @@ int canvas_getIndexOfObject (t_glist *glist, t_gobj *object)
     return n;
 }
 
+t_gobj *canvas_getObjectAtIndex (t_glist *glist, int n)
+{
+    t_gobj *t = NULL;
+    int i = 0;
+    
+    for (t = glist->gl_graphics; t; t = t->g_next) {
+        if (i == n) { return t; }
+        i++;
+    }
+    
+    return NULL;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
