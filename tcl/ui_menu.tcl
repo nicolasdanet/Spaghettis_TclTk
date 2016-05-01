@@ -215,25 +215,25 @@ proc _edit {m} {
     $m add command \
         -label [_ "Cut"] \
         -accelerator "${accelerator}+X" \
-        -command { ::ui_menu::_handle cut }
+        -command { ::ui_menu::_handle _cut }
     $m add command \
         -label [_ "Copy"] \
         -accelerator "${accelerator}+C" \
-        -command { ::ui_menu::_handle copy }
+        -command { ::ui_menu::_handle _copy }
     $m add command \
         -label [_ "Paste"] \
         -accelerator "${accelerator}+V" \
-        -command { ::ui_menu::_handle paste }
+        -command { ::ui_menu::_handle _paste }
     $m add separator
     
     $m add command \
         -label [_ "Duplicate"] \
         -accelerator "${accelerator}+D" \
-        -command { ::ui_menu::_handle duplicate }
+        -command { ::ui_menu::_handle _duplicate }
     $m add command \
         -label [_ "Select All"] \
         -accelerator "${accelerator}+A" \
-        -command { ::ui_menu::_handle selectall }
+        -command { ::ui_menu::_handle _selectall }
     $m add separator
     
     $m add check \

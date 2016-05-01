@@ -527,15 +527,15 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_map,           gensym ("_map"),        A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_pop,           gensym ("_pop"),        A_DEFFLOAT, A_NULL);
 
+    class_addMethod (c, (t_method)canvas_cut,           gensym ("_cut"),        A_NULL);
+    class_addMethod (c, (t_method)canvas_copy,          gensym ("_copy"),       A_NULL);
+    class_addMethod (c, (t_method)canvas_paste,         gensym ("_paste"),      A_NULL);
+    class_addMethod (c, (t_method)canvas_duplicate,     gensym ("_duplicate"),  A_NULL);
+    class_addMethod (c, (t_method)canvas_selectall,     gensym ("_selectall"),  A_NULL);
+    
     class_addMethod (c, (t_method)glist_clear,          gensym ("clear"),       A_NULL);
     class_addMethod (c, (t_method)canvas_dsp,           gensym ("dsp"),         A_CANT, A_NULL);
     class_addMethod (c, (t_method)canvas_rename,        gensym ("rename"),      A_GIMME, A_NULL);
-    
-    class_addMethod (c, (t_method)canvas_cut,           gensym ("cut"),         A_NULL);
-    class_addMethod (c, (t_method)canvas_copy,          gensym ("copy"),        A_NULL);
-    class_addMethod (c, (t_method)canvas_paste,         gensym ("paste"),       A_NULL);
-    class_addMethod (c, (t_method)canvas_duplicate,     gensym ("duplicate"),   A_NULL);
-    class_addMethod (c, (t_method)canvas_selectall,     gensym ("selectall"),   A_NULL);
     
     class_addMethod (c, (t_method)canvas_done_popup,
         gensym ("done-popup"),
