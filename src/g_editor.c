@@ -1311,7 +1311,7 @@ void global_shouldQuit(void *dummy)
         if (g2 = glist_finddirty(g))
     {
         canvas_vis(g2, 1);
-            sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx menuclose 3 } {}\n",
+            sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx close 3 } {}\n",
                      canvas_getRoot(g2), g2);
         return;
     }
@@ -1339,13 +1339,13 @@ void canvas_menuclose(t_glist *x, t_float fforce)
         if (g)
         {
             pd_vMessage(&g->gl_obj.te_g.g_pd, gensym ("open"), "");
-            sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx menuclose 2 } {}\n",
+            sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx close 2 } {}\n",
                      canvas_getRoot(g), g);
             return;
         }
         else if (0)
         {
-            sys_vGui("::ui_confirm::checkAction .x%lx { Close this window? } { ::ui_interface::pdsend .x%lx menuclose 1 } { yes }\n",
+            sys_vGui("::ui_confirm::checkAction .x%lx { Close this window? } { ::ui_interface::pdsend .x%lx close 1 } { yes }\n",
                      canvas_getRoot(x), x);
         }
         else pd_free(&x->gl_obj.te_g.g_pd);
@@ -1361,7 +1361,7 @@ void canvas_menuclose(t_glist *x, t_float fforce)
         if (g)
         {
             pd_vMessage(&g->gl_obj.te_g.g_pd, gensym ("open"), "");
-            sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx menuclose 2 } {}\n",
+            sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx close 2 } {}\n",
                      canvas_getRoot(x), g);
             return;
         }

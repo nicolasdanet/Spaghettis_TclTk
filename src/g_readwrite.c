@@ -756,7 +756,7 @@ static void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir,
         canvas_dirty(x, 0);
         canvas_reload(filename, dir, &x->gl_obj.te_g);
         if (fdestroy != 0)
-            pd_vMessage(&x->gl_obj.te_g.g_pd, gensym ("menuclose"), "f", 1.);
+            pd_vMessage(&x->gl_obj.te_g.g_pd, gensym ("close"), "f", 1.);
     }
     buffer_free(b);
 }

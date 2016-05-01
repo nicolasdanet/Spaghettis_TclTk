@@ -474,7 +474,11 @@ void canvas_setup (void)
 
     class_addCreator ((t_newmethod)subpatch_new, gensym ("pd"), A_DEFSYMBOL, A_NULL);
     
+    class_addKey (c, canvas_key);
     class_addClick (c, canvas_click);
+    class_addMotion (c, canvas_motion);
+    class_addMouse (c, canvas_mouse);
+    class_addMouseUp (c, canvas_mouseup);
     class_addBounds (c, canvas_setBounds);
 
     class_addMethod (c, (t_method)canvas_coords,        gensym ("coords"),      A_GIMME, A_NULL);
@@ -487,7 +491,23 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_graph,         gensym ("graph"),       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)glist_scalar,         gensym ("scalar"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_width,         gensym ("f"),           A_GIMME, A_NULL);
+    
+    class_addMethod (c, (t_method)canvas_connect,
+        gensym ("connect"),
+        A_FLOAT,
+        A_FLOAT,
+        A_FLOAT,
+        A_FLOAT,
+        A_NULL);
         
+    class_addMethod (c, (t_method)canvas_disconnect,
+        gensym ("disconnect"),
+        A_FLOAT,
+        A_FLOAT,
+        A_FLOAT,
+        A_FLOAT,
+        A_NULL);
+     
     class_addMethod (c, (t_method)canvas_bng,           gensym ("bng"),         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_toggle,        gensym ("tgl"),         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_vslider,       gensym ("vslider"),     A_GIMME, A_NULL);
@@ -498,6 +518,8 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_mycnv,         gensym ("cnv"),         A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_numbox,        gensym ("nbx"),         A_GIMME, A_NULL);
     
+    class_addMethod (c, (t_method)canvas_editmode,      gensym ("editmode"),    A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_menuclose,     gensym ("close"),       A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_open,          gensym ("open"),        A_NULL);
     class_addMethod (c, (t_method)canvas_loadbang,      gensym ("loadbang"),    A_NULL);
     class_addMethod (c, (t_method)canvas_vis,           gensym ("visible"),     A_FLOAT, A_NULL);
@@ -509,26 +531,35 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_dsp,           gensym ("dsp"),         A_CANT, A_NULL);
     class_addMethod (c, (t_method)canvas_rename,        gensym ("rename"),      A_GIMME, A_NULL);
     
-    class_addMethod (c, (t_method)canvas_motion, gensym ("motion"), A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_key, gensym ("key"), A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_mouse, gensym ("mouse"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_mouseup, gensym ("mouseup"), A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_menuclose, gensym ("menuclose"), A_DEFFLOAT, 0);
-    class_addMethod (c, (t_method)canvas_cut, gensym ("cut"), A_NULL);
-    class_addMethod (c, (t_method)canvas_copy, gensym ("copy"), A_NULL);
-    class_addMethod (c, (t_method)canvas_paste, gensym ("paste"), A_NULL);
-    class_addMethod (c, (t_method)canvas_duplicate, gensym ("duplicate"), A_NULL);
-    class_addMethod (c, (t_method)canvas_selectall, gensym ("selectall"), A_NULL);
-    class_addMethod (c, (t_method)canvas_editmode, gensym ("editmode"), A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_done_popup, gensym ("done-popup"), A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_donecanvasdialog, gensym ("donecanvasdialog"), A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)glist_arraydialog, gensym ("arraydialog"), A_SYMBOL, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_connect, gensym ("connect"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_disconnect, gensym ("disconnect"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_cut,           gensym ("cut"),         A_NULL);
+    class_addMethod (c, (t_method)canvas_copy,          gensym ("copy"),        A_NULL);
+    class_addMethod (c, (t_method)canvas_paste,         gensym ("paste"),       A_NULL);
+    class_addMethod (c, (t_method)canvas_duplicate,     gensym ("duplicate"),   A_NULL);
+    class_addMethod (c, (t_method)canvas_selectall,     gensym ("selectall"),   A_NULL);
+    
+    class_addMethod (c, (t_method)canvas_done_popup,
+        gensym ("done-popup"),
+        A_FLOAT,
+        A_FLOAT,
+        A_FLOAT,
+        A_NULL);
         
+    class_addMethod (c, (t_method)canvas_donecanvasdialog,
+        gensym ("donecanvasdialog"),
+        A_GIMME,
+        A_NULL);
+        
+    class_addMethod (c, (t_method)glist_arraydialog,
+        gensym ("arraydialog"),
+        A_SYMBOL,
+        A_FLOAT,
+        A_FLOAT,
+        A_NULL);
+   
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)canvas_open,          gensym ("menu-open"),   A_NULL);
+    class_addMethod (c, (t_method)canvas_menuclose,     gensym ("menuclose"),   A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_toggle,        gensym ("toggle"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_vumeter,       gensym ("vumeter"),     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_mycnv,         gensym ("mycnv"),       A_GIMME, A_NULL);

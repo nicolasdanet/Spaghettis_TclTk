@@ -121,6 +121,26 @@ typedef void (*t_gotfn1)(void *x, void *arg1);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define class_addKey(c, m)                  class_addMethod ((c), (t_method)(m), \
+                                                gensym ("key"), \
+                                                A_GIMME, \
+                                                A_NULL);
+
+#define class_addMouse(c, m)                class_addMethod ((c), (t_method)(m), \
+                                                gensym ("mouse"), \
+                                                A_FLOAT, \
+                                                A_FLOAT, \
+                                                A_FLOAT, \
+                                                A_FLOAT, \
+                                                A_NULL);
+                                                
+#define class_addMouseUp(c, m)              class_addMethod ((c), (t_method)(m), \
+                                                gensym ("mouseup"), \
+                                                A_FLOAT, \
+                                                A_FLOAT, \
+                                                A_FLOAT, \
+                                                A_NULL);
+    
 #define class_addClick(c, m)                class_addMethod ((c), (t_method)(m), \
                                                 gensym ("click"), \
                                                 A_FLOAT, \

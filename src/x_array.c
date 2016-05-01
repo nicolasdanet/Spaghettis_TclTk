@@ -849,6 +849,8 @@ void x_array_setup(void )
     class_addMethod(array_define_class, (t_method)canvas_motion, gensym ("motion"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     class_addMethod(array_define_class, (t_method)canvas_menuclose,
+        gensym ("close"), A_DEFFLOAT, 0);
+    class_addMethod(array_define_class, (t_method)canvas_menuclose,
         gensym ("menuclose"), A_DEFFLOAT, 0);
     /*class_addMethod(array_define_class, (t_method)canvas_find_parent,
         gensym ("findparent"), A_NULL)*/
