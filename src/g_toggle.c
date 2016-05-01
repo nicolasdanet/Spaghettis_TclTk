@@ -514,7 +514,7 @@ void toggle_setup (void)
     
     class_addMethod (c, (t_method)toggle_loadbang,          gensym ("loadbang"),        A_NULL);
     class_addMethod (c, (t_method)toggle_initialize,        gensym ("initialize"),      A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)toggle_dialog,            gensym ("dialog"),          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)toggle_dialog,            gensym ("_iemDialog"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)toggle_size,              gensym ("size"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_move,             gensym ("move"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_position,         gensym ("position"),        A_GIMME, A_NULL);

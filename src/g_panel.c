@@ -410,7 +410,7 @@ void panel_setup (void)
         A_GIMME,
         A_NULL);
         
-    class_addMethod (c, (t_method)panel_dialog,             gensym ("dialog"),          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)panel_dialog,             gensym ("_iemDialog"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)panel_gripSize,           gensym ("gripsize"),        A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_move,             gensym ("move"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_position,         gensym ("position"),        A_GIMME, A_NULL);

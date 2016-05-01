@@ -733,7 +733,7 @@ void dial_setup (void)
 
     class_addMethod (c, (t_method)dial_loadbang,            gensym ("loadbang"),        A_NULL);
     class_addMethod (c, (t_method)dial_initialize,          gensym ("initialize"),      A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)dial_dialog,              gensym ("dialog"),          A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)dial_dialog,              gensym ("_iemDialog"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)dial_size,                gensym ("size"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_move,             gensym ("move"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_position,         gensym ("position"),        A_GIMME, A_NULL);
