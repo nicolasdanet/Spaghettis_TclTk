@@ -241,12 +241,12 @@ proc _resized {top width height x y} {
 
 proc _mapped {top} {
 
-    ::ui_interface::pdsend "$top map 1"
+    ::ui_interface::pdsend "$top _map 1"
 }
 
 proc _unmapped {top} {
 
-    ::ui_interface::pdsend "$top map 0"
+    ::ui_interface::pdsend "$top _map 0"
 }
 
 # ------------------------------------------------------------------------------------------------------------

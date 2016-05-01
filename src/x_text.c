@@ -1795,7 +1795,7 @@ static void text_template_init( void)
     canvas_setActiveFileNameAndDirectory (gensym ("_text_template"), gensym ("."));
     buffer_withStringUnzeroed(b, text_templatefile, strlen(text_templatefile));
     buffer_eval(b, &pd_canvasMaker, 0, 0);
-    pd_vMessage(s__X.s_thing, gensym ("pop"), "i", 0);
+    pd_vMessage(s__X.s_thing, gensym ("_pop"), "i", 0);
     
     canvas_setActiveFileNameAndDirectory (&s_, &s_);
     buffer_free(b);  

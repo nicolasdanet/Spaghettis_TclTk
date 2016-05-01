@@ -251,6 +251,21 @@ void canvas_loadbang (t_glist *glist)
     canvas_loadbangSubpatches (glist);
 }
 
+void canvas_dirty (t_glist *glist, t_float f)
+{
+    int isDirty = (f != 0.0);
+        
+    if (!editor_reloading) {
+    //
+    t_glist *y = canvas_getRoot (glist);
+        
+    if (y->gl_isDirty != isDirty) { 
+        y->gl_isDirty = isDirty; if (y->gl_haveWindow) { canvas_updateTitle (y); }
+    }
+    //
+    }
+}
+
 void canvas_map (t_glist *glist, t_float f)
 {
     int isMapped = (f != 0.0);
@@ -278,21 +293,6 @@ void canvas_map (t_glist *glist, t_float f)
         }
         
         sys_vGui ("::ui_patch::updateScrollRegion .x%lx.c\n", glist);
-    }
-    //
-    }
-}
-
-void canvas_dirty (t_glist *glist, t_float f)
-{
-    int isDirty = (f != 0.0);
-        
-    if (!editor_reloading) {
-    //
-    t_glist *y = canvas_getRoot (glist);
-        
-    if (y->gl_isDirty != isDirty) { 
-        y->gl_isDirty = isDirty; if (y->gl_haveWindow) { canvas_updateTitle (y); }
     }
     //
     }
@@ -466,11 +466,11 @@ void canvas_setup (void)
     class_addMethod (pd_canvasMaker, (t_method)canvas_new, gensym ("canvas"), A_GIMME, A_NULL);
     
     c = class_new (gensym ("canvas"),
-        NULL, 
-        (t_method)canvas_free, 
-        sizeof (t_glist), 
-        CLASS_NOINLET,
-        A_NULL);
+            NULL, 
+            (t_method)canvas_free, 
+            sizeof (t_glist), 
+            CLASS_NOINLET,
+            A_NULL);
 
     class_addCreator ((t_newmethod)subpatch_new, gensym ("pd"), A_DEFSYMBOL, A_NULL);
     
@@ -523,9 +523,9 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_open,          gensym ("open"),        A_NULL);
     class_addMethod (c, (t_method)canvas_loadbang,      gensym ("loadbang"),    A_NULL);
     class_addMethod (c, (t_method)canvas_vis,           gensym ("visible"),     A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_map,           gensym ("map"),         A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_dirty,         gensym ("dirty"),       A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_pop,           gensym ("pop"),         A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_map,           gensym ("_map"),        A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_pop,           gensym ("_pop"),        A_DEFFLOAT, A_NULL);
 
     class_addMethod (c, (t_method)glist_clear,          gensym ("clear"),       A_NULL);
     class_addMethod (c, (t_method)canvas_dsp,           gensym ("dsp"),         A_CANT, A_NULL);

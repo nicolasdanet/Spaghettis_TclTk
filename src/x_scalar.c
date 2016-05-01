@@ -189,7 +189,7 @@ void x_scalar_setup(void )
     class_addMethod(scalar_define_class, (t_method)canvas_dsp,
         gensym ("dsp"), A_CANT, 0);
     class_addMethod(scalar_define_class, (t_method)canvas_map,
-        gensym ("map"), A_FLOAT, A_NULL);
+        gensym ("_map"), A_FLOAT, A_NULL);
     class_addMethod(scalar_define_class, (t_method)canvas_setBounds,
         gensym ("setbounds"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     class_addMethod(scalar_define_class, (t_method)canvas_mouse, gensym ("mouse"),

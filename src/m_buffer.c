@@ -716,7 +716,7 @@ void buffer_openFile (void *dummy, t_symbol *name, t_symbol *directory)
     
     while ((x != s__X.s_thing) && s__X.s_thing) {
         x = s__X.s_thing;
-        pd_vMessage (x, gensym ("pop"), "i", 1);
+        pd_vMessage (x, gensym ("_pop"), "i", 1);
     }
     
     stack_performLoadbang();

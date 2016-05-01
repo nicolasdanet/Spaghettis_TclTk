@@ -124,11 +124,11 @@ void guiconnect_setup (void)
     t_class *c = NULL;
     
     c = class_new (gensym ("guiconnect"),
-        NULL,
-        (t_method)guiconnect_free,
-        sizeof (t_guiconnect), 
-        CLASS_PURE,
-        A_NULL);
+            NULL,
+            (t_method)guiconnect_free,
+            sizeof (t_guiconnect), 
+            CLASS_PURE,
+            A_NULL);
         
     class_addAnything (c, guiconnect_anything);
     
@@ -264,11 +264,11 @@ void guistub_setup (void)
     t_class *c = NULL;
     
     c = class_new (gensym ("guistub"),
-        NULL, 
-        (t_method)guistub_free,
-        sizeof (t_guistub),
-        CLASS_PURE, 
-        A_NULL);
+            NULL, 
+            (t_method)guistub_free,
+            sizeof (t_guistub),
+            CLASS_PURE, 
+            A_NULL);
         
     class_addAnything (c, guistub_anything);
 
