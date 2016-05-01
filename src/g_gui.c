@@ -63,14 +63,13 @@ static void guiconnect_task (t_guiconnect *x)
 
 void guiconnect_release (t_guiconnect *x, double timeOut)
 {
+    PD_ASSERT (timeOut >= 0.0);
+    
     if (!x->x_bound) { pd_free (cast_pd (x)); }
     else {
         x->x_owner = NULL;
-        
-        if (timeOut > 0) {
-            x->x_clock = clock_new (x, (t_method)guiconnect_task);
-            clock_delay (x->x_clock, timeOut);
-        }
+        x->x_clock = clock_new (x, (t_method)guiconnect_task);
+        clock_delay (x->x_clock, PD_MAX (0.0, timeOut));
     }    
 }
 
@@ -132,7 +131,7 @@ void guiconnect_setup (void)
         
     class_addAnything (c, guiconnect_anything);
     
-    class_addMethod (c, (t_method)guiconnect_signoff, gensym ("signoff"), A_NULL);
+    class_addMethod (c, (t_method)guiconnect_signoff, gensym ("_signoff"), A_NULL);
         
     guiconnect_class = c;
 }
@@ -272,9 +271,9 @@ void guistub_setup (void)
         
     class_addAnything (c, guistub_anything);
 
-    class_addMethod (c, (t_method)guistub_data,     gensym ("data"),    A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)guistub_end,      gensym ("end"),     A_NULL);
-    class_addMethod (c, (t_method)guistub_signoff,  gensym ("signoff"), A_NULL);
+    class_addMethod (c, (t_method)guistub_data,     gensym ("_data"),       A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)guistub_end,      gensym ("_end"),        A_NULL);
+    class_addMethod (c, (t_method)guistub_signoff,  gensym ("_signoff"),    A_NULL);
     
     guistub_class = c;
 }
