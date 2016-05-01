@@ -62,6 +62,25 @@ static void select_deselectLine (t_glist *glist)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void canvas_removeSelectedLine (t_glist *glist)
+{
+    if (glist->gl_editor->e_isSelectedline) {
+    //
+    canvas_disconnect (glist, 
+        glist->gl_editor->e_selectedLineIndexOfObjectOut,
+        glist->gl_editor->e_selectedLineIndexOfOutlet,
+        glist->gl_editor->e_selectedLineIndexOfObjectIn,
+        glist->gl_editor->e_selectedLineIndexOfInlet);
+             
+    canvas_dirty (glist, 1);
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 int canvas_isObjectSelected (t_glist *glist, t_gobj *y)
 {
     if (glist->gl_editor) {

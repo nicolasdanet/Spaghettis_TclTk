@@ -95,11 +95,24 @@ t_glist *canvas_getRoot (t_glist *glist)
     }
 }
 
-int canvas_getFontSize (t_glist *glist)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+t_glist *canvas_findDirty (t_glist *glist)
 {
-    while (!glist->gl_environment) { if (!(glist = glist->gl_owner)) { PD_BUG; } }
+    if (glist->gl_environment && glist->gl_isDirty) { return glist; }
+    else {
+    //
+    t_gobj *o = NULL;
     
-    return glist->gl_fontSize;
+    for (o = glist->gl_graphics; o; o = o->g_next) {
+        t_glist *t = NULL;
+        if (pd_class (o) == canvas_class && (t = canvas_findDirty (cast_glist (o)))) { return t; }
+    }
+    //
+    }
+    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -300,6 +313,13 @@ int canvas_hasGraphOnParentTitle (t_glist *glist)
     return !(argc && IS_SYMBOL (argv) && GET_SYMBOL (argv) == gensym ("graph"));
     //
     }
+}
+
+int canvas_getFontSize (t_glist *glist)
+{
+    while (!glist->gl_environment) { if (!(glist = glist->gl_owner)) { PD_BUG; } }
+    
+    return glist->gl_fontSize;
 }
 
 // -----------------------------------------------------------------------------------------------------------

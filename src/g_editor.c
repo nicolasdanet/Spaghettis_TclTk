@@ -90,11 +90,8 @@ static char *editor_cursors[] =                         /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static t_glist  *glist_finddirty        (t_glist *x);
-
-static void     canvas_doclear          (t_glist *x);
-static void     glist_setlastxy         (t_glist *gl, int xval, int yval);
-static void     canvas_clearline        (t_glist *x);
+static void canvas_doclear  (t_glist *x);
+static void glist_setlastxy (t_glist *gl, int xval, int yval);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -993,7 +990,7 @@ void canvas_mouseup(t_glist *x,
                 dirty sub-patch that would be discarded if we edit this. */
             if (pd_class(&g->g_pd) == canvas_class &&
                 canvas_isAbstraction((t_glist *)g) &&
-                    (gl2 = glist_finddirty((t_glist *)g)))
+                    (gl2 = canvas_findDirty((t_glist *)g)))
             {
                 pd_vMessage(&gl2->gl_obj.te_g.g_pd, gensym ("open"), "");
                 x->gl_editor->e_onMotion = ACTION_NONE;
@@ -1160,7 +1157,7 @@ void canvas_key(t_glist *x, t_symbol *s, int ac, t_atom *av)
         else if (keynum == 8 || keynum == 127)
         {
             if (x->gl_editor->e_isSelectedline)
-                canvas_clearline(x);
+                canvas_removeSelectedLine(x);
             else if (x->gl_editor->e_selectedObjects)
             {
                 // canvas_setundo(x, canvas_undo_cut, canvas_undo_set_cut(x, UCUT_CLEAR), "clear");
@@ -1285,29 +1282,14 @@ void canvas_startmotion(t_glist *x)
     x->gl_editor->e_previousY = yval; 
 }
 
-
-/* find a dirty sub-glist, if any, of this one (including itself) */
-static t_glist *glist_finddirty(t_glist *x)
-{
-    t_gobj *g;
-    t_glist *g2;
-    if (x->gl_environment && x->gl_isDirty)
-        return (x);
-    for (g = x->gl_graphics; g; g = g->g_next)
-        if (pd_class(&g->g_pd) == canvas_class &&
-            (g2 = glist_finddirty((t_glist *)g)))
-                return (g2);
-    return (0);
-}
-
-    /* quit, after calling glist_finddirty() on all toplevels and verifying
+    /* quit, after calling canvas_findDirty() on all toplevels and verifying
     the user really wants to discard changes  */
 void global_shouldQuit(void *dummy)
 {
     t_glist *g, *g2;
         /* find all root canvases */
     for (g = pd_this->pd_roots; g; g = g->gl_next)
-        if (g2 = glist_finddirty(g))
+        if (g2 = canvas_findDirty(g))
     {
         canvas_vis(g2, 1);
             sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx close 3 } {}\n",
@@ -1334,7 +1316,7 @@ void canvas_menuclose(t_glist *x, t_float fforce)
         canvas_vis(x, 0);   /* if subpatch, just invis it */
     else if (force == 0)    
     {
-        g = glist_finddirty(x);
+        g = canvas_findDirty(x);
         if (g)
         {
             pd_vMessage(&g->gl_obj.te_g.g_pd, gensym ("open"), "");
@@ -1356,7 +1338,7 @@ void canvas_menuclose(t_glist *x, t_float fforce)
         canvas_dirty(x, 0);
         while (x->gl_owner)
             x = x->gl_owner;
-        g = glist_finddirty(x);
+        g = canvas_findDirty(x);
         if (g)
         {
             pd_vMessage(&g->gl_obj.te_g.g_pd, gensym ("open"), "");
@@ -1480,26 +1462,6 @@ void canvas_copy (t_glist *x)
     }
 }
 
-static void canvas_clearline(t_glist *x)
-{
-    if (x->gl_editor->e_isSelectedline)
-    {
-        canvas_disconnect(x, x->gl_editor->e_selectedLineIndexOfObjectOut,
-             x->gl_editor->e_selectedLineIndexOfOutlet,
-             x->gl_editor->e_selectedLineIndexOfObjectIn,
-             x->gl_editor->e_selectedLineIndexOfInlet);
-        canvas_dirty(x, 1);
-        
-        /* canvas_setundo(x, canvas_undo_disconnect,
-            canvas_undo_set_disconnect(x,
-                x->gl_editor->e_selectedLineIndexOfObjectOut,
-                x->gl_editor->e_selectedLineIndexOfOutlet,
-                x->gl_editor->e_selectedLineIndexOfObjectIn,
-                x->gl_editor->e_selectedLineIndexOfInlet),
-            "disconnect"); */
-    }
-}
-
 static void canvas_doclear(t_glist *x)
 {
     t_gobj *y, *y2;
@@ -1559,7 +1521,7 @@ void canvas_cut (t_glist *x)
     if (!x->gl_editor)  /* ignore if invisible */ 
         return;
     if (x->gl_editor && x->gl_editor->e_isSelectedline)   /* delete line */
-        canvas_clearline(x);
+        canvas_removeSelectedLine(x);
     else if (x->gl_editor->e_selectedText) /* delete selected text in a box */
     {
         char *buf;
