@@ -18,7 +18,7 @@
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_pd     pd_canvasMaker;
-extern int      editor_reloading;
+extern int      editor_isReloading;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -255,7 +255,7 @@ void canvas_dirty (t_glist *glist, t_float f)
 {
     int isDirty = (f != 0.0);
         
-    if (!editor_reloading) {
+    if (!editor_isReloading) {
     //
     t_glist *y = canvas_getRoot (glist);
         

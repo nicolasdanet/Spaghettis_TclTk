@@ -21,6 +21,7 @@ void interface_initialize   (void);
 void object_initialize      (void);
 void bindlist_initialize    (void);
 void global_initialize      (void);
+void editor_initialize      (void);
 void loader_initialize      (void);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -32,6 +33,7 @@ void interface_release      (void);
 void object_release         (void);
 void bindlist_release       (void);
 void global_release         (void);
+void editor_release         (void);
 void loader_release         (void);
 
 // -----------------------------------------------------------------------------------------------------------
@@ -41,7 +43,6 @@ void loader_release         (void);
 void g_array_setup          (void);
 void canvas_setup           (void);
 void g_graph_setup          (void);
-void g_editor_setup         (void);
 void g_readwrite_setup      (void);
 void guiconnect_setup       (void);
 void bng_setup              (void);
@@ -95,11 +96,11 @@ void setup_initialize (void)
     object_initialize();
     bindlist_initialize();
     global_initialize();
+    editor_initialize();
     
     g_array_setup();
     canvas_setup();
     g_graph_setup();
-    g_editor_setup();
     g_readwrite_setup();
     guiconnect_setup();
     bng_setup();
@@ -152,6 +153,7 @@ void setup_release (void)
 {
     loader_release();
     
+    editor_release();
     global_release();
     bindlist_release();
     object_release();

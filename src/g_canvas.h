@@ -685,7 +685,7 @@ t_glist  *canvas_getglistonsuper        (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-
+void         garray_properties       (t_garray *x);
 t_template   *garray_template           (t_garray *x);
 t_garray     *graph_array               (t_glist *gl,
                                             t_symbol *s,

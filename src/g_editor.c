@@ -19,47 +19,86 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pdinstance     *pd_this;
-
-extern t_class          *canvas_class;
-extern t_class          *garray_class;
-extern t_class          *vinlet_class;
-extern t_class          *voutlet_class;
-
-extern t_pd             pd_canvasMaker;
-extern t_widgetbehavior text_widgetBehavior;
+extern t_pd                 pd_canvasMaker;
+extern t_widgetbehavior     text_widgetBehavior;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_buffer         *copy_binbuf;                           /* Shared. */
-static char             *canvas_textcopybuf;                    /* Shared. */
-
-static int              canvas_textcopybufsize;                 /* Shared. */
+extern t_pdinstance         *pd_this;
+extern t_pd                 *pd_newest;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_buffer *canvas_docopy          (t_glist *x);
-static t_glist  *glist_finddirty        (t_glist *x);
+extern t_class      *text_class;
+extern t_class      *canvas_class;
+extern t_class      *garray_class;
+extern t_class      *vinlet_class;
+extern t_class      *voutlet_class;
 
-static void     canvas_doclear          (t_glist *x);
-static void     glist_setlastxy         (t_glist *gl, int xval, int yval);
-static void     glist_donewloadbangs    (t_glist *x);
-static void     canvas_dopaste          (t_glist *x, t_buffer *b);
-static void     canvas_clearline        (t_glist *x);
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+int                 editor_isReloading;                 /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static t_buffer     *editor_buffer;                     /* Shared. */
+static t_glist      *editor_lastCanvas;                 /* Shared. */
+static t_glist      *editor_pasteCanvas;                /* Shared. */
+
+
+static int          editor_lastCanvasX;                 /* Shared. */
+static int          editor_lastCanvasY;                 /* Shared. */
+static int          editor_pasteOnset;                  /* Shared. */
+static int          editor_mouseUpX;                    /* Shared. */
+static int          editor_mouseUpY;                    /* Shared. */
+static double       editor_mouseUpClickTime;            /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define EDITOR_MODIFIER_NONE            0
+#define EDITOR_MODIFIER_SHIFT           1
+#define EDITOR_MODIFIER_CTRL            2
+#define EDITOR_MODIFIER_ALT             4
+#define EDITOR_MODIFIER_RIGHT           8
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#define EDITOR_DBLCLICK_INTERVAL        0.25
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static char *editor_cursors[] =                         /* Shared. */
+    {
+        "$::var(cursorRunNothing)",
+        "$::var(cursorRunClickMe)",
+        "$::var(cursorRunThicken)",
+        "$::var(cursorRunAddPoint)",
+        "$::var(cursorEditNothing)",
+        "$::var(cursorEditConnect)",
+        "$::var(cursorEditDisconnect)",
+        "$::var(cursorEditResize)"
+    };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-/* ------------------- support for undo/redo  -------------------------- */
+static t_glist  *glist_finddirty        (t_glist *x);
 
-static t_undofn canvas_undo_fn;         /* current undo function if any */
-static int canvas_undo_whatnext;        /* whether we can now UNDO or REDO */
-static void *canvas_undo_buf;           /* data private to the undo function */
-static t_glist *canvas_undo_canvas;    /* which canvas we can undo on */
-static const char *canvas_undo_name;
+static void     canvas_doclear          (t_glist *x);
+static void     glist_setlastxy         (t_glist *gl, int xval, int yval);
+static void     canvas_clearline        (t_glist *x);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 void canvas_disconnect(t_glist *x,
     t_float index1, t_float outno, t_float index2, t_float inno)
@@ -125,53 +164,33 @@ static void glist_doreload(t_glist *gl, t_symbol *name, t_symbol *dir,
         canvas_vis(glist_getcanvas(gl), 0);
 }
 
-    /* this flag stops canvases from being marked "dirty" if we have to touch
-    them to reload an abstraction; also suppress window list update */
-int editor_reloading = 0;    /* Shared. */
-
     /* call canvas_doreload on everyone */
 void canvas_reload (t_symbol *name, t_symbol *dir, t_gobj *except)
 {
     t_glist *x;
     int dspwas = dsp_suspend();
-    editor_reloading = 1;
+    editor_isReloading = 1;
         /* find all root canvases */
     for (x = pd_this->pd_roots; x; x = x->gl_next)
         glist_doreload(x, name, dir, except);
-    editor_reloading = 0;
+    editor_isReloading = 0;
     dsp_resume(dspwas);
 }
-
-/* ------------------------ event handling ------------------------ */
-
-static char *cursorlist[] = {
-    "$::var(cursorRunNothing)",
-    "$::var(cursorRunClickMe)",
-    "$::var(cursorRunThicken)",
-    "$::var(cursorRunAddPoint)",
-    "$::var(cursorEditNothing)",
-    "$::var(cursorEditConnect)",
-    "$::var(cursorEditDisconnect)",
-    "$::var(cursorEditResize)"
-};
 
 void canvas_setcursor(t_glist *x, unsigned int cursornum)
 {
     static t_glist *xwas;
     static unsigned int cursorwas;
-    if (cursornum >= sizeof(cursorlist)/sizeof *cursorlist)
-    {
-        PD_BUG;
-        return;
-    }
+
+    cursornum = PD_CLAMP (cursornum, CURSOR_NOTHING, CURSOR_EDIT_RESIZE);
+    
     if (xwas != x || cursorwas != cursornum)
     {
-        sys_vGui(".x%lx configure -cursor %s\n", x, cursorlist[cursornum]);
+        sys_vGui(".x%lx configure -cursor %s\n", x, editor_cursors[cursornum]);
         xwas = x;
         cursorwas = cursornum;
     }
 }
-
     /* check if a point lies in a gobj.  */
 int canvas_hitbox(t_glist *x, t_gobj *y, int xpos, int ypos,
     int *x1p, int *y1p, int *x2p, int *y2p)
@@ -284,8 +303,6 @@ void canvas_destroy_editor(t_glist *x)
         x->gl_editor = 0;
     }
 }
-
-void canvas_map(t_glist *x, t_float f);
 
     /* we call this when we want the window to become visible, mapped, and
     in front of all windows; or with "f" zero, when we want to get rid of
@@ -407,8 +424,6 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
         }
     }
 }
-
-void garray_properties(t_garray *x);
 
     /* tell GUI to create a properties dialog on the canvas.  We tell
     the user the negative of the "pixel" y scale to make it appear to grow
@@ -575,16 +590,6 @@ void canvas_done_popup(t_glist *x, t_float which, t_float xpos, t_float ypos)
         file_openHelp("intro.pd", canvas_getDirectory((t_glist *)x)->s_name);*/
 }
 
-#define NOMOD 0
-#define SHIFTMOD 1
-#define CTRLMOD 2
-#define ALTMOD 4
-#define RIGHTCLICK 8
-
-static double canvas_upclicktime;
-static int canvas_upx, canvas_upy;
-#define DCLICKINTERVAL 0.25
-
     /* mouse click */
 void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
     int mod, int doit)
@@ -599,10 +604,10 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
         return;
     }
     
-    shiftmod = (mod & SHIFTMOD);
-    runmode = ((mod & CTRLMOD) || (!x->gl_isEditMode));
-    altmod = (mod & ALTMOD);
-    rightclick = (mod & RIGHTCLICK);
+    shiftmod = (mod & EDITOR_MODIFIER_SHIFT);
+    runmode = ((mod & EDITOR_MODIFIER_CTRL) || (!x->gl_isEditMode));
+    altmod = (mod & EDITOR_MODIFIER_ALT);
+    rightclick = (mod & EDITOR_MODIFIER_RIGHT);
 
     // canvas_undo_already_set_move = 0;
 
@@ -613,8 +618,8 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
         glist_grab(x, 0, 0, 0, 0, 0);
     }
 
-    if (doit && !runmode && xpos == canvas_upx && ypos == canvas_upy &&
-        sys_getRealTimeInSeconds() - canvas_upclicktime < DCLICKINTERVAL)
+    if (doit && !runmode && xpos == editor_mouseUpX && ypos == editor_mouseUpY &&
+        sys_getRealTimeInSeconds() - editor_mouseUpClickTime < EDITOR_DBLCLICK_INTERVAL)
             doublemod = 1;
     //x->gl_editor->e_lastmoved = 0;
     if (doit)
@@ -637,7 +642,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                 /* check if the object wants to be clicked */
             if (canvas_hitbox(x, y, xpos, ypos, &x1, &y1, &x2, &y2)
                 && (clickreturned = gobj_click(y, x, xpos, ypos,
-                    shiftmod, ((mod & CTRLMOD) && (!x->gl_isEditMode)) || altmod,
+                    shiftmod, ((mod & EDITOR_MODIFIER_CTRL) && (!x->gl_isEditMode)) || altmod,
                         0, doit)))
                             break;
         }
@@ -966,9 +971,9 @@ void canvas_mouseup(t_glist *x,
         return;
     }
 
-    canvas_upclicktime = sys_getRealTimeInSeconds();
-    canvas_upx = xpos;
-    canvas_upy = ypos;
+    editor_mouseUpClickTime = sys_getRealTimeInSeconds();
+    editor_mouseUpX = xpos;
+    editor_mouseUpY = ypos;
 
     if (x->gl_editor->e_onMotion == ACTION_CONNECT)
         canvas_doconnect(x, xpos, ypos, which, 1);
@@ -1280,13 +1285,7 @@ void canvas_startmotion(t_glist *x)
     x->gl_editor->e_previousY = yval; 
 }
 
-/*
-void canvas_print(t_glist *x, t_symbol *s)
-{
-    if (*s->s_name) sys_vGui(".x%lx.c postscript -file %s\n", x, s->s_name);
-    else sys_vGui(".x%lx.c postscript -file x.ps\n", x);
-}
-*/
+
 /* find a dirty sub-glist, if any, of this one (including itself) */
 static t_glist *glist_finddirty(t_glist *x)
 {
@@ -1374,114 +1373,6 @@ void canvas_menuclose(t_glist *x, t_float fforce)
     }
 }
 
-static int canvas_find_index, canvas_find_wholeword;
-static t_buffer *canvas_findbuf;
-
-    /* function to support searching */
-static int atoms_match(int inargc, t_atom *inargv, int searchargc,
-    t_atom *searchargv, int wholeword)
-{
-    int indexin, nmatched;
-    for (indexin = 0; indexin <= inargc - searchargc; indexin++)
-    {
-        for (nmatched = 0; nmatched < searchargc; nmatched++)
-        {
-            t_atom *a1 = &inargv[indexin + nmatched], 
-                *a2 = &searchargv[nmatched];
-            if (a1->a_type == A_SEMICOLON || a1->a_type == A_COMMA)
-            {
-                if (a2->a_type != a1->a_type)
-                    goto nomatch;
-            }
-            else if (a1->a_type == A_FLOAT || a1->a_type == A_DOLLAR)
-            {
-                if (a2->a_type != a1->a_type || 
-                    a1->a_w.w_float != a2->a_w.w_float)
-                        goto nomatch;
-            }
-            else if (a1->a_type == A_SYMBOL || a1->a_type == A_DOLLARSYMBOL)
-            {
-                if ((a2->a_type != A_SYMBOL && a2->a_type != A_DOLLARSYMBOL)
-                    || (wholeword && a1->a_w.w_symbol != a2->a_w.w_symbol)
-                    || (!wholeword &&  !strstr(a1->a_w.w_symbol->s_name,
-                                        a2->a_w.w_symbol->s_name)))
-                        goto nomatch;
-            }           
-        }
-        return (1);
-    nomatch: ;
-    }
-    return (0);
-}
-
-    /* find an atom or string of atoms */
-static int canvas_dofind(t_glist *x, int *myindexp)
-{
-    t_gobj *y;
-    int findargc = buffer_size(canvas_findbuf), didit = 0;
-    t_atom *findargv = buffer_atoms(canvas_findbuf);
-    for (y = x->gl_graphics; y; y = y->g_next)
-    {
-        t_object *ob = 0;
-        if (ob = canvas_castToObjectIfBox(&y->g_pd))
-        {
-            if (atoms_match(buffer_size(ob->te_buffer), 
-                buffer_atoms(ob->te_buffer), findargc, findargv,
-                    canvas_find_wholeword))
-            {
-                if (*myindexp == canvas_find_index)
-                {
-                    canvas_deselectAll(x);
-                    pd_vMessage(&x->gl_obj.te_g.g_pd, gensym ("open"), "");
-                    canvas_editmode(x, 1.);
-                    canvas_selectObject(x, y);
-                    didit = 1;
-                }
-                (*myindexp)++;
-            }
-        }
-    }
-    for (y = x->gl_graphics; y; y = y->g_next)
-        if (pd_class(&y->g_pd) == canvas_class)
-            didit |= canvas_dofind((t_glist *)y, myindexp);
-    return (didit);
-}
-
-/*
-static void canvas_find(t_glist *x, t_symbol *s, t_float wholeword)
-{
-    int myindex = 0, found;
-    t_symbol *decodedsym = sys_decodedialog(s);
-    if (!canvas_findbuf)
-        canvas_findbuf = buffer_new();
-    buffer_withStringUnzeroed(canvas_findbuf, decodedsym->s_name, strlen(decodedsym->s_name));
-    canvas_find_index = 0;
-    canvas_find_wholeword = wholeword;
-    canvas_whichfind = x;
-    found = canvas_dofind(x, &myindex);
-    if (found)
-        canvas_find_index = 1;
-    sys_vGui("::dialog_find::pdtk_showfindresult .x%lx %d %d %d\n", x, found, canvas_find_index,
-        myindex);
-}
-
-static void canvas_find_again(t_glist *x)
-{
-    int myindex = 0, found;
-    if (!canvas_findbuf || !canvas_whichfind)
-        return;
-    found = canvas_dofind(canvas_whichfind, &myindex);
-    sys_vGui("::dialog_find::pdtk_showfindresult .x%lx %d %d %d\n", x, found, ++canvas_find_index,
-        myindex);
-}
-*/
-/*
-void canvas_find_parent(t_glist *x)
-{
-    if (x->gl_owner)
-        canvas_vis(glist_getcanvas(x->gl_owner), 1);
-}
-*/
 void canvas_stowconnections(t_glist *x)
 {
     t_gobj *selhead = 0, *seltail = 0, *nonhead = 0, *nontail = 0, *y, *y2;
@@ -1577,8 +1468,8 @@ void canvas_copy (t_glist *x)
 {
     if (!x->gl_editor || !x->gl_editor->e_selectedObjects)
         return;
-    buffer_free(copy_binbuf);
-    copy_binbuf = canvas_docopy(x);
+    buffer_free(editor_buffer);
+    editor_buffer = canvas_docopy(x);
     if (x->gl_editor->e_selectedText)
     {
         char *buf;
@@ -1609,7 +1500,6 @@ static void canvas_clearline(t_glist *x)
     }
 }
 
-extern t_pd *pd_newest;
 static void canvas_doclear(t_glist *x)
 {
     t_gobj *y, *y2;
@@ -1698,9 +1588,6 @@ void canvas_cut (t_glist *x)
     }
 }
 
-static int paste_onset;
-static t_glist *paste_canvas;
-
 static void glist_donewloadbangs(t_glist *x)
 {
     if (x->gl_editor)
@@ -1728,14 +1615,14 @@ static void canvas_dopaste(t_glist *x, t_buffer *b)
     canvas_deselectAll(x);
     for (g2 = x->gl_graphics, nbox = 0; g2; g2 = g2->g_next) nbox++;
 
-    paste_onset = nbox;
-    paste_canvas = x;
+    editor_pasteOnset = nbox;
+    editor_pasteCanvas = x;
 
     buffer_eval(b, 0, 0, 0);
     for (g2 = x->gl_graphics, count = 0; g2; g2 = g2->g_next, count++)
         if (count >= nbox)
             canvas_selectObject(x, g2);
-    paste_canvas = 0;
+    editor_pasteCanvas = 0;
     dsp_resume(dspstate);
     canvas_dirty(x, 1);
     sys_vGui("::ui_patch::updateScrollRegion .x%lx.c\n", x);
@@ -1757,7 +1644,7 @@ void canvas_paste(t_glist *x)
     else
     {
         // canvas_setundo(x, canvas_undo_paste, canvas_undo_set_paste(x), "paste");
-        canvas_dopaste(x, copy_binbuf);
+        canvas_dopaste(x, editor_buffer);
     }
 }
 
@@ -1770,7 +1657,7 @@ void canvas_duplicate(t_glist *x)
         t_selection *y;
         canvas_copy(x);
         // canvas_setundo(x, canvas_undo_paste, canvas_undo_set_paste(x), "duplicate");
-        canvas_dopaste(x, copy_binbuf);
+        canvas_dopaste(x, editor_buffer);
         for (y = x->gl_editor->e_selectedObjects; y; y = y->sel_next)
             gobj_displace(y->sel_what, x,
                 10, 10);
@@ -1795,8 +1682,6 @@ void canvas_selectall(t_glist *x)
     }
 }
 
-extern t_class *text_class;
-
 void canvas_connect(t_glist *x, t_float fwhoout, t_float foutno,
     t_float fwhoin, t_float finno)
 {
@@ -1805,7 +1690,7 @@ void canvas_connect(t_glist *x, t_float fwhoout, t_float foutno,
     t_object *objsrc, *objsink;
     t_outconnect *oc;
     int nin = whoin, nout = whoout;
-    if (paste_canvas == x) whoout += paste_onset, whoin += paste_onset;
+    if (editor_pasteCanvas == x) whoout += editor_pasteOnset, whoin += editor_pasteOnset;
     for (src = x->gl_graphics; whoout; src = src->g_next, whoout--)
         if (!src->g_next) goto bad; /* bug fix thanks to Hannes */
     for (sink = x->gl_graphics; whoin; sink = sink->g_next, whoin--)
@@ -1841,10 +1726,6 @@ bad:
             (src? class_getName(pd_class(&src->g_pd)) : "???"),
             (sink? class_getName(pd_class(&sink->g_pd)) : "???"));
 }
-
-#define XTOLERANCE 18
-#define YTOLERANCE 17
-#define NHIST 35
 
 void global_key (void *dummy, t_symbol *s, int ac, t_atom *av)
 {
@@ -1909,29 +1790,32 @@ static void canvas_dofont(t_glist *x, t_float font, t_float xresize,
             canvas_dofont((t_glist *)y, font, xresize, yresize);
 }
 
-static t_glist *canvas_last_glist;
-static int canvas_last_glist_x, canvas_last_glist_y;
-
 void glist_getnextxy(t_glist *gl, int *xpix, int *ypix)
 {
-    if (canvas_last_glist == gl)
-        *xpix = canvas_last_glist_x, *ypix = canvas_last_glist_y;
+    if (editor_lastCanvas == gl)
+        *xpix = editor_lastCanvasX, *ypix = editor_lastCanvasY;
     else *xpix = *ypix = 40;
 }
 
 static void glist_setlastxy(t_glist *gl, int xval, int yval)
 {
-    canvas_last_glist = gl;
-    canvas_last_glist_x = xval;
-    canvas_last_glist_y = yval;
+    editor_lastCanvas = gl;
+    editor_lastCanvasX = xval;
+    editor_lastCanvasY = yval;
 }
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
-void g_editor_setup (void)
+void editor_initialize (void)
 {
-    copy_binbuf = buffer_new();
+    editor_buffer = buffer_new();
+}
+
+void editor_release (void)
+{
+    if (editor_buffer) { buffer_free (editor_buffer); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
