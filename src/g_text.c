@@ -637,7 +637,7 @@ static void gatom_list(t_gatom *x, t_symbol *s, int argc, t_atom *argv)
     else { post_error ("gatom_list: need float or symbol"); }
 }
 
-static void gatom_motion(void *z, t_float dx, t_float dy)
+static void gatom_motion(void *z, t_float dx, t_float dy, t_float modifier)
 {
     t_gatom *x = (t_gatom *)z;
     if (dy == 0) return;
@@ -753,7 +753,7 @@ static void gatom_click(t_gatom *x,
         }
         x->a_shift = shift;
         x->a_buf[0] = 0;
-        glist_grab(x->a_glist, &x->a_text.te_g, gatom_motion, gatom_key,
+        glist_grab(x->a_glist, &x->a_text.te_g, (t_motionfn)gatom_motion, gatom_key,
             xpos, ypos);
     }
 }

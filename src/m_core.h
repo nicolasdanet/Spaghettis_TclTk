@@ -20,7 +20,7 @@ typedef void (*t_savefn)                (t_gobj *x, t_buffer *b);
 typedef void (*t_propertiesfn)          (t_gobj *x, t_glist *glist);
 typedef void (*t_drawfn)                (t_gobj *x, t_glist *glist);
 typedef void (*t_keyfn)                 (void *z, t_float key);
-typedef void (*t_motionfn)              (void *z, t_float deltaX, t_float deltaY);
+typedef void (*t_motionfn)              (void *z, t_float deltaX, t_float deltaY, t_float modifier);
 typedef void (*t_undofn)                (t_glist *glist, void *b, int action);
 
 // -----------------------------------------------------------------------------------------------------------

@@ -1189,8 +1189,7 @@ static void delay_move(t_glist *x)
     x->gl_editor->e_previousY = x->gl_editor->e_newY;
 }
 
-void canvas_motion(t_glist *x, t_float xpos, t_float ypos,
-    t_float fmod)
+void canvas_motion(t_glist *x, t_float xpos, t_float ypos, t_float fmod)
 { 
     /* post("motion %d %d", xpos, ypos); */
     int mod = fmod;
@@ -1218,7 +1217,8 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos,
         if (!x->gl_editor->e_fnMotion) { PD_BUG; }
         (*x->gl_editor->e_fnMotion)(&x->gl_editor->e_grabbed->g_pd,
             xpos - x->gl_editor->e_previousX,
-            ypos - x->gl_editor->e_previousY);
+            ypos - x->gl_editor->e_previousY, 
+            fmod);
         x->gl_editor->e_previousX = xpos;
         x->gl_editor->e_previousY = ypos;
     }

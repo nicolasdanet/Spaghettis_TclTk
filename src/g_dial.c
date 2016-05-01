@@ -44,7 +44,7 @@
 #pragma mark -
 
 static void dial_set    (t_dial *x, t_float f);
-static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY);
+static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY, t_float modifier);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -379,7 +379,7 @@ static void dial_click (t_dial *x, t_float a, t_float b, t_float shift, t_float 
     glist_grab (x->x_gui.iem_glist, cast_gobj (x), (t_motionfn)dial_motion, NULL, a, b);
 }
 
-static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY)
+static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY, t_float modifier)
 {
     int old = x->x_position;
     int t = old;

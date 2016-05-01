@@ -422,8 +422,8 @@ void            canvas_setBounds                        (t_glist *glist,
                                                             t_float d);
 
 void            canvas_motion                           (t_glist *glist,
-                                                            t_float a,
-                                                            t_float b,
+                                                            t_float deltaX,
+                                                            t_float deltaY,
                                                             t_float modifier);
 
 void            canvas_mouse                            (t_glist *glist,

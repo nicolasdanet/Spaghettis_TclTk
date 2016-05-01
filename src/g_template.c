@@ -1195,7 +1195,7 @@ static t_gpointer curve_motion_gpointer;
     /* LATER protect against the template changing or the scalar disappearing
     probably by attaching a gpointer here ... */
 
-static void curve_motion(void *z, t_float dx, t_float dy)
+static void curve_motion(void *z, t_float dx, t_float dy, t_float modifier)
 {
     t_curve *x = (t_curve *)z;
     t_fielddescriptor *f = x->x_vec + curve_motion_field;
@@ -1285,7 +1285,7 @@ static int curve_click(t_gobj *z, t_glist *glist,
                 curve_motion_scalar);
         else gpointer_setarray(&curve_motion_gpointer,
                 curve_motion_array, curve_motion_wp);
-        glist_grab(glist, z, curve_motion, 0, xpix, ypix);
+        glist_grab(glist, z, (t_motionfn)curve_motion, 0, xpix, ypix);
     }
     return (1);
 }
@@ -1945,7 +1945,7 @@ static int array_motion_fatten;
     /* LATER protect against the template changing or the scalar disappearing
     probably by attaching a gpointer here ... */
 
-static void array_motion(void *z, t_float dx, t_float dy)
+static void array_motion(void *z, t_float dx, t_float dy, t_float modifier)
 {
     array_motion_xcumulative += dx * array_motion_xperpix;
     array_motion_ycumulative += dy * array_motion_yperpix;
@@ -2119,7 +2119,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                 fielddesc_setcoord(yfield, elemtemplate,
                     (t_word *)(((char *)array->a_vec) + elemsize * xval),
                         glist_pixelstoy(glist, ypix), 1);
-                glist_grab(glist, 0, array_motion, 0, xpix, ypix);
+                glist_grab(glist, 0, (t_motionfn)array_motion, 0, xpix, ypix);
                 if (array_motion_scalar)
                     scalar_redraw(array_motion_scalar, array_motion_glist);
                 if (array_motion_array)
@@ -2262,7 +2262,7 @@ static int array_doclick(t_array *array, t_glist *glist, t_scalar *sc,
                             array_motion_yfield = 0;
                             array_motion_ycumulative = 0;
                         }
-                        glist_grab(glist, 0, array_motion, 0, xpix, ypix);
+                        glist_grab(glist, 0, (t_motionfn)array_motion, 0, xpix, ypix);
                     }
                     if (alt)
                     {
@@ -2548,7 +2548,7 @@ static t_gpointer drawnumber_motion_gpointer;
 static int drawnumber_motion_type;
 static int drawnumber_motion_firstkey;
 
-static void drawnumber_motion(void *z, t_float dx, t_float dy)
+static void drawnumber_motion(void *z, t_float dx, t_float dy, t_float modifier)
 {
     t_drawnumber *x = (t_drawnumber *)z;
     t_atom at;
@@ -2674,7 +2674,7 @@ static int drawnumber_click(t_gobj *z, t_glist *glist,
                     drawnumber_motion_glist, drawnumber_motion_scalar);
             else gpointer_setarray(&drawnumber_motion_gpointer,
                     drawnumber_motion_array, drawnumber_motion_wp);
-            glist_grab(glist, z, drawnumber_motion, drawnumber_key,
+            glist_grab(glist, z, (t_motionfn)drawnumber_motion, drawnumber_key,
                 xpix, ypix);
         }
         return (1);

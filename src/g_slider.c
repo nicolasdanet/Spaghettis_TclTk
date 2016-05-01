@@ -66,7 +66,7 @@ static inline int slider_stepsToPixels (int n)
 #pragma mark -
 
 static void slider_set      (t_slider *x, t_float f);
-static void slider_motion   (t_slider *x, t_float deltaX, t_float deltaY);
+static void slider_motion   (t_slider *x, t_float deltaX, t_float deltaY, t_float modifier);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -407,7 +407,7 @@ static void slider_click (t_slider *x, t_float a, t_float b, t_float shift, t_fl
     glist_grab (x->x_gui.iem_glist, cast_gobj (x), (t_motionfn)slider_motion, NULL, a, b);
 }
 
-static void slider_motion (t_slider *x, t_float deltaX, t_float deltaY)
+static void slider_motion (t_slider *x, t_float deltaX, t_float deltaY, t_float modifier)
 {
     int old = x->x_position;
     int t = old;
