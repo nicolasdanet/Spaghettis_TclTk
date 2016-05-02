@@ -31,11 +31,11 @@ extern t_pd                 *pd_newest;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_class      *text_class;
-extern t_class      *canvas_class;
-extern t_class      *garray_class;
-extern t_class      *vinlet_class;
-extern t_class      *voutlet_class;
+extern t_class              *text_class;
+extern t_class              *canvas_class;
+extern t_class              *garray_class;
+extern t_class              *vinlet_class;
+extern t_class              *voutlet_class;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -46,12 +46,8 @@ int                 editor_isReloading;                 /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 
 static t_buffer     *editor_buffer;                     /* Shared. */
-static t_glist      *editor_lastCanvas;                 /* Shared. */
 static t_glist      *editor_pasteCanvas;                /* Shared. */
 
-
-static int          editor_lastCanvasX;                 /* Shared. */
-static int          editor_lastCanvasY;                 /* Shared. */
 static int          editor_pasteOnset;                  /* Shared. */
 static int          editor_mouseUpX;                    /* Shared. */
 static int          editor_mouseUpY;                    /* Shared. */
@@ -90,12 +86,59 @@ static char *editor_cursors[] =                         /* Shared. */
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void canvas_doclear  (t_glist *x);
-static void glist_setlastxy (t_glist *gl, int xval, int yval);
+static void canvas_doclear(t_glist *x)
+{
+    t_gobj *y, *y2;
+    int dspstate;
 
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
+    dspstate = dsp_suspend();
+    if (x->gl_editor->e_isSelectedline)
+    {
+        canvas_disconnect(x, x->gl_editor->e_selectedLineIndexOfObjectOut,
+             x->gl_editor->e_selectedLineIndexOfOutlet,
+             x->gl_editor->e_selectedLineIndexOfObjectIn,
+             x->gl_editor->e_selectedLineIndexOfInlet);
+             
+        /* canvas_setundo(x, canvas_undo_disconnect,
+            canvas_undo_set_disconnect(x,
+                x->gl_editor->e_selectedLineIndexOfObjectOut,
+                x->gl_editor->e_selectedLineIndexOfOutlet,
+                x->gl_editor->e_selectedLineIndexOfObjectIn,
+                x->gl_editor->e_selectedLineIndexOfInlet),
+            "disconnect"); */
+    }
+        /* if text is selected, deselecting it might remake the
+        object. So we deselect it and hunt for a "new" object on
+        the glist to reselect. */
+    if (x->gl_editor->e_selectedText)
+    {
+        t_gobj *selwas = x->gl_editor->e_selectedObjects->sel_what;
+        pd_newest = 0;
+        canvas_deselectAll(x);
+        if (pd_newest)
+        {
+            for (y = x->gl_graphics; y; y = y->g_next)
+                if (&y->g_pd == pd_newest) canvas_selectObject(x, y);
+        }
+    }
+    while (1)   /* this is pretty wierd...  should rewrite it */
+    {
+        for (y = x->gl_graphics; y; y = y2)
+        {
+            y2 = y->g_next;
+            if (canvas_isObjectSelected(x, y))
+            {
+                glist_delete(x, y);
+                goto next;
+            }
+        }
+        goto restore;
+    next: ;
+    }
+restore:
+    dsp_resume(dspstate);
+    canvas_dirty(x, 1);
+}
 
 void canvas_disconnect(t_glist *x,
     t_float index1, t_float outno, t_float index2, t_float inno)
@@ -247,59 +290,7 @@ static void canvas_rightclick(t_glist *x, int xpos, int ypos, t_gobj *y)
 
 /* ----  editors -- perhaps this and "vis" should go to g_editor.c ------- */
 
-static t_editor *editor_new(t_glist *owner)
-{
-    char buf[40];
-    t_editor *x = (t_editor *)PD_MEMORY_GET(sizeof(*x));
-    x->e_buffer = buffer_new();
-    //x->e_deleted = buffer_new();
-    x->e_owner = owner;
-    sprintf(buf, ".x%lx", (t_int)owner);
-    x->e_guiconnect = guiconnect_new(&owner->gl_obj.te_g.g_pd, gensym (buf));
-    x->e_clock = 0;
-    return (x);
-}
 
-static void editor_free(t_editor *x, t_glist *y)
-{
-    canvas_deselectAll(y);
-    guiconnect_release(x->e_guiconnect, 1000);
-    buffer_free(x->e_buffer);
-    //buffer_free(x->e_deleted);
-    if (x->e_clock)
-        clock_free(x->e_clock);
-    PD_MEMORY_FREE((void *)x);
-}
-
-    /* recursively create or destroy all editors of a glist and its 
-    sub-glists, as long as they aren't toplevels. */
-void canvas_create_editor(t_glist *x)
-{
-    t_gobj *y;
-    t_object *ob;
-    if (!x->gl_editor)
-    {
-        x->gl_editor = editor_new(x);
-        for (y = x->gl_graphics; y; y = y->g_next)
-            if (ob = canvas_castToObjectIfBox(&y->g_pd))
-                rtext_new(x, ob);
-    }
-}
-
-void canvas_destroy_editor(t_glist *x)
-{
-    t_gobj *y;
-    t_object *ob;
-    canvas_deselectAll(x);
-    if (x->gl_editor)
-    {
-        t_boxtext *rtext;
-        while (rtext = x->gl_editor->e_text)
-            rtext_free(rtext);
-        editor_free(x->gl_editor, x);
-        x->gl_editor = 0;
-    }
-}
 
     /* we call this when we want the window to become visible, mapped, and
     in front of all windows; or with "f" zero, when we want to get rid of
@@ -312,7 +303,7 @@ void canvas_vis(t_glist *x, t_float f)
     {
         /* If a subpatch/abstraction has GOP/gl_isGraphOnParent set, then it will have
          * a gl_editor already, if its not, it will not have a gl_editor.
-         * canvas_create_editor(x) checks if a gl_editor is already created,
+         * canvas_createEditor(x) checks if a gl_editor is already created,
          * so its ok to run it on a canvas that already has a gl_editor. */
         if (x->gl_editor && x->gl_haveWindow)
         {           /* just put us in front */
@@ -323,7 +314,7 @@ void canvas_vis(t_glist *x, t_float f)
             char cbuf[PD_STRING];
             int cbuflen;
             t_glist *c = x;
-            canvas_create_editor(x);
+            canvas_createEditor(x);
             sys_vGui("::ui_patch::create .x%lx %d %d +%d+%d %d\n", x,
                 (int)(x->gl_windowBottomRightX - x->gl_windowTopLeftX),
                 (int)(x->gl_windowBottomRightY - x->gl_windowTopLeftY),
@@ -356,13 +347,13 @@ void canvas_vis(t_glist *x, t_float f)
                 subpatches fall here too but don'd need the editor freed, so
                 we check if it exists. */
             if (x->gl_editor)
-                canvas_destroy_editor(x);
+                canvas_destroyEditor(x);
             return;
         }
         canvas_deselectAll(x);
         if (canvas_isVisible(x))
             canvas_map(x, 0);
-        canvas_destroy_editor(x);
+        canvas_destroyEditor(x);
         sys_vGui("destroy .x%lx\n", x);
         for (i = 1, x2 = x; x2; x2 = x2->gl_next, i++)
             ;
@@ -1200,7 +1191,7 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos, t_float fmod)
         PD_BUG;
         return;
     }
-    glist_setlastxy(x, xpos, ypos);
+    canvas_setLastCoordinates(x, xpos, ypos);
     if (x->gl_editor->e_onMotion == ACTION_MOVE)
     {
         if (!x->gl_editor->e_clock)
@@ -1275,7 +1266,7 @@ void canvas_startmotion(t_glist *x)
 {
     int xval, yval;
     if (!x->gl_editor) return;
-    glist_getnextxy(x, &xval, &yval);
+    canvas_getLastCoordinates(x, &xval, &yval);
     if (xval == 0 && yval == 0) return;
     x->gl_editor->e_onMotion = ACTION_MOVE;
     x->gl_editor->e_previousX = xval;
@@ -1460,60 +1451,6 @@ void canvas_copy (t_glist *x)
         sys_gui("clipboard clear\n");
         sys_vGui("clipboard append {%.*s}\n", bufsize, buf);
     }
-}
-
-static void canvas_doclear(t_glist *x)
-{
-    t_gobj *y, *y2;
-    int dspstate;
-
-    dspstate = dsp_suspend();
-    if (x->gl_editor->e_isSelectedline)
-    {
-        canvas_disconnect(x, x->gl_editor->e_selectedLineIndexOfObjectOut,
-             x->gl_editor->e_selectedLineIndexOfOutlet,
-             x->gl_editor->e_selectedLineIndexOfObjectIn,
-             x->gl_editor->e_selectedLineIndexOfInlet);
-             
-        /* canvas_setundo(x, canvas_undo_disconnect,
-            canvas_undo_set_disconnect(x,
-                x->gl_editor->e_selectedLineIndexOfObjectOut,
-                x->gl_editor->e_selectedLineIndexOfOutlet,
-                x->gl_editor->e_selectedLineIndexOfObjectIn,
-                x->gl_editor->e_selectedLineIndexOfInlet),
-            "disconnect"); */
-    }
-        /* if text is selected, deselecting it might remake the
-        object. So we deselect it and hunt for a "new" object on
-        the glist to reselect. */
-    if (x->gl_editor->e_selectedText)
-    {
-        t_gobj *selwas = x->gl_editor->e_selectedObjects->sel_what;
-        pd_newest = 0;
-        canvas_deselectAll(x);
-        if (pd_newest)
-        {
-            for (y = x->gl_graphics; y; y = y->g_next)
-                if (&y->g_pd == pd_newest) canvas_selectObject(x, y);
-        }
-    }
-    while (1)   /* this is pretty wierd...  should rewrite it */
-    {
-        for (y = x->gl_graphics; y; y = y2)
-        {
-            y2 = y->g_next;
-            if (canvas_isObjectSelected(x, y))
-            {
-                glist_delete(x, y);
-                goto next;
-            }
-        }
-        goto restore;
-    next: ;
-    }
-restore:
-    dsp_resume(dspstate);
-    canvas_dirty(x, 1);
 }
 
 void canvas_cut (t_glist *x)
@@ -1752,18 +1689,67 @@ static void canvas_dofont(t_glist *x, t_float font, t_float xresize,
             canvas_dofont((t_glist *)y, font, xresize, yresize);
 }
 
-void glist_getnextxy(t_glist *gl, int *xpix, int *ypix)
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static t_editor *editor_new (t_glist *owner)
 {
-    if (editor_lastCanvas == gl)
-        *xpix = editor_lastCanvasX, *ypix = editor_lastCanvasY;
-    else *xpix = *ypix = 40;
+    char t[PD_STRING] = { 0 };
+    
+    t_editor *x = (t_editor *)PD_MEMORY_GET (sizeof (t_editor));
+    
+    string_sprintf (t, PD_STRING, ".x%lx", (t_int)owner);
+    
+    x->e_buffer     = buffer_new();
+    x->e_clock      = NULL;
+    x->e_guiconnect = guiconnect_new (cast_pd (owner), gensym (t));
+    
+    return x;
 }
 
-static void glist_setlastxy(t_glist *gl, int xval, int yval)
+static void editor_free (t_editor *x)
 {
-    editor_lastCanvas = gl;
-    editor_lastCanvasX = xval;
-    editor_lastCanvasY = yval;
+    guiconnect_release (x->e_guiconnect, 1000.0);
+    if (x->e_clock) { clock_free (x->e_clock); }
+    buffer_free (x->e_buffer);
+
+    PD_MEMORY_FREE (x);
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_createEditor (t_glist *glist)
+{
+    if (!glist->gl_editor) {
+    //
+    t_gobj *y = NULL;
+    
+    glist->gl_editor = editor_new (glist);
+    
+    for (y = glist->gl_graphics; y; y = y->g_next) {
+        t_object *o = NULL;
+        if (o = canvas_castToObjectIfBox (y)) { rtext_new (glist, o); }
+    }
+    //
+    }
+}
+
+void canvas_destroyEditor (t_glist *glist)
+{
+    if (glist->gl_editor) {
+    //
+    t_boxtext *text = NULL;
+    
+    canvas_deselectAll (glist);
+    while (text = glist->gl_editor->e_text) { rtext_free (text); }
+    
+    editor_free (glist->gl_editor);
+    glist->gl_editor = NULL;
+    //
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

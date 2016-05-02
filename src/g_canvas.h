@@ -126,6 +126,13 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define CANVAS_OBJECT_DEFAULT_X                 40
+#define CANVAS_OBJECT_DEFAULT_Y                 40
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 #ifdef __APPLE__
     #define CANVAS_WINDOW_HEADER_HEIGHT         22
 #else
@@ -203,7 +210,6 @@ typedef struct _selection {
     } t_selection;
     
 typedef struct _editor {
-    t_glist             *e_owner;
     t_guiconnect        *e_guiconnect;
     t_boxtext           *e_text;
     t_boxtext           *e_selectedText;
@@ -352,7 +358,7 @@ int             canvas_openFile                         (t_glist *glist,
                                                             char *directoryResult,
                                                             char **nameResult,
                                                             size_t size);
-                                                            
+
 void            canvas_bind                             (t_glist *glist);
 void            canvas_unbind                           (t_glist *glist);
 t_error         canvas_makeFilePath                     (t_glist *glist, char *name, char *dest, size_t size);
@@ -360,6 +366,9 @@ void            canvas_setName                          (t_glist *glist, t_symbo
 void            canvas_updateTitle                      (t_glist *glist);
 int             canvas_hasGraphOnParentTitle            (t_glist *glist);
 int             canvas_getFontSize                      (t_glist *glist);
+
+void            canvas_setLastCoordinates               (t_glist *glist, int a, int b);
+void            canvas_getLastCoordinates               (t_glist *glist, int *a, int *b);
 
 int             canvas_getIndexOfObject                 (t_glist *glist, t_gobj *object);
 t_gobj          *canvas_getObjectAtIndex                (t_glist *glist, int n);
@@ -403,6 +412,12 @@ void            canvas_deselectAll                      (t_glist *glist);
 int             canvas_getNumberOfUnselectedObjects     (t_glist *glist);
 int             canvas_getIndexOfObjectAmongSelected    (t_glist *glist, t_gobj *y);
 int             canvas_getIndexOfObjectAmongUnselected  (t_glist *glist, t_gobj *y);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void            canvas_createEditor                     (t_glist *glist);
+void            canvas_destroyEditor                    (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -567,8 +582,6 @@ t_float  glist_xtopixels        (t_glist *x, t_float xval);
 t_float  glist_ytopixels        (t_glist *x, t_float yval);
 t_float  glist_dpixtodx         (t_glist *x, t_float dxpix);
 t_float  glist_dpixtody         (t_glist *x, t_float dypix);
-void     glist_getnextxy        (t_glist *x, int *xval, int *yval);
-
 
 void     glist_arraydialog      (t_glist *parent,
                                     t_symbol *name,
@@ -587,13 +600,6 @@ void     glist_drawio           (t_glist *x,
                                     int y2);
 
 void     glist_eraseio          (t_glist *glist, t_object *ob, char *tag);
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-void canvas_create_editor       (t_glist *x);
-void canvas_destroy_editor      (t_glist *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

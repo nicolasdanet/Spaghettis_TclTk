@@ -234,7 +234,7 @@ static void canvas_open (t_glist *glist)
     
     gobj_visibleHasChanged (cast_gobj (glist), glist->gl_owner, 0);
     
-    if (glist->gl_editor) { canvas_destroy_editor (glist); }
+    if (glist->gl_editor) { canvas_destroyEditor (glist); }
 
     glist->gl_haveWindow = 1;
     
@@ -436,7 +436,7 @@ void canvas_free (t_glist *glist)
     
     while (y = glist->gl_graphics) { glist_delete (glist, y); }
     if (glist == glist_getcanvas (glist)) { canvas_vis (glist, 0); }
-    if (glist->gl_editor) { canvas_destroy_editor (glist); }
+    if (glist->gl_editor) { canvas_destroyEditor (glist); }
     
     canvas_unbind (glist);
 

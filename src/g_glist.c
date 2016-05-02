@@ -35,6 +35,14 @@ extern int          canvas_magic;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+static t_glist      *canvas_lastCanvas;             /* Shared. */
+
+static int          canvas_lastCanvasX;             /* Shared. */
+static int          canvas_lastCanvasY;             /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 void canvas_setActiveFileNameAndDirectory (t_symbol *name, t_symbol *directory)
 {
     canvas_fileName  = name;
@@ -320,6 +328,21 @@ int canvas_getFontSize (t_glist *glist)
     while (!glist->gl_environment) { if (!(glist = glist->gl_owner)) { PD_BUG; } }
     
     return glist->gl_fontSize;
+}
+
+void canvas_setLastCoordinates (t_glist *glist, int a, int b)
+{
+    canvas_lastCanvas   = glist;
+    canvas_lastCanvasX  = a;
+    canvas_lastCanvasY  = b;
+}
+
+void canvas_getLastCoordinates (t_glist *glist, int *a, int *b)
+{
+    if (canvas_lastCanvas == glist) { *a = canvas_lastCanvasX; *b = canvas_lastCanvasY; } 
+    else {
+        *a = CANVAS_OBJECT_DEFAULT_X; *b = CANVAS_OBJECT_DEFAULT_Y;
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------

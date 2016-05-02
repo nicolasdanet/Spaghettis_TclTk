@@ -67,7 +67,7 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         pd_vMessage((t_pd *)glist_getcanvas(gl), gensym ("editmode"), "i", 1);
         SET_SYMBOL(&at, gensym ("comment"));
         canvas_deselectAll(gl);
-        glist_getnextxy(gl, &xpix, &ypix);
+        canvas_getLastCoordinates(gl, &xpix, &ypix);
         x->te_xCoordinate = xpix-1;
         x->te_yCoordinate = ypix-1;
         buffer_deserialize(x->te_buffer, 1, &at);
@@ -178,7 +178,7 @@ static void canvas_howputnew(t_glist *x, int *connectp, int *xpixp, int *ypixp,
     }
     else
     {
-        glist_getnextxy(x, xpixp, ypixp);
+        canvas_getLastCoordinates(x, xpixp, ypixp);
         *xpixp -= 3;
         *ypixp -= 3;
         canvas_deselectAll(x);
@@ -232,7 +232,7 @@ void canvas_iems(t_glist *gl, t_symbol *guiobjname)
     canvas_deselectAll(gl);
     SET_SYMBOL(&at, guiobjname);
     buffer_deserialize(b, 1, &at);
-    glist_getnextxy(gl, &xpix, &ypix);
+    canvas_getLastCoordinates(gl, &xpix, &ypix);
     canvas_objtext(gl, xpix, ypix, 0, 1, b);
     canvas_startmotion(glist_getcanvas(gl));
 }
