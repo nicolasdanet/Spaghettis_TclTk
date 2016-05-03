@@ -1,6 +1,13 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
+
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* This file defines the "scalar" object, which is not a text object, just a
 "gobj".  Scalars have templates which describe their structures, which

@@ -1,6 +1,6 @@
 
 /* 
-    Copyright (c) 1997-2015 Miller Puckette and others.
+    Copyright (c) 1997-2016 Miller Puckette and others.
 */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
@@ -352,7 +352,6 @@ t_glist         *canvas_addGraph                        (t_glist *glist,
 int             canvas_isVisible                        (t_glist *glist);
 int             canvas_isTopLevel                       (t_glist *glist);
 int             canvas_isAbstraction                    (t_glist *glist);
-int             canvas_isSubpatch                       (t_glist *glist);
 
 int             canvas_openFile                         (t_glist *glist,
                                                             const char *name,

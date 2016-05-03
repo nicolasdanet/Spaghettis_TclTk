@@ -1,6 +1,6 @@
 
 /* 
-    Copyright (c) 1997-2003 Guenter Geiger, Miller Puckette,
+    Copyright (c) 1997-2016 Guenter Geiger, Miller Puckette,
     Larry Troxler, Winfried Ritsch, Karl MacMillan, and others.
 */
 

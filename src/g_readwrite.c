@@ -1,6 +1,13 @@
-/* Copyright (c) 1997-2002 Miller Puckette and others.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
+
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* 
 Routines to read and write canvases to files:

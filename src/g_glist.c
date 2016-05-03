@@ -1,6 +1,6 @@
 
 /* 
-    Copyright (c) 1997-2015 Miller Puckette and others.
+    Copyright (c) 1997-2016 Miller Puckette and others.
 */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */
@@ -224,11 +224,6 @@ int canvas_isAbstraction (t_glist *x)
     return (x->gl_environment != NULL);
 }
 
-int canvas_isSubpatch (t_glist *x)
-{
-    return (x->gl_owner && !canvas_isAbstraction (x));
-}
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -446,10 +441,7 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
             &t->tr_srcBottomRightY);
             
     } else {
-        t->tr_srcTopLeftX     = 0;
-        t->tr_srcTopLeftY     = 0;
-        t->tr_srcBottomRightX = 0;
-        t->tr_srcBottomRightY = 0;
+        t->tr_srcTopLeftX = t->tr_srcTopLeftY = t->tr_srcBottomRightX = t->tr_srcBottomRightY = 0;
     }
     //
     }
@@ -495,14 +487,8 @@ t_outconnect *canvas_traverseLinesNext (t_linetraverser *t)
         }
         
     } else {
-        t->tr_lineStartX        = 0;
-        t->tr_lineStartY        = 0;
-        t->tr_lineEndX          = 0;
-        t->tr_lineEndY          = 0;
-        t->tr_destTopLeftX      = 0;
-        t->tr_destTopLeftY      = 0;
-        t->tr_destBottomRightX  = 0;
-        t->tr_destBottomRightY  = 0;
+        t->tr_lineStartX   = t->tr_lineStartY   = t->tr_lineEndX         = t->tr_lineEndY         = 0;
+        t->tr_destTopLeftX = t->tr_destTopLeftY = t->tr_destBottomRightX = t->tr_destBottomRightY = 0;
     }
     
     return connection;

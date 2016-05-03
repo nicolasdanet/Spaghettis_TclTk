@@ -1,6 +1,6 @@
 
 /* 
-    Copyright (c) 2010 Peter Brinkmann.
+    Copyright (c) 2010-2016 Peter Brinkmann.
 */
 
 /* < https://opensource.org/licenses/BSD-3-Clause > */

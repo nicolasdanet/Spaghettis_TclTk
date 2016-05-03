@@ -1,6 +1,13 @@
-/* Copyright (c) 1997-1999 Miller Puckette.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
+
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* graphical inlets and outlets, both for control and signals.  */
 

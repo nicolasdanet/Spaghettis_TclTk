@@ -1,6 +1,13 @@
-/* Copyright (c) 1997-2001 Miller Puckette and others.
-* For information on usage and redistribution, and for a DISCLAIMER OF ALL
-* WARRANTIES, see the file, "LICENSE.txt," in this distribution.  */
+
+/* 
+    Copyright (c) 1997-2016 Miller Puckette and others.
+*/
+
+/* < https://opensource.org/licenses/BSD-3-Clause > */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 /* This file deals with the behavior of glists as either "text objects" or
 "graphs" inside another glist.  LATER move the inlet/outlet code of g_canvas.c 
