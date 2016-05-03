@@ -1139,7 +1139,7 @@ static void *canvas_getblock (t_class *blockclass, t_glist **canvasp)
         if (g->g_pd == blockclass)
             ret = g;
     }
-    *canvasp = canvas->gl_owner;
+    *canvasp = canvas->gl_parent;
     return(ret);
 }
 

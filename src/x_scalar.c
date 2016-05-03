@@ -64,7 +64,7 @@ static void *scalar_define_new(t_symbol *s, int argc, t_atom *argv)
     SET_FLOAT(a+5, 0);
     x = canvas_new (NULL, NULL, 6, a);
 
-    x->gl_owner = z;
+    x->gl_parent = z;
     x->gl_saveScalar = 0;
         /* put a scalar in it */
     template = template_findbyname(canvas_makeBindSymbol(templatesym));

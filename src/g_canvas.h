@@ -240,7 +240,7 @@ struct _glist {
     t_object            gl_obj;         /* MUST be the first. */
     t_gobj              *gl_graphics;
     t_gstub             *gl_stub;
-    t_glist             *gl_owner;
+    t_glist             *gl_parent;
     t_glist             *gl_next;
     t_environment       *gl_environment;
     t_symbol            *gl_name;
@@ -335,6 +335,7 @@ void            canvas_setActiveArguments               (int argc, t_atom *argv)
 t_glist         *canvas_getCurrent                      (void);
 t_environment   *canvas_getEnvironment                  (t_glist *glist);
 t_glist         *canvas_getRoot                         (t_glist *glist);
+t_glist         *canvas_getTopmostParent                (t_glist *glist);
 t_glist         *canvas_findDirty                       (t_glist *glist);
 t_symbol        *canvas_expandDollar                    (t_glist *glist, t_symbol *s);
 t_symbol        *canvas_makeBindSymbol                  (t_symbol *s);
@@ -350,8 +351,8 @@ t_glist         *canvas_addGraph                        (t_glist *glist,
                                                             t_float bottomRightY);
 
 int             canvas_isVisible                        (t_glist *glist);
-int             canvas_isTopLevel                       (t_glist *glist);
 int             canvas_isAbstraction                    (t_glist *glist);
+int             canvas_canHaveWindow                    (t_glist *glist);
 
 int             canvas_openFile                         (t_glist *glist,
                                                             const char *name,
@@ -512,8 +513,8 @@ void            gobj_displace                           (t_gobj *x, t_glist *own
 void            gobj_select                             (t_gobj *x, t_glist *owner, int state);
 void            gobj_activate                           (t_gobj *x, t_glist *owner, int state);
 void            gobj_delete                             (t_gobj *x, t_glist *owner);
-int             gobj_shouldBeVisible                    (t_gobj *x, t_glist *owner);
-void            gobj_visibleHasChanged                  (t_gobj *x, t_glist *owner, int isVisible);
+int             gobj_isVisible                          (t_gobj *x, t_glist *owner);
+void            gobj_visibilityChanged                  (t_gobj *x, t_glist *owner, int isVisible);
 int             gobj_click                              (t_gobj *x,
                                                             t_glist *owner,
                                                             int a,

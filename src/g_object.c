@@ -84,15 +84,15 @@ void gobj_save (t_gobj *x, t_buffer *buffer)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-int gobj_shouldBeVisible (t_gobj *x, t_glist *owner)
+int gobj_isVisible (t_gobj *x, t_glist *owner)
 {
     t_object *o = NULL;
     
-    if (!owner->gl_haveWindow && owner->gl_isGraphOnParent && owner->gl_owner) {    /* Graph on parent. */
+    if (!owner->gl_haveWindow && owner->gl_isGraphOnParent && owner->gl_parent) {    /* Graph on parent. */
     //
     /* Is parent visible? */
     
-    if (!gobj_shouldBeVisible (cast_gobj (owner), owner->gl_owner)) { return 0; }
+    if (!gobj_isVisible (cast_gobj (owner), owner->gl_parent)) { return 0; }
     
     /* Falling outside the graph rectangle? */
     
@@ -103,7 +103,7 @@ int gobj_shouldBeVisible (t_gobj *x, t_glist *owner)
         //
         int a, b, c, d, e, f, g, h;
             
-        gobj_getRectangle (cast_gobj (owner), owner->gl_owner, &a, &b, &c, &d);
+        gobj_getRectangle (cast_gobj (owner), owner->gl_parent, &a, &b, &c, &d);
         
         if (a > c) { int t = a; a = c; c = t; }
         if (b > d) { int t = b; b = d; d = t; }
@@ -133,10 +133,10 @@ int gobj_shouldBeVisible (t_gobj *x, t_glist *owner)
     return 1;
 }
 
-void gobj_visibleHasChanged (t_gobj *x, t_glist *owner, int isVisible)
+void gobj_visibilityChanged (t_gobj *x, t_glist *owner, int isVisible)
 {
     if (pd_class (x)->c_behavior && pd_class (x)->c_behavior->w_fnVisible) {
-        if (gobj_shouldBeVisible (x, owner)) {
+        if (gobj_isVisible (x, owner)) {
             (*(pd_class (x)->c_behavior->w_fnVisible)) (x, owner, isVisible);
         }
     }

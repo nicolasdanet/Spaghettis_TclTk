@@ -776,7 +776,7 @@ static void gatom_param(t_gatom *x, t_symbol *sel, int argc, t_atom *argv)
     t_symbol *label = gatom_unescapit(atom_getSymbolAtIndex(5, argc, argv));
     t_float wherelabel = atom_getFloatAtIndex(6, argc, argv);
 
-    gobj_visibleHasChanged(&x->a_text.te_g, x->a_glist, 0);
+    gobj_visibilityChanged(&x->a_text.te_g, x->a_glist, 0);
     if (!*symfrom->s_name && *x->a_symfrom->s_name)
         inlet_new(&x->a_text, &x->a_text.te_g.g_pd, 0, 0);
     else if (*symfrom->s_name && !*x->a_symfrom->s_name && x->a_text.te_inlet)
@@ -813,7 +813,7 @@ static void gatom_param(t_gatom *x, t_symbol *sel, int argc, t_atom *argv)
             canvas_expandDollar(x->a_glist, x->a_symfrom));
     x->a_symto = symto;
     x->a_expanded_to = canvas_expandDollar(x->a_glist, x->a_symto);
-    gobj_visibleHasChanged(&x->a_text.te_g, x->a_glist, 1);
+    gobj_visibilityChanged(&x->a_text.te_g, x->a_glist, 1);
     canvas_dirty(x->a_glist, 1);
 
     /* glist_retext(x->a_glist, &x->a_text); */
@@ -1058,7 +1058,7 @@ static void text_select(t_gobj *z, t_glist *glist, int state)
     t_object *x = (t_object *)z;
     t_boxtext *y = glist_findrtext(glist, x);
     rtext_select(y, state);
-    if (canvas_isVisible(glist) && gobj_shouldBeVisible(&x->te_g, glist))
+    if (canvas_isVisible(glist) && gobj_isVisible(&x->te_g, glist))
         sys_vGui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 
             rtext_gettag(y), (state? "blue" : "black"));
 }
@@ -1081,7 +1081,7 @@ static void text_vis(t_gobj *z, t_glist *glist, int vis)
     t_object *x = (t_object *)z;
     if (vis)
     {
-        if (gobj_shouldBeVisible(&x->te_g, glist))
+        if (gobj_isVisible(&x->te_g, glist))
         {
             t_boxtext *y = glist_findrtext(glist, x);
             if (x->te_type == TYPE_ATOM)
@@ -1094,7 +1094,7 @@ static void text_vis(t_gobj *z, t_glist *glist, int vis)
     else
     {
         t_boxtext *y = glist_findrtext(glist, x);
-        if (gobj_shouldBeVisible(&x->te_g, glist))
+        if (gobj_isVisible(&x->te_g, glist))
         {
             text_eraseborder(x, glist, rtext_gettag(y));
             rtext_erase(y);

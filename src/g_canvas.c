@@ -89,7 +89,7 @@ static void *subpatch_new (t_symbol *s)
     SET_FLOAT  (a + 5, 1);
     
     x = canvas_new (NULL, NULL, 6, a);
-    x->gl_owner = z;
+    x->gl_parent = z;
     
     canvas_pop (x, 1);
     
@@ -182,7 +182,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     if (!(z = gensym ("#X")->s_thing) || (pd_class (z) != canvas_class)) { PD_BUG; }
     else {
         t_glist *g = cast_glist (z);
-        glist->gl_owner = g;
+        glist->gl_parent = g;
         canvas_objfor (g, cast_object (glist), argc, argv);
     }
 }
@@ -217,8 +217,8 @@ static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     o->te_width = atom_getFloatAtIndex (0, argc, argv);
     
     if (canvas_isVisible (glist)) {
-        gobj_visibleHasChanged (g1, glist, 0);
-        gobj_visibleHasChanged (g1, glist, 1);
+        gobj_visibilityChanged (g1, glist, 0);
+        gobj_visibilityChanged (g1, glist, 1);
     }
     //
     }
@@ -235,7 +235,7 @@ void canvas_close (t_glist *glist, t_float f)
     if (k == 3) { canvas_dirty (glist, 0); global_shouldQuit (NULL); }      /* While quitting application. */
     else {
     //
-    if (glist->gl_owner && (k != 2)) { canvas_vis (glist, 0); }     /* Hide subpatches and abstractions. */
+    if (glist->gl_parent && (k != 2)) { canvas_vis (glist, 0); }     /* Hide subpatches and abstractions. */
     else {
     //
     if (k == 1) { pd_free (cast_pd (glist)); }                      /* Has been saved right before. */
@@ -244,7 +244,7 @@ void canvas_close (t_glist *glist, t_float f)
           
             /* Yet another? */
             
-            canvas_dirty (glist, 0); while (glist->gl_owner) { glist = glist->gl_owner; }
+            canvas_dirty (glist, 0); glist = canvas_getTopmostParent (glist);
         }
         {
             t_glist *t = canvas_findDirty (glist);
@@ -274,17 +274,17 @@ void canvas_close (t_glist *glist, t_float f)
 
 static void canvas_open (t_glist *glist)
 {
-    if (canvas_isVisible (glist) && !canvas_isTopLevel (glist)) {
+    if (canvas_isVisible (glist) && !canvas_canHaveWindow (glist)) {
     //
-    PD_ASSERT (glist->gl_owner);
+    PD_ASSERT (glist->gl_parent);
     
-    gobj_visibleHasChanged (cast_gobj (glist), glist->gl_owner, 0);
+    gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
     
     if (glist->gl_editor) { canvas_destroyEditor (glist); }
 
     glist->gl_haveWindow = 1;
     
-    gobj_visibleHasChanged (cast_gobj (glist), glist->gl_owner, 1);
+    gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
     //
     }
     
@@ -325,7 +325,7 @@ void canvas_map (t_glist *glist, t_float f)
         t_selection *selection = NULL;
         
         if (!glist->gl_haveWindow) { PD_BUG; canvas_vis (glist, 1); }
-        for (y = glist->gl_graphics; y; y = y->g_next) { gobj_visibleHasChanged (y, glist, 1); }
+        for (y = glist->gl_graphics; y; y = y->g_next) { gobj_visibilityChanged (y, glist, 1); }
         for (selection = glist->gl_editor->e_selectedObjects; selection; selection = selection->sel_next) {
             gobj_select (selection->sel_what, glist, 1);
         }
@@ -416,7 +416,7 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 
     x->gl_obj.te_type   = TYPE_OBJECT;
     x->gl_stub          = gstub_new (x, NULL);
-    x->gl_owner         = owner;
+    x->gl_parent        = owner;
     x->gl_name          = (name != &s_ ? name : (canvas_fileName ? canvas_fileName : gensym (PD_NAME_SHORT)));
     x->gl_magic         = ++canvas_magic;
     
@@ -461,8 +461,8 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
 
     if (visible && gensym ("#X")->s_thing && (pd_class (gensym ("#X")->s_thing) == canvas_class)) {
         t_glist *g = cast_glist (gensym ("#X")->s_thing);
-        while (g && !g->gl_environment) { g = g->gl_owner; }
-        if (g && canvas_isAbstraction (g) && g->gl_owner) { visible = 0; }
+        while (g && !g->gl_environment) { g = g->gl_parent; }
+        if (g && canvas_isAbstraction (g) && g->gl_parent) { visible = 0; }
     }
     
     x->gl_isEditMode    = 0;
@@ -496,7 +496,7 @@ void canvas_free (t_glist *glist)
     gstub_cutoff (glist->gl_stub);
     guistub_destroyWithKey (glist);
     
-    if (!glist->gl_owner) { instance_removeFromRoots (glist); }
+    if (!glist->gl_parent) { instance_removeFromRoots (glist); }
 }
 
 // -----------------------------------------------------------------------------------------------------------

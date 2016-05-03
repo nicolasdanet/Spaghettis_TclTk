@@ -238,7 +238,7 @@ int canvas_hitbox(t_glist *x, t_gobj *y, int xpos, int ypos,
 {
     int x1, y1, x2, y2;
     t_object *ob;
-    if (!gobj_shouldBeVisible(y, x))
+    if (!gobj_isVisible(y, x))
         return (0);
     gobj_getRectangle(y, x, &x1, &y1, &x2, &y2);
     if (xpos >= x1 && xpos <= x2 && ypos >= y1 && ypos <= y2)
@@ -323,8 +323,8 @@ void canvas_vis(t_glist *x, t_float f)
                 x->gl_isEditMode);
            snprintf(cbuf, PD_STRING - 2, "::ui_patch::pdtk_canvas_setparents .x%lx",
                 (unsigned long)c);
-            while (c->gl_owner) {
-                c = c->gl_owner;
+            while (c->gl_parent) {
+                c = c->gl_parent;
                 cbuflen = strlen(cbuf);
                 snprintf(cbuf + cbuflen,
                          PD_STRING - cbuflen - 2,/* leave 2 for "\n\0" */
@@ -360,14 +360,14 @@ void canvas_vis(t_glist *x, t_float f)
             ;
             /* if we're a graph on our parent, and if the parent exists
                and is visible, show ourselves on parent. */
-        if (x->gl_isGraphOnParent && x->gl_owner)
+        if (x->gl_isGraphOnParent && x->gl_parent)
         {
-            t_glist *gl2 = x->gl_owner;
+            t_glist *gl2 = x->gl_parent;
             if (canvas_isVisible(gl2))
-                gobj_visibleHasChanged(&x->gl_obj.te_g, gl2, 0);
+                gobj_visibilityChanged(&x->gl_obj.te_g, gl2, 0);
             x->gl_haveWindow = 0;
             if (canvas_isVisible(gl2) && !gl2->gl_isDeleting)
-                gobj_visibleHasChanged(&x->gl_obj.te_g, gl2, 1);
+                gobj_visibilityChanged(&x->gl_obj.te_g, gl2, 1);
         }
         else x->gl_haveWindow = 0;
     }
@@ -383,13 +383,13 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
     
     if (!flag && x->gl_isGraphOnParent)
     {
-        if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
-            gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 0);
+        if (x->gl_parent && !x->gl_isLoading && canvas_isVisible(x->gl_parent))
+            gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
         x->gl_isGraphOnParent = 0;
-        if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
+        if (x->gl_parent && !x->gl_isLoading && canvas_isVisible(x->gl_parent))
         {
-            gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 1);
-            canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
+            gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
+            canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
         }
     }
     else if (flag)
@@ -400,16 +400,16 @@ void canvas_setgraph(t_glist *x, int flag, int nogoprect)
         if (x->gl_height <= 0)
             x->gl_height = GLIST_DEFAULT_HEIGHT;
 
-        if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
-            gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 0);
+        if (x->gl_parent && !x->gl_isLoading && canvas_isVisible(x->gl_parent))
+            gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
         x->gl_isGraphOnParent = 1;
         x->gl_hasRectangle = !nogoprect;
         if (canvas_isVisible(x) && x->gl_hasRectangle)
             glist_redraw(x);
-        if (x->gl_owner && !x->gl_isLoading && canvas_isVisible(x->gl_owner))
+        if (x->gl_parent && !x->gl_isLoading && canvas_isVisible(x->gl_parent))
         {
-            gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 1);
-            canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
+            gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
+            canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
         }
     }
 }
@@ -516,10 +516,10 @@ void canvas_donecanvasdialog(t_glist *x,
     canvas_dirty(x, 1);
     if (x->gl_haveWindow)
         canvas_redraw(x);
-    else if (canvas_isVisible(x->gl_owner))
+    else if (canvas_isVisible(x->gl_parent))
     {
-        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 0);
-        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 1);
+        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
+        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
     }
 }
 
@@ -1241,19 +1241,19 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos, t_float fmod)
                 if (wantwidth < 1)
                     wantwidth = 1;
                 ob->te_width = wantwidth;
-                gobj_visibleHasChanged(y1, x, 0);
+                gobj_visibilityChanged(y1, x, 0);
                 canvas_updateLinesByObject(x, ob);
-                gobj_visibleHasChanged(y1, x, 1);
+                gobj_visibilityChanged(y1, x, 1);
             }
             else if (ob && ob->te_g.g_pd == canvas_class)
             {
-                gobj_visibleHasChanged(y1, x, 0);
+                gobj_visibilityChanged(y1, x, 0);
                 ((t_glist *)ob)->gl_width += xpos - x->gl_editor->e_newX;
                 ((t_glist *)ob)->gl_height += ypos - x->gl_editor->e_newY;
                 x->gl_editor->e_newX = xpos;
                 x->gl_editor->e_newY = ypos;
                 canvas_updateLinesByObject(x, ob);
-                gobj_visibleHasChanged(y1, x, 1);
+                gobj_visibilityChanged(y1, x, 1);
             }
             else post("not resizable");
         }
@@ -1559,7 +1559,7 @@ void canvas_editmode(t_glist *x, t_float state)
     if (x->gl_isEditMode == (unsigned int) state)
         return;
     x->gl_isEditMode = (unsigned int) state;
-    if (x->gl_isEditMode && canvas_isVisible(x) && canvas_isTopLevel(x))
+    if (x->gl_isEditMode && canvas_isVisible(x) && canvas_canHaveWindow(x))
     {
         t_gobj *g;
         t_object *ob;
@@ -1575,7 +1575,7 @@ void canvas_editmode(t_glist *x, t_float state)
     else
     {
         canvas_deselectAll(x);
-        if (canvas_isVisible(x) && canvas_isTopLevel(x))
+        if (canvas_isVisible(x) && canvas_canHaveWindow(x))
         {
             canvas_setcursor(x, CURSOR_NOTHING);
             sys_vGui(".x%lx.c delete commentbar\n", glist_getcanvas(x));

@@ -90,17 +90,43 @@ t_environment *canvas_getEnvironment (t_glist *glist)
 {
     PD_ASSERT (glist);
     
-    while (!glist->gl_environment) { if (!(glist = glist->gl_owner)) { PD_BUG; } }
+    while (!glist->gl_environment) { if (!(glist = glist->gl_parent)) { PD_BUG; } }
     
     return glist->gl_environment;
 }
 
 t_glist *canvas_getRoot (t_glist *glist)
 {
-    if (!glist->gl_owner || canvas_isAbstraction (glist)) { return glist; }
+    if (!glist->gl_parent || canvas_isAbstraction (glist)) { return glist; }
     else {
-        return (canvas_getRoot (glist->gl_owner));
+        return (canvas_getRoot (glist->gl_parent));
     }
+}
+
+t_glist *canvas_getTopmostParent (t_glist *glist)
+{
+    while (glist->gl_parent) { glist = glist->gl_parent; }
+    
+    return glist;
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+int canvas_isVisible (t_glist *glist)
+{
+    return (!glist->gl_isLoading && glist_getcanvas (glist)->gl_isMapped);
+}
+
+int canvas_isAbstraction (t_glist *x)
+{
+    return (x->gl_environment != NULL);
+}
+
+int canvas_canHaveWindow (t_glist *x)
+{
+    return (x->gl_haveWindow || !x->gl_isGraphOnParent);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -180,7 +206,7 @@ t_glist *canvas_addGraph (t_glist *glist, t_symbol *name,
     x->gl_obj.te_yCoordinate    = topLeftY;
     x->gl_obj.te_type           = TYPE_OBJECT;
     x->gl_stub                  = gstub_new (x, NULL);
-    x->gl_owner                 = glist;
+    x->gl_parent                = glist;
     x->gl_name                  = name;
     x->gl_magic                 = ++canvas_magic;
     x->gl_width                 = bottomRightX - topLeftX;
@@ -203,25 +229,6 @@ t_glist *canvas_addGraph (t_glist *glist, t_symbol *name,
     glist_add (glist, cast_gobj (x));
     
     return x;
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-int canvas_isVisible (t_glist *glist)
-{
-    return (!glist->gl_isLoading && glist_getcanvas (glist)->gl_isMapped);
-}
-
-int canvas_isTopLevel (t_glist *x)
-{
-    return (x->gl_haveWindow || !x->gl_isGraphOnParent);
-}
-
-int canvas_isAbstraction (t_glist *x)
-{
-    return (x->gl_environment != NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -325,7 +332,7 @@ int canvas_hasGraphOnParentTitle (t_glist *glist)
 
 int canvas_getFontSize (t_glist *glist)
 {
-    while (!glist->gl_environment) { if (!(glist = glist->gl_owner)) { PD_BUG; } }
+    while (!glist->gl_environment) { if (!(glist = glist->gl_parent)) { PD_BUG; } }
     
     return glist->gl_fontSize;
 }

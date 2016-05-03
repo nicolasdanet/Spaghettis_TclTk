@@ -61,7 +61,7 @@ void glist_add(t_glist *x, t_gobj *y)
         canvas_drawGraphOnParentRectangle(x);
     }
     if (canvas_isVisible(x))
-        gobj_visibleHasChanged(y, x, 1);
+        gobj_visibilityChanged(y, x, 1);
     if (class_hasDrawCommand(y->g_pd)) 
         canvas_redrawAllByTemplate(template_findbyname(canvas_makeBindSymbol(
             glist_getcanvas(x)->gl_name)), SCALAR_REDRAW);
@@ -125,7 +125,7 @@ void glist_delete(t_glist *x, t_gobj *y)
     gobj_delete(y, x);
     if (canvas_isVisible(canvas))
     {
-        gobj_visibleHasChanged(y, x, 0);
+        gobj_visibilityChanged(y, x, 0);
     }
     if (x->gl_editor && (ob = canvas_castToObjectIfBox(&y->g_pd)))
         rtext = rtext_new(x, ob);
@@ -197,8 +197,8 @@ void glist_grab(t_glist *x, t_gobj *y, t_motionfn motionfn,
 
 t_glist *glist_getcanvas(t_glist *x)
 {
-    while (x->gl_owner && !x->gl_haveWindow && x->gl_isGraphOnParent)
-            x = x->gl_owner;
+    while (x->gl_parent && !x->gl_haveWindow && x->gl_isGraphOnParent)
+            x = x->gl_parent;
     return((t_glist *)x);
 }
 
@@ -298,11 +298,11 @@ void glist_sort(t_glist *x)
 t_inlet *canvas_addinlet(t_glist *x, t_pd *who, t_symbol *s)
 {
     t_inlet *ip = inlet_new(&x->gl_obj, who, s, 0);
-    if (!x->gl_isLoading && x->gl_owner && canvas_isVisible(x->gl_owner))
+    if (!x->gl_isLoading && x->gl_parent && canvas_isVisible(x->gl_parent))
     {
-        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 0);
-        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 1);
-        canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
+        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
+        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
+        canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
     }
     if (!x->gl_isLoading) canvas_resortinlets(x);
     return (ip);
@@ -310,18 +310,18 @@ t_inlet *canvas_addinlet(t_glist *x, t_pd *who, t_symbol *s)
 
 void canvas_rminlet(t_glist *x, t_inlet *ip)
 {
-    t_glist *owner = x->gl_owner;
+    t_glist *owner = x->gl_parent;
     int redraw = (owner && canvas_isVisible(owner) && (!owner->gl_isDeleting)
-        && canvas_isTopLevel(owner));
+        && canvas_canHaveWindow(owner));
     
     if (owner) canvas_deleteLinesByInlets(owner, &x->gl_obj, ip, 0);
     if (redraw)
-        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 0);
+        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
     inlet_free(ip);
     if (redraw)
     {
-        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 1);
-        canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
+        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
+        canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
     }
 }
 
@@ -363,18 +363,18 @@ void canvas_resortinlets(t_glist *x)
         object_moveInletFirst(&x->gl_obj, ip);
     }
     PD_MEMORY_FREE(vec);
-    if (x->gl_owner && canvas_isVisible(x->gl_owner))
-        canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
+    if (x->gl_parent && canvas_isVisible(x->gl_parent))
+        canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
 }
 
 t_outlet *canvas_addoutlet(t_glist *x, t_pd *who, t_symbol *s)
 {
     t_outlet *op = outlet_new(&x->gl_obj, s);
-    if (!x->gl_isLoading && x->gl_owner && canvas_isVisible(x->gl_owner))
+    if (!x->gl_isLoading && x->gl_parent && canvas_isVisible(x->gl_parent))
     {
-        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 0);
-        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 1);
-        canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
+        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
+        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
+        canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
     }
     if (!x->gl_isLoading) canvas_resortoutlets(x);
     return (op);
@@ -382,19 +382,19 @@ t_outlet *canvas_addoutlet(t_glist *x, t_pd *who, t_symbol *s)
 
 void canvas_rmoutlet(t_glist *x, t_outlet *op)
 {
-    t_glist *owner = x->gl_owner;
+    t_glist *owner = x->gl_parent;
     int redraw = (owner && canvas_isVisible(owner) && (!owner->gl_isDeleting)
-        && canvas_isTopLevel(owner));
+        && canvas_canHaveWindow(owner));
     
     if (owner) canvas_deleteLinesByInlets(owner, &x->gl_obj, 0, op);
     if (redraw)
-        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 0);
+        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 0);
 
     outlet_free(op);
     if (redraw)
     {
-        gobj_visibleHasChanged(&x->gl_obj.te_g, x->gl_owner, 1);
-        canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
+        gobj_visibilityChanged(&x->gl_obj.te_g, x->gl_parent, 1);
+        canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
     }
 }
 
@@ -435,8 +435,8 @@ void canvas_resortoutlets(t_glist *x)
         object_moveOutletFirst(&x->gl_obj, ip);
     }
     PD_MEMORY_FREE(vec);
-    if (x->gl_owner && canvas_isVisible(x->gl_owner))
-        canvas_updateLinesByObject(x->gl_owner, &x->gl_obj);
+    if (x->gl_parent && canvas_isVisible(x->gl_parent))
+        canvas_updateLinesByObject(x->gl_parent, &x->gl_obj);
 }
 
 /* ----------calculating coordinates and controlling appearance --------- */
@@ -534,8 +534,8 @@ t_float glist_pixelstox(t_glist *x, t_float xpix)
     else 
     {
         int x1, y1, x2, y2;
-        if (!x->gl_owner) { PD_BUG; }       
-        graph_graphrect(&x->gl_obj.te_g, x->gl_owner, &x1, &y1, &x2, &y2);
+        if (!x->gl_parent) { PD_BUG; }       
+        graph_graphrect(&x->gl_obj.te_g, x->gl_parent, &x1, &y1, &x2, &y2);
         return (x->gl_indexStart + (x->gl_indexEnd - x->gl_indexStart) * 
             (xpix - x1) / (x2 - x1));
     }
@@ -551,8 +551,8 @@ t_float glist_pixelstoy(t_glist *x, t_float ypix)
     else 
     {
         int x1, y1, x2, y2;
-        if (!x->gl_owner) { PD_BUG; }
-        graph_graphrect(&x->gl_obj.te_g, x->gl_owner, &x1, &y1, &x2, &y2);
+        if (!x->gl_parent) { PD_BUG; }
+        graph_graphrect(&x->gl_obj.te_g, x->gl_parent, &x1, &y1, &x2, &y2);
         return (x->gl_valueUp + (x->gl_valueDown - x->gl_valueUp) * 
             (ypix - y1) / (y2 - y1));
     }
@@ -569,8 +569,8 @@ t_float glist_xtopixels(t_glist *x, t_float xval)
     else
     {
         int x1, y1, x2, y2;
-        if (!x->gl_owner) { PD_BUG; }
-        graph_graphrect(&x->gl_obj.te_g, x->gl_owner, &x1, &y1, &x2, &y2);
+        if (!x->gl_parent) { PD_BUG; }
+        graph_graphrect(&x->gl_obj.te_g, x->gl_parent, &x1, &y1, &x2, &y2);
         return (x1 + (x2 - x1) * (xval - x->gl_indexStart) / (x->gl_indexEnd - x->gl_indexStart));
     }
 }
@@ -585,8 +585,8 @@ t_float glist_ytopixels(t_glist *x, t_float yval)
     else 
     {
         int x1, y1, x2, y2;
-        if (!x->gl_owner) { PD_BUG; }
-        graph_graphrect(&x->gl_obj.te_g, x->gl_owner, &x1, &y1, &x2, &y2);
+        if (!x->gl_parent) { PD_BUG; }
+        graph_graphrect(&x->gl_obj.te_g, x->gl_parent, &x1, &y1, &x2, &y2);
         return (y1 + (y2 - y1) * (yval - x->gl_valueUp) / (x->gl_valueDown - x->gl_valueUp));
     }
 }
@@ -643,15 +643,15 @@ void glist_redraw(t_glist *x)
     if (canvas_isVisible(x))
     {
             /* LATER fix the graph_vis() code to handle both cases */
-        if (canvas_isTopLevel(x))
+        if (canvas_canHaveWindow(x))
         {
             t_gobj *g;
             t_linetraverser t;
             t_outconnect *oc;
             for (g = x->gl_graphics; g; g = g->g_next)
             {
-                gobj_visibleHasChanged(g, x, 0);
-                gobj_visibleHasChanged(g, x, 1);
+                gobj_visibilityChanged(g, x, 0);
+                gobj_visibilityChanged(g, x, 1);
             }
                 /* redraw all the lines */
             canvas_traverseLinesStart(&t, x);
@@ -665,10 +665,10 @@ void glist_redraw(t_glist *x)
                 canvas_drawGraphOnParentRectangle(x);
             }
         }
-        if (x->gl_owner && canvas_isVisible(x->gl_owner))
+        if (x->gl_parent && canvas_isVisible(x->gl_parent))
         {
-            graph_vis(&x->gl_obj.te_g, x->gl_owner, 0); 
-            graph_vis(&x->gl_obj.te_g, x->gl_owner, 1);
+            graph_vis(&x->gl_obj.te_g, x->gl_parent, 0); 
+            graph_vis(&x->gl_obj.te_g, x->gl_parent, 1);
         }
     }
 }
@@ -712,13 +712,13 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         {
             sys_vGui(".x%lx.c create polygon\
  %d %d %d %d %d %d %d %d %d %d -tags [list %s graph] -fill #c0c0c0\n",
-                glist_getcanvas(x->gl_owner),
+                glist_getcanvas(x->gl_parent),
                 x1, y1, x1, y2, x2, y2, x2, y1, x1, y1, tag);
         }
         else
         {
             sys_vGui(".x%lx.c delete %s\n",
-                glist_getcanvas(x->gl_owner), tag);
+                glist_getcanvas(x->gl_parent), tag);
         }
         return;
     }
@@ -738,7 +738,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             /* draw a rectangle around the graph */
         sys_vGui(".x%lx.c create line\
             %d %d %d %d %d %d %d %d %d %d -tags [list %s graph]\n",
-            glist_getcanvas(x->gl_owner),
+            glist_getcanvas(x->gl_parent),
             x1, y1, x1, y2, x2, y2, x2, y1, x1, y1, tag);
         
             /* if there's just one "garray" in the graph, write its name
@@ -768,11 +768,11 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             {
                 int tickpix = (i % x->gl_tickX.k_lperb ? 2 : 4);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    glist_getcanvas(x->gl_owner),
+                    glist_getcanvas(x->gl_parent),
                     (int)glist_xtopixels(x, f), (int)upix,
                     (int)glist_xtopixels(x, f), (int)upix - tickpix, tag);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    glist_getcanvas(x->gl_owner),
+                    glist_getcanvas(x->gl_parent),
                     (int)glist_xtopixels(x, f), (int)lpix,
                     (int)glist_xtopixels(x, f), (int)lpix + tickpix, tag);
             }
@@ -782,11 +782,11 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             {
                 int tickpix = (i % x->gl_tickX.k_lperb ? 2 : 4);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    glist_getcanvas(x->gl_owner),
+                    glist_getcanvas(x->gl_parent),
                     (int)glist_xtopixels(x, f), (int)upix,
                     (int)glist_xtopixels(x, f), (int)upix - tickpix, tag);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    glist_getcanvas(x->gl_owner),
+                    glist_getcanvas(x->gl_parent),
                     (int)glist_xtopixels(x, f), (int)lpix,
                     (int)glist_xtopixels(x, f), (int)lpix + tickpix, tag);
             }
@@ -805,11 +805,11 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             {
                 int tickpix = (i % x->gl_tickY.k_lperb ? 2 : 4);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    glist_getcanvas(x->gl_owner),
+                    glist_getcanvas(x->gl_parent),
                     x1, (int)glist_ytopixels(x, f), 
                     x1 + tickpix, (int)glist_ytopixels(x, f), tag);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    glist_getcanvas(x->gl_owner),
+                    glist_getcanvas(x->gl_parent),
                     x2, (int)glist_ytopixels(x, f), 
                     x2 - tickpix, (int)glist_ytopixels(x, f), tag);
             }
@@ -819,11 +819,11 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             {
                 int tickpix = (i % x->gl_tickY.k_lperb ? 2 : 4);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    glist_getcanvas(x->gl_owner),
+                    glist_getcanvas(x->gl_parent),
                     x1, (int)glist_ytopixels(x, f), 
                     x1 + tickpix, (int)glist_ytopixels(x, f), tag);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    glist_getcanvas(x->gl_owner),
+                    glist_getcanvas(x->gl_parent),
                     x2, (int)glist_ytopixels(x, f), 
                     x2 - tickpix, (int)glist_ytopixels(x, f), tag);
             }
@@ -850,14 +850,14 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         */
             /* draw contents of graph as glist */
         for (g = x->gl_graphics; g; g = g->g_next)
-            gobj_visibleHasChanged(g, x, 1);
+            gobj_visibilityChanged(g, x, 1);
     }
     else
     {
         sys_vGui(".x%lx.c delete %s\n",
-            glist_getcanvas(x->gl_owner), tag);
+            glist_getcanvas(x->gl_parent), tag);
         for (g = x->gl_graphics; g; g = g->g_next)
-            gobj_visibleHasChanged(g, x, 0);
+            gobj_visibilityChanged(g, x, 0);
     }
 }
 

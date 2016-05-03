@@ -170,7 +170,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
     {
             /* reset vis flag as before */
         glist_getcanvas(x)->gl_isMapped = 1;
-        gobj_visibleHasChanged(&sc->sc_g, x, 1);
+        gobj_visibilityChanged(&sc->sc_g, x, 1);
     }
     if (selectit)
     {
@@ -332,12 +332,12 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
                 if (nnew == ntotal)
         {
             newone = y2;
-            gobj_visibleHasChanged(newone, x, 0);
+            gobj_visibilityChanged(newone, x, 0);
             y->g_next = y2->g_next;
             break;    
         }
     }
-    else gobj_visibleHasChanged((newone = x->gl_graphics), x, 0), x->gl_graphics = newone->g_next;
+    else gobj_visibilityChanged((newone = x->gl_graphics), x, 0), x->gl_graphics = newone->g_next;
     if (!newone)
         post_error ("couldn't update properties (perhaps a format problem?)");
     else if (!oldone) { PD_BUG; }
@@ -352,8 +352,8 @@ void canvas_dataproperties(t_glist *x, t_scalar *sc, t_buffer *b)
         pd_free(&newone->g_pd);
         if (canvas_isVisible(x))
         {
-            gobj_visibleHasChanged(oldone, x, 0);
-            gobj_visibleHasChanged(oldone, x, 1);
+            gobj_visibilityChanged(oldone, x, 0);
+            gobj_visibilityChanged(oldone, x, 1);
         }
     }
     else
@@ -620,7 +620,7 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
     t_linetraverser t;
     t_outconnect *oc;
         /* subpatch */
-    if (x->gl_owner && !x->gl_environment)
+    if (x->gl_parent && !x->gl_environment)
     {
         /* have to go to original binbuf to find out how we were named. */
         t_buffer *bz = buffer_new();
@@ -753,7 +753,7 @@ static void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir, flo
     if (buffer_write(b, filename->s_name, dir->s_name)) { /* sys_ouch */ }
     else {
             /* if not an abstraction, reset title bar and directory */ 
-        if (!x->gl_owner)
+        if (!x->gl_parent)
         {
             canvas_setName(x, filename, dir);
             /* update window list in case Save As changed the window name */
