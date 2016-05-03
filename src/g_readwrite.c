@@ -738,8 +738,7 @@ void canvas_reload(t_symbol *name, t_symbol *dir, t_gobj *except);
 
     /* save a "root" canvas to a file; cf. canvas_saveto() which saves the
     body (and which is called recursively.) */
-static void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir,
-    float fdestroy)
+static void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir, float fdestroy)
 {
     t_buffer *b = buffer_new();
     canvas_savetemplatesto(x, b, 1);
@@ -756,7 +755,7 @@ static void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir,
         canvas_dirty(x, 0);
         canvas_reload(filename, dir, &x->gl_obj.te_g);
         if (fdestroy != 0)
-            pd_vMessage(&x->gl_obj.te_g.g_pd, gensym ("close"), "f", 1.);
+            pd_vMessage (&x->gl_obj.te_g.g_pd, gensym ("close"), "f", fdestroy);
     }
     buffer_free(b);
 }
@@ -764,8 +763,8 @@ static void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir,
 void canvas_menusaveas(t_glist *x, float fdestroy)
 {
     t_glist *x2 = canvas_getRoot(x);
-    sys_vGui("::ui_file::saveAs .x%lx {%s} {%s} %d\n", x2,
-        x2->gl_name->s_name, canvas_getEnvironment (x2)->ce_directory->s_name, (fdestroy != 0));
+    sys_vGui ("::ui_file::saveAs .x%lx {%s} {%s} %d\n", x2,
+        x2->gl_name->s_name, canvas_getEnvironment (x2)->ce_directory->s_name, (int)fdestroy);
 }
 
 void canvas_menusave(t_glist *x, float fdestroy)

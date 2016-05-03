@@ -64,6 +64,7 @@ static double       editor_mouseUpClickTime;            /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #define EDITOR_DBLCLICK_INTERVAL        0.25
 
@@ -1273,79 +1274,6 @@ void canvas_startmotion(t_glist *x)
     x->gl_editor->e_previousY = yval; 
 }
 
-    /* quit, after calling canvas_findDirty() on all toplevels and verifying
-    the user really wants to discard changes  */
-void global_shouldQuit(void *dummy)
-{
-    t_glist *g, *g2;
-        /* find all root canvases */
-    for (g = pd_this->pd_roots; g; g = g->gl_next)
-        if (g2 = canvas_findDirty(g))
-    {
-        canvas_vis(g2, 1);
-            sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx close 3 } {}\n",
-                     canvas_getRoot(g2), g2);
-        return;
-    }
-    if (0)
-        sys_vGui("::ui_confirm::checkAction .console { Really quit? } { ::ui_interface::pdsend pd quit } { yes }\n");
-    else { interface_quit(0); }
-}
-
-    /* close a window (or possibly quit Pd), checking for dirty flags.
-    The "force" parameter is interpreted as follows:
-        0 - request from GUI to close, verifying whether clean or dirty
-        1 - request from GUI to close, no verification
-        2 - verified - mark this one clean, then continue as in 1
-        3 - verified - mark this one clean, then verify-and-quit
-    */
-void canvas_menuclose(t_glist *x, t_float fforce)
-{
-    int force = fforce;
-    t_glist *g;
-    if (x->gl_owner && (force == 0 || force == 1))
-        canvas_vis(x, 0);   /* if subpatch, just invis it */
-    else if (force == 0)    
-    {
-        g = canvas_findDirty(x);
-        if (g)
-        {
-            pd_vMessage(&g->gl_obj.te_g.g_pd, gensym ("open"), "");
-            sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx close 2 } {}\n",
-                     canvas_getRoot(g), g);
-            return;
-        }
-        else if (0)
-        {
-            sys_vGui("::ui_confirm::checkAction .x%lx { Close this window? } { ::ui_interface::pdsend .x%lx close 1 } { yes }\n",
-                     canvas_getRoot(x), x);
-        }
-        else pd_free(&x->gl_obj.te_g.g_pd);
-    }
-    else if (force == 1)
-        pd_free(&x->gl_obj.te_g.g_pd);
-    else if (force == 2)
-    {
-        canvas_dirty(x, 0);
-        while (x->gl_owner)
-            x = x->gl_owner;
-        g = canvas_findDirty(x);
-        if (g)
-        {
-            pd_vMessage(&g->gl_obj.te_g.g_pd, gensym ("open"), "");
-            sys_vGui("::ui_confirm::checkClose .x%lx { ::ui_interface::pdsend $top menusave 1 } { ::ui_interface::pdsend .x%lx close 2 } {}\n",
-                     canvas_getRoot(x), g);
-            return;
-        }
-        else pd_free(&x->gl_obj.te_g.g_pd);
-    }
-    else if (force == 3)
-    {
-        canvas_dirty(x, 0);
-        global_shouldQuit(0);
-    }
-}
-
 void canvas_stowconnections(t_glist *x)
 {
     t_gobj *selhead = 0, *seltail = 0, *nonhead = 0, *nontail = 0, *y, *y2;
@@ -1626,12 +1554,6 @@ bad:
             (sink? class_getName(pd_class(&sink->g_pd)) : "???"));
 }
 
-void global_key (void *dummy, t_symbol *s, int ac, t_atom *av)
-{
-        /* canvas_key checks for zero */
-    canvas_key(0, s, ac, av);
-}
-
 void canvas_editmode(t_glist *x, t_float state)
 {
     if (x->gl_isEditMode == (unsigned int) state)
@@ -1662,31 +1584,6 @@ void canvas_editmode(t_glist *x, t_float state)
     if (canvas_isVisible(x))
       sys_vGui("::ui_patch::setEditMode .x%lx %d\n",
           glist_getcanvas(x), x->gl_isEditMode);
-}
-
-    /* called by canvas_font below */
-static void canvas_dofont(t_glist *x, t_float font, t_float xresize,
-    t_float yresize)
-{
-    t_gobj *y;
-    x->gl_fontSize = font;
-    if (xresize != 1 || yresize != 1)
-    {
-        // canvas_setundo(x, canvas_undo_move, canvas_undo_set_move(x, 0), "motion");
-        for (y = x->gl_graphics; y; y = y->g_next)
-        {
-            int x1, x2, y1, y2, nx1, ny1;
-            gobj_getRectangle(y, x, &x1, &y1, &x2, &y2);
-            nx1 = x1 * xresize + 0.5;
-            ny1 = y1 * yresize + 0.5;
-            gobj_displace(y, x, nx1-x1, ny1-y1);
-        }
-    }
-    if (canvas_isVisible(x))
-        glist_redraw(x);
-    for (y = x->gl_graphics; y; y = y->g_next)
-        if (canvas_castToGlist(&y->g_pd)  && !canvas_isAbstraction((t_glist *)y))
-            canvas_dofont((t_glist *)y, font, xresize, yresize);
 }
 
 // -----------------------------------------------------------------------------------------------------------

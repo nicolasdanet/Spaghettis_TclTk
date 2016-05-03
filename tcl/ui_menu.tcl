@@ -411,7 +411,7 @@ proc _close {} {
     
     switch -regexp -- [winfo class $top] {
         "PdPatch" { 
-            ::ui_interface::pdsend "$top close 0"
+            ::ui_interface::pdsend "$top close"
         }
         "PdDialog|PdText|PdData|PdTool" { 
             switch -- [::getTitle $top] {

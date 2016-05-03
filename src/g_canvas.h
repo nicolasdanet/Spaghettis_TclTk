@@ -352,6 +352,8 @@ t_glist         *canvas_addGraph                        (t_glist *glist,
 int             canvas_isVisible                        (t_glist *glist);
 int             canvas_isTopLevel                       (t_glist *glist);
 int             canvas_isAbstraction                    (t_glist *glist);
+int             canvas_isSubpatch                       (t_glist *glist);
+
 int             canvas_openFile                         (t_glist *glist,
                                                             const char *name,
                                                             const char *extension,
@@ -462,7 +464,7 @@ void            canvas_loadbang                         (t_glist *glist);
 void            canvas_map                              (t_glist *glist, t_float f);
 void            canvas_dirty                            (t_glist *glist, t_float f);
 void            canvas_pop                              (t_glist *glist, t_float f);
-void            canvas_menuclose                        (t_glist *glist, t_float f);
+void            canvas_close                            (t_glist *glist, t_float f);
 void            canvas_editmode                         (t_glist *glist, t_float f);
 void            canvas_cut                              (t_glist *glist);
 void            canvas_copy                             (t_glist *glist);

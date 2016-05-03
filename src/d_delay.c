@@ -320,6 +320,7 @@ static void sigvd_setup(void)
 {
     sigvd_class = class_new(gensym ("vd~"), (t_newmethod)sigvd_new, 0,
         sizeof(t_sigvd), 0, A_DEFSYMBOL, 0);
+    //gensym("delread4~")
     class_addMethod(sigvd_class, (t_method)sigvd_dsp, gensym ("dsp"), A_CANT, 0);
     CLASS_SIGNAL(sigvd_class, t_sigvd, x_f);
 }

@@ -200,9 +200,9 @@ void x_scalar_setup(void )
         A_GIMME, A_NULL);
     class_addMethod(scalar_define_class, (t_method)canvas_motion, gensym ("motion"),
         A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(scalar_define_class, (t_method)canvas_menuclose,
+    class_addMethod(scalar_define_class, (t_method)canvas_close,
         gensym ("close"), A_DEFFLOAT, 0);
-    class_addMethod(scalar_define_class, (t_method)canvas_menuclose,
+    class_addMethod(scalar_define_class, (t_method)canvas_close,
         gensym ("menuclose"), A_DEFFLOAT, 0);
     /*class_addMethod(scalar_define_class, (t_method)canvas_find_parent,
         gensym ("findparent"), A_NULL);*/

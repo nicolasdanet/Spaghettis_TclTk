@@ -17,19 +17,60 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+extern t_pdinstance *pd_this;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 t_class *global_object;     /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-static void global_default (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+/* Messy ping-pong required in order to check saving sequentially. */
+/* Furthermore it avoids the application to quit before responding. */
+
+void global_shouldQuit (void *dummy)
 {
-    post_error (PD_TRANSLATE ("%s: unknown method '%s'"), class_getName (pd_class (x)), s->s_name); // --
+    t_glist *g = NULL;
+    
+    for (g = pd_this->pd_roots; g; g = g->gl_next) {
+    //
+    t_glist *t = NULL;
+    
+    if (t = canvas_findDirty (g)) {
+    //
+    pd_vMessage (cast_pd (t), gensym ("open"), "");
+    
+    sys_vGui ("::ui_confirm::checkClose .x%lx"
+                    " { ::ui_interface::pdsend .x%lx menusave 3 }"
+                    " { ::ui_interface::pdsend .x%lx close 3 }"
+                    " {}\n",
+                    canvas_getRoot (t),
+                    canvas_getRoot (t),
+                    t);
+    return;
+    //
+    }
+    //
+    }
+    
+    interface_quit (NULL);
+}
+
+static void global_key (void *dummy, t_symbol *s, int argc, t_atom *argv)
+{
+    canvas_key (NULL, s, argc, argv);
 }
 
 static void global_dummy (void *dummy)
 {
+}
+
+static void global_default (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+{
+    post_error (PD_TRANSLATE ("%s: unknown method '%s'"), class_getName (pd_class (x)), s->s_name); // --
 }
 
 // -----------------------------------------------------------------------------------------------------------

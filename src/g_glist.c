@@ -224,6 +224,11 @@ int canvas_isAbstraction (t_glist *x)
     return (x->gl_environment != NULL);
 }
 
+int canvas_isSubpatch (t_glist *x)
+{
+    return (x->gl_owner && !canvas_isAbstraction (x));
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

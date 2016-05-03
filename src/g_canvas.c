@@ -226,6 +226,52 @@ static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
+/* Messy ping-pong required in order to check saving sequentially. */
+
+void canvas_close (t_glist *glist, t_float f)
+{
+    int k = (int)f;
+    
+    if (k == 3) { canvas_dirty (glist, 0); global_shouldQuit (NULL); }      /* While quitting application. */
+    else {
+    //
+    if (glist->gl_owner && (k != 2)) { canvas_vis (glist, 0); }     /* Hide subpatches and abstractions. */
+    else {
+    //
+    if (k == 1) { pd_free (cast_pd (glist)); }                      /* Has been saved right before. */
+    else {
+        if (k == 2) { 
+          
+            /* Yet another? */
+            
+            canvas_dirty (glist, 0); while (glist->gl_owner) { glist = glist->gl_owner; }
+        }
+        {
+            t_glist *t = canvas_findDirty (glist);
+            
+            if (t) {
+                pd_vMessage (cast_pd (t), gensym ("open"), "");
+                
+                sys_vGui ("::ui_confirm::checkClose .x%lx"
+                                " { ::ui_interface::pdsend .x%lx menusave 1 }"
+                                " { ::ui_interface::pdsend .x%lx close 2 }"
+                                " {}\n",
+                                canvas_getRoot (t),
+                                canvas_getRoot (t),
+                                t);
+                return;
+                
+            } else {
+                pd_free (cast_pd (glist));
+            }
+        }
+    }
+    //
+    }
+    //
+    }
+}
+
 static void canvas_open (t_glist *glist)
 {
     if (canvas_isVisible (glist) && !canvas_isTopLevel (glist)) {
@@ -519,7 +565,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_numbox,        gensym ("nbx"),         A_GIMME, A_NULL);
     
     class_addMethod (c, (t_method)canvas_editmode,      gensym ("editmode"),    A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_menuclose,     gensym ("close"),       A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_close,         gensym ("close"),       A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_open,          gensym ("open"),        A_NULL);
     class_addMethod (c, (t_method)canvas_loadbang,      gensym ("loadbang"),    A_NULL);
     class_addMethod (c, (t_method)canvas_vis,           gensym ("visible"),     A_FLOAT, A_NULL);
@@ -559,7 +605,7 @@ void canvas_setup (void)
     #if PD_WITH_LEGACY
     
     class_addMethod (c, (t_method)canvas_open,          gensym ("menu-open"),   A_NULL);
-    class_addMethod (c, (t_method)canvas_menuclose,     gensym ("menuclose"),   A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_close,         gensym ("menuclose"),   A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_toggle,        gensym ("toggle"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_vumeter,       gensym ("vumeter"),     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_mycnv,         gensym ("mycnv"),       A_GIMME, A_NULL);

@@ -81,7 +81,7 @@ proc create {top width height coordinates editable} {
 
 proc willClose {top} {
 
-    ::ui_interface::pdsend "$top close 0"
+    ::ui_interface::pdsend "$top close"
 }
 
 proc closed {top} {
