@@ -1164,9 +1164,9 @@ static void curve_vis(t_gobj *z, t_glist *glist,
                     fielddesc_getfloat(&x->x_fillcolor, template, data, 1),
                     fill);
                 sys_vGui(".x%lx.c create polygon\\\n",
-                    glist_getcanvas(glist));
+                    canvas_getPatch(glist));
             }
-            else sys_vGui(".x%lx.c create line\\\n", glist_getcanvas(glist));
+            else sys_vGui(".x%lx.c create line\\\n", canvas_getPatch(glist));
             for (i = 0; i < n; i++)
                 sys_vGui("%d %d\\\n", pix[2*i], pix[2*i+1]);
             sys_vGui("-width %f\\\n", width);
@@ -1181,7 +1181,7 @@ static void curve_vis(t_gobj *z, t_glist *glist,
     else
     {
         if (n > 1) sys_vGui(".x%lx.c delete curve%lx\n",
-            glist_getcanvas(glist), data);      
+            canvas_getPatch(glist), data);      
     }
 }
 
@@ -1728,7 +1728,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                 {
                     sys_vGui(".x%lx.c create rectangle %d %d %d %d \
 -fill black -width 0  -tags [list plot%lx array]\n",
-                        glist_getcanvas(glist),
+                        canvas_getPatch(glist),
                         ixpix, (int)glist_ytopixels(glist, 
                             basey + fielddesc_cvttocoord(yfielddesc, minyval)),
                         inextx, (int)(glist_ytopixels(glist, 
@@ -1755,7 +1755,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     /* found "w" field which controls linewidth.  The trace is
                     a filled polygon with 2n points. */
                 sys_vGui(".x%lx.c create polygon \\\n",
-                    glist_getcanvas(glist));
+                    canvas_getPatch(glist));
 
                 for (i = 0, xsum = xloc; i < nelem; i++)
                 {
@@ -1837,7 +1837,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
                     /* no "w" field.  If the linewidth is positive, draw a
                     segmented line with the requested width; otherwise don't
                     draw the trace at all. */
-                sys_vGui(".x%lx.c create line \\\n", glist_getcanvas(glist));
+                sys_vGui(".x%lx.c create line \\\n", canvas_getPatch(glist));
 
                 for (xsum = xloc, i = 0; i < nelem; i++)
                 {
@@ -1927,7 +1927,7 @@ static void plot_vis(t_gobj *z, t_glist *glist,
         }
             /* and then the trace */
         sys_vGui(".x%lx.c delete plot%lx\n",
-            glist_getcanvas(glist), data);      
+            canvas_getPatch(glist), data);      
     }
 }
 
@@ -2537,12 +2537,12 @@ static void drawnumber_vis(t_gobj *z, t_glist *glist,
             colorstring);
         drawnumber_getbuf(x, data, template, buf);
         sys_vGui(".x%lx.c create text %d %d -anchor nw -fill %s -text {%s}",
-                glist_getcanvas(glist), xloc, yloc, colorstring, buf);
+                canvas_getPatch(glist), xloc, yloc, colorstring, buf);
         sys_vGui(" -font [::getFont %d]",
                  font_getHostFontSize(canvas_getFontSize(glist)));
         sys_vGui(" -tags [list drawnumber%lx label]\n", data);
     }
-    else sys_vGui(".x%lx.c delete drawnumber%lx\n", glist_getcanvas(glist), data);
+    else sys_vGui(".x%lx.c delete drawnumber%lx\n", canvas_getPatch(glist), data);
 }
 
 static t_float drawnumber_motion_ycumulative;

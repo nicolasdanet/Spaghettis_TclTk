@@ -83,7 +83,7 @@ static void slider_drawUpdateVertical (t_slider *x, t_glist *glist)
 {
     if (canvas_isVisible (glist)) {
     //
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     int a = text_xpix (cast_object (x), glist);
     int k = text_ypix (cast_object (x), glist) + x->x_gui.iem_height - slider_stepsToPixels (x->x_position);
@@ -103,7 +103,7 @@ static void slider_drawUpdateHorizontal (t_slider *x, t_glist *glist)
 {
     if (canvas_isVisible (glist)) {
     //
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     int k = text_xpix (cast_object (x), glist) + slider_stepsToPixels (x->x_position);
     int b = text_ypix (cast_object (x), glist);
@@ -133,7 +133,7 @@ static void slider_drawUpdate (t_slider *x, t_glist *glist)
 
 static void slider_drawMove (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -157,7 +157,7 @@ static void slider_drawMove (t_slider *x, t_glist *glist)
 
 static void slider_drawNew (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -213,7 +213,7 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
 
 static void slider_drawSelect (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n", 
                 canvas, 
@@ -228,7 +228,7 @@ static void slider_drawSelect (t_slider *x, t_glist *glist)
 
 static void slider_drawErase (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     sys_vGui (".x%lx.c delete %lxBASE\n",
                 canvas, 
@@ -243,7 +243,7 @@ static void slider_drawErase (t_slider *x, t_glist *glist)
 
 static void slider_drawConfig (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
                 canvas,
@@ -388,9 +388,9 @@ static void slider_click (t_slider *x, t_float a, t_float b, t_float shift, t_fl
     t_float t;
     
     if (x->x_isVertical) {
-        t = text_ypix (cast_object (x), x->x_gui.iem_glist) + x->x_gui.iem_height - b;
+        t = text_ypix (cast_object (x), x->x_gui.iem_owner) + x->x_gui.iem_height - b;
     } else {
-        t = a - text_xpix (cast_object (x), x->x_gui.iem_glist);
+        t = a - text_xpix (cast_object (x), x->x_gui.iem_owner);
     }
     
     t *= IEM_SLIDER_STEPS_PER_PIXEL;
@@ -399,12 +399,12 @@ static void slider_click (t_slider *x, t_float a, t_float b, t_float shift, t_fl
         int numberOfSteps = slider_getNumberOfSteps (x);
         x->x_position = PD_CLAMP ((int)t, 0, numberOfSteps);
         x->x_floatValue = slider_getValue (x);
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
     }
     
     slider_out (x);
     
-    glist_grab (x->x_gui.iem_glist, cast_gobj (x), (t_motionfn)slider_motion, NULL, a, b);
+    glist_grab (x->x_gui.iem_owner, cast_gobj (x), (t_motionfn)slider_motion, NULL, a, b);
 }
 
 static void slider_motion (t_slider *x, t_float deltaX, t_float deltaY, t_float modifier)
@@ -423,7 +423,7 @@ static void slider_motion (t_slider *x, t_float deltaX, t_float deltaY, t_float 
     if (t != old) {
         x->x_position   = t;
         x->x_floatValue = slider_getValue (x);
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
         slider_out (x);
     }
 }
@@ -507,7 +507,7 @@ static void slider_set (t_slider *x, t_float f)
         x->x_position = (int)((f - x->x_minimum) / slider_getStepValue (x));
     }
         
-    if (x->x_position != old) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE); }
+    if (x->x_position != old) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
 }
 
 static void slider_steady (t_slider *x, t_float f)
@@ -695,7 +695,7 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
         iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
     }
     
-    x->x_gui.iem_glist      = (t_glist *)canvas_getCurrent();
+    x->x_gui.iem_owner      = (t_glist *)canvas_getCurrent();
     x->x_gui.iem_draw       = (t_iemfn)slider_draw;
     x->x_gui.iem_canSend    = (x->x_gui.iem_send == iemgui_empty()) ? 0 : 1;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;

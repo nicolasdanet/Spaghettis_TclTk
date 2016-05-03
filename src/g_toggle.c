@@ -45,7 +45,7 @@ void toggle_drawUpdate (t_toggle *x, t_glist *glist)
 {
     if (canvas_isVisible (glist)) {
     //
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     sys_vGui (".x%lx.c itemconfigure %lxCROSS1 -fill #%06x\n",
                 canvas,
@@ -61,7 +61,7 @@ void toggle_drawUpdate (t_toggle *x, t_glist *glist)
 
 void toggle_drawMove (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -106,7 +106,7 @@ void toggle_drawMove (t_toggle *x, t_glist *glist)
 
 void toggle_drawNew (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -155,7 +155,7 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
 
 void toggle_drawSelect (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas, 
@@ -169,7 +169,7 @@ void toggle_drawSelect (t_toggle *x, t_glist *glist)
 
 void toggle_drawErase (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     sys_vGui (".x%lx.c delete %lxBASE\n",
                 canvas,
@@ -187,7 +187,7 @@ void toggle_drawErase (t_toggle *x, t_glist *glist)
 
 void toggle_drawConfig (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
                 canvas,
@@ -316,7 +316,7 @@ static void toggle_set (t_toggle *x, t_float f)
     
     x->x_state = f;
 
-    if (draw) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE); }
+    if (draw) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
 }
 
 static void toggle_nonZero (t_toggle *x, t_float f)
@@ -459,7 +459,7 @@ static void *toggle_new (t_symbol *s, int argc, t_atom *argv)
         iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
     }
     
-    x->x_gui.iem_glist      = (t_glist *)canvas_getCurrent();
+    x->x_gui.iem_owner      = (t_glist *)canvas_getCurrent();
     x->x_gui.iem_draw       = (t_iemfn)toggle_draw;
     x->x_gui.iem_canSend    = (x->x_gui.iem_send == iemgui_empty()) ? 0 : 1;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;

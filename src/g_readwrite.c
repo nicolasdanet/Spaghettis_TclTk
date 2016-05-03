@@ -159,7 +159,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
     if (wasvis)
     {
             /* temporarily lie about vis flag while this is built */
-        glist_getcanvas(x)->gl_isMapped = 0;
+        canvas_getPatch(x)->gl_isMapped = 0;
     }
     glist_add(x, &sc->sc_g);
     
@@ -169,7 +169,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
     if (wasvis)
     {
             /* reset vis flag as before */
-        glist_getcanvas(x)->gl_isMapped = 1;
+        canvas_getPatch(x)->gl_isMapped = 1;
         gobj_visibilityChanged(&sc->sc_g, x, 1);
     }
     if (selectit)
@@ -181,7 +181,7 @@ int canvas_readscalar(t_glist *x, int natoms, t_atom *vec,
 
 void glist_readfrombinbuf(t_glist *x, t_buffer *b, char *filename, int selectem)
 {
-    t_glist *canvas = glist_getcanvas(x);
+    t_glist *canvas = canvas_getPatch(x);
     int cr = 0, natoms, nline, message, nextmsg = 0, i, j, nitems;
     t_atom *vec;
     t_gobj *gobj;
@@ -264,7 +264,7 @@ static void glist_doread(t_glist *x, t_symbol *filename, t_symbol *format,
     int clearme)
 {
     t_buffer *b = buffer_new();
-    t_glist *canvas = glist_getcanvas(x);
+    t_glist *canvas = canvas_getPatch(x);
     int wasvis = canvas_isVisible(canvas);
     int cr = 0, natoms, nline, message, nextmsg = 0, i, j;
     t_atom *vec;
@@ -594,7 +594,7 @@ static void glist_write(t_glist *x, t_symbol *filename, t_symbol *format)
     t_symbol **templatevec = PD_MEMORY_GET(0);
     int ntemplates = 0;
     t_gobj *y;
-    t_glist *canvas = glist_getcanvas(x);
+    t_glist *canvas = canvas_getPatch(x);
     canvas_makeFilePath(canvas, filename->s_name, buf, PD_STRING);
     if (!strcmp(format->s_name, "cr"))
         cr = 1;

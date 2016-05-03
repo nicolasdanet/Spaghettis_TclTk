@@ -202,7 +202,7 @@ static void glist_doreload(t_glist *gl, t_symbol *name, t_symbol *dir,
         }
     }
     if (!hadwindow && gl->gl_editor)
-        canvas_vis(glist_getcanvas(gl), 0);
+        canvas_vis(canvas_getPatch(gl), 0);
 }
 
     /* call canvas_doreload on everyone */
@@ -678,7 +678,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
                 /* resize?  only for "true" text boxes or canvases*/
             if (ob && !x->gl_editor->e_selectedObjects &&
                 (ob->te_g.g_pd->c_behavior == &text_widgetBehavior ||
-                    canvas_castToGlist(&ob->te_g.g_pd)) &&
+                    canvas_castToGlistChecked(&ob->te_g.g_pd)) &&
                         xpos >= x2-4 && ypos < y2-4)
             {
                 if (doit)
@@ -772,7 +772,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
         t_linetraverser t;
         t_outconnect *oc;
         t_float fx = xpos, fy = ypos;
-        t_glist *glist2 = glist_getcanvas(x);
+        t_glist *glist2 = canvas_getPatch(x);
         canvas_traverseLinesStart(&t, glist2);
         while (oc = canvas_traverseLinesNext(&t))
         {
@@ -899,7 +899,7 @@ void canvas_doconnect(t_glist *x, int xpos, int ypos, int which, int doit)
                             + ((INLETS_WIDTH - 1) / 2);
                 ly2 = y21;
                 sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
-                    glist_getcanvas(x),
+                    canvas_getPatch(x),
                         lx1, ly1, lx2, ly2,
                             (object_isSignalOutlet(ob1, closest1) ? 2 : 1), oc);
                 canvas_dirty(x, 1);
@@ -1234,7 +1234,7 @@ void canvas_motion(t_glist *x, t_float xpos, t_float ypos, t_float fmod)
             int wantwidth = xpos - x11;
             t_object *ob = canvas_castToObjectIfBox(&y1->g_pd);
             if (ob && ob->te_g.g_pd->c_behavior == &text_widgetBehavior ||
-                    (canvas_castToGlist(&ob->te_g.g_pd) &&
+                    (canvas_castToGlistChecked(&ob->te_g.g_pd) &&
                         !((t_glist *)ob)->gl_isGraphOnParent))
             {
                 wantwidth = wantwidth / font_getHostFontWidth(canvas_getFontSize(x));
@@ -1541,7 +1541,7 @@ void canvas_connect(t_glist *x, t_float fwhoout, t_float foutno,
     if (canvas_isVisible(x))
     {
         sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
-            glist_getcanvas(x), 0, 0, 0, 0,
+            canvas_getPatch(x), 0, 0, 0, 0,
             (object_isSignalOutlet(objsrc, outno) ? 2 : 1),oc);
         canvas_updateLinesByObject(x, objsrc);
     }
@@ -1552,38 +1552,6 @@ bad:
         x->gl_name->s_name, nout, outno, nin, inno,
             (src? class_getName(pd_class(&src->g_pd)) : "???"),
             (sink? class_getName(pd_class(&sink->g_pd)) : "???"));
-}
-
-void canvas_editmode(t_glist *x, t_float state)
-{
-    if (x->gl_isEditMode == (unsigned int) state)
-        return;
-    x->gl_isEditMode = (unsigned int) state;
-    if (x->gl_isEditMode && canvas_isVisible(x) && canvas_canHaveWindow(x))
-    {
-        t_gobj *g;
-        t_object *ob;
-        canvas_setcursor(x, CURSOR_EDIT_NOTHING);
-        for (g = x->gl_graphics; g; g = g->g_next)
-            if ((ob = canvas_castToObjectIfBox(&g->g_pd)) && ob->te_type == TYPE_TEXT)
-        {
-            t_boxtext *y = glist_findrtext(x, ob);
-            text_drawborder(ob, x,
-                rtext_gettag(y), rtext_width(y), rtext_height(y), 1);
-        }
-    }
-    else
-    {
-        canvas_deselectAll(x);
-        if (canvas_isVisible(x) && canvas_canHaveWindow(x))
-        {
-            canvas_setcursor(x, CURSOR_NOTHING);
-            sys_vGui(".x%lx.c delete commentbar\n", glist_getcanvas(x));
-        }
-    }
-    if (canvas_isVisible(x))
-      sys_vGui("::ui_patch::setEditMode .x%lx %d\n",
-          glist_getcanvas(x), x->gl_isEditMode);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -48,7 +48,7 @@ static t_class *radio_class;                        /* Shared. */
 
 void radio_drawMoveVertical (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     int n = x->x_numberOfButtons;
     int a = text_xpix (cast_object (x), glist);
@@ -87,7 +87,7 @@ void radio_drawMoveVertical (t_radio *x, t_glist *glist)
 
 void radio_drawNewVertical (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     int n = x->x_numberOfButtons;
     int a = text_xpix (cast_object (x), glist);
@@ -138,7 +138,7 @@ void radio_drawNewVertical (t_radio *x, t_glist *glist)
 
 void radio_drawMoveHorizontal (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     int n = x->x_numberOfButtons;
     int a = text_xpix (cast_object (x), glist);
@@ -177,7 +177,7 @@ void radio_drawMoveHorizontal (t_radio *x, t_glist *glist)
 
 void radio_drawNewHorizontal (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     int n = x->x_numberOfButtons;
     int a = text_xpix (cast_object (x), glist);
@@ -234,7 +234,7 @@ void radio_drawUpdate (t_radio *x, t_glist *glist)
 {
     if (canvas_isVisible (glist)) {
     //
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBUTTON%d -fill #%06x -outline #%06x\n",
                 canvas, 
@@ -272,7 +272,7 @@ void radio_drawNew (t_radio *x, t_glist *glist)
 
 void radio_drawSelect (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     int i;
 
@@ -294,7 +294,7 @@ void radio_drawSelect (t_radio *x, t_glist *glist)
 
 void radio_drawErase (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     int i;
 
@@ -318,7 +318,7 @@ void radio_drawErase (t_radio *x, t_glist *glist)
 
 void radio_drawConfig (t_radio *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     int i;
 
@@ -389,7 +389,7 @@ static void radio_float (t_radio *x, t_float f)
     x->x_state = PD_CLAMP ((int)f, 0, x->x_numberOfButtons - 1);
     x->x_floatValue = f;
     
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
     
     if (x->x_gui.iem_goThrough) {
         radio_out (x); 
@@ -401,15 +401,15 @@ static void radio_click (t_radio *x, t_float a, t_float b, t_float shift, t_floa
     t_float f;
     
     if (x->x_isVertical) { 
-        f = ((b - text_ypix (cast_object (x), x->x_gui.iem_glist)) / x->x_gui.iem_height);
+        f = ((b - text_ypix (cast_object (x), x->x_gui.iem_owner)) / x->x_gui.iem_height);
     } else {
-        f = ((a - text_xpix (cast_object (x), x->x_gui.iem_glist)) / x->x_gui.iem_width);
+        f = ((a - text_xpix (cast_object (x), x->x_gui.iem_owner)) / x->x_gui.iem_width);
     }
 
     x->x_state = PD_CLAMP ((int)f, 0, x->x_numberOfButtons - 1);
     x->x_floatValue = x->x_state;
     
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
         
     radio_out (x);
 }
@@ -470,7 +470,7 @@ static void radio_set (t_radio *x, t_float f)
     x->x_state = PD_CLAMP ((int)f, 0, x->x_numberOfButtons - 1);
     x->x_floatValue = f;
     
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
 static void radio_buttonsNumber (t_radio *x, t_float numberOfButtons)
@@ -478,12 +478,12 @@ static void radio_buttonsNumber (t_radio *x, t_float numberOfButtons)
     int n = PD_CLAMP ((int)numberOfButtons, 1, IEM_MAXIMUM_BUTTONS);
 
     if (n != x->x_numberOfButtons) {
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_ERASE);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_ERASE);
         x->x_numberOfButtons = numberOfButtons;
         x->x_state = PD_MIN (x->x_state, x->x_numberOfButtons - 1);
         x->x_floatValue = x->x_state;
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_NEW);
-        canvas_updateLinesByObject (x->x_gui.iem_glist, cast_object (x));
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_NEW);
+        canvas_updateLinesByObject (x->x_gui.iem_owner, cast_object (x));
     }
 }
 
@@ -640,7 +640,7 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
         iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
     }
     
-    x->x_gui.iem_glist      = (t_glist *)canvas_getCurrent();
+    x->x_gui.iem_owner      = (t_glist *)canvas_getCurrent();
     x->x_gui.iem_draw       = (t_iemfn)radio_draw;
     x->x_gui.iem_canSend    = (x->x_gui.iem_send == iemgui_empty()) ? 0 : 1;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;

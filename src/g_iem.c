@@ -252,7 +252,7 @@ void iemgui_setSend (void *x, t_iem *iem, t_symbol *s)
 {
     t_symbol *t = dollar_fromRaute (iemgui_parseEmpty (s));
     iem->iem_unexpandedSend = t;
-    iem->iem_send = iemgui_expandDollar (iem->iem_glist, t);
+    iem->iem_send = iemgui_expandDollar (iem->iem_owner, t);
     iem->iem_canSend = (s == iemgui_empty()) ? 0 : 1;
     iemgui_checkSendReceiveLoop (iem);
 }
@@ -262,7 +262,7 @@ void iemgui_setReceive (void *x, t_iem *iem, t_symbol *s)
     t_symbol *t = dollar_fromRaute (iemgui_parseEmpty (s));
     if (iem->iem_canReceive) { pd_unbind (cast_pd (iem), iem->iem_receive); }
     iem->iem_unexpandedReceive = t;
-    iem->iem_receive = iemgui_expandDollar (iem->iem_glist, t);
+    iem->iem_receive = iemgui_expandDollar (iem->iem_owner, t);
     iem->iem_canReceive = (s == iemgui_empty()) ? 0 : 1;
     if (iem->iem_canReceive) { pd_bind (cast_pd (iem), iem->iem_receive); }
     iemgui_checkSendReceiveLoop (iem);
@@ -272,11 +272,11 @@ void iemgui_setLabel (void *x, t_iem *iem, t_symbol *s)
 {
     t_symbol *t = dollar_fromRaute (iemgui_parseEmpty (s));
     iem->iem_unexpandedLabel = t;
-    iem->iem_label = iemgui_expandDollar (iem->iem_glist, t);
+    iem->iem_label = iemgui_expandDollar (iem->iem_owner, t);
 
-    if (canvas_isVisible (iem->iem_glist)) {
+    if (canvas_isVisible (iem->iem_owner)) {
         sys_vGui (".x%lx.c itemconfigure %lxLABEL -text {%s}\n",    // --
-            glist_getcanvas (iem->iem_glist),
+            canvas_getPatch (iem->iem_owner),
             x,
             iem->iem_label != iemgui_empty() ? iem->iem_label->s_name : "");
     }
@@ -289,12 +289,12 @@ void iemgui_setLabelPosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom
     iem->iem_labelX = (int)atom_getFloatAtIndex (0, argc, argv);
     iem->iem_labelY = (int)atom_getFloatAtIndex (1, argc, argv);
     
-    if (canvas_isVisible (iem->iem_glist)) {
+    if (canvas_isVisible (iem->iem_owner)) {
         sys_vGui (".x%lx.c coords %lxLABEL %d %d\n",
-            glist_getcanvas (iem->iem_glist),
+            canvas_getPatch (iem->iem_owner),
             x,
-            text_xpix (cast_object (x), iem->iem_glist) + iem->iem_labelX,
-            text_ypix (cast_object (x), iem->iem_glist) + iem->iem_labelY);
+            text_xpix (cast_object (x), iem->iem_owner) + iem->iem_labelX,
+            text_ypix (cast_object (x), iem->iem_owner) + iem->iem_labelY);
     }
     //
     }
@@ -307,9 +307,9 @@ void iemgui_setLabelFont (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *ar
     int f = (int)atom_getFloatAtIndex (1, argc, argv);
     f = PD_MAX (f, IEM_MINIMUM_FONTSIZE);
     iem->iem_fontSize = f;
-    if (canvas_isVisible (iem->iem_glist)) {
+    if (canvas_isVisible (iem->iem_owner)) {
         sys_vGui (".x%lx.c itemconfigure %lxLABEL -font [::getFont %d]\n",      // --
-            glist_getcanvas (iem->iem_glist), 
+            canvas_getPatch (iem->iem_owner), 
             x,
             iem->iem_fontSize);
     }
@@ -321,21 +321,21 @@ void iemgui_setBackgroundColor (void *x, t_iem *iem, t_symbol *s, int argc, t_at
 {
     iem->iem_colorBackground = iemgui_colorRGB (argc, argv);
     
-    if (canvas_isVisible (iem->iem_glist)) { (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_CONFIG); }
+    if (canvas_isVisible (iem->iem_owner)) { (*iem->iem_draw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
 
 void iemgui_setForegroundColor (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
 {
     iem->iem_colorForeground = iemgui_colorRGB (argc, argv);
     
-    if (canvas_isVisible (iem->iem_glist)) { (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_CONFIG); }
+    if (canvas_isVisible (iem->iem_owner)) { (*iem->iem_draw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
 
 void iemgui_setLabelColor (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
 {
     iem->iem_colorLabel = iemgui_colorRGB (argc, argv);
     
-    if (canvas_isVisible (iem->iem_glist)) { (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_CONFIG); }
+    if (canvas_isVisible (iem->iem_owner)) { (*iem->iem_draw) (x, iem->iem_owner, IEM_DRAW_CONFIG); }
 }
 
 void iemgui_setPosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *argv)
@@ -364,11 +364,11 @@ void iemgui_movePosition (void *x, t_iem *iem, t_symbol *s, int argc, t_atom *ar
 
 void iemgui_boxChanged (void *x, t_iem *iem)
 {
-    if (canvas_isVisible (iem->iem_glist)) {
+    if (canvas_isVisible (iem->iem_owner)) {
     //
-    (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_CONFIG);
-    (*iem->iem_draw) (x, iem->iem_glist, IEM_DRAW_MOVE);
-    canvas_updateLinesByObject (iem->iem_glist, cast_object (x));
+    (*iem->iem_draw) (x, iem->iem_owner, IEM_DRAW_CONFIG);
+    (*iem->iem_draw) (x, iem->iem_owner, IEM_DRAW_MOVE);
+    canvas_updateLinesByObject (iem->iem_owner, cast_object (x));
     //
     }
 }
@@ -505,9 +505,9 @@ void iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     iem->iem_unexpandedReceive  = s2;
     iem->iem_unexpandedLabel    = s3;
     
-    s1 = iemgui_expandDollar (iem->iem_glist, s1);
-    s2 = iemgui_expandDollar (iem->iem_glist, s2);
-    s3 = iemgui_expandDollar (iem->iem_glist, s3);
+    s1 = iemgui_expandDollar (iem->iem_owner, s1);
+    s2 = iemgui_expandDollar (iem->iem_owner, s2);
+    s3 = iemgui_expandDollar (iem->iem_owner, s3);
     
     if (s1 == iemgui_empty()) { canSend = 0;    }
     if (s2 == iemgui_empty()) { canReceive = 0; }
@@ -532,7 +532,7 @@ void iemgui_fromDialog (t_iem *iem, int argc, t_atom *argv)
     
     iemgui_checkSendReceiveLoop (iem);
     
-    canvas_dirty (iem->iem_glist, 1);
+    canvas_dirty (iem->iem_owner, 1);
 }
 
 // -----------------------------------------------------------------------------------------------------------

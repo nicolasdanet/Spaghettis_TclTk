@@ -101,12 +101,12 @@ static void dial_drawUpdate (t_dial *x, t_glist *glist)
     dial_setString (x);
     
     sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -extent %d\n",
-                glist_getcanvas (glist),
+                canvas_getPatch (glist),
                 x,
                 dial_getNeedleAngle (x));
                 
     sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%06x -text {%s}\n",  // --
-                glist_getcanvas (glist),
+                canvas_getPatch (glist),
                 x,
                 x->x_gui.iem_colorForeground,
                 x->x_t);
@@ -116,7 +116,7 @@ static void dial_drawUpdate (t_dial *x, t_glist *glist)
 
 static void dial_drawMove (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     int a     = text_xpix (cast_object (x), glist);
     int b     = text_ypix (cast_object (x), glist);
@@ -152,7 +152,7 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
 
 static void dial_drawNew (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     int a     = text_xpix (cast_object (x), glist);
     int b     = text_ypix (cast_object (x), glist);
@@ -214,7 +214,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
 
 static void dial_drawSelect (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas,
@@ -229,7 +229,7 @@ static void dial_drawSelect (t_dial *x, t_glist *glist)
 
 static void dial_drawErase (t_dial* x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     sys_vGui (".x%lx.c delete %lxBASE\n",
                 canvas,
@@ -247,7 +247,7 @@ static void dial_drawErase (t_dial* x, t_glist *glist)
 
 static void dial_drawConfig (t_dial* x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
                 canvas,
@@ -376,7 +376,7 @@ static void dial_list (t_dial *x, t_symbol *s, int argc, t_atom *argv)
 
 static void dial_click (t_dial *x, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
 {
-    glist_grab (x->x_gui.iem_glist, cast_gobj (x), (t_motionfn)dial_motion, NULL, a, b);
+    glist_grab (x->x_gui.iem_owner, cast_gobj (x), (t_motionfn)dial_motion, NULL, a, b);
 }
 
 static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY, t_float modifier)
@@ -394,7 +394,7 @@ static void dial_motion (t_dial *x, t_float deltaX, t_float deltaY, t_float modi
     if (t != old) {
         x->x_position   = t;
         x->x_floatValue = dial_getValue (x);
-        (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+        (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
         dial_out (x);
     }
 }
@@ -436,11 +436,11 @@ static void dial_dialog (t_dial *x, t_symbol *s, int argc, t_atom *argv)
     
     x->x_floatValue = dial_getValue (x);
         
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_CONFIG);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_MOVE);
     
-    canvas_updateLinesByObject (x->x_gui.iem_glist, cast_object (x));
+    canvas_updateLinesByObject (x->x_gui.iem_owner, cast_object (x));
     //
     }
 }
@@ -487,7 +487,7 @@ static void dial_set (t_dial *x, t_float f)
     
     x->x_floatValue = dial_getValue (x);
     
-    if (x->x_floatValue != old) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE); }
+    if (x->x_floatValue != old) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
 }
 
 static void dial_steps (t_dial *x, t_float f)
@@ -671,7 +671,7 @@ static void *dial_new (t_symbol *s, int argc, t_atom *argv)
         iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
     }
     
-    x->x_gui.iem_glist      = (t_glist *)canvas_getCurrent();
+    x->x_gui.iem_owner      = (t_glist *)canvas_getCurrent();
     x->x_gui.iem_draw       = (t_iemfn)dial_draw;
     x->x_gui.iem_canSend    = (x->x_gui.iem_send == iemgui_empty()) ? 0 : 1;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;

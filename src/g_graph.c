@@ -64,7 +64,7 @@ void glist_add(t_glist *x, t_gobj *y)
         gobj_visibilityChanged(y, x, 1);
     if (class_hasDrawCommand(y->g_pd)) 
         canvas_redrawAllByTemplate(template_findbyname(canvas_makeBindSymbol(
-            glist_getcanvas(x)->gl_name)), SCALAR_REDRAW);
+            canvas_getPatch(x)->gl_name)), SCALAR_REDRAW);
 }
 
     /* this is to protect against a hairy problem in which deleting
@@ -83,7 +83,7 @@ void glist_delete(t_glist *x, t_gobj *y)
     t_gobj *g;
     t_object *ob;
     int chkdsp = class_hasMethod (pd_class (&y->g_pd), gensym ("dsp"));
-    t_glist *canvas = glist_getcanvas(x);
+    t_glist *canvas = canvas_getPatch(x);
     t_boxtext *rtext = 0;
     int drawcommand = class_hasDrawCommand(y->g_pd);
     int wasdeleting;
@@ -121,7 +121,7 @@ void glist_delete(t_glist *x, t_gobj *y)
         it; we'll redraw them once it's deleted below. */
     if (drawcommand)
         canvas_redrawAllByTemplate(template_findbyname(canvas_makeBindSymbol(
-            glist_getcanvas(x)->gl_name)), SCALAR_ERASE);
+            canvas_getPatch(x)->gl_name)), SCALAR_ERASE);
     gobj_delete(y, x);
     if (canvas_isVisible(canvas))
     {
@@ -142,7 +142,7 @@ void glist_delete(t_glist *x, t_gobj *y)
     if (chkdsp) dsp_update();
     if (drawcommand)
         canvas_redrawAllByTemplate(template_findbyname(canvas_makeBindSymbol(
-            glist_getcanvas(x)->gl_name)), SCALAR_DRAW);
+            canvas_getPatch(x)->gl_name)), SCALAR_DRAW);
     canvas_setdeleting(canvas, wasdeleting);
     x->gl_magic = ++canvas_magic;
 }
@@ -171,7 +171,7 @@ void glist_clear(t_glist *x)
 
 void glist_retext(t_glist *glist, t_object *y)
 {
-    t_glist *c = glist_getcanvas(glist);
+    t_glist *c = canvas_getPatch(glist);
         /* check that we have built rtexts yet.  LATER need a better test. */
     if (glist->gl_editor && glist->gl_editor->e_text)
     {
@@ -184,7 +184,7 @@ void glist_retext(t_glist *glist, t_object *y)
 void glist_grab(t_glist *x, t_gobj *y, t_motionfn motionfn,
     t_keyfn keyfn, int xpos, int ypos)
 {
-    t_glist *x2 = glist_getcanvas(x);
+    t_glist *x2 = canvas_getPatch(x);
     if (motionfn)
         x2->gl_editor->e_onMotion = ACTION_PASS;
     else x2->gl_editor->e_onMotion = 0;
@@ -193,13 +193,6 @@ void glist_grab(t_glist *x, t_gobj *y, t_motionfn motionfn,
     x2->gl_editor->e_fnKey = keyfn;
     x2->gl_editor->e_previousX = xpos;
     x2->gl_editor->e_previousY = ypos;
-}
-
-t_glist *glist_getcanvas(t_glist *x)
-{
-    while (x->gl_parent && !x->gl_haveWindow && x->gl_isGraphOnParent)
-            x = x->gl_parent;
-    return((t_glist *)x);
 }
 
 static t_float gobj_getxforsort(t_gobj *g)
@@ -657,7 +650,7 @@ void glist_redraw(t_glist *x)
             canvas_traverseLinesStart(&t, x);
             while (oc = canvas_traverseLinesNext(&t))
                 sys_vGui(".x%lx.c coords %lxLINE %d %d %d %d\n",
-                    glist_getcanvas(x), oc,
+                    canvas_getPatch(x), oc,
                         t.tr_lineStartX, t.tr_lineStartY, t.tr_lineEndX, t.tr_lineEndY);
             canvas_deleteGraphOnParentRectangle(x);
             if (x->gl_hasRectangle)
@@ -712,13 +705,13 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         {
             sys_vGui(".x%lx.c create polygon\
  %d %d %d %d %d %d %d %d %d %d -tags [list %s graph] -fill #c0c0c0\n",
-                glist_getcanvas(x->gl_parent),
+                canvas_getPatch(x->gl_parent),
                 x1, y1, x1, y2, x2, y2, x2, y1, x1, y1, tag);
         }
         else
         {
             sys_vGui(".x%lx.c delete %s\n",
-                glist_getcanvas(x->gl_parent), tag);
+                canvas_getPatch(x->gl_parent), tag);
         }
         return;
     }
@@ -738,7 +731,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             /* draw a rectangle around the graph */
         sys_vGui(".x%lx.c create line\
             %d %d %d %d %d %d %d %d %d %d -tags [list %s graph]\n",
-            glist_getcanvas(x->gl_parent),
+            canvas_getPatch(x->gl_parent),
             x1, y1, x1, y2, x2, y2, x2, y1, x1, y1, tag);
         
             /* if there's just one "garray" in the graph, write its name
@@ -750,7 +743,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             i -= font_getHostFontHeight(canvas_getFontSize(x));
             sys_vGui(".x%lx.c create text %d %d -text {%s} -anchor nw\
              -font [::getFont %d] -tags [list %s label graph]\n",
-             (long)glist_getcanvas(x), x1, i, arrayname->s_name,
+             (long)canvas_getPatch(x), x1, i, arrayname->s_name,
                 font_getHostFontSize(canvas_getFontSize(x)), tag);
         }
         
@@ -768,11 +761,11 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             {
                 int tickpix = (i % x->gl_tickX.k_lperb ? 2 : 4);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    glist_getcanvas(x->gl_parent),
+                    canvas_getPatch(x->gl_parent),
                     (int)glist_xtopixels(x, f), (int)upix,
                     (int)glist_xtopixels(x, f), (int)upix - tickpix, tag);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    glist_getcanvas(x->gl_parent),
+                    canvas_getPatch(x->gl_parent),
                     (int)glist_xtopixels(x, f), (int)lpix,
                     (int)glist_xtopixels(x, f), (int)lpix + tickpix, tag);
             }
@@ -782,11 +775,11 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             {
                 int tickpix = (i % x->gl_tickX.k_lperb ? 2 : 4);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    glist_getcanvas(x->gl_parent),
+                    canvas_getPatch(x->gl_parent),
                     (int)glist_xtopixels(x, f), (int)upix,
                     (int)glist_xtopixels(x, f), (int)upix - tickpix, tag);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    glist_getcanvas(x->gl_parent),
+                    canvas_getPatch(x->gl_parent),
                     (int)glist_xtopixels(x, f), (int)lpix,
                     (int)glist_xtopixels(x, f), (int)lpix + tickpix, tag);
             }
@@ -805,11 +798,11 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             {
                 int tickpix = (i % x->gl_tickY.k_lperb ? 2 : 4);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    glist_getcanvas(x->gl_parent),
+                    canvas_getPatch(x->gl_parent),
                     x1, (int)glist_ytopixels(x, f), 
                     x1 + tickpix, (int)glist_ytopixels(x, f), tag);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    glist_getcanvas(x->gl_parent),
+                    canvas_getPatch(x->gl_parent),
                     x2, (int)glist_ytopixels(x, f), 
                     x2 - tickpix, (int)glist_ytopixels(x, f), tag);
             }
@@ -819,11 +812,11 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
             {
                 int tickpix = (i % x->gl_tickY.k_lperb ? 2 : 4);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    glist_getcanvas(x->gl_parent),
+                    canvas_getPatch(x->gl_parent),
                     x1, (int)glist_ytopixels(x, f), 
                     x1 + tickpix, (int)glist_ytopixels(x, f), tag);
                 sys_vGui(".x%lx.c create line %d %d %d %d -tags [list %s graph]\n",
-                    glist_getcanvas(x->gl_parent),
+                    canvas_getPatch(x->gl_parent),
                     x2, (int)glist_ytopixels(x, f), 
                     x2 - tickpix, (int)glist_ytopixels(x, f), tag);
             }
@@ -832,7 +825,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         for (i = 0; i < x->gl_nxlabels; i++)
             sys_vGui(".x%lx.c create text\
  %d %d -text {%s} -font [::getFont %d] -anchor %s -tags [list %s label graph]\n",
-                glist_getcanvas(x),
+                canvas_getPatch(x),
                 (int)glist_xtopixels(x, atof(x->gl_xlabel[i]->s_name)),
                 (int)glist_ytopixels(x, x->gl_xlabely),
                 x->gl_xlabel[i]->s_name,
@@ -842,7 +835,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
         for (i = 0; i < x->gl_nylabels; i++)
             sys_vGui(".x%lx.c create text\
  %d %d -text {%s} -font [::getFont %d] -anchor %s -tags [list %s label graph]\n",
-                glist_getcanvas(x),
+                canvas_getPatch(x),
                 (int)glist_xtopixels(x, x->gl_ylabelx),
                 (int)glist_ytopixels(x, atof(x->gl_ylabel[i]->s_name)),
                 x->gl_ylabel[i]->s_name,
@@ -855,7 +848,7 @@ static void graph_vis(t_gobj *gr, t_glist *parent_glist, int vis)
     else
     {
         sys_vGui(".x%lx.c delete %s\n",
-            glist_getcanvas(x->gl_parent), tag);
+            canvas_getPatch(x->gl_parent), tag);
         for (g = x->gl_graphics; g; g = g->g_next)
             gobj_visibilityChanged(g, x, 0);
     }
@@ -962,7 +955,7 @@ static void graph_select(t_gobj *z, t_glist *glist, int state)
         sys_vGui(".x%lx.c itemconfigure %sR -fill %s\n", glist, 
         rtext_gettag(y), (state? "blue" : "black"));
         sys_vGui(".x%lx.c itemconfigure graph%lx -fill %s\n",
-            glist_getcanvas(glist), z, (state? "blue" : "black"));
+            canvas_getPatch(glist), z, (state? "blue" : "black"));
     }
 }
 
@@ -1055,8 +1048,8 @@ static int graph_click(t_gobj *z, struct _glist *glist,
         if (!doit)
         {
             if (y)
-                canvas_setcursor(glist_getcanvas(x), clickreturned);
-            else canvas_setcursor(glist_getcanvas(x), CURSOR_NOTHING);
+                canvas_setcursor(canvas_getPatch(x), clickreturned);
+            else canvas_setcursor(canvas_getPatch(x), CURSOR_NOTHING);
         }
         return (clickreturned); 
     }

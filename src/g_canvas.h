@@ -314,7 +314,7 @@ struct _template {
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist         *canvas_castToGlist                     (t_pd *x);
+t_glist         *canvas_castToGlistChecked              (t_pd *x);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -336,6 +336,8 @@ t_glist         *canvas_getCurrent                      (void);
 t_environment   *canvas_getEnvironment                  (t_glist *glist);
 t_glist         *canvas_getRoot                         (t_glist *glist);
 t_glist         *canvas_getTopmostParent                (t_glist *glist);
+t_glist         *canvas_getPatch                        (t_glist *glist);
+
 t_glist         *canvas_findDirty                       (t_glist *glist);
 t_symbol        *canvas_expandDollar                    (t_glist *glist, t_symbol *s);
 t_symbol        *canvas_makeBindSymbol                  (t_symbol *s);
@@ -455,9 +457,19 @@ void            canvas_mouseup                          (t_glist *glist,
                                                             t_float a,
                                                             t_float b,
                                                             t_float button);
+
+void            canvas_connect                          (t_glist *x,
+                                                            t_float indexOfObjectOut,
+                                                            t_float indexOfOutlet,
+                                                            t_float indexOfObjectIn,
+                                                            t_float indexOfInlet);
+
+void            canvas_disconnect                       (t_glist *x,
+                                                            t_float indexOfObjectOut,
+                                                            t_float indexOfOutlet,
+                                                            t_float indexOfObjectIn,
+                                                            t_float indexOfInlet);
                                                             
-void            canvas_done_popup                       (t_glist *glist, t_float item, t_float a, t_float b);
-void            canvas_donecanvasdialog                 (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_key                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_restore                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_loadbang                         (t_glist *glist);
@@ -471,18 +483,8 @@ void            canvas_copy                             (t_glist *glist);
 void            canvas_paste                            (t_glist *glist);
 void            canvas_duplicate                        (t_glist *glist);
 void            canvas_selectall                        (t_glist *glist);
-
-void            canvas_connect                          (t_glist *x,
-                                                            t_float indexOfObjectOut,
-                                                            t_float indexOfOutlet,
-                                                            t_float indexOfObjectIn,
-                                                            t_float indexOfInlet);
-
-void            canvas_disconnect                       (t_glist *x,
-                                                            t_float indexOfObjectOut,
-                                                            t_float indexOfOutlet,
-                                                            t_float indexOfObjectIn,
-                                                            t_float indexOfInlet);
+void            canvas_done_popup                       (t_glist *glist, t_float item, t_float a, t_float b);
+void            canvas_donecanvasdialog                 (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
                                             
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -564,7 +566,6 @@ void glist_scalar(t_glist *canvas, t_symbol *s, int argc, t_atom *argv);
 t_glist  *glist_new             (void);
 void     glist_add              (t_glist *x, t_gobj *g);
 void     glist_clear            (t_glist *x);
-t_glist *glist_getcanvas        (t_glist *x);
 void     glist_delete           (t_glist *x, t_gobj *y);
 void     glist_retext           (t_glist *x, t_object *y);
 t_glist *glist_findgraph        (t_glist *x);

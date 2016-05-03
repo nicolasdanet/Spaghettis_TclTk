@@ -136,7 +136,7 @@ static void vu_drawUpdate (t_vu *x, t_glist *glist)
 {
     if (canvas_isVisible (glist)) {
     //
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -189,7 +189,7 @@ static void vu_drawUpdate (t_vu *x, t_glist *glist)
 
 static void vu_drawMove (t_vu *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -224,12 +224,12 @@ static void vu_drawMove (t_vu *x, t_glist *glist)
                 a + x->x_gui.iem_labelX,
                 b + x->x_gui.iem_labelY);
              
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
 static void vu_drawNew (t_vu *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -291,12 +291,12 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
                 x->x_gui.iem_colorLabel,
                 x);
 
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
 static void vu_drawSelect (t_vu* x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas,
@@ -310,7 +310,7 @@ static void vu_drawSelect (t_vu* x, t_glist *glist)
 
 static void vu_drawErase (t_vu* x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     int i;
     
     sys_vGui (".x%lx.c delete %lxBASE\n",
@@ -339,7 +339,7 @@ static void vu_drawErase (t_vu* x, t_glist *glist)
 
 static void vu_drawConfig (t_vu* x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     int i;
         
     sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
@@ -411,7 +411,7 @@ static void vu_bang (t_vu *x)
     outlet_float (x->x_outRight, x->x_peakValue);
     outlet_float (x->x_outLeft, x->x_rmsValue);
     
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
 static void vu_float (t_vu *x, t_float rms)
@@ -421,7 +421,7 @@ static void vu_float (t_vu *x, t_float rms)
     x->x_rmsValue = rms;
     x->x_rms = vu_stepWithDecibels (rms);
     
-    if (x->x_rms != old) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE); }
+    if (x->x_rms != old) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
     
     outlet_float (x->x_outLeft, rms);
 }
@@ -433,7 +433,7 @@ static void vu_ft1 (t_vu *x, t_float peak)
     x->x_peakValue = peak;
     x->x_peak = vu_stepWithDecibels (peak);
     
-    if (x->x_peak != old) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE); }
+    if (x->x_peak != old) { (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE); }
         
     outlet_float (x->x_outRight, peak);
 }
@@ -596,7 +596,7 @@ static void *vu_new (t_symbol *s, int argc, t_atom *argv)
         iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
     }
 
-    x->x_gui.iem_glist      = (t_glist *)canvas_getCurrent();
+    x->x_gui.iem_owner      = (t_glist *)canvas_getCurrent();
     x->x_gui.iem_draw       = (t_iemfn)vu_draw;
     x->x_gui.iem_canSend    = 0;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;

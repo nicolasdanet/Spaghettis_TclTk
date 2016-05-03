@@ -68,7 +68,7 @@ void canvas_newPatch (void *dummy, t_symbol *name, t_symbol *directory)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-t_glist *canvas_castToGlist (t_pd *x)
+t_glist *canvas_castToGlistChecked (t_pd *x)
 {
     if (pd_class (x) == canvas_class || pd_class (x) == array_define_class) {
         return cast_glist (x);
@@ -110,23 +110,30 @@ t_glist *canvas_getTopmostParent (t_glist *glist)
     return glist;
 }
 
+t_glist *canvas_getPatch (t_glist *glist)
+{
+    while (glist->gl_parent && !canvas_canHaveWindow (glist)) { glist = glist->gl_parent; }
+    
+    return glist;
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
 int canvas_isVisible (t_glist *glist)
 {
-    return (!glist->gl_isLoading && glist_getcanvas (glist)->gl_isMapped);
+    return (!glist->gl_isLoading && canvas_getPatch (glist)->gl_isMapped);
 }
 
-int canvas_isAbstraction (t_glist *x)
+int canvas_isAbstraction (t_glist *glist)
 {
-    return (x->gl_environment != NULL);
+    return (glist->gl_environment != NULL);
 }
 
-int canvas_canHaveWindow (t_glist *x)
+int canvas_canHaveWindow (t_glist *glist)
 {
-    return (x->gl_haveWindow || !x->gl_isGraphOnParent);
+    return (glist->gl_haveWindow || !glist->gl_isGraphOnParent);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -146,6 +153,7 @@ t_glist *canvas_findDirty (t_glist *glist)
     }
     //
     }
+    
     return NULL;
 }
 
@@ -167,6 +175,7 @@ t_glist *canvas_addGraph (t_glist *glist, t_symbol *name,
 
     int createdFromMenu = 0;
     t_glist *x = (t_glist *)pd_new (canvas_class);
+    
     int fontSize = (canvas_getCurrent() ? canvas_getCurrent()->gl_fontSize : font_getDefaultFontSize());
     
     PD_ASSERT (name);

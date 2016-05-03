@@ -363,7 +363,7 @@ static void ptrobj_sendwindow(t_ptrobj *x, t_symbol *s, int argc, t_atom *argv)
             owner_array = owner_array->a_gp.gp_stub->gs_un.gs_array;
         glist = owner_array->a_gp.gp_stub->gs_un.gs_glist;  
     }
-    canvas = (t_pd *)glist_getcanvas(glist);
+    canvas = (t_pd *)canvas_getPatch(glist);
     if (argc && argv->a_type == A_SYMBOL)
         pd_message(canvas, argv->a_w.w_symbol, argc-1, argv+1);
     else { post_error ("send-window: no message?"); }
@@ -1252,7 +1252,7 @@ static void append_float(t_append *x, t_float f)
         template_setfloat(template, vp->gv_sym, vec, vp->gv_f, 1);
     }
  
-    if (canvas_isVisible(glist_getcanvas(glist)))
+    if (canvas_isVisible(canvas_getPatch(glist)))
         gobj_visibilityChanged(&sc->sc_g, glist, 1);
     /*  scalar_redraw(sc, glist);  ... have to do 'vis' instead here because
     redraw assumes we're already visible??? ... */

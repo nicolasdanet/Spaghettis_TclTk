@@ -51,7 +51,7 @@ void bng_drawUpdate (t_bng *x, t_glist *glist)
 {
     if (canvas_isVisible (glist)) {
     //
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     sys_vGui (".x%lx.c itemconfigure %lxBUTTON -fill #%06x\n", 
                 canvas,
@@ -63,7 +63,7 @@ void bng_drawUpdate (t_bng *x, t_glist *glist)
 
 void bng_drawMove (t_bng *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
         
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -94,7 +94,7 @@ void bng_drawNew (t_bng *x, t_glist *glist)
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
     
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
                 canvas,
@@ -129,7 +129,7 @@ void bng_drawNew (t_bng *x, t_glist *glist)
 
 void bng_drawSelect (t_bng *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas,
@@ -147,7 +147,7 @@ void bng_drawSelect (t_bng *x, t_glist *glist)
 
 void bng_drawErase (t_bng *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     sys_vGui (".x%lx.c delete %lxBASE\n",
                 canvas,
@@ -162,7 +162,7 @@ void bng_drawErase (t_bng *x, t_glist *glist)
 
 void bng_drawConfig (t_bng *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
                 canvas,
@@ -211,12 +211,12 @@ void bng_setFlashTimes (t_bng *x, int flashBreak, int flashHold)
 static void bng_updateFlash (t_bng *x)
 {
     if (x->x_flashed) {
-        x->x_flashed = 0; (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+        x->x_flashed = 0; (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
         x->x_flashed = 1;
         clock_delay (x->x_clockBreak, x->x_flashTimeBreak);
         
     } else {
-        x->x_flashed = 1; (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+        x->x_flashed = 1; (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
     }
     
     clock_delay (x->x_clockHold, x->x_flashTimeHold);
@@ -338,12 +338,12 @@ static void bng_taskHold (t_bng *x)
 {
     x->x_flashed = 0;
     
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
 static void bng_taskBreak (t_bng *x)
 {
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_UPDATE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_UPDATE);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -482,7 +482,7 @@ static void *bng_new (t_symbol *s, int argc, t_atom *argv)
         iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
     }
 
-    x->x_gui.iem_glist      = (t_glist *)canvas_getCurrent();
+    x->x_gui.iem_owner      = (t_glist *)canvas_getCurrent();
     x->x_gui.iem_draw       = (t_iemfn)bng_draw;
     x->x_gui.iem_canSend    = (x->x_gui.iem_send == iemgui_empty()) ? 0 : 1;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;

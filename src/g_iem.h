@@ -111,7 +111,7 @@ typedef void (*t_iemfn)(void *x, t_glist *glist, int mode);
 
 typedef struct _iem {
     t_object    iem_obj;                        /* MUST be the first. */
-    t_glist     *iem_glist;
+    t_glist     *iem_owner;
     t_iemfn     iem_draw;
     char        iem_fontStyle;                  /* Unused but kept for compatibility. */
     char        iem_canSend;

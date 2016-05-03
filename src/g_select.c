@@ -165,7 +165,7 @@ void canvas_deselectObject (t_glist *glist, t_gobj *y)
         
             if (glist->gl_editor->e_isTextDirty) {
                 z = text;
-                canvas_stowconnections (glist_getcanvas (glist));
+                canvas_stowconnections (canvas_getPatch (glist));
                 select_deselectAllRecursive (y);
             }
             

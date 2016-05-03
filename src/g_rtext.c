@@ -70,7 +70,7 @@ t_boxtext *rtext_new(t_glist *glist, t_object *who)
         x->x_drawnwidth = x->x_drawnheight = 0;
     buffer_toStringUnzeroed(who->te_buffer, &x->x_buf, &x->x_bufsize);
     glist->gl_editor->e_text = x;
-    sprintf(x->x_tag, ".x%lx.t%lx", (t_int)glist_getcanvas(x->x_glist),
+    sprintf(x->x_tag, ".x%lx.t%lx", (t_int)canvas_getPatch(x->x_glist),
         (t_int)x);
     return (x);
 }
@@ -199,7 +199,7 @@ static void rtext_senditup(t_boxtext *x, int action, int *widthp, int *heightp,
     int outchars_b = 0, nlines = 0, ncolumns = 0,
         pixwide, pixhigh, font, fontwidth, fontheight, findx, findy;
     int reportedindex = 0;
-    t_glist *canvas = glist_getcanvas(x->x_glist);
+    t_glist *canvas = canvas_getPatch(x->x_glist);
     int widthspec_c = x->x_text->te_width;
     int widthlimit_c = (widthspec_c ? widthspec_c : BOXWIDTH);
     int inindex_b = 0;
@@ -444,19 +444,19 @@ void rtext_draw(t_boxtext *x)
 
 void rtext_erase(t_boxtext *x)
 {
-    sys_vGui(".x%lx.c delete %s\n", glist_getcanvas(x->x_glist), x->x_tag);
+    sys_vGui(".x%lx.c delete %s\n", canvas_getPatch(x->x_glist), x->x_tag);
 }
 
 void rtext_displace(t_boxtext *x, int dx, int dy)
 {
-    sys_vGui(".x%lx.c move %s %d %d\n", glist_getcanvas(x->x_glist), 
+    sys_vGui(".x%lx.c move %s %d %d\n", canvas_getPatch(x->x_glist), 
         x->x_tag, dx, dy);
 }
 
 void rtext_select(t_boxtext *x, int state)
 {
     t_glist *glist = x->x_glist;
-    t_glist *canvas = glist_getcanvas(glist);
+    t_glist *canvas = canvas_getPatch(glist);
     sys_vGui(".x%lx.c itemconfigure %s -fill %s\n", canvas, 
         x->x_tag, (state? "blue" : "black"));
 }
@@ -465,7 +465,7 @@ void rtext_activate(t_boxtext *x, int state)
 {
     int w = 0, h = 0, indx;
     t_glist *glist = x->x_glist;
-    t_glist *canvas = glist_getcanvas(glist);
+    t_glist *canvas = canvas_getPatch(glist);
     if (state)
     {
         sys_vGui("::ui_object::setEditing .x%lx %s 1\n", canvas, x->x_tag);

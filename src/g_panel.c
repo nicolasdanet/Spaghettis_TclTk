@@ -49,7 +49,7 @@ static t_widgetbehavior panel_widgetBehavior;       /* Shared. */
 
 void panel_drawMove (t_panel *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -77,7 +77,7 @@ void panel_drawMove (t_panel *x, t_glist *glist)
 
 void panel_drawNew (t_panel *x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
     
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -115,7 +115,7 @@ void panel_drawNew (t_panel *x, t_glist *glist)
 
 void panel_drawSelect (t_panel* x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas,
@@ -125,7 +125,7 @@ void panel_drawSelect (t_panel* x, t_glist *glist)
 
 void panel_drawErase (t_panel* x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     sys_vGui (".x%lx.c delete %lxBASE\n",
                 canvas,
@@ -140,7 +140,7 @@ void panel_drawErase (t_panel* x, t_glist *glist)
 
 void panel_drawConfig (t_panel* x, t_glist *glist)
 {
-    t_glist *canvas = glist_getcanvas (glist);
+    t_glist *canvas = canvas_getPatch (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxPANEL -fill #%06x -outline #%06x\n",
                 canvas,
@@ -193,8 +193,8 @@ static void panel_dialog (t_panel *x, t_symbol *s, int argc, t_atom *argv)
     x->x_panelWidth     = PD_MAX (panelWidth,  IEM_PANEL_MINIMUM_SIZE);
     x->x_panelHeight    = PD_MAX (panelHeight, IEM_PANEL_MINIMUM_SIZE);
     
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_CONFIG);
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_CONFIG);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_MOVE);
     //
     }
 }
@@ -225,7 +225,7 @@ static void panel_panelSize (t_panel *x, t_symbol *s, int argc, t_atom *argv)
     
     x->x_panelHeight = PD_MAX (i, IEM_PANEL_MINIMUM_SIZE);
     
-    (*x->x_gui.iem_draw) (x, x->x_gui.iem_glist, IEM_DRAW_MOVE);
+    (*x->x_gui.iem_draw) (x, x->x_gui.iem_owner, IEM_DRAW_MOVE);
     //
     }
 }
@@ -233,8 +233,8 @@ static void panel_panelSize (t_panel *x, t_symbol *s, int argc, t_atom *argv)
 static void panel_getPosition (t_panel *x)
 {
     if (x->x_gui.iem_canSend && x->x_gui.iem_send->s_thing) {
-        t_float a = text_xpix (cast_object (x), x->x_gui.iem_glist);
-        t_float b = text_ypix (cast_object (x), x->x_gui.iem_glist);
+        t_float a = text_xpix (cast_object (x), x->x_gui.iem_owner);
+        t_float b = text_ypix (cast_object (x), x->x_gui.iem_owner);
         SET_FLOAT (&x->x_t[0], a);
         SET_FLOAT (&x->x_t[1], b);
         pd_list (x->x_gui.iem_send->s_thing, 2, x->x_t);
@@ -363,7 +363,7 @@ static void *panel_new (t_symbol *s, int argc, t_atom *argv)
         iemgui_deserializeColors (&x->x_gui, NULL, NULL, NULL);
     }
 
-    x->x_gui.iem_glist      = (t_glist *)canvas_getCurrent();
+    x->x_gui.iem_owner      = (t_glist *)canvas_getCurrent();
     x->x_gui.iem_draw       = (t_iemfn)panel_draw;
     x->x_gui.iem_canSend    = (x->x_gui.iem_send == iemgui_empty()) ? 0 : 1;
     x->x_gui.iem_canReceive = (x->x_gui.iem_receive == iemgui_empty()) ? 0 : 1;

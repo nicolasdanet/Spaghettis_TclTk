@@ -226,6 +226,42 @@ static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void canvas_editmode (t_glist *glist, t_float state)
+{
+    if (glist->gl_isEditMode == (unsigned int) state)
+        return;
+    glist->gl_isEditMode = (unsigned int) state;
+    if (glist->gl_isEditMode && canvas_isVisible (glist) && canvas_canHaveWindow (glist))
+    {
+        t_gobj *g;
+        t_object *ob;
+        canvas_setcursor (glist, CURSOR_EDIT_NOTHING);
+        for (g = glist->gl_graphics; g; g = g->g_next)
+            if ((ob = canvas_castToObjectIfBox(&g->g_pd)) && ob->te_type == TYPE_TEXT)
+        {
+            t_boxtext *y = glist_findrtext (glist, ob);
+            text_drawborder(ob, glist,
+                rtext_gettag(y), rtext_width(y), rtext_height(y), 1);
+        }
+    }
+    else
+    {
+        canvas_deselectAll(glist);
+        if (canvas_isVisible(glist) && canvas_canHaveWindow(glist))
+        {
+            canvas_setcursor(glist, CURSOR_NOTHING);
+            sys_vGui(".x%lx.c delete commentbar\n", canvas_getPatch(glist));
+        }
+    }
+    if (canvas_isVisible(glist))
+      sys_vGui("::ui_patch::setEditMode .x%lx %d\n",
+          canvas_getPatch(glist), glist->gl_isEditMode);
+}
+
 /* Messy ping-pong required in order to check saving sequentially. */
 
 void canvas_close (t_glist *glist, t_float f)
@@ -356,6 +392,10 @@ void canvas_pop (t_glist *glist, t_float f)
     glist->gl_isLoading = 0;
 }
 
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 static void canvas_rename (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
 {
     if (argc && IS_SYMBOL (argv)) { canvas_setName (glist, GET_SYMBOL (argv), NULL); }
@@ -481,7 +521,7 @@ void canvas_free (t_glist *glist)
     canvas_deselectAll (glist);
     
     while (y = glist->gl_graphics) { glist_delete (glist, y); }
-    if (glist == glist_getcanvas (glist)) { canvas_vis (glist, 0); }
+    if (glist == canvas_getPatch (glist)) { canvas_vis (glist, 0); }
     if (glist->gl_editor) { canvas_destroyEditor (glist); }
     
     canvas_unbind (glist);
