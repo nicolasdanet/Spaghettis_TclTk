@@ -17,8 +17,12 @@
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+extern t_class  *text_class;
+extern t_glist  *editor_pasteCanvas;
+
 extern t_pd     pd_canvasMaker;
 extern int      editor_isReloading;
+extern int      editor_pasteOnset;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -226,6 +230,66 @@ static void canvas_width (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     }
 }
 
+void canvas_connect (t_glist *glist,
+    t_float indexOfObjectOut,
+    t_float indexOfOutlet,
+    t_float indexOfObjectIn,
+    t_float indexOfOInlet)
+{
+    int k = (editor_pasteCanvas == glist) ? editor_pasteOnset : 0;
+    
+    t_gobj *src  = canvas_getObjectAtIndex (glist, k + (int)indexOfObjectOut);
+    t_gobj *dest = canvas_getObjectAtIndex (glist, k + (int)indexOfObjectIn);
+    t_object *srcObject  = canvas_castToObjectIfBox (src);
+    t_object *destObject = canvas_castToObjectIfBox (dest);
+    
+    if (srcObject && destObject) {
+    //
+    int m = (int)indexOfOutlet;
+    int n = (int)indexOfOInlet;
+    t_outconnect *connection = NULL;
+    
+    /* Creates dummy outlets and inlets mainly in case of failure at object creation. */
+    
+    if (pd_class (srcObject) == text_class && srcObject->te_type == TYPE_OBJECT) {
+        while (m >= object_numberOfOutlets (srcObject)) {
+            outlet_new (srcObject, NULL);
+        }
+    }
+    
+    if (pd_class (destObject) == text_class && destObject->te_type == TYPE_OBJECT) {
+        while (n >= object_numberOfInlets (destObject)) {
+            inlet_new (destObject, cast_pd (destObject), NULL, NULL);
+        }
+    }
+
+    if ((connection = object_connect (srcObject, m, destObject, n))) {
+    //
+    if (canvas_isVisible (glist)) {
+    
+        sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
+                        canvas_getPatch (glist),
+                        0,
+                        0,
+                        0,
+                        0,
+                        (object_isSignalOutlet (srcObject, m) ? 2 : 1), connection);
+                        
+        canvas_updateLinesByObject (glist, srcObject);
+    }
+    
+    return;
+    //
+    }
+    //
+    }
+
+    /* post("%s %d %d %d %d (%s->%s) connection failed", 
+        glist->gl_name->s_name, objectOut, outlet, objectIn, inlet,
+            (src? class_getName(pd_class(&src->g_pd)) : "???"),
+            (dest? class_getName(pd_class(&dest->g_pd)) : "???")); */
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
@@ -319,6 +383,8 @@ void canvas_close (t_glist *glist, t_float f)
 
 static void canvas_open (t_glist *glist)
 {
+    /* Opening a graph on parent in its own window. */
+    
     if (canvas_isVisible (glist) && !canvas_canHaveWindow (glist)) {
     //
     PD_ASSERT (glist->gl_parent);
@@ -327,7 +393,7 @@ static void canvas_open (t_glist *glist)
     
     canvas_destroyEditorIfAny (glist);
 
-    glist->gl_haveWindow = 1;
+    glist->gl_haveWindow = 1;   /* Note that it modify how things are drawn below. */
     
     gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 1);
     //
@@ -375,6 +441,7 @@ void canvas_visible (t_glist *glist, t_float f)
                         glist->gl_isEditMode);
                         
             canvas_updateTitle (glist);
+            
             glist->gl_haveWindow = 1;
         }
         

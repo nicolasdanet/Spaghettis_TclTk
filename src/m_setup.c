@@ -152,7 +152,6 @@ void setup_initialize (void)
 void setup_release (void)
 {
     loader_release();
-    
     editor_release();
     global_release();
     bindlist_release();

@@ -31,7 +31,6 @@ extern t_pd                 *pd_newest;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_class              *text_class;
 extern t_class              *canvas_class;
 extern t_class              *garray_class;
 extern t_class              *vinlet_class;
@@ -40,18 +39,19 @@ extern t_class              *voutlet_class;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-int                 editor_isReloading;                 /* Shared. */
+t_glist                     *editor_pasteCanvas;        /* Shared. */
+
+int                         editor_pasteOnset;          /* Shared. */
+int                         editor_isReloading;         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-static t_buffer     *editor_buffer;                     /* Shared. */
-static t_glist      *editor_pasteCanvas;                /* Shared. */
+static t_buffer             *editor_buffer;             /* Shared. */
 
-static int          editor_pasteOnset;                  /* Shared. */
-static int          editor_mouseUpX;                    /* Shared. */
-static int          editor_mouseUpY;                    /* Shared. */
-static double       editor_mouseUpClickTime;            /* Shared. */
+static int                  editor_mouseUpX;            /* Shared. */
+static int                  editor_mouseUpY;            /* Shared. */
+static double               editor_mouseUpClickTime;    /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -1426,51 +1426,6 @@ void canvas_selectall(t_glist *x)
         if (!canvas_isObjectSelected(x, y))
             canvas_selectObject(x, y);
     }
-}
-
-void canvas_connect(t_glist *x, t_float fwhoout, t_float foutno,
-    t_float fwhoin, t_float finno)
-{
-    int whoout = fwhoout, outno = foutno, whoin = fwhoin, inno = finno;
-    t_gobj *src = 0, *sink = 0;
-    t_object *objsrc, *objsink;
-    t_outconnect *oc;
-    int nin = whoin, nout = whoout;
-    if (editor_pasteCanvas == x) whoout += editor_pasteOnset, whoin += editor_pasteOnset;
-    for (src = x->gl_graphics; whoout; src = src->g_next, whoout--)
-        if (!src->g_next) goto bad; /* bug fix thanks to Hannes */
-    for (sink = x->gl_graphics; whoin; sink = sink->g_next, whoin--)
-        if (!sink->g_next) goto bad;
-    
-        /* check they're both patchable objects */
-    if (!(objsrc = canvas_castToObjectIfBox(&src->g_pd)) ||
-        !(objsink = canvas_castToObjectIfBox(&sink->g_pd)))
-            goto bad;
-    
-        /* if object creation failed, make dummy inlets or outlets
-        as needed */ 
-    if (pd_class(&src->g_pd) == text_class && objsrc->te_type == TYPE_OBJECT)
-        while (outno >= object_numberOfOutlets(objsrc))
-            outlet_new(objsrc, 0);
-    if (pd_class(&sink->g_pd) == text_class && objsink->te_type == TYPE_OBJECT)
-        while (inno >= object_numberOfInlets(objsink))
-            inlet_new(objsink, &objsink->te_g.g_pd, 0, 0);
-
-    if (!(oc = object_connect(objsrc, outno, objsink, inno))) goto bad;
-    if (canvas_isVisible(x))
-    {
-        sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
-            canvas_getPatch(x), 0, 0, 0, 0,
-            (object_isSignalOutlet(objsrc, outno) ? 2 : 1),oc);
-        canvas_updateLinesByObject(x, objsrc);
-    }
-    return;
-
-bad:
-    post("%s %d %d %d %d (%s->%s) connection failed", 
-        x->gl_name->s_name, nout, outno, nin, inno,
-            (src? class_getName(pd_class(&src->g_pd)) : "???"),
-            (sink? class_getName(pd_class(&sink->g_pd)) : "???"));
 }
 
 // -----------------------------------------------------------------------------------------------------------
