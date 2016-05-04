@@ -88,7 +88,9 @@ int gobj_isVisible (t_gobj *x, t_glist *owner)
 {
     t_object *o = NULL;
     
-    if (!owner->gl_haveWindow && owner->gl_isGraphOnParent && owner->gl_parent) {    /* Graph on parent. */
+    /* Graph on parent. */
+    
+    if (!owner->gl_haveWindow && owner->gl_isGraphOnParent && owner->gl_parent) {
     //
     /* Is parent visible? */
     

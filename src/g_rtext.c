@@ -415,7 +415,7 @@ t_boxtext *glist_findrtext(t_glist *gl, t_object *who)
 {
     t_boxtext *x;
     if (!gl->gl_editor)
-        canvas_createEditor(gl);
+        canvas_createEditorIfNone(gl);
     for (x = gl->gl_editor->e_text; x && x->x_text != who; x = x->x_next)
         ;
     if (!x) { PD_BUG; }

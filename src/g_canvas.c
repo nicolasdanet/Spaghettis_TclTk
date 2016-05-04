@@ -102,7 +102,7 @@ static void *subpatch_new (t_symbol *s)
 
 void canvas_click (t_glist *glist, t_float a, t_float b, t_float shift, t_float ctrl, t_float alt)
 {
-    canvas_vis (glist, 1);
+    canvas_visible (glist, 1);
 }
 
 void canvas_setBounds (t_glist *x, t_float a, t_float b, t_float c, t_float d)
@@ -280,10 +280,10 @@ void canvas_close (t_glist *glist, t_float f)
     if (k == 3) { canvas_dirty (glist, 0); global_shouldQuit (NULL); }      /* While quitting application. */
     else {
     //
-    if (glist->gl_parent && (k != 2)) { canvas_vis (glist, 0); }     /* Hide subpatches and abstractions. */
+    if (glist->gl_parent && (k != 2)) { canvas_visible (glist, 0); }        /* Hide subpatches. */
     else {
     //
-    if (k == 1) { pd_free (cast_pd (glist)); }                      /* Has been saved right before. */
+    if (k == 1) { pd_free (cast_pd (glist)); }      /* Has been saved right before. */
     else {
         if (k == 2) { 
           
@@ -325,7 +325,7 @@ static void canvas_open (t_glist *glist)
     
     gobj_visibilityChanged (cast_gobj (glist), glist->gl_parent, 0);
     
-    if (glist->gl_editor) { canvas_destroyEditor (glist); }
+    canvas_destroyEditorIfAny (glist);
 
     glist->gl_haveWindow = 1;
     
@@ -333,7 +333,7 @@ static void canvas_open (t_glist *glist)
     //
     }
     
-    canvas_vis (glist, 1);
+    canvas_visible (glist, 1);
 }
 
 void canvas_loadbang (t_glist *glist)
@@ -357,6 +357,49 @@ void canvas_dirty (t_glist *glist, t_float f)
     }
 }
 
+void canvas_visible (t_glist *glist, t_float f)
+{
+    int isVisible = (f != 0.0);
+    
+    if (isVisible) {
+
+        if (glist->gl_editor && glist->gl_haveWindow) { sys_vGui ("::bringToFront .x%lx\n", glist); }
+        else {
+            canvas_createEditorIfNone (glist);
+            sys_vGui ("::ui_patch::create .x%lx %d %d +%d+%d %d\n",
+                        glist,
+                        (int)(glist->gl_windowBottomRightX - glist->gl_windowTopLeftX),
+                        (int)(glist->gl_windowBottomRightY - glist->gl_windowTopLeftY),
+                        (int)(glist->gl_windowTopLeftX),
+                        (int)(glist->gl_windowTopLeftY),
+                        glist->gl_isEditMode);
+                        
+            canvas_updateTitle (glist);
+            glist->gl_haveWindow = 1;
+        }
+        
+    } else {
+
+        if (!glist->gl_haveWindow) { canvas_destroyEditorIfAny (glist); }
+        else {
+            t_glist *t = NULL;
+            
+            canvas_deselectAll (glist);
+            if (canvas_isVisible (glist)) { canvas_map (glist, 0); }
+            canvas_destroyEditorIfAny (glist);
+            sys_vGui ("destroy .x%lx\n", glist);
+            
+            if (glist->gl_isGraphOnParent && (t = glist->gl_parent) && (!t->gl_isDeleting)) {
+                if (canvas_isVisible (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 0); }
+                glist->gl_haveWindow = 0;
+                if (canvas_isVisible (t)) { gobj_visibilityChanged (cast_gobj (glist), t, 1); }
+            } else {
+                glist->gl_haveWindow = 0;
+            }
+        }
+    }
+}
+
 void canvas_map (t_glist *glist, t_float f)
 {
     int isMapped = (f != 0.0);
@@ -369,7 +412,7 @@ void canvas_map (t_glist *glist, t_float f)
         t_gobj *y = NULL;
         t_selection *selection = NULL;
         
-        if (!glist->gl_haveWindow) { PD_BUG; canvas_vis (glist, 1); }
+        if (!glist->gl_haveWindow) { PD_BUG; canvas_visible (glist, 1); }
         for (y = glist->gl_graphics; y; y = y->g_next) { gobj_visibilityChanged (y, glist, 1); }
         for (selection = glist->gl_editor->e_selectedObjects; selection; selection = selection->sel_next) {
             gobj_select (selection->sel_what, glist, 1);
@@ -391,7 +434,7 @@ void canvas_map (t_glist *glist, t_float f)
 
 void canvas_pop (t_glist *glist, t_float f)
 {
-    if (f != 0.0) { canvas_vis (glist, 1); }
+    if (f != 0.0) { canvas_visible (glist, 1); }
     
     stack_pop (cast_pd (glist));
     
@@ -530,9 +573,9 @@ void canvas_free (t_glist *glist)
     canvas_deselectAll (glist);
     
     while (y = glist->gl_graphics) { glist_delete (glist, y); }
-    if (glist == canvas_getPatch (glist)) { canvas_vis (glist, 0); }
-    if (glist->gl_editor) { canvas_destroyEditor (glist); }
+    if (glist == canvas_getPatch (glist)) { canvas_visible (glist, 0); }
     
+    canvas_destroyEditorIfAny (glist);
     canvas_unbind (glist);
 
     if (glist->gl_environment) {
@@ -617,8 +660,8 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_close,         gensym ("close"),       A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_open,          gensym ("open"),        A_NULL);
     class_addMethod (c, (t_method)canvas_loadbang,      gensym ("loadbang"),    A_NULL);
-    class_addMethod (c, (t_method)canvas_vis,           gensym ("visible"),     A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_dirty,         gensym ("dirty"),       A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_visible,       gensym ("visible"),     A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_map,           gensym ("_map"),        A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_pop,           gensym ("_pop"),        A_DEFFLOAT, A_NULL);
 
@@ -659,7 +702,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_vumeter,       gensym ("vumeter"),     A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_mycnv,         gensym ("mycnv"),       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)canvas_numbox,        gensym ("numbox"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_vis,           gensym ("vis"),         A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_visible,       gensym ("vis"),         A_FLOAT, A_NULL);
     
     class_addCreator ((t_newmethod)subpatch_new,        gensym ("page"),        A_DEFSYMBOL, A_NULL);
 

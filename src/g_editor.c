@@ -184,7 +184,7 @@ static void glist_doreload(t_glist *gl, t_symbol *name, t_symbol *dir,
                 do g = g->g_next in this case. */
             int j = canvas_getIndexOfObject(gl, g);
             if (!gl->gl_editor)
-                canvas_vis(gl, 1);
+                canvas_visible(gl, 1);
             if (!gl->gl_editor) { PD_BUG; }
             canvas_deselectAll(gl);
             canvas_selectObject(gl, g);
@@ -202,7 +202,7 @@ static void glist_doreload(t_glist *gl, t_symbol *name, t_symbol *dir,
         }
     }
     if (!hadwindow && gl->gl_editor)
-        canvas_vis(canvas_getPatch(gl), 0);
+        canvas_visible(canvas_getPatch(gl), 0);
 }
 
     /* call canvas_doreload on everyone */
@@ -291,87 +291,6 @@ static void canvas_rightclick(t_glist *x, int xpos, int ypos, t_gobj *y)
 
 /* ----  editors -- perhaps this and "vis" should go to g_editor.c ------- */
 
-
-
-    /* we call this when we want the window to become visible, mapped, and
-    in front of all windows; or with "f" zero, when we want to get rid of
-    the window. */
-void canvas_vis(t_glist *x, t_float f)
-{
-    char buf[30];
-    int flag = (f != 0);
-    if (flag)
-    {
-        /* If a subpatch/abstraction has GOP/gl_isGraphOnParent set, then it will have
-         * a gl_editor already, if its not, it will not have a gl_editor.
-         * canvas_createEditor(x) checks if a gl_editor is already created,
-         * so its ok to run it on a canvas that already has a gl_editor. */
-        if (x->gl_editor && x->gl_haveWindow)
-        {           /* just put us in front */
-            sys_vGui("::bringToFront .x%lx\n", x);  
-        }
-        else
-        {
-            char cbuf[PD_STRING];
-            int cbuflen;
-            t_glist *c = x;
-            canvas_createEditor(x);
-            sys_vGui("::ui_patch::create .x%lx %d %d +%d+%d %d\n", x,
-                (int)(x->gl_windowBottomRightX - x->gl_windowTopLeftX),
-                (int)(x->gl_windowBottomRightY - x->gl_windowTopLeftY),
-                (int)(x->gl_windowTopLeftX), (int)(x->gl_windowTopLeftY),
-                x->gl_isEditMode);
-           snprintf(cbuf, PD_STRING - 2, "::ui_patch::pdtk_canvas_setparents .x%lx",
-                (unsigned long)c);
-            while (c->gl_parent) {
-                c = c->gl_parent;
-                cbuflen = strlen(cbuf);
-                snprintf(cbuf + cbuflen,
-                         PD_STRING - cbuflen - 2,/* leave 2 for "\n\0" */
-                         " .x%lx", (unsigned long)c);
-            }
-            strcat(cbuf, "\n");
-            // sys_gui(cbuf);
-            canvas_updateTitle(x);
-            x->gl_haveWindow = 1;
-        }
-    }
-    else    /* make invisible */
-    {
-        int i;
-        t_glist *x2;
-        if (!x->gl_haveWindow)
-        {
-                /* bug workaround -- a graph in a visible patch gets "invised"
-                when the patch is closed, and must lose the editor here.  It's
-                probably not the natural place to do this.  Other cases like
-                subpatches fall here too but don'd need the editor freed, so
-                we check if it exists. */
-            if (x->gl_editor)
-                canvas_destroyEditor(x);
-            return;
-        }
-        canvas_deselectAll(x);
-        if (canvas_isVisible(x))
-            canvas_map(x, 0);
-        canvas_destroyEditor(x);
-        sys_vGui("destroy .x%lx\n", x);
-        for (i = 1, x2 = x; x2; x2 = x2->gl_next, i++)
-            ;
-            /* if we're a graph on our parent, and if the parent exists
-               and is visible, show ourselves on parent. */
-        if (x->gl_isGraphOnParent && x->gl_parent)
-        {
-            t_glist *gl2 = x->gl_parent;
-            if (canvas_isVisible(gl2))
-                gobj_visibilityChanged(&x->gl_obj.te_g, gl2, 0);
-            x->gl_haveWindow = 0;
-            if (canvas_isVisible(gl2) && !gl2->gl_isDeleting)
-                gobj_visibilityChanged(&x->gl_obj.te_g, gl2, 1);
-        }
-        else x->gl_haveWindow = 0;
-    }
-}
 
     /* set a canvas up as a graph-on-parent.  Set reasonable defaults for
     any missing paramters and redraw things if necessary. */
@@ -1586,7 +1505,7 @@ static void editor_free (t_editor *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void canvas_createEditor (t_glist *glist)
+void canvas_createEditorIfNone (t_glist *glist)
 {
     if (!glist->gl_editor) {
     //
@@ -1602,7 +1521,7 @@ void canvas_createEditor (t_glist *glist)
     }
 }
 
-void canvas_destroyEditor (t_glist *glist)
+void canvas_destroyEditorIfAny (t_glist *glist)
 {
     if (glist->gl_editor) {
     //

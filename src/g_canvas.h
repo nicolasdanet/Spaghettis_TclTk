@@ -420,8 +420,8 @@ int             canvas_getIndexOfObjectAmongUnselected  (t_glist *glist, t_gobj 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-void            canvas_createEditor                     (t_glist *glist);
-void            canvas_destroyEditor                    (t_glist *glist);
+void            canvas_createEditorIfNone               (t_glist *glist);
+void            canvas_destroyEditorIfAny               (t_glist *glist);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -473,11 +473,13 @@ void            canvas_disconnect                       (t_glist *x,
 void            canvas_key                              (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_restore                          (t_glist *glist, t_symbol *s, int argc, t_atom *argv);
 void            canvas_loadbang                         (t_glist *glist);
-void            canvas_map                              (t_glist *glist, t_float f);
-void            canvas_dirty                            (t_glist *glist, t_float f);
-void            canvas_pop                              (t_glist *glist, t_float f);
-void            canvas_close                            (t_glist *glist, t_float f);
 void            canvas_editmode                         (t_glist *glist, t_float f);
+void            canvas_close                            (t_glist *glist, t_float f);
+void            canvas_dirty                            (t_glist *glist, t_float f);
+void            canvas_visible                          (t_glist *glist, t_float f);
+void            canvas_map                              (t_glist *glist, t_float f);
+void            canvas_pop                              (t_glist *glist, t_float f);
+
 void            canvas_cut                              (t_glist *glist);
 void            canvas_copy                             (t_glist *glist);
 void            canvas_paste                            (t_glist *glist);
@@ -659,7 +661,6 @@ void     canvas_resortinlets            (t_glist *x);
 void     canvas_resortoutlets           (t_glist *x);
 
 int      canvas_istable                 (t_glist *x);
-void     canvas_vis                     (t_glist *x, t_float f);
 
 int      canvas_hitbox                  (t_glist *x,
                                             t_gobj *y,

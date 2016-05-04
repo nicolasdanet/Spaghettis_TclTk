@@ -281,12 +281,12 @@ static void glist_doread(t_glist *x, t_symbol *filename, t_symbol *format,
         return;
     }
     if (wasvis)
-        canvas_vis(canvas, 0);
+        canvas_visible(canvas, 0);
     if (clearme)
         glist_clear(x);
     glist_readfrombinbuf(x, b, filename->s_name, 0);
     if (wasvis)
-        canvas_vis(canvas, 1);
+        canvas_visible(canvas, 1);
     buffer_free(b);
 }
 
