@@ -1322,12 +1322,12 @@ void text_drawborder(t_object *x, t_glist *glist,
     }
         /* for comments, just draw a bar on RHS if unlocked; when a visible
         canvas is unlocked we have to call this anew on all comments, and when
-        locked we erase them all via the annoying "commentbar" tag. */
+        locked we erase them all via the annoying "COMMENTBAR" tag. */
     else if (x->te_type == TYPE_TEXT && glist->gl_isEditMode)
     {
         if (firsttime)
             sys_vGui(".x%lx.c create line\
- %d %d %d %d -tags [list %sR commentbar]\n",
+ %d %d %d %d -tags [list %sR COMMENTBAR]\n",
                 canvas_getPatch(glist),
                 x2, y1,  x2, y2, tag);
         else
