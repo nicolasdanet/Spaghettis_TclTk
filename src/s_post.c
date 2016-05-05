@@ -50,6 +50,7 @@ void post_error (const char *fmt, ...)
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+#pragma mark -
 
 #if PD_WITH_DEBUG
 
@@ -66,14 +67,22 @@ void post_log (const char *fmt, ...)
     if (t >= 0 && t < PD_STRING) {
         if (logger_isRunning()) { logger_appendStringNative (buf); }
         else {
-            openlog (PD_NAME, LOG_CONS | LOG_PID | LOG_PERROR, LOG_USER);
-            syslog (LOG_ERR, "%s", buf);
-            closelog();
+            post_syslog (buf);
         }
     }
 }
 
 #endif
+
+/* On Mac OS X the syslog call seems to affect the JACK server. */
+/* Consequently it should be reserved for exceptional situations. */
+
+void post_syslog (const char *s)
+{
+    openlog (PD_NAME, LOG_CONS | LOG_PID | LOG_PERROR, LOG_USER);
+    syslog (LOG_ERR, "%s", s);
+    closelog();
+}
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
