@@ -40,11 +40,9 @@ LIB = -ldl -lpthread -lm
 
 LDFLAGS = -rdynamic $(ARCH)
 
-# Preprocessor flags.
+# Preprocessor and compiler flags.
 
 CPPFLAGS = -DNDEBUG -DPD_BUILDING_APPLICATION
-
-# Build flags.
 
 CFLAGS = -O3 -ffast-math -fvisibility=hidden -w $(ARCH)
 

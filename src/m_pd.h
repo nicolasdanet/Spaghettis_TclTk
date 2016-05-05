@@ -161,7 +161,7 @@
 #pragma mark -
 
 #ifndef PD_WITH_DEBUG
-#define PD_WITH_DEBUG           1           /* Debug mode. */
+#define PD_WITH_DEBUG           0           /* Debug mode. */
 #endif
 
 #ifndef PD_WITH_ALLOCA

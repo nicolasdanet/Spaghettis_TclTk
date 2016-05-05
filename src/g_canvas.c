@@ -284,10 +284,7 @@ void canvas_connect (t_glist *glist,
     //
     }
 
-    /* post("%s %d %d %d %d (%s->%s) connection failed", 
-        glist->gl_name->s_name, objectOut, outlet, objectIn, inlet,
-            (src? class_getName(pd_class(&src->g_pd)) : "???"),
-            (dest? class_getName(pd_class(&dest->g_pd)) : "???")); */
+    post_error (PD_TRANSLATE ("connection: failed in '%s'"), glist->gl_name->s_name);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -95,7 +95,8 @@ cd "${rep}/src"                                                 || exit 1
 #make -f makefile.mac "WITH_JACK=TRUE"                          || exit 1
 
 echo "Build with PORTAUDIO ..."
-make -f makefile.mac "WITH_PORTAUDIO=TRUE"                      || exit 1
+echo "Build with DEBUG ..."
+make -f makefile.mac "WITH_PORTAUDIO=TRUE" "WITH_DEBUG=TRUE"    || exit 1
 
 cd "${rep}"                                                     || exit 1
 
