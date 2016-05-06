@@ -355,6 +355,14 @@ void        setup_release                               (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void        message_initialize                          (void);
+void        message_release                             (void);
+void        message_newAnything                         (t_pd *x, t_symbol *s, int argc, t_atom *argv);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 void        sys_gui                                     (char *s);
 void        sys_vGui                                    (char *format, ...);
 

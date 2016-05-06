@@ -72,6 +72,12 @@ void post_log (const char *fmt, ...)
     }
 }
 
+#else
+
+void post_log (const char *fmt, ...)
+{
+}
+
 #endif
 
 /* On Mac OS X the syslog call seems to affect the JACK server. */

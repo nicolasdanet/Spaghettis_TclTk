@@ -50,7 +50,7 @@ typedef t_pd *(*t_newmethod6) (t_int, t_int, t_int, t_int, t_int, t_int,    MESS
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-#define MESSAGE_HASH_SIZE           1024                /* Must be a power of two. */
+#define MESSAGE_HASH_SIZE           1024                    /* Must be a power of two. */
 #define MESSAGE_MAXIMUM_RECURSION   1000
 #define MESSAGE_MAXIMUM_ARGUMENTS   10
 
@@ -64,7 +64,6 @@ extern t_pd *pd_newest;
 // -----------------------------------------------------------------------------------------------------------
 
 extern t_pd pd_objectMaker;
-extern t_pd pd_canvasMaker;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -97,11 +96,13 @@ static t_symbol *message_hashTable[MESSAGE_HASH_SIZE];      /* Shared. */
 
 t_symbol *generateSymbol (const char *s, t_symbol *alreadyAllocatedSymbol)
 {
-    t_symbol **sym1 = NULL;
-    t_symbol *sym2  = NULL;
+    t_symbol *sym   = NULL;
+    t_symbol **next = NULL;
     unsigned int hash = 5381;
     size_t length = 0;
     const char *s2 = s;
+    
+    PD_ASSERT (s != NULL);
     
     while (*s2) {
         hash = ((hash << 5) + hash) + *s2;      /* Bernstein djb2 hash algorithm. */
@@ -111,25 +112,25 @@ t_symbol *generateSymbol (const char *s, t_symbol *alreadyAllocatedSymbol)
     
     PD_ASSERT (length < PD_STRING);
     
-    sym1 = message_hashTable + (hash & (MESSAGE_HASH_SIZE - 1));
+    next = message_hashTable + (hash & (MESSAGE_HASH_SIZE - 1));
     
-    while (sym2 = *sym1) {
-        if (!strcmp (sym2->s_name, s)) { return sym2; }
-        sym1 = &sym2->s_next;
+    while (sym = *next) {
+        if (!strcmp (sym->s_name, s)) { return sym; }
+        next = &sym->s_next;
     }
     
-    if (alreadyAllocatedSymbol) { sym2 = alreadyAllocatedSymbol; }
+    if (alreadyAllocatedSymbol) { sym = alreadyAllocatedSymbol; }
     else {
-        sym2 = (t_symbol *)PD_MEMORY_GET (sizeof (t_symbol));
-        sym2->s_name  = (char *)PD_MEMORY_GET (length + 1);
-        sym2->s_next  = NULL;
-        sym2->s_thing = NULL;
-        strcpy (sym2->s_name, s);
+        sym = (t_symbol *)PD_MEMORY_GET (sizeof (t_symbol));
+        sym->s_name  = (char *)PD_MEMORY_GET (length + 1);
+        sym->s_next  = NULL;
+        sym->s_thing = NULL;
+        strcpy (sym->s_name, s);
     }
     
-    *sym1 = sym2; 
+    *next = sym; 
     
-    return sym2;
+    return sym;
 }
 
 t_symbol *gensym (const char *s)
@@ -152,7 +153,7 @@ static void message_popAbstraction (t_glist *glist)
     canvas_resortoutlets (glist);
 }
 
-static void message_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+void message_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
 {
     int f;
     char directory[PD_STRING] = { 0 };
@@ -218,14 +219,8 @@ void message_initialize (void)
         };
     
     int i;
+    for (i = 0; i < MESSAGE_HASH_SIZE; i++) { PD_ASSERT (message_hashTable[i] == NULL); }
     for (i = 0; i < 13; i++) { generateSymbol (symbols[i]->s_name, symbols[i]); }
-    
-    PD_ASSERT (!pd_objectMaker);
-    
-    pd_objectMaker = class_new (gensym ("objectmaker"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
-    pd_canvasMaker = class_new (gensym ("canvasmaker"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
-    
-    class_addAnything (pd_objectMaker, (t_method)message_newAnything);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -259,18 +254,20 @@ static int message_isStaticSymbol (t_symbol *s)
 
 void message_release (void)
 {
-    t_symbol **sym1 = NULL;
-    t_symbol *sym2  = NULL;
+    t_symbol *sym1 = NULL;
+    t_symbol *sym2 = NULL;
     
     int i;
     
     for (i = 0; i < MESSAGE_HASH_SIZE; i++) {
     //
-    sym1 = message_hashTable + i;
+    sym1 = message_hashTable[i];
     
-    while (sym2 = *sym1) {
-        sym1 = &sym2->s_next;
-        if (!message_isStaticSymbol (sym2)) { PD_MEMORY_FREE (sym2->s_name); PD_MEMORY_FREE (sym2); }
+    while ((sym2 = sym1)) {
+        sym1 = sym2->s_next;
+        if (!message_isStaticSymbol (sym2)) {
+            PD_MEMORY_FREE (sym2->s_name); PD_MEMORY_FREE (sym2); 
+        }
     }
     //
     }

@@ -70,6 +70,13 @@ static pdinstance_free (t_pdinstance *x)
 void instance_initialize (void)
 {
     pd_this = pdinstance_new();
+    
+    PD_ASSERT (!pd_objectMaker);
+    
+    pd_objectMaker = class_new (gensym ("objectmaker"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
+    pd_canvasMaker = class_new (gensym ("canvasmaker"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
+    
+    class_addAnything (pd_objectMaker, (t_method)message_newAnything);
 }
 
 void instance_release (void)

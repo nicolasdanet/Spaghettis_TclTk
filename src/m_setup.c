@@ -16,7 +16,6 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void message_initialize     (void);
 void interface_initialize   (void);
 void object_initialize      (void);
 void bindlist_initialize    (void);
@@ -28,7 +27,6 @@ void loader_initialize      (void);
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void message_release        (void);
 void interface_release      (void);
 void object_release         (void);
 void bindlist_release       (void);
@@ -91,7 +89,6 @@ void d_ugen_setup           (void);
 
 void setup_initialize (void)
 {
-    message_initialize();
     interface_initialize();
     object_initialize();
     bindlist_initialize();
@@ -157,7 +154,6 @@ void setup_release (void)
     bindlist_release();
     object_release();
     interface_release();
-    message_release();
 }
 
 // -----------------------------------------------------------------------------------------------------------

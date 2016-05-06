@@ -252,6 +252,8 @@ int main_entry (int argc, char **argv)
     //
     main_entryNative();
     
+    message_initialize();
+    
     err |= main_getRootDirectory();
     err |= main_parseArguments (argc - 1, argv + 1);
     err |= main_setPaths (main_directoryRoot);
@@ -295,6 +297,8 @@ int main_entry (int argc, char **argv)
     logger_release();
     //
     }
+    
+    message_release();
     //
     }
     
