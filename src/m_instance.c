@@ -17,6 +17,12 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+#define INSTANCE_MAXIMUM_RECURSION   1000
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
 t_pdinstance *pd_this;                          /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
@@ -29,6 +35,11 @@ t_pd *pd_newest;                                /* Shared. */
 
 t_pd pd_objectMaker;                            /* Shared. */
 t_pd pd_canvasMaker;                            /* Shared. */
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+static int instance_recursiveDepth;              /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -67,27 +78,6 @@ static pdinstance_free (t_pdinstance *x)
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
-void instance_initialize (void)
-{
-    pd_this = pdinstance_new();
-    
-    PD_ASSERT (!pd_objectMaker);
-    
-    pd_objectMaker = class_new (gensym ("objectmaker"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
-    pd_canvasMaker = class_new (gensym ("canvasmaker"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
-    
-    class_addAnything (pd_objectMaker, (t_method)message_newAnything);
-}
-
-void instance_release (void)
-{
-    pdinstance_free (pd_this);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
 void instance_addToRoots (t_glist *glist)
 {
     glist->gl_next = pd_this->pd_roots; pd_this->pd_roots = glist;
@@ -101,6 +91,84 @@ void instance_removeFromRoots (t_glist *glist)
         for (z = pd_this->pd_roots; z->gl_next != glist; z = z->gl_next) { }
         z->gl_next = glist->gl_next;
     }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+static void instance_popAbstraction (t_glist *glist)
+{
+    pd_newest = cast_pd (glist);
+    stack_pop (cast_pd (glist));
+    
+    glist->gl_isLoading = 0;
+    
+    canvas_resortinlets (glist);
+    canvas_resortoutlets (glist);
+}
+
+static void instance_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
+{
+    int f;
+    char directory[PD_STRING] = { 0 };
+    char *name = NULL;
+    t_error err = PD_ERROR_NONE;
+    
+    if (instance_recursiveDepth > INSTANCE_MAXIMUM_RECURSION) { PD_BUG; return; }
+
+    pd_newest = NULL;
+    
+    if (loader_loadExternal (canvas_getCurrent(), s->s_name)) {
+        instance_recursiveDepth++;
+        pd_message (x, s, argc, argv);
+        instance_recursiveDepth--;
+        return;
+    }
+    
+    err = (f = canvas_openFile (canvas_getCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING)) < 0;
+    
+    if (err) { pd_newest = NULL; }
+    else {
+    //
+    close (f);
+    
+    if (stack_setLoadingAbstraction (s)) { 
+        post_error (PD_TRANSLATE ("%s: can't load abstraction within itself"), s->s_name);  // --
+        
+    } else {
+        t_pd *t = s__X.s_thing;
+        canvas_setActiveArguments (argc, argv);
+        buffer_evalFile (gensym (name), gensym (directory));
+        if (s__X.s_thing && t != s__X.s_thing) { instance_popAbstraction (cast_glist (s__X.s_thing)); }
+        else { 
+            s__X.s_thing = t; 
+        }
+        canvas_setActiveArguments (0, NULL);
+    }
+    //
+    }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+#pragma mark -
+
+void instance_initialize (void)
+{
+    pd_this = pdinstance_new();
+    
+    PD_ASSERT (!pd_objectMaker);
+    
+    pd_objectMaker = class_new (gensym ("objectmaker"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
+    pd_canvasMaker = class_new (gensym ("canvasmaker"), NULL, NULL, sizeof (t_pd), CLASS_DEFAULT, A_NULL);
+    
+    class_addAnything (pd_objectMaker, (t_method)instance_newAnything);
+}
+
+void instance_release (void)
+{
+    pdinstance_free (pd_this);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -51,7 +51,6 @@ typedef t_pd *(*t_newmethod6) (t_int, t_int, t_int, t_int, t_int, t_int,    MESS
 #pragma mark -
 
 #define MESSAGE_HASH_SIZE           1024                    /* Must be a power of two. */
-#define MESSAGE_MAXIMUM_RECURSION   1000
 #define MESSAGE_MAXIMUM_ARGUMENTS   10
 
 // -----------------------------------------------------------------------------------------------------------
@@ -84,8 +83,6 @@ t_symbol s_         = { ""          , NULL, NULL };
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-
-static int message_recursiveDepth;                          /* Shared. */
 
 static t_symbol *message_hashTable[MESSAGE_HASH_SIZE];      /* Shared. */
 
@@ -136,63 +133,6 @@ t_symbol *generateSymbol (const char *s, t_symbol *alreadyAllocatedSymbol)
 t_symbol *gensym (const char *s)
 {
     return (generateSymbol (s, NULL));
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-static void message_popAbstraction (t_glist *glist)
-{
-    pd_newest = cast_pd (glist);
-    stack_pop (cast_pd (glist));
-    
-    glist->gl_isLoading = 0;
-    
-    canvas_resortinlets (glist);
-    canvas_resortoutlets (glist);
-}
-
-void message_newAnything (t_pd *x, t_symbol *s, int argc, t_atom *argv)
-{
-    int f;
-    char directory[PD_STRING] = { 0 };
-    char *name = NULL;
-    t_error err = PD_ERROR_NONE;
-    
-    if (message_recursiveDepth > MESSAGE_MAXIMUM_RECURSION) { PD_BUG; return; }
-
-    pd_newest = NULL;
-    
-    if (loader_loadExternal (canvas_getCurrent(), s->s_name)) {
-        message_recursiveDepth++;
-        pd_message (x, s, argc, argv);
-        message_recursiveDepth--;
-        return;
-    }
-    
-    err = (f = canvas_openFile (canvas_getCurrent(), s->s_name, PD_PATCH, directory, &name, PD_STRING)) < 0;
-    
-    if (err) { pd_newest = NULL; }
-    else {
-    //
-    close (f);
-    
-    if (stack_setLoadingAbstraction (s)) { 
-        post_error (PD_TRANSLATE ("%s: can't load abstraction within itself"), s->s_name);  // --
-        
-    } else {
-        t_pd *t = s__X.s_thing;
-        canvas_setActiveArguments (argc, argv);
-        buffer_evalFile (gensym (name), gensym (directory));
-        if (s__X.s_thing && t != s__X.s_thing) { message_popAbstraction (cast_glist (s__X.s_thing)); }
-        else { 
-            s__X.s_thing = t; 
-        }
-        canvas_setActiveArguments (0, NULL);
-    }
-    //
-    }
 }
 
 // -----------------------------------------------------------------------------------------------------------
