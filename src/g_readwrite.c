@@ -741,8 +741,6 @@ static void canvas_savetemplatesto(t_glist *x, t_buffer *b, int wholething)
     }
 }
 
-void canvas_reload(t_symbol *name, t_symbol *dir, t_gobj *except);
-
     /* save a "root" canvas to a file; cf. canvas_saveto() which saves the
     body (and which is called recursively.) */
 static void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir, float fdestroy)
@@ -760,7 +758,6 @@ static void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir, flo
         }
         post("saved to: %s/%s", dir->s_name, filename->s_name);
         canvas_dirty(x, 0);
-        canvas_reload(filename, dir, &x->gl_obj.te_g);
         if (fdestroy != 0)
             pd_vMessage (&x->gl_obj.te_g.g_pd, gensym ("close"), "f", fdestroy);
     }

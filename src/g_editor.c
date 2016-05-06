@@ -42,7 +42,6 @@ extern t_class              *voutlet_class;
 t_glist                     *editor_pasteCanvas;        /* Shared. */
 
 int                         editor_pasteOnset;          /* Shared. */
-int                         editor_isReloading;         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -139,63 +138,6 @@ static void canvas_doclear(t_glist *x)
 restore:
     dsp_resume(dspstate);
     canvas_dirty(x, 1);
-}
-
-    /* recursively check for abstractions to reload as result of a save. 
-    Don't reload the one we just saved ("except") though. */
-    /*  LATER try to do the same trick for externs. */
-    
-static void glist_doreload(t_glist *gl, t_symbol *name, t_symbol *dir,
-    t_gobj *except)
-{
-    t_gobj *g;
-    int i, nobj = canvas_getIndexOfObject(gl, 0);  /* number of objects */
-    int hadwindow = (gl->gl_editor != 0);
-    for (g = gl->gl_graphics, i = 0; g && i < nobj; i++)
-    {
-        if (g != except && pd_class(&g->g_pd) == canvas_class &&
-            canvas_isAbstraction((t_glist *)g) &&
-                ((t_glist *)g)->gl_name == name &&
-                    canvas_getEnvironment ((t_glist *)g)->ce_directory == dir)
-        {
-                /* we're going to remake the object, so "g" will go stale.
-                Get its index here, and afterward restore g.  Also, the
-                replacement will be at the end of the list, so we don't
-                do g = g->g_next in this case. */
-            int j = canvas_getIndexOfObject(gl, g);
-            if (!gl->gl_editor)
-                canvas_visible(gl, 1);
-            if (!gl->gl_editor) { PD_BUG; }
-            canvas_deselectAll(gl);
-            canvas_selectObject(gl, g);
-            //canvas_setundo(gl, canvas_undo_cut, canvas_undo_set_cut(gl, UCUT_CLEAR), "clear");
-            canvas_doclear(gl);
-            //canvas_undo(gl);
-            canvas_deselectAll(gl);
-            g = canvas_getObjectAtIndex(gl, j);
-        }
-        else
-        {
-            if (g != except && pd_class(&g->g_pd) == canvas_class)
-                glist_doreload((t_glist *)g, name, dir, except);
-             g = g->g_next;
-        }
-    }
-    if (!hadwindow && gl->gl_editor)
-        canvas_visible(canvas_getPatch(gl), 0);
-}
-
-    /* call canvas_doreload on everyone */
-void canvas_reload (t_symbol *name, t_symbol *dir, t_gobj *except)
-{
-    t_glist *x;
-    int dspwas = dsp_suspend();
-    editor_isReloading = 1;
-        /* find all root canvases */
-    for (x = pd_this->pd_roots; x; x = x->gl_next)
-        glist_doreload(x, name, dir, except);
-    editor_isReloading = 0;
-    dsp_resume(dspwas);
 }
 
 void canvas_setcursor(t_glist *x, unsigned int cursornum)

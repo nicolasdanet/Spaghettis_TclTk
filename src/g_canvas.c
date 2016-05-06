@@ -21,7 +21,6 @@ extern t_class  *text_class;
 extern t_glist  *editor_pasteCanvas;
 
 extern t_pd     pd_canvasMaker;
-extern int      editor_isReloading;
 extern int      editor_pasteOnset;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -438,14 +437,10 @@ void canvas_dirty (t_glist *glist, t_float f)
 {
     int isDirty = (f != 0.0);
         
-    if (!editor_isReloading) {
-    //
     t_glist *y = canvas_getRoot (glist);
         
     if (y->gl_isDirty != isDirty) { 
         y->gl_isDirty = isDirty; if (y->gl_haveWindow) { canvas_updateTitle (y); }
-    }
-    //
     }
 }
 
