@@ -287,6 +287,35 @@ void canvas_connect (t_glist *glist,
     post_error (PD_TRANSLATE ("connection: failed in '%s'"), glist->gl_name->s_name);
 }
 
+void canvas_disconnect (t_glist *glist,
+    t_float indexOfObjectOut, 
+    t_float indexOfOutlet, 
+    t_float indexOfObjectIn, 
+    t_float indexOfInlet)
+{
+    t_outconnect *connection = NULL;
+    t_linetraverser t;
+        
+    canvas_traverseLinesStart (&t, glist);
+    
+    while (connection = canvas_traverseLinesNext (&t)) {
+    //
+    if ((t.tr_srcIndexOfOutlet == (int)indexOfOutlet) && (t.tr_destIndexOfInlet == (int)indexOfInlet)) {
+    
+    int m = (canvas_getIndexOfObject (glist, cast_gobj (t.tr_srcObject)) == indexOfObjectOut);
+    int n = (canvas_getIndexOfObject (glist, cast_gobj (t.tr_destObject)) == indexOfObjectIn);
+
+    if (m && n) {
+        sys_vGui (".x%lx.c delete %lxLINE\n", glist, connection);
+        object_disconnect (t.tr_srcObject, t.tr_srcIndexOfOutlet, t.tr_destObject, t.tr_destIndexOfInlet);
+        break;
+    }
+    //
+    }
+    //
+    }
+}
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -

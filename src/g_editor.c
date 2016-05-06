@@ -141,26 +141,6 @@ restore:
     canvas_dirty(x, 1);
 }
 
-void canvas_disconnect(t_glist *x,
-    t_float index1, t_float outno, t_float index2, t_float inno)
-{
-    t_linetraverser t;
-    t_outconnect *oc;
-    canvas_traverseLinesStart(&t, x);
-    while (oc = canvas_traverseLinesNext(&t))
-    {
-        int srcno = canvas_getIndexOfObject(x, &t.tr_srcObject->te_g);
-        int sinkno = canvas_getIndexOfObject(x, &t.tr_destObject->te_g);
-        if (srcno == index1 && t.tr_srcIndexOfOutlet == outno &&
-            sinkno == index2 && t.tr_destIndexOfInlet == inno)
-        {
-            sys_vGui(".x%lx.c delete %lxLINE\n", x, oc);
-            object_disconnect(t.tr_srcObject, t.tr_srcIndexOfOutlet, t.tr_destObject, t.tr_destIndexOfInlet);
-            break;
-        }
-    }
-}
-
     /* recursively check for abstractions to reload as result of a save. 
     Don't reload the one we just saved ("except") though. */
     /*  LATER try to do the same trick for externs. */
