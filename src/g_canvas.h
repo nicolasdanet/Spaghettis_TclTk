@@ -335,10 +335,8 @@ void            canvas_setActiveArguments               (int argc, t_atom *argv)
 t_glist         *canvas_getCurrent                      (void);
 t_environment   *canvas_getEnvironment                  (t_glist *glist);
 t_glist         *canvas_getRoot                         (t_glist *glist);
-t_glist         *canvas_getTopmostParent                (t_glist *glist);
 t_glist         *canvas_getPatch                        (t_glist *glist);
 
-t_glist         *canvas_findDirty                       (t_glist *glist);
 t_symbol        *canvas_expandDollar                    (t_glist *glist, t_symbol *s);
 t_symbol        *canvas_makeBindSymbol                  (t_symbol *s);
 t_glist         *canvas_addGraph                        (t_glist *glist,
@@ -354,6 +352,7 @@ t_glist         *canvas_addGraph                        (t_glist *glist,
 
 int             canvas_isVisible                        (t_glist *glist);
 int             canvas_isAbstraction                    (t_glist *glist);
+int             canvas_isDirty                          (t_glist *glist);
 int             canvas_canHaveWindow                    (t_glist *glist);
 
 int             canvas_openFile                         (t_glist *glist,

@@ -366,38 +366,25 @@ void canvas_close (t_glist *glist, t_float f)
 {
     int k = (int)f;
     
-    if (k == 3) { canvas_dirty (glist, 0); global_shouldQuit (NULL); }      /* While quitting application. */
+    if (k == 2) { canvas_dirty (glist, 0); global_shouldQuit (NULL); }      /* While quitting application. */
     else {
     //
-    if (glist->gl_parent && (k != 2)) { canvas_visible (glist, 0); }        /* Hide subpatches. */
+    if (glist->gl_parent) { canvas_visible (glist, 0); }    /* Hide subpatches and abstractions. */
     else {
     //
-    if (k == 1) { pd_free (cast_pd (glist)); }      /* Has been saved right before. */
+    if (k == 1) { pd_free (cast_pd (glist)); }              /* Has been saved right before. */
     else {
-        if (k == 2) { 
-          
-            /* Yet another? */
+        if (canvas_isDirty (glist)) {
             
-            canvas_dirty (glist, 0); glist = canvas_getTopmostParent (glist);
-        }
-        {
-            t_glist *t = canvas_findDirty (glist);
+            sys_vGui ("::ui_confirm::checkClose .x%lx"
+                            " { ::ui_interface::pdsend $top menusave 1 }"
+                            " { ::ui_interface::pdsend $top close 1 }"
+                            " {}\n",
+                            glist);
+            return;
             
-            if (t) {
-                pd_vMessage (cast_pd (t), gensym ("open"), "");
-                
-                sys_vGui ("::ui_confirm::checkClose .x%lx"
-                                " { ::ui_interface::pdsend .x%lx menusave 1 }"
-                                " { ::ui_interface::pdsend .x%lx close 2 }"
-                                " {}\n",
-                                canvas_getRoot (t),
-                                canvas_getRoot (t),
-                                t);
-                return;
-                
-            } else {
-                pd_free (cast_pd (glist));
-            }
+        } else {
+            pd_free (cast_pd (glist));
         }
     }
     //

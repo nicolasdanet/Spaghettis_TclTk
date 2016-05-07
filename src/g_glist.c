@@ -103,13 +103,6 @@ t_glist *canvas_getRoot (t_glist *glist)
     }
 }
 
-t_glist *canvas_getTopmostParent (t_glist *glist)
-{
-    while (glist->gl_parent) { glist = glist->gl_parent; }
-    
-    return glist;
-}
-
 t_glist *canvas_getPatch (t_glist *glist)
 {
     while (glist->gl_parent && !canvas_canHaveWindow (glist)) { glist = glist->gl_parent; }
@@ -131,30 +124,14 @@ int canvas_isAbstraction (t_glist *glist)
     return (glist->gl_environment != NULL);
 }
 
+int canvas_isDirty (t_glist *glist)
+{
+    return (canvas_getRoot (glist)->gl_isDirty != 0);
+}
+
 int canvas_canHaveWindow (t_glist *glist)
 {
     return (glist->gl_haveWindow || !glist->gl_isGraphOnParent);
-}
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-t_glist *canvas_findDirty (t_glist *glist)
-{
-    if (glist->gl_environment && glist->gl_isDirty) { return glist; }
-    else {
-    //
-    t_gobj *o = NULL;
-    
-    for (o = glist->gl_graphics; o; o = o->g_next) {
-        t_glist *t = NULL;
-        if (pd_class (o) == canvas_class && (t = canvas_findDirty (cast_glist (o)))) { return t; }
-    }
-    //
-    }
-    
-    return NULL;
 }
 
 // -----------------------------------------------------------------------------------------------------------

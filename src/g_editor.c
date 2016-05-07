@@ -821,6 +821,7 @@ void canvas_mouseup(t_glist *x,
             t_glist *gl2;
                 /* first though, check we aren't an abstraction with a
                 dirty sub-patch that would be discarded if we edit this. */
+            /*
             if (pd_class(&g->g_pd) == canvas_class &&
                 canvas_isAbstraction((t_glist *)g) &&
                     (gl2 = canvas_findDirty((t_glist *)g)))
@@ -832,7 +833,7 @@ void canvas_mouseup(t_glist *x,
                     canvas_getRoot(gl2),
                         canvas_getRoot(gl2)->gl_name->s_name, gl2);
                 return;
-            }
+            }*/
                 /* OK, activate it */
             gobj_activate(x->gl_editor->e_selectedObjects->sel_what, x, 1);
         }

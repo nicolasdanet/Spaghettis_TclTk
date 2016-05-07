@@ -37,19 +37,13 @@ void global_shouldQuit (void *dummy)
     
     for (g = pd_this->pd_roots; g; g = g->gl_next) {
     //
-    t_glist *t = NULL;
-    
-    if (t = canvas_findDirty (g)) {
+    if (canvas_isDirty (g)) {
     //
-    pd_vMessage (cast_pd (t), gensym ("open"), "");
-    
     sys_vGui ("::ui_confirm::checkClose .x%lx"
-                    " { ::ui_interface::pdsend .x%lx menusave 3 }"
-                    " { ::ui_interface::pdsend .x%lx close 3 }"
+                    " { ::ui_interface::pdsend $top menusave 2 }"
+                    " { ::ui_interface::pdsend $top close 2 }"
                     " {}\n",
-                    canvas_getRoot (t),
-                    canvas_getRoot (t),
-                    t);
+                    g);
     return;
     //
     }
