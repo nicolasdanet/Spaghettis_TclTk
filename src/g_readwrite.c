@@ -719,7 +719,7 @@ static void canvas_savetemplatesto(t_glist *x, t_buffer *b, int wholething)
             continue;
         }
             /* drop "pd-" prefix from template symbol to print */
-        buffer_vAppend(b, "sss", &s__N, gensym ("struct"),
+        buffer_vAppend(b, "sss", gensym ("#N"), gensym ("struct"),
             gensym (templatevec[i]->s_name + 3));
         for (j = 0; j < m; j++)
         {

@@ -138,7 +138,7 @@ static void scalar_define_set(t_glist *x, t_symbol *s, int argc, t_atom *argv)
 static void scalar_define_save(t_gobj *z, t_buffer *bb)
 {
     t_glist *x = (t_glist *)z;
-    buffer_vAppend(bb, "ssff", &s__X, gensym ("obj"),
+    buffer_vAppend(bb, "ssff", gensym ("#X"), gensym ("obj"),
         (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
     buffer_serialize(bb, x->gl_obj.te_buffer);
     buffer_appendSemicolon(bb);

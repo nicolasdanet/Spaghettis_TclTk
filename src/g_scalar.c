@@ -391,7 +391,7 @@ static void scalar_save(t_gobj *z, t_buffer *b)
     t_atom a, *argv;
     int i, argc;
     canvas_writescalar(x->sc_template, x->sc_vector, b2, 0);
-    buffer_vAppend(b, "ss", &s__X, gensym ("scalar"));
+    buffer_vAppend(b, "ss", gensym ("#X"), gensym ("scalar"));
     buffer_serialize(b, b2);
     buffer_appendSemicolon(b);
     buffer_free(b2);

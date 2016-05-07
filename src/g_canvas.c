@@ -182,7 +182,7 @@ void canvas_restore (t_glist *glist, t_symbol *s, int argc, t_atom *argv)
     
     canvas_pop (glist, glist->gl_willBeVisible);
 
-    if (!(z = gensym ("#X")->s_thing) || (pd_class (z) != canvas_class)) { PD_BUG; }
+    if (!(z = s__X.s_thing) || (pd_class (z) != canvas_class)) { PD_BUG; }
     else {
         t_glist *g = cast_glist (z);
         glist->gl_parent = g;
@@ -626,11 +626,8 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     x->gl_isLoading     = 1;
     x->gl_hasRectangle  = 0;
 
-    if (visible && gensym ("#X")->s_thing && (pd_class (gensym ("#X")->s_thing) == canvas_class)) {
-        //t_glist *g = cast_glist (gensym ("#X")->s_thing);
-        //while (g && !g->gl_environment) { g = g->gl_parent; }
-        //if (g && canvas_isAbstraction (g)) { visible = 0; }
-        t_glist *g = canvas_getRoot (cast_glist (gensym ("#X")->s_thing));
+    if (visible && s__X.s_thing && (pd_class (s__X.s_thing) == canvas_class)) {
+        t_glist *g = canvas_getRoot (cast_glist (s__X.s_thing));
         PD_ASSERT (g);
         if (canvas_isAbstraction (g)) { visible = 0; }
     }
