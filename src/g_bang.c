@@ -51,7 +51,7 @@ void bng_drawUpdate (t_bng *x, t_glist *glist)
 {
     if (canvas_isVisible (glist)) {
     //
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
     
     sys_vGui (".x%lx.c itemconfigure %lxBUTTON -fill #%06x\n", 
                 canvas,
@@ -63,7 +63,7 @@ void bng_drawUpdate (t_bng *x, t_glist *glist)
 
 void bng_drawMove (t_bng *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
         
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -94,7 +94,7 @@ void bng_drawNew (t_bng *x, t_glist *glist)
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
     
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c create rectangle %d %d %d %d -fill #%06x -tags %lxBASE\n",
                 canvas,
@@ -129,7 +129,7 @@ void bng_drawNew (t_bng *x, t_glist *glist)
 
 void bng_drawSelect (t_bng *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas,
@@ -147,7 +147,7 @@ void bng_drawSelect (t_bng *x, t_glist *glist)
 
 void bng_drawErase (t_bng *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c delete %lxBASE\n",
                 canvas,
@@ -162,7 +162,7 @@ void bng_drawErase (t_bng *x, t_glist *glist)
 
 void bng_drawConfig (t_bng *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
                 canvas,

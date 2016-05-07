@@ -45,7 +45,7 @@ void toggle_drawUpdate (t_toggle *x, t_glist *glist)
 {
     if (canvas_isVisible (glist)) {
     //
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
     
     sys_vGui (".x%lx.c itemconfigure %lxCROSS1 -fill #%06x\n",
                 canvas,
@@ -61,7 +61,7 @@ void toggle_drawUpdate (t_toggle *x, t_glist *glist)
 
 void toggle_drawMove (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
     
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -106,7 +106,7 @@ void toggle_drawMove (t_toggle *x, t_glist *glist)
 
 void toggle_drawNew (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
     
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -155,7 +155,7 @@ void toggle_drawNew (t_toggle *x, t_glist *glist)
 
 void toggle_drawSelect (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas, 
@@ -169,7 +169,7 @@ void toggle_drawSelect (t_toggle *x, t_glist *glist)
 
 void toggle_drawErase (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c delete %lxBASE\n",
                 canvas,
@@ -187,7 +187,7 @@ void toggle_drawErase (t_toggle *x, t_glist *glist)
 
 void toggle_drawConfig (t_toggle *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
                 canvas,

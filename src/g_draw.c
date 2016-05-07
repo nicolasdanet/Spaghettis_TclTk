@@ -48,7 +48,7 @@ void canvas_drawLines (t_glist *glist)
     while (connection = canvas_traverseLinesNext (&t)) {
     //
     sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
-                canvas_getPatch (glist),
+                canvas_getView (glist),
                 t.tr_lineStartX,
                 t.tr_lineStartY,
                 t.tr_lineEndX,
@@ -73,7 +73,7 @@ void canvas_updateLinesByObject (t_glist *glist, t_object *o)
     if (canvas_isVisible (glist)) {
     //
     sys_vGui (".x%lx.c coords %lxLINE %d %d %d %d\n",
-                canvas_getPatch (glist),
+                canvas_getView (glist),
                 connection,
                 t.tr_lineStartX,
                 t.tr_lineStartY,
@@ -101,7 +101,7 @@ void canvas_deleteLinesByObject (t_glist *glist, t_object *o)
     if (canvas_isVisible (glist)) {
     //
     sys_vGui (".x%lx.c delete %lxLINE\n",
-                canvas_getPatch (glist),
+                canvas_getView (glist),
                 connection);
     //
     }
@@ -130,7 +130,7 @@ void canvas_deleteLinesByInlets (t_glist *glist, t_object *o, t_inlet *inlet, t_
     if (canvas_isVisible (glist)) {
     //
     sys_vGui (".x%lx.c delete %lxLINE\n",
-                canvas_getPatch (glist),
+                canvas_getView (glist),
                 connection);
     //
     }
@@ -152,7 +152,7 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
     sys_vGui (".x%lx.c create line %d %d %d %d %d %d %d %d %d %d" 
                 " -fill " DRAW_GRAPH_ON_PARENT_COLOR
                 " -tags GOP\n",
-                canvas_getPatch (glist),
+                canvas_getView (glist),
                 a,
                 b,
                 c,
@@ -167,7 +167,7 @@ void canvas_drawGraphOnParentRectangle (t_glist *glist)
 
 void canvas_deleteGraphOnParentRectangle (t_glist *glist)
 {
-    sys_vGui (".x%lx.c delete GOP\n",  canvas_getPatch (glist));
+    sys_vGui (".x%lx.c delete GOP\n",  canvas_getView (glist));
 }
 
 // -----------------------------------------------------------------------------------------------------------

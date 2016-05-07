@@ -1117,7 +1117,7 @@ static void garray_read(t_garray *x, t_symbol *filename)
         return;
     }
     nelem = array->a_n;
-    if ((filedesc = canvas_openFile(canvas_getPatch(x->x_glist),
+    if ((filedesc = canvas_openFile(canvas_getView(x->x_glist),
             filename->s_name, "", buf, &bufptr, PD_STRING)) < 0 
                 || !(fd = fdopen(filedesc, "r")))
     {
@@ -1153,7 +1153,7 @@ static void garray_write(t_garray *x, t_symbol *filename)
         post_error ("%s: needs floating-point 'y' field", x->x_realname->s_name);
         return;
     }
-    canvas_makeFilePath(canvas_getPatch(x->x_glist), filename->s_name,
+    canvas_makeFilePath(canvas_getView(x->x_glist), filename->s_name,
         buf, PD_STRING);
     if (!(fd = file_openWrite(buf)))
     {

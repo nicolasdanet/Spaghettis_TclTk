@@ -101,12 +101,12 @@ static void dial_drawUpdate (t_dial *x, t_glist *glist)
     dial_setString (x);
     
     sys_vGui (".x%lx.c itemconfigure %lxNEEDLE -extent %d\n",
-                canvas_getPatch (glist),
+                canvas_getView (glist),
                 x,
                 dial_getNeedleAngle (x));
                 
     sys_vGui (".x%lx.c itemconfigure %lxNUMBER -fill #%06x -text {%s}\n",  // --
-                canvas_getPatch (glist),
+                canvas_getView (glist),
                 x,
                 x->x_gui.iem_colorForeground,
                 x->x_t);
@@ -116,7 +116,7 @@ static void dial_drawUpdate (t_dial *x, t_glist *glist)
 
 static void dial_drawMove (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
     
     int a     = text_xpix (cast_object (x), glist);
     int b     = text_ypix (cast_object (x), glist);
@@ -152,7 +152,7 @@ static void dial_drawMove (t_dial *x, t_glist *glist)
 
 static void dial_drawNew (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
     
     int a     = text_xpix (cast_object (x), glist);
     int b     = text_ypix (cast_object (x), glist);
@@ -214,7 +214,7 @@ static void dial_drawNew (t_dial *x, t_glist *glist)
 
 static void dial_drawSelect (t_dial *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
     
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas,
@@ -229,7 +229,7 @@ static void dial_drawSelect (t_dial *x, t_glist *glist)
 
 static void dial_drawErase (t_dial* x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c delete %lxBASE\n",
                 canvas,
@@ -247,7 +247,7 @@ static void dial_drawErase (t_dial* x, t_glist *glist)
 
 static void dial_drawConfig (t_dial* x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
                 canvas,

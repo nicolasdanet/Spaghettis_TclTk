@@ -267,7 +267,7 @@ void canvas_connect (t_glist *glist,
     if (canvas_isVisible (glist)) {
     
         sys_vGui (".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
-                        canvas_getPatch (glist),
+                        canvas_getView (glist),
                         0,
                         0,
                         0,
@@ -349,12 +349,12 @@ void canvas_editmode (t_glist *glist, t_float f)
         
         if (canvas_isVisible (glist) && canvas_canHaveWindow (glist)) {
             canvas_setcursor (glist, CURSOR_NOTHING);
-            sys_vGui (".x%lx.c delete COMMENTBAR\n", canvas_getPatch (glist));
+            sys_vGui (".x%lx.c delete COMMENTBAR\n", canvas_getView (glist));
         }
     }
     
     if (canvas_isVisible (glist)) {
-        sys_vGui ("::ui_patch::setEditMode .x%lx %d\n", canvas_getPatch (glist), glist->gl_isEditMode);
+        sys_vGui ("::ui_patch::setEditMode .x%lx %d\n", canvas_getView (glist), glist->gl_isEditMode);
     }
     //
     }
@@ -627,9 +627,12 @@ t_glist *canvas_new (void *dummy, t_symbol *s, int argc, t_atom *argv)
     x->gl_hasRectangle  = 0;
 
     if (visible && gensym ("#X")->s_thing && (pd_class (gensym ("#X")->s_thing) == canvas_class)) {
-        t_glist *g = cast_glist (gensym ("#X")->s_thing);
-        while (g && !g->gl_environment) { g = g->gl_parent; }
-        if (g && canvas_isAbstraction (g) && g->gl_parent) { visible = 0; }
+        //t_glist *g = cast_glist (gensym ("#X")->s_thing);
+        //while (g && !g->gl_environment) { g = g->gl_parent; }
+        //if (g && canvas_isAbstraction (g)) { visible = 0; }
+        t_glist *g = canvas_getRoot (cast_glist (gensym ("#X")->s_thing));
+        PD_ASSERT (g);
+        if (canvas_isAbstraction (g)) { visible = 0; }
     }
     
     x->gl_isEditMode    = 0;
@@ -648,7 +651,7 @@ void canvas_free (t_glist *glist)
     canvas_deselectAll (glist);
     
     while (y = glist->gl_graphics) { glist_delete (glist, y); }
-    if (glist == canvas_getPatch (glist)) { canvas_visible (glist, 0); }
+    if (glist == canvas_getView (glist)) { canvas_visible (glist, 0); }
     
     canvas_destroyEditorIfAny (glist);
     canvas_unbind (glist);

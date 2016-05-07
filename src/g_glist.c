@@ -86,24 +86,24 @@ t_glist *canvas_getCurrent (void)
     return (cast_glist (pd_findByClass (&s__X, canvas_class)));
 }
 
-t_environment *canvas_getEnvironment (t_glist *glist)
-{
-    PD_ASSERT (glist);
-    
-    while (!glist->gl_environment) { if (!(glist = glist->gl_parent)) { PD_BUG; } }
-    
-    return glist->gl_environment;
-}
-
 t_glist *canvas_getRoot (t_glist *glist)
 {
-    if (!glist->gl_parent || canvas_isAbstraction (glist)) { return glist; }
+    if (canvas_isRoot (glist)) { return glist; }
     else {
         return (canvas_getRoot (glist->gl_parent));
     }
 }
 
-t_glist *canvas_getPatch (t_glist *glist)
+t_environment *canvas_getEnvironment (t_glist *glist)
+{
+    PD_ASSERT (glist);
+    
+    while (!glist->gl_environment) { glist = glist->gl_parent; PD_ASSERT (glist); }
+    
+    return glist->gl_environment;
+}
+
+t_glist *canvas_getView (t_glist *glist)
 {
     while (glist->gl_parent && !canvas_canHaveWindow (glist)) { glist = glist->gl_parent; }
     
@@ -116,12 +116,26 @@ t_glist *canvas_getPatch (t_glist *glist)
 
 int canvas_isVisible (t_glist *glist)
 {
-    return (!glist->gl_isLoading && canvas_getPatch (glist)->gl_isMapped);
+    return (!glist->gl_isLoading && canvas_getView (glist)->gl_isMapped);
+}
+
+int canvas_isRoot (t_glist *glist)
+{
+    int k = (!glist->gl_parent || canvas_isAbstraction (glist));
+    
+    if (k) { PD_ASSERT (glist->gl_environment != NULL); }
+    
+    return k;
 }
 
 int canvas_isAbstraction (t_glist *glist)
 {
-    return (glist->gl_environment != NULL);
+    return (glist->gl_parent && glist->gl_environment != NULL);
+}
+
+int canvas_isSubpatch (t_glist *glist)
+{
+    return !canvas_isRoot (glist);
 }
 
 int canvas_isDirty (t_glist *glist)
@@ -129,9 +143,19 @@ int canvas_isDirty (t_glist *glist)
     return (canvas_getRoot (glist)->gl_isDirty != 0);
 }
 
+int canvas_isGraphOnParent (t_glist *glist)
+{
+    return glist->gl_isGraphOnParent;
+}
+
 int canvas_canHaveWindow (t_glist *glist)
 {
     return (glist->gl_haveWindow || !glist->gl_isGraphOnParent);
+}
+
+int canvas_hasEnvironment (t_glist *glist)
+{
+    return (glist->gl_environment != NULL);
 }
 
 // -----------------------------------------------------------------------------------------------------------

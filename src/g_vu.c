@@ -136,7 +136,7 @@ static void vu_drawUpdate (t_vu *x, t_glist *glist)
 {
     if (canvas_isVisible (glist)) {
     //
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
 
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -189,7 +189,7 @@ static void vu_drawUpdate (t_vu *x, t_glist *glist)
 
 static void vu_drawMove (t_vu *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
 
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -229,7 +229,7 @@ static void vu_drawMove (t_vu *x, t_glist *glist)
 
 static void vu_drawNew (t_vu *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
 
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -296,7 +296,7 @@ static void vu_drawNew (t_vu *x, t_glist *glist)
 
 static void vu_drawSelect (t_vu* x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n",
                 canvas,
@@ -310,7 +310,7 @@ static void vu_drawSelect (t_vu* x, t_glist *glist)
 
 static void vu_drawErase (t_vu* x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
     int i;
     
     sys_vGui (".x%lx.c delete %lxBASE\n",
@@ -339,7 +339,7 @@ static void vu_drawErase (t_vu* x, t_glist *glist)
 
 static void vu_drawConfig (t_vu* x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
     int i;
         
     sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",

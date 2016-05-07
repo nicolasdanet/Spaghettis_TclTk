@@ -71,7 +71,7 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     else
     {
         int xpix, ypix;
-        pd_vMessage((t_pd *)canvas_getPatch(gl), gensym ("editmode"), "i", 1);
+        pd_vMessage((t_pd *)canvas_getView(gl), gensym ("editmode"), "i", 1);
         SET_SYMBOL(&at, gensym ("comment"));
         canvas_deselectAll(gl);
         canvas_getLastCoordinates(gl, &xpix, &ypix);
@@ -87,7 +87,7 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
             and objects though since there's no text in them at menu
             creation. */
             /* gobj_activate(&x->te_g, gl, 1); */
-        canvas_startmotion(canvas_getPatch(gl));
+        canvas_startmotion(canvas_getView(gl));
     }
 }
 
@@ -143,9 +143,9 @@ static void canvas_objtext(t_glist *gl, int xpix, int ypix, int width, int selec
         gobj_activate(&x->te_g, gl, 1);
     }
     if (pd_class((t_pd *)x) == vinlet_class)
-        canvas_resortinlets(canvas_getPatch(gl));
+        canvas_resortinlets(canvas_getView(gl));
     if (pd_class((t_pd *)x) == voutlet_class)
-        canvas_resortoutlets(canvas_getPatch(gl));
+        canvas_resortoutlets(canvas_getView(gl));
     //canvas_unsetCurrent((t_glist *)gl);
     stack_pop (cast_pd (gl));
 }
@@ -222,7 +222,7 @@ void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         canvas_objtext(gl, xpix, ypix, 0, 1, b);
         if (connectme)
             canvas_connect(gl, indx, 0, nobj, 0);
-        else canvas_startmotion(canvas_getPatch(gl));
+        else canvas_startmotion(canvas_getView(gl));
     }
 }
 
@@ -241,7 +241,7 @@ void canvas_iems(t_glist *gl, t_symbol *guiobjname)
     buffer_deserialize(b, 1, &at);
     canvas_getLastCoordinates(gl, &xpix, &ypix);
     canvas_objtext(gl, xpix, ypix, 0, 1, b);
-    canvas_startmotion(canvas_getPatch(gl));
+    canvas_startmotion(canvas_getView(gl));
 }
 
 void canvas_bng(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
@@ -436,7 +436,7 @@ static void message_click(t_message *x,
     {
         t_boxtext *y = glist_findrtext(x->m_glist, &x->m_text);
         sys_vGui(".x%lx.c itemconfigure %sR -width 5\n", 
-            canvas_getPatch(x->m_glist), rtext_gettag(y));
+            canvas_getView(x->m_glist), rtext_gettag(y));
         clock_delay(x->m_clock, 120);
     }
 }
@@ -447,7 +447,7 @@ static void message_tick(t_message *x)
     {
         t_boxtext *y = glist_findrtext(x->m_glist, &x->m_text);
         sys_vGui(".x%lx.c itemconfigure %sR -width 1\n",
-            canvas_getPatch(x->m_glist), rtext_gettag(y));
+            canvas_getView(x->m_glist), rtext_gettag(y));
     }
 }
 
@@ -489,7 +489,7 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         gobj_activate(&x->m_text.te_g, gl, 1);
         if (connectme)
             canvas_connect(gl, indx, 0, nobj, 0);
-        else canvas_startmotion(canvas_getPatch(gl));
+        else canvas_startmotion(canvas_getView(gl));
     }
 }
 
@@ -855,7 +855,7 @@ static void gatom_displace(t_gobj *z, t_glist *glist,
 {
     t_gatom *x = (t_gatom*)z;
     text_displace(z, glist, dx, dy);
-    sys_vGui(".x%lx.c move %lx.l %d %d\n", canvas_getPatch(glist), 
+    sys_vGui(".x%lx.c move %lx.l %d %d\n", canvas_getView(glist), 
         x, dx, dy);
 }
 
@@ -870,13 +870,13 @@ static void gatom_vis(t_gobj *z, t_glist *glist, int vis)
             int x1, y1;
             gatom_getwherelabel(x, glist, &x1, &y1);
             sys_vGui("::ui_object::newText .x%lx.c {%lx.l label text} %f %f {%s} %d %s\n",
-                canvas_getPatch(glist), x,
+                canvas_getView(glist), x,
                 (double)x1, (double)y1,
                 canvas_expandDollar(x->a_glist, x->a_label)->s_name,
                 font_getHostFontSize(canvas_getFontSize(glist)),
                 "black");
         }
-        else sys_vGui(".x%lx.c delete %lx.l\n", canvas_getPatch(glist), x);
+        else sys_vGui(".x%lx.c delete %lx.l\n", canvas_getView(glist), x);
     }
     if (!vis)
         interface_guiQueueRemove(x);
@@ -956,7 +956,7 @@ void canvas_atom(t_glist *gl, t_atomtype type,
         canvas_selectObject(gl, &x->a_text.te_g);
         if (connectme)
             canvas_connect(gl, indx, 0, nobj, 0);
-        else canvas_startmotion(canvas_getPatch(gl));
+        else canvas_startmotion(canvas_getView(gl));
     }
 }
 
@@ -1145,7 +1145,7 @@ void text_save(t_gobj *z, t_buffer *b)
             a canvas that's an abstraction, the saveto method does the work */
         if (class_hasMethod (pd_class ((t_pd *)x), gensym ("saveto")) &&
             !((pd_class((t_pd *)x) == canvas_class) && 
-                (canvas_isAbstraction((t_glist *)x)
+                (canvas_isAbstraction ((t_glist *)x)
                     || canvas_istable((t_glist *)x))))
         {  
             mess1((t_pd *)x, gensym ("saveto"), b);
@@ -1234,13 +1234,13 @@ void glist_drawio(t_glist *glist, t_object *ob, int firsttime,
         if (firsttime)
             sys_vGui(".x%lx.c create rectangle %d %d %d %d \
 -tags [list %so%d outlet]\n",
-                canvas_getPatch(glist),
+                canvas_getView(glist),
                 onset, y2 - 1,
                 onset + INLETS_WIDTH, y2,
                 tag, i);
         else
             sys_vGui(".x%lx.c coords %so%d %d %d %d %d\n",
-                canvas_getPatch(glist), tag, i,
+                canvas_getView(glist), tag, i,
                 onset, y2 - 1,
                 onset + INLETS_WIDTH, y2);
     }
@@ -1252,13 +1252,13 @@ void glist_drawio(t_glist *glist, t_object *ob, int firsttime,
         if (firsttime)
             sys_vGui(".x%lx.c create rectangle %d %d %d %d \
 -tags [list %si%d inlet]\n",
-                canvas_getPatch(glist),
+                canvas_getView(glist),
                 onset, y1,
                 onset + INLETS_WIDTH, y1 + EXTRAPIX,
                 tag, i);
         else
             sys_vGui(".x%lx.c coords %si%d %d %d %d %d\n",
-                canvas_getPatch(glist), tag, i,
+                canvas_getView(glist), tag, i,
                 onset, y1,
                 onset + INLETS_WIDTH, y1 + EXTRAPIX);
     }
@@ -1278,16 +1278,16 @@ void text_drawborder(t_object *x, t_glist *glist,
         if (firsttime)
             sys_vGui(".x%lx.c create line\
  %d %d %d %d %d %d %d %d %d %d -dash %s -tags [list %sR obj]\n",
-                canvas_getPatch(glist),
+                canvas_getView(glist),
                     x1, y1,  x2, y1,  x2, y2,  x1, y2,  x1, y1,  pattern, tag);
         else
         {
             sys_vGui(".x%lx.c coords %sR\
  %d %d %d %d %d %d %d %d %d %d\n",
-                canvas_getPatch(glist), tag,
+                canvas_getView(glist), tag,
                     x1, y1,  x2, y1,  x2, y2,  x1, y2,  x1, y1);
             sys_vGui(".x%lx.c itemconfigure %sR -dash %s\n",
-                canvas_getPatch(glist), tag, pattern);
+                canvas_getView(glist), tag, pattern);
         }
     }
     else if (x->te_type == TYPE_MESSAGE)
@@ -1295,14 +1295,14 @@ void text_drawborder(t_object *x, t_glist *glist,
         if (firsttime)
             sys_vGui(".x%lx.c create line\
  %d %d %d %d %d %d %d %d %d %d %d %d %d %d -tags [list %sR msg]\n",
-                canvas_getPatch(glist),
+                canvas_getView(glist),
                 x1, y1,  x2+4, y1,  x2, y1+4,  x2, y2-4,  x2+4, y2,
                 x1, y2,  x1, y1,
                     tag);
         else
             sys_vGui(".x%lx.c coords %sR\
  %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
-                canvas_getPatch(glist), tag,
+                canvas_getView(glist), tag,
                 x1, y1,  x2+4, y1,  x2, y1+4,  x2, y2-4,  x2+4, y2,
                 x1, y2,  x1, y1);
     }
@@ -1311,13 +1311,13 @@ void text_drawborder(t_object *x, t_glist *glist,
         if (firsttime)
             sys_vGui(".x%lx.c create line\
  %d %d %d %d %d %d %d %d %d %d %d %d -tags [list %sR atom]\n",
-                canvas_getPatch(glist),
+                canvas_getView(glist),
                 x1, y1,  x2-4, y1,  x2, y1+4,  x2, y2,  x1, y2,  x1, y1,
                     tag);
         else
             sys_vGui(".x%lx.c coords %sR\
  %d %d %d %d %d %d %d %d %d %d %d %d\n",
-                canvas_getPatch(glist), tag,
+                canvas_getView(glist), tag,
                 x1, y1,  x2-4, y1,  x2, y1+4,  x2, y2,  x1, y2,  x1, y1);
     }
         /* for comments, just draw a bar on RHS if unlocked; when a visible
@@ -1328,11 +1328,11 @@ void text_drawborder(t_object *x, t_glist *glist,
         if (firsttime)
             sys_vGui(".x%lx.c create line\
  %d %d %d %d -tags [list %sR COMMENTBAR]\n",
-                canvas_getPatch(glist),
+                canvas_getView(glist),
                 x2, y1,  x2, y2, tag);
         else
             sys_vGui(".x%lx.c coords %sR %d %d %d %d\n",
-                canvas_getPatch(glist), tag, x2, y1,  x2, y2);
+                canvas_getView(glist), tag, x2, y1,  x2, y2);
     }
         /* draw inlets/outlets */
     
@@ -1346,18 +1346,18 @@ void glist_eraseio(t_glist *glist, t_object *ob, char *tag)
     n = object_numberOfOutlets(ob);
     for (i = 0; i < n; i++)
         sys_vGui(".x%lx.c delete %so%d\n",
-            canvas_getPatch(glist), tag, i);
+            canvas_getView(glist), tag, i);
     n = object_numberOfInlets(ob);
     for (i = 0; i < n; i++)
         sys_vGui(".x%lx.c delete %si%d\n",
-            canvas_getPatch(glist), tag, i);
+            canvas_getView(glist), tag, i);
 }
 
 void text_eraseborder(t_object *x, t_glist *glist, char *tag)
 {
     if (x->te_type == TYPE_TEXT && !glist->gl_isEditMode) return;
     sys_vGui(".x%lx.c delete %sR\n",
-        canvas_getPatch(glist), tag);
+        canvas_getView(glist), tag);
     glist_eraseio(glist, x, tag);
 }
 
@@ -1389,7 +1389,7 @@ void text_setto(t_object *x, t_glist *glist, char *buf, int bufsize)
             int xwas = x->te_xCoordinate, ywas = x->te_yCoordinate;
             glist_delete(glist, &x->te_g);
             canvas_objtext(glist, xwas, ywas, widthwas, 0, b);
-            canvas_restoreconnections(canvas_getPatch(glist));
+            canvas_restoreconnections(canvas_getView(glist));
                 /* if it's an abstraction loadbang it here */
             if (pd_newest && pd_class(pd_newest) == canvas_class)
                 canvas_loadbang((t_glist *)pd_newest);

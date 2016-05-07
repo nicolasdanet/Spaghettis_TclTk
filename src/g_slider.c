@@ -83,7 +83,7 @@ static void slider_drawUpdateVertical (t_slider *x, t_glist *glist)
 {
     if (canvas_isVisible (glist)) {
     //
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
     
     int a = text_xpix (cast_object (x), glist);
     int k = text_ypix (cast_object (x), glist) + x->x_gui.iem_height - slider_stepsToPixels (x->x_position);
@@ -103,7 +103,7 @@ static void slider_drawUpdateHorizontal (t_slider *x, t_glist *glist)
 {
     if (canvas_isVisible (glist)) {
     //
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
     
     int k = text_xpix (cast_object (x), glist) + slider_stepsToPixels (x->x_position);
     int b = text_ypix (cast_object (x), glist);
@@ -133,7 +133,7 @@ static void slider_drawUpdate (t_slider *x, t_glist *glist)
 
 static void slider_drawMove (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
     
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -157,7 +157,7 @@ static void slider_drawMove (t_slider *x, t_glist *glist)
 
 static void slider_drawNew (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
     
     int a = text_xpix (cast_object (x), glist);
     int b = text_ypix (cast_object (x), glist);
@@ -213,7 +213,7 @@ static void slider_drawNew (t_slider *x, t_glist *glist)
 
 static void slider_drawSelect (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -outline #%06x\n", 
                 canvas, 
@@ -228,7 +228,7 @@ static void slider_drawSelect (t_slider *x, t_glist *glist)
 
 static void slider_drawErase (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c delete %lxBASE\n",
                 canvas, 
@@ -243,7 +243,7 @@ static void slider_drawErase (t_slider *x, t_glist *glist)
 
 static void slider_drawConfig (t_slider *x, t_glist *glist)
 {
-    t_glist *canvas = canvas_getPatch (glist);
+    t_glist *canvas = canvas_getView (glist);
 
     sys_vGui (".x%lx.c itemconfigure %lxBASE -fill #%06x\n",
                 canvas,

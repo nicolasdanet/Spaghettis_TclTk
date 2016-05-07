@@ -392,8 +392,7 @@ void canvas_done_popup(t_glist *x, t_float which, t_float xpos, t_float ypos)
             else    /* help */
             {
                 char *dir;
-                if (pd_class(&y->g_pd) == canvas_class &&
-                    canvas_isAbstraction((t_glist *)y))
+                if (pd_class (y) == canvas_class && canvas_hasEnvironment (cast_glist (y)))
                 {
                     t_object *ob = (t_object *)y;
                     int ac = buffer_size(ob->te_buffer);
@@ -613,7 +612,7 @@ void canvas_doclick(t_glist *x, int xpos, int ypos, int which,
         t_linetraverser t;
         t_outconnect *oc;
         t_float fx = xpos, fy = ypos;
-        t_glist *glist2 = canvas_getPatch(x);
+        t_glist *glist2 = canvas_getView(x);
         canvas_traverseLinesStart(&t, glist2);
         while (oc = canvas_traverseLinesNext(&t))
         {
@@ -740,7 +739,7 @@ void canvas_doconnect(t_glist *x, int xpos, int ypos, int which, int doit)
                             + ((INLETS_WIDTH - 1) / 2);
                 ly2 = y21;
                 sys_vGui(".x%lx.c create line %d %d %d %d -width %d -tags %lxLINE\n",
-                    canvas_getPatch(x),
+                    canvas_getView(x),
                         lx1, ly1, lx2, ly2,
                             (object_isSignalOutlet(ob1, closest1) ? 2 : 1), oc);
                 canvas_dirty(x, 1);
