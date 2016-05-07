@@ -553,8 +553,6 @@ extern t_symbol s_signal;
 extern t_symbol s__N;
 extern t_symbol s__X;
 extern t_symbol s__A;
-extern t_symbol s_x;
-extern t_symbol s_y;
 extern t_symbol s_;
 
 // -----------------------------------------------------------------------------------------------------------

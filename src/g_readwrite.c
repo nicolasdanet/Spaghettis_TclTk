@@ -633,7 +633,7 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
             (int)(x->gl_windowTopLeftY),
             (int)(x->gl_windowBottomRightX - x->gl_windowTopLeftX),
             (int)(x->gl_windowBottomRightY - x->gl_windowTopLeftY),
-            (patchsym != &s_ ? patchsym: gensym ("(subpatch)")),
+            (patchsym != &s_ ? patchsym: gensym ("subpatch")),
             x->gl_isMapped);
     }
         /* root or abstraction */

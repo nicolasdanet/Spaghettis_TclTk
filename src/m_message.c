@@ -68,18 +68,16 @@ extern t_pd pd_objectMaker;
 // -----------------------------------------------------------------------------------------------------------
 
 t_symbol s_pointer  = { "pointer"   , NULL, NULL };         /* Shared. */
-t_symbol s_float    = { "float"     , NULL, NULL };
-t_symbol s_symbol   = { "symbol"    , NULL, NULL };
-t_symbol s_bang     = { "bang"      , NULL, NULL };
-t_symbol s_list     = { "list"      , NULL, NULL };
-t_symbol s_anything = { "anything"  , NULL, NULL };
-t_symbol s_signal   = { "signal"    , NULL, NULL };
-t_symbol s__N       = { "#N"        , NULL, NULL };
-t_symbol s__X       = { "#X"        , NULL, NULL };
-t_symbol s__A       = { "#A"        , NULL, NULL };
-t_symbol s_x        = { "x"         , NULL, NULL };
-t_symbol s_y        = { "y"         , NULL, NULL };
-t_symbol s_         = { ""          , NULL, NULL };
+t_symbol s_float    = { "float"     , NULL, NULL };         /* Shared. */
+t_symbol s_symbol   = { "symbol"    , NULL, NULL };         /* Shared. */
+t_symbol s_bang     = { "bang"      , NULL, NULL };         /* Shared. */
+t_symbol s_list     = { "list"      , NULL, NULL };         /* Shared. */
+t_symbol s_anything = { "anything"  , NULL, NULL };         /* Shared. */
+t_symbol s_signal   = { "signal"    , NULL, NULL };         /* Shared. */
+t_symbol s__N       = { "#N"        , NULL, NULL };         /* Shared. */
+t_symbol s__X       = { "#X"        , NULL, NULL };         /* Shared. */
+t_symbol s__A       = { "#A"        , NULL, NULL };         /* Shared. */
+t_symbol s_         = { ""          , NULL, NULL };         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -141,7 +139,7 @@ t_symbol *gensym (const char *s)
 
 void message_initialize (void)
 {
-    t_symbol *symbols[13] = 
+    t_symbol *symbols[11] = 
         { 
             &s_pointer,
             &s_float,
@@ -153,14 +151,12 @@ void message_initialize (void)
             &s__N,
             &s__X,
             &s__A,
-            &s_x,
-            &s_y,
             &s_
         };
     
     int i;
     for (i = 0; i < MESSAGE_HASH_SIZE; i++) { PD_ASSERT (message_hashTable[i] == NULL); }
-    for (i = 0; i < 13; i++) { generateSymbol (symbols[i]->s_name, symbols[i]); }
+    for (i = 0; i < 11; i++) { generateSymbol (symbols[i]->s_name, symbols[i]); }
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -169,7 +165,7 @@ void message_initialize (void)
 
 static int message_isStaticSymbol (t_symbol *s)
 {
-    t_symbol *symbols[13] = 
+    t_symbol *symbols[11] = 
         { 
             &s_pointer,
             &s_float,
@@ -181,13 +177,11 @@ static int message_isStaticSymbol (t_symbol *s)
             &s__N,
             &s__X,
             &s__A,
-            &s_x,
-            &s_y,
             &s_
         };
     
     int i;
-    for (i = 0; i < 13; i++) { if (s == symbols[i]) { return 1; } }
+    for (i = 0; i < 11; i++) { if (s == symbols[i]) { return 1; } }
     
     return 0;
 }

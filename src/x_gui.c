@@ -205,20 +205,20 @@ static void key_setup(void)
         (t_newmethod)key_new, (t_method)key_free,
         sizeof(t_key), CLASS_NOINLET, 0);
     class_addFloat(key_class, key_float);
-    key_sym = gensym ("#key");
+    key_sym = gensym ("_key");
 
     keyup_class = class_new(gensym ("keyup"),
         (t_newmethod)keyup_new, (t_method)keyup_free,
         sizeof(t_keyup), CLASS_NOINLET, 0);
     class_addFloat(keyup_class, keyup_float);
-    keyup_sym = gensym ("#keyup");
+    keyup_sym = gensym ("_keyup");
     class_setHelpName(keyup_class, gensym ("key"));
     
     keyname_class = class_new(gensym ("keyname"),
         (t_newmethod)keyname_new, (t_method)keyname_free,
         sizeof(t_keyname), CLASS_NOINLET, 0);
     class_addList(keyname_class, keyname_list);
-    keyname_sym = gensym ("#keyname");
+    keyname_sym = gensym ("_keyname");
     class_setHelpName(keyname_class, gensym ("key"));
 }
 

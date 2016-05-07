@@ -48,23 +48,13 @@ static t_pdinstance *pdinstance_new()
 {
     t_pdinstance *x = (t_pdinstance *)PD_MEMORY_GET (sizeof (t_pdinstance));
     
-    x->pd_systime           = 0.0;
-    x->pd_dspState          = 0;
-    x->pd_dspChainSize      = 0;
-    x->pd_dspChain          = NULL;
-    x->pd_clocks            = NULL;
-    x->pd_signals           = NULL;
-    x->pd_roots             = NULL;
-    x->sym_midiin           = gensym ("#midiin");
-    x->sym_sysexin          = gensym ("#sysexin");
-    x->sym_notein           = gensym ("#notein");
-    x->sym_ctlin            = gensym ("#ctlin");
-    x->sym_pgmin            = gensym ("#pgmin");
-    x->sym_bendin           = gensym ("#bendin");
-    x->sym_touchin          = gensym ("#touchin");
-    x->sym_polytouchin      = gensym ("#polytouchin");
-    x->sym_midiclkin        = gensym ("#midiclkin");
-    x->sym_midirealtimein   = gensym ("#midirealtimein");
+    x->pd_systime       = 0.0;
+    x->pd_dspState      = 0;
+    x->pd_dspChainSize  = 0;
+    x->pd_dspChain      = NULL;
+    x->pd_clocks        = NULL;
+    x->pd_signals       = NULL;
+    x->pd_roots         = NULL;
     
     return x;
 }

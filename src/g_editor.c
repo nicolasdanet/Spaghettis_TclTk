@@ -25,7 +25,6 @@ extern t_widgetbehavior     text_widgetBehavior;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
-extern t_pdinstance         *pd_this;
 extern t_pd                 *pd_newest;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -921,9 +920,9 @@ void canvas_key(t_glist *x, t_symbol *s, int ac, t_atom *av)
             keynum = '\n';
     if (!keynumsym)
     {
-        keynumsym = gensym ("#key");
-        keyupsym = gensym ("#keyup");
-        keynamesym = gensym ("#keyname");
+        keynumsym  = gensym ("_key");
+        keyupsym   = gensym ("_keyup");
+        keynamesym = gensym ("_keyname");
     }
 #ifdef __APPLE__
         if (keynum == 30 || keynum == 63232)

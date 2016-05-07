@@ -82,7 +82,7 @@ static void *subpatch_new (t_symbol *s)
     t_glist *x = NULL;
     t_glist *z = canvas_getCurrent();
     
-    if (s == &s_) { s = gensym ("/SUBPATCH/"); }
+    if (s == &s_) { s = gensym ("subpatch"); }
     
     SET_FLOAT  (a + 0, 0);
     SET_FLOAT  (a + 1, CANVAS_WINDOW_HEADER_HEIGHT);

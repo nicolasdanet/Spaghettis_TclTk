@@ -164,17 +164,6 @@ struct _pdinstance {
     t_clock                 *pd_clocks;
     t_signal                *pd_signals;
     t_glist                 *pd_roots;
-    //
-    t_symbol                *sym_midiin;
-    t_symbol                *sym_sysexin;
-    t_symbol                *sym_notein;
-    t_symbol                *sym_ctlin;
-    t_symbol                *sym_pgmin;
-    t_symbol                *sym_bendin;
-    t_symbol                *sym_touchin;
-    t_symbol                *sym_polytouchin;
-    t_symbol                *sym_midiclkin;
-    t_symbol                *sym_midirealtimein;
     };
 
 // -----------------------------------------------------------------------------------------------------------
