@@ -229,7 +229,7 @@ proc _apply {top} {
     
     _forceValues
     
-    ::ui_interface::pdsend "pd _audioDialog \
+    ::ui_interface::pdsend "pd _audiodialog \
             $audioInDevice(1) \
             $audioInDevice(2) \
             $audioInDevice(3) \
@@ -249,7 +249,7 @@ proc _apply {top} {
             $audioSampleRate \
             $audioBlockSize"
     
-    ::ui_interface::pdsend "pd _savePreferences"
+    ::ui_interface::pdsend "pd _savepreferences"
 }
 
 # ------------------------------------------------------------------------------------------------------------

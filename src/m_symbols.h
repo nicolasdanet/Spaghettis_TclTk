@@ -38,7 +38,19 @@ extern t_symbol s_;
 
 extern t_symbol *sym___comma;
 extern t_symbol *sym___semicolon;
+
+extern t_symbol *sym__audiodialog;
+extern t_symbol *sym__audioproperties;
+extern t_symbol *sym__dummy;
+extern t_symbol *sym__font;
+extern t_symbol *sym__mididialog;
+extern t_symbol *sym__midiproperties;
+extern t_symbol *sym__path;
 extern t_symbol *sym__pop;
+extern t_symbol *sym__quit;
+extern t_symbol *sym__savepreferences;
+extern t_symbol *sym__watchdog;
+
 extern t_symbol *sym__X;
 
 extern t_symbol *sym_canvasmaker;

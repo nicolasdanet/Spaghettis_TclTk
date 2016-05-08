@@ -33,7 +33,19 @@ t_symbol s_         = { ""          , NULL, NULL };         /* Shared. */
 
 t_symbol *sym___comma;
 t_symbol *sym___semicolon;
+
+t_symbol *sym__audiodialog;
+t_symbol *sym__audioproperties;
+t_symbol *sym__dummy;
+t_symbol *sym__font;
+t_symbol *sym__mididialog;
+t_symbol *sym__midiproperties;
+t_symbol *sym__path;
 t_symbol *sym__pop;
+t_symbol *sym__quit;
+t_symbol *sym__savepreferences;
+t_symbol *sym__watchdog;
+
 t_symbol *sym__X;
 
 t_symbol *sym_canvasmaker;
@@ -58,9 +70,21 @@ t_symbol *sym_setbounds;
 
 void symbols_initialize (void)
 { 
-    sym___semicolon         = gensym (";");
     sym___comma             = gensym (",");
+    sym___semicolon         = gensym (";");
+
+    sym__audiodialog        = gensym ("_audiodialog");
+    sym__audioproperties    = gensym ("_audioproperties");
+    sym__dummy              = gensym ("_dummy");
+    sym__font               = gensym ("_font");
+    sym__mididialog         = gensym ("_mididialog");
+    sym__midiproperties     = gensym ("_midiproperties");
+    sym__path               = gensym ("_path");
     sym__pop                = gensym ("_pop");
+    sym__quit               = gensym ("_quit");
+    sym__savepreferences    = gensym ("_savepreferences");
+    sym__watchdog           = gensym ("_watchdog");
+    
     sym__X                  = gensym ("#X");
     
     sym_canvasmaker         = gensym ("canvasmaker");

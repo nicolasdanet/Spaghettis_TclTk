@@ -327,10 +327,10 @@ proc _media {m} {
     
     $m add command \
         -label [_ "MIDI..."] \
-        -command { ::ui_interface::pdsend "pd _midiProperties" }
+        -command { ::ui_interface::pdsend "pd _midiproperties" }
     $m add command \
         -label [_ "Audio..."] \
-        -command { ::ui_interface::pdsend "pd _audioProperties" }
+        -command { ::ui_interface::pdsend "pd _audioproperties" }
     $m add separator
     
     $m add check \

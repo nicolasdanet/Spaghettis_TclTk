@@ -882,10 +882,10 @@ void canvas_key(t_glist *x, t_symbol *s, int ac, t_atom *av)
     // canvas_undo_already_set_move = 0;
     down = (atom_getFloat(av) != 0);  /* nonzero if it's a key down */
     shift = (atom_getFloat(av+2) != 0);  /* nonzero if shift-ed */
-    if (av[1].a_type == A_SYMBOL)
+    if (av[1].a_type == A_SYMBOL) {
         gotkeysym = av[1].a_w.w_symbol;
-    else if (av[1].a_type == A_FLOAT)
-    {
+        
+    } else if (av[1].a_type == A_FLOAT) {
         int sz;
         char buf[UTF8_MAXIMUM_BYTES + 1];
         switch((int)(av[1].a_w.w_float))

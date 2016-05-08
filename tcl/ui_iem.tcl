@@ -493,7 +493,7 @@ proc _apply {top} {
     _forceDelta     $top
     _forceFont      $top
     
-    ::ui_interface::pdsend "$top _iemDialog \
+    ::ui_interface::pdsend "$top _iemdialog \
             $iemWidth($top) \
             $iemHeight($top) \
             $iemOption1($top) \

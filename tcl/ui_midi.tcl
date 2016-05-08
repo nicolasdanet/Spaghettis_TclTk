@@ -122,7 +122,7 @@ proc _apply {top} {
     variable midiInDevice
     variable midiOutDevice
     
-    ::ui_interface::pdsend "pd _midiDialog \
+    ::ui_interface::pdsend "pd _mididialog \
             $midiInDevice(1) \
             $midiInDevice(2) \
             $midiInDevice(3) \
@@ -140,7 +140,7 @@ proc _apply {top} {
             $midiOutDevice(7) \
             $midiOutDevice(8)"
     
-    ::ui_interface::pdsend "pd _savePreferences"
+    ::ui_interface::pdsend "pd _savepreferences"
 }
 
 # ------------------------------------------------------------------------------------------------------------
