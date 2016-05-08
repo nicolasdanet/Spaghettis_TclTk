@@ -31,16 +31,26 @@ t_symbol s_         = { ""          , NULL, NULL };         /* Shared. */
 
 /* Shared. */
 
+t_symbol *sym___comma;
+t_symbol *sym___semicolon;
+t_symbol *sym__pop;
 t_symbol *sym__X;
+
 t_symbol *sym_canvasmaker;
 t_symbol *sym_click;
+t_symbol *sym_dsp;
+t_symbol *sym_f;
 t_symbol *sym_inlet;
 t_symbol *sym_key;
 t_symbol *sym_loadbang;
 t_symbol *sym_motion;                                        
 t_symbol *sym_mouse;
 t_symbol *sym_mouseup;
+t_symbol *sym_new;
 t_symbol *sym_objectmaker;
+t_symbol *sym_open;
+t_symbol *sym_pd;
+t_symbol *sym_quit;
 t_symbol *sym_setbounds;
 
 // -----------------------------------------------------------------------------------------------------------
@@ -48,16 +58,26 @@ t_symbol *sym_setbounds;
 
 void symbols_initialize (void)
 { 
+    sym___semicolon         = gensym (";");
+    sym___comma             = gensym (",");
+    sym__pop                = gensym ("_pop");
     sym__X                  = gensym ("#X");
+    
     sym_canvasmaker         = gensym ("canvasmaker");
     sym_click               = gensym ("click");
+    sym_dsp                 = gensym ("dsp");
+    sym_f                   = gensym ("f");
     sym_inlet               = gensym ("inlet");
     sym_key                 = gensym ("key");
     sym_loadbang            = gensym ("loadbang");
     sym_motion              = gensym ("motion");
     sym_mouse               = gensym ("mouse");
     sym_mouseup             = gensym ("mouseup");
+    sym_new                 = gensym ("new");
     sym_objectmaker         = gensym ("objectmaker");
+    sym_open                = gensym ("open");
+    sym_pd                  = gensym ("pd");
+    sym_quit                = gensym ("quit");
     sym_setbounds           = gensym ("setbounds");
 }
 

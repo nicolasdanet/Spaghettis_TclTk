@@ -75,18 +75,18 @@ void global_initialize (void)
 {
     t_class *c = NULL;
     
-    c = class_new (gensym ("pd"), 
+    c = class_new (sym_pd, 
             NULL,
             NULL,
             sizeof (t_pd),
             CLASS_DEFAULT,
             A_NULL);
 
-    class_addMethod (c, (t_method)canvas_newPatch,          gensym ("new"),     A_SYMBOL, A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)buffer_openFile,          gensym ("open"),    A_SYMBOL, A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)dsp_state,                gensym ("dsp"),     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_newPatch,          sym_new,            A_SYMBOL, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)buffer_openFile,          sym_open,           A_SYMBOL, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)dsp_state,                sym_dsp,            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)global_key,               sym_key,            A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)interface_quit,           gensym ("quit"),    A_NULL);
+    class_addMethod (c, (t_method)interface_quit,           sym_quit,           A_NULL);
     
     class_addMethod (c, (t_method)font_withHostMeasured,    gensym ("_font"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)audio_requireDialog,      gensym ("_audioProperties"), A_NULL);
@@ -108,12 +108,12 @@ void global_initialize (void)
     
     global_object = c;
         
-    pd_bind (&global_object, gensym ("pd"));
+    pd_bind (&global_object, sym_pd);
 }
 
 void global_release (void)
 {
-    pd_unbind (&global_object, gensym ("pd"));
+    pd_unbind (&global_object, sym_pd);
 }
 
 // -----------------------------------------------------------------------------------------------------------

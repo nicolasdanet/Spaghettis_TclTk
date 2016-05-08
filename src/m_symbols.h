@@ -36,16 +36,26 @@ extern t_symbol s_;
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
+extern t_symbol *sym___comma;
+extern t_symbol *sym___semicolon;
+extern t_symbol *sym__pop;
 extern t_symbol *sym__X;
+
 extern t_symbol *sym_canvasmaker;
 extern t_symbol *sym_click;
+extern t_symbol *sym_dsp;
+extern t_symbol *sym_f;
 extern t_symbol *sym_inlet;
 extern t_symbol *sym_key;
 extern t_symbol *sym_loadbang;
 extern t_symbol *sym_motion;
 extern t_symbol *sym_mouse;
 extern t_symbol *sym_mouseup;
+extern t_symbol *sym_new;
+extern t_symbol *sym_open;
 extern t_symbol *sym_objectmaker;
+extern t_symbol *sym_pd;
+extern t_symbol *sym_quit;
 extern t_symbol *sym_setbounds;
 
 // -----------------------------------------------------------------------------------------------------------

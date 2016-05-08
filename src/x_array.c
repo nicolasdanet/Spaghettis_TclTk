@@ -835,7 +835,7 @@ void x_array_setup(void )
     class_addMethod(array_define_class, (t_method)canvas_click,
         sym_click, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(array_define_class, (t_method)canvas_dsp,
-        gensym ("dsp"), A_CANT, 0);
+        sym_dsp, A_CANT, 0);
     class_addMethod(array_define_class, (t_method)canvas_map,
         gensym ("_map"), A_FLOAT, A_NULL);
     class_addMethod(array_define_class, (t_method)canvas_setBounds,

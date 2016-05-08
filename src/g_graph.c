@@ -82,7 +82,7 @@ void glist_delete(t_glist *x, t_gobj *y)
 {
     t_gobj *g;
     t_object *ob;
-    int chkdsp = class_hasMethod (pd_class (&y->g_pd), gensym ("dsp"));
+    int chkdsp = class_hasMethod (pd_class (&y->g_pd), sym_dsp);
     t_glist *canvas = canvas_getView(x);
     t_boxtext *rtext = 0;
     int drawcommand = class_hasDrawCommand(y->g_pd);
@@ -152,7 +152,7 @@ void glist_clear(t_glist *x)
 {
     t_gobj *y, *y2;
     int dspstate = 0, suspended = 0;
-    t_symbol *dspsym = gensym ("dsp");
+    t_symbol *dspsym = sym_dsp;
     while (y = x->gl_graphics)
     {
             /* to avoid unnecessary DSP resorting, we suspend DSP

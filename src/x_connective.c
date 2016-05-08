@@ -107,7 +107,7 @@ void pdfloat_setup(void)
 {
     pdfloat_class = class_new(gensym ("float"), (t_newmethod)pdfloat_new, 0,
         sizeof(t_pdfloat), 0, A_FLOAT, 0);
-    class_addCreator((t_newmethod)pdfloat_new2, gensym ("f"), A_DEFFLOAT, 0);
+    class_addCreator((t_newmethod)pdfloat_new2, sym_f, A_DEFFLOAT, 0);
     class_addMethod(pdfloat_class, (t_method)pdfloat_send, gensym ("send"),
         A_SYMBOL, 0);
     class_addBang(pdfloat_class, pdfloat_bang);

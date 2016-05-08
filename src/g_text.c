@@ -1187,7 +1187,7 @@ void text_save(t_gobj *z, t_buffer *b)
         buffer_serialize(b, x->te_buffer);
     }
     if (x->te_width)
-        buffer_vAppend(b, ",si", gensym ("f"), (int)x->te_width);
+        buffer_vAppend(b, ",si", sym_f, (int)x->te_width);
     buffer_vAppend(b, ";");
 }
 

@@ -205,7 +205,7 @@ static void canvas_rightclick(t_glist *x, int xpos, int ypos, t_gobj *y)
 {
     int canprop, canopen;
     canprop = (!y || (y && class_hasPropertiesFunction (pd_class(&y->g_pd))));
-    canopen = (y && class_hasMethod (pd_class (&y->g_pd), gensym ("open")));
+    canopen = (y && class_hasMethod (pd_class (&y->g_pd), sym_open));
     sys_vGui("::ui_menu::showPopup .x%lx %d %d %d %d\n",
         x, xpos, ypos, canprop, canopen);
 }
@@ -383,9 +383,9 @@ void canvas_done_popup(t_glist *x, t_float which, t_float xpos, t_float ypos)
             }
             else if (which == 1)    /* open */
             {
-                if (!class_hasMethod (pd_class (&y->g_pd), gensym ("open")))
+                if (!class_hasMethod (pd_class (&y->g_pd), sym_open))
                     continue;
-                pd_vMessage(&y->g_pd, gensym ("open"), "");
+                pd_vMessage(&y->g_pd, sym_open, "");
                 return;
             }
             else    /* help */
@@ -824,7 +824,7 @@ void canvas_mouseup(t_glist *x,
                 canvas_isAbstraction((t_glist *)g) &&
                     (gl2 = canvas_findDirty((t_glist *)g)))
             {
-                pd_vMessage(&gl2->gl_obj.te_g.g_pd, gensym ("open"), "");
+                pd_vMessage(&gl2->gl_obj.te_g.g_pd, sym_open, "");
                 x->gl_editor->e_onMotion = ACTION_NONE;
                 sys_vGui(
 "::ui_confirm::checkAction .x%lx { Discard changes to %s? } { ::ui_interface::pdsend .x%lx dirty 0 } { no }\n",

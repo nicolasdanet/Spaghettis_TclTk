@@ -291,7 +291,7 @@ void block_tilde_setup(void)
         A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addMethod(block_class, (t_method)block_set, gensym ("set"), 
         A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
-    class_addMethod(block_class, (t_method)block_dsp, gensym ("dsp"), A_CANT, 0);
+    class_addMethod(block_class, (t_method)block_dsp, sym_dsp, A_CANT, 0);
     class_addFloat(block_class, block_float);
     class_addBang(block_class, block_bang);
 }
@@ -756,7 +756,7 @@ static void ugen_doit(t_dspcontext *dc, t_ugenbox *u)
         routine must fill in "borrowed" signal outputs in case it's either
         a subcanvas or a signal inlet. */
         
-    mess1(&u->u_obj->te_g.g_pd, gensym ("dsp"), insig);
+    mess1(&u->u_obj->te_g.g_pd, sym_dsp, insig);
     
         /* if any output signals aren't connected to anyone, free them
         now; otherwise they'll either get freed when the reference count

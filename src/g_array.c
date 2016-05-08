@@ -152,13 +152,13 @@ void garray_init( void)
     canvas_setActiveFileNameAndDirectory (gensym ("_float_template"), gensym ("."));
     buffer_withStringUnzeroed(b, garray_floattemplatefile, strlen(garray_floattemplatefile));
     buffer_eval(b, &pd_canvasMaker, 0, 0);
-    pd_vMessage(s__X.s_thing, gensym ("_pop"), "i", 0);
+    pd_vMessage(s__X.s_thing, sym__pop, "i", 0);
     
     canvas_setActiveFileNameAndDirectory (gensym ("_float_array_template"), gensym ("."));
     buffer_withStringUnzeroed(b, garray_arraytemplatefile, strlen(garray_arraytemplatefile));
     buffer_eval(b, &pd_canvasMaker, 0, 0);
     garray_arraytemplatecanvas = s__X.s_thing;
-    pd_vMessage(s__X.s_thing, gensym ("_pop"), "i", 0);
+    pd_vMessage(s__X.s_thing, sym__pop, "i", 0);
 
     canvas_setActiveFileNameAndDirectory (&s_, &s_);
     buffer_free(b);  

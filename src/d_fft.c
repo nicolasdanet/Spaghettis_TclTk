@@ -121,13 +121,13 @@ static void sigfft_setup(void)
         sizeof(t_sigfft), 0, 0);
     CLASS_SIGNAL(sigfft_class, t_sigfft, x_f);
     class_addMethod(sigfft_class, (t_method)sigfft_dsp,
-        gensym ("dsp"), A_CANT, 0);
+        sym_dsp, A_CANT, 0);
 
     sigifft_class = class_new(gensym ("ifft~"), sigifft_new, 0,
         sizeof(t_sigfft), 0, 0);
     CLASS_SIGNAL(sigifft_class, t_sigfft, x_f);
     class_addMethod(sigifft_class, (t_method)sigifft_dsp,
-        gensym ("dsp"), A_CANT, 0);
+        sym_dsp, A_CANT, 0);
     class_setHelpName(sigifft_class, gensym ("fft~"));
 }
 
@@ -185,7 +185,7 @@ static void sigrfft_setup(void)
         sizeof(t_sigrfft), 0, 0);
     CLASS_SIGNAL(sigrfft_class, t_sigrfft, x_f);
     class_addMethod(sigrfft_class, (t_method)sigrfft_dsp,
-        gensym ("dsp"), A_CANT, 0);
+        sym_dsp, A_CANT, 0);
     class_setHelpName(sigrfft_class, gensym ("fft~"));
 }
 
@@ -246,7 +246,7 @@ static void sigrifft_setup(void)
         sizeof(t_sigrifft), 0, 0);
     CLASS_SIGNAL(sigrifft_class, t_sigrifft, x_f);
     class_addMethod(sigrifft_class, (t_method)sigrifft_dsp,
-        gensym ("dsp"), A_CANT, 0);
+        sym_dsp, A_CANT, 0);
     class_setHelpName(sigrifft_class, gensym ("fft~"));
 }
 
@@ -335,7 +335,7 @@ static void sigframp_setup(void)
         sizeof(t_sigframp), 0, 0);
     CLASS_SIGNAL(sigframp_class, t_sigframp, x_f);
     class_addMethod(sigframp_class, (t_method)sigframp_dsp,
-        gensym ("dsp"), A_CANT, 0);
+        sym_dsp, A_CANT, 0);
 }
 
 /* ------------------------ global setup routine ------------------------- */

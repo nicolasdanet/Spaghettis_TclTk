@@ -135,7 +135,7 @@ void sighip_setup(void)
         sizeof(t_sighip), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sighip_class, t_sighip, x_f);
     class_addMethod(sighip_class, (t_method)sighip_dsp,
-        gensym ("dsp"), A_CANT, 0);
+        sym_dsp, A_CANT, 0);
     class_addMethod(sighip_class, (t_method)sighip_ft1,
         gensym ("ft1"), A_FLOAT, 0);
     class_addMethod(sighip_class, (t_method)sighip_clear, gensym ("clear"), 0);
@@ -226,7 +226,7 @@ void siglop_setup(void)
         sizeof(t_siglop), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(siglop_class, t_siglop, x_f);
     class_addMethod(siglop_class, (t_method)siglop_dsp,
-        gensym ("dsp"), A_CANT, 0);
+        sym_dsp, A_CANT, 0);
     class_addMethod(siglop_class, (t_method)siglop_ft1,
         gensym ("ft1"), A_FLOAT, 0);
     class_addMethod(siglop_class, (t_method)siglop_clear, gensym ("clear"), 0);
@@ -361,7 +361,7 @@ void sigbp_setup(void)
         sizeof(t_sigbp), 0, A_DEFFLOAT, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigbp_class, t_sigbp, x_f);
     class_addMethod(sigbp_class, (t_method)sigbp_dsp,
-        gensym ("dsp"), A_CANT, 0);
+        sym_dsp, A_CANT, 0);
     class_addMethod(sigbp_class, (t_method)sigbp_ft1,
         gensym ("ft1"), A_FLOAT, 0);
     class_addMethod(sigbp_class, (t_method)sigbp_ft2,
@@ -488,7 +488,7 @@ void sigbiquad_setup(void)
         0, sizeof(t_sigbiquad), 0, A_GIMME, 0);
     CLASS_SIGNAL(sigbiquad_class, t_sigbiquad, x_f);
     class_addMethod(sigbiquad_class, (t_method)sigbiquad_dsp,
-        gensym ("dsp"), A_CANT, 0);
+        sym_dsp, A_CANT, 0);
     class_addList(sigbiquad_class, sigbiquad_list);
     class_addMethod(sigbiquad_class, (t_method)sigbiquad_set, gensym ("set"),
         A_GIMME, 0);
@@ -570,7 +570,7 @@ void sigsamphold_setup(void)
     class_addMethod(sigsamphold_class, (t_method)sigsamphold_reset,
         gensym ("reset"), A_GIMME, 0);
     class_addMethod(sigsamphold_class, (t_method)sigsamphold_dsp,
-        gensym ("dsp"), A_CANT, 0);
+        sym_dsp, A_CANT, 0);
 }
 
 /* ---------------- rpole~ - real one-pole filter (raw) ----------------- */
@@ -643,7 +643,7 @@ void sigrpole_setup(void)
     class_addMethod(sigrpole_class, (t_method)sigrpole_clear,
         gensym ("clear"), 0);
     class_addMethod(sigrpole_class, (t_method)sigrpole_dsp,
-        gensym ("dsp"), A_CANT, 0);
+        sym_dsp, A_CANT, 0);
 }
 
 /* ---------------- rzero~ - real one-zero filter (raw) ----------------- */
@@ -715,7 +715,7 @@ void sigrzero_setup(void)
     class_addMethod(sigrzero_class, (t_method)sigrzero_clear,
         gensym ("clear"), 0);
     class_addMethod(sigrzero_class, (t_method)sigrzero_dsp,
-        gensym ("dsp"), A_CANT, 0);
+        sym_dsp, A_CANT, 0);
 }
 
 /* ---------- rzero_rev~ - real, reverse one-zero filter (raw) ------------ */
@@ -788,7 +788,7 @@ void sigrzero_rev_setup(void)
     class_addMethod(sigrzero_rev_class, (t_method)sigrzero_rev_clear,
         gensym ("clear"), 0);
     class_addMethod(sigrzero_rev_class, (t_method)sigrzero_rev_dsp,
-        gensym ("dsp"), A_CANT, 0);
+        sym_dsp, A_CANT, 0);
 }
 
 /* -------------- cpole~ - complex one-pole filter (raw) --------------- */
@@ -881,7 +881,7 @@ void sigcpole_setup(void)
     class_addMethod(sigcpole_class, (t_method)sigcpole_clear,
         gensym ("clear"), 0);
     class_addMethod(sigcpole_class, (t_method)sigcpole_dsp,
-        gensym ("dsp"), A_CANT, 0);
+        sym_dsp, A_CANT, 0);
 }
 
 /* -------------- czero~ - complex one-zero filter (raw) --------------- */
@@ -971,7 +971,7 @@ void sigczero_setup(void)
     class_addMethod(sigczero_class, (t_method)sigczero_clear,
         gensym ("clear"), 0);
     class_addMethod(sigczero_class, (t_method)sigczero_dsp,
-        gensym ("dsp"), A_CANT, 0);
+        sym_dsp, A_CANT, 0);
 }
 
 /* ------ czero_rev~ - complex one-zero filter (raw, reverse form) ----- */
@@ -1063,7 +1063,7 @@ void sigczero_rev_setup(void)
     class_addMethod(sigczero_rev_class, (t_method)sigczero_rev_clear,
         gensym ("clear"), 0);
     class_addMethod(sigczero_rev_class, (t_method)sigczero_rev_dsp,
-        gensym ("dsp"), A_CANT, 0);
+        sym_dsp, A_CANT, 0);
 }
 
 /* ------------------------ setup routine ------------------------- */

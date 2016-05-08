@@ -475,12 +475,12 @@ static int buffer_getMessage (t_atom *v, t_pd *object, t_pd **next, t_atom *m, i
     
     switch (v->a_type) {
     //
-    case A_SEMICOLON    :   if (object == &pd_objectMaker) { SET_SYMBOL (m, gensym (";")); }
+    case A_SEMICOLON    :   if (object == &pd_objectMaker) { SET_SYMBOL (m, sym___semicolon); }
                             else { 
                                 *next = NULL; end = 1; 
                             }
                             break;
-    case A_COMMA        :   if (object == &pd_objectMaker) { SET_SYMBOL (m, gensym (",")); }
+    case A_COMMA        :   if (object == &pd_objectMaker) { SET_SYMBOL (m, sym___comma); }
                             else { 
                                 end = 1; 
                             }
@@ -716,7 +716,7 @@ void buffer_openFile (void *dummy, t_symbol *name, t_symbol *directory)
     
     while ((x != s__X.s_thing) && s__X.s_thing) {
         x = s__X.s_thing;
-        pd_vMessage (x, gensym ("_pop"), "i", 1);
+        pd_vMessage (x, sym__pop, "i", 1);
     }
     
     stack_performLoadbang();

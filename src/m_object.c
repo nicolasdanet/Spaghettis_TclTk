@@ -818,7 +818,7 @@ void object_moveOutletFirst (t_object *x, t_outlet *o)
 
 void object_saveWidth (t_object *x, t_buffer *b)
 {
-    if (x->te_width) { buffer_vAppend (b, "ssf;", sym__X, gensym ("f"), (t_float)x->te_width); }
+    if (x->te_width) { buffer_vAppend (b, "ssf;", sym__X, sym_f, (t_float)x->te_width); }
 }
 
 t_float *object_getSignalValueAtIndex (t_object *x, int m)
