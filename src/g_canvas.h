@@ -355,7 +355,7 @@ int             canvas_isRoot                           (t_glist *glist);
 int             canvas_isAbstraction                    (t_glist *glist);
 int             canvas_isSubpatch                       (t_glist *glist);
 int             canvas_isDirty                          (t_glist *glist);
-int             canvas_isGraphOnParent                  (t_glist *glist);
+int             canvas_isGraphedOnParent                (t_glist *glist);
 int             canvas_canHaveWindow                    (t_glist *glist);
 int             canvas_hasEnvironment                   (t_glist *glist);
 

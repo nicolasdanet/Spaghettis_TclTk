@@ -143,9 +143,9 @@ int canvas_isDirty (t_glist *glist)
     return (canvas_getRoot (glist)->gl_isDirty != 0);
 }
 
-int canvas_isGraphOnParent (t_glist *glist)
+int canvas_isGraphedOnParent (t_glist *glist)
 {
-    return glist->gl_isGraphOnParent;
+    return (!canvas_canHaveWindow (glist) && glist->gl_parent);
 }
 
 int canvas_canHaveWindow (t_glist *glist)

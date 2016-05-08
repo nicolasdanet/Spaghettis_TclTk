@@ -605,7 +605,7 @@ t_float glist_dpixtody(t_glist *x, t_float dypix)
     proportional-style GOP.  In this case we do a coordinate transformation. */
 int text_xpix(t_object *x, t_glist *glist)
 {
-    if (glist->gl_haveWindow || !glist->gl_isGraphOnParent)
+    if (canvas_canHaveWindow (glist))
         return (x->te_xCoordinate);
     else if (glist->gl_hasRectangle)
         return (glist_xtopixels(glist, glist->gl_indexStart) +
@@ -617,7 +617,7 @@ int text_xpix(t_object *x, t_glist *glist)
 
 int text_ypix(t_object *x, t_glist *glist)
 {
-    if (glist->gl_haveWindow || !glist->gl_isGraphOnParent)
+    if (canvas_canHaveWindow (glist))
         return (x->te_yCoordinate);
     else if (glist->gl_hasRectangle)
         return (glist_ytopixels(glist, glist->gl_valueUp) +
