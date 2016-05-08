@@ -16,6 +16,11 @@
 // -----------------------------------------------------------------------------------------------------------
 #pragma mark -
 
+void symbols_initialize (void);
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
 extern t_symbol s_pointer;
 extern t_symbol s_float;
 extern t_symbol s_symbol;
@@ -27,6 +32,21 @@ extern t_symbol s__N;
 extern t_symbol s__X;
 extern t_symbol s__A;
 extern t_symbol s_;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+extern t_symbol *sym__X;
+extern t_symbol *sym_canvasmaker;
+extern t_symbol *sym_click;
+extern t_symbol *sym_inlet;
+extern t_symbol *sym_key;
+extern t_symbol *sym_loadbang;
+extern t_symbol *sym_motion;
+extern t_symbol *sym_mouse;
+extern t_symbol *sym_mouseup;
+extern t_symbol *sym_objectmaker;
+extern t_symbol *sym_setbounds;
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

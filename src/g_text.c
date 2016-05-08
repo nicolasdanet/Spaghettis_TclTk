@@ -1108,7 +1108,7 @@ static int text_click(t_gobj *z, struct _glist *glist,
     t_object *x = (t_object *)z;
     if (x->te_type == TYPE_OBJECT)
     {
-        t_symbol *clicksym = gensym ("click");
+        t_symbol *clicksym = sym_click;
         if (class_hasMethod (pd_class ((t_pd *)x), clicksym))
         {
             if (doit)
@@ -1149,19 +1149,19 @@ void text_save(t_gobj *z, t_buffer *b)
                     || canvas_istable((t_glist *)x))))
         {  
             mess1((t_pd *)x, gensym ("saveto"), b);
-            buffer_vAppend(b, "ssii", gensym ("#X"), gensym ("restore"),
+            buffer_vAppend(b, "ssii", sym__X, gensym ("restore"),
                 (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }
         else    /* otherwise just save the text */
         {
-            buffer_vAppend(b, "ssii", gensym ("#X"), gensym ("obj"),
+            buffer_vAppend(b, "ssii", sym__X, gensym ("obj"),
                 (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }
         buffer_serialize(b, x->te_buffer);
     }
     else if (x->te_type == TYPE_MESSAGE)
     {
-        buffer_vAppend(b, "ssii", gensym ("#X"), gensym ("msg"),
+        buffer_vAppend(b, "ssii", sym__X, gensym ("msg"),
             (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         buffer_serialize(b, x->te_buffer);
     }
@@ -1173,7 +1173,7 @@ void text_save(t_gobj *z, t_buffer *b)
         t_symbol *label = gatom_escapit(((t_gatom *)x)->a_label);
         t_symbol *symfrom = gatom_escapit(((t_gatom *)x)->a_symfrom);
         t_symbol *symto = gatom_escapit(((t_gatom *)x)->a_symto);
-        buffer_vAppend(b, "ssiiifffsss", gensym ("#X"), sel,
+        buffer_vAppend(b, "ssiiifffsss", sym__X, sel,
             (int)x->te_xCoordinate, (int)x->te_yCoordinate, (int)x->te_width,
             (double)((t_gatom *)x)->a_draglo,
             (double)((t_gatom *)x)->a_draghi,
@@ -1182,7 +1182,7 @@ void text_save(t_gobj *z, t_buffer *b)
     }           
     else        
     {
-        buffer_vAppend(b, "ssii", gensym ("#X"), gensym ("text"),
+        buffer_vAppend(b, "ssii", sym__X, gensym ("text"),
             (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         buffer_serialize(b, x->te_buffer);
     }
@@ -1424,7 +1424,7 @@ void g_text_setup(void)
     class_addList(message_class, message_list);
     class_addAnything(message_class, message_list);
 
-    class_addMethod(message_class, (t_method)message_click, gensym ("click"),
+    class_addMethod(message_class, (t_method)message_click, sym_click,
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(message_class, (t_method)message_set, gensym ("set"),
         A_GIMME, 0);
@@ -1457,7 +1457,7 @@ void g_text_setup(void)
     class_addList(gatom_class, gatom_list);
     class_addMethod(gatom_class, (t_method)gatom_set, gensym ("set"),
         A_GIMME, 0);
-    class_addMethod(gatom_class, (t_method)gatom_click, gensym ("click"),
+    class_addMethod(gatom_class, (t_method)gatom_click, sym_click,
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(gatom_class, (t_method)gatom_param, gensym ("param"),
         A_GIMME, 0);

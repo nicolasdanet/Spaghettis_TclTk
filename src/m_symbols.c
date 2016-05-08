@@ -28,3 +28,38 @@ t_symbol s_         = { ""          , NULL, NULL };         /* Shared. */
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
+
+/* Shared. */
+
+t_symbol *sym__X;
+t_symbol *sym_canvasmaker;
+t_symbol *sym_click;
+t_symbol *sym_inlet;
+t_symbol *sym_key;
+t_symbol *sym_loadbang;
+t_symbol *sym_motion;                                        
+t_symbol *sym_mouse;
+t_symbol *sym_mouseup;
+t_symbol *sym_objectmaker;
+t_symbol *sym_setbounds;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+void symbols_initialize (void)
+{ 
+    sym__X                  = gensym ("#X");
+    sym_canvasmaker         = gensym ("canvasmaker");
+    sym_click               = gensym ("click");
+    sym_inlet               = gensym ("inlet");
+    sym_key                 = gensym ("key");
+    sym_loadbang            = gensym ("loadbang");
+    sym_motion              = gensym ("motion");
+    sym_mouse               = gensym ("mouse");
+    sym_mouseup             = gensym ("mouseup");
+    sym_objectmaker         = gensym ("objectmaker");
+    sym_setbounds           = gensym ("setbounds");
+}
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------

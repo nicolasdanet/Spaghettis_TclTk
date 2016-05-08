@@ -265,7 +265,7 @@ static void panel_behaviorSave (t_gobj *z, t_buffer *b)
     iemgui_serialize (&x->x_gui, &names, &colors);
     
     buffer_vAppend (b, "ssiisiiisssiiiiss",
-        gensym ("#X"),
+        sym__X,
         gensym ("obj"),
         (int)cast_object (z)->te_xCoordinate,
         (int)cast_object (z)->te_yCoordinate,

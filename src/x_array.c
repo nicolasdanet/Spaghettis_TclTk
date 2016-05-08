@@ -169,7 +169,7 @@ void array_define_save(t_gobj *z, t_buffer *bb)
 {
     t_glist *x = (t_glist *)z;
     t_glist *gl = (x->gl_graphics ? canvas_castToGlistChecked(&x->gl_graphics->g_pd) : 0);
-    buffer_vAppend(bb, "ssff", gensym ("#X"), gensym ("obj"),
+    buffer_vAppend(bb, "ssff", sym__X, gensym ("obj"),
         (float)x->gl_obj.te_xCoordinate, (float)x->gl_obj.te_yCoordinate);
     buffer_serialize(bb, x->gl_obj.te_buffer);
     buffer_appendSemicolon(bb);
@@ -833,20 +833,20 @@ void x_array_setup(void )
     class_addMethod(array_define_class, (t_method)canvas_restore,
         gensym ("restore"), A_GIMME, 0);
     class_addMethod(array_define_class, (t_method)canvas_click,
-        gensym ("click"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
+        sym_click, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(array_define_class, (t_method)canvas_dsp,
         gensym ("dsp"), A_CANT, 0);
     class_addMethod(array_define_class, (t_method)canvas_map,
         gensym ("_map"), A_FLOAT, A_NULL);
     class_addMethod(array_define_class, (t_method)canvas_setBounds,
-        gensym ("setbounds"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(array_define_class, (t_method)canvas_mouse, gensym ("mouse"),
+        sym_setbounds, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
+    class_addMethod(array_define_class, (t_method)canvas_mouse, sym_mouse,
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(array_define_class, (t_method)canvas_mouseup, gensym ("mouseup"),
+    class_addMethod(array_define_class, (t_method)canvas_mouseup, sym_mouseup,
         A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
-    class_addMethod(array_define_class, (t_method)canvas_key, gensym ("key"),
+    class_addMethod(array_define_class, (t_method)canvas_key, sym_key,
         A_GIMME, A_NULL);
-    class_addMethod(array_define_class, (t_method)canvas_motion, gensym ("motion"),
+    class_addMethod(array_define_class, (t_method)canvas_motion, sym_motion,
         A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     class_addMethod(array_define_class, (t_method)canvas_close,
         gensym ("close"), A_DEFFLOAT, 0);

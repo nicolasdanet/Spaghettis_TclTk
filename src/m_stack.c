@@ -62,7 +62,7 @@ void stack_pop (t_pd *x)
 
 void stack_performLoadbang (void)
 {
-    if (stack_lastPopped) { pd_vMessage (stack_lastPopped, gensym ("loadbang"), ""); }
+    if (stack_lastPopped) { pd_vMessage (stack_lastPopped, sym_loadbang, ""); }
     
     stack_lastPopped = NULL;
 }

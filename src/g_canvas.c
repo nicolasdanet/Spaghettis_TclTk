@@ -57,7 +57,7 @@ static void canvas_loadbangAbstractions (t_glist *glist)
 static void canvas_loadbangSubpatches (t_glist *glist)
 {
     t_gobj   *y = NULL;
-    t_symbol *s = gensym ("loadbang");
+    t_symbol *s = sym_loadbang;
     
     for (y = glist->gl_graphics; y; y = y->g_next) {
         if (pd_class (y) == canvas_class) {
@@ -734,7 +734,7 @@ void canvas_setup (void)
     class_addMethod (c, (t_method)canvas_editmode,      gensym ("editmode"),    A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_close,         gensym ("close"),       A_DEFFLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_open,          gensym ("open"),        A_NULL);
-    class_addMethod (c, (t_method)canvas_loadbang,      gensym ("loadbang"),    A_NULL);
+    class_addMethod (c, (t_method)canvas_loadbang,      sym_loadbang,           A_NULL);
     class_addMethod (c, (t_method)canvas_dirty,         gensym ("dirty"),       A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_visible,       gensym ("visible"),     A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)canvas_map,           gensym ("_map"),        A_FLOAT, A_NULL);

@@ -771,7 +771,7 @@ static void garray_save(t_gobj *z, t_buffer *b)
             x->x_scalar->sc_vector, 0);    
     filestyle = (style == PLOT_POINTS ? 1 : 
         (style == PLOT_POLYGONS ? 0 : style)); 
-    buffer_vAppend(b, "sssisi;", gensym ("#X"), gensym ("array"),
+    buffer_vAppend(b, "sssisi;", sym__X, gensym ("array"),
         x->x_name, array->a_n, &s_float,
             x->x_saveit + 2 * filestyle + 8*x->x_hidename);
     garray_savecontentsto(x, b);

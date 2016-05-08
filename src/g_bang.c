@@ -377,7 +377,7 @@ static void bng_behaviorSave (t_gobj *z, t_buffer *b)
     iemgui_serialize (cast_iem (z), &names, &colors);
     
     buffer_vAppend (b, "ssiisiiiisssiiiisss", 
-        gensym ("#X"),
+        sym__X,
         gensym ("obj"),
         (int)cast_object (z)->te_xCoordinate,
         (int)cast_object (z)->te_yCoordinate,
@@ -540,7 +540,7 @@ void bng_setup (void)
     class_addAnything (c, bng_anything);
     class_addClick (c, bng_click);
     
-    class_addMethod (c, (t_method)bng_loadbang,             gensym ("loadbang"),        A_NULL);
+    class_addMethod (c, (t_method)bng_loadbang,             sym_loadbang,               A_NULL);
     class_addMethod (c, (t_method)bng_initialize,           gensym ("initialize"),      A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)bng_dialog,               gensym ("_iemDialog"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)bng_size,                 gensym ("size"),            A_GIMME, A_NULL);

@@ -287,7 +287,7 @@ static void *vinlet_newsig(t_symbol *s)
 
 static void vinlet_setup(void)
 {
-    vinlet_class = class_new(gensym ("inlet"), (t_newmethod)vinlet_new,
+    vinlet_class = class_new (sym_inlet, (t_newmethod)vinlet_new,
         (t_method)vinlet_free, sizeof(t_vinlet), CLASS_NOINLET, A_DEFSYMBOL, 0);
     class_addCreator((t_newmethod)vinlet_newsig, gensym ("inlet~"), A_DEFSYMBOL, 0);
     class_addBang(vinlet_class, vinlet_bang);

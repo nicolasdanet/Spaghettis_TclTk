@@ -252,6 +252,8 @@ int main_entry (int argc, char **argv)
     //
     main_entryNative();
     
+    /* Note that the order of operations below is crucial. */
+    
     message_initialize();
     
     err |= main_getRootDirectory();

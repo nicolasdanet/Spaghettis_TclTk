@@ -362,7 +362,7 @@ int scalar_doclick(t_word *data, t_template *template, t_scalar *sc,
     SET_FLOAT(at+1, basey + yloc);
     if (doit)
         template_notifyforscalar(template, owner, 
-            sc, gensym ("click"), 2, at);
+            sc, sym_click, 2, at);
     for (y = templatecanvas->gl_graphics; y; y = y->g_next)
     {
         t_parentwidgetbehavior *wb = class_getParentWidget (pd_class (&y->g_pd));
@@ -391,7 +391,7 @@ static void scalar_save(t_gobj *z, t_buffer *b)
     t_atom a, *argv;
     int i, argc;
     canvas_writescalar(x->sc_template, x->sc_vector, b2, 0);
-    buffer_vAppend(b, "ss", gensym ("#X"), gensym ("scalar"));
+    buffer_vAppend(b, "ss", sym__X, gensym ("scalar"));
     buffer_serialize(b, b2);
     buffer_appendSemicolon(b);
     buffer_free(b2);

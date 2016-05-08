@@ -564,7 +564,7 @@ static void slider_behaviorSave (t_gobj *z, t_buffer *b)
     iemgui_serialize (&x->x_gui, &names, &colors);
     
     buffer_vAppend (b, "ssiisiiffiisssiiiisssii", 
-        gensym ("#X"),
+        sym__X,
         gensym ("obj"),
         (int)cast_object (z)->te_xCoordinate, 
         (int)cast_object (z)->te_yCoordinate,
@@ -759,7 +759,7 @@ void slider_setup (void)
     class_addClick (c, slider_click);
     class_addMotion (c, slider_motion);
     
-    class_addMethod (c, (t_method)slider_loadbang,          gensym ("loadbang"),        A_NULL);
+    class_addMethod (c, (t_method)slider_loadbang,          sym_loadbang,               A_NULL);
     class_addMethod (c, (t_method)slider_initialize,        gensym ("initialize"),      A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)slider_dialog,            gensym ("_iemDialog"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_size,              gensym ("size"),            A_GIMME, A_NULL);

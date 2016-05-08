@@ -115,10 +115,10 @@ static void loadbang_loadbang(t_loadbang *x)
 
 static void loadbang_setup(void)
 {
-    loadbang_class = class_new(gensym ("loadbang"), (t_newmethod)loadbang_new, 0,
+    loadbang_class = class_new (sym_loadbang, (t_newmethod)loadbang_new, 0,
         sizeof(t_loadbang), CLASS_NOINLET, 0);
     class_addMethod(loadbang_class, (t_method)loadbang_loadbang,
-        gensym ("loadbang"), 0);
+        sym_loadbang, 0);
 }
 
 /* ------------- namecanvas (delete this later) --------------------- */

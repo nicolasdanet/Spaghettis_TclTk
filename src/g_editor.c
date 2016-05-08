@@ -1166,7 +1166,7 @@ void canvas_stowconnections(t_glist *x)
         int s2 = canvas_isObjectSelected(x, &t.tr_destObject->te_g);
         if (s1 != s2)
             buffer_vAppend(x->gl_editor->e_buffer, "ssiiii;",
-                gensym ("#X"), gensym ("connect"),
+                sym__X, gensym ("connect"),
                     canvas_getIndexOfObject(x, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
                         canvas_getIndexOfObject(x, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
     }
@@ -1197,7 +1197,7 @@ static t_buffer *canvas_docopy(t_glist *x)
         if (canvas_isObjectSelected(x, &t.tr_srcObject->te_g)
             && canvas_isObjectSelected(x, &t.tr_destObject->te_g))
         {
-            buffer_vAppend(b, "ssiiii;", gensym ("#X"), gensym ("connect"),
+            buffer_vAppend(b, "ssiiii;", sym__X, gensym ("connect"),
                 canvas_getIndexOfObjectAmongSelected(x, &t.tr_srcObject->te_g), t.tr_srcIndexOfOutlet,
                 canvas_getIndexOfObjectAmongSelected(x, &t.tr_destObject->te_g), t.tr_destIndexOfInlet);
         }

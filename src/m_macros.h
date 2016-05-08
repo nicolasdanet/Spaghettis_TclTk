@@ -122,12 +122,12 @@ typedef void (*t_gotfn1)(void *x, void *arg1);
 #pragma mark -
 
 #define class_addKey(c, m)                  class_addMethod ((c), (t_method)(m), \
-                                                gensym ("key"), \
+                                                sym_key, \
                                                 A_GIMME, \
                                                 A_NULL);
 
 #define class_addMouse(c, m)                class_addMethod ((c), (t_method)(m), \
-                                                gensym ("mouse"), \
+                                                sym_mouse, \
                                                 A_FLOAT, \
                                                 A_FLOAT, \
                                                 A_FLOAT, \
@@ -135,14 +135,14 @@ typedef void (*t_gotfn1)(void *x, void *arg1);
                                                 A_NULL);
                                                 
 #define class_addMouseUp(c, m)              class_addMethod ((c), (t_method)(m), \
-                                                gensym ("mouseup"), \
+                                                sym_mouseup, \
                                                 A_FLOAT, \
                                                 A_FLOAT, \
                                                 A_FLOAT, \
                                                 A_NULL);
     
 #define class_addClick(c, m)                class_addMethod ((c), (t_method)(m), \
-                                                gensym ("click"), \
+                                                sym_click, \
                                                 A_FLOAT, \
                                                 A_FLOAT, \
                                                 A_FLOAT, \
@@ -151,14 +151,14 @@ typedef void (*t_gotfn1)(void *x, void *arg1);
                                                 A_NULL);
 
 #define class_addMotion(c, m)               class_addMethod ((c), (t_method)(m), \
-                                                gensym ("motion"), \
+                                                sym_motion, \
                                                 A_FLOAT, \
                                                 A_FLOAT, \
                                                 A_FLOAT, \
                                                 A_NULL);
 
 #define class_addBounds(c, m)               class_addMethod ((c), (t_method)(m), \
-                                                gensym ("setbounds"), \
+                                                sym_setbounds, \
                                                 A_FLOAT, \
                                                 A_FLOAT, \
                                                 A_FLOAT, \

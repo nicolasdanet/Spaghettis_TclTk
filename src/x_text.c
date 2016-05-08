@@ -340,7 +340,7 @@ void text_define_set(t_text_define *x, t_symbol *s, int argc, t_atom *argv)
 static void text_define_save(t_gobj *z, t_buffer *bb)
 {
     t_text_define *x = (t_text_define *)z;
-    buffer_vAppend(bb, "ssff", gensym ("#X"), gensym ("obj"),
+    buffer_vAppend(bb, "ssff", sym__X, gensym ("obj"),
         (float)x->x_ob.te_xCoordinate, (float)x->x_ob.te_yCoordinate);
     buffer_serialize(bb, x->x_ob.te_buffer);
     buffer_appendSemicolon(bb);
@@ -1808,7 +1808,7 @@ void x_qlist_setup(void )
         (t_newmethod)text_define_new,
         (t_method)text_define_free, sizeof(t_text_define), 0, A_GIMME, 0);
     class_addMethod(text_define_class, (t_method)textbuf_open,
-        gensym ("click"), 0);
+        sym_click, 0);
     class_addMethod(text_define_class, (t_method)textbuf_close,
         gensym ("close"), 0);
     class_addMethod(text_define_class, (t_method)textbuf_addline, 
@@ -1902,7 +1902,7 @@ void x_qlist_setup(void )
         A_SYMBOL, A_DEFSYMBOL, 0);
     class_addMethod(qlist_class, (t_method)qlist_write, gensym ("write"),
         A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addMethod(qlist_class, (t_method)textbuf_open, gensym ("click"), 0);
+    class_addMethod(qlist_class, (t_method)textbuf_open, sym_click, 0);
     class_addMethod(qlist_class, (t_method)textbuf_close, gensym ("close"), 0);
     class_addMethod(qlist_class, (t_method)textbuf_addline, 
         gensym ("addline"), A_GIMME, 0);
@@ -1931,7 +1931,7 @@ void x_qlist_setup(void )
         A_SYMBOL, A_DEFSYMBOL, 0);
     class_addMethod(textfile_class, (t_method)qlist_write, gensym ("write"), 
         A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addMethod(textfile_class, (t_method)textbuf_open, gensym ("click"), 0);
+    class_addMethod(textfile_class, (t_method)textbuf_open, sym_click, 0);
     class_addMethod(textfile_class, (t_method)textbuf_close, gensym ("close"), 
         0);
     class_addMethod(textfile_class, (t_method)textbuf_addline, 

@@ -655,7 +655,7 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
     {
         int srcno = canvas_getIndexOfObject(x, &t.tr_srcObject->te_g);
         int sinkno = canvas_getIndexOfObject(x, &t.tr_destObject->te_g);
-        buffer_vAppend(b, "ssiiii;", gensym ("#X"), gensym ("connect"),
+        buffer_vAppend(b, "ssiiii;", sym__X, gensym ("connect"),
             srcno, t.tr_srcIndexOfOutlet, sinkno, t.tr_destIndexOfInlet);
     }
         /* unless everything is the default (as in ordinary subpatches)
@@ -667,14 +667,14 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
                 /* if we have a graph-on-parent rectangle, we're new style.
                 The format is arranged so
                 that old versions of Pd can at least do something with it. */
-            buffer_vAppend(b, "ssfffffffff;", gensym ("#X"), gensym ("coords"),
+            buffer_vAppend(b, "ssfffffffff;", sym__X, gensym ("coords"),
                 x->gl_indexStart, x->gl_valueUp,
                 x->gl_indexEnd, x->gl_valueDown,
                 (t_float)x->gl_width, (t_float)x->gl_height,
                 (t_float)((x->gl_hideText)?2.:1.),
                 (t_float)x->gl_marginX, (t_float)x->gl_marginY); 
                     /* otherwise write in 0.38-compatible form */
-        else buffer_vAppend(b, "ssfffffff;", gensym ("#X"), gensym ("coords"),
+        else buffer_vAppend(b, "ssfffffff;", sym__X, gensym ("coords"),
                 x->gl_indexStart, x->gl_valueUp,
                 x->gl_indexEnd, x->gl_valueDown,
                 (t_float)x->gl_width, (t_float)x->gl_height,

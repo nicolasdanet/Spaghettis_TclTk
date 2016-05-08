@@ -82,11 +82,11 @@ void global_initialize (void)
             CLASS_DEFAULT,
             A_NULL);
 
-    class_addMethod (c, (t_method)canvas_newPatch,          gensym ("new"),  A_SYMBOL, A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)buffer_openFile,          gensym ("open"), A_SYMBOL, A_SYMBOL, A_NULL);
-    class_addMethod (c, (t_method)dsp_state,                gensym ("dsp"),  A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)global_key,               gensym ("key"),  A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)interface_quit,           gensym ("quit"), A_NULL);
+    class_addMethod (c, (t_method)canvas_newPatch,          gensym ("new"),     A_SYMBOL, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)buffer_openFile,          gensym ("open"),    A_SYMBOL, A_SYMBOL, A_NULL);
+    class_addMethod (c, (t_method)dsp_state,                gensym ("dsp"),     A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)global_key,               sym_key,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)interface_quit,           gensym ("quit"),    A_NULL);
     
     class_addMethod (c, (t_method)font_withHostMeasured,    gensym ("_font"),            A_GIMME, A_NULL);
     class_addMethod (c, (t_method)audio_requireDialog,      gensym ("_audioProperties"), A_NULL);

@@ -142,6 +142,10 @@ void message_initialize (void)
     int i;
     for (i = 0; i < MESSAGE_HASH_SIZE; i++) { PD_ASSERT (message_hashTable[i] == NULL); }
     for (i = 0; i < 11; i++) { generateSymbol (symbols[i]->s_name, symbols[i]); }
+    
+    symbols_initialize();
+    
+    PD_ASSERT (sym__X == &s__X);
 }
 
 // -----------------------------------------------------------------------------------------------------------

@@ -436,10 +436,10 @@ void outlet_anything (t_outlet *x, t_symbol *s, int argc, t_atom *argv)
 
 void object_initialize (void)
 {
-    inlet_class         = class_new (gensym ("inlet"), NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
-    pointerinlet_class  = class_new (gensym ("inlet"), NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
-    floatinlet_class    = class_new (gensym ("inlet"), NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
-    symbolinlet_class   = class_new (gensym ("inlet"), NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
+    inlet_class         = class_new (sym_inlet, NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
+    pointerinlet_class  = class_new (sym_inlet, NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
+    floatinlet_class    = class_new (sym_inlet, NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
+    symbolinlet_class   = class_new (sym_inlet, NULL, NULL, sizeof (t_inlet), CLASS_PURE, A_NULL);
     
     class_addBang (inlet_class,             (t_method)inlet_forBang);
     class_addPointer (inlet_class,          (t_method)inlet_forPointer);
@@ -818,7 +818,7 @@ void object_moveOutletFirst (t_object *x, t_outlet *o)
 
 void object_saveWidth (t_object *x, t_buffer *b)
 {
-    if (x->te_width) { buffer_vAppend (b, "ssf;", gensym ("#X"), gensym ("f"), (t_float)x->te_width); }
+    if (x->te_width) { buffer_vAppend (b, "ssf;", sym__X, gensym ("f"), (t_float)x->te_width); }
 }
 
 t_float *object_getSignalValueAtIndex (t_object *x, int m)
