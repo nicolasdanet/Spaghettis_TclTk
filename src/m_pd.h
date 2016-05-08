@@ -541,22 +541,6 @@ typedef void *(*t_newmethod)(void);
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
-#pragma mark -
-
-extern t_symbol s_pointer;
-extern t_symbol s_float;
-extern t_symbol s_symbol;
-extern t_symbol s_bang;
-extern t_symbol s_list;
-extern t_symbol s_anything;
-extern t_symbol s_signal;
-extern t_symbol s__N;
-extern t_symbol s__X;
-extern t_symbol s__A;
-extern t_symbol s_;
-
-// -----------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------
 
 #define PD_MEMORY_GET(n)                                sys_getMemory (n)
 #define PD_MEMORY_GET_COPY(src, n)                      sys_getMemoryCopy (src, n)

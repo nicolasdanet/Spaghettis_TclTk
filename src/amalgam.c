@@ -19,6 +19,7 @@
 #include "m_stack.c"
 #include "m_pd.c"
 #include "m_message.c"
+#include "m_symbols.c"
 #include "m_class.c"
 #include "m_object.c"
 #include "m_atom.c"
