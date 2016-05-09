@@ -71,7 +71,7 @@ void glist_text(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
     else
     {
         int xpix, ypix;
-        pd_vMessage((t_pd *)canvas_getView(gl), gensym ("editmode"), "i", 1);
+        pd_vMessage((t_pd *)canvas_getView(gl), sym_editmode, "i", 1);
         SET_SYMBOL(&at, gensym ("comment"));
         canvas_deselectAll(gl);
         canvas_getLastCoordinates(gl, &xpix, &ypix);
@@ -218,7 +218,7 @@ void canvas_obj(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         t_buffer *b = buffer_new();
         int connectme, xpix, ypix, indx, nobj;
         canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
-        pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym ("editmode"), "i", 1);
+        pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_editmode, "i", 1);
         canvas_objtext(gl, xpix, ypix, 0, 1, b);
         if (connectme)
             canvas_connect(gl, indx, 0, nobj, 0);
@@ -235,7 +235,7 @@ void canvas_iems(t_glist *gl, t_symbol *guiobjname)
     t_buffer *b = buffer_new();
     int xpix, ypix;
 
-    pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym ("editmode"), "i", 1);
+    pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_editmode, "i", 1);
     canvas_deselectAll(gl);
     SET_SYMBOL(&at, guiobjname);
     buffer_deserialize(b, 1, &at);
@@ -246,47 +246,47 @@ void canvas_iems(t_glist *gl, t_symbol *guiobjname)
 
 void canvas_bng(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym ("bng"));
+    canvas_iems (gl, sym_bng);
 }
 
 void canvas_toggle(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym ("tgl"));
+    canvas_iems (gl, sym_tgl);
 }
 
 void canvas_vslider(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym ("vsl"));
+    canvas_iems(gl, sym_vslider);
 }
 
 void canvas_hslider(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym ("hsl"));
+    canvas_iems (gl, sym_hslider);
 }
 
 void canvas_hradio(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym ("hradio"));
+    canvas_iems (gl, sym_hradio);
 }
 
 void canvas_vradio(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym ("vradio"));
+    canvas_iems (gl, sym_vradio);
 }
 
 void canvas_vumeter(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym ("vu"));
+    canvas_iems (gl, sym_vu);
 }
 
 void canvas_mycnv(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym ("cnv"));
+    canvas_iems (gl, sym_cnv);
 }
 
 void canvas_numbox(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
 {
-    canvas_iems(gl, gensym ("nbx"));
+    canvas_iems (gl, sym_nbx);
 }
 
 /* iemlib */
@@ -480,7 +480,7 @@ void canvas_msg(t_glist *gl, t_symbol *s, int argc, t_atom *argv)
         int connectme, xpix, ypix, indx, nobj;
         canvas_howputnew(gl, &connectme, &xpix, &ypix, &indx, &nobj);
         
-        pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym ("editmode"), "i", 1);
+        pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_editmode, "i", 1);
         x->m_text.te_xCoordinate = xpix;
         x->m_text.te_yCoordinate = ypix;
         glist_add(gl, &x->m_text.te_g);
@@ -948,7 +948,7 @@ void canvas_atom(t_glist *gl, t_atomtype type,
         outlet_new(&x->a_text,
             x->a_atom.a_type == A_FLOAT ? &s_float: &s_symbol);
         inlet_new(&x->a_text, &x->a_text.te_g.g_pd, 0, 0);
-        pd_vMessage(&gl->gl_obj.te_g.g_pd, gensym ("editmode"), "i", 1);
+        pd_vMessage(&gl->gl_obj.te_g.g_pd, sym_editmode, "i", 1);
         x->a_text.te_xCoordinate = xpix;
         x->a_text.te_yCoordinate = ypix;
         glist_add(gl, &x->a_text.te_g);
@@ -1380,7 +1380,7 @@ void text_setto(t_object *x, t_glist *glist, char *buf, int bufsize)
              vec2[0].a_type == A_SYMBOL
             && !strcmp(vec2[0].a_w.w_symbol->s_name, "pd"))
         {
-            pd_message((t_pd *)x, gensym ("rename"), natom2-1, vec2+1);
+            pd_message((t_pd *)x, sym_rename, natom2-1, vec2+1);
             buffer_free(x->te_buffer);
             x->te_buffer = b;
         }

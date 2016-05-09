@@ -837,7 +837,7 @@ void x_array_setup(void )
     class_addMethod(array_define_class, (t_method)canvas_dsp,
         sym_dsp, A_CANT, 0);
     class_addMethod(array_define_class, (t_method)canvas_map,
-        gensym ("_map"), A_FLOAT, A_NULL);
+        sym__map, A_FLOAT, A_NULL);
     class_addMethod(array_define_class, (t_method)canvas_setBounds,
         sym_setbounds, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     class_addMethod(array_define_class, (t_method)canvas_mouse, sym_mouse,
@@ -849,7 +849,7 @@ void x_array_setup(void )
     class_addMethod(array_define_class, (t_method)canvas_motion, sym_motion,
         A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     class_addMethod(array_define_class, (t_method)canvas_close,
-        gensym ("close"), A_DEFFLOAT, 0);
+        sym_close, A_DEFFLOAT, 0);
     class_addMethod(array_define_class, (t_method)canvas_close,
         gensym ("menuclose"), A_DEFFLOAT, 0);
     /*class_addMethod(array_define_class, (t_method)canvas_find_parent,
@@ -866,7 +866,7 @@ void x_array_setup(void )
     class_setSaveFunction(array_define_class, array_define_save);
 
     class_addMethod(array_define_class, (t_method)array_define_ignore,
-        gensym ("editmode"), A_GIMME, 0);
+        sym_editmode, A_GIMME, 0);
 
     class_addCreator((t_newmethod)arrayobj_new, gensym ("array"), A_GIMME, 0);
 

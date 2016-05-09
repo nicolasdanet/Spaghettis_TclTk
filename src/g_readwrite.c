@@ -759,7 +759,7 @@ static void canvas_savetofile(t_glist *x, t_symbol *filename, t_symbol *dir, flo
         post("saved to: %s/%s", dir->s_name, filename->s_name);
         canvas_dirty(x, 0);
         if (fdestroy != 0)
-            pd_vMessage (&x->gl_obj.te_g.g_pd, gensym ("close"), "f", fdestroy);
+            pd_vMessage (&x->gl_obj.te_g.g_pd, sym_close, "f", fdestroy);
     }
     buffer_free(b);
 }

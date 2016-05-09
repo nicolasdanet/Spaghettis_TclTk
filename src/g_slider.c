@@ -568,7 +568,7 @@ static void slider_behaviorSave (t_gobj *z, t_buffer *b)
         sym_obj,
         (int)cast_object (z)->te_xCoordinate, 
         (int)cast_object (z)->te_yCoordinate,
-        x->x_isVertical ? gensym ("vslider") : gensym ("hslider"), 
+        x->x_isVertical ? sym_vslider : sym_hslider, 
         x->x_gui.iem_width,                                             // Width.
         x->x_gui.iem_height,                                            // Height.
         (t_float)x->x_minimum,                                          // Range minimum.
@@ -636,8 +636,8 @@ static void *slider_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_slider *x = (t_slider *)pd_new (slider_class);
     
-    if (s == gensym ("vslider")) { x->x_isVertical = 1; }
-    if (s == gensym ("vsl"))     { x->x_isVertical = 1; }
+    if (s == sym_vslider)    { x->x_isVertical = 1; }
+    if (s == gensym ("vsl")) { x->x_isVertical = 1; }
 
     {
     //
@@ -744,7 +744,7 @@ void slider_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (gensym ("hslider"),
+    c = class_new (sym_hslider,
         (t_newmethod)slider_new,
         (t_method)slider_free,
         sizeof (t_slider),
@@ -752,7 +752,7 @@ void slider_setup (void)
         A_GIMME,
         A_NULL);
 
-    class_addCreator ((t_newmethod)slider_new, gensym ("vslider"), A_GIMME, A_NULL);
+    class_addCreator ((t_newmethod)slider_new, sym_vslider, A_GIMME, A_NULL);
 
     class_addBang (c, slider_bang);
     class_addFloat (c, slider_float);

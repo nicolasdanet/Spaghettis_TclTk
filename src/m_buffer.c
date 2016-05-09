@@ -475,12 +475,12 @@ static int buffer_getMessage (t_atom *v, t_pd *object, t_pd **next, t_atom *m, i
     
     switch (v->a_type) {
     //
-    case A_SEMICOLON    :   if (object == &pd_objectMaker) { SET_SYMBOL (m, sym___semicolon); }
+    case A_SEMICOLON    :   if (object == &pd_objectMaker) { SET_SYMBOL (m, sym___semicolon__); }
                             else { 
                                 *next = NULL; end = 1; 
                             }
                             break;
-    case A_COMMA        :   if (object == &pd_objectMaker) { SET_SYMBOL (m, sym___comma); }
+    case A_COMMA        :   if (object == &pd_objectMaker) { SET_SYMBOL (m, sym___comma__); }
                             else { 
                                 end = 1; 
                             }

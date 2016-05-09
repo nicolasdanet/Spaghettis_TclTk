@@ -530,7 +530,7 @@ static void radio_behaviorSave (t_gobj *z, t_buffer *b)
         sym_obj,
         (int)cast_object (z)->te_xCoordinate,
         (int)cast_object (z)->te_yCoordinate,
-        x->x_isVertical ? gensym ("vradio") : gensym ("hradio"),
+        x->x_isVertical ? sym_vradio : sym_hradio,
         x->x_gui.iem_width,                                         // Size.
         x->x_changed,                                               // Dummy.
         iemgui_serializeLoadbang (&x->x_gui),                       // Loadbang.
@@ -592,7 +592,7 @@ static void *radio_new (t_symbol *s, int argc, t_atom *argv)
 {
     t_radio *x = (t_radio *)pd_new (radio_class);
     
-    if (s == gensym ("vradio"))  { x->x_isVertical = 1; }
+    if (s == sym_vradio)  { x->x_isVertical = 1; }
     
     {
     //
@@ -686,7 +686,7 @@ void radio_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (gensym ("hradio"), 
+    c = class_new (sym_hradio, 
             (t_newmethod)radio_new,
             (t_method)radio_free,
             sizeof (t_radio),
@@ -694,7 +694,7 @@ void radio_setup (void)
             A_GIMME,
             A_NULL);
     
-    class_addCreator ((t_newmethod)radio_new, gensym ("vradio"), A_GIMME, A_NULL);
+    class_addCreator ((t_newmethod)radio_new, sym_vradio, A_GIMME, A_NULL);
         
     class_addBang (c, radio_bang);
     class_addFloat (c, radio_float);

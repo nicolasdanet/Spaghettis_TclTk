@@ -551,7 +551,7 @@ static void dial_behaviorSave (t_gobj *z, t_buffer *b)
         sym_obj,
         (int)cast_object (z)->te_xCoordinate,
         (int)cast_object (z)->te_yCoordinate,
-        gensym ("nbx"),
+        sym_nbx,
         x->x_digitsNumber,                                                      // Number of digits.
         x->x_gui.iem_height,                                                    // Height.
         (t_float)x->x_minimum,                                                  // Range minimum.
@@ -717,7 +717,7 @@ void dial_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (gensym ("nbx"),
+    c = class_new (sym_nbx,
         (t_newmethod)dial_new,
         (t_method)dial_free,
         sizeof (t_dial),
@@ -776,7 +776,7 @@ void dial_setup (void)
     dial_widgetBehavior.w_fnClick           = dial_behaviorClick;
     
     class_setWidgetBehavior (c, &dial_widgetBehavior);
-    class_setHelpName (c, gensym ("nbx"));
+    class_setHelpName (c, sym_nbx);
     class_setSaveFunction (c, dial_behaviorSave);
     class_setPropertiesFunction (c, dial_behaviorProperties);
     

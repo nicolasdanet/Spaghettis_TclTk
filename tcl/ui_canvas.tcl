@@ -327,7 +327,7 @@ proc _apply {top} {
     ::ui_canvas::_forceLimits  $top
     ::ui_canvas::_forceVisible $top
 
-    ::ui_interface::pdsend "$top donecanvasdialog \
+    ::ui_interface::pdsend "$top _canvasdialog \
             $canvasScaleX($top) \
             $canvasScaleY($top) \
             [expr {$canvasVisible($top) + 2 * $canvasHide($top)}] \

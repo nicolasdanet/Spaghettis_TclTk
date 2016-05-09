@@ -500,7 +500,7 @@ static void vu_behaviorSave (t_gobj *z, t_buffer *b)
         sym_obj,
         (int)cast_object (x)->te_xCoordinate,
         (int)cast_object (x)->te_yCoordinate,
-        gensym ("vu"),
+        sym_vu,
         x->x_gui.iem_width,                                         // Width.
         x->x_gui.iem_height,                                        // Height.
         names.n_unexpandedReceive,                                  // Receive.
@@ -638,7 +638,7 @@ void vu_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (gensym ("vu"),
+    c = class_new (sym_vu,
         (t_newmethod)vu_new,
         (t_method)vu_free,
         sizeof (t_vu),
@@ -681,7 +681,7 @@ void vu_setup (void)
     vu_widgetBehavior.w_fnClick         = NULL;
     
     class_setWidgetBehavior (c, &vu_widgetBehavior);
-    class_setHelpName (c, gensym ("vu"));
+    class_setHelpName (c, sym_vu);
     class_setSaveFunction (c, vu_behaviorSave);
     class_setPropertiesFunction (c, vu_behaviorProperties);
     

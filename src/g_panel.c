@@ -269,7 +269,7 @@ static void panel_behaviorSave (t_gobj *z, t_buffer *b)
         sym_obj,
         (int)cast_object (z)->te_xCoordinate,
         (int)cast_object (z)->te_yCoordinate,
-        gensym ("cnv"),
+        sym_cnv,
         x->x_gui.iem_width,                                                     // Grip width.
         x->x_panelWidth,                                                        // Panel width.
         x->x_panelHeight,                                                       // Panel height.
@@ -402,7 +402,7 @@ void panel_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (gensym ("cnv"), 
+    c = class_new (sym_cnv, 
         (t_newmethod)panel_new,
         (t_method)panel_free,
         sizeof (t_panel), 
@@ -448,7 +448,7 @@ void panel_setup (void)
     panel_widgetBehavior.w_fnClick          = NULL;
     
     class_setWidgetBehavior (c, &panel_widgetBehavior);
-    class_setHelpName (c, gensym ("cnv"));
+    class_setHelpName (c, sym_cnv);
     class_setSaveFunction (c, panel_behaviorSave);
     class_setPropertiesFunction (c, panel_behaviorProperties);
     

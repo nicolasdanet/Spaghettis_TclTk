@@ -1226,7 +1226,7 @@ void g_array_setup(void)
         A_FLOAT, A_FLOAT, A_FLOAT, 0);
     /*class_addMethod(garray_class, (t_method)garray_ylabel, gensym ("ylabel"),
         A_GIMME, 0);*/
-    class_addMethod(garray_class, (t_method)garray_rename, gensym ("rename"),
+    class_addMethod(garray_class, (t_method)garray_rename, sym_rename,
         A_SYMBOL, 0);
     class_addMethod(garray_class, (t_method)garray_read, gensym ("read"),
         A_SYMBOL, A_NULL);
@@ -1243,7 +1243,7 @@ void g_array_setup(void)
     class_addMethod(garray_class, (t_method)garray_normalize,
         gensym ("normalize"), A_DEFFLOAT, 0);
     class_addMethod(garray_class, (t_method)garray_arraydialog,
-        gensym ("arraydialog"), A_SYMBOL, A_FLOAT, A_FLOAT, A_NULL);
+        sym__arraydialog, A_SYMBOL, A_FLOAT, A_FLOAT, A_NULL);
 /* jsarlo { */
     class_addMethod(garray_class, (t_method)garray_arrayviewlist_new,
         gensym ("arrayviewlistnew"), A_NULL);

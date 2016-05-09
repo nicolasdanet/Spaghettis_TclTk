@@ -359,7 +359,7 @@ static void toggle_behaviorSave (t_gobj *z, t_buffer *b)
         sym_obj,
         (int)cast_object (z)->te_xCoordinate,
         (int)cast_object (z)->te_yCoordinate,
-        gensym ("tgl"), 
+        sym_tgl, 
         x->x_gui.iem_width,                                 // Size.
         iemgui_serializeLoadbang (&x->x_gui),               // Loadbang.
         names.n_unexpandedSend,                             // Send.
@@ -500,7 +500,7 @@ void toggle_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (gensym ("tgl"),
+    c = class_new (sym_tgl,
             (t_newmethod)toggle_new,
             (t_method)toggle_free,
             sizeof (t_toggle),
@@ -551,7 +551,7 @@ void toggle_setup (void)
     toggle_widgetBehavior.w_fnClick         = toggle_behaviorClick;
     
     class_setWidgetBehavior (c, &toggle_widgetBehavior);
-    class_setHelpName (c, gensym ("tgl"));
+    class_setHelpName (c, sym_tgl);
     class_setSaveFunction (c, toggle_behaviorSave);
     class_setPropertiesFunction (c, toggle_behaviorProperties);
     

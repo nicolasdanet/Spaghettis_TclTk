@@ -381,7 +381,7 @@ static void bng_behaviorSave (t_gobj *z, t_buffer *b)
         sym_obj,
         (int)cast_object (z)->te_xCoordinate,
         (int)cast_object (z)->te_yCoordinate,
-        gensym ("bng"), 
+        sym_bng, 
         x->x_gui.iem_width,                                     // Size.
         x->x_flashTimeHold,                                     // Flash hold.
         x->x_flashTimeBreak,                                    // Flash break.
@@ -524,7 +524,7 @@ void bng_setup (void)
 {
     t_class *c = NULL;
     
-    c = class_new (gensym ("bng"), 
+    c = class_new (sym_bng, 
             (t_newmethod)bng_new, 
             (t_method)bng_free, 
             sizeof (t_bng), 
@@ -576,7 +576,7 @@ void bng_setup (void)
     bng_widgetBehavior.w_fnClick        = bng_behaviorClick;
     
     class_setWidgetBehavior (c, &bng_widgetBehavior);
-    class_setHelpName (c, gensym ("bng"));
+    class_setHelpName (c, sym_bng);
     class_setSaveFunction (c, bng_behaviorSave);
     class_setPropertiesFunction (c, bng_behaviorProperties);
     

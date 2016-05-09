@@ -443,7 +443,7 @@ proc _doPopup {top action} {
     variable popupX
     variable popupY
     
-    ::ui_interface::pdsend "$top done-popup $action $popupX $popupY"
+    ::ui_interface::pdsend "$top _popupdialog $action $popupX $popupY"
 }
 
 # ------------------------------------------------------------------------------------------------------------

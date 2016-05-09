@@ -189,7 +189,7 @@ void x_scalar_setup(void )
     class_addMethod(scalar_define_class, (t_method)canvas_dsp,
         sym_dsp, A_CANT, 0);
     class_addMethod(scalar_define_class, (t_method)canvas_map,
-        gensym ("_map"), A_FLOAT, A_NULL);
+        sym__map, A_FLOAT, A_NULL);
     class_addMethod(scalar_define_class, (t_method)canvas_setBounds,
         sym_setbounds, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     class_addMethod(scalar_define_class, (t_method)canvas_mouse, sym_mouse,
@@ -201,7 +201,7 @@ void x_scalar_setup(void )
     class_addMethod(scalar_define_class, (t_method)canvas_motion, sym_motion,
         A_FLOAT, A_FLOAT, A_FLOAT, A_NULL);
     class_addMethod(scalar_define_class, (t_method)canvas_close,
-        gensym ("close"), A_DEFFLOAT, 0);
+        sym_close, A_DEFFLOAT, 0);
     class_addMethod(scalar_define_class, (t_method)canvas_close,
         gensym ("menuclose"), A_DEFFLOAT, 0);
     /*class_addMethod(scalar_define_class, (t_method)canvas_find_parent,

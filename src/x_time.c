@@ -647,7 +647,7 @@ static void pipe_setup(void)
         sizeof(t_pipe), 0, A_GIMME, 0);
     class_addList(pipe_class, pipe_list);
     class_addMethod(pipe_class, (t_method)pipe_flush, gensym ("flush"), 0);
-    class_addMethod(pipe_class, (t_method)pipe_clear, gensym ("clear"), 0);
+    class_addMethod(pipe_class, (t_method)pipe_clear, sym_clear, 0);
 }
 
 void x_time_setup(void)
