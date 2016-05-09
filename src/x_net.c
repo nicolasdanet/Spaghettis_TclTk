@@ -331,7 +331,7 @@ static void netsend_setup(void)
         sym_connect, A_SYMBOL, A_FLOAT, 0);
     class_addMethod(netsend_class, (t_method)netsend_disconnect,
         sym_disconnect, 0);
-    class_addMethod(netsend_class, (t_method)netsend_send, gensym ("send"),
+    class_addMethod(netsend_class, (t_method)netsend_send, sym_send,
         A_GIMME, 0);
 }
 
@@ -555,7 +555,7 @@ static void netreceive_setup(void)
     class_addMethod(netreceive_class, (t_method)netreceive_listen,
         gensym ("listen"), A_FLOAT, 0);
     class_addMethod(netreceive_class, (t_method)netreceive_send,
-        gensym ("send"), A_GIMME, 0);
+        sym_send, A_GIMME, 0);
 }
 
 void x_net_setup(void)

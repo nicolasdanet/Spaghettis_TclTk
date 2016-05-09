@@ -147,7 +147,7 @@ static void scalar_define_save(t_gobj *z, t_buffer *bb)
     {
         t_buffer *b2 = buffer_new();
         t_scalar *sc = (t_scalar *)(x->gl_graphics);
-        buffer_vAppend(bb, "ss", sym__A, gensym ("set"));
+        buffer_vAppend(bb, "ss", sym__A, sym_set);
         canvas_writescalar(sc->sc_template, sc->sc_vector, b2, 0);
         buffer_serialize(bb, b2);
         buffer_appendSemicolon(bb);
@@ -203,18 +203,18 @@ void x_scalar_setup(void )
     class_addMethod(scalar_define_class, (t_method)canvas_close,
         sym_close, A_DEFFLOAT, 0);
     class_addMethod(scalar_define_class, (t_method)canvas_close,
-        gensym ("menuclose"), A_DEFFLOAT, 0);
+        sym_menuclose, A_DEFFLOAT, 0);
     /*class_addMethod(scalar_define_class, (t_method)canvas_find_parent,
         gensym ("findparent"), A_NULL);*/
     class_addMethod(scalar_define_class, (t_method)canvas_menusave,
-        gensym ("menusave"), 0);
+        sym_menusave, 0);
     class_addMethod(scalar_define_class, (t_method)canvas_menusaveas,
-        gensym ("menusaveas"), 0);
+        sym_menusaveas, 0);
     
     class_addMethod(scalar_define_class, (t_method)scalar_define_send,
-        gensym ("send"), A_SYMBOL, 0);
+        sym_send, A_SYMBOL, 0);
     class_addMethod(scalar_define_class, (t_method)scalar_define_set,
-        gensym ("set"), A_GIMME, 0);
+        sym_set, A_GIMME, 0);
     class_setHelpName(scalar_define_class, sym_scalar);
     class_setSaveFunction(scalar_define_class, scalar_define_save);
 

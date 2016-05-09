@@ -1093,7 +1093,7 @@ void g_graph_setup_class(t_class *c)
         A_FLOAT, A_FLOAT, A_FLOAT, 0);
     /* class_addMethod(c, (t_method)graph_ylabel, gensym ("ylabel"),
         A_GIMME, 0); */
-    class_addMethod(c, (t_method)graph_array, gensym ("array"),
+    class_addMethod(c, (t_method)graph_array, sym_array,
         A_SYMBOL, A_FLOAT, A_SYMBOL, A_DEFFLOAT, A_NULL);
     class_addMethod(c, (t_method)canvas_menuarray,
         gensym ("menuarray"), A_NULL);

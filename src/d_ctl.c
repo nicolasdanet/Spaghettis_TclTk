@@ -475,7 +475,7 @@ static void snapshot_tilde_setup(void)
     class_addMethod(snapshot_tilde_class, (t_method)snapshot_tilde_dsp,
         sym_dsp, A_CANT, 0);
     class_addMethod(snapshot_tilde_class, (t_method)snapshot_tilde_set,
-        gensym ("set"), A_DEFFLOAT, 0);
+        sym_set, A_DEFFLOAT, 0);
     class_addBang(snapshot_tilde_class, snapshot_tilde_bang);
 }
 
@@ -831,7 +831,7 @@ static void threshold_tilde_setup( void)
             A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, A_DEFFLOAT, 0);
     CLASS_SIGNAL(threshold_tilde_class, t_threshold_tilde, x_f);
     class_addMethod(threshold_tilde_class, (t_method)threshold_tilde_set,
-        gensym ("set"), A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
+        sym_set, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
     class_addMethod(threshold_tilde_class, (t_method)threshold_tilde_ft1,
         gensym ("ft1"), A_FLOAT, 0);
     class_addMethod(threshold_tilde_class, (t_method)threshold_tilde_dsp,

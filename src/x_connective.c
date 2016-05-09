@@ -52,7 +52,7 @@ void pdint_setup(void)
     pdint_class = class_new(gensym ("int"), (t_newmethod)pdint_new, 0,
         sizeof(t_pdint), 0, A_DEFFLOAT, 0);
     class_addCreator((t_newmethod)pdint_new, gensym ("i"), A_DEFFLOAT, 0);
-    class_addMethod(pdint_class, (t_method)pdint_send, gensym ("send"),
+    class_addMethod(pdint_class, (t_method)pdint_send, sym_send,
         A_SYMBOL, 0);
     class_addBang(pdint_class, pdint_bang);
     class_addFloat(pdint_class, pdint_float);
@@ -108,7 +108,7 @@ void pdfloat_setup(void)
     pdfloat_class = class_new(gensym ("float"), (t_newmethod)pdfloat_new, 0,
         sizeof(t_pdfloat), 0, A_FLOAT, 0);
     class_addCreator((t_newmethod)pdfloat_new2, sym_f, A_DEFFLOAT, 0);
-    class_addMethod(pdfloat_class, (t_method)pdfloat_send, gensym ("send"),
+    class_addMethod(pdfloat_class, (t_method)pdfloat_send, sym_send,
         A_SYMBOL, 0);
     class_addBang(pdfloat_class, pdfloat_bang);
     class_addFloat(pdfloat_class, (t_method)pdfloat_float);
@@ -262,7 +262,7 @@ static void *send_new(t_symbol *s)
 
 static void send_setup(void)
 {
-    send_class = class_new(gensym ("send"), (t_newmethod)send_new, 0,
+    send_class = class_new(sym_send, (t_newmethod)send_new, 0,
         sizeof(t_send), 0, A_DEFSYMBOL, 0);
     class_addCreator((t_newmethod)send_new, gensym ("s"), A_DEFSYMBOL, 0);
     class_addBang(send_class, send_bang);
@@ -1326,7 +1326,7 @@ static void makefilename_setup(void)
     class_addFloat(makefilename_class, makefilename_float);
     class_addSymbol(makefilename_class, makefilename_symbol);
     class_addMethod(makefilename_class, (t_method)makefilename_set,
-        gensym ("set"), A_SYMBOL, 0);
+        sym_set, A_SYMBOL, 0);
 }
 
 /* -------------------------- swap ------------------------------ */
@@ -1414,7 +1414,7 @@ void change_setup(void)
         sizeof(t_change), 0, A_DEFFLOAT, 0);
     class_addBang(change_class, change_bang);
     class_addFloat(change_class, change_float);
-    class_addMethod(change_class, (t_method)change_set, gensym ("set"),
+    class_addMethod(change_class, (t_method)change_set, sym_set,
         A_DEFFLOAT, 0);
 }
 

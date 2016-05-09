@@ -182,7 +182,7 @@ static void sigreceive_setup(void)
         (t_newmethod)sigreceive_new, 0,
         sizeof(t_sigreceive), 0, A_DEFSYMBOL, 0);
     class_addCreator((t_newmethod)sigreceive_new, gensym ("r~"), A_DEFSYMBOL, 0);
-    class_addMethod(sigreceive_class, (t_method)sigreceive_set, gensym ("set"),
+    class_addMethod(sigreceive_class, (t_method)sigreceive_set, sym_set,
         A_SYMBOL, 0);
     class_addMethod(sigreceive_class, (t_method)sigreceive_dsp,
         sym_dsp, A_CANT, 0);
@@ -344,7 +344,7 @@ static void sigthrow_setup(void)
 {
     sigthrow_class = class_new(gensym ("throw~"), (t_newmethod)sigthrow_new, 0,
         sizeof(t_sigthrow), 0, A_DEFSYMBOL, 0);
-    class_addMethod(sigthrow_class, (t_method)sigthrow_set, gensym ("set"),
+    class_addMethod(sigthrow_class, (t_method)sigthrow_set, sym_set,
         A_SYMBOL, 0);
     CLASS_SIGNAL(sigthrow_class, t_sigthrow, x_f);
     class_addMethod(sigthrow_class, (t_method)sigthrow_dsp,

@@ -490,7 +490,7 @@ void sigbiquad_setup(void)
     class_addMethod(sigbiquad_class, (t_method)sigbiquad_dsp,
         sym_dsp, A_CANT, 0);
     class_addList(sigbiquad_class, sigbiquad_list);
-    class_addMethod(sigbiquad_class, (t_method)sigbiquad_set, gensym ("set"),
+    class_addMethod(sigbiquad_class, (t_method)sigbiquad_set, sym_set,
         A_GIMME, 0);
     class_addMethod(sigbiquad_class, (t_method)sigbiquad_set, sym_clear,
         A_GIMME, 0);
@@ -566,7 +566,7 @@ void sigsamphold_setup(void)
         (t_newmethod)sigsamphold_new, 0, sizeof(t_sigsamphold), 0, 0);
     CLASS_SIGNAL(sigsamphold_class, t_sigsamphold, x_f);
     class_addMethod(sigsamphold_class, (t_method)sigsamphold_set,
-        gensym ("set"), A_DEFFLOAT, 0);
+        sym_set, A_DEFFLOAT, 0);
     class_addMethod(sigsamphold_class, (t_method)sigsamphold_reset,
         gensym ("reset"), A_GIMME, 0);
     class_addMethod(sigsamphold_class, (t_method)sigsamphold_dsp,
@@ -639,7 +639,7 @@ void sigrpole_setup(void)
         (t_newmethod)sigrpole_new, 0, sizeof(t_sigrpole), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigrpole_class, t_sigrpole, x_f);
     class_addMethod(sigrpole_class, (t_method)sigrpole_set,
-        gensym ("set"), A_DEFFLOAT, 0);
+        sym_set, A_DEFFLOAT, 0);
     class_addMethod(sigrpole_class, (t_method)sigrpole_clear,
         sym_clear, 0);
     class_addMethod(sigrpole_class, (t_method)sigrpole_dsp,
@@ -711,7 +711,7 @@ void sigrzero_setup(void)
         (t_newmethod)sigrzero_new, 0, sizeof(t_sigrzero), 0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigrzero_class, t_sigrzero, x_f);
     class_addMethod(sigrzero_class, (t_method)sigrzero_set,
-        gensym ("set"), A_DEFFLOAT, 0);
+        sym_set, A_DEFFLOAT, 0);
     class_addMethod(sigrzero_class, (t_method)sigrzero_clear,
         sym_clear, 0);
     class_addMethod(sigrzero_class, (t_method)sigrzero_dsp,
@@ -784,7 +784,7 @@ void sigrzero_rev_setup(void)
         0, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigrzero_rev_class, t_sigrzero_rev, x_f);
     class_addMethod(sigrzero_rev_class, (t_method)sigrzero_rev_set,
-        gensym ("set"), A_DEFFLOAT, 0);
+        sym_set, A_DEFFLOAT, 0);
     class_addMethod(sigrzero_rev_class, (t_method)sigrzero_rev_clear,
         sym_clear, 0);
     class_addMethod(sigrzero_rev_class, (t_method)sigrzero_rev_dsp,
@@ -877,7 +877,7 @@ void sigcpole_setup(void)
             A_DEFFLOAT, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigcpole_class, t_sigcpole, x_f);
     class_addMethod(sigcpole_class, (t_method)sigcpole_set,
-        gensym ("set"), A_DEFFLOAT, A_DEFFLOAT, 0);
+        sym_set, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addMethod(sigcpole_class, (t_method)sigcpole_clear,
         sym_clear, 0);
     class_addMethod(sigcpole_class, (t_method)sigcpole_dsp,
@@ -967,7 +967,7 @@ void sigczero_setup(void)
             A_DEFFLOAT, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigczero_class, t_sigczero, x_f);
     class_addMethod(sigczero_class, (t_method)sigczero_set,
-        gensym ("set"), A_DEFFLOAT, A_DEFFLOAT, 0);
+        sym_set, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addMethod(sigczero_class, (t_method)sigczero_clear,
         sym_clear, 0);
     class_addMethod(sigczero_class, (t_method)sigczero_dsp,
@@ -1059,7 +1059,7 @@ void sigczero_rev_setup(void)
             A_DEFFLOAT, A_DEFFLOAT, 0);
     CLASS_SIGNAL(sigczero_rev_class, t_sigczero_rev, x_f);
     class_addMethod(sigczero_rev_class, (t_method)sigczero_rev_set,
-        gensym ("set"), A_DEFFLOAT, A_DEFFLOAT, 0);
+        sym_set, A_DEFFLOAT, A_DEFFLOAT, 0);
     class_addMethod(sigczero_rev_class, (t_method)sigczero_rev_clear,
         sym_clear, 0);
     class_addMethod(sigczero_rev_class, (t_method)sigczero_rev_dsp,

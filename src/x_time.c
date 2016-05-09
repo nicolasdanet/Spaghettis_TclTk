@@ -347,7 +347,7 @@ static void line_setup(void)
     class_addMethod(line_class, (t_method)line_stop,
         gensym ("stop"), 0);
     class_addMethod(line_class, (t_method)line_set,
-        gensym ("set"), A_FLOAT, 0);
+        sym_set, A_FLOAT, 0);
     class_addFloat(line_class, (t_method)line_float);
 }
 

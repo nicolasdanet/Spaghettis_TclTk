@@ -708,7 +708,7 @@ void oscformat_setup(void)
     oscformat_class = class_new(gensym ("oscformat"), (t_newmethod)oscformat_new,
         (t_method)oscformat_free, sizeof(t_oscformat), 0, A_GIMME, 0);
     class_addMethod(oscformat_class, (t_method)oscformat_set,
-        gensym ("set"), A_GIMME, 0);
+        sym_set, A_GIMME, 0);
     class_addMethod(oscformat_class, (t_method)oscformat_format,
         gensym ("format"), A_DEFSYMBOL, 0);
     class_addList(oscformat_class, oscformat_list);

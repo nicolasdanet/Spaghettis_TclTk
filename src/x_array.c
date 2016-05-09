@@ -851,24 +851,24 @@ void x_array_setup(void )
     class_addMethod(array_define_class, (t_method)canvas_close,
         sym_close, A_DEFFLOAT, 0);
     class_addMethod(array_define_class, (t_method)canvas_close,
-        gensym ("menuclose"), A_DEFFLOAT, 0);
+        sym_menuclose, A_DEFFLOAT, 0);
     /*class_addMethod(array_define_class, (t_method)canvas_find_parent,
         gensym ("findparent"), A_NULL)*/
     class_addMethod(array_define_class, (t_method)canvas_menusave,
-        gensym ("menusave"), 0);
+        sym_menusave, 0);
     class_addMethod(array_define_class, (t_method)canvas_menusaveas,
-        gensym ("menusaveas"), 0);
+        sym_menusaveas, 0);
     
     class_addMethod(array_define_class, (t_method)array_define_send,
-        gensym ("send"), A_SYMBOL, 0);
+        sym_send, A_SYMBOL, 0);
     class_addAnything(array_define_class, array_define_anything);
-    class_setHelpName(array_define_class, gensym ("array"));
+    class_setHelpName(array_define_class, sym_array);
     class_setSaveFunction(array_define_class, array_define_save);
 
     class_addMethod(array_define_class, (t_method)array_define_ignore,
         sym_editmode, A_GIMME, 0);
 
-    class_addCreator((t_newmethod)arrayobj_new, gensym ("array"), A_GIMME, 0);
+    class_addCreator((t_newmethod)arrayobj_new, sym_array, A_GIMME, 0);
 
     class_addCreator((t_newmethod)table_new, gensym ("table"),
         A_DEFSYMBOL, A_DEFFLOAT, 0);
@@ -878,33 +878,33 @@ void x_array_setup(void )
             sizeof(t_array_size), 0, A_GIMME, 0);
     class_addBang(array_size_class, array_size_bang);
     class_addFloat(array_size_class, array_size_float);
-    class_setHelpName(array_size_class, gensym ("array"));
+    class_setHelpName(array_size_class, sym_array);
 
     array_sum_class = class_new(gensym ("array sum"),
         (t_newmethod)array_sum_new, (t_method)array_client_free,
             sizeof(t_array_sum), 0, A_GIMME, 0);
     class_addBang(array_sum_class, array_sum_bang);
     class_addFloat(array_sum_class, array_sum_float);
-    class_setHelpName(array_sum_class, gensym ("array"));
+    class_setHelpName(array_sum_class, sym_array);
 
     array_get_class = class_new(gensym ("array get"),
         (t_newmethod)array_get_new, (t_method)array_client_free,
             sizeof(t_array_get), 0, A_GIMME, 0);
     class_addBang(array_get_class, array_get_bang);
     class_addFloat(array_get_class, array_get_float);
-    class_setHelpName(array_get_class, gensym ("array"));
+    class_setHelpName(array_get_class, sym_array);
 
     array_set_class = class_new(gensym ("array set"),
         (t_newmethod)array_set_new, (t_method)array_client_free,
             sizeof(t_array_set), 0, A_GIMME, 0);
     class_addList(array_set_class, array_set_list);
-    class_setHelpName(array_set_class, gensym ("array"));
+    class_setHelpName(array_set_class, sym_array);
 
     array_quantile_class = class_new(gensym ("array quantile"),
         (t_newmethod)array_quantile_new, (t_method)array_client_free,
             sizeof(t_array_quantile), 0, A_GIMME, 0);
     class_addFloat(array_quantile_class, array_quantile_float);
-    class_setHelpName(array_quantile_class, gensym ("array"));
+    class_setHelpName(array_quantile_class, sym_array);
 
     array_random_class = class_new(gensym ("array random"),
         (t_newmethod)array_random_new, (t_method)array_client_free,
@@ -913,19 +913,19 @@ void x_array_setup(void )
         gensym ("seed"), A_FLOAT, 0);
     class_addFloat(array_random_class, array_random_float);
     class_addBang(array_random_class, array_random_bang);
-    class_setHelpName(array_random_class, gensym ("array"));
+    class_setHelpName(array_random_class, sym_array);
 
     array_max_class = class_new(gensym ("array max"),
         (t_newmethod)array_max_new, (t_method)array_client_free,
             sizeof(t_array_max), 0, A_GIMME, 0);
     class_addFloat(array_max_class, array_max_float);
     class_addBang(array_max_class, array_max_bang);
-    class_setHelpName(array_max_class, gensym ("array"));
+    class_setHelpName(array_max_class, sym_array);
 
     array_min_class = class_new(gensym ("array min"),
         (t_newmethod)array_min_new, (t_method)array_client_free,
             sizeof(t_array_min), 0, A_GIMME, 0);
     class_addFloat(array_min_class, array_min_float);
     class_addBang(array_min_class, array_min_bang);
-    class_setHelpName(array_min_class, gensym ("array"));
+    class_setHelpName(array_min_class, sym_array);
 }

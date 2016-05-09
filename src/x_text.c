@@ -346,7 +346,7 @@ static void text_define_save(t_gobj *z, t_buffer *bb)
     buffer_appendSemicolon(bb);
     if (x->x_keep)
     {
-        buffer_vAppend(bb, "ss", sym__A, gensym ("set"));
+        buffer_vAppend(bb, "ss", sym__A, sym_set);
         buffer_serialize(bb, x->x_binbuf);
         buffer_appendSemicolon(bb);
     }
@@ -1814,13 +1814,13 @@ void x_qlist_setup(void )
     class_addMethod(text_define_class, (t_method)textbuf_addline, 
         gensym ("addline"), A_GIMME, 0);
     class_addMethod(text_define_class, (t_method)text_define_set,
-        gensym ("set"), A_GIMME, 0);
+        sym_set, A_GIMME, 0);
     class_addMethod(text_define_class, (t_method)text_define_clear,
         sym_clear, 0);
     class_addMethod(text_define_class, (t_method)textbuf_write,
-        gensym ("write"), A_GIMME, 0);
+        sym_write, A_GIMME, 0);
     class_addMethod(text_define_class, (t_method)textbuf_read,
-        gensym ("read"), A_GIMME, 0);
+        sym_read, A_GIMME, 0);
     class_setSaveFunction(text_define_class, text_define_save);
     class_addBang(text_define_class, text_define_bang);
     class_setHelpName(text_define_class, gensym ("text-object"));
@@ -1889,7 +1889,7 @@ void x_qlist_setup(void )
     class_addMethod(qlist_class, (t_method)qlist_rewind, gensym ("rewind"), 0);
     class_addMethod(qlist_class, (t_method)qlist_next,
         gensym ("next"), A_DEFFLOAT, 0);  
-    class_addMethod(qlist_class, (t_method)qlist_set, gensym ("set"),
+    class_addMethod(qlist_class, (t_method)qlist_set, sym_set,
         A_GIMME, 0);
     class_addMethod(qlist_class, (t_method)qlist_clear, sym_clear, 0);
     class_addMethod(qlist_class, (t_method)qlist_add, gensym ("add"),
@@ -1898,9 +1898,9 @@ void x_qlist_setup(void )
         A_GIMME, 0);
     class_addMethod(qlist_class, (t_method)qlist_add, gensym ("append"),
         A_GIMME, 0);
-    class_addMethod(qlist_class, (t_method)qlist_read, gensym ("read"),
+    class_addMethod(qlist_class, (t_method)qlist_read, sym_read,
         A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addMethod(qlist_class, (t_method)qlist_write, gensym ("write"),
+    class_addMethod(qlist_class, (t_method)qlist_write, sym_write,
         A_SYMBOL, A_DEFSYMBOL, 0);
     class_addMethod(qlist_class, (t_method)textbuf_open, sym_click, 0);
     class_addMethod(qlist_class, (t_method)textbuf_close, sym_close, 0);
@@ -1918,7 +1918,7 @@ void x_qlist_setup(void )
         (t_method)textbuf_free, sizeof(t_qlist), 0, 0);
     class_addMethod(textfile_class, (t_method)textfile_rewind, gensym ("rewind"),
         0);
-    class_addMethod(textfile_class, (t_method)qlist_set, gensym ("set"),
+    class_addMethod(textfile_class, (t_method)qlist_set, sym_set,
         A_GIMME, 0);
     class_addMethod(textfile_class, (t_method)qlist_clear, sym_clear, 0);
     class_addMethod(textfile_class, (t_method)qlist_add, gensym ("add"),
@@ -1927,9 +1927,9 @@ void x_qlist_setup(void )
         A_GIMME, 0);
     class_addMethod(textfile_class, (t_method)qlist_add, gensym ("append"),
         A_GIMME, 0);
-    class_addMethod(textfile_class, (t_method)qlist_read, gensym ("read"), 
+    class_addMethod(textfile_class, (t_method)qlist_read, sym_read, 
         A_SYMBOL, A_DEFSYMBOL, 0);
-    class_addMethod(textfile_class, (t_method)qlist_write, gensym ("write"), 
+    class_addMethod(textfile_class, (t_method)qlist_write, sym_write, 
         A_SYMBOL, A_DEFSYMBOL, 0);
     class_addMethod(textfile_class, (t_method)textbuf_open, sym_click, 0);
     class_addMethod(textfile_class, (t_method)textbuf_close, sym_close, 

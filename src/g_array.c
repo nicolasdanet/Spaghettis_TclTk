@@ -771,7 +771,7 @@ static void garray_save(t_gobj *z, t_buffer *b)
             x->x_scalar->sc_vector, 0);    
     filestyle = (style == PLOT_POINTS ? 1 : 
         (style == PLOT_POLYGONS ? 0 : style)); 
-    buffer_vAppend(b, "sssisi;", sym__X, gensym ("array"),
+    buffer_vAppend(b, "sssisi;", sym__X, sym_array,
         x->x_name, array->a_n, &s_float,
             x->x_saveit + 2 * filestyle + 8*x->x_hidename);
     garray_savecontentsto(x, b);
@@ -1210,7 +1210,7 @@ static void garray_print(t_garray *x)
 
 void g_array_setup(void)
 {
-    garray_class = class_new(gensym ("array"), 0, (t_method)garray_free,
+    garray_class = class_new(sym_array, 0, (t_method)garray_free,
         sizeof(t_garray), CLASS_GRAPHIC, 0);
     class_setWidgetBehavior(garray_class, &garray_widgetbehavior);
     class_addMethod(garray_class, (t_method)garray_const, gensym ("const"),
@@ -1228,9 +1228,9 @@ void g_array_setup(void)
         A_GIMME, 0);*/
     class_addMethod(garray_class, (t_method)garray_rename, sym_rename,
         A_SYMBOL, 0);
-    class_addMethod(garray_class, (t_method)garray_read, gensym ("read"),
+    class_addMethod(garray_class, (t_method)garray_read, sym_read,
         A_SYMBOL, A_NULL);
-    class_addMethod(garray_class, (t_method)garray_write, gensym ("write"),
+    class_addMethod(garray_class, (t_method)garray_write, sym_write,
         A_SYMBOL, A_NULL);
     class_addMethod(garray_class, (t_method)garray_resize, gensym ("resize"),
         A_FLOAT, A_NULL);

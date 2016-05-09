@@ -1493,10 +1493,10 @@ static void soundfiler_setup(void)
 {
     soundfiler_class = class_new(gensym ("soundfiler"), (t_newmethod)soundfiler_new, 
         0, sizeof(t_soundfiler), 0, 0);
-    class_addMethod(soundfiler_class, (t_method)soundfiler_read, gensym ("read"), 
+    class_addMethod(soundfiler_class, (t_method)soundfiler_read, sym_read, 
         A_GIMME, 0);
     class_addMethod(soundfiler_class, (t_method)soundfiler_write,
-        gensym ("write"), A_GIMME, 0);
+        sym_write, A_GIMME, 0);
 }
 
 

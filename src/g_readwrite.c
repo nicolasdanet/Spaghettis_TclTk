@@ -546,13 +546,13 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
                 ((t_scalar *)y)->sc_vector,  &ntemplates, &templatevec);
         }
     }
-    buffer_vAppend(b, "s;", gensym ("data"));
+    buffer_vAppend(b, "s;", sym_data);
     for (i = 0; i < ntemplates; i++)
     {
         t_template *template = template_findbyname(templatevec[i]);
         int j, m = template->t_n;
             /* drop "pd-" prefix from template symbol to print it: */
-        buffer_vAppend(b, "ss;", gensym ("template"),
+        buffer_vAppend(b, "ss;", sym_template,
             gensym (templatevec[i]->s_name + 3));
         for (j = 0; j < m; j++)
         {
@@ -561,7 +561,7 @@ t_buffer *glist_writetobinbuf(t_glist *x, int wholething)
             {
                 case DATA_FLOAT: type = &s_float; break;
                 case DATA_SYMBOL: type = &s_symbol; break;
-                case DATA_ARRAY: type = gensym ("array"); break;
+                case DATA_ARRAY: type = sym_array; break;
                 case DATA_TEXT: type = &s_list; break;
                 default: type = &s_float; PD_BUG;
             }
@@ -628,7 +628,7 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
         buffer_serialize(bz, x->gl_obj.te_buffer);
         patchsym = atom_getSymbolAtIndex(1, buffer_size(bz), buffer_atoms(bz));
         buffer_free(bz);
-        buffer_vAppend(b, "ssiiiisi;", gensym ("#N"), sym_canvas,
+        buffer_vAppend(b, "ssiiiisi;", sym__N, sym_canvas,
             (int)(x->gl_windowTopLeftX),
             (int)(x->gl_windowTopLeftY),
             (int)(x->gl_windowBottomRightX - x->gl_windowTopLeftX),
@@ -639,7 +639,7 @@ static void canvas_saveto(t_glist *x, t_buffer *b)
         /* root or abstraction */
     else 
     {
-        buffer_vAppend(b, "ssiiiii;", gensym ("#N"), sym_canvas,
+        buffer_vAppend(b, "ssiiiii;", sym__N, sym_canvas,
             (int)(x->gl_windowTopLeftX),
             (int)(x->gl_windowTopLeftY),
             (int)(x->gl_windowBottomRightX - x->gl_windowTopLeftX),
@@ -719,7 +719,7 @@ static void canvas_savetemplatesto(t_glist *x, t_buffer *b, int wholething)
             continue;
         }
             /* drop "pd-" prefix from template symbol to print */
-        buffer_vAppend(b, "sss", gensym ("#N"), sym_struct,
+        buffer_vAppend(b, "sss", sym__N, sym_struct,
             gensym (templatevec[i]->s_name + 3));
         for (j = 0; j < m; j++)
         {
@@ -728,7 +728,7 @@ static void canvas_savetemplatesto(t_glist *x, t_buffer *b, int wholething)
             {
                 case DATA_FLOAT: type = &s_float; break;
                 case DATA_SYMBOL: type = &s_symbol; break;
-                case DATA_ARRAY: type = gensym ("array"); break;
+                case DATA_ARRAY: type = sym_array; break;
                 case DATA_TEXT: type = sym_text; break;
                 default: type = &s_float; PD_BUG;
             }
@@ -787,20 +787,20 @@ void canvas_menusave(t_glist *x, float fdestroy)
 void g_readwrite_setup(void)
 {
     class_addMethod(canvas_class, (t_method)glist_write,
-        gensym ("write"), A_SYMBOL, A_DEFSYMBOL, A_NULL);
+        sym_write, A_SYMBOL, A_DEFSYMBOL, A_NULL);
     class_addMethod(canvas_class, (t_method)glist_read,
-        gensym ("read"), A_SYMBOL, A_DEFSYMBOL, A_NULL);
+        sym_read, A_SYMBOL, A_DEFSYMBOL, A_NULL);
     class_addMethod(canvas_class, (t_method)glist_mergefile,
-        gensym ("mergefile"), A_SYMBOL, A_DEFSYMBOL, A_NULL);
+        sym_mergefile, A_SYMBOL, A_DEFSYMBOL, A_NULL);
     class_addMethod(canvas_class, (t_method)canvas_savetofile,
-        gensym ("savetofile"), A_SYMBOL, A_SYMBOL, A_DEFFLOAT, 0);
+        sym_savetofile, A_SYMBOL, A_SYMBOL, A_DEFFLOAT, 0);
     class_addMethod(canvas_class, (t_method)canvas_saveto,
-        gensym ("saveto"), A_CANT, 0);
+        sym_saveto, A_CANT, 0);
 /* ------------------ from the menu ------------------------- */
     class_addMethod(canvas_class, (t_method)canvas_menusave,
-        gensym ("menusave"), A_DEFFLOAT, 0);
+        sym_menusave, A_DEFFLOAT, 0);
     class_addMethod(canvas_class, (t_method)canvas_menusaveas,
-        gensym ("menusaveas"), A_DEFFLOAT, 0);
+        sym_menusaveas, A_DEFFLOAT, 0);
 }
 
 

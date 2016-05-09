@@ -65,7 +65,9 @@ extern t_symbol *sym__selectall;
 extern t_symbol *sym__signoff;
 extern t_symbol *sym__watchdog;
 extern t_symbol *sym__A;
+extern t_symbol *sym__N;
 extern t_symbol *sym__X;
+extern t_symbol *sym_array;
 extern t_symbol *sym_bindlist;
 extern t_symbol *sym_bng;
 extern t_symbol *sym_canvas;
@@ -76,6 +78,7 @@ extern t_symbol *sym_close;
 extern t_symbol *sym_cnv;
 extern t_symbol *sym_connect;
 extern t_symbol *sym_coords;
+extern t_symbol *sym_data;
 extern t_symbol *sym_dirty;
 extern t_symbol *sym_disconnect;
 extern t_symbol *sym_dsp;
@@ -90,6 +93,7 @@ extern t_symbol *sym_hslider;
 extern t_symbol *sym_inlet;
 extern t_symbol *sym_key;
 extern t_symbol *sym_loadbang;
+extern t_symbol *sym_mergefile;
 extern t_symbol *sym_motion;
 extern t_symbol *sym_mouse;
 extern t_symbol *sym_mouseup;
@@ -101,19 +105,26 @@ extern t_symbol *sym_obj;
 extern t_symbol *sym_objectmaker;
 extern t_symbol *sym_pd;
 extern t_symbol *sym_quit;
+extern t_symbol *sym_read;
 extern t_symbol *sym_rename;
 extern t_symbol *sym_restore;
+extern t_symbol *sym_saveto;
+extern t_symbol *sym_savetofile;
 extern t_symbol *sym_scalar;
+extern t_symbol *sym_send;
+extern t_symbol *sym_set;
 extern t_symbol *sym_setbounds;
 extern t_symbol *sym_struct;
 extern t_symbol *sym_subpatch;
 extern t_symbol *sym_symbolatom;
+extern t_symbol *sym_template;
 extern t_symbol *sym_text;
 extern t_symbol *sym_tgl;
 extern t_symbol *sym_visible;
 extern t_symbol *sym_vradio;
 extern t_symbol *sym_vslider;
 extern t_symbol *sym_vu;
+extern t_symbol *sym_write;
 extern t_symbol *sym_BackSpace;
 extern t_symbol *sym_Delete;
 extern t_symbol *sym_Down;
@@ -124,6 +135,24 @@ extern t_symbol *sym_Right;
 extern t_symbol *sym_Space;
 extern t_symbol *sym_Tab;
 extern t_symbol *sym_Up;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if PD_WITH_LEGACY
+
+extern t_symbol *sym_menu__dash__open;
+extern t_symbol *sym_menuclose;
+extern t_symbol *sym_menusave;
+extern t_symbol *sym_menusaveas;
+extern t_symbol *sym_mycnv;
+extern t_symbol *sym_numbox;
+extern t_symbol *sym_page;
+extern t_symbol *sym_toggle;
+extern t_symbol *sym_vis;
+extern t_symbol *sym_vumeter;
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

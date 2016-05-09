@@ -771,15 +771,15 @@ void canvas_setup (void)
    
     #if PD_WITH_LEGACY
     
-    class_addMethod (c, (t_method)canvas_open,          gensym ("menu-open"),   A_NULL);
-    class_addMethod (c, (t_method)canvas_close,         gensym ("menuclose"),   A_DEFFLOAT, A_NULL);
-    class_addMethod (c, (t_method)canvas_toggle,        gensym ("toggle"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_vumeter,       gensym ("vumeter"),     A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_mycnv,         gensym ("mycnv"),       A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_numbox,        gensym ("numbox"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)canvas_visible,       gensym ("vis"),         A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_open,          sym_menu__dash__open,   A_NULL);
+    class_addMethod (c, (t_method)canvas_close,         sym_menuclose,          A_DEFFLOAT, A_NULL);
+    class_addMethod (c, (t_method)canvas_toggle,        sym_toggle,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_vumeter,       sym_vumeter,            A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_mycnv,         sym_mycnv,              A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_numbox,        sym_numbox,             A_GIMME, A_NULL);
+    class_addMethod (c, (t_method)canvas_visible,       sym_vis,                A_FLOAT, A_NULL);
     
-    class_addCreator ((t_newmethod)subpatch_new,        gensym ("page"),        A_DEFSYMBOL, A_NULL);
+    class_addCreator ((t_newmethod)subpatch_new,        sym_page,               A_DEFSYMBOL, A_NULL);
 
     #endif
         

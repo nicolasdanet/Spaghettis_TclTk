@@ -1143,12 +1143,12 @@ void text_save(t_gobj *z, t_buffer *b)
     {
             /* if we have a "saveto" method, and if we don't happen to be
             a canvas that's an abstraction, the saveto method does the work */
-        if (class_hasMethod (pd_class ((t_pd *)x), gensym ("saveto")) &&
+        if (class_hasMethod (pd_class ((t_pd *)x), sym_saveto) &&
             !((pd_class((t_pd *)x) == canvas_class) && 
                 (canvas_isAbstraction ((t_glist *)x)
                     || canvas_istable((t_glist *)x))))
         {  
-            mess1((t_pd *)x, gensym ("saveto"), b);
+            mess1((t_pd *)x, sym_saveto, b);
             buffer_vAppend(b, "ssii", sym__X, sym_restore,
                 (int)x->te_xCoordinate, (int)x->te_yCoordinate);
         }
@@ -1426,7 +1426,7 @@ void g_text_setup(void)
 
     class_addMethod(message_class, (t_method)message_click, sym_click,
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);
-    class_addMethod(message_class, (t_method)message_set, gensym ("set"),
+    class_addMethod(message_class, (t_method)message_set, sym_set,
         A_GIMME, 0);
     class_addMethod(message_class, (t_method)message_add, gensym ("add"),
         A_GIMME, 0);
@@ -1455,7 +1455,7 @@ void g_text_setup(void)
     class_addFloat(gatom_class, gatom_float);
     class_addSymbol(gatom_class, gatom_symbol);
     class_addList(gatom_class, gatom_list);
-    class_addMethod(gatom_class, (t_method)gatom_set, gensym ("set"),
+    class_addMethod(gatom_class, (t_method)gatom_set, sym_set,
         A_GIMME, 0);
     class_addMethod(gatom_class, (t_method)gatom_click, sym_click,
         A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, A_FLOAT, 0);

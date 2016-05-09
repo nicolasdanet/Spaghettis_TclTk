@@ -523,9 +523,9 @@ void toggle_setup (void)
     class_addMethod (c, (t_method)iemjump_backgroundColor,  gensym ("backgroundcolor"), A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_foregroundColor,  gensym ("foregroundcolor"), A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)toggle_set,               gensym ("set"),             A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)toggle_set,               sym_set,                    A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)toggle_nonZero,           gensym ("nonzero"),         A_FLOAT, A_NULL);
-    class_addMethod (c, (t_method)iemjump_send,             gensym ("send"),            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemjump_send,             sym_send,                   A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemjump_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemjump_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
 
@@ -538,7 +538,7 @@ void toggle_setup (void)
     class_addMethod (c, (t_method)iemjump_labelPosition,    gensym ("label_pos"),       A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_labelFont,        gensym ("label_font"),      A_GIMME, A_NULL);
     
-    class_addCreator ((t_newmethod)toggle_new, gensym ("toggle"), A_GIMME, A_NULL);
+    class_addCreator ((t_newmethod)toggle_new, sym_toggle, A_GIMME, A_NULL);
         
     #endif
     

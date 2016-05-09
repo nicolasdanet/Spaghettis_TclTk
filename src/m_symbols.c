@@ -60,7 +60,9 @@ t_symbol *sym__selectall;
 t_symbol *sym__signoff;
 t_symbol *sym__watchdog;
 t_symbol *sym__A;
+t_symbol *sym__N;
 t_symbol *sym__X;
+t_symbol *sym_array;
 t_symbol *sym_bindlist;
 t_symbol *sym_bng;
 t_symbol *sym_canvas;
@@ -71,6 +73,7 @@ t_symbol *sym_close;
 t_symbol *sym_cnv;
 t_symbol *sym_connect;
 t_symbol *sym_coords;
+t_symbol *sym_data;
 t_symbol *sym_dirty;
 t_symbol *sym_disconnect;
 t_symbol *sym_dsp;
@@ -85,6 +88,7 @@ t_symbol *sym_hslider;
 t_symbol *sym_inlet;
 t_symbol *sym_key;
 t_symbol *sym_loadbang;
+t_symbol *sym_mergefile;
 t_symbol *sym_motion;                                        
 t_symbol *sym_mouse;
 t_symbol *sym_mouseup;
@@ -96,19 +100,26 @@ t_symbol *sym_objectmaker;
 t_symbol *sym_open;
 t_symbol *sym_pd;
 t_symbol *sym_quit;
+t_symbol *sym_read;
 t_symbol *sym_rename;
 t_symbol *sym_restore;
+t_symbol *sym_saveto;
+t_symbol *sym_savetofile;
 t_symbol *sym_scalar;
+t_symbol *sym_send;
+t_symbol *sym_set;
 t_symbol *sym_setbounds;
 t_symbol *sym_struct;
 t_symbol *sym_subpatch;
 t_symbol *sym_symbolatom;
+t_symbol *sym_template;
 t_symbol *sym_text;
 t_symbol *sym_tgl;
 t_symbol *sym_visible;
 t_symbol *sym_vradio;
 t_symbol *sym_vslider;
 t_symbol *sym_vu;
+t_symbol *sym_write;
 t_symbol *sym_BackSpace;
 t_symbol *sym_Delete;
 t_symbol *sym_Down;
@@ -119,6 +130,24 @@ t_symbol *sym_Return;
 t_symbol *sym_Right;
 t_symbol *sym_Tab;
 t_symbol *sym_Up;
+
+// -----------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------
+
+#if PD_WITH_LEGACY
+
+t_symbol *sym_menu__dash__open;
+t_symbol *sym_menuclose;
+t_symbol *sym_menusave;
+t_symbol *sym_menusaveas;
+t_symbol *sym_mycnv;
+t_symbol *sym_numbox;
+t_symbol *sym_page;
+t_symbol *sym_toggle;
+t_symbol *sym_vis;
+t_symbol *sym_vumeter;
+
+#endif
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
@@ -154,7 +183,9 @@ void symbols_initialize (void)
     sym__signoff            = gensym ("_signoff");
     sym__watchdog           = gensym ("_watchdog");
     sym__A                  = gensym ("#A");
+    sym__N                  = gensym ("#N");
     sym__X                  = gensym ("#X");
+    sym_array               = gensym ("array");
     sym_bindlist            = gensym ("bindlist");
     sym_bng                 = gensym ("bng");
     sym_canvas              = gensym ("canvas");
@@ -165,6 +196,7 @@ void symbols_initialize (void)
     sym_cnv                 = gensym ("cnv");
     sym_connect             = gensym ("connect");
     sym_coords              = gensym ("coords");
+    sym_data                = gensym ("data");
     sym_dirty               = gensym ("dirty");
     sym_disconnect          = gensym ("disconnect");
     sym_dsp                 = gensym ("dsp");
@@ -179,6 +211,7 @@ void symbols_initialize (void)
     sym_inlet               = gensym ("inlet");
     sym_key                 = gensym ("key");
     sym_loadbang            = gensym ("loadbang");
+    sym_mergefile           = gensym ("mergefile");
     sym_motion              = gensym ("motion");
     sym_mouse               = gensym ("mouse");
     sym_mouseup             = gensym ("mouseup");
@@ -190,19 +223,26 @@ void symbols_initialize (void)
     sym_open                = gensym ("open");
     sym_pd                  = gensym ("pd");
     sym_quit                = gensym ("quit");
+    sym_read                = gensym ("read");
     sym_rename              = gensym ("rename");
     sym_restore             = gensym ("restore");
+    sym_saveto              = gensym ("saveto");
+    sym_savetofile          = gensym ("savetofile");
     sym_scalar              = gensym ("scalar");
+    sym_send                = gensym ("send");
+    sym_set                 = gensym ("set");
     sym_setbounds           = gensym ("setbounds");
     sym_struct              = gensym ("struct");
     sym_subpatch            = gensym ("subpatch");
     sym_symbolatom          = gensym ("symbolatom");
+    sym_template            = gensym ("template");
     sym_text                = gensym ("text");
     sym_tgl                 = gensym ("tgl");
     sym_visible             = gensym ("visible");
     sym_vradio              = gensym ("vradio");
     sym_vslider             = gensym ("vslider");
     sym_vu                  = gensym ("vu");
+    sym_write               = gensym ("write");
     sym_BackSpace           = gensym ("BackSpace");
     sym_Delete              = gensym ("Delete");
     sym_Down                = gensym ("Down");
@@ -213,6 +253,21 @@ void symbols_initialize (void)
     sym_Space               = gensym ("Space");
     sym_Tab                 = gensym ("Tab");
     sym_Up                  = gensym ("Up");
+    
+    #if PD_WITH_LEGACY
+
+    sym_menu__dash__open    = gensym ("menu-open");
+    sym_menuclose           = gensym ("menuclose");
+    sym_menusave            = gensym ("menusave");
+    sym_menusaveas          = gensym ("menusaveas");
+    sym_mycnv               = gensym ("mycnv");
+    sym_numbox              = gensym ("numbox");
+    sym_page                = gensym ("page");
+    sym_toggle              = gensym ("toggle");
+    sym_vis                 = gensym ("vis");
+    sym_vumeter             = gensym ("vumeter");
+    
+    #endif
 }
 
 // -----------------------------------------------------------------------------------------------------------

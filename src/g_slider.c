@@ -771,11 +771,11 @@ void slider_setup (void)
     class_addMethod (c, (t_method)iemjump_foregroundColor,  gensym ("foregroundcolor"), A_GIMME, A_NULL);
     class_addMethod (c, (t_method)iemjump_labelColor,       gensym ("labelcolor"),      A_GIMME, A_NULL);
     class_addMethod (c, (t_method)slider_range,             gensym ("range"),           A_GIMME, A_NULL);
-    class_addMethod (c, (t_method)slider_set,               gensym ("set"),             A_FLOAT, A_NULL);
+    class_addMethod (c, (t_method)slider_set,               sym_set,                    A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)slider_steady,            gensym ("steady"),          A_FLOAT, A_NULL);
     class_addMethod (c, (t_method)slider_logarithmic,       gensym ("logarithmic"),     A_NULL);
     class_addMethod (c, (t_method)slider_linear,            gensym ("linear"),          A_NULL);
-    class_addMethod (c, (t_method)iemjump_send,             gensym ("send"),            A_DEFSYMBOL, A_NULL);
+    class_addMethod (c, (t_method)iemjump_send,             sym_send,                   A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemjump_receive,          gensym ("receive"),         A_DEFSYMBOL, A_NULL);
     class_addMethod (c, (t_method)iemjump_label,            gensym ("label"),           A_DEFSYMBOL, A_NULL);
     
